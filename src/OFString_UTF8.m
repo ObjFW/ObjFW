@@ -1096,7 +1096,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	pool = objc_autoreleasePoolPush();
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
 	if (_s->cString[pathCStringLength - 1] == '/' ||
@@ -1105,7 +1105,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		pathCStringLength--;
 
 	for (i = 0; i < pathCStringLength; i++) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 		if (_s->cString[i] == OF_PATH_DELIMITER) {
 #else
 		if (_s->cString[i] == '/' || _s->cString[i] == '\\') {
@@ -1135,7 +1135,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (pathCStringLength == 0)
 		return @"";
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
 	if (_s->cString[pathCStringLength - 1] == '/' ||
@@ -1144,7 +1144,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		pathCStringLength--;
 
 	for (i = pathCStringLength - 1; i >= 0; i--) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 		if (_s->cString[i] == OF_PATH_DELIMITER) {
 #else
 		if (_s->cString[i] == '/' || _s->cString[i] == '\\') {
@@ -1172,7 +1172,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (pathCStringLength == 0)
 		return @"";
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (_s->cString[pathCStringLength - 1] == OF_PATH_DELIMITER)
 #else
 	if (_s->cString[pathCStringLength - 1] == '/' ||
@@ -1185,7 +1185,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					       length: 1];
 
 	for (i = pathCStringLength - 1; i >= 1; i--)
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 		if (_s->cString[i] == OF_PATH_DELIMITER)
 #else
 		if (_s->cString[i] == '/' || _s->cString[i] == '\\')
@@ -1193,7 +1193,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			return [OFString stringWithUTF8String: _s->cString
 						       length: i];
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (_s->cString[0] == OF_PATH_DELIMITER)
 #else
 	if (_s->cString[0] == '/' || _s->cString[0] == '\\')

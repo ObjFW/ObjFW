@@ -285,7 +285,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"+[pathWithComponents:]",
 	    (is = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]]) &&
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	    [is isEqual: @"foo/bar/baz"] &&
 #else
 	    [is isEqual: @"foo\\bar\\baz"] &&
@@ -349,7 +349,7 @@ static uint16_t sutf16str[] = {
 	    [[@"foo..bar" stringByDeletingPathExtension] isEqual: @"foo."] &&
 	    [[@"/foo./bar" stringByDeletingPathExtension]
 	    isEqual: @"/foo./bar"] &&
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	    [[@"/foo./bar.baz" stringByDeletingPathExtension]
 	    isEqual: @"/foo./bar"] &&
 #else
@@ -384,11 +384,11 @@ static uint16_t sutf16str[] = {
 	    isnan([@"   NAN\t\t" floatValue]))
 
 	TEST(@"-[doubleValue]",
-#ifndef __ANDROID__
+#if !defined(__ANDROID__) && !defined(__DJGPP__)
 	    [@"\t-0x1.FFFFFFFFFFFFFP-1020 " doubleValue] ==
 	    -0x1.FFFFFFFFFFFFFP-1020 &&
 #else
-	    /* strtod() does not accept 0x on Android */
+	    /* Android and DJGPPP do not accept 0x for strtod() */
 	    [@"\t-0.123456789 " doubleValue] == -0.123456789 &&
 #endif
 	    [@"\r-INFINITY\n" doubleValue] == -INFINITY &&

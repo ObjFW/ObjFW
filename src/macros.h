@@ -113,7 +113,7 @@
 		abort();						\
 	}
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 # define OF_PATH_DELIMITER '/'
 # define OF_PATH_DELIMITER_STRING @"/"
 #else

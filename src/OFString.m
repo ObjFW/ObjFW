@@ -1977,7 +1977,7 @@ static struct {
 
 	characters = [self characters];
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (characters[length - 1] == OF_PATH_DELIMITER)
 #else
 	if (characters[length - 1] == '/' || characters[length - 1] == '\\')
@@ -1985,7 +1985,7 @@ static struct {
 		length--;
 
 	for (i = 0; i < length; i++) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 		if (characters[i] == OF_PATH_DELIMITER) {
 #else
 		if (characters[i] == '/' || characters[i] == '\\') {
@@ -2020,7 +2020,7 @@ static struct {
 
 	characters = [self characters];
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (characters[length - 1] == OF_PATH_DELIMITER)
 #else
 	if (characters[length - 1] == '/' || characters[length - 1] == '\\')
@@ -2028,7 +2028,7 @@ static struct {
 		length--;
 
 	for (i = length - 1; i >= 0; i--) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 		if (characters[i] == OF_PATH_DELIMITER) {
 #else
 		if (characters[i] == '/' || characters[i] == '\\') {
@@ -2083,7 +2083,7 @@ static struct {
 
 	characters = [self characters];
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (characters[length - 1] == OF_PATH_DELIMITER)
 #else
 	if (characters[length - 1] == '/' || characters[length - 1] == '\\')
@@ -2096,7 +2096,7 @@ static struct {
 	}
 
 	for (i = length - 1; i >= 1; i--) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 		if (characters[i] == OF_PATH_DELIMITER) {
 #else
 		if (characters[i] == '/' || characters[i] == '\\') {
@@ -2106,7 +2106,7 @@ static struct {
 		}
 	}
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (characters[0] == OF_PATH_DELIMITER) {
 #else
 	if (characters[0] == '/' || characters[0] == '\\') {

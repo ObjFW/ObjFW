@@ -15,6 +15,16 @@ Android
   * Limitations: Does not work as a shared library
 
 
+DOS
+---
+
+  * OS versions: Windows XP DOS Emulation, DOSBox
+  * Architectures: x86
+  * Compilers: DJGPP GCC 4.7.3 (djdev204)
+  * Runtimes: ObjFW
+  * Limitations: No threads, no sockets
+
+
 DragonFlyBSD
 ------------
 

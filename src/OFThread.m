@@ -66,6 +66,11 @@
 #import "autorelease.h"
 #import "macros.h"
 
+#ifdef __DJGPP__
+# define lrint(x) rint(x)
+# define useconds_t unsigned int
+#endif
+
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
 

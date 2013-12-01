@@ -28,7 +28,7 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(_WIN32) && defined(STDOUT)
+#if defined(STDOUT) && (defined(_WIN32) || defined(__DJGPP__))
 # undef STDOUT
 # define STDOUT_SIMPLE
 #endif
