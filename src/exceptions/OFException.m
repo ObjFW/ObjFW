@@ -144,17 +144,22 @@ of_wsaerr_to_errno(int wsaerr)
 		Dl_info info;
 
 		if (dladdr(_backtrace[i], &info)) {
-			ptrdiff_t offset = (char*)_backtrace[i] -
-			    (char*)info.dli_saddr;
+			OFString *frame;
 
-			if (info.dli_sname == NULL)
-				info.dli_sname = "??";
+			if (info.dli_sname != NULL) {
+				ptrdiff_t offset = (char*)_backtrace[i] -
+				    (char*)info.dli_saddr;
 
-			[backtrace addObject:
-			    [OFString stringWithFormat: @"%p <%s+%td> at %s",
-							_backtrace[i],
-							info.dli_sname, offset,
-							info.dli_fname]];
+				frame = [OFString stringWithFormat:
+				    @"%p <%s+%td> at %s",
+				    _backtrace[i], info.dli_sname, offset,
+				    info.dli_fname];
+			} else
+				frame = [OFString stringWithFormat:
+				    @"%p <?" @"?> at %s",
+				    _backtrace[i], info.dli_fname];
+
+			[backtrace addObject: frame];
 		} else
 # endif
 			[backtrace addObject:
