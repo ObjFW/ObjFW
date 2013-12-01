@@ -139,14 +139,20 @@ default_equal(void *value1, void *value2)
 
 #undef SET_DEFAULT
 
-		if (capacity > UINT32_MAX ||
-		    capacity > UINT32_MAX / sizeof(*_buckets) ||
+		if (capacity > UINT32_MAX / sizeof(*_buckets) ||
 		    capacity > UINT32_MAX / 8)
 			@throw [OFOutOfRangeException exception];
 
-		for (_capacity = 1; _capacity < capacity; _capacity *= 2);
-		if (capacity * 8 / _capacity >= 6)
+		for (_capacity = 1; _capacity < capacity;) {
+			if (_capacity > UINT32_MAX / 2)
+				@throw [OFOutOfRangeException exception];
+
 			_capacity *= 2;
+		}
+
+		if (capacity * 8 / _capacity >= 6)
+			if (_capacity <= UINT32_MAX / 2)
+				_capacity *= 2;
 
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
@@ -296,15 +302,17 @@ default_equal(void *value1, void *value2)
 	uint32_t i, fullness, capacity;
 	struct of_map_table_bucket **buckets;
 
-	if (count > UINT32_MAX || count > UINT32_MAX / sizeof(*_buckets) ||
-	    count > UINT32_MAX / 8)
+	if (count > UINT32_MAX / sizeof(*_buckets) || count > UINT32_MAX / 8)
 		@throw [OFOutOfRangeException exception];
 
 	fullness = count * 8 / _capacity;
 
-	if (fullness >= 6)
+	if (fullness >= 6) {
+		if (_capacity > UINT32_MAX / 2)
+			return;
+
 		capacity = _capacity * 2;
-	else if (fullness <= 1)
+	} else if (fullness <= 1)
 		capacity = _capacity / 2;
 	else
 		return;
@@ -337,8 +345,6 @@ default_equal(void *value1, void *value2)
 				for (j = 0; j < last &&
 				    buckets[j] != NULL; j++);
 			}
-
-			assert(j < last);
 
 			buckets[j] = _buckets[i];
 		}
@@ -460,6 +466,8 @@ default_equal(void *value1, void *value2)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key)) {
+			_mutations++;
+
 			_keyFunctions.release(_buckets[i]->key);
 			_valueFunctions.release(_buckets[i]->value);
 
@@ -467,7 +475,6 @@ default_equal(void *value1, void *value2)
 			_buckets[i] = &deleted;
 
 			_count--;
-			_mutations++;
 			[self OF_resizeForCount: _count];
 
 			return;
