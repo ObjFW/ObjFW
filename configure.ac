@@ -766,6 +766,12 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	])
 ])
 
+case "$host" in
+	arm-apple-darwin*)
+		AC_DEFINE(OF_IOS, 1, [Whether we compile for iOS])
+		;;
+esac
+
 AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
