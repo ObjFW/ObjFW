@@ -722,8 +722,14 @@ AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
 ])
 
 case "$host" in
+	arm-apple-darwin*)
+		have_processes="no"
+		;;
 	*-*-mingw*)
 		have_processes="yes"
+		;;
+	*-*-msdosdjgpp*)
+		have_processes="no"
 		;;
 	*)
 		AC_CHECK_FUNCS([fork dup2 execvp kill], [
