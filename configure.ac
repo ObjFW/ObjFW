@@ -217,12 +217,6 @@ case $objc_runtime in
 			OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
 			AC_MSG_RESULT(no)
 			old_compiler="yes"
-
-			AX_CHECK_COMPILER_FLAGS(-fno-objc-nonfragile-abi, [
-				flag="-fno-objc-nonfragile-abi"
-				OBJCFLAGS="$OBJCFLAGS $flag"
-				RUNTIME_FLAGS="$RUNTIME_FLAGS $flag"
-			])
 		])
 
 		AC_SUBST(RUNTIME, "runtime")
