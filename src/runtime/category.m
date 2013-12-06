@@ -46,7 +46,7 @@ static void
 register_category(struct objc_abi_category *cat)
 {
 	struct objc_abi_category **cats;
-	Class cls = objc_classname_to_class(cat->class_name);
+	Class cls = objc_classname_to_class(cat->class_name, false);
 
 	if (categories == NULL)
 		categories = objc_hashtable_new(2);

@@ -126,7 +126,7 @@ extern void objc_free_all_categories(void);
 extern void objc_initialize_class(Class);
 extern void objc_update_dtable(Class);
 extern void objc_register_all_classes(struct objc_abi_symtab*);
-extern Class objc_classname_to_class(const char*);
+extern Class objc_classname_to_class(const char*, bool);
 extern void objc_free_class(Class);
 extern void objc_free_all_classes(void);
 extern uint32_t objc_hash_string(const char*);

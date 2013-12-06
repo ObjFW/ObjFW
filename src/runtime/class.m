@@ -23,10 +23,16 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
+struct sparsearray {
+	void *next[256];
+};
+
 static struct objc_hashtable *classes = NULL;
 static Class *load_queue = NULL;
 static size_t load_queue_cnt = 0;
 static struct objc_sparsearray *empty_dtable = NULL;
+static unsigned lookups_till_fast_path = 128;
+static struct sparsearray *sparsearray = NULL;
 
 static void
 register_class(struct objc_abi_class *cls)
@@ -67,15 +73,82 @@ register_selectors(struct objc_abi_class *cls)
 }
 
 inline Class
-objc_classname_to_class(const char *name)
+objc_classname_to_class(const char *name, bool cache)
 {
 	Class c;
 
 	if (classes == NULL)
 		return Nil;
 
+	/*
+	 * Fast path
+	 *
+	 * Instead of looking up the string in a dictionary, which needs
+	 * locking, we use a sparse array to look up the pointer. If
+	 * objc_classname_to_class() gets called a lot, it is most likely that
+	 * the GCC ABI is used, which always calls into objc_lookup_class(), or
+	 * that it is used in a loop by the user. In both cases, it is very
+	 * likely that the same string pointer is passed again and again.
+	 *
+	 * This is not used before objc_classname_to_class() has been called a
+	 * certain amount of times, so that no memory is wasted if it is only
+	 * used rarely, for example if the ObjFW ABI is used and the user does
+	 * not call it in a loop.
+	 *
+	 * Runtime internal usage does not use the fast path and does not count
+	 * as a call into objc_classname_to_class(). The reason for this is
+	 * that if the runtime calls into objc_classname_to_class(), it already
+	 * has the lock and thus the performance gain would be small, but it
+	 * would waste memory.
+	 */
+	if (cache && sparsearray != NULL) {
+		uintptr_t clsidx = (uintptr_t)name;
+		struct sparsearray *iter = sparsearray;
+		uint_fast8_t i;
+
+		for (i = 0; i < sizeof(uintptr_t) - 1; i++) {
+			uintptr_t idx = (clsidx >>
+			    ((sizeof(uintptr_t) - i - 1) * 8)) & 0xFF;
+
+			if ((iter = iter->next[idx]) == NULL)
+				break;
+		}
+
+		if (iter != NULL && (c = iter->next[clsidx & 0xFF]) != Nil)
+			return c;
+	}
+
 	objc_global_mutex_lock();
+
 	c = (Class)((uintptr_t)objc_hashtable_get(classes, name) & ~1);
+
+	if (cache && sparsearray == NULL && --lookups_till_fast_path == 0)
+		if ((sparsearray = calloc(1,
+		    sizeof(struct sparsearray))) == NULL)
+			OBJC_ERROR("Failed to allocate memory for class lookup "
+			    "fast path!");
+
+	if (cache && sparsearray != NULL) {
+		uintptr_t clsidx = (uintptr_t)name;
+		struct sparsearray *iter = sparsearray;
+		uint_fast8_t i;
+
+		for (i = 0; i < sizeof(uintptr_t) - 1; i++) {
+			uintptr_t idx = (clsidx >>
+			    ((sizeof(uintptr_t) - i - 1) * 8)) & 0xFF;
+
+			if (iter->next[idx] == NULL)
+				if ((iter->next[idx] = calloc(1,
+				    sizeof(struct sparsearray))) == NULL)
+					OBJC_ERROR("Failed to allocate memory "
+					    "for class lookup fast path!");
+
+			iter = iter->next[idx];
+		}
+
+		iter->next[clsidx & 0xFF] = c;
+	}
+
 	objc_global_mutex_unlock();
 
 	return c;
@@ -239,7 +312,7 @@ setup_class(Class cls)
 		return;
 
 	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
-		Class super = objc_classname_to_class(superclass);
+		Class super = objc_classname_to_class(superclass, false);
 
 		if (super == nil)
 			return;
@@ -383,9 +456,9 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 id
 objc_lookUpClass(const char *name)
 {
-	Class cls = objc_classname_to_class(name);
+	Class cls;
 
-	if (cls == NULL)
+	if ((cls = objc_classname_to_class(name, true)) == NULL)
 		return Nil;
 
 	if (cls->info & OBJC_CLASS_INFO_SETUP)
@@ -634,10 +707,24 @@ objc_free_class(Class rcls)
 	objc_hashtable_set(classes, cls->name, NULL);
 }
 
+static void
+free_sparsearray(struct sparsearray *sa, size_t depth)
+{
+	uint_fast16_t i;
+
+	if (sa == NULL || depth == 0)
+		return;
+
+	for (i = 0; i < 256; i++)
+		free_sparsearray(sa->next[i], depth - 1);
+
+	free(sa);
+}
+
 void
 objc_free_all_classes(void)
 {
-	uint32_t i;
+	uint_fast32_t i;
 
 	if (classes == NULL)
 		return;
@@ -658,6 +745,9 @@ objc_free_all_classes(void)
 		objc_sparsearray_free(empty_dtable);
 		empty_dtable = NULL;
 	}
+
+	free_sparsearray(sparsearray, sizeof(uintptr_t));
+	sparsearray = NULL;
 
 	objc_hashtable_free(classes);
 	classes = NULL;
