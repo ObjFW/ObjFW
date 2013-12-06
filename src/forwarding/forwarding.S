@@ -27,7 +27,7 @@
 #  include "apple-forwarding-ppc.S"
 # endif
 #else
-# ifdef __ELF__
+# if defined(__ELF__)
 #  if defined(__amd64__) || defined(__x86_64__)
 #   include "forwarding-amd64-elf.S"
 #  elif defined(__i386__)
@@ -40,5 +40,7 @@
     (defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #   include "forwarding-mips-elf.S"
 #  endif
+# elif defined(_WIN32) && defined(__i386__)
+#  include "forwarding-x86-win32.S"
 # endif
 #endif

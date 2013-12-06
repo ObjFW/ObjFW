@@ -111,7 +111,7 @@
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
-# ifdef __ELF__
+# if defined(__ELF__)
 #  if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
     defined(__arm__) || defined(__ARM__) || defined(__ppc__) || defined(__PPC__)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
@@ -126,6 +126,11 @@
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
 #  endif
+# elif defined(_WIN32) && defined(__i386__)
+#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#   if __OBJFW_RUNTIME_ABI__ >= 800
+#    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+#   endif
 # endif
 #endif
 
