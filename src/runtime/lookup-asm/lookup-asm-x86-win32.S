@@ -16,10 +16,10 @@
 
 #include "config.h"
 
-.globl objc_msg_lookup
-.globl objc_msg_lookup_stret
-.globl objc_msg_lookup_super
-.globl objc_msg_lookup_super_stret
+.globl _objc_msg_lookup
+.globl _objc_msg_lookup_stret
+.globl _objc_msg_lookup_super
+.globl _objc_msg_lookup_super_stret
 
 .section .text
 .macro generate_lookup name not_found_handler
@@ -53,8 +53,6 @@
 .forward_L0_\name:
 	addl	$\not_found_handler-.forward_L0_\name, %eax
 	jmp	*%eax
-.type \name, %function
-.size \name, .-\name
 .endm
 
 .macro generate_lookup_super name lookup
@@ -66,14 +64,12 @@
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
 	jmp	.main_\lookup
-.type \name, %function
-.size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_not_found_handler
-generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
-generate_lookup_super objc_msg_lookup_super objc_msg_lookup
-generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+generate_lookup _objc_msg_lookup _objc_not_found_handler
+generate_lookup _objc_msg_lookup_stret _objc_not_found_handler_stret
+generate_lookup_super _objc_msg_lookup_super _objc_msg_lookup
+generate_lookup_super _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
 ret_nil:
 	call	get_eip
@@ -88,7 +84,3 @@ nil_method:
 get_eip:
 	movl	(%esp), %eax
 	ret
-
-#ifdef __linux__
-.section .note.GNU-stack, "", %progbits
-#endif

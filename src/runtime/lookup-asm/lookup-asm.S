@@ -33,4 +33,6 @@
 # if defined(__amd64__) || defined(__x86_64__)
 #  include "lookup-asm-amd64-macho.S"
 # endif
+#elif defined(_WIN32) && defined(__i386__)
+# include "lookup-asm-x86-win32.S"
 #endif
