@@ -22,6 +22,14 @@ AS_IF([test x"$host" = x"psp"], [
 
 AC_CANONICAL_HOST
 
+case "$host_os" in
+	msdosdjgpp*)
+		enable_shared="no"
+		enable_threads="no"
+		enable_sockets="no"
+		;;
+esac
+
 AC_LANG([Objective C])
 AC_PROG_OBJC([clang gcc])
 AC_PROG_OBJCPP
