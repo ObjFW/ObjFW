@@ -53,9 +53,15 @@
 # define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_LITTLE_ENDIAN
 #endif
 
-/* Hopefully no arch needs more than 16 bytes padding */
-#ifndef __BIGGEST_ALIGNMENT__
-# define __BIGGEST_ALIGNMENT__ 16
+#if __STDC_VERSION__ >= 201112L && defined(OF_HAVE_MAX_ALIGN_T)
+# define OF_BIGGEST_ALIGNMENT _Alignof(max_align_t)
+#else
+# ifdef __BIGGEST_ALIGNMENT__
+#  define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
+# else
+#  /* Hopefully no arch needs more than 16 bytes padding */
+#  define OF_BIGGEST_ALIGNMENT 16
+# endif
 #endif
 
 #ifdef __GNUC__
