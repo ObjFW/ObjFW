@@ -113,6 +113,15 @@
 		abort();						\
 	}
 
+#if __STDC_VERSION__ >= 201112L
+# /* C11 compiler, but old libc */
+# ifndef static_assert
+#  define static_assert _Static_assert
+# endif
+#else
+# define static_assert assert
+#endif
+
 #if !defined(_WIN32) && !defined(__DJGPP__)
 # define OF_PATH_DELIMITER '/'
 # define OF_PATH_DELIMITER_STRING @"/"

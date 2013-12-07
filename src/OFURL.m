@@ -18,7 +18,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #import "OFURL.h"
 #import "OFString.h"
@@ -137,7 +136,7 @@
 			else if ([_scheme isEqual: @"https"])
 				_port = 443;
 			else
-				assert(0);
+				OF_ENSURE(0);
 		}
 
 		if ((UTF8String = tmp) != NULL) {
