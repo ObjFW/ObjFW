@@ -60,7 +60,13 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
-AX_CHECK_COMPILER_FLAGS(-std=gnu99, [OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
+AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
+	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
+], [
+	AX_CHECK_COMPILER_FLAGS(-std=gnu99,
+		[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
+])
+
 case $OBJC in
 	*clang*)
 		;;
