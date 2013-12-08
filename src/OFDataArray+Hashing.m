@@ -18,6 +18,7 @@
 
 #import "OFDataArray.h"
 #import "OFString.h"
+#import "OFHash.h"
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
 
@@ -26,19 +27,20 @@
 int _OFDataArray_Hashing_reference;
 
 @implementation OFDataArray (Hashing)
-- (OFString*)MD5Hash
+- (OFString*)OF_hashAsStringWithHash: (Class <OFHash>)hashClass
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMD5Hash *hash = [OFMD5Hash hash];
-	uint8_t *digest;
-	char cString[OF_MD5_DIGEST_SIZE * 2];
+	id <OFHash> hash = [hashClass hash];
+	size_t digestSize = [hashClass digestSize];
+	const uint8_t *digest;
+	char cString[digestSize * 2];
 	size_t i;
 
 	[hash updateWithBuffer: _items
 			length: _count * _itemSize];
 	digest = [hash digest];
 
-	for (i = 0; i < OF_MD5_DIGEST_SIZE; i++) {
+	for (i = 0; i < digestSize; i++) {
 		uint8_t high, low;
 
 		high = digest[i] >> 4;
@@ -52,35 +54,16 @@ int _OFDataArray_Hashing_reference;
 
 	return [OFString stringWithCString: cString
 				  encoding: OF_STRING_ENCODING_ASCII
-				    length: OF_MD5_DIGEST_SIZE * 2];
+				    length: digestSize * 2];
+}
+
+- (OFString*)MD5Hash
+{
+	return [self OF_hashAsStringWithHash: [OFMD5Hash class]];
 }
 
 - (OFString*)SHA1Hash
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFSHA1Hash *hash = [OFSHA1Hash hash];
-	uint8_t *digest;
-	char cString[OF_SHA1_DIGEST_SIZE * 2];
-	size_t i;
-
-	[hash updateWithBuffer: _items
-			length: _count * _itemSize];
-	digest = [hash digest];
-
-	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++) {
-		uint8_t high, low;
-
-		high = digest[i] >> 4;
-		low  = digest[i] & 0x0F;
-
-		cString[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
-		cString[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return [OFString stringWithCString: cString
-				  encoding: OF_STRING_ENCODING_ASCII
-				    length: OF_SHA1_DIGEST_SIZE * 2];
+	return [self OF_hashAsStringWithHash: [OFSHA1Hash class]];
 }
 @end

@@ -215,7 +215,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 	memcpy(_in.u8, buffer, length);
 }
 
-- (uint8_t*)digest
+- (const uint8_t*)digest
 {
 	uint8_t	*p;
 	size_t count;
@@ -260,7 +260,7 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 
 	_calculated = true;
 
-	return (uint8_t*)_buffer;
+	return (const uint8_t*)_buffer;
 }
 
 - (bool)isCalculated

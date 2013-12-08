@@ -29,7 +29,7 @@
 
 static OFString *module = @"OFMD5Hash";
 
-const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
+const uint8_t testfile_md5[16] =
 	"\x00\x8B\x9D\x1B\x58\xDF\xF8\xFE\xEE\xF3\xAE\x8D\xBB\x68\x2D\x38";
 
 @implementation TestsAppDelegate (OFMD5HashTests)
@@ -51,8 +51,7 @@ const uint8_t testfile_md5[OF_MD5_DIGEST_SIZE] =
 	}
 	[f close];
 
-	TEST(@"-[digest]",
-	    !memcmp([md5 digest], testfile_md5, OF_MD5_DIGEST_SIZE))
+	TEST(@"-[digest]", !memcmp([md5 digest], testfile_md5, 16))
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,

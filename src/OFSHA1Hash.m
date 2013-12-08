@@ -170,7 +170,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	sha1_update(_state, &_count, _buffer, buffer, length);
 }
 
-- (uint8_t*)digest
+- (const uint8_t*)digest
 {
 	size_t i;
 	char finalcount[8];
@@ -188,7 +188,7 @@ sha1_update(uint32_t *state, uint64_t *count, char *buffer,
 	/* Should cause a sha1_transform() */
 	sha1_update(_state, &_count, _buffer, finalcount, 8);
 
-	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++)
+	for (i = 0; i < 20; i++)
 		_digest[i] = (char)((_state[i >> 2] >>
 		    ((3 - (i & 3)) * 8)) & 255);
 

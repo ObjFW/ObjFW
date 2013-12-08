@@ -62,7 +62,7 @@
  *
  * @return A buffer containing the hash
  */
-- (uint8_t*)digest OF_RETURNS_INNER_POINTER;
+- (const uint8_t*)digest OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns a boolean whether the hash has already been calculated.

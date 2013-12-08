@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFString.h"
+#import "OFHash.h"
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
 
@@ -25,61 +26,43 @@
 int _OFString_Hashing_reference;
 
 @implementation OFString (Hashing)
-- (OFString*)MD5Hash
+- (OFString*)OF_hashAsStringWithHash: (Class <OFHash>)hashClass
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMD5Hash *hash = [OFMD5Hash hash];
-	uint8_t *digest;
-	char ret[OF_MD5_DIGEST_SIZE * 2];
+	id <OFHash> hash = [hashClass hash];
+	size_t digestSize = [hashClass digestSize];
+	const uint8_t *digest;
+	char cString[digestSize * 2];
 	size_t i;
 
 	[hash updateWithBuffer: [self UTF8String]
 			length: [self UTF8StringLength]];
 	digest = [hash digest];
 
-	for (i = 0; i < OF_MD5_DIGEST_SIZE; i++) {
+	for (i = 0; i < digestSize; i++) {
 		uint8_t high, low;
 
 		high = digest[i] >> 4;
 		low  = digest[i] & 0x0F;
 
-		ret[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
-		ret[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
+		cString[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
+		cString[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
 	}
 
 	objc_autoreleasePoolPop(pool);
 
-	return [OFString stringWithCString: ret
+	return [OFString stringWithCString: cString
 				  encoding: OF_STRING_ENCODING_ASCII
-				    length: 32];
+				    length: digestSize * 2];
+}
+
+- (OFString*)MD5Hash
+{
+	return [self OF_hashAsStringWithHash: [OFMD5Hash class]];
 }
 
 - (OFString*)SHA1Hash
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFSHA1Hash *hash = [OFSHA1Hash hash];
-	uint8_t *digest;
-	char ret[OF_SHA1_DIGEST_SIZE * 2];
-	size_t i;
-
-	[hash updateWithBuffer: [self UTF8String]
-			length: [self UTF8StringLength]];
-	digest = [hash digest];
-
-	for (i = 0; i < OF_SHA1_DIGEST_SIZE; i++) {
-		uint8_t high, low;
-
-		high = digest[i] >> 4;
-		low  = digest[i] & 0x0F;
-
-		ret[i * 2] = (high > 9 ? high - 10 + 'a' : high + '0');
-		ret[i * 2 + 1] = (low > 9 ? low - 10 + 'a' : low + '0');
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return [OFString stringWithCString: ret
-				  encoding: OF_STRING_ENCODING_ASCII
-				    length: 40];
+	return [self OF_hashAsStringWithHash: [OFSHA1Hash class]];
 }
 @end

@@ -29,7 +29,7 @@
 
 static OFString *module = @"OFHash";
 
-const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
+const uint8_t testfile_sha1[20] =
 	"\xC9\x9A\xB8\x7E\x1E\xC8\xEC\x65\xD5\xEB\xE4\x2E\x0D\xA6\x80\x96\xF5"
 	"\x94\xE7\x17";
 
@@ -52,8 +52,7 @@ const uint8_t testfile_sha1[OF_SHA1_DIGEST_SIZE] =
 	}
 	[f close];
 
-	TEST(@"-[digest]",
-	    !memcmp([sha1 digest], testfile_sha1, OF_SHA1_DIGEST_SIZE))
+	TEST(@"-[digest]", !memcmp([sha1 digest], testfile_sha1, 20))
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
