@@ -213,13 +213,13 @@
  *
  * Not available on Windows.
  *
- * @param source The path of the item for which a symbolic link should be
- *		 created
  * @param destination The path of the item which should symbolically link to the
  *		      source
+ * @param source The path of the item for which a symbolic link should be
+ *		 created
  */
-+ (void)createSymbolicLinkAtPath: (OFString*)source
-	     withDestinationPath: (OFString*)destination;
++ (void)createSymbolicLinkAtPath: (OFString*)destination
+	     withDestinationPath: (OFString*)source;
 
 /*!
  * @brief Returns the destination of the symbolic link at the specified path.
