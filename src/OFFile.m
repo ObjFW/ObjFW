@@ -705,8 +705,52 @@ parseMode(const char *mode)
 
 + (void)removeItemAtPath: (OFString*)path
 {
+	void *pool;
+#ifndef _WIN32
+	struct stat s;
+#else
+	struct _stat s;
+#endif
+
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+#ifndef _WIN32
+	if (lstat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s))
+#else
+	if (_wstat([path UTF16String], &s))
+#endif
+		@throw [OFRemoveItemFailedException exceptionWithPath: path];
+
+	if (S_ISDIR(s.st_mode)) {
+		OFArray *contents;
+		OFEnumerator *enumerator;
+		OFString *item;
+
+		@try {
+			contents = [OFFile contentsOfDirectoryAtPath: path];
+		} @catch (id e) {
+			@throw [OFRemoveItemFailedException
+			    exceptionWithPath: path];
+		}
+
+		enumerator = [contents objectEnumerator];
+		while ((item = [enumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFArray *components;
+			OFString *itemPath;
+
+			components = [OFArray arrayWithObjects:
+			    path, item, nil];
+			itemPath = [OFString pathWithComponents: components];
+
+			[OFFile removeItemAtPath: itemPath];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+	}
 
 #ifndef _WIN32
 	if (remove([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
@@ -714,6 +758,8 @@ parseMode(const char *mode)
 	if (_wremove([path UTF16String]))
 #endif
 		@throw [OFRemoveItemFailedException exceptionWithPath: path];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 #ifdef OF_HAVE_LINK

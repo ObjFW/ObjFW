@@ -201,7 +201,7 @@
 /*!
  * @brief Removes the item at the specified path.
  *
- * If the item at the specified path is a directory, it needs to be empty.
+ * If the item at the specified path is a directory, it is removed recursively.
  *
  * @param path The path to the item which should be removed
  */
