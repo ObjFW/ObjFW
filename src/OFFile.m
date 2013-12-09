@@ -534,7 +534,11 @@ parseMode(const char *mode)
 		toPath: (OFString*)destination
 {
 	void *pool;
+#ifndef _WIN32
 	struct stat s;
+#else
+	struct _stat s;
+#endif
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -547,7 +551,11 @@ parseMode(const char *mode)
 		destination = [OFString pathWithComponents: components];
 	}
 
+#ifndef _WIN32
 	if (lstat([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s))
+#else
+	if (_wstat([source UTF16String], &s))
+#endif
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
@@ -622,6 +630,7 @@ parseMode(const char *mode)
 
 		enumerator = [contents objectEnumerator];
 		while ((item = [enumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
 			OFArray *components;
 			OFString *sourcePath, *destinationPath;
 
@@ -636,6 +645,8 @@ parseMode(const char *mode)
 
 			[OFFile copyItemAtPath: sourcePath
 					toPath: destinationPath];
+
+			objc_autoreleasePoolPop(pool2);
 		}
 #ifdef OF_HAVE_SYMLINK
 	} else if (S_ISLNK(s.st_mode)) {
