@@ -94,6 +94,16 @@
  */
 + (bool)directoryExistsAtPath: (OFString*)path;
 
+#ifdef OF_HAVE_SYMLINK
+/*!
+ * @brief Checks whether a symbolic link exists at the specified path.
+ *
+ * @param path The path to check
+ * @return A boolean whether there is a symbolic link at the specified path
+ */
++ (bool)symbolicLinkExistsAtPath: (OFString*)path;
+#endif
+
 /*!
  * @brief Creates a directory at the specified path.
  *

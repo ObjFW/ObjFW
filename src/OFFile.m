@@ -241,6 +241,25 @@ parseMode(const char *mode)
 	return false;
 }
 
+#ifdef OF_HAVE_SYMLINK
++ (bool)symbolicLinkExistsAtPath: (OFString*)path
+{
+	struct stat s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (lstat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    &s) == -1)
+		return false;
+
+	if (S_ISLNK(s.st_mode))
+		return true;
+
+	return false;
+}
+#endif
+
 + (void)createDirectoryAtPath: (OFString*)path
 {
 	if (path == nil)
