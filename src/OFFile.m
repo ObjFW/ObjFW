@@ -60,6 +60,7 @@
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChangeOwnerFailedException.h"
 #import "OFChangePermissionsFailedException.h"
+#import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFInitializationFailedException.h"
@@ -529,15 +530,11 @@ parseMode(const char *mode)
 }
 #endif
 
-+ (void)copyFileAtPath: (OFString*)source
++ (void)copyItemAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
 	void *pool;
-	bool override;
-	OFFile *sourceFile = nil;
-	OFFile *destinationFile = nil;
-	char *buffer;
-	size_t pageSize;
+	struct stat s;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -550,44 +547,118 @@ parseMode(const char *mode)
 		destination = [OFString pathWithComponents: components];
 	}
 
-	override = [self fileExistsAtPath: destination];
-	pageSize = [OFSystemInfo pageSize];
+	if (lstat([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s))
+		@throw [OFCopyItemFailedException
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
 
-	if ((buffer = malloc(pageSize)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
+	if (S_ISREG(s.st_mode)) {
+#ifdef OF_HAVE_CHMOD
+		bool override = [self fileExistsAtPath: destination];
+#endif
+		size_t pageSize = [OFSystemInfo pageSize];
+		OFFile *sourceFile = nil;
+		OFFile *destinationFile = nil;
+		char *buffer;
 
-	@try {
-		sourceFile = [OFFile fileWithPath: source
-					     mode: @"rb"];
-		destinationFile = [OFFile fileWithPath: destination
-						  mode: @"wb"];
+		if ((buffer = malloc(pageSize)) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: pageSize];
 
-		while (![sourceFile isAtEndOfStream]) {
-			size_t length;
+		@try {
+#ifdef OF_HAVE_SYMLINK
+			if ([OFFile symbolicLinkExistsAtPath: destination])
+				[OFFile removeItemAtPath: destination];
+#endif
 
-			length = [sourceFile readIntoBuffer: buffer
-						     length: pageSize];
-			[destinationFile writeBuffer: buffer
-					      length: length];
-		}
+			sourceFile = [OFFile fileWithPath: source
+						     mode: @"rb"];
+			destinationFile = [OFFile fileWithPath: destination
+							  mode: @"wb"];
+
+			while (![sourceFile isAtEndOfStream]) {
+				size_t length;
+
+				length = [sourceFile readIntoBuffer: buffer
+							     length: pageSize];
+				[destinationFile writeBuffer: buffer
+						      length: length];
+			}
 
 #ifdef OF_HAVE_CHMOD
-		if (!override) {
-			struct stat s;
-
-			if (fstat(sourceFile->_fd, &s) == 0)
+			if (!override)
 				[self changePermissionsOfItemAtPath: destination
 							permissions: s.st_mode];
-		}
-#else
-		(void)override;
 #endif
-	} @finally {
-		[sourceFile close];
-		[destinationFile close];
-		free(buffer);
-	}
+		} @catch (id e) {
+			@throw [OFCopyItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+		} @finally {
+			[sourceFile close];
+			[destinationFile close];
+			free(buffer);
+		}
+	} else if (S_ISDIR(s.st_mode)) {
+		OFArray *contents;
+		OFEnumerator *enumerator;
+		OFString *item;
+
+		@try {
+			if (![OFFile directoryExistsAtPath: destination])
+				[OFFile createDirectoryAtPath: destination];
+
+#ifdef OF_HAVE_CHMOD
+			[OFFile changePermissionsOfItemAtPath: destination
+						  permissions: s.st_mode];
+#endif
+
+			contents = [OFFile contentsOfDirectoryAtPath: source];
+		} @catch (id e) {
+			@throw [OFCopyItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+		}
+
+		enumerator = [contents objectEnumerator];
+		while ((item = [enumerator nextObject]) != nil) {
+			OFArray *components;
+			OFString *sourcePath, *destinationPath;
+
+			components = [OFArray arrayWithObjects:
+			    source, item, nil];
+			sourcePath = [OFString pathWithComponents: components];
+
+			components = [OFArray arrayWithObjects:
+			    destination, item, nil];
+			destinationPath = [OFString
+			    pathWithComponents: components];
+
+			[OFFile copyItemAtPath: sourcePath
+					toPath: destinationPath];
+		}
+#ifdef OF_HAVE_SYMLINK
+	} else if (S_ISLNK(s.st_mode)) {
+		@try {
+			if ([OFFile symbolicLinkExistsAtPath: destination] ||
+			    [OFFile fileExistsAtPath: destination])
+				[OFFile removeItemAtPath: destination];
+
+			source = [OFFile
+			    destinationOfSymbolicLinkAtPath: source];
+
+			[OFFile createSymbolicLinkAtPath: destination
+				     withDestinationPath: source];
+		} @catch (id e) {
+			@throw [OFCopyItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+		}
+#endif
+	} else
+		@throw [OFCopyItemFailedException
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -178,12 +178,15 @@
 #endif
 
 /*!
- * @brief Copies a file.
+ * @brief Copies a file, directory or symlink (if supported by the OS).
  *
- * @param source The file to copy
+ * If an item already exists, it is replaced. This is also the case if a
+ * directory is copied and an item already exists in the destination directory.
+ *
+ * @param source The file, directory or symlink to copy
  * @param destination The destination path
  */
-+ (void)copyFileAtPath: (OFString*)source
++ (void)copyItemAtPath: (OFString*)source
 		toPath: (OFString*)destination;
 
 /*!

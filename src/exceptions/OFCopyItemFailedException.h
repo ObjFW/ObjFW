@@ -19,9 +19,9 @@
 #import "OFException.h"
 
 /*!
- * @brief An exception indicating that copying a file failed.
+ * @brief An exception indicating that copying a item failed.
  */
-@interface OFCopyFileFailedException: OFException
+@interface OFCopyItemFailedException: OFException
 {
 	OFString *_sourcePath, *_destinationPath;
 	int _errNo;
@@ -34,29 +34,29 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased copy file failed exception.
+ * @brief Creates a new, autoreleased copy item failed exception.
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @return A new, autoreleased copy file failed exception
+ * @return A new, autoreleased copy item failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath;
 
 /*!
- * @brief Initializes an already allocated copy file failed exception.
+ * @brief Initializes an already allocated copy item failed exception.
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @return An initialized copy file failed exception
+ * @return An initialized copy item failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath;
 
 /*!
- * @brief Returns the path of the source file.
+ * @brief Returns the path of the source item.
  *
- * @return The path of the source file
+ * @return The path of the source item
  */
 - (OFString*)sourcePath;
 

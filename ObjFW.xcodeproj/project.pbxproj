@@ -114,8 +114,6 @@
 		4B29BC40133AC4E80004B236 /* OFCreateDirectoryFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */; };
 		4B29BC41133AC4E80004B236 /* OFSeekFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC42133AC4E80004B236 /* OFSeekFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC3A133AC4E80004B236 /* OFSeekFailedException.m */; };
-		4B29BC4E133AC7DD0004B236 /* OFCopyFileFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC46133AC7DB0004B236 /* OFCopyFileFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B29BC4F133AC7DD0004B236 /* OFCopyFileFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC47133AC7DB0004B236 /* OFCopyFileFailedException.m */; };
 		4B29BC58133AC8540004B236 /* OFConditionBroadcastFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1701133A3B8E007CD8B3 /* OFConditionBroadcastFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC59133AC8540004B236 /* OFConditionSignalFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1703133A3B8E007CD8B3 /* OFConditionSignalFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC5A133AC8540004B236 /* OFConditionWaitFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8B1705133A3B8E007CD8B3 /* OFConditionWaitFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -266,6 +264,8 @@
 		4B5C112F17E9AB3E003C917F /* forwarding.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C112C17E9AAED003C917F /* forwarding.S */; };
 		4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
+		4B62ED1518566FCA0004E0E3 /* OFCopyItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B62ED1618566FCA0004E0E3 /* OFCopyItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */; };
 		4B64D6EF1425381E007BDFB1 /* OFStreamObserver_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */; };
 		4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */; };
 		4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */; };
@@ -569,8 +569,6 @@
 		4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCreateDirectoryFailedException.m; path = src/exceptions/OFCreateDirectoryFailedException.m; sourceTree = "<group>"; };
 		4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekFailedException.h; path = src/exceptions/OFSeekFailedException.h; sourceTree = "<group>"; };
 		4B29BC3A133AC4E80004B236 /* OFSeekFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSeekFailedException.m; path = src/exceptions/OFSeekFailedException.m; sourceTree = "<group>"; };
-		4B29BC46133AC7DB0004B236 /* OFCopyFileFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyFileFailedException.h; path = src/exceptions/OFCopyFileFailedException.h; sourceTree = "<group>"; };
-		4B29BC47133AC7DB0004B236 /* OFCopyFileFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCopyFileFailedException.m; path = src/exceptions/OFCopyFileFailedException.m; sourceTree = "<group>"; };
 		4B29BC5D133AC9C40004B236 /* OFLinkFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFLinkFailedException.h; path = src/exceptions/OFLinkFailedException.h; sourceTree = "<group>"; };
 		4B29BC5E133AC9C40004B236 /* OFLinkFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFLinkFailedException.m; path = src/exceptions/OFLinkFailedException.m; sourceTree = "<group>"; };
 		4B2B3E73140D430500EC2F7C /* OFArray_adjacent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFArray_adjacent.h; path = src/OFArray_adjacent.h; sourceTree = "<group>"; };
@@ -639,6 +637,8 @@
 		4B5C112E17E9AB0C003C917F /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/forwarding/Makefile; sourceTree = "<group>"; };
 		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
+		4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyItemFailedException.h; path = src/exceptions/OFCopyItemFailedException.h; sourceTree = "<group>"; };
+		4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCopyItemFailedException.m; path = src/exceptions/OFCopyItemFailedException.m; sourceTree = "<group>"; };
 		4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_poll.h; path = src/OFStreamObserver_poll.h; sourceTree = "<group>"; };
 		4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_poll.m; path = src/OFStreamObserver_poll.m; sourceTree = "<group>"; };
 		4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_select.h; path = src/OFStreamObserver_select.h; sourceTree = "<group>"; };
@@ -955,8 +955,8 @@
 				4B8B1706133A3B8E007CD8B3 /* OFConditionWaitFailedException.m */,
 				4B90B79A133AD87D00BD33CB /* OFConnectionFailedException.h */,
 				4B90B79B133AD87D00BD33CB /* OFConnectionFailedException.m */,
-				4B29BC46133AC7DB0004B236 /* OFCopyFileFailedException.h */,
-				4B29BC47133AC7DB0004B236 /* OFCopyFileFailedException.m */,
+				4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */,
+				4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */,
 				4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */,
 				4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */,
 				4B067FB5177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h */,
@@ -1569,7 +1569,7 @@
 				4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */,
 				4B29BC5A133AC8540004B236 /* OFConditionWaitFailedException.h in Headers */,
 				4B90B7A4133AD87D00BD33CB /* OFConnectionFailedException.h in Headers */,
-				4B29BC4E133AC7DD0004B236 /* OFCopyFileFailedException.h in Headers */,
+				4B62ED1518566FCA0004E0E3 /* OFCopyItemFailedException.h in Headers */,
 				4B29BC3F133AC4E80004B236 /* OFCreateDirectoryFailedException.h in Headers */,
 				4B067FC1177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h in Headers */,
 				4B17FF87133A2E7B003E6DCD /* OFEnumerationMutationException.h in Headers */,
@@ -1935,7 +1935,7 @@
 				4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */,
 				4B8B170F133A3C11007CD8B3 /* OFConditionWaitFailedException.m in Sources */,
 				4B90B7A5133AD87D00BD33CB /* OFConnectionFailedException.m in Sources */,
-				4B29BC4F133AC7DD0004B236 /* OFCopyFileFailedException.m in Sources */,
+				4B62ED1618566FCA0004E0E3 /* OFCopyItemFailedException.m in Sources */,
 				4B29BC40133AC4E80004B236 /* OFCreateDirectoryFailedException.m in Sources */,
 				4B067FC2177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m in Sources */,
 				4B17FF88133A2E7B003E6DCD /* OFEnumerationMutationException.m in Sources */,

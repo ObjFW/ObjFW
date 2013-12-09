@@ -108,7 +108,7 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFConnectionFailedException.h"
 #endif
-#import "OFCopyFileFailedException.h"
+#import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFEnumerationMutationException.h"

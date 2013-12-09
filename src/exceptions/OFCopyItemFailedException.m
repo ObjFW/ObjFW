@@ -16,13 +16,13 @@
 
 #include "config.h"
 
-#import "OFCopyFileFailedException.h"
+#import "OFCopyItemFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 #import "macros.h"
 
-@implementation OFCopyFileFailedException
+@implementation OFCopyItemFailedException
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
 {
@@ -63,7 +63,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to copy file %@ to %@! " ERRFMT, _sourcePath,
+	    @"Failed to copy item %@ to %@! " ERRFMT, _sourcePath,
 	    _destinationPath, ERRPARAM];
 }
 
