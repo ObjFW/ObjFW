@@ -1,5 +1,9 @@
+include ../extra.mk
+
 PROG = ofzip
 SRCS = OFZIP.m
+
+${PROG}: ${LIBOBJFW_DEP}
 
 include ../buildsys.mk
 
