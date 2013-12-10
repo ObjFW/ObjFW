@@ -35,7 +35,16 @@
 # include <winerror.h>
 #endif
 
-#if defined(HAVE_DWARF_EXCEPTIONS) || defined(OBJC_ZEROCOST_EXCEPTIONS)
+/*
+ * Define HAVE_DWARF_EXCEPTIONS if OBJC_ZEROCOST_EXCEPTIONS is defined, but
+ * don't do so on 32-bit ARM, as it is defined there even if SjLj exceptions
+ * are used.
+ */
+#if defined(OBJC_ZEROCOST_EXCEPTIONS) && !defined(__ARMEL__)
+# define HAVE_DWARF_EXCEPTIONS
+#endif
+
+#ifdef HAVE_DWARF_EXCEPTIONS
 struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
@@ -111,7 +120,7 @@ of_wsaerr_to_errno(int wsaerr)
 	return [[[self alloc] init] autorelease];
 }
 
-#if defined(HAVE_DWARF_EXCEPTIONS) || defined(OBJC_ZEROCOST_EXCEPTIONS)
+#ifdef HAVE_DWARF_EXCEPTIONS
 - init
 {
 	struct backtrace_ctx ctx;
@@ -134,7 +143,7 @@ of_wsaerr_to_errno(int wsaerr)
 
 - (OFArray*)backtrace
 {
-#if defined(HAVE_DWARF_EXCEPTIONS) || defined(OBJC_ZEROCOST_EXCEPTIONS)
+#ifdef HAVE_DWARF_EXCEPTIONS
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	uint_fast8_t i;
