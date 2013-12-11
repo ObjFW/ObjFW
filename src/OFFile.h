@@ -166,7 +166,7 @@
 /*!
  * @brief Changes the owner of an item.
  *
- * This method is not available on Windows.
+ * This method is not available on some systems, most notably Windows.
  *
  * @param path The path to the item whose owner should be changed
  * @param owner The new owner for the item
@@ -180,8 +180,9 @@
 /*!
  * @brief Copies a file, directory or symlink (if supported by the OS).
  *
- * If an item already exists, it is replaced. This is also the case if a
- * directory is copied and an item already exists in the destination directory.
+ * If an item already exists, the copy operation fails. This is also the case
+ * if a directory is copied and an item already exists in the destination
+ * directory.
  *
  * @param source The file, directory or symlink to copy
  * @param destination The destination path
@@ -211,7 +212,7 @@
 /*!
  * @brief Creates a hard link for the specified item.
  *
- * Not available on Windows.
+ * This method is not available on some systems, most notably Windows.
  *
  * @param source The path of the item for which a link should be created
  * @param destination The path of the item which should link to the source
@@ -224,7 +225,7 @@
 /*!
  * @brief Creates a symbolic link for an item.
  *
- * Not available on Windows.
+ * This method is not available on some systems, most notably Windows.
  *
  * @param destination The path of the item which should symbolically link to the
  *		      source

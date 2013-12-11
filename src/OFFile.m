@@ -552,6 +552,18 @@ parseMode(const char *mode)
 	}
 
 #ifndef _WIN32
+	if (lstat([destination
+		cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s) == 0) {
+#else
+	if (_wstat([destination UTF16String], &s) == 0) {
+#endif
+		errno = EEXIST;
+		@throw [OFCopyItemFailedException
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
+	}
+
+#ifndef _WIN32
 	if (lstat([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s))
 #else
 	if (_wstat([source UTF16String], &s))
@@ -560,62 +572,13 @@ parseMode(const char *mode)
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
 
-	if (S_ISREG(s.st_mode)) {
-#ifdef OF_HAVE_CHMOD
-		bool override = [self fileExistsAtPath: destination];
-#endif
-		size_t pageSize = [OFSystemInfo pageSize];
-		OFFile *sourceFile = nil;
-		OFFile *destinationFile = nil;
-		char *buffer;
-
-		if ((buffer = malloc(pageSize)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: pageSize];
-
-		@try {
-#ifdef OF_HAVE_SYMLINK
-			if ([OFFile symbolicLinkExistsAtPath: destination])
-				[OFFile removeItemAtPath: destination];
-#endif
-
-			sourceFile = [OFFile fileWithPath: source
-						     mode: @"rb"];
-			destinationFile = [OFFile fileWithPath: destination
-							  mode: @"wb"];
-
-			while (![sourceFile isAtEndOfStream]) {
-				size_t length;
-
-				length = [sourceFile readIntoBuffer: buffer
-							     length: pageSize];
-				[destinationFile writeBuffer: buffer
-						      length: length];
-			}
-
-#ifdef OF_HAVE_CHMOD
-			if (!override)
-				[self changePermissionsOfItemAtPath: destination
-							permissions: s.st_mode];
-#endif
-		} @catch (id e) {
-			@throw [OFCopyItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination];
-		} @finally {
-			[sourceFile close];
-			[destinationFile close];
-			free(buffer);
-		}
-	} else if (S_ISDIR(s.st_mode)) {
+	if (S_ISDIR(s.st_mode)) {
 		OFArray *contents;
 		OFEnumerator *enumerator;
 		OFString *item;
 
 		@try {
-			if (![OFFile directoryExistsAtPath: destination])
-				[OFFile createDirectoryAtPath: destination];
-
+			[OFFile createDirectoryAtPath: destination];
 #ifdef OF_HAVE_CHMOD
 			[OFFile changePermissionsOfItemAtPath: destination
 						  permissions: s.st_mode];
@@ -648,13 +611,47 @@ parseMode(const char *mode)
 
 			objc_autoreleasePoolPop(pool2);
 		}
+	} else if (S_ISREG(s.st_mode)) {
+		size_t pageSize = [OFSystemInfo pageSize];
+		OFFile *sourceFile = nil;
+		OFFile *destinationFile = nil;
+		char *buffer;
+
+		if ((buffer = malloc(pageSize)) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: pageSize];
+
+		@try {
+			sourceFile = [OFFile fileWithPath: source
+						     mode: @"rb"];
+			destinationFile = [OFFile fileWithPath: destination
+							  mode: @"wb"];
+
+			while (![sourceFile isAtEndOfStream]) {
+				size_t length;
+
+				length = [sourceFile readIntoBuffer: buffer
+							     length: pageSize];
+				[destinationFile writeBuffer: buffer
+						      length: length];
+			}
+
+#ifdef OF_HAVE_CHMOD
+			[self changePermissionsOfItemAtPath: destination
+						permissions: s.st_mode];
+#endif
+		} @catch (id e) {
+			@throw [OFCopyItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+		} @finally {
+			[sourceFile close];
+			[destinationFile close];
+			free(buffer);
+		}
 #ifdef OF_HAVE_SYMLINK
 	} else if (S_ISLNK(s.st_mode)) {
 		@try {
-			if ([OFFile symbolicLinkExistsAtPath: destination] ||
-			    [OFFile fileExistsAtPath: destination])
-				[OFFile removeItemAtPath: destination];
-
 			source = [OFFile
 			    destinationOfSymbolicLinkAtPath: source];
 
