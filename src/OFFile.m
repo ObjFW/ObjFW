@@ -67,11 +67,11 @@
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
 #import "OFLockFailedException.h"
+#import "OFMoveItemFailedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFRenameItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
@@ -665,10 +665,15 @@ parseMode(const char *mode)
 	objc_autoreleasePoolPop(pool);
 }
 
-+ (void)renameItemAtPath: (OFString*)source
-		  toPath: (OFString*)destination
++ (void)moveItemAtPath: (OFString*)source
+		toPath: (OFString*)destination
 {
 	void *pool;
+#ifndef _WIN32
+	struct stat s;
+#else
+	struct _stat s;
+#endif
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -676,14 +681,46 @@ parseMode(const char *mode)
 	pool = objc_autoreleasePoolPush();
 
 #ifndef _WIN32
-	if (rename([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (lstat([destination
+		cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s) == 0) {
 #else
-	if (_wrename([source UTF16String], [destination UTF16String]))
+	if (_wstat([destination UTF16String], &s) == 0) {
 #endif
-		@throw [OFRenameItemFailedException
+		errno = EEXIST;
+		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
+	}
+
+#ifndef _WIN32
+	if (rename([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE])) {
+#else
+	if (_wrename([source UTF16String], [destination UTF16String])) {
+#endif
+		if (errno != EXDEV)
+			@throw [OFMoveItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+
+		@try {
+			[OFFile copyItemAtPath: source
+					toPath: destination];
+		} @catch (OFCopyItemFailedException *e) {
+			[OFFile removeItemAtPath: destination];
+			@throw [OFMoveItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+		}
+
+		@try {
+			[OFFile removeItemAtPath: source];
+		} @catch (OFRemoveItemFailedException *e) {
+			@throw [OFMoveItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination];
+		}
+	}
 
 	objc_autoreleasePoolPop(pool);
 }

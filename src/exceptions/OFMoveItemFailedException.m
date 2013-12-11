@@ -16,13 +16,13 @@
 
 #include "config.h"
 
-#import "OFRenameItemFailedException.h"
+#import "OFMoveItemFailedException.h"
 #import "OFString.h"
 
 #import "common.h"
 #import "macros.h"
 
-@implementation OFRenameItemFailedException
+@implementation OFMoveItemFailedException
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
 {
@@ -63,7 +63,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to rename item at path %@ to %@! " ERRFMT, _sourcePath,
+	    @"Failed to move item at path %@ to %@! " ERRFMT, _sourcePath,
 	    _destinationPath, ERRPARAM];
 }
 

@@ -194,16 +194,20 @@
 		toPath: (OFString*)destination;
 
 /*!
- * @brief Renames an item.
+ * @brief Moves an item.
  *
  * The destination path must be a full path, which means it must include the
  * name of the item.
  *
+ * If the destination is on a different logical device, the source will be
+ * copied to the destination using @ref copyItemAtPath:toPath: and the source
+ * removed using @ref removeItemAtPath:.
+ *
  * @param source The item to rename
  * @param destination The new name for the item
  */
-+ (void)renameItemAtPath: (OFString*)source
-		  toPath: (OFString*)destination;
++ (void)moveItemAtPath: (OFString*)source
+		toPath: (OFString*)destination;
 
 /*!
  * @brief Removes the item at the specified path.

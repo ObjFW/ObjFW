@@ -19,9 +19,9 @@
 #import "OFException.h"
 
 /*!
- * @brief An exception indicating that renaming an item failed.
+ * @brief An exception indicating that moving an item failed.
  */
-@interface OFRenameItemFailedException: OFException
+@interface OFMoveItemFailedException: OFException
 {
 	OFString *_sourcePath, *_destinationPath;
 	int _errNo;
@@ -33,21 +33,21 @@
 #endif
 
 /*!
- * @brief Creates a new, autoreleased rename failed exception.
+ * @brief Creates a new, autoreleased move item failed exception.
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @return A new, autoreleased rename failed exception
+ * @return A new, autoreleased move item failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath;
 
 /*!
- * @brief Initializes an already allocated rename failed exception.
+ * @brief Initializes an already allocated move item failed exception.
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @return An initialized rename failed exception
+ * @return An initialized move item failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath;

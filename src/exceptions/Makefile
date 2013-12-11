@@ -24,6 +24,7 @@ SRCS = OFAllocFailedException.m				\
        OFLockFailedException.m				\
        OFMalformedXMLException.m			\
        OFMemoryNotPartOfObjectException.m		\
+       OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
        OFOpenFileFailedException.m			\
        OFOutOfMemoryException.m				\
@@ -31,7 +32,6 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
-       OFRenameItemFailedException.m			\
        OFSeekFailedException.m				\
        OFSetOptionFailedException.m			\
        OFStillLockedException.m				\
