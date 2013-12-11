@@ -545,12 +545,6 @@ parseMode(const char *mode)
 
 	pool = objc_autoreleasePoolPush();
 
-	if ([self directoryExistsAtPath: destination]) {
-		OFArray *components = [OFArray arrayWithObjects:
-		    destination, [source lastPathComponent], nil];
-		destination = [OFString pathWithComponents: components];
-	}
-
 #ifndef _WIN32
 	if (lstat([destination
 		cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s) == 0) {
@@ -680,12 +674,6 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-
-	if ([self directoryExistsAtPath: destination]) {
-		OFArray *components = [OFArray arrayWithObjects:
-		    destination, [source lastPathComponent], nil];
-		destination = [OFString pathWithComponents: components];
-	}
 
 #ifndef _WIN32
 	if (rename([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],

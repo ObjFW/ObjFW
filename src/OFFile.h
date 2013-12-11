@@ -180,6 +180,9 @@
 /*!
  * @brief Copies a file, directory or symlink (if supported by the OS).
  *
+ * The destination path must be a full path, which means it must include the
+ * name of the item.
+ *
  * If an item already exists, the copy operation fails. This is also the case
  * if a directory is copied and an item already exists in the destination
  * directory.
@@ -192,6 +195,9 @@
 
 /*!
  * @brief Renames an item.
+ *
+ * The destination path must be a full path, which means it must include the
+ * name of the item.
  *
  * @param source The item to rename
  * @param destination The new name for the item
