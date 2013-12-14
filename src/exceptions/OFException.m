@@ -40,8 +40,10 @@
  * don't do so on 32-bit ARM, as it is defined there even if SjLj exceptions
  * are used.
  */
-#if defined(OBJC_ZEROCOST_EXCEPTIONS) && !defined(__ARMEL__)
-# define HAVE_DWARF_EXCEPTIONS
+#ifndef HAVE_DWARF_EXCEPTIONS
+# if defined(OBJC_ZEROCOST_EXCEPTIONS) && !defined(__ARMEL__)
+#  define HAVE_DWARF_EXCEPTIONS
+# endif
 #endif
 
 #ifdef HAVE_DWARF_EXCEPTIONS
