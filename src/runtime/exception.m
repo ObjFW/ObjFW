@@ -96,7 +96,7 @@ struct objc_exception {
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
 		 */
-		uintptr_t private1, private2;
+		uint64_t private1, private2;
 #endif
 	} exception;
 	id object;
