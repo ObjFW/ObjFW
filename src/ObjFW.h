@@ -129,6 +129,7 @@
 #import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"
+#import "OFMoveItemFailedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFNotConnectedException.h"
 #endif
@@ -139,7 +140,6 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFRenameItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFStillLockedException.h"
