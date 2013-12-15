@@ -498,39 +498,43 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
 	AC_SUBST(USE_INCLUDES_THREADS, '${INCLUDES_THREADS}')
 
-	AC_MSG_CHECKING(whether __thread works)
-	AC_TRY_LINK([
-		/* It seems __thread is buggy with GCC 4.1 */
-		#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
-		# error buggy
-		#endif
+	AC_ARG_ENABLE(tls,
+		AS_HELP_STRING([--disable-tls], [disable thread local storage]))
+	AS_IF([test x"$enable_tls" != x"no"], [
+		AC_MSG_CHECKING(whether __thread works)
+		AC_TRY_LINK([
+			/* It seems __thread is buggy with GCC 4.1 */
+			#if __GNUC__ == 4 && __GNUC_MINOR__ < 2
+			# error buggy
+			#endif
 
-		__thread int x = 0;
-	], [
-		x++;
-	], [
-		AS_IF([test x"$enable_shared" != x"no"], [
-			old_OBJCFLAGS="$OBJCFLAGS"
-			OBJCFLAGS="$OBJCFLAGS -fPIC"
-			AC_TRY_COMPILE([
-				__thread int x = 0;
-			], [
-				x++;
+			__thread int x = 0;
+		], [
+			x++;
+		], [
+			AS_IF([test x"$enable_shared" != x"no"], [
+				old_OBJCFLAGS="$OBJCFLAGS"
+				OBJCFLAGS="$OBJCFLAGS -fPIC"
+				AC_TRY_COMPILE([
+					__thread int x = 0;
+				], [
+					x++;
+				], [
+					AC_MSG_RESULT(yes)
+					AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
+						[Whether __thread works])
+				], [
+					AC_MSG_RESULT(no)
+				])
+				OBJCFLAGS="$old_OBJCFLAGS"
 			], [
 				AC_MSG_RESULT(yes)
 				AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
 					[Whether __thread works])
-			], [
-				AC_MSG_RESULT(no)
 			])
-			OBJCFLAGS="$old_OBJCFLAGS"
 		], [
-			AC_MSG_RESULT(yes)
-			AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
-				[Whether __thread works])
+			AC_MSG_RESULT(no)
 		])
-	], [
-		AC_MSG_RESULT(no)
 	])
 
 	atomic_ops="none"
