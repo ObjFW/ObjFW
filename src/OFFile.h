@@ -22,11 +22,18 @@
 #endif
 
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #import "OFSeekableStream.h"
 
 @class OFArray;
 @class OFDate;
+
+#ifndef _WIN32
+typedef struct stat of_stat_t;
+#else
+typedef struct _stat of_stat_t;
+#endif
 
 /*!
  * @brief A class which provides functions to read, write and manipulate files.
@@ -287,3 +294,12 @@
  */
 - initWithFileDescriptor: (int)fd;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int of_stat(OFString *path, of_stat_t *buffer);
+extern int of_lstat(OFString *path, of_stat_t *buffer);
+#ifdef __cplusplus
+}
+#endif

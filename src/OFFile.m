@@ -30,8 +30,6 @@
 
 #include <unistd.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
 
@@ -107,6 +105,31 @@
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 static of_mutex_t mutex;
 #endif
+
+int
+of_stat(OFString *path, of_stat_t *buffer)
+{
+#ifdef _WIN32
+	return _wstat([path UTF16String], buffer);
+#else
+	return stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    buffer);
+#endif
+}
+
+int
+of_lstat(OFString *path, of_stat_t *buffer)
+{
+#if defined(_WIN32)
+	return _wstat([path UTF16String], buffer);
+#elif defined(HAVE_LSTAT)
+	return lstat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    buffer);
+#else
+	return stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	    buffer);
+#endif
+}
 
 static int
 parseMode(const char *mode)
@@ -196,21 +219,13 @@ parseMode(const char *mode)
 
 + (bool)fileExistsAtPath: (OFString*)path
 {
+	of_stat_t s;
+
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef _WIN32
-	struct stat s;
-
-	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    &s) == -1)
+	if (of_stat(path, &s) == -1)
 		return false;
-#else
-	struct _stat s;
-
-	if (_wstat([path UTF16String], &s) == -1)
-		return false;
-#endif
 
 	if (S_ISREG(s.st_mode))
 		return true;
@@ -220,21 +235,13 @@ parseMode(const char *mode)
 
 + (bool)directoryExistsAtPath: (OFString*)path
 {
+	of_stat_t s;
+
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef _WIN32
-	struct stat s;
-
-	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    &s) == -1)
+	if (of_stat(path, &s) == -1)
 		return false;
-#else
-	struct _stat s;
-
-	if (_wstat([path UTF16String], &s) == -1)
-		return false;
-#endif
 
 	if (S_ISDIR(s.st_mode))
 		return true;
@@ -245,13 +252,12 @@ parseMode(const char *mode)
 #ifdef OF_HAVE_SYMLINK
 + (bool)symbolicLinkExistsAtPath: (OFString*)path
 {
-	struct stat s;
+	of_stat_t s;
 
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (lstat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    &s) == -1)
+	if (of_lstat(path, &s) == -1)
 		return false;
 
 	if (S_ISLNK(s.st_mode))
@@ -410,42 +416,28 @@ parseMode(const char *mode)
 
 + (off_t)sizeOfFileAtPath: (OFString*)path
 {
+	of_stat_t s;
+
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef _WIN32
-	struct stat s;
-
-	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    &s) == -1)
-#else
-	struct _stat s;
-
-	if (_wstat([path UTF16String], &s) == -1)
-#endif
+	if (of_stat(path, &s) == -1)
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"r"];
 
-	/* On Android, off_t is 32 bit, but st_size is long long there */
+	/* FIXME: On Android, off_t is 32 bit, but st_size is long long there */
 	return (off_t)s.st_size;
 }
 
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path
 {
+	of_stat_t s;
+
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef _WIN32
-	struct stat s;
-
-	if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    &s) == -1)
-#else
-	struct _stat s;
-
-	if (_wstat([path UTF16String], &s) == -1)
-#endif
+	if (of_stat(path, &s) == -1)
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"r"];
@@ -534,34 +526,21 @@ parseMode(const char *mode)
 		toPath: (OFString*)destination
 {
 	void *pool;
-#ifndef _WIN32
-	struct stat s;
-#else
-	struct _stat s;
-#endif
+	of_stat_t s;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
-#ifndef _WIN32
-	if (lstat([destination
-		cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s) == 0) {
-#else
-	if (_wstat([destination UTF16String], &s) == 0) {
-#endif
+	if (of_lstat(destination, &s) == 0) {
 		errno = EEXIST;
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
 	}
 
-#ifndef _WIN32
-	if (lstat([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s))
-#else
-	if (_wstat([source UTF16String], &s))
-#endif
+	if (of_lstat(source, &s))
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
@@ -669,23 +648,14 @@ parseMode(const char *mode)
 		toPath: (OFString*)destination
 {
 	void *pool;
-#ifndef _WIN32
-	struct stat s;
-#else
-	struct _stat s;
-#endif
+	of_stat_t s;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
-#ifndef _WIN32
-	if (lstat([destination
-		cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s) == 0) {
-#else
-	if (_wstat([destination UTF16String], &s) == 0) {
-#endif
+	if (of_lstat(destination, &s) == 0) {
 		errno = EEXIST;
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
@@ -728,22 +698,14 @@ parseMode(const char *mode)
 + (void)removeItemAtPath: (OFString*)path
 {
 	void *pool;
-#ifndef _WIN32
-	struct stat s;
-#else
-	struct _stat s;
-#endif
+	of_stat_t s;
 
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
-#ifndef _WIN32
-	if (lstat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE], &s))
-#else
-	if (_wstat([path UTF16String], &s))
-#endif
+	if (of_lstat(path, &s))
 		@throw [OFRemoveItemFailedException exceptionWithPath: path];
 
 	if (S_ISDIR(s.st_mode)) {
