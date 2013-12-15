@@ -1,46 +1,34 @@
 AC_INIT(ObjFW, 0.8-dev, js@webkeks.org)
 AC_CONFIG_SRCDIR(src)
 
-AS_IF([test x"$host" = x"psp"], [
-	AS_IF([test x"$DEVKITPSP" = x""], [
-		AC_MSG_ERROR([DEVKITPSP is not set! Please set DEVKITPSP.])
-	])
-
-	OBJCFLAGS="$OBJCFLAGS -G0"
-	CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
-	LDFLAGS="$LDFLAGS -G0"
-	LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay -lpspge"
-	LIBS="$LIBS -lpspctrl -lpspsdk -lc -lpspnet -lpspnet_inet"
-	LIBS="$LIBS -lpspnet_apctl -lpspnet_resolver -lpsputility -lpspuser"
-	LIBS="$LIBS -lpspkernel"
-	enable_shared="no"
-	enable_threads="no"	# TODO
-	enable_sockets="no"	# TODO
-
-	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
-])
-
 AC_CANONICAL_HOST
 
-case "$host_os" in
-	msdosdjgpp*)
+case "$host" in
+	*-msdosdjgpp*)
 		enable_shared="no"
 		enable_threads="no"
 		enable_sockets="no"
 		;;
+	*-psp-*)
+		AS_IF([test x"$DEVKITPSP" = x""], [
+			AC_MSG_ERROR(
+				[DEVKITPSP is not set! Please set DEVKITPSP.])
+		])
+
+		OBJCFLAGS="$OBJCFLAGS -G0"
+		CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
+		LDFLAGS="$LDFLAGS -G0"
+		LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
+		LIBS="$LIBS -lpspge -lpspctrl -lpspsdk -lc -lpspnet"
+		LIBS="$LIBS -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
+		LIBS="$LIBS -lpsputility -lpspuser -lpspkernel"
+		enable_shared="no"
+		enable_threads="no"	# TODO
+		enable_sockets="no"	# TODO
+
+		AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+		;;
 esac
-
-AC_LANG([Objective C])
-AC_PROG_OBJC([clang gcc])
-AC_PROG_OBJCPP
-AC_PROG_LN_S
-AC_PROG_INSTALL
-AC_PROG_EGREP
-
-CPP="$OBJCPP"
-CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
-OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
-OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AC_ARG_WITH(wii,
 	AS_HELP_STRING([--with-wii], [build for Wii]))
@@ -59,6 +47,18 @@ AS_IF([test x"$with_wii" = x"yes"], [
 
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
+
+AC_LANG([Objective C])
+AC_PROG_OBJC([clang gcc])
+AC_PROG_OBJCPP
+AC_PROG_LN_S
+AC_PROG_INSTALL
+AC_PROG_EGREP
+
+CPP="$OBJCPP"
+CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
+OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
+OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
 AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
 	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
