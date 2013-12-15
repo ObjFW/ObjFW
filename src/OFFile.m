@@ -757,12 +757,6 @@ parseMode(const char *mode)
 
 	pool = objc_autoreleasePoolPush();
 
-	if ([self directoryExistsAtPath: destination]) {
-		OFArray *components = [OFArray arrayWithObjects:
-		    destination, [source lastPathComponent], nil];
-		destination = [OFString pathWithComponents: components];
-	}
-
 	if (link([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
 		@throw [OFLinkFailedException
@@ -783,12 +777,6 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-
-	if ([self directoryExistsAtPath: destination]) {
-		OFArray *components = [OFArray arrayWithObjects:
-		    destination, [source lastPathComponent], nil];
-		destination = [OFString pathWithComponents: components];
-	}
 
 	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
 	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)

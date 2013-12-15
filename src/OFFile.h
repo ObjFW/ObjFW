@@ -229,6 +229,9 @@ typedef struct _stat of_stat_t;
 /*!
  * @brief Creates a hard link for the specified item.
  *
+ * The destination path must be a full path, which means it must include the
+ * name of the item.
+ *
  * This method is not available on some systems, most notably Windows.
  *
  * @param source The path of the item for which a link should be created
@@ -241,6 +244,9 @@ typedef struct _stat of_stat_t;
 #ifdef OF_HAVE_SYMLINK
 /*!
  * @brief Creates a symbolic link for an item.
+ *
+ * The destination path must be a full path, which means it must include the
+ * name of the item.
  *
  * This method is not available on some systems, most notably Windows.
  *
