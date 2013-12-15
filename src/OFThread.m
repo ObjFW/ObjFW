@@ -234,9 +234,9 @@ setThreadName(OFThread *thread)
 		[thread handleTermination];
 
 		thread->_running = OF_THREAD_WAITING_FOR_JOIN;
+		objc_autoreleasePoolPop(thread->_pool);
 	}
 
-	objc_autoreleasePoolPop(thread->_pool);
 	[OFAutoreleasePool OF_handleThreadTermination];
 
 	[thread release];

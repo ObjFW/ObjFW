@@ -123,6 +123,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	[app OF_run];
 
+	[delegate release];
+
 	return 0;
 }
 

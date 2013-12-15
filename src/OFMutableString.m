@@ -310,8 +310,8 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	return [self appendString: [OFString stringWithCharacters: characters
-							   length: length]];
+	[self appendString: [OFString stringWithCharacters: characters
+						    length: length]];
 
 	objc_autoreleasePoolPop(pool);
 }
