@@ -18,13 +18,7 @@
 
 #include <stdlib.h>
 
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFStdIOStream.h"
-#import "OFFile.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFException.h"
+#import "ObjFW.h"
 
 #import "TestsAppDelegate.h"
 
