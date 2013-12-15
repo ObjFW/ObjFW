@@ -567,17 +567,12 @@ parseMode(const char *mode)
 		enumerator = [contents objectEnumerator];
 		while ((item = [enumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFArray *components;
 			OFString *sourcePath, *destinationPath;
 
-			components = [OFArray arrayWithObjects:
-			    source, item, nil];
-			sourcePath = [OFString pathWithComponents: components];
-
-			components = [OFArray arrayWithObjects:
-			    destination, item, nil];
-			destinationPath = [OFString
-			    pathWithComponents: components];
+			sourcePath =
+			    [source stringByAppendingPathComponent: item];
+			destinationPath =
+			    [destination stringByAppendingPathComponent: item];
 
 			[OFFile copyItemAtPath: sourcePath
 					toPath: destinationPath];
@@ -723,14 +718,9 @@ parseMode(const char *mode)
 		enumerator = [contents objectEnumerator];
 		while ((item = [enumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFArray *components;
-			OFString *itemPath;
 
-			components = [OFArray arrayWithObjects:
-			    path, item, nil];
-			itemPath = [OFString pathWithComponents: components];
-
-			[OFFile removeItemAtPath: itemPath];
+			[OFFile removeItemAtPath:
+			    [path stringByAppendingPathComponent: item]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
