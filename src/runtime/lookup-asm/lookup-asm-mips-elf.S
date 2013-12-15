@@ -30,20 +30,20 @@
 	lw	$t0, 32($t0)
 
 .main_\name:
-#if defined(_MIPSEL)
+#if defined(__MIPSEL__)
 # ifdef OF_SELUID24
 	lbu	$t1, 2($a1)
 # endif
 	lbu	$t2, 1($a1)
 	lbu	$t3, 0($a1)
-#elif defined(_MIPSEB)
+#elif defined(__MIPSEB__)
 # ifdef OF_SELUID24
 	lbu	$t1, 1($a1)
 # endif
 	lbu	$t2, 2($a1)
 	lbu	$t3, 3($a1)
 #else
-# error Neither _MIPSEL nor _MIPSEB defined!
+# error Neither __MIPSEL__ nor __MIPSEB__ defined!
 #endif
 
 #ifdef OF_SELUID24
