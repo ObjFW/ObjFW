@@ -590,8 +590,10 @@ void _references_to_categories_of_OFObject(void)
 {
 	id (*imp)(id, SEL) = (id(*)(id, SEL))[self methodForSelector: selector];
 
-	if OF_UNLIKELY (imp == NULL)
+	if OF_UNLIKELY (imp == NULL) {
 		[self doesNotRecognizeSelector: selector];
+		abort();
+	}
 
 	return imp(self, selector);
 }
@@ -602,8 +604,10 @@ void _references_to_categories_of_OFObject(void)
 	id (*imp)(id, SEL, id) =
 	    (id(*)(id, SEL, id))[self methodForSelector: selector];
 
-	if OF_UNLIKELY (imp == NULL)
+	if OF_UNLIKELY (imp == NULL) {
 		[self doesNotRecognizeSelector: selector];
+		abort();
+	}
 
 	return imp(self, selector, object);
 }
@@ -615,8 +619,10 @@ void _references_to_categories_of_OFObject(void)
 	id (*imp)(id, SEL, id, id) =
 	    (id(*)(id, SEL, id, id))[self methodForSelector: selector];
 
-	if OF_UNLIKELY (imp == NULL)
+	if OF_UNLIKELY (imp == NULL) {
 		[self doesNotRecognizeSelector: selector];
+		abort();
+	}
 
 	return imp(self, selector, object1, object2);
 }
