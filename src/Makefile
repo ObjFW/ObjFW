@@ -1,6 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions forwarding
+DISTCLEAN = objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
 STATIC_LIB = ${OBJFW_STATIC_LIB}

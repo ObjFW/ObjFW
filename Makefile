@@ -1,7 +1,8 @@
 include extra.mk
 
 SUBDIRS = src utils ${TESTS}
-DISTCLEAN = aclocal.m4		\
+DISTCLEAN = Info.plist		\
+	    aclocal.m4		\
 	    autom4te.cache	\
 	    buildsys.mk		\
 	    config.h		\
