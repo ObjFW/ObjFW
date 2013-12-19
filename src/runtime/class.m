@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <assert.h>
+
 #import "runtime.h"
 #import "runtime-private.h"
 
@@ -28,6 +30,7 @@ struct sparsearray {
 };
 
 static struct objc_hashtable *classes = NULL;
+static unsigned classes_cnt = 0;
 static Class *load_queue = NULL;
 static size_t load_queue_cnt = 0;
 static struct objc_sparsearray *empty_dtable = NULL;
@@ -47,6 +50,9 @@ register_class(struct objc_abi_class *cls)
 
 	cls->dtable = empty_dtable;
 	cls->metaclass->dtable = empty_dtable;
+
+	if (strcmp(cls->name, "Protocol"))
+		classes_cnt++;
 }
 
 BOOL
@@ -505,6 +511,70 @@ objc_get_class(const char *name)
 	return objc_getRequiredClass(name);
 }
 
+unsigned int
+objc_getClassList(Class *buf, unsigned int count)
+{
+	uint32_t i;
+	unsigned int j;
+	objc_global_mutex_lock();
+
+	if (buf == NULL)
+		return classes_cnt;
+
+	if (classes_cnt < count)
+		count = classes_cnt;
+
+	for (i = j = 0; i <= classes->last_idx; i++) {
+		Class cls;
+
+		if (j >= count) {
+			objc_global_mutex_unlock();
+			return j;
+		}
+
+		if (classes->data[i] == NULL)
+			continue;
+
+		if (!strcmp(classes->data[i]->key, "Protocol"))
+			continue;
+
+		cls = (Class)classes->data[i]->obj;
+
+		if (cls == Nil || (uintptr_t)cls & 1)
+			continue;
+
+		buf[j++] = cls;
+	}
+
+	objc_global_mutex_unlock();
+
+	return j;
+}
+
+Class*
+objc_copyClassList(unsigned int *len)
+{
+	Class *ret;
+	unsigned int count;
+
+	objc_global_mutex_lock();
+
+	if ((ret = malloc((classes_cnt + 1) * sizeof(Class))) == NULL)
+		OBJC_ERROR("Failed to allocate memory for class list!");
+
+	count = objc_getClassList(ret, classes_cnt);
+	assert(count == classes_cnt);
+
+	ret[count] = Nil;
+
+	if (len != NULL)
+		*len = count;
+
+	objc_global_mutex_unlock();
+
+	return ret;
+}
+
 bool
 class_isMetaClass(Class cls)
 {
@@ -703,13 +773,16 @@ unregister_class(Class rcls)
 
 	if (rcls->superclass != Nil)
 		cls->superclass = rcls->superclass->name;
-
-	objc_hashtable_set(classes, cls->name, NULL);
 }
 
 void
 objc_unregister_class(Class cls)
 {
+	objc_hashtable_set(classes, cls->name, NULL);
+
+	if (strcmp(cls->name, "Protocol"))
+		classes_cnt--;
+
 	unregister_class(cls);
 	unregister_class(cls->isa);
 }
@@ -746,6 +819,8 @@ objc_unregister_all_classes(void)
 			objc_unregister_class(cls);
 		}
 	}
+
+	assert(classes_cnt == 0);
 
 	if (empty_dtable != NULL) {
 		objc_sparsearray_free(empty_dtable);

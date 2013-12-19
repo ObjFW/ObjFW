@@ -186,6 +186,8 @@ extern bool sel_isEqual(SEL, SEL);
 extern id objc_lookUpClass(const char*);
 extern id objc_getClass(const char*);
 extern id objc_getRequiredClass(const char*);
+extern unsigned int objc_getClassList(Class*, unsigned int);
+extern Class* objc_copyClassList(unsigned int*);
 extern bool class_isMetaClass(Class);
 extern const char* class_getName(Class);
 extern Class class_getSuperclass(Class);
