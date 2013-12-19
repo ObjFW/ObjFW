@@ -16,6 +16,7 @@
 
 #ifndef __OBJFW_RUNTIME_H__
 #define __OBJFW_RUNTIME_H__
+
 #include <stdint.h>
 #include <stdbool.h>
 

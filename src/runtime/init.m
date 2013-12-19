@@ -37,9 +37,10 @@ objc_exit(void)
 {
 	objc_global_mutex_lock();
 
-	objc_free_all_categories();
-	objc_free_all_classes();
-	objc_free_all_selectors();
+	objc_unregister_all_categories();
+	objc_unregister_all_classes();
+	objc_unregister_all_selectors();
+	objc_forget_pending_static_instances();
 	objc_sparsearray_cleanup();
 
 	objc_global_mutex_unlock();

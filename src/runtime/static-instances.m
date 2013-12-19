@@ -91,3 +91,11 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 		}
 	}
 }
+
+void
+objc_forget_pending_static_instances()
+{
+	free(static_instances);
+	static_instances = NULL;
+	static_instances_cnt = 0;
+}

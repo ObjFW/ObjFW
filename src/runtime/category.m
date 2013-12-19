@@ -116,7 +116,7 @@ objc_categories_for_class(Class cls)
 }
 
 void
-objc_free_all_categories(void)
+objc_unregister_all_categories(void)
 {
 	uint32_t i;
 

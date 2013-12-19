@@ -128,7 +128,7 @@ sel_isEqual(SEL sel1, SEL sel2)
 }
 
 void
-objc_free_all_selectors(void)
+objc_unregister_all_selectors(void)
 {
 	objc_hashtable_free(selectors);
 	objc_sparsearray_free(selector_names);

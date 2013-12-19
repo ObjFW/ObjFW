@@ -122,13 +122,13 @@ struct objc_sparsearray_level2 {
 
 extern void objc_register_all_categories(struct objc_abi_symtab*);
 extern struct objc_category** objc_categories_for_class(Class);
-extern void objc_free_all_categories(void);
+extern void objc_unregister_all_categories(void);
 extern void objc_initialize_class(Class);
 extern void objc_update_dtable(Class);
 extern void objc_register_all_classes(struct objc_abi_symtab*);
 extern Class objc_classname_to_class(const char*, bool);
-extern void objc_free_class(Class);
-extern void objc_free_all_classes(void);
+extern void objc_unregister_class(Class);
+extern void objc_unregister_all_classes(void);
 extern uint32_t objc_hash_string(const char*);
 extern struct objc_hashtable* objc_hashtable_new(uint32_t);
 extern void objc_hashtable_set(struct objc_hashtable*, const char*,
@@ -137,7 +137,7 @@ extern void* objc_hashtable_get(struct objc_hashtable*, const char*);
 extern void objc_hashtable_free(struct objc_hashtable *h);
 extern void objc_register_selector(struct objc_abi_selector*);
 extern void objc_register_all_selectors(struct objc_abi_symtab*);
-extern void objc_free_all_selectors(void);
+extern void objc_unregister_all_selectors(void);
 extern struct objc_sparsearray* objc_sparsearray_new(void);
 extern void objc_sparsearray_copy(struct objc_sparsearray*,
     struct objc_sparsearray*);
@@ -146,6 +146,7 @@ extern void objc_sparsearray_set(struct objc_sparsearray*, uint32_t,
 extern void objc_sparsearray_free(struct objc_sparsearray*);
 extern void objc_sparsearray_cleanup(void);
 extern void objc_init_static_instances(struct objc_abi_symtab*);
+extern void objc_forget_pending_static_instances(void);
 extern void __objc_exec_class(struct objc_abi_module*);
 #ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);

@@ -314,7 +314,7 @@ setup_class(Class cls)
 	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
 		Class super = objc_classname_to_class(superclass, false);
 
-		if (super == nil)
+		if (super == Nil)
 			return;
 
 		setup_class(super);
@@ -657,7 +657,7 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 
 	objc_global_mutex_unlock();
 
-	return (IMP)nil;
+	return NULL;
 }
 
 Class
@@ -686,8 +686,8 @@ object_getClassName(id obj)
 	return object_getClass(obj)->name;
 }
 
-void
-objc_free_class(Class rcls)
+static void
+unregister_class(Class rcls)
 {
 	struct objc_abi_class *cls = (struct objc_abi_class*)rcls;
 
@@ -707,6 +707,13 @@ objc_free_class(Class rcls)
 	objc_hashtable_set(classes, cls->name, NULL);
 }
 
+void
+objc_unregister_class(Class cls)
+{
+	unregister_class(cls);
+	unregister_class(cls->isa);
+}
+
 static void
 free_sparsearray(struct sparsearray *sa, size_t depth)
 {
@@ -722,7 +729,7 @@ free_sparsearray(struct sparsearray *sa, size_t depth)
 }
 
 void
-objc_free_all_classes(void)
+objc_unregister_all_classes(void)
 {
 	uint_fast32_t i;
 
@@ -736,8 +743,7 @@ objc_free_all_classes(void)
 			if (cls == Nil || (uintptr_t)cls & 1)
 				continue;
 
-			objc_free_class(cls);
-			objc_free_class(cls->isa);
+			objc_unregister_class(cls);
 		}
 	}
 
