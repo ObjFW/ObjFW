@@ -1,6 +1,7 @@
 include ../extra.mk
 
 SUBDIRS = ${RUNTIME} exceptions forwarding
+SUBDIRS_AFTER = ${BRIDGE}
 DISTCLEAN = objfw-defs.h
 
 SHARED_LIB = ${OBJFW_SHARED_LIB}
@@ -138,15 +139,6 @@ LIB_OBJS_EXTRA = ${RUNTIME_RUNTIME_LIB_A}	\
 		 ${FORWARDING_FORWARDING_LIB_A}
 
 include ../buildsys.mk
-
-post-all: ${BRIDGE}
-
-${BRIDGE}: ${SHARED_LIB}
-	for i in $@; do \
-		${DIR_ENTER}; \
-		${MAKE} ${MFLAGS} || exit $$?; \
-		${DIR_LEAVE}; \
-	done
 
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}

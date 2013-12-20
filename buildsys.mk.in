@@ -109,20 +109,22 @@ MO_FILES = ${LOCALES:.po=.mo}
 .SILENT:
 .SUFFIXES:
 .SUFFIXES: .beam .c .c.dep .cc .cc.dep .class .cxx .cxx.dep .d .erl .lib.o .java .mo .m .m.dep .mm .mm.dep .o .plugin.o .po .py .pyc .rc .S .S.dep .xpm
-.PHONY: all subdirs pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales ${SUBDIRS}
+.PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
 	${MAKE} pre-all
 	${MAKE} ${MFLAGS} subdirs
 	${MAKE} ${MFLAGS} depend
 	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
+	${MAKE} ${MFLAGS} subdirs-after
 	${MAKE} post-all
 
 pre-all post-all:
 
 subdirs: ${SUBDIRS}
+subdirs-after: ${SUBDIRS_AFTER}
 
-${SUBDIRS}:
+${SUBDIRS} ${SUBDIRS_AFTER}:
 	for i in $@; do \
 		${DIR_ENTER}; \
 		${MAKE} ${MFLAGS} || exit $$?; \
@@ -565,7 +567,7 @@ locales: ${MO_FILES}
 	fi
 
 install: all install-extra
-	for i in ${SUBDIRS}; do \
+	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
 		${MAKE} ${MFLAGS} install || exit $$?; \
 		${DIR_LEAVE}; \
@@ -646,7 +648,7 @@ install: all install-extra
 install-extra:
 
 uninstall: uninstall-extra
-	for i in ${SUBDIRS}; do \
+	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
 		${MAKE} ${MFLAGS} uninstall || exit $$?; \
 		${DIR_LEAVE}; \
@@ -739,7 +741,7 @@ uninstall: uninstall-extra
 uninstall-extra:
 
 clean:
-	for i in ${SUBDIRS}; do \
+	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
 		${MAKE} ${MFLAGS} clean || exit $$?; \
 		${DIR_LEAVE}; \
@@ -756,7 +758,7 @@ clean:
 	done
 
 distclean: clean
-	for i in ${SUBDIRS}; do \
+	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
 		${MAKE} ${MFLAGS} distclean || exit $$?; \
 		${DIR_LEAVE}; \
