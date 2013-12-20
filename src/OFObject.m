@@ -371,7 +371,7 @@ void _references_to_categories_of_OFObject(void)
 + (const char*)typeEncodingForInstanceSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	return objc_get_type_encoding(self, selector);
+	return class_getMethodTypeEncoding(self, selector);
 #else
 	Method m;
 
@@ -836,7 +836,7 @@ void _references_to_categories_of_OFObject(void)
 - (const char*)typeEncodingForSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	return objc_get_type_encoding(object_getClass(self), selector);
+	return class_getMethodTypeEncoding(object_getClass(self), selector);
 #else
 	Method m;
 

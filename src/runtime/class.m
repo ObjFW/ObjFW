@@ -618,7 +618,7 @@ class_getMethodImplementation(Class cls, SEL sel)
 }
 
 const char*
-objc_get_type_encoding(Class cls, SEL sel)
+class_getMethodTypeEncoding(Class cls, SEL sel)
 {
 	struct objc_method_list *ml;
 	struct objc_category **cats;
@@ -655,8 +655,8 @@ objc_get_type_encoding(Class cls, SEL sel)
 
 	objc_global_mutex_unlock();
 
-	if (cls->superclass != NULL)
-		return objc_get_type_encoding(cls->superclass, sel);
+	if (cls->superclass != Nil)
+		return class_getMethodTypeEncoding(cls->superclass, sel);
 
 	return NULL;
 }

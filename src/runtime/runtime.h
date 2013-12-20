@@ -40,11 +40,17 @@
 # define OBJC_ROOT_CLASS
 #endif
 
+#define Nil (Class)0
+#define nil (id)0
+#define YES (BOOL)1
+#define NO  (BOOL)0
+
 typedef struct objc_class* Class;
 typedef struct objc_object* id;
 typedef const struct objc_selector* SEL;
 typedef signed char BOOL;
 typedef id (*IMP)(id, SEL, ...);
+typedef void (*objc_uncaught_exception_handler)(id);
 
 struct objc_class {
 	Class isa;
@@ -111,22 +117,24 @@ struct objc_category {
 struct objc_ivar {
 	const char *name;
 	const char *type;
-	unsigned offset;
+	unsigned int offset;
 };
 
 struct objc_ivar_list {
-	unsigned count;
+	unsigned int count;
 	struct objc_ivar ivars[1];
 };
 
-#define OBJC_PROPERTY_READONLY	0x01
-#define OBJC_PROPERTY_GETTER	0x02
-#define OBJC_PROPERTY_ASSIGN	0x04
-#define OBJC_PROPERTY_READWRITE	0x08
-#define OBJC_PROPERTY_RETAIN	0x10
-#define OBJC_PROPERTY_COPY	0x20
-#define OBJC_PROPERTY_NONATOMIC	0x40
-#define OBJC_PROPERTY_SETTER	0x80
+enum objc_property_attributes {
+	OBJC_PROPERTY_READONLY	= 0x01,
+	OBJC_PROPERTY_GETTER	= 0x02,
+	OBJC_PROPERTY_ASSIGN	= 0x04,
+	OBJC_PROPERTY_READWRITE	= 0x08,
+	OBJC_PROPERTY_RETAIN	= 0x10,
+	OBJC_PROPERTY_COPY	= 0x20,
+	OBJC_PROPERTY_NONATOMIC	= 0x40,
+	OBJC_PROPERTY_SETTER	= 0x80
+};
 
 struct objc_property {
 	const char *name;
@@ -139,7 +147,7 @@ struct objc_property {
 };
 
 struct objc_property_list {
-	unsigned count;
+	unsigned int count;
 	struct objc_property_list *next;
 	struct objc_property properties[1];
 };
@@ -170,13 +178,6 @@ struct objc_protocol_list {
 	OBJC_UNSAFE_UNRETAINED Protocol *list[1];
 };
 
-#define Nil (Class)0
-#define nil (id)0
-#define YES (BOOL)1
-#define NO  (BOOL)0
-
-typedef void (*objc_uncaught_exception_handler)(id);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -196,15 +197,11 @@ extern unsigned long class_getInstanceSize(Class);
 extern bool class_respondsToSelector(Class, SEL);
 extern bool class_conformsToProtocol(Class, Protocol*);
 extern IMP class_getMethodImplementation(Class, SEL);
+extern const char* class_getMethodTypeEncoding(Class, SEL);
 extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
-extern const char* objc_get_type_encoding(Class, SEL);
 extern Class object_getClass(id);
 extern Class object_setClass(id, Class);
 extern const char* object_getClassName(id);
-extern IMP objc_msg_lookup(id, SEL);
-extern IMP objc_msg_lookup_stret(id, SEL);
-extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
-extern IMP objc_msg_lookup_super_stret(struct objc_super*, SEL);
 extern const char* protocol_getName(Protocol*);
 extern bool protocol_isEqual(Protocol*, Protocol*);
 extern bool protocol_conformsToProtocol(Protocol*, Protocol*);
@@ -217,6 +214,11 @@ extern id objc_autorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
 extern id _objc_rootAutorelease(id);
+/* Used by the compiler, but can be called manually. */
+extern IMP objc_msg_lookup(id, SEL);
+extern IMP objc_msg_lookup_stret(id, SEL);
+extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
+extern IMP objc_msg_lookup_super_stret(struct objc_super*, SEL);
 #ifdef __cplusplus
 }
 #endif
