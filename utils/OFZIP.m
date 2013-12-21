@@ -14,6 +14,8 @@
  * file.
  */
 
+#include <string.h>
+
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDate.h"
@@ -24,6 +26,10 @@
 #import "OFStdIOStream.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
+
+#import "OFCreateDirectoryFailedException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOpenFileFailedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -36,6 +42,7 @@
 	int _exitStatus;
 }
 
+- (OFZIPArchive*)openArchiveWithPath: (OFString*)path;
 - (void)listFilesInArchive: (OFZIPArchive*)archive;
 - (void)extractFiles: (OFArray*)files
 	 fromArchive: (OFZIPArchive*)archive;
@@ -114,7 +121,7 @@ help(OFStream *stream, bool full, int status)
 		if ([remainingArguments count] != 1)
 			help(of_stderr, false, 1);
 
-		archive = [OFZIPArchive archiveWithPath:
+		archive = [self openArchiveWithPath:
 		    [remainingArguments firstObject]];
 
 		[self listFilesInArchive: archive];
@@ -125,11 +132,24 @@ help(OFStream *stream, bool full, int status)
 
 		files = [remainingArguments objectsInRange:
 		    of_range(1, [remainingArguments count] - 1)];
-		archive = [OFZIPArchive archiveWithPath:
+		archive = [self openArchiveWithPath:
 		    [remainingArguments firstObject]];
 
-		[self extractFiles: files
-		       fromArchive: archive];
+		@try {
+			[self extractFiles: files
+			       fromArchive: archive];
+		} @catch (OFCreateDirectoryFailedException *e) {
+			[of_stderr writeFormat:
+			    @"\rFailed to create directory %@: %s\n",
+			    [e path], strerror([e errNo])];
+			_exitStatus = 1;
+		} @catch (OFOpenFileFailedException *e) {
+			[of_stderr writeFormat:
+			    @"\rFailed to open file %@: %s\n",
+			    [e path], strerror([e errNo])];
+			_exitStatus = 1;
+		}
+
 		break;
 	default:
 		help(of_stderr, true, 1);
@@ -137,6 +157,25 @@ help(OFStream *stream, bool full, int status)
 	}
 
 	[OFApplication terminateWithStatus: _exitStatus];
+}
+
+- (OFZIPArchive*)openArchiveWithPath: (OFString*)path
+{
+	OFZIPArchive *archive;
+
+	@try {
+		archive = [OFZIPArchive archiveWithPath: path];
+	} @catch (OFOpenFileFailedException *e) {
+		[of_stderr writeFormat: @"Failed to open file %@: %s\n",
+					[e path], strerror([e errNo])];
+		[OFApplication terminateWithStatus: 1];
+	} @catch (OFInvalidFormatException *e) {
+		[of_stderr writeFormat: @"File %@ is not a valid archive!\n",
+					path];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	return archive;
 }
 
 - (void)listFilesInArchive: (OFZIPArchive*)archive
