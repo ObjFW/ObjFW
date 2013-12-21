@@ -33,6 +33,7 @@
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFSeekFailedException.h"
 #import "OFUnsupportedVersionException.h"
 
 #import "autorelease.h"
@@ -221,8 +222,15 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	bool valid = false;
 
 	do {
-		[_file seekToOffset: offset
-			     whence: SEEK_END];
+		@try {
+			[_file seekToOffset: offset
+				     whence: SEEK_END];
+		} @catch (OFSeekFailedException *e) {
+			if ([e errNo] == EINVAL)
+				@throw [OFInvalidFormatException exception];
+
+			@throw e;
+		}
 
 		if ([_file readLittleEndianInt32] == 0x06054B50) {
 			valid = true;

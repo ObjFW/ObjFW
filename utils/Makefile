@@ -30,7 +30,7 @@ uninstall-extra:
 		fi \
 	done
 
-CPPFLAGS += -I../src -I../src/runtime -I..
+CPPFLAGS += -I../src -I../src/runtime -I../src/exceptions -I..
 LIBS := -L../src -lobjfw ${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}
