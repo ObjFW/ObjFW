@@ -33,6 +33,7 @@
 @interface OFZIP: OFObject
 {
 	int_fast8_t _override, _outputLevel;
+	int _exitStatus;
 }
 
 - (void)listFilesInArchive: (OFZIPArchive*)archive;
@@ -135,7 +136,7 @@ help(OFStream *stream, bool full, int status)
 		break;
 	}
 
-	[OFApplication terminate];
+	[OFApplication terminateWithStatus: _exitStatus];
 }
 
 - (void)listFilesInArchive: (OFZIPArchive*)archive
@@ -195,7 +196,8 @@ help(OFStream *stream, bool full, int status)
 #endif
 			[of_stderr writeFormat: @"Refusing to extract %@!\n",
 						fileName];
-			[OFApplication terminateWithStatus: 1];
+			_exitStatus = 1;
+			continue;
 		}
 
 		componentEnumerator =
@@ -204,7 +206,8 @@ help(OFStream *stream, bool full, int status)
 			if ([component isEqual: OF_PATH_PARENT_DIRECTORY]) {
 				[of_stderr writeFormat:
 				    @"Refusing to extract %@!\n", fileName];
-				[OFApplication terminateWithStatus: 1];
+				_exitStatus = 1;
+				continue;
 			}
 		}
 
@@ -300,7 +303,7 @@ help(OFStream *stream, bool full, int status)
 			[of_stderr writeFormat:
 			    @"File %@ is not in the archive!\n", file];
 
-		[OFApplication terminateWithStatus: 1];
+		_exitStatus = 1;
 	}
 }
 @end
