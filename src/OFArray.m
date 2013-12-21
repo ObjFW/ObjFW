@@ -622,8 +622,7 @@ static struct {
 	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id, SEL))[objects[i]
-		    methodForSelector: selector])(objects[i], selector);
+		[objects[i] performSelector: selector];
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector
@@ -633,8 +632,8 @@ static struct {
 	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
-		((void(*)(id, SEL, id))[objects[i]
-		    methodForSelector: selector])(objects[i], selector, object);
+		[objects[i] performSelector: selector
+				 withObject: object];
 }
 
 - (OFArray*)sortedArray

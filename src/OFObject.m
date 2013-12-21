@@ -588,43 +588,40 @@ void _references_to_categories_of_OFObject(void)
 
 - (id)performSelector: (SEL)selector
 {
-	id (*imp)(id, SEL) = (id(*)(id, SEL))[self methodForSelector: selector];
-
-	if OF_UNLIKELY (imp == NULL) {
-		[self doesNotRecognizeSelector: selector];
-		abort();
-	}
+#if defined(OF_OBJFW_RUNTIME)
+	id (*imp)(id, SEL) = (id(*)(id, SEL))objc_msg_lookup(self, selector);
 
 	return imp(self, selector);
+#elif defined(OF_APPLE_RUNTIME)
+	return objc_msgSend(self, selector);
+#endif
 }
 
 - (id)performSelector: (SEL)selector
 	   withObject: (id)object
 {
+#if defined(OF_OBJFW_RUNTIME)
 	id (*imp)(id, SEL, id) =
-	    (id(*)(id, SEL, id))[self methodForSelector: selector];
-
-	if OF_UNLIKELY (imp == NULL) {
-		[self doesNotRecognizeSelector: selector];
-		abort();
-	}
+	    (id(*)(id, SEL, id))objc_msg_lookup(self, selector);
 
 	return imp(self, selector, object);
+#elif defined(OF_APPLE_RUNTIME)
+	return objc_msgSend(self, selector, object);
+#endif
 }
 
 - (id)performSelector: (SEL)selector
 	   withObject: (id)object1
 	   withObject: (id)object2
 {
+#if defined(OF_OBJFW_RUNTIME)
 	id (*imp)(id, SEL, id, id) =
-	    (id(*)(id, SEL, id, id))[self methodForSelector: selector];
-
-	if OF_UNLIKELY (imp == NULL) {
-		[self doesNotRecognizeSelector: selector];
-		abort();
-	}
+	    (id(*)(id, SEL, id, id))objc_msg_lookup(self, selector);
 
 	return imp(self, selector, object1, object2);
+#elif defined(OF_APPLE_RUNTIME)
+	return objc_msgSend(self, selector, object1, object2);
+#endif
 }
 
 - (void)performSelector: (SEL)selector

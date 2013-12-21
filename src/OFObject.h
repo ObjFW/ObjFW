@@ -36,6 +36,7 @@
 
 #ifdef OF_APPLE_RUNTIME
 # import <objc/runtime.h>
+# import <objc/message.h>
 #endif
 
 #if defined(__GNUC__)
