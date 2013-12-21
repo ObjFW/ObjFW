@@ -63,7 +63,7 @@ iOS
 Linux
 -----
 
-  * Architectures: ARMv6, m68k, MIPS32, PPC, x86, x86_64
+  * Architectures: ARMv6, m68k, MIPS32 (O32), PPC, x86, x86_64
   * Compilers: Clang 3.0-3.4, GCC 4.6-4.8
   * Runtimes: ObjFW
 
@@ -99,7 +99,7 @@ PlayStation Portable
 --------------------
 
   * OS versions: 5.00 M33-4
-  * Architectures: MIPS32
+  * Architectures: MIPS32 (EABI)
   * Compiler: GCC 4.6.2 (devkitPSP release 16)
   * Runtimes: ObjFW
   * Limitations: No threads, no sockets
@@ -141,3 +141,5 @@ version has been ported. If not, please send an e-mail with a bug report.
 
 If you successfully ran ObjFW on a platform not listed here, please send an
 e-mail to js@webkeks.org so it can be added here!
+
+If you have a platform on which ObjFW does not work, please contact me as well!
