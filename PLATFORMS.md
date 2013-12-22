@@ -55,7 +55,7 @@ Haiku
 iOS
 ---
 
-  * Architectures: ARMv7
+  * Architectures: ARMv7, ARM64
   * Compilers: GCC 4.2.1
   * Runtimes: Apple
 
