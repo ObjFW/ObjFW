@@ -22,7 +22,7 @@ of_forward:
 	stmfd	sp!, {r0-r3, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	ldr	r1, sel_forwardingTargetForSelector__indirect_L0
+	ldr	r1, sel_forwardingTargetForSelector_$indirect_L0
 .L0:
 	add	r1, pc
 	stmfd	sp!, {r1}
@@ -51,7 +51,7 @@ of_forward_stret:
 	fstmfdd	sp!, {d0-d7}
 
 	mov	r0, r1
-	ldr	r1, sel_forwardingTargetForSelector__indirect_L1
+	ldr	r1, sel_forwardingTargetForSelector_$indirect_L1
 .L1:
 	add	r1, pc
 	stmfd	sp!, {r1}
@@ -81,9 +81,9 @@ init:
 	add	r0, pc
 	b	__objc_exec_class(PLT)
 
-sel_forwardingTargetForSelector__indirect_L0:
+sel_forwardingTargetForSelector_$indirect_L0:
 	.long sel_forwardingTargetForSelector_-(.L0+8)
-sel_forwardingTargetForSelector__indirect_L1:
+sel_forwardingTargetForSelector_$indirect_L1:
 	.long sel_forwardingTargetForSelector_-(.L1+8)
 module_indirect_L2:
 	.long module-(.L2+8)

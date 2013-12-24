@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
-L_str_forwardingTargetForSelector:
+L_str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector:
-	.long L_str_forwardingTargetForSelector
+L_sel_forwardingTargetForSelector_:
+	.long L_str_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
@@ -37,7 +37,7 @@ _of_forward:
 
 	blx	_object_getClass
 
-	ldr	r1, L_sel_forwardingTargetForSelector_indirect_L0
+	ldr	r1, L_sel_forwardingTargetForSelector_$indirect_L0
 L0:
 	ldr	r1, [pc, r1]
 	stmfd	sp!, {r1}
@@ -76,7 +76,7 @@ _of_forward_stret:
 	mov	r0, r1
 	blx	_object_getClass
 
-	ldr	r1, L_sel_forwardingTargetForSelector_indirect_L1
+	ldr	r1, L_sel_forwardingTargetForSelector_$indirect_L1
 L1:
 	ldr	r1, [pc, r1]
 	stmfd	sp!, {r1}
@@ -113,8 +113,8 @@ fail_stret:
 	b	_of_method_not_found
 
 .data_region
-L_sel_forwardingTargetForSelector_indirect_L0:
-	.long L_sel_forwardingTargetForSelector-(L0+8)
-L_sel_forwardingTargetForSelector_indirect_L1:
-	.long L_sel_forwardingTargetForSelector-(L1+8)
+L_sel_forwardingTargetForSelector_$indirect_L0:
+	.long L_sel_forwardingTargetForSelector_-(L0+8)
+L_sel_forwardingTargetForSelector_$indirect_L1:
+	.long L_sel_forwardingTargetForSelector_-(L1+8)
 .end_data_region

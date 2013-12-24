@@ -106,22 +106,23 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-# if defined(__x86_64__) || defined(__i386__) || defined(__arm__) || \
-    defined(__ppc__)
+# if defined(__x86_64__) || defined(__i386__) || defined(__ARM64_ARCH_8__) || \
+	defined(__arm__) || defined(__ppc__)
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
 # if defined(__ELF__)
 #  if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
-    defined(__arm__) || defined(__ARM__) || defined(__ppc__) || defined(__PPC__)
+	defined(__arm__) || defined(__ARM__) || defined(__ppc__) || \
+	defined(__PPC__)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
 #  endif
 #  if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-    (defined(__mips_eabi) && _MIPS_SZPTR == 32)
+	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET

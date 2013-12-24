@@ -21,6 +21,8 @@
 #  include "apple-forwarding-x86_64.S"
 # elif defined(__i386__)
 #  include "apple-forwarding-i386.S"
+# elif defined(__ARM64_ARCH_8__)
+#  include "apple-forwarding-arm64.S"
 # elif defined(__arm__)
 #  include "apple-forwarding-arm.S"
 # elif defined(__ppc__)

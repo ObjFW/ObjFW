@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __cstring, cstring_literals
-L_str_forwardingTargetForSelector:
+L_str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector:
-	.long L_str_forwardingTargetForSelector
+L_sel_forwardingTargetForSelector_:
+	.long L_str_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
@@ -70,8 +70,8 @@ _of_forward:
 	bl	L0
 L0:
 	mflr	r13
-	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector-L0)
-	lwz	r13, lo16(L_sel_forwardingTargetForSelector-L0)(r13)
+	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector_-L0)
+	lwz	r13, lo16(L_sel_forwardingTargetForSelector_-L0)(r13)
 	mr	r4, r13
 	bl	_class_respondsToSelector
 	cmpwi	r3, 0
@@ -172,8 +172,8 @@ _of_forward_stret:
 	bl	L1
 L1:
 	mflr	r13
-	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector-L1)
-	lwz	r13, lo16(L_sel_forwardingTargetForSelector-L1)(r13)
+	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector_-L1)
+	lwz	r13, lo16(L_sel_forwardingTargetForSelector_-L1)(r13)
 	mr	r4, r13
 	bl	_class_respondsToSelector
 	cmpwi	r3, 0

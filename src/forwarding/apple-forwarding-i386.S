@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __cstring, cstring_literals
-L_str_forwardingTargetForSelector:
+L_str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector:
-	.long L_str_forwardingTargetForSelector
+L_sel_forwardingTargetForSelector_:
+	.long L_str_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
@@ -43,7 +43,7 @@ _of_forward:
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector-.L0(%ebx), %eax
+	movl	L_sel_forwardingTargetForSelector_-.L0(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 	testl	%eax, %eax
@@ -51,7 +51,7 @@ _of_forward:
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector-.L0(%ebx), %eax
+	movl	L_sel_forwardingTargetForSelector_-.L0(%ebx), %eax
 	movl	%eax, 4(%esp)
 	movl	12(%ebp), %eax
 	movl	%eax, 8(%esp)
@@ -92,7 +92,7 @@ _of_forward_stret:
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector-.L1(%ebx), %eax
+	movl	L_sel_forwardingTargetForSelector_-.L1(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 	testl	%eax, %eax
@@ -100,7 +100,7 @@ _of_forward_stret:
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector-.L1(%ebx), %eax
+	movl	L_sel_forwardingTargetForSelector_-.L1(%ebx), %eax
 	movl	%eax, 4(%esp)
 	movl	16(%ebp), %eax
 	movl	%eax, 8(%esp)
