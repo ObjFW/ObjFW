@@ -161,7 +161,7 @@ help(OFStream *stream, bool full, int status)
 
 - (OFZIPArchive*)openArchiveWithPath: (OFString*)path
 {
-	OFZIPArchive *archive;
+	OFZIPArchive *archive = nil;
 
 	@try {
 		archive = [OFZIPArchive archiveWithPath: path];
