@@ -257,7 +257,7 @@ init:
 	j	__objc_exec_class
 #endif
 
-.section .ctors, "a", %progbits
+.section .ctors, "aw", %progbits
 	.long init
 
 .section .rodata

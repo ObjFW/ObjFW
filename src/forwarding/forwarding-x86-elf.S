@@ -119,7 +119,7 @@ get_eip:
 	movl	(%esp), %ebx
 	ret
 
-.section .ctors, "a", %progbits
+.section .ctors, "aw", %progbits
 	.long init
 
 .section .rodata

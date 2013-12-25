@@ -160,7 +160,7 @@ init:
 	la	%r3, module@l(%r3)
 	b	__objc_exec_class@plt
 
-.section .ctors, "a", %progbits
+.section .ctors, "aw", %progbits
 	.long init
 
 .section .rodata

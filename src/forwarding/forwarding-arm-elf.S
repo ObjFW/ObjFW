@@ -88,7 +88,7 @@ sel_forwardingTargetForSelector_$indirect_L1:
 module_indirect_L2:
 	.long module-(.L2+8)
 
-.section .ctors, "a", %progbits
+.section .ctors, "aw", %progbits
 	.long init
 
 .section .rodata

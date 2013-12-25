@@ -141,7 +141,7 @@ init:
 	leaq	module(%rip), %rdi
 	jmp	__objc_exec_class@PLT
 
-.section .ctors, "a", %progbits
+.section .ctors, "aw", %progbits
 	.quad init
 
 .section .rodata
