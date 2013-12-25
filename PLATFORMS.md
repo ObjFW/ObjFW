@@ -143,3 +143,19 @@ If you successfully ran ObjFW on a platform not listed here, please send an
 e-mail to js@webkeks.org so it can be added here!
 
 If you have a platform on which ObjFW does not work, please contact me as well!
+
+
+Forwarding
+==========
+
+As forwarding needs hand-written assembly for each combination of CPU
+architecture, executable format and calling convention, it is only available
+for the following platforms (except resolveClassMethod: and
+resolveInstanceMethod:, which are always available):
+
+  * AMD64 (ELF, Mach-O)
+  * ARM (ELF, Mach-O)
+  * ARM64 (Mach-O)
+  * MIPS (ELF/O32, ELF/EABI)
+  * PPC (ELF, Mach-O)
+  * x86 (ELF, Mach-O, Win32)
