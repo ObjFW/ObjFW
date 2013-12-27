@@ -22,7 +22,7 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found_handler
+.macro generate_lookup name not_found
 \name:
 	testq	%rdi, %rdi
 	jz	ret_nil
@@ -43,7 +43,7 @@
 	movq	(%r8,%rdx,8), %rax
 
 	testq	%rax, %rax
-	jz	\not_found_handler@PLT
+	jz	\not_found@PLT
 
 	ret
 .type \name, %function
@@ -64,8 +64,8 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_not_found_handler
-generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup objc_msg_lookup objc_method_not_found
+generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
 generate_lookup_super objc_msg_lookup_super objc_msg_lookup
 generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 

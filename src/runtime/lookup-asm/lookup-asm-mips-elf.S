@@ -22,7 +22,7 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found_handler
+.macro generate_lookup name not_found
 \name:
 	beqz	$a0, .ret_nil_\name
 
@@ -64,7 +64,7 @@
 #ifdef __PIC__
 	beqz	$t0, .forward_\name
 #else
-	beqz	$t0, \not_found_handler
+	beqz	$t0, \not_found
 #endif
 
 	move	$v0, $t0
@@ -85,7 +85,7 @@
 	addu	$gp, $gp, $t9
 	addiu	$gp, $gp, .forward_\name-\name
 
-	lw	$t9, %call16(\not_found_handler)($gp)
+	lw	$t9, %call16(\not_found)($gp)
 	jr	$t9
 #endif
 .type \name, %function
@@ -113,8 +113,8 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_not_found_handler
-generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup objc_msg_lookup objc_method_not_found
+generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
 generate_lookup_super objc_msg_lookup_super objc_msg_lookup
 generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 

@@ -19,20 +19,36 @@
 
 .section .text
 of_forward:
-	stmfd	sp!, {r0-r3, lr}
+	stmfd	sp!, {r0-r4, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	ldr	r1, sel_forwardingTargetForSelector_$indirect_L0
+	ldr	r4, sel_forwardingTargetForSelector_$indirect_L0
 .L0:
-	add	r1, pc
-	stmfd	sp!, {r1}
+	add	r4, pc
+
+	bl	object_getClass(PLT)
+
+	mov	r1, r4
+	bl	class_respondsToSelector(PLT)
+
+	cmp	r0, #0
+	beq	fail
+
+	ldr	r0, [sp, #64]
+	mov	r1, r4
 	bl	objc_msg_lookup(PLT)
-	ldmfd	sp!, {r1}
 
 	mov	r12, r0
 	ldr	r0, [sp, #64]
+	mov	r1, r4
 	ldr	r2, [sp, #68]
 	blx	r12
+
+	cmp	r0, #0
+	beq	fail
+	ldr	r1, [sp, #64]
+	cmp	r0, r1
+	beq	fail
 
 	str	r0, [sp, #64]
 	ldr	r1, [sp, #68]
@@ -40,28 +56,49 @@ of_forward:
 
 	mov	r12, r0
 	fldmfdd	sp!, {d0-d7}
-	ldmfd	sp!, {r0-r3, lr}
+	ldmfd	sp!, {r0-r4, lr}
 
 	bx	r12
+
+fail:
+	fldmfdd	sp!, {d0-d7}
+	ldmfd	sp!, {r0-r4, lr}
+	b	of_method_not_found(PLT)
 .type of_forward, %function
 .size of_forward, .-of_forward
 
 of_forward_stret:
-	stmfd	sp!, {r0-r3, lr}
+	stmfd	sp!, {r0-r4, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	mov	r0, r1
-	ldr	r1, sel_forwardingTargetForSelector_$indirect_L1
+	ldr	r4, sel_forwardingTargetForSelector_$indirect_L1
 .L1:
-	add	r1, pc
-	stmfd	sp!, {r1}
+	add	r4, pc
+
+	mov	r0, r1
+	bl	object_getClass(PLT)
+
+	mov	r1, r4
+	bl	class_respondsToSelector(PLT)
+
+	cmp	r0, #0
+	beq	fail_stret
+
+	ldr	r0, [sp, #68]
+	mov	r1, r4
 	bl	objc_msg_lookup(PLT)
-	ldmfd	sp!, {r1}
 
 	mov	r12, r0
 	ldr	r0, [sp, #68]
+	mov	r1, r4
 	ldr	r2, [sp, #72]
 	blx	r12
+
+	cmp	r0, #0
+	beq	fail_stret
+	ldr	r1, [sp, #68]
+	cmp	r0, r1
+	beq	fail_stret
 
 	str	r0, [sp, #68]
 	ldr	r1, [sp, #72]
@@ -69,9 +106,14 @@ of_forward_stret:
 
 	mov	r12, r0
 	fldmfdd	sp!, {d0-d7}
-	ldmfd	sp!, {r0-r3, lr}
+	ldmfd	sp!, {r0-r4, lr}
 
 	bx	r12
+
+fail_stret:
+	fldmfdd	sp!, {d0-d7}
+	ldmfd	sp!, {r0-r4, lr}
+	b	of_method_not_found_stret(PLT)
 .type of_forward_stret, %function
 .size of_forward_stret, .-of_forward_stret
 

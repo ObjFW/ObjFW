@@ -60,8 +60,8 @@ $0:
 	jmp	Lmain$1
 .endmacro
 
-generate_lookup _objc_msg_lookup, _objc_not_found_handler
-generate_lookup _objc_msg_lookup_stret, _objc_not_found_handler_stret
+generate_lookup _objc_msg_lookup, _objc_method_not_found
+generate_lookup _objc_msg_lookup_stret, _objc_method_not_found_stret
 generate_lookup_super _objc_msg_lookup_super, _objc_msg_lookup
 generate_lookup_super _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 

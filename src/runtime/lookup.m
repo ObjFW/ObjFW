@@ -23,12 +23,11 @@
 #import "runtime-private.h"
 #import "macros.h"
 
-IMP (*objc_forward_handler)(id, SEL) = NULL;
-IMP (*objc_forward_handler_stret)(id, SEL) = NULL;
+static void *forward_handler = NULL;
+static void *forward_handler_stret = NULL;
 
 static IMP
-common_not_found_handler(id obj, SEL sel, IMP (*lookup)(id, SEL),
-    IMP (*forward_handler)(id, SEL))
+common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), void *forward)
 {
 	bool is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
 
@@ -54,25 +53,63 @@ common_not_found_handler(id obj, SEL sel, IMP (*lookup)(id, SEL),
 		return lookup(obj, sel);
 	}
 
-	if (forward_handler != NULL)
-		return forward_handler(obj, sel);
+	/* Try resolveClassMethod:/resolveInstanceMethod: */
+	if (class_isMetaClass(object_getClass(obj))) {
+		Class cls = object_getClass(obj);
+
+		if (class_respondsToSelector(cls,
+		    @selector(resolveClassMethod:)) &&
+		    [obj resolveClassMethod: sel]) {
+			if (!class_respondsToSelector(cls, sel))
+				OBJC_ERROR("[%s resolveClassMethod: %s] "
+				    "returned true without adding the method!",
+				    class_getName(obj), sel_getName(sel));
+
+			return lookup(obj, sel);
+		}
+	} else {
+		Class cls = object_getClass(obj);
+		Class metacls = object_getClass(cls);
+
+		if (class_respondsToSelector(metacls,
+		    @selector(resolveInstanceMethod:)) &&
+		    [cls resolveInstanceMethod: sel]) {
+			if (!class_respondsToSelector(cls, sel))
+				OBJC_ERROR("[%s resolveInstanceMethod: %s] "
+				    "returned true without adding the method!",
+				    class_getName(object_getClass(obj)),
+				    sel_getName(sel));
+
+			return lookup(obj, sel);
+		}
+	}
+
+	if (forward != NULL)
+		return forward;
 
 	OBJC_ERROR("Selector %c[%s] is not implemented for class %s!",
 	    (is_class ? '+' : '-'), sel_getName(sel), object_getClassName(obj));
 }
 
 IMP
-objc_not_found_handler(id obj, SEL sel)
+objc_method_not_found(id obj, SEL sel)
 {
-	return common_not_found_handler(obj, sel, objc_msg_lookup,
-	    objc_forward_handler);
+	return common_method_not_found(obj, sel, objc_msg_lookup,
+	    forward_handler);
 }
 
 IMP
-objc_not_found_handler_stret(id obj, SEL sel)
+objc_method_not_found_stret(id obj, SEL sel)
 {
-	return common_not_found_handler(obj, sel, objc_msg_lookup_stret,
-	    objc_forward_handler_stret);
+	return common_method_not_found(obj, sel, objc_msg_lookup_stret,
+	    forward_handler_stret);
+}
+
+void
+objc_setForwardHandler(void *forward, void *forward_stret)
+{
+	forward_handler = forward;
+	forward_handler_stret = forward_stret;
 }
 
 bool
@@ -92,7 +129,7 @@ nil_method(id self, SEL _cmd)
 }
 
 static OF_INLINE IMP
-common_lookup(id obj, SEL sel, IMP (*not_found_handler)(id, SEL))
+common_lookup(id obj, SEL sel, IMP (*not_found)(id, SEL))
 {
 	IMP imp;
 
@@ -103,7 +140,7 @@ common_lookup(id obj, SEL sel, IMP (*not_found_handler)(id, SEL))
 	    (uint32_t)sel->uid);
 
 	if (imp == NULL)
-		return not_found_handler(obj, sel);
+		return not_found(obj, sel);
 
 	return imp;
 }
@@ -111,18 +148,18 @@ common_lookup(id obj, SEL sel, IMP (*not_found_handler)(id, SEL))
 IMP
 objc_msg_lookup(id obj, SEL sel)
 {
-	return common_lookup(obj, sel, objc_not_found_handler);
+	return common_lookup(obj, sel, objc_method_not_found);
 }
 
 IMP
 objc_msg_lookup_stret(id obj, SEL sel)
 {
-	return common_lookup(obj, sel, objc_not_found_handler_stret);
+	return common_lookup(obj, sel, objc_method_not_found_stret);
 }
 
 static OF_INLINE IMP
 common_lookup_super(struct objc_super *super, SEL sel,
-    IMP (*not_found_handler)(id, SEL))
+    IMP (*not_found)(id, SEL))
 {
 	IMP imp;
 
@@ -132,7 +169,7 @@ common_lookup_super(struct objc_super *super, SEL sel,
 	imp = objc_sparsearray_get(super->cls->dtable, (uint32_t)sel->uid);
 
 	if (imp == NULL)
-		return not_found_handler(super->self, sel);
+		return not_found(super->self, sel);
 
 	return imp;
 }
@@ -140,12 +177,12 @@ common_lookup_super(struct objc_super *super, SEL sel,
 IMP
 objc_msg_lookup_super(struct objc_super *super, SEL sel)
 {
-	return common_lookup_super(super, sel, objc_not_found_handler);
+	return common_lookup_super(super, sel, objc_method_not_found);
 }
 
 IMP
 objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
 {
-	return common_lookup_super(super, sel, objc_not_found_handler_stret);
+	return common_lookup_super(super, sel, objc_method_not_found_stret);
 }
 #endif

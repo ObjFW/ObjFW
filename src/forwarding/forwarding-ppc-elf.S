@@ -43,6 +43,16 @@ of_forward:
 	stfd	%f7, 88(%r1)
 	stfd	%f8, 96(%r1)
 
+	bl	object_getClass@plt
+
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	class_respondsToSelector@plt
+
+	cmpwi	%r3, 0
+	beq-	fail
+
+	lwz	%r3, 8(%r1)
 	lis	%r4, sel_forwardingTargetForSelector_@ha
 	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	bl	objc_msg_lookup@plt
@@ -53,6 +63,13 @@ of_forward:
 	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	lwz	%r5, 12(%r1)
 	bctrl
+
+	cmpwi	%r3, 0
+	beq-	fail
+	lwz	%r4, 8(%r1)
+	cmpw	%r3, %r4
+	beq-	fail
+
 	stw	%r3, 8(%r1)
 
 	lwz	%r4, 12(%r1)
@@ -83,6 +100,16 @@ of_forward:
 	mtlr	%r0
 	addi	%r1, %r1, 112
 	bctr
+
+fail:
+	lwz	%r3, 8(%r1)
+	lwz	%r4, 12(%r1)
+
+	lwz	%r0, 116(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 112
+
+	b	of_method_not_found@plt
 .type of_forward, %function
 .size of_forward, .-of_forward
 
@@ -112,6 +139,16 @@ of_forward_stret:
 	stfd	%f8, 96(%r1)
 
 	mr	%r3, %r4
+	bl	object_getClass@plt
+
+	lis	%r4, sel_forwardingTargetForSelector_@ha
+	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
+	bl	class_respondsToSelector@plt
+
+	cmpwi	%r3, 0
+	beq-	fail_stret
+
+	lwz	%r3, 12(%r1)
 	lis	%r4, sel_forwardingTargetForSelector_@ha
 	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	bl	objc_msg_lookup@plt
@@ -122,6 +159,13 @@ of_forward_stret:
 	la	%r4, sel_forwardingTargetForSelector_@l(%r4)
 	lwz	%r5, 16(%r1)
 	bctrl
+
+	cmpwi	%r3, 0
+	beq-	fail_stret
+	lwz	%r4, 12(%r1)
+	cmpw	%r3, %r4
+	beq-	fail_stret
+
 	stw	%r3, 12(%r1)
 
 	lwz	%r4, 16(%r1)
@@ -152,6 +196,17 @@ of_forward_stret:
 	mtlr	%r0
 	addi	%r1, %r1, 112
 	bctr
+
+fail_stret:
+	lwz	%r3, 8(%r1)
+	lwz	%r4, 12(%r1)
+	lwz	%r5, 16(%r1)
+
+	lwz	%r0, 116(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 112
+
+	b	of_method_not_found_stret@plt
 .type of_forward_stret, %function
 .size of_forward_stret, .-of_forward_stret
 

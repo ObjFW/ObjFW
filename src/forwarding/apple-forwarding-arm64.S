@@ -56,6 +56,7 @@ _of_forward_stret:
 
 	mov	x1, x19
 	bl	_class_respondsToSelector
+
 	cbz	x0, fail
 
 	ldp	x0, x2, [sp]

@@ -22,7 +22,7 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found_handler
+.macro generate_lookup name not_found
 \name:
 	cmpwi	%r3, 0
 	beq-	ret_nil
@@ -56,7 +56,7 @@
 	blr
 
 .forward_\name:
-	b	\not_found_handler@plt
+	b	\not_found@plt
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -75,8 +75,8 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_not_found_handler
-generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup objc_msg_lookup objc_method_not_found
+generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
 generate_lookup_super objc_msg_lookup_super objc_msg_lookup
 generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 

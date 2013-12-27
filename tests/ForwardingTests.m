@@ -47,15 +47,17 @@ struct stret_test {
 @interface ForwardingTest (Test)
 + (void)test;
 - (void)test;
-- (bool)forwardingTargetTest: (intptr_t)a0
-			    : (intptr_t)a1
-			    : (double)a2
-			    : (double)a3;
+- (uint32_t)forwardingTargetTest: (intptr_t)a0
+				: (intptr_t)a1
+				: (double)a2
+				: (double)a3;
 - (OFString*)forwardingTargetVarArgTest: (OFConstantString*)fmt, ...;
 - (long double)forwardingTargetFPRetTest;
 - (struct stret_test)forwardingTargetStRetTest;
-- (void)notExistant;
-- (struct stret_test)notExistantStRet;
+- (void)forwardingTargetNilTest;
+- (void)forwardingTargetSelfTest;
+- (struct stret_test)forwardingTargetNilStRetTest;
+- (struct stret_test)forwardingTargetSelfStRetTest;
 @end
 
 @interface ForwardingTarget: OFObject
@@ -116,28 +118,36 @@ test(id self, SEL _cmd)
 	    sel_isEqual(selector, @selector(forwardingTargetStRetTest)))
 		return (id)((char*)target + (ptrdiff_t)add);
 
-	return nil;
+	if (sel_isEqual(selector, @selector(forwardingTargetNilTest)) ||
+	    sel_isEqual(selector, @selector(forwardingTargetNilStRetTest)))
+		return nil;
+
+	if (sel_isEqual(selector, @selector(forwardingTargetSelfTest)) ||
+	    sel_isEqual(selector, @selector(forwardingTargetSelfStRetTest)))
+		return self;
+
+	abort();
 }
 @end
 
 @implementation ForwardingTarget
-- (bool)forwardingTargetTest: (intptr_t)a0
-			    : (intptr_t)a1
-			    : (double)a2
-			    : (double)a3
+- (uint32_t)forwardingTargetTest: (intptr_t)a0
+				: (intptr_t)a1
+				: (double)a2
+				: (double)a3
 {
 	OF_ENSURE(self == target);
 
 	if (a0 != 0xDEADBEEF)
-		return false;
+		return 0;
 	if (a1 != -1)
-		return false;
+		return 0;
 	if (a2 != 1.25)
-		return false;
+		return 0;
 	if (a3 != 2.75)
-		return false;
+		return 0;
 
-	return true;
+	return 0x12345678;
 }
 
 - (OFString*)forwardingTargetVarArgTest: (OFConstantString*)fmt, ...
@@ -197,21 +207,27 @@ test(id self, SEL _cmd)
 	    [t forwardingTargetTest: 0xDEADBEEF
 				   : -1
 				   : 1.25
-				   : 2.75])
-	TEST(@"-[forwardingTargetForSelector:] with variable arguments",
+				   : 2.75] == 0x12345678)
+	TEST(@"-[forwardingTargetForSelector:] variable arguments",
 	   [([t forwardingTargetVarArgTest: FMT, ARGS]) isEqual: RESULT])
-	TEST(@"-[forwardingTargetForSelector:] with fp return",
+	TEST(@"-[forwardingTargetForSelector:] fp return",
 	    [t forwardingTargetFPRetTest] == 12345678.00006103515625)
 # ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
-	TEST(@"-[forwardingTargetForSelector:] with struct return",
+	TEST(@"-[forwardingTargetForSelector:] struct return",
 	    !memcmp([t forwardingTargetStRetTest].s,
 	    "abcdefghijklmnopqrstuvwxyz", 27))
 # endif
-	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] with nil target",
-	    OFNotImplementedException, [t notExistant])
+	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] nil target",
+	    OFNotImplementedException, [t forwardingTargetNilTest])
+	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] self target",
+	    OFNotImplementedException, [t forwardingTargetSelfTest])
 # ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
-	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] with nil target + "
-	    @"stret", OFNotImplementedException, [t notExistantStRet])
+	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] nil target + "
+	    @"stret", OFNotImplementedException,
+	    [t forwardingTargetNilStRetTest])
+	EXPECT_EXCEPTION(@"-[forwardingTargetForSelector:] self target + "
+	    @"stret", OFNotImplementedException,
+	    [t forwardingTargetSelfStRetTest])
 # endif
 #endif
 

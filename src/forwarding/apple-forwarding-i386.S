@@ -38,6 +38,7 @@ _of_forward:
 
 	call	get_eip
 .L0:
+
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
 	call	_object_getClass
@@ -46,6 +47,7 @@ _of_forward:
 	movl	L_sel_forwardingTargetForSelector_-.L0(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
+
 	testl	%eax, %eax
 	jz	fail
 
@@ -59,7 +61,6 @@ _of_forward:
 
 	testl	%eax, %eax
 	jz	fail
-
 	cmpl	8(%ebp), %eax
 	je	fail
 
@@ -87,6 +88,7 @@ _of_forward_stret:
 
 	call	get_eip
 .L1:
+
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
 	call	_object_getClass
@@ -95,6 +97,7 @@ _of_forward_stret:
 	movl	L_sel_forwardingTargetForSelector_-.L1(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
+
 	testl	%eax, %eax
 	jz	fail_stret
 
@@ -108,7 +111,6 @@ _of_forward_stret:
 
 	testl	%eax, %eax
 	jz	fail_stret
-
 	cmpl	12(%ebp), %eax
 	je	fail_stret
 
@@ -121,16 +123,11 @@ _of_forward_stret:
 	jmp	_objc_msgSend_stret
 
 fail_stret:
-	movl	12(%ebp), %eax
-	movl	%eax, 8(%ebp)
-	movl	16(%ebp), %eax
-	movl	%eax, 12(%ebp)
-
 	addl	$20, %esp
 	popl	%ebx
 	popl	%ebp
 
-	jmp	_of_method_not_found
+	jmp	_of_method_not_found_stret
 
 get_eip:
 	movl	(%esp), %ebx

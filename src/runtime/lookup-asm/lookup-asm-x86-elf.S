@@ -22,7 +22,7 @@
 .globl objc_msg_lookup_super_stret
 
 .section .text
-.macro generate_lookup name not_found_handler
+.macro generate_lookup name not_found
 \name:
 	movl	4(%esp), %edx
 	testl	%edx, %edx
@@ -51,7 +51,7 @@
 .forward_\name:
 	call	get_eip
 .forward_L0_\name:
-	addl	$\not_found_handler-.forward_L0_\name, %eax
+	addl	$\not_found-.forward_L0_\name, %eax
 	jmp	*%eax
 .type \name, %function
 .size \name, .-\name
@@ -70,8 +70,8 @@
 .size \name, .-\name
 .endm
 
-generate_lookup objc_msg_lookup objc_not_found_handler
-generate_lookup objc_msg_lookup_stret objc_not_found_handler_stret
+generate_lookup objc_msg_lookup objc_method_not_found
+generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
 generate_lookup_super objc_msg_lookup_super objc_msg_lookup
 generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 

@@ -72,8 +72,10 @@ L0:
 	mflr	r13
 	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector_-L0)
 	lwz	r13, lo16(L_sel_forwardingTargetForSelector_-L0)(r13)
+
 	mr	r4, r13
 	bl	_class_respondsToSelector
+
 	cmpwi	r3, 0
 	beq-	fail
 
@@ -84,7 +86,6 @@ L0:
 
 	cmpwi	r3, 0
 	beq-	fail
-
 	lwz	r4, 216(r1)
 	cmpw	r3, r4
 	beq-	fail
@@ -174,8 +175,10 @@ L1:
 	mflr	r13
 	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector_-L1)
 	lwz	r13, lo16(L_sel_forwardingTargetForSelector_-L1)(r13)
+
 	mr	r4, r13
 	bl	_class_respondsToSelector
+
 	cmpwi	r3, 0
 	beq-	fail_stret
 
@@ -186,7 +189,6 @@ L1:
 
 	cmpwi	r3, 0
 	beq-	fail_stret
-
 	lwz	r4, 212(r1)
 	cmpw	r3, r4
 	beq-	fail_stret
@@ -225,11 +227,12 @@ L1:
 	b	_objc_msgSend_stret
 
 fail_stret:
-	lwz	r3, 212(r1)
-	lwz	r4, 216(r1)
+	lwz	r3, 208(r1)
+	lwz	r4, 212(r1)
+	lwz	r5, 216(r1)
 
 	addi	r1, r1, 184
 	lwz	r0, 8(r1)
 	mtlr	r0
 
-	b	_of_method_not_found
+	b	_of_method_not_found_stret

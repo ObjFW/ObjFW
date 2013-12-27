@@ -56,6 +56,7 @@ _of_forward:
 	movq	%rax, %rdi
 	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
 	call	_class_respondsToSelector
+
 	testq	%rax, %rax
 	jz	fail
 
@@ -63,13 +64,13 @@ _of_forward:
 	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x18(%rbp), %rdx
 	call	_objc_msgSend
-	movq	%rax, %rdi
 
-	testq	%rdi, %rdi
+	testq	%rax, %rax
 	jz	fail
-
-	cmpq	-0x10(%rbp), %rdi
+	cmpq	-0x10(%rbp), %rax
 	je	fail
+
+	movq	%rax, %rdi
 
 	/* Restore all arguments, except %rdi */
 	movdqa	-0xC0(%rbp), %xmm7
@@ -136,13 +137,13 @@ _of_forward_stret:
 	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x20(%rbp), %rdx
 	call	_objc_msgSend
-	movq	%rax, %rsi
 
-	testq	%rsi, %rsi
+	testq	%rax, %rax
 	jz	fail_stret
-
-	cmpq	-0x18(%rbp), %rsi
+	cmpq	-0x18(%rbp), %rax
 	je	fail_stret
+
+	movq	%rax, %rsi
 
 	/* Restore all arguments, except %rsi */
 	movdqa	-0xC0(%rbp), %xmm7
@@ -166,10 +167,11 @@ _of_forward_stret:
 	jmp	_objc_msgSend_stret
 
 fail_stret:
-	movq	-0x18(%rbp), %rdi
-	movq	-0x20(%rbp), %rsi
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
+	movq	-0x20(%rbp), %rdx
 
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmp	_of_method_not_found
+	jmp	_of_method_not_found_stret

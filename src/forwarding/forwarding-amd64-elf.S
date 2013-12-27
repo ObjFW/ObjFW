@@ -40,12 +40,29 @@ of_forward:
 	movdqa	%xmm6, -0xB0(%rbp)
 	movdqa	%xmm7, -0xC0(%rbp)
 
+	call	object_getClass@PLT
+
+	movq	%rax, %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	call	class_respondsToSelector@PLT
+
+	testq	%rax, %rax
+	jz	fail
+
+	movq	-0x10(%rbp), %rdi
 	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	objc_msg_lookup@PLT
+
 	movq	-0x10(%rbp), %rdi
 	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x18(%rbp), %rdx
 	call	*%rax
+
+	testq	%rax, %rax
+	jz	fail
+	cmpq	-0x10(%rbp), %rax
+	je	fail
+
 	movq	%rax, -0x10(%rbp)
 
 	movq	%rax, %rdi
@@ -74,6 +91,15 @@ of_forward:
 	popq	%rbp
 
 	jmpq     *%r11
+
+fail:
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmp	of_method_not_found@PLT
 .type of_forward, %function
 .size of_forward, .-of_forward
 
@@ -100,12 +126,29 @@ of_forward_stret:
 	movdqa	%xmm7, -0xC0(%rbp)
 
 	movq	%rsi, %rdi
+	call	object_getClass@PLT
+
+	movq	%rax, %rdi
+	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
+	call	class_respondsToSelector@PLT
+
+	testq	%rax, %rax
+	jz	fail_stret
+
+	movq	-0x18(%rbp), %rdi
 	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	objc_msg_lookup@PLT
+
 	movq	-0x18(%rbp), %rdi
 	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x20(%rbp), %rdx
 	call	*%rax
+
+	testq	%rax, %rax
+	jz	fail_stret
+	cmpq	-0x18(%rbp), %rax
+	je	fail_stret
+
 	movq	%rax, -0x18(%rbp)
 
 	movq	%rax, %rdi
@@ -134,6 +177,16 @@ of_forward_stret:
 	popq	%rbp
 
 	jmpq     *%r11
+
+fail_stret:
+	movq	-0x10(%rbp), %rdi
+	movq	-0x18(%rbp), %rsi
+	movq	-0x20(%rbp), %rdx
+
+	movq	%rbp, %rsp
+	popq	%rbp
+
+	jmp	of_method_not_found_stret@PLT
 .type of_forward_stret, %function
 .size of_forward_stret, .-of_forward_stret
 

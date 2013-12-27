@@ -208,8 +208,7 @@ extern bool protocol_conformsToProtocol(Protocol*, Protocol*);
 extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
-extern IMP (*objc_forward_handler)(id, SEL);
-extern IMP (*objc_forward_handler_stret)(id, SEL);
+extern void objc_setForwardHandler(void*, void*);
 extern id objc_autorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);

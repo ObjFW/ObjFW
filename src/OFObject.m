@@ -65,8 +65,8 @@
 extern id of_forward(id, SEL, ...);
 extern struct stret of_forward_stret(id, SEL, ...);
 #else
-# define of_forward NULL
-# define of_forward_stret NULL
+# define of_forward of_method_not_found
+# define of_forward_stret of_method_not_found_stret
 #endif
 
 struct pre_ivar {
@@ -137,69 +137,11 @@ of_method_not_found(id obj, SEL sel)
 	abort();
 }
 
-#ifdef OF_OBJFW_RUNTIME
-static IMP
-commonForwardHandler(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
+void
+of_method_not_found_stret(void *st, id obj, SEL sel)
 {
-	/* Try resolveClassMethod:/resolveInstanceMethod: */
-	if (class_isMetaClass(object_getClass(obj))) {
-		if ([obj respondsToSelector: @selector(resolveClassMethod:)] &&
-		    [obj resolveClassMethod: sel]) {
-			if (![obj respondsToSelector: sel]) {
-				fprintf(stderr, "Runtime error: [%s "
-				    "resolveClassMethod: %s] returned true "
-				    "without adding the method!\n",
-				    class_getName(obj), sel_getName(sel));
-				abort();
-			}
-
-			return lookup(obj, sel);
-		}
-	} else {
-		Class c = object_getClass(obj);
-
-		if ([c respondsToSelector: @selector(resolveInstanceMethod:)] &&
-		    [c resolveInstanceMethod: sel]) {
-			if (![obj respondsToSelector: sel]) {
-				fprintf(stderr, "Runtime error: [%s "
-				    "resolveInstanceMethod: %s] returned true "
-				    "without adding the method!\n",
-				    class_getName(object_getClass(obj)),
-				    sel_getName(sel));
-				abort();
-			}
-
-			return lookup(obj, sel);
-		}
-	}
-
-#ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
-	if (class_respondsToSelector(object_getClass(obj),
-	    @selector(forwardingTargetForSelector:))) {
-		id target = [obj forwardingTargetForSelector: sel];
-
-		if (target != nil && target != obj)
-			return forward;
-	}
-#endif
-
 	of_method_not_found(obj, sel);
-	return NULL;
 }
-
-static IMP
-forwardHandler(id obj, SEL sel)
-{
-	return commonForwardHandler(obj, sel, objc_msg_lookup, (IMP)of_forward);
-}
-
-static IMP
-forwardHandlerStret(id obj, SEL sel)
-{
-	return commonForwardHandler(obj, sel,
-	    objc_msg_lookup_stret, (IMP)of_forward_stret);
-}
-#endif
 
 #ifndef HAVE_OBJC_ENUMERATIONMUTATION
 void
@@ -279,13 +221,7 @@ void _references_to_categories_of_OFObject(void)
 	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
 #endif
 
-#if defined(OF_OBJFW_RUNTIME)
-	objc_forward_handler = forwardHandler;
-	objc_forward_handler_stret = forwardHandlerStret;
-#elif defined(OF_APPLE_RUNTIME) && \
-    defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 	objc_setForwardHandler(of_forward, of_forward_stret);
-#endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
