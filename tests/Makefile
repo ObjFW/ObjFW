@@ -36,11 +36,8 @@ SRCS_THREADS = OFThreadTests.m
 IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
-.PHONY: run run-tests run-on-ios
+.PHONY: run run-on-ios run-on-android sign-for-ios
 run: all
-	if [ -z "${DONT_RUN_TESTS}" ]; then ${MAKE} ${MFLAGS} run-tests; fi
-
-run-tests: all
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.dylib

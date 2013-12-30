@@ -111,8 +111,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
-	${AUTORELEASE_M}		\
-	${INSTANCE_M}			\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\
@@ -122,8 +120,10 @@ SRCS += OFArray_adjacent.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
 	${ASPRINTF_M}			\
+	${AUTORELEASE_M}		\
 	codepage_437.m			\
 	${FOUNDATION_COMPAT_M}		\
+	${INSTANCE_M}			\
 	iso_8859_15.m			\
 	windows_1252.m
 SRCS_SOCKETS += ${OFSTREAMOBSERVER_KQUEUE_M}	\
