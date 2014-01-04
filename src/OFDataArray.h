@@ -292,6 +292,9 @@
 /*!
  * @brief Returns the string representation of the data array.
  *
+ * The string representation is a hex dump of the data inside the data array,
+ * grouped by itemSize bytes.
+ *
  * @return The string representation of the data array.
  */
 - (OFString*)stringRepresentation;
