@@ -614,7 +614,37 @@ class_getInstanceSize(Class cls)
 IMP
 class_getMethodImplementation(Class cls, SEL sel)
 {
-	return objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid);
+	/*
+	 * We use a dummy object here so that the normal lookup is used, even
+	 * though we don't have an object. Doing so is safe, as objc_msg_lookup
+	 * does not access the object, but only its class.
+	 *
+	 * Just looking it up in the dispatch table could result in returning
+	 * NULL instead of the forwarding handler, it would also mean
+	 * +[resolveClassMethod:] / +[resolveInstanceMethod:] would not be
+	 * called.
+	 */
+
+	struct {
+		Class isa;
+	} dummy = { cls };
+
+	return objc_msg_lookup((id)&dummy, sel);
+}
+
+IMP
+class_getMethodImplementation_stret(Class cls, SEL sel)
+{
+	/*
+	 * Same as above, but use objc_msg_lookup_stret instead, so that the
+	 * correct forwarding handler is returned.
+	 */
+
+	struct {
+		Class isa;
+	} dummy = { cls };
+
+	return objc_msg_lookup_stret((id)&dummy, sel);
 }
 
 const char*

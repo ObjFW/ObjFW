@@ -197,6 +197,7 @@ extern unsigned long class_getInstanceSize(Class);
 extern bool class_respondsToSelector(Class, SEL);
 extern bool class_conformsToProtocol(Class, Protocol*);
 extern IMP class_getMethodImplementation(Class, SEL);
+extern IMP class_getMethodImplementation_stret(Class, SEL);
 extern const char* class_getMethodTypeEncoding(Class, SEL);
 extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
 extern Class object_getClass(id);

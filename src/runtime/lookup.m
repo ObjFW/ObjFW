@@ -29,6 +29,11 @@ static void *forward_handler_stret = NULL;
 static IMP
 common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), void *forward)
 {
+	/*
+	 * obj might be a dummy object (see class_getMethodImplementation), so
+	 * don't access obj directly unless it's a class!
+	 */
+
 	bool is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
 
 	if (!(object_getClass(obj)->info & OBJC_CLASS_INFO_INITIALIZED)) {
