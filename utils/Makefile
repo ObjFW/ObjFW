@@ -1,6 +1,6 @@
 include ../extra.mk
 
-PROG = ofzip
+PROG = ${OFZIP}
 SRCS = OFZIP.m
 
 ${PROG}: ${LIBOBJFW_DEP}

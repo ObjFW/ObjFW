@@ -27,7 +27,9 @@
 #import "OFString_UTF8+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFFile.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+#endif
 #import "OFURL.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPClient.h"
@@ -411,6 +413,7 @@ static struct {
 					       arguments: arguments];
 }
 
+#ifdef OF_HAVE_FILES
 - initWithContentsOfFile: (OFString*)path
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path];
@@ -422,6 +425,7 @@ static struct {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path
 							encoding: encoding];
 }
+#endif
 
 - initWithContentsOfURL: (OFURL*)URL
 {
@@ -601,6 +605,7 @@ static struct {
 	return ret;
 }
 
+#ifdef OF_HAVE_FILES
 + (instancetype)stringWithContentsOfFile: (OFString*)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
@@ -612,6 +617,7 @@ static struct {
 	return [[[self alloc] initWithContentsOfFile: path
 					    encoding: encoding] autorelease];
 }
+#endif
 
 + (instancetype)stringWithContentsOfURL: (OFURL*)URL
 {
@@ -786,6 +792,7 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
+#ifdef OF_HAVE_FILES
 - initWithContentsOfFile: (OFString*)path
 {
 	return [self initWithContentsOfFile: path
@@ -833,6 +840,7 @@ static struct {
 
 	return self;
 }
+#endif
 
 - initWithContentsOfURL: (OFURL*)URL
 {
@@ -860,6 +868,7 @@ static struct {
 	pool = objc_autoreleasePoolPush();
 
 	if ([[URL scheme] isEqual: @"file"]) {
+#ifdef OF_HAVE_FILES
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
 			encoding = OF_STRING_ENCODING_UTF_8;
 
@@ -867,6 +876,9 @@ static struct {
 						encoding: encoding];
 		objc_autoreleasePoolPop(pool);
 		return self;
+#else
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+#endif
 	}
 
 #ifdef OF_HAVE_SOCKETS
@@ -2425,6 +2437,7 @@ static struct {
 	return ret;
 }
 
+#ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString*)path
 {
 	return [self writeToFile: path
@@ -2444,6 +2457,7 @@ static struct {
 
 	objc_autoreleasePoolPop(pool);
 }
+#endif
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block

@@ -291,7 +291,7 @@ main(int argc, char *argv[])
 
 - (void)applicationDidFinishLaunching
 {
-#ifdef __wii__
+#if defined(__wii__) && defined(OF_HAVE_FILES)
 	[OFFile changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
 
@@ -299,8 +299,10 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
 #endif
+#ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self SHA1HashTests];
+#endif
 	[self stringTests];
 	[self dataArrayTests];
 	[self arrayTests];
@@ -323,7 +325,9 @@ main(int argc, char *argv[])
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
+#ifdef OF_HAVE_FILES
 	[self serializationTests];
+#endif
 	[self JSONTests];
 #ifdef OF_HAVE_PLUGINS
 	[self pluginTests];

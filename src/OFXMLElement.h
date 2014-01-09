@@ -107,6 +107,7 @@
  */
 + (instancetype)elementWithXMLString: (OFString*)string;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Parses the specified file and returns an OFXMLElement for it.
  *
@@ -115,6 +116,7 @@
  *	   file
  */
 + (instancetype)elementWithFile: (OFString*)path;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name.
@@ -181,6 +183,7 @@
  */
 - initWithXMLString: (OFString*)string;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Parses the specified file and initializes an already allocated
  *	  OFXMLElement with it.
@@ -189,6 +192,7 @@
  * @return An initialized OFXMLElement with the contents of the specified file
  */
 - initWithFile: (OFString*)path;
+#endif
 
 /*!
  * @brief Sets the name of the element.

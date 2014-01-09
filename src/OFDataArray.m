@@ -22,7 +22,9 @@
 
 #import "OFDataArray.h"
 #import "OFString.h"
-#import "OFFile.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+#endif
 #import "OFURL.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPClient.h"
@@ -77,10 +79,12 @@ void _references_to_categories_of_OFDataArray(void)
 				      capacity: capacity] autorelease];
 }
 
+#ifdef OF_HAVE_FILES
 + (instancetype)dataArrayWithContentsOfFile: (OFString*)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
+#endif
 
 + (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL
 {
@@ -146,6 +150,7 @@ void _references_to_categories_of_OFDataArray(void)
 	return self;
 }
 
+#ifdef OF_HAVE_FILES
 - initWithContentsOfFile: (OFString*)path
 {
 	@try {
@@ -183,6 +188,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 	return self;
 }
+#endif
 
 - initWithContentsOfURL: (OFURL*)URL
 {
@@ -202,9 +208,13 @@ void _references_to_categories_of_OFDataArray(void)
 	pool = objc_autoreleasePoolPush();
 
 	if ([[URL scheme] isEqual: @"file"]) {
+#ifdef OF_HAVE_FILES
 		self = [[c alloc] initWithContentsOfFile: [URL path]];
 		objc_autoreleasePoolPop(pool);
 		return self;
+#else
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+#endif
 	}
 
 #ifdef OF_HAVE_SOCKETS
@@ -599,6 +609,7 @@ void _references_to_categories_of_OFDataArray(void)
 	return of_base64_encode(_items, _count * _itemSize);
 }
 
+#ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString*)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
@@ -611,6 +622,7 @@ void _references_to_categories_of_OFDataArray(void)
 		[file release];
 	}
 }
+#endif
 
 - (OFXMLElement*)XMLElementBySerializing
 {

@@ -272,6 +272,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithFormat: (OFConstantString*)format, ...;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new OFString with the contents of the specified UTF-8
  *	  encoded file.
@@ -291,6 +292,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfFile: (OFString*)path
 				encoding: (of_string_encoding_t)encoding;
+#endif
 
 /*!
  * @brief Creates a new OFString with the contents of the specified URL.
@@ -514,6 +516,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - initWithFormat: (OFConstantString*)format
        arguments: (va_list)arguments;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
  *	  specified file in the specified encoding.
@@ -533,6 +536,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - initWithContentsOfFile: (OFString*)path
 		encoding: (of_string_encoding_t)encoding;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
@@ -1029,6 +1033,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Writes the string into the specified file using UTF-8 encoding.
  *
@@ -1045,6 +1050,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (void)writeToFile: (OFString*)path
 	   encoding: (of_string_encoding_t)encoding;
+#endif
 
 #ifdef OF_HAVE_BLOCKS
 /*!

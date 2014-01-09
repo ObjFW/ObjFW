@@ -79,6 +79,7 @@
 + (instancetype)dataArrayWithItemSize: (size_t)itemSize
 			     capacity: (size_t)capacity;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new OFDataArary with an item size of 1, containing the data
  *	  of the specified file.
@@ -87,6 +88,7 @@
  * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithContentsOfFile: (OFString*)path;
+#endif
 
 /*!
  * @brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -145,6 +147,7 @@
 - initWithItemSize: (size_t)itemSize
 	  capacity: (size_t)capacity;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the specified file.
@@ -153,6 +156,7 @@
  * @return An initialized OFDataArray
  */
 - initWithContentsOfFile: (OFString*)path;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
@@ -306,12 +310,14 @@
  */
 - (OFString*)stringByBase64Encoding;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Writes the OFDataArray into the specified file.
  *
  * @param path The path of the file to write to
  */
 - (void)writeToFile: (OFString*)path;
+#endif
 @end
 
 /*!

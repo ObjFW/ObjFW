@@ -173,6 +173,7 @@ static uint16_t sutf16str[] = {
 	    (is = [OFString stringWithUTF32String: sucstr]) &&
 	    [is isEqual: @"fööbär🀺"])
 
+#ifdef OF_HAVE_FILES
 	TEST(@"+[stringWithContentsOfFile:encoding]", (is = [OFString
 	    stringWithContentsOfFile: @"testfile.txt"
 			    encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
@@ -183,6 +184,7 @@ static uint16_t sutf16str[] = {
 					 @"file://testfile.txt"]
 			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
 	    [is isEqual: @"testäöü"])
+#endif
 
 	TEST(@"-[appendUTFString:length:]",
 	    R([s[0] appendUTF8String: "foo\xEF\xBB\xBF" "barqux" + 3

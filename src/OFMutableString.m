@@ -171,6 +171,7 @@ static struct {
 						      arguments: arguments];
 }
 
+#ifdef OF_HAVE_FILES
 - initWithContentsOfFile: (OFString*)path
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfFile: path];
@@ -183,6 +184,7 @@ static struct {
 	    initWithContentsOfFile: path
 			  encoding: encoding];
 }
+#endif
 
 - initWithContentsOfURL: (OFURL*)URL
 {

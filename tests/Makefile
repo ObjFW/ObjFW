@@ -11,12 +11,9 @@ SRCS = ForwardingTests.m		\
        OFDictionaryTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
-       OFMD5HashTests.m			\
        OFNumberTests.m			\
        OFObjectTests.m			\
-       OFSerializationTests.m		\
        OFSet.m				\
-       OFSHA1HashTests.m		\
        OFStreamTests.m			\
        OFStringTests.m			\
        OFURLTests.m			\
@@ -25,10 +22,14 @@ SRCS = ForwardingTests.m		\
        OFXMLParserTests.m		\
        ${PROPERTIESTESTS_M}		\
        TestsAppDelegate.m		\
+       ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${OFHTTPCLIENTTESTS_M}
+SRCS_FILES = OFMD5HashTests.m		\
+	     OFSerializationTests.m	\
+	     OFSHA1HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFTCPSocketTests.m
 SRCS_THREADS = OFThreadTests.m

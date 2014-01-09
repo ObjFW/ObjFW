@@ -27,7 +27,9 @@
 #import "OFDataArray.h"
 #import "OFXMLAttribute.h"
 #import "OFStream.h"
-#import "OFFile.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+#endif
 #import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
@@ -296,6 +298,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	}
 }
 
+#ifdef OF_HAVE_FILES
 - (void)parseFile: (OFString*)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
@@ -307,6 +310,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[file release];
 	}
 }
+#endif
 
 /*
  * The following methods handle the different states of the parser. They are

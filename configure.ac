@@ -588,6 +588,14 @@ AS_IF([test x"$atomic_ops" != x"none"], [
 ])
 AC_MSG_RESULT($atomic_ops)
 
+AC_ARG_ENABLE(files,
+	AS_HELP_STRING([--disable-files], [disable file support]))
+AS_IF([test x"$enable_files" != x"no"], [
+	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
+	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
+	AC_SUBST(OFZIP, ofzip)
+])
+
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep lstat])
 
 AC_CHECK_HEADERS([pwd.h grp.h])

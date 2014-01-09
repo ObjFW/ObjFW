@@ -24,7 +24,6 @@ SRCS = OFApplication.m			\
        OFDeflate64Stream.m		\
        OFDictionary.m			\
        OFEnumerator.m			\
-       OFFile.m				\
        OFIntrospection.m		\
        OFList.m				\
        OFMapTable.m			\
@@ -68,15 +67,17 @@ SRCS = OFApplication.m			\
        OFXMLNode.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
-       OFZIPArchive.m			\
-       OFZIPArchiveEntry.m		\
        base64.m				\
        of_asprintf.m			\
        of_strptime.m			\
        unicode.m			\
+       ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}
+SRCS_FILES = OFFile.m			\
+	     OFZIPArchive.m		\
+	     OFZIPArchiveEntry.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m		\
 	       OFHTTPRequest.m		\

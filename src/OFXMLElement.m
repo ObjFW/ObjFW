@@ -119,10 +119,12 @@ static Class CDATAClass = Nil;
 	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
+#ifdef OF_HAVE_FILES
 + (instancetype)elementWithFile: (OFString*)path
 {
 	return [[[self alloc] initWithFile: path] autorelease];
 }
+#endif
 
 - init
 {
@@ -236,6 +238,7 @@ static Class CDATAClass = Nil;
 	return self;
 }
 
+#ifdef OF_HAVE_FILES
 - initWithFile: (OFString*)path
 {
 	void *pool;
@@ -266,6 +269,7 @@ static Class CDATAClass = Nil;
 
 	return self;
 }
+#endif
 
 - initWithSerialization: (OFXMLElement*)element
 {
