@@ -14,11 +14,11 @@
  * file.
  */
 
+/*! @file */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*! @file */
-
 /*!
  * @brief Creates a new autorelease pool.
  *

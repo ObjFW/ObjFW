@@ -39,6 +39,8 @@
 # import <objc/message.h>
 #endif
 
+/*! @file */
+
 #if defined(__GNUC__)
 # define restrict __restrict__
 #elif __STDC_VERSION__ < 199901L
@@ -156,8 +158,6 @@
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_NOT_FOUND SIZE_MAX
 
-/*! @file */
-
 /*!
  * @brief A result of a comparison.
  */
@@ -234,6 +234,13 @@ typedef struct of_rectangle_t
  * @return The class of the object
  */
 - (Class)class;
+
+/*!
+ * @brief Returns the superclass of the object.
+ *
+ * @return The superclass of the object
+ */
+- (Class)superclass;
 
 /*!
  * @brief Returns a boolean whether the object of the specified kind.

@@ -484,6 +484,11 @@ void _references_to_categories_of_OFObject(void)
 	return object_getClass(self);
 }
 
+- (Class)superclass
+{
+	return class_getSuperclass(object_getClass(self));
+}
+
 - (OFString*)className
 {
 	return [OFString stringWithCString: object_getClassName(self)
