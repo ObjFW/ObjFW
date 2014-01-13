@@ -593,18 +593,6 @@ class_getSuperclass(Class cls)
 	return cls->superclass;
 }
 
-bool
-class_isKindOfClass(Class cls1, Class cls2)
-{
-	Class iter;
-
-	for (iter = cls1; iter != Nil; iter = iter->superclass)
-		if (iter == cls2)
-			return true;
-
-	return false;
-}
-
 unsigned long
 class_getInstanceSize(Class cls)
 {

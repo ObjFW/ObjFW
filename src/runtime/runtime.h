@@ -192,7 +192,6 @@ extern Class* objc_copyClassList(unsigned int*);
 extern bool class_isMetaClass(Class);
 extern const char* class_getName(Class);
 extern Class class_getSuperclass(Class);
-extern bool class_isKindOfClass(Class, Class);
 extern unsigned long class_getInstanceSize(Class);
 extern bool class_respondsToSelector(Class, SEL);
 extern bool class_conformsToProtocol(Class, Protocol*);
