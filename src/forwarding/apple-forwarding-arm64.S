@@ -64,7 +64,7 @@ _of_forward_stret:
 	bl	_objc_msgSend
 
 	cbz	x0, fail
-	ldr	x1, [sp, #8]
+	ldr	x1, [sp]
 	cmp	x0, x1
 	b.eq	fail
 
@@ -88,6 +88,7 @@ _of_forward_stret:
 
 fail:
 	ldp	x0, x1, [sp]
+	ldr	x19, [sp, #72]
 
 	mov	sp, fp
 	ldp	fp, lr, [sp], #208
