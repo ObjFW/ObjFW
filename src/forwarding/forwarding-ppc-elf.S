@@ -50,7 +50,7 @@ of_forward:
 	bl	class_respondsToSelector@plt
 
 	cmpwi	%r3, 0
-	beq-	fail
+	beq-	0f
 
 	lwz	%r3, 8(%r1)
 	lis	%r4, sel_forwardingTargetForSelector_@ha
@@ -65,10 +65,10 @@ of_forward:
 	bctrl
 
 	cmpwi	%r3, 0
-	beq-	fail
+	beq-	0f
 	lwz	%r4, 8(%r1)
 	cmpw	%r3, %r4
-	beq-	fail
+	beq-	0f
 
 	stw	%r3, 8(%r1)
 
@@ -101,7 +101,7 @@ of_forward:
 	addi	%r1, %r1, 112
 	bctr
 
-fail:
+0:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 
@@ -146,7 +146,7 @@ of_forward_stret:
 	bl	class_respondsToSelector@plt
 
 	cmpwi	%r3, 0
-	beq-	fail_stret
+	beq-	0f
 
 	lwz	%r3, 12(%r1)
 	lis	%r4, sel_forwardingTargetForSelector_@ha
@@ -161,10 +161,10 @@ of_forward_stret:
 	bctrl
 
 	cmpwi	%r3, 0
-	beq-	fail_stret
+	beq-	0f
 	lwz	%r4, 12(%r1)
 	cmpw	%r3, %r4
-	beq-	fail_stret
+	beq-	0f
 
 	stw	%r3, 12(%r1)
 
@@ -197,7 +197,7 @@ of_forward_stret:
 	addi	%r1, %r1, 112
 	bctr
 
-fail_stret:
+0:
 	lwz	%r3, 8(%r1)
 	lwz	%r4, 12(%r1)
 	lwz	%r5, 16(%r1)

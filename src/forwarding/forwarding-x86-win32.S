@@ -26,47 +26,47 @@ _of_forward:
 	subl	$20, %esp
 
 	call	get_eip
-.L0:
+0:
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	leal	_object_getClass-.L0(%ebx), %eax
+	leal	_object_getClass-0b(%ebx), %eax
 	call	*%eax
 
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-.L0(%ebx), %eax
+	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
-	leal	_class_respondsToSelector-.L0(%ebx), %eax
+	leal	_class_respondsToSelector-0b(%ebx), %eax
 	call	*%eax
 
 	testl	%eax, %eax
-	jz	fail
+	jz	1f
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-.L0(%ebx), %eax
+	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup-.L0(%ebx), %eax
+	leal	_objc_msg_lookup-0b(%ebx), %eax
 	call	*%eax
 
 	movl	8(%ebp), %edx
 	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_-.L0(%ebx), %edx
+	leal	sel_forwardingTargetForSelector_-0b(%ebx), %edx
 	movl	%edx, 4(%esp)
 	movl	12(%ebp), %edx
 	movl	%edx, 8(%esp)
 	call	*%eax
 
 	testl	%eax, %eax
-	jz	fail
+	jz	1f
 	cmpl	8(%ebp), %eax
-	je	fail
+	je	1f
 
 	movl	%eax, 8(%ebp)
 	movl	%eax, (%esp)
 	movl	12(%ebp), %eax
 	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup-.L0(%ebx), %eax
+	leal	_objc_msg_lookup-0b(%ebx), %eax
 	call	*%eax
 
 	addl	$20, %esp
@@ -75,8 +75,8 @@ _of_forward:
 
 	jmp	*%eax
 
-fail:
-	leal	_of_method_not_found-.L0(%ebx), %eax
+1:
+	leal	_of_method_not_found-0b(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -92,47 +92,47 @@ _of_forward_stret:
 	subl	$20, %esp
 
 	call	get_eip
-.L1:
+0:
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	leal	_object_getClass-.L1(%ebx), %eax
+	leal	_object_getClass-0b(%ebx), %eax
 	call	*%eax
 
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-.L1(%ebx), %eax
+	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
-	leal	_class_respondsToSelector-.L1(%ebx), %eax
+	leal	_class_respondsToSelector-0b(%ebx), %eax
 	call	*%eax
 
 	testl	%eax, %eax
-	jz	fail_stret
+	jz	1f
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	leal	sel_forwardingTargetForSelector_-.L1(%ebx), %eax
+	leal	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup-.L1(%ebx), %eax
+	leal	_objc_msg_lookup-0b(%ebx), %eax
 	call	*%eax
 
 	movl	12(%ebp), %edx
 	movl	%edx, (%esp)
-	leal	sel_forwardingTargetForSelector_-.L1(%ebx), %edx
+	leal	sel_forwardingTargetForSelector_-0b(%ebx), %edx
 	movl	%edx, 4(%esp)
 	movl	16(%ebp), %edx
 	movl	%edx, 8(%esp)
 	call	*%eax
 
 	testl	%eax, %eax
-	jz	fail_stret
+	jz	1f
 	cmpl	12(%ebp), %eax
-	je	fail_stret
+	je	1f
 
 	movl	%eax, 12(%ebp)
 	movl	%eax, (%esp)
 	movl	16(%ebp), %eax
 	movl	%eax, 4(%esp)
-	leal	_objc_msg_lookup_stret-.L1(%ebx), %eax
+	leal	_objc_msg_lookup_stret-0b(%ebx), %eax
 	call	*%eax
 
 	addl	$20, %esp
@@ -141,8 +141,8 @@ _of_forward_stret:
 
 	jmp	*%eax
 
-fail_stret:
-	leal	_of_method_not_found_stret-.L1(%ebx), %eax
+1:
+	leal	_of_method_not_found_stret-0b(%ebx), %eax
 
 	addl	$20, %esp
 	popl	%ebx
@@ -158,10 +158,10 @@ init:
 	subl	$4, %esp
 
 	call	get_eip
-.L2:
-	leal	module-.L2(%ebx), %eax
+0:
+	leal	module-0b(%ebx), %eax
 	movl	%eax, (%esp)
-	leal	___objc_exec_class-.L2(%ebx), %eax
+	leal	___objc_exec_class-0b(%ebx), %eax
 	call	*%eax
 
 	addl	$4, %esp

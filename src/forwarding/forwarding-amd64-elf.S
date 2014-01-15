@@ -47,7 +47,7 @@ of_forward:
 	call	class_respondsToSelector@PLT
 
 	testq	%rax, %rax
-	jz	fail
+	jz	0f
 
 	movq	-0x10(%rbp), %rdi
 	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
@@ -59,9 +59,9 @@ of_forward:
 	call	*%rax
 
 	testq	%rax, %rax
-	jz	fail
+	jz	0f
 	cmpq	-0x10(%rbp), %rax
-	je	fail
+	je	0f
 
 	movq	%rax, -0x10(%rbp)
 
@@ -92,7 +92,7 @@ of_forward:
 
 	jmpq     *%r11
 
-fail:
+0:
 	movq	-0x10(%rbp), %rdi
 	movq	-0x18(%rbp), %rsi
 
@@ -133,7 +133,7 @@ of_forward_stret:
 	call	class_respondsToSelector@PLT
 
 	testq	%rax, %rax
-	jz	fail_stret
+	jz	0f
 
 	movq	-0x18(%rbp), %rdi
 	leaq	sel_forwardingTargetForSelector_(%rip), %rsi
@@ -145,9 +145,9 @@ of_forward_stret:
 	call	*%rax
 
 	testq	%rax, %rax
-	jz	fail_stret
+	jz	0f
 	cmpq	-0x18(%rbp), %rax
-	je	fail_stret
+	je	0f
 
 	movq	%rax, -0x18(%rbp)
 
@@ -178,7 +178,7 @@ of_forward_stret:
 
 	jmpq     *%r11
 
-fail_stret:
+0:
 	movq	-0x10(%rbp), %rdi
 	movq	-0x18(%rbp), %rsi
 	movq	-0x20(%rbp), %rdx

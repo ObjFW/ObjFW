@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
-L_str_forwardingTargetForSelector_:
+str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector_:
-	.long L_str_forwardingTargetForSelector_
+sel_forwardingTargetForSelector_:
+	.long str_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
@@ -35,7 +35,7 @@ _of_forward:
 	stmfd	sp!, {r0-r4, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	ldr	r4, L_sel_forwardingTargetForSelector_$indirect_L0
+	ldr	r4, sel_forwardingTargetForSelector_$indirect_L0
 L0:
 	ldr	r4, [pc, r4]
 
@@ -45,7 +45,7 @@ L0:
 	blx	_class_respondsToSelector
 
 	cmp	r0, #0
-	beq	fail
+	beq	0f
 
 	ldr	r0, [sp, #64]
 	mov	r1, r4
@@ -53,10 +53,10 @@ L0:
 	blx	_objc_msgSend
 
 	cmp	r0, #0
-	beq	fail
+	beq	0f
 	ldr	r1, [sp, #64]
 	cmp	r0, r1
-	beq	fail
+	beq	0f
 
 	fldmfdd	sp!, {d0-d7}
 	add	sp, sp, #4	@ throw away r0
@@ -64,7 +64,7 @@ L0:
 
 	b	_objc_msgSend
 
-fail:
+0:
 	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
 	b	_of_method_not_found
@@ -74,7 +74,7 @@ _of_forward_stret:
 	stmfd	sp!, {r0-r4, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	ldr	r4, L_sel_forwardingTargetForSelector_$indirect_L1
+	ldr	r4, sel_forwardingTargetForSelector_$indirect_L1
 L1:
 	ldr	r4, [pc, r4]
 
@@ -85,7 +85,7 @@ L1:
 	blx	_class_respondsToSelector
 
 	cmp	r0, #0
-	beq	fail_stret
+	beq	0f
 
 	ldr	r0, [sp, #68]
 	mov	r1, r4
@@ -93,10 +93,10 @@ L1:
 	blx	_objc_msgSend
 
 	cmp	r0, #0
-	beq	fail_stret
+	beq	0f
 	ldr	r1, [sp, #68]
 	cmp	r0, r1
-	beq	fail_stret
+	beq	0f
 
 	mov	r1, r0
 
@@ -107,14 +107,14 @@ L1:
 
 	b	_objc_msgSend_stret
 
-fail_stret:
+0:
 	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
 	b	_of_method_not_found_stret
 
 .data_region
-L_sel_forwardingTargetForSelector_$indirect_L0:
-	.long L_sel_forwardingTargetForSelector_-(L0+8)
-L_sel_forwardingTargetForSelector_$indirect_L1:
-	.long L_sel_forwardingTargetForSelector_-(L1+8)
+sel_forwardingTargetForSelector_$indirect_L0:
+	.long sel_forwardingTargetForSelector_-(L0+8)
+sel_forwardingTargetForSelector_$indirect_L1:
+	.long sel_forwardingTargetForSelector_-(L1+8)
 .end_data_region

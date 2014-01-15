@@ -91,7 +91,7 @@ of_forward:
 	move	$a0, $v0
 	move	$a1, $s1
 	jal_pic	class_respondsToSelector
-	beqz	$v0, fail
+	beqz	$v0, 0f
 
 	move	$gp, $s0
 	lw	$a0, 28($sp)
@@ -105,9 +105,9 @@ of_forward:
 	move	$t9, $v0
 	jalr	$t9
 
-	beqz	$v0, fail
+	beqz	$v0, 0f
 	lw	$t0, 28($sp)
-	beq	$v0, $t0, fail
+	beq	$v0, $t0, 0f
 
 	sw	$v0, 28($sp)
 
@@ -145,7 +145,7 @@ of_forward:
 	move	$t9, $v0
 	jr	$t9
 
-fail:
+0:
 	move	$gp, $s0
 
 	lw	$a1, 32($sp)
@@ -216,7 +216,7 @@ of_forward_stret:
 	move	$a0, $v0
 	move	$a1, $s1
 	jal_pic	class_respondsToSelector
-	beqz	$v0, fail_stret
+	beqz	$v0, 0f
 
 	move	$gp, $s0
 	lw	$a0, 32($sp)
@@ -230,9 +230,9 @@ of_forward_stret:
 	move	$t9, $v0
 	jalr	$t9
 
-	beqz	$v0, fail_stret
+	beqz	$v0, 0f
 	lw	$t0, 32($sp)
-	beq	$v0, $t0, fail_stret
+	beq	$v0, $t0, 0f
 
 	sw	$v0, 32($sp)
 
@@ -270,7 +270,7 @@ of_forward_stret:
 	move	$t9, $v0
 	jr	$t9
 
-fail_stret:
+0:
 	move	$gp, $s0
 
 	lw	$a2, 36($sp)

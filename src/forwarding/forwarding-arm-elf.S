@@ -22,7 +22,7 @@ of_forward:
 	stmfd	sp!, {r0-r4, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	ldr	r4, sel_forwardingTargetForSelector_$indirect_L0
+	ldr	r4, sel_forwardingTargetForSelector_$indirect_.L0
 .L0:
 	add	r4, pc
 
@@ -32,7 +32,7 @@ of_forward:
 	bl	class_respondsToSelector(PLT)
 
 	cmp	r0, #0
-	beq	fail
+	beq	0f
 
 	ldr	r0, [sp, #64]
 	mov	r1, r4
@@ -45,10 +45,10 @@ of_forward:
 	blx	r12
 
 	cmp	r0, #0
-	beq	fail
+	beq	0f
 	ldr	r1, [sp, #64]
 	cmp	r0, r1
-	beq	fail
+	beq	0f
 
 	str	r0, [sp, #64]
 	ldr	r1, [sp, #68]
@@ -60,7 +60,7 @@ of_forward:
 
 	bx	r12
 
-fail:
+0:
 	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
 	b	of_method_not_found(PLT)
@@ -71,7 +71,7 @@ of_forward_stret:
 	stmfd	sp!, {r0-r4, lr}
 	fstmfdd	sp!, {d0-d7}
 
-	ldr	r4, sel_forwardingTargetForSelector_$indirect_L1
+	ldr	r4, sel_forwardingTargetForSelector_$indirect_.L1
 .L1:
 	add	r4, pc
 
@@ -82,7 +82,7 @@ of_forward_stret:
 	bl	class_respondsToSelector(PLT)
 
 	cmp	r0, #0
-	beq	fail_stret
+	beq	0f
 
 	ldr	r0, [sp, #68]
 	mov	r1, r4
@@ -95,10 +95,10 @@ of_forward_stret:
 	blx	r12
 
 	cmp	r0, #0
-	beq	fail_stret
+	beq	0f
 	ldr	r1, [sp, #68]
 	cmp	r0, r1
-	beq	fail_stret
+	beq	0f
 
 	str	r0, [sp, #68]
 	ldr	r1, [sp, #72]
@@ -110,7 +110,7 @@ of_forward_stret:
 
 	bx	r12
 
-fail_stret:
+0:
 	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
 	b	of_method_not_found_stret(PLT)
@@ -118,16 +118,16 @@ fail_stret:
 .size of_forward_stret, .-of_forward_stret
 
 init:
-	ldr	r0, module_indirect_L2
+	ldr	r0, module$indirect_.L2
 .L2:
 	add	r0, pc
 	b	__objc_exec_class(PLT)
 
-sel_forwardingTargetForSelector_$indirect_L0:
+sel_forwardingTargetForSelector_$indirect_.L0:
 	.long sel_forwardingTargetForSelector_-(.L0+8)
-sel_forwardingTargetForSelector_$indirect_L1:
+sel_forwardingTargetForSelector_$indirect_.L1:
 	.long sel_forwardingTargetForSelector_-(.L1+8)
-module_indirect_L2:
+module$indirect_.L2:
 	.long module-(.L2+8)
 
 .section .ctors, "aw", %progbits

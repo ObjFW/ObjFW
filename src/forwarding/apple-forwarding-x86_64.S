@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
-L_str_forwardingTargetForSelector_:
+str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector_:
-	.quad L_str_forwardingTargetForSelector_
+sel_forwardingTargetForSelector_:
+	.quad str_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
@@ -54,21 +54,21 @@ _of_forward:
 	call	_object_getClass
 
 	movq	%rax, %rdi
-	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	_class_respondsToSelector
 
 	testq	%rax, %rax
-	jz	fail
+	jz	0f
 
 	movq	-0x10(%rbp), %rdi
-	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	sel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x18(%rbp), %rdx
 	call	_objc_msgSend
 
 	testq	%rax, %rax
-	jz	fail
+	jz	0f
 	cmpq	-0x10(%rbp), %rax
-	je	fail
+	je	0f
 
 	movq	%rax, %rdi
 
@@ -93,7 +93,7 @@ _of_forward:
 
 	jmp	_objc_msgSend
 
-fail:
+0:
 	movq	-0x10(%rbp), %rdi
 	movq	-0x18(%rbp), %rsi
 
@@ -128,20 +128,20 @@ _of_forward_stret:
 	call	_object_getClass
 
 	movq	%rax, %rdi
-	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	sel_forwardingTargetForSelector_(%rip), %rsi
 	call	_class_respondsToSelector
 	testq	%rax, %rax
-	jz	fail_stret
+	jz	0f
 
 	movq	-0x18(%rbp), %rdi
-	movq	L_sel_forwardingTargetForSelector_(%rip), %rsi
+	movq	sel_forwardingTargetForSelector_(%rip), %rsi
 	movq	-0x20(%rbp), %rdx
 	call	_objc_msgSend
 
 	testq	%rax, %rax
-	jz	fail_stret
+	jz	0f
 	cmpq	-0x18(%rbp), %rax
-	je	fail_stret
+	je	0f
 
 	movq	%rax, %rsi
 
@@ -166,7 +166,7 @@ _of_forward_stret:
 
 	jmp	_objc_msgSend_stret
 
-fail_stret:
+0:
 	movq	-0x10(%rbp), %rdi
 	movq	-0x18(%rbp), %rsi
 	movq	-0x20(%rbp), %rdx

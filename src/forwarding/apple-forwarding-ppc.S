@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __cstring, cstring_literals
-L_str_forwardingTargetForSelector_:
+str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector_:
-	.long L_str_forwardingTargetForSelector_
+sel_forwardingTargetForSelector_:
+	.long str_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
@@ -67,17 +67,17 @@ _of_forward:
 
 	bl	_object_getClass
 
-	bl	L0
-L0:
+	bl	0f
+0:
 	mflr	r13
-	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector_-L0)
-	lwz	r13, lo16(L_sel_forwardingTargetForSelector_-L0)(r13)
+	addis	r13, r13, ha16(sel_forwardingTargetForSelector_-0b)
+	lwz	r13, lo16(sel_forwardingTargetForSelector_-0b)(r13)
 
 	mr	r4, r13
 	bl	_class_respondsToSelector
 
 	cmpwi	r3, 0
-	beq-	fail
+	beq-	0f
 
 	lwz	r3, 216(r1)
 	mr	r4, r13
@@ -85,10 +85,10 @@ L0:
 	bl	_objc_msgSend
 
 	cmpwi	r3, 0
-	beq-	fail
+	beq-	0f
 	lwz	r4, 216(r1)
 	cmpw	r3, r4
-	beq-	fail
+	beq-	0f
 
 	/* Restore all arguments and r13, except r3 */
 	lwz	r4, 220(r1)
@@ -121,7 +121,7 @@ L0:
 
 	b	_objc_msgSend
 
-fail:
+0:
 	lwz	r3, 216(r1)
 	lwz	r4, 220(r1)
 
@@ -170,17 +170,17 @@ _of_forward_stret:
 	mr	r3, r4
 	bl	_object_getClass
 
-	bl	L1
-L1:
+	bl	0f
+0:
 	mflr	r13
-	addis	r13, r13, ha16(L_sel_forwardingTargetForSelector_-L1)
-	lwz	r13, lo16(L_sel_forwardingTargetForSelector_-L1)(r13)
+	addis	r13, r13, ha16(sel_forwardingTargetForSelector_-0b)
+	lwz	r13, lo16(sel_forwardingTargetForSelector_-0b)(r13)
 
 	mr	r4, r13
 	bl	_class_respondsToSelector
 
 	cmpwi	r3, 0
-	beq-	fail_stret
+	beq-	0f
 
 	lwz	r3, 212(r1)
 	mr	r4, r13
@@ -188,10 +188,10 @@ L1:
 	bl	_objc_msgSend
 
 	cmpwi	r3, 0
-	beq-	fail_stret
+	beq-	0f
 	lwz	r4, 212(r1)
 	cmpw	r3, r4
-	beq-	fail_stret
+	beq-	0f
 
 	mr	r4, r3
 
@@ -226,7 +226,7 @@ L1:
 
 	b	_objc_msgSend_stret
 
-fail_stret:
+0:
 	lwz	r3, 208(r1)
 	lwz	r4, 212(r1)
 	lwz	r5, 216(r1)

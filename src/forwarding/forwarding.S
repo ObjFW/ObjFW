@@ -39,7 +39,7 @@
 #  elif defined(__ppc__) || defined(__PPC__)
 #   include "forwarding-ppc-elf.S"
 #  elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-    (defined(__mips_eabi) && _MIPS_SZPTR == 32)
+	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #   include "forwarding-mips-elf.S"
 #  endif
 # elif defined(_WIN32) && defined(__i386__)

@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __objc_methname, cstring_literals
-L_str_forwardingTargetForSelector_:
+str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __DATA, __objc_selrefs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector_:
-	.quad L_str_forwardingTargetForSelector_
+sel_forwardingTargetForSelector_:
+	.quad str_forwardingTargetForSelector_
 
 .section __DATA, __objc_imageinfo, regular, no_dead_strip
 	.long 0, 0
@@ -50,23 +50,23 @@ _of_forward_stret:
 
 	bl	_object_getClass
 
-	adrp	x19, L_sel_forwardingTargetForSelector_@PAGE
-	add	x19, x19, L_sel_forwardingTargetForSelector_@PAGEOFF
+	adrp	x19, sel_forwardingTargetForSelector_@PAGE
+	add	x19, x19, sel_forwardingTargetForSelector_@PAGEOFF
 	ldr	x19, [x19]
 
 	mov	x1, x19
 	bl	_class_respondsToSelector
 
-	cbz	x0, fail
+	cbz	x0, 0f
 
 	ldp	x0, x2, [sp]
 	mov	x1, x19
 	bl	_objc_msgSend
 
-	cbz	x0, fail
+	cbz	x0, 0f
 	ldr	x1, [sp]
 	cmp	x0, x1
-	b.eq	fail
+	b.eq	0f
 
 	/* Restore all arguments, x8 and x19, but not x0 */
 	ldr	x1, [sp, #8]
@@ -86,7 +86,7 @@ _of_forward_stret:
 
 	b	_objc_msgSend
 
-fail:
+0:
 	ldp	x0, x1, [sp]
 	ldr	x19, [sp, #72]
 

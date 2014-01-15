@@ -18,12 +18,12 @@
 .globl _of_forward_stret
 
 .section __TEXT, __cstring, cstring_literals
-L_str_forwardingTargetForSelector_:
+str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
 .section __OBJC, __message_refs, literal_pointers, no_dead_strip
-L_sel_forwardingTargetForSelector_:
-	.long L_str_forwardingTargetForSelector_
+sel_forwardingTargetForSelector_:
+	.long str_forwardingTargetForSelector_
 
 .section __OBJC, __image_info
 	.long 0, 0
@@ -37,32 +37,32 @@ _of_forward:
 	subl	$20, %esp
 
 	call	get_eip
-.L0:
+0:
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector_-.L0(%ebx), %eax
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
 	testl	%eax, %eax
-	jz	fail
+	jz	0f
 
 	movl	8(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector_-.L0(%ebx), %eax
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	movl	12(%ebp), %eax
 	movl	%eax, 8(%esp)
 	call	_objc_msgSend
 
 	testl	%eax, %eax
-	jz	fail
+	jz	0f
 	cmpl	8(%ebp), %eax
-	je	fail
+	je	0f
 
 	movl	%eax, 8(%ebp)
 
@@ -72,7 +72,7 @@ _of_forward:
 
 	jmp	_objc_msgSend
 
-fail:
+0:
 	addl	$20, %esp
 	popl	%ebx
 	popl	%ebp
@@ -87,32 +87,32 @@ _of_forward_stret:
 	subl	$20, %esp
 
 	call	get_eip
-.L1:
+0:
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
 	call	_object_getClass
 
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector_-.L1(%ebx), %eax
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	call	_class_respondsToSelector
 
 	testl	%eax, %eax
-	jz	fail_stret
+	jz	0f
 
 	movl	12(%ebp), %eax
 	movl	%eax, (%esp)
-	movl	L_sel_forwardingTargetForSelector_-.L1(%ebx), %eax
+	movl	sel_forwardingTargetForSelector_-0b(%ebx), %eax
 	movl	%eax, 4(%esp)
 	movl	16(%ebp), %eax
 	movl	%eax, 8(%esp)
 	call	_objc_msgSend
 
 	testl	%eax, %eax
-	jz	fail_stret
+	jz	0f
 	cmpl	12(%ebp), %eax
-	je	fail_stret
+	je	0f
 
 	movl	%eax, 12(%ebp)
 
@@ -122,7 +122,7 @@ _of_forward_stret:
 
 	jmp	_objc_msgSend_stret
 
-fail_stret:
+0:
 	addl	$20, %esp
 	popl	%ebx
 	popl	%ebp
