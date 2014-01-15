@@ -31,7 +31,7 @@
 	movl	(%edx), %edx
 	movl	32(%edx), %edx
 
-.main_\name:
+.Lmain_\name:
 	movl	8(%esp), %eax
 
 #ifdef OF_SELUID24
@@ -44,14 +44,14 @@
 	movl	(%edx,%ecx,4), %eax
 
 	testl	%eax, %eax
-	jz	.forward_\name
+	jz	0f
 
 	ret
 
-.forward_\name:
+0:
 	call	get_eip
-.forward_L0_\name:
-	addl	$\not_found-.forward_L0_\name, %eax
+1:
+	addl	$\not_found-1b, %eax
 	jmp	*%eax
 .endm
 
@@ -63,7 +63,7 @@
 
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
-	jmp	.main_\lookup
+	jmp	.Lmain_\lookup
 .endm
 
 generate_lookup _objc_msg_lookup _objc_method_not_found
@@ -73,8 +73,8 @@ generate_lookup_super _objc_msg_lookup_super_stret _objc_msg_lookup_stret
 
 ret_nil:
 	call	get_eip
-.L0:
-	addl	$nil_method-.L0, %eax
+0:
+	addl	$nil_method-0b, %eax
 	ret
 
 nil_method:

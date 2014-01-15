@@ -30,7 +30,7 @@
 	ldr	r2, [r0, #0]
 	ldr	r2, [r2, #32]
 
-.main_\name:
+.Lmain_\name:
 #ifdef OF_SELUID24
 	ldrb	r3, [r1, #2]
 	ldr	r2, [r2, r3, lsl #2]
@@ -58,7 +58,7 @@
 	ldr	r2, [r0, #4]
 	ldr	r2, [r2, #32]
 
-	b	.main_\lookup
+	b	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm

@@ -30,7 +30,7 @@
 	lwz	%r5, 0(%r3)
 	lwz	%r5, 32(%r5)
 
-.main_\name:
+.Lmain_\name:
 #ifdef OF_SELUID24
 	lbz	%r6, 1(%r4)
 #endif
@@ -50,12 +50,12 @@
 	lwzx	%r5, %r5, %r8
 
 	cmpwi	%r5, 0
-	beq-	.forward_\name
+	beq-	0f
 
 	mr	%r3, %r5
 	blr
 
-.forward_\name:
+0:
 	b	\not_found@plt
 .type \name, %function
 .size \name, .-\name
@@ -70,7 +70,7 @@
 	lwz	%r5, 4(%r3)
 	lwz	%r5, 32(%r5)
 
-	b	.main_\lookup
+	b	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -84,8 +84,8 @@ ret_nil:
 	mflr	%r0
 	bl	get_pc
 	mtlr	%r0
-.L0:
-	addi	%r3, %r3, nil_method-.L0
+0:
+	addi	%r3, %r3, nil_method-0b
 	blr
 
 nil_method:

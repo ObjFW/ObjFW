@@ -30,7 +30,7 @@
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8
 
-.main_\name:
+.Lmain_\name:
 	movq	(%rsi), %rax
 	movzbl	%ah, %ecx
 	movzbl	%al, %edx
@@ -59,7 +59,7 @@
 	movq	8(%rdi), %r8
 	movq	64(%r8), %r8
 	movq	%rdi, %rax
-	jmp	.main_\lookup
+	jmp	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name
 .endm

@@ -24,12 +24,12 @@
 .section .text
 .macro generate_lookup name not_found
 \name:
-	beqz	$a0, .ret_nil_\name
+	beqz	$a0, 0f
 
 	lw	$t0, 0($a0)
 	lw	$t0, 32($t0)
 
-.main_\name:
+.Lmain_\name:
 #if defined(__MIPSEL__)
 # ifdef OF_SELUID24
 	lbu	$t1, 2($a1)
@@ -62,7 +62,7 @@
 	lw	$t0, 0($t0)
 
 #ifdef __PIC__
-	beqz	$t0, .forward_\name
+	beqz	$t0, 1f
 #else
 	beqz	$t0, \not_found
 #endif
@@ -70,7 +70,7 @@
 	move	$v0, $t0
 	j	$ra
 
-.ret_nil_\name:
+0:
 #ifdef __PIC__
 	addiu	$v0, $t9, nil_method-\name
 #else
@@ -79,11 +79,11 @@
 	j	$ra
 
 #ifdef __PIC__
-.forward_\name:
+1:
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
-	addiu	$gp, $gp, .forward_\name-\name
+	addiu	$gp, $gp, 1b-\name
 
 	lw	$t9, %call16(\not_found)($gp)
 	jr	$t9
@@ -95,14 +95,14 @@
 .macro generate_lookup_super name lookup
 \name:
 	lw	$t0, 0($a0)
-	beqz	$t0, .ret_nil_\name
+	beqz	$t0, 0f
 
 	lw	$t0, 4($a0)
 	lw	$t0, 32($t0)
 
-	b	.main_\lookup
+	b	.Lmain_\lookup
 
-.ret_nil_\name:
+0:
 #ifdef __PIC__
 	addiu	$v0, $t9, nil_method-\name
 #else

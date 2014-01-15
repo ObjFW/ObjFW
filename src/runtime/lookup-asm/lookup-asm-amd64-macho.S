@@ -30,7 +30,7 @@ $0:
 	movq	(%rdi), %r8
 	movq	64(%r8), %r8
 
-Lmain$0:
+Lmain_$0:
 	movq	(%rsi), %rax
 	movzbl	%ah, %ecx
 	movzbl	%al, %edx
@@ -57,7 +57,7 @@ $0:
 	movq	8(%rdi), %r8
 	movq	64(%r8), %r8
 	movq	%rdi, %rax
-	jmp	Lmain$1
+	jmp	Lmain_$1
 .endmacro
 
 generate_lookup _objc_msg_lookup, _objc_method_not_found
