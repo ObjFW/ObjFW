@@ -231,7 +231,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 				OFString *key, *value;
 				char *sep;
 				const of_string_encoding_t encoding =
-				    OF_STRING_ENCODING_NATIVE;
+				    [OFString nativeOSEncoding];
 
 				pool = objc_autoreleasePoolPush();
 
@@ -328,19 +328,20 @@ of_application_main(int *argc, char **argv[], Class cls)
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
 	int i;
+	of_string_encoding_t encoding;
 
 	_argc = argc;
 	_argv = argv;
 
-	_programName = [[OFString alloc]
-	    initWithCString: (*argv)[0]
-		   encoding: OF_STRING_ENCODING_NATIVE];
+	encoding = [OFString nativeOSEncoding];
+
+	_programName = [[OFString alloc] initWithCString: (*argv)[0]
+						encoding: encoding];
 	arguments = [[OFMutableArray alloc] init];
 
 	for (i = 1; i < *argc; i++)
-		[arguments addObject:
-		    [OFString stringWithCString: (*argv)[i]
-				       encoding: OF_STRING_ENCODING_NATIVE]];
+		[arguments addObject: [OFString stringWithCString: (*argv)[i]
+							 encoding: encoding]];
 
 	[arguments makeImmutable];
 	_arguments = arguments;

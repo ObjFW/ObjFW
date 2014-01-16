@@ -47,7 +47,7 @@
 
 #ifndef _WIN32
 	if ((handle = dlopen([path cStringWithEncoding:
-	    OF_STRING_ENCODING_NATIVE], RTLD_LAZY)) == NULL)
+	    [OFString nativeOSEncoding]], RTLD_LAZY)) == NULL)
 #else
 	if ((handle = LoadLibraryW([path UTF16String])) == NULL)
 #endif

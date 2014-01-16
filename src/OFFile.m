@@ -112,7 +112,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 #ifdef _WIN32
 	return _wstat([path UTF16String], buffer);
 #else
-	return stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	return stat([path cStringWithEncoding: [OFString nativeOSEncoding]],
 	    buffer);
 #endif
 }
@@ -123,10 +123,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #if defined(_WIN32)
 	return _wstat([path UTF16String], buffer);
 #elif defined(HAVE_LSTAT)
-	return lstat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	return lstat([path cStringWithEncoding: [OFString nativeOSEncoding]],
 	    buffer);
 #else
-	return stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	return stat([path cStringWithEncoding: [OFString nativeOSEncoding]],
 	    buffer);
 #endif
 }
@@ -206,7 +206,7 @@ parseMode(const char *mode)
 	@try {
 #ifndef _WIN32
 		ret = [OFString stringWithCString: buffer
-					 encoding: OF_STRING_ENCODING_NATIVE];
+					 encoding: [OFString nativeOSEncoding]];
 #else
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
@@ -273,7 +273,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32
-	if (mkdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	if (mkdir([path cStringWithEncoding: [OFString nativeOSEncoding]],
 	    DIR_MODE))
 #else
 	if (_wmkdir([path UTF16String]))
@@ -328,18 +328,19 @@ parseMode(const char *mode)
 + (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
 {
 	OFMutableArray *files;
+	of_string_encoding_t encoding;
 
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	files = [OFMutableArray array];
+	encoding = [OFString nativeOSEncoding];
 
 #ifndef _WIN32
 	DIR *dir;
 	struct dirent *dirent;
 
-	if ((dir = opendir([path cStringWithEncoding:
-	    OF_STRING_ENCODING_NATIVE])) == NULL)
+	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"r"];
 
@@ -352,9 +353,8 @@ parseMode(const char *mode)
 			    !strcmp(dirent->d_name, ".."))
 				continue;
 
-			file = [OFString
-			    stringWithCString: dirent->d_name
-				     encoding: OF_STRING_ENCODING_NATIVE];
+			file = [OFString stringWithCString: dirent->d_name
+						  encoding: encoding];
 			[files addObject: file];
 
 			objc_autoreleasePoolPop(pool);
@@ -406,7 +406,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32
-	if (chdir([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (chdir([path cStringWithEncoding: [OFString nativeOSEncoding]]))
 #else
 	if (_wchdir([path UTF16String]))
 #endif
@@ -454,7 +454,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 # ifndef _WIN32
-	if (chmod([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	if (chmod([path cStringWithEncoding: [OFString nativeOSEncoding]],
 	    permissions))
 # else
 	if (_wchmod([path UTF16String], permissions))
@@ -472,9 +472,12 @@ parseMode(const char *mode)
 {
 	uid_t uid = -1;
 	gid_t gid = -1;
+	of_string_encoding_t encoding;
 
 	if (path == nil || (owner == nil && group == nil))
 		@throw [OFInvalidArgumentException exception];
+
+	encoding = [OFString nativeOSEncoding];
 
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
@@ -485,8 +488,8 @@ parseMode(const char *mode)
 		if (owner != nil) {
 			struct passwd *passwd;
 
-			if ((passwd = getpwnam([owner cStringWithEncoding:
-			    OF_STRING_ENCODING_NATIVE])) == NULL)
+			if ((passwd = getpwnam([owner
+			    cStringWithEncoding: encoding])) == NULL)
 				@throw [OFChangeOwnerFailedException
 				    exceptionWithPath: path
 						owner: owner
@@ -498,8 +501,8 @@ parseMode(const char *mode)
 		if (group != nil) {
 			struct group *group_;
 
-			if ((group_ = getgrnam([group cStringWithEncoding:
-			    OF_STRING_ENCODING_NATIVE])) == NULL)
+			if ((group_ = getgrnam([group
+			    cStringWithEncoding: encoding])) == NULL)
 				@throw [OFChangeOwnerFailedException
 				    exceptionWithPath: path
 						owner: owner
@@ -514,8 +517,7 @@ parseMode(const char *mode)
 	}
 # endif
 
-	if (chown([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    uid, gid))
+	if (chown([path cStringWithEncoding: encoding], uid, gid))
 		@throw [OFChangeOwnerFailedException exceptionWithPath: path
 								 owner: owner
 								 group: group];
@@ -644,6 +646,7 @@ parseMode(const char *mode)
 {
 	void *pool;
 	of_stat_t s;
+	of_string_encoding_t encoding;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -657,9 +660,11 @@ parseMode(const char *mode)
 			    destinationPath: destination];
 	}
 
+	encoding = [OFString nativeOSEncoding];
+
 #ifndef _WIN32
-	if (rename([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE])) {
+	if (rename([source cStringWithEncoding: encoding],
+	    [destination cStringWithEncoding: encoding])) {
 #else
 	if (_wrename([source UTF16String], [destination UTF16String])) {
 #endif
@@ -727,7 +732,7 @@ parseMode(const char *mode)
 	}
 
 #ifndef _WIN32
-	if (remove([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE]))
+	if (remove([path cStringWithEncoding: [OFString nativeOSEncoding]]))
 #else
 	if (_wremove([path UTF16String]))
 #endif
@@ -741,14 +746,16 @@ parseMode(const char *mode)
 		toPath: (OFString*)destination
 {
 	void *pool;
+	of_string_encoding_t encoding;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
+	encoding = [OFString nativeOSEncoding];
 
-	if (link([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
+	if (link([source cStringWithEncoding: encoding],
+	    [destination cStringWithEncoding: encoding]) != 0)
 		@throw [OFLinkFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
@@ -762,14 +769,16 @@ parseMode(const char *mode)
 	     withDestinationPath: (OFString*)source
 {
 	void *pool;
+	of_string_encoding_t encoding;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
+	encoding = [OFString nativeOSEncoding];
 
-	if (symlink([source cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    [destination cStringWithEncoding: OF_STRING_ENCODING_NATIVE]) != 0)
+	if (symlink([source cStringWithEncoding: encoding],
+	    [destination cStringWithEncoding: encoding]) != 0)
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
@@ -781,11 +790,13 @@ parseMode(const char *mode)
 {
 	char destination[PATH_MAX];
 	ssize_t length;
+	of_string_encoding_t encoding;
 
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	length = readlink([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
+	encoding = [OFString nativeOSEncoding];
+	length = readlink([path cStringWithEncoding: encoding],
 	    destination, PATH_MAX);
 
 	if (length < 0)
@@ -793,7 +804,7 @@ parseMode(const char *mode)
 							       mode: @"r"];
 
 	return [OFString stringWithCString: destination
-				  encoding: OF_STRING_ENCODING_NATIVE
+				  encoding: encoding
 				    length: length];
 }
 #endif
@@ -816,7 +827,7 @@ parseMode(const char *mode)
 
 #ifndef _WIN32
 		if ((_fd = open([path cStringWithEncoding:
-		    OF_STRING_ENCODING_NATIVE], flags, DEFAULT_MODE)) == -1)
+		    [OFString nativeOSEncoding]], flags, DEFAULT_MODE)) == -1)
 #else
 		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)

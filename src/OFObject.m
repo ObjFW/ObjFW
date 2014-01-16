@@ -104,7 +104,7 @@ uncaughtExceptionHandler(id exception)
 	OFArray *backtrace = nil;
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [description cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
+	    [description cStringWithEncoding: [OFString nativeOSEncoding]]);
 
 	if ([exception respondsToSelector: @selector(backtrace)])
 		backtrace = [exception backtrace];
@@ -112,7 +112,7 @@ uncaughtExceptionHandler(id exception)
 	if (backtrace != nil) {
 		OFString *s = [backtrace componentsJoinedByString: @"\n  "];
 		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
-		      [s cStringWithEncoding: OF_STRING_ENCODING_NATIVE]);
+		    [s cStringWithEncoding: [OFString nativeOSEncoding]]);
 	}
 
 	abort();
@@ -205,7 +205,7 @@ const char*
 _NSPrintForDebugger(id object)
 {
 	return [[object description]
-	    cStringWithEncoding: OF_STRING_ENCODING_NATIVE];
+	    cStringWithEncoding: [OFString nativeOSEncoding]];
 }
 
 /* References for static linking */

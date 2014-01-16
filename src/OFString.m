@@ -650,6 +650,12 @@ static struct {
 	return ret;
 }
 
++ (of_string_encoding_t)nativeOSEncoding
+{
+	/* FIXME */
+	return OF_STRING_ENCODING_UTF_8;
+}
+
 - init
 {
 	if (object_getClass(self) == [OFString class]) {
@@ -808,8 +814,8 @@ static struct {
 	@try {
 		OFFile *file;
 
-		if (stat([path cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-		    &st) == -1)
+		if (stat([path cStringWithEncoding: [OFString
+		    nativeOSEncoding]], &st) == -1)
 			@throw [OFOpenFileFailedException
 			    exceptionWithPath: path
 					 mode: @"rb"];

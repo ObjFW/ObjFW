@@ -67,9 +67,6 @@ enum {
 	OF_STRING_SKIP_EMPTY	   = 2
 };
 
-/* FIXME */
-#define OF_STRING_ENCODING_NATIVE OF_STRING_ENCODING_UTF_8
-
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief A block for enumerating the lines of a string.
@@ -326,6 +323,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (OFString*)pathWithComponents: (OFArray*)components;
+
+/*!
+ * @brief Returns the string encoding native to the operating system.
+ *
+ * This is useful to encode strings correctly for passing them to operating
+ * system calls.
+ *
+ * @return The string encoding native to the operating system
+ */
++ (of_string_encoding_t)nativeOSEncoding;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C

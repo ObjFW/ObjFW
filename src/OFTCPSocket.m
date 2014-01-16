@@ -365,8 +365,7 @@ static uint16_t freePort = 65532;
 	hints.ai_flags = AI_NUMERICSERV;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    portCString, &hints, &res0))
+	if (getaddrinfo([host UTF8String], portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
 		    exceptionWithHost: host
 			       socket: self];
@@ -399,8 +398,8 @@ static uint16_t freePort = 65532;
 	addr.sin_family = AF_INET;
 	addr.sin_port = OF_BSWAP16_IF_LE(port);
 
-	if ((addr.sin_addr.s_addr = inet_addr([host cStringWithEncoding:
-	    OF_STRING_ENCODING_NATIVE])) != (in_addr_t)(-1)) {
+	if ((addr.sin_addr.s_addr = inet_addr([host UTF8String])) !=
+	    (in_addr_t)(-1)) {
 		if ((_socket = socket(AF_INET, SOCK_STREAM,
 		    0)) == INVALID_SOCKET) {
 			@throw [OFConnectionFailedException
@@ -431,8 +430,7 @@ static uint16_t freePort = 65532;
 	[mutex lock];
 # endif
 
-	if ((he = gethostbyname([host cStringWithEncoding:
-	    OF_STRING_ENCODING_NATIVE])) == NULL) {
+	if ((he = gethostbyname([host UTF8String])) == NULL) {
 # ifdef OF_HAVE_THREADS
 		[addrlist release];
 		[mutex unlock];
@@ -576,8 +574,7 @@ static uint16_t freePort = 65532;
 	hints.ai_flags = AI_NUMERICSERV | AI_PASSIVE;
 	snprintf(portCString, 7, "%" PRIu16, port);
 
-	if (getaddrinfo([host cStringWithEncoding: OF_STRING_ENCODING_NATIVE],
-	    portCString, &hints, &res))
+	if (getaddrinfo([host UTF8String], portCString, &hints, &res))
 		@throw [OFAddressTranslationFailedException
 		    exceptionWithHost: host
 			       socket: self];
@@ -607,16 +604,15 @@ static uint16_t freePort = 65532;
 	addr.in.sin_family = AF_INET;
 	addr.in.sin_port = OF_BSWAP16_IF_LE(port);
 
-	if ((addr.in.sin_addr.s_addr = inet_addr([host cStringWithEncoding:
-	    OF_STRING_ENCODING_NATIVE])) == (in_addr_t)(-1)) {
+	if ((addr.in.sin_addr.s_addr = inet_addr([host UTF8String])) ==
+	    (in_addr_t)(-1)) {
 # ifdef OF_HAVE_THREADS
 		[mutex lock];
 		@try {
 # endif
 			struct hostent *he;
 
-			if ((he = gethostbyname([host cStringWithEncoding:
-			    OF_STRING_ENCODING_NATIVE])) == NULL)
+			if ((he = gethostbyname([host UTF8String])) == NULL)
 				@throw [OFAddressTranslationFailedException
 				    exceptionWithHost: host
 					       socket: self];
@@ -762,8 +758,7 @@ static uint16_t freePort = 65532;
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithSocket: self];
 
-		return [OFString stringWithCString: host
-					  encoding: OF_STRING_ENCODING_NATIVE];
+		return [OFString stringWithUTF8String: host];
 	} @finally {
 		[self freeMemory: host];
 	}
@@ -779,8 +774,7 @@ static uint16_t freePort = 65532;
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithSocket: self];
 
-		return [OFString stringWithCString: host
-					  encoding: OF_STRING_ENCODING_NATIVE];
+		return [OFString stringWithUTF8String: host];
 # ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];

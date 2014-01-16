@@ -140,17 +140,19 @@ extern char **environ;
 			OFString **objects = [arguments objects];
 			size_t i, count = [arguments count];
 			char **argv;
+			of_string_encoding_t encoding;
 
 			argv = [self allocMemoryWithSize: sizeof(char*)
 						   count: count + 2];
 
-			argv[0] = (char*)[programName cStringWithEncoding:
-			    OF_STRING_ENCODING_NATIVE];
+			encoding = [OFString nativeOSEncoding];
+
+			argv[0] = (char*)[programName
+			    cStringWithEncoding: encoding];
 
 			for (i = 0; i < count; i++)
 				argv[i + 1] = (char*)[objects[i]
-				    cStringWithEncoding:
-				    OF_STRING_ENCODING_NATIVE];
+				    cStringWithEncoding: encoding];
 
 			argv[i + 1] = NULL;
 
@@ -168,8 +170,7 @@ extern char **environ;
 			close(_writePipe[1]);
 			dup2(_writePipe[0], 0);
 			dup2(_readPipe[1], 1);
-			execvp([program cStringWithEncoding:
-			    OF_STRING_ENCODING_NATIVE], argv);
+			execvp([program cStringWithEncoding: encoding], argv);
 
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
@@ -304,9 +305,12 @@ extern char **environ;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	char **envp;
 	size_t i, count;
+	of_string_encoding_t encoding;
 
 	if (environment == nil)
 		return NULL;
+
+	encoding = [OFString nativeOSEncoding];
 
 	count = [environment count];
 	envp = [self allocMemoryWithSize: sizeof(char*)
@@ -323,18 +327,15 @@ extern char **environ;
 		key = [keyEnumerator nextObject];
 		object = [objectEnumerator nextObject];
 
-		keyLen = [key cStringLengthWithEncoding:
-		    OF_STRING_ENCODING_NATIVE];
-		objectLen = [object cStringLengthWithEncoding:
-		    OF_STRING_ENCODING_NATIVE];
+		keyLen = [key cStringLengthWithEncoding: encoding];
+		objectLen = [object cStringLengthWithEncoding: encoding];
 
 		envp[i] = [self allocMemoryWithSize: keyLen + objectLen + 2];
 
-		memcpy(envp[i], [key cStringWithEncoding:
-		    OF_STRING_ENCODING_NATIVE], keyLen);
+		memcpy(envp[i], [key cStringWithEncoding: encoding], keyLen);
 		envp[i][keyLen] = '=';
-		memcpy(envp[i] + keyLen + 1, [object cStringWithEncoding:
-		    OF_STRING_ENCODING_NATIVE], objectLen);
+		memcpy(envp[i] + keyLen + 1,
+		    [object cStringWithEncoding: encoding], objectLen);
 		envp[i][keyLen + objectLen + 1] = '\0';
 	}
 
