@@ -191,6 +191,11 @@ typedef struct of_range_t {
 } of_range_t;
 
 /*!
+ * @brief A time interval in seconds.
+ */
+typedef double of_time_interval_t;
+
+/*!
  * @brief A point.
  */
 typedef struct of_point_t {
@@ -732,7 +737,7 @@ OF_ROOT_CLASS
  * @param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
-	     afterDelay: (double)delay;
+	     afterDelay: (of_time_interval_t)delay;
 
 /*!
  * @brief Performs the specified selector with the specified object after the
@@ -745,7 +750,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	     withObject: (id)object
-	     afterDelay: (double)delay;
+	     afterDelay: (of_time_interval_t)delay;
 
 /*!
  * @brief Performs the specified selector with the specified objects after the
@@ -761,7 +766,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	     withObject: (id)object1
 	     withObject: (id)object2
-	     afterDelay: (double)delay;
+	     afterDelay: (of_time_interval_t)delay;
 
 #ifdef OF_HAVE_THREADS
 /*!
@@ -856,7 +861,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     afterDelay: (double)delay;
+	     afterDelay: (of_time_interval_t)delay;
 
 /*!
  * @brief Performs the specified selector on the specified thread with the
@@ -871,7 +876,7 @@ OF_ROOT_CLASS
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	     withObject: (id)object
-	     afterDelay: (double)delay;
+	     afterDelay: (of_time_interval_t)delay;
 
 /*!
  * @brief Performs the specified selector on the specified thread with the
@@ -889,7 +894,7 @@ OF_ROOT_CLASS
 	       onThread: (OFThread*)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
-	     afterDelay: (double)delay;
+	     afterDelay: (of_time_interval_t)delay;
 #endif
 
 /*!

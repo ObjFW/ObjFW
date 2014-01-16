@@ -566,7 +566,7 @@ void _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	     afterDelay: (double)delay
+	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -580,7 +580,7 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)performSelector: (SEL)selector
 	     withObject: (id)object
-	     afterDelay: (double)delay
+	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -596,7 +596,7 @@ void _references_to_categories_of_OFObject(void)
 - (void)performSelector: (SEL)selector
 	     withObject: (id)object1
 	     withObject: (id)object2
-	     afterDelay: (double)delay
+	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -724,7 +724,7 @@ void _references_to_categories_of_OFObject(void)
 
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     afterDelay: (double)delay
+	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -739,7 +739,7 @@ void _references_to_categories_of_OFObject(void)
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
 	     withObject: (id)object
-	     afterDelay: (double)delay
+	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -756,7 +756,7 @@ void _references_to_categories_of_OFObject(void)
 	       onThread: (OFThread*)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
-	     afterDelay: (double)delay
+	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
 

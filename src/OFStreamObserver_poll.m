@@ -135,7 +135,7 @@ typedef u32 nfds_t;
 			   withEvents: POLLOUT];
 }
 
-- (bool)observeForTimeInterval: (double)timeInterval
+- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;

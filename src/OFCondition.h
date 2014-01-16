@@ -47,7 +47,7 @@
  * @param timeInterval The time interval until the timeout is reached
  * @return Whether the condition has been signaled
  */
-- (bool)waitForTimeInterval: (double)timeInterval;
+- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval;
 
 /*!
  * @brief Blocks the current thread until another thread calls @ref signal,

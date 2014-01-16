@@ -122,9 +122,9 @@ typedef id (^of_thread_block_t)(void);
  * @brief Suspends execution of the current thread for the specified time
  *	  interval.
  *
- * @param seconds The number of seconds to sleep
+ * @param timeInterval The number of seconds to sleep
  */
-+ (void)sleepForTimeInterval: (double)seconds;
++ (void)sleepForTimeInterval: (of_time_interval_t)timeInterval;
 
 /*!
  * @brief Suspends execution of the current thread until the specified date.

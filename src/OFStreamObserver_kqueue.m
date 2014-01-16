@@ -108,7 +108,7 @@
 	[_changeList addItem: &event];
 }
 
-- (bool)observeForTimeInterval: (double)timeInterval
+- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timeout;

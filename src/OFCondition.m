@@ -63,7 +63,7 @@
 		    exceptionWithCondition: self];
 }
 
-- (bool)waitForTimeInterval: (double)timeInterval
+- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
 {
 	return of_condition_timed_wait(&_condition, &_mutex, timeInterval);
 }

@@ -393,7 +393,7 @@ enum {
 	[self observeForTimeInterval: -1];
 }
 
-- (bool)observeForTimeInterval: (double)timeInterval
+- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

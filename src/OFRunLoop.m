@@ -674,7 +674,8 @@ static OFRunLoop *mainRunLoop = nil;
 
 		/* Watch for stream events until the next timer is due */
 		if (nextTimer != nil) {
-			double timeout = [nextTimer timeIntervalSinceNow];
+			of_time_interval_t timeout =
+			    [nextTimer timeIntervalSinceNow];
 
 			if (timeout > 0) {
 #if defined(OF_HAVE_SOCKETS)

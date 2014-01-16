@@ -175,32 +175,33 @@ setThreadName(OFThread *thread)
 }
 #endif
 
-+ (void)sleepForTimeInterval: (double)seconds
++ (void)sleepForTimeInterval: (of_time_interval_t)timeInterval
 {
-	if (seconds < 0)
+	if (timeInterval < 0)
 		@throw [OFOutOfRangeException exception];
 
 #if defined(_WIN32)
-	if (seconds * 1000 > UINT_MAX)
+	if (timeInterval * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	Sleep((unsigned int)(seconds * 1000));
+	Sleep((unsigned int)(timeInterval * 1000));
 #elif defined(HAVE_NANOSLEEP)
 	struct timespec rqtp;
 
-	rqtp.tv_sec = (time_t)seconds;
-	rqtp.tv_nsec = lrint((seconds - rqtp.tv_sec) * 1000000000);
+	rqtp.tv_sec = (time_t)timeInterval;
+	rqtp.tv_nsec = lrint((timeInterval - rqtp.tv_sec) * 1000000000);
 
-	if (rqtp.tv_sec != floor(seconds))
+	if (rqtp.tv_sec != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
 #else
-	if (seconds > UINT_MAX)
+	if (timeInterval > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	sleep((unsigned int)seconds);
-	usleep((useconds_t)lrint((seconds - floor(seconds)) * 1000000));
+	sleep((unsigned int)timeInterval);
+	usleep((useconds_t)lrint(
+	    (timeInterval - floor(timeInterval)) * 1000000));
 #endif
 }
 

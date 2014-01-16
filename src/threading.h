@@ -23,6 +23,8 @@
 
 #include <math.h>
 
+#import "OFObject.h"
+
 #import "macros.h"
 
 #if defined(OF_HAVE_PTHREADS)
@@ -224,7 +226,7 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 
 static OF_INLINE bool
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
-    double timeout)
+    of_time_interval_t timeout)
 {
 #if defined(OF_HAVE_PTHREADS)
 	struct timespec ts;

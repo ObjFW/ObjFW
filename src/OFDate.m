@@ -163,13 +163,13 @@ static int monthToDayOfYear[12] = {
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)dateWithTimeIntervalSince1970: (double)seconds
++ (instancetype)dateWithTimeIntervalSince1970: (of_time_interval_t)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSince1970: seconds] autorelease];
 }
 
-+ (instancetype)dateWithTimeIntervalSinceNow: (double)seconds
++ (instancetype)dateWithTimeIntervalSinceNow: (of_time_interval_t)seconds
 {
 	return [[[self alloc]
 	    initWithTimeIntervalSinceNow: seconds] autorelease];
@@ -210,12 +210,12 @@ static int monthToDayOfYear[12] = {
 	OF_ENSURE(gettimeofday(&t, NULL) == 0);
 
 	_seconds = t.tv_sec;
-	_seconds += (double)t.tv_usec / 1000000;
+	_seconds += (of_time_interval_t)t.tv_usec / 1000000;
 
 	return self;
 }
 
-- initWithTimeIntervalSince1970: (double)seconds
+- initWithTimeIntervalSince1970: (of_time_interval_t)seconds
 {
 	self = [super init];
 
@@ -224,7 +224,7 @@ static int monthToDayOfYear[12] = {
 	return self;
 }
 
-- initWithTimeIntervalSinceNow: (double)seconds
+- initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
 {
 	self = [self init];
 
@@ -608,30 +608,30 @@ static int monthToDayOfYear[12] = {
 	return [[self retain] autorelease];
 }
 
-- (double)timeIntervalSince1970
+- (of_time_interval_t)timeIntervalSince1970
 {
 	return _seconds;
 }
 
-- (double)timeIntervalSinceDate: (OFDate*)otherDate
+- (of_time_interval_t)timeIntervalSinceDate: (OFDate*)otherDate
 {
 	return _seconds - otherDate->_seconds;
 }
 
-- (double)timeIntervalSinceNow
+- (of_time_interval_t)timeIntervalSinceNow
 {
 	struct timeval t;
-	double seconds;
+	of_time_interval_t seconds;
 
 	OF_ENSURE(!gettimeofday(&t, NULL));
 
 	seconds = t.tv_sec;
-	seconds += (double)t.tv_usec / 1000000;
+	seconds += (of_time_interval_t)t.tv_usec / 1000000;
 
 	return _seconds - seconds;
 }
 
-- (OFDate*)dateByAddingTimeInterval: (double)seconds
+- (OFDate*)dateByAddingTimeInterval: (of_time_interval_t)seconds
 {
 	return [OFDate dateWithTimeIntervalSince1970: _seconds + seconds];
 }

@@ -25,7 +25,7 @@
  */
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization>
 {
-	double _seconds;
+	of_time_interval_t _seconds;
 }
 
 /*!
@@ -42,7 +42,7 @@
  * @param seconds The seconds since 1970-01-01T00:00:00Z
  * @return A new, autoreleased OFDate with the specified date and time
  */
-+ (instancetype)dateWithTimeIntervalSince1970: (double)seconds;
++ (instancetype)dateWithTimeIntervalSince1970: (of_time_interval_t)seconds;
 
 /*!
  * @brief Creates a new OFDate with the specified date and time since now.
@@ -50,7 +50,7 @@
  * @param seconds The seconds since now
  * @return A new, autoreleased OFDate with the specified date and time
  */
-+ (instancetype)dateWithTimeIntervalSinceNow: (double)seconds;
++ (instancetype)dateWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
 
 /*!
  * @brief Creates a new OFDate with the specified string in the specified
@@ -112,7 +112,7 @@
  * @param seconds The seconds since 1970-01-01T00:00:00Z
  * @return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSince1970: (double)seconds;
+- initWithTimeIntervalSince1970: (of_time_interval_t)seconds;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified date and
@@ -121,7 +121,7 @@
  * @param seconds The seconds since now
  * @return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSinceNow: (double)seconds;
+- initWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified string in
@@ -311,7 +311,7 @@
  *
  * @return The seconds since 1970-01-01T00:00:00Z
  */
-- (double)timeIntervalSince1970;
+- (of_time_interval_t)timeIntervalSince1970;
 
 /*!
  * @brief Returns the seconds the receiver is after the date.
@@ -319,14 +319,14 @@
  * @param otherDate Date date to generate the difference with receiver
  * @return The seconds the receiver is after the date.
  */
-- (double)timeIntervalSinceDate: (OFDate*)otherDate;
+- (of_time_interval_t)timeIntervalSinceDate: (OFDate*)otherDate;
 
 /*!
  * @brief Returns the seconds the receiver is in the future.
  *
  * @return The seconds the receiver is in the future
  */
-- (double)timeIntervalSinceNow;
+- (of_time_interval_t)timeIntervalSinceNow;
 
 /*!
  * @brief Creates a new date with the specified time interval added.
@@ -334,5 +334,5 @@
  * @param seconds The seconds after the date
  * @return A new, autoreleased OFDate
  */
-- (OFDate*)dateByAddingTimeInterval: (double)seconds;
+- (OFDate*)dateByAddingTimeInterval: (of_time_interval_t)seconds;
 @end

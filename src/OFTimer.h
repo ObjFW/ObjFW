@@ -40,7 +40,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 @interface OFTimer: OFObject <OFComparing>
 {
 	OFDate *_fireDate;
-	double _interval;
+	of_time_interval_t _interval;
 	id _target, _object1, _object2;
 	SEL _selector;
 	uint8_t _arguments;
@@ -63,14 +63,13 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param target The target on which to call the selector
  * @param selector The selector to call on the target
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (double)interval
++ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 				       repeats: (bool)repeats;
@@ -78,15 +77,14 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param target The target on which to call the selector
  * @param selector The selector to call on the target
  * @param object An object to pass when calling the selector on the target
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (double)interval
++ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object
@@ -95,8 +93,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param target The target on which to call the selector
  * @param selector The selector to call on the target
  * @param object1 The first object to pass when calling the selector on the
@@ -106,7 +103,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (double)interval
++ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
 					object: (id)object1
@@ -117,13 +114,12 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param repeats Whether the timer repeats after it has been executed
  * @param block The block to invoke when the timer fires
  * @return A new, autoreleased timer
  */
-+ (instancetype)scheduledTimerWithTimeInterval: (double)interval
++ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 				       repeats: (bool)repeats
 					 block: (of_timer_block_t)block;
 #endif
@@ -131,14 +127,13 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param target The target on which to call the selector
  * @param selector The selector to call on the target
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (double)interval
++ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			      repeats: (bool)repeats;
@@ -146,15 +141,14 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param target The target on which to call the selector
  * @param selector The selector to call on the target
  * @param object An object to pass when calling the selector on the target
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (double)interval
++ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object
@@ -163,8 +157,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param target The target on which to call the selector
  * @param selector The selector to call on the target
  * @param object1 The first object to pass when calling the selector on the
@@ -174,7 +167,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (double)interval
++ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
 			       object: (id)object1
@@ -185,13 +178,12 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 /*!
  * @brief Creates a new timer with the specified time interval.
  *
- * @param interval The time interval after which the timer should be executed
- *		   when fired
+ * @param timeInterval The time interval after which the timer should be fired
  * @param repeats Whether the timer repeats after it has been executed
  * @param block The block to invoke when the timer fires
  * @return A new, autoreleased timer
  */
-+ (instancetype)timerWithTimeInterval: (double)interval
++ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			      repeats: (bool)repeats
 				block: (of_timer_block_t)block;
 #endif
@@ -209,7 +201,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @return An initialized timer
  */
 - initWithFireDate: (OFDate*)fireDate
-	  interval: (double)interval
+	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
 	   repeats: (bool)repeats;
@@ -228,7 +220,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @return An initialized timer
  */
 - initWithFireDate: (OFDate*)fireDate
-	  interval: (double)interval
+	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
 	    object: (id)object
@@ -251,7 +243,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @return An initialized timer
  */
 - initWithFireDate: (OFDate*)fireDate
-	  interval: (double)interval
+	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
 	    object: (id)object1
@@ -271,7 +263,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @return An initialized timer
  */
 - initWithFireDate: (OFDate*)fireDate
-	  interval: (double)interval
+	  interval: (of_time_interval_t)interval
 	   repeats: (bool)repeats
 	     block: (of_timer_block_t)block;
 #endif
@@ -320,7 +312,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @return The time interval in which the timer will repeat, if it is a
  *	   repeating timer
  */
-- (double)timeInterval;
+- (of_time_interval_t)timeInterval;
 
 #ifdef OF_HAVE_THREADS
 /*!

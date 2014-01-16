@@ -188,7 +188,7 @@
  * @param timeInterval The time to wait for an event, in seconds
  * @return A boolean whether events occurred during the timeinterval
  */
-- (bool)observeForTimeInterval: (double)timeInterval;
+- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval;
 
 /*!
  * @brief Observes all streams until an event happens on a stream or the
