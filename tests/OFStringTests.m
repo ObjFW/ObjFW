@@ -219,6 +219,59 @@ static uint16_t sutf16str[] = {
 				encoding: OF_STRING_ENCODING_WINDOWS_1252]
 	    isEqual: @"€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ"])
 
+	TEST(@"Conversion of Codepage 437 to UTF-8",
+	    [[OFString stringWithCString: "\xB0\xB1\xB2\xDB"
+				encoding: OF_STRING_ENCODING_CODEPAGE_437]
+	    isEqual: @"░▒▓█"])
+
+	TEST(@"Conversion of UTF-8 to ASCII #1",
+	    !strcmp([@"This is a test" cStringWithEncoding:
+	    OF_STRING_ENCODING_ASCII], "This is a test"))
+
+	EXPECT_EXCEPTION(@"Conversion of UTF-8 to ASCII #2",
+	    OFInvalidEncodingException,
+	    [@"This is a tést" cStringWithEncoding: OF_STRING_ENCODING_ASCII])
+
+	TEST(@"Conversion of UTF-8 to ISO-8859-1 #1",
+	    !strcmp([@"This is ä test" cStringWithEncoding:
+	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 test"))
+
+	EXPECT_EXCEPTION(@"Conversion of UTF-8 to ISO-8859-1 #2",
+	    OFInvalidEncodingException, [@"This is ä t€st" cStringWithEncoding:
+	    OF_STRING_ENCODING_ISO_8859_1])
+
+	TEST(@"Conversion of UTF-8 to ISO-8859-15 #1",
+	    !strcmp([@"This is ä t€st" cStringWithEncoding:
+	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st"))
+
+	EXPECT_EXCEPTION(@"Conversion of UTF-8 to ISO-8859-15 #2",
+	    OFInvalidEncodingException, [@"This is ä t€st…" cStringWithEncoding:
+	    OF_STRING_ENCODING_ISO_8859_15])
+
+	TEST(@"Conversion of UTF-8 to Windows-1252 #1",
+	    !strcmp([@"This is ä t€st…" cStringWithEncoding:
+	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85"))
+
+	EXPECT_EXCEPTION(@"Conversion of UTF-8 to Windows-1252 #2",
+	    OFInvalidEncodingException, [@"This is ä t€st…‼"
+	    cStringWithEncoding: OF_STRING_ENCODING_WINDOWS_1252])
+
+	TEST(@"Lossy conversion of UTF-8 to ASCII",
+	    !strcmp([@"This is a tést" lossyCStringWithEncoding:
+	    OF_STRING_ENCODING_ASCII], "This is a t?st"))
+
+	TEST(@"Lossy conversion of UTF-8 to ISO-8859-1",
+	    !strcmp([@"This is ä t€st" lossyCStringWithEncoding:
+	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 t?st"))
+
+	TEST(@"Lossy conversion of UTF-8 to ISO-8859-15",
+	    !strcmp([@"This is ä t€st…" lossyCStringWithEncoding:
+	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st?"))
+
+	TEST(@"Lossy conversion of UTF-8 to Windows-1252",
+	    !strcmp([@"This is ä t€st…‼" lossyCStringWithEncoding:
+	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85?"))
+
 	TEST(@"+[stringWithFormat:]",
 	    [(s[0] = [OFMutableString stringWithFormat: @"%@:%d", @"test", 123])
 	    isEqual: @"test:123"])

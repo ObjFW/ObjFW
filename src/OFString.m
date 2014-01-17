@@ -66,6 +66,15 @@
 # define strtod __strtod
 #endif
 
+@interface OFString (OF_PRIVATE_CATEGORY)
+- (size_t)OF_getCString: (char*)cString
+	      maxLength: (size_t)maxLength
+	       encoding: (of_string_encoding_t)encoding
+		  lossy: (bool)lossy;
+- (const char*)OF_cStringWithEncoding: (of_string_encoding_t)encoding
+				lossy: (bool)lossy;
+@end
+
 /* References for static linking */
 void _references_to_categories_of_OFString(void)
 {
@@ -961,9 +970,10 @@ static struct {
 	return self;
 }
 
-- (size_t)getCString: (char*)cString
-	   maxLength: (size_t)maxLength
-	    encoding: (of_string_encoding_t)encoding
+- (size_t)OF_getCString: (char*)cString
+	      maxLength: (size_t)maxLength
+	       encoding: (of_string_encoding_t)encoding
+		  lossy: (bool)lossy
 {
 	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
@@ -997,7 +1007,13 @@ static struct {
 
 				break;
 			default:
-				@throw [OFInvalidEncodingException exception];
+				if (lossy)
+					cString[j++] = '?';
+				else
+					@throw [OFInvalidEncodingException
+					    exception];
+
+				break;
 			}
 		}
 
@@ -1009,10 +1025,14 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
-			if OF_UNLIKELY (characters[i] > 0x80)
-				@throw [OFInvalidEncodingException exception];
-
-			cString[i] = (char)characters[i];
+			if OF_UNLIKELY (characters[i] > 0x80) {
+				if (lossy)
+					cString[i] = '?';
+				else
+					@throw [OFInvalidEncodingException
+					    exception];
+			} else
+				cString[i] = (char)characters[i];
 		}
 
 		cString[i] = '\0';
@@ -1023,10 +1043,14 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		for (i = 0; i < length; i++) {
-			if OF_UNLIKELY (characters[i] > 0xFF)
-				@throw [OFInvalidEncodingException exception];
-
-			cString[i] = (uint8_t)characters[i];
+			if OF_UNLIKELY (characters[i] > 0xFF) {
+				if (lossy)
+					cString[i] = '?';
+				else
+					@throw [OFInvalidEncodingException
+					    exception];
+			} else
+				cString[i] = (uint8_t)characters[i];
 		}
 
 		cString[i] = '\0';
@@ -1048,7 +1072,13 @@ static struct {
 			case 0xBC:
 			case 0xBD:
 			case 0xBE:
-				@throw [OFInvalidEncodingException exception];
+				if (lossy)
+					cString[i] = '?';
+				else
+					@throw [OFInvalidEncodingException
+					    exception];
+
+				break;
 			}
 
 			if OF_UNLIKELY (c > 0xFF) {
@@ -1078,8 +1108,14 @@ static struct {
 					cString[i] = 0xBE;
 					break;
 				default:
-					@throw [OFInvalidEncodingException
-					    exception];
+					if (lossy)
+						cString[i] = '?';
+					else
+						@throw
+						    [OFInvalidEncodingException
+						    exception];
+
+					break;
 				}
 			} else
 				cString[i] = (uint8_t)c;
@@ -1095,8 +1131,13 @@ static struct {
 		for (i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];
 
-			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F)
-				@throw [OFInvalidEncodingException exception];
+			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F) {
+				if (lossy)
+					cString[i] = '?';
+				else
+					@throw [OFInvalidEncodingException
+					    exception];
+			}
 
 			if OF_UNLIKELY (c > 0xFF) {
 				switch (c) {
@@ -1182,8 +1223,14 @@ static struct {
 					cString[i] = 0x9F;
 					break;
 				default:
-					@throw [OFInvalidEncodingException
-					    exception];
+					if (lossy)
+						cString[i] = '?';
+					else
+						@throw
+						    [OFInvalidEncodingException
+						    exception];
+
+					break;
 				}
 			} else
 				cString[i] = (uint8_t)c;
@@ -1198,7 +1245,28 @@ static struct {
 	}
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (size_t)getCString: (char*)cString
+	   maxLength: (size_t)maxLength
+	    encoding: (of_string_encoding_t)encoding
+{
+	return [self OF_getCString: cString
+			 maxLength: maxLength
+			  encoding: encoding
+			     lossy: false];
+}
+
+- (size_t)getLossyCString: (char*)cString
+		maxLength: (size_t)maxLength
+		 encoding: (of_string_encoding_t)encoding
+{
+	return [self OF_getCString: cString
+			 maxLength: maxLength
+			  encoding: encoding
+			     lossy: true];
+}
+
+- (const char*)OF_cStringWithEncoding: (of_string_encoding_t)encoding
+				lossy: (bool)lossy
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = [self length];
@@ -1210,9 +1278,10 @@ static struct {
 
 		cString = [object allocMemoryWithSize: (length * 4) + 1];
 
-		cStringLength = [self getCString: cString
-				       maxLength: (length * 4) + 1
-					encoding: OF_STRING_ENCODING_UTF_8];
+		cStringLength = [self OF_getCString: cString
+					  maxLength: (length * 4) + 1
+					   encoding: OF_STRING_ENCODING_UTF_8
+					      lossy: lossy];
 
 		@try {
 			cString = [object resizeMemory: cString
@@ -1228,9 +1297,10 @@ static struct {
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		cString = [object allocMemoryWithSize: length + 1];
 
-		[self getCString: cString
-		       maxLength: length + 1
-			encoding: encoding];
+		[self OF_getCString: cString
+			  maxLength: length + 1
+			   encoding: encoding
+			      lossy: lossy];
 
 		break;
 	default:
@@ -1239,6 +1309,18 @@ static struct {
 	}
 
 	return cString;
+}
+
+- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+{
+	return [self OF_cStringWithEncoding: encoding
+				      lossy: false];
+}
+
+- (const char*)lossyCStringWithEncoding: (of_string_encoding_t)encoding
+{
+	return [self OF_cStringWithEncoding: encoding
+				      lossy: true];
 }
 
 - (const char*)UTF8String
