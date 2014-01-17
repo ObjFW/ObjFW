@@ -75,6 +75,10 @@
 				lossy: (bool)lossy;
 @end
 
+extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, char*, size_t, bool);
+extern bool of_unicode_to_windows_1252(const of_unichar_t*, char*, size_t,
+    bool);
+
 /* References for static linking */
 void _references_to_categories_of_OFString(void)
 {
@@ -1060,183 +1064,22 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		for (i = 0; i < length; i++) {
-			of_unichar_t c = characters[i];
+		if (!of_unicode_to_iso_8859_15(characters, cString, length,
+		    lossy))
+			@throw [OFInvalidEncodingException exception];
 
-			switch (c) {
-			case 0xA4:
-			case 0xA6:
-			case 0xA8:
-			case 0xB4:
-			case 0xB8:
-			case 0xBC:
-			case 0xBD:
-			case 0xBE:
-				if (lossy)
-					cString[i] = '?';
-				else
-					@throw [OFInvalidEncodingException
-					    exception];
-
-				break;
-			}
-
-			if OF_UNLIKELY (c > 0xFF) {
-				switch (c) {
-				case 0x20AC:
-					cString[i] = 0xA4;
-					break;
-				case 0x160:
-					cString[i] = 0xA6;
-					break;
-				case 0x161:
-					cString[i] = 0xA8;
-					break;
-				case 0x17D:
-					cString[i] = 0xB4;
-					break;
-				case 0x17E:
-					cString[i] = 0xB8;
-					break;
-				case 0x152:
-					cString[i] = 0xBC;
-					break;
-				case 0x153:
-					cString[i] = 0xBD;
-					break;
-				case 0x178:
-					cString[i] = 0xBE;
-					break;
-				default:
-					if (lossy)
-						cString[i] = '?';
-					else
-						@throw
-						    [OFInvalidEncodingException
-						    exception];
-
-					break;
-				}
-			} else
-				cString[i] = (uint8_t)c;
-		}
-
-		cString[i] = '\0';
+		cString[length] = '\0';
 
 		return length;
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		for (i = 0; i < length; i++) {
-			of_unichar_t c = characters[i];
+		if (!of_unicode_to_windows_1252(characters, cString, length,
+		    lossy))
+			@throw [OFInvalidEncodingException exception];
 
-			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F) {
-				if (lossy)
-					cString[i] = '?';
-				else
-					@throw [OFInvalidEncodingException
-					    exception];
-			}
-
-			if OF_UNLIKELY (c > 0xFF) {
-				switch (c) {
-				case 0x20AC:
-					cString[i] = 0x80;
-					break;
-				case 0x201A:
-					cString[i] = 0x82;
-					break;
-				case 0x192:
-					cString[i] = 0x83;
-					break;
-				case 0x201E:
-					cString[i] = 0x84;
-					break;
-				case 0x2026:
-					cString[i] = 0x85;
-					break;
-				case 0x2020:
-					cString[i] = 0x86;
-					break;
-				case 0x2021:
-					cString[i] = 0x87;
-					break;
-				case 0x2C6:
-					cString[i] = 0x88;
-					break;
-				case 0x2030:
-					cString[i] = 0x89;
-					break;
-				case 0x160:
-					cString[i] = 0x8A;
-					break;
-				case 0x2039:
-					cString[i] = 0x8B;
-					break;
-				case 0x152:
-					cString[i] = 0x8C;
-					break;
-				case 0x17D:
-					cString[i] = 0x8E;
-					break;
-				case 0x2018:
-					cString[i] = 0x91;
-					break;
-				case 0x2019:
-					cString[i] = 0x92;
-					break;
-				case 0x201C:
-					cString[i] = 0x93;
-					break;
-				case 0x201D:
-					cString[i] = 0x94;
-					break;
-				case 0x2022:
-					cString[i] = 0x95;
-					break;
-				case 0x2013:
-					cString[i] = 0x96;
-					break;
-				case 0x2014:
-					cString[i] = 0x97;
-					break;
-				case 0x2DC:
-					cString[i] = 0x98;
-					break;
-				case 0x2122:
-					cString[i] = 0x99;
-					break;
-				case 0x161:
-					cString[i] = 0x9A;
-					break;
-				case 0x203A:
-					cString[i] = 0x9B;
-					break;
-				case 0x153:
-					cString[i] = 0x9C;
-					break;
-				case 0x17E:
-					cString[i] = 0x9E;
-					break;
-				case 0x178:
-					cString[i] = 0x9F;
-					break;
-				default:
-					if (lossy)
-						cString[i] = '?';
-					else
-						@throw
-						    [OFInvalidEncodingException
-						    exception];
-
-					break;
-				}
-			} else
-				cString[i] = (uint8_t)c;
-		}
-
-		cString[i] = '\0';
+		cString[length] = '\0';
 
 		return length;
 	default:

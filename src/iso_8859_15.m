@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+#import "macros.h"
+
 const of_char16_t of_iso_8859_15[128] = {
 	0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
 	0x0088, 0x0089, 0x008A, 0x008B, 0x008C, 0x008D, 0x008E, 0x008F,
@@ -34,3 +36,62 @@ const of_char16_t of_iso_8859_15[128] = {
 	0x00F0, 0x00F1, 0x00F2, 0x00F3, 0x00F4, 0x00F5, 0x00F6, 0x00F7,
 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE, 0x00FF
 };
+
+bool
+of_unicode_to_iso_8859_15(const of_unichar_t *input, char *output,
+    size_t length, bool lossy)
+{
+	size_t i;
+
+	for (i = 0; i < length; i++) {
+		of_unichar_t c = input[i];
+
+		if OF_UNLIKELY (c == 0xA4 || c == 0xA6 || c == 0xA8 ||
+		    c == 0xB4 || c == 0xB8 || c == 0xBC || c == 0xBD ||
+		    c == 0xBE || c > 0xFFFF) {
+			if (lossy)
+				output[i] = '?';
+			else
+				return false;
+		}
+
+		if OF_UNLIKELY (c > 0xFF) {
+			switch ((of_char16_t)c) {
+			case 0x20AC:
+				output[i] = 0xA4;
+				break;
+			case 0x160:
+				output[i] = 0xA6;
+				break;
+			case 0x161:
+				output[i] = 0xA8;
+				break;
+			case 0x17D:
+				output[i] = 0xB4;
+				break;
+			case 0x17E:
+				output[i] = 0xB8;
+				break;
+			case 0x152:
+				output[i] = 0xBC;
+				break;
+			case 0x153:
+				output[i] = 0xBD;
+				break;
+			case 0x178:
+				output[i] = 0xBE;
+				break;
+			default:
+				if (lossy)
+					output[i] = '?';
+				else
+					return false;
+
+				break;
+			}
+		} else
+			output[i] = (uint8_t)c;
+	}
+
+	return true;
+}

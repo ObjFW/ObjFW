@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+#import "macros.h"
+
 const of_char16_t of_windows_1252[128] = {
 	0x20AC, 0xFFFD, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,
 	0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0xFFFD, 0x017D, 0xFFFD,
@@ -34,3 +36,117 @@ const of_char16_t of_windows_1252[128] = {
 	0x00F0, 0x00F1, 0x00F2, 0x00F3, 0x00F4, 0x00F5, 0x00F6, 0x00F7,
 	0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE, 0x00FF
 };
+
+bool
+of_unicode_to_windows_1252(const of_unichar_t *input, char *output,
+    size_t length, bool lossy)
+{
+	size_t i;
+
+	for (i = 0; i < length; i++) {
+		of_unichar_t c = input[i];
+
+		if OF_UNLIKELY ((c >= 0x80 && c <= 0x9F) || c > 0xFFFF) {
+			if (lossy)
+				output[i] = '?';
+			else
+				return false;
+		}
+
+		if OF_UNLIKELY (c > 0xFF) {
+			switch ((of_char16_t)c) {
+			case 0x20AC:
+				output[i] = 0x80;
+				break;
+			case 0x201A:
+				output[i] = 0x82;
+				break;
+			case 0x192:
+				output[i] = 0x83;
+				break;
+			case 0x201E:
+				output[i] = 0x84;
+				break;
+			case 0x2026:
+				output[i] = 0x85;
+				break;
+			case 0x2020:
+				output[i] = 0x86;
+				break;
+			case 0x2021:
+				output[i] = 0x87;
+				break;
+			case 0x2C6:
+				output[i] = 0x88;
+				break;
+			case 0x2030:
+				output[i] = 0x89;
+				break;
+			case 0x160:
+				output[i] = 0x8A;
+				break;
+			case 0x2039:
+				output[i] = 0x8B;
+				break;
+			case 0x152:
+				output[i] = 0x8C;
+				break;
+			case 0x17D:
+				output[i] = 0x8E;
+				break;
+			case 0x2018:
+				output[i] = 0x91;
+				break;
+			case 0x2019:
+				output[i] = 0x92;
+				break;
+			case 0x201C:
+				output[i] = 0x93;
+				break;
+			case 0x201D:
+				output[i] = 0x94;
+				break;
+			case 0x2022:
+				output[i] = 0x95;
+				break;
+			case 0x2013:
+				output[i] = 0x96;
+				break;
+			case 0x2014:
+				output[i] = 0x97;
+				break;
+			case 0x2DC:
+				output[i] = 0x98;
+				break;
+			case 0x2122:
+				output[i] = 0x99;
+				break;
+			case 0x161:
+				output[i] = 0x9A;
+				break;
+			case 0x203A:
+				output[i] = 0x9B;
+				break;
+			case 0x153:
+				output[i] = 0x9C;
+				break;
+			case 0x17E:
+				output[i] = 0x9E;
+				break;
+			case 0x178:
+				output[i] = 0x9F;
+				break;
+			default:
+				if (lossy)
+					output[i] = '?';
+				else
+					return false;
+
+				break;
+			}
+		} else
+			output[i] = (uint8_t)c;
+	}
+
+	return true;
+}
