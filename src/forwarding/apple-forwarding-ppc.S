@@ -21,7 +21,7 @@
 str_forwardingTargetForSelector_:
 	.asciz "forwardingTargetForSelector:"
 
-.section __OBJC, __message_refs, literal_pointers, no_dead_strip
+.section __OBJC, __message_refs
 sel_forwardingTargetForSelector_:
 	.long str_forwardingTargetForSelector_
 
