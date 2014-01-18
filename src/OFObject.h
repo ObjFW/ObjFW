@@ -64,7 +64,9 @@
 #if defined(__clang__) || __GCC_VERSION__ >= 406 || defined(OBJC_NEW_PROPERTIES)
 # define OF_HAVE_PROPERTIES
 # define OF_HAVE_OPTIONAL_PROTOCOLS
-# define OF_HAVE_FAST_ENUMERATION
+# if defined(__clang__) || __GCC_VERSION__ >= 406 || defined(OF_APPLE_RUNTIME)
+#  define OF_HAVE_FAST_ENUMERATION
+# endif
 # define OF_HAVE_CLASS_EXTENSIONS
 #endif
 
