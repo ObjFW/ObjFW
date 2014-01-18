@@ -63,10 +63,10 @@ objfw-config: Available arguments are:
 	--static-libs	Outputs the required LIBS to link ObjFW statically
 	--version	Outputs the installed version
 __EOF__
-	exit 0
+	exit $1
 }
 
-test -z "$1" && show_help
+test -z "$1" && show_help 1
 
 while test ! -z "$1"; do
 	case "$1" in
