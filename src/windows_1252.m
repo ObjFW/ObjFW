@@ -46,14 +46,15 @@ of_unicode_to_windows_1252(const of_unichar_t *input, char *output,
 	for (i = 0; i < length; i++) {
 		of_unichar_t c = input[i];
 
-		if OF_UNLIKELY ((c >= 0x80 && c <= 0x9F) || c > 0xFFFF) {
-			if (lossy)
-				output[i] = '?';
-			else
-				return false;
-		}
-
 		if OF_UNLIKELY (c > 0xFF) {
+			if OF_UNLIKELY (c > 0xFFFF) {
+				if (lossy) {
+					output[i] = '?';
+					continue;
+				} else
+					return false;
+			}
+
 			switch ((of_char16_t)c) {
 			case 0x20AC:
 				output[i] = 0x80;
@@ -144,8 +145,15 @@ of_unicode_to_windows_1252(const of_unichar_t *input, char *output,
 
 				break;
 			}
-		} else
-			output[i] = (uint8_t)c;
+		} else {
+			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F) {
+				if (lossy)
+					output[i] = '?';
+				else
+					return false;
+			} else
+				output[i] = (uint8_t)c;
+		}
 	}
 
 	return true;

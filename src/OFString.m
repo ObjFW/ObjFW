@@ -1011,11 +1011,7 @@ static struct {
 
 				break;
 			default:
-				if (lossy)
-					cString[j++] = '?';
-				else
-					@throw [OFInvalidEncodingException
-					    exception];
+				@throw [OFInvalidEncodingException exception];
 
 				break;
 			}

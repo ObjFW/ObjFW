@@ -21,6 +21,7 @@
 #include <math.h>
 
 #import "OFString.h"
+#import "OFMutableString_UTF8.h"
 #import "OFArray.h"
 #import "OFURL.h"
 #import "OFAutoreleasePool.h"
@@ -198,20 +199,20 @@ static uint16_t sutf16str[] = {
 	    [OFString stringWithUTF8String: "\xF0\x80\x80\xC0"])
 
 	TEST(@"-[reverse] on UTF-8 strings",
-	    (s[0] = [OFMutableString stringWithUTF8String: "äöü€𝄞"]) &&
+	    (s[0] = [OFMutableString_UTF8 stringWithUTF8String: "äöü€𝄞"]) &&
 	    R([s[0] reverse]) && [s[0] isEqual: @"𝄞€üöä"])
 
-	TEST(@"Conversion of ISO 8859-1 to UTF-8",
+	TEST(@"Conversion of ISO 8859-1 to Unicode",
 	    [[OFString stringWithCString: "\xE4\xF6\xFC"
 				encoding: OF_STRING_ENCODING_ISO_8859_1]
 	    isEqual: @"äöü"])
 
-	TEST(@"Conversion of ISO 8859-15 to UTF-8",
+	TEST(@"Conversion of ISO 8859-15 to Unicode",
 	    [[OFString stringWithCString: "\xA4\xA6\xA8\xB4\xB8\xBC\xBD\xBE"
 				encoding: OF_STRING_ENCODING_ISO_8859_15]
 	    isEqual: @"€ŠšŽžŒœŸ"])
 
-	TEST(@"Conversion of Windows 1252 to UTF-8",
+	TEST(@"Conversion of Windows 1252 to Unicode",
 	    [[OFString stringWithCString: "\x80\x82\x83\x84\x85\x86\x87\x88"
 					  "\x89\x8A\x8B\x8C\x8E\x91\x92\x93"
 					  "\x94\x95\x96\x97\x98\x99\x9A\x9B"
@@ -219,56 +220,56 @@ static uint16_t sutf16str[] = {
 				encoding: OF_STRING_ENCODING_WINDOWS_1252]
 	    isEqual: @"€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ"])
 
-	TEST(@"Conversion of Codepage 437 to UTF-8",
+	TEST(@"Conversion of Codepage 437 to Unicode",
 	    [[OFString stringWithCString: "\xB0\xB1\xB2\xDB"
 				encoding: OF_STRING_ENCODING_CODEPAGE_437]
 	    isEqual: @"░▒▓█"])
 
-	TEST(@"Conversion of UTF-8 to ASCII #1",
+	TEST(@"Conversion of Unicode to ASCII #1",
 	    !strcmp([@"This is a test" cStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII], "This is a test"))
 
-	EXPECT_EXCEPTION(@"Conversion of UTF-8 to ASCII #2",
+	EXPECT_EXCEPTION(@"Conversion of Unicode to ASCII #2",
 	    OFInvalidEncodingException,
 	    [@"This is a tést" cStringWithEncoding: OF_STRING_ENCODING_ASCII])
 
-	TEST(@"Conversion of UTF-8 to ISO-8859-1 #1",
+	TEST(@"Conversion of Unicode to ISO-8859-1 #1",
 	    !strcmp([@"This is ä test" cStringWithEncoding:
 	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 test"))
 
-	EXPECT_EXCEPTION(@"Conversion of UTF-8 to ISO-8859-1 #2",
+	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-1 #2",
 	    OFInvalidEncodingException, [@"This is ä t€st" cStringWithEncoding:
 	    OF_STRING_ENCODING_ISO_8859_1])
 
-	TEST(@"Conversion of UTF-8 to ISO-8859-15 #1",
+	TEST(@"Conversion of Unicode to ISO-8859-15 #1",
 	    !strcmp([@"This is ä t€st" cStringWithEncoding:
 	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st"))
 
-	EXPECT_EXCEPTION(@"Conversion of UTF-8 to ISO-8859-15 #2",
+	EXPECT_EXCEPTION(@"Conversion of Unicode to ISO-8859-15 #2",
 	    OFInvalidEncodingException, [@"This is ä t€st…" cStringWithEncoding:
 	    OF_STRING_ENCODING_ISO_8859_15])
 
-	TEST(@"Conversion of UTF-8 to Windows-1252 #1",
+	TEST(@"Conversion of Unicode to Windows-1252 #1",
 	    !strcmp([@"This is ä t€st…" cStringWithEncoding:
 	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85"))
 
-	EXPECT_EXCEPTION(@"Conversion of UTF-8 to Windows-1252 #2",
+	EXPECT_EXCEPTION(@"Conversion of Unicode to Windows-1252 #2",
 	    OFInvalidEncodingException, [@"This is ä t€st…‼"
 	    cStringWithEncoding: OF_STRING_ENCODING_WINDOWS_1252])
 
-	TEST(@"Lossy conversion of UTF-8 to ASCII",
+	TEST(@"Lossy conversion of Unicode to ASCII",
 	    !strcmp([@"This is a tést" lossyCStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII], "This is a t?st"))
 
-	TEST(@"Lossy conversion of UTF-8 to ISO-8859-1",
+	TEST(@"Lossy conversion of Unicode to ISO-8859-1",
 	    !strcmp([@"This is ä t€st" lossyCStringWithEncoding:
 	    OF_STRING_ENCODING_ISO_8859_1], "This is \xE4 t?st"))
 
-	TEST(@"Lossy conversion of UTF-8 to ISO-8859-15",
+	TEST(@"Lossy conversion of Unicode to ISO-8859-15",
 	    !strcmp([@"This is ä t€st…" lossyCStringWithEncoding:
 	    OF_STRING_ENCODING_ISO_8859_15], "This is \xE4 t\xA4st?"))
 
-	TEST(@"Lossy conversion of UTF-8 to Windows-1252",
+	TEST(@"Lossy conversion of Unicode to Windows-1252",
 	    !strcmp([@"This is ä t€st…‼" lossyCStringWithEncoding:
 	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85?"))
 

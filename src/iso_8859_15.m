@@ -46,16 +46,15 @@ of_unicode_to_iso_8859_15(const of_unichar_t *input, char *output,
 	for (i = 0; i < length; i++) {
 		of_unichar_t c = input[i];
 
-		if OF_UNLIKELY (c == 0xA4 || c == 0xA6 || c == 0xA8 ||
-		    c == 0xB4 || c == 0xB8 || c == 0xBC || c == 0xBD ||
-		    c == 0xBE || c > 0xFFFF) {
-			if (lossy)
-				output[i] = '?';
-			else
-				return false;
-		}
-
 		if OF_UNLIKELY (c > 0xFF) {
+			if OF_UNLIKELY (c > 0xFFFF) {
+				if (lossy) {
+					output[i] = '?';
+					continue;
+				} else
+					return false;
+			}
+
 			switch ((of_char16_t)c) {
 			case 0x20AC:
 				output[i] = 0xA4;
@@ -89,8 +88,27 @@ of_unicode_to_iso_8859_15(const of_unichar_t *input, char *output,
 
 				break;
 			}
-		} else
-			output[i] = (uint8_t)c;
+		} else {
+			switch (c) {
+			case 0xA4:
+			case 0xA6:
+			case 0xA8:
+			case 0xB4:
+			case 0xB8:
+			case 0xBC:
+			case 0xBD:
+			case 0xBE:
+				if (lossy)
+					output[i] = '?';
+				else
+					return false;
+
+				break;
+			default:
+				output[i] = (uint8_t)c;
+				break;
+			}
+		}
 	}
 
 	return true;
