@@ -24,40 +24,51 @@
 .section __TEXT, __text, regular, pure_instructions
 .macro generate_lookup
 $0:
-	testq	%rdi, %rdi
-	jz	ret_nil
+	cmpwi	r3, 0
+	beq-	ret_nil
 
-	movq	(%rdi), %r8
-	movq	64(%r8), %r8
+	lwz	r5, 0(r3)
+	lwz	r5, 32(r5)
 
 Lmain_$0:
-	movq	(%rsi), %rax
-	movzbl	%ah, %ecx
-	movzbl	%al, %edx
 #ifdef OF_SELUID24
-	shrl	$16, %eax
-
-	movq	(%r8,%rax,8), %r8
+	lbz	r6, 1(r4)
 #endif
-	movq	(%r8,%rcx,8), %r8
-	movq	(%r8,%rdx,8), %rax
+	lbz	r7, 2(r4)
+	lbz	r8, 3(r4)
 
-	testq	%rax, %rax
-	jz	$1
+#ifdef OF_SELUID24
+	slwi	r6, r6, 2
+#endif
+	slwi	r7, r7, 2
+	slwi	r8, r8, 2
 
-	ret
+#ifdef OF_SELUID24
+	lwzx	r5, r5, r6
+#endif
+	lwzx	r5, r5, r7
+	lwzx	r5, r5, r8
+
+	cmpwi	r5, 0
+	beq-	0f
+
+	mr	r3, r5
+	blr
+
+0:
+	b	$1
 .endmacro
 
 .macro generate_lookup_super
 $0:
-	movq	(%rdi), %rax
-	testq	%rax, %rax
-	jz	ret_nil
+	lwz	r5, 0(r3)
+	cmpwi	r5, 0
+	beq-	ret_nil
 
-	movq	8(%rdi), %r8
-	movq	64(%r8), %r8
-	movq	%rdi, %rax
-	jmp	Lmain_$1
+	lwz	r5, 4(r3)
+	lwz	r5, 32(r5)
+
+	b	Lmain_$1
 .endmacro
 
 generate_lookup _objc_msg_lookup, _objc_method_not_found
@@ -66,9 +77,17 @@ generate_lookup_super _objc_msg_lookup_super, _objc_msg_lookup
 generate_lookup_super _objc_msg_lookup_super_stret, _objc_msg_lookup_stret
 
 ret_nil:
-	leaq	nil_method(%rip), %rax
-	ret
+	mflr	r0
+	bl	get_pc
+	mtlr	r0
+0:
+	addi	r3, r3, lo16(nil_method-0b)
+	blr
 
 nil_method:
-	movq	%rdi, %rax
-	ret
+	li	r3, 0
+	blr
+
+get_pc:
+	mflr	r3
+	blr

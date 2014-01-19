@@ -30,9 +30,13 @@
 #  include "lookup-asm-mips-elf.S"
 # endif
 #elif defined(__MACH__)
-# if defined(__amd64__) || defined(__x86_64__)
+# if defined(__x86_64__)
 #  include "lookup-asm-amd64-macho.S"
+# elif defined(__ppc__)
+#  include "lookup-asm-ppc-macho.S"
 # endif
-#elif defined(_WIN32) && defined(__i386__)
-# include "lookup-asm-x86-win32.S"
+#elif defined(_WIN32)
+# if defined(__i386__)
+#  include "lookup-asm-x86-win32.S"
+# endif
 #endif

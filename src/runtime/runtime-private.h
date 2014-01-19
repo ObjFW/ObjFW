@@ -186,11 +186,13 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(__MACH__)
-# if defined(__amd64__) || defined(__x86_64__)
+# if defined(__x86_64__) || defined(__ppc__)
 #  define OF_ASM_LOOKUP
 # endif
-#elif defined(_WIN32) && defined(__i386__)
-# define OF_ASM_LOOKUP
+#elif defined(_WIN32)
+# if defined(__i386__)
+#  define OF_ASM_LOOKUP
+# endif
 #endif
 
 #define OBJC_ERROR(...)							\
