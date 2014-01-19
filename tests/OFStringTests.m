@@ -257,6 +257,14 @@ static uint16_t sutf16str[] = {
 	    OFInvalidEncodingException, [@"This is ä t€st…‼"
 	    cStringWithEncoding: OF_STRING_ENCODING_WINDOWS_1252])
 
+	TEST(@"Conversion of Unicode to Codepage 437 #1",
+	    !strcmp([@"Tést strîng ░▒▓" cStringWithEncoding:
+	    OF_STRING_ENCODING_CODEPAGE_437], "T\x82st str\x8Cng \xB0\xB1\xB2"))
+
+	EXPECT_EXCEPTION(@"Conversion of Unicode to Codepage 437 #2",
+	    OFInvalidEncodingException, [@"T€st strîng ░▒▓"
+	    cStringWithEncoding: OF_STRING_ENCODING_CODEPAGE_437])
+
 	TEST(@"Lossy conversion of Unicode to ASCII",
 	    !strcmp([@"This is a tést" lossyCStringWithEncoding:
 	    OF_STRING_ENCODING_ASCII], "This is a t?st"))
@@ -272,6 +280,10 @@ static uint16_t sutf16str[] = {
 	TEST(@"Lossy conversion of Unicode to Windows-1252",
 	    !strcmp([@"This is ä t€st…‼" lossyCStringWithEncoding:
 	    OF_STRING_ENCODING_WINDOWS_1252], "This is \xE4 t\x80st\x85?"))
+
+	TEST(@"Lossy conversion of Unicode to Codepage 437",
+	    !strcmp([@"T€st strîng ░▒▓" lossyCStringWithEncoding:
+	    OF_STRING_ENCODING_CODEPAGE_437], "T?st str\x8Cng \xB0\xB1\xB2"))
 
 	TEST(@"+[stringWithFormat:]",
 	    [(s[0] = [OFMutableString stringWithFormat: @"%@:%d", @"test", 123])
