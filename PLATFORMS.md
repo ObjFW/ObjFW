@@ -8,7 +8,7 @@ others as well.
 Android
 -------
 
-  * OS versions: 4.0.4, 4.1.2
+  * OS Versions: 4.0.4, 4.1.2
   * Architectures: ARMv6, ARMv7
   * Compilers: Clang 3.3
   * Runtimes: ObjFW
@@ -18,17 +18,16 @@ Android
 DOS
 ---
 
-  * OS versions: Windows XP DOS Emulation, DOSBox
+  * OS Versions: Windows XP DOS Emulation, DOSBox
   * Architectures: x86
   * Compilers: DJGPP GCC 4.7.3 (djdev204)
   * Runtimes: ObjFW
-  * Limitations: No threads, no sockets
 
 
 DragonFlyBSD
 ------------
 
-  * OS versions: 3.0, 3.3-DEVELOPMENT
+  * OS Versions: 3.0, 3.3-DEVELOPMENT
   * Architectures: x86, x86_64
   * Compilers: GCC 4.4.7
   * Runtimes: ObjFW
@@ -37,7 +36,7 @@ DragonFlyBSD
 FreeBSD
 -------
 
-  * OS versions: 9.1-rc3
+  * OS Versions: 9.1-rc3
   * Architectures: x86_64
   * Compilers: Clang 3.1
   * Runtimes: ObjFW
@@ -71,7 +70,7 @@ Linux
 MacOS X
 -------
 
-  * OS versions: 10.5, 10.7, 10.8, 10.9
+  * OS Versions: 10.5, 10.7, 10.8, 10.9
   * Architectures: PPC, x86, x86_64
   * Compilers: Clang 3.1-3.4, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
@@ -80,7 +79,7 @@ MacOS X
 NetBSD
 ------
 
-  * OS versions: 5.1-6.1
+  * OS Versions: 5.1-6.1
   * Architectures: x86, x86_64
   * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3
   * Runtimes: ObjFW
@@ -89,7 +88,7 @@ NetBSD
 OpenBSD
 -------
 
-  * OS versions: 5.2, 5.3
+  * OS Versions: 5.2, 5.3
   * Architectures: PPC, SPARC64, x86_64
   * Compilers: GCC 4.2.1
   * Runtimes: ObjFW
@@ -98,7 +97,7 @@ OpenBSD
 PlayStation Portable
 --------------------
 
-  * OS versions: 5.00 M33-4
+  * OS Versions: 5.00 M33-4
   * Architectures: MIPS32 (EABI)
   * Compiler: GCC 4.6.2 (devkitPSP release 16)
   * Runtimes: ObjFW
@@ -108,7 +107,7 @@ PlayStation Portable
 QNX
 ---
 
-  * OS versions: 6.5.0
+  * OS Versions: 6.5.0
   * Architectures: x86
   * Compilers: GCC 4.6.1
   * Runtimes: ObjFW
@@ -117,7 +116,7 @@ QNX
 Wii
 ---
 
-  * OS versions: 4.3E / Homebrew Channel 1.1.0
+  * OS Versions: 4.3E / Homebrew Channel 1.1.0
   * Architectures: PPC
   * Compilers: GCC 4.6.3 (devkitPPC release 26)
   * Runtimes: ObjFW
@@ -127,7 +126,7 @@ Wii
 Windows
 -------
 
-  * OS versions: XP (x86), 7 (x64), 8 (x64), Wine
+  * OS Versions: XP (x86), 7 (x64), 8 (x64), Wine
   * Architectures: x86
   * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2
   * Runtimes: ObjFW
