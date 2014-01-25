@@ -17,7 +17,7 @@
 #import "OFReadOrWriteFailedException.h"
 
 /*!
- * @brief An exception indicating a write to a stream failed.
+ * @brief An exception indicating that writing to an object failed.
  */
 @interface OFWriteFailedException: OFReadOrWriteFailedException
 @end

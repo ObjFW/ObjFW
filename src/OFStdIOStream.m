@@ -96,7 +96,7 @@ of_log(OFConstantString *format, ...)
 
 	if (_fd == -1 || _atEndOfStream ||
 	    (ret = read(_fd, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithStream: self
+		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
 	if (ret == 0)
@@ -109,7 +109,7 @@ of_log(OFConstantString *format, ...)
 		     length: (size_t)length
 {
 	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
-		@throw [OFWriteFailedException exceptionWithStream: self
+		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 }
 

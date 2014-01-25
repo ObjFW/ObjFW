@@ -18,13 +18,12 @@
 
 #import "OFNotConnectedException.h"
 #import "OFString.h"
-#import "OFTCPSocket.h"
 
 #import "common.h"
 #import "macros.h"
 
 @implementation OFNotConnectedException
-+ (instancetype)exceptionWithSocket: (OFStreamSocket*)socket
++ (instancetype)exceptionWithSocket: (id)socket
 {
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
@@ -34,7 +33,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSocket: (OFStreamSocket*)socket
+- initWithSocket: (id)socket
 {
 	self = [super init];
 
@@ -57,7 +56,7 @@
 	    [_socket class]];
 }
 
-- (OFStreamSocket*)socket
+- (id)socket
 {
 	OF_GETTER(_socket, true)
 }

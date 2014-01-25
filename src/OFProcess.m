@@ -406,7 +406,7 @@ extern char **environ;
 		}
 
 #endif
-		@throw [OFReadFailedException exceptionWithStream: self
+		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 	}
 
@@ -429,7 +429,7 @@ extern char **environ;
 	    !WriteFile(_writePipe[1], buffer, length, &ret, NULL) ||
 	    ret < length)
 #endif
-		@throw [OFWriteFailedException exceptionWithStream: self
+		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 }
 

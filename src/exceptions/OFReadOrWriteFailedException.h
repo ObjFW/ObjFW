@@ -18,21 +18,20 @@
 
 #import "OFException.h"
 
-@class OFStream;
-
 /*!
- * @brief An exception indicating a read or write to a stream failed.
+ * @brief An exception indicating that reading from or writing to an object
+ *	  failed.
  */
 @interface OFReadOrWriteFailedException: OFException
 {
-	OFStream *_stream;
-	size_t	 _requestedLength;
+	id _object;
+	size_t _requestedLength;
 @public
-	int	 _errNo;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFStream *stream;
+@property (readonly, retain) id object;
 @property (readonly) size_t requestedLength;
 @property (readonly) int errNo;
 #endif
@@ -40,31 +39,31 @@
 /*!
  * @brief Creates a new, autoreleased read or write failed exception.
  *
- * @param stream The stream which caused the read or write failed exception
+ * @param object The object from which reading or to which writing failed
  * @param requestedLength The requested length of the data that couldn't be
  *			  read / written
  * @return A new, autoreleased read or write failed exception
  */
-+ (instancetype)exceptionWithStream: (OFStream*)stream
++ (instancetype)exceptionWithObject: (id)object
 		    requestedLength: (size_t)requestedLength;
 
 /*!
  * @brief Initializes an already allocated read or write failed exception.
  *
- * @param stream The stream which caused the read or write failed exception
+ * @param object The object from which reading or to which writing failed
  * @param requestedLength The requested length of the data that couldn't be
  *			  read / written
  * @return A new open file failed exception
  */
--  initWithStream: (OFStream*)stream
+-  initWithObject: (id)object
   requestedLength: (size_t)requestedLength;
 
 /*!
- * @brief Returns the stream which caused the read or write failed exception.
+ * @brief Returns the object from which reading or to which writing failed
  *
  * @return The stream which caused the read or write failed exception
  */
-- (OFStream*)stream;
+- (id)object;
 
 /*!
  * @brief Returns the requested length of the data that couldn't be read /

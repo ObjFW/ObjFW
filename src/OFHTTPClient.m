@@ -127,7 +127,7 @@ normalizeKey(char *str_)
 	if (_atEndOfStream) {
 		OFReadFailedException *e;
 
-		e = [OFReadFailedException exceptionWithStream: self
+		e = [OFReadFailedException exceptionWithObject: self
 					       requestedLength: length];
 		e->_errNo = ENOTCONN;
 		@throw e;

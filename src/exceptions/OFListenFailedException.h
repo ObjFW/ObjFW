@@ -22,19 +22,17 @@
 # error No sockets available!
 #endif
 
-@class OFTCPSocket;
-
 /*!
  * @brief An exception indicating that listening on the socket failed.
  */
 @interface OFListenFailedException: OFException
 {
-	OFTCPSocket *_socket;
+	id _socket;
 	int _backLog, _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFTCPSocket *socket;
+@property (readonly, retain) id socket;
 @property (readonly) int backLog, errNo;
 #endif
 
@@ -45,7 +43,7 @@
  * @param backLog The requested size of the back log
  * @return A new, autoreleased listen failed exception
  */
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithSocket: (id)socket
 			    backLog: (int)backLog;
 
 /*!
@@ -55,7 +53,7 @@
  * @param backLog The requested size of the back log
  * @return An initialized listen failed exception
  */
-- initWithSocket: (OFTCPSocket*)socket
+- initWithSocket: (id)socket
 	 backLog: (int)backLog;
 
 /*!
@@ -63,7 +61,7 @@
  *
  * @return The socket which failed to listen
  */
-- (OFTCPSocket*)socket;
+- (id)socket;
 
 /*!
  * @brief Returns the requested back log.

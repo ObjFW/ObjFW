@@ -18,7 +18,6 @@
 
 #import "OFReadOrWriteFailedException.h"
 #import "OFString.h"
-#import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 #endif
@@ -27,10 +26,10 @@
 #import "macros.h"
 
 @implementation OFReadOrWriteFailedException
-+ (instancetype)exceptionWithStream: (OFStream*)stream
++ (instancetype)exceptionWithObject: (id)object
 		    requestedLength: (size_t)requestedLength
 {
-	return [[[self alloc] initWithStream: stream
+	return [[[self alloc] initWithObject: object
 			     requestedLength: requestedLength] autorelease];
 }
 
@@ -39,16 +38,16 @@
 	OF_INVALID_INIT_METHOD
 }
 
--  initWithStream: (OFStream*)stream
+-  initWithObject: (id)object
   requestedLength: (size_t)requestedLength
 {
 	self = [super init];
 
-	_stream = [stream retain];
+	_object = [object retain];
 	_requestedLength = requestedLength;
 
 #ifdef OF_HAVE_SOCKETS
-	if ([stream isKindOfClass: [OFStreamSocket class]])
+	if ([object isKindOfClass: [OFStreamSocket class]])
 		_errNo = GET_SOCK_ERRNO;
 	else
 #endif
@@ -59,7 +58,7 @@
 
 - (void)dealloc
 {
-	[_stream release];
+	[_object release];
 
 	[super dealloc];
 }
@@ -67,13 +66,13 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to read or write %zu bytes in a stream of type "
-	    @"%@! " ERRFMT, _requestedLength, [_stream class], ERRPARAM];
+	    @"Failed to read or write %zu bytes from / to an object of type "
+	    @"%@! " ERRFMT, _requestedLength, [_object class], ERRPARAM];
 }
 
-- (OFStream*)stream
+- (id)object
 {
-	OF_GETTER(_stream, true)
+	OF_GETTER(_object, true)
 }
 
 - (size_t)requestedLength

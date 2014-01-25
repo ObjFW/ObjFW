@@ -95,14 +95,14 @@
 	if (_atEndOfStream) {
 		OFReadFailedException *e;
 
-		e = [OFReadFailedException exceptionWithStream: self
+		e = [OFReadFailedException exceptionWithObject: self
 					       requestedLength: length];
 		e->_errNo = ENOTCONN;
 		@throw e;
 	}
 
 	if ((ret = recv(_socket, buffer, length, 0)) < 0)
-		@throw [OFReadFailedException exceptionWithStream: self
+		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
 	if (ret == 0)
@@ -120,14 +120,14 @@
 	if (_atEndOfStream) {
 		OFWriteFailedException *e;
 
-		e = [OFWriteFailedException exceptionWithStream: self
+		e = [OFWriteFailedException exceptionWithObject: self
 						requestedLength: length];
 		e->_errNo = ENOTCONN;
 		@throw e;
 	}
 
 	if (send(_socket, buffer, length, 0) < length)
-		@throw [OFWriteFailedException exceptionWithStream: self
+		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 }
 

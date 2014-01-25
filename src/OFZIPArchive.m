@@ -546,7 +546,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	size_t min, ret;
 
 	if (_atEndOfStream)
-		@throw [OFReadFailedException exceptionWithStream: self
+		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
 	if (_hasDataDescriptor) {

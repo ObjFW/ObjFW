@@ -18,13 +18,12 @@
 
 #import "OFAddressTranslationFailedException.h"
 #import "OFString.h"
-#import "OFTCPSocket.h"
 
 #import "common.h"
 #import "macros.h"
 
 @implementation OFAddressTranslationFailedException
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithSocket: (id)socket
 {
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
@@ -35,7 +34,7 @@
 }
 
 + (instancetype)exceptionWithHost: (OFString*)host
-			   socket: (OFTCPSocket*)socket
+			   socket: (id)socket
 {
 	return [[[self alloc] initWithHost: host
 				    socket: socket] autorelease];
@@ -46,7 +45,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSocket: (OFTCPSocket*)socket
+- initWithSocket: (id)socket
 {
 	return [self initWithHost: nil
 			   socket: socket];
@@ -59,7 +58,7 @@
 }
 
 - initWithHost: (OFString*)host
-	socket: (OFTCPSocket*)socket
+	socket: (id)socket
 {
 	self = [super init];
 
@@ -116,7 +115,7 @@
 	OF_GETTER(_host, true)
 }
 
-- (OFTCPSocket*)socket
+- (id)socket
 {
 	OF_GETTER(_socket, true)
 }

@@ -18,7 +18,6 @@
 
 #import "OFReadFailedException.h"
 #import "OFString.h"
-#import "OFStream.h"
 
 #import "common.h"
 
@@ -26,7 +25,7 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to read %zu bytes in a stream of type %@! " ERRFMT,
-	    _requestedLength, [_stream class], ERRPARAM];
+	    @"Failed to read %zu bytes from an object of type %@! " ERRFMT,
+	    _requestedLength, [_object class], ERRPARAM];
 }
 @end

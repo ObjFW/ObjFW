@@ -22,23 +22,21 @@
 # error No sockets available!
 #endif
 
-@class OFTCPSocket;
-
 /*!
  * @brief An exception indicating that binding a socket failed.
  */
 @interface OFBindFailedException: OFException
 {
-	OFTCPSocket *_socket;
-	OFString    *_host;
-	uint16_t    _port;
-	int	    _errNo;
+	id _socket;
+	OFString *_host;
+	uint16_t _port;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *host;
 @property (readonly) uint16_t port;
-@property (readonly, retain) OFTCPSocket *socket;
+@property (readonly, retain) id socket;
 @property (readonly) int errNo;
 #endif
 
@@ -52,7 +50,7 @@
  */
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
-			   socket: (OFTCPSocket*)socket;
+			   socket: (id)socket;
 
 /*!
  * @brief Initializes an already allocated bind failed exception.
@@ -64,7 +62,7 @@
  */
 - initWithHost: (OFString*)host
 	  port: (uint16_t)port
-	socket: (OFTCPSocket*)socket;
+	socket: (id)socket;
 
 /*!
  * @brief Returns the host on which binding failed.
@@ -85,7 +83,7 @@
  *
  * @return The socket which could not be bound
  */
-- (OFTCPSocket*)socket;
+- (id)socket;
 
 /*!
  * @brief Returns the errno from when the exception was created.

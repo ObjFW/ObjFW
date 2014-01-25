@@ -298,7 +298,7 @@ releaseTree(struct huffman_tree *tree)
 	uint_fast16_t slidingWindowIndex;
 
 	if (_atEndOfStream)
-		@throw [OFReadFailedException exceptionWithStream: self
+		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
 start:

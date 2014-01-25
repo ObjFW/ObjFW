@@ -18,13 +18,12 @@
 
 #import "OFListenFailedException.h"
 #import "OFString.h"
-#import "OFTCPSocket.h"
 
 #import "common.h"
 #import "macros.h"
 
 @implementation OFListenFailedException
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithSocket: (id)socket
 			    backLog: (int)backLog
 {
 	return [[[self alloc] initWithSocket: socket
@@ -36,7 +35,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSocket: (OFTCPSocket*)socket
+- initWithSocket: (id)socket
 	 backLog: (int)backLog
 {
 	self = [super init];
@@ -62,7 +61,7 @@
 	    ERRFMT, [_socket class], _backLog, ERRPARAM];
 }
 
-- (OFTCPSocket*)socket
+- (id)socket
 {
 	OF_GETTER(_socket, true)
 }

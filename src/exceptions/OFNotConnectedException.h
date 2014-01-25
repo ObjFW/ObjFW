@@ -20,18 +20,16 @@
 # error No sockets available!
 #endif
 
-@class OFStreamSocket;
-
 /*!
  * @brief An exception indicating a socket is not connected or bound.
  */
 @interface OFNotConnectedException: OFException
 {
-	OFStreamSocket *_socket;
+	id _socket;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFStreamSocket *socket;
+@property (readonly, retain) id socket;
 #endif
 
 /*!
@@ -40,7 +38,7 @@
  * @param socket The socket which is not connected
  * @return A new, autoreleased not connected exception
  */
-+ (instancetype)exceptionWithSocket: (OFStreamSocket*)socket;
++ (instancetype)exceptionWithSocket: (id)socket;
 
 /*!
  * @brief Initializes an already allocated not connected exception.
@@ -48,12 +46,12 @@
  * @param socket The socket which is not connected
  * @return An initialized not connected exception
  */
-- initWithSocket: (OFStreamSocket*)socket;
+- initWithSocket: (id)socket;
 
 /*!
  * @brief Returns the socket which is not connected.
  *
  * @return The socket which is not connected
  */
-- (OFStreamSocket*)socket;
+- (id)socket;
 @end
