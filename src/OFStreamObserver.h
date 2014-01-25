@@ -16,23 +16,7 @@
 
 #import "OFObject.h"
 
-#ifndef OF_HAVE_SOCKETS
-# error No sockets available!
-#endif
-
-#ifdef OF_HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-
-#ifdef _WIN32
-# include <winsock2.h>
-#endif
-
-#ifdef __wii__
-# define BOOL OGC_BOOL
-# include <network.h>
-# undef BOOL
-#endif
+#import "socket.h"
 
 @class OFStream;
 @class OFMutableArray;

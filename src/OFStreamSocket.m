@@ -24,11 +24,6 @@
 
 #include <errno.h>
 
-#include <sys/types.h>
-#ifdef OF_HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-
 #import "OFStreamSocket.h"
 
 #import "OFInitializationFailedException.h"
@@ -37,21 +32,7 @@
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifdef __wii__
-# define BOOL OGC_BOOL
-# include <network.h>
-# undef BOOL
-# define recv(sock, buf, len, flags) net_recv(sock, buf, len, flags)
-# define send(sock, buf, len, flags) net_send(sock, buf, len, flags)
-#endif
-
-#ifndef INVALID_SOCKET
-# define INVALID_SOCKET -1
-#endif
-
-#ifdef _WIN32
-# define close(sock) closesocket(sock)
-#endif
+#import "socket_helpers.h"
 
 @implementation OFStreamSocket
 + (void)initialize

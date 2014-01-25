@@ -91,6 +91,7 @@ SRCS_THREADS = OFCondition.m		\
 	       OFRecursiveMutex.m	\
 	       OFThreadPool.m
 
+INCLUDES_SOCKETS = socket.h
 INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
@@ -108,6 +109,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    instance.h				\
 	    macros.h				\
 	    objfw-defs.h			\
+	    ${USE_INCLUDES_SOCKETS}		\
 	    ${USE_INCLUDES_THREADS}
 
 SRCS += OFArray_adjacent.m		\

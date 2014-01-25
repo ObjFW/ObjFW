@@ -296,6 +296,10 @@
 		4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */; };
 		4B745BA5168B25E600A6C20E /* OFSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B745BA3168B25E600A6C20E /* OFSystemInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B745BA6168B25E600A6C20E /* OFSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B745BA4168B25E600A6C20E /* OFSystemInfo.m */; };
+		4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD58118942FE200990FD6 /* socket_helpers.h */; };
+		4B7DD5851894358500990FD6 /* OFMoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B7DD5861894358500990FD6 /* OFMoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */; };
+		4B7DD58818943D4A00990FD6 /* socket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD58718943D4A00990FD6 /* socket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B4133CED6200000324 /* OFConditionStillWaitingException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */; };
 		4B837D7916829C5F007A3E83 /* block.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B837D7716829C5F007A3E83 /* block.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -411,8 +415,6 @@
 		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
-		4BFF3716177E17C100192782 /* OFRenameItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3712177E17C100192782 /* OFRenameItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BFF3717177E17C100192782 /* OFRenameItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3713177E17C100192782 /* OFRenameItemFailedException.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -732,6 +734,10 @@
 		4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPResponse.m; path = src/OFHTTPResponse.m; sourceTree = "<group>"; };
 		4B745BA3168B25E600A6C20E /* OFSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSystemInfo.h; path = src/OFSystemInfo.h; sourceTree = "<group>"; };
 		4B745BA4168B25E600A6C20E /* OFSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSystemInfo.m; path = src/OFSystemInfo.m; sourceTree = "<group>"; };
+		4B7DD58118942FE200990FD6 /* socket_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socket_helpers.h; path = src/socket_helpers.h; sourceTree = "<group>"; };
+		4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMoveItemFailedException.h; path = src/exceptions/OFMoveItemFailedException.h; sourceTree = "<group>"; };
+		4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMoveItemFailedException.m; path = src/exceptions/OFMoveItemFailedException.m; sourceTree = "<group>"; };
+		4B7DD58718943D4A00990FD6 /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socket.h; path = src/socket.h; sourceTree = "<group>"; };
 		4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionStillWaitingException.h; path = src/exceptions/OFConditionStillWaitingException.h; sourceTree = "<group>"; };
 		4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionStillWaitingException.m; path = src/exceptions/OFConditionStillWaitingException.m; sourceTree = "<group>"; };
 		4B837D7716829C5F007A3E83 /* block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = block.h; path = src/block.h; sourceTree = "<group>"; };
@@ -872,8 +878,6 @@
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
-		4BFF3712177E17C100192782 /* OFRenameItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRenameItemFailedException.h; path = src/exceptions/OFRenameItemFailedException.h; sourceTree = "<group>"; };
-		4BFF3713177E17C100192782 /* OFRenameItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRenameItemFailedException.m; path = src/exceptions/OFRenameItemFailedException.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -991,6 +995,8 @@
 				4B17FFA0133A3332003E6DCD /* OFMalformedXMLException.m */,
 				4B17FF8D133A3034003E6DCD /* OFMemoryNotPartOfObjectException.h */,
 				4B17FF8E133A3034003E6DCD /* OFMemoryNotPartOfObjectException.m */,
+				4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */,
+				4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */,
 				4B90B789133AD46700BD33CB /* OFNotConnectedException.h */,
 				4B90B78A133AD46700BD33CB /* OFNotConnectedException.m */,
 				4B17FF75133A2B18003E6DCD /* OFNotImplementedException.h */,
@@ -1007,8 +1013,6 @@
 				4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */,
 				4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */,
 				4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */,
-				4BFF3712177E17C100192782 /* OFRenameItemFailedException.h */,
-				4BFF3713177E17C100192782 /* OFRenameItemFailedException.m */,
 				4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */,
 				4B29BC3A133AC4E80004B236 /* OFSeekFailedException.m */,
 				4B90B78B133AD46700BD33CB /* OFSetOptionFailedException.h */,
@@ -1346,6 +1350,8 @@
 				4BB50DD012F863C700C9393F /* of_asprintf.m */,
 				4BA355BC14879BF700442EF4 /* of_strptime.h */,
 				4BA355B914879BDD00442EF4 /* of_strptime.m */,
+				4B7DD58718943D4A00990FD6 /* socket.h */,
+				4B7DD58118942FE200990FD6 /* socket_helpers.h */,
 				4B67998B1099E7C50041064A /* threading.h */,
 				4B67998C1099E7C50041064A /* unicode.h */,
 				4BFBDD1610A0724800051AFB /* unicode.m */,
@@ -1553,6 +1559,7 @@
 				4BD98C03133814220048DD5B /* objfw-defs.h in Headers */,
 				4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */,
 				4BA355BD14879BF700442EF4 /* of_strptime.h in Headers */,
+				4B7DD58818943D4A00990FD6 /* socket.h in Headers */,
 				4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */,
 				4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */,
 				4B90B79E133AD87D00BD33CB /* OFAcceptFailedException.h in Headers */,
@@ -1586,6 +1593,7 @@
 				4B6743F1163C384A00EB1E59 /* OFLockFailedException.h in Headers */,
 				4B17FFA1133A3335003E6DCD /* OFMalformedXMLException.h in Headers */,
 				4B17FF8F133A3036003E6DCD /* OFMemoryNotPartOfObjectException.h in Headers */,
+				4B7DD5851894358500990FD6 /* OFMoveItemFailedException.h in Headers */,
 				4B90B78F133AD46700BD33CB /* OFNotConnectedException.h in Headers */,
 				4B17FF77133A2B18003E6DCD /* OFNotImplementedException.h in Headers */,
 				4B55A10A133AC05100B58A93 /* OFOpenFileFailedException.h in Headers */,
@@ -1594,7 +1602,6 @@
 				4B55A112133AC24600B58A93 /* OFReadFailedException.h in Headers */,
 				4B55A114133AC24600B58A93 /* OFReadOrWriteFailedException.h in Headers */,
 				4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */,
-				4BFF3716177E17C100192782 /* OFRenameItemFailedException.h in Headers */,
 				4B29BC41133AC4E80004B236 /* OFSeekFailedException.h in Headers */,
 				4B90B791133AD46700BD33CB /* OFSetOptionFailedException.h in Headers */,
 				4B6743F3163C384A00EB1E59 /* OFStillLockedException.h in Headers */,
@@ -1633,6 +1640,7 @@
 				4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */,
 				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4BDF37B51338055600F9A81A /* config.h in Headers */,
+				4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1953,6 +1961,7 @@
 				4B6743F2163C384A00EB1E59 /* OFLockFailedException.m in Sources */,
 				4B17FFA2133A3335003E6DCD /* OFMalformedXMLException.m in Sources */,
 				4B17FF90133A3036003E6DCD /* OFMemoryNotPartOfObjectException.m in Sources */,
+				4B7DD5861894358500990FD6 /* OFMoveItemFailedException.m in Sources */,
 				4B90B790133AD46700BD33CB /* OFNotConnectedException.m in Sources */,
 				4B17FF78133A2B18003E6DCD /* OFNotImplementedException.m in Sources */,
 				4B55A10B133AC05100B58A93 /* OFOpenFileFailedException.m in Sources */,
@@ -1961,7 +1970,6 @@
 				4B55A113133AC24600B58A93 /* OFReadFailedException.m in Sources */,
 				4B55A115133AC24600B58A93 /* OFReadOrWriteFailedException.m in Sources */,
 				4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */,
-				4BFF3717177E17C100192782 /* OFRenameItemFailedException.m in Sources */,
 				4B29BC42133AC4E80004B236 /* OFSeekFailedException.m in Sources */,
 				4B90B792133AD46700BD33CB /* OFSetOptionFailedException.m in Sources */,
 				4B6743F4163C384A00EB1E59 /* OFStillLockedException.m in Sources */,

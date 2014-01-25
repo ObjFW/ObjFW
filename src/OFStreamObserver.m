@@ -47,25 +47,12 @@
 # import "OFStreamObserver_select.h"
 #endif
 
-#ifdef _WIN32
-# include <ws2tcpip.h>
-#endif
-
 #import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
 #import "macros.h"
-
-#ifdef __wii__
-# define BOOL OGC_BOOL
-# include <network.h>
-# undef BOOL
-# define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
-# define sendto(sock, buf, len, flags, addr, addrlen) \
-	net_sendto(sock, buf, len, flags, addr, addrlen)
-# define socket(domain, type, proto) net_socket(domain, type, proto)
-#endif
+#import "socket_helpers.h"
 
 enum {
 	QUEUE_ADD = 0,

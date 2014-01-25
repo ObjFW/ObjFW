@@ -14,30 +14,9 @@
  * file.
  */
 
-#ifndef __STDC_LIMIT_MACROS
-# define __STDC_LIMIT_MACROS
-#endif
-#ifndef __STDC_CONSTANT_MACROS
-# define __STDC_CONSTANT_MACROS
-#endif
-
-#import "objfw-defs.h"
-
-#ifdef OF_HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-
 #import "OFStreamSocket.h"
 
-#ifdef _WIN32
-# include <ws2tcpip.h>
-#endif
-
-#ifdef __wii__
-# define BOOL OGC_BOOL
-# include <network.h>
-# undef BOOL
-#endif
+#import "socket.h"
 
 /*! @file */
 
@@ -78,7 +57,7 @@ typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
 @interface OFTCPSocket: OFStreamSocket
 {
 	bool _listening;
-	struct sockaddr_storage *_sockAddr;
+	struct sockaddr_storage _sockAddr;
 	socklen_t _sockAddrLen;
 	OFString *_SOCKS5Host;
 	uint16_t _SOCKS5Port;

@@ -14,27 +14,40 @@
  * file.
  */
 
-#import "OFStream.h"
+#import "objfw-defs.h"
 
-#import "socket.h"
-
-/*!
- * @brief A class which provides functions to create and use stream sockets.
- */
-@interface OFStreamSocket: OFStream
-{
-#ifndef _WIN32
-	int    _socket;
-#else
-	SOCKET _socket;
+#ifndef OF_HAVE_SOCKETS
+# error No sockets available!
 #endif
-	bool  _atEndOfStream;
-}
 
-/*!
- * @brief Returns a new, autoreleased OFTCPSocket.
- *
- * @return A new, autoreleased OFTCPSocket
- */
-+ (instancetype)socket;
-@end
+#ifdef OF_HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+
+#ifdef _WIN32
+# include <ws2tcpip.h>
+#endif
+
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <network.h>
+# undef BOOL
+
+struct sockaddr_storage {
+	u8 ss_len;
+	u8 ss_family;
+	u8 ss_data[14];
+};
+#endif
+
+#ifdef _PSP
+# include <stdint.h>
+
+struct sockaddr_storage {
+	uint8_t	       ss_len;
+	sa_family_t    ss_family;
+	in_port_t      ss_data1;
+	struct in_addr ss_data2;
+	int8_t	       ss_data3[8];
+};
+#endif

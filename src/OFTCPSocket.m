@@ -25,16 +25,6 @@
 
 #include <unistd.h>
 
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
@@ -56,64 +46,13 @@
 
 #import "autorelease.h"
 #import "macros.h"
-
-#ifndef INVALID_SOCKET
-# define INVALID_SOCKET -1
-#endif
-
-#ifdef HAVE_THREADSAFE_GETADDRINFO
-# ifndef AI_NUMERICSERV
-#  define AI_NUMERICSERV 0
-# endif
-# ifndef AI_NUMERICHOST
-#  define AI_NUMERICHOST 0
-# endif
-#endif
-
-#ifndef SOMAXCONN
-# define SOMAXCONN 32
-#endif
+#import "socket_helpers.h"
 
 #if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
 # import "OFMutex.h"
 # import "OFDataArray.h"
 
 static OFMutex *mutex = nil;
-#endif
-
-#ifdef _WIN32
-# define close(sock) closesocket(sock)
-#endif
-
-#ifdef _PSP
-/* PSP defines AF_INET6, even though sockaddr_in6 is missing */
-# undef AF_INET6
-struct sockaddr_storage {
-	uint8_t	       ss_len;
-	sa_family_t    ss_family;
-	in_port_t      ss_data1;
-	struct in_addr ss_data2;
-	int8_t	       ss_data3[8];
-};
-#endif
-
-#ifdef __wii__
-# define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
-# define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
-# define close(sock) net_close(sock)
-# define connect(sock, addr, addrlen) net_connect(sock, addr, addrlen)
-# define gethostbyname(name) net_gethostbyname(name)
-# define listen(sock, backlog) net_listen(sock, backlog)
-# define setsockopt(sock, level, name, value, len) \
-	net_setsockopt(sock, level, name, value, len)
-# define socket(domain, type, proto) net_socket(domain, type, proto)
-typedef u32 in_addr_t;
-
-struct sockaddr_storage {
-	u8 ss_len;
-	u8 ss_family;
-	u8 ss_data[14];
-};
 #endif
 
 /* References for static linking */
@@ -302,7 +241,7 @@ static uint16_t freePort = 65532;
 
 	@try {
 		_socket = INVALID_SOCKET;
-		_sockAddr = NULL;
+		_sockAddrLen = sizeof(struct sockaddr_storage);
 		_SOCKS5Host = [defaultSOCKS5Host copy];
 		_SOCKS5Port = defaultSOCKS5Port;
 	} @catch (id e) {
@@ -679,6 +618,11 @@ static uint16_t freePort = 65532;
 						 socket: self];
 }
 
+- (void)listen
+{
+	[self listenWithBackLog: SOMAXCONN];
+}
+
 - (void)listenWithBackLog: (int)backLog
 {
 	if (_socket == INVALID_SOCKET)
@@ -691,29 +635,14 @@ static uint16_t freePort = 65532;
 	_listening = true;
 }
 
-- (void)listen
-{
-	[self listenWithBackLog: SOMAXCONN];
-}
-
 - (instancetype)accept
 {
-	OFTCPSocket *client;
-	struct sockaddr_storage *addr;
-	socklen_t addrLen;
-	int socket;
+	OFTCPSocket *client = [[[[self class] alloc] init] autorelease];
 
-	client = [[[[self class] alloc] init] autorelease];
-	addrLen = sizeof(*addr);
-	addr = [client allocMemoryWithSize: addrLen];
-
-	if ((socket = accept(_socket, (struct sockaddr*)addr,
-	    &addrLen)) == INVALID_SOCKET)
+	if ((client->_socket = accept(_socket,
+	    (struct sockaddr*)&client->_sockAddr,
+	    &client->_sockAddrLen)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException exceptionWithSocket: self];
-
-	client->_socket = socket;
-	client->_sockAddr = addr;
-	client->_sockAddrLen = addrLen;
 
 	return client;
 }
@@ -746,15 +675,15 @@ static uint16_t freePort = 65532;
 {
 	char *host;
 
-	if (_sockAddr == NULL || _sockAddrLen == 0)
+	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	host = [self allocMemoryWithSize: NI_MAXHOST];
 
 	@try {
-		if (getnameinfo((struct sockaddr*)_sockAddr, _sockAddrLen, host,
-		    NI_MAXHOST, NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV))
+		if (getnameinfo((struct sockaddr*)&_sockAddr, _sockAddrLen,
+		    host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV))
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithSocket: self];
 
@@ -768,7 +697,7 @@ static uint16_t freePort = 65532;
 
 	@try {
 # endif
-		host = inet_ntoa(((struct sockaddr_in*)_sockAddr)->sin_addr);
+		host = inet_ntoa(((struct sockaddr_in*)&_sockAddr)->sin_addr);
 
 		if (host == NULL)
 			@throw [OFAddressTranslationFailedException
@@ -796,8 +725,6 @@ static uint16_t freePort = 65532;
 	[super close];
 
 	_listening = false;
-	[self freeMemory: _sockAddr];
-	_sockAddr = NULL;
-	_sockAddrLen = 0;
+	_sockAddrLen = sizeof(struct sockaddr_storage);
 }
 @end
