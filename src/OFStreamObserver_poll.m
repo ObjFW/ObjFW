@@ -18,8 +18,6 @@
 
 #define __NO_EXT_QNX
 
-#include <unistd.h>
-
 #ifdef HAVE_POLL_H
 # include <poll.h>
 #endif

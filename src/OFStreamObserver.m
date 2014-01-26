@@ -18,8 +18,6 @@
 
 #define __NO_EXT_QNX
 
-#include <unistd.h>
-
 #include <assert.h>
 
 #import "OFStreamObserver.h"

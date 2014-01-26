@@ -23,8 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <unistd.h>
-
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"

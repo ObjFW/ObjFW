@@ -738,6 +738,7 @@
 		4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMoveItemFailedException.h; path = src/exceptions/OFMoveItemFailedException.h; sourceTree = "<group>"; };
 		4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMoveItemFailedException.m; path = src/exceptions/OFMoveItemFailedException.m; sourceTree = "<group>"; };
 		4B7DD58718943D4A00990FD6 /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socket.h; path = src/socket.h; sourceTree = "<group>"; };
+		4B7DD58918944A7900990FD6 /* apple-forwarding-arm64.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-arm64.S"; path = "src/forwarding/apple-forwarding-arm64.S"; sourceTree = "<group>"; };
 		4B7FF3B2133CED6100000324 /* OFConditionStillWaitingException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFConditionStillWaitingException.h; path = src/exceptions/OFConditionStillWaitingException.h; sourceTree = "<group>"; };
 		4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionStillWaitingException.m; path = src/exceptions/OFConditionStillWaitingException.m; sourceTree = "<group>"; };
 		4B837D7716829C5F007A3E83 /* block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = block.h; path = src/block.h; sourceTree = "<group>"; };
@@ -1119,6 +1120,7 @@
 			children = (
 				4B5C112D17E9AAF6003C917F /* Supporting Files */,
 				4B5C112817E9AAED003C917F /* apple-forwarding-arm.S */,
+				4B7DD58918944A7900990FD6 /* apple-forwarding-arm64.S */,
 				4B5C112917E9AAED003C917F /* apple-forwarding-i386.S */,
 				4B5C112A17E9AAED003C917F /* apple-forwarding-ppc.S */,
 				4B5C112B17E9AAED003C917F /* apple-forwarding-x86_64.S */,

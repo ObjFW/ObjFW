@@ -17,7 +17,6 @@
 #include "config.h"
 
 #include <math.h>
-#include <unistd.h>
 #include <errno.h>
 
 #include <assert.h>
@@ -37,6 +36,7 @@
 
 #import "autorelease.h"
 #import "macros.h"
+#import "socket_helpers.h"
 
 #define EVENTLIST_SIZE 64
 

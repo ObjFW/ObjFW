@@ -20,7 +20,6 @@
 
 #include <string.h>
 #include <math.h>
-#include <unistd.h>
 
 #include <sys/time.h>
 
@@ -32,6 +31,7 @@
 
 #import "autorelease.h"
 #import "macros.h"
+#import "socket_helpers.h"
 
 @implementation OFStreamObserver_select
 - init
