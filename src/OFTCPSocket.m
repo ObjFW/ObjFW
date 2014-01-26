@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <assert.h>
+
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
@@ -33,25 +35,19 @@
 
 #import "OFAcceptFailedException.h"
 #import "OFAlreadyConnectedException.h"
-#import "OFAddressTranslationFailedException.h"
 #import "OFBindFailedException.h"
 #import "OFConnectionFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenFailedException.h"
 #import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFSetOptionFailedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
+#import "resolver.h"
 #import "socket_helpers.h"
-
-#if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-# import "OFMutex.h"
-# import "OFDataArray.h"
-
-static OFMutex *mutex = nil;
-#endif
 
 /* References for static linking */
 void _references_to_categories_of_OFTCPSocket(void)
@@ -203,14 +199,6 @@ static uint16_t freePort = 65532;
 #endif
 
 @implementation OFTCPSocket
-#if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
-+ (void)initialize
-{
-	if (self == [OFTCPSocket class])
-		mutex = [[OFMutex alloc] init];
-}
-#endif
-
 + (void)setSOCKS5Host: (OFString*)host
 {
 	id old = defaultSOCKS5Host;
@@ -239,7 +227,6 @@ static uint16_t freePort = 65532;
 
 	@try {
 		_socket = INVALID_SOCKET;
-		_sockAddrLen = sizeof(struct sockaddr_storage);
 		_SOCKS5Host = [defaultSOCKS5Host copy];
 		_SOCKS5Port = defaultSOCKS5Port;
 	} @catch (id e) {
@@ -282,6 +269,7 @@ static uint16_t freePort = 65532;
 {
 	OFString *destinationHost = host;
 	uint16_t destinationPort = port;
+	of_resolver_result_t **results, **iter;
 
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
@@ -292,27 +280,17 @@ static uint16_t freePort = 65532;
 		port = _SOCKS5Port;
 	}
 
-#ifdef HAVE_THREADSAFE_GETADDRINFO
-	struct addrinfo hints, *res, *res0;
-	char portCString[7];
+	results = of_resolve_host(host, port, SOCK_STREAM);
 
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_NUMERICSERV;
-	snprintf(portCString, 7, "%" PRIu16, port);
+	for (iter = results; *iter != NULL; iter++) {
+		of_resolver_result_t *result = *iter;
 
-	if (getaddrinfo([host UTF8String], portCString, &hints, &res0))
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host
-			       socket: self];
-
-	for (res = res0; res != NULL; res = res->ai_next) {
-		if ((_socket = socket(res->ai_family, res->ai_socktype,
-		    res->ai_protocol)) == INVALID_SOCKET)
+		if ((_socket = socket(result->family, result->type,
+		    result->protocol)) == INVALID_SOCKET)
 			continue;
 
-		if (connect(_socket, res->ai_addr, res->ai_addrlen) == -1) {
+		if (connect(_socket, result->address,
+		    result->addressLength) == -1) {
 			close(_socket);
 			_socket = INVALID_SOCKET;
 			continue;
@@ -321,110 +299,7 @@ static uint16_t freePort = 65532;
 		break;
 	}
 
-	freeaddrinfo(res0);
-#else
-	bool connected = false;
-	struct hostent *he;
-	struct sockaddr_in addr;
-	char **ip;
-# ifdef OF_HAVE_THREADS
-	OFDataArray *addrlist;
-# endif
-
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = OF_BSWAP16_IF_LE(port);
-
-	if ((addr.sin_addr.s_addr = inet_addr([host UTF8String])) !=
-	    (in_addr_t)(-1)) {
-		if ((_socket = socket(AF_INET, SOCK_STREAM,
-		    0)) == INVALID_SOCKET) {
-			@throw [OFConnectionFailedException
-			    exceptionWithHost: host
-					 port: port
-				       socket: self];
-		}
-
-		if (connect(_socket, (struct sockaddr*)&addr,
-		    sizeof(addr)) == -1) {
-			close(_socket);
-			_socket = INVALID_SOCKET;
-			@throw [OFConnectionFailedException
-			    exceptionWithHost: host
-					 port: port
-				       socket: self];
-		}
-
-		if (_SOCKS5Host != nil)
-			[self OF_SOCKS5ConnectToHost: destinationHost
-						port: destinationPort];
-
-		return;
-	}
-
-# ifdef OF_HAVE_THREADS
-	addrlist = [[OFDataArray alloc] initWithItemSize: sizeof(char**)];
-	[mutex lock];
-# endif
-
-	if ((he = gethostbyname([host UTF8String])) == NULL) {
-# ifdef OF_HAVE_THREADS
-		[addrlist release];
-		[mutex unlock];
-# endif
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host
-			       socket: self];
-	}
-
-	if (he->h_addrtype != AF_INET ||
-	    (_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-# ifdef OF_HAVE_THREADS
-		[addrlist release];
-		[mutex unlock];
-# endif
-		@throw [OFConnectionFailedException exceptionWithHost: host
-								 port: port
-							       socket: self];
-	}
-
-# ifdef OF_HAVE_THREADS
-	@try {
-		for (ip = he->h_addr_list; *ip != NULL; ip++)
-			[addrlist addItem: ip];
-
-		/* Add the terminating NULL */
-		[addrlist addItem: ip];
-	} @catch (id e) {
-		[addrlist release];
-		@throw e;
-	} @finally {
-		[mutex unlock];
-	}
-
-	for (ip = [addrlist items]; *ip != NULL; ip++) {
-# else
-	for (ip = he->h_addr_list; *ip != NULL; ip++) {
-# endif
-		memcpy(&addr.sin_addr.s_addr, *ip, he->h_length);
-
-		if (connect(_socket, (struct sockaddr*)&addr,
-		    sizeof(addr)) == -1)
-			continue;
-
-		connected = true;
-		break;
-	}
-
-# ifdef OF_HAVE_THREADS
-	[addrlist release];
-# endif
-
-	if (!connected) {
-		close(_socket);
-		_socket = INVALID_SOCKET;
-	}
-#endif
+	of_resolver_free(results);
 
 	if (_socket == INVALID_SOCKET)
 		@throw [OFConnectionFailedException exceptionWithHost: host
@@ -477,15 +352,16 @@ static uint16_t freePort = 65532;
 - (uint16_t)bindToHost: (OFString*)host
 		  port: (uint16_t)port
 {
+	of_resolver_result_t **results;
 	const int one = 1;
+#ifndef __wii__
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
-#ifdef AF_INET6
+# ifdef AF_INET6
 		struct sockaddr_in6 in6;
-#endif
+# endif
 	} addr;
-#ifndef __wii__
 	socklen_t addrLen;
 #endif
 
@@ -501,92 +377,30 @@ static uint16_t freePort = 65532;
 		port = freePort--;
 #endif
 
-#ifdef HAVE_THREADSAFE_GETADDRINFO
-	struct addrinfo hints, *res;
-	char portCString[7];
+	results = of_resolve_host(host, port, SOCK_STREAM);
+	@try {
+		if ((_socket = socket(results[0]->family, results[0]->type,
+		    results[0]->protocol)) == INVALID_SOCKET)
+			@throw [OFBindFailedException exceptionWithHost: host
+								   port: port
+								 socket: self];
 
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_NUMERICSERV | AI_PASSIVE;
-	snprintf(portCString, 7, "%" PRIu16, port);
+		if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
+		    (const char*)&one, sizeof(one)))
+			@throw [OFSetOptionFailedException
+			    exceptionWithStream: self];
 
-	if (getaddrinfo([host UTF8String], portCString, &hints, &res))
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host
-			       socket: self];
-
-	if ((_socket = socket(res->ai_family, SOCK_STREAM,
-	    0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self];
-
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
-	    sizeof(one)))
-		@throw [OFSetOptionFailedException exceptionWithStream: self];
-
-	if (bind(_socket, res->ai_addr, res->ai_addrlen) == -1) {
-		freeaddrinfo(res);
-		close(_socket);
-		_socket = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self];
-	}
-
-	freeaddrinfo(res);
-#else
-	memset(&addr, 0, sizeof(addr));
-	addr.in.sin_family = AF_INET;
-	addr.in.sin_port = OF_BSWAP16_IF_LE(port);
-
-	if ((addr.in.sin_addr.s_addr = inet_addr([host UTF8String])) ==
-	    (in_addr_t)(-1)) {
-# ifdef OF_HAVE_THREADS
-		[mutex lock];
-		@try {
-# endif
-			struct hostent *he;
-
-			if ((he = gethostbyname([host UTF8String])) == NULL)
-				@throw [OFAddressTranslationFailedException
-				    exceptionWithHost: host
-					       socket: self];
-
-			if (he->h_addrtype != AF_INET ||
-			    he->h_addr_list[0] == NULL) {
-				@throw [OFAddressTranslationFailedException
-				    exceptionWithHost: host
-					       socket: self];
-			}
-
-			memcpy(&addr.in.sin_addr.s_addr, he->h_addr_list[0],
-			    he->h_length);
-# ifdef OF_HAVE_THREADS
-		} @finally {
-			[mutex unlock];
+		if (bind(_socket, results[0]->address,
+		    results[0]->addressLength) == -1) {
+			close(_socket);
+			_socket = INVALID_SOCKET;
+			@throw [OFBindFailedException exceptionWithHost: host
+								   port: port
+								 socket: self];
 		}
-# endif
+	} @finally {
+		of_resolver_free(results);
 	}
-
-	if ((_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self];
-
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&one,
-	    sizeof(one)))
-		@throw [OFSetOptionFailedException exceptionWithStream: self];
-
-	if (bind(_socket, (struct sockaddr*)&addr.in, sizeof(addr.in)) == -1) {
-		close(_socket);
-		_socket = INVALID_SOCKET;
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self];
-	}
-#endif
 
 	if (port > 0)
 		return port;
@@ -637,10 +451,25 @@ static uint16_t freePort = 65532;
 {
 	OFTCPSocket *client = [[[[self class] alloc] init] autorelease];
 
-	if ((client->_socket = accept(_socket,
-	    (struct sockaddr*)&client->_sockAddr,
-	    &client->_sockAddrLen)) == INVALID_SOCKET)
+	client->_address = [client
+	    allocMemoryWithSize: sizeof(struct sockaddr_storage)];
+	client->_addressLength = sizeof(struct sockaddr_storage);
+
+	if ((client->_socket = accept(_socket, client->_address,
+	   &client->_addressLength)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException exceptionWithSocket: self];
+
+	assert(client->_addressLength <= sizeof(struct sockaddr_storage));
+
+	if (client->_addressLength != sizeof(struct sockaddr_storage)) {
+		@try {
+			client->_address = [client
+			    resizeMemory: client->_address
+				    size: client->_addressLength];
+		} @catch (OFOutOfMemoryException *e) {
+			/* We don't care, as we only made it smaller */
+		}
+	}
 
 	return client;
 }
@@ -671,46 +500,13 @@ static uint16_t freePort = 65532;
 
 - (OFString*)remoteAddress
 {
-	char *host;
-
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
-#ifdef HAVE_THREADSAFE_GETADDRINFO
-	host = [self allocMemoryWithSize: NI_MAXHOST];
+	if (_address == NULL)
+		@throw [OFInvalidArgumentException exception];
 
-	@try {
-		if (getnameinfo((struct sockaddr*)&_sockAddr, _sockAddrLen,
-		    host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST | NI_NUMERICSERV))
-			@throw [OFAddressTranslationFailedException
-			    exceptionWithSocket: self];
-
-		return [OFString stringWithUTF8String: host];
-	} @finally {
-		[self freeMemory: host];
-	}
-#else
-# ifdef OF_HAVE_THREADS
-	[mutex lock];
-
-	@try {
-# endif
-		host = inet_ntoa(((struct sockaddr_in*)&_sockAddr)->sin_addr);
-
-		if (host == NULL)
-			@throw [OFAddressTranslationFailedException
-			    exceptionWithSocket: self];
-
-		return [OFString stringWithUTF8String: host];
-# ifdef OF_HAVE_THREADS
-	} @finally {
-		[mutex unlock];
-	}
-# endif
-#endif
-
-	/* Get rid of a warning, never reached anyway */
-	OF_ENSURE(0);
+	return of_address_to_string(_address, _addressLength);
 }
 
 - (bool)isListening
@@ -723,6 +519,5 @@ static uint16_t freePort = 65532;
 	[super close];
 
 	_listening = false;
-	_sockAddrLen = sizeof(struct sockaddr_storage);
 }
 @end

@@ -85,7 +85,8 @@ SRCS_SOCKETS = OFHTTPClient.m		\
 	       OFHTTPServer.m		\
 	       OFStreamObserver.m	\
 	       OFStreamSocket.m		\
-	       OFTCPSocket.m
+	       OFTCPSocket.m		\
+	       resolver.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\

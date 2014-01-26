@@ -296,6 +296,8 @@
 		4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */; };
 		4B745BA5168B25E600A6C20E /* OFSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B745BA3168B25E600A6C20E /* OFSystemInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B745BA6168B25E600A6C20E /* OFSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B745BA4168B25E600A6C20E /* OFSystemInfo.m */; };
+		4B7769ED1895C07D00D12284 /* resolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7769EB1895C07D00D12284 /* resolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B7769EE1895C07D00D12284 /* resolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7769EC1895C07D00D12284 /* resolver.m */; };
 		4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD58118942FE200990FD6 /* socket_helpers.h */; };
 		4B7DD5851894358500990FD6 /* OFMoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7DD5861894358500990FD6 /* OFMoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */; };
@@ -734,6 +736,8 @@
 		4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPResponse.m; path = src/OFHTTPResponse.m; sourceTree = "<group>"; };
 		4B745BA3168B25E600A6C20E /* OFSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSystemInfo.h; path = src/OFSystemInfo.h; sourceTree = "<group>"; };
 		4B745BA4168B25E600A6C20E /* OFSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSystemInfo.m; path = src/OFSystemInfo.m; sourceTree = "<group>"; };
+		4B7769EB1895C07D00D12284 /* resolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resolver.h; path = src/resolver.h; sourceTree = "<group>"; };
+		4B7769EC1895C07D00D12284 /* resolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = resolver.m; path = src/resolver.m; sourceTree = "<group>"; };
 		4B7DD58118942FE200990FD6 /* socket_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socket_helpers.h; path = src/socket_helpers.h; sourceTree = "<group>"; };
 		4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMoveItemFailedException.h; path = src/exceptions/OFMoveItemFailedException.h; sourceTree = "<group>"; };
 		4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMoveItemFailedException.m; path = src/exceptions/OFMoveItemFailedException.m; sourceTree = "<group>"; };
@@ -1352,6 +1356,8 @@
 				4BB50DD012F863C700C9393F /* of_asprintf.m */,
 				4BA355BC14879BF700442EF4 /* of_strptime.h */,
 				4BA355B914879BDD00442EF4 /* of_strptime.m */,
+				4B7769EB1895C07D00D12284 /* resolver.h */,
+				4B7769EC1895C07D00D12284 /* resolver.m */,
 				4B7DD58718943D4A00990FD6 /* socket.h */,
 				4B7DD58118942FE200990FD6 /* socket_helpers.h */,
 				4B67998B1099E7C50041064A /* threading.h */,
@@ -1561,6 +1567,7 @@
 				4BD98C03133814220048DD5B /* objfw-defs.h in Headers */,
 				4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */,
 				4BA355BD14879BF700442EF4 /* of_strptime.h in Headers */,
+				4B7769ED1895C07D00D12284 /* resolver.h in Headers */,
 				4B7DD58818943D4A00990FD6 /* socket.h in Headers */,
 				4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */,
 				4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */,
@@ -1929,6 +1936,7 @@
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
 				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
 				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
+				4B7769EE1895C07D00D12284 /* resolver.m in Sources */,
 				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
 				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
 				4B90B79F133AD87D00BD33CB /* OFAcceptFailedException.m in Sources */,

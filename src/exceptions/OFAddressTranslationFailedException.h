@@ -27,24 +27,14 @@
  */
 @interface OFAddressTranslationFailedException: OFException
 {
-	id _socket;
 	OFString *_host;
 	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *host;
-@property (readonly, retain) id socket;
 @property (readonly) int errNo;
 #endif
-
-/*!
- * @brief Creates a new, autoreleased address translation failed exception.
- *
- * @param socket The socket which could not translate the address
- * @return A new, autoreleased address translation failed exception
- */
-+ (instancetype)exceptionWithSocket: (id)socket;
 
 /*!
  * @brief Creates a new, autoreleased address translation failed exception.
@@ -55,24 +45,6 @@
 + (instancetype)exceptionWithHost: (OFString*)host;
 
 /*!
- * @brief Creates a new, autoreleased address translation failed exception.
- *
- * @param host The host for which translation was requested
- * @param socket The socket which could not translate the address
- * @return A new, autoreleased address translation failed exception
- */
-+ (instancetype)exceptionWithHost: (OFString*)host
-			   socket: (id)socket;
-
-/*!
- * @brief Initializes an already allocated address translation failed exception.
- *
- * @param socket The socket which could not translate the address
- * @return An initialized address translation failed exception
- */
-- initWithSocket: (id)socket;
-
-/*!
  * @brief Initializes an already allocated address translation failed exception.
  *
  * @param host The host for which translation was requested
@@ -81,28 +53,11 @@
 - initWithHost: (OFString*)host;
 
 /*!
- * @brief Initializes an already allocated address translation failed exception.
- *
- * @param host The host for which translation was requested
- * @param socket The socket which could not translate the address
- * @return An initialized address translation failed exception
- */
-- initWithHost: (OFString*)host
-	socket: (id)socket;
-
-/*!
  * @brief Returns the host for which the address translation was requested.
  *
  * @return The host for which the address translation was requested
  */
 - (OFString*)host;
-
-/*!
- * @brief Returns the socket which could not translate the address.
- *
- * @return The socket which could not translate the address
- */
-- (id)socket;
 
 /*!
  * @brief Returns the errno from when the exception was created.

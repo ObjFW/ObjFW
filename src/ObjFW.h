@@ -182,3 +182,6 @@
 #import "base64.h"
 #import "of_asprintf.h"
 #import "of_strptime.h"
+#ifdef OF_HAVE_SOCKETS
+# import "resolver.h"
+#endif
