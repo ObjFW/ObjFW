@@ -18,17 +18,16 @@
 
 #import "OFAlreadyConnectedException.h"
 #import "OFString.h"
-#import "OFTCPSocket.h"
 
 #import "common.h"
 
 @implementation OFAlreadyConnectedException
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithSocket: (id)socket
 {
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
 
-- initWithSocket: (OFTCPSocket*)socket
+- initWithSocket: (id)socket
 {
 	self = [super init];
 
@@ -55,7 +54,7 @@
 		return @"A connection has already been established!";
 }
 
-- (OFTCPSocket*)socket
+- (id)socket
 {
 	OF_GETTER(_socket, true)
 }

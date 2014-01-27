@@ -18,13 +18,12 @@
 
 #import "OFAcceptFailedException.h"
 #import "OFString.h"
-#import "OFTCPSocket.h"
 
 #import "common.h"
 #import "macros.h"
 
 @implementation OFAcceptFailedException
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket
++ (instancetype)exceptionWithSocket: (id)socket
 {
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
@@ -34,7 +33,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSocket: (OFTCPSocket*)socket
+- initWithSocket: (id)socket
 {
 	self = [super init];
 
@@ -58,7 +57,7 @@
 	    [_socket class], ERRPARAM];
 }
 
-- (OFTCPSocket*)socket
+- (id)socket
 {
 	OF_GETTER(_socket, true)
 }

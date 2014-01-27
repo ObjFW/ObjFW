@@ -18,7 +18,6 @@
 
 #import "OFConnectionFailedException.h"
 #import "OFString.h"
-#import "OFTCPSocket.h"
 
 #import "common.h"
 #import "macros.h"
@@ -26,7 +25,7 @@
 @implementation OFConnectionFailedException
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
-			   socket: (OFTCPSocket*)socket
+			   socket: (id)socket
 {
 	return [[[self alloc] initWithHost: host
 				      port: port
@@ -40,7 +39,7 @@
 
 - initWithHost: (OFString*)host
 	  port: (uint16_t)port
-	socket: (OFTCPSocket*)socket
+	socket: (id)socket
 {
 	self = [super init];
 
@@ -83,7 +82,7 @@
 	return _port;
 }
 
-- (OFTCPSocket*)socket
+- (id)socket
 {
 	OF_GETTER(_socket, true)
 }

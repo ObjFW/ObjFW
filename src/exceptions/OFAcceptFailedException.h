@@ -22,19 +22,17 @@
 # error No sockets available!
 #endif
 
-@class OFTCPSocket;
-
 /*!
  * @brief An exception indicating that accepting a connection failed.
  */
 @interface OFAcceptFailedException: OFException
 {
-	OFTCPSocket *_socket;
+	id _socket;
 	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFTCPSocket *socket;
+@property (readonly, retain) id socket;
 @property (readonly) int errNo;
 #endif
 
@@ -44,7 +42,7 @@
  * @param socket The socket which could not accept a connection
  * @return A new, autoreleased accept failed exception
  */
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket;
++ (instancetype)exceptionWithSocket: (id)socket;
 
 /*!
  * @brief Initializes an already allocated accept failed exception.
@@ -52,14 +50,14 @@
  * @param socket The socket which could not accept a connection
  * @return An initialized accept failed exception
  */
-- initWithSocket: (OFTCPSocket*)socket;
+- initWithSocket: (id)socket;
 
 /*!
  * @brief Returns the socket which could not accept a connection.
  *
  * @return The socket which could not accept a connection
  */
-- (OFTCPSocket*)socket;
+- (id)socket;
 
 /*!
  * @brief Returns the errno from when the exception was created.

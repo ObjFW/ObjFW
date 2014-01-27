@@ -22,21 +22,19 @@
 # error No sockets available!
 #endif
 
-@class OFTCPSocket;
-
 /*!
  * @brief An exception indicating that a connection could not be established.
  */
 @interface OFConnectionFailedException: OFException
 {
-	OFTCPSocket *_socket;
-	OFString    *_host;
-	uint16_t    _port;
-	int	    _errNo;
+	id _socket;
+	OFString *_host;
+	uint16_t _port;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFTCPSocket *socket;
+@property (readonly, retain) id socket;
 @property (readonly, copy) OFString *host;
 @property (readonly) uint16_t port;
 @property (readonly) int errNo;
@@ -52,7 +50,7 @@
  */
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
-			   socket: (OFTCPSocket*)socket;
+			   socket: (id)socket;
 
 /*!
  * @brief Initializes an already allocated connection failed exception.
@@ -64,14 +62,14 @@
  */
 - initWithHost: (OFString*)host
 	  port: (uint16_t)port
-	socket: (OFTCPSocket*)socket;
+	socket: (id)socket;
 
 /*!
  * @brief Returns the socket which could not connect.
  *
  * @return The socket which could not connect
  */
-- (OFTCPSocket*)socket;
+- (id)socket;
 
 /*!
  * @brief Returns the host to which the connection failed.

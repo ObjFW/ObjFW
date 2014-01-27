@@ -20,19 +20,17 @@
 # error No sockets available!
 #endif
 
-@class OFTCPSocket;
-
 /*!
  * @brief An exception indicating an attempt to connect or bind an already
  *        connected or bound socket.
  */
 @interface OFAlreadyConnectedException: OFException
 {
-	OFTCPSocket *_socket;
+	id _socket;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, retain) OFTCPSocket *socket;
+@property (readonly, retain) id socket;
 #endif
 
 /*!
@@ -41,7 +39,7 @@
  * @param socket The socket which is already connected
  * @return A new, autoreleased already connected exception
  */
-+ (instancetype)exceptionWithSocket: (OFTCPSocket*)socket;
++ (instancetype)exceptionWithSocket: (id)socket;
 
 /*!
  * @brief Initializes an already allocated already connected exception.
@@ -49,12 +47,12 @@
  * @param socket The socket which is already connected
  * @return An initialized already connected exception
  */
-- initWithSocket: (OFTCPSocket*)socket;
+- initWithSocket: (id)socket;
 
 /*!
  * @brief Returns the socket which is already connected.
  *
  * @return The socket which is already connected
  */
-- (OFTCPSocket*)socket;
+- (id)socket;
 @end
