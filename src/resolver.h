@@ -49,14 +49,16 @@ extern of_resolver_result_t** of_resolve_host(OFString *host, uint16_t port,
     int protocol);
 
 /*!
- * @brief Converts the specified address to a string.
+ * @brief Converts the specified address to a string and port pair.
  *
  * @param address The address to convert to a string
  * @param addressLength The length of the address to convert to a string
+ * @param port A pointer to an uint16_t which should be set to the port of the
+ *	       address or NULL if the port is not needed
  * @return The address as a string
  */
-extern OFString* of_address_to_string(struct sockaddr *address,
-    socklen_t addressLength);
+extern OFString* of_address_to_string_and_port(struct sockaddr *address,
+    socklen_t addressLength, uint16_t *port);
 
 /*!
  * @brief Frees the results returned by @ref of_resolve_host.

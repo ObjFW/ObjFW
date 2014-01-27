@@ -407,7 +407,7 @@ static uint16_t freePort = 65532;
 
 #ifndef __wii__
 	addrLen = sizeof(addr.storage);
-	if (getsockname(_socket, (struct sockaddr*)&addr, &addrLen)) {
+	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
 		close(_socket);
 		_socket = INVALID_SOCKET;
 		@throw [OFBindFailedException exceptionWithHost: host
@@ -506,7 +506,7 @@ static uint16_t freePort = 65532;
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	return of_address_to_string(_address, _addressLength);
+	return of_address_to_string_and_port(_address, _addressLength, NULL);
 }
 
 - (bool)isListening

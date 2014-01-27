@@ -211,14 +211,30 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 }
 
 OFString*
-of_address_to_string(struct sockaddr *address, socklen_t addressLength)
+of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
+    uint16_t *port)
 {
 #ifdef HAVE_THREADSAFE_GETADDRINFO
 	char host[NI_MAXHOST];
+	char portCString[NI_MAXSERV];
 
-	if (getnameinfo(address, addressLength, host, NI_MAXHOST, NULL, 0,
-	    NI_NUMERICHOST | NI_NUMERICSERV))
+	/* FIXME: Add NI_DGRAM for UDP? */
+	if (getnameinfo(address, addressLength, host, NI_MAXHOST,
+	    portCString, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV))
 		@throw [OFAddressTranslationFailedException exception];
+
+	if (port != NULL) {
+		char *endptr;
+		long tmp;
+
+		if ((tmp = strtol(portCString, &endptr, 10)) > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		if (endptr != NULL && *endptr != '\0')
+			@throw [OFAddressTranslationFailedException exception];
+
+		*port = (uint16_t)tmp;
+	}
 
 	return [OFString stringWithUTF8String: host];
 #else
@@ -238,6 +254,10 @@ of_address_to_string(struct sockaddr *address, socklen_t addressLength)
 		@throw [OFAddressTranslationFailedException exception];
 
 	ret = [OFString stringWithUTF8String: host];
+
+	if (port != NULL)
+		*port = OF_BSWAP16_IF_LE(
+		    ((struct sockaddr_in*)(void*)address)->sin_port);
 
 # if OF_HAVE_THREADS
 	if (!of_mutex_unlock(&mutex))
