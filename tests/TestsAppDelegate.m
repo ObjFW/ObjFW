@@ -314,6 +314,7 @@ main(int argc, char *argv[])
 	[self streamTests];
 #ifdef OF_HAVE_SOCKETS
 	[self TCPSocketTests];
+	[self UDPSocketTests];
 #endif
 #ifdef OF_HAVE_THREADS
 	[self threadTests];

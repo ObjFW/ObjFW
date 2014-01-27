@@ -298,6 +298,8 @@
 		4B745BA6168B25E600A6C20E /* OFSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B745BA4168B25E600A6C20E /* OFSystemInfo.m */; };
 		4B7769ED1895C07D00D12284 /* resolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7769EB1895C07D00D12284 /* resolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7769EE1895C07D00D12284 /* resolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7769EC1895C07D00D12284 /* resolver.m */; };
+		4B7769F11895ED0C00D12284 /* OFUDPSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7769EF1895ED0C00D12284 /* OFUDPSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B7769F21895ED0C00D12284 /* OFUDPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7769F01895ED0C00D12284 /* OFUDPSocket.m */; };
 		4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD58118942FE200990FD6 /* socket_helpers.h */; };
 		4B7DD5851894358500990FD6 /* OFMoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7DD5861894358500990FD6 /* OFMoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */; };
@@ -738,6 +740,8 @@
 		4B745BA4168B25E600A6C20E /* OFSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSystemInfo.m; path = src/OFSystemInfo.m; sourceTree = "<group>"; };
 		4B7769EB1895C07D00D12284 /* resolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resolver.h; path = src/resolver.h; sourceTree = "<group>"; };
 		4B7769EC1895C07D00D12284 /* resolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = resolver.m; path = src/resolver.m; sourceTree = "<group>"; };
+		4B7769EF1895ED0C00D12284 /* OFUDPSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUDPSocket.h; path = src/OFUDPSocket.h; sourceTree = "<group>"; };
+		4B7769F01895ED0C00D12284 /* OFUDPSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUDPSocket.m; path = src/OFUDPSocket.m; sourceTree = "<group>"; };
 		4B7DD58118942FE200990FD6 /* socket_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socket_helpers.h; path = src/socket_helpers.h; sourceTree = "<group>"; };
 		4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMoveItemFailedException.h; path = src/exceptions/OFMoveItemFailedException.h; sourceTree = "<group>"; };
 		4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMoveItemFailedException.m; path = src/exceptions/OFMoveItemFailedException.m; sourceTree = "<group>"; };
@@ -1311,6 +1315,8 @@
 				4B325EDC1605F3A0007836CA /* OFTimer.m */,
 				4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */,
 				4BA02BA015041F5900002F84 /* OFTLSSocket.h */,
+				4B7769EF1895ED0C00D12284 /* OFUDPSocket.h */,
+				4B7769F01895ED0C00D12284 /* OFUDPSocket.m */,
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
 				4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */,
@@ -1543,6 +1549,7 @@
 				4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */,
 				4B325EDF1605F3A0007836CA /* OFTimer.h in Headers */,
 				4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */,
+				4B7769F11895ED0C00D12284 /* OFUDPSocket.h in Headers */,
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
 				4B49EA6D143B3A090005BBC6 /* OFXMLCDATA.h in Headers */,
@@ -1917,6 +1924,7 @@
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
 				4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */,
 				4B325EE01605F3A0007836CA /* OFTimer.m in Sources */,
+				4B7769F21895ED0C00D12284 /* OFUDPSocket.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
 				4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */,

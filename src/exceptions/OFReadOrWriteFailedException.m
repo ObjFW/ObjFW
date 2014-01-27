@@ -20,6 +20,7 @@
 #import "OFString.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
+# import "OFUDPSocket.h"
 #endif
 
 #import "common.h"
@@ -47,7 +48,8 @@
 	_requestedLength = requestedLength;
 
 #ifdef OF_HAVE_SOCKETS
-	if ([object isKindOfClass: [OFStreamSocket class]])
+	if ([object isKindOfClass: [OFStreamSocket class]] ||
+	    [object isKindOfClass: [OFUDPSocket class]])
 		_errNo = GET_SOCK_ERRNO;
 	else
 #endif

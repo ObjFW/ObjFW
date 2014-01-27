@@ -31,7 +31,8 @@ SRCS_FILES = OFMD5HashTests.m		\
 	     OFSerializationTests.m	\
 	     OFSHA1HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SOCKETS = OFTCPSocketTests.m
+SRCS_SOCKETS = OFTCPSocketTests.m	\
+	       OFUDPSocketTests.m
 SRCS_THREADS = OFThreadTests.m
 
 IOS_USER ?= mobile

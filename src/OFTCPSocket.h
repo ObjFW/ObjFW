@@ -168,10 +168,10 @@ typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
 #endif
 
 /*!
- * @brief Bind the socket on the specified port and host.
+ * @brief Bind the socket to the specified host and port.
  *
- * @param host The host to bind to. Use @"0.0.0.0" for IPv4 or @"::" for IPv6
- *	       to bind to all.
+ * @param host The host to bind to. Use `@"0.0.0.0"` for IPv4 or `@"::"` for
+ *	       IPv6 to bind to all.
  * @param port The port to bind to. If the port is 0, an unused port will be
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to

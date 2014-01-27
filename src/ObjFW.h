@@ -55,6 +55,7 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"
 # import "OFTCPSocket.h"
+# import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
 # import "OFStreamObserver.h"
 
