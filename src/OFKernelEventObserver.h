@@ -29,9 +29,9 @@
 
 /*!
  * @brief A protocol that needs to be implemented by delegates for
- *	  OFStreamObserver.
+ *	  OFKernelEventObserver.
  */
-@protocol OFStreamObserverDelegate <OFObject>
+@protocol OFKernelEventObserverDelegate <OFObject>
 #ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
 #endif
@@ -66,11 +66,12 @@
 @end
 
 /*!
- * @brief A class that can observe multiple streams at once.
+ * @brief A class that can observe multiple kernel events (e.g. streams being
+ *	  ready to read) at once.
  *
  * @note Currently, Win32 can only observe sockets and not files!
  */
-@interface OFStreamObserver: OFObject
+@interface OFKernelEventObserver: OFObject
 {
 	OFMutableArray *_readStreams;
 	OFMutableArray *_writeStreams;
@@ -78,7 +79,7 @@
 	size_t _maxFD;
 	OFMutableArray *_queue;
 	OFDataArray *_queueInfo, *_queueFDs;
-	id <OFStreamObserverDelegate> _delegate;
+	id <OFKernelEventObserverDelegate> _delegate;
 	int _cancelFD[2];
 #ifndef OF_HAVE_PIPE
 	struct sockaddr_in _cancelAddr;
@@ -89,29 +90,29 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFStreamObserverDelegate> delegate;
+@property (assign) id <OFKernelEventObserverDelegate> delegate;
 #endif
 
 /*!
- * @brief Creates a new OFStreamObserver.
+ * @brief Creates a new OFKernelEventObserver.
  *
- * @return A new, autoreleased OFStreamObserver
+ * @return A new, autoreleased OFKernelEventObserver
  */
 + (instancetype)observer;
 
 /*!
- * @brief Returns the delegate for the OFStreamObserver.
+ * @brief Returns the delegate for the OFKernelEventObserver.
  *
- * @return The delegate for the OFStreamObserver
+ * @return The delegate for the OFKernelEventObserver
  */
-- (id <OFStreamObserverDelegate>)delegate;
+- (id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
- * @brief Sets the delegate for the OFStreamObserver.
+ * @brief Sets the delegate for the OFKernelEventObserver.
  *
- * @param delegate The delegate for the OFStreamObserver
+ * @param delegate The delegate for the OFKernelEventObserver
  */
-- (void)setDelegate: (id <OFStreamObserverDelegate>)delegate;
+- (void)setDelegate: (id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
  * @brief Adds a stream to observe for reading.
@@ -193,5 +194,6 @@
 - (void)cancel;
 @end
 
-@interface OFObject (OFStreamObserverDelegate) <OFStreamObserverDelegate>
+@interface OFObject (OFKernelEventObserverDelegate)
+    <OFKernelEventObserverDelegate>
 @end

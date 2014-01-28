@@ -14,11 +14,11 @@
  * file.
  */
 
-#import "OFStreamObserver.h"
+#import "OFKernelEventObserver.h"
 
 #import "macros.h"
 
-@interface OFStreamObserver (OF_PRIVATE_CATEGORY)
+@interface OFKernelEventObserver (OF_PRIVATE_CATEGORY)
 - (void)OF_addFileDescriptorForReading: (int)fd;
 - (void)OF_addFileDescriptorForWriting: (int)fd;
 - (void)OF_removeFileDescriptorForReading: (int)fd;

@@ -22,9 +22,9 @@
 # include <poll.h>
 #endif
 
-#import "OFStreamObserver.h"
-#import "OFStreamObserver+Private.h"
-#import "OFStreamObserver_poll.h"
+#import "OFKernelEventObserver.h"
+#import "OFKernelEventObserver+Private.h"
+#import "OFKernelEventObserver_poll.h"
 #import "OFDataArray.h"
 
 #import "OFOutOfRangeException.h"
@@ -38,7 +38,7 @@
 # define fd socket
 #endif
 
-@implementation OFStreamObserver_poll
+@implementation OFKernelEventObserver_poll
 - init
 {
 	self = [super init];

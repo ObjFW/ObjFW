@@ -57,7 +57,7 @@
 # import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
-# import "OFStreamObserver.h"
+# import "OFKernelEventObserver.h"
 
 # import "OFHTTPRequest.h"
 # import "OFHTTPResponse.h"

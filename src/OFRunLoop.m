@@ -22,7 +22,7 @@
 #import "OFRunLoop+Private.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFStreamObserver.h"
+# import "OFKernelEventObserver.h"
 #endif
 #import "OFThread.h"
 #ifdef OF_HAVE_THREADS
@@ -177,7 +177,8 @@ static OFRunLoop *mainRunLoop = nil;
 	}								\
 									\
 	if ([queue count] == 0)						\
-		[runLoop->_streamObserver addStreamForReading: stream];	\
+		[runLoop->_kernelEventObserver				\
+		    addStreamForReading: stream];			\
 									\
 	queueItem = [[[type alloc] init] autorelease];			\
 	code								\
@@ -289,7 +290,7 @@ static OFRunLoop *mainRunLoop = nil;
 	if ((queue = [runLoop->_readQueues objectForKey: stream]) != nil) {
 		assert([queue count] > 0);
 
-		[runLoop->_streamObserver removeStreamForReading: stream];
+		[runLoop->_kernelEventObserver removeStreamForReading: stream];
 		[runLoop->_readQueues removeObjectForKey: stream];
 	}
 
@@ -308,8 +309,8 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 
 #if defined(OF_HAVE_SOCKETS)
-		_streamObserver = [[OFStreamObserver alloc] init];
-		[_streamObserver setDelegate: self];
+		_kernelEventObserver = [[OFKernelEventObserver alloc] init];
+		[_kernelEventObserver setDelegate: self];
 
 		_readQueues = [[OFMutableDictionary alloc] init];
 #elif defined(OF_HAVE_THREADS)
@@ -330,7 +331,7 @@ static OFRunLoop *mainRunLoop = nil;
 	[_timersQueueLock release];
 #endif
 #if defined(OF_HAVE_SOCKETS)
-	[_streamObserver release];
+	[_kernelEventObserver release];
 	[_readQueues release];
 #elif defined(OF_HAVE_THREADS)
 	[_condition release];
@@ -355,7 +356,7 @@ static OFRunLoop *mainRunLoop = nil;
 	[timer OF_setInRunLoop: self];
 
 #if defined(OF_HAVE_SOCKETS)
-	[_streamObserver cancel];
+	[_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
 	[_condition lock];
 	[_condition signal];
@@ -416,7 +417,7 @@ static OFRunLoop *mainRunLoop = nil;
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
-					[_streamObserver
+					[_kernelEventObserver
 					    removeStreamForReading: stream];
 					[_readQueues
 					    removeObjectForKey: stream];
@@ -435,7 +436,7 @@ static OFRunLoop *mainRunLoop = nil;
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
-					[_streamObserver
+					[_kernelEventObserver
 					    removeStreamForReading: stream];
 					[_readQueues
 					    removeObjectForKey: stream];
@@ -474,7 +475,7 @@ static OFRunLoop *mainRunLoop = nil;
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
-						[_streamObserver
+						[_kernelEventObserver
 						    removeStreamForReading:
 						    stream];
 						[_readQueues
@@ -498,7 +499,7 @@ static OFRunLoop *mainRunLoop = nil;
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
-						[_streamObserver
+						[_kernelEventObserver
 						    removeStreamForReading:
 						    stream];
 						[_readQueues
@@ -532,7 +533,7 @@ static OFRunLoop *mainRunLoop = nil;
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
-						[_streamObserver
+						[_kernelEventObserver
 						    removeStreamForReading:
 						    stream];
 						[_readQueues
@@ -553,7 +554,7 @@ static OFRunLoop *mainRunLoop = nil;
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
-						[_streamObserver
+						[_kernelEventObserver
 						    removeStreamForReading:
 						    stream];
 						[_readQueues
@@ -584,7 +585,7 @@ static OFRunLoop *mainRunLoop = nil;
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
-					[_streamObserver
+					[_kernelEventObserver
 					    removeStreamForReading: stream];
 					[_readQueues
 					    removeObjectForKey: stream];
@@ -604,7 +605,7 @@ static OFRunLoop *mainRunLoop = nil;
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
-					[_streamObserver
+					[_kernelEventObserver
 					    removeStreamForReading: stream];
 					[_readQueues
 					    removeObjectForKey: stream];
@@ -679,7 +680,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 			if (timeout > 0) {
 #if defined(OF_HAVE_SOCKETS)
-				[_streamObserver
+				[_kernelEventObserver
 				    observeForTimeInterval: timeout];
 #elif defined(OF_HAVE_THREADS)
 				[_condition lock];
@@ -696,7 +697,7 @@ static OFRunLoop *mainRunLoop = nil;
 			 * cancels the observe.
 			 */
 #if defined(OF_HAVE_SOCKETS)
-			[_streamObserver observe];
+			[_kernelEventObserver observe];
 #elif defined(OF_HAVE_THREADS)
 			[_condition lock];
 			[_condition wait];
@@ -714,7 +715,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	_running = false;
 #if defined(OF_HAVE_SOCKETS)
-	[_streamObserver cancel];
+	[_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
 	[_condition lock];
 	[_condition signal];

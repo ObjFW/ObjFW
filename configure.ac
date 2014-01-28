@@ -634,26 +634,30 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AC_CHECK_FUNC(kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
-		AC_SUBST(OFSTREAMOBSERVER_KQUEUE_M, "OFStreamObserver_kqueue.m")
+		AC_SUBST(OFKERNELEVENTOBSERVER_KQUEUE_M,
+			"OFKernelEventObserver_kqueue.m")
 	])
 	AC_CHECK_HEADER(poll.h, [
 		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
-		AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
+		AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
+			"OFKernelEventObserver_poll.m")
 	])
 	AC_CHECK_HEADER(sys/select.h, [
 		AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
-		AC_SUBST(OFSTREAMOBSERVER_SELECT_M, "OFStreamObserver_select.m")
+		AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
+			"OFKernelEventObserver_select.m")
 	])
 
 	case "$host_os" in
 		mingw*)
-			AC_SUBST(OFSTREAMOBSERVER_SELECT_M,
-				"OFStreamObserver_select.m")
+			AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
+				"OFKernelEventObserver_select.m")
 			;;
 	esac
 
 	AS_IF([test x"$with_wii" = x"yes"], [
-	       AC_SUBST(OFSTREAMOBSERVER_POLL_M, "OFStreamObserver_poll.m")
+	       AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
+			"OFKernelEventObserver_poll.m")
 	])
 
 	AC_MSG_CHECKING(for getaddrinfo)

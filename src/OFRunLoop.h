@@ -26,7 +26,7 @@
 @class OFCondition;
 #endif
 #ifdef OF_HAVE_SOCKETS
-@class OFStreamObserver;
+@class OFKernelEventObserver;
 #endif
 @class OFMutableDictionary;
 @class OFTimer;
@@ -41,7 +41,7 @@
 	OFMutex *_timersQueueLock;
 #endif
 #if defined(OF_HAVE_SOCKETS)
-	OFStreamObserver *_streamObserver;
+	OFKernelEventObserver *_kernelEventObserver;
 	OFMutableDictionary *_readQueues;
 #elif defined(OF_HAVE_THREADS)
 	OFCondition *_condition;

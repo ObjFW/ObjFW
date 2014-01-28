@@ -20,8 +20,8 @@
 
 #include <assert.h>
 
-#import "OFStreamObserver.h"
-#import "OFStreamObserver+Private.h"
+#import "OFKernelEventObserver.h"
+#import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFStream.h"
@@ -36,13 +36,13 @@
 #import "OFDate.h"
 
 #ifdef HAVE_KQUEUE
-# import "OFStreamObserver_kqueue.h"
+# import "OFKernelEventObserver_kqueue.h"
 #endif
 #if defined(HAVE_POLL_H) || defined(__wii__)
-# import "OFStreamObserver_poll.h"
+# import "OFKernelEventObserver_poll.h"
 #endif
 #if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
-# import "OFStreamObserver_select.h"
+# import "OFKernelEventObserver_select.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -60,7 +60,7 @@ enum {
 };
 #define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
-@implementation OFStreamObserver
+@implementation OFKernelEventObserver
 + (instancetype)observer
 {
 	return [[[self alloc] init] autorelease];
@@ -69,24 +69,24 @@ enum {
 #if defined(HAVE_KQUEUE)
 + alloc
 {
-	if (self == [OFStreamObserver class])
-		return [OFStreamObserver_kqueue alloc];
+	if (self == [OFKernelEventObserver class])
+		return [OFKernelEventObserver_kqueue alloc];
 
 	return [super alloc];
 }
 #elif defined(HAVE_POLL_H) || defined(__wii__)
 + alloc
 {
-	if (self == [OFStreamObserver class])
-		return [OFStreamObserver_poll alloc];
+	if (self == [OFKernelEventObserver class])
+		return [OFKernelEventObserver_poll alloc];
 
 	return [super alloc];
 }
 #elif defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
 + alloc
 {
-	if (self == [OFStreamObserver class])
-		return [OFStreamObserver_select alloc];
+	if (self == [OFKernelEventObserver class])
+		return [OFKernelEventObserver_select alloc];
 
 	return [super alloc];
 }
@@ -186,12 +186,12 @@ enum {
 	[super dealloc];
 }
 
-- (id <OFStreamObserverDelegate>)delegate
+- (id <OFKernelEventObserverDelegate>)delegate
 {
 	return _delegate;
 }
 
-- (void)setDelegate: (id <OFStreamObserverDelegate>)delegate
+- (void)setDelegate: (id <OFKernelEventObserverDelegate>)delegate
 {
 	_delegate = delegate;
 }

@@ -14,13 +14,12 @@
  * file.
  */
 
-#import "OFStreamObserver.h"
+#import "OFKernelEventObserver.h"
 
 @class OFDataArray;
 
-@interface OFStreamObserver_kqueue: OFStreamObserver
+@interface OFKernelEventObserver_poll: OFKernelEventObserver
 {
-	int _kernelQueue;
-	OFDataArray *_changeList;
+	OFDataArray *_FDs;
 }
 @end

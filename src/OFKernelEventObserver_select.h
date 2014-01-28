@@ -14,12 +14,21 @@
  * file.
  */
 
-#import "OFStreamObserver.h"
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
 
-@class OFDataArray;
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
 
-@interface OFStreamObserver_poll: OFStreamObserver
+#import "OFKernelEventObserver.h"
+
+@interface OFKernelEventObserver_select: OFKernelEventObserver
 {
-	OFDataArray *_FDs;
+	fd_set _readFDs, _writeFDs, _exceptFDs;
 }
 @end

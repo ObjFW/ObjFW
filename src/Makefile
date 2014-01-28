@@ -83,7 +83,7 @@ SRCS_SOCKETS = OFHTTPClient.m		\
 	       OFHTTPRequest.m		\
 	       OFHTTPResponse.m		\
 	       OFHTTPServer.m		\
-	       OFStreamObserver.m	\
+	       OFKernelEventObserver.m	\
 	       OFStreamSocket.m		\
 	       OFTCPSocket.m		\
 	       OFUDPSocket.m		\
@@ -131,9 +131,9 @@ SRCS += OFArray_adjacent.m		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\
 	windows_1252.m
-SRCS_SOCKETS += ${OFSTREAMOBSERVER_KQUEUE_M}	\
-		${OFSTREAMOBSERVER_POLL_M}	\
-		${OFSTREAMOBSERVER_SELECT_M}	\
+SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
+		${OFKERNELEVENTOBSERVER_POLL_M}		\
+		${OFKERNELEVENTOBSERVER_SELECT_M}	\
 		OFTCPSocket+SOCKS5.m
 
 OBJS_EXTRA = ${RUNTIME_RUNTIME_A}	\

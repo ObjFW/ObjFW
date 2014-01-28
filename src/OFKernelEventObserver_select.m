@@ -23,9 +23,9 @@
 
 #include <sys/time.h>
 
-#import "OFStreamObserver.h"
-#import "OFStreamObserver+Private.h"
-#import "OFStreamObserver_select.h"
+#import "OFKernelEventObserver.h"
+#import "OFKernelEventObserver+Private.h"
+#import "OFKernelEventObserver_select.h"
 #import "OFStream.h"
 #import "OFArray.h"
 
@@ -33,7 +33,7 @@
 #import "macros.h"
 #import "socket_helpers.h"
 
-@implementation OFStreamObserver_select
+@implementation OFKernelEventObserver_select
 - init
 {
 	self = [super init];

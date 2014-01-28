@@ -43,6 +43,16 @@
 		4B067FC0177BA6F900B8CFDA /* OFChangePermissionsFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B067FB4177BA6F900B8CFDA /* OFChangePermissionsFailedException.m */; };
 		4B067FC1177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B067FB5177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B067FC2177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B067FB6177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m */; };
+		4B0EA91B1898690E00F573A4 /* OFKernelEventObserver_kqueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA9121898690E00F573A4 /* OFKernelEventObserver_kqueue.h */; };
+		4B0EA91C1898690E00F573A4 /* OFKernelEventObserver_kqueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EA9131898690E00F573A4 /* OFKernelEventObserver_kqueue.m */; };
+		4B0EA91D1898690E00F573A4 /* OFKernelEventObserver_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA9141898690E00F573A4 /* OFKernelEventObserver_poll.h */; };
+		4B0EA91E1898690E00F573A4 /* OFKernelEventObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EA9151898690E00F573A4 /* OFKernelEventObserver_poll.m */; };
+		4B0EA91F1898690E00F573A4 /* OFKernelEventObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA9161898690E00F573A4 /* OFKernelEventObserver_select.h */; };
+		4B0EA9201898690E00F573A4 /* OFKernelEventObserver_select.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EA9171898690E00F573A4 /* OFKernelEventObserver_select.m */; };
+		4B0EA9211898690E00F573A4 /* OFKernelEventObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA9181898690E00F573A4 /* OFKernelEventObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B0EA9221898690E00F573A4 /* OFKernelEventObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EA9191898690E00F573A4 /* OFKernelEventObserver.m */; };
+		4B0EA9231898690E00F573A4 /* OFKernelEventObserver+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA91A1898690E00F573A4 /* OFKernelEventObserver+Private.h */; };
+		4B0EA925189869D900F573A4 /* OFUDPSocketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EA924189869D900F573A4 /* OFUDPSocketTests.m */; };
 		4B11005C14329B9A003A45D8 /* OFXMLNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B11005A14329B9A003A45D8 /* OFXMLNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B11005D14329B9A003A45D8 /* OFXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B11005B14329B9A003A45D8 /* OFXMLNode.m */; };
 		4B141BA415FCDF74000C21A8 /* OFSortedList.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B141BA215FCDF74000C21A8 /* OFSortedList.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -161,7 +171,6 @@
 		4B3D23A11337FC0D00DD29B8 /* OFSeekableStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B981CDF116F71DD00294DB7 /* OFSeekableStream.m */; };
 		4B3D23A21337FC0D00DD29B8 /* OFSHA1Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */; };
 		4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67997E1099E7C50041064A /* OFStream.m */; };
-		4B3D23A41337FC0D00DD29B8 /* OFStreamObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAF5F48123460C900F4E111 /* OFStreamObserver.m */; };
 		4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */; };
 		4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799801099E7C50041064A /* OFString.m */; };
 		4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF1BCC711C9663F0025511F /* OFString+Hashing.m */; };
@@ -205,7 +214,6 @@
 		4B3D23D31337FCB000DD29B8 /* OFSeekableStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23D41337FCB000DD29B8 /* OFSHA1Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23D51337FCB000DD29B8 /* OFStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67997D1099E7C50041064A /* OFStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B3D23D61337FCB000DD29B8 /* OFStreamObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAF5F47123460C900F4E111 /* OFStreamObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23D71337FCB000DD29B8 /* OFStreamSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAF5F49123460C900F4E111 /* OFStreamSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23D81337FCB000DD29B8 /* OFString.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67997F1099E7C50041064A /* OFString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23D91337FCB000DD29B8 /* OFString+Hashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF1BCC611C9663F0025511F /* OFString+Hashing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -266,10 +274,6 @@
 		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
 		4B62ED1518566FCA0004E0E3 /* OFCopyItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B62ED1618566FCA0004E0E3 /* OFCopyItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */; };
-		4B64D6EF1425381E007BDFB1 /* OFStreamObserver_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */; };
-		4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */; };
-		4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */; };
-		4B64D6F21425381E007BDFB1 /* OFStreamObserver_select.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */; };
 		4B66B636182ADC45000A69E3 /* OFDeflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B66B637182ADC45000A69E3 /* OFDeflate64Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B66B635182ADC45000A69E3 /* OFDeflate64Stream.m */; };
 		4B6743F1163C384A00EB1E59 /* OFLockFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -287,7 +291,6 @@
 		4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FD163C395900EB1E59 /* OFRecursiveMutex.m */; };
 		4B6C8AD817BD5C2E00B194F2 /* OFRunLoop+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */; };
 		4B6C8AD917BD5C2E00B194F2 /* OFStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */; };
-		4B6C8ADA17BD5C2E00B194F2 /* OFStreamObserver+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD317BD5C2E00B194F2 /* OFStreamObserver+Private.h */; };
 		4B6C8ADB17BD5C2E00B194F2 /* OFString_UTF8+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD417BD5C2E00B194F2 /* OFString_UTF8+Private.h */; };
 		4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */; };
 		4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */; };
@@ -308,8 +311,6 @@
 		4B7FF3B5133CED6200000324 /* OFConditionStillWaitingException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */; };
 		4B837D7916829C5F007A3E83 /* block.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B837D7716829C5F007A3E83 /* block.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B837D7A16829C5F007A3E83 /* instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B837D7816829C5F007A3E83 /* instance.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B83F0F4142FDEFD00E4A821 /* OFStreamObserver_kqueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B83F0F2142FDEFD00E4A821 /* OFStreamObserver_kqueue.h */; };
-		4B83F0F5142FDEFD00E4A821 /* OFStreamObserver_kqueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B83F0F3142FDEFD00E4A821 /* OFStreamObserver_kqueue.m */; };
 		4B86E7CB17F8B98200ACA680 /* OFDeflateStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B86E7C917F8B98200ACA680 /* OFDeflateStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B86E7CC17F8B98200ACA680 /* OFDeflateStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B86E7CA17F8B98200ACA680 /* OFDeflateStream.m */; };
 		4B879A8C177231F000EBCEA4 /* OFDataArray+MessagePackValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -499,6 +500,16 @@
 		4B067FB6177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCreateSymbolicLinkFailedException.m; path = src/exceptions/OFCreateSymbolicLinkFailedException.m; sourceTree = "<group>"; };
 		4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLElementBuilder.h; path = src/OFXMLElementBuilder.h; sourceTree = "<group>"; };
 		4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementBuilder.m; path = src/OFXMLElementBuilder.m; sourceTree = "<group>"; };
+		4B0EA9121898690E00F573A4 /* OFKernelEventObserver_kqueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFKernelEventObserver_kqueue.h; path = src/OFKernelEventObserver_kqueue.h; sourceTree = "<group>"; };
+		4B0EA9131898690E00F573A4 /* OFKernelEventObserver_kqueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFKernelEventObserver_kqueue.m; path = src/OFKernelEventObserver_kqueue.m; sourceTree = "<group>"; };
+		4B0EA9141898690E00F573A4 /* OFKernelEventObserver_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFKernelEventObserver_poll.h; path = src/OFKernelEventObserver_poll.h; sourceTree = "<group>"; };
+		4B0EA9151898690E00F573A4 /* OFKernelEventObserver_poll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFKernelEventObserver_poll.m; path = src/OFKernelEventObserver_poll.m; sourceTree = "<group>"; };
+		4B0EA9161898690E00F573A4 /* OFKernelEventObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFKernelEventObserver_select.h; path = src/OFKernelEventObserver_select.h; sourceTree = "<group>"; };
+		4B0EA9171898690E00F573A4 /* OFKernelEventObserver_select.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFKernelEventObserver_select.m; path = src/OFKernelEventObserver_select.m; sourceTree = "<group>"; };
+		4B0EA9181898690E00F573A4 /* OFKernelEventObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFKernelEventObserver.h; path = src/OFKernelEventObserver.h; sourceTree = "<group>"; };
+		4B0EA9191898690E00F573A4 /* OFKernelEventObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFKernelEventObserver.m; path = src/OFKernelEventObserver.m; sourceTree = "<group>"; };
+		4B0EA91A1898690E00F573A4 /* OFKernelEventObserver+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFKernelEventObserver+Private.h"; path = "src/OFKernelEventObserver+Private.h"; sourceTree = "<group>"; };
+		4B0EA924189869D900F573A4 /* OFUDPSocketTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUDPSocketTests.m; path = tests/OFUDPSocketTests.m; sourceTree = "<group>"; };
 		4B11005A14329B9A003A45D8 /* OFXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLNode.h; path = src/OFXMLNode.h; sourceTree = "<group>"; };
 		4B11005B14329B9A003A45D8 /* OFXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLNode.m; path = src/OFXMLNode.m; sourceTree = "<group>"; };
 		4B141BA215FCDF74000C21A8 /* OFSortedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSortedList.h; path = src/OFSortedList.h; sourceTree = "<group>"; };
@@ -645,10 +656,6 @@
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
 		4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyItemFailedException.h; path = src/exceptions/OFCopyItemFailedException.h; sourceTree = "<group>"; };
 		4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCopyItemFailedException.m; path = src/exceptions/OFCopyItemFailedException.m; sourceTree = "<group>"; };
-		4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_poll.h; path = src/OFStreamObserver_poll.h; sourceTree = "<group>"; };
-		4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_poll.m; path = src/OFStreamObserver_poll.m; sourceTree = "<group>"; };
-		4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_select.h; path = src/OFStreamObserver_select.h; sourceTree = "<group>"; };
-		4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_select.m; path = src/OFStreamObserver_select.m; sourceTree = "<group>"; };
 		4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDeflate64Stream.h; path = src/OFDeflate64Stream.h; sourceTree = "<group>"; };
 		4B66B635182ADC45000A69E3 /* OFDeflate64Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDeflate64Stream.m; path = src/OFDeflate64Stream.m; sourceTree = "<group>"; };
 		4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFLockFailedException.h; path = src/exceptions/OFLockFailedException.h; sourceTree = "<group>"; };
@@ -709,7 +716,6 @@
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
 		4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFRunLoop+Private.h"; path = "src/OFRunLoop+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStream+Private.h"; path = "src/OFStream+Private.h"; sourceTree = "<group>"; };
-		4B6C8AD317BD5C2E00B194F2 /* OFStreamObserver+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStreamObserver+Private.h"; path = "src/OFStreamObserver+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD417BD5C2E00B194F2 /* OFString_UTF8+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString_UTF8+Private.h"; path = "src/OFString_UTF8+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFThread+Private.h"; path = "src/OFThread+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTimer+Private.h"; path = "src/OFTimer+Private.h"; sourceTree = "<group>"; };
@@ -751,8 +757,6 @@
 		4B7FF3B3133CED6100000324 /* OFConditionStillWaitingException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionStillWaitingException.m; path = src/exceptions/OFConditionStillWaitingException.m; sourceTree = "<group>"; };
 		4B837D7716829C5F007A3E83 /* block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = block.h; path = src/block.h; sourceTree = "<group>"; };
 		4B837D7816829C5F007A3E83 /* instance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = instance.h; path = src/instance.h; sourceTree = "<group>"; };
-		4B83F0F2142FDEFD00E4A821 /* OFStreamObserver_kqueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver_kqueue.h; path = src/OFStreamObserver_kqueue.h; sourceTree = "<group>"; };
-		4B83F0F3142FDEFD00E4A821 /* OFStreamObserver_kqueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver_kqueue.m; path = src/OFStreamObserver_kqueue.m; sourceTree = "<group>"; };
 		4B86E7C917F8B98200ACA680 /* OFDeflateStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDeflateStream.h; path = src/OFDeflateStream.h; sourceTree = "<group>"; };
 		4B86E7CA17F8B98200ACA680 /* OFDeflateStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDeflateStream.m; path = src/OFDeflateStream.m; sourceTree = "<group>"; };
 		4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+MessagePackValue.h"; path = "src/OFDataArray+MessagePackValue.h"; sourceTree = "<group>"; };
@@ -814,8 +818,6 @@
 		4BAA60C714D09699006F068D /* OFJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFJSONTests.m; path = tests/OFJSONTests.m; sourceTree = "<group>"; };
 		4BAE7353139C507F00F682ED /* serialization.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = serialization.xml; path = tests/serialization.xml; sourceTree = "<group>"; };
 		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = "<group>"; };
-		4BAF5F47123460C900F4E111 /* OFStreamObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamObserver.h; path = src/OFStreamObserver.h; sourceTree = "<group>"; };
-		4BAF5F48123460C900F4E111 /* OFStreamObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamObserver.m; path = src/OFStreamObserver.m; sourceTree = "<group>"; };
 		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = "<group>"; };
 		4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStreamSocket.m; path = src/OFStreamSocket.m; sourceTree = "<group>"; };
 		4BAFC166182EAA7800BE5E57 /* OFOptionsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFOptionsParser.h; path = src/OFOptionsParser.h; sourceTree = "<group>"; };
@@ -1208,6 +1210,15 @@
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
 				4BA49D8F13DB113B00381CDB /* OFIntrospection.m */,
 				4BA02B9F15041F5900002F84 /* OFJSONRepresentation.h */,
+				4B0EA9181898690E00F573A4 /* OFKernelEventObserver.h */,
+				4B0EA9191898690E00F573A4 /* OFKernelEventObserver.m */,
+				4B0EA91A1898690E00F573A4 /* OFKernelEventObserver+Private.h */,
+				4B0EA9121898690E00F573A4 /* OFKernelEventObserver_kqueue.h */,
+				4B0EA9131898690E00F573A4 /* OFKernelEventObserver_kqueue.m */,
+				4B0EA9141898690E00F573A4 /* OFKernelEventObserver_poll.h */,
+				4B0EA9151898690E00F573A4 /* OFKernelEventObserver_poll.m */,
+				4B0EA9161898690E00F573A4 /* OFKernelEventObserver_select.h */,
+				4B0EA9171898690E00F573A4 /* OFKernelEventObserver_select.m */,
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
 				4B6743F9163C395900EB1E59 /* OFLocking.h */,
@@ -1272,15 +1283,6 @@
 				4B67997D1099E7C50041064A /* OFStream.h */,
 				4B67997E1099E7C50041064A /* OFStream.m */,
 				4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */,
-				4BAF5F47123460C900F4E111 /* OFStreamObserver.h */,
-				4BAF5F48123460C900F4E111 /* OFStreamObserver.m */,
-				4B6C8AD317BD5C2E00B194F2 /* OFStreamObserver+Private.h */,
-				4B83F0F2142FDEFD00E4A821 /* OFStreamObserver_kqueue.h */,
-				4B83F0F3142FDEFD00E4A821 /* OFStreamObserver_kqueue.m */,
-				4B64D6EB1425381E007BDFB1 /* OFStreamObserver_poll.h */,
-				4B64D6EC1425381E007BDFB1 /* OFStreamObserver_poll.m */,
-				4B64D6ED1425381E007BDFB1 /* OFStreamObserver_select.h */,
-				4B64D6EE1425381E007BDFB1 /* OFStreamObserver_select.m */,
 				4BAF5F49123460C900F4E111 /* OFStreamSocket.h */,
 				4BAF5F4A123460C900F4E111 /* OFStreamSocket.m */,
 				4B67997F1099E7C50041064A /* OFString.h */,
@@ -1400,6 +1402,7 @@
 				4B6EF6791235358D0076B512 /* OFStringTests.m */,
 				4B6EF67A1235358D0076B512 /* OFTCPSocketTests.m */,
 				4B6EF67B1235358D0076B512 /* OFThreadTests.m */,
+				4B0EA924189869D900F573A4 /* OFUDPSocketTests.m */,
 				4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */,
 				4B6EF67C1235358D0076B512 /* OFXMLElementBuilderTests.m */,
 				4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */,
@@ -1507,6 +1510,7 @@
 				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
+				4B0EA9211898690E00F573A4 /* OFKernelEventObserver.h in Headers */,
 				4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */,
 				4B674402163C395900EB1E59 /* OFLocking.h in Headers */,
 				4B3B0798166978780044E634 /* OFMapTable.h in Headers */,
@@ -1534,7 +1538,6 @@
 				4B141BA415FCDF74000C21A8 /* OFSortedList.h in Headers */,
 				4B0256E4172B60400062B5F1 /* OFStdIOStream.h in Headers */,
 				4B3D23D51337FCB000DD29B8 /* OFStream.h in Headers */,
-				4B3D23D61337FCB000DD29B8 /* OFStreamObserver.h in Headers */,
 				4B3D23D71337FCB000DD29B8 /* OFStreamSocket.h in Headers */,
 				4B3D23D81337FCB000DD29B8 /* OFString.h in Headers */,
 				4B3D23D91337FCB000DD29B8 /* OFString+Hashing.h in Headers */,
@@ -1637,6 +1640,10 @@
 				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
 				4B2B3E7F140D430500EC2F7C /* OFDictionary_hashtable.h in Headers */,
+				4B0EA9231898690E00F573A4 /* OFKernelEventObserver+Private.h in Headers */,
+				4B0EA91B1898690E00F573A4 /* OFKernelEventObserver_kqueue.h in Headers */,
+				4B0EA91D1898690E00F573A4 /* OFKernelEventObserver_poll.h in Headers */,
+				4B0EA91F1898690E00F573A4 /* OFKernelEventObserver_select.h in Headers */,
 				4BC1C3EB184B5EB200BBF50F /* OFMapTable+Private.h in Headers */,
 				4B2B3E81140D430500EC2F7C /* OFMutableArray_adjacent.h in Headers */,
 				4B2B3E83140D430500EC2F7C /* OFMutableDictionary_hashtable.h in Headers */,
@@ -1645,10 +1652,6 @@
 				4B6C8AD817BD5C2E00B194F2 /* OFRunLoop+Private.h in Headers */,
 				4BA85BCE140ECCE800E91D51 /* OFSet_hashtable.h in Headers */,
 				4B6C8AD917BD5C2E00B194F2 /* OFStream+Private.h in Headers */,
-				4B6C8ADA17BD5C2E00B194F2 /* OFStreamObserver+Private.h in Headers */,
-				4B83F0F4142FDEFD00E4A821 /* OFStreamObserver_kqueue.h in Headers */,
-				4B64D6EF1425381E007BDFB1 /* OFStreamObserver_poll.h in Headers */,
-				4B64D6F11425381E007BDFB1 /* OFStreamObserver_select.h in Headers */,
 				4B552554147AA5DB0003BF47 /* OFString_UTF8.h in Headers */,
 				4B6C8ADB17BD5C2E00B194F2 /* OFString_UTF8+Private.h in Headers */,
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
@@ -1876,6 +1879,10 @@
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,
 				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
+				4B0EA9221898690E00F573A4 /* OFKernelEventObserver.m in Sources */,
+				4B0EA91C1898690E00F573A4 /* OFKernelEventObserver_kqueue.m in Sources */,
+				4B0EA91E1898690E00F573A4 /* OFKernelEventObserver_poll.m in Sources */,
+				4B0EA9201898690E00F573A4 /* OFKernelEventObserver_select.m in Sources */,
 				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,
 				4B3B0799166978780044E634 /* OFMapTable.m in Sources */,
 				4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */,
@@ -1905,10 +1912,6 @@
 				4B141BA515FCDF74000C21A8 /* OFSortedList.m in Sources */,
 				4B0256E5172B60400062B5F1 /* OFStdIOStream.m in Sources */,
 				4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */,
-				4B3D23A41337FC0D00DD29B8 /* OFStreamObserver.m in Sources */,
-				4B83F0F5142FDEFD00E4A821 /* OFStreamObserver_kqueue.m in Sources */,
-				4B64D6F01425381E007BDFB1 /* OFStreamObserver_poll.m in Sources */,
-				4B64D6F21425381E007BDFB1 /* OFStreamObserver_select.m in Sources */,
 				4B3D23A51337FC0D00DD29B8 /* OFStreamSocket.m in Sources */,
 				4B3D23A61337FC0D00DD29B8 /* OFString.m in Sources */,
 				4B3D23A71337FC0D00DD29B8 /* OFString+Hashing.m in Sources */,
@@ -2029,6 +2032,7 @@
 				4BF33B0A133807A20059CEF7 /* OFStringTests.m in Sources */,
 				4BF33B0B133807A20059CEF7 /* OFTCPSocketTests.m in Sources */,
 				4BF33B0C133807A20059CEF7 /* OFThreadTests.m in Sources */,
+				4B0EA925189869D900F573A4 /* OFUDPSocketTests.m in Sources */,
 				4BF33B0D133807A20059CEF7 /* OFURLTests.m in Sources */,
 				4BF33B0E133807A20059CEF7 /* OFXMLElementBuilderTests.m in Sources */,
 				4B49EA66143B39CE0005BBC6 /* OFXMLNodeTests.m in Sources */,
