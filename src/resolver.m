@@ -95,13 +95,12 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 		resultsIter->protocol = res->ai_protocol;
 		resultsIter->address = res->ai_addr;
 		resultsIter->addressLength = res->ai_addrlen;
-		resultsIter->private = NULL;
 
 		*retIter = resultsIter;
 	}
 	*retIter = NULL;
 
-	ret[0]->private = res0;
+	ret[0]->private_ = res0;
 #else
 	struct hostent *he;
 	in_addr_t s_addr;
@@ -272,7 +271,7 @@ void
 of_resolver_free(of_resolver_result_t **results)
 {
 #ifdef HAVE_THREADSAFE_GETADDRINFO
-	freeaddrinfo(results[0]->private);
+	freeaddrinfo(results[0]->private_);
 #else
 	free(results[0]->address);
 #endif

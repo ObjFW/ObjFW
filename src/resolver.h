@@ -27,7 +27,7 @@ typedef struct of_resolver_result_t {
 	int family, type, protocol;
 	struct sockaddr *address;
 	socklen_t addressLength;
-	void *private;
+	void *private_;
 } of_resolver_result_t;
 
 #ifdef __cplusplus
