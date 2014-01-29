@@ -29,6 +29,6 @@
 
 @interface OFKernelEventObserver_select: OFKernelEventObserver
 {
-	fd_set _readFDs, _writeFDs, _exceptFDs;
+	fd_set _readFDs, _writeFDs;
 }
 @end

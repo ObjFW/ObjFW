@@ -25,6 +25,7 @@
 
 #import "OFObject.h"
 #import "OFString.h"
+#import "OFKernelEventObserver.h"
 
 /*! @file */
 
@@ -75,7 +76,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *	 override these methods without the lowlevel prefix, you *will* break
  *	 caching and get broken results!
  */
-@interface OFStream: OFObject <OFCopying>
+@interface OFStream: OFObject <OFCopying, OFReadyForReadingObserving,
+    OFReadyForWritingObserving>
 {
 	char *_readBuffer, *_writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
@@ -141,6 +143,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * return 0 bytes - this does not necessarily mean that the stream ended, so
  * you still need to check @ref isAtEndOfStream.
  *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
+ *
  * @param buffer The buffer into which the data is read.
  *		 The buffer must not be free'd before the async read completed!
  * @param length The length of the data that should be read at most.
@@ -168,6 +173,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * not call the method when less than the specified length has been read -
  * instead, it waits until it got exactly the specified length, the stream has
  * ended or an exception occurred.
+ *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
@@ -198,6 +206,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * return 0 bytes - this does not necessarily mean that the stream ended, so
  * you still need to check @ref isAtEndOfStream.
  *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
+ *
  * @param buffer The buffer into which the data is read.
  *		 The buffer must not be free'd before the async read completed!
  * @param length The length of the data that should be read at most.
@@ -220,6 +231,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * the block when less than the specified length has been read - instead, it
  * waits until it got exactly the specified length, the stream has ended or an
  * exception occurred.
+ *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
@@ -587,6 +601,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @brief Asyncronously reads until a newline, \\0, end of stream or an
  *	  exception occurs.
  *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
+ *
  * @param target The target on which to call the selector when the data has
  *		 been received. If the method returns true, it will be called
  *		 again when the next line has been received. If you want the
@@ -602,6 +619,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 /*!
  * @brief Asyncronously reads with the specified encoding until a newline, \\0,
  *	  end of stream or an exception occurs.
+ *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
  *
  * @param encoding The encoding used by the stream
  * @param target The target on which to call the selector when the data has
@@ -622,6 +642,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @brief Asyncronously reads until a newline, \\0, end of stream or an
  *	  exception occurs.
  *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
+ *
  * @param block The block to call when the data has been received.
  *		If the block returns true, it will be called again when the next
  *		line has been received. If you want the next block in the queue
@@ -633,6 +656,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 /*!
  * @brief Asyncronously reads with the specified encoding until a newline, \\0,
  *	  end of stream or an exception occurs.
+ *
+ * @note The stream must implement @ref fileDescriptorForReading and return a
+ *	 valid file descriptor in order for this to work!
  *
  * @param encoding The encoding used by the stream
  * @param block The block to call when the data has been received.

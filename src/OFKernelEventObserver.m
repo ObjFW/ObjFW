@@ -46,6 +46,7 @@
 #endif
 
 #import "OFInitializationFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 #import "autorelease.h"
@@ -104,8 +105,8 @@ enum {
 # endif
 #endif
 
-		_readStreams = [[OFMutableArray alloc] init];
-		_writeStreams = [[OFMutableArray alloc] init];
+		_readObjects = [[OFMutableArray alloc] init];
+		_writeObjects = [[OFMutableArray alloc] init];
 		_queue = [[OFMutableArray alloc] init];
 		_queueInfo = [[OFDataArray alloc]
 		    initWithItemSize: sizeof(int)];
@@ -154,9 +155,9 @@ enum {
 #endif
 
 		_maxFD = _cancelFD[0];
-		_FDToStream = [self allocMemoryWithSize: sizeof(OFStream*)
+		_FDToObject = [self allocMemoryWithSize: sizeof(id)
 						  count: _maxFD + 1];
-		_FDToStream[_cancelFD[0]] = nil;
+		_FDToObject[_cancelFD[0]] = nil;
 
 #ifdef OF_HAVE_THREADS
 		_mutex = [[OFMutex alloc] init];
@@ -174,8 +175,8 @@ enum {
 	close(_cancelFD[0]);
 	close(_cancelFD[1]);
 
-	[_readStreams release];
-	[_writeStreams release];
+	[_readObjects release];
+	[_writeObjects release];
 	[_queue release];
 	[_queueInfo release];
 	[_queueFDs release];
@@ -196,16 +197,16 @@ enum {
 	_delegate = delegate;
 }
 
-- (void)addStreamForReading: (OFStream*)stream
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 #endif
 	@try {
 		int qi = QUEUE_ADD | QUEUE_READ;
-		int fd = [stream fileDescriptorForReading];
+		int fd = [object fileDescriptorForReading];
 
-		[_queue addObject: stream];
+		[_queue addObject: object];
 		[_queueInfo addItem: &qi];
 		[_queueFDs addItem: &fd];
 	} @finally {
@@ -217,16 +218,16 @@ enum {
 	[self cancel];
 }
 
-- (void)addStreamForWriting: (OFStream*)stream
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 #endif
 	@try {
 		int qi = QUEUE_ADD | QUEUE_WRITE;
-		int fd = [stream fileDescriptorForWriting];
+		int fd = [object fileDescriptorForWriting];
 
-		[_queue addObject: stream];
+		[_queue addObject: object];
 		[_queueInfo addItem: &qi];
 		[_queueFDs addItem: &fd];
 	} @finally {
@@ -238,16 +239,16 @@ enum {
 	[self cancel];
 }
 
-- (void)removeStreamForReading: (OFStream*)stream
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 #endif
 	@try {
 		int qi = QUEUE_REMOVE | QUEUE_READ;
-		int fd = [stream fileDescriptorForReading];
+		int fd = [object fileDescriptorForReading];
 
-		[_queue addObject: stream];
+		[_queue addObject: object];
 		[_queueInfo addItem: &qi];
 		[_queueFDs addItem: &fd];
 	} @finally {
@@ -259,16 +260,16 @@ enum {
 	[self cancel];
 }
 
-- (void)removeStreamForWriting: (OFStream*)stream
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 #endif
 	@try {
 		int qi = QUEUE_REMOVE | QUEUE_WRITE;
-		int fd = [stream fileDescriptorForWriting];
+		int fd = [object fileDescriptorForWriting];
 
-		[_queue addObject: stream];
+		[_queue addObject: object];
 		[_queueInfo addItem: &qi];
 		[_queueFDs addItem: &fd];
 	} @finally {
@@ -306,54 +307,54 @@ enum {
 	[_mutex lock];
 #endif
 	@try {
-		OFStream **queueObjects = [_queue objects];
+		id *queueObjects = [_queue objects];
 		int *queueInfoItems = [_queueInfo items];
 		int *queueFDsItems = [_queueFDs items];
 		size_t i, count = [_queue count];
 
 		for (i = 0; i < count; i++) {
-			OFStream *stream = queueObjects[i];
+			id object = queueObjects[i];
 			int action = queueInfoItems[i];
 			int fd = queueFDsItems[i];
 
 			if ((action & QUEUE_ACTION) == QUEUE_ADD) {
 				if (fd > _maxFD) {
 					_maxFD = fd;
-					_FDToStream = [self
-					    resizeMemory: _FDToStream
-						    size: sizeof(OFStream*)
+					_FDToObject = [self
+					    resizeMemory: _FDToObject
+						    size: sizeof(id)
 						   count: _maxFD + 1];
 				}
 
-				_FDToStream[fd] = stream;
+				_FDToObject[fd] = object;
 			}
 
 			if ((action & QUEUE_ACTION) == QUEUE_REMOVE) {
 				/* FIXME: Maybe downsize? */
-				_FDToStream[fd] = nil;
+				_FDToObject[fd] = nil;
 			}
 
 			switch (action) {
 			case QUEUE_ADD | QUEUE_READ:
-				[_readStreams addObject: stream];
+				[_readObjects addObject: object];
 
 				[self OF_addFileDescriptorForReading: fd];
 
 				break;
 			case QUEUE_ADD | QUEUE_WRITE:
-				[_writeStreams addObject: stream];
+				[_writeObjects addObject: object];
 
 				[self OF_addFileDescriptorForWriting: fd];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
-				[_readStreams removeObjectIdenticalTo: stream];
+				[_readObjects removeObjectIdenticalTo: object];
 
 				[self OF_removeFileDescriptorForReading: fd];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
-				[_writeStreams removeObjectIdenticalTo: stream];
+				[_writeObjects removeObjectIdenticalTo: object];
 
 				[self OF_removeFileDescriptorForWriting: fd];
 
@@ -400,18 +401,19 @@ enum {
 
 - (bool)OF_processCache
 {
-	OFStream **objects = [_readStreams objects];
-	size_t i, count = [_readStreams count];
+	id *objects = [_readObjects objects];
+	size_t i, count = [_readObjects count];
 	bool foundInCache = false;
 
 	for (i = 0; i < count; i++) {
-		if ([objects[i] numberOfBytesInReadBuffer] > 0 &&
+		if ([objects[i] isKindOfClass: [OFStream class]] &&
+		    [objects[i] numberOfBytesInReadBuffer] > 0 &&
 		    ![objects[i] OF_isWaitingForDelimiter]) {
 			void *pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
-			    @selector(streamIsReadyForReading:)])
-				[_delegate streamIsReadyForReading: objects[i]];
+			    @selector(objectsIsReadyForReading:)])
+				[_delegate objectIsReadyForReading: objects[i]];
 
 			foundInCache = true;
 

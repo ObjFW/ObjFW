@@ -178,7 +178,7 @@ static OFRunLoop *mainRunLoop = nil;
 									\
 	if ([queue count] == 0)						\
 		[runLoop->_kernelEventObserver				\
-		    addStreamForReading: stream];			\
+		    addObjectForReading: stream];			\
 									\
 	queueItem = [[[type alloc] init] autorelease];			\
 	code								\
@@ -290,7 +290,7 @@ static OFRunLoop *mainRunLoop = nil;
 	if ((queue = [runLoop->_readQueues objectForKey: stream]) != nil) {
 		assert([queue count] > 0);
 
-		[runLoop->_kernelEventObserver removeStreamForReading: stream];
+		[runLoop->_kernelEventObserver removeObjectForReading: stream];
 		[runLoop->_readQueues removeObjectForKey: stream];
 	}
 
@@ -387,9 +387,9 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 #ifdef OF_HAVE_SOCKETS
-- (void)streamIsReadyForReading: (OFStream*)stream
+- (void)objectIsReadyForReading: (id)object
 {
-	OFList *queue = [_readQueues objectForKey: stream];
+	OFList *queue = [_readQueues objectForKey: object];
 	of_list_object_t *listObject;
 
 	assert(queue != nil);
@@ -403,7 +403,7 @@ static OFRunLoop *mainRunLoop = nil;
 		OFException *exception = nil;
 
 		@try {
-			length = [stream readIntoBuffer: queueItem->_buffer
+			length = [object readIntoBuffer: queueItem->_buffer
 						 length: queueItem->_length];
 		} @catch (OFException *e) {
 			length = 0;
@@ -412,15 +412,15 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 		if (queueItem->_block != NULL) {
-			if (!queueItem->_block(stream, queueItem->_buffer,
+			if (!queueItem->_block(object, queueItem->_buffer,
 			    length, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
 					[_kernelEventObserver
-					    removeStreamForReading: stream];
+					    removeObjectForReading: object];
 					[_readQueues
-					    removeObjectForKey: stream];
+					    removeObjectForKey: object];
 				}
 			}
 		} else {
@@ -432,14 +432,14 @@ static OFRunLoop *mainRunLoop = nil;
 			    queueItem->_selector];
 
 			if (!func(queueItem->_target, queueItem->_selector,
-			    stream, queueItem->_buffer, length, exception)) {
+			    object, queueItem->_buffer, length, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
 					[_kernelEventObserver
-					    removeStreamForReading: stream];
+					    removeObjectForReading: object];
 					[_readQueues
-					    removeObjectForKey: stream];
+					    removeObjectForKey: object];
 				}
 			}
 # ifdef OF_HAVE_BLOCKS
@@ -452,7 +452,7 @@ static OFRunLoop *mainRunLoop = nil;
 		OFException *exception = nil;
 
 		@try {
-			length = [stream
+			length = [object
 			    readIntoBuffer: (char*)queueItem->_buffer +
 					    queueItem->_readLength
 				    length: queueItem->_exactLength -
@@ -464,10 +464,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 		queueItem->_readLength += length;
 		if (queueItem->_readLength == queueItem->_exactLength ||
-		    [stream isAtEndOfStream] || exception != nil) {
+		    [object isAtEndOfStream] || exception != nil) {
 # ifdef OF_HAVE_BLOCKS
 			if (queueItem->_block != NULL) {
-				if (queueItem->_block(stream,
+				if (queueItem->_block(object,
 				    queueItem->_buffer, queueItem->_readLength,
 				    exception))
 					queueItem->_readLength = 0;
@@ -476,10 +476,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 					if ([queue count] == 0) {
 						[_kernelEventObserver
-						    removeStreamForReading:
-						    stream];
+						    removeObjectForReading:
+						    object];
 						[_readQueues
-						    removeObjectForKey: stream];
+						    removeObjectForKey: object];
 					}
 				}
 			} else {
@@ -491,7 +491,7 @@ static OFRunLoop *mainRunLoop = nil;
 				    methodForSelector: queueItem->_selector];
 
 				if (func(queueItem->_target,
-				    queueItem->_selector, stream,
+				    queueItem->_selector, object,
 				    queueItem->_buffer, queueItem->_readLength,
 				    exception))
 					queueItem->_readLength = 0;
@@ -500,10 +500,10 @@ static OFRunLoop *mainRunLoop = nil;
 
 					if ([queue count] == 0) {
 						[_kernelEventObserver
-						    removeStreamForReading:
-						    stream];
+						    removeObjectForReading:
+						    object];
 						[_readQueues
-						    removeObjectForKey: stream];
+						    removeObjectForKey: object];
 					}
 				}
 # ifdef OF_HAVE_BLOCKS
@@ -517,27 +517,27 @@ static OFRunLoop *mainRunLoop = nil;
 		OFException *exception = nil;
 
 		@try {
-			line = [stream
+			line = [object
 			    tryReadLineWithEncoding: queueItem->_encoding];
 		} @catch (OFException *e) {
 			line = nil;
 			exception = e;
 		}
 
-		if (line != nil || [stream isAtEndOfStream] ||
+		if (line != nil || [object isAtEndOfStream] ||
 		    exception != nil) {
 # ifdef OF_HAVE_BLOCKS
 			if (queueItem->_block != NULL) {
-				if (!queueItem->_block(stream, line,
+				if (!queueItem->_block(object, line,
 				    exception)) {
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
 						[_kernelEventObserver
-						    removeStreamForReading:
-						    stream];
+						    removeObjectForReading:
+						    object];
 						[_readQueues
-						    removeObjectForKey: stream];
+						    removeObjectForKey: object];
 					}
 				}
 			} else {
@@ -549,16 +549,16 @@ static OFRunLoop *mainRunLoop = nil;
 				    queueItem->_selector];
 
 				if (!func(queueItem->_target,
-				    queueItem->_selector, stream, line,
+				    queueItem->_selector, object, line,
 				    exception)) {
 					[queue removeListObject: listObject];
 
 					if ([queue count] == 0) {
 						[_kernelEventObserver
-						    removeStreamForReading:
-						    stream];
+						    removeObjectForReading:
+						    object];
 						[_readQueues
-						    removeObjectForKey: stream];
+						    removeObjectForKey: object];
 					}
 				}
 # ifdef OF_HAVE_BLOCKS
@@ -572,7 +572,7 @@ static OFRunLoop *mainRunLoop = nil;
 		OFException *exception = nil;
 
 		@try {
-			newSocket = [(OFTCPSocket*)stream accept];
+			newSocket = [object accept];
 		} @catch (OFException *e) {
 			newSocket = nil;
 			exception = e;
@@ -580,15 +580,14 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 		if (queueItem->_block != NULL) {
-			if (!queueItem->_block((OFTCPSocket*)stream,
-			    newSocket, exception)) {
+			if (!queueItem->_block(object, newSocket, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
 					[_kernelEventObserver
-					    removeStreamForReading: stream];
+					    removeObjectForReading: object];
 					[_readQueues
-					    removeObjectForKey: stream];
+					    removeObjectForKey: object];
 				}
 			}
 		} else {
@@ -601,14 +600,14 @@ static OFRunLoop *mainRunLoop = nil;
 			    queueItem->_selector];
 
 			if (!func(queueItem->_target, queueItem->_selector,
-			    (OFTCPSocket*)stream, newSocket, exception)) {
+			    object, newSocket, exception)) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
 					[_kernelEventObserver
-					    removeStreamForReading: stream];
+					    removeObjectForReading: object];
 					[_readQueues
-					    removeObjectForKey: stream];
+					    removeObjectForKey: object];
 				}
 			}
 # ifdef OF_HAVE_BLOCKS
@@ -673,7 +672,7 @@ static OFRunLoop *mainRunLoop = nil;
 		}
 #endif
 
-		/* Watch for stream events until the next timer is due */
+		/* Watch for I/O events until the next timer is due */
 		if (nextTimer != nil) {
 			of_time_interval_t timeout =
 			    [nextTimer timeIntervalSinceNow];
@@ -692,7 +691,7 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 		} else {
 			/*
-			 * No more timers: Just watch for streams until we get
+			 * No more timers: Just watch for I/O until we get
 			 * an event. If a timer is added by another thread, it
 			 * cancels the observe.
 			 */

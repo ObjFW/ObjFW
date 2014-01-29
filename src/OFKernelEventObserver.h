@@ -18,7 +18,6 @@
 
 #import "socket.h"
 
-@class OFStream;
 @class OFMutableArray;
 @class OFMutableDictionary;
 @class OFDataArray;
@@ -36,46 +35,70 @@
 @optional
 #endif
 /*!
- * @brief This callback is called when a stream did get ready for reading.
+ * @brief This callback is called when an object did get ready for reading.
  *
- * @note When @ref OFStream::tryReadLine or
- *	 @ref OFStream::tryReadTillDelimiter: has been called on the stream,
- *	 this callback will not be called again until new data has been
- *	 received, even though there is still data in the cache. The reason for
- *	 this is to prevent spinning in a loop when there is an incomplete
- *	 string in the cache. Once the string is complete, the callback will be
- *	 called again if there is data in the cache.
+ * @note If the object is a subclass of @ref OFStream and
+ *	 @ref OFStream::tryReadLine or @ref OFStream::tryReadTillDelimiter: has
+ *	 been called on the stream, this callback will not be called again
+ *	 until new data has been received, even though there is still data in
+ *	 the cache. The reason for this is to prevent spinning in a loop when
+ *	 there is an incomplete string in the cache. Once the string has been
+ *	 completed, the callback will be called again as long there is data in
+ *	 the cache.
  *
- * @param stream The stream which did become ready for reading
+ * @param object The object which did become ready for reading
  */
-- (void)streamIsReadyForReading: (OFStream*)stream;
+- (void)objectIsReadyForReading: (id)object;
 
 /*!
- * @brief This callback is called when a stream did get ready for writing.
+ * @brief This callback is called when an object did get ready for writing.
  *
- * @param stream The stream which did become ready for writing
+ * @param object The object which did become ready for writing
  */
-- (void)streamIsReadyForWriting: (OFStream*)stream;
+- (void)objectIsReadyForWriting: (id)object;
+@end
 
 /*!
- * @brief This callback is called when an exception occurred on the stream.
- *
- * @param stream The stream on which an exception occurred
+ * @brief This protocol is implemented by classes which can be observed for
+ *	  readiness for reading by OFKernelEventObserver.
  */
-- (void)streamDidReceiveException: (OFStream*)stream;
+@protocol OFReadyForReadingObserving <OFObject>
+/*!
+ * @brief Returns the file descriptor for reading that should be checked by the
+ *	  OFKernelEventObserver.
+ *
+ * @return The file descriptor for reading that should be checked by the
+ *	   OFKernelEventObserver
+ */
+- (int)fileDescriptorForReading;
+@end
+
+/*!
+ * @brief This protocol is implemented by classes which can be observed for
+ *	  readiness for writing by OFKernelEventObserver.
+ */
+@protocol OFReadyForWritingObserving <OFObject>
+/*!
+ * @brief Returns the file descriptor for writing that should be checked by the
+ *	  OFKernelEventObserver.
+ *
+ * @return The file descriptor for writing that should be checked by the
+ *	   OFKernelEventObserver
+ */
+- (int)fileDescriptorForWriting;
 @end
 
 /*!
  * @brief A class that can observe multiple kernel events (e.g. streams being
  *	  ready to read) at once.
  *
- * @note Currently, Win32 can only observe sockets and not files!
+ * @note Currently, Win32 can only observe TCP sockets!
  */
 @interface OFKernelEventObserver: OFObject
 {
-	OFMutableArray *_readStreams;
-	OFMutableArray *_writeStreams;
-	__unsafe_unretained OFStream **_FDToStream;
+	OFMutableArray *_readObjects;
+	OFMutableArray *_writeObjects;
+	__unsafe_unretained id *_FDToObject;
 	size_t _maxFD;
 	OFMutableArray *_queue;
 	OFDataArray *_queueInfo, *_queueFDs;
@@ -115,59 +138,55 @@
 - (void)setDelegate: (id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
- * @brief Adds a stream to observe for reading.
+ * @brief Adds an object to observe for reading.
  *
  * This is also used to observe a listening socket for incoming connections,
- * which then triggers a read event for the observed stream.
- *
- * It is recommended that the stream you add is set to non-blocking mode.
+ * which then triggers a read event for the observed object.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
- * for this is to prevent blocking even though the new added stream is ready.
+ * for this is to prevent blocking even though the newly added object is ready.
  *
- * @param stream The stream to observe for reading
+ * @param object The object to observe for reading
  */
-- (void)addStreamForReading: (OFStream*)stream;
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object;
 
 /*!
- * @brief Adds a stream to observe for writing.
- *
- * It is recommended that the stream you add is set to non-blocking mode.
+ * @brief Adds an object to observe for writing.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
- * for this is to prevent blocking even though the new added stream is ready.
+ * for this is to prevent blocking even though the newly added object is ready.
  *
- * @param stream The stream to observe for writing
+ * @param object The object to observe for writing
  */
-- (void)addStreamForWriting: (OFStream*)stream;
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
 /*!
- * @brief Removes a stream to observe for reading.
+ * @brief Removes an object to observe for reading.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
- * for this is to prevent the removed stream from still being observed.
+ * for this is to prevent the removed object from still being observed.
  *
- * @param stream The stream to remove from observing for reading
+ * @param object The object to remove from observing for reading
  */
-- (void)removeStreamForReading: (OFStream*)stream;
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object;
 
 /*!
- * @brief Removes a stream to observe for writing.
+ * @brief Removes an object to observe for writing.
  *
  * If there is an @ref observe call blocking, it will be canceled. The reason
- * for this is to prevent the removed stream from still being observed.
+ * for this is to prevent the removed object from still being observed.
  *
- * @param stream The stream to remove from observing for writing
+ * @param object The object to remove from observing for writing
  */
-- (void)removeStreamForWriting: (OFStream*)stream;
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object;
 
 /*!
- * @brief Observes all streams and blocks until an event happens on a stream.
+ * @brief Observes all objects and blocks until an event happens on an object.
  */
 - (void)observe;
 
 /*!
- * @brief Observes all streams until an event happens on a stream or the
+ * @brief Observes all objects until an event happens on an object or the
  *	  timeout is reached.
  *
  * @param timeInterval The time to wait for an event, in seconds
@@ -176,8 +195,8 @@
 - (bool)observeForTimeInterval: (of_time_interval_t)timeInterval;
 
 /*!
- * @brief Observes all streams until an event happens on a stream or the
- *	  timeout is reached.
+ * @brief Observes all objects until an event happens on an object or the
+ *	  specified date is reached.
  *
  * @param date The until which to observe
  * @return A boolean whether events occurred until the specified date
@@ -187,7 +206,7 @@
 /*!
  * @brief Cancels the currently blocking observe call.
  *
- * This is automatically done when a new stream is added or removed by another
+ * This is automatically done when a new object is added or removed by another
  * thread, but in some circumstances, it might be desirable for a thread to
  * manually stop the observe running in another thread.
  */

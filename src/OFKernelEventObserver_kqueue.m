@@ -152,28 +152,18 @@
 
 		pool = objc_autoreleasePoolPush();
 
-		if (eventList[i].flags & EV_ERROR) {
-			if ([_delegate respondsToSelector:
-			    @selector(streamDidReceiveException:)])
-				[_delegate streamDidReceiveException:
-				    _FDToStream[eventList[i].ident]];
-
-			objc_autoreleasePoolPop(pool);
-			continue;
-		}
-
 		switch (eventList[i].filter) {
 		case EVFILT_READ:
 			if ([_delegate respondsToSelector:
-			    @selector(streamIsReadyForReading:)])
-				[_delegate streamIsReadyForReading:
-				    _FDToStream[eventList[i].ident]];
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading:
+				    _FDToObject[eventList[i].ident]];
 			break;
 		case EVFILT_WRITE:
 			if ([_delegate respondsToSelector:
-			    @selector(streamIsReadyForWriting:)])
-				[_delegate streamIsReadyForWriting:
-				    _FDToStream[eventList[i].ident]];
+			    @selector(objectIsReadyForWriting:)])
+				[_delegate objectIsReadyForWriting:
+				    _FDToObject[eventList[i].ident]];
 			break;
 		default:
 			assert(0);

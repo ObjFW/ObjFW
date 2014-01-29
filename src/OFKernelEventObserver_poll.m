@@ -82,7 +82,7 @@
 	}
 
 	if (!found) {
-		struct pollfd p = { fd, events | POLLERR, 0 };
+		struct pollfd p = { fd, events, 0 };
 		[_FDs addItem: &p];
 	}
 }
@@ -97,7 +97,7 @@
 		if (FDs[i].fd == fd) {
 			FDs[i].events &= ~events;
 
-			if ((FDs[i].events & ~POLLERR) == 0)
+			if (FDs[i].events == 0)
 				[_FDs removeItemAtIndex: i];
 
 			break;
@@ -171,27 +171,18 @@
 			}
 
 			if ([_delegate respondsToSelector:
-			    @selector(streamIsReadyForReading:)])
-				[_delegate streamIsReadyForReading:
-				    _FDToStream[FDs[i].fd]];
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading:
+				    _FDToObject[FDs[i].fd]];
 
 			realEvents++;
 		}
 
 		if (FDs[i].revents & POLLOUT) {
 			if ([_delegate respondsToSelector:
-			    @selector(streamIsReadyForWriting:)])
-				[_delegate streamIsReadyForWriting:
-				    _FDToStream[FDs[i].fd]];
-
-			realEvents++;
-		}
-
-		if (FDs[i].revents & POLLERR) {
-			if ([_delegate respondsToSelector:
-			    @selector(streamDidReceiveException:)])
-				[_delegate streamDidReceiveException:
-				    _FDToStream[FDs[i].fd]];
+			    @selector(objectIsReadyForWriting:)])
+				[_delegate objectIsReadyForWriting:
+				    _FDToObject[FDs[i].fd]];
 
 			realEvents++;
 		}
