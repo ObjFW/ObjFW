@@ -285,6 +285,16 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 						   requestedLength: length];
 }
 
+- (int)fileDescriptorForReading
+{
+	return _socket;
+}
+
+- (int)fileDescriptorForWriting
+{
+	return _socket;
+}
+
 - (void)close
 {
 	if (_socket == INVALID_SOCKET)

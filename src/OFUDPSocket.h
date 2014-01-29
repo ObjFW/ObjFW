@@ -15,6 +15,7 @@
  */
 
 #import "OFObject.h"
+#import "OFKernelEventObserver.h"
 
 #import "socket.h"
 
@@ -38,7 +39,8 @@ typedef struct {
  * @ref of_udp_socket_address_equal and you can use
  * @ref of_udp_socket_address_hash to get a hash to use in e.g. @ref OFMapTable.
  */
-@interface OFUDPSocket: OFObject
+@interface OFUDPSocket: OFObject <OFReadyForReadingObserving,
+    OFReadyForWritingObserving>
 {
 	int _socket;
 }
