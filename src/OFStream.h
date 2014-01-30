@@ -157,8 +157,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 queue to handle the data received next, you need to return
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
- *		   bool (OFStream *stream, void *buffer, size_t size,
- *		   OFException *exception).
+ *		   `bool (OFStream *stream, void *buffer, size_t size,
+ *		   OFException *exception)`.
  */
 - (void)asyncReadIntoBuffer: (void*)buffer
 		     length: (size_t)length
@@ -187,8 +187,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 queue to handle the data received next, you need to return
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
- *		   bool (OFStream *stream, void *buffer, size_t size,
- *		   OFException *exception).
+ *		   `bool (OFStream *stream, void *buffer, size_t size,
+ *		   OFException *exception)`.
  */
  - (void)asyncReadIntoBuffer: (void*)buffer
 		 exactLength: (size_t)length
@@ -610,8 +610,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 next method in the queue to handle the next line, you need to
  *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
- *		   bool (OFStream *stream, OFString *line,
- *		   OFException *exception).
+ *		   `bool (OFStream *stream, OFString *line,
+ *		   OFException *exception)`.
  */
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector;
@@ -630,8 +630,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 next method in the queue to handle the next line, you need to
  *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
- *		   bool (OFStream *stream, OFString *line,
- *		   OFException *exception).
+ *		   `bool (OFStream *stream, OFString *line,
+ *		   OFException *exception)`.
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target

@@ -15,6 +15,8 @@
  */
 
 #import "OFRunLoop.h"
+#import "OFStream.h"
+#import "OFUDPSocket.h"
 
 #import "macros.h"
 
@@ -38,6 +40,11 @@
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
 			       target: (id)target
 			     selector: (SEL)selector;
++ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket*)socket
+				buffer: (void*)buffer
+				length: (size_t)length
+				target: (id)target
+			      selector: (SEL)selector;
 # ifdef OF_HAVE_BLOCKS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream
 			  buffer: (void*)buffer
@@ -53,8 +60,13 @@
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
 				block: (of_tcp_socket_async_accept_block_t)
 					   block;
++ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket*)socket
+				buffer: (void*)buffer
+				length: (size_t)length
+				 block: (of_udp_socket_async_receive_block_t)
+					    block;
 # endif
-+ (void)OF_cancelAsyncRequestsForStream: (OFStream*)stream;
++ (void)OF_cancelAsyncRequestsForObject: (id)object;
 #endif
 - (void)OF_removeTimer: (OFTimer*)timer;
 @end

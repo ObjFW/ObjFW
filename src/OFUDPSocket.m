@@ -21,6 +21,11 @@
 #include <assert.h>
 
 #import "OFUDPSocket.h"
+#ifdef OF_HAVE_THREADS
+# import "OFThread.h"
+#endif
+#import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 
 #import "OFBindFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -28,12 +33,143 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
+#import "autorelease.h"
 #import "macros.h"
 #import "resolver.h"
 #import "socket_helpers.h"
 
 #ifdef __wii__
 static uint16_t freePort = 65532;
+#endif
+
+#ifdef OF_HAVE_THREADS
+@interface OFUDPSocket_ResolveThread: OFThread
+{
+	OFThread *_sourceThread;
+	OFString *_host;
+	uint16_t _port;
+	id _target;
+	SEL _selector;
+# ifdef OF_HAVE_BLOCKS
+	of_udp_socket_async_resolve_block_t _block;
+# endif
+	of_udp_socket_address_t _address;
+	OFException *_exception;
+}
+
+- initWithSourceThread: (OFThread*)sourceThread
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		target: (id)target
+	      selector: (SEL)selector;
+# ifdef OF_HAVE_BLOCKS
+- initWithSourceThread: (OFThread*)sourceThread
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		 block: (of_udp_socket_async_resolve_block_t)block;
+# endif
+@end
+
+@implementation OFUDPSocket_ResolveThread
+- initWithSourceThread: (OFThread*)sourceThread
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		target: (id)target
+	      selector: (SEL)selector
+{
+	self = [super init];
+
+	@try {
+		_sourceThread = [sourceThread retain];
+		_host = [host retain];
+		_port = port;
+		_target = [target retain];
+		_selector = selector;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+# ifdef OF_HAVE_BLOCKS
+- initWithSourceThread: (OFThread*)sourceThread
+		  host: (OFString*)host
+		  port: (uint16_t)port
+		 block: (of_udp_socket_async_resolve_block_t)block
+{
+	self = [super init];
+
+	@try {
+		_sourceThread = [sourceThread retain];
+		_host = [host copy];
+		_port = port;
+		_block = [block copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+# endif
+
+- (void)dealloc
+{
+	[_sourceThread release];
+	[_host release];
+	[_target release];
+# ifdef OF_HAVE_BLOCKS
+	[_block release];
+# endif
+	[_exception release];
+
+	[super dealloc];
+}
+
+- (void)didResolve
+{
+	[self join];
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		_block(_host, _port, _address, _exception);
+# endif
+	else {
+		void (*func)(id, SEL, OFString*, uint16_t,
+		    of_udp_socket_address_t, OFException*) =
+		    (void(*)(id, SEL, OFString*, uint16_t,
+		    of_udp_socket_address_t, OFException*))[_target
+		    methodForSelector: _selector];
+
+		func(_target, _selector, _host, _port, _address, _exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
+- (id)main
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	@try {
+		[OFUDPSocket resolveAddressForHost: _host
+					      port: _port
+					   address: &_address];
+	} @catch (OFException *e) {
+		_exception = e;
+	}
+
+	[self performSelector: @selector(didResolve)
+		     onThread: _sourceThread
+		waitUntilDone: false];
+
+	objc_autoreleasePoolPop(pool);
+
+	return nil;
+}
+@end
 #endif
 
 bool
@@ -161,6 +297,42 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	of_resolver_free(results);
 }
 
+#ifdef OF_HAVE_THREADS
++ (void)asyncResolveAddressForHost: (OFString*)host
+			      port: (uint16_t)port
+			    target: (id)target
+			  selector: (SEL)selector
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[[[OFUDPSocket_ResolveThread alloc]
+	    initWithSourceThread: [OFThread currentThread]
+			    host: host
+			    port: port
+			  target: target
+			selector: selector] autorelease] start];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+# ifdef OF_HAVE_BLOCKS
++ (void)asyncResolveAddressForHost: (OFString*)host
+			      port: (uint16_t)port
+			     block: (of_udp_socket_async_resolve_block_t)block
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[[[OFUDPSocket_ResolveThread alloc]
+	    initWithSourceThread: [OFThread currentThread]
+			    host: host
+			    port: port
+			   block: block] autorelease] start];
+
+	objc_autoreleasePoolPop(pool);
+}
+# endif
+#endif
+
 + (void)getHost: (OFString *__autoreleasing*)host
 	andPort: (uint16_t*)port
      forAddress: (of_udp_socket_address_t*)address
@@ -273,6 +445,30 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	return ret;
 }
 
+- (void)asyncReceiveIntoBuffer: (void*)buffer
+			length: (size_t)length
+			target: (id)target
+		      selector: (SEL)selector
+{
+	[OFRunLoop OF_addAsyncReceiveForUDPSocket: self
+					   buffer: buffer
+					   length: length
+					   target: target
+					 selector: selector];
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncReceiveIntoBuffer: (void*)buffer
+			length: (size_t)length
+			 block: (of_udp_socket_async_receive_block_t)block
+{
+	[OFRunLoop OF_addAsyncReceiveForUDPSocket: self
+					   buffer: buffer
+					   length: length
+					    block: block];
+}
+#endif
+
 - (void)sendBuffer: (const void*)buffer
 	    length: (size_t)length
 	  receiver: (of_udp_socket_address_t*)receiver
@@ -284,6 +480,11 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	    (struct sockaddr*)&receiver->address, receiver->length) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+}
+
+- (void)cancelAsyncRequests
+{
+	[OFRunLoop OF_cancelAsyncRequestsForObject: self];
 }
 
 - (int)fileDescriptorForReading

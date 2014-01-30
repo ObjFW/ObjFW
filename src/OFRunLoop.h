@@ -15,7 +15,6 @@
  */
 
 #import "OFObject.h"
-#import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFTCPSocket.h"
 #endif

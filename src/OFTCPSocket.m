@@ -74,7 +74,7 @@ static uint16_t freePort = 65532;
 	id _target;
 	SEL _selector;
 # ifdef OF_HAVE_BLOCKS
-	of_tcp_socket_async_connect_block_t _connectBlock;
+	of_tcp_socket_async_connect_block_t _block;
 # endif
 	OFException *_exception;
 }
@@ -133,7 +133,7 @@ static uint16_t freePort = 65532;
 		_socket = [socket retain];
 		_host = [host copy];
 		_port = port;
-		_connectBlock = [block copy];
+		_block = [block copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -150,7 +150,7 @@ static uint16_t freePort = 65532;
 	[_host release];
 	[_target release];
 # ifdef OF_HAVE_BLOCKS
-	[_connectBlock release];
+	[_block release];
 # endif
 	[_exception release];
 
@@ -162,8 +162,8 @@ static uint16_t freePort = 65532;
 	[self join];
 
 # ifdef OF_HAVE_BLOCKS
-	if (_connectBlock != NULL)
-		_connectBlock(_socket, _exception);
+	if (_block != NULL)
+		_block(_socket, _exception);
 	else {
 # endif
 		void (*func)(id, SEL, OFTCPSocket*, OFException*) =
@@ -184,7 +184,7 @@ static uint16_t freePort = 65532;
 		[_socket connectToHost: _host
 				  port: _port];
 	} @catch (OFException *e) {
-		_exception = [[e retain] autorelease];
+		_exception = e;
 	}
 
 	[self performSelector: @selector(didConnect)

@@ -1547,7 +1547,7 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop OF_cancelAsyncRequestsForStream: self];
+	[OFRunLoop OF_cancelAsyncRequestsForObject: self];
 }
 #endif
 
