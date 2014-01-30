@@ -74,7 +74,7 @@ static uint16_t freePort = 65532;
 	id _target;
 	SEL _selector;
 # ifdef OF_HAVE_BLOCKS
-	of_tcpsocket_async_connect_block_t _connectBlock;
+	of_tcp_socket_async_connect_block_t _connectBlock;
 # endif
 	OFException *_exception;
 }
@@ -90,7 +90,7 @@ static uint16_t freePort = 65532;
 		socket: (OFTCPSocket*)socket
 		  host: (OFString*)host
 		  port: (uint16_t)port
-		 block: (of_tcpsocket_async_connect_block_t)block;
+		 block: (of_tcp_socket_async_connect_block_t)block;
 # endif
 @end
 
@@ -124,7 +124,7 @@ static uint16_t freePort = 65532;
 		socket: (OFTCPSocket*)socket
 		  host: (OFString*)host
 		  port: (uint16_t)port
-		 block: (of_tcpsocket_async_connect_block_t)block
+		 block: (of_tcp_socket_async_connect_block_t)block
 {
 	self = [super init];
 
@@ -333,7 +333,7 @@ static uint16_t freePort = 65532;
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
-		     block: (of_tcpsocket_async_connect_block_t)block
+		     block: (of_tcp_socket_async_connect_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -483,7 +483,7 @@ static uint16_t freePort = 65532;
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block
+- (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block
 {
 	[OFRunLoop OF_addAsyncAcceptForTCPSocket: self
 					   block: block];

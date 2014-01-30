@@ -51,7 +51,8 @@
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block;
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
-				block: (of_tcpsocket_async_accept_block_t)block;
+				block: (of_tcp_socket_async_accept_block_t)
+					   block;
 # endif
 + (void)OF_cancelAsyncRequestsForStream: (OFStream*)stream;
 #endif

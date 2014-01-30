@@ -31,7 +31,7 @@
  * @param exception An exception which occurred while connecting the socket or
  *		    nil on success
  */
-typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket *socket,
+typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
     OFException *exception);
 
 /*!
@@ -44,7 +44,7 @@ typedef void (^of_tcpsocket_async_connect_block_t)(OFTCPSocket *socket,
  * @return A bool whether the same block should be used for the next incoming
  *	   connection
  */
-typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
+typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
     OFTCPSocket *acceptedSocket, OFException *exception);
 #endif
 
@@ -163,7 +163,7 @@ typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
  */
 - (void)asyncConnectToHost: (OFString*)host
 		      port: (uint16_t)port
-		     block: (of_tcpsocket_async_connect_block_t)block;
+		     block: (of_tcp_socket_async_connect_block_t)block;
 # endif
 #endif
 
@@ -220,7 +220,7 @@ typedef bool (^of_tcpsocket_async_accept_block_t)(OFTCPSocket *socket,
  *		Returns whether the next incoming connection should be accepted
  *		by the specified block as well.
  */
-- (void)asyncAcceptWithBlock: (of_tcpsocket_async_accept_block_t)block;
+- (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block;
 #endif
 
 /*!

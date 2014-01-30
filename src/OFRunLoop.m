@@ -84,7 +84,7 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_tcpsocket_async_accept_block_t _block;
+	of_tcp_socket_async_accept_block_t _block;
 # endif
 }
 @end
@@ -272,7 +272,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 + (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)stream
-				block: (of_tcpsocket_async_accept_block_t)block
+				block: (of_tcp_socket_async_accept_block_t)block
 {
 	ADD(OFRunLoop_AcceptQueueItem, {
 		queueItem->_block = [block copy];
