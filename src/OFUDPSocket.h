@@ -66,16 +66,17 @@ typedef struct {
 		      address: (of_udp_socket_address_t*)address;
 
 /*!
- * @brief Returns the host for the specified address and optionally the port.
+ * @brief Gets the host and port for the specified address.
  *
- * @param address The address for which the host and (optionally) the port
- *		  should be returned
+ * @param host A pointer to an OFString*. If it is not NULL, it will be set to
+ *	       the host of the host / port pair.
  * @param port A pointer to an uint16_t. If it is not NULL, the port of the
  *	       host / port pair will be written to it.
- * @return The host of the host / port pair
+ * @param address The address for which the host and port should be retrieved
  */
-+ (OFString*)hostForAddress: (of_udp_socket_address_t*)address
-		       port: (uint16_t*)port;
++ (void)getHost: (OFString *__autoreleasing*)host
+	andPort: (uint16_t*)port
+     forAddress: (of_udp_socket_address_t*)address;
 
 /*!
  * @brief Binds the socket to the specified host and port.

@@ -500,13 +500,17 @@ static uint16_t freePort = 65532;
 
 - (OFString*)remoteAddress
 {
+	OFString *ret;
+
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	return of_address_to_string_and_port(_address, _addressLength, NULL);
+	of_address_to_string_and_port(_address, _addressLength, &ret, NULL);
+
+	return ret;
 }
 
 - (bool)isListening

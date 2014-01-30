@@ -161,11 +161,12 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	of_resolver_free(results);
 }
 
-+ (OFString*)hostForAddress: (of_udp_socket_address_t*)address
-		       port: (uint16_t*)port
++ (void)getHost: (OFString *__autoreleasing*)host
+	andPort: (uint16_t*)port
+     forAddress: (of_udp_socket_address_t*)address
 {
-	return of_address_to_string_and_port(
-	    (struct sockaddr*)&address->address, address->length, port);
+	of_address_to_string_and_port(
+	    (struct sockaddr*)&address->address, address->length, host, port);
 }
 
 - init

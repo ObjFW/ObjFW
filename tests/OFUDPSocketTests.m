@@ -34,6 +34,7 @@ static OFString *module = @"OFUDPSocket";
 	uint16_t port1, port2;
 	of_udp_socket_address_t addr1, addr2, addr3;
 	char buf[6];
+	OFString *host;
 
 	TEST(@"+[socket]", (sock = [OFUDPSocket socket]))
 
@@ -57,10 +58,11 @@ static OFString *module = @"OFUDPSocket";
 			     sender: &addr2] == 6 &&
 	    !memcmp(buf, "Hello", 6))
 
-	TEST(@"+[hostForAddress:port:]",
-	    [[OFUDPSocket hostForAddress: &addr2
-				    port: &port2] isEqual: @"127.0.0.1"] &&
-	    port2 == port1)
+	TEST(@"+[getHost:andPort:forAddress:]",
+	    R([OFUDPSocket getHost: &host
+			   andPort: &port2
+			forAddress: &addr2]) &&
+	    [host isEqual: @"127.0.0.1"] && port2 == port1)
 
 	[OFUDPSocket resolveAddressForHost: @"127.0.0.1"
 				      port: port1 + 1

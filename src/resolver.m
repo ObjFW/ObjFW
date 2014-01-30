@@ -209,18 +209,21 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 	return ret;
 }
 
-OFString*
+void
 of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
-    uint16_t *port)
+    OFString *__autoreleasing *host, uint16_t *port)
 {
 #ifdef HAVE_THREADSAFE_GETADDRINFO
-	char host[NI_MAXHOST];
+	char hostCString[NI_MAXHOST];
 	char portCString[NI_MAXSERV];
 
 	/* FIXME: Add NI_DGRAM for UDP? */
-	if (getnameinfo(address, addressLength, host, NI_MAXHOST,
+	if (getnameinfo(address, addressLength, hostCString, NI_MAXHOST,
 	    portCString, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV))
 		@throw [OFAddressTranslationFailedException exception];
+
+	if (host != NULL)
+		*host = [OFString stringWithUTF8String: hostCString];
 
 	if (port != NULL) {
 		char *endptr;
@@ -234,11 +237,8 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 
 		*port = (uint16_t)tmp;
 	}
-
-	return [OFString stringWithUTF8String: host];
 #else
-	OFString *ret;
-	char *host;
+	char *hostCString;
 
 	if (address->sa_family != AF_INET)
 		@throw [OFInvalidArgumentException exception];
@@ -248,11 +248,12 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 		@throw [OFLockFailedException exception];
 # endif
 
-	host = inet_ntoa(((struct sockaddr_in*)(void*)address)->sin_addr);
-	if (host == NULL)
+	if ((hostCString = inet_ntoa(
+	    ((struct sockaddr_in*)(void*)address)->sin_addr)) == NULL)
 		@throw [OFAddressTranslationFailedException exception];
 
-	ret = [OFString stringWithUTF8String: host];
+	if (host != NULL)
+		*host = [OFString stringWithUTF8String: hostCString];
 
 	if (port != NULL)
 		*port = OF_BSWAP16_IF_LE(
