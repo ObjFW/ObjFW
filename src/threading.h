@@ -17,7 +17,7 @@
 #import "objfw-defs.h"
 
 #if !defined(OF_HAVE_THREADS) || \
-    (!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
+	(!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
 # error No threads available!
 #endif
 
@@ -42,6 +42,8 @@ typedef struct {
 	HANDLE event;
 	int count;
 } of_condition_t;
+#else
+# error No threads available!
 #endif
 
 #if defined(OF_HAVE_ATOMIC_OPS)
@@ -69,6 +71,9 @@ typedef struct {
 #elif defined(_WIN32)
 # define of_thread_is_current(t) (t == GetCurrentThread())
 # define of_thread_current GetCurrentThread
+#else
+# error of_thread_is_current not implemented!
+# error of_thread_current not implemented!
 #endif
 
 static OF_INLINE bool
@@ -82,6 +87,8 @@ of_thread_new(of_thread_t *thread, id (*function)(id), id data)
 	    (__bridge void*)data, 0, NULL);
 
 	return (thread != NULL);
+#else
+# error of_thread_new not implemented!
 #endif
 }
 
@@ -106,6 +113,8 @@ of_thread_join(of_thread_t thread)
 	CloseHandle(thread);
 
 	return true;
+#else
+# error of_thread_join not implemented!
 #endif
 }
 
@@ -117,6 +126,8 @@ of_thread_detach(of_thread_t thread)
 #elif defined(_WIN32)
 	/* FIXME */
 	return true;
+#else
+# error of_thread_detach not implemented!
 #endif
 }
 
@@ -127,6 +138,8 @@ of_thread_exit(void)
 	pthread_exit(NULL);
 #elif defined(_WIN32)
 	ExitThread(0);
+#else
+# error of_thread_exit not implemented!
 #endif
 }
 
@@ -138,6 +151,8 @@ of_mutex_new(of_mutex_t *mutex)
 #elif defined(_WIN32)
 	InitializeCriticalSection(mutex);
 	return true;
+#else
+# error of_mutex_new not implemented!
 #endif
 }
 
@@ -149,6 +164,8 @@ of_mutex_free(of_mutex_t *mutex)
 #elif defined(_WIN32)
 	DeleteCriticalSection(mutex);
 	return true;
+#else
+# error of_mutex_free not implemented!
 #endif
 }
 
@@ -160,6 +177,8 @@ of_mutex_lock(of_mutex_t *mutex)
 #elif defined(_WIN32)
 	EnterCriticalSection(mutex);
 	return true;
+#else
+# error of_mutex_lock not implemented!
 #endif
 }
 
@@ -170,6 +189,8 @@ of_mutex_trylock(of_mutex_t *mutex)
 	return !pthread_mutex_trylock(mutex);
 #elif defined(_WIN32)
 	return TryEnterCriticalSection(mutex);
+#else
+# error of_mutex_trylock not implemented!
 #endif
 }
 
@@ -181,6 +202,8 @@ of_mutex_unlock(of_mutex_t *mutex)
 #elif defined(_WIN32)
 	LeaveCriticalSection(mutex);
 	return true;
+#else
+# error of_mutex_unlock not implemented!
 #endif
 }
 
@@ -196,6 +219,8 @@ of_condition_new(of_condition_t *condition)
 		return false;
 
 	return true;
+#else
+# error of_condition_new not implemented!
 #endif
 }
 
@@ -221,6 +246,8 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 		return false;
 
 	return true;
+#else
+# error of_condition_wait not implemented!
 #endif
 }
 
@@ -253,6 +280,8 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 		return false;
 
 	return true;
+#else
+# error of_condition_timed_wait not implemented!
 #endif
 }
 
@@ -263,6 +292,8 @@ of_condition_signal(of_condition_t *condition)
 	return !pthread_cond_signal(condition);
 #elif defined(_WIN32)
 	return SetEvent(condition->event);
+#else
+# error of_condition_signal not implemented!
 #endif
 }
 
@@ -279,6 +310,8 @@ of_condition_broadcast(of_condition_t *condition)
 			return false;
 
 	return true;
+#else
+# error of_condition_broadcast not implemented!
 #endif
 }
 
@@ -292,6 +325,8 @@ of_condition_free(of_condition_t *condition)
 		return false;
 
 	return CloseHandle(condition->event);
+#else
+# error of_condition_free not implemented!
 #endif
 }
 
@@ -302,6 +337,8 @@ of_tlskey_new(of_tlskey_t *key)
 	return !pthread_key_create(key, NULL);
 #elif defined(_WIN32)
 	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
+#else
+# error of_tlskey_new not implemented!
 #endif
 }
 
@@ -312,6 +349,8 @@ of_tlskey_get(of_tlskey_t key)
 	return pthread_getspecific(key);
 #elif defined(_WIN32)
 	return TlsGetValue(key);
+#else
+# error of_tlskey_get not implemented!
 #endif
 }
 
@@ -322,6 +361,8 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 	return !pthread_setspecific(key, ptr);
 #elif defined(_WIN32)
 	return TlsSetValue(key, ptr);
+#else
+# error of_tlskey_set not implemented!
 #endif
 }
 
@@ -332,6 +373,8 @@ of_tlskey_free(of_tlskey_t key)
 	return !pthread_key_delete(key);
 #elif defined(_WIN32)
 	return TlsFree(key);
+#else
+# error of_tlskey_free not implemented!
 #endif
 }
 

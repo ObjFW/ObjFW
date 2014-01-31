@@ -68,7 +68,7 @@ of_atomic_add_int(volatile int *p, int i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_add_int not implemented!
 #endif
 }
 
@@ -92,7 +92,7 @@ of_atomic_add_32(volatile int32_t *p, int32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(i, p);
 #else
-# error No atomic operations available!
+# error of_atomic_add_32 not implemented!
 #endif
 }
 
@@ -133,7 +133,7 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_add_ptr not implemented!
 #endif
 }
 
@@ -179,7 +179,7 @@ of_atomic_sub_int(volatile int *p, int i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_sub_int not implemented!
 #endif
 }
 
@@ -204,7 +204,7 @@ of_atomic_sub_32(volatile int32_t *p, int32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(-i, p);
 #else
-# error No atomic operations available!
+# error of_atomic_sub_32 not implemented!
 #endif
 }
 
@@ -247,7 +247,7 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_sub_ptr not implemented!
 #endif
 }
 
@@ -297,7 +297,7 @@ of_atomic_inc_int(volatile int *p)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_inc_int not implemented!
 #endif
 }
 
@@ -325,7 +325,7 @@ of_atomic_inc_32(volatile int32_t *p)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicIncrement32Barrier(p);
 #else
-# error No atomic operations available!
+# error of_atomic_inc_32 not implemented!
 #endif
 }
 
@@ -375,7 +375,7 @@ of_atomic_dec_int(volatile int *p)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_dec_int not implemented!
 #endif
 }
 
@@ -403,7 +403,7 @@ of_atomic_dec_32(volatile int32_t *p)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicDecrement32Barrier(p);
 #else
-# error No atomic operations available!
+# error of_atomic_dec_32 not implemented!
 #endif
 }
 
@@ -457,7 +457,7 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_or_int not implemented!
 #endif
 }
 
@@ -486,7 +486,7 @@ of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicOr32Barrier(i, p);
 #else
-# error No atomic operations available!
+# error of_atomic_or_32 not implemented!
 #endif
 }
 
@@ -540,7 +540,7 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_and_int not implemented!
 #endif
 }
 
@@ -569,7 +569,7 @@ of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAnd32Barrier(i, p);
 #else
-# error No atomic operations available!
+# error of_atomic_and_32 not implemented!
 #endif
 }
 
@@ -623,7 +623,7 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 	else
 		abort();
 #else
-# error No atomic operations available!
+# error of_atomic_xor_int not implemented!
 #endif
 }
 
@@ -652,7 +652,7 @@ of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicXor32Barrier(i, p);
 #else
-# error No atomic operations available!
+# error of_atomic_xor_32 not implemented!
 #endif
 }
 
@@ -685,7 +685,7 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapIntBarrier(o, n, p);
 #else
-# error No atomic operations available!
+# error of_atomic_cmpswap_int not implemented!
 #endif
 }
 
@@ -718,7 +718,7 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwap32Barrier(o, n, p);
 #else
-# error No atomic operations available!
+# error of_atomic_cmpswap_32 not implemented!
 #endif
 }
 
@@ -751,7 +751,7 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapPtrBarrier(o, n, p);
 #else
-# error No atomic operations available!
+# error of_atomic_cmpswap_ptr not implemented!
 #endif
 }
 
@@ -768,7 +768,7 @@ of_memory_barrier(void)
 #elif defined(OF_HAVE_OSATOMIC)
 	OSMemoryBarrier();
 #else
-# error No atomic operations available!
+# error of_memory_barrier not implemented!
 #endif
 }
 
