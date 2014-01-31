@@ -135,8 +135,8 @@ static uint16_t freePort = 65532;
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
 		_block(_host, _port, _address, _exception);
-# endif
 	else {
+# endif
 		void (*func)(id, SEL, OFString*, uint16_t,
 		    of_udp_socket_address_t, OFException*) =
 		    (void(*)(id, SEL, OFString*, uint16_t,

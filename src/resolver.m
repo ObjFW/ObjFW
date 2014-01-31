@@ -263,8 +263,6 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 	if (!of_mutex_unlock(&mutex))
 		@throw [OFUnlockFailedException exception];
 # endif
-
-	return ret;
 #endif
 }
 

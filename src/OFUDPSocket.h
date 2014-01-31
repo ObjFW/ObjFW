@@ -32,6 +32,7 @@ typedef struct {
 	socklen_t length;
 } of_udp_socket_address_t;
 
+#ifdef OF_HAVE_BLOCKS
 /*!
  * @brief A block which is called when the host / port pair for the UDP socket
  *	  has been resolved.
@@ -59,6 +60,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
 typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
     void *buffer, size_t length, of_udp_socket_address_t sender,
     OFException *exception);
+#endif
 
 /*!
  * @brief A class which provides functions to create and use UDP sockets.
