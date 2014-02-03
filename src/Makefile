@@ -87,13 +87,13 @@ SRCS_SOCKETS = OFHTTPClient.m		\
 	       OFStreamSocket.m		\
 	       OFTCPSocket.m		\
 	       OFUDPSocket.m		\
-	       resolver.m
+	       resolver.m		\
+	       socket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
 	       OFThreadPool.m
 
-INCLUDES_SOCKETS = socket.h
 INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
@@ -111,7 +111,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    instance.h				\
 	    macros.h				\
 	    objfw-defs.h			\
-	    ${USE_INCLUDES_SOCKETS}		\
 	    ${USE_INCLUDES_THREADS}
 
 SRCS += OFArray_adjacent.m		\

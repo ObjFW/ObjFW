@@ -237,6 +237,7 @@
 		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
+		4B40EC1B189FE2650031E19E /* socket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B40EC1A189FE2650031E19E /* socket.m */; };
 		4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B45355113DCFE1E0037AB4D /* OFCountedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B45355213DCFE1E0037AB4D /* OFCountedSet.m */; };
 		4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -612,6 +613,7 @@
 		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D5693139A617D0010A78F /* OFSerializationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerializationTests.m; path = tests/OFSerializationTests.m; sourceTree = "<group>"; };
+		4B40EC1A189FE2650031E19E /* socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = socket.m; path = src/socket.m; sourceTree = "<group>"; };
 		4B45355113DCFE1E0037AB4D /* OFCountedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet.h; path = src/OFCountedSet.h; sourceTree = "<group>"; };
 		4B45355213DCFE1E0037AB4D /* OFCountedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet.m; path = src/OFCountedSet.m; sourceTree = "<group>"; };
 		4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLProcessingInstructions.h; path = src/OFXMLProcessingInstructions.h; sourceTree = "<group>"; };
@@ -1367,6 +1369,7 @@
 				4B7769EB1895C07D00D12284 /* resolver.h */,
 				4B7769EC1895C07D00D12284 /* resolver.m */,
 				4B7DD58718943D4A00990FD6 /* socket.h */,
+				4B40EC1A189FE2650031E19E /* socket.m */,
 				4B7DD58118942FE200990FD6 /* socket_helpers.h */,
 				4B67998B1099E7C50041064A /* threading.h */,
 				4B67998C1099E7C50041064A /* unicode.h */,
@@ -1948,6 +1951,7 @@
 				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
 				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
 				4B7769EE1895C07D00D12284 /* resolver.m in Sources */,
+				4B40EC1B189FE2650031E19E /* socket.m in Sources */,
 				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
 				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
 				4B90B79F133AD87D00BD33CB /* OFAcceptFailedException.m in Sources */,

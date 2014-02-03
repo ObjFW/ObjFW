@@ -14,44 +14,28 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#include "config.h"
 
-#ifndef OF_HAVE_SOCKETS
-# error No sockets available!
-#endif
+#import "socket.h"
 
-#include <stdbool.h>
+static bool initialized = false;
 
-#ifdef OF_HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
+bool
+of_init_sockets()
+{
+	if (initialized)
+		return true;
 
 #ifdef _WIN32
-# include <ws2tcpip.h>
+	WSADATA wsa;
+
+	if (WSAStartup(MAKEWORD(2, 0), &wsa))
+		return false;
+#elif defined(__wii__)
+	if (net_init() < 0)
+		return false;
 #endif
 
-#ifdef __wii__
-# define BOOL OGC_BOOL
-# include <network.h>
-# undef BOOL
-
-struct sockaddr_storage {
-	u8 ss_len;
-	u8 ss_family;
-	u8 ss_data[14];
-};
-#endif
-
-#ifdef _PSP
-# include <stdint.h>
-
-struct sockaddr_storage {
-	uint8_t	       ss_len;
-	sa_family_t    ss_family;
-	in_port_t      ss_data1;
-	struct in_addr ss_data2;
-	int8_t	       ss_data3[8];
-};
-#endif
-
-extern bool of_init_sockets(void);
+	initialized = true;
+	return true;
+}

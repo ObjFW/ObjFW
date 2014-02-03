@@ -35,22 +35,12 @@
 @implementation OFStreamSocket
 + (void)initialize
 {
-#ifdef _WIN32
-	WSADATA wsa;
-#endif
-
 	if (self != [OFStreamSocket class])
 		return;
 
-#if defined(_WIN32)
-	if (WSAStartup(MAKEWORD(2, 0), &wsa))
+	if (!of_init_sockets())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-#elif defined(__wii__)
-	if (net_init() < 0)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-#endif
 }
 
 + (instancetype)socket

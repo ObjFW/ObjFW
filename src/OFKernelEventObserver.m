@@ -62,6 +62,16 @@ enum {
 #define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
 @implementation OFKernelEventObserver
++ (void)initialize
+{
+	if (self != [OFKernelEventObserver class])
+		return;
+
+	if (!of_init_sockets())
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+}
+
 + (instancetype)observer
 {
 	return [[[self alloc] init] autorelease];
@@ -117,9 +127,6 @@ enum {
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 #else
-		/* Make sure network has been initialized */
-		[OFStreamSocket class];
-
 		_cancelFD[0] = socket(AF_INET, SOCK_DGRAM, 0);
 		_cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 

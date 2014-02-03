@@ -28,6 +28,7 @@
 #import "OFRunLoop+Private.h"
 
 #import "OFBindFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotConnectedException.h"
 #import "OFReadFailedException.h"
@@ -276,6 +277,16 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 }
 
 @implementation OFUDPSocket
++ (void)initialize
+{
+	if (self != [OFUDPSocket class])
+		return;
+
+	if (!of_init_sockets())
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+}
+
 + (instancetype)socket
 {
 	return [[[self alloc] init] autorelease];

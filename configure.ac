@@ -620,7 +620,6 @@ AC_ARG_ENABLE(sockets,
 AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_DEFINE(OF_HAVE_SOCKETS, 1, [Whether we have sockets])
 	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
-	AC_SUBST(USE_INCLUDES_SOCKETS, '${INCLUDES_SOCKETS}')
 
 	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
