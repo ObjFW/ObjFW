@@ -419,7 +419,7 @@ enum {
 			void *pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
-			    @selector(objectsIsReadyForReading:)])
+			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: objects[i]];
 
 			foundInCache = true;
