@@ -498,9 +498,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
 	AC_SUBST(USE_INCLUDES_THREADS, '${INCLUDES_THREADS}')
 
-	AC_ARG_ENABLE(tls,
-		AS_HELP_STRING([--disable-tls], [disable thread local storage]))
-	AS_IF([test x"$enable_tls" != x"no"], [
+	AC_ARG_ENABLE(compiler-tls,
+		AS_HELP_STRING([--disable-compiler-tls],
+			[disable compiler thread local storage]))
+	AS_IF([test x"$enable_compiler_tls" != x"no"], [
 		AC_MSG_CHECKING(whether __thread works)
 		AC_TRY_LINK([
 			/* It seems __thread is buggy with GCC 4.1 */
