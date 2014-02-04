@@ -369,6 +369,11 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	[super dealloc];
 }
 
+- (id)copy
+{
+	return [self retain];
+}
+
 - (uint16_t)bindToHost: (OFString*)host
 		  port: (uint16_t)port
 {

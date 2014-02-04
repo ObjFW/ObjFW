@@ -72,8 +72,15 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @ref of_udp_socket_address_equal and you can use
  * @ref of_udp_socket_address_hash to get a hash to use in e.g.
  * @ref OFMapTable.
+ *
+ * @warning Even though the OFCopying protocol is implemented, it does *not*
+ *	    return an independent copy of the socket, but instead retains it.
+ *	    This is so that the socket can be used as a key for a dictionary,
+ *	    so context can be associated with a socket. Using a socket in more
+ *	    than one thread at the same time is not thread-safe, even if copy
+ *	    was called to create one "instance" for every thread!
  */
-@interface OFUDPSocket: OFObject <OFReadyForReadingObserving,
+@interface OFUDPSocket: OFObject <OFCopying, OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
 	int _socket;
