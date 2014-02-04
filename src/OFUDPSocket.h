@@ -195,7 +195,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		 need to return false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
- *		   of_udp_socket_address_t*, OFException *exception)`.
+ *		   of_udp_socket_address_t, OFException *exception)`.
  */
 - (void)asyncReceiveIntoBuffer: (void*)buffer
 			length: (size_t)length
