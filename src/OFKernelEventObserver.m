@@ -355,15 +355,15 @@ enum {
 
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
-				[_readObjects removeObjectIdenticalTo: object];
-
 				[self OF_removeFileDescriptorForReading: fd];
+
+				[_readObjects removeObjectIdenticalTo: object];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
-				[_writeObjects removeObjectIdenticalTo: object];
-
 				[self OF_removeFileDescriptorForWriting: fd];
+
+				[_writeObjects removeObjectIdenticalTo: object];
 
 				break;
 			default:

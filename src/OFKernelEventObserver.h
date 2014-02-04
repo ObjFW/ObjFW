@@ -92,7 +92,7 @@
  * @brief A class that can observe multiple kernel events (e.g. streams being
  *	  ready to read) at once.
  *
- * @note Currently, Win32 can only observe TCP sockets!
+ * @note Currently, Win32 can only observe TCP and UDP sockets!
  */
 @interface OFKernelEventObserver: OFObject
 {
@@ -190,7 +190,7 @@
  *	  timeout is reached.
  *
  * @param timeInterval The time to wait for an event, in seconds
- * @return A boolean whether events occurred during the timeinterval
+ * @return A boolean whether events occurred before returning
  */
 - (bool)observeForTimeInterval: (of_time_interval_t)timeInterval;
 
@@ -199,7 +199,7 @@
  *	  specified date is reached.
  *
  * @param date The until which to observe
- * @return A boolean whether events occurred until the specified date
+ * @return A boolean whether events occurred before returning
  */
 - (bool)observeUntilDate: (OFDate*)date;
 

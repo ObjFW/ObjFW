@@ -152,6 +152,30 @@
 
 		pool = objc_autoreleasePoolPush();
 
+		/*
+		 * If a file descriptor has been closed before it is removed
+		 * from the kernel event observer, the file descriptor is not
+		 * valid anymore and causes EBADF. As closing a file descriptor
+		 * automatically removes it from the queue, there is nothing to
+		 * do anymore.
+		 *
+		 * Ideally, a file descriptor should never be closed before it
+		 * is removed from the kernel event observer, as in rare cases,
+		 * it could result in removing the wrong object from the kernel
+		 * event observer, for example if a file descriptor is closed,
+		 * a new one created, added to the kernel event observer and
+		 * then the old one removed, as the new one could now have the
+		 * same file descriptor as the closed one had and thus the new
+		 * one is removed.
+		 *
+		 * For other errors, call the callback like it was successful
+		 * so that the read / write will generate an error and throw an
+		 * exception.
+		 */
+		if ((eventList[i].flags & EV_ERROR) &&
+		    eventList[i].data == EBADF)
+			continue;
+
 		switch (eventList[i].filter) {
 		case EVFILT_READ:
 			if ([_delegate respondsToSelector:
