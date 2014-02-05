@@ -205,21 +205,21 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 
 /*!
  * @brief Returns the index of the first object that is equivalent to the
- *	  specified object or OF_NOT_FOUND if it was not found.
+ *	  specified object or `OF_NOT_FOUND` if it was not found.
  *
  * @param object The object whose index is returned
  * @return The index of the first object equivalent to the specified object
- *	   or OF_NOT_FOUND if it was not found
+ *	   or `OF_NOT_FOUND` if it was not found
  */
 - (size_t)indexOfObject: (id)object;
 
 /*!
  * @brief Returns the index of the first object that has the same address as the
- *	  specified object or OF_NOT_FOUND if it was not found.
+ *	  specified object or `OF_NOT_FOUND` if it was not found.
  *
  * @param object The object whose index is returned
  * @return The index of the first object that has the same aaddress as
- *	   the specified object or OF_NOT_FOUND if it was not found
+ *	   the specified object or `OF_NOT_FOUND` if it was not found
  */
 - (size_t)indexOfObjectIdenticalTo: (id)object;
 
@@ -275,9 +275,9 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @param separator The string with which the objects should be joined
  * @param options Options according to which the objects should be joined.@n
  *		  Possible values are:
- *		  Value                | Description
- *		  ---------------------|----------------------
- * 		  OF_ARRAY_SKIP_EMPTY | Skip empty components
+ *		  Value                 | Description
+ *		  ----------------------|----------------------
+ * 		  `OF_ARRAY_SKIP_EMPTY` | Skip empty components
  * @return A string containing all objects joined by the separator
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator
@@ -302,9 +302,9 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @param selector The selector to perform on the objects
  * @param options Options according to which the objects should be joined.@n
  *		  Possible values are:
- *		  Value                | Description
- *		  ---------------------|----------------------
- * 		  OF_ARRAY_SKIP_EMPTY | Skip empty components
+ *		  Value                 | Description
+ *		  ----------------------|----------------------
+ * 		  `OF_ARRAY_SKIP_EMPTY` | Skip empty components
  * @return A string containing all objects joined by the separator
  */
 - (OFString*)componentsJoinedByString: (OFString*)separator
@@ -341,9 +341,9 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * @param options The options to use when sorting the array.@n
  *		  Possible values are:
- *		  Value                    | Description
- *		  -------------------------|-------------------------
- *		  OF_ARRAY_SORT_DESCENDING | Sort in descending order
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------
+ *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
  * @return A sorted copy of the array
  */
 - (OFArray*)sortedArrayWithOptions: (int)options;

@@ -191,10 +191,10 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Creates a new OFString from a UTF-16 encoded string, assuming the
- *	  specified byte order if no BOM is found.
+ *	  specified byte order if no byte order mark is found.
  *
  * @param string The UTF-16 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF16String: (const of_char16_t*)string
@@ -202,12 +202,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Creates a new OFString from a UTF-16 encoded string with the
- *	  specified length, assuming the specified byte order if no BOM is
- *	  found.
+ *	  specified length, assuming the specified byte order if no byte order
+ *	  mark is found.
  *
  * @param string The UTF-16 string
  * @param length The length of the UTF-16 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF16String: (const of_char16_t*)string
@@ -235,10 +235,10 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Creates a new OFString from a UTF-32 encoded string, assuming the
- *	  specified byte order if no BOM is found.
+ *	  specified byte order if no byte order mark is found.
  *
  * @param string The UTF-32 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF32String: (const of_char32_t*)string
@@ -246,12 +246,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Creates a new OFString from a UTF-32 encoded string with the
- *	  specified length, assuming the specified byte order if no BOM is
- *	  found.
+ *	  specified length, assuming the specified byte order if no byte order
+ *	  mark is found.
  *
  * @param string The UTF-32 string
  * @param length The length of the UTF-32 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF32String: (const of_char32_t*)string
@@ -432,10 +432,10 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string,
- *	  assuming the specified byte order if no BOM is found.
+ *	  assuming the specified byte order if no byte order mark is found.
  *
  * @param string The UTF-16 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
 - initWithUTF16String: (const of_char16_t*)string
@@ -443,12 +443,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
- *	  the specified length, assuming the specified byte order if no BOM is
- *	  found.
+ *	  the specified length, assuming the specified byte order if no byte
+ *	  order mark is found.
  *
  * @param string The UTF-16 string
  * @param length The length of the UTF-16 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
 - initWithUTF16String: (const of_char16_t*)string
@@ -476,10 +476,10 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string,
- *	  assuming the specified byte order if no BOM is found.
+ *	  assuming the specified byte order if no byte order mark is found.
  *
  * @param string The UTF-32 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
 - initWithUTF32String: (const of_char32_t*)string
@@ -487,12 +487,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string with
- *	  the specified length, assuming the specified byte order if no BOM is
- *	  found.
+ *	  the specified length, assuming the specified byte order if no byte
+ *	  order mark is found.
  *
  * @param string The UTF-32 string
  * @param length The length of the UTF-32 string
- * @param byteOrder The byte order to assume if there is no BOM
+ * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
 - initWithUTF32String: (const of_char32_t*)string
@@ -696,7 +696,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @param string The string to search
  * @return The range of the first occurrence of the string or a range with
- *	   OF_NOT_FOUND as start position if it was not found
+ *	   `OF_NOT_FOUND` as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string;
 
@@ -706,11 +706,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to search
  * @param options Options modifying search behaviour.@n
  *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------------
- *		  OF_STRING_SEARCH_BACKWARDS | Search backwards in the string
+ *		  Value                        | Description
+ *		  -----------------------------|-------------------------------
+ *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
  * @return The range of the first occurrence of the string or a range with
- *	   OF_NOT_FOUND as start position if it was not found
+ *	   `OF_NOT_FOUND` as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string
 		    options: (int)options;
@@ -721,12 +721,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to search
  * @param options Options modifying search behaviour.@n
  *		  Possible values are:
- *		  Value                      | Description
- *		  ---------------------------|-------------------------------
- *		  OF_STRING_SEARCH_BACKWARDS | Search backwards in the string
+ *		  Value                        | Description
+ *		  -----------------------------|-------------------------------
+ *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
  * @param range The range in which to search
  * @return The range of the first occurrence of the string or a range with
- *	   OF_NOT_FOUND as start position if it was not found
+ *	   `OF_NOT_FOUND` as start position if it was not found
  */
 - (of_range_t)rangeOfString: (OFString*)string
 		    options: (int)options
@@ -895,9 +895,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param delimiter The delimiter for separating
  * @param options Options according to which the string should be separated.@n
  *		  Possible values are:
- *		  Value                | Description
- *		  ---------------------|----------------------
- * 		  OF_STRING_SKIP_EMPTY | Skip empty components
+ *		  Value                  | Description
+ *		  -----------------------|----------------------
+ * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
  * @return An autoreleased OFArray with the separated string
  */
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
