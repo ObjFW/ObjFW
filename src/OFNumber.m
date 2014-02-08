@@ -1424,10 +1424,13 @@
 
 	doubleValue = [self doubleValue];
 	if (isinf(doubleValue)) {
-		if (doubleValue > 0)
-			return @"Infinity";
-		else
-			return @"-Infinity";
+		if (options & OF_JSON_REPRESENTATION_JSON5) {
+			if (doubleValue > 0)
+				return @"Infinity";
+			else
+				return @"-Infinity";
+		} else
+			@throw [OFInvalidArgumentException exception];
 	}
 
 	return [self description];

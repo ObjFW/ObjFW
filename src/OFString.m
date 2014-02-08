@@ -19,6 +19,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <sys/stat.h>
 
@@ -1460,15 +1461,35 @@ static struct {
 			      withString: @"\\b"];
 	[JSON replaceOccurrencesOfString: @"\f"
 			      withString: @"\\f"];
-	[JSON replaceOccurrencesOfString: @"\n"
-			      withString: @"\\n"];
 	[JSON replaceOccurrencesOfString: @"\r"
 			      withString: @"\\r"];
 	[JSON replaceOccurrencesOfString: @"\t"
 			      withString: @"\\t"];
 
-	[JSON prependString: @"\""];
-	[JSON appendString: @"\""];
+	if (options & OF_JSON_REPRESENTATION_JSON5) {
+		[JSON replaceOccurrencesOfString: @"\n"
+				      withString: @"\\\n"];
+
+		if (options & OF_JSON_REPRESENTATION_IDENTIFIER) {
+			const char *cString = [self UTF8String];
+
+			if ((!isalpha(cString[0]) && cString[0] != '_' &&
+			    cString[0] != '$') ||
+			    strpbrk(cString, " \n\r\t\b\f\\\"'") != NULL) {
+				[JSON prependString: @"\""];
+				[JSON appendString: @"\""];
+			}
+		} else {
+			[JSON prependString: @"\""];
+			[JSON appendString: @"\""];
+		}
+	} else {
+		[JSON replaceOccurrencesOfString: @"\n"
+				      withString: @"\\n"];
+
+		[JSON prependString: @"\""];
+		[JSON appendString: @"\""];
+	}
 
 	[JSON makeImmutable];
 

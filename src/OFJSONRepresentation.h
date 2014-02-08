@@ -17,7 +17,9 @@
 @class OFString;
 
 enum {
-	OF_JSON_REPRESENTATION_PRETTY = 1
+	OF_JSON_REPRESENTATION_PRETTY	  = 0x01,
+	OF_JSON_REPRESENTATION_JSON5	  = 0x02,
+	OF_JSON_REPRESENTATION_IDENTIFIER = 0x10
 };
 
 /*!
@@ -44,6 +46,7 @@ enum {
  *		  Value                           | Description
  *		  --------------------------------|-------------------------
  *		  `OF_JSON_REPRESENTATION_PRETTY` | Optimize for readability
+ *		  `OF_JSON_REPRESENTATION_JSON5`  | Generate JSON5
  *
  * @return The JSON representation of the object as a string
  */

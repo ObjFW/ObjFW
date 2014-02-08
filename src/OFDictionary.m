@@ -617,11 +617,16 @@ static struct {
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
+			int identifierOptions =
+			    options | OF_JSON_REPRESENTATION_IDENTIFIER;
+
+			if (![key isKindOfClass: [OFString class]])
+				@throw [OFInvalidArgumentException exception];
 
 			[JSON appendString: indentation];
 			[JSON appendString: @"\t"];
 			[JSON appendString: [key
-			    OF_JSONRepresentationWithOptions: options
+			    OF_JSONRepresentationWithOptions: identifierOptions
 						       depth: depth + 1]];
 			[JSON appendString: @": "];
 			[JSON appendString: [object
@@ -642,9 +647,14 @@ static struct {
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil) {
 			void *pool2 = objc_autoreleasePoolPush();
+			int identifierOptions =
+			    options | OF_JSON_REPRESENTATION_IDENTIFIER;
+
+			if (![key isKindOfClass: [OFString class]])
+				@throw [OFInvalidArgumentException exception];
 
 			[JSON appendString: [key
-			    OF_JSONRepresentationWithOptions: options
+			    OF_JSONRepresentationWithOptions: identifierOptions
 						       depth: depth + 1]];
 			[JSON appendString: @":"];
 			[JSON appendString: [object
