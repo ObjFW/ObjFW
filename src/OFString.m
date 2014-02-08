@@ -73,6 +73,8 @@
 		  lossy: (bool)lossy;
 - (const char*)OF_cStringWithEncoding: (of_string_encoding_t)encoding
 				lossy: (bool)lossy;
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth;
 @end
 
 extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, char*, size_t, bool);
@@ -1433,6 +1435,19 @@ static struct {
 }
 
 - (OFString*)JSONRepresentation
+{
+	return [self OF_JSONRepresentationWithOptions: 0
+						depth: 0];
+}
+
+- (OFString*)JSONRepresentationWithOptions: (int)options
+{
+	return [self OF_JSONRepresentationWithOptions: options
+						depth: 0];
+}
+
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth
 {
 	OFMutableString *JSON = [[self mutableCopy] autorelease];
 

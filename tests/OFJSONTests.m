@@ -51,6 +51,11 @@ static OFString *module = @"OFJSON";
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
 	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"ba\\r\"}"])
 
+	TEST(@"OF_JSON_REPRESENTATION_PRETTY",
+	    [[d JSONRepresentationWithOptions: OF_JSON_REPRESENTATION_PRETTY]
+	    isEqual: @"{\n\t\"x\": [\n\t\t0.5,\n\t\t15,\n\t\tnull,\n\t\t"
+		     @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"ba\\r\"\n}"])
+
 	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidJSONException,
 	    [@"{" JSONValue])
 	EXPECT_EXCEPTION(@"-[JSONValue #3]", OFInvalidJSONException,

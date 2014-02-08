@@ -39,6 +39,11 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFArray (OF_PRIVATE_CATEGORY)
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth;
+@end
+
 @interface OFArray_placeholder: OFArray
 @end
 
@@ -544,21 +549,74 @@ static struct {
 
 - (OFString*)JSONRepresentation
 {
+	return [self OF_JSONRepresentationWithOptions: 0
+						depth: 0];
+}
+
+- (OFString*)JSONRepresentationWithOptions: (int)options
+{
+	return [self OF_JSONRepresentationWithOptions: options
+						depth: 0];
+}
+
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth
+{
+	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableString *JSON;
+	OFEnumerator *enumerator = [self objectEnumerator];
+	id object;
+	size_t i, count = [self count];
 
-	JSON = [[self componentsJoinedByString: @","
-				 usingSelector: @selector(JSONRepresentation)]
-	    mutableCopy];
+	if (options & OF_JSON_REPRESENTATION_PRETTY) {
+		OFMutableString *indentation = [OFMutableString string];
 
-	[JSON prependString: @"["];
+		for (i = 0; i < depth; i++)
+			[indentation appendString: @"\t"];
+
+		[JSON appendString: @"\n"];
+
+		i = 0;
+		while ((object = [enumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
+
+			[JSON appendString: indentation];
+			[JSON appendString: @"\t"];
+			[JSON appendString: [object
+			    OF_JSONRepresentationWithOptions: options
+						       depth: depth + 1]];
+
+			if (++i < count)
+				[JSON appendString: @",\n"];
+			else
+				[JSON appendString: @"\n"];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+
+		[JSON appendString: indentation];
+	} else {
+		i = 0;
+		while ((object = [enumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
+
+			[JSON appendString: [object
+			    OF_JSONRepresentationWithOptions: options
+						       depth: depth + 1]];
+
+			if (++i < count)
+				[JSON appendString: @","];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+	}
+
 	[JSON appendString: @"]"];
-
 	[JSON makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [JSON autorelease];
+	return JSON;
 }
 
 - (OFDataArray*)messagePackRepresentation

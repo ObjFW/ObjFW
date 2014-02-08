@@ -26,6 +26,11 @@
 #import "autorelease.h"
 #import "macros.h"
 
+@interface OFNull (OF_PRIVATE_CATEGORY)
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth;
+@end
+
 static OFNull *null = nil;
 
 @implementation OFNull
@@ -82,6 +87,19 @@ static OFNull *null = nil;
 }
 
 - (OFString*)JSONRepresentation
+{
+	return [self OF_JSONRepresentationWithOptions: 0
+						depth: 0];
+}
+
+- (OFString*)JSONRepresentationWithOptions: (int)options
+{
+	return [self OF_JSONRepresentationWithOptions: options
+						depth: 0];
+}
+
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth
 {
 	return @"null";
 }

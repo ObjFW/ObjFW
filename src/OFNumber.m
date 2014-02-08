@@ -334,6 +334,11 @@
 		@throw [OFInvalidFormatException exception];		\
 	}
 
+@interface OFNumber (OF_PRIVATE_CATEGORY)
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth;
+@end
+
 @implementation OFNumber
 + (instancetype)numberWithBool: (bool)bool_
 {
@@ -1398,6 +1403,19 @@
 }
 
 - (OFString*)JSONRepresentation
+{
+	return [self OF_JSONRepresentationWithOptions: 0
+						depth: 0];
+}
+
+- (OFString*)JSONRepresentationWithOptions: (int)options
+{
+	return [self OF_JSONRepresentationWithOptions: options
+						depth: 0];
+}
+
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth
 {
 	double doubleValue;
 

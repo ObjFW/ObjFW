@@ -37,6 +37,11 @@ static struct {
 	Class isa;
 } placeholder;
 
+@interface OFDictionary (OF_PRIVATE_CATEGORY)
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth;
+@end
+
 @interface OFDictionary_placeholder: OFDictionary
 @end
 
@@ -580,26 +585,77 @@ static struct {
 
 - (OFString*)JSONRepresentation
 {
+	return [self OF_JSONRepresentationWithOptions: 0
+						depth: 0];
+}
+
+- (OFString*)JSONRepresentationWithOptions: (int)options
+{
+	return [self OF_JSONRepresentationWithOptions: options
+						depth: 0];
+}
+
+- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+					depth: (size_t)depth
+{
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *keyEnumerator = [self keyEnumerator];
 	OFEnumerator *objectEnumerator = [self objectEnumerator];
-	size_t i = 0, count = [self count];
-	OFString *key;
-	OFString *object;
+	size_t i, count = [self count];
+	id key, object;
 
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil) {
-		void *pool2 = objc_autoreleasePoolPush();
+	if (options & OF_JSON_REPRESENTATION_PRETTY) {
+		OFMutableString *indentation = [OFMutableString string];
 
-		[JSON appendString: [key JSONRepresentation]];
-		[JSON appendString: @":"];
-		[JSON appendString: [object JSONRepresentation]];
+		for (i = 0; i < depth; i++)
+			[indentation appendString: @"\t"];
 
-		if (++i < count)
-			[JSON appendString: @","];
+		[JSON appendString: @"\n"];
 
-		objc_autoreleasePoolPop(pool2);
+		i = 0;
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
+
+			[JSON appendString: indentation];
+			[JSON appendString: @"\t"];
+			[JSON appendString: [key
+			    OF_JSONRepresentationWithOptions: options
+						       depth: depth + 1]];
+			[JSON appendString: @": "];
+			[JSON appendString: [object
+			    OF_JSONRepresentationWithOptions: options
+						       depth: depth + 1]];
+
+			if (++i < count)
+				[JSON appendString: @",\n"];
+			else
+				[JSON appendString: @"\n"];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+
+		[JSON appendString: indentation];
+	} else {
+		i = 0;
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil) {
+			void *pool2 = objc_autoreleasePoolPush();
+
+			[JSON appendString: [key
+			    OF_JSONRepresentationWithOptions: options
+						       depth: depth + 1]];
+			[JSON appendString: @":"];
+			[JSON appendString: [object
+			    OF_JSONRepresentationWithOptions: options
+						       depth: depth + 1]];
+
+			if (++i < count)
+				[JSON appendString: @","];
+
+			objc_autoreleasePoolPop(pool2);
+		}
 	}
 
 	[JSON appendString: @"}"];

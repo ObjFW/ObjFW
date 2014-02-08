@@ -16,6 +16,10 @@
 
 @class OFString;
 
+enum {
+	OF_JSON_REPRESENTATION_PRETTY = 1
+};
+
 /*!
  * @brief A protocol implemented by classes that support encoding to a JSON
  *	  representation.
@@ -28,7 +32,20 @@
 /*!
  * @brief Returns the JSON representation of the object as a string.
  *
- * @return The JSON representation of the object as a string.
+ * @return The JSON representation of the object as a string
  */
 - (OFString*)JSONRepresentation;
+
+/*!
+ * @brief Returns the JSON representation of the object as a string.
+ *
+ * @param options The options to use when creating a JSON representation.@n
+ *		  Possible values are:
+ *		  Value                           | Description
+ *		  --------------------------------|-------------------------
+ *		  `OF_JSON_REPRESENTATION_PRETTY` | Optimize for readability
+ *
+ * @return The JSON representation of the object as a string
+ */
+- (OFString*)JSONRepresentationWithOptions: (int)options;
 @end
