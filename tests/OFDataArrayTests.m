@@ -19,6 +19,7 @@
 #include <string.h>
 
 #import "OFDataArray.h"
+#import "OFBigDataArray.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 

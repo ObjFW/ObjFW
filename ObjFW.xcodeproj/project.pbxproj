@@ -419,6 +419,8 @@
 		4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
 		4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
 		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
+		4BF48CE118A95F83000E8D04 /* OFBigDataArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF48CE218A95F83000E8D04 /* OFBigDataArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
 /* End PBXBuildFile section */
@@ -888,6 +890,8 @@
 		4BF33AF0133807310059CEF7 /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BF33B4213380CD40059CEF7 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = testfile.bin; path = tests/testfile.bin; sourceTree = "<group>"; };
 		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
+		4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBigDataArray.h; path = src/OFBigDataArray.h; sourceTree = "<group>"; };
+		4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBigDataArray.m; path = src/OFBigDataArray.m; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
@@ -1169,6 +1173,8 @@
 				4B67995C1099E7C50041064A /* OFAutoreleasePool.h */,
 				4B67995D1099E7C50041064A /* OFAutoreleasePool.m */,
 				4B1473CA17E6391900B46BB8 /* OFAutoreleasePool+Private.h */,
+				4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */,
+				4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */,
 				4BD86D801237A6C600ED9912 /* OFBlock.h */,
 				4BD86D811237A6C600ED9912 /* OFBlock.m */,
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
@@ -1491,6 +1497,7 @@
 				4B3D23BD1337FC8300DD29B8 /* OFArray.h in Headers */,
 				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
 				4B3D23BE1337FC8300DD29B8 /* OFAutoreleasePool.h in Headers */,
+				4BF48CE118A95F83000E8D04 /* OFBigDataArray.h in Headers */,
 				4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */,
 				4B3D23C01337FC8300DD29B8 /* OFCollection.h in Headers */,
 				4B674400163C395900EB1E59 /* OFCondition.h in Headers */,
@@ -1862,6 +1869,7 @@
 				4B9BB7BE141CDE2D000AD1CC /* OFArray_adjacentSubarray.m in Sources */,
 				4B9BB7C0141CDE2D000AD1CC /* OFArray_subarray.m in Sources */,
 				4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */,
+				4BF48CE218A95F83000E8D04 /* OFBigDataArray.m in Sources */,
 				4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */,
 				4B674401163C395900EB1E59 /* OFCondition.m in Sources */,
 				4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */,

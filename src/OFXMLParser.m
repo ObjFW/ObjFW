@@ -24,7 +24,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFBigDataArray.h"
 #import "OFXMLAttribute.h"
 #import "OFStream.h"
 #ifdef OF_HAVE_FILES

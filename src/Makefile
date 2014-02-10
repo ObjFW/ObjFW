@@ -13,6 +13,7 @@ SRCS = OFApplication.m			\
        OFArray.m			\
        OFArray_subarray.m		\
        OFAutoreleasePool.m		\
+       OFBigDataArray.m			\
        OFBlock.m			\
        OFConstantString.m		\
        OFCountedSet.m			\

@@ -320,18 +320,5 @@
 #endif
 @end
 
-/*!
- * @brief A class for storing arbitrary big data in an array.
- *
- * The OFBigDataArray class is a class for storing arbitrary data in an array
- * and is designed to store large hunks of data. Therefore, it allocates
- * memory in pages rather than a chunk of memory for each item.
- */
-@interface OFBigDataArray: OFDataArray
-{
-	size_t _size;
-}
-@end
-
 #import "OFDataArray+Hashing.h"
 #import "OFDataArray+MessagePackValue.h"
