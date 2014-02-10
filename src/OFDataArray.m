@@ -132,10 +132,8 @@ void _references_to_categories_of_OFDataArray(void)
 	self = [super init];
 
 	@try {
-		if (itemSize == 0) {
-			[self release];
+		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
-		}
 
 		_items = [self allocMemoryWithSize: itemSize
 					     count: capacity];
@@ -712,10 +710,8 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		size_t size, lastPageByte;
 
-		if (itemSize == 0) {
-			[self release];
+		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
-		}
 
 		if (capacity > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
