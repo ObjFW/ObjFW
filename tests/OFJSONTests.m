@@ -33,10 +33,10 @@ static OFString *module = @"OFJSON";
 - (void)JSONTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *s = @"{\"foo\"\t:'ba\\r', \"x\":/*foo*/ [.5\r,0xF,null//bar\n"
-	    @",\"foo\",false]}";
+	OFString *s = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,null"
+	    @"//bar\n,\"foo\",false]}";
 	OFDictionary *d = [OFDictionary dictionaryWithKeysAndObjects:
-	    @"foo", @"ba\r",
+	    @"foo", @"b\na\r",
 	    @"x", [OFArray arrayWithObjects:
 		[OFNumber numberWithFloat: .5f],
 		[OFNumber numberWithInt: 0xF],
@@ -49,12 +49,16 @@ static OFString *module = @"OFJSON";
 	TEST(@"-[JSONValue #1]", [[s JSONValue] isEqual: d])
 
 	TEST(@"-[JSONRepresentation]", [[d JSONRepresentation] isEqual:
-	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"ba\\r\"}"])
+	    @"{\"x\":[0.5,15,null,\"foo\",false],\"foo\":\"b\\na\\r\"}"])
 
 	TEST(@"OF_JSON_REPRESENTATION_PRETTY",
 	    [[d JSONRepresentationWithOptions: OF_JSON_REPRESENTATION_PRETTY]
 	    isEqual: @"{\n\t\"x\": [\n\t\t0.5,\n\t\t15,\n\t\tnull,\n\t\t"
-		     @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"ba\\r\"\n}"])
+		     @"\"foo\",\n\t\tfalse\n\t],\n\t\"foo\": \"b\\na\\r\"\n}"])
+
+	TEST(@"OF_JSON_REPRESENTATION_JSON5",
+	    [[d JSONRepresentationWithOptions: OF_JSON_REPRESENTATION_JSON5]
+	    isEqual: @"{x:[0.5,15,null,\"foo\",false],foo:\"b\\\na\\r\"}"])
 
 	EXPECT_EXCEPTION(@"-[JSONValue #2]", OFInvalidJSONException,
 	    [@"{" JSONValue])
