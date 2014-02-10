@@ -1074,6 +1074,12 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #ifdef OF_HAVE_SOCKETS
 /*!
  * @brief Cancels all pending asyncronous requests on the stream.
+ *
+ * @warning You are not allowed to call this inside the handler of an
+ *	    asyncronous request, as this would cancel the asyncronous request
+ *	    that is currently being handled! To cancel all pending asyncronous
+ *	    requests after the handler has finished executing, you may schedule
+ *	    a timer for this method with a timeout of 0 from inside the handler.
  */
 - (void)cancelAsyncRequests;
 #endif
