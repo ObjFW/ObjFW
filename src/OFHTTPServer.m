@@ -686,15 +686,15 @@ normalizedKey(OFString *key)
 
 - (void)start
 {
-	if (_host == nil || _port == 0)
+	if (_host == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_listeningSocket != nil)
 		@throw [OFAlreadyConnectedException exception];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
-	[_listeningSocket bindToHost: _host
-				port: _port];
+	_port = [_listeningSocket bindToHost: _host
+					port: _port];
 	[_listeningSocket listen];
 
 	[_listeningSocket asyncAcceptWithTarget: self
