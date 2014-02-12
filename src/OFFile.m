@@ -328,17 +328,20 @@ parseMode(const char *mode)
 + (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
 {
 	OFMutableArray *files;
+#ifndef _WIN32
 	of_string_encoding_t encoding;
+#endif
 
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	files = [OFMutableArray array];
-	encoding = [OFString nativeOSEncoding];
 
 #ifndef _WIN32
 	DIR *dir;
 	struct dirent *dirent;
+
+	encoding = [OFString nativeOSEncoding];
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
@@ -646,7 +649,9 @@ parseMode(const char *mode)
 {
 	void *pool;
 	of_stat_t s;
+#ifndef _WIN32
 	of_string_encoding_t encoding;
+#endif
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -660,9 +665,9 @@ parseMode(const char *mode)
 			    destinationPath: destination];
 	}
 
+#ifndef _WIN32
 	encoding = [OFString nativeOSEncoding];
 
-#ifndef _WIN32
 	if (rename([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding])) {
 #else
