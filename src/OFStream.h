@@ -25,7 +25,9 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#import "OFKernelEventObserver.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFKernelEventObserver.h"
+#endif
 
 /*! @file */
 
@@ -76,8 +78,11 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *	 override these methods without the lowlevel prefix, you *will* break
  *	 caching and get broken results!
  */
-@interface OFStream: OFObject <OFCopying, OFReadyForReadingObserving,
-    OFReadyForWritingObserving>
+@interface OFStream: OFObject <
+#ifdef OF_HAVE_SOCKETS
+    OFReadyForReadingObserving, OFReadyForWritingObserving,
+#endif
+    OFCopying>
 {
 	char *_readBuffer, *_writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
