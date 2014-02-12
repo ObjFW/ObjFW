@@ -126,9 +126,9 @@ Wii
 Windows
 -------
 
-  * OS Versions: XP (x86), 7 (x64), 8 (x64), Wine
+  * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), Wine
   * Architectures: x86
-  * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2
+  * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2, MinGW-w64 GCC 4.8.2 DWARF
   * Runtimes: ObjFW
 
 
