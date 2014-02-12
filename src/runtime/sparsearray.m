@@ -193,7 +193,7 @@ objc_sparsearray_free(struct objc_sparsearray *s)
 
 #ifdef OF_SELUID24
 		for (j = 0; j < 256; j++)
-			if (!s->buckets[i]->buckets[j] == empty_level3)
+			if (s->buckets[i]->buckets[j] != empty_level3)
 				free(s->buckets[i]->buckets[j]);
 #endif
 
