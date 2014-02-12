@@ -83,7 +83,11 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
 @interface OFUDPSocket: OFObject <OFCopying, OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
-	int _socket;
+#ifndef _WIN32
+	int    _socket;
+#else
+	SOCKET _socket;
+#endif
 }
 
 /*!
