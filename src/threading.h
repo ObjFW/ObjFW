@@ -34,6 +34,14 @@ typedef pthread_key_t of_tlskey_t;
 typedef pthread_mutex_t of_mutex_t;
 typedef pthread_cond_t of_condition_t;
 #elif defined(_WIN32)
+/*
+ * winsock2.h needs to be included before windows.h. Not including it here
+ * would make it impossible to use sockets after threading.h has been
+ * imported.
+ */
+# ifdef OF_HAVE_SOCKETS
+#  include <winsock2.h>
+# endif
 # include <windows.h>
 typedef HANDLE of_thread_t;
 typedef DWORD of_tlskey_t;
