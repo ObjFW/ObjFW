@@ -899,6 +899,8 @@ parseMode(const char *mode)
 							   offset: offset
 							   whence: whence];
 
+	_atEndOfStream = false;
+
 	return ret;
 }
 
