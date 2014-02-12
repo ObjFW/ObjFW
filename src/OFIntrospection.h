@@ -20,6 +20,19 @@
 @class OFArray;
 @class OFMutableArray;
 
+enum {
+	OF_PROPERTY_READONLY	=   0x01,
+	OF_PROPERTY_ASSIGN	=   0x04,
+	OF_PROPERTY_READWRITE	=   0x08,
+	OF_PROPERTY_RETAIN	=   0x10,
+	OF_PROPERTY_COPY	=   0x20,
+	OF_PROPERTY_NONATOMIC	=   0x40,
+	OF_PROPERTY_SYNTHESIZED	=  0x100,
+	OF_PROPERTY_DYNAMIC	=  0x200,
+	OF_PROPERTY_ATOMIC	=  0x400,
+	OF_PROPERTY_WEAK	=  0x800
+};
+
 /*!
  * @brief A class for describing a method.
  */
@@ -56,6 +69,65 @@
  * @return The type encoding for the method
  */
 - (const char*)typeEncoding;
+@end
+
+/*!
+ * @brief A class for describing a property.
+ */
+@interface OFProperty: OFObject
+{
+	OFString *_name;
+	unsigned _attributes;
+	OFString *_getter, *_setter;
+}
+
+#ifdef OF_HAVE_PROPERTIES
+@property (readonly, copy) OFString *name;
+@property (readonly) unsigned attributes;
+@property (readonly, copy) OFString *getter, *setter;
+#endif
+
+/*!
+ * @brief Returns the name of the property.
+ *
+ * @return The name of the property
+ */
+- (OFString*)name;
+
+/*!
+ * @brief Returns the attributes of the property.
+ *
+ * The attributes are a bitmask with the following possible flags:@n
+ * Flag                          | Description
+ * ------------------------------|-------------------------------------
+ * OF_PROPERTY_READONLY          | The property is declared `readonly`
+ * OF_PROPERTY_READWRITE         | The property is declared `readwrite`
+ * OF_PROPERTY_ASSIGN            | The property is declared `assign`
+ * OF_PROPERTY_RETAIN            | The property is declared `retain`
+ * OF_PROPERTY_COPY              | The property is declared `copy`
+ * OF_PROPERTY_NONATOMIC         | The property is declared `nonatomic`
+ * OF_PROPERTY_ATOMIC            | The property is declared `atomic`
+ * OF_PROPERTY_WEAK              | The property is declared `weak`
+ * OF_PROPERTY_SYNTHESIZED       | The property is synthesized
+ * OF_PROPERTY_DYNAMIC           | The property is dynamic
+ *
+ * @return The attributes of the property
+ */
+- (unsigned)attributes;
+
+/*!
+ * @brief Returns the name of the getter.
+ *
+ * @return The name of the getter
+ */
+- (OFString*)getter;
+
+/*!
+ * @brief Returns the name of the setter.
+ *
+ * @return The name of the setter
+ */
+- (OFString*)setter;
 @end
 
 /*!
@@ -103,15 +175,14 @@
 {
 	OFMutableArray *_classMethods;
 	OFMutableArray *_instanceMethods;
-	OFMutableArray *_instanceVariables;
-#ifdef OF_HAVE_PROPERTIES
 	OFMutableArray *_properties;
-#endif
+	OFMutableArray *_instanceVariables;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFArray *classMethods;
 @property (readonly, copy) OFArray *instanceMethods;
+@property (readonly, copy) OFArray *properties;
 @property (readonly, copy) OFArray *instanceVariables;
 #endif
 
@@ -133,21 +204,45 @@
 /*!
  * @brief Returns the class methods of the class.
  *
- * @return An array of OFMethods
+ * @return An array of objects of class @ref OFMethod
  */
 - (OFArray*)classMethods;
 
 /*!
  * @brief Returns the instance methods of the class.
  *
- * @return An array of OFMethods
+ * @return An array of objects of class @ref OFMethod
  */
 - (OFArray*)instanceMethods;
 
 /*!
+ * @brief Returns the properties of the class.
+ *
+ * @warning **Do not rely on this, as this behaves differently depending on the
+ *	    compiler and ABI used!**
+ *
+ * @warning For the ObjFW ABI, Clang only emits data for property introspection
+ *	    if `@``synthesize` or `@``dynamic` has been used on the property,
+ *	    not if the property has only been implemented by methods. Using
+ *	    `@``synthesize` and manually implementing the methods works,
+ *	    though.
+ *
+ * @warning For the Apple ABI, Clang and GCC both emit data for property
+ *	    introspection for every property that has been declared using
+ *	    `@``property`, even if no `@``synchronize` or `@``dynamic` has been
+ *	    used.
+ *
+ * @warning GCC does not emit any data for property introspection for the GNU
+ *	    ABI.
+ *
+ * @return An array of objects of class @ref OFProperty
+ */
+- (OFArray*)properties;
+
+/*!
  * @brief Returns the instance variables of the class.
  *
- * @return An array of OFInstanceVariables
+ * @return An array of objects of class @ref OFInstanceVariable
  */
 - (OFArray*)instanceVariables;
 

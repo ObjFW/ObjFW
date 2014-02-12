@@ -136,10 +136,19 @@ enum objc_property_attributes {
 	OBJC_PROPERTY_SETTER	= 0x80
 };
 
+enum objc_property_extended_attributes {
+	OBJC_PROPERTY_SYNTHESIZE	=  0x1,
+	OBJC_PROPERTY_DYNAMIC		=  0x2,
+	OBJC_PROPERTY_PROTOCOL		=  0x3,
+	OBJC_PROPERTY_ATOMIC		=  0x4,
+	OBJC_PROPERTY_WEAK		=  0x8,
+	OBJC_PROPERTY_STRONG		= 0x10,
+	OBJC_PROPERTY_UNSAFE_UNRETAINED = 0x20
+};
+
 struct objc_property {
 	const char *name;
-	unsigned char attributes;
-	BOOL synthesized;
+	unsigned char attributes, extended_attributes;
 	struct {
 		const char *name;
 		const char *type;
