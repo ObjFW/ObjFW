@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_SEH_EXCEPTIONS
+# include <windows.h>
+#endif
+
 #import "runtime.h"
 
 static const uint64_t objc_exception_class = 0x474E55434F424A43; /* GNUCOBJC */
@@ -92,11 +96,15 @@ struct objc_exception {
 		} pr_cache;
 		long long int : 0;
 #else
+# ifdef HAVE_SEH_EXCEPTIONS
+		uint64_t private[6];
+# else
 		/*
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
 		 */
 		uint64_t private1, private2;
+# endif
 #endif
 	} exception;
 	id object;
@@ -175,12 +183,21 @@ extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
 extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
 #endif
 
+#ifdef HAVE_SEH_EXCEPTIONS
+extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void*,
+    PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code(*)(int, int, uint64_t,
+    struct _Unwind_Exception*, struct _Unwind_Context*));
+#endif
+
 #if defined(HAVE_DWARF_EXCEPTIONS)
 # define PERSONALITY __gnu_objc_personality_v0
 # define RAISE_EXCEPTION _Unwind_RaiseException
 #elif defined(HAVE_SJLJ_EXCEPTIONS)
 # define PERSONALITY __gnu_objc_personality_sj0
 # define RAISE_EXCEPTION _Unwind_SjLj_RaiseException
+#elif defined(HAVE_SEH_EXCEPTIONS)
+# define PERSONALITY gnu_objc_personality
+# define RAISE_EXCEPTION _Unwind_RaiseException
 #else
 # error Unknown exception type!
 #endif
@@ -516,6 +533,9 @@ PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
 
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
 #else
+# ifdef HAVE_SEH_EXCEPTIONS
+static
+# endif
 _Unwind_Reason_Code
 PERSONALITY(int version, int actions, uint64_t ex_class,
     struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
@@ -640,3 +660,13 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 
 	return old;
 }
+
+#ifdef HAVE_SEH_EXCEPTIONS
+EXCEPTION_DISPOSITION
+__gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
+    PCONTEXT ms_orig_context, PDISPATCHER_CONTEXT ms_disp)
+{
+	return _GCC_specific_handler(ms_exc, this_frame, ms_orig_context,
+	    ms_disp, PERSONALITY);
+}
+#endif

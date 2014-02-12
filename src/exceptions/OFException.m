@@ -46,6 +46,14 @@
 # endif
 #endif
 
+/*
+ * Define HAVE_DWARF_EXCEPTIONS if HAVE_SEH_EXCEPTIONS is defined, as SEH
+ * exceptions are implemented as a wrapper around DWARF exceptions.
+ */
+#ifdef HAVE_SEH_EXCEPTIONS
+# define HAVE_DWARF_EXCEPTIONS
+#endif
+
 #ifdef HAVE_DWARF_EXCEPTIONS
 struct _Unwind_Context;
 typedef enum {

@@ -269,6 +269,10 @@ case $objc_runtime in
 					conftest.$ac_objext >/dev/null], [
 				exception_type="SjLj"
 			])
+			AS_IF([$EGREP __gnu_objc_personality_seh0 \
+					conftest.$ac_objext >/dev/null], [
+				exception_type="SEH"
+			])
 
 			case $exception_type in
 			DWARF)
@@ -278,6 +282,10 @@ case $objc_runtime in
 			SjLj)
 				AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
 					[Whether SjLj exceptions are used])
+				;;
+			SEH)
+				AC_DEFINE(HAVE_SEH_EXCEPTIONS, 1,
+					[Whether SEH exceptions are used])
 				;;
 			*)
 				AC_MSG_RESULT(unknown)
