@@ -172,7 +172,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 		OFMutableDictionary *environment;
 #if defined(__MACH__) && !defined(OF_IOS)
 		char **env = *_NSGetEnviron();
-#elif defined(__WIN32)
+#elif defined(_WIN32)
 		of_char16_t *env, *env0;
 #elif !defined(OF_IOS)
 		char **env = environ;
