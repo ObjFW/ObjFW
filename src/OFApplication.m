@@ -173,7 +173,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 #if defined(__MACH__) && !defined(OF_IOS)
 		char **env = *_NSGetEnviron();
 #elif defined(__WIN32)
-		of_char16_t *env;
+		of_char16_t *env, *env0;
 #elif !defined(OF_IOS)
 		char **env = environ;
 #else
@@ -184,7 +184,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 		atexit(atexitHandler);
 #if defined(_WIN32)
-		env = GetEnvironmentStringsW();
+		env = env0 = GetEnvironmentStringsW();
 
 		while (*env != 0) {
 			OFString *tmp, *key, *value;
@@ -224,7 +224,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 			objc_autoreleasePoolPop(pool);
 		}
 
-		FreeEnvironmentStringsW(env);
+		FreeEnvironmentStringsW(env0);
 #elif !defined(OF_IOS)
 		if (env != NULL) {
 			for (; *env != NULL; env++) {
