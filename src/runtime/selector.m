@@ -23,6 +23,8 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
+#import "macros.h"
+
 #ifdef OF_SELUID24
 # define SEL_MAX 0xFFFFFF
 #else
@@ -79,7 +81,7 @@ sel_registerName(const char *name)
 	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	if ((sel->name = strdup(name)) == NULL)
+	if ((sel->name = of_strdup(name)) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
 	sel->types = NULL;

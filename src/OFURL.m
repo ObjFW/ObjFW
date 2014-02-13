@@ -58,7 +58,7 @@
 	@try {
 		char *tmp, *tmp2;
 
-		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
+		if ((UTF8String2 = of_strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
 			     exceptionWithRequestedSize: [string
 							     UTF8StringLength]];
@@ -194,7 +194,7 @@
 		_user = [URL->_user copy];
 		_password = [URL->_password copy];
 
-		if ((UTF8String2 = strdup([string UTF8String])) == NULL)
+		if ((UTF8String2 = of_strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
 			     exceptionWithRequestedSize:
 			     [string UTF8StringLength]];

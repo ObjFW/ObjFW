@@ -14,9 +14,10 @@
  * file.
  */
 
+#define _POSIX_SOURCE
+
 #include "config.h"
 
-#define _GNU_SOURCE
 #include <stdint.h>
 #include <limits.h>
 #include <time.h>

@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(OF_APPLE_RUNTIME)
 # import <objc/runtime.h>
@@ -410,4 +411,18 @@ of_rectangle(float x, float y, float width, float height)
 	};
 
 	return rectangle;
+}
+
+static OF_INLINE char*
+of_strdup(const char *string)
+{
+	char *copy;
+	size_t length = strlen(string);
+
+	if ((copy = malloc(length + 1)) == NULL)
+		return NULL;
+
+	memcpy(copy, string, length + 1);
+
+	return copy;
 }

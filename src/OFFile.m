@@ -14,6 +14,8 @@
  * file.
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include "config.h"
 
 #define __NO_EXT_QNX

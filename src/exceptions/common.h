@@ -19,8 +19,8 @@
 
 #import "macros.h"
 
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
+#ifdef OF_HAVE_SOCKETS
+# include "socket_helpers.h"
 #endif
 
 #ifndef _WIN32

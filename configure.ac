@@ -60,21 +60,12 @@ CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
-AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
-	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
+AX_CHECK_COMPILER_FLAGS(-std=c11, [
+	OBJCFLAGS="$OBJCFLAGS -std=c11"
 ], [
-	AX_CHECK_COMPILER_FLAGS(-std=gnu99,
-		[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
+	AX_CHECK_COMPILER_FLAGS(-std=c99, [OBJCFLAGS="$OBJCFLAGS -std=c99"])
 ])
 
-case $OBJC in
-	*clang*)
-		;;
-	*)
-		AX_CHECK_COMPILER_FLAGS([-fgnu89-inline -Werror],
-			[OBJCFLAGS="$OBJCFLAGS -fgnu89-inline"])
-		;;
-esac
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [

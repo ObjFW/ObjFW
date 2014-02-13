@@ -145,7 +145,7 @@ statusCodeToString(short code)
 static OF_INLINE OFString*
 normalizedKey(OFString *key)
 {
-	char *cString = strdup([key UTF8String]);
+	char *cString = of_strdup([key UTF8String]);
 	uint8_t *tmp = (uint8_t*)cString;
 	bool firstLetter = true;
 
