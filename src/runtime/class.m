@@ -578,24 +578,36 @@ objc_copyClassList(unsigned int *len)
 bool
 class_isMetaClass(Class cls)
 {
+	if (cls == Nil)
+		return false;
+
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
 
 const char*
 class_getName(Class cls)
 {
+	if (cls == Nil)
+		return "";
+
 	return cls->name;
 }
 
 Class
 class_getSuperclass(Class cls)
 {
+	if (cls == Nil)
+		return nil;
+
 	return cls->superclass;
 }
 
 unsigned long
 class_getInstanceSize(Class cls)
 {
+	if (cls == Nil)
+		return 0;
+
 	return cls->instance_size;
 }
 
@@ -612,11 +624,14 @@ class_getMethodImplementation(Class cls, SEL sel)
 	 * +[resolveClassMethod:] / +[resolveInstanceMethod:] would not be
 	 * called.
 	 */
-
 	struct {
 		Class isa;
-	} dummy = { cls };
+	} dummy;
 
+	if (cls == Nil)
+		return NULL;
+
+	dummy.isa = cls;
 	return objc_msg_lookup((id)&dummy, sel);
 }
 
@@ -627,11 +642,14 @@ class_getMethodImplementation_stret(Class cls, SEL sel)
 	 * Same as above, but use objc_msg_lookup_stret instead, so that the
 	 * correct forwarding handler is returned.
 	 */
-
 	struct {
 		Class isa;
-	} dummy = { cls };
+	} dummy;
 
+	if (cls == Nil)
+		return NULL;
+
+	dummy.isa = cls;
 	return objc_msg_lookup_stret((id)&dummy, sel);
 }
 
@@ -641,6 +659,9 @@ class_getMethodTypeEncoding(Class cls, SEL sel)
 	struct objc_method_list *ml;
 	struct objc_category **cats;
 	unsigned int i;
+
+	if (cls == Nil)
+		return NULL;
 
 	objc_global_mutex_lock();
 
@@ -751,7 +772,12 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 Class
 object_getClass(id obj_)
 {
-	struct objc_object *obj = (struct objc_object*)obj_;
+	struct objc_object *obj;
+
+	if (obj_ == nil)
+		return Nil;
+
+	obj = (struct objc_object*)obj_;
 
 	return obj->isa;
 }
@@ -759,8 +785,13 @@ object_getClass(id obj_)
 Class
 object_setClass(id obj_, Class cls)
 {
-	struct objc_object *obj = (struct objc_object*)obj_;
+	struct objc_object *obj;
 	Class old;
+
+	if (obj_ == nil)
+		return Nil;
+
+	obj = (struct objc_object*)obj_;
 
 	old = obj->isa;
 	obj->isa = cls;
@@ -771,7 +802,7 @@ object_setClass(id obj_, Class cls)
 const char*
 object_getClassName(id obj)
 {
-	return object_getClass(obj)->name;
+	return class_getName(object_getClass(obj));
 }
 
 static void
