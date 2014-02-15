@@ -593,7 +593,7 @@ AC_ARG_ENABLE(files,
 AS_IF([test x"$enable_files" != x"no"], [
 	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
-	AC_SUBST(OFZIP, ofzip)
+	AC_SUBST(OFZIP, 'ofzip${PROG_SUFFIX}')
 ])
 
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep lstat])
