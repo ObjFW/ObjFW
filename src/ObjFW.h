@@ -49,6 +49,7 @@
 #import "OFDeflateStream.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
+# import "OFINIFile.h"
 # import "OFZIPArchive.h"
 # import "OFZIPArchiveEntry.h"
 #endif

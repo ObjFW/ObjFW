@@ -77,6 +77,7 @@ SRCS = OFApplication.m			\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}
 SRCS_FILES = OFFile.m			\
+	     OFINIFile.m		\
 	     OFZIPArchive.m		\
 	     OFZIPArchiveEntry.m
 SRCS_PLUGINS = OFPlugin.m

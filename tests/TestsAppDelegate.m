@@ -299,10 +299,6 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
 #endif
-#ifdef OF_HAVE_FILES
-	[self MD5HashTests];
-	[self SHA1HashTests];
-#endif
 	[self stringTests];
 	[self dataArrayTests];
 	[self arrayTests];
@@ -312,6 +308,11 @@ main(int argc, char *argv[])
 	[self dateTests];
 	[self numberTests];
 	[self streamTests];
+#ifdef OF_HAVE_FILES
+	[self MD5HashTests];
+	[self SHA1HashTests];
+	[self INIFileTests];
+#endif
 #ifdef OF_HAVE_SOCKETS
 	[self TCPSocketTests];
 	[self UDPSocketTests];

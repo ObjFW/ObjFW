@@ -270,6 +270,10 @@
 		4B55A115133AC24600B58A93 /* OFReadOrWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */; };
 		4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A110133AC24500B58A93 /* OFWriteFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A111133AC24600B58A93 /* OFWriteFailedException.m */; };
+		4B5B02BE18B288A400CE6AE4 /* OFINIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5B02BC18B288A400CE6AE4 /* OFINIFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */; };
+		4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */; };
+		4B5B02C418B28A1B00CE6AE4 /* testfile.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B5B02C218B289ED00CE6AE4 /* testfile.ini */; };
 		4B5C112F17E9AB3E003C917F /* forwarding.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C112C17E9AAED003C917F /* forwarding.S */; };
 		4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
@@ -482,6 +486,7 @@
 			files = (
 				4BAE7354139C508E00F682ED /* serialization.xml in CopyFiles */,
 				4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */,
+				4B5B02C418B28A1B00CE6AE4 /* testfile.ini in CopyFiles */,
 				4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -650,6 +655,10 @@
 		4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFReadOrWriteFailedException.m; path = src/exceptions/OFReadOrWriteFailedException.m; sourceTree = "<group>"; };
 		4B55A110133AC24500B58A93 /* OFWriteFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFWriteFailedException.h; path = src/exceptions/OFWriteFailedException.h; sourceTree = "<group>"; };
 		4B55A111133AC24600B58A93 /* OFWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFWriteFailedException.m; path = src/exceptions/OFWriteFailedException.m; sourceTree = "<group>"; };
+		4B5B02BC18B288A400CE6AE4 /* OFINIFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFINIFile.h; path = src/OFINIFile.h; sourceTree = "<group>"; };
+		4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINIFile.m; path = src/OFINIFile.m; sourceTree = "<group>"; };
+		4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINIFileTests.m; path = tests/OFINIFileTests.m; sourceTree = "<group>"; };
+		4B5B02C218B289ED00CE6AE4 /* testfile.ini */ = {isa = PBXFileReference; lastKnownFileType = text; name = testfile.ini; path = tests/testfile.ini; sourceTree = "<group>"; };
 		4B5C112817E9AAED003C917F /* apple-forwarding-arm.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-arm.S"; path = "src/forwarding/apple-forwarding-arm.S"; sourceTree = "<group>"; };
 		4B5C112917E9AAED003C917F /* apple-forwarding-i386.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-i386.S"; path = "src/forwarding/apple-forwarding-i386.S"; sourceTree = "<group>"; };
 		4B5C112A17E9AAED003C917F /* apple-forwarding-ppc.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-ppc.S"; path = "src/forwarding/apple-forwarding-ppc.S"; sourceTree = "<group>"; };
@@ -1215,6 +1224,8 @@
 				4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */,
 				4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */,
 				4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */,
+				4B5B02BC18B288A400CE6AE4 /* OFINIFile.h */,
+				4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */,
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
 				4BA49D8F13DB113B00381CDB /* OFIntrospection.m */,
 				4BA02B9F15041F5900002F84 /* OFJSONRepresentation.h */,
@@ -1398,6 +1409,7 @@
 				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
 				4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */,
+				4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */,
 				4BAA60C714D09699006F068D /* OFJSONTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
 				4B6EF6731235358D0076B512 /* OFMD5HashTests.m */,
@@ -1454,6 +1466,7 @@
 				4B19023D1338D6D5000374C9 /* Makefile */,
 				4BAE7353139C507F00F682ED /* serialization.xml */,
 				4BF33B4213380CD40059CEF7 /* testfile.bin */,
+				4B5B02C218B289ED00CE6AE4 /* testfile.ini */,
 				4BF33B4313380CD40059CEF7 /* testfile.txt */,
 			);
 			name = "Supporting Files";
@@ -1518,6 +1531,7 @@
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */,
 				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
+				4B5B02BE18B288A400CE6AE4 /* OFINIFile.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
 				4B0EA9211898690E00F573A4 /* OFKernelEventObserver.h in Headers */,
@@ -1889,6 +1903,7 @@
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,
 				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
+				4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
 				4B0EA9221898690E00F573A4 /* OFKernelEventObserver.m in Sources */,
 				4B0EA91C1898690E00F573A4 /* OFKernelEventObserver_kqueue.m in Sources */,
@@ -2031,6 +2046,7 @@
 				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
 				4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */,
+				4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */,
 				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,
 				4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */,

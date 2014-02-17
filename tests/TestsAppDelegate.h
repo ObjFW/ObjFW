@@ -100,6 +100,10 @@
 - (void)HTTPClientTests;
 @end
 
+@interface TestsAppDelegate (OFINIFileTests)
+- (void)INIFileTests;
+@end
+
 @interface TestsAppDelegate (OFJSONTests)
 - (void)JSONTests;
 @end

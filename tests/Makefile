@@ -27,7 +27,8 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${OFHTTPCLIENTTESTS_M}
-SRCS_FILES = OFMD5HashTests.m		\
+SRCS_FILES = OFINIFileTests.m		\
+	     OFMD5HashTests.m		\
 	     OFSerializationTests.m	\
 	     OFSHA1HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
@@ -79,7 +80,8 @@ run-on-ios: all sign-for-ios
 	ssh ${IOS_USER}@${IOS_HOST} \
 		'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
 	scp -q ../src/libobjfw.dylib tests testfile.bin testfile.txt \
-		serialization.xml ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
+		testfile.ini serialization.xml \
+		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.bundle \
 		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
@@ -91,6 +93,7 @@ run-on-android: all
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.bin /data/local/tmp/objfw/testfile.bin
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
+	adb push testfile.ini /data/local/tmp/objfw/testfile.ini
 	adb push serialization.xml /data/local/tmp/objfw/serialization.xml
 	echo "Running tests binary on Android device..."
 	adb shell 'cd /data/local/tmp/objfw && ./tests'
