@@ -43,6 +43,9 @@
 		4B067FC0177BA6F900B8CFDA /* OFChangePermissionsFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B067FB4177BA6F900B8CFDA /* OFChangePermissionsFailedException.m */; };
 		4B067FC1177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B067FB5177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B067FC2177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B067FB6177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m */; };
+		4B06855318B2AD3800FC731A /* OFINICategory.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B06855018B2AD3800FC731A /* OFINICategory.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B06855418B2AD3800FC731A /* OFINICategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B06855118B2AD3800FC731A /* OFINICategory.m */; };
+		4B06855518B2AD3800FC731A /* OFINICategory+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B06855218B2AD3800FC731A /* OFINICategory+Private.h */; };
 		4B0EA91B1898690E00F573A4 /* OFKernelEventObserver_kqueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA9121898690E00F573A4 /* OFKernelEventObserver_kqueue.h */; };
 		4B0EA91C1898690E00F573A4 /* OFKernelEventObserver_kqueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0EA9131898690E00F573A4 /* OFKernelEventObserver_kqueue.m */; };
 		4B0EA91D1898690E00F573A4 /* OFKernelEventObserver_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0EA9141898690E00F573A4 /* OFKernelEventObserver_poll.h */; };
@@ -506,6 +509,9 @@
 		4B067FB4177BA6F900B8CFDA /* OFChangePermissionsFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFChangePermissionsFailedException.m; path = src/exceptions/OFChangePermissionsFailedException.m; sourceTree = "<group>"; };
 		4B067FB5177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCreateSymbolicLinkFailedException.h; path = src/exceptions/OFCreateSymbolicLinkFailedException.h; sourceTree = "<group>"; };
 		4B067FB6177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCreateSymbolicLinkFailedException.m; path = src/exceptions/OFCreateSymbolicLinkFailedException.m; sourceTree = "<group>"; };
+		4B06855018B2AD3800FC731A /* OFINICategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFINICategory.h; path = src/OFINICategory.h; sourceTree = "<group>"; };
+		4B06855118B2AD3800FC731A /* OFINICategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINICategory.m; path = src/OFINICategory.m; sourceTree = "<group>"; };
+		4B06855218B2AD3800FC731A /* OFINICategory+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFINICategory+Private.h"; path = "src/OFINICategory+Private.h"; sourceTree = "<group>"; };
 		4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLElementBuilder.h; path = src/OFXMLElementBuilder.h; sourceTree = "<group>"; };
 		4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLElementBuilder.m; path = src/OFXMLElementBuilder.m; sourceTree = "<group>"; };
 		4B0EA9121898690E00F573A4 /* OFKernelEventObserver_kqueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFKernelEventObserver_kqueue.h; path = src/OFKernelEventObserver_kqueue.h; sourceTree = "<group>"; };
@@ -1224,6 +1230,9 @@
 				4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */,
 				4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */,
 				4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */,
+				4B06855018B2AD3800FC731A /* OFINICategory.h */,
+				4B06855118B2AD3800FC731A /* OFINICategory.m */,
+				4B06855218B2AD3800FC731A /* OFINICategory+Private.h */,
 				4B5B02BC18B288A400CE6AE4 /* OFINIFile.h */,
 				4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */,
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
@@ -1531,6 +1540,7 @@
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */,
 				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
+				4B06855318B2AD3800FC731A /* OFINICategory.h in Headers */,
 				4B5B02BE18B288A400CE6AE4 /* OFINIFile.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
@@ -1664,6 +1674,7 @@
 				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
 				4B2B3E7F140D430500EC2F7C /* OFDictionary_hashtable.h in Headers */,
+				4B06855518B2AD3800FC731A /* OFINICategory+Private.h in Headers */,
 				4B0EA9231898690E00F573A4 /* OFKernelEventObserver+Private.h in Headers */,
 				4B0EA91B1898690E00F573A4 /* OFKernelEventObserver_kqueue.h in Headers */,
 				4B0EA91D1898690E00F573A4 /* OFKernelEventObserver_poll.h in Headers */,
@@ -1903,6 +1914,7 @@
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,
 				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
+				4B06855418B2AD3800FC731A /* OFINICategory.m in Sources */,
 				4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
 				4B0EA9221898690E00F573A4 /* OFKernelEventObserver.m in Sources */,

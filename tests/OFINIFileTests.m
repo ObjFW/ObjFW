@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFINIFile.h"
+#import "OFINICategory.h"
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"

@@ -50,6 +50,7 @@
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFINIFile.h"
+# import "OFINICategory.h"
 # import "OFZIPArchive.h"
 # import "OFZIPArchiveEntry.h"
 #endif
