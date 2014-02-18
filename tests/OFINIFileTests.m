@@ -89,9 +89,9 @@ static OFString *module = @"OFINIFile";
 
 	TEST(@"-[floatForKey:defaultValue:]",
 	    [category floatForKey: @"float"
-		     defaultValue: 1] == 0.5)
+		     defaultValue: 1] == 0.5f)
 
-	TEST(@"-[setFloat:forKey:]", R([category setFloat: 0.25
+	TEST(@"-[setFloat:forKey:]", R([category setFloat: 0.25f
 						   forKey: @"float"]))
 
 	TEST(@"-[doubleForKey:defaultValue:]",
