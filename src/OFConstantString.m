@@ -14,9 +14,9 @@
  * file.
  */
 
-#include "config.h"
-
 #define OF_CONSTANT_STRING_M
+
+#include "config.h"
 
 #include <stdlib.h>
 #include <string.h>

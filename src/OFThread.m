@@ -14,14 +14,12 @@
  * file.
  */
 
-#define _POSIX_C_SOURCE 199309
-
-#include "config.h"
-
 #define OF_THREAD_M
-
+#define _POSIX_C_SOURCE 199309
 #define _POSIX_TIMERS
 #define __NO_EXT_QNX
+
+#include "config.h"
 
 #include <stdlib.h>
 #include <math.h>

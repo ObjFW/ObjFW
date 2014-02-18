@@ -14,9 +14,9 @@
  * file.
  */
 
-#include "config.h"
-
 #define __NO_EXT_QNX
+
+#include "config.h"
 
 #include <string.h>
 
