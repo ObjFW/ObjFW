@@ -110,6 +110,8 @@
 #  ifdef OF_ARMV7_ASM
 #   define OF_ARMV6_ASM
 #  endif
+# elif defined(__arm64__) || defined(__aarch64__)
+#  define OF_ARM64_ASM
 # endif
 #endif
 
