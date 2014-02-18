@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFUnsupportedVersionException \
+ *	  OFUnsupportedVersionException.h ObjFW/OFUnsupportedVersionException.h
+ *
  * @brief An exception indicating that the specified version of the format or
  *	  protocol is not supported.
  */

@@ -19,6 +19,8 @@
 #import "socket.h"
 
 /*!
+ * @class OFStreamSocket OFStreamSocket.h ObjFW/OFStreamSocket.h
+ *
  * @brief A class which provides functions to create and use stream sockets.
  */
 @interface OFStreamSocket: OFStream

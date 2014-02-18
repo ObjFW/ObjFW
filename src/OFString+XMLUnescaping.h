@@ -40,6 +40,8 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
 #endif
 
 /*!
+ * @protocol OFStringXMLUnescapingDelegate OFString.h ObjFW/OFString.h
+ *
  * @brief A protocol that needs to be implemented by delegates for
  *	  stringByXMLUnescapingWithHandler:.
  */
@@ -60,9 +62,6 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
   containsUnknownEntityNamed: (OFString*)entity;
 @end
 
-/*!
- * @brief A category for unescaping XML in strings.
- */
 @interface OFString (XMLUnescaping)
 /*!
  * @brief Unescapes XML in the string.

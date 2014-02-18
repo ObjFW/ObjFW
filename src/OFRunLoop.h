@@ -31,6 +31,8 @@
 @class OFTimer;
 
 /*!
+ * @class OFRunLoop OFRunLoop.h ObjFW/OFRunLoop.h
+ *
  * @brief A class providing a run loop for the application and its processes.
  */
 @interface OFRunLoop: OFObject

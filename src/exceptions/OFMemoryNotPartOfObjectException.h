@@ -17,6 +17,10 @@
 #import "OFException.h"
 
 /*!
+ * @class OFMemoryNotPartOfObjectException \
+ *	  OFMemoryNotPartOfObjectException.h \
+ *	  ObjFW/OFMemoryNotPartOfObjectException.h
+ *
  * @brief An exception indicating the given memory is not part of the object.
  */
 @interface OFMemoryNotPartOfObjectException: OFException

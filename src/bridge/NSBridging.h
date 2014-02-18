@@ -15,6 +15,8 @@
  */
 
 /*!
+ * @protocol NSBridging NSBridging.h ObjFW-Bridge/NSBridging.h
+ *
  * @brief A protocol implemented by classes supporting bridging Foundation
  *	  objects to ObjFW objects.
  */

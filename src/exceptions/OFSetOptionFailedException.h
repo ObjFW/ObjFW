@@ -19,6 +19,9 @@
 @class OFStream;
 
 /*!
+ * @class OFSetOptionFailedException \
+ *	  OFSetOptionFailedException.h ObjFW/OFSetOptionFailedException.h
+ *
  * @brief An exception indicating that setting an option for a stream failed.
  */
 @interface OFSetOptionFailedException: OFException

@@ -21,6 +21,8 @@
 
 typedef struct of_list_object_t of_list_object_t;
 /*!
+ * @struct of_list_object_t OFList.h ObjFW/OFList.h
+ *
  * @brief A list object.
  *
  * A struct that contains a pointer to the next list object, the previous list
@@ -36,6 +38,8 @@ struct of_list_object_t {
 };
 
 /*!
+ * @class OFList OFList.h ObjFW/OFList.h
+ *
  * @brief A class which provides easy to use double-linked lists.
  */
 @interface OFList: OFObject <OFCopying, OFCollection, OFSerialization>

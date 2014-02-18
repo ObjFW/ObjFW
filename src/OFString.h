@@ -82,6 +82,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @class OFURL;
 
 /*!
+ * @class OFString OFString.h ObjFW/OFString.h
+ *
  * @brief A class for handling strings.
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,

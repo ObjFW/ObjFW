@@ -23,6 +23,9 @@
 @class OFThread;
 
 /*!
+ * @class OFThreadStartFailedException \
+ *	  OFThreadStartFailedException.h ObjFW/OFThreadStartFailedException.h
+ *
  * @brief An exception indicating that starting a thread failed.
  */
 @interface OFThreadStartFailedException: OFException

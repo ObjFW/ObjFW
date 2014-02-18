@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFChecksumFailedException \
+ *	  OFChecksumFailedException.h ObjFW/OFChecksumFailedException.h
+ *
  * @brief An exception indicating that a checksum did not match.
  */
 @interface OFChecksumFailedException: OFException

@@ -19,6 +19,9 @@
 #import "NSBridging.h"
 
 /*!
+ * @category NSString (OFObject)
+ *	     NSString+OFObject.h ObjFW-Bridge/NSString+OFObject.h
+ *
  * @brief Support for bridging NSStrings to OFStrings.
  *
  * Unfortunately, they need to be copied, as NSString is not capable of

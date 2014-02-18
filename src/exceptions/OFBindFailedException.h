@@ -23,6 +23,9 @@
 #endif
 
 /*!
+ * @class OFBindFailedException \
+ *	  OFBindFailedException.h ObjFW/OFBindFailedException.h
+ *
  * @brief An exception indicating that binding a socket failed.
  */
 @interface OFBindFailedException: OFException

@@ -29,6 +29,8 @@
 @class OFDataArray;
 
 /*!
+ * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
+ *
  * @brief A delegate for OFHTTPClient.
  */
 @protocol OFHTTPClientDelegate <OFObject>
@@ -91,6 +93,8 @@
 @end
 
 /*!
+ * @class OFHTTPClient OFHTTPClient.h ObjFW/OFHTTPClient.h
+ *
  * @brief A class for performing HTTP requests.
  */
 @interface OFHTTPClient: OFObject

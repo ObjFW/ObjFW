@@ -17,6 +17,8 @@
 #import "OFXMLNode.h"
 
 /*!
+ * @class OFXMLCDATA OFXMLCDATA.h ObjFW/OFXMLCDATA.h
+ *
  * @brief A class representing XML CDATA.
  */
 @interface OFXMLCDATA: OFXMLNode

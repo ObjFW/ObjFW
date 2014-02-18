@@ -26,9 +26,6 @@ extern int _OFObject_Serialization_reference;
 }
 #endif
 
-/*!
- * @brief A category that provides methods for serializing objects.
- */
 @interface OFObject (OFSerialization)
 /*!
  * @brief Creates a string by serializing the receiver.

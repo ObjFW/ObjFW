@@ -32,6 +32,8 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
 #endif
 
 /*!
+ * @class OFCountedSet OFCountedSet.h ObjFW/OFCountedSet.h
+ *
  * @brief An abstract class for a mutable unordered set of objects, counting how
  *	  often it contains an object.
  */

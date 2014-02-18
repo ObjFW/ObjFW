@@ -21,6 +21,10 @@
 #import "OFException.h"
 
 /*!
+ * @class OFChangePermissionsFailedException \
+ *	  OFChangePermissionsFailedException.h \
+ *	  ObjFW/OFChangePermissionsFailedException.h
+ *
  * @brief An exception indicating that changing the permissions of an item
  *	  failed.
  */

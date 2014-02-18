@@ -21,9 +21,11 @@
 /*! @file */
 
 /*!
+ * @struct of_resolver_result_t resolver.h ObjFW/resolver.h
+ *
  * @brief A struct representing one result from the resolver.
  */
-typedef struct of_resolver_result_t {
+typedef struct {
 	int family, type, protocol;
 	struct sockaddr *address;
 	socklen_t addressLength;

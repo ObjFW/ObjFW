@@ -23,6 +23,10 @@
 @class OFCondition;
 
 /*!
+ * @class OFConditionWaitFailedException \
+ *	  OFConditionWaitFailedException.h \
+ *	  ObjFW/OFConditionWaitFailedException.h
+ *
  * @brief An exception indicating waiting for a condition failed.
  */
 @interface OFConditionWaitFailedException: OFException

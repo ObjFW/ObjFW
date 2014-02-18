@@ -21,6 +21,9 @@
 #endif
 
 /*!
+ * @class OFNotConnectedException \
+ *	  OFNotConnectedException.h ObjFW/OFNotConnectedException.h
+ *
  * @brief An exception indicating a socket is not connected or bound.
  */
 @interface OFNotConnectedException: OFException

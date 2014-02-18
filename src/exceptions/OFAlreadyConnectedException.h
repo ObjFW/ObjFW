@@ -21,6 +21,9 @@
 #endif
 
 /*!
+ * @class OFAlreadyConnectedException \
+ *	  OFAlreadyConnectedException.h ObjFW/OFAlreadyConnectedException.h
+ *
  * @brief An exception indicating an attempt to connect or bind an already
  *        connected or bound socket.
  */

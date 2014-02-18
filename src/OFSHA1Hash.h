@@ -17,6 +17,8 @@
 #import "OFHash.h"
 
 /*!
+ * @class OFSHA1Hash OFSHA1Hash.h ObjFW/OFSHA1Hash.h
+ *
  * @brief A class which provides functions to create an SHA1 hash.
  */
 @interface OFSHA1Hash: OFObject <OFHash>

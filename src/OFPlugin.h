@@ -26,6 +26,8 @@ typedef HMODULE of_plugin_handle_t;
 #endif
 
 /*!
+ * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
+ *
  * @brief Provides a system for loading plugins at runtime.
  */
 @interface OFPlugin: OFObject

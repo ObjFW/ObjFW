@@ -24,6 +24,8 @@
 @class OFXMLAttribute;
 
 /*!
+ * @class OFXMLElement OFXMLElement.h ObjFW/OFXMLElement.h
+ *
  * @brief A class which stores an XML element.
  */
 @interface OFXMLElement: OFXMLNode

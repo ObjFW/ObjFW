@@ -23,6 +23,10 @@
 @class OFCondition;
 
 /*!
+ * @class OFConditionStillWaitingException \
+ *	  OFConditionStillWaitingException.h \
+ *	  ObjFW/OFConditionStillWaitingException.h
+ *
  * @brief An exception indicating that a thread is still waiting for a
  *	  condition.
  */

@@ -17,6 +17,10 @@
 #import "OFException.h"
 
 /*!
+ * @class OFInitializationFailedException \
+ *	  OFInitializationFailedException.h \
+ *	  ObjFW/OFInitializationFailedException.h
+ *
  * @brief An exception indicating that initializing something failed.
  */
 @interface OFInitializationFailedException: OFException

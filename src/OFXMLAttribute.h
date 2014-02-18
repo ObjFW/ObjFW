@@ -19,6 +19,8 @@
 @class OFString;
 
 /*!
+ * @class OFXMLAttribute OFXMLAttribute.h ObjFW/OFXMLAttribute.h
+ *
  * @brief A representation of an attribute of an XML element as an object.
  */
 @interface OFXMLAttribute: OFXMLNode

@@ -51,6 +51,8 @@ typedef bool (^of_set_filter_block_t)(id object);
 #endif
 
 /*!
+ * @class OFSet OFSet.h ObjFW/OFSet.h
+ *
  * @brief An abstract class for an unordered set of unique objects.
  *
  * @warning Do not mutate objects that are in a set! Changing the hash of

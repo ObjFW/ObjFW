@@ -20,6 +20,8 @@
 @class OFDictionary;
 
 /*!
+ * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
+ *
  * @brief A class for representing an HTTP request reply as a stream.
  */
 @interface OFHTTPResponse: OFStream

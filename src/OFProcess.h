@@ -34,6 +34,8 @@
 @class OFDictionary;
 
 /*!
+ * @class OFProcess OFProcess.h ObjFW/OFProcess.h
+ *
  * @brief A class for stream-like communication with a newly created process.
  */
 @interface OFProcess: OFStream

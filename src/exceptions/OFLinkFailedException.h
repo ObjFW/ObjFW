@@ -20,6 +20,9 @@
 
 #ifdef OF_HAVE_LINK
 /*!
+ * @class OFLinkFailedException \
+ *	  OFLinkFailedException.h ObjFW/OFLinkFailedException.h
+ *
  * @brief An exception indicating that creating a link failed.
  */
 @interface OFLinkFailedException: OFException

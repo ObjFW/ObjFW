@@ -24,10 +24,7 @@ extern int _OFString_Serialization_reference;
 }
 #endif
 
-/*!
- * @brief A category that provides methods for deserializing objects.
- */
-@interface OFString (OFSerialization)
+@interface OFString (Serialization)
 /*!
  * @brief Deserializes the receiver into an object.
  *

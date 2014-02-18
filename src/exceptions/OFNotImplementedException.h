@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFNotImplementedException \
+ *	  OFNotImplementedException.h ObjFW/OFNotImplementedException.h
+ *
  * @brief An exception indicating that a method or part of it is not
  *        implemented.
  */

@@ -24,9 +24,6 @@ extern int _OFString_URLEncoding_reference;
 }
 #endif
 
-/*!
- * @brief A category which provides URL encoding and decoding.
- */
 @interface OFString (URLEncoding)
 /*!
  * @brief Encodes a string for use in a URL.

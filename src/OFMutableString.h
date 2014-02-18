@@ -17,6 +17,8 @@
 #import "OFString.h"
 
 /*!
+ * @class OFMutableString OFString.h ObjFW/OFString.h
+ *
  * @brief A class for storing and modifying strings.
  */
 @interface OFMutableString: OFString

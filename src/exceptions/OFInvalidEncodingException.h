@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFInvalidEncodingException \
+ *	  OFInvalidEncodingException.h ObjFW/OFInvalidEncodingException.h
+ *
  * @brief An exception indicating that the encoding is invalid for this object.
  */
 @interface OFInvalidEncodingException: OFException

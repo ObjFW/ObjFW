@@ -31,6 +31,8 @@ typedef void (^of_thread_pool_block_t)(void);
 @class OFThreadPoolJob;
 
 /*!
+ * @class OFThreadPool OFThreadPool.h ObjFW/OFThreadPool.h
+ *
  * @brief A class providing a pool of reusable threads.
  *
  * @note When the thread pool is released, all threads will terminate after

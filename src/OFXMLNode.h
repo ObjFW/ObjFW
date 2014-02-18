@@ -18,6 +18,8 @@
 #import "OFSerialization.h"
 
 /*!
+ * @class OFXMLNode OFXMLNode.h ObjFW/OFXMLNode.h
+ *
  * @brief A class which stores an XML element.
  */
 @interface OFXMLNode: OFObject <OFCopying, OFSerialization>

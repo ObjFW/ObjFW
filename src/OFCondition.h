@@ -19,6 +19,8 @@
 @class OFDate;
 
 /*!
+ * @class OFCondition OFCondition.h ObjFW/OFCondition.h
+ *
  * @brief A class implementing a condition variable for thread synchronization.
  */
 @interface OFCondition: OFMutex

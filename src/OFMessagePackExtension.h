@@ -20,6 +20,9 @@
 @class OFDataArray;
 
 /*!
+ * @class OFMessagePackExtension \
+ *	  OFMessagePackExtension.h ObjFW/OFMessagePackExtension.h
+ *
  * @brief A class for representing the MessagePack extension type.
  */
 @interface OFMessagePackExtension: OFObject <OFMessagePackRepresentation,

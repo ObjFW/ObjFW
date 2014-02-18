@@ -17,6 +17,8 @@
 #import "OFDeflateStream.h"
 
 /*!
+ * @class OFDeflate64Stream OFDeflate64Stream.h ObjFW/OFDeflate64Stream.h
+ *
  * @brief A class for a stream that handles Deflate64 compression or
  *	  decompression transparently for an underlying stream.
  */

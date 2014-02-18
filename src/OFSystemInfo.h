@@ -17,6 +17,8 @@
 #import "OFObject.h"
 
 /*!
+ * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
+ *
  * @brief A class for querying information about the system.
  */
 @interface OFSystemInfo: OFObject

@@ -17,6 +17,10 @@
 #import "OFException.h"
 
 /*!
+ * @class OFEnumerationMutationException \
+ *	  OFEnumerationMutationException.h \
+ *	  ObjFW/OFEnumerationMutationException.h
+ *
  * @brief An exception indicating that a mutation was detected during
  *        enumeration.
  */

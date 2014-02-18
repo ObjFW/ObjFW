@@ -34,6 +34,8 @@ enum {
 };
 
 /*!
+ * @class OFMethod OFIntrospection.h ObjFW/OFIntrospection.h
+ *
  * @brief A class for describing a method.
  */
 @interface OFMethod: OFObject
@@ -72,6 +74,8 @@ enum {
 @end
 
 /*!
+ * @class OFProperty OFIntrospection.h ObjFW/OFIntrospection.h
+ *
  * @brief A class for describing a property.
  */
 @interface OFProperty: OFObject
@@ -131,6 +135,8 @@ enum {
 @end
 
 /*!
+ * @class OFInstanceVariable OFIntrospection.h ObjFW/OFIntrospection.h
+ *
  * @brief A class for describing an instance variable.
  */
 @interface OFInstanceVariable: OFObject
@@ -169,6 +175,8 @@ enum {
 @end
 
 /*!
+ * @class OFIntrospection OFIntrospection.h ObjFW/OFIntrospection.h
+ *
  * @brief A class for introspecting classes.
  */
 @interface OFIntrospection: OFObject

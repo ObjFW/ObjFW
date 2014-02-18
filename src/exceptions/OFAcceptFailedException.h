@@ -23,6 +23,9 @@
 #endif
 
 /*!
+ * @class OFAcceptFailedException \
+ *	  OFAcceptFailedException.h ObjFW/OFAcceptFailedException.h
+ *
  * @brief An exception indicating that accepting a connection failed.
  */
 @interface OFAcceptFailedException: OFException

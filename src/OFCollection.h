@@ -17,6 +17,8 @@
 #import "OFEnumerator.h"
 
 /*!
+ * @protocol OFCollection OFCollection.h ObjFW/OFCollection.h
+ *
  * @brief A protocol with methods common for all collections.
  */
 @protocol OFCollection <OFEnumerating, OFFastEnumeration>

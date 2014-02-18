@@ -19,6 +19,8 @@
 #define OF_DEFLATE_STREAM_BUFFER_SIZE 4096
 
 /*!
+ * @class OFDeflateStream OFDeflateStream.h ObjFW/OFDeflateStream.h
+ *
  * @brief A class for a stream that handles Deflate compression or decompression
  *	  transparently for an underlying stream.
  */

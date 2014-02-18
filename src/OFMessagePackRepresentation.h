@@ -17,6 +17,9 @@
 @class OFDataArray;
 
 /*!
+ * @protocol OFMessagePackRepresentation
+ *	     OFMessagePackRepresentation.h ObjFW/OFMessagePackRepresentation.h
+ *
  * @brief A protocol implemented by classes that support encoding to a
  *	  MessagePack representation.
  */

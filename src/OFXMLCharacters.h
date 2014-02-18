@@ -17,6 +17,8 @@
 #import "OFXMLNode.h"
 
 /*!
+ * @class OFXMLCharacters OFXMLCharacters.h ObjFW/OFXMLCharacters.h
+ *
  * @brief A class representing XML characters.
  */
 @interface OFXMLCharacters: OFXMLNode

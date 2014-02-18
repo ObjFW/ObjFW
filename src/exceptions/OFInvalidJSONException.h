@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFInvalidJSONException \
+ *	  OFInvalidJSONException.h ObjFW/OFInvalidJSONException.h
+ *
  * @brief An exception indicating a JSON representation is invalid.
  */
 @interface OFInvalidJSONException: OFException

@@ -61,6 +61,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
 
 /*!
+ * @class OFStream OFStream.h ObjFW/OFStream.h
+ *
  * @brief A base class for different types of streams.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*

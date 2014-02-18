@@ -19,6 +19,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFRemoveItemFailedException \
+ *	  OFRemoveItemFailedException.h ObjFW/OFRemoveItemFailedException.h
+ *
  * @brief An exception indicating that removing an item failed.
  */
 @interface OFRemoveItemFailedException: OFException

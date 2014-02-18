@@ -25,5 +25,10 @@ extern int _OFDataArray_MessagePackValue_reference;
 #endif
 
 @interface OFDataArray (MessagePackValue)
+/*!
+ * @brief Parses the MessagePack representation and returns it as an object.
+ *
+ * @return The MessagePack representation as an object
+ */
 - (id)messagePackValue;
 @end

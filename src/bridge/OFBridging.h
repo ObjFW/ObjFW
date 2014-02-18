@@ -15,6 +15,8 @@
  */
 
 /*!
+ * @protocol OFBridging OFBridging.h ObjFW-Bridge/OFBridging.h
+ *
  * @brief A protocol implemented by classes supporting bridging ObjFW objects
  *	  to Foundation objects.
  */

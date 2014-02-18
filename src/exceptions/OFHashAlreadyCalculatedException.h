@@ -18,6 +18,10 @@
 #import "OFHash.h"
 
 /*!
+ * @class OFHashAlreadyCalculatedException \
+ *	  OFHashAlreadyCalculatedException.h \
+ *	  ObjFW/OFHashAlreadyCalculatedException.h
+ *
  * @brief An exception indicating that the hash has already been calculated.
  */
 @interface OFHashAlreadyCalculatedException: OFException

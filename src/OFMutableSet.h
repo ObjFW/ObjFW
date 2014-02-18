@@ -17,6 +17,8 @@
 #import "OFSet.h"
 
 /*!
+ * @class OFMutableSet OFSet.h ObjFW/OFSet.h
+ *
  * @brief An abstract class for a mutable unordered set of unique objects.
  */
 @interface OFMutableSet: OFSet

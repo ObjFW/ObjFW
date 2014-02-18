@@ -24,6 +24,8 @@
 @class OFStream;
 
 /*!
+ * @class OFZIPArchive OFZIPArchive.h ObjFW/OFZIPArchive.h
+ *
  * @brief A class for accessing and manipulating ZIP files.
  */
 @interface OFZIPArchive: OFObject

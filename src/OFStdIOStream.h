@@ -17,6 +17,8 @@
 #import "OFStream.h"
 
 /*!
+ * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
+ *
  * @brief A class for providing standard input, output and error as OFStream.
  *
  * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are

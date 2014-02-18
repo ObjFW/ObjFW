@@ -33,7 +33,7 @@
 /*!
  * @brief The C type of a number stored in an OFNumber.
  */
-typedef enum of_number_type_t {
+typedef enum {
 	/*! bool */
 	OF_NUMBER_BOOL		= 0x01,
 	/*! unsigned char */
@@ -94,6 +94,8 @@ typedef enum of_number_type_t {
 } of_number_type_t;
 
 /*!
+ * @class OFNumber OFNumber.h ObjFW/OFNumber.h
+ *
  * @brief Provides a way to store a number in an object.
  */
 @interface OFNumber: OFObject <OFCopying, OFComparing, OFSerialization,

@@ -27,6 +27,9 @@
 @class OFDate;
 
 /*!
+ * @protocol OFKernelEventObserverDelegate
+ *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ *
  * @brief A protocol that needs to be implemented by delegates for
  *	  OFKernelEventObserver.
  */
@@ -59,6 +62,9 @@
 @end
 
 /*!
+ * @protocol OFReadyForReadingObserving
+ *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ *
  * @brief This protocol is implemented by classes which can be observed for
  *	  readiness for reading by OFKernelEventObserver.
  */
@@ -74,6 +80,9 @@
 @end
 
 /*!
+ * @protocol OFReadyForWritingObserving
+ *	     OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ *
  * @brief This protocol is implemented by classes which can be observed for
  *	  readiness for writing by OFKernelEventObserver.
  */
@@ -89,6 +98,9 @@
 @end
 
 /*!
+ * @class OFKernelEventObserver
+ *	  OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
+ *
  * @brief A class that can observe multiple kernel events (e.g. streams being
  *	  ready to read) at once.
  *

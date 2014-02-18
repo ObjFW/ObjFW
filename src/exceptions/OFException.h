@@ -132,6 +132,8 @@ extern int of_wsaerr_to_errno(int);
 #endif
 
 /*!
+ * @class OFException OFException.h ObjFW/OFException.h
+ *
  * @brief The base class for all exceptions in ObjFW
  *
  * The OFException class is the base class for all exceptions in ObjFW, except

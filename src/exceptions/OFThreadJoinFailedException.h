@@ -23,6 +23,9 @@
 @class OFThread;
 
 /*!
+ * @class OFThreadJoinFailedException \
+ *	  OFThreadJoinFailedException.h ObjFW/OFThreadJoinFailedException.h
+ *
  * @brief An exception indicating that joining a thread failed.
  */
 @interface OFThreadJoinFailedException: OFException

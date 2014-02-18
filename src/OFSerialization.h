@@ -21,6 +21,8 @@
 @class OFXMLElement;
 
 /*!
+ * @protocol OFSerialization OFSerialization.h ObjFW/OFSerialization.h
+ *
  * @brief A protocol for serializing objects.
  */
 @protocol OFSerialization

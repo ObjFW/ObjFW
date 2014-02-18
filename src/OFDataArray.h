@@ -22,6 +22,8 @@
 @class OFURL;
 
 /*!
+ * @class OFDataArray OFDataArray.h ObjFW/OFDataArray.h
+ *
  * @brief A class for storing arbitrary data in an array.
  *
  * If you plan to store large hunks of data, you should consider using

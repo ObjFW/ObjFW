@@ -19,6 +19,9 @@
 @class OFString;
 
 /*!
+ * @class OFAllocFailedException \
+ *	  OFAllocFailedException.h ObjFW/OFAllocFailedException.h
+ *
  * @brief An exception indicating an object could not be allocated.
  *
  * This exception is preallocated, as when there's no memory, no exception can

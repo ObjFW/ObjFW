@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFInvalidArgumentException \
+ *	  OFInvalidArgumentException.h ObjFW/OFInvalidArgumentException.h
+ *
  * @brief An exception indicating that the argument is invalid for this method.
  */
 @interface OFInvalidArgumentException: OFException

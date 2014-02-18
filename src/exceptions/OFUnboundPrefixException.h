@@ -19,6 +19,9 @@
 @class OFXMLParser;
 
 /*!
+ * @class OFUnboundPrefixException \
+ *	  OFUnboundPrefixException.h ObjFW/OFUnboundPrefixException.h
+ *
  * @brief An exception indicating an attempt to use an unbound prefix.
  */
 @interface OFUnboundPrefixException: OFException

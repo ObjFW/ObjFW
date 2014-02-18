@@ -20,6 +20,8 @@
 @class OFArray;
 
 /*!
+ * @protocol OFEnumerating OFEnumerator.h ObjFW/OFEnumerator.h
+ *
  * @brief A protocol for getting an enumerator for the object.
  */
 @protocol OFEnumerating
@@ -33,6 +35,8 @@
 @end
 
 /*!
+ * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
+ *
  * @brief A class which provides methods to enumerate through collections.
  */
 @interface OFEnumerator: OFObject
@@ -66,9 +70,11 @@
 #define of_fast_enumeration_state_t NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
 /*!
+ * @struct of_fast_enumeration_state_t OFEnumerator.h ObjFW/OFEnumerator.h
+ *
  * @brief State information for fast enumerations.
  */
-typedef struct of_fast_enumeration_state_t {
+typedef struct {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
 	/// Pointer to a C array of objects to return
@@ -81,6 +87,8 @@ typedef struct of_fast_enumeration_state_t {
 #endif
 
 /*!
+ * @protocol OFFastEnumeration OFEnumerator.h ObjFW/OFEnumerator.h
+ *
  * @brief A protocol for fast enumeration.
  *
  * The OFFastEnumeration protocol needs to be implemented by all classes

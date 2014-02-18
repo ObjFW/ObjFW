@@ -20,9 +20,11 @@
 /*! @file */
 
 /*!
+ * @struct of_map_table_functions_t OFMapTable.h ObjFW/OFMapTable.h
+ *
  * @brief A struct describing the functions to be used by the map table.
  */
-typedef struct of_map_table_functions_t {
+typedef struct {
 	/// The function to retain keys / values
 	void* (*retain)(void *value);
 	/// The function to release keys / values
@@ -58,6 +60,8 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 @class OFMapTableEnumerator;
 
 /*!
+ * @class OFMapTable OFMapTable.h ObjFW/OFMapTable.h
+ *
  * @brief A class similar to OFDictionary, but providing more options how keys
  *	  and values should be retained, released, compared and hashed.
  */
@@ -225,6 +229,8 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 @end
 
 /*!
+ * @class OFMapTableEnumerator OFMapTable.h ObjFW/OFMapTable.h
+ *
  * @brief A class which provides methods to enumerate through an OFMapTable's
  *	  keys or values.
  */

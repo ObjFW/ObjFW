@@ -17,6 +17,8 @@
 #import "OFObject.h"
 
 /*!
+ * @protocol OFLocking OFLocking.h ObjFW/OFLocking.h
+ *
  * @brief A protocol for locks.
  */
 @protocol OFLocking <OFObject>

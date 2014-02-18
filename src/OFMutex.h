@@ -20,6 +20,8 @@
 #import "threading.h"
 
 /*!
+ * @class OFMutex OFMutex.h ObjFW/OFMutex.h
+ *
  * @brief A class for creating mutual exclusions.
  */
 @interface OFMutex: OFObject <OFLocking>

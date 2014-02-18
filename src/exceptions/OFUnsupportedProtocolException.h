@@ -19,6 +19,10 @@
 @class OFURL;
 
 /*!
+ * @class OFUnsupportedProtocolException \
+ *	  OFUnsupportedProtocolException.h \
+ *	  ObjFW/OFUnsupportedProtocolException.h
+ *
  * @brief An exception indicating that the protocol specified by the URL is not
  *	  supported.
  */

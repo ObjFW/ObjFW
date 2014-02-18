@@ -18,6 +18,8 @@
 #import "OFConstantString.h"
 
 /*!
+ * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h
+ *
  * @brief A class for parsing the program options specified on the command line.
  */
 @interface OFOptionsParser: OFObject

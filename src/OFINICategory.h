@@ -20,6 +20,8 @@
 @class OFMutableArray;
 
 /*!
+ * @class OFINICategory OFINICategory.h ObjFW/OFINICategory.h
+ *
  * @brief A class for representing a category of an INI file.
  */
 @interface OFINICategory: OFObject

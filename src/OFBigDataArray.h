@@ -17,6 +17,8 @@
 #import "OFDataArray.h"
 
 /*!
+ * @class OFBigDataArray OFBigDataArray.h ObjFW/OFBigDataArray.h
+ *
  * @brief A class for storing arbitrary big data in an array.
  *
  * The OFBigDataArray class is a class for storing arbitrary data in an array

@@ -19,6 +19,9 @@
 @class OFXMLElement;
 
 /*!
+ * @class OFUnboundNamespaceException \
+ *	  OFUnboundNamespaceException.h ObjFW/OFUnboundNamespaceException.h
+ *
  * @brief An exception indicating an attempt to use an unbound namespace.
  */
 @interface OFUnboundNamespaceException: OFException

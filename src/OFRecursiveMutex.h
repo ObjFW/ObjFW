@@ -20,6 +20,8 @@
 #import "threading.h"
 
 /*!
+ * @class OFRecursiveMutex OFRecursiveMutex.h ObjFW/OFRecursiveMutex.h
+ *
  * @brief A class for creating mutual exclusions which can be entered
  *	  recursively.
  */

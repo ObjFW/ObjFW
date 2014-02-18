@@ -19,6 +19,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFMoveItemFailedException \
+ *	  OFMoveItemFailedException.h ObjFW/OFMoveItemFailedException.h
+ *
  * @brief An exception indicating that moving an item failed.
  */
 @interface OFMoveItemFailedException: OFException

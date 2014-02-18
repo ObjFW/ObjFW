@@ -17,6 +17,8 @@
 #import "OFObject.h"
 
 /*!
+ * @protocol OFHash OFHash.h ObjFW/OFHash.h
+ *
  * @brief A protocol for classes providing hash functions.
  */
 @protocol OFHash <OFObject>

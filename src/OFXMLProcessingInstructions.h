@@ -17,6 +17,9 @@
 #import "OFXMLNode.h"
 
 /*!
+ * @class OFXMLProcessingInstructions \
+ *	  OFXMLProcessingInstructions.h ObjFW/OFXMLProcessingInstructions.h
+ *
  * @brief A class for representing XML processing instructions.
  */
 @interface OFXMLProcessingInstructions: OFXMLNode

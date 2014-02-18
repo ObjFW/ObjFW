@@ -23,6 +23,9 @@
 #import "OFBridging.h"
 
 /*!
+ * @category OFDictionary (NSObject) \
+ *	     OFDictionary+NSObject.h ObjFW-Bridge/OFDictionary+NSObject.h
+ *
  * @brief Support for bridging OFDictionaries to NSDictionaries.
  */
 @interface OFDictionary (NSObject) <OFBridging>

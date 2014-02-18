@@ -19,6 +19,10 @@
 #import "OFException.h"
 
 /*!
+ * @class OFChangeCurrentDirectoryPathFailedException \
+ *	  OFChangeCurrentDirectoryPathFailedException.h \
+ *	  ObjFW/OFChangeCurrentDirectoryPathFailedException.h
+ *
  * @brief An exception indicating that changing the current directory path
  *	  failed.
  */

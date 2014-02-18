@@ -30,6 +30,8 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
 #endif
 
 /*!
+ * @class OFMutableArray OFArray.h ObjFW/OFArray.h
+ *
  * @brief An abstract class for storing, adding and removing objects in an
  *	  array.
  */

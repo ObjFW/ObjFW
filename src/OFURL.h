@@ -20,6 +20,8 @@
 @class OFString;
 
 /*!
+ * @class OFURL OFURL.h ObjFW/OFURL.h
+ *
  * @brief A class for parsing URLs and accessing parts of it.
  */
 @interface OFURL: OFObject <OFCopying, OFSerialization>

@@ -24,6 +24,10 @@
 @class OFHTTPResponse;
 
 /*!
+ * @class OFHTTPRequestFailedException \
+ *	  OFHTTPRequestFailedException.h \
+ *	  ObjFW/OFHTTPRequestFailedException.h
+ *
  * @brief An exception indicating that an HTTP request failed.
  */
 @interface OFHTTPRequestFailedException: OFException

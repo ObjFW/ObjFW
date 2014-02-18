@@ -20,6 +20,10 @@
 
 #ifdef OF_HAVE_SYMLINK
 /*!
+ * @class OFCreateSymbolicLinkFailedException \
+ *	  OFCreateSymbolicLinkFailedException.h \
+ *	  ObjFW/OFCreateSymbolicLinkFailedException.h
+ *
  * @brief An exception indicating that creating a symbolic link failed.
  */
 @interface OFCreateSymbolicLinkFailedException: OFException

@@ -36,6 +36,8 @@ typedef id (^of_thread_block_t)(void);
 #endif
 
 /*!
+ * @class OFThread OFThread.h ObjFW/OFThread.h
+ *
  * @brief A class which provides portable threads.
  *
  * To use it, you should create a new class derived from it and reimplement

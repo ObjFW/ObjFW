@@ -19,6 +19,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFCopyItemFailedException \
+ *	  OFCopyItemFailedException.h ObjFW/OFCopyItemFailedException.h
+ *
  * @brief An exception indicating that copying a item failed.
  */
 @interface OFCopyItemFailedException: OFException

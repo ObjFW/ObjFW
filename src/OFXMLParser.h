@@ -25,6 +25,8 @@
 @class OFStream;
 
 /*!
+ * @protocol OFXMLParserDelegate OFXMLParser.h ObjFW/OFXMLParser.h
+ *
  * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
 @protocol OFXMLParserDelegate <OFObject>
@@ -118,6 +120,8 @@
 @end
 
 /*!
+ * @class OFXMLParser OFXMLParser.h ObjFW/OFXMLParser.h
+ *
  * @brief An event-based XML parser.
  *
  * OFXMLParser is an event-based XML parser which calls the delegate's callbacks

@@ -17,6 +17,8 @@
 #import "OFObject.h"
 
 /*!
+ * @class OFAutoreleasePool OFAutoreleasePool.h ObjFW/OFAutoreleasePool.h
+ *
  * @brief A pool that keeps track of objects to release.
  *
  * The OFAutoreleasePool class is a class that keeps track of objects that will

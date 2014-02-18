@@ -26,6 +26,8 @@
 #import "OFStream.h"
 
 /*!
+ * @class OFSeekableStream OFSeekableStream.h ObjFW/OFSeekableStream.h
+ *
  * @brief A stream that supports seeking.
  *
  * @note If you want to subclass this, override

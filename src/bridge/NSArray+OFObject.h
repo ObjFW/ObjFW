@@ -19,6 +19,9 @@
 #import "NSBridging.h"
 
 /*!
+ * @category NSArray (OFObject) \
+ *	     NSArray+OFObject.h ObjFW-Bridge/NSArray+OFObject.h
+ *
  * @brief Support for bridging NSArrays to OFArrays.
  */
 @interface NSArray (OFObject) <NSBridging>

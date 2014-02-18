@@ -25,6 +25,8 @@
 @class OFException;
 
 /*!
+ * @struct of_udp_socket_address_t OFUDPSocket.h ObjFW/OFUDPSocket.h
+ *
  * @brief A struct which represents a host / port pair for a UDP socket.
  */
 typedef struct {
@@ -63,6 +65,8 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
 #endif
 
 /*!
+ * @class OFUDPSocket OFUDPSocket.h ObjFW/OFUDPSocket.h
+ *
  * @brief A class which provides functions to create and use UDP sockets.
  *
  * Addresses are of type @ref of_udp_socket_address_t. You can use @ref

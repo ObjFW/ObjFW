@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFInvalidServerReplyException \
+ *	  OFInvalidServerReplyException.h ObjFW/OFInvalidServerReplyException.h
+ *
  * @brief An exception indicating that the server sent an invalid reply.
  */
 @interface OFInvalidServerReplyException: OFException

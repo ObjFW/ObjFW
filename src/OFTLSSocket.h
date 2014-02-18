@@ -21,6 +21,8 @@
 @protocol OFTLSSocket;
 
 /*!
+ * @protocol OFTLSSocketDelegate OFTLSSocket.h ObjFW/OFTLSSocket.h
+ *
  * @brief A delegate for classes implementing the OFTLSSocket protocol.
  */
 @protocol OFTLSSocketDelegate
@@ -39,6 +41,8 @@
 @end
 
 /*!
+ * @protocol OFTLSSocket OFTLSSocket.h ObjFW/OFTLSSocket.h
+ *
  * @brief A protocol that should be implemented by 3rd-party libraries
  *	  implementing TLS.
  */

@@ -80,6 +80,8 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 #endif
 
 /*!
+ * @class OFArray OFArray.h ObjFW/OFArray.h
+ *
  * @brief An abstract class for storing objects in an array.
  */
 @interface OFArray: OFObject <OFCopying, OFMutableCopying, OFCollection,

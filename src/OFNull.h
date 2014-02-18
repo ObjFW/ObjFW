@@ -20,6 +20,8 @@
 #import "OFMessagePackRepresentation.h"
 
 /*!
+ * @class OFNull OFNull.h ObjFW/OFNull.h
+ *
  * @brief A class for representing null values in collections.
  */
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,

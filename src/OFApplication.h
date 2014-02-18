@@ -30,6 +30,8 @@
 	}
 
 /*!
+ * @protocol OFApplicationDelegate OFApplication.h ObjFW/OFApplication.h
+ *
  * @brief A protocol for delegates of OFApplication.
  */
 @protocol OFApplicationDelegate <OFObject>
@@ -97,6 +99,8 @@
 @end
 
 /*!
+ * @class OFApplication OFApplication.h ObjFW/OFApplication.h
+ *
  * @brief A class which represents the application as an object.
  *
  * In order to create a new OFApplication, you should create a class conforming

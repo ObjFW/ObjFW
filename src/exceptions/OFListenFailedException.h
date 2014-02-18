@@ -23,6 +23,9 @@
 #endif
 
 /*!
+ * @class OFListenFailedException \
+ *	  OFListenFailedException.h ObjFW/OFListenFailedException.h
+ *
  * @brief An exception indicating that listening on the socket failed.
  */
 @interface OFListenFailedException: OFException

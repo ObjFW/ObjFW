@@ -17,6 +17,8 @@
 #import "OFList.h"
 
 /*!
+ * @class OFSortedList OFSortedList.h ObjFW/OFSortedList.h
+ *
  * @brief A class which provides easy to use sorted double-linked lists.
  *
  * @warning Because the list is sorted, all methods inserting an object at a

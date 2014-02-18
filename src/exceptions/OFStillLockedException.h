@@ -18,6 +18,9 @@
 #import "OFLocking.h"
 
 /*!
+ * @class OFStillLockedException \
+ *	  OFStillLockedException.h ObjFW/OFStillLockedException.h
+ *
  * @brief An exception indicating that a lock is still locked.
  */
 @interface OFStillLockedException: OFException

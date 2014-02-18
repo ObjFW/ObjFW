@@ -20,6 +20,9 @@
 
 #ifdef OF_HAVE_CHOWN
 /*!
+ * @class OFChangeOwnerFailedException \
+ *	  OFChangeOwnerFailedException.h ObjFW/OFChangeOwnerFailedException.h
+ *
  * @brief An exception indicating that changing the owner of an item failed.
  */
 @interface OFChangeOwnerFailedException: OFException

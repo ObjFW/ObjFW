@@ -21,6 +21,8 @@
 @class OFINICategory;
 
 /*!
+ * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
+ *
  * @brief A class for reading, creating and modifying INI files.
  */
 @interface OFINIFile: OFObject

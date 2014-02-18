@@ -40,12 +40,14 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 #endif
 
 /*!
+ * @class OFDictionary OFDictionary.h ObjFW/OFDictionary.h
+ *
  * @brief An abstract class for storing objects in a dictionary.
  *
  * Keys are copied and thus must conform to the OFCopying protocol.
  *
- * Note: Fast enumeration on a dictionary enumerates through the keys of the
- * dictionary.
+ * @note Fast enumeration on a dictionary enumerates through the keys of the
+ *	 dictionary.
  */
 @interface OFDictionary: OFObject <OFCopying, OFMutableCopying, OFCollection,
     OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>

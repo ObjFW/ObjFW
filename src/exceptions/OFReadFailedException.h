@@ -17,6 +17,9 @@
 #import "OFReadOrWriteFailedException.h"
 
 /*!
+ * @class OFReadFailedException \
+ *	  OFReadFailedException.h ObjFW/OFReadFailedException.h
+ *
  * @brief An exception indicating that reading from an object failed.
  */
 @interface OFReadFailedException: OFReadOrWriteFailedException

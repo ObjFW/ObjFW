@@ -23,6 +23,9 @@
 @class OFThread;
 
 /*!
+ * @class OFThreadStillRunningException \
+ *	  OFThreadStillRunningException.h ObjFW/OFThreadStillRunningException.h
+ *
  * @brief An exception indicating that a thread is still running.
  */
 @interface OFThreadStillRunningException: OFException

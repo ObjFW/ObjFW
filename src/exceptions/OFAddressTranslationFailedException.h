@@ -23,6 +23,10 @@
 #endif
 
 /*!
+ * @class OFAddressTranslationFailedException \
+ *	  OFAddressTranslationFailedException.h \
+ *	  ObjFW/OFAddressTranslationFailedException.h
+ *
  * @brief An exception indicating the translation of an address failed.
  */
 @interface OFAddressTranslationFailedException: OFException

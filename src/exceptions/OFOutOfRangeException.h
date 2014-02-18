@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFOutOfRangeException \
+ *	  OFOutOfRangeException.h ObjFW/OFOutOfRangeException.h
+ *
  * @brief An exception indicating the given value is out of range.
  */
 @interface OFOutOfRangeException: OFException

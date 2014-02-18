@@ -23,6 +23,10 @@
 @class OFCondition;
 
 /*!
+ * @class OFConditionSignalFailedException \
+ *	  OFConditionSignalFailedException.h \
+ *	  ObjFW/OFConditionSignalFailedException.h
+ *
  * @brief An exception indicating signaling a condition failed.
  */
 @interface OFConditionSignalFailedException: OFException

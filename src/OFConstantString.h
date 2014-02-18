@@ -28,6 +28,8 @@ extern void *_OFConstantStringClassReference;
 #endif
 
 /*!
+ * @class OFConstantString OFConstantString.h ObjFW/OFConstantString.h
+ *
  * @brief A class for storing constant strings using the `@""` literal.
  */
 @interface OFConstantString: OFString

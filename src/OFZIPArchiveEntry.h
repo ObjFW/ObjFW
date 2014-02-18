@@ -24,6 +24,8 @@
 @class OFDate;
 
 /*!
+ * @class OFZIPArchiveEntry OFZIPArchiveEntry.h ObjFW/OFZIPArchiveEntry.h
+ *
  * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.
  */

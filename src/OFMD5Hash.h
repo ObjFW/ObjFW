@@ -17,6 +17,8 @@
 #import "OFHash.h"
 
 /*!
+ * @class OFMD5Hash OFMD5Hash.h ObjFW/OFMD5Hash.h
+ *
  * @brief A class which provides functions to create an MD5 hash.
  */
 @interface OFMD5Hash: OFObject <OFHash>

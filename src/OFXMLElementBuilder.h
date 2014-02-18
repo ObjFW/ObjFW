@@ -22,6 +22,9 @@
 @class OFXMLElementBuilder;
 
 /*!
+ * @protocol OFXMLElementBuilderDelegate
+ *	     OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
+ *
  * @brief A protocol that needs to be implemented by delegates for
  * OFXMLElementBuilder.
  */
@@ -92,6 +95,8 @@
 @end
 
 /*!
+ * @class OFXMLElementBuilder OFXMLElementBuilder.h ObjFW/OFXMLElementBuilder.h
+ *
  * @brief A class implementing the OFXMLParserDelegate protocol that can build
  * OFXMLElements from the document parsed by the OFXMLParser.
  *

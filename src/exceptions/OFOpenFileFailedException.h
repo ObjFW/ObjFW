@@ -19,6 +19,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFOpenFileFailedException \
+ *	  OFOpenFileFailedException.h ObjFW/OFOpenFileFailedException.h
+ *
  * @brief An exception indicating a file couldn't be opened.
  */
 @interface OFOpenFileFailedException: OFException

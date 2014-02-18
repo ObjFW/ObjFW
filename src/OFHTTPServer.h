@@ -27,6 +27,8 @@
 @class OFException;
 
 /*!
+ * @protocol OFHTTPServerDelegate OFHTTPServer.h ObjFW/OFHTTPServer.h
+ *
  * @brief A delegate for OFHTTPServer.
  */
 @protocol OFHTTPServerDelegate <OFObject>
@@ -61,6 +63,8 @@
 @end
 
 /*!
+ * @class OFHTTPServer OFHTTPServer.h ObjFW/OFHTTPServer.h
+ *
  * @brief A class for creating a simple HTTP server inside of applications.
  */
 @interface OFHTTPServer: OFObject

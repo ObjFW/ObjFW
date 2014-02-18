@@ -23,6 +23,10 @@
 @class OFCondition;
 
 /*!
+ * @class OFConditionBroadcastFailedException \
+ *	  OFConditionBroadcastFailedException.h \
+ *	  ObjFW/OFConditionBroadcastFailedException.h
+ *
  * @brief An exception indicating broadcasting a condition failed.
  */
 @interface OFConditionBroadcastFailedException: OFException

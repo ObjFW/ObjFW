@@ -19,6 +19,10 @@
 #import "OFException.h"
 
 /*!
+ * @class OFCreateDirectoryFailedException \
+ *	  OFCreateDirectoryFailedException.h \
+ *	  ObjFW/OFCreateDirectoryFailedException.h
+ *
  * @brief An exception indicating a directory couldn't be created.
  */
 @interface OFCreateDirectoryFailedException: OFException

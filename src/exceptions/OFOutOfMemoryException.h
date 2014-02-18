@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFOutOfMemoryException \
+ *	  OFOutOfMemoryException.h ObjFW/OFOutOfMemoryException.h
+ *
  * @brief An exception indicating there is not enough memory available.
  */
 @interface OFOutOfMemoryException: OFException

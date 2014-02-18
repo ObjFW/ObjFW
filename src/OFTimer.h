@@ -35,6 +35,8 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 #endif
 
 /*!
+ * @class OFTimer OFTimer.h ObjFW/OFTimer.h
+ *
  * @brief A class for creating and firing timers.
  */
 @interface OFTimer: OFObject <OFComparing>

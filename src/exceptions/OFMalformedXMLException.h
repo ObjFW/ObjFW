@@ -19,6 +19,9 @@
 @class OFXMLParser;
 
 /*!
+ * @class OFMalformedXMLException \
+ *	  OFMalformedXMLException.h ObjFW/OFMalformedXMLException.h
+ *
  * @brief An exception indicating that a parser encountered malformed XML.
  */
 @interface OFMalformedXMLException: OFException

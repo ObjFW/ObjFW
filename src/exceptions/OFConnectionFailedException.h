@@ -23,6 +23,9 @@
 #endif
 
 /*!
+ * @class OFConnectionFailedException \
+ *	  OFConnectionFailedException.h ObjFW/OFConnectionFailedException.h
+ *
  * @brief An exception indicating that a connection could not be established.
  */
 @interface OFConnectionFailedException: OFException

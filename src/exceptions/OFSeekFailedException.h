@@ -23,6 +23,9 @@
 @class OFSeekableStream;
 
 /*!
+ * @class OFSeekFailedException \
+ *	  OFSeekFailedException.h ObjFW/OFSeekFailedException.h
+ *
  * @brief An exception indicating that seeking in a stream failed.
  */
 @interface OFSeekFailedException: OFException

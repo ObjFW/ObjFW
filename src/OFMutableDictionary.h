@@ -30,6 +30,8 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object);
 #endif
 
 /*!
+ * @class OFMutableDictionary OFDictionary.h ObjFW/OFDictionary.h
+ *
  * @brief An abstract class for storing and changing objects in a dictionary.
  */
 @interface OFMutableDictionary: OFDictionary

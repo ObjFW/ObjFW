@@ -17,6 +17,8 @@
 #import "OFXMLNode.h"
 
 /*!
+ * @class OFXMLComment OFXMLComment.h ObjFW/OFXMLComment.h
+ *
  * @brief A class for representing XML comments.
  */
 @interface OFXMLComment: OFXMLNode

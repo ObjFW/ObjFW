@@ -21,6 +21,8 @@
 @class OFConstantString;
 
 /*!
+ * @class OFDate OFDate.h ObjFW/OFDate.h
+ *
  * @brief A class for storing, accessing and comparing dates.
  */
 @interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization>

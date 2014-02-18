@@ -17,6 +17,9 @@
 #import "OFException.h"
 
 /*!
+ * @class OFInvalidFormatException \
+ *	  OFInvalidFormatException.h ObjFW/OFInvalidFormatException.h
+ *
  * @brief An exception indicating that the format is invalid.
  */
 @interface OFInvalidFormatException: OFException

@@ -30,7 +30,7 @@
 /*!
  * @brief The type of an HTTP request.
  */
-typedef enum of_http_request_method_t {
+typedef enum {
 	/*! OPTIONS */
 	OF_HTTP_REQUEST_METHOD_OPTIONS,
 	/*! GET */
@@ -50,9 +50,12 @@ typedef enum of_http_request_method_t {
 } of_http_request_method_t;
 
 /*!
+ * @struct of_http_request_protocol_version_t \
+ *	   OFHTTPRequest.h ObjFW/OFHTTPRequest.h
+ *
  * @brief The HTTP version of the HTTP request.
  */
-typedef struct of_http_request_protocol_version_t {
+typedef struct {
 	/*! The major of the HTTP version */
 	uint8_t major;
 	/*! The minor of the HTTP version */
@@ -60,6 +63,8 @@ typedef struct of_http_request_protocol_version_t {
 } of_http_request_protocol_version_t;
 
 /*!
+ * @class OFHTTPRequest OFHTTPRequest.h ObjFW/OFHTTPRequest.h
+ *
  * @brief A class for storing HTTP requests.
  */
 @interface OFHTTPRequest: OFObject <OFCopying>

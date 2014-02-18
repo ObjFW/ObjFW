@@ -26,9 +26,6 @@ extern int _OFDataArray_Hashing_reference;
 }
 #endif
 
-/*!
- * @brief A category which provides methods to calculate hashes for data arrays.
- */
 @interface OFDataArray (Hashing)
 /*!
  * @brief Returns the MD5 hash of the data array as an autoreleased OFString.

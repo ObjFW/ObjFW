@@ -18,6 +18,9 @@
 #import "OFLocking.h"
 
 /*!
+ * @class OFLockFailedException \
+ *	  OFLockFailedException.h ObjFW/OFLockFailedException.h
+ *
  * @brief An exception indicating that locking a lock failed.
  */
 @interface OFLockFailedException: OFException

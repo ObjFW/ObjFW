@@ -163,7 +163,7 @@
 /*!
  * @brief A result of a comparison.
  */
-typedef enum of_comparison_result_t {
+typedef enum {
 	/*! The left object is smaller than the right */
 	OF_ORDERED_ASCENDING = -1,
 	/*! Both objects are equal */
@@ -175,7 +175,7 @@ typedef enum of_comparison_result_t {
 /*!
  * @brief An enum for storing endianess.
  */
-typedef enum of_byte_order_t {
+typedef enum {
 	/*! Most significant byte first (big endian) */
 	OF_BYTE_ORDER_BIG_ENDIAN,
 	/*! Least significant byte first (little endian) */
@@ -183,9 +183,11 @@ typedef enum of_byte_order_t {
 } of_byte_order_t;
 
 /*!
+ * @struct of_range_t OFObject.h ObjFW/OFObject.h
+ *
  * @brief A range.
  */
-typedef struct of_range_t {
+typedef struct {
 	/*! The start of the range */
 	size_t location;
 	/*! The length of the range */
@@ -198,9 +200,11 @@ typedef struct of_range_t {
 typedef double of_time_interval_t;
 
 /*!
+ * @struct of_point_t OFObject.h ObjFW/OFObject.h
+ *
  * @brief A point.
  */
-typedef struct of_point_t {
+typedef struct {
 	/*! The x coordinate of the point */
 	float x;
 	/*! The y coordinate of the point */
@@ -208,9 +212,11 @@ typedef struct of_point_t {
 } of_point_t;
 
 /*!
+ * @struct of_dimension_t OFObject.h ObjFW/OFObject.h
+ *
  * @brief A dimension.
  */
-typedef struct of_dimension_t {
+typedef struct {
 	/*! The width of the dimension */
 	float width;
 	/*! The height of the dimension */
@@ -218,10 +224,11 @@ typedef struct of_dimension_t {
 } of_dimension_t;
 
 /*!
+ * @struct of_rectangle_t OFObject.h ObjFW/OFObject.h
+ *
  * @brief A rectangle.
  */
-typedef struct of_rectangle_t
-{
+typedef struct {
 	/*! The point from where the rectangle originates */
 	of_point_t origin;
 	/*! The size of the rectangle */
@@ -232,6 +239,8 @@ typedef struct of_rectangle_t
 @class OFThread;
 
 /*!
+ * @protocol OFObject OFObject.h ObjFW/OFObject.h
+ *
  * @brief The protocol which all root classes implement.
  */
 @protocol OFObject
@@ -407,6 +416,8 @@ typedef struct of_rectangle_t
 @end
 
 /*!
+ * @class OFObject OFObject.h ObjFW/OFObject.h
+ *
  * @brief The root class for all other classes inside ObjFW.
  */
 OF_ROOT_CLASS
@@ -923,6 +934,8 @@ OF_ROOT_CLASS
 @end
 
 /*!
+ * @protocol OFCopying OFObject.h ObjFW/OFObject.h
+ *
  * @brief A protocol for the creation of copies.
  */
 @protocol OFCopying
@@ -939,6 +952,8 @@ OF_ROOT_CLASS
 @end
 
 /*!
+ * @protocol OFMutableCopying OFObject.h ObjFW/OFObject.h
+ *
  * @brief A protocol for the creation of mutable copies.
  *
  * This protocol is implemented by objects that can be mutable and immutable
@@ -954,6 +969,8 @@ OF_ROOT_CLASS
 @end
 
 /*!
+ * @protocol OFComparing OFObject.h ObjFW/OFObject.h
+ *
  * @brief A protocol for comparing objects.
  *
  * This protocol is implemented by objects that can be compared.
