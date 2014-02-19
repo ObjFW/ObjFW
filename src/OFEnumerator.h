@@ -67,13 +67,13 @@
  * We need this bad check to see if we already imported Cocoa, which defines
  * this as well.
  */
-#define of_fast_enumeration_state_t NSFastEnumerationState
-#ifndef NSINTEGER_DEFINED
 /*!
  * @struct of_fast_enumeration_state_t OFEnumerator.h ObjFW/OFEnumerator.h
  *
  * @brief State information for fast enumerations.
  */
+#define of_fast_enumeration_state_t NSFastEnumerationState
+#ifndef NSINTEGER_DEFINED
 typedef struct {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
