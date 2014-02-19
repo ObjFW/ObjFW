@@ -190,7 +190,7 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 #  define OF_ASM_LOOKUP
 # endif
 #elif defined(_WIN32)
-# if defined(__i386__)
+# if defined(__x86_64__) || defined(__i386__)
 #  define OF_ASM_LOOKUP
 # endif
 #endif

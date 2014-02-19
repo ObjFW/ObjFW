@@ -36,7 +36,9 @@
 #  include "lookup-asm-ppc-macho.S"
 # endif
 #elif defined(_WIN32)
-# if defined(__i386__)
+# if defined(__x86_64__)
+#  include "lookup-asm-amd64-win64.S"
+# elif defined(__i386__)
 #  include "lookup-asm-x86-win32.S"
 # endif
 #endif
