@@ -58,7 +58,6 @@
 
 	movq	8(%rdi), %r8
 	movq	64(%r8), %r8
-	movq	%rdi, %rax
 	jmp	.Lmain_\lookup
 .type \name, %function
 .size \name, .-\name

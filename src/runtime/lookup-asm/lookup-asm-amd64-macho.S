@@ -56,7 +56,6 @@ $0:
 
 	movq	8(%rdi), %r8
 	movq	64(%r8), %r8
-	movq	%rdi, %rax
 	jmp	Lmain_$1
 .endmacro
 
