@@ -35,6 +35,20 @@
 #endif
 
 /*!
+ * @brief Sets the name of the INI category.
+ *
+ * @param name The name to set
+ */
+- (void)setName: (OFString*)name;
+
+/*!
+ * @brief Returns the name of the INI category.
+ *
+ * @return The name of the INI category
+ */
+- (OFString*)name;
+
+/*!
  * @brief Returns the string value for the specified key, or nil if it does not
  *	  exist.
  *
