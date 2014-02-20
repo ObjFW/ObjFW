@@ -98,8 +98,6 @@ run-on-android: all
 	echo "Running tests binary on Android device..."
 	adb shell 'cd /data/local/tmp/objfw && ./tests'
 
-${PROG_NOINST}: ${LIBOBJFW_DEP}
-
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}
 	mksfo "ObjFW Tests" PARAM.SFO
@@ -110,6 +108,8 @@ boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
 include ../buildsys.mk
+
+${PROG_NOINST}: ${LIBOBJFW_DEP}
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 LIBS := -L../src -lobjfw ${TESTS_LIBS} ${LIBS}

@@ -3,9 +3,9 @@ include ../extra.mk
 PROG = ${OFZIP}
 SRCS = OFZIP.m
 
-${PROG}: ${LIBOBJFW_DEP}
-
 include ../buildsys.mk
+
+${PROG}: ${LIBOBJFW_DEP}
 
 DISTCLEAN = objfw-config
 
