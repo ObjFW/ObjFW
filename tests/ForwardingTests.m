@@ -210,8 +210,14 @@ test(id self, SEL _cmd)
 				   : 2.75] == 0x12345678)
 	TEST(@"-[forwardingTargetForSelector:] variable arguments",
 	   [([t forwardingTargetVarArgTest: FMT, ARGS]) isEqual: RESULT])
+	/*
+	 * Don't try fpret on Win64 if we don't have stret forwarding, as
+	 * long double is handled as a struct there.
+	 */
+# if !defined(_WIN64) || defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET)
 	TEST(@"-[forwardingTargetForSelector:] fp return",
 	    [t forwardingTargetFPRetTest] == 12345678.00006103515625)
+# endif
 # ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 	TEST(@"-[forwardingTargetForSelector:] struct return",
 	    !memcmp([t forwardingTargetStRetTest].s,
