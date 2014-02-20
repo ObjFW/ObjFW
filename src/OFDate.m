@@ -14,6 +14,7 @@
  * file.
  */
 
+#define _POSIX_SOURCE
 #define _XOPEN_SOURCE 500
 
 #include "config.h"
