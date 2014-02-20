@@ -25,6 +25,18 @@
 
 #import "runtime.h"
 
+#if defined(HAVE_DWARF_EXCEPTIONS)
+# define PERSONALITY __gnu_objc_personality_v0
+#elif defined(HAVE_SJLJ_EXCEPTIONS)
+# define PERSONALITY __gnu_objc_personality_sj0
+# define _Unwind_RaiseException _Unwind_SjLj_RaiseException
+# define __builtin_eh_return_data_regno(i) (i)
+#elif defined(HAVE_SEH_EXCEPTIONS)
+# define PERSONALITY gnu_objc_personality
+#else
+# error Unknown exception type!
+#endif
+
 static const uint64_t objc_exception_class = 0x474E55434F424A43; /* GNUCOBJC */
 
 #define _UA_SEARCH_PHASE  0x01
@@ -123,12 +135,7 @@ struct lsda {
 	const uint8_t *callsites, *actiontable;
 };
 
-#ifndef HAVE_SJLJ_EXCEPTIONS
 extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception*);
-#else
-extern _Unwind_Reason_Code _Unwind_SjLj_RaiseException(
-    struct _Unwind_Exception*);
-#endif
 extern void _Unwind_DeleteException(struct _Unwind_Exception*);
 extern void* _Unwind_GetLanguageSpecificData(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
@@ -187,19 +194,6 @@ extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
 extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void*,
     PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code(*)(int, int, uint64_t,
     struct _Unwind_Exception*, struct _Unwind_Context*));
-#endif
-
-#if defined(HAVE_DWARF_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_v0
-# define RAISE_EXCEPTION _Unwind_RaiseException
-#elif defined(HAVE_SJLJ_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_sj0
-# define RAISE_EXCEPTION _Unwind_SjLj_RaiseException
-#elif defined(HAVE_SEH_EXCEPTIONS)
-# define PERSONALITY gnu_objc_personality
-# define RAISE_EXCEPTION _Unwind_RaiseException
-#else
-# error Unknown exception type!
 #endif
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
@@ -645,7 +639,7 @@ objc_exception_throw(id object)
 	e->exception.cleanup = cleanup;
 	e->object = object;
 
-	if (RAISE_EXCEPTION(&e->exception) == _URC_END_OF_STACK &&
+	if (_Unwind_RaiseException(&e->exception) == _URC_END_OF_STACK &&
 	    uncaught_exception_handler != NULL)
 		uncaught_exception_handler(object);
 
