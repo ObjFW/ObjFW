@@ -418,7 +418,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		return port;
 
 #ifndef __wii__
-	addrLen = sizeof(addr.storage);
+	addrLen = (socklen_t)sizeof(addr.storage);
 	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
 		close(_socket);
 		_socket = INVALID_SOCKET;
@@ -451,7 +451,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
-	sender->length = sizeof(sender->address);
+	sender->length = (socklen_t)sizeof(sender->address);
 
 	if ((ret = recvfrom(_socket, buffer, length, 0,
 	    (struct sockaddr*)&sender->address, &sender->length)) < 0)

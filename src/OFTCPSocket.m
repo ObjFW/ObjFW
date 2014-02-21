@@ -385,7 +385,7 @@ static uint16_t freePort = 65532;
 								 socket: self];
 
 		if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
-		    (const char*)&one, sizeof(one)))
+		    (const char*)&one, (socklen_t)sizeof(one)))
 			@throw [OFSetOptionFailedException
 			    exceptionWithStream: self];
 
@@ -405,7 +405,7 @@ static uint16_t freePort = 65532;
 		return port;
 
 #ifndef __wii__
-	addrLen = sizeof(addr.storage);
+	addrLen = (socklen_t)sizeof(addr.storage);
 	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
 		close(_socket);
 		_socket = INVALID_SOCKET;
@@ -452,7 +452,7 @@ static uint16_t freePort = 65532;
 
 	client->_address = [client
 	    allocMemoryWithSize: sizeof(struct sockaddr_storage)];
-	client->_addressLength = sizeof(struct sockaddr_storage);
+	client->_addressLength = (socklen_t)sizeof(struct sockaddr_storage);
 
 	if ((client->_socket = accept(_socket, client->_address,
 	   &client->_addressLength)) == INVALID_SOCKET)
@@ -493,7 +493,8 @@ static uint16_t freePort = 65532;
 {
 	int v = enable;
 
-	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&v, sizeof(v)))
+	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
+	    (char*)&v, (socklen_t)sizeof(v)))
 		@throw [OFSetOptionFailedException exceptionWithStream: self];
 }
 
