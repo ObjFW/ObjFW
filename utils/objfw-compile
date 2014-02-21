@@ -101,6 +101,17 @@ while test x"$1" != "x"; do
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
 			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
 			;;
+		--plugin)
+			if test x"$lib" = x"yes"; then
+				echo "You can't use --lib and --plugin!"
+				exit 1
+			fi
+
+			plugin="yes"
+			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --plugin-cflags)"
+			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --plugin-ldflags)"
+			out_suffix="$($OBJFW_CONFIG --plugin-suffix)"
+			;;
 		--arc)
 			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --arc)"
 			;;
@@ -153,19 +164,11 @@ while test x"$1" != "x"; do
 		-L*)
 			LIBS="$LIBS $1"
 			;;
-		-O*)
+		-m)
 			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
-		--plugin)
-			if test x"$lib" = x"yes"; then
-				echo "You can't use --lib and --plugin!"
-				exit 1
-			fi
-
-			plugin="yes"
-			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --plugin-cflags)"
-			LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --plugin-ldflags)"
-			out_suffix="$($OBJFW_CONFIG --plugin-suffix)"
+		-O*)
+			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
 		-pthread)
 			OBJCFLAGS="$OBJCFLAGS $1"
