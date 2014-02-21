@@ -59,14 +59,7 @@ of_atomic_add_int(volatile int *p, int i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_add_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicAdd32Barrier(i, p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicAdd64Barrier(i, p);
-# endif
-	else
-		abort();
+	return OSAtomicAdd32Barrier(i, p);
 #else
 # error of_atomic_add_int not implemented!
 #endif
@@ -124,14 +117,11 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_add_and_fetch(p, (void*)i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(void*) == 4)
-		return (void*)OSAtomicAdd32Barrier(i, (int32_t*)p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(void*) == 8)
-		return (void*)OSAtomicAdd64Barrier(i, (int64_t*)p);
+# ifdef __LP64__
+	return (void*)OSAtomicAdd64Barrier(i, (int64_t*)p);
+# else
+	return (void*)OSAtomicAdd32Barrier(i, (int32_t*)p);
 # endif
-	else
-		abort();
 #else
 # error of_atomic_add_ptr not implemented!
 #endif
@@ -170,14 +160,7 @@ of_atomic_sub_int(volatile int *p, int i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_sub_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicAdd32Barrier(-i, p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicAdd64Barrier(-i, p);
-# endif
-	else
-		abort();
+	return OSAtomicAdd32Barrier(-i, p);
 #else
 # error of_atomic_sub_int not implemented!
 #endif
@@ -238,14 +221,11 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_sub_and_fetch(p, (void*)i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(void*) == 4)
-		return (void*)OSAtomicAdd32Barrier(-i, (int32_t*)p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(void*) == 8)
-		return (void*)OSAtomicAdd64Barrier(-i, (int64_t*)p);
+# ifdef __LP64__
+	return (void*)OSAtomicAdd64Barrier(-i, (int64_t*)p);
+# else
+	return (void*)OSAtomicAdd32Barrier(-i, (int32_t*)p);
 # endif
-	else
-		abort();
 #else
 # error of_atomic_sub_ptr not implemented!
 #endif
@@ -288,14 +268,7 @@ of_atomic_inc_int(volatile int *p)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicIncrement32Barrier(p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicDecrement64Barrier(p);
-# endif
-	else
-		abort();
+	return OSAtomicIncrement32Barrier(p);
 #else
 # error of_atomic_inc_int not implemented!
 #endif
@@ -366,14 +339,7 @@ of_atomic_dec_int(volatile int *p)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicDecrement32Barrier(p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicDecrement64Barrier(p);
-# endif
-	else
-		abort();
+	return OSAtomicDecrement32Barrier(p);
 #else
 # error of_atomic_dec_int not implemented!
 #endif
@@ -448,14 +414,7 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_or_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicOr32Barrier(i, p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicOr64Barrier(i, p);
-# endif
-	else
-		abort();
+	return OSAtomicOr32Barrier(i, p);
 #else
 # error of_atomic_or_int not implemented!
 #endif
@@ -531,14 +490,7 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_and_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicAnd32Barrier(i, p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicAnd64Barrier(i, p);
-# endif
-	else
-		abort();
+	return OSAtomicAnd32Barrier(i, p);
 #else
 # error of_atomic_and_int not implemented!
 #endif
@@ -614,14 +566,7 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_xor_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
-	if (sizeof(int) == 4)
-		return OSAtomicXor32Barrier(i, p);
-# ifdef OF_HAVE_OSATOMIC_64
-	else if (sizeof(int) == 8)
-		return OSAtomicXor64Barrier(i, p);
-# endif
-	else
-		abort();
+	return OSAtomicXor32Barrier(i, p);
 #else
 # error of_atomic_xor_int not implemented!
 #endif

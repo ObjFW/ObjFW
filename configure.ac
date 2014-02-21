@@ -571,10 +571,6 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		test x"$atomic_ops" = x"none" && atomic_ops="libkern/OSAtomic.h"
 		AC_DEFINE(OF_HAVE_OSATOMIC, 1,
 			[Whether we have libkern/OSAtomic.h])
-		AC_CHECK_FUNC(OSAtomicAdd64Barrier, [
-			AC_DEFINE(OF_HAVE_OSATOMIC_64, 1,
-				[Whether we have OSAtomic*64])
-		])
 	])
 ], [
 	dnl We can only have one thread - therefore everything is atomic
