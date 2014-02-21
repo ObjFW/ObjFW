@@ -421,7 +421,7 @@ of_strdup(const char *string)
 	char *copy;
 	size_t length = strlen(string);
 
-	if ((copy = malloc(length + 1)) == NULL)
+	if ((copy = (char*)malloc(length + 1)) == NULL)
 		return NULL;
 
 	memcpy(copy, string, length + 1);
