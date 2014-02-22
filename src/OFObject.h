@@ -117,7 +117,7 @@
 # endif
 #else
 # if defined(__ELF__)
-#  if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
+#  if defined(__x86_64__) || defined(__amd64__) || defined(__i386__) || \
 	defined(__arm__) || defined(__ARM__) || defined(__ppc__) || \
 	defined(__PPC__)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR

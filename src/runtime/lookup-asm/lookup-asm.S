@@ -17,8 +17,8 @@
 #include "config.h"
 
 #if defined(__ELF__)
-# if defined(__amd64__) || defined(__x86_64__)
-#  include "lookup-asm-amd64-elf.S"
+# if defined(__x86_64__) || defined(__amd64__)
+#  include "lookup-asm-x86_64-elf.S"
 # elif defined(__i386__)
 #  include "lookup-asm-x86-elf.S"
 # elif defined(__arm__) || defined(__ARM__)
@@ -31,13 +31,13 @@
 # endif
 #elif defined(__MACH__)
 # if defined(__x86_64__)
-#  include "lookup-asm-amd64-macho.S"
+#  include "lookup-asm-x86_64-macho.S"
 # elif defined(__ppc__)
 #  include "lookup-asm-ppc-macho.S"
 # endif
 #elif defined(_WIN32)
 # if defined(__x86_64__)
-#  include "lookup-asm-amd64-win64.S"
+#  include "lookup-asm-x86_64-win64.S"
 # elif defined(__i386__)
 #  include "lookup-asm-x86-win32.S"
 # endif

@@ -176,7 +176,7 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 }
 
 #if defined(__ELF__)
-# if defined(__amd64__) || defined(__x86_64__) || defined(__i386__) || \
+# if defined(__x86_64__) || defined(__amd64__) || defined(__i386__) || \
 	defined(__ppc__) || defined(__PPC__) || defined(__arm__) || \
 	defined(__ARM__)
 #  define OF_ASM_LOOKUP

@@ -153,11 +153,11 @@ architecture, executable format and calling convention, it is only available
 for the following platforms (except resolveClassMethod: and
 resolveInstanceMethod:, which are always available):
 
-  * AMD64 (SysV/ELF, Apple/Mach-O, Win64/PE)
   * ARM (EABI/ELF, Apple/Mach-O)
   * ARM64 (Apple/Mach-O)
   * MIPS (O32/ELF, EABI/ELF)
   * PPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
+  * x86_64 (SysV/ELF, Apple/Mach-O, Win64/PE)
 
 Apple means both, the Apple ABI and runtime.

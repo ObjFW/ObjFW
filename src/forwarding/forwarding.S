@@ -30,8 +30,8 @@
 # endif
 #else
 # if defined(__ELF__)
-#  if defined(__amd64__) || defined(__x86_64__)
-#   include "forwarding-amd64-elf.S"
+#  if defined(__x86_64__) || defined(__amd64__)
+#   include "forwarding-x86_64-elf.S"
 #  elif defined(__i386__)
 #   include "forwarding-x86-elf.S"
 #  elif defined(__arm__) || defined(__ARM__)
@@ -44,7 +44,7 @@
 #  endif
 # elif defined(_WIN32)
 #  if defined(__x86_64__)
-#   include "forwarding-amd64-win64.S"
+#   include "forwarding-x86_64-win64.S"
 #  elif defined(__i386__)
 #   include "forwarding-x86-win32.S"
 #  endif

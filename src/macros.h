@@ -66,8 +66,8 @@
 #endif
 
 #ifdef __GNUC__
-# if defined(__amd64__) || defined(__x86_64__)
-#  define OF_AMD64_ASM
+# if defined(__x86_64__) || defined(__amd64__)
+#  define OF_X86_64_ASM
 # elif defined(__i386__)
 #  define OF_X86_ASM
 # elif defined(__ppc__) || defined(__PPC__)
@@ -203,7 +203,7 @@ OF_BSWAP64_CONST(uint64_t i)
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_NONCONST(uint16_t i)
 {
-#if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ (
 	    "xchgb	%h0, %b0"
 	    : "=Q"(i)
@@ -231,7 +231,7 @@ OF_BSWAP16_NONCONST(uint16_t i)
 static OF_INLINE uint32_t OF_CONST_FUNC
 OF_BSWAP32_NONCONST(uint32_t i)
 {
-#if defined(OF_X86_ASM) || defined(OF_AMD64_ASM)
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ (
 	    "bswap	%0"
 	    : "=q"(i)
@@ -261,7 +261,7 @@ OF_BSWAP32_NONCONST(uint32_t i)
 static OF_INLINE uint64_t OF_CONST_FUNC
 OF_BSWAP64_NONCONST(uint64_t i)
 {
-#if defined(OF_AMD64_ASM)
+#if defined(OF_X86_64_ASM)
 	__asm__ (
 	    "bswap	%0"
 	    : "=r"(i)
