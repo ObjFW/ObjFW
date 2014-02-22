@@ -127,8 +127,9 @@ Windows
 -------
 
   * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), Wine
-  * Architectures: x86
-  * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2, MinGW-w64 GCC 4.8.2 DWARF
+  * Architectures: x86, x86_64
+  * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2, MinGW-w64 GCC 4.8.2 DWARF,
+               MinGW-w64 GCC 4.8.2 SEH, MinGW-w64 GCC 4.8.2 SjLj
   * Runtimes: ObjFW
 
 
@@ -152,7 +153,7 @@ architecture, executable format and calling convention, it is only available
 for the following platforms (except resolveClassMethod: and
 resolveInstanceMethod:, which are always available):
 
-  * AMD64 (SysV/ELF, Apple/Mach-O)
+  * AMD64 (SysV/ELF, Apple/Mach-O, Win64/PE)
   * ARM (EABI/ELF, Apple/Mach-O)
   * ARM64 (Apple/Mach-O)
   * MIPS (O32/ELF, EABI/ELF)
