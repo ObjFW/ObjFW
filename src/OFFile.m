@@ -15,11 +15,10 @@
  */
 
 #define _POSIX_C_SOURCE 200112L
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
+#define __NO_EXT_QNX
 
 #include "config.h"
-
-#define __NO_EXT_QNX
 
 /* Work around a bug with Clang + glibc */
 #ifdef __clang__
