@@ -36,9 +36,9 @@ DragonFlyBSD
 FreeBSD
 -------
 
-  * OS Versions: 9.1-rc3
+  * OS Versions: 9.1-rc3, 10.0
   * Architectures: x86_64
-  * Compilers: Clang 3.1
+  * Compilers: Clang 3.1, Clang 3.3
   * Runtimes: ObjFW
 
 
@@ -62,16 +62,16 @@ iOS
 Linux
 -----
 
-  * Architectures: ARMv6, m68k, MIPS32 (O32), PPC, SH4, x86, x86_64
-  * Compilers: Clang 3.0-3.4, GCC 4.6-4.8
+  * Architectures: Alpha, ARMv6, m68k, MIPS (O32), PPC, SH4, x86, x86_64
+  * Compilers: Clang 3.0-3.4, GCC 4.2, GCC 4.6-4.8
   * Runtimes: ObjFW
 
 
 MacOS X
 -------
 
-  * OS Versions: 10.5, 10.7, 10.8, 10.9
-  * Architectures: PPC, x86, x86_64
+  * OS Versions: 10.5, 10.7-10.9
+  * Architectures: PPC, PPC64, x86, x86_64
   * Compilers: Clang 3.1-3.4, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
@@ -98,7 +98,7 @@ PlayStation Portable
 --------------------
 
   * OS Versions: 5.00 M33-4
-  * Architectures: MIPS32 (EABI)
+  * Architectures: MIPS (EABI)
   * Compiler: GCC 4.6.2 (devkitPSP release 16)
   * Runtimes: ObjFW
   * Limitations: No threads, no sockets
@@ -126,7 +126,7 @@ Wii
 Windows
 -------
 
-  * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), Wine
+  * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), Wine (x86 & x64)
   * Architectures: x86, x86_64
   * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2, MinGW-w64 GCC 4.8.2 DWARF,
                MinGW-w64 GCC 4.8.2 SEH, MinGW-w64 GCC 4.8.2 SjLj
