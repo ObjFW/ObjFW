@@ -78,8 +78,6 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS([-Wno-deprecated-objc-pointer-introspection -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wno-deprecated-objc-pointer-introspection"])
-AX_CHECK_COMPILER_FLAGS(-Wdocumentation -Werror,
-	[OBJCFLAGS="$OBJCFLAGS -Wdocumentation"])
 
 case "$OBJC" in
 	*clang*)
@@ -866,6 +864,23 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	], [
 	], [
 		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$old_OBJCFLAGS"
+	])
+
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
+	AC_MSG_CHECKING(whether -Wdocumentation is buggy)
+	AC_TRY_COMPILE([
+		/*!
+		 * @class Test conftest.m conftest.m
+		 */
+		@interface Test
+		@end
+	], [
+	], [
+		AC_MSG_RESULT(no, adding -Wdocumentation)
 	], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$old_OBJCFLAGS"
