@@ -16,9 +16,7 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
@@ -40,7 +38,7 @@ static OFCondition *cond;
 @interface OFHTTPClientTestsServer: OFThread
 {
 @public
-	uint16_t port;
+	uint16_t _port;
 }
 @end
 
@@ -52,8 +50,8 @@ static OFCondition *cond;
 	[cond lock];
 
 	listener = [OFTCPSocket socket];
-	port = [listener bindToHost: @"127.0.0.1"
-			       port: 0];
+	_port = [listener bindToHost: @"127.0.0.1"
+				port: 0];
 	[listener listen];
 
 	[cond signal];
@@ -65,7 +63,7 @@ static OFCondition *cond;
 		OF_ENSURE(0);
 
 	if (![[client readLine] isEqual:
-	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, port]])
+	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, _port]])
 		OF_ENSURE(0);
 
 	if (![[client readLine] hasPrefix: @"User-Agent:"])
@@ -107,7 +105,7 @@ static OFCondition *cond;
 
 	url = [OFURL URLWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
-					server->port]];
+					server->_port]];
 
 	TEST(@"-[performRequest:]",
 	    (client = [OFHTTPClient client]) &&
