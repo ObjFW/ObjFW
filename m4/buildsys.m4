@@ -1,5 +1,5 @@
 dnl
-dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012
+dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014
 dnl Jonathan Schleifer <js@webkeks.org>
 dnl
 dnl https://webkeks.org/git/?p=buildsys.git
@@ -21,65 +21,76 @@ dnl ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 dnl POSSIBILITY OF SUCH DAMAGE.
 dnl
 
-AC_CONFIG_COMMANDS_PRE([
-	AC_SUBST(CC_DEPENDS, $GCC)
-	AC_SUBST(CXX_DEPENDS, $GXX)
-	AC_SUBST(OBJC_DEPENDS, $GOBJC)
-	AC_SUBST(OBJCXX_DEPENDS, $GOBJCXX)
+AC_DEFUN([BUILDSYS_INIT], [
+	AC_CONFIG_COMMANDS_PRE([
+		AC_SUBST(CC_DEPENDS, $GCC)
+		AC_SUBST(CXX_DEPENDS, $GXX)
+		AC_SUBST(OBJC_DEPENDS, $GOBJC)
+		AC_SUBST(OBJCXX_DEPENDS, $GOBJCXX)
 
-	AC_PATH_PROG(TPUT, tput)
+		AC_PATH_PROG(TPUT, tput)
 
-	AS_IF([test x"$TPUT" != x""], [
-		if x=$($TPUT el 2>/dev/null); then
-			AC_SUBST(TERM_EL, "$x")
-		else
-			AC_SUBST(TERM_EL, "$($TPUT ce 2>/dev/null)")
-		fi
+		AS_IF([test x"$TPUT" != x""], [
+			if x=$($TPUT el 2>/dev/null); then
+				AC_SUBST(TERM_EL, "$x")
+			else
+				AC_SUBST(TERM_EL, "$($TPUT ce 2>/dev/null)")
+			fi
 
-		if x=$($TPUT sgr0 2>/dev/null); then
-			AC_SUBST(TERM_SGR0, "$x")
-		else
-			AC_SUBST(TERM_SGR0, "$($TPUT me 2>/dev/null)")
-		fi
+			if x=$($TPUT sgr0 2>/dev/null); then
+				AC_SUBST(TERM_SGR0, "$x")
+			else
+				AC_SUBST(TERM_SGR0, "$($TPUT me 2>/dev/null)")
+			fi
 
-		if x=$($TPUT bold 2>/dev/null); then
-			AC_SUBST(TERM_BOLD, "$x")
-		else
-			AC_SUBST(TERM_BOLD, "$($TPUT md 2>/dev/null)")
-		fi
+			if x=$($TPUT bold 2>/dev/null); then
+				AC_SUBST(TERM_BOLD, "$x")
+			else
+				AC_SUBST(TERM_BOLD, "$($TPUT md 2>/dev/null)")
+			fi
 
-		if x=$($TPUT setaf 1 2>/dev/null); then
-			AC_SUBST(TERM_SETAF1, "$x")
-			AC_SUBST(TERM_SETAF2, "$($TPUT setaf 2 2>/dev/null)")
-			AC_SUBST(TERM_SETAF3, "$($TPUT setaf 3 2>/dev/null)")
-			AC_SUBST(TERM_SETAF4, "$($TPUT setaf 4 2>/dev/null)")
-			AC_SUBST(TERM_SETAF6, "$($TPUT setaf 6 2>/dev/null)")
-		else
-			AC_SUBST(TERM_SETAF1, "$($TPUT AF 1 2>/dev/null)")
-			AC_SUBST(TERM_SETAF2, "$($TPUT AF 2 2>/dev/null)")
-			AC_SUBST(TERM_SETAF3, "$($TPUT AF 3 2>/dev/null)")
-			AC_SUBST(TERM_SETAF4, "$($TPUT AF 4 2>/dev/null)")
-			AC_SUBST(TERM_SETAF6, "$($TPUT AF 6 2>/dev/null)")
-		fi
-	], [
-		AC_SUBST(TERM_EL, '\033\133K')
-		AC_SUBST(TERM_SGR0, '\033\133m')
-		AC_SUBST(TERM_BOLD, '\033\1331m')
-		AC_SUBST(TERM_SETAF1, '\033\13331m')
-		AC_SUBST(TERM_SETAF2, '\033\13332m')
-		AC_SUBST(TERM_SETAF3, '\033\13333m')
-		AC_SUBST(TERM_SETAF4, '\033\13334m')
-		AC_SUBST(TERM_SETAF6, '\033\13336m')
+			if x=$($TPUT setaf 1 2>/dev/null); then
+				AC_SUBST(TERM_SETAF1, "$x")
+				AC_SUBST(TERM_SETAF2,
+					"$($TPUT setaf 2 2>/dev/null)")
+				AC_SUBST(TERM_SETAF3,
+					"$($TPUT setaf 3 2>/dev/null)")
+				AC_SUBST(TERM_SETAF4,
+					"$($TPUT setaf 4 2>/dev/null)")
+				AC_SUBST(TERM_SETAF6,
+					"$($TPUT setaf 6 2>/dev/null)")
+			else
+				AC_SUBST(TERM_SETAF1,
+					"$($TPUT AF 1 2>/dev/null)")
+				AC_SUBST(TERM_SETAF2,
+					"$($TPUT AF 2 2>/dev/null)")
+				AC_SUBST(TERM_SETAF3,
+					"$($TPUT AF 3 2>/dev/null)")
+				AC_SUBST(TERM_SETAF4,
+					"$($TPUT AF 4 2>/dev/null)")
+				AC_SUBST(TERM_SETAF6,
+					"$($TPUT AF 6 2>/dev/null)")
+			fi
+		], [
+			AC_SUBST(TERM_EL, '\033\133K')
+			AC_SUBST(TERM_SGR0, '\033\133m')
+			AC_SUBST(TERM_BOLD, '\033\1331m')
+			AC_SUBST(TERM_SETAF1, '\033\13331m')
+			AC_SUBST(TERM_SETAF2, '\033\13332m')
+			AC_SUBST(TERM_SETAF3, '\033\13333m')
+			AC_SUBST(TERM_SETAF4, '\033\13334m')
+			AC_SUBST(TERM_SETAF6, '\033\13336m')
+		])
 	])
-])
 
-AC_CONFIG_COMMANDS_POST([
-	${as_echo:="echo"} ${as_me:="configure"}": touching .deps files"
-	for i in $(find . -name Makefile); do
-		DEPSFILE="$(dirname $i)/.deps"
-		test -f "$DEPSFILE" && rm "$DEPSFILE"
-		touch -t 0001010000 "$DEPSFILE"
-	done
+	AC_CONFIG_COMMANDS_POST([
+		${as_echo:="echo"} ${as_me:="configure"}": touching .deps files"
+		for i in $(find . -name Makefile); do
+			DEPSFILE="$(dirname $i)/.deps"
+			test -f "$DEPSFILE" && rm "$DEPSFILE"
+			touch -t 0001010000 "$DEPSFILE"
+		done
+	])
 ])
 
 AC_DEFUN([BUILDSYS_PROG_IMPLIB], [

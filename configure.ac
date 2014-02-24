@@ -1,4 +1,6 @@
 AC_INIT(ObjFW, 0.8-dev, js@webkeks.org)
+BUILDSYS_INIT
+
 AC_CONFIG_SRCDIR(src)
 
 AC_CANONICAL_HOST
