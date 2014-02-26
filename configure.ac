@@ -873,7 +873,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
-	AC_MSG_CHECKING(whether -Wdocumentation is buggy)
+	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_TRY_COMPILE([
 		/*!
 		 * @class Test conftest.m conftest.m
@@ -882,9 +882,9 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		@end
 	], [
 	], [
-		AC_MSG_RESULT(no, adding -Wdocumentation)
-	], [
 		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 ])

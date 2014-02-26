@@ -121,7 +121,7 @@ struct {
 	 * objc_setFutureClass suddenly stopped working as OFConstantString
 	 * became more complex. So the only solution is to make
 	 * _OFConstantStringClassRerence the actual class, but there is no
-	 * objc_initializeClassPair in 10.5.  However, objc_allocateClassPair
+	 * objc_initializeClassPair in 10.5. However, objc_allocateClassPair
 	 * does not register the new class with the subclass in the ObjC1
 	 * runtime like the ObjC2 runtime does, so this workaround should be
 	 * fine.
