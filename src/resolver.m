@@ -59,7 +59,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 	of_resolver_result_t **ret, **retIter;
 	of_resolver_result_t *results, *resultsIter;
 	size_t count;
-#ifdef HAVE_THREADSAFE_GETADDRINFO
+#ifdef HAVE_GETADDRINFO
 	struct addrinfo hints = { 0 }, *res, *res0;
 	char portCString[7];
 
@@ -67,6 +67,11 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 	hints.ai_socktype = type;
 	hints.ai_flags = AI_NUMERICSERV;
 	snprintf(portCString, 7, "%" PRIu16, port);
+
+# if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
+	if (!of_mutex_lock(&mutex))
+		@throw [OFLockFailedException exception];
+# endif
 
 	if (getaddrinfo([host UTF8String], portCString, &hints, &res0))
 		@throw [OFAddressTranslationFailedException
@@ -103,6 +108,11 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 	*retIter = NULL;
 
 	ret[0]->private_ = res0;
+
+# if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
+	if (!of_mutex_unlock(&mutex))
+		@throw [OFUnlockFailedException exception];
+# endif
 #else
 	struct hostent *he;
 	in_addr_t s_addr;
