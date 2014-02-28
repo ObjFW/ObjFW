@@ -24,22 +24,19 @@
 #import "threading.h"
 
 static of_rmutex_t global_mutex;
-static bool global_mutex_init = false;
+static of_once_t once_control = OF_ONCE_INIT;
 
 static void
-objc_global_mutex_new(void)
+init(void)
 {
 	if (!of_rmutex_new(&global_mutex))
 		OBJC_ERROR("Failed to create global mutex!");
-
-	global_mutex_init = true;
 }
 
 void
 objc_global_mutex_lock(void)
 {
-	if (!global_mutex_init)
-		objc_global_mutex_new();
+	of_once(&once_control, init);
 
 	if (!of_rmutex_lock(&global_mutex))
 		OBJC_ERROR("Failed to lock global mutex!");

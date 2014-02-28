@@ -17,25 +17,38 @@
 #include "config.h"
 
 #import "socket.h"
+#ifdef OF_HAVE_THREADS
+# include "threading.h"
 
+static of_once_t onceControl = OF_ONCE_INIT;
+#endif
 static bool initialized = false;
+
+static void
+init(void)
+{
+#if defined(_WIN32)
+	WSADATA wsa;
+
+	if (WSAStartup(MAKEWORD(2, 0), &wsa))
+		return;
+#elif defined(__wii__)
+	if (net_init() < 0)
+		return;
+#endif
+
+	initialized = true;
+}
 
 bool
 of_init_sockets()
 {
-	if (initialized)
-		return true;
-
-#ifdef _WIN32
-	WSADATA wsa;
-
-	if (WSAStartup(MAKEWORD(2, 0), &wsa))
-		return false;
-#elif defined(__wii__)
-	if (net_init() < 0)
-		return false;
+#ifdef OF_HAVE_THREADS
+	of_once(&onceControl, init);
+#else
+	if (!initialized)
+		init();
 #endif
 
-	initialized = true;
-	return true;
+	return initialized;
 }

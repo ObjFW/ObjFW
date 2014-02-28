@@ -33,6 +33,8 @@ typedef pthread_t of_thread_t;
 typedef pthread_key_t of_tlskey_t;
 typedef pthread_mutex_t of_mutex_t;
 typedef pthread_cond_t of_condition_t;
+typedef pthread_once_t of_once_t;
+# define OF_ONCE_INIT PTHREAD_ONCE_INIT
 #elif defined(_WIN32)
 /*
  * winsock2.h needs to be included before windows.h. Not including it here
@@ -50,6 +52,8 @@ typedef struct {
 	HANDLE event;
 	int count;
 } of_condition_t;
+typedef volatile LONG of_once_t;
+# define OF_ONCE_INIT 0
 #else
 # error No threads available!
 #endif
@@ -148,6 +152,27 @@ of_thread_exit(void)
 	ExitThread(0);
 #else
 # error of_thread_exit not implemented!
+#endif
+}
+
+static OF_INLINE void
+of_once(of_once_t *control, void (*func)(void))
+{
+#if defined(OF_HAVE_PTHREADS)
+	pthread_once(control, func);
+#elif defined(_WIN32)
+	switch (InterlockedCompareExchange(control, 1, 0)) {
+	case 0:
+		func();
+		InterlockedIncrement(control);
+		break;
+	case 1:
+		while (*control == 1)
+			Sleep(0);
+		break;
+	}
+#else
+# error of_once not implemented!
 #endif
 }
 
