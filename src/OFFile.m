@@ -81,7 +81,7 @@
 
 #ifdef _WIN32
 # include <windows.h>
-# include <wchar.h>
+# include <direct.h>
 #endif
 
 #ifndef O_BINARY

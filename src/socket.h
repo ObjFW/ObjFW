@@ -27,7 +27,12 @@
 #endif
 
 #ifdef _WIN32
-# include <winsock2.h>
+# ifdef __MINGW32__
+#  include <_mingw.h>
+#  ifdef __MINGW64_VERSION_MAJOR
+#   include <winsock2.h>
+#  endif
+# endif
 # include <windows.h>
 # include <ws2tcpip.h>
 #endif

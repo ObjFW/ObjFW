@@ -317,7 +317,7 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setString: [OFString stringWithFormat: @"%lg", double_]
+	[self setString: [OFString stringWithFormat: @"%g", double_]
 		 forKey: key];
 
 	objc_autoreleasePoolPop(pool);

@@ -1304,7 +1304,7 @@
 
 		return ret;
 	case OF_NUMBER_DOUBLE:
-		ret = [OFMutableString stringWithFormat: @"%lg",
+		ret = [OFMutableString stringWithFormat: @"%g",
 							 _value.double_];
 
 		if (![ret containsString: @"."])
