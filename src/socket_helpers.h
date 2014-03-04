@@ -30,7 +30,7 @@
 # define INVALID_SOCKET -1
 #endif
 
-#ifdef HAVE_THREADSAFE_GETADDRINFO
+#ifdef HAVE_GETADDRINFO
 # ifndef AI_NUMERICSERV
 #  define AI_NUMERICSERV 0
 # endif

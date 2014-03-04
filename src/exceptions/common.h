@@ -26,7 +26,7 @@
 #ifndef _WIN32
 # define GET_ERRNO	errno
 # ifdef OF_HAVE_SOCKETS
-#  if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(HAVE_H_ERRNO)
+#  if !defined(HAVE_GETADDRINFO) && defined(HAVE_H_ERRNO)
 #   define GET_AT_ERRNO	h_errno
 #  else
 #   define GET_AT_ERRNO	errno
@@ -36,7 +36,7 @@
 # define ERRFMT			@"Error string was: %s"
 # define ERRPARAM		strerror(_errNo)
 # ifdef OF_HAVE_SOCKETS
-#  if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(HAVE_HSTRERROR)
+#  if !defined(HAVE_GETADDRINFO) && defined(HAVE_HSTRERROR)
 #   define AT_ERRPARAM		hstrerror(_errNo)
 #  else
 #   define AT_ERRPARAM		strerror(_errNo)

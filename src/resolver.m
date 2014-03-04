@@ -71,47 +71,56 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 # if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
 	if (!of_mutex_lock(&mutex))
 		@throw [OFLockFailedException exception];
+
+	@try {
 # endif
+		if (getaddrinfo([host UTF8String], portCString, &hints, &res0))
+			@throw [OFAddressTranslationFailedException
+			    exceptionWithHost: host];
 
-	if (getaddrinfo([host UTF8String], portCString, &hints, &res0))
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host];
+		count = 0;
+		for (res = res0; res != NULL; res = res->ai_next)
+			count++;
 
-	count = 0;
-	for (res = res0; res != NULL; res = res->ai_next)
-		count++;
+		if (count == 0) {
+			freeaddrinfo(res0);
+			@throw [OFAddressTranslationFailedException
+			    exceptionWithHost: host];
+		}
 
-	if (count == 0) {
-		freeaddrinfo(res0);
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host];
-	}
+		if ((ret = calloc(count + 1, sizeof(*ret))) == NULL) {
+			freeaddrinfo(res0);
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize:
+			    (count + 1) * sizeof(*ret)];
+		}
 
-	if ((ret = calloc(count + 1, sizeof(*ret))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: (count + 1) * sizeof(*ret)];
+		if ((results = malloc(count * sizeof(*results))) == NULL) {
+			freeaddrinfo(res0);
+			free(ret);
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize:
+			    count * sizeof(*results)];
+		}
 
-	if ((results = malloc(count * sizeof(*results))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: count * sizeof(*results)];
+		for (retIter = ret, resultsIter = results, res = res0;
+		    res != NULL; retIter++, resultsIter++, res = res->ai_next) {
+			resultsIter->family = res->ai_family;
+			resultsIter->type = res->ai_socktype;
+			resultsIter->protocol = res->ai_protocol;
+			resultsIter->address = res->ai_addr;
+			resultsIter->addressLength = res->ai_addrlen;
 
-	for (retIter = ret, resultsIter = results, res = res0;
-	    res != NULL; retIter++, resultsIter++, res = res->ai_next) {
-		resultsIter->family = res->ai_family;
-		resultsIter->type = res->ai_socktype;
-		resultsIter->protocol = res->ai_protocol;
-		resultsIter->address = res->ai_addr;
-		resultsIter->addressLength = res->ai_addrlen;
+			*retIter = resultsIter;
+		}
+		*retIter = NULL;
 
-		*retIter = resultsIter;
-	}
-	*retIter = NULL;
-
-	ret[0]->private_ = res0;
-
+		ret[0]->private_ = res0;
 # if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_unlock(&mutex))
-		@throw [OFUnlockFailedException exception];
+	} @finally {
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFUnlockFailedException exception];
+	}
 # endif
 #else
 	struct hostent *he;
@@ -132,13 +141,18 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: 2 * sizeof(*ret)];
 
-		if ((tmp = malloc(sizeof(*tmp))) == NULL)
+		if ((tmp = malloc(sizeof(*tmp))) == NULL) {
+			free(ret);
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: sizeof(*tmp)];
+		}
 
-		if ((addr = calloc(1, sizeof(*addr))) == NULL)
+		if ((addr = calloc(1, sizeof(*addr))) == NULL) {
+			free(ret);
+			free(tmp);
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: sizeof(*addr)];
+		}
 
 		addr->sin_family = AF_INET;
 		addr->sin_port = OF_BSWAP16_IF_LE(port);
@@ -159,62 +173,65 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
 		@throw [OFLockFailedException exception];
-# endif
 
-	if ((he = gethostbyname([host UTF8String])) == NULL ||
-	    he->h_addrtype != AF_INET) {
+	@try {
+# endif
+		if ((he = gethostbyname([host UTF8String])) == NULL ||
+		    he->h_addrtype != AF_INET)
+			@throw [OFAddressTranslationFailedException
+			    exceptionWithHost: host];
+
+		count = 0;
+		for (ip = he->h_addr_list; *ip != NULL; ip++)
+			count++;
+
+		if (count == 0)
+			@throw [OFAddressTranslationFailedException
+			    exceptionWithHost: host];
+
+		if ((ret = calloc(count + 1, sizeof(*ret))) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize:
+			    (count + 1) * sizeof(*ret)];
+
+		if ((results = malloc(count * sizeof(*results))) == NULL) {
+			free(ret);
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize:
+			    count * sizeof(*results)];
+		}
+
+		if ((addrs = calloc(count, sizeof(*addrs))) == NULL) {
+			free(ret);
+			free(results);
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: count * sizeof(*addrs)];
+		}
+
+		for (retIter = ret, resultsIter = results, addrsIter = addrs,
+		    ip = he->h_addr_list; *ip != NULL;
+		    retIter++, resultsIter++, addrsIter++, ip++) {
+			addrsIter->sin_family = he->h_addrtype;
+			addrsIter->sin_port = OF_BSWAP16_IF_LE(port);
+
+			if (he->h_length > sizeof(addrsIter->sin_addr.s_addr))
+				@throw [OFOutOfRangeException exception];
+
+			memcpy(&addrsIter->sin_addr.s_addr, *ip, he->h_length);
+
+			resultsIter->family = he->h_addrtype;
+			resultsIter->type = type;
+			resultsIter->protocol = 0;
+			resultsIter->address = (struct sockaddr*)addrsIter;
+			resultsIter->addressLength = sizeof(*addrsIter);
+
+			*retIter = resultsIter;
+		}
 # ifdef OF_HAVE_THREADS
+	} @finally {
 		if (!of_mutex_unlock(&mutex))
 			@throw [OFUnlockFailedException exception];
-# endif
-
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host];
 	}
-
-	count = 0;
-	for (ip = he->h_addr_list; *ip != NULL; ip++)
-		count++;
-
-	if (count == 0)
-		@throw [OFAddressTranslationFailedException
-		    exceptionWithHost: host];
-
-	if ((ret = calloc(count + 1, sizeof(*ret))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: (count + 1) * sizeof(*ret)];
-
-	if ((results = malloc(count * sizeof(*results))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: count * sizeof(*results)];
-
-	if ((addrs = calloc(count, sizeof(*addrs))) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: count * sizeof(*addrs)];
-
-	for (retIter = ret, resultsIter = results, addrsIter = addrs,
-	    ip = he->h_addr_list; *ip != NULL; retIter++, resultsIter++,
-	    addrsIter++, ip++) {
-		addrsIter->sin_family = he->h_addrtype;
-		addrsIter->sin_port = OF_BSWAP16_IF_LE(port);
-
-		if (he->h_length > sizeof(addrsIter->sin_addr.s_addr))
-			@throw [OFOutOfRangeException exception];
-
-		memcpy(&addrsIter->sin_addr.s_addr, *ip, he->h_length);
-
-		resultsIter->family = he->h_addrtype;
-		resultsIter->type = type;
-		resultsIter->protocol = 0;
-		resultsIter->address = (struct sockaddr*)addrsIter;
-		resultsIter->addressLength = sizeof(*addrsIter);
-
-		*retIter = resultsIter;
-	}
-
-# ifdef OF_HAVE_THREADS
-	if (!of_mutex_unlock(&mutex))
-		@throw [OFUnlockFailedException exception];
 # endif
 #endif
 
@@ -225,30 +242,44 @@ void
 of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
     OFString *__autoreleasing *host, uint16_t *port)
 {
-#ifdef HAVE_THREADSAFE_GETADDRINFO
+#ifdef HAVE_GETADDRINFO
 	char hostCString[NI_MAXHOST];
 	char portCString[NI_MAXSERV];
 
-	/* FIXME: Add NI_DGRAM for UDP? */
-	if (getnameinfo(address, addressLength, hostCString, NI_MAXHOST,
-	    portCString, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV))
-		@throw [OFAddressTranslationFailedException exception];
+# if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
+	if (!of_mutex_lock(&mutex))
+		@throw [OFLockFailedException exception];
 
-	if (host != NULL)
-		*host = [OFString stringWithUTF8String: hostCString];
-
-	if (port != NULL) {
-		char *endptr;
-		long tmp;
-
-		if ((tmp = strtol(portCString, &endptr, 10)) > UINT16_MAX)
-			@throw [OFOutOfRangeException exception];
-
-		if (endptr != NULL && *endptr != '\0')
+	@try {
+# endif
+		/* FIXME: Add NI_DGRAM for UDP? */
+		if (getnameinfo(address, addressLength, hostCString, NI_MAXHOST,
+		    portCString, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV))
 			@throw [OFAddressTranslationFailedException exception];
 
-		*port = (uint16_t)tmp;
+		if (host != NULL)
+			*host = [OFString stringWithUTF8String: hostCString];
+
+		if (port != NULL) {
+			char *endptr;
+			long tmp;
+
+			if ((tmp = strtol(portCString, &endptr, 10)) >
+			    UINT16_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			if (endptr != NULL && *endptr != '\0')
+				@throw [OFAddressTranslationFailedException
+				    exception];
+
+			*port = (uint16_t)tmp;
+		}
+# if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
+	} @finally {
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFUnlockFailedException exception];
 	}
+# endif
 #else
 	char *hostCString;
 
@@ -258,22 +289,24 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 # if OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
 		@throw [OFLockFailedException exception];
+
+	@try {
 # endif
+		if ((hostCString = inet_ntoa(
+		    ((struct sockaddr_in*)(void*)address)->sin_addr)) == NULL)
+			@throw [OFAddressTranslationFailedException exception];
 
-	if ((hostCString = inet_ntoa(
-	    ((struct sockaddr_in*)(void*)address)->sin_addr)) == NULL)
-		@throw [OFAddressTranslationFailedException exception];
+		if (host != NULL)
+			*host = [OFString stringWithUTF8String: hostCString];
 
-	if (host != NULL)
-		*host = [OFString stringWithUTF8String: hostCString];
-
-	if (port != NULL)
-		*port = OF_BSWAP16_IF_LE(
-		    ((struct sockaddr_in*)(void*)address)->sin_port);
-
+		if (port != NULL)
+			*port = OF_BSWAP16_IF_LE(
+			    ((struct sockaddr_in*)(void*)address)->sin_port);
 # if OF_HAVE_THREADS
-	if (!of_mutex_unlock(&mutex))
-		@throw [OFUnlockFailedException exception];
+	} @finally {
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFUnlockFailedException exception];
+	}
 # endif
 #endif
 }
@@ -281,7 +314,7 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 void
 of_resolver_free(of_resolver_result_t **results)
 {
-#ifdef HAVE_THREADSAFE_GETADDRINFO
+#ifdef HAVE_GETADDRINFO
 	freeaddrinfo(results[0]->private_);
 #else
 	free(results[0]->address);
