@@ -25,6 +25,8 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
 @implementation OFBigDataArray
 - init
 {
@@ -44,7 +46,7 @@
 	self = [super init];
 
 	@try {
-		size_t size, lastPageByte;
+		size_t size, pageSize;
 
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
@@ -52,11 +54,11 @@
 		if (capacity > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
 
-		lastPageByte = [OFSystemInfo pageSize] - 1;
-		size = (capacity * itemSize + lastPageByte) & ~lastPageByte;
+		pageSize = [OFSystemInfo pageSize];
+		size = OF_ROUND_UP_POW2(pageSize, capacity * itemSize);
 
 		if (size == 0)
-			size = lastPageByte + 1;
+			size = pageSize;
 
 		_items = [self allocMemoryWithSize: size];
 
@@ -77,11 +79,10 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + 1 > _capacity) {
-		size_t size, lastPageByte;
+		size_t size, pageSize;
 
-		lastPageByte = [OFSystemInfo pageSize] - 1;
-		size = ((_count + 1) * _itemSize + lastPageByte) &
-		    ~lastPageByte;
+		pageSize = [OFSystemInfo pageSize];
+		size = OF_ROUND_UP_POW2(pageSize, (_count + 1) * _itemSize);
 
 		_items = [self resizeMemory: _items
 				       size: size];
@@ -102,11 +103,10 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		size_t size, lastPageByte;
+		size_t size, pageSize;
 
-		lastPageByte = [OFSystemInfo pageSize] - 1;
-		size = ((_count + count) * _itemSize + lastPageByte) &
-		    ~lastPageByte;
+		pageSize = [OFSystemInfo pageSize];
+		size = OF_ROUND_UP_POW2(pageSize, (_count + count) * _itemSize);
 
 		_items = [self resizeMemory: _items
 				       size: size];
@@ -129,11 +129,10 @@
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
-		size_t size, lastPageByte;
+		size_t size, pageSize;
 
-		lastPageByte = [OFSystemInfo pageSize] - 1;
-		size = ((_count + count) * _itemSize + lastPageByte) &
-		    ~lastPageByte;
+		pageSize = [OFSystemInfo pageSize];
+		size = OF_ROUND_UP_POW2(pageSize, (_count + count) * _itemSize);
 
 		_items = [self resizeMemory: _items
 				       size: size];
@@ -151,7 +150,7 @@
 
 - (void)removeItemsInRange: (of_range_t)range
 {
-	size_t lastPageByte, size;
+	size_t pageSize, size;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _count)
@@ -162,10 +161,10 @@
 	    (_count - range.location - range.length) * _itemSize);
 
 	_count -= range.length;
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	size = (_count * _itemSize + lastPageByte) & ~lastPageByte;
+	pageSize = [OFSystemInfo pageSize];
+	size = OF_ROUND_UP_POW2(pageSize, _count * _itemSize);
 
-	if (_size != size && size > lastPageByte) {
+	if (_size != size && size >= pageSize) {
 		@try {
 			_items = [self resizeMemory: _items
 					       size: size];
@@ -179,16 +178,16 @@
 
 - (void)removeLastItem
 {
-	size_t lastPageByte, size;
+	size_t pageSize, size;
 
 	if (_count == 0)
 		return;
 
 	_count--;
-	lastPageByte = [OFSystemInfo pageSize] - 1;
-	size = (_count * _itemSize + lastPageByte) & ~lastPageByte;
+	pageSize = [OFSystemInfo pageSize];
+	size = OF_ROUND_UP_POW2(pageSize, _count * _itemSize);
 
-	if (_size != size && size > lastPageByte) {
+	if (_size != size && size >= pageSize) {
 		@try {
 			_items = [self resizeMemory: _items
 					       size: size];

@@ -358,6 +358,8 @@ OF_BSWAP_DOUBLE(double d)
 	(((value) >> ((bits) % (sizeof(value) * 8))) |			   \
 	((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))))
 
+#define OF_ROUND_UP_POW2(pow2, value) (((value) + (pow2) - 1) & ~((pow2) - 1))
+
 #define OF_HASH_INIT(hash) hash = of_hash_seed;
 #define OF_HASH_ADD(hash, byte)			\
 	{					\
