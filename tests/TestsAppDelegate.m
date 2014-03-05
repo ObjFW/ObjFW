@@ -37,9 +37,11 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 
 #ifdef __wii__
 # define BOOL OGC_BOOL
+# define asm __asm__
 # include <gccore.h>
 # include <wiiuse/wpad.h>
 # undef BOOL
+# undef asm
 #endif
 
 enum {
