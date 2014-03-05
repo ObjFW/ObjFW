@@ -20,6 +20,7 @@
 #import "macros.h"
 
 #ifdef OF_HAVE_SOCKETS
+# include "socket.h"
 # include "socket_helpers.h"
 #endif
 
