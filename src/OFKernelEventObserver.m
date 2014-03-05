@@ -108,11 +108,8 @@ enum {
 	self = [super init];
 
 	@try {
-#ifndef OF_HAVE_PIPE
-		struct sockaddr_in cancelAddr2;
-# ifndef __wii__
+#if !defined(OF_HAVE_PIPE) && !defined(__wii__)
 		socklen_t cancelAddrLen;
-# endif
 #endif
 
 		_readObjects = [[OFMutableArray alloc] init];
@@ -127,28 +124,23 @@ enum {
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 #else
-		_cancelFD[0] = socket(AF_INET, SOCK_DGRAM, 0);
-		_cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
+		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 
-		if (_cancelFD[0] == INVALID_SOCKET ||
-		    _cancelFD[1] == INVALID_SOCKET)
+		if (_cancelFD[0] == INVALID_SOCKET)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
 		_cancelAddr.sin_family = AF_INET;
 		_cancelAddr.sin_port = 0;
 		_cancelAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-		cancelAddr2 = _cancelAddr;
 
 # ifdef __wii__
 		/* The Wii does not accept port 0 as "choose any free port" */
-		_cancelAddr.sin_port = 65533;
-		cancelAddr2.sin_port = 65534;
+		_cancelAddr.sin_port = 65535;
 # endif
 
 		if (bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
-		    sizeof(_cancelAddr)) || bind(_cancelFD[1],
-		    (struct sockaddr*)&cancelAddr2, sizeof(cancelAddr2)))
+		    sizeof(_cancelAddr)))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
@@ -180,7 +172,8 @@ enum {
 - (void)dealloc
 {
 	close(_cancelFD[0]);
-	close(_cancelFD[1]);
+	if (_cancelFD[1] != _cancelFD[0])
+		close(_cancelFD[1]);
 
 	[_readObjects release];
 	[_writeObjects release];
