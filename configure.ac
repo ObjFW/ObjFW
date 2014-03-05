@@ -625,7 +625,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
 	])
-	AC_CHECK_HEADERS([netinet/in.h arpa/inet.h netdb.h])
+	AC_CHECK_HEADERS(netinet/in.h, [
+		AC_DEFINE(OF_HAVE_NETINET_IN_H, 1,
+			[Whether we have netinet/in.h])
+	])
+	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
 	AC_CHECK_FUNC(kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])

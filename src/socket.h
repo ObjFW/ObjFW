@@ -25,6 +25,9 @@
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
+#ifdef OF_HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
 
 #ifdef _WIN32
 # ifdef __MINGW32__
