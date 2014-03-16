@@ -18,19 +18,34 @@
 
 #include "config.h"
 
-#import "OFSystemInfo.h"
-
 #include <unistd.h>
 
-#ifdef __QNX__
-# include <sys/syspage.h>
+#import "OFSystemInfo.h"
+#import "OFString.h"
+#import "OFArray.h"
+#import "OFDictionary.h"
+#import "OFApplication.h"
+
+#import "OFNotImplementedException.h"
+
+#import "autorelease.h"
+#import "macros.h"
+
+#ifdef __APPLE__
+# include <NSSystemDirectories.h>
 #endif
 
 #ifdef _WIN32
 # include <windows.h>
 #endif
 
-#import "macros.h"
+#ifdef __HAIKU__
+# include <FindDirectory.h>
+#endif
+
+#ifdef __QNX__
+# include <sys/syspage.h>
+#endif
 
 static size_t pageSize;
 static size_t numberOfCPUs;
@@ -75,5 +90,164 @@ static size_t numberOfCPUs;
 + (size_t)numberOfCPUs
 {
 	return numberOfCPUs;
+}
+
++ (OFString*)userDataPath
+{
+#if defined(__APPLE__)
+	void *pool = objc_autoreleasePoolPush();
+	char pathC[PATH_MAX];
+	NSSearchPathEnumerationState state;
+	OFMutableString *path;
+	OFString *home;
+
+	state = NSStartSearchPathEnumeration(NSApplicationSupportDirectory,
+	    NSUserDomainMask);
+	if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	path = [OFMutableString stringWithUTF8String: pathC];
+	if ([path hasPrefix: @"~"]) {
+		OFDictionary *env = [OFApplication environment];
+
+		if ((home = [env objectForKey: @"HOME"]) == nil)
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+
+		[path deleteCharactersInRange: of_range(0, 1)];
+		[path prependString: home];
+	}
+
+	[path makeImmutable];
+
+	[path retain];
+	objc_autoreleasePoolPop(pool);
+	return [path autorelease];
+#elif defined(_WIN32)
+	void *pool = objc_autoreleasePoolPush();
+	OFDictionary *env = [OFApplication environment];
+	OFString *appData;
+
+	if ((appData = [env objectForKey: @"APPDATA"]) == nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	[appData retain];
+	objc_autoreleasePoolPop(pool);
+	return [appData autorelease];
+#elif defined(__HAIKU__)
+	char pathC[PATH_MAX];
+
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, 0, false,
+	    pathC, PATH_MAX) != B_OK)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	return [OFString stringWithUTF8String: pathC];
+#else
+	void *pool = objc_autoreleasePoolPush();
+	OFDictionary *env = [OFApplication environment];
+	OFString *var;
+
+	if ((var = [env objectForKey: @"XDG_DATA_HOME"]) != nil &&
+	    [var length] > 0) {
+		[var retain];
+		objc_autoreleasePoolPop(pool);
+		return [dataHome autorelease];
+	}
+
+	if ((var = [env objectForKey: @"HOME"]) == nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	var = [OFString pathWithComponents: [OFArray arrayWithObjects:
+	    var, @".local", @"share", nil]];
+
+	[var retain];
+	objc_autoreleasePoolPop(pool);
+	return [var autorelease];
+#endif
+}
+
++ (OFString*)userConfigPath
+{
+#if defined(__APPLE__)
+	void *pool = objc_autoreleasePoolPush();
+	char pathC[PATH_MAX];
+	NSSearchPathEnumerationState state;
+	OFMutableString *path;
+	OFString *home;
+
+	state = NSStartSearchPathEnumeration(NSLibraryDirectory,
+	    NSUserDomainMask);
+	if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	path = [OFMutableString stringWithUTF8String: pathC];
+	if ([path hasPrefix: @"~"]) {
+		OFDictionary *env = [OFApplication environment];
+
+		if ((home = [env objectForKey: @"HOME"]) == nil)
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+
+		[path deleteCharactersInRange: of_range(0, 1)];
+		[path prependString: home];
+	}
+
+	[path appendString: @"/Preferences"];
+
+	[path makeImmutable];
+
+	[path retain];
+	objc_autoreleasePoolPop(pool);
+	return [path autorelease];
+#elif defined(_WIN32)
+	void *pool = objc_autoreleasePoolPush();
+	OFDictionary *env = [OFApplication environment];
+	OFString *appData;
+
+	if ((appData = [env objectForKey: @"APPDATA"]) == nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	[appData retain];
+	objc_autoreleasePoolPop(pool);
+	return [appData autorelease];
+#elif defined(__HAIKU__)
+	char pathC[PATH_MAX];
+
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, 0, false,
+	    pathC, PATH_MAX) != B_OK)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	return [OFString stringWithUTF8String: pathC];
+#else
+	void *pool = objc_autoreleasePoolPush();
+	OFDictionary *env = [OFApplication environment];
+	OFString *var;
+
+	if ((var = [env objectForKey: @"XDG_CONFIG_HOME"]) != nil &&
+	    [var length] > 0) {
+		[var retain];
+		objc_autoreleasePoolPop(pool);
+		return [var autorelease];
+	}
+
+	if ((var = [env objectForKey: @"HOME"]) == nil)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	var = [var stringByAppendingPathComponent: @".config"];
+
+	[var retain];
+	objc_autoreleasePoolPop(pool);
+	return [var autorelease];
+#endif
 }
 @end

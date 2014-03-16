@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+@class OFString;
+
 /*!
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
@@ -37,4 +39,30 @@
  * @return The number of CPUs installed in the system
  */
 + (size_t)numberOfCPUs;
+
+/*!
+ * @brief Returns the path where user data for the application can be stored.
+ *
+ * On Unix systems, this adheres to the XDG Base Directory specification.@n
+ * On Mac OS X and iOS, it uses the `NSApplicationSupportDirectory` directory.@n
+ * On Windows, it uses the `APPDATA` environment variable.@n
+ * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.
+ *
+ * @return The path where user data for the application can be stored
+ */
++ (OFString*)userDataPath;
+
+/*!
+ * @brief Returns the path where user configuration for the application can be
+ *	  stored.
+ *
+ * On Unix systems, this adheres to the XDG Base Directory specification.@n
+ * On Mac OS X and iOS, it uses the `Preferences` directory inside of
+ * `NSLibraryDirectory` directory.@n
+ * On Windows, it uses the `APPDATA` environment variable.@n
+ * On Haiku, it uses the `B_USER_SETTINGS_DIRECTORY` directory.
+ *
+ * @return The path where user configuration for the application can be stored
+ */
++ (OFString*)userConfigPath;
 @end
