@@ -155,7 +155,7 @@ static size_t numberOfCPUs;
 	    [var length] > 0) {
 		[var retain];
 		objc_autoreleasePoolPop(pool);
-		return [dataHome autorelease];
+		return [var autorelease];
 	}
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
