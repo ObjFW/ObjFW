@@ -49,7 +49,8 @@ register_category(struct objc_abi_category *cat)
 	Class cls = objc_classname_to_class(cat->class_name, false);
 
 	if (categories == NULL)
-		categories = objc_hashtable_new(2);
+		categories = objc_hashtable_new(
+		    objc_hash_string, objc_equal_string, 2);
 
 	cats = (struct objc_abi_category**)objc_hashtable_get(categories,
 	    cat->class_name);
@@ -123,7 +124,7 @@ objc_unregister_all_categories(void)
 	if (categories == NULL)
 		return;
 
-	for (i = 0; i <= categories->last_idx; i++)
+	for (i = 0; i < categories->size; i++)
 		if (categories->data[i] != NULL)
 			free((void*)categories->data[i]->obj);
 

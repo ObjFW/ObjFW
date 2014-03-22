@@ -47,7 +47,8 @@ objc_register_selector(struct objc_abi_selector *sel)
 		OBJC_ERROR("Out of selector slots!");
 
 	if (selectors == NULL)
-		selectors = objc_hashtable_new(2);
+		selectors = objc_hashtable_new(
+		    objc_hash_string, objc_equal_string, 2);
 	else if ((rsel = objc_hashtable_get(selectors, sel->name)) != NULL) {
 		((struct objc_selector*)sel)->uid = rsel->uid;
 		return;

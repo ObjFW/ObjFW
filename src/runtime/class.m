@@ -41,7 +41,8 @@ static void
 register_class(struct objc_abi_class *cls)
 {
 	if (classes == NULL)
-		classes = objc_hashtable_new(2);
+		classes = objc_hashtable_new(
+		    objc_hash_string, objc_equal_string, 2);
 
 	objc_hashtable_set(classes, cls->name, cls);
 
@@ -524,7 +525,7 @@ objc_getClassList(Class *buf, unsigned int count)
 	if (classes_cnt < count)
 		count = classes_cnt;
 
-	for (i = j = 0; i <= classes->last_idx; i++) {
+	for (i = j = 0; i < classes->size; i++) {
 		Class cls;
 
 		if (j >= count) {
@@ -858,7 +859,7 @@ objc_unregister_all_classes(void)
 	if (classes == NULL)
 		return;
 
-	for (i = 0; i <= classes->last_idx; i++) {
+	for (i = 0; i < classes->size; i++) {
 		if (classes->data[i] != NULL) {
 			Class cls = (Class)classes->data[i]->obj;
 
