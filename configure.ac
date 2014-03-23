@@ -78,6 +78,8 @@ AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32 -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
+AX_CHECK_COMPILER_FLAGS(-Wobjc-property-synthesis -Werror,
+	[OBJCFLAGS="$OBJCFLAGS -Wobjc-property-synthesis"])
 
 case "$OBJC" in
 	*clang*)
