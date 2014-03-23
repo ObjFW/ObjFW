@@ -526,7 +526,7 @@ objc_getClassList(Class *buf, unsigned int count)
 		count = classes_cnt;
 
 	for (i = j = 0; i < classes->size; i++) {
-		Class cls;
+		void *cls;
 
 		if (j >= count) {
 			objc_global_mutex_unlock();
@@ -861,7 +861,7 @@ objc_unregister_all_classes(void)
 
 	for (i = 0; i < classes->size; i++) {
 		if (classes->data[i] != NULL) {
-			Class cls = (Class)classes->data[i]->obj;
+			void *cls = (Class)classes->data[i]->obj;
 
 			if (cls == Nil || (uintptr_t)cls & 1)
 				continue;
