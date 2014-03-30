@@ -245,9 +245,12 @@ objc_update_dtable(Class cls)
 		}
 	}
 
-	if (cls->subclass_list != NULL)
-		for (i = 0; cls->subclass_list[i] != NULL; i++)
-			objc_update_dtable(cls->subclass_list[i]);
+	if (cls->subclass_list != NULL) {
+		Class *iter;
+
+		for (iter = cls->subclass_list; *iter != NULL; iter++)
+			objc_update_dtable(*iter);
+	}
 }
 
 static void
@@ -811,6 +814,31 @@ unregister_class(Class rcls)
 {
 	struct objc_abi_class *cls = (struct objc_abi_class*)rcls;
 
+	if ((rcls->info & OBJC_CLASS_INFO_SETUP) &&
+	    rcls->superclass != Nil &&
+	    rcls->superclass->subclass_list != NULL) {
+		size_t i = SIZE_MAX, count = 0;
+		Class *tmp;
+
+		for (tmp = rcls->superclass->subclass_list;
+		    *tmp != Nil; tmp++) {
+			if (*tmp == rcls)
+				i = count;
+
+			count++;
+		}
+
+		if (count > 0 && i < SIZE_MAX) {
+			tmp = rcls->superclass->subclass_list;
+			tmp[i] = tmp[count - 1];
+			tmp[count - 1] = NULL;
+
+			if ((tmp = realloc(rcls->superclass->subclass_list,
+			    count * sizeof(Class))) != NULL)
+				rcls->superclass->subclass_list = tmp;
+		}
+	}
+
 	if (rcls->subclass_list != NULL) {
 		free(rcls->subclass_list);
 		rcls->subclass_list = NULL;
@@ -823,14 +851,22 @@ unregister_class(Class rcls)
 
 	if (rcls->superclass != Nil)
 		cls->superclass = rcls->superclass->name;
+
+	rcls->info &= ~OBJC_CLASS_INFO_SETUP;
 }
 
 void
 objc_unregister_class(Class cls)
 {
+	while (cls->subclass_list != NULL && cls->subclass_list[0] != Nil)
+		objc_unregister_class(cls->subclass_list[0]);
+
+	if (cls->info & OBJC_CLASS_INFO_LOADED)
+		call_method(cls, "unload");
+
 	objc_hashtable_set(classes, cls->name, NULL);
 
-	if (strcmp(cls->name, "Protocol"))
+	if (strcmp(class_getName(cls), "Protocol"))
 		classes_cnt--;
 
 	unregister_class(cls);

@@ -244,6 +244,10 @@ void _references_to_categories_of_OFObject(void)
 #endif
 }
 
++ (void)unload
+{
+}
+
 + (void)initialize
 {
 }

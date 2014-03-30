@@ -433,10 +433,24 @@ OF_ROOT_CLASS
  * @brief A method which is called once when the class is loaded into the
  *	  runtime.
  *
- * Derived classes can overide this to execute their own code when the class is
- * loaded.
+ * Derived classes can override this to execute their own code when the class
+ * is loaded.
  */
 + (void)load;
+
+/*!
+ * @brief A method which is called when the class is unloaded from the runtime.
+ *
+ * Derived classes can override this to execute their own code when the class
+ * is unloaded.
+ *
+ * @warning This is not supported by the Apple runtime and currently only
+ *	    called by the ObjFW runtime when objc_unregister_class() or
+ *	    objc_exit() has been called!
+ *	    In the future, this might also be called by the ObjFW runtime when
+ *	    the class is part of a plugin that has been unloaded.
+ */
++ (void)unload;
 
 /*!
  * @brief A method which is called the moment before the first call to the class
