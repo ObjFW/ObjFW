@@ -864,7 +864,7 @@ objc_unregister_class(Class cls)
 	if (cls->info & OBJC_CLASS_INFO_LOADED)
 		call_method(cls, "unload");
 
-	objc_hashtable_set(classes, cls->name, NULL);
+	objc_hashtable_delete(classes, cls->name);
 
 	if (strcmp(class_getName(cls), "Protocol"))
 		classes_cnt--;
@@ -896,13 +896,17 @@ objc_unregister_all_classes(void)
 		return;
 
 	for (i = 0; i < classes->size; i++) {
-		if (classes->data[i] != NULL) {
+		if (classes->data[i] != NULL &&
+		    classes->data[i] != &objc_deleted_bucket) {
 			void *cls = (Class)classes->data[i]->obj;
 
 			if (cls == Nil || (uintptr_t)cls & 1)
 				continue;
 
 			objc_unregister_class(cls);
+
+			/* The table might have been resized, so start again */
+			i = 0;
 		}
 	}
 

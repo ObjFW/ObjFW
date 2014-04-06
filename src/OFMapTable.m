@@ -338,8 +338,8 @@ defaultEqual(void *value1, void *value2)
 
 			last = capacity;
 
-			j = _buckets[i]->hash & (capacity - 1);
-			for (; j < last && buckets[j] != NULL; j++);
+			for (j = _buckets[i]->hash & (capacity - 1);
+			    j < last && buckets[j] != NULL; j++);
 
 			/* In case the last bucket is already used */
 			if (j >= last) {
@@ -348,6 +348,9 @@ defaultEqual(void *value1, void *value2)
 				for (j = 0; j < last &&
 				    buckets[j] != NULL; j++);
 			}
+
+			if (j >= last)
+				@throw [OFOutOfRangeException exception];
 
 			buckets[j] = _buckets[i];
 		}

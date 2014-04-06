@@ -133,9 +133,11 @@ extern uint32_t objc_hash_string(const void*);
 extern bool objc_equal_string(const void*, const void*);
 extern struct objc_hashtable* objc_hashtable_new(uint32_t (*)(const void*),
     bool (*)(const void*, const void*), uint32_t);
+extern struct objc_hashtable_bucket objc_deleted_bucket;
 extern void objc_hashtable_set(struct objc_hashtable*, const void*,
     const void*);
 extern void* objc_hashtable_get(struct objc_hashtable*, const void*);
+extern void objc_hashtable_delete(struct objc_hashtable*, const void*);
 extern void objc_hashtable_free(struct objc_hashtable *h);
 extern void objc_register_selector(struct objc_abi_selector*);
 extern void objc_register_all_selectors(struct objc_abi_symtab*);
