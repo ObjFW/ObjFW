@@ -331,6 +331,31 @@
 	return hash;
 }
 
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count_
+{
+	size_t count = [_array count];
+
+	if (count > INT_MAX)
+		/*
+		 * Use the implementation from OFArray, which is slower, but can
+		 * enumerate in chunks.
+		 */
+		return [super countByEnumeratingWithState: state
+						  objects: objects
+						    count: count_];
+
+	if (state->state >= count)
+		return 0;
+
+	state->state = count;
+	state->itemsPtr = [_array items];
+	state->mutationsPtr = (unsigned long*)self;
+
+	return (int)count;
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {

@@ -300,20 +300,31 @@
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
-			     count: (int)count
+			     count: (int)count_
 {
-	/*
-	 * Super means the implementation from OFArray here, as OFMutableArray
-	 * does not reimplement it. As OFArray_adjacent does not reimplement it
-	 * either, this is fine.
-	 */
-	int ret = [super countByEnumeratingWithState: state
-					     objects: objects
-					       count: count];
+	size_t count = [_array count];
 
+	if (count > INT_MAX) {
+		/*
+		 * Use the implementation from OFArray (OFMutableArray does not
+		 * have one), which is slower, but can enumerate in chunks, and
+		 * set the mutations pointer.
+		 */
+		int ret = [super countByEnumeratingWithState: state
+						     objects: objects
+						       count: count_];
+		state->mutationsPtr = &_mutations;
+		return ret;
+	}
+
+	if (state->state >= count)
+		return 0;
+
+	state->state = count;
+	state->itemsPtr = [_array items];
 	state->mutationsPtr = &_mutations;
 
-	return ret;
+	return (int)count;
 }
 
 - (OFEnumerator*)objectEnumerator
