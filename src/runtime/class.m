@@ -905,7 +905,10 @@ objc_unregister_all_classes(void)
 
 			objc_unregister_class(cls);
 
-			/* The table might have been resized, so start again */
+			/*
+			 * The table might have been resized, so go back to the
+			 * start again.
+			 */
 			i = 0;
 		}
 	}

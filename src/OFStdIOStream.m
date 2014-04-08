@@ -154,7 +154,7 @@ of_log(OFConstantString *format, ...)
 {
 	OF_UNRECOGNIZED_SELECTOR
 
-	/* Get rid of stupid warning */
+	/* Get rid of a stupid warning */
 	[super dealloc];
 }
 @end

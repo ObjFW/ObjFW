@@ -127,41 +127,6 @@ resize(struct objc_hashtable *table, uint32_t count)
 	table->size = nsize;
 }
 
-static void
-insert(struct objc_hashtable *table, const void *key, const void *obj)
-{
-	uint32_t i, hash, last;
-	struct objc_hashtable_bucket *bucket;
-
-	resize(table, table->count + 1);
-
-	hash = table->hash(key);
-	last = table->size;
-
-	for (i = hash & (table->size - 1); i < last && table->data[i] != NULL &&
-	    table->data[i] != &objc_deleted_bucket; i++);
-
-	if (i >= last) {
-		last = hash & (table->size - 1);
-
-		for (i = 0; i < last && table->data[i] != NULL &&
-		    table->data[i] != &objc_deleted_bucket; i++);
-	}
-
-	if (i >= last)
-		OBJC_ERROR("No free bucket!");
-
-	if ((bucket = malloc(sizeof(struct objc_hashtable_bucket))) == NULL)
-		OBJC_ERROR("Not enough memory to allocate hash table bucket!");
-
-	bucket->key = key;
-	bucket->hash = hash;
-	bucket->obj = obj;
-
-	table->data[i] = bucket;
-	table->count++;
-}
-
 static inline bool
 index_for_key(struct objc_hashtable *table, const void *key, uint32_t *index)
 {
@@ -199,14 +164,41 @@ void
 objc_hashtable_set(struct objc_hashtable *table, const void *key,
     const void *obj)
 {
-	uint32_t idx;
+	uint32_t i, hash, last;
+	struct objc_hashtable_bucket *bucket;
 
-	if (!index_for_key(table, key, &idx)) {
-		insert(table, key, obj);
+	if (index_for_key(table, key, &i)) {
+		table->data[i]->obj = obj;
 		return;
 	}
 
-	table->data[idx]->obj = obj;
+	resize(table, table->count + 1);
+
+	hash = table->hash(key);
+	last = table->size;
+
+	for (i = hash & (table->size - 1); i < last && table->data[i] != NULL &&
+	    table->data[i] != &objc_deleted_bucket; i++);
+
+	if (i >= last) {
+		last = hash & (table->size - 1);
+
+		for (i = 0; i < last && table->data[i] != NULL &&
+		    table->data[i] != &objc_deleted_bucket; i++);
+	}
+
+	if (i >= last)
+		OBJC_ERROR("No free bucket!");
+
+	if ((bucket = malloc(sizeof(struct objc_hashtable_bucket))) == NULL)
+		OBJC_ERROR("Not enough memory to allocate hash table bucket!");
+
+	bucket->key = key;
+	bucket->hash = hash;
+	bucket->obj = obj;
+
+	table->data[i] = bucket;
+	table->count++;
 }
 
 void*
