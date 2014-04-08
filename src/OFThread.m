@@ -37,14 +37,6 @@
 # include <kernel/OS.h>
 #endif
 
-#ifdef __wii__
-# define BOOL OGC_BOOL
-# define asm __asm__
-# include <ogcsys.h>
-# undef BOOL
-# undef asm
-#endif
-
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFRunLoop.h"
@@ -202,12 +194,7 @@ setThreadName(OFThread *thread)
 	if (rqtp.tv_sec != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
-# ifndef __wii__
 	nanosleep(&rqtp, NULL);
-# else
-	/* Wii has an incompatible nanosleep */
-	nanosleep(&rqtp);
-# endif
 #else
 	if (timeInterval > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
