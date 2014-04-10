@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 .globl of_forward
 .globl of_forward_stret
 
