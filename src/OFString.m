@@ -884,9 +884,10 @@ static struct {
 	OFString *contentType, *contentLength;
 	OFDataArray *data;
 #endif
-	Class c;
+#ifdef OF_HAVE_FILES
+	Class c = [self class];
+#endif
 
-	c = [self class];
 	[self release];
 
 	pool = objc_autoreleasePoolPush();

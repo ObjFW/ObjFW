@@ -198,9 +198,10 @@ void _references_to_categories_of_OFDataArray(void)
 	OFDictionary *headers;
 	OFString *contentLength;
 #endif
-	Class c;
+#ifdef OF_HAVE_FILES
+	Class c = [self class];
+#endif
 
-	c = [self class];
 	[self release];
 
 	pool = objc_autoreleasePoolPush();
