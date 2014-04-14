@@ -32,6 +32,13 @@ case "$host" in
 		;;
 esac
 
+AC_LANG([Objective C])
+AC_PROG_OBJC([clang gcc])
+AC_PROG_OBJCPP
+AC_PROG_LN_S
+AC_PROG_INSTALL
+AC_PROG_EGREP
+
 AC_ARG_WITH(wii,
 	AS_HELP_STRING([--with-wii], [build for Wii]))
 AS_IF([test x"$with_wii" = x"yes"], [
@@ -50,12 +57,6 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
-AC_LANG([Objective C])
-AC_PROG_OBJC([clang gcc])
-AC_PROG_OBJCPP
-AC_PROG_LN_S
-AC_PROG_INSTALL
-AC_PROG_EGREP
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
