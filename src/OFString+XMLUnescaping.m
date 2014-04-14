@@ -75,117 +75,9 @@ parseNumericEntity(const char *entity, size_t length)
 				       length: i];
 }
 
-@implementation OFString (XMLUnescaping)
-- (OFString*)stringByXMLUnescaping
-{
-	return [self stringByXMLUnescapingWithDelegate: nil];
-}
-
-- (OFString*)stringByXMLUnescapingWithDelegate:
-    (id <OFStringXMLUnescapingDelegate>)delegate
-{
-	const char *string;
-	size_t i, last, length;
-	bool inEntity;
-	OFMutableString *ret;
-
-	string = [self UTF8String];
-	length = [self UTF8StringLength];
-
-	ret = [OFMutableString string];
-
-	last = 0;
-	inEntity = false;
-
-	for (i = 0; i < length; i++) {
-		if (!inEntity && string[i] == '&') {
-			[ret appendUTF8String: string + last
-				       length: i - last];
-
-			last = i + 1;
-			inEntity = true;
-		} else if (inEntity && string[i] == ';') {
-			const char *entity = string + last;
-			size_t entityLength = i - last;
-
-			if (entityLength == 2 && memcmp(entity, "lt", 2) == 0)
-				[ret appendCString: "<"
-					  encoding: OF_STRING_ENCODING_ASCII
-					    length: 1];
-			else if (entityLength == 2 &&
-			    memcmp(entity, "gt", 2) == 0)
-				[ret appendCString: ">"
-					  encoding: OF_STRING_ENCODING_ASCII
-					    length: 1];
-			else if (entityLength == 4 &&
-			    memcmp(entity, "quot", 4) == 0)
-				[ret appendCString: "\""
-					  encoding: OF_STRING_ENCODING_ASCII
-					    length: 1];
-			else if (entityLength == 4 &&
-			    memcmp(entity, "apos", 4) == 0)
-				[ret appendCString: "'"
-					  encoding: OF_STRING_ENCODING_ASCII
-					    length: 1];
-			else if (entityLength == 3 &&
-			    memcmp(entity, "amp", 3) == 0)
-				[ret appendCString: "&"
-					  encoding: OF_STRING_ENCODING_ASCII
-					    length: 1];
-			else if (entity[0] == '#') {
-				void *pool;
-				OFString *tmp;
-
-				pool = objc_autoreleasePoolPush();
-				tmp = parseNumericEntity(entity,
-				    entityLength);
-
-				if (tmp == nil)
-					@throw [OFInvalidFormatException
-					    exception];
-
-				[ret appendString: tmp];
-				objc_autoreleasePoolPop(pool);
-			} else if (delegate != nil) {
-				void *pool;
-				OFString *n, *tmp;
-
-				pool = objc_autoreleasePoolPush();
-
-				n = [OFString
-				    stringWithUTF8String: entity
-						  length: entityLength];
-				tmp =	  [delegate string: self
-				containsUnknownEntityNamed: n];
-
-				if (tmp == nil)
-					@throw [OFInvalidFormatException
-					    exception];
-
-				[ret appendString: tmp];
-				objc_autoreleasePoolPop(pool);
-			} else
-				@throw [OFInvalidFormatException exception];
-
-			last = i + 1;
-			inEntity = false;
-		}
-	}
-
-	if (inEntity)
-		@throw [OFInvalidFormatException exception];
-
-	[ret appendUTF8String: string + last
-		       length: i - last];
-
-	[ret makeImmutable];
-
-	return ret;
-}
-
-#ifdef OF_HAVE_BLOCKS
-- (OFString*)stringByXMLUnescapingWithBlock:
-    (of_string_xml_unescaping_block_t)block
+static OFString*
+parseEntities(OFString *self, id (*lookup)(void*, OFString*, OFString*),
+    void *context)
 {
 	const char *string;
 	size_t i, last, length;
@@ -251,14 +143,14 @@ parseNumericEntity(const char *entity, size_t length)
 				objc_autoreleasePoolPop(pool);
 			} else {
 				void *pool;
-				OFString *entityString, *tmp;
+				OFString *name, *tmp;
 
 				pool = objc_autoreleasePoolPush();
 
-				entityString = [OFString
+				name = [OFString
 				    stringWithUTF8String: entity
 						  length: entityLength];
-				tmp = block(self, entityString);
+				tmp = lookup(context, self, name);
 
 				if (tmp == nil)
 					@throw [OFInvalidFormatException
@@ -282,6 +174,50 @@ parseNumericEntity(const char *entity, size_t length)
 	[ret makeImmutable];
 
 	return ret;
+}
+
+static id
+lookupUsingDelegate(void *context, OFString *self, OFString *entity)
+{
+	id <OFStringXMLUnescapingDelegate> delegate = context;
+
+	if (delegate == nil)
+		return nil;
+
+	return [delegate        string: self
+	    containsUnknownEntityNamed: entity];
+}
+
+#ifdef OF_HAVE_BLOCKS
+static id
+lookupUsingBlock(void *context, OFString *self, OFString *entity)
+{
+	of_string_xml_unescaping_block_t block = context;
+
+	if (block == NULL)
+		return nil;
+
+	return block(self, entity);
+}
+#endif
+
+@implementation OFString (XMLUnescaping)
+- (OFString*)stringByXMLUnescaping
+{
+	return [self stringByXMLUnescapingWithDelegate: nil];
+}
+
+- (OFString*)stringByXMLUnescapingWithDelegate:
+    (id <OFStringXMLUnescapingDelegate>)delegate
+{
+	return parseEntities(self, lookupUsingDelegate, delegate);
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (OFString*)stringByXMLUnescapingWithBlock:
+    (of_string_xml_unescaping_block_t)block
+{
+	return parseEntities(self, lookupUsingBlock, block);
 }
 #endif
 @end
