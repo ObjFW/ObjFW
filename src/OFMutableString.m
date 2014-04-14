@@ -490,7 +490,7 @@ static struct {
 
 	for (i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(of_unichar_t)))
+		    searchLength * sizeof(of_unichar_t)) != 0)
 			continue;
 
 		[self replaceCharactersInRange: of_range(i, searchLength)

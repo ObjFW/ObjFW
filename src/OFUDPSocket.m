@@ -213,7 +213,7 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 			return false;
 		if (memcmp(sin6_1->sin6_addr.s6_addr,
 		    sin6_2->sin6_addr.s6_addr,
-		    sizeof(sin6_1->sin6_addr.s6_addr)))
+		    sizeof(sin6_1->sin6_addr.s6_addr)) != 0)
 			return false;
 
 		break;

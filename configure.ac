@@ -39,8 +39,8 @@ AS_IF([test x"$with_wii" = x"yes"], [
 		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
 	])
 
-	OBJCFLAGS="$OBJCFLAGS -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
-	CPPFLAGS="$CPPFLAGS -I$DEVKITPRO/libogc/include"
+	OBJCFLAGS="$OBJCFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
+	CPPFLAGS="$CPPFLAGS -DGEKKO -I$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
 	TESTS_LIBS="$TESTS_LIBS -lwiiuse -lbte"

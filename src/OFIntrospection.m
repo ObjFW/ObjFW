@@ -124,7 +124,7 @@
 		return false;
 
 	if (method->_typeEncoding != NULL && _typeEncoding != NULL &&
-	    strcmp(method->_typeEncoding, _typeEncoding))
+	    strcmp(method->_typeEncoding, _typeEncoding) != 0)
 		return false;
 
 	return true;

@@ -168,7 +168,7 @@ static uint16_t sutf16str[] = {
 	    (is = [OFString stringWithUTF16String: sutf16str]) &&
 	    [is isEqual: @"fööbär🀺"])
 
-	TEST(@"+[stringWithUTF32String::]",
+	TEST(@"+[stringWithUTF32String:]",
 	    (is = [OFString stringWithUTF32String: ucstr]) &&
 	    [is isEqual: @"fööbär🀺"] &&
 	    (is = [OFString stringWithUTF32String: sucstr]) &&

@@ -33,7 +33,7 @@ protocol_getName(Protocol *p)
 inline bool __attribute__((gnu_inline))
 protocol_isEqual(Protocol *a, Protocol *b)
 {
-	return !strcmp(protocol_getName(a), protocol_getName(b));
+	return (strcmp(protocol_getName(a), protocol_getName(b)) == 0);
 }
 
 bool

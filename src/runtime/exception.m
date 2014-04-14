@@ -483,7 +483,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			className = (const char*)c;
 
 			if (className != NULL && *className != '\0' &&
-			    strcmp(className, "@id"))
+			    strcmp(className, "@id") != 0)
 				class = objc_getRequiredClass(className);
 			else
 				class = Nil;

@@ -177,7 +177,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	@try {
 		if (UTF8StringLength >= 3 &&
-		    !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
 			UTF8String += 3;
 			UTF8StringLength -= 3;
 		}
@@ -217,7 +217,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		const of_char16_t *table;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
-		    cStringLength >= 3 && !memcmp(cString, "\xEF\xBB\xBF", 3)) {
+		    cStringLength >= 3 &&
+		    memcmp(cString, "\xEF\xBB\xBF", 3) == 0) {
 			cString += 3;
 			cStringLength -= 3;
 		}
@@ -346,7 +347,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		size_t UTF8StringLength = strlen(UTF8String);
 
 		if (UTF8StringLength >= 3 &&
-		    !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
 			UTF8String += 3;
 			UTF8StringLength -= 3;
 		}
@@ -732,7 +733,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	    _s->hash != otherString->_s->hash)
 		return false;
 
-	if (strcmp(_s->cString, [otherString UTF8String]))
+	if (strcmp(_s->cString, [otherString UTF8String]) != 0)
 		return false;
 
 	return true;
@@ -952,8 +953,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
 		for (i = rangeLength - cStringLength;; i--) {
-			if (!memcmp(_s->cString + rangeLocation + i, cString,
-			    cStringLength)) {
+			if (memcmp(_s->cString + rangeLocation + i, cString,
+			    cStringLength) == 0) {
 				range.location += of_string_utf8_get_index(
 				    _s->cString + rangeLocation, i);
 				range.length = [string length];
@@ -967,8 +968,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 	} else {
 		for (i = 0; i <= rangeLength - cStringLength; i++) {
-			if (!memcmp(_s->cString + rangeLocation + i, cString,
-			    cStringLength)) {
+			if (memcmp(_s->cString + rangeLocation + i, cString,
+			    cStringLength) == 0) {
 				range.location += of_string_utf8_get_index(
 				    _s->cString + rangeLocation, i);
 				range.length = [string length];
@@ -993,7 +994,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return false;
 
 	for (i = 0; i <= _s->cStringLength - cStringLength; i++)
-		if (!memcmp(_s->cString + i, cString, cStringLength))
+		if (memcmp(_s->cString + i, cString, cStringLength) == 0)
 			return true;
 
 	return false;
@@ -1025,7 +1026,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	return !memcmp(_s->cString, [prefix UTF8String], cStringLength);
+	return (memcmp(_s->cString, [prefix UTF8String], cStringLength) == 0);
 }
 
 - (bool)hasSuffix: (OFString*)suffix
@@ -1035,8 +1036,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	return !memcmp(_s->cString + (_s->cStringLength - cStringLength),
-	    [suffix UTF8String], cStringLength);
+	return (memcmp(_s->cString + (_s->cStringLength - cStringLength),
+	    [suffix UTF8String], cStringLength) == 0);
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
@@ -1061,7 +1062,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	}
 
 	for (i = 0, last = 0; i <= _s->cStringLength - cStringLength; i++) {
-		if (memcmp(_s->cString + i, cString, cStringLength))
+		if (memcmp(_s->cString + i, cString, cStringLength) != 0)
 			continue;
 
 		component = [OFString stringWithUTF8String: _s->cString + last

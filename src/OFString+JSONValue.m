@@ -602,7 +602,7 @@ nextObject(const char *restrict *pointer, const char *stop,
 		if (*pointer + 3 >= stop)
 			return nil;
 
-		if (memcmp(*pointer, "true", 4))
+		if (memcmp(*pointer, "true", 4) != 0)
 			return nil;
 
 		(*pointer) += 4;
@@ -612,7 +612,7 @@ nextObject(const char *restrict *pointer, const char *stop,
 		if (*pointer + 4 >= stop)
 			return nil;
 
-		if (memcmp(*pointer, "false", 5))
+		if (memcmp(*pointer, "false", 5) != 0)
 			return nil;
 
 		(*pointer) += 5;
@@ -622,7 +622,7 @@ nextObject(const char *restrict *pointer, const char *stop,
 		if (*pointer + 3 >= stop)
 			return nil;
 
-		if (memcmp(*pointer, "null", 4))
+		if (memcmp(*pointer, "null", 4) != 0)
 			return nil;
 
 		(*pointer) += 4;

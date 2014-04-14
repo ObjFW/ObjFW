@@ -1267,7 +1267,7 @@ static struct {
 	otherCharacters = [otherString characters];
 
 	if (memcmp(characters, otherCharacters,
-	    length * sizeof(of_unichar_t))) {
+	    length * sizeof(of_unichar_t)) != 0) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
@@ -1596,8 +1596,8 @@ static struct {
 
 		if (options & OF_STRING_SEARCH_BACKWARDS) {
 			for (i = range.length - searchLength;; i--) {
-				if (!memcmp(characters + i, searchCharacters,
-				    searchLength * sizeof(of_unichar_t))) {
+				if (memcmp(characters + i, searchCharacters,
+				    searchLength * sizeof(of_unichar_t)) == 0) {
 					objc_autoreleasePoolPop(pool);
 					return of_range(range.location + i,
 					    searchLength);
@@ -1609,8 +1609,8 @@ static struct {
 			}
 		} else {
 			for (i = 0; i <= range.length - searchLength; i++) {
-				if (!memcmp(characters + i, searchCharacters,
-				    searchLength * sizeof(of_unichar_t))) {
+				if (memcmp(characters + i, searchCharacters,
+				    searchLength * sizeof(of_unichar_t)) == 0) {
 					objc_autoreleasePoolPop(pool);
 					return of_range(range.location + i,
 					    searchLength);
@@ -1644,8 +1644,8 @@ static struct {
 	searchCharacters = [string characters];
 
 	for (i = 0; i <= length - searchLength; i++) {
-		if (!memcmp(characters + i, searchCharacters,
-		    searchLength * sizeof(of_unichar_t))) {
+		if (memcmp(characters + i, searchCharacters,
+		    searchLength * sizeof(of_unichar_t)) == 0) {
 			objc_autoreleasePoolPop(pool);
 			return true;
 		}
@@ -1838,7 +1838,7 @@ static struct {
 	of_unichar_t *tmp;
 	const of_unichar_t *prefixCharacters;
 	size_t prefixLength;
-	int compare;
+	bool hasPrefix;
 
 	if ((prefixLength = [prefix length]) > [self length])
 		return false;
@@ -1852,15 +1852,15 @@ static struct {
 			    inRange: of_range(0, prefixLength)];
 
 		prefixCharacters = [prefix characters];
-		compare = memcmp(tmp, prefixCharacters,
-		    prefixLength * sizeof(of_unichar_t));
+		hasPrefix = (memcmp(tmp, prefixCharacters,
+		    prefixLength * sizeof(of_unichar_t)) == 0);
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
 		[self freeMemory: tmp];
 	}
 
-	return !compare;
+	return hasPrefix;
 }
 
 - (bool)hasSuffix: (OFString*)suffix
@@ -1868,7 +1868,7 @@ static struct {
 	of_unichar_t *tmp;
 	const of_unichar_t *suffixCharacters;
 	size_t length, suffixLength;
-	int compare;
+	bool hasSuffix;
 
 	if ((suffixLength = [suffix length]) > [self length])
 		return false;
@@ -1885,15 +1885,15 @@ static struct {
 					 suffixLength)];
 
 		suffixCharacters = [suffix characters];
-		compare = memcmp(tmp, suffixCharacters,
-		    suffixLength * sizeof(of_unichar_t));
+		hasSuffix = (memcmp(tmp, suffixCharacters,
+		    suffixLength * sizeof(of_unichar_t)) == 0);
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
 		[self freeMemory: tmp];
 	}
 
-	return !compare;
+	return hasSuffix;
 }
 
 - (OFArray*)componentsSeparatedByString: (OFString*)delimiter
@@ -1930,7 +1930,7 @@ static struct {
 
 	for (i = 0, last = 0; i <= length - delimiterLength; i++) {
 		if (memcmp(characters + i, delimiterCharacters,
-		    delimiterLength * sizeof(of_unichar_t)))
+		    delimiterLength * sizeof(of_unichar_t)) != 0)
 			continue;
 
 		component = [self substringWithRange: of_range(last, i - last)];

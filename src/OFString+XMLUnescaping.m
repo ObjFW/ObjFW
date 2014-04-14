@@ -108,25 +108,27 @@ parseNumericEntity(const char *entity, size_t length)
 			const char *entity = string + last;
 			size_t entityLength = i - last;
 
-			if (entityLength == 2 && !memcmp(entity, "lt", 2))
+			if (entityLength == 2 && memcmp(entity, "lt", 2) == 0)
 				[ret appendCString: "<"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
-			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
+			else if (entityLength == 2 &&
+			    memcmp(entity, "gt", 2) == 0)
 				[ret appendCString: ">"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    !memcmp(entity, "quot", 4))
+			    memcmp(entity, "quot", 4) == 0)
 				[ret appendCString: "\""
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    !memcmp(entity, "apos", 4))
+			    memcmp(entity, "apos", 4) == 0)
 				[ret appendCString: "'"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
-			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
+			else if (entityLength == 3 &&
+			    memcmp(entity, "amp", 3) == 0)
 				[ret appendCString: "&"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
@@ -209,25 +211,27 @@ parseNumericEntity(const char *entity, size_t length)
 			const char *entity = string + last;
 			size_t entityLength = i - last;
 
-			if (entityLength == 2 && !memcmp(entity, "lt", 2))
+			if (entityLength == 2 && memcmp(entity, "lt", 2) == 0)
 				[ret appendCString: "<"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
-			else if (entityLength == 2 && !memcmp(entity, "gt", 2))
+			else if (entityLength == 2 &&
+			    memcmp(entity, "gt", 2) == 0)
 				[ret appendCString: ">"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    !memcmp(entity, "quot", 4))
+			    memcmp(entity, "quot", 4) == 0)
 				[ret appendCString: "\""
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entityLength == 4 &&
-			    !memcmp(entity, "apos", 4))
+			    memcmp(entity, "apos", 4) == 0)
 				[ret appendCString: "'"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
-			else if (entityLength == 3 && !memcmp(entity, "amp", 3))
+			else if (entityLength == 3 &&
+			    memcmp(entity, "amp", 3) == 0)
 				[ret appendCString: "&"
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];

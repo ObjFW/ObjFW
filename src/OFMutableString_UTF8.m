@@ -276,7 +276,8 @@
 	size_t UTF8StringLength = strlen(UTF8String);
 	size_t length;
 
-	if (UTF8StringLength >= 3 && !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+	if (UTF8StringLength >= 3 &&
+	    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
 		UTF8String += 3;
 		UTF8StringLength -= 3;
 	}
@@ -305,7 +306,8 @@
 {
 	size_t length;
 
-	if (UTF8StringLength >= 3 && !memcmp(UTF8String, "\xEF\xBB\xBF", 3)) {
+	if (UTF8StringLength >= 3 &&
+	    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
 		UTF8String += 3;
 		UTF8StringLength -= 3;
 	}
@@ -675,7 +677,7 @@
 
 	last = 0;
 	for (i = range.location; i <= range.length - searchLength; i++) {
-		if (memcmp(_s->cString + i, searchString, searchLength))
+		if (memcmp(_s->cString + i, searchString, searchLength) != 0)
 			continue;
 
 		@try {

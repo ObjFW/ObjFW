@@ -52,7 +52,7 @@ register_class(struct objc_abi_class *cls)
 	cls->dtable = empty_dtable;
 	cls->metaclass->dtable = empty_dtable;
 
-	if (strcmp(cls->name, "Protocol"))
+	if (strcmp(cls->name, "Protocol") != 0)
 		classes_cnt++;
 }
 
@@ -539,7 +539,7 @@ objc_getClassList(Class *buf, unsigned int count)
 		if (classes->data[i] == NULL)
 			continue;
 
-		if (!strcmp(classes->data[i]->key, "Protocol"))
+		if (strcmp(classes->data[i]->key, "Protocol") == 0)
 			continue;
 
 		cls = (Class)classes->data[i]->obj;
@@ -866,7 +866,7 @@ objc_unregister_class(Class cls)
 
 	objc_hashtable_delete(classes, cls->name);
 
-	if (strcmp(class_getName(cls), "Protocol"))
+	if (strcmp(class_getName(cls), "Protocol") != 0)
 		classes_cnt--;
 
 	unregister_class(cls);

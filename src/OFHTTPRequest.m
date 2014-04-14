@@ -60,21 +60,21 @@ of_http_request_method_to_string(of_http_request_method_t method)
 of_http_request_method_t
 of_http_request_method_from_string(const char *string)
 {
-	if (!strcmp(string, "OPTIONS"))
+	if (strcmp(string, "OPTIONS") == 0)
 		return OF_HTTP_REQUEST_METHOD_OPTIONS;
-	if (!strcmp(string, "GET"))
+	if (strcmp(string, "GET") == 0)
 		return OF_HTTP_REQUEST_METHOD_GET;
-	if (!strcmp(string, "HEAD"))
+	if (strcmp(string, "HEAD") == 0)
 		return OF_HTTP_REQUEST_METHOD_HEAD;
-	if (!strcmp(string, "POST"))
+	if (strcmp(string, "POST") == 0)
 		return OF_HTTP_REQUEST_METHOD_POST;
-	if (!strcmp(string, "PUT"))
+	if (strcmp(string, "PUT") == 0)
 		return OF_HTTP_REQUEST_METHOD_PUT;
-	if (!strcmp(string, "DELETE"))
+	if (strcmp(string, "DELETE") == 0)
 		return OF_HTTP_REQUEST_METHOD_DELETE;
-	if (!strcmp(string, "TRACE"))
+	if (strcmp(string, "TRACE") == 0)
 		return OF_HTTP_REQUEST_METHOD_TRACE;
-	if (!strcmp(string, "CONNECT"))
+	if (strcmp(string, "CONNECT") == 0)
 		return OF_HTTP_REQUEST_METHOD_CONNECT;
 
 	@throw [OFInvalidFormatException exception];

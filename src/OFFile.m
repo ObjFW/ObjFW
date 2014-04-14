@@ -136,29 +136,29 @@ of_lstat(OFString *path, of_stat_t *buffer)
 static int
 parseMode(const char *mode)
 {
-	if (!strcmp(mode, "r"))
+	if (strcmp(mode, "r") == 0)
 		return O_RDONLY;
-	if (!strcmp(mode, "rb"))
+	if (strcmp(mode, "rb") == 0)
 		return O_RDONLY | O_BINARY;
-	if (!strcmp(mode, "r+"))
+	if (strcmp(mode, "r+") == 0)
 		return O_RDWR;
-	if (!strcmp(mode, "rb+") || !strcmp(mode, "r+b"))
+	if (strcmp(mode, "rb+") == 0 || strcmp(mode, "r+b") == 0)
 		return O_RDWR | O_BINARY;
-	if (!strcmp(mode, "w"))
+	if (strcmp(mode, "w") == 0)
 		return O_WRONLY | O_CREAT | O_TRUNC;
-	if (!strcmp(mode, "wb"))
+	if (strcmp(mode, "wb") == 0)
 		return O_WRONLY | O_CREAT | O_TRUNC | O_BINARY;
-	if (!strcmp(mode, "w+"))
+	if (strcmp(mode, "w+") == 0)
 		return O_RDWR | O_CREAT | O_TRUNC;
-	if (!strcmp(mode, "wb+") || !strcmp(mode, "w+b"))
+	if (strcmp(mode, "wb+") == 0 || strcmp(mode, "w+b") == 0)
 		return O_RDWR | O_CREAT | O_TRUNC | O_BINARY;
-	if (!strcmp(mode, "a"))
+	if (strcmp(mode, "a") == 0)
 		return O_WRONLY | O_CREAT | O_APPEND;
-	if (!strcmp(mode, "ab"))
+	if (strcmp(mode, "ab") == 0)
 		return O_WRONLY | O_CREAT | O_APPEND | O_BINARY;
-	if (!strcmp(mode, "a+"))
+	if (strcmp(mode, "a+") == 0)
 		return O_RDWR | O_CREAT | O_APPEND;
-	if (!strcmp(mode, "ab+") || !strcmp(mode, "a+b"))
+	if (strcmp(mode, "ab+") == 0 || strcmp(mode, "a+b") == 0)
 		return O_RDWR | O_CREAT | O_APPEND | O_BINARY;
 
 	return -1;
@@ -354,8 +354,8 @@ parseMode(const char *mode)
 			void *pool = objc_autoreleasePoolPush();
 			OFString *file;
 
-			if (!strcmp(dirent->d_name, ".") ||
-			    !strcmp(dirent->d_name, ".."))
+			if (strcmp(dirent->d_name, ".") == 0 ||
+			    strcmp(dirent->d_name, "..") == 0)
 				continue;
 
 			file = [OFString stringWithCString: dirent->d_name

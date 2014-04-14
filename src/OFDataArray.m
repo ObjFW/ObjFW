@@ -514,7 +514,7 @@ void _references_to_categories_of_OFDataArray(void)
 	if ([dataArray count] != _count ||
 	    [dataArray itemSize] != _itemSize)
 		return false;
-	if (memcmp([dataArray items], _items, _count * _itemSize))
+	if (memcmp([dataArray items], _items, _count * _itemSize) != 0)
 		return false;
 
 	return true;
