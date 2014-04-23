@@ -21,8 +21,10 @@
 
 .section .text
 of_forward:
-	stmfd	sp!, {r0-r4, lr}
+#ifdef HAVE_VFP2
 	fstmfdd	sp!, {d0-d7}
+#endif
+	stmfd	sp!, {r0-r4, lr}
 
 	ldr	r4, sel_forwardingTargetForSelector_$indirect_.L0
 .L0:
@@ -36,42 +38,48 @@ of_forward:
 	cmp	r0, #0
 	beq	0f
 
-	ldr	r0, [sp, #64]
+	ldr	r0, [sp, #0]
 	mov	r1, r4
 	bl	objc_msg_lookup(PLT)
 
 	mov	r12, r0
-	ldr	r0, [sp, #64]
+	ldr	r0, [sp, #0]
 	mov	r1, r4
-	ldr	r2, [sp, #68]
+	ldr	r2, [sp, #4]
 	blx	r12
 
 	cmp	r0, #0
 	beq	0f
-	ldr	r1, [sp, #64]
+	ldr	r1, [sp, #0]
 	cmp	r0, r1
 	beq	0f
 
-	str	r0, [sp, #64]
-	ldr	r1, [sp, #68]
+	str	r0, [sp, #0]
+	ldr	r1, [sp, #4]
 	bl	objc_msg_lookup(PLT)
 
 	mov	r12, r0
-	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
+#ifdef HAVE_VFP2
+	fldmfdd	sp!, {d0-d7}
+#endif
 
 	bx	r12
 
 0:
-	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
+#ifdef HAVE_VFP2
+	fldmfdd	sp!, {d0-d7}
+#endif
 	b	of_method_not_found(PLT)
 .type of_forward, %function
 .size of_forward, .-of_forward
 
 of_forward_stret:
-	stmfd	sp!, {r0-r4, lr}
+#ifdef HAVE_VFP2
 	fstmfdd	sp!, {d0-d7}
+#endif
+	stmfd	sp!, {r0-r4, lr}
 
 	ldr	r4, sel_forwardingTargetForSelector_$indirect_.L1
 .L1:
@@ -86,35 +94,39 @@ of_forward_stret:
 	cmp	r0, #0
 	beq	0f
 
-	ldr	r0, [sp, #68]
+	ldr	r0, [sp, #4]
 	mov	r1, r4
 	bl	objc_msg_lookup(PLT)
 
 	mov	r12, r0
-	ldr	r0, [sp, #68]
+	ldr	r0, [sp, #4]
 	mov	r1, r4
-	ldr	r2, [sp, #72]
+	ldr	r2, [sp, #8]
 	blx	r12
 
 	cmp	r0, #0
 	beq	0f
-	ldr	r1, [sp, #68]
+	ldr	r1, [sp, #4]
 	cmp	r0, r1
 	beq	0f
 
-	str	r0, [sp, #68]
-	ldr	r1, [sp, #72]
+	str	r0, [sp, #4]
+	ldr	r1, [sp, #8]
 	bl	objc_msg_lookup_stret(PLT)
 
 	mov	r12, r0
-	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
+#ifdef HAVE_VFP2
+	fldmfdd	sp!, {d0-d7}
+#endif
 
 	bx	r12
 
 0:
-	fldmfdd	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
+#ifdef HAVE_VFP2
+	fldmfdd	sp!, {d0-d7}
+#endif
 	b	of_method_not_found_stret(PLT)
 .type of_forward_stret, %function
 .size of_forward_stret, .-of_forward_stret
