@@ -962,9 +962,10 @@ AS_IF([test x"$old_compiler" = x"yes"], [
 	echo
 	printf "  ** Note: Your compiler does not seem to "
 	echo "accept -fobjc-runtime=objfw."
-	printf "  ** To get optimal performance and be able to use all "
-	echo "features, you should "
-	echo "  ** install Clang >= 3.2."
+	printf "  ** To get optimal performance, you should install "
+	echo "Clang >= 3.2"
+	printf "  ** (or the latest Clang release to be able to use all "
+	echo "features)."
 	echo
 ])
 
