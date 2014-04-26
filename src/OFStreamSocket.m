@@ -26,6 +26,7 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFNotConnectedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
@@ -70,9 +71,18 @@
 		@throw e;
 	}
 
+#ifndef _WIN32
 	if ((ret = recv(_socket, buffer, length, 0)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+#else
+	if (length > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((ret = recv(_socket, buffer, (unsigned int)length, 0)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+#endif
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -95,9 +105,18 @@
 		@throw e;
 	}
 
+#ifndef _WIN32
 	if (send(_socket, buffer, length, 0) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+#else
+	if (length > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (send(_socket, buffer, (unsigned int)length, 0) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
+#endif
 }
 
 #ifdef _WIN32
@@ -113,12 +132,26 @@
 
 - (int)fileDescriptorForReading
 {
+#ifndef _WIN32
 	return _socket;
+#else
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
 }
 
 - (int)fileDescriptorForWriting
 {
+#ifndef _WIN32
 	return _socket;
+#else
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
 }
 
 - (void)close

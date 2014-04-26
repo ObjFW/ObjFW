@@ -37,6 +37,7 @@
 #import "OFDataArray.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -398,19 +399,24 @@ extern char **environ;
 
 #ifndef _WIN32
 	if (_readPipe[0] == -1 || _atEndOfStream ||
-	    (ret = read(_readPipe[0], buffer, length)) < 0) {
+	    (ret = read(_readPipe[0], buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
 #else
+	if (length > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	if (_readPipe[0] == NULL || _atEndOfStream ||
-	    !ReadFile(_readPipe[0], buffer, length, &ret, NULL)) {
+	    !ReadFile(_readPipe[0], buffer, (DWORD)length, &ret, NULL)) {
 		if (GetLastError() == ERROR_BROKEN_PIPE) {
 			_atEndOfStream = true;
 			return 0;
 		}
 
-#endif
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 	}
+#endif
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -424,15 +430,20 @@ extern char **environ;
 #ifndef _WIN32
 	if (_writePipe[1] == -1 || _atEndOfStream ||
 	    write(_writePipe[1], buffer, length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
 #else
 	DWORD ret;
 
+	if (length > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	if (_writePipe[1] == NULL || _atEndOfStream ||
-	    !WriteFile(_writePipe[1], buffer, length, &ret, NULL) ||
+	    !WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
 	    ret < length)
-#endif
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+#endif
 }
 
 - (int)fileDescriptorForReading

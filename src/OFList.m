@@ -16,7 +16,8 @@
 
 #include "config.h"
 
-#include "assert.h"
+#include <string.h>
+#include <assert.h>
 
 #import "OFList.h"
 #import "OFString.h"
@@ -385,24 +386,28 @@
 			   objects: (id*)objects
 			     count: (int)count
 {
-	of_list_object_t **listObject = (of_list_object_t**)&state->extra[0];
+	of_list_object_t *listObject;
 	int i;
+
+	memcpy(&listObject, state->extra, sizeof(listObject));
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = &_mutations;
 
 	if (state->state == 0) {
-		*listObject = _firstListObject;
+		listObject = _firstListObject;
 		state->state = 1;
 	}
 
 	for (i = 0; i < count; i++) {
-		if (*listObject == NULL)
+		if (listObject == NULL)
 			return i;
 
-		objects[i] = (*listObject)->object;
-		*listObject = (*listObject)->next;
+		objects[i] = listObject->object;
+		listObject = listObject->next;
 	}
+
+	memcpy(state->extra, &listObject, sizeof(listObject));
 
 	return count;
 }

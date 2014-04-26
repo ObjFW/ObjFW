@@ -97,7 +97,11 @@
 	 * however, this is not available on Win32. As an int should always
 	 * satisfy the required range, we just cast to int.
 	 */
+#ifndef _WIN32
 	timeout.tv_sec = (time_t)timeInterval;
+#else
+	timeout.tv_sec = (long)timeInterval;
+#endif
 	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
 	if (select((int)_maxFD + 1, &readFDs, &writeFDs, NULL,

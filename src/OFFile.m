@@ -70,6 +70,7 @@
 #import "OFMoveItemFailedException.h"
 #import "OFOpenFileFailedException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
 #import "OFSeekFailedException.h"
@@ -872,10 +873,20 @@ parseMode(const char *mode)
 {
 	ssize_t ret;
 
+#ifndef _WIN32
 	if (_fd == -1 || _atEndOfStream ||
 	    (ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+#else
+	if (length > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (_fd == -1 || _atEndOfStream ||
+	    (ret = read(_fd, buffer, (unsigned int)length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+#endif
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -886,9 +897,19 @@ parseMode(const char *mode)
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
+#ifndef _WIN32
 	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+#else
+	if (length > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (_fd == -1 || _atEndOfStream ||
+	    write(_fd, buffer, (unsigned int)length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
+#endif
 }
 
 - (off_t)lowlevelSeekToOffset: (off_t)offset

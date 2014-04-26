@@ -320,7 +320,7 @@
 	if (state->state >= count)
 		return 0;
 
-	state->state = count;
+	state->state = (unsigned long)count;
 	state->itemsPtr = [_array items];
 	state->mutationsPtr = &_mutations;
 

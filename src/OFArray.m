@@ -742,7 +742,10 @@ static struct {
 	[self getObjects: objects
 		 inRange: range];
 
-	state->state = range.location + range.length;
+	if (range.location + range.length > ULONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	state->state = (unsigned long)(range.location + range.length);
 	state->itemsPtr = objects;
 	state->mutationsPtr = (unsigned long*)self;
 

@@ -22,6 +22,7 @@
 #import "OFDate.h"
 #import "OFApplication.h"
 
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -94,10 +95,20 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
+#ifndef _WIN32
 	if (_fd == -1 || _atEndOfStream ||
 	    (ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+#else
+	if (length > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (_fd == -1 || _atEndOfStream ||
+	    (ret = read(_fd, buffer, (unsigned int)length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+#endif
 
 	if (ret == 0)
 		_atEndOfStream = true;
@@ -108,9 +119,19 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
+#ifndef _WIN32
 	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+#else
+	if (length > UINT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (_fd == -1 || _atEndOfStream ||
+	    write(_fd, buffer, (unsigned int)length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
+#endif
 }
 
 - (int)fileDescriptorForReading

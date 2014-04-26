@@ -109,7 +109,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			resultsIter->type = res->ai_socktype;
 			resultsIter->protocol = res->ai_protocol;
 			resultsIter->address = res->ai_addr;
-			resultsIter->addressLength = res->ai_addrlen;
+			resultsIter->addressLength = (socklen_t)res->ai_addrlen;
 
 			*retIter = resultsIter;
 		}

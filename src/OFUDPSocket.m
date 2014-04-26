@@ -31,6 +31,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotConnectedException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -453,10 +454,20 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	sender->length = (socklen_t)sizeof(sender->address);
 
+#ifndef _WIN32
 	if ((ret = recvfrom(_socket, buffer, length, 0,
 	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+#else
+	if (length > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
+	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+#endif
 
 	return ret;
 }
@@ -492,10 +503,20 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
+#ifndef _WIN32
 	if (sendto(_socket, buffer, length, 0,
 	    (struct sockaddr*)&receiver->address, receiver->length) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+#else
+	if (length > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (sendto(_socket, buffer, (int)length, 0,
+	    (struct sockaddr*)&receiver->address, receiver->length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
+#endif
 }
 
 - (void)cancelAsyncRequests
@@ -505,12 +526,26 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 - (int)fileDescriptorForReading
 {
+#ifndef _WIN32
 	return _socket;
+#else
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
 }
 
 - (int)fileDescriptorForWriting
 {
+#ifndef _WIN32
 	return _socket;
+#else
+	if (_socket > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	return (int)_socket;
+#endif
 }
 
 - (void)close
