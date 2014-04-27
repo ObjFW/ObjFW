@@ -57,6 +57,26 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
+AC_ARG_WITH(nds,
+	AS_HELP_STRING([--with-nds], [build for Nintendo DS]))
+AS_IF([test x"$with_nds" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
+	OBJCFLAGS="$OBJCFLAGS -march=armv5te -mtune=arm946e-s"
+	OBJCFLAGS="$OBJCFLAGS -mthumb -mthumb-interwork"
+	CPPFLAGS="$CPPFLAGS -DARM9 -I$DEVKITPRO/libnds/include"
+	LDFLAGS="$LDFLAGS -specs=ds_arm9.specs"
+	LIBS="$LIBS -L$DEVKITPRO/libnds/lib -lfilesystem -lfat -lnds9"
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+
+	AC_DEFINE(OF_NINTENDO_DS, 1,
+		[Whether we are compiling for the Nintendo DS])
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+])
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"

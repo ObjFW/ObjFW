@@ -144,7 +144,11 @@ sel_forwardingTargetForSelector_$indirect_.L1:
 module$indirect_.L2:
 	.long module-(.L2+8)
 
+#ifndef OF_NINTENDO_DS
 .section .ctors, "aw", %progbits
+#else
+.section .init_array, "aw", %init_array
+#endif
 	.long init
 
 .section .rodata

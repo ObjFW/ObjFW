@@ -468,7 +468,9 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 
 			if (c != 0) {
 				c += (uintptr_t)tmp;
+# if defined(__linux__) || defined(__NetBSD__)
 				c = *(uintptr_t*)c;
+# endif
 			}
 #else
 			uintptr_t i;

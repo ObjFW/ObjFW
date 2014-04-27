@@ -832,6 +832,9 @@ static struct {
 	@try {
 		OFFile *file;
 
+		/* Make sure the file system is initialized */
+		[OFFile class];
+
 		if (stat([path cStringWithEncoding: [OFString
 		    nativeOSEncoding]], &st) == -1)
 			@throw [OFOpenFileFailedException

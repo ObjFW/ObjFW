@@ -25,6 +25,7 @@
 # define _HAVE_STRING_ARCH_strcmp
 #endif
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +47,10 @@
 # define BOOL OGC_BOOL
 # include <fat.h>
 # undef BOOL
+#endif
+
+#ifdef OF_NINTENDO_DS
+# include <filesystem.h>
 #endif
 
 #import "OFFile.h"
@@ -179,6 +184,12 @@ parseMode(const char *mode)
 
 #ifdef __wii__
 	if (!fatInitDefault())
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
+
+#ifdef OF_NINTENDO_DS
+	if (!nitroFSInit(NULL))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 #endif

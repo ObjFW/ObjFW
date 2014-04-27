@@ -32,7 +32,9 @@ ObjFW.xcodeproj/xcuserdata
 src/objfw-defs.h
 src/ObjFW
 tests/tests
+tests/tests.arm9
 tests/tests.exe
+tests/tests.nds
 tests/EBOOT.PBP
 tests/PARAM.SFO
 tests/objc_sync/objc_sync

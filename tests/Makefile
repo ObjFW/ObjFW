@@ -2,6 +2,11 @@ include ../extra.mk
 
 SUBDIRS = ${TESTPLUGIN}
 
+CLEAN = EBOOT.PBP		\
+	boot.dol		\
+	${PROG_NOINST}.arm9	\
+	${PROG_NOINST}.nds
+
 PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
@@ -106,6 +111,16 @@ EBOOT.PBP: ${PROG_NOINST}
 
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
+
+${PROG_NOINST}.arm9: ${PROG_NOINST}
+	arm-none-eabi-objcopy -O binary $< $@
+
+${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
+	rm -fr nds-data
+	mkdir -p nds-data
+	cp testfile.bin testfile.txt testfile.ini serialization.xml nds-data
+	ndstool -c $@ -9 $< -d nds-data
+	rm -fr nds-data
 
 include ../buildsys.mk
 

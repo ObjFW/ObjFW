@@ -50,6 +50,12 @@ extern char **environ;
 # include <psploadexec.h>
 #endif
 
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+#endif
+
 @interface OFApplication (OF_PRIVATE_CATEGORY)
 - (void)OF_setArgumentCount: (int*)argc
 	  andArgumentValues: (char**[])argv;
@@ -335,16 +341,24 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	encoding = [OFString nativeOSEncoding];
 
-	_programName = [[OFString alloc] initWithCString: (*argv)[0]
-						encoding: encoding];
-	arguments = [[OFMutableArray alloc] init];
+# ifdef OF_NINTENDO_DS
+	if (__system_argv->argvMagic == ARGV_MAGIC &&
+	    __system_argv->argc >= 1) {
+# endif
+		_programName = [[OFString alloc] initWithCString: (*argv)[0]
+							encoding: encoding];
+		arguments = [[OFMutableArray alloc] init];
+		_arguments = arguments;
 
-	for (i = 1; i < *argc; i++)
-		[arguments addObject: [OFString stringWithCString: (*argv)[i]
-							 encoding: encoding]];
+		for (i = 1; i < *argc; i++)
+			[arguments addObject:
+			    [OFString stringWithCString: (*argv)[i]
+					       encoding: encoding]];
 
-	[arguments makeImmutable];
-	_arguments = arguments;
+		[arguments makeImmutable];
+# ifdef OF_NINTENDO_DS
+	}
+# endif
 
 	objc_autoreleasePoolPop(pool);
 #else

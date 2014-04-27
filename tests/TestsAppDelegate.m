@@ -44,6 +44,12 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef asm
 #endif
 
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+#endif
+
 enum {
 	NO_COLOR,
 	RED,
@@ -119,7 +125,11 @@ main(int argc, char *argv[])
 		sceKernelStartThread(tid, 0, 0);
 #endif
 
-#if defined(__wii__) || defined(_PSP)
+#ifdef OF_NINTENDO_DS
+	consoleDemoInit();
+#endif
+
+#if defined(__wii__) || defined(_PSP) || defined(OF_NINTENDO_DS)
 	@try {
 		return of_application_main(&argc, &argv,
 		    [TestsAppDelegate class]);
@@ -139,7 +149,6 @@ main(int argc, char *argv[])
 # if defined(__wii__)
 		[delegate outputString: @"Press home button to exit!\n"
 			       inColor: NO_COLOR];
-
 		for (;;) {
 			WPAD_ScanPads();
 
@@ -150,6 +159,15 @@ main(int argc, char *argv[])
 		}
 # elif defined(_PSP)
 		sceKernelSleepThreadCB();
+# elif defined(OF_NINTENDO_DS)
+		[delegate outputString: @"Press start button to exit!"
+			       inColor: NO_COLOR];
+		for (;;) {
+			swiWaitForVBlank();
+			scanKeys();
+			if (keysDown() & KEY_START)
+				[OFApplication terminateWithStatus: 1];
+		}
 # else
 		abort();
 # endif
@@ -192,7 +210,7 @@ main(int argc, char *argv[])
 	switch (color) {
 	case NO_COLOR:
 		[of_stdout writeString: @"\r\033[K"];
-# ifdef __wii__
+# if defined(__wii__) || defined(OF_NINTENDO_DS)
 		[of_stdout writeString: @"\033[37m"];
 # endif
 		break;
@@ -285,6 +303,16 @@ main(int argc, char *argv[])
 		}
 	}
 # endif
+# ifdef OF_NINTENDO_DS
+	[self outputString: @"Press A to continue!"
+		   inColor: NO_COLOR];
+	for (;;) {
+		swiWaitForVBlank();
+		scanKeys();
+		if (keysDown() & KEY_A)
+			break;
+	}
+# endif
 #else
 	[self outputString: @"failed\n"
 		   inColor: RED];
@@ -357,6 +385,15 @@ main(int argc, char *argv[])
 							_fails]
 		   inColor: NO_COLOR];
 	sceKernelSleepThreadCB();
+#elif defined(OF_NINTENDO_DS)
+	[self outputString: @"Press start button to exit!"
+		   inColor: NO_COLOR];
+	for (;;) {
+		swiWaitForVBlank();
+		scanKeys();
+		if (keysDown() & KEY_START)
+			[OFApplication terminateWithStatus: _fails];
+	}
 #else
 	[OFApplication terminateWithStatus: _fails];
 #endif

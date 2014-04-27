@@ -50,6 +50,12 @@
 # include <windows.h>
 #endif
 
+#ifdef OF_NINTENDO_DS
+# define asm __asm__
+# include <nds.h>
+# undef asm
+#endif
+
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
@@ -195,6 +201,15 @@ setThreadName(OFThread *thread)
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
+#elif defined(OF_NINTENDO_DS)
+	uint64_t counter;
+
+	if (timeInterval > UINT64_MAX / 60)
+		@throw [OFOutOfRangeException exception];
+
+	counter = timeInterval * 60;
+	while (counter--)
+		swiWaitForVBlank();
 #else
 	if (timeInterval > UINT_MAX)
 		@throw [OFOutOfRangeException exception];

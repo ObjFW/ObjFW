@@ -85,6 +85,16 @@ NetBSD
   * Runtimes: ObjFW
 
 
+Nintendo DS
+-----------
+
+  * Architectures: ARM (EABI)
+  * Compilers: GCC 4.8.2 (devkitARM release 42)
+  * Runtimes: ObjFW
+  * Limitations: No threads, no sockets
+  * Note: File support requires an argv-compatible launcher (such as HBMenu)
+
+
 OpenBSD
 -------
 

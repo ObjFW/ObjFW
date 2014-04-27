@@ -108,10 +108,15 @@ static OFString *module = @"OFINIFile";
 
 	module = @"OFINIFile";
 
+	/* FIXME: Find a way to write files on Nintendo DS */
+#ifndef OF_NINTENDO_DS
 	TEST(@"-[writeToFile:]", R([file writeToFile: @"tmpfile.ini"]) &&
 	    [[OFString stringWithContentsOfFile: @"tmpfile.ini"]
 	    isEqual: output])
 	[OFFile removeItemAtPath: @"tmpfile.ini"];
+#else
+	(void)output;
+#endif
 
 	[pool drain];
 }
