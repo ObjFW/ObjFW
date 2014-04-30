@@ -484,7 +484,18 @@ AC_CHECK_FUNC(arc4random, [
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 AC_CHECK_HEADERS(dlfcn.h)
-AC_CHECK_FUNCS(dladdr)
+case "$host_os" in
+	netbsd*)
+		dnl dladdr exists on NetBSD, but it is completely broken.
+		dnl When using it with code that uses __thread, it freezes the
+		dnl process so that it has to be killed using SIGKILL.
+		dnl When disabling __thread, it doesn't freeze, but all symbols
+		dnl are wrong.
+		;;
+	*)
+		AC_CHECK_FUNCS(dladdr)
+		;;
+esac
 
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
