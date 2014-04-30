@@ -80,7 +80,7 @@ NetBSD
 ------
 
   * OS Versions: 5.1-6.1
-  * Architectures: x86, x86_64
+  * Architectures: SPARC, x86, x86_64
   * Compilers: Clang 3.0-3.2, GCC 4.1.3 & 4.5.3
   * Runtimes: ObjFW
 
