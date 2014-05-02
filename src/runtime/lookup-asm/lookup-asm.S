@@ -28,7 +28,7 @@
 # elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
 	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
 #  include "lookup-asm-mips-elf.S"
-# elif defined(__sparc__)
+# elif defined(__sparc__) && !defined(__arch64__)
 #  include "lookup-asm-sparc-elf.S"
 # endif
 #elif defined(__MACH__)
