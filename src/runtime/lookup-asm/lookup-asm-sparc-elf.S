@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014
+ *   Jonathan Schleifer <js@webkeks.org>
+ *
+ * All rights reserved.
+ *
+ * This file is part of ObjFW. It may be distributed under the terms of the
+ * Q Public License 1.0, which can be found in the file LICENSE.QPL included in
+ * the packaging of this file.
+ *
+ * Alternatively, it may be distributed under the terms of the GNU General
+ * Public License, either version 2 or 3, which can be found in the file
+ * LICENSE.GPLv2 or LICENSE.GPLv3 respectively included in the packaging of this
+ * file.
+ */
+
+#include "config.h"
+
+.globl objc_msg_lookup
+.globl objc_msg_lookup_stret
+.globl objc_msg_lookup_super
+.globl objc_msg_lookup_super_stret
+
+.section .text
+.macro generate_lookup name not_found
+\name:
+	cmp	%o0, 0
+	beq,a	ret_nil
+	 nop
+
+	ld	[%o0], %o2
+	ld	[%o2 + 32], %o2
+
+.Lmain_\name:
+#ifdef OF_SELUID24
+	ldub	[%o1 + 1], %o3
+#endif
+	ldub	[%o1 + 2], %o4
+	ldub	[%o1 + 3], %o5
+
+#ifdef OF_SELUID24
+	sll	%o3, 2, %o3
+#endif
+	sll	%o4, 2, %o4
+	sll	%o5, 2, %o5
+
+#ifdef OF_SELUID24
+	ld	[%o2 + %o3], %o2
+#endif
+	ld	[%o2 + %o4], %o2
+	ld	[%o2 + %o5], %o2
+
+	cmp	%o2, 0
+	beq,a	\not_found
+	 nop
+
+	retl
+	 mov	%o2, %o0
+.type \name, %function
+.size \name, .-\name
+.endm
+
+.macro generate_lookup_super name lookup
+\name:
+	ld	[%o0], %o2
+	cmp	%o2, 0
+	beq	ret_nil
+	 nop
+
+	ld	[%o0 + 4], %o2
+	ba	.Lmain_\lookup
+	 ld	[%o2 + 32], %o2
+.type \name, %function
+.size \name, .-\name
+.endm
+
+generate_lookup objc_msg_lookup objc_method_not_found
+generate_lookup objc_msg_lookup_stret objc_method_not_found_stret
+generate_lookup_super objc_msg_lookup_super objc_msg_lookup
+generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
+
+ret_nil:
+#ifdef PIC
+	save
+
+	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %l7
+	call	get_pc
+	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
+
+	sethi	%hi(nil_method), %i0
+	or	%i0, %lo(nil_method), %i0
+	ld	[%l7 + %i0], %i0
+
+	ret
+	 restore
+#else
+	sethi	%hi(nil_method), %o0
+	retl
+	 or	%o0, %lo(nil_method), %o0
+#endif
+
+nil_method:
+	retl
+	 set	0, %o0
+
+#ifdef PIC
+get_pc:
+	retl
+	 add	%o7, %l7, %l7
+#endif
+
+#ifdef __linux__
+.section .note.GNU-stack, "", %progbits
+#endif

@@ -182,7 +182,7 @@ objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
 #if defined(__ELF__)
 # if defined(__x86_64__) || defined(__amd64__) || defined(__i386__) || \
 	defined(__ppc__) || defined(__PPC__) || defined(__arm__) || \
-	defined(__ARM__)
+	defined(__ARM__) || defined(__sparc__)
 #  define OF_ASM_LOOKUP
 # endif
 # if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
