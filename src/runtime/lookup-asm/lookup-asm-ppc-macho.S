@@ -33,9 +33,9 @@ $0:
 Lmain_$0:
 	lwz	r8, 0(r4)
 #ifdef OF_SELUID24
-	rlwinm	r6, r8, -14, 0x3FC
+	rlwinm	r6, r8, 18, 0x3FC
 #endif
-	rlwinm	r7, r8, -6, 0x3FC
+	rlwinm	r7, r8, 26, 0x3FC
 	rlwinm	r8, r8, 2, 0x3FC
 
 #ifdef OF_SELUID24
