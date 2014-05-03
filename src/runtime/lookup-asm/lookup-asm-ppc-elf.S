@@ -31,17 +31,12 @@
 	lwz	%r5, 32(%r5)
 
 .Lmain_\name:
+	lwz	%r8, 0(%r4)
 #ifdef OF_SELUID24
-	lbz	%r6, 1(%r4)
+	rlwinm	%r6, %r8, -14, 0x3FC
 #endif
-	lbz	%r7, 2(%r4)
-	lbz	%r8, 3(%r4)
-
-#ifdef OF_SELUID24
-	slwi	%r6, %r6, 2
-#endif
-	slwi	%r7, %r7, 2
-	slwi	%r8, %r8, 2
+	rlwinm	%r7, %r8, -6, 0x3FC
+	rlwinm	%r8, %r8, 2, 0x3FC
 
 #ifdef OF_SELUID24
 	lwzx	%r5, %r5, %r6
