@@ -246,14 +246,6 @@
 - (OFArray*)children;
 
 /*!
- * @brief Removes all children and sets the string value to the specified
- *	  string.
- *
- * @param stringValue The new string value for the element
- */
-- (void)setStringValue: (OFString*)stringValue;
-
-/*!
  * @brief Adds the specified attribute.
  *
  * If an attribute with the same name and namespace already exists, it is not

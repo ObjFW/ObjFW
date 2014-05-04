@@ -117,7 +117,14 @@
 
 - (OFString*)stringValue
 {
-	OF_GETTER(_stringValue, true)
+	return [[_stringValue copy] autorelease];
+}
+
+- (void)setStringValue: (OFString*)stringValue
+{
+	OFString *old = _stringValue;
+	_stringValue = [stringValue copy];
+	[old release];
 }
 
 - (bool)isEqual: (id)object

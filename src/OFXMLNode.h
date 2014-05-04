@@ -31,6 +31,16 @@
 - (OFString*)stringValue;
 
 /*!
+ * @brief Sets the string value of the receiver to the specified string.
+ *
+ * For an @ref OFXMLElement, it removes all children and creates a single child
+ * with the specified string value.
+ *
+ * @param stringValue The new string value for the node
+ */
+- (void)setStringValue: (OFString*)stringValue;
+
+/*!
  * @brief Returns the contents of the receiver as a decimal value.
  *
  * @return An integer with the decimal value

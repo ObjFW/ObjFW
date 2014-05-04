@@ -32,6 +32,11 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
+- (void)setStringValue: (OFString*)stringValue
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (intmax_t)decimalValue
 {
 	return [[self stringValue] decimalValue];

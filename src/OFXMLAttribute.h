@@ -36,7 +36,6 @@
 # else
 @property (readonly, copy) OFString *namespace;
 # endif
-@property (readonly, copy) OFString *stringValue;
 #endif
 
 /*!

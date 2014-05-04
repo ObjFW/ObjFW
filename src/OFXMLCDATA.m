@@ -95,6 +95,13 @@
 	return [[_CDATA copy] autorelease];
 }
 
+- (void)setStringValue: (OFString*)stringValue
+{
+	OFString *old = _CDATA;
+	_CDATA = [stringValue copy];
+	[old release];
+}
+
 - (OFString*)XMLString
 {
 	/* FIXME: What to do about ]]>? */

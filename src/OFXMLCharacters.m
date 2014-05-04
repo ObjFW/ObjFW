@@ -95,6 +95,13 @@
 	return [[_characters copy] autorelease];
 }
 
+- (void)setStringValue: (OFString*)stringValue
+{
+	OFString *old = _characters;
+	_characters = [stringValue copy];
+	[old release];
+}
+
 - (OFString*)XMLString
 {
 	return [_characters stringByXMLEscaping];
