@@ -29,7 +29,7 @@
 #endif
 
 static OF_INLINE int
-of_atomic_add_int(volatile int *p, int i)
+of_atomic_int_add(volatile int *p, int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
@@ -61,12 +61,12 @@ of_atomic_add_int(volatile int *p, int i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(i, p);
 #else
-# error of_atomic_add_int not implemented!
+# error of_atomic_int_add not implemented!
 #endif
 }
 
 static OF_INLINE int32_t
-of_atomic_add_32(volatile int32_t *p, int32_t i)
+of_atomic_int32_add(volatile int32_t *p, int32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
@@ -85,12 +85,12 @@ of_atomic_add_32(volatile int32_t *p, int32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(i, p);
 #else
-# error of_atomic_add_32 not implemented!
+# error of_atomic_int32_add not implemented!
 #endif
 }
 
 static OF_INLINE void*
-of_atomic_add_ptr(void* volatile *p, intptr_t i)
+of_atomic_ptr_add(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p += i);
@@ -123,12 +123,12 @@ of_atomic_add_ptr(void* volatile *p, intptr_t i)
 	return (void*)OSAtomicAdd32Barrier(i, (int32_t*)p);
 # endif
 #else
-# error of_atomic_add_ptr not implemented!
+# error of_atomic_ptr_add not implemented!
 #endif
 }
 
 static OF_INLINE int
-of_atomic_sub_int(volatile int *p, int i)
+of_atomic_int_sub(volatile int *p, int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
@@ -162,12 +162,12 @@ of_atomic_sub_int(volatile int *p, int i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(-i, p);
 #else
-# error of_atomic_sub_int not implemented!
+# error of_atomic_int_sub not implemented!
 #endif
 }
 
 static OF_INLINE int32_t
-of_atomic_sub_32(volatile int32_t *p, int32_t i)
+of_atomic_int32_sub(volatile int32_t *p, int32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
@@ -187,12 +187,12 @@ of_atomic_sub_32(volatile int32_t *p, int32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(-i, p);
 #else
-# error of_atomic_sub_32 not implemented!
+# error of_atomic_int32_sub not implemented!
 #endif
 }
 
 static OF_INLINE void*
-of_atomic_sub_ptr(void* volatile *p, intptr_t i)
+of_atomic_ptr_sub(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p -= i);
@@ -227,12 +227,12 @@ of_atomic_sub_ptr(void* volatile *p, intptr_t i)
 	return (void*)OSAtomicAdd32Barrier(-i, (int32_t*)p);
 # endif
 #else
-# error of_atomic_sub_ptr not implemented!
+# error of_atomic_ptr_sub not implemented!
 #endif
 }
 
 static OF_INLINE int
-of_atomic_inc_int(volatile int *p)
+of_atomic_int_inc(volatile int *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return ++*p;
@@ -270,12 +270,12 @@ of_atomic_inc_int(volatile int *p)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicIncrement32Barrier(p);
 #else
-# error of_atomic_inc_int not implemented!
+# error of_atomic_int_inc not implemented!
 #endif
 }
 
 static OF_INLINE int32_t
-of_atomic_inc_32(volatile int32_t *p)
+of_atomic_int32_inc(volatile int32_t *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return ++*p;
@@ -298,12 +298,12 @@ of_atomic_inc_32(volatile int32_t *p)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicIncrement32Barrier(p);
 #else
-# error of_atomic_inc_32 not implemented!
+# error of_atomic_int32_inc not implemented!
 #endif
 }
 
 static OF_INLINE int
-of_atomic_dec_int(volatile int *p)
+of_atomic_int_dec(volatile int *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return --*p;
@@ -341,12 +341,12 @@ of_atomic_dec_int(volatile int *p)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicDecrement32Barrier(p);
 #else
-# error of_atomic_dec_int not implemented!
+# error of_atomic_int_dec not implemented!
 #endif
 }
 
 static OF_INLINE int32_t
-of_atomic_dec_32(volatile int32_t *p)
+of_atomic_int32_dec(volatile int32_t *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return --*p;
@@ -369,12 +369,12 @@ of_atomic_dec_32(volatile int32_t *p)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicDecrement32Barrier(p);
 #else
-# error of_atomic_dec_32 not implemented!
+# error of_atomic_int32_dec not implemented!
 #endif
 }
 
 static OF_INLINE unsigned int
-of_atomic_or_int(volatile unsigned int *p, unsigned int i)
+of_atomic_int_or(volatile unsigned int *p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
@@ -416,12 +416,12 @@ of_atomic_or_int(volatile unsigned int *p, unsigned int i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicOr32Barrier(i, p);
 #else
-# error of_atomic_or_int not implemented!
+# error of_atomic_int_or not implemented!
 #endif
 }
 
 static OF_INLINE uint32_t
-of_atomic_or_32(volatile uint32_t *p, uint32_t i)
+of_atomic_int32_or(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
@@ -445,12 +445,12 @@ of_atomic_or_32(volatile uint32_t *p, uint32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicOr32Barrier(i, p);
 #else
-# error of_atomic_or_32 not implemented!
+# error of_atomic_int32_or not implemented!
 #endif
 }
 
 static OF_INLINE unsigned int
-of_atomic_and_int(volatile unsigned int *p, unsigned int i)
+of_atomic_int_and(volatile unsigned int *p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
@@ -492,12 +492,12 @@ of_atomic_and_int(volatile unsigned int *p, unsigned int i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAnd32Barrier(i, p);
 #else
-# error of_atomic_and_int not implemented!
+# error of_atomic_int_and not implemented!
 #endif
 }
 
 static OF_INLINE uint32_t
-of_atomic_and_32(volatile uint32_t *p, uint32_t i)
+of_atomic_int32_and(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
@@ -521,12 +521,12 @@ of_atomic_and_32(volatile uint32_t *p, uint32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAnd32Barrier(i, p);
 #else
-# error of_atomic_and_32 not implemented!
+# error of_atomic_int32_and not implemented!
 #endif
 }
 
 static OF_INLINE unsigned int
-of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
+of_atomic_int_xor(volatile unsigned int *p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
@@ -568,12 +568,12 @@ of_atomic_xor_int(volatile unsigned int *p, unsigned int i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicXor32Barrier(i, p);
 #else
-# error of_atomic_xor_int not implemented!
+# error of_atomic_int_xor not implemented!
 #endif
 }
 
 static OF_INLINE uint32_t
-of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
+of_atomic_int32_xor(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
@@ -597,12 +597,12 @@ of_atomic_xor_32(volatile uint32_t *p, uint32_t i)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicXor32Barrier(i, p);
 #else
-# error of_atomic_xor_32 not implemented!
+# error of_atomic_int32_xor not implemented!
 #endif
 }
 
 static OF_INLINE bool
-of_atomic_cmpswap_int(volatile int *p, int o, int n)
+of_atomic_int_cmpswap(volatile int *p, int o, int n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
@@ -630,12 +630,12 @@ of_atomic_cmpswap_int(volatile int *p, int o, int n)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapIntBarrier(o, n, p);
 #else
-# error of_atomic_cmpswap_int not implemented!
+# error of_atomic_int_cmpswap not implemented!
 #endif
 }
 
 static OF_INLINE bool
-of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
+of_atomic_int32_cmpswap(volatile int32_t *p, int32_t o, int32_t n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
@@ -663,12 +663,12 @@ of_atomic_cmpswap_32(volatile int32_t *p, int32_t o, int32_t n)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwap32Barrier(o, n, p);
 #else
-# error of_atomic_cmpswap_32 not implemented!
+# error of_atomic_int32_cmpswap not implemented!
 #endif
 }
 
 static OF_INLINE bool
-of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
+of_atomic_ptr_cmpswap(void* volatile *p, void *o, void *n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
@@ -696,7 +696,7 @@ of_atomic_cmpswap_ptr(void* volatile *p, void *o, void *n)
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapPtrBarrier(o, n, p);
 #else
-# error of_atomic_cmpswap_ptr not implemented!
+# error of_atomic_ptr_cmpswap not implemented!
 #endif
 }
 

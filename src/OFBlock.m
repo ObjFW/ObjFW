@@ -190,7 +190,7 @@ _Block_copy(const void *block_)
 
 	if (object_getClass((id)block) == (Class)&_NSConcreteMallocBlock) {
 #ifdef OF_HAVE_ATOMIC_OPS
-		of_atomic_inc_int(&block->flags);
+		of_atomic_int_inc(&block->flags);
 #else
 		unsigned hash = SPINLOCK_HASH(block);
 
@@ -212,7 +212,7 @@ _Block_release(const void *block_)
 		return;
 
 #ifdef OF_HAVE_ATOMIC_OPS
-	if ((of_atomic_dec_int(&block->flags) & OF_BLOCK_REFCOUNT_MASK) == 0) {
+	if ((of_atomic_int_dec(&block->flags) & OF_BLOCK_REFCOUNT_MASK) == 0) {
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
 

@@ -266,14 +266,14 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	if (!of_mutex_unlock(mutex))
 		return false;
 
-	of_atomic_inc_int(&condition->count);
+	of_atomic_int_inc(&condition->count);
 
 	if (WaitForSingleObject(condition->event, INFINITE) != WAIT_OBJECT_0) {
 		of_mutex_lock(mutex);
 		return false;
 	}
 
-	of_atomic_dec_int(&condition->count);
+	of_atomic_int_dec(&condition->count);
 
 	if (!of_mutex_lock(mutex))
 		return false;
@@ -299,7 +299,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	if (!of_mutex_unlock(mutex))
 		return false;
 
-	of_atomic_inc_int(&condition->count);
+	of_atomic_int_inc(&condition->count);
 
 	if (WaitForSingleObject(condition->event,
 	    timeout * 1000) != WAIT_OBJECT_0) {
@@ -307,7 +307,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 		return false;
 	}
 
-	of_atomic_dec_int(&condition->count);
+	of_atomic_int_dec(&condition->count);
 
 	if (!of_mutex_lock(mutex))
 		return false;
@@ -428,7 +428,7 @@ static OF_INLINE bool
 of_spinlock_trylock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	return of_atomic_cmpswap_int(spinlock, 0, 1);
+	return of_atomic_int_cmpswap(spinlock, 0, 1);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_trylock(spinlock);
 #else
@@ -469,7 +469,7 @@ static OF_INLINE bool
 of_spinlock_unlock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	return of_atomic_cmpswap_int(spinlock, 1, 0);
+	return of_atomic_int_cmpswap(spinlock, 1, 0);
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_unlock(spinlock);
 #else

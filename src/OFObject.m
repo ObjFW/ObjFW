@@ -72,11 +72,11 @@ extern struct stret of_forward_stret(id, SEL, ...);
 #endif
 
 struct pre_ivar {
-	int32_t retainCount;
-	struct pre_mem *firstMem, *lastMem;
+	int retainCount;
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 	of_spinlock_t retainCountSpinlock;
 #endif
+	struct pre_mem *firstMem, *lastMem;
 };
 
 struct pre_mem {
@@ -960,7 +960,7 @@ void _references_to_categories_of_OFObject(void)
 - retain
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	of_atomic_inc_32(&PRE_IVARS->retainCount);
+	of_atomic_int_inc(&PRE_IVARS->retainCount);
 #else
 	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
 	PRE_IVARS->retainCount++;
@@ -979,7 +979,7 @@ void _references_to_categories_of_OFObject(void)
 - (void)release
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	if (of_atomic_dec_32(&PRE_IVARS->retainCount) <= 0)
+	if (of_atomic_int_dec(&PRE_IVARS->retainCount) <= 0)
 		[self dealloc];
 #else
 	size_t c;

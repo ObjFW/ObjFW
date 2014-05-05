@@ -347,7 +347,7 @@ setThreadName(OFThread *thread)
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
-		if (!of_atomic_cmpswap_ptr((void**)&_runLoop, nil, tmp))
+		if (!of_atomic_ptr_cmpswap((void**)&_runLoop, nil, tmp))
 			[tmp release];
 	}
 # else
