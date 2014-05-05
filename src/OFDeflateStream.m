@@ -745,8 +745,7 @@ start:
 #undef CTX
 	}
 
-	/* Get rid of a warning, never reached anyway */
-	OF_ENSURE(0);
+	OF_UNREACHABLE
 }
 
 - (bool)lowlevelIsAtEndOfStream

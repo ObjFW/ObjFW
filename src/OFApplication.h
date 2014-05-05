@@ -164,14 +164,14 @@
 /*!
  * @brief Terminates the application.
  */
-+ (void)terminate;
++ (void)terminate OF_NO_RETURN;
 
 /*!
  * @brief Terminates the application with the specified status.
  *
  * @param status The status with which the application will terminate
  */
-+ (void)terminateWithStatus: (int)status;
++ (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 /*!
  * @brief Gets args and argv.

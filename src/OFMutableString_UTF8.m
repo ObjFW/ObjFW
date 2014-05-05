@@ -267,8 +267,7 @@
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't really care, as we only made it smaller */
 		}
-	} else
-		assert(0);
+	}
 }
 
 - (void)appendUTF8String: (const char*)UTF8String

@@ -93,8 +93,10 @@
 
 #if defined(__clang__) || __GCC_VERSION__ >= 406
 # define OF_SENTINEL __attribute__((sentinel))
+# define OF_NO_RETURN __attribute__((noreturn))
 #else
 # define OF_SENTINEL
+# define OF_NO_RETURN
 #endif
 
 #if __has_attribute(objc_requires_super)
@@ -946,7 +948,7 @@ OF_ROOT_CLASS
  *
  * @param selector The selector not understood by the receiver
  */
-- (void)doesNotRecognizeSelector: (SEL)selector;
+- (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
 
 /*!

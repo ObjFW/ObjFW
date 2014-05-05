@@ -238,6 +238,13 @@ setThreadName(OFThread *thread)
 + (void)terminate
 {
 	[self terminateWithObject: nil];
+
+	/*
+	 * For some reason, Clang thinks terminateWithObject: can return - even
+	 * though it is declared noreturn - and warns that terminate returns
+	 * while being declared noreturn.
+	 */
+	OF_UNREACHABLE
 }
 
 + (void)terminateWithObject: (id)object
