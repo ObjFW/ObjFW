@@ -199,7 +199,9 @@ OF_BSWAP64_CONST(uint64_t i)
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_NONCONST(uint16_t i)
 {
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if defined(OF_HAVE_BUILTIN_BSWAP16)
+	return __builtin_bswap16(i);
+#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ (
 	    "xchgb	%h0, %b0"
 	    : "=Q"(i)
@@ -227,7 +229,9 @@ OF_BSWAP16_NONCONST(uint16_t i)
 static OF_INLINE uint32_t OF_CONST_FUNC
 OF_BSWAP32_NONCONST(uint32_t i)
 {
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if defined(OF_HAVE_BUILTIN_BSWAP32)
+	return __builtin_bswap32(i);
+#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ (
 	    "bswap	%0"
 	    : "=q"(i)
@@ -257,7 +261,9 @@ OF_BSWAP32_NONCONST(uint32_t i)
 static OF_INLINE uint64_t OF_CONST_FUNC
 OF_BSWAP64_NONCONST(uint64_t i)
 {
-#if defined(OF_X86_64_ASM)
+#if defined(OF_HAVE_BUILTIN_BSWAP64)
+	return __builtin_bswap64(i);
+#elif defined(OF_X86_64_ASM)
 	__asm__ (
 	    "bswap	%0"
 	    : "=r"(i)

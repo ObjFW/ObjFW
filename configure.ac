@@ -795,6 +795,28 @@ AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
 	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
 ])
 
+AC_DEFUN([CHECK_BUILTIN_BSWAP], [
+	AC_MSG_CHECKING(for __builtin_bswap$1)
+	AC_TRY_LINK([
+		#include <stdint.h>
+		#include <stdio.h>
+		#include <inttypes.h>
+		#include <errno.h>
+	], [
+		uint$1_t i = errno;
+		printf("%" PRIu$1, __builtin_bswap$1(i));
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(OF_HAVE_BUILTIN_BSWAP$1, 1,
+			[Whether we have __builtin_bswap$1])
+	], [
+		AC_MSG_RESULT(no)
+	])
+])
+CHECK_BUILTIN_BSWAP(16)
+CHECK_BUILTIN_BSWAP(32)
+CHECK_BUILTIN_BSWAP(64)
+
 case "$host" in
 	arm-apple-darwin*)
 		have_processes="no"
