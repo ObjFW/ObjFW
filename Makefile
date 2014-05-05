@@ -1,6 +1,6 @@
 include extra.mk
 
-SUBDIRS = src utils ${TESTS}
+SUBDIRS = src utils tests
 DISTCLEAN = Info.plist		\
 	    aclocal.m4		\
 	    autom4te.cache	\
@@ -12,7 +12,7 @@ DISTCLEAN = Info.plist		\
 
 include buildsys.mk
 
-utils ${TESTS}: src
+utils tests: src
 
 tarball:
 	echo "Generating tarball for version ${PACKAGE_VERSION}..."

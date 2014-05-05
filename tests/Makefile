@@ -44,8 +44,12 @@ SRCS_THREADS = OFThreadTests.m
 IOS_USER ?= mobile
 IOS_TMP ?= /tmp/objfw-test
 
+include ../buildsys.mk
+
+post-all: ${RUN_TESTS}
+
 .PHONY: run run-on-ios run-on-android sign-for-ios
-run: all
+run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.dylib
@@ -112,6 +116,8 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
+${PROG_NOINST}: ${LIBOBJFW_DEP}
+
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
 
@@ -121,10 +127,6 @@ ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
 	cp testfile.bin testfile.txt testfile.ini serialization.xml nds-data
 	ndstool -c $@ -9 $< -d nds-data
 	rm -fr nds-data
-
-include ../buildsys.mk
-
-${PROG_NOINST}: ${LIBOBJFW_DEP}
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 LIBS := -L../src -lobjfw ${TESTS_LIBS} ${LIBS}

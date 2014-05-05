@@ -947,7 +947,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 			AC_CHECK_PROG(WINE, wine, wine)
 
 			AS_IF([test x"$WINE" != x""], [
-				AC_SUBST(TESTS, "tests")
+				AC_SUBST(RUN_TESTS, "run")
 				AC_SUBST(TEST_LAUNCHER, "$WINE")
 			])
 			;;
@@ -960,12 +960,12 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 		AC_CHECK_PROG(wiiload, wiiload, wiiload)
 
 		AS_IF([test x"$wiiload" != x""], [
-			AC_SUBST(TESTS, "tests")
+			AC_SUBST(RUN_TESTS, "run")
 			AC_SUBST(TEST_LAUNCHER, "$wiiload")
 		])
 	])
 ], [
-	AC_SUBST(TESTS, "tests")
+	AC_SUBST(RUN_TESTS, "run")
 ])
 
 dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
