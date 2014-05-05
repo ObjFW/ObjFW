@@ -585,19 +585,6 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 	atomic_ops="none"
 
-	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)
-	AC_EGREP_CPP(yes, [
-		#if defined(__GNUC__) && (defined(__i386__) || \
-			defined(__x86_64__) || defined(__amd64__))
-		yes
-		#endif
-	], [
-		AC_MSG_RESULT(yes)
-		atomic_ops="assembly implementation"
-	], [
-		AC_MSG_RESULT(no)
-	])
-
 	AC_MSG_CHECKING(whether __sync_* works)
 	AC_TRY_LINK([#include <stdint.h>], [
 		int32_t i, j;
@@ -606,9 +593,23 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		while (!__sync_bool_compare_and_swap(&i, 0, 1));
 	], [
 		AC_MSG_RESULT(yes)
-		test x"$atomic_ops" = x"none" && atomic_ops="gcc builtins"
+		atomic_ops="gcc builtins"
 		AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
 			[Whether gcc atomic operations are available])
+	], [
+		AC_MSG_RESULT(no)
+	])
+
+	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)
+	AC_EGREP_CPP(yes, [
+		#if defined(__GNUC__) && (defined(__i386__) || \
+			defined(__x86_64__) || defined(__amd64__))
+		yes
+		#endif
+	], [
+		AC_MSG_RESULT(yes)
+		test x"$atomic_ops" = x"none" && \
+			atomic_ops="assembly implementation"
 	], [
 		AC_MSG_RESULT(no)
 	])

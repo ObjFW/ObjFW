@@ -33,6 +33,8 @@ of_atomic_int_add(volatile int *p, int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_add_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	if (sizeof(int) == 4)
 		__asm__ __volatile__ (
@@ -56,8 +58,6 @@ of_atomic_int_add(volatile int *p, int i)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_add_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(i, p);
 #else
@@ -70,6 +70,8 @@ of_atomic_int32_add(volatile int32_t *p, int32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_add_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "lock\n\t"
@@ -80,8 +82,6 @@ of_atomic_int32_add(volatile int32_t *p, int32_t i)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_add_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(i, p);
 #else
@@ -94,6 +94,8 @@ of_atomic_ptr_add(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p += i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_add_and_fetch(p, (void*)i);
 #elif defined(OF_X86_64_ASM)
 	__asm__ __volatile__ (
 	    "lock\n\t"
@@ -114,8 +116,6 @@ of_atomic_ptr_add(void* volatile *p, intptr_t i)
 	);
 
 	return (void*)i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_add_and_fetch(p, (void*)i);
 #elif defined(OF_HAVE_OSATOMIC)
 # ifdef __LP64__
 	return (void*)OSAtomicAdd64Barrier(i, (int64_t*)p);
@@ -132,6 +132,8 @@ of_atomic_int_sub(volatile int *p, int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_sub_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	if (sizeof(int) == 4)
 		__asm__ __volatile__ (
@@ -157,8 +159,6 @@ of_atomic_int_sub(volatile int *p, int i)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_sub_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(-i, p);
 #else
@@ -171,6 +171,8 @@ of_atomic_int32_sub(volatile int32_t *p, int32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_sub_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "negl	%0\n\t"
@@ -182,8 +184,6 @@ of_atomic_int32_sub(volatile int32_t *p, int32_t i)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_sub_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(-i, p);
 #else
@@ -196,6 +196,8 @@ of_atomic_ptr_sub(void* volatile *p, intptr_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p -= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_sub_and_fetch(p, (void*)i);
 #elif defined(OF_X86_64_ASM)
 	__asm__ __volatile__ (
 	    "negq	%0\n\t"
@@ -218,8 +220,6 @@ of_atomic_ptr_sub(void* volatile *p, intptr_t i)
 	);
 
 	return (void*)i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_sub_and_fetch(p, (void*)i);
 #elif defined(OF_HAVE_OSATOMIC)
 # ifdef __LP64__
 	return (void*)OSAtomicAdd64Barrier(-i, (int64_t*)p);
@@ -236,6 +236,8 @@ of_atomic_int_inc(volatile int *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return ++*p;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	int i;
 
@@ -265,8 +267,6 @@ of_atomic_int_inc(volatile int *p)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicIncrement32Barrier(p);
 #else
@@ -279,6 +279,8 @@ of_atomic_int32_inc(volatile int32_t *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return ++*p;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	uint32_t i;
 
@@ -293,8 +295,6 @@ of_atomic_int32_inc(volatile int32_t *p)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicIncrement32Barrier(p);
 #else
@@ -307,6 +307,8 @@ of_atomic_int_dec(volatile int *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return --*p;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	int i;
 
@@ -336,8 +338,6 @@ of_atomic_int_dec(volatile int *p)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicDecrement32Barrier(p);
 #else
@@ -350,6 +350,8 @@ of_atomic_int32_dec(volatile int32_t *p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return --*p;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	uint32_t i;
 
@@ -364,8 +366,6 @@ of_atomic_int32_dec(volatile int32_t *p)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicDecrement32Barrier(p);
 #else
@@ -378,6 +378,8 @@ of_atomic_int_or(volatile unsigned int *p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_or_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	if (sizeof(int) == 4)
 		__asm__ __volatile__ (
@@ -411,8 +413,6 @@ of_atomic_int_or(volatile unsigned int *p, unsigned int i)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_or_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicOr32Barrier(i, p);
 #else
@@ -425,6 +425,8 @@ of_atomic_int32_or(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_or_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -440,8 +442,6 @@ of_atomic_int32_or(volatile uint32_t *p, uint32_t i)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_or_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicOr32Barrier(i, p);
 #else
@@ -454,6 +454,8 @@ of_atomic_int_and(volatile unsigned int *p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_and_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	if (sizeof(int) == 4)
 		__asm__ __volatile__ (
@@ -487,8 +489,6 @@ of_atomic_int_and(volatile unsigned int *p, unsigned int i)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_and_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAnd32Barrier(i, p);
 #else
@@ -501,6 +501,8 @@ of_atomic_int32_and(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_and_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -516,8 +518,6 @@ of_atomic_int32_and(volatile uint32_t *p, uint32_t i)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_and_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAnd32Barrier(i, p);
 #else
@@ -530,6 +530,8 @@ of_atomic_int_xor(volatile unsigned int *p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_xor_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	if (sizeof(int) == 4)
 		__asm__ __volatile__ (
@@ -563,8 +565,6 @@ of_atomic_int_xor(volatile unsigned int *p, unsigned int i)
 		abort();
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_xor_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicXor32Barrier(i, p);
 #else
@@ -577,6 +577,8 @@ of_atomic_int32_xor(volatile uint32_t *p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_xor_and_fetch(p, i);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
@@ -592,8 +594,6 @@ of_atomic_int32_xor(volatile uint32_t *p, uint32_t i)
 	);
 
 	return i;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_xor_and_fetch(p, i);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicXor32Barrier(i, p);
 #else
@@ -611,6 +611,8 @@ of_atomic_int_cmpswap(volatile int *p, int o, int n)
 	}
 
 	return false;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	int r;
 
@@ -625,8 +627,6 @@ of_atomic_int_cmpswap(volatile int *p, int o, int n)
 	);
 
 	return r;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapIntBarrier(o, n, p);
 #else
@@ -644,6 +644,8 @@ of_atomic_int32_cmpswap(volatile int32_t *p, int32_t o, int32_t n)
 	}
 
 	return false;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	int r;
 
@@ -658,8 +660,6 @@ of_atomic_int32_cmpswap(volatile int32_t *p, int32_t o, int32_t n)
 	);
 
 	return r;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwap32Barrier(o, n, p);
 #else
@@ -677,6 +677,8 @@ of_atomic_ptr_cmpswap(void* volatile *p, void *o, void *n)
 	}
 
 	return false;
+#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
+	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	int r;
 
@@ -691,8 +693,6 @@ of_atomic_ptr_cmpswap(void* volatile *p, void *o, void *n)
 	);
 
 	return r;
-#elif defined(OF_HAVE_GCC_ATOMIC_OPS)
-	return __sync_bool_compare_and_swap(p, o, n);
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapPtrBarrier(o, n, p);
 #else
