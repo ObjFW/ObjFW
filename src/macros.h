@@ -60,7 +60,7 @@
 # ifdef __BIGGEST_ALIGNMENT__
 #  define OF_BIGGEST_ALIGNMENT __BIGGEST_ALIGNMENT__
 # else
-#  /* Hopefully no arch needs more than 16 bytes padding */
+#  /* Hopefully no arch needs more than 16 byte alignment */
 #  define OF_BIGGEST_ALIGNMENT 16
 # endif
 #endif
@@ -390,7 +390,7 @@ OF_BSWAP_DOUBLE(double d)
 		OF_HASH_ADD(hash, otherCopy & 0xFF);		\
 	}
 
-static OF_INLINE of_range_t
+static OF_INLINE of_range_t OF_CONST_FUNC
 of_range(size_t start, size_t length)
 {
 	of_range_t range = { start, length };
@@ -398,7 +398,7 @@ of_range(size_t start, size_t length)
 	return range;
 }
 
-static OF_INLINE of_point_t
+static OF_INLINE of_point_t OF_CONST_FUNC
 of_point(float x, float y)
 {
 	of_point_t point = { x, y };
@@ -406,7 +406,7 @@ of_point(float x, float y)
 	return point;
 }
 
-static OF_INLINE of_dimension_t
+static OF_INLINE of_dimension_t OF_CONST_FUNC
 of_dimension(float width, float height)
 {
 	of_dimension_t dimension = { width, height };
@@ -414,7 +414,7 @@ of_dimension(float width, float height)
 	return dimension;
 }
 
-static OF_INLINE of_rectangle_t
+static OF_INLINE of_rectangle_t OF_CONST_FUNC
 of_rectangle(float x, float y, float width, float height)
 {
 	of_rectangle_t rectangle = {
