@@ -282,7 +282,7 @@ of_atomic_int32_inc(volatile int32_t *p)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_add_and_fetch(p, 1);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
-	uint32_t i;
+	int32_t i;
 
 	__asm__ __volatile__ (
 	    "xorl	%0, %0\n\t"
@@ -353,7 +353,7 @@ of_atomic_int32_dec(volatile int32_t *p)
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	return __sync_sub_and_fetch(p, 1);
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
-	uint32_t i;
+	int32_t i;
 
 	__asm__ __volatile__ (
 	    "xorl	%0, %0\n\t"
@@ -389,7 +389,7 @@ of_atomic_int_or(volatile unsigned int *p, unsigned int i)
 		    "orl	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
-		    "jne	0\n\t"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
@@ -403,7 +403,7 @@ of_atomic_int_or(volatile unsigned int *p, unsigned int i)
 		    "orq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
-		    "jne	0\n\t"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "rax", "cc"
@@ -435,7 +435,7 @@ of_atomic_int32_or(volatile uint32_t *p, uint32_t i)
 	    "orl	%1, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%0, %2\n\t"
-	    "jne	0\n\t"
+	    "jne	0b"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
@@ -465,7 +465,7 @@ of_atomic_int_and(volatile unsigned int *p, unsigned int i)
 		    "andl	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
-		    "jne	0\n\t"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
@@ -479,7 +479,7 @@ of_atomic_int_and(volatile unsigned int *p, unsigned int i)
 		    "andq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
-		    "jne	0\n\t"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "rax", "cc"
@@ -511,7 +511,7 @@ of_atomic_int32_and(volatile uint32_t *p, uint32_t i)
 	    "andl	%1, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchg	%0, %2\n\t"
-	    "jne	0\n\t"
+	    "jne	0b"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
@@ -541,7 +541,7 @@ of_atomic_int_xor(volatile unsigned int *p, unsigned int i)
 		    "xorl	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
-		    "jne	0\n\t"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "eax", "cc"
@@ -555,7 +555,7 @@ of_atomic_int_xor(volatile unsigned int *p, unsigned int i)
 		    "xorq	%1, %0\n\t"
 		    "lock\n\t"
 		    "cmpxchg	%0, %2\n\t"
-		    "jne	0\n\t"
+		    "jne	0b"
 		    : "=&r"(i)
 		    : "r"(i), "m"(*p)
 		    : "rax", "cc"
@@ -587,7 +587,7 @@ of_atomic_int32_xor(volatile uint32_t *p, uint32_t i)
 	    "xorl	%1, %0\n\t"
 	    "lock\n\t"
 	    "cmpxchgl	%0, %2\n\t"
-	    "jne	0\n\t"
+	    "jne	0b"
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
@@ -621,7 +621,7 @@ of_atomic_int_cmpswap(volatile int *p, int o, int n)
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&d"(r), "+a"(o)	/* use d instead of r due to gcc bug */
+	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
 	    : "r"(n), "m"(*p)
 	    : "cc"
 	);
@@ -654,7 +654,7 @@ of_atomic_int32_cmpswap(volatile int32_t *p, int32_t o, int32_t n)
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&d"(r), "+a"(o)	/* use d instead of r due to gcc bug */
+	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
 	    : "r"(n), "m"(*p)
 	    : "cc"
 	);
@@ -687,7 +687,7 @@ of_atomic_ptr_cmpswap(void* volatile *p, void *o, void *n)
 	    "cmpxchg	%2, %3\n\t"
 	    "sete	%b0\n\t"
 	    "movzbl	%b0, %0"
-	    : "=&d"(r), "+a"(o)	/* use d instead of r due to gcc bug */
+	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
 	    : "r"(n), "m"(*p)
 	    : "cc"
 	);
