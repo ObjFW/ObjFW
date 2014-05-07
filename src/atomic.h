@@ -58,6 +58,18 @@ of_atomic_int_add(volatile int *p, int i)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "add	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(i, p);
 #else
@@ -79,6 +91,18 @@ of_atomic_int32_add(volatile int32_t *p, int32_t i)
 	    "addl	%1, %0"
 	    : "+&r"(i)
 	    : "r"(i), "m"(*p)
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "add	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return i;
@@ -113,6 +137,18 @@ of_atomic_ptr_add(void* volatile *p, intptr_t i)
 	    "addl	%1, %0"
 	    : "+&r"(i)
 	    : "r"(i), "m"(*p)
+	);
+
+	return (void*)i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "add	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return (void*)i;
@@ -159,6 +195,18 @@ of_atomic_int_sub(volatile int *p, int i)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "sub	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAdd32Barrier(-i, p);
 #else
@@ -181,6 +229,18 @@ of_atomic_int32_sub(volatile int32_t *p, int32_t i)
 	    "subl	%1, %0"
 	    : "+&r"(i)
 	    : "r"(i), "m"(*p)
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "sub	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return i;
@@ -217,6 +277,18 @@ of_atomic_ptr_sub(void* volatile *p, intptr_t i)
 	    "subl	%1, %0"
 	    : "+&r"(i)
 	    : "r"(i), "m"(*p)
+	);
+
+	return (void*)i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "sub	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return (void*)i;
@@ -267,6 +339,20 @@ of_atomic_int_inc(volatile int *p)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	int i;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %1\n\t"
+	    "addi	%0, %0, 1\n\t"
+	    "stwcx.	%0, 0, %1\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicIncrement32Barrier(p);
 #else
@@ -292,6 +378,20 @@ of_atomic_int32_inc(volatile int32_t *p)
 	    "incl	%0"
 	    : "=&r"(i)
 	    : "m"(*p)
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	int32_t i;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %1\n\t"
+	    "addi	%0, %0, 1\n\t"
+	    "stwcx.	%0, 0, %1\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(p)
 	);
 
 	return i;
@@ -338,6 +438,20 @@ of_atomic_int_dec(volatile int *p)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	int i;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %1\n\t"
+	    "subi	%0, %0, 1\n\t"
+	    "stwcx.	%0, 0, %1\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicDecrement32Barrier(p);
 #else
@@ -363,6 +477,20 @@ of_atomic_int32_dec(volatile int32_t *p)
 	    "decl	%0"
 	    : "=&r"(i)
 	    : "m"(*p)
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	int32_t i;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %1\n\t"
+	    "subi	%0, %0, 1\n\t"
+	    "stwcx.	%0, 0, %1\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(p)
 	);
 
 	return i;
@@ -413,6 +541,18 @@ of_atomic_int_or(volatile unsigned int *p, unsigned int i)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "or		%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicOr32Barrier(i, p);
 #else
@@ -439,6 +579,18 @@ of_atomic_int32_or(volatile uint32_t *p, uint32_t i)
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "or		%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return i;
@@ -489,6 +641,18 @@ of_atomic_int_and(volatile unsigned int *p, unsigned int i)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "and	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicAnd32Barrier(i, p);
 #else
@@ -515,6 +679,18 @@ of_atomic_int32_and(volatile uint32_t *p, uint32_t i)
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "and	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return i;
@@ -565,6 +741,18 @@ of_atomic_int_xor(volatile unsigned int *p, unsigned int i)
 		abort();
 
 	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "xor	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
+	);
+
+	return i;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicXor32Barrier(i, p);
 #else
@@ -591,6 +779,18 @@ of_atomic_int32_xor(volatile uint32_t *p, uint32_t i)
 	    : "=&r"(i)
 	    : "r"(i), "m"(*p)
 	    : "eax", "cc"
+	);
+
+	return i;
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %2\n\t"
+	    "xor	%0, %0, %1\n\t"
+	    "stwcx.	%0, 0, %2\n\t"
+	    "bne-	0b"
+	    : "=&r"(i)
+	    : "r"(i), "r"(p)
 	);
 
 	return i;
@@ -623,6 +823,28 @@ of_atomic_int_cmpswap(volatile int *p, int o, int n)
 	    "movzbl	%b0, %0"
 	    : "=&d"(r), "+a"(o)	/* use d instead of r to avoid a gcc bug */
 	    : "r"(n), "m"(*p)
+	    : "cc"
+	);
+
+	return r;
+#elif defined(OF_PPC_ASM)
+	int r;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %3\n\t"
+	    "cmpw	%0, %1\n\t"
+	    "bne	1f\n\t"
+	    "stwcx.	%2, 0, %3\n\t"
+	    "bne-	0b\n\t"
+	    "li		%0, 1\n\t"
+	    "b		2f\n\t"
+	    "1:\n\t"
+	    "stwcx.	%0, 0, %3\n\t"
+	    "li		%0, 0\n\t"
+	    "2:"
+	    : "=&r"(r)
+	    : "r"(o), "r"(n), "r"(p)
 	    : "cc"
 	);
 
@@ -660,6 +882,28 @@ of_atomic_int32_cmpswap(volatile int32_t *p, int32_t o, int32_t n)
 	);
 
 	return r;
+#elif defined(OF_PPC_ASM)
+	int r;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %3\n\t"
+	    "cmpw	%0, %1\n\t"
+	    "bne	1f\n\t"
+	    "stwcx.	%2, 0, %3\n\t"
+	    "bne-	0b\n\t"
+	    "li		%0, 1\n\t"
+	    "b		2f\n\t"
+	    "1:\n\t"
+	    "stwcx.	%0, 0, %3\n\t"
+	    "li		%0, 0\n\t"
+	    "2:"
+	    : "=&r"(r)
+	    : "r"(o), "r"(n), "r"(p)
+	    : "cc"
+	);
+
+	return r;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwap32Barrier(o, n, p);
 #else
@@ -693,6 +937,28 @@ of_atomic_ptr_cmpswap(void* volatile *p, void *o, void *n)
 	);
 
 	return r;
+#elif defined(OF_PPC_ASM)
+	int r;
+
+	__asm__ __volatile__ (
+	    "0:\n\t"
+	    "lwarx	%0, 0, %3\n\t"
+	    "cmpw	%0, %1\n\t"
+	    "bne	1f\n\t"
+	    "stwcx.	%2, 0, %3\n\t"
+	    "bne-	0b\n\t"
+	    "li		%0, 1\n\t"
+	    "b		2f\n\t"
+	    "1:\n\t"
+	    "stwcx.	%0, 0, %3\n\t"
+	    "li		%0, 0\n\t"
+	    "2:"
+	    : "=&r"(r)
+	    : "r"(o), "r"(n), "r"(p)
+	    : "cc"
+	);
+
+	return r;
 #elif defined(OF_HAVE_OSATOMIC)
 	return OSAtomicCompareAndSwapPtrBarrier(o, n, p);
 #else
@@ -707,6 +973,10 @@ of_memory_barrier(void)
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "mfence"
+	);
+#elif defined(OF_PPC_ASM)
+	__asm__ __volatile__ (
+	    "sync"
 	);
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	__sync_synchronize();
