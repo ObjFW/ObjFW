@@ -914,5 +914,5 @@ typedef enum {
 
 #ifndef NSINTEGER_DEFINED
 /* Required for number literals to work */
-@compatibility_alias NSNumber OFNumber;
+# define NSNumber OFNumber
 #endif

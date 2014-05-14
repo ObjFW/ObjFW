@@ -444,5 +444,5 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 
 #ifndef NSINTEGER_DEFINED
 /* Required for array literals to work */
-@compatibility_alias NSArray OFArray;
+# define NSArray OFArray
 #endif
