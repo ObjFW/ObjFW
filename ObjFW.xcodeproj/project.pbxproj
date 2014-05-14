@@ -2130,9 +2130,12 @@
 					"-Wall",
 					"-Werror",
 					"-Wshorten-64-to-32",
+					"-Wsemicolon-before-method-body",
+					"-Wobjc-property-synthesis",
 					"-Wwrite-strings",
-					"-Wcast-align",
 					"-Wpointer-arith",
+					"-Wcast-align",
+					"-Wdocumentation",
 				);
 			};
 			name = Debug;
@@ -2154,9 +2157,12 @@
 					"-Wall",
 					"-Werror",
 					"-Wshorten-64-to-32",
+					"-Wsemicolon-before-method-body",
+					"-Wobjc-property-synthesis",
 					"-Wwrite-strings",
-					"-Wcast-align",
 					"-Wpointer-arith",
+					"-Wcast-align",
+					"-Wdocumentation",
 				);
 			};
 			name = Release;
