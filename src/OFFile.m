@@ -16,6 +16,10 @@
 
 #define _POSIX_C_SOURCE 200112L
 #define _XOPEN_SOURCE 600
+#define _BSD_SOURCE
+#define _NETBSD_SOURCE
+#define _DARWIN_C_SOURCE
+#define __BSD_VISIBLE 1
 #define __NO_EXT_QNX
 
 #include "config.h"
@@ -93,6 +97,9 @@
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif
+#ifndef O_EXLOCK
+# define O_EXLOCK 0
+#endif
 
 #ifndef S_IRGRP
 # define S_IRGRP 0
@@ -144,26 +151,32 @@ parseMode(const char *mode)
 {
 	if (strcmp(mode, "r") == 0)
 		return O_RDONLY;
-	if (strcmp(mode, "rb") == 0)
-		return O_RDONLY | O_BINARY;
-	if (strcmp(mode, "r+") == 0)
-		return O_RDWR;
-	if (strcmp(mode, "rb+") == 0 || strcmp(mode, "r+b") == 0)
-		return O_RDWR | O_BINARY;
 	if (strcmp(mode, "w") == 0)
 		return O_WRONLY | O_CREAT | O_TRUNC;
-	if (strcmp(mode, "wb") == 0)
-		return O_WRONLY | O_CREAT | O_TRUNC | O_BINARY;
-	if (strcmp(mode, "w+") == 0)
-		return O_RDWR | O_CREAT | O_TRUNC;
-	if (strcmp(mode, "wb+") == 0 || strcmp(mode, "w+b") == 0)
-		return O_RDWR | O_CREAT | O_TRUNC | O_BINARY;
+	if (strcmp(mode, "wx") == 0)
+		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
 	if (strcmp(mode, "a") == 0)
 		return O_WRONLY | O_CREAT | O_APPEND;
+	if (strcmp(mode, "rb") == 0)
+		return O_RDONLY | O_BINARY;
+	if (strcmp(mode, "wb") == 0)
+		return O_WRONLY | O_CREAT | O_TRUNC | O_BINARY;
+	if (strcmp(mode, "wbx") == 0)
+		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
 	if (strcmp(mode, "ab") == 0)
 		return O_WRONLY | O_CREAT | O_APPEND | O_BINARY;
+	if (strcmp(mode, "r+") == 0)
+		return O_RDWR;
+	if (strcmp(mode, "w+") == 0)
+		return O_RDWR | O_CREAT | O_TRUNC;
 	if (strcmp(mode, "a+") == 0)
 		return O_RDWR | O_CREAT | O_APPEND;
+	if (strcmp(mode, "r+b") == 0 || strcmp(mode, "rb+") == 0)
+		return O_RDWR | O_BINARY;
+	if (strcmp(mode, "w+b") == 0 || strcmp(mode, "wb+") == 0)
+		return O_RDWR | O_CREAT | O_TRUNC | O_BINARY;
+	if (strcmp(mode, "w+bx") == 0 || strcmp(mode, "wb+x") == 0)
+		return O_RDWR | O_CREAT | O_EXCL | O_EXLOCK;
 	if (strcmp(mode, "ab+") == 0 || strcmp(mode, "a+b") == 0)
 		return O_RDWR | O_CREAT | O_APPEND | O_BINARY;
 
