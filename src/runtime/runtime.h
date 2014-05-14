@@ -34,8 +34,8 @@
 # define OBJC_UNSAFE_UNRETAINED
 #endif
 
-#if __has_attribute(objc_root_class)
-# define OBJC_ROOT_CLASS __attribute__((objc_root_class))
+#if __has_attribute(__objc_root_class__)
+# define OBJC_ROOT_CLASS __attribute__((__objc_root_class__))
 #else
 # define OBJC_ROOT_CLASS
 #endif

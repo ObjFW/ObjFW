@@ -104,21 +104,21 @@
 #endif
 
 #if defined(__clang__) || __GCC_VERSION__ >= 406
-# define OF_SENTINEL __attribute__((sentinel))
-# define OF_NO_RETURN __attribute__((noreturn))
+# define OF_SENTINEL __attribute__((__sentinel__))
+# define OF_NO_RETURN __attribute__((__noreturn__))
 #else
 # define OF_SENTINEL
 # define OF_NO_RETURN
 #endif
 
-#if __has_attribute(objc_requires_super)
-# define OF_REQUIRES_SUPER __attribute__((objc_requires_super))
+#if __has_attribute(__objc_requires_super__)
+# define OF_REQUIRES_SUPER __attribute__((__objc_requires_super__))
 #else
 # define OF_REQUIRES_SUPER
 #endif
 
-#if __has_attribute(objc_root_class)
-# define OF_ROOT_CLASS __attribute__((objc_root_class))
+#if __has_attribute(__objc_root_class__)
+# define OF_ROOT_CLASS __attribute__((__objc_root_class__))
 #else
 # define OF_ROOT_CLASS
 #endif
@@ -157,11 +157,12 @@
 #endif
 
 #if __has_feature(objc_arc)
-# define OF_RETURNS_RETAINED __attribute__((ns_returns_retained))
-# define OF_RETURNS_NOT_RETAINED __attribute__((ns_returns_not_retained))
-# define OF_RETURNS_INNER_POINTER __attribute__((objc_returns_inner_pointer))
-# define OF_CONSUMED __attribute__((ns_consumed))
-# define OF_WEAK_UNAVAILABLE __attribute__((objc_arc_weak_unavailable))
+# define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
+# define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
+# define OF_RETURNS_INNER_POINTER \
+	__attribute__((__objc_returns_inner_pointer__))
+# define OF_CONSUMED __attribute__((__ns_consumed__))
+# define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
 #else
 # define OF_RETURNS_RETAINED
 # define OF_RETURNS_NOT_RETAINED

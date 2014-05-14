@@ -34,7 +34,7 @@ struct lock_s {
 
 static of_mutex_t mutex;
 
-static void __attribute__((constructor))
+static void __attribute__((__constructor__))
 init(void)
 {
 	if (!of_mutex_new(&mutex))

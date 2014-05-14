@@ -32,7 +32,7 @@ static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 #endif
 
 #ifdef OF_HAVE_THREADS
-static void __attribute__((constructor))
+static void __attribute__((__constructor__))
 init(void)
 {
 	size_t i;

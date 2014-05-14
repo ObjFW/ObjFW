@@ -55,7 +55,7 @@ autorelease(id self, SEL _cmd)
 	return self;
 }
 
-static void __attribute__((constructor))
+static void __attribute__((__constructor__))
 init(void)
 {
 	Class NSAutoreleasePool = objc_getClass("NSAutoreleasePool");

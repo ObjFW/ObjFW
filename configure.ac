@@ -961,7 +961,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	AC_TRY_COMPILE([
 		#ifdef __has_attribute
 		# if __has_attribute(objc_root_class)
-		__attribute__((objc_root_class))
+		__attribute__((__objc_root_class__))
 		# endif
 		#endif
 		@interface Foo

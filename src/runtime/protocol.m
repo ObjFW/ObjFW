@@ -24,13 +24,13 @@
 @implementation Protocol
 @end
 
-inline const char* __attribute__((gnu_inline))
+inline const char* __attribute__((__gnu_inline__))
 protocol_getName(Protocol *p)
 {
 	return p->name;
 }
 
-inline bool __attribute__((gnu_inline))
+inline bool __attribute__((__gnu_inline__))
 protocol_isEqual(Protocol *a, Protocol *b)
 {
 	return (strcmp(protocol_getName(a), protocol_getName(b)) == 0);
