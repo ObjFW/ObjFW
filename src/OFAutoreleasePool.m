@@ -31,7 +31,7 @@
 #define MAX_CACHE_SIZE 0x20
 
 #if defined(OF_HAVE_COMPILER_TLS)
-static __thread OFAutoreleasePool **cache = NULL;
+static thread_local OFAutoreleasePool **cache = NULL;
 #elif defined(OF_HAVE_THREADS)
 static of_tlskey_t cacheKey;
 #else

@@ -30,9 +30,9 @@
 #import "autorelease.h"
 
 #if defined(OF_HAVE_COMPILER_TLS)
-static __thread id *objects = NULL;
-static __thread id *top = NULL;
-static __thread size_t size = 0;
+static thread_local id *objects = NULL;
+static thread_local id *top = NULL;
+static thread_local size_t size = 0;
 #elif defined(OF_HAVE_THREADS)
 static of_tlskey_t objectsKey, topKey, sizeKey;
 #else

@@ -47,6 +47,18 @@
 # define restrict
 #endif
 
+#if defined(OF_HAVE__THREAD_LOCAL)
+# define OF_HAVE_COMPILER_TLS
+# ifdef OF_HAVE_THREADS_H
+#  include <threads.h>
+# else
+#  define thread_local _Thread_local
+# endif
+#elif defined(OF_HAVE___THREAD)
+# define OF_HAVE_COMPILER_TLS
+# define thread_local __thread
+#endif
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif

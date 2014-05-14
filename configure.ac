@@ -552,6 +552,41 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		AS_HELP_STRING([--disable-compiler-tls],
 			[disable compiler thread local storage]))
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
+		AC_CHECK_HEADERS(threads.h, [
+			AC_DEFINE(OF_HAVE_THREADS_H, 1,
+				[Whether we have threads.h])
+		])
+
+		AC_MSG_CHECKING(whether _Thread_local works)
+		AC_TRY_LINK([
+			static _Thread_local int x = 0;
+		], [
+			x++;
+		], [
+			AS_IF([test x"$enable_shared" != x"no"], [
+				old_OBJCFLAGS="$OBJCFLAGS"
+				OBJCFLAGS="$OBJCFLAGS -fPIC"
+				AC_TRY_COMPILE([
+					static _Thread_local int x = 0;
+				], [
+					x++;
+				], [
+					AC_MSG_RESULT(yes)
+					AC_DEFINE(OF_HAVE__THREAD_LOCAL, 1,
+						[Whether _Thread_local works])
+				], [
+					AC_MSG_RESULT(no)
+				])
+				OBJCFLAGS="$old_OBJCFLAGS"
+			], [
+				AC_MSG_RESULT(yes)
+				AC_DEFINE(OF_HAVE__THREAD_LOCAL, 1,
+					[Whether _Thread_local works])
+			])
+		], [
+			AC_MSG_RESULT(no)
+		])
+
 		AC_MSG_CHECKING(whether __thread works)
 		AC_TRY_LINK([
 			/* It seems __thread is buggy with GCC 4.1 */
@@ -572,7 +607,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 					x++;
 				], [
 					AC_MSG_RESULT(yes)
-					AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
+					AC_DEFINE(OF_HAVE___THREAD, 1,
 						[Whether __thread works])
 				], [
 					AC_MSG_RESULT(no)
@@ -580,7 +615,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 				OBJCFLAGS="$old_OBJCFLAGS"
 			], [
 				AC_MSG_RESULT(yes)
-				AC_DEFINE(OF_HAVE_COMPILER_TLS, 1,
+				AC_DEFINE(OF_HAVE___THREAD, 1,
 					[Whether __thread works])
 			])
 		], [
