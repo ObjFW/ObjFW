@@ -47,6 +47,18 @@
 # define restrict
 #endif
 
+#if __STDC_VERSION__ >= 201112L
+# ifdef OF_HAVE_STDNORETURN_H
+#  include <stdnoreturn.h>
+# else
+#  define noreturn _Noreturn
+# endif
+#elif defined(__GNUC__)
+# define noreturn __attribute__((noreturn))
+#else
+# define noreturn
+#endif
+
 #if defined(OF_HAVE__THREAD_LOCAL)
 # define OF_HAVE_COMPILER_TLS
 # ifdef OF_HAVE_THREADS_H
@@ -105,10 +117,10 @@
 
 #if defined(__clang__) || __GCC_VERSION__ >= 406
 # define OF_SENTINEL __attribute__((__sentinel__))
-# define OF_NO_RETURN __attribute__((__noreturn__))
+# define OF_METHOD_NORETURN __attribute__((__noreturn__))
 #else
 # define OF_SENTINEL
-# define OF_NO_RETURN
+# define OF_METHOD_NORETURN
 #endif
 
 #if __has_attribute(__objc_requires_super__)
@@ -961,7 +973,7 @@ OF_ROOT_CLASS
  *
  * @param selector The selector not understood by the receiver
  */
-- (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
+- (void)doesNotRecognizeSelector: (SEL)selector OF_METHOD_NORETURN;
 @end
 
 /*!

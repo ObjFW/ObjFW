@@ -390,6 +390,9 @@ AC_EGREP_CPP(yes, [
 AC_CHECK_TYPE(max_align_t,
 	[AC_DEFINE(OF_HAVE_MAX_ALIGN_T, 1, [Whether we have max_align_t])])
 
+AC_CHECK_HEADER(stdnoreturn.h,
+	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
+
 AC_CHECK_SIZEOF(float)
 AC_CHECK_SIZEOF(double)
 AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],

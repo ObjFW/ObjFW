@@ -143,7 +143,7 @@ of_thread_detach(of_thread_t thread)
 #endif
 }
 
-static OF_INLINE void OF_NO_RETURN
+static OF_INLINE void noreturn
 of_thread_exit(void)
 {
 #if defined(OF_HAVE_PTHREADS)
@@ -153,6 +153,7 @@ of_thread_exit(void)
 #else
 # error of_thread_exit not implemented!
 #endif
+	OF_UNREACHABLE
 }
 
 static OF_INLINE void
