@@ -661,7 +661,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)
 	AC_EGREP_CPP(yes, [
 		#if defined(__GNUC__) && (defined(__i386__) || \
-			defined(__x86_64__) || defined(__amd64__)) ||
+			defined(__x86_64__) || defined(__amd64__)) || \
 			defined(__ppc__)
 		yes
 		#endif
