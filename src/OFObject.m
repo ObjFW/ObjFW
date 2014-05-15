@@ -221,7 +221,7 @@ void _references_to_categories_of_OFObject(void)
 	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
 #endif
 
-	objc_setForwardHandler(of_forward, of_forward_stret);
+	objc_setForwardHandler((void*)&of_forward, (void*)&of_forward_stret);
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
