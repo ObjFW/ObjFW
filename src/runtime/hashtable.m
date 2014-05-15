@@ -87,7 +87,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 
 	if (fullness >= 6) {
 		if (table->size > UINT32_MAX / 2)
-			nsize = table->size;
+			return;
 
 		nsize = table->size * 2;
 	} else if (fullness <= 1)
@@ -95,9 +95,11 @@ resize(struct objc_hashtable *table, uint32_t count)
 	else
 		return;
 
-	if ((ndata = calloc(nsize,
-	    sizeof(struct objc_hashtable_bucket*))) == NULL)
-		OBJC_ERROR("Not enough memory to insert into hash table!");
+	if (count < table->count && nsize < 16)
+		return;
+
+	if ((ndata = calloc(nsize, sizeof(sizeof(*ndata)))) == NULL)
+		OBJC_ERROR("Not enough memory to resize hash table!");
 
 	for (i = 0; i < table->size; i++) {
 		if (table->data[i] != NULL &&
@@ -190,7 +192,7 @@ objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	if (i >= last)
 		OBJC_ERROR("No free bucket!");
 
-	if ((bucket = malloc(sizeof(struct objc_hashtable_bucket))) == NULL)
+	if ((bucket = malloc(sizeof(*bucket))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate hash table bucket!");
 
 	bucket->key = key;

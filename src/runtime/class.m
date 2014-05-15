@@ -908,8 +908,12 @@ objc_unregister_all_classes(void)
 			/*
 			 * The table might have been resized, so go back to the
 			 * start again.
+			 *
+			 * Due to the i++ in the for loop, we need to set it to
+			 * UINT_FAST32_MAX so that it will get increased at the
+			 * end of the loop and thus become 0.
 			 */
-			i = 0;
+			i = UINT_FAST32_MAX;
 		}
 	}
 
