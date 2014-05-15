@@ -35,12 +35,14 @@
 # define dlclose(handle) FreeLibrary(handle)
 #endif
 
+typedef OFPlugin* (*init_plugin_t)(void);
+
 @implementation OFPlugin
 + (id)pluginFromFile: (OFString*)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_plugin_handle_t handle;
-	OFPlugin *(*initPlugin)(void);
+	init_plugin_t initPlugin;
 	OFPlugin *plugin;
 
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
@@ -56,8 +58,8 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	initPlugin = (OFPlugin*(*)(void))dlsym(handle, "init_plugin");
-	if (initPlugin == NULL || (plugin = initPlugin()) == nil) {
+	initPlugin = (init_plugin_t)(uintptr_t)dlsym(handle, "init_plugin");
+	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
 		dlclose(handle);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
