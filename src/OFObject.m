@@ -221,7 +221,11 @@ void _references_to_categories_of_OFObject(void)
 	objc_setUncaughtExceptionHandler(uncaughtExceptionHandler);
 #endif
 
+#if defined(OF_APPLE_RUNTIME)
 	objc_setForwardHandler((void*)&of_forward, (void*)&of_forward_stret);
+#else
+	objc_setForwardHandler((IMP)&of_forward, (IMP)&of_forward_stret);
+#endif
 
 #ifdef HAVE_OBJC_ENUMERATIONMUTATION
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);

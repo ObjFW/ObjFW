@@ -23,11 +23,11 @@
 #import "runtime-private.h"
 #import "macros.h"
 
-static void *forward_handler = NULL;
-static void *forward_handler_stret = NULL;
+static IMP forward_handler = (IMP)0;
+static IMP forward_handler_stret = (IMP)0;
 
 static IMP
-common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), void *forward)
+common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 {
 	/*
 	 * obj might be a dummy object (see class_getMethodImplementation), so
@@ -89,7 +89,7 @@ common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), void *forward)
 		}
 	}
 
-	if (forward != NULL)
+	if (forward != (IMP)0)
 		return forward;
 
 	OBJC_ERROR("Selector %c[%s] is not implemented for class %s!",
@@ -111,7 +111,7 @@ objc_method_not_found_stret(id obj, SEL sel)
 }
 
 void
-objc_setForwardHandler(void *forward, void *forward_stret)
+objc_setForwardHandler(IMP forward, IMP forward_stret)
 {
 	forward_handler = forward;
 	forward_handler_stret = forward_stret;
@@ -123,7 +123,7 @@ class_respondsToSelector(Class cls, SEL sel)
 	if (cls == Nil)
 		return false;
 
-	return (objc_sparsearray_get(cls->dtable, (uint32_t)sel->uid) != NULL);
+	return (objc_dtable_get(cls->dtable, (uint32_t)sel->uid) != (IMP)0);
 }
 
 #ifndef OF_ASM_LOOKUP
@@ -141,10 +141,9 @@ common_lookup(id obj, SEL sel, IMP (*not_found)(id, SEL))
 	if (obj == nil)
 		return (IMP)nil_method;
 
-	imp = objc_sparsearray_get(object_getClass(obj)->dtable,
-	    (uint32_t)sel->uid);
+	imp = objc_dtable_get(object_getClass(obj)->dtable, (uint32_t)sel->uid);
 
-	if (imp == NULL)
+	if (imp == (IMP)0)
 		return not_found(obj, sel);
 
 	return imp;
@@ -171,9 +170,9 @@ common_lookup_super(struct objc_super *super, SEL sel,
 	if (super->self == nil)
 		return (IMP)nil_method;
 
-	imp = objc_sparsearray_get(super->cls->dtable, (uint32_t)sel->uid);
+	imp = objc_dtable_get(super->cls->dtable, (uint32_t)sel->uid);
 
-	if (imp == NULL)
+	if (imp == (IMP)0)
 		return not_found(super->self, sel);
 
 	return imp;

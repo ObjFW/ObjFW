@@ -103,22 +103,23 @@ struct objc_hashtable {
 };
 
 struct objc_sparsearray {
-	struct objc_sparsearray_level2 *buckets[256];
+	struct objc_sparsearray_data {
+		void *next[256];
+	} *data;
+	uint_fast8_t index_size;
 };
 
+struct objc_dtable {
+	struct objc_dtable_level2 {
 #ifdef OF_SELUID24
-struct objc_sparsearray_level2 {
-	struct objc_sparsearray_level3 *buckets[256];
-};
-
-struct objc_sparsearray_level3 {
-	const void *buckets[256];
-};
+		struct objc_dtable_level3 {
+			IMP buckets[256];
+		} *buckets[256];
 #else
-struct objc_sparsearray_level2 {
-	const void *buckets[256];
-};
+		IMP buckets[256];
 #endif
+	} *buckets[256];
+};
 
 extern void objc_register_all_categories(struct objc_abi_symtab*);
 extern struct objc_category** objc_categories_for_class(Class);
@@ -142,13 +143,15 @@ extern void objc_hashtable_free(struct objc_hashtable *h);
 extern void objc_register_selector(struct objc_abi_selector*);
 extern void objc_register_all_selectors(struct objc_abi_symtab*);
 extern void objc_unregister_all_selectors(void);
-extern struct objc_sparsearray* objc_sparsearray_new(void);
-extern void objc_sparsearray_copy(struct objc_sparsearray*,
-    struct objc_sparsearray*);
-extern void objc_sparsearray_set(struct objc_sparsearray*, uint32_t,
-    const void*);
+extern struct objc_sparsearray *objc_sparsearray_new(uint_fast8_t);
+extern void *objc_sparsearray_get(struct objc_sparsearray*, uintptr_t);
+extern void objc_sparsearray_set(struct objc_sparsearray*, uintptr_t, void*);
 extern void objc_sparsearray_free(struct objc_sparsearray*);
-extern void objc_sparsearray_cleanup(void);
+extern struct objc_dtable* objc_dtable_new(void);
+extern void objc_dtable_copy(struct objc_dtable*, struct objc_dtable*);
+extern void objc_dtable_set(struct objc_dtable*, uint32_t, IMP);
+extern void objc_dtable_free(struct objc_dtable*);
+extern void objc_dtable_cleanup(void);
 extern void objc_init_static_instances(struct objc_abi_symtab*);
 extern void objc_forget_pending_static_instances(void);
 extern void __objc_exec_class(struct objc_abi_module*);
@@ -162,20 +165,20 @@ extern void objc_global_mutex_free(void);
 # define objc_global_mutex_free()
 #endif
 
-static inline void*
-objc_sparsearray_get(const struct objc_sparsearray *s, uint32_t idx)
+static inline IMP
+objc_dtable_get(const struct objc_dtable *dtable, uint32_t idx)
 {
 #ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
 	uint8_t j = idx >>  8;
 	uint8_t k = idx;
 
-	return (void*)s->buckets[i]->buckets[j]->buckets[k];
+	return dtable->buckets[i]->buckets[j]->buckets[k];
 #else
 	uint8_t i = idx >> 8;
 	uint8_t j = idx;
 
-	return (void*)s->buckets[i]->buckets[j];
+	return dtable->buckets[i]->buckets[j];
 #endif
 }
 

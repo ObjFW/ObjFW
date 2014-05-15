@@ -25,17 +25,13 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-struct sparsearray {
-	void *next[256];
-};
-
 static struct objc_hashtable *classes = NULL;
 static unsigned classes_cnt = 0;
 static Class *load_queue = NULL;
 static size_t load_queue_cnt = 0;
-static struct objc_sparsearray *empty_dtable = NULL;
+static struct objc_dtable *empty_dtable = NULL;
 static unsigned lookups_till_fast_path = 128;
-static struct sparsearray *sparsearray = NULL;
+static struct objc_sparsearray *fast_path = NULL;
 
 static void
 register_class(struct objc_abi_class *cls)
@@ -47,7 +43,7 @@ register_class(struct objc_abi_class *cls)
 	objc_hashtable_set(classes, cls->name, cls);
 
 	if (empty_dtable == NULL)
-		empty_dtable = objc_sparsearray_new();
+		empty_dtable = objc_dtable_new();
 
 	cls->dtable = empty_dtable;
 	cls->metaclass->dtable = empty_dtable;
@@ -82,7 +78,7 @@ register_selectors(struct objc_abi_class *cls)
 Class
 objc_classname_to_class(const char *name, bool cache)
 {
-	Class c;
+	Class cls;
 
 	if (classes == NULL)
 		return Nil;
@@ -108,57 +104,26 @@ objc_classname_to_class(const char *name, bool cache)
 	 * has the lock and thus the performance gain would be small, but it
 	 * would waste memory.
 	 */
-	if (cache && sparsearray != NULL) {
-		uintptr_t clsidx = (uintptr_t)name;
-		struct sparsearray *iter = sparsearray;
-		uint_fast8_t i;
+	if (cache && fast_path != NULL) {
+		cls = objc_sparsearray_get(fast_path, (uintptr_t)name);
 
-		for (i = 0; i < sizeof(uintptr_t) - 1; i++) {
-			uintptr_t idx = (clsidx >>
-			    ((sizeof(uintptr_t) - i - 1) * 8)) & 0xFF;
-
-			if ((iter = iter->next[idx]) == NULL)
-				break;
-		}
-
-		if (iter != NULL && (c = iter->next[clsidx & 0xFF]) != Nil)
-			return c;
+		if (cls != Nil)
+			return cls;
 	}
 
 	objc_global_mutex_lock();
 
-	c = (Class)((uintptr_t)objc_hashtable_get(classes, name) & ~1);
+	cls = (Class)((uintptr_t)objc_hashtable_get(classes, name) & ~1);
 
-	if (cache && sparsearray == NULL && --lookups_till_fast_path == 0)
-		if ((sparsearray = calloc(1,
-		    sizeof(struct sparsearray))) == NULL)
-			OBJC_ERROR("Failed to allocate memory for class lookup "
-			    "fast path!");
+	if (cache && fast_path == NULL && --lookups_till_fast_path == 0)
+		fast_path = objc_sparsearray_new(sizeof(uintptr_t));
 
-	if (cache && sparsearray != NULL) {
-		uintptr_t clsidx = (uintptr_t)name;
-		struct sparsearray *iter = sparsearray;
-		uint_fast8_t i;
-
-		for (i = 0; i < sizeof(uintptr_t) - 1; i++) {
-			uintptr_t idx = (clsidx >>
-			    ((sizeof(uintptr_t) - i - 1) * 8)) & 0xFF;
-
-			if (iter->next[idx] == NULL)
-				if ((iter->next[idx] = calloc(1,
-				    sizeof(struct sparsearray))) == NULL)
-					OBJC_ERROR("Failed to allocate memory "
-					    "for class lookup fast path!");
-
-			iter = iter->next[idx];
-		}
-
-		iter->next[clsidx & 0xFF] = c;
-	}
+	if (cache && fast_path != NULL)
+		objc_sparsearray_set(fast_path, (uintptr_t)name, cls);
 
 	objc_global_mutex_unlock();
 
-	return c;
+	return cls;
 }
 
 static void
@@ -219,14 +184,14 @@ objc_update_dtable(Class cls)
 		return;
 
 	if (cls->dtable == empty_dtable)
-		cls->dtable = objc_sparsearray_new();
+		cls->dtable = objc_dtable_new();
 
 	if (cls->superclass != Nil)
-		objc_sparsearray_copy(cls->dtable, cls->superclass->dtable);
+		objc_dtable_copy(cls->dtable, cls->superclass->dtable);
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (i = 0; i < ml->count; i++)
-			objc_sparsearray_set(cls->dtable,
+			objc_dtable_set(cls->dtable,
 			    (uint32_t)ml->methods[i].sel.uid,
 			    ml->methods[i].imp);
 
@@ -239,7 +204,7 @@ objc_update_dtable(Class cls)
 
 			for (; ml != NULL; ml = ml->next)
 				for (j = 0; j < ml->count; j++)
-					objc_sparsearray_set(cls->dtable,
+					objc_dtable_set(cls->dtable,
 					    (uint32_t)ml->methods[j].sel.uid,
 					    ml->methods[j].imp);
 		}
@@ -845,7 +810,7 @@ unregister_class(Class rcls)
 	}
 
 	if (rcls->dtable != NULL && rcls->dtable != empty_dtable)
-		objc_sparsearray_free(rcls->dtable);
+		objc_dtable_free(rcls->dtable);
 
 	rcls->dtable = NULL;
 
@@ -871,20 +836,6 @@ objc_unregister_class(Class cls)
 
 	unregister_class(cls);
 	unregister_class(cls->isa);
-}
-
-static void
-free_sparsearray(struct sparsearray *sa, size_t depth)
-{
-	uint_fast16_t i;
-
-	if (sa == NULL || depth == 0)
-		return;
-
-	for (i = 0; i < 256; i++)
-		free_sparsearray(sa->next[i], depth - 1);
-
-	free(sa);
 }
 
 void
@@ -920,12 +871,12 @@ objc_unregister_all_classes(void)
 	assert(classes_cnt == 0);
 
 	if (empty_dtable != NULL) {
-		objc_sparsearray_free(empty_dtable);
+		objc_dtable_free(empty_dtable);
 		empty_dtable = NULL;
 	}
 
-	free_sparsearray(sparsearray, sizeof(uintptr_t));
-	sparsearray = NULL;
+	objc_sparsearray_free(fast_path);
+	fast_path = NULL;
 
 	objc_hashtable_free(classes);
 	classes = NULL;

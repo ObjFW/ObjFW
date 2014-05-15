@@ -41,7 +41,7 @@ objc_exit(void)
 	objc_unregister_all_classes();
 	objc_unregister_all_selectors();
 	objc_forget_pending_static_instances();
-	objc_sparsearray_cleanup();
+	objc_dtable_cleanup();
 
 	objc_global_mutex_unlock();
 	objc_global_mutex_free();

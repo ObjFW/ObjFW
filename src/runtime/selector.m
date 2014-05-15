@@ -27,8 +27,10 @@
 
 #ifdef OF_SELUID24
 # define SEL_MAX 0xFFFFFF
+# define SEL_SIZE 3
 #else
 # define SEL_MAX 0xFFFF
+# define SEL_SIZE 2
 #endif
 
 static struct objc_hashtable *selectors = NULL;
@@ -55,14 +57,14 @@ objc_register_selector(struct objc_abi_selector *sel)
 	}
 
 	if (selector_names == NULL)
-		selector_names = objc_sparsearray_new();
+		selector_names = objc_sparsearray_new(SEL_SIZE);
 
 	name = sel->name;
 	rsel = (struct objc_selector*)sel;
 	rsel->uid = selectors_cnt++;
 
 	objc_hashtable_set(selectors, name, rsel);
-	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, name);
+	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, (void*)name);
 }
 
 SEL
