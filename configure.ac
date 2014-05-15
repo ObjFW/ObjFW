@@ -94,6 +94,7 @@ AX_CHECK_COMPILER_FLAGS(-std=c11, [
 	])
 ])
 
+AX_CHECK_COMPILER_FLAGS(-pedantic, [OBJCFLAGS="$OBJCFLAGS -pedantic"])
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [

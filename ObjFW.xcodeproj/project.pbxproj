@@ -2118,6 +2118,7 @@
 			buildSettings = {
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_WARN_PEDANTIC = YES;
 				OTHER_CFLAGS = (
 					"-fexceptions",
 					"-fconstant-string-class=OFConstantString",
@@ -2145,6 +2146,7 @@
 			buildSettings = {
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_WARN_PEDANTIC = YES;
 				OTHER_CFLAGS = (
 					"-fexceptions",
 					"-fconstant-string-class=OFConstantString",
