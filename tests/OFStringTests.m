@@ -350,17 +350,19 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"])
 
+#if !defined(_WIN32) && !defined(__DJGPP__)
+# define EXPECTED @"foo/bar/baz"
+#else
+# define EXPECTED @"foo\\bar\\baz"
+#endif
 	TEST(@"+[pathWithComponents:]",
 	    (is = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]]) &&
-#if !defined(_WIN32) && !defined(__DJGPP__)
-	    [is isEqual: @"foo/bar/baz"] &&
-#else
-	    [is isEqual: @"foo\\bar\\baz"] &&
-#endif
+	    [is isEqual: EXPECTED] &&
 	    (is = [OFString pathWithComponents:
 	    [OFArray arrayWithObjects: @"foo", nil]]) &&
 	    [is isEqual: @"foo"])
+#undef EXPECTED
 
 	TEST(@"-[pathComponents]",
 	    /* /tmp */
@@ -412,21 +414,22 @@ static uint16_t sutf16str[] = {
 	    [[@"/" stringByDeletingLastPathComponent] isEqual: @"/"] &&
 	    [[@"foo" stringByDeletingLastPathComponent] isEqual: @"."])
 
+#if !defined(_WIN32) && !defined(__DJGPP__)
+# define EXPECTED @"/foo./bar"
+#else
+# define EXPECTED @"\\foo.\\bar"
+#endif
 	TEST(@"-[stringByDeletingPathExtension]",
 	    [[@"foo.bar" stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[@"foo..bar" stringByDeletingPathExtension] isEqual: @"foo."] &&
 	    [[@"/foo./bar" stringByDeletingPathExtension]
 	    isEqual: @"/foo./bar"] &&
-#if !defined(_WIN32) && !defined(__DJGPP__)
 	    [[@"/foo./bar.baz" stringByDeletingPathExtension]
-	    isEqual: @"/foo./bar"] &&
-#else
-	    [[@"/foo./bar.baz" stringByDeletingPathExtension]
-	    isEqual: @"\\foo.\\bar"] &&
-#endif
+	    isEqual: EXPECTED] &&
 	    [[@"foo.bar/" stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[@".foo" stringByDeletingPathExtension] isEqual: @".foo"] &&
 	    [[@".foo.bar" stringByDeletingPathExtension] isEqual: @".foo"])
+#undef EXPECTED
 
 	TEST(@"-[decimalValue]",
 	    [@"1234" decimalValue] == 1234 &&
@@ -451,16 +454,20 @@ static uint16_t sutf16str[] = {
 	    [@"\r-INFINITY\n" floatValue] == -INFINITY &&
 	    isnan([@"   NAN\t\t" floatValue]))
 
-	TEST(@"-[doubleValue]",
 #if !defined(__ANDROID__) && !defined(__DJGPP__)
-	    [@"\t-0x1.FFFFFFFFFFFFFP-1020 " doubleValue] ==
-	    -0x1.FFFFFFFFFFFFFP-1020 &&
+# define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
+# define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else
-	    /* Android and DJGPPP do not accept 0x for strtod() */
-	    [@"\t-0.123456789 " doubleValue] == -0.123456789 &&
+/* Android and DJGPPP do not accept 0x for strtod() */
+# define INPUT @"\t-0.123456789 "
+# define EXPECTED -0.123456789
 #endif
+	TEST(@"-[doubleValue]",
+	    [INPUT doubleValue] == EXPECTED &&
 	    [@"\r-INFINITY\n" doubleValue] == -INFINITY &&
 	    isnan([@"   NAN\t\t" doubleValue]))
+#undef INPUT
+#undef EXPECTED
 
 	EXPECT_EXCEPTION(@"Detect invalid characters in -[decimalValue] #1",
 	    OFInvalidFormatException, [@"abc" decimalValue])
@@ -507,27 +514,24 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[characters]", (ua = [@"fööbär🀺" characters]) &&
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))
 
+#ifdef OF_BIG_ENDIAN
+# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_LITTLE_ENDIAN
+#else
+# define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_BIG_ENDIAN
+#endif
 	TEST(@"-[UTF16String]", (u16a = [@"fööbär🀺" UTF16String]) &&
 	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&
 	    (u16a = [@"fööbär🀺"
-#ifdef OF_BIG_ENDIAN
-	    UTF16StringWithByteOrder: OF_BYTE_ORDER_LITTLE_ENDIAN]) &&
-#else
-	    UTF16StringWithByteOrder: OF_BYTE_ORDER_BIG_ENDIAN]) &&
-#endif
+	    UTF16StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
 	    !memcmp(u16a, sutf16str + 1, of_string_utf16_length(sutf16str) * 2))
 
 	TEST(@"-[UTF16StringLength]", [@"fööbär🀺" UTF16StringLength] == 8)
 
 	TEST(@"-[UTF32String]", (ua = [@"fööbär🀺" UTF32String]) &&
 	    !memcmp(ua, ucstr + 1, of_string_utf32_length(ucstr) * 4) &&
-	    (ua = [@"fööbär🀺"
-#ifdef OF_BIG_ENDIAN
-	    UTF32StringWithByteOrder: OF_BYTE_ORDER_LITTLE_ENDIAN]) &&
-#else
-	    UTF32StringWithByteOrder: OF_BYTE_ORDER_BIG_ENDIAN]) &&
-#endif
+	    (ua = [@"fööbär🀺" UTF32StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
 	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
+#undef SWAPPED_BYTE_ORDER
 
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
