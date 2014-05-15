@@ -79,7 +79,7 @@ register_selectors(struct objc_abi_class *cls)
 			    (struct objc_abi_selector*)&ml->methods[i]);
 }
 
-inline Class __attribute__((__gnu_inline__))
+Class
 objc_classname_to_class(const char *name, bool cache)
 {
 	Class c;
