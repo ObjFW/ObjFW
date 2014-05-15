@@ -14,8 +14,6 @@
  * file.
  */
 
-#define _BSD_SOURCE
-
 #include "config.h"
 
 #include <string.h>

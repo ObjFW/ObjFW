@@ -14,12 +14,6 @@
  * file.
  */
 
-#define _POSIX_C_SOURCE 200112L
-#define _XOPEN_SOURCE 600
-#define _BSD_SOURCE
-#define _NETBSD_SOURCE
-#define _DARWIN_C_SOURCE
-#define __BSD_VISIBLE 1
 #define __NO_EXT_QNX
 
 #include "config.h"

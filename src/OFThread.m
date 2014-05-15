@@ -15,8 +15,6 @@
  */
 
 #define OF_THREAD_M
-#define _POSIX_C_SOURCE 200112L
-#define _POSIX_TIMERS
 #define __NO_EXT_QNX
 
 #include "config.h"

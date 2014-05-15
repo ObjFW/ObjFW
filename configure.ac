@@ -182,6 +182,20 @@ AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
 ])
 
+AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
+AC_EGREP_CPP(yes, [
+	#include <stdlib.h>
+
+	#ifdef __GLIBC__
+	yes
+	#endif
+], [
+	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+])
+
 objc_runtime="ObjFW runtime"
 AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
