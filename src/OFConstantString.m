@@ -348,8 +348,8 @@ struct {
 {
 	[self finishInitialization];
 
-	return [self getCharacters: buffer
-			   inRange: range];
+	[self getCharacters: buffer
+		    inRange: range];
 }
 
 - (of_range_t)rangeOfString: (OFString*)string
@@ -612,7 +612,7 @@ struct {
 {
 	[self finishInitialization];
 
-	return [self writeToFile: path];
+	[self writeToFile: path];
 }
 
 - (void)writeToFile: (OFString*)path
@@ -620,8 +620,8 @@ struct {
 {
 	[self finishInitialization];
 
-	return [self writeToFile: path
-			encoding: encoding];
+	[self writeToFile: path
+		 encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -629,7 +629,7 @@ struct {
 {
 	[self finishInitialization];
 
-	return [self enumerateLinesUsingBlock: block];
+	[self enumerateLinesUsingBlock: block];
 }
 #endif
 @end

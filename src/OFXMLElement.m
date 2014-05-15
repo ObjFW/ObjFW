@@ -875,8 +875,10 @@ static Class CDATAClass = Nil;
 	OFXMLAttribute **objects;
 	size_t i, count;
 
-	if (attributeNS == nil)
-		return [self removeAttributeForName: attributeName];
+	if (attributeNS == nil) {
+		[self removeAttributeForName: attributeName];
+		return;
+	}
 
 	objects = [_attributes objects];
 	count = [_attributes count];

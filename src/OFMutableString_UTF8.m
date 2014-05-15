@@ -334,9 +334,9 @@
 - (void)appendCString: (const char*)cString
 	     encoding: (of_string_encoding_t)encoding
 {
-	return [self appendCString: cString
-			  encoding: encoding
-			    length: strlen(cString)];
+	[self appendCString: cString
+		   encoding: encoding
+		     length: strlen(cString)];
 }
 
 - (void)appendCString: (const char*)cString

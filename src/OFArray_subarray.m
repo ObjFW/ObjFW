@@ -74,8 +74,8 @@
 
 	range.location += _range.location;
 
-	return [_array getObjects: buffer
-			  inRange: range];
+	[_array getObjects: buffer
+		   inRange: range];
 }
 
 - (size_t)indexOfObject: (id)object

@@ -2422,8 +2422,8 @@ static struct {
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString*)path
 {
-	return [self writeToFile: path
-			encoding: OF_STRING_ENCODING_UTF_8];
+	[self writeToFile: path
+		 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
 - (void)writeToFile: (OFString*)path

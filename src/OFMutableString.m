@@ -303,8 +303,8 @@ static struct {
 
 - (void)appendString: (OFString*)string
 {
-	return [self insertString: string
-			  atIndex: [self length]];
+	[self insertString: string
+		   atIndex: [self length]];
 }
 
 - (void)appendCharacters: (of_unichar_t*)characters
@@ -395,8 +395,8 @@ static struct {
 
 - (void)prependString: (OFString*)string
 {
-	return [self insertString: string
-			  atIndex: 0];
+	[self insertString: string
+		   atIndex: 0];
 }
 
 - (void)reverse
