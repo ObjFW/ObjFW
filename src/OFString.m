@@ -78,10 +78,11 @@
 					depth: (size_t)depth;
 @end
 
-extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, char*, size_t, bool);
-extern bool of_unicode_to_windows_1252(const of_unichar_t*, char*, size_t,
+extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, uint8_t*, size_t,
     bool);
-extern bool of_unicode_to_codepage_437(const of_unichar_t*, char*, size_t,
+extern bool of_unicode_to_windows_1252(const of_unichar_t*, uint8_t*, size_t,
+    bool);
+extern bool of_unicode_to_codepage_437(const of_unichar_t*, uint8_t*, size_t,
     bool);
 
 /* References for static linking */
@@ -1069,8 +1070,8 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_iso_8859_15(characters, cString, length,
-		    lossy))
+		if (!of_unicode_to_iso_8859_15(characters, (uint8_t*)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1080,8 +1081,8 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_windows_1252(characters, cString, length,
-		    lossy))
+		if (!of_unicode_to_windows_1252(characters, (uint8_t*)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1091,8 +1092,8 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_codepage_437(characters, cString, length,
-		    lossy))
+		if (!of_unicode_to_codepage_437(characters, (uint8_t*)cString,
+		    length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';

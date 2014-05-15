@@ -76,7 +76,7 @@
 - (OFDataArray*)messagePackRepresentation
 {
 	OFDataArray *ret;
-	int8_t prefix;
+	uint8_t prefix;
 	size_t count = [_data count];
 
 	if (count == 1) {
