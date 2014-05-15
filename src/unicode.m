@@ -18,7 +18,7 @@
 
 #import "OFString.h"
 
-static const of_unichar_t emptyPage[0x100] = {};
+static const of_unichar_t emptyPage[0x100] = { 0 };
 
 static const of_unichar_t uppercasePage0[0x100] = {
 	0, 0, 0, 0, 0, 0, 0, 0,

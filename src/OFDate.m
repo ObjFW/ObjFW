@@ -238,7 +238,7 @@ static int monthToDayOfYear[12] = {
 	self = [super init];
 
 	@try {
-		struct tm tm = {};
+		struct tm tm = { 0 };
 
 		tm.tm_isdst = -1;
 
@@ -283,7 +283,7 @@ static int monthToDayOfYear[12] = {
 	self = [super init];
 
 	@try {
-		struct tm tm = {};
+		struct tm tm = { 0 };
 
 		tm.tm_isdst = -1;
 

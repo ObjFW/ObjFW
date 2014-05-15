@@ -60,7 +60,7 @@ static of_map_table_functions_t keyFunctions = {
 	.hash = hash,
 	.equal = equal
 };
-static of_map_table_functions_t valueFunctions = {};
+static of_map_table_functions_t valueFunctions = { 0 };
 
 @implementation OFSet_hashtable
 - init

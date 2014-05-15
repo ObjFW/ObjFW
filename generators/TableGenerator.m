@@ -184,7 +184,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#include \"config.h\"\n"
 	    @"\n"
 	    @"#import \"OFString.h\"\n\n"
-	    @"static const of_unichar_t emptyPage[0x100] = {};\n\n"];
+	    @"static const of_unichar_t emptyPage[0x100] = { 0 };\n\n"];
 
 	/* Write uppercasePage%u */
 	for (i = 0; i < 0x110000; i += 0x100) {

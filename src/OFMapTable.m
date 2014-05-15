@@ -36,7 +36,7 @@ struct of_map_table_bucket {
 	void *key, *value;
 	uint32_t hash;
 };
-static struct of_map_table_bucket deleted = {};
+static struct of_map_table_bucket deleted = { 0 };
 
 static void*
 defaultRetain(void *value)
