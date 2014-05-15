@@ -94,7 +94,6 @@ AX_CHECK_COMPILER_FLAGS(-std=c11, [
 	])
 ])
 
-AX_CHECK_COMPILER_FLAGS(-pedantic, [OBJCFLAGS="$OBJCFLAGS -pedantic"])
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
@@ -651,9 +650,9 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		while (!__sync_bool_compare_and_swap(&i, 0, 1));
 	], [
 		AC_MSG_RESULT(yes)
-		atomic_ops="gcc builtins"
+		atomic_ops="GCC builtins"
 		AC_DEFINE(OF_HAVE_GCC_ATOMIC_OPS, 1,
-			[Whether gcc atomic operations are available])
+			[Whether GCC atomic operations are available])
 	], [
 		AC_MSG_RESULT(no)
 	])
@@ -930,7 +929,7 @@ esac
 AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
-	AC_MSG_CHECKING(whether we have gcc bug objc/27438)
+	AC_MSG_CHECKING(whether we have GCC bug objc/27438)
 	AC_TRY_COMPILE([
 		@interface OFConstantString
 		{
@@ -952,7 +951,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		AC_SUBST(NO_WARN_UNUSED, "-Wno-unused-variable")
 	])
 
-	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to gcc bugs)
+	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_TRY_COMPILE([
 		@interface Foo
 		{
@@ -1017,6 +1016,32 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		AC_MSG_RESULT(yes)
 	], [
 		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
+	])
+
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -pedantic"
+	AC_MSG_CHECKING(whether -pedantic is buggy)
+	AC_TRY_COMPILE([
+		#import <stdlib.h>
+
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Foo
+		{
+			void *foo;
+		}
+		@end
+
+		@interface Bar: Foo
+		@end
+	], [], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 ])
