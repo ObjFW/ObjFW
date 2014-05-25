@@ -29,10 +29,43 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-extern void of_zip_archive_find_extra_field(OFDataArray*, uint16_t, uint8_t**,
-    uint16_t*);
 extern uint32_t of_zip_archive_read_field32(uint8_t**, uint16_t*);
 extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
+
+void
+of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
+    uint8_t **data, uint16_t *size)
+{
+	uint8_t *bytes;
+	size_t i, count;
+
+	bytes = [extraField items];
+	count = [extraField count];
+
+	for (i = 0; i < count;) {
+		uint16_t currentTag, currentSize;
+
+		if (i + 3 >= count)
+			@throw [OFInvalidFormatException exception];
+
+		currentTag = (bytes[i + 1] << 8) | bytes[i];
+		currentSize = (bytes[i + 3] << 8) | bytes[i + 2];
+
+		if (i + 3 + currentSize >= count)
+			@throw [OFInvalidFormatException exception];
+
+		if (currentTag == tag) {
+			*data = bytes + i + 4;
+			*size = currentSize;
+			return;
+		}
+
+		i += 4 + currentSize;
+	}
+
+	*data = NULL;
+	*size = 0;
+}
 
 @implementation OFZIPArchiveEntry
 - (instancetype)OF_initWithFile: (OFFile*)file
@@ -77,7 +110,7 @@ extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
 		_fileComment = [[file readStringWithLength: fileCommentLength
 						  encoding: encoding] copy];
 
-		of_zip_archive_find_extra_field(_extraField, 0x0001,
+		of_zip_archive_entry_find_extra_field(_extraField, 0x0001,
 		    &ZIP64, &ZIP64Size);
 
 		if (ZIP64 != NULL) {

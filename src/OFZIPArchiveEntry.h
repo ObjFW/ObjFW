@@ -16,7 +16,7 @@
 
 #import "OFObject.h"
 
-#include <stdio.h>
+/*! @file */
 
 @class OFString;
 @class OFDataArray;
@@ -102,3 +102,20 @@
  */
 - (OFDataArray*)extraField;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief Gets a pointer to and the size of the extra field with the specified
+ *	  tag.
+ *
+ * @param data A pointer to a pointer that should be set to the start of the
+ *	       extra field with the specified tag
+ * @param size A pointer to an uint16_t that should be set to the size
+ */
+extern void of_zip_archive_entry_find_extra_field(OFDataArray *extraField,
+    uint16_t tag, uint8_t **data, uint16_t *size);
+#ifdef __cplusplus
+}
+#endif
