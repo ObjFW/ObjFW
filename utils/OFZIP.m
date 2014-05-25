@@ -54,7 +54,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeFormat:
-	    @"Usage: %@ -[flnvx] archive.zip [file1 file2 ...]\n",
+	    @"Usage: %@ -[flnqvx] archive.zip [file1 file2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full) {
