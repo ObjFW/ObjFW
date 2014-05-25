@@ -210,6 +210,7 @@ pre-depend:
 
 ${PROG} ${PROG_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
+	out="$@"; \
 	if ${LD} -o $@ ${OBJS} ${OBJS_EXTRA} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
@@ -233,7 +234,8 @@ ${JARFILE}: ${EXT_DEPS} ${JAR_MANIFEST} ${OBJS} ${OBJS_EXTRA}
 	fi
 
 ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
-	${LINK_STATUS}; \
+	${LINK_STATUS}
+	out="$@"; \
 	objs=""; \
 	ars=""; \
 	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
@@ -269,6 +271,7 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 
 ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	${LINK_STATUS}
+	out="$@"; \
 	objs=""; \
 	ars=""; \
 	for i in ${PLUGIN_OBJS}; do \
@@ -305,6 +308,7 @@ ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
 	rm -f $@
+	out="$@"; \
 	objs=""; \
 	ars=""; \
 	for i in ${OBJS} ${OBJS_EXTRA}; do \
@@ -342,6 +346,7 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}
 	rm -f $@
+	out="$@"; \
 	objs=""; \
 	ars=""; \
 	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
@@ -380,6 +385,8 @@ locales: ${MO_FILES}
 
 .c.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CC} ${CFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -387,6 +394,8 @@ locales: ${MO_FILES}
 	fi
 .c.lib.o:
 	${COMPILE_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CC} ${LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -394,6 +403,8 @@ locales: ${MO_FILES}
 	fi
 .c.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CC} ${PLUGIN_CFLAGS} ${CFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -402,6 +413,8 @@ locales: ${MO_FILES}
 
 .cc.o .cxx.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CXX} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -409,6 +422,8 @@ locales: ${MO_FILES}
 	fi
 .cc.lib.o .cxx.lib.o:
 	${COMPILE_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CXX} ${LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -416,6 +431,8 @@ locales: ${MO_FILES}
 	fi
 .cc.plugin.o .cxx.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CXX} ${PLUGIN_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -424,6 +441,8 @@ locales: ${MO_FILES}
 
 .d.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if test x"$(basename ${DC})" = x"dmd"; then \
 		if ${DC} ${DFLAGS} -c -of$@ $<; then \
 			${COMPILE_OK}; \
@@ -440,6 +459,8 @@ locales: ${MO_FILES}
 
 .erl.beam:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${ERLC} ${ERLCFLAGS} -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -448,6 +469,8 @@ locales: ${MO_FILES}
 
 .java.class:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${JAVAC} ${JAVACFLAGS} $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -456,6 +479,8 @@ locales: ${MO_FILES}
 
 .m.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${OBJC} ${OBJCFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -463,6 +488,8 @@ locales: ${MO_FILES}
 	fi
 .m.lib.o:
 	${COMPILE_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${OBJC} ${LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -470,6 +497,8 @@ locales: ${MO_FILES}
 	fi
 .m.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${OBJC} ${PLUGIN_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -478,6 +507,8 @@ locales: ${MO_FILES}
 
 .mm.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${OBJCXX} ${OBJCXXFLAGS} ${OBJCFLAGS} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -485,6 +516,8 @@ locales: ${MO_FILES}
 	fi
 .mm.lib.o:
 	${COMPILE_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${OBJCXX} ${LIB_CFLAGS} ${OBJCXXFLAGS} ${OBJCFLAGS} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -492,6 +525,8 @@ locales: ${MO_FILES}
 	fi
 .mm.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${OBJCXX} ${PLUGIN_CFLAGS} ${OBJCXXFLAGS} ${OBJCFLAGS} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -500,6 +535,8 @@ locales: ${MO_FILES}
 
 .po.mo:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${MSGFMT} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -508,6 +545,8 @@ locales: ${MO_FILES}
 
 .py.pyc:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${PYTHON} ${PYTHON_FLAGS} -c "import py_compile; py_compile.compile('$<')"; then \
 		${COMPILE_OK}; \
 	else \
@@ -516,6 +555,8 @@ locales: ${MO_FILES}
 
 .rc.o .rc.lib.o .rc.plugin.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${WINDRES} ${CPPFLAGS} -J rc -O coff -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -524,6 +565,8 @@ locales: ${MO_FILES}
 
 .S.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${AS} ${ASFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -531,6 +574,8 @@ locales: ${MO_FILES}
 	fi
 .S.lib.o:
 	${COMPILE_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${AS} ${LIB_CFLAGS} ${ASFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -538,6 +583,8 @@ locales: ${MO_FILES}
 	fi
 .S.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${AS} ${PLUGIN_CFLAGS} ${ASFLAGS} ${CPPFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
@@ -546,6 +593,8 @@ locales: ${MO_FILES}
 
 .xpm.o:
 	${COMPILE_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CC} ${CFLAGS} ${CPPFLAGS} -x c -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
@@ -553,6 +602,8 @@ locales: ${MO_FILES}
 	fi
 .xpm.lib.o:
 	${COMPILE_LIB_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CC} ${LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} -x c -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
@@ -560,6 +611,8 @@ locales: ${MO_FILES}
 	fi
 .xpm.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
+	in="$<"; \
+	out="$@"; \
 	if ${CC} ${PLUGIN_CFLAGS} ${CFLAGS} ${CPPFLAGS} -x c -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
