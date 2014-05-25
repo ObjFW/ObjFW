@@ -205,15 +205,21 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 	while ((entry = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
-		if (_outputLevel > 0) {
+		if (_outputLevel >= 1) {
 			OFString *date = [[entry modificationDate]
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 
 			[of_stdout writeFormat:
 			    @"%@: %" PRIu64 @" (%" PRIu64 @") bytes; %08X; %@; "
-			    @"%@\n", [entry fileName], [entry uncompressedSize],
+			    @"%@", [entry fileName], [entry uncompressedSize],
 			    [entry compressedSize], [entry CRC32], date,
 			    [entry fileComment]];
+
+			if (_outputLevel >= 3)
+				[of_stdout writeFormat: @"; %@",
+							[entry extraField]];
+
+			[of_stdout writeString: @"\n"];
 		} else
 			[of_stdout writeLine: [entry fileName]];
 
@@ -269,13 +275,13 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 			}
 		}
 
-		if (_outputLevel > -1)
+		if (_outputLevel >= 0)
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
 
 		if ([fileName hasSuffix: @"/"]) {
 			[OFFile createDirectoryAtPath: outFileName
 					createParents: true];
-			if (_outputLevel > -1)
+			if (_outputLevel >= 0)
 				[of_stdout writeLine: @" done"];
 			continue;
 		}
@@ -289,7 +295,7 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 			OFString *line;
 
 			if (_override == -1) {
-				if (_outputLevel > -1)
+				if (_outputLevel >= 0)
 					[of_stdout writeLine: @" skipped"];
 				continue;
 			}
@@ -337,7 +343,7 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 			newPercent = (written == size
 			    ? 100 : (int_fast8_t)(written * 100 / size));
 
-			if (_outputLevel > -1 && percent != newPercent) {
+			if (_outputLevel >= 0 && percent != newPercent) {
 				percent = newPercent;
 
 				[of_stdout writeFormat:
@@ -346,7 +352,7 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 			}
 		}
 
-		if (_outputLevel > -1)
+		if (_outputLevel >= 0)
 			[of_stdout writeFormat: @"\rExtracting %@... done\n",
 						fileName];
 
