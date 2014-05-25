@@ -57,7 +57,7 @@ help(OFStream *stream, bool full, int status)
 	    @"Usage: %@ -[flnqvx] archive.zip [file1 file2 ...]\n",
 	    [OFApplication programName]];
 
-	if (full) {
+	if (full)
 		[stream writeString:
 		    @"\nOptions:\n"
 		    @"    -f  Force / override files\n"
@@ -67,9 +67,16 @@ help(OFStream *stream, bool full, int status)
 		    @"    -q  Quiet mode (no output, except errors)\n"
 		    @"    -v  Verbose output for file list\n"
 		    @"    -x  Extract files\n"];
-	}
 
 	[OFApplication terminateWithStatus: status];
+}
+
+static void
+mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
+{
+	[of_stderr writeFormat: @"Error: -%C and -%C are mutually exclusive!\n",
+				option1, option2];
+	[OFApplication terminateWithStatus: 1];
 }
 
 @implementation OFZIP
@@ -85,21 +92,33 @@ help(OFStream *stream, bool full, int status)
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'f':
+			if (_override < 0)
+				mutuallyExclusiveError('f', 'n');
+
 			_override = 1;
 			break;
 		case 'n':
+			if (_override > 0)
+				mutuallyExclusiveError('f', 'n');
+
 			_override = -1;
 			break;
 		case 'v':
-			_outputLevel = 1;
+			if (_outputLevel < 0)
+				mutuallyExclusiveError('v', 'q');
+
+			_outputLevel++;
 			break;
 		case 'q':
-			_outputLevel = -1;
+			if (_outputLevel > 0)
+				mutuallyExclusiveError('v', 'q');
+
+			_outputLevel--;
 			break;
 		case 'l':
 		case 'x':
 			if (mode != '\0')
-				help(of_stdout, false, 1);
+				mutuallyExclusiveError('x', 'l');
 
 			mode = option;
 			break;
