@@ -79,6 +79,23 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 	[OFApplication terminateWithStatus: 1];
 }
 
+static void
+setPermissions(OFString *path, OFZIPArchiveEntry *entry)
+{
+#ifdef OF_HAVE_CHMOD
+	if (([entry versionMadeBy] >> 8) ==
+	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
+		uint32_t mode = [entry versionSpecificAttributes] >> 16;
+
+		/* Only allow modes that are safe */
+		mode &= (S_IRWXU | S_IRWXG | S_IRWXO);
+
+		[OFFile changePermissionsOfItemAtPath: path
+					  permissions: mode];
+	}
+#endif
+}
+
 @implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
@@ -215,6 +232,16 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 			    [entry compressedSize], [entry CRC32], date,
 			    [entry fileComment]];
 
+			if (_outputLevel >= 2) {
+				if (([entry versionMadeBy] >> 8) ==
+				    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
+					uint32_t mode = [entry
+					    versionSpecificAttributes] >> 16;
+					[of_stdout writeFormat: @"; %06o",
+								mode];
+				}
+			}
+
 			if (_outputLevel >= 3)
 				[of_stdout writeFormat: @"; %@",
 							[entry extraField]];
@@ -281,8 +308,11 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 		if ([fileName hasSuffix: @"/"]) {
 			[OFFile createDirectoryAtPath: outFileName
 					createParents: true];
+			setPermissions(outFileName, entry);
+
 			if (_outputLevel >= 0)
 				[of_stdout writeLine: @" done"];
+
 			continue;
 		}
 
@@ -332,6 +362,7 @@ mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
 		stream = [archive streamForReadingFile: fileName];
 		output = [OFFile fileWithPath: outFileName
 					 mode: @"wb"];
+		setPermissions(outFileName, entry);
 
 		while (![stream isAtEndOfStream]) {
 			size_t length = [stream readIntoBuffer: buffer
