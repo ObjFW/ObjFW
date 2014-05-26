@@ -20,15 +20,8 @@
 
 @interface OFZIPArchiveEntry (OF_PRIVATE_CATEGORY)
 - (instancetype)OF_initWithFile: (OFFile*)file;
-- (uint16_t)OF_madeWithVersion;
-- (uint16_t)OF_minVersion;
 - (uint16_t)OF_generalPurposeBitFlag;
-- (uint16_t)OF_compressionMethod;
 - (uint16_t)OF_lastModifiedFileTime;
 - (uint16_t)OF_lastModifiedFileDate;
-- (OFDataArray*)OF_extraFieldNoCopy;
-- (uint16_t)OF_startDiskNumber;
-- (uint16_t)OF_internalAttributes;
-- (uint32_t)OF_externalAttributes;
 - (uint64_t)OF_localFileHeaderOffset;
 @end

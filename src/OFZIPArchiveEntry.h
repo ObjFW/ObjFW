@@ -18,6 +18,62 @@
 
 /*! @file */
 
+enum {
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE	  = 0,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE	  = 8,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64 = 9
+};
+
+/*!
+ * @brief Attribute compatibility part of ZIP versions.
+ */
+enum of_zip_archive_entry_attribute_compatibility {
+	/** MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems) */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS	       =  0,
+	/** Amiga */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA	       =  1,
+	/** OpenVMS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OPENVMS       =  2,
+	/** UNIX */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX	       =  3,
+	/** VM/CMS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VM_CMS	       =  4,
+	/** Atari ST */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ATARI_ST      =  5,
+	/** OS/2 HPFS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS2_HPFS      =  6,
+	/** Macintosh */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MACINTOSH     =  7,
+	/** Z-System */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_Z_SYSTEM      =  8,
+	/** CP/M */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_CP_M	       =  9,
+	/** Windows NTFS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_WINDOWS_NTFS  = 10,
+	/** MVS (OS/390 - Z/OS) */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS	       = 11,
+	/** VSE */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE	       = 12,
+	/** Acorn Risc */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC    = 13,
+	/** VFAT */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT	       = 14,
+	/** Alternate MVS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ALTERNATE_MVS = 15,
+	/** BeOS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_BEOS	       = 16,
+	/** Tandem */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_TANDEM	       = 17,
+	/** OS/400 */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_400	       = 18,
+	/** OS X (Darwin) */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_X	       = 19
+};
+
+enum {
+	OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64 = 0x0001
+};
+
 @class OFString;
 @class OFDataArray;
 @class OFFile;
@@ -31,9 +87,9 @@
  */
 @interface OFZIPArchiveEntry: OFObject
 {
-	uint16_t _madeWithVersion, _minVersion, _generalPurposeBitFlag;
-	uint16_t _compressionMethod, _lastModifiedFileTime;
-	uint16_t _lastModifiedFileDate;
+	uint16_t _versionMadeBy, _minVersionNeeded, _generalPurposeBitFlag;
+	uint16_t _compressionMethod;
+	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
 	uint32_t _CRC32;
 	uint64_t _compressedSize, _uncompressedSize;
 	OFString *_fileName;
@@ -41,15 +97,18 @@
 	OFString *_fileComment;
 	uint32_t _startDiskNumber;
 	uint16_t _internalAttributes;
-	uint32_t _externalAttributes;
+	uint32_t _versionSpecificAttributes;
 	uint64_t _localFileHeaderOffset;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *fileName, *fileComment;
+@property (readonly) uint16_t versionMadeBy, minVersionNeeded;
+@property (readonly) uint16_t compressionMethod;
 @property (readonly) uint64_t compressedSize, uncompressedSize;
 @property (readonly, retain) OFDate *modificationDate;
 @property (readonly) uint32_t CRC32;
+@property (readonly) uint32_t versionSpecificAttributes;
 @property (readonly, copy) OFDataArray *extraField;
 #endif
 
@@ -66,6 +125,44 @@
  * @return The comment of the entry's file
  */
 - (OFString*)fileComment;
+
+/*!
+ * @brief Returns the version which made the entry.
+ *
+ * The lower 8 bits are the ZIP specification version.@n
+ * The upper 8 bits are the attribute compatibility.
+ * See @ref of_zip_archive_entry_attribute_compatibility.
+ *
+ * @return The version which made the entry
+ */
+- (uint16_t)versionMadeBy;
+
+/*!
+ * @brief Returns the minimum version required to extract the file.
+ *
+ * The lower 8 bits are the ZIP specification version.@n
+ * The upper 8 bits are the attribute compatibility.
+ * See @ref of_zip_archive_entry_attribute_compatibility.
+ *
+ * @return The minimum version required to extract the file
+ */
+- (uint16_t)minVersionNeeded;
+
+/*!
+ * @brief Returns the compression method of the entry
+ *
+ * Supported values are:
+ * Value                                             | Description
+ * --------------------------------------------------|---------------
+ * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE      | No compression
+ * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE   | Deflate
+ * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64 | Deflate64
+ *
+ * Other values may be returned, but the file cannot be extracted then.
+ *
+ * @return The compression method of the entry
+ */
+- (uint16_t)compressionMethod;
 
 /*!
  * @brief Returns the compressed size of the entry's file.
@@ -96,6 +193,16 @@
 - (uint32_t)CRC32;
 
 /*!
+ * @brief Returns the version specific attributes.
+ *
+ * The meaning of the version specific attributes depends on the attribute
+ * compatibility part of the version that made the entry.
+ *
+ * @return The version specific attributes
+ */
+- (uint32_t)versionSpecificAttributes;
+
+/*!
  * @brief Returns the extra field of the entry.
  *
  * @return The extra field of the entry
@@ -107,14 +214,17 @@
 extern "C" {
 #endif
 /*!
- * @brief Gets a pointer to and the size of the extra field with the specified
- *	  tag.
+ * @brief Gets a pointer to and the size of the extensible data field with the
+ *	  specified tag.
  *
+ * @param extraField The extra field to search for an extensible data field with
+ *		     the specified tag
+ * @param tag The tag to look for
  * @param data A pointer to a pointer that should be set to the start of the
  *	       extra field with the specified tag
  * @param size A pointer to an uint16_t that should be set to the size
  */
-extern void of_zip_archive_entry_find_extra_field(OFDataArray *extraField,
+extern void of_zip_archive_entry_extra_field_find(OFDataArray *extraField,
     uint16_t tag, uint8_t **data, uint16_t *size);
 #ifdef __cplusplus
 }

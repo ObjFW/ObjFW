@@ -57,7 +57,7 @@
 @interface OFZIPArchive_LocalFileHeader: OFObject
 {
 @public
-	uint16_t _minVersion, _generalPurposeBitFlag, _compressionMethod;
+	uint16_t _minVersionNeeded, _generalPurposeBitFlag, _compressionMethod;
 	uint16_t _lastModifiedFileTime, _lastModifiedFileDate;
 	uint32_t _CRC32;
 	uint64_t _compressedSize, _uncompressedSize;
@@ -341,10 +341,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
 
-	if ((localFileHeader->_minVersion & 0xFF) > 45) {
+	if ((localFileHeader->_minVersionNeeded & 0xFF) > 45) {
 		OFString *version = [OFString stringWithFormat: @"%u.%u",
-		    (localFileHeader->_minVersion & 0xFF) / 10,
-		    (localFileHeader->_minVersion & 0xFF) % 10];
+		    (localFileHeader->_minVersionNeeded & 0xFF) / 10,
+		    (localFileHeader->_minVersionNeeded & 0xFF) % 10];
 
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
@@ -376,7 +376,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		if ([file readLittleEndianInt32] != 0x04034B50)
 			@throw [OFInvalidFormatException exception];
 
-		_minVersion = [file readLittleEndianInt16];
+		_minVersionNeeded = [file readLittleEndianInt16];
 		_generalPurposeBitFlag = [file readLittleEndianInt16];
 		_compressionMethod = [file readLittleEndianInt16];
 		_lastModifiedFileTime = [file readLittleEndianInt16];
@@ -395,8 +395,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		_extraField = [[file
 		    readDataArrayWithCount: extraFieldLength] retain];
 
-		of_zip_archive_entry_find_extra_field(_extraField, 0x0001,
-		    &ZIP64, &ZIP64Size);
+		of_zip_archive_entry_extra_field_find(_extraField,
+		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);
 
 		if (ZIP64 != NULL) {
 			if (_uncompressedSize == 0xFFFFFFFF)
@@ -427,9 +427,9 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - (bool)matchesEntry: (OFZIPArchiveEntry*)entry
 {
-	if (_minVersion != [entry OF_minVersion] ||
+	if (_minVersionNeeded != [entry minVersionNeeded] ||
 	    _generalPurposeBitFlag != [entry OF_generalPurposeBitFlag] ||
-	    _compressionMethod != [entry OF_compressionMethod] ||
+	    _compressionMethod != [entry compressionMethod] ||
 	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
 	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate])
 		return false;
@@ -461,14 +461,14 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 			     whence: SEEK_SET];
 
 		switch (localFileHeader->_compressionMethod) {
-		case 0: /* No compression */
+		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
 			_stream = [_file retain];
 			break;
-		case 8: /* Deflate */
+		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
 			_stream = [[OFDeflateStream alloc]
 			    initWithStream: _file];
 			break;
-		case 9: /* Deflate64 */
+		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
 			_stream = [[OFDeflate64Stream alloc]
 			    initWithStream: _file];
 			break;

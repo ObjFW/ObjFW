@@ -33,7 +33,7 @@ extern uint32_t of_zip_archive_read_field32(uint8_t**, uint16_t*);
 extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
 
 void
-of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
+of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
     uint8_t **data, uint16_t *size)
 {
 	uint8_t *bytes;
@@ -82,8 +82,8 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 		if ([file readLittleEndianInt32] != 0x02014B50)
 			@throw [OFInvalidFormatException exception];
 
-		_madeWithVersion = [file readLittleEndianInt16];
-		_minVersion = [file readLittleEndianInt16];
+		_versionMadeBy = [file readLittleEndianInt16];
+		_minVersionNeeded = [file readLittleEndianInt16];
 		_generalPurposeBitFlag = [file readLittleEndianInt16];
 		_compressionMethod = [file readLittleEndianInt16];
 		_lastModifiedFileTime = [file readLittleEndianInt16];
@@ -96,7 +96,7 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 		fileCommentLength = [file readLittleEndianInt16];
 		_startDiskNumber = [file readLittleEndianInt16];
 		_internalAttributes = [file readLittleEndianInt16];
-		_externalAttributes = [file readLittleEndianInt32];
+		_versionSpecificAttributes = [file readLittleEndianInt32];
 		_localFileHeaderOffset = [file readLittleEndianInt32];
 
 		encoding = (_generalPurposeBitFlag & (1 << 11)
@@ -110,8 +110,8 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 		_fileComment = [[file readStringWithLength: fileCommentLength
 						  encoding: encoding] copy];
 
-		of_zip_archive_entry_find_extra_field(_extraField, 0x0001,
-		    &ZIP64, &ZIP64Size);
+		of_zip_archive_entry_extra_field_find(_extraField,
+		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);
 
 		if (ZIP64 != NULL) {
 			if (_uncompressedSize == 0xFFFFFFFF)
@@ -160,6 +160,21 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 	OF_GETTER(_fileComment, true)
 }
 
+- (uint16_t)versionMadeBy
+{
+	return _versionMadeBy;
+}
+
+- (uint16_t)minVersionNeeded
+{
+	return _minVersionNeeded;
+}
+
+- (uint16_t)compressionMethod
+{
+	return _compressionMethod;
+}
+
 - (uint64_t)compressedSize
 {
 	return _compressedSize;
@@ -199,6 +214,11 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 	return _CRC32;
 }
 
+- (uint32_t)versionSpecificAttributes
+{
+	return _versionSpecificAttributes;
+}
+
 - (OFDataArray*)extraField
 {
 	return [[_extraField copy] autorelease];
@@ -230,24 +250,9 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 	return [ret autorelease];
 }
 
-- (uint16_t)OF_madeWithVersion
-{
-	return _madeWithVersion;
-}
-
-- (uint16_t)OF_minVersion
-{
-	return _minVersion;
-}
-
 - (uint16_t)OF_generalPurposeBitFlag
 {
 	return _generalPurposeBitFlag;
-}
-
-- (uint16_t)OF_compressionMethod
-{
-	return _compressionMethod;
 }
 
 - (uint16_t)OF_lastModifiedFileTime
@@ -258,26 +263,6 @@ of_zip_archive_entry_find_extra_field(OFDataArray *extraField, uint16_t tag,
 - (uint16_t)OF_lastModifiedFileDate
 {
 	return _lastModifiedFileDate;
-}
-
-- (OFDataArray*)OF_extraFieldNoCopy
-{
-	OF_GETTER(_extraField, true)
-}
-
-- (uint16_t)OF_startDiskNumber
-{
-	return _startDiskNumber;
-}
-
-- (uint16_t)OF_internalAttributes
-{
-	return _internalAttributes;
-}
-
-- (uint32_t)OF_externalAttributes
-{
-	return _externalAttributes;
 }
 
 - (uint64_t)OF_localFileHeaderOffset
