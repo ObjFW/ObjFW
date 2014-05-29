@@ -16,6 +16,12 @@
 
 #include "config.h"
 
+/* Work around __block being used by glibc */
+#include <stdlib.h>	/* include any libc header to get the libc defines */
+#ifdef __GLIBC__
+# undef __USE_XOPEN
+#endif
+
 #include <unistd.h>
 
 #import "OFStdIOStream.h"

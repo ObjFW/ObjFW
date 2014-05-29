@@ -14,6 +14,11 @@
  * file.
  */
 
+/* Work around __block being used by glibc */
+#ifdef __GLIBC__
+# undef __USE_XOPEN
+#endif
+
 #include <unistd.h>
 
 #ifdef HAVE_ARPA_INET_H

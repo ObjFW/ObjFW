@@ -29,6 +29,11 @@
 #include <string.h>
 #include <stdarg.h>
 
+/* Work around __block being used by glibc */
+#ifdef __GLIBC__
+# undef __USE_XOPEN
+#endif
+
 #include <unistd.h>
 
 #include <fcntl.h>

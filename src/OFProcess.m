@@ -18,6 +18,11 @@
 
 #include <string.h>
 
+/* Work around __block being used by glibc */
+#ifdef __GLIBC__
+# undef __USE_XOPEN
+#endif
+
 #ifndef _WIN32
 # include <unistd.h>
 # include <signal.h>
