@@ -32,6 +32,84 @@
 extern uint32_t of_zip_archive_read_field32(uint8_t**, uint16_t*);
 extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
 
+OFString*
+of_zip_archive_entry_version_to_string(uint16_t version)
+{
+	const char *attrCompat = NULL;
+
+	switch (version >> 8) {
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS:
+		attrCompat = "MS-DOS or OS/2";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA:
+		attrCompat = "Amiga";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OPENVMS:
+		attrCompat = "OpenVMS";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX:
+		attrCompat = "UNIX";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VM_CMS:
+		attrCompat = "VM/CMS";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ATARI_ST:
+		attrCompat = "Atari ST";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS2_HPFS:
+		attrCompat = "OS/2 HPFS";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MACINTOSH:
+		attrCompat = "Macintosh";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_Z_SYSTEM:
+		attrCompat = "Z-System";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_CP_M:
+		attrCompat = "CP/M";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_WINDOWS_NTFS:
+		attrCompat = "Windows NTFS";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS:
+		attrCompat = "MVS (OS/390 - Z/OS)";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE:
+		attrCompat = "VSE";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC:
+		attrCompat = "Acorn Risc";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT:
+		attrCompat = "VFAT";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ALTERNATE_MVS:
+		attrCompat = "Alternate MVS";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_BEOS:
+		attrCompat = "BeOS";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_TANDEM:
+		attrCompat = "Tandem";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_400:
+		attrCompat = "OS/400";
+		break;
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_X:
+		attrCompat = "OS X (Darwin)";
+		break;
+	}
+
+	if (attrCompat != NULL)
+		return [OFString stringWithFormat:
+		    @"%u.%u, %s",
+		    (version & 0xFF) / 10, (version & 0xFF) % 10, attrCompat];
+	else
+		return [OFString stringWithFormat:
+		    @"%u.%u, unknown %02X",
+		    (version % 0xFF) / 10, (version & 0xFF) % 10, version >> 8];
+}
+
 void
 of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
     uint8_t **data, uint16_t *size)

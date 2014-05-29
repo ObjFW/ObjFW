@@ -28,7 +28,7 @@ enum {
  * @brief Attribute compatibility part of ZIP versions.
  */
 enum of_zip_archive_entry_attribute_compatibility {
-	/** MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems) */
+	/** MS-DOS and OS/2 */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS	       =  0,
 	/** Amiga */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA	       =  1,
@@ -213,6 +213,14 @@ enum {
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*!
+ * @brief Converts the ZIP entry version to a string
+ *
+ * @param version The ZIP entry version to convert to a string
+ * @return The ZIP entry version as a string
+ */
+extern OFString* of_zip_archive_entry_version_to_string(uint16_t version);
+
 /*!
  * @brief Gets a pointer to and the size of the extensible data field with the
  *	  specified tag.

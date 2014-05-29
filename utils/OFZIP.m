@@ -222,33 +222,48 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	while ((entry = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
+		[of_stdout writeLine: [entry fileName]];
+
 		if (_outputLevel >= 1) {
 			OFString *date = [[entry modificationDate]
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 
 			[of_stdout writeFormat:
-			    @"%@: %" PRIu64 @" (%" PRIu64 @") bytes; %08X; %@; "
-			    @"%@", [entry fileName], [entry uncompressedSize],
-			    [entry compressedSize], [entry CRC32], date,
-			    [entry fileComment]];
+			    @"\tCompressed: %" PRIu64 @" bytes\n"
+			    @"\tUncompressed: %" PRIu64 @" bytes\n"
+			    @"\tCRC32: %08X\n"
+			    @"\tModification date: %@\n",
+			    [entry compressedSize], [entry uncompressedSize],
+			    [entry CRC32], date];
 
 			if (_outputLevel >= 2) {
-				if (([entry versionMadeBy] >> 8) ==
+				uint16_t versionMadeBy = [entry versionMadeBy];
+
+				[of_stdout writeFormat:
+				    @"\tVersion made by: %@\n"
+				    @"\tMinimum version needed: %@\n",
+				    of_zip_archive_entry_version_to_string(
+				    versionMadeBy),
+				    of_zip_archive_entry_version_to_string(
+				    [entry minVersionNeeded])];
+
+				if ((versionMadeBy >> 8) ==
 				    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
 					uint32_t mode = [entry
 					    versionSpecificAttributes] >> 16;
-					[of_stdout writeFormat: @"; %06o",
-								mode];
+					[of_stdout writeFormat:
+					    @"\tMode: %06o\n", mode];
 				}
 			}
 
 			if (_outputLevel >= 3)
-				[of_stdout writeFormat: @"; %@",
+				[of_stdout writeFormat: @"\tExtra field: %@\n",
 							[entry extraField]];
 
-			[of_stdout writeString: @"\n"];
-		} else
-			[of_stdout writeLine: [entry fileName]];
+			if ([[entry fileComment] length] > 0)
+				[of_stdout writeFormat: @"\tComment: %@\n",
+							[entry fileComment]];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	}
