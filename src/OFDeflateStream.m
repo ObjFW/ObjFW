@@ -23,7 +23,12 @@
 
 #include <assert.h>
 
-#import "OFDeflateStream.h"
+#ifndef DEFLATE64
+# import "OFDeflateStream.h"
+#else
+# import "OFDeflate64Stream.h"
+# define OFDeflateStream OFDeflate64Stream
+#endif
 #import "OFDataArray.h"
 
 #import "OFInitializationFailedException.h"
@@ -57,6 +62,7 @@ struct huffman_tree {
 	uint16_t value;
 };
 
+#ifndef DEFLATE64
 static const uint_fast8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
@@ -75,6 +81,27 @@ static const uint8_t distanceExtraBits[30] = {
 	0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10,
 	10, 11, 11, 12, 12, 13, 13
 };
+#else
+static const uint_fast8_t numDistanceCodes = 32;
+static const uint8_t lengthCodes[29] = {
+	/* indices are -257, values -3 */
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
+	64, 80, 96, 112, 128, 160, 192, 224, 0
+};
+static const uint8_t lengthExtraBits[29] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4,
+	5, 5, 5, 5, 16
+};
+static const uint16_t distanceCodes[32] = {
+	1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385,
+	513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577,
+	32769, 49153
+};
+static const uint8_t distanceExtraBits[32] = {
+	0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10,
+	10, 11, 11, 12, 12, 13, 13, 14, 14
+};
+#endif
 static const uint8_t codeLengthsOrder[19] = {
 	16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
 };
@@ -254,6 +281,7 @@ releaseTree(struct huffman_tree *tree)
 	fixedDistTree = constructTree(lengths, 32);
 }
 
+#ifndef DEFLATE64
 + (instancetype)streamWithStream: (OFStream*)stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
@@ -271,11 +299,6 @@ releaseTree(struct huffman_tree *tree)
 	_stream = [stream retain];
 	_bitIndex = 8;	/* 0-7 address the bit, 8 means fetch next byte */
 	_slidingWindowMask = 0x7FFF;
-	_codes.numDistanceCodes = numDistanceCodes;
-	_codes.lengthCodes = lengthCodes;
-	_codes.lengthExtraBits = lengthExtraBits;
-	_codes.distanceCodes = distanceCodes;
-	_codes.distanceExtraBits = distanceExtraBits;
 
 	return self;
 }
@@ -286,6 +309,7 @@ releaseTree(struct huffman_tree *tree)
 
 	[super dealloc];
 }
+#endif
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer_
 			  length: (size_t)length
@@ -610,13 +634,12 @@ start:
 				    &value))
 					return bytesWritten;
 
-				if OF_UNLIKELY (value >=
-				    _codes.numDistanceCodes)
+				if OF_UNLIKELY (value >= numDistanceCodes)
 					@throw [OFInvalidFormatException
 					    exception];
 
-				CTX.distance = _codes.distanceCodes[value];
-				extraBits = _codes.distanceExtraBits[value];
+				CTX.distance = distanceCodes[value];
+				extraBits = distanceExtraBits[value];
 
 				if (extraBits > 0) {
 					if OF_UNLIKELY (!tryReadBits(self,
@@ -723,8 +746,8 @@ start:
 
 			/* Length of length distance pair */
 			lengthCodeIndex = value - 257;
-			CTX.length = _codes.lengthCodes[lengthCodeIndex] + 3;
-			extraBits = _codes.lengthExtraBits[lengthCodeIndex];
+			CTX.length = lengthCodes[lengthCodeIndex] + 3;
+			extraBits = lengthExtraBits[lengthCodeIndex];
 
 			if (extraBits > 0) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits,
@@ -748,8 +771,10 @@ start:
 	OF_UNREACHABLE
 }
 
+#ifndef DEFLATE64
 - (bool)lowlevelIsAtEndOfStream
 {
 	return _atEndOfStream;
 }
+#endif
 @end

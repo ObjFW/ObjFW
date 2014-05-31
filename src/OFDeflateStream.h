@@ -38,13 +38,6 @@
 @protected
 	uint8_t *_slidingWindow;
 	uint_fast16_t _slidingWindowIndex, _slidingWindowMask;
-	struct {
-		uint_fast8_t numDistanceCodes;
-		const uint8_t *lengthCodes;
-		const uint8_t *lengthExtraBits;
-		const uint16_t *distanceCodes;
-		const uint8_t *distanceExtraBits;
-	} _codes;
 	enum {
 		OF_DEFLATE_STREAM_BLOCK_HEADER,
 		OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER,
