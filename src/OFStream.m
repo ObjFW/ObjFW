@@ -1463,9 +1463,9 @@
 	return length;
 }
 
-- (size_t)numberOfBytesInReadBuffer
+- (bool)hasDataInReadBuffer
 {
-	return _readBufferLength;
+	return (_readBufferLength > 0);
 }
 
 - (bool)isBlocking

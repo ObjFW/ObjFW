@@ -776,5 +776,15 @@ start:
 {
 	return _atEndOfStream;
 }
+
+- (int)fileDescriptorForReading
+{
+	return [_stream fileDescriptorForReading];
+}
+
+- (bool)hasDataInReadBuffer
+{
+	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+}
 #endif
 @end

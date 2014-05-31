@@ -14,6 +14,8 @@
  * file.
  */
 
+#define OF_SEEKABLE_STREAM_M
+
 #include "config.h"
 
 #include <stdlib.h>

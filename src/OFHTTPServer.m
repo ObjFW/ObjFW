@@ -205,7 +205,7 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
-- (void)sendHeaders
+- (void)OF_sendHeaders
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *date = [[OFDate date]
@@ -242,7 +242,7 @@ normalizedKey(OFString *key)
 	void *pool;
 
 	if (!_headersSent)
-		[self sendHeaders];
+		[self OF_sendHeaders];
 
 	if (!_chunked) {
 		[_socket writeBuffer: buffer
@@ -263,7 +263,7 @@ normalizedKey(OFString *key)
 - (void)close
 {
 	if (!_headersSent)
-		[self sendHeaders];
+		[self OF_sendHeaders];
 
 	if (_chunked)
 		[_socket writeBuffer: "0\r\n\r\n"

@@ -238,10 +238,9 @@ normalizeKey(char *str_)
 	return [_socket fileDescriptorForReading];
 }
 
-- (size_t)numberOfBytesInReadBuffer
+- (bool)hasDataInReadBuffer
 {
-	return [super numberOfBytesInReadBuffer] +
-	    [_socket numberOfBytesInReadBuffer];
+	return ([super hasDataInReadBuffer] || [_socket hasDataInReadBuffer]);
 }
 
 - (void)close

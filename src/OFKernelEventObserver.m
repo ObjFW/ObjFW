@@ -407,7 +407,7 @@ enum {
 
 	for (i = 0; i < count; i++) {
 		if ([objects[i] isKindOfClass: [OFStream class]] &&
-		    [objects[i] numberOfBytesInReadBuffer] > 0 &&
+		    [objects[i] hasDataInReadBuffer] &&
 		    ![objects[i] OF_isWaitingForDelimiter]) {
 			void *pool = objc_autoreleasePoolPush();
 

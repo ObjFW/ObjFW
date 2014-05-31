@@ -86,6 +86,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
     OFCopying>
 {
+#ifndef OF_SEEKABLE_STREAM_M
+@private
+#endif
 	char *_readBuffer, *_writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _writeBufferEnabled, _blocking, _waitingForDelimiter;
@@ -1041,11 +1044,11 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 	    arguments: (va_list)arguments;
 
 /*!
- * @brief Returns the number of bytes still present in the internal read buffer.
+ * @brief Returns whether data is present in the internal read buffer.
  *
- * @return The number of bytes still present in the internal read buffer.
+ * @return Whether data is present in the internal read buffer
  */
-- (size_t)numberOfBytesInReadBuffer;
+- (bool)hasDataInReadBuffer;
 
 /*!
  * @brief Returns whether the stream is in blocking mode.
