@@ -54,9 +54,19 @@
 #  define noreturn _Noreturn
 # endif
 #elif defined(__GNUC__)
-# define noreturn __attribute__((noreturn))
+# define noreturn __attribute__((__noreturn__))
 #else
 # define noreturn
+#endif
+
+/*
+ * Work around Apple's libc headers breaking by defining noreturn.
+ * They use __attribute__((noreturn)) where they should be using
+ * __attribute__((__noreturn__)).
+ */
+#if defined(__APPLE__) && defined(__dead2)
+# undef __dead2
+# define __dead2 __attribute__((__noreturn__))
 #endif
 
 #if defined(OF_HAVE__THREAD_LOCAL)
