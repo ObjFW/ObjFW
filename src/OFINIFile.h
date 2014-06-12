@@ -15,10 +15,10 @@
  */
 
 #import "OFObject.h"
+#import "OFINICategory.h"
 
 @class OFMutableArray;
 @class OFString;
-@class OFINICategory;
 
 /*!
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h

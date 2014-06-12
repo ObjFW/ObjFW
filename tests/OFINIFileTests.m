@@ -44,7 +44,9 @@ static OFString *module = @"OFINIFile";
 	    NL
 	    @"[foobar]" NL
 	    @";foobarcomment" NL
-	    @"qux= asd" NL
+	    @"qux=\" asd\"" NL
+	    @"quxquxqux=\"hello\\\"world\"" NL
+	    @"qux2=\"\\f\"" NL
 	    NL
 	    @"[types]" NL
 	    @"integer=16" NL
@@ -63,7 +65,11 @@ static OFString *module = @"OFINIFile";
 	module = @"OFINICategory";
 
 	TEST(@"-[stringForKey:]",
-	    [[category stringForKey: @"foo"] isEqual: @"bar"])
+	    [[category stringForKey: @"foo"] isEqual: @"bar"] &&
+	    (category = [file categoryForName: @"foobar"]) &&
+	    [[category stringForKey: @"quxquxqux"] isEqual: @"hello\"world"])
+
+	category = [file categoryForName: @"tests"];
 
 	TEST(@"-[setString:forKey:]",
 	    R([category setString: @"baz"
@@ -104,7 +110,7 @@ static OFString *module = @"OFINIFile";
 	category = [file categoryForName: @"foobar"];
 
 	TEST(@"-[removeValueForKey:]",
-	    R([category removeValueForKey: @"quxqux"]))
+	    R([category removeValueForKey: @"quxqux "]))
 
 	module = @"OFINIFile";
 

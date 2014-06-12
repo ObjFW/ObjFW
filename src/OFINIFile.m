@@ -22,6 +22,7 @@
 #import "OFINICategory+Private.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFOpenFileFailedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -115,10 +116,20 @@ isWhitespaceLine(OFString *line)
 - (void)OF_parseFile: (OFString*)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"r"];
+	OFFile *file;
 	OFINICategory *category = nil;
 	OFString *line;
+
+	@try {
+		file = [OFFile fileWithPath: path
+				       mode: @"r"];
+	} @catch (OFOpenFileFailedException *e) {
+		/* Handle missing file like an empty file */
+		if ([e errNo] == ENOENT)
+			return;
+
+		@throw e;
+	}
 
 	while ((line = [file readLine]) != nil) {
 		if (isWhitespaceLine(line))

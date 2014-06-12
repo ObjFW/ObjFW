@@ -40,6 +40,66 @@
 }
 @end
 
+static OFString*
+escapeString(OFString *string)
+{
+	OFMutableString *mutableString;
+
+	/* FIXME: Optimize */
+	if (![string hasPrefix: @" "] && ![string hasPrefix: @"\t"] &&
+	    ![string hasPrefix: @"\f"] && ![string hasSuffix: @" "] &&
+	    ![string hasSuffix: @"\t"] && ![string hasSuffix: @"\f"] &&
+	    ![string containsString: @"\""])
+		return string;
+
+	mutableString = [[string mutableCopy] autorelease];
+
+	[mutableString replaceOccurrencesOfString: @"\\"
+				       withString: @"\\\\"];
+	[mutableString replaceOccurrencesOfString: @"\f"
+				       withString: @"\\f"];
+	[mutableString replaceOccurrencesOfString: @"\r"
+				       withString: @"\\r"];
+	[mutableString replaceOccurrencesOfString: @"\n"
+				       withString: @"\\n"];
+	[mutableString replaceOccurrencesOfString: @"\""
+				       withString: @"\\\""];
+
+	[mutableString prependString: @"\""];
+	[mutableString appendString: @"\""];
+
+	[mutableString makeImmutable];
+
+	return mutableString;
+}
+
+static OFString*
+unescapeString(OFString *string)
+{
+	OFMutableString *mutableString;
+
+	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
+		return string;
+
+	string = [string substringWithRange: of_range(1, [string length] - 2)];
+	mutableString = [[string mutableCopy] autorelease];
+
+	[mutableString replaceOccurrencesOfString: @"\\f"
+				       withString: @"\f"];
+	[mutableString replaceOccurrencesOfString: @"\\r"
+				       withString: @"\r"];
+	[mutableString replaceOccurrencesOfString: @"\\n"
+				       withString: @"\n"];
+	[mutableString replaceOccurrencesOfString: @"\\\""
+				       withString: @"\""];
+	[mutableString replaceOccurrencesOfString: @"\\\\"
+				       withString: @"\\"];
+
+	[mutableString makeImmutable];
+
+	return mutableString;
+}
+
 @implementation OFINICategory_Pair
 - (void)dealloc
 {
@@ -112,10 +172,11 @@
 		value = [line substringWithRange:
 		    of_range(pos + 1, [line length] - pos - 1)];
 
-		if ([key hasSuffix: @" "]) {
-			key = [key stringByDeletingEnclosingWhitespaces];
-			value = [value stringByDeletingEnclosingWhitespaces];
-		}
+		key = [key stringByDeletingEnclosingWhitespaces];
+		value = [value stringByDeletingEnclosingWhitespaces];
+
+		key = unescapeString(key);
+		value = unescapeString(value);
 
 		pair->_key = [key copy];
 		pair->_value = [value copy];
@@ -293,12 +354,8 @@
 - (void)setBool: (bool)bool_
 	 forKey: (OFString*)key
 {
-	if (bool_)
-		[self setString: @"true"
-			 forKey: key];
-	else
-		[self setString: @"false"
-			 forKey: key];
+	[self setString: (bool_ ? @"true" : @"false")
+		 forKey: key];
 }
 
 - (void)setFloat: (float)float_
@@ -373,8 +430,10 @@
 			[stream writeLine: comment->_comment];
 		} else if ([line isKindOfClass: [OFINICategory_Pair class]]) {
 			OFINICategory_Pair *pair = line;
-			[stream writeFormat: @"%@=%@\n",
-					     pair->_key, pair->_value];
+			OFString *key = escapeString(pair->_key);
+			OFString *value = escapeString(pair->_value);
+
+			[stream writeFormat: @"%@=%@\n", key, value];
 		} else
 			@throw [OFInvalidArgumentException exception];
 	}
