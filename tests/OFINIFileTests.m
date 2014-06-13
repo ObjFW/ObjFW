@@ -46,7 +46,8 @@ static OFString *module = @"OFINIFile";
 	    @";foobarcomment" NL
 	    @"qux=\" asd\"" NL
 	    @"quxquxqux=\"hello\\\"world\"" NL
-	    @"qux2=\"\\f\"" NL
+	    @"qux2=\"a\\f\"" NL
+	    @"qux3=a\fb" NL
 	    NL
 	    @"[types]" NL
 	    @"integer=16" NL
@@ -54,63 +55,61 @@ static OFString *module = @"OFINIFile";
 	    @"float=0.25" NL
 	    @"double=0.75" NL;
 	OFINIFile *file;
-	OFINICategory *category;
+	OFINICategory *tests, *foobar, *types;
 
 	TEST(@"+[fileWithPath:]",
 	    (file = [OFINIFile fileWithPath: @"testfile.ini"]))
 
+	tests = [file categoryForName: @"tests"];
+	foobar = [file categoryForName: @"foobar"];
+	types = [file categoryForName: @"types"];
 	TEST(@"-[categoryForName:]",
-	    (category = [file categoryForName: @"tests"]))
+	    tests != nil && foobar != nil && types != nil)
 
 	module = @"OFINICategory";
 
 	TEST(@"-[stringForKey:]",
-	    [[category stringForKey: @"foo"] isEqual: @"bar"] &&
-	    (category = [file categoryForName: @"foobar"]) &&
-	    [[category stringForKey: @"quxquxqux"] isEqual: @"hello\"world"])
-
-	category = [file categoryForName: @"tests"];
+	    [[tests stringForKey: @"foo"] isEqual: @"bar"] &&
+	    [[foobar stringForKey: @"quxquxqux"] isEqual: @"hello\"world"])
 
 	TEST(@"-[setString:forKey:]",
-	    R([category setString: @"baz"
-			   forKey: @"foo"]) &&
-	    R([category setString: @"new"
-			   forKey: @"new"]))
-
-	category = [file categoryForName: @"types"];
+	    R([tests setString: @"baz"
+			forKey: @"foo"]) &&
+	    R([tests setString: @"new"
+			forKey: @"new"]) &&
+	    R([foobar setString: @"a\fb"
+			 forKey: @"qux3"]))
 
 	TEST(@"-[integerForKey:defaultValue:]",
-	    [category integerForKey: @"integer"
-		       defaultValue: 2] == 0x20)
+	    [types integerForKey: @"integer"
+		    defaultValue: 2] == 0x20)
 
-	TEST(@"-[setInteger:forKey:]", R([category setInteger: 0x10
-						       forKey: @"integer"]))
+	TEST(@"-[setInteger:forKey:]", R([types setInteger: 0x10
+						    forKey: @"integer"]))
 
 	TEST(@"-[boolForKey:defaultValue:]",
-	    [category boolForKey: @"bool"
-		    defaultValue: false] == true)
+	    [types boolForKey: @"bool"
+		 defaultValue: false] == true)
 
-	TEST(@"-[setBool:forKey:]", R([category setBool: false
-						 forKey: @"bool"]))
+	TEST(@"-[setBool:forKey:]", R([types setBool: false
+					      forKey: @"bool"]))
 
 	TEST(@"-[floatForKey:defaultValue:]",
-	    [category floatForKey: @"float"
-		     defaultValue: 1] == 0.5f)
+	    [types floatForKey: @"float"
+		  defaultValue: 1] == 0.5f)
 
-	TEST(@"-[setFloat:forKey:]", R([category setFloat: 0.25f
-						   forKey: @"float"]))
+	TEST(@"-[setFloat:forKey:]", R([types setFloat: 0.25f
+						forKey: @"float"]))
 
 	TEST(@"-[doubleForKey:defaultValue:]",
-	    [category doubleForKey: @"double"
-		      defaultValue: 3] == 0.25)
+	    [types doubleForKey: @"double"
+		   defaultValue: 3] == 0.25)
 
-	TEST(@"-[setDouble:forKey:]", R([category setDouble: 0.75
-						     forKey: @"double"]))
-
-	category = [file categoryForName: @"foobar"];
+	TEST(@"-[setDouble:forKey:]", R([types setDouble: 0.75
+						  forKey: @"double"]))
 
 	TEST(@"-[removeValueForKey:]",
-	    R([category removeValueForKey: @"quxqux "]))
+	    R([foobar removeValueForKey: @"quxqux "]))
 
 	module = @"OFINIFile";
 
