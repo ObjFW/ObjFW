@@ -45,7 +45,7 @@ static OFString *module = @"OFINIFile";
 	    @"[foobar]" NL
 	    @";foobarcomment" NL
 	    @"qux=\" asd\"" NL
-	    @"quxquxqux=\"hello\\\"world\"" NL
+	    @"quxquxqux=\"hello\\\"wörld\"" NL
 	    @"qux2=\"a\\f\"" NL
 	    @"qux3=a\fb" NL
 	    NL
@@ -57,8 +57,9 @@ static OFString *module = @"OFINIFile";
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 
-	TEST(@"+[fileWithPath:]",
-	    (file = [OFINIFile fileWithPath: @"testfile.ini"]))
+	TEST(@"+[fileWithPath:encoding:]",
+	    (file = [OFINIFile fileWithPath: @"testfile.ini"
+				   encoding: OF_STRING_ENCODING_CODEPAGE_437]))
 
 	tests = [file categoryForName: @"tests"];
 	foobar = [file categoryForName: @"foobar"];
@@ -70,7 +71,7 @@ static OFString *module = @"OFINIFile";
 
 	TEST(@"-[stringForKey:]",
 	    [[tests stringForKey: @"foo"] isEqual: @"bar"] &&
-	    [[foobar stringForKey: @"quxquxqux"] isEqual: @"hello\"world"])
+	    [[foobar stringForKey: @"quxquxqux"] isEqual: @"hello\"wörld"])
 
 	TEST(@"-[setString:forKey:]",
 	    R([tests setString: @"baz"
@@ -115,8 +116,12 @@ static OFString *module = @"OFINIFile";
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #ifndef OF_NINTENDO_DS
-	TEST(@"-[writeToFile:]", R([file writeToFile: @"tmpfile.ini"]) &&
-	    [[OFString stringWithContentsOfFile: @"tmpfile.ini"]
+	TEST(@"-[writeToFile:encoding:]",
+	    R([file writeToFile: @"tmpfile.ini"
+		       encoding: OF_STRING_ENCODING_CODEPAGE_437]) &&
+	    [[OFString
+		stringWithContentsOfFile: @"tmpfile.ini"
+				encoding: OF_STRING_ENCODING_CODEPAGE_437]
 	    isEqual: output])
 	[OFFile removeItemAtPath: @"tmpfile.ini"];
 #else

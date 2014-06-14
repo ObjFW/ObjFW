@@ -410,6 +410,7 @@ unescapeString(OFString *string)
 }
 
 - (bool)OF_writeToStream: (OFStream*)stream
+		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first
 {
 	OFEnumerator *enumerator;
@@ -432,8 +433,11 @@ unescapeString(OFString *string)
 			OFINICategory_Pair *pair = line;
 			OFString *key = escapeString(pair->_key);
 			OFString *value = escapeString(pair->_value);
+			OFString *line = [OFString
+			    stringWithFormat: @"%@=%@\n", key, value];
 
-			[stream writeFormat: @"%@=%@\n", key, value];
+			[stream writeString: line
+				   encoding: encoding];
 		} else
 			@throw [OFInvalidArgumentException exception];
 	}

@@ -28,7 +28,8 @@
 #import "macros.h"
 
 @interface OFINIFile (OF_PRIVATE_CATEGORY)
-- (void)OF_parseFile: (OFString*)path;
+- (void)OF_parseFile: (OFString*)path
+	    encoding: (of_string_encoding_t)encoding;
 @end
 
 static bool
@@ -58,6 +59,13 @@ isWhitespaceLine(OFString *line)
 	return [[[self alloc] initWithPath: path] autorelease];
 }
 
++ (instancetype)fileWithPath: (OFString*)path
+		    encoding: (of_string_encoding_t)encoding
+{
+	return [[[self alloc] initWithPath: path
+				  encoding: encoding] autorelease];
+}
+
 - init
 {
 	OF_INVALID_INIT_METHOD
@@ -65,12 +73,20 @@ isWhitespaceLine(OFString *line)
 
 - initWithPath: (OFString*)path
 {
+	return [self initWithPath: path
+			 encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- initWithPath: (OFString*)path
+      encoding: (of_string_encoding_t)encoding
+{
 	self = [super init];
 
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self OF_parseFile: path];
+		[self OF_parseFile: path
+			  encoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -114,6 +130,7 @@ isWhitespaceLine(OFString *line)
 }
 
 - (void)OF_parseFile: (OFString*)path
+	    encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file;
@@ -131,7 +148,7 @@ isWhitespaceLine(OFString *line)
 		@throw e;
 	}
 
-	while ((line = [file readLine]) != nil) {
+	while ((line = [file readLineWithEncoding: encoding]) != nil) {
 		if (isWhitespaceLine(line))
 			continue;
 
@@ -161,6 +178,13 @@ isWhitespaceLine(OFString *line)
 
 - (void)writeToFile: (OFString*)path
 {
+	[self writeToFile: path
+		 encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (void)writeToFile: (OFString*)path
+	   encoding: (of_string_encoding_t)encoding
+{
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
 				       mode: @"w"];
@@ -170,6 +194,7 @@ isWhitespaceLine(OFString *line)
 
 	while ((category = [enumerator nextObject]) != nil)
 		if ([category OF_writeToStream: file
+				      encoding: encoding
 					 first: first])
 			first = false;
 

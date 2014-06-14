@@ -15,10 +15,10 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 #import "OFINICategory.h"
 
 @class OFMutableArray;
-@class OFString;
 
 /*!
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
@@ -40,6 +40,18 @@
 + (instancetype)fileWithPath: (OFString*)path;
 
 /*!
+ * @brief Creates a new OFINIFile with the contents of the specified file in
+ *	  the specified encoding.
+ *
+ * @param path The path to the file whose contents the OFINIFile should contain
+ * @param encoding The encoding of the specified file
+ *
+ * @return A new, autoreleased OFINIFile with the contents of the specified file
+ */
++ (instancetype)fileWithPath: (OFString*)path
+		    encoding: (of_string_encoding_t)encoding;
+
+/*!
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file.
  *
@@ -48,6 +60,18 @@
  * @return An initialized OFINIFile with the contents of the specified file
  */
 - initWithPath: (OFString*)path;
+
+/*!
+ * @brief Initializes an already allocated OFINIFile with the contents of the
+ *	  specified file in the specified encoding.
+ *
+ * @param path The path to the file whose contents the OFINIFile should contain
+ * @param encoding The encoding of the specified file
+ *
+ * @return An initialized OFINIFile with the contents of the specified file
+ */
+- initWithPath: (OFString*)path
+      encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Returns an @ref OFINICategory for the category with the specified
@@ -66,4 +90,14 @@
  * @param path The path of the file to write to
  */
 - (void)writeToFile: (OFString*)path;
+
+/*!
+ * @brief Writes the contents of the OFINIFile to a file in the specified
+ *	  encoding.
+ *
+ * @param path The path of the file to write to
+ * @param encoding The encoding to use
+ */
+- (void)writeToFile: (OFString*)path
+	   encoding: (of_string_encoding_t)encoding;
 @end

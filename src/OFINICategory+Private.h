@@ -15,6 +15,9 @@
  */
 
 #import "OFINICategory.h"
+#import "OFString.h"
+
+#import "macros.h"
 
 @class OFStream;
 
@@ -22,5 +25,6 @@
 - (instancetype)OF_init;
 - (void)OF_parseLine: (OFString*)line;
 - (bool)OF_writeToStream: (OFStream*)stream
+		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first;
 @end
