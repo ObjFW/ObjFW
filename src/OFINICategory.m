@@ -307,6 +307,32 @@ unescapeString(OFString *string)
 	return ret;
 }
 
+- (OFArray*)arrayForKey: (OFString*)key
+{
+	OFMutableArray *ret = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	OFEnumerator *enumerator = [_lines objectEnumerator];
+	id line;
+
+	while ((line = [enumerator nextObject]) != nil) {
+		OFINICategory_Pair *pair;
+
+		if (![line isKindOfClass: [OFINICategory_Pair class]])
+			continue;
+
+		pair = line;
+
+		if ([pair->_key isEqual: key])
+			[ret addObject: [[pair->_value copy] autorelease]];
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
 - (void)setString: (OFString*)string
 	   forKey: (OFString*)key
 {
@@ -380,30 +406,98 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)removeValueForKey: (OFString*)key
+- (void)setArray: (OFArray*)array
+	  forKey: (OFString*)key
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [_lines objectEnumerator];
-	size_t i;
-	id line;
+	void *pool;
+	OFEnumerator *enumerator;
+	OFMutableArray *pairs;
+	id object;
+	id const *lines;
+	size_t i, count;
+	bool replaced;
 
-	i = 0;
-	while ((line = [enumerator nextObject]) != nil) {
+	if ([array count] == 0) {
+		[self removeValueForKey: key];
+		return;
+	}
+
+	pool = objc_autoreleasePoolPush();
+
+	enumerator = [array objectEnumerator];
+	pairs = [OFMutableArray arrayWithCapacity: [array count]];
+
+	while ((object = [enumerator nextObject]) != nil) {
 		OFINICategory_Pair *pair;
 
-		if (![line isKindOfClass: [OFINICategory_Pair class]]) {
-			i++;
-			continue;
-		}
+		pair = [[[OFINICategory_Pair alloc] init] autorelease];
+		pair->_key = [key copy];
+		pair->_value = [object copy];
 
-		pair = line;
+		[pairs addObject: pair];
+	}
+
+	lines = [_lines objects];
+	count = [_lines count];
+	replaced = false;
+
+	for (i = 0; i < count; i++) {
+		OFINICategory_Pair *pair;
+
+		if (![lines[i] isKindOfClass: [OFINICategory_Pair class]])
+			continue;
+
+		pair = lines[i];
 
 		if ([pair->_key isEqual: key]) {
 			[_lines removeObjectAtIndex: i];
-			break;
-		}
 
-		i++;
+			if (!replaced) {
+				[_lines insertObjectsFromArray: pairs
+						       atIndex: i];
+
+				replaced = true;
+				/* Continue after inserted pairs */
+				i += [array count] - 1;
+			} else
+				i--;	/* Continue at same position */
+
+			lines = [_lines objects];
+			count = [_lines count];
+
+			continue;
+		}
+	}
+
+	if (!replaced)
+		[_lines addObjectsFromArray: pairs];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)removeValueForKey: (OFString*)key
+{
+	void *pool = objc_autoreleasePoolPush();
+	id const *lines = [_lines objects];
+	size_t i, count = [_lines count];
+
+	for (i = 0; i < count; i++) {
+		OFINICategory_Pair *pair;
+
+		if (![lines[i] isKindOfClass: [OFINICategory_Pair class]])
+			continue;
+
+		pair = lines[i];
+
+		if ([pair->_key isEqual: key]) {
+			[_lines removeObjectAtIndex: i];
+
+			lines = [_lines objects];
+			count = [_lines count];
+
+			i--;	/* Continue at same position */
+			continue;
+		}
 	}
 
 	objc_autoreleasePoolPop(pool);

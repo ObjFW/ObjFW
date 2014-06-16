@@ -19,6 +19,7 @@
 #import "OFINIFile.h"
 #import "OFINICategory.h"
 #import "OFString.h"
+#import "OFArray.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
 
@@ -53,9 +54,12 @@ static OFString *module = @"OFINIFile";
 	    @"integer=16" NL
 	    @"bool=false" NL
 	    @"float=0.25" NL
+	    @"array1=foo" NL
+	    @"array1=bar" NL
 	    @"double=0.75" NL;
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
+	OFArray *array;
 
 	TEST(@"+[fileWithPath:encoding:]",
 	    (file = [OFINIFile fileWithPath: @"testfile.ini"
@@ -109,8 +113,19 @@ static OFString *module = @"OFINIFile";
 	TEST(@"-[setDouble:forKey:]", R([types setDouble: 0.75
 						  forKey: @"double"]))
 
+	array = [OFArray arrayWithObjects: @"1", @"2", nil];
+	TEST(@"-[arrayForKey:]",
+	    [[types arrayForKey: @"array1"] isEqual: array] &&
+	    [[types arrayForKey: @"array2"] isEqual: array] &&
+	    [[types arrayForKey: @"array3"] isEqual: [OFArray array]])
+
+	array = [OFArray arrayWithObjects: @"foo", @"bar", nil];
+	TEST(@"-[setArray:forKey:]", R([types setArray: array
+						forKey: @"array1"]))
+
 	TEST(@"-[removeValueForKey:]",
-	    R([foobar removeValueForKey: @"quxqux "]))
+	    R([foobar removeValueForKey: @"quxqux "]) &&
+	    R([types removeValueForKey: @"array2"]))
 
 	module = @"OFINIFile";
 
