@@ -90,7 +90,7 @@
 
 - initWithArray: (OFArray*)array
 {
-	id *objects;
+	id const *objects;
 	size_t i, count;
 
 	self = [super init];
@@ -206,7 +206,7 @@
 	return [_array count];
 }
 
-- (id*)objects
+- (id const*)objects
 {
 	return [_array items];
 }
@@ -290,7 +290,7 @@
 - (bool)isEqual: (id)object
 {
 	OFArray *otherArray;
-	id *objects, *otherObjects;
+	id const *objects, *otherObjects;
 	size_t i, count;
 
 	if ([object class] != [OFArray_adjacent class] &&

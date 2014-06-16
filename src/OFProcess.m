@@ -143,7 +143,7 @@ extern char **environ;
 
 		switch ((_pid = fork())) {
 		case 0:;
-			OFString **objects = [arguments objects];
+			OFString *const *objects = [arguments objects];
 			size_t i, count = [arguments count];
 			char **argv;
 			of_string_encoding_t encoding;

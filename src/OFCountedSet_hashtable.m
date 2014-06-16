@@ -81,7 +81,7 @@
 	self = [self init];
 
 	@try {
-		id *objects = [array objects];
+		id const *objects = [array objects];
 		size_t i, count = [array count];
 
 		for (i = 0; i < count; i++)

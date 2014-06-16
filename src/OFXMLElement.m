@@ -423,7 +423,7 @@ static Class CDATAClass = Nil;
 - (OFString*)stringValue
 {
 	OFMutableString *ret;
-	OFXMLElement **objects;
+	OFXMLElement *const *objects;
 	size_t i, count = [_children count];
 
 	if (count == 0)
@@ -454,7 +454,7 @@ static Class CDATAClass = Nil;
 	char *cString;
 	size_t length, i, j, attributesCount;
 	OFString *prefix, *parentPrefix;
-	OFXMLAttribute **attributesObjects;
+	OFXMLAttribute *const *attributesObjects;
 	OFString *ret;
 	OFString *defaultNS;
 
@@ -595,7 +595,7 @@ static Class CDATAClass = Nil;
 
 	/* Childen */
 	if (_children != nil) {
-		OFXMLElement **childrenObjects = [_children objects];
+		OFXMLElement *const *childrenObjects = [_children objects];
 		size_t childrenCount = [_children count];
 		OFDataArray *tmp = [OFDataArray dataArray];
 		bool indent;
@@ -823,7 +823,7 @@ static Class CDATAClass = Nil;
 
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **objects = [_attributes objects];
+	OFXMLAttribute *const *objects = [_attributes objects];
 	size_t i, count = [_attributes count];
 
 	for (i = 0; i < count; i++)
@@ -837,7 +837,7 @@ static Class CDATAClass = Nil;
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 			  namespace: (OFString*)attributeNS
 {
-	OFXMLAttribute **objects;
+	OFXMLAttribute *const *objects;
 	size_t i, count;
 
 	if (attributeNS == nil)
@@ -856,7 +856,7 @@ static Class CDATAClass = Nil;
 
 - (void)removeAttributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute **objects = [_attributes objects];
+	OFXMLAttribute *const *objects = [_attributes objects];
 	size_t i, count = [_attributes count];
 
 	for (i = 0; i < count; i++) {
@@ -872,7 +872,7 @@ static Class CDATAClass = Nil;
 - (void)removeAttributeForName: (OFString*)attributeName
 		     namespace: (OFString*)attributeNS
 {
-	OFXMLAttribute **objects;
+	OFXMLAttribute *const *objects;
 	size_t i, count;
 
 	if (attributeNS == nil) {
@@ -1014,7 +1014,7 @@ static Class CDATAClass = Nil;
 - (OFArray*)elements
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **objects = [_children objects];
+	OFXMLElement *const *objects = [_children objects];
 	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
@@ -1029,7 +1029,7 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForName: (OFString*)elementName
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **objects = [_children objects];
+	OFXMLElement *const *objects = [_children objects];
 	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
@@ -1046,7 +1046,7 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement **objects = [_children objects];
+	OFXMLElement *const *objects = [_children objects];
 	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
@@ -1064,7 +1064,7 @@ static Class CDATAClass = Nil;
 		  namespace: (OFString*)elementNS
 {
 	OFMutableArray *ret;
-	OFXMLElement **objects;
+	OFXMLElement *const *objects;
 	size_t i, count;
 
 	if (elementNS == nil)

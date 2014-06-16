@@ -68,7 +68,7 @@
 - (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
-	id *objects;
+	id const *objects;
 	fd_set readFDs;
 	fd_set writeFDs;
 	struct timeval timeout;

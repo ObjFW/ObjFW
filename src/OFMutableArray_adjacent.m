@@ -79,7 +79,7 @@
 - (void)insertObjectsFromArray: (OFArray*)array
 		       atIndex: (size_t)index
 {
-	id *objects = [array objects];
+	id const *objects = [array objects];
 	size_t i, count = [array count];
 
 	@try {

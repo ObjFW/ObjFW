@@ -99,7 +99,7 @@ transformString(OFDataArray *buffer, size_t cut, bool unescape,
 static OFString*
 namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 {
-	OFDictionary **objects = [namespaces objects];
+	OFDictionary *const *objects = [namespaces objects];
 	ssize_t i;
 
 	if (prefix == nil)
@@ -700,7 +700,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	void *pool;
 	OFString *namespace;
-	OFXMLAttribute **attributesObjects;
+	OFXMLAttribute *const *attributesObjects;
 	size_t j, attributesCount;
 
 	if (_data[_i] != '>' && _data[_i] != '/') {

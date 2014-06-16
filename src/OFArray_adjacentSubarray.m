@@ -21,7 +21,7 @@
 #import "OFMutableArray_adjacent.h"
 
 @implementation OFArray_adjacentSubarray
-- (id*)objects
+- (const id*)objects
 {
 	return [_array objects] + _range.location;
 }
@@ -29,7 +29,7 @@
 - (bool)isEqual: (id)object
 {
 	OFArray *otherArray;
-	id *objects, *otherObjects;
+	id const *objects, *otherObjects;
 	size_t i;
 
 	if ([object class] != [OFArray_adjacent class] &&
@@ -55,7 +55,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [self objects];
+	id const *objects = [self objects];
 	size_t i;
 	bool stop = false;
 

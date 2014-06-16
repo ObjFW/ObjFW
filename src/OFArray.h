@@ -203,7 +203,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * @return The objects of the array as a C array
  */
-- (id*)objects;
+- (id const*)objects;
 
 /*!
  * @brief Returns the index of the first object that is equivalent to the

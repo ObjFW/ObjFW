@@ -243,7 +243,7 @@ static struct {
 		buffer[i] = [self objectAtIndex: range.location + i];
 }
 
-- (id*)objects
+- (id const*)objects
 {
 	OFObject *container;
 	size_t count;
@@ -398,7 +398,7 @@ static struct {
 {
 	void *pool;
 	OFMutableString *ret;
-	id *objects;
+	id const *objects;
 	size_t i, count;
 
 	if (separator == nil)
@@ -476,7 +476,7 @@ static struct {
 
 - (uint32_t)hash
 {
-	id *objects = [self objects];
+	id const *objects = [self objects];
 	size_t i, count = [self count];
 	uint32_t hash;
 
@@ -522,7 +522,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
-	id <OFSerialization> *objects = [self objects];
+	id <OFSerialization> const *objects = [self objects];
 	size_t i, count = [self count];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
@@ -676,7 +676,7 @@ static struct {
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 {
-	id *objects = [self objects];
+	id const *objects = [self objects];
 	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)
@@ -686,7 +686,7 @@ static struct {
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (id)object
 {
-	id *objects = [self objects];
+	id const *objects = [self objects];
 	size_t i, count = [self count];
 
 	for (i = 0; i < count; i++)

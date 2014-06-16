@@ -223,7 +223,7 @@ static struct {
 - initWithObjects: (OFArray*)objects_
 	  forKeys: (OFArray*)keys_
 {
-	id *objects, *keys;
+	id const *objects, *keys;
 	size_t count;
 
 	@try {

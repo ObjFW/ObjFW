@@ -307,7 +307,7 @@ enum {
 	[_mutex lock];
 #endif
 	@try {
-		id *queueObjects = [_queue objects];
+		id const *queueObjects = [_queue objects];
 		int *queueInfoItems = [_queueInfo items];
 		int *queueFDsItems = [_queueFDs items];
 		size_t i, count = [_queue count];
@@ -401,7 +401,7 @@ enum {
 
 - (bool)OF_processCache
 {
-	id *objects = [_readObjects objects];
+	id const *objects = [_readObjects objects];
 	size_t i, count = [_readObjects count];
 	bool foundInCache = false;
 

@@ -89,7 +89,7 @@
        attributes: (OFArray*)attributes
 {
 	OFXMLElement *element;
-	OFXMLAttribute **objects;
+	OFXMLAttribute *const *objects;
 	size_t i, count;
 
 	element = [OFXMLElement elementWithName: name
