@@ -98,7 +98,7 @@ int _OFString_URLEncoding_reference;
 			break;
 		case 1:
 		case 2:;
-			uint8_t shift = (state == 1 ? 4  : 0);
+			uint8_t shift = (state == 1 ? 4 : 0);
 
 			if (*string >= '0' && *string <= '9')
 				byte += (*string - '0') << shift;

@@ -430,6 +430,9 @@ unescapeString(OFString *string)
 	while ((object = [enumerator nextObject]) != nil) {
 		OFINICategory_Pair *pair;
 
+		if (![object isKindOfClass: [OFString class]])
+			@throw [OFInvalidArgumentException exception];
+
 		pair = [[[OFINICategory_Pair alloc] init] autorelease];
 		pair->_key = [key copy];
 		pair->_value = [object copy];

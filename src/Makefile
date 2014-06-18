@@ -79,6 +79,7 @@ SRCS = OFApplication.m			\
 SRCS_FILES = OFFile.m			\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
+	     OFSettings.m		\
 	     OFZIPArchive.m		\
 	     OFZIPArchiveEntry.m
 SRCS_PLUGINS = OFPlugin.m
@@ -133,6 +134,7 @@ SRCS += OFArray_adjacent.m		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\
 	windows_1252.m
+SRCS_FILES += OFSettings_INIFile.m
 SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
 		${OFKERNELEVENTOBSERVER_POLL_M}		\
 		${OFKERNELEVENTOBSERVER_SELECT_M}	\
