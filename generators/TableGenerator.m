@@ -93,7 +93,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
 		OFArray *split;
-		OFString **splitObjects;
+		OFString *const *splitObjects;
 		of_unichar_t codep;
 
 		if ([line length] == 0)
@@ -142,7 +142,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
 		OFArray *split;
-		OFString **splitObjects;
+		OFString *const *splitObjects;
 		of_unichar_t codep;
 
 		if ([line length] == 0 || [line hasPrefix: @"#"])
