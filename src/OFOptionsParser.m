@@ -20,9 +20,6 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFOptionsParser
 + (instancetype)parserWithOptions: (OFString*)options
 {

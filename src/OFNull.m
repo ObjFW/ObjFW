@@ -23,9 +23,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @interface OFNull (OF_PRIVATE_CATEGORY)
 - (OFString*)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth;

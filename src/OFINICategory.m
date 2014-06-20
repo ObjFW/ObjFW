@@ -23,9 +23,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @interface OFINICategory_Pair: OFObject
 {
 @public

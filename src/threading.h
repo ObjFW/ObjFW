@@ -25,8 +25,6 @@
 
 #import "OFObject.h"
 
-#import "macros.h"
-
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
 typedef pthread_t of_thread_t;

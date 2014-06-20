@@ -28,9 +28,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFURL
 + (instancetype)URL
 {

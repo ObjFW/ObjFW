@@ -160,8 +160,6 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
-#import "macros.h"
-
 #ifdef OF_HAVE_PLUGINS
 # import "OFPlugin.h"
 #endif
@@ -180,7 +178,6 @@
 # import "OFCondition.h"
 #endif
 
-#import "autorelease.h"
 #import "asprintf.h"
 #import "base64.h"
 #import "of_asprintf.h"

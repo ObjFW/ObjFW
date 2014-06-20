@@ -25,9 +25,6 @@
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "threading.h"
 #endif
-#import "macros.h"
-
-#import "autorelease.h"
 
 #if defined(OF_HAVE_COMPILER_TLS)
 static thread_local id *objects = NULL;

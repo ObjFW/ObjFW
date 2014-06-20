@@ -22,8 +22,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-
 @implementation OFXMLCDATA
 + (instancetype)CDATAWithString: (OFString*)string
 {

@@ -28,8 +28,6 @@
 #import "OFKernelEventObserver_select.h"
 #import "OFArray.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "socket_helpers.h"
 
 @implementation OFKernelEventObserver_select

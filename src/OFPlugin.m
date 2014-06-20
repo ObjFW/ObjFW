@@ -28,8 +28,6 @@
 
 #import "OFInitializationFailedException.h"
 
-#import "autorelease.h"
-
 #ifdef _WIN32
 # define dlsym(handle, symbol) GetProcAddress(handle, symbol)
 # define dlclose(handle) FreeLibrary(handle)

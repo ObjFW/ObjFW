@@ -21,7 +21,6 @@
 #import "OFSeekableStream.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFSeekFailedException
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream

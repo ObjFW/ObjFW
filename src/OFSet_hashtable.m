@@ -28,8 +28,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFEnumerationMutationException.h"
 
-#import "autorelease.h"
-
 static void*
 retain(void *value)
 {

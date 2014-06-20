@@ -23,7 +23,6 @@
 
 #import "OFObject.h"
 
-#import "macros.h"
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */

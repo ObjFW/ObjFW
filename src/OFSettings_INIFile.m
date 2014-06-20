@@ -21,9 +21,6 @@
 #import "OFINIFile.h"
 #import "OFSystemInfo.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFSettings_INIFile
 - initWithApplicationName: (OFString*)applicationName
 {

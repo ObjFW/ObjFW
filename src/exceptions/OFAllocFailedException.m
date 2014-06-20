@@ -19,8 +19,6 @@
 #import "OFAllocFailedException.h"
 #import "OFString.h"
 
-#import "macros.h"
-
 @implementation OFAllocFailedException
 + alloc
 {

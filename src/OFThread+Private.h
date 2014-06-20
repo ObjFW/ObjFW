@@ -16,8 +16,6 @@
 
 #import "OFThread.h"
 
-#import "macros.h"
-
 #ifdef OF_HAVE_THREADS
 @interface OFThread (OF_PRIVATE_CATEGORY)
 + (void)OF_createMainThread;

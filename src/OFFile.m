@@ -85,9 +85,6 @@
 #import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #ifdef _WIN32
 # include <windows.h>
 # include <direct.h>

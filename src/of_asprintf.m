@@ -28,8 +28,6 @@
 #import "OFString.h"
 
 #import "asprintf.h"
-#import "autorelease.h"
-#import "macros.h"
 
 #define MAX_SUBFORMAT_LEN 64
 

@@ -28,8 +28,6 @@
 #import "OFInvalidEncodingException.h"
 #import "OFOutOfMemoryException.h"
 
-#import "macros.h"
-
 #if defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # import <objc/runtime.h>
 

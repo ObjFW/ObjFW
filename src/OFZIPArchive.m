@@ -36,9 +36,6 @@
 #import "OFSeekFailedException.h"
 #import "OFUnsupportedVersionException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #define CRC32_MAGIC 0xEDB88320
 
 /*

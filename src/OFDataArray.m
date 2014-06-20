@@ -45,9 +45,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
-#import "autorelease.h"
 #import "base64.h"
-#import "macros.h"
 
 /* References for static linking */
 void _references_to_categories_of_OFDataArray(void)

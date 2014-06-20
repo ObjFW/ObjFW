@@ -29,8 +29,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-
 @implementation OFCountedSet_hashtable
 + (void)initialize
 {

@@ -22,7 +22,6 @@
 #import "OFHTTPResponse.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFHTTPRequestFailedException
 + (instancetype)exceptionWithRequest: (OFHTTPRequest*)request

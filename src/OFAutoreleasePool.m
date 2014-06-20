@@ -19,14 +19,11 @@
 #import "OFAutoreleasePool.h"
 #import "OFAutoreleasePool+Private.h"
 
-#import "macros.h"
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "threading.h"
-
+#
 # import "OFInitializationFailedException.h"
 #endif
-
-#import "autorelease.h"
 
 #define MAX_CACHE_SIZE 0x20
 

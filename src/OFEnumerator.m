@@ -21,9 +21,6 @@
 #import "OFEnumerator.h"
 #import "OFArray.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFEnumerator
 - init
 {

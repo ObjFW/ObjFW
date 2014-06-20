@@ -36,12 +36,9 @@
 #import "OFMalformedXMLException.h"
 #import "OFUnboundPrefixException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
-typedef void (*state_function)(id, SEL);
+typedef void (*state_function_t)(id, SEL);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
-static state_function lookupTable[OF_XMLPARSER_NUM_STATES];
+static state_function_t lookupTable[OF_XMLPARSER_NUM_STATES];
 
 static OF_INLINE void
 appendToBuffer(OFDataArray *buffer, const char *string,
@@ -170,7 +167,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self];
 
-		lookupTable[i] = (state_function)
+		lookupTable[i] = (state_function_t)
 		    [self instanceMethodForSelector: selectors[i]];
 	}
 }

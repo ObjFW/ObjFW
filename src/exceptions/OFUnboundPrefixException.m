@@ -21,7 +21,6 @@
 #import "OFXMLParser.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFUnboundPrefixException
 + (instancetype)exceptionWithPrefix: (OFString*)prefix

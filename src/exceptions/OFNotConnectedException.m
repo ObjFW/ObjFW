@@ -20,7 +20,6 @@
 #import "OFString.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFNotConnectedException
 + (instancetype)exceptionWithSocket: (id)socket

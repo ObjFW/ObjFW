@@ -22,8 +22,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "macros.h"
-
 @implementation OFMessagePackExtension
 + (instancetype)extensionWithType: (int8_t)type
 			     data: (OFDataArray*)data

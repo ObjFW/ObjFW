@@ -45,7 +45,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 
-#import "macros.h"
 #import "of_asprintf.h"
 
 @implementation OFStream

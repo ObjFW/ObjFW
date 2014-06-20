@@ -29,9 +29,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFArray_adjacent
 - init
 {

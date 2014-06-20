@@ -28,9 +28,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 static struct {
 	Class isa;
 } placeholder;

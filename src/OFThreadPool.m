@@ -23,8 +23,6 @@
 #import "OFCondition.h"
 #import "OFSystemInfo.h"
 
-#import "autorelease.h"
-
 @interface OFThreadPoolJob: OFObject
 {
 	id _target;

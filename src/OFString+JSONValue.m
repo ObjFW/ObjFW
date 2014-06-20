@@ -31,8 +31,6 @@
 
 #import "OFInvalidJSONException.h"
 
-#import "macros.h"
-
 int _OFString_JSONValue_reference;
 
 static id nextObject(const char *restrict *, const char*,

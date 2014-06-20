@@ -16,8 +16,6 @@
 
 #import "OFZIPArchive.h"
 
-#import "macros.h"
-
 @interface OFZIPArchiveEntry (OF_PRIVATE_CATEGORY)
 - (instancetype)OF_initWithFile: (OFFile*)file;
 - (uint16_t)OF_generalPurposeBitFlag;

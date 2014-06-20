@@ -20,19 +20,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(OF_OBJFW_RUNTIME)
-# import "runtime.h"
-# import "runtime-private.h"
-#elif defined(OF_APPLE_RUNTIME)
-# import <objc/runtime.h>
-#endif
-
 #import "OFBlock.h"
 
 #import "OFAllocFailedException.h"
 #import "OFInitializationFailedException.h"
 
-#import "macros.h"
+#if defined(OF_OBJFW_RUNTIME)
+# import "runtime-private.h"
+#endif
+
 #ifdef OF_HAVE_ATOMIC_OPS
 # import "atomic.h"
 #endif

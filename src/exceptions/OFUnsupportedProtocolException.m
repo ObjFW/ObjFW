@@ -21,7 +21,6 @@
 #import "OFURL.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFUnsupportedProtocolException
 + (instancetype)exceptionWithURL: (OFURL*)url

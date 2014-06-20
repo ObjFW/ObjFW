@@ -34,8 +34,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "socket_helpers.h"
 
 #define EVENTLIST_SIZE 64

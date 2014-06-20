@@ -20,7 +20,6 @@
 #import "OFString.h"
 
 #import "common.h"
-#import "macros.h"
 
 #ifdef OF_HAVE_SYMLINK
 @implementation OFCreateSymbolicLinkFailedException

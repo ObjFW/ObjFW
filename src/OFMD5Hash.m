@@ -22,8 +22,6 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 
-#import "macros.h"
-
 /* The four MD5 core functions - F1 is optimized somewhat */
 #define F1(x, y, z) (z ^ (x & (y ^ z)))
 #define F2(x, y, z) F1(z, x, y)

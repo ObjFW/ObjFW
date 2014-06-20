@@ -34,9 +34,6 @@
 #import "OFTimer+Private.h"
 #import "OFDate.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 static OFRunLoop *mainRunLoop = nil;
 
 #ifdef OF_HAVE_SOCKETS

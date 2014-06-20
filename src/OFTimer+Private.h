@@ -16,8 +16,6 @@
 
 #import "OFTimer.h"
 
-#import "macros.h"
-
 @interface OFTimer (OF_PRIVATE_CATEGORY)
 - (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop;
 @end

@@ -25,8 +25,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "macros.h"
-
 @implementation OFBigDataArray
 - init
 {

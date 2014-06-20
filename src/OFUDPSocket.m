@@ -35,8 +35,6 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "resolver.h"
 #import "socket_helpers.h"
 

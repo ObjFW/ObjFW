@@ -16,8 +16,6 @@
 
 #import "OFStream.h"
 
-#import "macros.h"
-
 @interface OFStream (OF_PRIVATE_CATEGORY)
 - (bool)OF_isWaitingForDelimiter;
 @end

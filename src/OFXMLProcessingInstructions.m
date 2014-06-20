@@ -24,8 +24,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-
 @implementation OFXMLProcessingInstructions
 + (instancetype)processingInstructionsWithString: (OFString*)string
 {

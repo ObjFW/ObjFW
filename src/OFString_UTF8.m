@@ -35,8 +35,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "of_asprintf.h"
 #import "unicode.h"
 

@@ -28,8 +28,6 @@
 
 #import "OFMalformedXMLException.h"
 
-#import "macros.h"
-
 @implementation OFXMLElementBuilder
 + (instancetype)elementBuilder
 {

@@ -23,9 +23,6 @@
 #import "OFMutableSet.h"
 #import "OFMutableSet_hashtable.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 static struct {
 	Class isa;
 } placeholder;

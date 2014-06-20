@@ -23,9 +23,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFXMLAttribute
 + (instancetype)attributeWithName: (OFString*)name
 			namespace: (OFString*)namespace

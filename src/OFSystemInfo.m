@@ -34,21 +34,15 @@
 
 #import "OFNotImplementedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #ifdef __APPLE__
 # include <NSSystemDirectories.h>
 #endif
-
 #ifdef _WIN32
 # include <windows.h>
 #endif
-
 #ifdef __HAIKU__
 # include <FindDirectory.h>
 #endif
-
 #ifdef __QNX__
 # include <sys/syspage.h>
 #endif

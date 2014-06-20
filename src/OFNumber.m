@@ -28,9 +28,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #define RETURN_AS(t)							\
 	switch (_type) {						\
 	case OF_NUMBER_BOOL:						\

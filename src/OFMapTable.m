@@ -28,8 +28,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
-#import "macros.h"
-
 #define MIN_CAPACITY 16
 
 struct of_map_table_bucket {

@@ -23,8 +23,6 @@
 
 #import "OFSeekableStream.h"
 
-#import "macros.h"
-
 @implementation OFSeekableStream
 - init
 {

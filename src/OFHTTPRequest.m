@@ -25,9 +25,6 @@
 #import "OFDataArray.h"
 #import "OFArray.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"

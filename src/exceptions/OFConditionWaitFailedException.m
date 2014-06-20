@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFCondition.h"
 
-#import "macros.h"
-
 @implementation OFConditionWaitFailedException
 + (instancetype)exceptionWithCondition: (OFCondition*)condition
 {

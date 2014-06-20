@@ -32,9 +32,6 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;

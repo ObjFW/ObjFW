@@ -24,8 +24,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-
 @implementation OFXMLComment
 + (instancetype)commentWithString: (OFString*)string
 {

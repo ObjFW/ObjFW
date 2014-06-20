@@ -27,9 +27,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFList
 + (instancetype)list
 {

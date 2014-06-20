@@ -30,8 +30,6 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-#import "autorelease.h"
-
 static void*
 copy(void *value)
 {

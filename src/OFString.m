@@ -54,8 +54,6 @@
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "of_asprintf.h"
 #import "unicode.h"
 

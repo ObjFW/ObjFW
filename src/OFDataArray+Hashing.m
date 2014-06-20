@@ -22,8 +22,6 @@
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
 
-#import "autorelease.h"
-
 int _OFDataArray_Hashing_reference;
 
 @implementation OFDataArray (Hashing)

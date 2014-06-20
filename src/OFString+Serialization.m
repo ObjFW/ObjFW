@@ -28,8 +28,6 @@
 #import "OFUnboundNamespaceException.h"
 #import "OFUnsupportedVersionException.h"
 
-#import "autorelease.h"
-
 int _OFString_Serialization_reference;
 
 @implementation OFString (Serialization)

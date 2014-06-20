@@ -44,9 +44,6 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 static OF_INLINE void
 normalizeKey(char *str_)
 {

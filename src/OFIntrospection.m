@@ -19,18 +19,11 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined(OF_APPLE_RUNTIME)
-# import <objc/runtime.h>
-#endif
-
 #import "OFIntrospection.h"
 #import "OFString.h"
 #import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
-
-#import "autorelease.h"
-#import "macros.h"
 
 @implementation OFMethod
 #if defined(OF_OBJFW_RUNTIME)

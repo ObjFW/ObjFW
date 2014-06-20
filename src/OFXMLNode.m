@@ -19,8 +19,6 @@
 #import "OFXMLNode.h"
 #import "OFString.h"
 
-#import "macros.h"
-
 @implementation OFXMLNode
 - initWithSerialization: (OFXMLElement*)element
 {

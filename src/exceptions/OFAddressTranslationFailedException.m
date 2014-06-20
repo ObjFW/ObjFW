@@ -20,7 +20,6 @@
 #import "OFString.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFAddressTranslationFailedException
 + (instancetype)exceptionWithHost: (OFString*)host

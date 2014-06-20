@@ -39,9 +39,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #if defined(OF_APPLE_RUNTIME) && __OBJC2__
 # import <objc/objc-exception.h>
 #elif defined(OF_OBJFW_RUNTIME)

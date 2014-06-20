@@ -72,8 +72,6 @@
 #ifdef OF_HAVE_ATOMIC_OPS
 # import "atomic.h"
 #endif
-#import "autorelease.h"
-#import "macros.h"
 
 #ifdef __DJGPP__
 # define lrint(x) rint(x)

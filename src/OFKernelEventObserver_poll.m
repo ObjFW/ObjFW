@@ -29,8 +29,6 @@
 
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "socket_helpers.h"
 
 #ifdef __wii__

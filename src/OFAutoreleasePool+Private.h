@@ -16,8 +16,6 @@
 
 #import "OFAutoreleasePool.h"
 
-#import "macros.h"
-
 @interface OFAutoreleasePool (OF_PRIVATE_CATEGORY)
 + (void)OF_handleThreadTermination;
 - (void)OF_super_dealloc;

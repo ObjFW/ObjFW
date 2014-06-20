@@ -24,9 +24,6 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 static struct {
 	Class isa;
 } placeholder;

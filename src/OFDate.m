@@ -38,8 +38,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
-#import "autorelease.h"
-#import "macros.h"
 #import "of_strptime.h"
 
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \

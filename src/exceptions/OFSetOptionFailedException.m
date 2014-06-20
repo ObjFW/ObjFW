@@ -21,7 +21,6 @@
 #import "OFStream.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFSetOptionFailedException
 + (instancetype)exceptionWithStream: (OFStream*)stream

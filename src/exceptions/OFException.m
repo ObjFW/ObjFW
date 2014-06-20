@@ -26,8 +26,6 @@
 #import "OFString.h"
 #import "OFArray.h"
 
-#import "autorelease.h"
-
 #if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
 # include <errno.h>
 # include <winerror.h>

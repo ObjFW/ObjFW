@@ -20,9 +20,6 @@
 #import "OFSettings_INIFile.h"
 #import "OFString.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFSettings
 + alloc
 {

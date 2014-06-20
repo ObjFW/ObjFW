@@ -19,8 +19,6 @@
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFString.h"
 
-#import "macros.h"
-
 @implementation OFMemoryNotPartOfObjectException
 + (instancetype)exceptionWithPointer: (void*)pointer
 			      object: (id)object

@@ -24,9 +24,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenFileFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @interface OFINIFile (OF_PRIVATE_CATEGORY)
 - (void)OF_parseFile: (OFString*)path
 	    encoding: (of_string_encoding_t)encoding;

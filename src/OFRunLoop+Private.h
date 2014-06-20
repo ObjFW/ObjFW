@@ -20,8 +20,6 @@
 # import "OFUDPSocket.h"
 #endif
 
-#import "macros.h"
-
 @interface OFRunLoop (OF_PRIVATE_CATEGORY)
 + (void)OF_setMainRunLoop: (OFRunLoop*)runLoop;
 #ifdef OF_HAVE_SOCKETS

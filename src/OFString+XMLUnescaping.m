@@ -22,9 +22,6 @@
 
 #import "OFInvalidFormatException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 int _OFString_XMLUnescaping_reference;
 
 static OF_INLINE OFString*

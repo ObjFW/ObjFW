@@ -18,8 +18,6 @@
 
 #import "OFSortedList.h"
 
-#import "macros.h"
-
 @implementation OFSortedList
 - (of_list_object_t*)appendObject: (id)object
 {

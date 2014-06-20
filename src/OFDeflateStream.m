@@ -36,9 +36,6 @@
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #define BLOCK_HEADER		  OF_DEFLATE_STREAM_BLOCK_HEADER
 #define UNCOMPRESSED_BLOCK_HEADER OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER
 #define UNCOMPRESSED_BLOCK	  OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK

@@ -17,8 +17,6 @@
 #import "OFINICategory.h"
 #import "OFString.h"
 
-#import "macros.h"
-
 @class OFStream;
 
 @interface OFINICategory (OF_PRIVATE_CATEGORY)

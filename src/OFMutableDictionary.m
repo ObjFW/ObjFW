@@ -21,9 +21,6 @@
 #import "OFMutableDictionary_hashtable.h"
 #import "OFArray.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 static struct {
 	Class isa;
 } placeholder;

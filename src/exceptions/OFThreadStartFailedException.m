@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFThread.h"
 
-#import "macros.h"
-
 @implementation OFThreadStartFailedException
 + (instancetype)exceptionWithThread: (OFThread*)thread
 {

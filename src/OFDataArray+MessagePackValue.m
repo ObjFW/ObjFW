@@ -25,9 +25,6 @@
 
 #import "OFInvalidFormatException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 int _OFDataArray_MessagePackValue_reference;
 
 static size_t parseObject(const uint8_t*, size_t, id*);

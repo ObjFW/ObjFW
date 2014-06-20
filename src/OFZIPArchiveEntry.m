@@ -23,9 +23,6 @@
 #import "OFFile.h"
 #import "OFDate.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 

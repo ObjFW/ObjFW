@@ -24,8 +24,6 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 
-#import "autorelease.h"
-
 int _OFObject_Serialization_reference;
 
 @implementation OFObject (Serialization)

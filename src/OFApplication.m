@@ -31,9 +31,6 @@
 #import "OFThread.h"
 #import "OFThread+Private.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #if defined(__MACH__) && !defined(OF_IOS)
 # include <crt_externs.h>
 #elif defined(_WIN32)

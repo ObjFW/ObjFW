@@ -48,9 +48,6 @@
 # include <windows.h>
 #endif
 
-#import "autorelease.h"
-#import "macros.h"
-
 #ifndef __MACH__
 extern char **environ;
 #endif

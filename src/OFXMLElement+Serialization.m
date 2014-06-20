@@ -23,9 +23,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 int _OFXMLElement_Serialization_reference;
 
 @implementation OFXMLElement (Serialization)

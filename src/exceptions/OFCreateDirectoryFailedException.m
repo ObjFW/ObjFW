@@ -20,7 +20,6 @@
 #import "OFString.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFCreateDirectoryFailedException
 + (instancetype)exceptionWithPath: (OFString*)path

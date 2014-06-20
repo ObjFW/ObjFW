@@ -25,8 +25,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFOutOfRangeException.h"
 
-#import "macros.h"
-
 @implementation OFMutableDictionary_hashtable
 + (void)initialize
 {

@@ -22,9 +22,6 @@
 #import "OFArray.h"
 #import "OFDataArray.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"

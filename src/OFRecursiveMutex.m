@@ -24,8 +24,6 @@
 #import "OFStillLockedException.h"
 #import "OFUnlockFailedException.h"
 
-#import "macros.h"
-
 @implementation OFRecursiveMutex
 + (instancetype)mutex
 {

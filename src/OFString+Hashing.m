@@ -21,8 +21,6 @@
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
 
-#import "autorelease.h"
-
 int _OFString_Hashing_reference;
 
 @implementation OFString (Hashing)

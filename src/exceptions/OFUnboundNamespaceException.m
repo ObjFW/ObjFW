@@ -21,7 +21,6 @@
 #import "OFXMLElement.h"
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFUnboundNamespaceException
 + (instancetype)exceptionWithNamespace: (OFString*)namespace

@@ -22,8 +22,6 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 
-#import "macros.h"
-
 /* blk0() and blk() perform the initial expand. */
 #ifndef OF_BIG_ENDIAN
 #define blk0(i)							\

@@ -24,7 +24,6 @@
 #endif
 
 #import "common.h"
-#import "macros.h"
 
 @implementation OFReadOrWriteFailedException
 + (instancetype)exceptionWithObject: (id)object

@@ -16,8 +16,6 @@
 
 #import "OFKernelEventObserver.h"
 
-#import "macros.h"
-
 @interface OFKernelEventObserver (OF_PRIVATE_CATEGORY)
 - (void)OF_addFileDescriptorForReading: (int)fd;
 - (void)OF_addFileDescriptorForWriting: (int)fd;

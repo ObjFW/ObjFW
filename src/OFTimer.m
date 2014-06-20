@@ -31,9 +31,6 @@
 
 #import "OFInvalidArgumentException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 @implementation OFTimer
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
