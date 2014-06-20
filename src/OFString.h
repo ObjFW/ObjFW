@@ -1113,7 +1113,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 #ifndef NSINTEGER_DEFINED
 /* Required for string boxing literals to work */
-# define NSString OFString
+@compatibility_alias NSString OFString;
 #endif
 
 #ifdef __cplusplus

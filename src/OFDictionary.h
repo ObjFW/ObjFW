@@ -248,5 +248,5 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 
 #ifndef NSINTEGER_DEFINED
 /* Required for dictionary literals to work */
-# define NSDictionary OFDictionary
+@compatibility_alias NSDictionary OFDictionary;
 #endif
