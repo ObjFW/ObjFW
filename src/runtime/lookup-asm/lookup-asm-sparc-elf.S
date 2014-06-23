@@ -81,18 +81,19 @@ generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
 #ifdef PIC
-	save
+	or	%o7, %g0, %o2
 
-	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %l7
-	call	get_pc
-	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %l7
+	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o1
+	call	0f
+	 add	%o1, %lo(_GLOBAL_OFFSET_TABLE_ + 4), %o1
+0:
+	add	%o7, %o1, %o1
 
-	sethi	%hi(nil_method), %i0
-	or	%i0, %lo(nil_method), %i0
-	ld	[%l7 + %i0], %i0
+	sethi	%hi(nil_method), %o0
+	or	%o0, %lo(nil_method), %o0
 
-	ret
-	 restore
+	jmpl	%o2 + 8, %g0
+	 ld	[%o1 + %o0], %o0
 #else
 	sethi	%hi(nil_method), %o0
 	retl
@@ -101,13 +102,7 @@ ret_nil:
 
 nil_method:
 	retl
-	 set	0, %o0
-
-#ifdef PIC
-get_pc:
-	retl
-	 add	%o7, %l7, %l7
-#endif
+	 clr	%o0
 
 #ifdef __linux__
 .section .note.GNU-stack, "", %progbits
