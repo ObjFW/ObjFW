@@ -23,6 +23,15 @@
 #import "runtime-private.h"
 #import "macros.h"
 
+@interface DummyObject
+{
+	Class isa;
+}
+
++ (BOOL)resolveClassMethod: (SEL)selector;
++ (BOOL)resolveInstanceMethod: (SEL)selector;
+@end
+
 static IMP forward_handler = (IMP)0;
 static IMP forward_handler_stret = (IMP)0;
 
