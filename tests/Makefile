@@ -106,7 +106,7 @@ run-on-android: all
 	adb push testfile.ini /data/local/tmp/objfw/testfile.ini
 	adb push serialization.xml /data/local/tmp/objfw/serialization.xml
 	echo "Running tests binary on Android device..."
-	adb shell 'cd /data/local/tmp/objfw && ./tests'
+	adb shell 'cd /data/local/tmp/objfw && exec ./tests'
 
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}
