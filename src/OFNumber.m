@@ -30,149 +30,149 @@
 
 #define RETURN_AS(t)							\
 	switch (_type) {						\
-	case OF_NUMBER_BOOL:						\
+	case OF_NUMBER_TYPE_BOOL:					\
 		return (t)_value.bool_;					\
-	case OF_NUMBER_CHAR:						\
+	case OF_NUMBER_TYPE_CHAR:					\
 		return (t)_value.schar;					\
-	case OF_NUMBER_SHORT:						\
+	case OF_NUMBER_TYPE_SHORT:					\
 		return (t)_value.sshort;				\
-	case OF_NUMBER_INT:						\
+	case OF_NUMBER_TYPE_INT:					\
 		return (t)_value.sint;					\
-	case OF_NUMBER_LONG:						\
+	case OF_NUMBER_TYPE_LONG:					\
 		return (t)_value.slong;					\
-	case OF_NUMBER_LONGLONG:					\
+	case OF_NUMBER_TYPE_LONGLONG:					\
 		return (t)_value.slonglong;				\
-	case OF_NUMBER_UCHAR:						\
+	case OF_NUMBER_TYPE_UCHAR:					\
 		return (t)_value.uchar;					\
-	case OF_NUMBER_USHORT:						\
+	case OF_NUMBER_TYPE_USHORT:					\
 		return (t)_value.ushort;				\
-	case OF_NUMBER_UINT:						\
+	case OF_NUMBER_TYPE_UINT:					\
 		return (t)_value.uint;					\
-	case OF_NUMBER_ULONG:						\
+	case OF_NUMBER_TYPE_ULONG:					\
 		return (t)_value.ulong;					\
-	case OF_NUMBER_ULONGLONG:					\
+	case OF_NUMBER_TYPE_ULONGLONG:					\
 		return (t)_value.ulonglong;				\
-	case OF_NUMBER_INT8:						\
+	case OF_NUMBER_TYPE_INT8:					\
 		return (t)_value.int8;					\
-	case OF_NUMBER_INT16:						\
+	case OF_NUMBER_TYPE_INT16:					\
 		return (t)_value.int16;					\
-	case OF_NUMBER_INT32:						\
+	case OF_NUMBER_TYPE_INT32:					\
 		return (t)_value.int32;					\
-	case OF_NUMBER_INT64:						\
+	case OF_NUMBER_TYPE_INT64:					\
 		return (t)_value.int64;					\
-	case OF_NUMBER_UINT8:						\
+	case OF_NUMBER_TYPE_UINT8:					\
 		return (t)_value.uint8;					\
-	case OF_NUMBER_UINT16:						\
+	case OF_NUMBER_TYPE_UINT16:					\
 		return (t)_value.uint16;				\
-	case OF_NUMBER_UINT32:						\
+	case OF_NUMBER_TYPE_UINT32:					\
 		return (t)_value.uint32;				\
-	case OF_NUMBER_UINT64:						\
+	case OF_NUMBER_TYPE_UINT64:					\
 		return (t)_value.uint64;				\
-	case OF_NUMBER_SIZE:						\
+	case OF_NUMBER_TYPE_SIZE:					\
 		return (t)_value.size;					\
-	case OF_NUMBER_SSIZE:						\
+	case OF_NUMBER_TYPE_SSIZE:					\
 		return (t)_value.ssize;					\
-	case OF_NUMBER_INTMAX:						\
+	case OF_NUMBER_TYPE_INTMAX:					\
 		return (t)_value.intmax;				\
-	case OF_NUMBER_UINTMAX:						\
+	case OF_NUMBER_TYPE_UINTMAX:					\
 		return (t)_value.uintmax;				\
-	case OF_NUMBER_PTRDIFF:						\
+	case OF_NUMBER_TYPE_PTRDIFF:					\
 		return (t)_value.ptrdiff;				\
-	case OF_NUMBER_INTPTR:						\
+	case OF_NUMBER_TYPE_INTPTR:					\
 		return (t)_value.intptr;				\
-	case OF_NUMBER_UINTPTR:						\
+	case OF_NUMBER_TYPE_UINTPTR:					\
 		return (t)_value.uintptr;				\
-	case OF_NUMBER_FLOAT:						\
+	case OF_NUMBER_TYPE_FLOAT:					\
 		return (t)_value.float_;				\
-	case OF_NUMBER_DOUBLE:						\
+	case OF_NUMBER_TYPE_DOUBLE:					\
 		return (t)_value.double_;				\
 	default:							\
 		@throw [OFInvalidFormatException exception];		\
 	}
 #define CALCULATE(o, n)							\
 	switch (_type) {						\
-	case OF_NUMBER_BOOL:						\
+	case OF_NUMBER_TYPE_BOOL:					\
 		return [OFNumber numberWithBool:			\
 		    _value.bool_ o [n boolValue]];			\
-	case OF_NUMBER_CHAR:						\
+	case OF_NUMBER_TYPE_CHAR:					\
 		return [OFNumber numberWithChar:			\
 		    _value.schar o [n charValue]];			\
-	case OF_NUMBER_SHORT:						\
+	case OF_NUMBER_TYPE_SHORT:					\
 		return [OFNumber numberWithShort:			\
 		    _value.sshort o [n shortValue]];			\
-	case OF_NUMBER_INT:						\
+	case OF_NUMBER_TYPE_INT:					\
 		return [OFNumber numberWithInt:				\
 		    _value.sint o [n intValue]];			\
-	case OF_NUMBER_LONG:						\
+	case OF_NUMBER_TYPE_LONG:					\
 		return [OFNumber numberWithLong:			\
 		    _value.slong o [n longValue]];			\
-	case OF_NUMBER_LONGLONG:					\
+	case OF_NUMBER_TYPE_LONGLONG:					\
 		return [OFNumber numberWithLongLong:			\
 		    _value.slonglong o [n longLongValue]];		\
-	case OF_NUMBER_UCHAR:						\
+	case OF_NUMBER_TYPE_UCHAR:					\
 		return [OFNumber numberWithUnsignedChar:		\
 		    _value.uchar o [n unsignedCharValue]];		\
-	case OF_NUMBER_USHORT:						\
+	case OF_NUMBER_TYPE_USHORT:					\
 		return [OFNumber numberWithUnsignedShort:		\
 		    _value.ushort o [n unsignedShortValue]];		\
-	case OF_NUMBER_UINT:						\
+	case OF_NUMBER_TYPE_UINT:					\
 		return [OFNumber numberWithUnsignedInt:			\
 		    _value.uint o [n unsignedIntValue]];		\
-	case OF_NUMBER_ULONG:						\
+	case OF_NUMBER_TYPE_ULONG:					\
 		return [OFNumber numberWithUnsignedLong:		\
 		    _value.ulong o [n unsignedLongValue]];		\
-	case OF_NUMBER_ULONGLONG:					\
+	case OF_NUMBER_TYPE_ULONGLONG:					\
 		return [OFNumber numberWithUnsignedLongLong:		\
 		    _value.ulonglong o [n unsignedLongLongValue]];	\
-	case OF_NUMBER_INT8:						\
+	case OF_NUMBER_TYPE_INT8:					\
 		return [OFNumber numberWithInt8:			\
 		    _value.int8 o [n int8Value]];			\
-	case OF_NUMBER_INT16:						\
+	case OF_NUMBER_TYPE_INT16:					\
 		return [OFNumber numberWithInt16:			\
 		    _value.int16 o [n int16Value]];			\
-	case OF_NUMBER_INT32:						\
+	case OF_NUMBER_TYPE_INT32:					\
 		return [OFNumber numberWithInt32:			\
 		    _value.int32 o [n int32Value]];			\
-	case OF_NUMBER_INT64:						\
+	case OF_NUMBER_TYPE_INT64:					\
 		return [OFNumber numberWithInt64:			\
 		    _value.int64 o [n int64Value]];			\
-	case OF_NUMBER_UINT8:						\
+	case OF_NUMBER_TYPE_UINT8:					\
 		return [OFNumber numberWithUInt8:			\
 		    _value.uint8 o [n uInt8Value]];			\
-	case OF_NUMBER_UINT16:						\
+	case OF_NUMBER_TYPE_UINT16:					\
 		return [OFNumber numberWithUInt16:			\
 		    _value.uint16 o [n uInt16Value]];			\
-	case OF_NUMBER_UINT32:						\
+	case OF_NUMBER_TYPE_UINT32:					\
 		return [OFNumber numberWithUInt32:			\
 		    _value.uint32 o [n uInt32Value]];			\
-	case OF_NUMBER_UINT64:						\
+	case OF_NUMBER_TYPE_UINT64:					\
 		return [OFNumber numberWithUInt64:			\
 		    _value.uint64 o [n uInt64Value]];			\
-	case OF_NUMBER_SIZE:						\
+	case OF_NUMBER_TYPE_SIZE:					\
 		return [OFNumber numberWithSize:			\
 		    _value.size o [n sizeValue]];			\
-	case OF_NUMBER_SSIZE:						\
+	case OF_NUMBER_TYPE_SSIZE:					\
 		return [OFNumber numberWithSSize:			\
 		    _value.ssize o [n sSizeValue]];			\
-	case OF_NUMBER_INTMAX:						\
+	case OF_NUMBER_TYPE_INTMAX:					\
 		return [OFNumber numberWithIntMax:			\
 		    _value.intmax o [n intMaxValue]];			\
-	case OF_NUMBER_UINTMAX:						\
+	case OF_NUMBER_TYPE_UINTMAX:					\
 		return [OFNumber numberWithUIntMax:			\
 		    _value.uintmax o [n uIntMaxValue]];			\
-	case OF_NUMBER_PTRDIFF:						\
+	case OF_NUMBER_TYPE_PTRDIFF:					\
 		return [OFNumber numberWithPtrDiff:			\
 		    _value.ptrdiff o [n ptrDiffValue]];			\
-	case OF_NUMBER_INTPTR:						\
+	case OF_NUMBER_TYPE_INTPTR:					\
 		return [OFNumber numberWithIntPtr:			\
 		    _value.intptr o [n intPtrValue]];			\
-	case OF_NUMBER_UINTPTR:						\
+	case OF_NUMBER_TYPE_UINTPTR:					\
 		return [OFNumber numberWithUIntPtr:			\
 		    _value.uintptr o [n uIntPtrValue]];			\
-	case OF_NUMBER_FLOAT:						\
+	case OF_NUMBER_TYPE_FLOAT:					\
 		return [OFNumber numberWithFloat:			\
 		    _value.float_ o [n floatValue]];			\
-	case OF_NUMBER_DOUBLE:						\
+	case OF_NUMBER_TYPE_DOUBLE:					\
 		return [OFNumber numberWithDouble:			\
 		    _value.double_ o [n doubleValue]];			\
 	default:							\
@@ -180,152 +180,152 @@
 	}
 #define CALCULATE2(o, n)						\
 	switch (_type) {						\
-	case OF_NUMBER_BOOL:						\
+	case OF_NUMBER_TYPE_BOOL:					\
 		return [OFNumber numberWithBool:			\
 		    _value.bool_ o [n boolValue]];			\
-	case OF_NUMBER_CHAR:						\
+	case OF_NUMBER_TYPE_CHAR:					\
 		return [OFNumber numberWithChar:			\
 		    _value.schar o [n charValue]];			\
-	case OF_NUMBER_SHORT:						\
+	case OF_NUMBER_TYPE_SHORT:					\
 		return [OFNumber numberWithShort:			\
 		    _value.sshort o [n shortValue]];			\
-	case OF_NUMBER_INT:						\
+	case OF_NUMBER_TYPE_INT:					\
 		return [OFNumber numberWithInt:				\
 		    _value.sint o [n intValue]];			\
-	case OF_NUMBER_LONG:						\
+	case OF_NUMBER_TYPE_LONG:					\
 		return [OFNumber numberWithLong:			\
 		    _value.slong o [n longValue]];			\
-	case OF_NUMBER_LONGLONG:					\
+	case OF_NUMBER_TYPE_LONGLONG:					\
 		return [OFNumber numberWithLongLong:			\
 		    _value.slonglong o [n longLongValue]];		\
-	case OF_NUMBER_UCHAR:						\
+	case OF_NUMBER_TYPE_UCHAR:					\
 		return [OFNumber numberWithUnsignedChar:		\
 		    _value.uchar o [n unsignedCharValue]];		\
-	case OF_NUMBER_USHORT:						\
+	case OF_NUMBER_TYPE_USHORT:					\
 		return [OFNumber numberWithUnsignedShort:		\
 		    _value.ushort o [n unsignedShortValue]];		\
-	case OF_NUMBER_UINT:						\
+	case OF_NUMBER_TYPE_UINT:					\
 		return [OFNumber numberWithUnsignedInt:			\
 		    _value.uint o [n unsignedIntValue]];		\
-	case OF_NUMBER_ULONG:						\
+	case OF_NUMBER_TYPE_ULONG:					\
 		return [OFNumber numberWithUnsignedLong:		\
 		    _value.ulong o [n unsignedLongValue]];		\
-	case OF_NUMBER_ULONGLONG:					\
+	case OF_NUMBER_TYPE_ULONGLONG:					\
 		return [OFNumber numberWithUnsignedLongLong:		\
 		    _value.ulonglong o [n unsignedLongLongValue]];	\
-	case OF_NUMBER_INT8:						\
+	case OF_NUMBER_TYPE_INT8:					\
 		return [OFNumber numberWithInt8:			\
 		    _value.int8 o [n int8Value]];			\
-	case OF_NUMBER_INT16:						\
+	case OF_NUMBER_TYPE_INT16:					\
 		return [OFNumber numberWithInt16:			\
 		    _value.int16 o [n int16Value]];			\
-	case OF_NUMBER_INT32:						\
+	case OF_NUMBER_TYPE_INT32:					\
 		return [OFNumber numberWithInt32:			\
 		    _value.int32 o [n int32Value]];			\
-	case OF_NUMBER_INT64:						\
+	case OF_NUMBER_TYPE_INT64:					\
 		return [OFNumber numberWithInt64:			\
 		    _value.int64 o [n int64Value]];			\
-	case OF_NUMBER_UINT8:						\
+	case OF_NUMBER_TYPE_UINT8:					\
 		return [OFNumber numberWithUInt8:			\
 		    _value.uint8 o [n uInt8Value]];			\
-	case OF_NUMBER_UINT16:						\
+	case OF_NUMBER_TYPE_UINT16:					\
 		return [OFNumber numberWithUInt16:			\
 		    _value.uint16 o [n uInt16Value]];			\
-	case OF_NUMBER_UINT32:						\
+	case OF_NUMBER_TYPE_UINT32:					\
 		return [OFNumber numberWithUInt32:			\
 		    _value.uint32 o [n uInt32Value]];			\
-	case OF_NUMBER_UINT64:						\
+	case OF_NUMBER_TYPE_UINT64:					\
 		return [OFNumber numberWithUInt64:			\
 		    _value.uint64 o [n uInt64Value]];			\
-	case OF_NUMBER_SIZE:						\
+	case OF_NUMBER_TYPE_SIZE:					\
 		return [OFNumber numberWithSize:			\
 		    _value.size o [n sizeValue]];			\
-	case OF_NUMBER_SSIZE:						\
+	case OF_NUMBER_TYPE_SSIZE:					\
 		return [OFNumber numberWithSSize:			\
 		    _value.ssize o [n sSizeValue]];			\
-	case OF_NUMBER_INTMAX:						\
+	case OF_NUMBER_TYPE_INTMAX:					\
 		return [OFNumber numberWithIntMax:			\
 		    _value.intmax o [n intMaxValue]];			\
-	case OF_NUMBER_UINTMAX:						\
+	case OF_NUMBER_TYPE_UINTMAX:					\
 		return [OFNumber numberWithUIntMax:			\
 		    _value.uintmax o [n uIntMaxValue]];			\
-	case OF_NUMBER_PTRDIFF:						\
+	case OF_NUMBER_TYPE_PTRDIFF:					\
 		return [OFNumber numberWithPtrDiff:			\
 		    _value.ptrdiff o [n ptrDiffValue]];			\
-	case OF_NUMBER_INTPTR:						\
+	case OF_NUMBER_TYPE_INTPTR:					\
 		return [OFNumber numberWithIntPtr:			\
 		    _value.intptr o [n intPtrValue]];			\
-	case OF_NUMBER_UINTPTR:						\
+	case OF_NUMBER_TYPE_UINTPTR:					\
 		return [OFNumber numberWithUIntPtr:			\
 		    _value.uintptr o [n uIntPtrValue]];			\
-	case OF_NUMBER_FLOAT:						\
-	case OF_NUMBER_DOUBLE:						\
+	case OF_NUMBER_TYPE_FLOAT:					\
+	case OF_NUMBER_TYPE_DOUBLE:					\
 		@throw [OFInvalidArgumentException exception];		\
 	default:							\
 		@throw [OFInvalidFormatException exception];		\
 	}
 #define CALCULATE3(o)							\
 	switch (_type) {						\
-	case OF_NUMBER_BOOL:						\
+	case OF_NUMBER_TYPE_BOOL:						\
 		return [OFNumber numberWithBool: _value.bool_ o];	\
-	case OF_NUMBER_CHAR:						\
+	case OF_NUMBER_TYPE_CHAR:						\
 		return [OFNumber numberWithChar: _value.schar o];	\
-	case OF_NUMBER_SHORT:						\
+	case OF_NUMBER_TYPE_SHORT:						\
 		return [OFNumber numberWithShort: _value.sshort o];	\
-	case OF_NUMBER_INT:						\
+	case OF_NUMBER_TYPE_INT:						\
 		return [OFNumber numberWithInt: _value.sint o];		\
-	case OF_NUMBER_LONG:						\
+	case OF_NUMBER_TYPE_LONG:						\
 		return [OFNumber numberWithLong: _value.slong o];	\
-	case OF_NUMBER_LONGLONG:					\
+	case OF_NUMBER_TYPE_LONGLONG:					\
 		return [OFNumber numberWithLongLong:			\
 		    _value.slonglong o];				\
-	case OF_NUMBER_UCHAR:						\
+	case OF_NUMBER_TYPE_UCHAR:					\
 		return [OFNumber numberWithUnsignedChar:		\
 		    _value.uchar o];					\
-	case OF_NUMBER_USHORT:						\
+	case OF_NUMBER_TYPE_USHORT:					\
 		return [OFNumber numberWithUnsignedShort:		\
 		    _value.ushort o];					\
-	case OF_NUMBER_UINT:						\
+	case OF_NUMBER_TYPE_UINT:					\
 		return [OFNumber numberWithUnsignedInt: _value.uint o];	\
-	case OF_NUMBER_ULONG:						\
+	case OF_NUMBER_TYPE_ULONG:					\
 		return [OFNumber numberWithUnsignedLong:		\
 		    _value.ulong o];					\
-	case OF_NUMBER_ULONGLONG:					\
+	case OF_NUMBER_TYPE_ULONGLONG:					\
 		return [OFNumber numberWithUnsignedLongLong:		\
 		    _value.ulonglong o];				\
-	case OF_NUMBER_INT8:						\
+	case OF_NUMBER_TYPE_INT8:					\
 		return [OFNumber numberWithInt8: _value.int8 o];	\
-	case OF_NUMBER_INT16:						\
+	case OF_NUMBER_TYPE_INT16:					\
 		return [OFNumber numberWithInt16: _value.int16 o];	\
-	case OF_NUMBER_INT32:						\
+	case OF_NUMBER_TYPE_INT32:					\
 		return [OFNumber numberWithInt32: _value.int32 o];	\
-	case OF_NUMBER_INT64:						\
+	case OF_NUMBER_TYPE_INT64:					\
 		return [OFNumber numberWithInt64: _value.int64 o];	\
-	case OF_NUMBER_UINT8:						\
+	case OF_NUMBER_TYPE_UINT8:					\
 		return [OFNumber numberWithUInt8: _value.uint8 o];	\
-	case OF_NUMBER_UINT16:						\
+	case OF_NUMBER_TYPE_UINT16:					\
 		return [OFNumber numberWithUInt16: _value.uint16 o];	\
-	case OF_NUMBER_UINT32:						\
+	case OF_NUMBER_TYPE_UINT32:					\
 		return [OFNumber numberWithUInt32: _value.uint32 o];	\
-	case OF_NUMBER_UINT64:						\
+	case OF_NUMBER_TYPE_UINT64:					\
 		return [OFNumber numberWithUInt64: _value.uint64 o];	\
-	case OF_NUMBER_SIZE:						\
+	case OF_NUMBER_TYPE_SIZE:					\
 		return [OFNumber numberWithSize: _value.size o];	\
-	case OF_NUMBER_SSIZE:						\
+	case OF_NUMBER_TYPE_SSIZE:					\
 		return [OFNumber numberWithSSize: _value.ssize o];	\
-	case OF_NUMBER_INTMAX:						\
+	case OF_NUMBER_TYPE_INTMAX:					\
 		return [OFNumber numberWithIntMax: _value.intmax o];	\
-	case OF_NUMBER_UINTMAX:						\
+	case OF_NUMBER_TYPE_UINTMAX:					\
 		return [OFNumber numberWithUIntMax: _value.uintmax o];	\
-	case OF_NUMBER_PTRDIFF:						\
+	case OF_NUMBER_TYPE_PTRDIFF:					\
 		return [OFNumber numberWithPtrDiff: _value.ptrdiff o];	\
-	case OF_NUMBER_INTPTR:						\
+	case OF_NUMBER_TYPE_INTPTR:					\
 		return [OFNumber numberWithIntPtr: _value.intptr o];	\
-	case OF_NUMBER_UINTPTR:						\
+	case OF_NUMBER_TYPE_UINTPTR:					\
 		return [OFNumber numberWithUIntPtr: _value.uintptr o];	\
-	case OF_NUMBER_FLOAT:						\
+	case OF_NUMBER_TYPE_FLOAT:					\
 		return [OFNumber numberWithFloat: _value.float_ o];	\
-	case OF_NUMBER_DOUBLE:						\
+	case OF_NUMBER_TYPE_DOUBLE:					\
 		return [OFNumber numberWithDouble: _value.double_ o];	\
 	default:							\
 		@throw [OFInvalidFormatException exception];		\
@@ -487,7 +487,7 @@
 	self = [super init];
 
 	_value.bool_ = bool_;
-	_type = OF_NUMBER_BOOL;
+	_type = OF_NUMBER_TYPE_BOOL;
 
 	return self;
 }
@@ -497,7 +497,7 @@
 	self = [super init];
 
 	_value.schar = schar;
-	_type = OF_NUMBER_CHAR;
+	_type = OF_NUMBER_TYPE_CHAR;
 
 	return self;
 }
@@ -507,7 +507,7 @@
 	self = [super init];
 
 	_value.sshort = sshort;
-	_type = OF_NUMBER_SHORT;
+	_type = OF_NUMBER_TYPE_SHORT;
 
 	return self;
 }
@@ -517,7 +517,7 @@
 	self = [super init];
 
 	_value.sint = sint;
-	_type = OF_NUMBER_INT;
+	_type = OF_NUMBER_TYPE_INT;
 
 	return self;
 }
@@ -527,7 +527,7 @@
 	self = [super init];
 
 	_value.slong = slong;
-	_type = OF_NUMBER_LONG;
+	_type = OF_NUMBER_TYPE_LONG;
 
 	return self;
 }
@@ -537,7 +537,7 @@
 	self = [super init];
 
 	_value.slonglong = slonglong;
-	_type = OF_NUMBER_LONGLONG;
+	_type = OF_NUMBER_TYPE_LONGLONG;
 
 	return self;
 }
@@ -547,7 +547,7 @@
 	self = [super init];
 
 	_value.uchar = uchar;
-	_type = OF_NUMBER_UCHAR;
+	_type = OF_NUMBER_TYPE_UCHAR;
 
 	return self;
 }
@@ -557,7 +557,7 @@
 	self = [super init];
 
 	_value.ushort = ushort;
-	_type = OF_NUMBER_USHORT;
+	_type = OF_NUMBER_TYPE_USHORT;
 
 	return self;
 }
@@ -567,7 +567,7 @@
 	self = [super init];
 
 	_value.uint = uint;
-	_type = OF_NUMBER_UINT;
+	_type = OF_NUMBER_TYPE_UINT;
 
 	return self;
 }
@@ -577,7 +577,7 @@
 	self = [super init];
 
 	_value.ulong = ulong;
-	_type = OF_NUMBER_ULONG;
+	_type = OF_NUMBER_TYPE_ULONG;
 
 	return self;
 }
@@ -587,7 +587,7 @@
 	self = [super init];
 
 	_value.ulonglong = ulonglong;
-	_type = OF_NUMBER_ULONGLONG;
+	_type = OF_NUMBER_TYPE_ULONGLONG;
 
 	return self;
 }
@@ -597,7 +597,7 @@
 	self = [super init];
 
 	_value.int8 = int8;
-	_type = OF_NUMBER_INT8;
+	_type = OF_NUMBER_TYPE_INT8;
 
 	return self;
 }
@@ -607,7 +607,7 @@
 	self = [super init];
 
 	_value.int16 = int16;
-	_type = OF_NUMBER_INT16;
+	_type = OF_NUMBER_TYPE_INT16;
 
 	return self;
 }
@@ -617,7 +617,7 @@
 	self = [super init];
 
 	_value.int32 = int32;
-	_type = OF_NUMBER_INT32;
+	_type = OF_NUMBER_TYPE_INT32;
 
 	return self;
 }
@@ -627,7 +627,7 @@
 	self = [super init];
 
 	_value.int64 = int64;
-	_type = OF_NUMBER_INT64;
+	_type = OF_NUMBER_TYPE_INT64;
 
 	return self;
 }
@@ -637,7 +637,7 @@
 	self = [super init];
 
 	_value.uint8 = uint8;
-	_type = OF_NUMBER_UINT8;
+	_type = OF_NUMBER_TYPE_UINT8;
 
 	return self;
 }
@@ -647,7 +647,7 @@
 	self = [super init];
 
 	_value.uint16 = uint16;
-	_type = OF_NUMBER_UINT16;
+	_type = OF_NUMBER_TYPE_UINT16;
 
 	return self;
 }
@@ -657,7 +657,7 @@
 	self = [super init];
 
 	_value.uint32 = uint32;
-	_type = OF_NUMBER_UINT32;
+	_type = OF_NUMBER_TYPE_UINT32;
 
 	return self;
 }
@@ -667,7 +667,7 @@
 	self = [super init];
 
 	_value.uint64 = uint64;
-	_type = OF_NUMBER_UINT64;
+	_type = OF_NUMBER_TYPE_UINT64;
 
 	return self;
 }
@@ -677,7 +677,7 @@
 	self = [super init];
 
 	_value.size = size;
-	_type = OF_NUMBER_SIZE;
+	_type = OF_NUMBER_TYPE_SIZE;
 
 	return self;
 }
@@ -687,7 +687,7 @@
 	self = [super init];
 
 	_value.ssize = ssize;
-	_type = OF_NUMBER_SSIZE;
+	_type = OF_NUMBER_TYPE_SSIZE;
 
 	return self;
 }
@@ -697,7 +697,7 @@
 	self = [super init];
 
 	_value.intmax = intmax;
-	_type = OF_NUMBER_INTMAX;
+	_type = OF_NUMBER_TYPE_INTMAX;
 
 	return self;
 }
@@ -707,7 +707,7 @@
 	self = [super init];
 
 	_value.uintmax = uintmax;
-	_type = OF_NUMBER_UINTMAX;
+	_type = OF_NUMBER_TYPE_UINTMAX;
 
 	return self;
 }
@@ -717,7 +717,7 @@
 	self = [super init];
 
 	_value.ptrdiff = ptrdiff;
-	_type = OF_NUMBER_PTRDIFF;
+	_type = OF_NUMBER_TYPE_PTRDIFF;
 
 	return self;
 }
@@ -727,7 +727,7 @@
 	self = [super init];
 
 	_value.intptr = intptr;
-	_type = OF_NUMBER_INTPTR;
+	_type = OF_NUMBER_TYPE_INTPTR;
 
 	return self;
 }
@@ -737,7 +737,7 @@
 	self = [super init];
 
 	_value.uintptr = uintptr;
-	_type = OF_NUMBER_UINTPTR;
+	_type = OF_NUMBER_TYPE_UINTPTR;
 
 	return self;
 }
@@ -747,7 +747,7 @@
 	self = [super init];
 
 	_value.float_ = float_;
-	_type = OF_NUMBER_FLOAT;
+	_type = OF_NUMBER_TYPE_FLOAT;
 
 	return self;
 }
@@ -757,7 +757,7 @@
 	self = [super init];
 
 	_value.double_ = double_;
-	_type = OF_NUMBER_DOUBLE;
+	_type = OF_NUMBER_TYPE_DOUBLE;
 
 	return self;
 }
@@ -777,7 +777,7 @@
 		typeString = [[element attributeForName: @"type"] stringValue];
 
 		if ([typeString isEqual: @"boolean"]) {
-			_type = OF_NUMBER_BOOL;
+			_type = OF_NUMBER_TYPE_BOOL;
 
 			if ([[element stringValue] isEqual: @"true"])
 				_value.bool_ = true;
@@ -790,10 +790,10 @@
 			 * FIXME: This will fail if the value is bigger than
 			 *	  INTMAX_MAX!
 			 */
-			_type = OF_NUMBER_UINTMAX;
+			_type = OF_NUMBER_TYPE_UINTMAX;
 			_value.uintmax = [element decimalValue];
 		} else if ([typeString isEqual: @"signed"]) {
-			_type = OF_NUMBER_INTMAX;
+			_type = OF_NUMBER_TYPE_INTMAX;
 			_value.intmax = [element decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
 			union {
@@ -803,7 +803,7 @@
 
 			f.u = (uint32_t)[element hexadecimalValue];
 
-			_type = OF_NUMBER_FLOAT;
+			_type = OF_NUMBER_TYPE_FLOAT;
 			_value.float_ = f.f;
 		} else if ([typeString isEqual: @"double"]) {
 			union {
@@ -813,7 +813,7 @@
 
 			d.u = (uint64_t)[element hexadecimalValue];
 
-			_type = OF_NUMBER_DOUBLE;
+			_type = OF_NUMBER_TYPE_DOUBLE;
 			_value.double_ = d.d;
 		} else
 			@throw [OFInvalidArgumentException exception];
@@ -981,7 +981,8 @@
 
 	number = object;
 
-	if (_type & OF_NUMBER_FLOAT || number->_type & OF_NUMBER_FLOAT) {
+	if (_type & OF_NUMBER_TYPE_FLOAT ||
+	    number->_type & OF_NUMBER_TYPE_FLOAT) {
 		double value1 = [number doubleValue];
 		double value2 = [self doubleValue];
 
@@ -993,7 +994,8 @@
 		return (value1 == value2);
 	}
 
-	if (_type & OF_NUMBER_SIGNED || number->_type & OF_NUMBER_SIGNED)
+	if (_type & OF_NUMBER_TYPE_SIGNED ||
+	    number->_type & OF_NUMBER_TYPE_SIGNED)
 		return ([number intMaxValue] == [self intMaxValue]);
 
 	return ([number uIntMaxValue] == [self uIntMaxValue]);
@@ -1008,7 +1010,8 @@
 
 	number = (OFNumber*)object;
 
-	if (_type & OF_NUMBER_FLOAT || number->_type & OF_NUMBER_FLOAT) {
+	if (_type & OF_NUMBER_TYPE_FLOAT ||
+	    number->_type & OF_NUMBER_TYPE_FLOAT) {
 		double double1 = [self doubleValue];
 		double double2 = [number doubleValue];
 
@@ -1018,8 +1021,8 @@
 			return OF_ORDERED_ASCENDING;
 
 		return OF_ORDERED_SAME;
-	} else if (_type & OF_NUMBER_SIGNED ||
-	    number->_type & OF_NUMBER_SIGNED) {
+	} else if (_type & OF_NUMBER_TYPE_SIGNED ||
+	    number->_type & OF_NUMBER_TYPE_SIGNED) {
 		intmax_t int1 = [self intMaxValue];
 		intmax_t int2 = [number intMaxValue];
 
@@ -1048,27 +1051,27 @@
 	uint32_t hash;
 
 	/* Do we really need signed to represent this number? */
-	if (type & OF_NUMBER_SIGNED && [self intMaxValue] >= 0)
-		type &= ~OF_NUMBER_SIGNED;
+	if (type & OF_NUMBER_TYPE_SIGNED && [self intMaxValue] >= 0)
+		type &= ~OF_NUMBER_TYPE_SIGNED;
 
 	/* Do we really need floating point to represent this number? */
-	if (type & OF_NUMBER_FLOAT) {
+	if (type & OF_NUMBER_TYPE_FLOAT) {
 		double v = [self doubleValue];
 
 		if (v < 0) {
 			if (v == [self intMaxValue]) {
-				type &= ~OF_NUMBER_FLOAT;
-				type |= OF_NUMBER_SIGNED;
+				type &= ~OF_NUMBER_TYPE_FLOAT;
+				type |= OF_NUMBER_TYPE_SIGNED;
 			}
 		} else {
 			if (v == [self uIntMaxValue])
-				type &= ~OF_NUMBER_FLOAT;
+				type &= ~OF_NUMBER_TYPE_FLOAT;
 		}
 	}
 
 	OF_HASH_INIT(hash);
 
-	if (type & OF_NUMBER_FLOAT) {
+	if (type & OF_NUMBER_TYPE_FLOAT) {
 		union {
 			double d;
 			uint8_t b[sizeof(double)];
@@ -1082,7 +1085,7 @@
 
 		for (i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, d.b[i]);
-	} else if (type & OF_NUMBER_SIGNED) {
+	} else if (type & OF_NUMBER_TYPE_SIGNED) {
 		intmax_t v = [self intMaxValue] * -1;
 
 		while (v != 0) {
@@ -1163,88 +1166,88 @@
 - (OFNumber*)remainderOfDivisionWithNumber: (OFNumber*)number
 {
 	switch (_type) {
-	case OF_NUMBER_BOOL:
+	case OF_NUMBER_TYPE_BOOL:
 		return [OFNumber numberWithBool:
 		    _value.bool_ % [number boolValue]];
-	case OF_NUMBER_CHAR:
+	case OF_NUMBER_TYPE_CHAR:
 		return [OFNumber numberWithChar:
 		    _value.schar % [number charValue]];
-	case OF_NUMBER_SHORT:
+	case OF_NUMBER_TYPE_SHORT:
 		return [OFNumber numberWithShort:
 		    _value.sshort % [number shortValue]];
-	case OF_NUMBER_INT:
+	case OF_NUMBER_TYPE_INT:
 		return [OFNumber numberWithInt:
 		    _value.sint % [number intValue]];
-	case OF_NUMBER_LONG:
+	case OF_NUMBER_TYPE_LONG:
 		return [OFNumber numberWithLong:
 		    _value.slong % [number longValue]];
-	case OF_NUMBER_LONGLONG:
+	case OF_NUMBER_TYPE_LONGLONG:
 		return [OFNumber numberWithLongLong:
 		    _value.slonglong % [number longLongValue]];
-	case OF_NUMBER_UCHAR:
+	case OF_NUMBER_TYPE_UCHAR:
 		return [OFNumber numberWithUnsignedChar:
 		    _value.uchar % [number unsignedCharValue]];
-	case OF_NUMBER_USHORT:
+	case OF_NUMBER_TYPE_USHORT:
 		return [OFNumber numberWithUnsignedShort:
 		    _value.ushort % [number unsignedShortValue]];
-	case OF_NUMBER_UINT:
+	case OF_NUMBER_TYPE_UINT:
 		return [OFNumber numberWithUnsignedInt:
 		    _value.uint % [number unsignedIntValue]];
-	case OF_NUMBER_ULONG:
+	case OF_NUMBER_TYPE_ULONG:
 		return [OFNumber numberWithUnsignedLong:
 		    _value.ulong % [number unsignedLongValue]];
-	case OF_NUMBER_ULONGLONG:
+	case OF_NUMBER_TYPE_ULONGLONG:
 		return [OFNumber numberWithUnsignedLongLong:
 		    _value.ulonglong % [number unsignedLongLongValue]];
-	case OF_NUMBER_INT8:
+	case OF_NUMBER_TYPE_INT8:
 		return [OFNumber numberWithInt8:
 		    _value.int8 % [number int8Value]];
-	case OF_NUMBER_INT16:
+	case OF_NUMBER_TYPE_INT16:
 		return [OFNumber numberWithInt16:
 		    _value.int16 % [number int16Value]];
-	case OF_NUMBER_INT32:
+	case OF_NUMBER_TYPE_INT32:
 		return [OFNumber numberWithInt32:
 		    _value.int32 % [number int32Value]];
-	case OF_NUMBER_INT64:
+	case OF_NUMBER_TYPE_INT64:
 		return [OFNumber numberWithInt64:
 		    _value.int64 % [number int64Value]];
-	case OF_NUMBER_UINT8:
+	case OF_NUMBER_TYPE_UINT8:
 		return [OFNumber numberWithUInt8:
 		    _value.uint8 % [number uInt8Value]];
-	case OF_NUMBER_UINT16:
+	case OF_NUMBER_TYPE_UINT16:
 		return [OFNumber numberWithUInt16:
 		    _value.uint16 % [number uInt16Value]];
-	case OF_NUMBER_UINT32:
+	case OF_NUMBER_TYPE_UINT32:
 		return [OFNumber numberWithUInt32:
 		    _value.uint32 % [number uInt32Value]];
-	case OF_NUMBER_UINT64:
+	case OF_NUMBER_TYPE_UINT64:
 		return [OFNumber numberWithUInt64:
 		    _value.uint64 % [number uInt64Value]];
-	case OF_NUMBER_SIZE:
+	case OF_NUMBER_TYPE_SIZE:
 		return [OFNumber numberWithSize:
 		    _value.size % [number sizeValue]];
-	case OF_NUMBER_SSIZE:
+	case OF_NUMBER_TYPE_SSIZE:
 		return [OFNumber numberWithSSize:
 		    _value.ssize % [number sSizeValue]];
-	case OF_NUMBER_INTMAX:
+	case OF_NUMBER_TYPE_INTMAX:
 		return [OFNumber numberWithIntMax:
 		    _value.intmax % [number intMaxValue]];
-	case OF_NUMBER_UINTMAX:
+	case OF_NUMBER_TYPE_UINTMAX:
 		return [OFNumber numberWithUIntMax:
 		    _value.uintmax % [number uIntMaxValue]];
-	case OF_NUMBER_PTRDIFF:
+	case OF_NUMBER_TYPE_PTRDIFF:
 		return [OFNumber numberWithPtrDiff:
 		    _value.ptrdiff % [number ptrDiffValue]];
-	case OF_NUMBER_INTPTR:
+	case OF_NUMBER_TYPE_INTPTR:
 		return [OFNumber numberWithIntPtr:
 		    _value.intptr % [number intPtrValue]];
-	case OF_NUMBER_UINTPTR:
+	case OF_NUMBER_TYPE_UINTPTR:
 		return [OFNumber numberWithUIntPtr:
 		    _value.uintptr % [number uIntPtrValue]];
-	case OF_NUMBER_FLOAT:
+	case OF_NUMBER_TYPE_FLOAT:
 		return [OFNumber numberWithFloat:
 		    fmodf(_value.float_, [number floatValue])];
-	case OF_NUMBER_DOUBLE:
+	case OF_NUMBER_TYPE_DOUBLE:
 		return [OFNumber numberWithDouble:
 		    fmod(_value.double_, [number doubleValue])];
 	default:
@@ -1262,36 +1265,36 @@
 	OFMutableString *ret;
 
 	switch (_type) {
-	case OF_NUMBER_BOOL:
+	case OF_NUMBER_TYPE_BOOL:
 		return (_value.bool_ ? @"true" : @"false");
-	case OF_NUMBER_UCHAR:
-	case OF_NUMBER_USHORT:
-	case OF_NUMBER_UINT:
-	case OF_NUMBER_ULONG:
-	case OF_NUMBER_ULONGLONG:
-	case OF_NUMBER_UINT8:
-	case OF_NUMBER_UINT16:
-	case OF_NUMBER_UINT32:
-	case OF_NUMBER_UINT64:
-	case OF_NUMBER_SIZE:
-	case OF_NUMBER_UINTMAX:
-	case OF_NUMBER_UINTPTR:
+	case OF_NUMBER_TYPE_UCHAR:
+	case OF_NUMBER_TYPE_USHORT:
+	case OF_NUMBER_TYPE_UINT:
+	case OF_NUMBER_TYPE_ULONG:
+	case OF_NUMBER_TYPE_ULONGLONG:
+	case OF_NUMBER_TYPE_UINT8:
+	case OF_NUMBER_TYPE_UINT16:
+	case OF_NUMBER_TYPE_UINT32:
+	case OF_NUMBER_TYPE_UINT64:
+	case OF_NUMBER_TYPE_SIZE:
+	case OF_NUMBER_TYPE_UINTMAX:
+	case OF_NUMBER_TYPE_UINTPTR:
 		return [OFString stringWithFormat: @"%ju", [self uIntMaxValue]];
-	case OF_NUMBER_CHAR:
-	case OF_NUMBER_SHORT:
-	case OF_NUMBER_INT:
-	case OF_NUMBER_LONG:
-	case OF_NUMBER_LONGLONG:
-	case OF_NUMBER_INT8:
-	case OF_NUMBER_INT16:
-	case OF_NUMBER_INT32:
-	case OF_NUMBER_INT64:
-	case OF_NUMBER_SSIZE:
-	case OF_NUMBER_INTMAX:
-	case OF_NUMBER_PTRDIFF:
-	case OF_NUMBER_INTPTR:
+	case OF_NUMBER_TYPE_CHAR:
+	case OF_NUMBER_TYPE_SHORT:
+	case OF_NUMBER_TYPE_INT:
+	case OF_NUMBER_TYPE_LONG:
+	case OF_NUMBER_TYPE_LONGLONG:
+	case OF_NUMBER_TYPE_INT8:
+	case OF_NUMBER_TYPE_INT16:
+	case OF_NUMBER_TYPE_INT32:
+	case OF_NUMBER_TYPE_INT64:
+	case OF_NUMBER_TYPE_SSIZE:
+	case OF_NUMBER_TYPE_INTMAX:
+	case OF_NUMBER_TYPE_PTRDIFF:
+	case OF_NUMBER_TYPE_INTPTR:
 		return [OFString stringWithFormat: @"%jd", [self intMaxValue]];
-	case OF_NUMBER_FLOAT:
+	case OF_NUMBER_TYPE_FLOAT:
 		ret = [OFMutableString stringWithFormat: @"%g", _value.float_];
 
 		if (![ret containsString: @"."])
@@ -1300,7 +1303,7 @@
 		[ret makeImmutable];
 
 		return ret;
-	case OF_NUMBER_DOUBLE:
+	case OF_NUMBER_TYPE_DOUBLE:
 		ret = [OFMutableString stringWithFormat: @"%g",
 							 _value.double_];
 
@@ -1325,42 +1328,42 @@
 				    stringValue: [self description]];
 
 	switch (_type) {
-	case OF_NUMBER_BOOL:
+	case OF_NUMBER_TYPE_BOOL:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"boolean"];
 		break;
-	case OF_NUMBER_UCHAR:
-	case OF_NUMBER_USHORT:
-	case OF_NUMBER_UINT:
-	case OF_NUMBER_ULONG:
-	case OF_NUMBER_ULONGLONG:
-	case OF_NUMBER_UINT8:
-	case OF_NUMBER_UINT16:
-	case OF_NUMBER_UINT32:
-	case OF_NUMBER_UINT64:
-	case OF_NUMBER_SIZE:
-	case OF_NUMBER_UINTMAX:
-	case OF_NUMBER_UINTPTR:
+	case OF_NUMBER_TYPE_UCHAR:
+	case OF_NUMBER_TYPE_USHORT:
+	case OF_NUMBER_TYPE_UINT:
+	case OF_NUMBER_TYPE_ULONG:
+	case OF_NUMBER_TYPE_ULONGLONG:
+	case OF_NUMBER_TYPE_UINT8:
+	case OF_NUMBER_TYPE_UINT16:
+	case OF_NUMBER_TYPE_UINT32:
+	case OF_NUMBER_TYPE_UINT64:
+	case OF_NUMBER_TYPE_SIZE:
+	case OF_NUMBER_TYPE_UINTMAX:
+	case OF_NUMBER_TYPE_UINTPTR:
 		[element addAttributeWithName: @"type"
 				  stringValue: @"unsigned"];
 		break;
-	case OF_NUMBER_CHAR:
-	case OF_NUMBER_SHORT:
-	case OF_NUMBER_INT:
-	case OF_NUMBER_LONG:
-	case OF_NUMBER_LONGLONG:
-	case OF_NUMBER_INT8:
-	case OF_NUMBER_INT16:
-	case OF_NUMBER_INT32:
-	case OF_NUMBER_INT64:
-	case OF_NUMBER_SSIZE:
-	case OF_NUMBER_INTMAX:
-	case OF_NUMBER_PTRDIFF:
-	case OF_NUMBER_INTPTR:;
+	case OF_NUMBER_TYPE_CHAR:
+	case OF_NUMBER_TYPE_SHORT:
+	case OF_NUMBER_TYPE_INT:
+	case OF_NUMBER_TYPE_LONG:
+	case OF_NUMBER_TYPE_LONGLONG:
+	case OF_NUMBER_TYPE_INT8:
+	case OF_NUMBER_TYPE_INT16:
+	case OF_NUMBER_TYPE_INT32:
+	case OF_NUMBER_TYPE_INT64:
+	case OF_NUMBER_TYPE_SSIZE:
+	case OF_NUMBER_TYPE_INTMAX:
+	case OF_NUMBER_TYPE_PTRDIFF:
+	case OF_NUMBER_TYPE_INTPTR:;
 		[element addAttributeWithName: @"type"
 				  stringValue: @"signed"];
 		break;
-	case OF_NUMBER_FLOAT:;
+	case OF_NUMBER_TYPE_FLOAT:;
 		union {
 			float f;
 			uint32_t u;
@@ -1374,7 +1377,7 @@
 		    [OFString stringWithFormat: @"%08" PRIx32, f.u]];
 
 		break;
-	case OF_NUMBER_DOUBLE:;
+	case OF_NUMBER_TYPE_DOUBLE:;
 		union {
 			double d;
 			uint64_t u;
@@ -1416,7 +1419,7 @@
 {
 	double doubleValue;
 
-	if (_type == OF_NUMBER_BOOL)
+	if (_type == OF_NUMBER_TYPE_BOOL)
 		return (_value.bool_ ? @"true" : @"false");
 
 	doubleValue = [self doubleValue];
@@ -1437,7 +1440,7 @@
 {
 	OFDataArray *data;
 
-	if (_type == OF_NUMBER_BOOL) {
+	if (_type == OF_NUMBER_TYPE_BOOL) {
 		uint8_t type;
 
 		data = [OFDataArray dataArrayWithItemSize: 1
@@ -1449,7 +1452,7 @@
 			type = 0xC2;
 
 		[data addItem: &type];
-	} else if (_type == OF_NUMBER_FLOAT) {
+	} else if (_type == OF_NUMBER_TYPE_FLOAT) {
 		uint8_t type = 0xCA;
 		float tmp = OF_BSWAP_FLOAT_IF_LE(_value.float_);
 
@@ -1459,7 +1462,7 @@
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type == OF_NUMBER_DOUBLE) {
+	} else if (_type == OF_NUMBER_TYPE_DOUBLE) {
 		uint8_t type = 0xCB;
 		double tmp = OF_BSWAP_DOUBLE_IF_LE(_value.double_);
 
@@ -1469,7 +1472,7 @@
 		[data addItem: &type];
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
-	} else if (_type & OF_NUMBER_SIGNED) {
+	} else if (_type & OF_NUMBER_TYPE_SIGNED) {
 		intmax_t value = [self intMaxValue];
 
 		if (value >= -32 && value < 0) {
