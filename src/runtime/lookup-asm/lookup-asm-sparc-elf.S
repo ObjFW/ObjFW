@@ -64,7 +64,7 @@
 \name:
 	ld	[%o0], %o2
 	cmp	%o2, 0
-	beq	ret_nil
+	beq,a	ret_nil
 	 nop
 
 	ld	[%o0 + 4], %o2
@@ -81,7 +81,7 @@ generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 ret_nil:
 #ifdef PIC
-	or	%o7, %g0, %o2
+	mov	%o7, %g1
 
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_ - 4), %o1
 	call	0f
@@ -92,7 +92,7 @@ ret_nil:
 	sethi	%hi(nil_method), %o0
 	or	%o0, %lo(nil_method), %o0
 
-	jmpl	%o2 + 8, %g0
+	jmpl	%g1 + 8, %g0
 	 ld	[%o1 + %o0], %o0
 #else
 	sethi	%hi(nil_method), %o0
