@@ -38,27 +38,9 @@ static OFString *module = @"OFNumber";
 
 	TEST(@"-[hash]", [num hash] == 0x82D8BC42)
 
+	TEST(@"-[charValue]", [num charValue] == 21)
+
 	TEST(@"-[doubleValue]", [num doubleValue] == 123456789.L)
-
-	TEST(@"-[numberByDecreasing]",
-	    [[num numberByDecreasing]
-	    isEqual: [OFNumber numberWithInt32: 123456788]])
-
-	TEST(@"-[numberByDividingBy:]",
-	    [[num numberByDividingWithNumber: [OFNumber numberWithInt: 2]]
-	    intValue] == 61728394)
-
-	TEST(@"-[numberByXORing:]",
-	    [[num numberByXORingWithNumber: [OFNumber numberWithInt: 123456831]]
-	    intValue] == 42)
-
-	TEST(@"-[numberByShiftingRightBy:]",
-	    [[num numberByShiftingRightWithNumber: [OFNumber numberWithInt: 8]]
-	    intValue] == 482253)
-
-	TEST(@"-[remainderOfDivisionWithNumber:]",
-	    [[num remainderOfDivisionWithNumber: [OFNumber numberWithInt: 11]]
-	    intValue] == 5)
 
 	[pool drain];
 }
