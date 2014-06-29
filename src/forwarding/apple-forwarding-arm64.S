@@ -31,6 +31,7 @@ sel_forwardingTargetForSelector_:
 	.long 0, 0
 
 .section __TEXT, __text, regular, pure_instructions
+.align 2
 _of_forward:
 _of_forward_stret:
 	stp	fp, lr, [sp, #-208]!
