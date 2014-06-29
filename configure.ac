@@ -876,7 +876,7 @@ CHECK_BUILTIN_BSWAP(32)
 CHECK_BUILTIN_BSWAP(64)
 
 case "$host" in
-	arm-apple-darwin*)
+	arm*-apple-darwin*)
 		have_processes="no"
 		;;
 	*-*-mingw*)
@@ -921,7 +921,7 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 ])
 
 case "$host" in
-	arm-apple-darwin*)
+	arm*-apple-darwin*)
 		AC_DEFINE(OF_IOS, 1, [Whether we compile for iOS])
 		;;
 esac
