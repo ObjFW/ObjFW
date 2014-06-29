@@ -85,14 +85,16 @@ run-on-ios: all
 	echo "Uploading files to iOS device ${IOS_HOST} at ${IOS_TMP}..."
 	ssh ${IOS_USER}@${IOS_HOST} \
 		'rm -fr ${IOS_TMP} && mkdir -p ${IOS_TMP}/plugin'
-	scp -q ../src/libobjfw.dylib tests testfile.bin testfile.txt \
-		testfile.ini serialization.xml \
+	destname=libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
+	scp -q ../src/libobjfw.dylib \
+		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/$$destname
+	scp -q tests testfile.bin testfile.txt testfile.ini serialization.xml \
 		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/
 	scp -q plugin/TestPlugin.bundle \
 		${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
 	ssh ${IOS_USER}@${IOS_HOST} \
-		'cd ${IOS_TMP} && ${TEST_LAUNCHER} ./tests'
+		'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${TEST_LAUNCHER} ./tests'
 
 run-on-android: all
 	echo "Uploading files to Android device..."
