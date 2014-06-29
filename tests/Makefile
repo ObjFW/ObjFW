@@ -48,7 +48,7 @@ include ../buildsys.mk
 
 post-all: ${RUN_TESTS}
 
-.PHONY: run run-on-ios run-on-android sign-for-ios
+.PHONY: run run-on-ios run-on-android
 run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
@@ -77,11 +77,7 @@ run:
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
-sign-for-ios: all
-	codesign -s "iPhone Developer" -f \
-		../src/libobjfw.dylib tests plugin/TestPlugin.bundle
-
-run-on-ios: all sign-for-ios
+run-on-ios: all
 	if [ -z "${IOS_HOST}" ]; then \
 		echo "Please set IOS_HOST to the hostname of your iOS host!"; \
 		exit 1; \
