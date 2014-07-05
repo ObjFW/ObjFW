@@ -263,6 +263,25 @@ of_http_request_method_from_string(const char *string)
 	OF_SETTER(_entity, entity, true, 0)
 }
 
+- (void)setEntityFromString: (OFString*)string
+{
+	[self setEntityFromString: string
+			 encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (void)setEntityFromString: (OFString*)string
+		   encoding: (of_string_encoding_t)encoding
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDataArray *entity = [OFDataArray dataArray];
+
+	[entity addItems: [string cStringWithEncoding: encoding]
+		   count: [string cStringLengthWithEncoding: encoding]];
+	[self setEntity: entity];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (OFDataArray*)entity
 {
 	OF_GETTER(_entity, true)

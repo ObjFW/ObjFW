@@ -15,6 +15,7 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 
 #ifndef OF_HAVE_SOCKETS
 # error No sockets available!
@@ -186,6 +187,24 @@ typedef struct {
  * @param entity The entity body of the HTTP request
  */
 - (void)setEntity: (OFDataArray*)entity;
+
+/*!
+ * @brief Sets the entity body of the HTTP request to the specified string
+ *	  encoded in UTF-8.
+ *
+ * @param string The string to use for the entity body
+ */
+- (void)setEntityFromString: (OFString*)string;
+
+/*!
+ * @brief Sets the entity body of the HTTP request to the specified string
+ *	  encoded in the specified encoding.
+ *
+ * @param string The string to use for the entity body
+ * @param encoding The encoding to encode the string with
+ */
+- (void)setEntityFromString: (OFString*)string
+		   encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Returns the entity body of the HTTP request.
