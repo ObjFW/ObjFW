@@ -323,6 +323,7 @@ normalizeKey(char *str_)
 	OFString *scheme = [URL scheme];
 	of_http_request_method_t method = [request method];
 	OFMutableString *requestString;
+	OFString *user, *password;
 	OFDictionary *headers = [request headers];
 	OFDataArray *entity = [request entity];
 	OFTCPSocket *socket;
@@ -388,6 +389,23 @@ normalizeKey(char *str_)
 	else
 		[requestString appendFormat: @"Host: %@:%d\r\n", [URL host],
 		    [URL port]];
+
+	user = [URL user];
+	password = [URL password];
+
+	if ([user length] > 0 || [password length] > 0) {
+		OFDataArray *authorization = [OFDataArray dataArray];
+
+		[authorization addItems: [user UTF8String]
+				  count: [user UTF8StringLength]];
+		[authorization addItem: ":"];
+		[authorization addItems: [password UTF8String]
+				  count: [password UTF8StringLength]];
+
+		[requestString appendFormat:
+		    @"Authorization: Basic %@\r\n",
+		    [authorization stringByBase64Encoding]];
+	}
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
 		[requestString appendString:
