@@ -412,6 +412,18 @@ normalizeKey(char *str_)
 		    @"User-Agent: Something using ObjFW "
 		    @"<https://webkeks.org/objfw>\r\n"];
 
+	if (entity != nil) {
+		if ([headers objectForKey: @"Content-Length"] == nil)
+			[requestString appendFormat:
+			    @"Content-Length: %zd\r\n",
+			    [entity itemSize] * [entity count]];
+
+		if ([headers objectForKey: @"Content-Type"] == nil)
+			[requestString appendString:
+			    @"Content-Type: application/x-www-form-urlencoded; "
+			    @"charset=UTF-8\r\n"];
+	}
+
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
 
