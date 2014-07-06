@@ -46,8 +46,15 @@ int _OFString_URLEncoding_reference;
 		    ([self UTF8StringLength] * 3) + 1];
 
 	for (i = 0; *string != '\0'; string++) {
-		if (isalnum((int)*string) || *string == '-' || *string == '_' ||
-		    *string == '.' || *string == '~')
+		/*
+		 * '+' is also listed in RFC 1738, however, '+' is sometimes
+		 * interpreted as space in HTTP. Therefore always escape it to
+		 * make sure it's always interpreted correctly.
+		 */
+		if (!(*string & 0x80) && (isalnum((int)*string) ||
+		    *string == '$' || *string == '-' || *string == '_' ||
+		    *string == '.' || *string == '!' || *string == '*' ||
+		    *string == '(' || *string == ')' || *string == ','))
 			retCString[i++] = *string;
 		else {
 			uint8_t high, low;
