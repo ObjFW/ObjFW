@@ -76,15 +76,18 @@ static OFString*
 parseEntities(OFString *self, id (*lookup)(void*, OFString*, OFString*),
     void *context)
 {
+	OFMutableString *ret;
+	void *pool;
 	const char *string;
 	size_t i, last, length;
 	bool inEntity;
-	OFMutableString *ret;
+
+	ret = [OFMutableString string];
+
+	pool = objc_autoreleasePoolPush();
 
 	string = [self UTF8String];
 	length = [self UTF8StringLength];
-
-	ret = [OFMutableString string];
 
 	last = 0;
 	inEntity = false;
@@ -169,6 +172,8 @@ parseEntities(OFString *self, id (*lookup)(void*, OFString*, OFString*),
 		       length: i - last];
 
 	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }

@@ -31,6 +31,7 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
+	void *pool = objc_autoreleasePoolPush();
 	const char *string = [self UTF8String];
 	char *retCString;
 	size_t i;
@@ -70,6 +71,8 @@ int _OFString_URLEncoding_reference;
 		}
 	}
 
+	objc_autoreleasePoolPop(pool);
+
 	@try {
 		ret = [OFString stringWithUTF8String: retCString
 					      length: i];
@@ -82,6 +85,7 @@ int _OFString_URLEncoding_reference;
 
 - (OFString*)stringByURLDecoding
 {
+	void *pool = objc_autoreleasePoolPush();
 	OFString *ret;
 	const char *string = [self UTF8String];
 	char *retCString;
@@ -128,6 +132,8 @@ int _OFString_URLEncoding_reference;
 		}
 	}
 	retCString[i] = '\0';
+
+	objc_autoreleasePoolPop(pool);
 
 	if (state != 0) {
 		free(retCString);

@@ -654,6 +654,7 @@ nextObject(const char *restrict *pointer, const char *stop,
 
 - (id)JSONValueWithDepthLimit: (size_t)depthLimit
 {
+	void *pool = objc_autoreleasePoolPush();
 	const char *pointer = [self UTF8String];
 	const char *stop = pointer + [self UTF8StringLength];
 	id object;
@@ -666,6 +667,10 @@ nextObject(const char *restrict *pointer, const char *stop,
 		@throw [OFInvalidJSONException exceptionWithString: self
 							      line: line];
 
-	return object;
+	[object retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [object autorelease];
 }
 @end

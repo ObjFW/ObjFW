@@ -29,6 +29,7 @@ int _OFString_XMLEscaping_reference;
 @implementation OFString (XMLEscaping)
 - (OFString*)stringByXMLEscaping
 {
+	void *pool = objc_autoreleasePoolPush();
 	char *retCString;
 	const char *string, *append;
 	size_t length, retLength, appendLen;
@@ -97,8 +98,9 @@ int _OFString_XMLEscaping_reference;
 		} else
 			retCString[j++] = string[i];
 	}
-
 	assert(j == retLength);
+
+	objc_autoreleasePoolPop(pool);
 
 	@try {
 		ret = [OFString stringWithUTF8String: retCString
