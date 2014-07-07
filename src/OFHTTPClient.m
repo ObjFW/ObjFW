@@ -328,7 +328,7 @@ normalizeKey(char *str_)
 	OFDataArray *entity = [request entity];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
-	OFString *line, *path, *version, *redirect, *keepAlive;
+	OFString *line, *version, *redirect, *keepAlive;
 	OFMutableDictionary *serverHeaders;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
@@ -365,9 +365,6 @@ normalizeKey(char *str_)
 	} else
 		socket = [self OF_createSocketForRequest: request];
 
-	if ([(path = [URL path]) length] == 0)
-		path = @"/";
-
 	/*
 	 * As a work around for a bug with split packets in lighttpd when using
 	 * HTTPS, we construct the complete request in a buffer string and then
@@ -375,13 +372,13 @@ normalizeKey(char *str_)
 	 */
 	if ([URL query] != nil)
 		requestString = [OFMutableString stringWithFormat:
-		    @"%s %@?%@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method), path, [URL query],
-		    [request protocolVersionString]];
+		    @"%s /%@?%@ HTTP/%@\r\n",
+		    of_http_request_method_to_string(method), [URL path],
+		    [URL query], [request protocolVersionString]];
 	else
 		requestString = [OFMutableString stringWithFormat:
-		    @"%s %@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method), path,
+		    @"%s /%@ HTTP/%@\r\n",
+		    of_http_request_method_to_string(method), [URL path],
 		    [request protocolVersionString]];
 
 	if ([URL port] == 80)

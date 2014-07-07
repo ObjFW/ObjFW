@@ -385,6 +385,7 @@ normalizedKey(OFString *key)
 - (bool)parseProlog: (OFString*)line
 {
 	OFString *method;
+	OFMutableString *path;
 	size_t pos;
 
 	@try {
@@ -417,17 +418,24 @@ normalizedKey(OFString *key)
 	}
 
 	@try {
-		_path = [line substringWithRange:
-		    of_range(pos + 1, [line length] - pos - 10)];
+		of_range_t range = of_range(pos + 1, [line length] - pos - 10);
+
+		path = [[[line substringWithRange:
+		    range] mutableCopy] autorelease];
 	} @catch (OFOutOfRangeException *e) {
 		return [self sendErrorAndClose: 400];
 	}
-	_path = [[_path stringByDeletingEnclosingWhitespaces] retain];
 
-	if (![_path hasPrefix: @"/"])
+	[path deleteEnclosingWhitespaces];
+
+	if (![path hasPrefix: @"/"])
 		return [self sendErrorAndClose: 400];
 
+	[path deleteCharactersInRange: of_range(0, 1)];
+	[path makeImmutable];
+
 	_headers = [[OFMutableDictionary alloc] init];
+	_path = [path copy];
 	_state = PARSING_HEADERS;
 
 	return true;

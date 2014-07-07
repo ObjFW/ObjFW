@@ -66,7 +66,7 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	TEST(@"-[host]", [[u1 host] isEqual: @"h"] && [u4 port] == 0)
 	TEST(@"-[port]", [u1 port] == 1234)
 	TEST(@"-[path]",
-	    [[u1 path] isEqual: @"/f"] && [[u4 path] isEqual: @"/etc/passwd"])
+	    [[u1 path] isEqual: @"f"] && [[u4 path] isEqual: @"/etc/passwd"])
 	TEST(@"-[parameters]",
 	    [[u1 parameters] isEqual: @"p"] && [u4 parameters] == nil)
 	TEST(@"-[query]", [[u1 query] isEqual: @"q"] && [u4 query] == nil)

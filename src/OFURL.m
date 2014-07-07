@@ -158,10 +158,9 @@
 				    initWithUTF8String: tmp + 1];
 			}
 
-			_path = [[OFString alloc] initWithFormat: @"/%s",
-								  UTF8String];
-		} else
-			_path = @"";
+			_path = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -217,7 +216,7 @@
 
 		if (*UTF8String == '/')
 			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			    initWithUTF8String: UTF8String + 1];
 		else {
 			void *pool;
 			OFString *s;
@@ -482,7 +481,7 @@
 		[ret appendFormat: @":%u", _port];
 
 	if (_path != nil)
-		[ret appendString: _path];
+		[ret appendFormat: @"/%@", _path];
 
 	if (_parameters != nil)
 		[ret appendFormat: @";%@", _parameters];
