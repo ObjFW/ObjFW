@@ -76,15 +76,12 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	TEST(@"-[copy]", R(u4 = [[u1 copy] autorelease]))
 
 	TEST(@"-[isEqual:]", [u1 isEqual: u4] && ![u2 isEqual: u3] &&
-	    [[OFURL URLWithString: @"http://bar/"] isEqual: u3])
+	    [[OFURL URLWithString: @"HTTP://bar/"] isEqual: u3])
 
 	TEST(@"-[hash:]", [u1 hash] == [u4 hash] && [u2 hash] != [u3 hash])
 
 	EXPECT_EXCEPTION(@"Detection of invalid format",
 	    OFInvalidFormatException, [OFURL URLWithString: @"http"])
-
-	EXPECT_EXCEPTION(@"Detection of invalid scheme",
-	    OFInvalidFormatException, [OFURL URLWithString: @"foo://"])
 
 	[pool drain];
 }

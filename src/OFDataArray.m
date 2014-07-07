@@ -189,13 +189,7 @@ void _references_to_categories_of_OFDataArray(void)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	void *pool;
-#ifdef OF_HAVE_SOCKETS
-	OFHTTPClient *client;
-	OFHTTPRequest *request;
-	OFHTTPResponse *response;
-	OFDictionary *headers;
-	OFString *contentLength;
-#endif
+	OFString *scheme;
 #ifdef OF_HAVE_FILES
 	Class c = [self class];
 #endif
@@ -204,39 +198,41 @@ void _references_to_categories_of_OFDataArray(void)
 
 	pool = objc_autoreleasePoolPush();
 
-	if ([[URL scheme] isEqual: @"file"]) {
+	scheme = [URL scheme];
+
 #ifdef OF_HAVE_FILES
+	if ([scheme isEqual: @"file"])
 		self = [[c alloc] initWithContentsOfFile: [URL path]];
-		objc_autoreleasePoolPop(pool);
-		return self;
-#else
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	else
 #endif
-	}
-
 #ifdef OF_HAVE_SOCKETS
-	client = [OFHTTPClient client];
-	request = [OFHTTPRequest requestWithURL: URL];
-	response = [client performRequest: request];
+	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
+		OFHTTPClient *client = [OFHTTPClient client];
+		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
+		OFHTTPResponse *response = [client performRequest: request];
+		OFDictionary *headers;
+		OFString *contentLength;
 
-	if ([response statusCode] != 200)
-		@throw [OFHTTPRequestFailedException
-		    exceptionWithRequest: request
-				response: response];
+		if ([response statusCode] != 200)
+			@throw [OFHTTPRequestFailedException
+			    exceptionWithRequest: request
+					response: response];
 
-	/*
-	 * TODO: This can be optimized by allocating a data array with the
-	 * capacity from the Content-Length header.
-	 */
-	self = [[response readDataArrayTillEndOfStream] retain];
+		/*
+		 * TODO: This can be optimized by allocating a data array with
+		 * the capacity from the Content-Length header.
+		 */
+		self = [[response readDataArrayTillEndOfStream] retain];
 
-	headers = [response headers];
-	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
-		if ([self count] != (size_t)[contentLength decimalValue])
-			@throw [OFTruncatedDataException exception];
-#else
-	@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+		headers = [response headers];
+		if ((contentLength =
+		    [headers objectForKey: @"Content-Length"]) != nil)
+			if ([self count] !=
+			    (size_t)[contentLength decimalValue])
+				@throw [OFTruncatedDataException exception];
+	} else
 #endif
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	objc_autoreleasePoolPop(pool);
 

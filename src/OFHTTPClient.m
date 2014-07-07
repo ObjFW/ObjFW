@@ -561,11 +561,12 @@ normalizeKey(char *str_)
 		_lastResponse = [response retain];
 	}
 
+	/* FIXME: Case-insensitive check of redirect's scheme */
 	if (redirects > 0 && (status == 301 || status == 302 ||
 	    status == 303 || status == 307) &&
 	    (redirect = [serverHeaders objectForKey: @"Location"]) != nil &&
 	    (_insecureRedirectsAllowed || [scheme isEqual: @"http"] ||
-	    ![redirect hasPrefix: @"http://"])) {
+	    [redirect hasPrefix: @"https://"])) {
 		OFURL *newURL;
 		bool follow;
 

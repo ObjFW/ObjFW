@@ -878,14 +878,7 @@ static struct {
 	       encoding: (of_string_encoding_t)encoding
 {
 	void *pool;
-#ifdef OF_HAVE_SOCKETS
-	OFHTTPClient *client;
-	OFHTTPRequest *request;
-	OFHTTPResponse *response;
-	OFDictionary *headers;
-	OFString *contentType, *contentLength;
-	OFDataArray *data;
-#endif
+	OFString *scheme;
 #ifdef OF_HAVE_FILES
 	Class c = [self class];
 #endif
@@ -894,61 +887,65 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	if ([[URL scheme] isEqual: @"file"]) {
+	scheme = [URL scheme];
+
 #ifdef OF_HAVE_FILES
+	if ([scheme isEqual: @"file"]) {
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
 			encoding = OF_STRING_ENCODING_UTF_8;
 
 		self = [[c alloc] initWithContentsOfFile: [URL path]
 						encoding: encoding];
-		objc_autoreleasePoolPop(pool);
-		return self;
-#else
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+	} else
 #endif
-	}
-
 #ifdef OF_HAVE_SOCKETS
-	client = [OFHTTPClient client];
-	request = [OFHTTPRequest requestWithURL: URL];
-	response = [client performRequest: request];
+	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
+		OFHTTPClient *client = [OFHTTPClient client];
+		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
+		OFHTTPResponse *response = [client performRequest: request];
+		OFDictionary *headers;
+		OFString *contentType, *contentLength;
+		OFDataArray *data;
 
-	if ([response statusCode] != 200)
-		@throw [OFHTTPRequestFailedException
-		    exceptionWithRequest: request
-				response: response];
+		if ([response statusCode] != 200)
+			@throw [OFHTTPRequestFailedException
+			    exceptionWithRequest: request
+					response: response];
 
-	headers = [response headers];
+		headers = [response headers];
 
-	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
-	    (contentType = [headers objectForKey: @"Content-Type"]) != nil) {
-		contentType = [contentType lowercaseString];
+		if (encoding == OF_STRING_ENCODING_AUTODETECT &&
+		    (contentType = [headers
+		    objectForKey: @"Content-Type"]) != nil) {
+			contentType = [contentType lowercaseString];
 
-		if ([contentType hasSuffix: @"charset=utf-8"])
+			if ([contentType hasSuffix: @"charset=utf-8"])
+				encoding = OF_STRING_ENCODING_UTF_8;
+			if ([contentType hasSuffix: @"charset=iso-8859-1"])
+				encoding = OF_STRING_ENCODING_ISO_8859_1;
+			if ([contentType hasSuffix: @"charset=iso-8859-15"])
+				encoding = OF_STRING_ENCODING_ISO_8859_15;
+			if ([contentType hasSuffix: @"charset=windows-1252"])
+				encoding = OF_STRING_ENCODING_WINDOWS_1252;
+		}
+
+		if (encoding == OF_STRING_ENCODING_AUTODETECT)
 			encoding = OF_STRING_ENCODING_UTF_8;
-		if ([contentType hasSuffix: @"charset=iso-8859-1"])
-			encoding = OF_STRING_ENCODING_ISO_8859_1;
-		if ([contentType hasSuffix: @"charset=iso-8859-15"])
-			encoding = OF_STRING_ENCODING_ISO_8859_15;
-		if ([contentType hasSuffix: @"charset=windows-1252"])
-			encoding = OF_STRING_ENCODING_WINDOWS_1252;
-	}
 
-	if (encoding == OF_STRING_ENCODING_AUTODETECT)
-		encoding = OF_STRING_ENCODING_UTF_8;
+		data = [response readDataArrayTillEndOfStream];
 
-	data = [response readDataArrayTillEndOfStream];
+		if ((contentLength = [headers
+		    objectForKey: @"Content-Length"]) != nil)
+			if ([data count] !=
+			    (size_t)[contentLength decimalValue])
+				@throw [OFTruncatedDataException exception];
 
-	if ((contentLength = [headers objectForKey: @"Content-Length"]) != nil)
-		if ([data count] != (size_t)[contentLength decimalValue])
-			@throw [OFTruncatedDataException exception];
-
-	self = [[c alloc] initWithCString: (char*)[data items]
-				 encoding: encoding
-				   length: [data count]];
-#else
-	@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+		self = [[c alloc] initWithCString: (char*)[data items]
+					 encoding: encoding
+					   length: [data count]];
+	} else
 #endif
+		@throw [OFUnsupportedProtocolException exception];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #import "OFURL.h"
 #import "OFString.h"
@@ -57,24 +58,28 @@
 
 		if ((UTF8String2 = of_strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
-			     exceptionWithRequestedSize: [string
-							     UTF8StringLength]];
+			     exceptionWithRequestedSize:
+			     [string UTF8StringLength]];
 
 		UTF8String = UTF8String2;
 
-		if (!strncmp(UTF8String, "file://", 7)) {
-			_scheme = @"file";
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String + 7];
-			return self;
-		} else if (!strncmp(UTF8String, "http://", 7)) {
-			_scheme = @"http";
-			UTF8String += 7;
-		} else if (!strncmp(UTF8String, "https://", 8)) {
-			_scheme = @"https";
-			UTF8String += 8;
-		} else
+		if ((tmp = strstr(UTF8String, "://")) == NULL)
 			@throw [OFInvalidFormatException exception];
+
+		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
+			*tmp2 = tolower((int)*tmp2);
+
+		_scheme = [[OFString alloc]
+		    initWithUTF8String: UTF8String
+				length: tmp - UTF8String];
+
+		UTF8String = tmp + 3;
+
+		if ([_scheme isEqual: @"file"]) {
+			_path = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
+			return self;
+		}
 
 		if ((tmp = strchr(UTF8String, '/')) != NULL) {
 			*tmp = '\0';
@@ -120,9 +125,6 @@
 
 			_port = [portString decimalValue];
 
-			if (_port == 0)
-				_port = 80;
-
 			objc_autoreleasePoolPop(pool);
 		} else {
 			_host = [[OFString alloc]
@@ -132,8 +134,8 @@
 				_port = 80;
 			else if ([_scheme isEqual: @"https"])
 				_port = 443;
-			else
-				OF_ENSURE(0);
+			else if ([_scheme isEqual: @"ftp"])
+				_port = 21;
 		}
 
 		if ((UTF8String = tmp) != NULL) {
@@ -366,9 +368,6 @@
 
 - (void)setScheme: (OFString*)scheme
 {
-	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
-		@throw [OFInvalidArgumentException exception];
-
 	OF_SETTER(_scheme, scheme, true, 1)
 }
 
@@ -419,10 +418,6 @@
 
 - (void)setPath: (OFString*)path
 {
-	if (([_scheme isEqual: @"http"] || [_scheme isEqual: @"https"]) &&
-	    ![path hasPrefix: @"/"])
-		@throw [OFInvalidArgumentException exception];
-
 	OF_SETTER(_path, path, true, 1)
 }
 
@@ -477,7 +472,8 @@
 		[ret appendString: _host];
 
 	if (([_scheme isEqual: @"http"] && _port != 80) ||
-	    ([_scheme isEqual: @"https"] && _port != 443))
+	    ([_scheme isEqual: @"https"] && _port != 443) ||
+	    ([_scheme isEqual: @"ftp"] && _port != 21))
 		[ret appendFormat: @":%u", _port];
 
 	if (_path != nil)
