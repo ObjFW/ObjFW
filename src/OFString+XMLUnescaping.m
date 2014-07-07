@@ -21,6 +21,7 @@
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFUnknownXMLEntityException.h"
 
 int _OFString_XMLUnescaping_reference;
 
@@ -153,8 +154,8 @@ parseEntities(OFString *self, id (*lookup)(void*, OFString*, OFString*),
 				tmp = lookup(context, self, name);
 
 				if (tmp == nil)
-					@throw [OFInvalidFormatException
-					    exception];
+					@throw [OFUnknownXMLEntityException
+					    exceptionWithEntityName: name];
 
 				[ret appendString: tmp];
 				objc_autoreleasePoolPop(pool);

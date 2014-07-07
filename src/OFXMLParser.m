@@ -33,6 +33,7 @@
 #import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFInvalidFormatException.h"
 #import "OFMalformedXMLException.h"
 #import "OFUnboundPrefixException.h"
 
@@ -59,8 +60,8 @@ appendToBuffer(OFDataArray *buffer, const char *string,
 }
 
 static OFString*
-transformString(OFDataArray *buffer, size_t cut, bool unescape,
-    id <OFStringXMLUnescapingDelegate> delegate)
+transformString(OFXMLParser *parser, OFDataArray *buffer, size_t cut,
+    bool unescape)
 {
 	char *items;
 	size_t i, length;
@@ -87,8 +88,14 @@ transformString(OFDataArray *buffer, size_t cut, bool unescape,
 	ret = [OFString stringWithUTF8String: items
 				      length: length];
 
-	if (unescape && hasEntities)
-		return [ret stringByXMLUnescapingWithDelegate: delegate];
+	if (unescape && hasEntities) {
+		@try {
+			return [ret stringByXMLUnescapingWithDelegate: parser];
+		} @catch (OFInvalidFormatException *e) {
+			@throw [OFMalformedXMLException
+			    exceptionWithParser: parser];
+		}
+	}
 
 	return ret;
 }
@@ -351,7 +358,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	if ([_buffer count] > 0) {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *characters = transformString(_buffer, 0, true, self);
+		OFString *characters = transformString(self, _buffer, 0, true);
 
 		if ([_delegate respondsToSelector:
 		    @selector(parser:foundCharacters:)])
@@ -513,7 +520,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		OFString *PI;
 
 		appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
-		PI = transformString(_buffer, 1, false, nil);
+		PI = transformString(self, _buffer, 1, false);
 
 		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
 		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
@@ -856,7 +863,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
 	pool = objc_autoreleasePoolPush();
-	attributeValue = transformString(_buffer, 0, true, self);
+	attributeValue = transformString(self, _buffer, 0, true);
 
 	if (_attributePrefix == nil && [_attributeName isEqual: @"xmlns"])
 		[[_namespaces lastObject] setObject: attributeValue
@@ -946,7 +953,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		OFString *CDATA;
 
 		appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
-		CDATA = transformString(_buffer, 2, false, nil);
+		CDATA = transformString(self, _buffer, 2, false);
 
 		if ([_delegate respondsToSelector:
 		    @selector(parser:foundCDATA:)])
@@ -996,7 +1003,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	pool = objc_autoreleasePoolPush();
 
 	appendToBuffer(_buffer, _data + _last, _encoding, _i - _last);
-	comment = transformString(_buffer, 2, false, nil);
+	comment = transformString(self, _buffer, 2, false);
 
 	if ([_delegate respondsToSelector: @selector(parser:foundComment:)])
 		[_delegate parser: self

@@ -30,6 +30,7 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
+#import "OFUnknownXMLEntityException.h"
 
 #import "macros.h"
 
@@ -665,18 +666,18 @@ static uint16_t sutf16str[] = {
 	    [[@"&#8364;" stringByXMLUnescaping] isEqual: @"€"] &&
 	    [[@"&#x1D11E;" stringByXMLUnescaping] isEqual: @"𝄞"])
 
+	EXPECT_EXCEPTION(@"Detect unknown entities in -[stringByXMLUnescaping]",
+	    OFUnknownXMLEntityException, [@"&foo;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#1", OFInvalidFormatException, [@"&foo;" stringByXMLUnescaping])
+	    @"#1", OFInvalidFormatException, [@"x&amp" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#2", OFInvalidFormatException, [@"x&amp" stringByXMLUnescaping])
+	    @"#2", OFInvalidFormatException, [@"&#;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#3", OFInvalidFormatException, [@"&#;" stringByXMLUnescaping])
+	    @"#3", OFInvalidFormatException, [@"&#x;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#4", OFInvalidFormatException, [@"&#x;" stringByXMLUnescaping])
+	    @"#4", OFInvalidFormatException, [@"&#g;" stringByXMLUnescaping])
 	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#5", OFInvalidFormatException, [@"&#g;" stringByXMLUnescaping])
-	EXPECT_EXCEPTION(@"Detect invalid entities in -[stringByXMLUnescaping] "
-	    @"#6", OFInvalidFormatException, [@"&#xg;" stringByXMLUnescaping])
+	    @"#5", OFInvalidFormatException, [@"&#xg;" stringByXMLUnescaping])
 
 	TEST(@"-[stringByXMLUnescapingWithDelegate:]",
 	    (h = [[[EntityHandler alloc] init] autorelease]) &&

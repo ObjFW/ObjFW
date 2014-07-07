@@ -351,6 +351,8 @@
 		4B90B7A5133AD87D00BD33CB /* OFConnectionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79B133AD87D00BD33CB /* OFConnectionFailedException.m */; };
 		4B90B7A6133AD87D00BD33CB /* OFListenFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B79C133AD87D00BD33CB /* OFListenFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */; };
+		4B91FD12196B4F5900C5C25E /* OFUnknownXMLEntityException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B91FD10196B4F5900C5C25E /* OFUnknownXMLEntityException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B91FD13196B4F5900C5C25E /* OFUnknownXMLEntityException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B91FD11196B4F5900C5C25E /* OFUnknownXMLEntityException.m */; };
 		4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9361A61511000C00DCD16B /* OFThreadPool.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9361A71511000C00DCD16B /* OFThreadPool.m */; };
 		4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B989C2E13771A3700109A30 /* OFSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -815,6 +817,8 @@
 		4B90B79B133AD87D00BD33CB /* OFConnectionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConnectionFailedException.m; path = src/exceptions/OFConnectionFailedException.m; sourceTree = "<group>"; };
 		4B90B79C133AD87D00BD33CB /* OFListenFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFListenFailedException.h; path = src/exceptions/OFListenFailedException.h; sourceTree = "<group>"; };
 		4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFListenFailedException.m; path = src/exceptions/OFListenFailedException.m; sourceTree = "<group>"; };
+		4B91FD10196B4F5900C5C25E /* OFUnknownXMLEntityException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUnknownXMLEntityException.h; path = src/exceptions/OFUnknownXMLEntityException.h; sourceTree = "<group>"; };
+		4B91FD11196B4F5900C5C25E /* OFUnknownXMLEntityException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUnknownXMLEntityException.m; path = src/exceptions/OFUnknownXMLEntityException.m; sourceTree = "<group>"; };
 		4B9361A61511000C00DCD16B /* OFThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFThreadPool.h; path = src/OFThreadPool.h; sourceTree = "<group>"; };
 		4B9361A71511000C00DCD16B /* OFThreadPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFThreadPool.m; path = src/OFThreadPool.m; sourceTree = "<group>"; };
 		4B981CDE116F71DD00294DB7 /* OFSeekableStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekableStream.h; path = src/OFSeekableStream.h; sourceTree = "<group>"; };
@@ -1071,6 +1075,8 @@
 				4B17FFB4133A3750003E6DCD /* OFUnboundNamespaceException.m */,
 				4BD77FDC176E4BC40031C497 /* OFUnboundPrefixException.h */,
 				4BD77FDD176E4BC40031C497 /* OFUnboundPrefixException.m */,
+				4B91FD10196B4F5900C5C25E /* OFUnknownXMLEntityException.h */,
+				4B91FD11196B4F5900C5C25E /* OFUnknownXMLEntityException.m */,
 				4B6743EF163C384A00EB1E59 /* OFUnlockFailedException.h */,
 				4B6743F0163C384A00EB1E59 /* OFUnlockFailedException.m */,
 				4B17FFAF133A3658003E6DCD /* OFUnsupportedProtocolException.h */,
@@ -1677,6 +1683,7 @@
 				4B55A103133ABEA900B58A93 /* OFThreadStillRunningException.h in Headers */,
 				4B17FFB5133A375B003E6DCD /* OFUnboundNamespaceException.h in Headers */,
 				4BD77FDE176E4BC40031C497 /* OFUnboundPrefixException.h in Headers */,
+				4B91FD12196B4F5900C5C25E /* OFUnknownXMLEntityException.h in Headers */,
 				4B6743F5163C384A00EB1E59 /* OFUnlockFailedException.h in Headers */,
 				4B17FFB1133A3664003E6DCD /* OFUnsupportedProtocolException.h in Headers */,
 				4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */,
@@ -2055,6 +2062,7 @@
 				4B17FFAA133A34E7003E6DCD /* OFTruncatedDataException.m in Sources */,
 				4B17FFB6133A375B003E6DCD /* OFUnboundNamespaceException.m in Sources */,
 				4BD77FDF176E4BC40031C497 /* OFUnboundPrefixException.m in Sources */,
+				4B91FD13196B4F5900C5C25E /* OFUnknownXMLEntityException.m in Sources */,
 				4B6743F6163C384A00EB1E59 /* OFUnlockFailedException.m in Sources */,
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4BA4846315CC9F1E00D75360 /* OFUnsupportedVersionException.m in Sources */,
