@@ -286,7 +286,7 @@ normalizeKey(char *str_)
 			  redirects: 10];
 }
 
-- (OFTCPSocket*)OF_createSocketForRequest: (OFHTTPRequest*)request
+- (OFTCPSocket*)OF_closeAndCreateSocketForRequest: (OFHTTPRequest*)request
 {
 	OFURL *URL = [request URL];
 	OFTCPSocket *socket;
@@ -338,7 +338,7 @@ normalizeKey(char *str_)
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	/* Can we reuse the socket? */
-	if (_socket != nil && [[_lastURL scheme] isEqual: [URL scheme]] &&
+	if (_socket != nil && [[_lastURL scheme] isEqual: scheme] &&
 	    [[_lastURL host] isEqual: [URL host]] &&
 	    [_lastURL port] == [URL port]) {
 		/*
@@ -363,7 +363,7 @@ normalizeKey(char *str_)
 		[_lastResponse release];
 		_lastResponse = nil;
 	} else
-		socket = [self OF_createSocketForRequest: request];
+		socket = [self OF_closeAndCreateSocketForRequest: request];
 
 	/*
 	 * As a work around for a bug with split packets in lighttpd when using
@@ -381,11 +381,12 @@ normalizeKey(char *str_)
 		    of_http_request_method_to_string(method), [URL path],
 		    [request protocolVersionString]];
 
-	if ([URL port] == 80)
-		[requestString appendFormat: @"Host: %@\r\n", [URL host]];
+	if (([scheme isEqual: @"http"] && [URL port] != 80) ||
+	    ([scheme isEqual: @"https"] && [URL port] != 443))
+		[requestString appendFormat: @"Host: %@:%d\r\n",
+					     [URL host], [URL port]];
 	else
-		[requestString appendFormat: @"Host: %@:%d\r\n", [URL host],
-		    [URL port]];
+		[requestString appendFormat: @"Host: %@\r\n", [URL host]];
 
 	user = [URL user];
 	password = [URL password];
@@ -441,7 +442,7 @@ normalizeKey(char *str_)
 			@throw e;
 
 		/* Reconnect in case a keep-alive connection timed out */
-		socket = [self OF_createSocketForRequest: request];
+		socket = [self OF_closeAndCreateSocketForRequest: request];
 		[socket writeString: requestString];
 	}
 
@@ -461,7 +462,7 @@ normalizeKey(char *str_)
 	 * end due to a timeout. In this case, we need to reconnect.
 	 */
 	if (line == nil) {
-		socket = [self OF_createSocketForRequest: request];
+		socket = [self OF_closeAndCreateSocketForRequest: request];
 		[socket writeString: requestString];
 
 		if (entity != nil)
