@@ -103,8 +103,8 @@ static of_map_table_functions_t valueFunctions = {
 	if (dictionary == nil)
 		return [self init];
 
-	if ([dictionary class] == [OFDictionary_hashtable class] ||
-	    [dictionary class] == [OFMutableDictionary_hashtable class]) {
+	if ([dictionary isKindOfClass: [OFDictionary_hashtable class]] ||
+	    [dictionary isKindOfClass: [OFMutableDictionary_hashtable class]]) {
 		self = [super init];
 
 		@try {
@@ -314,8 +314,8 @@ static of_map_table_functions_t valueFunctions = {
 {
 	OFDictionary_hashtable *dictionary_;
 
-	if ([self class] != [OFDictionary_hashtable class] &&
-	    [self class] != [OFMutableDictionary_hashtable class])
+	if (![dictionary isKindOfClass: [OFDictionary_hashtable class]] &&
+	    ![dictionary isKindOfClass: [OFMutableDictionary_hashtable class]])
 		return [super isEqual: dictionary];
 
 	dictionary_ = (OFDictionary_hashtable*)dictionary;

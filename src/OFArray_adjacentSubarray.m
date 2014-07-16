@@ -32,9 +32,8 @@
 	id const *objects, *otherObjects;
 	size_t i;
 
-	if ([object class] != [OFArray_adjacent class] &&
-	    [object class] != [OFMutableArray_adjacent class] &&
-	    [object class] != [OFArray_adjacentSubarray class])
+	if (![object isKindOfClass: [OFArray_adjacent class]] &&
+	    ![object isKindOfClass: [OFMutableArray_adjacent class]])
 		return [super isEqual: object];
 
 	otherArray = object;
