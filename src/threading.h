@@ -90,8 +90,8 @@ static OF_INLINE bool
 of_thread_new(of_thread_t *thread, id (*function)(id), id data)
 {
 #if defined(OF_HAVE_PTHREADS)
-	return !pthread_create(thread, NULL, (void*(*)(void*))function,
-	    (__bridge void*)data);
+	return (pthread_create(thread, NULL, (void*(*)(void*))function,
+	    (__bridge void*)data) == 0);
 #elif defined(_WIN32)
 	*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)function,
 	    (__bridge void*)data, 0, NULL);
@@ -108,7 +108,7 @@ of_thread_join(of_thread_t thread)
 #if defined(OF_HAVE_PTHREADS)
 	void *ret;
 
-	if (pthread_join(thread, &ret))
+	if (pthread_join(thread, &ret) != 0)
 		return false;
 
 # ifdef PTHREAD_CANCELED
@@ -230,7 +230,7 @@ static OF_INLINE bool
 of_mutex_unlock(of_mutex_t *mutex)
 {
 #if defined(OF_HAVE_PTHREADS)
-	return !pthread_mutex_unlock(mutex);
+	return (pthread_mutex_unlock(mutex) == 0);
 #elif defined(_WIN32)
 	LeaveCriticalSection(mutex);
 	return true;
@@ -243,7 +243,7 @@ static OF_INLINE bool
 of_condition_new(of_condition_t *condition)
 {
 #if defined(OF_HAVE_PTHREADS)
-	return !pthread_cond_init(condition, NULL);
+	return (pthread_cond_init(condition, NULL) == 0);
 #elif defined(_WIN32)
 	condition->count = 0;
 
@@ -494,16 +494,16 @@ of_rmutex_new(of_mutex_t *mutex)
 {
 	pthread_mutexattr_t attr;
 
-	if (pthread_mutexattr_init(&attr))
+	if (pthread_mutexattr_init(&attr) != 0)
 		return false;
 
-	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE))
+	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) != 0)
 		return false;
 
-	if (pthread_mutex_init(mutex, &attr))
+	if (pthread_mutex_init(mutex, &attr) != 0)
 		return false;
 
-	if (pthread_mutexattr_destroy(&attr))
+	if (pthread_mutexattr_destroy(&attr) != 0)
 		return false;
 
 	return true;
