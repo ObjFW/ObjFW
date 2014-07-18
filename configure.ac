@@ -563,7 +563,6 @@ AS_IF([test x"$enable_threads" != x"no"], [
 
 	AC_DEFINE(OF_HAVE_THREADS, 1, [Whether we have threads])
 	AC_SUBST(USE_SRCS_THREADS, '${SRCS_THREADS}')
-	AC_SUBST(USE_INCLUDES_THREADS, '${INCLUDES_THREADS}')
 
 	AC_ARG_ENABLE(compiler-tls,
 		AS_HELP_STRING([--disable-compiler-tls],

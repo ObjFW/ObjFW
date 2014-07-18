@@ -96,9 +96,9 @@ SRCS_SOCKETS = OFHTTPClient.m		\
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
-	       OFThreadPool.m
+	       OFThreadPool.m		\
+	       threading.m
 
-INCLUDES_THREADS = threading.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFHash.h				\
@@ -114,8 +114,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    block.h				\
 	    instance.h				\
 	    macros.h				\
-	    objfw-defs.h			\
-	    ${USE_INCLUDES_THREADS}
+	    objfw-defs.h
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
