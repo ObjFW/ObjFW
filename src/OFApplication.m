@@ -338,9 +338,11 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	encoding = [OFString nativeOSEncoding];
 
-# ifdef OF_NINTENDO_DS
+# ifndef OF_NINTENDO_DS
+	if (*argc > 0) {
+# else
 	if (__system_argv->argvMagic == ARGV_MAGIC &&
-	    __system_argv->argc >= 1) {
+	    __system_argv->argc > 0) {
 # endif
 		_programName = [[OFString alloc] initWithCString: (*argv)[0]
 							encoding: encoding];
@@ -353,9 +355,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 					       encoding: encoding]];
 
 		[arguments makeImmutable];
-# ifdef OF_NINTENDO_DS
 	}
-# endif
 
 	objc_autoreleasePoolPop(pool);
 #else
@@ -372,15 +372,17 @@ of_application_main(int *argc, char **argv[], Class cls)
 	OFMutableArray *arguments;
 	int i;
 
-	_programName = [[OFString alloc] initWithUTF16String: argv[0]];
-	arguments = [[OFMutableArray alloc] init];
+	if (argc > 0) {
+		_programName = [[OFString alloc] initWithUTF16String: argv[0]];
+		arguments = [[OFMutableArray alloc] init];
 
-	for (i = 1; i < argc; i++)
-		[arguments addObject:
-		    [OFString stringWithUTF16String: argv[i]]];
+		for (i = 1; i < argc; i++)
+			[arguments addObject:
+			    [OFString stringWithUTF16String: argv[i]]];
 
-	[arguments makeImmutable];
-	_arguments = arguments;
+		[arguments makeImmutable];
+		_arguments = arguments;
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
