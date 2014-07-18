@@ -48,16 +48,18 @@ Using the Mac OS X framework in Xcode
 Building with LLVM/Clang for ARM
 ================================
 
-  When using LLVM/Clang to compile for ARM, it is necessary to specify
-  extra flags in order to enable ARM EHABI compliant exceptions. To do
+  When using LLVM/Clang older than 3.5 to compile for ARM, it is necessary to
+  specify extra flags in order to enable ARM EHABI compliant exceptions. To do
   so, set `OBJCFLAGS` to this:
 
     -O2 -g -mllvm -arm-enable-ehabi -mllvm -arm-enable-ehabi-descriptors
 
-  If you are getting errors from the assembler about instructions being
-  unavailable for the architecture, you need to set `OBJC` to this:
+  If you have a CPU supporting VFP or NEON, it is important to set the correct
+  architecture, as otherwise VFP / NEON registers won't be saved and restored
+  when forwarding. For example, if you have an ARMv6 that supports VFP, you
+  need to set `OBJC` to this:
 
-    clang -arch armv6 -mfpu=vfp
+    clang -march=armv6 -mfpu=vfp
 
   Using these flags, ObjFW was compiled successfully for Android and the
   Raspberry Pi.
