@@ -132,6 +132,8 @@ typedef struct _stat of_stat_t;
 /*!
  * @brief Returns an array with the items in the specified directory.
  *
+ * @note `.` and `..` are not part of the returned array.
+ *
  * @param path The path to the directory whose items should be returned
  * @return An array of OFStrings with the items in the specified directory
  */
