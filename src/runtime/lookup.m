@@ -50,13 +50,9 @@ common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 
 		objc_initialize_class(cls);
 
-		if (!(cls->info & OBJC_CLASS_INFO_SETUP)) {
-			if (is_class)
-				return lookup(nil, sel);
-			else
-				OBJC_ERROR("Could not dispatch message for "
-				    "incomplete class %s!", cls->name);
-		}
+		if (!(cls->info & OBJC_CLASS_INFO_SETUP))
+			OBJC_ERROR("Could not dispatch message for incomplete "
+			    "class %s!", cls->name);
 
 		/*
 		 * We don't need to handle the case that super was called.
@@ -67,7 +63,7 @@ common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 		return lookup(obj, sel);
 	}
 
-	/* Try resolveClassMethod:/resolveInstanceMethod: */
+	/* Try resolveClassMethod: / resolveInstanceMethod: */
 	if (class_isMetaClass(object_getClass(obj))) {
 		Class cls = object_getClass(obj);
 
