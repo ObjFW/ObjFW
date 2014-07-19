@@ -849,6 +849,7 @@
 		4BA85BC9140ECCE800E91D51 /* OFSet_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet_hashtable.m; path = src/OFSet_hashtable.m; sourceTree = "<group>"; };
 		4BA9CFA315E129D30076DC74 /* autorelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = autorelease.h; path = src/autorelease.h; sourceTree = "<group>"; };
 		4BAA60C714D09699006F068D /* OFJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFJSONTests.m; path = tests/OFJSONTests.m; sourceTree = "<group>"; };
+		4BABC29A197A8212006A93BD /* threading_pthread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = threading_pthread.m; path = src/threading_pthread.m; sourceTree = "<group>"; };
 		4BAE7353139C507F00F682ED /* serialization.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = serialization.xml; path = tests/serialization.xml; sourceTree = "<group>"; };
 		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = "<group>"; };
 		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = "<group>"; };
@@ -1419,6 +1420,7 @@
 				4B7DD58118942FE200990FD6 /* socket_helpers.h */,
 				4B67998B1099E7C50041064A /* threading.h */,
 				4B3379CE1979326A0088E97E /* threading.m */,
+				4BABC29A197A8212006A93BD /* threading_pthread.m */,
 				4B67998C1099E7C50041064A /* unicode.h */,
 				4BFBDD1610A0724800051AFB /* unicode.m */,
 				4B6AF97210A8D42E0003FB0A /* windows_1252.m */,
