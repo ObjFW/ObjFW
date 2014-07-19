@@ -44,28 +44,6 @@
 # define restrict
 #endif
 
-#if __STDC_VERSION__ >= 201112L
-# ifdef OF_HAVE_STDNORETURN_H
-#  include <stdnoreturn.h>
-# else
-#  define noreturn _Noreturn
-# endif
-#elif defined(__GNUC__)
-# define noreturn __attribute__((__noreturn__))
-#else
-# define noreturn
-#endif
-
-/*
- * Work around Apple's libc headers breaking by defining noreturn.
- * They use __attribute__((noreturn)) where they should be using
- * __attribute__((__noreturn__)).
- */
-#if defined(__APPLE__) && defined(__dead2)
-# undef __dead2
-# define __dead2 __attribute__((__noreturn__))
-#endif
-
 #if __STDC_VERSION__ >= 201112L && !defined(static_assert)
 /* C11 compiler, but old libc */
 # define static_assert _Static_assert
@@ -177,10 +155,10 @@
 
 #if defined(__clang__) || __GCC_VERSION__ >= 406
 # define OF_SENTINEL __attribute__((__sentinel__))
-# define OF_METHOD_NORETURN __attribute__((__noreturn__))
+# define OF_NO_RETURN __attribute__((__noreturn__))
 #else
 # define OF_SENTINEL
-# define OF_METHOD_NORETURN
+# define OF_NO_RETURN
 #endif
 
 #if __has_attribute(__objc_requires_super__)

@@ -89,7 +89,7 @@ typedef struct {
 extern bool of_thread_new(of_thread_t *thread, id (*function)(id), id data);
 extern bool of_thread_join(of_thread_t thread);
 extern bool of_thread_detach(of_thread_t thread);
-extern void noreturn of_thread_exit(void);
+extern void OF_NO_RETURN of_thread_exit(void);
 extern void of_once(of_once_t *control, void (*func)(void));
 extern bool of_mutex_new(of_mutex_t *mutex);
 extern bool of_mutex_lock(of_mutex_t *mutex);

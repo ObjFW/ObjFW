@@ -71,7 +71,7 @@ of_thread_detach(of_thread_t thread)
 #endif
 }
 
-void noreturn
+void OF_NO_RETURN
 of_thread_exit(void)
 {
 #if defined(OF_HAVE_PTHREADS)

@@ -242,8 +242,8 @@ setThreadName(OFThread *thread)
 
 	/*
 	 * For some reason, Clang thinks terminateWithObject: can return - even
-	 * though it is declared noreturn - and warns that terminate returns
-	 * while being declared noreturn.
+	 * though it is declared OF_NO_RETURN - and warns that terminate
+	 * returns while being declared OF_NO_RETURN.
 	 */
 	OF_UNREACHABLE
 }

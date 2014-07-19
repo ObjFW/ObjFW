@@ -164,14 +164,14 @@
 /*!
  * @brief Terminates the application.
  */
-+ (void)terminate OF_METHOD_NORETURN;
++ (void)terminate OF_NO_RETURN;
 
 /*!
  * @brief Terminates the application with the specified status.
  *
  * @param status The status with which the application will terminate
  */
-+ (void)terminateWithStatus: (int)status OF_METHOD_NORETURN;
++ (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 /*!
  * @brief Gets args and argv.
@@ -220,14 +220,14 @@
 /*!
  * @brief Terminates the application.
  */
-- (void)terminate OF_METHOD_NORETURN;
+- (void)terminate OF_NO_RETURN;
 
 /*!
  * @brief Terminates the application with the specified status.
  *
  * @param status The status with which the application will terminate
  */
-- (void)terminateWithStatus: (int)status OF_METHOD_NORETURN;
+- (void)terminateWithStatus: (int)status OF_NO_RETURN;
 @end
 
 @interface OFObject (OFApplicationDelegate) <OFApplicationDelegate>

@@ -882,7 +882,7 @@ OF_ROOT_CLASS
  *
  * @param selector The selector not understood by the receiver
  */
-- (void)doesNotRecognizeSelector: (SEL)selector OF_METHOD_NORETURN;
+- (void)doesNotRecognizeSelector: (SEL)selector OF_NO_RETURN;
 @end
 
 /*!

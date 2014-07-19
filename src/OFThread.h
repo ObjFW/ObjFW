@@ -145,14 +145,14 @@ typedef id (^of_thread_block_t)(void);
 /*!
  * @brief Terminates the current thread, letting it return nil.
  */
-+ (void)terminate OF_METHOD_NORETURN;
++ (void)terminate OF_NO_RETURN;
 
 /*!
  * @brief Terminates the current thread, letting it return the specified object.
  *
  * @param object The object which the terminated thread will return
  */
-+ (void)terminateWithObject: (id)object OF_METHOD_NORETURN;
++ (void)terminateWithObject: (id)object OF_NO_RETURN;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
