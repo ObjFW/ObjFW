@@ -36,6 +36,13 @@
 
 #define BUFFER_SIZE 4096
 
+#ifndef S_IRWXG
+# define S_IRWXG 0
+#endif
+#ifndef S_IRWXO
+# define S_IRWXO 0
+#endif
+
 @interface OFZIP: OFObject
 {
 	int_fast8_t _override, _outputLevel;

@@ -186,7 +186,7 @@ AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
 AC_EGREP_CPP(yes, [
 	#include <stdlib.h>
 
-	#ifdef __GLIBC__
+	#if defined(__GLIBC__) || defined(__MINGW32__)
 	yes
 	#endif
 ], [

@@ -91,7 +91,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
 	char *_readBuffer, *_writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
-	bool _writeBufferEnabled, _blocking, _waitingForDelimiter;
+	bool _writeBufferEnabled, _waitingForDelimiter;
+@protected
+	bool _blocking;
 }
 
 #ifdef OF_HAVE_PROPERTIES

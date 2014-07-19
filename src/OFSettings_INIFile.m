@@ -18,6 +18,7 @@
 
 #import "OFSettings_INIFile.h"
 #import "OFString.h"
+#import "OFArray.h"
 #import "OFINIFile.h"
 #import "OFSystemInfo.h"
 
