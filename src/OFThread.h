@@ -58,6 +58,7 @@ typedef id (^of_thread_block_t)(void);
 @private
 # endif
 	of_thread_t _thread;
+	of_thread_attr_t _attr;
 	enum {
 		OF_THREAD_NOT_RUNNING,
 		OF_THREAD_RUNNING,
@@ -79,6 +80,8 @@ typedef id (^of_thread_block_t)(void);
 @property (copy) of_thread_block_t threadBlock;
 #  endif
 @property (copy) OFString *name;
+@property float priority;
+@property size_t stackSize;
 # endif
 
 /*!
@@ -215,5 +218,38 @@ typedef id (^of_thread_block_t)(void);
  * @param name The name for the thread
  */
 - (void)setName: (OFString*)name;
+
+/*!
+ * @brief Returns the priority of the thread.
+ *
+ * @return The priority of the thread
+ */
+- (float)priority;
+
+/*!
+ * @brief Sets the priority of the thread.
+ *
+ * @note This has to be set before the thread is started!
+ *
+ * @param priority The priority for the thread, with 0.0 being the lowest and
+ *		   1.0 the highest
+ */
+- (void)setPriority: (float)priority;
+
+/*!
+ * @brief Returns the stack size of the thread.
+ *
+ * @return The stack size of the thread
+ */
+- (size_t)stackSize;
+
+/*!
+ * @brief Sets the stack size of the thread.
+ *
+ * @note This has to be set before the thread is started!
+ *
+ * @param stackSize The stack size for the thread
+ */
+- (void)setStackSize: (size_t)stackSize;
 #endif
 @end

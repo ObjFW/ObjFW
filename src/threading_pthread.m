@@ -14,13 +14,82 @@
  * file.
  */
 
-#import "threading.h"
+bool
+of_thread_attr_init(of_thread_attr_t *attr)
+{
+	pthread_attr_t pattr;
+
+	if (pthread_attr_init(&pattr) != 0)
+		return false;
+
+	@try {
+		int policy, minPrio, maxPrio;
+		struct sched_param param;
+
+		if (pthread_attr_getschedpolicy(&pattr, &policy) != 0)
+			return false;
+
+		minPrio = sched_get_priority_min(policy);
+		maxPrio = sched_get_priority_max(policy);
+
+		if (pthread_attr_getschedparam(&pattr, &param) != 0)
+			return false;
+
+		attr->priority = (float)(param.sched_priority - minPrio) /
+		    (maxPrio - minPrio);
+
+		if (pthread_attr_getstacksize(&pattr, &attr->stackSize) != 0)
+			return false;
+
+		return true;
+	} @finally {
+		pthread_attr_destroy(&pattr);
+	}
+}
 
 bool
-of_thread_new(of_thread_t *thread, id (*function)(id), id data)
+of_thread_new(of_thread_t *thread, id (*function)(id), id data,
+    const of_thread_attr_t *attr)
 {
-	return (pthread_create(thread, NULL, (void*(*)(void*))function,
-	    (__bridge void*)data) == 0);
+	pthread_attr_t pattr;
+
+	if (pthread_attr_init(&pattr) != 0)
+		return false;
+
+	@try {
+		if (attr != NULL) {
+			int policy, minPrio, maxPrio;
+			struct sched_param param;
+
+			if (attr->priority < 0 || attr->priority > 1)
+				return false;
+
+			if (pthread_attr_getschedpolicy(&pattr, &policy) != 0)
+				return false;
+
+			minPrio = sched_get_priority_min(policy);
+			maxPrio = sched_get_priority_max(policy);
+
+			param.sched_priority = (float)minPrio +
+			    attr->priority * (maxPrio - minPrio);
+
+			if (pthread_attr_setinheritsched(&pattr,
+			    PTHREAD_EXPLICIT_SCHED) != 0)
+				return false;
+
+			if (pthread_attr_setschedparam(&pattr, &param) != 0)
+				return false;
+
+			if (pthread_attr_setstacksize(&pattr,
+			    attr->stackSize) != 0)
+				return false;
+		}
+
+		return (pthread_create(thread, &pattr,
+		    (void*(*)(void*))function, (__bridge void*)data) == 0);
+	} @finally {
+		pthread_attr_destroy(&pattr);
+	}
 }
 
 bool

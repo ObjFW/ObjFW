@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "threading.h"
 
 #if defined(OF_HAVE_PTHREADS)

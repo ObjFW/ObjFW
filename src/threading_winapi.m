@@ -14,15 +14,43 @@
  * file.
  */
 
-#import "threading.h"
+bool
+of_thread_attr_init(of_thread_attr_t *attr)
+{
+	attr->priority =
+	    (float)(THREAD_PRIORITY_NORMAL - THREAD_PRIORITY_LOWEST) /
+	    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_LOWEST);
+	attr->stackSize = 0;
+
+	return true;
+}
 
 bool
-of_thread_new(of_thread_t *thread, id (*function)(id), id data)
+of_thread_new(of_thread_t *thread, id (*function)(id), id data,
+    const of_thread_attr_t *attr)
 {
-	*thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)function,
-	    (__bridge void*)data, 0, NULL);
+	size_t stackSize = 0;
+	int priority = 0;
 
-	return (thread != NULL);
+	if (attr != NULL) {
+		if (attr->priority < 0 || attr->priority > 1)
+			return false;
+
+		priority = THREAD_PRIORITY_LOWEST + attr->priority *
+		    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_LOWEST);
+		stackSize = attr->stackSize;
+	}
+
+	*thread = CreateThread(NULL, stackSize,
+	    (LPTHREAD_START_ROUTINE)function, (__bridge void*)data, 0, NULL);
+
+	if (thread == NULL)
+		return false;
+
+	if (priority > 0)
+		return SetThreadPriority(*thread, priority);
+	else
+		return true;
 }
 
 bool

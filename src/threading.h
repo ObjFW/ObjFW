@@ -27,6 +27,7 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
+# include <sched.h>
 typedef pthread_t of_thread_t;
 typedef pthread_key_t of_tlskey_t;
 typedef pthread_mutex_t of_mutex_t;
@@ -66,6 +67,10 @@ typedef pthread_spinlock_t of_spinlock_t;
 typedef of_mutex_t of_spinlock_t;
 #endif
 
+#ifdef OF_HAVE_SCHED_YIELD
+# include <sched.h>
+#endif
+
 #ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
 # define of_rmutex_t of_mutex_t
 #else
@@ -74,6 +79,11 @@ typedef struct {
 	of_tlskey_t count;
 } of_rmutex_t;
 #endif
+
+typedef struct of_thread_attr_t {
+	float priority;
+	size_t stackSize;
+} of_thread_attr_t;
 
 #if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
@@ -86,7 +96,9 @@ typedef struct {
 # error of_thread_current not implemented!
 #endif
 
-extern bool of_thread_new(of_thread_t *thread, id (*function)(id), id data);
+extern bool of_thread_attr_init(of_thread_attr_t *attr);
+extern bool of_thread_new(of_thread_t *thread, id (*function)(id), id data,
+    const of_thread_attr_t *attr);
 extern void of_thread_set_name(of_thread_t thread, const char *name);
 extern bool of_thread_join(of_thread_t thread);
 extern bool of_thread_detach(of_thread_t thread);

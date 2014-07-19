@@ -93,7 +93,7 @@ callMain(id object)
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
-	 * value on join.
+	 * pointer on join.
 	 */
 # ifdef OF_HAVE_BLOCKS
 	if (thread->_threadBlock != NULL)
@@ -260,10 +260,26 @@ callMain(id object)
 		    exceptionWithClass: self];
 }
 
+- init
+{
+	self = [super init];
+
+	@try {
+		if (!of_thread_attr_init(&_attr))
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: [self class]];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 # ifdef OF_HAVE_BLOCKS
 - initWithThreadBlock: (of_thread_block_t)threadBlock
 {
-	self = [super init];
+	self = [self init];
 
 	@try {
 		_threadBlock = [threadBlock copy];
@@ -308,7 +324,7 @@ callMain(id object)
 
 	_running = OF_THREAD_RUNNING;
 
-	if (!of_thread_new(&_thread, callMain, self)) {
+	if (!of_thread_new(&_thread, callMain, self, &_attr)) {
 		[self release];
 		@throw [OFThreadStartFailedException exceptionWithThread: self];
 	}
@@ -369,6 +385,34 @@ callMain(id object)
 			of_thread_set_name(_thread,
 			    class_getName([self class]));
 	}
+}
+
+- (float)priority
+{
+	return _attr.priority;
+}
+
+- (void)setPriority: (float)priority
+{
+	if (_running == OF_THREAD_RUNNING)
+		@throw [OFThreadStillRunningException
+		    exceptionWithThread: self];
+
+	_attr.priority = priority;
+}
+
+- (size_t)stackSize
+{
+	return _attr.stackSize;
+}
+
+- (void)setStackSize: (size_t)stackSize
+{
+	if (_running == OF_THREAD_RUNNING)
+		@throw [OFThreadStillRunningException
+		    exceptionWithThread: self];
+
+	_attr.stackSize = stackSize;
 }
 
 - (void)dealloc
