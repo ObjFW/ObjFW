@@ -69,8 +69,9 @@ typedef id (^of_thread_block_t)(void);
 # endif
 	id _returnValue;
 	OFRunLoop *_runLoop;
-	OFString *_name;
 	OFMutableDictionary *_threadDictionary;
+@private
+	OFString *_name;
 }
 
 # ifdef OF_HAVE_PROPERTIES

@@ -87,6 +87,7 @@ typedef struct {
 #endif
 
 extern bool of_thread_new(of_thread_t *thread, id (*function)(id), id data);
+extern void of_thread_set_name(of_thread_t thread, const char *name);
 extern bool of_thread_join(of_thread_t thread);
 extern bool of_thread_detach(of_thread_t thread);
 extern void OF_NO_RETURN of_thread_exit(void);

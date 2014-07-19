@@ -36,10 +36,6 @@
 # include <sched.h>
 #endif
 
-#if defined(OF_HAVE_THREADS) && defined(__HAIKU__)
-# include <kernel/OS.h>
-#endif
-
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFRunLoop.h"
@@ -116,20 +112,6 @@ callMain(id object)
 	[thread release];
 
 	return 0;
-}
-
-static void
-setThreadName(OFThread *thread)
-{
-# ifdef __HAIKU__
-	OFString *name = thread->_name;
-
-	if (name == nil)
-		name = [thread className];
-
-	rename_thread(get_pthread_thread_id(thread->_thread),
-	    [name UTF8String]);
-# endif
 }
 #endif
 
@@ -331,7 +313,10 @@ setThreadName(OFThread *thread)
 		@throw [OFThreadStartFailedException exceptionWithThread: self];
 	}
 
-	setThreadName(self);
+	if (_name != nil)
+		of_thread_set_name(_thread, [_name UTF8String]);
+	else
+		of_thread_set_name(_thread, class_getName([self class]));
 }
 
 - (id)join
@@ -377,8 +362,13 @@ setThreadName(OFThread *thread)
 {
 	OF_SETTER(_name, name, true, 1)
 
-	if (_running == OF_THREAD_RUNNING)
-		setThreadName(self);
+	if (_running == OF_THREAD_RUNNING) {
+		if (_name != nil)
+			of_thread_set_name(_thread, [_name UTF8String]);
+		else
+			of_thread_set_name(_thread,
+			    class_getName([self class]));
+	}
 }
 
 - (void)dealloc
