@@ -40,17 +40,18 @@ of_thread_attr_init(of_thread_attr_t *attr)
 
 		if (pthread_attr_getstacksize(&pattr, &attr->stackSize) != 0)
 			return false;
-
-		return true;
 	} @finally {
 		pthread_attr_destroy(&pattr);
 	}
+
+	return true;
 }
 
 bool
 of_thread_new(of_thread_t *thread, id (*function)(id), id data,
     const of_thread_attr_t *attr)
 {
+	bool ret;
 	pthread_attr_t pattr;
 
 	if (pthread_attr_init(&pattr) != 0)
@@ -85,11 +86,13 @@ of_thread_new(of_thread_t *thread, id (*function)(id), id data,
 				return false;
 		}
 
-		return (pthread_create(thread, &pattr,
+		ret = (pthread_create(thread, &pattr,
 		    (void*(*)(void*))function, (__bridge void*)data) == 0);
 	} @finally {
 		pthread_attr_destroy(&pattr);
 	}
+
+	return ret;
 }
 
 bool
