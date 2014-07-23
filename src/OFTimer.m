@@ -354,7 +354,22 @@
 
 - (void)fire
 {
+	void *pool = objc_autoreleasePoolPush();
+	id target = [[_target retain] autorelease];
+	id object1 = [[_object1 retain] autorelease];
+	id object2 = [[_object2 retain] autorelease];
+
 	OF_ENSURE(_arguments <= 2);
+
+	if (_repeats && _valid) {
+		OFDate *old = _fireDate;
+		_fireDate = [[OFDate alloc]
+		    initWithTimeIntervalSinceNow: _interval];
+		[old release];
+
+		[[OFRunLoop currentRunLoop] addTimer: self];
+	} else
+		[self invalidate];
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
@@ -363,16 +378,16 @@
 #endif
 		switch (_arguments) {
 		case 0:
-			[_target performSelector: _selector];
+			[target performSelector: _selector];
 			break;
 		case 1:
-			[_target performSelector: _selector
-				      withObject: _object1];
+			[target performSelector: _selector
+				     withObject: object1];
 			break;
 		case 2:
-			[_target performSelector: _selector
-				      withObject: _object1
-				      withObject: _object2];
+			[target performSelector: _selector
+				     withObject: object1
+				     withObject: object2];
 			break;
 		}
 #ifdef OF_HAVE_BLOCKS
@@ -389,15 +404,7 @@
 	}
 #endif
 
-	if (_repeats && _valid) {
-		OFDate *old = _fireDate;
-		_fireDate = [[OFDate alloc]
-		    initWithTimeIntervalSinceNow: _interval];
-		[old release];
-
-		[[OFRunLoop currentRunLoop] addTimer: self];
-	} else
-		[self invalidate];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFDate*)fireDate
@@ -431,7 +438,11 @@
 	_valid = false;
 
 	[_target release];
+	[_object1 release];
+	[_object2 release];
 	_target = nil;
+	_object1 = nil;
+	_object2 = nil;
 }
 
 - (bool)isValid
