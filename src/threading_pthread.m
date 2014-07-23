@@ -35,8 +35,12 @@ of_thread_attr_init(of_thread_attr_t *attr)
 		if (pthread_attr_getschedparam(&pattr, &param) != 0)
 			return false;
 
-		attr->priority = (float)(param.sched_priority - minPrio) /
-		    (maxPrio - minPrio);
+		/* Prevent possible division by zero */
+		if (minPrio != maxPrio)
+			attr->priority = (float)(param.sched_priority -
+			    minPrio) / (maxPrio - minPrio);
+		else
+			attr->priority = 0;
 
 		if (pthread_attr_getstacksize(&pattr, &attr->stackSize) != 0)
 			return false;
