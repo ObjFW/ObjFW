@@ -827,6 +827,17 @@ distclean: clean
 		fi \
 	done
 
+print-hierarchy:
+	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		echo ${PRINT_HIERARCHY_PREFIX}$$i; \
+		cd $$i || exit $$?; \
+		${MAKE} ${MFLAGS} PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
+		cd .. || exit $$?; \
+	done
+
+print-var:
+	echo '${${VAR}}'
+
 DIR_ENTER = printf "@TERM_EL@@TERM_SETAF6@Entering directory @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd $$i || exit $$?
 DIR_LEAVE = printf "@TERM_EL@@TERM_SETAF6@Leaving directory @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd .. || exit $$?
 DEPEND_STATUS = printf "@TERM_EL@@TERM_SETAF3@Generating dependencies...@TERM_SGR0@\r"
