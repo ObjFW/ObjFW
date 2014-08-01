@@ -14,6 +14,24 @@
  * file.
  */
 
+struct thread_ctx {
+	void (*function)(id object);
+	id object;
+};
+
+static void*
+function_wrapper(void *data)
+{
+	struct thread_ctx *ctx = data;
+
+	pthread_cleanup_push(free, data);
+
+	ctx->function(ctx->object);
+
+	pthread_cleanup_pop(1);
+	return NULL;
+}
+
 bool
 of_thread_attr_init(of_thread_attr_t *attr)
 {
@@ -52,7 +70,7 @@ of_thread_attr_init(of_thread_attr_t *attr)
 }
 
 bool
-of_thread_new(of_thread_t *thread, id (*function)(id), id data,
+of_thread_new(of_thread_t *thread, void (*function)(id), id object,
     const of_thread_attr_t *attr)
 {
 	bool ret;
@@ -62,6 +80,8 @@ of_thread_new(of_thread_t *thread, id (*function)(id), id data,
 		return false;
 
 	@try {
+		struct thread_ctx *ctx;
+
 		if (attr != NULL) {
 			int policy, minPrio, maxPrio;
 			struct sched_param param;
@@ -90,8 +110,14 @@ of_thread_new(of_thread_t *thread, id (*function)(id), id data,
 				return false;
 		}
 
+		if ((ctx = malloc(sizeof(*ctx))) == NULL)
+			return false;
+
+		ctx->function = function;
+		ctx->object = object;
+
 		ret = (pthread_create(thread, &pattr,
-		    (void*(*)(void*))function, (__bridge void*)data) == 0);
+		    function_wrapper, ctx) == 0);
 	} @finally {
 		pthread_attr_destroy(&pattr);
 	}

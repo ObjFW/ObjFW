@@ -80,7 +80,7 @@
 static of_tlskey_t threadSelfKey;
 static OFThread *mainThread;
 
-static id
+static void
 callMain(id object)
 {
 	OFThread *thread = (OFThread*)object;
@@ -110,8 +110,6 @@ callMain(id object)
 	[OFAutoreleasePool OF_handleThreadTermination];
 
 	[thread release];
-
-	return 0;
 }
 #endif
 
