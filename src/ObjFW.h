@@ -178,7 +178,6 @@
 # import "OFCondition.h"
 #endif
 
-#import "asprintf.h"
 #import "base64.h"
 #import "of_asprintf.h"
 #import "of_strptime.h"

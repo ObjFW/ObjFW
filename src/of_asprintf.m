@@ -27,8 +27,6 @@
 
 #import "OFString.h"
 
-#import "asprintf.h"
-
 #define MAX_SUBFORMAT_LEN 64
 
 struct context {
@@ -59,6 +57,37 @@ struct context {
 		LENGTH_MODIFIER_CAPITAL_L
 	} lengthModifier;
 };
+
+#ifndef HAVE_ASPRINTF
+static int
+vasprintf(char **string, const char *format, va_list arguments)
+{
+	int length;
+	va_list argumentsCopy;
+
+	va_copy(argumentsCopy, arguments);
+
+	if ((length = vsnprintf(NULL, 0, format, argumentsCopy)) < 0)
+		return length;
+	if ((*string = malloc((size_t)length + 1)) == NULL)
+		return -1;
+
+	return vsnprintf(*string, (size_t)length + 1, format, arguments);
+}
+
+static int
+asprintf(char **string, const char *format, ...)
+{
+	int ret;
+	va_list arguments;
+
+	va_start(arguments, format);
+	ret = vasprintf(string, format, arguments);
+	va_end(arguments);
+
+	return ret;
+}
+#endif
 
 static bool
 appendString(struct context *ctx, const char *append, size_t appendLen)

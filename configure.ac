@@ -463,19 +463,16 @@ AC_CHECK_FUNC(asprintf, [
 		*-psp-*)
 			dnl asprintf is broken on the PSP, but snprintf works.
 			have_asprintf="no"
-			AC_SUBST(ASPRINTF_M, "asprintf.m")
 			ac_cv_snprintf_useful_ret="yes"
 			;;
 		*)
 			have_asprintf="yes"
-			AC_DEFINE(OF_HAVE_ASPRINTF, 1,
+			AC_DEFINE(HAVE_ASPRINTF, 1,
 				[Whether we have asprintf()])
-			AC_SUBST(ASPRINTF_DEF, "-DOF_HAVE_ASPRINTF")
 		;;
 	esac
 ], [
 	have_asprintf="no"
-	AC_SUBST(ASPRINTF_M, "asprintf.m")
 
 	AC_MSG_CHECKING(whether snprintf returns something useful)
 	AC_CACHE_VAL(ac_cv_snprintf_useful_ret, [

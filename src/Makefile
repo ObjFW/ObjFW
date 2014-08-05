@@ -108,7 +108,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFSerialization.h			\
 	    OFTLSSocket.h			\
 	    ObjFW.h				\
-	    asprintf.h				\
 	    autorelease.h			\
 	    ${ATOMIC_H}				\
 	    block.h				\
@@ -126,7 +125,6 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableString_UTF8.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
-	${ASPRINTF_M}			\
 	${AUTORELEASE_M}		\
 	codepage_437.m			\
 	${FOUNDATION_COMPAT_M}		\
