@@ -116,6 +116,9 @@
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 static of_mutex_t mutex;
 #endif
+#if !defined(HAVE_READDIR_R) && !defined(_WIN32) && defined(OF_HAVE_THREADS)
+static of_mutex_t mutex;
+#endif
 
 int
 of_stat(OFString *path, of_stat_t *buffer)
@@ -186,6 +189,12 @@ parseMode(const char *mode)
 		return;
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
+	if (!of_mutex_new(&mutex))
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
+
+#if !defined(HAVE_READDIR_R) && !defined(_WIN32) && defined(OF_HAVE_THREADS)
 	if (!of_mutex_new(&mutex))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -362,7 +371,6 @@ parseMode(const char *mode)
 
 #ifndef _WIN32
 	DIR *dir;
-	struct dirent *dirent;
 
 	encoding = [OFString nativeOSEncoding];
 
@@ -370,14 +378,37 @@ parseMode(const char *mode)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"r"];
 
+# if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
+	if (!of_mutex_lock(&mutex))
+		@throw [OFLockFailedException exception];
+# endif
+
 	@try {
-		while ((dirent = readdir(dir)) != NULL) {
-			void *pool = objc_autoreleasePoolPush();
+		for (;;) {
+			struct dirent *dirent;
+# ifdef HAVE_READDIR_R
+			struct dirent buffer;
+# endif
+			void *pool;
 			OFString *file;
+
+# ifdef HAVE_READDIR_R
+			if (readdir_r(dir, &buffer, &dirent) != 0)
+				@throw [OFReadFailedException
+				    exceptionWithObject: self
+					requestedLength: 0];
+# else
+			dirent = readdir(dir);
+# endif
+
+			if (dirent == NULL)
+				break;
 
 			if (strcmp(dirent->d_name, ".") == 0 ||
 			    strcmp(dirent->d_name, "..") == 0)
 				continue;
+
+			pool = objc_autoreleasePoolPush();
 
 			file = [OFString stringWithCString: dirent->d_name
 						  encoding: encoding];
@@ -387,6 +418,10 @@ parseMode(const char *mode)
 		}
 	} @finally {
 		closedir(dir);
+# if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFUnlockFailedException exception];
+# endif
 	}
 #else
 	void *pool = objc_autoreleasePoolPush();

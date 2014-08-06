@@ -497,13 +497,7 @@ AC_CHECK_FUNC(asprintf, [
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
-AC_CHECK_FUNC(arc4random, [
-	AC_DEFINE(HAVE_ARC4RANDOM, 1, [Whether we have arc4random()])
-], [
-	AC_CHECK_FUNC(random, [
-		AC_DEFINE(HAVE_RANDOM, 1, [Whether we have random()])
-	])
-])
+AC_CHECK_FUNCS([arc4random random], break)
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 AC_CHECK_HEADERS(dlfcn.h)
@@ -695,6 +689,8 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
 	AC_SUBST(OFZIP, "ofzip$ac_cv_exeext")
+
+	AC_CHECK_FUNCS(readdir_r)
 ])
 
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep lstat])
