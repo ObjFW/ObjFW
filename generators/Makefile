@@ -20,7 +20,8 @@ run: all
 		${LN_S} ../src/libobjfw.dll libobjfw.dll; \
 	fi
 	if test -f ../src/libobjfw.dylib; then \
-		${LN_S} ../src/libobjfw.dylib libobjfw.dylib; \
+		${LN_S} ../src/libobjfw.dylib \
+			libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
