@@ -30,14 +30,6 @@
 # include <kernel/OS.h>
 #endif
 
-void
-of_thread_set_name(of_thread_t thread, const char *name)
-{
-#ifdef __HAIKU__
-	rename_thread(get_pthread_thread_id(thread), name);
-#endif
-}
-
 bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {

@@ -14,6 +14,10 @@
  * file.
  */
 
+#ifdef HAVE_PTHREAD_NP_H
+# include <pthread_np.h>
+#endif
+
 struct thread_ctx {
 	void (*function)(id object);
 	id object;
@@ -152,6 +156,27 @@ of_thread_exit(void)
 	pthread_exit(NULL);
 
 	OF_UNREACHABLE
+}
+
+void
+of_thread_set_name(of_thread_t thread, const char *name)
+{
+#if defined(__HAIKU__)
+	rename_thread(get_pthread_thread_id(thread), name);
+#elif defined(HAVE_PTHREAD_SET_NAME_NP)
+	pthread_set_name_np(pthread_self(), name);
+#elif defined(HAVE_PTHREAD_SETNAME_NP)
+# if defined(__APPLE__)
+	pthread_setname_np(name);
+# elif defined(__GLIBC__)
+	char buffer[16];
+
+	strncpy(buffer, name, 15);
+	buffer[15] = 0;
+
+	pthread_setname_np(pthread_self(), buffer);
+# endif
+#endif
 }
 
 void

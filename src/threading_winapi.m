@@ -80,6 +80,11 @@ of_thread_exit(void)
 }
 
 void
+of_thread_set_name(of_thread_t thread, const char *name)
+{
+}
+
+void
 of_once(of_once_t *control, void (*func)(void))
 {
 	switch (InterlockedCompareExchange(control, 1, 0)) {

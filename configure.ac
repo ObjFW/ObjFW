@@ -550,6 +550,10 @@ AS_IF([test x"$enable_threads" != x"no"], [
 				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
 					[Whether we have sched_yield()])
 			])
+
+			AC_CHECK_HEADERS(pthread_np.h)
+			AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np,
+				break)
 		], [
 			AC_MSG_ERROR(No supported threads found!)
 		])
