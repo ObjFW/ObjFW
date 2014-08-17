@@ -231,7 +231,6 @@
 		4B3D23E21337FCB000DD29B8 /* OFXMLElementBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D249411DFAA3D00ED6FFC /* OFXMLElementBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23E31337FCB000DD29B8 /* OFXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799891099E7C50041064A /* OFXMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6AF97310A8D4450003FB0A /* ObjFW.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799561099E7C50041064A /* asprintf.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BBA36C411406AB700CBA3AC /* atomic.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23E71337FCB000DD29B8 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3D236D1337FB5800DD29B8 /* base64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23E81337FCB000DD29B8 /* macros.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BBA36C511406AB700CBA3AC /* macros.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -698,7 +697,6 @@
 		4B6743FB163C395900EB1E59 /* OFMutex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutex.m; path = src/OFMutex.m; sourceTree = "<group>"; };
 		4B6743FC163C395900EB1E59 /* OFRecursiveMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRecursiveMutex.h; path = src/OFRecursiveMutex.h; sourceTree = "<group>"; };
 		4B6743FD163C395900EB1E59 /* OFRecursiveMutex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRecursiveMutex.m; path = src/OFRecursiveMutex.m; sourceTree = "<group>"; };
-		4B6799561099E7C50041064A /* asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = asprintf.h; path = src/asprintf.h; sourceTree = "<group>"; };
 		4B67995A1099E7C50041064A /* OFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFArray.h; path = src/OFArray.h; sourceTree = "<group>"; };
 		4B67995B1099E7C50041064A /* OFArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArray.m; path = src/OFArray.m; sourceTree = "<group>"; };
 		4B67995C1099E7C50041064A /* OFAutoreleasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFAutoreleasePool.h; path = src/OFAutoreleasePool.h; sourceTree = "<group>"; };
@@ -737,7 +735,6 @@
 		4B67998A1099E7C50041064A /* OFXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLParser.m; path = src/OFXMLParser.m; sourceTree = "<group>"; };
 		4B67998B1099E7C50041064A /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = src/threading.h; sourceTree = "<group>"; };
 		4B67998C1099E7C50041064A /* unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode.h; path = src/unicode.h; sourceTree = "<group>"; };
-		4B6AF96C10A8D3E40003FB0A /* asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = asprintf.m; path = src/asprintf.m; sourceTree = "<group>"; };
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
@@ -1396,8 +1393,6 @@
 				4B8B025817BBA7C7009ED983 /* OFZIPArchiveEntry.m */,
 				4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
-				4B6799561099E7C50041064A /* asprintf.h */,
-				4B6AF96C10A8D3E40003FB0A /* asprintf.m */,
 				4BBA36C411406AB700CBA3AC /* atomic.h */,
 				4BA9CFA315E129D30076DC74 /* autorelease.h */,
 				4B3D236D1337FB5800DD29B8 /* base64.h */,
@@ -1625,7 +1620,6 @@
 				4BE52D2117B990B4005958D1 /* OFZIPArchive.h in Headers */,
 				4B8B025917BBA7C7009ED983 /* OFZIPArchiveEntry.h in Headers */,
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
-				4B3D23E51337FCB000DD29B8 /* asprintf.h in Headers */,
 				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
 				4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */,
 				4B3D23E71337FCB000DD29B8 /* base64.h in Headers */,
