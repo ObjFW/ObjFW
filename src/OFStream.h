@@ -86,7 +86,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
     OFCopying>
 {
-#ifndef OF_SEEKABLE_STREAM_M
+#if !defined(OF_SEEKABLE_STREAM_M) && !defined(OF_TCP_SOCKET_M)
 @private
 #endif
 	char *_readBuffer, *_writeBuffer;

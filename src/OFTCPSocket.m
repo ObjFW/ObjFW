@@ -14,6 +14,8 @@
  * file.
  */
 
+#define OF_TCP_SOCKET_M
+
 #define __NO_EXT_QNX
 
 #include "config.h"
@@ -271,6 +273,13 @@ static uint16_t freePort = 65532;
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
+	_listening = false;
+
+	/* Make sure to clear the read buffer in case the socket is reused */
+	[self freeMemory: _readBuffer];
+	_readBuffer = NULL;
+	_readBufferLength = 0;
+
 	if (_SOCKS5Host != nil) {
 		/* Connect to the SOCKS5 proxy instead */
 		host = _SOCKS5Host;
@@ -514,12 +523,5 @@ static uint16_t freePort = 65532;
 - (bool)isListening
 {
 	return _listening;
-}
-
-- (void)close
-{
-	[super close];
-
-	_listening = false;
 }
 @end
