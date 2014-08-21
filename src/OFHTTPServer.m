@@ -33,9 +33,12 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotConnectedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFWriteFailedException.h"
+
+#import "socket_helpers.h"
 
 #define BUFFER_SIZE 1024
 
@@ -171,7 +174,7 @@ normalizedKey(OFString *key)
 {
 	OFTCPSocket *_socket;
 	OFHTTPServer *_server;
-	bool _chunked, _headersSent, _closed;
+	bool _chunked, _headersSent;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
@@ -193,10 +196,9 @@ normalizedKey(OFString *key)
 
 - (void)dealloc
 {
-	if (!_closed)
-		[self close];
+	if (_socket != nil)
+		[self close];	/* includes [_socket release] */
 
-	[_socket release];
 	[_server release];
 
 	[super dealloc];
@@ -238,6 +240,9 @@ normalizedKey(OFString *key)
 {
 	void *pool;
 
+	if (_socket == nil)
+		@throw [OFNotConnectedException exceptionWithSocket: self];
+
 	if (!_headersSent)
 		[self OF_sendHeaders];
 
@@ -259,6 +264,9 @@ normalizedKey(OFString *key)
 
 - (void)close
 {
+	if (_socket == nil)
+		@throw [OFNotConnectedException exceptionWithSocket: self];
+
 	if (!_headersSent)
 		[self OF_sendHeaders];
 
@@ -266,13 +274,15 @@ normalizedKey(OFString *key)
 		[_socket writeBuffer: "0\r\n\r\n"
 			      length: 5];
 
-	[_socket close];
-
-	_closed = true;
+	[_socket release];
+	_socket = nil;
 }
 
 - (int)fileDescriptorForWriting
 {
+	if (_socket == nil)
+		return INVALID_SOCKET;
+
 	return [_socket fileDescriptorForWriting];
 }
 @end
@@ -562,7 +572,6 @@ normalizedKey(OFString *key)
 			      @"\r\n",
 			      statusCode, statusCodeToString(statusCode),
 			      date, [_server name]];
-	[_socket close];
 
 	return false;
 }
