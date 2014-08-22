@@ -29,6 +29,7 @@
 #import "OFKernelEventObserver+Private.h"
 #import "OFKernelEventObserver_kqueue.h"
 #import "OFDataArray.h"
+#import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfMemoryException.h"
@@ -50,6 +51,7 @@
 
 		_changeList = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct kevent)];
+		_removedArray = [[OFMutableArray alloc] init];
 
 		[self OF_addFileDescriptorForReading: _cancelFD[0]];
 	} @catch (id e) {
@@ -63,7 +65,9 @@
 - (void)dealloc
 {
 	close(_kernelQueue);
+
 	[_changeList release];
+	[_removedArray release];
 
 	[super dealloc];
 }
@@ -116,7 +120,11 @@
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
 
-	[self OF_processQueue];
+	/*
+	 * Make sure to keep the streams retained and thus the file descriptors
+	 * valid until the actual change has been performed.
+	 */
+	[self OF_processQueueAndStoreRemovedIn: _removedArray];
 
 	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);
@@ -128,6 +136,8 @@
 	events = kevent(_kernelQueue, [_changeList items],
 	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
 	    (timeInterval == -1 ? NULL : &timeout));
+
+	[_removedArray removeAllObjects];
 
 	if (events < 0)
 		return false;
@@ -149,30 +159,6 @@
 		realEvents++;
 
 		pool = objc_autoreleasePoolPush();
-
-		/*
-		 * If a file descriptor has been closed before it is removed
-		 * from the kernel event observer, the file descriptor is not
-		 * valid anymore and causes EBADF. As closing a file descriptor
-		 * automatically removes it from the queue, there is nothing to
-		 * do anymore.
-		 *
-		 * Ideally, a file descriptor should never be closed before it
-		 * is removed from the kernel event observer, as in rare cases,
-		 * it could result in removing the wrong object from the kernel
-		 * event observer, for example if a file descriptor is closed,
-		 * a new one created, added to the kernel event observer and
-		 * then the old one removed, as the new one could now have the
-		 * same file descriptor as the closed one had and thus the new
-		 * one is removed.
-		 *
-		 * For other errors, call the callback like it was successful
-		 * so that the read / write will generate an error and throw an
-		 * exception.
-		 */
-		if ((eventList[i].flags & EV_ERROR) &&
-		    eventList[i].data == EBADF)
-			continue;
 
 		switch (eventList[i].filter) {
 		case EVFILT_READ:

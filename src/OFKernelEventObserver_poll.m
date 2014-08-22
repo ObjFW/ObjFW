@@ -133,7 +133,7 @@
 	struct pollfd *FDs;
 	size_t i, nFDs, realEvents = 0;
 
-	[self OF_processQueue];
+	[self OF_processQueueAndStoreRemovedIn: nil];
 
 	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);

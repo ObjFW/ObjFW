@@ -72,7 +72,7 @@
 	struct timeval timeout;
 	size_t i, count, realEvents = 0;
 
-	[self OF_processQueue];
+	[self OF_processQueueAndStoreRemovedIn: nil];
 
 	if ([self OF_processCache]) {
 		objc_autoreleasePoolPop(pool);

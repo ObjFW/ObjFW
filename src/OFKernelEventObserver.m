@@ -299,7 +299,7 @@ enum {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_processQueue
+- (void)OF_processQueueAndStoreRemovedIn: (OFMutableArray*)removed
 {
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
@@ -348,12 +348,14 @@ enum {
 			case QUEUE_REMOVE | QUEUE_READ:
 				[self OF_removeFileDescriptorForReading: fd];
 
+				[removed addObject: object];
 				[_readObjects removeObjectIdenticalTo: object];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
 				[self OF_removeFileDescriptorForWriting: fd];
 
+				[removed addObject: object];
 				[_writeObjects removeObjectIdenticalTo: object];
 
 				break;

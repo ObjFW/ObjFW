@@ -17,10 +17,12 @@
 #import "OFKernelEventObserver.h"
 
 @class OFDataArray;
+@class OFMutableArray;
 
 @interface OFKernelEventObserver_kqueue: OFKernelEventObserver
 {
 	int _kernelQueue;
 	OFDataArray *_changeList;
+	OFMutableArray *_removedArray;
 }
 @end
