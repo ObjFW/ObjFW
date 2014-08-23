@@ -1112,8 +1112,20 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #import "OFString+XMLUnescaping.h"
 
 #ifndef NSINTEGER_DEFINED
-/* Required for string boxing literals to work */
-@compatibility_alias NSString OFString;
+/*
+ * Very *ugly* hack required for string boxing literals to work.
+ *
+ * This hack is needed in order to work with `@class NSString` from Apple's
+ * objc/NSString.h - which is included when using modules - as
+ * @compatibility_alias does not work if @class has been used before.
+ * For some reason, this makes Clang refer to OFString for string box literals
+ * and not to NSString (which would result in a linker error, but would be the
+ * correct behavior).
+ *
+ * TODO: Submit a patch for Clang that makes the boxing classes configurable!
+ */
+@interface NSString: OFString
+@end
 #endif
 
 #ifdef __cplusplus

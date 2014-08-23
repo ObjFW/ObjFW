@@ -2,7 +2,6 @@
 *.bundle
 *.dll
 *.dylib
-*.map
 *.o
 *.orig
 *.so
@@ -31,6 +30,7 @@ ObjFW.xcodeproj/project.xcworkspace
 ObjFW.xcodeproj/xcuserdata
 src/objfw-defs.h
 src/ObjFW
+tests/*.map
 tests/tests
 tests/tests.arm9
 tests/tests.exe

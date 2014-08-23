@@ -1118,4 +1118,15 @@ void _references_to_categories_of_OFObject(void)
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
+
+/* Required to use ObjFW from Swift */
++ allocWithZone: (void*)zone
+{
+	if OF_UNLIKELY (zone != NULL) {
+		[self doesNotRecognizeSelector: _cmd];
+		abort();
+	}
+
+	return [self alloc];
+}
 @end
