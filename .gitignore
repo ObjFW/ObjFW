@@ -23,13 +23,14 @@ docs
 extra.mk
 generators/gen_tables
 generators/gen_tables.exe
-Info.plist
 ObjFW.xcodeproj/*.mode1v3
 ObjFW.xcodeproj/*.pbxuser
 ObjFW.xcodeproj/project.xcworkspace
 ObjFW.xcodeproj/xcuserdata
 src/objfw-defs.h
 src/ObjFW
+support/Bridge-Info.plist
+support/Info.plist
 tests/*.map
 tests/tests
 tests/tests.arm9
