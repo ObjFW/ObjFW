@@ -22,111 +22,96 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 
-/* The four MD5 core functions - F1 is optimized somewhat */
-#define F1(x, y, z) (z ^ (x & (y ^ z)))
-#define F2(x, y, z) F1(z, x, y)
-#define F3(x, y, z) (x ^ y ^ z)
-#define F4(x, y, z) (y ^ (x | ~z))
+#define F(a, b, c) (((a) & (b)) | (~(a) & (c)))
+#define G(a, b, c) (((a) & (c)) | ((b) & ~(c)))
+#define H(a, b, c) ((a) ^ (b) ^ (c))
+#define I(a, b, c) ((b) ^ ((a) | ~(c)))
 
-/* This is the central step in the MD5 algorithm. */
-#define MD5STEP(f, w, x, y, z, data, s) \
-	(w += f(x, y, z) + data, w = w << s | w >> (32 - s), w += x)
+static const uint32_t sinTable[] = {
+	0xD76AA478, 0xE8C7B756, 0x242070DB, 0xC1BDCEEE,
+	0xF57C0FAF, 0x4787C62A, 0xA8304613, 0xFD469501,
+	0x698098D8, 0x8B44F7AF, 0xFFFF5BB1, 0x895CD7BE,
+	0x6B901122, 0xFD987193, 0xA679438E, 0x49B40821,
 
-#ifdef OF_BIG_ENDIAN
-static OF_INLINE void
-BSWAP32_VEC_IF_BE(uint32_t *buffer, size_t length)
-{
-	while (length--) {
-		*buffer = OF_BSWAP32(*buffer);
-		buffer++;
-	}
-}
-#else
-# define BSWAP32_VEC_IF_BE(buffer, length)
-#endif
+	0xF61E2562, 0xC040B340, 0x265E5A51, 0xE9B6C7AA,
+	0xD62F105D, 0x02441453, 0xD8A1E681, 0xE7D3FBC8,
+	0x21E1CDE6, 0xC33707D6, 0xF4D50D87, 0x455A14ED,
+	0xA9E3E905, 0xFCEFA3F8, 0x676F02D9, 0x8D2A4C8A,
+
+	0xFFFA3942, 0x8771F681, 0x6D9D6122, 0xFDE5380C,
+	0xA4BEEA44, 0x4BDECFA9, 0xF6BB4B60, 0xBEBFBC70,
+	0x289B7EC6, 0xEAA127FA, 0xD4EF3085, 0x04881D05,
+	0xD9D4D039, 0xE6DB99E5, 0x1FA27CF8, 0xC4AC5665,
+
+	0xF4292244, 0x432AFF97, 0xAB9423A7, 0xFC93A039,
+	0x655B59C3, 0x8F0CCC92, 0xFFEFF47D, 0x85845DD1,
+	0x6FA87E4F, 0xFE2CE6E0, 0xA3014314, 0x4E0811A1,
+	0xF7537E82, 0xBD3AF235, 0x2AD7D2BB, 0xEB86D391
+};
+static const uint8_t wordOrder[] = {
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+	1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12,
+	5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2,
+	0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9
+};
+static const uint8_t rotateBits[] = {
+	7, 12, 17, 22,
+	5, 9, 14, 20,
+	4, 11, 16, 23,
+	6, 10, 15, 21
+};
 
 static void
-md5_transform(uint32_t buffer[4], const uint32_t in[16])
+byteSwapVectorIfBE(uint32_t *vector, uint_fast8_t length)
 {
-	register uint32_t a, b, c, d;
+	uint_fast8_t i;
 
-	a = buffer[0];
-	b = buffer[1];
-	c = buffer[2];
-	d = buffer[3];
+	for (i = 0; i < length; i++)
+		vector[i] = OF_BSWAP32_IF_BE(vector[i]);
+}
 
-	MD5STEP(F1, a, b, c, d, in[0]  + 0xD76AA478, 7);
-	MD5STEP(F1, d, a, b, c, in[1]  + 0xE8C7B756, 12);
-	MD5STEP(F1, c, d, a, b, in[2]  + 0x242070DB, 17);
-	MD5STEP(F1, b, c, d, a, in[3]  + 0xC1BDCEEE, 22);
-	MD5STEP(F1, a, b, c, d, in[4]  + 0xF57C0FAF, 7);
-	MD5STEP(F1, d, a, b, c, in[5]  + 0x4787C62A, 12);
-	MD5STEP(F1, c, d, a, b, in[6]  + 0xA8304613, 17);
-	MD5STEP(F1, b, c, d, a, in[7]  + 0xFD469501, 22);
-	MD5STEP(F1, a, b, c, d, in[8]  + 0x698098D8, 7);
-	MD5STEP(F1, d, a, b, c, in[9]  + 0x8B44F7AF, 12);
-	MD5STEP(F1, c, d, a, b, in[10] + 0xFFFF5BB1, 17);
-	MD5STEP(F1, b, c, d, a, in[11] + 0x895CD7Be, 22);
-	MD5STEP(F1, a, b, c, d, in[12] + 0x6B901122, 7);
-	MD5STEP(F1, d, a, b, c, in[13] + 0xFD987193, 12);
-	MD5STEP(F1, c, d, a, b, in[14] + 0xA679438e, 17);
-	MD5STEP(F1, b, c, d, a, in[15] + 0x49B40821, 22);
+static void
+processBlock(uint32_t *state, uint32_t *buffer)
+{
+	uint32_t new[4];
+	uint_fast8_t i = 0;
 
-	MD5STEP(F2, a, b, c, d, in[1]  + 0xF61E2562, 5);
-	MD5STEP(F2, d, a, b, c, in[6]  + 0xC040B340, 9);
-	MD5STEP(F2, c, d, a, b, in[11] + 0x265E5A51, 14);
-	MD5STEP(F2, b, c, d, a, in[0]  + 0xE9B6C7AA, 20);
-	MD5STEP(F2, a, b, c, d, in[5]  + 0xD62F105D, 5);
-	MD5STEP(F2, d, a, b, c, in[10] + 0x02441453, 9);
-	MD5STEP(F2, c, d, a, b, in[15] + 0xD8A1E681, 14);
-	MD5STEP(F2, b, c, d, a, in[4]  + 0xE7D3FBC8, 20);
-	MD5STEP(F2, a, b, c, d, in[9]  + 0x21E1CDE6, 5);
-	MD5STEP(F2, d, a, b, c, in[14] + 0xC33707D6, 9);
-	MD5STEP(F2, c, d, a, b, in[3]  + 0xF4D50D87, 14);
-	MD5STEP(F2, b, c, d, a, in[8]  + 0x455A14ED, 20);
-	MD5STEP(F2, a, b, c, d, in[13] + 0xA9E3E905, 5);
-	MD5STEP(F2, d, a, b, c, in[2]  + 0xFCEFA3F8, 9);
-	MD5STEP(F2, c, d, a, b, in[7]  + 0x676F02D9, 14);
-	MD5STEP(F2, b, c, d, a, in[12] + 0x8D2A4C8a, 20);
+	new[0] = state[0];
+	new[1] = state[1];
+	new[2] = state[2];
+	new[3] = state[3];
 
-	MD5STEP(F3, a, b, c, d, in[5]  + 0xFFFA3942, 4);
-	MD5STEP(F3, d, a, b, c, in[8]  + 0x8771F681, 11);
-	MD5STEP(F3, c, d, a, b, in[11] + 0x6D9D6122, 16);
-	MD5STEP(F3, b, c, d, a, in[14] + 0xFDE5380c, 23);
-	MD5STEP(F3, a, b, c, d, in[1]  + 0xA4BEEA44, 4);
-	MD5STEP(F3, d, a, b, c, in[4]  + 0x4BDECFA9, 11);
-	MD5STEP(F3, c, d, a, b, in[7]  + 0xF6BB4B60, 16);
-	MD5STEP(F3, b, c, d, a, in[10] + 0xBEBFBC70, 23);
-	MD5STEP(F3, a, b, c, d, in[13] + 0x289B7EC6, 4);
-	MD5STEP(F3, d, a, b, c, in[0]  + 0xEAA127FA, 11);
-	MD5STEP(F3, c, d, a, b, in[3]  + 0xD4EF3085, 16);
-	MD5STEP(F3, b, c, d, a, in[6]  + 0x04881D05, 23);
-	MD5STEP(F3, a, b, c, d, in[9]  + 0xD9D4D039, 4);
-	MD5STEP(F3, d, a, b, c, in[12] + 0xE6DB99E5, 11);
-	MD5STEP(F3, c, d, a, b, in[15] + 0x1FA27CF8, 16);
-	MD5STEP(F3, b, c, d, a, in[2]  + 0xC4AC5665, 23);
+	byteSwapVectorIfBE(buffer, 16);
 
-	MD5STEP(F4, a, b, c, d, in[0]  + 0xF4292244, 6);
-	MD5STEP(F4, d, a, b, c, in[7]  + 0x432AFF97, 10);
-	MD5STEP(F4, c, d, a, b, in[14] + 0xAB9423A7, 15);
-	MD5STEP(F4, b, c, d, a, in[5]  + 0xFC93A039, 21);
-	MD5STEP(F4, a, b, c, d, in[12] + 0x655B59C3, 6);
-	MD5STEP(F4, d, a, b, c, in[3]  + 0x8F0CCC92, 10);
-	MD5STEP(F4, c, d, a, b, in[10] + 0xFFEFF47d, 15);
-	MD5STEP(F4, b, c, d, a, in[1]  + 0x85845DD1, 21);
-	MD5STEP(F4, a, b, c, d, in[8]  + 0x6FA87E4F, 6);
-	MD5STEP(F4, d, a, b, c, in[15] + 0xFE2CE6E0, 10);
-	MD5STEP(F4, c, d, a, b, in[6]  + 0xA3014314, 15);
-	MD5STEP(F4, b, c, d, a, in[13] + 0x4E0811A1, 21);
-	MD5STEP(F4, a, b, c, d, in[4]  + 0xF7537E82, 6);
-	MD5STEP(F4, d, a, b, c, in[11] + 0xBD3AF235, 10);
-	MD5STEP(F4, c, d, a, b, in[2]  + 0x2AD7D2BB, 15);
-	MD5STEP(F4, b, c, d, a, in[9]  + 0xEB86D391, 21);
+#define LOOP_BODY(f)							   \
+	{								   \
+		const uint_fast8_t a = (4 - (i & 3)) & 3;		   \
+		const uint_fast8_t b = (a + 1) & 3;			   \
+		const uint_fast8_t c = (a + 2) & 3;			   \
+		const uint_fast8_t d = (a + 3) & 3;			   \
+		const uint_fast8_t r = rotateBits[(i % 4) + (i / 16) * 4]; \
+									   \
+		new[a] += f(new[b], new[c], new[d]) +			   \
+		    buffer[wordOrder[i]] + sinTable[i];			   \
+		new[a] = OF_ROL(new[a], r);				   \
+		new[a] += new[b];					   \
+	}
 
-	buffer[0] += a;
-	buffer[1] += b;
-	buffer[2] += c;
-	buffer[3] += d;
+	for (; i < 16; i++)
+		LOOP_BODY(F)
+	for (; i < 32; i++)
+		LOOP_BODY(G)
+	for (; i < 48; i++)
+		LOOP_BODY(H)
+	for (; i < 64; i++)
+		LOOP_BODY(I)
+
+#undef LOOP_BODY
+
+	state[0] += new[0];
+	state[1] += new[1];
+	state[2] += new[2];
+	state[3] += new[3];
 }
 
 @implementation OFMD5Hash
@@ -149,10 +134,10 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 {
 	self = [super init];
 
-	_buffer[0] = 0x67452301;
-	_buffer[1] = 0xEFCDAB89;
-	_buffer[2] = 0x98BADCFE;
-	_buffer[3] = 0x10325476;
+	_state[0] = 0x67452301;
+	_state[1] = 0xEFCDAB89;
+	_state[2] = 0x98BADCFE;
+	_state[3] = 0x10325476;
 
 	return self;
 }
@@ -160,105 +145,54 @@ md5_transform(uint32_t buffer[4], const uint32_t in[16])
 - (void)updateWithBuffer: (const void*)buffer_
 		  length: (size_t)length
 {
-	uint32_t t;
-	const char *buffer = buffer_;
-
-	if (length == 0)
-		return;
+	const uint8_t *buffer = buffer_;
 
 	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithHash: self];
 
-	/* Update bitcount */
-	t = _bits[0];
-	if ((_bits[0] = t + ((uint32_t)length << 3)) < t)
-		/* Carry from low to high */
-		_bits[1]++;
-	_bits[1] += (uint32_t)length >> 29;
+	_bits += (length * 8);
 
-	/* Bytes already in shsInfo->data */
-	t = (t >> 3) & 0x3F;
+	while (length > 0) {
+		size_t min = 64 - _bufferLength;
 
-	/* Handle any leading odd-sized chunks */
-	if (t) {
-		uint8_t *p = _in.u8 + t;
+		if (min > length)
+			min = length;
 
-		t = 64 - t;
+		memcpy(_buffer.bytes + _bufferLength, buffer, min);
+		_bufferLength += min;
 
-		if (length < t) {
-			memcpy(p, buffer, length);
-			return;
+		buffer += min;
+		length -= min;
+
+		if (_bufferLength == 64) {
+			processBlock(_state, _buffer.words);
+			_bufferLength = 0;
 		}
-
-		memcpy(p, buffer, t);
-		BSWAP32_VEC_IF_BE(_in.u32, 16);
-		md5_transform(_buffer, _in.u32);
-
-		buffer += t;
-		length -= t;
 	}
-
-	/* Process data in 64-byte chunks */
-	while (length >= 64) {
-		memcpy(_in.u8, buffer, 64);
-		BSWAP32_VEC_IF_BE(_in.u32, 16);
-		md5_transform(_buffer, _in.u32);
-
-		buffer += 64;
-		length -= 64;
-	}
-
-	/* Handle any remaining bytes of data. */
-	memcpy(_in.u8, buffer, length);
 }
 
 - (const uint8_t*)digest
 {
-	uint8_t	*p;
-	size_t count;
-
 	if (_calculated)
-		return (uint8_t*)_buffer;
+		return (const uint8_t*)_state;
 
-	/* Compute number of bytes mod 64 */
-	count = (_bits[0] >> 3) & 0x3F;
+	_buffer.bytes[_bufferLength] = 0x80;
+	memset(_buffer.bytes + _bufferLength + 1, 0, 64 - _bufferLength - 1);
 
-	/*
-	 * Set the first char of padding to 0x80. This is safe since there is
-	 * always at least one byte free
-	 */
-	p = _in.u8 + count;
-	*p++ = 0x80;
-
-	/* Bytes of padding needed to make 64 bytes */
-	count = 64 - 1 - count;
-
-	/* Pad out to 56 mod 64 */
-	if (count < 8) {
-		/* Two lots of padding: Pad the first block to 64 bytes */
-		memset(p, 0, count);
-		BSWAP32_VEC_IF_BE(_in.u32, 16);
-		md5_transform(_buffer, _in.u32);
-
-		/* Now fill the next block with 56 bytes */
-		memset(_in.u8, 0, 56);
-	} else {
-		/* Pad block to 56 bytes */
-		memset(p, 0, count - 8);
+	if (_bufferLength >= 56) {
+		processBlock(_state, _buffer.words);
+		memset(_buffer.bytes, 0, 64);
 	}
-	BSWAP32_VEC_IF_BE(_in.u32, 14);
 
-	/* Append length in bits and transform */
-	_in.u32[14] = _bits[0];
-	_in.u32[15] = _bits[1];
+	_buffer.words[14] = OF_BSWAP32_IF_BE((uint32_t)(_bits & 0xFFFFFFFF));
+	_buffer.words[15] = OF_BSWAP32_IF_BE((uint32_t)(_bits >> 32));
 
-	md5_transform(_buffer, _in.u32);
-	BSWAP32_VEC_IF_BE(_buffer, 4);
-
+	processBlock(_state, _buffer.words);
+	byteSwapVectorIfBE(_state, 4);
 	_calculated = true;
 
-	return (const uint8_t*)_buffer;
+	return (const uint8_t*)_state;
 }
 
 - (bool)isCalculated

@@ -23,12 +23,13 @@
  */
 @interface OFMD5Hash: OFObject <OFHash>
 {
-	uint32_t _buffer[4];
-	uint32_t _bits[2];
-	union of_md5hash_in_union {
-		uint8_t	u8[64];
-		uint32_t u32[16];
-	} _in;
+	uint32_t _state[4];
+	uint64_t _bits;
+	union {
+		uint8_t bytes[64];
+		uint32_t words[16];
+	} _buffer;
+	size_t _bufferLength;
 	bool _calculated;
 }
 @end
