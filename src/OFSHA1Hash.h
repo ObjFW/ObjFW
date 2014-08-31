@@ -24,9 +24,12 @@
 @interface OFSHA1Hash: OFObject <OFHash>
 {
 	uint32_t _state[5];
-	uint64_t _count;
-	char	 _buffer[64];
-	uint8_t	 _digest[20];
-	bool	 _calculated;
+	uint64_t _bits;
+	union {
+		uint8_t bytes[64];
+		uint32_t words[80];
+	} _buffer;
+	size_t _bufferLength;
+	bool _calculated;
 }
 @end
