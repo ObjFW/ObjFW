@@ -162,6 +162,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_buffer.words[15] = OF_BSWAP32_IF_LE((uint32_t)(_bits & 0xFFFFFFFF));
 
 	processBlock(_state, _buffer.words);
+	memset(&_buffer, 0, sizeof(_buffer));
 	byteSwapVectorIfLE(_state, 5);
 	_calculated = true;
 
