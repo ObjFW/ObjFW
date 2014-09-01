@@ -36,6 +36,7 @@ SRCS_FILES = OFINIFileTests.m		\
 	     OFMD5HashTests.m		\
 	     OFSerializationTests.m	\
 	     OFSHA1HashTests.m		\
+	     OFSHA224HashTests.m	\
 	     OFSHA256HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
 SRCS_SOCKETS = OFTCPSocketTests.m	\

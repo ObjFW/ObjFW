@@ -40,6 +40,13 @@ extern int _OFString_Hashing_reference;
 - (OFString*)SHA1Hash;
 
 /*!
+ * @brief Returns the SHA-224 hash of the string as an autoreleased OFString.
+ *
+ * @return The SHA-224 hash of the string as an autoreleased OFString
+ */
+- (OFString*)SHA224Hash;
+
+/*!
  * @brief Returns the SHA-256 hash of the string as an autoreleased OFString.
  *
  * @return The SHA-256 hash of the string as an autoreleased OFString

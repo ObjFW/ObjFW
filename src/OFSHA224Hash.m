@@ -14,26 +14,26 @@
  * file.
  */
 
-#import "OFSHA256Hash.h"
+#import "OFSHA224Hash.h"
 
-@implementation OFSHA256Hash
+@implementation OFSHA224Hash
 + (size_t)digestSize
 {
-	return 32;
+	return 28;
 }
 
 - init
 {
 	self = [super init];
 
-	_state[0] = 0x6A09E667;
-	_state[1] = 0xBB67AE85;
-	_state[2] = 0x3C6EF372;
-	_state[3] = 0xA54FF53A;
-	_state[4] = 0x510E527F;
-	_state[5] = 0x9B05688C;
-	_state[6] = 0x1F83D9AB;
-	_state[7] = 0x5BE0CD19;
+	_state[0] = 0xC1059ED8;
+	_state[1] = 0x367CD507;
+	_state[2] = 0x3070DD17;
+	_state[3] = 0xF70E5939;
+	_state[4] = 0xFFC00B31;
+	_state[5] = 0x68581511;
+	_state[6] = 0x64F98FA7;
+	_state[7] = 0xBEFA4FA4;
 
 	return self;
 }

@@ -14,27 +14,23 @@
  * file.
  */
 
-#import "OFSHA256Hash.h"
+#import "OFHash.h"
 
-@implementation OFSHA256Hash
-+ (size_t)digestSize
+/*!
+ * @class OFSHA224OrSHA256Hash OFSHA224OrSHA256Hash.h \
+ *	  ObjFW/OFSHA224OrSHA256Hash.h
+ *
+ * @brief A base class for SHA-224 and SHA-256.
+ */
+@interface OFSHA224OrSHA256Hash: OFObject <OFHash>
 {
-	return 32;
-}
-
-- init
-{
-	self = [super init];
-
-	_state[0] = 0x6A09E667;
-	_state[1] = 0xBB67AE85;
-	_state[2] = 0x3C6EF372;
-	_state[3] = 0xA54FF53A;
-	_state[4] = 0x510E527F;
-	_state[5] = 0x9B05688C;
-	_state[6] = 0x1F83D9AB;
-	_state[7] = 0x5BE0CD19;
-
-	return self;
+	uint32_t _state[8];
+	uint64_t _bits;
+	union {
+		uint8_t bytes[64];
+		uint32_t words[64];
+	} _buffer;
+	size_t _bufferLength;
+	bool _calculated;
 }
 @end

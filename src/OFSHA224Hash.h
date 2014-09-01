@@ -14,27 +14,12 @@
  * file.
  */
 
-#import "OFSHA256Hash.h"
+#import "OFSHA224OrSHA256Hash.h"
 
-@implementation OFSHA256Hash
-+ (size_t)digestSize
-{
-	return 32;
-}
-
-- init
-{
-	self = [super init];
-
-	_state[0] = 0x6A09E667;
-	_state[1] = 0xBB67AE85;
-	_state[2] = 0x3C6EF372;
-	_state[3] = 0xA54FF53A;
-	_state[4] = 0x510E527F;
-	_state[5] = 0x9B05688C;
-	_state[6] = 0x1F83D9AB;
-	_state[7] = 0x5BE0CD19;
-
-	return self;
-}
+/*!
+ * @class OFSHA224Hash OFSHA224Hash.h ObjFW/OFSHA224Hash.h
+ *
+ * @brief A class which provides functions to create an SHA-224 hash.
+ */
+@interface OFSHA224Hash: OFSHA224OrSHA256Hash
 @end

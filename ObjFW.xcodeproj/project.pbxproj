@@ -123,6 +123,12 @@
 		4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
 		4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4B23CA941338121C0047A1D9 /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B23CA8A133811610047A1D9 /* TestPlugin.bundle */; };
+		4B24592A19B5397C0059F271 /* OFSHA224Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B24592619B5397C0059F271 /* OFSHA224Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B24592B19B5397C0059F271 /* OFSHA224Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592719B5397C0059F271 /* OFSHA224Hash.m */; };
+		4B24592C19B5397C0059F271 /* OFSHA224OrSHA256Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B24592819B5397C0059F271 /* OFSHA224OrSHA256Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B24592D19B5397C0059F271 /* OFSHA224OrSHA256Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592919B5397C0059F271 /* OFSHA224OrSHA256Hash.m */; };
+		4B24593019B53BC80059F271 /* OFSHA224HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592E19B53BC80059F271 /* OFSHA224HashTests.m */; };
+		4B24593119B53BC80059F271 /* OFSHA256HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592F19B53BC80059F271 /* OFSHA256HashTests.m */; };
 		4B29BC3F133AC4E80004B236 /* OFCreateDirectoryFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC40133AC4E80004B236 /* OFCreateDirectoryFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */; };
 		4B29BC41133AC4E80004B236 /* OFSeekFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -615,6 +621,12 @@
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
 		4B23CA8A133811610047A1D9 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B24592619B5397C0059F271 /* OFSHA224Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA224Hash.h; path = src/OFSHA224Hash.h; sourceTree = "<group>"; };
+		4B24592719B5397C0059F271 /* OFSHA224Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA224Hash.m; path = src/OFSHA224Hash.m; sourceTree = "<group>"; };
+		4B24592819B5397C0059F271 /* OFSHA224OrSHA256Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA224OrSHA256Hash.h; path = src/OFSHA224OrSHA256Hash.h; sourceTree = "<group>"; };
+		4B24592919B5397C0059F271 /* OFSHA224OrSHA256Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA224OrSHA256Hash.m; path = src/OFSHA224OrSHA256Hash.m; sourceTree = "<group>"; };
+		4B24592E19B53BC80059F271 /* OFSHA224HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA224HashTests.m; path = tests/OFSHA224HashTests.m; sourceTree = "<group>"; };
+		4B24592F19B53BC80059F271 /* OFSHA256HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA256HashTests.m; path = tests/OFSHA256HashTests.m; sourceTree = "<group>"; };
 		4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCreateDirectoryFailedException.h; path = src/exceptions/OFCreateDirectoryFailedException.h; sourceTree = "<group>"; };
 		4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCreateDirectoryFailedException.m; path = src/exceptions/OFCreateDirectoryFailedException.m; sourceTree = "<group>"; };
 		4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekFailedException.h; path = src/exceptions/OFSeekFailedException.h; sourceTree = "<group>"; };
@@ -1339,6 +1351,10 @@
 				4B8385131951BF9500D5358A /* OFSettings_INIFile.m */,
 				4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */,
 				4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */,
+				4B24592619B5397C0059F271 /* OFSHA224Hash.h */,
+				4B24592719B5397C0059F271 /* OFSHA224Hash.m */,
+				4B24592819B5397C0059F271 /* OFSHA224OrSHA256Hash.h */,
+				4B24592919B5397C0059F271 /* OFSHA224OrSHA256Hash.m */,
 				4B3B03E919B3F70500F70C05 /* OFSHA256Hash.h */,
 				4B3B03EA19B3F70500F70C05 /* OFSHA256Hash.m */,
 				4B141BA215FCDF74000C21A8 /* OFSortedList.h */,
@@ -1465,6 +1481,8 @@
 				4B3D5693139A617D0010A78F /* OFSerializationTests.m */,
 				4B4B6903191437D500334775 /* OFSetTests.m */,
 				4B6EF6771235358D0076B512 /* OFSHA1HashTests.m */,
+				4B24592E19B53BC80059F271 /* OFSHA224HashTests.m */,
+				4B24592F19B53BC80059F271 /* OFSHA256HashTests.m */,
 				4B6EF6781235358D0076B512 /* OFStreamTests.m */,
 				4B6EF6791235358D0076B512 /* OFStringTests.m */,
 				4B6EF67A1235358D0076B512 /* OFTCPSocketTests.m */,
@@ -1607,6 +1625,8 @@
 				4B39844213D3A24600E6F825 /* OFSet.h in Headers */,
 				4B8385181951BF9500D5358A /* OFSettings.h in Headers */,
 				4B3D23D41337FCB000DD29B8 /* OFSHA1Hash.h in Headers */,
+				4B24592A19B5397C0059F271 /* OFSHA224Hash.h in Headers */,
+				4B24592C19B5397C0059F271 /* OFSHA224OrSHA256Hash.h in Headers */,
 				4B3B03EB19B3F70500F70C05 /* OFSHA256Hash.h in Headers */,
 				4B141BA415FCDF74000C21A8 /* OFSortedList.h in Headers */,
 				4B0256E4172B60400062B5F1 /* OFStdIOStream.h in Headers */,
@@ -1982,6 +2002,8 @@
 				4B8385191951BF9500D5358A /* OFSettings.m in Sources */,
 				4B8385171951BF9500D5358A /* OFSettings_INIFile.m in Sources */,
 				4B3D23A21337FC0D00DD29B8 /* OFSHA1Hash.m in Sources */,
+				4B24592B19B5397C0059F271 /* OFSHA224Hash.m in Sources */,
+				4B24592D19B5397C0059F271 /* OFSHA224OrSHA256Hash.m in Sources */,
 				4B3B03EC19B3F70500F70C05 /* OFSHA256Hash.m in Sources */,
 				4B141BA515FCDF74000C21A8 /* OFSortedList.m in Sources */,
 				4B0256E5172B60400062B5F1 /* OFStdIOStream.m in Sources */,
@@ -2106,6 +2128,8 @@
 				4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */,
 				4B4B6904191437D500334775 /* OFSetTests.m in Sources */,
 				4BF33B08133807A20059CEF7 /* OFSHA1HashTests.m in Sources */,
+				4B24593019B53BC80059F271 /* OFSHA224HashTests.m in Sources */,
+				4B24593119B53BC80059F271 /* OFSHA256HashTests.m in Sources */,
 				4BF33B09133807A20059CEF7 /* OFStreamTests.m in Sources */,
 				4BF33B0A133807A20059CEF7 /* OFStringTests.m in Sources */,
 				4BF33B0B133807A20059CEF7 /* OFTCPSocketTests.m in Sources */,

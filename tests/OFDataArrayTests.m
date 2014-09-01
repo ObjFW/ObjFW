@@ -105,6 +105,9 @@ const char *str = "Hello!";
 
 	TEST(@"-[SHA1Hash]", [[array[0] SHA1Hash] isEqual: [@"abcde" SHA1Hash]])
 
+	TEST(@"-[SHA224Hash]", [[array[0] SHA224Hash]
+	    isEqual: [@"abcde" SHA224Hash]])
+
 	TEST(@"-[SHA256Hash]", [[array[0] SHA256Hash]
 	    isEqual: [@"abcde" SHA256Hash]])
 

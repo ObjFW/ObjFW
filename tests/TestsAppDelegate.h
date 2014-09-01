@@ -144,6 +144,10 @@
 - (void)SHA1HashTests;
 @end
 
+@interface TestsAppDelegate (OFSHA224HashTests)
+- (void)SHA224HashTests;
+@end
+
 @interface TestsAppDelegate (OFSHA256HashTests)
 - (void)SHA256HashTests;
 @end
