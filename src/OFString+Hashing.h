@@ -33,9 +33,16 @@ extern int _OFString_Hashing_reference;
 - (OFString*)MD5Hash;
 
 /*!
- * @brief Returns the SHA1 hash of the string as an autoreleased OFString.
+ * @brief Returns the SHA-1 hash of the string as an autoreleased OFString.
  *
- * @return The SHA1 hash of the string as an autoreleased OFString
+ * @return The SHA-1 hash of the string as an autoreleased OFString
  */
 - (OFString*)SHA1Hash;
+
+/*!
+ * @brief Returns the SHA-256 hash of the string as an autoreleased OFString.
+ *
+ * @return The SHA-256 hash of the string as an autoreleased OFString
+ */
+- (OFString*)SHA256Hash;
 @end

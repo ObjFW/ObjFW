@@ -341,6 +341,7 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_FILES
 	[self MD5HashTests];
 	[self SHA1HashTests];
+	[self SHA256HashTests];
 	[self INIFileTests];
 #endif
 #ifdef OF_HAVE_SOCKETS

@@ -540,6 +540,11 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[SHA1Hash]", [[@"asdfoobar" SHA1Hash]
 	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"])
 
+	TEST(@"-[SHA256Hash]", [[@"asdfoobar" SHA256Hash]
+	    isEqual:
+	    @"28e65b1dcd7f6ce2ea6277b15f87b913628b5500bf7913a2bbf4cedcfa1215f6"
+	    ])
+
 	TEST(@"-[stringByURLEncoding]",
 	    [[@"foo\"ba'_~$" stringByURLEncoding] isEqual: @"foo%22ba%27_%7E$"])
 

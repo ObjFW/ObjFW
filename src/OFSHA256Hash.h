@@ -17,17 +17,17 @@
 #import "OFHash.h"
 
 /*!
- * @class OFSHA1Hash OFSHA1Hash.h ObjFW/OFSHA1Hash.h
+ * @class OFSHA256Hash OFSHA256Hash.h ObjFW/OFSHA256Hash.h
  *
- * @brief A class which provides functions to create an SHA-1 hash.
+ * @brief A class which provides functions to create an SHA-256 hash.
  */
-@interface OFSHA1Hash: OFObject <OFHash>
+@interface OFSHA256Hash: OFObject <OFHash>
 {
-	uint32_t _state[5];
+	uint32_t _state[8];
 	uint64_t _bits;
 	union {
 		uint8_t bytes[64];
-		uint32_t words[80];
+		uint32_t words[64];
 	} _buffer;
 	size_t _bufferLength;
 	bool _calculated;

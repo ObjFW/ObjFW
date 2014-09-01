@@ -74,6 +74,7 @@
 #import "OFHash.h"
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
+#import "OFSHA256Hash.h"
 
 #import "OFXMLAttribute.h"
 #import "OFXMLElement.h"

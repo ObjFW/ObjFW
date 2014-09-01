@@ -149,6 +149,8 @@
 		4B39844313D3A24600E6F825 /* OFSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39844113D3A24600E6F825 /* OFSet.m */; };
 		4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B39844513D3AFB400E6F825 /* OFMutableSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B39844813D3AFB400E6F825 /* OFMutableSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B39844613D3AFB400E6F825 /* OFMutableSet.m */; };
+		4B3B03EB19B3F70500F70C05 /* OFSHA256Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3B03E919B3F70500F70C05 /* OFSHA256Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3B03EC19B3F70500F70C05 /* OFSHA256Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3B03EA19B3F70500F70C05 /* OFSHA256Hash.m */; };
 		4B3B0798166978780044E634 /* OFMapTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3B0796166978780044E634 /* OFMapTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3B0799166978780044E634 /* OFMapTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3B0797166978780044E634 /* OFMapTable.m */; };
 		4B3D238B1337FC0D00DD29B8 /* OFApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B175C1E116D130B003C99CB /* OFApplication.m */; };
@@ -636,6 +638,8 @@
 		4B39844113D3A24600E6F825 /* OFSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSet.m; path = src/OFSet.m; sourceTree = "<group>"; };
 		4B39844513D3AFB400E6F825 /* OFMutableSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableSet.h; path = src/OFMutableSet.h; sourceTree = "<group>"; };
 		4B39844613D3AFB400E6F825 /* OFMutableSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableSet.m; path = src/OFMutableSet.m; sourceTree = "<group>"; };
+		4B3B03E919B3F70500F70C05 /* OFSHA256Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA256Hash.h; path = src/OFSHA256Hash.h; sourceTree = "<group>"; };
+		4B3B03EA19B3F70500F70C05 /* OFSHA256Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA256Hash.m; path = src/OFSHA256Hash.m; sourceTree = "<group>"; };
 		4B3B0796166978780044E634 /* OFMapTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMapTable.h; path = src/OFMapTable.h; sourceTree = "<group>"; };
 		4B3B0797166978780044E634 /* OFMapTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMapTable.m; path = src/OFMapTable.m; sourceTree = "<group>"; };
 		4B3D236D1337FB5800DD29B8 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
@@ -1335,6 +1339,8 @@
 				4B8385131951BF9500D5358A /* OFSettings_INIFile.m */,
 				4BF1BCC411C9663F0025511F /* OFSHA1Hash.h */,
 				4BF1BCC511C9663F0025511F /* OFSHA1Hash.m */,
+				4B3B03E919B3F70500F70C05 /* OFSHA256Hash.h */,
+				4B3B03EA19B3F70500F70C05 /* OFSHA256Hash.m */,
 				4B141BA215FCDF74000C21A8 /* OFSortedList.h */,
 				4B141BA315FCDF74000C21A8 /* OFSortedList.m */,
 				4B0256E2172B60400062B5F1 /* OFStdIOStream.h */,
@@ -1601,6 +1607,7 @@
 				4B39844213D3A24600E6F825 /* OFSet.h in Headers */,
 				4B8385181951BF9500D5358A /* OFSettings.h in Headers */,
 				4B3D23D41337FCB000DD29B8 /* OFSHA1Hash.h in Headers */,
+				4B3B03EB19B3F70500F70C05 /* OFSHA256Hash.h in Headers */,
 				4B141BA415FCDF74000C21A8 /* OFSortedList.h in Headers */,
 				4B0256E4172B60400062B5F1 /* OFStdIOStream.h in Headers */,
 				4B3D23D51337FCB000DD29B8 /* OFStream.h in Headers */,
@@ -1975,6 +1982,7 @@
 				4B8385191951BF9500D5358A /* OFSettings.m in Sources */,
 				4B8385171951BF9500D5358A /* OFSettings_INIFile.m in Sources */,
 				4B3D23A21337FC0D00DD29B8 /* OFSHA1Hash.m in Sources */,
+				4B3B03EC19B3F70500F70C05 /* OFSHA256Hash.m in Sources */,
 				4B141BA515FCDF74000C21A8 /* OFSortedList.m in Sources */,
 				4B0256E5172B60400062B5F1 /* OFStdIOStream.m in Sources */,
 				4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */,

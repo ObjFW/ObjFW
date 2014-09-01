@@ -144,6 +144,10 @@
 - (void)SHA1HashTests;
 @end
 
+@interface TestsAppDelegate (OFSHA256HashTests)
+- (void)SHA256HashTests;
+@end
+
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end

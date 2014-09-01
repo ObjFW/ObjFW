@@ -40,4 +40,12 @@ extern int _OFDataArray_Hashing_reference;
  * @return The SHA-1 hash of the data array as an autoreleased OFString
  */
 - (OFString*)SHA1Hash;
+
+/*!
+ * @brief Returns the SHA-256 hash of the data array as an autoreleased
+ *	  OFString.
+ *
+ * @return The SHA-256 hash of the data array as an autoreleased OFString
+ */
+- (OFString*)SHA256Hash;
 @end

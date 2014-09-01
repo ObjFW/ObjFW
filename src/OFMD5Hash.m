@@ -27,7 +27,7 @@
 #define H(a, b, c) ((a) ^ (b) ^ (c))
 #define I(a, b, c) ((b) ^ ((a) | ~(c)))
 
-static const uint32_t sinTable[] = {
+static const uint32_t table[] = {
 	0xD76AA478, 0xE8C7B756, 0x242070DB, 0xC1BDCEEE,
 	0xF57C0FAF, 0x4787C62A, 0xA8304613, 0xFD469501,
 	0x698098D8, 0x8B44F7AF, 0xFFFF5BB1, 0x895CD7BE,
@@ -92,7 +92,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 		const uint_fast8_t r = rotateBits[(i % 4) + (i / 16) * 4]; \
 									   \
 		new[a] += f(new[b], new[c], new[d]) +			   \
-		    buffer[wordOrder[i]] + sinTable[i];			   \
+		    buffer[wordOrder[i]] + table[i];			   \
 		new[a] = OF_ROL(new[a], r);				   \
 		new[a] += new[b];					   \
 	}

@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#import "OFSHA1Hash.h"
+#import "OFSHA256Hash.h"
 #import "OFString.h"
 #import "OFFile.h"
 #import "OFAutoreleasePool.h"
@@ -27,37 +27,37 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSHA1Hash";
+static OFString *module = @"OFSHA256Hash";
 
-const uint8_t testfile_sha1[20] =
-	"\xC9\x9A\xB8\x7E\x1E\xC8\xEC\x65\xD5\xEB\xE4\x2E\x0D\xA6\x80\x96\xF5"
-	"\x94\xE7\x17";
+const uint8_t testfile_sha256[32] =
+	"\x1A\x02\xD6\x46\xF5\xA6\xBA\xAA\xFF\x7F\xD5\x87\xBA\xC3\xF6\xC6\xB5"
+	"\x67\x93\x8F\x0F\x44\x90\xB8\xF5\x35\x89\xF0\x5A\x23\x7F\x69";
 
-@implementation TestsAppDelegate (SHA1HashTests)
-- (void)SHA1HashTests
+@implementation TestsAppDelegate (SHA256HashTests)
+- (void)SHA256HashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFSHA1Hash *sha1;
+	OFSHA256Hash *sha256;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
-	TEST(@"+[hash]", (sha1 = [OFSHA1Hash hash]))
+	TEST(@"+[hash]", (sha256 = [OFSHA256Hash hash]))
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];
 		size_t len = [f readIntoBuffer: buf
 					length: 64];
-		[sha1 updateWithBuffer: buf
-				length: len];
+		[sha256 updateWithBuffer: buf
+				  length: len];
 	}
 	[f close];
 
-	TEST(@"-[digest]", !memcmp([sha1 digest], testfile_sha1, 20))
+	TEST(@"-[digest]", !memcmp([sha256 digest], testfile_sha256, 32))
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,
-	    [sha1 updateWithBuffer: ""
-			    length: 1])
+	    [sha256 updateWithBuffer: ""
+			      length: 1])
 
 	[pool drain];
 }

@@ -21,6 +21,7 @@
 #import "OFHash.h"
 #import "OFMD5Hash.h"
 #import "OFSHA1Hash.h"
+#import "OFSHA256Hash.h"
 
 int _OFDataArray_Hashing_reference;
 
@@ -63,5 +64,10 @@ int _OFDataArray_Hashing_reference;
 - (OFString*)SHA1Hash
 {
 	return [self OF_hashAsStringWithHash: [OFSHA1Hash class]];
+}
+
+- (OFString*)SHA256Hash
+{
+	return [self OF_hashAsStringWithHash: [OFSHA256Hash class]];
 }
 @end
