@@ -14,12 +14,12 @@
  * file.
  */
 
-#import "OFSHA224OrSHA256Hash.h"
+#import "OFSHA224Or256Hash.h"
 
 /*!
  * @class OFSHA224Hash OFSHA224Hash.h ObjFW/OFSHA224Hash.h
  *
  * @brief A class which provides functions to create an SHA-224 hash.
  */
-@interface OFSHA224Hash: OFSHA224OrSHA256Hash
+@interface OFSHA224Hash: OFSHA224Or256Hash
 @end

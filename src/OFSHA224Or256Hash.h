@@ -17,12 +17,11 @@
 #import "OFHash.h"
 
 /*!
- * @class OFSHA224OrSHA256Hash OFSHA224OrSHA256Hash.h \
- *	  ObjFW/OFSHA224OrSHA256Hash.h
+ * @class OFSHA224Or256Hash OFSHA224Or256Hash.h ObjFW/OFSHA224Or256Hash.h
  *
  * @brief A base class for SHA-224 and SHA-256.
  */
-@interface OFSHA224OrSHA256Hash: OFObject <OFHash>
+@interface OFSHA224Or256Hash: OFObject <OFHash>
 {
 	uint32_t _state[8];
 	uint64_t _bits;

@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFSHA224OrSHA256Hash.h"
+#import "OFSHA224Or256Hash.h"
 
 #import "OFHashAlreadyCalculatedException.h"
 
@@ -108,7 +108,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	state[7] += new[7];
 }
 
-@implementation OFSHA224OrSHA256Hash
+@implementation OFSHA224Or256Hash
 + (size_t)digestSize
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -126,7 +126,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - init
 {
-	if (object_getClass(self) == [OFSHA224OrSHA256Hash class]) {
+	if (object_getClass(self) == [OFSHA224Or256Hash class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {
