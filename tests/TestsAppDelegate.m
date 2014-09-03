@@ -340,6 +340,7 @@ main(int argc, char *argv[])
 	[self streamTests];
 #ifdef OF_HAVE_FILES
 	[self MD5HashTests];
+	[self RIPEMD160HashTests];
 	[self SHA1HashTests];
 	[self SHA224HashTests];
 	[self SHA256HashTests];

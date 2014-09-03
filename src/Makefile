@@ -40,6 +40,7 @@ SRCS = OFApplication.m			\
        OFObject+Serialization.m		\
        OFOptionsParser.m		\
        ${OFPROCESS_M}			\
+       OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSeekableStream.m		\
        OFSet.m				\

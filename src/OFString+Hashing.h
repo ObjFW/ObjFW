@@ -33,6 +33,13 @@ extern int _OFString_Hashing_reference;
 - (OFString*)MD5Hash;
 
 /*!
+ * @brief Returns the RIPEMD-160 hash of the string as an autoreleased OFString.
+ *
+ * @return The RIPEMD-160 hash of the string as an autoreleased OFString
+ */
+- (OFString*)RIPEMD160Hash;
+
+/*!
  * @brief Returns the SHA-1 hash of the string as an autoreleased OFString.
  *
  * @return The SHA-1 hash of the string as an autoreleased OFString

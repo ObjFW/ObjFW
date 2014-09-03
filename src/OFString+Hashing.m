@@ -19,6 +19,7 @@
 #import "OFString.h"
 #import "OFHash.h"
 #import "OFMD5Hash.h"
+#import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"
 #import "OFSHA224Hash.h"
 #import "OFSHA256Hash.h"
@@ -61,6 +62,11 @@ int _OFString_Hashing_reference;
 - (OFString*)MD5Hash
 {
 	return [self OF_hashAsStringWithHash: [OFMD5Hash class]];
+}
+
+- (OFString*)RIPEMD160Hash
+{
+	return [self OF_hashAsStringWithHash: [OFRIPEMD160Hash class]];
 }
 
 - (OFString*)SHA1Hash

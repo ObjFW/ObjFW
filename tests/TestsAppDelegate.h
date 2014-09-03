@@ -132,6 +132,10 @@
 - (void)propertiesTests;
 @end
 
+@interface TestsAppDelegate (OFRIPEMD160HashTests)
+- (void)RIPEMD160HashTests;
+@end
+
 @interface TestsAppDelegate (SerializationTests)
 - (void)serializationTests;
 @end

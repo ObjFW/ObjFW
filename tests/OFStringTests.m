@@ -537,6 +537,9 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[MD5Hash]", [[@"asdfoobar" MD5Hash]
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
 
+	TEST(@"-[RIPEMD160Hash]", [[@"asdfoobar" RIPEMD160Hash]
+	    isEqual: @"021d773b0fac06eb6755ca6aa58a580c980f7f13"])
+
 	TEST(@"-[SHA1Hash]", [[@"asdfoobar" SHA1Hash]
 	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"])
 

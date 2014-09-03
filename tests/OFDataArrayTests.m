@@ -103,6 +103,9 @@ const char *str = "Hello!";
 
 	TEST(@"-[MD5Hash]", [[array[0] MD5Hash] isEqual: [@"abcde" MD5Hash]])
 
+	TEST(@"-[RIPEMD160Hash]", [[array[0] RIPEMD160Hash]
+	    isEqual: [@"abcde" RIPEMD160Hash]])
+
 	TEST(@"-[SHA1Hash]", [[array[0] SHA1Hash] isEqual: [@"abcde" SHA1Hash]])
 
 	TEST(@"-[SHA224Hash]", [[array[0] SHA224Hash]

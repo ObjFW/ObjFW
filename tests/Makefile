@@ -34,6 +34,7 @@ SRCS = ForwardingTests.m		\
        ${OFHTTPCLIENTTESTS_M}
 SRCS_FILES = OFINIFileTests.m		\
 	     OFMD5HashTests.m		\
+	     OFRIPEMD160HashTests.m	\
 	     OFSerializationTests.m	\
 	     OFSHA1HashTests.m		\
 	     OFSHA224HashTests.m	\
