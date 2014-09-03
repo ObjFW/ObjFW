@@ -83,18 +83,16 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 	byteSwapVectorIfBE(buffer, 16);
 
-#define LOOP_BODY(f)							   \
-	{								   \
-		const uint_fast8_t a = (4 - (i & 3)) & 3;		   \
-		const uint_fast8_t b = (a + 1) & 3;			   \
-		const uint_fast8_t c = (a + 2) & 3;			   \
-		const uint_fast8_t d = (a + 3) & 3;			   \
-		const uint_fast8_t r = rotateBits[(i % 4) + (i / 16) * 4]; \
-									   \
-		new[a] += f(new[b], new[c], new[d]) +			   \
-		    buffer[wordOrder[i]] + table[i];			   \
-		new[a] = OF_ROL(new[a], r);				   \
-		new[a] += new[b];					   \
+#define LOOP_BODY(f)							      \
+	{								      \
+		uint32_t tmp = new[3];					      \
+		tmp = new[3];						      \
+		new[0] += f(new[1], new[2], new[3]) +			      \
+		    buffer[wordOrder[i]] + table[i];			      \
+		new[3] = new[2];					      \
+		new[2] = new[1];					      \
+		new[1] += OF_ROL(new[0], rotateBits[(i % 4) + (i / 16) * 4]); \
+		new[0] = tmp;\
 	}
 
 	for (; i < 16; i++)
