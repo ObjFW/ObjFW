@@ -111,6 +111,12 @@ const char *str = "Hello!";
 	TEST(@"-[SHA256Hash]", [[array[0] SHA256Hash]
 	    isEqual: [@"abcde" SHA256Hash]])
 
+	TEST(@"-[SHA384Hash]", [[array[0] SHA384Hash]
+	    isEqual: [@"abcde" SHA384Hash]])
+
+	TEST(@"-[SHA512Hash]", [[array[0] SHA512Hash]
+	    isEqual: [@"abcde" SHA512Hash]])
+
 	TEST(@"-[stringByBase64Encoding]",
 	    [[array[0] stringByBase64Encoding] isEqual: @"YWJjZGU="])
 

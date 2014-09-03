@@ -544,10 +544,17 @@ static uint16_t sutf16str[] = {
 	    isEqual:
 	    @"5a06822dcbd5a874f67d062b80b9d8a9cb9b5b303960b9da9290c192"])
 
-	TEST(@"-[SHA256Hash]", [[@"asdfoobar" SHA256Hash]
-	    isEqual:
-	    @"28e65b1dcd7f6ce2ea6277b15f87b913628b5500bf7913a2bbf4cedcfa1215f6"
-	    ])
+	TEST(@"-[SHA256Hash]", [[@"asdfoobar" SHA256Hash] isEqual:
+	    @"28e65b1dcd7f6ce2ea6277b15f87b913"
+	    @"628b5500bf7913a2bbf4cedcfa1215f6"])
+
+	TEST(@"-[SHA384Hash]", [[@"asdfoobar" SHA384Hash] isEqual:
+	    @"73286da882ffddca2f45e005cfa6b44f3fc65bfb26db1d08"
+	    @"7ded2f9c279e5addf8be854044bca0cece073fce28eec7d9"])
+
+	TEST(@"-[SHA512Hash]", [[@"asdfoobar" SHA512Hash] isEqual:
+	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
+	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
 
 	TEST(@"-[stringByURLEncoding]",
 	    [[@"foo\"ba'_~$" stringByURLEncoding] isEqual: @"foo%22ba%27_%7E$"])

@@ -343,6 +343,8 @@ main(int argc, char *argv[])
 	[self SHA1HashTests];
 	[self SHA224HashTests];
 	[self SHA256HashTests];
+	[self SHA384HashTests];
+	[self SHA512HashTests];
 	[self INIFileTests];
 #endif
 #ifdef OF_HAVE_SOCKETS

@@ -288,6 +288,14 @@
 		4B5C112F17E9AB3E003C917F /* forwarding.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C112C17E9AAED003C917F /* forwarding.S */; };
 		4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
+		4B60259F19B76A5C00694BCC /* OFSHA384Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259919B76A5C00694BCC /* OFSHA384Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6025A019B76A5C00694BCC /* OFSHA384Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */; };
+		4B6025A119B76A5C00694BCC /* OFSHA384Or512Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6025A219B76A5C00694BCC /* OFSHA384Or512Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B60259C19B76A5C00694BCC /* OFSHA384Or512Hash.m */; };
+		4B6025A319B76A5C00694BCC /* OFSHA512Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259D19B76A5C00694BCC /* OFSHA512Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6025A419B76A5C00694BCC /* OFSHA512Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B60259E19B76A5C00694BCC /* OFSHA512Hash.m */; };
+		4B6025A719B76B5000694BCC /* OFSHA384HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6025A519B76B5000694BCC /* OFSHA384HashTests.m */; };
+		4B6025A819B76B5000694BCC /* OFSHA512HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */; };
 		4B62ED1518566FCA0004E0E3 /* OFCopyItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B62ED1618566FCA0004E0E3 /* OFCopyItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */; };
 		4B66B636182ADC45000A69E3 /* OFDeflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -707,6 +715,14 @@
 		4B5C112E17E9AB0C003C917F /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/forwarding/Makefile; sourceTree = "<group>"; };
 		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
+		4B60259919B76A5C00694BCC /* OFSHA384Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Hash.h; path = src/OFSHA384Hash.h; sourceTree = "<group>"; };
+		4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384Hash.m; path = src/OFSHA384Hash.m; sourceTree = "<group>"; };
+		4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Or512Hash.h; path = src/OFSHA384Or512Hash.h; sourceTree = "<group>"; };
+		4B60259C19B76A5C00694BCC /* OFSHA384Or512Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384Or512Hash.m; path = src/OFSHA384Or512Hash.m; sourceTree = "<group>"; };
+		4B60259D19B76A5C00694BCC /* OFSHA512Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA512Hash.h; path = src/OFSHA512Hash.h; sourceTree = "<group>"; };
+		4B60259E19B76A5C00694BCC /* OFSHA512Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA512Hash.m; path = src/OFSHA512Hash.m; sourceTree = "<group>"; };
+		4B6025A519B76B5000694BCC /* OFSHA384HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384HashTests.m; path = tests/OFSHA384HashTests.m; sourceTree = "<group>"; };
+		4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA512HashTests.m; path = tests/OFSHA512HashTests.m; sourceTree = "<group>"; };
 		4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyItemFailedException.h; path = src/exceptions/OFCopyItemFailedException.h; sourceTree = "<group>"; };
 		4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCopyItemFailedException.m; path = src/exceptions/OFCopyItemFailedException.m; sourceTree = "<group>"; };
 		4B66B634182ADC45000A69E3 /* OFDeflate64Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDeflate64Stream.h; path = src/OFDeflate64Stream.h; sourceTree = "<group>"; };
@@ -1357,6 +1373,12 @@
 				4B24592919B5397C0059F271 /* OFSHA224Or256Hash.m */,
 				4B3B03E919B3F70500F70C05 /* OFSHA256Hash.h */,
 				4B3B03EA19B3F70500F70C05 /* OFSHA256Hash.m */,
+				4B60259919B76A5C00694BCC /* OFSHA384Hash.h */,
+				4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */,
+				4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */,
+				4B60259C19B76A5C00694BCC /* OFSHA384Or512Hash.m */,
+				4B60259D19B76A5C00694BCC /* OFSHA512Hash.h */,
+				4B60259E19B76A5C00694BCC /* OFSHA512Hash.m */,
 				4B141BA215FCDF74000C21A8 /* OFSortedList.h */,
 				4B141BA315FCDF74000C21A8 /* OFSortedList.m */,
 				4B0256E2172B60400062B5F1 /* OFStdIOStream.h */,
@@ -1483,6 +1505,8 @@
 				4B6EF6771235358D0076B512 /* OFSHA1HashTests.m */,
 				4B24592E19B53BC80059F271 /* OFSHA224HashTests.m */,
 				4B24592F19B53BC80059F271 /* OFSHA256HashTests.m */,
+				4B6025A519B76B5000694BCC /* OFSHA384HashTests.m */,
+				4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */,
 				4B6EF6781235358D0076B512 /* OFStreamTests.m */,
 				4B6EF6791235358D0076B512 /* OFStringTests.m */,
 				4B6EF67A1235358D0076B512 /* OFTCPSocketTests.m */,
@@ -1628,6 +1652,9 @@
 				4B24592A19B5397C0059F271 /* OFSHA224Hash.h in Headers */,
 				4B24592C19B5397C0059F271 /* OFSHA224Or256Hash.h in Headers */,
 				4B3B03EB19B3F70500F70C05 /* OFSHA256Hash.h in Headers */,
+				4B60259F19B76A5C00694BCC /* OFSHA384Hash.h in Headers */,
+				4B6025A119B76A5C00694BCC /* OFSHA384Or512Hash.h in Headers */,
+				4B6025A319B76A5C00694BCC /* OFSHA512Hash.h in Headers */,
 				4B141BA415FCDF74000C21A8 /* OFSortedList.h in Headers */,
 				4B0256E4172B60400062B5F1 /* OFStdIOStream.h in Headers */,
 				4B3D23D51337FCB000DD29B8 /* OFStream.h in Headers */,
@@ -2005,6 +2032,9 @@
 				4B24592B19B5397C0059F271 /* OFSHA224Hash.m in Sources */,
 				4B24592D19B5397C0059F271 /* OFSHA224Or256Hash.m in Sources */,
 				4B3B03EC19B3F70500F70C05 /* OFSHA256Hash.m in Sources */,
+				4B6025A019B76A5C00694BCC /* OFSHA384Hash.m in Sources */,
+				4B6025A219B76A5C00694BCC /* OFSHA384Or512Hash.m in Sources */,
+				4B6025A419B76A5C00694BCC /* OFSHA512Hash.m in Sources */,
 				4B141BA515FCDF74000C21A8 /* OFSortedList.m in Sources */,
 				4B0256E5172B60400062B5F1 /* OFStdIOStream.m in Sources */,
 				4B3D23A31337FC0D00DD29B8 /* OFStream.m in Sources */,
@@ -2125,8 +2155,10 @@
 				4BF33B05133807A20059CEF7 /* OFNumberTests.m in Sources */,
 				4BF33B06133807A20059CEF7 /* OFObjectTests.m in Sources */,
 				4BF33B07133807A20059CEF7 /* OFPluginTests.m in Sources */,
+				4B6025A819B76B5000694BCC /* OFSHA512HashTests.m in Sources */,
 				4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */,
 				4B4B6904191437D500334775 /* OFSetTests.m in Sources */,
+				4B6025A719B76B5000694BCC /* OFSHA384HashTests.m in Sources */,
 				4BF33B08133807A20059CEF7 /* OFSHA1HashTests.m in Sources */,
 				4B24593019B53BC80059F271 /* OFSHA224HashTests.m in Sources */,
 				4B24593119B53BC80059F271 /* OFSHA256HashTests.m in Sources */,

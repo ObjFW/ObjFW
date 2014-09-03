@@ -152,6 +152,14 @@
 - (void)SHA256HashTests;
 @end
 
+@interface TestsAppDelegate (OFSHA384HashTests)
+- (void)SHA384HashTests;
+@end
+
+@interface TestsAppDelegate (OFSHA512HashTests)
+- (void)SHA512HashTests;
+@end
+
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end

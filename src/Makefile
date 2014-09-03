@@ -47,6 +47,9 @@ SRCS = OFApplication.m			\
        OFSHA224Hash.m			\
        OFSHA224Or256Hash.m		\
        OFSHA256Hash.m			\
+       OFSHA384Hash.m			\
+       OFSHA384Or512Hash.m		\
+       OFSHA512Hash.m			\
        OFSortedList.m			\
        OFStdIOStream.m			\
        OFStream.m			\
