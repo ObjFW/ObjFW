@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFINIFile.h"
 #import "OFArray.h"
 #import "OFString.h"

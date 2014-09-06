@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #include <string.h>
 
 #import "OFApplication.h"

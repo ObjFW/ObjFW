@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFSHA512Hash.h"
 
 @implementation OFSHA512Hash

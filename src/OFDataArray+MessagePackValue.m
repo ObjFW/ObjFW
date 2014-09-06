@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFDataArray+MessagePackValue.h"
 #import "OFNumber.h"
 #import "OFNull.h"

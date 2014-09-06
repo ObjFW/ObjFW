@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFINICategory.h"
 #import "OFINICategory+Private.h"
 #import "OFArray.h"

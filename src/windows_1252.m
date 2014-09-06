@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFString.h"
 
 const of_char16_t of_windows_1252[128] = {
