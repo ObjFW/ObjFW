@@ -167,6 +167,7 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_LIB_A, "lookup-asm/lookup-asm.lib.a")
 ], [
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
+	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
 ])
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
 AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
@@ -692,7 +693,7 @@ AC_ARG_ENABLE(files,
 AS_IF([test x"$enable_files" != x"no"], [
 	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
-	AC_SUBST(OFZIP, "ofzip$ac_cv_exeext")
+	AC_SUBST(OFZIP, "ofzip")
 
 	AC_CHECK_FUNCS(readdir_r)
 ])
