@@ -40,5 +40,7 @@ tests/EBOOT.PBP
 tests/PARAM.SFO
 tests/objc_sync/objc_sync
 utils/objfw-config
+utils/ofhash/ofhash
+utils/ofhash/ofhash.exe
 utils/ofzip/ofzip
 utils/ofzip/ofzip.exe
