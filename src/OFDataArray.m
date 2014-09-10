@@ -259,25 +259,24 @@ void _references_to_categories_of_OFDataArray(void)
 
 - initWithStringRepresentation: (OFString*)string
 {
-	self = [super init];
-
 	@try {
 		const char *cString;
-		size_t i;
+		size_t i, count;
 
-		_itemSize = 1;
-		_count = [string
+		count = [string
 		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII];
 
-		if (_count % 2 != 0)
+		if (count % 2 != 0)
 			@throw [OFInvalidFormatException exception];
 
-		_count /= 2;
+		count /= 2;
+
+		self = [self initWithCapacity: count];
+
 		cString = [string
 		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];
-		_items = [self allocMemoryWithSize: _count];
 
-		for (i = 0; i < _count; i++) {
+		for (i = 0; i < count; i++) {
 			uint8_t c1 = cString[2 * i];
 			uint8_t c2 = cString[2 * i + 1];
 			uint8_t byte;
@@ -300,7 +299,7 @@ void _references_to_categories_of_OFDataArray(void)
 			else
 				@throw [OFInvalidFormatException exception];
 
-			_items[i] = byte;
+			[self addItem: &byte];
 		}
 	} @catch (id e) {
 		[self release];
