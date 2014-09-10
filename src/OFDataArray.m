@@ -190,11 +190,6 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	void *pool;
 	OFString *scheme;
-#ifdef OF_HAVE_FILES
-	Class c = [self class];
-#endif
-
-	[self release];
 
 	pool = objc_autoreleasePoolPush();
 
@@ -202,7 +197,7 @@ void _references_to_categories_of_OFDataArray(void)
 
 #ifdef OF_HAVE_FILES
 	if ([scheme isEqual: @"file"])
-		self = [[c alloc] initWithContentsOfFile: [URL path]];
+		self = [self initWithContentsOfFile: [URL path]];
 	else
 #endif
 #ifdef OF_HAVE_SOCKETS
@@ -210,6 +205,8 @@ void _references_to_categories_of_OFDataArray(void)
 		OFHTTPClient *client = [OFHTTPClient client];
 		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
 		OFHTTPResponse *response = [client performRequest: request];
+		size_t pageSize;
+		char *buffer;
 		OFDictionary *headers;
 		OFString *contentLength;
 
@@ -218,11 +215,23 @@ void _references_to_categories_of_OFDataArray(void)
 			    exceptionWithRequest: request
 					response: response];
 
-		/*
-		 * TODO: This can be optimized by allocating a data array with
-		 * the capacity from the Content-Length header.
-		 */
-		self = [[response readDataArrayTillEndOfStream] retain];
+		self = [self init];
+
+		pageSize = [OFSystemInfo pageSize];
+		buffer = [self allocMemoryWithSize: pageSize];
+
+		@try {
+			while (![response isAtEndOfStream]) {
+				size_t length;
+
+				length = [response readIntoBuffer: buffer
+							   length: pageSize];
+				[self addItems: buffer
+					 count: length];
+			}
+		} @finally {
+			[self freeMemory: buffer];
+		}
 
 		headers = [response headers];
 		if ((contentLength =
