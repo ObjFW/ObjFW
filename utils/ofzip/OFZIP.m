@@ -32,6 +32,8 @@
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOpenFileFailedException.h"
+#import "OFReadFailedException.h"
+#import "OFWriteFailedException.h"
 
 #import "autorelease.h"
 #import "macros.h"
@@ -214,6 +216,10 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		[of_stderr writeFormat: @"Failed to open file %@: %s\n",
 					[e path], strerror([e errNo])];
 		[OFApplication terminateWithStatus: 1];
+	} @catch (OFReadFailedException *e) {
+		[of_stderr writeFormat: @"Failed to read file %@: %s\n",
+					path, strerror([e errNo])];
+		[OFApplication terminateWithStatus: 1];
 	} @catch (OFInvalidFormatException *e) {
 		[of_stderr writeFormat: @"File %@ is not a valid archive!\n",
 					path];
@@ -389,10 +395,31 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		setPermissions(outFileName, entry);
 
 		while (![stream isAtEndOfStream]) {
-			size_t length = [stream readIntoBuffer: buffer
-							length: BUFFER_SIZE];
-			[output writeBuffer: buffer
-				     length: length];
+			size_t length;
+
+			@try {
+				length = [stream readIntoBuffer: buffer
+							 length: BUFFER_SIZE];
+			} @catch (OFReadFailedException *e) {
+				[of_stderr writeFormat:
+				    @"\rFailed to read file %@: %s\n",
+				    fileName, strerror([e errNo])];
+
+				_exitStatus = 1;
+				goto outer_loop_end;
+			}
+
+			@try {
+				[output writeBuffer: buffer
+					     length: length];
+			} @catch (OFWriteFailedException *e) {
+				[of_stderr writeFormat:
+				    @"\rFailed to write file %@: %s\n",
+				    fileName, strerror([e errNo])];
+
+				_exitStatus = 1;
+				goto outer_loop_end;
+			}
 
 			written += length;
 			newPercent = (written == size
@@ -411,6 +438,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			[of_stdout writeFormat: @"\rExtracting %@... done\n",
 						fileName];
 
+outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
