@@ -202,43 +202,52 @@ void _references_to_categories_of_OFDataArray(void)
 #endif
 #ifdef OF_HAVE_SOCKETS
 	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
-		OFHTTPClient *client = [OFHTTPClient client];
-		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
-		OFHTTPResponse *response = [client performRequest: request];
-		size_t pageSize;
-		char *buffer;
-		OFDictionary *headers;
-		OFString *contentLength;
-
-		if ([response statusCode] != 200)
-			@throw [OFHTTPRequestFailedException
-			    exceptionWithRequest: request
-					response: response];
-
 		self = [self init];
 
-		pageSize = [OFSystemInfo pageSize];
-		buffer = [self allocMemoryWithSize: pageSize];
-
 		@try {
-			while (![response isAtEndOfStream]) {
-				size_t length;
+			OFHTTPClient *client = [OFHTTPClient client];
+			OFHTTPRequest *request = [OFHTTPRequest
+			    requestWithURL: URL];
+			OFHTTPResponse *response = [client
+			    performRequest: request];
+			size_t pageSize;
+			char *buffer;
+			OFDictionary *headers;
+			OFString *contentLength;
 
-				length = [response readIntoBuffer: buffer
-							   length: pageSize];
-				[self addItems: buffer
-					 count: length];
+			if ([response statusCode] != 200)
+				@throw [OFHTTPRequestFailedException
+				    exceptionWithRequest: request
+						response: response];
+
+			pageSize = [OFSystemInfo pageSize];
+			buffer = [self allocMemoryWithSize: pageSize];
+
+			@try {
+				while (![response isAtEndOfStream]) {
+					size_t length;
+
+					length = [response
+					    readIntoBuffer: buffer
+						    length: pageSize];
+					[self addItems: buffer
+						 count: length];
+				}
+			} @finally {
+				[self freeMemory: buffer];
 			}
-		} @finally {
-			[self freeMemory: buffer];
-		}
 
-		headers = [response headers];
-		if ((contentLength =
-		    [headers objectForKey: @"Content-Length"]) != nil)
-			if ([self count] !=
-			    (size_t)[contentLength decimalValue])
-				@throw [OFTruncatedDataException exception];
+			headers = [response headers];
+			if ((contentLength =
+			    [headers objectForKey: @"Content-Length"]) != nil)
+				if ([self count] !=
+				    (size_t)[contentLength decimalValue])
+					@throw [OFTruncatedDataException
+					    exception];
+		} @catch (id e) {
+			[self release];
+			@throw e;
+		}
 	} else
 #endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
