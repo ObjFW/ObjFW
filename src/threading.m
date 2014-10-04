@@ -33,7 +33,7 @@
 bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
 	pthread_mutexattr_t attr;
 
 	if (pthread_mutexattr_init(&attr) != 0)
@@ -63,7 +63,7 @@ of_rmutex_new(of_rmutex_t *rmutex)
 bool
 of_rmutex_lock(of_rmutex_t *rmutex)
 {
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
 	return of_mutex_lock(rmutex);
 #else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
@@ -90,7 +90,7 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 bool
 of_rmutex_trylock(of_rmutex_t *rmutex)
 {
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
 	return of_mutex_trylock(rmutex);
 #else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
@@ -117,7 +117,7 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 bool
 of_rmutex_unlock(of_rmutex_t *rmutex)
 {
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
 	return of_mutex_unlock(rmutex);
 #else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
@@ -142,7 +142,7 @@ of_rmutex_unlock(of_rmutex_t *rmutex)
 bool
 of_rmutex_free(of_rmutex_t *rmutex)
 {
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
 	return of_mutex_free(rmutex);
 #else
 	if (!of_mutex_free(&rmutex->mutex))

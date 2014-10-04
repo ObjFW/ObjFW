@@ -71,7 +71,7 @@ typedef of_mutex_t of_spinlock_t;
 # include <sched.h>
 #endif
 
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
 # define of_rmutex_t of_mutex_t
 #else
 typedef struct {
