@@ -26,6 +26,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFSystemInfo.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFThread.h"
@@ -234,7 +235,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 				OFString *key, *value;
 				char *sep;
 				const of_string_encoding_t encoding =
-				    [OFString nativeOSEncoding];
+				    [OFSystemInfo native8BitEncoding];
 
 				pool = objc_autoreleasePoolPush();
 
@@ -336,7 +337,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	_argc = argc;
 	_argv = argv;
 
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 # ifndef OF_NINTENDO_DS
 	if (*argc > 0) {

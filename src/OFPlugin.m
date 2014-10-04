@@ -25,6 +25,7 @@
 
 #import "OFPlugin.h"
 #import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 
@@ -47,7 +48,7 @@ typedef OFPlugin* (*init_plugin_t)(void);
 
 #ifndef _WIN32
 	if ((handle = dlopen([path cStringWithEncoding:
-	    [OFString nativeOSEncoding]], RTLD_LAZY)) == NULL)
+	    [OFSystemInfo native8BitEncoding]], RTLD_LAZY)) == NULL)
 #else
 	if ((handle = LoadLibraryW([path UTF16String])) == NULL)
 #endif

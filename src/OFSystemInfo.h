@@ -15,8 +15,7 @@
  */
 
 #import "OFObject.h"
-
-@class OFString;
+#import "OFString.h"
 
 /*!
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
@@ -39,6 +38,16 @@
  * @return The number of CPUs installed in the system
  */
 + (size_t)numberOfCPUs;
+
+/*!
+ * @brief Returns the native 8-bit string encoding of the operating system.
+ *
+ * This is useful to encode strings correctly for passing them to operating
+ * system calls.
+ *
+ * @return The native 8-bit string encoding of the operating system
+ */
++ (of_string_encoding_t)native8BitEncoding;
 
 /*!
  * @brief Returns the path where user data for the application can be stored.

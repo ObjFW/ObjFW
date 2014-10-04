@@ -92,6 +92,12 @@ static size_t numberOfCPUs;
 	return numberOfCPUs;
 }
 
++ (of_string_encoding_t)native8BitEncoding
+{
+	/* FIXME */
+	return OF_STRING_ENCODING_UTF_8;
+}
+
 + (OFString*)userDataPath
 {
 #if defined(__APPLE__)

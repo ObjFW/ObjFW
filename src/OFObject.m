@@ -26,6 +26,7 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
+#import "OFSystemInfo.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 #import "OFThread.h"
@@ -99,9 +100,10 @@ uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
 	OFArray *backtrace = nil;
+	of_string_encoding_t encoding = [OFSystemInfo native8BitEncoding];
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
-	    [description cStringWithEncoding: [OFString nativeOSEncoding]]);
+	    [description cStringWithEncoding: encoding]);
 
 	if ([exception respondsToSelector: @selector(backtrace)])
 		backtrace = [exception backtrace];
@@ -109,7 +111,7 @@ uncaughtExceptionHandler(id exception)
 	if (backtrace != nil) {
 		OFString *s = [backtrace componentsJoinedByString: @"\n  "];
 		fprintf(stderr, "\nBacktrace:\n  %s\n\n",
-		    [s cStringWithEncoding: [OFString nativeOSEncoding]]);
+		    [s cStringWithEncoding: encoding]);
 	}
 
 	abort();
@@ -202,7 +204,7 @@ const char*
 _NSPrintForDebugger(id object)
 {
 	return [[object description]
-	    cStringWithEncoding: [OFString nativeOSEncoding]];
+	    cStringWithEncoding: [OFSystemInfo native8BitEncoding]];
 }
 
 /* References for static linking */

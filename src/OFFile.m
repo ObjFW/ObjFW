@@ -126,8 +126,8 @@ of_stat(OFString *path, of_stat_t *buffer)
 #ifdef _WIN32
 	return _wstat([path UTF16String], buffer);
 #else
-	return stat([path cStringWithEncoding: [OFString nativeOSEncoding]],
-	    buffer);
+	return stat([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], buffer);
 #endif
 }
 
@@ -137,11 +137,11 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #if defined(_WIN32)
 	return _wstat([path UTF16String], buffer);
 #elif defined(HAVE_LSTAT)
-	return lstat([path cStringWithEncoding: [OFString nativeOSEncoding]],
-	    buffer);
+	return lstat([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], buffer);
 #else
-	return stat([path cStringWithEncoding: [OFString nativeOSEncoding]],
-	    buffer);
+	return stat([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], buffer);
 #endif
 }
 
@@ -237,8 +237,9 @@ parseMode(const char *mode)
 
 	@try {
 #ifndef _WIN32
-		ret = [OFString stringWithCString: buffer
-					 encoding: [OFString nativeOSEncoding]];
+		ret = [OFString
+		    stringWithCString: buffer
+			     encoding: [OFSystemInfo native8BitEncoding]];
 #else
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
@@ -305,10 +306,10 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32
-	if (mkdir([path cStringWithEncoding: [OFString nativeOSEncoding]],
-	    DIR_MODE))
+	if (mkdir([path cStringWithEncoding: [OFSystemInfo native8BitEncoding]],
+	    DIR_MODE) != 0)
 #else
-	if (_wmkdir([path UTF16String]))
+	if (_wmkdir([path UTF16String]) != 0)
 #endif
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithPath: path];
@@ -372,7 +373,7 @@ parseMode(const char *mode)
 #ifndef _WIN32
 	DIR *dir;
 
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
@@ -467,9 +468,10 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32
-	if (chdir([path cStringWithEncoding: [OFString nativeOSEncoding]]))
+	if (chdir([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]]) != 0)
 #else
-	if (_wchdir([path UTF16String]))
+	if (_wchdir([path UTF16String]) != 0)
 #endif
 		@throw [OFChangeCurrentDirectoryPathFailedException
 		    exceptionWithPath: path];
@@ -515,10 +517,10 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 # ifndef _WIN32
-	if (chmod([path cStringWithEncoding: [OFString nativeOSEncoding]],
-	    permissions))
+	if (chmod([path cStringWithEncoding: [OFSystemInfo native8BitEncoding]],
+	    permissions) != 0)
 # else
-	if (_wchmod([path UTF16String], permissions))
+	if (_wchmod([path UTF16String], permissions) != 0)
 # endif
 		@throw [OFChangePermissionsFailedException
 		    exceptionWithPath: path
@@ -538,7 +540,7 @@ parseMode(const char *mode)
 	if (path == nil || (owner == nil && group == nil))
 		@throw [OFInvalidArgumentException exception];
 
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
@@ -578,7 +580,7 @@ parseMode(const char *mode)
 	}
 # endif
 
-	if (chown([path cStringWithEncoding: encoding], uid, gid))
+	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
 		@throw [OFChangeOwnerFailedException exceptionWithPath: path
 								 owner: owner
 								 group: group];
@@ -603,7 +605,7 @@ parseMode(const char *mode)
 			    destinationPath: destination];
 	}
 
-	if (of_lstat(source, &s))
+	if (of_lstat(source, &s) != 0)
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination];
@@ -724,12 +726,12 @@ parseMode(const char *mode)
 	}
 
 #ifndef _WIN32
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 	if (rename([source cStringWithEncoding: encoding],
-	    [destination cStringWithEncoding: encoding])) {
+	    [destination cStringWithEncoding: encoding]) != 0) {
 #else
-	if (_wrename([source UTF16String], [destination UTF16String])) {
+	if (_wrename([source UTF16String], [destination UTF16String]) != 0) {
 #endif
 		if (errno != EXDEV)
 			@throw [OFMoveItemFailedException
@@ -768,7 +770,7 @@ parseMode(const char *mode)
 
 	pool = objc_autoreleasePoolPush();
 
-	if (of_lstat(path, &s))
+	if (of_lstat(path, &s) != 0)
 		@throw [OFRemoveItemFailedException exceptionWithPath: path];
 
 	if (S_ISDIR(s.st_mode)) {
@@ -795,9 +797,10 @@ parseMode(const char *mode)
 	}
 
 #ifndef _WIN32
-	if (remove([path cStringWithEncoding: [OFString nativeOSEncoding]]))
+	if (remove([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]]) != 0)
 #else
-	if (_wremove([path UTF16String]))
+	if (_wremove([path UTF16String]) != 0)
 #endif
 		@throw [OFRemoveItemFailedException exceptionWithPath: path];
 
@@ -815,7 +818,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 	if (link([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0)
@@ -838,7 +841,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 	if (symlink([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0)
@@ -858,7 +861,7 @@ parseMode(const char *mode)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 	length = readlink([path cStringWithEncoding: encoding],
 	    destination, PATH_MAX);
 
@@ -889,8 +892,8 @@ parseMode(const char *mode)
 			@throw [OFInvalidArgumentException exception];
 
 #ifndef _WIN32
-		if ((_fd = open([path cStringWithEncoding:
-		    [OFString nativeOSEncoding]], flags, DEFAULT_MODE)) == -1)
+		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo
+		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
 #else
 		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)

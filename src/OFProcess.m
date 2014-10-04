@@ -38,6 +38,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
+#import "OFSystemInfo.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -148,7 +149,7 @@ extern char **environ;
 			argv = [self allocMemoryWithSize: sizeof(char*)
 						   count: count + 2];
 
-			encoding = [OFString nativeOSEncoding];
+			encoding = [OFSystemInfo native8BitEncoding];
 
 			argv[0] = (char*)[programName
 			    cStringWithEncoding: encoding];
@@ -313,7 +314,7 @@ extern char **environ;
 	if (environment == nil)
 		return NULL;
 
-	encoding = [OFString nativeOSEncoding];
+	encoding = [OFSystemInfo native8BitEncoding];
 
 	count = [environment count];
 	envp = [self allocMemoryWithSize: sizeof(char*)

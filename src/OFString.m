@@ -28,6 +28,8 @@
 #import "OFString_UTF8+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFDataArray.h"
+#import "OFSystemInfo.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -37,7 +39,6 @@
 # import "OFHTTPRequest.h"
 # import "OFHTTPResponse.h"
 #endif
-#import "OFDataArray.h"
 #import "OFXMLElement.h"
 
 #ifdef OF_HAVE_SOCKETS
@@ -667,12 +668,6 @@ static struct {
 	return ret;
 }
 
-+ (of_string_encoding_t)nativeOSEncoding
-{
-	/* FIXME */
-	return OF_STRING_ENCODING_UTF_8;
-}
-
 - init
 {
 	if (object_getClass(self) == [OFString class]) {
@@ -834,8 +829,8 @@ static struct {
 		/* Make sure the file system is initialized */
 		[OFFile class];
 
-		if (stat([path cStringWithEncoding: [OFString
-		    nativeOSEncoding]], &st) == -1)
+		if (stat([path cStringWithEncoding:
+		    [OFSystemInfo native8BitEncoding]], &st) == -1)
 			@throw [OFOpenFileFailedException
 			    exceptionWithPath: path
 					 mode: @"rb"];
@@ -1160,8 +1155,7 @@ static struct {
 
 		break;
 	default:
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
+		@throw [OFInvalidEncodingException exception];
 	}
 
 	return cString;
@@ -1218,8 +1212,7 @@ static struct {
 	case OF_STRING_ENCODING_CODEPAGE_437:
 		return [self length];
 	default:
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
+		@throw [OFInvalidEncodingException exception];
 	}
 }
 

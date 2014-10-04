@@ -327,16 +327,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 + (OFString*)pathWithComponents: (OFArray*)components;
 
 /*!
- * @brief Returns the string encoding native to the operating system.
- *
- * This is useful to encode strings correctly for passing them to operating
- * system calls.
- *
- * @return The string encoding native to the operating system
- */
-+ (of_string_encoding_t)nativeOSEncoding;
-
-/*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
  *	  string.
  *
