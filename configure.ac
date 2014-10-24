@@ -888,12 +888,13 @@ case "$host" in
 		have_processes="no"
 		;;
 	*)
-		AC_CHECK_FUNCS([fork dup2 execvp kill], [
+		AC_CHECK_FUNCS([fork dup2 execvp kill _exit], [
 			if test x"$ac_cv_func_fork" = x"yes" \
 			    -a x"$ac_cv_func_pipe" = x"yes" \
 			    -a x"$ac_cv_func_dup2" = x"yes" \
 			    -a x"$ac_cv_func_execvp" = x"yes" \
-			    -a x"$ac_cv_func_kill" = x"yes"; then
+			    -a x"$ac_cv_func_kill" = x"yes" \
+			    -a x"$ac_cv_func__exit" = x"yes"; then
 				have_processes="yes"
 			fi
 		], [

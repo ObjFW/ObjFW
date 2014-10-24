@@ -176,8 +176,7 @@ extern char **environ;
 			dup2(_readPipe[1], 1);
 			execvp([program cStringWithEncoding: encoding], argv);
 
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			_exit(EXIT_FAILURE);
 		case -1:
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
