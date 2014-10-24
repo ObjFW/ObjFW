@@ -469,7 +469,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)terminate
 {
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 - (void)terminateWithStatus: (int)status

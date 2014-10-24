@@ -162,7 +162,7 @@
 + (OFDictionary*)environment;
 
 /*!
- * @brief Terminates the application.
+ * @brief Terminates the application with the EXIT_SUCCESS status.
  */
 + (void)terminate OF_NO_RETURN;
 
