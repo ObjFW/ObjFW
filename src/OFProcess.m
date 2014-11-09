@@ -135,56 +135,48 @@ extern char **environ;
 
 	@try {
 #ifndef _WIN32
+		void *pool = objc_autoreleasePoolPush();
+		const char *path;
+		int argc;
+		char **argv, **env;
+
 		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		switch ((_pid = fork())) {
-		case 0:;
-			OFString *const *objects = [arguments objects];
-			size_t i, count = [arguments count];
-			char **argv;
-			of_string_encoding_t encoding;
+		path = [program cStringWithEncoding:
+		    [OFSystemInfo native8BitEncoding]];
+		[self OF_getArgC: &argc
+			 andArgV: &argv
+		  forProgramName: programName
+		    andArguments: arguments];
+		env = [self OF_environmentForDictionary: environment];
 
-			argv = [self allocMemoryWithSize: sizeof(char*)
-						   count: count + 2];
-
-			encoding = [OFSystemInfo native8BitEncoding];
-
-			argv[0] = (char*)[programName
-			    cStringWithEncoding: encoding];
-
-			for (i = 0; i < count; i++)
-				argv[i + 1] = (char*)[objects[i]
-				    cStringWithEncoding: encoding];
-
-			argv[i + 1] = NULL;
-
-			if (environment != nil) {
+		if ((_pid = fork()) == 0) {
 #ifdef __MACH__
-				*_NSGetEnviron() = [self
-				    OF_environmentForDictionary: environment];
+			*_NSGetEnviron() = env;
 #else
-				environ = [self
-				    OF_environmentForDictionary: environment];
+			environ = env;
 #endif
-			}
 
 			close(_readPipe[0]);
 			close(_writePipe[1]);
 			dup2(_writePipe[0], 0);
 			dup2(_readPipe[1], 1);
-			execvp([program cStringWithEncoding: encoding], argv);
+			execvp(path, argv);
 
 			_exit(EXIT_FAILURE);
-		case -1:
+		}
+
+		close(_readPipe[1]);
+		close(_writePipe[0]);
+		[self freeMemory: argv];
+
+		if (_pid == -1)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
-		default:
-			close(_readPipe[1]);
-			close(_writePipe[0]);
-			break;
-		}
+
+		objc_autoreleasePoolPop(pool);
 #else
 		SECURITY_ATTRIBUTES sa;
 		PROCESS_INFORMATION pi;
@@ -303,6 +295,29 @@ extern char **environ;
 }
 
 #ifndef _WIN32
+- (void)OF_getArgC: (int*)argc
+	   andArgV: (char***)argv
+    forProgramName: (OFString*)programName
+      andArguments: (OFArray*)arguments
+{
+	OFString *const *objects = [arguments objects];
+	size_t i, count = [arguments count];
+	of_string_encoding_t encoding;
+
+	*argv = [self allocMemoryWithSize: sizeof(char*)
+				    count: count + 2];
+
+	encoding = [OFSystemInfo native8BitEncoding];
+
+	(*argv)[0] = (char*)[programName cStringWithEncoding: encoding];
+
+	for (i = 0; i < count; i++)
+		(*argv)[i + 1] =
+		    (char*)[objects[i] cStringWithEncoding: encoding];
+
+	(*argv)[i + 1] = NULL;
+}
+
 - (char**)OF_environmentForDictionary: (OFDictionary*)environment
 {
 	OFEnumerator *keyEnumerator, *objectEnumerator;
