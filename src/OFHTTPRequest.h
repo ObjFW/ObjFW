@@ -175,7 +175,7 @@ typedef struct {
 - (void)setHeaders: (OFDictionary*)headers;
 
 /*!
- * @brief Retrusn a dictionary with headers for the HTTP request.
+ * @brief Returns a dictionary with headers for the HTTP request.
  *
  * @return A dictionary with headers for the HTTP request.
  */

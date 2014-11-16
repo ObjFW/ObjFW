@@ -70,7 +70,7 @@ struct of_list_object_t {
 - (of_list_object_t*)firstListObject;
 
 /*!
- * @brief Retrusn the last list object of the list.
+ * @brief Returns the last list object of the list.
  *
  * @return The last list object of the list
  */
