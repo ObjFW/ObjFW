@@ -33,7 +33,7 @@
 bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES)
 	pthread_mutexattr_t attr;
 
 	if (pthread_mutexattr_init(&attr) != 0)
@@ -49,6 +49,8 @@ of_rmutex_new(of_rmutex_t *rmutex)
 		return false;
 
 	return true;
+#elif defined(_WIN32)
+	return of_mutex_new(rmutex);
 #else
 	if (!of_mutex_new(&rmutex->mutex))
 		return false;
