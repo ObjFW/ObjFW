@@ -45,9 +45,20 @@
 	self = [super init];
 
 	@try {
+#ifdef HAVE_KQUEUE1
+		if ((_kernelQueue = kqueue1(O_CLOEXEC)) == -1)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: [self class]];
+#else
+		int flags;
+
 		if ((_kernelQueue = kqueue()) == -1)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
+
+		if ((flags = fcntl(_kernelQueue, F_GETFD, 0)) != -1)
+			fcntl(_kernelQueue, F_SETFD, flags | FD_CLOEXEC);
+#endif
 
 		_changeList = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct kevent)];

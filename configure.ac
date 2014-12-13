@@ -744,6 +744,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
 		AC_SUBST(OFKERNELEVENTOBSERVER_KQUEUE_M,
 			"OFKernelEventObserver_kqueue.m")
+
+		AC_CHECK_FUNCS(kqueue1)
 	])
 	AC_CHECK_HEADER(poll.h, [
 		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
