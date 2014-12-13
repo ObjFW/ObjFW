@@ -738,6 +738,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
+	AC_CHECK_FUNCS([paccept accept4])
+
 	AC_CHECK_FUNC(kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
 		AC_SUBST(OFKERNELEVENTOBSERVER_KQUEUE_M,

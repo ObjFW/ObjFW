@@ -290,10 +290,19 @@ static uint16_t freePort = 65532;
 
 	for (iter = results; *iter != NULL; iter++) {
 		of_resolver_result_t *result = *iter;
+#if SOCK_CLOEXEC == 0
+		int flags;
+#endif
 
-		if ((_socket = socket(result->family, result->type,
+		if ((_socket = socket(result->family,
+		    result->type | SOCK_CLOEXEC,
 		    result->protocol)) == INVALID_SOCKET)
 			continue;
+
+#if SOCK_CLOEXEC == 0
+		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+#endif
 
 		if (connect(_socket, result->address,
 		    result->addressLength) == -1) {
@@ -385,11 +394,21 @@ static uint16_t freePort = 65532;
 
 	results = of_resolve_host(host, port, SOCK_STREAM);
 	@try {
-		if ((_socket = socket(results[0]->family, results[0]->type,
+#if SOCK_CLOEXEC == 0
+		int flags;
+#endif
+
+		if ((_socket = socket(results[0]->family,
+		    results[0]->type | SOCK_CLOEXEC,
 		    results[0]->protocol)) == INVALID_SOCKET)
 			@throw [OFBindFailedException exceptionWithHost: host
 								   port: port
 								 socket: self];
+
+#if SOCK_CLOEXEC == 0
+		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+#endif
 
 		if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 		    (const char*)&one, (socklen_t)sizeof(one)))
@@ -456,14 +475,30 @@ static uint16_t freePort = 65532;
 - (instancetype)accept
 {
 	OFTCPSocket *client = [[[[self class] alloc] init] autorelease];
+#if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
+	int flags;
+#endif
 
 	client->_address = [client
 	    allocMemoryWithSize: sizeof(struct sockaddr_storage)];
 	client->_addressLength = (socklen_t)sizeof(struct sockaddr_storage);
 
+#if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
+	if ((client->_socket = paccept(_socket, client->_address,
+	   &client->_addressLength, NULL, SOCK_CLOEXEC)) == INVALID_SOCKET)
+		@throw [OFAcceptFailedException exceptionWithSocket: self];
+#elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
+	if ((client->_socket = accept4(_socket, client->_address,
+	   &client->_addressLength, SOCK_CLOEXEC)) == INVALID_SOCKET)
+		@throw [OFAcceptFailedException exceptionWithSocket: self];
+#else
 	if ((client->_socket = accept(_socket, client->_address,
 	   &client->_addressLength)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException exceptionWithSocket: self];
+
+	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
+		fcntl(client->_socket, F_SETFD, flags | FD_CLOEXEC);
+#endif
 
 	assert(client->_addressLength <= sizeof(struct sockaddr_storage));
 

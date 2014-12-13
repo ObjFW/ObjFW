@@ -49,6 +49,10 @@
 # define SOMAXCONN 32
 #endif
 
+#ifndef SOCK_CLOEXEC
+# define SOCK_CLOEXEC 0
+#endif
+
 #ifdef _WIN32
 # define close(sock) closesocket(sock)
 #endif

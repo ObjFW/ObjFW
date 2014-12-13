@@ -93,6 +93,9 @@
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
 #ifndef O_EXLOCK
 # define O_EXLOCK 0
 #endif
@@ -890,6 +893,8 @@ parseMode(const char *mode)
 
 		if ((flags = parseMode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException exception];
+
+		flags |= O_CLOEXEC;
 
 #ifndef _WIN32
 		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo

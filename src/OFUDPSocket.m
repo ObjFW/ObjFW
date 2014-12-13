@@ -395,11 +395,21 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	results = of_resolve_host(host, port, SOCK_DGRAM);
 	@try {
-		if ((_socket = socket(results[0]->family, results[0]->type,
+#if SOCK_CLOEXEC == 0
+		int flags;
+#endif
+
+		if ((_socket = socket(results[0]->family,
+		    results[0]->type | SOCK_CLOEXEC,
 		    results[0]->protocol)) == INVALID_SOCKET)
 			@throw [OFBindFailedException exceptionWithHost: host
 								   port: port
 								 socket: self];
+
+#if SOCK_CLOEXEC == 0
+		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+#endif
 
 		if (bind(_socket, results[0]->address,
 		    results[0]->addressLength) == -1) {
