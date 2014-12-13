@@ -55,6 +55,10 @@ extern char **environ;
 
 @interface OFProcess (OF_PRIVATE_CATEGORY)
 #ifndef _WIN32
+- (void)OF_getArgC: (int*)argc
+	   andArgV: (char***)argv
+    forProgramName: (OFString*)programName
+      andArguments: (OFArray*)arguments;
 - (char**)OF_environmentForDictionary: (OFDictionary*)dictionary;
 #else
 - (of_char16_t*)OF_environmentForDictionary: (OFDictionary*)dictionary;
