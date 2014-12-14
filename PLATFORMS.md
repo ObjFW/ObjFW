@@ -72,7 +72,7 @@ iOS
 Linux
 -----
 
-  * Architectures: Alpha, ARMv6, m68k, MIPS (O32), PPC, SH4, x86, x86_64
+  * Architectures: Alpha, ARMv6, ARM64, m68k, MIPS (O32), PPC, SH4, x86, x86_64
   * Compilers: Clang 3.0-3.4, GCC 4.2, GCC 4.6-4.8
   * Runtimes: ObjFW
 
