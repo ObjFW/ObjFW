@@ -893,16 +893,25 @@ case "$host" in
 		;;
 	*)
 		AC_CHECK_FUNCS([fork dup2 execvp kill _exit], [
-			if test x"$ac_cv_func_fork" = x"yes" \
+			AS_IF([test x"$ac_cv_func_fork" = x"yes" \
 			    -a x"$ac_cv_func_pipe" = x"yes" \
 			    -a x"$ac_cv_func_dup2" = x"yes" \
 			    -a x"$ac_cv_func_execvp" = x"yes" \
 			    -a x"$ac_cv_func_kill" = x"yes" \
-			    -a x"$ac_cv_func__exit" = x"yes"; then
+			    -a x"$ac_cv_func__exit" = x"yes"], [
 				have_processes="yes"
-			fi
+			])
 		], [
 			break
+		])
+
+		AC_CHECK_FUNCS(posix_spawnp)
+
+		AS_IF([test x"$ac_cv_func_posix_spawnp" = x"yes" \
+		    -a x"$ac_cv_func_kill" = x"yes"], [
+			have_processes="yes"
+
+			AC_CHECK_HEADERS(spawn.h)
 		])
 		;;
 esac

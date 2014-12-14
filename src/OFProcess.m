@@ -29,8 +29,8 @@
 # include <sys/wait.h>
 #endif
 
-#ifdef __MACH__
-# include <crt_externs.h>
+#ifdef HAVE_SPAWN_H
+# include <spawn.h>
 #endif
 
 #import "OFProcess.h"
@@ -55,8 +55,7 @@ extern char **environ;
 
 @interface OFProcess (OF_PRIVATE_CATEGORY)
 #ifndef _WIN32
-- (void)OF_getArgC: (int*)argc
-	   andArgV: (char***)argv
+- (void)OF_getArgV: (char***)argv
     forProgramName: (OFString*)programName
       andArguments: (OFArray*)arguments;
 - (char**)OF_environmentForDictionary: (OFDictionary*)dictionary;
@@ -141,8 +140,7 @@ extern char **environ;
 #ifndef _WIN32
 		void *pool = objc_autoreleasePoolPush();
 		const char *path;
-		int argc;
-		char **argv, **env;
+		char **argv;
 
 		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
 			@throw [OFInitializationFailedException
@@ -150,35 +148,77 @@ extern char **environ;
 
 		path = [program cStringWithEncoding:
 		    [OFSystemInfo native8BitEncoding]];
-		[self OF_getArgC: &argc
-			 andArgV: &argv
+		[self OF_getArgV: &argv
 		  forProgramName: programName
 		    andArguments: arguments];
-		env = [self OF_environmentForDictionary: environment];
 
-		if ((_pid = fork()) == 0) {
-#ifdef __MACH__
-			*_NSGetEnviron() = env;
-#else
-			environ = env;
-#endif
+		@try {
+			char **env = [self
+			    OF_environmentForDictionary: environment];
+# ifdef HAVE_POSIX_SPAWNP
+			posix_spawn_file_actions_t actions;
+			posix_spawnattr_t attr;
 
-			close(_readPipe[0]);
-			close(_writePipe[1]);
-			dup2(_writePipe[0], 0);
-			dup2(_readPipe[1], 1);
-			execvp(path, argv);
+			if (posix_spawn_file_actions_init(&actions) != 0)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: [self class]];
 
-			_exit(EXIT_FAILURE);
+			if (posix_spawnattr_init(&attr) != 0) {
+				posix_spawn_file_actions_destroy(&actions);
+
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: [self class]];
+			}
+
+			@try {
+				if (posix_spawn_file_actions_addclose(&actions,
+				    _readPipe[0]) != 0 ||
+				    posix_spawn_file_actions_addclose(&actions,
+				    _writePipe[1]) != 0 ||
+				    posix_spawn_file_actions_adddup2(&actions,
+				    _writePipe[0], 0) != 0 ||
+				    posix_spawn_file_actions_adddup2(&actions,
+				    _readPipe[1], 1) != 0)
+					@throw [OFInitializationFailedException
+					    exceptionWithClass: [self class]];
+
+#  ifdef POSIX_SPAWN_CLOEXEC_DEFAULT
+				if (posix_spawnattr_setflags(&attr,
+				    POSIX_SPAWN_CLOEXEC_DEFAULT) != 0)
+					@throw [OFInitializationFailedException
+					    exceptionWithClass: [self class]];
+#  endif
+
+				if (posix_spawnp(&_pid, path, &actions, &attr,
+				    argv, env) != 0)
+					@throw [OFInitializationFailedException
+					    exceptionWithClass: [self class]];
+			} @finally {
+				posix_spawn_file_actions_destroy(&actions);
+				posix_spawnattr_destroy(&attr);
+			}
+# else
+			if ((_pid = fork()) == 0) {
+				environ = env;
+
+				close(_readPipe[0]);
+				close(_writePipe[1]);
+				dup2(_writePipe[0], 0);
+				dup2(_readPipe[1], 1);
+				execvp(path, argv);
+
+				_exit(EXIT_FAILURE);
+			}
+
+			if (_pid == -1)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: [self class]];
+# endif
+		} @finally {
+			close(_readPipe[1]);
+			close(_writePipe[0]);
+			[self freeMemory: argv];
 		}
-
-		close(_readPipe[1]);
-		close(_writePipe[0]);
-		[self freeMemory: argv];
-
-		if (_pid == -1)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
 
 		objc_autoreleasePoolPop(pool);
 #else
@@ -299,8 +339,7 @@ extern char **environ;
 }
 
 #ifndef _WIN32
-- (void)OF_getArgC: (int*)argc
-	   andArgV: (char***)argv
+- (void)OF_getArgV: (char***)argv
     forProgramName: (OFString*)programName
       andArguments: (OFArray*)arguments
 {
