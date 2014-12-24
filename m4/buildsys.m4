@@ -120,10 +120,11 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		darwin*)
 			AC_MSG_RESULT(Darwin)
 			LIB_CFLAGS='-fPIC -DPIC'
-			LIB_LDFLAGS='-dynamiclib -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR} -Wl,-install_name,${libdir}/$${out%.dylib}.${LIB_MAJOR}.dylib'
+			LIB_LDFLAGS='-dynamiclib -current_version ${LIB_MAJOR}.${LIB_MINOR} -compatibility_version ${LIB_MAJOR}'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.dylib'
 			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
+			LDFLAGS_INSTALL_NAME='-Wl,-install_name,${libdir}/$${out%.dylib}.${LIB_MAJOR}.dylib'
 			PLUGIN_CFLAGS='-fPIC -DPIC'
 			PLUGIN_LDFLAGS='-bundle -undefined dynamic_lookup'
 			PLUGIN_SUFFIX='.bundle'
@@ -194,6 +195,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_SUBST(LIB_PREFIX)
 	AC_SUBST(LIB_SUFFIX)
 	AC_SUBST(LDFLAGS_RPATH)
+	AC_SUBST(LDFLAGS_INSTALL_NAME)
 	AC_SUBST(PLUGIN_CFLAGS)
 	AC_SUBST(PLUGIN_LDFLAGS)
 	AC_SUBST(PLUGIN_SUFFIX)
