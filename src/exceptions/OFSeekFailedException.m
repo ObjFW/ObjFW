@@ -24,7 +24,7 @@
 
 @implementation OFSeekFailedException
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream
-			     offset: (off_t)offset
+			     offset: (of_offset_t)offset
 			     whence: (int)whence
 {
 	return [[[self alloc] initWithStream: stream
@@ -38,7 +38,7 @@
 }
 
 - initWithStream: (OFSeekableStream*)stream
-	  offset: (off_t)offset
+	  offset: (of_offset_t)offset
 	  whence: (int)whence
 {
 	self = [super init];
@@ -70,7 +70,7 @@
 	OF_GETTER(_stream, true)
 }
 
-- (off_t)offset
+- (of_offset_t)offset
 {
 	return _offset;
 }

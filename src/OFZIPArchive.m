@@ -78,7 +78,7 @@
 }
 
 - initWithArchiveFile: (OFString*)path
-	       offset: (off_t)offset
+	       offset: (of_offset_t)offset
       localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader;
 @end
 
@@ -180,7 +180,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t commentLength;
-	off_t offset = -22;
+	of_offset_t offset = -22;
 	bool valid = false;
 
 	do {
@@ -238,10 +238,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		[_file readLittleEndianInt32];
 		offset64 = [_file readLittleEndianInt64];
 
-		if ((off_t)offset64 != offset64)
+		if ((of_offset_t)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
-		[_file seekToOffset: (off_t)offset64
+		[_file seekToOffset: (of_offset_t)offset64
 			     whence: SEEK_SET];
 
 		if ([_file readLittleEndianInt32] != 0x06064B50)
@@ -263,7 +263,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		_centralDirectorySize = [_file readLittleEndianInt64];
 		_centralDirectoryOffset = [_file readLittleEndianInt64];
 
-		if ((off_t)_centralDirectoryOffset != _centralDirectoryOffset)
+		if ((of_offset_t)_centralDirectoryOffset !=
+		    _centralDirectoryOffset)
 			@throw [OFOutOfRangeException exception];
 	}
 
@@ -275,10 +276,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	void *pool = objc_autoreleasePoolPush();
 	size_t i;
 
-	if ((off_t)_centralDirectoryOffset != _centralDirectoryOffset)
+	if ((of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
-	[_file seekToOffset: (off_t)_centralDirectoryOffset
+	[_file seekToOffset: (of_offset_t)_centralDirectoryOffset
 		     whence: SEEK_SET];
 
 	_entries = [[OFMutableArray alloc] init];
@@ -318,7 +319,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
 	OFZIPArchive_LocalFileHeader *localFileHeader;
-	uint64_t offset;
+	uint64_t offset64;
 
 	if (entry == nil) {
 		errno = ENOENT;
@@ -326,11 +327,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 							       mode: @"rb"];
 	}
 
-	offset = [entry OF_localFileHeaderOffset];
-	if ((off_t)offset != offset)
+	offset64 = [entry OF_localFileHeaderOffset];
+	if ((of_offset_t)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
-	[_file seekToOffset: (off_t)offset
+	[_file seekToOffset: (of_offset_t)offset64
 		     whence: SEEK_SET];
 	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
 	    initWithFile: _file] autorelease];
@@ -446,7 +447,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 @implementation OFZIPArchive_FileStream
 - initWithArchiveFile: (OFString*)path
-	       offset: (off_t)offset
+	       offset: (of_offset_t)offset
       localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader
 {
 	self = [super init];

@@ -25,6 +25,12 @@
 
 #import "OFStream.h"
 
+#ifdef __ANDROID__
+typedef long long of_offset_t;
+#else
+typedef off_t of_offset_t;
+#endif
+
 /*!
  * @class OFSeekableStream OFSeekableStream.h ObjFW/OFSeekableStream.h
  *
@@ -50,8 +56,8 @@
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset form the start of the file
  */
-- (off_t)seekToOffset: (off_t)offset
-	       whence: (int)whence;
+- (of_offset_t)seekToOffset: (of_offset_t)offset
+		     whence: (int)whence;
 
 /*!
  * @brief Seek the stream on the lowlevel.
@@ -71,6 +77,6 @@
  *		 `SEEK_END` | Seek to the end of the stream + offset
  * @return The new offset from the start of the file
  */
-- (off_t)lowlevelSeekToOffset: (off_t)offset
-		       whence: (int)whence;
+- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
+			     whence: (int)whence;
 @end

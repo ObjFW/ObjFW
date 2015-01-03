@@ -151,7 +151,7 @@ typedef struct _stat of_stat_t;
  *
  * @return The size of the specified file
  */
-+ (off_t)sizeOfFileAtPath: (OFString*)path;
++ (of_offset_t)sizeOfFileAtPath: (OFString*)path;
 
 /*!
  * @brief Returns the date of the last modification of the file.

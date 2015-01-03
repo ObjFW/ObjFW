@@ -480,7 +480,7 @@ parseMode(const char *mode)
 		    exceptionWithPath: path];
 }
 
-+ (off_t)sizeOfFileAtPath: (OFString*)path
++ (of_offset_t)sizeOfFileAtPath: (OFString*)path
 {
 	of_stat_t s;
 
@@ -492,8 +492,7 @@ parseMode(const char *mode)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
 							       mode: @"r"];
 
-	/* FIXME: On Android, off_t is 32 bit, but st_size is long long there */
-	return (off_t)s.st_size;
+	return s.st_size;
 }
 
 + (OFDate*)modificationDateOfFileAtPath: (OFString*)path
@@ -975,10 +974,10 @@ parseMode(const char *mode)
 #endif
 }
 
-- (off_t)lowlevelSeekToOffset: (off_t)offset
-		       whence: (int)whence
+- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
+			     whence: (int)whence
 {
-	off_t ret = lseek(_fd, offset, whence);
+	of_offset_t ret = lseek(_fd, offset, whence);
 
 	if (ret == -1)
 		@throw [OFSeekFailedException exceptionWithStream: self

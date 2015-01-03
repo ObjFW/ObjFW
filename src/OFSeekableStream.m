@@ -39,14 +39,14 @@
 	return [super init];
 }
 
-- (off_t)lowlevelSeekToOffset: (off_t)offset
-		       whence: (int)whence
+- (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
+			     whence: (int)whence
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (off_t)seekToOffset: (off_t)offset
-	       whence: (int)whence
+- (of_offset_t)seekToOffset: (of_offset_t)offset
+		     whence: (int)whence
 {
 	if (whence == SEEK_CUR)
 		offset -= _readBufferLength;

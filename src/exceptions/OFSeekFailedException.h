@@ -14,13 +14,8 @@
  * file.
  */
 
-#include <errno.h>
-
-#include <sys/types.h>
-
 #import "OFException.h"
-
-@class OFSeekableStream;
+#import "OFSeekableStream.h"
 
 /*!
  * @class OFSeekFailedException \
@@ -31,13 +26,13 @@
 @interface OFSeekFailedException: OFException
 {
 	OFSeekableStream *_stream;
-	off_t _offset;
+	of_offset_t _offset;
 	int _whence, _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, retain) OFSeekableStream *stream;
-@property (readonly) off_t offset;
+@property (readonly) of_offset_t offset;
 @property (readonly) int whence, errNo;
 #endif
 
@@ -50,7 +45,7 @@
  * @return A new, autoreleased seek failed exception
  */
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream
-			     offset: (off_t)offset
+			     offset: (of_offset_t)offset
 			     whence: (int)whence;
 
 /*!
@@ -62,7 +57,7 @@
  * @return An initialized seek failed exception
  */
 - initWithStream: (OFSeekableStream*)stream
-	  offset: (off_t)offset
+	  offset: (of_offset_t)offset
 	  whence: (int)whence;
 
 /*!
@@ -77,7 +72,7 @@
  *
  * @return The offset to which seeking failed
  */
-- (off_t)offset;
+- (of_offset_t)offset;
 
 /*!
  * @brief Returns to what the offset is relative.

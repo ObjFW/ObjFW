@@ -152,7 +152,7 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		OFFile *file = [[OFFile alloc] initWithPath: path
 						       mode: @"rb"];
-		off_t size = [OFFile sizeOfFileAtPath: path];
+		of_offset_t size = [OFFile sizeOfFileAtPath: path];
 
 		if (size > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
