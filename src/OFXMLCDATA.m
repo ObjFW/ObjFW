@@ -102,8 +102,15 @@
 
 - (OFString*)XMLString
 {
-	/* FIXME: What to do about ]]>? */
-	return [OFString stringWithFormat: @"<![CDATA[%@]]>", _CDATA];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *tmp = [_CDATA
+	    stringByReplacingOccurrencesOfString: @"]]>"
+				      withString: @"]]>]]&gt;<![CDATA["];
+	OFString *ret = [OFString stringWithFormat: @"<![CDATA[%@]]>", tmp];
+
+	[ret retain];
+	objc_autoreleasePoolPop(pool);
+	return [ret autorelease];
 }
 
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
