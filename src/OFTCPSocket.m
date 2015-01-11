@@ -290,7 +290,7 @@ static uint16_t freePort = 65532;
 
 	for (iter = results; *iter != NULL; iter++) {
 		of_resolver_result_t *result = *iter;
-#if SOCK_CLOEXEC == 0
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
 #endif
 
@@ -299,7 +299,7 @@ static uint16_t freePort = 65532;
 		    result->protocol)) == INVALID_SOCKET)
 			continue;
 
-#if SOCK_CLOEXEC == 0
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
@@ -394,7 +394,7 @@ static uint16_t freePort = 65532;
 
 	results = of_resolve_host(host, port, SOCK_STREAM);
 	@try {
-#if SOCK_CLOEXEC == 0
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
 #endif
 
@@ -405,7 +405,7 @@ static uint16_t freePort = 65532;
 								   port: port
 								 socket: self];
 
-#if SOCK_CLOEXEC == 0
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
@@ -476,7 +476,9 @@ static uint16_t freePort = 65532;
 {
 	OFTCPSocket *client = [[[[self class] alloc] init] autorelease];
 #if (!defined(HAVE_PACCEPT) && !defined(HAVE_ACCEPT4)) || !defined(SOCK_CLOEXEC)
+# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	int flags;
+# endif
 #endif
 
 	client->_address = [client
@@ -496,8 +498,10 @@ static uint16_t freePort = 65532;
 	   &client->_addressLength)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException exceptionWithSocket: self];
 
+# if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
 		fcntl(client->_socket, F_SETFD, flags | FD_CLOEXEC);
+# endif
 #endif
 
 	assert(client->_addressLength <= sizeof(struct sockaddr_storage));

@@ -395,7 +395,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	results = of_resolve_host(host, port, SOCK_DGRAM);
 	@try {
-#if SOCK_CLOEXEC == 0
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
 #endif
 
@@ -406,7 +406,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 								   port: port
 								 socket: self];
 
-#if SOCK_CLOEXEC == 0
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
