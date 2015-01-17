@@ -126,8 +126,11 @@ static of_mutex_t mutex;
 int
 of_stat(OFString *path, of_stat_t *buffer)
 {
-#ifdef _WIN32
-	return _wstat([path UTF16String], buffer);
+#if defined(_WIN32)
+	return _wstat64([path UTF16String], buffer);
+#elif defined(OF_HAVE_OFF64_T)
+	return stat64([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], buffer);
 #else
 	return stat([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]], buffer);
@@ -138,13 +141,23 @@ int
 of_lstat(OFString *path, of_stat_t *buffer)
 {
 #if defined(_WIN32)
-	return _wstat([path UTF16String], buffer);
+	return _wstat64([path UTF16String], buffer);
 #elif defined(HAVE_LSTAT)
+# ifdef OF_HAVE_OFF64_T
+	return lstat64([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], buffer);
+# else
 	return lstat([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]], buffer);
+# endif
 #else
+# ifdef OF_HAVE_OFF64_T
+	return stat64([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], buffer);
+# else
 	return stat([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]], buffer);
+# endif
 #endif
 }
 
@@ -895,12 +908,15 @@ parseMode(const char *mode)
 
 		flags |= O_CLOEXEC;
 
-#ifndef _WIN32
-		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo
-		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
-#else
+#if defined(_WIN32)
 		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)
+#elif defined(OF_HAVE_OFF64_T)
+		if ((_fd = open64([path cStringWithEncoding: [OFSystemInfo
+		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
+#else
+		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo
+		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
 #endif
 			@throw [OFOpenFileFailedException
 			    exceptionWithPath: path
@@ -977,7 +993,13 @@ parseMode(const char *mode)
 - (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
 			     whence: (int)whence
 {
+#if defined(_WIN32)
+	of_offset_t ret = _lseeki64(_fd, offset, whence);
+#elif defined(OF_HAVE_OFF64_T)
+	of_offset_t ret = lseek64(_fd, offset, whence);
+#else
 	of_offset_t ret = lseek(_fd, offset, whence);
+#endif
 
 	if (ret == -1)
 		@throw [OFSeekFailedException exceptionWithStream: self

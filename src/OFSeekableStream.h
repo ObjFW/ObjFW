@@ -25,8 +25,12 @@
 
 #import "OFStream.h"
 
-#ifdef __ANDROID__
+#if defined(_WIN32)
+typedef __int64 of_offset_t;
+#elif defined(__ANDROID__)
 typedef long long of_offset_t;
+#elif defined(OF_HAVE_OFF64_T)
+typedef off64_t of_offset_t;
 #else
 typedef off_t of_offset_t;
 #endif

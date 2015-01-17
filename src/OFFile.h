@@ -29,10 +29,12 @@
 @class OFArray;
 @class OFDate;
 
-#ifndef _WIN32
-typedef struct stat of_stat_t;
+#if defined(_WIN32)
+typedef struct __stat64 of_stat_t;
+#elif defined(OF_HAVE_OFF64_T)
+typedef struct stat64 of_stat_t;
 #else
-typedef struct _stat of_stat_t;
+typedef struct stat of_stat_t;
 #endif
 
 /*!
