@@ -28,6 +28,8 @@
 #import "OFKernelEventObserver_select.h"
 #import "OFArray.h"
 
+#import "OFOutOfRangeException.h"
+
 #import "socket_helpers.h"
 
 @implementation OFKernelEventObserver_select
@@ -45,21 +47,33 @@
 
 - (void)OF_addFileDescriptorForReading: (int)fd
 {
+	if (fd >= FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
+
 	FD_SET(fd, &_readFDs);
 }
 
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
+	if (fd >= FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
+
 	FD_SET(fd, &_writeFDs);
 }
 
 - (void)OF_removeFileDescriptorForReading: (int)fd
 {
+	if (fd >= FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
+
 	FD_CLR(fd, &_readFDs);
 }
 
 - (void)OF_removeFileDescriptorForWriting: (int)fd
 {
+	if (fd >= FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
+
 	FD_CLR(fd, &_writeFDs);
 }
 
