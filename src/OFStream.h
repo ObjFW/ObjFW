@@ -91,13 +91,13 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
 	char *_readBuffer, *_writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
-	bool _writeBufferEnabled, _waitingForDelimiter;
+	bool _writeBuffered, _waitingForDelimiter;
 @protected
 	bool _blocking;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (getter=isWriteBufferEnabled) bool writeBufferEnabled;
+@property (getter=isWriteBuffered) bool writeBuffered;
 @property (getter=isBlocking) bool blocking;
 @property (readonly, getter=isAtEndOfStream) bool atEndOfStream;
 #endif
@@ -755,14 +755,14 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @return A boolean whether writes are buffered
  */
-- (bool)isWriteBufferEnabled;
+- (bool)isWriteBuffered;
 
 /*!
  * @brief Enables or disables the write buffer.
  *
  * @param enable Whether the write buffer should be enabled or disabled
  */
-- (void)setWriteBufferEnabled: (bool)enable;
+- (void)setWriteBuffered: (bool)enable;
 
 /*!
  * @brief Writes everythig in the write buffer to the stream.

@@ -948,14 +948,14 @@
 				 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (bool)isWriteBufferEnabled
+- (bool)isWriteBuffered
 {
-	return _writeBufferEnabled;
+	return _writeBuffered;
 }
 
-- (void)setWriteBufferEnabled: (bool)enable
+- (void)setWriteBuffered: (bool)enable
 {
-	_writeBufferEnabled = enable;
+	_writeBuffered = enable;
 }
 
 - (void)flushWriteBuffer
@@ -974,7 +974,7 @@
 - (void)writeBuffer: (const void*)buffer
 	     length: (size_t)length
 {
-	if (!_writeBufferEnabled)
+	if (!_writeBuffered)
 		[self lowlevelWriteBuffer: buffer
 				   length: length];
 	else {

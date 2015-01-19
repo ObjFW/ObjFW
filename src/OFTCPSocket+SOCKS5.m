@@ -29,7 +29,7 @@ int _OFTCPSocket_SOCKS5_reference;
 {
 	const char request[] = { 5, 1, 0, 3 };
 	char reply[256];
-	bool wasWriteBufferEnabled;
+	bool wasWriteBuffered;
 
 	/* 5 1 0 -> no authentication */
 	[self writeBuffer: request
@@ -45,8 +45,8 @@ int _OFTCPSocket_SOCKS5_reference;
 							       socket: self];
 	}
 
-	wasWriteBufferEnabled = [self isWriteBufferEnabled];
-	[self setWriteBufferEnabled: true];
+	wasWriteBuffered = [self isWriteBuffered];
+	[self setWriteBuffered: true];
 
 	/* CONNECT request */
 	[self writeBuffer: request
@@ -57,7 +57,7 @@ int _OFTCPSocket_SOCKS5_reference;
 	[self writeBigEndianInt16: port];
 
 	[self flushWriteBuffer];
-	[self setWriteBufferEnabled: wasWriteBufferEnabled];
+	[self setWriteBuffered: wasWriteBuffered];
 
 	[self readIntoBuffer: reply
 		 exactLength: 4];
