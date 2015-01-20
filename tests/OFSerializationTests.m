@@ -34,7 +34,7 @@
 
 static OFString *module = @"OFSerialization";
 
-@implementation TestsAppDelegate (SerializationTests)
+@implementation TestsAppDelegate (OFSerializationTests)
 - (void)serializationTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];

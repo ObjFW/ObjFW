@@ -35,14 +35,14 @@
 static OFString *module = @"OFHTTPClient";
 static OFCondition *cond;
 
-@interface OFHTTPClientTestsServer: OFThread
+@interface HTTPClientTestsServer: OFThread
 {
 @public
 	uint16_t _port;
 }
 @end
 
-@implementation OFHTTPClientTestsServer
+@implementation HTTPClientTestsServer
 - main
 {
 	OFTCPSocket *listener, *client;
@@ -83,11 +83,11 @@ static OFCondition *cond;
 }
 @end
 
-@implementation TestsAppDelegate (OFHTTPClientests)
+@implementation TestsAppDelegate (OFHTTPClientTests)
 - (void)HTTPClientTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFHTTPClientTestsServer *server;
+	HTTPClientTestsServer *server;
 	OFURL *url;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
@@ -97,7 +97,7 @@ static OFCondition *cond;
 	cond = [OFCondition condition];
 	[cond lock];
 
-	server = [[[OFHTTPClientTestsServer alloc] init] autorelease];
+	server = [[[HTTPClientTestsServer alloc] init] autorelease];
 	[server start];
 
 	[cond wait];

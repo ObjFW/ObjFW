@@ -136,7 +136,7 @@
 - (void)RIPEMD160HashTests;
 @end
 
-@interface TestsAppDelegate (SerializationTests)
+@interface TestsAppDelegate (OFSerializationTests)
 - (void)serializationTests;
 @end
 
