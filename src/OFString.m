@@ -1998,6 +1998,12 @@ static struct {
 	if (OF_IS_PATH_DELIMITER(characters[length - 1]))
 		length--;
 
+	if (length == 0) {
+		objc_autoreleasePoolPop(pool);
+
+		return @"";
+	}
+
 	for (i = length - 1; i >= 0; i--) {
 		if (OF_IS_PATH_DELIMITER(characters[i])) {
 			i++;

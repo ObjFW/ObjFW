@@ -1128,6 +1128,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (OF_IS_PATH_DELIMITER(_s->cString[pathCStringLength - 1]))
 		pathCStringLength--;
 
+	if (pathCStringLength == 0)
+		return @"";
+
 	for (i = pathCStringLength - 1; i >= 0; i--) {
 		if (OF_IS_PATH_DELIMITER(_s->cString[i])) {
 			i++;
