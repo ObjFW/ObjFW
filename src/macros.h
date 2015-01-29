@@ -510,12 +510,16 @@ OF_BSWAP_DOUBLE(double d)
 # define OF_BSWAP_DOUBLE_IF_LE(i) OF_BSWAP_DOUBLE(i)
 #endif
 
-#define OF_ROL(value, bits)						   \
-	(((value) << ((bits) % (sizeof(value) * 8))) |			   \
-	((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))))
-#define OF_ROR(value, bits)						   \
-	(((value) >> ((bits) % (sizeof(value) * 8))) |			   \
-	((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))))
+#define OF_ROL(value, bits)						  \
+	(((bits) % (sizeof(value) * 8)) > 0				  \
+	? ((value) << ((bits) % (sizeof(value) * 8))) |			  \
+	((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))) \
+	: (value))
+#define OF_ROR(value, bits)						  \
+	(((bits) % (sizeof(value) * 8)) > 0				  \
+	? ((value) >> ((bits) % (sizeof(value) * 8))) |			  \
+	((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))) \
+	: (value))
 
 #define OF_ROUND_UP_POW2(pow2, value) (((value) + (pow2) - 1) & ~((pow2) - 1))
 
