@@ -57,7 +57,7 @@ post-all: ${RUN_TESTS}
 run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
-	rm -f libobjfw.dll libobjfw.dylib
+	rm -f libobjfw.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
