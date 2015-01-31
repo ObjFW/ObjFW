@@ -296,9 +296,7 @@
 		abort();						\
 	}
 
-#define OF_UNRECOGNIZED_SELECTOR		\
-	[self doesNotRecognizeSelector: _cmd];	\
-	OF_UNREACHABLE
+#define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
 #define OF_INVALID_INIT_METHOD				\
 	@try {						\
 		[self doesNotRecognizeSelector: _cmd];	\

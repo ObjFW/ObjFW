@@ -124,7 +124,7 @@ enumerationMutationHandler(id object)
 	@throw [OFEnumerationMutationException exceptionWithObject: object];
 }
 
-void
+void OF_NO_RETURN
 of_method_not_found(id obj, SEL sel)
 {
 	[obj doesNotRecognizeSelector: sel];
@@ -136,7 +136,7 @@ of_method_not_found(id obj, SEL sel)
 	abort();
 }
 
-void
+void OF_NO_RETURN
 of_method_not_found_stret(void *st, id obj, SEL sel)
 {
 	of_method_not_found(obj, sel);
