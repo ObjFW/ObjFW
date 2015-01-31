@@ -72,4 +72,13 @@
  * @return A boolean whether the hash has already been calculated
  */
 - (bool)isCalculated;
+
+/*!
+ * @brief Resets all state so that a new hash can be calculated.
+ *
+ * @warning This invalidates any pointer previously returned by @ref digest. If
+ *	    you are still interested in the previous digest, you need to memcpy
+ *	    it yourself before calling @ref reset!
+ */
+- (void)reset;
 @end

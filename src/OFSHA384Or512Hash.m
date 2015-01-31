@@ -213,4 +213,18 @@ processBlock(uint64_t *state, uint64_t *buffer)
 {
 	return _calculated;
 }
+
+- (void)reset
+{
+	[self OF_resetState];
+	memset(&_bits, 0, sizeof(_bits));
+	memset(&_buffer, 0, sizeof(_buffer));
+	_bufferLength = 0;
+	_calculated = false;
+}
+
+- (void)OF_resetState
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
 @end

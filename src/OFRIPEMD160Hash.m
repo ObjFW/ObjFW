@@ -148,13 +148,18 @@ processBlock(uint32_t *state, uint32_t *buffer)
 {
 	self = [super init];
 
+	[self OF_resetState];
+
+	return self;
+}
+
+- (void)OF_resetState
+{
 	_state[0] = 0x67452301;
 	_state[1] = 0xEFCDAB89;
 	_state[2] = 0x98BADCFE;
 	_state[3] = 0x10325476;
 	_state[4] = 0xC3D2E1F0;
-
-	return self;
 }
 
 - (void)updateWithBuffer: (const void*)buffer_
@@ -214,5 +219,14 @@ processBlock(uint32_t *state, uint32_t *buffer)
 - (bool)isCalculated
 {
 	return _calculated;
+}
+
+- (void)reset
+{
+	[self OF_resetState];
+	_bits = 0;
+	memset(&_buffer, 0, sizeof(_buffer));
+	_bufferLength = 0;
+	_calculated = false;
 }
 @end

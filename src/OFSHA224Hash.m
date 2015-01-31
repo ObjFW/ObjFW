@@ -28,6 +28,13 @@
 {
 	self = [super init];
 
+	[self OF_resetState];
+
+	return self;
+}
+
+- (void)OF_resetState
+{
 	_state[0] = 0xC1059ED8;
 	_state[1] = 0x367CD507;
 	_state[2] = 0x3070DD17;
@@ -36,7 +43,5 @@
 	_state[5] = 0x68581511;
 	_state[6] = 0x64F98FA7;
 	_state[7] = 0xBEFA4FA4;
-
-	return self;
 }
 @end

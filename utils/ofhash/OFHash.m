@@ -47,23 +47,23 @@ help(void)
 	[OFApplication terminateWithStatus: 1];
 }
 
-static Class
-hashClassForName(OFString *name)
+static id <OFHash>
+hashForName(OFString *name)
 {
 	if ([name isEqual: @"md5"])
-		return [OFMD5Hash class];
+		return [OFMD5Hash hash];
 	else if ([name isEqual: @"rmd160"] || [name isEqual: @"ripemd160"])
-		return [OFRIPEMD160Hash class];
+		return [OFRIPEMD160Hash hash];
 	else if ([name isEqual: @"sha1"])
-		return [OFSHA1Hash class];
+		return [OFSHA1Hash hash];
 	else if ([name isEqual: @"sha224"])
-		return [OFSHA224Hash class];
+		return [OFSHA224Hash hash];
 	else if ([name isEqual: @"sha256"])
-		return [OFSHA256Hash class];
+		return [OFSHA256Hash hash];
 	else if ([name isEqual: @"sha384"])
-		return [OFSHA384Hash class];
+		return [OFSHA384Hash hash];
 	else if ([name isEqual: @"sha512"])
-		return [OFSHA512Hash class];
+		return [OFSHA512Hash hash];
 
 	return nil;
 }
@@ -72,7 +72,7 @@ hashClassForName(OFString *name)
 - (void)applicationDidFinishLaunching
 {
 	OFArray *arguments = [OFApplication arguments];
-	Class <OFHash> hashClass;
+	id <OFHash> hash;
 	OFEnumerator *enumerator;
 	OFString *path;
 	int exitStatus = 0;
@@ -80,14 +80,13 @@ hashClassForName(OFString *name)
 	if ([arguments count] < 2)
 		help();
 
-	if ((hashClass = hashClassForName([arguments objectAtIndex: 0])) == Nil)
+	if ((hash = hashForName([arguments firstObject])) == nil)
 		help();
 
 	enumerator = [[arguments objectsInRange:
 	    of_range(1, [arguments count] - 1)] objectEnumerator];
 	while ((path = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
-		id <OFHash> hash = [hashClass hash];
 		OFStream *file;
 		const uint8_t *digest;
 		size_t i, digestSize;
@@ -108,6 +107,8 @@ hashClassForName(OFString *name)
 			}
 		}
 
+		[hash reset];
+
 		while (![file isAtEndOfStream]) {
 			uint8_t buffer[1024];
 			size_t length;
@@ -127,10 +128,12 @@ hashClassForName(OFString *name)
 			[hash updateWithBuffer: buffer
 					length: length];
 		}
+
 		[file close];
 
 		digest = [hash digest];
-		digestSize = [hashClass digestSize];
+		digestSize = [[hash class] digestSize];
+
 		for (i = 0; i < digestSize; i++)
 			[of_stdout writeFormat: @"%02x", digest[i]];
 

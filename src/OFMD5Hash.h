@@ -32,4 +32,6 @@
 	size_t _bufferLength;
 	bool _calculated;
 }
+
+- (void)OF_resetState;
 @end
