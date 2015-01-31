@@ -57,13 +57,15 @@ static const uint8_t rotateBits2[] = {
 	8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 };
 
-static void
+static OF_INLINE void
 byteSwapVectorIfBE(uint32_t *vector, uint_fast8_t length)
 {
+#ifdef OF_BIG_ENDIAN
 	uint_fast8_t i;
 
 	for (i = 0; i < length; i++)
-		vector[i] = OF_BSWAP32_IF_BE(vector[i]);
+		vector[i] = OF_BSWAP32(vector[i]);
+#endif
 }
 
 static void

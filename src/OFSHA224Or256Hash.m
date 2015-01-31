@@ -42,13 +42,15 @@ static const uint32_t table[] = {
 	0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
 };
 
-static void
+static OF_INLINE void
 byteSwapVectorIfLE(uint32_t *vector, uint_fast8_t length)
 {
+#ifndef OF_BIG_ENDIAN
 	uint_fast8_t i;
 
 	for (i = 0; i < length; i++)
-		vector[i] = OF_BSWAP32_IF_LE(vector[i]);
+		vector[i] = OF_BSWAP32(vector[i]);
+#endif
 }
 
 static void

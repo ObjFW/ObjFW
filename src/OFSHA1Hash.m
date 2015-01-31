@@ -27,13 +27,15 @@
 #define H(a, b, c, d) (((b) & (c)) | ((d) & ((b) | (c))))
 #define I(a, b, c, d) ((b) ^ (c) ^ (d))
 
-static void
+static OF_INLINE void
 byteSwapVectorIfLE(uint32_t *vector, uint_fast8_t length)
 {
+#ifndef OF_BIG_ENDIAN
 	uint_fast8_t i;
 
 	for (i = 0; i < length; i++)
-		vector[i] = OF_BSWAP32_IF_LE(vector[i]);
+		vector[i] = OF_BSWAP32(vector[i]);
+#endif
 }
 
 static void
