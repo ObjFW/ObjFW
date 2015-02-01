@@ -123,59 +123,60 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 	}
 # endif
 #else
-	struct hostent *he;
-	in_addr_t s_addr;
-	char **ip;
-	struct sockaddr_in *addrs, *addrsIter;
-
-	/*
-	 * If the host is an IP address, don't try resolving it.
-	 * On the Wii for example, the resolver will return an error if you
-	 * specify an IP address.
-	 */
-	if ((s_addr = inet_addr([host UTF8String])) != INADDR_NONE) {
-		of_resolver_result_t *tmp;
-		struct sockaddr_in *addr;
-
-		if ((ret = calloc(2, sizeof(*ret))) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: 2 * sizeof(*ret)];
-
-		if ((tmp = malloc(sizeof(*tmp))) == NULL) {
-			free(ret);
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: sizeof(*tmp)];
-		}
-
-		if ((addr = calloc(1, sizeof(*addr))) == NULL) {
-			free(ret);
-			free(tmp);
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: sizeof(*addr)];
-		}
-
-		addr->sin_family = AF_INET;
-		addr->sin_port = OF_BSWAP16_IF_LE(port);
-		addr->sin_addr.s_addr = s_addr;
-
-		tmp->family = AF_INET;
-		tmp->type = type;
-		tmp->protocol = 0;
-		tmp->address = (struct sockaddr*)addr;
-		tmp->addressLength = sizeof(*addr);
-
-		ret[0] = tmp;
-		ret[1] = NULL;
-
-		return ret;
-	}
-
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
 		@throw [OFLockFailedException exception];
 
 	@try {
 # endif
+		in_addr_t s_addr;
+		struct hostent *he;
+		char **ip;
+		struct sockaddr_in *addrs, *addrsIter;
+
+		/*
+		 * If the host is an IP address, don't try resolving it.  On
+		 * the Wii for example, the resolver will return an error if
+		 * you specify an IP address.
+		 */
+		if ((s_addr = inet_addr([host UTF8String])) != INADDR_NONE) {
+			of_resolver_result_t *tmp;
+			struct sockaddr_in *addr;
+
+			if ((ret = calloc(2, sizeof(*ret))) == NULL)
+				@throw [OFOutOfMemoryException
+				    exceptionWithRequestedSize: 2 *
+								sizeof(*ret)];
+
+			if ((tmp = malloc(sizeof(*tmp))) == NULL) {
+				free(ret);
+				@throw [OFOutOfMemoryException
+				    exceptionWithRequestedSize: sizeof(*tmp)];
+			}
+
+			if ((addr = calloc(1, sizeof(*addr))) == NULL) {
+				free(ret);
+				free(tmp);
+				@throw [OFOutOfMemoryException
+				    exceptionWithRequestedSize: sizeof(*addr)];
+			}
+
+			addr->sin_family = AF_INET;
+			addr->sin_port = OF_BSWAP16_IF_LE(port);
+			addr->sin_addr.s_addr = s_addr;
+
+			tmp->family = AF_INET;
+			tmp->type = type;
+			tmp->protocol = 0;
+			tmp->address = (struct sockaddr*)addr;
+			tmp->addressLength = sizeof(*addr);
+
+			ret[0] = tmp;
+			ret[1] = NULL;
+
+			return ret;
+		}
+
 		if ((he = gethostbyname([host UTF8String])) == NULL ||
 		    he->h_addrtype != AF_INET)
 			@throw [OFAddressTranslationFailedException
