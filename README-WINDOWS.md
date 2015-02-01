@@ -1,74 +1,77 @@
 ObjFW on Windows
 ================
 
-This file contains instructions on how to get a working build environment to
-compile and use ObjFW on Windows.
+  This file contains instructions on how to get a working build environment to
+  compile and use ObjFW on Windows.
 
 
-Prerequisites
-=============
+Getting MSYS2
+-------------
 
-The first thing you need to install is MinGW. If you already have MinGW
-installed, please *remove* it! ObjFW needs a GCC that emits DWARF-2 exception
-handling code. SjLj is *not* supported, and this is what most MinGW builds use.
-
-
-Installation
-============
-
-TDM-GCC
--------
-
-Instead of using the official MinGW builds, we're going to use the TDM-GCC
-builds, as these contain a version emitting DWARF-2 exception handling code.
-Even when using TDM-GCC, most builds will output SjLj exceptions. This is why
-we are going to use this
-[installer](http://sourceforge.net/projects/tdm-gcc/files/TDM-GCC%20Installer/tdm-gcc-webdl.exe/download).
-
-After downloading and starting the installer, we choose to create a new
-installation. In the next step, the installer asks whether we want a
-`MinGW/TDM` installation or a `MinGW-w64/TDM64 Experimental` installation. It
-is very important to choose the `MinGW/TDM` installation, as `MinGW-w64/TDM64`
-does *not* include GCC versions that output DWARF-2 exceptions! When asked for
-an installation path, it is recommended to keep the default of `C:\MinGW32`;
-the selected mirror does not really matter. After that, the components to be
-installed have to be selected. Select `TDM-GCC Recommended, C/C++` as
-installation type, then expand `Components` → `gcc` → `Version` and select the
-TDM-GCC version ending in -dw2 and enable the `objc` checkbox. In the next step
-the installer will start downloading and installing the selected components.
+  The first thing to install is [MSYS2](https://msys2.github.io) to provide a
+  basic UNIX-like environment for Windows. Unfortunately, the binaries are not
+  signed and there is no way to verify their integrity, so only download this
+  from a trusted connection. Everything else you will download using MSYS2
+  later will be cryptographically signed.
 
 
-MSys
-----
+Updating MSYS2
+--------------
 
-Next, we're going to install MSys. To do so, we're going to use the official
-MinGW installer, but we are *not* going to install MinGW with it, so follow
-these steps carefully. First, go to the [SourceForge download page for the
-MinGW installer](http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/)
-and select the latest version. Get the .exe file there. When you launch it,
-select the same installation path you selected for TDM-GCC before. After
-selecting the installation directory, *deselect* all compilers and select
-*only* `MSYS Basic System` and `MinGW Developer ToolKit`. Make sure `MinGW
-Compiler Suite` is white and not grey! The installation progress bar will be
-completely filled after a short while and it will appear to hang - this is
-*not* the case. When it reaches that step, it starts downloading the required
-files and installs them. Just give it some time.
+  The first thing to do is updating MSYS2. It is important to update things in
+  a certain order, as `pacman` (the package manager MSYS2 uses, which comes
+  from ArchLinux) does not know about a few things that are special on Windows.
+
+  First, update the mirror list:
+
+    $ pacman -Sy pacman-mirrors
+
+  Then proceed to update the `msys2-runtime` itself, `bash` and `pacman`:
+
+    $ pacman -S msys2-runtime bash pacman
+
+  Now close the current window and restart MSYS2, as the current window is now
+  defunct. In a new MSYS2 window, update the rest of MSYS2:
+
+    $ pacman -Su
+
+  Now you have a fully updated MSYS2. Whenever you want to update MSYS2,
+  proceed in this order. Notice that the first `pacman` invocation includes
+  `-y` to actually fetch a new list of packages.
 
 
-Building ObjFW
-==============
+Installing MinGW-w64 using MSYS2
+--------------------------------
 
-Building ObjFW for Windows works pretty much the same way it works on any other
-operating system. The only thing you need to pay attention to is that the
-TDM-GCC binary is called gcc-dw2. So all you need to do is `export OBJC=gcc-dw2`
-before executing the usual `./autogen.sh && ./configure && make install`.
+  Now it's time to install MinGW-w64. If you want to build 32 bit binaries:
+
+    $ pacman -S mingw-w64-i686-gcc-objc
+
+  For 64 bit binaries:
+
+    $ pacman -S mingw-w64-x86_64-gcc-objc
+
+  There is nothing wrong with installing them both, as MSYS2 has created two
+  entries in your start menu: MinGW-w64 Win32 Shell and MinGW-w64 Win64 Shell.
+  So if you want to build for 32 or 64 bit, you just start the correct shell.
+
+  Finally, install a few more things needed to build ObjFW:
+
+    $ pacman -S autoconf automake git make
 
 
-Troubleshooting
-===============
+Getting, building and installing ObjFW
+--------------------------------------
 
-If you are getting errors about no threads being available when typing `make`,
-you've hit a bug present in some versions of Git for Windows. If you delete
-your checkout and get a
-[tarball](https://webkeks.org/git/?p=objfw.git;a=snapshot;h=HEAD;sf=tgz), it
-should work.
+  Start the MinGW-w64 Win32 or Win64 Shell (depening on what version you want
+  to build) and check out ObjFW:
+
+    $ git clone https://webkeks.org/git/objfw.git
+
+  You can also download a release tarball if you want. Now go to the newly
+  checked out repository and build and install it:
+
+    $ ./autogen.sh && ./configure && make -j16 install
+
+  If everything was successfully, you can now build projects using ObjFW for
+  Windows using the normal `objfw-compile` and friends.
