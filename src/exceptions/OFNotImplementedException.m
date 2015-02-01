@@ -19,8 +19,6 @@
 #import "OFNotImplementedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFNotImplementedException
 + (instancetype)exceptionWithSelector: (SEL)selector
 			       object: (id)object

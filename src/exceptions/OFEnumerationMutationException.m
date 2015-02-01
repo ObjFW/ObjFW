@@ -19,8 +19,6 @@
 #import "OFEnumerationMutationException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFEnumerationMutationException
 + (instancetype)exceptionWithObject: (id)object
 {

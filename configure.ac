@@ -457,6 +457,8 @@ case "$host" in
 		;;
 esac
 
+AC_CHECK_FUNCS(strerror_r)
+
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
 
 AC_CHECK_FUNC(asprintf, [
@@ -855,8 +857,6 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	], [
 		AC_MSG_RESULT(no)
 	])
-
-	AC_CHECK_FUNCS([h_errno hstrerror])
 ])
 
 AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [

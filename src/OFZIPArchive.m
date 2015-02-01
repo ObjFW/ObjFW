@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
@@ -321,11 +323,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	OFZIPArchive_LocalFileHeader *localFileHeader;
 	uint64_t offset64;
 
-	if (entry == nil) {
-		errno = ENOENT;
+	if (entry == nil)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"rb"];
-	}
+							       mode: @"rb"
+							      errNo: ENOENT];
 
 	offset64 = [entry OF_localFileHeaderOffset];
 	if ((of_offset_t)offset64 != offset64)

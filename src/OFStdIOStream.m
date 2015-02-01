@@ -22,6 +22,7 @@
 # undef __USE_XOPEN
 #endif
 
+#include <errno.h>
 #include <unistd.h>
 
 #import "OFStdIOStream.h"
@@ -98,19 +99,23 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-#ifndef _WIN32
-	if (_fd == -1 || _atEndOfStream ||
-	    (ret = read(_fd, buffer, length)) < 0)
+	if (_fd == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+
+#ifndef _WIN32
+	if ((ret = read(_fd, buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: errno];
 #else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_fd == -1 || _atEndOfStream ||
-	    (ret = read(_fd, buffer, (unsigned int)length)) < 0)
+	if ((ret = read(_fd, buffer, (unsigned int)length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+						  requestedLength: length
+							    errNo: errno];
 #endif
 
 	if (ret == 0)
@@ -122,18 +127,23 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
-#ifndef _WIN32
-	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
+	if (_fd == -1 || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+
+#ifndef _WIN32
+	if (write(_fd, buffer, length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: errno];
 #else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_fd == -1 || _atEndOfStream ||
-	    write(_fd, buffer, (unsigned int)length) < length)
+	if (write(_fd, buffer, (unsigned int)length) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+						   requestedLength: length
+							     errNo: errno];
 #endif
 }
 

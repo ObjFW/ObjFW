@@ -19,8 +19,6 @@
 #import "OFStillLockedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFStillLockedException
 + (instancetype)exceptionWithLock: (id <OFLocking>)lock
 {

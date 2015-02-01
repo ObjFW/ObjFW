@@ -19,12 +19,12 @@
 #import "OFAcceptFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFAcceptFailedException
 + (instancetype)exceptionWithSocket: (id)socket
+			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithSocket: socket] autorelease];
+	return [[[self alloc] initWithSocket: socket
+				       errNo: errNo] autorelease];
 }
 
 - init
@@ -33,11 +33,12 @@
 }
 
 - initWithSocket: (id)socket
+	   errNo: (int)errNo
 {
 	self = [super init];
 
 	_socket = [socket retain];
-	_errNo = GET_SOCK_ERRNO;
+	_errNo = errNo;
 
 	return self;
 }
@@ -52,8 +53,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to accept connection in socket of class %@! " ERRFMT,
-	    [_socket class], ERRPARAM];
+	    @"Failed to accept connection in socket of class %@: %@",
+	    [_socket class], of_strerror(_errNo)];
 }
 
 - (id)socket
@@ -63,10 +64,6 @@
 
 - (int)errNo
 {
-#ifdef _WIN32
-	return of_wsaerr_to_errno(_errNo);
-#else
 	return _errNo;
-#endif
 }
 @end

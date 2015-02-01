@@ -23,11 +23,12 @@
 # define _HAVE_STRING_ARCH_strcmp
 #endif
 
+#include <errno.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
 /* Work around __block being used by glibc */
 #ifdef __GLIBC__
@@ -328,7 +329,8 @@ parseMode(const char *mode)
 	if (_wmkdir([path UTF16String]) != 0)
 #endif
 		@throw [OFCreateDirectoryFailedException
-		    exceptionWithPath: path];
+		    exceptionWithPath: path
+				errNo: errno];
 }
 
 + (void)createDirectoryAtPath: (OFString*)path
@@ -393,7 +395,8 @@ parseMode(const char *mode)
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"];
+							       mode: @"r"
+							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
 	if (!of_mutex_lock(&mutex))
@@ -413,13 +416,22 @@ parseMode(const char *mode)
 			if (readdir_r(dir, &buffer, &dirent) != 0)
 				@throw [OFReadFailedException
 				    exceptionWithObject: self
-					requestedLength: 0];
-# else
-			dirent = readdir(dir);
-# endif
+					requestedLength: 0
+						  errNo: errno];
 
 			if (dirent == NULL)
 				break;
+# else
+			if ((dirent = readdir(dir)) == NULL) {
+				if (errno == 0)
+					break;
+				else
+					@throw [OFReadFailedException
+					    exceptionWithObject: self
+						requestedLength: 0
+							  errNo: errno];
+			}
+# endif
 
 			if (strcmp(dirent->d_name, ".") == 0 ||
 			    strcmp(dirent->d_name, "..") == 0)
@@ -448,9 +460,16 @@ parseMode(const char *mode)
 	path = [path stringByAppendingString: @"\\*"];
 
 	if ((handle = FindFirstFileW([path UTF16String],
-	    &fd)) == INVALID_HANDLE_VALUE)
+	    &fd)) == INVALID_HANDLE_VALUE) {
+		int errNo = 0;
+
+		if (GetLastError() == ERROR_FILE_NOT_FOUND)
+			errNo = ENOENT;
+
 		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"];
+							       mode: @"r"
+							      errNo: errNo];
+	}
 
 	@try {
 		do {
@@ -466,6 +485,10 @@ parseMode(const char *mode)
 
 			objc_autoreleasePoolPop(pool2);
 		} while (FindNextFileW(handle, &fd));
+
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+			@throw [OFReadFailedException exceptionWithObject: self
+							  requestedLength: 0];
 	} @finally {
 		FindClose(handle);
 	}
@@ -490,7 +513,8 @@ parseMode(const char *mode)
 	if (_wchdir([path UTF16String]) != 0)
 #endif
 		@throw [OFChangeCurrentDirectoryPathFailedException
-		    exceptionWithPath: path];
+		    exceptionWithPath: path
+				errNo: errno];
 }
 
 + (of_offset_t)sizeOfFileAtPath: (OFString*)path
@@ -500,10 +524,11 @@ parseMode(const char *mode)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(path, &s) == -1)
+	if (of_stat(path, &s) != 0)
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"];
+							       mode: @"r"
+							      errNo: errno];
 
 	return s.st_size;
 }
@@ -515,10 +540,11 @@ parseMode(const char *mode)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(path, &s) == -1)
+	if (of_stat(path, &s) != 0)
 		/* FIXME: Maybe use another exception? */
 		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"];
+							       mode: @"r"
+							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
@@ -539,7 +565,8 @@ parseMode(const char *mode)
 # endif
 		@throw [OFChangePermissionsFailedException
 		    exceptionWithPath: path
-			  permissions: permissions];
+			  permissions: permissions
+				errNo: errno];
 }
 #endif
 
@@ -571,7 +598,8 @@ parseMode(const char *mode)
 				@throw [OFChangeOwnerFailedException
 				    exceptionWithPath: path
 						owner: owner
-						group: group];
+						group: group
+						errNo: errno];
 
 			uid = passwd->pw_uid;
 		}
@@ -584,7 +612,8 @@ parseMode(const char *mode)
 				@throw [OFChangeOwnerFailedException
 				    exceptionWithPath: path
 						owner: owner
-						group: group];
+						group: group
+						errNo: errno];
 
 			gid = group_->gr_gid;
 		}
@@ -598,7 +627,8 @@ parseMode(const char *mode)
 	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
 		@throw [OFChangeOwnerFailedException exceptionWithPath: path
 								 owner: owner
-								 group: group];
+								 group: group
+								 errNo: errno];
 }
 #endif
 
@@ -613,17 +643,17 @@ parseMode(const char *mode)
 
 	pool = objc_autoreleasePoolPush();
 
-	if (of_lstat(destination, &s) == 0) {
-		errno = EEXIST;
+	if (of_lstat(destination, &s) == 0)
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
-	}
+			    destinationPath: destination
+				      errNo: EEXIST];
 
 	if (of_lstat(source, &s) != 0)
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
+			    destinationPath: destination
+				      errNo: errno];
 
 	if (S_ISDIR(s.st_mode)) {
 		OFArray *contents;
@@ -639,9 +669,19 @@ parseMode(const char *mode)
 
 			contents = [OFFile contentsOfDirectoryAtPath: source];
 		} @catch (id e) {
-			@throw [OFCopyItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination];
+			/*
+			 * Only convert exceptions to OFCopyItemFailedException
+			 * that have an errNo property. This covers all I/O
+			 * related exceptions from the operations used to copy
+			 * an item, all others should be left as is.
+			 */
+			if ([e respondsToSelector: @selector(errNo)])
+				@throw [OFCopyItemFailedException
+				    exceptionWithSourcePath: source
+					    destinationPath: destination
+						      errNo: [e errNo]];
+
+			@throw e;
 		}
 
 		enumerator = [contents objectEnumerator];
@@ -689,9 +729,19 @@ parseMode(const char *mode)
 						permissions: s.st_mode];
 #endif
 		} @catch (id e) {
-			@throw [OFCopyItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination];
+			/*
+			 * Only convert exceptions to OFCopyItemFailedException
+			 * that have an errNo property. This covers all I/O
+			 * related exceptions from the operations used to copy
+			 * an item, all others should be left as is.
+			 */
+			if ([e respondsToSelector: @selector(errNo)])
+				@throw [OFCopyItemFailedException
+				    exceptionWithSourcePath: source
+					    destinationPath: destination
+						      errNo: [e errNo]];
+
+			@throw e;
 		} @finally {
 			[sourceFile close];
 			[destinationFile close];
@@ -706,15 +756,26 @@ parseMode(const char *mode)
 			[OFFile createSymbolicLinkAtPath: destination
 				     withDestinationPath: source];
 		} @catch (id e) {
-			@throw [OFCopyItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination];
+			/*
+			 * Only convert exceptions to OFCopyItemFailedException
+			 * that have an errNo property. This covers all I/O
+			 * related exceptions from the operations used to copy
+			 * an item, all others should be left as is.
+			 */
+			if ([e respondsToSelector: @selector(errNo)])
+				@throw [OFCopyItemFailedException
+				    exceptionWithSourcePath: source
+					    destinationPath: destination
+						      errNo: [e errNo]];
+
+			@throw e;
 		}
 #endif
 	} else
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
+			    destinationPath: destination
+				      errNo: ENOTSUP];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -733,12 +794,11 @@ parseMode(const char *mode)
 
 	pool = objc_autoreleasePoolPush();
 
-	if (of_lstat(destination, &s) == 0) {
-		errno = EEXIST;
+	if (of_lstat(destination, &s) == 0)
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
-	}
+			    destinationPath: destination
+				      errNo: EEXIST];
 
 #ifndef _WIN32
 	encoding = [OFSystemInfo native8BitEncoding];
@@ -751,16 +811,19 @@ parseMode(const char *mode)
 		if (errno != EXDEV)
 			@throw [OFMoveItemFailedException
 			    exceptionWithSourcePath: source
-				    destinationPath: destination];
+				    destinationPath: destination
+					      errNo: errno];
 
 		@try {
 			[OFFile copyItemAtPath: source
 					toPath: destination];
 		} @catch (OFCopyItemFailedException *e) {
 			[OFFile removeItemAtPath: destination];
+
 			@throw [OFMoveItemFailedException
 			    exceptionWithSourcePath: source
-				    destinationPath: destination];
+				    destinationPath: destination
+					      errNo: [e errNo]];
 		}
 
 		@try {
@@ -768,7 +831,8 @@ parseMode(const char *mode)
 		} @catch (OFRemoveItemFailedException *e) {
 			@throw [OFMoveItemFailedException
 			    exceptionWithSourcePath: source
-				    destinationPath: destination];
+				    destinationPath: destination
+					      errNo: [e errNo]];
 		}
 	}
 
@@ -786,7 +850,8 @@ parseMode(const char *mode)
 	pool = objc_autoreleasePoolPush();
 
 	if (of_lstat(path, &s) != 0)
-		@throw [OFRemoveItemFailedException exceptionWithPath: path];
+		@throw [OFRemoveItemFailedException exceptionWithPath: path
+								errNo: errno];
 
 	if (S_ISDIR(s.st_mode)) {
 		OFArray *contents;
@@ -796,8 +861,19 @@ parseMode(const char *mode)
 		@try {
 			contents = [OFFile contentsOfDirectoryAtPath: path];
 		} @catch (id e) {
-			@throw [OFRemoveItemFailedException
-			    exceptionWithPath: path];
+			/*
+			 * Only convert exceptions to
+			 * OFRemoveItemFailedException that have an errNo
+			 * property. This covers all I/O related exceptions
+			 * from the operations used to remove an item, all
+			 * others should be left as is.
+			 */
+			if ([e respondsToSelector: @selector(errNo)])
+				@throw [OFRemoveItemFailedException
+				    exceptionWithPath: path
+						errNo: [e errNo]];
+
+			@throw e;
 		}
 
 		enumerator = [contents objectEnumerator];
@@ -817,7 +893,8 @@ parseMode(const char *mode)
 #else
 	if (_wremove([path UTF16String]) != 0)
 #endif
-		@throw [OFRemoveItemFailedException exceptionWithPath: path];
+		@throw [OFRemoveItemFailedException exceptionWithPath: path
+								errNo: errno];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -839,7 +916,8 @@ parseMode(const char *mode)
 	    [destination cStringWithEncoding: encoding]) != 0)
 		@throw [OFLinkFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
+			    destinationPath: destination
+				      errNo: errno];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -862,7 +940,8 @@ parseMode(const char *mode)
 	    [destination cStringWithEncoding: encoding]) != 0)
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
+			    destinationPath: destination
+				      errNo: errno];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -882,7 +961,8 @@ parseMode(const char *mode)
 
 	if (length < 0)
 		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"];
+							       mode: @"r"
+							      errNo: errno];
 
 	return [OFString stringWithCString: destination
 				  encoding: encoding
@@ -920,7 +1000,8 @@ parseMode(const char *mode)
 #endif
 			@throw [OFOpenFileFailedException
 			    exceptionWithPath: path
-					 mode: mode];
+					 mode: mode
+					errNo: errno];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -951,19 +1032,24 @@ parseMode(const char *mode)
 {
 	ssize_t ret;
 
-#ifndef _WIN32
-	if (_fd == -1 || _atEndOfStream ||
-	    (ret = read(_fd, buffer, length)) < 0)
+
+	if (_fd == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+
+#ifndef _WIN32
+	if ((ret = read(_fd, buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: errno];
 #else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_fd == -1 || _atEndOfStream ||
-	    (ret = read(_fd, buffer, (unsigned int)length)) < 0)
+	if ((ret = read(_fd, buffer, (unsigned int)length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+						  requestedLength: length
+							    errNo: errno];
 #endif
 
 	if (ret == 0)
@@ -975,18 +1061,23 @@ parseMode(const char *mode)
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
-#ifndef _WIN32
-	if (_fd == -1 || _atEndOfStream || write(_fd, buffer, length) < length)
+	if (_fd == -1 || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+
+#ifndef _WIN32
+	if (write(_fd, buffer, length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: errno];
 #else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_fd == -1 || _atEndOfStream ||
-	    write(_fd, buffer, (unsigned int)length) < length)
+	if (write(_fd, buffer, (unsigned int)length) < length)
 		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+						   requestedLength: length
+							     errNo: errno];
 #endif
 }
 
@@ -1004,7 +1095,8 @@ parseMode(const char *mode)
 	if (ret == -1)
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
-							   whence: whence];
+							   whence: whence
+							    errNo: errno];
 
 	_atEndOfStream = false;
 

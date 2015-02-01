@@ -16,10 +16,11 @@
 
 #include "config.h"
 
+#include <ctype.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include <sys/stat.h>
 
@@ -29,7 +30,6 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
-#import "OFSystemInfo.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -821,7 +821,7 @@ static struct {
 		encoding: (of_string_encoding_t)encoding
 {
 	char *tmp;
-	struct stat st;
+	of_stat_t st;
 
 	@try {
 		OFFile *file;
@@ -829,11 +829,11 @@ static struct {
 		/* Make sure the file system is initialized */
 		[OFFile class];
 
-		if (stat([path cStringWithEncoding:
-		    [OFSystemInfo native8BitEncoding]], &st) == -1)
+		if (of_stat(path, &st) != 0)
 			@throw [OFOpenFileFailedException
 			    exceptionWithPath: path
-					 mode: @"rb"];
+					 mode: @"rb"
+					errNo: errno];
 
 		if (st.st_size > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];

@@ -20,11 +20,11 @@
 
 #include "config.h"
 
+#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
 
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
@@ -269,6 +269,7 @@ static uint16_t freePort = 65532;
 	OFString *destinationHost = host;
 	uint16_t destinationPort = port;
 	of_resolver_result_t **results, **iter;
+	int errNo = 0;
 
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
@@ -296,8 +297,11 @@ static uint16_t freePort = 65532;
 
 		if ((_socket = socket(result->family,
 		    result->type | SOCK_CLOEXEC,
-		    result->protocol)) == INVALID_SOCKET)
+		    result->protocol)) == INVALID_SOCKET) {
+			errNo = of_socket_errno();
+
 			continue;
+		}
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -306,8 +310,11 @@ static uint16_t freePort = 65532;
 
 		if (connect(_socket, result->address,
 		    result->addressLength) == -1) {
+			errNo = of_socket_errno();
+
 			close(_socket);
 			_socket = INVALID_SOCKET;
+
 			continue;
 		}
 
@@ -319,7 +326,8 @@ static uint16_t freePort = 65532;
 	if (_socket == INVALID_SOCKET)
 		@throw [OFConnectionFailedException exceptionWithHost: host
 								 port: port
-							       socket: self];
+							       socket: self
+								errNo: errNo];
 
 	if (_SOCKS5Host != nil)
 		[self OF_SOCKS5ConnectToHost: destinationHost
@@ -401,27 +409,31 @@ static uint16_t freePort = 65532;
 		if ((_socket = socket(results[0]->family,
 		    results[0]->type | SOCK_CLOEXEC,
 		    results[0]->protocol)) == INVALID_SOCKET)
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self];
+			@throw [OFBindFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: of_socket_errno()];
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-		if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
-		    (const char*)&one, (socklen_t)sizeof(one)))
-			@throw [OFSetOptionFailedException
-			    exceptionWithStream: self];
+		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
+		    (const char*)&one, (socklen_t)sizeof(one));
 
 		if (bind(_socket, results[0]->address,
 		    results[0]->addressLength) == -1) {
+			int errNo = of_socket_errno();
+
 			close(_socket);
 			_socket = INVALID_SOCKET;
+
 			@throw [OFBindFailedException exceptionWithHost: host
 								   port: port
-								 socket: self];
+								 socket: self
+								  errNo: errNo];
 		}
 	} @finally {
 		of_resolver_free(results);
@@ -433,11 +445,15 @@ static uint16_t freePort = 65532;
 #ifndef __wii__
 	addrLen = (socklen_t)sizeof(addr.storage);
 	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
+		int errNo = of_socket_errno();
+
 		close(_socket);
 		_socket = INVALID_SOCKET;
+
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
-							 socket: self];
+							 socket: self
+							  errNo: errNo];
 	}
 
 	if (addr.storage.ss_family == AF_INET)
@@ -452,7 +468,8 @@ static uint16_t freePort = 65532;
 	_socket = INVALID_SOCKET;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
-						 socket: self];
+						 socket: self
+						  errNo: EAFNOSUPPORT];
 }
 
 - (void)listen
@@ -466,8 +483,10 @@ static uint16_t freePort = 65532;
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
 	if (listen(_socket, backLog) == -1)
-		@throw [OFListenFailedException exceptionWithSocket: self
-							    backLog: backLog];
+		@throw [OFListenFailedException
+		    exceptionWithSocket: self
+				backLog: backLog
+				  errNo: of_socket_errno()];
 
 	_listening = true;
 }
@@ -488,15 +507,21 @@ static uint16_t freePort = 65532;
 #if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = paccept(_socket, client->_address,
 	   &client->_addressLength, NULL, SOCK_CLOEXEC)) == INVALID_SOCKET)
-		@throw [OFAcceptFailedException exceptionWithSocket: self];
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
 	if ((client->_socket = accept4(_socket, client->_address,
 	   &client->_addressLength, SOCK_CLOEXEC)) == INVALID_SOCKET)
-		@throw [OFAcceptFailedException exceptionWithSocket: self];
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
 #else
 	if ((client->_socket = accept(_socket, client->_address,
 	   &client->_addressLength)) == INVALID_SOCKET)
-		@throw [OFAcceptFailedException exceptionWithSocket: self];
+		@throw [OFAcceptFailedException
+		    exceptionWithSocket: self
+				  errNo: of_socket_errno()];
 
 # if defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 	if ((flags = fcntl(client->_socket, F_GETFD, 0)) != -1)
@@ -541,7 +566,9 @@ static uint16_t freePort = 65532;
 
 	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
 	    (char*)&v, (socklen_t)sizeof(v)))
-		@throw [OFSetOptionFailedException exceptionWithStream: self];
+		@throw [OFSetOptionFailedException
+		    exceptionWithStream: self
+				  errNo: of_socket_errno()];
 }
 
 - (OFString*)remoteAddress

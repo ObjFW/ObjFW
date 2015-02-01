@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdlib.h>
 
 #ifdef HAVE_DLFCN_H
@@ -25,19 +26,26 @@
 #import "OFException.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFSystemInfo.h"
+
+#import "OFInitializationFailedException.h"
+#import "OFLockFailedException.h"
+#import "OFUnlockFailedException.h"
+
+#if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
+# import "threading.h"
+#endif
 
 #if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
-# include <errno.h>
 # include <winerror.h>
 #endif
 
 /*
  * Define HAVE_DWARF_EXCEPTIONS if OBJC_ZEROCOST_EXCEPTIONS is defined, but
- * don't do so on 32-bit ARM, as it is defined there even if SjLj exceptions
- * are used.
+ * don't do so on iOS, as it is defined there even if SjLj exceptions are used.
  */
 #ifndef HAVE_DWARF_EXCEPTIONS
-# if defined(OBJC_ZEROCOST_EXCEPTIONS) && !defined(__ARMEL__)
+# if defined(OBJC_ZEROCOST_EXCEPTIONS) && !defined(OF_IOS)
 #  define HAVE_DWARF_EXCEPTIONS
 # endif
 #endif
@@ -70,6 +78,133 @@ extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
 # endif
 
+#if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
+static of_mutex_t mutex;
+
+static void __attribute__((__constructor__))
+init(void)
+{
+	if (!of_mutex_new(&mutex))
+		@throw [OFInitializationFailedException exception];
+}
+#endif
+
+OFString*
+of_strerror(int errNo)
+{
+	OFString *ret;
+#ifdef HAVE_STRERROR_R
+	char buffer[256];
+#endif
+
+#ifdef _WIN32
+	/*
+	 * These were translated from WSAE* errors to errno and thus Win32's
+	 * strerror_r() does not know about them.
+	 *
+	 * FIXME: These could have better descriptions!
+	 */
+	switch (errNo) {
+	case EADDRINUSE:
+		return @"EADDRINUSE";
+	case EADDRNOTAVAIL:
+		return @"EADDRNOTAVAIL";
+	case EAFNOSUPPORT:
+		return @"EAFNOSUPPORT";
+	case EALREADY:
+		return @"EALREADY";
+	case ECONNABORTED:
+		return @"ECONNABORTED";
+	case ECONNREFUSED:
+		return @"ECONNREFUSED";
+	case ECONNRESET:
+		return @"ECONNRESET";
+	case EDESTADDRREQ:
+		return @"EDESTADDRREQ";
+	case EDQUOT:
+		return @"EDQUOT";
+	case EHOSTDOWN:
+		return @"EHOSTDOWN";
+	case EHOSTUNREACH:
+		return @"EHOSTUNREACH";
+	case EINPROGRESS:
+		return @"EINPROGRESS";
+	case EISCONN:
+		return @"EISCONN";
+	case ELOOP:
+		return @"ELOOP";
+	case EMSGSIZE:
+		return @"EMSGSIZE";
+	case ENETDOWN:
+		return @"ENETDOWN";
+	case ENETRESET:
+		return @"ENETRESET";
+	case ENETUNREACH:
+		return @"ENETUNREACH";
+	case ENOBUFS:
+		return @"ENOBUFS";
+	case ENOPROTOOPT:
+		return @"ENOPROTOOPT";
+	case ENOTCONN:
+		return @"ENOTCONN";
+	case ENOTSOCK:
+		return @"ENOTSOCK";
+	case EOPNOTSUPP:
+		return @"EOPNOTSUPP";
+	case EPFNOSUPPORT:
+		return @"EPFNOSUPPORT";
+	case EPROCLIM:
+		return @"EPROCLIM";
+	case EPROTONOSUPPORT:
+		return @"EPROTONOSUPPORT";
+	case EPROTOTYPE:
+		return @"EPROTOTYPE";
+	case EREMOTE:
+		return @"EREMOTE";
+	case ESHUTDOWN:
+		return @"ESHUTDOWN";
+	case ESOCKTNOSUPPORT:
+		return @"ESOCKTNOSUPPORT";
+	case ESTALE:
+		return @"ESTALE";
+	case ETIMEDOUT:
+		return @"ETIMEDOUT";
+	case ETOOMANYREFS:
+		return @"ETOOMANYREFS";
+	case EUSERS:
+		return @"EUSERS";
+	case EWOULDBLOCK:
+		return @"EWOULDBLOCK";
+	}
+#endif
+
+#ifdef HAVE_STRERROR_R
+	if (strerror_r(errNo, buffer, 256) != 0)
+		return @"Unknown error (strerror_r failed)";
+
+	ret = [OFString stringWithCString: buffer
+				 encoding: [OFSystemInfo native8BitEncoding]];
+#else
+# ifdef OF_HAVE_THREADS
+	if (!of_mutex_lock(&mutex))
+		@throw [OFLockFailedException exception];
+
+	@try {
+# endif
+		ret = [OFString
+		    stringWithCString: strerror(errNo)
+			     encoding: [OFSystemInfo native8BitEncoding]];
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFUnlockFailedException exception];
+	}
+# endif
+#endif
+
+	return ret;
+}
+
 static _Unwind_Reason_Code
 backtrace_callback(struct _Unwind_Context *ctx, void *data)
 {
@@ -88,103 +223,6 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	}
 
 	return _URC_END_OF_STACK;
-}
-#endif
-
-#if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
-int
-of_wsaerr_to_errno(int wsaerr)
-{
-	switch (wsaerr) {
-	case WSAEACCES:
-		return EACCES;
-	case WSAEADDRINUSE:
-		return EADDRINUSE;
-	case WSAEADDRNOTAVAIL:
-		return EADDRNOTAVAIL;
-	case WSAEAFNOSUPPORT:
-		return EAFNOSUPPORT;
-	case WSAEALREADY:
-		return EALREADY;
-	case WSAEBADF:
-		return EBADF;
-	case WSAECONNABORTED:
-		return ECONNABORTED;
-	case WSAECONNREFUSED:
-		return ECONNREFUSED;
-	case WSAECONNRESET:
-		return ECONNRESET;
-	case WSAEDESTADDRREQ:
-		return EDESTADDRREQ;
-	case WSAEDISCON:
-		return EPIPE;
-	case WSAEDQUOT:
-		return EDQUOT;
-	case WSAEFAULT:
-		return EFAULT;
-	case WSAEHOSTDOWN:
-		return EHOSTDOWN;
-	case WSAEHOSTUNREACH:
-		return EHOSTUNREACH;
-	case WSAEINPROGRESS:
-		return EINPROGRESS;
-	case WSAEINTR:
-		return EINTR;
-	case WSAEINVAL:
-		return EINVAL;
-	case WSAEISCONN:
-		return EISCONN;
-	case WSAELOOP:
-		return ELOOP;
-	case WSAEMSGSIZE:
-		return EMSGSIZE;
-	case WSAENAMETOOLONG:
-		return ENAMETOOLONG;
-	case WSAENETDOWN:
-		return ENETDOWN;
-	case WSAENETRESET:
-		return ENETRESET;
-	case WSAENETUNREACH:
-		return ENETUNREACH;
-	case WSAENOBUFS:
-		return ENOBUFS;
-	case WSAENOPROTOOPT:
-		return ENOPROTOOPT;
-	case WSAENOTCONN:
-		return ENOTCONN;
-	case WSAENOTEMPTY:
-		return ENOTEMPTY;
-	case WSAENOTSOCK:
-		return ENOTSOCK;
-	case WSAEOPNOTSUPP:
-		return EOPNOTSUPP;
-	case WSAEPFNOSUPPORT:
-		return EPFNOSUPPORT;
-	case WSAEPROCLIM:
-		return EPROCLIM;
-	case WSAEPROTONOSUPPORT:
-		return EPROTONOSUPPORT;
-	case WSAEPROTOTYPE:
-		return EPROTOTYPE;
-	case WSAEREMOTE:
-		return EREMOTE;
-	case WSAESHUTDOWN:
-		return ESHUTDOWN;
-	case WSAESOCKTNOSUPPORT:
-		return ESOCKTNOSUPPORT;
-	case WSAESTALE:
-		return ESTALE;
-	case WSAETIMEDOUT:
-		return ETIMEDOUT;
-	case WSAETOOMANYREFS:
-		return ETOOMANYREFS;
-	case WSAEUSERS:
-		return EUSERS;
-	case WSAEWOULDBLOCK:
-		return EWOULDBLOCK;
-	default:
-		return wsaerr;
-	}
 }
 #endif
 

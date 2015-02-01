@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifndef OF_HAVE_SOCKETS
@@ -43,17 +41,21 @@
  * @brief Creates a new, autoreleased accept failed exception.
  *
  * @param socket The socket which could not accept a connection
+ * @param errNo The errno for the error
  * @return A new, autoreleased accept failed exception
  */
-+ (instancetype)exceptionWithSocket: (id)socket;
++ (instancetype)exceptionWithSocket: (id)socket
+			      errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated accept failed exception.
  *
  * @param socket The socket which could not accept a connection
+ * @param errNo The errno for the error
  * @return An initialized accept failed exception
  */
-- initWithSocket: (id)socket;
+- initWithSocket: (id)socket
+	   errNo: (int)errNo;
 
 /*!
  * @brief Returns the socket which could not accept a connection.

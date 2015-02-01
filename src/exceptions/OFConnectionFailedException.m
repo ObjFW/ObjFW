@@ -19,8 +19,6 @@
 #import "OFConnectionFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFConnectionFailedException
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
@@ -29,6 +27,17 @@
 	return [[[self alloc] initWithHost: host
 				      port: port
 				    socket: socket] autorelease];
+}
+
++ (instancetype)exceptionWithHost: (OFString*)host
+			     port: (uint16_t)port
+			   socket: (id)socket
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithHost: host
+				      port: port
+				    socket: socket
+				     errNo: errNo] autorelease];
 }
 
 - init
@@ -43,10 +52,29 @@
 	self = [super init];
 
 	@try {
-		_host   = [host copy];
+		_host = [host copy];
 		_socket = [socket retain];
-		_port   = port;
-		_errNo  = GET_SOCK_ERRNO;
+		_port = port;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithHost: (OFString*)host
+	  port: (uint16_t)port
+	socket: (id)socket
+	 errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_host = [host copy];
+		_socket = [socket retain];
+		_port = port;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -65,10 +93,16 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"A connection to %@ on port %" @PRIu16 @" could not be "
-	    @"established in socket of type %@! " ERRFMT, _host, _port,
-	    [_socket class], ERRPARAM];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"A connection to %@ on port %" @PRIu16 @" could not be "
+		    @"established in socket of type %@: %@",
+		    _host, _port, [_socket class], of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"A connection to %@ on port %" @PRIu16 @" could not be "
+		    @"established in socket of type %@!",
+		    _host, _port, [_socket class]];
 }
 
 - (OFString*)host
@@ -88,10 +122,6 @@
 
 - (int)errNo
 {
-#ifdef _WIN32
-	return of_wsaerr_to_errno(_errNo);
-#else
 	return _errNo;
-#endif
 }
 @end

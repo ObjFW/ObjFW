@@ -19,13 +19,16 @@
 #import "OFWriteFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFWriteFailedException
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to write %zu bytes to an object of type %@! " ERRFMT,
-	    _requestedLength, [_object class], ERRPARAM];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to write %zu bytes to an object of type %@: %@",
+		    _requestedLength, [_object class], of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to write %zu bytes to an object of type %@!",
+		    _requestedLength, [_object class]];
 }
 @end

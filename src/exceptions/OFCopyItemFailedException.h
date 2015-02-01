@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 /*!
@@ -41,20 +39,24 @@
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
+ * @param errNo The errno of the error
  * @return A new, autoreleased copy item failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath;
+			destinationPath: (OFString*)destinationPath
+				  errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated copy item failed exception.
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
+ * @param errNo The errno of the error
  * @return An initialized copy item failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath;
+     destinationPath: (OFString*)destinationPath
+	       errNo: (int)errNo;
 
 /*!
  * @brief Returns the path of the source item.

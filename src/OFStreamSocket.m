@@ -18,9 +18,8 @@
 
 #include "config.h"
 
-#include <string.h>
-
 #include <errno.h>
+#include <string.h>
 
 #import "OFStreamSocket.h"
 
@@ -39,7 +38,7 @@
 	if (self != [OFStreamSocket class])
 		return;
 
-	if (!of_init_sockets())
+	if (!of_socket_init())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -62,26 +61,26 @@
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
-	if (_atEndOfStream) {
-		OFReadFailedException *e;
-
-		e = [OFReadFailedException exceptionWithObject: self
-					       requestedLength: length];
-		e->_errNo = ENOTCONN;
-		@throw e;
-	}
+	if (_atEndOfStream)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: ENOTCONN];
 
 #ifndef _WIN32
 	if ((ret = recv(_socket, buffer, length, 0)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = recv(_socket, buffer, (unsigned int)length, 0)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #endif
 
 	if (ret == 0)
@@ -96,26 +95,26 @@
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotConnectedException exceptionWithSocket: self];
 
-	if (_atEndOfStream) {
-		OFWriteFailedException *e;
-
-		e = [OFWriteFailedException exceptionWithObject: self
-						requestedLength: length];
-		e->_errNo = ENOTCONN;
-		@throw e;
-	}
+	if (_atEndOfStream)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: ENOTCONN];
 
 #ifndef _WIN32
 	if (send(_socket, buffer, length, 0) < length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if (send(_socket, buffer, (unsigned int)length, 0) < length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #endif
 }
 
@@ -126,7 +125,9 @@
 	_blocking = enable;
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
-		@throw [OFSetOptionFailedException exceptionWithStream: self];
+		@throw [OFSetOptionFailedException
+		    exceptionWithStream: self
+				  errNo: of_socket_errno()];
 }
 #endif
 

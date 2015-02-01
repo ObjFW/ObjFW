@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFXMLParser.h"
 
-#import "common.h"
-
 @implementation OFUnboundPrefixException
 + (instancetype)exceptionWithPrefix: (OFString*)prefix
 			     parser: (OFXMLParser*)parser

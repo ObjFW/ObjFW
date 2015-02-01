@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFXMLParser.h"
 
-#import "common.h"
-
 @implementation OFMalformedXMLException
 + (instancetype)exceptionWithParser: (OFXMLParser*)parser
 {

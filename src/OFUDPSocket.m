@@ -16,9 +16,9 @@
 
 #include "config.h"
 
-#include <string.h>
-
 #include <assert.h>
+#include <errno.h>
+#include <string.h>
 
 #import "OFUDPSocket.h"
 #ifdef OF_HAVE_THREADS
@@ -281,7 +281,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	if (self != [OFUDPSocket class])
 		return;
 
-	if (!of_init_sockets())
+	if (!of_socket_init())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -402,9 +402,11 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		if ((_socket = socket(results[0]->family,
 		    results[0]->type | SOCK_CLOEXEC,
 		    results[0]->protocol)) == INVALID_SOCKET)
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self];
+			@throw [OFBindFailedException
+			    exceptionWithHost: host
+					 port: port
+				       socket: self
+					errNo: of_socket_errno()];
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -413,11 +415,15 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 		if (bind(_socket, results[0]->address,
 		    results[0]->addressLength) == -1) {
+			int errNo = of_socket_errno();
+
 			close(_socket);
 			_socket = INVALID_SOCKET;
+
 			@throw [OFBindFailedException exceptionWithHost: host
 								   port: port
-								 socket: self];
+								 socket: self
+								  errNo: errNo];
 		}
 	} @finally {
 		of_resolver_free(results);
@@ -429,11 +435,15 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef __wii__
 	addrLen = (socklen_t)sizeof(addr.storage);
 	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
+		int errNo = of_socket_errno();
+
 		close(_socket);
 		_socket = INVALID_SOCKET;
+
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
-							 socket: self];
+							 socket: self
+							  errNo: errNo];
 	}
 
 	if (addr.storage.ss_family == AF_INET)
@@ -448,7 +458,8 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	_socket = INVALID_SOCKET;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
-						 socket: self];
+						 socket: self
+						  errNo: EAFNOSUPPORT];
 }
 
 - (size_t)receiveIntoBuffer: (void*)buffer
@@ -465,16 +476,20 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef _WIN32
 	if ((ret = recvfrom(_socket, buffer, length, 0,
 	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
 	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+		@throw [OFReadFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #endif
 
 	return ret;
@@ -514,16 +529,20 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef _WIN32
 	if (sendto(_socket, buffer, length, 0,
 	    (struct sockaddr*)&receiver->address, receiver->length) < length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if (sendto(_socket, buffer, (int)length, 0,
 	    (struct sockaddr*)&receiver->address, receiver->length) < length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: length
+				  errNo: of_socket_errno()];
 #endif
 }
 

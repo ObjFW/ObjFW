@@ -19,8 +19,6 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFUnsupportedVersionException
 + (instancetype)exceptionWithVersion: (OFString*)version
 {

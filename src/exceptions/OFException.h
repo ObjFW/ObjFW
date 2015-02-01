@@ -166,3 +166,11 @@ extern int of_wsaerr_to_errno(int);
  */
 - (OFArray*)backtrace;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFString* of_strerror(int errNo);
+#ifdef __cplusplus
+}
+#endif

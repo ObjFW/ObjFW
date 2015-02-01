@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 /*!
@@ -39,17 +37,21 @@
  * @brief Creates a new, autoreleased remove failed exception.
  *
  * @param path The path of the item which could not be removed
+ * @param errNo The errno of the error
  * @return A new, autoreleased remove item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString*)path
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated remove failed exception.
  *
  * @param path The path of the item which could not be removed
+ * @param errNo The errno of the error
  * @return An initialized remove item failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString*)path
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns the path of the item which could not be removed.

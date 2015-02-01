@@ -21,8 +21,6 @@
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 
-#import "common.h"
-
 @implementation OFHTTPRequestFailedException
 + (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
 			    response: (OFHTTPResponse*)response

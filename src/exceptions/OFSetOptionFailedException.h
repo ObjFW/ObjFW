@@ -27,27 +27,33 @@
 @interface OFSetOptionFailedException: OFException
 {
 	OFStream *_stream;
+	int _errNo;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, retain) OFStream *stream;
+@property (readonly) int errNo;
 #endif
 
 /*!
  * @brief Creates a new, autoreleased set option failed exception.
  *
  * @param stream The stream for which the option could not be set
+ * @param errNo The errno of the error
  * @return A new, autoreleased set option failed exception
  */
-+ (instancetype)exceptionWithStream: (OFStream*)stream;
++ (instancetype)exceptionWithStream: (OFStream*)stream
+			      errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated set option failed exception.
  *
  * @param stream The stream for which the option could not be set
+ * @param errNo The errno of the error
  * @return An initialized set option failed exception
  */
-- initWithStream: (OFStream*)stream;
+- initWithStream: (OFStream*)stream
+	   errNo: (int)errNo;
 
 /*!
  * @brief Returns the stream for which the option could not be set.
@@ -55,4 +61,11 @@
  * @return The stream for which the option could not be set
  */
 - (OFStream*)stream;
+
+/*!
+ * @brief Returns the errno from when the exception was created.
+ *
+ * @return The errno from when the exception was created
+ */
+- (int)errNo;
 @end

@@ -18,12 +18,6 @@
 
 #import "OFReadOrWriteFailedException.h"
 #import "OFString.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFStreamSocket.h"
-# import "OFUDPSocket.h"
-#endif
-
-#import "common.h"
 
 @implementation OFReadOrWriteFailedException
 + (instancetype)exceptionWithObject: (id)object
@@ -31,6 +25,15 @@
 {
 	return [[[self alloc] initWithObject: object
 			     requestedLength: requestedLength] autorelease];
+}
+
++ (instancetype)exceptionWithObject: (id)object
+		    requestedLength: (size_t)requestedLength
+			      errNo: (int)errNo
+{
+	return [[[self alloc] initWithObject: object
+			     requestedLength: requestedLength
+				       errNo: errNo] autorelease];
 }
 
 - init
@@ -46,13 +49,18 @@
 	_object = [object retain];
 	_requestedLength = requestedLength;
 
-#ifdef OF_HAVE_SOCKETS
-	if ([object isKindOfClass: [OFStreamSocket class]] ||
-	    [object isKindOfClass: [OFUDPSocket class]])
-		_errNo = GET_SOCK_ERRNO;
-	else
-#endif
-		_errNo = GET_ERRNO;
+	return self;
+}
+
+-  initWithObject: (id)object
+  requestedLength: (size_t)requestedLength
+	    errNo: (int)errNo
+{
+	self = [super init];
+
+	_object = [object retain];
+	_requestedLength = requestedLength;
+	_errNo = errNo;
 
 	return self;
 }
@@ -66,9 +74,16 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to read or write %zu bytes from / to an object of type "
-	    @"%@! " ERRFMT, _requestedLength, [_object class], ERRPARAM];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to read or write %zu bytes from / to an object of "
+		    @"type %@: %@",
+		    _requestedLength, [_object class], of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to read or write %zu bytes from / to an object of "
+		    @"type %@!",
+		    _requestedLength, [_object class]];
 }
 
 - (id)object
@@ -83,10 +98,6 @@
 
 - (int)errNo
 {
-#ifdef _WIN32
-	return of_wsaerr_to_errno(_errNo);
-#else
 	return _errNo;
-#endif
 }
 @end

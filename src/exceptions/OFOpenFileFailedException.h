@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 /*!
@@ -46,6 +44,18 @@
 			     mode: (OFString*)mode;
 
 /*!
+ * @brief Creates a new, autoreleased open file failed exception.
+ *
+ * @param path A string with the path of the file tried to open
+ * @param mode A string with the mode in which the file should have been opened
+ * @param errNo The errno of the error
+ * @return A new, autoreleased open file failed exception
+ */
++ (instancetype)exceptionWithPath: (OFString*)path
+			     mode: (OFString*)mode
+			    errNo: (int)errNo;
+
+/*!
  * @brief Initializes an already allocated open file failed exception.
  *
  * @param path A string with the path of the file which couldn't be opened
@@ -54,6 +64,18 @@
  */
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode;
+
+/*!
+ * @brief Initializes an already allocated open file failed exception.
+ *
+ * @param path A string with the path of the file which couldn't be opened
+ * @param mode A string with the mode in which the file should have been opened
+ * @param errNo The errno of the error
+ * @return An initialized open file failed exception
+ */
+- initWithPath: (OFString*)path
+	  mode: (OFString*)mode
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns a string with the path of the file which couldn't be opened.

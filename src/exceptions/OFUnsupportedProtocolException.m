@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFURL.h"
 
-#import "common.h"
-
 @implementation OFUnsupportedProtocolException
 + (instancetype)exceptionWithURL: (OFURL*)url
 {

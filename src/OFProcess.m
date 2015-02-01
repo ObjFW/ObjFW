@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <string.h>
 
 /* Work around __block being used by glibc */
@@ -456,16 +457,23 @@ extern char **environ;
 #endif
 
 #ifndef _WIN32
-	if (_readPipe[0] == -1 || _atEndOfStream ||
-	    (ret = read(_readPipe[0], buffer, length)) < 0)
+	if (_readPipe[0] == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+
+	if ((ret = read(_readPipe[0], buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: errno];
 #else
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_readPipe[0] == NULL || _atEndOfStream ||
-	    !ReadFile(_readPipe[0], buffer, (DWORD)length, &ret, NULL)) {
+	if (_readPipe[0] == NULL || _atEndOfStream)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+
+	if (!ReadFile(_readPipe[0], buffer, (DWORD)length, &ret, NULL)) {
 		if (GetLastError() == ERROR_BROKEN_PIPE) {
 			_atEndOfStream = true;
 			return 0;
@@ -486,21 +494,35 @@ extern char **environ;
 		     length: (size_t)length
 {
 #ifndef _WIN32
-	if (_writePipe[1] == -1 || _atEndOfStream ||
-	    write(_writePipe[1], buffer, length) < length)
+	if (_writePipe[1] == -1 || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+
+	if (write(_writePipe[1], buffer, length) < length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: errno];
 #else
 	DWORD ret;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_writePipe[1] == NULL || _atEndOfStream ||
-	    !WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
-	    ret < length)
+	if (_writePipe[1] == NULL || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+
+	if (!WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
+	    ret < length) {
+		int errNo = 0;
+
+		if (GetLastError() == ERROR_BROKEN_PIPE)
+			errNo = EPIPE;
+
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: errNo];
+	}
 #endif
 }
 

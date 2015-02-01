@@ -19,8 +19,6 @@
 #import "OFNotConnectedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFNotConnectedException
 + (instancetype)exceptionWithSocket: (id)socket
 {

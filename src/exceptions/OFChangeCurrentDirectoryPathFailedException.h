@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 /*!
@@ -43,18 +41,22 @@
  *
  * @param path The path of the directory to which the current path could not be
  *	       changed
+ * @param errNo The errno of the error
  * @return A new, autoreleased change current directory path failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString*)path
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated change directory failed exception.
  *
  * @param path The path of the directory to which the current path could not be
  *	       changed
+ * @param errNo The errno of the error
  * @return An initialized change current directory path failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString*)path
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns the path of the directory to which the current path could not

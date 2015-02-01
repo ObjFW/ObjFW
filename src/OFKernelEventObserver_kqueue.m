@@ -16,10 +16,9 @@
 
 #include "config.h"
 
-#include <math.h>
-#include <errno.h>
-
 #include <assert.h>
+#include <errno.h>
+#include <math.h>
 
 #include <sys/types.h>
 #include <sys/event.h>

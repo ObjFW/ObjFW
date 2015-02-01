@@ -20,16 +20,16 @@
 #import "OFString.h"
 #import "OFSeekableStream.h"
 
-#import "common.h"
-
 @implementation OFSeekFailedException
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream
 			     offset: (of_offset_t)offset
 			     whence: (int)whence
+			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithStream: stream
 				      offset: offset
-				      whence: whence] autorelease];
+				      whence: whence
+				       errNo: errNo] autorelease];
 }
 
 - init
@@ -40,13 +40,14 @@
 - initWithStream: (OFSeekableStream*)stream
 	  offset: (of_offset_t)offset
 	  whence: (int)whence
+	   errNo: (int)errNo
 {
 	self = [super init];
 
 	_stream = [stream retain];
 	_offset = offset;
 	_whence = whence;
-	_errNo = GET_ERRNO;
+	_errNo = errNo;
 
 	return self;
 }
@@ -61,8 +62,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Seeking failed in stream of type %@! " ERRFMT, [_stream class],
-	    ERRPARAM];
+	    @"Seeking failed in stream of type %@: %@",
+	    [_stream class], of_strerror(_errNo)];
 }
 
 - (OFSeekableStream*)stream

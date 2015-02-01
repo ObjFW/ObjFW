@@ -20,12 +20,12 @@
 #import "OFString.h"
 #import "OFStream.h"
 
-#import "common.h"
-
 @implementation OFSetOptionFailedException
 + (instancetype)exceptionWithStream: (OFStream*)stream
+			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return [[[self alloc] initWithStream: stream
+				       errNo: errNo] autorelease];
 }
 
 - init
@@ -34,10 +34,12 @@
 }
 
 - initWithStream: (OFStream*)stream
+	   errNo: (int)errNo
 {
 	self = [super init];
 
 	_stream = [stream retain];
+	_errNo = errNo;
 
 	return self;
 }
@@ -52,12 +54,17 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Setting an option in a stream of type %@ failed!",
-	    [_stream class]];
+	    @"Setting an option in a stream of type %@ failed: %@",
+	    [_stream class], of_strerror(_errNo)];
 }
 
 - (OFStream*)stream
 {
 	OF_GETTER(_stream, true)
+}
+
+- (int)errNo
+{
+	return _errNo;
 }
 @end

@@ -19,14 +19,21 @@
 #import "OFOpenFileFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFOpenFileFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 			     mode: (OFString*)mode
 {
 	return [[[self alloc] initWithPath: path
 				      mode: mode] autorelease];
+}
+
++ (instancetype)exceptionWithPath: (OFString*)path
+			     mode: (OFString*)mode
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPath: path
+				      mode: mode
+				     errNo: errNo] autorelease];
 }
 
 - init
@@ -42,7 +49,24 @@
 	@try {
 		_path  = [path copy];
 		_mode  = [mode copy];
-		_errNo = GET_ERRNO;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithPath: (OFString*)path
+	  mode: (OFString*)mode
+	 errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_path  = [path copy];
+		_mode  = [mode copy];
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,9 +85,14 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to open file %@ with mode %@! " ERRFMT, _path, _mode,
-	    ERRPARAM];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to open file %@ with mode %@: %@",
+		    _path, _mode, of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to open file %@ with mode %@!",
+		    _path, _mode];
 }
 
 - (OFString*)path

@@ -16,10 +16,9 @@
 
 #include "config.h"
 
-#include <string.h>
 #include <ctype.h>
-
 #include <errno.h>
+#include <string.h>
 
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
@@ -121,14 +120,10 @@ normalizeKey(char *str_)
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
 			  length: (size_t)length
 {
-	if (_atEndOfStream) {
-		OFReadFailedException *e;
-
-		e = [OFReadFailedException exceptionWithObject: self
-					       requestedLength: length];
-		e->_errNo = ENOTCONN;
-		@throw e;
-	}
+	if (_atEndOfStream)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: ENOTCONN];
 
 	if (!_hasContentLength && !_chunked)
 		return [_socket readIntoBuffer: buffer

@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifdef OF_HAVE_LINK
@@ -41,20 +39,24 @@
  *
  * @param sourcePath The source for the link
  * @param destinationPath The destination for the link
+ * @param errNo The errno of the error
  * @return A new, autoreleased link failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath;
+			destinationPath: (OFString*)destinationPath
+				  errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated link failed exception.
  *
  * @param sourcePath The source for the link
  * @param destinationPath The destination for the link
+ * @param errNo The errno of the error
  * @return An initialized link failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath;
+     destinationPath: (OFString*)destinationPath
+	       errNo: (int)errNo;
 
 /*!
  * @brief Returns a string with the source for the link.

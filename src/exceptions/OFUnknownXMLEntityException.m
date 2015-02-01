@@ -19,8 +19,6 @@
 #import "OFUnknownXMLEntityException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFUnknownXMLEntityException
 + (instancetype)exceptionWithEntityName: (OFString*)entityName
 {

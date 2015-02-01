@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 /*!
@@ -29,7 +27,6 @@
 {
 	id _object;
 	size_t _requestedLength;
-@public
 	int _errNo;
 }
 
@@ -51,6 +48,19 @@
 		    requestedLength: (size_t)requestedLength;
 
 /*!
+ * @brief Creates a new, autoreleased read or write failed exception.
+ *
+ * @param object The object from which reading or to which writing failed
+ * @param requestedLength The requested length of the data that couldn't be
+ *			  read / written
+ * @param errNo The errno of the error
+ * @return A new, autoreleased read or write failed exception
+ */
++ (instancetype)exceptionWithObject: (id)object
+		    requestedLength: (size_t)requestedLength
+			      errNo: (int)errNo;
+
+/*!
  * @brief Initializes an already allocated read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed
@@ -60,6 +70,19 @@
  */
 -  initWithObject: (id)object
   requestedLength: (size_t)requestedLength;
+
+/*!
+ * @brief Initializes an already allocated read or write failed exception.
+ *
+ * @param object The object from which reading or to which writing failed
+ * @param requestedLength The requested length of the data that couldn't be
+ *			  read / written
+ * @param errNo The errno of the error
+ * @return A new open file failed exception
+ */
+-  initWithObject: (id)object
+  requestedLength: (size_t)requestedLength
+	    errNo: (int)errNo;
 
 /*!
  * @brief Returns the object from which reading or to which writing failed

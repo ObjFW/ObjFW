@@ -19,12 +19,12 @@
 #import "OFRemoveItemFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFRemoveItemFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
+			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc] initWithPath: path
+				     errNo: errNo] autorelease];
 }
 
 - init
@@ -33,12 +33,13 @@
 }
 
 - initWithPath: (OFString*)path
+	 errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
 		_path = [path copy];
-		_errNo = GET_ERRNO;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -56,8 +57,13 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to remove item at path %@! " ERRFMT, _path, ERRPARAM];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to remove item at path %@: %@",
+		    _path, of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to remove item at path %@!", _path];
 }
 
 - (OFString*)path

@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFINIFile.h"
 #import "OFArray.h"
 #import "OFString.h"

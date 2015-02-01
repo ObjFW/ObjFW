@@ -66,4 +66,11 @@ struct sockaddr_storage {
 };
 #endif
 
-extern bool of_init_sockets(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern bool of_socket_init(void);
+extern int of_socket_errno(void);
+#ifdef __cplusplus
+}
+#endif

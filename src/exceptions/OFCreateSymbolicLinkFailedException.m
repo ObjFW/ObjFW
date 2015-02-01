@@ -19,15 +19,15 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 #ifdef OF_HAVE_SYMLINK
 @implementation OFCreateSymbolicLinkFailedException
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
+				  errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourcePath: sourcePath
-				 destinationPath: destinationPath] autorelease];
+				 destinationPath: destinationPath
+					   errNo: errNo] autorelease];
 }
 
 - init
@@ -37,13 +37,14 @@
 
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath
+	       errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
 		_sourcePath = [sourcePath copy];
 		_destinationPath = [destinationPath copy];
-		_errNo = GET_ERRNO;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -63,8 +64,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to symlink file %@ to %@! " ERRFMT, _sourcePath,
-	    _destinationPath, ERRPARAM];
+	    @"Failed to symlink file %@ to %@: %@",
+	    _sourcePath, _destinationPath, of_strerror(_errNo)];
 }
 
 - (OFString*)sourcePath

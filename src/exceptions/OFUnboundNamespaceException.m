@@ -20,8 +20,6 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 
-#import "common.h"
-
 @implementation OFUnboundNamespaceException
 + (instancetype)exceptionWithNamespace: (OFString*)namespace
 			       element: (OFXMLElement*)element

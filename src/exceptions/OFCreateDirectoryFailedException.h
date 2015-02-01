@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 /*!
@@ -41,18 +39,22 @@
  *
  * @param path A string with the path of the directory which could not be
  *	       created
+ * @param errNo The errno of the error
  * @return A new, autoreleased create directory failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString*)path
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated create directory failed exception.
  *
  * @param path A string with the path of the directory which could not be
  *	       created
+ * @param errNo The errno of the error
  * @return An initialized create directory failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString*)path
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns a string with the path of the directory which couldn't be

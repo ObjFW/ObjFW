@@ -19,14 +19,14 @@
 #import "OFMoveItemFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFMoveItemFailedException
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
+				  errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourcePath: sourcePath
-				 destinationPath: destinationPath] autorelease];
+				 destinationPath: destinationPath
+					   errNo: errNo] autorelease];
 }
 
 - init
@@ -36,13 +36,14 @@
 
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath
+	       errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
 		_sourcePath = [sourcePath copy];
 		_destinationPath = [destinationPath copy];
-		_errNo = GET_ERRNO;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,9 +62,14 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to move item at path %@ to %@! " ERRFMT, _sourcePath,
-	    _destinationPath, ERRPARAM];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to move item at path %@ to %@: %@",
+		    _sourcePath, _destinationPath, of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to move item at path %@ to %@!",
+		    _sourcePath, _destinationPath];
 }
 
 - (OFString*)sourcePath

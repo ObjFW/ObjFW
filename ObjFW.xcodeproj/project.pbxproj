@@ -272,7 +272,6 @@
 		4B55A102133ABEA900B58A93 /* OFThreadStartFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A0FC133ABEA900B58A93 /* OFThreadStartFailedException.m */; };
 		4B55A103133ABEA900B58A93 /* OFThreadStillRunningException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A0FD133ABEA900B58A93 /* OFThreadStillRunningException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A104133ABEA900B58A93 /* OFThreadStillRunningException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A0FE133ABEA900B58A93 /* OFThreadStillRunningException.m */; };
-		4B55A109133AC05100B58A93 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A106133AC05100B58A93 /* common.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A10A133AC05100B58A93 /* OFOpenFileFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A107133AC05100B58A93 /* OFOpenFileFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A10B133AC05100B58A93 /* OFOpenFileFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A108133AC05100B58A93 /* OFOpenFileFailedException.m */; };
 		4B55A112133AC24600B58A93 /* OFReadFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A10C133AC24500B58A93 /* OFReadFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -697,7 +696,6 @@
 		4B55A0FC133ABEA900B58A93 /* OFThreadStartFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFThreadStartFailedException.m; path = src/exceptions/OFThreadStartFailedException.m; sourceTree = "<group>"; };
 		4B55A0FD133ABEA900B58A93 /* OFThreadStillRunningException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFThreadStillRunningException.h; path = src/exceptions/OFThreadStillRunningException.h; sourceTree = "<group>"; };
 		4B55A0FE133ABEA900B58A93 /* OFThreadStillRunningException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFThreadStillRunningException.m; path = src/exceptions/OFThreadStillRunningException.m; sourceTree = "<group>"; };
-		4B55A106133AC05100B58A93 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/exceptions/common.h; sourceTree = "<group>"; };
 		4B55A107133AC05100B58A93 /* OFOpenFileFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFOpenFileFailedException.h; path = src/exceptions/OFOpenFileFailedException.h; sourceTree = "<group>"; };
 		4B55A108133AC05100B58A93 /* OFOpenFileFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFOpenFileFailedException.m; path = src/exceptions/OFOpenFileFailedException.m; sourceTree = "<group>"; };
 		4B55A10C133AC24500B58A93 /* OFReadFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFReadFailedException.h; path = src/exceptions/OFReadFailedException.h; sourceTree = "<group>"; };
@@ -1135,7 +1133,6 @@
 				4BA4846115CC9F1E00D75360 /* OFUnsupportedVersionException.m */,
 				4B55A110133AC24500B58A93 /* OFWriteFailedException.h */,
 				4B55A111133AC24600B58A93 /* OFWriteFailedException.m */,
-				4B55A106133AC05100B58A93 /* common.h */,
 			);
 			name = Exceptions;
 			sourceTree = "<group>";
@@ -1764,7 +1761,6 @@
 				4B17FFB1133A3664003E6DCD /* OFUnsupportedProtocolException.h in Headers */,
 				4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */,
 				4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */,
-				4B55A109133AC05100B58A93 /* common.h in Headers */,
 				4B2B3E7D140D430500EC2F7C /* OFArray_adjacent.h in Headers */,
 				4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */,
 				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,

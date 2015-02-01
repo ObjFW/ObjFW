@@ -19,14 +19,14 @@
 #import "OFChangePermissionsFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFChangePermissionsFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 		      permissions: (mode_t)permissions
+			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
-			       permissions: permissions] autorelease];
+			       permissions: permissions
+				     errNo: errNo] autorelease];
 }
 
 - init
@@ -36,13 +36,14 @@
 
 - initWithPath: (OFString*)path
    permissions: (mode_t)permissions
+	 errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
 		_path = [path copy];
 		_permissions = permissions;
-		_errNo = GET_ERRNO;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -61,8 +62,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to change permissions of item at path %@ to %d! " ERRFMT,
-	    _path, _permissions, ERRPARAM];
+	    @"Failed to change permissions of item at path %@ to %d: %@",
+	    _path, _permissions, of_strerror(_errNo)];
 }
 
 - (OFString*)path

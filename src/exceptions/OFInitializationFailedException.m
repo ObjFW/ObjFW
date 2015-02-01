@@ -19,8 +19,6 @@
 #import "OFInitializationFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFInitializationFailedException
 + (instancetype)exceptionWithClass: (Class)class
 {

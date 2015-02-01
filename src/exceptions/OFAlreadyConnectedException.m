@@ -19,8 +19,6 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFAlreadyConnectedException
 + (instancetype)exceptionWithSocket: (id)socket
 {

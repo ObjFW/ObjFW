@@ -19,8 +19,6 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFHashAlreadyCalculatedException
 + (instancetype)exceptionWithHash: (id <OFHash>)hash
 {

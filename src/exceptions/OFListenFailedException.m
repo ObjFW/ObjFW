@@ -19,14 +19,14 @@
 #import "OFListenFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFListenFailedException
 + (instancetype)exceptionWithSocket: (id)socket
 			    backLog: (int)backLog
+			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithSocket: socket
-				     backLog: backLog] autorelease];
+				     backLog: backLog
+				       errNo: errNo] autorelease];
 }
 
 - init
@@ -36,12 +36,13 @@
 
 - initWithSocket: (id)socket
 	 backLog: (int)backLog
+	   errNo: (int)errNo
 {
 	self = [super init];
 
-	_socket  = [socket retain];
+	_socket = [socket retain];
 	_backLog = backLog;
-	_errNo   = GET_SOCK_ERRNO;
+	_errNo = errNo;
 
 	return self;
 }
@@ -56,8 +57,8 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to listen in socket of type %@ with a back log of %d! "
-	    ERRFMT, [_socket class], _backLog, ERRPARAM];
+	    @"Failed to listen in socket of type %@ with a back log of %d: %@",
+	    [_socket class], _backLog, of_strerror(_errNo)];
 }
 
 - (id)socket
@@ -72,10 +73,6 @@
 
 - (int)errNo
 {
-#ifdef _WIN32
-	return of_wsaerr_to_errno(_errNo);
-#else
 	return _errNo;
-#endif
 }
 @end

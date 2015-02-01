@@ -27,7 +27,7 @@
 #import "resolver.h"
 
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
-# include "OFMutex.h"
+# include "threading.h"
 #endif
 
 #import "OFAddressTranslationFailedException.h"
@@ -74,9 +74,13 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 
 	@try {
 # endif
-		if (getaddrinfo([host UTF8String], portCString, &hints, &res0))
+		int error;
+
+		if ((error = getaddrinfo([host UTF8String], portCString, &hints,
+		    &res0)) != 0)
 			@throw [OFAddressTranslationFailedException
-			    exceptionWithHost: host];
+			    exceptionWithHost: host
+					error: error];
 
 		count = 0;
 		for (res = res0; res != NULL; res = res->ai_next)
@@ -91,16 +95,16 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 		if ((ret = calloc(count + 1, sizeof(*ret))) == NULL) {
 			freeaddrinfo(res0);
 			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize:
-			    (count + 1) * sizeof(*ret)];
+			    exceptionWithRequestedSize: (count + 1) *
+							sizeof(*ret)];
 		}
 
 		if ((results = malloc(count * sizeof(*results))) == NULL) {
 			freeaddrinfo(res0);
 			free(ret);
 			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize:
-			    count * sizeof(*results)];
+			    exceptionWithRequestedSize: count *
+							sizeof(*results)];
 		}
 
 		for (retIter = ret, resultsIter = results, res = res0;
@@ -180,7 +184,8 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 		if ((he = gethostbyname([host UTF8String])) == NULL ||
 		    he->h_addrtype != AF_INET)
 			@throw [OFAddressTranslationFailedException
-			    exceptionWithHost: host];
+			    exceptionWithHost: host
+					error: h_errno];
 
 		count = 0;
 		for (ip = he->h_addr_list; *ip != NULL; ip++)
@@ -192,14 +197,14 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 
 		if ((ret = calloc(count + 1, sizeof(*ret))) == NULL)
 			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize:
-			    (count + 1) * sizeof(*ret)];
+			    exceptionWithRequestedSize: (count + 1) *
+							sizeof(*ret)];
 
 		if ((results = malloc(count * sizeof(*results))) == NULL) {
 			free(ret);
 			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize:
-			    count * sizeof(*results)];
+			    exceptionWithRequestedSize: count *
+							sizeof(*results)];
 		}
 
 		if ((addrs = calloc(count, sizeof(*addrs))) == NULL) {
@@ -253,10 +258,14 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 
 	@try {
 # endif
+		int error;
+
 		/* FIXME: Add NI_DGRAM for UDP? */
-		if (getnameinfo(address, addressLength, hostCString, NI_MAXHOST,
-		    portCString, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV))
-			@throw [OFAddressTranslationFailedException exception];
+		if ((error = getnameinfo(address, addressLength, hostCString,
+		    NI_MAXHOST, portCString, NI_MAXSERV,
+		    NI_NUMERICHOST | NI_NUMERICSERV)) != 0)
+			@throw [OFAddressTranslationFailedException
+			    exceptionWithError: error];
 
 		if (host != NULL)
 			*host = [OFString stringWithUTF8String: hostCString];
@@ -295,7 +304,8 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 # endif
 		if ((hostCString = inet_ntoa(
 		    ((struct sockaddr_in*)(void*)address)->sin_addr)) == NULL)
-			@throw [OFAddressTranslationFailedException exception];
+			@throw [OFAddressTranslationFailedException
+			    exceptionWithError: h_errno];
 
 		if (host != NULL)
 			*host = [OFString stringWithUTF8String: hostCString];

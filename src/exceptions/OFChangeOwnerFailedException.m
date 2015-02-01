@@ -19,17 +19,17 @@
 #import "OFChangeOwnerFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 #ifdef OF_HAVE_CHOWN
 @implementation OFChangeOwnerFailedException
 + (instancetype)exceptionWithPath: (OFString*)path
 			    owner: (OFString*)owner
 			    group: (OFString*)group
+			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
 				     owner: owner
-				     group: group] autorelease];
+				     group: group
+				     errNo: errNo] autorelease];
 }
 
 - init
@@ -40,6 +40,7 @@
 - initWithPath: (OFString*)path
 	 owner: (OFString*)owner
 	 group: (OFString*)group
+	 errNo: (int)errNo
 {
 	self = [super init];
 
@@ -47,7 +48,7 @@
 		_path  = [path copy];
 		_owner = [owner copy];
 		_group = [group copy];
-		_errNo = GET_ERRNO;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -69,16 +70,16 @@
 {
 	if (_group == nil)
 		return [OFString stringWithFormat:
-		    @"Failed to change owner of item at path %@ to %@! "
-		    ERRFMT, _path, _owner, ERRPARAM];
+		    @"Failed to change owner of item at path %@ to %@: %@",
+		    _path, _owner, of_strerror(_errNo)];
 	else if (_owner == nil)
 		return [OFString stringWithFormat:
-		    @"Failed to change group of item at path %@ to %@! "
-		    ERRFMT, _path, _group, ERRPARAM];
+		    @"Failed to change group of item at path %@ to %@: %@",
+		     _path, _group, of_strerror(_errNo)];
 	else
 		return [OFString stringWithFormat:
-		    @"Failed to change owner of item at path %@ to %@:%@! "
-		    ERRFMT, _path, _owner, _group, ERRPARAM];
+		    @"Failed to change owner of item at path %@ to %@:%@: %@",
+		    _path, _owner, _group, of_strerror(_errNo)];
 }
 
 - (OFString*)path

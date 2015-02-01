@@ -19,16 +19,16 @@
 #import "OFBindFailedException.h"
 #import "OFString.h"
 
-#import "common.h"
-
 @implementation OFBindFailedException
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
 			   socket: (id)socket
+			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithHost: host
 				      port: port
-				    socket: socket] autorelease];
+				    socket: socket
+				     errNo: errNo] autorelease];
 }
 
 - init
@@ -39,14 +39,15 @@
 - initWithHost: (OFString*)host
 	  port: (uint16_t)port
 	socket: (id)socket
+	 errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_host   = [host copy];
-		_port   = port;
+		_host = [host copy];
+		_port = port;
 		_socket = [socket retain];
-		_errNo  = GET_SOCK_ERRNO;
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -67,7 +68,8 @@
 {
 	return [OFString stringWithFormat:
 	    @"Binding to port %" @PRIu16 @" on host %@ failed in socket of "
-	    @"type %@! " ERRFMT, _port, _host, [_socket class], ERRPARAM];
+	    @"type %@: %@",
+	    _port, _host, [_socket class], of_strerror(_errNo)];
 }
 
 - (OFString*)host
@@ -87,10 +89,6 @@
 
 - (int)errNo
 {
-#ifdef _WIN32
-	return of_wsaerr_to_errno(_errNo);
-#else
 	return _errNo;
-#endif
 }
 @end

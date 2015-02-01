@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifndef OF_HAVE_SOCKETS
@@ -56,6 +54,20 @@
 			   socket: (id)socket;
 
 /*!
+ * @brief Creates a new, autoreleased connection failed exception.
+ *
+ * @param host The host to which the connection failed
+ * @param port The port on the host to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error
+ * @return A new, autoreleased connection failed exception
+ */
++ (instancetype)exceptionWithHost: (OFString*)host
+			     port: (uint16_t)port
+			   socket: (id)socket
+			    errNo: (int)errNo;
+
+/*!
  * @brief Initializes an already allocated connection failed exception.
  *
  * @param host The host to which the connection failed
@@ -66,6 +78,20 @@
 - initWithHost: (OFString*)host
 	  port: (uint16_t)port
 	socket: (id)socket;
+
+/*!
+ * @brief Initializes an already allocated connection failed exception.
+ *
+ * @param host The host to which the connection failed
+ * @param port The port on the host to which the connection failed
+ * @param socket The socket which could not connect
+ * @param errNo The errno of the error
+ * @return An initialized connection failed exception
+ */
+- initWithHost: (OFString*)host
+	  port: (uint16_t)port
+	socket: (id)socket
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns the socket which could not connect.

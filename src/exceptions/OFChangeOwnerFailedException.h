@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifdef OF_HAVE_CHOWN
@@ -42,11 +40,13 @@
  * @param path The path of the item
  * @param owner The new owner for the item
  * @param group The new group for the item
+ * @param errNo The errno of the error
  * @return A new, autoreleased change owner failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
 			    owner: (OFString*)owner
-			    group: (OFString*)group;
+			    group: (OFString*)group
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated change owner failed exception.
@@ -54,11 +54,13 @@
  * @param path The path of the item
  * @param owner The new owner for the item
  * @param group The new group for the item
+ * @param errNo The errno of the error
  * @return An initialized change owner failed exception
  */
 - initWithPath: (OFString*)path
 	 owner: (OFString*)owner
-	 group: (OFString*)group;
+	 group: (OFString*)group
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns the path of the item.

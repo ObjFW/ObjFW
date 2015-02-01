@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifndef OF_HAVE_SOCKETS
@@ -49,11 +47,13 @@
  * @param host The host on which binding failed
  * @param port The port on which binding failed
  * @param socket The socket which could not be bound
+ * @param errNo The errno of the error
  * @return A new, autoreleased bind failed exception
  */
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
-			   socket: (id)socket;
+			   socket: (id)socket
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated bind failed exception.
@@ -61,11 +61,13 @@
  * @param host The host on which binding failed
  * @param port The port on which binding failed
  * @param socket The socket which could not be bound
+ * @param errNo The errno of the error
  * @return An initialized bind failed exception
  */
 - initWithHost: (OFString*)host
 	  port: (uint16_t)port
-	socket: (id)socket;
+	socket: (id)socket
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns the host on which binding failed.

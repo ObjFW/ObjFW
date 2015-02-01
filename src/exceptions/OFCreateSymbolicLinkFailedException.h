@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifdef OF_HAVE_SYMLINK
@@ -42,10 +40,12 @@
  *
  * @param sourcePath The source for the symbolic link
  * @param destinationPath The destination for the symbolic link
+ * @param errNo The errno of the error
  * @return A new, autoreleased create symbolic link failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath;
+			destinationPath: (OFString*)destinationPath
+				  errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated create symbolic link failed
@@ -53,10 +53,12 @@
  *
  * @param sourcePath The source for the symbolic link
  * @param destinationPath The destination for the symbolic link
+ * @param errNo The errno of the error
  * @return An initialized create symbolic link failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath;
+     destinationPath: (OFString*)destinationPath
+	       errNo: (int)errNo;
 
 /*!
  * @brief Returns a string with the source for the symlink.

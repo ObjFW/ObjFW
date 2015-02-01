@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifndef OF_HAVE_SOCKETS
@@ -32,12 +30,11 @@
 @interface OFAddressTranslationFailedException: OFException
 {
 	OFString *_host;
-	int _errNo;
+	int _error;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *host;
-@property (readonly) int errNo;
 #endif
 
 /*!
@@ -48,6 +45,10 @@
  */
 + (instancetype)exceptionWithHost: (OFString*)host;
 
++ (instancetype)exceptionWithHost: (OFString*)host
+			    error: (int)error;
++ (instancetype)exceptionWithError: (int)error;
+
 /*!
  * @brief Initializes an already allocated address translation failed exception.
  *
@@ -56,17 +57,14 @@
  */
 - initWithHost: (OFString*)host;
 
+- initWithHost: (OFString*)host
+	 error: (int)error;
+- initWithError: (int)error;
+
 /*!
  * @brief Returns the host for which the address translation was requested.
  *
  * @return The host for which the address translation was requested
  */
 - (OFString*)host;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
 @end

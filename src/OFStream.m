@@ -18,12 +18,12 @@
 
 #include "config.h"
 
+#include <assert.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <assert.h>
 
 #include <fcntl.h>
 
@@ -1486,7 +1486,8 @@
 
 		if (readFlags == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithStream: self];
+			    exceptionWithStream: self
+					  errNo: errno];
 
 		if (enable)
 			readFlags &= ~O_NONBLOCK;
@@ -1496,7 +1497,8 @@
 		if (fcntl([self fileDescriptorForReading], F_SETFL,
 		    readFlags) == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithStream: self];
+			    exceptionWithStream: self
+					  errNo: errno];
 	} @catch (OFNotImplementedException *e) {
 	}
 
@@ -1509,7 +1511,8 @@
 
 		if (writeFlags == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithStream: self];
+			    exceptionWithStream: self
+					  errNo: errno];
 
 		if (enable)
 			writeFlags &= ~O_NONBLOCK;
@@ -1519,7 +1522,8 @@
 		if (fcntl([self fileDescriptorForWriting], F_SETFL,
 		    writeFlags) == -1)
 			@throw [OFSetOptionFailedException
-			    exceptionWithStream: self];
+			    exceptionWithStream: self
+					  errNo: errno];
 	} @catch (OFNotImplementedException *e) {
 	}
 

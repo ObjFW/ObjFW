@@ -65,7 +65,7 @@ enum {
 	if (self != [OFKernelEventObserver class])
 		return;
 
-	if (!of_init_sockets())
+	if (!of_socket_init())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }

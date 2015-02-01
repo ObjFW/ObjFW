@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #include <sys/types.h>
 
 #import "OFException.h"
@@ -46,20 +44,24 @@
  *
  * @param path The path of the item
  * @param permissions The new permissions for the item
+ * @param errNo The errno of the error
  * @return A new, autoreleased change permissions failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
-		      permissions: (mode_t)permissions;
+		      permissions: (mode_t)permissions
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated change permissions failed exception.
  *
  * @param path The path of the item
  * @param permissions The new permissions for the item
+ * @param errNo The errno of the error
  * @return An initialized change permissions failed exception
  */
 - initWithPath: (OFString*)path
-   permissions: (mode_t)permissions;
+   permissions: (mode_t)permissions
+	 errNo: (int)errNo;
 
 /*!
  * @brief Returns the path of the item.

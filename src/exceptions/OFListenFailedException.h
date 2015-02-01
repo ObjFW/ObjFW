@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <errno.h>
-
 #import "OFException.h"
 
 #ifndef OF_HAVE_SOCKETS
@@ -44,20 +42,24 @@
  *
  * @param socket The socket which failed to listen
  * @param backLog The requested size of the back log
+ * @param errNo The errno of the error
  * @return A new, autoreleased listen failed exception
  */
 + (instancetype)exceptionWithSocket: (id)socket
-			    backLog: (int)backLog;
+			    backLog: (int)backLog
+			      errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated listen failed exception
  *
  * @param socket The socket which failed to listen
  * @param backLog The requested size of the back log
+ * @param errNo The errno of the error
  * @return An initialized listen failed exception
  */
 - initWithSocket: (id)socket
-	 backLog: (int)backLog;
+	 backLog: (int)backLog
+	   errNo: (int)errNo;
 
 /*!
  * @brief Returns the socket which failed to listen.
