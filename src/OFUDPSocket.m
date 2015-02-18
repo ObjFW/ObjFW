@@ -35,8 +35,9 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "resolver.h"
+#import "socket.h"
 #import "socket_helpers.h"
+#import "resolver.h"
 
 #ifdef __wii__
 static uint16_t freePort = 65532;
@@ -434,7 +435,8 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 #ifndef __wii__
 	addrLen = (socklen_t)sizeof(addr.storage);
-	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
+	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
+	    &addrLen) != 0) {
 		int errNo = of_socket_errno();
 
 		close(_socket);

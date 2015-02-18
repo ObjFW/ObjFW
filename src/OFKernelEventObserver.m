@@ -49,6 +49,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
+#import "socket.h"
 #import "socket_helpers.h"
 
 enum {
@@ -144,8 +145,8 @@ enum {
 
 # ifndef __wii__
 		cancelAddrLen = sizeof(_cancelAddr);
-		if (getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
-		    &cancelAddrLen))
+		if (of_getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
+		    &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 # endif

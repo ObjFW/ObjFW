@@ -45,8 +45,9 @@
 #import "OFOutOfMemoryException.h"
 #import "OFSetOptionFailedException.h"
 
-#import "resolver.h"
+#import "socket.h"
 #import "socket_helpers.h"
+#import "resolver.h"
 
 /* References for static linking */
 void _references_to_categories_of_OFTCPSocket(void)
@@ -444,7 +445,8 @@ static uint16_t freePort = 65532;
 
 #ifndef __wii__
 	addrLen = (socklen_t)sizeof(addr.storage);
-	if (getsockname(_socket, (struct sockaddr*)&addr.storage, &addrLen)) {
+	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
+	    &addrLen) != 0) {
 		int errNo = of_socket_errno();
 
 		close(_socket);

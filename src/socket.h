@@ -71,6 +71,10 @@ extern "C" {
 #endif
 extern bool of_socket_init(void);
 extern int of_socket_errno(void);
+# ifndef __wii__
+extern int of_getsockname(int socket, struct sockaddr *restrict address,
+    socklen_t *restrict address_len);
+# endif
 #ifdef __cplusplus
 }
 #endif

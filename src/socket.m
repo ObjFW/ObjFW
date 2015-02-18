@@ -18,14 +18,16 @@
 
 #include <errno.h>
 
-/* For some E* -> WSAE* defines */
-#import "OFException.h"
+#import "OFException.h"  /* For some E* -> WSAE* defines */
+#import "OFLockFailedException.h"
+#import "OFUnlockFailedException.h"
 
 #import "socket.h"
 #ifdef OF_HAVE_THREADS
 # include "threading.h"
 
 static of_once_t onceControl = OF_ONCE_INIT;
+static of_mutex_t mutex;
 #endif
 static bool initialized = false;
 
@@ -39,6 +41,11 @@ init(void)
 		return;
 #elif defined(__wii__)
 	if (net_init() < 0)
+		return;
+#endif
+
+#ifdef OF_HAVE_THREADS
+	if (!of_mutex_new(&mutex))
 		return;
 #endif
 
@@ -156,3 +163,27 @@ of_socket_errno()
 	return 0;
 #endif
 }
+
+#ifndef __wii__
+int
+of_getsockname(int socket, struct sockaddr *restrict address,
+    socklen_t *restrict address_len)
+{
+	int ret;
+
+# ifdef OF_HAVE_THREADS
+	if (!of_mutex_lock(&mutex))
+		@throw [OFLockFailedException exception];
+
+# endif
+
+	ret = getsockname(socket, address, address_len);
+
+# ifdef OF_HAVE_THREADS
+	if (!of_mutex_unlock(&mutex))
+		@throw [OFUnlockFailedException exception];
+# endif
+
+	return ret;
+}
+#endif
