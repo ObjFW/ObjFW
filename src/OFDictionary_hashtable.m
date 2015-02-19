@@ -295,7 +295,7 @@ static of_map_table_functions_t valueFunctions = {
 
 - (void)dealloc
 {
-	[_mapTable dealloc];
+	[_mapTable release];
 
 	[super dealloc];
 }
