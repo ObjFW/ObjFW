@@ -57,13 +57,9 @@
 
 - (OFString*)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to remove item at path %@: %@",
-		    _path, of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to remove item at path %@!", _path];
+	return [OFString stringWithFormat:
+	    @"Failed to remove item at path %@: %@",
+	    _path, of_strerror(_errNo)];
 }
 
 - (OFString*)path

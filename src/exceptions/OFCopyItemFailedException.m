@@ -62,14 +62,8 @@
 
 - (OFString*)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to copy item %@ to %@: %@",
-		    _sourcePath, _destinationPath, of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to copy item %@ to %@!",
-		    _sourcePath, _destinationPath];
+	return [OFString stringWithFormat: @"Failed to copy item %@ to %@: %@",
+	    _sourcePath, _destinationPath, of_strerror(_errNo)];
 }
 
 - (OFString*)sourcePath
