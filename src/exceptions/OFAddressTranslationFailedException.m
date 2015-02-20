@@ -123,14 +123,27 @@ static of_mutex_t mutex;
 	}
 
 # ifdef HAVE_GETADDRINFO
-	if (_host != nil)
-		return [OFString stringWithFormat:
-		    @"The host %@ could not be translated to an address: %s",
-		    _host, gai_strerror(_error)];
-	else
-		return [OFString stringWithFormat:
-		    @"An address could not be translated: %s",
-		    gai_strerror(_error)];
+#  if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+	if (!of_mutex_lock(&mutex))
+		@throw [OFLockFailedException exception];
+
+	@try {
+#  endif
+		if (_host != nil)
+			return [OFString stringWithFormat:
+			    @"The host %@ could not be translated to an "
+			    @"address: %s",
+			    _host, gai_strerror(_error)];
+		else
+			return [OFString stringWithFormat:
+			    @"An address could not be translated: %s",
+			    gai_strerror(_error)];
+#  if defined(OF_HAVE_THREADS) && !defined(HAVE_THREADSAFE_GETADDRINFO)
+	} @finally {
+		if (!of_mutex_unlock(&mutex))
+			@throw [OFUnlockFailedException exception];
+	}
+#  endif
 # else
 #  ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
