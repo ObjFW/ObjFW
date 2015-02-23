@@ -1032,7 +1032,6 @@ parseMode(const char *mode)
 {
 	ssize_t ret;
 
-
 	if (_fd == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
