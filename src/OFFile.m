@@ -533,7 +533,24 @@ parseMode(const char *mode)
 	return s.st_size;
 }
 
-+ (OFDate*)modificationDateOfFileAtPath: (OFString*)path
++ (OFDate*)accessTimeOfItemAtPath: (OFString*)path
+{
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_stat(path, &s) != 0)
+		/* FIXME: Maybe use another exception? */
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"
+							      errNo: errno];
+
+	/* FIXME: We could be more precise on some OSes */
+	return [OFDate dateWithTimeIntervalSince1970: s.st_atime];
+}
+
++ (OFDate*)modificationTimeOfItemAtPath: (OFString*)path
 {
 	of_stat_t s;
 
@@ -548,6 +565,23 @@ parseMode(const char *mode)
 
 	/* FIXME: We could be more precise on some OSes */
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
+}
+
++ (OFDate*)statusChangeTimeOfItemAtPath: (OFString*)path
+{
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_stat(path, &s) != 0)
+		/* FIXME: Maybe use another exception? */
+		@throw [OFOpenFileFailedException exceptionWithPath: path
+							       mode: @"r"
+							      errNo: errno];
+
+	/* FIXME: We could be more precise on some OSes */
+	return [OFDate dateWithTimeIntervalSince1970: s.st_ctime];
 }
 
 #ifdef OF_HAVE_CHMOD

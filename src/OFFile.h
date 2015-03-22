@@ -156,11 +156,25 @@ typedef struct stat of_stat_t;
 + (of_offset_t)sizeOfFileAtPath: (OFString*)path;
 
 /*!
- * @brief Returns the date of the last modification of the file.
+ * @brief Returns the last access time of the specified file.
  *
- * @return The date of the last modification of the file
+ * @return The last access time of the specified file
  */
-+ (OFDate*)modificationDateOfFileAtPath: (OFString*)path;
++ (OFDate*)accessTimeOfItemAtPath: (OFString*)path;
+
+/*!
+ * @brief Returns the last modification time of the specified file.
+ *
+ * @return The last modification time of the specified file
+ */
++ (OFDate*)modificationTimeOfItemAtPath: (OFString*)path;
+
+/*!
+ * @brief Returns the last status change time of the specified file.
+ *
+ * @return The last status change time of the specified file
+ */
++ (OFDate*)statusChangeTimeOfItemAtPath: (OFString*)path;
 
 #ifdef OF_HAVE_CHMOD
 /*!
