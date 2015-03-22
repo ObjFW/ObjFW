@@ -25,12 +25,8 @@
  */
 @interface OFStreamSocket: OFStream
 {
-#ifndef _WIN32
-	int    _socket;
-#else
-	SOCKET _socket;
-#endif
-	bool  _atEndOfStream;
+	of_socket_t _socket;
+	bool _atEndOfStream;
 }
 
 /*!

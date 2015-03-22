@@ -227,6 +227,9 @@ normalizeKey(char *str_)
 
 - (int)fileDescriptorForReading
 {
+	if (_socket == nil)
+		return -1;
+
 	return [_socket fileDescriptorForReading];
 }
 

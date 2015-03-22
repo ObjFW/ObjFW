@@ -558,6 +558,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -570,6 +573,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 

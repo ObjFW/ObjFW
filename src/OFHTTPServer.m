@@ -281,7 +281,7 @@ normalizedKey(OFString *key)
 - (int)fileDescriptorForWriting
 {
 	if (_socket == nil)
-		return (int)INVALID_SOCKET;
+		return -1;
 
 	return [_socket fileDescriptorForWriting];
 }

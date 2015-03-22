@@ -115,12 +115,10 @@
 	OFMutableArray *_queue;
 	OFDataArray *_queueInfo, *_queueFDs;
 	id <OFKernelEventObserverDelegate> _delegate;
-#ifndef _WIN32
+#ifdef OF_HAVE_PIPE
 	int _cancelFD[2];
 #else
-	SOCKET _cancelFD[2];
-#endif
-#ifndef OF_HAVE_PIPE
+	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
 #endif
 #ifdef OF_HAVE_THREADS

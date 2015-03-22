@@ -136,6 +136,9 @@
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -148,6 +151,9 @@
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 

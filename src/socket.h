@@ -66,13 +66,19 @@ struct sockaddr_storage {
 };
 #endif
 
+#ifndef _WIN32
+typedef int of_socket_t;
+#else
+typedef SOCKET of_socket_t;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 extern bool of_socket_init(void);
 extern int of_socket_errno(void);
 # ifndef __wii__
-extern int of_getsockname(int socket, struct sockaddr *restrict address,
+extern int of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
     socklen_t *restrict address_len);
 # endif
 #ifdef __cplusplus
