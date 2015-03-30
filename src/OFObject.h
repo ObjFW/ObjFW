@@ -944,7 +944,7 @@ extern "C" {
 #endif
 extern id of_alloc_object(Class class_, size_t extraSize, size_t extraAlignment,
     void **extra);
-extern void OF_NO_RETURN of_method_not_found(id self, SEL _cmd);
+extern void OF_NO_RETURN_FUNC of_method_not_found(id self, SEL _cmd);
 extern uint32_t of_hash_seed;
 #ifdef __cplusplus
 }

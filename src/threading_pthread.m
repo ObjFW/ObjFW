@@ -150,7 +150,7 @@ of_thread_detach(of_thread_t thread)
 	return (pthread_detach(thread) == 0);
 }
 
-void OF_NO_RETURN
+void OF_NO_RETURN_FUNC
 of_thread_exit(void)
 {
 	pthread_exit(NULL);

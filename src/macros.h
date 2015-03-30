@@ -66,11 +66,13 @@
 # define OF_LIKELY(cond) (__builtin_expect(!!(cond), 1))
 # define OF_UNLIKELY(cond) (__builtin_expect(!!(cond), 0))
 # define OF_CONST_FUNC __attribute__((__const__))
+# define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) cond
 # define OF_UNLIKELY(cond) cond
 # define OF_CONST_FUNC
+# define OF_NO_RETURN_FUNC
 #endif
 
 /* Required to build universal binaries on OS X */
