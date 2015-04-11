@@ -227,7 +227,7 @@ AS_IF([test x"$enable_runtime" != x"yes"], [
 ])
 AC_MSG_RESULT($objc_runtime)
 
-case $objc_runtime in
+case "$objc_runtime" in
 	"ObjFW runtime")
 		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
 			[Whether we use the ObjFW runtime])
@@ -310,7 +310,7 @@ case $objc_runtime in
 				exception_type="SEH"
 			])
 
-			case $exception_type in
+			case "$exception_type" in
 			DWARF)
 				AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
 					[Whether DWARF exceptions are used])
@@ -527,7 +527,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		;;
 	*)
 		ACX_PTHREAD([
-			CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
+			CPPFLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
 			LIBS="$LIBS $PTHREAD_LIBS"
 			AC_DEFINE(OF_HAVE_PTHREADS, 1,
 				[Whether we have pthreads])
