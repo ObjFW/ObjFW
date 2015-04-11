@@ -133,6 +133,15 @@ QNX
   * Runtimes: ObjFW
 
 
+Solaris
+-------
+
+  * OS Versions: OpenIndiana 2015.03
+  * Architectures: x86, x86_64
+  * Compilers: Clang 3.4.2, GCC 4.8.3
+  * Runtimes: ObjFW
+
+
 Wii
 ---
 
