@@ -109,9 +109,11 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			if (pthread_attr_setschedparam(&pattr, &param) != 0)
 				return false;
 
-			if (pthread_attr_setstacksize(&pattr,
-			    attr->stackSize) != 0)
-				return false;
+			if (attr->stackSize > 0) {
+				if (pthread_attr_setstacksize(&pattr,
+				    attr->stackSize) != 0)
+					return false;
+			}
 		}
 
 		if ((ctx = malloc(sizeof(*ctx))) == NULL)
