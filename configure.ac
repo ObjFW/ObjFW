@@ -526,46 +526,56 @@ esac
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
 AS_IF([test x"$enable_threads" != x"no"], [
+	AC_MSG_CHECKING(for threads)
+
 	case "$host_os" in
 	mingw*)
-		AC_MSG_CHECKING(for threads)
 		AC_MSG_RESULT(WinAPI)
 		;;
 	*)
-		ACX_PTHREAD([
-			CPPFLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
-			LIBS="$LIBS $PTHREAD_LIBS"
-			AC_DEFINE(OF_HAVE_PTHREADS, 1,
-				[Whether we have pthreads])
+		AC_MSG_RESULT(POSIX)
 
-			AC_TRY_COMPILE([
-				#include <pthread.h>
-			], [
-				pthread_mutexattr_t attr;
-				pthread_mutexattr_settype(&attr,
-				    PTHREAD_MUTEX_RECURSIVE);
-			], [
-				AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
-					[If pthread mutexes can be recursive])
-			])
-
-			AC_CHECK_FUNC(pthread_spin_lock, [
-				have_spinlocks="yes"
-				AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
-					[Whether we have pthread spinlocks])
-			])
-
-			AC_CHECK_FUNC(sched_yield, [
-				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
-					[Whether we have sched_yield()])
-			])
-
-			AC_CHECK_HEADERS(pthread_np.h)
-			AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np,
-				break)
+		AX_CHECK_COMPILER_FLAGS(-pthread, [
+			CPPFLAGS="$CPPFLAGS -pthread"
 		], [
+			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
+		])
+
+		LIBS="$LIBS -lpthread"
+		AC_TRY_LINK([
+			#include <pthread.h>
+		], [
+			pthread_create(NULL, NULL, NULL, NULL);
+		], [], [
 			AC_MSG_ERROR(No supported threads found!)
 		])
+
+		AC_DEFINE(OF_HAVE_PTHREADS, 1, [Whether we have pthreads])
+
+		AC_TRY_COMPILE([
+			#include <pthread.h>
+		], [
+			pthread_mutexattr_t attr;
+			pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+		], [
+			AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
+				[If pthread mutexes can be recursive])
+		])
+
+		AC_CHECK_FUNC(pthread_spin_lock, [
+			have_spinlocks="yes"
+			AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
+				[Whether we have pthread spinlocks])
+		])
+
+		AC_CHECK_FUNC(sched_yield, [
+			AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
+				[Whether we have sched_yield()])
+		])
+
+		AC_CHECK_HEADERS(pthread_np.h)
+		AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np, break)
 		;;
 	esac
 
