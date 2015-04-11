@@ -77,7 +77,7 @@
 #import "OFLinkFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFMoveItemFailedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -394,8 +394,7 @@ parseMode(const char *mode)
 	encoding = [OFSystemInfo native8BitEncoding];
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
@@ -466,8 +465,7 @@ parseMode(const char *mode)
 		if (GetLastError() == ERROR_FILE_NOT_FOUND)
 			errNo = ENOENT;
 
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errNo];
 	}
 
@@ -526,8 +524,7 @@ parseMode(const char *mode)
 
 	if (of_stat(path, &s) != 0)
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	return s.st_size;
@@ -542,8 +539,7 @@ parseMode(const char *mode)
 
 	if (of_stat(path, &s) != 0)
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
@@ -559,8 +555,7 @@ parseMode(const char *mode)
 
 	if (of_stat(path, &s) != 0)
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
@@ -576,8 +571,7 @@ parseMode(const char *mode)
 
 	if (of_stat(path, &s) != 0)
 		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
@@ -994,8 +988,8 @@ parseMode(const char *mode)
 	    destination, PATH_MAX);
 
 	if (length < 0)
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		/* FIXME: Maybe use another exception? */
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	return [OFString stringWithCString: destination
@@ -1032,7 +1026,7 @@ parseMode(const char *mode)
 		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo
 		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
 #endif
-			@throw [OFOpenFileFailedException
+			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: mode
 					errNo: errno];

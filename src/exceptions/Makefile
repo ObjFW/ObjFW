@@ -26,7 +26,7 @@ SRCS = OFAllocFailedException.m				\
        OFMemoryNotPartOfObjectException.m		\
        OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
-       OFOpenFileFailedException.m			\
+       OFOpenItemFailedException.m			\
        OFOutOfMemoryException.m				\
        OFOutOfRangeException.m				\
        OFReadFailedException.m				\

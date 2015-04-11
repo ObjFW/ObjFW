@@ -28,7 +28,7 @@
 #import "OFSHA512Hash.h"
 #import "OFStdIOStream.h"
 
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 
 @interface OFHash: OFObject
@@ -97,7 +97,7 @@ hashForName(OFString *name)
 			@try {
 				file = [OFFile fileWithPath: path
 						       mode: @"rb"];
-			} @catch (OFOpenFileFailedException *e) {
+			} @catch (OFOpenItemFailedException *e) {
 				[of_stderr writeFormat:
 				    @"Failed to open file %@: %s\n",
 				    [e path], strerror([e errNo])];

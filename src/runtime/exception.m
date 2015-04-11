@@ -72,8 +72,7 @@ static const uint64_t objc_exception_class = 0x474E55434F424A43; /* GNUCOBJC */
 
 struct _Unwind_Context;
 
-typedef enum
-{
+typedef enum {
 	_URC_OK			= 0,
 	_URC_FATAL_PHASE1_ERROR	= 3,
 	_URC_END_OF_STACK	= 5,

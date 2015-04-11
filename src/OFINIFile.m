@@ -26,7 +26,7 @@
 #import "OFINICategory+Private.h"
 
 #import "OFInvalidFormatException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 
 @interface OFINIFile (OF_PRIVATE_CATEGORY)
 - (void)OF_parseFile: (OFString*)path
@@ -141,7 +141,7 @@ isWhitespaceLine(OFString *line)
 	@try {
 		file = [OFFile fileWithPath: path
 				       mode: @"r"];
-	} @catch (OFOpenFileFailedException *e) {
+	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
 		if ([e errNo] == ENOENT)
 			return;

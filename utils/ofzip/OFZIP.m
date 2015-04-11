@@ -31,7 +31,7 @@
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidFormatException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
@@ -190,7 +190,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			    @"\rFailed to create directory %@: %s\n",
 			    [e path], strerror([e errNo])];
 			_exitStatus = 1;
-		} @catch (OFOpenFileFailedException *e) {
+		} @catch (OFOpenItemFailedException *e) {
 			[of_stderr writeFormat:
 			    @"\rFailed to open file %@: %s\n",
 			    [e path], strerror([e errNo])];
@@ -212,7 +212,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 	@try {
 		archive = [OFZIPArchive archiveWithPath: path];
-	} @catch (OFOpenFileFailedException *e) {
+	} @catch (OFOpenItemFailedException *e) {
 		[of_stderr writeFormat: @"Failed to open file %@: %s\n",
 					[e path], strerror([e errNo])];
 		[OFApplication terminateWithStatus: 1];

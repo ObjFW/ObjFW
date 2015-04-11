@@ -49,7 +49,7 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -830,7 +830,7 @@ static struct {
 		[OFFile class];
 
 		if (of_stat(path, &st) != 0)
-			@throw [OFOpenFileFailedException
+			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: @"rb"
 					errNo: errno];

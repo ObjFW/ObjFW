@@ -145,7 +145,7 @@
 # import "OFNotConnectedException.h"
 #endif
 #import "OFNotImplementedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"

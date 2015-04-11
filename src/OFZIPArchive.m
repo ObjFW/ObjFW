@@ -32,7 +32,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSeekFailedException.h"
@@ -324,7 +324,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	uint64_t offset64;
 
 	if (entry == nil)
-		@throw [OFOpenFileFailedException exceptionWithPath: path
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							       mode: @"rb"
 							      errNo: ENOENT];
 

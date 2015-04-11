@@ -16,15 +16,27 @@
 
 #include "config.h"
 
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFString.h"
 
-@implementation OFOpenFileFailedException
+@implementation OFOpenItemFailedException
++ (instancetype)exceptionWithPath: (OFString*)path
+{
+	return [[[self alloc] initWithPath: path] autorelease];
+}
+
 + (instancetype)exceptionWithPath: (OFString*)path
 			     mode: (OFString*)mode
 {
 	return [[[self alloc] initWithPath: path
 				      mode: mode] autorelease];
+}
+
++ (instancetype)exceptionWithPath: (OFString*)path
+			    errNo: (int)errNo
+{
+	return [[[self alloc] initWithPath: path
+				     errNo: errNo] autorelease];
 }
 
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -42,6 +54,20 @@
 }
 
 - initWithPath: (OFString*)path
+{
+	self = [super init];
+
+	@try {
+		_path = [path copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 {
 	self = [super init];
@@ -49,6 +75,22 @@
 	@try {
 		_path  = [path copy];
 		_mode  = [mode copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithPath: (OFString*)path
+	 errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_path  = [path copy];
+		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -85,14 +127,24 @@
 
 - (OFString*)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to open file %@ with mode %@: %@",
-		    _path, _mode, of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to open file %@ with mode %@!",
-		    _path, _mode];
+	if (_mode != nil) {
+		if (_errNo != 0)
+			return [OFString stringWithFormat:
+			    @"Failed to open item %@ with mode %@: %@",
+			    _path, _mode, of_strerror(_errNo)];
+		else
+			return [OFString stringWithFormat:
+			    @"Failed to open item %@ with mode %@!",
+			    _path, _mode];
+	} else {
+		if (_errNo != 0)
+			return [OFString stringWithFormat:
+			    @"Failed to open item %@: %@",
+			    _path, of_strerror(_errNo)];
+		else
+			return [OFString stringWithFormat:
+			    @"Failed to open item %@!", _path];
+	}
 }
 
 - (OFString*)path
