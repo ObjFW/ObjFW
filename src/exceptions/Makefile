@@ -34,6 +34,7 @@ SRCS = OFAllocFailedException.m				\
        OFRemoveItemFailedException.m			\
        OFSeekFailedException.m				\
        OFSetOptionFailedException.m			\
+       OFStatItemFailedException.m			\
        OFStillLockedException.m				\
        OFTruncatedDataException.m			\
        OFUnboundNamespaceException.m			\

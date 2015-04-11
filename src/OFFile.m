@@ -82,6 +82,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFStatItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
@@ -523,8 +524,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	if (of_stat(path, &s) != 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenItemFailedException exceptionWithPath: path
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	return s.st_size;
@@ -538,8 +538,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	if (of_stat(path, &s) != 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenItemFailedException exceptionWithPath: path
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
@@ -554,8 +553,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	if (of_stat(path, &s) != 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenItemFailedException exceptionWithPath: path
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
@@ -570,8 +568,7 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	if (of_stat(path, &s) != 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenItemFailedException exceptionWithPath: path
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
@@ -988,8 +985,7 @@ parseMode(const char *mode)
 	    destination, PATH_MAX);
 
 	if (length < 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenItemFailedException exceptionWithPath: path
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	return [OFString stringWithCString: destination
