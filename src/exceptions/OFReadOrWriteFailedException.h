@@ -53,7 +53,7 @@
  * @param object The object from which reading or to which writing failed
  * @param requestedLength The requested length of the data that couldn't be
  *			  read / written
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased read or write failed exception
  */
 + (instancetype)exceptionWithObject: (id)object
@@ -77,7 +77,7 @@
  * @param object The object from which reading or to which writing failed
  * @param requestedLength The requested length of the data that couldn't be
  *			  read / written
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new open file failed exception
  */
 -  initWithObject: (id)object
@@ -100,9 +100,9 @@
 - (size_t)requestedLength;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

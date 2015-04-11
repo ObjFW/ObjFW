@@ -42,7 +42,7 @@
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased seek failed exception
  */
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream
@@ -56,7 +56,7 @@
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized seek failed exception
  */
 - initWithStream: (OFSeekableStream*)stream
@@ -86,9 +86,9 @@
 - (int)whence;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

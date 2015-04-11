@@ -55,7 +55,7 @@
  * @brief Creates a new, autoreleased open item failed exception.
  *
  * @param path A string with the path of the item tried to open
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -66,7 +66,7 @@
  *
  * @param path A string with the path of the item tried to open
  * @param mode A string with the mode in which the item should have been opened
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -95,7 +95,7 @@
  * @brief Initializes an already allocated open item failed exception.
  *
  * @param path A string with the path of the item which couldn't be opened
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
 - initWithPath: (OFString*)path
@@ -106,7 +106,7 @@
  *
  * @param path A string with the path of the item which couldn't be opened
  * @param mode A string with the mode in which the item should have been opened
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
 - initWithPath: (OFString*)path
@@ -129,9 +129,9 @@
 - (OFString*)mode;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

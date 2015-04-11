@@ -42,7 +42,7 @@
  *
  * @param socket The socket which failed to listen
  * @param backLog The requested size of the back log
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased listen failed exception
  */
 + (instancetype)exceptionWithSocket: (id)socket
@@ -54,7 +54,7 @@
  *
  * @param socket The socket which failed to listen
  * @param backLog The requested size of the back log
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized listen failed exception
  */
 - initWithSocket: (id)socket
@@ -76,9 +76,9 @@
 - (int)backLog;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

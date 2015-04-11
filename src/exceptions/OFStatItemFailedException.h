@@ -47,7 +47,7 @@
  *
  * @param path A string with the path of the item whose status could not be
  *	       retrieved
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased stat item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -67,7 +67,7 @@
  *
  * @param path A string with the path of the item whose status could not be
  *	       retrieved
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized stat item failed exception
  */
 - initWithPath: (OFString*)path
@@ -83,9 +83,9 @@
 - (OFString*)path;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end
