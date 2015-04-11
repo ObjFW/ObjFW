@@ -201,6 +201,12 @@ AC_EGREP_CPP(yes, [
 	AC_MSG_RESULT(no)
 ])
 
+case "$host_os" in
+	solaris*)
+		CPPFLAGS="-D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS $CPPFLAGS"
+		;;
+esac
+
 objc_runtime="ObjFW runtime"
 AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
