@@ -51,7 +51,8 @@
 0:
 	call	get_eip
 1:
-	addl	$\not_found-1b, %eax
+	addl	$_GLOBAL_OFFSET_TABLE_, %eax
+	movl	\not_found@GOT(%eax), %eax
 	jmp	*%eax
 .type \name, %function
 .size \name, .-\name
