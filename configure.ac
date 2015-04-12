@@ -217,17 +217,17 @@ AC_ARG_ENABLE(seluid24,
 		[use 24 bit instead of 16 bit for selectors UIDs]))
 AS_IF([test x"$enable_runtime" != x"yes"], [
 	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-		dnl TODO: This is ugly. Let's think of a better check.
 		AC_EGREP_CPP(yes, [
 			#import <objc/objc.h>
-			#ifdef __objc_INCLUDE_GNU
+
+			#ifdef OBJC_BOOL_DEFINED
 			yes
 			#endif
 		], [
-			dnl We don't want the GNU runtime
-			true
-		], [
 			objc_runtime="Apple runtime"
+		], [
+			dnl We don't want the GNU runtime
+			:
 		])
 	])
 ])
