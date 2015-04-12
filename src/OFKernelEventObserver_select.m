@@ -18,8 +18,9 @@
 
 #include "config.h"
 
-#include <string.h>
+#include <errno.h>
 #include <math.h>
+#include <string.h>
 
 #include <sys/time.h>
 
@@ -28,6 +29,7 @@
 #import "OFKernelEventObserver_select.h"
 #import "OFArray.h"
 
+#import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "socket_helpers.h"
@@ -84,6 +86,7 @@
 	fd_set readFDs;
 	fd_set writeFDs;
 	struct timeval timeout;
+	int events;
 	size_t i, count, realEvents = 0;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
@@ -116,8 +119,14 @@
 #endif
 	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
-	if (select((int)_maxFD + 1, &readFDs, &writeFDs, NULL,
-	    (timeInterval != -1 ? &timeout : NULL)) < 1)
+	events = select((int)_maxFD + 1, &readFDs, &writeFDs, NULL,
+	    (timeInterval != -1 ? &timeout : NULL));
+
+	if (events < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
+
+	if (events == 0)
 		return false;
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {

@@ -20,6 +20,9 @@
 #include <errno.h>
 #include <math.h>
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <sys/types.h>
 #include <sys/event.h>
 #include <sys/time.h>
@@ -31,7 +34,7 @@
 #import "OFArray.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFOutOfMemoryException.h"
+#import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "socket_helpers.h"
@@ -125,7 +128,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
-	int i, events, realEvents = 0;
+	int i, events, errNo, realEvents = 0;
 
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
@@ -146,11 +149,13 @@
 	events = kevent(_kernelQueue, [_changeList items],
 	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
 	    (timeInterval == -1 ? NULL : &timeout));
+	errNo = errno;
 
 	[_removedArray removeAllObjects];
 
 	if (events < 0)
-		return false;
+		return [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errNo];
 
 	[_changeList removeAllItems];
 

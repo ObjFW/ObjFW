@@ -18,6 +18,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #ifdef HAVE_POLL_H
 # include <poll.h>
 #endif
@@ -27,6 +29,7 @@
 #import "OFKernelEventObserver_poll.h"
 #import "OFDataArray.h"
 
+#import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "socket_helpers.h"
@@ -131,6 +134,7 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
+	int events;
 	size_t i, nFDs, realEvents = 0;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
@@ -150,8 +154,14 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if (poll(FDs, (nfds_t)nFDs,
-	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1)) < 1)
+	events = poll(FDs, (nfds_t)nFDs,
+	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1));
+
+	if (events < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
+
+	if (events == 0)
 		return false;
 
 	for (i = 0; i < nFDs; i++) {
