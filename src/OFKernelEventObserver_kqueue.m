@@ -37,8 +37,6 @@
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
-#import "socket_helpers.h"
-
 #define EVENTLIST_SIZE 64
 
 @implementation OFKernelEventObserver_kqueue
@@ -128,7 +126,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
-	int i, events, errNo, realEvents = 0;
+	int i, events, realEvents = 0;
 
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
@@ -149,15 +147,13 @@
 	events = kevent(_kernelQueue, [_changeList items],
 	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
 	    (timeInterval == -1 ? NULL : &timeout));
-	errNo = errno;
-
-	[_removedArray removeAllObjects];
 
 	if (events < 0)
 		return [OFObserveFailedException exceptionWithObserver: self
-								 errNo: errNo];
+								 errNo: errno];
 
 	[_changeList removeAllItems];
+	[_removedArray removeAllObjects];
 
 	if (events == 0)
 		return false;
@@ -166,12 +162,11 @@
 		if (eventList[i].ident == _cancelFD[0]) {
 			char buffer;
 
-			OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
+			assert(eventList[i].filter == EVFILT_READ);
+			OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
 
 			continue;
 		}
-
-		realEvents++;
 
 		pool = objc_autoreleasePoolPush();
 
@@ -193,6 +188,8 @@
 		}
 
 		objc_autoreleasePoolPop(pool);
+
+		realEvents++;
 	}
 
 	if (realEvents == 0)

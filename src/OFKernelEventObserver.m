@@ -407,19 +407,19 @@ enum {
 	bool foundInCache = false;
 
 	for (i = 0; i < count; i++) {
+		void *pool = objc_autoreleasePoolPush();
+
 		if ([objects[i] isKindOfClass: [OFStream class]] &&
 		    [objects[i] hasDataInReadBuffer] &&
 		    ![objects[i] OF_isWaitingForDelimiter]) {
-			void *pool = objc_autoreleasePoolPush();
-
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: objects[i]];
 
 			foundInCache = true;
-
-			objc_autoreleasePoolPop(pool);
 		}
+
+		objc_autoreleasePoolPop(pool);
 	}
 
 	/*

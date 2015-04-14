@@ -165,39 +165,42 @@
 		return false;
 
 	for (i = 0; i < nFDs; i++) {
-		pool = objc_autoreleasePoolPush();
-
 		if (FDs[i].revents & POLLIN) {
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
 
-				OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
+				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
 				FDs[i].revents = 0;
 
-				objc_autoreleasePoolPop(pool);
 				continue;
 			}
+
+			pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
 				    _FDToObject[FDs[i].fd]];
 
+			objc_autoreleasePoolPop(pool);
+
 			realEvents++;
 		}
 
 		if (FDs[i].revents & POLLOUT) {
+			pool = objc_autoreleasePoolPush();
+
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
 				    _FDToObject[FDs[i].fd]];
 
+			objc_autoreleasePoolPop(pool);
+
 			realEvents++;
 		}
 
 		FDs[i].revents = 0;
-
-		objc_autoreleasePoolPop(pool);
 	}
 
 	if (realEvents == 0)
