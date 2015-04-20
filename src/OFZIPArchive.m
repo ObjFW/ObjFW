@@ -426,18 +426,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - (bool)matchesEntry: (OFZIPArchiveEntry*)entry
 {
-	/*
-	 * Bit 11 is the Language Encoding Flag, which some implementations
-	 * only set in the Central Directory Entry, but not in the Local File
-	 * Header. Therefore, ignore it for the comparison of the General
-	 * Purpose Bit Flag.
-	 */
-	uint16_t generalPurposeBitFlag = _generalPurposeBitFlag & ~(1 << 11);
-	uint16_t entryGeneralPurposeBitFlag =
-	    [entry OF_generalPurposeBitFlag] & ~(1 << 11);
-
 	if (_minVersionNeeded != [entry minVersionNeeded] ||
-	    generalPurposeBitFlag != entryGeneralPurposeBitFlag ||
 	    _compressionMethod != [entry compressionMethod] ||
 	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
 	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate])
