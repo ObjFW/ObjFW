@@ -120,6 +120,7 @@
 		4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
 		4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B187E60163EA4530049A832 /* Foundation.framework */; };
 		4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
+		4B22BE201AE594A000CD320A /* OFKernelEventObserverTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */; };
 		4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
 		4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4B23CA941338121C0047A1D9 /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B23CA8A133811610047A1D9 /* TestPlugin.bundle */; };
@@ -634,6 +635,7 @@
 		4B187E60163EA4530049A832 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
+		4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFKernelEventObserverTests.m; path = tests/OFKernelEventObserverTests.m; sourceTree = "<group>"; };
 		4B23CA8A133811610047A1D9 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B24592619B5397C0059F271 /* OFSHA224Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA224Hash.h; path = src/OFSHA224Hash.h; sourceTree = "<group>"; };
 		4B24592719B5397C0059F271 /* OFSHA224Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA224Hash.m; path = src/OFSHA224Hash.m; sourceTree = "<group>"; };
@@ -1512,6 +1514,7 @@
 				4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */,
 				4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */,
 				4BAA60C714D09699006F068D /* OFJSONTests.m */,
+				4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
 				4B6EF6731235358D0076B512 /* OFMD5HashTests.m */,
 				4B6EF6741235358D0076B512 /* OFNumberTests.m */,
@@ -2173,6 +2176,7 @@
 				4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */,
 				4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */,
 				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
+				4B22BE201AE594A000CD320A /* OFKernelEventObserverTests.m in Sources */,
 				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,
 				4BF33B04133807A20059CEF7 /* OFMD5HashTests.m in Sources */,
 				4BF33B05133807A20059CEF7 /* OFNumberTests.m in Sources */,

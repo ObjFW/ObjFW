@@ -108,6 +108,10 @@
 - (void)JSONTests;
 @end
 
+@interface TestsAppDelegate (OFKernelEventObserverTests)
+- (void)kernelEventObserverTests;
+@end
+
 @interface TestsAppDelegate (OFListTests)
 - (void)listTests;
 @end
@@ -176,12 +180,12 @@
 - (void)TCPSocketTests;
 @end
 
-@interface TestsAppDelegate (OFUDPSocketTests)
-- (void)UDPSocketTests;
-@end
-
 @interface TestsAppDelegate (OFThreadTests)
 - (void)threadTests;
+@end
+
+@interface TestsAppDelegate (OFUDPSocketTests)
+- (void)UDPSocketTests;
 @end
 
 @interface TestsAppDelegate (OFURLTests)
