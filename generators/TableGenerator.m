@@ -28,9 +28,6 @@
 #import "OFFile.h"
 #import "OFStdIOStream.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #import "TableGenerator.h"
 #import "copyright.h"
 

@@ -21,8 +21,6 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
-#import "macros.h"
-
 #import "OFNotImplementedException.h"
 
 #import "TestsAppDelegate.h"

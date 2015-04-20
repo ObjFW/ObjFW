@@ -35,9 +35,6 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#import "autorelease.h"
-#import "macros.h"
-
 #define BUFFER_SIZE 4096
 
 #ifndef S_IRWXG

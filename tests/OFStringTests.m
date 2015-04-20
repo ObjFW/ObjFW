@@ -32,8 +32,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnknownXMLEntityException.h"
 
-#import "macros.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFString";
