@@ -94,7 +94,7 @@ static bool readData = false;
 	TEST(@"-[observe] keeping event until read",
 	    R(readData = true) && [observer observeForTimeInterval: 0.01] == 1)
 
-	TEST(@"-[observer] time out due to no events",
+	TEST(@"-[observe] time out due to no events",
 	    R(readData = false) && [observer observeForTimeInterval: 0.01] == 0)
 
 	TEST(@"-[observe] correct number of events", events == 3)

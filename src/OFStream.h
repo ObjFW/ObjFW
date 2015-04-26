@@ -169,7 +169,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 queue to handle the data received next, you need to return
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, void *buffer, size_t size,
+ *		   `bool (OFStream *stream, void *buffer, size_t length,
  *		   OFException *exception)`.
  */
 - (void)asyncReadIntoBuffer: (void*)buffer
