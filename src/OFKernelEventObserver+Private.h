@@ -22,5 +22,5 @@
 - (void)OF_removeFileDescriptorForReading: (int)fd;
 - (void)OF_removeFileDescriptorForWriting: (int)fd;
 - (void)OF_processQueueAndStoreRemovedIn: (OFMutableArray*)removed;
-- (bool)OF_processCache;
+- (bool)OF_processReadBuffers;
 @end

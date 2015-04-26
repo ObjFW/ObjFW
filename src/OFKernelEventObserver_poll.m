@@ -139,7 +139,7 @@
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
 
-	if ([self OF_processCache]) {
+	if ([self OF_processReadBuffers]) {
 		objc_autoreleasePoolPop(pool);
 		return true;
 	}

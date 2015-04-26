@@ -400,11 +400,11 @@ enum {
 #endif
 }
 
-- (bool)OF_processCache
+- (bool)OF_processReadBuffers
 {
 	id const *objects = [_readObjects objects];
 	size_t i, count = [_readObjects count];
-	bool foundInCache = false;
+	bool foundInReadBuffer = false;
 
 	for (i = 0; i < count; i++) {
 		void *pool = objc_autoreleasePoolPush();
@@ -416,17 +416,17 @@ enum {
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: objects[i]];
 
-			foundInCache = true;
+			foundInReadBuffer = true;
 		}
 
 		objc_autoreleasePoolPop(pool);
 	}
 
 	/*
-	 * As long as we have data in the cache for any stream, we don't want
-	 * to block.
+	 * As long as we have data in the read buffer for any stream, we don't
+	 * want to block.
 	 */
-	if (foundInCache)
+	if (foundInReadBuffer)
 		return true;
 
 	return false;
