@@ -29,7 +29,7 @@ static int events = 0;
 static id expectedObject;
 static bool readData = false;
 
-@interface ObserverDelegate: OFObject <OFKernelEventObserverDelegate>
+@interface ObserverDelegate: OFObject
 - (void)objectIsReadyForReading: (id)object;
 @end
 
