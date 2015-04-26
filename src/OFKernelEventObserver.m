@@ -329,8 +329,11 @@ enum {
 			}
 
 			if ((action & QUEUE_ACTION) == QUEUE_REMOVE) {
-				/* FIXME: Maybe downsize? */
-				_FDToObject[fd] = nil;
+				/*
+				 * FIXME: What to do? There might still be an
+				 *	  object that has data in the read
+				 *	  buffer and needs the map!
+				 */
 			}
 
 			switch (action) {
