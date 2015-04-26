@@ -33,6 +33,7 @@
 
 @implementation ProgressBar
 - initWithLength: (intmax_t)length
+     resumedFrom: (intmax_t)resumedFrom
 {
 	self = [super init];
 
@@ -40,6 +41,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		_length = length;
+		_resumedFrom = resumedFrom;
 		_startDate = [[OFDate alloc] init];
 		_timer = [[OFTimer
 		    scheduledTimerWithTimeInterval: UPDATE_INTERVAL
@@ -75,8 +77,10 @@
 	uint_fast8_t i;
 	float bars, percent, bps;
 
-	bars = (float)_received / (float)_length * BAR_WIDTH;
-	percent = (float)_received / (float)_length * 100;
+	bars = (float)(_resumedFrom + _received) /
+	    (_resumedFrom + _length) * BAR_WIDTH;
+	percent = (float)(_resumedFrom + _received) /
+	    (_resumedFrom + _length) * 100;
 
 	[of_stdout writeString: @"\r  ▕"];
 
@@ -131,16 +135,20 @@
 	float bps;
 
 	if (_received >= GIBIBYTE)
-		[of_stdout writeFormat: @"\r  %7.2f GiB (",
-					(float)_received / GIBIBYTE];
+		[of_stdout writeFormat:
+		    @"\r  %7.2f GiB ",
+		    (float)(_resumedFrom + _received) / GIBIBYTE];
 	else if (_received >= MEBIBYTE)
-		[of_stdout writeFormat: @"\r  %7.2f MiB ",
-					(float)_received / MEBIBYTE];
+		[of_stdout writeFormat:
+		    @"\r  %7.2f MiB ",
+		    (float)(_resumedFrom + _received) / MEBIBYTE];
 	else if (_received >= KIBIBYTE)
-		[of_stdout writeFormat: @"\r  %7.2f KiB ",
-					(float)_received / KIBIBYTE];
+		[of_stdout writeFormat:
+		    @"\r  %7.2f KiB ",
+		    (float)(_resumedFrom + _received) / KIBIBYTE];
 	else
-		[of_stdout writeFormat: @"\r  %jd bytes ", _received];
+		[of_stdout writeFormat:
+		    @"\r  %jd bytes ", _resumedFrom + _received];
 
 	if (_stopped)
 		bps = (float)_received / -[_startDate timeIntervalSinceNow];

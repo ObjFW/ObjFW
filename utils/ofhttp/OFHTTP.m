@@ -34,6 +34,8 @@
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
+#import "OFOutOfRangeException.h"
+#import "OFStatItemFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 
 #import "ProgressBar.h"
@@ -52,7 +54,7 @@
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
 	OFStream *_output;
-	intmax_t _received, _length;
+	intmax_t _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
 }
 
@@ -65,12 +67,13 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[of_stderr writeFormat:
-	    @"Usage: %@ -[hoq] url1 [url2 ...]\n",
+	    @"Usage: %@ -[choq] url1 [url2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
 		[stream writeString:
 		    @"\nOptions:\n"
+		    @"    -c  Continue download of existing file\n"
 		    @"    -h  Show this help\n"
 		    @"    -o  Output filename\n"
 		    @"    -q  Quiet mode (no output, except errors)\n"];
@@ -99,11 +102,14 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"ho:q"];
+	    [OFOptionsParser parserWithOptions: @"cho:q"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
+		case 'c':
+			_continue = true;
+			break;
 		case 'h':
 			help(of_stdout, true, 0);
 			break;
@@ -213,13 +219,14 @@ next:
 {
 	OFString *URLString = nil;
 	OFURL *URL;
+	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
 	OFHTTPResponse *response;
 	OFDictionary *headers;
 	OFString *fileName, *lengthString, *type;
 
 	_length = -1;
-	_received = 0;
+	_received = _resumedFrom = 0;
 
 	if (_output != of_stdout)
 		[_output release];
@@ -253,7 +260,35 @@ next:
 	if (!_quiet)
 		[of_stdout writeFormat: @"⇣ %@", [URL string]];
 
+	if (_outputPath != nil)
+		fileName = _outputPath;
+	else
+		fileName = [[URL path] lastPathComponent];
+
+	clientHeaders = [OFMutableDictionary
+	    dictionaryWithObject: @"OFHTTP"
+			  forKey: @"User-Agent"];
+
+	if (_continue) {
+		@try {
+			off_t size = [OFFile sizeOfFileAtPath: fileName];
+			OFString *range;
+
+			if (size > INTMAX_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_resumedFrom = (intmax_t)size;
+
+			range = [OFString stringWithFormat: @"bytes=%jd-",
+							    _resumedFrom];
+			[clientHeaders setObject: range
+					  forKey: @"Range"];
+		} @catch (OFStatItemFailedException *e) {
+		}
+	}
+
 	request = [OFHTTPRequest requestWithURL: URL];
+	[request setHeaders: clientHeaders];
 
 	@try {
 		response = [_HTTPClient performRequest: request];
@@ -322,11 +357,6 @@ next:
 	lengthString = [headers objectForKey: @"Content-Length"];
 	type = [headers objectForKey: @"Content-Type"];
 
-	if (_outputPath != nil)
-		fileName = _outputPath;
-	else
-		fileName = [[URL path] lastPathComponent];
-
 	if (lengthString != nil)
 		_length = [lengthString decimalValue];
 
@@ -337,16 +367,19 @@ next:
 		if (lengthString != nil) {
 			if (_length >= GIBIBYTE)
 				lengthString = [OFString stringWithFormat:
-				    @"%.2f GiB", (float)_length / GIBIBYTE];
+				    @"%.2f GiB",
+				    (float)(_resumedFrom + _length) / GIBIBYTE];
 			else if (_length >= MEBIBYTE)
 				lengthString = [OFString stringWithFormat:
-				    @"%.2f MiB", (float)_length / MEBIBYTE];
+				    @"%.2f MiB",
+				    (float)(_resumedFrom + _length) / MEBIBYTE];
 			else if (_length >= KIBIBYTE)
 				lengthString = [OFString stringWithFormat:
-				    @"%.2f KiB", (float)_length / KIBIBYTE];
+				    @"%.2f KiB",
+				    (float)(_resumedFrom + _length) / KIBIBYTE];
 			else
 				lengthString = [OFString stringWithFormat:
-				    @"%jd bytes", _length];
+				    @"%jd bytes", _resumedFrom + _length];
 		} else
 			lengthString = @"unknown";
 
@@ -358,7 +391,7 @@ next:
 	if ([_outputPath isEqual: @"-"])
 		_output = of_stdout;
 	else {
-		if ([OFFile fileExistsAtPath: fileName]) {
+		if (!_continue && [OFFile fileExistsAtPath: fileName]) {
 			[of_stderr writeFormat:
 			    @"%@: File %@ already exists!\n",
 			    [OFApplication programName], fileName];
@@ -368,8 +401,10 @@ next:
 		}
 
 		@try {
+			OFString *mode =
+			    ([response statusCode] == 206 ? @"ab" : @"wb");
 			_output = [[OFFile alloc] initWithPath: fileName
-							  mode: @"wb"];
+							  mode: mode];
 		} @catch (OFOpenItemFailedException *e) {
 			[of_stderr writeFormat:
 			    @"%@: Failed to open file %@!\n",
@@ -381,7 +416,10 @@ next:
 	}
 
 	if (!_quiet) {
-		_progressBar = [[ProgressBar alloc] initWithLength: _length];
+		_progressBar = [[ProgressBar alloc]
+		    initWithLength: _length
+		       resumedFrom: _resumedFrom];
+		[_progressBar setReceived: _received];
 		[_progressBar draw];
 	}
 

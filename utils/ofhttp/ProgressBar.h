@@ -21,14 +21,15 @@
 
 @interface ProgressBar: OFObject
 {
-	intmax_t _length, _received, _lastReceived;
+	intmax_t _received, _lastReceived, _length, _resumedFrom;
 	OFDate *_startDate;
 	double _lastDrawn;
 	OFTimer *_timer;
 	bool _stopped;
 }
 
-- initWithLength: (intmax_t)length;
+- initWithLength: (intmax_t)length
+     resumedFrom: (intmax_t)resumedFrom;
 - (void)setReceived: (intmax_t)received;
 - (void)draw;
 - (void)stop;
