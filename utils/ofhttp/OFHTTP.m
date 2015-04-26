@@ -26,6 +26,7 @@
 #import "OFOptionsParser.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
+#import "OFTCPSocket.h"
 #import "OFURL.h"
 
 #import "OFAddressTranslationFailedException.h"
@@ -53,14 +54,13 @@
 	int _errorCode;
 	OFString *_outputPath;
 	bool _continue, _quiet;
+	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
 	OFStream *_output;
 	intmax_t _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
 }
-
-- (void)downloadNextURL;
 @end
 
 OF_APPLICATION_DELEGATE(OFHTTP)
@@ -69,7 +69,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[of_stderr writeFormat:
-	    @"Usage: %@ -[choq] url1 [url2 ...]\n",
+	    @"Usage: %@ -[chHoPq] url1 [url2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
@@ -77,7 +77,9 @@ help(OFStream *stream, bool full, int status)
 		    @"\nOptions:\n"
 		    @"    -c  Continue download of existing file\n"
 		    @"    -h  Show this help\n"
+		    @"    -H  Add a header (e.g. X-Foo:Bar)\n"
 		    @"    -o  Output filename\n"
+		    @"    -P  Specify SOCKS5 proxy\n"
 		    @"    -q  Quiet mode (no output, except errors)\n"];
 
 	[OFApplication terminateWithStatus: status];
@@ -89,6 +91,8 @@ help(OFStream *stream, bool full, int status)
 	self = [super init];
 
 	@try {
+		_clientHeaders = [[OFMutableDictionary alloc] init];
+
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		[_HTTPClient setDelegate: self];
 
@@ -101,10 +105,62 @@ help(OFStream *stream, bool full, int status)
 	return self;
 }
 
+- (void)addHeader: (OFString*)header
+{
+	size_t pos = [header rangeOfString: @":"].location;
+	OFString *name, *value;
+
+	if (pos == OF_NOT_FOUND) {
+		[of_stderr writeFormat: @"%@: Headers must to be in format "
+					"name:value!\n",
+					[OFApplication programName]];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	name = [header substringWithRange: of_range(0, pos)];
+	name = [name stringByDeletingEnclosingWhitespaces];
+
+	value = [header substringWithRange:
+	    of_range(pos + 1, [header length] - pos - 1)];
+	value = [value stringByDeletingEnclosingWhitespaces];
+
+	[_clientHeaders setObject: value
+			   forKey: name];
+}
+
+- (void)setProxy: (OFString*)proxy
+{
+	@try {
+		size_t pos = [proxy
+		    rangeOfString: @":"
+			  options: OF_STRING_SEARCH_BACKWARDS].location;
+		OFString *host;
+		intmax_t port;
+
+		if (pos == OF_NOT_FOUND)
+			@throw [OFInvalidFormatException exception];
+
+		host = [proxy substringWithRange: of_range(0, pos)];
+		port = [[proxy substringWithRange:
+		    of_range(pos + 1, [proxy length] - pos - 1)] decimalValue];
+
+		if (port > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[OFTCPSocket setSOCKS5Host: host];
+		[OFTCPSocket setSOCKS5Port: (uint16_t)port];
+	} @catch (OFInvalidFormatException *e) {
+		[of_stderr writeFormat: @"%@: Proxy must to be in format "
+					"host:port!\n",
+					[OFApplication programName]];
+		[OFApplication terminateWithStatus: 1];
+	}
+}
+
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"cho:q"];
+	    [OFOptionsParser parserWithOptions: @"chH:o:P:q"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -115,9 +171,15 @@ help(OFStream *stream, bool full, int status)
 		case 'h':
 			help(of_stdout, true, 0);
 			break;
+		case 'H':
+			[self addHeader: [optionsParser argument]];
+			break;
 		case 'o':
 			[_outputPath release];
 			_outputPath = [[optionsParser argument] retain];
+			break;
+		case 'P':
+			[self setProxy: [optionsParser argument]];
 			break;
 		case 'q':
 			_quiet = true;
@@ -267,9 +329,7 @@ next:
 	else
 		fileName = [[URL path] lastPathComponent];
 
-	clientHeaders = [OFMutableDictionary
-	    dictionaryWithObject: @"OFHTTP"
-			  forKey: @"User-Agent"];
+	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
 
 	if (_continue) {
 		@try {
