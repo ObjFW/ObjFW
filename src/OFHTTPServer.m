@@ -314,7 +314,7 @@ normalizedKey(OFString *key)
 - (bool)parseProlog: (OFString*)line;
 - (bool)parseHeaders: (OFString*)line;
 -      (bool)socket: (OFTCPSocket*)socket
-  didReadIntoBuffer: (const char*)buffer
+  didReadIntoBuffer: (char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception;
 - (bool)sendErrorAndClose: (short)statusCode;
@@ -457,10 +457,10 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if ([line length] == 0) {
-		size_t contentLength;
+		intmax_t contentLength;
 
 		@try {
-			contentLength = (size_t)[[_headers
+			contentLength = [[_headers
 			    objectForKey: @"Content-Length"] decimalValue];
 		} @catch (OFInvalidFormatException *e) {
 			return [self sendErrorAndClose: 400];
@@ -536,7 +536,7 @@ normalizedKey(OFString *key)
 }
 
 -      (bool)socket: (OFTCPSocket*)socket
-  didReadIntoBuffer: (const char*)buffer
+  didReadIntoBuffer: (char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception
 {
@@ -547,6 +547,14 @@ normalizedKey(OFString *key)
 		    count: length];
 
 	if ([_entity count] >= _contentLength) {
+		/*
+		 * Manually free the buffer here. While this is not required
+		 * now as the async read is the only thing referencing self and
+		 * the buffer is allocated on self, it is required once
+		 * Connection: keep-alive is implemented.
+		 */
+		[self freeMemory: buffer];
+
 		@try {
 			[self createResponse];
 		} @catch (OFWriteFailedException *e) {

@@ -110,7 +110,12 @@ normalizeKey(char *str_)
 		_hasContentLength = true;
 
 		@try {
-			_toRead = (size_t)[contentLength decimalValue];
+			intmax_t toRead = [contentLength decimalValue];
+
+			if (toRead > SIZE_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_toRead = (size_t)toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -187,8 +192,12 @@ normalizeKey(char *str_)
 			    of_range(0, range.location)];
 
 		@try {
-			_toRead =
-			    (size_t)[line hexadecimalValue];
+			uintmax_t toRead = [line hexadecimalValue];
+
+			if (toRead > SIZE_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_toRead = (size_t)toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}

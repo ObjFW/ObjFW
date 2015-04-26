@@ -241,7 +241,7 @@ void _references_to_categories_of_OFDataArray(void)
 			if ((contentLength =
 			    [headers objectForKey: @"Content-Length"]) != nil)
 				if ([self count] !=
-				    (size_t)[contentLength decimalValue])
+				    [contentLength decimalValue])
 					@throw [OFTruncatedDataException
 					    exception];
 		} @catch (id e) {
