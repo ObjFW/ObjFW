@@ -35,8 +35,10 @@
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
+#import "OFReadFailedException.h"
 #import "OFStatItemFailedException.h"
 #import "OFUnsupportedProtocolException.h"
+#import "OFWriteFailedException.h"
 
 #import "ProgressBar.h"
 
@@ -292,17 +294,6 @@ next:
 
 	@try {
 		response = [_HTTPClient performRequest: request];
-	} @catch (OFHTTPRequestFailedException *e) {
-		if (!_quiet)
-			[of_stdout writeFormat: @" ➜ %d\n",
-						[[e response] statusCode]];
-
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n",
-					[OFApplication programName],
-					[URL string]];
-
-		_errorCode = 1;
-		goto next;
 	} @catch (OFAddressTranslationFailedException *e) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
@@ -348,6 +339,35 @@ next:
 
 		_errorCode = 1;
 		goto next;
+	} @catch (OFReadOrWriteFailedException *e) {
+		OFString *action = @"Read or write";
+
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		if ([e isKindOfClass: [OFReadFailedException class]])
+			action = @"Read";
+		else if ([e isKindOfClass: [OFWriteFailedException class]])
+			action = @"Write";
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  %@ failed: %@\n",
+					[OFApplication programName],
+					[URL string], action, e];
+
+		_errorCode = 1;
+		goto next;
+	} @catch (OFHTTPRequestFailedException *e) {
+		if (!_quiet)
+			[of_stdout writeFormat: @" ➜ %d\n",
+						[[e response] statusCode]];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n",
+					[OFApplication programName],
+					[URL string]];
+
+		_errorCode = 1;
+		goto next;
 	}
 
 	if (!_quiet)
@@ -365,15 +385,15 @@ next:
 			type = @"unknown";
 
 		if (lengthString != nil) {
-			if (_length >= GIBIBYTE)
+			if (_resumedFrom + _length >= GIBIBYTE)
 				lengthString = [OFString stringWithFormat:
 				    @"%.2f GiB",
 				    (float)(_resumedFrom + _length) / GIBIBYTE];
-			else if (_length >= MEBIBYTE)
+			else if (_resumedFrom + _length >= MEBIBYTE)
 				lengthString = [OFString stringWithFormat:
 				    @"%.2f MiB",
 				    (float)(_resumedFrom + _length) / MEBIBYTE];
-			else if (_length >= KIBIBYTE)
+			else if (_resumedFrom + _length >= KIBIBYTE)
 				lengthString = [OFString stringWithFormat:
 				    @"%.2f KiB",
 				    (float)(_resumedFrom + _length) / KIBIBYTE];

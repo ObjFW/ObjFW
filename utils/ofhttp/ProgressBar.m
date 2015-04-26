@@ -134,15 +134,15 @@
 {
 	float bps;
 
-	if (_received >= GIBIBYTE)
+	if (_resumedFrom + _received >= GIBIBYTE)
 		[of_stdout writeFormat:
 		    @"\r  %7.2f GiB ",
 		    (float)(_resumedFrom + _received) / GIBIBYTE];
-	else if (_received >= MEBIBYTE)
+	else if (_resumedFrom + _received >= MEBIBYTE)
 		[of_stdout writeFormat:
 		    @"\r  %7.2f MiB ",
 		    (float)(_resumedFrom + _received) / MEBIBYTE];
-	else if (_received >= KIBIBYTE)
+	else if (_resumedFrom + _received >= KIBIBYTE)
 		[of_stdout writeFormat:
 		    @"\r  %7.2f KiB ",
 		    (float)(_resumedFrom + _received) / KIBIBYTE];
