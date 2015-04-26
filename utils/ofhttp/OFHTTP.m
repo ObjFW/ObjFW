@@ -28,8 +28,11 @@
 #import "OFSystemInfo.h"
 #import "OFURL.h"
 
+#import "OFAddressTranslationFailedException.h"
+#import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidFormatException.h"
+#import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -260,6 +263,39 @@ next:
 						[[e response] statusCode]];
 
 		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n",
+					[OFApplication programName],
+					[URL string]];
+
+		_errorCode = 1;
+		goto next;
+	} @catch (OFAddressTranslationFailedException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  Address translation failed: %@\n",
+					[OFApplication programName],
+					[URL string], e];
+
+		_errorCode = 1;
+		goto next;
+	} @catch (OFConnectionFailedException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  Connection failed: %@\n",
+					[OFApplication programName],
+					[URL string], e];
+
+		_errorCode = 1;
+		goto next;
+	} @catch (OFInvalidServerReplyException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  Invalid server reply!\n",
 					[OFApplication programName],
 					[URL string]];
 
