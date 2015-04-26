@@ -1,6 +1,7 @@
 include ../extra.mk
 
 SUBDIRS += ${OFHASH}	\
+	   ${OFHTTP}	\
 	   ${OFZIP}
 
 include ../buildsys.mk

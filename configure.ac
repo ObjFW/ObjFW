@@ -746,6 +746,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_DEFINE(OF_HAVE_SOCKETS, 1, [Whether we have sockets])
 	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
 
+	AS_IF([test x"$enable_files" != x"no"], [
+		AC_SUBST(OFHTTP, "ofhttp")
+	])
+
 	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
 	AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
