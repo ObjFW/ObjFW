@@ -82,6 +82,8 @@ help(OFStream *stream, bool full, int status)
 
 	@try {
 		_HTTPClient = [[OFHTTPClient alloc] init];
+		[_HTTPClient setDelegate: self];
+
 		_buffer = [self allocMemoryWithSize: [OFSystemInfo pageSize]];
 	} @catch (id e) {
 		[self release];
@@ -137,6 +139,18 @@ help(OFStream *stream, bool full, int status)
 
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
+}
+
+-	  (bool)client: (OFHTTPClient*)client
+  shouldFollowRedirect: (OFURL*)URL
+	    statusCode: (int)statusCode
+	       request: (OFHTTPRequest*)request
+{
+	if (!_quiet)
+		[of_stdout writeFormat: @" ➜ %d\n↻ %@",
+					statusCode, [URL string]];
+
+	return true;
 }
 
 -      (bool)stream: (OFHTTPResponse*)response

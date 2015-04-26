@@ -68,7 +68,7 @@
 	    request: (OFHTTPRequest*)request;
 
 /*!
- * @brief A callback which is called when an OFHTTPClient will follow a
+ * @brief A callback which is called when an OFHTTPClient wants to follow a
  *	  redirect.
  *
  * If you want to get the headers and data for each redirect, set the number of
