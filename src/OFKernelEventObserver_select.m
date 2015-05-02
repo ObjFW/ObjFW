@@ -18,6 +18,11 @@
 
 #include "config.h"
 
+#ifdef _WIN32
+/* Win32 has a ridiculous default of 64, even though it supports much more. */
+# define FD_SETSIZE 1024
+#endif
+
 #include <errno.h>
 #include <math.h>
 #include <string.h>
@@ -49,16 +54,20 @@
 
 - (void)OF_addFileDescriptorForReading: (int)fd
 {
+#ifndef _WIN32
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
+#endif
 
 	FD_SET(fd, &_readFDs);
 }
 
 - (void)OF_addFileDescriptorForWriting: (int)fd
 {
+#ifndef _WIN32
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
+#endif
 
 	FD_SET(fd, &_writeFDs);
 }
