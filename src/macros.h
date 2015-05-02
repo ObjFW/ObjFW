@@ -292,11 +292,14 @@
 #define OF_PATH_PARENT_DIRECTORY @".."
 
 #define OF_ENSURE(cond)							\
-	if (!(cond)) {							\
-		fprintf(stderr, "Failed to ensure condition in "	\
-		    __FILE__ ":%d:\n" #cond "\n", __LINE__);		\
-		abort();						\
-	}
+	do {								\
+		if (!(cond)) {						\
+			fprintf(stderr, "Failed to ensure condition "	\
+			    "in " __FILE__ ":%d:\n" #cond "\n",		\
+			    __LINE__);					\
+			abort();					\
+		}							\
+	} while (0)
 
 #define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
 #define OF_INVALID_INIT_METHOD				\
