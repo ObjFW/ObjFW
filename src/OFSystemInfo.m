@@ -34,7 +34,7 @@
 
 #import "OFNotImplementedException.h"
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(OF_IOS)
 # include <NSSystemDirectories.h>
 #endif
 #ifdef _WIN32
@@ -137,7 +137,8 @@ cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userDataPath
 {
-#if defined(__APPLE__)
+	/* TODO: Return something more sensible for iOS */
+#if defined(__APPLE__) && !defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	NSSearchPathEnumerationState state;
@@ -216,7 +217,8 @@ cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userConfigPath
 {
-#if defined(__APPLE__)
+	/* TODO: Return something more sensible for iOS */
+#if defined(__APPLE__) && !defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	NSSearchPathEnumerationState state;
