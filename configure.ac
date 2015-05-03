@@ -111,12 +111,6 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body -Werror,
 AX_CHECK_COMPILER_FLAGS(-Wobjc-property-synthesis -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-property-synthesis"])
 
-case "$OBJC" in
-	*clang*)
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
-esac
-
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
 	@interface Foo
