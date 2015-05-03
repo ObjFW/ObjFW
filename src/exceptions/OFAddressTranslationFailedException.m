@@ -25,14 +25,14 @@
 
 #include "socket_helpers.h"
 
-#if !defined(HAVE_GETADDRINFO) && defined(OF_HAVE_THREADS)
+#if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
 # include "threading.h"
 
 static of_mutex_t mutex;
 #endif
 
 @implementation OFAddressTranslationFailedException
-#if !defined(HAVE_GETADDRINFO) && defined(OF_HAVE_THREADS)
+#if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
 	if (self != [OFAddressTranslationFailedException class])
