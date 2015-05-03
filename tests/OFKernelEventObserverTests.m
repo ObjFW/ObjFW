@@ -27,7 +27,8 @@ static OFString *module = @"OFKernelEventObserverSocket";
 static OFKernelEventObserver *observer;
 static int events = 0;
 static id expectedObject;
-static bool readData = false;
+static bool readData = false, expectEOS = false;
+static OFTCPSocket *accepted = nil;
 
 @interface ObserverDelegate: OFObject
 - (void)objectIsReadyForReading: (id)object;
@@ -41,20 +42,21 @@ static bool readData = false;
 	OF_ENSURE(object == expectedObject);
 
 	if ([object isListening]) {
-		OFTCPSocket *client = [object accept];
+		accepted = [[object accept] retain];
 
-		[observer addObjectForReading: client];
-		[client writeBuffer: "0"
-			     length: 1];
-
-		return;
+		[accepted writeBuffer: "0"
+			       length: 1];
 	} else if (readData) {
 		char buf;
 
-		[object readIntoBuffer: &buf
-				length: 1];
-
-		OF_ENSURE(buf == '0');
+		if (expectEOS)
+			OF_ENSURE([object readIntoBuffer: &buf
+						  length: 1] == 0);
+		else {
+			OF_ENSURE([object readIntoBuffer: &buf
+						  length: 1] == 1);
+			OF_ENSURE(buf == '0');
+		}
 	}
 }
 @end
@@ -84,20 +86,26 @@ static bool readData = false;
 			port: port];
 	TEST(@"-[observe] waiting for connection",
 	    (expectedObject = sock1) &&
-	    [observer observeForTimeInterval: 0.01] == 1)
+	    [observer observeForTimeInterval: 0.01])
+	[accepted autorelease];
 
 	TEST(@"-[observe] waiting for data",
 	    (expectedObject = sock2) &&
 	    R([observer addObjectForReading: sock2]) &&
-	    [observer observeForTimeInterval: 0.01] == 1)
+	    [observer observeForTimeInterval: 0.01])
 
 	TEST(@"-[observe] keeping event until read",
-	    R(readData = true) && [observer observeForTimeInterval: 0.01] == 1)
+	    R(readData = true) && [observer observeForTimeInterval: 0.01])
 
 	TEST(@"-[observe] time out due to no events",
-	    R(readData = false) && [observer observeForTimeInterval: 0.01] == 0)
+	    R(readData = false) && ![observer observeForTimeInterval: 0.01])
 
-	TEST(@"-[observe] correct number of events", events == 3)
+	[accepted close];
+	TEST(@"-[observe] closed connection",
+	    R(readData = true) && R(expectEOS = true) &&
+	    [observer observeForTimeInterval: 0.01])
+
+	TEST(@"-[observe] correct number of events", events == 4)
 
 	[pool drain];
 }
