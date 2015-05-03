@@ -35,6 +35,7 @@
 #import "OFInitializationFailedException.h"
 #import "OFInvalidFormatException.h"
 #import "OFMalformedXMLException.h"
+#import "OFOutOfRangeException.h"
 #import "OFUnboundPrefixException.h"
 
 typedef void (*state_function_t)(id, SEL);
@@ -104,12 +105,16 @@ static OFString*
 namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 {
 	OFDictionary *const *objects = [namespaces objects];
+	size_t count = [namespaces count];
 	ssize_t i;
 
 	if (prefix == nil)
 		prefix = @"";
 
-	for (i = [namespaces count] - 1; i >= 0; i--) {
+	if (count - 1 > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	for (i = count - 1; i >= 0; i--) {
 		OFString *tmp;
 
 		if ((tmp = [objects[i] objectForKey: prefix]) != nil)

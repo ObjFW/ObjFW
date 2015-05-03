@@ -527,6 +527,9 @@ static struct {
 	size_t length = [self length];
 	ssize_t i;
 
+	if (length - 1 > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	for (i = length - 1; i >= 0; i--) {
 		of_unichar_t c = [self characterAtIndex: i];
 
