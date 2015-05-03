@@ -73,16 +73,16 @@ Linux
 -----
 
   * Architectures: Alpha, ARMv6, ARM64, m68k, MIPS (O32), PPC, SH4, x86, x86_64
-  * Compilers: Clang 3.0-3.4, GCC 4.2, GCC 4.6-4.8
+  * Compilers: Clang 3.0-3.6, GCC 4.2, GCC 4.6-4.8
   * Runtimes: ObjFW
 
 
 MacOS X
 -------
 
-  * OS Versions: 10.5, 10.7-10.9
+  * OS Versions: 10.5, 10.7-10.10
   * Architectures: PPC, PPC64, x86, x86_64
-  * Compilers: Clang 3.1-3.4, LLVM GCC 4.2.1
+  * Compilers: Clang 3.1-3.7, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
 
@@ -108,9 +108,9 @@ Nintendo DS
 OpenBSD
 -------
 
-  * OS Versions: 5.2-5.4
+  * OS Versions: 5.2-5.7
   * Architectures: MIPS64, PPC, SPARC64, x86_64
-  * Compilers: GCC 4.2.1
+  * Compilers: GCC 4.2.1, Clang 3.5
   * Runtimes: ObjFW
 
 
