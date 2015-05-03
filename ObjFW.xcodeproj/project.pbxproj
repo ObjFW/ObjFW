@@ -250,6 +250,8 @@
 		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
+		4B3ED7C21AF62C30004C8FF1 /* OFGetOptionFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3ED7C31AF62C30004C8FF1 /* OFGetOptionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */; };
 		4B40EC1B189FE2650031E19E /* socket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B40EC1A189FE2650031E19E /* socket.m */; };
 		4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B45355113DCFE1E0037AB4D /* OFCountedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B45355213DCFE1E0037AB4D /* OFCountedSet.m */; };
@@ -677,6 +679,8 @@
 		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = support/Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D5693139A617D0010A78F /* OFSerializationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerializationTests.m; path = tests/OFSerializationTests.m; sourceTree = "<group>"; };
+		4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFGetOptionFailedException.h; path = src/exceptions/OFGetOptionFailedException.h; sourceTree = "<group>"; };
+		4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFGetOptionFailedException.m; path = src/exceptions/OFGetOptionFailedException.m; sourceTree = "<group>"; };
 		4B40EC1A189FE2650031E19E /* socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = socket.m; path = src/socket.m; sourceTree = "<group>"; };
 		4B45355113DCFE1E0037AB4D /* OFCountedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet.h; path = src/OFCountedSet.h; sourceTree = "<group>"; };
 		4B45355213DCFE1E0037AB4D /* OFCountedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet.m; path = src/OFCountedSet.m; sourceTree = "<group>"; };
@@ -1071,6 +1075,8 @@
 				4B17FF86133A2E7A003E6DCD /* OFEnumerationMutationException.m */,
 				4B17FF70133A28FC003E6DCD /* OFException.h */,
 				4B17FF71133A28FC003E6DCD /* OFException.m */,
+				4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */,
+				4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */,
 				4B8B16FC133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h */,
 				4B8B16FD133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m */,
 				4B17FFAB133A3586003E6DCD /* OFHTTPRequestFailedException.h */,
@@ -1740,6 +1746,7 @@
 				4B29BC3F133AC4E80004B236 /* OFCreateDirectoryFailedException.h in Headers */,
 				4B067FC1177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.h in Headers */,
 				4B17FF87133A2E7B003E6DCD /* OFEnumerationMutationException.h in Headers */,
+				4B3ED7C21AF62C30004C8FF1 /* OFGetOptionFailedException.h in Headers */,
 				4B8B16FE133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.h in Headers */,
 				4B17FFAD133A3591003E6DCD /* OFHTTPRequestFailedException.h in Headers */,
 				4B17FFA5133A3411003E6DCD /* OFInitializationFailedException.h in Headers */,
@@ -2121,6 +2128,7 @@
 				4B067FC2177BA6F900B8CFDA /* OFCreateSymbolicLinkFailedException.m in Sources */,
 				4B17FF88133A2E7B003E6DCD /* OFEnumerationMutationException.m in Sources */,
 				4B17FF73133A2A76003E6DCD /* OFException.m in Sources */,
+				4B3ED7C31AF62C30004C8FF1 /* OFGetOptionFailedException.m in Sources */,
 				4B8B16FF133A3B84007CD8B3 /* OFHashAlreadyCalculatedException.m in Sources */,
 				4B17FFAE133A3591003E6DCD /* OFHTTPRequestFailedException.m in Sources */,
 				4B17FFA6133A3411003E6DCD /* OFInitializationFailedException.m in Sources */,

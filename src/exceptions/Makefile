@@ -13,6 +13,7 @@ SRCS = OFAllocFailedException.m				\
        OFCreateSymbolicLinkFailedException.m		\
        OFEnumerationMutationException.m			\
        OFException.m					\
+       OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
        OFInitializationFailedException.m		\
        OFInvalidArgumentException.m			\

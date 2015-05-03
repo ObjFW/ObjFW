@@ -762,6 +762,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_IN_H, 1,
 			[Whether we have netinet/in.h])
 	])
+	AC_CHECK_HEADERS(netinet/tcp.h, [
+		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
+			[Whether we have netinet/tcp.h])
+	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
 	AC_CHECK_FUNCS([fcntl paccept accept4])

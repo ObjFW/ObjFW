@@ -69,6 +69,8 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 @property (readonly, getter=isListening) bool listening;
 @property (copy) OFString *SOCKS5Host;
 @property uint16_t SOCKS5Port;
+@property (getter=isKeepAliveEnabled) bool keepAliveEnabled;
+@property (getter=isTCPNoDelayEnabled) bool TCPNoDelayEnabled;
 #endif
 
 /*!
@@ -226,13 +228,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #endif
 
 /*!
- * @brief Enable or disable keep alives for the connection.
- *
- * @param enable Whether to enable or disable keep alives for the connection
- */
-- (void)setKeepAlivesEnabled: (bool)enable;
-
-/*!
  * @brief Returns the remote address of the socket.
  *
  * Only works with accepted sockets!
@@ -247,6 +242,34 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @return Whether the socket is a listening socket
  */
 - (bool)isListening;
+
+/*!
+ * @brief Enable or disable keep alive for the connection.
+ *
+ * @param enabled Whether to enable or disable keep alives for the connection
+ */
+- (void)setKeepAliveEnabled: (bool)enabled;
+
+/*!
+ * @brief Returns whether keep alive is enabled for the connection.
+ *
+ * @return Whether keep alives are enabled for the connection
+ */
+- (bool)isKeepAliveEnabled;
+
+/*!
+ * @brief Enable or disable TCP_NODELAY for the connection.
+ *
+ * @param enabled Whether to enable or disable TCP_NODELAY for the connection
+ */
+- (void)setTCPNoDelayEnabled: (bool)enabled;
+
+/*!
+ * @brief Returns whether TCP_NODELAY is enabled for the connection.
+ *
+ * @return Whether TCP_NODELAY is enabled for the connection
+ */
+- (bool)isTCPNoDelayEnabled;
 @end
 
 #ifdef __cplusplus
