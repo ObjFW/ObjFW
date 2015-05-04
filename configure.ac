@@ -771,6 +771,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 		AC_CHECK_FUNCS(kqueue1)
 	])
+	AC_CHECK_FUNC(epoll_create, [
+		AC_DEFINE(HAVE_EPOLL, 1, [Whether we have epoll])
+		AC_SUBST(OFKERNELEVENTOBSERVER_EPOLL_M,
+			"OFKernelEventObserver_epoll.m")
+
+		AC_CHECK_FUNCS(epoll_create1)
+	])
 	AC_CHECK_HEADER(poll.h, [
 		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
 		AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,

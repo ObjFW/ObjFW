@@ -58,7 +58,7 @@ static const of_map_table_functions_t keyFunctions = {
 	.hash = hash,
 	.equal = equal
 };
-static const of_map_table_functions_t valueFunctions = { 0 };
+static const of_map_table_functions_t valueFunctions = { NULL };
 
 @implementation OFSet_hashtable
 - init

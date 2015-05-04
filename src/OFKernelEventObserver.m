@@ -38,6 +38,9 @@
 #ifdef HAVE_KQUEUE
 # import "OFKernelEventObserver_kqueue.h"
 #endif
+#ifdef HAVE_EPOLL
+# import "OFKernelEventObserver_epoll.h"
+#endif
 #if defined(HAVE_POLL_H) || defined(__wii__)
 # import "OFKernelEventObserver_poll.h"
 #endif
@@ -76,31 +79,23 @@ enum {
 	return [[[self alloc] init] autorelease];
 }
 
++ alloc
+{
+	if (self == [OFKernelEventObserver class])
 #if defined(HAVE_KQUEUE)
-+ alloc
-{
-	if (self == [OFKernelEventObserver class])
 		return [OFKernelEventObserver_kqueue alloc];
-
-	return [super alloc];
-}
+#elif defined(HAVE_EPOLL)
+		return [OFKernelEventObserver_epoll alloc];
 #elif defined(HAVE_POLL_H) || defined(__wii__)
-+ alloc
-{
-	if (self == [OFKernelEventObserver class])
 		return [OFKernelEventObserver_poll alloc];
-
-	return [super alloc];
-}
 #elif defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
-+ alloc
-{
-	if (self == [OFKernelEventObserver class])
 		return [OFKernelEventObserver_select alloc];
+#else
+# error No kqueue / epoll / poll / select found!
+#endif
 
 	return [super alloc];
 }
-#endif
 
 - init
 {

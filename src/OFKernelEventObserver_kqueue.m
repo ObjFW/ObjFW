@@ -146,7 +146,7 @@
 
 	events = kevent(_kernelQueue, [_changeList items],
 	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
-	    (timeInterval == -1 ? NULL : &timeout));
+	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)
 		return [OFObserveFailedException exceptionWithObserver: self
