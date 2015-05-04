@@ -21,14 +21,27 @@
 #import "OFTCPSocket.h"
 #import "OFAutoreleasePool.h"
 
+#if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
+# import "OFKernelEventObserver_select.h"
+#endif
+#if defined(HAVE_POLL_H) || defined(__wii__)
+# import "OFKernelEventObserver_poll.h"
+#endif
+#ifdef HAVE_EPOLL
+# import "OFKernelEventObserver_epoll.h"
+#endif
+#ifdef HAVE_KQUEUE
+# import "OFKernelEventObserver_kqueue.h"
+#endif
+
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFKernelEventObserverSocket";
+static OFString *module;
 static OFKernelEventObserver *observer;
-static int events = 0;
+static int events;
 static id expectedObject;
-static bool readData = false, expectEOS = false;
-static OFTCPSocket *accepted = nil;
+static bool readData, expectEOS;
+static OFTCPSocket *accepted;
 
 @interface ObserverDelegate: OFObject
 - (void)objectIsReadyForReading: (id)object;
@@ -62,21 +75,26 @@ static OFTCPSocket *accepted = nil;
 @end
 
 @implementation TestsAppDelegate (OFKernelEventObserverTests)
-- (void)kernelEventObserverTests
+- (void)kernelEventObserverTestsWithClass: (Class)class
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	ObserverDelegate *delegate =
 	    [[[ObserverDelegate alloc] init] autorelease];
 	OFTCPSocket *sock1 = [OFTCPSocket socket];
 	OFTCPSocket *sock2 = [OFTCPSocket socket];
 	uint16_t port;
 
+	module = [class className];
+	events = 0;
+	expectedObject = nil;
+	readData = expectEOS = false;
+	accepted = nil;
+
 	port = [sock1 bindToHost: @"127.0.0.1"
 			    port: 0];
 	[sock1 listen];
 
 	TEST(@"+[observer]",
-	    (observer = [OFKernelEventObserver observer]) &&
+	    (observer = [class observer]) &&
 	    R([observer setDelegate: delegate]))
 
 	TEST(@"-[addObjectForReading:]",
@@ -106,6 +124,31 @@ static OFTCPSocket *accepted = nil;
 	    [observer observeForTimeInterval: 0.01])
 
 	TEST(@"-[observe] correct number of events", events == 4)
+}
+
+- (void)kernelEventObserverTests
+{
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+
+#if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
+	[self kernelEventObserverTestsWithClass:
+	    [OFKernelEventObserver_select class]];
+#endif
+
+#if defined(HAVE_POLL_H) || defined(__wii__)
+	[self kernelEventObserverTestsWithClass:
+	    [OFKernelEventObserver_poll class]];
+#endif
+
+#ifdef HAVE_EPOLL
+	[self kernelEventObserverTestsWithClass:
+	    [OFKernelEventObserver_epoll class]];
+#endif
+
+#ifdef HAVE_KQUEUE
+	[self kernelEventObserverTestsWithClass:
+	    [OFKernelEventObserver_kqueue class]];
+#endif
 
 	[pool drain];
 }
