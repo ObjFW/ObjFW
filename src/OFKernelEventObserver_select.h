@@ -30,5 +30,6 @@
 @interface OFKernelEventObserver_select: OFKernelEventObserver
 {
 	fd_set _readFDs, _writeFDs;
+	int _maxFD;
 }
 @end

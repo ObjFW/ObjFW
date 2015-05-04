@@ -28,6 +28,7 @@
 #import "OFKernelEventObserver+Private.h"
 #import "OFKernelEventObserver_epoll.h"
 #import "OFMapTable.h"
+#import "OFNull.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
@@ -42,6 +43,8 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	self = [super init];
 
 	@try {
+		struct epoll_event event;
+
 #ifdef HAVE_EPOLL_CREATE1
 		if ((_epfd = epoll_create1(EPOLL_CLOEXEC)) == -1)
 			@throw [OFInitializationFailedException exception];
@@ -59,7 +62,12 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 		    initWithKeyFunctions: mapFunctions
 			  valueFunctions: mapFunctions];
 
-		[self OF_addFileDescriptorForReading: _cancelFD[0]];
+		memset(&event, 0, sizeof(event));
+		event.events = EPOLLIN;
+		event.data.ptr = [OFNull null];
+
+		if (epoll_ctl(_epfd, EPOLL_CTL_ADD, _cancelFD[0], &event) == -1)
+			@throw [OFInitializationFailedException exception];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -77,9 +85,9 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[super dealloc];
 }
 
-
-- (void)OF_addFileDescriptor: (int)fd
-		   forEvents: (int)addEvents
+- (void)OF_addObject: (id)object
+      fileDescriptor: (int)fd
+	      events: (int)addEvents
 {
 	intptr_t events;
 
@@ -89,7 +97,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 		memset(&event, 0, sizeof(event));
 		event.events = addEvents;
-		event.data.fd = fd;
+		event.data.ptr = object;
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &event) == -1)
 			@throw [OFObserveFailedException
@@ -103,7 +111,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 		memset(&event, 0, sizeof(event));
 		event.events = (int)events | addEvents;
-		event.data.fd = fd;
+		event.data.ptr = object;
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
 			@throw [OFObserveFailedException
@@ -115,8 +123,9 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	}
 }
 
-- (void)OF_removeFileDescriptor: (int)fd
-		      forEvents: (int)removeEvents
+- (void)OF_removeObject: (id)object
+	 fileDescriptor: (int)fd
+		 events: (int)removeEvents
 {
 	intptr_t events;
 
@@ -135,7 +144,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 		memset(&event, 0, sizeof(event));
 		event.events = (int)events;
-		event.data.fd = fd;
+		event.data.ptr = object;
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
 			@throw [OFObserveFailedException
@@ -147,32 +156,37 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	}
 }
 
-- (void)OF_addFileDescriptorForReading: (int)fd
+- (void)OF_addObjectForReading: (id)object
 {
-	[self OF_addFileDescriptor: fd
-			 forEvents: EPOLLIN];
+	[self OF_addObject: object
+	    fileDescriptor: [object fileDescriptorForReading]
+		    events: EPOLLIN];
 }
 
-- (void)OF_addFileDescriptorForWriting: (int)fd
+- (void)OF_addObjectForWriting: (id)object
 {
-	[self OF_addFileDescriptor: fd
-			 forEvents: EPOLLOUT];
+	[self OF_addObject: object
+	    fileDescriptor: [object fileDescriptorForWriting]
+		    events: EPOLLOUT];
 }
 
-- (void)OF_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeObjectForReading: (id)object
 {
-	[self OF_removeFileDescriptor: fd
-			    forEvents: EPOLLIN];
+	[self OF_removeObject: object
+	       fileDescriptor: [object fileDescriptorForReading]
+		       events: EPOLLIN];
 }
 
-- (void)OF_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeObjectForWriting: (id)object
 {
-	[self OF_removeFileDescriptor: fd
-			    forEvents: EPOLLOUT];
+	[self OF_removeObject: object
+	       fileDescriptor: [object fileDescriptorForWriting]
+		       events: EPOLLOUT];
 }
 
 - (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
+	OFNull *nullObject = [OFNull null];
 	void *pool = objc_autoreleasePoolPush();
 	struct epoll_event eventList[EVENTLIST_SIZE];
 	int i, events, realEvents = 0;
@@ -197,7 +211,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 		return false;
 
 	for (i = 0; i < events; i++) {
-		if (eventList[i].data.fd == _cancelFD[0]) {
+		if (eventList[i].data.ptr == nullObject) {
 			char buffer;
 
 			assert(eventList[i].events == EPOLLIN);
@@ -212,7 +226,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
-				    _FDToObject[eventList[i].data.fd]];
+				    eventList[i].data.ptr];
 
 			realEvents++;
 
@@ -225,7 +239,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
-				    _FDToObject[eventList[i].data.fd]];
+				    eventList[i].data.ptr];
 
 			realEvents++;
 

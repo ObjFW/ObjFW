@@ -34,6 +34,7 @@
 #import "OFKernelEventObserver_select.h"
 #import "OFArray.h"
 
+#import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
@@ -44,44 +45,74 @@
 {
 	self = [super init];
 
+#ifndef _WIN32
+	if (_cancelFD[0] >= FD_SETSIZE)
+		@throw [OFInitializationFailedException exception];
+#endif
+
 	FD_ZERO(&_readFDs);
 	FD_ZERO(&_writeFDs);
-
 	FD_SET(_cancelFD[0], &_readFDs);
+
+	_maxFD = _cancelFD[0];
 
 	return self;
 }
 
-- (void)OF_addFileDescriptorForReading: (int)fd
+- (void)OF_addObjectForReading: (id)object
 {
+	int fd = [object fileDescriptorForReading];
+
+	if (fd > INT_MAX - 1)
+		@throw [OFOutOfRangeException exception];
+
 #ifndef _WIN32
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
+
+	if (fd > _maxFD)
+		_maxFD = fd;
 
 	FD_SET(fd, &_readFDs);
 }
 
-- (void)OF_addFileDescriptorForWriting: (int)fd
+- (void)OF_addObjectForWriting: (id)object
 {
+	int fd = [object fileDescriptorForWriting];
+
+	if (fd > INT_MAX - 1)
+		@throw [OFOutOfRangeException exception];
+
 #ifndef _WIN32
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
 
+	if (fd > _maxFD)
+		_maxFD = fd;
+
 	FD_SET(fd, &_writeFDs);
 }
 
-- (void)OF_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeObjectForReading: (id)object
 {
+	/* TODO: Adjust _maxFD */
+
+	int fd = [object fileDescriptorForReading];
+
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 
 	FD_CLR(fd, &_readFDs);
 }
 
-- (void)OF_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeObjectForWriting: (id)object
 {
+	/* TODO: Adjust _maxFD */
+
+	int fd = [object fileDescriptorForWriting];
+
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 
@@ -128,7 +159,7 @@
 #endif
 	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
-	events = select((int)_maxFD + 1, &readFDs, &writeFDs, NULL,
+	events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
 	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)

@@ -21,5 +21,7 @@
 @interface OFKernelEventObserver_poll: OFKernelEventObserver
 {
 	OFDataArray *_FDs;
+	size_t _maxFD;
+	__unsafe_unretained id *_FDToObject;
 }
 @end

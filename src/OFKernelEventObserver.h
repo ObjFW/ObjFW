@@ -110,10 +110,8 @@
 {
 	OFMutableArray *_readObjects;
 	OFMutableArray *_writeObjects;
-	__unsafe_unretained id *_FDToObject;
-	size_t _maxFD;
 	OFMutableArray *_queue;
-	OFDataArray *_queueInfo, *_queueFDs;
+	OFDataArray *_queueActions;
 	id <OFKernelEventObserverDelegate> _delegate;
 #ifdef OF_HAVE_PIPE
 	int _cancelFD[2];

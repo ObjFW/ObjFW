@@ -45,6 +45,8 @@
 	self = [super init];
 
 	@try {
+		struct kevent event;
+
 #ifdef HAVE_KQUEUE1
 		if ((_kernelQueue = kqueue1(O_CLOEXEC)) == -1)
 			@throw [OFInitializationFailedException
@@ -62,9 +64,10 @@
 
 		_changeList = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct kevent)];
-		_removedArray = [[OFMutableArray alloc] init];
+		EV_SET(&event, _cancelFD[0], EVFILT_READ, EV_ADD, 0, 0, 0);
+		[_changeList addItem: &event];
 
-		[self OF_addFileDescriptorForReading: _cancelFD[0]];
+		_removedArray = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -83,41 +86,65 @@
 	[super dealloc];
 }
 
-- (void)OF_addFileDescriptorForReading: (int)fd
+- (void)OF_addObjectForReading: (id)object
 {
 	struct kevent event;
 
 	if ([_changeList count] >= INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	EV_SET(&event, fd, EVFILT_READ, EV_ADD, 0, 0, 0);
+	memset(&event, 0, sizeof(event));
+	event.ident = [object fileDescriptorForReading];
+	event.filter = EVFILT_READ;
+	event.flags = EV_ADD;
+#ifndef __NetBSD__
+	event.udata = object;
+#else
+	event.udata = (intptr_t)object;
+#endif
+
 	[_changeList addItem: &event];
 }
 
-- (void)OF_addFileDescriptorForWriting: (int)fd
+- (void)OF_addObjectForWriting: (id)object
 {
 	struct kevent event;
 
 	if ([_changeList count] >= INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	EV_SET(&event, fd, EVFILT_WRITE, EV_ADD, 0, 0, 0);
+	memset(&event, 0, sizeof(event));
+	event.ident = [object fileDescriptorForWriting];
+	event.filter = EVFILT_WRITE;
+	event.flags = EV_ADD;
+#ifndef __NetBSD__
+	event.udata = object;
+#else
+	event.udata = (intptr_t)object;
+#endif
+
 	[_changeList addItem: &event];
 }
 
-- (void)OF_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeObjectForReading: (id)object
 {
 	struct kevent event;
 
-	EV_SET(&event, fd, EVFILT_READ, EV_DELETE, 0, 0, 0);
+	memset(&event, 0, sizeof(event));
+	event.ident = [object fileDescriptorForReading];
+	event.filter = EVFILT_READ;
+	event.flags = EV_DELETE;
 	[_changeList addItem: &event];
 }
 
-- (void)OF_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeObjectForWriting: (id)object
 {
 	struct kevent event;
 
-	EV_SET(&event, fd, EVFILT_WRITE, EV_DELETE, 0, 0, 0);
+	memset(&event, 0, sizeof(event));
+	event.ident = [object fileDescriptorForWriting];
+	event.filter = EVFILT_WRITE;
+	event.flags = EV_DELETE;
 	[_changeList addItem: &event];
 }
 
@@ -175,13 +202,13 @@
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
-				    _FDToObject[eventList[i].ident]];
+				    (id)eventList[i].udata];
 			break;
 		case EVFILT_WRITE:
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
-				    _FDToObject[eventList[i].ident]];
+				    (id)eventList[i].udata];
 			break;
 		default:
 			assert(0);

@@ -109,9 +109,8 @@ enum {
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
 		_queue = [[OFMutableArray alloc] init];
-		_queueInfo = [[OFDataArray alloc]
+		_queueActions = [[OFDataArray alloc]
 		    initWithItemSize: sizeof(int)];
-		_queueFDs = [[OFDataArray alloc] initWithItemSize: sizeof(int)];
 
 #ifdef OF_HAVE_PIPE
 		if (pipe(_cancelFD))
@@ -147,11 +146,6 @@ enum {
 # endif
 #endif
 
-		_maxFD = _cancelFD[0];
-		_FDToObject = [self allocMemoryWithSize: sizeof(id)
-						  count: _maxFD + 1];
-		_FDToObject[_cancelFD[0]] = nil;
-
 #ifdef OF_HAVE_THREADS
 		_mutex = [[OFMutex alloc] init];
 #endif
@@ -172,8 +166,7 @@ enum {
 	[_readObjects release];
 	[_writeObjects release];
 	[_queue release];
-	[_queueInfo release];
-	[_queueFDs release];
+	[_queueActions release];
 #ifdef OF_HAVE_THREADS
 	[_mutex release];
 #endif
@@ -198,11 +191,9 @@ enum {
 #endif
 	@try {
 		int qi = QUEUE_ADD | QUEUE_READ;
-		int fd = [object fileDescriptorForReading];
 
 		[_queue addObject: object];
-		[_queueInfo addItem: &qi];
-		[_queueFDs addItem: &fd];
+		[_queueActions addItem: &qi];
 	} @finally {
 #ifdef OF_HAVE_THREADS
 		[_mutex unlock];
@@ -219,11 +210,9 @@ enum {
 #endif
 	@try {
 		int qi = QUEUE_ADD | QUEUE_WRITE;
-		int fd = [object fileDescriptorForWriting];
 
 		[_queue addObject: object];
-		[_queueInfo addItem: &qi];
-		[_queueFDs addItem: &fd];
+		[_queueActions addItem: &qi];
 	} @finally {
 #ifdef OF_HAVE_THREADS
 		[_mutex unlock];
@@ -240,11 +229,9 @@ enum {
 #endif
 	@try {
 		int qi = QUEUE_REMOVE | QUEUE_READ;
-		int fd = [object fileDescriptorForReading];
 
 		[_queue addObject: object];
-		[_queueInfo addItem: &qi];
-		[_queueFDs addItem: &fd];
+		[_queueActions addItem: &qi];
 	} @finally {
 #ifdef OF_HAVE_THREADS
 		[_mutex unlock];
@@ -261,11 +248,9 @@ enum {
 #endif
 	@try {
 		int qi = QUEUE_REMOVE | QUEUE_WRITE;
-		int fd = [object fileDescriptorForWriting];
 
 		[_queue addObject: object];
-		[_queueInfo addItem: &qi];
-		[_queueFDs addItem: &fd];
+		[_queueActions addItem: &qi];
 	} @finally {
 #ifdef OF_HAVE_THREADS
 		[_mutex unlock];
@@ -275,22 +260,22 @@ enum {
 	[self cancel];
 }
 
-- (void)OF_addFileDescriptorForReading: (int)fd
+- (void)OF_addObjectForReading: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_addFileDescriptorForWriting: (int)fd
+- (void)OF_addObjectForWriting: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeObjectForReading: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeObjectForWriting: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -302,57 +287,35 @@ enum {
 #endif
 	@try {
 		id const *queueObjects = [_queue objects];
-		int *queueInfoItems = [_queueInfo items];
-		int *queueFDsItems = [_queueFDs items];
+		int *queueActionItems = [_queueActions items];
 		size_t i, count = [_queue count];
 
 		for (i = 0; i < count; i++) {
 			id object = queueObjects[i];
-			int action = queueInfoItems[i];
-			int fd = queueFDsItems[i];
-
-			if ((action & QUEUE_ACTION) == QUEUE_ADD) {
-				if (fd > _maxFD) {
-					_maxFD = fd;
-					_FDToObject = [self
-					    resizeMemory: _FDToObject
-						    size: sizeof(id)
-						   count: _maxFD + 1];
-				}
-
-				_FDToObject[fd] = object;
-			}
-
-			if ((action & QUEUE_ACTION) == QUEUE_REMOVE) {
-				/*
-				 * FIXME: What to do? There might still be an
-				 *	  object that has data in the read
-				 *	  buffer and needs the map!
-				 */
-			}
+			int action = queueActionItems[i];
 
 			switch (action) {
 			case QUEUE_ADD | QUEUE_READ:
 				[_readObjects addObject: object];
 
-				[self OF_addFileDescriptorForReading: fd];
+				[self OF_addObjectForReading: object];
 
 				break;
 			case QUEUE_ADD | QUEUE_WRITE:
 				[_writeObjects addObject: object];
 
-				[self OF_addFileDescriptorForWriting: fd];
+				[self OF_addObjectForWriting: object];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
-				[self OF_removeFileDescriptorForReading: fd];
+				[self OF_removeObjectForReading: object];
 
 				[removed addObject: object];
 				[_readObjects removeObjectIdenticalTo: object];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
-				[self OF_removeFileDescriptorForWriting: fd];
+				[self OF_removeObjectForWriting: object];
 
 				[removed addObject: object];
 				[_writeObjects removeObjectIdenticalTo: object];
@@ -364,8 +327,7 @@ enum {
 		}
 
 		[_queue removeAllObjects];
-		[_queueInfo removeAllItems];
-		[_queueFDs removeAllItems];
+		[_queueActions removeAllItems];
 	} @finally {
 #ifdef OF_HAVE_THREADS
 		[_mutex unlock];
