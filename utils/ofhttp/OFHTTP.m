@@ -333,7 +333,7 @@ next:
 
 	if (_continue) {
 		@try {
-			off_t size = [OFFile sizeOfFileAtPath: fileName];
+			of_offset_t size = [OFFile sizeOfFileAtPath: fileName];
 			OFString *range;
 
 			if (size > INTMAX_MAX)
