@@ -43,10 +43,16 @@
 		_length = length;
 		_resumedFrom = resumedFrom;
 		_startDate = [[OFDate alloc] init];
-		_timer = [[OFTimer
+		_lastReceivedDate = [[OFDate alloc] init];
+		_drawTimer = [[OFTimer
 		    scheduledTimerWithTimeInterval: UPDATE_INTERVAL
 					    target: self
 					  selector: @selector(draw)
+					   repeats: true] retain];
+		_BPSTimer = [[OFTimer
+		    scheduledTimerWithTimeInterval: 1.0
+					    target: self
+					  selector: @selector(calculateBPS)
 					   repeats: true] retain];
 
 		objc_autoreleasePoolPop(pool);
@@ -62,7 +68,8 @@
 {
 	[self stop];
 
-	[_timer release];
+	[_drawTimer release];
+	[_BPSTimer release];
 
 	[super dealloc];
 }
@@ -75,7 +82,7 @@
 - (void)_drawProgress
 {
 	uint_fast8_t i;
-	float bars, percent, bps;
+	float bars, percent;
 
 	bars = (float)(_resumedFrom + _received) /
 	    (_resumedFrom + _length) * BAR_WIDTH;
@@ -113,27 +120,20 @@
 	[of_stdout writeFormat: @"▏ %6.2f%% ", percent];
 
 	if (percent == 100)
-		bps = (float)_received / -[_startDate timeIntervalSinceNow];
-	else
-		bps = (float)(_received - _lastReceived) / UPDATE_INTERVAL;
+		_BPS = (float)_received / -[_startDate timeIntervalSinceNow];
 
-	if (bps >= GIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f GiB/s", bps / GIBIBYTE];
-	else if (bps >= MEBIBYTE)
-		[of_stdout writeFormat: @"%7.2f MiB/s", bps / MEBIBYTE];
-	else if (bps >= KIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f KiB/s", bps / KIBIBYTE];
+	if (_BPS >= GIBIBYTE)
+		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
+	else if (_BPS >= MEBIBYTE)
+		[of_stdout writeFormat: @"%7.2f MiB/s", _BPS / MEBIBYTE];
+	else if (_BPS >= KIBIBYTE)
+		[of_stdout writeFormat: @"%7.2f KiB/s", _BPS / KIBIBYTE];
 	else
-		[of_stdout writeFormat: @"%7.2f B/s  ", bps];
-
-	_lastDrawn = [[OFDate date] timeIntervalSince1970];
-	_lastReceived = _received;
+		[of_stdout writeFormat: @"%7.2f B/s  ", _BPS];
 }
 
 - (void)_drawReceived
 {
-	float bps;
-
 	if (_resumedFrom + _received >= GIBIBYTE)
 		[of_stdout writeFormat:
 		    @"\r  %7.2f GiB ",
@@ -151,21 +151,16 @@
 		    @"\r  %jd bytes ", _resumedFrom + _received];
 
 	if (_stopped)
-		bps = (float)_received / -[_startDate timeIntervalSinceNow];
-	else
-		bps = (float)(_received - _lastReceived) / UPDATE_INTERVAL;
+		_BPS = (float)_received / -[_startDate timeIntervalSinceNow];
 
-	if (bps >= GIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f GiB/s", bps / GIBIBYTE];
-	else if (bps >= MEBIBYTE)
-		[of_stdout writeFormat: @"%7.2f MiB/s", bps / MEBIBYTE];
-	else if (bps >= KIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f KiB/s", bps / KIBIBYTE];
+	if (_BPS >= GIBIBYTE)
+		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
+	else if (_BPS >= MEBIBYTE)
+		[of_stdout writeFormat: @"%7.2f MiB/s", _BPS / MEBIBYTE];
+	else if (_BPS >= KIBIBYTE)
+		[of_stdout writeFormat: @"%7.2f KiB/s", _BPS / KIBIBYTE];
 	else
-		[of_stdout writeFormat: @"%7.2f B/s  ", bps];
-
-	_lastDrawn = [[OFDate date] timeIntervalSince1970];
-	_lastReceived = _received;
+		[of_stdout writeFormat: @"%7.2f B/s  ", _BPS];
 }
 
 - (void)draw
@@ -176,9 +171,20 @@
 		[self _drawReceived];
 }
 
+- (void)calculateBPS
+{
+	_BPS = (float)(_received - _lastReceived) /
+	    -[_lastReceivedDate timeIntervalSinceNow];;
+
+	_lastReceived = _received;
+	[_lastReceivedDate release];
+	_lastReceivedDate = [[OFDate alloc] init];
+}
+
 - (void)stop
 {
-	[_timer invalidate];
+	[_drawTimer invalidate];
+	[_BPSTimer invalidate];
 
 	_stopped = true;
 }
