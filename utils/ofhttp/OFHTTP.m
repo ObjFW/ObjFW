@@ -18,6 +18,7 @@
 
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFDataArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFHTTPClient.h"
@@ -54,6 +55,8 @@
 	int _errorCode;
 	OFString *_outputPath;
 	bool _continue, _quiet;
+	OFDataArray *_entity;
+	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
 	char *_buffer;
@@ -69,15 +72,17 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[of_stderr writeFormat:
-	    @"Usage: %@ -[chHoPq] url1 [url2 ...]\n",
+	    @"Usage: %@ -[cehHmoPq] url1 [url2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
 		[stream writeString:
 		    @"\nOptions:\n"
 		    @"    -c  Continue download of existing file\n"
+		    @"    -e  Specify the entity\n"
 		    @"    -h  Show this help\n"
 		    @"    -H  Add a header (e.g. X-Foo:Bar)\n"
+		    @"    -m  Set the method of the HTTP request\n"
 		    @"    -o  Output filename\n"
 		    @"    -P  Specify SOCKS5 proxy\n"
 		    @"    -q  Quiet mode (no output, except errors)\n"];
@@ -91,6 +96,8 @@ help(OFStream *stream, bool full, int status)
 	self = [super init];
 
 	@try {
+		_method = OF_HTTP_REQUEST_METHOD_GET;
+
 		_clientHeaders = [[OFMutableDictionary alloc] init];
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
@@ -128,6 +135,40 @@ help(OFStream *stream, bool full, int status)
 			   forKey: name];
 }
 
+- (void)setEntity: (OFString*)entity
+{
+	[_entity release];
+	_entity = [[OFDataArray alloc] initWithContentsOfFile: entity];
+}
+
+- (void)setMethod: (OFString*)method
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	method = [method uppercaseString];
+
+	if ([method isEqual: @"GET"])
+		_method = OF_HTTP_REQUEST_METHOD_GET;
+	else if ([method isEqual: @"HEAD"])
+		_method = OF_HTTP_REQUEST_METHOD_HEAD;
+	else if ([method isEqual: @"POST"])
+		_method = OF_HTTP_REQUEST_METHOD_POST;
+	else if ([method isEqual: @"PUT"])
+		_method = OF_HTTP_REQUEST_METHOD_PUT;
+	else if ([method isEqual: @"DELETE"])
+		_method = OF_HTTP_REQUEST_METHOD_DELETE;
+	else if ([method isEqual: @"TRACE"])
+		_method = OF_HTTP_REQUEST_METHOD_TRACE;
+	else {
+		[of_stderr writeFormat: @"%@: Invalid request method %@!\n",
+					[OFApplication programName],
+					method];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)setProxy: (OFString*)proxy
 {
 	@try {
@@ -160,7 +201,7 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"chH:o:P:q"];
+	    [OFOptionsParser parserWithOptions: @"ce:hH:m:o:P:q"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -168,11 +209,17 @@ help(OFStream *stream, bool full, int status)
 		case 'c':
 			_continue = true;
 			break;
+		case 'e':
+			[self setEntity: [optionsParser argument]];
+			break;
 		case 'h':
 			help(of_stdout, true, 0);
 			break;
 		case 'H':
 			[self addHeader: [optionsParser argument]];
+			break;
+		case 'm':
+			[self setMethod: [optionsParser argument]];
 			break;
 		case 'o':
 			[_outputPath release];
@@ -351,6 +398,8 @@ next:
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setHeaders: clientHeaders];
+	[request setMethod: _method];
+	[request setEntity: _entity];
 
 	@try {
 		response = [_HTTPClient performRequest: request];
