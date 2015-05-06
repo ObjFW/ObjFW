@@ -30,7 +30,7 @@
 #import "OFBindFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFNotConnectedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
@@ -471,7 +471,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	ssize_t ret;
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	sender->length = (socklen_t)sizeof(sender->address);
 
@@ -526,7 +526,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	  receiver: (of_udp_socket_address_t*)receiver
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef _WIN32
 	if (sendto(_socket, buffer, length, 0,
@@ -586,7 +586,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 - (void)close
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	close(_socket);
 	_socket = INVALID_SOCKET;

@@ -141,10 +141,8 @@
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFMoveItemFailedException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFNotConnectedException.h"
-#endif
 #import "OFNotImplementedException.h"
+#import "OFNotOpenException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"

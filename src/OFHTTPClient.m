@@ -33,7 +33,6 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
-#import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"

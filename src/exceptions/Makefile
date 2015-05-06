@@ -27,6 +27,7 @@ SRCS = OFAllocFailedException.m				\
        OFMemoryNotPartOfObjectException.m		\
        OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
+       OFNotOpenException.m				\
        OFOpenItemFailedException.m			\
        OFOutOfMemoryException.m				\
        OFOutOfRangeException.m				\
@@ -54,7 +55,6 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFConnectionFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
-	       OFNotConnectedException.m		\
 	       OFObserveFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\

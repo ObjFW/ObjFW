@@ -33,7 +33,7 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFNotConnectedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFWriteFailedException.h"
@@ -241,7 +241,7 @@ normalizedKey(OFString *key)
 	void *pool;
 
 	if (_socket == nil)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!_headersSent)
 		[self OF_sendHeaders];
@@ -265,7 +265,7 @@ normalizedKey(OFString *key)
 - (void)close
 {
 	if (_socket == nil)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!_headersSent)
 		[self OF_sendHeaders];

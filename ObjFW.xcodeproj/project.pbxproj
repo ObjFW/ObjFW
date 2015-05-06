@@ -359,8 +359,8 @@
 		4B8B170F133A3C11007CD8B3 /* OFConditionWaitFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8B1706133A3B8E007CD8B3 /* OFConditionWaitFailedException.m */; };
 		4B90B78D133AD46700BD33CB /* OFAlreadyConnectedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B787133AD46700BD33CB /* OFAlreadyConnectedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B90B78E133AD46700BD33CB /* OFAlreadyConnectedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B788133AD46700BD33CB /* OFAlreadyConnectedException.m */; };
-		4B90B78F133AD46700BD33CB /* OFNotConnectedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B789133AD46700BD33CB /* OFNotConnectedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B90B790133AD46700BD33CB /* OFNotConnectedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B78A133AD46700BD33CB /* OFNotConnectedException.m */; };
+		4B90B78F133AD46700BD33CB /* OFNotOpenException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B789133AD46700BD33CB /* OFNotOpenException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B90B790133AD46700BD33CB /* OFNotOpenException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B78A133AD46700BD33CB /* OFNotOpenException.m */; };
 		4B90B791133AD46700BD33CB /* OFSetOptionFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B78B133AD46700BD33CB /* OFSetOptionFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B90B792133AD46700BD33CB /* OFSetOptionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B78C133AD46700BD33CB /* OFSetOptionFailedException.m */; };
 		4B90B79E133AD87D00BD33CB /* OFAcceptFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B794133AD87D00BD33CB /* OFAcceptFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -860,8 +860,8 @@
 		4B8B1706133A3B8E007CD8B3 /* OFConditionWaitFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFConditionWaitFailedException.m; path = src/exceptions/OFConditionWaitFailedException.m; sourceTree = "<group>"; };
 		4B90B787133AD46700BD33CB /* OFAlreadyConnectedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFAlreadyConnectedException.h; path = src/exceptions/OFAlreadyConnectedException.h; sourceTree = "<group>"; };
 		4B90B788133AD46700BD33CB /* OFAlreadyConnectedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFAlreadyConnectedException.m; path = src/exceptions/OFAlreadyConnectedException.m; sourceTree = "<group>"; };
-		4B90B789133AD46700BD33CB /* OFNotConnectedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFNotConnectedException.h; path = src/exceptions/OFNotConnectedException.h; sourceTree = "<group>"; };
-		4B90B78A133AD46700BD33CB /* OFNotConnectedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFNotConnectedException.m; path = src/exceptions/OFNotConnectedException.m; sourceTree = "<group>"; };
+		4B90B789133AD46700BD33CB /* OFNotOpenException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFNotOpenException.h; path = src/exceptions/OFNotOpenException.h; sourceTree = "<group>"; };
+		4B90B78A133AD46700BD33CB /* OFNotOpenException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFNotOpenException.m; path = src/exceptions/OFNotOpenException.m; sourceTree = "<group>"; };
 		4B90B78B133AD46700BD33CB /* OFSetOptionFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSetOptionFailedException.h; path = src/exceptions/OFSetOptionFailedException.h; sourceTree = "<group>"; };
 		4B90B78C133AD46700BD33CB /* OFSetOptionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSetOptionFailedException.m; path = src/exceptions/OFSetOptionFailedException.m; sourceTree = "<group>"; };
 		4B90B794133AD87D00BD33CB /* OFAcceptFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFAcceptFailedException.h; path = src/exceptions/OFAcceptFailedException.h; sourceTree = "<group>"; };
@@ -1105,10 +1105,10 @@
 				4B17FF8E133A3034003E6DCD /* OFMemoryNotPartOfObjectException.m */,
 				4B7DD5831894358400990FD6 /* OFMoveItemFailedException.h */,
 				4B7DD5841894358400990FD6 /* OFMoveItemFailedException.m */,
-				4B90B789133AD46700BD33CB /* OFNotConnectedException.h */,
-				4B90B78A133AD46700BD33CB /* OFNotConnectedException.m */,
 				4B17FF75133A2B18003E6DCD /* OFNotImplementedException.h */,
 				4B17FF76133A2B18003E6DCD /* OFNotImplementedException.m */,
+				4B90B789133AD46700BD33CB /* OFNotOpenException.h */,
+				4B90B78A133AD46700BD33CB /* OFNotOpenException.m */,
 				4B35C64C1ADAD30A003DB666 /* OFObserveFailedException.h */,
 				4B35C64D1ADAD30A003DB666 /* OFObserveFailedException.m */,
 				4B55A107133AC05100B58A93 /* OFOpenItemFailedException.h */,
@@ -1761,8 +1761,8 @@
 				4B17FFA1133A3335003E6DCD /* OFMalformedXMLException.h in Headers */,
 				4B17FF8F133A3036003E6DCD /* OFMemoryNotPartOfObjectException.h in Headers */,
 				4B7DD5851894358500990FD6 /* OFMoveItemFailedException.h in Headers */,
-				4B90B78F133AD46700BD33CB /* OFNotConnectedException.h in Headers */,
 				4B17FF77133A2B18003E6DCD /* OFNotImplementedException.h in Headers */,
+				4B90B78F133AD46700BD33CB /* OFNotOpenException.h in Headers */,
 				4B35C64E1ADAD30A003DB666 /* OFObserveFailedException.h in Headers */,
 				4B55A10A133AC05100B58A93 /* OFOpenItemFailedException.h in Headers */,
 				4B17FF83133A2DFB003E6DCD /* OFOutOfMemoryException.h in Headers */,
@@ -2143,8 +2143,8 @@
 				4B17FFA2133A3335003E6DCD /* OFMalformedXMLException.m in Sources */,
 				4B17FF90133A3036003E6DCD /* OFMemoryNotPartOfObjectException.m in Sources */,
 				4B7DD5861894358500990FD6 /* OFMoveItemFailedException.m in Sources */,
-				4B90B790133AD46700BD33CB /* OFNotConnectedException.m in Sources */,
 				4B17FF78133A2B18003E6DCD /* OFNotImplementedException.m in Sources */,
+				4B90B790133AD46700BD33CB /* OFNotOpenException.m in Sources */,
 				4B35C64F1ADAD30A003DB666 /* OFObserveFailedException.m in Sources */,
 				4B55A10B133AC05100B58A93 /* OFOpenItemFailedException.m in Sources */,
 				4B17FF84133A2DFB003E6DCD /* OFOutOfMemoryException.m in Sources */,

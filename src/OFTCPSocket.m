@@ -41,8 +41,8 @@
 #import "OFGetOptionFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenFailedException.h"
-#import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFSetOptionFailedException.h"
 
@@ -483,7 +483,7 @@ static uint16_t freePort = 65532;
 - (void)listenWithBackLog: (int)backLog
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backLog) == -1)
 		@throw [OFListenFailedException
@@ -568,7 +568,7 @@ static uint16_t freePort = 65532;
 	OFString *ret;
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
