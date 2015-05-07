@@ -79,7 +79,7 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString:
 		    @"\nOptions:\n"
 		    @"    -c  Continue download of existing file\n"
-		    @"    -e  Specify the entity\n"
+		    @"    -e  Specify the file to send as entity\n"
 		    @"    -h  Show this help\n"
 		    @"    -H  Add a header (e.g. X-Foo:Bar)\n"
 		    @"    -m  Set the method of the HTTP request\n"
@@ -279,7 +279,7 @@ help(OFStream *stream, bool full, int status)
 	  exception: (OFException*)e
 {
 	if (e != nil) {
-		OFURL *URL;
+		OFString *URL;
 
 		[_progressBar stop];
 		[_progressBar draw];
@@ -291,8 +291,7 @@ help(OFStream *stream, bool full, int status)
 
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
 		[of_stderr writeFormat: @"%@: Failed to download <%@>: %@\n",
-					[OFApplication programName],
-					[URL string], e];
+					[OFApplication programName], URL, e];
 
 		_errorCode = 1;
 		goto next;
