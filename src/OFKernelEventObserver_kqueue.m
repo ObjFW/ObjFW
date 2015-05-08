@@ -186,6 +186,11 @@
 		return false;
 
 	for (i = 0; i < events; i++) {
+		if (eventList[i].flags & EV_ERROR)
+			@throw [OFObserveFailedException
+			    exceptionWithObserver: self
+					    errNo: (int)eventList[i].data];
+
 		if (eventList[i].ident == _cancelFD[0]) {
 			char buffer;
 
