@@ -17,7 +17,7 @@
 #import "OFZIPArchive.h"
 
 @interface OFZIPArchiveEntry (OF_PRIVATE_CATEGORY)
-- (instancetype)OF_initWithFile: (OFFile*)file;
+- (instancetype)OF_initWithStream: (OFStream*)stream;
 - (uint16_t)OF_generalPurposeBitFlag;
 - (uint16_t)OF_lastModifiedFileTime;
 - (uint16_t)OF_lastModifiedFileDate;

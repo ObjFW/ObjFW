@@ -143,7 +143,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 }
 
 @implementation OFZIPArchiveEntry
-- (instancetype)OF_initWithFile: (OFFile*)file
+- (instancetype)OF_initWithStream: (OFStream*)stream
 {
 	self = [super init];
 
@@ -154,36 +154,36 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 		uint8_t *ZIP64 = NULL;
 		uint16_t ZIP64Size;
 
-		if ([file readLittleEndianInt32] != 0x02014B50)
+		if ([stream readLittleEndianInt32] != 0x02014B50)
 			@throw [OFInvalidFormatException exception];
 
-		_versionMadeBy = [file readLittleEndianInt16];
-		_minVersionNeeded = [file readLittleEndianInt16];
-		_generalPurposeBitFlag = [file readLittleEndianInt16];
-		_compressionMethod = [file readLittleEndianInt16];
-		_lastModifiedFileTime = [file readLittleEndianInt16];
-		_lastModifiedFileDate = [file readLittleEndianInt16];
-		_CRC32 = [file readLittleEndianInt32];
-		_compressedSize = [file readLittleEndianInt32];
-		_uncompressedSize = [file readLittleEndianInt32];
-		fileNameLength = [file readLittleEndianInt16];
-		extraFieldLength = [file readLittleEndianInt16];
-		fileCommentLength = [file readLittleEndianInt16];
-		_startDiskNumber = [file readLittleEndianInt16];
-		_internalAttributes = [file readLittleEndianInt16];
-		_versionSpecificAttributes = [file readLittleEndianInt32];
-		_localFileHeaderOffset = [file readLittleEndianInt32];
+		_versionMadeBy = [stream readLittleEndianInt16];
+		_minVersionNeeded = [stream readLittleEndianInt16];
+		_generalPurposeBitFlag = [stream readLittleEndianInt16];
+		_compressionMethod = [stream readLittleEndianInt16];
+		_lastModifiedFileTime = [stream readLittleEndianInt16];
+		_lastModifiedFileDate = [stream readLittleEndianInt16];
+		_CRC32 = [stream readLittleEndianInt32];
+		_compressedSize = [stream readLittleEndianInt32];
+		_uncompressedSize = [stream readLittleEndianInt32];
+		fileNameLength = [stream readLittleEndianInt16];
+		extraFieldLength = [stream readLittleEndianInt16];
+		fileCommentLength = [stream readLittleEndianInt16];
+		_startDiskNumber = [stream readLittleEndianInt16];
+		_internalAttributes = [stream readLittleEndianInt16];
+		_versionSpecificAttributes = [stream readLittleEndianInt32];
+		_localFileHeaderOffset = [stream readLittleEndianInt32];
 
 		encoding = (_generalPurposeBitFlag & (1 << 11)
 		    ? OF_STRING_ENCODING_UTF_8
 		    : OF_STRING_ENCODING_CODEPAGE_437);
 
-		_fileName = [[file readStringWithLength: fileNameLength
-					       encoding: encoding] copy];
-		_extraField = [[file
+		_fileName = [[stream readStringWithLength: fileNameLength
+						 encoding: encoding] copy];
+		_extraField = [[stream
 		    readDataArrayWithCount: extraFieldLength] retain];
-		_fileComment = [[file readStringWithLength: fileCommentLength
-						  encoding: encoding] copy];
+		_fileComment = [[stream readStringWithLength: fileCommentLength
+						    encoding: encoding] copy];
 
 		of_zip_archive_entry_extra_field_find(_extraField,
 		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);
