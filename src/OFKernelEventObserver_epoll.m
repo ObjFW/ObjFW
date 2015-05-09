@@ -200,7 +200,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	    (timeInterval != -1 ? timeInterval * 1000 : -1));
 
 	if (events < 0)
-		return [OFObserveFailedException exceptionWithObserver: self
+		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
 
 	for (i = 0; i < events; i++) {
