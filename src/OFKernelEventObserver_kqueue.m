@@ -148,12 +148,12 @@
 	[_changeList addItem: &event];
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
-	int i, events, realEvents = 0;
+	int i, events;
 
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
@@ -164,10 +164,7 @@
 	 */
 	[self OF_processQueueAndStoreRemovedIn: _removedArray];
 
-	if ([self OF_processReadBuffers]) {
-		objc_autoreleasePoolPop(pool);
-		return true;
-	}
+	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -176,14 +173,11 @@
 	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)
-		return [OFObserveFailedException exceptionWithObserver: self
+		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
 
 	[_changeList removeAllItems];
 	[_removedArray removeAllObjects];
-
-	if (events == 0)
-		return false;
 
 	for (i = 0; i < events; i++) {
 		if (eventList[i].flags & EV_ERROR)
@@ -220,13 +214,6 @@
 		}
 
 		objc_autoreleasePoolPop(pool);
-
-		realEvents++;
 	}
-
-	if (realEvents == 0)
-		return false;
-
-	return true;
 }
 @end

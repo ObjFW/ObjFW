@@ -22,5 +22,5 @@
 - (void)OF_removeObjectForReading: (id)object;
 - (void)OF_removeObjectForWriting: (id)object;
 - (void)OF_processQueueAndStoreRemovedIn: (OFMutableArray*)removed;
-- (bool)OF_processReadBuffers;
+- (void)OF_processReadBuffers;
 @end

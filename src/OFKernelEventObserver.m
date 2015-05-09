@@ -340,14 +340,14 @@ enum {
 	[self observeForTimeInterval: -1];
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)observeUntilDate: (OFDate*)date
+- (void)observeUntilDate: (OFDate*)date
 {
-	return [self observeForTimeInterval: [date timeIntervalSinceNow]];
+	[self observeForTimeInterval: [date timeIntervalSinceNow]];
 }
 
 - (void)cancel
@@ -360,35 +360,22 @@ enum {
 #endif
 }
 
-- (bool)OF_processReadBuffers
+- (void)OF_processReadBuffers
 {
 	id const *objects = [_readObjects objects];
 	size_t i, count = [_readObjects count];
-	bool foundInReadBuffer = false;
 
 	for (i = 0; i < count; i++) {
 		void *pool = objc_autoreleasePoolPush();
 
 		if ([objects[i] isKindOfClass: [OFStream class]] &&
 		    [objects[i] hasDataInReadBuffer] &&
-		    ![objects[i] OF_isWaitingForDelimiter]) {
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForReading:)])
-				[_delegate objectIsReadyForReading: objects[i]];
-
-			foundInReadBuffer = true;
-		}
+		    ![objects[i] OF_isWaitingForDelimiter] &&
+		    [_delegate respondsToSelector:
+		    @selector(objectIsReadyForReading:)])
+			[_delegate objectIsReadyForReading: objects[i]];
 
 		objc_autoreleasePoolPop(pool);
 	}
-
-	/*
-	 * As long as we have data in the read buffer for any stream, we don't
-	 * want to block.
-	 */
-	if (foundInReadBuffer)
-		return true;
-
-	return false;
 }
 @end

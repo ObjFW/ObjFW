@@ -119,7 +119,7 @@
 	FD_CLR(fd, &_writeFDs);
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	id const *objects;
@@ -127,14 +127,10 @@
 	fd_set writeFDs;
 	struct timeval timeout;
 	int events;
-	size_t i, count, realEvents = 0;
+	size_t i, count;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
-
-	if ([self OF_processReadBuffers]) {
-		objc_autoreleasePoolPop(pool);
-		return true;
-	}
+	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -166,9 +162,6 @@
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
 
-	if (events == 0)
-		return false;
-
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
 
@@ -188,13 +181,9 @@
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fd, &readFDs)) {
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForReading:)])
-				[_delegate objectIsReadyForReading: objects[i]];
-
-			realEvents++;
-		}
+		if (FD_ISSET(fd, &readFDs) && [_delegate respondsToSelector:
+		    @selector(objectIsReadyForReading:)])
+			[_delegate objectIsReadyForReading: objects[i]];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -207,20 +196,11 @@
 
 		pool = objc_autoreleasePoolPush();
 
-		if (FD_ISSET(fd, &writeFDs)) {
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForWriting:)])
-				[_delegate objectIsReadyForWriting: objects[i]];
-
-			realEvents++;
-		}
+		if (FD_ISSET(fd, &writeFDs) && [_delegate respondsToSelector:
+		    @selector(objectIsReadyForWriting:)])
+			[_delegate objectIsReadyForWriting: objects[i]];
 
 		objc_autoreleasePoolPop(pool);
 	}
-
-	if (realEvents == 0)
-		return false;
-
-	return true;
 }
 @end

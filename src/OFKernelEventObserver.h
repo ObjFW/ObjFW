@@ -202,18 +202,16 @@
  *	  timeout is reached.
  *
  * @param timeInterval The time to wait for an event, in seconds
- * @return A boolean whether events occurred before returning
  */
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval;
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval;
 
 /*!
  * @brief Observes all objects until an event happens on an object or the
  *	  specified date is reached.
  *
  * @param date The until which to observe
- * @return A boolean whether events occurred before returning
  */
-- (bool)observeUntilDate: (OFDate*)date;
+- (void)observeUntilDate: (OFDate*)date;
 
 /*!
  * @brief Cancels the currently blocking observe call.

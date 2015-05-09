@@ -184,19 +184,15 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 		       events: EPOLLOUT];
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	OFNull *nullObject = [OFNull null];
 	void *pool = objc_autoreleasePoolPush();
 	struct epoll_event eventList[EVENTLIST_SIZE];
-	int i, events, realEvents = 0;
+	int i, events;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
-
-	if ([self OF_processReadBuffers]) {
-		objc_autoreleasePoolPop(pool);
-		return true;
-	}
+	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -206,9 +202,6 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	if (events < 0)
 		return [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
-
-	if (events == 0)
-		return false;
 
 	for (i = 0; i < events; i++) {
 		if (eventList[i].data.ptr == nullObject) {
@@ -228,8 +221,6 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 				[_delegate objectIsReadyForReading:
 				    eventList[i].data.ptr];
 
-			realEvents++;
-
 			objc_autoreleasePoolPop(pool);
 		}
 
@@ -241,17 +232,10 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 				[_delegate objectIsReadyForWriting:
 				    eventList[i].data.ptr];
 
-			realEvents++;
-
 			objc_autoreleasePoolPop(pool);
 		}
 
 		assert((eventList[i].events & ~(EPOLLIN | EPOLLOUT)) == 0);
 	}
-
-	if (realEvents == 0)
-		return false;
-
-	return true;
 }
 @end

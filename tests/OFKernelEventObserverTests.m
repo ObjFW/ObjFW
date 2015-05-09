@@ -18,6 +18,7 @@
 
 #import "OFKernelEventObserver.h"
 #import "OFString.h"
+#import "OFDate.h"
 #import "OFTCPSocket.h"
 #import "OFAutoreleasePool.h"
 
@@ -36,40 +37,156 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module;
-static OFKernelEventObserver *observer;
-static int events;
-static id expectedObject;
-static bool readData, expectEOS;
-static OFTCPSocket *accepted;
+#define EXPECTED_EVENTS 3
 
-@interface ObserverDelegate: OFObject
-- (void)objectIsReadyForReading: (id)object;
+static OFString *module;
+
+@interface ObserverTest: OFObject
+{
+@public
+	TestsAppDelegate *_testsAppDelegate;
+	OFKernelEventObserver *_observer;
+	OFTCPSocket *_server, *_client, *_accepted;
+	size_t _events;
+}
+
+- (void)run;
 @end
 
-@implementation ObserverDelegate
+@implementation ObserverTest
+- initWithTestsAppDelegate: (TestsAppDelegate*)testsAppDelegate
+{
+	self = [super init];
+
+	@try {
+		uint16_t port;
+
+		_testsAppDelegate = testsAppDelegate;
+
+		_server = [[OFTCPSocket alloc] init];
+		port = [_server bindToHost: @"127.0.0.1"
+				      port: 0];
+		[_server listen];
+
+		_client = [[OFTCPSocket alloc] init];
+		[_client connectToHost: @"127.0.0.1"
+				  port: port];
+
+		[_client writeBuffer: "0"
+			      length: 1];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_server release];
+	[_client release];
+	[_accepted release];
+
+	[super dealloc];
+}
+
+- (void)run
+{
+	OFDate *deadline;
+	bool deadlineExceeded = false;
+
+	[_testsAppDelegate outputTesting: @"-[observe] with listening socket"
+				inModule: module];
+
+	deadline = [OFDate dateWithTimeIntervalSinceNow: 1];
+	while (_events < EXPECTED_EVENTS) {
+		if ([deadline timeIntervalSinceNow] < 0) {
+			deadlineExceeded = true;
+			break;
+		}
+
+		[_observer observeForTimeInterval: 0.01];
+	}
+
+	if (!deadlineExceeded)
+		[_testsAppDelegate
+		    outputSuccess: @"-[observe] not exceeding deadline"
+			 inModule: module];
+	else
+		[_testsAppDelegate
+		    outputFailure: @"-[observe] not exceeding deadline"
+			 inModule: module];
+
+	if (_events == EXPECTED_EVENTS)
+		[_testsAppDelegate
+		    outputSuccess: @"-[observe] handling all events"
+			 inModule: module];
+	else
+		[_testsAppDelegate
+		    outputFailure: @"-[observe] handling all events"
+			 inModule: module];
+}
+
 - (void)objectIsReadyForReading: (id)object
 {
-	events++;
+	char buf;
 
-	OF_ENSURE(object == expectedObject);
+	switch (_events++) {
+	case 0:
+		if (object == _server)
+			[_testsAppDelegate
+			    outputSuccess: @"-[observe] with listening socket"
+				 inModule: module];
+		else
+			[_testsAppDelegate
+			    outputFailure: @"-[observe] with listening socket"
+				 inModule: module];
 
-	if ([object isListening]) {
-		accepted = [[object accept] retain];
+		_accepted = [[object accept] retain];
+		[_observer addObjectForReading: _accepted];
 
-		[accepted writeBuffer: "0"
-			       length: 1];
-	} else if (readData) {
-		char buf;
+		[_testsAppDelegate
+		    outputTesting: @"-[observe] with data to read available"
+			 inModule: module];
 
-		if (expectEOS)
-			OF_ENSURE([object readIntoBuffer: &buf
-						  length: 1] == 0);
-		else {
-			OF_ENSURE([object readIntoBuffer: &buf
-						  length: 1] == 1);
-			OF_ENSURE(buf == '0');
-		}
+		break;
+	case 1:
+		if (object == _accepted &&
+		    [object readIntoBuffer: &buf
+				    length: 1] == 1 && buf == '0')
+			[_testsAppDelegate
+			    outputSuccess: @"-[observe] with data to read "
+					   @"available"
+				 inModule: module];
+		else
+			[_testsAppDelegate
+			    outputFailure: @"-[observe] with data to read "
+					   @"available"
+				 inModule: module];
+
+		[_client close];
+
+		[_testsAppDelegate
+		    outputTesting: @"-[observe] with closed connection"
+			 inModule: module];
+
+		break;
+	case 2:
+		if (object == _accepted &&
+		    [object readIntoBuffer: &buf
+				    length: 1] == 0)
+			[_testsAppDelegate
+			    outputSuccess: @"-[observe] with closed connection"
+				 inModule: module];
+		else
+			[_testsAppDelegate
+			    outputFailure: @"-[observe] with closed connection"
+				 inModule: module];
+
+		break;
+	default:
+		OF_ENSURE(0);
 	}
 }
 @end
@@ -77,53 +194,20 @@ static OFTCPSocket *accepted;
 @implementation TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTestsWithClass: (Class)class
 {
-	ObserverDelegate *delegate =
-	    [[[ObserverDelegate alloc] init] autorelease];
-	OFTCPSocket *sock1 = [OFTCPSocket socket];
-	OFTCPSocket *sock2 = [OFTCPSocket socket];
-	uint16_t port;
+	ObserverTest *test;
 
 	module = [class className];
-	events = 0;
-	expectedObject = nil;
-	readData = expectEOS = false;
-	accepted = nil;
-
-	port = [sock1 bindToHost: @"127.0.0.1"
-			    port: 0];
-	[sock1 listen];
+	test = [[[ObserverTest alloc]
+	    initWithTestsAppDelegate: self] autorelease];
 
 	TEST(@"+[observer]",
-	    (observer = [class observer]) &&
-	    R([observer setDelegate: delegate]))
+	    (test->_observer = [OFKernelEventObserver observer]))
+	[test->_observer setDelegate: test];
 
 	TEST(@"-[addObjectForReading:]",
-	    R([observer addObjectForReading: sock1]))
+	    R([test->_observer addObjectForReading: test->_server]))
 
-	[sock2 connectToHost: @"127.0.0.1"
-			port: port];
-	TEST(@"-[observe] waiting for connection",
-	    (expectedObject = sock1) &&
-	    [observer observeForTimeInterval: 0.01])
-	[accepted autorelease];
-
-	TEST(@"-[observe] waiting for data",
-	    (expectedObject = sock2) &&
-	    R([observer addObjectForReading: sock2]) &&
-	    [observer observeForTimeInterval: 0.01])
-
-	TEST(@"-[observe] keeping event until read",
-	    R(readData = true) && [observer observeForTimeInterval: 0.01])
-
-	TEST(@"-[observe] time out due to no events",
-	    R(readData = false) && ![observer observeForTimeInterval: 0.01])
-
-	[accepted close];
-	TEST(@"-[observe] closed connection",
-	    R(readData = true) && R(expectEOS = true) &&
-	    [observer observeForTimeInterval: 0.01])
-
-	TEST(@"-[observe] correct number of events", events == 4)
+	[test run];
 }
 
 - (void)kernelEventObserverTests

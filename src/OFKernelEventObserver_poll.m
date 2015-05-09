@@ -152,19 +152,15 @@
 		       events: POLLOUT];
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
 	int events;
-	size_t i, nFDs, realEvents = 0;
+	size_t i, nFDs;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
-
-	if ([self OF_processReadBuffers]) {
-		objc_autoreleasePoolPop(pool);
-		return true;
-	}
+	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -182,9 +178,6 @@
 	if (events < 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
-
-	if (events == 0)
-		return false;
 
 	for (i = 0; i < nFDs; i++) {
 		if (FDs[i].fd > _maxFD)
@@ -208,8 +201,6 @@
 				    _FDToObject[FDs[i].fd]];
 
 			objc_autoreleasePoolPop(pool);
-
-			realEvents++;
 		}
 
 		if (FDs[i].revents & POLLOUT) {
@@ -221,16 +212,9 @@
 				    _FDToObject[FDs[i].fd]];
 
 			objc_autoreleasePoolPop(pool);
-
-			realEvents++;
 		}
 
 		FDs[i].revents = 0;
 	}
-
-	if (realEvents == 0)
-		return false;
-
-	return true;
 }
 @end
