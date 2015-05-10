@@ -75,7 +75,7 @@
 	bool _hasDataDescriptor;
 	uint64_t _size;
 	uint32_t _CRC32;
-	bool _atEndOfStream;
+	bool _atEndOfStream, _closed;
 }
 
 -  initWithStream: (OFStream*)path
@@ -525,7 +525,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	size_t min, ret;
 
-	if (_atEndOfStream)
+	if (_atEndOfStream || _closed)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
@@ -575,6 +575,6 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - (void)close
 {
-	_atEndOfStream = true;
+	_closed = true;
 }
 @end
