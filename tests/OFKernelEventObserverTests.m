@@ -147,7 +147,7 @@ static OFString *module;
 		[_observer addObjectForReading: _accepted];
 
 		[_testsAppDelegate
-		    outputTesting: @"-[observe] with data to read available"
+		    outputTesting: @"-[observe] with data ready to read"
 			 inModule: module];
 
 		break;
@@ -156,13 +156,11 @@ static OFString *module;
 		    [object readIntoBuffer: &buf
 				    length: 1] == 1 && buf == '0')
 			[_testsAppDelegate
-			    outputSuccess: @"-[observe] with data to read "
-					   @"available"
+			    outputSuccess: @"-[observe] with data ready to read"
 				 inModule: module];
 		else
 			[_testsAppDelegate
-			    outputFailure: @"-[observe] with data to read "
-					   @"available"
+			    outputFailure: @"-[observe] with data ready to read"
 				 inModule: module];
 
 		[_client close];
