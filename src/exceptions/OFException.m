@@ -17,7 +17,9 @@
 #include "config.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
