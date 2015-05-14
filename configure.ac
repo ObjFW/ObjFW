@@ -405,6 +405,21 @@ AC_EGREP_CPP(yes, [
 	])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
 ])
+AC_MSG_CHECKING(for SSIZE_MAX)
+AC_EGREP_CPP(yes, [
+	#include <stdint.h>
+	#include <limits.h>
+
+	#ifdef SSIZE_MAX
+	yes
+	#endif
+], [
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+	AC_DEFINE(SSIZE_MAX, [((ssize_t)(SIZE_MAX / 2))],
+		[Maximum value for ssize_t])
+])
 
 AC_CHECK_TYPE(max_align_t,
 	[AC_DEFINE(OF_HAVE_MAX_ALIGN_T, 1, [Whether we have max_align_t])])
