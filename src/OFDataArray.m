@@ -84,10 +84,12 @@ void _references_to_categories_of_OFDataArray(void)
 }
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 + (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
+#endif
 
 + (instancetype)dataArrayWithStringRepresentation: (OFString*)string
 {
@@ -186,6 +188,7 @@ void _references_to_categories_of_OFDataArray(void)
 }
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	void *pool;
@@ -195,12 +198,12 @@ void _references_to_categories_of_OFDataArray(void)
 
 	scheme = [URL scheme];
 
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 	if ([scheme isEqual: @"file"])
 		self = [self initWithContentsOfFile: [URL path]];
 	else
-#endif
-#ifdef OF_HAVE_SOCKETS
+# endif
+# ifdef OF_HAVE_SOCKETS
 	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
 		self = [self init];
 
@@ -249,13 +252,14 @@ void _references_to_categories_of_OFDataArray(void)
 			@throw e;
 		}
 	} else
-#endif
+# endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
+#endif
 
 - initWithStringRepresentation: (OFString*)string
 {

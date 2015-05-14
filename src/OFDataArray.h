@@ -92,6 +92,7 @@
 + (instancetype)dataArrayWithContentsOfFile: (OFString*)path;
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Creates a new OFDataArray with an item size of 1, containing the data
  *	  of the specified URL.
@@ -100,6 +101,7 @@
  * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL;
+#endif
 
 /*!
  * @brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -160,6 +162,7 @@
 - initWithContentsOfFile: (OFString*)path;
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the specified URL.
@@ -168,6 +171,7 @@
  * @return A new autoreleased OFDataArray
  */
 - initWithContentsOfURL: (OFURL*)URL;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,

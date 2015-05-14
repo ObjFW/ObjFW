@@ -445,6 +445,7 @@ static struct {
 }
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfURL: URL];
@@ -456,6 +457,7 @@ static struct {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfURL: URL
 						       encoding: encoding];
 }
+#endif
 
 - initWithSerialization: (OFXMLElement*)element
 {
@@ -637,6 +639,7 @@ static struct {
 }
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 + (instancetype)stringWithContentsOfURL: (OFURL*)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
@@ -648,6 +651,7 @@ static struct {
 	return [[[self alloc] initWithContentsOfURL: URL
 					   encoding: encoding] autorelease];
 }
+#endif
 
 + (OFString*)pathWithComponents: (OFArray*)components
 {
@@ -863,6 +867,7 @@ static struct {
 }
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	return [self initWithContentsOfURL: URL
@@ -874,9 +879,9 @@ static struct {
 {
 	void *pool;
 	OFString *scheme;
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 	Class c = [self class];
-#endif
+# endif
 
 	[self release];
 
@@ -884,7 +889,7 @@ static struct {
 
 	scheme = [URL scheme];
 
-#ifdef OF_HAVE_FILES
+# ifdef OF_HAVE_FILES
 	if ([scheme isEqual: @"file"]) {
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
 			encoding = OF_STRING_ENCODING_UTF_8;
@@ -892,8 +897,8 @@ static struct {
 		self = [[c alloc] initWithContentsOfFile: [URL path]
 						encoding: encoding];
 	} else
-#endif
-#ifdef OF_HAVE_SOCKETS
+# endif
+# ifdef OF_HAVE_SOCKETS
 	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
 		OFHTTPClient *client = [OFHTTPClient client];
 		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
@@ -939,13 +944,14 @@ static struct {
 					 encoding: encoding
 					   length: [data count]];
 	} else
-#endif
+# endif
 		@throw [OFUnsupportedProtocolException exception];
 
 	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
+#endif
 
 - initWithSerialization: (OFXMLElement*)element
 {
