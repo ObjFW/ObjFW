@@ -727,24 +727,24 @@ AS_IF([test x"$enable_files" != x"no"], [
 		AC_DEFINE(OF_HAVE_OFF64_T, 1, [Whether we have off64_t])
 	])
 
-	AC_CHECK_FUNCS(readdir_r)
+	AC_CHECK_HEADERS([pwd.h grp.h])
+	AC_CHECK_FUNC(chmod, [
+		AC_DEFINE(OF_HAVE_CHMOD, 1, [Whether we have chmod()])
+	])
+	AC_CHECK_FUNC(chown, [
+		AC_DEFINE(OF_HAVE_CHOWN, 1, [Whether we have chown()])
+	])
+	AC_CHECK_FUNC(link, [
+		AC_DEFINE(OF_HAVE_LINK, 1, [Whether we have link()])
+	])
+	AC_CHECK_FUNC(symlink, [
+		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
+	])
+	AC_CHECK_FUNCS([lstat readdir_r])
 ])
 
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep lstat])
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 
-AC_CHECK_HEADERS([pwd.h grp.h])
-AC_CHECK_FUNC(chmod, [
-	AC_DEFINE(OF_HAVE_CHMOD, 1, [Whether we have chmod()])
-])
-AC_CHECK_FUNC(chown, [
-	AC_DEFINE(OF_HAVE_CHOWN, 1, [Whether we have chown()])
-])
-AC_CHECK_FUNC(link, [
-	AC_DEFINE(OF_HAVE_LINK, 1, [Whether we have link()])
-])
-AC_CHECK_FUNC(symlink, [
-	AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
-])
 AC_CHECK_FUNC(pipe, [
 	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
 ])
@@ -777,7 +777,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
-	AC_CHECK_FUNCS([fcntl paccept accept4])
+	AC_CHECK_FUNCS([paccept accept4])
 
 	AC_CHECK_FUNC(kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])

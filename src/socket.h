@@ -22,8 +22,6 @@
 
 #include <stdbool.h>
 
-#include <fcntl.h>
-
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif

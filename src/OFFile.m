@@ -37,8 +37,8 @@
 
 #include <unistd.h>
 
-#include <fcntl.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>

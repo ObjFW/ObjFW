@@ -1474,7 +1474,7 @@
 
 - (void)setBlocking: (bool)enable
 {
-#ifndef _WIN32
+#ifdef HAVE_FCNTL
 	bool readImplemented = false, writeImplemented = false;
 
 	@try {

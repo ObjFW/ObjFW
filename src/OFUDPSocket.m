@@ -20,6 +20,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include <fcntl.h>
+
 #import "OFUDPSocket.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThread.h"

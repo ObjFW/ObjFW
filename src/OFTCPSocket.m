@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <fcntl.h>
+
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
