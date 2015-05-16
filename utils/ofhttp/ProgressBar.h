@@ -26,12 +26,13 @@
 	OFTimer *_drawTimer, *_BPSTimer;
 	bool _stopped;
 	float _BPS;
+	double _ETA;
 }
 
 - initWithLength: (intmax_t)length
      resumedFrom: (intmax_t)resumedFrom;
 - (void)setReceived: (intmax_t)received;
 - (void)draw;
-- (void)calculateBPS;
+- (void)calculateBPSAndETA;
 - (void)stop;
 @end

@@ -55,7 +55,8 @@
 		_BPSTimer = [[OFTimer
 		    scheduledTimerWithTimeInterval: 1.0
 					    target: self
-					  selector: @selector(calculateBPS)
+					  selector: @selector(
+							calculateBPSAndETA)
 					   repeats: true] retain];
 
 		objc_autoreleasePoolPop(pool);
@@ -91,10 +92,10 @@
 	struct winsize ws;
 
 	if (ioctl(0, TIOCGWINSZ, &ws) == 0)
-		barWidth = ws.ws_col - 28;
+		barWidth = ws.ws_col - 37;
 	else
 #endif
-		barWidth = 52;
+		barWidth = 43;
 
 	bars = (float)(_resumedFrom + _received) /
 	    (_resumedFrom + _length) * barWidth;
@@ -131,8 +132,22 @@
 
 	[of_stdout writeFormat: @"▏ %6.2f%% ", percent];
 
-	if (percent == 100)
-		_BPS = (float)_received / -[_startDate timeIntervalSinceNow];
+	if (percent == 100) {
+		double timeInterval = -[_startDate timeIntervalSinceNow];
+
+		_BPS = (float)_received / timeInterval;
+		_ETA = timeInterval;
+	}
+
+	if (isinf(_ETA))
+		[of_stdout writeString: @"--:--:-- "];
+	else if (_ETA >= 99 * 3600)
+		[of_stdout writeFormat: @"%4.2f d ", _ETA / (24 * 3600)];
+	else
+		[of_stdout writeFormat: @"%2u:%02u:%02u ",
+		    (unsigned char)(_ETA / 3600),
+		    (unsigned char)(_ETA / 60) % 60,
+		    (unsigned char)_ETA % 60];
 
 	if (_BPS >= GIBIBYTE)
 		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
@@ -183,10 +198,11 @@
 		[self _drawReceived];
 }
 
-- (void)calculateBPS
+- (void)calculateBPSAndETA
 {
 	_BPS = (float)(_received - _lastReceived) /
 	    -[_lastReceivedDate timeIntervalSinceNow];;
+	_ETA = (double)(_length - _resumedFrom - _resumedFrom) / _BPS;
 
 	_lastReceived = _received;
 	[_lastReceivedDate release];
