@@ -18,6 +18,10 @@
 
 #include <math.h>
 
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
+
 #import "OFDate.h"
 #import "OFStdIOStream.h"
 #import "OFTimer.h"
@@ -28,7 +32,6 @@
 #define MEBIBYTE (1024 * 1024)
 #define KIBIBYTE (1024)
 
-#define BAR_WIDTH 52
 #define UPDATE_INTERVAL 0.1
 
 @implementation ProgressBar
@@ -83,9 +86,18 @@
 {
 	uint_fast8_t i;
 	float bars, percent;
+	unsigned short barWidth;
+#ifdef HAVE_SYS_IOCTL_H
+	struct winsize ws;
+
+	if (ioctl(0, TIOCGWINSZ, &ws) == 0)
+		barWidth = ws.ws_col - 28;
+	else
+#endif
+		barWidth = 52;
 
 	bars = (float)(_resumedFrom + _received) /
-	    (_resumedFrom + _length) * BAR_WIDTH;
+	    (_resumedFrom + _length) * barWidth;
 	percent = (float)(_resumedFrom + _received) /
 	    (_resumedFrom + _length) * 100;
 
@@ -93,27 +105,27 @@
 
 	for (i = 0; i < (uint_fast8_t)bars; i++)
 		[of_stdout writeString: @"█"];
-	if (bars < BAR_WIDTH) {
-		float rest = bars - floorf(bars);
+	if (bars < barWidth) {
+		float remainder = bars - floorf(bars);
 
-		if (rest >= 0.875)
+		if (remainder >= 0.875)
 			[of_stdout writeString: @"▉"];
-		else if (rest >= 0.75)
+		else if (remainder >= 0.75)
 			[of_stdout writeString: @"▊"];
-		else if (rest >= 0.625)
+		else if (remainder >= 0.625)
 			[of_stdout writeString: @"▋"];
-		else if (rest >= 0.5)
+		else if (remainder >= 0.5)
 			[of_stdout writeString: @"▌"];
-		else if (rest >= 0.375)
+		else if (remainder >= 0.375)
 			[of_stdout writeString: @"▍"];
-		else if (rest >= 0.25)
+		else if (remainder >= 0.25)
 			[of_stdout writeString: @"▎"];
-		else if (rest >= 0.125)
+		else if (remainder >= 0.125)
 			[of_stdout writeString: @"▏"];
 		else
 			[of_stdout writeString: @" "];
 
-		for (i = 0; i < BAR_WIDTH - (uint_fast8_t)bars - 1; i++)
+		for (i = 0; i < barWidth - (uint_fast8_t)bars - 1; i++)
 			[of_stdout writeString: @" "];
 	}
 

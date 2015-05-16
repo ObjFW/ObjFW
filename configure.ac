@@ -950,6 +950,8 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
+AC_CHECK_HEADERS(sys/ioctl.h)
+
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
