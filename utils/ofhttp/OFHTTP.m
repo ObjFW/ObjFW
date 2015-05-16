@@ -98,7 +98,9 @@ help(OFStream *stream, bool full, int status)
 	@try {
 		_method = OF_HTTP_REQUEST_METHOD_GET;
 
-		_clientHeaders = [[OFMutableDictionary alloc] init];
+		_clientHeaders = [[OFMutableDictionary alloc]
+		    initWithObject: @"OFHTTP"
+			    forKey: @"User-Agent"];
 
 		_HTTPClient = [[OFHTTPClient alloc] init];
 		[_HTTPClient setDelegate: self];
