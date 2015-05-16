@@ -181,6 +181,20 @@ AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
 ])
 
+AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
+AC_EGREP_CPP(yes, [
+	#include <stdlib.h>
+
+	#if defined(__GLIBC__) || defined(__MINGW32__)
+	yes
+	#endif
+], [
+	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+])
+
 case "$host_os" in
 	solaris*)
 		CPPFLAGS="-D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS $CPPFLAGS"
