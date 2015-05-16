@@ -87,14 +87,14 @@ CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
-AX_CHECK_COMPILER_FLAGS(-std=c11, [
-	OBJCFLAGS="$OBJCFLAGS -std=c11"
+AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
+	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
 ], [
-	AX_CHECK_COMPILER_FLAGS(-std=c1x, [
-		OBJCFLAGS="$OBJCFLAGS -std=c1x"
+	AX_CHECK_COMPILER_FLAGS(-std=gnu1x, [
+		OBJCFLAGS="$OBJCFLAGS -std=gnu1x"
 	], [
-		AX_CHECK_COMPILER_FLAGS(-std=c99,
-			[OBJCFLAGS="$OBJCFLAGS -std=c99"])
+		AX_CHECK_COMPILER_FLAGS(-std=gnu99,
+			[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
 	])
 ])
 
@@ -179,20 +179,6 @@ AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
-])
-
-AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
-AC_EGREP_CPP(yes, [
-	#include <stdlib.h>
-
-	#if defined(__GLIBC__) || defined(__MINGW32__)
-	yes
-	#endif
-], [
-	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
 ])
 
 case "$host_os" in

@@ -620,7 +620,7 @@ static int monthToDayOfYear[12] = {
 	struct timeval t;
 	of_time_interval_t seconds;
 
-	OF_ENSURE(!gettimeofday(&t, NULL));
+	OF_ENSURE(gettimeofday(&t, NULL) == 0);
 
 	seconds = t.tv_sec;
 	seconds += (of_time_interval_t)t.tv_usec / 1000000;
