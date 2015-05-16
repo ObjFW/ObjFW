@@ -63,7 +63,7 @@
 {
 	int fd = [object fileDescriptorForReading];
 
-	if (fd > INT_MAX - 1)
+	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
 #ifndef _WIN32
@@ -81,7 +81,7 @@
 {
 	int fd = [object fileDescriptorForWriting];
 
-	if (fd > INT_MAX - 1)
+	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
 #ifndef _WIN32
@@ -101,7 +101,7 @@
 
 	int fd = [object fileDescriptorForReading];
 
-	if (fd >= FD_SETSIZE)
+	if (fd < 0 || fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 
 	FD_CLR(fd, &_readFDs);
@@ -113,7 +113,7 @@
 
 	int fd = [object fileDescriptorForWriting];
 
-	if (fd >= FD_SETSIZE)
+	if (fd < 0 || fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 
 	FD_CLR(fd, &_writeFDs);
@@ -177,9 +177,10 @@
 	count = [_readObjects count];
 
 	for (i = 0; i < count; i++) {
-		int fd = [objects[i] fileDescriptorForReading];
+		int fd;
 
 		pool = objc_autoreleasePoolPush();
+		fd = [objects[i] fileDescriptorForReading];
 
 		if (FD_ISSET(fd, &readFDs) && [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
@@ -192,9 +193,10 @@
 	count = [_writeObjects count];
 
 	for (i = 0; i < count; i++) {
-		int fd = [objects[i] fileDescriptorForWriting];
+		int fd;
 
 		pool = objc_autoreleasePoolPush();
+		fd = [objects[i] fileDescriptorForWriting];
 
 		if (FD_ISSET(fd, &writeFDs) && [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
