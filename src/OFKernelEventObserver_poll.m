@@ -18,6 +18,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_POLL_H
@@ -180,8 +181,7 @@
 								 errNo: errno];
 
 	for (i = 0; i < nFDs; i++) {
-		if (FDs[i].fd > _maxFD)
-			@throw [OFOutOfRangeException exception];
+		assert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {
 			if (FDs[i].fd == _cancelFD[0]) {
