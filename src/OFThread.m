@@ -165,7 +165,7 @@ callMain(id object)
 + (void)sleepForTimeInterval: (of_time_interval_t)timeInterval
 {
 	if (timeInterval < 0)
-		@throw [OFOutOfRangeException exception];
+		return;
 
 #if defined(_WIN32)
 	if (timeInterval * 1000 > UINT_MAX)

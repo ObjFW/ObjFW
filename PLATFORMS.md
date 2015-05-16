@@ -77,8 +77,8 @@ Linux
   * Runtimes: ObjFW
 
 
-MacOS X
--------
+Mac OS X
+--------
 
   * OS Versions: 10.5, 10.7-10.10
   * Architectures: PPC, PPC64, x86, x86_64
