@@ -15,4 +15,4 @@
  */
 
 #define DEFLATE64
-#include "OFDeflateStream.m"
+#include "OFInflateStream.m"

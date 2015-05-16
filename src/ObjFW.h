@@ -47,7 +47,8 @@
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"
-#import "OFDeflateStream.h"
+#import "OFInflateStream.h"
+#import "OFInflate64Stream.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFINIFile.h"

@@ -21,10 +21,10 @@ SRCS = OFApplication.m			\
        OFDataArray+Hashing.m		\
        OFDataArray+MessagePackValue.m	\
        OFDate.m				\
-       OFDeflateStream.m		\
-       OFDeflate64Stream.m		\
        OFDictionary.m			\
        OFEnumerator.m			\
+       OFInflateStream.m		\
+       OFInflate64Stream.m		\
        OFIntrospection.m		\
        OFList.m				\
        OFMapTable.m			\

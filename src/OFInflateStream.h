@@ -16,21 +16,21 @@
 
 #import "OFStream.h"
 
-#define OF_DEFLATE_STREAM_BUFFER_SIZE 4096
+#define OF_INFLATE_STREAM_BUFFER_SIZE 4096
 
 /*!
- * @class OFDeflateStream OFDeflateStream.h ObjFW/OFDeflateStream.h
+ * @class OFInflateStream OFInflateStream.h ObjFW/OFInflateStream.h
  *
- * @brief A class for a stream that handles Deflate compression or decompression
- *	  transparently for an underlying stream.
+ * @brief A class that handles Deflate decompression transparently for an
+ *	  underlying stream.
  */
-@interface OFDeflateStream: OFStream
+@interface OFInflateStream: OFStream
 {
-#ifdef OF_DEFLATE_STREAM_M
+#ifdef OF_INFLATE_STREAM_M
 @public
 #endif
 	OFStream *_stream;
-	uint8_t _buffer[OF_DEFLATE_STREAM_BUFFER_SIZE];
+	uint8_t _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
 	uint_fast16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
 	uint_fast8_t _bitIndex, _savedBitsLength;
@@ -39,11 +39,11 @@
 	uint8_t *_slidingWindow;
 	uint_fast16_t _slidingWindowIndex, _slidingWindowMask;
 	enum {
-		OF_DEFLATE_STREAM_BLOCK_HEADER,
-		OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER,
-		OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK,
-		OF_DEFLATE_STREAM_HUFFMAN_TREE,
-		OF_DEFLATE_STREAM_HUFFMAN_BLOCK
+		OF_INFLATE_STREAM_BLOCK_HEADER,
+		OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER,
+		OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK,
+		OF_INFLATE_STREAM_HUFFMAN_TREE,
+		OF_INFLATE_STREAM_HUFFMAN_BLOCK
 	} _state;
 	union {
 		struct {
@@ -64,12 +64,12 @@
 		struct {
 			struct huffman_tree *litLenTree, *distTree, *treeIter;
 			enum {
-				OF_DEFLATE_STREAM_WRITE_VALUE,
-				OF_DEFLATE_STREAM_AWAIT_CODE,
-				OF_DEFLATE_STREAM_AWAIT_LENGTH_EXTRA_BITS,
-				OF_DEFLATE_STREAM_AWAIT_DISTANCE,
-				OF_DEFLATE_STREAM_AWAIT_DISTANCE_EXTRA_BITS,
-				OF_DEFLATE_STREAM_PROCESS_PAIR
+				OF_INFLATE_STREAM_WRITE_VALUE,
+				OF_INFLATE_STREAM_AWAIT_CODE,
+				OF_INFLATE_STREAM_AWAIT_LENGTH_EXTRA_BITS,
+				OF_INFLATE_STREAM_AWAIT_DISTANCE,
+				OF_INFLATE_STREAM_AWAIT_DISTANCE_EXTRA_BITS,
+				OF_INFLATE_STREAM_PROCESS_PAIR
 			} state;
 			uint_fast16_t value, length, distance;
 			uint_fast16_t extraBits;
@@ -79,21 +79,21 @@
 }
 
 /*!
- * @brief Creates a new OFDeflateStream with the specified underlying stream.
+ * @brief Creates a new OFInflateStream with the specified underlying stream.
  *
  * @param stream The underlying stream to which compressed data is written or
  *		 from which compressed data is read
- * @return A new, autoreleased OFDeflateStream
+ * @return A new, autoreleased OFInflateStream
  */
 + (instancetype)streamWithStream: (OFStream*)stream;
 
 /*!
- * @brief Initializes an already allocated OFDeflateStream with the specified
+ * @brief Initializes an already allocated OFInflateStream with the specified
  *	  underlying stream.
  *
  * @param stream The underlying stream to which compressed data is written or
  *		 from which compressed data is read
- * @return A initialized OFDeflateStream
+ * @return A initialized OFInflateStream
  */
 - initWithStream: (OFStream*)stream;
 @end

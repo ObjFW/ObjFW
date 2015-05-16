@@ -25,8 +25,8 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
-#import "OFDeflateStream.h"
-#import "OFDeflate64Stream.h"
+#import "OFInflateStream.h"
+#import "OFInflate64Stream.h"
 
 #import "OFChecksumFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -480,11 +480,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 			_decompressedStream = [stream retain];
 			break;
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
-			_decompressedStream = [[OFDeflateStream alloc]
+			_decompressedStream = [[OFInflateStream alloc]
 			    initWithStream: stream];
 			break;
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
-			_decompressedStream = [[OFDeflate64Stream alloc]
+			_decompressedStream = [[OFInflate64Stream alloc]
 			    initWithStream: stream];
 			break;
 		default:

@@ -14,13 +14,13 @@
  * file.
  */
 
-#import "OFDeflateStream.h"
+#import "OFInflateStream.h"
 
 /*!
- * @class OFDeflate64Stream OFDeflate64Stream.h ObjFW/OFDeflate64Stream.h
+ * @class OFInflate64Stream OFInflate64Stream.h ObjFW/OFInflate64Stream.h
  *
- * @brief A class for a stream that handles Deflate64 compression or
- *	  decompression transparently for an underlying stream.
+ * @brief A class that handles Deflate64 decompression transparently for an
+ *	  underlying stream.
  */
-@interface OFDeflate64Stream: OFDeflateStream
+@interface OFInflate64Stream: OFInflateStream
 @end

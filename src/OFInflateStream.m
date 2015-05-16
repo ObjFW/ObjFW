@@ -14,7 +14,7 @@
  * file.
  */
 
-#define OF_DEFLATE_STREAM_M
+#define OF_INFLATE_STREAM_M
 
 #include "config.h"
 
@@ -24,10 +24,10 @@
 #include <assert.h>
 
 #ifndef DEFLATE64
-# import "OFDeflateStream.h"
+# import "OFInflateStream.h"
 #else
-# import "OFDeflate64Stream.h"
-# define OFDeflateStream OFDeflate64Stream
+# import "OFInflate64Stream.h"
+# define OFInflateStream OFInflate64Stream
 #endif
 #import "OFDataArray.h"
 
@@ -36,21 +36,21 @@
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
 
-#define BLOCK_HEADER		  OF_DEFLATE_STREAM_BLOCK_HEADER
-#define UNCOMPRESSED_BLOCK_HEADER OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER
-#define UNCOMPRESSED_BLOCK	  OF_DEFLATE_STREAM_UNCOMPRESSED_BLOCK
-#define HUFFMAN_BLOCK		  OF_DEFLATE_STREAM_HUFFMAN_BLOCK
-#define HUFFMAN_TREE		  OF_DEFLATE_STREAM_HUFFMAN_TREE
-#define CONSTRUCT_CODELEN_TREE	  OF_DEFLATE_STREAM_CONSTRUCT_CODELEN_TREE
-#define CONSTRUCT_LITLEN_TREE	  OF_DEFLATE_STREAM_CONSTRUCT_LITLEN_TREE
-#define CONSTRUCT_DIST_TREE	  OF_DEFLATE_STREAM_CONSTRUCT_DIST_TREE
-#define AWAIT_CODE		  OF_DEFLATE_STREAM_AWAIT_CODE
-#define WRITE_VALUE		  OF_DEFLATE_STREAM_WRITE_VALUE
-#define AWAIT_LENGTH_EXTRA_BITS   OF_DEFLATE_STREAM_AWAIT_LENGTH_EXTRA_BITS
-#define AWAIT_DISTANCE		  OF_DEFLATE_STREAM_AWAIT_DISTANCE
-#define AWAIT_DISTANCE_EXTRA_BITS OF_DEFLATE_STREAM_AWAIT_DISTANCE_EXTRA_BITS
-#define PROCESS_PAIR		  OF_DEFLATE_STREAM_PROCESS_PAIR
-#define BUFFER_SIZE		  OF_DEFLATE_STREAM_BUFFER_SIZE
+#define BLOCK_HEADER		  OF_INFLATE_STREAM_BLOCK_HEADER
+#define UNCOMPRESSED_BLOCK_HEADER OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER
+#define UNCOMPRESSED_BLOCK	  OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK
+#define HUFFMAN_BLOCK		  OF_INFLATE_STREAM_HUFFMAN_BLOCK
+#define HUFFMAN_TREE		  OF_INFLATE_STREAM_HUFFMAN_TREE
+#define CONSTRUCT_CODELEN_TREE	  OF_INFLATE_STREAM_CONSTRUCT_CODELEN_TREE
+#define CONSTRUCT_LITLEN_TREE	  OF_INFLATE_STREAM_CONSTRUCT_LITLEN_TREE
+#define CONSTRUCT_DIST_TREE	  OF_INFLATE_STREAM_CONSTRUCT_DIST_TREE
+#define AWAIT_CODE		  OF_INFLATE_STREAM_AWAIT_CODE
+#define WRITE_VALUE		  OF_INFLATE_STREAM_WRITE_VALUE
+#define AWAIT_LENGTH_EXTRA_BITS   OF_INFLATE_STREAM_AWAIT_LENGTH_EXTRA_BITS
+#define AWAIT_DISTANCE		  OF_INFLATE_STREAM_AWAIT_DISTANCE
+#define AWAIT_DISTANCE_EXTRA_BITS OF_INFLATE_STREAM_AWAIT_DISTANCE_EXTRA_BITS
+#define PROCESS_PAIR		  OF_INFLATE_STREAM_PROCESS_PAIR
+#define BUFFER_SIZE		  OF_INFLATE_STREAM_BUFFER_SIZE
 
 #define MAX_BITS 15
 
@@ -105,7 +105,7 @@ static const uint8_t codeLengthsOrder[19] = {
 static struct huffman_tree *fixedLitLenTree, *fixedDistTree;
 
 static bool
-tryReadBits(OFDeflateStream *stream, uint_fast16_t *bits, uint_fast8_t count)
+tryReadBits(OFInflateStream *stream, uint_fast16_t *bits, uint_fast8_t count)
 {
 	uint_fast16_t ret = stream->_savedBits;
 	uint_fast8_t i;
@@ -219,7 +219,7 @@ constructTree(uint8_t lengths[], uint_fast16_t count)
 }
 
 static bool
-walkTree(OFDeflateStream *stream, struct huffman_tree **tree, uint16_t *value)
+walkTree(OFInflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 {
 	struct huffman_tree *iter = *tree;
 	uint_fast16_t bits;
@@ -252,13 +252,13 @@ releaseTree(struct huffman_tree *tree)
 	free(tree);
 }
 
-@implementation OFDeflateStream
+@implementation OFInflateStream
 + (void)initialize
 {
 	uint_fast16_t i;
 	uint8_t lengths[288];
 
-	if (self != [OFDeflateStream class])
+	if (self != [OFInflateStream class])
 		return;
 
 	for (i = 0; i <= 143; i++)
