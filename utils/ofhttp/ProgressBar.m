@@ -85,17 +85,19 @@
 
 - (void)_drawProgress
 {
-	uint_fast8_t i;
+	size_t i;
 	float bars, percent;
 	unsigned short barWidth;
 #ifdef HAVE_SYS_IOCTL_H
 	struct winsize ws;
 
-	if (ioctl(0, TIOCGWINSZ, &ws) == 0)
+	if (ioctl(0, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 37)
 		barWidth = ws.ws_col - 37;
 	else
+		barWidth = 0;
+#else
+	barWidth = 43;
 #endif
-		barWidth = 43;
 
 	bars = (float)(_resumedFrom + _received) /
 	    (_resumedFrom + _length) * barWidth;
@@ -104,7 +106,7 @@
 
 	[of_stdout writeString: @"\r  ▕"];
 
-	for (i = 0; i < (uint_fast8_t)bars; i++)
+	for (i = 0; i < (size_t)bars; i++)
 		[of_stdout writeString: @"█"];
 	if (bars < barWidth) {
 		float remainder = bars - floorf(bars);
@@ -126,7 +128,7 @@
 		else
 			[of_stdout writeString: @" "];
 
-		for (i = 0; i < barWidth - (uint_fast8_t)bars - 1; i++)
+		for (i = 0; i < barWidth - (size_t)bars - 1; i++)
 			[of_stdout writeString: @" "];
 	}
 
@@ -145,9 +147,8 @@
 		[of_stdout writeFormat: @"%4.2f d ", _ETA / (24 * 3600)];
 	else
 		[of_stdout writeFormat: @"%2u:%02u:%02u ",
-		    (unsigned char)(_ETA / 3600),
-		    (unsigned char)(_ETA / 60) % 60,
-		    (unsigned char)_ETA % 60];
+		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
+		    (uint8_t)_ETA % 60];
 
 	if (_BPS >= GIBIBYTE)
 		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
