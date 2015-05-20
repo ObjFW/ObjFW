@@ -54,7 +54,7 @@
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath;
-	bool _continue, _quiet;
+	bool _continue, _detectFileName, _quiet;
 	OFDataArray *_entity;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -72,7 +72,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[of_stderr writeFormat:
-	    @"Usage: %@ -[cehHmoPq] url1 [url2 ...]\n",
+	    @"Usage: %@ -[cehHmoOPq] url1 [url2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
@@ -83,7 +83,8 @@ help(OFStream *stream, bool full, int status)
 		    @"    -h  Show this help\n"
 		    @"    -H  Add a header (e.g. X-Foo:Bar)\n"
 		    @"    -m  Set the method of the HTTP request\n"
-		    @"    -o  Output filename\n"
+		    @"    -o  Specify output file name\n"
+		    @"    -O  Do a HEAD request to detect file name\n"
 		    @"    -P  Specify SOCKS5 proxy\n"
 		    @"    -q  Quiet mode (no output, except errors)\n"];
 
@@ -203,7 +204,7 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"ce:hH:m:o:P:q"];
+	    [OFOptionsParser parserWithOptions: @"ce:hH:m:o:OP:q"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -226,6 +227,9 @@ help(OFStream *stream, bool full, int status)
 		case 'o':
 			[_outputPath release];
 			_outputPath = [[optionsParser argument] retain];
+			break;
+		case 'O':
+			_detectFileName = true;
 			break;
 		case 'P':
 			[self setProxy: [optionsParser argument]];
@@ -273,6 +277,196 @@ help(OFStream *stream, bool full, int status)
 					statusCode, [URL string]];
 
 	return true;
+}
+
+- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
+{
+	OFHTTPResponse *response = nil;
+
+	@try {
+		response = [_HTTPClient performRequest: request];
+	} @catch (OFAddressTranslationFailedException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  Address translation failed: %@\n",
+					[OFApplication programName],
+					[[request URL] string], e];
+	} @catch (OFConnectionFailedException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  Connection failed: %@\n",
+					[OFApplication programName],
+					[[request URL] string], e];
+	} @catch (OFInvalidServerReplyException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  Invalid server reply!\n",
+					[OFApplication programName],
+					[[request URL] string]];
+	} @catch (OFUnsupportedProtocolException *e) {
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		[of_stderr writeFormat: @"%@: No SSL library loaded!\n"
+					@"  In order to download via https, "
+					@"you need to preload an SSL library "
+					@"for ObjFW\n  such as ObjOpenSSL!\n",
+					[OFApplication programName]];
+	} @catch (OFReadOrWriteFailedException *e) {
+		OFString *action = @"Read or write";
+
+		if (!_quiet)
+			[of_stdout writeString: @"\n"];
+
+		if ([e isKindOfClass: [OFReadFailedException class]])
+			action = @"Read";
+		else if ([e isKindOfClass: [OFWriteFailedException class]])
+			action = @"Write";
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
+					@"  %@ failed: %@\n",
+					[OFApplication programName],
+					[[request URL] string], action, e];
+	} @catch (OFHTTPRequestFailedException *e) {
+		if (!_quiet)
+			[of_stdout writeFormat: @" ➜ %d\n",
+						[[e response] statusCode]];
+
+		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n",
+					[OFApplication programName],
+					[[request URL] string]];
+	}
+
+	if (!_quiet && response != nil)
+		[of_stdout writeFormat: @" ➜ %d\n", [response statusCode]];
+
+	return response;
+}
+
+- (OFString*)fileNameFromContentDisposition: (OFString*)contentDisposition
+{
+	void *pool;
+	const char *UTF8String;
+	size_t UTF8StringLength;
+	enum {
+		DISPOSITION_TYPE,
+		DISPOSITION_TYPE_SEMICOLON,
+		DISPOSITION_PARAM_NAME_SKIP_SPACE,
+		DISPOSITION_PARAM_NAME,
+		DISPOSITION_PARAM_VALUE,
+		DISPOSITION_PARAM_QUOTED,
+		DISPOSITION_EXPECT_SEMICOLON
+	} state;
+	size_t i, last;
+	OFString *type = nil, *paramName = nil, *paramValue;
+	OFMutableDictionary *params;
+	OFString *fileName;
+
+	if (contentDisposition == nil)
+		return nil;
+
+	pool = objc_autoreleasePoolPush();
+
+	UTF8String = [contentDisposition UTF8String];
+	UTF8StringLength = [contentDisposition UTF8StringLength];
+	state = DISPOSITION_TYPE;
+	params = [OFMutableDictionary dictionary];
+	last = 0;
+
+	for (i = 0; i < UTF8StringLength; i++) {
+		switch (state) {
+		case DISPOSITION_TYPE:
+			if (UTF8String[i] == ';' || UTF8String[i] == ' ') {
+				type = [OFString
+				    stringWithUTF8String: UTF8String
+						  length: i];
+
+				state = (UTF8String[i] == ';'
+				    ? DISPOSITION_PARAM_NAME_SKIP_SPACE
+				    : DISPOSITION_TYPE_SEMICOLON);
+				last = i + 1;
+			}
+			break;
+		case DISPOSITION_TYPE_SEMICOLON:
+			if (UTF8String[i] == ';') {
+				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				last = i + 1;
+			} else if (UTF8String[i] != ' ') {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+			break;
+		case DISPOSITION_PARAM_NAME_SKIP_SPACE:
+			if (UTF8String[i] != ' ') {
+				state = DISPOSITION_PARAM_NAME;
+				last = i;
+				i--;
+			}
+			break;
+		case DISPOSITION_PARAM_NAME:
+			if (UTF8String[i] == '=') {
+				paramName = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				state = DISPOSITION_PARAM_VALUE;
+			}
+			break;
+		case DISPOSITION_PARAM_VALUE:
+			if (UTF8String[i] == '"') {
+				state = DISPOSITION_PARAM_QUOTED;
+				last = i + 1;
+			} else {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+			break;
+		case DISPOSITION_PARAM_QUOTED:
+			if (UTF8String[i] == '"') {
+				paramValue = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				[params setObject: paramValue
+					   forKey: paramName];
+
+				state = DISPOSITION_EXPECT_SEMICOLON;
+			}
+			break;
+		case DISPOSITION_EXPECT_SEMICOLON:
+			if (UTF8String[i] == ';') {
+				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				last = i + 1;
+			} else if (UTF8String[i] != ' ') {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+			break;
+		}
+	}
+
+	if (state != DISPOSITION_EXPECT_SEMICOLON) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	if (![type isEqual: @"attachment"] ||
+	    (fileName = [params objectForKey: @"filename"]) == nil) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	fileName = [fileName lastPathComponent];
+
+	[fileName retain];
+	objc_autoreleasePoolPop(pool);
+	return [fileName autorelease];
 }
 
 -      (bool)stream: (OFHTTPResponse*)response
@@ -335,7 +529,7 @@ next:
 	OFHTTPRequest *request;
 	OFHTTPResponse *response;
 	OFDictionary *headers;
-	OFString *fileName, *lengthString, *type;
+	OFString *fileName = nil, *lengthString, *type;
 
 	_length = -1;
 	_received = _resumedFrom = 0;
@@ -369,15 +563,33 @@ next:
 		goto next;
 	}
 
+	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
+
+	if (_detectFileName) {
+		if (!_quiet)
+			[of_stdout writeFormat: @"⁈ %@", [URL string]];
+
+		request = [OFHTTPRequest requestWithURL: URL];
+		[request setHeaders: clientHeaders];
+		[request setMethod: OF_HTTP_REQUEST_METHOD_HEAD];
+
+		if ((response = [self performRequest: request]) == nil) {
+			_errorCode = 1;
+			goto next;
+		}
+
+		fileName = [self fileNameFromContentDisposition:
+		    [[response headers] objectForKey: @"Content-Disposition"]];
+	}
+
 	if (!_quiet)
 		[of_stdout writeFormat: @"⇣ %@", [URL string]];
 
 	if (_outputPath != nil)
 		fileName = _outputPath;
-	else
-		fileName = [[URL path] lastPathComponent];
 
-	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
+	if (fileName == nil)
+		fileName = [[URL path] lastPathComponent];
 
 	if (_continue) {
 		@try {
@@ -402,86 +614,10 @@ next:
 	[request setMethod: _method];
 	[request setEntity: _entity];
 
-	@try {
-		response = [_HTTPClient performRequest: request];
-	} @catch (OFAddressTranslationFailedException *e) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  Address translation failed: %@\n",
-					[OFApplication programName],
-					[URL string], e];
-
-		_errorCode = 1;
-		goto next;
-	} @catch (OFConnectionFailedException *e) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  Connection failed: %@\n",
-					[OFApplication programName],
-					[URL string], e];
-
-		_errorCode = 1;
-		goto next;
-	} @catch (OFInvalidServerReplyException *e) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  Invalid server reply!\n",
-					[OFApplication programName],
-					[URL string]];
-
-		_errorCode = 1;
-		goto next;
-	} @catch (OFUnsupportedProtocolException *e) {
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		[of_stderr writeFormat: @"%@: No SSL library loaded!\n"
-					@"  In order to download via https, "
-					@"you need to preload an SSL library "
-					@"for ObjFW\n  such as ObjOpenSSL!\n",
-					[OFApplication programName]];
-
-		_errorCode = 1;
-		goto next;
-	} @catch (OFReadOrWriteFailedException *e) {
-		OFString *action = @"Read or write";
-
-		if (!_quiet)
-			[of_stdout writeString: @"\n"];
-
-		if ([e isKindOfClass: [OFReadFailedException class]])
-			action = @"Read";
-		else if ([e isKindOfClass: [OFWriteFailedException class]])
-			action = @"Write";
-
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  %@ failed: %@\n",
-					[OFApplication programName],
-					[URL string], action, e];
-
-		_errorCode = 1;
-		goto next;
-	} @catch (OFHTTPRequestFailedException *e) {
-		if (!_quiet)
-			[of_stdout writeFormat: @" ➜ %d\n",
-						[[e response] statusCode]];
-
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n",
-					[OFApplication programName],
-					[URL string]];
-
+	if ((response = [self performRequest: request]) == nil) {
 		_errorCode = 1;
 		goto next;
 	}
-
-	if (!_quiet)
-		[of_stdout writeFormat: @" ➜ %d\n", [response statusCode]];
 
 	headers = [response headers];
 	lengthString = [headers objectForKey: @"Content-Length"];
