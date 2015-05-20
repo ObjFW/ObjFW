@@ -103,6 +103,7 @@
 	bool _insecureRedirectsAllowed;
 	OFTCPSocket *_socket;
 	OFURL *_lastURL;
+	bool _lastWasHEAD;
 	OFHTTPResponse *_lastResponse;
 }
 

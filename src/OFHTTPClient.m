@@ -358,16 +358,23 @@ normalizeKey(char *str_)
 		[_lastURL release];
 		_lastURL = nil;
 
-		/* Throw away content that has not been read yet */
-		while (![_lastResponse isAtEndOfStream]) {
-			char buffer[512];
+		@try {
+			if (!_lastWasHEAD) {
+				/*
+				 * Throw away content that has not been read
+				 * yet.
+				 */
+				while (![_lastResponse isAtEndOfStream]) {
+					char buffer[512];
 
-			[_lastResponse readIntoBuffer: buffer
-					       length: 512];
+					[_lastResponse readIntoBuffer: buffer
+							       length: 512];
+				}
+			}
+		} @finally {
+			[_lastResponse release];
+			_lastResponse = nil;
 		}
-
-		[_lastResponse release];
-		_lastResponse = nil;
 	} else
 		socket = [self OF_closeAndCreateSocketForRequest: request];
 
@@ -565,6 +572,7 @@ normalizeKey(char *str_)
 
 		_socket = [socket retain];
 		_lastURL = [URL copy];
+		_lastWasHEAD = (method == OF_HTTP_REQUEST_METHOD_HEAD);
 		_lastResponse = [response retain];
 	}
 
