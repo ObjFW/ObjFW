@@ -273,7 +273,7 @@ help(OFStream *stream, bool full, int status)
 	       request: (OFHTTPRequest*)request
 {
 	if (!_quiet)
-		[of_stdout writeFormat: @" ➜ %d\n↻ %@",
+		[of_stdout writeFormat: @" ➜ %d\n☇ %@",
 					statusCode, [URL string]];
 
 	return true;
@@ -567,7 +567,7 @@ next:
 
 	if (_detectFileName) {
 		if (!_quiet)
-			[of_stdout writeFormat: @"⁈ %@", [URL string]];
+			[of_stdout writeFormat: @"⠒ %@", [URL string]];
 
 		request = [OFHTTPRequest requestWithURL: URL];
 		[request setHeaders: clientHeaders];
