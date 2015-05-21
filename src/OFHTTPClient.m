@@ -70,7 +70,7 @@ normalizeKey(char *str_)
 }
 
 - initWithSocket: (OFTCPSocket*)socket;
-- (void)setKeepAlive: (bool)keepAlive;
+- (void)OF_setKeepAlive: (bool)keepAlive;
 @end
 
 @implementation OFHTTPClientResponse
@@ -83,7 +83,7 @@ normalizeKey(char *str_)
 	return self;
 }
 
-- (void)setKeepAlive: (bool)keepAlive
+- (void)OF_setKeepAlive: (bool)keepAlive
 {
 	_keepAlive = keepAlive;
 }
@@ -334,7 +334,8 @@ normalizeKey(char *str_)
 	OFDataArray *entity = [request entity];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
-	OFString *line, *version, *redirect, *keepAlive;
+	OFString *line, *version, *redirect, *connectionHeader;
+	bool keepAlive;
 	OFMutableDictionary *serverHeaders;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
@@ -565,10 +566,23 @@ normalizeKey(char *str_)
 	[response setStatusCode: status];
 	[response setHeaders: serverHeaders];
 
-	keepAlive = [serverHeaders objectForKey: @"Connection"];
-	if ([version isEqual: @"1.1"] ||
-	    (keepAlive != nil && [keepAlive isEqual: @"keep-alive"])) {
-		[response setKeepAlive: true];
+	connectionHeader = [serverHeaders objectForKey: @"Connection"];
+	if ([version isEqual: @"1.1"]) {
+		if (connectionHeader != nil)
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"close"] != OF_ORDERED_SAME);
+		else
+			keepAlive = true;
+	} else {
+		if (connectionHeader != nil)
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"keep-alive"] == OF_ORDERED_SAME);
+		else
+			keepAlive = false;
+	}
+
+	if (keepAlive) {
+		[response OF_setKeepAlive: true];
 
 		_socket = [socket retain];
 		_lastURL = [URL copy];
