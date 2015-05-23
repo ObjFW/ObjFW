@@ -331,7 +331,7 @@ normalizeKey(char *str_)
 	OFMutableString *requestString;
 	OFString *user, *password;
 	OFDictionary *headers = [request headers];
-	OFDataArray *entity = [request entity];
+	OFDataArray *body = [request body];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
 	OFString *line, *version, *redirect, *connectionHeader;
@@ -424,11 +424,11 @@ normalizeKey(char *str_)
 		    @"User-Agent: Something using ObjFW "
 		    @"<https://webkeks.org/objfw>\r\n"];
 
-	if (entity != nil) {
+	if (body != nil) {
 		if ([headers objectForKey: @"Content-Length"] == nil)
 			[requestString appendFormat:
 			    @"Content-Length: %zd\r\n",
-			    [entity itemSize] * [entity count]];
+			    [body itemSize] * [body count]];
 
 		if ([headers objectForKey: @"Content-Type"] == nil)
 			[requestString appendString:
@@ -460,9 +460,9 @@ normalizeKey(char *str_)
 		[socket writeString: requestString];
 	}
 
-	if (entity != nil)
-		[socket writeBuffer: [entity items]
-			     length: [entity count] * [entity itemSize]];
+	if (body != nil)
+		[socket writeBuffer: [body items]
+			     length: [body count] * [body itemSize]];
 
 	@try {
 		line = [socket readLine];
@@ -479,10 +479,10 @@ normalizeKey(char *str_)
 		socket = [self OF_closeAndCreateSocketForRequest: request];
 		[socket writeString: requestString];
 
-		if (entity != nil)
-			[socket writeBuffer: [entity items]
-				     length: [entity count] *
-					     [entity itemSize]];
+		if (body != nil)
+			[socket writeBuffer: [body items]
+				     length: [body count] *
+					     [body itemSize]];
 
 		@try {
 			line = [socket readLine];
@@ -634,7 +634,7 @@ normalizeKey(char *str_)
 			newRequest = [OFHTTPRequest requestWithURL: newURL];
 			[newRequest setMethod: method];
 			[newRequest setHeaders: headers];
-			[newRequest setEntity: entity];
+			[newRequest setBody: body];
 
 			/*
 			 * 303 means the request should be converted to a GET
@@ -660,7 +660,7 @@ normalizeKey(char *str_)
 				[newRequest
 				    setMethod: OF_HTTP_REQUEST_METHOD_GET];
 				[newRequest setHeaders: newHeaders];
-				[newRequest setEntity: nil];
+				[newRequest setBody: nil];
 			}
 
 			[newRequest retain];

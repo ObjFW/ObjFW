@@ -74,7 +74,7 @@ typedef struct {
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary *_headers;
-	OFDataArray *_entity;
+	OFDataArray *_body;
 	OFString *_remoteAddress;
 }
 
@@ -83,7 +83,7 @@ typedef struct {
 @property of_http_request_method_t method;
 @property of_http_request_protocol_version_t protocolVersion;
 @property (copy) OFDictionary *headers;
-@property (retain) OFDataArray *entity;
+@property (retain) OFDataArray *body;
 @property (copy) OFString *remoteAddress;
 #endif
 
@@ -184,9 +184,9 @@ typedef struct {
 /*!
  * @brief Sets the entity body of the HTTP request.
  *
- * @param entity The entity body of the HTTP request
+ * @param body The entity body of the HTTP request
  */
-- (void)setEntity: (OFDataArray*)entity;
+- (void)setBody: (OFDataArray*)body;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -194,7 +194,7 @@ typedef struct {
  *
  * @param string The string to use for the entity body
  */
-- (void)setEntityFromString: (OFString*)string;
+- (void)setBodyFromString: (OFString*)string;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -203,15 +203,15 @@ typedef struct {
  * @param string The string to use for the entity body
  * @param encoding The encoding to encode the string with
  */
-- (void)setEntityFromString: (OFString*)string
-		   encoding: (of_string_encoding_t)encoding;
+- (void)setBodyFromString: (OFString*)string
+		 encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Returns the entity body of the HTTP request.
  *
  * @return The entity body of the HTTP request
  */
-- (OFDataArray*)entity;
+- (OFDataArray*)body;
 
 /*!
  * @brief Sets the remote address from which the request originates.

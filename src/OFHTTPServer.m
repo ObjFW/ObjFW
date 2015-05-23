@@ -303,7 +303,7 @@ normalizedKey(OFString *key)
 	uint16_t _port;
 	OFMutableDictionary *_headers;
 	size_t _contentLength;
-	OFDataArray *_entity;
+	OFDataArray *_body;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
@@ -356,7 +356,7 @@ normalizedKey(OFString *key)
 	[_host release];
 	[_path release];
 	[_headers release];
-	[_entity release];
+	[_body release];
 
 	[super dealloc];
 }
@@ -470,7 +470,7 @@ normalizedKey(OFString *key)
 			char *buffer;
 
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			_entity = [[OFDataArray alloc] init];
+			_body = [[OFDataArray alloc] init];
 
 			[_socket asyncReadIntoBuffer: buffer
 					      length: BUFFER_SIZE
@@ -543,10 +543,10 @@ normalizedKey(OFString *key)
 	if ([socket isAtEndOfStream] || exception != nil)
 		return false;
 
-	[_entity addItems: buffer
-		    count: length];
+	[_body addItems: buffer
+		  count: length];
 
-	if ([_entity count] >= _contentLength) {
+	if ([_body count] >= _contentLength) {
 		/*
 		 * Manually free the buffer here. While this is not required
 		 * now as the async read is the only thing referencing self and
@@ -628,7 +628,7 @@ normalizedKey(OFString *key)
 	[request setProtocolVersion:
 	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion }];
 	[request setHeaders: _headers];
-	[request setEntity: _entity];
+	[request setBody: _body];
 	[request setRemoteAddress: [_socket remoteAddress]];
 
 	response = [[[OFHTTPServerResponse alloc]

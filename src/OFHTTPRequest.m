@@ -117,7 +117,7 @@ of_http_request_method_from_string(const char *string)
 {
 	[_URL release];
 	[_headers release];
-	[_entity release];
+	[_body release];
 	[_remoteAddress release];
 
 	[super dealloc];
@@ -132,7 +132,7 @@ of_http_request_method_from_string(const char *string)
 		copy->_protocolVersion = _protocolVersion;
 		[copy setURL: _URL];
 		[copy setHeaders: _headers];
-		[copy setEntity: _entity];
+		[copy setBody: _body];
 		[copy setRemoteAddress: _remoteAddress];
 	} @catch (id e) {
 		[copy release];
@@ -156,7 +156,7 @@ of_http_request_method_from_string(const char *string)
 	    request->_protocolVersion.minor != _protocolVersion.minor ||
 	    ![request->_URL isEqual: _URL] ||
 	    ![request->_headers isEqual: _headers] ||
-	    ![request->_entity isEqual: _entity] ||
+	    ![request->_body isEqual: _body] ||
 	    ![request->_remoteAddress isEqual: _remoteAddress])
 		return false;
 
@@ -174,7 +174,7 @@ of_http_request_method_from_string(const char *string)
 	OF_HASH_ADD(hash, _protocolVersion.minor);
 	OF_HASH_ADD_HASH(hash, [_URL hash]);
 	OF_HASH_ADD_HASH(hash, [_headers hash]);
-	OF_HASH_ADD_HASH(hash, [_entity hash]);
+	OF_HASH_ADD_HASH(hash, [_body hash]);
 	OF_HASH_ADD_HASH(hash, [_remoteAddress hash]);
 
 	OF_HASH_FINALIZE(hash);
@@ -258,33 +258,33 @@ of_http_request_method_from_string(const char *string)
 	OF_GETTER(_headers, true)
 }
 
-- (void)setEntity: (OFDataArray*)entity
+- (void)setBody: (OFDataArray*)body
 {
-	OF_SETTER(_entity, entity, true, 0)
+	OF_SETTER(_body, body, true, 0)
 }
 
-- (void)setEntityFromString: (OFString*)string
+- (void)setBodyFromString: (OFString*)string
 {
-	[self setEntityFromString: string
-			 encoding: OF_STRING_ENCODING_UTF_8];
+	[self setBodyFromString: string
+		       encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)setEntityFromString: (OFString*)string
-		   encoding: (of_string_encoding_t)encoding
+- (void)setBodyFromString: (OFString*)string
+		 encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFDataArray *entity = [OFDataArray dataArray];
+	OFDataArray *body = [OFDataArray dataArray];
 
-	[entity addItems: [string cStringWithEncoding: encoding]
-		   count: [string cStringLengthWithEncoding: encoding]];
-	[self setEntity: entity];
+	[body addItems: [string cStringWithEncoding: encoding]
+		 count: [string cStringLengthWithEncoding: encoding]];
+	[self setBody: body];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFDataArray*)entity
+- (OFDataArray*)body
 {
-	OF_GETTER(_entity, true)
+	OF_GETTER(_body, true)
 }
 
 - (void)setRemoteAddress: (OFString*)remoteAddress
@@ -301,12 +301,12 @@ of_http_request_method_from_string(const char *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *method = of_http_request_method_to_string(_method);
-	OFString *indentedHeaders, *indentedEntity, *ret;
+	OFString *indentedHeaders, *indentedBody, *ret;
 
 	indentedHeaders = [[_headers description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
-	indentedEntity = [[_entity description]
+	indentedBody = [[_body description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -314,10 +314,10 @@ of_http_request_method_from_string(const char *string)
 	    @"<%@:\n\tURL = %@\n"
 	    @"\tMethod = %s\n"
 	    @"\tHeaders = %@\n"
-	    @"\tEntity = %@\n"
+	    @"\tBody = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    [self class], _URL, method, indentedHeaders, indentedEntity,
+	    [self class], _URL, method, indentedHeaders, indentedBody,
 	    _remoteAddress];
 
 	objc_autoreleasePoolPop(pool);

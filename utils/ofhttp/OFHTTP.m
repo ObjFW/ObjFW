@@ -55,7 +55,7 @@
 	int _errorCode;
 	OFString *_outputPath;
 	bool _continue, _detectFileName, _quiet;
-	OFDataArray *_entity;
+	OFDataArray *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
@@ -78,8 +78,8 @@ help(OFStream *stream, bool full, int status)
 	if (full)
 		[stream writeString:
 		    @"\nOptions:\n"
+		    @"    -b  Specify the file to send as body\n"
 		    @"    -c  Continue download of existing file\n"
-		    @"    -e  Specify the file to send as entity\n"
 		    @"    -h  Show this help\n"
 		    @"    -H  Add a header (e.g. X-Foo:Bar)\n"
 		    @"    -m  Set the method of the HTTP request\n"
@@ -138,10 +138,10 @@ help(OFStream *stream, bool full, int status)
 			   forKey: name];
 }
 
-- (void)setEntity: (OFString*)entity
+- (void)setBody: (OFString*)body
 {
-	[_entity release];
-	_entity = [[OFDataArray alloc] initWithContentsOfFile: entity];
+	[_body release];
+	_body = [[OFDataArray alloc] initWithContentsOfFile: body];
 }
 
 - (void)setMethod: (OFString*)method
@@ -204,16 +204,16 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"ce:hH:m:o:OP:q"];
+	    [OFOptionsParser parserWithOptions: @"bc:hH:m:o:OP:q"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
+		case 'b':
+			[self setBody: [optionsParser argument]];
+			break;
 		case 'c':
 			_continue = true;
-			break;
-		case 'e':
-			[self setEntity: [optionsParser argument]];
 			break;
 		case 'h':
 			help(of_stdout, true, 0);
@@ -612,7 +612,7 @@ next:
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setHeaders: clientHeaders];
 	[request setMethod: _method];
-	[request setEntity: _entity];
+	[request setBody: _body];
 
 	if ((response = [self performRequest: request]) == nil) {
 		_errorCode = 1;
