@@ -491,7 +491,8 @@ normalizeKey(char *str_)
 		}
 	}
 
-	if (![line hasPrefix: @"HTTP/"] || [line characterAtIndex: 8] != ' ')
+	if (![line hasPrefix: @"HTTP/"] || [line length] < 9 ||
+	    [line characterAtIndex: 8] != ' ')
 		@throw [OFInvalidServerReplyException exception];
 
 	version = [line substringWithRange: of_range(5, 3)];
