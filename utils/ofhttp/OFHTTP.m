@@ -54,7 +54,7 @@
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath;
-	bool _continue, _detectFileName, _quiet;
+	bool _continue, _detectFileName, _quiet, _verbose;
 	OFDataArray *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -72,7 +72,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[of_stderr writeFormat:
-	    @"Usage: %@ -[cehHmoOPq] url1 [url2 ...]\n",
+	    @"Usage: %@ -[cehHmoOPqv] url1 [url2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
@@ -86,7 +86,8 @@ help(OFStream *stream, bool full, int status)
 		    @"    -o  Specify output file name\n"
 		    @"    -O  Do a HEAD request to detect file name\n"
 		    @"    -P  Specify SOCKS5 proxy\n"
-		    @"    -q  Quiet mode (no output, except errors)\n"];
+		    @"    -q  Quiet mode (no output, except errors)\n"
+		    @"    -v  Verbose mode (print headers)\n"];
 
 	[OFApplication terminateWithStatus: status];
 }
@@ -204,7 +205,7 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"bc:hH:m:o:OP:q"];
+	    [OFOptionsParser parserWithOptions: @"bc:hH:m:o:OP:qv"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
@@ -237,6 +238,9 @@ help(OFStream *stream, bool full, int status)
 		case 'q':
 			_quiet = true;
 			break;
+		case 'v':
+			_verbose = true;
+			break;
 		case ':':
 			[of_stderr writeFormat: @"%@: Argument for option -%C "
 						@"missing\n",
@@ -255,6 +259,13 @@ help(OFStream *stream, bool full, int status)
 
 	if ([_URLs count] < 1)
 		help(of_stderr, false, 1);
+
+	if (_quiet && _verbose) {
+		[of_stderr writeFormat: @"%@: -q and -v are mutually "
+					@"exclusive!\n",
+					[OFApplication programName]];
+		[OFApplication terminateWithStatus: 1];
+	}
 
 	if (_outputPath != nil && [_URLs count] > 1) {
 		[of_stderr writeFormat: @"%@: Cannot use -o when more than "
@@ -650,8 +661,25 @@ next:
 			lengthString = @"unknown";
 
 		[of_stdout writeFormat: @"  Name: %@\n", fileName];
-		[of_stdout writeFormat: @"  Type: %@\n", type];
-		[of_stdout writeFormat: @"  Size: %@\n", lengthString];
+
+		if (_verbose) {
+			void *pool = objc_autoreleasePoolPush();
+			OFDictionary *headers = [response headers];
+			OFEnumerator *keyEnumerator = [headers keyEnumerator];
+			OFEnumerator *objectEnumerator =
+			    [headers objectEnumerator];
+			OFString *key, *object;
+
+			while ((key = [keyEnumerator nextObject]) != nil &&
+			    (object = [objectEnumerator nextObject]) != nil)
+				[of_stdout writeFormat: @"  %@: %@\n",
+							key, object];
+
+			objc_autoreleasePoolPop(pool);
+		} else {
+			[of_stdout writeFormat: @"  Type: %@\n", type];
+			[of_stdout writeFormat: @"  Size: %@\n", lengthString];
+		}
 	}
 
 	if ([_outputPath isEqual: @"-"])
