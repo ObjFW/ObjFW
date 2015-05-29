@@ -202,8 +202,8 @@
 - (void)calculateBPSAndETA
 {
 	_BPS = (float)(_received - _lastReceived) /
-	    -[_lastReceivedDate timeIntervalSinceNow];;
-	_ETA = (double)(_length - _resumedFrom - _resumedFrom) / _BPS;
+	    -[_lastReceivedDate timeIntervalSinceNow];
+	_ETA = (double)(_length - _resumedFrom - _received) / _BPS;
 
 	_lastReceived = _received;
 	[_lastReceivedDate release];
