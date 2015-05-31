@@ -72,6 +72,8 @@
 {
 	[self stop];
 
+	[_startDate release];
+	[_lastReceivedDate release];
 	[_drawTimer release];
 	[_BPSTimer release];
 
