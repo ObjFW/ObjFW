@@ -54,7 +54,10 @@
 	FD_ZERO(&_writeFDs);
 	FD_SET(_cancelFD[0], &_readFDs);
 
-	_maxFD = _cancelFD[0];
+	if (_cancelFD[0] > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	_maxFD = (int)_cancelFD[0];
 
 	return self;
 }

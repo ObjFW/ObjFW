@@ -641,7 +641,7 @@ next:
 		if (type == nil)
 			type = @"unknown";
 
-		if (lengthString != nil) {
+		if (_length >= 0) {
 			if (_resumedFrom + _length >= GIBIBYTE)
 				lengthString = [OFString stringWithFormat:
 				    @"%.2f GiB",
