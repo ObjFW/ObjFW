@@ -205,7 +205,7 @@ help(OFStream *stream, bool full, int status)
 - (void)applicationDidFinishLaunching
 {
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"bc:hH:m:o:OP:qv"];
+	    [OFOptionsParser parserWithOptions: @"b:chH:m:o:OP:qv"];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
