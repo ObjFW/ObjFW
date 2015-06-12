@@ -35,7 +35,14 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  * @brief An abstract class for storing, adding and removing objects in an
  *	  array.
  */
+#ifdef OF_HAVE_GENERICS
+@interface OFMutableArray <ObjectType>: OFArray <ObjectType>
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
 @interface OFMutableArray: OFArray
+#endif
 /*!
  * @brief Creates a new OFMutableArray with enough memory to hold the specified
  *	  number of objects.
@@ -59,14 +66,14 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param object An object to add
  */
-- (void)addObject: (id)object;
+- (void)addObject: (ObjectType)object;
 
 /*!
  * @brief Adds the objects from the specified OFArray to the end of the array.
  *
  * @param array An array of objects to add
  */
-- (void)addObjectsFromArray: (OFArray*)array;
+- (void)addObjectsFromArray: (OFArray OF_GENERIC(ObjectType)*)array;
 
 /*!
  * @brief Inserts an object to the OFArray at the specified index.
@@ -74,7 +81,7 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  * @param object An object to add
  * @param index The index where the object should be inserted
  */
-- (void)insertObject: (id)object
+- (void)insertObject: (ObjectType)object
 	     atIndex: (size_t)index;
 
 /*!
@@ -83,7 +90,7 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  * @param array An array of objects
  * @param index The index where the objects should be inserted
  */
-- (void)insertObjectsFromArray: (OFArray*)array
+- (void)insertObjectsFromArray: (OFArray OF_GENERIC(ObjectType)*)array
 		       atIndex: (size_t)index;
 
 /*!
@@ -93,8 +100,8 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  * @param oldObject The object to replace
  * @param newObject The replacement object
  */
-- (void)replaceObject: (id)oldObject
-	   withObject: (id)newObject;
+- (void)replaceObject: (ObjectType)oldObject
+	   withObject: (ObjectType)newObject;
 
 /*!
  * @brief Replaces the object at the specified index with the specified object.
@@ -103,8 +110,8 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  * @param object The replacement object
  */
 - (void)replaceObjectAtIndex: (size_t)index
-		  withObject: (id)object;
--    (void)setObject: (id)object
+		  withObject: (ObjectType)object;
+-    (void)setObject: (ObjectType)object
   atIndexedSubscript: (size_t)index;
 
 /*!
@@ -114,15 +121,15 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  * @param oldObject The object to replace
  * @param newObject The replacement object
  */
-- (void)replaceObjectIdenticalTo: (id)oldObject
-		      withObject: (id)newObject;
+- (void)replaceObjectIdenticalTo: (ObjectType)oldObject
+		      withObject: (ObjectType)newObject;
 
 /*!
  * @brief Removes the first object equivalent to the specified object.
  *
  * @param object The object to remove
  */
-- (void)removeObject: (id)object;
+- (void)removeObject: (ObjectType)object;
 
 /*!
  * @brief Removes the first object that has the same address as the specified
@@ -130,7 +137,7 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param object The object to remove
  */
-- (void)removeObjectIdenticalTo: (id)object;
+- (void)removeObjectIdenticalTo: (ObjectType)object;
 
 /*!
  * @brief Removes the object at the specified index.
@@ -200,3 +207,6 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
  */
 - (void)makeImmutable;
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif

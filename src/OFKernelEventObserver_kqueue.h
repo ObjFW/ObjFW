@@ -17,7 +17,7 @@
 #import "OFKernelEventObserver.h"
 
 @class OFDataArray;
-@class OFMutableArray;
+@class OFMutableArray OF_GENERIC(ObjectType);
 
 @interface OFKernelEventObserver_kqueue: OFKernelEventObserver
 {

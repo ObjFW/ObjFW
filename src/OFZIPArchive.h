@@ -16,10 +16,13 @@
 
 #import "OFObject.h"
 #import "OFString.h"
+#import "OFZIPArchiveEntry.h"
 
-@class OFArray;
-@class OFMutableArray;
-@class OFMutableDictionary;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
 @class OFSeekableStream;
 @class OFStream;
 
@@ -35,14 +38,15 @@
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize, _centralDirectoryOffset;
 	OFString *_archiveComment;
-	OFMutableArray *_entries;
-	OFMutableDictionary *_pathToEntryMap;
+	OFMutableArray OF_GENERIC(OFZIPArchiveEntry*) *_entries;
+	OFMutableDictionary OF_GENERIC(OFString*, OFZIPArchiveEntry*)
+	    *_pathToEntryMap;
 	OFStream *_lastReturnedStream;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *archiveComment;
-@property (readonly, copy) OFArray *entries;
+@property (readonly, copy) OFArray OF_GENERIC(OFZIPArchiveEntry*) *entries;
 #endif
 
 /*!
@@ -89,7 +93,7 @@
  *
  * @return The entries of the central directory of the archive as an array
  */
-- (OFArray*)entries;
+- (OFArray OF_GENERIC(OFZIPArchiveEntry*)*)entries;
 
 /*!
  * @brief Returns the archive comment.

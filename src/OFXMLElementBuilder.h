@@ -17,7 +17,7 @@
 #import "OFObject.h"
 #import "OFXMLParser.h"
 
-@class OFMutableArray;
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFXMLElement;
 @class OFXMLElementBuilder;
 
@@ -106,7 +106,7 @@
  */
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
-	OFMutableArray *_stack;
+	OFMutableArray OF_GENERIC(OFXMLElement*) *_stack;
 	id <OFXMLElementBuilderDelegate> _delegate;
 }
 

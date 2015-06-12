@@ -78,7 +78,7 @@ enum {
 typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 @class OFURL;
 
 /*!
@@ -326,7 +326,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param components An array of components for the path
  * @return A new autoreleased OFString
  */
-+ (OFString*)pathWithComponents: (OFArray*)components;
++ (OFString*)pathWithComponents: (OFArray OF_GENERIC(OFString*)*)components;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -883,7 +883,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param delimiter The delimiter for separating
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
+- (OFArray OF_GENERIC(OFString*)*)componentsSeparatedByString:
+    (OFString*)delimiter;
 
 /*!
  * @brief Separates an OFString into an OFArray of OFStrings.
@@ -896,15 +897,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-				options: (int)options;
+- (OFArray OF_GENERIC(OFString*)*)
+    componentsSeparatedByString: (OFString*)delimiter
+			options: (int)options;
 
 /*!
  * @brief Returns the components of the path.
  *
  * @return The components of the path
  */
-- (OFArray*)pathComponents;
+- (OFArray OF_GENERIC(OFString*)*)pathComponents;
 
 /*!
  * @brief Returns the last component of the path.

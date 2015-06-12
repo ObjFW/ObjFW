@@ -17,7 +17,7 @@
 #import "OFObject.h"
 
 @class OFString;
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 
 /*!
  * @class OFSettings OFSettings.h ObjFW/OFSettings.h
@@ -119,7 +119,7 @@
  * @param array The array of strings to set
  * @param path The path to store the array of strings at
  */
-- (void)setArray: (OFArray*)array
+- (void)setArray: (OFArray OF_GENERIC(OFString*)*)array
 	 forPath: (OFString*)path;
 
 /*!
@@ -193,7 +193,7 @@
  * @param path The path for which the array of strings should be returned
  * @return The array of strings of the specified path
  */
-- (OFArray*)arrayForPath: (OFString*)path;
+- (OFArray OF_GENERIC(OFString*)*)arrayForPath: (OFString*)path;
 
 /*!
  * @brief Removes the value for the specified path.

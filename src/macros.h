@@ -128,14 +128,6 @@
 # define __has_attribute(x) 0
 #endif
 
-#if !__has_feature(objc_instancetype)
-# define instancetype id
-#endif
-
-#if __has_feature(blocks)
-# define OF_HAVE_BLOCKS
-#endif
-
 #if __has_feature(objc_bool)
 # undef YES
 # define YES __objc_yes
@@ -147,6 +139,39 @@
 #  undef false
 #  define false ((bool)0)
 # endif
+#endif
+
+#if !__has_feature(objc_instancetype)
+# define instancetype id
+#endif
+
+#if __has_feature(blocks)
+# define OF_HAVE_BLOCKS
+#endif
+
+#if __has_feature(objc_arc)
+# define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
+# define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
+# define OF_RETURNS_INNER_POINTER \
+	__attribute__((__objc_returns_inner_pointer__))
+# define OF_CONSUMED __attribute__((__ns_consumed__))
+# define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
+#else
+# define OF_RETURNS_RETAINED
+# define OF_RETURNS_NOT_RETAINED
+# define OF_RETURNS_INNER_POINTER
+# define OF_CONSUMED
+# define OF_WEAK_UNAVAILABLE
+# define __unsafe_unretained
+# define __bridge
+# define __autoreleasing
+#endif
+
+#if __has_feature(objc_generics)
+# define OF_HAVE_GENERICS
+# define OF_GENERIC(...) <__VA_ARGS__>
+#else
+# define OF_GENERIC(...)
 #endif
 
 #if defined(__clang__) || __GCC_VERSION__ >= 405
@@ -256,24 +281,6 @@
 #   endif
 #  endif
 # endif
-#endif
-
-#if __has_feature(objc_arc)
-# define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
-# define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
-# define OF_RETURNS_INNER_POINTER \
-	__attribute__((__objc_returns_inner_pointer__))
-# define OF_CONSUMED __attribute__((__ns_consumed__))
-# define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
-#else
-# define OF_RETURNS_RETAINED
-# define OF_RETURNS_NOT_RETAINED
-# define OF_RETURNS_INNER_POINTER
-# define OF_CONSUMED
-# define OF_WEAK_UNAVAILABLE
-# define __unsafe_unretained
-# define __bridge
-# define __autoreleasing
 #endif
 
 #define OF_RETAIN_COUNT_MAX UINT_MAX

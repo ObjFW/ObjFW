@@ -16,8 +16,10 @@
 
 #import "OFObject.h"
 
-@class OFEnumerator;
-@class OFArray;
+#ifndef DOXYGEN
+@class OFEnumerator OF_GENERIC(ObjectType);
+@class OFArray OF_GENERIC(ObjectType);
+#endif
 
 /*!
  * @protocol OFEnumerating OFEnumerator.h ObjFW/OFEnumerator.h
@@ -39,20 +41,27 @@
  *
  * @brief A class which provides methods to enumerate through collections.
  */
+#ifdef OF_HAVE_GENERICS
+@interface OFEnumerator <ObjectType>: OFObject
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
 @interface OFEnumerator: OFObject
+#endif
 /*!
  * @brief Returns the next object.
  *
  * @return The next object
  */
-- (id)nextObject;
+- (ObjectType)nextObject;
 
 /*!
  * @brief Returns an array of all remaining objects in the collection.
  *
  * @return An array of all remaining objects in the collection
  */
-- (OFArray*)allObjects;
+- (OFArray OF_GENERIC(ObjectType)*)allObjects;
 
 /*!
  * @brief Resets the enumerator, so the next call to nextObject returns the
@@ -60,6 +69,9 @@
  */
 - (void)reset;
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
 
 /*
  * This needs to be exactly like this because it's hardcoded in the compiler.

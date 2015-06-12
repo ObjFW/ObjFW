@@ -42,7 +42,15 @@ struct of_list_object_t {
  *
  * @brief A class which provides easy to use double-linked lists.
  */
-@interface OFList: OFObject <OFCopying, OFCollection, OFSerialization>
+#ifdef OF_HAVE_GENERICS
+@interface OFList <ObjectType>:
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
+@interface OFList:
+#endif
+    OFObject <OFCopying, OFCollection, OFSerialization>
 {
 	of_list_object_t *_firstListObject;
 	of_list_object_t *_lastListObject;
@@ -84,7 +92,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)appendObject: (id)object;
+- (of_list_object_t*)appendObject: (ObjectType)object;
 
 /*!
  * @brief Prepends an object to the list.
@@ -94,7 +102,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)prependObject: (id)object;
+- (of_list_object_t*)prependObject: (ObjectType)object;
 
 /*!
  * @brief Inserts an object before another list object.
@@ -106,7 +114,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (id)object
+- (of_list_object_t*)insertObject: (ObjectType)object
 		 beforeListObject: (of_list_object_t*)listObject;
 
 /*!
@@ -119,7 +127,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (id)object
+- (of_list_object_t*)insertObject: (ObjectType)object
 		  afterListObject: (of_list_object_t*)listObject;
 
 /*!
@@ -130,13 +138,29 @@ struct of_list_object_t {
 - (void)removeListObject: (of_list_object_t*)listObject;
 
 /*!
+ * @brief Checks whether the list contains an object equal to the specified
+ *	  object.
+ *
+ * @param object The object which is checked for being in the list
+ * @return A boolean whether the list contains the specified object
+ */
+- (bool)containsObject: (ObjectType)object;
+
+/*!
  * @brief Checks whether the list contains an object with the specified address.
  *
  * @param object The object which is checked for being in the list
  * @return A boolean whether the list contains an object with the specified
- *	   address.
+ *	   address
  */
-- (bool)containsObjectIdenticalTo: (id)object;
+- (bool)containsObjectIdenticalTo: (ObjectType)object;
+
+/*!
+ * @brief Returns an OFEnumerator to enumerate through all objects of the list.
+ *
+ * @returns An OFEnumerator to enumerate through all objects of the list
+ */
+- (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
 
 /*!
  * @brief Returns the first object of the list or nil.
@@ -146,7 +170,7 @@ struct of_list_object_t {
  *
  * @return The first object of the list or nil
  */
-- (id)firstObject;
+- (ObjectType)firstObject;
 
 /*!
  * @brief Returns the last object of the list or nil.
@@ -156,13 +180,16 @@ struct of_list_object_t {
  *
  * @return The last object of the list or nil
  */
-- (id)lastObject;
+- (ObjectType)lastObject;
 
 /*!
  * @brief Removes all objects from the list.
  */
 - (void)removeAllObjects;
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
 
 @interface OFListEnumerator: OFEnumerator
 {

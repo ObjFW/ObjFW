@@ -30,8 +30,8 @@
 # include <windows.h>
 #endif
 
-@class OFArray;
-@class OFDictionary;
+@class OFArray OF_GENERIC(ObjectType);
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /*!
  * @class OFProcess OFProcess.h ObjFW/OFProcess.h
@@ -70,7 +70,7 @@
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)processWithProgram: (OFString*)program
-			 arguments: (OFArray*)arguments;
+			 arguments: (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Creates a new OFProcess with the specified program, program name and
@@ -85,7 +85,7 @@
  */
 + (instancetype)processWithProgram: (OFString*)program
 		       programName: (OFString*)programName
-			 arguments: (OFArray*)arguments;
+			 arguments: (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Creates a new OFProcess with the specified program, program name,
@@ -105,8 +105,9 @@
  */
 + (instancetype)processWithProgram: (OFString*)program
 		       programName: (OFString*)programName
-			 arguments: (OFArray*)arguments
-		       environment: (OFDictionary*)environment;
+			 arguments: (OFArray OF_GENERIC(OFString*)*)arguments
+		       environment: (OFDictionary OF_GENERIC(OFString*,
+					OFString*)*)environment;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
@@ -128,7 +129,7 @@
  * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program
-	arguments: (OFArray*)arguments;
+	arguments: (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -143,7 +144,7 @@
  */
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
-	arguments: (OFArray*)arguments;
+	arguments: (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -163,8 +164,8 @@
  */
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
-	arguments: (OFArray*)arguments
-      environment: (OFDictionary*)environment;
+	arguments: (OFArray OF_GENERIC(OFString*)*)arguments
+      environment: (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Closes the write direction of the process.

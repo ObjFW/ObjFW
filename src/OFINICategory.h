@@ -17,8 +17,10 @@
 #import "OFObject.h"
 
 @class OFString;
-@class OFArray;
-@class OFMutableArray;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+#endif
 
 /*!
  * @class OFINICategory OFINICategory.h ObjFW/OFINICategory.h
@@ -147,7 +149,7 @@
  * @return The array for the specified key, or an empty array if it does not
  *	   exist
  */
-- (OFArray*)arrayForKey: (OFString*)key;
+- (OFArray OF_GENERIC(OFString*)*)arrayForKey: (OFString*)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified string.
@@ -221,7 +223,7 @@
  * @param array The array of strings to which the multi-key should be set
  * @param key The multi-key for which the new values should be set
  */
-- (void)setArray: (OFArray*)array
+- (void)setArray: (OFArray OF_GENERIC(OFString*)*)array
 	  forKey: (OFString*)key;
 
 /*!

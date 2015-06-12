@@ -19,8 +19,11 @@
 #import "OFXMLAttribute.h"
 
 @class OFXMLParser;
-@class OFArray;
-@class OFMutableArray;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
 @class OFDataArray;
 @class OFStream;
 
@@ -58,7 +61,7 @@
   didStartElement: (OFString*)name
 	   prefix: (OFString*)prefix
 	namespace: (OFString*)ns
-       attributes: (OFArray*)attributes;
+       attributes: (OFArray OF_GENERIC(OFXMLAttribute*)*)attributes;
 
 /*!
  * @brief This callback is called when the XML parser found the end of a tag.
@@ -157,10 +160,13 @@
 	const char *_data;
 	OFDataArray *_buffer;
 	OFString *_name, *_prefix;
-	OFMutableArray *_namespaces, *_attributes;
+	OFMutableArray
+	    OF_GENERIC(OFMutableDictionary OF_GENERIC(OFString*, OFString*)*)
+	    *_namespaces;
+	OFMutableArray OF_GENERIC(OFXMLAttribute*) *_attributes;
 	OFString *_attributeName, *_attributePrefix;
 	char _delimiter;
-	OFMutableArray *_previous;
+	OFMutableArray OF_GENERIC(OFString*) *_previous;
 	size_t _level;
 	bool _acceptProlog;
 	size_t _lineNumber;

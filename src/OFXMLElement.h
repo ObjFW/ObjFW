@@ -17,10 +17,12 @@
 #import "OFXMLNode.h"
 
 @class OFString;
-@class OFArray;
 @class OFMutableString;
-@class OFMutableArray;
-@class OFMutableDictionary;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
 @class OFXMLAttribute;
 
 /*!
@@ -31,9 +33,9 @@
 @interface OFXMLElement: OFXMLNode
 {
 	OFString *_name, *_namespace, *_defaultNamespace;
-	OFMutableArray *_attributes;
-	OFMutableDictionary *_namespaces;
-	OFMutableArray *_children;
+	OFMutableArray OF_GENERIC(OFXMLAttribute*) *_attributes;
+	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *_namespaces;
+	OFMutableArray OF_GENERIC(OFXMLNode*) *_children;
 }
 
 #ifdef OF_HAVE_PROPERTIES
@@ -44,8 +46,8 @@
 @property (copy) OFString *namespace;
 # endif
 @property (copy) OFString *defaultNamespace;
-@property (readonly, copy) OFArray *attributes;
-@property (copy) OFArray *children;
+@property (readonly, copy) OFArray OF_GENERIC(OFXMLAttribute*) *attributes;
+@property (copy) OFArray OF_GENERIC(OFXMLNode*) *children;
 #endif
 
 /*!
@@ -229,21 +231,21 @@
  *
  * @return An OFArray with the attributes of the element
  */
-- (OFArray*)attributes;
+- (OFArray OF_GENERIC(OFXMLAttribute*)*)attributes;
 
 /*!
  * @brief Removes all children and adds the children from the specified array.
  *
  * @param children The new children to add
  */
-- (void)setChildren: (OFArray*)children;
+- (void)setChildren: (OFArray OF_GENERIC(OFXMLNode*)*)children;
 
 /*!
  * @brief Returns an array of OFXMLNodes with all children of the element.
  *
  * @return An array of OFXMLNodes with all children of the element
  */
-- (OFArray*)children;
+- (OFArray OF_GENERIC(OFXMLNode*)*)children;
 
 /*!
  * @brief Adds the specified attribute.
@@ -364,7 +366,7 @@
  * @param children An array of OFXMLNodes which are added as children
  * @param index The index where the child is added
  */
-- (void)insertChildren: (OFArray*)children
+- (void)insertChildren: (OFArray OF_GENERIC(OFXMLNode*)*)children
 	       atIndex: (size_t)index;
 
 /*!
@@ -405,14 +407,15 @@
  *
  * @return All children that are elements
  */
-- (OFArray*)elements;
+- (OFArray OF_GENERIC(OFXMLElement*)*)elements;
 
 /*!
  * @brief Returns all children that have the specified namespace.
  *
  * @return All children that have the specified namespace
  */
-- (OFArray*)elementsForNamespace: (OFString*)elementNS;
+- (OFArray OF_GENERIC(OFXMLElement*)*)elementsForNamespace:
+    (OFString*)elementNS;
 
 /*!
  * @brief Returns the first child element with the specified name.
@@ -428,7 +431,7 @@
  * @param elementName The name of the elements
  * @return The child elements with the specified name
  */
-- (OFArray*)elementsForName: (OFString*)elementName;
+- (OFArray OF_GENERIC(OFXMLElement*)*)elementsForName: (OFString*)elementName;
 
 /*!
  * @brief Returns the first child element with the specified name and namespace.
@@ -447,8 +450,8 @@
  * @param elementNS The namespace of the elements
  * @return The child elements with the specified name and namespace
  */
-- (OFArray*)elementsForName: (OFString*)elementName
-		  namespace: (OFString*)elementNS;
+- (OFArray OF_GENERIC(OFXMLElement*)*)elementsForName: (OFString*)elementName
+					    namespace: (OFString*)elementNS;
 @end
 
 #import "OFXMLElement+Serialization.h"

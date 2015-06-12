@@ -22,7 +22,7 @@
 #endif
 
 @class OFURL;
-@class OFDictionary;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
 @class OFString;
 
@@ -73,7 +73,7 @@ typedef struct {
 	OFURL *_URL;
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
-	OFDictionary *_headers;
+	OFDictionary OF_GENERIC(OFString*, OFString*) *_headers;
 	OFDataArray *_body;
 	OFString *_remoteAddress;
 }
@@ -82,7 +82,7 @@ typedef struct {
 @property (copy) OFURL *URL;
 @property of_http_request_method_t method;
 @property of_http_request_protocol_version_t protocolVersion;
-@property (copy) OFDictionary *headers;
+@property (copy) OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
 @property (retain) OFDataArray *body;
 @property (copy) OFString *remoteAddress;
 #endif
@@ -172,14 +172,14 @@ typedef struct {
  *
  * @param headers A dictionary with headers for the HTTP request
  */
-- (void)setHeaders: (OFDictionary*)headers;
+- (void)setHeaders: (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Returns a dictionary with headers for the HTTP request.
  *
  * @return A dictionary with headers for the HTTP request.
  */
-- (OFDictionary*)headers;
+- (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Sets the entity body of the HTTP request.

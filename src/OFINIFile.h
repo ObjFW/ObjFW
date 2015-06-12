@@ -18,7 +18,7 @@
 #import "OFString.h"
 #import "OFINICategory.h"
 
-@class OFMutableArray;
+@class OFMutableArray OF_GENERIC(ObjectType);
 
 /*!
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
@@ -27,7 +27,7 @@
  */
 @interface OFINIFile: OFObject
 {
-	OFMutableArray *_categories;
+	OFMutableArray OF_GENERIC(OFINICategory*) *_categories;
 }
 
 /*!

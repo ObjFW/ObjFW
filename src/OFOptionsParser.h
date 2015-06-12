@@ -25,7 +25,7 @@
 @interface OFOptionsParser: OFObject
 {
 	of_unichar_t *_options;
-	OFArray *_arguments;
+	OFArray OF_GENERIC(OFString*) *_arguments;
 	size_t _index, _subIndex;
 	of_unichar_t _lastOption;
 	OFString *_argument;
@@ -89,5 +89,5 @@
  *
  * @return The arguments following the last option
  */
-- (OFArray*)remainingArguments;
+- (OFArray OF_GENERIC(OFString*)*)remainingArguments;
 @end

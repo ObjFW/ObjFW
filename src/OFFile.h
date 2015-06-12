@@ -26,7 +26,7 @@
 
 #import "OFSeekableStream.h"
 
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
 
 #if defined(_WIN32)
@@ -139,7 +139,7 @@ typedef struct stat of_stat_t;
  * @param path The path to the directory whose items should be returned
  * @return An array of OFStrings with the items in the specified directory
  */
-+ (OFArray*)contentsOfDirectoryAtPath: (OFString*)path;
++ (OFArray OF_GENERIC(OFString*)*)contentsOfDirectoryAtPath: (OFString*)path;
 
 /*!
  * @brief Changes the current working directory.

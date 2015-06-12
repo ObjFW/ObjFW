@@ -25,7 +25,7 @@
 @class OFHTTPResponse;
 @class OFURL;
 @class OFTCPSocket;
-@class OFDictionary;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
 
 /*!
@@ -63,7 +63,7 @@
  *		  received
  */
 -      (void)client: (OFHTTPClient*)client
-  didReceiveHeaders: (OFDictionary*)headers
+  didReceiveHeaders: (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers
 	 statusCode: (int)statusCode
 	    request: (OFHTTPRequest*)request;
 

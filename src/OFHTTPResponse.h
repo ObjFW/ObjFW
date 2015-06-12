@@ -17,7 +17,7 @@
 #import "OFStream.h"
 #import "OFHTTPRequest.h"
 
-@class OFDictionary;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /*!
  * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
@@ -28,13 +28,13 @@
 {
 	of_http_request_protocol_version_t _protocolVersion;
 	short _statusCode;
-	OFDictionary *_headers;
+	OFDictionary OF_GENERIC(OFString*, OFString*) *_headers;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property of_http_request_protocol_version_t protocolVersion;
 @property short statusCode;
-@property (copy) OFDictionary *headers;
+@property (copy) OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
 #endif
 
 /*!
@@ -85,14 +85,14 @@
  *
  * @return The headers of the reply to the HTTP request
  */
-- (OFDictionary*)headers;
+- (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Returns the headers of the reply to the HTTP request.
  *
  * @param headers The headers of the reply to the HTTP request
  */
-- (void)setHeaders: (OFDictionary*)headers;
+- (void)setHeaders: (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Returns the reply as a string, trying to detect the encoding.

@@ -17,7 +17,7 @@
 #import "objfw-defs.h"
 
 @class OFString;
-@class OFDictionary;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @protocol OFTLSSocket;
 
 /*!

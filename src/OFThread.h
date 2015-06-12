@@ -24,7 +24,7 @@
 
 @class OFDate;
 @class OFRunLoop;
-@class OFMutableDictionary;
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_BLOCKS)
 /*!

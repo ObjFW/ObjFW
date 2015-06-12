@@ -17,10 +17,12 @@
 #import "OFObject.h"
 
 @class OFString;
-@class OFArray;
-@class OFDictionary;
-@class OFMutableArray;
-@class OFMutableDictionary;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
 
 #define OF_APPLICATION_DELEGATE(cls)					\
 	int								\
@@ -112,8 +114,8 @@
 @interface OFApplication: OFObject
 {
 	OFString *_programName;
-	OFArray *_arguments;
-	OFDictionary *_environment;
+	OFArray OF_GENERIC(OFString*) *_arguments;
+	OFDictionary OF_GENERIC(OFString*, OFString*) *_environment;
 	int *_argc;
 	char ***_argv;
 @public
@@ -128,8 +130,9 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy, nonatomic) OFString *programName;
-@property (readonly, copy, nonatomic) OFArray *arguments;
-@property (readonly, copy, nonatomic) OFDictionary *environment;
+@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
+@property (readonly, copy, nonatomic)
+    OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
 @property (assign) id <OFApplicationDelegate> delegate;
 #endif
 
@@ -152,14 +155,14 @@
  *
  * @return The arguments passed to the application
  */
-+ (OFArray*)arguments;
++ (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
-+ (OFDictionary*)environment;
++ (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Terminates the application with the EXIT_SUCCESS status.
@@ -194,14 +197,14 @@
  *
  * @return The arguments passed to the application
  */
-- (OFArray*)arguments;
+- (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
-- (OFDictionary*)environment;
+- (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Returns the delegate of the application.

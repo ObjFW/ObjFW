@@ -18,8 +18,8 @@
 
 #import "socket.h"
 
-@class OFMutableArray;
-@class OFMutableDictionary;
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
@@ -108,8 +108,10 @@
  */
 @interface OFKernelEventObserver: OFObject
 {
-	OFMutableArray *_readObjects;
-	OFMutableArray *_writeObjects;
+	OFMutableArray OF_GENERIC(id <OFReadyForReadingObserving>)
+	    *_readObjects;
+	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
+	    *_writeObjects;
 	OFMutableArray *_queue;
 	OFDataArray *_queueActions;
 	id <OFKernelEventObserverDelegate> _delegate;

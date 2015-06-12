@@ -17,8 +17,10 @@
 #import "OFObject.h"
 
 @class OFString;
-@class OFArray;
-@class OFMutableArray;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+#endif
 
 enum {
 	OF_PROPERTY_READONLY	=   0x01,
@@ -181,17 +183,18 @@ enum {
  */
 @interface OFIntrospection: OFObject
 {
-	OFMutableArray *_classMethods;
-	OFMutableArray *_instanceMethods;
-	OFMutableArray *_properties;
-	OFMutableArray *_instanceVariables;
+	OFMutableArray OF_GENERIC(OFMethod*) *_classMethods;
+	OFMutableArray OF_GENERIC(OFMethod*) *_instanceMethods;
+	OFMutableArray OF_GENERIC(OFProperty*) *_properties;
+	OFMutableArray OF_GENERIC(OFInstanceVariable*) *_instanceVariables;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFArray *classMethods;
-@property (readonly, copy) OFArray *instanceMethods;
-@property (readonly, copy) OFArray *properties;
-@property (readonly, copy) OFArray *instanceVariables;
+@property (readonly, copy) OFArray OF_GENERIC(OFMethod*) *classMethods;
+@property (readonly, copy) OFArray OF_GENERIC(OFMethod*) *instanceMethods;
+@property (readonly, copy) OFArray OF_GENERIC(OFProperty*) *properties;
+@property (readonly, copy)
+    OFArray OF_GENERIC(OFInstanceVariable*) *instanceVariables;
 #endif
 
 /*!
@@ -214,14 +217,14 @@ enum {
  *
  * @return An array of objects of class @ref OFMethod
  */
-- (OFArray*)classMethods;
+- (OFArray OF_GENERIC(OFMethod*)*)classMethods;
 
 /*!
  * @brief Returns the instance methods of the class.
  *
  * @return An array of objects of class @ref OFMethod
  */
-- (OFArray*)instanceMethods;
+- (OFArray OF_GENERIC(OFMethod*)*)instanceMethods;
 
 /*!
  * @brief Returns the properties of the class.
@@ -245,14 +248,14 @@ enum {
  *
  * @return An array of objects of class @ref OFProperty
  */
-- (OFArray*)properties;
+- (OFArray OF_GENERIC(OFProperty*)*)properties;
 
 /*!
  * @brief Returns the instance variables of the class.
  *
  * @return An array of objects of class @ref OFInstanceVariable
  */
-- (OFArray*)instanceVariables;
+- (OFArray OF_GENERIC(OFInstanceVariable*)*)instanceVariables;
 
 /* TODO: protocols */
 @end
