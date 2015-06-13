@@ -174,6 +174,12 @@
 # define OF_GENERIC(...)
 #endif
 
+#if __has_feature(objc_kindof)
+# define OF_KINDOF(cls) __kindof cls
+#else
+# define OF_KINDOF(cls) id
+#endif
+
 #if defined(__clang__) || __GCC_VERSION__ >= 405
 # define OF_UNREACHABLE __builtin_unreachable();
 #else
