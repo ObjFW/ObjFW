@@ -19,6 +19,8 @@
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 typedef struct of_list_object_t of_list_object_t;
 /*!
  * @struct of_list_object_t OFList.h ObjFW/OFList.h
@@ -59,8 +61,8 @@ struct of_list_object_t {
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) of_list_object_t *firstListObject;
-@property (readonly) of_list_object_t *lastListObject;
+@property (readonly, nullable) of_list_object_t *firstListObject;
+@property (readonly, nullable) of_list_object_t *lastListObject;
 #endif
 
 /*!
@@ -75,14 +77,14 @@ struct of_list_object_t {
  *
  * @return The first list object of the list
  */
-- (of_list_object_t*)firstListObject;
+- (nullable of_list_object_t*)firstListObject;
 
 /*!
  * @brief Returns the last list object of the list.
  *
  * @return The last list object of the list
  */
-- (of_list_object_t*)lastListObject;
+- (nullable of_list_object_t*)lastListObject;
 
 /*!
  * @brief Appends an object to the list.
@@ -144,7 +146,7 @@ struct of_list_object_t {
  * @param object The object which is checked for being in the list
  * @return A boolean whether the list contains the specified object
  */
-- (bool)containsObject: (ObjectType)object;
+- (bool)containsObject: (nullable ObjectType)object;
 
 /*!
  * @brief Checks whether the list contains an object with the specified address.
@@ -153,7 +155,7 @@ struct of_list_object_t {
  * @return A boolean whether the list contains an object with the specified
  *	   address
  */
-- (bool)containsObjectIdenticalTo: (ObjectType)object;
+- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through all objects of the list.
@@ -170,7 +172,7 @@ struct of_list_object_t {
  *
  * @return The first object of the list or nil
  */
-- (ObjectType)firstObject;
+- (nullable ObjectType)firstObject;
 
 /*!
  * @brief Returns the last object of the list or nil.
@@ -180,7 +182,7 @@ struct of_list_object_t {
  *
  * @return The last object of the list or nil
  */
-- (ObjectType)lastObject;
+- (nullable ObjectType)lastObject;
 
 /*!
  * @brief Removes all objects from the list.
@@ -202,3 +204,5 @@ struct of_list_object_t {
 -     initWithList: (OFList*)list
   mutationsPointer: (unsigned long*)mutationsPtr;
 @end
+
+OF_ASSUME_NONNULL_END

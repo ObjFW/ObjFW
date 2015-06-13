@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 @class OFArray OF_GENERIC(ObjectType);
 
@@ -129,7 +131,7 @@
  * @param path The path for which the string value should be returned
  * @return The string value of the specified path
  */
-- (OFString*)stringForPath: (OFString*)path;
+- (nullable OFString*)stringForPath: (OFString*)path;
 
 /*!
  * @brief Returns the string for the specified path, or the default value if
@@ -139,8 +141,8 @@
  * @param defaultValue The default value to return if the path does not exist
  * @return The string value of the specified path
  */
-- (OFString*)stringForPath: (OFString*)path
-	      defaultValue: (OFString*)defaultValue;
+- (nullable OFString*)stringForPath: (OFString*)path
+		       defaultValue: (nullable OFString*)defaultValue;
 
 /*!
  * @brief Returns the integer for the specified path, or the default value if
@@ -212,3 +214,5 @@
  */
 - (void)save;
 @end
+
+OF_ASSUME_NONNULL_END

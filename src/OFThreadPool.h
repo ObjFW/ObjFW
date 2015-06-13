@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -95,7 +97,7 @@ typedef void (^of_thread_pool_block_t)(void);
  */
 - (void)dispatchWithTarget: (id)target
 		  selector: (SEL)selector
-		    object: (id)object;
+		    object: (nullable id)object;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -118,3 +120,5 @@ typedef void (^of_thread_pool_block_t)(void);
  */
 - (size_t)size;
 @end
+
+OF_ASSUME_NONNULL_END

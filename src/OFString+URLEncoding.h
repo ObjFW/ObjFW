@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,3 +41,5 @@ extern int _OFString_URLEncoding_reference;
  */
 - (OFString*)stringByURLDecoding;
 @end
+
+OF_ASSUME_NONNULL_END

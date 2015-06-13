@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
@@ -108,7 +110,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFHTTPClientDelegate> delegate;
+@property (assign, nullable) id <OFHTTPClientDelegate> delegate;
 @property bool insecureRedirectsAllowed;
 #endif
 
@@ -124,14 +126,14 @@
  *
  * @param delegate The delegate of the HTTP request
  */
-- (void)setDelegate: (id <OFHTTPClientDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFHTTPClientDelegate>)delegate;
 
 /*!
  * @brief Returns the delegate of the HTTP reqeust.
  *
  * @return The delegate of the HTTP request
  */
-- (id <OFHTTPClientDelegate>)delegate;
+- (nullable id <OFHTTPClientDelegate>)delegate;
 
 /*!
  * @brief Sets whether redirects from HTTPS to HTTP are allowed.
@@ -174,3 +176,5 @@
 
 @interface OFObject (OFHTTPClientDelegate) <OFHTTPClientDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

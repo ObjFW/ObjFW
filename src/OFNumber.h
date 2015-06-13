@@ -28,6 +28,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 /*!
@@ -813,6 +815,8 @@ typedef enum {
  */
 - (double)doubleValue;
 @end
+
+OF_ASSUME_NONNULL_END
 
 #ifndef NSINTEGER_DEFINED
 /* Required for number literals to work */

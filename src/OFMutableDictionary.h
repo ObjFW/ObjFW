@@ -16,6 +16,8 @@
 
 #import "OFDictionary.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -26,7 +28,7 @@
  * @param object The object to replace
  * @return The object to replace the object with
  */
-typedef id (^of_dictionary_replace_block_t)(id key, id object);
+typedef __nonnull id (^of_dictionary_replace_block_t)(id key, id object);
 #endif
 
 /*!
@@ -105,3 +107,5 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object);
 # undef KeyType
 # undef ObjectType
 #endif
+
+OF_ASSUME_NONNULL_END

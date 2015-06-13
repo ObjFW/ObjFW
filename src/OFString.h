@@ -29,6 +29,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFConstantString;
@@ -1098,6 +1100,19 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern size_t of_string_utf8_encode(of_unichar_t, char*);
+extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
+extern size_t of_string_utf16_length(const of_char16_t*);
+extern size_t of_string_utf32_length(const of_char32_t*);
+#ifdef __cplusplus
+}
+#endif
+
+OF_ASSUME_NONNULL_END
+
 #import "OFConstantString.h"
 #import "OFMutableString.h"
 #import "OFString+Hashing.h"
@@ -1122,15 +1137,4 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @interface NSString: OFString
 @end
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern size_t of_string_utf8_encode(of_unichar_t, char*);
-extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
-extern size_t of_string_utf16_length(const of_char16_t*);
-extern size_t of_string_utf32_length(const of_char32_t*);
-#ifdef __cplusplus
-}
 #endif

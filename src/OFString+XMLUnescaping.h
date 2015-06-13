@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef __cplusplus
@@ -35,8 +37,8 @@ extern int _OFString_XMLUnescaping_reference;
  * @param entity The XML entity which is unknown
  * @return A replacement string for the unknown entity
  */
-typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
-    OFString *entity);
+typedef __nullable OFString* (^of_string_xml_unescaping_block_t)(
+    OFString *string, OFString *entity);
 #endif
 
 /*!
@@ -75,7 +77,7 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
  * @param delegate An OFXMLUnescapingDelegate as a handler for unknown entities
  */
 - (OFString*)stringByXMLUnescapingWithDelegate:
-    (id <OFStringXMLUnescapingDelegate>)delegate;
+    (nullable id <OFStringXMLUnescapingDelegate>)delegate;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -88,3 +90,5 @@ typedef OFString* (^of_string_xml_unescaping_block_t)(OFString *string,
     (of_string_xml_unescaping_block_t)block;
 #endif
 @end
+
+OF_ASSUME_NONNULL_END

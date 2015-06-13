@@ -16,6 +16,10 @@
 
 #import "OFStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFStream (OF_PRIVATE_CATEGORY)
 - (bool)OF_isWaitingForDelimiter;
 @end
+
+OF_ASSUME_NONNULL_END

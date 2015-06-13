@@ -16,6 +16,8 @@
 
 #import "OFZIPArchive.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFZIPArchiveEntry (OF_PRIVATE_CATEGORY)
 - (instancetype)OF_initWithStream: (OFStream*)stream;
 - (uint16_t)OF_generalPurposeBitFlag;
@@ -23,3 +25,5 @@
 - (uint16_t)OF_lastModifiedFileDate;
 - (uint64_t)OF_localFileHeaderOffset;
 @end
+
+OF_ASSUME_NONNULL_END

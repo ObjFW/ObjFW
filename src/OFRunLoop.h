@@ -19,6 +19,8 @@
 # import "OFTCPSocket.h"
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFSortedList OF_GENERIC(ObjectType);
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
@@ -82,3 +84,5 @@
  */
 - (void)stop;
 @end
+
+OF_ASSUME_NONNULL_END

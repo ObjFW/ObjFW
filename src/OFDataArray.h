@@ -18,6 +18,8 @@
 #import "OFSerialization.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 @class OFURL;
 
@@ -230,14 +232,14 @@
  *
  * @return The first item of the OFDataArray or NULL
  */
-- (void*)firstItem OF_RETURNS_INNER_POINTER;
+- (nullable void*)firstItem OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the last item of the OFDataArray.
  *
  * @return The last item of the OFDataArray or NULL
  */
-- (void*)lastItem OF_RETURNS_INNER_POINTER;
+- (nullable void*)lastItem OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Adds an item to the OFDataArray.
@@ -325,6 +327,8 @@
 - (void)writeToFile: (OFString*)path;
 #endif
 @end
+
+OF_ASSUME_NONNULL_END
 
 #import "OFDataArray+Hashing.h"
 #import "OFDataArray+MessagePackValue.h"

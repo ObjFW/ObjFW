@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -66,3 +68,5 @@ extern int _OFString_JSONValue_reference;
  */
 - (id)JSONValueWithDepthLimit: (size_t)depthLimit;
 @end
+
+OF_ASSUME_NONNULL_END

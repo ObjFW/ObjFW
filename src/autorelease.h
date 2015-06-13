@@ -14,6 +14,10 @@
  * file.
  */
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef __cplusplus
@@ -43,3 +47,5 @@ extern id _objc_rootAutorelease(id object);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFInflateStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInflate64Stream OFInflate64Stream.h ObjFW/OFInflate64Stream.h
  *
@@ -24,3 +26,5 @@
  */
 @interface OFInflate64Stream: OFInflateStream
 @end
+
+OF_ASSUME_NONNULL_END

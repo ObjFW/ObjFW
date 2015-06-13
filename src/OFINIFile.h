@@ -18,6 +18,8 @@
 #import "OFString.h"
 #import "OFINICategory.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMutableArray OF_GENERIC(ObjectType);
 
 /*!
@@ -101,3 +103,5 @@
 - (void)writeToFile: (OFString*)path
 	   encoding: (of_string_encoding_t)encoding;
 @end
+
+OF_ASSUME_NONNULL_END

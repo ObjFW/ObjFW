@@ -17,6 +17,8 @@
 #import "OFMutableString.h"
 #import "OFString_UTF8.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFMutableString_UTF8: OFMutableString
 {
 @public
@@ -24,3 +26,5 @@
 	struct of_string_utf8_ivars _storage;
 }
 @end
+
+OF_ASSUME_NONNULL_END

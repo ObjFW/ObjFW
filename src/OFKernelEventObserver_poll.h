@@ -16,6 +16,8 @@
 
 #import "OFKernelEventObserver.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDataArray;
 
 @interface OFKernelEventObserver_poll: OFKernelEventObserver
@@ -25,3 +27,5 @@
 	__unsafe_unretained id *_FDToObject;
 }
 @end
+
+OF_ASSUME_NONNULL_END

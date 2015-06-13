@@ -16,6 +16,8 @@
 
 #import "OFDataArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFBigDataArray OFBigDataArray.h ObjFW/OFBigDataArray.h
  *
@@ -30,3 +32,5 @@
 	size_t _size;
 }
 @end
+
+OF_ASSUME_NONNULL_END

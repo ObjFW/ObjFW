@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 #ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
@@ -133,7 +135,7 @@
 @property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
 @property (readonly, copy, nonatomic)
     OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
-@property (assign) id <OFApplicationDelegate> delegate;
+@property (assign, nullable) id <OFApplicationDelegate> delegate;
 #endif
 
 /*!
@@ -182,8 +184,8 @@
  * @param argc A pointer where a pointer to argc should be stored
  * @param argv A pointer where a pointer to argv should be stored
  */
-- (void)getArgumentCount: (int**)argc
-       andArgumentValues: (char***[])argv;
+- (void)getArgumentCount: (__nonnull int **__nonnull)argc
+       andArgumentValues: (__nonnull char **__nonnull *__nonnull[])argv;
 
 /*!
  * @brief Returns the name of the program (argv[0]).
@@ -211,14 +213,14 @@
  *
  * @return The delegate of the application
  */
-- (id <OFApplicationDelegate>)delegate;
+- (nullable id <OFApplicationDelegate>)delegate;
 
 /*!
  * @brief Sets the delegate of the application.
  *
  * @param delegate The delegate for the application
  */
-- (void)setDelegate: (id <OFApplicationDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFApplicationDelegate>)delegate;
 
 /*!
  * @brief Terminates the application.
@@ -239,7 +241,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_application_main(int*, char**[], Class);
+extern int of_application_main(__nonnull int*, __nonnull char **__nonnull[],
+    Class);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

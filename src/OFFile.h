@@ -26,6 +26,8 @@
 
 #import "OFSeekableStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
 
@@ -329,3 +331,5 @@ extern int of_lstat(OFString *path, of_stat_t *buffer);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

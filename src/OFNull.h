@@ -19,6 +19,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFNull OFNull.h ObjFW/OFNull.h
  *
@@ -33,3 +35,5 @@
  */
 + (OFNull*)null;
 @end
+
+OF_ASSUME_NONNULL_END

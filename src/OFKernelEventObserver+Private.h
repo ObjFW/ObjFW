@@ -16,11 +16,15 @@
 
 #import "OFKernelEventObserver.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFKernelEventObserver (OF_PRIVATE_CATEGORY)
 - (void)OF_addObjectForReading: (id)object;
 - (void)OF_addObjectForWriting: (id)object;
 - (void)OF_removeObjectForReading: (id)object;
 - (void)OF_removeObjectForWriting: (id)object;
-- (void)OF_processQueueAndStoreRemovedIn: (OFMutableArray*)removed;
+- (void)OF_processQueueAndStoreRemovedIn: (nullable OFMutableArray*)removed;
 - (void)OF_processReadBuffers;
 @end
+
+OF_ASSUME_NONNULL_END

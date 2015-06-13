@@ -18,6 +18,8 @@
 
 #import "socket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
@@ -127,7 +129,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFKernelEventObserverDelegate> delegate;
+@property (assign, nullable) id <OFKernelEventObserverDelegate> delegate;
 #endif
 
 /*!
@@ -142,14 +144,14 @@
  *
  * @return The delegate for the OFKernelEventObserver
  */
-- (id <OFKernelEventObserverDelegate>)delegate;
+- (nullable id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
  * @brief Sets the delegate for the OFKernelEventObserver.
  *
  * @param delegate The delegate for the OFKernelEventObserver
  */
-- (void)setDelegate: (id <OFKernelEventObserverDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
  * @brief Adds an object to observe for reading.
@@ -228,3 +230,5 @@
 @interface OFObject (OFKernelEventObserverDelegate)
     <OFKernelEventObserverDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

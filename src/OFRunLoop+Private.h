@@ -20,6 +20,8 @@
 # import "OFUDPSocket.h"
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFRunLoop (OF_PRIVATE_CATEGORY)
 + (void)OF_setMainRunLoop: (OFRunLoop*)runLoop;
 #ifdef OF_HAVE_SOCKETS
@@ -70,3 +72,5 @@
 #endif
 - (void)OF_removeTimer: (OFTimer*)timer;
 @end
+
+OF_ASSUME_NONNULL_END

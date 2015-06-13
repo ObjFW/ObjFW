@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 #ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
@@ -50,7 +52,7 @@ enum {
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) SEL selector;
 @property (readonly, copy) OFString *name;
-@property (readonly) const char *typeEncoding;
+@property (assign, readonly, nullable) const char *typeEncoding;
 #endif
 
 /*!
@@ -72,7 +74,7 @@ enum {
  *
  * @return The type encoding for the method
  */
-- (const char*)typeEncoding;
+- (nullable const char*)typeEncoding;
 @end
 
 /*!
@@ -90,7 +92,7 @@ enum {
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
 @property (readonly) unsigned attributes;
-@property (readonly, copy) OFString *getter, *setter;
+@property (copy, readonly, nullable) OFString *getter, *setter;
 #endif
 
 /*!
@@ -126,14 +128,14 @@ enum {
  *
  * @return The name of the getter
  */
-- (OFString*)getter;
+- (nullable OFString*)getter;
 
 /*!
  * @brief Returns the name of the setter.
  *
  * @return The name of the setter
  */
-- (OFString*)setter;
+- (nullable OFString*)setter;
 @end
 
 /*!
@@ -151,7 +153,7 @@ enum {
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
 @property (readonly) ptrdiff_t offset;
-@property (readonly) const char *typeEncoding;
+@property (assign, readonly, nullable) const char *typeEncoding;
 #endif
 
 /*!
@@ -173,7 +175,7 @@ enum {
  *
  * @return The type encoding for the instance variable
  */
-- (const char*)typeEncoding;
+- (nullable const char*)typeEncoding;
 @end
 
 /*!
@@ -259,3 +261,5 @@ enum {
 
 /* TODO: protocols */
 @end
+
+OF_ASSUME_NONNULL_END

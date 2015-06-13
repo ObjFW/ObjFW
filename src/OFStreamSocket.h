@@ -18,6 +18,8 @@
 
 #import "socket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFStreamSocket OFStreamSocket.h ObjFW/OFStreamSocket.h
  *
@@ -36,3 +38,5 @@
  */
 + (instancetype)socket;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -30,13 +30,15 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
 typedef void (^of_dictionary_enumeration_block_t)(id key, id object,
      bool *stop);
 typedef bool (^of_dictionary_filter_block_t)(id key, id object);
-typedef id (^of_dictionary_map_block_t)(id key, id object);
+typedef __nonnull id (^of_dictionary_map_block_t)(id key, id object);
 #endif
 
 /*!
@@ -105,9 +107,10 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @param count The number of objects in the arrays
  * @return A new autoreleased OFDictionary
  */
-+ (instancetype)dictionaryWithObjects: (ObjectType const*)objects
-			      forKeys: (KeyType const*)keys
-				count: (size_t)count;
++ (instancetype)
+    dictionaryWithObjects: (__nonnull ObjectType const *__nonnull)objects
+		  forKeys: (__nonnull KeyType const *__nonnull)keys
+		    count: (size_t)count;
 
 /*!
  * @brief Creates a new OFDictionary with the specified keys objects.
@@ -158,8 +161,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @param count The number of objects in the arrays
  * @return An initialized OFDictionary
  */
-- initWithObjects: (ObjectType const*)objects
-	  forKeys: (KeyType const*)keys
+- initWithObjects: (__nonnull ObjectType const *__nonnull)objects
+	  forKeys: (__nonnull KeyType const *__nonnull)keys
 	    count: (size_t)count;
 
 /*!
@@ -191,8 +194,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @param key The key whose object should be returned
  * @return The object for the given key or nil if the key was not found
  */
-- (ObjectType)objectForKey: (KeyType)key;
-- (ObjectType)objectForKeyedSubscript: (KeyType)key;
+- (nullable ObjectType)objectForKey: (KeyType)key;
+- (nullable ObjectType)objectForKeyedSubscript: (KeyType)key;
 
 /*!
  * @brief Checks whether the dictionary contains an object equal to the
@@ -201,7 +204,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object which is checked for being in the dictionary
  * @return A boolean whether the dictionary contains the specified object
  */
-- (bool)containsObject: (ObjectType)object;
+- (bool)containsObject: (nullable ObjectType)object;
 
 /*!
  * @brief Checks whether the dictionary contains an object with the specified
@@ -211,7 +214,7 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
  * @return A boolean whether the dictionary contains an object with the
  *	   specified address
  */
-- (bool)containsObjectIdenticalTo: (ObjectType)object;
+- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
 
 /*!
  * @brief Returns an array of all keys.
@@ -276,6 +279,8 @@ typedef id (^of_dictionary_map_block_t)(id key, id object);
 # undef KeyType
 # undef ObjectType
 #endif
+
+OF_ASSUME_NONNULL_END
 
 #import "OFMutableDictionary.h"
 

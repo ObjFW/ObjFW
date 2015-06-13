@@ -23,11 +23,9 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#ifdef OF_OBJFW_RUNTIME
-# import "runtime.h"
-#else
-# import <objc/objc.h>
-#endif
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 @class OFDataArray;
@@ -41,3 +39,5 @@ extern bool of_base64_decode(OFDataArray*, const char*, size_t);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

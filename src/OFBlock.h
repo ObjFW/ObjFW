@@ -18,6 +18,8 @@
 
 #import "block.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFBlock OFBlock.h ObjFW/OFBlock.h
  *
@@ -34,3 +36,5 @@
 
 @interface OFMallocBlock: OFBlock
 @end
+
+OF_ASSUME_NONNULL_END

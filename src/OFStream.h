@@ -29,6 +29,8 @@
 # import "OFKernelEventObserver.h"
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFStream;
@@ -46,18 +48,19 @@
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
-    size_t length, OFException *exception);
+    size_t length, __nullable OFException *exception);
 
 /*!
  * @brief A block which is called when a line was read from the stream.
  *
  * @param stream The stream on which a line was read
- * @param line The line which has been read
+ * @param line The line which has been read or nil when the end of stream
+ *	       occurred
  * @param exception An exception which occurred while reading or nil on success
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
-    OFString *line, OFException *exception);
+    __nullable OFString *line, __nullable OFException *exception);
 #endif
 
 /*!
@@ -202,10 +205,10 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		   `bool (OFStream *stream, void *buffer, size_t size,
  *		   OFException *exception)`.
  */
- - (void)asyncReadIntoBuffer: (void*)buffer
-		 exactLength: (size_t)length
-		      target: (id)target
-		    selector: (SEL)selector;
+- (void)asyncReadIntoBuffer: (void*)buffer
+		exactLength: (size_t)length
+		     target: (id)target
+		   selector: (SEL)selector;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
@@ -596,7 +599,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)readLine;
+- (nullable OFString*)readLine;
 
 /*!
  * @brief Reads with the specified encoding until a newline, \\0 or end of
@@ -606,7 +609,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 #ifdef OF_HAVE_SOCKETS
 /*!
@@ -691,7 +694,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the line is not
  *	   complete yet
  */
-- (OFString*)tryReadLine;
+- (nullable OFString*)tryReadLine;
 
 /*!
  * @brief Tries to read a line from the stream with the specified encoding (see
@@ -702,7 +705,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the line is not
  *	   complete yet
  */
-- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Reads until the specified string or \\0 is found or the end of stream
@@ -712,7 +715,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)readTillDelimiter: (OFString*)delimiter;
+- (nullable OFString*)readTillDelimiter: (OFString*)delimiter;
 
 /*!
  * @brief Reads until the specified string or \\0 is found or the end of stream
@@ -723,8 +726,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)readTillDelimiter: (OFString*)delimiter
-		      encoding: (of_string_encoding_t)encoding;
+- (nullable OFString*)readTillDelimiter: (OFString*)delimiter
+			       encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Tries to reads until the specified string or \\0 is found or the end
@@ -735,7 +738,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter;
+- (nullable OFString*)tryReadTillDelimiter: (OFString*)delimiter;
 
 /*!
  * @brief Tries to read until the specified string or \\0 is found or the end
@@ -747,8 +750,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or nil if the end of the
  *	   stream has been reached.
  */
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
-			 encoding: (of_string_encoding_t)encoding;
+- (nullable OFString*)tryReadTillDelimiter: (OFString*)delimiter
+				  encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Returns a boolen whether writes are buffered.
@@ -1164,3 +1167,5 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  */
 - (bool)lowlevelIsAtEndOfStream;
 @end
+
+OF_ASSUME_NONNULL_END

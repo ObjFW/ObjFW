@@ -18,6 +18,8 @@
 
 #import "socket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFTCPSocket;
@@ -32,7 +34,7 @@
  *		    nil on success
  */
 typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
-    OFException *exception);
+    __nullable OFException *exception);
 
 /*!
  * @brief A block which is called when the socket accepted a connection.
@@ -45,7 +47,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
  *	   connection
  */
 typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
-    OFTCPSocket *acceptedSocket, OFException *exception);
+    OFTCPSocket *acceptedSocket, __nullable OFException *exception);
 #endif
 
 /*!
@@ -67,7 +69,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, getter=isListening) bool listening;
-@property (copy) OFString *SOCKS5Host;
+@property (copy, nullable) OFString *SOCKS5Host;
 @property uint16_t SOCKS5Port;
 @property (getter=isKeepAliveEnabled) bool keepAliveEnabled;
 @property (getter=isTCPNoDelayEnabled) bool TCPNoDelayEnabled;
@@ -79,14 +81,14 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param SOCKS5Host The host to use as a SOCKS5 proxy when creating a new
  *		     socket
  */
-+ (void)setSOCKS5Host: (OFString*)SOCKS5Host;
++ (void)setSOCKS5Host: (nullable OFString*)SOCKS5Host;
 
 /*!
  * @brief Returns the host to use as a SOCKS5 proxy when creating a new socket
  *
  * @return The host to use as a SOCKS5 proxy when creating a new socket
  */
-+ (OFString*)SOCKS5Host;
++ (nullable OFString*)SOCKS5Host;
 
 /*!
  * @brief Sets the global SOCKS5 proxy port to use when creating a new socket
@@ -107,14 +109,14 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *
  * @param host The host to use as a SOCKS5 proxy
  */
-- (void)setSOCKS5Host: (OFString*)host;
+- (void)setSOCKS5Host: (nullable OFString*)host;
 
 /*!
  * @brief Returns the host to use as a SOCKS5 proxy.
  *
  * @return The host to use as a SOCKS5 proxy
  */
-- (OFString*)SOCKS5Host;
+- (nullable OFString*)SOCKS5Host;
 
 /*!
  * @brief Sets the port to use on the SOCKS5 proxy.
@@ -234,7 +236,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *
  * @return The remote address as a string
  */
-- (OFString*)remoteAddress;
+- (nullable OFString*)remoteAddress;
 
 /*!
  * @brief Returns whether the socket is a listening socket.
@@ -275,7 +277,9 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern Class of_tls_socket_class;
+extern __nullable Class of_tls_socket_class;
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

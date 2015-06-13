@@ -19,6 +19,8 @@
 
 #import "threading.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFMutex OFMutex.h ObjFW/OFMutex.h
  *
@@ -38,3 +40,5 @@
  */
 + (instancetype)mutex;
 @end
+
+OF_ASSUME_NONNULL_END

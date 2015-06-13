@@ -30,6 +30,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFString;
@@ -67,7 +69,7 @@ typedef bool (^of_array_filter_block_t)(id object, size_t index);
  * @param index The index of the object to map
  * @return The object to map to
  */
-typedef id (^of_array_map_block_t)(id object, size_t index);
+typedef __nonnull id (^of_array_map_block_t)(id object, size_t index);
 
 /*!
  * @brief A block for folding an OFArray.
@@ -76,7 +78,7 @@ typedef id (^of_array_map_block_t)(id object, size_t index);
  * @param right The object that should be added to the left object
  * @return The left and right side folded into one object
  */
-typedef id (^of_array_fold_block_t)(id left, id right);
+typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
 #endif
 
 /*!
@@ -137,7 +139,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @param count The length of the C array
  * @return A new autoreleased OFArray
  */
-+ (instancetype)arrayWithObjects: (ObjectType const*)objects
++ (instancetype)arrayWithObjects: (__nonnull ObjectType const *__nonnull)objects
 			   count: (size_t)count;
 
 /*!
@@ -182,7 +184,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @param count The length of the C array
  * @return An initialized OFArray
  */
-- initWithObjects: (ObjectType const*)objects
+- initWithObjects: (__nonnull ObjectType const *__nonnull)objects
 	    count: (size_t)count;
 
 /*!
@@ -203,7 +205,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @param buffer The buffer to copy the objects to
  * @param range The range to copy
  */
-- (void)getObjects: (__unsafe_unretained ObjectType*)buffer
+- (void)getObjects: (__unsafe_unretained __nonnull ObjectType *__nonnull)buffer
 	   inRange: (of_range_t)range;
 
 /*!
@@ -211,7 +213,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * @return The objects of the array as a C array
  */
-- (ObjectType const*)objects;
+- (__nonnull ObjectType const *__nonnull)objects;
 
 /*!
  * @brief Returns the index of the first object that is equivalent to the
@@ -240,7 +242,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @param object The object which is checked for being in the array
  * @return A boolean whether the array contains the specified object
  */
-- (bool)containsObject: (ObjectType)object;
+- (bool)containsObject: (nullable ObjectType)object;
 
 /*!
  * @brief Checks whether the array contains an object with the specified
@@ -250,7 +252,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  * @return A boolean whether the array contains an object with the specified
  *	   address
  */
-- (bool)containsObjectIdenticalTo: (ObjectType)object;
+- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
 
 /*!
  * @brief Returns the first object of the array or nil.
@@ -260,7 +262,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * @return The first object of the array or nil
  */
-- (ObjectType)firstObject;
+- (nullable ObjectType)firstObject;
 
 /*!
  * @brief Returns the last object of the array or nil.
@@ -270,7 +272,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *
  * @return The last object of the array or nil
  */
-- (ObjectType)lastObject;
+- (nullable ObjectType)lastObject;
 
 /*!
  * @brief Returns the objects in the specified range as a new OFArray.
@@ -346,7 +348,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *	      array
  */
 - (void)makeObjectsPerformSelector: (SEL)selector
-			withObject: (id)object;
+			withObject: (nullable id)object;
 
 /*!
  * @brief Returns a sorted copy of the array.
@@ -450,7 +452,7 @@ typedef id (^of_array_fold_block_t)(id left, id right);
  *		all objects except the first
  * @return The array folded to a single object
  */
-- (id)foldUsingBlock: (of_array_fold_block_t)block;
+- (nullable id)foldUsingBlock: (of_array_fold_block_t)block;
 #endif
 @end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
@@ -467,8 +469,10 @@ typedef id (^of_array_fold_block_t)(id left, id right);
 }
 
 - initWithArray: (OFArray*)data
-   mutationsPtr: (unsigned long*)mutationsPtr;
+   mutationsPtr: (__nullable unsigned long*)mutationsPtr;
 @end
+
+OF_ASSUME_NONNULL_END
 
 #import "OFMutableArray.h"
 

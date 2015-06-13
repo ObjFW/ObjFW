@@ -16,6 +16,8 @@
 
 #import "OFXMLNode.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFXMLComment OFXMLComment.h ObjFW/OFXMLComment.h
  *
@@ -43,3 +45,5 @@
  */
 - initWithString: (OFString*)string;
 @end
+
+OF_ASSUME_NONNULL_END

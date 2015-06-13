@@ -16,6 +16,8 @@
 
 #import "OFSet.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFMutableSet OFSet.h ObjFW/OFSet.h
  *
@@ -73,3 +75,5 @@
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+
+OF_ASSUME_NONNULL_END

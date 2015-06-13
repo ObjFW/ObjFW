@@ -67,6 +67,10 @@ struct sockaddr_storage {
 };
 #endif
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 #ifndef _WIN32
 typedef int of_socket_t;
 #else
@@ -85,3 +89,5 @@ extern int of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFString_UTF8: OFString
 {
 @public
@@ -48,3 +50,5 @@ extern size_t of_string_utf8_get_position(const char*, size_t, size_t);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

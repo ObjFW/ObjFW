@@ -16,5 +16,9 @@
 
 #import "OFArray_subarray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFArray_adjacentSubarray: OFArray_subarray
 @end
+
+OF_ASSUME_NONNULL_END

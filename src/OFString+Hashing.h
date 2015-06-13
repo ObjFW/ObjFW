@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,3 +76,5 @@ extern int _OFString_Hashing_reference;
  */
 - (OFString*)SHA512Hash;
 @end
+
+OF_ASSUME_NONNULL_END

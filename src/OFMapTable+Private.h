@@ -16,6 +16,8 @@
 
 #import "OFMapTable.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFMapTable_EnumeratorWrapper: OFEnumerator
 {
 	OFMapTableEnumerator *_enumerator;
@@ -25,3 +27,5 @@
 - initWithEnumerator: (OFMapTableEnumerator*)enumerator
 	      object: (id)object;
 @end
+
+OF_ASSUME_NONNULL_END

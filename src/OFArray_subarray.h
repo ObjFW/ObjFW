@@ -16,6 +16,8 @@
 
 #import "OFArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFArray_subarray: OFArray
 {
 	OFArray *_array;
@@ -27,3 +29,5 @@
 - initWithArray: (OFArray*)array
 	  range: (of_range_t)range;
 @end
+
+OF_ASSUME_NONNULL_END

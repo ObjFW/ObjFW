@@ -16,6 +16,8 @@
 
 #import "OFDictionary.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMapTable;
 
 @interface OFMutableDictionary_hashtable: OFMutableDictionary
@@ -23,3 +25,5 @@
 	OFMapTable *_mapTable;
 }
 @end
+
+OF_ASSUME_NONNULL_END

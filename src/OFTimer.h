@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFTimer;
@@ -89,7 +91,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
-					object: (id)object
+					object: (nullable id)object
 				       repeats: (bool)repeats;
 
 /*!
@@ -108,8 +110,8 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
-					object: (id)object1
-					object: (id)object2
+					object: (nullable id)object1
+					object: (nullable id)object2
 				       repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
@@ -153,7 +155,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 + (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
-			       object: (id)object
+			       object: (nullable id)object
 			      repeats: (bool)repeats;
 
 /*!
@@ -172,8 +174,8 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 + (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			       target: (id)target
 			     selector: (SEL)selector
-			       object: (id)object1
-			       object: (id)object2
+			       object: (nullable id)object1
+			       object: (nullable id)object2
 			      repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
@@ -225,7 +227,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
-	    object: (id)object
+	    object: (nullable id)object
 	   repeats: (bool)repeats;
 
 /*!
@@ -248,8 +250,8 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
-	    object: (id)object1
-	    object: (id)object2
+	    object: (nullable id)object1
+	    object: (nullable id)object2
 	   repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
@@ -323,3 +325,5 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 - (void)waitUntilDone;
 #endif
 @end
+
+OF_ASSUME_NONNULL_END

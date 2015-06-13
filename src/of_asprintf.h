@@ -23,11 +23,18 @@
 
 #include <stdarg.h>
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_asprintf(char**, const char*, ...);
-extern int of_vasprintf(char**, const char*, va_list);
+extern int of_asprintf(__nullable char **__nonnull, const __nonnull char*, ...);
+extern int of_vasprintf(__nullable char **__nonnull, const __nonnull char*,
+    va_list);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFSHA384Or512Hash.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFSHA512Hash OFSHA512Hash.h ObjFW/OFSHA512Hash.h
  *
@@ -23,3 +25,5 @@
  */
 @interface OFSHA512Hash: OFSHA384Or512Hash
 @end
+
+OF_ASSUME_NONNULL_END

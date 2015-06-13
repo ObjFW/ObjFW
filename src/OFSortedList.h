@@ -16,6 +16,8 @@
 
 #import "OFList.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFSortedList OFSortedList.h ObjFW/OFSortedList.h
  *
@@ -43,3 +45,5 @@
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+
+OF_ASSUME_NONNULL_END

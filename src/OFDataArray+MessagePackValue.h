@@ -16,6 +16,8 @@
 
 #import "OFDataArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,3 +34,5 @@ extern int _OFDataArray_MessagePackValue_reference;
  */
 - (id)messagePackValue;
 @end
+
+OF_ASSUME_NONNULL_END

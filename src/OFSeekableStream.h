@@ -25,6 +25,8 @@
 
 #import "OFStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #if defined(_WIN32)
 typedef __int64 of_offset_t;
 #elif defined(__ANDROID__)
@@ -84,3 +86,5 @@ typedef off_t of_offset_t;
 - (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
 			     whence: (int)whence;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDataArray;
 
 @interface OFArray_adjacent: OFArray
@@ -23,3 +25,5 @@
 	OFDataArray *_array;
 }
 @end
+
+OF_ASSUME_NONNULL_END

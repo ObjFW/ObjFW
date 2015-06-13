@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,3 +34,5 @@ extern int _OFString_Serialization_reference;
  */
 - (id)objectByDeserializing;
 @end
+
+OF_ASSUME_NONNULL_END

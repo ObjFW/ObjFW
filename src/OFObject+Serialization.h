@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 
 #ifdef __cplusplus
@@ -34,3 +36,5 @@ extern int _OFObject_Serialization_reference;
  */
 - (OFString*)stringBySerializing;
 @end
+
+OF_ASSUME_NONNULL_END

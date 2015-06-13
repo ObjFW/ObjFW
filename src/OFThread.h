@@ -20,6 +20,8 @@
 # import "threading.h"
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFDate;
@@ -32,7 +34,7 @@
  *
  * @return The object which should be returned when the thread is joined
  */
-typedef id (^of_thread_block_t)(void);
+typedef __nullable id (^of_thread_block_t)(void);
 #endif
 
 /*!
@@ -156,7 +158,7 @@ typedef id (^of_thread_block_t)(void);
  *
  * @param object The object which the terminated thread will return
  */
-+ (void)terminateWithObject: (id)object OF_NO_RETURN;
++ (void)terminateWithObject: (nullable id)object OF_NO_RETURN;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
@@ -176,7 +178,7 @@ typedef id (^of_thread_block_t)(void);
  *
  * @return The object the join method should return when called for this thread
  */
-- (id)main;
+- (nullable id)main;
 
 /*!
  * @brief This routine is exectued when the thread's main method has finished
@@ -210,14 +212,14 @@ typedef id (^of_thread_block_t)(void);
  *
  * @return The name of the thread or nik if none has been set
  */
-- (OFString*)name;
+- (nullable OFString*)name;
 
 /*!
  * @brief Sets the name for the thread.
  *
  * @param name The name for the thread
  */
-- (void)setName: (OFString*)name;
+- (void)setName: (nullable OFString*)name;
 
 /*!
  * @brief Returns the priority of the thread.
@@ -253,3 +255,5 @@ typedef id (^of_thread_block_t)(void);
 - (void)setStackSize: (size_t)stackSize;
 #endif
 @end
+
+OF_ASSUME_NONNULL_END

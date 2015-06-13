@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFXMLNode OFXMLNode.h ObjFW/OFXMLNode.h
  *
@@ -97,3 +99,5 @@
 - (OFString*)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level;
 @end
+
+OF_ASSUME_NONNULL_END

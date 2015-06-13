@@ -16,6 +16,8 @@
 
 #import "OFKernelEventObserver.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDataArray;
 @class OFMutableArray OF_GENERIC(ObjectType);
 
@@ -26,3 +28,5 @@
 	OFMutableArray *_removedArray;
 }
 @end
+
+OF_ASSUME_NONNULL_END

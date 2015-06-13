@@ -135,7 +135,7 @@ const char *str = "Hello!";
 	    OFOutOfRangeException, [array[0] itemAtIndex: [array[0] count]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
-	    OFOutOfRangeException, [array[0] addItems: NULL
+	    OFOutOfRangeException, [array[0] addItems: data[0]
 						count: SIZE_MAX])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",

@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 
 /*!
@@ -35,12 +37,12 @@
 @property (copy) OFString *scheme;
 @property (copy) OFString *host;
 @property uint16_t port;
-@property (copy) OFString *user;
-@property (copy) OFString *password;
+@property (copy, nullable) OFString *user;
+@property (copy, nullable) OFString *password;
 @property (copy) OFString *path;
-@property (copy) OFString *parameters;
-@property (copy) OFString *query;
-@property (copy) OFString *fragment;
+@property (copy, nullable) OFString *parameters;
+@property (copy, nullable) OFString *query;
+@property (copy, nullable) OFString *fragment;
 #endif
 
 /*!
@@ -134,28 +136,28 @@
  *
  * @return The user part of the URL
  */
-- (OFString*)user;
+- (nullable OFString*)user;
 
 /*!
  * @brief Set the user part of the URL.
  *
  * @param user The user part of the URL to set
  */
-- (void)setUser: (OFString*)user;
+- (void)setUser: (nullable OFString*)user;
 
 /*!
  * @brief Returns the password part of the URL.
  *
  * @return The password part of the URL
  */
-- (OFString*)password;
+- (nullable OFString*)password;
 
 /*!
  * @brief Set the password part of the URL.
  *
  * @param password The password part of the URL to set
  */
-- (void)setPassword: (OFString*)password;
+- (void)setPassword: (nullable OFString*)password;
 
 /*!
  * @brief Returns the path part of the URL.
@@ -176,42 +178,42 @@
  *
  * @return The parameters part of the URL
  */
-- (OFString*)parameters;
+- (nullable OFString*)parameters;
 
 /*!
  * @brief Set the parameters part of the URL.
  *
  * @param parameters The parameters part of the URL to set
  */
-- (void)setParameters: (OFString*)parameters;
+- (void)setParameters: (nullable OFString*)parameters;
 
 /*!
  * @brief Returns the query part of the URL.
  *
  * @return The query part of the URL
  */
-- (OFString*)query;
+- (nullable OFString*)query;
 
 /*!
  * @brief Set the query part of the URL.
  *
  * @param query The query part of the URL to set
  */
-- (void)setQuery: (OFString*)query;
+- (void)setQuery: (nullable OFString*)query;
 
 /*!
  * @brief Returns the fragment part of the URL.
  *
  * @return The fragment part of the URL
  */
-- (OFString*)fragment;
+- (nullable OFString*)fragment;
 
 /*!
  * @brief Set the fragment part of the URL.
  *
  * @param fragment The fragment part of the URL to set
  */
-- (void)setFragment: (OFString*)fragment;
+- (void)setFragment: (nullable OFString*)fragment;
 
 /*!
  * @brief Returns the URL as a string.
@@ -220,3 +222,5 @@
  */
 - (OFString*)string;
 @end
+
+OF_ASSUME_NONNULL_END

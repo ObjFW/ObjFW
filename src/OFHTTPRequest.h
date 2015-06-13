@@ -21,6 +21,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFURL;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
@@ -82,9 +84,10 @@ typedef struct {
 @property (copy) OFURL *URL;
 @property of_http_request_method_t method;
 @property of_http_request_protocol_version_t protocolVersion;
-@property (copy) OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
-@property (retain) OFDataArray *body;
-@property (copy) OFString *remoteAddress;
+@property (copy, nullable) OFDictionary OF_GENERIC(OFString*, OFString*)
+    *headers;
+@property (retain, nullable) OFDataArray *body;
+@property (copy, nullable) OFString *remoteAddress;
 #endif
 
 /*!
@@ -172,21 +175,22 @@ typedef struct {
  *
  * @param headers A dictionary with headers for the HTTP request
  */
-- (void)setHeaders: (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
+- (void)setHeaders:
+    (nullable OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Returns a dictionary with headers for the HTTP request.
  *
  * @return A dictionary with headers for the HTTP request.
  */
-- (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
+- (nullable OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Sets the entity body of the HTTP request.
  *
  * @param body The entity body of the HTTP request
  */
-- (void)setBody: (OFDataArray*)body;
+- (void)setBody: (nullable OFDataArray*)body;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -194,7 +198,7 @@ typedef struct {
  *
  * @param string The string to use for the entity body
  */
-- (void)setBodyFromString: (OFString*)string;
+- (void)setBodyFromString: (nullable OFString*)string;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -203,7 +207,7 @@ typedef struct {
  * @param string The string to use for the entity body
  * @param encoding The encoding to encode the string with
  */
-- (void)setBodyFromString: (OFString*)string
+- (void)setBodyFromString: (nullable OFString*)string
 		 encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -211,21 +215,21 @@ typedef struct {
  *
  * @return The entity body of the HTTP request
  */
-- (OFDataArray*)body;
+- (nullable OFDataArray*)body;
 
 /*!
  * @brief Sets the remote address from which the request originates.
  *
  * @param remoteAddress The remote address from which the request originates
  */
-- (void)setRemoteAddress: (OFString*)remoteAddress;
+- (void)setRemoteAddress: (nullable OFString*)remoteAddress;
 
 /*!
  * @brief Returns the remote address from which the request originates.
  *
  * @return The remote address from which the request originates
  */
-- (OFString*)remoteAddress;
+- (nullable OFString*)remoteAddress;
 @end
 
 #ifdef __cplusplus
@@ -237,7 +241,7 @@ extern "C" {
  * @param method The request method which should be described as a C string
  * @return A C string describing the specified request method
  */
-extern const char* of_http_request_method_to_string(
+extern __nullable const char* of_http_request_method_to_string(
     of_http_request_method_t method);
 
 /*!
@@ -251,3 +255,5 @@ extern of_http_request_method_t of_http_request_method_from_string(
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

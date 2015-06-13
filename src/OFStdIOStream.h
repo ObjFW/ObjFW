@@ -16,6 +16,8 @@
 
 #import "OFStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
@@ -39,19 +41,21 @@ extern "C" {
 /*!
  * @brief The standard input as an OFStream.
  */
-extern OFStdIOStream *of_stdin;
+extern __nullable OFStdIOStream *of_stdin;
 
 /*!
  * @brief The standard output as an OFStream.
  */
-extern OFStdIOStream *of_stdout;
+extern __nullable OFStdIOStream *of_stdout;
 
 /*!
  * @brief The standard error as an OFStream.
  */
-extern OFStdIOStream *of_stderr;
+extern __nullable OFStdIOStream *of_stderr;
 
 extern void of_log(OFConstantString*, ...);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

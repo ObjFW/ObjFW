@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFSystemInfo OFSystemInfo.h ObjFW/OFSystemInfo.h
  *
@@ -82,7 +84,7 @@
  *
  * @return The vendor of the CPU
  */
-+ (OFString*)CPUVendor;
++ (nullable OFString*)CPUVendor;
 
 /*!
  * @brief Returns whether the CPU supports MMX.
@@ -147,3 +149,5 @@
  */
 + (bool)supportsAVX2;
 @end
+
+OF_ASSUME_NONNULL_END

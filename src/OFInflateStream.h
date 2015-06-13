@@ -16,6 +16,8 @@
 
 #import "OFStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #define OF_INFLATE_STREAM_BUFFER_SIZE 4096
 
 /*!
@@ -97,3 +99,5 @@
  */
 - initWithStream: (OFStream*)stream;
 @end
+
+OF_ASSUME_NONNULL_END

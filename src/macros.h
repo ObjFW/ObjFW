@@ -174,6 +174,18 @@
 # define OF_GENERIC(...)
 #endif
 
+#if __has_feature(nullability)
+# define OF_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
+# define OF_ASSUME_NONNULL_END _Pragma("clang assume_nonnull end")
+#else
+# define OF_ASSUME_NONNULL_BEGIN
+# define OF_ASSUME_NONNULL_END
+# define __nonnull
+# define __nullable
+# define nonnull
+# define nullable
+#endif
+
 #if __has_feature(objc_kindof)
 # define OF_KINDOF(cls) __kindof cls
 #else

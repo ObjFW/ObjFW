@@ -16,6 +16,8 @@
 
 @class OFString;
 
+OF_ASSUME_NONNULL_BEGIN
+
 enum {
 	OF_JSON_REPRESENTATION_PRETTY	  = 0x01,
 	OF_JSON_REPRESENTATION_JSON5	  = 0x02,
@@ -55,3 +57,5 @@ enum {
  */
 - (OFString*)JSONRepresentationWithOptions: (int)options;
 @end
+
+OF_ASSUME_NONNULL_END

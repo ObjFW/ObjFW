@@ -16,6 +16,8 @@
 
 #import "OFCountedSet.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMapTable;
 
 @interface OFCountedSet_hashtable: OFCountedSet
@@ -23,3 +25,5 @@
 	OFMapTable *_mapTable;
 }
 @end
+
+OF_ASSUME_NONNULL_END

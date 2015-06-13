@@ -27,6 +27,8 @@
 #import "OFCollection.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFArray OF_GENERIC(ObjectType);
@@ -105,7 +107,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return A new, autoreleased set with the specified objects
  */
-+ (instancetype)setWithObjects: (ObjectType const*)objects
++ (instancetype)setWithObjects: (__nonnull ObjectType const *__nonnull)objects
 			 count: (size_t)count;
 
 /*!
@@ -139,7 +141,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return An initialized set with the specified objects
  */
-- initWithObjects: (ObjectType const*)objects
+- initWithObjects: (__nonnull ObjectType const *__nonnull)objects
 	    count: (size_t)count;
 
 /*!
@@ -217,7 +219,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param object The object which is checked for being in the set
  * @return A boolean whether the set contains the specified object
  */
-- (bool)containsObject: (ObjectType)object;
+- (bool)containsObject: (nullable ObjectType)object;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through all objects of the set.
@@ -248,5 +250,7 @@ typedef bool (^of_set_filter_block_t)(id object);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+
+OF_ASSUME_NONNULL_END
 
 #import "OFMutableSet.h"

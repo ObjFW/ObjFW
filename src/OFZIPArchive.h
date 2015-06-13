@@ -18,6 +18,8 @@
 #import "OFString.h"
 #import "OFZIPArchiveEntry.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
@@ -114,3 +116,5 @@
  */
 - (OFStream*)streamForReadingFile: (OFString*)path;
 @end
+
+OF_ASSUME_NONNULL_END

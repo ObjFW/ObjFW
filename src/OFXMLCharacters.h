@@ -16,6 +16,8 @@
 
 #import "OFXMLNode.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFXMLCharacters OFXMLCharacters.h ObjFW/OFXMLCharacters.h
  *
@@ -43,3 +45,5 @@
  */
 - initWithString: (OFString*)string;
 @end
+
+OF_ASSUME_NONNULL_END

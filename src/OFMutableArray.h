@@ -16,6 +16,8 @@
 
 #import "OFArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -26,7 +28,7 @@
  * @param index The index of the object to replace
  * @return The object to replace the object with
  */
-typedef id (^of_array_replace_block_t)(id object, size_t index);
+typedef __nonnull id (^of_array_replace_block_t)(id object, size_t index);
 #endif
 
 /*!
@@ -210,3 +212,5 @@ typedef id (^of_array_replace_block_t)(id object, size_t index);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+
+OF_ASSUME_NONNULL_END

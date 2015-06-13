@@ -16,6 +16,8 @@
 
 #import "OFDictionary.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMapTable;
 @class OFMapTableEnumerator;
 
@@ -26,3 +28,5 @@
 
 - initWithCapacity: (size_t)capacity;
 @end
+
+OF_ASSUME_NONNULL_END

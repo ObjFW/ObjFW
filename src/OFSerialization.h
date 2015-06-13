@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #define OF_SERIALIZATION_NS @"https://webkeks.org/objfw/serialization"
 
 @class OFXMLElement;
@@ -41,3 +43,5 @@
  */
 - (OFXMLElement*)XMLElementBySerializing;
 @end
+
+OF_ASSUME_NONNULL_END

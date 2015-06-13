@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFAutoreleasePool OFAutoreleasePool.h ObjFW/OFAutoreleasePool.h
  *
@@ -76,3 +78,5 @@ extern id of_autorelease(id);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

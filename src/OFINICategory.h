@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 #ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
@@ -61,7 +63,7 @@
  * @param key The key for which the string value should be returned
  * @return The string value for the specified key, or nil if it does not exist
  */
-- (OFString*)stringForKey: (OFString*)key;
+- (nullable OFString*)stringForKey: (OFString*)key;
 
 /*!
  * @brief Returns the string value for the specified key or the specified
@@ -75,8 +77,8 @@
  * @return The string value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (OFString*)stringForKey: (OFString*)key
-	     defaultValue: (OFString*)defaultValue;
+- (nullable OFString*)stringForKey: (OFString*)key
+		      defaultValue: (nullable OFString*)defaultValue;
 
 /*!
  * @brief Returns the integer value for the specified key or the specified
@@ -236,3 +238,5 @@
  */
 - (void)removeValueForKey: (OFString*)key;
 @end
+
+OF_ASSUME_NONNULL_END

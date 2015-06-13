@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @protocol OFHash OFHash.h ObjFW/OFHash.h
  *
@@ -82,3 +84,5 @@
  */
 - (void)reset;
 @end
+
+OF_ASSUME_NONNULL_END

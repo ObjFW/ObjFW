@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifndef DOXYGEN
 @class OFEnumerator OF_GENERIC(ObjectType);
 @class OFArray OF_GENERIC(ObjectType);
@@ -50,11 +52,11 @@
 @interface OFEnumerator: OFObject
 #endif
 /*!
- * @brief Returns the next object.
+ * @brief Returns the next object or nil if there is none left.
  *
- * @return The next object
+ * @return The next object or nil if there is none left
  */
-- (ObjectType)nextObject;
+- (nullable ObjectType)nextObject;
 
 /*!
  * @brief Returns an array of all remaining objects in the collection.
@@ -90,9 +92,9 @@ typedef struct {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
 	/// Pointer to a C array of objects to return
-	__unsafe_unretained id *itemsPtr;
+	__unsafe_unretained __nullable id *__nullable itemsPtr;
 	/// Arbitrary state information to detect mutations
-	unsigned long *mutationsPtr;
+	__nullable unsigned long *mutationsPtr;
 	/// Additional arbitrary state information
 	unsigned long extra[5];
 } of_fast_enumeration_state_t;
@@ -118,6 +120,9 @@ typedef struct {
  *	   finished.
  */
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (__unsafe_unretained id*)objects
+			   objects: (__unsafe_unretained __nonnull id
+					*__nonnull)objects
 			     count: (int)count;
 @end
+
+OF_ASSUME_NONNULL_END

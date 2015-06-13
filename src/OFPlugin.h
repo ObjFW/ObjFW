@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 
 #ifndef _WIN32
@@ -41,5 +43,7 @@ typedef HMODULE of_plugin_handle_t;
  * @param path Path to the plugin file. The suffix is appended automatically.
  * @return The loaded plugin
  */
-+ (id)pluginFromFile: (OFString*)path;
++ (OF_KINDOF(OFPlugin*))pluginFromFile: (OFString*)path;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFDataArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 
 #ifdef __cplusplus
@@ -81,3 +83,5 @@ extern int _OFDataArray_Hashing_reference;
  */
 - (OFString*)SHA512Hash;
 @end
+
+OF_ASSUME_NONNULL_END
