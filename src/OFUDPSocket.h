@@ -49,7 +49,7 @@ typedef struct {
  */
 typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
     uint16_t port, of_udp_socket_address_t address,
-    __nullable OFException *exception);
+    OFException *OF_NULLABLE exception);
 
 /*!
  * @brief A block which is called when a packet has been received.
@@ -64,7 +64,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
  */
 typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
     void *buffer, size_t length, of_udp_socket_address_t sender,
-    __nullable OFException *exception);
+    OFException *OF_NULLABLE exception);
 #endif
 
 /*!
@@ -154,8 +154,8 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *	       host / port pair will be written to it.
  * @param address The address for which the host and port should be retrieved
  */
-+ (void)getHost: (__nonnull OFString *__autoreleasing *__nullable)host
-	andPort: (__nullable uint16_t*)port
++ (void)getHost: (OFString *__autoreleasing OF_NONNULL *OF_NULLABLE)host
+	andPort: (uint16_t *OF_NULLABLE)port
      forAddress: (of_udp_socket_address_t*)address;
 
 /*!

@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    nil on success
  */
 typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
-    __nullable OFException *exception);
+    OFException *OF_NULLABLE exception);
 
 /*!
  * @brief A block which is called when the socket accepted a connection.
@@ -47,7 +47,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
  *	   connection
  */
 typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
-    OFTCPSocket *acceptedSocket, __nullable OFException *exception);
+    OFTCPSocket *acceptedSocket, OFException *OF_NULLABLE exception);
 #endif
 
 /*!
@@ -277,7 +277,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern __nullable Class of_tls_socket_class;
+extern Class OF_NULLABLE of_tls_socket_class;
 #ifdef __cplusplus
 }
 #endif

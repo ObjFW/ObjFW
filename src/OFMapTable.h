@@ -28,14 +28,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef struct {
 	/// The function to retain keys / values
-	__nonnull void* (*__nullable retain)(__nonnull void *value);
+	void *OF_NONNULL (*OF_NULLABLE retain)(void *value);
 	/// The function to release keys / values
-	void (*__nullable release)(__nonnull void *value);
+	void (*OF_NULLABLE release)(void *value);
 	/// The function to hash keys
-	uint32_t (*__nullable hash)(__nonnull void *value);
+	uint32_t (*OF_NULLABLE hash)(void *value);
 	/// The function to compare keys / values
-	bool (*__nullable equal)(__nonnull void *value1,
-	    __nonnull void *value2);
+	bool (*OF_NULLABLE equal)(void *value1, void *value2);
 } of_map_table_functions_t;
 
 #ifdef OF_HAVE_BLOCKS
@@ -57,7 +56,8 @@ typedef void (^of_map_table_enumeration_block_t)(void *key, void *value,
  * @param value The value to replace
  * @return The value to replace the value with
  */
-typedef __nonnull void* (^of_map_table_replace_block_t)(void *key, void *value);
+typedef void *OF_NONNULL (^of_map_table_replace_block_t)(
+    void *key, void *value);
 #endif
 
 @class OFMapTableEnumerator;

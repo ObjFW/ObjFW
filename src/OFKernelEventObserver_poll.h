@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFDataArray *_FDs;
 	size_t _maxFD;
-	__unsafe_unretained id *_FDToObject;
+	id __unsafe_unretained *_FDToObject;
 }
 @end
 

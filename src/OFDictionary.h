@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 typedef void (^of_dictionary_enumeration_block_t)(id key, id object,
      bool *stop);
 typedef bool (^of_dictionary_filter_block_t)(id key, id object);
-typedef __nonnull id (^of_dictionary_map_block_t)(id key, id object);
+typedef id OF_NONNULL (^of_dictionary_map_block_t)(id key, id object);
 #endif
 
 /*!
@@ -108,8 +108,8 @@ typedef __nonnull id (^of_dictionary_map_block_t)(id key, id object);
  * @return A new autoreleased OFDictionary
  */
 + (instancetype)
-    dictionaryWithObjects: (__nonnull ObjectType const *__nonnull)objects
-		  forKeys: (__nonnull KeyType const *__nonnull)keys
+    dictionaryWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
+		  forKeys: (KeyType const OF_NONNULL *OF_NONNULL)keys
 		    count: (size_t)count;
 
 /*!
@@ -161,8 +161,8 @@ typedef __nonnull id (^of_dictionary_map_block_t)(id key, id object);
  * @param count The number of objects in the arrays
  * @return An initialized OFDictionary
  */
-- initWithObjects: (__nonnull ObjectType const *__nonnull)objects
-	  forKeys: (__nonnull KeyType const *__nonnull)keys
+- initWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
+	  forKeys: (KeyType const OF_NONNULL *OF_NONNULL)keys
 	    count: (size_t)count;
 
 /*!

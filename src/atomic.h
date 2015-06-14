@@ -31,7 +31,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 static OF_INLINE int
-of_atomic_int_add(volatile __nonnull int *p, int i)
+of_atomic_int_add(volatile int *OF_NONNULL p, int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
@@ -80,7 +80,7 @@ of_atomic_int_add(volatile __nonnull int *p, int i)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_add(volatile __nonnull int32_t *p, int32_t i)
+of_atomic_int32_add(volatile int32_t *OF_NONNULL p, int32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p += i);
@@ -116,7 +116,7 @@ of_atomic_int32_add(volatile __nonnull int32_t *p, int32_t i)
 }
 
 static OF_INLINE void*
-of_atomic_ptr_add(__nullable void *volatile *__nonnull p, intptr_t i)
+of_atomic_ptr_add(void *volatile OF_NULLABLE *OF_NONNULL p, intptr_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p += i);
@@ -166,7 +166,7 @@ of_atomic_ptr_add(__nullable void *volatile *__nonnull p, intptr_t i)
 }
 
 static OF_INLINE int
-of_atomic_int_sub(volatile __nonnull int *p, int i)
+of_atomic_int_sub(volatile int *OF_NONNULL p, int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
@@ -217,7 +217,7 @@ of_atomic_int_sub(volatile __nonnull int *p, int i)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_sub(volatile __nonnull int32_t *p, int32_t i)
+of_atomic_int32_sub(volatile int32_t *OF_NONNULL p, int32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p -= i);
@@ -254,7 +254,7 @@ of_atomic_int32_sub(volatile __nonnull int32_t *p, int32_t i)
 }
 
 static OF_INLINE void*
-of_atomic_ptr_sub(__nullable void *volatile *__nonnull p, intptr_t i)
+of_atomic_ptr_sub(void *volatile OF_NULLABLE *OF_NONNULL p, intptr_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*(char* volatile*)p -= i);
@@ -306,7 +306,7 @@ of_atomic_ptr_sub(__nullable void *volatile *__nonnull p, intptr_t i)
 }
 
 static OF_INLINE int
-of_atomic_int_inc(volatile __nonnull int *p)
+of_atomic_int_inc(volatile int *OF_NONNULL p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return ++*p;
@@ -363,7 +363,7 @@ of_atomic_int_inc(volatile __nonnull int *p)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_inc(volatile __nonnull int32_t *p)
+of_atomic_int32_inc(volatile int32_t *OF_NONNULL p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return ++*p;
@@ -405,7 +405,7 @@ of_atomic_int32_inc(volatile __nonnull int32_t *p)
 }
 
 static OF_INLINE int
-of_atomic_int_dec(volatile __nonnull int *p)
+of_atomic_int_dec(volatile int *OF_NONNULL p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return --*p;
@@ -462,7 +462,7 @@ of_atomic_int_dec(volatile __nonnull int *p)
 }
 
 static OF_INLINE int32_t
-of_atomic_int32_dec(volatile __nonnull int32_t *p)
+of_atomic_int32_dec(volatile int32_t *OF_NONNULL p)
 {
 #if !defined(OF_HAVE_THREADS)
 	return --*p;
@@ -504,7 +504,7 @@ of_atomic_int32_dec(volatile __nonnull int32_t *p)
 }
 
 static OF_INLINE unsigned int
-of_atomic_int_or(volatile __nonnull unsigned int *p, unsigned int i)
+of_atomic_int_or(volatile unsigned int *OF_NONNULL p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
@@ -563,7 +563,7 @@ of_atomic_int_or(volatile __nonnull unsigned int *p, unsigned int i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_int32_or(volatile __nonnull uint32_t *p, uint32_t i)
+of_atomic_int32_or(volatile uint32_t *OF_NONNULL p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p |= i);
@@ -604,7 +604,7 @@ of_atomic_int32_or(volatile __nonnull uint32_t *p, uint32_t i)
 }
 
 static OF_INLINE unsigned int
-of_atomic_int_and(volatile __nonnull unsigned int *p, unsigned int i)
+of_atomic_int_and(volatile unsigned int *OF_NONNULL p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
@@ -663,7 +663,7 @@ of_atomic_int_and(volatile __nonnull unsigned int *p, unsigned int i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_int32_and(volatile __nonnull uint32_t *p, uint32_t i)
+of_atomic_int32_and(volatile uint32_t *OF_NONNULL p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p &= i);
@@ -704,7 +704,7 @@ of_atomic_int32_and(volatile __nonnull uint32_t *p, uint32_t i)
 }
 
 static OF_INLINE unsigned int
-of_atomic_int_xor(volatile __nonnull unsigned int *p, unsigned int i)
+of_atomic_int_xor(volatile unsigned int *OF_NONNULL p, unsigned int i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
@@ -763,7 +763,7 @@ of_atomic_int_xor(volatile __nonnull unsigned int *p, unsigned int i)
 }
 
 static OF_INLINE uint32_t
-of_atomic_int32_xor(volatile __nonnull uint32_t *p, uint32_t i)
+of_atomic_int32_xor(volatile uint32_t *OF_NONNULL p, uint32_t i)
 {
 #if !defined(OF_HAVE_THREADS)
 	return (*p ^= i);
@@ -804,7 +804,7 @@ of_atomic_int32_xor(volatile __nonnull uint32_t *p, uint32_t i)
 }
 
 static OF_INLINE bool
-of_atomic_int_cmpswap(volatile __nonnull int *p, int o, int n)
+of_atomic_int_cmpswap(volatile int *OF_NONNULL p, int o, int n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
@@ -859,7 +859,7 @@ of_atomic_int_cmpswap(volatile __nonnull int *p, int o, int n)
 }
 
 static OF_INLINE bool
-of_atomic_int32_cmpswap(volatile __nonnull int32_t *p, int32_t o, int32_t n)
+of_atomic_int32_cmpswap(volatile int32_t *OF_NONNULL p, int32_t o, int32_t n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {
@@ -914,8 +914,8 @@ of_atomic_int32_cmpswap(volatile __nonnull int32_t *p, int32_t o, int32_t n)
 }
 
 static OF_INLINE bool
-of_atomic_ptr_cmpswap(__nullable void *volatile *__nonnull p,
-    __nullable void *o, __nullable void *n)
+of_atomic_ptr_cmpswap(void *volatile OF_NULLABLE *OF_NONNULL p,
+    void *OF_NULLABLE o, void *OF_NULLABLE n)
 {
 #if !defined(OF_HAVE_THREADS)
 	if (*p == o) {

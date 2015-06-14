@@ -91,7 +91,7 @@ struct objc_selector {
 };
 
 struct objc_super {
-	OBJC_UNSAFE_UNRETAINED id self;
+	id OBJC_UNSAFE_UNRETAINED self;
 	Class cls;
 };
 
@@ -184,7 +184,7 @@ typedef struct {
 struct objc_protocol_list {
 	struct objc_protocol_list *next;
 	long count;
-	OBJC_UNSAFE_UNRETAINED Protocol *list[1];
+	Protocol *OBJC_UNSAFE_UNRETAINED list[1];
 };
 
 #ifdef __cplusplus

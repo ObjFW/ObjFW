@@ -107,7 +107,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return A new, autoreleased set with the specified objects
  */
-+ (instancetype)setWithObjects: (__nonnull ObjectType const *__nonnull)objects
++ (instancetype)setWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
 			 count: (size_t)count;
 
 /*!
@@ -141,7 +141,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return An initialized set with the specified objects
  */
-- initWithObjects: (__nonnull ObjectType const *__nonnull)objects
+- initWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
 	    count: (size_t)count;
 
 /*!

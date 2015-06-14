@@ -49,7 +49,7 @@ extern "C" {
  * @return An array of results. The list is terminated by NULL and should be
  *	   free'd after use.
  */
-extern __nullable of_resolver_result_t **__nonnull
+extern of_resolver_result_t *OF_NULLABLE *OF_NONNULL
     of_resolve_host(OFString *host, uint16_t port, int protocol);
 
 /*!
@@ -64,8 +64,8 @@ extern __nullable of_resolver_result_t **__nonnull
  */
 extern void of_address_to_string_and_port(struct sockaddr *address,
     socklen_t addressLength,
-    __nonnull OFString *__autoreleasing *__nullable host,
-    __nullable uint16_t *port);
+    OFString *__autoreleasing OF_NONNULL *OF_NULLABLE host,
+    uint16_t *OF_NULLABLE port);
 
 /*!
  * @brief Frees the results returned by @ref of_resolve_host.
@@ -73,7 +73,7 @@ extern void of_address_to_string_and_port(struct sockaddr *address,
  * @param results The results returned by @ref of_resolve_host
  */
 extern void of_resolver_free(
-    __nullable of_resolver_result_t **__nonnull results);
+    of_resolver_result_t *OF_NULLABLE *OF_NONNULL results);
 #ifdef __cplusplus
 }
 #endif

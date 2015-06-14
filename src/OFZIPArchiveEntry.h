@@ -235,7 +235,7 @@ extern OFString* of_zip_archive_entry_version_to_string(uint16_t version);
  * @param size A pointer to an uint16_t that should be set to the size
  */
 extern void of_zip_archive_entry_extra_field_find(OFDataArray *extraField,
-    uint16_t tag, __nonnull uint8_t **__nonnull data, __nonnull uint16_t *size);
+    uint16_t tag, uint8_t *OF_NONNULL *OF_NONNULL data, uint16_t *size);
 #ifdef __cplusplus
 }
 #endif

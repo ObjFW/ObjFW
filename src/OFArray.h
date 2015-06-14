@@ -69,7 +69,7 @@ typedef bool (^of_array_filter_block_t)(id object, size_t index);
  * @param index The index of the object to map
  * @return The object to map to
  */
-typedef __nonnull id (^of_array_map_block_t)(id object, size_t index);
+typedef id OF_NONNULL (^of_array_map_block_t)(id object, size_t index);
 
 /*!
  * @brief A block for folding an OFArray.
@@ -78,7 +78,7 @@ typedef __nonnull id (^of_array_map_block_t)(id object, size_t index);
  * @param right The object that should be added to the left object
  * @return The left and right side folded into one object
  */
-typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
+typedef id OF_NULLABLE (^of_array_fold_block_t)(id OF_NULLABLE left, id right);
 #endif
 
 /*!
@@ -139,8 +139,9 @@ typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
  * @param count The length of the C array
  * @return A new autoreleased OFArray
  */
-+ (instancetype)arrayWithObjects: (__nonnull ObjectType const *__nonnull)objects
-			   count: (size_t)count;
++ (instancetype)
+    arrayWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
+	       count: (size_t)count;
 
 /*!
  * @brief Initializes an OFArray with the specified object.
@@ -184,7 +185,7 @@ typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
  * @param count The length of the C array
  * @return An initialized OFArray
  */
-- initWithObjects: (__nonnull ObjectType const *__nonnull)objects
+- initWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
 	    count: (size_t)count;
 
 /*!
@@ -205,7 +206,8 @@ typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
  * @param buffer The buffer to copy the objects to
  * @param range The range to copy
  */
-- (void)getObjects: (__unsafe_unretained __nonnull ObjectType *__nonnull)buffer
+- (void)getObjects: (ObjectType __unsafe_unretained OF_NONNULL *OF_NONNULL)
+			buffer
 	   inRange: (of_range_t)range;
 
 /*!
@@ -213,7 +215,7 @@ typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
  *
  * @return The objects of the array as a C array
  */
-- (__nonnull ObjectType const *__nonnull)objects;
+- (ObjectType const __unsafe_unretained OF_NONNULL *OF_NONNULL)objects;
 
 /*!
  * @brief Returns the index of the first object that is equivalent to the
@@ -469,7 +471,7 @@ typedef __nullable id (^of_array_fold_block_t)(__nullable id left, id right);
 }
 
 - initWithArray: (OFArray*)data
-   mutationsPtr: (__nullable unsigned long*)mutationsPtr;
+   mutationsPtr: (unsigned long *OF_NULLABLE)mutationsPtr;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -241,7 +241,7 @@ extern "C" {
  * @param method The request method which should be described as a C string
  * @return A C string describing the specified request method
  */
-extern __nullable const char* of_http_request_method_to_string(
+extern const char *OF_NULLABLE of_http_request_method_to_string(
     of_http_request_method_t method);
 
 /*!
