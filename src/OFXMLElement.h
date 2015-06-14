@@ -257,6 +257,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)setDefaultNamespace: (nullable OFString*)defaultNamespace;
 
 /*!
+ * @brief Returns the default namespace for the element to be used if there is
+ *	  no parent.
+ *
+ * @return The default namespace for the element to be used if there is no
+ *	   parent.
+ */
+- (nullable OFString*)defaultNamespace;
+
+/*!
  * @brief Returns an OFArray with the attributes of the element.
  *
  * @return An OFArray with the attributes of the element

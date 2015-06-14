@@ -97,7 +97,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param host The host to listen on
  */
-- (void)setHost: (nullable OFString*)host;
+- (void)setHost: (OFString*)host;
 
 /*!
  * @brief Returns the host on which the HTTP server will listen.
