@@ -139,10 +139,18 @@ help(OFStream *stream, bool full, int status)
 			   forKey: name];
 }
 
-- (void)setBody: (OFString*)body
+- (void)setBody: (OFString*)file
 {
 	[_body release];
-	_body = [[OFDataArray alloc] initWithContentsOfFile: body];
+
+	if ([file isEqual: @"-"]) {
+		void *pool = objc_autoreleasePoolPush();
+
+		_body = [[of_stdin readDataArrayTillEndOfStream] retain];
+
+		objc_autoreleasePoolPop(pool);
+	} else
+		_body = [[OFDataArray alloc] initWithContentsOfFile: file];
 }
 
 - (void)setMethod: (OFString*)method
