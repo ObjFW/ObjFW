@@ -113,7 +113,8 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, nullable) id <OFXMLElementBuilderDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign)
+    id <OFXMLElementBuilderDelegate> delegate;
 #endif
 
 /*!

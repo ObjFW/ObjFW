@@ -84,10 +84,10 @@ typedef struct {
 @property (copy) OFURL *URL;
 @property of_http_request_method_t method;
 @property of_http_request_protocol_version_t protocolVersion;
-@property (copy, nullable) OFDictionary OF_GENERIC(OFString*, OFString*)
-    *headers;
-@property (retain, nullable) OFDataArray *body;
-@property (copy, nullable) OFString *remoteAddress;
+@property OF_NULLABLE_PROPERTY (copy)
+    OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
+@property OF_NULLABLE_PROPERTY (retain) OFDataArray *body;
+@property OF_NULLABLE_PROPERTY (copy) OFString *remoteAddress;
 #endif
 
 /*!

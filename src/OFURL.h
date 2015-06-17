@@ -34,15 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (copy) OFString *scheme;
-@property (copy) OFString *host;
+@property (copy) OFString *scheme, *host;
 @property uint16_t port;
-@property (copy, nullable) OFString *user;
-@property (copy, nullable) OFString *password;
+@property OF_NULLABLE_PROPERTY (copy) OFString *user, *password;
 @property (copy) OFString *path;
-@property (copy, nullable) OFString *parameters;
-@property (copy, nullable) OFString *query;
-@property (copy, nullable) OFString *fragment;
+@property OF_NULLABLE_PROPERTY (copy) OFString *parameters, *query, *fragment;
 #endif
 
 /*!

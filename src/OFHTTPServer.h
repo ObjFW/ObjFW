@@ -79,10 +79,10 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (copy, nullable) OFString *host;
+@property OF_NULLABLE_PROPERTY (copy) OFString *host;
 @property uint16_t port;
-@property (assign, nullable) id <OFHTTPServerDelegate> delegate;
-@property (copy, nullable) OFString *name;
+@property OF_NULLABLE_PROPERTY (assign) id <OFHTTPServerDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (copy) OFString *name;
 #endif
 
 /*!

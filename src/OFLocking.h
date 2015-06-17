@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFLocking <OFObject>
 #ifdef OF_HAVE_PROPERTIES
-@property (copy, nullable) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy) OFString *name;
 #endif
 
 /*!

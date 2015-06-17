@@ -110,7 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, nullable) id <OFHTTPClientDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign) id <OFHTTPClientDelegate> delegate;
 @property bool insecureRedirectsAllowed;
 #endif
 

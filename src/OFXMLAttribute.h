@@ -34,9 +34,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
 # ifdef __cplusplus
-@property (readonly, copy, getter=namespace, nullable) OFString *namespace_;
+@property OF_NULLABLE_PROPERTY (readonly, copy, getter=namespace)
+    OFString *namespace_;
 # else
-@property (readonly, copy, nullable) OFString *namespace;
+@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *namespace;
 # endif
 #endif
 

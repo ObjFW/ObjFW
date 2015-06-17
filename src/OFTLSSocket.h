@@ -57,9 +57,10 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFTLSSocket
 #ifdef OF_HAVE_PROPERTIES
-@property (assign, nullable) id <OFTLSSocketDelegate> delegate;
-@property (copy, nullable) OFString *certificateFile, *privateKeyFile;
-@property (assign, nullable) const char *privateKeyPassphrase;
+@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocketDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (copy)
+    OFString *certificateFile, *privateKeyFile;
+@property OF_NULLABLE_PROPERTY (assign) const char *privateKeyPassphrase;
 @property (getter=isCertificateVerificationEnabled)
     bool certificateVerificationEnabled;
 #endif

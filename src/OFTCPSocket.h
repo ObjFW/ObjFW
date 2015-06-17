@@ -69,7 +69,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, getter=isListening) bool listening;
-@property (copy, nullable) OFString *SOCKS5Host;
+@property OF_NULLABLE_PROPERTY (copy) OFString *SOCKS5Host;
 @property uint16_t SOCKS5Port;
 @property (getter=isKeepAliveEnabled) bool keepAliveEnabled;
 @property (getter=isTCPNoDelayEnabled) bool TCPNoDelayEnabled;

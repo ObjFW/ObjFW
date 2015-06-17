@@ -52,7 +52,7 @@ enum {
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly) SEL selector;
 @property (readonly, copy) OFString *name;
-@property (assign, readonly, nullable) const char *typeEncoding;
+@property OF_NULLABLE_PROPERTY (assign, readonly) const char *typeEncoding;
 #endif
 
 /*!
@@ -92,7 +92,7 @@ enum {
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
 @property (readonly) unsigned attributes;
-@property (copy, readonly, nullable) OFString *getter, *setter;
+@property OF_NULLABLE_PROPERTY (copy, readonly) OFString *getter, *setter;
 #endif
 
 /*!
@@ -153,7 +153,7 @@ enum {
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
 @property (readonly) ptrdiff_t offset;
-@property (assign, readonly, nullable) const char *typeEncoding;
+@property OF_NULLABLE_PROPERTY (assign, readonly) const char *typeEncoding;
 #endif
 
 /*!

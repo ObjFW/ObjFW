@@ -179,11 +179,13 @@
 # define OF_ASSUME_NONNULL_END _Pragma("clang assume_nonnull end")
 # define OF_NONNULL __nonnull
 # define OF_NULLABLE __nullable
+# define OF_NULLABLE_PROPERTY(...) (__VA_ARGS__, nullable)
 #else
 # define OF_ASSUME_NONNULL_BEGIN
 # define OF_ASSUME_NONNULL_END
 # define OF_NONNULL
 # define OF_NULLABLE
+# define OF_NULLABLE_PROPERTY
 # define nonnull
 # define nullable
 #endif

@@ -61,8 +61,8 @@ struct of_list_object_t {
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly, nullable) of_list_object_t *firstListObject;
-@property (readonly, nullable) of_list_object_t *lastListObject;
+@property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *firstListObject;
+@property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *lastListObject;
 #endif
 
 /*!

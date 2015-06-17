@@ -36,8 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_PROPERTIES
 @property of_http_request_protocol_version_t protocolVersion;
 @property short statusCode;
-@property (copy, nullable) OFDictionary OF_GENERIC(OFString*, OFString*)
-    *headers;
+@property OF_NULLABLE_PROPERTY (copy)
+    OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
 #endif
 
 /*!

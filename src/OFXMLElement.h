@@ -43,15 +43,15 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_PROPERTIES
 @property (copy) OFString *name;
 # ifdef __cplusplus
-@property (copy, getter=namespace, setter=setNamespace:, nullable)
+@property OF_NULLABLE_PROPERTY (copy, getter=namespace, setter=setNamespace:)
     OFString *namespace_;
 # else
-@property (copy, nullable) OFString *namespace;
+@property OF_NULLABLE_PROPERTY (copy) OFString *namespace;
 # endif
-@property (copy, nullable) OFString *defaultNamespace;
-@property (copy, readonly, nullable) OFArray OF_GENERIC(OFXMLAttribute*)
-    *attributes;
-@property (copy, nullable) OFArray OF_GENERIC(OFXMLNode*) *children;
+@property OF_NULLABLE_PROPERTY (copy) OFString *defaultNamespace;
+@property OF_NULLABLE_PROPERTY (copy, readonly)
+    OFArray OF_GENERIC(OFXMLAttribute*) *attributes;
+@property OF_NULLABLE_PROPERTY (copy) OFArray OF_GENERIC(OFXMLNode*) *children;
 #endif
 
 /*!

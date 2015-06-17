@@ -135,7 +135,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
 @property (readonly, copy, nonatomic)
     OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
-@property (assign, nullable) id <OFApplicationDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign) id <OFApplicationDelegate> delegate;
 #endif
 
 /*!
