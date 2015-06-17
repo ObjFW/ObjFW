@@ -102,9 +102,9 @@
 #endif
 
 	bars = (float)(_resumedFrom + _received) /
-	    (_resumedFrom + _length) * barWidth;
+	    (float)(_resumedFrom + _length) * barWidth;
 	percent = (float)(_resumedFrom + _received) /
-	    (_resumedFrom + _length) * 100;
+	    (float)(_resumedFrom + _length) * 100;
 
 	[of_stdout writeString: @"\r  ▕"];
 
@@ -139,7 +139,7 @@
 	if (percent == 100) {
 		double timeInterval = -[_startDate timeIntervalSinceNow];
 
-		_BPS = (float)_received / timeInterval;
+		_BPS = (float)_received / (float)timeInterval;
 		_ETA = timeInterval;
 	}
 
@@ -181,7 +181,8 @@
 		    @"\r  %jd bytes ", _resumedFrom + _received];
 
 	if (_stopped)
-		_BPS = (float)_received / -[_startDate timeIntervalSinceNow];
+		_BPS = (float)_received /
+		    -(float)[_startDate timeIntervalSinceNow];
 
 	if (_BPS >= GIBIBYTE)
 		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
@@ -204,7 +205,7 @@
 - (void)calculateBPSAndETA
 {
 	_BPS = (float)(_received - _lastReceived) /
-	    -[_lastReceivedDate timeIntervalSinceNow];
+	    -(float)[_lastReceivedDate timeIntervalSinceNow];
 	_ETA = (double)(_length - _resumedFrom - _received) / _BPS;
 
 	_lastReceived = _received;
