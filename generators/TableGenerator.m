@@ -89,7 +89,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
-		OFArray *split;
+		OFArray OF_GENERIC(OFString*) *split;
 		OFString *const *splitObjects;
 		of_unichar_t codep;
 
@@ -138,7 +138,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
-		OFArray *split;
+		OFArray OF_GENERIC(OFString*) *split;
 		OFString *const *splitObjects;
 		of_unichar_t codep;
 

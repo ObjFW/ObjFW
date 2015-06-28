@@ -50,7 +50,7 @@
 
 @interface OFHTTP: OFObject
 {
-	OFArray *_URLs;
+	OFArray OF_GENERIC(OFString*) *_URLs;
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath;
@@ -547,7 +547,7 @@ next:
 	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
 	OFHTTPResponse *response;
-	OFDictionary *headers;
+	OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
 	OFString *fileName = nil, *lengthString, *type;
 
 	_length = -1;
@@ -672,7 +672,8 @@ next:
 
 		if (_verbose) {
 			void *pool = objc_autoreleasePoolPush();
-			OFDictionary *headers = [response headers];
+			OFDictionary OF_GENERIC(OFString*, OFString*) *headers =
+			    [response headers];
 			OFEnumerator *keyEnumerator = [headers keyEnumerator];
 			OFEnumerator *objectEnumerator =
 			    [headers objectEnumerator];

@@ -71,7 +71,7 @@ hashForName(OFString *name)
 @implementation OFHash
 - (void)applicationDidFinishLaunching
 {
-	OFArray *arguments = [OFApplication arguments];
+	OFArray OF_GENERIC(OFString*) *arguments = [OFApplication arguments];
 	id <OFHash> hash;
 	OFEnumerator *enumerator;
 	OFString *path;
