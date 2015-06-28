@@ -29,7 +29,7 @@ run: all
 	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} libobjfw.dll \
-	rm -f libobjfw.dylib; \
+	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
 include ../buildsys.mk
