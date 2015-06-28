@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing null values in collections.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
     OFMessagePackRepresentation>
 /*!

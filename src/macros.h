@@ -222,6 +222,13 @@
 # define OF_ROOT_CLASS
 #endif
 
+#if __has_attribute(__objc_subclassing_restricted__)
+# define OF_SUBCLASSING_RESTRICTED \
+	__attribute__((__objc_subclassing_restricted__))
+#else
+# define OF_SUBCLASSING_RESTRICTED
+#endif
+
 #ifdef __GNUC__
 # if defined(__x86_64__) || defined(__amd64__)
 #  define OF_X86_64_ASM
