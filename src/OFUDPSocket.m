@@ -371,7 +371,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	[super dealloc];
 }
 
-- (id)copy
+- copy
 {
 	return [self retain];
 }
