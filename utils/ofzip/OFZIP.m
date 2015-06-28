@@ -21,7 +21,6 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDate.h"
-#import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFOptionsParser.h"
 #import "OFSet.h"
@@ -52,7 +51,7 @@
 
 - (OFZIPArchive*)openArchiveWithPath: (OFString*)path;
 - (void)listFilesInArchive: (OFZIPArchive*)archive;
-- (void)extractFiles: (OFArray*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
 	 fromArchive: (OFZIPArchive*)archive;
 @end
 
@@ -110,9 +109,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: @"fhlnqvx"];
 	of_unichar_t option, mode = '\0';
-	OFArray *remainingArguments;
+	OFArray OF_GENERIC(OFString*) *remainingArguments, *files;
 	OFZIPArchive *archive;
-	OFArray *files;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
@@ -228,8 +226,10 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)listFilesInArchive: (OFZIPArchive*)archive
 {
-	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
+	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *enumerator;
 	OFZIPArchiveEntry *entry;
+
+	enumerator = [[archive entries] objectEnumerator];
 
 	while ((entry = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
@@ -281,19 +281,23 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	}
 }
 
-- (void)extractFiles: (OFArray*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
 	 fromArchive: (OFZIPArchive*)archive
 {
-	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
+	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *entryEnumerator;
 	OFZIPArchiveEntry *entry;
-	bool all = ([files count] == 0);
-	OFMutableSet *missing = [OFMutableSet setWithArray: files];
+	bool all;
+	OFMutableSet OF_GENERIC(OFString*) *missing;
 
-	while ((entry = [enumerator nextObject]) != nil) {
+	all = ([files count] == 0);
+	missing = [OFMutableSet setWithArray: files];
+
+	entryEnumerator = [[archive entries] objectEnumerator];
+	while ((entry = [entryEnumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		OFString *outFileName = [fileName stringByStandardizingPath];
-		OFEnumerator *componentEnumerator;
+		OFEnumerator OF_GENERIC(OFString*) *componentEnumerator;
 		OFString *component, *directory;
 		OFStream *stream;
 		OFFile *output;
@@ -440,6 +444,7 @@ outer_loop_end:
 	}
 
 	if ([missing count] > 0) {
+		OFEnumerator OF_GENERIC(OFString*) *enumerator;
 		OFString *file;
 
 		enumerator = [missing objectEnumerator];
