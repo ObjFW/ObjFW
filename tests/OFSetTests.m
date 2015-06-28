@@ -62,7 +62,7 @@ static OFString *module = @"OFSet";
 	TEST(@"-[addObject:]",
 	    R([mutableSet addObject: @"baz"]) && [mutableSet isEqual: set2] &&
 	    R([mutableSet addObject: @"y"]) && [mutableSet isEqual:
-	    ([OFSet setWithObjects: @"foo", @"bar", @"baz", @"x", @"y", nil])])
+	    [OFSet setWithObjects: @"foo", @"bar", @"baz", @"x", @"y", nil]])
 
 	TEST(@"-[removeObject:]",
 	    R([mutableSet removeObject: @"y"]) && [mutableSet isEqual: set1])
@@ -75,21 +75,21 @@ static OFString *module = @"OFSet";
 	TEST(@"-[intersectsSet:]",
 	    [(set2 = [OFSet setWithObjects: @"x", nil]) intersectsSet: set1] &&
 	    [set1 intersectsSet: set2] &&
-	    ![([OFSet setWithObjects: @"1", nil]) intersectsSet: set1]);
+	    ![[OFSet setWithObjects: @"1", nil] intersectsSet: set1]);
 
 	TEST(@"-[minusSet:]",
-	    R([mutableSet minusSet: ([OFSet setWithObjects: @"x", nil])]) &&
-	    [mutableSet isEqual: ([OFSet setWithObjects: @"baz", @"bar", nil])])
+	    R([mutableSet minusSet: [OFSet setWithObjects: @"x", nil]]) &&
+	    [mutableSet isEqual: [OFSet setWithObjects: @"baz", @"bar", nil]])
 
 	TEST(@"-[intersectSet:]",
-	    R([mutableSet intersectSet: ([OFSet setWithObjects: @"baz",
-	    nil])]) && [mutableSet isEqual: ([OFSet setWithObjects: @"baz",
-	    nil])])
+	    R([mutableSet intersectSet: [OFSet setWithObjects: @"baz",
+	    nil]]) && [mutableSet isEqual: [OFSet setWithObjects: @"baz",
+	    nil]])
 
 	TEST(@"-[unionSet:]",
-	    R([mutableSet unionSet: ([OFSet setWithObjects: @"x", @"bar",
-	    nil])]) && [mutableSet isEqual: ([OFSet setWithObjects: @"baz",
-	    @"bar", @"x", nil])])
+	    R([mutableSet unionSet: [OFSet setWithObjects: @"x", @"bar",
+	    nil]]) && [mutableSet isEqual: [OFSet setWithObjects: @"baz",
+	    @"bar", @"x", nil]])
 
 #ifdef OF_HAVE_FAST_ENUMERATION
 	ok = true;

@@ -113,7 +113,7 @@ static OFCondition *cond;
 	    R(response = [client performRequest: request]))
 
 	TEST(@"Normalization of server header keys",
-	    ([[response headers] objectForKey: @"Content-Length"] != nil))
+	    [[response headers] objectForKey: @"Content-Length"] != nil)
 
 	TEST(@"Correct parsing of data",
 	    (data = [response readDataArrayTillEndOfStream]) &&

@@ -68,12 +68,12 @@ static OFString *values[] = {
 	    @"{\n\tkey1 = value1;\n\tkey2 = value2;\n}"])
 
 	TEST(@"-[allKeys]",
-	    [[dict allKeys] isEqual: ([OFArray arrayWithObjects: keys[0],
-	    keys[1], nil])])
+	    [[dict allKeys] isEqual: [OFArray arrayWithObjects: keys[0],
+	    keys[1], nil]])
 
 	TEST(@"-[allObjects]",
-	    [[dict allObjects] isEqual: ([OFArray arrayWithObjects: values[0],
-	    values[1], nil])])
+	    [[dict allObjects] isEqual: [OFArray arrayWithObjects: values[0],
+	    values[1], nil]])
 
 	TEST(@"-[keyEnumerator]", (key_enum = [dict keyEnumerator]))
 	TEST(@"-[objectEnumerator]", (obj_enum = [dict objectEnumerator]))

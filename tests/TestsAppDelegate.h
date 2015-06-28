@@ -17,12 +17,12 @@
 #import "OFApplication.h"
 #import "OFXMLElementBuilder.h"
 
-#define TEST(test, cond)				\
+#define TEST(test, ...)					\
 	{						\
 		[self outputTesting: test		\
 			   inModule: module];		\
 							\
-		if (cond)				\
+		if (__VA_ARGS__)			\
 			[self outputSuccess: test	\
 				   inModule: module];	\
 		else {					\
@@ -53,7 +53,7 @@
 			_fails++;			\
 		}					\
 	}
-#define R(x) (x, 1)
+#define R(...) (__VA_ARGS__, 1)
 
 @class OFString;
 

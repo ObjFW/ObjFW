@@ -94,7 +94,7 @@ static OFString *c_ary[] = {
 
 	TEST(@"-[objectsInRange:]",
 	    [[a[0] objectsInRange: of_range(1, 2)] isEqual:
-	    ([OFArray arrayWithObjects: c_ary[1], c_ary[2], nil])])
+	    [OFArray arrayWithObjects: c_ary[1], c_ary[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
 	    R([m[0] replaceObject: c_ary[1]
@@ -136,25 +136,25 @@ static OFString *c_ary[] = {
 	[m[1] addObject: @"qux"];
 	[m[1] addObject: @"last"];
 	TEST(@"-[reverse]",
-	    R([m[1] reverse]) && [m[1] isEqual: ([OFArray arrayWithObjects:
-	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil])])
+	    R([m[1] reverse]) && [m[1] isEqual: [OFArray arrayWithObjects:
+	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	[m[1] addObject: @"qux"];
 	[m[1] addObject: @"last"];
 	TEST(@"-[reversedArray]",
-	    [[m[1] reversedArray] isEqual: ([OFArray arrayWithObjects:
-	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil])])
+	    [[m[1] reversedArray] isEqual: [OFArray arrayWithObjects:
+	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	[m[1] addObject: @"0"];
 	[m[1] addObject: @"z"];
 	TEST(@"-[sortedArray]",
-	    [[m[1] sortedArray] isEqual: ([OFArray arrayWithObjects:
-	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil])] &&
+	    [[m[1] sortedArray] isEqual: [OFArray arrayWithObjects:
+	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil]] &&
 	    [[m[1] sortedArrayWithOptions: OF_ARRAY_SORT_DESCENDING]
-	    isEqual: ([OFArray arrayWithObjects:
-	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil])])
+	    isEqual: [OFArray arrayWithObjects:
+	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
 	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
@@ -315,8 +315,8 @@ static OFString *c_ary[] = {
 	    }] description] isEqual: @"(\n\tfoo\n)"])
 
 	TEST(@"-[foldUsingBlock:]",
-	    [([OFArray arrayWithObjects: [OFMutableString string], @"foo",
-	    @"bar", @"baz", nil]) foldUsingBlock: ^ id (id left, id right) {
+	    [[OFArray arrayWithObjects: [OFMutableString string], @"foo",
+	    @"bar", @"baz", nil] foldUsingBlock: ^ id (id left, id right) {
 		[left appendString: right];
 		return left;
 	    }])
