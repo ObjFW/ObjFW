@@ -297,6 +297,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		OFString *outFileName = [fileName stringByStandardizingPath];
+		OFArray OF_GENERIC(OFString*) *pathComponents;
 		OFEnumerator OF_GENERIC(OFString*) *componentEnumerator;
 		OFString *component, *directory;
 		OFStream *stream;
@@ -318,20 +319,23 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 #endif
 			[of_stderr writeFormat: @"Refusing to extract %@!\n",
 						fileName];
+
 			_exitStatus = 1;
-			continue;
+			goto outer_loop_end;
 		}
 
-		componentEnumerator =
-		    [[outFileName pathComponents] objectEnumerator];
+		pathComponents = [outFileName pathComponents];
+		componentEnumerator = [pathComponents objectEnumerator];
 		while ((component = [componentEnumerator nextObject]) != nil) {
 			if ([component isEqual: OF_PATH_PARENT_DIRECTORY]) {
 				[of_stderr writeFormat:
 				    @"Refusing to extract %@!\n", fileName];
+
 				_exitStatus = 1;
-				continue;
+				goto outer_loop_end;
 			}
 		}
+		outFileName = [OFString pathWithComponents: pathComponents];
 
 		if (_outputLevel >= 0)
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
@@ -344,7 +348,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			if (_outputLevel >= 0)
 				[of_stdout writeLine: @" done"];
 
-			continue;
+			goto outer_loop_end;
 		}
 
 		directory = [outFileName stringByDeletingLastPathComponent];
@@ -358,7 +362,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			if (_override == -1) {
 				if (_outputLevel >= 0)
 					[of_stdout writeLine: @" skipped"];
-				continue;
+
+				goto outer_loop_end;
 			}
 
 			do {
@@ -384,7 +389,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 				[of_stdout writeFormat: @"Skipping %@...\n",
 							fileName];
-				continue;
+
+				goto outer_loop_end;
 			}
 
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
