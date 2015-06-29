@@ -18,7 +18,9 @@
 #import "OFString.h"
 #import "OFINICategory.h"
 
-@class OFMutableArray;
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFMutableArray OF_GENERIC(ObjectType);
 
 /*!
  * @class OFINIFile OFINIFile.h ObjFW/OFINIFile.h
@@ -27,7 +29,7 @@
  */
 @interface OFINIFile: OFObject
 {
-	OFMutableArray *_categories;
+	OFMutableArray OF_GENERIC(OFINICategory*) *_categories;
 }
 
 /*!
@@ -101,3 +103,5 @@
 - (void)writeToFile: (OFString*)path
 	   encoding: (of_string_encoding_t)encoding;
 @end
+
+OF_ASSUME_NONNULL_END

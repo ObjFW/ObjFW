@@ -16,6 +16,8 @@
 
 #import "OFSet.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMapTable;
 
 @interface OFSet_hashtable: OFSet
@@ -25,3 +27,5 @@
 
 - initWithCapacity: (size_t)capacity;
 @end
+
+OF_ASSUME_NONNULL_END

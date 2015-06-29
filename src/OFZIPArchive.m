@@ -25,14 +25,14 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
-#import "OFDeflateStream.h"
-#import "OFDeflate64Stream.h"
+#import "OFInflateStream.h"
+#import "OFInflate64Stream.h"
 
 #import "OFChecksumFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSeekFailedException.h"
@@ -64,24 +64,22 @@
 	OFDataArray *_extraField;
 }
 
-- initWithFile: (OFFile*)file;
+- initWithStream: (OFStream*)stream;
 - (bool)matchesEntry: (OFZIPArchiveEntry*)entry;
 @end
 
 @interface OFZIPArchive_FileStream: OFStream
 {
-	OFStream *_stream;
-	OFFile *_file;
+	OFStream *_stream, *_decompressedStream;
 	OFZIPArchive_LocalFileHeader *_localFileHeader;
 	bool _hasDataDescriptor;
 	uint64_t _size;
 	uint32_t _CRC32;
-	bool _atEndOfStream;
+	bool _atEndOfStream, _closed;
 }
 
-- initWithArchiveFile: (OFString*)path
-	       offset: (of_offset_t)offset
-      localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader;
+-  initWithStream: (OFStream*)path
+  localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader;
 @end
 
 uint32_t
@@ -138,6 +136,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 }
 
 @implementation OFZIPArchive
++ (instancetype)archiveWithSeekableStream: (OFSeekableStream*)stream
+{
+	return [[[self alloc] initWithSeekableStream: stream] autorelease];
+}
+
 + (instancetype)archiveWithPath: (OFString*)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
@@ -148,14 +151,30 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	OF_INVALID_INIT_METHOD
 }
 
+- initWithSeekableStream: (OFSeekableStream*)stream
+{
+	self = [super init];
+
+	@try {
+		_stream = [stream retain];
+
+		[self OF_readZIPInfo];
+		[self OF_readEntries];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - initWithPath: (OFString*)path
 {
 	self = [super init];
 
 	@try {
-		_file = [[OFFile alloc] initWithPath: path
-						mode: @"rb"];
-		_path = [path copy];
+		_stream = [[OFFile alloc] initWithPath: path
+						  mode: @"rb"];
 
 		[self OF_readZIPInfo];
 		[self OF_readEntries];
@@ -169,11 +188,11 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - (void)dealloc
 {
-	[_file release];
-	[_path release];
+	[_stream release];
 	[_archiveComment release];
 	[_entries release];
 	[_pathToEntryMap release];
+	[_lastReturnedStream release];
 
 	[super dealloc];
 }
@@ -187,8 +206,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 	do {
 		@try {
-			[_file seekToOffset: offset
-				     whence: SEEK_END];
+			[_stream seekToOffset: offset
+				       whence: SEEK_END];
 		} @catch (OFSeekFailedException *e) {
 			if ([e errNo] == EINVAL)
 				@throw [OFInvalidFormatException exception];
@@ -196,7 +215,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 			@throw e;
 		}
 
-		if ([_file readLittleEndianInt32] == 0x06054B50) {
+		if ([_stream readLittleEndianInt32] == 0x06054B50) {
 			valid = true;
 			break;
 		}
@@ -205,15 +224,15 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if (!valid)
 		@throw [OFInvalidFormatException exception];
 
-	_diskNumber = [_file readLittleEndianInt16],
-	_centralDirectoryDisk = [_file readLittleEndianInt16];
-	_centralDirectoryEntriesInDisk = [_file readLittleEndianInt16];
-	_centralDirectoryEntries = [_file readLittleEndianInt16];
-	_centralDirectorySize = [_file readLittleEndianInt32];
-	_centralDirectoryOffset = [_file readLittleEndianInt32];
+	_diskNumber = [_stream readLittleEndianInt16];
+	_centralDirectoryDisk = [_stream readLittleEndianInt16];
+	_centralDirectoryEntriesInDisk = [_stream readLittleEndianInt16];
+	_centralDirectoryEntries = [_stream readLittleEndianInt16];
+	_centralDirectorySize = [_stream readLittleEndianInt32];
+	_centralDirectoryOffset = [_stream readLittleEndianInt32];
 
-	commentLength = [_file readLittleEndianInt16];
-	_archiveComment = [[_file
+	commentLength = [_stream readLittleEndianInt16];
+	_archiveComment = [[_stream
 	    readStringWithLength: commentLength
 			encoding: OF_STRING_ENCODING_CODEPAGE_437] copy];
 
@@ -225,10 +244,10 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	    _centralDirectoryOffset == 0xFFFFFFFF) {
 		uint64_t offset64, size;
 
-		[_file seekToOffset: offset - 20
-			     whence: SEEK_END];
+		[_stream seekToOffset: offset - 20
+			       whence: SEEK_END];
 
-		if ([_file readLittleEndianInt32] != 0x07064B50) {
+		if ([_stream readLittleEndianInt32] != 0x07064B50) {
 			objc_autoreleasePoolPop(pool);
 			return;
 		}
@@ -237,33 +256,34 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		 * FIXME: Handle number of the disk containing ZIP64 end of
 		 * central directory record.
 		 */
-		[_file readLittleEndianInt32];
-		offset64 = [_file readLittleEndianInt64];
+		[_stream readLittleEndianInt32];
+		offset64 = [_stream readLittleEndianInt64];
 
 		if ((of_offset_t)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
-		[_file seekToOffset: (of_offset_t)offset64
-			     whence: SEEK_SET];
+		[_stream seekToOffset: (of_offset_t)offset64
+			       whence: SEEK_SET];
 
-		if ([_file readLittleEndianInt32] != 0x06064B50)
+		if ([_stream readLittleEndianInt32] != 0x06064B50)
 			@throw [OFInvalidFormatException exception];
 
-		size = [_file readLittleEndianInt64];
+		size = [_stream readLittleEndianInt64];
 		if (size < 44)
 			@throw [OFInvalidFormatException exception];
 
 		/* version made by */
-		[_file readLittleEndianInt16];
+		[_stream readLittleEndianInt16];
 		/* version needed to extract */
-		[_file readLittleEndianInt16];
+		[_stream readLittleEndianInt16];
 
-		_diskNumber = [_file readLittleEndianInt32];
-		_centralDirectoryDisk = [_file readLittleEndianInt32];
-		_centralDirectoryEntriesInDisk = [_file readLittleEndianInt64];
-		_centralDirectoryEntries = [_file readLittleEndianInt64];
-		_centralDirectorySize = [_file readLittleEndianInt64];
-		_centralDirectoryOffset = [_file readLittleEndianInt64];
+		_diskNumber = [_stream readLittleEndianInt32];
+		_centralDirectoryDisk = [_stream readLittleEndianInt32];
+		_centralDirectoryEntriesInDisk =
+		    [_stream readLittleEndianInt64];
+		_centralDirectoryEntries = [_stream readLittleEndianInt64];
+		_centralDirectorySize = [_stream readLittleEndianInt64];
+		_centralDirectoryOffset = [_stream readLittleEndianInt64];
 
 		if ((of_offset_t)_centralDirectoryOffset !=
 		    _centralDirectoryOffset)
@@ -281,15 +301,15 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if ((of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
-	[_file seekToOffset: (of_offset_t)_centralDirectoryOffset
-		     whence: SEEK_SET];
+	[_stream seekToOffset: (of_offset_t)_centralDirectoryOffset
+		       whence: SEEK_SET];
 
 	_entries = [[OFMutableArray alloc] init];
 	_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
 	for (i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
-		    OF_initWithFile: _file] autorelease];
+		    OF_initWithStream: _stream] autorelease];
 
 		if ([_pathToEntryMap objectForKey: [entry fileName]] != nil)
 			@throw [OFInvalidFormatException exception];
@@ -317,25 +337,28 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 
 - (OFStream*)streamForReadingFile: (OFString*)path
 {
-	OFStream *ret;
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
 	OFZIPArchive_LocalFileHeader *localFileHeader;
 	uint64_t offset64;
 
 	if (entry == nil)
-		@throw [OFOpenFileFailedException exceptionWithPath: path
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							       mode: @"rb"
 							      errNo: ENOENT];
+
+	[_lastReturnedStream close];
+	[_lastReturnedStream release];
+	_lastReturnedStream = nil;
 
 	offset64 = [entry OF_localFileHeaderOffset];
 	if ((of_offset_t)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
-	[_file seekToOffset: (of_offset_t)offset64
-		     whence: SEEK_SET];
+	[_stream seekToOffset: (of_offset_t)offset64
+		       whence: SEEK_SET];
 	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
-	    initWithFile: _file] autorelease];
+	    initWithStream: _stream] autorelease];
 
 	if (![localFileHeader matchesEntry: entry])
 		@throw [OFInvalidFormatException exception];
@@ -349,20 +372,18 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		    exceptionWithVersion: version];
 	}
 
-	ret = [[OFZIPArchive_FileStream alloc]
-	    initWithArchiveFile: _path
-			 offset: [_file seekToOffset: 0
-					      whence: SEEK_CUR]
-	        localFileHeader: localFileHeader];
+	_lastReturnedStream = [[OFZIPArchive_FileStream alloc]
+	     initWithStream: _stream
+	    localFileHeader: localFileHeader];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [ret autorelease];
+	return [[_lastReturnedStream retain] autorelease];
 }
 @end
 
 @implementation OFZIPArchive_LocalFileHeader
-- initWithFile: (OFFile*)file
+- initWithStream: (OFStream*)stream
 {
 	self = [super init];
 
@@ -372,26 +393,26 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		uint8_t *ZIP64;
 		uint16_t ZIP64Size;
 
-		if ([file readLittleEndianInt32] != 0x04034B50)
+		if ([stream readLittleEndianInt32] != 0x04034B50)
 			@throw [OFInvalidFormatException exception];
 
-		_minVersionNeeded = [file readLittleEndianInt16];
-		_generalPurposeBitFlag = [file readLittleEndianInt16];
-		_compressionMethod = [file readLittleEndianInt16];
-		_lastModifiedFileTime = [file readLittleEndianInt16];
-		_lastModifiedFileDate = [file readLittleEndianInt16];
-		_CRC32 = [file readLittleEndianInt32];
-		_compressedSize = [file readLittleEndianInt32];
-		_uncompressedSize = [file readLittleEndianInt32];
-		fileNameLength = [file readLittleEndianInt16];
-		extraFieldLength = [file readLittleEndianInt16];
+		_minVersionNeeded = [stream readLittleEndianInt16];
+		_generalPurposeBitFlag = [stream readLittleEndianInt16];
+		_compressionMethod = [stream readLittleEndianInt16];
+		_lastModifiedFileTime = [stream readLittleEndianInt16];
+		_lastModifiedFileDate = [stream readLittleEndianInt16];
+		_CRC32 = [stream readLittleEndianInt32];
+		_compressedSize = [stream readLittleEndianInt32];
+		_uncompressedSize = [stream readLittleEndianInt32];
+		fileNameLength = [stream readLittleEndianInt16];
+		extraFieldLength = [stream readLittleEndianInt16];
 		encoding = (_generalPurposeBitFlag & (1 << 11)
 		    ? OF_STRING_ENCODING_UTF_8
 		    : OF_STRING_ENCODING_CODEPAGE_437);
 
-		_fileName = [[file readStringWithLength: fileNameLength
-					       encoding: encoding] copy];
-		_extraField = [[file
+		_fileName = [[stream readStringWithLength: fileNameLength
+						 encoding: encoding] copy];
+		_extraField = [[stream
 		    readDataArrayWithCount: extraFieldLength] retain];
 
 		of_zip_archive_entry_extra_field_find(_extraField,
@@ -427,7 +448,6 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 - (bool)matchesEntry: (OFZIPArchiveEntry*)entry
 {
 	if (_minVersionNeeded != [entry minVersionNeeded] ||
-	    _generalPurposeBitFlag != [entry OF_generalPurposeBitFlag] ||
 	    _compressionMethod != [entry compressionMethod] ||
 	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
 	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate])
@@ -447,29 +467,25 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 @end
 
 @implementation OFZIPArchive_FileStream
-- initWithArchiveFile: (OFString*)path
-	       offset: (of_offset_t)offset
-      localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader
+-  initWithStream: (OFStream*)stream
+  localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader
 {
 	self = [super init];
 
 	@try {
-		_file = [[OFFile alloc] initWithPath: path
-						mode: @"rb"];
-		[_file seekToOffset: offset
-			     whence: SEEK_SET];
+		_stream = [stream retain];
 
 		switch (localFileHeader->_compressionMethod) {
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
-			_stream = [_file retain];
+			_decompressedStream = [stream retain];
 			break;
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
-			_stream = [[OFDeflateStream alloc]
-			    initWithStream: _file];
+			_decompressedStream = [[OFInflateStream alloc]
+			    initWithStream: stream];
 			break;
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
-			_stream = [[OFDeflate64Stream alloc]
-			    initWithStream: _file];
+			_decompressedStream = [[OFInflate64Stream alloc]
+			    initWithStream: stream];
 			break;
 		default:
 			@throw [OFNotImplementedException
@@ -493,7 +509,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 - (void)dealloc
 {
 	[_stream release];
-	[_file release];
+	[_decompressedStream release];
 	[_localFileHeader release];
 
 	[super dealloc];
@@ -509,19 +525,19 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	size_t min, ret;
 
-	if (_atEndOfStream)
+	if (_atEndOfStream || _closed)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
 	if (_hasDataDescriptor) {
-		if ([_stream isAtEndOfStream]) {
+		if ([_decompressedStream isAtEndOfStream]) {
 			uint32_t CRC32;
 
 			_atEndOfStream = true;
 
-			CRC32 = [_file readLittleEndianInt32];
+			CRC32 = [_stream readLittleEndianInt32];
 			if (CRC32 == 0x08074B50)
-				CRC32 = [_file readLittleEndianInt32];
+				CRC32 = [_stream readLittleEndianInt32];
 
 			if (~_CRC32 != CRC32)
 				@throw [OFChecksumFailedException exception];
@@ -534,8 +550,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 			return 0;
 		}
 
-		ret = [_stream readIntoBuffer: buffer
-				       length: length];
+		ret = [_decompressedStream readIntoBuffer: buffer
+						   length: length];
 	} else {
 		if (_size == 0) {
 			_atEndOfStream = true;
@@ -547,13 +563,18 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		}
 
 		min = (length < _size ? length : (size_t)_size);
-		ret = [_stream readIntoBuffer: buffer
-				       length: min];
+		ret = [_decompressedStream readIntoBuffer: buffer
+						   length: min];
 		_size -= ret;
 	}
 
 	_CRC32 = crc32(_CRC32, buffer, ret);
 
 	return ret;
+}
+
+- (void)close
+{
+	_closed = true;
 }
 @end

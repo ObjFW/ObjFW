@@ -16,8 +16,10 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 
 /*!
  * @class OFSettings OFSettings.h ObjFW/OFSettings.h
@@ -119,7 +121,7 @@
  * @param array The array of strings to set
  * @param path The path to store the array of strings at
  */
-- (void)setArray: (OFArray*)array
+- (void)setArray: (OFArray OF_GENERIC(OFString*)*)array
 	 forPath: (OFString*)path;
 
 /*!
@@ -129,7 +131,7 @@
  * @param path The path for which the string value should be returned
  * @return The string value of the specified path
  */
-- (OFString*)stringForPath: (OFString*)path;
+- (nullable OFString*)stringForPath: (OFString*)path;
 
 /*!
  * @brief Returns the string for the specified path, or the default value if
@@ -139,8 +141,8 @@
  * @param defaultValue The default value to return if the path does not exist
  * @return The string value of the specified path
  */
-- (OFString*)stringForPath: (OFString*)path
-	      defaultValue: (OFString*)defaultValue;
+- (nullable OFString*)stringForPath: (OFString*)path
+		       defaultValue: (nullable OFString*)defaultValue;
 
 /*!
  * @brief Returns the integer for the specified path, or the default value if
@@ -193,7 +195,7 @@
  * @param path The path for which the array of strings should be returned
  * @return The array of strings of the specified path
  */
-- (OFArray*)arrayForPath: (OFString*)path;
+- (OFArray OF_GENERIC(OFString*)*)arrayForPath: (OFString*)path;
 
 /*!
  * @brief Removes the value for the specified path.
@@ -212,3 +214,5 @@
  */
 - (void)save;
 @end
+
+OF_ASSUME_NONNULL_END

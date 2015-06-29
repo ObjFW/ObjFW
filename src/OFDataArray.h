@@ -18,6 +18,8 @@
 #import "OFSerialization.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 @class OFURL;
 
@@ -92,6 +94,7 @@
 + (instancetype)dataArrayWithContentsOfFile: (OFString*)path;
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Creates a new OFDataArray with an item size of 1, containing the data
  *	  of the specified URL.
@@ -100,6 +103,7 @@
  * @return A new autoreleased OFDataArray
  */
 + (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL;
+#endif
 
 /*!
  * @brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -160,6 +164,7 @@
 - initWithContentsOfFile: (OFString*)path;
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
  *	  containing the data of the specified URL.
@@ -168,6 +173,7 @@
  * @return A new autoreleased OFDataArray
  */
 - initWithContentsOfURL: (OFURL*)URL;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
@@ -226,14 +232,14 @@
  *
  * @return The first item of the OFDataArray or NULL
  */
-- (void*)firstItem OF_RETURNS_INNER_POINTER;
+- (nullable void*)firstItem OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the last item of the OFDataArray.
  *
  * @return The last item of the OFDataArray or NULL
  */
-- (void*)lastItem OF_RETURNS_INNER_POINTER;
+- (nullable void*)lastItem OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Adds an item to the OFDataArray.
@@ -321,6 +327,8 @@
 - (void)writeToFile: (OFString*)path;
 #endif
 @end
+
+OF_ASSUME_NONNULL_END
 
 #import "OFDataArray+Hashing.h"
 #import "OFDataArray+MessagePackValue.h"

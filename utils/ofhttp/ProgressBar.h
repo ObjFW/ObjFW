@@ -14,13 +14,25 @@
  * file.
  */
 
-#import "OFDeflateStream.h"
+#import "OFObject.h"
 
-/*!
- * @class OFDeflate64Stream OFDeflate64Stream.h ObjFW/OFDeflate64Stream.h
- *
- * @brief A class for a stream that handles Deflate64 compression or
- *	  decompression transparently for an underlying stream.
- */
-@interface OFDeflate64Stream: OFDeflateStream
+@class OFDate;
+@class OFTimer;
+
+@interface ProgressBar: OFObject
+{
+	intmax_t _received, _lastReceived, _length, _resumedFrom;
+	OFDate *_startDate, *_lastReceivedDate;
+	OFTimer *_drawTimer, *_BPSTimer;
+	bool _stopped;
+	float _BPS;
+	double _ETA;
+}
+
+- initWithLength: (intmax_t)length
+     resumedFrom: (intmax_t)resumedFrom;
+- (void)setReceived: (intmax_t)received;
+- (void)draw;
+- (void)calculateBPSAndETA;
+- (void)stop;
 @end

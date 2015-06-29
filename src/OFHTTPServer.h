@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFHTTPServer;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
@@ -77,10 +79,10 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (copy) OFString *host;
+@property OF_NULLABLE_PROPERTY (copy) OFString *host;
 @property uint16_t port;
-@property (assign) id <OFHTTPServerDelegate> delegate;
-@property (copy) OFString *name;
+@property OF_NULLABLE_PROPERTY (assign) id <OFHTTPServerDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (copy) OFString *name;
 #endif
 
 /*!
@@ -102,7 +104,7 @@
  *
  * @return The host on which the HTTP server will listen
  */
-- (OFString*)host;
+- (nullable OFString*)host;
 
 /*!
  * @brief Sets the port on which the HTTP server will listen.
@@ -123,28 +125,28 @@
  *
  * @param delegate The delegate for the HTTP server
  */
-- (void)setDelegate: (id <OFHTTPServerDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFHTTPServerDelegate>)delegate;
 
 /*!
  * @brief Returns the delegate for the HTTP server.
  *
  * @return The delegate for the HTTP server
  */
-- (id <OFHTTPServerDelegate>)delegate;
+- (nullable id <OFHTTPServerDelegate>)delegate;
 
 /*!
  * @brief Sets the server name the server presents to clients.
  *
  * @param name The server name to present to clients
  */
-- (void)setName: (OFString*)name;
+- (void)setName: (nullable OFString*)name;
 
 /*!
  * @brief Returns the server name the server presents to clients.
  *
  * @return The server name the server presents to clients
  */
-- (OFString*)name;
+- (nullable OFString*)name;
 
 /*!
  * @brief Starts the HTTP server in the current thread's runloop.
@@ -161,3 +163,5 @@
 
 @interface OFObject (OFHTTPServerDelegate) <OFHTTPServerDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

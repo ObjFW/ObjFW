@@ -31,6 +31,8 @@
 #import "macros.h"
 #import "autorelease.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 /*!
@@ -236,7 +238,7 @@ of_rectangle(float x, float y, float width, float height)
  * @param selector The selector for which the method should be returned
  * @return The implementation for the specified selector
  */
-- (IMP)methodForSelector: (SEL)selector;
+- (nullable IMP)methodForSelector: (SEL)selector;
 
 /*!
  * @brief Returns the type encoding for the specified selector.
@@ -244,7 +246,7 @@ of_rectangle(float x, float y, float width, float height)
  * @param selector The selector for which the type encoding should be returned
  * @return The type encoding for the specified selector
  */
-- (const char*)typeEncodingForSelector: (SEL)selector;
+- (nullable const char*)typeEncodingForSelector: (SEL)selector;
 
 /*!
  * @brief Performs the specified selector.
@@ -252,7 +254,7 @@ of_rectangle(float x, float y, float width, float height)
  * @param selector The selector to perform
  * @return The object returned by the method specified by the selector
  */
-- (id)performSelector: (SEL)selector;
+- (nullable id)performSelector: (SEL)selector;
 
 /*!
  * @brief Performs the specified selector with the specified object.
@@ -262,8 +264,8 @@ of_rectangle(float x, float y, float width, float height)
  *		 selector
  * @return The object returned by the method specified by the selector
  */
-- (id)performSelector: (SEL)selector
-	   withObject: (id)object;
+- (nullable id)performSelector: (SEL)selector
+		    withObject: (nullable id)object;
 
 /*!
  * @brief Performs the specified selector with the specified objects.
@@ -275,9 +277,9 @@ of_rectangle(float x, float y, float width, float height)
  *		  the selector
  * @return The object returned by the method specified by the selector
  */
-- (id)performSelector: (SEL)selector
-	   withObject: (id)object1
-	   withObject: (id)object2;
+- (nullable id)performSelector: (SEL)selector
+		    withObject: (nullable id)object1
+		    withObject: (nullable id)object2;
 
 /*!
  * @brief Checks two objects for equality.
@@ -291,7 +293,7 @@ of_rectangle(float x, float y, float width, float height)
  * @param object The object which should be tested for equality
  * @return A boolean whether the object is equal to the specified object
  */
-- (bool)isEqual: (id)object;
+- (bool)isEqual: (nullable id)object;
 
 /*!
  * @brief Calculates a hash for the object.
@@ -471,7 +473,7 @@ OF_ROOT_CLASS
  * @return The implementation of the instance method for the specified selector
  *	   or nil if it isn't implemented
  */
-+ (IMP)instanceMethodForSelector: (SEL)selector;
++ (nullable IMP)instanceMethodForSelector: (SEL)selector;
 
 /*!
  * @brief Returns the type encoding of the instance method for the specified
@@ -480,7 +482,7 @@ OF_ROOT_CLASS
  * @param selector The selector for which the type encoding should be returned
  * @return The type encoding of the instance method for the specified selector
  */
-+ (const char*)typeEncodingForInstanceSelector: (SEL)selector;
++ (nullable const char*)typeEncodingForInstanceSelector: (SEL)selector;
 
 /*!
  * @brief Returns a description for the class, which is usually the class name.
@@ -498,8 +500,8 @@ OF_ROOT_CLASS
  * @param class_ The class from which the new class method should be taken
  * @return The old implementation
  */
-+ (IMP)replaceClassMethod: (SEL)selector
-      withMethodFromClass: (Class)class_;
++ (nullable IMP)replaceClassMethod: (SEL)selector
+	       withMethodFromClass: (Class)class_;
 
 /*!
  * @brief Replaces an instance method with an instance method from another
@@ -509,8 +511,8 @@ OF_ROOT_CLASS
  * @param class_ The class from which the new instance method should be taken
  * @return The old implementation
  */
-+ (IMP)replaceInstanceMethod: (SEL)selector
-	 withMethodFromClass: (Class)class_;
++ (nullable IMP)replaceInstanceMethod: (SEL)selector
+		  withMethodFromClass: (Class)class_;
 
 /*!
  * @brief Replaces or adds a class method.
@@ -524,9 +526,9 @@ OF_ROOT_CLASS
  * @param typeEncoding The type encoding for the new method
  * @return The old implementation or nil if the method was added
  */
-+ (IMP)replaceClassMethod: (SEL)selector
-       withImplementation: (IMP)implementation
-	     typeEncoding: (const char*)typeEncoding;
++ (nullable IMP)replaceClassMethod: (SEL)selector
+		withImplementation: (IMP)implementation
+		      typeEncoding: (const char*)typeEncoding;
 
 /*!
  * @brief Replaces or adds an instance method.
@@ -540,9 +542,9 @@ OF_ROOT_CLASS
  * @param typeEncoding The type encoding for the new method
  * @return The old implementation or nil if the method was added
  */
-+ (IMP)replaceInstanceMethod: (SEL)selector
-	  withImplementation: (IMP)implementation
-		typeEncoding: (const char*)typeEncoding;
++ (nullable IMP)replaceInstanceMethod: (SEL)selector
+		   withImplementation: (IMP)implementation
+			 typeEncoding: (const char*)typeEncoding;
 
 /*!
  * @brief Adds all methods from the specified class to the class that is the
@@ -658,8 +660,8 @@ OF_ROOT_CLASS
  * @param size The new size for the memory chunk
  * @return A pointer to the resized memory chunk
  */
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size;
+- (nullable void*)resizeMemory: (nullable void*)pointer
+			  size: (size_t)size;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specific number of
@@ -673,9 +675,9 @@ OF_ROOT_CLASS
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
  */
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
-		count: (size_t)count;
+- (nullable void*)resizeMemory: (nullable void*)pointer
+			  size: (size_t)size
+			 count: (size_t)count;
 
 /*!
  * @brief Frees allocated memory and removes it from the object's memory pool.
@@ -684,7 +686,7 @@ OF_ROOT_CLASS
  *
  * @param pointer A pointer to the allocated memory
  */
-- (void)freeMemory: (void*)pointer;
+- (void)freeMemory: (nullable void*)pointer;
 
 /*!
  * @brief Deallocates the object.
@@ -714,7 +716,7 @@ OF_ROOT_CLASS
  * @param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
-	     withObject: (id)object
+	     withObject: (nullable id)object
 	     afterDelay: (of_time_interval_t)delay;
 
 /*!
@@ -729,8 +731,8 @@ OF_ROOT_CLASS
  * @param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
-	     withObject: (id)object1
-	     withObject: (id)object2
+	     withObject: (nullable id)object1
+	     withObject: (nullable id)object2
 	     afterDelay: (of_time_interval_t)delay;
 
 #ifdef OF_HAVE_THREADS
@@ -757,7 +759,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     withObject: (id)object
+	     withObject: (nullable id)object
 	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
@@ -774,8 +776,8 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     withObject: (id)object1
-	     withObject: (id)object2
+	     withObject: (nullable id)object1
+	     withObject: (nullable id)object2
 	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
@@ -797,7 +799,7 @@ OF_ROOT_CLASS
  * @param waitUntilDone Whether to wait until the perform finished
  */
 - (void)performSelectorOnMainThread: (SEL)selector
-			 withObject: (id)object
+			 withObject: (nullable id)object
 		      waitUntilDone: (bool)waitUntilDone;
 
 /*!
@@ -812,8 +814,8 @@ OF_ROOT_CLASS
  * @param waitUntilDone Whether to wait until the perform finished
  */
 - (void)performSelectorOnMainThread: (SEL)selector
-			 withObject: (id)object1
-			 withObject: (id)object2
+			 withObject: (nullable id)object1
+			 withObject: (nullable id)object2
 		      waitUntilDone: (bool)waitUntilDone;
 
 /*!
@@ -840,7 +842,7 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     withObject: (id)object
+	     withObject: (nullable id)object
 	     afterDelay: (of_time_interval_t)delay;
 
 /*!
@@ -857,8 +859,8 @@ OF_ROOT_CLASS
  */
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread*)thread
-	     withObject: (id)object1
-	     withObject: (id)object2
+	     withObject: (nullable id)object1
+	     withObject: (nullable id)object2
 	     afterDelay: (of_time_interval_t)delay;
 #endif
 
@@ -872,7 +874,7 @@ OF_ROOT_CLASS
  *
  * @return The target to forward the message to
  */
-- (id)forwardingTargetForSelector: (SEL)selector;
+- (nullable id)forwardingTargetForSelector: (SEL)selector;
 
 /*!
  * @brief Handles messages which are not understood by the receiver.
@@ -937,15 +939,17 @@ OF_ROOT_CLASS
 - (of_comparison_result_t)compare: (id <OFComparing>)object;
 @end
 
-#import "OFObject+Serialization.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern id of_alloc_object(Class class_, size_t extraSize, size_t extraAlignment,
-    void **extra);
-extern void OF_NO_RETURN of_method_not_found(id self, SEL _cmd);
+extern id of_alloc_object(Class class_, size_t extraSize,
+    size_t extraAlignment, void *OF_NULLABLE *OF_NULLABLE extra);
+extern void OF_NO_RETURN_FUNC of_method_not_found(id self, SEL _cmd);
 extern uint32_t of_hash_seed;
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END
+
+#import "OFObject+Serialization.h"

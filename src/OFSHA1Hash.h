@@ -16,6 +16,8 @@
 
 #import "OFHash.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFSHA1Hash OFSHA1Hash.h ObjFW/OFSHA1Hash.h
  *
@@ -35,3 +37,5 @@
 
 - (void)OF_resetState;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -34,7 +34,7 @@
 
 #import "OFNotImplementedException.h"
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(OF_IOS)
 # include <NSSystemDirectories.h>
 #endif
 #ifdef _WIN32
@@ -59,10 +59,25 @@ cpuid(uint32_t eax, uint32_t ecx)
 {
 	struct cpuid_regs regs;
 
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if defined(OF_X86_64_ASM)
 	__asm__(
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
+	    : "a"(eax), "c"(ecx)
+	);
+#elif defined(OF_X86_ASM)
+	/*
+	 * This workaround is required by GCC when using -fPIC, as ebx is a
+	 * special register in PIC code. Yes, GCC is indeed not able to just
+	 * push a register onto the stack before the __asm__ block and to pop
+	 * it afterwards.
+	 */
+	__asm__(
+	    "pushl	%%ebx\n\t"
+	    "cpuid\n\t"
+	    "movl	%%ebx, %1\n\t"
+	    "popl	%%ebx"
+	    : "=a"(regs.eax), "=r"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
 #else
@@ -122,7 +137,8 @@ cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userDataPath
 {
-#if defined(__APPLE__)
+	/* TODO: Return something more sensible for iOS */
+#if defined(__APPLE__) && !defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	NSSearchPathEnumerationState state;
@@ -201,7 +217,8 @@ cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userConfigPath
 {
-#if defined(__APPLE__)
+	/* TODO: Return something more sensible for iOS */
+#if defined(__APPLE__) && !defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	NSSearchPathEnumerationState state;

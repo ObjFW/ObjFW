@@ -19,6 +19,8 @@
 #import "OFEnumerator.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 typedef struct of_list_object_t of_list_object_t;
 /*!
  * @struct of_list_object_t OFList.h ObjFW/OFList.h
@@ -34,7 +36,7 @@ struct of_list_object_t {
 	/// A pointer to the previous list object in the list
 	of_list_object_t *previous;
 	/// The object for the list object
-	__unsafe_unretained id object;
+	id __unsafe_unretained object;
 };
 
 /*!
@@ -42,7 +44,15 @@ struct of_list_object_t {
  *
  * @brief A class which provides easy to use double-linked lists.
  */
-@interface OFList: OFObject <OFCopying, OFCollection, OFSerialization>
+#ifdef OF_HAVE_GENERICS
+@interface OFList <ObjectType>:
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
+@interface OFList:
+#endif
+    OFObject <OFCopying, OFCollection, OFSerialization>
 {
 	of_list_object_t *_firstListObject;
 	of_list_object_t *_lastListObject;
@@ -51,8 +61,8 @@ struct of_list_object_t {
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (readonly) of_list_object_t *firstListObject;
-@property (readonly) of_list_object_t *lastListObject;
+@property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *firstListObject;
+@property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *lastListObject;
 #endif
 
 /*!
@@ -67,14 +77,14 @@ struct of_list_object_t {
  *
  * @return The first list object of the list
  */
-- (of_list_object_t*)firstListObject;
+- (nullable of_list_object_t*)firstListObject;
 
 /*!
  * @brief Returns the last list object of the list.
  *
  * @return The last list object of the list
  */
-- (of_list_object_t*)lastListObject;
+- (nullable of_list_object_t*)lastListObject;
 
 /*!
  * @brief Appends an object to the list.
@@ -84,7 +94,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)appendObject: (id)object;
+- (of_list_object_t*)appendObject: (ObjectType)object;
 
 /*!
  * @brief Prepends an object to the list.
@@ -94,7 +104,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)prependObject: (id)object;
+- (of_list_object_t*)prependObject: (ObjectType)object;
 
 /*!
  * @brief Inserts an object before another list object.
@@ -106,7 +116,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (id)object
+- (of_list_object_t*)insertObject: (ObjectType)object
 		 beforeListObject: (of_list_object_t*)listObject;
 
 /*!
@@ -119,7 +129,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (id)object
+- (of_list_object_t*)insertObject: (ObjectType)object
 		  afterListObject: (of_list_object_t*)listObject;
 
 /*!
@@ -130,13 +140,29 @@ struct of_list_object_t {
 - (void)removeListObject: (of_list_object_t*)listObject;
 
 /*!
+ * @brief Checks whether the list contains an object equal to the specified
+ *	  object.
+ *
+ * @param object The object which is checked for being in the list
+ * @return A boolean whether the list contains the specified object
+ */
+- (bool)containsObject: (nullable ObjectType)object;
+
+/*!
  * @brief Checks whether the list contains an object with the specified address.
  *
  * @param object The object which is checked for being in the list
  * @return A boolean whether the list contains an object with the specified
- *	   address.
+ *	   address
  */
-- (bool)containsObjectIdenticalTo: (id)object;
+- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
+
+/*!
+ * @brief Returns an OFEnumerator to enumerate through all objects of the list.
+ *
+ * @returns An OFEnumerator to enumerate through all objects of the list
+ */
+- (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
 
 /*!
  * @brief Returns the first object of the list or nil.
@@ -146,7 +172,7 @@ struct of_list_object_t {
  *
  * @return The first object of the list or nil
  */
-- (id)firstObject;
+- (nullable ObjectType)firstObject;
 
 /*!
  * @brief Returns the last object of the list or nil.
@@ -156,13 +182,16 @@ struct of_list_object_t {
  *
  * @return The last object of the list or nil
  */
-- (id)lastObject;
+- (nullable ObjectType)lastObject;
 
 /*!
  * @brief Removes all objects from the list.
  */
 - (void)removeAllObjects;
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
 
 @interface OFListEnumerator: OFEnumerator
 {
@@ -175,3 +204,5 @@ struct of_list_object_t {
 -     initWithList: (OFList*)list
   mutationsPointer: (unsigned long*)mutationsPtr;
 @end
+
+OF_ASSUME_NONNULL_END

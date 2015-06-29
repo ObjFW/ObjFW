@@ -109,9 +109,11 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			if (pthread_attr_setschedparam(&pattr, &param) != 0)
 				return false;
 
-			if (pthread_attr_setstacksize(&pattr,
-			    attr->stackSize) != 0)
-				return false;
+			if (attr->stackSize > 0) {
+				if (pthread_attr_setstacksize(&pattr,
+				    attr->stackSize) != 0)
+					return false;
+			}
 		}
 
 		if ((ctx = malloc(sizeof(*ctx))) == NULL)
@@ -150,7 +152,7 @@ of_thread_detach(of_thread_t thread)
 	return (pthread_detach(thread) == 0);
 }
 
-void OF_NO_RETURN
+void OF_NO_RETURN_FUNC
 of_thread_exit(void)
 {
 	pthread_exit(NULL);

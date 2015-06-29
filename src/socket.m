@@ -166,7 +166,7 @@ of_socket_errno()
 
 #ifndef __wii__
 int
-of_getsockname(int socket, struct sockaddr *restrict address,
+of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
     socklen_t *restrict address_len)
 {
 	int ret;

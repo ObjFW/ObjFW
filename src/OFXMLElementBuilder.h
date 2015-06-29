@@ -17,7 +17,9 @@
 #import "OFObject.h"
 #import "OFXMLParser.h"
 
-@class OFMutableArray;
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFXMLElement;
 @class OFXMLElementBuilder;
 
@@ -79,8 +81,8 @@
  */
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
   didNotExpectCloseTag: (OFString*)name
-		prefix: (OFString*)prefix
-	     namespace: (OFString*)namespace_;
+		prefix: (nullable OFString*)prefix
+	     namespace: (nullable OFString*)namespace_;
 
 /*!
  * @brief This callback is called when the XML parser for the element builder
@@ -106,12 +108,13 @@
  */
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
-	OFMutableArray *_stack;
+	OFMutableArray OF_GENERIC(OFXMLElement*) *_stack;
 	id <OFXMLElementBuilderDelegate> _delegate;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFXMLElementBuilderDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign)
+    id <OFXMLElementBuilderDelegate> delegate;
 #endif
 
 /*!
@@ -122,19 +125,21 @@
 + (instancetype)elementBuilder;
 
 /*!
- * @brief Returns the delegate for the OFXMLElementBuilder.
- *
- * @return The delegate for the OFXMLElementBuilder
- */
-- (id <OFXMLElementBuilderDelegate>)delegate;
-
-/*!
  * @brief Sets the delegate for the OFXMLElementBuilder.
  *
  * @param delegate The delegate for the OFXMLElementBuilder
  */
-- (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFXMLElementBuilderDelegate>)delegate;
+
+/*!
+ * @brief Returns the delegate for the OFXMLElementBuilder.
+ *
+ * @return The delegate for the OFXMLElementBuilder
+ */
+- (nullable id <OFXMLElementBuilderDelegate>)delegate;
 @end
 
 @interface OFObject (OFXMLElementBuilderDelegate) <OFXMLElementBuilderDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

@@ -21,10 +21,10 @@ SRCS = OFApplication.m			\
        OFDataArray+Hashing.m		\
        OFDataArray+MessagePackValue.m	\
        OFDate.m				\
-       OFDeflateStream.m		\
-       OFDeflate64Stream.m		\
        OFDictionary.m			\
        OFEnumerator.m			\
+       OFInflateStream.m		\
+       OFInflate64Stream.m		\
        OFIntrospection.m		\
        OFList.m				\
        OFMapTable.m			\
@@ -139,7 +139,8 @@ SRCS += OFArray_adjacent.m		\
 	iso_8859_15.m			\
 	windows_1252.m
 SRCS_FILES += OFSettings_INIFile.m
-SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
+SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_EPOLL_M}	\
+		${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
 		${OFKERNELEVENTOBSERVER_POLL_M}		\
 		${OFKERNELEVENTOBSERVER_SELECT_M}	\
 		OFTCPSocket+SOCKS5.m

@@ -29,6 +29,8 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFConstantString;
@@ -78,7 +80,7 @@ enum {
 typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 @class OFURL;
 
 /*!
@@ -293,6 +295,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 				encoding: (of_string_encoding_t)encoding;
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Creates a new OFString with the contents of the specified URL.
  *
@@ -317,6 +320,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 + (instancetype)stringWithContentsOfURL: (OFURL*)URL
 			       encoding: (of_string_encoding_t)encoding;
+#endif
 
 /*!
  * @brief Creates a path from the specified path components.
@@ -324,7 +328,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param components An array of components for the path
  * @return A new autoreleased OFString
  */
-+ (OFString*)pathWithComponents: (OFArray*)components;
++ (OFString*)pathWithComponents: (OFArray OF_GENERIC(OFString*)*)components;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -537,6 +541,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 		encoding: (of_string_encoding_t)encoding;
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
  *	  specified URL.
@@ -562,6 +567,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - initWithContentsOfURL: (OFURL*)URL
 	       encoding: (of_string_encoding_t)encoding;
+#endif
 
 /*!
  * @brief Writes the OFString into the specified C string with the specified
@@ -879,7 +885,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param delimiter The delimiter for separating
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter;
+- (OFArray OF_GENERIC(OFString*)*)componentsSeparatedByString:
+    (OFString*)delimiter;
 
 /*!
  * @brief Separates an OFString into an OFArray of OFStrings.
@@ -892,15 +899,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-				options: (int)options;
+- (OFArray OF_GENERIC(OFString*)*)
+    componentsSeparatedByString: (OFString*)delimiter
+			options: (int)options;
 
 /*!
  * @brief Returns the components of the path.
  *
  * @return The components of the path
  */
-- (OFArray*)pathComponents;
+- (OFArray OF_GENERIC(OFString*)*)pathComponents;
 
 /*!
  * @brief Returns the last component of the path.
@@ -1092,6 +1100,19 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern size_t of_string_utf8_encode(of_unichar_t, char*);
+extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
+extern size_t of_string_utf16_length(const of_char16_t*);
+extern size_t of_string_utf32_length(const of_char32_t*);
+#ifdef __cplusplus
+}
+#endif
+
+OF_ASSUME_NONNULL_END
+
 #import "OFConstantString.h"
 #import "OFMutableString.h"
 #import "OFString+Hashing.h"
@@ -1116,15 +1137,4 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @interface NSString: OFString
 @end
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern size_t of_string_utf8_encode(of_unichar_t, char*);
-extern size_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
-extern size_t of_string_utf16_length(const of_char16_t*);
-extern size_t of_string_utf32_length(const of_char32_t*);
-#ifdef __cplusplus
-}
 #endif

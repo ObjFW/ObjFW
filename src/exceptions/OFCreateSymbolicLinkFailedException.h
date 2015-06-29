@@ -40,7 +40,7 @@
  *
  * @param sourcePath The source for the symbolic link
  * @param destinationPath The destination for the symbolic link
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create symbolic link failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
@@ -53,7 +53,7 @@
  *
  * @param sourcePath The source for the symbolic link
  * @param destinationPath The destination for the symbolic link
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized create symbolic link failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
@@ -75,9 +75,9 @@
 - (OFString*)destinationPath;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

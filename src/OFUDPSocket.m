@@ -20,6 +20,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include <fcntl.h>
+
 #import "OFUDPSocket.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThread.h"
@@ -30,7 +32,7 @@
 #import "OFBindFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
-#import "OFNotConnectedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
@@ -369,7 +371,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	[super dealloc];
 }
 
-- (id)copy
+- copy
 {
 	return [self retain];
 }
@@ -471,7 +473,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	ssize_t ret;
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	sender->length = (socklen_t)sizeof(sender->address);
 
@@ -526,7 +528,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	  receiver: (of_udp_socket_address_t*)receiver
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef _WIN32
 	if (sendto(_socket, buffer, length, 0,
@@ -558,6 +560,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -570,6 +575,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -580,7 +588,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 - (void)close
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	close(_socket);
 	_socket = INVALID_SOCKET;

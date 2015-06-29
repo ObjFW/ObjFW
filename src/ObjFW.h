@@ -47,7 +47,8 @@
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"
-#import "OFDeflateStream.h"
+#import "OFInflateStream.h"
+#import "OFInflate64Stream.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFINIFile.h"
@@ -141,11 +142,9 @@
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFMoveItemFailedException.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFNotConnectedException.h"
-#endif
 #import "OFNotImplementedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFNotOpenException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"

@@ -16,6 +16,8 @@
 
 #import "OFTCPSocket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,3 +30,5 @@ extern int _OFTCPSocket_SOCKS5_reference;
 - (void)OF_SOCKS5ConnectToHost: (OFString*)host
 			  port: (uint16_t)port;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,9 +16,13 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
-@class OFArray;
-@class OFMutableArray;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+#endif
 
 /*!
  * @class OFINICategory OFINICategory.h ObjFW/OFINICategory.h
@@ -59,7 +63,7 @@
  * @param key The key for which the string value should be returned
  * @return The string value for the specified key, or nil if it does not exist
  */
-- (OFString*)stringForKey: (OFString*)key;
+- (nullable OFString*)stringForKey: (OFString*)key;
 
 /*!
  * @brief Returns the string value for the specified key or the specified
@@ -73,8 +77,8 @@
  * @return The string value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (OFString*)stringForKey: (OFString*)key
-	     defaultValue: (OFString*)defaultValue;
+- (nullable OFString*)stringForKey: (OFString*)key
+		      defaultValue: (nullable OFString*)defaultValue;
 
 /*!
  * @brief Returns the integer value for the specified key or the specified
@@ -147,7 +151,7 @@
  * @return The array for the specified key, or an empty array if it does not
  *	   exist
  */
-- (OFArray*)arrayForKey: (OFString*)key;
+- (OFArray OF_GENERIC(OFString*)*)arrayForKey: (OFString*)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified string.
@@ -221,7 +225,7 @@
  * @param array The array of strings to which the multi-key should be set
  * @param key The multi-key for which the new values should be set
  */
-- (void)setArray: (OFArray*)array
+- (void)setArray: (OFArray OF_GENERIC(OFString*)*)array
 	  forKey: (OFString*)key;
 
 /*!
@@ -234,3 +238,5 @@
  */
 - (void)removeValueForKey: (OFString*)key;
 @end
+
+OF_ASSUME_NONNULL_END

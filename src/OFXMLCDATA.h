@@ -16,6 +16,8 @@
 
 #import "OFXMLNode.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFXMLCDATA OFXMLCDATA.h ObjFW/OFXMLCDATA.h
  *
@@ -42,3 +44,5 @@
  */
 - initWithString: (OFString*)string;
 @end
+
+OF_ASSUME_NONNULL_END

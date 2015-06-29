@@ -14,11 +14,17 @@
  * file.
  */
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern id objc_constructInstance(Class, void*);
+extern id objc_constructInstance(Class OF_NULLABLE, void *OF_NULLABLE);
 extern void* objc_destructInstance(id);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

@@ -87,14 +87,14 @@ CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
-AX_CHECK_COMPILER_FLAGS(-std=c11, [
-	OBJCFLAGS="$OBJCFLAGS -std=c11"
+AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
+	OBJCFLAGS="$OBJCFLAGS -std=gnu11"
 ], [
-	AX_CHECK_COMPILER_FLAGS(-std=c1x, [
-		OBJCFLAGS="$OBJCFLAGS -std=c1x"
+	AX_CHECK_COMPILER_FLAGS(-std=gnu1x, [
+		OBJCFLAGS="$OBJCFLAGS -std=gnu1x"
 	], [
-		AX_CHECK_COMPILER_FLAGS(-std=c99,
-			[OBJCFLAGS="$OBJCFLAGS -std=c99"])
+		AX_CHECK_COMPILER_FLAGS(-std=gnu99,
+			[OBJCFLAGS="$OBJCFLAGS -std=gnu99"])
 	])
 ])
 
@@ -110,12 +110,6 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS(-Wobjc-property-synthesis -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-property-synthesis"])
-
-case "$OBJC" in
-	*clang*)
-		ASFLAGS="$ASFLAGS -no-integrated-as"
-		;;
-esac
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
@@ -201,6 +195,12 @@ AC_EGREP_CPP(yes, [
 	AC_MSG_RESULT(no)
 ])
 
+case "$host_os" in
+	solaris*)
+		CPPFLAGS="-D__EXTENSIONS__ -D_POSIX_PTHREAD_SEMANTICS $CPPFLAGS"
+		;;
+esac
+
 objc_runtime="ObjFW runtime"
 AC_CHECK_HEADER(objc/objc.h)
 AC_MSG_CHECKING(which Objective C runtime to use)
@@ -211,23 +211,23 @@ AC_ARG_ENABLE(seluid24,
 		[use 24 bit instead of 16 bit for selectors UIDs]))
 AS_IF([test x"$enable_runtime" != x"yes"], [
 	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-		dnl TODO: This is ugly. Let's think of a better check.
 		AC_EGREP_CPP(yes, [
 			#import <objc/objc.h>
-			#ifdef __objc_INCLUDE_GNU
+
+			#ifdef OBJC_BOOL_DEFINED
 			yes
 			#endif
 		], [
-			dnl We don't want the GNU runtime
-			true
-		], [
 			objc_runtime="Apple runtime"
+		], [
+			dnl We don't want the GNU runtime
+			:
 		])
 	])
 ])
 AC_MSG_RESULT($objc_runtime)
 
-case $objc_runtime in
+case "$objc_runtime" in
 	"ObjFW runtime")
 		AC_DEFINE(OF_OBJFW_RUNTIME, 1,
 			[Whether we use the ObjFW runtime])
@@ -310,7 +310,7 @@ case $objc_runtime in
 				exception_type="SEH"
 			])
 
-			case $exception_type in
+			case "$exception_type" in
 			DWARF)
 				AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
 					[Whether DWARF exceptions are used])
@@ -404,6 +404,21 @@ AC_EGREP_CPP(yes, [
 		size_max="(~(size_t)0)"
 	])
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
+])
+AC_MSG_CHECKING(for SSIZE_MAX)
+AC_EGREP_CPP(yes, [
+	#include <stdint.h>
+	#include <limits.h>
+
+	#ifdef SSIZE_MAX
+	yes
+	#endif
+], [
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+	AC_DEFINE(SSIZE_MAX, [((ssize_t)(SIZE_MAX / 2))],
+		[Maximum value for ssize_t])
 ])
 
 AC_CHECK_TYPE(max_align_t,
@@ -520,46 +535,56 @@ esac
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
 AS_IF([test x"$enable_threads" != x"no"], [
+	AC_MSG_CHECKING(for threads)
+
 	case "$host_os" in
 	mingw*)
-		AC_MSG_CHECKING(for threads)
 		AC_MSG_RESULT(WinAPI)
 		;;
 	*)
-		ACX_PTHREAD([
-			CPPLAGS="$CPPFLAGS $PTHREAD_CFLAGS"
-			LIBS="$LIBS $PTHREAD_LIBS"
-			AC_DEFINE(OF_HAVE_PTHREADS, 1,
-				[Whether we have pthreads])
+		AC_MSG_RESULT(POSIX)
 
-			AC_TRY_COMPILE([
-				#include <pthread.h>
-			], [
-				pthread_mutexattr_t attr;
-				pthread_mutexattr_settype(&attr,
-				    PTHREAD_MUTEX_RECURSIVE);
-			], [
-				AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
-					[If pthread mutexes can be recursive])
-			])
-
-			AC_CHECK_FUNC(pthread_spin_lock, [
-				have_spinlocks="yes"
-				AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
-					[Whether we have pthread spinlocks])
-			])
-
-			AC_CHECK_FUNC(sched_yield, [
-				AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
-					[Whether we have sched_yield()])
-			])
-
-			AC_CHECK_HEADERS(pthread_np.h)
-			AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np,
-				break)
+		AX_CHECK_COMPILER_FLAGS(-pthread, [
+			CPPFLAGS="$CPPFLAGS -pthread"
 		], [
+			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
+		])
+
+		LIBS="$LIBS -lpthread"
+		AC_TRY_LINK([
+			#include <pthread.h>
+		], [
+			pthread_create(NULL, NULL, NULL, NULL);
+		], [], [
 			AC_MSG_ERROR(No supported threads found!)
 		])
+
+		AC_DEFINE(OF_HAVE_PTHREADS, 1, [Whether we have pthreads])
+
+		AC_TRY_COMPILE([
+			#include <pthread.h>
+		], [
+			pthread_mutexattr_t attr;
+			pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+		], [
+			AC_DEFINE(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES, 1,
+				[If pthread mutexes can be recursive])
+		])
+
+		AC_CHECK_FUNC(pthread_spin_lock, [
+			have_spinlocks="yes"
+			AC_DEFINE(OF_HAVE_PTHREAD_SPINLOCKS, 1,
+				[Whether we have pthread spinlocks])
+		])
+
+		AC_CHECK_FUNC(sched_yield, [
+			AC_DEFINE(OF_HAVE_SCHED_YIELD, 1,
+				[Whether we have sched_yield()])
+		])
+
+		AC_CHECK_HEADERS(pthread_np.h, [], [], [#include <pthread.h>])
+		AC_CHECK_FUNCS(pthread_set_name_np pthread_setname_np, break)
 		;;
 	esac
 
@@ -702,24 +727,24 @@ AS_IF([test x"$enable_files" != x"no"], [
 		AC_DEFINE(OF_HAVE_OFF64_T, 1, [Whether we have off64_t])
 	])
 
-	AC_CHECK_FUNCS(readdir_r)
+	AC_CHECK_HEADERS([pwd.h grp.h])
+	AC_CHECK_FUNC(chmod, [
+		AC_DEFINE(OF_HAVE_CHMOD, 1, [Whether we have chmod()])
+	])
+	AC_CHECK_FUNC(chown, [
+		AC_DEFINE(OF_HAVE_CHOWN, 1, [Whether we have chown()])
+	])
+	AC_CHECK_FUNC(link, [
+		AC_DEFINE(OF_HAVE_LINK, 1, [Whether we have link()])
+	])
+	AC_CHECK_FUNC(symlink, [
+		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
+	])
+	AC_CHECK_FUNCS([lstat readdir_r])
 ])
 
-AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep lstat])
+AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 
-AC_CHECK_HEADERS([pwd.h grp.h])
-AC_CHECK_FUNC(chmod, [
-	AC_DEFINE(OF_HAVE_CHMOD, 1, [Whether we have chmod()])
-])
-AC_CHECK_FUNC(chown, [
-	AC_DEFINE(OF_HAVE_CHOWN, 1, [Whether we have chown()])
-])
-AC_CHECK_FUNC(link, [
-	AC_DEFINE(OF_HAVE_LINK, 1, [Whether we have link()])
-])
-AC_CHECK_FUNC(symlink, [
-	AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
-])
 AC_CHECK_FUNC(pipe, [
 	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
 ])
@@ -729,6 +754,10 @@ AC_ARG_ENABLE(sockets,
 AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_DEFINE(OF_HAVE_SOCKETS, 1, [Whether we have sockets])
 	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
+
+	AS_IF([test x"$enable_files" != x"no"], [
+		AC_SUBST(OFHTTP, "ofhttp")
+	])
 
 	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
@@ -742,9 +771,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_NETINET_IN_H, 1,
 			[Whether we have netinet/in.h])
 	])
+	AC_CHECK_HEADERS(netinet/tcp.h, [
+		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
+			[Whether we have netinet/tcp.h])
+	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
-	AC_CHECK_FUNCS([fcntl paccept accept4])
+	AC_CHECK_FUNCS([paccept accept4])
 
 	AC_CHECK_FUNC(kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
@@ -752,6 +785,13 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			"OFKernelEventObserver_kqueue.m")
 
 		AC_CHECK_FUNCS(kqueue1)
+	])
+	AC_CHECK_FUNC(epoll_create, [
+		AC_DEFINE(HAVE_EPOLL, 1, [Whether we have epoll])
+		AC_SUBST(OFKERNELEVENTOBSERVER_EPOLL_M,
+			"OFKernelEventObserver_epoll.m")
+
+		AC_CHECK_FUNCS(epoll_create1)
 	])
 	AC_CHECK_HEADER(poll.h, [
 		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
@@ -923,6 +963,8 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_SUBST(OFPROCESS_M, "OFProcess.m")
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
+
+AC_CHECK_HEADERS(sys/ioctl.h)
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [

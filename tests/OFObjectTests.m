@@ -95,9 +95,9 @@ static OFString *module = @"OFObject";
 
 	TEST(@"-[description]",
 	    [[o description] isEqual:
-	    ([OFString stringWithFormat: @"<OFObject: %p>", o])] &&
+	    [OFString stringWithFormat: @"<OFObject: %p>", o]] &&
 	    [[m description] isEqual:
-	    ([OFString stringWithFormat: @"<MyObj: %p>", m])])
+	    [OFString stringWithFormat: @"<MyObj: %p>", m]])
 
 	[pool drain];
 }

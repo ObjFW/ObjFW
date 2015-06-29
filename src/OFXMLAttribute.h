@@ -16,6 +16,8 @@
 
 #import "OFXMLNode.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 
 /*!
@@ -32,9 +34,10 @@
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *name;
 # ifdef __cplusplus
-@property (readonly, copy, getter=namespace) OFString *namespace_;
+@property OF_NULLABLE_PROPERTY (readonly, copy, getter=namespace)
+    OFString *namespace_;
 # else
-@property (readonly, copy) OFString *namespace;
+@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *namespace;
 # endif
 #endif
 
@@ -57,7 +60,7 @@
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
 + (instancetype)attributeWithName: (OFString*)name
-			namespace: (OFString*)namespace_
+			namespace: (nullable OFString*)namespace_
 		      stringValue: (OFString*)stringValue;
 
 /*!
@@ -79,7 +82,7 @@
  * @return An initialized OFXMLAttribute with the specified parameters
  */
 - initWithName: (OFString*)name
-     namespace: (OFString*)namespace_
+     namespace: (nullable OFString*)namespace_
    stringValue: (OFString*)stringValue;
 
 /*!
@@ -94,5 +97,7 @@
  *
  * @return The namespace of the attribute as an autoreleased OFString
  */
-- (OFString*)namespace;
+- (nullable OFString*)namespace;
 @end
+
+OF_ASSUME_NONNULL_END

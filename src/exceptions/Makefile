@@ -13,6 +13,7 @@ SRCS = OFAllocFailedException.m				\
        OFCreateSymbolicLinkFailedException.m		\
        OFEnumerationMutationException.m			\
        OFException.m					\
+       OFGetOptionFailedException.m			\
        OFHashAlreadyCalculatedException.m		\
        OFInitializationFailedException.m		\
        OFInvalidArgumentException.m			\
@@ -26,7 +27,8 @@ SRCS = OFAllocFailedException.m				\
        OFMemoryNotPartOfObjectException.m		\
        OFMoveItemFailedException.m			\
        OFNotImplementedException.m			\
-       OFOpenFileFailedException.m			\
+       OFNotOpenException.m				\
+       OFOpenItemFailedException.m			\
        OFOutOfMemoryException.m				\
        OFOutOfRangeException.m				\
        OFReadFailedException.m				\
@@ -34,6 +36,7 @@ SRCS = OFAllocFailedException.m				\
        OFRemoveItemFailedException.m			\
        OFSeekFailedException.m				\
        OFSetOptionFailedException.m			\
+       OFStatItemFailedException.m			\
        OFStillLockedException.m				\
        OFTruncatedDataException.m			\
        OFUnboundNamespaceException.m			\
@@ -52,7 +55,7 @@ SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFConnectionFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
-	       OFNotConnectedException.m
+	       OFObserveFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

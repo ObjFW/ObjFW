@@ -19,6 +19,8 @@
 
 #import "socket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 @class OFUDPSocket;
@@ -46,7 +48,8 @@ typedef struct {
  *		    success
  */
 typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
-    uint16_t port, of_udp_socket_address_t address, OFException *exception);
+    uint16_t port, of_udp_socket_address_t address,
+    OFException *OF_NULLABLE exception);
 
 /*!
  * @brief A block which is called when a packet has been received.
@@ -61,7 +64,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
  */
 typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
     void *buffer, size_t length, of_udp_socket_address_t sender,
-    OFException *exception);
+    OFException *OF_NULLABLE exception);
 #endif
 
 /*!
@@ -74,8 +77,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @ref getHost:andPort:forAddress: to get the host / port pair for an address.
  * If you want to compare two addresses, you can use
  * @ref of_udp_socket_address_equal and you can use
- * @ref of_udp_socket_address_hash to get a hash to use in e.g.
- * @ref OFMapTable.
+ * @ref of_udp_socket_address_hash to get a hash to use in e.g. @ref OFMapTable.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
@@ -87,11 +89,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
 @interface OFUDPSocket: OFObject <OFCopying, OFReadyForReadingObserving,
     OFReadyForWritingObserving>
 {
-#ifndef _WIN32
-	int    _socket;
-#else
-	SOCKET _socket;
-#endif
+	of_socket_t _socket;
 }
 
 /*!
@@ -156,8 +154,8 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *	       host / port pair will be written to it.
  * @param address The address for which the host and port should be retrieved
  */
-+ (void)getHost: (OFString *__autoreleasing*)host
-	andPort: (uint16_t*)port
++ (void)getHost: (OFString *__autoreleasing OF_NONNULL *OF_NULLABLE)host
+	andPort: (uint16_t *OF_NULLABLE)port
      forAddress: (of_udp_socket_address_t*)address;
 
 /*!
@@ -284,3 +282,5 @@ extern uint32_t of_udp_socket_address_hash(of_udp_socket_address_t *address);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

@@ -19,11 +19,14 @@
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFNull OFNull.h ObjFW/OFNull.h
  *
  * @brief A class for representing null values in collections.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
     OFMessagePackRepresentation>
 /*!
@@ -33,3 +36,5 @@
  */
 + (OFNull*)null;
 @end
+
+OF_ASSUME_NONNULL_END

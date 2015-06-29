@@ -21,7 +21,6 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDate.h"
-#import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFOptionsParser.h"
 #import "OFSet.h"
@@ -31,12 +30,9 @@
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidFormatException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
-
-#import "autorelease.h"
-#import "macros.h"
 
 #define BUFFER_SIZE 4096
 
@@ -55,7 +51,7 @@
 
 - (OFZIPArchive*)openArchiveWithPath: (OFString*)path;
 - (void)listFilesInArchive: (OFZIPArchive*)archive;
-- (void)extractFiles: (OFArray*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
 	 fromArchive: (OFZIPArchive*)archive;
 @end
 
@@ -65,7 +61,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeFormat:
-	    @"Usage: %@ -[flnqvx] archive.zip [file1 file2 ...]\n",
+	    @"Usage: %@ -[fhlnqvx] archive.zip [file1 file2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
@@ -113,9 +109,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	OFOptionsParser *optionsParser =
 	    [OFOptionsParser parserWithOptions: @"fhlnqvx"];
 	of_unichar_t option, mode = '\0';
-	OFArray *remainingArguments;
+	OFArray OF_GENERIC(OFString*) *remainingArguments, *files;
 	OFZIPArchive *archive;
-	OFArray *files;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
@@ -190,7 +185,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			    @"\rFailed to create directory %@: %s\n",
 			    [e path], strerror([e errNo])];
 			_exitStatus = 1;
-		} @catch (OFOpenFileFailedException *e) {
+		} @catch (OFOpenItemFailedException *e) {
 			[of_stderr writeFormat:
 			    @"\rFailed to open file %@: %s\n",
 			    [e path], strerror([e errNo])];
@@ -212,7 +207,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 	@try {
 		archive = [OFZIPArchive archiveWithPath: path];
-	} @catch (OFOpenFileFailedException *e) {
+	} @catch (OFOpenItemFailedException *e) {
 		[of_stderr writeFormat: @"Failed to open file %@: %s\n",
 					[e path], strerror([e errNo])];
 		[OFApplication terminateWithStatus: 1];
@@ -231,8 +226,10 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)listFilesInArchive: (OFZIPArchive*)archive
 {
-	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
+	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *enumerator;
 	OFZIPArchiveEntry *entry;
+
+	enumerator = [[archive entries] objectEnumerator];
 
 	while ((entry = [enumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
@@ -284,19 +281,24 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	}
 }
 
-- (void)extractFiles: (OFArray*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
 	 fromArchive: (OFZIPArchive*)archive
 {
-	OFEnumerator *enumerator = [[archive entries] objectEnumerator];
+	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *entryEnumerator;
 	OFZIPArchiveEntry *entry;
-	bool all = ([files count] == 0);
-	OFMutableSet *missing = [OFMutableSet setWithArray: files];
+	bool all;
+	OFMutableSet OF_GENERIC(OFString*) *missing;
 
-	while ((entry = [enumerator nextObject]) != nil) {
+	all = ([files count] == 0);
+	missing = [OFMutableSet setWithArray: files];
+
+	entryEnumerator = [[archive entries] objectEnumerator];
+	while ((entry = [entryEnumerator nextObject]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		OFString *outFileName = [fileName stringByStandardizingPath];
-		OFEnumerator *componentEnumerator;
+		OFArray OF_GENERIC(OFString*) *pathComponents;
+		OFEnumerator OF_GENERIC(OFString*) *componentEnumerator;
 		OFString *component, *directory;
 		OFStream *stream;
 		OFFile *output;
@@ -317,20 +319,23 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 #endif
 			[of_stderr writeFormat: @"Refusing to extract %@!\n",
 						fileName];
+
 			_exitStatus = 1;
-			continue;
+			goto outer_loop_end;
 		}
 
-		componentEnumerator =
-		    [[outFileName pathComponents] objectEnumerator];
+		pathComponents = [outFileName pathComponents];
+		componentEnumerator = [pathComponents objectEnumerator];
 		while ((component = [componentEnumerator nextObject]) != nil) {
 			if ([component isEqual: OF_PATH_PARENT_DIRECTORY]) {
 				[of_stderr writeFormat:
 				    @"Refusing to extract %@!\n", fileName];
+
 				_exitStatus = 1;
-				continue;
+				goto outer_loop_end;
 			}
 		}
+		outFileName = [OFString pathWithComponents: pathComponents];
 
 		if (_outputLevel >= 0)
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
@@ -343,7 +348,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			if (_outputLevel >= 0)
 				[of_stdout writeLine: @" done"];
 
-			continue;
+			goto outer_loop_end;
 		}
 
 		directory = [outFileName stringByDeletingLastPathComponent];
@@ -357,7 +362,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			if (_override == -1) {
 				if (_outputLevel >= 0)
 					[of_stdout writeLine: @" skipped"];
-				continue;
+
+				goto outer_loop_end;
 			}
 
 			do {
@@ -383,7 +389,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 				[of_stdout writeFormat: @"Skipping %@...\n",
 							fileName];
-				continue;
+
+				goto outer_loop_end;
 			}
 
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
@@ -443,6 +450,7 @@ outer_loop_end:
 	}
 
 	if ([missing count] > 0) {
+		OFEnumerator OF_GENERIC(OFString*) *enumerator;
 		OFString *file;
 
 		enumerator = [missing objectEnumerator];

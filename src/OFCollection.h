@@ -16,6 +16,8 @@
 
 #import "OFEnumerator.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @protocol OFCollection OFCollection.h ObjFW/OFCollection.h
  *
@@ -40,5 +42,7 @@
  * @param object The object which is checked for being in the collection
  * @return A boolean whether the collection contains the specified object
  */
-- (bool)containsObject: (id)object;
+- (bool)containsObject: (nullable id)object;
 @end
+
+OF_ASSUME_NONNULL_END

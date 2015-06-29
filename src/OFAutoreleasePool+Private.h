@@ -16,7 +16,11 @@
 
 #import "OFAutoreleasePool.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFAutoreleasePool (OF_PRIVATE_CATEGORY)
 + (void)OF_handleThreadTermination;
 - (void)OF_super_dealloc;
 @end
+
+OF_ASSUME_NONNULL_END

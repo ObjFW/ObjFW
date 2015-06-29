@@ -66,11 +66,13 @@
 # define OF_LIKELY(cond) (__builtin_expect(!!(cond), 1))
 # define OF_UNLIKELY(cond) (__builtin_expect(!!(cond), 0))
 # define OF_CONST_FUNC __attribute__((__const__))
+# define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 #else
 # define OF_INLINE inline
 # define OF_LIKELY(cond) cond
 # define OF_UNLIKELY(cond) cond
 # define OF_CONST_FUNC
+# define OF_NO_RETURN_FUNC
 #endif
 
 /* Required to build universal binaries on OS X */
@@ -126,14 +128,6 @@
 # define __has_attribute(x) 0
 #endif
 
-#if !__has_feature(objc_instancetype)
-# define instancetype id
-#endif
-
-#if __has_feature(blocks)
-# define OF_HAVE_BLOCKS
-#endif
-
 #if __has_feature(objc_bool)
 # undef YES
 # define YES __objc_yes
@@ -145,6 +139,61 @@
 #  undef false
 #  define false ((bool)0)
 # endif
+#endif
+
+#if !__has_feature(objc_instancetype)
+# define instancetype id
+#endif
+
+#if __has_feature(blocks)
+# define OF_HAVE_BLOCKS
+#endif
+
+#if __has_feature(objc_arc)
+# define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
+# define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
+# define OF_RETURNS_INNER_POINTER \
+	__attribute__((__objc_returns_inner_pointer__))
+# define OF_CONSUMED __attribute__((__ns_consumed__))
+# define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
+#else
+# define OF_RETURNS_RETAINED
+# define OF_RETURNS_NOT_RETAINED
+# define OF_RETURNS_INNER_POINTER
+# define OF_CONSUMED
+# define OF_WEAK_UNAVAILABLE
+# define __unsafe_unretained
+# define __bridge
+# define __autoreleasing
+#endif
+
+#if __has_feature(objc_generics)
+# define OF_HAVE_GENERICS
+# define OF_GENERIC(...) <__VA_ARGS__>
+#else
+# define OF_GENERIC(...)
+#endif
+
+#if __has_feature(nullability)
+# define OF_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
+# define OF_ASSUME_NONNULL_END _Pragma("clang assume_nonnull end")
+# define OF_NONNULL __nonnull
+# define OF_NULLABLE __nullable
+# define OF_NULLABLE_PROPERTY(...) (__VA_ARGS__, nullable)
+#else
+# define OF_ASSUME_NONNULL_BEGIN
+# define OF_ASSUME_NONNULL_END
+# define OF_NONNULL
+# define OF_NULLABLE
+# define OF_NULLABLE_PROPERTY
+# define nonnull
+# define nullable
+#endif
+
+#if __has_feature(objc_kindof)
+# define OF_KINDOF(cls) __kindof cls
+#else
+# define OF_KINDOF(cls) id
 #endif
 
 #if defined(__clang__) || __GCC_VERSION__ >= 405
@@ -171,6 +220,13 @@
 # define OF_ROOT_CLASS __attribute__((__objc_root_class__))
 #else
 # define OF_ROOT_CLASS
+#endif
+
+#if __has_attribute(__objc_subclassing_restricted__)
+# define OF_SUBCLASSING_RESTRICTED \
+	__attribute__((__objc_subclassing_restricted__))
+#else
+# define OF_SUBCLASSING_RESTRICTED
 #endif
 
 #ifdef __GNUC__
@@ -256,24 +312,6 @@
 # endif
 #endif
 
-#if __has_feature(objc_arc)
-# define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
-# define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
-# define OF_RETURNS_INNER_POINTER \
-	__attribute__((__objc_returns_inner_pointer__))
-# define OF_CONSUMED __attribute__((__ns_consumed__))
-# define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
-#else
-# define OF_RETURNS_RETAINED
-# define OF_RETURNS_NOT_RETAINED
-# define OF_RETURNS_INNER_POINTER
-# define OF_CONSUMED
-# define OF_WEAK_UNAVAILABLE
-# define __unsafe_unretained
-# define __bridge
-# define __autoreleasing
-#endif
-
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_NOT_FOUND SIZE_MAX
 
@@ -290,11 +328,14 @@
 #define OF_PATH_PARENT_DIRECTORY @".."
 
 #define OF_ENSURE(cond)							\
-	if (!(cond)) {							\
-		fprintf(stderr, "Failed to ensure condition in "	\
-		    __FILE__ ":%d:\n" #cond "\n", __LINE__);		\
-		abort();						\
-	}
+	do {								\
+		if (!(cond)) {						\
+			fprintf(stderr, "Failed to ensure condition "	\
+			    "in " __FILE__ ":%d:\n" #cond "\n",		\
+			    __LINE__);					\
+			abort();					\
+		}							\
+	} while (0)
 
 #define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
 #define OF_INVALID_INIT_METHOD				\

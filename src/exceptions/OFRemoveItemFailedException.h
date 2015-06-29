@@ -37,7 +37,7 @@
  * @brief Creates a new, autoreleased remove failed exception.
  *
  * @param path The path of the item which could not be removed
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased remove item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -47,7 +47,7 @@
  * @brief Initializes an already allocated remove failed exception.
  *
  * @param path The path of the item which could not be removed
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized remove item failed exception
  */
 - initWithPath: (OFString*)path
@@ -61,9 +61,9 @@
 - (OFString*)path;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

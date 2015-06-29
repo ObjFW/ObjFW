@@ -1131,6 +1131,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (pathCStringLength == 0)
 		return @"";
 
+	if (pathCStringLength - 1 > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	for (i = pathCStringLength - 1; i >= 0; i--) {
 		if (OF_IS_PATH_DELIMITER(_s->cString[i])) {
 			i++;

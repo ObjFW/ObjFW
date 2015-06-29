@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFEnumerator.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 /*!
@@ -26,13 +28,13 @@
  */
 typedef struct {
 	/// The function to retain keys / values
-	void* (*retain)(void *value);
+	void *OF_NONNULL (*OF_NULLABLE retain)(void *value);
 	/// The function to release keys / values
-	void (*release)(void *value);
+	void (*OF_NULLABLE release)(void *value);
 	/// The function to hash keys
-	uint32_t (*hash)(void *value);
+	uint32_t (*OF_NULLABLE hash)(void *value);
 	/// The function to compare keys / values
-	bool (*equal)(void *value1, void *value2);
+	bool (*OF_NULLABLE equal)(void *value1, void *value2);
 } of_map_table_functions_t;
 
 #ifdef OF_HAVE_BLOCKS
@@ -54,7 +56,8 @@ typedef void (^of_map_table_enumeration_block_t)(void *key, void *value,
  * @param value The value to replace
  * @return The value to replace the value with
  */
-typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
+typedef void *OF_NONNULL (^of_map_table_replace_block_t)(
+    void *key, void *value);
 #endif
 
 @class OFMapTableEnumerator;
@@ -133,12 +136,12 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
 - (size_t)count;
 
 /*!
- * @brief Returns the value for the given key or nil if the key was not found.
+ * @brief Returns the value for the given key or NULL if the key was not found.
  *
  * @param key The key whose object should be returned
- * @return The value for the given key or nil if the key was not found
+ * @return The value for the given key or NULL if the key was not found
  */
-- (void*)valueForKey: (void*)key;
+- (nullable void*)valueForKey: (void*)key;
 
 /*!
  * @brief Sets a value for a key.
@@ -168,7 +171,7 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
  * @param value The value which is checked for being in the map table
  * @return A boolean whether the map table contains the specified value
 */
-- (bool)containsValue: (void*)value;
+- (bool)containsValue: (nullable void*)value;
 
 /*!
  * @brief Checks whether the map table contains a value with the specified
@@ -178,7 +181,7 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
  * @return A boolean whether the map table contains a value with the specified
  *	   address.
  */
-- (bool)containsValueIdenticalTo: (void*)value;
+- (bool)containsValueIdenticalTo: (nullable void*)value;
 
 /*!
  * @brief Returns an OFMapTableEnumerator to enumerate through the map table's
@@ -257,3 +260,5 @@ typedef void* (^of_map_table_replace_block_t)(void *key, void *value);
  */
 - (void)reset;
 @end
+
+OF_ASSUME_NONNULL_END

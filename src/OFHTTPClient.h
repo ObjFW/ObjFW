@@ -20,12 +20,14 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFURL;
 @class OFTCPSocket;
-@class OFDictionary;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
 
 /*!
@@ -63,12 +65,12 @@
  *		  received
  */
 -      (void)client: (OFHTTPClient*)client
-  didReceiveHeaders: (OFDictionary*)headers
+  didReceiveHeaders: (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers
 	 statusCode: (int)statusCode
 	    request: (OFHTTPRequest*)request;
 
 /*!
- * @brief A callback which is called when an OFHTTPClient will follow a
+ * @brief A callback which is called when an OFHTTPClient wants to follow a
  *	  redirect.
  *
  * If you want to get the headers and data for each redirect, set the number of
@@ -103,11 +105,12 @@
 	bool _insecureRedirectsAllowed;
 	OFTCPSocket *_socket;
 	OFURL *_lastURL;
+	bool _lastWasHEAD;
 	OFHTTPResponse *_lastResponse;
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFHTTPClientDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign) id <OFHTTPClientDelegate> delegate;
 @property bool insecureRedirectsAllowed;
 #endif
 
@@ -123,14 +126,14 @@
  *
  * @param delegate The delegate of the HTTP request
  */
-- (void)setDelegate: (id <OFHTTPClientDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFHTTPClientDelegate>)delegate;
 
 /*!
  * @brief Returns the delegate of the HTTP reqeust.
  *
  * @return The delegate of the HTTP request
  */
-- (id <OFHTTPClientDelegate>)delegate;
+- (nullable id <OFHTTPClientDelegate>)delegate;
 
 /*!
  * @brief Sets whether redirects from HTTPS to HTTP are allowed.
@@ -173,3 +176,5 @@
 
 @interface OFObject (OFHTTPClientDelegate) <OFHTTPClientDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

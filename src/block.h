@@ -14,6 +14,10 @@
  * file.
  */
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 typedef struct of_block_literal_t {
 #ifdef __OBJC__
 	Class isa;
@@ -48,3 +52,5 @@ extern void _Block_release(const void*);
 #ifndef Block_release
 # define Block_release(...) _Block_release((const void*)(__VA_ARGS__))
 #endif
+
+OF_ASSUME_NONNULL_END

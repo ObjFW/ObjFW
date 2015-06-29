@@ -18,9 +18,14 @@
 #import "OFString.h"
 #import "OFXMLAttribute.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFXMLParser;
-@class OFArray;
-@class OFMutableArray;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
 @class OFDataArray;
 @class OFStream;
 
@@ -56,9 +61,9 @@
  */
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
-	   prefix: (OFString*)prefix
-	namespace: (OFString*)ns
-       attributes: (OFArray*)attributes;
+	   prefix: (nullable OFString*)prefix
+	namespace: (nullable OFString*)ns
+       attributes: (nullable OFArray OF_GENERIC(OFXMLAttribute*)*)attributes;
 
 /*!
  * @brief This callback is called when the XML parser found the end of a tag.
@@ -70,8 +75,8 @@
  */
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
-	 prefix: (OFString*)prefix
-      namespace: (OFString*)ns;
+	 prefix: (nullable OFString*)prefix
+      namespace: (nullable OFString*)ns;
 
 /*!
  * @brief This callback is called when the XML parser found characters.
@@ -157,10 +162,13 @@
 	const char *_data;
 	OFDataArray *_buffer;
 	OFString *_name, *_prefix;
-	OFMutableArray *_namespaces, *_attributes;
+	OFMutableArray
+	    OF_GENERIC(OFMutableDictionary OF_GENERIC(OFString*, OFString*)*)
+	    *_namespaces;
+	OFMutableArray OF_GENERIC(OFXMLAttribute*) *_attributes;
 	OFString *_attributeName, *_attributePrefix;
 	char _delimiter;
-	OFMutableArray *_previous;
+	OFMutableArray OF_GENERIC(OFString*) *_previous;
 	size_t _level;
 	bool _acceptProlog;
 	size_t _lineNumber;
@@ -170,7 +178,7 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFXMLParserDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign) id <OFXMLParserDelegate> delegate;
 @property size_t depthLimit;
 #endif
 
@@ -182,18 +190,18 @@
 + (instancetype)parser;
 
 /*!
- * @brief Returns the delegate that is used by the XML parser.
- *
- * @return The delegate that is used by the XML parser
- */
-- (id <OFXMLParserDelegate>)delegate;
-
-/*!
  * @brief Sets the delegate the XML parser should use.
  *
  * @param delegate The delegate to use
  */
-- (void)setDelegate: (id <OFXMLParserDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFXMLParserDelegate>)delegate;
+
+/*!
+ * @brief Returns the delegate that is used by the XML parser.
+ *
+ * @return The delegate that is used by the XML parser
+ */
+- (nullable id <OFXMLParserDelegate>)delegate;
 
 /*!
  * @brief Returns the depth limit for the XML parser.
@@ -262,3 +270,5 @@
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

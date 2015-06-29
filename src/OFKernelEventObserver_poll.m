@@ -18,6 +18,9 @@
 
 #include "config.h"
 
+#include <assert.h>
+#include <errno.h>
+
 #ifdef HAVE_POLL_H
 # include <poll.h>
 #endif
@@ -27,6 +30,7 @@
 #import "OFKernelEventObserver_poll.h"
 #import "OFDataArray.h"
 
+#import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "socket_helpers.h"
@@ -42,13 +46,15 @@
 	self = [super init];
 
 	@try {
-		struct pollfd p = { 0, POLLIN, 0 };
+		struct pollfd p = { _cancelFD[0], POLLIN, 0 };
 
 		_FDs = [[OFDataArray alloc] initWithItemSize:
 		    sizeof(struct pollfd)];
-
-		p.fd = _cancelFD[0];
 		[_FDs addItem: &p];
+
+		_maxFD = _cancelFD[0];
+		_FDToObject = [self allocMemoryWithSize: sizeof(id)
+						  count: _maxFD + 1];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -64,8 +70,9 @@
 	[super dealloc];
 }
 
-- (void)OF_addFileDescriptor: (int)fd
-		  withEvents: (short)events
+- (void)OF_addObject: (id)object
+      fileDescriptor: (int)fd
+	      events: (short)events
 {
 	struct pollfd *FDs = [_FDs items];
 	size_t i, count = [_FDs count];
@@ -81,12 +88,22 @@
 
 	if (!found) {
 		struct pollfd p = { fd, events, 0 };
+
+		if (fd > _maxFD) {
+			_maxFD = fd;
+			_FDToObject = [self resizeMemory: _FDToObject
+						    size: sizeof(id)
+						   count: _maxFD + 1];
+		}
+
+		_FDToObject[fd] = object;
 		[_FDs addItem: &p];
 	}
 }
 
-- (void)OF_removeFileDescriptor: (int)fd
-		     withEvents: (short)events
+- (void)OF_removeObject: (id)object
+	 fileDescriptor: (int)fd
+		 events: (short)events
 {
 	struct pollfd *FDs = [_FDs items];
 	size_t i, nFDs = [_FDs count];
@@ -95,50 +112,56 @@
 		if (FDs[i].fd == fd) {
 			FDs[i].events &= ~events;
 
-			if (FDs[i].events == 0)
+			if (FDs[i].events == 0) {
+				/*
+				 * TODO: Remove from and resize _FDToObject,
+				 *	 adjust _maxFD.
+				 */
 				[_FDs removeItemAtIndex: i];
+			}
 
 			break;
 		}
 	}
 }
 
-- (void)OF_addFileDescriptorForReading: (int)fd
+- (void)OF_addObjectForReading: (id)object
 {
-	[self OF_addFileDescriptor: fd
-			withEvents: POLLIN];
+	[self OF_addObject: object
+	    fileDescriptor: [object fileDescriptorForReading]
+		    events: POLLIN];
 }
 
-- (void)OF_addFileDescriptorForWriting: (int)fd
+- (void)OF_addObjectForWriting: (id)object
 {
-	[self OF_addFileDescriptor: fd
-			withEvents: POLLOUT];
+	[self OF_addObject: object
+	    fileDescriptor: [object fileDescriptorForWriting]
+		    events: POLLOUT];
 }
 
-- (void)OF_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeObjectForReading: (id)object
 {
-	[self OF_removeFileDescriptor: fd
-			   withEvents: POLLIN];
+	[self OF_removeObject: object
+	       fileDescriptor: [object fileDescriptorForReading]
+		       events: POLLIN];
 }
 
-- (void)OF_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeObjectForWriting: (id)object
 {
-	[self OF_removeFileDescriptor: fd
-			   withEvents: POLLOUT];
+	[self OF_removeObject: object
+	       fileDescriptor: [object fileDescriptorForWriting]
+		       events: POLLOUT];
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
-	size_t i, nFDs, realEvents = 0;
+	int events;
+	size_t i, nFDs;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
-
-	if ([self OF_processCache]) {
-		objc_autoreleasePoolPop(pool);
-		return true;
-	}
+	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -150,49 +173,48 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	if (poll(FDs, (nfds_t)nFDs,
-	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1)) < 1)
-		return false;
+	events = poll(FDs, (nfds_t)nFDs,
+	    (int)(timeInterval != -1 ? timeInterval * 1000 : -1));
+
+	if (events < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
 
 	for (i = 0; i < nFDs; i++) {
-		pool = objc_autoreleasePoolPush();
+		assert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
 
-				OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
+				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
 				FDs[i].revents = 0;
 
-				objc_autoreleasePoolPop(pool);
 				continue;
 			}
+
+			pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
 				    _FDToObject[FDs[i].fd]];
 
-			realEvents++;
+			objc_autoreleasePoolPop(pool);
 		}
 
 		if (FDs[i].revents & POLLOUT) {
+			pool = objc_autoreleasePoolPush();
+
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
 				    _FDToObject[FDs[i].fd]];
 
-			realEvents++;
+			objc_autoreleasePoolPop(pool);
 		}
 
 		FDs[i].revents = 0;
-
-		objc_autoreleasePoolPop(pool);
 	}
-
-	if (realEvents == 0)
-		return false;
-
-	return true;
 }
 @end

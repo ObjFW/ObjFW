@@ -16,6 +16,8 @@
 
 #import "OFArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDataArray;
 
 @interface OFMutableArray_adjacent: OFMutableArray
@@ -24,3 +26,5 @@
 	unsigned long _mutations;
 }
 @end
+
+OF_ASSUME_NONNULL_END

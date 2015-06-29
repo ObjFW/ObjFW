@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFMutableString OFString.h ObjFW/OFString.h
  *
@@ -207,3 +209,5 @@
  */
 - (void)makeImmutable;
 @end
+
+OF_ASSUME_NONNULL_END

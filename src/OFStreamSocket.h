@@ -18,6 +18,8 @@
 
 #import "socket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFStreamSocket OFStreamSocket.h ObjFW/OFStreamSocket.h
  *
@@ -25,12 +27,8 @@
  */
 @interface OFStreamSocket: OFStream
 {
-#ifndef _WIN32
-	int    _socket;
-#else
-	SOCKET _socket;
-#endif
-	bool  _atEndOfStream;
+	of_socket_t _socket;
+	bool _atEndOfStream;
 }
 
 /*!
@@ -40,3 +38,5 @@
  */
 + (instancetype)socket;
 @end
+
+OF_ASSUME_NONNULL_END

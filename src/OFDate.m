@@ -189,13 +189,13 @@ static int monthToDayOfYear[12] = {
 + (instancetype)distantFuture
 {
 	return [[[self alloc]
-	    initWithTimeIntervalSince1970: DBL_MAX] autorelease];
+	    initWithTimeIntervalSince1970: INFINITY] autorelease];
 }
 
 + (instancetype)distantPast
 {
 	return [[[self alloc]
-	    initWithTimeIntervalSince1970: DBL_MIN] autorelease];
+	    initWithTimeIntervalSince1970: -INFINITY] autorelease];
 }
 
 - init
@@ -305,6 +305,7 @@ static int monthToDayOfYear[12] = {
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+		OFString *stringValue;
 		union {
 			double d;
 			uint64_t u;
@@ -314,8 +315,16 @@ static int monthToDayOfYear[12] = {
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		d.u = (uint64_t)[element hexadecimalValue];
-		_seconds = d.d;
+		stringValue = [element stringValue];
+
+		if ([stringValue isEqual: @"DISTANT_PAST"])
+			_seconds = -INFINITY;
+		else if ([stringValue isEqual: @"DISTANT_FUTURE"])
+			_seconds = INFINITY;
+		else {
+			d.u = (uint64_t)[element hexadecimalValue];
+			_seconds = d.d;
+		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -386,7 +395,10 @@ static int monthToDayOfYear[12] = {
 
 - (OFString*)description
 {
-	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
+	if (isinf(_seconds))
+		return (_seconds > 0 ? @"Distant Future" : @"Distant Past");
+	else
+		return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
 - (OFXMLElement*)XMLElementBySerializing
@@ -401,9 +413,14 @@ static int monthToDayOfYear[12] = {
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	d.d = _seconds;
-	[element setStringValue:
-	    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
+	if (isinf(_seconds))
+		[element setStringValue:
+		    (_seconds > 0 ? @"DISTANT_FUTURE" : @"DISTANT_PAST")];
+	else {
+		d.d = _seconds;
+		[element setStringValue:
+		    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
+	}
 
 	[element retain];
 
@@ -620,7 +637,7 @@ static int monthToDayOfYear[12] = {
 	struct timeval t;
 	of_time_interval_t seconds;
 
-	OF_ENSURE(!gettimeofday(&t, NULL));
+	OF_ENSURE(gettimeofday(&t, NULL) == 0);
 
 	seconds = t.tv_sec;
 	seconds += (of_time_interval_t)t.tv_usec / 1000000;

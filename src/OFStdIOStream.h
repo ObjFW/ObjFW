@@ -16,6 +16,8 @@
 
 #import "OFStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
@@ -24,6 +26,7 @@
  * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are
  * instances of this class and need no initialization.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFStdIOStream: OFStream
 {
 	int  _fd;
@@ -39,19 +42,21 @@ extern "C" {
 /*!
  * @brief The standard input as an OFStream.
  */
-extern OFStdIOStream *of_stdin;
+extern OFStdIOStream *OF_NULLABLE of_stdin;
 
 /*!
  * @brief The standard output as an OFStream.
  */
-extern OFStdIOStream *of_stdout;
+extern OFStdIOStream *OF_NULLABLE of_stdout;
 
 /*!
  * @brief The standard error as an OFStream.
  */
-extern OFStdIOStream *of_stderr;
+extern OFStdIOStream *OF_NULLABLE of_stderr;
 
 extern void of_log(OFConstantString*, ...);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

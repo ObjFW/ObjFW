@@ -40,7 +40,7 @@
  * @param path The path of the item
  * @param owner The new owner for the item
  * @param group The new group for the item
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change owner failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -54,7 +54,7 @@
  * @param path The path of the item
  * @param owner The new owner for the item
  * @param group The new group for the item
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized change owner failed exception
  */
 - initWithPath: (OFString*)path
@@ -84,9 +84,9 @@
 - (OFString*)group;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

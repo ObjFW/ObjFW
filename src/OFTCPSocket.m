@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <fcntl.h>
+
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
@@ -38,10 +40,11 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 #import "OFConnectionFailedException.h"
+#import "OFGetOptionFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFListenFailedException.h"
-#import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFSetOptionFailedException.h"
 
@@ -482,7 +485,7 @@ static uint16_t freePort = 65532;
 - (void)listenWithBackLog: (int)backLog
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (listen(_socket, backLog) == -1)
 		@throw [OFListenFailedException
@@ -562,23 +565,12 @@ static uint16_t freePort = 65532;
 }
 #endif
 
-- (void)setKeepAlivesEnabled: (bool)enable
-{
-	int v = enable;
-
-	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
-	    (char*)&v, (socklen_t)sizeof(v)))
-		@throw [OFSetOptionFailedException
-		    exceptionWithStream: self
-				  errNo: of_socket_errno()];
-}
-
 - (OFString*)remoteAddress
 {
 	OFString *ret;
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
@@ -591,5 +583,55 @@ static uint16_t freePort = 65532;
 - (bool)isListening
 {
 	return _listening;
+}
+
+- (void)setKeepAliveEnabled: (bool)enabled
+{
+	int v = enabled;
+
+	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
+	    (char*)&v, (socklen_t)sizeof(v)) != 0)
+		@throw [OFSetOptionFailedException
+		    exceptionWithStream: self
+				  errNo: of_socket_errno()];
+}
+
+- (bool)isKeepAliveEnabled
+{
+	int v;
+	socklen_t len = sizeof(v);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
+	    (char*)&v, &len) != 0 || len != sizeof(v))
+		@throw [OFGetOptionFailedException
+		    exceptionWithStream: self
+				  errNo: of_socket_errno()];
+
+	return v;
+}
+
+- (void)setTCPNoDelayEnabled: (bool)enabled
+{
+	int v = enabled;
+
+	if (setsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
+	    (char*)&v, (socklen_t)sizeof(v)) != 0)
+		@throw [OFSetOptionFailedException
+		    exceptionWithStream: self
+				  errNo: of_socket_errno()];
+}
+
+- (bool)isTCPNoDelayEnabled
+{
+	int v;
+	socklen_t len = sizeof(v);
+
+	if (getsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
+	    (char*)&v, &len) != 0 || len != sizeof(v))
+		@throw [OFGetOptionFailedException
+		    exceptionWithStream: self
+				  errNo: of_socket_errno()];
+
+	return v;
 }
 @end

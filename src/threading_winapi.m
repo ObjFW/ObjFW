@@ -71,7 +71,7 @@ of_thread_detach(of_thread_t thread)
 	return true;
 }
 
-void OF_NO_RETURN
+void OF_NO_RETURN_FUNC
 of_thread_exit(void)
 {
 	ExitThread(0);

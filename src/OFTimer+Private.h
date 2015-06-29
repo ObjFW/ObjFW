@@ -16,6 +16,10 @@
 
 #import "OFTimer.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFTimer (OF_PRIVATE_CATEGORY)
-- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop;
+- (void)OF_setInRunLoop: (nullable OFRunLoop*)inRunLoop;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -23,6 +23,10 @@
 
 #include <time.h>
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,3 +34,5 @@ extern const char* of_strptime(const char*, const char*, struct tm *tm);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

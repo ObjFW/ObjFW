@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @protocol OFLocking OFLocking.h ObjFW/OFLocking.h
  *
@@ -23,7 +25,7 @@
  */
 @protocol OFLocking <OFObject>
 #ifdef OF_HAVE_PROPERTIES
-@property (copy) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy) OFString *name;
 #endif
 
 /*!
@@ -48,12 +50,14 @@
  *
  * @param name The name for the lock
  */
-- (void)setName: (OFString*)name;
+- (void)setName: (nullable OFString*)name;
 
 /*!
  * @brief Returns the name for the lock.
  *
  * @return The name for the lock
  */
-- (OFString*)name;
+- (nullable OFString*)name;
 @end
+
+OF_ASSUME_NONNULL_END

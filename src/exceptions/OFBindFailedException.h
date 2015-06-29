@@ -47,7 +47,7 @@
  * @param host The host on which binding failed
  * @param port The port on which binding failed
  * @param socket The socket which could not be bound
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased bind failed exception
  */
 + (instancetype)exceptionWithHost: (OFString*)host
@@ -61,7 +61,7 @@
  * @param host The host on which binding failed
  * @param port The port on which binding failed
  * @param socket The socket which could not be bound
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized bind failed exception
  */
 - initWithHost: (OFString*)host
@@ -91,9 +91,9 @@
 - (id)socket;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

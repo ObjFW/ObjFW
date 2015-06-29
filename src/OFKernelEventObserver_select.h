@@ -27,8 +27,13 @@
 
 #import "OFKernelEventObserver.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @interface OFKernelEventObserver_select: OFKernelEventObserver
 {
 	fd_set _readFDs, _writeFDs;
+	int _maxFD;
 }
 @end
+
+OF_ASSUME_NONNULL_END

@@ -32,8 +32,6 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnknownXMLEntityException.h"
 
-#import "macros.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFString";
@@ -455,13 +453,19 @@ static uint16_t sutf16str[] = {
 	    [@"\r-INFINITY\n" floatValue] == -INFINITY &&
 	    isnan([@"   NAN\t\t" floatValue]))
 
-#if !defined(__ANDROID__) && !defined(__DJGPP__)
+#if !defined(__ANDROID__) && !defined(__sun__) && !defined(__DJGPP__)
 # define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
 # define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else
-/* Android and DJGPPP do not accept 0x for strtod() */
-# define INPUT @"\t-0.123456789 "
-# define EXPECTED -0.123456789
+/* Android, Solaris and DJGPP do not accept 0x for strtod() */
+# if !defined(__sun__) || !defined(__i386__)
+#  define INPUT @"\t-0.123456789 "
+#  define EXPECTED -0.123456789
+# else
+/* Solaris' strtod() has weird rounding on x86, but not on x86_64 */
+#  define INPUT @"\t-0.125 "
+#  define EXPECTED -0.125
+# endif
 #endif
 	TEST(@"-[doubleValue]",
 	    [INPUT doubleValue] == EXPECTED &&

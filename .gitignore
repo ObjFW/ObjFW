@@ -42,5 +42,7 @@ tests/objc_sync/objc_sync
 utils/objfw-config
 utils/ofhash/ofhash
 utils/ofhash/ofhash.exe
+utils/ofhttp/ofhttp
+utils/ofhttp/ofhttp.exe
 utils/ofzip/ofzip
 utils/ofzip/ofzip.exe

@@ -19,6 +19,8 @@
 
 #import "threading.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFRecursiveMutex OFRecursiveMutex.h ObjFW/OFRecursiveMutex.h
  *
@@ -39,3 +41,5 @@
  */
 + (instancetype)mutex;
 @end
+
+OF_ASSUME_NONNULL_END

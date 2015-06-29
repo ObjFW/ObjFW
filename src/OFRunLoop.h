@@ -19,7 +19,9 @@
 # import "OFTCPSocket.h"
 #endif
 
-@class OFSortedList;
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFSortedList OF_GENERIC(ObjectType);
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
 @class OFCondition;
@@ -27,7 +29,7 @@
 #ifdef OF_HAVE_SOCKETS
 @class OFKernelEventObserver;
 #endif
-@class OFMutableDictionary;
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFTimer;
 
 /*!
@@ -82,3 +84,5 @@
  */
 - (void)stop;
 @end
+
+OF_ASSUME_NONNULL_END

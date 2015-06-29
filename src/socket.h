@@ -22,13 +22,14 @@
 
 #include <stdbool.h>
 
-#include <fcntl.h>
-
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
 #ifdef OF_HAVE_NETINET_IN_H
 # include <netinet/in.h>
+#endif
+#ifdef OF_HAVE_NETINET_TCP_H
+# include <netinet/tcp.h>
 #endif
 
 #ifdef _WIN32
@@ -66,15 +67,27 @@ struct sockaddr_storage {
 };
 #endif
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+#ifndef _WIN32
+typedef int of_socket_t;
+#else
+typedef SOCKET of_socket_t;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 extern bool of_socket_init(void);
 extern int of_socket_errno(void);
 # ifndef __wii__
-extern int of_getsockname(int socket, struct sockaddr *restrict address,
+extern int of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
     socklen_t *restrict address_len);
 # endif
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

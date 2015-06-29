@@ -24,7 +24,7 @@
 #import "OFStreamSocket.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFNotConnectedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSetOptionFailedException.h"
@@ -59,7 +59,7 @@
 	ssize_t ret;
 
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
@@ -93,7 +93,7 @@
 		     length: (size_t)length
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
@@ -136,6 +136,9 @@
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -148,6 +151,9 @@
 #ifndef _WIN32
 	return _socket;
 #else
+	if (_socket == INVALID_SOCKET)
+		return -1;
+
 	if (_socket > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -158,7 +164,7 @@
 - (void)close
 {
 	if (_socket == INVALID_SOCKET)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	close(_socket);
 	_socket = INVALID_SOCKET;

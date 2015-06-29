@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFMessagePackRepresentation.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDataArray;
 
 /*!
@@ -73,3 +75,5 @@
  */
 - (OFDataArray*)data;
 @end
+
+OF_ASSUME_NONNULL_END

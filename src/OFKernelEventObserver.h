@@ -18,8 +18,10 @@
 
 #import "socket.h"
 
-@class OFMutableArray;
-@class OFMutableDictionary;
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFDataArray;
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
@@ -108,19 +110,17 @@
  */
 @interface OFKernelEventObserver: OFObject
 {
-	OFMutableArray *_readObjects;
-	OFMutableArray *_writeObjects;
-	__unsafe_unretained id *_FDToObject;
-	size_t _maxFD;
+	OFMutableArray OF_GENERIC(id <OFReadyForReadingObserving>)
+	    *_readObjects;
+	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
+	    *_writeObjects;
 	OFMutableArray *_queue;
-	OFDataArray *_queueInfo, *_queueFDs;
+	OFDataArray *_queueActions;
 	id <OFKernelEventObserverDelegate> _delegate;
-#ifndef _WIN32
+#ifdef OF_HAVE_PIPE
 	int _cancelFD[2];
 #else
-	SOCKET _cancelFD[2];
-#endif
-#ifndef OF_HAVE_PIPE
+	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
 #endif
 #ifdef OF_HAVE_THREADS
@@ -129,7 +129,8 @@
 }
 
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFKernelEventObserverDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (assign)
+    id <OFKernelEventObserverDelegate> delegate;
 #endif
 
 /*!
@@ -144,14 +145,14 @@
  *
  * @return The delegate for the OFKernelEventObserver
  */
-- (id <OFKernelEventObserverDelegate>)delegate;
+- (nullable id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
  * @brief Sets the delegate for the OFKernelEventObserver.
  *
  * @param delegate The delegate for the OFKernelEventObserver
  */
-- (void)setDelegate: (id <OFKernelEventObserverDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
  * @brief Adds an object to observe for reading.
@@ -206,18 +207,16 @@
  *	  timeout is reached.
  *
  * @param timeInterval The time to wait for an event, in seconds
- * @return A boolean whether events occurred before returning
  */
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval;
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval;
 
 /*!
  * @brief Observes all objects until an event happens on an object or the
  *	  specified date is reached.
  *
  * @param date The until which to observe
- * @return A boolean whether events occurred before returning
  */
-- (bool)observeUntilDate: (OFDate*)date;
+- (void)observeUntilDate: (OFDate*)date;
 
 /*!
  * @brief Cancels the currently blocking observe call.
@@ -232,3 +231,5 @@
 @interface OFObject (OFKernelEventObserverDelegate)
     <OFKernelEventObserverDelegate>
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #if !defined(OF_CONSTANT_STRING_M) && \
     defined(OF_APPLE_RUNTIME) && !defined(__OBJC2__)
 # ifdef __cplusplus
@@ -38,3 +40,5 @@ extern void *_OFConstantStringClassReference;
 	unsigned int _cStringLength;
 }
 @end
+
+OF_ASSUME_NONNULL_END

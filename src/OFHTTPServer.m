@@ -33,7 +33,7 @@
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
-#import "OFNotConnectedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFWriteFailedException.h"
@@ -241,7 +241,7 @@ normalizedKey(OFString *key)
 	void *pool;
 
 	if (_socket == nil)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!_headersSent)
 		[self OF_sendHeaders];
@@ -265,7 +265,7 @@ normalizedKey(OFString *key)
 - (void)close
 {
 	if (_socket == nil)
-		@throw [OFNotConnectedException exceptionWithSocket: self];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!_headersSent)
 		[self OF_sendHeaders];
@@ -281,7 +281,7 @@ normalizedKey(OFString *key)
 - (int)fileDescriptorForWriting
 {
 	if (_socket == nil)
-		return (int)INVALID_SOCKET;
+		return -1;
 
 	return [_socket fileDescriptorForWriting];
 }
@@ -303,7 +303,7 @@ normalizedKey(OFString *key)
 	uint16_t _port;
 	OFMutableDictionary *_headers;
 	size_t _contentLength;
-	OFDataArray *_entity;
+	OFDataArray *_body;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
@@ -314,7 +314,7 @@ normalizedKey(OFString *key)
 - (bool)parseProlog: (OFString*)line;
 - (bool)parseHeaders: (OFString*)line;
 -      (bool)socket: (OFTCPSocket*)socket
-  didReadIntoBuffer: (const char*)buffer
+  didReadIntoBuffer: (char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception;
 - (bool)sendErrorAndClose: (short)statusCode;
@@ -356,7 +356,7 @@ normalizedKey(OFString *key)
 	[_host release];
 	[_path release];
 	[_headers release];
-	[_entity release];
+	[_body release];
 
 	[super dealloc];
 }
@@ -457,10 +457,10 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if ([line length] == 0) {
-		size_t contentLength;
+		intmax_t contentLength;
 
 		@try {
-			contentLength = (size_t)[[_headers
+			contentLength = [[_headers
 			    objectForKey: @"Content-Length"] decimalValue];
 		} @catch (OFInvalidFormatException *e) {
 			return [self sendErrorAndClose: 400];
@@ -470,7 +470,7 @@ normalizedKey(OFString *key)
 			char *buffer;
 
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			_entity = [[OFDataArray alloc] init];
+			_body = [[OFDataArray alloc] init];
 
 			[_socket asyncReadIntoBuffer: buffer
 					      length: BUFFER_SIZE
@@ -536,17 +536,25 @@ normalizedKey(OFString *key)
 }
 
 -      (bool)socket: (OFTCPSocket*)socket
-  didReadIntoBuffer: (const char*)buffer
+  didReadIntoBuffer: (char*)buffer
 	     length: (size_t)length
 	  exception: (OFException*)exception
 {
 	if ([socket isAtEndOfStream] || exception != nil)
 		return false;
 
-	[_entity addItems: buffer
-		    count: length];
+	[_body addItems: buffer
+		  count: length];
 
-	if ([_entity count] >= _contentLength) {
+	if ([_body count] >= _contentLength) {
+		/*
+		 * Manually free the buffer here. While this is not required
+		 * now as the async read is the only thing referencing self and
+		 * the buffer is allocated on self, it is required once
+		 * Connection: keep-alive is implemented.
+		 */
+		[self freeMemory: buffer];
+
 		@try {
 			[self createResponse];
 		} @catch (OFWriteFailedException *e) {
@@ -620,7 +628,7 @@ normalizedKey(OFString *key)
 	[request setProtocolVersion:
 	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion }];
 	[request setHeaders: _headers];
-	[request setEntity: _entity];
+	[request setBody: _body];
 	[request setRemoteAddress: [_socket remoteAddress]];
 
 	response = [[[OFHTTPServerResponse alloc]

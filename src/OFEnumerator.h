@@ -16,8 +16,12 @@
 
 #import "OFObject.h"
 
-@class OFEnumerator;
-@class OFArray;
+OF_ASSUME_NONNULL_BEGIN
+
+#ifndef DOXYGEN
+@class OFEnumerator OF_GENERIC(ObjectType);
+@class OFArray OF_GENERIC(ObjectType);
+#endif
 
 /*!
  * @protocol OFEnumerating OFEnumerator.h ObjFW/OFEnumerator.h
@@ -39,20 +43,27 @@
  *
  * @brief A class which provides methods to enumerate through collections.
  */
+#ifdef OF_HAVE_GENERICS
+@interface OFEnumerator <ObjectType>: OFObject
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
 @interface OFEnumerator: OFObject
+#endif
 /*!
- * @brief Returns the next object.
+ * @brief Returns the next object or nil if there is none left.
  *
- * @return The next object
+ * @return The next object or nil if there is none left
  */
-- (id)nextObject;
+- (nullable ObjectType)nextObject;
 
 /*!
  * @brief Returns an array of all remaining objects in the collection.
  *
  * @return An array of all remaining objects in the collection
  */
-- (OFArray*)allObjects;
+- (OFArray OF_GENERIC(ObjectType)*)allObjects;
 
 /*!
  * @brief Resets the enumerator, so the next call to nextObject returns the
@@ -60,6 +71,9 @@
  */
 - (void)reset;
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
 
 /*
  * This needs to be exactly like this because it's hardcoded in the compiler.
@@ -78,9 +92,9 @@ typedef struct {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
 	/// Pointer to a C array of objects to return
-	__unsafe_unretained id *itemsPtr;
+	id __unsafe_unretained OF_NULLABLE *OF_NULLABLE itemsPtr;
 	/// Arbitrary state information to detect mutations
-	unsigned long *mutationsPtr;
+	unsigned long *OF_NULLABLE mutationsPtr;
 	/// Additional arbitrary state information
 	unsigned long extra[5];
 } of_fast_enumeration_state_t;
@@ -106,6 +120,9 @@ typedef struct {
  *	   finished.
  */
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (__unsafe_unretained id*)objects
+			   objects: (id __unsafe_unretained OF_NONNULL
+					*OF_NONNULL)objects
 			     count: (int)count;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,13 +16,13 @@
 
 #include "config.h"
 
-#import "OFNotConnectedException.h"
+#import "OFNotOpenException.h"
 #import "OFString.h"
 
-@implementation OFNotConnectedException
-+ (instancetype)exceptionWithSocket: (id)socket
+@implementation OFNotOpenException
++ (instancetype)exceptionWithObject: (id)object
 {
-	return [[[self alloc] initWithSocket: socket] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
 - init
@@ -30,18 +30,18 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSocket: (id)socket
+- initWithObject: (id)object
 {
 	self = [super init];
 
-	_socket = [socket retain];
+	_object = [object retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_socket release];
+	[_object release];
 
 	[super dealloc];
 }
@@ -49,12 +49,12 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"The socket of type %@ is not connected or bound!",
-	    [_socket class]];
+	    @"The object of type %@ is not open, connected or bound!",
+	    [_object class]];
 }
 
-- (id)socket
+- (id)object
 {
-	OF_GETTER(_socket, true)
+	OF_GETTER(_object, true)
 }
 @end

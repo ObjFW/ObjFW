@@ -14,5 +14,17 @@
  * file.
  */
 
-#define DEFLATE64
-#include "OFDeflateStream.m"
+#import "OFKernelEventObserver.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFMapTable;
+
+@interface OFKernelEventObserver_epoll: OFKernelEventObserver
+{
+	int _epfd;
+	OFMapTable *_FDToEvents;
+}
+@end
+
+OF_ASSUME_NONNULL_END

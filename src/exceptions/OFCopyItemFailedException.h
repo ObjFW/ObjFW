@@ -39,7 +39,7 @@
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased copy item failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
@@ -51,7 +51,7 @@
  *
  * @param sourcePath The original path
  * @param destinationPath The new path
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized copy item failed exception
  */
 - initWithSourcePath: (OFString*)sourcePath
@@ -73,9 +73,9 @@
 - (OFString*)destinationPath;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

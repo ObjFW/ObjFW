@@ -16,6 +16,8 @@
 
 #import "OFDictionary.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -26,7 +28,7 @@
  * @param object The object to replace
  * @return The object to replace the object with
  */
-typedef id (^of_dictionary_replace_block_t)(id key, id object);
+typedef id OF_NONNULL (^of_dictionary_replace_block_t)(id key, id object);
 #endif
 
 /*!
@@ -34,7 +36,16 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object);
  *
  * @brief An abstract class for storing and changing objects in a dictionary.
  */
+#ifdef OF_HAVE_GENERICS
+@interface OFMutableDictionary <KeyType, ObjectType>:
+    OFDictionary <KeyType, ObjectType>
+#else
+# ifndef DOXYGEN
+#  define KeyType id
+#  define ObjectType id
+# endif
 @interface OFMutableDictionary: OFDictionary
+#endif
 /*!
  * @brief Creates a new OFMutableDictionary with enough memory to hold the
  *	  specified number of objects.
@@ -61,17 +72,17 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object);
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (id)object
-	   forKey: (id)key;
--   (void)setObject: (id)object
-  forKeyedSubscript: (id)key;
+- (void)setObject: (ObjectType)object
+	   forKey: (KeyType)key;
+-   (void)setObject: (ObjectType)object
+  forKeyedSubscript: (KeyType)key;
 
 /*!
  * @brief Removes the object for the specified key from the dictionary.
  *
  * @param key The key whose object should be removed
  */
-- (void)removeObjectForKey: (id)key;
+- (void)removeObjectForKey: (KeyType)key;
 
 /*!
  * @brief Removes all objects.
@@ -92,3 +103,9 @@ typedef id (^of_dictionary_replace_block_t)(id key, id object);
  */
 - (void)makeImmutable;
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef KeyType
+# undef ObjectType
+#endif
+
+OF_ASSUME_NONNULL_END

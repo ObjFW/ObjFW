@@ -412,12 +412,12 @@ static struct {
 	return ret;
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator*)keyEnumerator
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFEnumerator*)keyEnumerator
+- (OFEnumerator*)objectEnumerator
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

@@ -27,9 +27,11 @@
 #import "OFCollection.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
-@class OFArray;
+@class OFArray OF_GENERIC(ObjectType);
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -58,8 +60,15 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @warning Do not mutate objects that are in a set! Changing the hash of
  *	    objects in a set breaks the internal representation of the set!
  */
-@interface OFSet: OFObject <OFCollection, OFCopying, OFMutableCopying,
-    OFSerialization>
+#ifdef OF_HAVE_GENERICS
+@interface OFSet <ObjectType>:
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
+@interface OFSet:
+#endif
+    OFObject <OFCollection, OFCopying, OFMutableCopying, OFSerialization>
 /*!
  * @brief Creates a new set.
  *
@@ -73,7 +82,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param set The set to initialize the set with
  * @return A new, autoreleased set with the specified set
  */
-+ (instancetype)setWithSet: (OFSet*)set;
++ (instancetype)setWithSet: (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Creates a new set with the specified array.
@@ -81,7 +90,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param array The array to initialize the set with
  * @return A new, autoreleased set with the specified array
  */
-+ (instancetype)setWithArray: (OFArray*)array;
++ (instancetype)setWithArray: (OFArray OF_GENERIC(ObjectType)*)array;
 
 /*!
  * @brief Creates a new set with the specified objects.
@@ -89,7 +98,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param firstObject The first object for the set
  * @return A new, autoreleased set with the specified objects
  */
-+ (instancetype)setWithObjects: (id)firstObject, ...;
++ (instancetype)setWithObjects: (ObjectType)firstObject, ...;
 
 /*!
  * @brief Creates a new set with the specified objects.
@@ -98,7 +107,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return A new, autoreleased set with the specified objects
  */
-+ (instancetype)setWithObjects: (id const*)objects
++ (instancetype)setWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
 			 count: (size_t)count;
 
 /*!
@@ -107,7 +116,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param set The set to initialize the set with
  * @return An initialized set with the specified set
  */
-- initWithSet: (OFSet*)set;
+- initWithSet: (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Initializes an already allocated set with the specified array.
@@ -115,7 +124,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param array The array to initialize the set with
  * @return An initialized set with the specified array
  */
-- initWithArray: (OFArray*)array;
+- initWithArray: (OFArray OF_GENERIC(ObjectType)*)array;
 
 /*!
  * @brief Initializes an already allocated set with the specified objects.
@@ -123,7 +132,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param firstObject The first object for the set
  * @return An initialized set with the specified objects
  */
-- initWithObjects: (id)firstObject, ...;
+- initWithObjects: (ObjectType)firstObject, ...;
 
 /*!
  * @brief Initializes an already allocated set with the specified objects.
@@ -132,7 +141,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return An initialized set with the specified objects
  */
-- initWithObjects: (id const*)objects
+- initWithObjects: (ObjectType const OF_NONNULL *OF_NONNULL)objects
 	    count: (size_t)count;
 
 /*!
@@ -143,7 +152,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param arguments A va_list with the other objects
  * @return An initialized set with the specified object and va_list
  */
-- initWithObject: (id)firstObject
+- initWithObject: (ObjectType)firstObject
        arguments: (va_list)arguments;
 
 /*!
@@ -151,7 +160,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @return Whether the receiver is a subset of the specified set
  */
-- (bool)isSubsetOfSet: (OFSet*)set;
+- (bool)isSubsetOfSet: (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Returns whether the receiver and the specified set have at least one
@@ -160,7 +169,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @return Whether the receiver and the specified set have at least one object
  *	   in common
  */
-- (bool)intersectsSet: (OFSet*)set;
+- (bool)intersectsSet: (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Creates a new set which contains the objects which are in the
@@ -168,7 +177,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param set The set whose objects will not be in the new set
  */
-- (OFSet*)setBySubtractingSet: (OFSet*)set;
+- (OFSet OF_GENERIC(ObjectType)*)setBySubtractingSet:
+    (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Creates a new set by creating the intersection of the receiver and
@@ -176,7 +186,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param set The set to intersect with
  */
-- (OFSet*)setByIntersectingWithSet: (OFSet*)set;
+- (OFSet OF_GENERIC(ObjectType)*)setByIntersectingWithSet:
+    (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Creates a new set by creating the union of the receiver and the
@@ -184,21 +195,38 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param set The set to create the union with
  */
-- (OFSet*)setByAddingSet: (OFSet*)set;
+- (OFSet OF_GENERIC(ObjectType)*)setByAddingSet:
+    (OFSet OF_GENERIC(ObjectType)*)set;
 
 /*!
  * @brief Returns an array of all objects in the set.
  *
  * @return An array of all objects in the set
  */
-- (OFArray*)allObjects;
+- (OFArray OF_GENERIC(ObjectType)*)allObjects;
 
 /*!
  * @brief Returns an arbitrary object in the set.
  *
  * @return An arbitrary object in the set
  */
-- (id)anyObject;
+- (ObjectType)anyObject;
+
+/*!
+ * @brief Checks whether the set contains an object equal to the specified
+ *	  object.
+ *
+ * @param object The object which is checked for being in the set
+ * @return A boolean whether the set contains the specified object
+ */
+- (bool)containsObject: (nullable ObjectType)object;
+
+/*!
+ * @brief Returns an OFEnumerator to enumerate through all objects of the set.
+ *
+ * @returns An OFEnumerator to enumerate through all objects of the set
+ */
+- (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -215,8 +243,14 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param block A block which determines if the object should be in the new set
  * @return A new, autoreleased OFSet
  */
-- (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block;
+- (OFSet OF_GENERIC(ObjectType)*)filteredSetUsingBlock:
+    (of_set_filter_block_t)block;
 #endif
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
+
+OF_ASSUME_NONNULL_END
 
 #import "OFMutableSet.h"

@@ -37,8 +37,8 @@
 
 #include <unistd.h>
 
-#include <fcntl.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>
@@ -77,11 +77,12 @@
 #import "OFLinkFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFMoveItemFailedException.h"
-#import "OFOpenFileFailedException.h"
+#import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFStatItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFUnlockFailedException.h"
 #import "OFWriteFailedException.h"
@@ -394,8 +395,7 @@ parseMode(const char *mode)
 	encoding = [OFSystemInfo native8BitEncoding];
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
@@ -466,8 +466,7 @@ parseMode(const char *mode)
 		if (GetLastError() == ERROR_FILE_NOT_FOUND)
 			errNo = ENOENT;
 
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFOpenItemFailedException exceptionWithPath: path
 							      errNo: errNo];
 	}
 
@@ -525,15 +524,13 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	if (of_stat(path, &s) != 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	return s.st_size;
 }
 
-+ (OFDate*)modificationDateOfFileAtPath: (OFString*)path
++ (OFDate*)accessTimeOfItemAtPath: (OFString*)path
 {
 	of_stat_t s;
 
@@ -541,13 +538,41 @@ parseMode(const char *mode)
 		@throw [OFInvalidArgumentException exception];
 
 	if (of_stat(path, &s) != 0)
-		/* FIXME: Maybe use another exception? */
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFStatItemFailedException exceptionWithPath: path
+							      errNo: errno];
+
+	/* FIXME: We could be more precise on some OSes */
+	return [OFDate dateWithTimeIntervalSince1970: s.st_atime];
+}
+
++ (OFDate*)modificationTimeOfItemAtPath: (OFString*)path
+{
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_stat(path, &s) != 0)
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	/* FIXME: We could be more precise on some OSes */
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
+}
+
++ (OFDate*)statusChangeTimeOfItemAtPath: (OFString*)path
+{
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_stat(path, &s) != 0)
+		@throw [OFStatItemFailedException exceptionWithPath: path
+							      errNo: errno];
+
+	/* FIXME: We could be more precise on some OSes */
+	return [OFDate dateWithTimeIntervalSince1970: s.st_ctime];
 }
 
 #ifdef OF_HAVE_CHMOD
@@ -960,8 +985,7 @@ parseMode(const char *mode)
 	    destination, PATH_MAX);
 
 	if (length < 0)
-		@throw [OFOpenFileFailedException exceptionWithPath: path
-							       mode: @"r"
+		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
 	return [OFString stringWithCString: destination
@@ -998,7 +1022,7 @@ parseMode(const char *mode)
 		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo
 		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
 #endif
-			@throw [OFOpenFileFailedException
+			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: mode
 					errNo: errno];

@@ -17,6 +17,8 @@
 #import "OFINICategory.h"
 #import "OFString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFStream;
 
 @interface OFINICategory (OF_PRIVATE_CATEGORY)
@@ -26,3 +28,5 @@
 		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first;
 @end
+
+OF_ASSUME_NONNULL_END

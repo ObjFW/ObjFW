@@ -351,6 +351,7 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_SOCKETS
 	[self TCPSocketTests];
 	[self UDPSocketTests];
+	[self kernelEventObserverTests];
 #endif
 #ifdef OF_HAVE_THREADS
 	[self threadTests];

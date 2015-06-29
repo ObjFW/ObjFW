@@ -16,6 +16,8 @@
 
 #import "OFSHA224Or256Hash.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFSHA224Hash OFSHA224Hash.h ObjFW/OFSHA224Hash.h
  *
@@ -23,3 +25,5 @@
  */
 @interface OFSHA224Hash: OFSHA224Or256Hash
 @end
+
+OF_ASSUME_NONNULL_END

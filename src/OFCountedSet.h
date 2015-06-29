@@ -16,6 +16,8 @@
 
 #import "OFSet.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 #ifdef OF_HAVE_BLOCKS
@@ -37,13 +39,20 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
  * @brief An abstract class for a mutable unordered set of objects, counting how
  *	  often it contains an object.
  */
+#ifdef OF_HAVE_GENERICS
+@interface OFCountedSet <ObjectType>: OFMutableSet <ObjectType>
+#else
+# ifndef DOXYGEN
+#  define ObjectType id
+# endif
 @interface OFCountedSet: OFMutableSet
+#endif
 /*!
  * @brief Returns how often the object is in the set.
  *
  * @return How often the object is in the set
  */
-- (size_t)countForObject: (id)object;
+- (size_t)countForObject: (ObjectType)object;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -55,3 +64,8 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
     (of_counted_set_enumeration_block_t)block;
 #endif
 @end
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
+
+OF_ASSUME_NONNULL_END

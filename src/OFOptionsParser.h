@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFConstantString.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFOptionsParser OFOptionsParser.h ObjFW/OFOptionsParser.h
  *
@@ -25,7 +27,7 @@
 @interface OFOptionsParser: OFObject
 {
 	of_unichar_t *_options;
-	OFArray *_arguments;
+	OFArray OF_GENERIC(OFString*) *_arguments;
 	size_t _index, _subIndex;
 	of_unichar_t _lastOption;
 	OFString *_argument;
@@ -82,12 +84,14 @@
  *
  * @return The argument for the last parsed option
  */
-- (OFString*)argument;
+- (nullable OFString*)argument;
 
 /*!
  * @brief Returns the arguments following the last option.
  *
  * @return The arguments following the last option
  */
-- (OFArray*)remainingArguments;
+- (OFArray OF_GENERIC(OFString*)*)remainingArguments;
 @end
+
+OF_ASSUME_NONNULL_END

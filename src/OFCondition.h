@@ -16,6 +16,8 @@
 
 #import "OFMutex.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDate;
 
 /*!
@@ -70,3 +72,5 @@
  */
 - (void)broadcast;
 @end
+
+OF_ASSUME_NONNULL_END

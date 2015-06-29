@@ -17,6 +17,8 @@
 #import "OFObject.h"
 #import "OFSerialization.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 @class OFConstantString;
 
@@ -338,3 +340,5 @@
  */
 - (OFDate*)dateByAddingTimeInterval: (of_time_interval_t)seconds;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFMutableSet.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFMapTable;
 
 @interface OFMutableSet_hashtable: OFMutableSet
@@ -23,3 +25,5 @@
 	OFMapTable *_mapTable;
 }
 @end
+
+OF_ASSUME_NONNULL_END

@@ -41,7 +41,7 @@
  *
  * @param path The path of the directory to which the current path could not be
  *	       changed
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change current directory path failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -52,7 +52,7 @@
  *
  * @param path The path of the directory to which the current path could not be
  *	       changed
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized change current directory path failed exception
  */
 - initWithPath: (OFString*)path
@@ -68,9 +68,9 @@
 - (OFString*)path;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

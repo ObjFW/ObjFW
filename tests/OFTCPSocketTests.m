@@ -22,8 +22,6 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
-#import "macros.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFTCPSocket";

@@ -16,6 +16,8 @@
 
 #import "OFSettings.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 @class OFINIFile;
 
@@ -25,3 +27,5 @@
 	OFINIFile *_INIFile;
 }
 @end
+
+OF_ASSUME_NONNULL_END

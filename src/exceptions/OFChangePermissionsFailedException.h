@@ -44,7 +44,7 @@
  *
  * @param path The path of the item
  * @param permissions The new permissions for the item
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change permissions failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
@@ -56,7 +56,7 @@
  *
  * @param path The path of the item
  * @param permissions The new permissions for the item
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized change permissions failed exception
  */
 - initWithPath: (OFString*)path
@@ -78,9 +78,9 @@
 - (mode_t)permissions;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

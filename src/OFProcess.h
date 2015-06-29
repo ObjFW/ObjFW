@@ -30,8 +30,10 @@
 # include <windows.h>
 #endif
 
-@class OFArray;
-@class OFDictionary;
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFArray OF_GENERIC(ObjectType);
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /*!
  * @class OFProcess OFProcess.h ObjFW/OFProcess.h
@@ -69,8 +71,9 @@
  * @param arguments The arguments to pass to the program, or nil
  * @return A new, autoreleased OFProcess.
  */
-+ (instancetype)processWithProgram: (OFString*)program
-			 arguments: (OFArray*)arguments;
++ (instancetype)
+    processWithProgram: (OFString*)program
+	     arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Creates a new OFProcess with the specified program, program name and
@@ -83,9 +86,10 @@
  * @param arguments The arguments to pass to the program, or nil
  * @return A new, autoreleased OFProcess.
  */
-+ (instancetype)processWithProgram: (OFString*)program
-		       programName: (OFString*)programName
-			 arguments: (OFArray*)arguments;
++ (instancetype)
+    processWithProgram: (OFString*)program
+	   programName: (OFString*)programName
+	     arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Creates a new OFProcess with the specified program, program name,
@@ -103,10 +107,12 @@
  *		      first, copy it, modify it and then pass it.
  * @return A new, autoreleased OFProcess.
  */
-+ (instancetype)processWithProgram: (OFString*)program
-		       programName: (OFString*)programName
-			 arguments: (OFArray*)arguments
-		       environment: (OFDictionary*)environment;
++ (instancetype)
+    processWithProgram: (OFString*)program
+	   programName: (OFString*)programName
+	     arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments
+	   environment: (nullable OFDictionary
+			    OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
@@ -128,7 +134,7 @@
  * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program
-	arguments: (OFArray*)arguments;
+	arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -143,7 +149,7 @@
  */
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
-	arguments: (OFArray*)arguments;
+	arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -163,8 +169,9 @@
  */
 - initWithProgram: (OFString*)program
       programName: (OFString*)programName
-	arguments: (OFArray*)arguments
-      environment: (OFDictionary*)environment;
+	arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments
+      environment: (nullable OFDictionary
+		       OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Closes the write direction of the process.
@@ -175,3 +182,5 @@
  */
 - (void)closeForWriting;
 @end
+
+OF_ASSUME_NONNULL_END

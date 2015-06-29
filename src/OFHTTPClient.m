@@ -33,7 +33,6 @@
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
-#import "OFNotConnectedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -71,7 +70,7 @@ normalizeKey(char *str_)
 }
 
 - initWithSocket: (OFTCPSocket*)socket;
-- (void)setKeepAlive: (bool)keepAlive;
+- (void)OF_setKeepAlive: (bool)keepAlive;
 @end
 
 @implementation OFHTTPClientResponse
@@ -84,7 +83,7 @@ normalizeKey(char *str_)
 	return self;
 }
 
-- (void)setKeepAlive: (bool)keepAlive
+- (void)OF_setKeepAlive: (bool)keepAlive
 {
 	_keepAlive = keepAlive;
 }
@@ -110,7 +109,12 @@ normalizeKey(char *str_)
 		_hasContentLength = true;
 
 		@try {
-			_toRead = (size_t)[contentLength decimalValue];
+			intmax_t toRead = [contentLength decimalValue];
+
+			if (toRead > SIZE_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_toRead = (size_t)toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -187,8 +191,12 @@ normalizeKey(char *str_)
 			    of_range(0, range.location)];
 
 		@try {
-			_toRead =
-			    (size_t)[line hexadecimalValue];
+			uintmax_t toRead = [line hexadecimalValue];
+
+			if (toRead > SIZE_MAX)
+				@throw [OFOutOfRangeException exception];
+
+			_toRead = (size_t)toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -227,6 +235,9 @@ normalizeKey(char *str_)
 
 - (int)fileDescriptorForReading
 {
+	if (_socket == nil)
+		return -1;
+
 	return [_socket fileDescriptorForReading];
 }
 
@@ -320,10 +331,11 @@ normalizeKey(char *str_)
 	OFMutableString *requestString;
 	OFString *user, *password;
 	OFDictionary *headers = [request headers];
-	OFDataArray *entity = [request entity];
+	OFDataArray *body = [request body];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
-	OFString *line, *version, *redirect, *keepAlive;
+	OFString *line, *version, *redirect, *connectionHeader;
+	bool keepAlive;
 	OFMutableDictionary *serverHeaders;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
@@ -347,16 +359,23 @@ normalizeKey(char *str_)
 		[_lastURL release];
 		_lastURL = nil;
 
-		/* Throw away content that has not been read yet */
-		while (![_lastResponse isAtEndOfStream]) {
-			char buffer[512];
+		@try {
+			if (!_lastWasHEAD) {
+				/*
+				 * Throw away content that has not been read
+				 * yet.
+				 */
+				while (![_lastResponse isAtEndOfStream]) {
+					char buffer[512];
 
-			[_lastResponse readIntoBuffer: buffer
-					       length: 512];
+					[_lastResponse readIntoBuffer: buffer
+							       length: 512];
+				}
+			}
+		} @finally {
+			[_lastResponse release];
+			_lastResponse = nil;
 		}
-
-		[_lastResponse release];
-		_lastResponse = nil;
 	} else
 		socket = [self OF_closeAndCreateSocketForRequest: request];
 
@@ -405,11 +424,11 @@ normalizeKey(char *str_)
 		    @"User-Agent: Something using ObjFW "
 		    @"<https://webkeks.org/objfw>\r\n"];
 
-	if (entity != nil) {
+	if (body != nil) {
 		if ([headers objectForKey: @"Content-Length"] == nil)
 			[requestString appendFormat:
 			    @"Content-Length: %zd\r\n",
-			    [entity itemSize] * [entity count]];
+			    [body itemSize] * [body count]];
 
 		if ([headers objectForKey: @"Content-Type"] == nil)
 			[requestString appendString:
@@ -441,9 +460,9 @@ normalizeKey(char *str_)
 		[socket writeString: requestString];
 	}
 
-	if (entity != nil)
-		[socket writeBuffer: [entity items]
-			     length: [entity count] * [entity itemSize]];
+	if (body != nil)
+		[socket writeBuffer: [body items]
+			     length: [body count] * [body itemSize]];
 
 	@try {
 		line = [socket readLine];
@@ -460,10 +479,10 @@ normalizeKey(char *str_)
 		socket = [self OF_closeAndCreateSocketForRequest: request];
 		[socket writeString: requestString];
 
-		if (entity != nil)
-			[socket writeBuffer: [entity items]
-				     length: [entity count] *
-					     [entity itemSize]];
+		if (body != nil)
+			[socket writeBuffer: [body items]
+				     length: [body count] *
+					     [body itemSize]];
 
 		@try {
 			line = [socket readLine];
@@ -472,7 +491,8 @@ normalizeKey(char *str_)
 		}
 	}
 
-	if (![line hasPrefix: @"HTTP/"] || [line characterAtIndex: 8] != ' ')
+	if (![line hasPrefix: @"HTTP/"] || [line length] < 9 ||
+	    [line characterAtIndex: 8] != ' ')
 		@throw [OFInvalidServerReplyException exception];
 
 	version = [line substringWithRange: of_range(5, 3)];
@@ -547,13 +567,27 @@ normalizeKey(char *str_)
 	[response setStatusCode: status];
 	[response setHeaders: serverHeaders];
 
-	keepAlive = [serverHeaders objectForKey: @"Connection"];
-	if ([version isEqual: @"1.1"] ||
-	    (keepAlive != nil && [keepAlive isEqual: @"keep-alive"])) {
-		[response setKeepAlive: true];
+	connectionHeader = [serverHeaders objectForKey: @"Connection"];
+	if ([version isEqual: @"1.1"]) {
+		if (connectionHeader != nil)
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"close"] != OF_ORDERED_SAME);
+		else
+			keepAlive = true;
+	} else {
+		if (connectionHeader != nil)
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"keep-alive"] == OF_ORDERED_SAME);
+		else
+			keepAlive = false;
+	}
+
+	if (keepAlive) {
+		[response OF_setKeepAlive: true];
 
 		_socket = [socket retain];
 		_lastURL = [URL copy];
+		_lastWasHEAD = (method == OF_HTTP_REQUEST_METHOD_HEAD);
 		_lastResponse = [response retain];
 	}
 
@@ -601,7 +635,7 @@ normalizeKey(char *str_)
 			newRequest = [OFHTTPRequest requestWithURL: newURL];
 			[newRequest setMethod: method];
 			[newRequest setHeaders: headers];
-			[newRequest setEntity: entity];
+			[newRequest setBody: body];
 
 			/*
 			 * 303 means the request should be converted to a GET
@@ -627,7 +661,7 @@ normalizeKey(char *str_)
 				[newRequest
 				    setMethod: OF_HTTP_REQUEST_METHOD_GET];
 				[newRequest setHeaders: newHeaders];
-				[newRequest setEntity: nil];
+				[newRequest setBody: nil];
 			}
 
 			[newRequest retain];

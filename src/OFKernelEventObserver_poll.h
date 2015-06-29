@@ -16,10 +16,16 @@
 
 #import "OFKernelEventObserver.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDataArray;
 
 @interface OFKernelEventObserver_poll: OFKernelEventObserver
 {
 	OFDataArray *_FDs;
+	size_t _maxFD;
+	id __unsafe_unretained *_FDToObject;
 }
 @end
+
+OF_ASSUME_NONNULL_END

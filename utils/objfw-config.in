@@ -68,7 +68,7 @@ __EOF__
 
 test -z "$1" && show_help 1
 
-while test ! -z "$1"; do
+while test -n "$1"; do
 	case "$1" in
 		--all)
 			printf "%s %s %s " "$CFLAGS" "$CPPFLAGS" "$CXXFLAGS"
@@ -168,7 +168,7 @@ while test ! -z "$1"; do
 	esac
 	shift
 
-	test ! -z "$1" && printf " "
+	test -n "$1" && printf " "
 done
 
 echo

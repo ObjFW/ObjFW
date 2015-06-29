@@ -16,11 +16,16 @@
 
 #import "OFObject.h"
 #import "OFString.h"
+#import "OFZIPArchiveEntry.h"
 
-@class OFFile;
-@class OFArray;
-@class OFMutableArray;
-@class OFMutableDictionary;
+OF_ASSUME_NONNULL_BEGIN
+
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
+@class OFSeekableStream;
 @class OFStream;
 
 /*!
@@ -30,23 +35,32 @@
  */
 @interface OFZIPArchive: OFObject
 {
-	OFFile *_file;
-	OFString *_path;
+	OFSeekableStream *_stream;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize, _centralDirectoryOffset;
 	OFString *_archiveComment;
-	OFMutableArray *_entries;
-	OFMutableDictionary *_pathToEntryMap;
+	OFMutableArray OF_GENERIC(OFZIPArchiveEntry*) *_entries;
+	OFMutableDictionary OF_GENERIC(OFString*, OFZIPArchiveEntry*)
+	    *_pathToEntryMap;
+	OFStream *_lastReturnedStream;
 }
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy) OFString *archiveComment;
-@property (readonly, copy) OFArray *entries;
+@property (readonly, copy) OFArray OF_GENERIC(OFZIPArchiveEntry*) *entries;
 #endif
 
 /*!
- * @brief Creates a new OFZIPArchive object for the specified file.
+ * @brief Creates a new OFZIPArchive object with the specified seekable stream.
+ *
+ * @param stream A seekable stream from which the ZIP archive will be read
+ * @return A new, autoreleased OFZIPArchive
+ */
++ (instancetype)archiveWithSeekableStream: (OFSeekableStream*)stream;
+
+/*!
+ * @brief Creates a new OFZIPArchive object with the specified file.
  *
  * @param path The path to the ZIP file
  * @return A new, autoreleased OFZIPArchive
@@ -54,7 +68,16 @@
 + (instancetype)archiveWithPath: (OFString*)path;
 
 /*!
- * @brief Initializes an already allocated OFZIPArchive object for the
+ * @brief Initializes an already allocated OFZIPArchive object with the
+ *	  specified seekable stream.
+ *
+ * @param stream A seekable stream from which the ZIP archive will be read
+ * @return An initialized OFZIPArchive
+ */
+- initWithSeekableStream: (OFSeekableStream*)stream;
+
+/*!
+ * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
  *
  * @param path The path to the ZIP file
@@ -72,7 +95,7 @@
  *
  * @return The entries of the central directory of the archive as an array
  */
-- (OFArray*)entries;
+- (OFArray OF_GENERIC(OFZIPArchiveEntry*)*)entries;
 
 /*!
  * @brief Returns the archive comment.
@@ -84,8 +107,14 @@
 /*!
  * @brief Returns a stream for reading the specified file from the archive.
  *
+ * @warning Calling @ref streamForReadingFile: will invalidate all streams
+ *	    previously returned by @ref streamForReadingFile:! Reading from an
+ *	    invalidated stream will throw an @ref OFReadFailedException!
+ *
  * @param path The path to the file inside the archive
  * @return A stream for reading the specified file form the archive
  */
 - (OFStream*)streamForReadingFile: (OFString*)path;
 @end
+
+OF_ASSUME_NONNULL_END

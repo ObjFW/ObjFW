@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <assert.h>
@@ -232,7 +233,7 @@ defaultEqual(void *value1, void *value2)
 	return hash;
 }
 
-- (id)copy
+- copy
 {
 	OFMapTable *copy = [[OFMapTable alloc]
 	    initWithKeyFunctions: _keyFunctions

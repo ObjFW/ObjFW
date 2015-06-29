@@ -14,10 +14,12 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#import "OFObject.h"
+
+OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-@class OFArray;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @protocol OFTLSSocket;
 
 /*!
@@ -26,18 +28,25 @@
  * @brief A delegate for classes implementing the OFTLSSocket protocol.
  */
 @protocol OFTLSSocketDelegate
+#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
+@optional
+#endif
 /*!
  * @brief This callback is called when the TLS socket wants to know if it
- *	  should accept the received keychain.
+ *	  should accept the received certificate.
+ *
+ * @note This is only used to verify certain fields of a certificate to allow
+ *	 for protocol specific verification. The certificate chain is verified
+ *	 using the specified CAs, or the system's CAs if no CAs have been
+ *	 specified.
  *
  * @param socket The socket which wants to know if it should accept the received
- *		 keychain
- * @param keychain An array of objects implementing the OFX509Certificate
- *		   protocol
- * @return Whether the TLS socket should accept the received keychain
+ *		 certificate
+ * @param certificate A dictionary with the fields of the received certificate
+ * @return Whether the TLS socket should accept the received certificatechain
  */
--	  (bool)socket: (id <OFTLSSocket>)socket
-  shouldAcceptKeychain: (OFArray*)keychain;
+-	     (bool)socket: (id <OFTLSSocket>)socket
+  shouldAcceptCertificate: (OFDictionary*)certificate;
 @end
 
 /*!
@@ -48,9 +57,12 @@
  */
 @protocol OFTLSSocket
 #ifdef OF_HAVE_PROPERTIES
-@property (assign) id <OFTLSSocketDelegate> delegate;
-@property (copy) OFString *certificateFile, *privateKeyFile;
-@property const char *privateKeyPassphrase;
+@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocketDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (copy)
+    OFString *certificateFile, *privateKeyFile;
+@property OF_NULLABLE_PROPERTY (assign) const char *privateKeyPassphrase;
+@property (getter=isCertificateVerificationEnabled)
+    bool certificateVerificationEnabled;
 #endif
 
 /*!
@@ -66,29 +78,32 @@
  *
  * @note This is only useful if you used @ref initWithSocket: to start TLS on
  *	 a TCP socket which is already connected!
+ *
+ * @param host The host to expect for certificate verification.
+ *	       May be nil if certificate verification is disabled.
  */
-- (void)startTLS;
+- (void)startTLSWithExpectedHost: (OFString*)host;
 
 /*!
  * @brief Sets a delegate for the TLS socket.
  *
  * @param delegate The delegate to use
  */
-- (void)setDelegate: (id <OFTLSSocketDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFTLSSocketDelegate>)delegate;
 
 /*!
  * @brief Returns the delegate used by the TLS socket.
  *
  * @return The delegate used by the TLS socket
  */
-- (id <OFTLSSocketDelegate>)delegate;
+- (nullable id <OFTLSSocketDelegate>)delegate;
 
 /*!
  * @brief Sets the path to the X.509 certificate file to use.
  *
  * @param certificateFile The path to the X.509 certificate file
  */
-- (void)setCertificateFile: (OFString*)certificateFile;
+- (void)setCertificateFile: (nullable OFString*)certificateFile;
 
 /*!
  * @brief Sets the path to the X.509 certificate file to use for the specified
@@ -107,7 +122,7 @@
  *
  * @return The path of the X.509 certificate file used by the TLS socket
  */
-- (OFString*)certificateFile;
+- (nullable OFString*)certificateFile;
 
 /*!
  * @brief Returns the path of the X.509 certificate file used by the TLS socket
@@ -119,14 +134,14 @@
  * @return The path of the X.509 certificate file used by the TLS socket for
  *	   the specified SNI host
  */
-- (OFString*)certificateFileForSNIHost: (OFString*)SNIHost;
+- (nullable OFString*)certificateFileForSNIHost: (OFString*)SNIHost;
 
 /*!
  * @brief Sets the path to the PKCS#8 private key file to use.
  *
  * @param privateKeyFile The path to the PKCS#8 private key file
  */
-- (void)setPrivateKeyFile: (OFString*)privateKeyFile;
+- (void)setPrivateKeyFile: (nullable OFString*)privateKeyFile;
 
 /*!
  * @brief Sets the path to the PKCS#8 private key file to use for the specified
@@ -145,7 +160,7 @@
  *
  * @return The path of the PKCS#8 private key file used by the TLS socket
  */
-- (OFString*)privateKeyFile;
+- (nullable OFString*)privateKeyFile;
 
 /*!
  * @brief Returns the path of the PKCS#8 private key file used by the TLS
@@ -157,7 +172,7 @@
  * @return The path of the PKCS#8 private key file used by the TLS socket for
  *	   the specified SNI host
  */
-- (OFString*)privateKeyFileForSNIHost: (OFString*)SNIHost;
+- (nullable OFString*)privateKeyFileForSNIHost: (OFString*)SNIHost;
 
 /*!
  * @brief Sets the passphrase to decrypt the PKCS#8 private key file.
@@ -168,7 +183,7 @@
  * @param privateKeyPassphrase The passphrase to decrypt the PKCS#8 private
  *			       key file
  */
-- (void)setPrivateKeyPassphrase: (const char*)privateKeyPassphrase;
+- (void)setPrivateKeyPassphrase: (nullable const char*)privateKeyPassphrase;
 
 /*!
  * @brief Sets the passphrase to decrypt the PKCS#8 private key file for the
@@ -192,7 +207,7 @@
  *
  * @return The passphrase to decrypt the PKCS#8 private key file
  */
-- (const char*)privateKeyPassphrase;
+- (nullable const char*)privateKeyPassphrase;
 
 /*!
  * @brief Returns the passphrase to decrypt the PKCS#8 private key file for the
@@ -206,5 +221,23 @@
  * @return The passphrase to decrypt the PKCS#8 private key file for the
  *	   specified SNI host
  */
-- (const char*)privateKeyPassphraseForSNIHost: (OFString*)SNIHost;
+- (nullable const char*)privateKeyPassphraseForSNIHost: (OFString*)SNIHost;
+
+/**
+ * @brief Enable or disable certificate verification.
+ *
+ * The default is enabled.
+ *
+ * @param enabled Whether to enable or disable certificate verification
+ */
+- (void)setCertificateVerificationEnabled: (bool)enabled;
+
+/**
+ * @brief Returns whether certificate verification is enabled.
+ *
+ * @return Whether certificate verification is enabled
+ */
+- (bool)isCertificateVerificationEnabled;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -420,7 +420,7 @@ static Class CDATAClass = Nil;
 - (OFString*)stringValue
 {
 	OFMutableString *ret;
-	OFXMLElement *const *objects;
+	OFXMLNode *const *objects;
 	size_t i, count = [_children count];
 
 	if (count == 0)
@@ -592,7 +592,7 @@ static Class CDATAClass = Nil;
 
 	/* Childen */
 	if (_children != nil) {
-		OFXMLElement *const *childrenObjects = [_children objects];
+		OFXMLNode *const *childrenObjects = [_children objects];
 		size_t childrenCount = [_children count];
 		OFDataArray *tmp = [OFDataArray dataArray];
 		bool indent;
@@ -620,7 +620,7 @@ static Class CDATAClass = Nil;
 
 			if ([childrenObjects[j] isKindOfClass:
 			    [OFXMLElement class]])
-				child = [childrenObjects[j]
+				child = [(OFXMLElement*)childrenObjects[j]
 				    OF_XMLStringWithParent: self
 						namespaces: allNamespaces
 					       indentation: ind
@@ -1010,13 +1010,13 @@ static Class CDATAClass = Nil;
 
 - (OFArray*)elements
 {
-	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement *const *objects = [_children objects];
+	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
+	OFXMLNode *const *objects = [_children objects];
 	size_t i, count = [_children count];
 
 	for (i = 0; i < count; i++)
 		if ([objects[i] isKindOfClass: [OFXMLElement class]])
-			[ret addObject: objects[i]];
+			[ret addObject: (OFXMLElement*)objects[i]];
 
 	[ret makeImmutable];
 
@@ -1025,15 +1025,19 @@ static Class CDATAClass = Nil;
 
 - (OFArray*)elementsForName: (OFString*)elementName
 {
-	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement *const *objects = [_children objects];
+	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
+	OFXMLNode *const *objects = [_children objects];
 	size_t i, count = [_children count];
 
-	for (i = 0; i < count; i++)
-		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
-		    objects[i]->_namespace == nil &&
-		    [objects[i]->_name isEqual: elementName])
-			[ret addObject: objects[i]];
+	for (i = 0; i < count; i++) {
+		if ([objects[i] isKindOfClass: [OFXMLElement class]]) {
+			OFXMLElement *element = (OFXMLElement*)objects[i];
+
+			if (element->_namespace == nil &&
+			    [element->_name isEqual: elementName])
+				[ret addObject: element];
+		}
+	}
 
 	[ret makeImmutable];
 
@@ -1042,15 +1046,19 @@ static Class CDATAClass = Nil;
 
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
 {
-	OFMutableArray *ret = [OFMutableArray array];
-	OFXMLElement *const *objects = [_children objects];
+	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
+	OFXMLNode *const *objects = [_children objects];
 	size_t i, count = [_children count];
 
-	for (i = 0; i < count; i++)
-		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
-		    objects[i]->_name != nil &&
-		    [objects[i]->_namespace isEqual: elementNS])
-			[ret addObject: objects[i]];
+	for (i = 0; i < count; i++) {
+		if ([objects[i] isKindOfClass: [OFXMLElement class]]) {
+			OFXMLElement *element = (OFXMLElement*)objects[i];
+
+			if (element->_name != nil &&
+			    [element->_namespace isEqual: elementNS])
+				[ret addObject: element];
+		}
+	}
 
 	[ret makeImmutable];
 
@@ -1060,8 +1068,8 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForName: (OFString*)elementName
 		  namespace: (OFString*)elementNS
 {
-	OFMutableArray *ret;
-	OFXMLElement *const *objects;
+	OFMutableArray OF_GENERIC(OFXMLElement*) *ret;
+	OFXMLNode *const *objects;
 	size_t i, count;
 
 	if (elementNS == nil)
@@ -1071,11 +1079,15 @@ static Class CDATAClass = Nil;
 	objects = [_children objects];
 	count = [_children count];
 
-	for (i = 0; i < count; i++)
-		if ([objects[i] isKindOfClass: [OFXMLElement class]] &&
-		    [objects[i]->_namespace isEqual: elementNS] &&
-		    [objects[i]->_name isEqual: elementName])
-			[ret addObject: objects[i]];
+	for (i = 0; i < count; i++) {
+		if ([objects[i] isKindOfClass: [OFXMLElement class]]) {
+			OFXMLElement *element = (OFXMLElement*)objects[i];
+
+			if ([element->_namespace isEqual: elementNS] &&
+			    [element->_name isEqual: elementName])
+				[ret addObject: element];
+		}
+	}
 
 	[ret makeImmutable];
 

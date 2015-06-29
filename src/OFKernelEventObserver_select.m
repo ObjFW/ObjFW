@@ -18,8 +18,14 @@
 
 #include "config.h"
 
-#include <string.h>
+#ifdef _WIN32
+/* Win32 has a ridiculous default of 64, even though it supports much more. */
+# define FD_SETSIZE 1024
+#endif
+
+#include <errno.h>
 #include <math.h>
+#include <string.h>
 
 #include <sys/time.h>
 
@@ -28,6 +34,8 @@
 #import "OFKernelEventObserver_select.h"
 #import "OFArray.h"
 
+#import "OFInitializationFailedException.h"
+#import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
 
 #import "socket_helpers.h"
@@ -37,61 +45,95 @@
 {
 	self = [super init];
 
+#ifndef _WIN32
+	if (_cancelFD[0] >= FD_SETSIZE)
+		@throw [OFInitializationFailedException exception];
+#endif
+
 	FD_ZERO(&_readFDs);
 	FD_ZERO(&_writeFDs);
-
 	FD_SET(_cancelFD[0], &_readFDs);
+
+	if (_cancelFD[0] > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	_maxFD = (int)_cancelFD[0];
 
 	return self;
 }
 
-- (void)OF_addFileDescriptorForReading: (int)fd
+- (void)OF_addObjectForReading: (id)object
 {
+	int fd = [object fileDescriptorForReading];
+
+	if (fd < 0 || fd > INT_MAX - 1)
+		@throw [OFOutOfRangeException exception];
+
+#ifndef _WIN32
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
+#endif
+
+	if (fd > _maxFD)
+		_maxFD = fd;
 
 	FD_SET(fd, &_readFDs);
 }
 
-- (void)OF_addFileDescriptorForWriting: (int)fd
+- (void)OF_addObjectForWriting: (id)object
 {
+	int fd = [object fileDescriptorForWriting];
+
+	if (fd < 0 || fd > INT_MAX - 1)
+		@throw [OFOutOfRangeException exception];
+
+#ifndef _WIN32
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
+#endif
+
+	if (fd > _maxFD)
+		_maxFD = fd;
 
 	FD_SET(fd, &_writeFDs);
 }
 
-- (void)OF_removeFileDescriptorForReading: (int)fd
+- (void)OF_removeObjectForReading: (id)object
 {
-	if (fd >= FD_SETSIZE)
+	/* TODO: Adjust _maxFD */
+
+	int fd = [object fileDescriptorForReading];
+
+	if (fd < 0 || fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 
 	FD_CLR(fd, &_readFDs);
 }
 
-- (void)OF_removeFileDescriptorForWriting: (int)fd
+- (void)OF_removeObjectForWriting: (id)object
 {
-	if (fd >= FD_SETSIZE)
+	/* TODO: Adjust _maxFD */
+
+	int fd = [object fileDescriptorForWriting];
+
+	if (fd < 0 || fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 
 	FD_CLR(fd, &_writeFDs);
 }
 
-- (bool)observeForTimeInterval: (of_time_interval_t)timeInterval
+- (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	void *pool = objc_autoreleasePoolPush();
 	id const *objects;
 	fd_set readFDs;
 	fd_set writeFDs;
 	struct timeval timeout;
-	size_t i, count, realEvents = 0;
+	int events;
+	size_t i, count;
 
 	[self OF_processQueueAndStoreRemovedIn: nil];
-
-	if ([self OF_processCache]) {
-		objc_autoreleasePoolPop(pool);
-		return true;
-	}
+	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -116,17 +158,21 @@
 #endif
 	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
-	if (select((int)_maxFD + 1, &readFDs, &writeFDs, NULL,
-	    (timeInterval != -1 ? &timeout : NULL)) < 1)
-		return false;
+	events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	    (timeInterval != -1 ? &timeout : NULL));
+
+	if (events < 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
+
 #ifndef _WIN32
-		OF_ENSURE(read(_cancelFD[0], &buffer, 1) > 0);
+		OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
 #else
 		OF_ENSURE(recvfrom(_cancelFD[0], &buffer, 1, 0, NULL,
-		    NULL) > 0);
+		    NULL) == 1);
 #endif
 	}
 
@@ -134,17 +180,14 @@
 	count = [_readObjects count];
 
 	for (i = 0; i < count; i++) {
-		int fd = [objects[i] fileDescriptorForReading];
+		int fd;
 
 		pool = objc_autoreleasePoolPush();
+		fd = [objects[i] fileDescriptorForReading];
 
-		if (FD_ISSET(fd, &readFDs)) {
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForReading:)])
-				[_delegate objectIsReadyForReading: objects[i]];
-
-			realEvents++;
-		}
+		if (FD_ISSET(fd, &readFDs) && [_delegate respondsToSelector:
+		    @selector(objectIsReadyForReading:)])
+			[_delegate objectIsReadyForReading: objects[i]];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -153,24 +196,16 @@
 	count = [_writeObjects count];
 
 	for (i = 0; i < count; i++) {
-		int fd = [objects[i] fileDescriptorForWriting];
+		int fd;
 
 		pool = objc_autoreleasePoolPush();
+		fd = [objects[i] fileDescriptorForWriting];
 
-		if (FD_ISSET(fd, &writeFDs)) {
-			if ([_delegate respondsToSelector:
-			    @selector(objectIsReadyForWriting:)])
-				[_delegate objectIsReadyForWriting: objects[i]];
-
-			realEvents++;
-		}
+		if (FD_ISSET(fd, &writeFDs) && [_delegate respondsToSelector:
+		    @selector(objectIsReadyForWriting:)])
+			[_delegate objectIsReadyForWriting: objects[i]];
 
 		objc_autoreleasePoolPop(pool);
 	}
-
-	if (realEvents == 0)
-		return false;
-
-	return true;
 }
 @end

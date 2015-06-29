@@ -39,7 +39,7 @@
  * @brief Creates a new, autoreleased set option failed exception.
  *
  * @param stream The stream for which the option could not be set
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased set option failed exception
  */
 + (instancetype)exceptionWithStream: (OFStream*)stream
@@ -49,7 +49,7 @@
  * @brief Initializes an already allocated set option failed exception.
  *
  * @param stream The stream for which the option could not be set
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized set option failed exception
  */
 - initWithStream: (OFStream*)stream
@@ -63,9 +63,9 @@
 - (OFStream*)stream;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end

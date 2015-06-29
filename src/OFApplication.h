@@ -16,11 +16,15 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
-@class OFArray;
-@class OFDictionary;
-@class OFMutableArray;
-@class OFMutableDictionary;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+#endif
 
 #define OF_APPLICATION_DELEGATE(cls)					\
 	int								\
@@ -112,8 +116,8 @@
 @interface OFApplication: OFObject
 {
 	OFString *_programName;
-	OFArray *_arguments;
-	OFDictionary *_environment;
+	OFArray OF_GENERIC(OFString*) *_arguments;
+	OFDictionary OF_GENERIC(OFString*, OFString*) *_environment;
 	int *_argc;
 	char ***_argv;
 @public
@@ -128,9 +132,10 @@
 
 #ifdef OF_HAVE_PROPERTIES
 @property (readonly, copy, nonatomic) OFString *programName;
-@property (readonly, copy, nonatomic) OFArray *arguments;
-@property (readonly, copy, nonatomic) OFDictionary *environment;
-@property (assign) id <OFApplicationDelegate> delegate;
+@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
+@property (readonly, copy, nonatomic)
+    OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
+@property OF_NULLABLE_PROPERTY (assign) id <OFApplicationDelegate> delegate;
 #endif
 
 /*!
@@ -152,14 +157,14 @@
  *
  * @return The arguments passed to the application
  */
-+ (OFArray*)arguments;
++ (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
-+ (OFDictionary*)environment;
++ (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Terminates the application with the EXIT_SUCCESS status.
@@ -179,8 +184,8 @@
  * @param argc A pointer where a pointer to argc should be stored
  * @param argv A pointer where a pointer to argv should be stored
  */
-- (void)getArgumentCount: (int**)argc
-       andArgumentValues: (char***[])argv;
+- (void)getArgumentCount: (int *OF_NONNULL *OF_NONNULL)argc
+       andArgumentValues: (char *OF_NONNULL *OF_NONNULL *OF_NONNULL[])argv;
 
 /*!
  * @brief Returns the name of the program (argv[0]).
@@ -194,28 +199,28 @@
  *
  * @return The arguments passed to the application
  */
-- (OFArray*)arguments;
+- (OFArray OF_GENERIC(OFString*)*)arguments;
 
 /*!
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
-- (OFDictionary*)environment;
+- (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Returns the delegate of the application.
  *
  * @return The delegate of the application
  */
-- (id <OFApplicationDelegate>)delegate;
+- (nullable id <OFApplicationDelegate>)delegate;
 
 /*!
  * @brief Sets the delegate of the application.
  *
  * @param delegate The delegate for the application
  */
-- (void)setDelegate: (id <OFApplicationDelegate>)delegate;
+- (void)setDelegate: (nullable id <OFApplicationDelegate>)delegate;
 
 /*!
  * @brief Terminates the application.
@@ -236,7 +241,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_application_main(int*, char**[], Class);
+extern int of_application_main(int *OF_NONNULL, char *OF_NONNULL *OF_NONNULL[],
+    Class);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

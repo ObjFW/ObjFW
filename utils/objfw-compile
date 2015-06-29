@@ -15,13 +15,13 @@
 #  file.
 #
 
-if test x"$(basename $0)" != x"objfw-compile"; then
-	OBJFW_CONFIG="$(basename $0 | sed 's/-objfw-compile$//')-objfw-config"
+if test x"$(basename "$0")" != x"objfw-compile"; then
+	OBJFW_CONFIG="$(basename "$0" | sed 's/-objfw-compile$//')-objfw-config"
 else
 	OBJFW_CONFIG="objfw-config"
 fi
 
-if ! which $OBJFW_CONFIG 2>&1 >/dev/null; then
+if ! which $OBJFW_CONFIG >/dev/null 2>&1; then
 	echo "You need to have ObjFW and $OBJFW_CONFIG installed!"
 	exit 1
 fi
@@ -38,26 +38,29 @@ if test x"$1" = "x"; then
 fi
 
 status_compiling() {
-	printf "\033[K\033[0;33mCompiling \033[1;33m$1\033[0;33m...\033[0m\r"
+	printf "\033[K\033[0;33mCompiling \033[1;33m%s\033[0;33m...\033[0m\r" \
+		"$1"
 }
 status_compiled() {
-	printf "\033[K\033[0;32mSuccessfully compiled \033[1;32m$1\033[0;32m."
+	printf "\033[K\033[0;32mSuccessfully compiled \033[1;32m%s\033[0;32m." \
+		"$1"
 	printf "\033[0m\n"
 }
 status_compile_failed() {
-	printf "\033[K\033[0;31mFailed to compile \033[1;31m$1\033[0;31m!"
+	printf "\033[K\033[0;31mFailed to compile \033[1;31m%s\033[0;31m!" "$1"
 	printf "\033[0m\n"
 	exit $2
 }
 status_linking() {
-	printf "\033[K\033[0;33mLinking \033[1;33m$1\033[0;33m...\033[0m\r"
+	printf "\033[K\033[0;33mLinking \033[1;33m%s\033[0;33m...\033[0m\r" "$1"
 }
 status_linked() {
-	printf "\033[K\033[0;32mSuccessfully linked \033[1;32m$1\033[0;32m."
+	printf "\033[K\033[0;32mSuccessfully linked \033[1;32m%s\033[0;32m." \
+		"$1"
 	printf "\033[0m\n"
 }
 status_link_failed() {
-	printf "\033[K\033[0;31mFailed to link \033[1;31m$1\033[0;31m!"
+	printf "\033[K\033[0;31mFailed to link \033[1;31m%s\033[0;31m!" "$1"
 	printf "\033[0m\n"
 	exit $2
 }

@@ -17,7 +17,9 @@
 #include "config.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
@@ -77,6 +79,7 @@ extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
 # else
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
 # endif
+#endif
 
 #if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
 static of_mutex_t mutex;
@@ -205,6 +208,7 @@ of_strerror(int errNo)
 	return ret;
 }
 
+#ifdef HAVE_DWARF_EXCEPTIONS
 static _Unwind_Reason_Code
 backtrace_callback(struct _Unwind_Context *ctx, void *data)
 {

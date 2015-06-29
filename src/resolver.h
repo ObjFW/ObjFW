@@ -18,6 +18,8 @@
 
 #import "socket.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*! @file */
 
 /*!
@@ -47,8 +49,8 @@ extern "C" {
  * @return An array of results. The list is terminated by NULL and should be
  *	   free'd after use.
  */
-extern of_resolver_result_t** of_resolve_host(OFString *host, uint16_t port,
-    int protocol);
+extern of_resolver_result_t *OF_NULLABLE *OF_NONNULL
+    of_resolve_host(OFString *host, uint16_t port, int protocol);
 
 /*!
  * @brief Converts the specified address to a string and port pair.
@@ -61,14 +63,19 @@ extern of_resolver_result_t** of_resolve_host(OFString *host, uint16_t port,
  *	       address or NULL if the port is not needed
  */
 extern void of_address_to_string_and_port(struct sockaddr *address,
-    socklen_t addressLength, OFString *__autoreleasing *host, uint16_t *port);
+    socklen_t addressLength,
+    OFString *__autoreleasing OF_NONNULL *OF_NULLABLE host,
+    uint16_t *OF_NULLABLE port);
 
 /*!
  * @brief Frees the results returned by @ref of_resolve_host.
  *
  * @param results The results returned by @ref of_resolve_host
  */
-extern void of_resolver_free(of_resolver_result_t **results);
+extern void of_resolver_free(
+    of_resolver_result_t *OF_NULLABLE *OF_NONNULL results);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

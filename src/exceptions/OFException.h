@@ -17,8 +17,10 @@
 #import "OFObject.h"
 
 @class OFString;
-@class OFArray;
-@class OFMutableArray;
+#ifndef DOXYGEN
+@class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+#endif
 
 #define OF_BACKTRACE_SIZE 32
 

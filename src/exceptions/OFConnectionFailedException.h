@@ -59,7 +59,7 @@
  * @param host The host to which the connection failed
  * @param port The port on the host to which the connection failed
  * @param socket The socket which could not connect
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased connection failed exception
  */
 + (instancetype)exceptionWithHost: (OFString*)host
@@ -85,7 +85,7 @@
  * @param host The host to which the connection failed
  * @param port The port on the host to which the connection failed
  * @param socket The socket which could not connect
- * @param errNo The errno of the error
+ * @param errNo The errno of the error that occurred
  * @return An initialized connection failed exception
  */
 - initWithHost: (OFString*)host
@@ -115,9 +115,9 @@
 - (uint16_t)port;
 
 /*!
- * @brief Returns the errno from when the exception was created.
+ * @brief Returns the errno of the error that occurred.
  *
- * @return The errno from when the exception was created
+ * @return The errno of the error that occurred
  */
 - (int)errNo;
 @end
