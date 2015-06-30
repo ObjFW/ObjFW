@@ -54,6 +54,7 @@
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 		char *tmp, *tmp2;
 
 		if ((UTF8String2 = of_strdup([string UTF8String])) == NULL)
@@ -69,15 +70,17 @@
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
 			*tmp2 = tolower((int)*tmp2);
 
-		_scheme = [[OFString alloc]
-		    initWithUTF8String: UTF8String
-				length: tmp - UTF8String];
+		_scheme = [[[OFString stringWithUTF8String: UTF8String
+						    length: tmp - UTF8String]
+		    stringByURLDecoding] copy];
 
 		UTF8String = tmp + 3;
 
 		if ([_scheme isEqual: @"file"]) {
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_path = [[[OFString stringWithUTF8String:
+			    UTF8String] stringByURLDecoding] copy];
+
+			objc_autoreleasePoolPop(pool);
 			return self;
 		}
 
@@ -96,13 +99,13 @@
 				*tmp3 = '\0';
 				tmp3++;
 
-				_user = [[OFString alloc]
-				    initWithUTF8String: UTF8String];
-				_password = [[OFString alloc]
-				    initWithUTF8String: tmp3];
+				_user = [[[OFString stringWithUTF8String:
+				    UTF8String] stringByURLDecoding] copy];
+				_password = [[[OFString stringWithUTF8String:
+				    tmp3] stringByURLDecoding] copy];
 			} else
-				_user = [[OFString alloc]
-				    initWithUTF8String: UTF8String];
+				_user = [[[OFString stringWithUTF8String:
+				    UTF8String] stringByURLDecoding] copy];
 
 			UTF8String = tmp2;
 		}
@@ -114,8 +117,8 @@
 			*tmp2 = '\0';
 			tmp2++;
 
-			_host = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_host = [[[OFString stringWithUTF8String:
+			    UTF8String] stringByURLDecoding] copy];
 
 			pool = objc_autoreleasePoolPush();
 			portString = [OFString stringWithUTF8String: tmp2];
@@ -127,8 +130,8 @@
 
 			objc_autoreleasePoolPop(pool);
 		} else {
-			_host = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_host = [[[OFString stringWithUTF8String:
+			    UTF8String] stringByURLDecoding] copy];
 
 			if ([_scheme isEqual: @"http"])
 				_port = 80;
@@ -142,27 +145,29 @@
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
-				_fragment = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
+				_fragment = [[[OFString stringWithUTF8String:
+				    tmp + 1] stringByURLDecoding] copy];
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
-				_query = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
+				_query = [[[OFString stringWithUTF8String:
+				    tmp + 1] stringByURLDecoding] copy];
 			}
 
 			if ((tmp = strchr(UTF8String, ';')) != NULL) {
 				*tmp = '\0';
 
-				_parameters = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
+				_parameters = [[[OFString stringWithUTF8String:
+				    tmp + 1] stringByURLDecoding] copy];
 			}
 
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_path = [[[OFString stringWithUTF8String:
+			    UTF8String] stringByURLDecoding] copy];
 		}
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -184,6 +189,7 @@
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 		char *tmp;
 
 		_scheme = [URL->_scheme copy];
@@ -201,43 +207,42 @@
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			_fragment = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+			_fragment = [[[OFString stringWithUTF8String:
+			    tmp + 1] stringByURLDecoding] copy];
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			_query = [[OFString alloc] initWithUTF8String: tmp + 1];
+			_query = [[[OFString stringWithUTF8String:
+			    tmp + 1] stringByURLDecoding] copy];
 		}
 
 		if ((tmp = strchr(UTF8String, ';')) != NULL) {
 			*tmp = '\0';
-			_parameters = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+			_parameters = [[[OFString stringWithUTF8String:
+			    tmp + 1] stringByURLDecoding] copy];
 		}
 
 		if (*UTF8String == '/')
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String + 1];
+			_path = [[[OFString stringWithUTF8String:
+			    UTF8String + 1] stringByURLDecoding] copy];
 		else {
-			void *pool;
-			OFString *s;
+			OFString *path, *s;
 
-			pool = objc_autoreleasePoolPush();
+			path = [[[OFString stringWithUTF8String:
+			    UTF8String] stringByURLDecoding] copy];
 
 			if ([URL->_path hasSuffix: @"/"])
-				s = [OFString stringWithFormat: @"%@%s",
-								URL->_path,
-								UTF8String];
+				s = [URL->_path stringByAppendingString: path];
 			else
-				s = [OFString stringWithFormat: @"%@/../%s",
+				s = [OFString stringWithFormat: @"%@/../%@",
 								URL->_path,
-								UTF8String];
+								path];
 
 			_path = [[s stringByStandardizingURLPath] copy];
-
-			objc_autoreleasePoolPop(pool);
 		}
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -453,23 +458,29 @@
 
 - (OFString*)string
 {
-	OFMutableString *ret = [OFMutableString stringWithFormat: @"%@://",
-								  _scheme];
+	OFMutableString *ret = [OFMutableString string];
+	void *pool = objc_autoreleasePoolPush();
+
+	[ret appendFormat: @"%@://", [_scheme stringByURLEncoding]];
 
 	if ([_scheme isEqual: @"file"]) {
 		if (_path != nil)
-			[ret appendString: _path];
+			[ret appendString: [_path
+			    stringByURLEncodingWithIgnoredCharacters: "/"]];
 
+		objc_autoreleasePoolPop(pool);
 		return ret;
 	}
 
 	if (_user != nil && _password != nil)
-		[ret appendFormat: @"%@:%@@", _user, _password];
+		[ret appendFormat: @"%@:%@@",
+				   [_user stringByURLEncoding],
+				   [_password stringByURLEncoding]];
 	else if (_user != nil)
-		[ret appendFormat: @"%@@", _user];
+		[ret appendFormat: @"%@@", [_user stringByURLEncoding]];
 
 	if (_host != nil)
-		[ret appendString: _host];
+		[ret appendString: [_host stringByURLEncoding]];
 
 	if (([_scheme isEqual: @"http"] && _port != 80) ||
 	    ([_scheme isEqual: @"https"] && _port != 443) ||
@@ -477,16 +488,19 @@
 		[ret appendFormat: @":%u", _port];
 
 	if (_path != nil)
-		[ret appendFormat: @"/%@", _path];
+		[ret appendFormat: @"/%@",
+		    [_path stringByURLEncodingWithIgnoredCharacters: "/"]];
 
 	if (_parameters != nil)
-		[ret appendFormat: @";%@", _parameters];
+		[ret appendFormat: @";%@", [_parameters stringByURLEncoding]];
 
 	if (_query != nil)
-		[ret appendFormat: @"?%@", _query];
+		[ret appendFormat: @"?%@", [_query stringByURLEncoding]];
 
 	if (_fragment != nil)
-		[ret appendFormat: @"#%@", _fragment];
+		[ret appendFormat: @"#%@", [_fragment stringByURLEncoding]];
+
+	objc_autoreleasePoolPop(pool);
 
 	[ret makeImmutable];
 

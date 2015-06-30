@@ -25,7 +25,8 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFURL";
-static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
+static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
+    @"pa%3Bth;pa%3Fram?que%23ry#frag%23ment";
 
 @implementation TestsAppDelegate (OFURLTests)
 - (void)URLTests
@@ -42,7 +43,7 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	TEST(@"+[URLWithString:relativeToURL:]",
 	    [[[OFURL URLWithString: @"/foo"
 		     relativeToURL: u1] string] isEqual:
-	    @"http://u:p@h:1234/foo"] &&
+	    @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
 	    [[[OFURL URLWithString: @"foo/bar?q"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/quux"]]
 	    string] isEqual: @"http://h/qux/foo/bar?q"] &&
@@ -59,19 +60,20 @@ static OFString *url_str = @"http://u:p@h:1234/f;p?q#f";
 	    [[u4 string] isEqual: @"file:///etc/passwd"])
 
 	TEST(@"-[scheme]",
-	    [[u1 scheme] isEqual: @"http"] && [[u4 scheme] isEqual: @"file"])
-	TEST(@"-[user]", [[u1 user] isEqual: @"u"] && [u4 user] == nil)
+	    [[u1 scheme] isEqual: @"ht%3Atp"] && [[u4 scheme] isEqual: @"file"])
+	TEST(@"-[user]", [[u1 user] isEqual: @"us:er"] && [u4 user] == nil)
 	TEST(@"-[password]",
-	    [[u1 password] isEqual: @"p"] && [u4 password] == nil)
-	TEST(@"-[host]", [[u1 host] isEqual: @"h"] && [u4 port] == 0)
+	    [[u1 password] isEqual: @"p@w"] && [u4 password] == nil)
+	TEST(@"-[host]", [[u1 host] isEqual: @"ho:st"] && [u4 port] == 0)
 	TEST(@"-[port]", [u1 port] == 1234)
 	TEST(@"-[path]",
-	    [[u1 path] isEqual: @"f"] && [[u4 path] isEqual: @"/etc/passwd"])
+	    [[u1 path] isEqual: @"pa;th"] &&
+	    [[u4 path] isEqual: @"/etc/passwd"])
 	TEST(@"-[parameters]",
-	    [[u1 parameters] isEqual: @"p"] && [u4 parameters] == nil)
-	TEST(@"-[query]", [[u1 query] isEqual: @"q"] && [u4 query] == nil)
+	    [[u1 parameters] isEqual: @"pa?ram"] && [u4 parameters] == nil)
+	TEST(@"-[query]", [[u1 query] isEqual: @"que#ry"] && [u4 query] == nil)
 	TEST(@"-[fragment]",
-	    [[u1 fragment] isEqual: @"f"] && [u4 fragment] == nil)
+	    [[u1 fragment] isEqual: @"frag#ment"] && [u4 fragment] == nil)
 
 	TEST(@"-[copy]", R(u4 = [[u1 copy] autorelease]))
 
