@@ -35,6 +35,16 @@ extern int _OFString_URLEncoding_reference;
 - (OFString*)stringByURLEncoding;
 
 /*!
+ * @brief Encodes a string for use in a URL, but does not escape the specified
+ *	  ignored characters.
+ *
+ * @param ignored A C string of characters that should not be escaped
+ *
+ * @return A new autoreleased string
+ */
+- (OFString*)stringByURLEncodingWithIgnoredCharacters: (const char*)ignored;
+
+/*!
  * @brief Decodes a string used in a URL.
  *
  * @return A new autoreleased string

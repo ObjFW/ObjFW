@@ -31,6 +31,11 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
+	return [self stringByURLEncodingWithIgnoredCharacters: ""];
+}
+
+- (OFString*)stringByURLEncodingWithIgnoredCharacters: (const char*)ignored
+{
 	void *pool = objc_autoreleasePoolPush();
 	const char *string = [self UTF8String];
 	char *retCString;
@@ -55,7 +60,8 @@ int _OFString_URLEncoding_reference;
 		if (!(*string & 0x80) && (isalnum((int)*string) ||
 		    *string == '$' || *string == '-' || *string == '_' ||
 		    *string == '.' || *string == '!' || *string == '*' ||
-		    *string == '(' || *string == ')' || *string == ','))
+		    *string == '(' || *string == ')' || *string == ',' ||
+		    strchr(ignored, *string) != NULL))
 			retCString[i++] = *string;
 		else {
 			uint8_t high, low;
