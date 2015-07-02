@@ -482,9 +482,9 @@
 	if (_host != nil)
 		[ret appendString: [_host stringByURLEncoding]];
 
-	if (([_scheme isEqual: @"http"] && _port != 80) ||
-	    ([_scheme isEqual: @"https"] && _port != 443) ||
-	    ([_scheme isEqual: @"ftp"] && _port != 21))
+	if (!(([_scheme isEqual: @"http"] && _port == 80) ||
+	    ([_scheme isEqual: @"https"] && _port == 443) ||
+	    ([_scheme isEqual: @"ftp"] && _port == 21)))
 		[ret appendFormat: @":%u", _port];
 
 	if (_path != nil)

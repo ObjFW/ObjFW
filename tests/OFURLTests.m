@@ -60,7 +60,7 @@ static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [[u4 string] isEqual: @"file:///etc/passwd"])
 
 	TEST(@"-[scheme]",
-	    [[u1 scheme] isEqual: @"ht%3Atp"] && [[u4 scheme] isEqual: @"file"])
+	    [[u1 scheme] isEqual: @"ht:tp"] && [[u4 scheme] isEqual: @"file"])
 	TEST(@"-[user]", [[u1 user] isEqual: @"us:er"] && [u4 user] == nil)
 	TEST(@"-[password]",
 	    [[u1 password] isEqual: @"p@w"] && [u4 password] == nil)
