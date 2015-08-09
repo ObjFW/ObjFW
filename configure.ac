@@ -208,7 +208,7 @@ AC_ARG_ENABLE(runtime,
 	AS_HELP_STRING([--enable-runtime], [use the included runtime]))
 AC_ARG_ENABLE(seluid24,
 	AS_HELP_STRING([--enable-seluid24],
-		[use 24 bit instead of 16 bit for selectors UIDs]))
+		[use 24 bit instead of 16 bit for selector UIDs]))
 AS_IF([test x"$enable_runtime" != x"yes"], [
 	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
 		AC_EGREP_CPP(yes, [
