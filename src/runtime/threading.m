@@ -48,10 +48,3 @@ objc_global_mutex_unlock(void)
 	if (!of_rmutex_unlock(&global_mutex))
 		OBJC_ERROR("Failed to unlock global mutex!");
 }
-
-void
-objc_global_mutex_free(void)
-{
-	if (!of_rmutex_free(&global_mutex))
-		OBJC_ERROR("Failed to free global mutex!");
-}

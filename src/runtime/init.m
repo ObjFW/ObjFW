@@ -44,5 +44,4 @@ objc_exit(void)
 	objc_dtable_cleanup();
 
 	objc_global_mutex_unlock();
-	objc_global_mutex_free();
 }
