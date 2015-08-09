@@ -199,7 +199,7 @@ extern char **environ;
 				posix_spawnattr_destroy(&attr);
 			}
 # else
-			if ((_pid = fork()) == 0) {
+			if ((_pid = vfork()) == 0) {
 				environ = env;
 
 				close(_readPipe[0]);
