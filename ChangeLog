@@ -2,6 +2,55 @@ Legend:
  * Changes of existing features or bugfixes
  + New features
 
+ObjFW 0.7.1 -> ObjFW 0.8, 14.10.2015
+
+ + An insanely huge amount of new APIs
+ + New classes: OFHTTPServer, OFINICategory, OFINIFile, OFInflate64Stream,
+   OFInflateStream, OFMapTable, OFRIPEMD160Hash, OFSHA224Hash, OFSHA256Hash,
+   OFSHA384Hash, OFSHA512Hash, OFSettings, OFStdIOStream, OFSystemInfo,
+   OFUDPSocket, OFZIPArchive, OFZIPArchiveEntry
+ + New utils: ofzip, ofhash, ofhttp
+ + Support for -[forwardingTargetForSelector:] on a lot of platforms
+   (see PLATFORMS.md)
+ * OFHTTPRequest: Split into OFHTTPRequest and OFHTTPClient
+ * Rename OFHTTPRequestReply to OFHTTPResponse
+ * OFDictionary now uses OFMapTable internally
+ + Highly randomized, DoS-resistant hashtables (different seed per hashtable,
+   additionally rotated by a random number of bits)
+ * Reworked exceptions API that explicitly passes errno around
+ + OFHTTPClient: Keep-alive and Basic Authorization support
+ + Support for (and use of) ObjC generics, nullability and kindof
+ + Fast path for resolving classes when using GCC (Clang doesn't need the fast
+   path, as it directly references classes)
+ * OFStreamObserver: Refactored and renamed to OFKernelEventObserver (as it is
+   no longer limited to streams)
+ + Support for SjLj and SEH exceptions
+ + Support for DOS/DJGPP, Nintendo Wii, Nintendo DS and PlayStation Portable
+ + Support for bare metal (in other words: running without any OS; tested on
+   ARM)
+ + Full support for ARM64 on iOS
+ + Full MessagePack implementation (the new MessagePack version that supports
+   strings)
+ + Backtraces for uncaught exceptions
+ + Bridge to Cocoa now part of ObjFW
+ * Default depth limit for XML and JSON parser
+ + Optional support for outputting JSON5 (default is JSON)
+ * 16 bit selector UIDs are now the default
+ * BOOL replaced with bool everywhere (except where required by the ABI)
+ * Fix for a nasty bug in -[replaceCharactersInRange:withString:]
+ * Fix for a nasty bug in atomic ops
+ * OFTLSKey replaced with +[OFThread threadDictionary]
+ * Documentation improvements (for example, imports should now be shown
+   correctly everywhere and many APIs have been documented in more detail)
+ + Property introspection
+ * OFProcess: Use posix_spawnp if available
+ * OFProcess improvements for Win32
+ + epoll support for OFKernelEventObserver
+ * Rewritten OFMD5Hash and OFSHA1Hash
+ * Reworked OFTLSSocket API (easier verification)
+ * Unicode support updated to Unicode 8.0
+ * OFURL: Proper escaping and unescaping
+
 ObjFW 0.7 -> ObjFW 0.7.1, 12.11.2012
  + Support for Haiku
  * Autorelease pools now work properly without __thread
