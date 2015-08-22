@@ -119,10 +119,10 @@
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
-static of_mutex_t mutex;
+static of_mutex_t chownMutex;
 #endif
 #if !defined(HAVE_READDIR_R) && !defined(_WIN32) && defined(OF_HAVE_THREADS)
-static of_mutex_t mutex;
+static of_mutex_t readdirMutex;
 #endif
 
 int
@@ -207,13 +207,13 @@ parseMode(const char *mode)
 		return;
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_new(&mutex))
+	if (!of_mutex_new(&chownMutex))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 #endif
 
 #if !defined(HAVE_READDIR_R) && !defined(_WIN32) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_new(&mutex))
+	if (!of_mutex_new(&readdirMutex))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 #endif
@@ -399,7 +399,7 @@ parseMode(const char *mode)
 							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_lock(&mutex))
+	if (!of_mutex_lock(&readdirMutex))
 		@throw [OFLockFailedException exception];
 # endif
 
@@ -448,7 +448,7 @@ parseMode(const char *mode)
 	} @finally {
 		closedir(dir);
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
-		if (!of_mutex_unlock(&mutex))
+		if (!of_mutex_unlock(&readdirMutex))
 			@throw [OFUnlockFailedException exception];
 # endif
 	}
@@ -610,7 +610,7 @@ parseMode(const char *mode)
 	encoding = [OFSystemInfo native8BitEncoding];
 
 # ifdef OF_HAVE_THREADS
-	if (!of_mutex_lock(&mutex))
+	if (!of_mutex_lock(&chownMutex))
 		@throw [OFLockFailedException exception];
 
 	@try {
@@ -644,7 +644,7 @@ parseMode(const char *mode)
 		}
 # ifdef OF_HAVE_THREADS
 	} @finally {
-		if (!of_mutex_unlock(&mutex))
+		if (!of_mutex_unlock(&chownMutex))
 			@throw [OFUnlockFailedException exception];
 	}
 # endif
