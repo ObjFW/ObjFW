@@ -21,6 +21,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFFile.h"
+#import "OFFileManager.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -138,7 +139,7 @@ static OFString *module = @"OFINIFile";
 		stringWithContentsOfFile: @"tmpfile.ini"
 				encoding: OF_STRING_ENCODING_CODEPAGE_437]
 	    isEqual: output])
-	[OFFile removeItemAtPath: @"tmpfile.ini"];
+	[[OFFileManager defaultManager] removeItemAtPath: @"tmpfile.ini"];
 #else
 	(void)output;
 #endif

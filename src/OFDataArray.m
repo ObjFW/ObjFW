@@ -24,6 +24,7 @@
 #import "OFString.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
+# import "OFFileManager.h"
 #endif
 #import "OFURL.h"
 #ifdef OF_HAVE_SOCKETS
@@ -154,7 +155,8 @@ void _references_to_categories_of_OFDataArray(void)
 	@try {
 		OFFile *file = [[OFFile alloc] initWithPath: path
 						       mode: @"rb"];
-		of_offset_t size = [OFFile sizeOfFileAtPath: path];
+		of_offset_t size = [[OFFileManager defaultManager]
+		    sizeOfFileAtPath: path];
 
 		if (size > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];

@@ -22,6 +22,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFFile.h"
+#import "OFFileManager.h"
 #import "OFOptionsParser.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
@@ -97,8 +98,9 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		/* Only allow modes that are safe */
 		mode &= (S_IRWXU | S_IRWXG | S_IRWXO);
 
-		[OFFile changePermissionsOfItemAtPath: path
-					  permissions: mode];
+		[[OFFileManager defaultManager]
+		    changePermissionsOfItemAtPath: path
+				      permissions: mode];
 	}
 #endif
 }
@@ -284,6 +286,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 - (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
 	 fromArchive: (OFZIPArchive*)archive
 {
+	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *entryEnumerator;
 	OFZIPArchiveEntry *entry;
 	bool all;
@@ -341,8 +344,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			[of_stdout writeFormat: @"Extracting %@...", fileName];
 
 		if ([fileName hasSuffix: @"/"]) {
-			[OFFile createDirectoryAtPath: outFileName
-					createParents: true];
+			[fileManager createDirectoryAtPath: outFileName
+					     createParents: true];
 			setPermissions(outFileName, entry);
 
 			if (_outputLevel >= 0)
@@ -352,11 +355,12 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		}
 
 		directory = [outFileName stringByDeletingLastPathComponent];
-		if (![OFFile directoryExistsAtPath: directory])
-			[OFFile createDirectoryAtPath: directory
-					createParents: true];
+		if (![fileManager directoryExistsAtPath: directory])
+			[fileManager createDirectoryAtPath: directory
+					     createParents: true];
 
-		if ([OFFile fileExistsAtPath: outFileName] && _override != 1) {
+		if ([fileManager fileExistsAtPath: outFileName] &&
+		    _override != 1) {
 			OFString *line;
 
 			if (_override == -1) {

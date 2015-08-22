@@ -51,6 +51,7 @@
 #import "OFInflate64Stream.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
+# import "OFFileManager.h"
 # import "OFINIFile.h"
 # import "OFSettings.h"
 # import "OFZIPArchive.h"

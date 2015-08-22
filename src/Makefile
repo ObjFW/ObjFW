@@ -84,6 +84,7 @@ SRCS = OFApplication.m			\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}
 SRCS_FILES = OFFile.m			\
+	     OFFileManager.m		\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
 	     OFSettings.m		\

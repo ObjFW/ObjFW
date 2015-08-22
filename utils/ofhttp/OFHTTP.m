@@ -21,6 +21,7 @@
 #import "OFDataArray.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
+#import "OFFileManager.h"
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
@@ -542,6 +543,7 @@ next:
 
 - (void)downloadNextURL
 {
+	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFString *URLString = nil;
 	OFURL *URL;
 	OFMutableDictionary *clientHeaders;
@@ -612,7 +614,8 @@ next:
 
 	if (_continue) {
 		@try {
-			of_offset_t size = [OFFile sizeOfFileAtPath: fileName];
+			of_offset_t size =
+			    [fileManager sizeOfFileAtPath: fileName];
 			OFString *range;
 
 			if (size > INTMAX_MAX)
@@ -694,7 +697,7 @@ next:
 	if ([_outputPath isEqual: @"-"])
 		_output = of_stdout;
 	else {
-		if (!_continue && [OFFile fileExistsAtPath: fileName]) {
+		if (!_continue && [fileManager fileExistsAtPath: fileName]) {
 			[of_stderr writeFormat:
 			    @"%@: File %@ already exists!\n",
 			    [OFApplication programName], fileName];

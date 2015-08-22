@@ -147,6 +147,8 @@
 		4B2B3E82140D430500EC2F7C /* OFMutableArray_adjacent.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E78140D430500EC2F7C /* OFMutableArray_adjacent.m */; };
 		4B2B3E83140D430500EC2F7C /* OFMutableDictionary_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2B3E79140D430500EC2F7C /* OFMutableDictionary_hashtable.h */; settings = {ATTRIBUTES = (); }; };
 		4B2B3E84140D430500EC2F7C /* OFMutableDictionary_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */; };
+		4B2C728B1B888B8300717583 /* OFFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C72891B888B6900717583 /* OFFileManager.m */; };
+		4B2C728C1B888B8700717583 /* OFFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2C72881B888B6900717583 /* OFFileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B325EDD1605F3A0007836CA /* OFRunLoop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B325ED91605F3A0007836CA /* OFRunLoop.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B325EDE1605F3A0007836CA /* OFRunLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B325EDA1605F3A0007836CA /* OFRunLoop.m */; };
 		4B325EDF1605F3A0007836CA /* OFTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B325EDB1605F3A0007836CA /* OFTimer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -659,6 +661,8 @@
 		4B2B3E78140D430500EC2F7C /* OFMutableArray_adjacent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableArray_adjacent.m; path = src/OFMutableArray_adjacent.m; sourceTree = "<group>"; };
 		4B2B3E79140D430500EC2F7C /* OFMutableDictionary_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableDictionary_hashtable.h; path = src/OFMutableDictionary_hashtable.h; sourceTree = "<group>"; };
 		4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableDictionary_hashtable.m; path = src/OFMutableDictionary_hashtable.m; sourceTree = "<group>"; };
+		4B2C72881B888B6900717583 /* OFFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFFileManager.h; path = src/OFFileManager.h; sourceTree = "<group>"; };
+		4B2C72891B888B6900717583 /* OFFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFFileManager.m; path = src/OFFileManager.m; sourceTree = "<group>"; };
 		4B325ED91605F3A0007836CA /* OFRunLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRunLoop.h; path = src/OFRunLoop.h; sourceTree = "<group>"; };
 		4B325EDA1605F3A0007836CA /* OFRunLoop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRunLoop.m; path = src/OFRunLoop.m; sourceTree = "<group>"; };
 		4B325EDB1605F3A0007836CA /* OFTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFTimer.h; path = src/OFTimer.h; sourceTree = "<group>"; };
@@ -1299,6 +1303,8 @@
 				4B0108CA10EB8C9300631877 /* OFEnumerator.m */,
 				4B6799661099E7C50041064A /* OFFile.h */,
 				4B6799671099E7C50041064A /* OFFile.m */,
+				4B2C72881B888B6900717583 /* OFFileManager.h */,
+				4B2C72891B888B6900717583 /* OFFileManager.m */,
 				4BF1BCC011C9663F0025511F /* OFHash.h */,
 				4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */,
 				4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */,
@@ -1639,6 +1645,7 @@
 				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
+				4B2C728C1B888B8700717583 /* OFFileManager.h in Headers */,
 				4B3D23C91337FCB000DD29B8 /* OFHash.h in Headers */,
 				4BB4B54416775FF4002A2DCE /* OFHTTPClient.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
@@ -2018,6 +2025,7 @@
 				4B2B3E80140D430500EC2F7C /* OFDictionary_hashtable.m in Sources */,
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
 				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
+				4B2C728B1B888B8300717583 /* OFFileManager.m in Sources */,
 				4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,
