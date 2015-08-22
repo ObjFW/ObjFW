@@ -518,7 +518,7 @@ test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 AC_CHECK_FUNCS([arc4random random], break)
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
-AC_CHECK_HEADERS(dlfcn.h)
+AC_CHECK_HEADERS_ONCE(dlfcn.h)
 case "$host_os" in
 	netbsd*)
 		dnl dladdr exists on NetBSD, but it is completely broken.
@@ -595,7 +595,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		AS_HELP_STRING([--disable-compiler-tls],
 			[disable compiler thread local storage]))
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
-		AC_CHECK_HEADERS(threads.h, [
+		AC_CHECK_HEADER(threads.h, [
 			AC_DEFINE(OF_HAVE_THREADS_H, 1,
 				[Whether we have threads.h])
 		])
@@ -767,11 +767,11 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
 			[Whether we have sys/socket.h])
 	])
-	AC_CHECK_HEADERS(netinet/in.h, [
+	AC_CHECK_HEADER(netinet/in.h, [
 		AC_DEFINE(OF_HAVE_NETINET_IN_H, 1,
 			[Whether we have netinet/in.h])
 	])
-	AC_CHECK_HEADERS(netinet/tcp.h, [
+	AC_CHECK_HEADER(netinet/tcp.h, [
 		AC_DEFINE(OF_HAVE_NETINET_TCP_H, 1,
 			[Whether we have netinet/tcp.h])
 	])
@@ -964,7 +964,7 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
-AC_CHECK_HEADERS([sys/ioctl.h sys/termios.h])
+AC_CHECK_HEADERS_ONCE([sys/ioctl.h sys/termios.h])
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
