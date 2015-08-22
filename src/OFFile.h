@@ -160,6 +160,8 @@ typedef struct stat of_stat_t;
 /*!
  * @brief Returns the last access time of the specified file.
  *
+ * @param path The path to the file whose last access time should be returned
+ *
  * @return The last access time of the specified file
  */
 + (OFDate*)accessTimeOfItemAtPath: (OFString*)path;
@@ -167,12 +169,18 @@ typedef struct stat of_stat_t;
 /*!
  * @brief Returns the last modification time of the specified file.
  *
+ * @param path The path to the file whose last modification time should be
+ *	       returned
+ *
  * @return The last modification time of the specified file
  */
 + (OFDate*)modificationTimeOfItemAtPath: (OFString*)path;
 
 /*!
  * @brief Returns the last status change time of the specified file.
+ *
+ * @param path The path to the file whose last status change time should be
+ *	       returned
  *
  * @return The last status change time of the specified file
  */
@@ -284,6 +292,7 @@ typedef struct stat of_stat_t;
  * @brief Returns the destination of the symbolic link at the specified path.
  *
  * @param path The path to the symbolic link
+ *
  * @return The destination of the symbolic link at the specified path
  */
 + (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path;
