@@ -153,36 +153,38 @@ typedef struct stat of_stat_t;
 /*!
  * @brief Returns the size of the specified file.
  *
+ * @param path The path to the file whose path should be returned
+ *
  * @return The size of the specified file
  */
 + (of_offset_t)sizeOfFileAtPath: (OFString*)path;
 
 /*!
- * @brief Returns the last access time of the specified file.
+ * @brief Returns the last access time of the specified item.
  *
  * @param path The path to the file whose last access time should be returned
  *
- * @return The last access time of the specified file
+ * @return The last access time of the specified item
  */
 + (OFDate*)accessTimeOfItemAtPath: (OFString*)path;
 
 /*!
- * @brief Returns the last modification time of the specified file.
+ * @brief Returns the last modification time of the specified item.
  *
  * @param path The path to the file whose last modification time should be
  *	       returned
  *
- * @return The last modification time of the specified file
+ * @return The last modification time of the specified item
  */
 + (OFDate*)modificationTimeOfItemAtPath: (OFString*)path;
 
 /*!
- * @brief Returns the last status change time of the specified file.
+ * @brief Returns the last status change time of the specified item.
  *
  * @param path The path to the file whose last status change time should be
  *	       returned
  *
- * @return The last status change time of the specified file
+ * @return The last status change time of the specified item
  */
 + (OFDate*)statusChangeTimeOfItemAtPath: (OFString*)path;
 
