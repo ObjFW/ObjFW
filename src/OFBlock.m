@@ -241,15 +241,13 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 	if (src_ == NULL)
 		return;
 
-	if (flags_ & OF_BLOCK_BYREF_CALLER)
-		return;
-
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
 		*(of_block_literal_t**)dst_ = _Block_copy(src_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
-		*(id*)dst_ = [(id)src_ retain];
+		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
+			*(id*)dst_ = [(id)src_ retain];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
 		of_block_byref_t *src = (of_block_byref_t*)src_;
@@ -268,7 +266,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 			memcpy(*dst, src, src->size);
 
-			if (src->size >= sizeof(of_block_byref_t))
+			if (src->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				src->byref_keep(*dst, src);
 		} else
 			*dst = src;
@@ -287,21 +285,19 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	if (obj_ == NULL)
 		return;
 
-	if (flags_ & OF_BLOCK_BYREF_CALLER)
-		return;
-
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
 		_Block_release(obj_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
-		[(id)obj_ release];
+		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
+			[(id)obj_ release];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
 		of_block_byref_t *obj = (of_block_byref_t*)obj_;
 
 		if ((--obj->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-			if (obj->size >= sizeof(of_block_byref_t))
+			if (obj->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				obj->byref_dispose(obj);
 
 			free(obj);
