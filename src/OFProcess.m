@@ -568,7 +568,7 @@ extern char **environ;
 		close(_writePipe[1]);
 
 	if (_pid != -1) {
-		kill(_pid, SIGKILL);
+		kill(_pid, SIGTERM);
 		waitpid(_pid, &_status, WNOHANG);
 	}
 
