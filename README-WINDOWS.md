@@ -71,7 +71,7 @@ Getting, building and installing ObjFW
   You can also download a release tarball if you want. Now go to the newly
   checked out repository and build and install it:
 
-    $ ./autogen.sh && ./configure && make -j16 install
+    $ autoreconf && ./configure && make -j16 install
 
   If everything was successfully, you can now build projects using ObjFW for
   Windows using the normal `objfw-compile` and friends.
