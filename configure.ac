@@ -1153,9 +1153,9 @@ AC_SUBST(TESTS_LIBS)
 AC_CONFIG_FILES([
 	buildsys.mk
 	extra.mk
+	misc/Bridge-Info.plist
+	misc/Info.plist
 	utils/objfw-config
-	support/Info.plist
-	support/Bridge-Info.plist
 ])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])
 AC_OUTPUT

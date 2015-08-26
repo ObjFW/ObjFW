@@ -612,7 +612,7 @@
 		4B17FFB8133A3813003E6DCD /* OFInvalidServerReplyException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidServerReplyException.m; path = src/exceptions/OFInvalidServerReplyException.m; sourceTree = "<group>"; };
 		4B187E0E163EA29F0049A832 /* ObjFW-Bridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "ObjFW-Bridge.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B187E22163EA3DA0049A832 /* ObjFW-Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ObjFW-Bridge.h"; path = "src/bridge/ObjFW-Bridge.h"; sourceTree = "<group>"; };
-		4B187E23163EA3DA0049A832 /* Bridge-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Bridge-Info.plist"; path = "support/Bridge-Info.plist"; sourceTree = "<group>"; };
+		4B187E23163EA3DA0049A832 /* Bridge-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Bridge-Info.plist"; path = "misc/Bridge-Info.plist"; sourceTree = "<group>"; };
 		4B187E24163EA3DA0049A832 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = src/bridge/Makefile; sourceTree = "<group>"; };
 		4B187E25163EA3DA0049A832 /* NSArray_OFArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSArray_OFArray.h; path = src/bridge/NSArray_OFArray.h; sourceTree = "<group>"; };
 		4B187E26163EA3DA0049A832 /* NSArray_OFArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSArray_OFArray.m; path = src/bridge/NSArray_OFArray.m; sourceTree = "<group>"; };
@@ -681,7 +681,7 @@
 		4B3D236D1337FB5800DD29B8 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = src/base64.h; sourceTree = "<group>"; };
 		4B3D236E1337FB5800DD29B8 /* base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = base64.m; path = src/base64.m; sourceTree = "<group>"; };
 		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = support/Info.plist; sourceTree = SOURCE_ROOT; };
+		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = misc/Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D5693139A617D0010A78F /* OFSerializationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerializationTests.m; path = tests/OFSerializationTests.m; sourceTree = "<group>"; };
 		4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFGetOptionFailedException.h; path = src/exceptions/OFGetOptionFailedException.h; sourceTree = "<group>"; };
 		4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFGetOptionFailedException.m; path = src/exceptions/OFGetOptionFailedException.m; sourceTree = "<group>"; };
@@ -959,7 +959,7 @@
 		4BE5F0DA12DF4225005C7A0C /* OFDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDate.m; path = src/OFDate.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlockTests.m; path = tests/OFBlockTests.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E512DF4259005C7A0C /* OFDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDateTests.m; path = tests/OFDateTests.m; sourceTree = SOURCE_ROOT; };
-		4BEAF52519A8107500B61868 /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.map; path = support/module.map; sourceTree = SOURCE_ROOT; };
+		4BEAF52519A8107500B61868 /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.map; path = misc/module.map; sourceTree = SOURCE_ROOT; };
 		4BEC83B719B7CB7100E4BB08 /* OFRIPEMD160Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRIPEMD160Hash.h; path = src/OFRIPEMD160Hash.h; sourceTree = "<group>"; };
 		4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160Hash.m; path = src/OFRIPEMD160Hash.m; sourceTree = "<group>"; };
 		4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160HashTests.m; path = tests/OFRIPEMD160HashTests.m; sourceTree = "<group>"; };
@@ -2334,7 +2334,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/support/Bridge-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/misc/Bridge-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.webkeks.objfw-bridge";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
@@ -2359,7 +2359,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/support/Bridge-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/misc/Bridge-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.webkeks.objfw-bridge";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = framework;
@@ -2396,7 +2396,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 8;
 				DYLIB_CURRENT_VERSION = 8;
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "$(SRCROOT)/support/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/misc/Info.plist";
 				OTHER_LDFLAGS = (
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
@@ -2414,7 +2414,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 8;
 				DYLIB_CURRENT_VERSION = 8;
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "$(SRCROOT)/support/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/misc/Info.plist";
 				OTHER_LDFLAGS = (
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
