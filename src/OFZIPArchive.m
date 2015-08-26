@@ -119,7 +119,7 @@ of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
 }
 
 static uint32_t
-crc32(uint32_t crc, uint8_t *bytes, size_t length)
+calculateCRC32(uint32_t crc, uint8_t *bytes, size_t length)
 {
 	size_t i;
 
@@ -133,6 +133,21 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	}
 
 	return crc;
+}
+
+static void
+seekOrThrowInvalidFormat(OFSeekableStream *stream,
+    of_offset_t offset, int whence)
+{
+	@try {
+		[stream seekToOffset: offset
+			      whence: whence];
+	} @catch (OFSeekFailedException *e) {
+		if ([e errNo] == EINVAL)
+			@throw [OFInvalidFormatException exception];
+
+		@throw e;
+	}
 }
 
 @implementation OFZIPArchive
@@ -205,15 +220,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	bool valid = false;
 
 	do {
-		@try {
-			[_stream seekToOffset: offset
-				       whence: SEEK_END];
-		} @catch (OFSeekFailedException *e) {
-			if ([e errNo] == EINVAL)
-				@throw [OFInvalidFormatException exception];
-
-			@throw e;
-		}
+		seekOrThrowInvalidFormat(_stream, offset, SEEK_END);
 
 		if ([_stream readLittleEndianInt32] == 0x06054B50) {
 			valid = true;
@@ -244,8 +251,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	    _centralDirectoryOffset == 0xFFFFFFFF) {
 		uint64_t offset64, size;
 
-		[_stream seekToOffset: offset - 20
-			       whence: SEEK_END];
+		seekOrThrowInvalidFormat(_stream, offset - 20, SEEK_END);
 
 		if ([_stream readLittleEndianInt32] != 0x07064B50) {
 			objc_autoreleasePoolPop(pool);
@@ -262,8 +268,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		if ((of_offset_t)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
-		[_stream seekToOffset: (of_offset_t)offset64
-			       whence: SEEK_SET];
+		seekOrThrowInvalidFormat(_stream,
+		    (of_offset_t)offset64, SEEK_SET);
 
 		if ([_stream readLittleEndianInt32] != 0x06064B50)
 			@throw [OFInvalidFormatException exception];
@@ -301,8 +307,8 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if ((of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
-	[_stream seekToOffset: (of_offset_t)_centralDirectoryOffset
-		       whence: SEEK_SET];
+	seekOrThrowInvalidFormat(_stream,
+	    (of_offset_t)_centralDirectoryOffset, SEEK_SET);
 
 	_entries = [[OFMutableArray alloc] init];
 	_pathToEntryMap = [[OFMutableDictionary alloc] init];
@@ -355,8 +361,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 	if ((of_offset_t)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
-	[_stream seekToOffset: (of_offset_t)offset64
-		       whence: SEEK_SET];
+	seekOrThrowInvalidFormat(_stream, (of_offset_t)offset64, SEEK_SET);
 	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
 	    initWithStream: _stream] autorelease];
 
@@ -568,7 +573,7 @@ crc32(uint32_t crc, uint8_t *bytes, size_t length)
 		_size -= ret;
 	}
 
-	_CRC32 = crc32(_CRC32, buffer, ret);
+	_CRC32 = calculateCRC32(_CRC32, buffer, ret);
 
 	return ret;
 }
