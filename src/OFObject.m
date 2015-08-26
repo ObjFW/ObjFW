@@ -230,19 +230,23 @@ void _references_to_categories_of_OFObject(void)
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
 #endif
 
+	of_hash_seed = 0;
+	while (of_hash_seed == 0) {
 #if defined(HAVE_ARC4RANDOM)
-	of_hash_seed = arc4random();
+		of_hash_seed = arc4random();
 #elif defined(HAVE_RANDOM)
-	struct timeval t;
-	gettimeofday(&t, NULL);
-	srandom((unsigned)(t.tv_sec ^ t.tv_usec));
-	of_hash_seed = (uint32_t)((random() << 16) | (random() & 0xFFFF));
+		struct timeval t;
+		gettimeofday(&t, NULL);
+		srandom((unsigned)(t.tv_sec ^ t.tv_usec));
+		of_hash_seed = (uint32_t)((random() << 16) |
+		    (random() & 0xFFFF));
 #else
-	struct timeval t;
-	gettimeofday(&t, NULL);
-	srand((unsigned)(t.tv_sec ^ t.tv_usec));
-	of_hash_seed = (uint32_t)((rand() << 16) | (rand() & 0xFFFF));
+		struct timeval t;
+		gettimeofday(&t, NULL);
+		srand((unsigned)(t.tv_sec ^ t.tv_usec));
+		of_hash_seed = (uint32_t)((rand() << 16) | (rand() & 0xFFFF));
 #endif
+	}
 }
 
 + (void)unload
