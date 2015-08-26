@@ -6,6 +6,7 @@ AS_IF([test configure.ac -nt configure], [
 ])
 
 AC_CONFIG_SRCDIR(src)
+AC_CONFIG_AUX_DIR(build-aux)
 
 AC_CANONICAL_HOST
 
