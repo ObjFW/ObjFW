@@ -36,6 +36,12 @@
 # include <sched.h>
 #endif
 
+#ifdef __wii__
+# define BOOL OGC_BOOL
+# include <ogcsys.h>
+# undef BOOL
+#endif
+
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFRunLoop.h"
@@ -181,7 +187,11 @@ callMain(id object)
 	if (rqtp.tv_sec != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
+# ifndef __wii__
 	nanosleep(&rqtp, NULL);
+# else
+	nanosleep(&rqtp);
+# endif
 #elif defined(OF_NINTENDO_DS)
 	uint64_t counter;
 

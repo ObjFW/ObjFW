@@ -594,10 +594,15 @@ static uint16_t freePort = 65532;
 		@throw [OFSetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
+
+#ifdef __wii__
+	_keepAliveEnabled = enabled;
+#endif
 }
 
 - (bool)isKeepAliveEnabled
 {
+#ifndef __wii__
 	int v;
 	socklen_t len = sizeof(v);
 
@@ -608,6 +613,9 @@ static uint16_t freePort = 65532;
 				  errNo: of_socket_errno()];
 
 	return v;
+#else
+	return _keepAliveEnabled;
+#endif
 }
 
 - (void)setTCPNoDelayEnabled: (bool)enabled
@@ -619,10 +627,15 @@ static uint16_t freePort = 65532;
 		@throw [OFSetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
+
+#ifdef __wii__
+	_TCPNoDelayEnabled = enabled;
+#endif
 }
 
 - (bool)isTCPNoDelayEnabled
 {
+#ifndef __wii__
 	int v;
 	socklen_t len = sizeof(v);
 
@@ -633,5 +646,8 @@ static uint16_t freePort = 65532;
 				  errNo: of_socket_errno()];
 
 	return v;
+#else
+	return _TCPNoDelayEnabled;
+#endif
 }
 @end
