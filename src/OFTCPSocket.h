@@ -65,6 +65,9 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 	socklen_t _addressLength;
 	OFString *_SOCKS5Host;
 	uint16_t _SOCKS5Port;
+#ifdef __wii__
+	bool _keepAliveEnabled, _TCPNoDelayEnabled;
+#endif
 }
 
 #ifdef OF_HAVE_PROPERTIES

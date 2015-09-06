@@ -322,7 +322,8 @@ main(int argc, char *argv[])
 - (void)applicationDidFinishLaunching
 {
 #if defined(__wii__) && defined(OF_HAVE_FILES)
-	[OFFile changeCurrentDirectoryPath: @"/apps/objfw-tests"];
+	[[OFFileManager defaultManager]
+	    changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
 
 	[self objectTests];

@@ -28,6 +28,8 @@
 # include <netdb.h>
 #endif
 
+#include "socket.h"
+
 #ifndef INVALID_SOCKET
 # define INVALID_SOCKET -1
 #endif
@@ -68,6 +70,8 @@
 # define close(sock) net_close(sock)
 # define connect(sock, addr, addrlen) net_connect(sock, addr, addrlen)
 # define gethostbyname(name) net_gethostbyname(name)
+# define h_errno 0
+# define hstrerror(err) "unknown (no hstrerror)"
 # define listen(sock, backlog) net_listen(sock, backlog)
 # define poll(fds, nfds, timeout) net_poll(fds, nfds, timeout)
 # define recv(sock, buf, len, flags) net_recv(sock, buf, len, flags)
