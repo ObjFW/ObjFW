@@ -239,7 +239,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  */
 - (void)sendBuffer: (const void*)buffer
 	    length: (size_t)length
-	  receiver: (of_udp_socket_address_t*)receiver;
+	  receiver: (const of_udp_socket_address_t*)receiver;
 
 /*!
  * @brief Cancels all pending asyncronous requests on the socket.
