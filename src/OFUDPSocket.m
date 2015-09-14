@@ -525,7 +525,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 - (void)sendBuffer: (const void*)buffer
 	    length: (size_t)length
-	  receiver: (of_udp_socket_address_t*)receiver
+	  receiver: (const of_udp_socket_address_t*)receiver
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
