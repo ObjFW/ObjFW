@@ -64,7 +64,8 @@ Getting, building and installing ObjFW
 --------------------------------------
 
   Start the MinGW-w64 Win32 or Win64 Shell (depening on what version you want
-  to build) and check out ObjFW:
+  to build - do *not* use the MSYS2 Shell shortcut, but use the MinGW-w64 Win32
+  or Win64 Shell shortcut instead!) and check out ObjFW:
 
     $ git clone https://webkeks.org/git/objfw.git
 
