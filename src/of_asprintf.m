@@ -29,6 +29,16 @@
 
 #define MAX_SUBFORMAT_LEN 64
 
+#ifndef HAVE_ASPRINTF
+/*
+ * (v)asprintf might be declared, but HAVE_ASPRINTF not defined because
+ * configure determined it is broken. In this case, we must make sure there is
+ * no name clash.
+ */
+# define asprintf asprintf_
+# define vasprintf vasprintf_
+#endif
+
 struct context {
 	const char *format;
 	size_t formatLen;
