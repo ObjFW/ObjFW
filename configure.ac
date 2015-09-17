@@ -1081,31 +1081,38 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
-	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -pedantic"
-	AC_MSG_CHECKING(whether -pedantic is buggy)
-	AC_TRY_COMPILE([
-		#import <stdlib.h>
+	case "$host" in
+		*-psp*)
+			# PSP headers don't work with -pedantic
+			;;
+		*)
+			old_OBJCFLAGS="$OBJCFLAGS"
+			OBJCFLAGS="$OBJCFLAGS -pedantic"
+			AC_MSG_CHECKING(whether -pedantic is buggy)
+			AC_TRY_COMPILE([
+				#import <stdlib.h>
 
-		#ifdef __has_attribute
-		# if __has_attribute(objc_root_class)
-		__attribute__((__objc_root_class__))
-		# endif
-		#endif
-		@interface Foo
-		{
-			void *foo;
-		}
-		@end
+				#ifdef __has_attribute
+				# if __has_attribute(objc_root_class)
+				__attribute__((__objc_root_class__))
+				# endif
+				#endif
+				@interface Foo
+				{
+					void *foo;
+				}
+				@end
 
-		@interface Bar: Foo
-		@end
-	], [], [
-		AC_MSG_RESULT(no)
-	], [
-		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$old_OBJCFLAGS"
-	])
+				@interface Bar: Foo
+				@end
+			], [], [
+				AC_MSG_RESULT(no)
+			], [
+				AC_MSG_RESULT(yes)
+				OBJCFLAGS="$old_OBJCFLAGS"
+			])
+			;;
+	esac
 ])
 
 AS_IF([test x"$cross_compiling" = x"yes"], [

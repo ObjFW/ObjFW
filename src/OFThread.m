@@ -15,6 +15,7 @@
  */
 
 #define OF_THREAD_M
+#define _POSIX_TIMERS
 #define __NO_EXT_QNX
 
 #include "config.h"
@@ -38,8 +39,10 @@
 
 #ifdef __wii__
 # define BOOL OGC_BOOL
+# define nanosleep ogc_nanosleep
 # include <ogcsys.h>
 # undef BOOL
+# undef nanosleep
 #endif
 
 #import "OFThread.h"
@@ -187,11 +190,7 @@ callMain(id object)
 	if (rqtp.tv_sec != floor(timeInterval))
 		@throw [OFOutOfRangeException exception];
 
-# ifndef __wii__
 	nanosleep(&rqtp, NULL);
-# else
-	nanosleep(&rqtp);
-# endif
 #elif defined(OF_NINTENDO_DS)
 	uint64_t counter;
 

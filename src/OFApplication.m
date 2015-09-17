@@ -162,6 +162,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 {
 #ifdef _PSP
 	sceKernelExitGame();
+	abort();	/* sceKernelExitGame() is not marked noreturn */
 #else
 	exit(status);
 #endif
