@@ -139,9 +139,9 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 		struct sockaddr_in *addrs, *addrsIter;
 
 		/*
-		 * If the host is an IP address, don't try resolving it.  On
-		 * the Wii for example, the resolver will return an error if
-		 * you specify an IP address.
+		 * If the host is an IP address, don't try resolving it. On the
+		 * Wii for example, the resolver will return an error if you
+		 * specify an IP address.
 		 */
 		if ((s_addr = inet_addr([host UTF8String])) != INADDR_NONE) {
 			of_resolver_result_t *tmp;
