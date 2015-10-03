@@ -9,6 +9,9 @@ AC_CONFIG_SRCDIR(src)
 
 AC_CANONICAL_HOST
 
+dnl Used to disable checking for -pedantic on some platforms where it's broken
+check_pedantic="yes"
+
 case "$host" in
 	*-msdosdjgpp*)
 		enable_shared="no"
@@ -31,6 +34,7 @@ case "$host" in
 		enable_shared="no"
 		enable_threads="no"	# TODO
 		enable_sockets="no"	# TODO
+		check_pedantic="no"
 
 		AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 		;;
@@ -76,6 +80,7 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	enable_shared="no"
 	enable_threads="no"	# TODO
 	enable_sockets="no"	# TODO
+	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_DS, 1,
 		[Whether we are compiling for the Nintendo DS])
@@ -1081,38 +1086,33 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		OBJCFLAGS="$old_OBJCFLAGS"
 	])
 
-	case "$host" in
-		*-psp*)
-			# PSP headers don't work with -pedantic
-			;;
-		*)
-			old_OBJCFLAGS="$OBJCFLAGS"
-			OBJCFLAGS="$OBJCFLAGS -pedantic"
-			AC_MSG_CHECKING(whether -pedantic is buggy)
-			AC_TRY_COMPILE([
-				#import <stdlib.h>
+	AS_IF([test x"$check_pedantic" = x"yes"], [
+		old_OBJCFLAGS="$OBJCFLAGS"
+		OBJCFLAGS="$OBJCFLAGS -pedantic"
+		AC_MSG_CHECKING(whether -pedantic is buggy)
+		AC_TRY_COMPILE([
+			#import <stdlib.h>
 
-				#ifdef __has_attribute
-				# if __has_attribute(objc_root_class)
-				__attribute__((__objc_root_class__))
-				# endif
-				#endif
-				@interface Foo
-				{
-					void *foo;
-				}
-				@end
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
+			@interface Foo
+			{
+				void *foo;
+			}
+			@end
 
-				@interface Bar: Foo
-				@end
-			], [], [
-				AC_MSG_RESULT(no)
-			], [
-				AC_MSG_RESULT(yes)
-				OBJCFLAGS="$old_OBJCFLAGS"
-			])
-			;;
-	esac
+			@interface Bar: Foo
+			@end
+		], [], [
+			AC_MSG_RESULT(no)
+		], [
+			AC_MSG_RESULT(yes)
+			OBJCFLAGS="$old_OBJCFLAGS"
+		])
+	])
 ])
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
