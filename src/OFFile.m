@@ -28,6 +28,7 @@
 #endif
 
 #ifdef OF_NINTENDO_DS
+# include <stdbool.h>
 # include <filesystem.h>
 #endif
 
