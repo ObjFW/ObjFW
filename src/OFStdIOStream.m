@@ -132,15 +132,18 @@ of_log(OFConstantString *format, ...)
 						   requestedLength: length];
 
 #ifndef _WIN32
-	if (write(_fd, buffer, length) < length)
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (write(_fd, buffer, length) != (ssize_t)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
 #else
-	if (length > UINT_MAX)
+	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, buffer, (unsigned int)length) < length)
+	if (write(_fd, buffer, (int)length) != (int)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];

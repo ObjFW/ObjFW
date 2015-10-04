@@ -498,7 +498,10 @@ extern char **environ;
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 
-	if (write(_writePipe[1], buffer, length) < length)
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (write(_writePipe[1], buffer, length) != (ssize_t)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
@@ -513,7 +516,7 @@ extern char **environ;
 						   requestedLength: length];
 
 	if (!WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
-	    ret < length) {
+	    ret != (DWORD)length) {
 		int errNo = 0;
 
 		if (GetLastError() == ERROR_BROKEN_PIPE)

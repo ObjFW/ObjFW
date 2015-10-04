@@ -541,8 +541,12 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef _WIN32
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	if (sendto(_socket, buffer, length, 0,
-	    (struct sockaddr*)&receiver->address, receiver->length) < length)
+	    (struct sockaddr*)&receiver->address,
+	    receiver->length) != (ssize_t)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -552,7 +556,8 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		@throw [OFOutOfRangeException exception];
 
 	if (sendto(_socket, buffer, (int)length, 0,
-	    (struct sockaddr*)&receiver->address, receiver->length) < length)
+	    (struct sockaddr*)&receiver->address,
+	    receiver->length) != (int)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
