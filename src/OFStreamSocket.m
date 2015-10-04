@@ -101,16 +101,19 @@
 							     errNo: ENOTCONN];
 
 #ifndef _WIN32
-	if (send(_socket, buffer, length, 0) < length)
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (send(_socket, buffer, length, 0) != (ssize_t)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: of_socket_errno()];
 #else
-	if (length > UINT_MAX)
+	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (send(_socket, buffer, (unsigned int)length, 0) < length)
+	if (send(_socket, buffer, (int)length, 0) != (int)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
