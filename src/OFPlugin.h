@@ -16,8 +16,6 @@
 
 #import "OFObject.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
 @class OFString;
 
 #ifndef _WIN32
@@ -26,6 +24,8 @@ typedef void* of_plugin_handle_t;
 # include <windows.h>
 typedef HMODULE of_plugin_handle_t;
 #endif
+
+OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @class OFPlugin OFPlugin.h ObjFW/OFPlugin.h
