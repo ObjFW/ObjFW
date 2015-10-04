@@ -168,7 +168,7 @@
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
 
-#ifndef _WIN32
+#ifdef OF_HAVE_PIPE
 		OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
 #else
 		OF_ENSURE(recvfrom(_cancelFD[0], &buffer, 1, 0, NULL,
