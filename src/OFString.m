@@ -2139,8 +2139,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
-	size_t length = [self length];
-	int i = 0;
+	size_t i = 0, length = [self length];
 	intmax_t value = 0;
 	bool expectWhitespace = false;
 
@@ -2194,8 +2193,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
-	size_t length = [self length];
-	int i = 0;
+	size_t i = 0, length = [self length];
 	uintmax_t value = 0;
 	bool expectWhitespace = false, foundValue = false;
 
