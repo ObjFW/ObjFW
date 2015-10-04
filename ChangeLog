@@ -2,6 +2,20 @@ Legend:
  * Changes of existing features or bugfixes
  + New features
 
+ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
+ * Adjust to __nullable / __nonnull being changed to _Nullable / _Nonnull in
+   Clang 3.7 (this fixes compilation with Clang 3.7)
+ * Blocks: Proper handling when called from a byref handler
+ * Fix compilation on Solaris
+ * Fix compilation for Wii, PSP and Nintendo DS
+ * OFProcess: Send SIGTERM on close instead of SIGKILL
+ * OFZIPArchive: Throw invalid format exception on failed seeks
+ * Make sure of_hash_seed is never initialized to 0
+ * Special cases for the Wii's weird network stack (fixes the tests)
+ * Better length checks for write / send calls
+ * Don't use -pedantic on platforms where it's broken by the system headers
+ * Documentation fixes
+
 ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
 
  + An insanely huge amount of new APIs
