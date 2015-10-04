@@ -189,9 +189,14 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 
 	switch (address1->address.ss_family) {
 	case AF_INET:
+#ifndef __wii__
 		if (address1->length < sizeof(struct sockaddr_in) ||
 		    address2->length < sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
+#else
+		if (address1->length < 8 || address2->length < 8)
+			@throw [OFInvalidArgumentException exception];
+#endif
 
 		sin_1 = (struct sockaddr_in*)&address1->address;
 		sin_2 = (struct sockaddr_in*)&address2->address;
@@ -242,8 +247,13 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	switch (address->address.ss_family) {
 	case AF_INET:
+#ifndef __wii__
 		if (address->length < sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
+#else
+		if (address->length < 8)
+			@throw [OFInvalidArgumentException exception];
+#endif
 
 		sin = (struct sockaddr_in*)&address->address;
 
