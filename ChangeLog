@@ -2,7 +2,7 @@ Legend:
  * Changes of existing features or bugfixes
  + New features
 
-ObjFW 0.7.1 -> ObjFW 0.8, 14.10.2015
+ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
 
  + An insanely huge amount of new APIs
  + New classes: OFHTTPServer, OFINICategory, OFINIFile, OFInflate64Stream,
