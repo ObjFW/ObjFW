@@ -211,7 +211,7 @@
 {
 	_BPS = (float)(_received - _lastReceived) /
 	    -(float)[_lastReceivedDate timeIntervalSinceNow];
-	_ETA = (double)(_length - _resumedFrom - _received) / _BPS;
+	_ETA = (double)(_length - _received) / _BPS;
 
 	_lastReceived = _received;
 	[_lastReceivedDate release];
