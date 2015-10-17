@@ -104,8 +104,13 @@
 
 	int fd = [object fileDescriptorForReading];
 
-	if (fd < 0 || fd >= FD_SETSIZE)
+	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
+
+#ifndef _WIN32
+	if (fd >= FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
+#endif
 
 	FD_CLR(fd, &_readFDs);
 }
@@ -116,8 +121,13 @@
 
 	int fd = [object fileDescriptorForWriting];
 
-	if (fd < 0 || fd >= FD_SETSIZE)
+	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
+
+#ifndef _WIN32
+	if (fd >= FD_SETSIZE)
+		@throw [OFOutOfRangeException exception];
+#endif
 
 	FD_CLR(fd, &_writeFDs);
 }
