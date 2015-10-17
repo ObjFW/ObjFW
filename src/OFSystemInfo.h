@@ -86,8 +86,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (nullable OFString*)CPUVendor;
 
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM) || defined(DOXYGEN)
 /*!
  * @brief Returns whether the CPU supports MMX.
+ *
+ * @note This method is only available on x86 and x86_64.
  *
  * @return Whether the CPU supports MMX
  */
@@ -96,12 +99,20 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns whether the CPU supports SSE.
  *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
  * @return Whether the CPU supports SSE
  */
 + (bool)supportsSSE;
 
 /*!
  * @brief Returns whether the CPU supports SSE2.
+ *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
  *
  * @return Whether the CPU supports SSE2
  */
@@ -110,12 +121,20 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns whether the CPU supports SSE3.
  *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
  * @return Whether the CPU supports SSE3
  */
 + (bool)supportsSSE3;
 
 /*!
  * @brief Returns whether the CPU supports SSSE3.
+ *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
  *
  * @return Whether the CPU supports SSSE3
  */
@@ -124,12 +143,20 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns whether the CPU supports SSE4.1.
  *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
  * @return Whether the CPU supports SSE4.1
  */
 + (bool)supportsSSE41;
 
 /*!
  * @brief Returns whether the CPU supports SSE4.2.
+ *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
  *
  * @return Whether the CPU supports SSE4.2
  */
@@ -138,6 +165,10 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns whether the CPU supports AVX.
  *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
  * @return Whether the CPU supports AVX
  */
 + (bool)supportsAVX;
@@ -145,9 +176,14 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns whether the CPU supports AVX2.
  *
+ * @warning This method only checks CPU support and assumes OS support!
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
  * @return Whether the CPU supports AVX2
  */
 + (bool)supportsAVX2;
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

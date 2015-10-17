@@ -47,25 +47,35 @@
 # include <sys/syspage.h>
 #endif
 
-struct cpuid_regs {
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+struct x86_regs {
 	uint32_t eax, ebx, ecx, edx;
 };
+#endif
 
 static size_t pageSize;
 static size_t numberOfCPUs;
 
-static OF_INLINE struct cpuid_regs OF_CONST_FUNC
-cpuid(uint32_t eax, uint32_t ecx)
-{
-	struct cpuid_regs regs;
-
 #if defined(OF_X86_64_ASM)
+static OF_INLINE struct x86_regs OF_CONST_FUNC
+x86_cpuid(uint32_t eax, uint32_t ecx)
+{
+	struct x86_regs regs;
+
 	__asm__(
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
+
+	return regs;
+}
 #elif defined(OF_X86_ASM)
+static OF_INLINE struct x86_regs OF_CONST_FUNC
+x86_cpuid(uint32_t eax, uint32_t ecx)
+{
+	struct x86_regs regs;
+
 	/*
 	 * This workaround is required by GCC when using -fPIC, as ebx is a
 	 * special register in PIC code. Yes, GCC is indeed not able to just
@@ -80,12 +90,10 @@ cpuid(uint32_t eax, uint32_t ecx)
 	    : "=a"(regs.eax), "=r"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
-#else
-	regs.eax = regs.ebx = regs.ecx = regs.edx = 0;
-#endif
 
 	return regs;
 }
+#endif
 
 @implementation OFSystemInfo
 + (void)initialize
@@ -298,7 +306,8 @@ cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)CPUVendor
 {
-	struct cpuid_regs regs = cpuid(0, 0);
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+	struct x86_regs regs = x86_cpuid(0, 0);
 	char buffer[12];
 
 	if (regs.eax == 0)
@@ -311,50 +320,55 @@ cpuid(uint32_t eax, uint32_t ecx)
 	return [OFString stringWithCString: buffer
 				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 12];
+#else
+	return nil;
+#endif
 }
 
+#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 + (bool)supportsMMX
 {
-	return (cpuid(1, 0).edx & (1 << 23));
+	return (x86_cpuid(1, 0).edx & (1 << 23));
 }
 
 + (bool)supportsSSE
 {
-	return (cpuid(1, 0).edx & (1 << 25));
+	return (x86_cpuid(1, 0).edx & (1 << 25));
 }
 
 + (bool)supportsSSE2
 {
-	return (cpuid(1, 0).edx & (1 << 26));
+	return (x86_cpuid(1, 0).edx & (1 << 26));
 }
 
 + (bool)supportsSSE3
 {
-	return (cpuid(1, 0).ecx & (1 << 0));
+	return (x86_cpuid(1, 0).ecx & (1 << 0));
 }
 
 + (bool)supportsSSSE3
 {
-	return (cpuid(1, 0).ecx & (1 << 9));
+	return (x86_cpuid(1, 0).ecx & (1 << 9));
 }
 
 + (bool)supportsSSE41
 {
-	return (cpuid(1, 0).ecx & (1 << 19));
+	return (x86_cpuid(1, 0).ecx & (1 << 19));
 }
 
 + (bool)supportsSSE42
 {
-	return (cpuid(1, 0).ecx & (1 << 20));
+	return (x86_cpuid(1, 0).ecx & (1 << 20));
 }
 
 + (bool)supportsAVX
 {
-	return (cpuid(1, 0).ecx & (1 << 28));
+	return (x86_cpuid(1, 0).ecx & (1 << 28));
 }
 
 + (bool)supportsAVX2
 {
-	return cpuid(0, 0).eax >= 7 && (cpuid(7, 0).ebx & (1 << 5));
+	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1 << 5));
 }
+#endif
 @end
