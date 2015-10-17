@@ -46,8 +46,9 @@
 #ifdef __QNX__
 # include <sys/syspage.h>
 #endif
-#ifdef OF_PPC_ASM
+#if defined(OF_PPC_ASM) || defined(OF_MIPS_ASM)
 # include <setjmp.h>
+# include <signal.h>
 #endif
 
 #if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
@@ -58,9 +59,13 @@ struct x86_regs {
 
 static size_t pageSize;
 static size_t numberOfCPUs;
-#ifdef OF_PPC_ASM
-static sig_atomic_t altiVecSupported;
-static sigjmp_buf altiVecJumpBuffer;
+#if defined(OF_PPC_ASM)
+static sig_atomic_t supportsAltiVec = 0;
+#elif defined(OF_MIPS_ASM)
+static sig_atomic_t supportsMXU = 0;
+#endif
+#if defined(OF_PPC_ASM) || defined(OF_MIPS_ASM)
+static sigjmp_buf SIGILLJumpBuffer;
 #endif
 
 #if defined(OF_X86_64_ASM)
@@ -102,25 +107,36 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 }
 #endif
 
-#ifdef OF_PPC_ASM
+#if defined(OF_PPC_ASM) || defined(OF_MIPS_ASM)
 static void
-altiVecSIGILLHandler(int signal)
+SIGILLHandler(int signal)
 {
-	altiVecSupported = 0;
-	siglongjmp(altiVecJumpBuffer, 1);
+	siglongjmp(SIGILLJumpBuffer, 1);
 }
 #endif
 
 @implementation OFSystemInfo
-#ifdef OF_PPC_ASM
+#if defined(OF_PPC_ASM) || defined(OF_MIPS_ASM)
 + (void)load
 {
-	altiVecSupported = 1;
-	if (sigsetjmp(altiVecJumpBuffer, 1) == 0) {
-		signal(SIGILL, altiVecSIGILLHandler);
+	if (sigsetjmp(SIGILLJumpBuffer, 1) == 0) {
+		signal(SIGILL, SIGILLHandler);
+# if defined(OF_PPC_ASM)
 		__asm__ __volatile__ (
 		    "vor	v0, v0, v0"
 		);
+		supportsAltiVec = 1;
+# elif defined(OF_MIPS_ASM)
+		/* This also enables the MXU */
+		__asm__ __volatile__ (
+		    "li	$t0, 1\n\t"
+		    ".word 0x7008042f	/* s32i2m xr16, $t0 */"
+		    :
+		    :
+		    : "$8" /* $t0 */
+		);
+		supportsMXU = 1;
+# endif
 	}
 	signal(SIGILL, SIG_DFL);
 }
@@ -405,7 +421,14 @@ altiVecSIGILLHandler(int signal)
 #ifdef OF_PPC_ASM
 + (bool)supportsAltiVec
 {
-	return altiVecSupported;
+	return supportsAltiVec;
+}
+#endif
+
+#ifdef OF_MIPS_ASM
++ (bool)supportsMXU
+{
+	return supportsMXU;
 }
 #endif
 @end

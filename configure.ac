@@ -480,11 +480,13 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
-case "$host" in
+case "$host_cpu" in
 	arm*)
 		AC_MSG_CHECKING(if VFP2 or above is available)
 		AC_TRY_COMPILE([], [
-			__asm__("fstmfdd sp!, {d0-d7}");
+			__asm__ __volatile__ (
+			    "fstmfdd sp!, {d0-d7}"
+			);
 		], [
 			AC_DEFINE(HAVE_VFP2, 1, [Whether we have VFP2 or above])
 			AC_MSG_RESULT(yes)

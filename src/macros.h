@@ -277,6 +277,9 @@
 #  endif
 # elif defined(__arm64__) || defined(__aarch64__)
 #  define OF_ARM64_ASM
+# elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
+	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
+#  define OF_MIPS_ASM
 # endif
 #endif
 
