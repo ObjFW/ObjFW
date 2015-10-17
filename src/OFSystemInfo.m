@@ -46,6 +46,9 @@
 #ifdef __QNX__
 # include <sys/syspage.h>
 #endif
+#ifdef OF_PPC_ASM
+# include <setjmp.h>
+#endif
 
 #if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 struct x86_regs {
@@ -55,6 +58,10 @@ struct x86_regs {
 
 static size_t pageSize;
 static size_t numberOfCPUs;
+#ifdef OF_PPC_ASM
+static sig_atomic_t altiVecSupported;
+static sigjmp_buf altiVecJumpBuffer;
+#endif
 
 #if defined(OF_X86_64_ASM)
 static OF_INLINE struct x86_regs OF_CONST_FUNC
@@ -95,7 +102,30 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 }
 #endif
 
+#ifdef OF_PPC_ASM
+static void
+altiVecSIGILLHandler(int signal)
+{
+	altiVecSupported = 0;
+	siglongjmp(altiVecJumpBuffer, 1);
+}
+#endif
+
 @implementation OFSystemInfo
+#ifdef OF_PPC_ASM
++ (void)load
+{
+	altiVecSupported = 1;
+	if (sigsetjmp(altiVecJumpBuffer, 1) == 0) {
+		signal(SIGILL, altiVecSIGILLHandler);
+		__asm__ __volatile__ (
+		    "vor	v0, v0, v0"
+		);
+	}
+	signal(SIGILL, SIG_DFL);
+}
+#endif
+
 + (void)initialize
 {
 	if (self != [OFSystemInfo class])
@@ -369,6 +399,13 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (bool)supportsAVX2
 {
 	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1 << 5));
+}
+#endif
+
+#ifdef OF_PPC_ASM
++ (bool)supportsAltiVec
+{
+	return altiVecSupported;
 }
 #endif
 @end
