@@ -23,6 +23,7 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
