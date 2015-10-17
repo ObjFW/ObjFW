@@ -63,10 +63,6 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-#ifdef __wii__
-static uint16_t freePort = 65532;
-#endif
-
 #ifdef OF_HAVE_THREADS
 @interface OFTCPSocket_ConnectThread: OFThread
 {
@@ -240,6 +236,18 @@ static uint16_t freePort = 65532;
 	return self;
 }
 
+- (void)close
+{
+	[super close];
+
+#ifdef __wii__
+	if (_port > 0) {
+		of_socket_port_free(_port, SOCK_STREAM);
+		_port = 0;
+	}
+#endif
+}
+
 - (void)dealloc
 {
 	[_SOCKS5Host release];
@@ -401,10 +409,23 @@ static uint16_t freePort = 65532;
 
 #ifdef __wii__
 	if (port == 0)
-		port = freePort--;
+		port = of_socket_port_find(SOCK_STREAM);
+	else if (!of_socket_port_register(port, SOCK_STREAM))
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self
+							  errNo: EADDRINUSE];
 #endif
 
-	results = of_resolve_host(host, port, SOCK_STREAM);
+	@try {
+		results = of_resolve_host(host, port, SOCK_STREAM);
+	} @catch (id e) {
+#ifdef __wii__
+		of_socket_port_free(port, SOCK_STREAM);
+#endif
+		@throw e;
+	}
+
 	@try {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
@@ -439,12 +460,21 @@ static uint16_t freePort = 65532;
 								 socket: self
 								  errNo: errNo];
 		}
+	} @catch (id e) {
+#ifdef __wii__
+		of_socket_port_free(port, SOCK_STREAM);
+#endif
+		@throw e;
 	} @finally {
 		of_resolver_free(results);
 	}
 
-	if (port > 0)
+	if (port > 0) {
+#ifdef __wii__
+		_port = port;
+#endif
 		return port;
+	}
 
 #ifndef __wii__
 	addrLen = (socklen_t)sizeof(addr.storage);

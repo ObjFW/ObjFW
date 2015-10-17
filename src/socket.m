@@ -19,6 +19,7 @@
 #include <errno.h>
 
 #import "OFException.h"  /* For some E* -> WSAE* defines */
+#import "OFInvalidArgumentException.h"
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
 
@@ -30,6 +31,13 @@ static of_once_t onceControl = OF_ONCE_INIT;
 static of_mutex_t mutex;
 #endif
 static bool initialized = false;
+
+#ifdef __wii__
+# ifdef OF_HAVE_THREADS
+static of_spinlock_t spinlock;
+# endif
+static uint8_t portRegistry[2][65536 / 8];
+#endif
 
 static void
 init(void)
@@ -47,6 +55,11 @@ init(void)
 #ifdef OF_HAVE_THREADS
 	if (!of_mutex_new(&mutex))
 		return;
+
+# ifdef __wii__
+	if (!of_spinlock_new(&spinlock))
+		return;
+# endif
 #endif
 
 	initialized = true;
@@ -185,5 +198,89 @@ of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
 # endif
 
 	return ret;
+}
+#else
+static size_t
+type_to_index(int type)
+{
+	switch (type) {
+	case SOCK_STREAM:
+		return 0;
+	case SOCK_DGRAM:
+		return 1;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+}
+
+bool
+of_socket_port_register(uint16_t port, int type)
+{
+	size_t index;
+	bool wasSet;
+
+	if (port == 0)
+		@throw [OFInvalidArgumentException exception];
+
+# ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		@throw [OFLockFailedException exception];
+# endif
+
+	index = type_to_index(type);
+	wasSet = of_bitset_isset(portRegistry[index], port);
+
+	of_bitset_set(portRegistry[index], port);
+
+# ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		@throw [OFUnlockFailedException exception];
+# endif
+
+	return !wasSet;
+}
+
+void
+of_socket_port_free(uint16_t port, int type)
+{
+	if (port == 0)
+		@throw [OFInvalidArgumentException exception];
+
+# ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		@throw [OFLockFailedException exception];
+# endif
+
+	of_bitset_clear(portRegistry[type_to_index(type)], port);
+
+# ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		@throw [OFUnlockFailedException exception];
+# endif
+}
+
+uint16_t
+of_socket_port_find(int type)
+{
+	uint16_t port;
+	size_t index;
+
+# ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		@throw [OFLockFailedException exception];
+# endif
+
+	index = type_to_index(type);
+
+	do {
+		port = rand();
+	} while (port == 0 || of_bitset_isset(portRegistry[index], port));
+
+# ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		@throw [OFUnlockFailedException exception];
+# endif
+
+	return port;
 }
 #endif

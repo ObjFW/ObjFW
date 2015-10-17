@@ -41,10 +41,6 @@
 #import "socket_helpers.h"
 #import "resolver.h"
 
-#ifdef __wii__
-static uint16_t freePort = 65532;
-#endif
-
 #ifdef OF_HAVE_THREADS
 @interface OFUDPSocket_ResolveThread: OFThread
 {
@@ -403,10 +399,23 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 #ifdef __wii__
 	if (port == 0)
-		port = freePort--;
+		port = of_socket_port_find(SOCK_DGRAM);
+	else if (!of_socket_port_register(port, SOCK_DGRAM))
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self
+							  errNo: EADDRINUSE];
 #endif
 
-	results = of_resolve_host(host, port, SOCK_DGRAM);
+	@try {
+		results = of_resolve_host(host, port, SOCK_DGRAM);
+	} @catch (id e) {
+#ifdef __wii__
+		of_socket_port_free(port, SOCK_DGRAM);
+#endif
+		@throw e;
+	}
+
 	@try {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
@@ -438,12 +447,21 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 								 socket: self
 								  errNo: errNo];
 		}
+	} @catch (id e) {
+#ifdef __wii__
+		of_socket_port_free(port, SOCK_DGRAM);
+#endif
+		@throw e;
 	} @finally {
 		of_resolver_free(results);
 	}
 
-	if (port > 0)
+	if (port > 0) {
+#ifdef __wii__
+		_port = port;
+#endif
 		return port;
+	}
 
 #ifndef __wii__
 	addrLen = (socklen_t)sizeof(addr.storage);
@@ -607,5 +625,12 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	close(_socket);
 	_socket = INVALID_SOCKET;
+
+#ifdef __wii__
+	if (_port > 0) {
+		of_socket_port_free(_port, SOCK_DGRAM);
+		_port = 0;
+	}
+#endif
 }
 @end

@@ -63,11 +63,6 @@ enum {
 };
 #define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
-#ifdef __wii__
-/* FIXME: Add a port registry for Wii */
-static uint16_t freePort = 65535;
-#endif
-
 @implementation OFKernelEventObserver
 + (void)initialize
 {
@@ -135,7 +130,7 @@ static uint16_t freePort = 65535;
 # ifdef __wii__
 		_cancelAddr.sin_len = 8;
 		/* The Wii does not accept port 0 as "choose any free port" */
-		_cancelAddr.sin_port = freePort--;
+		_cancelAddr.sin_port = of_socket_port_find(SOCK_DGRAM);
 # endif
 
 		if (bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
@@ -168,6 +163,10 @@ static uint16_t freePort = 65535;
 	close(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
+
+#ifdef __wii__
+	of_socket_port_free(_cancelAddr.sin_port, SOCK_DGRAM);
+#endif
 
 	[_readObjects release];
 	[_writeObjects release];

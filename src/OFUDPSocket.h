@@ -90,6 +90,9 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
     OFReadyForWritingObserving>
 {
 	of_socket_t _socket;
+#ifdef __wii__
+	uint16_t _port;
+#endif
 }
 
 /*!
