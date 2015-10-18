@@ -184,34 +184,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (bool)supportsAVX2;
 #endif
-
-#ifdef OF_PPC_ASM
-/*!
- * @brief Returns whether the CPU supports AltiVec.
- *
- * @warning This method only checks CPU support and assumes OS support!
- *
- * @note This method is only available on PowerPC.
- *
- * @return Whether the CPU supports AltiVec
- */
-+ (bool)supportsAltiVec;
-#endif
-
-#ifdef OF_MIPS_ASM
-/*!
- * @brief Returns whether the CPU supports MXU.
- *
- * MXU is the SIMD extension of the JZ47XX SoCs.
- *
- * @warning This method only checks CPU support and assumes OS support!
- *
- * @note This method is only available on MIPS.
- *
- * @return Whether the CPU supports MXU
- */
-+ (bool)supportsMXU;
-#endif
 @end
 
 OF_ASSUME_NONNULL_END
