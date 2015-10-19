@@ -22,12 +22,12 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(STDOUT) && (defined(_WIN32) || defined(__DJGPP__))
+#if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS))
 # undef STDOUT
 # define STDOUT_SIMPLE
 #endif
 
-#ifdef _PSP
+#ifdef OF_PSP
 # include <pspmoduleinfo.h>
 # include <pspkernel.h>
 # include <pspdebug.h>
@@ -35,7 +35,7 @@
 PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 #endif
 
-#ifdef __wii__
+#ifdef OF_WII
 # define BOOL OGC_BOOL
 # define asm __asm__
 # include <gccore.h>
@@ -57,7 +57,7 @@ enum {
 	YELLOW
 };
 
-#ifdef _PSP
+#ifdef OF_PSP
 static int
 exit_cb(int arg1, int arg2, void *arg)
 {
@@ -80,11 +80,11 @@ callback_thread(SceSize args, void *argp)
 int
 main(int argc, char *argv[])
 {
-#ifdef _PSP
+#ifdef OF_PSP
 	int tid;
 #endif
 
-#if defined(OF_OBJFW_RUNTIME) && !defined(_WIN32)
+#if defined(OF_OBJFW_RUNTIME) && !defined(OF_WINDOWS)
 	/* This does not work on Win32 if ObjFW is built as a DLL */
 	atexit(objc_exit);
 #endif
@@ -92,7 +92,7 @@ main(int argc, char *argv[])
 	/* We need deterministic hashes for tests */
 	of_hash_seed = 0;
 
-#ifdef __wii__
+#ifdef OF_WII
 	GXRModeObj *rmode;
 	void *xfb;
 
@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 	VIDEO_ClearFrameBuffer(rmode, xfb, COLOR_BLACK);
 #endif
 
-#ifdef _PSP
+#ifdef OF_PSP
 	pspDebugScreenInit();
 
 	sceCtrlSetSamplingCycle(0);
@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 	consoleDemoInit();
 #endif
 
-#if defined(__wii__) || defined(_PSP) || defined(OF_NINTENDO_DS)
+#if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS)
 	@try {
 		return of_application_main(&argc, &argv,
 		    [TestsAppDelegate class]);
@@ -146,7 +146,7 @@ main(int argc, char *argv[])
 			       inColor: RED];
 		[delegate outputString: backtrace
 			       inColor: RED];
-# if defined(__wii__)
+# if defined(OF_WII)
 		[delegate outputString: @"Press home button to exit!\n"
 			       inColor: NO_COLOR];
 		for (;;) {
@@ -157,7 +157,7 @@ main(int argc, char *argv[])
 
 			VIDEO_WaitVSync();
 		}
-# elif defined(_PSP)
+# elif defined(OF_PSP)
 		sceKernelSleepThreadCB();
 # elif defined(OF_NINTENDO_DS)
 		[delegate outputString: @"Press start button to exit!"
@@ -181,7 +181,7 @@ main(int argc, char *argv[])
 - (void)outputString: (OFString*)str
 	     inColor: (int)color
 {
-#if defined(_PSP)
+#if defined(OF_PSP)
 	char i, space = ' ';
 	int y = pspDebugScreenGetY();
 
@@ -210,7 +210,7 @@ main(int argc, char *argv[])
 	switch (color) {
 	case NO_COLOR:
 		[of_stdout writeString: @"\r\033[K"];
-# if defined(__wii__) || defined(OF_NINTENDO_DS)
+# if defined(OF_WII) || defined(OF_NINTENDO_DS)
 		[of_stdout writeString: @"\033[37m"];
 # endif
 		break;
@@ -275,7 +275,7 @@ main(int argc, char *argv[])
 		   inColor: RED];
 	[pool release];
 
-# ifdef __wii__
+# ifdef OF_WII
 	[self outputString: @"Press A to continue!\n"
 		   inColor: NO_COLOR];
 	for (;;) {
@@ -287,7 +287,7 @@ main(int argc, char *argv[])
 		VIDEO_WaitVSync();
 	}
 # endif
-# ifdef _PSP
+# ifdef OF_PSP
 	[self outputString: @"Press X to continue!\n"
 		   inColor: NO_COLOR];
 	for (;;) {
@@ -321,7 +321,7 @@ main(int argc, char *argv[])
 
 - (void)applicationDidFinishLaunching
 {
-#if defined(__wii__) && defined(OF_HAVE_FILES)
+#if defined(OF_WII) && defined(OF_HAVE_FILES)
 	[[OFFileManager defaultManager]
 	    changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
@@ -376,7 +376,7 @@ main(int argc, char *argv[])
 	[self propertiesTests];
 #endif
 
-#if defined(__wii__)
+#if defined(OF_WII)
 	[self outputString: @"Press home button to exit!\n"
 		   inColor: NO_COLOR];
 	for (;;) {
@@ -387,7 +387,7 @@ main(int argc, char *argv[])
 
 		VIDEO_WaitVSync();
 	}
-#elif defined(_PSP)
+#elif defined(OF_PSP)
 	[self outputString: [OFString stringWithFormat: @"%d tests failed!",
 							_fails]
 		   inColor: NO_COLOR];

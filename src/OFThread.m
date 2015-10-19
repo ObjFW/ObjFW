@@ -29,7 +29,9 @@
 # undef __USE_XOPEN
 #endif
 
-#ifndef _WIN32
+#include "platform.h"
+
+#ifndef OF_WINDOWS
 # include <unistd.h>
 #endif
 
@@ -37,7 +39,7 @@
 # include <sched.h>
 #endif
 
-#ifdef __wii__
+#ifdef OF_WII
 # define BOOL OGC_BOOL
 # define nanosleep ogc_nanosleep
 # include <ogcsys.h>
@@ -54,7 +56,7 @@
 #import "OFAutoreleasePool.h"
 #import "OFAutoreleasePool+Private.h"
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
 
@@ -176,7 +178,7 @@ callMain(id object)
 	if (timeInterval < 0)
 		return;
 
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 	if (timeInterval * 1000 > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 

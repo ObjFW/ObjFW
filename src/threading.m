@@ -20,13 +20,13 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include "threading_pthread.m"
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 # include "threading_winapi.m"
 #else
 # error No threads available!
 #endif
 
-#ifdef __HAIKU__
+#ifdef OF_HAIKU
 # include <kernel/OS.h>
 #endif
 
@@ -49,7 +49,7 @@ of_rmutex_new(of_rmutex_t *rmutex)
 		return false;
 
 	return true;
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	return of_mutex_new(rmutex);
 #else
 	if (!of_mutex_new(&rmutex->mutex))
@@ -65,7 +65,7 @@ of_rmutex_new(of_rmutex_t *rmutex)
 bool
 of_rmutex_lock(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
 	return of_mutex_lock(rmutex);
 #else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
@@ -92,7 +92,7 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 bool
 of_rmutex_trylock(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
 	return of_mutex_trylock(rmutex);
 #else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
@@ -119,7 +119,7 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 bool
 of_rmutex_unlock(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
 	return of_mutex_unlock(rmutex);
 #else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
@@ -144,7 +144,7 @@ of_rmutex_unlock(of_rmutex_t *rmutex)
 bool
 of_rmutex_free(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
 	return of_mutex_free(rmutex);
 #else
 	if (!of_mutex_free(&rmutex->mutex))

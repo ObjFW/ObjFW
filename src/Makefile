@@ -121,7 +121,8 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    block.h				\
 	    instance.h				\
 	    macros.h				\
-	    objfw-defs.h
+	    objfw-defs.h			\
+	    platform.h
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\

@@ -24,7 +24,7 @@
 
 #define OF_BACKTRACE_SIZE 32
 
-#if defined(_WIN32) && defined(OF_HAVE_SOCKETS)
+#if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # ifndef EADDRINUSE
 #  define EADDRINUSE WSAEADDRINUSE
 # endif

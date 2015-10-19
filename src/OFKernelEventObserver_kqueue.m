@@ -97,7 +97,7 @@
 	event.ident = [object fileDescriptorForReading];
 	event.filter = EVFILT_READ;
 	event.flags = EV_ADD;
-#ifndef __NetBSD__
+#ifndef OF_NETBSD
 	event.udata = object;
 #else
 	event.udata = (intptr_t)object;
@@ -117,7 +117,7 @@
 	event.ident = [object fileDescriptorForWriting];
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_ADD;
-#ifndef __NetBSD__
+#ifndef OF_NETBSD
 	event.udata = object;
 #else
 	event.udata = (intptr_t)object;

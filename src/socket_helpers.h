@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 /* Work around __block being used by glibc */
 #ifdef __GLIBC__
 # undef __USE_XOPEN
@@ -55,16 +57,16 @@
 # define SOCK_CLOEXEC 0
 #endif
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # define close(sock) closesocket(sock)
 #endif
 
-#ifdef _PSP
+#ifdef OF_PSP
 /* PSP defines AF_INET6, even though sockaddr_in6 is missing */
 # undef AF_INET6
 #endif
 
-#ifdef __wii__
+#ifdef OF_WII
 # define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
 # define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
 # define close(sock) net_close(sock)

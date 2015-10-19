@@ -14,6 +14,10 @@
  * file.
  */
 
+#include "config.h"
+
+#import "macros.h"
+
 bool
 of_thread_attr_init(of_thread_attr_t *attr)
 {

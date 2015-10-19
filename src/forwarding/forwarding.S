@@ -16,36 +16,37 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 #ifdef OF_APPLE_RUNTIME
-# if defined(__x86_64__)
+# if defined(OF_X86_64)
 #  include "apple-forwarding-x86_64.S"
-# elif defined(__i386__)
+# elif defined(OF_X86)
 #  include "apple-forwarding-i386.S"
-# elif defined(__ARM64_ARCH_8__)
+# elif defined(OF_ARM64)
 #  include "apple-forwarding-arm64.S"
-# elif defined(__arm__)
+# elif defined(OF_ARM)
 #  include "apple-forwarding-arm.S"
-# elif defined(__ppc__)
+# elif defined(OF_POWERPC)
 #  include "apple-forwarding-ppc.S"
 # endif
 #else
-# if defined(__ELF__)
-#  if defined(__x86_64__) || defined(__amd64__)
+# if defined(OF_ELF)
+#  if defined(OF_X86_64)
 #   include "forwarding-x86_64-elf.S"
-#  elif defined(__i386__)
+#  elif defined(OF_X86)
 #   include "forwarding-x86-elf.S"
-#  elif defined(__arm__) || defined(__ARM__)
+#  elif defined(OF_ARM)
 #   include "forwarding-arm-elf.S"
-#  elif defined(__ppc__) || defined(__PPC__)
+#  elif defined(OF_POWERPC)
 #   include "forwarding-ppc-elf.S"
-#  elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
+#  elif defined(OF_MIPS)
 #   include "forwarding-mips-elf.S"
 #  endif
-# elif defined(_WIN32)
-#  if defined(__x86_64__)
+# elif defined(OF_WINDOWS)
+#  if defined(OF_X86_64)
 #   include "forwarding-x86_64-win64.S"
-#  elif defined(__i386__)
+#  elif defined(OF_X86)
 #   include "forwarding-x86-win32.S"
 #  endif
 # endif

@@ -18,7 +18,9 @@
 
 #include "config.h"
 
-#ifdef _WIN32
+#include "platform.h"
+
+#ifdef OF_WINDOWS
 /* Win32 has a ridiculous default of 64, even though it supports much more. */
 # define FD_SETSIZE 1024
 #endif
@@ -45,7 +47,7 @@
 {
 	self = [super init];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (_cancelFD[0] >= FD_SETSIZE)
 		@throw [OFInitializationFailedException exception];
 #endif
@@ -69,7 +71,7 @@
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -87,7 +89,7 @@
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -107,7 +109,7 @@
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -124,7 +126,7 @@
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (fd >= FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
@@ -161,7 +163,7 @@
 	 * however, this is not available on Win32. As an int should always
 	 * satisfy the required range, we just cast to int.
 	 */
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	timeout.tv_sec = (time_t)timeInterval;
 #else
 	timeout.tv_sec = (long)timeInterval;

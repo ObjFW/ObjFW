@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#include "objfw-defs.h"
 
 #ifndef __STDC_LIMIT_MACROS
 # define __STDC_LIMIT_MACROS
@@ -29,6 +29,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "platform.h"
 
 #ifdef OF_OBJFW_RUNTIME
 # import "runtime.h"
@@ -74,16 +76,6 @@
 # define OF_UNLIKELY(cond) cond
 # define OF_CONST_FUNC
 # define OF_NO_RETURN_FUNC
-#endif
-
-/* Required to build universal binaries on OS X */
-#ifdef OF_UNIVERSAL
-# if __BIG_ENDIAN__
-#  define OF_BIG_ENDIAN
-#  define OF_FLOAT_BIG_ENDIAN
-# elif !__LITTLE_ENDIAN__
-#  error OF_UNIVERSAL defined, but neither __BIG_ENDIAN__ nor __LITTLE_ENDIAN__!
-# endif
 #endif
 
 #ifdef OF_BIG_ENDIAN
@@ -231,83 +223,49 @@
 #endif
 
 #ifdef __GNUC__
-# if defined(__x86_64__) || defined(__amd64__)
+# ifdef OF_X86_64
 #  define OF_X86_64_ASM
-# elif defined(__i386__)
+# endif
+# ifdef OF_X86
 #  define OF_X86_ASM
-# elif defined(__ppc__) || defined(__PPC__)
-#  define OF_PPC_ASM
-# elif defined(__arm__) || defined(__ARM__)
-#  define OF_ARM_ASM
-#  ifdef __ARM_ARCH_7__
-#   define OF_ARMV7_ASM
-#  endif
-#  ifdef __ARM_ARCH_7A__
-#   define OF_ARMV7_ASM
-#  endif
-#  ifdef __ARM_ARCH_7R__
-#   define OF_ARMV7_ASM
-#  endif
-#  ifdef __ARM_ARCH_7M__
-#   define OF_ARMV7_ASM
-#  endif
-#  ifdef __ARM_ARCH_7EM__
-#   define OF_ARMV7_ASM
-#  endif
-#  ifdef __ARM_ARCH_6__
-#   define OF_ARMV6_ASM
-#  endif
-#  ifdef __ARM_ARCH_6J__
-#   define OF_ARMV6_ASM
-#  endif
-#  ifdef __ARM_ARCH_6K__
-#   define OF_ARMV6_ASM
-#  endif
-#  ifdef __ARM_ARCH_6Z__
-#   define OF_ARMV6_ASM
-#  endif
-#  ifdef __ARM_ARCH_6ZK__
-#   define OF_ARMV6_ASM
-#  endif
-#  ifdef __ARM_ARCH_6T2__
-#   define OF_ARMV6_ASM
-#  endif
-#  ifdef OF_ARMV7_ASM
-#   define OF_ARMV6_ASM
-#  endif
-# elif defined(__arm64__) || defined(__aarch64__)
+# endif
+# ifdef OF_POWERPC
+#  define OF_POWERPC_ASM
+# endif
+# ifdef OF_ARM64
 #  define OF_ARM64_ASM
-# elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
+# endif
+# ifdef OF_ARM
+#  define OF_ARM_ASM
+# endif
+# ifdef OF_ARMV7
+#  define OF_ARMV7_ASM
+# endif
+# ifdef OF_ARMV6
+#  define OF_ARMV6_ASM
+# endif
+# ifdef OF_MIPS
 #  define OF_MIPS_ASM
 # endif
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-# if defined(__x86_64__) || defined(__i386__) || defined(__ARM64_ARCH_8__) || \
-	defined(__arm__) || defined(__ppc__)
+# if defined(OF_X86_64) || defined(OF_X86) || defined(OF_ARM64) || \
+	defined(OF_ARM) || defined(OF_POWERPC)
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
-# if defined(__ELF__)
-#  if defined(__x86_64__) || defined(__amd64__) || defined(__i386__) || \
-	defined(__arm__) || defined(__ARM__) || defined(__ppc__) || \
-	defined(__PPC__)
+# if defined(OF_ELF)
+#  if defined(OF_X86_64) || defined(OF_X86) || \
+	defined(OF_ARM) || defined(OF_POWERPC) || defined(OF_MIPS)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
 #  endif
-#  if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
-#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
-#   if __OBJFW_RUNTIME_ABI__ >= 800
-#    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
-#   endif
-#  endif
-# elif defined(_WIN32)
-#  if defined(__x86_64__) || defined(__i386__)
+# elif defined(OF_WINDOWS)
+#  if defined(OF_X86_64) || defined(OF_X86)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
@@ -319,7 +277,7 @@
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_NOT_FOUND SIZE_MAX
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
+#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
 # define OF_PATH_DELIMITER '/'
 # define OF_PATH_DELIMITER_STRING @"/"
 # define OF_IS_PATH_DELIMITER(c) (c == '/')
@@ -407,7 +365,7 @@ OF_BSWAP16_NONCONST(uint16_t i)
 	    : "=Q"(i)
 	    : "0"(i)
 	);
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ (
 	    "lhbrx	%0, 0, %1"
 	    : "=r"(i)
@@ -437,7 +395,7 @@ OF_BSWAP32_NONCONST(uint32_t i)
 	    : "=q"(i)
 	    : "0"(i)
 	);
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ (
 	    "lwbrx	%0, 0, %1"
 	    : "=r"(i)

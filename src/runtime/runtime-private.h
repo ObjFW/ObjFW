@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 struct objc_abi_class {
 	struct objc_abi_class *metaclass;
 	const char *superclass;
@@ -182,25 +184,17 @@ objc_dtable_get(const struct objc_dtable *dtable, uint32_t idx)
 #endif
 }
 
-#if defined(__ELF__)
-# if defined(__x86_64__) || defined(__amd64__) || defined(__i386__) || \
-	defined(__ppc__) || defined(__PPC__) || defined(__arm__) || \
-	defined(__ARM__)
+#if defined(OF_ELF)
+# if defined(OF_X86_64) || defined(OF_X86) || defined(OF_POWERPC) || \
+	defined(OF_ARM) || defined(OF_MIPS) || defined(OF_SPARC)
 #  define OF_ASM_LOOKUP
 # endif
-# if (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
+#elif defined(OF_MACH_O)
+# if defined(OF_X86_64) || defined(OF_POWERPC)
 #  define OF_ASM_LOOKUP
 # endif
-# if defined(__sparc__) && !defined(__arch64__)
-#  define OF_ASM_LOOKUP
-# endif
-#elif defined(__MACH__)
-# if defined(__x86_64__) || defined(__ppc__)
-#  define OF_ASM_LOOKUP
-# endif
-#elif defined(_WIN32)
-# if defined(__x86_64__) || defined(__i386__)
+#elif defined(OF_WINDOWS)
+# if defined(OF_X86_64) || defined(OF_X86)
 #  define OF_ASM_LOOKUP
 # endif
 #endif

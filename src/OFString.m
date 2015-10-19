@@ -62,7 +62,7 @@
  * It seems strtod is buggy on Win32.
  * However, the MinGW version __strtod seems to be ok.
  */
-#ifdef _WIN32
+#ifdef __MINGW32__
 # define strtod __strtod
 #endif
 

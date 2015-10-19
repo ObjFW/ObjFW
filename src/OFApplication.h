@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)applicationDidReceiveSIGINT;
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 /*!
  * @brief A method which is called when the application received a SIGHUP.
  *
@@ -123,7 +123,7 @@ OF_ASSUME_NONNULL_BEGIN
 @public
 	id <OFApplicationDelegate> _delegate;
 	void (*_SIGINTHandler)(id, SEL);
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	void (*_SIGHUPHandler)(id, SEL);
 	void (*_SIGUSR1Handler)(id, SEL);
 	void (*_SIGUSR2Handler)(id, SEL);

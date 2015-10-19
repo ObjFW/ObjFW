@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#include "objfw-defs.h"
 
 #ifndef OF_HAVE_SOCKETS
 # error No sockets available!
@@ -32,7 +32,9 @@
 # include <netinet/tcp.h>
 #endif
 
-#ifdef _WIN32
+#include "platform.h"
+
+#ifdef OF_WINDOWS
 # ifdef __MINGW32__
 #  include <_mingw.h>
 #  ifdef __MINGW64_VERSION_MAJOR
@@ -43,7 +45,7 @@
 # include <ws2tcpip.h>
 #endif
 
-#ifdef __wii__
+#ifdef OF_WII
 # define BOOL OGC_BOOL
 # include <network.h>
 # undef BOOL
@@ -55,7 +57,7 @@ struct sockaddr_storage {
 };
 #endif
 
-#ifdef _PSP
+#ifdef OF_PSP
 # include <stdint.h>
 
 struct sockaddr_storage {
@@ -71,7 +73,7 @@ struct sockaddr_storage {
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 typedef int of_socket_t;
 #else
 typedef SOCKET of_socket_t;
@@ -82,7 +84,7 @@ extern "C" {
 #endif
 extern bool of_socket_init(void);
 extern int of_socket_errno(void);
-# ifndef __wii__
+# ifndef OF_WII
 extern int of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
     socklen_t *restrict address_len);
 # else

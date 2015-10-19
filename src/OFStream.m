@@ -27,7 +27,9 @@
 
 #include <fcntl.h>
 
-#ifndef _WIN32
+#include "platform.h"
+
+#ifndef OF_WINDOWS
 # include <signal.h>
 #endif
 
@@ -48,7 +50,7 @@
 #import "of_asprintf.h"
 
 @implementation OFStream
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 + (void)initialize
 {
 	if (self == [OFStream class])

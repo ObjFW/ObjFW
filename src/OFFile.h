@@ -28,7 +28,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 typedef struct __stat64 of_stat_t;
 #elif defined(OF_HAVE_OFF64_T)
 typedef struct stat64 of_stat_t;

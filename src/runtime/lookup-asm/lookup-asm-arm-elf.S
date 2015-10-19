@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -76,6 +78,6 @@ nil_method:
 	mov	r0, #0
 	bx	lr
 
-#ifdef __linux__
+#ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
 #endif

@@ -109,7 +109,7 @@ static of_mutex_t mutex;
 - (OFString*)description
 {
 	/* FIXME: Add proper description for Win32 */
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (_error == 0) {
 #endif
 		if (_host != nil)
@@ -119,7 +119,7 @@ static of_mutex_t mutex;
 			    _host];
 		else
 			return @"An address could not be translated!";
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	}
 
 # ifdef HAVE_GETADDRINFO

@@ -16,31 +16,32 @@
 
 #include "config.h"
 
-#if defined(__ELF__)
-# if defined(__x86_64__) || defined(__amd64__)
+#include "platform.h"
+
+#if defined(OF_ELF)
+# if defined(OF_X86_64)
 #  include "lookup-asm-x86_64-elf.S"
-# elif defined(__i386__)
+# elif defined(OF_X86)
 #  include "lookup-asm-x86-elf.S"
-# elif defined(__arm__) || defined(__ARM__)
+# elif defined(OF_ARM)
 #  include "lookup-asm-arm-elf.S"
-# elif defined(__ppc__) || defined(__PPC__)
+# elif defined(OF_POWERPC)
 #  include "lookup-asm-ppc-elf.S"
-# elif (defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32) || \
-	(defined(__mips_eabi) && _MIPS_SZPTR == 32)
+# elif defined(OF_MIPS)
 #  include "lookup-asm-mips-elf.S"
-# elif defined(__sparc__) && !defined(__arch64__)
+# elif defined(OF_SPARC)
 #  include "lookup-asm-sparc-elf.S"
 # endif
-#elif defined(__MACH__)
-# if defined(__x86_64__)
+#elif defined(OF_MACH_O)
+# if defined(OF_X86_64)
 #  include "lookup-asm-x86_64-macho.S"
-# elif defined(__ppc__)
+# elif defined(OF_POWERPC)
 #  include "lookup-asm-ppc-macho.S"
 # endif
-#elif defined(_WIN32)
-# if defined(__x86_64__)
+#elif defined(OF_WINDOWS)
+# if defined(OF_X86_64)
 #  include "lookup-asm-x86_64-win64.S"
-# elif defined(__i386__)
+# elif defined(OF_X86)
 #  include "lookup-asm-x86-win32.S"
 # endif
 #endif

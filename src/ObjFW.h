@@ -14,8 +14,6 @@
  * file.
  */
 
-#import "objfw-defs.h"
-
 #import "OFObject.h"
 #import "OFBlock.h"
 

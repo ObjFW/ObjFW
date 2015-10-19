@@ -41,10 +41,10 @@
 #ifdef HAVE_EPOLL
 # import "OFKernelEventObserver_epoll.h"
 #endif
-#if defined(HAVE_POLL_H) || defined(__wii__)
+#if defined(HAVE_POLL_H) || defined(OF_WII)
 # import "OFKernelEventObserver_poll.h"
 #endif
-#if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
+#if defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
 # import "OFKernelEventObserver_select.h"
 #endif
 
@@ -86,9 +86,9 @@ enum {
 		return [OFKernelEventObserver_kqueue alloc];
 #elif defined(HAVE_EPOLL)
 		return [OFKernelEventObserver_epoll alloc];
-#elif defined(HAVE_POLL_H) || defined(__wii__)
+#elif defined(HAVE_POLL_H) || defined(OF_WII)
 		return [OFKernelEventObserver_poll alloc];
-#elif defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
+#elif defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
 		return [OFKernelEventObserver_select alloc];
 #else
 # error No kqueue / epoll / poll / select found!
@@ -102,7 +102,7 @@ enum {
 	self = [super init];
 
 	@try {
-#if !defined(OF_HAVE_PIPE) && !defined(__wii__)
+#if !defined(OF_HAVE_PIPE) && !defined(OF_WII)
 		socklen_t cancelAddrLen;
 #endif
 
@@ -127,7 +127,7 @@ enum {
 		_cancelAddr.sin_port = 0;
 		_cancelAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-# ifdef __wii__
+# ifdef OF_WII
 		_cancelAddr.sin_len = 8;
 		/* The Wii does not accept port 0 as "choose any free port" */
 		_cancelAddr.sin_port = of_socket_port_find(SOCK_DGRAM);
@@ -138,7 +138,7 @@ enum {
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-# ifndef __wii__
+# ifndef OF_WII
 		cancelAddrLen = sizeof(_cancelAddr);
 		if (of_getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
 		    &cancelAddrLen) != 0)
@@ -164,7 +164,7 @@ enum {
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
 
-#ifdef __wii__
+#ifdef OF_WII
 	of_socket_port_free(_cancelAddr.sin_port, SOCK_DGRAM);
 #endif
 
@@ -360,7 +360,7 @@ enum {
 #ifdef OF_HAVE_PIPE
 	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
 #else
-# ifndef __wii__
+# ifndef OF_WII
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
 	    (struct sockaddr*)&_cancelAddr, sizeof(_cancelAddr)) > 0);
 # else

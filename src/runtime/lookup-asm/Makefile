@@ -7,4 +7,4 @@ SRCS = lookup-asm.S
 
 include ../../../buildsys.mk
 
-ASFLAGS += -I../../..
+ASFLAGS += -I../../.. -I../..

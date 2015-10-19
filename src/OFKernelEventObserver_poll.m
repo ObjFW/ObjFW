@@ -35,7 +35,7 @@
 
 #import "socket_helpers.h"
 
-#ifdef __wii__
+#ifdef OF_WII
 # define pollfd pollsd
 # define fd socket
 #endif

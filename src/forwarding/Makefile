@@ -7,4 +7,4 @@ SRCS = forwarding.S
 
 include ../../buildsys.mk
 
-ASFLAGS += -I../..
+ASFLAGS += -I../.. -I..

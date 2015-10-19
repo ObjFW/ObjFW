@@ -14,10 +14,12 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#include "objfw-defs.h"
+
+#include "platform.h"
 
 #if !defined(OF_HAVE_THREADS) || \
-	(!defined(OF_HAVE_PTHREADS) && !defined(_WIN32))
+	(!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS))
 # error No threads available!
 #endif
 
@@ -34,7 +36,7 @@ typedef pthread_mutex_t of_mutex_t;
 typedef pthread_cond_t of_condition_t;
 typedef pthread_once_t of_once_t;
 # define OF_ONCE_INIT PTHREAD_ONCE_INIT
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 /*
  * winsock2.h needs to be included before windows.h. Not including it here
  * would make it impossible to use sockets after threading.h has been
@@ -71,7 +73,7 @@ typedef of_mutex_t of_spinlock_t;
 # include <sched.h>
 #endif
 
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(_WIN32)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
 # define of_rmutex_t of_mutex_t
 #else
 typedef struct {
@@ -88,7 +90,7 @@ typedef struct of_thread_attr_t {
 #if defined(OF_HAVE_PTHREADS)
 # define of_thread_is_current(t) pthread_equal(t, pthread_self())
 # define of_thread_current pthread_self
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 # define of_thread_is_current(t) (t == GetCurrentThread())
 # define of_thread_current GetCurrentThread
 #else
@@ -129,7 +131,7 @@ of_tlskey_new(of_tlskey_t *key)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_key_create(key, NULL);
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
 #else
 # error of_tlskey_new not implemented!
@@ -141,7 +143,7 @@ of_tlskey_get(of_tlskey_t key)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return pthread_getspecific(key);
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	return TlsGetValue(key);
 #else
 # error of_tlskey_get not implemented!
@@ -153,7 +155,7 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_setspecific(key, ptr);
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	return TlsSetValue(key, ptr);
 #else
 # error of_tlskey_set not implemented!
@@ -165,7 +167,7 @@ of_tlskey_free(of_tlskey_t key)
 {
 #if defined(OF_HAVE_PTHREADS)
 	return !pthread_key_delete(key);
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	return TlsFree(key);
 #else
 # error of_tlskey_free not implemented!
@@ -201,7 +203,7 @@ static OF_INLINE bool
 of_spinlock_lock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-# if defined(OF_HAVE_SCHED_YIELD) || defined(_WIN32)
+# if defined(OF_HAVE_SCHED_YIELD) || defined(OF_WINDOWS)
 	int i;
 
 	for (i = 0; i < OF_SPINCOUNT; i++)
@@ -209,7 +211,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 			return true;
 
 	while (!of_spinlock_trylock(spinlock))
-#  ifndef _WIN32
+#  ifndef OF_WINDOWS
 		sched_yield();
 #  else
 		Sleep(0);

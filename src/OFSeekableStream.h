@@ -27,7 +27,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 typedef __int64 of_offset_t;
 #elif defined(__ANDROID__)
 typedef long long of_offset_t;

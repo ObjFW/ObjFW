@@ -143,7 +143,7 @@ struct class {
 struct class _NSConcreteStackBlock;
 struct class _NSConcreteGlobalBlock;
 struct class _NSConcreteMallocBlock;
-# if defined(__OBJC2__) && !defined(__ppc64__)
+# if defined(__OBJC2__) && !defined(OF_POWERPC64)
 struct class _NSConcreteStackBlock_metaclass;
 struct class _NSConcreteGlobalBlock_metaclass;
 struct class _NSConcreteMallocBlock_metaclass;
@@ -321,7 +321,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 #ifdef OF_APPLE_RUNTIME
 	Class tmp;
 
-# if defined(__OBJC2__) && !defined(__ppc64__)
+# if defined(__OBJC2__) && !defined(OF_POWERPC64)
 	tmp = objc_initializeClassPair(self, "OFStackBlock",
 	    (Class)&_NSConcreteStackBlock,
 	    (Class)&_NSConcreteStackBlock_metaclass);

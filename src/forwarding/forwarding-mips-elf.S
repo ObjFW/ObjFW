@@ -16,10 +16,12 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 .globl of_forward
 .globl of_forward_stret
 
-#ifdef __PIC__
+#ifdef OF_PIC
 .macro j_pic symbol
 	lw	$t9, %call16(\symbol)($gp)
 	jr	$t9
@@ -39,7 +41,7 @@
 
 .section .text
 of_forward:
-#ifdef __PIC__
+#ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
@@ -62,7 +64,7 @@ of_forward:
 	sw	$a1, 32($sp)
 	sw	$a2, 36($sp)
 	sw	$a3, 40($sp)
-#ifdef __mips_eabi
+#ifdef OF_MIPS_EABI
 	/* For some reason, $a4-$a8 are not always defined */
 	sw	$8, 44($sp)
 	sw	$9, 48($sp)
@@ -80,7 +82,7 @@ of_forward:
 #endif
 
 	move	$s0, $gp
-#ifdef __PIC__
+#ifdef OF_PIC
 	lw	$s1, %got(sel_forwardingTargetForSelector_)($gp)
 #else
 	lui	$s1, %hi(sel_forwardingTargetForSelector_)
@@ -118,7 +120,7 @@ of_forward:
 	lw	$a1, 32($sp)
 	jal_pic	objc_msg_lookup
 
-#ifdef __mips_eabi
+#ifdef OF_MIPS_EABI
 	lwc1	$f19, 88($sp)
 	lwc1	$f18, 84($sp)
 	lwc1	$f17, 80($sp)
@@ -163,7 +165,7 @@ of_forward:
 .size of_forward, .-of_forward
 
 of_forward_stret:
-#ifdef __PIC__
+#ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
@@ -186,7 +188,7 @@ of_forward_stret:
 	sw	$a1, 32($sp)
 	sw	$a2, 36($sp)
 	sw	$a3, 40($sp)
-#ifdef __mips_eabi
+#ifdef OF_MIPS_EABI
 	/* For some reason, $a4-$a8 are not always defined */
 	sw	$8, 44($sp)
 	sw	$9, 48($sp)
@@ -204,7 +206,7 @@ of_forward_stret:
 #endif
 
 	move	$s0, $gp
-#ifdef __PIC__
+#ifdef OF_PIC
 	lw	$s1, %got(sel_forwardingTargetForSelector_)($gp)
 #else
 	lui	$s1, %hi(sel_forwardingTargetForSelector_)
@@ -243,7 +245,7 @@ of_forward_stret:
 	lw	$a1, 36($sp)
 	jal_pic	objc_msg_lookup_stret
 
-#ifdef __mips_eabi
+#ifdef OF_MIPS_EABI
 	lwc1	$f19, 88($sp)
 	lwc1	$f18, 84($sp)
 	lwc1	$f17, 80($sp)
@@ -289,7 +291,7 @@ of_forward_stret:
 .size of_forward_stret, .-of_forward_stret
 
 init:
-#ifdef __PIC__
+#ifdef OF_PIC
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
 	addu	$gp, $gp, $t9
@@ -323,6 +325,6 @@ symtab:
 module:
 	.long 8, 16, 0, symtab
 
-#ifdef __linux__
+#ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
 #endif

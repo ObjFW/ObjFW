@@ -25,6 +25,8 @@
 
 #import "runtime.h"
 
+#import "macros.h"
+
 #if defined(HAVE_DWARF_EXCEPTIONS)
 # define PERSONALITY __gnu_objc_personality_v0
 #elif defined(HAVE_SJLJ_EXCEPTIONS)
@@ -86,7 +88,7 @@ struct objc_exception {
 	struct _Unwind_Exception {
 		uint64_t class;
 		void (*cleanup)(_Unwind_Reason_Code, struct _Unwind_Exception*);
-#if defined(__arm__) || defined(__ARM__)
+#ifdef OF_ARM
 		/* From "Exception Handling ABI for the ARM(R) Architecture" */
 		struct {
 			uint32_t reserved1, reserved2, reserved3, reserved4;
@@ -119,7 +121,7 @@ struct objc_exception {
 #endif
 	} exception;
 	id object;
-#if !defined(__arm__) && !defined(__ARM__)
+#ifndef OF_ARM
 	uintptr_t landingpad;
 	intptr_t filter;
 #endif
@@ -141,7 +143,7 @@ extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
 
-#if defined(__arm__) || defined(__ARM__)
+#ifdef OF_ARM
 extern _Unwind_Reason_Code __gnu_unwind_frame(struct _Unwind_Exception*,
     struct _Unwind_Context*);
 extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
@@ -314,7 +316,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	return value;
 }
 
-#if !defined(__arm__) && !defined(__ARM__)
+#ifndef OF_ARM
 static uint64_t
 resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 {
@@ -461,13 +463,13 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			uintptr_t c;
 			const uint8_t *tmp;
 
-#if defined(__arm__) || defined(__ARM__)
+#ifdef OF_ARM
 			tmp = lsda->typestable - (filter * 4);
 			c = *(uintptr_t*)(void*)tmp;
 
 			if (c != 0) {
 				c += (uintptr_t)tmp;
-# if defined(__linux__) || defined(__NetBSD__)
+# if defined(OF_LINUX) || defined(OF_NETBSD)
 				c = *(uintptr_t*)c;
 # endif
 			}
@@ -502,7 +504,7 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 	return 0;
 }
 
-#if defined(__arm__) || defined(__ARM__)
+#ifdef OF_ARM
 _Unwind_Reason_Code
 PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
     struct _Unwind_Context *ctx)
@@ -558,7 +560,7 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 		 */
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
 		    (uintptr_t)e->object);
-#if defined(__arm__) || defined(__ARM__)
+#ifdef OF_ARM
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
 		    ex->barrier_cache.bitpattern[1]);
 		_Unwind_SetIP(ctx, ex->barrier_cache.bitpattern[3]);
@@ -596,7 +598,7 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 			CONTINUE_UNWIND;
 
 		/* Cache it so we don't have to search it again in phase 2 */
-#if defined(__arm__) || defined(__ARM__)
+#ifdef OF_ARM
 		ex->barrier_cache.sp = _Unwind_GetGR(ctx, 13);
 		ex->barrier_cache.bitpattern[1] = filter;
 		ex->barrier_cache.bitpattern[3] = landingpad;

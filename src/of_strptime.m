@@ -20,6 +20,8 @@
 
 #include <time.h>
 
+#include "macros.h"
+
 const char*
 of_strptime(const char *buffer, const char *format, struct tm *tm)
 {

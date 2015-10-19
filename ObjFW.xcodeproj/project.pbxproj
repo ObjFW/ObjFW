@@ -462,6 +462,7 @@
 		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
 		4BF48CE118A95F83000E8D04 /* OFBigDataArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF48CE218A95F83000E8D04 /* OFBigDataArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */; };
+		4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF69CE51BD44F8B00DFFC1B /* platform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
 /* End PBXBuildFile section */
@@ -985,6 +986,7 @@
 		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
 		4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBigDataArray.h; path = src/OFBigDataArray.h; sourceTree = "<group>"; };
 		4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBigDataArray.m; path = src/OFBigDataArray.m; sourceTree = "<group>"; };
+		4BF69CE51BD44F8B00DFFC1B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = src/platform.h; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
@@ -1496,6 +1498,7 @@
 				4BB50DD012F863C700C9393F /* of_asprintf.m */,
 				4BA355BC14879BF700442EF4 /* of_strptime.h */,
 				4BA355B914879BDD00442EF4 /* of_strptime.m */,
+				4BF69CE51BD44F8B00DFFC1B /* platform.h */,
 				4B7769EB1895C07D00D12284 /* resolver.h */,
 				4B7769EC1895C07D00D12284 /* resolver.m */,
 				4B7DD58718943D4A00990FD6 /* socket.h */,
@@ -1731,6 +1734,7 @@
 				4BD98C03133814220048DD5B /* objfw-defs.h in Headers */,
 				4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */,
 				4BA355BD14879BF700442EF4 /* of_strptime.h in Headers */,
+				4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */,
 				4B7769ED1895C07D00D12284 /* resolver.h in Headers */,
 				4B7DD58818943D4A00990FD6 /* socket.h in Headers */,
 				4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */,

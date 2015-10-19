@@ -21,7 +21,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#ifdef __wii__
+#include "platform.h"
+
+#ifdef OF_WII
 # define BOOL OGC_BOOL
 # include <fat.h>
 # undef BOOL
@@ -44,7 +46,7 @@
 #import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
 
@@ -116,7 +118,7 @@ parseMode(const char *mode)
 	if (self != [OFFile class])
 		return;
 
-#ifdef __wii__
+#ifdef OF_WII
 	if (!fatInitDefault())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -160,7 +162,7 @@ parseMode(const char *mode)
 
 		flags |= O_CLOEXEC;
 
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)
 #elif defined(OF_HAVE_OFF64_T)
@@ -208,7 +210,7 @@ parseMode(const char *mode)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if ((ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
@@ -236,7 +238,7 @@ parseMode(const char *mode)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -258,7 +260,7 @@ parseMode(const char *mode)
 - (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
 			     whence: (int)whence
 {
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 	of_offset_t ret = _lseeki64(_fd, offset, whence);
 #elif defined(OF_HAVE_OFF64_T)
 	of_offset_t ret = lseek64(_fd, offset, whence);

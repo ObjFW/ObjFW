@@ -26,7 +26,7 @@
 #import "OFStream.h"
 #import "OFString.h"
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
 
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFProcess: OFStream
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	pid_t _pid;
 	int _readPipe[2], _writePipe[2];
 #else

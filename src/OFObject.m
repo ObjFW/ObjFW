@@ -46,7 +46,7 @@
 # import "runtime.h"
 #endif
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
 

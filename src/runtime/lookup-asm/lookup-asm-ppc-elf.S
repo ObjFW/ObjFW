@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -91,6 +93,6 @@ get_pc:
 	mflr	%r3
 	blr
 
-#ifdef __linux__
+#ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
 #endif

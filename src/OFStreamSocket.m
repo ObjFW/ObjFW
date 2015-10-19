@@ -66,7 +66,7 @@
 						  requestedLength: length
 							    errNo: ENOTCONN];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if ((ret = recv(_socket, buffer, length, 0)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
@@ -100,7 +100,7 @@
 						   requestedLength: length
 							     errNo: ENOTCONN];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -121,7 +121,7 @@
 #endif
 }
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 - (void)setBlocking: (bool)enable
 {
 	u_long v = enable;
@@ -136,7 +136,7 @@
 
 - (int)fileDescriptorForReading
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return _socket;
 #else
 	if (_socket == INVALID_SOCKET)
@@ -151,7 +151,7 @@
 
 - (int)fileDescriptorForWriting
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return _socket;
 #else
 	if (_socket == INVALID_SOCKET)

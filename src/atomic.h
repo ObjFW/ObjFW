@@ -14,15 +14,13 @@
  * file.
  */
 
-#import "objfw-defs.h"
+#include <stdlib.h>
+
+#import "macros.h"
 
 #ifndef OF_HAVE_ATOMIC_OPS
 # error No atomic operations available!
 #endif
-
-#include <stdlib.h>
-
-#import "macros.h"
 
 #ifdef OF_HAVE_OSATOMIC
 # include <libkern/OSAtomic.h>
@@ -60,7 +58,7 @@ of_atomic_int_add(volatile int *OF_NONNULL p, int i)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -96,7 +94,7 @@ of_atomic_int32_add(volatile int32_t *OF_NONNULL p, int32_t i)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -142,7 +140,7 @@ of_atomic_ptr_add(void *volatile OF_NULLABLE *OF_NONNULL p, intptr_t i)
 	);
 
 	return (void*)i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -197,7 +195,7 @@ of_atomic_int_sub(volatile int *OF_NONNULL p, int i)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -234,7 +232,7 @@ of_atomic_int32_sub(volatile int32_t *OF_NONNULL p, int32_t i)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -282,7 +280,7 @@ of_atomic_ptr_sub(void *volatile OF_NULLABLE *OF_NONNULL p, intptr_t i)
 	);
 
 	return (void*)i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -341,7 +339,7 @@ of_atomic_int_inc(volatile int *OF_NONNULL p)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int i;
 
 	__asm__ __volatile__ (
@@ -383,7 +381,7 @@ of_atomic_int32_inc(volatile int32_t *OF_NONNULL p)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int32_t i;
 
 	__asm__ __volatile__ (
@@ -440,7 +438,7 @@ of_atomic_int_dec(volatile int *OF_NONNULL p)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int i;
 
 	__asm__ __volatile__ (
@@ -482,7 +480,7 @@ of_atomic_int32_dec(volatile int32_t *OF_NONNULL p)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int32_t i;
 
 	__asm__ __volatile__ (
@@ -543,7 +541,7 @@ of_atomic_int_or(volatile unsigned int *OF_NONNULL p, unsigned int i)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -584,7 +582,7 @@ of_atomic_int32_or(volatile uint32_t *OF_NONNULL p, uint32_t i)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -643,7 +641,7 @@ of_atomic_int_and(volatile unsigned int *OF_NONNULL p, unsigned int i)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -684,7 +682,7 @@ of_atomic_int32_and(volatile uint32_t *OF_NONNULL p, uint32_t i)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -743,7 +741,7 @@ of_atomic_int_xor(volatile unsigned int *OF_NONNULL p, unsigned int i)
 		abort();
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -784,7 +782,7 @@ of_atomic_int32_xor(volatile uint32_t *OF_NONNULL p, uint32_t i)
 	);
 
 	return i;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "0:\n\t"
 	    "lwarx	%0, 0, %2\n\t"
@@ -829,7 +827,7 @@ of_atomic_int_cmpswap(volatile int *OF_NONNULL p, int o, int n)
 	);
 
 	return r;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int r;
 
 	__asm__ __volatile__ (
@@ -884,7 +882,7 @@ of_atomic_int32_cmpswap(volatile int32_t *OF_NONNULL p, int32_t o, int32_t n)
 	);
 
 	return r;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int r;
 
 	__asm__ __volatile__ (
@@ -940,7 +938,7 @@ of_atomic_ptr_cmpswap(void *volatile OF_NULLABLE *OF_NONNULL p,
 	);
 
 	return r;
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	int r;
 
 	__asm__ __volatile__ (
@@ -977,7 +975,7 @@ of_memory_barrier(void)
 	__asm__ __volatile__ (
 	    "mfence"
 	);
-#elif defined(OF_PPC_ASM)
+#elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
 	    "sync"
 	);

@@ -314,7 +314,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 		[missing removeObject: fileName];
 
-#ifndef _WIN32
+#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
 		if ([outFileName hasPrefix: @"/"]) {
 #else
 		if ([outFileName hasPrefix: @"/"] ||

@@ -349,7 +349,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"])
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
+#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
 # define EXPECTED @"foo/bar/baz"
 #else
 # define EXPECTED @"foo\\bar\\baz"
@@ -413,7 +413,7 @@ static uint16_t sutf16str[] = {
 	    [[@"/" stringByDeletingLastPathComponent] isEqual: @"/"] &&
 	    [[@"foo" stringByDeletingLastPathComponent] isEqual: @"."])
 
-#if !defined(_WIN32) && !defined(__DJGPP__)
+#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
 # define EXPECTED @"/foo./bar"
 #else
 # define EXPECTED @"\\foo.\\bar"
@@ -453,12 +453,12 @@ static uint16_t sutf16str[] = {
 	    [@"\r-INFINITY\n" floatValue] == -INFINITY &&
 	    isnan([@"   NAN\t\t" floatValue]))
 
-#if !defined(__ANDROID__) && !defined(__sun__) && !defined(__DJGPP__)
+#if !defined(__ANDROID__) && !defined(OF_SOLARIS) && !defined(__DJGPP__)
 # define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
 # define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else
 /* Android, Solaris and DJGPP do not accept 0x for strtod() */
-# if !defined(__sun__) || !defined(__i386__)
+# if !defined(OF_SOLARIS) || !defined(OF_X86)
 #  define INPUT @"\t-0.123456789 "
 #  define EXPECTED -0.123456789
 # else

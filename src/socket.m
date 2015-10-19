@@ -32,7 +32,7 @@ static of_mutex_t mutex;
 #endif
 static bool initialized = false;
 
-#ifdef __wii__
+#ifdef OF_WII
 # ifdef OF_HAVE_THREADS
 static of_spinlock_t spinlock;
 # endif
@@ -42,12 +42,12 @@ static uint8_t portRegistry[2][65536 / 8];
 static void
 init(void)
 {
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 	WSADATA wsa;
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		return;
-#elif defined(__wii__)
+#elif defined(OF_WII)
 	if (net_init() < 0)
 		return;
 #endif
@@ -56,7 +56,7 @@ init(void)
 	if (!of_mutex_new(&mutex))
 		return;
 
-# ifdef __wii__
+# ifdef OF_WII
 	if (!of_spinlock_new(&spinlock))
 		return;
 # endif
@@ -81,7 +81,7 @@ of_socket_init()
 int
 of_socket_errno()
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return errno;
 #else
 	switch (WSAGetLastError()) {
@@ -177,7 +177,7 @@ of_socket_errno()
 #endif
 }
 
-#ifndef __wii__
+#ifndef OF_WII
 int
 of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
     socklen_t *restrict address_len)

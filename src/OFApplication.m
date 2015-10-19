@@ -32,9 +32,9 @@
 #import "OFThread.h"
 #import "OFThread+Private.h"
 
-#if defined(__MACH__) && !defined(OF_IOS)
+#if defined(OF_MAC_OS_X)
 # include <crt_externs.h>
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 # include <windows.h>
 
 extern int _CRT_glob;
@@ -43,7 +43,7 @@ extern void __wgetmainargs(int*, wchar_t***, wchar_t***, int, int*);
 extern char **environ;
 #endif
 
-#ifdef _PSP
+#ifdef OF_PSP
 # include <pspkerneltypes.h>
 # include <psploadexec.h>
 #endif
@@ -57,7 +57,7 @@ extern char **environ;
 @interface OFApplication (OF_PRIVATE_CATEGORY)
 - (void)OF_setArgumentCount: (int*)argc
 	  andArgumentValues: (char**[])argv;
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 - (void)OF_setArgumentCount: (int)argc
       andWideArgumentValues: (wchar_t*[])argv;
 #endif
@@ -85,7 +85,7 @@ atexitHandler(void)
 		    @selector(applicationDidReceive##sig));	\
 	}
 SIGNAL_HANDLER(SIGINT)
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 SIGNAL_HANDLER(SIGHUP)
 SIGNAL_HANDLER(SIGUSR1)
 SIGNAL_HANDLER(SIGUSR2)
@@ -96,7 +96,7 @@ int
 of_application_main(int *argc, char **argv[], Class cls)
 {
 	id <OFApplicationDelegate> delegate;
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 	wchar_t **wargv, **wenvp;
 	int wargc, si = 0;
 #endif
@@ -116,7 +116,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	[app OF_setArgumentCount: argc
 	       andArgumentValues: argv];
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 	__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
 	[app OF_setArgumentCount: wargc
 	   andWideArgumentValues: wargv];
@@ -160,7 +160,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 + (void)terminateWithStatus: (int)status
 {
-#ifdef _PSP
+#ifdef OF_PSP
 	sceKernelExitGame();
 	abort();	/* sceKernelExitGame() is not marked noreturn */
 #else
@@ -175,9 +175,9 @@ of_application_main(int *argc, char **argv[], Class cls)
 	@try {
 		void *pool;
 		OFMutableDictionary *environment;
-#if defined(__MACH__) && !defined(OF_IOS)
+#if defined(OF_MAC_OS_X)
 		char **env = *_NSGetEnviron();
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 		of_char16_t *env, *env0;
 #elif !defined(OF_IOS)
 		char **env = environ;
@@ -188,7 +188,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 		environment = [[OFMutableDictionary alloc] init];
 
 		atexit(atexitHandler);
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 		env = env0 = GetEnvironmentStringsW();
 
 		while (*env != 0) {
@@ -329,7 +329,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 - (void)OF_setArgumentCount: (int*)argc
 	  andArgumentValues: (char***)argv
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
 	int i;
@@ -366,7 +366,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 #endif
 }
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 - (void)OF_setArgumentCount: (int)argc
       andWideArgumentValues: (wchar_t**)argv
 {
@@ -431,7 +431,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	} else								\
 		signal(sig, SIG_DFL);
 	REGISTER_SIGNAL(SIGINT)
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	REGISTER_SIGNAL(SIGHUP)
 	REGISTER_SIGNAL(SIGUSR1)
 	REGISTER_SIGNAL(SIGUSR2)

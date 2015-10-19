@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 .globl of_forward
 .globl of_forward_stret
 
@@ -202,6 +204,6 @@ symtab:
 module:
 	.long 8, 16, 0, symtab
 
-#ifdef __linux__
+#ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
 #endif

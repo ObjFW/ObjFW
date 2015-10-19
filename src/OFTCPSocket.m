@@ -15,7 +15,6 @@
  */
 
 #define OF_TCP_SOCKET_M
-
 #define __NO_EXT_QNX
 
 #include "config.h"
@@ -240,7 +239,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[super close];
 
-#ifdef __wii__
+#ifdef OF_WII
 	if (_port > 0) {
 		of_socket_port_free(_port, SOCK_STREAM);
 		_port = 0;
@@ -389,7 +388,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	of_resolver_result_t **results;
 	const int one = 1;
-#ifndef __wii__
+#ifndef OF_WII
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
@@ -407,7 +406,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-#ifdef __wii__
+#ifdef OF_WII
 	if (port == 0)
 		port = of_socket_port_find(SOCK_STREAM);
 	else if (!of_socket_port_register(port, SOCK_STREAM))
@@ -420,7 +419,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	@try {
 		results = of_resolve_host(host, port, SOCK_STREAM);
 	} @catch (id e) {
-#ifdef __wii__
+#ifdef OF_WII
 		of_socket_port_free(port, SOCK_STREAM);
 #endif
 		@throw e;
@@ -461,7 +460,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 								  errNo: errNo];
 		}
 	} @catch (id e) {
-#ifdef __wii__
+#ifdef OF_WII
 		of_socket_port_free(port, SOCK_STREAM);
 #endif
 		@throw e;
@@ -470,13 +469,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 
 	if (port > 0) {
-#ifdef __wii__
+#ifdef OF_WII
 		_port = port;
 #endif
 		return port;
 	}
 
-#ifndef __wii__
+#ifndef OF_WII
 	addrLen = (socklen_t)sizeof(addr.storage);
 	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
 	    &addrLen) != 0) {
@@ -625,14 +624,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
 
-#ifdef __wii__
+#ifdef OF_WII
 	_keepAliveEnabled = enabled;
 #endif
 }
 
 - (bool)isKeepAliveEnabled
 {
-#ifndef __wii__
+#ifndef OF_WII
 	int v;
 	socklen_t len = sizeof(v);
 
@@ -658,14 +657,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
 
-#ifdef __wii__
+#ifdef OF_WII
 	_TCPNoDelayEnabled = enabled;
 #endif
 }
 
 - (bool)isTCPNoDelayEnabled
 {
-#ifndef __wii__
+#ifndef OF_WII
 	int v;
 	socklen_t len = sizeof(v);
 

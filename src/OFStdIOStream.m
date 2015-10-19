@@ -103,7 +103,7 @@ of_log(OFConstantString *format, ...)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if ((ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
@@ -131,7 +131,7 @@ of_log(OFConstantString *format, ...)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 

@@ -34,16 +34,16 @@
 
 #import "OFNotImplementedException.h"
 
-#if defined(__APPLE__) && !defined(OF_IOS)
+#if defined(OF_MAC_OS_X)
 # include <NSSystemDirectories.h>
 #endif
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
-#ifdef __HAIKU__
+#ifdef OF_HAIKU
 # include <FindDirectory.h>
 #endif
-#ifdef __QNX__
+#ifdef OF_QNX
 # include <sys/syspage.h>
 #endif
 
@@ -101,12 +101,12 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	if (self != [OFSystemInfo class])
 		return;
 
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 	pageSize = si.dwPageSize;
 	numberOfCPUs = si.dwNumberOfProcessors;
-#elif defined(__QNX__)
+#elif defined(OF_QNX)
 	if ((pageSize = sysconf(_SC_PAGESIZE)) < 1)
 		pageSize = 4096;
 	numberOfCPUs = _syspage_ptr->num_cpu;
@@ -146,7 +146,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (OFString*)userDataPath
 {
 	/* TODO: Return something more sensible for iOS */
-#if defined(__APPLE__) && !defined(OF_IOS)
+#if defined(OF_MAC_OS_X)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	NSSearchPathEnumerationState state;
@@ -177,7 +177,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[path retain];
 	objc_autoreleasePoolPop(pool);
 	return [path autorelease];
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
@@ -189,7 +189,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[appData retain];
 	objc_autoreleasePoolPop(pool);
 	return [appData autorelease];
-#elif defined(__HAIKU__)
+#elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, 0, false,
@@ -226,7 +226,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (OFString*)userConfigPath
 {
 	/* TODO: Return something more sensible for iOS */
-#if defined(__APPLE__) && !defined(OF_IOS)
+#if defined(OF_MAC_OS_X)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	NSSearchPathEnumerationState state;
@@ -259,7 +259,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[path retain];
 	objc_autoreleasePoolPop(pool);
 	return [path autorelease];
-#elif defined(_WIN32)
+#elif defined(OF_WINDOWS)
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
@@ -271,7 +271,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[appData retain];
 	objc_autoreleasePoolPop(pool);
 	return [appData autorelease];
-#elif defined(__HAIKU__)
+#elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, 0, false,

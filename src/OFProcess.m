@@ -24,7 +24,9 @@
 # undef __USE_XOPEN
 #endif
 
-#ifndef _WIN32
+#include "platform.h"
+
+#ifndef OF_WINDOWS
 # include <unistd.h>
 # include <signal.h>
 # include <sys/wait.h>
@@ -46,16 +48,16 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 #endif
 
-#ifndef __MACH__
+#if !defined(OF_WINDOWS) && !defined(HAVE_POSIX_SPAWNP)
 extern char **environ;
 #endif
 
 @interface OFProcess (OF_PRIVATE_CATEGORY)
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 - (void)OF_getArgV: (char***)argv
     forProgramName: (OFString*)programName
       andArguments: (OFArray*)arguments;
@@ -138,7 +140,7 @@ extern char **environ;
 	self = [super init];
 
 	@try {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 		void *pool = objc_autoreleasePoolPush();
 		const char *path;
 		char **argv;
@@ -339,7 +341,7 @@ extern char **environ;
 	[super dealloc];
 }
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 - (void)OF_getArgV: (char***)argv
     forProgramName: (OFString*)programName
       andArguments: (OFArray*)arguments
@@ -437,7 +439,7 @@ extern char **environ;
 
 - (bool)lowlevelIsAtEndOfStream
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (_readPipe[0] == -1)
 #else
 	if (_readPipe[0] == NULL)
@@ -450,13 +452,9 @@ extern char **environ;
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer
 			  length: (size_t)length
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	ssize_t ret;
-#else
-	DWORD ret;
-#endif
 
-#ifndef _WIN32
 	if (_readPipe[0] == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
@@ -466,6 +464,8 @@ extern char **environ;
 						  requestedLength: length
 							    errNo: errno];
 #else
+	DWORD ret;
+
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -493,7 +493,7 @@ extern char **environ;
 - (void)lowlevelWriteBuffer: (const void*)buffer
 		     length: (size_t)length
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (_writePipe[1] == -1 || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
@@ -531,7 +531,7 @@ extern char **environ;
 
 - (int)fileDescriptorForReading
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return _readPipe[0];
 #else
 	OF_UNRECOGNIZED_SELECTOR
@@ -540,7 +540,7 @@ extern char **environ;
 
 - (int)fileDescriptorForWriting
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return _writePipe[1];
 #else
 	OF_UNRECOGNIZED_SELECTOR
@@ -549,7 +549,7 @@ extern char **environ;
 
 - (void)closeForWriting
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (_writePipe[1] != -1)
 		close(_writePipe[1]);
 
@@ -564,7 +564,7 @@ extern char **environ;
 
 - (void)close
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (_readPipe[0] != -1)
 		close(_readPipe[0]);
 	if (_writePipe[1] != -1)

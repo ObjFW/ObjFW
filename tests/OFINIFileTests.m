@@ -26,7 +26,7 @@
 
 #import "TestsAppDelegate.h"
 
-#ifdef _WIN32
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
 # define NL @"\r\n"
 #else
 # define NL @"\n"

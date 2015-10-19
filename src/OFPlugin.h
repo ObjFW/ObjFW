@@ -18,7 +18,7 @@
 
 @class OFString;
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 typedef void* of_plugin_handle_t;
 #else
 # include <windows.h>

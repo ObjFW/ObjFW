@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include "platform.h"
+
 .globl objc_msg_lookup
 .globl objc_msg_lookup_stret
 .globl objc_msg_lookup_super
@@ -30,20 +32,18 @@
 	lw	$t0, 32($t0)
 
 .Lmain_\name:
-#if defined(__MIPSEL__)
-# ifdef OF_SELUID24
-	lbu	$t1, 2($a1)
-# endif
-	lbu	$t2, 1($a1)
-	lbu	$t3, 0($a1)
-#elif defined(__MIPSEB__)
+#ifdef OF_BIGENDIAN
 # ifdef OF_SELUID24
 	lbu	$t1, 1($a1)
 # endif
 	lbu	$t2, 2($a1)
 	lbu	$t3, 3($a1)
 #else
-# error Neither __MIPSEL__ nor __MIPSEB__ defined!
+# ifdef OF_SELUID24
+	lbu	$t1, 2($a1)
+# endif
+	lbu	$t2, 1($a1)
+	lbu	$t3, 0($a1)
 #endif
 
 #ifdef OF_SELUID24
@@ -61,7 +61,7 @@
 	addu	$t0, $t0, $t3
 	lw	$t0, 0($t0)
 
-#ifdef __PIC__
+#ifdef OF_PIC
 	beqz	$t0, 1f
 #else
 	beqz	$t0, \not_found
@@ -71,14 +71,14 @@
 	j	$ra
 
 0:
-#ifdef __PIC__
+#ifdef OF_PIC
 	addiu	$v0, $t9, nil_method-\name
 #else
 	la	$v0, nil_method
 #endif
 	j	$ra
 
-#ifdef __PIC__
+#ifdef OF_PIC
 1:
 	lui	$gp, %hi(_gp_disp)
 	addiu	$gp, $gp, %lo(_gp_disp)
@@ -103,7 +103,7 @@
 	b	.Lmain_\lookup
 
 0:
-#ifdef __PIC__
+#ifdef OF_PIC
 	addiu	$v0, $t9, nil_method-\name
 #else
 	la	$v0, nil_method
@@ -122,6 +122,6 @@ nil_method:
 	move	$v0, $zero
 	j	$ra
 
-#ifdef __linux__
+#ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
 #endif

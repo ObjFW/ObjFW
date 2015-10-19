@@ -57,7 +57,7 @@
 #import "OFStatItemFailedException.h"
 #import "OFUnlockFailedException.h"
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # include <windows.h>
 # include <direct.h>
 #endif
@@ -83,14 +83,14 @@ static OFFileManager *defaultManager;
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 static of_mutex_t chownMutex;
 #endif
-#if !defined(HAVE_READDIR_R) && !defined(_WIN32) && defined(OF_HAVE_THREADS)
+#if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
 static of_mutex_t readdirMutex;
 #endif
 
 int
 of_stat(OFString *path, of_stat_t *buffer)
 {
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 	return _wstat64([path UTF16String], buffer);
 #elif defined(OF_HAVE_OFF64_T)
 	return stat64([path cStringWithEncoding:
@@ -104,7 +104,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 int
 of_lstat(OFString *path, of_stat_t *buffer)
 {
-#if defined(_WIN32)
+#if defined(OF_WINDOWS)
 	return _wstat64([path UTF16String], buffer);
 #elif defined(HAVE_LSTAT)
 # ifdef OF_HAVE_OFF64_T
@@ -143,7 +143,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    exceptionWithClass: self];
 #endif
 
-#if !defined(HAVE_READDIR_R) && !defined(_WIN32) && defined(OF_HAVE_THREADS)
+#if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
 	if (!of_mutex_new(&readdirMutex))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -160,14 +160,14 @@ of_lstat(OFString *path, of_stat_t *buffer)
 - (OFString*)currentDirectoryPath
 {
 	OFString *ret;
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	char *buffer = getcwd(NULL, 0);
 #else
 	wchar_t *buffer = _wgetcwd(NULL, 0);
 #endif
 
 	@try {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 		ret = [OFString
 		    stringWithCString: buffer
 			     encoding: [OFSystemInfo native8BitEncoding]];
@@ -236,7 +236,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (mkdir([path cStringWithEncoding: [OFSystemInfo native8BitEncoding]],
 	    DIR_MODE) != 0)
 #else
@@ -293,7 +293,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 - (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
 {
 	OFMutableArray *files;
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	of_string_encoding_t encoding;
 #endif
 
@@ -302,7 +302,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	files = [OFMutableArray array];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	DIR *dir;
 
 	encoding = [OFSystemInfo native8BitEncoding];
@@ -418,7 +418,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (chdir([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]]) != 0)
 #else
@@ -495,7 +495,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-# ifndef _WIN32
+# ifndef OF_WINDOWS
 	if (chmod([path cStringWithEncoding: [OFSystemInfo native8BitEncoding]],
 	    permissions) != 0)
 # else
@@ -722,7 +722,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 {
 	void *pool;
 	of_stat_t s;
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	of_string_encoding_t encoding;
 #endif
 
@@ -737,7 +737,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			    destinationPath: destination
 				      errNo: EEXIST];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	encoding = [OFSystemInfo native8BitEncoding];
 
 	if (rename([source cStringWithEncoding: encoding],
@@ -824,7 +824,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		}
 	}
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (remove([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]]) != 0)
 #else

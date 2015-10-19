@@ -165,7 +165,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 				    exceptionWithRequestedSize: sizeof(*addr)];
 			}
 
-#ifdef __wii__
+#ifdef OF_WII
 			addr->sin_len = 8;
 #endif
 			addr->sin_family = AF_INET;
@@ -176,7 +176,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			tmp->type = type;
 			tmp->protocol = 0;
 			tmp->address = (struct sockaddr*)addr;
-#ifndef __wii__
+#ifndef OF_WII
 			tmp->addressLength = sizeof(*addr);
 #else
 			tmp->addressLength = 8;

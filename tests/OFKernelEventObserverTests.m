@@ -22,10 +22,10 @@
 #import "OFTCPSocket.h"
 #import "OFAutoreleasePool.h"
 
-#if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
+#if defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
 # import "OFKernelEventObserver_select.h"
 #endif
-#if defined(HAVE_POLL_H) || defined(__wii__)
+#if defined(HAVE_POLL_H) || defined(OF_WII)
 # import "OFKernelEventObserver_poll.h"
 #endif
 #ifdef HAVE_EPOLL
@@ -212,12 +212,12 @@ static OFString *module;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-#if defined(HAVE_SYS_SELECT_H) || defined(_WIN32)
+#if defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
 	[self kernelEventObserverTestsWithClass:
 	    [OFKernelEventObserver_select class]];
 #endif
 
-#if defined(HAVE_POLL_H) || defined(__wii__)
+#if defined(HAVE_POLL_H) || defined(OF_WII)
 	[self kernelEventObserverTestsWithClass:
 	    [OFKernelEventObserver_poll class]];
 #endif

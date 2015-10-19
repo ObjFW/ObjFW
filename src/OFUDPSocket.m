@@ -185,7 +185,7 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 
 	switch (address1->address.ss_family) {
 	case AF_INET:
-#ifndef __wii__
+#ifndef OF_WII
 		if (address1->length < sizeof(struct sockaddr_in) ||
 		    address2->length < sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
@@ -243,7 +243,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	switch (address->address.ss_family) {
 	case AF_INET:
-#ifndef __wii__
+#ifndef OF_WII
 		if (address->length < sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #else
@@ -386,7 +386,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		  port: (uint16_t)port
 {
 	of_resolver_result_t **results;
-#ifndef __wii__
+#ifndef OF_WII
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
@@ -397,7 +397,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	socklen_t addrLen;
 #endif
 
-#ifdef __wii__
+#ifdef OF_WII
 	if (port == 0)
 		port = of_socket_port_find(SOCK_DGRAM);
 	else if (!of_socket_port_register(port, SOCK_DGRAM))
@@ -410,7 +410,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	@try {
 		results = of_resolve_host(host, port, SOCK_DGRAM);
 	} @catch (id e) {
-#ifdef __wii__
+#ifdef OF_WII
 		of_socket_port_free(port, SOCK_DGRAM);
 #endif
 		@throw e;
@@ -448,7 +448,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 								  errNo: errNo];
 		}
 	} @catch (id e) {
-#ifdef __wii__
+#ifdef OF_WII
 		of_socket_port_free(port, SOCK_DGRAM);
 #endif
 		@throw e;
@@ -457,13 +457,13 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	}
 
 	if (port > 0) {
-#ifdef __wii__
+#ifdef OF_WII
 		_port = port;
 #endif
 		return port;
 	}
 
-#ifndef __wii__
+#ifndef OF_WII
 	addrLen = (socklen_t)sizeof(addr.storage);
 	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
 	    &addrLen) != 0) {
@@ -505,7 +505,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	sender->length = (socklen_t)sizeof(sender->address);
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if ((ret = recvfrom(_socket, buffer, length, 0,
 	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
 		@throw [OFReadFailedException
@@ -558,7 +558,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -590,7 +590,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 - (int)fileDescriptorForReading
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return _socket;
 #else
 	if (_socket == INVALID_SOCKET)
@@ -605,7 +605,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 - (int)fileDescriptorForWriting
 {
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	return _socket;
 #else
 	if (_socket == INVALID_SOCKET)
@@ -626,7 +626,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	close(_socket);
 	_socket = INVALID_SOCKET;
 
-#ifdef __wii__
+#ifdef OF_WII
 	if (_port > 0) {
 		of_socket_port_free(_port, SOCK_DGRAM);
 		_port = 0;

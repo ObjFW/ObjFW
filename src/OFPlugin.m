@@ -29,7 +29,7 @@
 
 #import "OFInitializationFailedException.h"
 
-#ifdef _WIN32
+#ifdef OF_WINDOWS
 # define dlsym(handle, symbol) GetProcAddress(handle, symbol)
 # define dlclose(handle) FreeLibrary(handle)
 #endif
@@ -46,7 +46,7 @@ typedef OFPlugin* (*init_plugin_t)(void);
 
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 
-#ifndef _WIN32
+#ifndef OF_WINDOWS
 	if ((handle = dlopen([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]], RTLD_LAZY)) == NULL)
 #else
