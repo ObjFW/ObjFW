@@ -23,8 +23,9 @@
 #include <string.h>
 #include <inttypes.h>
 
-#import "macros.h"
 #import "resolver.h"
+
+#import "macros.h"
 
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
 # include "threading.h"

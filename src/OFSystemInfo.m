@@ -47,7 +47,7 @@
 # include <sys/syspage.h>
 #endif
 
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if defined(OF_X86_64) || defined(OF_X86)
 struct x86_regs {
 	uint32_t eax, ebx, ecx, edx;
 };
@@ -56,26 +56,19 @@ struct x86_regs {
 static size_t pageSize;
 static size_t numberOfCPUs;
 
-#if defined(OF_X86_64_ASM)
+#if defined(OF_X86_64) || defined(OF_X86)
 static OF_INLINE struct x86_regs OF_CONST_FUNC
 x86_cpuid(uint32_t eax, uint32_t ecx)
 {
 	struct x86_regs regs;
 
+# if defined(OF_X86_64_ASM)
 	__asm__(
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
-
-	return regs;
-}
-#elif defined(OF_X86_ASM)
-static OF_INLINE struct x86_regs OF_CONST_FUNC
-x86_cpuid(uint32_t eax, uint32_t ecx)
-{
-	struct x86_regs regs;
-
+# elif deifned(OF_X86_ASM)
 	/*
 	 * This workaround is required by GCC when using -fPIC, as ebx is a
 	 * special register in PIC code. Yes, GCC is indeed not able to just
@@ -90,6 +83,9 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	    : "=a"(regs.eax), "=r"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
+# else
+	memset(&regs, 0, sizeof(regs));
+# endif
 
 	return regs;
 }
@@ -325,7 +321,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #endif
 }
 
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#if defined(OF_X86_64) || defined(OF_X86)
 + (bool)supportsMMX
 {
 	return (x86_cpuid(1, 0).edx & (1 << 23));

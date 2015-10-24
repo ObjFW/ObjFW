@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (nullable OFString*)CPUVendor;
 
-#if defined(OF_X86_64_ASM) || defined(OF_X86_ASM) || defined(DOXYGEN)
+#if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
 /*!
  * @brief Returns whether the CPU supports MMX.
  *
