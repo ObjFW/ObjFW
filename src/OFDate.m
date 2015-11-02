@@ -510,7 +510,11 @@ static int monthToDayOfYear[12] = {
 	time_t seconds = (time_t)_seconds;
 	struct tm tm;
 	size_t pageSize;
+#ifndef OF_WINDOWS
 	char *buffer;
+#else
+	wchar_t *buffer;
+#endif
 
 	if (seconds != floor(_seconds))
 		@throw [OFOutOfRangeException exception];
@@ -541,10 +545,18 @@ static int monthToDayOfYear[12] = {
 	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
-		if (!strftime(buffer, pageSize, [format UTF8String], &tm))
+#ifndef OF_WINDOWS
+		if (strftime(buffer, pageSize, [format UTF8String], &tm) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
+#else
+		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
+		    [format UTF16String], &tm) == 0)
+			@throw [OFOutOfRangeException exception];
+
+		ret = [OFString stringWithUTF16String: buffer];
+#endif
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -558,7 +570,11 @@ static int monthToDayOfYear[12] = {
 	time_t seconds = (time_t)_seconds;
 	struct tm tm;
 	size_t pageSize;
+#ifndef OF_WINDOWS
 	char *buffer;
+#else
+	wchar_t *buffer;
+#endif
 
 	if (seconds != floor(_seconds))
 		@throw [OFOutOfRangeException exception];
@@ -589,10 +605,18 @@ static int monthToDayOfYear[12] = {
 	buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
-		if (!strftime(buffer, pageSize, [format UTF8String], &tm))
+#ifndef OF_WINDOWS
+		if (strftime(buffer, pageSize, [format UTF8String], &tm) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
+#else
+		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
+		    [format UTF16String], &tm) == 0)
+			@throw [OFOutOfRangeException exception];
+
+		ret = [OFString stringWithUTF16String: buffer];
+#endif
 	} @finally {
 		[self freeMemory: buffer];
 	}
