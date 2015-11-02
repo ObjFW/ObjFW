@@ -453,7 +453,7 @@ normalizedKey(OFString *key)
 
 - (bool)parseHeaders: (OFString*)line
 {
-	OFString *key, *value;
+	OFString *key, *value, *old;
 	size_t pos;
 
 	if ([line length] == 0) {
@@ -498,6 +498,10 @@ normalizedKey(OFString *key)
 
 	key = normalizedKey([key stringByDeletingTrailingWhitespaces]);
 	value = [value stringByDeletingLeadingWhitespaces];
+
+	old = [_headers objectForKey: key];
+	if (old != nil)
+		value = [old stringByAppendingFormat: @",%@", value];
 
 	[_headers setObject: value
 		     forKey: key];

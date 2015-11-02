@@ -505,7 +505,7 @@ normalizeKey(char *str_)
 	serverHeaders = [OFMutableDictionary dictionary];
 
 	for (;;) {
-		OFString *key, *value;
+		OFString *key, *value, *old;
 		const char *lineC, *tmp;
 		char *keyC;
 
@@ -547,6 +547,10 @@ normalizeKey(char *str_)
 		} while (*tmp == ' ');
 
 		value = [OFString stringWithUTF8String: tmp];
+
+		old = [serverHeaders objectForKey: key];
+		if (old != nil)
+			value = [old stringByAppendingFormat: @",%@", value];
 
 		[serverHeaders setObject: value
 				  forKey: key];
