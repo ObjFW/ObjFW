@@ -184,6 +184,17 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (bool)supportsAVX2;
 #endif
+
+#if defined(OF_POWERPC) || defined(OF_POWERPC64)
+/*!
+ * @brief Returns whether the CPU and OS support AltiVec.
+ *
+ * @note This method is only available on PowerPC and PowerPC64.
+ *
+ * @return Whether the CPU and OS support AltiVec
+ */
++ (bool)supportsAltiVec;
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

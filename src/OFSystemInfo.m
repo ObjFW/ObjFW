@@ -26,6 +26,12 @@
 
 #include <unistd.h>
 
+#include "platform.h"
+
+#ifdef OF_MAC_OS_X
+# include <sys/sysctl.h>
+#endif
+
 #import "OFSystemInfo.h"
 #import "OFString.h"
 #import "OFArray.h"
@@ -365,6 +371,21 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (bool)supportsAVX2
 {
 	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1 << 5));
+}
+#endif
+
+#if defined(OF_POWERPC) || defined(OF_POWERPC64)
++ (bool)supportsAltiVec
+{
+# ifdef OF_MAC_OS_X
+	int name[2] = { CTL_HW, HW_VECTORUNIT }, value = 0;
+	size_t length = sizeof(value);
+
+	if (sysctl(name, 2, &value, &length, NULL, 0) == 0)
+		return value;
+# endif
+
+	return 0;
 }
 #endif
 @end
