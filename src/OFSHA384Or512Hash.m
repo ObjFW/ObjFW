@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 #import "OFSHA384Or512Hash.h"
@@ -139,18 +138,11 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 - init
 {
-	if (object_getClass(self) == [OFSHA384Or512Hash class]) {
-		@try {
-			[self doesNotRecognizeSelector: _cmd];
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
+	self = [super init];
 
-		abort();
-	}
+	[self OF_resetState];
 
-	return [super init];
+	return self;
 }
 
 - (void)updateWithBuffer: (const void*)buffer_

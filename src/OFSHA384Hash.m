@@ -24,15 +24,6 @@
 	return 48;
 }
 
-- init
-{
-	self = [super init];
-
-	[self OF_resetState];
-
-	return self;
-}
-
 - (void)OF_resetState
 {
 	_state[0] = 0xCBBB9D5DC1059ED8;
