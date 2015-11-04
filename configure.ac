@@ -145,7 +145,7 @@ AC_TRY_COMPILE([
 ], [
 	Foo *foo = (id)0;
 	[foo setBar: (id)0];
-	[foo bar];
+	foo = [foo bar];
 ], [
 	AC_SUBST(PROPERTIESTESTS_M, "PropertiesTests.m")
 	AC_MSG_RESULT(yes)
