@@ -29,6 +29,8 @@
 #  include "lookup-asm-ppc-elf.S"
 # elif defined(OF_MIPS)
 #  include "lookup-asm-mips-elf.S"
+# elif defined(OF_SPARC64)
+#  include "lookup-asm-sparc64-elf.S"
 # elif defined(OF_SPARC)
 #  include "lookup-asm-sparc-elf.S"
 # endif

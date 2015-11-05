@@ -30,27 +30,27 @@
 	beq,a	ret_nil
 	 nop
 
-	ld	[%o0], %o2
-	ld	[%o2 + 32], %o2
+	ldx	[%o0], %o2
+	ldx	[%o2 + 64], %o2
 
 .Lmain_\name:
 #ifdef OF_SELUID24
-	ldub	[%o1 + 1], %o3
+	ldub	[%o1 + 5], %o3
 #endif
-	ldub	[%o1 + 2], %o4
-	ldub	[%o1 + 3], %o5
+	ldub	[%o1 + 6], %o4
+	ldub	[%o1 + 7], %o5
 
 #ifdef OF_SELUID24
-	sll	%o3, 2, %o3
+	sll	%o3, 3, %o3
 #endif
-	sll	%o4, 2, %o4
-	sll	%o5, 2, %o5
+	sll	%o4, 3, %o4
+	sll	%o5, 3, %o5
 
 #ifdef OF_SELUID24
-	ld	[%o2 + %o3], %o2
+	ldx	[%o2 + %o3], %o2
 #endif
-	ld	[%o2 + %o4], %o2
-	ld	[%o2 + %o5], %o2
+	ldx	[%o2 + %o4], %o2
+	ldx	[%o2 + %o5], %o2
 
 	cmp	%o2, 0
 	beq,a	\not_found
@@ -64,14 +64,14 @@
 
 .macro generate_lookup_super name lookup
 \name:
-	ld	[%o0], %o2
+	ldx	[%o0], %o2
 	cmp	%o2, 0
 	beq,a	ret_nil
 	 nop
 
-	ld	[%o0 + 4], %o2
+	ldx	[%o0 + 8], %o2
 	ba	.Lmain_\lookup
-	 ld	[%o2 + 32], %o2
+	 ldx	[%o2 + 64], %o2
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -95,7 +95,7 @@ ret_nil:
 	or	%o0, %lo(nil_method), %o0
 
 	jmpl	%g1 + 8, %g0
-	 ld	[%o1 + %o0], %o0
+	 ldx	[%o1 + %o0], %o0
 #else
 	sethi	%hi(nil_method), %o0
 	retl

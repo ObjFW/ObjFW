@@ -55,6 +55,8 @@
 #elif defined(__mips_eabi) && _MIPS_SZPTR == 32
 # define OF_MIPS
 # define OF_MIPS_EABI
+#elif defined(__sparc64__) || (defined(__sparc__) && defined(__arch64__))
+# define OF_SPARC64
 #elif defined(__sparc__) && !defined(__arch64__)
 # define OF_SPARC
 #endif
