@@ -539,6 +539,8 @@ AC_CHECK_FUNC(asprintf, [
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
+AC_CHECK_FUNCS(sigaction)
+
 AC_CHECK_FUNCS([arc4random random], break)
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")

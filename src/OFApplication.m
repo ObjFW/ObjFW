@@ -419,9 +419,24 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate
 {
-	_delegate = delegate;
+#ifdef HAVE_SIGACTION
+	struct sigaction sa = { .sa_flags = SA_RESTART };
+	sigemptyset(&sa.sa_mask);
 
-#define REGISTER_SIGNAL(sig)						\
+# define REGISTER_SIGNAL(sig)						\
+	if ([delegate respondsToSelector:				\
+	    @selector(applicationDidReceive##sig)]) {			\
+		_##sig##Handler = (void(*)(id, SEL))[(id)delegate	\
+		    methodForSelector:					\
+		    @selector(applicationDidReceive##sig)];		\
+									\
+		sa.sa_handler = handle##sig;				\
+	} else								\
+		sa.sa_handler = SIG_DFL;				\
+									\
+	OF_ENSURE(sigaction(sig, &sa, NULL) == 0);
+#else
+# define REGISTER_SIGNAL(sig)						\
 	if ([delegate respondsToSelector:				\
 	    @selector(applicationDidReceive##sig)]) {			\
 		_##sig##Handler = (void(*)(id, SEL))[(id)delegate	\
@@ -430,12 +445,17 @@ of_application_main(int *argc, char **argv[], Class cls)
 		signal(sig, handle##sig);				\
 	} else								\
 		signal(sig, SIG_DFL);
+#endif
+
+	_delegate = delegate;
+
 	REGISTER_SIGNAL(SIGINT)
 #ifndef OF_WINDOWS
 	REGISTER_SIGNAL(SIGHUP)
 	REGISTER_SIGNAL(SIGUSR1)
 	REGISTER_SIGNAL(SIGUSR2)
 #endif
+
 #undef REGISTER_SIGNAL
 }
 
