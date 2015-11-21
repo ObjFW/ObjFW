@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host to expect for certificate verification.
  *	       May be nil if certificate verification is disabled.
  */
-- (void)startTLSWithExpectedHost: (OFString*)host;
+- (void)startTLSWithExpectedHost: (nullable OFString*)host;
 
 /*!
  * @brief Sets a delegate for the TLS socket.
