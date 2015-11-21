@@ -961,26 +961,27 @@ case "$host" in
 		have_processes="no"
 		;;
 	*)
-		AC_CHECK_FUNCS([vfork dup2 execvp kill _exit], [
-			AS_IF([test x"$ac_cv_func_vfork" = x"yes" \
-			    -a x"$ac_cv_func_pipe" = x"yes" \
-			    -a x"$ac_cv_func_dup2" = x"yes" \
-			    -a x"$ac_cv_func_execvp" = x"yes" \
-			    -a x"$ac_cv_func_kill" = x"yes" \
-			    -a x"$ac_cv_func__exit" = x"yes"], [
+		AC_CHECK_FUNCS(kill)
+
+		AC_CHECK_FUNC(posix_spawn, [
+			AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
 				have_processes="yes"
+
+				AC_CHECK_HEADERS(spawn.h)
 			])
 		], [
-			break
-		])
-
-		AC_CHECK_FUNCS(posix_spawnp)
-
-		AS_IF([test x"$ac_cv_func_posix_spawnp" = x"yes" \
-		    -a x"$ac_cv_func_kill" = x"yes"], [
-			have_processes="yes"
-
-			AC_CHECK_HEADERS(spawn.h)
+			AC_CHECK_FUNCS([vfork dup2 execvp _exit], [
+				AS_IF([test x"$ac_cv_func_vfork" = x"yes" \
+				    -a x"$ac_cv_func_pipe" = x"yes" \
+				    -a x"$ac_cv_func_dup2" = x"yes" \
+				    -a x"$ac_cv_func_execvp" = x"yes" \
+				    -a x"$ac_cv_func_kill" = x"yes" \
+				    -a x"$ac_cv_func__exit" = x"yes"], [
+					have_processes="yes"
+				])
+			], [
+				break
+			])
 		])
 		;;
 esac
