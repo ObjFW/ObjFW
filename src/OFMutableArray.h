@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The index of the object to replace
  * @return The object to replace the object with
  */
-typedef id OF_NONNULL (^of_array_replace_block_t)(id object, size_t index);
+typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 #endif
 
 /*!

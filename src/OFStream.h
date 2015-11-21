@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
-    size_t length, OFException *OF_NULLABLE exception);
+    size_t length, OFException *_Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read from the stream.
@@ -60,7 +60,7 @@ typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
-    OFString *OF_NULLABLE line, OFException *OF_NULLABLE exception);
+    OFString *_Nullable line, OFException *_Nullable exception);
 #endif
 
 /*!

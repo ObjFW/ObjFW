@@ -42,17 +42,17 @@ extern "C" {
 /*!
  * @brief The standard input as an OFStream.
  */
-extern OFStdIOStream *OF_NULLABLE of_stdin;
+extern OFStdIOStream *_Nullable of_stdin;
 
 /*!
  * @brief The standard output as an OFStream.
  */
-extern OFStdIOStream *OF_NULLABLE of_stdout;
+extern OFStdIOStream *_Nullable of_stdout;
 
 /*!
  * @brief The standard error as an OFStream.
  */
-extern OFStdIOStream *OF_NULLABLE of_stderr;
+extern OFStdIOStream *_Nullable of_stderr;
 
 extern void of_log(OFConstantString*, ...);
 #ifdef __cplusplus

@@ -92,9 +92,9 @@ typedef struct {
 	/// Arbitrary state information for the enumeration
 	unsigned long state;
 	/// Pointer to a C array of objects to return
-	id __unsafe_unretained OF_NULLABLE *OF_NULLABLE itemsPtr;
+	id __unsafe_unretained _Nullable *_Nullable itemsPtr;
 	/// Arbitrary state information to detect mutations
-	unsigned long *OF_NULLABLE mutationsPtr;
+	unsigned long *_Nullable mutationsPtr;
 	/// Additional arbitrary state information
 	unsigned long extra[5];
 } of_fast_enumeration_state_t;
@@ -120,8 +120,8 @@ typedef struct {
  *	   finished.
  */
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id __unsafe_unretained OF_NONNULL
-					*OF_NONNULL)objects
+			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
+					objects
 			     count: (int)count;
 @end
 

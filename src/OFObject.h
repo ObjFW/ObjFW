@@ -943,7 +943,7 @@ OF_ROOT_CLASS
 extern "C" {
 #endif
 extern id of_alloc_object(Class class_, size_t extraSize,
-    size_t extraAlignment, void *OF_NULLABLE *OF_NULLABLE extra);
+    size_t extraAlignment, void *_Nullable *_Nullable extra);
 extern void OF_NO_RETURN_FUNC of_method_not_found(id self, SEL _cmd);
 extern uint32_t of_hash_seed;
 #ifdef __cplusplus

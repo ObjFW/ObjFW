@@ -37,7 +37,7 @@ extern int _OFString_XMLUnescaping_reference;
  * @param entity The XML entity which is unknown
  * @return A replacement string for the unknown entity
  */
-typedef OFString *OF_NULLABLE (^of_string_xml_unescaping_block_t)(
+typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
     OFString *string, OFString *entity);
 #endif
 

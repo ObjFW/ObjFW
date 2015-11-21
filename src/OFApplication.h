@@ -184,8 +184,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param argc A pointer where a pointer to argc should be stored
  * @param argv A pointer where a pointer to argv should be stored
  */
-- (void)getArgumentCount: (int *OF_NONNULL *OF_NONNULL)argc
-       andArgumentValues: (char *OF_NONNULL *OF_NONNULL *OF_NONNULL[])argv;
+- (void)getArgumentCount: (int *_Nonnull *_Nonnull)argc
+       andArgumentValues: (char *_Nonnull *_Nonnull *_Nonnull[])argv;
 
 /*!
  * @brief Returns the name of the program (argv[0]).
@@ -241,7 +241,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_application_main(int *OF_NONNULL, char *OF_NONNULL *OF_NONNULL[],
+extern int of_application_main(int *_Nonnull, char *_Nonnull *_Nonnull[],
     Class);
 #ifdef __cplusplus
 }

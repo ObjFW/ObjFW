@@ -31,9 +31,9 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern int of_asprintf(
-    char *OF_NULLABLE *OF_NONNULL, const char *OF_NONNULL, ...);
+    char *_Nullable *_Nonnull, const char *_Nonnull, ...);
 extern int of_vasprintf(
-    char *OF_NULLABLE *OF_NONNULL, const char *OF_NONNULL, va_list);
+    char *_Nullable *_Nonnull, const char *_Nonnull, va_list);
 #ifdef __cplusplus
 }
 #endif

@@ -170,14 +170,13 @@
 #if __has_feature(nullability)
 # define OF_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
 # define OF_ASSUME_NONNULL_END _Pragma("clang assume_nonnull end")
-# define OF_NONNULL _Nonnull
-# define OF_NULLABLE _Nullable
 # define OF_NULLABLE_PROPERTY(...) (__VA_ARGS__, nullable)
 #else
 # define OF_ASSUME_NONNULL_BEGIN
 # define OF_ASSUME_NONNULL_END
-# define OF_NONNULL
-# define OF_NULLABLE
+# define _Nonnull
+# define _Nullable
+# define _Null_unspecified
 # define OF_NULLABLE_PROPERTY
 # define nonnull
 # define nullable

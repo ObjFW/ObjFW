@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The object which should be returned when the thread is joined
  */
-typedef id OF_NULLABLE (^of_thread_block_t)(void);
+typedef id _Nullable (^of_thread_block_t)(void);
 #endif
 
 /*!

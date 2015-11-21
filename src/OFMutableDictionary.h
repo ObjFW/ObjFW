@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object to replace
  * @return The object to replace the object with
  */
-typedef id OF_NONNULL (^of_dictionary_replace_block_t)(id key, id object);
+typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 #endif
 
 /*!
