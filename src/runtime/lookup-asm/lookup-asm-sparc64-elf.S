@@ -27,7 +27,7 @@
 .macro generate_lookup name not_found
 \name:
 	cmp	%o0, 0
-	beq,a	ret_nil
+	beq,pn	ret_nil
 	 nop
 
 	ldx	[%o0], %o2
@@ -53,7 +53,7 @@
 	ldx	[%o2 + %o5], %o2
 
 	cmp	%o2, 0
-	beq,a	\not_found
+	beq,pn	\not_found
 	 nop
 
 	retl
@@ -66,7 +66,7 @@
 \name:
 	ldx	[%o0], %o2
 	cmp	%o2, 0
-	beq,a	ret_nil
+	beq,pn	ret_nil
 	 nop
 
 	ldx	[%o0 + 8], %o2
