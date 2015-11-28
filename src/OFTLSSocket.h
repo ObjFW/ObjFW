@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	 a TCP socket which is already connected!
  *
  * @param host The host to expect for certificate verification.
- *	       May be nil if certificate verification is disabled.
+ *	       May be `nil` if certificate verification is disabled.
  */
 - (void)startTLSWithExpectedHost: (nullable OFString*)host;
 

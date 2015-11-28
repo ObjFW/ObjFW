@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the vendor of the CPU.
  *
- * If the vendor could not be determined, nil is returned instead.
+ * If the vendor could not be determined, `nil` is returned instead.
  *
  * @return The vendor of the CPU
  */

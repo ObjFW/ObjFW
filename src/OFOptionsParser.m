@@ -60,7 +60,7 @@ stringEqual(void *value1, void *value2)
 		};
 		const of_map_table_functions_t valueFunctions = { NULL };
 
-		/* Count, sanity check and initialize pointers */
+		/* Count, sanity check, initialize pointers */
 		for (iter = options;
 		    iter->shortOption != '\0' || iter->longOption != nil;
 		    iter++) {

@@ -52,13 +52,13 @@ typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
  * @brief This callback is called when an unknown entity was found while trying
  *	  to unescape XML.
  *
- * The callback is supposed to return a substitution for the entity or nil if
+ * The callback is supposed to return a substitution for the entity or `nil` if
  * it is unknown to the callback as well, in which case an exception will be
  * thrown.
  *
  * @param string The string which contains the unknown entity
  * @param entity The name of the entity that is unknown
- * @return A substitution for the entity or nil
+ * @return A substitution for the entity or `nil`
  */
 -	   (OFString*)string: (OFString*)string
   containsUnknownEntityNamed: (OFString*)entity;

@@ -186,13 +186,14 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
     arguments: (va_list)arguments;
 
 /*!
- * @brief Returns the object for the given key or nil if the key was not found.
+ * @brief Returns the object for the given key or `nil` if the key was not
+ *	  found.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
  *
  * @param key The key whose object should be returned
- * @return The object for the given key or nil if the key was not found
+ * @return The object for the given key or `nil` if the key was not found
  */
 - (nullable ObjectType)objectForKey: (KeyType)key;
 - (nullable ObjectType)objectForKeyedSubscript: (KeyType)key;

@@ -125,7 +125,7 @@ OF_ASSUME_NONNULL_BEGIN
 	 forPath: (OFString*)path;
 
 /*!
- * @brief Returns the string for the specified path, or nil if the path does
+ * @brief Returns the string for the specified path, or `nil` if the path does
  *	  not exist.
  *
  * @param path The path for which the string value should be returned

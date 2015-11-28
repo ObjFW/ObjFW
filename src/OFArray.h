@@ -116,7 +116,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 + (instancetype)arrayWithObject: (ObjectType)object;
 
 /*!
- * @brief Creates a new OFArray with the specified objects, terminated by nil.
+ * @brief Creates a new OFArray with the specified objects, terminated by `nil`.
  *
  * @param firstObject The first object in the array
  * @return A new autoreleased OFArray
@@ -256,22 +256,22 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
 
 /*!
- * @brief Returns the first object of the array or nil.
+ * @brief Returns the first object of the array or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
  *
- * @return The first object of the array or nil
+ * @return The first object of the array or `nil`
  */
 - (nullable ObjectType)firstObject;
 
 /*!
- * @brief Returns the last object of the array or nil.
+ * @brief Returns the last object of the array or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
  *
- * @return The last object of the array or nil
+ * @return The last object of the array or `nil`
  */
 - (nullable ObjectType)lastObject;
 
@@ -440,7 +440,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 /*!
  * @brief Folds the array to a single object using the specified block.
  *
- * If the array is empty, it will return nil.
+ * If the array is empty, it will return `nil`.
  *
  * If there is only one object in the array, that object will be returned and
  * the block will not be invoked.

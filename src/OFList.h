@@ -165,22 +165,22 @@ struct of_list_object_t {
 - (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
 
 /*!
- * @brief Returns the first object of the list or nil.
+ * @brief Returns the first object of the list or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
  *
- * @return The first object of the list or nil
+ * @return The first object of the list or `nil`
  */
 - (nullable ObjectType)firstObject;
 
 /*!
- * @brief Returns the last object of the list or nil.
+ * @brief Returns the last object of the list or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
  *
- * @return The last object of the list or nil
+ * @return The last object of the list or `nil`
  */
 - (nullable ObjectType)lastObject;
 

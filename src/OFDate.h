@@ -293,7 +293,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the earlier of the two dates.
  *
- * If the argument is nil, it returns the receiver.
+ * If the argument is `nil`, it returns the receiver.
  *
  * @param otherDate Another date
  * @return The earlier date of the two dates
@@ -303,7 +303,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the later of the two dates.
  *
- * If the argument is nil, it returns the receiver.
+ * If the argument is `nil`, it returns the receiver.
  *
  * @param otherDate Another date
  * @return The later date of the two dates

@@ -54,14 +54,14 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFString*)name;
 
 /*!
- * @brief Returns the string value for the specified key, or nil if it does not
- *	  exist.
+ * @brief Returns the string value for the specified key, or `nil` if it does
+ *	  not exist.
  *
  * If the specified key is a multi-key (see @ref arrayForKey:), the value of
  * the first key/value pair found is returned.
  *
  * @param key The key for which the string value should be returned
- * @return The string value for the specified key, or nil if it does not exist
+ * @return The string value for the specified key, or `nil` if it does not exist
  */
 - (nullable OFString*)stringForKey: (OFString*)key;
 

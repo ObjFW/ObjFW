@@ -54,10 +54,10 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param parser The parser which found a new tag
  * @param name The name of the tag which just started
- * @param prefix The prefix of the tag which just started or nil
- * @param ns The namespace of the tag which just started or nil
+ * @param prefix The prefix of the tag which just started or `nil`
+ * @param ns The namespace of the tag which just started or `nil`
  * @param attributes The attributes included in the tag which just started or
- *		     nil
+ *		     `nil`
  */
 -    (void)parser: (OFXMLParser*)parser
   didStartElement: (OFString*)name
@@ -70,8 +70,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param parser The parser which found the end of a tag
  * @param name The name of the tag which just ended
- * @param prefix The prefix of the tag which just ended or nil
- * @param ns The namespace of the tag which just ended or nil
+ * @param prefix The prefix of the tag which just ended or `nil`
+ * @param ns The namespace of the tag which just ended or `nil`
  */
 -  (void)parser: (OFXMLParser*)parser
   didEndElement: (OFString*)name
@@ -112,13 +112,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief This callback is called when the XML parser found an entity it
  *	  doesn't know.
  *
- * The callback is supposed to return a substitution for the entity or nil if
+ * The callback is supposed to return a substitution for the entity or `nil` if
  * it is not known to the callback as well, in which case an exception will be
  * risen.
  *
  * @param parser The parser which found an unknown entity
  * @param entity The name of the entity the XML parser didn't know
- * @return A substitution for the entity or nil
+ * @return A substitution for the entity or `nil`
  */
 -	(OFString*)parser: (OFXMLParser*)parser
   foundUnknownEntityNamed: (OFString*)entity;

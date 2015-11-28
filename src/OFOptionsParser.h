@@ -27,16 +27,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
 typedef struct of_options_parser_option_t {
-	/*! The short version (e.g. `-v`) of the option or `'\0'` for none */
+	/*! The short version (e.g. `-v`) of the option or `\0` for none. */
 	of_unichar_t shortOption;
 
 	/*!
-	 * The long version (e.g. `--verbose`) of the option or `nil` for none
+	 * The long version (e.g. `--verbose`) of the option or `nil` for none.
 	 */
 	OFString *_Nullable longOption;
 
 	/*!
-	 * Whether the option takes an argument
+	 * Whether the option takes an argument.
 	 *
 	 * 0 means it takes no argument.@n
 	 * 1 means it takes a required argument.@n
@@ -49,13 +49,13 @@ typedef struct of_options_parser_option_t {
 
 	/*!
 	 * An optional pointer to a bool that is set to whether the option has
-	 * been specified
+	 * been specified.
 	 */
 	bool *_Nullable isSpecifiedPtr;
 
 	/*!
 	 * An optional pointer to an @ref OFString* that is set to the argument
-	 * specified for the option or `nil` for no argument
+	 * specified for the option or `nil` for no argument.
 	 */
 	OFString *__autoreleasing _Nullable *_Nullable argumentPtr;
 } of_options_parser_option_t;
@@ -88,7 +88,7 @@ typedef struct of_options_parser_option_t {
  *
  * @param options An array of @ref of_options_parser_option_t specifying all
  *		  accepted options, terminated with an option whose short
- *		  option is `'\0'` and long option is `nil`.
+ *		  option is `\0` and long option is `nil`.
  *
  * @return A new, autoreleased OFOptionsParser
  */
@@ -100,7 +100,7 @@ typedef struct of_options_parser_option_t {
  *
  * @param options An array of @ref of_options_parser_option_t specifying all
  *		  accepted options, terminated with an option whose short
- *		  option is `'\0'` and long option is `nil`.
+ *		  option is `\0` and long option is `nil`.
  *
  * @return An initialized OFOptionsParser
  */
@@ -109,16 +109,16 @@ typedef struct of_options_parser_option_t {
 /*!
  * @brief Returns the next option.
  *
- * If the option is only available as a long option, '-' is returned.
+ * If the option is only available as a long option, `-` is returned.
  * Otherwise, the short option is returned, even if it was specified as a long
  * option.@n
- * If an unknown option is specified, '?' is returned.@n
- * If the argument for the option is missing, ':' is returned.@n
- * If there is an argument for the option even though it takes none, '=' is
+ * If an unknown option is specified, `?` is returned.@n
+ * If the argument for the option is missing, `:` is returned.@n
+ * If there is an argument for the option even though it takes none, `=` is
  * returned.@n
- * If all options have been parsed, `'\0'` is returned.
+ * If all options have been parsed, `\0` is returned.
  *
- * @note You need to call @ref nextOption repeatedly until it returns `'\0'` to
+ * @note You need to call @ref nextOption repeatedly until it returns `\0` to
  *	 make sure all options have been parsed, even if you only rely on the
  *	 optional pointers specified and don't do any parsing yourself.
  *
@@ -129,9 +129,9 @@ typedef struct of_options_parser_option_t {
 /*!
  * @brief Returns the last parsed option.
  *
- * If @ref nextOption returned '?' or ':', this returns the option which was
+ * If @ref nextOption returned `?` or `:`, this returns the option which was
  * unknown or for which the argument was missing.@n
- * If this returns '-', the last option is only available as a long option (see
+ * If this returns `-`, the last option is only available as a long option (see
  * @ref lastLongOption).
  *
  * @return The last parsed option
@@ -142,16 +142,16 @@ typedef struct of_options_parser_option_t {
  * @brief Returns the long option for the last parsed option, or `nil` if the
  *	  last parsed option was not passed as a long option by the user.
  *
- * In case @ref nextOption returned '?', this contains the unknown long
+ * In case @ref nextOption returned `?`, this contains the unknown long
  * option.@n
- * In case it returned ':', this contains the long option which is missing an
+ * In case it returned `:`, this contains the long option which is missing an
  * argument.@n
- * In case it returned '=', this contains the long option for which an argument
- * was specified even though the option takes no argument.
+ * In case it returned `=`, this contains the long option for which an
+ * argument was specified even though the option takes no argument.
  *
- * @warning Unlike @ref lastOption, which returns the short option even if the
- *	    user specified a long option, this only returns the long option if
- *	    it was actually specified as a long option by the user.
+ * @warning Unlike lastOption, which returns the short option even if the user
+ *	    specified a long option, this only returns the long option if it
+ *	    was actually specified as a long option by the user.
  *
  * @return The last parsed long option or `nil`
  */

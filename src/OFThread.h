@@ -149,7 +149,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 
 #ifdef OF_HAVE_THREADS
 /*!
- * @brief Terminates the current thread, letting it return nil.
+ * @brief Terminates the current thread, letting it return `nil`.
  */
 + (void)terminate OF_NO_RETURN;
 
@@ -208,7 +208,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 - (OFRunLoop*)runLoop;
 
 /*!
- * @brief Returns the name of the thread or nil if none has been set.
+ * @brief Returns the name of the thread or `nil` if none has been set.
  *
  * @return The name of the thread or nik if none has been set
  */

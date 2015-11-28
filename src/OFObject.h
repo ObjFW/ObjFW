@@ -405,8 +405,8 @@ OF_ROOT_CLASS
  * @brief Allocates memory for an instance of the class and sets up the memory
  *	  pool for the object.
  *
- * This method will never return nil, instead, it will throw an
- * OFAllocFailedException.
+ * This method will never return `nil`, instead, it will throw an
+ * @ref OFAllocFailedException.
  *
  * @return The allocated object
  */
@@ -471,7 +471,7 @@ OF_ROOT_CLASS
  *
  * @param selector The selector for which the method should be returned
  * @return The implementation of the instance method for the specified selector
- *	   or nil if it isn't implemented
+ *	   or `nil` if it isn't implemented
  */
 + (nullable IMP)instanceMethodForSelector: (SEL)selector;
 
@@ -524,7 +524,7 @@ OF_ROOT_CLASS
  * @param selector The selector for the new method
  * @param implementation The implementation for the new method
  * @param typeEncoding The type encoding for the new method
- * @return The old implementation or nil if the method was added
+ * @return The old implementation or `nil` if the method was added
  */
 + (nullable IMP)replaceClassMethod: (SEL)selector
 		withImplementation: (IMP)implementation
@@ -540,7 +540,7 @@ OF_ROOT_CLASS
  * @param selector The selector for the new method
  * @param implementation The implementation for the new method
  * @param typeEncoding The type encoding for the new method
- * @return The old implementation or nil if the method was added
+ * @return The old implementation or `nil` if the method was added
  */
 + (nullable IMP)replaceInstanceMethod: (SEL)selector
 		   withImplementation: (IMP)implementation
@@ -603,9 +603,9 @@ OF_ROOT_CLASS
  * @code
  *   self = [super init]
  * @endcode
- * before they do any initialization themselves. @ref init may never return nil,
- * instead an exception (for example OFInitializationFailedException) should be
- * thrown.
+ * before they do any initialization themselves. @ref init may never return
+ * `nil`, instead an exception (for example @ref
+ * OFInitializationFailedException) should be thrown.
  *
  * @return An initialized object
  */
@@ -869,8 +869,9 @@ OF_ROOT_CLASS
  *	  @ref resolveInstanceMethod: returned false. It should return a target
  *	  to which the message should be forwarded.
  *
- * @note When the message should not be forwarded, you should not return nil,
- *	 but instead return the result of the superclass!
+ * @note When the message should not be forwarded, you should not return `nil`,
+ *	 but instead return the result of `[super
+ *	 forwardingTargetForSelector: selector]`.
  *
  * @return The target to forward the message to
  */

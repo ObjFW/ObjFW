@@ -52,9 +52,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFEnumerator: OFObject
 #endif
 /*!
- * @brief Returns the next object or nil if there is none left.
+ * @brief Returns the next object or `nil` if there is none left.
  *
- * @return The next object or nil if there is none left
+ * @return The next object or `nil` if there is none left
  */
 - (nullable ObjectType)nextObject;
 

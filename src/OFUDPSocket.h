@@ -44,7 +44,7 @@ typedef struct {
  * @param host The host that has been resolved
  * @param port The port of the host / port pair
  * @param address The address of the resolved host / port pair
- * @param exception An exception which occurred while resolving or nil on
+ * @param exception An exception which occurred while resolving or `nil` on
  *		    success
  */
 typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
@@ -58,7 +58,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
  * @param buffer The buffer the packet has been written to
  * @param length The length of the packet
  * @param sender The address of the sender of the packet
- * @param exception An exception which occurred while receiving or nil on
+ * @param exception An exception which occurred while receiving or `nil` on
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */

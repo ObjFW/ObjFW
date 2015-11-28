@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * @param arguments The arguments to pass to the program, or nil
+ * @param arguments The arguments to pass to the program, or `nil`
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)
@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
- * @param arguments The arguments to pass to the program, or nil
+ * @param arguments The arguments to pass to the program, or `nil`
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)
@@ -99,12 +99,12 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
- * @param arguments The arguments to pass to the program, or nil
- * @param environment The environment to pass to the program, or nil. If it is
- *		      non-nil, the passed dictionary will be used to override
- *		      the environment. If you want to add to the existing
- *		      environment, you need to get the existing environment
- *		      first, copy it, modify it and then pass it.
+ * @param arguments The arguments to pass to the program, or `nil`
+ * @param environment The environment to pass to the program, or `nil`. If it
+ *		      is not `nil`, the passed dictionary will be used to
+ *		      override the environment. If you want to add to the
+ *		      existing environment, you need to get the existing
+ *		      environment first, copy it, modify it and then pass it.
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)
@@ -130,7 +130,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param program The program to execute. If it does not start with a slash, the
  *		  search path specified in PATH is used.
- * @param arguments The arguments to pass to the program, or nil
+ * @param arguments The arguments to pass to the program, or `nil`
  * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program
@@ -144,7 +144,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
- * @param arguments The arguments to pass to the program, or nil
+ * @param arguments The arguments to pass to the program, or `nil`
  * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program
@@ -159,12 +159,12 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @param programName The program name for the program to invoke (argv[0]).
  *		      Usually, this is equal to program.
- * @param arguments The arguments to pass to the program, or nil
- * @param environment The environment to pass to the program, or nil. If it is
- *		      non-nil, the passed dictionary will be used to override
- *		      the environment. If you want to add to the existing
- *		      environment, you need to get the existing environment
- *		      first, copy it, modify it and then pass it.
+ * @param arguments The arguments to pass to the program, or `nil`
+ * @param environment The environment to pass to the program, or `nil`. If it
+ *		      is not `nil`, the passed dictionary will be used to
+ *		      override the environment. If you want to add to the
+ *		      existing environment, you need to get the existing
+ *		      environment first, copy it, modify it and then pass it.
  * @return An initialized OFProcess.
  */
 - initWithProgram: (OFString*)program

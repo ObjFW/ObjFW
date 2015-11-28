@@ -44,7 +44,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream The stream on which data was read
  * @param buffer A buffer with the data that has been read
  * @param length The length of the data that has been read
- * @param exception An exception which occurred while reading or nil on success
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
@@ -54,9 +55,10 @@ typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
  * @brief A block which is called when a line was read from the stream.
  *
  * @param stream The stream on which a line was read
- * @param line The line which has been read or nil when the end of stream
+ * @param line The line which has been read or `nil` when the end of stream
  *	       occurred
- * @param exception An exception which occurred while reading or nil on success
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
@@ -562,10 +564,10 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 /*!
  * @brief Reads a string with the specified length from the stream.
  *
- * If a \\0 appears in the stream, the string will be truncated at the \\0 and
+ * If `\0` appears in the stream, the string will be truncated at the `\0` and
  * the rest of the bytes of the string will be lost. This way, reading from the
- * stream will not break because of a \\0 because the specified number of bytes
- * is still being read and only the string gets truncated.
+ * stream will not break because of a `\0` because the specified number of
+ * bytes is still being read and only the string gets truncated.
  *
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
@@ -578,10 +580,10 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 /*!
  * @brief Reads a string with the specified encoding and length from the stream.
  *
- * If a \\0 appears in the stream, the string will be truncated at the \\0 and
- * the rest of the bytes of the string will be lost. This way, reading from the
- * stream will not break because of a \\0 because the specified number of bytes
- * is still being read and only the string gets truncated.
+ * If a `\0` appears in the stream, the string will be truncated at the `\0`
+ * and the rest of the bytes of the string will be lost. This way, reading from
+ * the stream will not break because of a `\0` because the specified number of
+ * bytes is still being read and only the string gets truncated.
  *
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
@@ -594,26 +596,26 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 			 encoding: (of_string_encoding_t)encoding;
 
 /*!
- * @brief Reads until a newline, \\0 or end of stream occurs.
+ * @brief Reads until a newline, `\0` or end of stream occurs.
  *
- * @return The line that was read, autoreleased, or nil if the end of the
+ * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
 - (nullable OFString*)readLine;
 
 /*!
- * @brief Reads with the specified encoding until a newline, \\0 or end of
+ * @brief Reads with the specified encoding until a newline, `\0` or end of
  *	  stream occurs.
  *
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or nil if the end of the
+ * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
 - (nullable OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 #ifdef OF_HAVE_SOCKETS
 /*!
- * @brief Asyncronously reads until a newline, \\0, end of stream or an
+ * @brief Asyncronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
@@ -632,8 +634,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 		       selector: (SEL)selector;
 
 /*!
- * @brief Asyncronously reads with the specified encoding until a newline, \\0,
- *	  end of stream or an exception occurs.
+ * @brief Asyncronously reads with the specified encoding until a newline,
+ *	  `\0`, end of stream or an exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
  *	 valid file descriptor in order for this to work!
@@ -654,7 +656,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 # ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asyncronously reads until a newline, \\0, end of stream or an
+ * @brief Asyncronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
@@ -669,8 +671,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
 
 /*!
- * @brief Asyncronously reads with the specified encoding until a newline, \\0,
- *	  end of stream or an exception occurs.
+ * @brief Asyncronously reads with the specified encoding until a newline,
+ *	  `\0`, end of stream or an exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
  *	 valid file descriptor in order for this to work!
@@ -688,66 +690,66 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
 
 /*!
- * @brief Tries to read a line from the stream (see readLine) and returns nil if
- *	  no complete line has been received yet.
+ * @brief Tries to read a line from the stream (see readLine) and returns `nil`
+ *	  if no complete line has been received yet.
  *
- * @return The line that was read, autoreleased, or nil if the line is not
+ * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
  */
 - (nullable OFString*)tryReadLine;
 
 /*!
  * @brief Tries to read a line from the stream with the specified encoding (see
- *	  @ref readLineWithEncoding:) and returns nil if no complete line has
+ *	  @ref readLineWithEncoding:) and returns `nil` if no complete line has
  *	  been received yet.
  *
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or nil if the line is not
+ * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
  */
 - (nullable OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
 
 /*!
- * @brief Reads until the specified string or \\0 is found or the end of stream
- *	  occurs.
+ * @brief Reads until the specified string or `\0` is found or the end of
+ *	  stream occurs.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or nil if the end of the
+ * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
 - (nullable OFString*)readTillDelimiter: (OFString*)delimiter;
 
 /*!
- * @brief Reads until the specified string or \\0 is found or the end of stream
- *	  occurs.
+ * @brief Reads until the specified string or `\0` is found or the end of
+ *	  stream occurs.
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or nil if the end of the
+ * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
 - (nullable OFString*)readTillDelimiter: (OFString*)delimiter
 			       encoding: (of_string_encoding_t)encoding;
 
 /*!
- * @brief Tries to reads until the specified string or \\0 is found or the end
- *	  of stream (see @ref readTillDelimiter:) and returns nil if not enough
- *	  data has been received yet.
+ * @brief Tries to reads until the specified string or `\0` is found or the end
+ *	  of stream (see @ref readTillDelimiter:) and returns `nil` if not
+ *	  enough data has been received yet.
  *
  * @param delimiter The delimiter
- * @return The line that was read, autoreleased, or nil if the end of the
+ * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
 - (nullable OFString*)tryReadTillDelimiter: (OFString*)delimiter;
 
 /*!
- * @brief Tries to read until the specified string or \\0 is found or the end
- *	  of stream occurs (see @ref readTillDelimiter:encoding:) and
- *	  returns nil if not enough data has been received yet.
+ * @brief Tries to read until the specified string or `\0` is found or the end
+ *	  of stream occurs (see @ref readTillDelimiter:encoding:) and returns
+ *	  `nil` if not enough data has been received yet.
  *
  * @param delimiter The delimiter
  * @param encoding The encoding used by the stream
- * @return The line that was read, autoreleased, or nil if the end of the
+ * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
 - (nullable OFString*)tryReadTillDelimiter: (OFString*)delimiter

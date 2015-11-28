@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param socket The socket which connected
  * @param exception An exception which occurred while connecting the socket or
- *		    nil on success
+ *		    `nil` on success
  */
 typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
     OFException *_Nullable exception);
@@ -42,7 +42,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
  * @param socket The socket which accepted the connection
  * @param acceptedSocket The socket which has been accepted
  * @param exception An exception which occurred while accepting the socket or
- *		    nil on success
+ *		    `nil` on success
  * @return A bool whether the same block should be used for the next incoming
  *	   connection
  */
