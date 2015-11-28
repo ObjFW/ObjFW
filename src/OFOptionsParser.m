@@ -19,9 +19,24 @@
 #import "OFOptionsParser.h"
 #import "OFApplication.h"
 #import "OFArray.h"
+#import "OFMapTable.h"
+
+#import "OFInvalidArgumentException.h"
+
+static uint32_t
+stringHash(void *value)
+{
+	return [(OFString*)value hash];
+}
+
+static bool
+stringEqual(void *value1, void *value2)
+{
+	return [(OFString*)value1 isEqual: (OFString*)value2];
+}
 
 @implementation OFOptionsParser
-+ (instancetype)parserWithOptions: (OFString*)options
++ (instancetype)parserWithOptions: (const of_options_parser_option_t*)options
 {
 	return [[[self alloc] initWithOptions: options] autorelease];
 }
@@ -31,16 +46,81 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithOptions: (OFString*)options
+- initWithOptions: (const of_options_parser_option_t*)options
 {
 	self = [super init];
 
 	@try {
-		_options = [self allocMemoryWithSize: sizeof(of_unichar_t)
-					       count: [options length] + 1];
-		[options getCharacters: _options
-			       inRange: of_range(0, [options length])];
-		_options[[options length]] = 0;
+		size_t count = 0;
+		const of_options_parser_option_t *iter;
+		of_options_parser_option_t *iter2;
+		const of_map_table_functions_t keyFunctions = {
+			.hash = stringHash,
+			.equal = stringEqual
+		};
+		const of_map_table_functions_t valueFunctions = { NULL };
+
+		/* Count, sanity check and initialize pointers */
+		for (iter = options;
+		    iter->shortOption != '\0' || iter->longOption != nil;
+		    iter++) {
+			if (iter->hasArgument < -1 || iter->hasArgument > 1)
+				@throw [OFInvalidArgumentException exception];
+
+			if (iter->shortOption != '\0' &&
+			    iter->hasArgument == -1)
+				@throw [OFInvalidArgumentException exception];
+
+			if (iter->hasArgument == 0 && iter->argumentPtr != NULL)
+				@throw [OFInvalidArgumentException exception];
+
+			if (iter->isSpecifiedPtr)
+				*iter->isSpecifiedPtr = false;
+			if (iter->argumentPtr)
+				*iter->argumentPtr = nil;
+
+			count++;
+		}
+
+		_longOptions = [[OFMapTable alloc]
+		    initWithKeyFunctions: keyFunctions
+			  valueFunctions: valueFunctions];
+		_options = [self
+		    allocMemoryWithSize: sizeof(*_options)
+				  count: count + 1];
+
+		for (iter = options, iter2 = _options;
+		    iter->shortOption != '\0' || iter->longOption != nil;
+		    iter++, iter2++) {
+			iter2->shortOption = iter->shortOption;
+			iter2->longOption = nil;
+			iter2->hasArgument = iter->hasArgument;
+			iter2->isSpecifiedPtr = iter->isSpecifiedPtr;
+			iter2->argumentPtr = iter->argumentPtr;
+
+			@try {
+				iter2->longOption = [iter->longOption copy];
+
+				if ([_longOptions
+				    valueForKey: iter2->longOption] != NULL)
+					@throw [OFInvalidArgumentException
+					    exception];
+
+				[_longOptions setValue: iter2
+						forKey: iter2->longOption];
+			} @catch (id e) {
+				/*
+				 * Make sure we are in a consistent state where
+				 * dealloc works.
+				 */
+				[iter2->longOption release];
+
+				iter2->shortOption = '\0';
+				iter2->longOption = nil;
+
+				@throw e;
+			}
+		}
 
 		_arguments = [[OFApplication arguments] retain];
 	} @catch (id e) {
@@ -53,6 +133,16 @@
 
 - (void)dealloc
 {
+	of_options_parser_option_t *iter;
+
+	[_longOptions release];
+
+	if (_options != NULL)
+		for (iter = _options;
+		    iter->shortOption != '\0' || iter->longOption != nil;
+		    iter++)
+			[iter->longOption release];
+
 	[_arguments release];
 	[_argument release];
 
@@ -61,11 +151,16 @@
 
 - (of_unichar_t)nextOption
 {
-	of_unichar_t *options;
+	of_options_parser_option_t *iter;
 	OFString *argument;
 
 	if (_done || _index >= [_arguments count])
 		return '\0';
+
+	[_lastLongOption release];
+	[_argument release];
+	_lastLongOption = nil;
+	_argument = nil;
 
 	argument = [_arguments objectAtIndex: _index];
 
@@ -82,6 +177,49 @@
 			return '\0';
 		}
 
+		if ([argument hasPrefix: @"--"]) {
+			void *pool = objc_autoreleasePoolPush();
+			size_t pos;
+			of_options_parser_option_t *option;
+
+			_lastOption = '-';
+			_index++;
+
+			if ((pos = [argument rangeOfString: @"="].location) !=
+			    OF_NOT_FOUND) {
+				of_range_t range = of_range(pos + 1,
+				    [argument length] - pos - 1);
+				_argument = [[argument
+				    substringWithRange: range] copy];
+			} else
+				pos = [argument length];
+
+			_lastLongOption = [[argument substringWithRange:
+			    of_range(2, pos - 2)] copy];
+
+			objc_autoreleasePoolPop(pool);
+
+			option = [_longOptions valueForKey: _lastLongOption];
+			if (option == nil)
+				return '?';
+
+			if (option->hasArgument == 1 && _argument == nil)
+				return ':';
+			if (option->hasArgument == 0 && _argument != nil)
+				return '=';
+
+			if (option->isSpecifiedPtr != NULL)
+				*option->isSpecifiedPtr = true;
+			if (option->argumentPtr != NULL)
+				*option->argumentPtr =
+				    [[_argument copy] autorelease];
+
+			if (option->shortOption != '\0')
+				_lastOption = option->shortOption;
+
+			return _lastOption;
+		}
+
 		_subIndex = 1;
 	}
 
@@ -92,13 +230,11 @@
 		_subIndex = 0;
 	}
 
-	for (options = _options; *options != 0; options++) {
-		if (_lastOption == *options) {
-			if (options[1] != ':') {
-				[_argument release];
-				_argument = nil;
+	for (iter = _options;
+	    iter->shortOption != '\0' || iter->longOption != nil; iter++) {
+		if (iter->shortOption == _lastOption) {
+			if (iter->hasArgument == 0)
 				return _lastOption;
-			}
 
 			if (_index >= [_arguments count])
 				return ':';
@@ -107,8 +243,13 @@
 			argument = [argument substringWithRange:
 			    of_range(_subIndex, [argument length] - _subIndex)];
 
-			[_argument release];
 			_argument = [argument copy];
+
+			if (iter->isSpecifiedPtr != NULL)
+				*iter->isSpecifiedPtr = true;
+			if (iter->argumentPtr != NULL)
+				*iter->argumentPtr =
+				    [[_argument copy] autorelease];
 
 			_index++;
 			_subIndex = 0;
@@ -125,9 +266,14 @@
 	return _lastOption;
 }
 
+- (OFString*)lastLongOption
+{
+	OF_GETTER(_lastLongOption, true)
+}
+
 - (OFString*)argument
 {
-	return [[_argument copy] autorelease];
+	OF_GETTER(_argument, true)
 }
 
 - (OFArray*)remainingArguments

@@ -213,17 +213,28 @@ help(OFStream *stream, bool full, int status)
 
 - (void)applicationDidFinishLaunching
 {
-	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"b:chH:m:o:OP:qv"];
+	OFString *outputPath;
+	const of_options_parser_option_t options[] = {
+		{ 'b', @"body",	1, NULL, NULL },
+		{ 'c', @"continue", 0, &_continue, NULL },
+		{ 'h', @"help",	0, NULL, NULL },
+		{ 'H', @"header", 1, NULL, NULL },
+		{ 'm', @"method", 1, NULL, NULL },
+		{ 'o', @"output", 1, NULL, &outputPath },
+		{ 'O', @"detect-filename", 0, &_detectFileName, NULL },
+		{ 'P', @"socks5-proxy", 1, NULL, NULL },
+		{ 'q', @"quiet", 0, &_quiet, NULL },
+		{ 'v', @"verbose", 0, &_verbose, NULL },
+		{ '\0', nil, 0, NULL, NULL }
+	};
+	OFOptionsParser *optionsParser = [OFOptionsParser
+	    parserWithOptions: options];
 	of_unichar_t option;
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'b':
 			[self setBody: [optionsParser argument]];
-			break;
-		case 'c':
-			_continue = true;
 			break;
 		case 'h':
 			help(of_stdout, true, 0);
@@ -234,36 +245,49 @@ help(OFStream *stream, bool full, int status)
 		case 'm':
 			[self setMethod: [optionsParser argument]];
 			break;
-		case 'o':
-			[_outputPath release];
-			_outputPath = [[optionsParser argument] retain];
-			break;
-		case 'O':
-			_detectFileName = true;
-			break;
 		case 'P':
 			[self setProxy: [optionsParser argument]];
 			break;
-		case 'q':
-			_quiet = true;
-			break;
-		case 'v':
-			_verbose = true;
-			break;
 		case ':':
-			[of_stderr writeFormat: @"%@: Argument for option -%C "
-						@"missing\n",
-						[OFApplication programName],
-						[optionsParser lastOption]];
+			if ([optionsParser lastLongOption] != nil)
+				[of_stderr writeFormat:
+				    @"%@: Argument for option --%@ missing\n",
+				    [OFApplication programName],
+				    [optionsParser lastLongOption]];
+			else
+				[of_stderr writeFormat:
+				    @"%@: Argument for option -%C missing\n",
+				    [OFApplication programName],
+				    [optionsParser lastOption]];
+
 			[OFApplication terminateWithStatus: 1];
-		default:
-			[of_stderr writeFormat: @"%@: Unknown option: -%C\n",
+			break;
+		case '=':
+			[of_stderr writeFormat: @"%@: Option --%@ takes no "
+						@"argument\n",
 						[OFApplication programName],
-						[optionsParser lastOption]];
+						[optionsParser lastLongOption]];
+
 			[OFApplication terminateWithStatus: 1];
+			break;
+		case '?':
+			if ([optionsParser lastLongOption] != nil)
+				[of_stderr writeFormat:
+				    @"%@: Unknown option: --%@\n",
+				    [OFApplication programName],
+				    [optionsParser lastLongOption]];
+			else
+				[of_stderr writeFormat:
+				    @"%@: Unknown option: -%C\n",
+				    [OFApplication programName],
+				    [optionsParser lastOption]];
+
+			[OFApplication terminateWithStatus: 1];
+			break;
 		}
 	}
 
+	_outputPath = [outputPath copy];
 	_URLs = [[optionsParser remainingArguments] retain];
 
 	if ([_URLs count] < 1)

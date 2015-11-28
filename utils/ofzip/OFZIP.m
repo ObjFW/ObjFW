@@ -108,8 +108,18 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 @implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
+	const of_options_parser_option_t options[] = {
+		{ 'f', @"force", 0, NULL, NULL },
+		{ 'h', @"help", 0, NULL, NULL },
+		{ 'l', @"list", 0, NULL, NULL },
+		{ 'n', @"no-clobber", 0, NULL, NULL },
+		{ 'q', @"quiet", 0, NULL, NULL },
+		{ 'v', @"verbose", 0, NULL, NULL },
+		{ 'x', @"extract", 0, NULL, NULL },
+		{ '\0', nil, 0, NULL, NULL }
+	};
 	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: @"fhlnqvx"];
+	    [OFOptionsParser parserWithOptions: options];
 	of_unichar_t option, mode = '\0';
 	OFArray OF_GENERIC(OFString*) *remainingArguments, *files;
 	OFZIPArchive *archive;
@@ -150,10 +160,26 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		case 'h':
 			help(of_stdout, true, 0);
 			break;
-		default:
-			[of_stderr writeFormat: @"%@: Unknown option: -%C\n",
+		case '=':
+			[of_stderr writeFormat: @"%@: Option --%@ takes no "
+						@"argument!\n",
 						[OFApplication programName],
-						[optionsParser lastOption]];
+						[optionsParser lastLongOption]];
+
+			[OFApplication terminateWithStatus: 1];
+			break;
+		default:
+			if ([optionsParser lastLongOption] != nil)
+				[of_stderr writeFormat:
+				    @"%@: Unknown option: --%@\n",
+				    [OFApplication programName],
+				    [optionsParser lastLongOption]];
+			else
+				[of_stderr writeFormat:
+				    @"%@: Unknown option: -%C\n",
+				    [OFApplication programName],
+				    [optionsParser lastOption]];
+
 			[OFApplication terminateWithStatus: 1];
 		}
 	}
@@ -359,8 +385,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
 
-		if ([fileManager fileExistsAtPath: outFileName] &&
-		    _override != 1) {
+		if (_override != 1 &&
+		    [fileManager fileExistsAtPath: outFileName]) {
 			OFString *line;
 
 			if (_override == -1) {
