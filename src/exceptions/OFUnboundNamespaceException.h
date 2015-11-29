@@ -33,7 +33,11 @@
 /*!
  * The unbound namespace.
  */
+#ifndef __cplusplus
 @property (readonly, copy) OFString *namespace;
+#else
+@property (readonly, copy, getter=namespace) OFString *namespace_;
+#endif
 
 /*!
  * The element in which the namespace was not bound.

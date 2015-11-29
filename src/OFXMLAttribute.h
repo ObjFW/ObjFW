@@ -39,7 +39,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The namespace of the attribute.
  */
+#ifndef __cplusplus
 @property OF_NULLABLE_PROPERTY (readonly, copy) OFString *namespace;
+#else
+@property OF_NULLABLE_PROPERTY (readonly, copy, getter=namespace)
+    OFString *namespace_;
+#endif
 
 /*!
  * @brief Creates a new XML attribute.
