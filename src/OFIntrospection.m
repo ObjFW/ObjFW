@@ -26,6 +26,8 @@
 #import "OFInitializationFailedException.h"
 
 @implementation OFMethod
+@synthesize selector = _selector, name = _name, typeEncoding = _typeEncoding;
+
 #if defined(OF_OBJFW_RUNTIME)
 - (instancetype)OF_initWithMethod: (struct objc_method*)method
 {
@@ -74,21 +76,6 @@
 	[_name release];
 
 	[super dealloc];
-}
-
-- (SEL)selector
-{
-	return _selector;
-}
-
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
-}
-
-- (const char*)typeEncoding
-{
-	return _typeEncoding;
 }
 
 - (OFString*)description
@@ -146,6 +133,9 @@
 @end
 
 @implementation OFProperty
+@synthesize name = _name, attributes = _attributes;
+@synthesize getter = _getter, setter = _setter;
+
 #if defined(OF_OBJFW_RUNTIME)
 - (instancetype)OF_initWithProperty: (struct objc_property*)property
 {
@@ -316,26 +306,6 @@
 	[super dealloc];
 }
 
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
-}
-
-- (unsigned)attributes
-{
-	return _attributes;
-}
-
-- (OFString*)getter
-{
-	OF_GETTER(_getter, true)
-}
-
-- (OFString*)setter
-{
-	OF_GETTER(_setter, true)
-}
-
 - (OFString*)description
 {
 	return [OFString
@@ -388,6 +358,8 @@
 @end
 
 @implementation OFInstanceVariable
+@synthesize name = _name, offset = _offset, typeEncoding = _typeEncoding;
+
 #if defined(OF_OBJFW_RUNTIME)
 - (instancetype)OF_initWithIvar: (struct objc_ivar*)ivar
 {
@@ -437,21 +409,6 @@
 	[super dealloc];
 }
 
-- (OFString*)name
-{
-	OF_GETTER(_name, true);
-}
-
-- (ptrdiff_t)offset
-{
-	return _offset;
-}
-
-- (const char*)typeEncoding
-{
-	return _typeEncoding;
-}
-
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
@@ -461,6 +418,9 @@
 @end
 
 @implementation OFIntrospection
+@synthesize classMethods = _classMethods, instanceMethods = _instanceMethods;
+@synthesize properties = _properties, instanceVariables = _instanceVariables;
+
 + (instancetype)introspectionWithClass: (Class)class
 {
 	return [[[self alloc] initWithClass: class] autorelease];
@@ -621,25 +581,5 @@
 	[_instanceVariables release];
 
 	[super dealloc];
-}
-
-- (OFArray*)classMethods
-{
-	OF_GETTER(_classMethods, true)
-}
-
-- (OFArray*)instanceMethods
-{
-	OF_GETTER(_instanceMethods, true)
-}
-
-- (OFArray*)properties
-{
-	OF_GETTER(_properties, true)
-}
-
-- (OFArray*)instanceVariables
-{
-	OF_GETTER(_instanceVariables, true)
 }
 @end

@@ -28,9 +28,10 @@
 	id <OFLocking> _lock;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The lock which could not be locked.
+ */
 @property (readonly, retain) id <OFLocking> lock;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased lock failed exception.
@@ -47,11 +48,4 @@
  * @return An initialized lock failed exception
  */
 - initWithLock: (id <OFLocking>)lock;
-
-/*!
- * @brief Returns the lock which could not be locked.
- *
- * @return The lock which could not be locked
- */
-- (id <OFLocking>)lock;
 @end

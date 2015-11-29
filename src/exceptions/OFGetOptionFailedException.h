@@ -30,10 +30,15 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The stream for which the option could not be retrieved.
+ */
 @property (readonly, retain) OFStream *stream;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased get option failed exception.
@@ -54,18 +59,4 @@
  */
 - initWithStream: (OFStream*)stream
 	   errNo: (int)errNo;
-
-/*!
- * @brief Returns the stream for which the option could not be gotten.
- *
- * @return The stream for which the option could not be gotten
- */
-- (OFStream*)stream;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

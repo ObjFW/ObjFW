@@ -28,10 +28,15 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The path of the item which could not be removed.
+ */
 @property (readonly, copy) OFString *path;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased remove failed exception.
@@ -52,18 +57,4 @@
  */
 - initWithPath: (OFString*)path
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns the path of the item which could not be removed.
- *
- * @return The path of the item which could not be removed
- */
-- (OFString*)path;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

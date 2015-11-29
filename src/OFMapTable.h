@@ -77,6 +77,16 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
 }
 
 /*!
+ * The key functions used by the map table.
+ */
+@property (readonly) of_map_table_functions_t keyFunctions;
+
+/*!
+ * The value functions used by the map table.
+ */
+@property (readonly) of_map_table_functions_t valueFunctions;
+
+/*!
  * @brief Creates a new OFMapTable with the specified key and value functions.
  *
  * @param keyFunctions A structure of functions for handling keys
@@ -214,20 +224,6 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
  */
 - (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block;
 #endif
-
-/*!
- * @brief Returns the key functions used by the map table.
- *
- * @return The key functions used by the map table
- */
-- (of_map_table_functions_t)keyFunctions;
-
-/*!
- * @brief Returns the value functions used by the map table.
- *
- * @return The value functions used by the map table
- */
-- (of_map_table_functions_t)valueFunctions;
 @end
 
 /*!

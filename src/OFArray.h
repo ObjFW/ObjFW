@@ -96,10 +96,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 #endif
     OFObject <OFCopying, OFMutableCopying, OFCollection, OFSerialization,
     OFJSONRepresentation, OFMessagePackRepresentation>
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) size_t count;
-#endif
-
 /*!
  * @brief Creates a new OFArray.
  *

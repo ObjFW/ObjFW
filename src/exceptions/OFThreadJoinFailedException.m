@@ -21,6 +21,8 @@
 #import "OFThread.h"
 
 @implementation OFThreadJoinFailedException
+@synthesize thread = _thread;
+
 + (instancetype)exceptionWithThread: (OFThread*)thread
 {
 	return [[[self alloc] initWithThread: thread] autorelease];
@@ -52,10 +54,5 @@
 	return [OFString stringWithFormat:
 	    @"Joining a thread of type %@ failed! Most likely, another thread "
 	    @"already waits for the thread to join.", [_thread class]];
-}
-
-- (OFThread*)thread
-{
-	OF_GETTER(_thread, true)
 }
 @end

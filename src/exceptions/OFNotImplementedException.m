@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFNotImplementedException
+@synthesize selector = _selector, object = _object;
+
 + (instancetype)exceptionWithSelector: (SEL)selector
 			       object: (id)object
 {
@@ -55,15 +57,5 @@
 	return [OFString stringWithFormat:
 	    @"The selector %s is not understood by an object of type %@ or not "
 	    @"(fully) implemented!", sel_getName(_selector), [_object class]];
-}
-
-- (SEL)selector
-{
-	return _selector;
-}
-
-- (id)object
-{
-	OF_GETTER(_object, true)
 }
 @end

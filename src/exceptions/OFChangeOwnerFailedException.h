@@ -29,10 +29,25 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *path, *owner, *group;
+/*!
+ * The path of the item.
+ */
+@property (readonly, copy) OFString *path;
+
+/*!
+ * The new owner for the item.
+ */
+@property (readonly, copy) OFString *owner;
+
+/*!
+ * The new group for the item.
+ */
+@property (readonly, copy) OFString *group;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased change owner failed exception.
@@ -61,33 +76,5 @@
 	 owner: (OFString*)owner
 	 group: (OFString*)group
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns the path of the item.
- *
- * @return The path of the item
- */
-- (OFString*)path;
-
-/*!
- * @brief Returns the new owner for the item.
- *
- * @return The new owner for the item
- */
-- (OFString*)owner;
-
-/*!
- * @brief Returns the new group for the item.
- *
- * @return The new group for the item
- */
-- (OFString*)group;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end
 #endif

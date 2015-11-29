@@ -143,6 +143,19 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 }
 
 @implementation OFZIPArchiveEntry
+@synthesize fileName = _fileName, fileComment = _fileComment;
+@synthesize versionMadeBy = _versionMadeBy;
+@synthesize minVersionNeeded = _minVersionNeeded;
+@synthesize compressionMethod = _compressionMethod;
+@synthesize compressedSize = _compressedSize;
+@synthesize uncompressedSize = _uncompressedSize;
+@synthesize CRC32 = _CRC32;
+@synthesize versionSpecificAttributes = _versionSpecificAttributes;
+@synthesize OF_generalPurposeBitFlag = _generalPurposeBitFlag;
+@synthesize OF_lastModifiedFileTime = _lastModifiedFileTime;
+@synthesize OF_lastModifiedFileDate = _lastModifiedFileDate;
+@synthesize OF_localFileHeaderOffset = _localFileHeaderOffset;
+
 - (instancetype)OF_initWithStream: (OFStream*)stream
 {
 	self = [super init];
@@ -225,41 +238,6 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	[super dealloc];
 }
 
-- (OFString*)fileName
-{
-	OF_GETTER(_fileName, true)
-}
-
-- (OFString*)fileComment
-{
-	OF_GETTER(_fileComment, true)
-}
-
-- (uint16_t)versionMadeBy
-{
-	return _versionMadeBy;
-}
-
-- (uint16_t)minVersionNeeded
-{
-	return _minVersionNeeded;
-}
-
-- (uint16_t)compressionMethod
-{
-	return _compressionMethod;
-}
-
-- (uint64_t)compressedSize
-{
-	return _compressedSize;
-}
-
-- (uint64_t)uncompressedSize
-{
-	return _uncompressedSize;
-}
-
 - (OFDate*)modificationDate
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -282,16 +260,6 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	objc_autoreleasePoolPop(pool);
 
 	return [date autorelease];
-}
-
-- (uint32_t)CRC32
-{
-	return _CRC32;
-}
-
-- (uint32_t)versionSpecificAttributes
-{
-	return _versionSpecificAttributes;
 }
 
 - (OFDataArray*)extraField
@@ -323,25 +291,5 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
-}
-
-- (uint16_t)OF_generalPurposeBitFlag
-{
-	return _generalPurposeBitFlag;
-}
-
-- (uint16_t)OF_lastModifiedFileTime
-{
-	return _lastModifiedFileTime;
-}
-
-- (uint16_t)OF_lastModifiedFileDate
-{
-	return _lastModifiedFileDate;
-}
-
-- (uint64_t)OF_localFileHeaderOffset
-{
-	return _localFileHeaderOffset;
 }
 @end

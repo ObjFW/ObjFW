@@ -30,10 +30,15 @@
 	OFXMLParser *_parser;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The unbound prefix.
+ */
 @property (readonly, copy) OFString *prefix;
+
+/*!
+ * The parser which encountered the unbound prefix.
+ */
 @property (readonly, retain) OFXMLParser *parser;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased unbound prefix exception.
@@ -54,18 +59,4 @@
  */
 - initWithPrefix: (OFString*)prefix
 	  parser: (OFXMLParser*)parser;
-
-/*!
- * @brief Returns the unbound prefix.
- *
- * @return The unbound prefix
- */
-- (OFString*)prefix;
-
-/*!
- * @brief Returns the parser which encountered the unbound prefix.
- *
- * @return The parser which encountered the unbound prefix
- */
-- (OFXMLParser*)parser;
 @end

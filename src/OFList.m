@@ -28,6 +28,9 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFList
+@synthesize firstListObject = _firstListObject;
+@synthesize lastListObject = _lastListObject;
+
 + (instancetype)list
 {
 	return [[[self alloc] init] autorelease];
@@ -73,16 +76,6 @@
 		[iter->object release];
 
 	[super dealloc];
-}
-
-- (of_list_object_t*)firstListObject
-{
-	return _firstListObject;
-}
-
-- (of_list_object_t*)lastListObject
-{
-	return _lastListObject;
 }
 
 - (of_list_object_t*)appendObject: (id)object

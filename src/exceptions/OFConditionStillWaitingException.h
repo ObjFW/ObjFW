@@ -35,9 +35,10 @@
 	OFCondition *_condition;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The condition for which is still being waited.
+ */
 @property (readonly, retain) OFCondition *condition;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased condition still waiting exception.
@@ -54,11 +55,4 @@
  * @return An initialized condition still waiting exception
  */
 - initWithCondition: (OFCondition*)condition;
-
-/*!
- * @brief Return the condition for which is still being waited.
- *
- * @return The condition for which is still being waited
- */
-- (OFCondition*)condition;
 @end

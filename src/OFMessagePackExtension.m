@@ -23,6 +23,8 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFMessagePackExtension
+@synthesize type = _type, data = _data;
+
 + (instancetype)extensionWithType: (int8_t)type
 			     data: (OFDataArray*)data
 {
@@ -59,16 +61,6 @@
 	[_data release];
 
 	[super dealloc];
-}
-
-- (int8_t)type
-{
-	return _type;
-}
-
-- (OFDataArray*)data
-{
-	OF_GETTER(_data, true)
 }
 
 - (OFDataArray*)messagePackRepresentation

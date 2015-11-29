@@ -32,10 +32,15 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The socket which could not accept a connection.
+ */
 @property (readonly, retain) id socket;
+
+/*!
+ * @return The errno from when the exception was created.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased accept failed exception.
@@ -56,18 +61,4 @@
  */
 - initWithSocket: (id)socket
 	   errNo: (int)errNo;
-
-/*!
- * @brief Returns the socket which could not accept a connection.
- *
- * @return The socket which could not accept a connection
- */
-- (id)socket;
-
-/*!
- * @brief Returns the errno from when the exception was created.
- *
- * @return The errno from when the exception was created
- */
-- (int)errNo;
 @end

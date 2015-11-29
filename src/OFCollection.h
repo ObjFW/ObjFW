@@ -24,10 +24,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A protocol with methods common for all collections.
  */
 @protocol OFCollection <OFEnumerating, OFFastEnumeration>
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) size_t count;
-#endif
-
 /*!
  * @brief Returns the number of objects in the collection.
  *

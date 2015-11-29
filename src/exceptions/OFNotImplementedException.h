@@ -29,10 +29,15 @@
 	id _object;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The selector which is not or not fully implemented.
+ */
 @property (readonly) SEL selector;
+
+/*!
+ * The object which does not (fully) implement the selector.
+ */
 @property (readonly, retain) id object;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased not implemented exception.
@@ -53,18 +58,4 @@
  */
 - initWithSelector: (SEL)selector
 	    object: (id)object;
-
-/*!
- * @brief Returns the selector which is not or not fully implemented.
- *
- * @return The selector which is not or not fully implemented
- */
-- (SEL)selector;
-
-/*!
- * @brief Returns the object which does not (fully) implement the selector.
- *
- * @return The object which does not (fully) implement the selector
- */
-- (id)object;
 @end

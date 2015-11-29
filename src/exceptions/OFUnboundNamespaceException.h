@@ -30,14 +30,15 @@
 	OFXMLElement *_element;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-# ifdef __cplusplus
-@property (readonly, copy, getter=namespace) OFString *namespace_;
-# else
+/*!
+ * The unbound namespace.
+ */
 @property (readonly, copy) OFString *namespace;
-# endif
+
+/*!
+ * The element in which the namespace was not bound.
+ */
 @property (readonly, retain) OFXMLElement *element;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
@@ -58,18 +59,4 @@
  */
 - initWithNamespace: (OFString*)namespace_
 	    element: (OFXMLElement*)element;
-
-/*!
- * @brief Returns the unbound namespace.
- *
- * @return The unbound namespace
- */
-- (OFString*)namespace;
-
-/*!
- * @brief Returns the element in which the namespace was not bound.
- *
- * @return The element in which the namespace was not bound
- */
-- (OFXMLElement*)element;
 @end

@@ -27,14 +27,15 @@
 	size_t _requestedSize;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The size of the memory that could not be allocated.
+ */
 @property (readonly) size_t requestedSize;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased no memory exception.
  *
- * @param requestedSize The size of the memory that couldn't be allocated
+ * @param requestedSize The size of the memory that could not be allocated
  * @return A new, autoreleased no memory exception
  */
 + (instancetype)exceptionWithRequestedSize: (size_t)requestedSize;
@@ -42,15 +43,8 @@
 /*!
  * @brief Initializes an already allocated no memory exception.
  *
- * @param requestedSize The size of the memory that couldn't be allocated
+ * @param requestedSize The size of the memory that could not be allocated
  * @return An initialized no memory exception
  */
 - initWithRequestedSize: (size_t)requestedSize;
-
-/*!
- * @brief Returns the size of the memoory that couldn't be allocated.
- *
- * @return The size of the memoory that couldn't be allocated
- */
-- (size_t)requestedSize;
 @end

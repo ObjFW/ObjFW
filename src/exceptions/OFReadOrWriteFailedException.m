@@ -20,6 +20,9 @@
 #import "OFString.h"
 
 @implementation OFReadOrWriteFailedException
+@synthesize object = _object, requestedLength = _requestedLength;
+@synthesize errNo = _errNo;
+
 + (instancetype)exceptionWithObject: (id)object
 		    requestedLength: (size_t)requestedLength
 {
@@ -84,20 +87,5 @@
 		    @"Failed to read or write %zu bytes from / to an object of "
 		    @"type %@!",
 		    _requestedLength, [_object class]];
-}
-
-- (id)object
-{
-	OF_GETTER(_object, true)
-}
-
-- (size_t)requestedLength
-{
-	return _requestedLength;
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFStillLockedException
+@synthesize lock = _lock;
+
 + (instancetype)exceptionWithLock: (id <OFLocking>)lock
 {
 	return [[[self alloc] initWithLock: lock] autorelease];
@@ -50,10 +52,5 @@
 	else
 		return @"Deallocation of a lock even though it was still "
 		    @"locked!";
-}
-
-- (id <OFLocking>)lock
-{
-	OF_GETTER(_lock, true)
 }
 @end

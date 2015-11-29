@@ -29,9 +29,10 @@
 	OFXMLParser *_parser;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The parser which encountered malformed XML.
+ */
 @property (readonly, retain) OFXMLParser *parser;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased malformed XML exception.
@@ -48,11 +49,4 @@
  * @return An initialized malformed XML exception
  */
 - initWithParser: (OFXMLParser*)parser;
-
-/*!
- * @brief Returns the parser which encountered malformed XML.
- *
- * @return The parser which encountered malformed XML
- */
-- (OFXMLParser*)parser;
 @end

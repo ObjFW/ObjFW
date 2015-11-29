@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFConnectionFailedException
+@synthesize host = _host, port = _port, socket = _socket, errNo = _errNo;
+
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
 			   socket: (id)socket
@@ -103,25 +105,5 @@
 		    @"A connection to %@ on port %" @PRIu16 @" could not be "
 		    @"established in socket of type %@!",
 		    _host, _port, [_socket class]];
-}
-
-- (OFString*)host
-{
-	OF_GETTER(_host, true)
-}
-
-- (uint16_t)port
-{
-	return _port;
-}
-
-- (id)socket
-{
-	OF_GETTER(_socket, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

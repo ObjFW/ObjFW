@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFChangePermissionsFailedException
+@synthesize path = _path, permissions = _permissions, errNo = _errNo;
+
 + (instancetype)exceptionWithPath: (OFString*)path
 		      permissions: (mode_t)permissions
 			    errNo: (int)errNo
@@ -64,20 +66,5 @@
 	return [OFString stringWithFormat:
 	    @"Failed to change permissions of item at path %@ to %d: %@",
 	    _path, _permissions, of_strerror(_errNo)];
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (mode_t)permissions
-{
-	return _permissions;
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

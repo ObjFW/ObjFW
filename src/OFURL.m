@@ -30,6 +30,10 @@
 #import "OFOutOfMemoryException.h"
 
 @implementation OFURL
+@synthesize scheme = _scheme, host = _host, port = _port, user = _user;
+@synthesize password = _password, path = _path, parameters = _parameters;
+@synthesize query = _query, fragment = _fragment;
+
 + (instancetype)URL
 {
 	return [[[self alloc] init] autorelease];
@@ -364,96 +368,6 @@
 	}
 
 	return copy;
-}
-
-- (OFString*)scheme
-{
-	OF_GETTER(_scheme, true)
-}
-
-- (void)setScheme: (OFString*)scheme
-{
-	OF_SETTER(_scheme, scheme, true, 1)
-}
-
-- (OFString*)host
-{
-	OF_GETTER(_host, true)
-}
-
-- (void)setHost: (OFString*)host
-{
-	OF_SETTER(_host, host, true, 1)
-}
-
-- (uint16_t)port
-{
-	return _port;
-}
-
-- (void)setPort: (uint16_t)port
-{
-	_port = port;
-}
-
-- (OFString*)user
-{
-	OF_GETTER(_user, true)
-}
-
-- (void)setUser: (OFString*)user
-{
-	OF_SETTER(_user, user, true, 1)
-}
-
-- (OFString*)password
-{
-	OF_GETTER(_password, true)
-}
-
-- (void)setPassword: (OFString*)password
-{
-	OF_SETTER(_password, password, true, 1)
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (void)setPath: (OFString*)path
-{
-	OF_SETTER(_path, path, true, 1)
-}
-
-- (OFString*)parameters
-{
-	OF_GETTER(_parameters, true)
-}
-
-- (void)setParameters: (OFString*)parameters
-{
-	OF_SETTER(_parameters, parameters, true, 1)
-}
-
-- (OFString*)query
-{
-	OF_GETTER(_query, true)
-}
-
-- (void)setQuery: (OFString*)query
-{
-	OF_SETTER(_query, query, true, 1)
-}
-
-- (OFString*)fragment
-{
-	OF_GETTER(_fragment, true)
-}
-
-- (void)setFragment: (OFString*)fragment
-{
-	OF_SETTER(_fragment, fragment, true, 1)
 }
 
 - (OFString*)string

@@ -34,10 +34,15 @@ OF_ASSUME_NONNULL_BEGIN
 	OFDataArray *_data;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The MessagePack extension type.
+ */
 @property (readonly) int8_t type;
+
+/*!
+ * @return The data of the extension.
+ */
 @property (readonly, retain) OFDataArray *data;
-#endif
 
 /*!
  * @brief Creates a new OFMessagePackRepresentation with the specified type and
@@ -60,20 +65,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithType: (int8_t)type
 	  data: (OFDataArray*)data;
-
-/*!
- * @brief Returns the MessagePack extension type.
- *
- * @return The MessagePack extension type
- */
-- (int8_t)type;
-
-/*!
- * @brief Returns the data of the extension.
- *
- * @return The data of the extension
- */
-- (OFDataArray*)data;
 @end
 
 OF_ASSUME_NONNULL_END

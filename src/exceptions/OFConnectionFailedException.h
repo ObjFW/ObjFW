@@ -34,12 +34,25 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The socket which could not connect.
+ */
 @property (readonly, retain) id socket;
+
+/*!
+ * The host to which the connection failed.
+ */
 @property (readonly, copy) OFString *host;
+
+/*!
+ * The port on the host to which the connection failed.
+ */
 @property (readonly) uint16_t port;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased connection failed exception.
@@ -92,32 +105,4 @@
 	  port: (uint16_t)port
 	socket: (id)socket
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns the socket which could not connect.
- *
- * @return The socket which could not connect
- */
-- (id)socket;
-
-/*!
- * @brief Returns the host to which the connection failed.
- *
- * @return The host to which the connection failed
- */
-- (OFString*)host;
-
-/*!
- * @brief Returns the port on the host to which the connection failed.
- *
- * @return The port on the host to which the connection failed
- */
-- (uint16_t)port;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

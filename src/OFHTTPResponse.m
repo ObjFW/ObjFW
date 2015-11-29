@@ -28,6 +28,8 @@
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFHTTPResponse
+@synthesize statusCode = _statusCode, headers = _headers;
+
 - init
 {
 	self = [super init];
@@ -89,26 +91,6 @@
 {
 	return [OFString stringWithFormat: @"%u.%u", _protocolVersion.major,
 					   _protocolVersion.minor];
-}
-
-- (short)statusCode
-{
-	return _statusCode;
-}
-
-- (void)setStatusCode: (short)statusCode
-{
-	_statusCode = statusCode;
-}
-
-- (OFDictionary*)headers
-{
-	OF_GETTER(_headers, true)
-}
-
-- (void)setHeaders: (OFDictionary*)headers
-{
-	OF_SETTER(_headers, headers, true, 1)
 }
 
 - (OFString*)string

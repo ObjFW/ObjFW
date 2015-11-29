@@ -32,10 +32,20 @@
 	int _backLog, _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The socket which failed to listen.
+ */
 @property (readonly, retain) id socket;
-@property (readonly) int backLog, errNo;
-#endif
+
+/*!
+ * The requested back log.
+ */
+@property (readonly) int backLog;
+
+/*!
+ * The errno of the error that occurred.
+ */
+@property (readonly) int errNo;
 
 /*!
  * @brief Creates a new, autoreleased listen failed exception.
@@ -60,25 +70,4 @@
 - initWithSocket: (id)socket
 	 backLog: (int)backLog
 	   errNo: (int)errNo;
-
-/*!
- * @brief Returns the socket which failed to listen.
- *
- * @return The socket which failed to listen
- */
-- (id)socket;
-
-/*!
- * @brief Returns the requested back log.
- *
- * @return The requested back log
- */
-- (int)backLog;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

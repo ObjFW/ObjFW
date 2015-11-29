@@ -56,15 +56,6 @@ OF_ASSUME_NONNULL_BEGIN
  *	  implementing TLS.
  */
 @protocol OFTLSSocket
-#ifdef OF_HAVE_PROPERTIES
-@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocketDelegate> delegate;
-@property OF_NULLABLE_PROPERTY (copy)
-    OFString *certificateFile, *privateKeyFile;
-@property OF_NULLABLE_PROPERTY (assign) const char *privateKeyPassphrase;
-@property (getter=isCertificateVerificationEnabled)
-    bool certificateVerificationEnabled;
-#endif
-
 /*!
  * @brief Initializes the TLS socket with the specified TCP socket as its
  *	  underlying socket.

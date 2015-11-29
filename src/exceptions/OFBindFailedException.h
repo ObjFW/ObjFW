@@ -34,12 +34,25 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The host on which binding failed.
+ */
 @property (readonly, copy) OFString *host;
+
+/*!
+ * The port on which binding failed.
+ */
 @property (readonly) uint16_t port;
+
+/*!
+ * The socket which could not be bound.
+ */
 @property (readonly, retain) id socket;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased bind failed exception.
@@ -68,32 +81,4 @@
 	  port: (uint16_t)port
 	socket: (id)socket
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns the host on which binding failed.
- *
- * @return The host on which binding failed
- */
-- (OFString*)host;
-
-/*!
- * @brief Return the port on which binding failed.
- *
- * @return The port on which binding failed
- */
-- (uint16_t)port;
-
-/*!
- * @brief Returns the socket which could not be bound.
- *
- * @return The socket which could not be bound
- */
-- (id)socket;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

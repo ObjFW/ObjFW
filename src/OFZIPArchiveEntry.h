@@ -103,55 +103,36 @@ enum {
 	uint64_t _localFileHeaderOffset;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *fileName, *fileComment;
-@property (readonly) uint16_t versionMadeBy, minVersionNeeded;
-@property (readonly) uint16_t compressionMethod;
-@property (readonly) uint64_t compressedSize, uncompressedSize;
-@property (readonly, retain) OFDate *modificationDate;
-@property (readonly) uint32_t CRC32;
-@property (readonly) uint32_t versionSpecificAttributes;
-@property (readonly, copy) OFDataArray *extraField;
-#endif
-
 /*!
- * @brief Returns the file name of the entry.
- *
- * @return The file name of the entry
+ * The file name of the entry.
  */
-- (OFString*)fileName;
+@property (readonly, copy) OFString *fileName;
 
 /*!
- * @brief Returns the comment of the entry's file.
- *
- * @return The comment of the entry's file
+ * The comment of the entry's file.
  */
-- (OFString*)fileComment;
+@property (readonly, copy) OFString *fileComment;
 
 /*!
- * @brief Returns the version which made the entry.
+ * The version which made the entry.
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
  * See @ref of_zip_archive_entry_attribute_compatibility.
- *
- * @return The version which made the entry
  */
-- (uint16_t)versionMadeBy;
+@property (readonly) uint16_t versionMadeBy;
 
 /*!
- * @brief Returns the minimum version required to extract the file.
+ * The minimum version required to extract the file.
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
  * See @ref of_zip_archive_entry_attribute_compatibility.
- *
- * @return The minimum version required to extract the file
  */
-- (uint16_t)minVersionNeeded;
+@property (readonly) uint16_t minVersionNeeded;
 
 /*!
- * @brief Returns the compression method of the entry
+ * The compression method of the entry.
  *
  * Supported values are:
  * Value                                             | Description
@@ -161,24 +142,31 @@ enum {
  * OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64 | Deflate64
  *
  * Other values may be returned, but the file cannot be extracted then.
- *
- * @return The compression method of the entry
  */
-- (uint16_t)compressionMethod;
+@property (readonly) uint16_t compressionMethod;
 
 /*!
- * @brief Returns the compressed size of the entry's file.
- *
- * @return The compressed size of the entry's file
+ * The compressed size of the entry's file.
  */
-- (uint64_t)compressedSize;
+@property (readonly) uint64_t compressedSize;
 
 /*!
- * @brief Returns the uncompressed size of the entry's file.
- *
- * @return The uncompressed size of the entry's file
+ * The uncompressed size of the entry's file.
  */
-- (uint64_t)uncompressedSize;
+@property (readonly) uint64_t uncompressedSize;
+
+/*!
+ * The CRC32 checksum of the entry's file.
+ */
+@property (readonly) uint32_t CRC32;
+
+/*!
+ * The version specific attributes.
+ *
+ * The meaning of the version specific attributes depends on the attribute
+ * compatibility part of the version that made the entry.
+ */
+@property (readonly) uint32_t versionSpecificAttributes;
 
 /*!
  * @brief Returns the last modification date of the entry's file.
@@ -186,23 +174,6 @@ enum {
  * @return The last modification date of the entry's file
  */
 - (OFDate*)modificationDate;
-
-/*!
- * @brief Returns the CRC32 checksum of the entry's file.
- *
- * @return The CRC32 checksum of the entry's file
- */
-- (uint32_t)CRC32;
-
-/*!
- * @brief Returns the version specific attributes.
- *
- * The meaning of the version specific attributes depends on the attribute
- * compatibility part of the version that made the entry.
- *
- * @return The version specific attributes
- */
-- (uint32_t)versionSpecificAttributes;
 
 /*!
  * @brief Returns the extra field of the entry.

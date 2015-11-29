@@ -109,10 +109,15 @@ OF_ASSUME_NONNULL_BEGIN
 	OFHTTPResponse *_lastResponse;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The delegate of the HTTP request.
+ */
 @property OF_NULLABLE_PROPERTY (assign) id <OFHTTPClientDelegate> delegate;
+
+/*!
+ * Whether redirects from HTTPS to HTTP will be allowed.
+ */
 @property bool insecureRedirectsAllowed;
-#endif
 
 /*!
  * @brief Creates a new OFHTTPClient.
@@ -120,34 +125,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFHTTPClient
  */
 + (instancetype)client;
-
-/*!
- * @brief Sets the delegate of the HTTP request.
- *
- * @param delegate The delegate of the HTTP request
- */
-- (void)setDelegate: (nullable id <OFHTTPClientDelegate>)delegate;
-
-/*!
- * @brief Returns the delegate of the HTTP reqeust.
- *
- * @return The delegate of the HTTP request
- */
-- (nullable id <OFHTTPClientDelegate>)delegate;
-
-/*!
- * @brief Sets whether redirects from HTTPS to HTTP are allowed.
- *
- * @param allowed Whether redirects from HTTPS to HTTP are allowed
- */
-- (void)setInsecureRedirectsAllowed: (bool)allowed;
-
-/*!
- * @brief Returns whether redirects from HTTPS to HTTP will be allowed
- *
- * @return Whether redirects from HTTPS to HTTP will be allowed
- */
-- (bool)insecureRedirectsAllowed;
 
 /*!
  * @brief Performs the specified HTTP request and returns an OFHTTPResponse.

@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFInvalidJSONException
+@synthesize string = _string, line = _line;
+
 + (instancetype)exceptionWithString: (OFString*)string
 			       line: (size_t)line
 {
@@ -59,15 +61,5 @@
 {
 	return [OFString stringWithFormat:
 	    @"The JSON representation is invalid in line %zu!", _line];
-}
-
-- (OFString*)string
-{
-	OF_GETTER(_string, true)
-}
-
-- (size_t)line
-{
-	return _line;
 }
 @end

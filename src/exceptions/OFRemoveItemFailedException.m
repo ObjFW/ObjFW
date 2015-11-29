@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFRemoveItemFailedException
+@synthesize path = _path, errNo = _errNo;
+
 + (instancetype)exceptionWithPath: (OFString*)path
 			    errNo: (int)errNo
 {
@@ -60,15 +62,5 @@
 	return [OFString stringWithFormat:
 	    @"Failed to remove item at path %@: %@",
 	    _path, of_strerror(_errNo)];
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

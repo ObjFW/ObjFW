@@ -24,6 +24,8 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLAttribute
+@synthesize name = _name, namespace = _namespace;
+
 + (instancetype)attributeWithName: (OFString*)name
 			namespace: (OFString*)namespace
 		      stringValue: (OFString*)stringValue
@@ -100,16 +102,6 @@
 	[_stringValue release];
 
 	[super dealloc];
-}
-
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
-}
-
-- (OFString*)namespace
-{
-	OF_GETTER(_namespace, true)
 }
 
 - (OFString*)stringValue

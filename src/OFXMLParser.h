@@ -177,10 +177,19 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _depthLimit;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The delegate that is used by the XML parser.
+ */
 @property OF_NULLABLE_PROPERTY (assign) id <OFXMLParserDelegate> delegate;
+
+/*!
+ * The depth limit for the XML parser.
+ *
+ * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
+ *
+ * The default is 32. 0 means unlimited (insecure!).
+ */
 @property size_t depthLimit;
-#endif
 
 /*!
  * @brief Creates a new XML parser.
@@ -188,38 +197,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFXMLParser
  */
 + (instancetype)parser;
-
-/*!
- * @brief Sets the delegate the XML parser should use.
- *
- * @param delegate The delegate to use
- */
-- (void)setDelegate: (nullable id <OFXMLParserDelegate>)delegate;
-
-/*!
- * @brief Returns the delegate that is used by the XML parser.
- *
- * @return The delegate that is used by the XML parser
- */
-- (nullable id <OFXMLParserDelegate>)delegate;
-
-/*!
- * @brief Returns the depth limit for the XML parser.
- *
- * @return The depth limit for the XML parser
- */
-- (size_t)depthLimit;
-
-/*!
- * @brief Sets the depth limit for the XML parser.
- *
- * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
- *
- * The default is 32. 0 means unlimited (insecure!).
- *
- * @param depthLimit The depth limit for the XML parser
- */
-- (void)setDepthLimit: (size_t)depthLimit;
 
 /*!
  * @brief Parses the specified buffer with the specified size.
@@ -265,7 +242,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return Whether the XML parser has finished parsing
  */
-- (bool)finishedParsing;
+- (bool)hasFinishedParsing;
 @end
 
 @interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>

@@ -50,6 +50,8 @@
 #import "of_asprintf.h"
 
 @implementation OFStream
+@synthesize OF_isWaitingForDelimiter = _waitingForDelimiter;
+
 #ifndef OF_WINDOWS
 + (void)initialize
 {
@@ -1574,10 +1576,5 @@
 - (void)close
 {
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (bool)OF_isWaitingForDelimiter
-{
-	return _waitingForDelimiter;
 }
 @end

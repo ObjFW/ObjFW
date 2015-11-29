@@ -29,10 +29,20 @@
 	int _errNo;
 }
 
-# ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *sourcePath, *destinationPath;
+/*!
+ * A string with the source for the link.
+ */
+@property (readonly, copy) OFString *sourcePath;
+
+/*!
+ * A string with the destination for the link.
+ */
+@property (readonly, copy) OFString *destinationPath;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-# endif
 
 /*!
  * @brief Creates a new, autoreleased link failed exception.
@@ -57,26 +67,5 @@
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath
 	       errNo: (int)errNo;
-
-/*!
- * @brief Returns a string with the source for the link.
- *
- * @return A string with the source for the link
- */
-- (OFString*)sourcePath;
-
-/*!
- * @brief Returns a string with the destination for the link.
- *
- * @return A string with the destination for the link
- */
-- (OFString*)destinationPath;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end
 #endif

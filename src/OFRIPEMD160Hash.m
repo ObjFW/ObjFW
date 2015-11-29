@@ -129,6 +129,8 @@ processBlock(uint32_t *state, uint32_t *buffer)
 }
 
 @implementation OFRIPEMD160Hash
+@synthesize calculated = _calculated;
+
 + (size_t)digestSize
 {
 	return 20;
@@ -214,11 +216,6 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_calculated = true;
 
 	return (const uint8_t*)_state;
-}
-
-- (bool)isCalculated
-{
-	return _calculated;
 }
 
 - (void)reset

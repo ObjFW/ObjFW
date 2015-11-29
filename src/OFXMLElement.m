@@ -70,6 +70,9 @@ static Class CDATAClass = Nil;
 @end
 
 @implementation OFXMLElement
+@synthesize name = _name, namespace = _namespace;
+@synthesize defaultNamespace = _defaultNamespace;
+
 + (void)initialize
 {
 	if (self == [OFXMLElement class]) {
@@ -225,7 +228,7 @@ static Class CDATAClass = Nil;
 
 	[parser parseString: string];
 
-	if (![parser finishedParsing])
+	if (![parser hasFinishedParsing])
 		@throw [OFMalformedXMLException exceptionWithParser: parser];
 
 	self = [delegate->_element retain];
@@ -257,7 +260,7 @@ static Class CDATAClass = Nil;
 
 	[parser parseFile: path];
 
-	if (![parser finishedParsing])
+	if (![parser hasFinishedParsing])
 		@throw [OFMalformedXMLException exceptionWithParser: parser];
 
 	self = [delegate->_element retain];
@@ -369,42 +372,21 @@ static Class CDATAClass = Nil;
 	[super dealloc];
 }
 
-- (void)setName: (OFString*)name
-{
-	if (name == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	OF_SETTER(_name, name, true, 1)
-}
-
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
-}
-
-- (void)setNamespace: (OFString*)namespace
-{
-	OF_SETTER(_namespace, namespace, true, 1)
-}
-
-- (OFString*)namespace
-{
-	OF_GETTER(_namespace, true)
-}
-
 - (OFArray*)attributes
 {
-	OF_GETTER(_attributes, true)
+	return [[_attributes copy] autorelease];
 }
 
 - (void)setChildren: (OFArray*)children
 {
-	OF_SETTER(_children, children, true, 2)
+	OFArray *old = _children;
+	_children = [children copy];
+	[old release];
 }
 
 - (OFArray*)children
 {
-	OF_GETTER(_children, true)
+	return [[_children copy] autorelease];
 }
 
 - (void)setStringValue: (OFString*)stringValue
@@ -909,16 +891,6 @@ static Class CDATAClass = Nil;
 	[self addAttributeWithName: prefix
 			 namespace: @"http://www.w3.org/2000/xmlns/"
 		       stringValue: namespace];
-}
-
-- (OFString*)defaultNamespace
-{
-	OF_GETTER(_defaultNamespace, true)
-}
-
-- (void)setDefaultNamespace: (OFString*)defaultNamespace
-{
-	OF_SETTER(_defaultNamespace, defaultNamespace, true, 1)
 }
 
 - (void)addChild: (OFXMLNode*)child

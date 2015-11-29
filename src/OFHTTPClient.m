@@ -254,6 +254,9 @@ normalizeKey(char *str_)
 @end
 
 @implementation OFHTTPClient
+@synthesize delegate = _delegate;
+@synthesize insecureRedirectsAllowed = _insecureRedirectsAllowed;
+
 + (instancetype)client
 {
 	return [[[self alloc] init] autorelease];
@@ -264,26 +267,6 @@ normalizeKey(char *str_)
 	[self close];
 
 	[super dealloc];
-}
-
-- (void)setDelegate: (id <OFHTTPClientDelegate>)delegate
-{
-	_delegate = delegate;
-}
-
-- (id <OFHTTPClientDelegate>)delegate
-{
-	return _delegate;
-}
-
-- (void)setInsecureRedirectsAllowed: (bool)allowed
-{
-	_insecureRedirectsAllowed = allowed;
-}
-
-- (bool)insecureRedirectsAllowed
-{
-	return _insecureRedirectsAllowed;
 }
 
 - (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request

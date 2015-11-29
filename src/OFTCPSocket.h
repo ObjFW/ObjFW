@@ -71,13 +71,15 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #endif
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, getter=isListening) bool listening;
+/*!
+ * The host to use as a SOCKS5 proxy.
+ */
 @property OF_NULLABLE_PROPERTY (copy) OFString *SOCKS5Host;
+
+/*!
+ * The port to use on the SOCKS5 proxy.
+ */
 @property uint16_t SOCKS5Port;
-@property (getter=isKeepAliveEnabled) bool keepAliveEnabled;
-@property (getter=isTCPNoDelayEnabled) bool TCPNoDelayEnabled;
-#endif
 
 /*!
  * @brief Sets the global SOCKS5 proxy host to use when creating a new socket
@@ -107,36 +109,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @return The port to use as a SOCKS5 proxy when creating a new socket
  */
 + (uint16_t)SOCKS5Port;
-
-/*!
- * @brief Sets the host to use as a SOCKS5 proxy.
- *
- * @param host The host to use as a SOCKS5 proxy
- */
-- (void)setSOCKS5Host: (nullable OFString*)host;
-
-/*!
- * @brief Returns the host to use as a SOCKS5 proxy.
- *
- * @return The host to use as a SOCKS5 proxy
- */
-- (nullable OFString*)SOCKS5Host;
-
-/*!
- * @brief Sets the port to use on the SOCKS5 proxy.
- *
- * The default port is 1080.
- *
- * @param port The port to use on the SOCKS5 proxy
- */
-- (void)setSOCKS5Port: (uint16_t)port;
-
-/*!
- * @brief Returns the port to use on the SOCKS5 proxy.
- *
- * @return The port to use on the SOCKS5 proxy
- */
-- (uint16_t)SOCKS5Port;
 
 /*!
  * @brief Connect the OFTCPSocket to the specified destination.

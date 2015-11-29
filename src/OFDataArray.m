@@ -56,6 +56,8 @@ void _references_to_categories_of_OFDataArray(void)
 }
 
 @implementation OFDataArray
+@synthesize itemSize = _itemSize;
+
 + (instancetype)dataArray
 {
 	return [[[self alloc] init] autorelease];
@@ -359,11 +361,6 @@ void _references_to_categories_of_OFDataArray(void)
 - (size_t)count
 {
 	return _count;
-}
-
-- (size_t)itemSize
-{
-	return _itemSize;
 }
 
 - (void*)items

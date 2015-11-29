@@ -35,23 +35,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray *_lines;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the INI category
+ */
 @property (copy) OFString *name;
-#endif
-
-/*!
- * @brief Sets the name of the INI category.
- *
- * @param name The name to set
- */
-- (void)setName: (OFString*)name;
-
-/*!
- * @brief Returns the name of the INI category.
- *
- * @return The name of the INI category
- */
-- (OFString*)name;
 
 /*!
  * @brief Returns the string value for the specified key, or `nil` if it does

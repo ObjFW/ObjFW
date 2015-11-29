@@ -78,12 +78,25 @@ OF_ASSUME_NONNULL_BEGIN
 	OFTCPSocket *_listeningSocket;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property OF_NULLABLE_PROPERTY (copy) OFString *host;
+/*!
+ * The host on which the HTTP server will listen.
+ */
+@property OF_NULLABLE_PROPERTY (copy) OFString* host;
+
+/*!
+ * The port on which the HTTP server will listen.
+ */
 @property uint16_t port;
+
+/*!
+ * The delegate for the HTTP server.
+ */
 @property OF_NULLABLE_PROPERTY (assign) id <OFHTTPServerDelegate> delegate;
-@property OF_NULLABLE_PROPERTY (copy) OFString *name;
-#endif
+
+/*!
+ * The server name the server presents to clients.
+ */
+@property (copy) OFString *name;
 
 /*!
  * @brief Creates a new HTTP server.
@@ -91,62 +104,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new HTTP server
  */
 + (instancetype)server;
-
-/*!
- * @brief Sets the host on which the HTTP server will listen.
- *
- * @param host The host to listen on
- */
-- (void)setHost: (OFString*)host;
-
-/*!
- * @brief Returns the host on which the HTTP server will listen.
- *
- * @return The host on which the HTTP server will listen
- */
-- (nullable OFString*)host;
-
-/*!
- * @brief Sets the port on which the HTTP server will listen.
- *
- * @param port The port to listen on
- */
-- (void)setPort: (uint16_t)port;
-
-/*!
- * @brief Returns the port on which the HTTP server will listen.
- *
- * @return The port on which the HTTP server will listen
- */
-- (uint16_t)port;
-
-/*!
- * @brief Sets the delegate for the HTTP server.
- *
- * @param delegate The delegate for the HTTP server
- */
-- (void)setDelegate: (nullable id <OFHTTPServerDelegate>)delegate;
-
-/*!
- * @brief Returns the delegate for the HTTP server.
- *
- * @return The delegate for the HTTP server
- */
-- (nullable id <OFHTTPServerDelegate>)delegate;
-
-/*!
- * @brief Sets the server name the server presents to clients.
- *
- * @param name The server name to present to clients
- */
-- (void)setName: (nullable OFString*)name;
-
-/*!
- * @brief Returns the server name the server presents to clients.
- *
- * @return The server name the server presents to clients
- */
-- (nullable OFString*)name;
 
 /*!
  * @brief Starts the HTTP server in the current thread's runloop.

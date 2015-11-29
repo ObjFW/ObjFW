@@ -60,10 +60,15 @@ struct of_list_object_t {
 	unsigned long	 _mutations;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The first list object of the list.
+ */
 @property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *firstListObject;
+
+/*!
+ * The last list object of the list.
+ */
 @property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *lastListObject;
-#endif
 
 /*!
  * @brief Creates a new OFList.
@@ -71,20 +76,6 @@ struct of_list_object_t {
  * @return A new autoreleased OFList
  */
 + (instancetype)list;
-
-/*!
- * @brief Returns the first list object of the list.
- *
- * @return The first list object of the list
- */
-- (nullable of_list_object_t*)firstListObject;
-
-/*!
- * @brief Returns the last list object of the list.
- *
- * @return The last list object of the list
- */
-- (nullable of_list_object_t*)lastListObject;
 
 /*!
  * @brief Appends an object to the list.

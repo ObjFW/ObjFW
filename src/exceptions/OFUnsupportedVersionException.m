@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFUnsupportedVersionException
+@synthesize version = _version;
+
 + (instancetype)exceptionWithVersion: (OFString*)version
 {
 	return [[[self alloc] initWithVersion: version] autorelease];
@@ -56,10 +58,5 @@
 	return [OFString stringWithFormat:
 	    @"Version %@ of the format or protocol is not supported!",
 	    _version];
-}
-
-- (OFString*)version
-{
-	OF_GETTER(_version, true)
 }
 @end

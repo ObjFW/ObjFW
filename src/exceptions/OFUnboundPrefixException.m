@@ -21,6 +21,8 @@
 #import "OFXMLParser.h"
 
 @implementation OFUnboundPrefixException
+@synthesize prefix = _prefix, parser = _parser;
+
 + (instancetype)exceptionWithPrefix: (OFString*)prefix
 			     parser: (OFXMLParser*)parser
 {
@@ -62,15 +64,5 @@
 	return [OFString stringWithFormat:
 	    @"An XML parser of type %@ encountered the unbound prefix %@ in "
 	    @"line %zu!", [_parser class], _prefix, [_parser lineNumber]];
-}
-
-- (OFString*)prefix
-{
-	OF_GETTER(_prefix, true)
-}
-
-- (OFXMLParser*)parser
-{
-	OF_GETTER(_parser, true)
 }
 @end

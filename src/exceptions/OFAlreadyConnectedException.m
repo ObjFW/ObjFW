@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFAlreadyConnectedException
+@synthesize socket = _socket;
+
 + (instancetype)exceptionWithSocket: (id)socket
 {
 	return [[[self alloc] initWithSocket: socket] autorelease];
@@ -50,10 +52,5 @@
 		    [_socket class]];
 	else
 		return @"A connection has already been established!";
-}
-
-- (id)socket
-{
-	OF_GETTER(_socket, true)
 }
 @end

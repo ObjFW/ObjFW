@@ -28,10 +28,15 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * A string with the path of the item whose status could not be retrieved.
+ */
 @property (readonly, copy) OFString *path;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased stat item failed exception.
@@ -72,20 +77,4 @@
  */
 - initWithPath: (OFString*)path
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns a string with the path of the item whose status could not be
- *	  retrieved.
- *
- * @return A string with the path of the item whose status could not be
- *	   retrieved
- */
-- (OFString*)path;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

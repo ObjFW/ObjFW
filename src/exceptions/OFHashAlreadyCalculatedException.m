@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFHashAlreadyCalculatedException
+@synthesize hashObject = _hashObject;
+
 + (instancetype)exceptionWithHash: (id <OFHash>)hash
 {
 	return [[[self alloc] initWithHash: hash] autorelease];
@@ -51,10 +53,5 @@
 	return [OFString stringWithFormat:
 	    @"The hash of type %@ has already been calculated and thus no new "
 	    @"data can be added!", [_hashObject class]];
-}
-
-- (id <OFHash>)hashObject
-{
-	OF_GETTER(_hashObject, true)
 }
 @end

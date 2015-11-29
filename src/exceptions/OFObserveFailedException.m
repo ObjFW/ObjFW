@@ -21,6 +21,8 @@
 #import "OFKernelEventObserver.h"
 
 @implementation OFObserveFailedException
+@synthesize observer = _observer, errNo = _errNo;
+
 + (instancetype)exceptionWithObserver: (OFKernelEventObserver*)observer
 				errNo: (int)errNo
 {
@@ -61,15 +63,5 @@
 	return [OFString stringWithFormat:
 	    @"An observer of class %@ failed to observe: %@",
 	    [_observer className], of_strerror(_errNo)];
-}
-
-- (OFKernelEventObserver*)observer
-{
-	OF_GETTER(_observer, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

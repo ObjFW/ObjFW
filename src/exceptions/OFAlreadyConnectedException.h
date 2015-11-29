@@ -32,9 +32,10 @@
 	id _socket;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The socket which is already connected.
+ */
 @property (readonly, retain) id socket;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased already connected exception.
@@ -51,11 +52,4 @@
  * @return An initialized already connected exception
  */
 - initWithSocket: (id)socket;
-
-/*!
- * @brief Returns the socket which is already connected.
- *
- * @return The socket which is already connected
- */
-- (id)socket;
 @end

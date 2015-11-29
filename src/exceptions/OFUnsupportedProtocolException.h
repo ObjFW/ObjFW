@@ -31,9 +31,10 @@
 	OFURL *_URL;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The URL whose protocol is unsupported.
+ */
 @property (readonly, retain) OFURL *URL;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased unsupported protocol exception.
@@ -50,11 +51,4 @@
  * @return An initialized unsupported protocol exception
  */
 - initWithURL: (OFURL*)URL;
-
-/*!
- * @brief Returns the URL whose protocol is unsupported.
- *
- * @return The URL whose protocol is unsupported
- */
-- (OFURL*)URL;
 @end

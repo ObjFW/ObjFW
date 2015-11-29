@@ -133,6 +133,9 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 
 @implementation OFApplication
+@synthesize programName = _programName, arguments = _arguments;
+@synthesize environment = _environment;
+
 + (OFApplication*)sharedApplication
 {
 	return app;
@@ -395,21 +398,6 @@ of_application_main(int *argc, char **argv[], Class cls)
 {
 	*argc = _argc;
 	*argv = _argv;
-}
-
-- (OFString*)programName
-{
-	OF_GETTER(_programName, false)
-}
-
-- (OFArray*)arguments
-{
-	OF_GETTER(_arguments, false)
-}
-
-- (OFDictionary*)environment
-{
-	OF_GETTER(_environment, false)
 }
 
 - (id <OFApplicationDelegate>)delegate

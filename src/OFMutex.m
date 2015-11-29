@@ -25,6 +25,8 @@
 #import "OFUnlockFailedException.h"
 
 @implementation OFMutex
+@synthesize name = _name;
+
 + (instancetype)mutex
 {
 	return [[[self alloc] init] autorelease];
@@ -45,6 +47,17 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	if (_initialized)
+		if (!of_mutex_free(&_mutex))
+			@throw [OFStillLockedException exceptionWithLock: self];
+
+	[_name release];
+
+	[super dealloc];
+}
+
 - (void)lock
 {
 	if (!of_mutex_lock(&_mutex))
@@ -62,16 +75,6 @@
 		@throw [OFUnlockFailedException exceptionWithLock: self];
 }
 
-- (void)setName: (OFString*)name
-{
-	OF_SETTER(_name, name, true, 1)
-}
-
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
-}
-
 - (OFString*)description
 {
 	if (_name == nil)
@@ -79,16 +82,5 @@
 
 	return [OFString stringWithFormat: @"<%@: %@>",
 					   [self className], _name];
-}
-
-- (void)dealloc
-{
-	if (_initialized)
-		if (!of_mutex_free(&_mutex))
-			@throw [OFStillLockedException exceptionWithLock: self];
-
-	[_name release];
-
-	[super dealloc];
 }
 @end

@@ -146,6 +146,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 @implementation OFXMLParser
+@synthesize delegate = _delegate, depthLimit = _depthLimit;
+
 + (void)initialize
 {
 	size_t i;
@@ -234,26 +236,6 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[_previous release];
 
 	[super dealloc];
-}
-
-- (id <OFXMLParserDelegate>)delegate
-{
-	return _delegate;
-}
-
-- (void)setDelegate: (id <OFXMLParserDelegate>)delegate
-{
-	_delegate = delegate;
-}
-
-- (size_t)depthLimit
-{
-	return _depthLimit;
-}
-
-- (void)setDepthLimit: (size_t)depthLimit
-{
-	_depthLimit = depthLimit;
 }
 
 - (void)parseBuffer: (const char*)buffer
@@ -1043,7 +1025,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	return _lineNumber;
 }
 
-- (bool)finishedParsing
+- (bool)hasFinishedParsing
 {
 	return _finishedParsing;
 }

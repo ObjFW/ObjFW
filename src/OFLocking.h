@@ -24,9 +24,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A protocol for locks.
  */
 @protocol OFLocking <OFObject>
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the lock.
+ */
 @property OF_NULLABLE_PROPERTY (copy) OFString *name;
-#endif
 
 /*!
  * @brief Locks the lock.

@@ -21,6 +21,8 @@
 #import "OFXMLElement.h"
 
 @implementation OFUnboundNamespaceException
+@synthesize namespace = _namespace, element = _element;
+
 + (instancetype)exceptionWithNamespace: (OFString*)namespace
 			       element: (OFXMLElement*)element
 {
@@ -62,15 +64,5 @@
 	return [OFString stringWithFormat:
 	    @"The namespace %@ is not bound in an element of type %@!",
 	    _namespace, [_element class]];
-}
-
-- (OFString*)namespace
-{
-	OF_GETTER(_namespace, true)
-}
-
-- (OFXMLElement*)element
-{
-	OF_GETTER(_element, true)
 }
 @end

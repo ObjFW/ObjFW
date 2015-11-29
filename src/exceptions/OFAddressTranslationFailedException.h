@@ -33,9 +33,10 @@
 	int _error;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The host for which the address translation was requested.
+ */
 @property (readonly, copy) OFString *host;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased address translation failed exception.
@@ -57,14 +58,7 @@
  */
 - initWithHost: (OFString*)host;
 
-- initWithHost: (OFString*)host
-	 error: (int)error;
-- initWithError: (int)error;
-
-/*!
- * @brief Returns the host for which the address translation was requested.
- *
- * @return The host for which the address translation was requested
- */
-- (OFString*)host;
+- (instancetype)initWithHost: (OFString*)host
+		       error: (int)error;
+- (instancetype)initWithError: (int)error;
 @end

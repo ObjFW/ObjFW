@@ -348,7 +348,7 @@ enum event_type {
 	len = strlen(str);
 
 	for (j = 0; j < len; j+= 2) {
-		if ([parser finishedParsing])
+		if ([parser hasFinishedParsing])
 			abort();
 
 		if (j + 2 > len)
@@ -362,7 +362,7 @@ enum event_type {
 	TEST(@"Checking if everything was parsed",
 	    i == 32 && [parser lineNumber] == 18)
 
-	TEST(@"-[finishedParsing]", [parser finishedParsing])
+	TEST(@"-[hasFinishedParsing]", [parser hasFinishedParsing])
 
 	TEST(@"Parsing whitespaces after the document",
 	    R([parser parseString: @" \t\r\n "]))

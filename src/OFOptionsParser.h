@@ -76,12 +76,38 @@ typedef struct of_options_parser_option_t {
 	bool _done;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The last parsed option.
+ *
+ * If @ref nextOption returned `?` or `:`, this returns the option which was
+ * unknown or for which the argument was missing.@n
+ * If this returns `-`, the last option is only available as a long option (see
+ * @ref lastLongOption).
+ */
 @property (readonly) of_unichar_t lastOption;
-@property OF_NULLABLE_PROPERTY (readonly) OFString *lastLongOption;
-@property OF_NULLABLE_PROPERTY (readonly) OFString *argument;
-@property (readonly) OFArray OF_GENERIC(OFString*) *remainingArguments;
-#endif
+
+/*!
+ * The long option for the last parsed option, or `nil` if the last parsed
+ * option was not passed as a long option by the user.
+ *
+ * In case @ref nextOption returned `?`, this contains the unknown long
+ * option.@n
+ * In case it returned `:`, this contains the long option which is missing an
+ * argument.@n
+ * In case it returned `=`, this contains the long option for which an
+ * argument was specified even though the option takes no argument.
+ *
+ * @warning Unlike @ref lastOption, which returns the short option even if the
+ *	    user specified a long option, this only returns the long option if
+ *	    it was actually specified as a long option by the user.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *lastLongOption;
+
+/*!
+ * The argument for the last parsed option, or `nil` if the last parsed option
+ * takes no argument.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *argument;
 
 /*!
  * @brief Creates a new OFOptionsParser which accepts the specified options.
@@ -125,45 +151,6 @@ typedef struct of_options_parser_option_t {
  * @return The next option
  */
 - (of_unichar_t)nextOption;
-
-/*!
- * @brief Returns the last parsed option.
- *
- * If @ref nextOption returned `?` or `:`, this returns the option which was
- * unknown or for which the argument was missing.@n
- * If this returns `-`, the last option is only available as a long option (see
- * @ref lastLongOption).
- *
- * @return The last parsed option
- */
-- (of_unichar_t)lastOption;
-
-/*!
- * @brief Returns the long option for the last parsed option, or `nil` if the
- *	  last parsed option was not passed as a long option by the user.
- *
- * In case @ref nextOption returned `?`, this contains the unknown long
- * option.@n
- * In case it returned `:`, this contains the long option which is missing an
- * argument.@n
- * In case it returned `=`, this contains the long option for which an
- * argument was specified even though the option takes no argument.
- *
- * @warning Unlike lastOption, which returns the short option even if the user
- *	    specified a long option, this only returns the long option if it
- *	    was actually specified as a long option by the user.
- *
- * @return The last parsed long option or `nil`
- */
-- (nullable OFString*)lastLongOption;
-
-/*!
- * @brief Returns the argument for the last parsed option, or `nil` if the last
- *	  parsed option takes no argument.
- *
- * @return The argument for the last parsed option
- */
-- (nullable OFString*)argument;
 
 /*!
  * @brief Returns the arguments following the last option.

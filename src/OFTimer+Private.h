@@ -19,7 +19,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFTimer (OF_PRIVATE_CATEGORY)
-- (void)OF_setInRunLoop: (nullable OFRunLoop*)inRunLoop;
+@property OF_NULLABLE_PROPERTY (retain, setter=OF_setInRunLoop:)
+    OFRunLoop *OF_inRunLoop;
 @end
 
 OF_ASSUME_NONNULL_END

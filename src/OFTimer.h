@@ -60,9 +60,16 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 	OFRunLoop *_inRunLoop;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (retain) OFDate *fireDate;
-#endif
+/*!
+ * Whether the timer is valid.
+ */
+@property (readonly) bool isValid;
+
+/*!
+ * The time interval in which the timer will repeat, if it is a repeating
+ * timer.
+ */
+@property (readonly) of_time_interval_t timeInterval;
 
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.
@@ -301,22 +308,6 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @brief Invalidates the timer, preventing it from firing.
  */
 - (void)invalidate;
-
-/*!
- * @brief Returns whether the timer is valid.
- *
- * @return Whether the timer is valid
- */
-- (bool)isValid;
-
-/*!
- * @brief Returns the time interval in which the timer will repeat, if it is a
- *	  repeating timer.
- *
- * @return The time interval in which the timer will repeat, if it is a
- *	   repeating timer
- */
-- (of_time_interval_t)timeInterval;
 
 #ifdef OF_HAVE_THREADS
 /*!

@@ -33,9 +33,10 @@
 	OFThread *_thread;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The thread which could not be joined.
+ */
 @property (readonly, retain) OFThread *thread;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased thread join failed exception.
@@ -52,11 +53,4 @@
  * @return An initialized thread join failed exception
  */
 - initWithThread: (OFThread*)thread;
-
-/*!
- * @brief Returns the thread which could not be joined.
- *
- * @return The thread which could not be joined
- */
-- (OFThread*)thread;
 @end

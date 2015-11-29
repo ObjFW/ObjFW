@@ -28,10 +28,15 @@
 	size_t _line;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The string containing the invalid JSON representation.
+ */
 @property (readonly, copy) OFString *string;
+
+/*!
+ * The line in which parsing the JSON representation failed.
+ */
 @property (readonly) size_t line;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased invalid JSON exception.
@@ -52,18 +57,4 @@
  */
 - initWithString: (OFString*)string
 	    line: (size_t)line;
-
-/*!
- * @brief Returns the string containing the invalid JSON representation.
- *
- * @return The string containing the invalid JSON representation
- */
-- (OFString*)string;
-
-/*!
- * @brief Returns the line in which parsing the JSON representation failed.
- *
- * @return The line in which parsing the JSON representation failed
- */
-- (size_t)line;
 @end

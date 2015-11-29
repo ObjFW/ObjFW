@@ -24,9 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A protocol for classes providing hash functions.
  */
 @protocol OFHash <OFObject>
-#ifdef OF_HAVE_PROPERTIES
 @property (readonly, getter=isCalculated) bool calculated;
-#endif
 
 /*!
  * @brief Creates a new hash.

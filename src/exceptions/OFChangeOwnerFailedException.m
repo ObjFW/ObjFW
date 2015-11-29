@@ -21,6 +21,8 @@
 
 #ifdef OF_HAVE_CHOWN
 @implementation OFChangeOwnerFailedException
+@synthesize path = _path, owner = _owner, group = _group, errNo = _errNo;
+
 + (instancetype)exceptionWithPath: (OFString*)path
 			    owner: (OFString*)owner
 			    group: (OFString*)group
@@ -80,26 +82,6 @@
 		return [OFString stringWithFormat:
 		    @"Failed to change owner of item at path %@ to %@:%@: %@",
 		    _path, _owner, _group, of_strerror(_errNo)];
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (OFString*)owner
-{
-	OF_GETTER(_owner, true)
-}
-
-- (OFString*)group
-{
-	OF_GETTER(_group, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end
 #endif

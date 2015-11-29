@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFListenFailedException
+@synthesize socket = _socket, backLog = _backLog, errNo = _errNo;
+
 + (instancetype)exceptionWithSocket: (id)socket
 			    backLog: (int)backLog
 			      errNo: (int)errNo
@@ -59,20 +61,5 @@
 	return [OFString stringWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d: %@",
 	    [_socket class], _backLog, of_strerror(_errNo)];
-}
-
-- (id)socket
-{
-	OF_GETTER(_socket, true)
-}
-
-- (int)backLog
-{
-	return _backLog;
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

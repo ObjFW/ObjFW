@@ -29,6 +29,8 @@
 #import "OFMalformedXMLException.h"
 
 @implementation OFXMLElementBuilder
+@synthesize delegate = _delegate;
+
 + (instancetype)elementBuilder
 {
 	return [[[self alloc] init] autorelease];
@@ -53,16 +55,6 @@
 	[_stack release];
 
 	[super dealloc];
-}
-
-- (id <OFXMLElementBuilderDelegate>)delegate
-{
-	return _delegate;
-}
-
-- (void)setDelegate: (id <OFXMLElementBuilderDelegate>)delegate
-{
-	_delegate = delegate;
 }
 
 -		 (void)parser: (OFXMLParser*)parser

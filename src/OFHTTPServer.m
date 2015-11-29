@@ -389,7 +389,7 @@ normalizedKey(OFString *key)
 		return false;
 	}
 
-	abort();
+	OF_ENSURE(0);
 }
 
 - (bool)parseProlog: (OFString*)line
@@ -646,6 +646,8 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServer
+@synthesize host = _host, port = _port, delegate = _delegate, name = _name;
+
 + (instancetype)server
 {
 	return [[[self alloc] init] autorelease];
@@ -668,46 +670,6 @@ normalizedKey(OFString *key)
 	[_name release];
 
 	[super dealloc];
-}
-
-- (void)setHost: (OFString*)host
-{
-	OF_SETTER(_host, host, true, 1)
-}
-
-- (OFString*)host
-{
-	OF_GETTER(_host, true)
-}
-
-- (void)setPort: (uint16_t)port
-{
-	_port = port;
-}
-
-- (uint16_t)port
-{
-	return _port;
-}
-
-- (void)setDelegate: (id <OFHTTPServerDelegate>)delegate
-{
-	_delegate = delegate;
-}
-
-- (id <OFHTTPServerDelegate>)delegate
-{
-	return _delegate;
-}
-
-- (void)setName: (OFString*)name
-{
-	OF_SETTER(_name, name, true, 1)
-}
-
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
 }
 
 - (void)start

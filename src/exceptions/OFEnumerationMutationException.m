@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFEnumerationMutationException
+@synthesize object = _object;
+
 + (instancetype)exceptionWithObject: (id)object
 {
 	return [[[self alloc] initWithObject: object] autorelease];
@@ -51,10 +53,5 @@
 	return [OFString stringWithFormat:
 	    @"Object of class %@ was mutated during enumeration!",
 	    [_object class]];
-}
-
-- (id)object
-{
-	OF_GETTER(_object, true)
 }
 @end

@@ -30,10 +30,15 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The path of the directory to which the current path could not be changed.
+ */
 @property (readonly, copy) OFString *path;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased change current directory path failed
@@ -57,20 +62,4 @@
  */
 - initWithPath: (OFString*)path
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns the path of the directory to which the current path could not
- *	  be changed.
- *
- * @return The path of the directory to which the current path could not be
- *	   changed
- */
-- (OFString*)path;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

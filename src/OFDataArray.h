@@ -41,11 +41,10 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _count, _itemSize, _capacity;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) void *items;
-@property (readonly) size_t count;
+/*!
+ * The size of a single item in the OFDataArray in bytes.
+ */
 @property (readonly) size_t itemSize;
-#endif
 
 /*!
  * @brief Creates a new OFDataArray with an item size of 1.
@@ -199,13 +198,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The number of items in the OFDataArray
  */
 - (size_t)count;
-
-/*!
- * @brief Returns the size of a single item in the OFDataArray in bytes.
- *
- * @return The size of a single item in the OFDataArray in bytes
- */
-- (size_t)itemSize;
 
 /*!
  * @brief Returns all items of the OFDataArray as a C array.

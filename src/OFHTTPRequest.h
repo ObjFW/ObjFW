@@ -80,15 +80,31 @@ typedef struct {
 	OFString *_remoteAddress;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The URL of the HTTP request.
+ */
 @property (copy) OFURL *URL;
+
+/*!
+ * The request method of the HTTP request.
+ */
 @property of_http_request_method_t method;
-@property of_http_request_protocol_version_t protocolVersion;
+
+/*!
+ * The headers for the HTTP request.
+ */
 @property OF_NULLABLE_PROPERTY (copy)
     OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
+
+/*!
+ * The entity body of the HTTP request.
+ */
 @property OF_NULLABLE_PROPERTY (retain) OFDataArray *body;
+
+/*!
+ * The remote address from which the request originates.
+ */
 @property OF_NULLABLE_PROPERTY (copy) OFString *remoteAddress;
-#endif
 
 /*!
  * @brief Creates a new OFHTTPRequest.
@@ -112,34 +128,6 @@ typedef struct {
  * @return An initialized OFHTTPRequest
  */
 - initWithURL: (OFURL*)URL;
-
-/*!
- * @brief Sets the URL of the HTTP request.
- *
- * @param URL The URL of the HTTP request
- */
-- (void)setURL: (OFURL*)URL;
-
-/*!
- * @brief Returns the URL of the HTTP request.
- *
- * @return The URL of the HTTP request
- */
-- (OFURL*)URL;
-
-/*!
- * @brief Sets the request method of the HTTP request.
- *
- * @param method The request method of the HTTP request
- */
-- (void)setMethod: (of_http_request_method_t)method;
-
-/*!
- * @brief Returns the request method of the HTTP request.
- *
- * @return The request method of the HTTP request
- */
-- (of_http_request_method_t)method;
 
 /*!
  * @brief Sets the protocol version of the HTTP request.
@@ -171,28 +159,6 @@ typedef struct {
 - (OFString*)protocolVersionString;
 
 /*!
- * @brief Sets a dictionary with headers for the HTTP request.
- *
- * @param headers A dictionary with headers for the HTTP request
- */
-- (void)setHeaders:
-    (nullable OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
-
-/*!
- * @brief Returns a dictionary with headers for the HTTP request.
- *
- * @return A dictionary with headers for the HTTP request.
- */
-- (nullable OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
-
-/*!
- * @brief Sets the entity body of the HTTP request.
- *
- * @param body The entity body of the HTTP request
- */
-- (void)setBody: (nullable OFDataArray*)body;
-
-/*!
  * @brief Sets the entity body of the HTTP request to the specified string
  *	  encoded in UTF-8.
  *
@@ -209,27 +175,6 @@ typedef struct {
  */
 - (void)setBodyFromString: (nullable OFString*)string
 		 encoding: (of_string_encoding_t)encoding;
-
-/*!
- * @brief Returns the entity body of the HTTP request.
- *
- * @return The entity body of the HTTP request
- */
-- (nullable OFDataArray*)body;
-
-/*!
- * @brief Sets the remote address from which the request originates.
- *
- * @param remoteAddress The remote address from which the request originates
- */
-- (void)setRemoteAddress: (nullable OFString*)remoteAddress;
-
-/*!
- * @brief Returns the remote address from which the request originates.
- *
- * @return The remote address from which the request originates
- */
-- (nullable OFString*)remoteAddress;
 @end
 
 #ifdef __cplusplus

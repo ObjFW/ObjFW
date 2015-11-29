@@ -33,9 +33,10 @@
 	OFThread *_thread;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The thread which is still running.
+ */
 @property (readonly, retain) OFThread *thread;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased thread still running exception.
@@ -52,11 +53,4 @@
  * @return An initialized thread still running exception
  */
 - initWithThread: (OFThread*)thread;
-
-/*!
- * @brief Returns the thread which is still running.
- *
- * @return The thread which is still running
- */
-- (OFThread*)thread;
 @end

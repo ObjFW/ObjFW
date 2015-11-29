@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFUnknownXMLEntityException
+@synthesize entityName = _entityName;
+
 + (instancetype)exceptionWithEntityName: (OFString*)entityName
 {
 	return [[[self alloc] initWithEntityName: entityName] autorelease];
@@ -51,10 +53,5 @@
 	return [OFString stringWithFormat:
 	    @"A parser encountered an unknown XML entity named %@!",
 	    _entityName];
-}
-
-- (OFString*)entityName
-{
-	OF_GETTER(_entityName, true)
 }
 @end

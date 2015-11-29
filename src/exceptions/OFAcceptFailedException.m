@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFAcceptFailedException
+@synthesize socket = _socket, errNo = _errNo;
+
 + (instancetype)exceptionWithSocket: (id)socket
 			      errNo: (int)errNo
 {
@@ -55,15 +57,5 @@
 	return [OFString stringWithFormat:
 	    @"Failed to accept connection in socket of class %@: %@",
 	    [_socket class], of_strerror(_errNo)];
-}
-
-- (id)socket
-{
-	OF_GETTER(_socket, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

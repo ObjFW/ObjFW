@@ -26,9 +26,10 @@
 	id _object;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The object which is not open, connected or bound.
+ */
 @property (readonly, retain) id object;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased not open exception.
@@ -45,11 +46,4 @@
  * @return An initialized not open exception
  */
 - initWithObject: (id)object;
-
-/*!
- * @brief Returns the object which is not open, connected or bound.
- *
- * @return The object which is not open, connected or bound
- */
-- (id)object;
 @end

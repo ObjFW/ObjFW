@@ -112,10 +112,11 @@ OF_ASSUME_NONNULL_BEGIN
 	id <OFXMLElementBuilderDelegate> _delegate;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The delegate for the OFXMLElementBuilder.
+ */
 @property OF_NULLABLE_PROPERTY (assign)
     id <OFXMLElementBuilderDelegate> delegate;
-#endif
 
 /*!
  * @brief Creates a new element builder.
@@ -123,20 +124,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFXMLElementBuilder
  */
 + (instancetype)elementBuilder;
-
-/*!
- * @brief Sets the delegate for the OFXMLElementBuilder.
- *
- * @param delegate The delegate for the OFXMLElementBuilder
- */
-- (void)setDelegate: (nullable id <OFXMLElementBuilderDelegate>)delegate;
-
-/*!
- * @brief Returns the delegate for the OFXMLElementBuilder.
- *
- * @return The delegate for the OFXMLElementBuilder
- */
-- (nullable id <OFXMLElementBuilderDelegate>)delegate;
 @end
 
 @interface OFObject (OFXMLElementBuilderDelegate) <OFXMLElementBuilderDelegate>

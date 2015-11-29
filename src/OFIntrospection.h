@@ -49,32 +49,20 @@ enum {
 	const char *_typeEncoding;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The selector of the method.
+ */
 @property (readonly) SEL selector;
+
+/*!
+ * The name of the method.
+ */
 @property (readonly, copy) OFString *name;
-@property OF_NULLABLE_PROPERTY (assign, readonly) const char *typeEncoding;
-#endif
 
 /*!
- * @brief Returns the selector of the method.
- *
- * @return The selector of the method
+ * The type encoding for the method.
  */
-- (SEL)selector;
-
-/*!
- * @brief Returns the name of the method.
- *
- * @return The name of the method
- */
-- (OFString*)name;
-
-/*!
- * @brief Returns the type encoding for the method.
- *
- * @return The type encoding for the method
- */
-- (nullable const char*)typeEncoding;
+@property OF_NULLABLE_PROPERTY (readonly) const char *typeEncoding;
 @end
 
 /*!
@@ -89,21 +77,13 @@ enum {
 	OFString *_getter, *_setter;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *name;
-@property (readonly) unsigned attributes;
-@property OF_NULLABLE_PROPERTY (copy, readonly) OFString *getter, *setter;
-#endif
-
 /*!
- * @brief Returns the name of the property.
- *
- * @return The name of the property
+ * The name of the property.
  */
-- (OFString*)name;
+@property (readonly, copy) OFString *name;
 
 /*!
- * @brief Returns the attributes of the property.
+ * The attributes of the property.
  *
  * The attributes are a bitmask with the following possible flags:@n
  * Flag                          | Description
@@ -118,24 +98,18 @@ enum {
  * OF_PROPERTY_WEAK              | The property is declared `weak`
  * OF_PROPERTY_SYNTHESIZED       | The property is synthesized
  * OF_PROPERTY_DYNAMIC           | The property is dynamic
- *
- * @return The attributes of the property
  */
-- (unsigned)attributes;
+@property (readonly) unsigned attributes;
 
 /*!
- * @brief Returns the name of the getter.
- *
- * @return The name of the getter
+ * The name of the getter.
  */
-- (nullable OFString*)getter;
+@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *getter;
 
 /*!
- * @brief Returns the name of the setter.
- *
- * @return The name of the setter
+ * @return The name of the setter.
  */
-- (nullable OFString*)setter;
+@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *setter;
 @end
 
 /*!
@@ -150,32 +124,20 @@ enum {
 	ptrdiff_t _offset;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the instance variable.
+ */
 @property (readonly, copy) OFString *name;
+
+/*!
+ * The offset of the instance variable.
+ */
 @property (readonly) ptrdiff_t offset;
-@property OF_NULLABLE_PROPERTY (assign, readonly) const char *typeEncoding;
-#endif
 
 /*!
- * @brief Returns the name of the instance variable.
- *
- * @return The name of the instance variable
+ * The type encoding for the instance variable.
  */
-- (OFString*)name;
-
-/*!
- * @brief Returns the offset of the instance variable.
- *
- * @return The offset of the instance variable
- */
-- (ptrdiff_t)offset;
-
-/*!
- * @brief Returns the type encoding for the instance variable.
- *
- * @return The type encoding for the instance variable
- */
-- (nullable const char*)typeEncoding;
+@property OF_NULLABLE_PROPERTY (readonly) const char *typeEncoding;
 @end
 
 /*!
@@ -191,45 +153,18 @@ enum {
 	OFMutableArray OF_GENERIC(OFInstanceVariable*) *_instanceVariables;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The class methods of the class.
+ */
 @property (readonly, copy) OFArray OF_GENERIC(OFMethod*) *classMethods;
+
+/*!
+ * The instance methods of the class.
+ */
 @property (readonly, copy) OFArray OF_GENERIC(OFMethod*) *instanceMethods;
-@property (readonly, copy) OFArray OF_GENERIC(OFProperty*) *properties;
-@property (readonly, copy)
-    OFArray OF_GENERIC(OFInstanceVariable*) *instanceVariables;
-#endif
 
 /*!
- * @brief Creates a new introspection for the specified class.
- *
- * @return A new, autoreleased introspection for the specified class
- */
-+ (instancetype)introspectionWithClass: (Class)class_;
-
-/*!
- * @brief Initializes an already allocated OFIntrospection with the specified
- *	  class.
- *
- * @return An initialized OFIntrospection
- */
-- initWithClass: (Class)class_;
-
-/*!
- * @brief Returns the class methods of the class.
- *
- * @return An array of objects of class @ref OFMethod
- */
-- (OFArray OF_GENERIC(OFMethod*)*)classMethods;
-
-/*!
- * @brief Returns the instance methods of the class.
- *
- * @return An array of objects of class @ref OFMethod
- */
-- (OFArray OF_GENERIC(OFMethod*)*)instanceMethods;
-
-/*!
- * @brief Returns the properties of the class.
+ * The properties of the class.
  *
  * @warning **Do not rely on this, as this behaves differently depending on the
  *	    compiler and ABI used!**
@@ -247,19 +182,31 @@ enum {
  *
  * @warning GCC does not emit any data for property introspection for the GNU
  *	    ABI.
- *
- * @return An array of objects of class @ref OFProperty
  */
-- (OFArray OF_GENERIC(OFProperty*)*)properties;
+@property (readonly, copy) OFArray OF_GENERIC(OFProperty*) *properties;
 
 /*!
- * @brief Returns the instance variables of the class.
- *
- * @return An array of objects of class @ref OFInstanceVariable
+ * The instance variables of the class.
  */
-- (OFArray OF_GENERIC(OFInstanceVariable*)*)instanceVariables;
+@property (readonly, copy)
+    OFArray OF_GENERIC(OFInstanceVariable*) *instanceVariables;
 
 /* TODO: protocols */
+
+/*!
+ * @brief Creates a new introspection for the specified class.
+ *
+ * @return A new, autoreleased introspection for the specified class
+ */
++ (instancetype)introspectionWithClass: (Class)class_;
+
+/*!
+ * @brief Initializes an already allocated OFIntrospection with the specified
+ *	  class.
+ *
+ * @return An initialized OFIntrospection
+ */
+- initWithClass: (Class)class_;
 @end
 
 OF_ASSUME_NONNULL_END

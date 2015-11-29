@@ -78,6 +78,9 @@ of_http_request_method_from_string(const char *string)
 }
 
 @implementation OFHTTPRequest
+@synthesize URL = _URL, method = _method, headers = _headers, body = _body;
+@synthesize remoteAddress = _remoteAddress;
+
 + (instancetype)request
 {
 	return [[[self alloc] init] autorelease];
@@ -182,26 +185,6 @@ of_http_request_method_from_string(const char *string)
 	return hash;
 }
 
-- (void)setURL: (OFURL*)URL
-{
-	OF_SETTER(_URL, URL, true, 1)
-}
-
-- (OFURL*)URL
-{
-	OF_GETTER(_URL, true)
-}
-
-- (void)setMethod: (of_http_request_method_t)method
-{
-	_method = method;
-}
-
-- (of_http_request_method_t)method
-{
-	return _method;
-}
-
 - (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
@@ -248,21 +231,6 @@ of_http_request_method_from_string(const char *string)
 					   _protocolVersion.minor];
 }
 
-- (void)setHeaders: (OFDictionary*)headers
-{
-	OF_SETTER(_headers, headers, true, 1)
-}
-
-- (OFDictionary*)headers
-{
-	OF_GETTER(_headers, true)
-}
-
-- (void)setBody: (OFDataArray*)body
-{
-	OF_SETTER(_body, body, true, 0)
-}
-
 - (void)setBodyFromString: (OFString*)string
 {
 	[self setBodyFromString: string
@@ -280,21 +248,6 @@ of_http_request_method_from_string(const char *string)
 	[self setBody: body];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (OFDataArray*)body
-{
-	OF_GETTER(_body, true)
-}
-
-- (void)setRemoteAddress: (OFString*)remoteAddress
-{
-	OF_SETTER(_remoteAddress, remoteAddress, true, 1)
-}
-
-- (OFString*)remoteAddress
-{
-	OF_GETTER(_remoteAddress, true)
 }
 
 - (OFString*)description

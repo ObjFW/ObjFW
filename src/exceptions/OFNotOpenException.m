@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFNotOpenException
+@synthesize object = _object;
+
 + (instancetype)exceptionWithObject: (id)object
 {
 	return [[[self alloc] initWithObject: object] autorelease];
@@ -51,10 +53,5 @@
 	return [OFString stringWithFormat:
 	    @"The object of type %@ is not open, connected or bound!",
 	    [_object class]];
-}
-
-- (id)object
-{
-	OF_GETTER(_object, true)
 }
 @end

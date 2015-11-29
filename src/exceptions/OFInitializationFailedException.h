@@ -28,9 +28,10 @@
 	Class _inClass;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) Class inClass;
-#endif
+/*!
+ * The class for which initialization failed.
+ */
+@property (readonly, assign) Class inClass;
 
 /*!
  * @brief Creates a new, autoreleased initialization failed exception.
@@ -47,11 +48,4 @@
  * @return An initialized initialization failed exception
  */
 - initWithClass: (Class)class_;
-
-/*!
- * @brief Returns the class for which initialization failed.
- *
- * @return The class for which initialization failed
- */
-- (Class)inClass;
 @end

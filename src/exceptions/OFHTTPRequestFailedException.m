@@ -22,6 +22,8 @@
 #import "OFHTTPResponse.h"
 
 @implementation OFHTTPRequestFailedException
+@synthesize request = _request, response = _response;
+
 + (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
 			    response: (OFHTTPResponse*)response
 {
@@ -61,15 +63,5 @@
 	return [OFString stringWithFormat:
 	    @"An HTTP %s request with URL %@ failed with code %d!", method,
 	    [_request URL], [_response statusCode]];
-}
-
-- (OFHTTPRequest*)request
-{
-	OF_GETTER(_request, true)
-}
-
-- (OFHTTPResponse*)response
-{
-	OF_GETTER(_response, true)
 }
 @end

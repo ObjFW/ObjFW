@@ -28,11 +28,20 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The path of the source item.
+ */
 @property (readonly, copy) OFString *sourcePath;
+
+/*!
+ * The destination path.
+ */
 @property (readonly, copy) OFString *destinationPath;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased copy item failed exception.
@@ -57,25 +66,4 @@
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath
 	       errNo: (int)errNo;
-
-/*!
- * @brief Returns the path of the source item.
- *
- * @return The path of the source item
- */
-- (OFString*)sourcePath;
-
-/*!
- * @brief Returns the destination path.
- *
- * @return The destination path
- */
-- (OFString*)destinationPath;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

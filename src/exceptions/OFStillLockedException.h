@@ -28,9 +28,10 @@
 	id <OFLocking> _lock;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The lock which is still locked.
+ */
 @property (readonly, retain) id <OFLocking> lock;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased still locked exception.
@@ -47,11 +48,4 @@
  * @return An initialized still locked exception
  */
 - initWithLock: (id <OFLocking>)lock;
-
-/*!
- * @brief Returns the lock which is still locked.
- *
- * @return The lock which is still locked
- */
-- (id <OFLocking>)lock;
 @end

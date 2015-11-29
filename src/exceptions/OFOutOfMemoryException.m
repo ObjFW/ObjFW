@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFOutOfMemoryException
+@synthesize requestedSize = _requestedSize;
+
 + (instancetype)exceptionWithRequestedSize: (size_t)requestedSize
 {
 	return [[[self alloc]
@@ -42,10 +44,5 @@
 		    @"Could not allocate %zu bytes!", _requestedSize];
 	else
 		return @"Could not allocate enough memory!";
-}
-
-- (size_t)requestedSize
-{
-	return _requestedSize;
 }
 @end

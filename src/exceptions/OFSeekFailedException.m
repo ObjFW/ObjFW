@@ -21,6 +21,9 @@
 #import "OFSeekableStream.h"
 
 @implementation OFSeekFailedException
+@synthesize stream = _stream, offset = _offset, whence = _whence;
+@synthesize errNo = _errNo;
+
 + (instancetype)exceptionWithStream: (OFSeekableStream*)stream
 			     offset: (of_offset_t)offset
 			     whence: (int)whence
@@ -64,25 +67,5 @@
 	return [OFString stringWithFormat:
 	    @"Seeking failed in stream of type %@: %@",
 	    [_stream class], of_strerror(_errNo)];
-}
-
-- (OFSeekableStream*)stream
-{
-	OF_GETTER(_stream, true)
-}
-
-- (of_offset_t)offset
-{
-	return _offset;
-}
-
-- (int)whence
-{
-	return _whence;
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

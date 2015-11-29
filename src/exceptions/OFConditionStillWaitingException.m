@@ -21,6 +21,8 @@
 #import "OFCondition.h"
 
 @implementation OFConditionStillWaitingException
+@synthesize condition = _condition;
+
 + (instancetype)exceptionWithCondition: (OFCondition*)condition
 {
 	return [[[self alloc] initWithCondition: condition] autorelease];
@@ -52,10 +54,5 @@
 	return [OFString stringWithFormat:
 	    @"Deallocation of a condition of type %@ was tried, even though a "
 	    @"thread was still waiting for it!", [_condition class]];
-}
-
-- (OFCondition*)condition
-{
-	OF_GETTER(_condition, true)
 }
 @end

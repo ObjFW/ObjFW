@@ -29,9 +29,10 @@
 	id _object;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The object which was mutated during enumeration.
+ */
 @property (readonly, retain) id object;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased enumeration mutation exception.
@@ -48,11 +49,4 @@
  * @return An initialized enumeration mutation exception
  */
 - initWithObject: (id)object;
-
-/*!
- * @brief Returns the object which was mutated during enumeration.
- *
- * @return The object which was mutated during enumeration
- */
-- (id)object;
 @end

@@ -64,6 +64,8 @@ enum {
 #define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
 @implementation OFKernelEventObserver
+@synthesize delegate = _delegate;
+
 + (void)initialize
 {
 	if (self != [OFKernelEventObserver class])
@@ -177,16 +179,6 @@ enum {
 #endif
 
 	[super dealloc];
-}
-
-- (id <OFKernelEventObserverDelegate>)delegate
-{
-	return _delegate;
-}
-
-- (void)setDelegate: (id <OFKernelEventObserverDelegate>)delegate
-{
-	_delegate = delegate;
 }
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object

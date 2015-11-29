@@ -21,6 +21,8 @@
 #import "OFXMLParser.h"
 
 @implementation OFMalformedXMLException
+@synthesize parser = _parser;
+
 + (instancetype)exceptionWithParser: (OFXMLParser*)parser
 {
 	return [[[self alloc] initWithParser: parser] autorelease];
@@ -50,10 +52,5 @@
 		    @"line %zu!", [_parser class], [_parser lineNumber]];
 	else
 		return @"An XML parser encountered malformed XML!";
-}
-
-- (OFXMLParser*)parser
-{
-	OF_GETTER(_parser, true)
 }
 @end

@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFLockFailedException
+@synthesize lock = _lock;
+
 + (instancetype)exceptionWithLock: (id <OFLocking>)lock
 {
 	return [[[self alloc] initWithLock: lock] autorelease];
@@ -48,10 +50,5 @@
 		    @"A lock of type %@ could not be locked!", [_lock class]];
 	else
 		return @"A lock could not be locked!";
-}
-
-- (id <OFLocking>)lock
-{
-	OF_GETTER(_lock, true)
 }
 @end

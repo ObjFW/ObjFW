@@ -34,9 +34,10 @@
 	OFCondition *_condition;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The condition for which could not be waited.
+ */
 @property (readonly, retain) OFCondition *condition;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased condition wait failed exception.
@@ -53,11 +54,4 @@
  * @return An initialized condition wait failed exception
  */
 - initWithCondition: (OFCondition*)condition;
-
-/*!
- * @brief Return the condition for which could not be waited.
- *
- * @return The condition for which could not be waited
- */
-- (OFCondition*)condition;
 @end

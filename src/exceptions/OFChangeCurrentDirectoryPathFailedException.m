@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFChangeCurrentDirectoryPathFailedException
+@synthesize path = _path, errNo = _errNo;
+
 + (instancetype)exceptionWithPath: (OFString*)path
 			    errNo: (int)errNo
 {
@@ -60,15 +62,5 @@
 	return [OFString stringWithFormat:
 	    @"Failed to change the current directory path to %@: %@",
 	    _path, of_strerror(_errNo)];
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

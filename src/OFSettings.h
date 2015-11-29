@@ -37,9 +37,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_applicationName;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the application whose settings are accessed by the instance.
+ */
 @property (readonly, copy) OFString *applicationName;
-#endif
 
 /*!
  * @brief Create a new OFSettings instance for the application with the
@@ -60,15 +61,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFSettings instance
  */
 - initWithApplicationName: (OFString*)applicationName;
-
-/*!
- * @brief Returns the name of the application whose settings are accessed by
- *	  the instance
- *
- * @return The name of the application whose settings are accessed by the
- *	   instance
- */
-- (OFString*)applicationName;
 
 /*!
  * @brief Sets the specified path to the specified string.

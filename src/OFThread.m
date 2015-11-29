@@ -126,7 +126,7 @@ callMain(id object)
 
 @implementation OFThread
 #ifdef OF_HAVE_THREADS
-# if defined(OF_HAVE_PROPERTIES) && defined(OF_HAVE_BLOCKS)
+# ifdef OF_HAVE_BLOCKS
 @synthesize threadBlock = _threadBlock;
 # endif
 
@@ -380,20 +380,18 @@ callMain(id object)
 
 - (OFString*)name
 {
-	OF_GETTER(_name, true)
+	return [[_name copy] autorelease];
 }
 
 - (void)setName: (OFString*)name
 {
-	OF_SETTER(_name, name, true, 1)
+	OFString *old = name;
+	_name = [name copy];
+	[old release];
 
-	if (_running == OF_THREAD_RUNNING) {
-		if (_name != nil)
-			of_thread_set_name(_thread, [_name UTF8String]);
-		else
-			of_thread_set_name(_thread,
-			    class_getName([self class]));
-	}
+	if (_running == OF_THREAD_RUNNING)
+		of_thread_set_name(_thread, (_name != nil
+		    ? [_name UTF8String] : class_getName([self class])));
 }
 
 - (float)priority

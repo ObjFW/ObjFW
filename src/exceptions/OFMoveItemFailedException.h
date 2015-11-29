@@ -28,10 +28,20 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *sourcePath, *destinationPath;
+/*!
+ * The original path.
+ */
+@property (readonly, copy) OFString *sourcePath;
+
+/*!
+ * The new path.
+ */
+@property (readonly, copy) OFString *destinationPath;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased move item failed exception.
@@ -56,25 +66,4 @@
 - initWithSourcePath: (OFString*)sourcePath
      destinationPath: (OFString*)destinationPath
 	       errNo: (int)errNo;
-
-/*!
- * @brief Returns the original path.
- *
- * @return The original path
- */
-- (OFString*)sourcePath;
-
-/*!
- * @brief Returns the new path.
- *
- * @return The new path
- */
-- (OFString*)destinationPath;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

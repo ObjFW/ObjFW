@@ -130,13 +130,21 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy, nonatomic) OFString *programName;
-@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
-@property (readonly, copy, nonatomic)
+/*!
+ * The name of the program (argv[0]).
+ */
+@property (readonly, assign) OFString *programName;
+
+/*!
+ * The arguments passed to the application.
+ */
+@property (readonly, assign) OFArray OF_GENERIC(OFString*) *arguments;
+
+/*!
+ * The environment of the application.
+ */
+@property (readonly, assign)
     OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
-@property OF_NULLABLE_PROPERTY (assign) id <OFApplicationDelegate> delegate;
-#endif
 
 /*!
  * @brief Returns the only OFApplication instance in the application.
@@ -186,27 +194,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)getArgumentCount: (int *_Nonnull *_Nonnull)argc
        andArgumentValues: (char *_Nonnull *_Nonnull *_Nonnull[])argv;
-
-/*!
- * @brief Returns the name of the program (argv[0]).
- *
- * @return The name of the program (argv[0])
- */
-- (OFString*)programName;
-
-/*!
- * @brief Returns the arguments passed to the application.
- *
- * @return The arguments passed to the application
- */
-- (OFArray OF_GENERIC(OFString*)*)arguments;
-
-/*!
- * @brief Returns the environment of the application.
- *
- * @return The environment of the application
- */
-- (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
 
 /*!
  * @brief Returns the delegate of the application.

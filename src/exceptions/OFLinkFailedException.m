@@ -21,6 +21,9 @@
 
 #ifdef OF_HAVE_LINK
 @implementation OFLinkFailedException
+@synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
+@synthesize errNo = _errNo;
+
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
 				  errNo: (int)errNo
@@ -66,21 +69,6 @@
 	return [OFString stringWithFormat:
 	    @"Failed to link file %@ to %@: %@",
 	    _sourcePath, _destinationPath, of_strerror(_errNo)];
-}
-
-- (OFString*)sourcePath
-{
-	OF_GETTER(_sourcePath, true)
-}
-
-- (OFString*)destinationPath
-{
-	OF_GETTER(_destinationPath, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end
 #endif

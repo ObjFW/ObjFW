@@ -197,6 +197,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 @implementation OFTCPSocket
+@synthesize SOCKS5Host = _SOCKS5Host, SOCKS5Port = _SOCKS5Port;
+
 + (void)setSOCKS5Host: (OFString*)host
 {
 	id old = defaultSOCKS5Host;
@@ -235,6 +237,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return self;
 }
 
+- (void)dealloc
+{
+	[_SOCKS5Host release];
+
+	[super dealloc];
+}
+
 - (void)close
 {
 	[super close];
@@ -245,33 +254,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_port = 0;
 	}
 #endif
-}
-
-- (void)dealloc
-{
-	[_SOCKS5Host release];
-
-	[super dealloc];
-}
-
-- (void)setSOCKS5Host: (OFString*)SOCKS5Host
-{
-	OF_SETTER(_SOCKS5Host, SOCKS5Host, true, 1)
-}
-
-- (OFString*)SOCKS5Host
-{
-	OF_GETTER(_SOCKS5Host, true)
-}
-
-- (void)setSOCKS5Port: (uint16_t)SOCKS5Port
-{
-	_SOCKS5Port = SOCKS5Port;
-}
-
-- (uint16_t)SOCKS5Port
-{
-	return _SOCKS5Port;
 }
 
 - (void)connectToHost: (OFString*)host

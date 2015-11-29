@@ -77,14 +77,12 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	OFString *_name;
 }
 
-# ifdef OF_HAVE_PROPERTIES
-#  ifdef OF_HAVE_BLOCKS
-@property (copy) of_thread_block_t threadBlock;
-#  endif
-@property (copy) OFString *name;
-@property float priority;
-@property size_t stackSize;
-# endif
+#ifdef OF_HAVE_BLOCKS
+/*!
+ * The block to execute in the thread.
+ */
+@property (readonly, copy) of_thread_block_t threadBlock;
+#endif
 
 /*!
  * @brief Creates a new thread.

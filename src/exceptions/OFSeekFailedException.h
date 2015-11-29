@@ -30,11 +30,25 @@
 	int _whence, _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The stream for which seeking failed.
+ */
 @property (readonly, retain) OFSeekableStream *stream;
+
+/*!
+ * The offset to which seeking failed.
+ */
 @property (readonly) of_offset_t offset;
-@property (readonly) int whence, errNo;
-#endif
+
+/*!
+ * To what the offset is relative.
+ */
+@property (readonly) int whence;
+
+/*!
+ * The errno of the error that occurred.
+ */
+@property (readonly) int errNo;
 
 /*!
  * @brief Creates a new, autoreleased seek failed exception.
@@ -63,32 +77,4 @@
 	  offset: (of_offset_t)offset
 	  whence: (int)whence
 	   errNo: (int)errNo;
-
-/*!
- * @brief Returns the stream for which seeking failed.
- *
- * @return The stream for which seeking failed
- */
-- (OFSeekableStream*)stream;
-
-/*!
- * @brief Returns the offset to which seeking failed.
- *
- * @return The offset to which seeking failed
- */
-- (of_offset_t)offset;
-
-/*!
- * @brief Returns to what the offset is relative.
- *
- * @return To what the offset is relative
- */
-- (int)whence;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

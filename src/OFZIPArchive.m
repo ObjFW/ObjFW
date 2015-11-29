@@ -151,6 +151,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 
 @implementation OFZIPArchive
+@synthesize archiveComment = _archiveComment;
+
 + (instancetype)archiveWithSeekableStream: (OFSeekableStream*)stream
 {
 	return [[[self alloc] initWithSeekableStream: stream] autorelease];
@@ -333,12 +335,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (OFArray*)entries
 {
-	OF_GETTER(_entries, true)
-}
-
-- (OFString*)archiveComment
-{
-	OF_GETTER(_archiveComment, true)
+	return [[_entries copy] autorelease];
 }
 
 - (OFStream*)streamForReadingFile: (OFString*)path

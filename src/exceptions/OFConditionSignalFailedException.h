@@ -34,9 +34,10 @@
 	OFCondition *_condition;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The condition which could not be signaled.
+ */
 @property (readonly, retain) OFCondition *condition;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased condition signal failed exception.
@@ -53,11 +54,4 @@
  * @return An initialized condition signal failed exception
  */
 - initWithCondition: (OFCondition*)condition;
-
-/*!
- * @brief Return the condition which could not be signaled.
- *
- * @return The condition which could not be signaled
- */
-- (OFCondition*)condition;
 @end

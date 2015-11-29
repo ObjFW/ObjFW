@@ -128,10 +128,11 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The delegate for the OFKernelEventObserver.
+ */
 @property OF_NULLABLE_PROPERTY (assign)
     id <OFKernelEventObserverDelegate> delegate;
-#endif
 
 /*!
  * @brief Creates a new OFKernelEventObserver.
@@ -139,20 +140,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFKernelEventObserver
  */
 + (instancetype)observer;
-
-/*!
- * @brief Returns the delegate for the OFKernelEventObserver.
- *
- * @return The delegate for the OFKernelEventObserver
- */
-- (nullable id <OFKernelEventObserverDelegate>)delegate;
-
-/*!
- * @brief Sets the delegate for the OFKernelEventObserver.
- *
- * @param delegate The delegate for the OFKernelEventObserver
- */
-- (void)setDelegate: (nullable id <OFKernelEventObserverDelegate>)delegate;
 
 /*!
  * @brief Adds an object to observe for reading.

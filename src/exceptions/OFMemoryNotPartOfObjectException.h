@@ -29,10 +29,15 @@
 	id _object;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * A pointer to the memory which is not part of the object.
+ */
 @property (readonly) void *pointer;
+
+/*!
+ * The object which the memory is not part of.
+ */
 @property (readonly, retain) id object;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased memory not part of object exception.
@@ -53,18 +58,4 @@
  */
 - initWithPointer: (void*)pointer
 	   object: (id)object;
-
-/*!
- * @brief Returns a pointer to the memory which is not part of the object.
- *
- * @return A pointer to the memory which is not part of the object
- */
-- (void*)pointer;
-
-/*!
- * @brief Returns the object which the memory is not part of.
- *
- * @return The object which the memory is not part of
- */
-- (id)object;
 @end

@@ -21,6 +21,8 @@
 #import "OFCondition.h"
 
 @implementation OFConditionSignalFailedException
+@synthesize condition = _condition;
+
 + (instancetype)exceptionWithCondition: (OFCondition*)condition
 {
 	return [[[self alloc] initWithCondition: condition] autorelease];
@@ -51,10 +53,5 @@
 {
 	return [OFString stringWithFormat:
 	    @"Signaling a condition of type %@ failed!", [_condition class]];
-}
-
-- (OFCondition*)condition
-{
-	OF_GETTER(_condition, true)
 }
 @end

@@ -33,11 +33,20 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The path of the item.
+ */
 @property (readonly, copy) OFString *path;
+
+/*!
+ * The new permissions for the item.
+ */
 @property (readonly) mode_t permissions;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased change permissions failed exception.
@@ -62,25 +71,4 @@
 - initWithPath: (OFString*)path
    permissions: (mode_t)permissions
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns the path of the item.
- *
- * @return The path of the item
- */
-- (OFString*)path;
-
-/*!
- * @brief Returns the new permissions for the item.
- *
- * @return The new permissions for the item
- */
-- (mode_t)permissions;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

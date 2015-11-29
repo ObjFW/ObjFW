@@ -21,6 +21,8 @@
 #import "OFURL.h"
 
 @implementation OFUnsupportedProtocolException
+@synthesize URL = _URL;
+
 + (instancetype)exceptionWithURL: (OFURL*)url
 {
 	return [[[self alloc] initWithURL: url] autorelease];
@@ -35,12 +37,7 @@
 {
 	self = [super init];
 
-	@try {
-		_URL = [URL copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	_URL = [URL retain];
 
 	return self;
 }
@@ -56,10 +53,5 @@
 {
 	return [OFString stringWithFormat:
 	    @"The protocol of URL %@ is not supported!", _URL];
-}
-
-- (OFURL*)URL
-{
-	OF_GETTER(_URL, true)
 }
 @end

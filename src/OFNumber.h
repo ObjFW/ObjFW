@@ -147,9 +147,10 @@ typedef enum {
 	of_number_type_t _type;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The type of the number.
+ */
 @property (readonly) of_number_type_t type;
-#endif
 
 /*!
  * @brief Creates a new OFNumber with the specified bool.
@@ -611,13 +612,6 @@ typedef enum {
  * @return An initialized OFNumber
  */
 - initWithDouble: (double)double_;
-
-/*!
- * @brief Returns the type of the number.
- *
- * @return An of_number_type_t indicating the type of the number
- */
-- (of_number_type_t)type;
 
 /*!
  * @brief Returns the OFNumber as a bool.

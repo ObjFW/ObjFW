@@ -28,9 +28,10 @@
 	OFString *_entityName;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the unknown XML entity.
+ */
 @property (readonly, copy) OFString *entityName;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased unknown XML entity exception.
@@ -47,11 +48,4 @@
  * @return An initialized unknown XML entity exception
  */
 - initWithEntityName: (OFString*)entityName;
-
-/*!
- * @brief Returns the name of the unknown XML entity
- *
- * @return The name of the unknown XML entity
- */
-- (OFString*)entityName;
 @end

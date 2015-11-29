@@ -29,9 +29,10 @@
 	id <OFHash> _hashObject;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The hash which has already been calculated.
+ */
 @property (readonly, retain) id <OFHash> hashObject;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased hash already calculated exception.
@@ -48,11 +49,4 @@
  * @return An initialized hash already calculated exception
  */
 - initWithHash: (id <OFHash>)hash;
-
-/*!
- * @brief Returns the hash which has already been calculated.
- *
- * @return The hash which has already been calculated
- */
-- (id <OFHash>)hashObject;
 @end

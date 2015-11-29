@@ -46,10 +46,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFStream *_lastReturnedStream;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The archive comment.
+ */
 @property (readonly, copy) OFString *archiveComment;
-@property (readonly, copy) OFArray OF_GENERIC(OFZIPArchiveEntry*) *entries;
-#endif
 
 /*!
  * @brief Creates a new OFZIPArchive object with the specified seekable stream.
@@ -96,13 +96,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The entries of the central directory of the archive as an array
  */
 - (OFArray OF_GENERIC(OFZIPArchiveEntry*)*)entries;
-
-/*!
- * @brief Returns the archive comment.
- *
- * @return The archive comment
- */
-- (OFString*)archiveComment;
 
 /*!
  * @brief Returns a stream for reading the specified file from the archive.

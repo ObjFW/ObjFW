@@ -36,10 +36,15 @@
 	OFHTTPResponse *_response;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The HTTP request which failed.
+ */
 @property (readonly, retain) OFHTTPRequest *request;
+
+/*!
+ * The response for the failed HTTP request.
+ */
 @property (readonly, retain) OFHTTPResponse *response;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased HTTP request failed exception.
@@ -60,18 +65,4 @@
  */
 - initWithRequest: (OFHTTPRequest*)request
 	 response: (OFHTTPResponse*)response;
-
-/*!
- * @brief Returns the HTTP request which failed.
- *
- * @return The HTTP request which failed
- */
-- (OFHTTPRequest*)request;
-
-/*!
- * @brief Returns the response for the failed HTTP request.
- *
- * @return The response for the failed HTTP request
- */
-- (OFHTTPResponse*)response;
 @end

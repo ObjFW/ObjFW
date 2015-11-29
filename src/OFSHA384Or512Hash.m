@@ -121,6 +121,8 @@ processBlock(uint64_t *state, uint64_t *buffer)
 }
 
 @implementation OFSHA384Or512Hash
+@synthesize calculated = _calculated;
+
 + (size_t)digestSize
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -199,11 +201,6 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	_calculated = true;
 
 	return (const uint8_t*)_state;
-}
-
-- (bool)isCalculated
-{
-	return _calculated;
 }
 
 - (void)reset

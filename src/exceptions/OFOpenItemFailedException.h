@@ -20,7 +20,7 @@
  * @class OFOpenItemFailedException \
  *	  OFOpenItemFailedException.h ObjFW/OFOpenItemFailedException.h
  *
- * @brief An exception indicating an item couldn't be opened.
+ * @brief An exception indicating an item could not be opened.
  */
 @interface OFOpenItemFailedException: OFException
 {
@@ -28,10 +28,20 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly, copy) OFString *path, *mode;
+/*!
+ * The path of the item which could not be opened.
+ */
+@property (readonly, copy) OFString *path;
+
+/*!
+ * The mode in which the item should have been opened.
+ */
+@property (readonly, copy) OFString *mode;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased open item failed exception.
@@ -76,7 +86,7 @@
 /*!
  * @brief Initializes an already allocated open item failed exception.
  *
- * @param path A string with the path of the item which couldn't be opened
+ * @param path A string with the path of the item which could not be opened
  * @return An initialized open item failed exception
  */
 - initWithPath: (OFString*)path;
@@ -84,7 +94,7 @@
 /*!
  * @brief Initializes an already allocated open item failed exception.
  *
- * @param path A string with the path of the item which couldn't be opened
+ * @param path A string with the path of the item which could not be opened
  * @param mode A string with the mode in which the item should have been opened
  * @return An initialized open item failed exception
  */
@@ -94,7 +104,7 @@
 /*!
  * @brief Initializes an already allocated open item failed exception.
  *
- * @param path A string with the path of the item which couldn't be opened
+ * @param path A string with the path of the item which could not be opened
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
@@ -104,7 +114,7 @@
 /*!
  * @brief Initializes an already allocated open item failed exception.
  *
- * @param path A string with the path of the item which couldn't be opened
+ * @param path A string with the path of the item which could not be opened
  * @param mode A string with the mode in which the item should have been opened
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
@@ -112,26 +122,4 @@
 - initWithPath: (OFString*)path
 	  mode: (OFString*)mode
 	 errNo: (int)errNo;
-
-/*!
- * @brief Returns a string with the path of the item which couldn't be opened.
- *
- * @return A string with the path of the item which couldn't be opened
- */
-- (OFString*)path;
-
-/*!
- * @brief Returns a string with the mode in which the item should have been
- *	  opened.
- *
- * @return A string with the mode in which the item should have been opened
- */
-- (OFString*)mode;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

@@ -119,6 +119,8 @@ unescapeString(OFString *string)
 @end
 
 @implementation OFINICategory
+@synthesize name = _name;
+
 - (instancetype)OF_init
 {
 	self = [super init];
@@ -144,16 +146,6 @@ unescapeString(OFString *string)
 	[_lines release];
 
 	[super dealloc];
-}
-
-- (void)setName: (OFString*)name
-{
-	OF_SETTER(_name, name, true, true)
-}
-
-- (OFString*)name
-{
-	OF_GETTER(_name, true)
 }
 
 - (void)OF_parseLine: (OFString*)line

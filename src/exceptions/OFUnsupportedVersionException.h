@@ -28,9 +28,10 @@
 	OFString *_version;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The version which is unsupported.
+ */
 @property (readonly, copy) OFString *version;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased unsupported version exception.
@@ -47,11 +48,4 @@
  * @return An initialized unsupported version exception
  */
 - initWithVersion: (OFString*)version;
-
-/*!
- * @brief Returns the version which is unsupported.
- *
- * @return The version which is unsupported
- */
-- (OFString*)version;
 @end

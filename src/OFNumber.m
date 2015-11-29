@@ -96,6 +96,8 @@
 @end
 
 @implementation OFNumber
+@synthesize type = _type;
+
 + (instancetype)numberWithBool: (bool)bool_
 {
 	return [[[self alloc] initWithBool: bool_] autorelease];
@@ -584,11 +586,6 @@
 	}
 
 	return self;
-}
-
-- (of_number_type_t)type
-{
-	return _type;
 }
 
 - (bool)boolValue

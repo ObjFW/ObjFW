@@ -31,15 +31,15 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_name, *_namespace, *_stringValue;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the attribute.
+ */
 @property (readonly, copy) OFString *name;
-# ifdef __cplusplus
-@property OF_NULLABLE_PROPERTY (readonly, copy, getter=namespace)
-    OFString *namespace_;
-# else
+
+/*!
+ * The namespace of the attribute.
+ */
 @property OF_NULLABLE_PROPERTY (readonly, copy) OFString *namespace;
-# endif
-#endif
 
 /*!
  * @brief Creates a new XML attribute.
@@ -84,20 +84,6 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithName: (OFString*)name
      namespace: (nullable OFString*)namespace_
    stringValue: (OFString*)stringValue;
-
-/*!
- * @brief Returns the name of the attribute as an autoreleased OFString.
- *
- * @return The name of the attribute as an autoreleased OFString
- */
-- (OFString*)name;
-
-/*!
- * @brief Returns the namespace of the attribute as an autoreleased OFString.
- *
- * @return The namespace of the attribute as an autoreleased OFString
- */
-- (nullable OFString*)namespace;
 @end
 
 OF_ASSUME_NONNULL_END

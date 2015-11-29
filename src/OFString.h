@@ -90,10 +90,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
-#ifdef OF_HAVE_PROPERTIES
-@property (readonly) size_t length;
-#endif
-
 /*!
  * @brief Creates a new OFString.
  *

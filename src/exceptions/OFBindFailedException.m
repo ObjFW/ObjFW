@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFBindFailedException
+@synthesize host = _host, port = _port, socket = _socket, errNo = _errNo;
+
 + (instancetype)exceptionWithHost: (OFString*)host
 			     port: (uint16_t)port
 			   socket: (id)socket
@@ -70,25 +72,5 @@
 	    @"Binding to port %" @PRIu16 @" on host %@ failed in socket of "
 	    @"type %@: %@",
 	    _port, _host, [_socket class], of_strerror(_errNo)];
-}
-
-- (OFString*)host
-{
-	OF_GETTER(_host, true)
-}
-
-- (uint16_t)port
-{
-	return _port;
-}
-
-- (id)socket
-{
-	OF_GETTER(_socket, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

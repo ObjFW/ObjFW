@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFStatItemFailedException
+@synthesize path = _path, errNo = _errNo;
+
 + (instancetype)exceptionWithPath: (OFString*)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
@@ -82,15 +84,5 @@
 	else
 		return [OFString stringWithFormat:
 		    @"Failed to stat item %@!", _path];
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

@@ -33,12 +33,16 @@ OF_ASSUME_NONNULL_BEGIN
 	OFDictionary OF_GENERIC(OFString*, OFString*) *_headers;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property of_http_request_protocol_version_t protocolVersion;
+/*!
+ * The status code of the reply to the HTTP request.
+ */
 @property short statusCode;
+
+/*!
+ * The headers of the reply to the HTTP request.
+ */
 @property OF_NULLABLE_PROPERTY (copy)
     OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
-#endif
 
 /*!
  * @brief Sets the protocol version of the HTTP request reply.
@@ -68,35 +72,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The protocol version of the HTTP request reply as a string
  */
 - (OFString*)protocolVersionString;
-
-/*!
- * @brief Returns the status code of the reply to the HTTP request.
- *
- * @return The status code of the reply to the HTTP request
- */
-- (short)statusCode;
-
-/*!
- * @brief Sets the status code of the reply to the HTTP request.
- *
- * @param statusCode The status code of the reply to the HTTP request
- */
-- (void)setStatusCode: (short)statusCode;
-
-/*!
- * @brief Returns the headers of the reply to the HTTP request.
- *
- * @return The headers of the reply to the HTTP request
- */
-- (nullable OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
-
-/*!
- * @brief Returns the headers of the reply to the HTTP request.
- *
- * @param headers The headers of the reply to the HTTP request
- */
-- (void)setHeaders:
-    (nullable OFDictionary OF_GENERIC(OFString*, OFString*)*)headers;
 
 /*!
  * @brief Returns the reply as a string, trying to detect the encoding.

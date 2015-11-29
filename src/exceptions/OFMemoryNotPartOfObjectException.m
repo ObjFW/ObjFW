@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFMemoryNotPartOfObjectException
+@synthesize pointer = _pointer, object = _object;
+
 + (instancetype)exceptionWithPointer: (void*)pointer
 			      object: (id)object
 {
@@ -57,15 +59,5 @@
 	    @"thus the memory allocation was not changed! It is also possible "
 	    @"that there was an attempt to free the same memory twice.",
 	    _pointer, [_object class]];
-}
-
-- (void*)pointer
-{
-	return _pointer;
-}
-
-- (id)object
-{
-	OF_GETTER(_object, true)
 }
 @end

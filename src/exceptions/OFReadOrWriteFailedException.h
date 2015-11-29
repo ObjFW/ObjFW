@@ -30,17 +30,26 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The stream which caused the read or write failed exception.
+ */
 @property (readonly, retain) id object;
+
+/*!
+ * The requested length of the data that could not be read / written.
+ */
 @property (readonly) size_t requestedLength;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed
- * @param requestedLength The requested length of the data that couldn't be
+ * @param requestedLength The requested length of the data that could not be
  *			  read / written
  * @return A new, autoreleased read or write failed exception
  */
@@ -51,7 +60,7 @@
  * @brief Creates a new, autoreleased read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed
- * @param requestedLength The requested length of the data that couldn't be
+ * @param requestedLength The requested length of the data that could not be
  *			  read / written
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased read or write failed exception
@@ -64,7 +73,7 @@
  * @brief Initializes an already allocated read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed
- * @param requestedLength The requested length of the data that couldn't be
+ * @param requestedLength The requested length of the data that could not be
  *			  read / written
  * @return A new open file failed exception
  */
@@ -75,7 +84,7 @@
  * @brief Initializes an already allocated read or write failed exception.
  *
  * @param object The object from which reading or to which writing failed
- * @param requestedLength The requested length of the data that couldn't be
+ * @param requestedLength The requested length of the data that could not be
  *			  read / written
  * @param errNo The errno of the error that occurred
  * @return A new open file failed exception
@@ -83,26 +92,4 @@
 -  initWithObject: (id)object
   requestedLength: (size_t)requestedLength
 	    errNo: (int)errNo;
-
-/*!
- * @brief Returns the object from which reading or to which writing failed
- *
- * @return The stream which caused the read or write failed exception
- */
-- (id)object;
-
-/*!
- * @brief Returns the requested length of the data that couldn't be read /
- *	  written.
- *
- * @return The requested length of the data that couldn't be read / written
- */
-- (size_t)requestedLength;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

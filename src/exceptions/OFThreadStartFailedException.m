@@ -21,6 +21,8 @@
 #import "OFThread.h"
 
 @implementation OFThreadStartFailedException
+@synthesize thread = _thread;
+
 + (instancetype)exceptionWithThread: (OFThread*)thread
 {
 	return [[[self alloc] initWithThread: thread] autorelease];
@@ -51,10 +53,5 @@
 {
 	return [OFString stringWithFormat:
 	    @"Starting a thread of type %@ failed!", [_thread class]];
-}
-
-- (OFThread*)thread
-{
-	OF_GETTER(_thread, true)
 }
 @end

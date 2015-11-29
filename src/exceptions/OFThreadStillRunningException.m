@@ -21,6 +21,8 @@
 #import "OFThread.h"
 
 @implementation OFThreadStillRunningException
+@synthesize thread = _thread;
+
 + (instancetype)exceptionWithThread: (OFThread*)thread
 {
 	return [[[self alloc] initWithThread: thread] autorelease];
@@ -52,10 +54,5 @@
 	return [OFString stringWithFormat:
 	    @"Deallocation of a thread of type %@ was tried, even though it "
 	    @"was still running!", [_thread class]];
-}
-
-- (OFThread*)thread
-{
-	OF_GETTER(_thread, true)
 }
 @end

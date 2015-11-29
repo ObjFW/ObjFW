@@ -32,6 +32,8 @@ static of_mutex_t mutex;
 #endif
 
 @implementation OFAddressTranslationFailedException
+@synthesize host = _host;
+
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
@@ -74,8 +76,8 @@ static of_mutex_t mutex;
 	return self;
 }
 
-- initWithHost: (OFString*)host
-	 error: (int)error
+- (instancetype)initWithHost: (OFString*)host
+		       error: (int)error
 {
 	self = [super init];
 
@@ -90,7 +92,7 @@ static of_mutex_t mutex;
 	return self;
 }
 
-- initWithError: (int)error
+- (instancetype)initWithError: (int)error
 {
 	self = [super init];
 
@@ -168,10 +170,5 @@ static of_mutex_t mutex;
 #  endif
 # endif
 #endif
-}
-
-- (OFString*)host
-{
-	OF_GETTER(_host, true)
 }
 @end

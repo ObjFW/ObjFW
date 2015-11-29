@@ -32,6 +32,9 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFTimer
+@synthesize timeInterval = _interval, isValid = _valid;
+@synthesize OF_inRunLoop = _inRunLoop;
+
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
 				      selector: (SEL)selector
@@ -409,7 +412,7 @@
 
 - (OFDate*)fireDate
 {
-	OF_GETTER(_fireDate, true)
+	return [[_fireDate copy] autorelease];
 }
 
 - (void)setFireDate: (OFDate*)fireDate
@@ -417,20 +420,19 @@
 	[self retain];
 	@try {
 		@synchronized (self) {
+			OFDate *old;
+
 			[_inRunLoop OF_removeTimer: self];
 
-			OF_SETTER(_fireDate, fireDate, true, 0)
+			old = _fireDate;
+			_fireDate = [fireDate copy];
+			[old release];
 
 			[_inRunLoop addTimer: self];
 		}
 	} @finally {
 		[self release];
 	}
-}
-
-- (of_time_interval_t)timeInterval
-{
-	return _interval;
 }
 
 - (void)invalidate
@@ -443,11 +445,6 @@
 	_target = nil;
 	_object1 = nil;
 	_object2 = nil;
-}
-
-- (bool)isValid
-{
-	return _valid;
 }
 
 #ifdef OF_HAVE_THREADS
@@ -466,9 +463,4 @@
 	}
 }
 #endif
-
-- (void)OF_setInRunLoop: (OFRunLoop*)inRunLoop
-{
-	OF_SETTER(_inRunLoop, inRunLoop, true, 0)
-}
 @end

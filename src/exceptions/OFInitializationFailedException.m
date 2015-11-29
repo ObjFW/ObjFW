@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFInitializationFailedException
+@synthesize inClass = _inClass;
+
 + (instancetype)exceptionWithClass: (Class)class
 {
 	return [[[self alloc] initWithClass: class] autorelease];
@@ -43,10 +45,5 @@
 {
 	return [OFString stringWithFormat:
 	    @"Initialization failed for or in class %@!", _inClass];
-}
-
-- (Class)inClass
-{
-	return _inClass;
 }
 @end

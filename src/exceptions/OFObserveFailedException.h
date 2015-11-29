@@ -30,10 +30,15 @@
 	int _errNo;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The observer which failed to observe.
+ */
 @property (readonly, retain) OFKernelEventObserver *observer;
+
+/*!
+ * The errno of the error that occurred.
+ */
 @property (readonly) int errNo;
-#endif
 
 /*!
  * @brief Creates a new, autoreleased observe failed exception.
@@ -54,18 +59,4 @@
  */
 - initWithObserver: (OFKernelEventObserver*)observer
 	     errNo: (int)errNo;
-
-/*!
- * @brief Returns the observer which failed to observe.
- *
- * @return The observer which failed to observe
- */
-- (OFKernelEventObserver*)observer;
-
-/*!
- * @brief Returns the errno of the error that occurred.
- *
- * @return The errno of the error that occurred
- */
-- (int)errNo;
 @end

@@ -34,9 +34,10 @@
 	OFCondition *_condition;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The condition which could not be broadcasted.
+ */
 @property (readonly, retain) OFCondition *condition;
-#endif
 
 /*!
  * @brief Returns a new, autoreleased condition broadcast failed exception.
@@ -53,11 +54,4 @@
  * @return An initialized condition broadcast failed exception
  */
 - initWithCondition: (OFCondition*)condition;
-
-/*!
- * @brief Returns the condition which could not be broadcasted.
- *
- * @return The condition which could not be broadcasted
- */
-- (OFCondition*)condition;
 @end

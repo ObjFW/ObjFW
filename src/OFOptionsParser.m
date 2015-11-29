@@ -36,6 +36,9 @@ stringEqual(void *value1, void *value2)
 }
 
 @implementation OFOptionsParser
+@synthesize lastOption = _lastOption, lastLongOption = _lastLongOption;
+@synthesize argument = _argument;
+
 + (instancetype)parserWithOptions: (const of_options_parser_option_t*)options
 {
 	return [[[self alloc] initWithOptions: options] autorelease];
@@ -259,21 +262,6 @@ stringEqual(void *value1, void *value2)
 	}
 
 	return '?';
-}
-
-- (of_unichar_t)lastOption
-{
-	return _lastOption;
-}
-
-- (OFString*)lastLongOption
-{
-	OF_GETTER(_lastLongOption, true)
-}
-
-- (OFString*)argument
-{
-	OF_GETTER(_argument, true)
 }
 
 - (OFArray*)remainingArguments

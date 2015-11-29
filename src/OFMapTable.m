@@ -80,6 +80,8 @@ defaultEqual(void *value1, void *value2)
 @end
 
 @implementation OFMapTable
+@synthesize keyFunctions = _keyFunctions, valueFunctions = _valueFunctions;
+
 + (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
 			  valueFunctions: (of_map_table_functions_t)
 					      valueFunctions
@@ -666,16 +668,6 @@ defaultEqual(void *value1, void *value2)
 	}
 }
 #endif
-
-- (of_map_table_functions_t)keyFunctions
-{
-	return _keyFunctions;
-}
-
-- (of_map_table_functions_t)valueFunctions
-{
-	return _valueFunctions;
-}
 @end
 
 @implementation OFMapTableEnumerator

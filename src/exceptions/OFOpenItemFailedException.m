@@ -20,6 +20,8 @@
 #import "OFString.h"
 
 @implementation OFOpenItemFailedException
+@synthesize path = _path, mode = _mode, errNo = _errNo;
+
 + (instancetype)exceptionWithPath: (OFString*)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
@@ -145,20 +147,5 @@
 			return [OFString stringWithFormat:
 			    @"Failed to open item %@!", _path];
 	}
-}
-
-- (OFString*)path
-{
-	OF_GETTER(_path, true)
-}
-
-- (OFString*)mode
-{
-	OF_GETTER(_mode, true)
-}
-
-- (int)errNo
-{
-	return _errNo;
 }
 @end

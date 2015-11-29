@@ -318,12 +318,6 @@ extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
 }
 #endif
 
-#define OF_IVAR_OFFSET(ivar) ((intptr_t)&ivar - (intptr_t)self)
-#define OF_GETTER(ivar, atomic) \
-	return objc_getProperty(self, _cmd, OF_IVAR_OFFSET(ivar), atomic);
-#define OF_SETTER(ivar, value, atomic, copy) \
-	objc_setProperty(self, _cmd, OF_IVAR_OFFSET(ivar), value, atomic, copy);
-
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_CONST(uint16_t i)
 {

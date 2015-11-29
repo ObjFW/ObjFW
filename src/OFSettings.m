@@ -21,6 +21,8 @@
 #import "OFString.h"
 
 @implementation OFSettings
+@synthesize applicationName = _applicationName;
+
 + alloc
 {
 	if (self == [OFSettings class])
@@ -59,11 +61,6 @@
 	[_applicationName release];
 
 	[super dealloc];
-}
-
-- (OFString*)applicationName
-{
-	OF_GETTER(_applicationName, true)
 }
 
 - (void)setString: (OFString*)string

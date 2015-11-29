@@ -101,12 +101,6 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 	bool _blocking;
 }
 
-#ifdef OF_HAVE_PROPERTIES
-@property (getter=isWriteBuffered) bool writeBuffered;
-@property (getter=isBlocking) bool blocking;
-@property (readonly, getter=isAtEndOfStream) bool atEndOfStream;
-#endif
-
 /*!
  * @brief Returns a boolean whether the end of the stream has been reached.
  *

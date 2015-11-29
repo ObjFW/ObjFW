@@ -40,19 +40,20 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray OF_GENERIC(OFXMLNode*) *_children;
 }
 
-#ifdef OF_HAVE_PROPERTIES
+/*!
+ * The name of the element.
+ */
 @property (copy) OFString *name;
-# ifdef __cplusplus
-@property OF_NULLABLE_PROPERTY (copy, getter=namespace, setter=setNamespace:)
-    OFString *namespace_;
-# else
+
+/*!
+ * The namespace of the element.
+ */
 @property OF_NULLABLE_PROPERTY (copy) OFString *namespace;
-# endif
+
+/*!
+ * The default namespace for the element to be used if there is no parent.
+ */
 @property OF_NULLABLE_PROPERTY (copy) OFString *defaultNamespace;
-@property OF_NULLABLE_PROPERTY (copy, readonly)
-    OFArray OF_GENERIC(OFXMLAttribute*) *attributes;
-@property OF_NULLABLE_PROPERTY (copy) OFArray OF_GENERIC(OFXMLNode*) *children;
-#endif
 
 /*!
  * @brief Creates a new XML element with the specified name.
@@ -203,34 +204,6 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * @brief Sets the name of the element.
- *
- * @param name The new name
- */
-- (void)setName: (OFString*)name;
-
-/*!
- * @brief Returns the name of the element.
- *
- * @return The name of the element
- */
-- (OFString*)name;
-
-/*!
- * @brief Sets the namespace of the element.
- *
- * @param namespace_ The new namespace
- */
-- (void)setNamespace: (nullable OFString*)namespace_;
-
-/*!
- * @brief Returns the namespace of the element.
- *
- * @return The namespace of the element
- */
-- (nullable OFString*)namespace;
-
-/*!
  * @brief Sets a prefix for a namespace.
  *
  * @param prefix The prefix for the namespace
@@ -247,23 +220,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)bindPrefix: (OFString*)prefix
       forNamespace: (OFString*)namespace_;
-
-/*!
- * @brief Sets the default namespace for the element to be used if there is no
- *	  parent.
- *
- * @param defaultNamespace The default namespace for the element
- */
-- (void)setDefaultNamespace: (nullable OFString*)defaultNamespace;
-
-/*!
- * @brief Returns the default namespace for the element to be used if there is
- *	  no parent.
- *
- * @return The default namespace for the element to be used if there is no
- *	   parent.
- */
-- (nullable OFString*)defaultNamespace;
 
 /*!
  * @brief Returns an OFArray with the attributes of the element.
