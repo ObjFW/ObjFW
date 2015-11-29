@@ -34,7 +34,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFDictionary (OF_PRIVATE_CATEGORY)
+@interface OFDictionary ()
 - (OFString*)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth;
 @end

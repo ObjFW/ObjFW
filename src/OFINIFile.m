@@ -28,7 +28,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
-@interface OFINIFile (OF_PRIVATE_CATEGORY)
+@interface OFINIFile ()
 - (void)OF_parseFile: (OFString*)path
 	    encoding: (of_string_encoding_t)encoding;
 @end

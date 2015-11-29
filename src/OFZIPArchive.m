@@ -48,7 +48,7 @@
  *  - Encrypted files cannot be read.
  */
 
-@interface OFZIPArchive (OF_PRIVATE_CATEGORY)
+@interface OFZIPArchive ()
 - (void)OF_readZIPInfo;
 - (void)OF_readEntries;
 @end

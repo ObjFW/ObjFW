@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
-@interface OFINICategory (OF_PRIVATE_CATEGORY)
+@interface OFINICategory ()
 - (instancetype)OF_init;
 - (void)OF_parseLine: (OFString*)line;
 - (bool)OF_writeToStream: (OFStream*)stream

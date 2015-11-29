@@ -18,7 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFStream (OF_PRIVATE_CATEGORY)
+@interface OFStream ()
 @property (readonly) bool OF_isWaitingForDelimiter;
 @end
 

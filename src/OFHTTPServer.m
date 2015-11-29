@@ -47,7 +47,7 @@
  * FIXME: Errors are not reported to the user.
  */
 
-@interface OFHTTPServer (OF_PRIVATE_CATEGORY)
+@interface OFHTTPServer ()
 - (bool)OF_socket: (OFTCPSocket*)socket
   didAcceptSocket: (OFTCPSocket*)clientSocket
 	exception: (OFException*)exception;

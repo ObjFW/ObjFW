@@ -66,7 +66,7 @@
 # define strtod __strtod
 #endif
 
-@interface OFString (OF_PRIVATE_CATEGORY)
+@interface OFString ()
 - (size_t)OF_getCString: (char*)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding

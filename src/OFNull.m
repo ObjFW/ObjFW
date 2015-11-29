@@ -23,7 +23,7 @@
 
 #import "OFInvalidArgumentException.h"
 
-@interface OFNull (OF_PRIVATE_CATEGORY)
+@interface OFNull ()
 - (OFString*)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth;
 @end

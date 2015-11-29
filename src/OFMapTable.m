@@ -60,13 +60,13 @@ defaultEqual(void *value1, void *value2)
 	return (value1 == value2);
 }
 
-@interface OFMapTable (OF_PRIVATE_CATEGORY)
+@interface OFMapTable ()
 - (void)OF_setValue: (void*)value
 	     forKey: (void*)key
 	       hash: (uint32_t)hash;
 @end
 
-@interface OFMapTableEnumerator (OF_PRIVATE_CATEGORY)
+@interface OFMapTableEnumerator ()
 - (instancetype)OF_initWithMapTable: (OFMapTable*)mapTable
 			    buckets: (struct of_map_table_bucket**)buckets
 			   capacity: (uint32_t)capacity

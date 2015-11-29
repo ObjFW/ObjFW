@@ -22,7 +22,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFRunLoop (OF_PRIVATE_CATEGORY)
+@interface OFRunLoop ()
 + (void)OF_setMainRunLoop: (OFRunLoop*)runLoop;
 #ifdef OF_HAVE_SOCKETS
 + (void)OF_addAsyncReadForStream: (OFStream*)stream

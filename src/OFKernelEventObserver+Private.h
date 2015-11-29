@@ -18,7 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFKernelEventObserver (OF_PRIVATE_CATEGORY)
+@interface OFKernelEventObserver ()
 - (void)OF_addObjectForReading: (id)object;
 - (void)OF_addObjectForWriting: (id)object;
 - (void)OF_removeObjectForReading: (id)object;

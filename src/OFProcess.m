@@ -56,7 +56,7 @@
 extern char **environ;
 #endif
 
-@interface OFProcess (OF_PRIVATE_CATEGORY)
+@interface OFProcess ()
 #ifndef OF_WINDOWS
 - (void)OF_getArgV: (char***)argv
     forProgramName: (OFString*)programName

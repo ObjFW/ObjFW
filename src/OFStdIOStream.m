@@ -37,7 +37,7 @@ OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
 
-@interface OFStdIOStream (OF_PRIVATE_CATEGORY)
+@interface OFStdIOStream ()
 - (instancetype)OF_initWithFileDescriptor: (int)fd;
 @end
 

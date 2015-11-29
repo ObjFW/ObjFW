@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_THREADS
-@interface OFThread (OF_PRIVATE_CATEGORY)
+@interface OFThread ()
 + (void)OF_createMainThread;
 @end
 #endif

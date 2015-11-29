@@ -18,7 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFAutoreleasePool (OF_PRIVATE_CATEGORY)
+@interface OFAutoreleasePool ()
 + (void)OF_handleThreadTermination;
 - (void)OF_super_dealloc;
 @end

@@ -54,7 +54,7 @@ extern char **environ;
 # undef asm
 #endif
 
-@interface OFApplication (OF_PRIVATE_CATEGORY)
+@interface OFApplication ()
 - (void)OF_setArgumentCount: (int*)argc
 	  andArgumentValues: (char**[])argv;
 #ifdef OF_WINDOWS

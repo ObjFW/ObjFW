@@ -90,7 +90,7 @@
 		@throw [OFInvalidFormatException exception];		\
 	}
 
-@interface OFNumber (OF_PRIVATE_CATEGORY)
+@interface OFNumber ()
 - (OFString*)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth;
 @end
