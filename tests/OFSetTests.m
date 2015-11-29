@@ -32,10 +32,8 @@ static OFString *module = @"OFSet";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFSet *set1, *set2;
 	OFMutableSet *mutableSet;
-#ifdef OF_HAVE_FAST_ENUMERATION
 	bool ok;
 	size_t i;
-#endif
 
 	TEST(@"+[setWithArray:]",
 	    (set1 = [OFSet setWithArray: [OFArray arrayWithObjects: @"foo",
@@ -91,7 +89,6 @@ static OFString *module = @"OFSet";
 	    nil]]) && [mutableSet isEqual: [OFSet setWithObjects: @"baz",
 	    @"bar", @"x", nil]])
 
-#ifdef OF_HAVE_FAST_ENUMERATION
 	ok = true;
 	i = 0;
 
@@ -132,7 +129,6 @@ static OFString *module = @"OFSet";
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok);
-#endif
 
 	[pool drain];
 }

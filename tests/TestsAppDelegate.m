@@ -372,9 +372,7 @@ main(int argc, char *argv[])
 	[self pluginTests];
 #endif
 	[self forwardingTests];
-#ifdef OF_HAVE_PROPERTIES
 	[self propertiesTests];
-#endif
 
 #if defined(OF_WII)
 	[self outputString: @"Press home button to exit!\n"

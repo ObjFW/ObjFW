@@ -123,7 +123,6 @@ static OFString *strings[] = {
 
 	[list prependObject: strings[0]];
 
-#ifdef OF_HAVE_FAST_ENUMERATION
 	loe = [list firstListObject];
 	i = 0;
 	ok = true;
@@ -153,7 +152,6 @@ static OFString *strings[] = {
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
-#endif
 
 	[pool drain];
 }

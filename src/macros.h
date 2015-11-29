@@ -101,18 +101,6 @@
 # define __GCC_VERSION__ 0
 #endif
 
-#if defined(__clang__) || __GCC_VERSION__ >= 406 || defined(OBJC_NEW_PROPERTIES)
-# define OF_HAVE_PROPERTIES
-# define OF_HAVE_OPTIONAL_PROTOCOLS
-# if defined(__clang__) || __GCC_VERSION__ >= 406 || defined(OF_APPLE_RUNTIME)
-#  define OF_HAVE_FAST_ENUMERATION
-# endif
-# define OF_HAVE_CLASS_EXTENSIONS
-# define OF_PRIVATE_CATEGORY
-#else
-# define OF_PRIVATE_CATEGORY Private
-#endif
-
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif

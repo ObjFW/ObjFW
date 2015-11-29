@@ -200,7 +200,6 @@ static OFString *c_ary[] = {
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
 	    OFEnumerationMutationException, [enumerator nextObject])
 
-#ifdef OF_HAVE_FAST_ENUMERATION
 	m[0] = [[a[0] mutableCopy] autorelease];
 	ok = true;
 	i = 0;
@@ -243,7 +242,6 @@ static OFString *c_ary[] = {
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
 	[m[0] removeLastObject];
-#endif
 
 #ifdef OF_HAVE_BLOCKS
 	{

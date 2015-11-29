@@ -94,7 +94,6 @@ static OFString *values[] = {
 	[dict setObject: values[0]
 		 forKey: keys[0]];
 
-#ifdef OF_HAVE_FAST_ENUMERATION
 	size_t i = 0;
 	bool ok = true;
 
@@ -126,7 +125,6 @@ static OFString *values[] = {
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
 	[dict removeObjectForKey: @""];
-#endif
 
 #ifdef OF_HAVE_BLOCKS
 	{
