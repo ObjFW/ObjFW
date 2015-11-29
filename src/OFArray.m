@@ -561,8 +561,6 @@ static struct {
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self objectEnumerator];
-	id object;
 	size_t i, count = [self count];
 
 	if (options & OF_JSON_REPRESENTATION_PRETTY) {
@@ -574,7 +572,7 @@ static struct {
 		[JSON appendString: @"\n"];
 
 		i = 0;
-		while ((object = [enumerator nextObject]) != nil) {
+		for (id object in self) {
 			void *pool2 = objc_autoreleasePoolPush();
 
 			[JSON appendString: indentation];
@@ -594,7 +592,7 @@ static struct {
 		[JSON appendString: indentation];
 	} else {
 		i = 0;
-		while ((object = [enumerator nextObject]) != nil) {
+		for (id object in self) {
 			void *pool2 = objc_autoreleasePoolPush();
 
 			[JSON appendString: [object
@@ -621,8 +619,6 @@ static struct {
 	OFDataArray *data;
 	size_t i, count;
 	void *pool;
-	OFEnumerator *enumerator;
-	id object;
 
 	data = [OFDataArray dataArray];
 	count = [self count];
@@ -650,8 +646,7 @@ static struct {
 	pool = objc_autoreleasePoolPush();
 
 	i = 0;
-	enumerator = [self objectEnumerator];
-	while ((object = [enumerator nextObject]) != nil) {
+	for (id object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 		OFDataArray *child;
 
@@ -755,7 +750,7 @@ static struct {
 					    mutationsPtr: NULL] autorelease];
 }
 
-#if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
+#ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
 	size_t i = 0;

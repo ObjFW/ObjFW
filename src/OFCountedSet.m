@@ -143,9 +143,7 @@ static struct {
 {
 	OFMutableString *ret;
 	void *pool;
-	OFEnumerator *enumerator;
 	size_t i, count = [self count];
-	id object;
 
 	if (count == 0)
 		return @"{()}";
@@ -154,9 +152,8 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	enumerator = [self objectEnumerator];
 	i = 0;
-	while ((object = [enumerator nextObject]) != nil) {
+	for (id object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
 		[ret appendString: object];
@@ -192,15 +189,11 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
-	OFEnumerator *enumerator;
-	id <OFSerialization> object;
 
 	element = [OFXMLElement elementWithName: @"OFCountedSet"
 				      namespace: OF_SERIALIZATION_NS];
 
-	enumerator = [self objectEnumerator];
-
-	while ((object = [enumerator nextObject]) != nil) {
+	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
 		OFXMLElement *objectElement;
@@ -244,22 +237,16 @@ static struct {
 
 	if ([set isKindOfClass: [OFCountedSet class]]) {
 		OFCountedSet *countedSet = (OFCountedSet*)set;
-		OFEnumerator *enumerator = [countedSet objectEnumerator];
-		id object;
 
-		while ((object = [enumerator nextObject]) != nil) {
+		for (id object in countedSet) {
 			size_t i, count = [countedSet countForObject: object];
 
 			for (i = 0; i < count; i++)
 				[self removeObject: object];
 		}
-	} else {
-		OFEnumerator *enumerator = [set objectEnumerator];
-		id object;
-
-		while ((object = [enumerator nextObject]) != nil)
+	} else
+		for (id object in set)
 			[self removeObject: object];
-	}
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -270,22 +257,16 @@ static struct {
 
 	if ([set isKindOfClass: [OFCountedSet class]]) {
 		OFCountedSet *countedSet = (OFCountedSet*)set;
-		OFEnumerator *enumerator = [countedSet objectEnumerator];
-		id object;
 
-		while ((object = [enumerator nextObject]) != nil) {
+		for (id object in countedSet) {
 			size_t i, count = [countedSet countForObject: object];
 
 			for (i = 0; i < count; i++)
 				[self addObject: object];
 		}
-	} else {
-		OFEnumerator *enumerator = [set objectEnumerator];
-		id object;
-
-		while ((object = [enumerator nextObject]) != nil)
+	} else
+		for (id object in set)
 			[self addObject: object];
-	}
 
 	objc_autoreleasePoolPop(pool);
 }

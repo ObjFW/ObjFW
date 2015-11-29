@@ -230,8 +230,6 @@ extern char **environ;
 		STARTUPINFOW si;
 		void *pool;
 		OFMutableString *argumentsString;
-		OFEnumerator *enumerator;
-		OFString *argument;
 		of_char16_t *argumentsCopy;
 		size_t length;
 
@@ -279,8 +277,7 @@ extern char **environ;
 			[argumentsString appendString: @"\""];
 		}
 
-		enumerator = [arguments objectEnumerator];
-		while ((argument = [enumerator nextObject]) != nil) {
+		for (OFString *argument in arguments) {
 			OFMutableString *tmp =
 			    [[argument mutableCopy] autorelease];
 			bool containsSpaces = [tmp containsString: @" "];

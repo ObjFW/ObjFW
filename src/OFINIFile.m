@@ -106,10 +106,9 @@ isWhitespaceLine(OFString *line)
 - (OFINICategory*)categoryForName: (OFString*)name
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [_categories objectEnumerator];
 	OFINICategory *category;
 
-	while ((category = [enumerator nextObject]) != nil) {
+	for (category in _categories) {
 		if ([[category name] isEqual: name]) {
 			OFINICategory *ret = [category retain];
 
@@ -189,11 +188,9 @@ isWhitespaceLine(OFString *line)
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
 				       mode: @"w"];
-	OFEnumerator *enumerator = [_categories objectEnumerator];
-	OFINICategory *category;
 	bool first = true;
 
-	while ((category = [enumerator nextObject]) != nil)
+	for (OFINICategory *category in _categories)
 		if ([category OF_writeToStream: file
 				      encoding: encoding
 					 first: first])

@@ -301,7 +301,7 @@ static struct {
 {
 	OFDictionary *otherDictionary;
 	void *pool;
-	OFEnumerator *enumerator;
+	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id key;
 
 	if (![object isKindOfClass: [OFDictionary class]])
@@ -314,12 +314,13 @@ static struct {
 
 	pool = objc_autoreleasePoolPush();
 
-	enumerator = [self keyEnumerator];
-	while ((key = [enumerator nextObject]) != nil) {
-		id object = [otherDictionary objectForKey: key];
+	keyEnumerator = [self keyEnumerator];
+	objectEnumerator = [self objectEnumerator];
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		id otherObject = [otherDictionary objectForKey: key];
 
-		if (object == nil ||
-		    ![object isEqual: [self objectForKey: key]]) {
+		if (otherObject == nil || ![otherObject isEqual: object]) {
 			objc_autoreleasePoolPop(pool);
 			return false;
 		}
@@ -340,8 +341,8 @@ static struct {
 		return false;
 
 	pool = objc_autoreleasePoolPush();
-	enumerator = [self objectEnumerator];
 
+	enumerator = [self objectEnumerator];
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if ([currentObject isEqual: object]) {
 			objc_autoreleasePoolPop(pool);
@@ -364,8 +365,8 @@ static struct {
 		return false;
 
 	pool = objc_autoreleasePoolPush();
-	enumerator = [self objectEnumerator];
 
+	enumerator = [self objectEnumerator];
 	while ((currentObject = [enumerator nextObject]) != nil) {
 		if (currentObject == object) {
 			objc_autoreleasePoolPop(pool);
@@ -381,16 +382,11 @@ static struct {
 - (OFArray*)allKeys
 {
 	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: [self count]];
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self keyEnumerator];
-	id key;
 
-	while ((key = [enumerator nextObject]) != nil)
+	for (id key in self)
 		[ret addObject: key];
 
 	[ret makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -429,7 +425,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-#if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
+#ifdef OF_HAVE_BLOCKS
 - (void)enumerateKeysAndObjectsUsingBlock:
     (of_dictionary_enumeration_block_t)block
 {
@@ -442,9 +438,7 @@ static struct {
 			break;
 	}
 }
-#endif
 
-#ifdef OF_HAVE_BLOCKS
 - (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
@@ -481,13 +475,15 @@ static struct {
 - (uint32_t)hash
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self keyEnumerator];
-	id key;
+	OFEnumerator *keyEnumerator = [self keyEnumerator];
+	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	id key, object;
 	uint32_t hash = 0;
 
-	while ((key = [enumerator nextObject]) != nil) {
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
 		hash += [key hash];
-		hash += [[self objectForKey: key] hash];
+		hash += [object hash];
 	}
 
 	objc_autoreleasePoolPop(pool);

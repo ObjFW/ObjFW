@@ -254,12 +254,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 - (void)listFilesInArchive: (OFZIPArchive*)archive
 {
-	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *enumerator;
-	OFZIPArchiveEntry *entry;
-
-	enumerator = [[archive entries] objectEnumerator];
-
-	while ((entry = [enumerator nextObject]) != nil) {
+	for (OFZIPArchiveEntry *entry in [archive entries]) {
 		void *pool = objc_autoreleasePoolPush();
 
 		[of_stdout writeLine: [entry fileName]];
@@ -313,22 +308,16 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	 fromArchive: (OFZIPArchive*)archive
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	OFEnumerator OF_GENERIC(OFZIPArchiveEntry*) *entryEnumerator;
-	OFZIPArchiveEntry *entry;
-	bool all;
-	OFMutableSet OF_GENERIC(OFString*) *missing;
+	bool all = ([files count] == 0);
+	OFMutableSet OF_GENERIC(OFString*) *missing =
+	    [OFMutableSet setWithArray: files];
 
-	all = ([files count] == 0);
-	missing = [OFMutableSet setWithArray: files];
-
-	entryEnumerator = [[archive entries] objectEnumerator];
-	while ((entry = [entryEnumerator nextObject]) != nil) {
+	for (OFZIPArchiveEntry *entry in [archive entries]) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		OFString *outFileName = [fileName stringByStandardizingPath];
 		OFArray OF_GENERIC(OFString*) *pathComponents;
-		OFEnumerator OF_GENERIC(OFString*) *componentEnumerator;
-		OFString *component, *directory;
+		OFString *directory;
 		OFStream *stream;
 		OFFile *output;
 		char buffer[BUFFER_SIZE];
@@ -354,8 +343,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		}
 
 		pathComponents = [outFileName pathComponents];
-		componentEnumerator = [pathComponents objectEnumerator];
-		while ((component = [componentEnumerator nextObject]) != nil) {
+		for (OFString *component in pathComponents) {
 			if ([component isEqual: OF_PATH_PARENT_DIRECTORY]) {
 				[of_stderr writeFormat:
 				    @"Refusing to extract %@!\n", fileName];
@@ -480,11 +468,7 @@ outer_loop_end:
 	}
 
 	if ([missing count] > 0) {
-		OFEnumerator OF_GENERIC(OFString*) *enumerator;
-		OFString *file;
-
-		enumerator = [missing objectEnumerator];
-		while ((file = [enumerator nextObject]) != nil)
+		for (OFString *file in missing)
 			[of_stderr writeFormat:
 			    @"File %@ is not in the archive!\n", file];
 

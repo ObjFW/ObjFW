@@ -144,14 +144,8 @@ static struct {
 
 - (void)minusSet: (OFSet*)set
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [set objectEnumerator];
-	id object;
-
-	while ((object = [enumerator nextObject]) != nil)
+	for (id object in set)
 		[self removeObject: object];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (void)intersectSet: (OFSet*)set
@@ -164,13 +158,10 @@ static struct {
 				     count: count];
 
 	@try {
-		OFEnumerator *enumerator;
-		id object;
 		size_t i;
 
 		i = 0;
-		enumerator = [self objectEnumerator];
-		while ((object = [enumerator nextObject]) != nil) {
+		for (id object in self) {
 			assert(i < count);
 			cArray[i++] = object;
 		}
@@ -187,15 +178,8 @@ static struct {
 
 - (void)unionSet: (OFSet*)set
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator;
-	id object;
-
-	enumerator = [set objectEnumerator];
-	while ((object = [enumerator nextObject]) != nil)
+	for (id object in set)
 		[self addObject: object];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (void)makeImmutable

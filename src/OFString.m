@@ -656,18 +656,16 @@ static struct {
 + (OFString*)pathWithComponents: (OFArray*)components
 {
 	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [components objectEnumerator];
-	OFString *component;
+	bool first = true;
 
-	if ((component = [enumerator nextObject]) != nil)
+	for (OFString *component in components) {
+		if (!first)
+			[ret appendString: OF_PATH_DELIMITER_STRING];
+
 		[ret appendString: component];
-	while ((component = [enumerator nextObject]) != nil) {
-		[ret appendString: OF_PATH_DELIMITER_STRING];
-		[ret appendString: component];
+
+		first = false;
 	}
-
-	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }

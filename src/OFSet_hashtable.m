@@ -100,16 +100,9 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 	self = [self initWithCapacity: count];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFEnumerator *enumerator;
-		id object;
-
-		enumerator = [set objectEnumerator];
-		while ((object = [enumerator nextObject]) != nil)
+		for (id object in set)
 			[_mapTable setValue: (void*)1
 				     forKey: object];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -135,16 +128,9 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 	self = [self initWithCapacity: count];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFEnumerator *enumerator;
-		id object;
-
-		enumerator = [array objectEnumerator];
-		while ((object = [enumerator nextObject]) != nil)
+		for (id object in array)
 			[_mapTable setValue: (void*)1
 				     forKey: object];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -211,17 +197,14 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFEnumerator *enumerator;
-		OFXMLElement *child;
 
 		if ((![[element name] isEqual: @"OFSet"] &&
 		    ![[element name] isEqual: @"OFMutableSet"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		enumerator = [[element elementsForNamespace:
-		    OF_SERIALIZATION_NS] objectEnumerator];
-		while ((child = [enumerator nextObject]) != nil) {
+		for (OFXMLElement *child in
+		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
 			void *pool2  = objc_autoreleasePoolPush();
 
 			[_mapTable setValue: (void*)1

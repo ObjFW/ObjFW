@@ -221,20 +221,11 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 - (void)insertObjectsFromArray: (OFArray*)array
 		       atIndex: (size_t)index
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [array objectEnumerator];
-	size_t i, count = [array count];
+	size_t i = 0;
 
-	for (i = 0; i < count; i++) {
-		id object = [enumerator nextObject];
-
-		assert(object != nil);
-
+	for (id object in array)
 		[self insertObject: object
-			   atIndex: index + i];
-	}
-
-	objc_autoreleasePoolPop(pool);
+			   atIndex: index + i++];
 }
 
 - (void)replaceObjectAtIndex: (size_t)index

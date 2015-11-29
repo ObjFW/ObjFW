@@ -167,18 +167,14 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFEnumerator *enumerator;
-		OFXMLElement *child;
 
 		if ((![[element name] isEqual: @"OFArray"] &&
 		    ![[element name] isEqual: @"OFMutableArray"]) ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		enumerator = [[element elementsForNamespace:
-		    OF_SERIALIZATION_NS] objectEnumerator];
-
-		while ((child = [enumerator nextObject]) != nil) {
+		for (OFXMLElement *child in
+		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			id object;
 

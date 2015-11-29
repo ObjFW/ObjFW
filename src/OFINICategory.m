@@ -192,11 +192,7 @@ unescapeString(OFString *string)
 - (OFString*)stringForKey: (OFString*)key
 	     defaultValue: (OFString*)defaultValue
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [_lines objectEnumerator];
-	id line;
-
-	while ((line = [enumerator nextObject]) != nil) {
+	for (id line in _lines) {
 		OFINICategory_Pair *pair;
 
 		if (![line isKindOfClass: [OFINICategory_Pair class]])
@@ -204,16 +200,9 @@ unescapeString(OFString *string)
 
 		pair = line;
 
-		if ([pair->_key isEqual: key]) {
-			OFString *value = [pair->_value copy];
-
-			objc_autoreleasePoolPop(pool);
-
-			return [value autorelease];
-		}
+		if ([pair->_key isEqual: key])
+			return [[pair->_value copy] autorelease];
 	}
-
-	objc_autoreleasePoolPop(pool);
 
 	return defaultValue;
 }
@@ -302,10 +291,8 @@ unescapeString(OFString *string)
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [_lines objectEnumerator];
-	id line;
 
-	while ((line = [enumerator nextObject]) != nil) {
+	for (id line in _lines) {
 		OFINICategory_Pair *pair;
 
 		if (![line isKindOfClass: [OFINICategory_Pair class]])
@@ -328,11 +315,9 @@ unescapeString(OFString *string)
 	   forKey: (OFString*)key
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [_lines objectEnumerator];
 	OFINICategory_Pair *pair;
-	id line;
 
-	while ((line = [enumerator nextObject]) != nil) {
+	for (id line in _lines) {
 		if (![line isKindOfClass: [OFINICategory_Pair class]])
 			continue;
 
@@ -350,9 +335,19 @@ unescapeString(OFString *string)
 	}
 
 	pair = [[[OFINICategory_Pair alloc] init] autorelease];
-	pair->_key = [key copy];
-	pair->_value = [string copy];
-	[_lines addObject: pair];
+	pair->_key = nil;
+	pair->_value = nil;
+
+	@try {
+		pair->_key = [key copy];
+		pair->_value = [string copy];
+		[_lines addObject: pair];
+	} @catch (id e) {
+		[pair->_key release];
+		[pair->_value release];
+
+		@throw e;
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -401,9 +396,7 @@ unescapeString(OFString *string)
 	  forKey: (OFString*)key
 {
 	void *pool;
-	OFEnumerator *enumerator;
 	OFMutableArray *pairs;
-	id object;
 	id const *lines;
 	size_t i, count;
 	bool replaced;
@@ -415,10 +408,9 @@ unescapeString(OFString *string)
 
 	pool = objc_autoreleasePoolPush();
 
-	enumerator = [array objectEnumerator];
 	pairs = [OFMutableArray arrayWithCapacity: [array count]];
 
-	while ((object = [enumerator nextObject]) != nil) {
+	for (id object in array) {
 		OFINICategory_Pair *pair;
 
 		if (![object isKindOfClass: [OFString class]])
@@ -501,9 +493,6 @@ unescapeString(OFString *string)
 		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first
 {
-	OFEnumerator *enumerator;
-	id line;
-
 	if ([_lines count] == 0)
 		return false;
 
@@ -512,8 +501,7 @@ unescapeString(OFString *string)
 	else
 		[stream writeFormat: @"\n[%@]\n", _name];
 
-	enumerator = [_lines objectEnumerator];
-	while ((line = [enumerator nextObject]) != nil) {
+	for (id line in _lines) {
 		if ([line isKindOfClass: [OFINICategory_Comment class]]) {
 			OFINICategory_Comment *comment = line;
 			[stream writeLine: comment->_comment];

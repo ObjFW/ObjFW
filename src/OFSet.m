@@ -248,11 +248,9 @@ static struct {
 - (uint32_t)hash
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [self objectEnumerator];
-	id object;
 	uint32_t hash = 0;
 
-	while ((object = [enumerator nextObject]) != nil)
+	for (id object in self)
 		hash += [object hash];
 
 	objc_autoreleasePoolPop(pool);
@@ -264,9 +262,7 @@ static struct {
 {
 	void *pool;
 	OFMutableString *ret;
-	OFEnumerator *enumerator;
 	size_t i, count = [self count];
-	id object;
 
 	if (count == 0)
 		return @"{()}";
@@ -274,10 +270,9 @@ static struct {
 	ret = [OFMutableString stringWithString: @"{(\n"];
 
 	pool = objc_autoreleasePoolPush();
-	enumerator = [self objectEnumerator];
 
 	i = 0;
-	while ((object = [enumerator nextObject]) != nil) {
+	for (id object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
 		[ret appendString: [object description]];
@@ -310,38 +305,18 @@ static struct {
 
 - (bool)isSubsetOfSet: (OFSet*)set
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator;
-	id object;
-
-	enumerator = [self objectEnumerator];
-	while ((object = [enumerator nextObject]) != nil) {
-		if (![set containsObject: object]) {
-			objc_autoreleasePoolPop(pool);
+	for (id object in self)
+		if (![set containsObject: object])
 			return false;
-		}
-	}
-
-	objc_autoreleasePoolPop(pool);
 
 	return true;
 }
 
 - (bool)intersectsSet: (OFSet*)set
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator;
-	id object;
-
-	enumerator = [self objectEnumerator];
-	while ((object = [enumerator nextObject]) != nil) {
-		if ([set containsObject: object]) {
-			objc_autoreleasePoolPop(pool);
+	for (id object in self)
+		if ([set containsObject: object])
 			return true;
-		}
-	}
-
-	objc_autoreleasePoolPop(pool);
 
 	return false;
 }
@@ -350,8 +325,6 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
-	OFEnumerator *enumerator;
-	id <OFSerialization> object;
 
 	if ([self isKindOfClass: [OFMutableSet class]])
 		element = [OFXMLElement elementWithName: @"OFMutableSet"
@@ -360,9 +333,7 @@ static struct {
 		element = [OFXMLElement elementWithName: @"OFSet"
 					      namespace: OF_SERIALIZATION_NS];
 
-	enumerator = [self objectEnumerator];
-
-	while ((object = [enumerator nextObject]) != nil) {
+	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
 		[element addChild: [object XMLElementBySerializing]];
@@ -431,7 +402,7 @@ static struct {
 	return [ret autorelease];
 }
 
-#if defined(OF_HAVE_BLOCKS) && defined(OF_HAVE_FAST_ENUMERATION)
+#ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
 	bool stop = false;
@@ -443,9 +414,7 @@ static struct {
 			break;
 	}
 }
-#endif
 
-#ifdef OF_HAVE_BLOCKS
 - (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block
 {
 	OFMutableSet *ret = [OFMutableSet set];

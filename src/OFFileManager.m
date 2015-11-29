@@ -250,10 +250,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 - (void)createDirectoryAtPath: (OFString*)path
 		createParents: (bool)createParents
 {
-	void *pool;
-	OFArray *pathComponents;
-	OFString *currentPath = nil, *component;
-	OFEnumerator *enumerator;
+	OFString *currentPath = nil;
 
 	if (!createParents) {
 		[self createDirectoryAtPath: path];
@@ -263,12 +260,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	pool = objc_autoreleasePoolPush();
-
-	pathComponents = [path pathComponents];
-	enumerator = [pathComponents objectEnumerator];
-	while ((component = [enumerator nextObject]) != nil) {
-		void *pool2 = objc_autoreleasePoolPush();
+	for (OFString *component in [path pathComponents]) {
+		void *pool = objc_autoreleasePoolPush();
 
 		if (currentPath != nil)
 			currentPath = [currentPath
@@ -282,12 +275,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 		[currentPath retain];
 
-		objc_autoreleasePoolPop(pool2);
+		objc_autoreleasePoolPop(pool);
 
 		[currentPath autorelease];
 	}
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
@@ -595,8 +586,6 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	if (S_ISDIR(s.st_mode)) {
 		OFArray *contents;
-		OFEnumerator *enumerator;
-		OFString *item;
 
 		@try {
 			[self createDirectoryAtPath: destination];
@@ -622,8 +611,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			@throw e;
 		}
 
-		enumerator = [contents objectEnumerator];
-		while ((item = [enumerator nextObject]) != nil) {
+		for (OFString *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFString *sourcePath, *destinationPath;
 
@@ -792,8 +780,6 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	if (S_ISDIR(s.st_mode)) {
 		OFArray *contents;
-		OFEnumerator *enumerator;
-		OFString *item;
 
 		@try {
 			contents = [self contentsOfDirectoryAtPath: path];
@@ -813,8 +799,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			@throw e;
 		}
 
-		enumerator = [contents objectEnumerator];
-		while ((item = [enumerator nextObject]) != nil) {
+		for (OFString *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
 
 			[self removeItemAtPath:

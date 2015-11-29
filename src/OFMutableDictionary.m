@@ -184,11 +184,8 @@ static struct {
 - (void)removeAllObjects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray *keys = [self allKeys];
-	OFEnumerator *enumerator = [keys objectEnumerator];
-	id key;
 
-	while ((key = [enumerator nextObject]) != nil)
+	for (id key in [self allKeys])
 		[self removeObjectForKey: key];
 
 	objc_autoreleasePoolPop(pool);

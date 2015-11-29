@@ -45,11 +45,8 @@
 
 		if ([set isKindOfClass: [OFCountedSet class]]) {
 			OFCountedSet *countedSet = (OFCountedSet*)countedSet;
-			OFEnumerator *enumerator =
-			    [countedSet objectEnumerator];
-			id object;
 
-			while ((object = [enumerator nextObject]) != nil) {
+			for (id object in countedSet) {
 				size_t i, count;
 
 				count = [countedSet countForObject: object];
@@ -57,13 +54,9 @@
 				for (i = 0; i < count; i++)
 					[self addObject: object];
 			}
-		} else {
-			OFEnumerator *enumerator = [set objectEnumerator];
-			id object;
-
-			while ((object = [enumerator nextObject]) != nil)
+		} else
+			for (id object in set)
 				[self addObject: object];
-		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -136,19 +129,14 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFArray *objects;
-		OFEnumerator *enumerator;
-		OFXMLElement *objectElement;
 
 		if (![[element name] isEqual: @"OFCountedSet"] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		objects = [element elementsForName: @"object"
-					 namespace: OF_SERIALIZATION_NS];
-
-		enumerator = [objects objectEnumerator];
-		while ((objectElement = [enumerator nextObject]) != nil) {
+		for (OFXMLElement *objectElement in
+		    [element elementsForName: @"object"
+				   namespace: OF_SERIALIZATION_NS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
 			OFXMLAttribute *count_;

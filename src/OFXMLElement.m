@@ -321,8 +321,7 @@ static Class CDATAClass = Nil;
 		    ![_children isKindOfClass: [OFMutableArray class]]))
 			@throw [OFInvalidArgumentException exception];
 
-		objectEnumerator = [_attributes objectEnumerator];
-		while ((object = [objectEnumerator nextObject]) != nil)
+		for (object in _attributes)
 			if (![object isKindOfClass: [OFXMLAttribute class]])
 				@throw [OFInvalidArgumentException exception];
 
@@ -334,8 +333,7 @@ static Class CDATAClass = Nil;
 			    ![object isKindOfClass: [OFString class]])
 				@throw [OFInvalidArgumentException exception];
 
-		objectEnumerator = [_children objectEnumerator];
-		while ((object = [objectEnumerator nextObject]) != nil)
+		for (object in _children)
 			if (![object isKindOfClass: [OFXMLNode class]])
 				@throw [OFInvalidArgumentException exception];
 
@@ -920,18 +918,12 @@ static Class CDATAClass = Nil;
 - (void)insertChildren: (OFArray*)children
 	       atIndex: (size_t)index
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator = [children objectEnumerator];
-	OFXMLNode *node;
-
-	while ((node = [enumerator nextObject]) != nil)
+	for (OFXMLNode *node in children)
 		if ([node isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
 
 	[_children insertObjectsFromArray: children
 				  atIndex: index];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeChild: (OFXMLNode*)child

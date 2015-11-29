@@ -73,8 +73,7 @@ hashForName(OFString *name)
 {
 	OFArray OF_GENERIC(OFString*) *arguments = [OFApplication arguments];
 	id <OFHash> hash;
-	OFEnumerator *enumerator;
-	OFString *path;
+	bool first = true;
 	int exitStatus = 0;
 
 	if ([arguments count] < 2)
@@ -83,13 +82,18 @@ hashForName(OFString *name)
 	if ((hash = hashForName([arguments firstObject])) == nil)
 		help();
 
-	enumerator = [[arguments objectsInRange:
-	    of_range(1, [arguments count] - 1)] objectEnumerator];
-	while ((path = [enumerator nextObject]) != nil) {
-		void *pool = objc_autoreleasePoolPush();
+	for (OFString *path in arguments) {
+		void *pool;
 		OFStream *file;
 		const uint8_t *digest;
 		size_t i, digestSize;
+
+		if (first) {
+			first = false;
+			continue;
+		}
+
+		pool = objc_autoreleasePoolPush();
 
 		if ([path isEqual: @"-"])
 			file = of_stdin;

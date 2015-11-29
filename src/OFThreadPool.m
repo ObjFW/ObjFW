@@ -295,15 +295,11 @@
 
 - (void)dealloc
 {
-	void *pool = objc_autoreleasePoolPush();
 	[_queueCondition lock];
 	@try {
 		[_countCondition lock];
 		@try {
-			OFEnumerator *enumerator = [_threads objectEnumerator];
-			OFThreadPoolThread *thread;
-
-			while ((thread = [enumerator nextObject]) != nil)
+			for (OFThreadPoolThread *thread in _threads)
 				thread->_terminate = true;
 		} @finally {
 			[_countCondition unlock];
@@ -313,7 +309,6 @@
 	} @finally {
 		[_queueCondition unlock];
 	}
-	objc_autoreleasePoolPop(pool);
 
 	[_threads release];
 	[_queue release];
