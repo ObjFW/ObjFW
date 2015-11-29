@@ -101,27 +101,32 @@ stringEqual(void *value1, void *value2)
 			iter2->isSpecifiedPtr = iter->isSpecifiedPtr;
 			iter2->argumentPtr = iter->argumentPtr;
 
-			@try {
-				iter2->longOption = [iter->longOption copy];
+			if (iter->longOption != nil) {
+				@try {
+					iter2->longOption =
+					    [iter->longOption copy];
 
-				if ([_longOptions
-				    valueForKey: iter2->longOption] != NULL)
-					@throw [OFInvalidArgumentException
-					    exception];
+					if ([_longOptions valueForKey:
+					    iter2->longOption] != NULL)
+						@throw
+						    [OFInvalidArgumentException
+						    exception];
 
-				[_longOptions setValue: iter2
-						forKey: iter2->longOption];
-			} @catch (id e) {
-				/*
-				 * Make sure we are in a consistent state where
-				 * dealloc works.
-				 */
-				[iter2->longOption release];
+					[_longOptions
+					    setValue: iter2
+					      forKey: iter2->longOption];
+				} @catch (id e) {
+					/*
+					 * Make sure we are in a consistent
+					 * state where dealloc works.
+					 */
+					[iter2->longOption release];
 
-				iter2->shortOption = '\0';
-				iter2->longOption = nil;
+					iter2->shortOption = '\0';
+					iter2->longOption = nil;
 
-				@throw e;
+					@throw e;
+				}
 			}
 		}
 
