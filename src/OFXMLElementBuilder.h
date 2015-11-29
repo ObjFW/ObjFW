@@ -44,10 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)elementBuilder: (OFXMLElementBuilder*)builder
        didBuildElement: (OFXMLElement*)element;
 
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
-#endif
-
 /*!
  * @brief This callback is called when the OFXMLElementBuilder built an
  *	  OFXMLNode which is not inside an element.
@@ -124,9 +121,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFXMLElementBuilder
  */
 + (instancetype)elementBuilder;
-@end
-
-@interface OFObject (OFXMLElementBuilderDelegate) <OFXMLElementBuilderDelegate>
 @end
 
 OF_ASSUME_NONNULL_END

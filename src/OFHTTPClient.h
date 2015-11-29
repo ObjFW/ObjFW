@@ -36,9 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A delegate for OFHTTPClient.
  */
 @protocol OFHTTPClientDelegate <OFObject>
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
-#endif
 /*!
  * @brief A callback which is called when an OFHTTPClient creates a socket.
  *
@@ -149,9 +147,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Closes connections that are still open due to keep-alive.
  */
 - (void)close;
-@end
-
-@interface OFObject (OFHTTPClientDelegate) <OFHTTPClientDelegate>
 @end
 
 OF_ASSUME_NONNULL_END

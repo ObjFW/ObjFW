@@ -46,9 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
   didReceiveRequest: (OFHTTPRequest*)request
 	   response: (OFHTTPResponse*)response;
 
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
-#endif
 /*!
  * @brief This method is called when the HTTP server's listening socket
  *	  encountered an exception.
@@ -116,9 +114,6 @@ OF_ASSUME_NONNULL_BEGIN
  *	  finished or timed out.
  */
 - (void)stop;
-@end
-
-@interface OFObject (OFHTTPServerDelegate) <OFHTTPServerDelegate>
 @end
 
 OF_ASSUME_NONNULL_END

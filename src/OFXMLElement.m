@@ -47,6 +47,7 @@ static Class charactersClass = Nil;
 static Class CDATAClass = Nil;
 
 @interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
+    <OFXMLElementBuilderDelegate>
 {
 @public
 	OFXMLElement *_element;

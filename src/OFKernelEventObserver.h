@@ -36,9 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	  OFKernelEventObserver.
  */
 @protocol OFKernelEventObserverDelegate <OFObject>
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
-#endif
 /*!
  * @brief This callback is called when an object did get ready for reading.
  *
@@ -213,10 +211,6 @@ OF_ASSUME_NONNULL_BEGIN
  * manually stop the observe running in another thread.
  */
 - (void)cancel;
-@end
-
-@interface OFObject (OFKernelEventObserverDelegate)
-    <OFKernelEventObserverDelegate>
 @end
 
 OF_ASSUME_NONNULL_END

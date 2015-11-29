@@ -45,9 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)applicationDidFinishLaunching;
 
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
-#endif
 /*!
  * @brief A method which is called when the application will terminate.
  */
@@ -220,9 +218,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @param status The status with which the application will terminate
  */
 - (void)terminateWithStatus: (int)status OF_NO_RETURN;
-@end
-
-@interface OFObject (OFApplicationDelegate) <OFApplicationDelegate>
 @end
 
 #ifdef __cplusplus

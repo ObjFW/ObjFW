@@ -35,9 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A protocol that needs to be implemented by delegates for OFXMLParser.
  */
 @protocol OFXMLParserDelegate <OFObject>
-#ifdef OF_HAVE_OPTIONAL_PROTOCOLS
 @optional
-#endif
 /*!
  * @brief This callback is called when the XML parser found processing
  *	  instructions.
@@ -243,9 +241,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the XML parser has finished parsing
  */
 - (bool)hasFinishedParsing;
-@end
-
-@interface OFObject (OFXMLParserDelegate) <OFXMLParserDelegate>
 @end
 
 OF_ASSUME_NONNULL_END

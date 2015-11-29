@@ -41,7 +41,7 @@
 
 static OFString *module;
 
-@interface ObserverTest: OFObject
+@interface ObserverTest: OFObject <OFKernelEventObserverDelegate>
 {
 @public
 	TestsAppDelegate *_testsAppDelegate;

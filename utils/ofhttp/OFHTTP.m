@@ -49,7 +49,7 @@
 #define MEBIBYTE (1024 * 1024)
 #define KIBIBYTE (1024)
 
-@interface OFHTTP: OFObject
+@interface OFHTTP: OFObject <OFHTTPClientDelegate>
 {
 	OFArray OF_GENERIC(OFString*) *_URLs;
 	size_t _URLIndex;

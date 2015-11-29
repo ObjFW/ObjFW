@@ -38,6 +38,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class providing a run loop for the application and its processes.
  */
 @interface OFRunLoop: OFObject
+#ifdef OF_HAVE_SOCKETS
+    <OFKernelEventObserverDelegate>
+#endif
 {
 	OFSortedList *_timersQueue;
 #ifdef OF_HAVE_THREADS

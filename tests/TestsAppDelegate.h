@@ -200,6 +200,7 @@
 - (void)XMLNodeTests;
 @end
 
-@interface TestsAppDelegate (OFXMLParserTests) <OFXMLElementBuilderDelegate>
+@interface TestsAppDelegate (OFXMLParserTests)
+    <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
 @end
