@@ -208,7 +208,7 @@ stringEqual(void *value1, void *value2)
 			objc_autoreleasePoolPop(pool);
 
 			option = [_longOptions valueForKey: _lastLongOption];
-			if (option == nil)
+			if (option == NULL)
 				return '?';
 
 			if (option->hasArgument == 1 && _argument == nil)
