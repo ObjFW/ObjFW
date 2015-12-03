@@ -33,7 +33,7 @@ typedef struct of_options_parser_option_t {
 	/*!
 	 * The long version (e.g. `--verbose`) of the option or `nil` for none.
 	 */
-	OFString *_Nullable longOption;
+	OFString *__unsafe_unretained _Nullable longOption;
 
 	/*!
 	 * Whether the option takes an argument.
