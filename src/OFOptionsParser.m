@@ -241,8 +241,12 @@ stringEqual(void *value1, void *value2)
 	for (iter = _options;
 	    iter->shortOption != '\0' || iter->longOption != nil; iter++) {
 		if (iter->shortOption == _lastOption) {
-			if (iter->hasArgument == 0)
+			if (iter->hasArgument == 0) {
+				if (iter->isSpecifiedPtr != NULL)
+					*iter->isSpecifiedPtr = true;
+
 				return _lastOption;
+			}
 
 			if (_index >= [_arguments count])
 				return ':';
