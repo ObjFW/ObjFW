@@ -68,22 +68,25 @@ help(OFStream *stream, bool full, int status)
 	if (full)
 		[stream writeString:
 		    @"\nOptions:\n"
-		    @"    -f  Force / override files\n"
-		    @"    -h  Show this help\n"
-		    @"    -l  List all files in the archive\n"
-		    @"    -n  Never override files\n"
-		    @"    -q  Quiet mode (no output, except errors)\n"
-		    @"    -v  Verbose output for file list\n"
-		    @"    -x  Extract files\n"];
+		    @"    -f  --force      Force / override files\n"
+		    @"    -h  --help       Show this help\n"
+		    @"    -l  --list       List all files in the archive\n"
+		    @"    -n  --no-clober  Never override files\n"
+		    @"    -q  --quiet      Quiet mode (no output, except "
+		    @"errors)\n"
+		    @"    -v  --verbose    Verbose output for file list\n"
+		    @"    -x  --extract    Extract files\n"];
 
 	[OFApplication terminateWithStatus: status];
 }
 
 static void
-mutuallyExclusiveError(of_unichar_t option1, of_unichar_t option2)
+mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
+    of_unichar_t shortOption2, OFString *longOption2)
 {
-	[of_stderr writeFormat: @"Error: -%C and -%C are mutually exclusive!\n",
-				option1, option2];
+	[of_stderr writeFormat:
+	    @"Error: -%C / --%@ and -%C / --%@ are mutually exclusive!\n",
+	    shortOption1, longOption1, shortOption2, longOption2];
 	[OFApplication terminateWithStatus: 1];
 }
 
@@ -128,32 +131,37 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		switch (option) {
 		case 'f':
 			if (_override < 0)
-				mutuallyExclusiveError('f', 'n');
+				mutuallyExclusiveError(
+				    'f', @"force", 'n', @"no-clobber");
 
 			_override = 1;
 			break;
 		case 'n':
 			if (_override > 0)
-				mutuallyExclusiveError('f', 'n');
+				mutuallyExclusiveError(
+				    'f', @"force", 'n', @"no-clobber");
 
 			_override = -1;
 			break;
 		case 'v':
 			if (_outputLevel < 0)
-				mutuallyExclusiveError('v', 'q');
+				mutuallyExclusiveError(
+				    'q', @"quiet", 'v', @"verbose");
 
 			_outputLevel++;
 			break;
 		case 'q':
 			if (_outputLevel > 0)
-				mutuallyExclusiveError('v', 'q');
+				mutuallyExclusiveError(
+				    'q', @"quiet", 'v', @"verbose");
 
 			_outputLevel--;
 			break;
 		case 'l':
 		case 'x':
 			if (mode != '\0')
-				mutuallyExclusiveError('x', 'l');
+				mutuallyExclusiveError(
+				    'l', @"list", 'x', @"extract");
 
 			mode = option;
 			break;

@@ -78,17 +78,27 @@ help(OFStream *stream, bool full, int status)
 
 	if (full)
 		[stream writeString:
-		    @"\nOptions:\n"
-		    @"    -b  Specify the file to send as body\n"
-		    @"    -c  Continue download of existing file\n"
-		    @"    -h  Show this help\n"
-		    @"    -H  Add a header (e.g. X-Foo:Bar)\n"
-		    @"    -m  Set the method of the HTTP request\n"
-		    @"    -o  Specify output file name\n"
-		    @"    -O  Do a HEAD request to detect file name\n"
-		    @"    -P  Specify SOCKS5 proxy\n"
-		    @"    -q  Quiet mode (no output, except errors)\n"
-		    @"    -v  Verbose mode (print headers)\n"];
+		    @"\nOptions:\n    "
+		    @"-b  --body           "
+		    @"  Specify the file to send as body\n    "
+		    @"-c  --continue       "
+		    @"  Continue download of existing file\n    "
+		    @"-h  --help           "
+		    @"  Show this help\n    "
+		    @"-H  --header         "
+		    @"  Add a header (e.g. X-Foo:Bar)\n    "
+		    @"-m  --method         "
+		    @"  Set the method of the HTTP request\n    "
+		    @"-o  --output         "
+		    @"  Specify output file name\n    "
+		    @"-O  --detect-filename"
+		    @"  Do a HEAD request to detect the file name\n    "
+		    @"-P  --proxy          "
+		    @"  Specify SOCKS5 proxy\n    "
+		    @"-q  --quiet          "
+		    @"  Quiet mode (no output, except errors)\n    "
+		    @"-v  --verbose        "
+		    @"  Verbose mode (print headers)\n"];
 
 	[OFApplication terminateWithStatus: status];
 }
@@ -294,15 +304,16 @@ help(OFStream *stream, bool full, int status)
 		help(of_stderr, false, 1);
 
 	if (_quiet && _verbose) {
-		[of_stderr writeFormat: @"%@: -q and -v are mutually "
-					@"exclusive!\n",
+		[of_stderr writeFormat: @"%@: -q / --quiet and -v / --verbose "
+					@"are mutually exclusive!\n",
 					[OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
 	}
 
 	if (_outputPath != nil && [_URLs count] > 1) {
-		[of_stderr writeFormat: @"%@: Cannot use -o when more than "
-					@"one URL has been specified!\n",
+		[of_stderr writeFormat: @"%@: Cannot use -o / --output when "
+					@"more than one URL has been "
+					@"specified!\n",
 					[OFApplication programName]];
 		[OFApplication terminateWithStatus: 1];
 	}
