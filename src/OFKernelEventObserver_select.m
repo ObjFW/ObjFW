@@ -63,9 +63,8 @@
 }
 
 - (void)OF_addObjectForReading: (id)object
+		fileDescriptor: (int)fd
 {
-	int fd = [object fileDescriptorForReading];
-
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
@@ -81,9 +80,8 @@
 }
 
 - (void)OF_addObjectForWriting: (id)object
+		fileDescriptor: (int)fd
 {
-	int fd = [object fileDescriptorForWriting];
-
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
@@ -99,10 +97,9 @@
 }
 
 - (void)OF_removeObjectForReading: (id)object
+		   fileDescriptor: (int)fd
 {
 	/* TODO: Adjust _maxFD */
-
-	int fd = [object fileDescriptorForReading];
 
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
@@ -116,10 +113,9 @@
 }
 
 - (void)OF_removeObjectForWriting: (id)object
+		   fileDescriptor: (int)fd
 {
 	/* TODO: Adjust _maxFD */
-
-	int fd = [object fileDescriptorForWriting];
 
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
@@ -142,7 +138,7 @@
 	int events;
 	size_t i, count;
 
-	[self OF_processQueueAndStoreRemovedIn: nil];
+	[self OF_processQueue];
 	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);

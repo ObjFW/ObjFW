@@ -18,8 +18,30 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFKernelEventObserver (OF_PRIVATE_CATEGORY)
-- (void)OF_processReadBuffers;
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFDataArray;
+#ifdef OF_HAVE_THREADS
+@class OFMutex;
+#endif
+
+@interface OFKernelEventObserver_LockedQueue: OFKernelEventObserver
+{
+	OFDataArray *_queueActions, *_queueFDs;
+	OFMutableArray *_queueObjects;
+#ifdef OF_HAVE_THREADS
+	OFMutex *_mutex;
+#endif
+}
+
+- (void)OF_addObjectForReading: (id)object
+		fileDescriptor: (int)fd;
+- (void)OF_addObjectForWriting: (id)object
+		fileDescriptor: (int)fd;
+- (void)OF_removeObjectForReading: (id)object
+		   fileDescriptor: (int)fd;
+- (void)OF_removeObjectForWriting: (id)object
+		   fileDescriptor: (int)fd;
+- (void)OF_processQueue;
 @end
 
 OF_ASSUME_NONNULL_END

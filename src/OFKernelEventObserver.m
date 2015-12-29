@@ -18,20 +18,13 @@
 
 #include "config.h"
 
-#include <assert.h>
-
 #import "OFKernelEventObserver.h"
 #import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
-#import "OFDictionary.h"
 #import "OFStream.h"
 #import "OFStream+Private.h"
-#import "OFDataArray.h"
 #ifndef OF_HAVE_PIPE
 # import "OFStreamSocket.h"
-#endif
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
 #endif
 #import "OFDate.h"
 
@@ -54,14 +47,6 @@
 
 #import "socket.h"
 #import "socket_helpers.h"
-
-enum {
-	QUEUE_ADD = 0,
-	QUEUE_REMOVE = 1,
-	QUEUE_READ = 0,
-	QUEUE_WRITE = 2
-};
-#define QUEUE_ACTION (QUEUE_ADD | QUEUE_REMOVE)
 
 #ifdef __wii__
 /* FIXME: Add a port registry for Wii */
@@ -113,9 +98,6 @@ static uint16_t freePort = 65535;
 
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
-		_queue = [[OFMutableArray alloc] init];
-		_queueActions = [[OFDataArray alloc]
-		    initWithItemSize: sizeof(int)];
 
 #ifdef OF_HAVE_PIPE
 		if (pipe(_cancelFD))
@@ -151,10 +133,6 @@ static uint16_t freePort = 65535;
 			    exceptionWithClass: [self class]];
 # endif
 #endif
-
-#ifdef OF_HAVE_THREADS
-		_mutex = [[OFMutex alloc] init];
-#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -171,11 +149,6 @@ static uint16_t freePort = 65535;
 
 	[_readObjects release];
 	[_writeObjects release];
-	[_queue release];
-	[_queueActions release];
-#ifdef OF_HAVE_THREADS
-	[_mutex release];
-#endif
 
 	[super dealloc];
 }
@@ -192,153 +165,22 @@ static uint16_t freePort = 65535;
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-#endif
-	@try {
-		int qi = QUEUE_ADD | QUEUE_READ;
-
-		[_queue addObject: object];
-		[_queueActions addItem: &qi];
-	} @finally {
-#ifdef OF_HAVE_THREADS
-		[_mutex unlock];
-#endif
-	}
-
-	[self cancel];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-#endif
-	@try {
-		int qi = QUEUE_ADD | QUEUE_WRITE;
-
-		[_queue addObject: object];
-		[_queueActions addItem: &qi];
-	} @finally {
-#ifdef OF_HAVE_THREADS
-		[_mutex unlock];
-#endif
-	}
-
-	[self cancel];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-#endif
-	@try {
-		int qi = QUEUE_REMOVE | QUEUE_READ;
-
-		[_queue addObject: object];
-		[_queueActions addItem: &qi];
-	} @finally {
-#ifdef OF_HAVE_THREADS
-		[_mutex unlock];
-#endif
-	}
-
-	[self cancel];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-#endif
-	@try {
-		int qi = QUEUE_REMOVE | QUEUE_WRITE;
-
-		[_queue addObject: object];
-		[_queueActions addItem: &qi];
-	} @finally {
-#ifdef OF_HAVE_THREADS
-		[_mutex unlock];
-#endif
-	}
-
-	[self cancel];
-}
-
-- (void)OF_addObjectForReading: (id)object
-{
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)OF_addObjectForWriting: (id)object
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)OF_removeObjectForReading: (id)object
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)OF_removeObjectForWriting: (id)object
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)OF_processQueueAndStoreRemovedIn: (OFMutableArray*)removed
-{
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-#endif
-	@try {
-		id const *queueObjects = [_queue objects];
-		int *queueActionItems = [_queueActions items];
-		size_t i, count = [_queue count];
-
-		for (i = 0; i < count; i++) {
-			id object = queueObjects[i];
-			int action = queueActionItems[i];
-
-			switch (action) {
-			case QUEUE_ADD | QUEUE_READ:
-				[_readObjects addObject: object];
-
-				[self OF_addObjectForReading: object];
-
-				break;
-			case QUEUE_ADD | QUEUE_WRITE:
-				[_writeObjects addObject: object];
-
-				[self OF_addObjectForWriting: object];
-
-				break;
-			case QUEUE_REMOVE | QUEUE_READ:
-				[self OF_removeObjectForReading: object];
-
-				[removed addObject: object];
-				[_readObjects removeObjectIdenticalTo: object];
-
-				break;
-			case QUEUE_REMOVE | QUEUE_WRITE:
-				[self OF_removeObjectForWriting: object];
-
-				[removed addObject: object];
-				[_writeObjects removeObjectIdenticalTo: object];
-
-				break;
-			default:
-				assert(0);
-			}
-		}
-
-		[_queue removeAllObjects];
-		[_queueActions removeAllItems];
-	} @finally {
-#ifdef OF_HAVE_THREADS
-		[_mutex unlock];
-#endif
-	}
 }
 
 - (void)observe

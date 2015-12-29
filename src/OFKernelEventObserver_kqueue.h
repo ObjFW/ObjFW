@@ -24,8 +24,6 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFKernelEventObserver_kqueue: OFKernelEventObserver
 {
 	int _kernelQueue;
-	OFDataArray *_changeList;
-	OFMutableArray *_removedArray;
 }
 @end
 
