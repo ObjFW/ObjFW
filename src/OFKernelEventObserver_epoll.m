@@ -156,28 +156,28 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	}
 }
 
-- (void)OF_addObjectForReading: (id)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self OF_addObject: object
 	    fileDescriptor: [object fileDescriptorForReading]
 		    events: EPOLLIN];
 }
 
-- (void)OF_addObjectForWriting: (id)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self OF_addObject: object
 	    fileDescriptor: [object fileDescriptorForWriting]
 		    events: EPOLLOUT];
 }
 
-- (void)OF_removeObjectForReading: (id)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self OF_removeObject: object
 	       fileDescriptor: [object fileDescriptorForReading]
 		       events: EPOLLIN];
 }
 
-- (void)OF_removeObjectForWriting: (id)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self OF_removeObject: object
 	       fileDescriptor: [object fileDescriptorForWriting]
@@ -191,7 +191,6 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	struct epoll_event eventList[EVENTLIST_SIZE];
 	int i, events;
 
-	[self OF_processQueueAndStoreRemovedIn: nil];
 	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);

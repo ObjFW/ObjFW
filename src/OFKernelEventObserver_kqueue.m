@@ -62,12 +62,11 @@
 			fcntl(_kernelQueue, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-		_changeList = [[OFDataArray alloc] initWithItemSize:
-		    sizeof(struct kevent)];
 		EV_SET(&event, _cancelFD[0], EVFILT_READ, EV_ADD, 0, 0, 0);
-		[_changeList addItem: &event];
 
-		_removedArray = [[OFMutableArray alloc] init];
+		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: [self class]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -80,18 +79,12 @@
 {
 	close(_kernelQueue);
 
-	[_changeList release];
-	[_removedArray release];
-
 	[super dealloc];
 }
 
-- (void)OF_addObjectForReading: (id)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
-
-	if ([_changeList count] >= INT_MAX)
-		@throw [OFOutOfRangeException exception];
 
 	memset(&event, 0, sizeof(event));
 	event.ident = [object fileDescriptorForReading];
@@ -103,15 +96,15 @@
 	event.udata = (intptr_t)object;
 #endif
 
-	[_changeList addItem: &event];
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 }
 
-- (void)OF_addObjectForWriting: (id)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
-
-	if ([_changeList count] >= INT_MAX)
-		@throw [OFOutOfRangeException exception];
 
 	memset(&event, 0, sizeof(event));
 	event.ident = [object fileDescriptorForWriting];
@@ -123,10 +116,13 @@
 	event.udata = (intptr_t)object;
 #endif
 
-	[_changeList addItem: &event];
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 }
 
-- (void)OF_removeObjectForReading: (id)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -134,10 +130,14 @@
 	event.ident = [object fileDescriptorForReading];
 	event.filter = EVFILT_READ;
 	event.flags = EV_DELETE;
-	[_changeList addItem: &event];
+
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 }
 
-- (void)OF_removeObjectForWriting: (id)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -145,7 +145,11 @@
 	event.ident = [object fileDescriptorForWriting];
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_DELETE;
-	[_changeList addItem: &event];
+
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException
+		    exceptionWithObserver: self
+				    errNo: errno];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
@@ -158,26 +162,16 @@
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
 
-	/*
-	 * Make sure to keep the streams retained and thus the file descriptors
-	 * valid until the actual change has been performed.
-	 */
-	[self OF_processQueueAndStoreRemovedIn: _removedArray];
-
 	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);
 
-	events = kevent(_kernelQueue, [_changeList items],
-	    (int)[_changeList count], eventList, EVENTLIST_SIZE,
+	events = kevent(_kernelQueue, NULL, 0, eventList, EVENTLIST_SIZE,
 	    (timeInterval != -1 ? &timeout : NULL));
 
 	if (events < 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
-
-	[_changeList removeAllItems];
-	[_removedArray removeAllObjects];
 
 	for (i = 0; i < events; i++) {
 		if (eventList[i].flags & EV_ERROR)

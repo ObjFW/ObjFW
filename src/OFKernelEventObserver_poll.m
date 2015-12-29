@@ -126,30 +126,34 @@
 }
 
 - (void)OF_addObjectForReading: (id)object
+		fileDescriptor: (int)fd
 {
 	[self OF_addObject: object
-	    fileDescriptor: [object fileDescriptorForReading]
+	    fileDescriptor: fd
 		    events: POLLIN];
 }
 
 - (void)OF_addObjectForWriting: (id)object
+		fileDescriptor: (int)fd
 {
 	[self OF_addObject: object
-	    fileDescriptor: [object fileDescriptorForWriting]
+	    fileDescriptor: fd
 		    events: POLLOUT];
 }
 
 - (void)OF_removeObjectForReading: (id)object
+		   fileDescriptor: (int)fd
 {
 	[self OF_removeObject: object
-	       fileDescriptor: [object fileDescriptorForReading]
+	       fileDescriptor: fd
 		       events: POLLIN];
 }
 
 - (void)OF_removeObjectForWriting: (id)object
+		   fileDescriptor: (int)fd
 {
 	[self OF_removeObject: object
-	       fileDescriptor: [object fileDescriptorForWriting]
+	       fileDescriptor: fd
 		       events: POLLOUT];
 }
 
@@ -160,7 +164,7 @@
 	int events;
 	size_t i, nFDs;
 
-	[self OF_processQueueAndStoreRemovedIn: nil];
+	[self OF_processQueue];
 	[self OF_processReadBuffers];
 
 	objc_autoreleasePoolPop(pool);

@@ -21,11 +21,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
-@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-@class OFDataArray;
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 @class OFDate;
 
 /*!
@@ -112,17 +107,12 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_readObjects;
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
-	OFMutableArray *_queue;
-	OFDataArray *_queueActions;
 	id <OFKernelEventObserverDelegate> _delegate;
 #ifdef OF_HAVE_PIPE
 	int _cancelFD[2];
 #else
 	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
-#endif
-#ifdef OF_HAVE_THREADS
-	OFMutex *_mutex;
 #endif
 }
 

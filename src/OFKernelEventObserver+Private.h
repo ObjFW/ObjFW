@@ -19,11 +19,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFKernelEventObserver ()
-- (void)OF_addObjectForReading: (id)object;
-- (void)OF_addObjectForWriting: (id)object;
-- (void)OF_removeObjectForReading: (id)object;
-- (void)OF_removeObjectForWriting: (id)object;
-- (void)OF_processQueueAndStoreRemovedIn: (nullable OFMutableArray*)removed;
 - (void)OF_processReadBuffers;
 @end
 

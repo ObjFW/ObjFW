@@ -14,18 +14,34 @@
  * file.
  */
 
-#import "OFKernelEventObserver_LockedQueue.h"
+#import "OFKernelEventObserver.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDataArray;
+#ifdef OF_HAVE_THREADS
+@class OFMutex;
+#endif
 
-@interface OFKernelEventObserver_poll: OFKernelEventObserver_LockedQueue
+@interface OFKernelEventObserver_LockedQueue: OFKernelEventObserver
 {
-	OFDataArray *_FDs;
-	size_t _maxFD;
-	id __unsafe_unretained *_FDToObject;
+	OFDataArray *_queueActions, *_queueFDs;
+	OFMutableArray *_queueObjects;
+#ifdef OF_HAVE_THREADS
+	OFMutex *_mutex;
+#endif
 }
+
+- (void)OF_addObjectForReading: (id)object
+		fileDescriptor: (int)fd;
+- (void)OF_addObjectForWriting: (id)object
+		fileDescriptor: (int)fd;
+- (void)OF_removeObjectForReading: (id)object
+		   fileDescriptor: (int)fd;
+- (void)OF_removeObjectForWriting: (id)object
+		   fileDescriptor: (int)fd;
+- (void)OF_processQueue;
 @end
 
 OF_ASSUME_NONNULL_END
