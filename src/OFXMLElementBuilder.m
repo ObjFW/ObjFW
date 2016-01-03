@@ -78,27 +78,20 @@
 	namespace: (OFString*)namespace
        attributes: (OFArray*)attributes
 {
-	OFXMLElement *element;
-	OFXMLAttribute *const *objects;
-	size_t i, count;
+	OFXMLElement *element = [OFXMLElement elementWithName: name
+						    namespace: namespace];
 
-	element = [OFXMLElement elementWithName: name
-				      namespace: namespace];
-
-	objects = [attributes objects];
-	count = [attributes count];
-
-	for (i = 0; i < count; i++) {
-		if ([objects[i] namespace] == nil &&
-		    [[objects[i] name] isEqual: @"xmlns"])
+	for (OFXMLAttribute *attribute in attributes) {
+		if ([attribute namespace] == nil &&
+		    [[attribute name] isEqual: @"xmlns"])
 			continue;
 
-		if ([[objects[i] namespace]
+		if ([[attribute namespace]
 		    isEqual: @"http://www.w3.org/2000/xmlns/"])
-			[element setPrefix: [objects[i] name]
-			      forNamespace: [objects[i] stringValue]];
+			[element setPrefix: [attribute name]
+			      forNamespace: [attribute stringValue]];
 
-		[element addAttribute: objects[i]];
+		[element addAttribute: attribute];
 	}
 
 	[[_stack lastObject] addChild: element];

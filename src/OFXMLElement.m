@@ -401,19 +401,16 @@ static Class CDATAClass = Nil;
 - (OFString*)stringValue
 {
 	OFMutableString *ret;
-	OFXMLNode *const *objects;
-	size_t i, count = [_children count];
 
-	if (count == 0)
+	if ([_children count] == 0)
 		return @"";
 
 	ret = [OFMutableString string];
-	objects = [_children objects];
 
-	for (i = 0; i < count; i++) {
+	for (OFXMLNode *child in _children) {
 		void *pool = objc_autoreleasePoolPush();
 
-		[ret appendString: [objects[i] stringValue]];
+		[ret appendString: [child stringValue]];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -801,13 +798,10 @@ static Class CDATAClass = Nil;
 
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 {
-	OFXMLAttribute *const *objects = [_attributes objects];
-	size_t i, count = [_attributes count];
-
-	for (i = 0; i < count; i++)
-		if (objects[i]->_namespace == nil &&
-		    [objects[i]->_name isEqual: attributeName])
-			return [[objects[i] retain] autorelease];
+	for (OFXMLAttribute *attribute in _attributes)
+		if (attribute->_namespace == nil &&
+		    [attribute->_name isEqual: attributeName])
+			return [[attribute retain] autorelease];
 
 	return nil;
 }
@@ -815,19 +809,13 @@ static Class CDATAClass = Nil;
 - (OFXMLAttribute*)attributeForName: (OFString*)attributeName
 			  namespace: (OFString*)attributeNS
 {
-	OFXMLAttribute *const *objects;
-	size_t i, count;
-
 	if (attributeNS == nil)
 		return [self attributeForName: attributeName];
 
-	objects = [_attributes objects];
-	count = [_attributes count];
-
-	for (i = 0; i < count; i++)
-		if ([objects[i]->_namespace isEqual: attributeNS] &&
-		    [objects[i]->_name isEqual: attributeName])
-			return [[objects[i] retain] autorelease];
+	for (OFXMLAttribute *attribute in _attributes)
+		if ([attribute->_namespace isEqual: attributeNS] &&
+		    [attribute->_name isEqual: attributeName])
+			return [[attribute retain] autorelease];
 
 	return nil;
 }
@@ -976,12 +964,10 @@ static Class CDATAClass = Nil;
 - (OFArray*)elements
 {
 	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
-	OFXMLNode *const *objects = [_children objects];
-	size_t i, count = [_children count];
 
-	for (i = 0; i < count; i++)
-		if ([objects[i] isKindOfClass: [OFXMLElement class]])
-			[ret addObject: (OFXMLElement*)objects[i]];
+	for (OFXMLNode *child in _children)
+		if ([child isKindOfClass: [OFXMLElement class]])
+			[ret addObject: (OFXMLElement*)child];
 
 	[ret makeImmutable];
 
@@ -991,12 +977,10 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForName: (OFString*)elementName
 {
 	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
-	OFXMLNode *const *objects = [_children objects];
-	size_t i, count = [_children count];
 
-	for (i = 0; i < count; i++) {
-		if ([objects[i] isKindOfClass: [OFXMLElement class]]) {
-			OFXMLElement *element = (OFXMLElement*)objects[i];
+	for (OFXMLNode *child in _children) {
+		if ([child isKindOfClass: [OFXMLElement class]]) {
+			OFXMLElement *element = (OFXMLElement*)child;
 
 			if (element->_namespace == nil &&
 			    [element->_name isEqual: elementName])
@@ -1012,12 +996,10 @@ static Class CDATAClass = Nil;
 - (OFArray*)elementsForNamespace: (OFString*)elementNS
 {
 	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
-	OFXMLNode *const *objects = [_children objects];
-	size_t i, count = [_children count];
 
-	for (i = 0; i < count; i++) {
-		if ([objects[i] isKindOfClass: [OFXMLElement class]]) {
-			OFXMLElement *element = (OFXMLElement*)objects[i];
+	for (OFXMLNode *child in _children) {
+		if ([child isKindOfClass: [OFXMLElement class]]) {
+			OFXMLElement *element = (OFXMLElement*)child;
 
 			if (element->_name != nil &&
 			    [element->_namespace isEqual: elementNS])
@@ -1034,19 +1016,15 @@ static Class CDATAClass = Nil;
 		  namespace: (OFString*)elementNS
 {
 	OFMutableArray OF_GENERIC(OFXMLElement*) *ret;
-	OFXMLNode *const *objects;
-	size_t i, count;
 
 	if (elementNS == nil)
 		return [self elementsForName: elementName];
 
 	ret = [OFMutableArray array];
-	objects = [_children objects];
-	count = [_children count];
 
-	for (i = 0; i < count; i++) {
-		if ([objects[i] isKindOfClass: [OFXMLElement class]]) {
-			OFXMLElement *element = (OFXMLElement*)objects[i];
+	for (OFXMLNode *child in _children) {
+		if ([child isKindOfClass: [OFXMLElement class]]) {
+			OFXMLElement *element = (OFXMLElement*)child;
 
 			if ([element->_namespace isEqual: elementNS] &&
 			    [element->_name isEqual: elementName])

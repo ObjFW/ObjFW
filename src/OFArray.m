@@ -279,32 +279,34 @@ static struct {
 
 - (size_t)indexOfObject: (id)object
 {
-	size_t i, count;
+	size_t i = 0;
 
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	count = [self count];
-
-	for (i = 0; i < count; i++)
-		if ([[self objectAtIndex: i] isEqual: object])
+	for (id objectIter in self) {
+		if ([objectIter isEqual: object])
 			return i;
+
+		i++;
+	}
 
 	return OF_NOT_FOUND;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	size_t i, count;
+	size_t i = 0;
 
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	count = [self count];
-
-	for (i = 0; i < count; i++)
-		if ([self objectAtIndex: i] == object)
+	for (id objectIter in self) {
+		if (objectIter == object)
 			return i;
+
+		i++;
+	}
 
 	return OF_NOT_FOUND;
 }
@@ -393,31 +395,23 @@ static struct {
 			usingSelector: (SEL)selector
 			      options: (int)options
 {
-	void *pool;
 	OFMutableString *ret;
-	id const *objects;
-	size_t i, count;
 
 	if (separator == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [self count];
-
-	if (count == 0)
+	if ([self count] == 0)
 		return @"";
-	if (count == 1)
+	if ([self count] == 1)
 		return [[self firstObject] performSelector: selector];
 
 	ret = [OFMutableString string];
 
-	pool = objc_autoreleasePoolPush();
-	objects = [self objects];
-
 	if (options & OF_ARRAY_SKIP_EMPTY) {
-		for (i = 0; i < count; i++) {
-			void *pool2 = objc_autoreleasePoolPush();
+		for (id object in self) {
+			void *pool = objc_autoreleasePoolPush();
 			OFString *component =
-			    [objects[i] performSelector: selector];
+			    [object performSelector: selector];
 
 			if ([component length] > 0) {
 				if ([ret length] > 0)
@@ -425,24 +419,21 @@ static struct {
 				[ret appendString: component];
 			}
 
-			objc_autoreleasePoolPop(pool2);
+			objc_autoreleasePoolPop(pool);
 		}
 	} else {
-		for (i = 0; i < count - 1; i++) {
-			void *pool2 = objc_autoreleasePoolPush();
+		for (id object in self) {
+			void *pool = objc_autoreleasePoolPush();
 
-			[ret appendString:
-			    [objects[i] performSelector: selector]];
-			[ret appendString: separator];
+			if ([ret length] > 0)
+				[ret appendString: separator];
+			[ret appendString: [object performSelector: selector]];
 
-			objc_autoreleasePoolPop(pool2);
+			objc_autoreleasePoolPop(pool);
 		}
-		[ret appendString: [objects[i] performSelector: selector]];
 	}
 
 	[ret makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
 
 	return ret;
 }
@@ -473,14 +464,12 @@ static struct {
 
 - (uint32_t)hash
 {
-	id const *objects = [self objects];
-	size_t i, count = [self count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < count; i++)
-		OF_HASH_ADD_HASH(hash, [objects[i] hash]);
+	for (id object in self)
+		OF_HASH_ADD_HASH(hash, [object hash]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -519,8 +508,6 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
-	id <OFSerialization> const *objects = [self objects];
-	size_t i, count = [self count];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		element = [OFXMLElement elementWithName: @"OFMutableArray"
@@ -529,10 +516,10 @@ static struct {
 		element = [OFXMLElement elementWithName: @"OFArray"
 					      namespace: OF_SERIALIZATION_NS];
 
-	for (i = 0; i < count; i++) {
+	for (id object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
-		[element addChild: [objects[i] XMLElementBySerializing]];
+		[element addChild: [object XMLElementBySerializing]];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -668,22 +655,16 @@ static struct {
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 {
-	id const *objects = [self objects];
-	size_t i, count = [self count];
-
-	for (i = 0; i < count; i++)
-		[objects[i] performSelector: selector];
+	for (id object in self)
+		[object performSelector: selector];
 }
 
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (id)object
 {
-	id const *objects = [self objects];
-	size_t i, count = [self count];
-
-	for (i = 0; i < count; i++)
-		[objects[i] performSelector: selector
-				 withObject: object];
+	for (id object in self)
+		[object performSelector: selector
+			     withObject: object];
 }
 
 - (OFArray*)sortedArray

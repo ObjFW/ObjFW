@@ -217,18 +217,15 @@
 
 - (void)OF_processReadBuffers
 {
-	id const *objects = [_readObjects objects];
-	size_t i, count = [_readObjects count];
-
-	for (i = 0; i < count; i++) {
+	for (id object in _readObjects) {
 		void *pool = objc_autoreleasePoolPush();
 
-		if ([objects[i] isKindOfClass: [OFStream class]] &&
-		    [objects[i] hasDataInReadBuffer] &&
-		    ![objects[i] OF_isWaitingForDelimiter] &&
+		if ([object isKindOfClass: [OFStream class]] &&
+		    [object hasDataInReadBuffer] &&
+		    ![object OF_isWaitingForDelimiter] &&
 		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
-			[_delegate objectIsReadyForReading: objects[i]];
+			[_delegate objectIsReadyForReading: object];
 
 		objc_autoreleasePoolPop(pool);
 	}
