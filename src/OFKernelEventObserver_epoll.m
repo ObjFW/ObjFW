@@ -27,8 +27,12 @@
 #import "OFKernelEventObserver.h"
 #import "OFKernelEventObserver+Private.h"
 #import "OFKernelEventObserver_epoll.h"
+#import "OFArray.h"
 #import "OFMapTable.h"
 #import "OFNull.h"
+#ifdef OF_HAVE_THREADS
+# import "OFMutex.h"
+#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
@@ -88,100 +92,118 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 - (void)OF_addObject: (id)object
       fileDescriptor: (int)fd
 	      events: (int)addEvents
+	objectsArray: (OFMutableArray*)objectsArray
 {
-	intptr_t events;
-
-	events = (intptr_t)[_FDToEvents valueForKey: (void*)(intptr_t)fd];
-	if (events == 0) {
+#ifdef OF_HAVE_THREADS
+	[_mutex lock];
+	@try {
+#endif
 		struct epoll_event event;
+		intptr_t events;
 
-		memset(&event, 0, sizeof(event));
-		event.events = addEvents;
-		event.data.ptr = object;
-
-		if (epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &event) == -1)
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
-
-		[_FDToEvents setValue: (void*)(intptr_t)addEvents
-			       forKey: (void*)(intptr_t)fd];
-	} else {
-		struct epoll_event event;
+		events = (intptr_t)[_FDToEvents
+		    valueForKey: (void*)(intptr_t)fd];
 
 		memset(&event, 0, sizeof(event));
 		event.events = (int)events | addEvents;
 		event.data.ptr = object;
 
-		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
+		[objectsArray addObject: object];
+
+		if (epoll_ctl(_epfd,
+		    (events == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD),
+		    fd, &event) == -1) {
+			[objectsArray removeObjectIdenticalTo: object];
 			@throw [OFObserveFailedException
 			    exceptionWithObserver: self
 					    errNo: errno];
+		}
 
 		[_FDToEvents setValue: (void*)(events | addEvents)
 			       forKey: (void*)(intptr_t)fd];
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[_mutex unlock];
 	}
+#endif
 }
 
 - (void)OF_removeObject: (id)object
 	 fileDescriptor: (int)fd
 		 events: (int)removeEvents
+	   objectsArray: (OFMutableArray*)objectsArray
 {
-	intptr_t events;
+#ifdef OF_HAVE_THREADS
+	[_mutex lock];
+	@try {
+#endif
+		intptr_t events;
 
-	events = (intptr_t)[_FDToEvents valueForKey: (void*)(intptr_t)fd];
-	events &= ~removeEvents;
+		events = (intptr_t)[_FDToEvents
+		    valueForKey: (void*)(intptr_t)fd];
+		events &= ~removeEvents;
 
-	if (events == 0) {
-		if (epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1)
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
+		if (events == 0) {
+			if (epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1)
+				@throw [OFObserveFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
 
-		[_FDToEvents removeValueForKey: (void*)(intptr_t)fd];
-	} else {
-		struct epoll_event event;
+			[_FDToEvents removeValueForKey: (void*)(intptr_t)fd];
+		} else {
+			struct epoll_event event;
 
-		memset(&event, 0, sizeof(event));
-		event.events = (int)events;
-		event.data.ptr = object;
+			memset(&event, 0, sizeof(event));
+			event.events = (int)events;
+			event.data.ptr = object;
 
-		if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
+			if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &event) == -1)
+				@throw [OFObserveFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
 
-		[_FDToEvents setValue: (void*)events
-			       forKey: (void*)(intptr_t)fd];
+			[_FDToEvents setValue: (void*)events
+				       forKey: (void*)(intptr_t)fd];
+		}
+
+		[objectsArray removeObjectIdenticalTo: object];
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[_mutex unlock];
 	}
+#endif
 }
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self OF_addObject: object
 	    fileDescriptor: [object fileDescriptorForReading]
-		    events: EPOLLIN];
+		    events: EPOLLIN
+	      objectsArray: _readObjects];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self OF_addObject: object
 	    fileDescriptor: [object fileDescriptorForWriting]
-		    events: EPOLLOUT];
+		    events: EPOLLOUT
+	      objectsArray: _writeObjects];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self OF_removeObject: object
 	       fileDescriptor: [object fileDescriptorForReading]
-		       events: EPOLLIN];
+		       events: EPOLLIN
+		 objectsArray: _readObjects];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self OF_removeObject: object
 	       fileDescriptor: [object fileDescriptorForWriting]
-		       events: EPOLLOUT];
+		       events: EPOLLOUT
+		 objectsArray: _writeObjects];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval

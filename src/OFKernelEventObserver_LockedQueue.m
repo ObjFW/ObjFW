@@ -43,10 +43,6 @@ enum {
 		    initWithItemSize: sizeof(int)];
 		_queueFDs = [[OFDataArray alloc] initWithItemSize: sizeof(int)];
 		_queueObjects = [[OFMutableArray alloc] init];
-
-#ifdef OF_HAVE_THREADS
-		_mutex = [[OFMutex alloc] init];
-#endif
 	} @catch (id e) {
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [self class]];
@@ -60,9 +56,6 @@ enum {
 	[_queueActions release];
 	[_queueFDs release];
 	[_queueObjects release];
-#ifdef OF_HAVE_THREADS
-	[_mutex release];
-#endif
 
 	[super dealloc];
 }

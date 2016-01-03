@@ -22,6 +22,9 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDate;
+#ifdef OF_HAVE_THREADS
+@class OFMutex;
+#endif
 
 /*!
  * @protocol OFKernelEventObserverDelegate
@@ -113,6 +116,9 @@ OF_ASSUME_NONNULL_BEGIN
 #else
 	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
+#endif
+#ifdef OF_HAVE_THREADS
+	OFMutex *_mutex;
 #endif
 }
 
