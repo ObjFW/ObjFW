@@ -67,7 +67,7 @@ Getting, building and installing ObjFW
   to build - do *not* use the MSYS2 Shell shortcut, but use the MinGW-w64 Win32
   or Win64 Shell shortcut instead!) and check out ObjFW:
 
-    $ git clone https://webkeks.org/git/objfw.git
+    $ git clone https://heap.zone/git/objfw.git
 
   You can also download a release tarball if you want. Now go to the newly
   checked out repository and build and install it:

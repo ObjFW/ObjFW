@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 0.9-dev, js@webkeks.org)
+AC_INIT(ObjFW, 0.9-dev, js@heap.zone)
 BUILDSYS_INIT
 
 AS_IF([test configure.ac -nt configure], [
