@@ -20,17 +20,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDataArray;
-#ifdef OF_HAVE_THREADS
-@class OFMutex;
-#endif
 
 @interface OFKernelEventObserver_LockedQueue: OFKernelEventObserver
 {
 	OFDataArray *_queueActions, *_queueFDs;
 	OFMutableArray *_queueObjects;
-#ifdef OF_HAVE_THREADS
-	OFMutex *_mutex;
-#endif
 }
 
 - (void)OF_addObjectForReading: (id)object

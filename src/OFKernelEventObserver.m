@@ -27,6 +27,9 @@
 # import "OFStreamSocket.h"
 #endif
 #import "OFDate.h"
+#ifdef OF_HAVE_THREADS
+# import "OFMutex.h"
+#endif
 
 #ifdef HAVE_KQUEUE
 # import "OFKernelEventObserver_kqueue.h"
@@ -133,6 +136,10 @@ static uint16_t freePort = 65535;
 			    exceptionWithClass: [self class]];
 # endif
 #endif
+
+#ifdef OF_HAVE_THREADS
+		_mutex = [[OFMutex alloc] init];
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -149,6 +156,10 @@ static uint16_t freePort = 65535;
 
 	[_readObjects release];
 	[_writeObjects release];
+
+#ifdef OF_HAVE_THREADS
+	[_mutex release];
+#endif
 
 	[super dealloc];
 }
