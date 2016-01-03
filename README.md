@@ -4,7 +4,7 @@ any platform supported by ObjFW without having to worry about
 differences between operating systems or various frameworks that you
 would otherwise need if you want to be portable.
 
-See https://webkeks.org/objfw for more information.
+See https://heap.zone/objfw for more information.
 
 
 Installation
@@ -69,4 +69,4 @@ Bugs and feature requests
 =========================
 
   If you find any bugs or have feature requests, feel free to send a
-  mail to js@webkeks.org!
+  mail to js@heap.zone!

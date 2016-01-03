@@ -169,7 +169,7 @@ Basically, it should run on any POSIX system to which GCC 4 or a recent Clang
 version has been ported. If not, please send an e-mail with a bug report.
 
 If you successfully ran ObjFW on a platform not listed here, please send an
-e-mail to js@webkeks.org so it can be added here!
+e-mail to js@heap.zone so it can be added here!
 
 If you have a platform on which ObjFW does not work, please contact me as well!
 
