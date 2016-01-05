@@ -30,7 +30,7 @@ static struct objc_dtable_level3 *empty_level3 = NULL;
 static void
 init(void)
 {
-	uint_fast16_t i;
+	uint16_t i;
 
 	empty_level2 = malloc(sizeof(struct objc_dtable_level2));
 	if (empty_level2 == NULL)
@@ -57,7 +57,7 @@ struct objc_dtable*
 objc_dtable_new(void)
 {
 	struct objc_dtable *dtable;
-	uint_fast16_t i;
+	uint16_t i;
 
 #ifdef OF_SELUID24
 	if (empty_level2 == NULL || empty_level3 == NULL)
@@ -79,9 +79,9 @@ objc_dtable_new(void)
 void
 objc_dtable_copy(struct objc_dtable *dst, struct objc_dtable *src)
 {
-	uint_fast16_t i, j;
+	uint16_t i, j;
 #ifdef OF_SELUID24
-	uint_fast16_t k;
+	uint16_t k;
 #endif
 	uint32_t idx;
 
@@ -137,7 +137,7 @@ objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
 
 	if (dtable->buckets[i] == empty_level2) {
 		struct objc_dtable_level2 *level2;
-		uint_fast16_t l;
+		uint16_t l;
 
 		level2 = malloc(sizeof(struct objc_dtable_level2));
 
@@ -157,7 +157,7 @@ objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
 #ifdef OF_SELUID24
 	if (dtable->buckets[i]->buckets[j] == empty_level3) {
 		struct objc_dtable_level3 *level3;
-		uint_fast16_t l;
+		uint16_t l;
 
 		level3 = malloc(sizeof(struct objc_dtable_level3));
 
@@ -179,9 +179,9 @@ objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
 void
 objc_dtable_free(struct objc_dtable *dtable)
 {
-	uint_fast16_t i;
+	uint16_t i;
 #ifdef OF_SELUID24
-	uint_fast16_t j;
+	uint16_t j;
 #endif
 
 	for (i = 0; i < 256; i++) {

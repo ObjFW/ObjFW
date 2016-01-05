@@ -60,7 +60,7 @@ struct huffman_tree {
 };
 
 #ifndef DEFLATE64
-static const uint_fast8_t numDistanceCodes = 30;
+static const uint8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
@@ -79,7 +79,7 @@ static const uint8_t distanceExtraBits[30] = {
 	10, 11, 11, 12, 12, 13, 13
 };
 #else
-static const uint_fast8_t numDistanceCodes = 32;
+static const uint8_t numDistanceCodes = 32;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
@@ -105,10 +105,10 @@ static const uint8_t codeLengthsOrder[19] = {
 static struct huffman_tree *fixedLitLenTree, *fixedDistTree;
 
 static bool
-tryReadBits(OFInflateStream *stream, uint_fast16_t *bits, uint_fast8_t count)
+tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
-	uint_fast16_t ret = stream->_savedBits;
-	uint_fast8_t i;
+	uint16_t ret = stream->_savedBits;
+	uint8_t i;
 
 	assert(stream->_savedBitsLength < count);
 
@@ -130,7 +130,7 @@ tryReadBits(OFInflateStream *stream, uint_fast16_t *bits, uint_fast8_t count)
 
 				stream->_byte = stream->_buffer[0];
 				stream->_bufferIndex = 1;
-				stream->_bufferLength = (uint_fast16_t)length;
+				stream->_bufferLength = (uint16_t)length;
 			}
 
 			stream->_bitIndex = 0;
@@ -162,11 +162,11 @@ newTree(void)
 }
 
 static void
-treeInsert(struct huffman_tree *tree, uint_fast16_t code, uint_fast8_t length,
+treeInsert(struct huffman_tree *tree, uint16_t code, uint8_t length,
     uint16_t value)
 {
 	while (length > 0) {
-		uint_fast8_t bit;
+		uint8_t bit;
 
 		length--;
 		bit = (code & (1 << length)) >> length;
@@ -181,12 +181,12 @@ treeInsert(struct huffman_tree *tree, uint_fast16_t code, uint_fast8_t length,
 }
 
 static struct huffman_tree*
-constructTree(uint8_t lengths[], uint_fast16_t count)
+constructTree(uint8_t lengths[], uint16_t count)
 {
 	struct huffman_tree *tree;
 	uint16_t lengthCount[MAX_BITS + 1] = { 0 };
 	uint16_t code, maxCode = 0, nextCode[MAX_BITS + 1];
-	uint_fast16_t i;
+	uint16_t i;
 
 	for (i = 0; i < count; i++) {
 		uint8_t length = lengths[i];
@@ -222,7 +222,7 @@ static bool
 walkTree(OFInflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 {
 	struct huffman_tree *iter = *tree;
-	uint_fast16_t bits;
+	uint16_t bits;
 
 	while (iter->value == 0xFFFF) {
 		if OF_UNLIKELY (!tryReadBits(stream, &bits, 1)) {
@@ -243,7 +243,7 @@ walkTree(OFInflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 static void
 releaseTree(struct huffman_tree *tree)
 {
-	uint_fast8_t i;
+	uint8_t i;
 
 	for (i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leafs[i] != NULL)
@@ -255,7 +255,7 @@ releaseTree(struct huffman_tree *tree)
 @implementation OFInflateStream
 + (void)initialize
 {
-	uint_fast16_t i;
+	uint16_t i;
 	uint8_t lengths[288];
 
 	if (self != [OFInflateStream class])
@@ -312,11 +312,11 @@ releaseTree(struct huffman_tree *tree)
 			  length: (size_t)length
 {
 	uint8_t *buffer = buffer_;
-	uint_fast16_t bits, i, tmp;
+	uint16_t bits, i, tmp;
 	uint16_t value;
 	size_t bytesWritten = 0;
 	uint8_t *slidingWindow;
-	uint_fast16_t slidingWindowIndex;
+	uint16_t slidingWindowIndex;
 
 	if (_atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
@@ -403,11 +403,10 @@ start:
 			return bytesWritten;
 
 		tmp = (length < CTX.length - CTX.position
-		    ? (uint_fast16_t)length : CTX.length - CTX.position);
+		    ? (uint16_t)length : CTX.length - CTX.position);
 
-		tmp = (uint_fast16_t)[_stream
-		    readIntoBuffer: buffer + bytesWritten
-			    length: tmp];
+		tmp = (uint16_t)[_stream readIntoBuffer: buffer + bytesWritten
+						 length: tmp];
 
 		if OF_UNLIKELY (_slidingWindow == NULL) {
 			_slidingWindow =
@@ -493,7 +492,7 @@ start:
 
 		for (i = CTX.receivedCount;
 		    i < CTX.litLenCodesCount + CTX.distCodesCount + 258;) {
-			uint_fast8_t j, count;
+			uint8_t j, count;
 
 			if OF_LIKELY (CTX.value == 0xFF) {
 				if OF_UNLIKELY (!walkTree(self, &CTX.treeIter,
@@ -587,7 +586,7 @@ start:
 	case HUFFMAN_BLOCK:
 #define CTX _context.huffman
 		for (;;) {
-			uint_fast8_t extraBits, lengthCodeIndex;
+			uint8_t extraBits, lengthCodeIndex;
 
 			if OF_UNLIKELY (CTX.state == WRITE_VALUE) {
 				if OF_UNLIKELY (length == 0)
@@ -663,14 +662,14 @@ start:
 
 			/* Length distance pair */
 			if (CTX.state == PROCESS_PAIR) {
-				uint_fast16_t j;
+				uint16_t j;
 
 				if OF_UNLIKELY (_slidingWindow == NULL)
 					@throw [OFInvalidFormatException
 					    exception];
 
 				for (j = 0; j < CTX.length; j++) {
-					uint_fast16_t index;
+					uint16_t index;
 
 					if OF_UNLIKELY (length == 0) {
 						CTX.length -= j;

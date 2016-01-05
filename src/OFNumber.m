@@ -832,7 +832,7 @@
 			double d;
 			uint8_t b[sizeof(double)];
 		} d;
-		uint_fast8_t i;
+		uint8_t i;
 
 		if (isnan([self doubleValue]))
 			return 0;

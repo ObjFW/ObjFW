@@ -69,7 +69,7 @@ typedef enum {
 
 struct backtrace_ctx {
 	void **backtrace;
-	uint_fast8_t i;
+	uint8_t i;
 };
 
 extern _Unwind_Reason_Code _Unwind_Backtrace(
@@ -262,7 +262,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 #ifdef HAVE_DWARF_EXCEPTIONS
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	uint_fast8_t i;
+	uint8_t i;
 
 	for (i = 0; i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
 # ifdef HAVE_DLADDR

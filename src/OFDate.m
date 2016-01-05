@@ -357,7 +357,7 @@ static int monthToDayOfYear[12] = {
 		double d;
 		uint8_t b[sizeof(double)];
 	} d;
-	uint_fast8_t i;
+	uint8_t i;
 
 	d.d = OF_BSWAP_DOUBLE_IF_BE(_seconds);
 

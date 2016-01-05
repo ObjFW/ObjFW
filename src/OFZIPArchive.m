@@ -86,7 +86,7 @@ uint32_t
 of_zip_archive_read_field32(uint8_t **data, uint16_t *size)
 {
 	uint32_t field = 0;
-	uint_fast8_t i;
+	uint8_t i;
 
 	if (*size < 4)
 		@throw [OFInvalidFormatException exception];
@@ -104,7 +104,7 @@ uint64_t
 of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
 {
 	uint64_t field = 0;
-	uint_fast8_t i;
+	uint8_t i;
 
 	if (*size < 8)
 		@throw [OFInvalidFormatException exception];
@@ -124,7 +124,7 @@ calculateCRC32(uint32_t crc, uint8_t *bytes, size_t length)
 	size_t i;
 
 	for (i = 0; i < length; i++) {
-		uint_fast8_t j;
+		uint8_t j;
 
 		crc ^= bytes[i];
 

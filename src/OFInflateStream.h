@@ -33,13 +33,13 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFStream *_stream;
 	uint8_t _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
-	uint_fast16_t _bufferIndex, _bufferLength;
+	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
-	uint_fast8_t _bitIndex, _savedBitsLength;
-	uint_fast16_t _savedBits;
+	uint8_t _bitIndex, _savedBitsLength;
+	uint16_t _savedBits;
 @protected
 	uint8_t *_slidingWindow;
-	uint_fast16_t _slidingWindowIndex, _slidingWindowMask;
+	uint16_t _slidingWindowIndex, _slidingWindowMask;
 	enum {
 		OF_INFLATE_STREAM_BLOCK_HEADER,
 		OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER,
@@ -49,19 +49,19 @@ OF_ASSUME_NONNULL_BEGIN
 	} _state;
 	union {
 		struct {
-			uint_fast8_t position;
+			uint8_t position;
 			uint8_t length[4];
 		} uncompressedHeader;
 		struct {
-			uint_fast16_t position, length;
+			uint16_t position, length;
 		} uncompressed;
 		struct {
 			struct huffman_tree *litLenTree, *distTree;
 			struct huffman_tree *codeLenTree, *treeIter;
 			uint8_t *lengths;
-			uint_fast16_t receivedCount;
-			uint_fast8_t value, litLenCodesCount, distCodesCount;
-			uint_fast8_t codeLenCodesCount;
+			uint16_t receivedCount;
+			uint8_t value, litLenCodesCount, distCodesCount;
+			uint8_t codeLenCodesCount;
 		} huffmanTree;
 		struct {
 			struct huffman_tree *litLenTree, *distTree, *treeIter;
@@ -73,8 +73,8 @@ OF_ASSUME_NONNULL_BEGIN
 				OF_INFLATE_STREAM_AWAIT_DISTANCE_EXTRA_BITS,
 				OF_INFLATE_STREAM_PROCESS_PAIR
 			} state;
-			uint_fast16_t value, length, distance;
-			uint_fast16_t extraBits;
+			uint16_t value, length, distance;
+			uint16_t extraBits;
 		} huffman;
 	} _context;
 	bool _inLastBlock, _atEndOfStream;

@@ -23,7 +23,7 @@
 #import "runtime-private.h"
 
 struct objc_sparsearray*
-objc_sparsearray_new(uint_fast8_t index_size)
+objc_sparsearray_new(uint8_t index_size)
 {
 	struct objc_sparsearray *sparsearray;
 
@@ -42,7 +42,7 @@ void*
 objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
-	uint_fast8_t i;
+	uint8_t i;
 
 	for (i = 0; i < sparsearray->index_size - 1; i++) {
 		uintptr_t j =
@@ -60,7 +60,7 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
     void *value)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
-	uint_fast8_t i;
+	uint8_t i;
 
 	for (i = 0; i < sparsearray->index_size - 1; i++) {
 		uintptr_t j =
@@ -79,9 +79,9 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 }
 
 static void
-free_sparsearray_data(struct objc_sparsearray_data *data, uint_fast8_t depth)
+free_sparsearray_data(struct objc_sparsearray_data *data, uint8_t depth)
 {
-	uint_fast16_t i;
+	uint16_t i;
 
 	if (data == NULL || depth == 0)
 		return;

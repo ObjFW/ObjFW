@@ -370,7 +370,7 @@ objc_initialize_class(Class cls)
 void
 objc_register_all_classes(struct objc_abi_symtab *symtab)
 {
-	uint_fast32_t i;
+	uint32_t i;
 
 	for (i = 0; i < symtab->cls_def_cnt; i++) {
 		struct objc_abi_class *cls =
@@ -842,7 +842,7 @@ objc_unregister_class(Class cls)
 void
 objc_unregister_all_classes(void)
 {
-	uint_fast32_t i;
+	uint32_t i;
 
 	if (classes == NULL)
 		return;
@@ -862,10 +862,10 @@ objc_unregister_all_classes(void)
 			 * start again.
 			 *
 			 * Due to the i++ in the for loop, we need to set it to
-			 * UINT_FAST32_MAX so that it will get increased at the
-			 * end of the loop and thus become 0.
+			 * UINT32_MAX so that it will get increased at the end
+			 * of the loop and thus become 0.
 			 */
-			i = UINT_FAST32_MAX;
+			i = UINT32_MAX;
 		}
 	}
 

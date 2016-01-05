@@ -46,7 +46,7 @@
 
 @interface OFZIP: OFObject
 {
-	int_fast8_t _override, _outputLevel;
+	int8_t _override, _outputLevel;
 	int _exitStatus;
 }
 
@@ -330,7 +330,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		OFFile *output;
 		char buffer[BUFFER_SIZE];
 		uint64_t written = 0, size = [entry uncompressedSize];
-		int_fast8_t percent = -1, newPercent;
+		int8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])
 			continue;
@@ -456,7 +456,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 			written += length;
 			newPercent = (written == size
-			    ? 100 : (int_fast8_t)(written * 100 / size));
+			    ? 100 : (int8_t)(written * 100 / size));
 
 			if (_outputLevel >= 0 && percent != newPercent) {
 				percent = newPercent;

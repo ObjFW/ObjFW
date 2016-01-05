@@ -108,7 +108,7 @@ struct objc_sparsearray {
 	struct objc_sparsearray_data {
 		void *next[256];
 	} *data;
-	uint_fast8_t index_size;
+	uint8_t index_size;
 };
 
 struct objc_dtable {
@@ -145,7 +145,7 @@ extern void objc_hashtable_free(struct objc_hashtable*);
 extern void objc_register_selector(struct objc_abi_selector*);
 extern void objc_register_all_selectors(struct objc_abi_symtab*);
 extern void objc_unregister_all_selectors(void);
-extern struct objc_sparsearray* objc_sparsearray_new(uint_fast8_t);
+extern struct objc_sparsearray* objc_sparsearray_new(uint8_t);
 extern void* objc_sparsearray_get(struct objc_sparsearray*, uintptr_t);
 extern void objc_sparsearray_set(struct objc_sparsearray*, uintptr_t, void*);
 extern void objc_sparsearray_free(struct objc_sparsearray*);

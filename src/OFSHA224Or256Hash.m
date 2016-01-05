@@ -42,10 +42,10 @@ static const uint32_t table[] = {
 };
 
 static OF_INLINE void
-byteSwapVectorIfLE(uint32_t *vector, uint_fast8_t length)
+byteSwapVectorIfLE(uint32_t *vector, uint8_t length)
 {
 #ifndef OF_BIG_ENDIAN
-	uint_fast8_t i;
+	uint8_t i;
 
 	for (i = 0; i < length; i++)
 		vector[i] = OF_BSWAP32(vector[i]);
@@ -56,7 +56,7 @@ static void
 processBlock(uint32_t *state, uint32_t *buffer)
 {
 	uint32_t new[8];
-	uint_fast8_t i;
+	uint8_t i;
 
 	new[0] = state[0];
 	new[1] = state[1];

@@ -241,12 +241,12 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 - (OFDate*)modificationDate
 {
 	void *pool = objc_autoreleasePoolPush();
-	uint_fast16_t year = ((_lastModifiedFileDate & 0xFE00) >> 9) + 1980;
-	uint_fast8_t month = (_lastModifiedFileDate & 0x1E0) >> 5;
-	uint_fast8_t day = (_lastModifiedFileDate & 0x1F);
-	uint_fast8_t hour = (_lastModifiedFileTime & 0xF800) >> 11;
-	uint_fast8_t minute = (_lastModifiedFileTime & 0x7E0) >> 5;
-	uint_fast8_t second = (_lastModifiedFileTime & 0x1F) << 1;
+	uint16_t year = ((_lastModifiedFileDate & 0xFE00) >> 9) + 1980;
+	uint8_t month = (_lastModifiedFileDate & 0x1E0) >> 5;
+	uint8_t day = (_lastModifiedFileDate & 0x1F);
+	uint8_t hour = (_lastModifiedFileTime & 0xF800) >> 11;
+	uint8_t minute = (_lastModifiedFileTime & 0x7E0) >> 5;
+	uint8_t second = (_lastModifiedFileTime & 0x1F) << 1;
 	OFDate *date;
 	OFString *dateString;
 
