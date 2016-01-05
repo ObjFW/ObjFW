@@ -623,6 +623,14 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_ARG_ENABLE(compiler-tls,
 		AS_HELP_STRING([--disable-compiler-tls],
 			[disable compiler thread local storage]))
+
+	case "$host" in
+		aarch64*-*-android*)
+			# Compiler TLS is broken on AArch64 Android with Clang
+			enable_compiler_tls="no"
+			;;
+	esac
+
 	AS_IF([test x"$enable_compiler_tls" != x"no"], [
 		AC_CHECK_HEADER(threads.h, [
 			AC_DEFINE(OF_HAVE_THREADS_H, 1,
