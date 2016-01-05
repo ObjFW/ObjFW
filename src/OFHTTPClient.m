@@ -396,7 +396,8 @@ normalizeKey(char *str_)
 	user = [URL user];
 	password = [URL password];
 
-	if ([user length] > 0 || [password length] > 0) {
+	if (([user length] > 0 || [password length] > 0) &&
+	    [headers objectForKey: @"Authorization"] == nil) {
 		OFDataArray *authorizationData = [OFDataArray dataArray];
 		OFString *authorization;
 
@@ -434,7 +435,8 @@ normalizeKey(char *str_)
 	}
 
 	if ([request protocolVersion].major == 1 &&
-	    [request protocolVersion].minor == 0)
+	    [request protocolVersion].minor == 0 &&
+	    [headers objectForKey: @"Connection"] == nil)
 		[headers setObject: @"keep-alive"
 			    forKey: @"Connection"];
 
