@@ -162,6 +162,13 @@
 # define OF_RETURNS_INNER_POINTER
 # define OF_CONSUMED
 # define OF_WEAK_UNAVAILABLE
+/*
+ * undef them first, as new Clang versions have these as built-in defines even
+ * when ARC is disabled.
+ */
+# undef __unsafe_unretained
+# undef __bridge
+# undef __autoreleasing
 # define __unsafe_unretained
 # define __bridge
 # define __autoreleasing
