@@ -8,11 +8,10 @@ others as well.
 Android
 -------
 
-  * OS Versions: 4.0.4, 4.1.2
-  * Architectures: ARMv6, ARMv7
-  * Compilers: Clang 3.3
+  * OS Versions: 4.0.4, 4.1.2, 6.0.1
+  * Architectures: ARMv6, ARMv7, ARM64
+  * Compilers: Clang 3.3, Clang 3.8.0
   * Runtimes: ObjFW
-  * Limitations: Does not work as a shared library
 
 
 Bare metal ARM Cortex-M4
