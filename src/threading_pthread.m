@@ -106,9 +106,11 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			param.sched_priority = (float)minPrio +
 			    attr->priority * (maxPrio - minPrio);
 
+#ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
 			if (pthread_attr_setinheritsched(&pattr,
 			    PTHREAD_EXPLICIT_SCHED) != 0)
 				return false;
+#endif
 
 			if (pthread_attr_setschedparam(&pattr, &param) != 0)
 				return false;
