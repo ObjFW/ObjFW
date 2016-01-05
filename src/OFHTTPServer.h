@@ -93,8 +93,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * The server name the server presents to clients.
+ *
+ * Setting it to `nil` means no `Server` header will be sent, unless one is
+ * specified in the response headers.
  */
-@property (copy) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy) OFString *name;
 
 /*!
  * @brief Creates a new HTTP server.

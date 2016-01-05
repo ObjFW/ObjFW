@@ -225,9 +225,13 @@ normalizedKey(OFString *key)
 			    forKey: @"Date"];
 	}
 
-	if ([headers objectForKey: @"Server"] == nil)
-		[headers setObject: [_server name]
-			    forKey: @"Server"];
+	if ([headers objectForKey: @"Server"] == nil) {
+		OFString *name = [_server name];
+
+		if (name != nil)
+			[headers setObject: name
+				    forKey: @"Server"];
+	}
 
 	keyEnumerator = [headers keyEnumerator];
 	valueEnumerator = [headers objectEnumerator];
