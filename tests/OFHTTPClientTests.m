@@ -62,11 +62,11 @@ static OFCondition *cond;
 	if (![[client readLine] isEqual: @"GET /foo HTTP/1.1"])
 		OF_ENSURE(0);
 
-	if (![[client readLine] isEqual:
-	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, _port]])
+	if (![[client readLine] hasPrefix: @"User-Agent:"])
 		OF_ENSURE(0);
 
-	if (![[client readLine] hasPrefix: @"User-Agent:"])
+	if (![[client readLine] isEqual:
+	    [OFString stringWithFormat: @"Host: 127.0.0.1:%" @PRIu16, _port]])
 		OF_ENSURE(0);
 
 	if (![[client readLine] isEqual: @""])
@@ -88,7 +88,7 @@ static OFCondition *cond;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	HTTPClientTestsServer *server;
-	OFURL *url;
+	OFURL *URL;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPResponse *response = nil;
@@ -103,13 +103,13 @@ static OFCondition *cond;
 	[cond wait];
 	[cond unlock];
 
-	url = [OFURL URLWithString:
+	URL = [OFURL URLWithString:
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->_port]];
 
 	TEST(@"-[performRequest:]",
 	    (client = [OFHTTPClient client]) &&
-	    R(request = [OFHTTPRequest requestWithURL: url]) &&
+	    R(request = [OFHTTPRequest requestWithURL: URL]) &&
 	    R(response = [client performRequest: request]))
 
 	TEST(@"Normalization of server header keys",

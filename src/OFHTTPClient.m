@@ -313,13 +313,13 @@ normalizeKey(char *str_)
 	of_http_request_method_t method = [request method];
 	OFMutableString *requestString;
 	OFString *user, *password;
-	OFDictionary *headers = [request headers];
+	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *headers;
 	OFDataArray *body = [request body];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
 	OFString *line, *version, *redirect, *connectionHeader;
 	bool keepAlive;
-	OFMutableDictionary *serverHeaders;
+	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *serverHeaders;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 	int status;
@@ -378,46 +378,65 @@ normalizeKey(char *str_)
 		    of_http_request_method_to_string(method), [URL path],
 		    [request protocolVersionString]];
 
+	headers = [[[request headers] mutableCopy] autorelease];
+	if (headers == nil)
+		headers = [OFMutableDictionary dictionary];
+
 	if (([scheme isEqual: @"http"] && [URL port] != 80) ||
-	    ([scheme isEqual: @"https"] && [URL port] != 443))
-		[requestString appendFormat: @"Host: %@:%d\r\n",
-					     [URL host], [URL port]];
-	else
-		[requestString appendFormat: @"Host: %@\r\n", [URL host]];
+	    ([scheme isEqual: @"https"] && [URL port] != 443)) {
+		OFString *host = [OFString stringWithFormat:
+		    @"%@:%d", [URL host], [URL port]];
+
+		[headers setObject: host
+			    forKey: @"Host"];
+	} else
+		[headers setObject: [URL host]
+			    forKey: @"Host"];
 
 	user = [URL user];
 	password = [URL password];
 
 	if ([user length] > 0 || [password length] > 0) {
-		OFDataArray *authorization = [OFDataArray dataArray];
+		OFDataArray *authorizationData = [OFDataArray dataArray];
+		OFString *authorization;
 
-		[authorization addItems: [user UTF8String]
-				  count: [user UTF8StringLength]];
-		[authorization addItem: ":"];
-		[authorization addItems: [password UTF8String]
-				  count: [password UTF8StringLength]];
+		[authorizationData addItems: [user UTF8String]
+				      count: [user UTF8StringLength]];
+		[authorizationData addItem: ":"];
+		[authorizationData addItems: [password UTF8String]
+				      count: [password UTF8StringLength]];
 
-		[requestString appendFormat:
-		    @"Authorization: Basic %@\r\n",
-		    [authorization stringByBase64Encoding]];
+		authorization = [OFString stringWithFormat:
+		    @"Basic %@", [authorizationData stringByBase64Encoding]];
+
+		[headers setObject: authorization
+			    forKey: @"Authorization"];
 	}
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
-		[requestString appendString:
-		    @"User-Agent: Something using ObjFW "
-		    @"<https://webkeks.org/objfw>\r\n"];
+		[headers setObject: @"Something using ObjFW "
+				    @"<https://heap.zone/objfw>"
+			    forKey: @"User-Agent"];
 
 	if (body != nil) {
-		if ([headers objectForKey: @"Content-Length"] == nil)
-			[requestString appendFormat:
-			    @"Content-Length: %zd\r\n",
-			    [body itemSize] * [body count]];
+		if ([headers objectForKey: @"Content-Length"] == nil) {
+			OFString *contentLength = [OFString stringWithFormat:
+			    @"%zd", [body itemSize] * [body count]];
+
+			[headers setObject: contentLength
+				    forKey: @"Content-Length"];
+		}
 
 		if ([headers objectForKey: @"Content-Type"] == nil)
-			[requestString appendString:
-			    @"Content-Type: application/x-www-form-urlencoded; "
-			    @"charset=UTF-8\r\n"];
+			[headers setObject: @"application/x-www-form-"
+					    @"urlencoded; charset=UTF-8"
+				    forKey: @"Content-Type"];
 	}
+
+	if ([request protocolVersion].major == 1 &&
+	    [request protocolVersion].minor == 0)
+		[headers setObject: @"keep-alive"
+			    forKey: @"Connection"];
 
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
@@ -425,10 +444,6 @@ normalizeKey(char *str_)
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil)
 		[requestString appendFormat: @"%@: %@\r\n", key, object];
-
-	if ([request protocolVersion].major == 1 &&
-	    [request protocolVersion].minor == 0)
-		[requestString appendString: @"Connection: keep-alive\r\n"];
 
 	[requestString appendString: @"\r\n"];
 

@@ -207,29 +207,38 @@ normalizedKey(OFString *key)
 - (void)OF_sendHeaders
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *date = [[OFDate date]
-	    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
+	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *headers;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
-	[_socket writeFormat: @"HTTP/%@ %d %s\r\n"
-			      @"Server: %@\r\n"
-			      @"Date: %@\r\n",
+	[_socket writeFormat: @"HTTP/%@ %d %s\r\n",
 			      [self protocolVersionString], _statusCode,
-			      statusCodeToString(_statusCode),
-			      [_server name], date];
+			      statusCodeToString(_statusCode)];
 
-	keyEnumerator = [_headers keyEnumerator];
-	valueEnumerator = [_headers objectEnumerator];
+	headers = [[_headers mutableCopy] autorelease];
+
+	if ([headers objectForKey: @"Date"] == nil) {
+		OFString *date = [[OFDate date]
+		    dateStringWithFormat: @"%a, %d %b %Y %H:%M:%S GMT"];
+
+		[headers setObject: date
+			    forKey: @"Date"];
+	}
+
+	if ([headers objectForKey: @"Server"] == nil)
+		[headers setObject: [_server name]
+			    forKey: @"Server"];
+
+	keyEnumerator = [headers keyEnumerator];
+	valueEnumerator = [headers objectEnumerator];
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (value = [valueEnumerator nextObject]) != nil)
-		if (![key isEqual: @"Server"] && ![key isEqual: @"Date"])
-			[_socket writeFormat: @"%@: %@\r\n", key, value];
+		[_socket writeFormat: @"%@: %@\r\n", key, value];
 
 	[_socket writeString: @"\r\n"];
 
 	_headersSent = true;
-	_chunked = [[_headers objectForKey: @"Transfer-Encoding"]
+	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
 
 	objc_autoreleasePoolPop(pool);
@@ -658,7 +667,7 @@ normalizedKey(OFString *key)
 	self = [super init];
 
 	_name = @"OFHTTPServer (ObjFW's HTTP server class "
-	    @"<https://webkeks.org/objfw/>)";
+	    @"<https://heap.zone/objfw/>)";
 
 	return self;
 }
