@@ -576,7 +576,8 @@ AS_IF([test x"$enable_threads" != x"no"], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
 		])
 
-		LIBS="$LIBS -lpthread"
+		AC_CHECK_LIB(pthread, pthread_create, LIBS="$LIBS -lpthread")
+
 		AC_TRY_LINK([
 			#include <pthread.h>
 		], [
