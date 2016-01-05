@@ -104,13 +104,21 @@ run-on-ios: all
 
 run-on-android: all
 	echo "Uploading files to Android device..."
+	if test -f ../src/libobjfw.so; then \
+		adb push ../src/libobjfw.so \
+			/data/local/tmp/objfw/libobjfw.so.${OBJFW_LIB_MAJOR}; \
+	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.bin /data/local/tmp/objfw/testfile.bin
 	adb push testfile.txt /data/local/tmp/objfw/testfile.txt
 	adb push testfile.ini /data/local/tmp/objfw/testfile.ini
 	adb push serialization.xml /data/local/tmp/objfw/serialization.xml
+	if test -f plugin/TestPlugin.so; then \
+		adb push plugin/TestPlugin.so \
+			/data/local/tmp/objfw/plugin/TestPlugin.so; \
+	fi
 	echo "Running tests binary on Android device..."
-	adb shell 'cd /data/local/tmp/objfw && exec ./tests'
+	adb shell 'cd /data/local/tmp/objfw && LD_LIBRARY_PATH=. exec ./tests'
 
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}
