@@ -23,6 +23,8 @@
 #  include "lookup-asm-x86_64-elf.S"
 # elif defined(OF_X86)
 #  include "lookup-asm-x86-elf.S"
+# elif defined(OF_ARM64)
+#  include "lookup-asm-arm64-elf.S"
 # elif defined(OF_ARM)
 #  include "lookup-asm-arm-elf.S"
 # elif defined(OF_POWERPC)
