@@ -182,7 +182,7 @@ for the following platforms (except resolveClassMethod: and
 resolveInstanceMethod:, which are always available):
 
   * ARM (EABI/ELF, Apple/Mach-O)
-  * ARM64 (Apple/Mach-O)
+  * ARM64 (ARM64/ELF, Apple/Mach-O)
   * MIPS (O32/ELF, EABI/ELF)
   * PPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
