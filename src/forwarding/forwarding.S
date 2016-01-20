@@ -36,6 +36,8 @@
 #   include "forwarding-x86_64-elf.S"
 #  elif defined(OF_X86)
 #   include "forwarding-x86-elf.S"
+#  elif defined(OF_ARM64)
+#   include "forwarding-arm64-elf.S"
 #  elif defined(OF_ARM)
 #   include "forwarding-arm-elf.S"
 #  elif defined(OF_POWERPC)
