@@ -29,6 +29,8 @@
 #  include "lookup-asm-arm-elf.S"
 # elif defined(OF_POWERPC)
 #  include "lookup-asm-ppc-elf.S"
+# elif defined(OF_MIPS64_N64)
+#  include "lookup-asm-mips64-elf.S"
 # elif defined(OF_MIPS)
 #  include "lookup-asm-mips-elf.S"
 # elif defined(OF_SPARC64)

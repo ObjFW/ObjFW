@@ -49,9 +49,17 @@
 	defined(__ARM_ARCH_6T2__)
 #  define OF_ARMV6
 # endif
-#elif defined(_MIPS_SIM) && _MIPS_SIM == _ABIO32
-# define OF_MIPS
-# define OF_MIPS_O32
+#elif defined(_MIPS_SIM)
+# if _MIPS_SIM == _ABI64
+#  define OF_MIPS64
+#  define OF_MIPS64_N64
+# elif _MIPS_SIM == _ABIN32
+#  define OF_MIPS64
+#  define OF_MIPS64_N32
+# elif _MIPS_SIM == _ABIO32
+#  define OF_MIPS
+#  define OF_MIPS_O32
+# endif
 #elif defined(__mips_eabi) && _MIPS_SZPTR == 32
 # define OF_MIPS
 # define OF_MIPS_EABI
