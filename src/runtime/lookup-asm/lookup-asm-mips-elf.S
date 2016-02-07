@@ -32,7 +32,7 @@
 	lw	$t0, 32($t0)
 
 .Lmain_\name:
-#ifdef OF_BIGENDIAN
+#ifdef OF_BIG_ENDIAN
 # ifdef OF_SELUID24
 	lbu	$t1, 1($a1)
 # endif
