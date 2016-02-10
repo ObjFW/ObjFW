@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 #elif defined(OF_HAVE_THREADS)
 	OFCondition *_condition;
 #endif
-	volatile bool _running;
+	volatile bool _stop;
 }
 
 /*!
@@ -80,6 +80,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Starts the run loop.
  */
 - (void)run;
+
+/*!
+ * @brief Run the run loop until the specified deadline.
+ *
+ * @param deadline The date until which the run loop should run
+ */
+- (void)runUntilDate: (nullable OFDate*)deadline;
 
 /*!
  * @brief Stops the run loop. If there is still an operation being executed, it

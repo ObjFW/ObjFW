@@ -719,46 +719,49 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)run
 {
-	_running = true;
+	[self runUntilDate: nil];
+}
+
+- (void)runUntilDate: (OFDate*)deadline
+{
+	_stop = false;
 
 	for (;;) {
-		void *pool;
-		OFDate *now;
-		OFTimer *timer;
+		void *pool = objc_autoreleasePoolPush();
+		OFDate *now = [OFDate date];
 		OFDate *nextTimer;
 
-		if (!_running)
-			break;
-
-		pool = objc_autoreleasePoolPush();
-		now = [OFDate date];
+		for (;;) {
+			OFTimer *timer;
 
 #ifdef OF_HAVE_THREADS
-		[_timersQueueLock lock];
-		@try {
+			[_timersQueueLock lock];
+			@try {
 #endif
-			of_list_object_t *listObject =
-			    [_timersQueue firstListObject];
+				of_list_object_t *listObject =
+				    [_timersQueue firstListObject];
 
-			if (listObject != NULL &&
-			    [[listObject->object fireDate] compare: now] !=
-			    OF_ORDERED_DESCENDING) {
-				timer =
-				    [[listObject->object retain] autorelease];
+				if (listObject != NULL && [[listObject->object
+				    fireDate] compare: now] !=
+				    OF_ORDERED_DESCENDING) {
+					timer = [[listObject->object
+					    retain] autorelease];
 
-				[_timersQueue removeListObject: listObject];
+					[_timersQueue removeListObject:
+					    listObject];
 
-				[timer OF_setInRunLoop: nil];
-			} else
-				timer = nil;
+					[timer OF_setInRunLoop: nil];
+				} else
+					break;
 #ifdef OF_HAVE_THREADS
-		} @finally {
-			[_timersQueueLock unlock];
+			} @finally {
+				[_timersQueueLock unlock];
+			}
+#endif
+
+			if ([timer isValid])
+				[timer fire];
 		}
-#endif
-
-		if ([timer isValid])
-			[timer fire];
 
 #ifdef OF_HAVE_THREADS
 		[_timersQueueLock lock];
@@ -772,27 +775,35 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 
 		/* Watch for I/O events until the next timer is due */
-		if (nextTimer != nil) {
-			of_time_interval_t timeout =
-			    [nextTimer timeIntervalSinceNow];
+		if (nextTimer != nil || deadline != nil) {
+			of_time_interval_t timeout;
 
-			if (timeout > 0) {
+			if (nextTimer != nil && deadline == nil)
+				timeout = [nextTimer timeIntervalSinceNow];
+			else if (nextTimer == nil && deadline != nil)
+				timeout = [deadline timeIntervalSinceNow];
+			else
+				timeout = [[nextTimer earlierDate: deadline]
+				    timeIntervalSinceNow];
+
+			if (timeout < 0)
+				timeout = 0;
+
 #if defined(OF_HAVE_SOCKETS)
-				[_kernelEventObserver
-				    observeForTimeInterval: timeout];
+			[_kernelEventObserver
+			    observeForTimeInterval: timeout];
 #elif defined(OF_HAVE_THREADS)
-				[_condition lock];
-				[_condition waitForTimeInterval: timeout];
-				[_condition unlock];
+			[_condition lock];
+			[_condition waitForTimeInterval: timeout];
+			[_condition unlock];
 #else
-				[OFThread sleepForTimeInterval: timeout];
+			[OFThread sleepForTimeInterval: timeout];
 #endif
-			}
 		} else {
 			/*
-			 * No more timers: Just watch for I/O until we get
-			 * an event. If a timer is added by another thread, it
-			 * cancels the observe.
+			 * No more timers and no deadline: Just watch for I/O
+			 * until we get an event. If a timer is added by
+			 * another thread, it cancels the observe.
 			 */
 #if defined(OF_HAVE_SOCKETS)
 			[_kernelEventObserver observe];
@@ -805,13 +816,18 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 		}
 
+		if (_stop || [deadline compare: now] != OF_ORDERED_DESCENDING) {
+			objc_autoreleasePoolPop(pool);
+			break;
+		}
+
 		objc_autoreleasePoolPop(pool);
 	}
 }
 
 - (void)stop
 {
-	_running = false;
+	_stop = true;
 #if defined(OF_HAVE_SOCKETS)
 	[_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
