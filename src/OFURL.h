@@ -79,14 +79,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (copy) OFString *fragment;
 
 /*!
- * Creates a new URL.
+ * @brief Creates a new URL.
  *
  * @return A new, autoreleased OFURL
  */
 + (instancetype)URL;
 
 /*!
- * Creates a new URL with the specified string.
+ * @brief Creates a new URL with the specified string.
  *
  * @param string A string describing a URL
  * @return A new, autoreleased OFURL
@@ -94,7 +94,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)URLWithString: (OFString*)string;
 
 /*!
- * Creates a new URL with the specified string relative to the specified URL.
+ * @brief Creates a new URL with the specified string relative to the
+ *	  specified URL.
  *
  * @param string A string describing a URL
  * @param URL An URL to which the string is relative
