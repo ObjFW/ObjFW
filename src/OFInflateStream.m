@@ -299,6 +299,17 @@ releaseTree(struct huffman_tree *tree)
 {
 	[_stream release];
 
+	if (_state == HUFFMAN_TREE)
+		if (_context.huffmanTree.codeLenTree != NULL)
+			releaseTree(_context.huffmanTree.codeLenTree);
+
+	if (_state == HUFFMAN_TREE || _state == HUFFMAN_BLOCK) {
+		if (_context.huffman.litLenTree != fixedLitLenTree)
+			releaseTree(_context.huffman.litLenTree);
+		if (_context.huffman.distTree != fixedDistTree)
+			releaseTree(_context.huffman.distTree);
+	}
+
 	[super dealloc];
 }
 #endif
@@ -558,6 +569,7 @@ start:
 		}
 
 		releaseTree(CTX.codeLenTree);
+		CTX.codeLenTree = NULL;
 
 		CTX.litLenTree = constructTree(CTX.lengths,
 		    CTX.litLenCodesCount + 257);
