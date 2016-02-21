@@ -18,6 +18,10 @@
 
 #include "platform.h"
 
+#ifdef HAVE_VFP2
+.fpu vfp
+#endif
+
 .globl of_forward
 .globl of_forward_stret
 
