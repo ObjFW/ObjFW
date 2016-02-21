@@ -422,11 +422,16 @@ static struct {
 			objc_autoreleasePoolPop(pool);
 		}
 	} else {
+		bool first = true;
+
 		for (id object in self) {
 			void *pool = objc_autoreleasePoolPush();
 
-			if ([ret length] > 0)
+			if OF_UNLIKELY (first)
+				first = false;
+			else
 				[ret appendString: separator];
+
 			[ret appendString: [object performSelector: selector]];
 
 			objc_autoreleasePoolPop(pool);

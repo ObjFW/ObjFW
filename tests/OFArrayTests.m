@@ -164,8 +164,8 @@ static OFString *c_ary[] = {
 		of_range(0, [m[0] count] + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
-	    (a[1] = [OFArray arrayWithObjects: @"foo", @"bar", @"baz", nil]) &&
-	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo bar baz"] &&
+	    (a[1] = [OFArray arrayWithObjects: @"", @"a", @"b", @"c", nil]) &&
+	    [[a[1] componentsJoinedByString: @" "] isEqual: @" a b c"] &&
 	    (a[1] = [OFArray arrayWithObject: @"foo"]) &&
 	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo"])
 
