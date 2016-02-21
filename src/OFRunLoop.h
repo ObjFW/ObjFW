@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFTimer;
+@class OFDate;
 
 /*!
  * @class OFRunLoop OFRunLoop.h ObjFW/OFRunLoop.h
