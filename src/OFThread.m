@@ -47,6 +47,10 @@
 # undef nanosleep
 #endif
 
+#ifdef OF_NINTENDO_3DS
+# include <3ds/svc.h>
+#endif
+
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFRunLoop.h"
@@ -202,6 +206,11 @@ callMain(id object)
 	counter = timeInterval * 60;
 	while (counter--)
 		swiWaitForVBlank();
+#elif defined(OF_NINTENDO_3DS)
+	if (timeInterval * 1000000000 > INT64_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	svcSleepThread((int64_t)(timeInterval * 1000000000));
 #else
 	if (timeInterval > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
