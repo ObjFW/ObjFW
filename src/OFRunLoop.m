@@ -816,7 +816,8 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 		}
 
-		if (_stop || [deadline compare: now] != OF_ORDERED_DESCENDING) {
+		if (_stop || (deadline != nil &&
+		    [deadline compare: now] != OF_ORDERED_DESCENDING)) {
 			objc_autoreleasePoolPop(pool);
 			break;
 		}
