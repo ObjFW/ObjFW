@@ -105,6 +105,14 @@ OF_ASSUME_NONNULL_BEGIN
 		relativeToURL: (OFURL*)URL;
 
 /*!
+ * @brief Creates a new URL with the specified local file path.
+ *
+ * @param path The local file path
+ * @return A new, autoreleased OFURL
+ */
++ (instancetype)fileURLWithPath: (OFString*)path;
+
+/*!
  * @brief Initializes an already allocated OFURL with the specified string.
  *
  * @param string A string describing a URL

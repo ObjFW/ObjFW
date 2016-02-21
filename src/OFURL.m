@@ -51,6 +51,19 @@
 			       relativeToURL: URL] autorelease];
 }
 
++ (instancetype)fileURLWithPath: (OFString*)path
+{
+	OFURL *URL = [OFURL URL];
+	void *pool = objc_autoreleasePoolPush();
+
+	[URL setScheme: @"file"];
+	[URL setPath: [[path pathComponents] componentsJoinedByString: @"/"]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return URL;
+}
+
 - initWithString: (OFString*)string
 {
 	char *UTF8String, *UTF8String2 = NULL;
