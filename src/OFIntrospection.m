@@ -119,10 +119,9 @@
 	OF_HASH_ADD_HASH(hash, [_name hash]);
 
 	if (_typeEncoding != NULL) {
-		size_t i, length;
+		size_t length = strlen(_typeEncoding);
 
-		length = strlen(_typeEncoding);
-		for (i = 0; i < length; i++)
+		for (size_t i = 0; i < length; i++)
 			OF_HASH_ADD(hash, _typeEncoding[i]);
 	}
 
@@ -440,7 +439,6 @@
 		Ivar *ivarList;
 		unsigned count;
 #endif
-		unsigned i;
 		void *pool;
 
 		_classMethods = [[OFMutableArray alloc] init];
@@ -453,7 +451,7 @@
 		    methodList != NULL; methodList = methodList->next) {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < methodList->count; i++)
+			for (unsigned int i = 0; i < methodList->count; i++)
 				[_classMethods addObject: [[[OFMethod alloc]
 				    OF_initWithMethod:
 				    &methodList->methods[i]] autorelease]];
@@ -465,7 +463,7 @@
 		    methodList = methodList->next) {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < methodList->count; i++)
+			for (unsigned int i = 0; i < methodList->count; i++)
 				[_instanceMethods addObject: [[[OFMethod alloc]
 				    OF_initWithMethod:
 				    &methodList->methods[i]] autorelease]];
@@ -477,7 +475,7 @@
 		    propertyList = propertyList->next) {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < propertyList->count; i++)
+			for (unsigned int i = 0; i < propertyList->count; i++)
 				[_properties addObject: [[[OFProperty alloc]
 				    OF_initWithProperty:
 				    &propertyList->properties[i]] autorelease]];
@@ -488,7 +486,7 @@
 		if (class->ivars != NULL) {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < class->ivars->count; i++)
+			for (unsigned int i = 0; i < class->ivars->count; i++)
 				[_instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
 				    OF_initWithIvar:
@@ -502,7 +500,7 @@
 		@try {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 				[_classMethods addObject: [[[OFMethod alloc]
 				    OF_initWithMethod: methodList[i]]
 				    autorelease]];
@@ -516,7 +514,7 @@
 		@try {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 				[_instanceMethods addObject: [[[OFMethod alloc]
 				    OF_initWithMethod: methodList[i]]
 				    autorelease]];
@@ -530,7 +528,7 @@
 		@try {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 				[_properties addObject: [[[OFProperty alloc]
 				    OF_initWithProperty: propertyList[i]]
 				    autorelease]];
@@ -544,7 +542,7 @@
 		@try {
 			pool = objc_autoreleasePoolPush();
 
-			for (i = 0; i < count; i++)
+			for (unsigned int i = 0; i < count; i++)
 				[_instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
 				    OF_initWithIvar: ivarList[i]] autorelease]];

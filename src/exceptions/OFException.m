@@ -262,9 +262,9 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 #ifdef HAVE_DWARF_EXCEPTIONS
 	OFMutableArray *backtrace = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	uint8_t i;
 
-	for (i = 0; i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
+	for (uint8_t i = 0;
+	    i < OF_BACKTRACE_SIZE && _backtrace[i] != NULL; i++) {
 # ifdef HAVE_DLADDR
 		Dl_info info;
 

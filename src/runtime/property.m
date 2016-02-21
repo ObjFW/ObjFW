@@ -34,9 +34,7 @@ static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 static void __attribute__((__constructor__))
 init(void)
 {
-	size_t i;
-
-	for (i = 0; i < NUM_SPINLOCKS; i++)
+	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
 		if (!of_spinlock_new(&spinlocks[i]))
 			OBJC_ERROR("Failed to initialize spinlocks!")
 }

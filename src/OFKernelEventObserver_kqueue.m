@@ -208,7 +208,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
-	int i, events;
+	int events;
 
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
@@ -224,7 +224,7 @@
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
 
-	for (i = 0; i < events; i++) {
+	for (int i = 0; i < events; i++) {
 		if (eventList[i].flags & EV_ERROR)
 			@throw [OFObserveFailedException
 			    exceptionWithObserver: self

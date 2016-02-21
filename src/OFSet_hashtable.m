@@ -145,9 +145,7 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 	self = [self initWithCapacity: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			[_mapTable setValue: (void*)1
 				     forKey: objects[i]];
 	} @catch (id e) {

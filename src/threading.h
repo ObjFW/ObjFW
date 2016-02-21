@@ -204,9 +204,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 # if defined(OF_HAVE_SCHED_YIELD) || defined(OF_WINDOWS)
-	int i;
-
-	for (i = 0; i < OF_SPINCOUNT; i++)
+	for (size_t i = 0; i < OF_SPINCOUNT; i++)
 		if (of_spinlock_trylock(spinlock))
 			return true;
 

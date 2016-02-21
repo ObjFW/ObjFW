@@ -234,9 +234,7 @@ static struct {
 - (void)getObjects: (id*)buffer
 	   inRange: (of_range_t)range
 {
-	size_t i;
-
-	for (i = 0; i < range.length; i++)
+	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self objectAtIndex: range.location + i];
 }
 
@@ -447,7 +445,7 @@ static struct {
 {
 	/* FIXME: Optimize (for example, buffer of 16 for each) */
 	OFArray *otherArray;
-	size_t i, count;
+	size_t count;
 
 	if (![object isKindOfClass: [OFArray class]])
 		return false;
@@ -459,7 +457,7 @@ static struct {
 	if (count != [otherArray count])
 		return false;
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		if (![[self objectAtIndex: i] isEqual:
 		    [otherArray objectAtIndex: i]])
 			return false;

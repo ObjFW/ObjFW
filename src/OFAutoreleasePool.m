@@ -55,9 +55,7 @@ static OFAutoreleasePool **cache = NULL;
 #endif
 
 	if (cache != NULL) {
-		unsigned i;
-
-		for (i = 0; i < MAX_CACHE_SIZE; i++) {
+		for (size_t i = 0; i < MAX_CACHE_SIZE; i++) {
 			if (cache[i] != NULL) {
 				OFAutoreleasePool *pool = cache[i];
 				cache[i] = NULL;
@@ -79,10 +77,9 @@ static OFAutoreleasePool **cache = NULL;
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
 #endif
-	size_t i;
 
 	if (cache != NULL) {
-		for (i = 0; i < MAX_CACHE_SIZE; i++)
+		for (size_t i = 0; i < MAX_CACHE_SIZE; i++)
 			[cache[i] OF_super_dealloc];
 
 		free(cache);
@@ -158,9 +155,7 @@ static OFAutoreleasePool **cache = NULL;
 	}
 
 	if (cache != NULL) {
-		unsigned i;
-
-		for (i = 0; i < MAX_CACHE_SIZE; i++) {
+		for (size_t i = 0; i < MAX_CACHE_SIZE; i++) {
 			if (cache[i] == NULL) {
 				_pool = NULL;
 				_ignoreRelease = false;

@@ -113,7 +113,6 @@ static inline of_char16_t
 parseUnicodeEscape(const char *pointer, const char *stop)
 {
 	of_char16_t ret = 0;
-	char i;
 
 	if (pointer + 5 >= stop)
 		return 0xFFFF;
@@ -121,7 +120,7 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 	if (pointer[0] != '\\' || pointer[1] != 'u')
 		return 0xFFFF;
 
-	for (i = 0; i < 4; i++) {
+	for (uint8_t i = 0; i < 4; i++) {
 		char c = pointer[i + 2];
 		ret <<= 4;
 

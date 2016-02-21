@@ -56,9 +56,7 @@ static OF_INLINE void
 byteSwapVectorIfLE(uint64_t *vector, uint8_t length)
 {
 #ifndef OF_BIG_ENDIAN
-	uint8_t i;
-
-	for (i = 0; i < length; i++)
+	for (uint8_t i = 0; i < length; i++)
 		vector[i] = OF_BSWAP64(vector[i]);
 #endif
 }

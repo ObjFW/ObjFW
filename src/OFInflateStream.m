@@ -108,11 +108,10 @@ static bool
 tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
-	uint8_t i;
 
 	assert(stream->_savedBitsLength < count);
 
-	for (i = stream->_savedBitsLength; i < count; i++) {
+	for (uint8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {
 			if (stream->_bufferIndex < stream->_bufferLength)
 				stream->_byte =
@@ -186,9 +185,8 @@ constructTree(uint8_t lengths[], uint16_t count)
 	struct huffman_tree *tree;
 	uint16_t lengthCount[MAX_BITS + 1] = { 0 };
 	uint16_t code, maxCode = 0, nextCode[MAX_BITS + 1];
-	uint16_t i;
 
-	for (i = 0; i < count; i++) {
+	for (uint16_t i = 0; i < count; i++) {
 		uint8_t length = lengths[i];
 
 		if OF_UNLIKELY (length > MAX_BITS)
@@ -201,14 +199,14 @@ constructTree(uint8_t lengths[], uint16_t count)
 	}
 
 	code = 0;
-	for (i = 1; i <= MAX_BITS; i++) {
+	for (size_t i = 1; i <= MAX_BITS; i++) {
 		code = (code + lengthCount[i - 1]) << 1;
 		nextCode[i] = code;
 	}
 
 	tree = newTree();
 
-	for (i = 0; i <= maxCode; i++) {
+	for (uint16_t i = 0; i <= maxCode; i++) {
 		uint8_t length = lengths[i];
 
 		if (length > 0)
@@ -243,9 +241,7 @@ walkTree(OFInflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 static void
 releaseTree(struct huffman_tree *tree)
 {
-	uint8_t i;
-
-	for (i = 0; i < 2; i++)
+	for (uint8_t i = 0; i < 2; i++)
 		if OF_LIKELY (tree->leafs[i] != NULL)
 			releaseTree(tree->leafs[i]);
 
@@ -255,24 +251,23 @@ releaseTree(struct huffman_tree *tree)
 @implementation OFInflateStream
 + (void)initialize
 {
-	uint16_t i;
 	uint8_t lengths[288];
 
 	if (self != [OFInflateStream class])
 		return;
 
-	for (i = 0; i <= 143; i++)
+	for (uint16_t i = 0; i <= 143; i++)
 		lengths[i] = 8;
-	for (i = 144; i <= 255; i++)
+	for (uint16_t i = 144; i <= 255; i++)
 		lengths[i] = 9;
-	for (i = 256; i <= 279; i++)
+	for (uint16_t i = 256; i <= 279; i++)
 		lengths[i] = 7;
-	for (i = 280; i <= 287; i++)
+	for (uint16_t i = 280; i <= 287; i++)
 		lengths[i] = 8;
 
 	fixedLitLenTree = constructTree(lengths, 288);
 
-	for (i = 0; i <= 31; i++)
+	for (uint16_t i = 0; i <= 31; i++)
 		lengths[i] = 5;
 
 	fixedDistTree = constructTree(lengths, 32);
@@ -312,7 +307,7 @@ releaseTree(struct huffman_tree *tree)
 			  length: (size_t)length
 {
 	uint8_t *buffer = buffer_;
-	uint16_t bits, i, tmp;
+	uint16_t bits, tmp;
 	uint16_t value;
 	size_t bytesWritten = 0;
 	uint8_t *slidingWindow;
@@ -417,7 +412,7 @@ start:
 
 		slidingWindow = _slidingWindow;
 		slidingWindowIndex = _slidingWindowIndex;
-		for (i = 0; i < tmp; i++) {
+		for (uint16_t i = 0; i < tmp; i++) {
 			slidingWindow[slidingWindowIndex] =
 			    buffer[bytesWritten + i];
 			slidingWindowIndex = (slidingWindowIndex + 1) &
@@ -467,7 +462,7 @@ start:
 				memset(CTX.lengths, 0, 19);
 			}
 
-			for (i = CTX.receivedCount;
+			for (uint16_t i = CTX.receivedCount;
 			    i < CTX.codeLenCodesCount + 4; i++) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 3)) {
 					CTX.receivedCount = i;
@@ -490,7 +485,7 @@ start:
 			CTX.lengths = [self allocMemoryWithSize:
 			    CTX.litLenCodesCount + CTX.distCodesCount + 258];
 
-		for (i = CTX.receivedCount;
+		for (uint16_t i = CTX.receivedCount;
 		    i < CTX.litLenCodesCount + CTX.distCodesCount + 258;) {
 			uint8_t j, count;
 

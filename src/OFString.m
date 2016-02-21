@@ -205,11 +205,11 @@ standardizePath(OFArray *components, OFString *currentDirectory,
 	endsWithEmpty = [[array lastObject] isEqual: @""];
 
 	while (!done) {
-		size_t i, length = [array count];
+		size_t length = [array count];
 
 		done = true;
 
-		for (i = 0; i < length; i++) {
+		for (size_t i = 0; i < length; i++) {
 			id object = [array objectAtIndex: i];
 			id parent;
 
@@ -1192,12 +1192,12 @@ static struct {
 	switch (encoding) {
 	case OF_STRING_ENCODING_UTF_8:;
 		const of_unichar_t *characters;
-		size_t i, length, UTF8StringLength = 0;
+		size_t length, UTF8StringLength = 0;
 
 		characters = [self characters];
 		length = [self length];
 
-		for (i = 0; i < length; i++) {
+		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
 			size_t len = of_string_utf8_encode(characters[i],
 			    buffer);
@@ -1233,9 +1233,7 @@ static struct {
 - (void)getCharacters: (of_unichar_t*)buffer
 	      inRange: (of_range_t)range
 {
-	size_t i;
-
-	for (i = 0; i < range.length; i++)
+	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self characterAtIndex: range.location + i];
 }
 
@@ -1289,7 +1287,7 @@ static struct {
 	void *pool;
 	OFString *otherString;
 	const of_unichar_t *characters, *otherCharacters;
-	size_t i, minimumLength;
+	size_t minimumLength;
 
 	if (object == self)
 		return OF_ORDERED_SAME;
@@ -1306,7 +1304,7 @@ static struct {
 	characters = [self characters];
 	otherCharacters = [otherString characters];
 
-	for (i = 0; i < minimumLength; i++) {
+	for (size_t i = 0; i < minimumLength; i++) {
 		if (characters[i] > otherCharacters[i]) {
 			objc_autoreleasePoolPop(pool);
 			return OF_ORDERED_DESCENDING;
@@ -1332,7 +1330,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters, *otherCharacters;
-	size_t i, length, otherLength, minimumLength;
+	size_t length, otherLength, minimumLength;
 
 	if (otherString == self)
 		return OF_ORDERED_SAME;
@@ -1344,7 +1342,7 @@ static struct {
 
 	minimumLength = (length > otherLength ? otherLength : length);
 
-	for (i = 0; i < minimumLength; i++) {
+	for (size_t i = 0; i < minimumLength; i++) {
 		of_unichar_t c = characters[i];
 		of_unichar_t oc = otherCharacters[i];
 
@@ -1387,12 +1385,12 @@ static struct {
 - (uint32_t)hash
 {
 	const of_unichar_t *characters = [self characters];
-	size_t i, length = [self length];
+	size_t length = [self length];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		const of_unichar_t c = characters[i];
 
 		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
@@ -1567,7 +1565,7 @@ static struct {
 	void *pool;
 	const of_unichar_t *searchCharacters;
 	of_unichar_t *characters;
-	size_t i, searchLength;
+	size_t searchLength;
 
 	if ((searchLength = [string length]) == 0)
 		return of_range(0, 0);
@@ -1592,7 +1590,7 @@ static struct {
 			    inRange: range];
 
 		if (options & OF_STRING_SEARCH_BACKWARDS) {
-			for (i = range.length - searchLength;; i--) {
+			for (size_t i = range.length - searchLength;; i--) {
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(of_unichar_t)) == 0) {
 					objc_autoreleasePoolPop(pool);
@@ -1605,7 +1603,8 @@ static struct {
 					break;
 			}
 		} else {
-			for (i = 0; i <= range.length - searchLength; i++) {
+			for (size_t i = 0;
+			    i <= range.length - searchLength; i++) {
 				if (memcmp(characters + i, searchCharacters,
 				    searchLength * sizeof(of_unichar_t)) == 0) {
 					objc_autoreleasePoolPop(pool);
@@ -1627,7 +1626,7 @@ static struct {
 {
 	void *pool;
 	const of_unichar_t *characters, *searchCharacters;
-	size_t i, length, searchLength;
+	size_t length, searchLength;
 
 	if ((searchLength = [string length]) == 0)
 		return true;
@@ -1640,7 +1639,7 @@ static struct {
 	characters = [self characters];
 	searchCharacters = [string characters];
 
-	for (i = 0; i <= length - searchLength; i++) {
+	for (size_t i = 0; i <= length - searchLength; i++) {
 		if (memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(of_unichar_t)) == 0) {
 			objc_autoreleasePoolPop(pool);
@@ -1908,7 +1907,7 @@ static struct {
 	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t length = [self length];
 	size_t delimiterLength = [delimiter length];
-	size_t i, last;
+	size_t last;
 	OFString *component;
 
 	pool = objc_autoreleasePoolPush();
@@ -1925,7 +1924,8 @@ static struct {
 		return array;
 	}
 
-	for (i = 0, last = 0; i <= length - delimiterLength; i++) {
+	last = 0;
+	for (size_t i = 0; i <= length - delimiterLength; i++) {
 		if (memcmp(characters + i, delimiterCharacters,
 		    delimiterLength * sizeof(of_unichar_t)) != 0)
 			continue;
@@ -2054,7 +2054,7 @@ static struct {
 {
 	void *pool;
 	const of_unichar_t *characters;
-	size_t i, length = [self length];
+	size_t length = [self length];
 
 	if (length == 0)
 		return @"";
@@ -2071,7 +2071,7 @@ static struct {
 		return [self substringWithRange: of_range(0, 1)];
 	}
 
-	for (i = length - 1; i >= 1; i--) {
+	for (size_t i = length - 1; i >= 1; i--) {
 		if (OF_IS_PATH_DELIMITER(characters[i])) {
 			objc_autoreleasePoolPop(pool);
 			return [self substringWithRange: of_range(0, i)];
@@ -2332,7 +2332,7 @@ static struct {
 	const of_unichar_t *characters = [self characters];
 	size_t length = [self length];
 	of_char16_t *ret;
-	size_t i, j;
+	size_t j;
 	bool swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
 
 	/* Allocate memory for the worst case */
@@ -2340,8 +2340,7 @@ static struct {
 				    count: (length + 1) * 2];
 
 	j = 0;
-
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		of_unichar_t c = characters[i];
 
 		if (c > 0x10FFFF)
@@ -2381,11 +2380,11 @@ static struct {
 - (size_t)UTF16StringLength
 {
 	const of_unichar_t *characters = [self characters];
-	size_t i, length, UTF16StringLength;
+	size_t length, UTF16StringLength;
 
 	length = UTF16StringLength = [self length];
 
-	for (i = 0; i < length; i++)
+	for (size_t i = 0; i < length; i++)
 		if (characters[i] > 0xFFFF)
 			UTF16StringLength++;
 
@@ -2409,12 +2408,9 @@ static struct {
 		    inRange: of_range(0, length)];
 	ret[length] = 0;
 
-	if (byteOrder != OF_BYTE_ORDER_NATIVE) {
-		size_t i;
-
-		for (i = 0; i < length; i++)
+	if (byteOrder != OF_BYTE_ORDER_NATIVE)
+		for (size_t i = 0; i < length; i++)
 			ret[i] = OF_BSWAP32(ret[i]);
-	}
 
 	return ret;
 }

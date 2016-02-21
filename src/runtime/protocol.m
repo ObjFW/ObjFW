@@ -39,14 +39,12 @@ protocol_isEqual(Protocol *a, Protocol *b)
 bool
 protocol_conformsToProtocol(Protocol *a, Protocol *b)
 {
-	struct objc_protocol_list *pl;
-	size_t i;
-
 	if (protocol_isEqual(a, b))
 		return true;
 
-	for (pl = a->protocol_list; pl != NULL; pl = pl->next)
-		for (i = 0; i < pl->count; i++)
+	for (struct objc_protocol_list *pl = a->protocol_list;
+	    pl != NULL; pl = pl->next)
+		for (size_t i = 0; i < pl->count; i++)
 			if (protocol_conformsToProtocol(pl->list[i], b))
 				return true;
 
@@ -56,12 +54,11 @@ protocol_conformsToProtocol(Protocol *a, Protocol *b)
 bool
 class_conformsToProtocol(Class cls, Protocol *p)
 {
-	struct objc_protocol_list *pl;
 	struct objc_category **cats;
-	long i, j;
 
-	for (pl = cls->protocols; pl != NULL; pl = pl->next)
-		for (i = 0; i < pl->count; i++)
+	for (struct objc_protocol_list *pl = cls->protocols;
+	    pl != NULL; pl = pl->next)
+		for (long i = 0; i < pl->count; i++)
 			if (protocol_conformsToProtocol(pl->list[i], p))
 				return true;
 
@@ -72,9 +69,10 @@ class_conformsToProtocol(Class cls, Protocol *p)
 		return false;
 	}
 
-	for (i = 0; cats[i] != NULL; i++) {
-		for (pl = cats[i]->protocols; pl != NULL; pl = pl->next) {
-			for (j = 0; j < pl->count; j++) {
+	for (long i = 0; cats[i] != NULL; i++) {
+		for (struct objc_protocol_list *pl = cats[i]->protocols;
+		    pl != NULL; pl = pl->next) {
+			for (long j = 0; j < pl->count; j++) {
 				if (protocol_conformsToProtocol(
 				    pl->list[j], p)) {
 					objc_global_mutex_unlock();

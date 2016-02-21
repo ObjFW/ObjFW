@@ -77,7 +77,7 @@ objc_hashtable_new(uint32_t (*hash)(const void*),
 static void
 resize(struct objc_hashtable *table, uint32_t count)
 {
-	uint32_t i, fullness, nsize;
+	uint32_t fullness, nsize;
 	struct objc_hashtable_bucket **ndata;
 
 	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 8)
@@ -101,7 +101,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 	if ((ndata = calloc(nsize, sizeof(sizeof(*ndata)))) == NULL)
 		OBJC_ERROR("Not enough memory to resize hash table!");
 
-	for (i = 0; i < table->size; i++) {
+	for (uint32_t i = 0; i < table->size; i++) {
 		if (table->data[i] != NULL &&
 		    table->data[i] != &objc_deleted_bucket) {
 			uint32_t j, last;
@@ -232,9 +232,7 @@ objc_hashtable_delete(struct objc_hashtable *table, const void *key)
 void
 objc_hashtable_free(struct objc_hashtable *table)
 {
-	uint32_t i;
-
-	for (i = 0; i < table->size; i++)
+	for (uint32_t i = 0; i < table->size; i++)
 		if (table->data[i] != NULL &&
 		    table->data[i] != &objc_deleted_bucket)
 			free(table->data[i]);

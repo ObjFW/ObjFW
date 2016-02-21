@@ -161,9 +161,7 @@ of_condition_signal(of_condition_t *condition)
 bool
 of_condition_broadcast(of_condition_t *condition)
 {
-	int i;
-
-	for (i = 0; i < condition->count; i++)
+	for (int i = 0; i < condition->count; i++)
 		if (!SetEvent(condition->event))
 			return false;
 

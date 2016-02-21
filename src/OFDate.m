@@ -357,13 +357,12 @@ static int monthToDayOfYear[12] = {
 		double d;
 		uint8_t b[sizeof(double)];
 	} d;
-	uint8_t i;
 
 	d.d = OF_BSWAP_DOUBLE_IF_BE(_seconds);
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < sizeof(double); i++)
+	for (size_t i = 0; i < sizeof(double); i++)
 		OF_HASH_ADD(hash, d.b[i]);
 
 	OF_HASH_FINALIZE(hash);

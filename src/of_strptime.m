@@ -29,12 +29,13 @@ of_strptime(const char *buffer, const char *format, struct tm *tm)
 		SEARCH_CONVERSION_SPECIFIER,
 		IN_CONVERSION_SPECIFIER
 	} state = SEARCH_CONVERSION_SPECIFIER;
-	size_t i, j, buffer_len, format_len;
+	size_t j, buffer_len, format_len;
 
 	buffer_len = strlen(buffer);
 	format_len = strlen(format);
 
-	for (i = j = 0; i < format_len; i++) {
+	j = 0;
+	for (size_t i = 0; i < format_len; i++) {
 		if (j >= buffer_len)
 			return NULL;
 

@@ -381,7 +381,7 @@ formatConversionSpecifierState(struct context *ctx)
 		{
 			const of_unichar_t *arg =
 			    va_arg(ctx->arguments, const of_unichar_t*);
-			size_t i, j, len = of_string_utf32_length(arg);
+			size_t j, len = of_string_utf32_length(arg);
 			char *buffer;
 
 			if (SIZE_MAX / 4 < len || (SIZE_MAX / 4) - len < 1)
@@ -390,7 +390,8 @@ formatConversionSpecifierState(struct context *ctx)
 			if ((buffer = malloc((len * 4) + 1)) == NULL)
 				return false;
 
-			for (i = j = 0; i < len; i++) {
+			j = 0;
+			for (size_t i = 0; i < len; i++) {
 				size_t clen = of_string_utf8_encode(arg[i],
 				    buffer + j);
 

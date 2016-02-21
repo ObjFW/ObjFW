@@ -36,13 +36,12 @@ int _OFString_Hashing_reference;
 	size_t digestSize = [hashClass digestSize];
 	const uint8_t *digest;
 	char cString[digestSize * 2];
-	size_t i;
 
 	[hash updateWithBuffer: [self UTF8String]
 			length: [self UTF8StringLength]];
 	digest = [hash digest];
 
-	for (i = 0; i < digestSize; i++) {
+	for (size_t i = 0; i < digestSize; i++) {
 		uint8_t high, low;
 
 		high = digest[i] >> 4;

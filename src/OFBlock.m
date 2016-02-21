@@ -310,9 +310,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 + (void)load
 {
 #ifndef OF_HAVE_ATOMIC_OPS
-	size_t i;
-
-	for (i = 0; i < NUM_SPINLOCKS; i++)
+	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
 		if (!of_spinlock_new(&spinlocks[i]))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self];

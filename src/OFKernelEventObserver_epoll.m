@@ -211,7 +211,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	OFNull *nullObject = [OFNull null];
 	void *pool = objc_autoreleasePoolPush();
 	struct epoll_event eventList[EVENTLIST_SIZE];
-	int i, events;
+	int events;
 
 	[self OF_processReadBuffers];
 
@@ -224,7 +224,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
 
-	for (i = 0; i < events; i++) {
+	for (int i = 0; i < events; i++) {
 		if (eventList[i].data.ptr == nullObject) {
 			char buffer;
 

@@ -247,10 +247,10 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
-	size_t i, length = [self length];
+	size_t length = [self length];
 	bool isStart = true;
 
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		const of_unichar_t *const *table;
 		size_t tableSize;
 		of_unichar_t c = characters[i];
@@ -471,7 +471,6 @@ static struct {
 	const of_unichar_t *searchCharacters = [string characters];
 	size_t searchLength = [string length];
 	size_t replacementLength = [replacement length];
-	size_t i;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [self length])
@@ -485,7 +484,7 @@ static struct {
 	pool2 = objc_autoreleasePoolPush();
 	characters = [self characters];
 
-	for (i = range.location; i <= range.length - searchLength; i++) {
+	for (size_t i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(characters + i, searchCharacters,
 		    searchLength * sizeof(of_unichar_t)) != 0)
 			continue;

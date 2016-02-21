@@ -57,7 +57,7 @@ static size_t
 parseArray(const uint8_t *buffer, size_t length, id *object, size_t count)
 {
 	void *pool;
-	size_t i, pos;
+	size_t pos = 0;
 
 	/*
 	 * Don't use capacity! For data and strings, this is safe, as we can
@@ -65,9 +65,8 @@ parseArray(const uint8_t *buffer, size_t length, id *object, size_t count)
 	 * can't know this, as every child can be more than one byte.
 	 */
 	*object = [OFMutableArray array];
-	pos = 0;
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		id child;
 		size_t childLength;
 
@@ -94,7 +93,7 @@ static size_t
 parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 {
 	void *pool;
-	size_t i, pos;
+	size_t pos = 0;
 
 	/*
 	 * Don't use capacity! For data and strings, this is safe, as we can
@@ -102,9 +101,8 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 	 * we can't know this, as every key / value can be more than one byte.
 	 */
 	*object = [OFMutableDictionary dictionary];
-	pos = 0;
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		id key, value;
 		size_t keyLength, valueLength;
 
@@ -140,7 +138,7 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 static size_t
 parseObject(const uint8_t *buffer, size_t length, id *object)
 {
-	size_t i, count;
+	size_t count;
 	int8_t type;
 	OFDataArray *data;
 
@@ -244,7 +242,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 		if (length < 5)
 			goto error;
 
-		for (i = 0; i < 4; i++)
+		for (size_t i = 0; i < 4; i++)
 			f.u8[i] = buffer[i + 1];
 
 		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f.f)];
@@ -258,7 +256,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 		if (length < 9)
 			goto error;
 
-		for (i = 0; i < 8; i++)
+		for (size_t i = 0; i < 8; i++)
 			d.u8[i] = buffer[i + 1];
 
 		*object = [OFNumber numberWithDouble:

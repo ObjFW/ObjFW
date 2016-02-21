@@ -239,9 +239,9 @@ static struct {
 		OFCountedSet *countedSet = (OFCountedSet*)set;
 
 		for (id object in countedSet) {
-			size_t i, count = [countedSet countForObject: object];
+			size_t count = [countedSet countForObject: object];
 
-			for (i = 0; i < count; i++)
+			for (size_t i = 0; i < count; i++)
 				[self removeObject: object];
 		}
 	} else
@@ -259,9 +259,9 @@ static struct {
 		OFCountedSet *countedSet = (OFCountedSet*)set;
 
 		for (id object in countedSet) {
-			size_t i, count = [countedSet countForObject: object];
+			size_t count = [countedSet countForObject: object];
 
-			for (i = 0; i < count; i++)
+			for (size_t i = 0; i < count; i++)
 				[self addObject: object];
 		}
 	} else

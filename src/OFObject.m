@@ -280,9 +280,7 @@ void _references_to_categories_of_OFObject(void)
 
 + (bool)isSubclassOfClass: (Class)class
 {
-	Class iter;
-
-	for (iter = self; iter != Nil; iter = class_getSuperclass(iter))
+	for (Class iter = self; iter != Nil; iter = class_getSuperclass(iter))
 		if (iter == class)
 			return true;
 
@@ -386,13 +384,10 @@ void _references_to_categories_of_OFObject(void)
 		return;
 
 #if defined(OF_OBJFW_RUNTIME)
-	struct objc_method_list *methodlist;
-
-	for (methodlist = object_getClass(class)->methodlist;
+	for (struct objc_method_list *methodlist =
+	    object_getClass(class)->methodlist;
 	    methodlist != NULL; methodlist = methodlist->next) {
-		int i;
-
-		for (i = 0; i < methodlist->count; i++) {
+		for (int i = 0; i < methodlist->count; i++) {
 			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
@@ -408,11 +403,9 @@ void _references_to_categories_of_OFObject(void)
 		}
 	}
 
-	for (methodlist = class->methodlist; methodlist != NULL;
-	    methodlist = methodlist->next) {
-		int i;
-
-		for (i = 0; i < methodlist->count; i++) {
+	for (struct objc_method_list *methodlist = class->methodlist;
+	    methodlist != NULL; methodlist = methodlist->next) {
+		for (int i = 0; i < methodlist->count; i++) {
 			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
@@ -429,11 +422,11 @@ void _references_to_categories_of_OFObject(void)
 	}
 #elif defined(OF_APPLE_RUNTIME)
 	Method *methodList;
-	unsigned i, count;
+	unsigned int count;
 
 	methodList = class_copyMethodList(object_getClass(class), &count);
 	@try {
-		for (i = 0; i < count; i++) {
+		for (unsigned int i = 0; i < count; i++) {
 			SEL selector = method_getName(methodList[i]);
 
 			/*
@@ -453,7 +446,7 @@ void _references_to_categories_of_OFObject(void)
 
 	methodList = class_copyMethodList(class, &count);
 	@try {
-		for (i = 0; i < count; i++) {
+		for (unsigned int i = 0; i < count; i++) {
 			SEL selector = method_getName(methodList[i]);
 
 			/*
@@ -508,9 +501,7 @@ void _references_to_categories_of_OFObject(void)
 
 - (bool)isKindOfClass: (Class)class
 {
-	Class iter;
-
-	for (iter = object_getClass(self); iter != Nil;
+	for (Class iter = object_getClass(self); iter != Nil;
 	    iter = class_getSuperclass(iter))
 		if (iter == class)
 			return true;

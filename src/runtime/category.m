@@ -28,16 +28,15 @@ static struct objc_hashtable *categories = NULL;
 static void
 register_selectors(struct objc_abi_category *cat)
 {
-	struct objc_abi_method_list *ml;
-	unsigned int i;
-
-	for (ml = cat->instance_methods; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
+	for (struct objc_abi_method_list *ml = cat->instance_methods;
+	    ml != NULL; ml = ml->next)
+		for (unsigned int i = 0; i < ml->count; i++)
 			objc_register_selector(
 			    (struct objc_abi_selector*)&ml->methods[i]);
 
-	for (ml = cat->class_methods; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
+	for (struct objc_abi_method_list *ml = cat->class_methods;
+	    ml != NULL; ml = ml->next)
+		for (unsigned int i = 0; i < ml->count; i++)
 			objc_register_selector(
 			    (struct objc_abi_selector*)&ml->methods[i]);
 }
@@ -95,12 +94,10 @@ register_category(struct objc_abi_category *cat)
 void
 objc_register_all_categories(struct objc_abi_symtab *symtab)
 {
-	struct objc_abi_category **cats;
-	size_t i;
+	struct objc_abi_category **cats =
+	    (struct objc_abi_category**)symtab->defs + symtab->cls_def_cnt;
 
-	cats = (struct objc_abi_category**)symtab->defs + symtab->cls_def_cnt;
-
-	for (i = 0; i < symtab->cat_def_cnt; i++) {
+	for (size_t i = 0; i < symtab->cat_def_cnt; i++) {
 		register_selectors(cats[i]);
 		register_category(cats[i]);
 	}
@@ -119,12 +116,10 @@ objc_categories_for_class(Class cls)
 void
 objc_unregister_all_categories(void)
 {
-	uint32_t i;
-
 	if (categories == NULL)
 		return;
 
-	for (i = 0; i < categories->size; i++)
+	for (uint32_t i = 0; i < categories->size; i++)
 		if (categories->data[i] != NULL)
 			free((void*)categories->data[i]->obj);
 

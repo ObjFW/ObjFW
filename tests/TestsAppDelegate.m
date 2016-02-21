@@ -182,11 +182,11 @@ main(int argc, char *argv[])
 	     inColor: (int)color
 {
 #if defined(OF_PSP)
-	char i, space = ' ';
+	char space = ' ';
 	int y = pspDebugScreenGetY();
 
 	pspDebugScreenSetXY(0, y);
-	for (i = 0; i < 68; i++)
+	for (uint8_t i = 0; i < 68; i++)
 		pspDebugScreenPrintData(&space, 1);
 
 	switch (color) {

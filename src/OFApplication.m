@@ -335,7 +335,6 @@ of_application_main(int *argc, char **argv[], Class cls)
 #ifndef OF_WINDOWS
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
-	int i;
 	of_string_encoding_t encoding;
 
 	_argc = argc;
@@ -354,7 +353,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 		arguments = [[OFMutableArray alloc] init];
 		_arguments = arguments;
 
-		for (i = 1; i < *argc; i++)
+		for (int i = 1; i < *argc; i++)
 			[arguments addObject:
 			    [OFString stringWithCString: (*argv)[i]
 					       encoding: encoding]];
@@ -375,13 +374,12 @@ of_application_main(int *argc, char **argv[], Class cls)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
-	int i;
 
 	if (argc > 0) {
 		_programName = [[OFString alloc] initWithUTF16String: argv[0]];
 		arguments = [[OFMutableArray alloc] init];
 
-		for (i = 1; i < argc; i++)
+		for (int i = 1; i < argc; i++)
 			[arguments addObject:
 			    [OFString stringWithUTF16String: argv[i]]];
 

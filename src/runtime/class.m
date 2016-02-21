@@ -68,10 +68,9 @@ static void
 register_selectors(struct objc_abi_class *cls)
 {
 	struct objc_abi_method_list *ml;
-	unsigned int i;
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
+		for (unsigned int i = 0; i < ml->count; i++)
 			objc_register_selector(
 			    (struct objc_abi_selector*)&ml->methods[i]);
 }
@@ -130,14 +129,11 @@ objc_classname_to_class(const char *name, bool cache)
 static void
 call_method(Class cls, const char *method)
 {
-	struct objc_method_list *ml;
-	SEL selector;
-	unsigned int i;
+	SEL selector = sel_registerName(method);
 
-	selector = sel_registerName(method);
-
-	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
+	for (struct objc_method_list *ml = cls->isa->methodlist;
+	    ml != NULL; ml = ml->next)
+		for (unsigned int i = 0; i < ml->count; i++)
 			if (sel_isEqual((SEL)&ml->methods[i].sel, selector))
 				((void(*)(id, SEL))ml->methods[i].imp)(cls,
 				    selector);
@@ -146,14 +142,11 @@ call_method(Class cls, const char *method)
 static bool
 has_load(Class cls)
 {
-	struct objc_method_list *ml;
-	SEL selector;
-	unsigned int i;
+	SEL selector = sel_registerName("load");
 
-	selector = sel_registerName("load");
-
-	for (ml = cls->isa->methodlist; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
+	for (struct objc_method_list *ml = cls->isa->methodlist;
+	    ml != NULL; ml = ml->next)
+		for (size_t i = 0; i < ml->count; i++)
 			if (sel_isEqual((SEL)&ml->methods[i].sel, selector))
 				return true;
 
@@ -179,7 +172,6 @@ objc_update_dtable(Class cls)
 {
 	struct objc_method_list *ml;
 	struct objc_category **cats;
-	unsigned int i;
 
 	if (!(cls->info & OBJC_CLASS_INFO_DTABLE))
 		return;
@@ -191,32 +183,27 @@ objc_update_dtable(Class cls)
 		objc_dtable_copy(cls->dtable, cls->superclass->dtable);
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
-		for (i = 0; i < ml->count; i++)
+		for (unsigned int i = 0; i < ml->count; i++)
 			objc_dtable_set(cls->dtable,
 			    (uint32_t)ml->methods[i].sel.uid,
 			    ml->methods[i].imp);
 
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
-		for (i = 0; cats[i] != NULL; i++) {
-			unsigned int j;
-
+		for (unsigned int i = 0; cats[i] != NULL; i++) {
 			ml = (cls->info & OBJC_CLASS_INFO_CLASS ?
 			    cats[i]->instance_methods : cats[i]->class_methods);
 
 			for (; ml != NULL; ml = ml->next)
-				for (j = 0; j < ml->count; j++)
+				for (unsigned int j = 0; j < ml->count; j++)
 					objc_dtable_set(cls->dtable,
 					    (uint32_t)ml->methods[j].sel.uid,
 					    ml->methods[j].imp);
 		}
 	}
 
-	if (cls->subclass_list != NULL) {
-		Class *iter;
-
-		for (iter = cls->subclass_list; *iter != NULL; iter++)
+	if (cls->subclass_list != NULL)
+		for (Class *iter = cls->subclass_list; *iter != NULL; iter++)
 			objc_update_dtable(*iter);
-	}
 }
 
 static void
@@ -253,8 +240,6 @@ add_subclass(Class cls)
 static void
 update_ivar_offsets(Class cls)
 {
-	unsigned i;
-
 	if (!(cls->info & OBJC_CLASS_INFO_NEW_ABI))
 		return;
 
@@ -267,7 +252,7 @@ update_ivar_offsets(Class cls)
 		cls->instance_size += cls->superclass->instance_size;
 
 		if (cls->ivars != NULL) {
-			for (i = 0; i < cls->ivars->count; i++) {
+			for (unsigned int i = 0; i < cls->ivars->count; i++) {
 				cls->ivars->ivars[i].offset +=
 				    cls->superclass->instance_size;
 				*cls->ivar_offsets[i] =
@@ -275,7 +260,7 @@ update_ivar_offsets(Class cls)
 			}
 		}
 	} else
-		for (i = 0; i < cls->ivars->count; i++)
+		for (unsigned int i = 0; i < cls->ivars->count; i++)
 			*cls->ivar_offsets[i] = cls->ivars->ivars[i].offset;
 }
 
@@ -370,9 +355,7 @@ objc_initialize_class(Class cls)
 void
 objc_register_all_classes(struct objc_abi_symtab *symtab)
 {
-	uint32_t i;
-
-	for (i = 0; i < symtab->cls_def_cnt; i++) {
+	for (uint16_t i = 0; i < symtab->cls_def_cnt; i++) {
 		struct objc_abi_class *cls =
 		    (struct objc_abi_class*)symtab->defs[i];
 
@@ -381,7 +364,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 		register_selectors(cls->metaclass);
 	}
 
-	for (i = 0; i < symtab->cls_def_cnt; i++) {
+	for (uint16_t i = 0; i < symtab->cls_def_cnt; i++) {
 		Class cls = (Class)symtab->defs[i];
 
 		if (has_load(cls)) {
@@ -404,7 +387,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 	}
 
 	/* Process load queue */
-	for (i = 0; i < load_queue_cnt; i++) {
+	for (size_t i = 0; i < load_queue_cnt; i++) {
 		setup_class(load_queue[i]);
 
 		if (load_queue[i]->info & OBJC_CLASS_INFO_SETUP) {
@@ -484,7 +467,6 @@ objc_get_class(const char *name)
 unsigned int
 objc_getClassList(Class *buf, unsigned int count)
 {
-	uint32_t i;
 	unsigned int j;
 	objc_global_mutex_lock();
 
@@ -494,7 +476,8 @@ objc_getClassList(Class *buf, unsigned int count)
 	if (classes_cnt < count)
 		count = classes_cnt;
 
-	for (i = j = 0; i < classes->size; i++) {
+	j = 0;
+	for (uint32_t i = 0; i < classes->size; i++) {
 		void *cls;
 
 		if (j >= count) {
@@ -628,7 +611,6 @@ class_getMethodTypeEncoding(Class cls, SEL sel)
 {
 	struct objc_method_list *ml;
 	struct objc_category **cats;
-	unsigned int i;
 
 	if (cls == Nil)
 		return NULL;
@@ -636,7 +618,7 @@ class_getMethodTypeEncoding(Class cls, SEL sel)
 	objc_global_mutex_lock();
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
-		for (i = 0; i < ml->count; i++) {
+		for (unsigned int i = 0; i < ml->count; i++) {
 			if (sel_isEqual((SEL)&ml->methods[i].sel, sel)) {
 				const char *ret = ml->methods[i].sel.types;
 				objc_global_mutex_unlock();
@@ -649,7 +631,7 @@ class_getMethodTypeEncoding(Class cls, SEL sel)
 		for (; *cats != NULL; cats++) {
 			for (ml = (*cats)->instance_methods; ml != NULL;
 			    ml = ml->next) {
-				for (i = 0; i < ml->count; i++) {
+				for (unsigned int i = 0; i < ml->count; i++) {
 					if (ml->methods[i].sel.uid ==
 					    sel->uid) {
 						const char *ret =
@@ -675,13 +657,12 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 {
 	struct objc_method_list *ml;
 	struct objc_category **cats;
-	unsigned int i;
 	IMP oldimp;
 
 	objc_global_mutex_lock();
 
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
-		for (i = 0; i < ml->count; i++) {
+		for (unsigned int i = 0; i < ml->count; i++) {
 			if (ml->methods[i].sel.uid == sel->uid) {
 				oldimp = ml->methods[i].imp;
 
@@ -703,7 +684,7 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 				ml = (*cats)->instance_methods;
 
 			for (; ml != NULL; ml = ml->next) {
-				for (i = 0; i < ml->count; i++) {
+				for (unsigned int i = 0; i < ml->count; i++) {
 					if (ml->methods[i].sel.uid ==
 					    sel->uid) {
 						oldimp = ml->methods[i].imp;
@@ -842,12 +823,10 @@ objc_unregister_class(Class cls)
 void
 objc_unregister_all_classes(void)
 {
-	uint32_t i;
-
 	if (classes == NULL)
 		return;
 
-	for (i = 0; i < classes->size; i++) {
+	for (uint32_t i = 0; i < classes->size; i++) {
 		if (classes->data[i] != NULL &&
 		    classes->data[i] != &objc_deleted_bucket) {
 			void *cls = (Class)classes->data[i]->obj;

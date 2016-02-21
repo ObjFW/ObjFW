@@ -177,12 +177,12 @@ enum {
 		int *queueActions = [_queueActions items];
 		int *queueFDs = [_queueFDs items];
 		id const *queueObjects = [_queueObjects objects];
-		size_t i, count = [_queueActions count];
+		size_t count = [_queueActions count];
 
 		OF_ENSURE([_queueFDs count] == count);
 		OF_ENSURE([_queueObjects count] == count);
 
-		for (i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 			int action = queueActions[i];
 			int fd = queueFDs[i];
 			id object = queueObjects[i];

@@ -42,9 +42,8 @@ void*
 objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
-	uint8_t i;
 
-	for (i = 0; i < sparsearray->index_size - 1; i++) {
+	for (uint8_t i = 0; i < sparsearray->index_size - 1; i++) {
 		uintptr_t j =
 		    (idx >> ((sparsearray->index_size - i - 1) * 8)) & 0xFF;
 
@@ -60,9 +59,8 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
     void *value)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
-	uint8_t i;
 
-	for (i = 0; i < sparsearray->index_size - 1; i++) {
+	for (uint8_t i = 0; i < sparsearray->index_size - 1; i++) {
 		uintptr_t j =
 		    (idx >> ((sparsearray->index_size - i - 1) * 8)) & 0xFF;
 
@@ -81,12 +79,10 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 static void
 free_sparsearray_data(struct objc_sparsearray_data *data, uint8_t depth)
 {
-	uint16_t i;
-
 	if (data == NULL || depth == 0)
 		return;
 
-	for (i = 0; i < 256; i++)
+	for (uint_fast16_t i = 0; i < 256; i++)
 		free_sparsearray_data(data->next[i], depth - 1);
 
 	free(data);

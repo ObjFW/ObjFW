@@ -47,11 +47,10 @@
 			OFCountedSet *countedSet = (OFCountedSet*)countedSet;
 
 			for (id object in countedSet) {
-				size_t i, count;
+				size_t count =
+				    [countedSet countForObject: object];
 
-				count = [countedSet countForObject: object];
-
-				for (i = 0; i < count; i++)
+				for (size_t i = 0; i < count; i++)
 					[self addObject: object];
 			}
 		} else
@@ -73,9 +72,9 @@
 
 	@try {
 		id const *objects = [array objects];
-		size_t i, count = [array count];
+		size_t count = [array count];
 
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];
 	} @catch (id e) {
 		[self release];
@@ -91,9 +90,7 @@
 	self = [self init];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];
 	} @catch (id e) {
 		[self release];

@@ -67,9 +67,8 @@
 
 - (void)dealloc
 {
-	of_list_object_t *iter;
-
-	for (iter = _firstListObject; iter != NULL; iter = iter->next)
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = iter->next)
 		[iter->object release];
 
 	[super dealloc];
@@ -229,12 +228,11 @@
 
 - (bool)containsObject: (id)object
 {
-	of_list_object_t *iter;
-
 	if (_count == 0)
 		return false;
 
-	for (iter = _firstListObject; iter != NULL; iter = iter->next)
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = iter->next)
 		if ([iter->object isEqual: object])
 			return true;
 
@@ -243,12 +241,11 @@
 
 - (bool)containsObjectIdenticalTo: (id)object
 {
-	of_list_object_t *iter;
-
 	if (_count == 0)
 		return false;
 
-	for (iter = _firstListObject; iter != NULL; iter = iter->next)
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = iter->next)
 		if (iter->object == object)
 			return true;
 
@@ -274,13 +271,14 @@
 - copy
 {
 	OFList *copy = [[[self class] alloc] init];
-	of_list_object_t *iter, *listObject, *previous;
+	of_list_object_t *listObject, *previous;
 
 	listObject = NULL;
 	previous = NULL;
 
 	@try {
-		for (iter = _firstListObject; iter != NULL; iter = iter->next) {
+		for (of_list_object_t *iter = _firstListObject;
+		    iter != NULL; iter = iter->next) {
 			listObject = [copy allocMemoryWithSize:
 			    sizeof(of_list_object_t)];
 			listObject->object = [iter->object retain];
@@ -308,12 +306,12 @@
 
 - (uint32_t)hash
 {
-	of_list_object_t *iter;
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
-	for (iter = _firstListObject; iter != NULL; iter = iter->next)
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = iter->next)
 		OF_HASH_ADD_HASH(hash, [iter->object hash]);
 
 	OF_HASH_FINALIZE(hash);
@@ -324,14 +322,14 @@
 - (OFString*)description
 {
 	OFMutableString *ret;
-	of_list_object_t *iter;
 
 	if (_count == 0)
 		return @"[]";
 
 	ret = [OFMutableString stringWithString: @"[\n"];
 
-	for (iter = _firstListObject; iter != NULL; iter = iter->next) {
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
 		[ret appendString: [iter->object description]];
@@ -352,13 +350,12 @@
 
 - (OFXMLElement*)XMLElementBySerializing
 {
-	OFXMLElement *element;
-	of_list_object_t *iter;
+	OFXMLElement *element =
+	    [OFXMLElement elementWithName: [self className]
+				namespace: OF_SERIALIZATION_NS];
 
-	element = [OFXMLElement elementWithName: [self className]
-				      namespace: OF_SERIALIZATION_NS];
-
-	for (iter = _firstListObject; iter != NULL; iter = iter->next) {
+	for (of_list_object_t *iter = _firstListObject;
+	    iter != NULL; iter = iter->next) {
 		void *pool = objc_autoreleasePoolPush();
 
 		[element addChild: [iter->object XMLElementBySerializing]];
@@ -374,7 +371,6 @@
 			     count: (int)count
 {
 	of_list_object_t *listObject;
-	int i;
 
 	memcpy(&listObject, state->extra, sizeof(listObject));
 
@@ -386,7 +382,7 @@
 		state->state = 1;
 	}
 
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		if (listObject == NULL)
 			return i;
 

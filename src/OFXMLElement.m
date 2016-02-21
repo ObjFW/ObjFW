@@ -427,7 +427,7 @@ static Class CDATAClass = Nil;
 {
 	void *pool;
 	char *cString;
-	size_t length, i, j, attributesCount;
+	size_t length, i, attributesCount;
 	OFString *prefix, *parentPrefix;
 	OFXMLAttribute *const *attributesObjects;
 	OFString *ret;
@@ -521,7 +521,7 @@ static Class CDATAClass = Nil;
 	attributesObjects = [_attributes objects];
 	attributesCount = [_attributes count];
 
-	for (j = 0; j < attributesCount; j++) {
+	for (size_t j = 0; j < attributesCount; j++) {
 		void *pool2 = objc_autoreleasePoolPush();
 		OFString *attributeName = [attributesObjects[j] name];
 		OFString *attributePrefix = nil;
@@ -578,7 +578,7 @@ static Class CDATAClass = Nil;
 		if (indentation > 0) {
 			indent = true;
 
-			for (j = 0; j < childrenCount; j++) {
+			for (size_t j = 0; j < childrenCount; j++) {
 				if ([childrenObjects[j] isKindOfClass:
 				    charactersClass] || [childrenObjects[j]
 				    isKindOfClass: CDATAClass]) {
@@ -589,7 +589,7 @@ static Class CDATAClass = Nil;
 		} else
 			indent = false;
 
-		for (j = 0; j < childrenCount; j++) {
+		for (size_t j = 0; j < childrenCount; j++) {
 			OFString *child;
 			unsigned int ind = (indent ? indentation : 0);
 
@@ -823,9 +823,9 @@ static Class CDATAClass = Nil;
 - (void)removeAttributeForName: (OFString*)attributeName
 {
 	OFXMLAttribute *const *objects = [_attributes objects];
-	size_t i, count = [_attributes count];
+	size_t count = [_attributes count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if (objects[i]->_namespace == nil &&
 		    [objects[i]->_name isEqual: attributeName]) {
 			[_attributes removeObjectAtIndex: i];
@@ -839,7 +839,7 @@ static Class CDATAClass = Nil;
 		     namespace: (OFString*)attributeNS
 {
 	OFXMLAttribute *const *objects;
-	size_t i, count;
+	size_t count;
 
 	if (attributeNS == nil) {
 		[self removeAttributeForName: attributeName];
@@ -849,7 +849,7 @@ static Class CDATAClass = Nil;
 	objects = [_attributes objects];
 	count = [_attributes count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([objects[i]->_namespace isEqual: attributeNS] &&
 		    [objects[i]->_name isEqual: attributeName]) {
 			[_attributes removeObjectAtIndex: i];

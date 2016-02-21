@@ -182,9 +182,7 @@ defaultEqual(void *value1, void *value2)
 
 - (void)dealloc
 {
-	uint32_t i;
-
-	for (i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			_keyFunctions.release(_buckets[i]->key);
 			_valueFunctions.release(_buckets[i]->value);
@@ -197,7 +195,6 @@ defaultEqual(void *value1, void *value2)
 - (bool)isEqual: (id)object
 {
 	OFMapTable *mapTable;
-	uint32_t i;
 
 	if (![object isKindOfClass: [OFMapTable class]])
 		return false;
@@ -209,7 +206,7 @@ defaultEqual(void *value1, void *value2)
 	    mapTable->_valueFunctions.equal != _valueFunctions.equal)
 		return false;
 
-	for (i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			void *value = [mapTable valueForKey: _buckets[i]->key];
 
@@ -223,9 +220,9 @@ defaultEqual(void *value1, void *value2)
 
 - (uint32_t)hash
 {
-	uint32_t i, hash = 0;
+	uint32_t hash = 0;
 
-	for (i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			hash += OF_ROR(_buckets[i]->hash, _rotate);
 			hash += _valueFunctions.hash(_buckets[i]->value);
@@ -243,9 +240,7 @@ defaultEqual(void *value1, void *value2)
 			capacity: _capacity];
 
 	@try {
-		uint32_t i;
-
-		for (i = 0; i < _capacity; i++)
+		for (uint32_t i = 0; i < _capacity; i++)
 			if (_buckets[i] != NULL && _buckets[i] != &deleted)
 				[copy OF_setValue: _buckets[i]->value
 					   forKey: _buckets[i]->key
@@ -301,7 +296,7 @@ defaultEqual(void *value1, void *value2)
 
 - (void)OF_resizeForCount: (uint32_t)count
 {
-	uint32_t i, fullness, capacity;
+	uint32_t fullness, capacity;
 	struct of_map_table_bucket **buckets;
 
 	if (count > UINT32_MAX / sizeof(*_buckets) || count > UINT32_MAX / 8)
@@ -331,7 +326,7 @@ defaultEqual(void *value1, void *value2)
 
 	memset(buckets, 0, capacity * sizeof(*buckets));
 
-	for (i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			uint32_t j, last;
 
@@ -514,9 +509,7 @@ defaultEqual(void *value1, void *value2)
 
 - (void)removeAllValues
 {
-	uint32_t i;
-
-	for (i = 0; i < _capacity; i++) {
+	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL) {
 			if (_buckets[i] == &deleted) {
 				_buckets[i] = NULL;
@@ -553,12 +546,10 @@ defaultEqual(void *value1, void *value2)
 
 - (bool)containsValue: (void*)value
 {
-	uint32_t i;
-
 	if (value == NULL || _count == 0)
 		return false;
 
-	for (i = 0; i < _capacity; i++)
+	for (uint32_t i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			if (_valueFunctions.equal(_buckets[i]->value, value))
 				return true;
@@ -568,12 +559,10 @@ defaultEqual(void *value1, void *value2)
 
 - (bool)containsValueIdenticalTo: (void*)value
 {
-	uint32_t i;
-
 	if (value == NULL || _count == 0)
 		return false;
 
-	for (i = 0; i < _capacity; i++)
+	for (uint32_t i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
 			if (_buckets[i]->value == value)
 				return true;
@@ -628,11 +617,10 @@ defaultEqual(void *value1, void *value2)
 - (void)enumerateKeysAndValuesUsingBlock:
     (of_map_table_enumeration_block_t)block
 {
-	size_t i;
 	bool stop = false;
 	unsigned long mutations = _mutations;
 
-	for (i = 0; i < _capacity && !stop; i++) {
+	for (size_t i = 0; i < _capacity && !stop; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];
@@ -644,10 +632,9 @@ defaultEqual(void *value1, void *value2)
 
 - (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block
 {
-	size_t i;
 	unsigned long mutations = _mutations;
 
-	for (i = 0; i < _capacity; i++) {
+	for (size_t i = 0; i < _capacity; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];

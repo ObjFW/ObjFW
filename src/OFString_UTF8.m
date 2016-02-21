@@ -45,9 +45,7 @@ extern const of_char16_t of_codepage_437[128];
 static inline int
 memcasecmp(const char *first, const char *second, size_t length)
 {
-	size_t i;
-
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		if (tolower((int)first[i]) > tolower((int)second[i]))
 			return OF_ORDERED_DESCENDING;
 		if (tolower((int)first[i]) < tolower((int)second[i]))
@@ -60,10 +58,10 @@ memcasecmp(const char *first, const char *second, size_t length)
 int
 of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
 {
-	size_t i, tmpLength = UTF8Length;
+	size_t tmpLength = UTF8Length;
 	int isUTF8 = 0;
 
-	for (i = 0; i < UTF8Length; i++) {
+	for (size_t i = 0; i < UTF8Length; i++) {
 		/* No sign of UTF-8 here */
 		if OF_LIKELY (!(UTF8String[i] & 0x80))
 			continue;
@@ -127,9 +125,9 @@ of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
 size_t
 of_string_utf8_get_index(const char *string, size_t position)
 {
-	size_t i, index = position;
+	size_t index = position;
 
-	for (i = 0; i < position; i++)
+	for (size_t i = 0; i < position; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
 			index--;
 
@@ -139,9 +137,7 @@ of_string_utf8_get_index(const char *string, size_t position)
 size_t
 of_string_utf8_get_position(const char *string, size_t index, size_t length)
 {
-	size_t i;
-
-	for (i = 0; i <= index; i++)
+	for (size_t i = 0; i <= index; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
 			if (++index > length)
 				return OF_NOT_FOUND;
@@ -211,8 +207,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	self = [super init];
 
 	@try {
-		size_t i, j;
 		const of_char16_t *table;
+		size_t j;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
 		    cStringLength >= 3 &&
@@ -251,7 +247,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->length = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_ISO_8859_1) {
-			for (i = j = 0; i < cStringLength; i++) {
+			j = 0;
+			for (size_t i = 0; i < cStringLength; i++) {
 				char buffer[4];
 				size_t bytes;
 
@@ -296,7 +293,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			@throw [OFInvalidEncodingException exception];
 		}
 
-		for (i = j = 0; i < cStringLength; i++) {
+		j = 0;
+		for (size_t i = 0; i < cStringLength; i++) {
 			char buffer[4];
 			of_unichar_t character;
 			size_t characterBytes;
@@ -407,14 +405,15 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	self = [super init];
 
 	@try {
-		size_t i, j = 0;
+		size_t j;
 
 		_s = &_storage;
 
 		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		_s->length = length;
 
-		for (i = 0; i < length; i++) {
+		j = 0;
+		for (size_t i = 0; i < length; i++) {
 			size_t len = of_string_utf8_encode(characters[i],
 			    _s->cString + j);
 
@@ -451,7 +450,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	self = [super init];
 
 	@try {
-		size_t i, j = 0;
+		size_t j;
 		bool swap = false;
 
 		if (length > 0 && *string == 0xFEFF) {
@@ -469,7 +468,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		_s->length = length;
 
-		for (i = 0; i < length; i++) {
+		j = 0;
+		for (size_t i = 0; i < length; i++) {
 			of_unichar_t character =
 			    (swap ? OF_BSWAP16(string[i]) : string[i]);
 			size_t len;
@@ -535,7 +535,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	self = [super init];
 
 	@try {
-		size_t i, j = 0;
+		size_t j;
 		bool swap = false;
 
 		if (length > 0 && *characters == 0xFEFF) {
@@ -553,7 +553,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		_s->length = length;
 
-		for (i = 0; i < length; i++) {
+		j = 0;
+		for (size_t i = 0; i < length; i++) {
 			char buffer[4];
 			size_t len = of_string_utf8_encode(
 			    (swap ? OF_BSWAP32(characters[i]) : characters[i]),
@@ -852,7 +853,6 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (uint32_t)hash
 {
-	size_t i;
 	uint32_t hash;
 
 	if (_s->hashed)
@@ -860,7 +860,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < _s->cStringLength; i++) {
+	for (size_t i = 0; i < _s->cStringLength; i++) {
 		of_unichar_t c;
 		size_t length;
 
@@ -925,7 +925,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		      range: (of_range_t)range
 {
 	const char *cString = [string UTF8String];
-	size_t i, cStringLength = [string UTF8StringLength];
+	size_t cStringLength = [string UTF8StringLength];
 	size_t rangeLocation, rangeLength;
 
 	if (range.length > SIZE_MAX - range.location ||
@@ -950,7 +950,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return of_range(OF_NOT_FOUND, 0);
 
 	if (options & OF_STRING_SEARCH_BACKWARDS) {
-		for (i = rangeLength - cStringLength;; i--) {
+		for (size_t i = rangeLength - cStringLength;; i--) {
 			if (memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength) == 0) {
 				range.location += of_string_utf8_get_index(
@@ -965,7 +965,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				return of_range(OF_NOT_FOUND, 0);
 		}
 	} else {
-		for (i = 0; i <= rangeLength - cStringLength; i++) {
+		for (size_t i = 0; i <= rangeLength - cStringLength; i++) {
 			if (memcmp(_s->cString + rangeLocation + i, cString,
 			    cStringLength) == 0) {
 				range.location += of_string_utf8_get_index(
@@ -983,7 +983,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 - (bool)containsString: (OFString*)string
 {
 	const char *cString = [string UTF8String];
-	size_t i, cStringLength = [string UTF8StringLength];
+	size_t cStringLength = [string UTF8StringLength];
 
 	if (cStringLength == 0)
 		return true;
@@ -991,7 +991,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	for (i = 0; i <= _s->cStringLength - cStringLength; i++)
+	for (size_t i = 0; i <= _s->cStringLength - cStringLength; i++)
 		if (memcmp(_s->cString + i, cString, cStringLength) == 0)
 			return true;
 
@@ -1046,7 +1046,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	const char *cString = [delimiter UTF8String];
 	size_t cStringLength = [delimiter UTF8StringLength];
 	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
-	size_t i, last;
+	size_t last;
 	OFString *component;
 
 	array = [OFMutableArray array];
@@ -1059,7 +1059,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return array;
 	}
 
-	for (i = 0, last = 0; i <= _s->cStringLength - cStringLength; i++) {
+	last = 0;
+	for (size_t i = 0; i <= _s->cStringLength - cStringLength; i++) {
 		if (memcmp(_s->cString + i, cString, cStringLength) != 0)
 			continue;
 
@@ -1154,7 +1155,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 - (OFString*)stringByDeletingLastPathComponent
 {
-	size_t i, pathCStringLength = _s->cStringLength;
+	size_t pathCStringLength = _s->cStringLength;
 
 	if (pathCStringLength == 0)
 		return @"";
@@ -1166,7 +1167,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return [OFString stringWithUTF8String: _s->cString
 					       length: 1];
 
-	for (i = pathCStringLength - 1; i >= 1; i--)
+	for (size_t i = pathCStringLength - 1; i >= 1; i--)
 		if (OF_IS_PATH_DELIMITER(_s->cString[i]))
 			return [OFString stringWithUTF8String: _s->cString
 						       length: i];

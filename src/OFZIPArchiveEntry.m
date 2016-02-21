@@ -111,13 +111,10 @@ void
 of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
     uint8_t **data, uint16_t *size)
 {
-	uint8_t *bytes;
-	size_t i, count;
+	uint8_t *bytes = [extraField items];
+	size_t count = [extraField count];
 
-	bytes = [extraField items];
-	count = [extraField count];
-
-	for (i = 0; i < count;) {
+	for (size_t i = 0; i < count;) {
 		uint16_t currentTag, currentSize;
 
 		if (i + 3 >= count)

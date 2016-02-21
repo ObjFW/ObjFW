@@ -389,10 +389,10 @@
 
 	tmp = [self allocMemoryWithSize: (length * 4) + 1];
 	@try {
-		size_t i, j = 0;
+		size_t j = 0;
 		bool isUTF8 = false;
 
-		for (i = 0; i < length; i++) {
+		for (size_t i = 0; i < length; i++) {
 			size_t len = of_string_utf8_encode(characters[i],
 			    tmp + j);
 
@@ -649,7 +649,7 @@
 	const char *replacementString = [replacement UTF8String];
 	size_t searchLength = [string UTF8StringLength];
 	size_t replacementLength = [replacement UTF8StringLength];
-	size_t i, last, newCStringLength, newLength;
+	size_t last, newCStringLength, newLength;
 	char *newCString;
 
 	if (range.length > SIZE_MAX - range.location ||
@@ -670,9 +670,9 @@
 	newCString = NULL;
 	newCStringLength = 0;
 	newLength = _s->length;
-
 	last = 0;
-	for (i = range.location; i <= range.length - searchLength; i++) {
+
+	for (size_t i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(_s->cString + i, searchString, searchLength) != 0)
 			continue;
 

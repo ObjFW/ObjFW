@@ -37,9 +37,9 @@ static bool
 isWhitespaceLine(OFString *line)
 {
 	const char *cString = [line UTF8String];
-	size_t i, length = [line UTF8StringLength];
+	size_t length = [line UTF8StringLength];
 
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		switch (cString[i]) {
 		case ' ':
 		case '\t':

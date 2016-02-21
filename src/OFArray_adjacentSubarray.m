@@ -30,7 +30,6 @@
 {
 	OFArray *otherArray;
 	id const *objects, *otherObjects;
-	size_t i;
 
 	if (![object isKindOfClass: [OFArray_adjacent class]] &&
 	    ![object isKindOfClass: [OFMutableArray_adjacent class]])
@@ -44,7 +43,7 @@
 	objects = [self objects];
 	otherObjects = [otherArray objects];
 
-	for (i = 0; i < _range.length; i++)
+	for (size_t i = 0; i < _range.length; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
 			return false;
 
@@ -55,10 +54,9 @@
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
 	id const *objects = [self objects];
-	size_t i;
 	bool stop = false;
 
-	for (i = 0; i < _range.length && !stop; i++)
+	for (size_t i = 0; i < _range.length && !stop; i++)
 		block(objects[i], i, &stop);
 }
 #endif

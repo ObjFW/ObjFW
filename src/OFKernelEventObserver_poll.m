@@ -75,10 +75,10 @@
 	      events: (short)events
 {
 	struct pollfd *FDs = [_FDs items];
-	size_t i, count = [_FDs count];
+	size_t count = [_FDs count];
 	bool found = false;
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if (FDs[i].fd == fd) {
 			FDs[i].events |= events;
 			found = true;
@@ -106,9 +106,9 @@
 		 events: (short)events
 {
 	struct pollfd *FDs = [_FDs items];
-	size_t i, nFDs = [_FDs count];
+	size_t nFDs = [_FDs count];
 
-	for (i = 0; i < nFDs; i++) {
+	for (size_t i = 0; i < nFDs; i++) {
 		if (FDs[i].fd == fd) {
 			FDs[i].events &= ~events;
 
@@ -162,7 +162,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
 	int events;
-	size_t i, nFDs;
+	size_t nFDs;
 
 	[self OF_processQueue];
 	[self OF_processReadBuffers];
@@ -184,7 +184,7 @@
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
 
-	for (i = 0; i < nFDs; i++) {
+	for (size_t i = 0; i < nFDs; i++) {
 		assert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {

@@ -269,7 +269,7 @@ void _references_to_categories_of_OFDataArray(void)
 {
 	@try {
 		const char *cString;
-		size_t i, count;
+		size_t count;
 
 		count = [string
 		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII];
@@ -284,7 +284,7 @@ void _references_to_categories_of_OFDataArray(void)
 		cString = [string
 		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];
 
-		for (i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 			uint8_t c1 = cString[2 * i];
 			uint8_t c2 = cString[2 * i + 1];
 			uint8_t byte;
@@ -571,11 +571,10 @@ void _references_to_categories_of_OFDataArray(void)
 - (uint32_t)hash
 {
 	uint32_t hash;
-	size_t i;
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < _count * _itemSize; i++)
+	for (size_t i = 0; i < _count * _itemSize; i++)
 		OF_HASH_ADD(hash, ((uint8_t*)_items)[i]);
 
 	OF_HASH_FINALIZE(hash);
@@ -586,15 +585,12 @@ void _references_to_categories_of_OFDataArray(void)
 - (OFString*)description
 {
 	OFMutableString *ret = [OFMutableString stringWithString: @"<"];
-	size_t i;
 
-	for (i = 0; i < _count; i++) {
-		size_t j;
-
+	for (size_t i = 0; i < _count; i++) {
 		if (i > 0)
 			[ret appendString: @" "];
 
-		for (j = 0; j < _itemSize; j++)
+		for (size_t j = 0; j < _itemSize; j++)
 			[ret appendFormat: @"%02x", _items[i * _itemSize + j]];
 	}
 
@@ -607,10 +603,9 @@ void _references_to_categories_of_OFDataArray(void)
 - (OFString*)stringRepresentation
 {
 	OFMutableString *ret = [OFMutableString string];
-	size_t i, j;
 
-	for (i = 0; i < _count; i++)
-		for (j = 0; j < _itemSize; j++)
+	for (size_t i = 0; i < _count; i++)
+		for (size_t j = 0; j < _itemSize; j++)
 			[ret appendFormat: @"%02x", _items[i * _itemSize + j]];
 
 	[ret makeImmutable];

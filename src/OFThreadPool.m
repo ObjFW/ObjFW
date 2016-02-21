@@ -260,15 +260,13 @@
 	self = [super init];
 
 	@try {
-		size_t i;
-
 		_size = size;
 		_threads = [[OFMutableArray alloc] init];
 		_queue = [[OFList alloc] init];
 		_queueCondition = [[OFCondition alloc] init];
 		_countCondition = [[OFCondition alloc] init];
 
-		for (i = 0; i < size; i++) {
+		for (size_t i = 0; i < size; i++) {
 			void *pool = objc_autoreleasePoolPush();
 
 			OFThreadPoolThread *thread =
@@ -281,9 +279,9 @@
 
 		/*
 		 * We need to start the threads in a separate loop to make sure
-		 * threads is not modified anymore to prevent a race condition.
+		 * _threads is not modified anymore to prevent a race condition.
 		 */
-		for (i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 			[[_threads objectAtIndex: i] start];
 	} @catch (id e) {
 		[self release];

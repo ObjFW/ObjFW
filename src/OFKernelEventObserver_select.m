@@ -138,7 +138,7 @@
 	fd_set writeFDs;
 	struct timeval timeout;
 	int events;
-	size_t i, count;
+	size_t count;
 
 	[self OF_processQueue];
 	[self OF_processReadBuffers];
@@ -187,7 +187,7 @@
 	objects = [_readObjects objects];
 	count = [_readObjects count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		int fd;
 
 		pool = objc_autoreleasePoolPush();
@@ -203,7 +203,7 @@
 	objects = [_writeObjects objects];
 	count = [_writeObjects count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		int fd;
 
 		pool = objc_autoreleasePoolPush();

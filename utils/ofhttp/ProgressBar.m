@@ -92,7 +92,6 @@
 
 - (void)_drawProgress
 {
-	size_t i;
 	float bars, percent;
 	unsigned short barWidth;
 #ifdef HAVE_SYS_IOCTL_H
@@ -113,7 +112,7 @@
 
 	[of_stdout writeString: @"\r  ▕"];
 
-	for (i = 0; i < (size_t)bars; i++)
+	for (size_t i = 0; i < (size_t)bars; i++)
 		[of_stdout writeString: @"█"];
 	if (bars < barWidth) {
 		float remainder = bars - floorf(bars);
@@ -135,7 +134,7 @@
 		else
 			[of_stdout writeString: @" "];
 
-		for (i = 0; i < barWidth - (size_t)bars - 1; i++)
+		for (size_t i = 0; i < barWidth - (size_t)bars - 1; i++)
 			[of_stdout writeString: @" "];
 	}
 

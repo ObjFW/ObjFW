@@ -244,14 +244,14 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 - (void)replaceObject: (id)oldObject
 	   withObject: (id)newObject
 {
-	size_t i, count;
+	size_t count;
 
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: oldObject]) {
 			[self replaceObjectAtIndex: i
 					withObject: newObject];
@@ -263,14 +263,14 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 - (void)replaceObjectIdenticalTo: (id)oldObject
 		      withObject: (id)newObject
 {
-	size_t i, count;
+	size_t count;
 
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == oldObject) {
 			[self replaceObjectAtIndex: i
 					withObject: newObject];
@@ -287,14 +287,14 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - (void)removeObject: (id)object
 {
-	size_t i, count;
+	size_t count;
 
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: object]) {
 			[self removeObjectAtIndex: i];
 
@@ -305,14 +305,14 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - (void)removeObjectIdenticalTo: (id)object
 {
-	size_t i, count;
+	size_t count;
 
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	count = [self count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == object) {
 			[self removeObjectAtIndex: i];
 
@@ -323,9 +323,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - (void)removeObjectsInRange: (of_range_t)range
 {
-	size_t i;
-
-	for (i = 0; i < range.length; i++)
+	for (size_t i = 0; i < range.length; i++)
 		[self removeObjectAtIndex: range.location];
 }
 

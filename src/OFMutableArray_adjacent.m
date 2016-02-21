@@ -80,7 +80,7 @@
 		       atIndex: (size_t)index
 {
 	id const *objects = [array objects];
-	size_t i, count = [array count];
+	size_t count = [array count];
 
 	@try {
 		[_array insertItems: objects
@@ -90,7 +90,7 @@
 		@throw [OFOutOfRangeException exception];
 	}
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		[objects[i] retain];
 
 	_mutations++;
@@ -100,7 +100,7 @@
 	   withObject: (id)newObject
 {
 	id *objects;
-	size_t i, count;
+	size_t count;
 
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -108,7 +108,7 @@
 	objects = [_array items];
 	count = [_array count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: oldObject]) {
 			[newObject retain];
 			[objects[i] release];
@@ -142,7 +142,7 @@
 		      withObject: (id)newObject
 {
 	id *objects;
-	size_t i, count;
+	size_t count;
 
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -150,7 +150,7 @@
 	objects = [_array items];
 	count = [_array count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if (objects[i] == oldObject) {
 			[newObject retain];
 			[objects[i] release];
@@ -164,7 +164,7 @@
 - (void)removeObject: (id)object
 {
 	id *objects;
-	size_t i, count;
+	size_t count;
 
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -172,7 +172,7 @@
 	objects = [_array items];
 	count = [_array count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
 			object = objects[i];
 
@@ -189,7 +189,7 @@
 - (void)removeObjectIdenticalTo: (id)object
 {
 	id *objects;
-	size_t i, count;
+	size_t count;
 
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -197,7 +197,7 @@
 	objects = [_array items];
 	count = [_array count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		if (objects[i] == object) {
 			[_array removeItemAtIndex: i];
 			_mutations++;
@@ -221,9 +221,9 @@
 - (void)removeAllObjects
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		[objects[i] release];
 
 	[_array removeAllItems];
@@ -232,7 +232,7 @@
 - (void)removeObjectsInRange: (of_range_t)range
 {
 	id *objects = [_array items], *copy;
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.length > count - range.location)
@@ -246,7 +246,7 @@
 		[_array removeItemsInRange: range];
 		_mutations++;
 
-		for (i = 0; i < range.length; i++)
+		for (size_t i = 0; i < range.length; i++)
 			[copy[i] release];
 	} @finally {
 		[self freeMemory: copy];
@@ -338,11 +338,11 @@
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 	bool stop = false;
 	unsigned long mutations = _mutations;
 
-	for (i = 0; i < count && !stop; i++) {
+	for (size_t i = 0; i < count && !stop; i++) {
 		if (_mutations != mutations)
 			@throw [OFEnumerationMutationException
 			    exceptionWithObject: self];
@@ -354,10 +354,10 @@
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 	unsigned long mutations = _mutations;
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		id new;
 
 		if (_mutations != mutations)

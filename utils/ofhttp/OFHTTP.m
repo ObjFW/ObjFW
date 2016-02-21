@@ -418,7 +418,7 @@ help(OFStream *stream, bool full, int status)
 		DISPOSITION_PARAM_QUOTED,
 		DISPOSITION_EXPECT_SEMICOLON
 	} state;
-	size_t i, last;
+	size_t last;
 	OFString *type = nil, *paramName = nil, *paramValue;
 	OFMutableDictionary *params;
 	OFString *fileName;
@@ -434,7 +434,7 @@ help(OFStream *stream, bool full, int status)
 	params = [OFMutableDictionary dictionary];
 	last = 0;
 
-	for (i = 0; i < UTF8StringLength; i++) {
+	for (size_t i = 0; i < UTF8StringLength; i++) {
 		switch (state) {
 		case DISPOSITION_TYPE:
 			if (UTF8String[i] == ';' || UTF8String[i] == ' ') {

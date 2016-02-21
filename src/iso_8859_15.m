@@ -41,9 +41,7 @@ bool
 of_unicode_to_iso_8859_15(const of_unichar_t *input, uint8_t *output,
     size_t length, bool lossy)
 {
-	size_t i;
-
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		of_unichar_t c = input[i];
 
 		if OF_UNLIKELY (c > 0xFF) {

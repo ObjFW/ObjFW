@@ -175,7 +175,6 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
 				       mode: @"wb"];
-	of_unichar_t i, j;
 
 	[file writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
@@ -184,10 +183,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"static const of_unichar_t emptyPage[0x100] = { 0 };\n\n"];
 
 	/* Write uppercasePage%u */
-	for (i = 0; i < 0x110000; i += 0x100) {
+	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (j = i; j < i + 0x100; j++) {
+		for (of_unichar_t j = i; j < i + 0x100; j++) {
 			if (_uppercaseTable[j] != 0) {
 				isEmpty = false;
 				_uppercaseTableSize = i >> 8;
@@ -203,7 +202,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			    @"static const of_unichar_t "
 			    @"uppercasePage%u[0x100] = {\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 8)
+			for (of_unichar_t j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _uppercaseTable[j],
@@ -222,10 +221,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write lowercasePage%u */
-	for (i = 0; i < 0x110000; i += 0x100) {
+	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (j = i; j < i + 0x100; j++) {
+		for (of_unichar_t j = i; j < i + 0x100; j++) {
 			if (_lowercaseTable[j] != 0) {
 				isEmpty = false;
 				_lowercaseTableSize = i >> 8;
@@ -241,7 +240,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			    @"static const of_unichar_t "
 			    @"lowercasePage%u[0x100] = {\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 8)
+			for (of_unichar_t j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _lowercaseTable[j],
@@ -260,10 +259,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write titlecasePage%u if it does NOT match uppercasePage%u */
-	for (i = 0; i < 0x110000; i += 0x100) {
+	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (j = i; j < i + 0x100; j++) {
+		for (of_unichar_t j = i; j < i + 0x100; j++) {
 			if (_titlecaseTable[j] != 0) {
 				isEmpty = !memcmp(_uppercaseTable + i,
 				    _titlecaseTable + i,
@@ -282,7 +281,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			    @"static const of_unichar_t "
 			    @"titlecasePage%u[0x100] = {\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 8)
+			for (of_unichar_t j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _titlecaseTable[j],
@@ -301,10 +300,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	}
 
 	/* Write casefoldingPage%u if it does NOT match lowercasePage%u */
-	for (i = 0; i < 0x110000; i += 0x100) {
+	for (of_unichar_t i = 0; i < 0x110000; i += 0x100) {
 		bool isEmpty = true;
 
-		for (j = i; j < i + 0x100; j++) {
+		for (of_unichar_t j = i; j < i + 0x100; j++) {
 			if (_casefoldingTable[j] != 0) {
 				isEmpty = !memcmp(_lowercaseTable + i,
 				    _casefoldingTable + i,
@@ -323,7 +322,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			    @"static const of_unichar_t "
 			    @"casefoldingPage%u[0x100] = {\n", i >> 8]];
 
-			for (j = i; j < i + 0x100; j += 8)
+			for (of_unichar_t j = i; j < i + 0x100; j += 8)
 				[file writeString: [OFString stringWithFormat:
 				    @"\t%u, %u, %u, %u, %u, %u, %u, %u,\n",
 				    _casefoldingTable[j],
@@ -355,7 +354,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"const of_unichar_t* const of_unicode_uppercase_table[0x%X] = "
 	    @"{\n\t", _uppercaseTableSize]];
 
-	for (i = 0; i < _uppercaseTableSize; i++) {
+	for (of_unichar_t i = 0; i < _uppercaseTableSize; i++) {
 		if (_uppercaseTableUsed[i]) {
 			[file writeString: [OFString stringWithFormat:
 			    @"uppercasePage%u", i]];
@@ -377,7 +376,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"const of_unichar_t* const of_unicode_lowercase_table[0x%X] = "
 	    @"{\n\t", _lowercaseTableSize]];
 
-	for (i = 0; i < _lowercaseTableSize; i++) {
+	for (of_unichar_t i = 0; i < _lowercaseTableSize; i++) {
 		if (_lowercaseTableUsed[i]) {
 			[file writeString: [OFString stringWithFormat:
 			    @"lowercasePage%u", i]];
@@ -399,7 +398,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"const of_unichar_t* const of_unicode_titlecase_table[0x%X] = {"
 	    @"\n\t", _titlecaseTableSize]];
 
-	for (i = 0; i < _titlecaseTableSize; i++) {
+	for (of_unichar_t i = 0; i < _titlecaseTableSize; i++) {
 		if (_titlecaseTableUsed[i] == 1) {
 			[file writeString: [OFString stringWithFormat:
 			    @"titlecasePage%u", i]];
@@ -424,7 +423,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"const of_unichar_t* const of_unicode_casefolding_table[0x%X] = "
 	    @"{\n\t", _casefoldingTableSize]];
 
-	for (i = 0; i < _casefoldingTableSize; i++) {
+	for (of_unichar_t i = 0; i < _casefoldingTableSize; i++) {
 		if (_casefoldingTableUsed[i] == 1) {
 			[file writeString: [OFString stringWithFormat:
 			    @"casefoldingPage%u", i]];

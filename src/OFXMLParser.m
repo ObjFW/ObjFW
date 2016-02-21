@@ -64,15 +64,12 @@ static OFString*
 transformString(OFXMLParser *parser, OFDataArray *buffer, size_t cut,
     bool unescape)
 {
-	char *items;
-	size_t i, length;
+	char *items = [buffer items];
+	size_t length = [buffer count] - cut;
 	bool hasEntities = false;
 	OFString *ret;
 
-	items = [buffer items];
-	length = [buffer count] - cut;
-
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		if (items[i] == '\r') {
 			if (i + 1 < length && items[i + 1] == '\n') {
 				[buffer removeItemAtIndex: i];
@@ -106,7 +103,6 @@ namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 {
 	OFDictionary *const *objects = [namespaces objects];
 	size_t count = [namespaces count];
-	ssize_t i;
 
 	if (prefix == nil)
 		prefix = @"";
@@ -114,7 +110,7 @@ namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 	if (count - 1 > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	for (i = count - 1; i >= 0; i--) {
+	for (ssize_t i = count - 1; i >= 0; i--) {
 		OFString *tmp;
 
 		if ((tmp = [objects[i] objectForKey: prefix]) != nil)
@@ -150,8 +146,6 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 + (void)initialize
 {
-	size_t i;
-
 	const SEL selectors_[OF_XMLPARSER_NUM_STATES] = {
 		@selector(OF_inByteOrderMarkState),
 		@selector(OF_outsideTagState),
@@ -176,7 +170,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	};
 	memcpy(selectors, selectors_, sizeof(selectors_));
 
-	for (i = 0; i < OF_XMLPARSER_NUM_STATES; i++) {
+	for (size_t i = 0; i < OF_XMLPARSER_NUM_STATES; i++) {
 		if (![self instancesRespondToSelector: selectors[i]])
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self];
@@ -399,7 +393,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 - (bool)OF_parseXMLProcessingInstructions: (OFString*)pi
 {
 	const char *cString;
-	size_t i, last, length;
+	size_t length, last;
 	int PIState = 0;
 	OFString *attribute = nil;
 	OFMutableString *value = nil;
@@ -417,7 +411,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	cString = [pi UTF8String];
 	length = [pi UTF8StringLength];
 
-	for (i = last = 0; i < length; i++) {
+	last = 0;
+	for (size_t i = 0; i < length; i++) {
 		switch (PIState) {
 		case 0:
 			if (cString[i] == ' ' || cString[i] == '\t' ||
@@ -692,7 +687,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	void *pool;
 	OFString *namespace;
 	OFXMLAttribute *const *attributesObjects;
-	size_t j, attributesCount;
+	size_t attributesCount;
 
 	if (_data[_i] != '>' && _data[_i] != '/') {
 		if (_data[_i] != ' ' && _data[_i] != '\t' &&
@@ -714,7 +709,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
 							      parser: self];
 
-	for (j = 0; j < attributesCount; j++)
+	for (size_t j = 0; j < attributesCount; j++)
 		resolveAttributeNamespace(attributesObjects[j], _namespaces,
 		    self);
 

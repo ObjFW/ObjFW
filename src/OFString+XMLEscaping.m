@@ -33,7 +33,7 @@ int _OFString_XMLEscaping_reference;
 	char *retCString;
 	const char *string, *append;
 	size_t length, retLength, appendLen;
-	size_t i, j;
+	size_t j;
 	OFString *ret;
 
 	string = [self UTF8String];
@@ -49,35 +49,35 @@ int _OFString_XMLEscaping_reference;
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: retLength];
 
-	for (i = 0; i < length; i++) {
+	for (size_t i = 0; i < length; i++) {
 		switch (string[i]) {
-			case '<':
-				append = "&lt;";
-				appendLen = 4;
-				break;
-			case '>':
-				append = "&gt;";
-				appendLen = 4;
-				break;
-			case '"':
-				append = "&quot;";
-				appendLen = 6;
-				break;
-			case '\'':
-				append = "&apos;";
-				appendLen = 6;
-				break;
-			case '&':
-				append = "&amp;";
-				appendLen = 5;
-				break;
-			case '\r':
-				append = "&#xD;";
-				appendLen = 5;
-				break;
-			default:
-				append = NULL;
-				appendLen = 0;
+		case '<':
+			append = "&lt;";
+			appendLen = 4;
+			break;
+		case '>':
+			append = "&gt;";
+			appendLen = 4;
+			break;
+		case '"':
+			append = "&quot;";
+			appendLen = 6;
+			break;
+		case '\'':
+			append = "&apos;";
+			appendLen = 6;
+			break;
+		case '&':
+			append = "&amp;";
+			appendLen = 5;
+			break;
+		case '\r':
+			append = "&#xD;";
+			appendLen = 5;
+			break;
+		default:
+			append = NULL;
+			appendLen = 0;
 		}
 
 		if (append != NULL) {

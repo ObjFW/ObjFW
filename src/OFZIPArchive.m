@@ -86,12 +86,11 @@ uint32_t
 of_zip_archive_read_field32(uint8_t **data, uint16_t *size)
 {
 	uint32_t field = 0;
-	uint8_t i;
 
 	if (*size < 4)
 		@throw [OFInvalidFormatException exception];
 
-	for (i = 0; i < 4; i++)
+	for (uint8_t i = 0; i < 4; i++)
 		field |= (uint32_t)(*data)[i] << (i * 8);
 
 	*data += 4;
@@ -104,12 +103,11 @@ uint64_t
 of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
 {
 	uint64_t field = 0;
-	uint8_t i;
 
 	if (*size < 8)
 		@throw [OFInvalidFormatException exception];
 
-	for (i = 0; i < 8; i++)
+	for (uint8_t i = 0; i < 8; i++)
 		field |= (uint64_t)(*data)[i] << (i * 8);
 
 	*data += 8;
@@ -121,14 +119,10 @@ of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
 static uint32_t
 calculateCRC32(uint32_t crc, uint8_t *bytes, size_t length)
 {
-	size_t i;
-
-	for (i = 0; i < length; i++) {
-		uint8_t j;
-
+	for (size_t i = 0; i < length; i++) {
 		crc ^= bytes[i];
 
-		for (j = 0; j < 8; j++)
+		for (uint8_t j = 0; j < 8; j++)
 			crc = (crc >> 1) ^ (CRC32_MAGIC & (~(crc & 1) + 1));
 	}
 
@@ -304,7 +298,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (void)OF_readEntries
 {
 	void *pool = objc_autoreleasePoolPush();
-	size_t i;
 
 	if ((of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
@@ -315,7 +308,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_entries = [[OFMutableArray alloc] init];
 	_pathToEntryMap = [[OFMutableDictionary alloc] init];
 
-	for (i = 0; i < _centralDirectoryEntries; i++) {
+	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
 		    OF_initWithStream: _stream] autorelease];
 

@@ -268,9 +268,7 @@
 		 exactLength: size];
 
 #ifndef OF_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP16(buffer[i]);
 #endif
 
@@ -286,9 +284,7 @@
 		 exactLength: size];
 
 #ifndef OF_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP32(buffer[i]);
 #endif
 
@@ -304,9 +300,7 @@
 		 exactLength: size];
 
 #ifndef OF_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP64(buffer[i]);
 #endif
 
@@ -322,9 +316,7 @@
 		 exactLength: size];
 
 #ifndef OF_FLOAT_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
 #endif
 
@@ -340,9 +332,7 @@
 		 exactLength: size];
 
 #ifndef OF_FLOAT_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
 #endif
 
@@ -408,9 +398,7 @@
 		 exactLength: size];
 
 #ifdef OF_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP16(buffer[i]);
 #endif
 
@@ -426,9 +414,7 @@
 		 exactLength: size];
 
 #ifdef OF_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP32(buffer[i]);
 #endif
 
@@ -444,9 +430,7 @@
 		 exactLength: size];
 
 #ifdef OF_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP64(buffer[i]);
 #endif
 
@@ -462,9 +446,7 @@
 		 exactLength: size];
 
 #ifdef OF_FLOAT_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_FLOAT(buffer[i]);
 #endif
 
@@ -480,9 +462,7 @@
 		 exactLength: size];
 
 #ifdef OF_FLOAT_BIG_ENDIAN
-	size_t i;
-
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		buffer[i] = OF_BSWAP_DOUBLE(buffer[i]);
 #endif
 
@@ -572,13 +552,13 @@
 
 - (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
 {
-	size_t i, pageSize, bufferLength, retLength;
+	size_t pageSize, bufferLength, retLength;
 	char *retCString, *buffer, *readBuffer;
 	OFString *ret;
 
 	/* Look if there's a line or \0 in our buffer */
 	if (!_waitingForDelimiter && _readBuffer != NULL) {
-		for (i = 0; i < _readBufferLength; i++) {
+		for (size_t i = 0; i < _readBufferLength; i++) {
 			if OF_UNLIKELY (_readBuffer[i] == '\n' ||
 			    _readBuffer[i] == '\0') {
 				retLength = i;
@@ -638,7 +618,7 @@
 						     length: pageSize];
 
 		/* Look if there's a newline or \0 */
-		for (i = 0; i < bufferLength; i++) {
+		for (size_t i = 0; i < bufferLength; i++) {
 			if OF_UNLIKELY (buffer[i] == '\n' ||
 			    buffer[i] == '\0') {
 				retLength = _readBufferLength + i;
@@ -783,7 +763,7 @@
 			 encoding: (of_string_encoding_t)encoding
 {
 	const char *delimiterCString;
-	size_t i, j, delimiterLength, pageSize, bufferLength, retLength;
+	size_t j, delimiterLength, pageSize, bufferLength, retLength;
 	char *retCString, *buffer, *readBuffer;
 	OFString *ret;
 
@@ -796,7 +776,7 @@
 
 	/* Look if there's something in our buffer */
 	if (!_waitingForDelimiter && _readBuffer != NULL) {
-		for (i = 0; i < _readBufferLength; i++) {
+		for (size_t i = 0; i < _readBufferLength; i++) {
 			if (_readBuffer[i] != delimiterCString[j++])
 				j = 0;
 
@@ -852,7 +832,7 @@
 						     length: pageSize];
 
 		/* Look if there's a delimiter or \0 */
-		for (i = 0; i < bufferLength; i++) {
+		for (size_t i = 0; i < bufferLength; i++) {
 			if (buffer[i] != delimiterCString[j++])
 				j = 0;
 
@@ -1044,15 +1024,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint16_t *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(uint16_t)
-				  count: count];
+	uint16_t *tmp = [self allocMemoryWithSize: sizeof(uint16_t)
+					    count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP16(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1074,15 +1050,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint32_t *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(uint32_t)
-				  count: count];
+	uint32_t *tmp = [self allocMemoryWithSize: sizeof(uint32_t)
+					    count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP32(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1104,15 +1076,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint64_t *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(uint64_t)
-				  count: count];
+	uint64_t *tmp = [self allocMemoryWithSize: sizeof(uint64_t)
+					    count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP64(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1134,15 +1102,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	float *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(float)
-				  count: count];
+	float *tmp = [self allocMemoryWithSize: sizeof(float)
+					 count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1164,15 +1128,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	double *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(double)
-				  count: count];
+	double *tmp = [self allocMemoryWithSize: sizeof(double)
+					  count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1234,15 +1194,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint16_t *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(uint16_t)
-				  count: count];
+	uint16_t *tmp = [self allocMemoryWithSize: sizeof(uint16_t)
+					    count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP16(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1264,15 +1220,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint32_t *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(uint32_t)
-				  count: count];
+	uint32_t *tmp = [self allocMemoryWithSize: sizeof(uint32_t)
+					    count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP32(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1294,15 +1246,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	uint64_t *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(uint64_t)
-				  count: count];
+	uint64_t *tmp = [self allocMemoryWithSize: sizeof(uint64_t)
+					    count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP64(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1324,15 +1272,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	float *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(float)
-				  count: count];
+	float *tmp = [self allocMemoryWithSize: sizeof(float)
+					 count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_FLOAT(buffer[i]);
 
 		[self writeBuffer: tmp
@@ -1354,15 +1298,11 @@
 	[self writeBuffer: buffer
 		   length: size];
 #else
-	double *tmp;
-
-	tmp = [self allocMemoryWithSize: sizeof(double)
-				  count: count];
+	double *tmp = [self allocMemoryWithSize: sizeof(double)
+					  count: count];
 
 	@try {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			tmp[i] = OF_BSWAP_DOUBLE(buffer[i]);
 
 		[self writeBuffer: tmp

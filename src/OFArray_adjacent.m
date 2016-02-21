@@ -88,7 +88,7 @@
 - initWithArray: (OFArray*)array
 {
 	id const *objects;
-	size_t i, count;
+	size_t count;
 
 	self = [super init];
 
@@ -107,13 +107,13 @@
 	}
 
 	@try {
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			[objects[i] retain];
 
 		[_array addItems: objects
 			   count: count];
 	} @catch (id e) {
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
 
 		/* Prevent double-release of objects */
@@ -133,10 +133,9 @@
 	self = [self init];
 
 	@try {
-		size_t i;
 		bool ok = true;
 
-		for (i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 			if (objects[i] == nil)
 				ok = false;
 
@@ -149,9 +148,7 @@
 		[_array addItems: objects
 			   count: count];
 	} @catch (id e) {
-		size_t i;
-
-		for (i = 0; i < count; i++)
+		for (size_t i = 0; i < count; i++)
 			[objects[i] release];
 
 		[self release];
@@ -218,20 +215,20 @@
 	   inRange: (of_range_t)range
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > count)
 		@throw [OFOutOfRangeException exception];
 
-	for (i = 0; i < range.length; i++)
+	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = objects[range.location + i];
 }
 
 - (size_t)indexOfObject: (id)object
 {
 	id *objects;
-	size_t i, count;
+	size_t count;
 
 	if (object == nil)
 		return OF_NOT_FOUND;
@@ -239,7 +236,7 @@
 	objects = [_array items];
 	count = [_array count];
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		if ([objects[i] isEqual: object])
 			return i;
 
@@ -249,7 +246,7 @@
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
 	id *objects;
-	size_t i, count;
+	size_t count;
 
 	if (object == nil)
 		return OF_NOT_FOUND;
@@ -257,7 +254,7 @@
 	objects = [_array items];
 	count = [_array count];
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		if (objects[i] == object)
 			return i;
 
@@ -284,7 +281,7 @@
 {
 	OFArray *otherArray;
 	id const *objects, *otherObjects;
-	size_t i, count;
+	size_t count;
 
 	if (![object isKindOfClass: [OFArray_adjacent class]] &&
 	    ![object isKindOfClass: [OFMutableArray_adjacent class]])
@@ -300,7 +297,7 @@
 	objects = [_array items];
 	otherObjects = [otherArray objects];
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
 			return false;
 
@@ -310,12 +307,12 @@
 - (uint32_t)hash
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		OF_HASH_ADD_HASH(hash, [objects[i] hash]);
 
 	OF_HASH_FINALIZE(hash);
@@ -352,10 +349,10 @@
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 	bool stop = false;
 
-	for (i = 0; i < count && !stop; i++)
+	for (size_t i = 0; i < count && !stop; i++)
 		block(objects[i], i, &stop);
 }
 #endif
@@ -363,9 +360,9 @@
 - (void)dealloc
 {
 	id *objects = [_array items];
-	size_t i, count = [_array count];
+	size_t count = [_array count];
 
-	for (i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		[objects[i] release];
 
 	[_array release];

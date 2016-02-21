@@ -86,7 +86,7 @@ hashForName(OFString *name)
 		void *pool;
 		OFStream *file;
 		const uint8_t *digest;
-		size_t i, digestSize;
+		size_t digestSize;
 
 		if (first) {
 			first = false;
@@ -138,7 +138,7 @@ hashForName(OFString *name)
 		digest = [hash digest];
 		digestSize = [[hash class] digestSize];
 
-		for (i = 0; i < digestSize; i++)
+		for (size_t i = 0; i < digestSize; i++)
 			[of_stdout writeFormat: @"%02x", digest[i]];
 
 		[of_stdout writeFormat: @"  %@\n", path];

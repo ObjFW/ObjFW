@@ -139,9 +139,7 @@ objc_unregister_all_selectors(void)
 	objc_sparsearray_free(selector_names);
 
 	if (free_list != NULL) {
-		size_t i;
-
-		for (i = 0; i < free_list_cnt; i++)
+		for (size_t i = 0; i < free_list_cnt; i++)
 			free(free_list[i]);
 
 		free(free_list);

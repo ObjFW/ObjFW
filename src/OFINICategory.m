@@ -398,7 +398,7 @@ unescapeString(OFString *string)
 	void *pool;
 	OFMutableArray *pairs;
 	id const *lines;
-	size_t i, count;
+	size_t count;
 	bool replaced;
 
 	if ([array count] == 0) {
@@ -427,7 +427,7 @@ unescapeString(OFString *string)
 	count = [_lines count];
 	replaced = false;
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		OFINICategory_Pair *pair;
 
 		if (![lines[i] isKindOfClass: [OFINICategory_Pair class]])
@@ -465,9 +465,9 @@ unescapeString(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
 	id const *lines = [_lines objects];
-	size_t i, count = [_lines count];
+	size_t count = [_lines count];
 
-	for (i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		OFINICategory_Pair *pair;
 
 		if (![lines[i] isKindOfClass: [OFINICategory_Pair class]])

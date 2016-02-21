@@ -236,7 +236,6 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 #ifdef AF_INET6
 	struct sockaddr_in6 *sin6;
 	uint32_t subhash;
-	size_t i;
 #endif
 
 	hash += address->address.ss_family;
@@ -268,7 +267,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 		OF_HASH_INIT(subhash);
 
-		for (i = 0; i < sizeof(sin6->sin6_addr.s6_addr); i++)
+		for (size_t i = 0; i < sizeof(sin6->sin6_addr.s6_addr); i++)
 			OF_HASH_ADD(subhash, sin6->sin6_addr.s6_addr[i]);
 
 		OF_HASH_FINALIZE(subhash);
