@@ -89,6 +89,29 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
+AC_ARG_WITH(3ds,
+	AS_HELP_STRING([--with-3ds], [build for Nintendo 3DS]))
+AS_IF([test x"$with_3ds" = x"yes"], [
+	AS_IF([test x"$DEVKITPRO" = x""], [
+		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
+	])
+
+	OBJCFLAGS="$OBJCFLAGS -march=armv6k -mtune=mpcore -mfloat-abi=hard"
+	OBJCFLAGS="$OBJCFLAGS -mtp=soft -mword-relocations"
+	CPPFLAGS="$CPPFLAGS -DARM11 -I$DEVKITPRO/libctru/include"
+	LDFLAGS="$LDFLAGS -specs=3dsx.specs -march=armv6k -mtune=mpcore"
+	LDFLAGS="$LDFLAGS -mfloat-abi=hard -mtp=soft -mword-relocations"
+	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
+	enable_shared="no"
+	enable_threads="no"	# TODO
+	enable_sockets="no"	# TODO
+	check_pedantic="no"
+
+	AC_DEFINE(OF_NINTENDO_3DS, 1,
+		[Whether we are compiling for the Nintendo 3DS])
+	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
+])
+
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
