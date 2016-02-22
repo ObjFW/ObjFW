@@ -34,7 +34,7 @@ static OFString *module = @"OFDate";
 	    (d1 = [OFDate dateWithTimeIntervalSince1970: 0]))
 
 	TEST(@"-[dateByAddingTimeInterval:]",
-	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5.000001]))
+	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5.000002]))
 
 	TEST(@"-[description]",
 	    [[d1 description] isEqual: @"1970-01-01T00:00:00Z"] &&
@@ -54,7 +54,7 @@ static OFString *module = @"OFDate";
 	TEST(@"-[second]", [d1 second] == 0 && [d2 second] == 5)
 
 	TEST(@"-[microsecond]",
-	    [d1 microsecond] == 0 && [d2 microsecond] == 1)
+	    [d1 microsecond] == 0 && [d2 microsecond] == 2)
 
 	TEST(@"-[minute]", [d1 minute] == 0 && [d2 minute] == 0)
 

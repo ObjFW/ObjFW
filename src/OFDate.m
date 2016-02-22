@@ -430,7 +430,7 @@ static int monthToDayOfYear[12] = {
 
 - (uint32_t)microsecond
 {
-	return (uint32_t)rint((_seconds - floor(_seconds)) * 1000000);
+	return (uint32_t)((_seconds - floor(_seconds)) * 1000000);
 }
 
 - (uint8_t)second
