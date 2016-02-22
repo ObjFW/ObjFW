@@ -141,6 +141,9 @@ ${PROG_NOINST}.nds: ${PROG_NOINST}.arm9
 	ndstool -c $@ -9 $< -d nds-data
 	rm -fr nds-data
 
+${PROG_NOINST}.3dsx: ${PROG_NOINST}
+	3dsxtool $< $@
+
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 LIBS := -L../src -lobjfw ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}

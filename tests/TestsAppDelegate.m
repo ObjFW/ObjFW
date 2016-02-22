@@ -50,6 +50,10 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # undef asm
 #endif
 
+#ifdef OF_NINTENDO_3DS
+# include <3ds.h>
+#endif
+
 enum {
 	NO_COLOR,
 	RED,
@@ -129,7 +133,13 @@ main(int argc, char *argv[])
 	consoleDemoInit();
 #endif
 
-#if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS)
+#ifdef OF_NINTENDO_3DS
+	gfxInitDefault();
+	consoleInit(GFX_TOP, NULL);
+#endif
+
+#if defined(OF_WII) || defined(OF_PSP) || defined(OF_NINTENDO_DS) || \
+	defined(OF_NINTENDO_3DS)
 	@try {
 		return of_application_main(&argc, &argv,
 		    [TestsAppDelegate class]);
@@ -167,6 +177,17 @@ main(int argc, char *argv[])
 			scanKeys();
 			if (keysDown() & KEY_START)
 				[OFApplication terminateWithStatus: 1];
+		}
+# elif defined(OF_NINTENDO_3DS)
+		[delegate outputString: @"Press start button to exit!"
+			       inColor: NO_COLOR];
+		for (;;) {
+			hidScanInput();
+
+			if (hidKeysDown() & KEY_START)
+				[OFApplication terminateWithStatus: 1];
+
+			gspWaitForVBlank();
 		}
 # else
 		abort();
@@ -313,6 +334,18 @@ main(int argc, char *argv[])
 			break;
 	}
 # endif
+# ifdef OF_NINTENDO_3DS
+	[self outputString: @"Press A to continue!"
+		   inColor: NO_COLOR];
+	for (;;) {
+		hidScanInput();
+
+		if (hidKeysDown() & KEY_A)
+			break;
+
+		gspWaitForVBlank();
+	}
+# endif
 #else
 	[self outputString: @"failed\n"
 		   inColor: RED];
@@ -398,6 +431,17 @@ main(int argc, char *argv[])
 		scanKeys();
 		if (keysDown() & KEY_START)
 			[OFApplication terminateWithStatus: _fails];
+	}
+#elif defined(OF_NINTENDO_3DS)
+	[self outputString: @"Press start button to exit!"
+		   inColor: NO_COLOR];
+	for (;;) {
+		hidScanInput();
+
+		if (hidKeysDown() & KEY_START)
+			[OFApplication terminateWithStatus: _fails];
+
+		gspWaitForVBlank();
 	}
 #else
 	[OFApplication terminateWithStatus: _fails];
