@@ -129,6 +129,8 @@ stringEqual(void *value1, void *value2)
 				}
 			}
 		}
+		iter2->shortOption = '\0';
+		iter2->longOption = nil;
 
 		_arguments = [[OFApplication arguments] retain];
 	} @catch (id e) {
