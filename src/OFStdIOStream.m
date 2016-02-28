@@ -33,9 +33,25 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
+#ifdef OF_WINDOWS
+# include <windows.h>
+#endif
+
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
+
+#ifdef OF_WINDOWS
+UINT originalConsoleCP;
+UINT originalConsoleOutputCP;
+
+static void
+restoreCodepage(void)
+{
+	SetConsoleCP(originalConsoleCP);
+	SetConsoleOutputCP(originalConsoleOutputCP);
+}
+#endif
 
 @interface OFStdIOStream ()
 - (instancetype)OF_initWithFileDescriptor: (int)fd;
@@ -71,6 +87,18 @@ of_log(OFConstantString *format, ...)
 	of_stdout = [[OFStdIOStream alloc] OF_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream alloc] OF_initWithFileDescriptor: 2];
 }
+
+#ifdef OF_WINDOWS
++ (void)initialize
+{
+	originalConsoleCP = GetConsoleCP();
+	originalConsoleOutputCP = GetConsoleOutputCP();
+	atexit(restoreCodepage);
+
+	SetConsoleCP(CP_UTF8);
+	SetConsoleOutputCP(CP_UTF8);
+}
+#endif
 
 - init
 {
