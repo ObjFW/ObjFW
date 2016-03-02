@@ -151,6 +151,7 @@
 #import "OFRemoveItemFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetOptionFailedException.h"
+#import "OFStatItemFailedException.h"
 #import "OFStillLockedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThreadJoinFailedException.h"
