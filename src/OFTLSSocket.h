@@ -55,6 +55,37 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFTLSSocket
 /*!
+ * The delegate for the TLS socket.
+ */
+@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocket> delegate;
+
+/*!
+ * The path to the X.509 certificate file to use.
+ */
+@property OF_NULLABLE_PROPERTY (copy) OFString *certificateFile;
+
+/*!
+ * The path to the PKCS#8 private key file to use.
+ */
+@property OF_NULLABLE_PROPERTY (copy) OFString *privateKeyFile;
+
+/*!
+ * The passphrase to decrypt the PKCS#8 private key file.
+ *
+ * @warning You have to ensure that this is in secure memory protected from
+ *	    swapping! This is also the reason why this is not an OFString.
+ */
+@property OF_NULLABLE_PROPERTY (assign) const char *privateKeyPassphrase;
+
+/**
+ * Whether certificate verification is enabled.
+ *
+ * The default is enabled.
+ */
+@property (getter=isCertificateVerificationEnabled)
+    bool certificateVerificationEnabled;
+
+/*!
  * @brief Initializes the TLS socket with the specified TCP socket as its
  *	  underlying socket.
  *
@@ -74,27 +105,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)startTLSWithExpectedHost: (nullable OFString*)host;
 
 /*!
- * @brief Sets a delegate for the TLS socket.
- *
- * @param delegate The delegate to use
- */
-- (void)setDelegate: (nullable id <OFTLSSocketDelegate>)delegate;
-
-/*!
- * @brief Returns the delegate used by the TLS socket.
- *
- * @return The delegate used by the TLS socket
- */
-- (nullable id <OFTLSSocketDelegate>)delegate;
-
-/*!
- * @brief Sets the path to the X.509 certificate file to use.
- *
- * @param certificateFile The path to the X.509 certificate file
- */
-- (void)setCertificateFile: (nullable OFString*)certificateFile;
-
-/*!
  * @brief Sets the path to the X.509 certificate file to use for the specified
  *	  SNI host.
  *
@@ -105,13 +115,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)setCertificateFile: (OFString*)certificateFile
 		forSNIHost: (OFString*)SNIHost;
-
-/*!
- * @brief Returns the path of the X.509 certificate file used by the TLS socket.
- *
- * @return The path of the X.509 certificate file used by the TLS socket
- */
-- (nullable OFString*)certificateFile;
 
 /*!
  * @brief Returns the path of the X.509 certificate file used by the TLS socket
@@ -126,13 +129,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (nullable OFString*)certificateFileForSNIHost: (OFString*)SNIHost;
 
 /*!
- * @brief Sets the path to the PKCS#8 private key file to use.
- *
- * @param privateKeyFile The path to the PKCS#8 private key file
- */
-- (void)setPrivateKeyFile: (nullable OFString*)privateKeyFile;
-
-/*!
  * @brief Sets the path to the PKCS#8 private key file to use for the specified
  *	  SNI host.
  *
@@ -145,14 +141,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @brief Returns the path of the PKCS#8 private key file used by the TLS
- *	  socket.
- *
- * @return The path of the PKCS#8 private key file used by the TLS socket
- */
-- (nullable OFString*)privateKeyFile;
-
-/*!
- * @brief Returns the path of the PKCS#8 private key file used by the TLS
  *	  socket for the specified SNI host.
  *
  * @param SNIHost The SNI host for which the path of the PKCS#8 private key
@@ -162,17 +150,6 @@ OF_ASSUME_NONNULL_BEGIN
  *	   the specified SNI host
  */
 - (nullable OFString*)privateKeyFileForSNIHost: (OFString*)SNIHost;
-
-/*!
- * @brief Sets the passphrase to decrypt the PKCS#8 private key file.
- *
- * @warning You have to ensure that this is in secure memory protected from
- *	    swapping! This is also the reason why this is not an OFString.
- *
- * @param privateKeyPassphrase The passphrase to decrypt the PKCS#8 private
- *			       key file
- */
-- (void)setPrivateKeyPassphrase: (nullable const char*)privateKeyPassphrase;
 
 /*!
  * @brief Sets the passphrase to decrypt the PKCS#8 private key file for the
@@ -190,15 +167,6 @@ OF_ASSUME_NONNULL_BEGIN
 		     forSNIHost: (OFString*)SNIHost;
 
 /*!
- * @brief Returns the passphrase to decrypt the PKCS#8 private key file.
- *
- * @warning You should not copy this to insecure memory which is swappable!
- *
- * @return The passphrase to decrypt the PKCS#8 private key file
- */
-- (nullable const char*)privateKeyPassphrase;
-
-/*!
  * @brief Returns the passphrase to decrypt the PKCS#8 private key file for the
  *	  specified SNI host.
  *
@@ -211,22 +179,6 @@ OF_ASSUME_NONNULL_BEGIN
  *	   specified SNI host
  */
 - (nullable const char*)privateKeyPassphraseForSNIHost: (OFString*)SNIHost;
-
-/**
- * @brief Enable or disable certificate verification.
- *
- * The default is enabled.
- *
- * @param enabled Whether to enable or disable certificate verification
- */
-- (void)setCertificateVerificationEnabled: (bool)enabled;
-
-/**
- * @brief Returns whether certificate verification is enabled.
- *
- * @return Whether certificate verification is enabled
- */
-- (bool)isCertificateVerificationEnabled;
 @end
 
 OF_ASSUME_NONNULL_END
