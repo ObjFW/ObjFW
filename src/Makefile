@@ -53,6 +53,7 @@ SRCS = OFApplication.m			\
        OFSHA512Hash.m			\
        OFSortedList.m			\
        OFStdIOStream.m			\
+       ${OFSTDIOSTREAM_WIN32CONSOLE_M}	\
        OFStream.m			\
        OFString.m			\
        OFString+Hashing.m		\

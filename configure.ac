@@ -562,6 +562,12 @@ AC_CHECK_FUNC(asprintf, [
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
 
+case "$host_os" in
+mingw*)
+	AC_SUBST(OFSTDIOSTREAM_WIN32CONSOLE_M, "OFStdIOStream_Win32Console.m")
+	;;
+esac
+
 AC_CHECK_FUNCS(sigaction)
 
 AC_CHECK_FUNCS([arc4random random], break)

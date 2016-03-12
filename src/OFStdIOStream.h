@@ -26,7 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
  * The global variables @ref of_stdin, @ref of_stdout and @ref of_stderr are
  * instances of this class and need no initialization.
  */
+#ifdef OF_STDIO_STREAM_WIN32_CONSOLE_H
 OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFStdIOStream: OFStream
 {
 	int  _fd;

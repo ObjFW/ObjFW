@@ -437,6 +437,7 @@
 		4BEC83B919B7CB7100E4BB08 /* OFRIPEMD160Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BEC83B719B7CB7100E4BB08 /* OFRIPEMD160Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BEC83BA19B7CB7100E4BB08 /* OFRIPEMD160Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */; };
 		4BEC83BC19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */; };
+		4BF171B21C949A3300F5B47B /* OFStdIOStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF171B11C9499F300F5B47B /* OFStdIOStream+Private.h */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66E1235358D0076B512 /* OFArrayTests.m */; };
 		4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */; };
@@ -965,6 +966,7 @@
 		4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160Hash.m; path = src/OFRIPEMD160Hash.m; sourceTree = "<group>"; };
 		4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160HashTests.m; path = tests/OFRIPEMD160HashTests.m; sourceTree = "<group>"; };
 		4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLTests.m; path = tests/OFURLTests.m; sourceTree = SOURCE_ROOT; };
+		4BF171B11C9499F300F5B47B /* OFStdIOStream+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStdIOStream+Private.h"; path = "src/OFStdIOStream+Private.h"; sourceTree = "<group>"; };
 		4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "objfw-defs.h.in"; path = "src/objfw-defs.h.in"; sourceTree = "<group>"; };
 		4BF1BCC011C9663F0025511F /* OFHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHash.h; path = src/OFHash.h; sourceTree = "<group>"; };
 		4BF1BCC211C9663F0025511F /* OFMD5Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMD5Hash.h; path = src/OFMD5Hash.h; sourceTree = "<group>"; };
@@ -1416,6 +1418,7 @@
 				4B141BA315FCDF74000C21A8 /* OFSortedList.m */,
 				4B0256E2172B60400062B5F1 /* OFStdIOStream.h */,
 				4B0256E3172B60400062B5F1 /* OFStdIOStream.m */,
+				4BF171B11C9499F300F5B47B /* OFStdIOStream+Private.h */,
 				4B67997D1099E7C50041064A /* OFStream.h */,
 				4B67997E1099E7C50041064A /* OFStream.m */,
 				4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */,
@@ -1814,6 +1817,7 @@
 				4B6C8AD817BD5C2E00B194F2 /* OFRunLoop+Private.h in Headers */,
 				4BA85BCE140ECCE800E91D51 /* OFSet_hashtable.h in Headers */,
 				4B8385161951BF9500D5358A /* OFSettings_INIFile.h in Headers */,
+				4BF171B21C949A3300F5B47B /* OFStdIOStream+Private.h in Headers */,
 				4B6C8AD917BD5C2E00B194F2 /* OFStream+Private.h in Headers */,
 				4B552554147AA5DB0003BF47 /* OFString_UTF8.h in Headers */,
 				4B6C8ADB17BD5C2E00B194F2 /* OFString_UTF8+Private.h in Headers */,
