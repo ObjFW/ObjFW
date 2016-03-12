@@ -19,8 +19,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
-#ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
+#ifndef DOXYGEN
 @class OFMutableArray OF_GENERIC(ObjectType);
 #endif
 

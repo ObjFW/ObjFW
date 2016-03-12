@@ -82,7 +82,7 @@ typedef struct of_options_parser_option_t {
  * If @ref nextOption returned `?` or `:`, this returns the option which was
  * unknown or for which the argument was missing.@n
  * If this returns `-`, the last option is only available as a long option (see
- * @ref lastLongOption).
+ * lastLongOption).
  */
 @property (readonly) of_unichar_t lastOption;
 
