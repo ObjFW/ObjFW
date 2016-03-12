@@ -74,7 +74,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
-# elif deifned(OF_X86_ASM)
+# elif defined(OF_X86_ASM)
 	/*
 	 * This workaround is required by GCC when using -fPIC, as ebx is a
 	 * special register in PIC code. Yes, GCC is indeed not able to just
