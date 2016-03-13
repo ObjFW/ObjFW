@@ -31,7 +31,7 @@
  * UTF-8 and converts to / from UTF-16 to use ReadConsoleW() / WriteConsoleW().
  * Doing so is safe, as the console only supports text anyway and thus it does
  * not matter if binary gets garbled by the conversion (e.g. because invalid
- * UTF-8 gets converted to U+FFFE).
+ * UTF-8 gets converted to U+FFFD).
  *
  * In order to not do this when redirecting input / output to a file (as the
  * file would then be read / written in the wrong encoding and break reading /
@@ -249,7 +249,7 @@
 		if (UTF8Len <= 0 || c > 0x10FFFF) {
 			assert(UTF8Len == 0 || UTF8Len < -4);
 
-			UTF16[0] = 0xFFFE;
+			UTF16[0] = 0xFFFD;
 			UTF16Len = 1;
 		} else {
 			if (c > 0xFFFF) {
@@ -296,7 +296,7 @@
 			}
 
 			if (UTF8Len <= 0 || c > 0x10FFFF) {
-				tmp[j++] = 0xFFFE;
+				tmp[j++] = 0xFFFD;
 				i++;
 				continue;
 			}
