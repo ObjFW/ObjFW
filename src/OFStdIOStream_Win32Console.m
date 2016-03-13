@@ -30,7 +30,8 @@
  * and writes to of_std{in,out,err} on the lowlevel, interprets the buffer as
  * UTF-8 and converts to / from UTF-16 to use ReadConsoleW() / WriteConsoleW().
  * Doing so is safe, as the console only supports text anyway and thus it does
- * not matter if binary gets garbled by the conversion.
+ * not matter if binary gets garbled by the conversion (e.g. because invalid
+ * UTF-8 gets converted to U+FFFE).
  *
  * In order to not do this when redirecting input / output to a file (as the
  * file would then be read / written in the wrong encoding and break reading /
@@ -40,6 +41,8 @@
 #define OF_STDIO_STREAM_WIN32_CONSOLE_M
 
 #include "config.h"
+
+#include <assert.h>
 
 #import "OFStdIOStream_Win32Console.h"
 #import "OFStdIOStream+Private.h"
@@ -114,11 +117,11 @@
 		if (!ReadConsoleW(_handle, UTF16, length, &UTF16Len, NULL))
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
-				requestedLength: length];
+				requestedLength: length * 2];
 
-		if (UTF16Len > 0 && _incompleteSurrogate != 0) {
+		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
 			of_unichar_t c =
-			    (((_incompleteSurrogate & 0x3FF) << 10) |
+			    (((_incompleteUTF16Surrogate & 0x3FF) << 10) |
 			    (UTF16[0] & 0x3FF)) + 0x10000;
 			char UTF8[4];
 			size_t UTF8Len;
@@ -137,7 +140,7 @@
 					 count: UTF8Len];
 			}
 
-			_incompleteSurrogate = 0;
+			_incompleteUTF16Surrogate = 0;
 		}
 
 		for (size_t i = 0; i < UTF16Len; i++) {
@@ -153,7 +156,7 @@
 				of_char16_t next;
 
 				if (UTF16Len <= i + 1) {
-					_incompleteSurrogate = c;
+					_incompleteUTF16Surrogate = c;
 
 					if (rest != nil) {
 						char *items = [rest items];
@@ -212,25 +215,91 @@
 {
 	const char *buffer = buffer_;
 	of_char16_t *tmp;
+	size_t i = 0, j = 0;
 
 	if (length > SIZE_MAX / 2)
 		@throw [OFOutOfRangeException exception];
 
+	if (_incompleteUTF8SurrogateLen > 0) {
+		of_unichar_t c;
+		of_char16_t UTF16[2];
+		ssize_t UTF8Len;
+		size_t toCopy, UTF16Len;
+		DWORD written;
+
+		UTF8Len = -of_string_utf8_decode(
+		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
+
+		OF_ENSURE(UTF8Len > 0);
+
+		toCopy = UTF8Len - _incompleteUTF8SurrogateLen;
+		if (toCopy > length)
+			toCopy = length;
+
+		memcpy(_incompleteUTF8Surrogate + _incompleteUTF8SurrogateLen,
+		    buffer, toCopy);
+		_incompleteUTF8SurrogateLen += toCopy;
+
+		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
+			return;
+
+		UTF8Len = of_string_utf8_decode(
+		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
+
+		if (UTF8Len <= 0 || c > 0x10FFFF) {
+			assert(UTF8Len == 0 || UTF8Len < -4);
+
+			UTF16[0] = 0xFFFE;
+			UTF16Len = 1;
+		} else {
+			if (c > 0xFFFF) {
+				c -= 0x10000;
+				UTF16[0] = 0xD800 | (c >> 10);
+				UTF16[1] = 0xDC00 | (c & 0x3FF);
+				UTF16Len = 2;
+			} else {
+				UTF16[0] = c;
+				UTF16Len = 1;
+			}
+		}
+
+		if (!WriteConsoleW(_handle, UTF16, UTF16Len, &written, NULL) ||
+		    written != UTF16Len)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: UTF16Len * 2];
+
+		_incompleteUTF8SurrogateLen = 0;
+		i += toCopy;
+	}
+
 	tmp = [self allocMemoryWithSize: sizeof(of_char16_t)
 				  count: length * 2];
 	@try {
-		size_t i = 0, j = 0;
 		DWORD written;
 
 		while (i < length) {
 			of_unichar_t c;
-			size_t UTF8Len;
+			ssize_t UTF8Len;
 
 			UTF8Len = of_string_utf8_decode(buffer + i, length - i,
 			    &c);
 
-			if (UTF8Len <= 0 || c > 0x10FFFF)
-				@throw [OFInvalidEncodingException exception];
+			if (UTF8Len < 0 && UTF8Len >= -4) {
+				OF_ENSURE(length - i < 4);
+
+				memcpy(_incompleteUTF8Surrogate, buffer + i,
+				    length - i);
+				_incompleteUTF8SurrogateLen = length - i;
+
+				break;
+			}
+
+			if (UTF8Len <= 0 || c > 0x10FFFF) {
+				tmp[j++] = 0xFFFE;
+				i++;
+				continue;
+			}
 
 			if (c > 0xFFFF) {
 				c -= 0x10000;
@@ -246,7 +315,7 @@
 		    written != j)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
-				requestedLength: j];
+				requestedLength: j * 2];
 	} @finally {
 		[self freeMemory: tmp];
 	}
