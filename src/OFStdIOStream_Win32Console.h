@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFStdIOStream_Win32Console: OFStdIOStream
 {
 	HANDLE _handle;
+	of_char16_t _incompleteSurrogate;
 }
 @end
 

@@ -18,23 +18,23 @@
  * This file tries to make writing UTF-8 strings to the console "just work" on
  * Windows.
  *
- * Windows does provide a way to change the codepage of the console to UTF-8,
- * but unfortunately, different Windows versions handle that differently. For
- * example on Windows XP when using Windows XP's console, changing the codepage
- * to UTF-8 mostly breaks write() and completely breaks read(): write()
- * suddenly returns the number of characters - instead of bytes - written and
- * read() just returns 0 as soon as a Unicode character is being read.
+ * While Windows does provide a way to change the codepage of the console to
+ * UTF-8, unfortunately, different Windows versions handle that differently.
+ * For example, on Windows XP, when using Windows XP's console, changing the
+ * codepage to UTF-8 mostly breaks write() and completely breaks read():
+ * write() suddenly returns the number of characters - instead of bytes -
+ * written and read() just returns 0 as soon as a Unicode character is being
+ * read.
  *
- * So instead of just using the UTF-8 codepage, this captures all reads and
- * writes to of_std{in,err,out} on the lowlevel, interprets the buffer as UTF-8
- * and converts to / from UTF-16 to use ReadConsoleW() and WriteConsoleW(), as
- * reading or writing binary from / to the console would not make any sense
- * anyway and thus it's safe to assume it's text.
+ * Therefore, instead of just using the UTF-8 codepage, this captures all reads
+ * and writes to of_std{in,out,err} on the lowlevel, interprets the buffer as
+ * UTF-8 and converts to / from UTF-16 to use ReadConsoleW() / WriteConsoleW().
+ * Doing so is safe, as the console only supports text anyway and thus it does
+ * not matter if binary gets garbled by the conversion.
  *
- * In order to not do this when redirecting input / output to a file, it checks
- * that the handle is indeed a console.
- *
- * TODO: Properly handle surrogates being cut in the middle
+ * In order to not do this when redirecting input / output to a file (as the
+ * file would then be read / written in the wrong encoding and break reading /
+ * writing binary), it checks that the handle is indeed a console.
  */
 
 #define OF_STDIO_STREAM_WIN32_CONSOLE_M
@@ -103,17 +103,41 @@
 	char *buffer = buffer_;
 	of_char16_t *UTF16;
 	size_t j = 0;
-	OFDataArray *rest = nil;
 
 	UTF16 = [self allocMemoryWithSize: sizeof(of_char16_t)
 				    count: length];
 	@try {
 		DWORD UTF16Len;
+		OFDataArray *rest = nil;
 
 		if (!ReadConsoleW(_handle, UTF16, length, &UTF16Len, NULL))
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: length];
+
+		if (UTF16Len > 0 && _incompleteSurrogate != 0) {
+			of_unichar_t c =
+			    (((_incompleteSurrogate & 0x3FF) << 10) |
+			    (UTF16[0] & 0x3FF)) + 0x10000;
+			char UTF8[4];
+			size_t UTF8Len;
+
+			if ((UTF8Len = of_string_utf8_encode(c, UTF8)) == 0)
+				@throw [OFInvalidEncodingException exception];
+
+			if (UTF8Len <= length) {
+				memcpy(buffer, UTF8, UTF8Len);
+				j += UTF8Len;
+			} else {
+				if (rest == nil)
+					rest = [OFDataArray dataArray];
+
+				[rest addItems: UTF8
+					 count: UTF8Len];
+			}
+
+			_incompleteSurrogate = 0;
+		}
 
 		for (size_t i = 0; i < UTF16Len; i++) {
 			of_unichar_t c = UTF16[i];
@@ -127,9 +151,21 @@
 			if ((c & 0xFC00) == 0xD800) {
 				of_char16_t next;
 
-				if (UTF16Len <= i + 1)
-					@throw [OFInvalidEncodingException
-					    exception];
+				if (UTF16Len <= i + 1) {
+					_incompleteSurrogate = c;
+
+					if (rest != nil) {
+						char *items = [rest items];
+						size_t count = [rest count];
+
+						[self unreadFromBuffer: items
+								length: count];
+					}
+
+					objc_autoreleasePoolPop(pool);
+
+					return j;
+				}
 
 				next = UTF16[i + 1];
 
