@@ -57,9 +57,9 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @brief Returns the main run loop.
+ * @brief Returns the run loop for the main thread.
  *
- * @return The main run loop
+ * @return The run loop for the main thread
  */
 + (OFRunLoop*)mainRunLoop;
 
