@@ -109,7 +109,7 @@
 		const of_unichar_t *const *table;
 		size_t tableSize;
 		of_unichar_t c;
-		size_t cLen;
+		ssize_t cLen;
 
 		if (isStart) {
 			table = startTable;
@@ -122,7 +122,7 @@
 		cLen = of_string_utf8_decode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
-		if (cLen == 0 || c > 0x10FFFF) {
+		if (cLen <= 0 || c > 0x10FFFF) {
 			[self freeMemory: unicodeString];
 			@throw [OFInvalidEncodingException exception];
 		}
@@ -204,7 +204,8 @@
 {
 	char buffer[4];
 	of_unichar_t c;
-	size_t lenNew, lenOld;
+	size_t lenNew;
+	ssize_t lenOld;
 
 	if (_s->isUTF8)
 		index = of_string_utf8_get_position(_s->cString, index,
@@ -224,14 +225,14 @@
 		@throw [OFInvalidEncodingException exception];
 
 	if ((lenOld = of_string_utf8_decode(_s->cString + index,
-	    _s->cStringLength - index, &c)) == 0)
+	    _s->cStringLength - index, &c)) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
 	_s->hashed = false;
 
-	if (lenNew == lenOld)
+	if (lenNew == (size_t)lenOld)
 		memcpy(_s->cString + index, buffer, lenNew);
-	else if (lenNew > lenOld) {
+	else if (lenNew > (size_t)lenOld) {
 		_s->cString = [self resizeMemory: _s->cString
 					    size: _s->cStringLength -
 						  lenOld + lenNew + 1];
@@ -247,7 +248,7 @@
 
 		if (character & 0x80)
 			_s->isUTF8 = true;
-	} else if (lenNew < lenOld) {
+	} else if (lenNew < (size_t)lenOld) {
 		memmove(_s->cString + index + lenNew,
 		    _s->cString + index + lenOld,
 		    _s->cStringLength - index - lenOld);

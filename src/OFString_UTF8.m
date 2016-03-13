@@ -808,14 +808,14 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	while (i < _s->cStringLength && j < otherCStringLength) {
 		of_unichar_t c1, c2;
-		size_t l1, l2;
+		ssize_t l1, l2;
 
 		l1 = of_string_utf8_decode(_s->cString + i,
 		    _s->cStringLength - i, &c1);
 		l2 = of_string_utf8_decode(otherCString + j,
 		    otherCStringLength - j, &c2);
 
-		if (l1 == 0 || l2 == 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
+		if (l1 <= 0 || l2 <= 0 || c1 > 0x10FFFF || c2 > 0x10FFFF)
 			@throw [OFInvalidEncodingException exception];
 
 		if (c1 >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
@@ -862,10 +862,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	for (size_t i = 0; i < _s->cStringLength; i++) {
 		of_unichar_t c;
-		size_t length;
+		ssize_t length;
 
 		if ((length = of_string_utf8_decode(_s->cString + i,
-		    _s->cStringLength - i, &c)) == 0)
+		    _s->cStringLength - i, &c)) <= 0)
 			@throw [OFInvalidEncodingException exception];
 
 		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
@@ -896,8 +896,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	index = of_string_utf8_get_position(_s->cString, index,
 	    _s->cStringLength);
 
-	if (!of_string_utf8_decode(_s->cString + index,
-	    _s->cStringLength - index, &character))
+	if (of_string_utf8_decode(_s->cString + index,
+	    _s->cStringLength - index, &character) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
 	return character;
@@ -1192,12 +1192,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	while (i < _s->cStringLength) {
 		of_unichar_t c;
-		size_t cLen;
+		ssize_t cLen;
 
 		cLen = of_string_utf8_decode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
-		if (cLen == 0 || c > 0x10FFFF)
+		if (cLen <= 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException exception];
 
 		ret[j++] = c;
@@ -1220,12 +1220,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	while (i < _s->cStringLength) {
 		of_unichar_t c;
-		size_t cLen;
+		ssize_t cLen;
 
 		cLen = of_string_utf8_decode(_s->cString + i,
 		    _s->cStringLength - i, &c);
 
-		if (cLen == 0 || c > 0x10FFFF)
+		if (cLen <= 0 || c > 0x10FFFF)
 			@throw [OFInvalidEncodingException exception];
 
 		if (byteOrder != OF_BYTE_ORDER_NATIVE)

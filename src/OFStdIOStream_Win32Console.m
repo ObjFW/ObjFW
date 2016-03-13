@@ -43,6 +43,7 @@
 
 #import "OFStdIOStream_Win32Console.h"
 #import "OFStdIOStream+Private.h"
+#import "OFString.h"
 #import "OFDataArray.h"
 
 #import "OFInvalidArgumentException.h"
@@ -223,12 +224,12 @@
 
 		while (i < length) {
 			of_unichar_t c;
-			size_t cLen;
+			size_t UTF8Len;
 
-			cLen = of_string_utf8_decode(buffer + i, length - i,
+			UTF8Len = of_string_utf8_decode(buffer + i, length - i,
 			    &c);
 
-			if (cLen == 0 || c > 0x10FFFF)
+			if (UTF8Len <= 0 || c > 0x10FFFF)
 				@throw [OFInvalidEncodingException exception];
 
 			if (c > 0xFFFF) {
@@ -238,7 +239,7 @@
 			} else
 				tmp[j++] = c;
 
-			i += cLen;
+			i += UTF8Len;
 		}
 
 		if (!WriteConsoleW(_handle, tmp, j, &written, NULL) ||

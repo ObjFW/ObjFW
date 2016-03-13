@@ -128,9 +128,10 @@ of_string_utf8_encode(of_unichar_t character, char *buffer)
 	return 0;
 }
 
-size_t
+ssize_t
 of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 {
+	/* FIXME: Check if the following bytes are indeed surrogates */
 	const uint8_t *buffer = (const uint8_t*)buffer_;
 
 	if (!(*buffer & 0x80)) {
@@ -140,7 +141,7 @@ of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 
 	if ((*buffer & 0xE0) == 0xC0) {
 		if OF_UNLIKELY (length < 2)
-			return 0;
+			return -2;
 
 		*ret = ((buffer[0] & 0x1F) << 6) | (buffer[1] & 0x3F);
 		return 2;
@@ -148,7 +149,7 @@ of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 
 	if ((*buffer & 0xF0) == 0xE0) {
 		if OF_UNLIKELY (length < 3)
-			return 0;
+			return -3;
 
 		*ret = ((buffer[0] & 0x0F) << 12) | ((buffer[1] & 0x3F) << 6) |
 		    (buffer[2] & 0x3F);
@@ -157,7 +158,7 @@ of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 
 	if ((*buffer & 0xF8) == 0xF0) {
 		if OF_UNLIKELY (length < 4)
-			return 0;
+			return -4;
 
 		*ret = ((buffer[0] & 0x07) << 18) | ((buffer[1] & 0x3F) << 12) |
 		    ((buffer[2] & 0x3F) << 6) | (buffer[3] & 0x3F);
