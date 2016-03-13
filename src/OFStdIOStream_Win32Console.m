@@ -113,6 +113,7 @@
 	@try {
 		DWORD UTF16Len;
 		OFDataArray *rest = nil;
+		size_t i = 0;
 
 		if (!ReadConsoleW(_handle, UTF16, length, &UTF16Len, NULL))
 			@throw [OFReadFailedException
@@ -141,9 +142,10 @@
 			}
 
 			_incompleteUTF16Surrogate = 0;
+			i++;
 		}
 
-		for (size_t i = 0; i < UTF16Len; i++) {
+		for (; i < UTF16Len; i++) {
 			of_unichar_t c = UTF16[i];
 			char UTF8[4];
 			size_t UTF8Len;
