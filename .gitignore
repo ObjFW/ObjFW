@@ -33,6 +33,7 @@ src/objfw-defs.h
 src/ObjFW
 tests/*.map
 tests/tests
+tests/tests.3dsx
 tests/tests.arm9
 tests/tests.exe
 tests/tests.nds
