@@ -1,0 +1,17 @@
+<!--
+ This file is for starting the tests on the Nintendo 3DS via Homebrew.
+
+ It is required in order to choose a title that is large enough for injecting
+ the tests into it.
+-->
+
+<targets selectable='true'>
+ <!-- Majora's Mask -->
+ <title mediatype='2'>0004000000125600</title> <!-- EU -->
+ <title mediatype='1'>0004000000125600</title> <!-- EU -->
+ <title mediatype='2'>0004000000125500</title> <!-- US -->
+ <title mediatype='1'>0004000000125500</title> <!-- US -->
+ <!-- YouTube -->
+ <title mediatype='0'>00040000000CCD00</title> <!-- EU -->
+ <title mediatype='0'>00040000000B0F00</title> <!-- US -->
+</targets>
