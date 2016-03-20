@@ -174,22 +174,26 @@ normalizedKey(OFString *key)
 {
 	OFTCPSocket *_socket;
 	OFHTTPServer *_server;
+	OFHTTPRequest *_request;
 	bool _chunked, _headersSent;
 }
 
 - initWithSocket: (OFTCPSocket*)socket
-	  server: (OFHTTPServer*)server;
+	  server: (OFHTTPServer*)server
+	 request: (OFHTTPRequest*)request;
 @end
 
 @implementation OFHTTPServerResponse
 - initWithSocket: (OFTCPSocket*)socket
 	  server: (OFHTTPServer*)server
+	 request: (OFHTTPRequest*)request
 {
 	self = [super init];
 
 	_statusCode = 500;
 	_socket = [socket retain];
 	_server = [server retain];
+	_request = [request retain];
 
 	return self;
 }
@@ -200,6 +204,7 @@ normalizedKey(OFString *key)
 		[self close];	/* includes [_socket release] */
 
 	[_server release];
+	[_request release];
 
 	[super dealloc];
 }
@@ -280,12 +285,23 @@ normalizedKey(OFString *key)
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (!_headersSent)
-		[self OF_sendHeaders];
+	@try {
+		if (!_headersSent)
+			[self OF_sendHeaders];
 
-	if (_chunked)
-		[_socket writeBuffer: "0\r\n\r\n"
-			      length: 5];
+		if (_chunked)
+			[_socket writeBuffer: "0\r\n\r\n"
+				      length: 5];
+	} @catch (OFWriteFailedException *e) {
+		id <OFHTTPServerDelegate> delegate = [_server delegate];
+
+		if ([delegate respondsToSelector: @selector(server:
+		  didReceiveExceptionForResponse:request:exception:)])
+			[delegate		    server: _server
+			    didReceiveExceptionForResponse: self
+						   request: _request
+						 exception: e];
+	}
 
 	[_socket release];
 	_socket = nil;
@@ -650,7 +666,8 @@ normalizedKey(OFString *key)
 
 	response = [[[OFHTTPServerResponse alloc]
 	    initWithSocket: _socket
-		    server: _server] autorelease];
+		    server: _server
+		   request: request] autorelease];
 
 	[[_server delegate] server: _server
 		 didReceiveRequest: request
