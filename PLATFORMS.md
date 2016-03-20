@@ -94,6 +94,16 @@ NetBSD
   * Runtimes: ObjFW
 
 
+Nintendo 3DS
+------------
+
+  * OS Versions: 9.2.0-20E, 10.5.0-30E / Homebrew Channel 1.1.0
+  * Architectures: ARM (EABI)
+  * Compilers: GCC 5.3.0 (devkitARM release 45)
+  * Runtimes: ObjFW
+  * Limitations: No threads, no sockets
+
+
 Nintendo DS
 -----------
 
