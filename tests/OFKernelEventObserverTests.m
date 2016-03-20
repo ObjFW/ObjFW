@@ -48,6 +48,7 @@ static OFString *module;
 	OFKernelEventObserver *_observer;
 	OFTCPSocket *_server, *_client, *_accepted;
 	size_t _events;
+	int _fails;
 }
 
 - (void)run;
@@ -113,19 +114,23 @@ static OFString *module;
 		[_testsAppDelegate
 		    outputSuccess: @"-[observe] not exceeding deadline"
 			 inModule: module];
-	else
+	else {
 		[_testsAppDelegate
 		    outputFailure: @"-[observe] not exceeding deadline"
 			 inModule: module];
+		_fails++;
+	}
 
 	if (_events == EXPECTED_EVENTS)
 		[_testsAppDelegate
 		    outputSuccess: @"-[observe] handling all events"
 			 inModule: module];
-	else
+	else {
 		[_testsAppDelegate
 		    outputFailure: @"-[observe] handling all events"
 			 inModule: module];
+		_fails++;
+	}
 }
 
 - (void)objectIsReadyForReading: (id)object
@@ -138,10 +143,12 @@ static OFString *module;
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with listening socket"
 				 inModule: module];
-		else
+		else {
 			[_testsAppDelegate
 			    outputFailure: @"-[observe] with listening socket"
 				 inModule: module];
+			_fails++;
+		}
 
 		_accepted = [[object accept] retain];
 		[_observer addObjectForReading: _accepted];
@@ -158,10 +165,12 @@ static OFString *module;
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with data ready to read"
 				 inModule: module];
-		else
+		else {
 			[_testsAppDelegate
 			    outputFailure: @"-[observe] with data ready to read"
 				 inModule: module];
+			_fails++;
+		}
 
 		[_client close];
 
@@ -177,10 +186,12 @@ static OFString *module;
 			[_testsAppDelegate
 			    outputSuccess: @"-[observe] with closed connection"
 				 inModule: module];
-		else
+		else {
 			[_testsAppDelegate
 			    outputFailure: @"-[observe] with closed connection"
 				 inModule: module];
+			_fails++;
+		}
 
 		break;
 	default:
@@ -206,6 +217,7 @@ static OFString *module;
 	    R([test->_observer addObjectForReading: test->_server]))
 
 	[test run];
+	_fails += test->_fails;
 }
 
 - (void)kernelEventObserverTests
