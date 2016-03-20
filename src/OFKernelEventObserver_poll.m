@@ -159,15 +159,14 @@
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
-	void *pool = objc_autoreleasePoolPush();
 	struct pollfd *FDs;
 	int events;
 	size_t i, nFDs;
 
 	[self OF_processQueue];
-	[self OF_processReadBuffers];
 
-	objc_autoreleasePoolPop(pool);
+	if ([self OF_processReadBuffers])
+		return;
 
 	FDs = [_FDs items];
 	nFDs = [_FDs count];
@@ -188,6 +187,8 @@
 		assert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {
+			void *pool;
+
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
 
@@ -213,7 +214,7 @@
 		}
 
 		if (FDs[i].revents & POLLOUT) {
-			pool = objc_autoreleasePoolPush();
+			void *pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])

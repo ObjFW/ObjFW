@@ -224,22 +224,32 @@ static uint16_t freePort = 65535;
 #endif
 }
 
-- (void)OF_processReadBuffers
+- (bool)OF_processReadBuffers
 {
 	id const *objects = [_readObjects objects];
 	size_t i, count = [_readObjects count];
+	bool foundInReadBuffer = false;
 
 	for (i = 0; i < count; i++) {
 		void *pool = objc_autoreleasePoolPush();
 
 		if ([objects[i] isKindOfClass: [OFStream class]] &&
 		    [objects[i] hasDataInReadBuffer] &&
-		    ![objects[i] OF_isWaitingForDelimiter] &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForReading:)])
-			[_delegate objectIsReadyForReading: objects[i]];
+		    ![objects[i] OF_isWaitingForDelimiter]) {
+			if ([_delegate respondsToSelector:
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading: objects[i]];
+
+			foundInReadBuffer = true;
+		}
 
 		objc_autoreleasePoolPop(pool);
 	}
+
+	/*
+	 * As long as we have data in the read buffer for any stream, we don't
+	 * want to block.
+	 */
+	return foundInReadBuffer;
 }
 @end

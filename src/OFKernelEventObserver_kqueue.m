@@ -205,17 +205,15 @@
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
-	void *pool = objc_autoreleasePoolPush();
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
 	int i, events;
 
+	if ([self OF_processReadBuffers])
+		return;
+
 	timeout.tv_sec = (time_t)timeInterval;
 	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
-
-	[self OF_processReadBuffers];
-
-	objc_autoreleasePoolPop(pool);
 
 	events = kevent(_kernelQueue, NULL, 0, eventList, EVENTLIST_SIZE,
 	    (timeInterval != -1 ? &timeout : NULL));
@@ -225,6 +223,8 @@
 								 errNo: errno];
 
 	for (i = 0; i < events; i++) {
+		void *pool;
+
 		if (eventList[i].flags & EV_ERROR)
 			@throw [OFObserveFailedException
 			    exceptionWithObserver: self

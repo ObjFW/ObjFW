@@ -209,13 +209,11 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
 	OFNull *nullObject = [OFNull null];
-	void *pool = objc_autoreleasePoolPush();
 	struct epoll_event eventList[EVENTLIST_SIZE];
 	int i, events;
 
-	[self OF_processReadBuffers];
-
-	objc_autoreleasePoolPop(pool);
+	if ([self OF_processReadBuffers])
+		return;
 
 	events = epoll_wait(_epfd, eventList, EVENTLIST_SIZE,
 	    (timeInterval != -1 ? timeInterval * 1000 : -1));

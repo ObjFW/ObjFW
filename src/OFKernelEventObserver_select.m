@@ -130,7 +130,6 @@
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
-	void *pool = objc_autoreleasePoolPush();
 	id const *objects;
 	fd_set readFDs;
 	fd_set writeFDs;
@@ -139,9 +138,9 @@
 	size_t i, count;
 
 	[self OF_processQueue];
-	[self OF_processReadBuffers];
 
-	objc_autoreleasePoolPop(pool);
+	if ([self OF_processReadBuffers])
+		return;
 
 #ifdef FD_COPY
 	FD_COPY(&_readFDs, &readFDs);
@@ -186,10 +185,8 @@
 	count = [_readObjects count];
 
 	for (i = 0; i < count; i++) {
-		int fd;
-
-		pool = objc_autoreleasePoolPush();
-		fd = [objects[i] fileDescriptorForReading];
+		void *pool = objc_autoreleasePoolPush();
+		int fd = [objects[i] fileDescriptorForReading];
 
 		if (FD_ISSET(fd, &readFDs) && [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
@@ -202,10 +199,8 @@
 	count = [_writeObjects count];
 
 	for (i = 0; i < count; i++) {
-		int fd;
-
-		pool = objc_autoreleasePoolPush();
-		fd = [objects[i] fileDescriptorForWriting];
+		void *pool = objc_autoreleasePoolPush();
+		int fd = [objects[i] fileDescriptorForWriting];
 
 		if (FD_ISSET(fd, &writeFDs) && [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
