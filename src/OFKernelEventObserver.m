@@ -215,19 +215,30 @@
 #endif
 }
 
-- (void)OF_processReadBuffers
+- (bool)OF_processReadBuffers
 {
+	bool foundInReadBuffer = false;
+
 	for (id object in _readObjects) {
 		void *pool = objc_autoreleasePoolPush();
 
 		if ([object isKindOfClass: [OFStream class]] &&
 		    [object hasDataInReadBuffer] &&
-		    ![object OF_isWaitingForDelimiter] &&
-		    [_delegate respondsToSelector:
-		    @selector(objectIsReadyForReading:)])
-			[_delegate objectIsReadyForReading: object];
+		    ![object OF_isWaitingForDelimiter]) {
+			if ([_delegate respondsToSelector:
+			    @selector(objectIsReadyForReading:)])
+				[_delegate objectIsReadyForReading: object];
+
+			foundInReadBuffer = true;
+		}
 
 		objc_autoreleasePoolPop(pool);
 	}
+
+	/*
+	 * As long as we have data in the read buffer for any stream, we don't
+	 * want to block.
+	 */
+	return foundInReadBuffer;
 }
 @end

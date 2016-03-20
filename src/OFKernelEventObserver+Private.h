@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFKernelEventObserver ()
-- (void)OF_processReadBuffers;
+- (bool)OF_processReadBuffers;
 @end
 
 OF_ASSUME_NONNULL_END

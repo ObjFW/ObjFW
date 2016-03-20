@@ -170,6 +170,8 @@ enum {
 
 - (void)OF_processQueue
 {
+	void *pool = objc_autoreleasePoolPush();
+
 #ifdef OF_HAVE_THREADS
 	[_mutex lock];
 	@try {
@@ -229,5 +231,7 @@ enum {
 		[_mutex unlock];
 	}
 #endif
+
+	objc_autoreleasePoolPop(pool);
 }
 @end
