@@ -158,16 +158,19 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 + (void)terminate
 {
-	exit(0);
+	[self terminateWithStatus: EXIT_SUCCESS];
+
+	OF_UNREACHABLE
 }
 
 + (void)terminateWithStatus: (int)status
 {
-#ifdef OF_PSP
-	sceKernelExitGame();
-	abort();	/* sceKernelExitGame() is not marked noreturn */
-#else
+#ifndef OF_PSP
 	exit(status);
+#else
+	sceKernelExitGame();
+
+	OF_UNREACHABLE
 #endif
 }
 
@@ -476,11 +479,15 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)terminate
 {
-	exit(EXIT_SUCCESS);
+	[[self class] terminate];
+
+	OF_UNREACHABLE
 }
 
 - (void)terminateWithStatus: (int)status
 {
-	exit(status);
+	[[self class] terminateWithStatus: status];
+
+	OF_UNREACHABLE
 }
 @end
