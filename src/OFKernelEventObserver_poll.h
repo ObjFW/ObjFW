@@ -14,13 +14,13 @@
  * file.
  */
 
-#import "OFKernelEventObserver_LockedQueue.h"
+#import "OFKernelEventObserver.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFDataArray;
 
-@interface OFKernelEventObserver_poll: OFKernelEventObserver_LockedQueue
+@interface OFKernelEventObserver_poll: OFKernelEventObserver
 {
 	OFDataArray *_FDs;
 	size_t _maxFD;

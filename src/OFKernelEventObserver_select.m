@@ -64,9 +64,10 @@
 	return self;
 }
 
-- (void)OF_addObjectForReading: (id)object
-		fileDescriptor: (int)fd
+- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
+	int fd = [object fileDescriptorForReading];
+
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
@@ -81,9 +82,10 @@
 	FD_SET(fd, &_readFDs);
 }
 
-- (void)OF_addObjectForWriting: (id)object
-		fileDescriptor: (int)fd
+- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
+	int fd = [object fileDescriptorForWriting];
+
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
 
@@ -98,10 +100,11 @@
 	FD_SET(fd, &_writeFDs);
 }
 
-- (void)OF_removeObjectForReading: (id)object
-		   fileDescriptor: (int)fd
+- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
+
+	int fd = [object fileDescriptorForReading];
 
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
@@ -114,10 +117,11 @@
 	FD_CLR(fd, &_readFDs);
 }
 
-- (void)OF_removeObjectForWriting: (id)object
-		   fileDescriptor: (int)fd
+- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
+
+	int fd = [object fileDescriptorForWriting];
 
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];

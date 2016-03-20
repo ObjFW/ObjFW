@@ -85,7 +85,7 @@
 	[super dealloc];
 }
 
-- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -99,26 +99,12 @@
 	event.udata = (intptr_t)object;
 #endif
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		[_readObjects addObject: object];
-
-		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0) {
-			[_readObjects removeObjectIdenticalTo: object];
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
-		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
 }
 
-- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -132,26 +118,12 @@
 	event.udata = (intptr_t)object;
 #endif
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		[_writeObjects addObject: object];
-
-		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0) {
-			[_writeObjects removeObjectIdenticalTo: object];
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
-		}
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
 }
 
-- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -160,24 +132,12 @@
 	event.filter = EVFILT_READ;
 	event.flags = EV_DELETE;
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
-
-		[_readObjects removeObjectIdenticalTo: object];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
 }
 
-- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -186,21 +146,9 @@
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_DELETE;
 
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
-
-		[_writeObjects removeObjectIdenticalTo: object];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
+	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: errno];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
@@ -208,6 +156,8 @@
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
 	int events;
+
+	[self OF_processQueue];
 
 	if ([self OF_processReadBuffers])
 		return;

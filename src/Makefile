@@ -92,16 +92,15 @@ SRCS_FILES = OFFile.m			\
 	     OFZIPArchive.m		\
 	     OFZIPArchiveEntry.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SOCKETS = OFHTTPClient.m				\
-	       OFHTTPRequest.m				\
-	       OFHTTPResponse.m				\
-	       OFHTTPServer.m				\
-	       OFKernelEventObserver.m			\
-	       OFKernelEventObserver_LockedQueue.m	\
-	       OFStreamSocket.m				\
-	       OFTCPSocket.m				\
-	       OFUDPSocket.m				\
-	       resolver.m				\
+SRCS_SOCKETS = OFHTTPClient.m			\
+	       OFHTTPRequest.m			\
+	       OFHTTPResponse.m			\
+	       OFHTTPServer.m			\
+	       OFKernelEventObserver.m		\
+	       OFStreamSocket.m			\
+	       OFTCPSocket.m			\
+	       OFUDPSocket.m			\
+	       resolver.m			\
 	       socket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\

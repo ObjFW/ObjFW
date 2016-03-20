@@ -27,11 +27,11 @@
 # include <sys/select.h>
 #endif
 
-#import "OFKernelEventObserver_LockedQueue.h"
+#import "OFKernelEventObserver.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFKernelEventObserver_select: OFKernelEventObserver_LockedQueue
+@interface OFKernelEventObserver_select: OFKernelEventObserver
 {
 	fd_set _readFDs, _writeFDs;
 	int _maxFD;
