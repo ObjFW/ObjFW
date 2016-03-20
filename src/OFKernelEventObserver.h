@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_THREADS
 @class OFMutex;
 #endif
+@class OFDataArray;
 
 /*!
  * @protocol OFKernelEventObserverDelegate
@@ -122,6 +123,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_THREADS
 	OFMutex *_mutex;
 #endif
+	OFDataArray *_queueActions;
+	OFMutableArray *_queueObjects;
 }
 
 #ifdef OF_HAVE_PROPERTIES

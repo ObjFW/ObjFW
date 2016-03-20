@@ -125,35 +125,31 @@
 	}
 }
 
-- (void)OF_addObjectForReading: (id)object
-		fileDescriptor: (int)fd
+- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self OF_addObject: object
-	    fileDescriptor: fd
+	    fileDescriptor: [object fileDescriptorForReading]
 		    events: POLLIN];
 }
 
-- (void)OF_addObjectForWriting: (id)object
-		fileDescriptor: (int)fd
+- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self OF_addObject: object
-	    fileDescriptor: fd
+	    fileDescriptor: [object fileDescriptorForWriting]
 		    events: POLLOUT];
 }
 
-- (void)OF_removeObjectForReading: (id)object
-		   fileDescriptor: (int)fd
+- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self OF_removeObject: object
-	       fileDescriptor: fd
+	       fileDescriptor: [object fileDescriptorForReading]
 		       events: POLLIN];
 }
 
-- (void)OF_removeObjectForWriting: (id)object
-		   fileDescriptor: (int)fd
+- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self OF_removeObject: object
-	       fileDescriptor: fd
+	       fileDescriptor: [object fileDescriptorForWriting]
 		       events: POLLOUT];
 }
 
