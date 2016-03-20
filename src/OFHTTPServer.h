@@ -62,6 +62,25 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -			  (bool)server: (OFHTTPServer*)server
   didReceiveExceptionOnListeningSocket: (OFException*)exception;
+
+/*!
+ * @brief This method is called when a client socket encountered an exception.
+ *
+ * This can happen when the OFHTTPServer tries to properly close the
+ * connection. If no headers have been sent yet, it will send headers, and if
+ * chunked transfer encoding was used, it will send a chunk of size 0. However,
+ * if the other end already closed the connection before that, this will raise
+ * an exception.
+ *
+ * @param server The HTTP server which encountered an exception
+ * @param response The response for which the exception occurred
+ * @param request The request for the response for which the exception occurred
+ * @param exception The exception which occurred
+ */
+-		    (void)server: (OFHTTPServer*)server
+  didReceiveExceptionForResponse: (OFHTTPResponse*)response
+			 request: (OFHTTPRequest*)request
+		       exception: (OFException*)exception;
 @end
 
 /*!
