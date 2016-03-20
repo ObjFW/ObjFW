@@ -135,6 +135,8 @@ main(int argc, char *argv[])
 
 #ifdef OF_NINTENDO_3DS
 	gfxInitDefault();
+	atexit(gfxExit);
+
 	consoleInit(GFX_TOP, NULL);
 #endif
 

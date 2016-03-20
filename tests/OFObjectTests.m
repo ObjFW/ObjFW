@@ -24,7 +24,7 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(OF_DRAGONFLYBSD) && defined(__LP64__)
+#if (defined(OF_DRAGONFLYBSD) && defined(__LP64__)) || defined(OF_NINTENDO_3DS)
 # define TOO_BIG (SIZE_MAX / 3)
 #else
 # define TOO_BIG (SIZE_MAX - 128)
