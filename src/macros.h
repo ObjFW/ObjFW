@@ -144,9 +144,8 @@
 # define OF_CONSUMED
 # define OF_WEAK_UNAVAILABLE
 /*
- * undef them first, as it seems Clang has these as built-in defines for some
- * platforms, even when ARC is disabled (at least it does when cross-compiling
- * for Android).
+ * undef them first, as new Clang versions have these as built-in defines even
+ * when ARC is disabled.
  */
 # undef __unsafe_unretained
 # undef __bridge
