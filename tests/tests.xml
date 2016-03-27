@@ -6,6 +6,11 @@
 -->
 
 <targets selectable='true'>
+ <!-- Ocarina of Time -->
+ <title mediatype='2'>0004000000033600</title> <!-- EU -->
+ <title mediatype='1'>0004000000033600</title> <!-- EU -->
+ <title mediatype='2'>0004000000033500</title> <!-- US -->
+ <title mediatype='1'>0004000000033500</title> <!-- US -->
  <!-- Majora's Mask -->
  <title mediatype='2'>0004000000125600</title> <!-- EU -->
  <title mediatype='1'>0004000000125600</title> <!-- EU -->
