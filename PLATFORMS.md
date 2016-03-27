@@ -101,7 +101,7 @@ Nintendo 3DS
   * Architectures: ARM (EABI)
   * Compilers: GCC 5.3.0 (devkitARM release 45)
   * Runtimes: ObjFW
-  * Limitations: No threads, no sockets
+  * Limitations: No threads
 
 
 Nintendo DS

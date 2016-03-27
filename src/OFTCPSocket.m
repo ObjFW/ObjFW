@@ -244,18 +244,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
-- (void)close
-{
-	[super close];
-
-#ifdef OF_WII
-	if (_port > 0) {
-		of_socket_port_free(_port, SOCK_STREAM);
-		_port = 0;
-	}
-#endif
-}
-
 - (void)connectToHost: (OFString*)host
 		 port: (uint16_t)port
 {
@@ -370,11 +358,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	of_resolver_result_t **results;
 	const int one = 1;
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
-# ifdef AF_INET6
+# ifdef HAVE_IPV6
 		struct sockaddr_in6 in6;
 # endif
 	} addr;
@@ -388,25 +376,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-#ifdef OF_WII
-	if (port == 0)
-		port = of_socket_port_find(SOCK_STREAM);
-	else if (!of_socket_port_register(port, SOCK_STREAM))
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EADDRINUSE];
-#endif
-
-	@try {
-		results = of_resolve_host(host, port, SOCK_STREAM);
-	} @catch (id e) {
-#ifdef OF_WII
-		of_socket_port_free(port, SOCK_STREAM);
-#endif
-		@throw e;
-	}
-
+	results = of_resolve_host(host, port, SOCK_STREAM);
 	@try {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
@@ -429,35 +399,80 @@ static uint16_t defaultSOCKS5Port = 1080;
 		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
 		    (const char*)&one, (socklen_t)sizeof(one));
 
-		if (bind(_socket, results[0]->address,
-		    results[0]->addressLength) == -1) {
-			int errNo = of_socket_errno();
-
-			close(_socket);
-			_socket = INVALID_SOCKET;
-
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self
-								  errNo: errNo];
-		}
-	} @catch (id e) {
-#ifdef OF_WII
-		of_socket_port_free(port, SOCK_STREAM);
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+		if (port != 0) {
 #endif
-		@throw e;
+			if (bind(_socket, results[0]->address,
+			    results[0]->addressLength) != 0) {
+				int errNo = of_socket_errno();
+
+				close(_socket);
+				_socket = INVALID_SOCKET;
+
+				@throw [OFBindFailedException
+				    exceptionWithHost: host
+						 port: port
+					       socket: self
+						errNo: errNo];
+			}
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+		} else {
+			for (;;) {
+				uint16_t rnd = 0;
+				int ret;
+
+				while (rnd < 1024)
+					rnd = (uint16_t)rand();
+
+				switch (results[0]->family) {
+				case AF_INET:
+					((struct sockaddr_in*)
+					    results[0]->address)->sin_port =
+					    OF_BSWAP16_IF_LE(rnd);
+					break;
+# ifdef HAVE_IPV6
+				case AF_INET6:
+					((struct sockaddr_in6*)
+					    results[0]->address)->sin6_port =
+					    OF_BSWAP16_IF_LE(rnd);
+					break;
+# endif
+				default:
+					@throw [OFInvalidArgumentException
+					    exception];
+				}
+
+				ret = bind(_socket, results[0]->address,
+				    results[0]->addressLength);
+
+				if (ret == 0) {
+					port = rnd;
+					break;
+				}
+
+				if (of_socket_errno() != EADDRINUSE) {
+					int errNo = of_socket_errno();
+
+					close(_socket);
+					_socket = INVALID_SOCKET;
+
+					@throw [OFBindFailedException
+					    exceptionWithHost: host
+							 port: port
+						       socket: self
+							errNo: errNo];
+				}
+			}
+		}
+#endif
 	} @finally {
 		of_resolver_free(results);
 	}
 
-	if (port > 0) {
-#ifdef OF_WII
-		_port = port;
-#endif
+	if (port > 0)
 		return port;
-	}
 
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	addrLen = (socklen_t)sizeof(addr.storage);
 	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
 	    &addrLen) != 0) {
@@ -474,7 +489,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if (addr.storage.ss_family == AF_INET)
 		return OF_BSWAP16_IF_LE(addr.in.sin_port);
-# ifdef AF_INET6
+# ifdef HAVE_IPV6
 	if (addr.storage.ss_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
 # endif
@@ -596,6 +611,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return _listening;
 }
 
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 - (void)setKeepAliveEnabled: (bool)enabled
 {
 	int v = enabled;
@@ -605,15 +621,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFSetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
-
-#ifdef OF_WII
-	_keepAliveEnabled = enabled;
-#endif
 }
 
 - (bool)isKeepAliveEnabled
 {
-#ifndef OF_WII
 	int v;
 	socklen_t len = sizeof(v);
 
@@ -624,11 +635,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  errNo: of_socket_errno()];
 
 	return v;
-#else
-	return _keepAliveEnabled;
-#endif
 }
+#endif
 
+#ifndef OF_WII
 - (void)setTCPNoDelayEnabled: (bool)enabled
 {
 	int v = enabled;
@@ -638,15 +648,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFSetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
-
-#ifdef OF_WII
-	_TCPNoDelayEnabled = enabled;
-#endif
 }
 
 - (bool)isTCPNoDelayEnabled
 {
-#ifndef OF_WII
 	int v;
 	socklen_t len = sizeof(v);
 
@@ -657,8 +662,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 				  errNo: of_socket_errno()];
 
 	return v;
-#else
-	return _TCPNoDelayEnabled;
-#endif
 }
+#endif
 @end

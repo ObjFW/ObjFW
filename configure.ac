@@ -104,7 +104,6 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	LIBS="$LIBS -L$DEVKITPRO/libctru/lib -lctru"
 	enable_shared="no"
 	enable_threads="no"	# TODO
-	enable_sockets="no"	# TODO
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
@@ -843,6 +842,47 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			[Whether we have netinet/tcp.h])
 	])
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+
+	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
+		AC_EGREP_CPP(yes, [
+			#ifdef OF_HAVE_SYS_SOCKET_H
+			# include <sys/socket.h>
+			#endif
+
+			#ifdef _WIN32
+			# ifdef __MINGW32__
+			#  include <_mingw.h>
+			#  ifdef __MINGW64_VERSION_MAJOR
+			#   include <winsock2.h>
+			#  endif
+			# endif
+			# include <windows.h>
+			# include <ws2tcpip.h>
+			#endif
+
+			#ifdef AF_INET6
+			yes
+			#endif
+		], [
+			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
+		])
+	], [
+	], [
+		#ifdef OF_HAVE_NETINET_IN_H
+		# include <netinet/in.h>
+		#endif
+
+		#ifdef _WIN32
+		# ifdef __MINGW32__
+		#  include <_mingw.h>
+		#  ifdef __MINGW64_VERSION_MAJOR
+		#   include <winsock2.h>
+		#  endif
+		# endif
+		# include <windows.h>
+		# include <ws2tcpip.h>
+		#endif
+	])
 
 	AC_CHECK_FUNCS([paccept accept4])
 

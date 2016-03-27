@@ -18,6 +18,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFKernelEventObserver.h"
 #import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
@@ -101,7 +103,7 @@ enum {
 	self = [super init];
 
 	@try {
-#if !defined(OF_HAVE_PIPE) && !defined(OF_WII)
+#if !defined(OF_HAVE_PIPE) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 		socklen_t cancelAddrLen;
 #endif
 
@@ -122,24 +124,40 @@ enum {
 		_cancelAddr.sin_family = AF_INET;
 		_cancelAddr.sin_port = 0;
 		_cancelAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
 # ifdef OF_WII
 		_cancelAddr.sin_len = 8;
-		/* The Wii does not accept port 0 as "choose any free port" */
-		_cancelAddr.sin_port = of_socket_port_find(SOCK_DGRAM);
 # endif
 
+# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 		if (bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
-		    sizeof(_cancelAddr)))
+		    sizeof(_cancelAddr)) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-# ifndef OF_WII
 		cancelAddrLen = sizeof(_cancelAddr);
 		if (of_getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
 		    &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
+# else
+		for (;;) {
+			uint16_t rnd = 0;
+			int ret;
+
+			while (rnd < 1024)
+				rnd = (uint16_t)rand();
+
+			_cancelAddr.sin_port = OF_BSWAP16_IF_LE(rnd);
+			ret = bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
+			    sizeof(_cancelAddr));
+
+			if (ret == 0)
+				break;
+
+			if (of_socket_errno() != EADDRINUSE)
+				@throw [OFInitializationFailedException
+				    exceptionWithClass: [self class]];
+		}
 # endif
 #endif
 
@@ -163,10 +181,6 @@ enum {
 	close(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
-
-#ifdef OF_WII
-	of_socket_port_free(_cancelAddr.sin_port, SOCK_DGRAM);
-#endif
 
 	[_readObjects release];
 	[_writeObjects release];

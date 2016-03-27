@@ -176,7 +176,7 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
     of_udp_socket_address_t *address2)
 {
 	struct sockaddr_in *sin_1, *sin_2;
-#ifdef AF_INET6
+#ifdef HAVE_IPV6
 	struct sockaddr_in6 *sin6_1, *sin6_2;
 #endif
 
@@ -185,7 +185,7 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 
 	switch (address1->address.ss_family) {
 	case AF_INET:
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 		if (address1->length < sizeof(struct sockaddr_in) ||
 		    address2->length < sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
@@ -203,7 +203,7 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 			return false;
 
 		break;
-#ifdef AF_INET6
+#ifdef HAVE_IPV6
 	case AF_INET6:
 		if (address1->length < sizeof(struct sockaddr_in6) ||
 		    address2->length < sizeof(struct sockaddr_in6))
@@ -233,7 +233,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 {
 	uint32_t hash = of_hash_seed;
 	struct sockaddr_in *sin;
-#ifdef AF_INET6
+#ifdef HAVE_IPV6
 	struct sockaddr_in6 *sin6;
 	uint32_t subhash;
 #endif
@@ -242,7 +242,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	switch (address->address.ss_family) {
 	case AF_INET:
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 		if (address->length < sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #else
@@ -256,7 +256,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		hash ^= sin->sin_addr.s_addr;
 
 		break;
-#ifdef AF_INET6
+#ifdef HAVE_IPV6
 	case AF_INET6:
 		if (address->length < sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
@@ -385,36 +385,18 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		  port: (uint16_t)port
 {
 	of_resolver_result_t **results;
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
-# ifdef AF_INET6
+# ifdef HAVE_IPV6
 		struct sockaddr_in6 in6;
 # endif
 	} addr;
 	socklen_t addrLen;
 #endif
 
-#ifdef OF_WII
-	if (port == 0)
-		port = of_socket_port_find(SOCK_DGRAM);
-	else if (!of_socket_port_register(port, SOCK_DGRAM))
-		@throw [OFBindFailedException exceptionWithHost: host
-							   port: port
-							 socket: self
-							  errNo: EADDRINUSE];
-#endif
-
-	@try {
-		results = of_resolve_host(host, port, SOCK_DGRAM);
-	} @catch (id e) {
-#ifdef OF_WII
-		of_socket_port_free(port, SOCK_DGRAM);
-#endif
-		@throw e;
-	}
-
+	results = of_resolve_host(host, port, SOCK_DGRAM);
 	@try {
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		int flags;
@@ -434,35 +416,80 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-		if (bind(_socket, results[0]->address,
-		    results[0]->addressLength) == -1) {
-			int errNo = of_socket_errno();
-
-			close(_socket);
-			_socket = INVALID_SOCKET;
-
-			@throw [OFBindFailedException exceptionWithHost: host
-								   port: port
-								 socket: self
-								  errNo: errNo];
-		}
-	} @catch (id e) {
-#ifdef OF_WII
-		of_socket_port_free(port, SOCK_DGRAM);
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+		if (port != 0) {
 #endif
-		@throw e;
+			if (bind(_socket, results[0]->address,
+			    results[0]->addressLength) != 0) {
+				int errNo = of_socket_errno();
+
+				close(_socket);
+				_socket = INVALID_SOCKET;
+
+				@throw [OFBindFailedException
+				    exceptionWithHost: host
+						 port: port
+					       socket: self
+						errNo: errNo];
+			}
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+		} else {
+			for (;;) {
+				uint16_t rnd = 0;
+				int ret;
+
+				while (rnd < 1024)
+					rnd = (uint16_t)rand();
+
+				switch (results[0]->family) {
+				case AF_INET:
+					((struct sockaddr_in*)
+					    results[0]->address)->sin_port =
+					    OF_BSWAP16_IF_LE(rnd);
+					break;
+# ifdef HAVE_IPV6
+				case AF_INET6:
+					((struct sockaddr_in6*)
+					    results[0]->address)->sin6_port =
+					    OF_BSWAP16_IF_LE(rnd);
+					break;
+# endif
+				default:
+					@throw [OFInvalidArgumentException
+					    exception];
+				}
+
+				ret = bind(_socket, results[0]->address,
+				    results[0]->addressLength);
+
+				if (ret == 0) {
+					port = rnd;
+					break;
+				}
+
+				if (of_socket_errno() != EADDRINUSE) {
+					int errNo = of_socket_errno();
+
+					close(_socket);
+					_socket = INVALID_SOCKET;
+
+					@throw [OFBindFailedException
+					    exceptionWithHost: host
+							 port: port
+						       socket: self
+							errNo: errNo];
+				}
+			}
+		}
+#endif
 	} @finally {
 		of_resolver_free(results);
 	}
 
-	if (port > 0) {
-#ifdef OF_WII
-		_port = port;
-#endif
+	if (port > 0)
 		return port;
-	}
 
-#ifndef OF_WII
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	addrLen = (socklen_t)sizeof(addr.storage);
 	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
 	    &addrLen) != 0) {
@@ -479,7 +506,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	if (addr.storage.ss_family == AF_INET)
 		return OF_BSWAP16_IF_LE(addr.in.sin_port);
-# ifdef AF_INET6
+# ifdef HAVE_IPV6
 	if (addr.storage.ss_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
 # endif
@@ -624,12 +651,5 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 	close(_socket);
 	_socket = INVALID_SOCKET;
-
-#ifdef OF_WII
-	if (_port > 0) {
-		of_socket_port_free(_port, SOCK_DGRAM);
-		_port = 0;
-	}
-#endif
 }
 @end

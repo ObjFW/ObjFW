@@ -94,7 +94,7 @@
 {
 	float bars, percent;
 	unsigned short barWidth;
-#ifdef HAVE_SYS_IOCTL_H
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ)
 	struct winsize ws;
 
 	if (ioctl(0, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 37)

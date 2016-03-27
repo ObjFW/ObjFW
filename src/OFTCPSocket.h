@@ -67,7 +67,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 	uint16_t _SOCKS5Port;
 #ifdef OF_WII
 	uint16_t _port;
-	bool _keepAliveEnabled, _TCPNoDelayEnabled;
 #endif
 }
 
@@ -221,8 +220,11 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  */
 - (bool)isListening;
 
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /*!
  * @brief Enable or disable keep alive for the connection.
+ *
+ * @warning This is not available on the Wii or Nintendo 3DS!
  *
  * @param enabled Whether to enable or disable keep alives for the connection
  */
@@ -231,12 +233,18 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 /*!
  * @brief Returns whether keep alive is enabled for the connection.
  *
+ * @warning This is not available on the Wii or Nintendo 3DS!
+ *
  * @return Whether keep alives are enabled for the connection
  */
 - (bool)isKeepAliveEnabled;
+#endif
 
+#ifndef OF_WII
 /*!
  * @brief Enable or disable TCP_NODELAY for the connection.
+ *
+ * @warning This is not available on the Wii!
  *
  * @param enabled Whether to enable or disable TCP_NODELAY for the connection
  */
@@ -245,9 +253,12 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 /*!
  * @brief Returns whether TCP_NODELAY is enabled for the connection.
  *
+ * @warning This is not available on the Wii!
+ *
  * @return Whether TCP_NODELAY is enabled for the connection
  */
 - (bool)isTCPNoDelayEnabled;
+#endif
 @end
 
 #ifdef __cplusplus

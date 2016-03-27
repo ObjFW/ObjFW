@@ -87,10 +87,6 @@ extern int of_socket_errno(void);
 # ifndef OF_WII
 extern int of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
     socklen_t *restrict address_len);
-# else
-extern bool of_socket_port_register(uint16_t port, int type);
-extern void of_socket_port_free(uint16_t port, int type);
-extern uint16_t of_socket_port_find(int type);
 # endif
 #ifdef __cplusplus
 }

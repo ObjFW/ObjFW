@@ -50,7 +50,11 @@
 #endif
 
 #ifndef SOMAXCONN
-# define SOMAXCONN 32
+/*
+ * Use 16 as everything > 17 fails on Nintendo 3DS and 16 is a less arbitrary
+ * number than 17.
+ */
+# define SOMAXCONN 16
 #endif
 
 #ifndef SOCK_CLOEXEC
@@ -59,11 +63,6 @@
 
 #ifdef OF_WINDOWS
 # define close(sock) closesocket(sock)
-#endif
-
-#ifdef OF_PSP
-/* PSP defines AF_INET6, even though sockaddr_in6 is missing */
-# undef AF_INET6
 #endif
 
 #ifdef OF_WII

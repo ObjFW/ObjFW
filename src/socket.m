@@ -16,6 +16,10 @@
 
 #include "config.h"
 
+#ifdef OF_NINTENDO_3DS
+# include <malloc.h>  /* For memalign() */
+#endif
+
 #include <errno.h>
 
 #import "OFException.h"  /* For some E* -> WSAE* defines */
@@ -26,7 +30,14 @@
 #import "socket.h"
 #ifdef OF_HAVE_THREADS
 # include "threading.h"
+#endif
 
+#ifdef OF_NINTENDO_3DS
+# include <3ds/types.h>
+# include <3ds/services/soc.h>
+#endif
+
+#ifdef OF_HAVE_THREADS
 static of_once_t onceControl = OF_ONCE_INIT;
 static of_mutex_t mutex;
 #endif
@@ -50,6 +61,16 @@ init(void)
 #elif defined(OF_WII)
 	if (net_init() < 0)
 		return;
+#elif defined(OF_NINTENDO_3DS)
+	void *ctx;
+
+	if ((ctx = memalign(0x1000, 0x100000)) == NULL)
+		return;
+
+	if (socInit(ctx, 0x100000) != 0)
+		return;
+
+	atexit((void(*))socExit);
 #endif
 
 #ifdef OF_HAVE_THREADS
@@ -198,89 +219,5 @@ of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
 # endif
 
 	return ret;
-}
-#else
-static size_t
-type_to_index(int type)
-{
-	switch (type) {
-	case SOCK_STREAM:
-		return 0;
-	case SOCK_DGRAM:
-		return 1;
-	default:
-		@throw [OFInvalidArgumentException exception];
-	}
-}
-
-bool
-of_socket_port_register(uint16_t port, int type)
-{
-	size_t index;
-	bool wasSet;
-
-	if (port == 0)
-		@throw [OFInvalidArgumentException exception];
-
-# ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		@throw [OFLockFailedException exception];
-# endif
-
-	index = type_to_index(type);
-	wasSet = of_bitset_isset(portRegistry[index], port);
-
-	of_bitset_set(portRegistry[index], port);
-
-# ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		@throw [OFUnlockFailedException exception];
-# endif
-
-	return !wasSet;
-}
-
-void
-of_socket_port_free(uint16_t port, int type)
-{
-	if (port == 0)
-		@throw [OFInvalidArgumentException exception];
-
-# ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		@throw [OFLockFailedException exception];
-# endif
-
-	of_bitset_clear(portRegistry[type_to_index(type)], port);
-
-# ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		@throw [OFUnlockFailedException exception];
-# endif
-}
-
-uint16_t
-of_socket_port_find(int type)
-{
-	uint16_t port;
-	size_t index;
-
-# ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
-		@throw [OFLockFailedException exception];
-# endif
-
-	index = type_to_index(type);
-
-	do {
-		port = rand();
-	} while (port == 0 || of_bitset_isset(portRegistry[index], port));
-
-# ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
-		@throw [OFUnlockFailedException exception];
-# endif
-
-	return port;
 }
 #endif
