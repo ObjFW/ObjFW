@@ -26,10 +26,34 @@
 # include <kernel/OS.h>
 #endif
 
+static int minPrio, maxPrio, normalPrio;
+
 struct thread_ctx {
 	void (*function)(id object);
 	id object;
 };
+
+/*
+ * This is done here to make sure this is done as early as possible in the main
+ * thread.
+ */
+static void __attribute__((constructor))
+init(void)
+{
+	pthread_attr_t pattr;
+	int policy;
+	struct sched_param param;
+
+	OF_ENSURE(pthread_attr_init(&pattr) == 0);
+	OF_ENSURE(pthread_attr_getschedpolicy(&pattr, &policy) == 0);
+	OF_ENSURE((minPrio = sched_get_priority_min(policy)) != -1);
+	OF_ENSURE((maxPrio = sched_get_priority_max(policy)) != -1);
+	OF_ENSURE(pthread_attr_getschedparam(&pattr, &param) == 0);
+
+	normalPrio = param.sched_priority;
+
+	pthread_attr_destroy(&pattr);
+}
 
 static void*
 function_wrapper(void *data)
@@ -53,24 +77,7 @@ of_thread_attr_init(of_thread_attr_t *attr)
 		return false;
 
 	@try {
-		int policy, minPrio, maxPrio;
-		struct sched_param param;
-
-		if (pthread_attr_getschedpolicy(&pattr, &policy) != 0)
-			return false;
-
-		minPrio = sched_get_priority_min(policy);
-		maxPrio = sched_get_priority_max(policy);
-
-		if (pthread_attr_getschedparam(&pattr, &param) != 0)
-			return false;
-
-		/* Prevent possible division by zero */
-		if (minPrio != maxPrio)
-			attr->priority = (float)(param.sched_priority -
-			    minPrio) / (maxPrio - minPrio);
-		else
-			attr->priority = 0;
+		attr->priority = 0;
 
 		if (pthread_attr_getstacksize(&pattr, &attr->stackSize) != 0)
 			return false;
@@ -95,26 +102,24 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 		struct thread_ctx *ctx;
 
 		if (attr != NULL) {
-			int policy, minPrio, maxPrio;
 			struct sched_param param;
 
-			if (attr->priority < 0 || attr->priority > 1)
+			if (attr->priority < -1 || attr->priority > 1)
 				return false;
-
-			if (pthread_attr_getschedpolicy(&pattr, &policy) != 0)
-				return false;
-
-			minPrio = sched_get_priority_min(policy);
-			maxPrio = sched_get_priority_max(policy);
-
-			param.sched_priority = (float)minPrio +
-			    attr->priority * (maxPrio - minPrio);
 
 #ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
 			if (pthread_attr_setinheritsched(&pattr,
 			    PTHREAD_EXPLICIT_SCHED) != 0)
 				return false;
 #endif
+
+			if (attr->priority < 0) {
+				param.sched_priority = minPrio +
+				    (1.0 + attr->priority) *
+				    (normalPrio - minPrio);
+			} else
+				param.sched_priority = normalPrio +
+				    attr->priority * (maxPrio - normalPrio);
 
 			if (pthread_attr_setschedparam(&pattr, &param) != 0)
 				return false;

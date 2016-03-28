@@ -21,9 +21,7 @@
 bool
 of_thread_attr_init(of_thread_attr_t *attr)
 {
-	attr->priority =
-	    (float)(THREAD_PRIORITY_NORMAL - THREAD_PRIORITY_LOWEST) /
-	    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_LOWEST);
+	attr->priority = 0;
 	attr->stackSize = 0;
 
 	return true;
@@ -37,11 +35,18 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 	int priority = 0;
 
 	if (attr != NULL) {
-		if (attr->priority < 0 || attr->priority > 1)
+		if (attr->priority < -1 || attr->priority > 1)
 			return false;
 
-		priority = THREAD_PRIORITY_LOWEST + attr->priority *
-		    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_LOWEST);
+		if (attr->priority < 0)
+			priority = THREAD_PRIORITY_LOWEST +
+			    (1.0 + attr->priority) *
+			    (THREAD_PRIORITY_NORMAL - THREAD_PRIORITY_LOWEST);
+		else
+			priority = THREAD_PRIORITY_NORMAL +
+			    attr->priority *
+			    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_NORMAL);
+
 		stackSize = attr->stackSize;
 	}
 

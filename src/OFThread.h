@@ -222,6 +222,10 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * @brief Returns the priority of the thread.
  *
+ * This is a value between -1.0 (meaning lowest priority that still schedules)
+ * and +1.0 (meaning highest priority that still allows getting preemptted)
+ * with normal priority being 0.0 (meaning being the same as the main thread).
+ *
  * @return The priority of the thread
  */
 - (float)priority;
@@ -231,8 +235,11 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @note This has to be set before the thread is started!
  *
- * @param priority The priority for the thread, with 0.0 being the lowest and
- *		   1.0 the highest
+ * @param priority The priority of the thread. This is a value between -1.0
+ *		   (meaning lowest priority that still schedules) and +1.0
+ *		   (meaning highest priority that still allows getting
+ *		   preemptted) with normal priority being 0.0 (meaning being
+ *		   the same as the main thread).
  */
 - (void)setPriority: (float)priority;
 
