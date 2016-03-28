@@ -31,10 +31,15 @@ bool
 of_thread_new(of_thread_t *thread, void (*function)(id), id object,
     const of_thread_attr_t *attr)
 {
-	size_t stackSize = 0;
-	int priority = 0;
+	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
+	    (LPTHREAD_START_ROUTINE)function, (__bridge void*)object, 0, NULL);
 
-	if (attr != NULL) {
+	if (thread == NULL)
+		return false;
+
+	if (attr != NULL && attr->priority != 0) {
+		DWORD priority;
+
 		if (attr->priority < -1 || attr->priority > 1)
 			return false;
 
@@ -47,19 +52,11 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			    attr->priority *
 			    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_NORMAL);
 
-		stackSize = attr->stackSize;
+		if (!SetThreadPriority(*thread, priority))
+			return false;
 	}
 
-	*thread = CreateThread(NULL, stackSize,
-	    (LPTHREAD_START_ROUTINE)function, (__bridge void*)object, 0, NULL);
-
-	if (thread == NULL)
-		return false;
-
-	if (priority > 0)
-		return SetThreadPriority(*thread, priority);
-	else
-		return true;
+	return true;
 }
 
 bool
