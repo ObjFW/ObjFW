@@ -22,6 +22,10 @@
 
 #import "macros.h"
 
+#ifdef OF_HAIKU
+# include <kernel/OS.h>
+#endif
+
 struct thread_ctx {
 	void (*function)(id object);
 	id object;

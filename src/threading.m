@@ -26,10 +26,6 @@
 # error No threads available!
 #endif
 
-#ifdef OF_HAIKU
-# include <kernel/OS.h>
-#endif
-
 bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {
