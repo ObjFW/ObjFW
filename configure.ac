@@ -928,9 +928,14 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#include <stddef.h>
 		#ifndef _WIN32
 		# include <sys/types.h>
+		#endif
+		#ifdef HAVE_SYS_SOCKET_H
 		# include <sys/socket.h>
+		#endif
+		#ifdef HAVE_NETDB_H
 		# include <netdb.h>
-		#else
+		#endif
+		#ifdef _WIN32
 		typedef unsigned char BOOL;
 		# include <ws2tcpip.h>
 		#endif
@@ -976,9 +981,14 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 				AC_EGREP_CPP(yes, [
 					#ifndef _WIN32
 					# include <sys/types.h>
+					#endif
+					#ifdef HAVE_SYS_SOCKET_H
 					# include <sys/socket.h>
+					#endif
+					#ifdef HAVE_NETDB_H
 					# include <netdb.h>
-					#else
+					#endif
+					#ifdef _WIN32
 					# define _WIN32_WINNT 0x0501
 					# include <windows.h>
 					# include <ws2tcpip.h>
