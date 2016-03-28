@@ -43,13 +43,6 @@ static of_mutex_t mutex;
 #endif
 static bool initialized = false;
 
-#ifdef OF_WII
-# ifdef OF_HAVE_THREADS
-static of_spinlock_t spinlock;
-# endif
-static uint8_t portRegistry[2][65536 / 8];
-#endif
-
 static void
 init(void)
 {
