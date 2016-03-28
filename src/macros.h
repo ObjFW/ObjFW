@@ -134,7 +134,7 @@
 # define OF_RETURNS_RETAINED __attribute__((__ns_returns_retained__))
 # define OF_RETURNS_NOT_RETAINED __attribute__((__ns_returns_not_retained__))
 # define OF_RETURNS_INNER_POINTER \
-	__attribute__((__objc_returns_inner_pointer__))
+    __attribute__((__objc_returns_inner_pointer__))
 # define OF_CONSUMED __attribute__((__ns_consumed__))
 # define OF_WEAK_UNAVAILABLE __attribute__((__objc_arc_weak_unavailable__))
 #else
@@ -211,7 +211,7 @@
 
 #if __has_attribute(__objc_subclassing_restricted__)
 # define OF_SUBCLASSING_RESTRICTED \
-	__attribute__((__objc_subclassing_restricted__))
+    __attribute__((__objc_subclassing_restricted__))
 #else
 # define OF_SUBCLASSING_RESTRICTED
 #endif
@@ -245,15 +245,15 @@
 
 #ifdef OF_APPLE_RUNTIME
 # if defined(OF_X86_64) || defined(OF_X86) || defined(OF_ARM64) || \
-	defined(OF_ARM) || defined(OF_POWERPC)
+    defined(OF_ARM) || defined(OF_POWERPC)
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #  define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 # endif
 #else
 # if defined(OF_ELF)
 #  if defined(OF_X86_64) || defined(OF_X86) || \
-	defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
-	defined(OF_MIPS)
+    defined(OF_ARM64) || defined(OF_ARM) || defined(OF_POWERPC) || \
+    defined(OF_MIPS)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
 #   if __OBJFW_RUNTIME_ABI__ >= 800
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
@@ -433,11 +433,11 @@ OF_BSWAP64_NONCONST(uint64_t i)
 
 #ifdef __GNUC__
 # define OF_BSWAP16(i) \
-	(__builtin_constant_p(i) ? OF_BSWAP16_CONST(i) : OF_BSWAP16_NONCONST(i))
+    (__builtin_constant_p(i) ? OF_BSWAP16_CONST(i) : OF_BSWAP16_NONCONST(i))
 # define OF_BSWAP32(i) \
-	(__builtin_constant_p(i) ? OF_BSWAP32_CONST(i) : OF_BSWAP32_NONCONST(i))
+    (__builtin_constant_p(i) ? OF_BSWAP32_CONST(i) : OF_BSWAP32_NONCONST(i))
 # define OF_BSWAP64(i) \
-	(__builtin_constant_p(i) ? OF_BSWAP64_CONST(i) : OF_BSWAP64_NONCONST(i))
+    (__builtin_constant_p(i) ? OF_BSWAP64_CONST(i) : OF_BSWAP64_NONCONST(i))
 #else
 # define OF_BSWAP16(i) OF_BSWAP16_CONST(i)
 # define OF_BSWAP32(i) OF_BSWAP32_CONST(i)
@@ -500,16 +500,16 @@ OF_BSWAP_DOUBLE(double d)
 # define OF_BSWAP_DOUBLE_IF_LE(i) OF_BSWAP_DOUBLE(i)
 #endif
 
-#define OF_ROL(value, bits)						  \
-	(((bits) % (sizeof(value) * 8)) > 0				  \
-	? ((value) << ((bits) % (sizeof(value) * 8))) |			  \
-	((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))) \
-	: (value))
-#define OF_ROR(value, bits)						  \
-	(((bits) % (sizeof(value) * 8)) > 0				  \
-	? ((value) >> ((bits) % (sizeof(value) * 8))) |			  \
-	((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8)))) \
-	: (value))
+#define OF_ROL(value, bits)						\
+    (((bits) % (sizeof(value) * 8)) > 0					\
+    ? ((value) << ((bits) % (sizeof(value) * 8))) |			\
+    ((value) >> (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
+    : (value))
+#define OF_ROR(value, bits)						\
+    (((bits) % (sizeof(value) * 8)) > 0					\
+    ? ((value) >> ((bits) % (sizeof(value) * 8))) |			\
+    ((value) << (sizeof(value) * 8 - ((bits) % (sizeof(value) * 8))))	\
+    : (value))
 
 #define OF_ROUND_UP_POW2(pow2, value) (((value) + (pow2) - 1) & ~((pow2) - 1))
 

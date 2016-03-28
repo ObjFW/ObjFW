@@ -19,7 +19,7 @@
 #include "platform.h"
 
 #if !defined(OF_HAVE_THREADS) || \
-	(!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS))
+    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS))
 # error No threads available!
 #endif
 

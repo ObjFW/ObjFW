@@ -77,12 +77,12 @@
 # define poll(fds, nfds, timeout) net_poll(fds, nfds, timeout)
 # define recv(sock, buf, len, flags) net_recv(sock, buf, len, flags)
 # define recvfrom(sock, buf, len, flags, addr, addrlen) \
-	net_recvfrom(sock, buf, len, flags, addr, addrlen)
+    net_recvfrom(sock, buf, len, flags, addr, addrlen)
 # define send(sock, buf, len, flags) net_send(sock, buf, len, flags)
 # define sendto(sock, buf, len, flags, addr, addrlen) \
-	net_sendto(sock, buf, len, flags, addr, addrlen)
+    net_sendto(sock, buf, len, flags, addr, addrlen)
 # define setsockopt(sock, level, name, value, len) \
-	net_setsockopt(sock, level, name, value, len)
+    net_setsockopt(sock, level, name, value, len)
 # define socket(domain, type, proto) net_socket(domain, type, proto)
 typedef u32 in_addr_t;
 typedef u32 nfds_t;

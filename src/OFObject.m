@@ -81,11 +81,11 @@ struct pre_mem {
 };
 
 #define PRE_IVARS_ALIGN ((sizeof(struct pre_ivar) + \
-	(OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
+    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
 #define PRE_IVARS ((struct pre_ivar*)(void*)((char*)self - PRE_IVARS_ALIGN))
 
 #define PRE_MEM_ALIGN ((sizeof(struct pre_mem) + \
-	(OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
+    (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
 #define PRE_MEM(mem) ((struct pre_mem*)(void*)((char*)mem - PRE_MEM_ALIGN))
 
 static struct {
