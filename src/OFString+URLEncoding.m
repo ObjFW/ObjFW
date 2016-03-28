@@ -52,22 +52,22 @@ int _OFString_URLEncoding_reference;
 		    ([self UTF8StringLength] * 3) + 1];
 
 	for (i = 0; *string != '\0'; string++) {
+		unsigned char c = *string;
+
 		/*
 		 * '+' is also listed in RFC 1738, however, '+' is sometimes
 		 * interpreted as space in HTTP. Therefore always escape it to
 		 * make sure it's always interpreted correctly.
 		 */
-		if (!(*string & 0x80) && (isalnum((int)*string) ||
-		    *string == '$' || *string == '-' || *string == '_' ||
-		    *string == '.' || *string == '!' || *string == '*' ||
-		    *string == '(' || *string == ')' || *string == ',' ||
-		    strchr(ignored, *string) != NULL))
-			retCString[i++] = *string;
+		if (!(c & 0x80) && (isalnum(c) || c == '$' || c == '-' ||
+		    c == '_' || c == '.' || c == '!' || c == '*' || c == '(' ||
+		    c == ')' || c == ',' || strchr(ignored, c) != NULL))
+			retCString[i++] = c;
 		else {
-			uint8_t high, low;
+			unsigned char high, low;
 
-			high = *string >> 4;
-			low = *string & 0x0F;
+			high = c >> 4;
+			low = c & 0x0F;
 
 			retCString[i++] = '%';
 			retCString[i++] =
