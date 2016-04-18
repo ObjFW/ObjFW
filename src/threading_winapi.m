@@ -203,45 +203,38 @@ of_condition_broadcast(of_condition_t *condition)
 bool
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
+	DWORD status;
+
 	if (!of_mutex_unlock(mutex))
 		return false;
 
 	of_atomic_int_inc(&condition->count);
-
-	if (WaitForSingleObject(condition->event, INFINITE) != WAIT_OBJECT_0) {
-		of_mutex_lock(mutex);
-		return false;
-	}
-
+	status = WaitForSingleObject(condition->event, INFINITE);
 	of_atomic_int_dec(&condition->count);
 
 	if (!of_mutex_lock(mutex))
 		return false;
 
-	return true;
+	return (status == WAIT_OBJECT_0);
 }
 
 bool
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
     of_time_interval_t timeout)
 {
+	DWORD status;
+
 	if (!of_mutex_unlock(mutex))
 		return false;
 
 	of_atomic_int_inc(&condition->count);
-
-	if (WaitForSingleObject(condition->event, timeout * 1000) !=
-	    WAIT_OBJECT_0) {
-		of_mutex_lock(mutex);
-		return false;
-	}
-
+	status = WaitForSingleObject(condition->event, timeout * 1000);
 	of_atomic_int_dec(&condition->count);
 
 	if (!of_mutex_lock(mutex))
 		return false;
 
-	return true;
+	return (status == WAIT_OBJECT_0);
 }
 
 bool
