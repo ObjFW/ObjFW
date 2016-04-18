@@ -54,6 +54,7 @@
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFRunLoop.h"
+#import "OFString.h"
 #import "OFList.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
