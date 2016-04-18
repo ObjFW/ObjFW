@@ -404,9 +404,7 @@ static OFRunLoop *mainRunLoop = nil;
 #if defined(OF_HAVE_SOCKETS)
 	[_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
-	[_condition lock];
 	[_condition signal];
-	[_condition unlock];
 #endif
 }
 
@@ -832,9 +830,7 @@ static OFRunLoop *mainRunLoop = nil;
 #if defined(OF_HAVE_SOCKETS)
 	[_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
-	[_condition lock];
 	[_condition signal];
-	[_condition unlock];
 #endif
 }
 @end
