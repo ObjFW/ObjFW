@@ -90,21 +90,6 @@ of_thread_set_name(of_thread_t thread, const char *name)
 {
 }
 
-void
-of_once(of_once_t *control, void (*func)(void))
-{
-	switch (InterlockedCompareExchange(control, 1, 0)) {
-	case 0:
-		func();
-		InterlockedIncrement(control);
-		break;
-	case 1:
-		while (*control == 1)
-			Sleep(0);
-		break;
-	}
-}
-
 bool
 of_mutex_new(of_mutex_t *mutex)
 {

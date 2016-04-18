@@ -26,6 +26,26 @@
 # error No threads available!
 #endif
 
+#ifndef OF_HAVE_PTHREADS
+void
+of_once(of_once_t *control, void (*func)(void))
+{
+	if (of_atomic_int_cmpswap(control, 0, 1)) {
+		func();
+		of_atomic_int_inc(control);
+	} else {
+		while (*control == 1)
+# if defined(HAVE_SCHED_YIELD)
+			sched_yield();
+# elif defined(OF_WINDOWS)
+			Sleep(0);
+# else
+			;
+# endif
+	}
+}
+#endif
+
 #if !defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) && !defined(OF_WINDOWS)
 bool
 of_rmutex_new(of_rmutex_t *rmutex)

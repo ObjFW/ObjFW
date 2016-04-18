@@ -53,7 +53,7 @@ typedef struct {
 	HANDLE event;
 	int count;
 } of_condition_t;
-typedef volatile LONG of_once_t;
+typedef volatile int of_once_t;
 # define OF_ONCE_INIT 0
 #else
 # error No threads available!
