@@ -33,16 +33,9 @@ of_once(of_once_t *control, void (*func)(void))
 	if (of_atomic_int_cmpswap(control, 0, 1)) {
 		func();
 		of_atomic_int_inc(control);
-	} else {
+	} else
 		while (*control == 1)
-# if defined(HAVE_SCHED_YIELD)
-			sched_yield();
-# elif defined(OF_WINDOWS)
-			Sleep(0);
-# else
-			;
-# endif
-	}
+			of_thread_yield();
 }
 #endif
 

@@ -174,6 +174,16 @@ of_tlskey_free(of_tlskey_t key)
 #endif
 }
 
+static OF_INLINE void
+of_thread_yield(void)
+{
+#if defined(OF_HAVE_SCHED_YIELD)
+	sched_yield();
+#elif defined(OF_WINDOWS)
+	Sleep(0);
+#endif
+}
+
 static OF_INLINE bool
 of_spinlock_new(of_spinlock_t *spinlock)
 {
@@ -203,7 +213,6 @@ static OF_INLINE bool
 of_spinlock_lock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-# if defined(OF_HAVE_SCHED_YIELD) || defined(OF_WINDOWS)
 	size_t i;
 
 	for (i = 0; i < OF_SPINCOUNT; i++)
@@ -211,14 +220,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 			return true;
 
 	while (!of_spinlock_trylock(spinlock))
-#  ifndef OF_WINDOWS
-		sched_yield();
-#  else
-		Sleep(0);
-#  endif
-# else
-	while (!of_spinlock_trylock(spinlock));
-# endif
+		of_thread_yield();
 
 	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
