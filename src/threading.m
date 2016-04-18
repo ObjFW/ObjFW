@@ -26,28 +26,10 @@
 # error No threads available!
 #endif
 
+#if !defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) && !defined(OF_WINDOWS)
 bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES)
-	pthread_mutexattr_t attr;
-
-	if (pthread_mutexattr_init(&attr) != 0)
-		return false;
-
-	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) != 0)
-		return false;
-
-	if (pthread_mutex_init(rmutex, &attr) != 0)
-		return false;
-
-	if (pthread_mutexattr_destroy(&attr) != 0)
-		return false;
-
-	return true;
-#elif defined(OF_WINDOWS)
-	return of_mutex_new(rmutex);
-#else
 	if (!of_mutex_new(&rmutex->mutex))
 		return false;
 
@@ -55,15 +37,11 @@ of_rmutex_new(of_rmutex_t *rmutex)
 		return false;
 
 	return true;
-#endif
 }
 
 bool
 of_rmutex_lock(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
-	return of_mutex_lock(rmutex);
-#else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 0) {
@@ -82,15 +60,11 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 	}
 
 	return true;
-#endif
 }
 
 bool
 of_rmutex_trylock(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
-	return of_mutex_trylock(rmutex);
-#else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 0) {
@@ -109,15 +83,11 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 	}
 
 	return true;
-#endif
 }
 
 bool
 of_rmutex_unlock(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
-	return of_mutex_unlock(rmutex);
-#else
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 1) {
@@ -134,15 +104,11 @@ of_rmutex_unlock(of_rmutex_t *rmutex)
 		return false;
 
 	return true;
-#endif
 }
 
 bool
 of_rmutex_free(of_rmutex_t *rmutex)
 {
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
-	return of_mutex_free(rmutex);
-#else
 	if (!of_mutex_free(&rmutex->mutex))
 		return false;
 
@@ -150,5 +116,5 @@ of_rmutex_free(of_rmutex_t *rmutex)
 		return false;
 
 	return true;
-#endif
 }
+#endif

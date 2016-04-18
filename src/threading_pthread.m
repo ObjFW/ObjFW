@@ -232,6 +232,52 @@ of_mutex_free(of_mutex_t *mutex)
 	return (pthread_mutex_destroy(mutex) == 0);
 }
 
+#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
+bool
+of_rmutex_new(of_rmutex_t *rmutex)
+{
+	pthread_mutexattr_t attr;
+
+	if (pthread_mutexattr_init(&attr) != 0)
+		return false;
+
+	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) != 0)
+		return false;
+
+	if (pthread_mutex_init(rmutex, &attr) != 0)
+		return false;
+
+	if (pthread_mutexattr_destroy(&attr) != 0)
+		return false;
+
+	return true;
+}
+
+bool
+of_rmutex_lock(of_rmutex_t *rmutex)
+{
+	return of_mutex_lock(rmutex);
+}
+
+bool
+of_rmutex_trylock(of_rmutex_t *rmutex)
+{
+	return of_mutex_trylock(rmutex);
+}
+
+bool
+of_rmutex_unlock(of_rmutex_t *rmutex)
+{
+	return of_mutex_unlock(rmutex);
+}
+
+bool
+of_rmutex_free(of_rmutex_t *rmutex)
+{
+	return of_mutex_free(rmutex);
+}
+#endif
+
 bool
 of_condition_new(of_condition_t *condition)
 {

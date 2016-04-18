@@ -144,6 +144,36 @@ of_mutex_free(of_mutex_t *mutex)
 }
 
 bool
+of_rmutex_new(of_rmutex_t *rmutex)
+{
+	return of_mutex_new(rmutex);
+}
+
+bool
+of_rmutex_lock(of_rmutex_t *rmutex)
+{
+	return of_mutex_lock(rmutex);
+}
+
+bool
+of_rmutex_trylock(of_rmutex_t *rmutex)
+{
+	return of_mutex_trylock(rmutex);
+}
+
+bool
+of_rmutex_unlock(of_rmutex_t *rmutex)
+{
+	return of_mutex_unlock(rmutex);
+}
+
+bool
+of_rmutex_free(of_rmutex_t *rmutex)
+{
+	return of_mutex_free(rmutex);
+}
+
+bool
 of_condition_new(of_condition_t *condition)
 {
 	condition->count = 0;
