@@ -41,12 +41,18 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Blocks the current thread until another thread calls @ref signal or
  *	  @ref broadcast.
+ *
+ * @note Waiting might have been interrupted by a signal. It is thus recommended
+ *	 to check the condition again after @ref wait returned!
  */
 - (void)wait;
 
 /*!
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or the timeout is reached.
+ *
+ * @note Waiting might have been interrupted by a signal. It is thus recommended
+ *	 to check the condition again after @ref waitForTimeInterval: returned!
  *
  * @param timeInterval The time interval until the timeout is reached
  * @return Whether the condition has been signaled
@@ -56,6 +62,9 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or the timeout is reached.
+ *
+ * @note Waiting might have been interrupted by a signal. It is thus recommended
+ *	 to check the condition again after @ref waitUntilDate: returned!
  *
  * @param date The date at which the timeout is reached
  * @return Whether the condition has been signaled
