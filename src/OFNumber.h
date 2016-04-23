@@ -103,7 +103,7 @@ typedef enum {
 	/*! float */
 	OF_NUMBER_TYPE_FLOAT		= 0x20,
 	/*! double */
-	OF_NUMBER_TYPE_DOUBLE		= 0x40 | OF_NUMBER_TYPE_FLOAT,
+	OF_NUMBER_TYPE_DOUBLE		= 0x40 | OF_NUMBER_TYPE_FLOAT
 } of_number_type_t;
 
 /*!

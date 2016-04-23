@@ -51,7 +51,7 @@ enum {
 	OF_BLOCK_HAS_CTOR	  = (1 << 26),
 	OF_BLOCK_IS_GLOBAL	  = (1 << 28),
 	OF_BLOCK_HAS_STRET	  = (1 << 29),
-	OF_BLOCK_HAS_SIGNATURE	  = (1 << 30),
+	OF_BLOCK_HAS_SIGNATURE	  = (1 << 30)
 };
 #define OF_BLOCK_REFCOUNT_MASK 0xFFFF
 
@@ -60,7 +60,7 @@ enum {
 	OF_BLOCK_FIELD_IS_BLOCK	 =   7,
 	OF_BLOCK_FIELD_IS_BYREF	 =   8,
 	OF_BLOCK_FIELD_IS_WEAK	 =  16,
-	OF_BLOCK_BYREF_CALLER	 = 128,
+	OF_BLOCK_BYREF_CALLER	 = 128
 };
 
 @protocol RetainRelease
