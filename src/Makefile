@@ -23,6 +23,7 @@ SRCS = OFApplication.m			\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\
+       OFGZIPStream.m			\
        OFInflateStream.m		\
        OFInflate64Stream.m		\
        OFIntrospection.m		\
@@ -77,6 +78,7 @@ SRCS = OFApplication.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
        base64.m				\
+       crc32.m				\
        of_asprintf.m			\
        of_strptime.m			\
        unicode.m			\

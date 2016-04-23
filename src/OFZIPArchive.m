@@ -28,6 +28,8 @@
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 
+#import "crc32.h"
+
 #import "OFChecksumFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -37,8 +39,6 @@
 #import "OFReadFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFUnsupportedVersionException.h"
-
-#define CRC32_MAGIC 0xEDB88320
 
 /*
  * FIXME: Current limitations:
@@ -114,19 +114,6 @@ of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
 	*size -= 8;
 
 	return field;
-}
-
-static uint32_t
-calculateCRC32(uint32_t crc, uint8_t *bytes, size_t length)
-{
-	for (size_t i = 0; i < length; i++) {
-		crc ^= bytes[i];
-
-		for (uint8_t j = 0; j < 8; j++)
-			crc = (crc >> 1) ^ (CRC32_MAGIC & (~(crc & 1) + 1));
-	}
-
-	return crc;
 }
 
 static void
@@ -563,7 +550,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_size -= ret;
 	}
 
-	_CRC32 = calculateCRC32(_CRC32, buffer, ret);
+	_CRC32 = of_crc32(_CRC32, buffer, ret);
 
 	return ret;
 }
