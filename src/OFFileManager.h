@@ -70,14 +70,14 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a directory at the specified path.
  *
- * @param path The path of the directory
+ * @param path The path of the directory to create
  */
 - (void)createDirectoryAtPath: (OFString*)path;
 
 /*!
  * @brief Creates a directory at the specified path.
  *
- * @param path The path of the directory
+ * @param path The path of the directory to create
  * @param createParents Whether to create the parents of the directory
  */
 - (void)createDirectoryAtPath: (OFString*)path
@@ -103,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the size of the specified file.
  *
- * @param path The path to the file whose path should be returned
+ * @param path The path to the file whose size should be returned
  *
  * @return The size of the specified file
  */
@@ -112,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the last access time of the specified item.
  *
- * @param path The path to the file whose last access time should be returned
+ * @param path The path to the item whose last access time should be returned
  *
  * @return The last access time of the specified item
  */
@@ -121,7 +121,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the last modification time of the specified item.
  *
- * @param path The path to the file whose last modification time should be
+ * @param path The path to the item whose last modification time should be
  *	       returned
  *
  * @return The last modification time of the specified item
@@ -131,7 +131,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the last status change time of the specified item.
  *
- * @param path The path to the file whose last status change time should be
+ * @param path The path to the item whose last status change time should be
  *	       returned
  *
  * @return The last status change time of the specified item
@@ -236,8 +236,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This method is not available on some systems, most notably Windows.
  *
- * @param source The path of the item for which a link should be created
- * @param destination The path of the item which should link to the source
+ * @param source The path to the item for which a link should be created
+ * @param destination The path to the item which should link to the source
  */
 - (void)linkItemAtPath: (OFString*)source
 		toPath: (OFString*)destination;
@@ -252,9 +252,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This method is not available on some systems, most notably Windows.
  *
- * @param destination The path of the item which should symbolically link to the
+ * @param destination The path to the item which should symbolically link to the
  *		      source
- * @param source The path of the item for which a symbolic link should be
+ * @param source The path to the item for which a symbolic link should be
  *		 created
  */
 - (void)createSymbolicLinkAtPath: (OFString*)destination
