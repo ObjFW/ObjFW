@@ -91,6 +91,18 @@ of_thread_set_name(of_thread_t thread, const char *name)
 }
 
 bool
+of_tlskey_new(of_tlskey_t *key)
+{
+	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
+}
+
+bool
+of_tlskey_free(of_tlskey_t key)
+{
+	return TlsFree(key);
+}
+
+bool
 of_mutex_new(of_mutex_t *mutex)
 {
 	InitializeCriticalSection(mutex);

@@ -203,6 +203,18 @@ of_once(of_once_t *control, void (*func)(void))
 }
 
 bool
+of_tlskey_new(of_tlskey_t *key)
+{
+	return (pthread_key_create(key, NULL) == 0);
+}
+
+bool
+of_tlskey_free(of_tlskey_t key)
+{
+	return (pthread_key_delete(key) == 0);
+}
+
+bool
 of_mutex_new(of_mutex_t *mutex)
 {
 	return (pthread_mutex_init(mutex, NULL) == 0);

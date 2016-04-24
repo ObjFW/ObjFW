@@ -106,6 +106,8 @@ extern bool of_thread_join(of_thread_t thread);
 extern bool of_thread_detach(of_thread_t thread);
 extern void OF_NO_RETURN_FUNC of_thread_exit(void);
 extern void of_once(of_once_t *control, void (*func)(void));
+extern bool of_tlskey_new(of_tlskey_t *key);
+extern bool of_tlskey_free(of_tlskey_t key);
 extern bool of_mutex_new(of_mutex_t *mutex);
 extern bool of_mutex_lock(of_mutex_t *mutex);
 extern bool of_mutex_trylock(of_mutex_t *mutex);
@@ -126,53 +128,33 @@ extern bool of_condition_free(of_condition_t *condition);
 
 /* TLS keys and spinlocks are inlined for performance. */
 
-static OF_INLINE bool
-of_tlskey_new(of_tlskey_t *key)
-{
 #if defined(OF_HAVE_PTHREADS)
-	return !pthread_key_create(key, NULL);
-#elif defined(OF_WINDOWS)
-	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
-#else
-# error of_tlskey_new not implemented!
-#endif
-}
-
 static OF_INLINE void*
 of_tlskey_get(of_tlskey_t key)
 {
-#if defined(OF_HAVE_PTHREADS)
 	return pthread_getspecific(key);
-#elif defined(OF_WINDOWS)
-	return TlsGetValue(key);
-#else
-# error of_tlskey_get not implemented!
-#endif
 }
 
 static OF_INLINE bool
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-#if defined(OF_HAVE_PTHREADS)
 	return !pthread_setspecific(key, ptr);
+}
 #elif defined(OF_WINDOWS)
-	return TlsSetValue(key, ptr);
-#else
-# error of_tlskey_set not implemented!
-#endif
+static OF_INLINE void*
+of_tlskey_get(of_tlskey_t key)
+{
+	return TlsGetValue(key);
 }
 
 static OF_INLINE bool
-of_tlskey_free(of_tlskey_t key)
+of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-#if defined(OF_HAVE_PTHREADS)
-	return !pthread_key_delete(key);
-#elif defined(OF_WINDOWS)
-	return TlsFree(key);
-#else
-# error of_tlskey_free not implemented!
-#endif
+	return TlsSetValue(key, ptr);
 }
+#else
+# error No thread local storage available!
+#endif
 
 static OF_INLINE void
 of_thread_yield(void)
