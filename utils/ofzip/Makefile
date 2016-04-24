@@ -1,7 +1,8 @@
 include ../../extra.mk
 
 PROG = ofzip${PROG_SUFFIX}
-SRCS = OFZIP.m
+SRCS = OFZIP.m		\
+       ZIPArchive.m
 
 include ../../buildsys.mk
 
