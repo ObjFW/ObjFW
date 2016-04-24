@@ -36,7 +36,7 @@
 #import "OFSystemInfo.h"
 
 #ifdef OF_HAVE_THREADS
-# import "threading.h"
+# import "OFMutex.h"
 #endif
 
 #import "OFChangeCurrentDirectoryPathFailedException.h"
@@ -81,10 +81,10 @@
 static OFFileManager *defaultManager;
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
-static of_mutex_t chownMutex;
+static OFMutex *passwdMutex;
 #endif
 #if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
-static of_mutex_t readdirMutex;
+static OFMutex *readdirMutex;
 #endif
 
 int
@@ -138,15 +138,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	[OFFile class];
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_new(&chownMutex))
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
+	passwdMutex = [[OFMutex alloc] init];
 #endif
-
 #if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_new(&readdirMutex))
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
+	readdirMutex = [[OFMutex alloc] init];
 #endif
 
 	defaultManager = [[OFFileManager alloc] init];
@@ -303,10 +298,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
-	if (!of_mutex_lock(&readdirMutex))
-		@throw [OFLockFailedException exception];
+	[readdirMutex lock];
 # endif
-
 	@try {
 		for (;;) {
 			struct dirent *dirent;
@@ -352,8 +345,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	} @finally {
 		closedir(dir);
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
-		if (!of_mutex_unlock(&readdirMutex))
-			@throw [OFUnlockFailedException exception];
+		[readdirMutex unlock];
 # endif
 	}
 #else
@@ -480,6 +472,20 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 
 #ifdef OF_HAVE_CHMOD
+- (mode_t)permissionsOfItemAtPath: (OFString*)path
+{
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_stat(path, &s) != 0)
+		@throw [OFStatItemFailedException exceptionWithPath: path
+							      errNo: errno];
+
+	return s.st_mode;
+}
+
 - (void)changePermissionsOfItemAtPath: (OFString*)path
 			  permissions: (mode_t)permissions
 {
@@ -500,6 +506,46 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 
 #ifdef OF_HAVE_CHOWN
+- (void)getOwner: (OFString**)owner
+	   group: (OFString**)group
+    ofItemAtPath: (OFString*)path
+{
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_stat(path, &s) != 0)
+		@throw [OFStatItemFailedException exceptionWithPath: path
+							      errNo: errno];
+
+# ifdef OF_HAVE_THREADS
+	[passwdMutex lock];
+	@try {
+# endif
+		of_string_encoding_t encoding =
+		    [OFSystemInfo native8BitEncoding];
+
+		if (owner != nil) {
+			struct passwd *passwd = getpwuid(s.st_uid);
+
+			*owner = [OFString stringWithCString: passwd->pw_name
+						    encoding: encoding];
+		}
+
+		if (group != nil) {
+			struct group *group_ = getgrgid(s.st_gid);
+
+			*group = [OFString stringWithCString: group_->gr_name
+						    encoding: encoding];
+		}
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		[passwdMutex unlock];
+	}
+#endif
+}
+
 - (void)changeOwnerOfItemAtPath: (OFString*)path
 			  owner: (OFString*)owner
 			  group: (OFString*)group
@@ -514,9 +560,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	encoding = [OFSystemInfo native8BitEncoding];
 
 # ifdef OF_HAVE_THREADS
-	if (!of_mutex_lock(&chownMutex))
-		@throw [OFLockFailedException exception];
-
+	[passwdMutex lock];
 	@try {
 # endif
 		if (owner != nil) {
@@ -548,8 +592,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		}
 # ifdef OF_HAVE_THREADS
 	} @finally {
-		if (!of_mutex_unlock(&chownMutex))
-			@throw [OFUnlockFailedException exception];
+		[passwdMutex unlock];
 	}
 # endif
 

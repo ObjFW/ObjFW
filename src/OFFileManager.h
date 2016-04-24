@@ -140,6 +140,15 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_CHMOD
 /*!
+ * @brief Returns the permissions of the specified item.
+ *
+ * @param path The path to the item whose permissions should be returned
+ *
+ * @return The permissions of the specified item
+ */
+- (mode_t)permissionsOfItemAtPath: (OFString*)path;
+
+/*!
  * @brief Changes the permissions of an item.
  *
  * This method only changes the read-only flag on Windows.
@@ -152,6 +161,17 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 #ifdef OF_HAVE_CHOWN
+/*!
+ * @brief Get the owner and group of the specified item.
+ *
+ * @param owner A pointer to an OFString* to store the owner, or nil
+ * @param group A pointer to an OFString* to store the group, or nil
+ * @param path The path to the item whose owner and group should be retrieved
+ */
+- (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner
+	   group: (OFString *__autoreleasing _Nonnull *_Nullable)group
+    ofItemAtPath: (OFString*)path;
+
 /*!
  * @brief Changes the owner of an item.
  *
