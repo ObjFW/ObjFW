@@ -197,8 +197,8 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 
 - (id <Archive>)openArchiveWithPath: (OFString*)path
 {
-	OFFile *file;
-	id <Archive> archive;
+	OFFile *file = nil;
+	id <Archive> archive = nil;
 
 	[_archivePath release];
 	_archivePath = [path copy];
