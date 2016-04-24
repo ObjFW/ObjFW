@@ -96,7 +96,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	struct epoll_event event;
 	intptr_t events;
 
-	events = (intptr_t)[_FDToEvents valueForKey: (void*)(intptr_t)fd];
+	events = (intptr_t)[_FDToEvents valueForKey: (void*)((intptr_t)fd + 1)];
 
 	memset(&event, 0, sizeof(event));
 	event.events = (int)events | addEvents;
@@ -108,7 +108,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 								 errNo: errno];
 
 	[_FDToEvents setValue: (void*)(events | addEvents)
-		       forKey: (void*)(intptr_t)fd];
+		       forKey: (void*)((intptr_t)fd + 1)];
 }
 
 - (void)OF_removeObject: (id)object
@@ -117,7 +117,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 {
 	intptr_t events;
 
-	events = (intptr_t)[_FDToEvents valueForKey: (void*)(intptr_t)fd];
+	events = (intptr_t)[_FDToEvents valueForKey: (void*)((intptr_t)fd + 1)];
 	events &= ~removeEvents;
 
 	if (events == 0) {
@@ -126,7 +126,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 			    exceptionWithObserver: self
 					    errNo: errno];
 
-		[_FDToEvents removeValueForKey: (void*)(intptr_t)fd];
+		[_FDToEvents removeValueForKey: (void*)((intptr_t)fd + 1)];
 	} else {
 		struct epoll_event event;
 
@@ -140,7 +140,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 					    errNo: errno];
 
 		[_FDToEvents setValue: (void*)events
-			       forKey: (void*)(intptr_t)fd];
+			       forKey: (void*)((intptr_t)fd + 1)];
 	}
 }
 
