@@ -17,12 +17,26 @@
 #include "config.h"
 
 #import "OFApplication.h"
+#import "OFFileManager.h"
 #import "OFStdIOStream.h"
 
 #import "GZIPArchive.h"
 #import "OFZIP.h"
 
 static OFZIP *app;
+
+static void
+setPermissions(OFString *destination, OFString *source)
+{
+#ifdef OF_HAVE_CHMOD
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+	mode_t mode;
+
+	mode = [fileManager permissionsOfItemAtPath: source];
+	[fileManager changePermissionsOfItemAtPath: destination
+				       permissions: mode];
+#endif
+}
 
 @implementation GZIPArchive
 + (void)initialize
@@ -87,7 +101,7 @@ static OFZIP *app;
 
 	output = [OFFile fileWithPath: fileName
 				 mode: @"wb"];
-	/* TODO: Copy permissions */
+	setPermissions(fileName, app->_archivePath);
 
 	while (![_stream isAtEndOfStream]) {
 		ssize_t length = [app copyBlockFromStream: _stream
