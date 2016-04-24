@@ -14,24 +14,12 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFString.h"
+#import "OFGZIPStream.h"
 
 #import "Archive.h"
 
-@interface OFZIP: OFObject
+@interface GZIPArchive: OFObject <Archive>
 {
-	int8_t _override;
-@public
-	int8_t _outputLevel;
-	OFString *_archivePath;
-	int _exitStatus;
+	OFGZIPStream *_stream;
 }
-
-- (id <Archive>)openArchiveWithPath: (OFString*)path;
-- (bool)shouldExtractFile: (OFString*)fileName
-	      outFileName: (OFString*)outFileName;
-- (ssize_t)copyBlockFromStream: (OFStream*)input
-		      toStream: (OFStream*)output
-		      fileName: (OFString*)fileName;
 @end

@@ -27,6 +27,7 @@
 
 #import "OFZIP.h"
 #import "ZIPArchive.h"
+#import "GZIPArchive.h"
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidFormatException.h"
@@ -199,6 +200,9 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 	OFFile *file;
 	id <Archive> archive;
 
+	[_archivePath release];
+	_archivePath = [path copy];
+
 	@try {
 		file = [OFFile fileWithPath: path
 				       mode: @"rb"];
@@ -209,7 +213,10 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 	}
 
 	@try {
-		archive = [ZIPArchive archiveWithFile: file];
+		if ([path hasSuffix: @".gz"])
+			archive = [GZIPArchive archiveWithFile: file];
+		else
+			archive = [ZIPArchive archiveWithFile: file];
 	} @catch (OFReadFailedException *e) {
 		[of_stderr writeFormat: @"Failed to read file %@: %s\n",
 					path, strerror([e errNo])];
