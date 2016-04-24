@@ -526,14 +526,14 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		of_string_encoding_t encoding =
 		    [OFSystemInfo native8BitEncoding];
 
-		if (owner != nil) {
+		if (owner != NULL) {
 			struct passwd *passwd = getpwuid(s.st_uid);
 
 			*owner = [OFString stringWithCString: passwd->pw_name
 						    encoding: encoding];
 		}
 
-		if (group != nil) {
+		if (group != NULL) {
 			struct group *group_ = getgrgid(s.st_gid);
 
 			*group = [OFString stringWithCString: group_->gr_name
