@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate for the TLS socket.
  */
-@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocket> delegate;
+@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocketDelegate> delegate;
 
 /*!
  * The path to the X.509 certificate file to use.
