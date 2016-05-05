@@ -49,6 +49,8 @@
 
 #import "of_asprintf.h"
 
+#define MIN_READ_SIZE 512
+
 @implementation OFStream
 @synthesize OF_isWaitingForDelimiter = _waitingForDelimiter;
 
@@ -112,29 +114,55 @@
 - (size_t)readIntoBuffer: (void*)buffer
 		  length: (size_t)length
 {
-	if (_readBufferLength == 0)
+	if (_readBufferLength == 0) {
+		/*
+		 * For small sizes, it is cheaper to read more and cache the
+		 * remainder - even if that means more copying of data - than
+		 * to do a syscall for every read.
+		 */
+		if (length < MIN_READ_SIZE) {
+			char tmp[MIN_READ_SIZE], *readBuffer;
+			size_t bytesRead;
+
+			bytesRead = [self
+			    lowlevelReadIntoBuffer: tmp
+					    length: MIN_READ_SIZE];
+
+			if (bytesRead > length) {
+				memcpy(buffer, tmp, length);
+
+				readBuffer = [self allocMemoryWithSize:
+				    bytesRead - length];
+				memcpy(readBuffer, tmp + length,
+				    bytesRead - length);
+
+				_readBuffer = _readBufferMemory = readBuffer;
+				_readBufferLength = bytesRead - length;
+
+				return length;
+			} else {
+				memcpy(buffer, tmp, bytesRead);
+				return bytesRead;
+			}
+		}
+
 		return [self lowlevelReadIntoBuffer: buffer
 					     length: length];
+	}
 
 	if (length >= _readBufferLength) {
 		size_t ret = _readBufferLength;
 		memcpy(buffer, _readBuffer, _readBufferLength);
 
-		[self freeMemory: _readBuffer];
-		_readBuffer = NULL;
+		[self freeMemory: _readBufferMemory];
+		_readBuffer = _readBufferMemory = NULL;
 		_readBufferLength = 0;
 
 		return ret;
 	} else {
-		char *tmp;
-
-		tmp = [self allocMemoryWithSize: _readBufferLength - length];
-		memcpy(tmp, _readBuffer + length, _readBufferLength - length);
-
 		memcpy(buffer, _readBuffer, length);
 
-		[self freeMemory: _readBuffer];
-		_readBuffer = tmp;
+		_readBuffer += length;
 		_readBufferLength -= length;
 
 		return length;
@@ -570,14 +598,7 @@
 							 encoding: encoding
 							   length: retLength];
 
-				readBuffer = [self allocMemoryWithSize:
-				    _readBufferLength - i - 1];
-				if (readBuffer != NULL)
-					memcpy(readBuffer, _readBuffer + i + 1,
-					    _readBufferLength - i - 1);
-
-				[self freeMemory: _readBuffer];
-				_readBuffer = readBuffer;
+				_readBuffer += i + 1;
 				_readBufferLength -= i + 1;
 
 				_waitingForDelimiter = false;
@@ -606,8 +627,8 @@
 						 encoding: encoding
 						   length: retLength];
 
-			[self freeMemory: _readBuffer];
-			_readBuffer = NULL;
+			[self freeMemory: _readBufferMemory];
+			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
 			_waitingForDelimiter = false;
@@ -644,21 +665,30 @@
 						     encoding: encoding
 						       length: rl];
 				} @catch (id e) {
-					/*
-					 * Append data to readBuffer to prevent
-					 * loss of data due to wrong encoding.
-					 */
-					_readBuffer = [self
-					    resizeMemory: _readBuffer
-						    size: _readBufferLength +
-							  bufferLength];
+					if (bufferLength > 0) {
+						/*
+						 * Append data to _readBuffer
+						 * to prevent loss of data due
+						 * to wrong encoding.
+						 */
+						readBuffer = [self
+						    allocMemoryWithSize:
+						    _readBufferLength +
+						    bufferLength];
 
-					if (_readBuffer != NULL)
-						memcpy(_readBuffer +
+						memcpy(readBuffer, _readBuffer,
+						    _readBufferLength);
+						memcpy(readBuffer +
 						    _readBufferLength,
 						    buffer, bufferLength);
 
-					_readBufferLength += bufferLength;
+						[self freeMemory:
+						    _readBufferMemory];
+						_readBuffer = readBuffer;
+						_readBufferMemory = readBuffer;
+						_readBufferLength +=
+						    bufferLength;
+					}
 
 					@throw e;
 				} @finally {
@@ -671,8 +701,8 @@
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				[self freeMemory: _readBuffer];
-				_readBuffer = readBuffer;
+				[self freeMemory: _readBufferMemory];
+				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
 				_waitingForDelimiter = false;
@@ -681,19 +711,18 @@
 		}
 
 		/* There was no newline or \0 */
-		_readBuffer = [self resizeMemory: _readBuffer
-					    size: _readBufferLength +
-						  bufferLength];
+		if (bufferLength > 0) {
+			readBuffer = [self allocMemoryWithSize:
+			    _readBufferLength + bufferLength];
 
-		/*
-		 * It's possible that _readBufferLength + bufferLength is 0 and
-		 * thus _readBuffer was set to NULL by resizeMemory:size:.
-		 */
-		if (_readBuffer != NULL)
-			memcpy(_readBuffer + _readBufferLength,
+			memcpy(readBuffer, _readBuffer, _readBufferLength);
+			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-		_readBufferLength += bufferLength;
+			[self freeMemory: _readBufferMemory];
+			_readBuffer = _readBufferMemory = readBuffer;
+			_readBufferLength += bufferLength;
+		}
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -789,14 +818,7 @@
 					     encoding: encoding
 					      length: i + 1 - delimiterLength];
 
-				readBuffer = [self allocMemoryWithSize:
-				    _readBufferLength - i - 1];
-				if (readBuffer != NULL)
-					memcpy(readBuffer, _readBuffer + i + 1,
-					    _readBufferLength - i - 1);
-
-				[self freeMemory: _readBuffer];
-				_readBuffer = readBuffer;
+				_readBuffer += i + 1;
 				_readBufferLength -= i + 1;
 
 				_waitingForDelimiter = false;
@@ -820,8 +842,8 @@
 						 encoding: encoding
 						   length: _readBufferLength];
 
-			[self freeMemory: _readBuffer];
-			_readBuffer = NULL;
+			[self freeMemory: _readBufferMemory];
+			_readBuffer = _readBufferMemory = NULL;
 			_readBufferLength = 0;
 
 			_waitingForDelimiter = false;
@@ -874,8 +896,8 @@
 					memcpy(readBuffer, buffer + i + 1,
 					    bufferLength - i - 1);
 
-				[self freeMemory: _readBuffer];
-				_readBuffer = readBuffer;
+				[self freeMemory: _readBufferMemory];
+				_readBuffer = _readBufferMemory = readBuffer;
 				_readBufferLength = bufferLength - i - 1;
 
 				_waitingForDelimiter = false;
@@ -884,19 +906,18 @@
 		}
 
 		/* Neither the delimiter nor \0 was found */
-		_readBuffer = [self resizeMemory: _readBuffer
-					    size: _readBufferLength +
-						  bufferLength];
+		if (bufferLength > 0) {
+			readBuffer = [self allocMemoryWithSize:
+			    _readBufferLength + bufferLength];
 
-		/*
-		 * It's possible that _readBufferLength + bufferLength is 0 and
-		 * thus _readBuffer was set to NULL by resizeMemory:size:.
-		 */
-		if (_readBuffer != NULL)
-			memcpy(_readBuffer + _readBufferLength,
+			memcpy(readBuffer, _readBuffer, _readBufferLength);
+			memcpy(readBuffer + _readBufferLength,
 			    buffer, bufferLength);
 
-		_readBufferLength += bufferLength;
+			[self freeMemory: _readBufferMemory];
+			_readBuffer = _readBufferMemory = readBuffer;
+			_readBufferLength += bufferLength;
+		}
 	} @finally {
 		[self freeMemory: buffer];
 	}
@@ -1501,15 +1522,17 @@
 - (void)unreadFromBuffer: (const void*)buffer
 		  length: (size_t)length
 {
+	char *readBuffer;
+
 	if (length > SIZE_MAX - _readBufferLength)
 		@throw [OFOutOfRangeException exception];
 
-	_readBuffer = [self resizeMemory: _readBuffer
-				    size: _readBufferLength + length];
+	readBuffer = [self allocMemoryWithSize: _readBufferLength + length];
+	memcpy(readBuffer, buffer, length);
+	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
 
-	memmove(_readBuffer + length, _readBuffer, _readBufferLength);
-	memcpy(_readBuffer, buffer, length);
-
+	[self freeMemory: _readBuffer];
+	_readBuffer = _readBufferMemory = readBuffer;
 	_readBufferLength += length;
 }
 
