@@ -387,7 +387,7 @@ void _references_to_categories_of_OFObject(void)
 	for (struct objc_method_list *methodlist =
 	    object_getClass(class)->methodlist;
 	    methodlist != NULL; methodlist = methodlist->next) {
-		for (int i = 0; i < methodlist->count; i++) {
+		for (unsigned int i = 0; i < methodlist->count; i++) {
 			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*
@@ -405,7 +405,7 @@ void _references_to_categories_of_OFObject(void)
 
 	for (struct objc_method_list *methodlist = class->methodlist;
 	    methodlist != NULL; methodlist = methodlist->next) {
-		for (int i = 0; i < methodlist->count; i++) {
+		for (unsigned int i = 0; i < methodlist->count; i++) {
 			SEL selector = (SEL)&methodlist->methods[i].sel;
 
 			/*

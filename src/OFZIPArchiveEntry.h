@@ -100,7 +100,7 @@ enum {
 	uint32_t _startDiskNumber;
 	uint16_t _internalAttributes;
 	uint32_t _versionSpecificAttributes;
-	uint64_t _localFileHeaderOffset;
+	int64_t _localFileHeaderOffset;
 }
 
 /*!

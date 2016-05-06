@@ -41,6 +41,7 @@
 #endif
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFInvalidServerReplyException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -160,7 +161,8 @@ void _references_to_categories_of_OFDataArray(void)
 		of_offset_t size = [[OFFileManager defaultManager]
 		    sizeOfFileAtPath: path];
 
-		if (size > SIZE_MAX)
+		if (sizeof(of_offset_t) > sizeof(size_t) &&
+		    size > (of_offset_t)SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 
 		self = [self initWithItemSize: 1
@@ -220,7 +222,7 @@ void _references_to_categories_of_OFDataArray(void)
 			size_t pageSize;
 			char *buffer;
 			OFDictionary *headers;
-			OFString *contentLength;
+			OFString *contentLengthString;
 
 			if ([response statusCode] != 200)
 				@throw [OFHTTPRequestFailedException
@@ -245,12 +247,20 @@ void _references_to_categories_of_OFDataArray(void)
 			}
 
 			headers = [response headers];
-			if ((contentLength =
-			    [headers objectForKey: @"Content-Length"]) != nil)
-				if ([self count] !=
-				    [contentLength decimalValue])
+			if ((contentLengthString =
+			    [headers objectForKey: @"Content-Length"]) != nil) {
+				intmax_t contentLength =
+				    [contentLengthString decimalValue];
+
+				if (contentLength < 0)
+					@throw [OFInvalidServerReplyException
+					    exception];
+
+				if ((uintmax_t)[self count] !=
+				    (uintmax_t)contentLength)
 					@throw [OFTruncatedDataException
 					    exception];
+			}
 		} @catch (id e) {
 			[self release];
 			@throw e;

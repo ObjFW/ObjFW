@@ -180,7 +180,7 @@
 			    exceptionWithObserver: self
 					    errNo: (int)eventList[i].data];
 
-		if (eventList[i].ident == _cancelFD[0]) {
+		if (eventList[i].ident == (uintptr_t)_cancelFD[0]) {
 			char buffer;
 
 			assert(eventList[i].filter == EVFILT_READ);

@@ -230,7 +230,7 @@
 			if (_bytesRead < 4)
 				return 0;
 
-			if (((_buffer[3] << 24) | (_buffer[2] << 16) |
+			if ((((uint32_t)_buffer[3] << 24) | (_buffer[2] << 16) |
 			    (_buffer[1] << 8) | _buffer[0]) != ~_CRC32)
 				@throw [OFChecksumFailedException exception];
 
@@ -242,7 +242,7 @@
 			_bytesRead += [_stream readIntoBuffer: _buffer
 						       length: 4 - _bytesRead];
 
-			if (((_buffer[3] << 24) | (_buffer[2] << 16) |
+			if ((((uint32_t)_buffer[3] << 24) | (_buffer[2] << 16) |
 			    (_buffer[1] << 8) | _buffer[0]) !=
 			    _uncompressedSize)
 				@throw [OFChecksumFailedException exception];

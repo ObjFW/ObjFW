@@ -111,7 +111,12 @@ normalizeKey(char *str_)
 		@try {
 			intmax_t toRead = [contentLength decimalValue];
 
-			if (toRead > SIZE_MAX)
+			if (toRead < 0)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			if (sizeof(intmax_t) > sizeof(size_t) &&
+			    toRead > (intmax_t)SIZE_MAX)
 				@throw [OFOutOfRangeException exception];
 
 			_toRead = (size_t)toRead;

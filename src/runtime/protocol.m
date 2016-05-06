@@ -44,7 +44,7 @@ protocol_conformsToProtocol(Protocol *a, Protocol *b)
 
 	for (struct objc_protocol_list *pl = a->protocol_list;
 	    pl != NULL; pl = pl->next)
-		for (size_t i = 0; i < pl->count; i++)
+		for (long i = 0; i < pl->count; i++)
 			if (protocol_conformsToProtocol(pl->list[i], b))
 				return true;
 

@@ -848,7 +848,8 @@ static struct {
 					 mode: @"rb"
 					errNo: errno];
 
-		if (st.st_size > SIZE_MAX)
+		if (sizeof(of_offset_t) > sizeof(size_t) &&
+		    st.st_size > (of_offset_t)SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 
 		file = [[OFFile alloc] initWithPath: path

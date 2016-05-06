@@ -32,7 +32,10 @@ int _OFTCPSocket_SOCKS5_reference;
 static void
 send_or_exception(OFTCPSocket *self, int socket, char *buffer, size_t length)
 {
-	if (send(socket, buffer, length, 0) != length)
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (send(socket, buffer, length, 0) != (ssize_t)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length

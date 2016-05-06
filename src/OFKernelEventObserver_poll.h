@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFKernelEventObserver_poll: OFKernelEventObserver
 {
 	OFDataArray *_FDs;
-	size_t _maxFD;
+	int _maxFD;
 	id __unsafe_unretained *_FDToObject;
 }
 @end

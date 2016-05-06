@@ -54,7 +54,7 @@
 
 		_maxFD = _cancelFD[0];
 		_FDToObject = [self allocMemoryWithSize: sizeof(id)
-						  count: _maxFD + 1];
+						  count: (size_t)_maxFD + 1];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -93,7 +93,7 @@
 			_maxFD = fd;
 			_FDToObject = [self resizeMemory: _FDToObject
 						    size: sizeof(id)
-						   count: _maxFD + 1];
+						   count: (size_t)_maxFD + 1];
 		}
 
 		_FDToObject[fd] = object;

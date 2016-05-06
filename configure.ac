@@ -154,6 +154,8 @@ AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS(-Wobjc-property-synthesis -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-property-synthesis"])
+AX_CHECK_COMPILER_FLAGS(-Wsign-compare -Werror,
+	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([

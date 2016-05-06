@@ -231,8 +231,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	    _centralDirectoryEntriesInDisk == 0xFFFF ||
 	    _centralDirectoryEntries == 0xFFFF ||
 	    _centralDirectorySize == 0xFFFFFFFF ||
-	    _centralDirectoryOffset == 0xFFFFFFFF) {
-		uint64_t offset64, size;
+	    _centralDirectoryOffset == -1) {
+		int64_t offset64;
+		uint64_t size;
 
 		seekOrThrowInvalidFormat(_stream, offset - 20, SEEK_END);
 
@@ -248,7 +249,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		[_stream readLittleEndianInt32];
 		offset64 = [_stream readLittleEndianInt64];
 
-		if ((of_offset_t)offset64 != offset64)
+		if (offset64 < 0 || (of_offset_t)offset64 != offset64)
 			@throw [OFOutOfRangeException exception];
 
 		seekOrThrowInvalidFormat(_stream,
@@ -274,7 +275,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_centralDirectorySize = [_stream readLittleEndianInt64];
 		_centralDirectoryOffset = [_stream readLittleEndianInt64];
 
-		if ((of_offset_t)_centralDirectoryOffset !=
+		if (_centralDirectoryOffset < 0 ||
+		    (of_offset_t)_centralDirectoryOffset !=
 		    _centralDirectoryOffset)
 			@throw [OFOutOfRangeException exception];
 	}
@@ -286,7 +288,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if ((of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
+	if (_centralDirectoryOffset < 0 ||
+	    (of_offset_t)_centralDirectoryOffset != _centralDirectoryOffset)
 		@throw [OFOutOfRangeException exception];
 
 	seekOrThrowInvalidFormat(_stream,
@@ -323,7 +326,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
 	OFZIPArchive_LocalFileHeader *localFileHeader;
-	uint64_t offset64;
+	int64_t offset64;
 
 	if (entry == nil)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
@@ -335,7 +338,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_lastReturnedStream = nil;
 
 	offset64 = [entry OF_localFileHeaderOffset];
-	if ((of_offset_t)offset64 != offset64)
+	if (offset64 < 0 || (of_offset_t)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
 	seekOrThrowInvalidFormat(_stream, (of_offset_t)offset64, SEEK_SET);

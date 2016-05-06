@@ -38,7 +38,8 @@ OF_ASSUME_NONNULL_BEGIN
 	OFSeekableStream *_stream;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
-	uint64_t _centralDirectorySize, _centralDirectoryOffset;
+	uint64_t _centralDirectorySize;
+	int64_t _centralDirectoryOffset;
 	OFString *_archiveComment;
 	OFMutableArray OF_GENERIC(OFZIPArchiveEntry*) *_entries;
 	OFMutableDictionary OF_GENERIC(OFString*, OFZIPArchiveEntry*)
