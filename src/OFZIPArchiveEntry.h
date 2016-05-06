@@ -169,6 +169,13 @@ enum {
 @property (readonly) uint32_t versionSpecificAttributes;
 
 /*!
+ * The general purpose bit flag of the entry.
+ *
+ * See the ZIP specification for details.
+ */
+@property (readonly) uint16_t generalPurposeBitFlag;
+
+/*!
  * @brief Returns the last modification date of the entry's file.
  *
  * @return The last modification date of the entry's file

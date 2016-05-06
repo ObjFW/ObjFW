@@ -19,8 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFZIPArchiveEntry ()
-@property (readonly) uint16_t OF_generalPurposeBitFlag, OF_lastModifiedFileTime;
-@property (readonly) uint16_t OF_lastModifiedFileDate;
+@property (readonly) uint16_t OF_lastModifiedFileTime, OF_lastModifiedFileDate;
 @property (readonly) uint64_t OF_localFileHeaderOffset;
 
 - (instancetype)OF_initWithStream: (OFStream*)stream;

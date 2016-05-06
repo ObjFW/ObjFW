@@ -127,8 +127,12 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			}
 
 			if (app->_outputLevel >= 3)
-				[of_stdout writeFormat: @"\tExtra field: %@\n",
-							[entry extraField]];
+				[of_stdout writeFormat:
+				    @"\tGeneral purpose bit flag: "
+				    @"%04" PRIx16 "\n"
+				    @"\tExtra field: %@\n",
+				    [entry generalPurposeBitFlag],
+				    [entry extraField]];
 
 			if ([[entry fileComment] length] > 0)
 				[of_stdout writeFormat: @"\tComment: %@\n",

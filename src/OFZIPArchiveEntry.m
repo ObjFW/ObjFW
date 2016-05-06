@@ -148,7 +148,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 @synthesize uncompressedSize = _uncompressedSize;
 @synthesize CRC32 = _CRC32;
 @synthesize versionSpecificAttributes = _versionSpecificAttributes;
-@synthesize OF_generalPurposeBitFlag = _generalPurposeBitFlag;
+@synthesize generalPurposeBitFlag = _generalPurposeBitFlag;
 @synthesize OF_lastModifiedFileTime = _lastModifiedFileTime;
 @synthesize OF_lastModifiedFileDate = _lastModifiedFileDate;
 @synthesize OF_localFileHeaderOffset = _localFileHeaderOffset;
