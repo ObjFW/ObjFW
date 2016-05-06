@@ -382,16 +382,18 @@ normalizeKey(char *str_)
 	if (headers == nil)
 		headers = [OFMutableDictionary dictionary];
 
-	if (([scheme isEqual: @"http"] && [URL port] != 80) ||
-	    ([scheme isEqual: @"https"] && [URL port] != 443)) {
-		OFString *host = [OFString stringWithFormat:
-		    @"%@:%d", [URL host], [URL port]];
+	if ([headers objectForKey: @"Host"] == nil) {
+		if (([scheme isEqual: @"http"] && [URL port] != 80) ||
+		    ([scheme isEqual: @"https"] && [URL port] != 443)) {
+			OFString *host = [OFString stringWithFormat:
+			    @"%@:%d", [URL host], [URL port]];
 
-		[headers setObject: host
-			    forKey: @"Host"];
-	} else
-		[headers setObject: [URL host]
-			    forKey: @"Host"];
+			[headers setObject: host
+				    forKey: @"Host"];
+		} else
+			[headers setObject: [URL host]
+				    forKey: @"Host"];
+	}
 
 	user = [URL user];
 	password = [URL password];
