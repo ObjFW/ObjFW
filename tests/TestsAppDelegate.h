@@ -57,7 +57,7 @@
 
 @class OFString;
 
-@interface TestsAppDelegate: OFObject
+@interface TestsAppDelegate: OFObject <OFApplicationDelegate>
 {
 	int _fails;
 }
