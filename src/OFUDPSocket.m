@@ -186,8 +186,8 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 	switch (address1->address.ss_family) {
 	case AF_INET:
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-		if (address1->length < sizeof(struct sockaddr_in) ||
-		    address2->length < sizeof(struct sockaddr_in))
+		if (address1->length < (socklen_t)sizeof(struct sockaddr_in) ||
+		    address2->length < (socklen_t)sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #else
 		if (address1->length < 8 || address2->length < 8)
@@ -243,7 +243,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	switch (address->address.ss_family) {
 	case AF_INET:
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-		if (address->length < sizeof(struct sockaddr_in))
+		if (address->length < (socklen_t)sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #else
 		if (address->length < 8)
@@ -306,7 +306,8 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	of_resolver_result_t **results =
 	    of_resolve_host(host, port, SOCK_DGRAM);
 
-	assert(results[0]->addressLength <= sizeof(address->address));
+	assert(results[0]->addressLength <=
+	    (socklen_t)sizeof(address->address));
 
 	memcpy(&address->address, results[0]->address,
 	    results[0]->addressLength);

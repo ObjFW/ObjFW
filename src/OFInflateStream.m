@@ -408,7 +408,7 @@ start:
 		if OF_UNLIKELY (length == 0)
 			return bytesWritten;
 
-		tmp = (length < CTX.length - CTX.position
+		tmp = (length < (size_t)CTX.length - CTX.position
 		    ? (uint16_t)length : CTX.length - CTX.position);
 
 		tmp = (uint16_t)[_stream readIntoBuffer: buffer + bytesWritten

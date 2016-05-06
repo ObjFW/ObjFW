@@ -560,7 +560,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 #endif
 
-	assert(client->_addressLength <= sizeof(struct sockaddr_storage));
+	assert(client->_addressLength <=
+	    (socklen_t)sizeof(struct sockaddr_storage));
 
 	if (client->_addressLength != sizeof(struct sockaddr_storage)) {
 		@try {
