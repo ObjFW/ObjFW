@@ -20,7 +20,6 @@ Bare metal ARM Cortex-M4
   * Architectures: ARMv7E-M
   * Compilers: Clang 3.5
   * Runtimes: ObjFW
-  * Limitations: No threads, no sockets, no files
   * Note: Bootloader, libc (newlib) and possibly external RAM required
 
 
