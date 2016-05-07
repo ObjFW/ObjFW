@@ -115,7 +115,7 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 
 			if (attr->priority < 0) {
 				param.sched_priority = minPrio +
-				    (1.0 + attr->priority) *
+				    (1.0f + attr->priority) *
 				    (normalPrio - minPrio);
 			} else
 				param.sched_priority = normalPrio +
