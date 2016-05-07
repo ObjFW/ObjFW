@@ -53,11 +53,12 @@
 
 .macro generate_lookup_super name lookup
 \name:
-	ldr	r2, [r0, #0]
+	mov	r2, r0
+	ldr	r0, [r0, #0]
 	cmp	r0, #0
 	beq	ret_nil
 
-	ldr	r2, [r0, #4]
+	ldr	r2, [r2, #4]
 	ldr	r2, [r2, #32]
 
 	b	.Lmain_\lookup
