@@ -136,7 +136,7 @@ test(id self, SEL _cmd)
 {
 	OF_ENSURE(self == target);
 
-	if (a0 != 0xDEADBEEF)
+	if (a0 != (intptr_t)0xDEADBEEF)
 		return 0;
 	if (a1 != -1)
 		return 0;
