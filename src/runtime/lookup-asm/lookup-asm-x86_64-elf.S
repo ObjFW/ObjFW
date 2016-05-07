@@ -54,11 +54,12 @@
 
 .macro generate_lookup_super name lookup
 \name:
-	movq	(%rdi), %rax
-	testq	%rax, %rax
+	movq	%rdi, %r8
+	movq	(%rdi), %rdi
+	testq	%rdi, %rdi
 	jz	ret_nil
 
-	movq	8(%rdi), %r8
+	movq	8(%r8), %r8
 	movq	64(%r8), %r8
 	jmp	.Lmain_\lookup
 .type \name, %function

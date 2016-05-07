@@ -50,11 +50,12 @@ Lmain_$0:
 
 .macro generate_lookup_super
 $0:
-	movq	(%rdi), %rax
-	testq	%rax, %rax
+	movq	%rdi, %r8
+	movq	(%rdi), %rdi
+	testq	%rdi, %rdi
 	jz	ret_nil
 
-	movq	8(%rdi), %r8
+	movq	8(%r8), %r8
 	movq	64(%r8), %r8
 	jmp	Lmain_$1
 .endmacro

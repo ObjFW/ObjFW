@@ -63,9 +63,11 @@
 .macro generate_lookup_super name lookup
 \name:
 	movl	4(%esp), %edx
-	cmpl	$0, (%edx)
+	movl	(%edx), %eax
+	cmpl	$0, %eax
 	je	ret_nil
 
+	movl	%eax, 4(%esp)
 	movl	4(%edx), %edx
 	movl	32(%edx), %edx
 	jmp	.Lmain_\lookup
