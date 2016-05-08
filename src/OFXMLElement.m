@@ -427,9 +427,8 @@ static Class CDATAClass = Nil;
 {
 	void *pool;
 	char *cString;
-	size_t length, i, attributesCount;
+	size_t length, i;
 	OFString *prefix, *parentPrefix;
-	OFXMLAttribute *const *attributesObjects;
 	OFString *ret;
 	OFString *defaultNS;
 
@@ -518,22 +517,17 @@ static Class CDATAClass = Nil;
 	}
 
 	/* Attributes */
-	attributesObjects = [_attributes objects];
-	attributesCount = [_attributes count];
-
-	for (size_t j = 0; j < attributesCount; j++) {
+	for (OFXMLAttribute *attribute in _attributes) {
 		void *pool2 = objc_autoreleasePoolPush();
-		OFString *attributeName = [attributesObjects[j] name];
+		OFString *attributeName = [attribute name];
 		OFString *attributePrefix = nil;
-		OFString *tmp =
-		    [[attributesObjects[j] stringValue] stringByXMLEscaping];
+		OFString *tmp = [[attribute stringValue] stringByXMLEscaping];
 
-		if ([attributesObjects[j] namespace] != nil &&
+		if ([attribute namespace] != nil &&
 		    (attributePrefix = [allNamespaces objectForKey:
-		    [attributesObjects[j] namespace]]) == nil)
+		    [attribute namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
-			    exceptionWithNamespace: [attributesObjects[j]
-							namespace]
+			    exceptionWithNamespace: [attribute namespace]
 					   element: self];
 
 		length += [attributeName UTF8StringLength] +
@@ -570,18 +564,15 @@ static Class CDATAClass = Nil;
 
 	/* Childen */
 	if (_children != nil) {
-		OFXMLNode *const *childrenObjects = [_children objects];
-		size_t childrenCount = [_children count];
 		OFDataArray *tmp = [OFDataArray dataArray];
 		bool indent;
 
 		if (indentation > 0) {
 			indent = true;
 
-			for (size_t j = 0; j < childrenCount; j++) {
-				if ([childrenObjects[j] isKindOfClass:
-				    charactersClass] || [childrenObjects[j]
-				    isKindOfClass: CDATAClass]) {
+			for (OFXMLNode *child in _children) {
+				if ([child isKindOfClass: charactersClass] ||
+				    [child isKindOfClass: CDATAClass]) {
 					indent = false;
 					break;
 				}
@@ -589,27 +580,26 @@ static Class CDATAClass = Nil;
 		} else
 			indent = false;
 
-		for (size_t j = 0; j < childrenCount; j++) {
-			OFString *child;
+		for (OFXMLNode *child in _children) {
+			OFString *childString;
 			unsigned int ind = (indent ? indentation : 0);
 
 			if (ind)
 				[tmp addItem: "\n"];
 
-			if ([childrenObjects[j] isKindOfClass:
-			    [OFXMLElement class]])
-				child = [(OFXMLElement*)childrenObjects[j]
+			if ([child isKindOfClass: [OFXMLElement class]])
+				childString = [(OFXMLElement*)child
 				    OF_XMLStringWithParent: self
 						namespaces: allNamespaces
 					       indentation: ind
 						     level: level + 1];
 			else
-				child = [childrenObjects[j]
+				childString = [child
 				    XMLStringWithIndentation: ind
 						       level: level + 1];
 
-			[tmp addItems: [child UTF8String]
-				count: [child UTF8StringLength]];
+			[tmp addItems: [childString UTF8String]
+				count: [childString UTF8StringLength]];
 		}
 
 		if (indent)
