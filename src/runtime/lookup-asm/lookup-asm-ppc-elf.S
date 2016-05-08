@@ -60,11 +60,12 @@
 
 .macro generate_lookup_super name lookup
 \name:
-	lwz	%r5, 0(%r3)
-	cmpwi	%r5, 0
+	mr	%r5, %r3
+	lwz	%r3, 0(%r3)
+	cmpwi	%r3, 0
 	beq-	ret_nil
 
-	lwz	%r5, 4(%r3)
+	lwz	%r5, 4(%r5)
 	lwz	%r5, 32(%r5)
 
 	b	.Lmain_\lookup
