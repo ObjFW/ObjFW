@@ -27,7 +27,7 @@
 .macro generate_lookup name not_found
 \name:
 	cmp	%o0, 0
-	beq,pn	ret_nil
+	be	ret_nil
 	 nop
 
 	ld	[%o0], %o2
@@ -53,7 +53,7 @@
 	ld	[%o2 + %o5], %o2
 
 	cmp	%o2, 0
-	beq,pn	\not_found
+	be	\not_found
 	 nop
 
 	retl
@@ -64,12 +64,13 @@
 
 .macro generate_lookup_super name lookup
 \name:
-	ld	[%o0], %o2
-	cmp	%o2, 0
-	beq,pn	ret_nil
+	mov	%o0, %o2
+	ld	[%o0], %o0
+	cmp	%o0, 0
+	be	ret_nil
 	 nop
 
-	ld	[%o0 + 4], %o2
+	ld	[%o2 + 4], %o2
 	ba	.Lmain_\lookup
 	 ld	[%o2 + 32], %o2
 .type \name, %function
