@@ -94,12 +94,14 @@
 
 .macro generate_lookup_super name lookup
 \name:
-	lw	$t0, 0($a0)
-	beqz	$t0, 0f
+	move	$t0, $a0
+	lw	$a0, 0($a0)
+	beqz	$a0, 0f
 
-	lw	$t0, 4($a0)
+	lw	$t0, 4($t0)
 	lw	$t0, 32($t0)
 
+	addiu	$t9, $t9, \lookup-\name
 	b	.Lmain_\lookup
 
 0:
