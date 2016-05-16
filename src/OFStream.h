@@ -1129,7 +1129,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @warning Do not call this directly!
  *
- * Override this method with your actual read implementation when subclassing!
+ * @note Override this method with your actual read implementation when
+ *	 subclassing!
  *
  * @param buffer The buffer for the data to read
  * @param length The length of the buffer
@@ -1143,7 +1144,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @warning Do not call this directly!
  *
- * Override this method with your actual write implementation when subclassing!
+ * @note Override this method with your actual write implementation when
+ *	 subclassing!
  *
  * @param buffer The buffer with the data to write
  * @param length The length of the data to write
@@ -1156,8 +1158,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @warning Do not call this directly!
  *
- * Override this method with your actual end of stream checking implementation
- * when subclassing!
+ * @note Override this method with your actual end of stream checking
+ *	 implementation when subclassing!
  *
  * @return Whether the lowlevel is at the end of the stream
  */

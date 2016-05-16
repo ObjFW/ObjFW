@@ -881,7 +881,7 @@ OF_ROOT_CLASS
  * @brief Handles messages which are not understood by the receiver.
  *
  * @warning If you override this method, you must make sure that it never
- *	    returns.
+ *	    returns!
  *
  * @param selector The selector not understood by the receiver
  */

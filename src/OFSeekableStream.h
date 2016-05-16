@@ -70,8 +70,8 @@ typedef off_t of_offset_t;
  *
  * @warning Do not call this directly!
  *
- * Override this with this method with your actual seek implementation when
- * subclassing!
+ * @note Override this method with your actual seek implementation when
+ *	 subclassing!
  *
  * @param offset The offset to seek to
  * @param whence From where to seek.@n
