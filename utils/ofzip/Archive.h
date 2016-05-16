@@ -23,4 +23,5 @@
 - initWithFile: (OFFile*)file;
 - (void)listFiles;
 - (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files;
+- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files;
 @end

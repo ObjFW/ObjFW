@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFDate.h"
 #import "OFSet.h"
 #import "OFApplication.h"
@@ -26,6 +28,7 @@
 #import "OFZIP.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFOpenItemFailedException.h"
 
 #ifndef S_IRWXG
 # define S_IRWXG 0
@@ -256,6 +259,46 @@ outer_loop_end:
 			    @"File %@ is not in the archive!\n", file];
 
 		app->_exitStatus = 1;
+	}
+}
+
+- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files
+{
+	OFStream *stream;
+
+	if ([files count] < 1) {
+		[of_stderr writeLine: @"Need one or more files to print!"];
+		app->_exitStatus = 1;
+		return;
+	}
+
+	for (OFString *path in files) {
+		@try {
+			stream = [_archive streamForReadingFile: path];
+		} @catch (OFOpenItemFailedException *e) {
+			if ([e errNo] == ENOENT) {
+				[of_stderr writeFormat:
+				    @"File %@ is not in the archive!\n",
+				    [e path]];
+				app->_exitStatus = 1;
+				continue;
+			}
+
+			@throw e;
+		}
+
+		while (![stream isAtEndOfStream]) {
+			ssize_t length = [app copyBlockFromStream: stream
+							 toStream: of_stdout
+							 fileName: path];
+
+			if (length < 0) {
+				app->_exitStatus = 1;
+				return;
+			}
+		}
+
+		[stream close];
 	}
 }
 @end

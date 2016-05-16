@@ -43,7 +43,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeFormat:
-	    @"Usage: %@ -[fhlnqvx] archive.zip [file1 file2 ...]\n",
+	    @"Usage: %@ -[fhlnpqvx] archive.zip [file1 file2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
@@ -53,6 +53,8 @@ help(OFStream *stream, bool full, int status)
 		    @"    -h  --help       Show this help\n"
 		    @"    -l  --list       List all files in the archive\n"
 		    @"    -n  --no-clober  Never overwrite files\n"
+		    @"    -p  --print      Print one or more files from the "
+		    @"archive\n"
 		    @"    -q  --quiet      Quiet mode (no output, except "
 		    @"errors)\n"
 		    @"    -v  --verbose    Verbose output for file list\n"
@@ -71,6 +73,18 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 	[OFApplication terminateWithStatus: 1];
 }
 
+static void
+mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
+    of_unichar_t shortOption2, OFString *longOption2,
+    of_unichar_t shortOption3, OFString *longOption3)
+{
+	[of_stderr writeFormat:
+	    @"Error: -%C / --%@, -%C / --%@ and -%C / --%@ are mutually "
+	    @"exclusive!\n", shortOption1, longOption1, shortOption2,
+	    longOption2, shortOption3, longOption3];
+	[OFApplication terminateWithStatus: 1];
+}
+
 @implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
@@ -79,6 +93,7 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 'l', @"list", 0, NULL, NULL },
 		{ 'n', @"no-clobber", 0, NULL, NULL },
+		{ 'p', @"print", 0, NULL, NULL },
 		{ 'q', @"quiet", 0, NULL, NULL },
 		{ 'v', @"verbose", 0, NULL, NULL },
 		{ 'x', @"extract", 0, NULL, NULL },
@@ -122,9 +137,11 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 			break;
 		case 'l':
 		case 'x':
+		case 'p':
 			if (mode != '\0')
-				mutuallyExclusiveError(
-				    'l', @"list", 'x', @"extract");
+				mutuallyExclusiveError3(
+				    'l', @"list", 'x', @"extract",
+				    'p', @"print");
 
 			mode = option;
 			break;
@@ -186,6 +203,15 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 			_exitStatus = 1;
 		}
 
+		break;
+	case 'p':
+		if ([remainingArguments count] < 1)
+			help(of_stderr, false, 1);
+
+		files = [remainingArguments objectsInRange:
+		    of_range(1, [remainingArguments count] - 1)];
+
+		[archive printFiles: files];
 		break;
 	default:
 		help(of_stderr, true, 1);

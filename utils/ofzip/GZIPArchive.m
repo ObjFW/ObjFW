@@ -117,4 +117,28 @@ setPermissions(OFString *destination, OFString *source)
 	if (app->_outputLevel >= 0)
 		[of_stdout writeFormat: @"\rExtracting %@... done\n", fileName];
 }
+
+- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files
+{
+	OFString *fileName = [[app->_archivePath lastPathComponent]
+	    stringByDeletingPathExtension];
+
+	if ([files count] > 0) {
+		[of_stderr writeLine:
+		    @"Cannot specify a file to print for .gz archives!"];
+		app->_exitStatus = 1;
+		return;
+	}
+
+	while (![_stream isAtEndOfStream]) {
+		ssize_t length = [app copyBlockFromStream: _stream
+						 toStream: of_stdout
+						 fileName: fileName];
+
+		if (length < 0) {
+			app->_exitStatus = 1;
+			return;
+		}
+	}
+}
 @end
