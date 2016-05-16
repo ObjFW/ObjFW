@@ -229,6 +229,9 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	[_archivePath release];
 	_archivePath = [path copy];
 
+	if (path == nil)
+		return nil;
+
 	@try {
 		file = [OFFile fileWithPath: path
 				       mode: @"rb"];
