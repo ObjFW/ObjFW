@@ -49,10 +49,10 @@ help(OFStream *stream, bool full, int status)
 	if (full)
 		[stream writeString:
 		    @"\nOptions:\n"
-		    @"    -f  --force      Force / override files\n"
+		    @"    -f  --force      Force / overwrite files\n"
 		    @"    -h  --help       Show this help\n"
 		    @"    -l  --list       List all files in the archive\n"
-		    @"    -n  --no-clober  Never override files\n"
+		    @"    -n  --no-clober  Never overwrite files\n"
 		    @"    -q  --quiet      Quiet mode (no output, except "
 		    @"errors)\n"
 		    @"    -v  --verbose    Verbose output for file list\n"
@@ -93,18 +93,18 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'f':
-			if (_override < 0)
+			if (_overwrite < 0)
 				mutuallyExclusiveError(
 				    'f', @"force", 'n', @"no-clobber");
 
-			_override = 1;
+			_overwrite = 1;
 			break;
 		case 'n':
-			if (_override > 0)
+			if (_overwrite > 0)
 				mutuallyExclusiveError(
 				    'f', @"force", 'n', @"no-clobber");
 
-			_override = -1;
+			_overwrite = -1;
 			break;
 		case 'v':
 			if (_outputLevel < 0)
@@ -235,19 +235,19 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 {
 	OFString *line;
 
-	if (_override == 1 ||
+	if (_overwrite == 1 ||
 	    ![[OFFileManager defaultManager] fileExistsAtPath: outFileName])
 		return true;
 
 
-	if (_override == -1) {
+	if (_overwrite == -1) {
 		if (_outputLevel >= 0)
 			[of_stdout writeLine: @" skipped"];
 		return false;
 	}
 
 	do {
-		[of_stderr writeFormat: @"\rOverride %@? [ynAN?] ", fileName];
+		[of_stderr writeFormat: @"\rOverwrite %@? [ynAN?] ", fileName];
 
 		line = [of_stdin readLine];
 
@@ -260,9 +260,9 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 	    ![line isEqual: @"N"] && ![line isEqual: @"A"]);
 
 	if ([line isEqual: @"A"])
-		_override = 1;
+		_overwrite = 1;
 	else if ([line isEqual: @"N"])
-		_override = -1;
+		_overwrite = -1;
 
 	if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 		if (_outputLevel >= 0)

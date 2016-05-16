@@ -21,7 +21,7 @@
 
 @interface OFZIP: OFObject
 {
-	int8_t _override;
+	int8_t _overwrite;
 @public
 	int8_t _outputLevel;
 	OFString *_archivePath;
