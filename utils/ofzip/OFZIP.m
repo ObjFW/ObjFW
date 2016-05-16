@@ -213,7 +213,7 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 	}
 
 	@try {
-		if ([path hasSuffix: @".gz"])
+		if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
 			archive = [GZIPArchive archiveWithFile: file];
 		else
 			archive = [ZIPArchive archiveWithFile: file];
