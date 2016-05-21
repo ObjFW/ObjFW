@@ -25,7 +25,7 @@ SRCS = ForwardingTests.m		\
        OFXMLElementBuilderTests.m	\
        OFXMLNodeTests.m			\
        OFXMLParserTests.m		\
-       ${PROPERTIESTESTS_M}		\
+       RuntimeTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\

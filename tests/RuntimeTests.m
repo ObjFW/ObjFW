@@ -21,45 +21,45 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"Properties";
+static OFString *module = @"Runtime";
 
-@interface PropertiesTest: OFObject
+@interface RuntimeTest: OFObject
 {
-	OFString *foo;
-	OFString *bar;
+	OFString *_foo, *_bar;
 }
 
 @property (copy, nonatomic) OFString *foo;
 @property (retain) OFString *bar;
 @end
 
-@implementation PropertiesTest
-@synthesize foo;
-@synthesize bar;
+@implementation RuntimeTest
+@synthesize foo = _foo;
+@synthesize bar = _bar;
 
 - (void)dealloc
 {
-	[foo release];
-	[bar release];
+	[_foo release];
+	[_bar release];
 
 	[super dealloc];
 }
 @end
 
-@implementation TestsAppDelegate (PropertiesTests)
-- (void)propertiesTests
+@implementation TestsAppDelegate (RuntimeTests)
+- (void)runtimeTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	PropertiesTest *pt = [[[PropertiesTest alloc] init] autorelease];
+	RuntimeTest *rt = [[[RuntimeTest alloc] init] autorelease];
 	OFString *t = [OFMutableString stringWithString: @"foo"];
 	OFString *foo = @"foo";
 
-	[pt setFoo: t];
-	TEST(@"copy, nonatomic", [[pt foo] isEqual: foo] &&
-	    [pt foo] != foo && [[pt foo] retainCount] == 1)
+	[rt setFoo: t];
+	TEST(@"copy, nonatomic properties", [[rt foo] isEqual: foo] &&
+	    [rt foo] != foo && [[rt foo] retainCount] == 1)
 
-	[pt setBar: t];
-	TEST(@"retain, atomic", [pt bar] == t && [t retainCount] == 3)
+	[rt setBar: t];
+	TEST(@"retain, atomic properties",
+	    [rt bar] == t && [t retainCount] == 3)
 
 	[pool drain];
 }

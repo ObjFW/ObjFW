@@ -171,10 +171,10 @@ AC_TRY_COMPILE([
 	[foo setBar: (id)0];
 	foo = [foo bar];
 ], [
-	AC_SUBST(PROPERTIESTESTS_M, "PropertiesTests.m")
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
+	AC_MSG_ERROR(Compiler does not support properties!)
 ])
 
 AC_MSG_CHECKING(whether Objective C compiler supports blocks)

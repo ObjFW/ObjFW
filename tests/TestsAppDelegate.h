@@ -132,8 +132,8 @@
 - (void)pluginTests;
 @end
 
-@interface TestsAppDelegate (PropertiesTests)
-- (void)propertiesTests;
+@interface TestsAppDelegate (RuntimeTests)
+- (void)runtimeTests;
 @end
 
 @interface TestsAppDelegate (OFRIPEMD160HashTests)

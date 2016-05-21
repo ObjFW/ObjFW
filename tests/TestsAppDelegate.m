@@ -361,6 +361,8 @@ main(int argc, char *argv[])
 	    changeCurrentDirectoryPath: @"/apps/objfw-tests"];
 #endif
 
+	[self runtimeTests];
+	[self forwardingTests];
 	[self objectTests];
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
@@ -406,8 +408,6 @@ main(int argc, char *argv[])
 #ifdef OF_HAVE_PLUGINS
 	[self pluginTests];
 #endif
-	[self forwardingTests];
-	[self propertiesTests];
 
 #if defined(OF_WII)
 	[self outputString: @"Press home button to exit!\n"
