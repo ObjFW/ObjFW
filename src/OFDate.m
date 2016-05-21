@@ -289,8 +289,13 @@ static int monthToDayOfYear[12] = {
 		    &tm) == NULL)
 			@throw [OFInvalidFormatException exception];
 
+#ifndef OF_WINDOWS
 		if ((_seconds = mktime(&tm)) == -1)
 			@throw [OFInvalidFormatException exception];
+#else
+		if ((_seconds = _mktime64(&tm)) == -1)
+			@throw [OFInvalidFormatException exception];
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
