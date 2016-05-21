@@ -1105,28 +1105,6 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
-	AC_MSG_CHECKING(whether we have GCC bug objc/27438)
-	AC_TRY_COMPILE([
-		@interface OFConstantString
-		{
-			struct objc_class *isa;
-			const char *string;
-			unsigned long size;
-		}
-		@end
-
-		void *_OFConstantStringClassReference;
-	], [
-		OFConstantString *test = @"";
-		(void)test; /* Get rid of unused variable warning */
-	], [
-		AC_MSG_RESULT(no)
-	], [
-		AC_MSG_RESULT([yes, adding -Wno-unused-variable])
-		OBJCFLAGS="$OBJCFLAGS -Wno-unused-variable"
-		AC_SUBST(NO_WARN_UNUSED, "-Wno-unused-variable")
-	])
-
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_TRY_COMPILE([
 		@interface Foo
