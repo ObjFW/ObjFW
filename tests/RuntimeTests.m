@@ -19,9 +19,15 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFNotImplementedException.h"
+
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"Runtime";
+
+@interface OFObject (SuperTest)
+- (id)superTest;
+@end
 
 @interface RuntimeTest: OFObject
 {
@@ -30,6 +36,8 @@ static OFString *module = @"Runtime";
 
 @property (copy, nonatomic) OFString *foo;
 @property (retain) OFString *bar;
+
+- (id)nilSuperTest;
 @end
 
 @implementation RuntimeTest
@@ -43,6 +51,18 @@ static OFString *module = @"Runtime";
 
 	[super dealloc];
 }
+
+- (id)superTest
+{
+	return [super superTest];
+}
+
+- (id)nilSuperTest
+{
+	self = nil;
+
+	return [self superTest];
+}
 @end
 
 @implementation TestsAppDelegate (RuntimeTests)
@@ -50,8 +70,16 @@ static OFString *module = @"Runtime";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	RuntimeTest *rt = [[[RuntimeTest alloc] init] autorelease];
-	OFString *t = [OFMutableString stringWithString: @"foo"];
-	OFString *foo = @"foo";
+	OFString *t, *foo;
+
+	EXPECT_EXCEPTION(@"Calling a non-existant method via super",
+	    OFNotImplementedException, [rt superTest])
+
+	TEST(@"Calling a method via a super with self == nil",
+	    [rt nilSuperTest] == nil)
+
+	t = [OFMutableString stringWithString: @"foo"];
+	foo = @"foo";
 
 	[rt setFoo: t];
 	TEST(@"copy, nonatomic properties", [[rt foo] isEqual: foo] &&
