@@ -42,18 +42,18 @@ typedef enum of_tar_archive_entry_type_t {
 {
 	OFStream *_stream;
 	bool _atEndOfStream;
-	OFString *_name;
+	OFString *_fileName;
 	uint32_t _mode;
 	uint64_t _size, _toRead;
 	OFDate *_modificationDate;
 	of_tar_archive_entry_type_t _type;
-	OFString *_targetName;
+	OFString *_targetFileName;
 }
 
 /*!
- * The name of the entry.
+ * The file name of the entry.
  */
-@property (readonly, copy) OFString *name;
+@property (readonly, copy) OFString *fileName;
 
 /*!
  * The mode of the entry.
@@ -78,9 +78,9 @@ typedef enum of_tar_archive_entry_type_t {
 @property (readonly) of_tar_archive_entry_type_t type;
 
 /*!
- * The name of the target (for a hard link or symbolic link).
+ * The file name of the target (for a hard link or symbolic link).
  */
-@property (readonly, copy) OFString *targetName;
+@property (readonly, copy) OFString *targetFileName;
 @end
 
 OF_ASSUME_NONNULL_END

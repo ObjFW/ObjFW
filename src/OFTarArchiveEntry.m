@@ -49,9 +49,9 @@ octalValueFromBuffer(const char *buffer, size_t length, size_t max)
 }
 
 @implementation OFTarArchiveEntry
-@synthesize name = _name, mode = _mode, size = _size;
+@synthesize fileName = _fileName, mode = _mode, size = _size;
 @synthesize modificationDate = _modificationDate, type = _type;
-@synthesize targetName = _targetName;
+@synthesize targetFileName = _targetFileName;
 
 - (instancetype)OF_initWithHeader: (char[512])header
 			   stream: (OFStream*)stream
@@ -63,7 +63,7 @@ octalValueFromBuffer(const char *buffer, size_t length, size_t max)
 
 		_stream = [stream retain];
 
-		_name = [stringFromBuffer(header, 100) copy];
+		_fileName = [stringFromBuffer(header, 100) copy];
 		_mode = (uint32_t)octalValueFromBuffer(
 		    header + 100, 8, UINT32_MAX);
 		_size = _toRead = (size_t)octalValueFromBuffer(
@@ -73,7 +73,7 @@ octalValueFromBuffer(const char *buffer, size_t length, size_t max)
 		    (of_time_interval_t)octalValueFromBuffer(
 		    header + 136, 12, UINTMAX_MAX)];
 		_type = header[156];
-		_targetName = [stringFromBuffer(header + 157, 100) copy];
+		_targetFileName = [stringFromBuffer(header + 157, 100) copy];
 
 		if (_type == '\0')
 			_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
@@ -90,9 +90,9 @@ octalValueFromBuffer(const char *buffer, size_t length, size_t max)
 - (void)dealloc
 {
 	[_stream release];
-	[_name release];
+	[_fileName release];
 	[_modificationDate release];
-	[_targetName release];
+	[_targetFileName release];
 
 	[super dealloc];
 }
@@ -112,10 +112,10 @@ octalValueFromBuffer(const char *buffer, size_t length, size_t max)
 	ret = [_stream readIntoBuffer: buffer
 			       length: length];
 
-	_toRead -= ret;
-
 	if (ret == 0)
 		_atEndOfStream = true;
+
+	_toRead -= ret;
 
 	return ret;
 }
