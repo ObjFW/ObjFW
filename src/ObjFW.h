@@ -48,13 +48,15 @@
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 #import "OFGZIPStream.h"
+#import "OFTarArchive.h"
+#import "OFTarArchiveEntry.h"
+#import "OFZIPArchive.h"
+#import "OFZIPArchiveEntry.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFFileManager.h"
 # import "OFINIFile.h"
 # import "OFSettings.h"
-# import "OFZIPArchive.h"
-# import "OFZIPArchiveEntry.h"
 #endif
 #ifdef OF_HAVE_SOCKETS
 # import "OFStreamSocket.h"

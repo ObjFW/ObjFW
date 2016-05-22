@@ -64,6 +64,8 @@ SRCS = OFApplication.m			\
        OFString+XMLEscaping.m		\
        OFString+XMLUnescaping.m		\
        OFSystemInfo.m			\
+       OFTarArchive.m			\
+       OFTarArchiveEntry.m		\
        OFThread.m			\
        OFTimer.m			\
        OFURL.m				\
