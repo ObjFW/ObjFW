@@ -2266,6 +2266,58 @@ static struct {
 	return value;
 }
 
+- (uintmax_t)octalValue
+{
+	void *pool = objc_autoreleasePoolPush();
+	const of_unichar_t *characters = [self characters];
+	size_t i = 0, length = [self length];
+	uintmax_t value = 0;
+	bool expectWhitespace = false;
+
+	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
+	    *characters == '\n' || *characters == '\r' ||
+	    *characters == '\f')) {
+		characters++;
+		length--;
+	}
+
+	if (length == 0) {
+		objc_autoreleasePoolPop(pool);
+		return 0;
+	}
+
+	for (; i < length; i++) {
+		uintmax_t newValue;
+
+		if (expectWhitespace) {
+			if (characters[i] != ' ' && characters[i] != '\t' &&
+			    characters[i] != '\n' && characters[i] != '\r' &&
+			    characters[i] != '\f')
+				@throw [OFInvalidFormatException exception];
+			continue;
+		}
+
+		if (characters[i] >= '0' && characters[i] <= '7')
+			newValue = (value << 3) | (characters[i] - '0');
+		else if (characters[i] == ' ' || characters[i] == '\t' ||
+		    characters[i] == '\n' || characters[i] == '\r' ||
+		    characters[i] == '\f') {
+			expectWhitespace = true;
+			continue;
+		} else
+			@throw [OFInvalidFormatException exception];
+
+		if (newValue < value)
+			@throw [OFOutOfRangeException exception];
+
+		value = newValue;
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return value;
+}
+
 - (float)floatValue
 {
 	void *pool = objc_autoreleasePoolPush();

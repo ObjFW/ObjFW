@@ -952,34 +952,49 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (OFString*)stringByStandardizingURLPath;
 
 /*!
- * @brief Returns the decimal value of the string as an intmax_t.
+ * @brief Returns the decimal value of the string as an `intmax_t`.
  *
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
- * OFInvalidEncodingException is thrown.
+ * @ref OFInvalidEncodingException is thrown.
  *
- * If the number is too big to fit into an intmax_t, an OFOutOfRangeException
- * is thrown.
+ * If the number is too big to fit into an `intmax_t`, an
+ * @ref OFOutOfRangeException is thrown.
  *
- * @return An intmax_t with the value of the string
+ * @return An `intmax_t` with the value of the string
  */
 - (intmax_t)decimalValue;
 
 /*!
- * @brief Returns the hexadecimal value of the string as an uintmax_t.
+ * @brief Returns the hexadecimal value of the string as an `uintmax_t`.
  *
  * Leading and trailing whitespaces are ignored.
  *
  * If the string contains any non-number characters, an
- * OFInvalidEncodingException is thrown.
+ * @ref OFInvalidEncodingException is thrown.
  *
- * If the number is too big to fit into an uintmax_t, an OFOutOfRangeException
- * is thrown.
+ * If the number is too big to fit into an `uintmax_t`, an
+ * @ref OFOutOfRangeException is thrown.
  *
- * @return A uintmax_t with the value of the string
+ * @return A `uintmax_t` with the value of the string
  */
 - (uintmax_t)hexadecimalValue;
+
+/*!
+ * @brief Returns the octal value of the string as an `uintmax_t`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidEncodingException is thrown.
+ *
+ * If the number is too big to fit into an `uintmax_t`, an
+ * @ref OFOutOfRangeException is thrown.
+ *
+ * @return A `uintmax_t` with the value of the string
+ */
+- (uintmax_t)octalValue;
 
 /*!
  * @brief Returns the float value of the string as a float.

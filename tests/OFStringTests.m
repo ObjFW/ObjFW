@@ -444,6 +444,12 @@ static uint16_t sutf16str[] = {
 	    [@"\rFeh " hexadecimalValue] == 0xFE &&
 	    [@"\r\t" hexadecimalValue] == 0)
 
+	TEST(@"-[octalValue]",
+	    [@"1234567" octalValue] == 01234567 &&
+	    [@"\r\n123" octalValue] == 0123 &&
+	    [@"765\t" octalValue] == 0765 &&
+	    [@"\t\t\r\n" octalValue] == 0)
+
 	/*
 	 * These test numbers can be generated without rounding if we have IEEE
 	 * floating point numbers, thus we can use == on them.

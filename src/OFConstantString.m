@@ -550,6 +550,13 @@ struct {
 	return [self hexadecimalValue];
 }
 
+- (uintmax_t)octalValue
+{
+	[self finishInitialization];
+
+	return [self octalValue];
+}
+
 - (float)floatValue
 {
 	[self finishInitialization];
