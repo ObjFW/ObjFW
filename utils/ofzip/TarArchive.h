@@ -14,14 +14,12 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFFile.h"
-#import "OFArray.h"
+#import "OFTarArchive.h"
 
-@protocol Archive <OFObject>
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream;
-- initWithStream: (OF_KINDOF(OFStream*))stream;
-- (void)listFiles;
-- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files;
-- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files;
+#import "Archive.h"
+
+@interface TarArchive: OFObject <Archive>
+{
+	OFTarArchive *_archive;
+}
 @end

@@ -26,8 +26,9 @@
 #import "OFStdIOStream.h"
 
 #import "OFZIP.h"
-#import "ZIPArchive.h"
 #import "GZIPArchive.h"
+#import "TarArchive.h"
+#import "ZIPArchive.h"
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidFormatException.h"
@@ -242,10 +243,17 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	}
 
 	@try {
-		if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
-			archive = [GZIPArchive archiveWithFile: file];
+		/* This one has to be first for obvious reasons */
+		if ([path hasSuffix: @".tar.gz"] || [path hasSuffix: @".tgz"] ||
+		    [path hasSuffix: @".TAR.GZ"] || [path hasSuffix: @".TGZ"])
+			archive = [TarArchive archiveWithStream:
+			    [OFGZIPStream streamWithStream: file]];
+		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
+			archive = [GZIPArchive archiveWithStream: file];
+		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
+			archive = [TarArchive archiveWithStream: file];
 		else
-			archive = [ZIPArchive archiveWithFile: file];
+			archive = [ZIPArchive archiveWithStream: file];
 	} @catch (OFReadFailedException *e) {
 		[of_stderr writeFormat: @"Failed to read file %@: %s\n",
 					path, strerror([e errNo])];

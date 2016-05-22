@@ -47,17 +47,17 @@ setPermissions(OFString *destination, OFString *source)
 		app = [[OFApplication sharedApplication] delegate];
 }
 
-+ (instancetype)archiveWithFile: (OFFile*)file
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream
 {
-	return [[[self alloc] initWithFile: file] autorelease];
+	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- initWithFile: (OFFile*)file
+- initWithStream: (OF_KINDOF(OFStream*))stream
 {
 	self = [super init];
 
 	@try {
-		_stream = [[OFGZIPStream alloc] initWithStream: file];
+		_stream = [[OFGZIPStream alloc] initWithStream: stream];
 	} @catch (id e) {
 		[self release];
 		@throw e;
