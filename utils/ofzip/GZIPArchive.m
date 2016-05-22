@@ -30,9 +30,11 @@ setPermissions(OFString *destination, OFString *source)
 {
 #ifdef OF_HAVE_CHMOD
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	mode_t mode;
+	mode_t mode = [fileManager permissionsOfItemAtPath: source];
 
-	mode = [fileManager permissionsOfItemAtPath: source];
+	/* Only allow modes that are safe */
+	mode &= (S_IRWXU | S_IRWXG | S_IRWXO);
+
 	[fileManager changePermissionsOfItemAtPath: destination
 				       permissions: mode];
 #endif
