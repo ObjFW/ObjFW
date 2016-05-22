@@ -100,7 +100,7 @@
 	ld	$t0, 8($t0)
 	ld	$t0, 64($t0)
 
-	addiu	$t9, $t9, \lookup-\name
+	daddiu	$t9, $t9, \lookup-\name
 	b	.Lmain_\lookup
 
 0:
