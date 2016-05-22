@@ -889,7 +889,7 @@ static struct {
 {
 	void *pool;
 	OFString *scheme;
-# ifdef OF_HAVE_FILES
+# if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 	Class c = [self class];
 # endif
 
