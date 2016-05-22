@@ -77,6 +77,8 @@ SRCS = OFApplication.m			\
        OFXMLNode.m			\
        OFXMLParser.m			\
        OFXMLProcessingInstructions.m	\
+       OFZIPArchive.m			\
+       OFZIPArchiveEntry.m		\
        base64.m				\
        crc32.m				\
        of_asprintf.m			\
@@ -90,9 +92,7 @@ SRCS_FILES = OFFile.m			\
 	     OFFileManager.m		\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
-	     OFSettings.m		\
-	     OFZIPArchive.m		\
-	     OFZIPArchiveEntry.m
+	     OFSettings.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m			\
 	       OFHTTPRequest.m			\

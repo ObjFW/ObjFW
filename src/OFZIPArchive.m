@@ -24,7 +24,10 @@
 #import "OFDataArray.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFFile.h"
+#import "OFSeekableStream.h"
+#ifdef OF_HAVE_FILES
+# import "OFFile.h"
+#endif
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 
@@ -44,7 +47,6 @@
  * FIXME: Current limitations:
  *  - Split archives are not supported.
  *  - Write support is missing.
- *  - The ZIP has to be a file on the local file system.
  *  - Encrypted files cannot be read.
  */
 
@@ -139,10 +141,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return [[[self alloc] initWithSeekableStream: stream] autorelease];
 }
 
+#ifdef OF_HAVE_FILES
 + (instancetype)archiveWithPath: (OFString*)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
 }
+#endif
 
 - init
 {
@@ -166,6 +170,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return self;
 }
 
+#ifdef OF_HAVE_FILES
 - initWithPath: (OFString*)path
 {
 	self = [super init];
@@ -183,6 +188,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	return self;
 }
+#endif
 
 - (void)dealloc
 {

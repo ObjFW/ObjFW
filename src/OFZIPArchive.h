@@ -60,6 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)archiveWithSeekableStream: (OFSeekableStream*)stream;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
@@ -67,6 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFZIPArchive
  */
 + (instancetype)archiveWithPath: (OFString*)path;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFZIPArchive object with the
@@ -77,6 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithSeekableStream: (OFSeekableStream*)stream;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified file.
@@ -85,6 +88,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFZIPArchive
  */
 - initWithPath: (OFString*)path;
+#endif
 
 /*!
  * @brief Returns the entries of the central directory of the archive as an

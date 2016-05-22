@@ -20,8 +20,8 @@
 #import "OFZIPArchiveEntry+Private.h"
 #import "OFString.h"
 #import "OFDataArray.h"
-#import "OFFile.h"
 #import "OFDate.h"
+#import "OFStream.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
