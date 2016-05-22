@@ -68,7 +68,7 @@
 #endif
 
 	move	$v0, $t0
-	j	$ra
+	jr	$ra
 
 0:
 #ifdef OF_PIC
@@ -76,7 +76,7 @@
 #else
 	la	$v0, nil_method
 #endif
-	j	$ra
+	jr	$ra
 
 #ifdef OF_PIC
 1:
@@ -110,7 +110,7 @@
 #else
 	la	$v0, nil_method
 #endif
-	j	$ra
+	jr	$ra
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -122,7 +122,7 @@ generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 nil_method:
 	move	$v0, $zero
-	j	$ra
+	jr	$ra
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits

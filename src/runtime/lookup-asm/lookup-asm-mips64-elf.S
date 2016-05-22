@@ -64,29 +64,21 @@
 	beqz	$t0, 1f
 
 	move	$v0, $t0
-	j	$ra
+	jr	$ra
 
 0:
 	lui	$v0, %hi(%neg(%gp_rel(\name)))
 	daddu	$v0, $v0, $t9
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
 	ld	$v0, %got_disp(nil_method)($v0)
-	j	$ra
+	jr	$ra
 
 1:
-	daddiu	$sp, $sp, -32
-	sd	$gp, 16($sp)
-	lui	$gp, %hi(%neg(%gp_rel(\name)))
-	daddu	$gp, $gp, $t9
-	daddiu	$gp, $gp, %lo(%neg(%gp_rel(\name)))
-	sd	$ra, 24($sp)
-
-	jal	\not_found
-
-	ld	$ra, 24($sp)
-	ld	$gp, 16($sp)
-	daddiu	$sp, $sp, 32
-	j	$ra
+	lui	$t0, %hi(%neg(%gp_rel(\name)))
+	daddu	$t0, $t0, $t9
+	daddiu	$t0, $t0, %lo(%neg(%gp_rel(\name)))
+	ld	$t9, %got_disp(\not_found)($t0)
+	jr	$t9
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -108,7 +100,7 @@
 	daddu	$v0, $v0, $t9
 	daddiu	$v0, $v0, %lo(%neg(%gp_rel(\name)))
 	ld	$v0, %got_disp(nil_method)($v0)
-	j	$ra
+	jr	$ra
 .type \name, %function
 .size \name, .-\name
 .endm
@@ -120,7 +112,7 @@ generate_lookup_super objc_msg_lookup_super_stret objc_msg_lookup_stret
 
 nil_method:
 	move	$v0, $zero
-	j	$ra
+	jr	$ra
 
 #ifdef OF_LINUX
 .section .note.GNU-stack, "", %progbits
