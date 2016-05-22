@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A stream from which the tar archive will be read
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithStream: (OFString*)stream;
++ (instancetype)archiveWithStream: (OFStream*)stream;
 
 #ifdef OF_HAVE_FILES
 /*!
