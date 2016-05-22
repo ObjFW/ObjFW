@@ -24,6 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A protocol for classes providing hash functions.
  */
 @protocol OFHash <OFObject>
+/*!
+ * A boolean whether the hash has already been calculated.
+ */
 @property (readonly, getter=isCalculated) bool calculated;
 
 /*!
@@ -65,13 +68,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A buffer containing the hash
  */
 - (const uint8_t*)digest OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns a boolean whether the hash has already been calculated.
- *
- * @return A boolean whether the hash has already been calculated
- */
-- (bool)isCalculated;
 
 /*!
  * @brief Resets all state so that a new hash can be calculated.
