@@ -1109,12 +1109,12 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	AC_TRY_COMPILE([
 		@interface Foo
 		{
-			struct objc_class *isa;
+			struct objc_class *_isa;
 		}
 		@end
 
 		static struct {
-			struct objc_class *isa;
+			struct objc_class *_isa;
 		} object;
 	], [
 		Foo *test = (Foo*)&object;
@@ -1124,6 +1124,41 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	], [
 		AC_MSG_RESULT(yes)
 		OBJCFLAGS="$OBJCFLAGS -Wno-strict-aliasing"
+	])
+
+	AC_MSG_CHECKING(
+	    whether we need -Wno-unused-property-ivar due to Clang bugs)
+	AC_TRY_COMPILE([
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Foo
+		{
+			struct objc_class *_isa;
+			Foo *_foo;
+		}
+
+		@property (readonly, retain) Foo *foo;
+
+		+ (Foo*)foo;
+		@end
+
+		@implementation Foo
+		@synthesize foo = _foo;
+
+		+ (Foo*)foo
+		{
+			return (Foo*)0;
+		}
+		@end
+	], [
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$OBJCFLAGS -Wno-unused-property-ivar"
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
@@ -1180,11 +1215,6 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		AC_TRY_COMPILE([
 			#import <stdlib.h>
 
-			#ifdef __has_attribute
-			# if __has_attribute(objc_root_class)
-			__attribute__((__objc_root_class__))
-			# endif
-			#endif
 			@interface Foo
 			{
 				void *foo;
