@@ -44,7 +44,7 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeFormat:
-	    @"Usage: %@ -[fhlnpqvx] archive.zip [file1 file2 ...]\n",
+	    @"Usage: %@ -[fhlnpqtvx] archive.zip [file1 file2 ...]\n",
 	    [OFApplication programName]];
 
 	if (full)
@@ -58,6 +58,7 @@ help(OFStream *stream, bool full, int status)
 		    @"archive\n"
 		    @"    -q  --quiet      Quiet mode (no output, except "
 		    @"errors)\n"
+		    @"    -t  --type       Archive type (gz, tar, tgz, zip)\n"
 		    @"    -v  --verbose    Verbose output for file list\n"
 		    @"    -x  --extract    Extract files\n"];
 
@@ -89,6 +90,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 @implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
+	OFString *type = nil;
 	const of_options_parser_option_t options[] = {
 		{ 'f', @"force", 0, NULL, NULL },
 		{ 'h', @"help", 0, NULL, NULL },
@@ -96,6 +98,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		{ 'n', @"no-clobber", 0, NULL, NULL },
 		{ 'p', @"print", 0, NULL, NULL },
 		{ 'q', @"quiet", 0, NULL, NULL },
+		{ 't', @"type", 1, NULL, &type },
 		{ 'v', @"verbose", 0, NULL, NULL },
 		{ 'x', @"extract", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
@@ -157,7 +160,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 			[OFApplication terminateWithStatus: 1];
 			break;
-		default:
+		case '?':
 			if ([optionsParser lastLongOption] != nil)
 				[of_stderr writeFormat:
 				    @"%@: Unknown option: --%@\n",
@@ -174,7 +177,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	}
 
 	remainingArguments = [optionsParser remainingArguments];
-	archive = [self openArchiveWithPath: [remainingArguments firstObject]];
+	archive = [self openArchiveWithPath: [remainingArguments firstObject]
+				       type: type];
 
 	switch (mode) {
 	case 'l':
@@ -223,6 +227,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 }
 
 - (id <Archive>)openArchiveWithPath: (OFString*)path
+			       type: (OFString*)type
 {
 	OFFile *file = nil;
 	id <Archive> archive = nil;
@@ -242,18 +247,34 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	@try {
+	if (type == nil || [type isEqual: @"auto"]) {
 		/* This one has to be first for obvious reasons */
 		if ([path hasSuffix: @".tar.gz"] || [path hasSuffix: @".tgz"] ||
 		    [path hasSuffix: @".TAR.GZ"] || [path hasSuffix: @".TGZ"])
+			type = @"tgz";
+		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
+			type = @"gz";
+		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
+			type = @"tar";
+		else
+			type = @"zip";
+	}
+
+	@try {
+		if ([type isEqual: @"gz"])
+			archive = [GZIPArchive archiveWithStream: file];
+		else if ([type isEqual: @"tar"])
+			archive = [TarArchive archiveWithStream: file];
+		else if ([type isEqual: @"tgz"])
 			archive = [TarArchive archiveWithStream:
 			    [OFGZIPStream streamWithStream: file]];
-		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
-			archive = [GZIPArchive archiveWithStream: file];
-		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
-			archive = [TarArchive archiveWithStream: file];
-		else
+		else if ([type isEqual: @"zip"])
 			archive = [ZIPArchive archiveWithStream: file];
+		else {
+			[of_stderr writeFormat: @"Unknown archive type: %@!\n",
+						type];
+			[OFApplication terminateWithStatus: 1];
+		}
 	} @catch (OFReadFailedException *e) {
 		[of_stderr writeFormat: @"Failed to read file %@: %s\n",
 					path, strerror([e errNo])];

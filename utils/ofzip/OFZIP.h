@@ -28,7 +28,8 @@
 	int _exitStatus;
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString*)path;
+- (id <Archive>)openArchiveWithPath: (OFString*)path
+			       type: (OFString*)type;
 - (bool)shouldExtractFile: (OFString*)fileName
 	      outFileName: (OFString*)outFileName;
 - (ssize_t)copyBlockFromStream: (OFStream*)input
