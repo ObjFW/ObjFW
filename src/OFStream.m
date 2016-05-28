@@ -1531,7 +1531,7 @@
 	memcpy(readBuffer, buffer, length);
 	memcpy(readBuffer + length, _readBuffer, _readBufferLength);
 
-	[self freeMemory: _readBuffer];
+	[self freeMemory: _readBufferMemory];
 	_readBuffer = _readBufferMemory = readBuffer;
 	_readBufferLength += length;
 }
