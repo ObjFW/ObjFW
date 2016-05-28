@@ -30,12 +30,10 @@
 int _OFTCPSocket_SOCKS5_reference;
 
 static void
-send_or_exception(OFTCPSocket *self, int socket, char *buffer, size_t length)
+send_or_exception(OFTCPSocket *self, of_socket_t socket, char *buffer,
+    int length)
 {
-	if (length > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	if (send(socket, buffer, length, 0) != (ssize_t)length)
+	if (send(socket, buffer, length, 0) != length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -43,7 +41,7 @@ send_or_exception(OFTCPSocket *self, int socket, char *buffer, size_t length)
 }
 
 static void
-recv_exact(OFTCPSocket *self, int socket, char *buffer, size_t length)
+recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 {
 	while (length > 0) {
 		ssize_t ret = recv(socket, buffer, length, 0);
@@ -100,8 +98,11 @@ recv_exact(OFTCPSocket *self, int socket, char *buffer, size_t length)
 	[connectRequest addItems: request
 			   count: 2];
 
+	if ([connectRequest count] > INT_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	send_or_exception(self, _socket,
-	    [connectRequest items], [connectRequest count]);
+	    [connectRequest items], (int)[connectRequest count]);
 
 	objc_autoreleasePoolPop(pool);
 
