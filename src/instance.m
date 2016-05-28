@@ -71,6 +71,10 @@ objc_destructInstance(id obj)
 	Class cls;
 	void (*last)(id, SEL) = NULL;
 
+#ifdef OF_OBJFW_RUNTIME
+	objc_zero_weak_references(obj);
+#endif
+
 	if (destructSel == NULL)
 		destructSel = sel_registerName(".cxx_destruct");
 

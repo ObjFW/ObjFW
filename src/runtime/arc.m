@@ -17,9 +17,47 @@
 #include "config.h"
 
 #import "runtime.h"
+#import "runtime-private.h"
+
+#ifdef OF_HAVE_THREADS
+# import "threading.h"
+#endif
 
 #import "OFObject.h"
 #import "OFBlock.h"
+
+struct weak_ref {
+	id **locations;
+	size_t count;
+};
+
+struct objc_hashtable *hashtable;
+#ifdef OF_HAVE_THREADS
+static of_spinlock_t spinlock;
+#endif
+
+static uint32_t
+obj_hash(const void *obj)
+{
+	return (uint32_t)(uintptr_t)obj;
+}
+
+static bool
+obj_equal(const void *obj1, const void *obj2)
+{
+	return (obj1 == obj2);
+}
+
+static void __attribute__((__constructor__))
+init(void)
+{
+	hashtable = objc_hashtable_new(obj_hash, obj_equal, 2);
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_new(&spinlock))
+		OBJC_ERROR("Failed to create spinlock!")
+#endif
+}
 
 id
 objc_retain(id object)
@@ -77,4 +115,172 @@ objc_storeStrong(id *object, id value)
 	objc_release(old);
 
 	return value;
+}
+
+id
+objc_storeWeak(id *object, id value)
+{
+	struct weak_ref *old;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		OBJC_ERROR("Failed to lock spinlock!")
+#endif
+
+	if (*object != nil &&
+	    (old = objc_hashtable_get(hashtable, *object)) != NULL) {
+		for (size_t i = 0; i < old->count; i++) {
+			if (old->locations[i] == object) {
+				if (--old->count == 0) {
+					objc_hashtable_delete(hashtable,
+					    *object);
+					free(old->locations);
+					free(old);
+				} else {
+					id **locations;
+
+					old->locations[i] =
+					    old->locations[old->count];
+
+					/*
+					 * We don't care if making it smaller
+					 * fails.
+					 */
+					if ((locations = realloc(old->locations,
+					    old->count * sizeof(id*))) != NULL)
+						old->locations = locations;
+				}
+
+				break;
+			}
+		}
+	}
+
+	if (value != nil) {
+		struct weak_ref *ref = objc_hashtable_get(hashtable, value);
+
+		if (ref == NULL) {
+			if ((ref = calloc(1, sizeof(*ref))) == NULL)
+				OBJC_ERROR("Not enough memory to allocate weak "
+				    "reference!");
+
+			objc_hashtable_set(hashtable, value, ref);
+		}
+
+		if ((ref->locations = realloc(ref->locations,
+		    (ref->count + 1) * sizeof(id*))) == NULL)
+			OBJC_ERROR("Not enough memory to allocate weak "
+			    "reference!")
+
+		ref->locations[ref->count++] = object;
+	}
+
+	*object = value;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		OBJC_ERROR("Failed to unlock spinlock!")
+#endif
+
+	return value;
+}
+
+id
+objc_loadWeakRetained(id *object)
+{
+	id ret = nil;
+	struct weak_ref *ref;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		OBJC_ERROR("Failed to lock spinlock!")
+#endif
+
+	if ((ref = objc_hashtable_get(hashtable, *object)) != NULL)
+		ret = *object;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		OBJC_ERROR("Failed to unlock spinlock!")
+#endif
+
+	return objc_retain(ret);
+}
+
+id
+objc_initWeak(id *object, id value)
+{
+	*object = nil;
+	return objc_storeWeak(object, value);
+}
+
+void
+objc_destroyWeak(id *object)
+{
+	objc_storeWeak(object, nil);
+}
+
+id
+objc_loadWeak(id *object)
+{
+	return objc_autorelease(objc_loadWeakRetained(object));
+}
+
+void
+objc_copyWeak(id *dest, id *src)
+{
+	objc_release(objc_initWeak(dest, objc_loadWeakRetained(src)));
+}
+
+void
+objc_moveWeak(id *dest, id *src)
+{
+	struct weak_ref *ref;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		OBJC_ERROR("Failed to lock spinlock!")
+#endif
+
+	if ((ref = objc_hashtable_get(hashtable, *src)) != NULL) {
+		for (size_t i = 0; i < ref->count; i++) {
+			if (ref->locations[i] == src) {
+				ref->locations[i] = dest;
+				break;
+			}
+		}
+	}
+
+	*dest = *src;
+	*src = nil;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		OBJC_ERROR("Failed to unlock spinlock!")
+#endif
+}
+
+void
+objc_zero_weak_references(id value)
+{
+	struct weak_ref *ref;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&spinlock))
+		OBJC_ERROR("Failed to lock spinlock!")
+#endif
+
+	if ((ref = objc_hashtable_get(hashtable, value)) != NULL) {
+		for (size_t i = 0; i < ref->count; i++)
+			*ref->locations[i] = nil;
+
+		objc_hashtable_delete(hashtable, value);
+		free(ref->locations);
+		free(ref);
+	}
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&spinlock))
+		OBJC_ERROR("Failed to unlock spinlock!")
+#endif
 }

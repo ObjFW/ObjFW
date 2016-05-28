@@ -222,6 +222,7 @@ extern id objc_autorelease(id);
 extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
 extern id _objc_rootAutorelease(id);
+extern void objc_zero_weak_references(id);
 /* Used by the compiler, but can be called manually. */
 extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_stret(id, SEL);
