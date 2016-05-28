@@ -208,7 +208,8 @@ _NSPrintForDebugger(id object)
 }
 
 /* References for static linking */
-void _references_to_categories_of_OFObject(void)
+void
+_references_to_categories_of_OFObject(void)
 {
 	_OFObject_Serialization_reference = 1;
 }

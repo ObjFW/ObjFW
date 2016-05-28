@@ -85,7 +85,8 @@ extern bool of_unicode_to_codepage_437(const of_unichar_t*, uint8_t*, size_t,
     bool);
 
 /* References for static linking */
-void _references_to_categories_of_OFString(void)
+void
+_references_to_categories_of_OFString(void)
 {
 	_OFString_Hashing_reference = 1;
 	_OFString_JSONValue_reference = 1;
@@ -95,7 +96,8 @@ void _references_to_categories_of_OFString(void)
 	_OFString_XMLUnescaping_reference = 1;
 }
 
-void _reference_to_OFConstantString(void)
+void
+_reference_to_OFConstantString(void)
 {
 	[OFConstantString class];
 }

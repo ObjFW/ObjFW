@@ -52,7 +52,8 @@
 #import "resolver.h"
 
 /* References for static linking */
-void _references_to_categories_of_OFTCPSocket(void)
+void
+_references_to_categories_of_OFTCPSocket(void)
 {
 	_OFTCPSocket_SOCKS5_reference = 1;
 }

@@ -29,10 +29,22 @@
 #import "OFStdIOStream+Private.h"
 #import "OFDate.h"
 #import "OFApplication.h"
+#ifdef OF_WINDOWS
+# include "OFStdIOStream_Win32Console.h"
+#endif
 
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
+
+/* References for static linking */
+#ifdef OF_WINDOWS
+void
+_reference_to_OFStdIOStream_Win32Console(void)
+{
+	[OFStdIOStream_Win32Console class];
+}
+#endif
 
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;

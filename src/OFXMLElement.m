@@ -38,7 +38,8 @@
 #import "OFUnboundNamespaceException.h"
 
 /* References for static linking */
-void _references_to_categories_of_OFXMLElement(void)
+void
+_references_to_categories_of_OFXMLElement(void)
 {
 	_OFXMLElement_Serialization_reference = 1;
 }
