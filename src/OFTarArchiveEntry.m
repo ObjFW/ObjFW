@@ -38,7 +38,7 @@ stringFromBuffer(const char *buffer, size_t length)
 }
 
 static uintmax_t
-octalValueFromBuffer(const char *buffer, size_t length, size_t max)
+octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 {
 	uintmax_t value = [stringFromBuffer(buffer, length) octalValue];
 
@@ -147,7 +147,7 @@ octalValueFromBuffer(const char *buffer, size_t length, size_t max)
 
 	if (_toRead > 0) {
 		[_stream readIntoBuffer: buffer
-			    exactLength: _toRead];
+			    exactLength: (size_t)_toRead];
 		_toRead = 0;
 	}
 
