@@ -79,7 +79,7 @@
 	if (fd > _maxFD)
 		_maxFD = fd;
 
-	FD_SET(fd, &_readFDs);
+	FD_SET((of_socket_t)fd, &_readFDs);
 }
 
 - (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -97,7 +97,7 @@
 	if (fd > _maxFD)
 		_maxFD = fd;
 
-	FD_SET(fd, &_writeFDs);
+	FD_SET((of_socket_t)fd, &_writeFDs);
 }
 
 - (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -114,7 +114,7 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR(fd, &_readFDs);
+	FD_CLR((of_socket_t)fd, &_readFDs);
 }
 
 - (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -131,7 +131,7 @@
 		@throw [OFOutOfRangeException exception];
 #endif
 
-	FD_CLR(fd, &_writeFDs);
+	FD_CLR((of_socket_t)fd, &_writeFDs);
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
@@ -194,7 +194,8 @@
 		void *pool = objc_autoreleasePoolPush();
 		int fd = [objects[i] fileDescriptorForReading];
 
-		if (FD_ISSET(fd, &readFDs) && [_delegate respondsToSelector:
+		if (FD_ISSET((of_socket_t)fd, &readFDs) &&
+		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForReading:)])
 			[_delegate objectIsReadyForReading: objects[i]];
 
@@ -208,7 +209,8 @@
 		void *pool = objc_autoreleasePoolPush();
 		int fd = [objects[i] fileDescriptorForWriting];
 
-		if (FD_ISSET(fd, &writeFDs) && [_delegate respondsToSelector:
+		if (FD_ISSET((of_socket_t)fd, &writeFDs) &&
+		    [_delegate respondsToSelector:
 		    @selector(objectIsReadyForWriting:)])
 			[_delegate objectIsReadyForWriting: objects[i]];
 
