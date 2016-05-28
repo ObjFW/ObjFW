@@ -30,13 +30,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 
-#ifndef S_IRWXG
-# define S_IRWXG 0
-#endif
-#ifndef S_IRWXO
-# define S_IRWXO 0
-#endif
-
 static OFZIP *app;
 
 static void
