@@ -108,6 +108,9 @@
 	of_char16_t *UTF16;
 	size_t j = 0;
 
+	if (length > sizeof(UINT32_MAX))
+		@throw [OFOutOfRangeException exception];
+
 	UTF16 = [self allocMemoryWithSize: sizeof(of_char16_t)
 				    count: length];
 	@try {
@@ -115,7 +118,8 @@
 		OFDataArray *rest = nil;
 		size_t i = 0;
 
-		if (!ReadConsoleW(_handle, UTF16, length, &UTF16Len, NULL))
+		if (!ReadConsoleW(_handle, UTF16, (DWORD)length, &UTF16Len,
+		    NULL))
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
 				requestedLength: length * 2];
@@ -226,8 +230,8 @@
 		of_unichar_t c;
 		of_char16_t UTF16[2];
 		ssize_t UTF8Len;
-		size_t toCopy, UTF16Len;
-		DWORD written;
+		size_t toCopy;
+		DWORD UTF16Len, written;
 
 		UTF8Len = -of_string_utf8_decode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
@@ -313,7 +317,10 @@
 			i += UTF8Len;
 		}
 
-		if (!WriteConsoleW(_handle, tmp, j, &written, NULL) ||
+		if (j > UINT32_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		if (!WriteConsoleW(_handle, tmp, (DWORD)j, &written, NULL) ||
 		    written != j)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
