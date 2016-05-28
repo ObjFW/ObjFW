@@ -407,15 +407,19 @@ extern char **environ;
 #else
 - (of_char16_t*)OF_environmentForDictionary: (OFDictionary*)environment
 {
-	OFDataArray *env = [OFDataArray dataArrayWithItemSize: 2];
+	OFDataArray *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 	const of_char16_t equal = '=';
-	const of_char16_t zero = 0;
+	const of_char16_t zero[2] = { 0, 0 };
+
+	if (environment == nil)
+		return NULL;
+
+	env = [OFDataArray dataArrayWithItemSize: sizeof(of_char16_t)];
 
 	keyEnumerator = [environment keyEnumerator];
 	objectEnumerator = [environment objectEnumerator];
-
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
 		[env addItems: [key UTF16String]
@@ -427,8 +431,8 @@ extern char **environ;
 		[env addItems: &zero
 			count: 1];
 	}
-	[env addItems: &zero
-		count: 1];
+	[env addItems: zero
+		count: 2];
 
 	return [env items];
 }
