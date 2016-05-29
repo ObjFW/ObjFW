@@ -23,8 +23,8 @@
 #ifdef HAVE_SYS_IOCTL_H
 # include <sys/ioctl.h>
 #endif
-#ifdef HAVE_SYS_TERMIOS_H
-# include <sys/termios.h>
+#ifdef HAVE_SYS_TTYCOM_H
+# include <sys/ttycom.h>
 #endif
 
 #import "OFDate.h"
