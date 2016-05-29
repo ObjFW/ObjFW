@@ -156,7 +156,8 @@ objc_storeWeak(id *object, id value)
 		}
 	}
 
-	if (value != nil) {
+	if (value != nil && class_respondsToSelector(object_getClass(value),
+	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
 		struct weak_ref *ref = objc_hashtable_get(hashtable, value);
 
 		if (ref == NULL) {
@@ -173,7 +174,8 @@ objc_storeWeak(id *object, id value)
 			    "reference!")
 
 		ref->locations[ref->count++] = object;
-	}
+	} else
+		value = nil;
 
 	*object = value;
 
@@ -188,7 +190,7 @@ objc_storeWeak(id *object, id value)
 id
 objc_loadWeakRetained(id *object)
 {
-	id ret = nil;
+	id value = nil;
 	struct weak_ref *ref;
 
 #ifdef OF_HAVE_THREADS
@@ -197,14 +199,18 @@ objc_loadWeakRetained(id *object)
 #endif
 
 	if ((ref = objc_hashtable_get(hashtable, *object)) != NULL)
-		ret = *object;
+		value = *object;
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_unlock(&spinlock))
 		OBJC_ERROR("Failed to unlock spinlock!")
 #endif
 
-	return objc_retain(ret);
+	if (class_respondsToSelector(object_getClass(value),
+	    @selector(retainWeakReference)) && [value retainWeakReference])
+		return value;
+
+	return nil;
 }
 
 id

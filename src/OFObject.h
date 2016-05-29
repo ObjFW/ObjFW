@@ -353,6 +353,20 @@ of_rectangle(float x, float y, float width, float height)
  * @return A boolean whether the object is a proxy object
  */
 - (bool)isProxy;
+
+/*!
+ * @brief Returns whether the class allows weak references.
+ *
+ * @return Whether the class allows weak references
+ */
+- (bool)allowsWeakReference;
+
+/*!
+ * @brief Retain a weak reference to this object.
+ *
+ * @return Whether a weak reference to this object has been retained
+ */
+- (bool)retainWeakReference;
 @end
 
 /*!
