@@ -824,7 +824,7 @@ start:
 - (bool)lowlevelIsAtEndOfStream
 {
 	if (_decompression == NULL)
-		return true;
+		return false;
 
 	return _decompression->atEndOfStream;
 }
