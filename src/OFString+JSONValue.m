@@ -33,12 +33,11 @@
 
 int _OFString_JSONValue_reference;
 
-static id nextObject(const char *restrict *, const char*,
-    size_t *restrict line, size_t depth, size_t depthLimit);
+static id nextObject(const char **pointer, const char *stop, size_t *line,
+    size_t depth, size_t depthLimit);
 
 static void
-skipWhitespaces(const char *restrict *pointer, const char *stop,
-    size_t *restrict line)
+skipWhitespaces(const char **pointer, const char *stop, size_t *line)
 {
 	while (*pointer < stop && (**pointer == ' ' || **pointer == '\t' ||
 	    **pointer == '\r' || **pointer == '\n')) {
@@ -50,8 +49,7 @@ skipWhitespaces(const char *restrict *pointer, const char *stop,
 }
 
 static void
-skipComment(const char *restrict *pointer, const char *stop,
-    size_t *restrict line)
+skipComment(const char **pointer, const char *stop, size_t *line)
 {
 	if (**pointer != '/')
 		return;
@@ -96,8 +94,7 @@ skipComment(const char *restrict *pointer, const char *stop,
 }
 
 static void
-skipWhitespacesAndComments(const char *restrict *pointer, const char *stop,
-    size_t *restrict line)
+skipWhitespacesAndComments(const char **pointer, const char *stop, size_t *line)
 {
 	const char *old = NULL;
 
@@ -141,8 +138,7 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 }
 
 static inline OFString*
-parseString(const char *restrict *pointer, const char *stop,
-    size_t *restrict line)
+parseString(const char **pointer, const char *stop, size_t *line)
 {
 	char *buffer;
 	size_t i = 0;
@@ -293,7 +289,7 @@ parseString(const char *restrict *pointer, const char *stop,
 }
 
 static inline OFString*
-parseIdentifier(const char *restrict *pointer, const char *stop)
+parseIdentifier(const char **pointer, const char *stop)
 {
 	char *buffer;
 	size_t i = 0;
@@ -393,8 +389,8 @@ parseIdentifier(const char *restrict *pointer, const char *stop)
 }
 
 static inline OFMutableArray*
-parseArray(const char *restrict *pointer, const char *stop,
-    size_t *restrict line, size_t depth, size_t depthLimit)
+parseArray(const char **pointer, const char *stop, size_t *line,
+    size_t depth, size_t depthLimit)
 {
 	OFMutableArray *array = [OFMutableArray array];
 
@@ -450,8 +446,8 @@ parseArray(const char *restrict *pointer, const char *stop,
 }
 
 static inline OFMutableDictionary*
-parseDictionary(const char *restrict *pointer, const char *stop,
-    size_t *restrict line, size_t depth, size_t depthLimit)
+parseDictionary(const char **pointer, const char *stop, size_t *line,
+    size_t depth, size_t depthLimit)
 {
 	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
 
@@ -529,8 +525,7 @@ parseDictionary(const char *restrict *pointer, const char *stop,
 }
 
 static inline OFNumber*
-parseNumber(const char *restrict *pointer, const char *stop,
-    size_t *restrict line)
+parseNumber(const char **pointer, const char *stop, size_t *line)
 {
 	bool isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');
 	bool hasDecimal = false;
@@ -579,8 +574,8 @@ parseNumber(const char *restrict *pointer, const char *stop,
 }
 
 static id
-nextObject(const char *restrict *pointer, const char *stop,
-    size_t *restrict line, size_t depth, size_t depthLimit)
+nextObject(const char **pointer, const char *stop, size_t *line,
+    size_t depth, size_t depthLimit)
 {
 	skipWhitespacesAndComments(pointer, stop, line);
 
