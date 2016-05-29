@@ -26,11 +26,21 @@ OF_ASSUME_NONNULL_BEGIN
  */
 typedef enum of_tar_archive_entry_type_t {
 	/*! Normal file */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_FILE	  = '0',
+	OF_TAR_ARCHIVE_ENTRY_TYPE_FILE		   = '0',
 	/*! Hard link */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_LINK	  = '1',
+	OF_TAR_ARCHIVE_ENTRY_TYPE_LINK		   = '1',
 	/*! Symbolic link */
-	OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK = '2'
+	OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK	   = '2',
+	/*! Character device */
+	OF_TAR_ARCHIVE_ENTRY_TYPE_CHARACTER_DEVICE = '3',
+	/*! Block device */
+	OF_TAR_ARCHIVE_ENTRY_TYPE_BLOCK_DEVICE	   = '4',
+	/*! Directory */
+	OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY	   = '5',
+	/*! FIFO */
+	OF_TAR_ARCHIVE_ENTRY_TYPE_FIFO		   = '6',
+	/*! Contiguous file */
+	OF_TAR_ARCHIVE_ENTRY_TYPE_CONTIGUOUS_FILE  = '7',
 } of_tar_archive_entry_type_t;
 
 /*!
@@ -48,6 +58,8 @@ typedef enum of_tar_archive_entry_type_t {
 	OFDate *_modificationDate;
 	of_tar_archive_entry_type_t _type;
 	OFString *_targetFileName;
+	OFString *_owner, *_group;
+	uint32_t _deviceMajor, _deviceMinor;
 }
 
 /*!
@@ -81,6 +93,26 @@ typedef enum of_tar_archive_entry_type_t {
  * The file name of the target (for a hard link or symbolic link).
  */
 @property (readonly, copy) OFString *targetFileName;
+
+/*!
+ * The owner of the file.
+ */
+@property (readonly, copy) OFString *owner;
+
+/*!
+ * The group of the file.
+ */
+@property (readonly, copy) OFString *group;
+
+/*!
+ * The device major (if the file is a device).
+ */
+@property (readonly) uint32_t deviceMajor;
+
+/*!
+ * The device major (if the file is a device).
+ */
+@property (readonly) uint32_t deviceMinor;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -99,6 +99,13 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			    @"\tSize: %" PRIu64 @" bytes\n"
 			    @"\tModification date: %@\n",
 			    [entry size], date];
+
+			if ([entry owner] != nil)
+				[of_stdout writeFormat: @"\tOwner: %@\n",
+							[entry owner]];
+			if ([entry group] != nil)
+				[of_stdout writeFormat: @"\tGroup: %@\n",
+							[entry group]];
 		}
 
 		if (app->_outputLevel >= 2) {
@@ -117,6 +124,32 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 				[of_stdout writeFormat:
 				    @"\tTarget file name: %@\n",
 				    [entry targetFileName]];
+				break;
+			case OF_TAR_ARCHIVE_ENTRY_TYPE_CHARACTER_DEVICE:
+				[of_stdout writeLine:
+				    @"\tType: Character device"];
+				[of_stdout writeFormat: @"\tDevice major: %d\n"
+							@"\tDevice minor: %d\n",
+							[entry deviceMajor],
+							[entry deviceMinor]];
+				break;
+			case OF_TAR_ARCHIVE_ENTRY_TYPE_BLOCK_DEVICE:
+				[of_stdout writeLine:
+				    @"\tType: Block device"];
+				[of_stdout writeFormat: @"\tDevice major: %d\n"
+							@"\tDevice minor: %d\n",
+							[entry deviceMajor],
+							[entry deviceMinor]];
+				break;
+			case OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY:
+				[of_stdout writeLine: @"\tType: Directory"];
+				break;
+			case OF_TAR_ARCHIVE_ENTRY_TYPE_FIFO:
+				[of_stdout writeLine: @"\tType: FIFO"];
+				break;
+			case OF_TAR_ARCHIVE_ENTRY_TYPE_CONTIGUOUS_FILE:
+				[of_stdout writeLine:
+				    @"\tType: Contiguous file"];
 				break;
 			default:
 				[of_stdout writeLine: @"\tType: Unknown"];

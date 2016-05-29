@@ -52,6 +52,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 @synthesize fileName = _fileName, mode = _mode, size = _size;
 @synthesize modificationDate = _modificationDate, type = _type;
 @synthesize targetFileName = _targetFileName;
+@synthesize owner = _owner, group = _group;
+@synthesize deviceMajor = _deviceMajor, deviceMinor = _deviceMinor;
 
 - (instancetype)OF_initWithHeader: (char[512])header
 			   stream: (OFStream*)stream
@@ -66,7 +68,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 		_fileName = [stringFromBuffer(header, 100) copy];
 		_mode = (uint32_t)octalValueFromBuffer(
 		    header + 100, 8, UINT32_MAX);
-		_size = _toRead = (size_t)octalValueFromBuffer(
+		_size = _toRead = (uint64_t)octalValueFromBuffer(
 		    header + 124, 12, UINT64_MAX);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
@@ -77,6 +79,23 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 		if (_type == '\0')
 			_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+
+		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
+			OFString *fileName;
+
+			_owner = [stringFromBuffer(header + 265, 32) copy];
+			_group = [stringFromBuffer(header + 297, 32) copy];
+
+			_deviceMajor = (uint32_t)octalValueFromBuffer(
+			    header + 329, 8, UINT32_MAX);
+			_deviceMinor = (uint32_t)octalValueFromBuffer(
+			    header + 337, 8, UINT32_MAX);
+
+			fileName = [OFString stringWithFormat: @"%@/%@",
+			    stringFromBuffer(header + 345, 155), _fileName];
+			[_fileName release];
+			_fileName = [fileName copy];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -93,6 +112,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	[_fileName release];
 	[_modificationDate release];
 	[_targetFileName release];
+	[_owner release];
+	[_group release];
 
 	[super dealloc];
 }
