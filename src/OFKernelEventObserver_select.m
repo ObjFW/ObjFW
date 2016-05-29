@@ -48,7 +48,7 @@
 	self = [super init];
 
 #ifndef OF_WINDOWS
-	if (_cancelFD[0] >= FD_SETSIZE)
+	if (_cancelFD[0] >= (int)FD_SETSIZE)
 		@throw [OFInitializationFailedException exception];
 #endif
 
@@ -72,7 +72,7 @@
 		@throw [OFOutOfRangeException exception];
 
 #ifndef OF_WINDOWS
-	if (fd >= FD_SETSIZE)
+	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
 
@@ -90,7 +90,7 @@
 		@throw [OFOutOfRangeException exception];
 
 #ifndef OF_WINDOWS
-	if (fd >= FD_SETSIZE)
+	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
 
@@ -110,7 +110,7 @@
 		@throw [OFOutOfRangeException exception];
 
 #ifndef OF_WINDOWS
-	if (fd >= FD_SETSIZE)
+	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
 
@@ -127,7 +127,7 @@
 		@throw [OFOutOfRangeException exception];
 
 #ifndef OF_WINDOWS
-	if (fd >= FD_SETSIZE)
+	if (fd >= (int)FD_SETSIZE)
 		@throw [OFOutOfRangeException exception];
 #endif
 
