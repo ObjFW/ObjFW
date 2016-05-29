@@ -333,7 +333,11 @@ releaseTree(struct huffman_tree *tree)
 
 	/* 0-7 address the bit, 8 means fetch next byte */
 	_decompression->bitIndex = 8;
+#ifdef DEFLATE64
+	_decompression->slidingWindowMask = 0xFFFF;
+#else
 	_decompression->slidingWindowMask = 0x7FFF;
+#endif
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer_
