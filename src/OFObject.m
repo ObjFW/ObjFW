@@ -1005,6 +1005,18 @@ _references_to_categories_of_OFObject(void)
 	return false;
 }
 
+- (bool)allowsWeakReference
+{
+	return true;
+}
+
+- (bool)retainWeakReference
+{
+	[self retain];
+
+	return true;
+}
+
 - (void)dealloc
 {
 	struct pre_mem *iter;
