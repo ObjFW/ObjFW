@@ -28,8 +28,8 @@
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
-#import "OFInflateStream.h"
-#import "OFInflate64Stream.h"
+#import "OFDeflateStream.h"
+#import "OFDeflate64Stream.h"
 
 #import "crc32.h"
 
@@ -471,11 +471,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			_decompressedStream = [stream retain];
 			break;
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
-			_decompressedStream = [[OFInflateStream alloc]
+			_decompressedStream = [[OFDeflateStream alloc]
 			    initWithStream: stream];
 			break;
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
-			_decompressedStream = [[OFInflate64Stream alloc]
+			_decompressedStream = [[OFDeflate64Stream alloc]
 			    initWithStream: stream];
 			break;
 		default:

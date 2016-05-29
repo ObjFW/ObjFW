@@ -45,8 +45,8 @@
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"
-#import "OFInflateStream.h"
-#import "OFInflate64Stream.h"
+#import "OFDeflateStream.h"
+#import "OFDeflate64Stream.h"
 #import "OFGZIPStream.h"
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"

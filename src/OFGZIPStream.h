@@ -17,14 +17,14 @@
 #import "OFStream.h"
 #import "OFDate.h"
 
-@class OFInflateStream;
+@class OFDeflateStream;
 
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFGZIPStream: OFStream
 {
 	OFStream *_stream;
-	OFInflateStream *_inflateStream;
+	OFDeflateStream *_inflateStream;
 	enum {
 		OF_GZIP_STREAM_ID1,
 		OF_GZIP_STREAM_ID2,

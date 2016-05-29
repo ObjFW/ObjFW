@@ -14,5 +14,17 @@
  * file.
  */
 
-#define DEFLATE64
-#include "OFInflateStream.m"
+#import "OFDeflateStream.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+/*!
+ * @class OFDeflate64Stream OFDeflate64Stream.h ObjFW/OFDeflate64Stream.h
+ *
+ * @brief A class that handles Deflate64 decompression transparently for an
+ *	  underlying stream.
+ */
+@interface OFDeflate64Stream: OFDeflateStream
+@end
+
+OF_ASSUME_NONNULL_END

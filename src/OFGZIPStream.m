@@ -17,7 +17,7 @@
 #include "config.h"
 
 #import "OFGZIPStream.h"
-#import "OFInflateStream.h"
+#import "OFDeflateStream.h"
 #import "OFDate.h"
 
 #import "crc32.h"
@@ -204,7 +204,7 @@
 			break;
 		case OF_GZIP_STREAM_DATA:
 			if (_inflateStream == nil)
-				_inflateStream = [[OFInflateStream alloc]
+				_inflateStream = [[OFDeflateStream alloc]
 				    initWithStream: _stream];
 
 			if (![_inflateStream isAtEndOfStream]) {

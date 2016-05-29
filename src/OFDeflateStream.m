@@ -24,10 +24,10 @@
 #include <assert.h>
 
 #ifndef DEFLATE64
-# import "OFInflateStream.h"
+# import "OFDeflateStream.h"
 #else
-# import "OFInflate64Stream.h"
-# define OFInflateStream OFInflate64Stream
+# import "OFDeflate64Stream.h"
+# define OFDeflateStream OFDeflate64Stream
 #endif
 #import "OFDataArray.h"
 
@@ -105,7 +105,7 @@ static const uint8_t codeLengthsOrder[19] = {
 static struct huffman_tree *fixedLitLenTree, *fixedDistTree;
 
 static bool
-tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
+tryReadBits(OFDeflateStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
 
@@ -217,7 +217,7 @@ constructTree(uint8_t lengths[], uint16_t count)
 }
 
 static bool
-walkTree(OFInflateStream *stream, struct huffman_tree **tree, uint16_t *value)
+walkTree(OFDeflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 {
 	struct huffman_tree *iter = *tree;
 	uint16_t bits;
@@ -248,12 +248,12 @@ releaseTree(struct huffman_tree *tree)
 	free(tree);
 }
 
-@implementation OFInflateStream
+@implementation OFDeflateStream
 + (void)initialize
 {
 	uint8_t lengths[288];
 
-	if (self != [OFInflateStream class])
+	if (self != [OFDeflateStream class])
 		return;
 
 	for (uint16_t i = 0; i <= 143; i++)

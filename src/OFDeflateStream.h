@@ -21,12 +21,12 @@ OF_ASSUME_NONNULL_BEGIN
 #define OF_INFLATE_STREAM_BUFFER_SIZE 4096
 
 /*!
- * @class OFInflateStream OFInflateStream.h ObjFW/OFInflateStream.h
+ * @class OFDeflateStream OFDeflateStream.h ObjFW/OFDeflateStream.h
  *
  * @brief A class that handles Deflate decompression transparently for an
  *	  underlying stream.
  */
-@interface OFInflateStream: OFStream
+@interface OFDeflateStream: OFStream
 {
 #ifdef OF_INFLATE_STREAM_M
 @public
@@ -81,21 +81,21 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @brief Creates a new OFInflateStream with the specified underlying stream.
+ * @brief Creates a new OFDeflateStream with the specified underlying stream.
  *
  * @param stream The underlying stream to which compressed data is written or
  *		 from which compressed data is read
- * @return A new, autoreleased OFInflateStream
+ * @return A new, autoreleased OFDeflateStream
  */
 + (instancetype)streamWithStream: (OFStream*)stream;
 
 /*!
- * @brief Initializes an already allocated OFInflateStream with the specified
+ * @brief Initializes an already allocated OFDeflateStream with the specified
  *	  underlying stream.
  *
  * @param stream The underlying stream to which compressed data is written or
  *		 from which compressed data is read
- * @return A initialized OFInflateStream
+ * @return A initialized OFDeflateStream
  */
 - initWithStream: (OFStream*)stream;
 @end
