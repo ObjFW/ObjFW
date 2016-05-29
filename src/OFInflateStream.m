@@ -284,18 +284,11 @@ releaseTree(struct huffman_tree *tree)
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithStream: (OFStream*)stream
 {
-	self = [super init];
+	self = [self init];
 
 	_stream = [stream retain];
-	_bitIndex = 8;	/* 0-7 address the bit, 8 means fetch next byte */
-	_slidingWindowMask = 0x7FFF;
 
 	return self;
 }
@@ -307,6 +300,20 @@ releaseTree(struct huffman_tree *tree)
 	[super dealloc];
 }
 #endif
+
+- init
+{
+	self = [super init];
+
+	_bitIndex = 8;	/* 0-7 address the bit, 8 means fetch next byte */
+#ifdef DEFLATE64
+	_slidingWindowMask = 0xFFFF;
+#else
+	_slidingWindowMask = 0x7FFF;
+#endif
+
+	return self;
+}
 
 - (size_t)lowlevelReadIntoBuffer: (void*)buffer_
 			  length: (size_t)length
