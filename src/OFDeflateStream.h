@@ -32,52 +32,41 @@ OF_ASSUME_NONNULL_BEGIN
 @public
 #endif
 	OFStream *_stream;
-	uint8_t _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
-	uint16_t _bufferIndex, _bufferLength;
-	uint8_t _byte;
-	uint8_t _bitIndex, _savedBitsLength;
-	uint16_t _savedBits;
-@protected
-	uint8_t *_slidingWindow;
-	uint16_t _slidingWindowIndex, _slidingWindowMask;
-	enum {
-		OF_INFLATE_STREAM_BLOCK_HEADER,
-		OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK_HEADER,
-		OF_INFLATE_STREAM_UNCOMPRESSED_BLOCK,
-		OF_INFLATE_STREAM_HUFFMAN_TREE,
-		OF_INFLATE_STREAM_HUFFMAN_BLOCK
-	} _state;
-	union {
-		struct {
-			uint8_t position;
-			uint8_t length[4];
-		} uncompressedHeader;
-		struct {
-			uint16_t position, length;
-		} uncompressed;
-		struct {
-			struct huffman_tree *litLenTree, *distTree;
-			struct huffman_tree *codeLenTree, *treeIter;
-			uint8_t *lengths;
-			uint16_t receivedCount;
-			uint8_t value, litLenCodesCount, distCodesCount;
-			uint8_t codeLenCodesCount;
-		} huffmanTree;
-		struct {
-			struct huffman_tree *litLenTree, *distTree, *treeIter;
-			enum {
-				OF_INFLATE_STREAM_WRITE_VALUE,
-				OF_INFLATE_STREAM_AWAIT_CODE,
-				OF_INFLATE_STREAM_AWAIT_LENGTH_EXTRA_BITS,
-				OF_INFLATE_STREAM_AWAIT_DISTANCE,
-				OF_INFLATE_STREAM_AWAIT_DISTANCE_EXTRA_BITS,
-				OF_INFLATE_STREAM_PROCESS_PAIR
-			} state;
-			uint16_t value, length, distance;
-			uint16_t extraBits;
-		} huffman;
-	} _context;
-	bool _inLastBlock, _atEndOfStream;
+	struct of_deflate_stream_decompression_ivars {
+		uint8_t buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
+		uint16_t bufferIndex, bufferLength;
+		uint8_t byte;
+		uint8_t bitIndex, savedBitsLength;
+		uint16_t savedBits;
+		uint8_t *slidingWindow;
+		uint16_t slidingWindowIndex, slidingWindowMask;
+		int state;
+		union {
+			struct {
+				uint8_t position;
+				uint8_t length[4];
+			} uncompressedHeader;
+			struct {
+				uint16_t position, length;
+			} uncompressed;
+			struct {
+				struct huffman_tree *litLenTree, *distTree;
+				struct huffman_tree *codeLenTree, *treeIter;
+				uint8_t *lengths;
+				uint16_t receivedCount;
+				uint8_t value, litLenCodesCount, distCodesCount;
+				uint8_t codeLenCodesCount;
+			} huffmanTree;
+			struct {
+				struct huffman_tree *litLenTree, *distTree;
+				struct huffman_tree *treeIter;
+				int state;
+				uint16_t value, length, distance;
+				uint16_t extraBits;
+			} huffman;
+		} context;
+		bool inLastBlock, atEndOfStream;
+	} *_decompression;
 }
 
 /*!
