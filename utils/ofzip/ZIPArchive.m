@@ -54,7 +54,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 + (void)initialize
 {
 	if (self == [ZIPArchive class])
-		app = [[OFApplication sharedApplication] delegate];
+		app = (OFZIP*)[[OFApplication sharedApplication] delegate];
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream

@@ -53,7 +53,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 + (void)initialize
 {
 	if (self == [TarArchive class])
-		app = [[OFApplication sharedApplication] delegate];
+		app = (OFZIP*)[[OFApplication sharedApplication] delegate];
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream
