@@ -24,15 +24,15 @@
 #import "OFInvalidArgumentException.h"
 
 static uint32_t
-stringHash(void *value)
+stringHash(void *object)
 {
-	return [(OFString*)value hash];
+	return [(OFString*)object hash];
 }
 
 static bool
-stringEqual(void *value1, void *value2)
+stringEqual(void *object1, void *object2)
 {
-	return [(OFString*)value1 isEqual: (OFString*)value2];
+	return [(OFString*)object1 isEqual: (OFString*)object2];
 }
 
 @implementation OFOptionsParser
@@ -61,7 +61,7 @@ stringEqual(void *value1, void *value2)
 			.hash = stringHash,
 			.equal = stringEqual
 		};
-		const of_map_table_functions_t valueFunctions = { NULL };
+		const of_map_table_functions_t objectFunctions = { NULL };
 
 		/* Count, sanity check, initialize pointers */
 		for (iter = options;
@@ -87,7 +87,7 @@ stringEqual(void *value1, void *value2)
 
 		_longOptions = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
-			  valueFunctions: valueFunctions];
+			 objectFunctions: objectFunctions];
 		_options = [self
 		    allocMemoryWithSize: sizeof(*_options)
 				  count: count + 1];
@@ -106,15 +106,15 @@ stringEqual(void *value1, void *value2)
 					iter2->longOption =
 					    [iter->longOption copy];
 
-					if ([_longOptions valueForKey:
+					if ([_longOptions objectForKey:
 					    iter2->longOption] != NULL)
 						@throw
 						    [OFInvalidArgumentException
 						    exception];
 
 					[_longOptions
-					    setValue: iter2
-					      forKey: iter2->longOption];
+					    setObject: iter2
+					       forKey: iter2->longOption];
 				} @catch (id e) {
 					/*
 					 * Make sure we are in a consistent
@@ -209,7 +209,7 @@ stringEqual(void *value1, void *value2)
 
 			objc_autoreleasePoolPop(pool);
 
-			option = [_longOptions valueForKey: _lastLongOption];
+			option = [_longOptions objectForKey: _lastLongOption];
 			if (option == NULL)
 				return '?';
 

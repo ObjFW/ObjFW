@@ -32,38 +32,38 @@
 #define MIN_CAPACITY 16
 
 struct of_map_table_bucket {
-	void *key, *value;
+	void *key, *object;
 	uint32_t hash;
 };
 static struct of_map_table_bucket deleted = { 0 };
 
 static void*
-defaultRetain(void *value)
+defaultRetain(void *object)
 {
-	return value;
+	return object;
 }
 
 static void
-defaultRelease(void *value)
+defaultRelease(void *object)
 {
 }
 
 static uint32_t
-defaultHash(void *value)
+defaultHash(void *object)
 {
-	return (uint32_t)(uintptr_t)value;
+	return (uint32_t)(uintptr_t)object;
 }
 
 static bool
-defaultEqual(void *value1, void *value2)
+defaultEqual(void *object1, void *object2)
 {
-	return (value1 == value2);
+	return (object1 == object2);
 }
 
 @interface OFMapTable ()
-- (void)OF_setValue: (void*)value
-	     forKey: (void*)key
-	       hash: (uint32_t)hash;
+- (void)OF_setObject: (void*)object
+	      forKey: (void*)key
+		hash: (uint32_t)hash;
 @end
 
 @interface OFMapTableEnumerator ()
@@ -76,29 +76,29 @@ defaultEqual(void *value1, void *value2)
 @interface OFMapTableKeyEnumerator: OFMapTableEnumerator
 @end
 
-@interface OFMapTableValueEnumerator: OFMapTableEnumerator
+@interface OFMapTableObjectEnumerator: OFMapTableEnumerator
 @end
 
 @implementation OFMapTable
-@synthesize keyFunctions = _keyFunctions, valueFunctions = _valueFunctions;
+@synthesize keyFunctions = _keyFunctions, objectFunctions = _objectFunctions;
 
 + (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			  valueFunctions: (of_map_table_functions_t)
-					      valueFunctions
+			 objectFunctions: (of_map_table_functions_t)
+					      objectFunctions
 {
 	return [[[self alloc]
 	    initWithKeyFunctions: keyFunctions
-		  valueFunctions: valueFunctions] autorelease];
+		  objectFunctions: objectFunctions] autorelease];
 }
 
 + (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			  valueFunctions: (of_map_table_functions_t)
-					      valueFunctions
+			 objectFunctions: (of_map_table_functions_t)
+					      objectFunctions
 				capacity: (size_t)capacity
 {
 	return [[[self alloc]
 	    initWithKeyFunctions: keyFunctions
-		  valueFunctions: valueFunctions
+		 objectFunctions: objectFunctions
 			capacity: capacity] autorelease];
 }
 
@@ -108,22 +108,22 @@ defaultEqual(void *value1, void *value2)
 }
 
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-	valueFunctions: (of_map_table_functions_t)valueFunctions
+       objectFunctions: (of_map_table_functions_t)objectFunctions
 {
 	return [self initWithKeyFunctions: keyFunctions
-			   valueFunctions: valueFunctions
+			  objectFunctions: objectFunctions
 				 capacity: 0];
 }
 
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-	valueFunctions: (of_map_table_functions_t)valueFunctions
+       objectFunctions: (of_map_table_functions_t)objectFunctions
 	      capacity: (size_t)capacity
 {
 	self = [super init];
 
 	@try {
 		_keyFunctions = keyFunctions;
-		_valueFunctions = valueFunctions;
+		_objectFunctions = objectFunctions;
 
 #define SET_DEFAULT(var, value) \
 	if (var == NULL)	\
@@ -134,10 +134,10 @@ defaultEqual(void *value1, void *value2)
 		SET_DEFAULT(_keyFunctions.hash, defaultHash);
 		SET_DEFAULT(_keyFunctions.equal, defaultEqual);
 
-		SET_DEFAULT(_valueFunctions.retain, defaultRetain);
-		SET_DEFAULT(_valueFunctions.release, defaultRelease);
-		SET_DEFAULT(_valueFunctions.hash, defaultHash);
-		SET_DEFAULT(_valueFunctions.equal, defaultEqual);
+		SET_DEFAULT(_objectFunctions.retain, defaultRetain);
+		SET_DEFAULT(_objectFunctions.release, defaultRelease);
+		SET_DEFAULT(_objectFunctions.hash, defaultHash);
+		SET_DEFAULT(_objectFunctions.equal, defaultEqual);
 
 #undef SET_DEFAULT
 
@@ -185,7 +185,7 @@ defaultEqual(void *value1, void *value2)
 	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			_keyFunctions.release(_buckets[i]->key);
-			_valueFunctions.release(_buckets[i]->value);
+			_objectFunctions.release(_buckets[i]->object);
 		}
 	}
 
@@ -203,14 +203,16 @@ defaultEqual(void *value1, void *value2)
 
 	if (mapTable->_count != _count ||
 	    mapTable->_keyFunctions.equal != _keyFunctions.equal ||
-	    mapTable->_valueFunctions.equal != _valueFunctions.equal)
+	    mapTable->_objectFunctions.equal != _objectFunctions.equal)
 		return false;
 
 	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			void *value = [mapTable valueForKey: _buckets[i]->key];
+			void *object =
+			    [mapTable objectForKey: _buckets[i]->key];
 
-			if (!_valueFunctions.equal(value, _buckets[i]->value))
+			if (!_objectFunctions.equal(object,
+			    _buckets[i]->object))
 				return false;
 		}
 	}
@@ -225,7 +227,7 @@ defaultEqual(void *value1, void *value2)
 	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			hash += OF_ROR(_buckets[i]->hash, _rotate);
-			hash += _valueFunctions.hash(_buckets[i]->value);
+			hash += _objectFunctions.hash(_buckets[i]->object);
 		}
 	}
 
@@ -236,16 +238,16 @@ defaultEqual(void *value1, void *value2)
 {
 	OFMapTable *copy = [[OFMapTable alloc]
 	    initWithKeyFunctions: _keyFunctions
-		  valueFunctions: _valueFunctions
+		 objectFunctions: _objectFunctions
 			capacity: _capacity];
 
 	@try {
 		for (uint32_t i = 0; i < _capacity; i++)
 			if (_buckets[i] != NULL && _buckets[i] != &deleted)
-				[copy OF_setValue: _buckets[i]->value
-					   forKey: _buckets[i]->key
-					     hash: OF_ROR(_buckets[i]->hash,
-						       _rotate)];
+				[copy OF_setObject: _buckets[i]->object
+					    forKey: _buckets[i]->key
+					      hash: OF_ROR(_buckets[i]->hash,
+							_rotate)];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -259,7 +261,7 @@ defaultEqual(void *value1, void *value2)
 	return _count;
 }
 
-- (void*)valueForKey: (void*)key
+- (void*)objectForKey: (void*)key
 {
 	uint32_t i, hash, last;
 
@@ -274,7 +276,7 @@ defaultEqual(void *value1, void *value2)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key))
-			return _buckets[i]->value;
+			return _buckets[i]->object;
 	}
 
 	if (i < last)
@@ -288,7 +290,7 @@ defaultEqual(void *value1, void *value2)
 			continue;
 
 		if (_keyFunctions.equal(_buckets[i]->key, key))
-			return _buckets[i]->value;
+			return _buckets[i]->object;
 	}
 
 	return NULL;
@@ -355,14 +357,14 @@ defaultEqual(void *value1, void *value2)
 	_capacity = capacity;
 }
 
-- (void)OF_setValue: (void*)value
-	     forKey: (void*)key
-	       hash: (uint32_t)hash
+- (void)OF_setObject: (void*)object
+	      forKey: (void*)key
+		hash: (uint32_t)hash
 {
 	uint32_t i, last;
 	void *old;
 
-	if (key == NULL || value == NULL)
+	if (key == NULL || object == NULL)
 		@throw [OFInvalidArgumentException exception];
 
 	hash = OF_ROL(hash, _rotate);
@@ -423,7 +425,7 @@ defaultEqual(void *value1, void *value2)
 		}
 
 		@try {
-			bucket->value = _valueFunctions.retain(value);
+			bucket->object = _objectFunctions.retain(object);
 		} @catch (id e) {
 			_keyFunctions.release(bucket->key);
 			[self freeMemory: bucket];
@@ -438,20 +440,20 @@ defaultEqual(void *value1, void *value2)
 		return;
 	}
 
-	old = _buckets[i]->value;
-	_buckets[i]->value = _valueFunctions.retain(value);
-	_valueFunctions.release(old);
+	old = _buckets[i]->object;
+	_buckets[i]->object = _objectFunctions.retain(object);
+	_objectFunctions.release(old);
 }
 
-- (void)setValue: (void*)value
-	  forKey: (void*)key
+- (void)setObject: (void*)object
+	   forKey: (void*)key
 {
-	[self OF_setValue: value
-		   forKey: key
-		     hash: _keyFunctions.hash(key)];
+	[self OF_setObject: object
+		    forKey: key
+		      hash: _keyFunctions.hash(key)];
 }
 
-- (void)removeValueForKey: (void*)key
+- (void)removeObjectForKey: (void*)key
 {
 	uint32_t i, hash, last;
 
@@ -469,7 +471,7 @@ defaultEqual(void *value1, void *value2)
 			_mutations++;
 
 			_keyFunctions.release(_buckets[i]->key);
-			_valueFunctions.release(_buckets[i]->value);
+			_objectFunctions.release(_buckets[i]->object);
 
 			[self freeMemory: _buckets[i]];
 			_buckets[i] = &deleted;
@@ -493,7 +495,7 @@ defaultEqual(void *value1, void *value2)
 
 		if (_keyFunctions.equal(_buckets[i]->key, key)) {
 			_keyFunctions.release(_buckets[i]->key);
-			_valueFunctions.release(_buckets[i]->value);
+			_objectFunctions.release(_buckets[i]->object);
 
 			[self freeMemory: _buckets[i]];
 			_buckets[i] = &deleted;
@@ -507,7 +509,7 @@ defaultEqual(void *value1, void *value2)
 	}
 }
 
-- (void)removeAllValues
+- (void)removeAllObjects
 {
 	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL) {
@@ -517,7 +519,7 @@ defaultEqual(void *value1, void *value2)
 			}
 
 			_keyFunctions.release(_buckets[i]->key);
-			_valueFunctions.release(_buckets[i]->value);
+			_objectFunctions.release(_buckets[i]->object);
 
 			[self freeMemory: _buckets[i]];
 			_buckets[i] = NULL;
@@ -544,27 +546,27 @@ defaultEqual(void *value1, void *value2)
 #endif
 }
 
-- (bool)containsValue: (void*)value
+- (bool)containsObject: (void*)object
 {
-	if (value == NULL || _count == 0)
+	if (object == NULL || _count == 0)
 		return false;
 
 	for (uint32_t i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
-			if (_valueFunctions.equal(_buckets[i]->value, value))
+			if (_objectFunctions.equal(_buckets[i]->object, object))
 				return true;
 
 	return false;
 }
 
-- (bool)containsValueIdenticalTo: (void*)value
+- (bool)containsObjectIdenticalTo: (void*)object
 {
-	if (value == NULL || _count == 0)
+	if (object == NULL || _count == 0)
 		return false;
 
 	for (uint32_t i = 0; i < _capacity; i++)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
-			if (_buckets[i]->value == value)
+			if (_buckets[i]->object == object)
 				return true;
 
 	return false;
@@ -579,9 +581,9 @@ defaultEqual(void *value1, void *value2)
 	       mutationsPointer: &_mutations] autorelease];
 }
 
-- (OFMapTableEnumerator*)valueEnumerator
+- (OFMapTableEnumerator*)objectEnumerator
 {
-	return [[[OFMapTableValueEnumerator alloc]
+	return [[[OFMapTableObjectEnumerator alloc]
 	    OF_initWithMapTable: self
 			buckets: _buckets
 		       capacity: _capacity
@@ -614,7 +616,7 @@ defaultEqual(void *value1, void *value2)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)enumerateKeysAndValuesUsingBlock:
+- (void)enumerateKeysAndObjectsUsingBlock:
     (of_map_table_enumeration_block_t)block
 {
 	bool stop = false;
@@ -626,11 +628,11 @@ defaultEqual(void *value1, void *value2)
 			    exceptionWithObject: self];
 
 		if (_buckets[i] != NULL && _buckets[i] != &deleted)
-			block(_buckets[i]->key, _buckets[i]->value, &stop);
+			block(_buckets[i]->key, _buckets[i]->object, &stop);
 	}
 }
 
-- (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block
+- (void)replaceObjectsUsingBlock: (of_map_table_replace_block_t)block
 {
 	unsigned long mutations = _mutations;
 
@@ -642,14 +644,14 @@ defaultEqual(void *value1, void *value2)
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
 			void *new;
 
-			new = block(_buckets[i]->key, _buckets[i]->value);
+			new = block(_buckets[i]->key, _buckets[i]->object);
 			if (new == NULL)
 				@throw [OFInvalidArgumentException exception];
 
-			if (new != _buckets[i]->value) {
-				_valueFunctions.release(_buckets[i]->value);
-				_buckets[i]->value =
-				    _valueFunctions.retain(new);
+			if (new != _buckets[i]->object) {
+				_objectFunctions.release(_buckets[i]->object);
+				_buckets[i]->object =
+				    _objectFunctions.retain(new);
 			}
 		}
 	}
@@ -686,7 +688,7 @@ defaultEqual(void *value1, void *value2)
 	[super dealloc];
 }
 
-- (void*)nextValue
+- (void*)nextObject
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -702,7 +704,7 @@ defaultEqual(void *value1, void *value2)
 @end
 
 @implementation OFMapTableKeyEnumerator
-- (void*)nextValue
+- (void*)nextObject
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
@@ -718,8 +720,8 @@ defaultEqual(void *value1, void *value2)
 }
 @end
 
-@implementation OFMapTableValueEnumerator
-- (void*)nextValue
+@implementation OFMapTableObjectEnumerator
+- (void*)nextObject
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
@@ -729,7 +731,7 @@ defaultEqual(void *value1, void *value2)
 	    _buckets[_position] == &deleted); _position++);
 
 	if (_position < _capacity)
-		return _buckets[_position++]->value;
+		return _buckets[_position++]->object;
 	else
 		return NULL;
 }
@@ -760,7 +762,7 @@ defaultEqual(void *value1, void *value2)
 	id ret;
 
 	@try {
-		ret = [_enumerator nextValue];
+		ret = [_enumerator nextObject];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
 		    exceptionWithObject: _object];

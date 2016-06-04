@@ -29,27 +29,27 @@
 #import "OFEnumerationMutationException.h"
 
 static void*
-retain(void *value)
+retain(void *object)
 {
-	return [(id)value retain];
+	return [(id)object retain];
 }
 
 static void
-release(void *value)
+release(void *object)
 {
-	[(id)value release];
+	[(id)object release];
 }
 
 static uint32_t
-hash(void *value)
+hash(void *object)
 {
-	return [(id)value hash];
+	return [(id)object hash];
 }
 
 static bool
-equal(void *value1, void *value2)
+equal(void *object1, void *object2)
 {
-	return [(id)value1 isEqual: (id)value2];
+	return [(id)object1 isEqual: (id)object2];
 }
 
 static const of_map_table_functions_t keyFunctions = {
@@ -58,7 +58,7 @@ static const of_map_table_functions_t keyFunctions = {
 	.hash = hash,
 	.equal = equal
 };
-static const of_map_table_functions_t valueFunctions = { NULL };
+static const of_map_table_functions_t objectFunctions = { NULL };
 
 @implementation OFSet_hashtable
 - init
@@ -73,7 +73,7 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 	@try {
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
-			  valueFunctions: valueFunctions
+			 objectFunctions: objectFunctions
 				capacity: capacity];
 	} @catch (id e) {
 		[self release];
@@ -101,8 +101,8 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 
 	@try {
 		for (id object in set)
-			[_mapTable setValue: (void*)1
-				     forKey: object];
+			[_mapTable setObject: (void*)1
+				      forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -129,8 +129,8 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 
 	@try {
 		for (id object in array)
-			[_mapTable setValue: (void*)1
-				     forKey: object];
+			[_mapTable setObject: (void*)1
+				      forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -146,8 +146,8 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			[_mapTable setValue: (void*)1
-				     forKey: objects[i]];
+			[_mapTable setObject: (void*)1
+				      forKey: objects[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -172,15 +172,15 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
-			  valueFunctions: valueFunctions
+			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setValue: (void*)1
-			     forKey: firstObject];
+		[_mapTable setObject: (void*)1
+			      forKey: firstObject];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[_mapTable setValue: (void*)1
-				     forKey: object];
+			[_mapTable setObject: (void*)1
+				      forKey: object];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -205,8 +205,8 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
 			void *pool2  = objc_autoreleasePoolPush();
 
-			[_mapTable setValue: (void*)1
-				     forKey: [child objectByDeserializing]];
+			[_mapTable setObject: (void*)1
+				      forKey: [child objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -237,7 +237,7 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 	if (object == nil)
 		return false;
 
-	return ([_mapTable valueForKey: object] != nil);
+	return ([_mapTable objectForKey: object] != nil);
 }
 
 - (bool)isEqual: (id)object
@@ -259,7 +259,7 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 	void *pool = objc_autoreleasePoolPush();
 	id object;
 
-	object = [[_mapTable keyEnumerator] nextValue];
+	object = [[_mapTable keyEnumerator] nextObject];
 	object = [object retain];
 
 	objc_autoreleasePoolPop(pool);
@@ -287,8 +287,8 @@ static const of_map_table_functions_t valueFunctions = { NULL };
 - (void)enumerateObjectsUsingBlock: (of_set_enumeration_block_t)block
 {
 	@try {
-		[_mapTable enumerateKeysAndValuesUsingBlock:
-		    ^ (void *key, void *value, bool *stop) {
+		[_mapTable enumerateKeysAndObjectsUsingBlock:
+		    ^ (void *key, void *object, bool *stop) {
 			block(key, stop);
 		}];
 	} @catch (OFEnumerationMutationException *e) {

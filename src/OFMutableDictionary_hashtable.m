@@ -35,27 +35,27 @@
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
-	[_mapTable setValue: object
-		     forKey: key];
+	[_mapTable setObject: object
+		      forKey: key];
 }
 
 - (void)removeObjectForKey: (id)key
 {
-	[_mapTable removeValueForKey: key];
+	[_mapTable removeObjectForKey: key];
 }
 
 - (void)removeAllObjects
 {
-	[_mapTable removeAllValues];
+	[_mapTable removeAllObjects];
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
 {
 	@try {
-		[_mapTable replaceValuesUsingBlock:
-		    ^ void* (void *key, void *value) {
-			return block(key, value);
+		[_mapTable replaceObjectsUsingBlock:
+		    ^ void* (void *key, void *object) {
+			return block(key, object);
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException

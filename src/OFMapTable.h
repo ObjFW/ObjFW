@@ -27,14 +27,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A struct describing the functions to be used by the map table.
  */
 typedef struct {
-	/// The function to retain keys / values
-	void *_Nonnull (*_Nullable retain)(void *value);
-	/// The function to release keys / values
-	void (*_Nullable release)(void *value);
+	/// The function to retain keys / objects
+	void *_Nonnull (*_Nullable retain)(void *object);
+	/// The function to release keys / objects
+	void (*_Nullable release)(void *object);
 	/// The function to hash keys
-	uint32_t (*_Nullable hash)(void *value);
-	/// The function to compare keys / values
-	bool (*_Nullable equal)(void *value1, void *value2);
+	uint32_t (*_Nullable hash)(void *object);
+	/// The function to compare keys / objects
+	bool (*_Nullable equal)(void *object1, void *object2);
 } of_map_table_functions_t;
 
 #ifdef OF_HAVE_BLOCKS
@@ -42,21 +42,21 @@ typedef struct {
  * @brief A block for enumerating an OFMapTable.
  *
  * @param key The current key
- * @param value The current value
+ * @param object The current object
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_map_table_enumeration_block_t)(void *key, void *value,
+typedef void (^of_map_table_enumeration_block_t)(void *key, void *object,
     bool *stop);
 
 /*!
- * @brief A block for replacing values in an OFMapTable.
+ * @brief A block for replacing objects in an OFMapTable.
  *
- * @param key The key of the value to replace
- * @param value The value to replace
- * @return The value to replace the value with
+ * @param key The key of the object to replace
+ * @param object The object to replace
+ * @return The object to replace the object with
  */
-typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
+typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 #endif
 
 @class OFMapTableEnumerator;
@@ -65,11 +65,11 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
  * @class OFMapTable OFMapTable.h ObjFW/OFMapTable.h
  *
  * @brief A class similar to OFDictionary, but providing more options how keys
- *	  and values should be retained, released, compared and hashed.
+ *	  and objects should be retained, released, compared and hashed.
  */
 @interface OFMapTable: OFObject <OFCopying, OFFastEnumeration>
 {
-	of_map_table_functions_t _keyFunctions, _valueFunctions;
+	of_map_table_functions_t _keyFunctions, _objectFunctions;
 	struct of_map_table_bucket **_buckets;
 	uint32_t _count, _capacity;
 	uint8_t _rotate;
@@ -82,59 +82,59 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
 @property (readonly) of_map_table_functions_t keyFunctions;
 
 /*!
- * The value functions used by the map table.
+ * The object functions used by the map table.
  */
-@property (readonly) of_map_table_functions_t valueFunctions;
+@property (readonly) of_map_table_functions_t objectFunctions;
 
 /*!
- * @brief Creates a new OFMapTable with the specified key and value functions.
+ * @brief Creates a new OFMapTable with the specified key and object functions.
  *
  * @param keyFunctions A structure of functions for handling keys
- * @param valueFunctions A structure of functions for handling values
+ * @param objectFunctions A structure of functions for handling objects
  * @return A new autoreleased OFMapTable
  */
 + (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			  valueFunctions: (of_map_table_functions_t)
-					      valueFunctions;
+			 objectFunctions: (of_map_table_functions_t)
+					      objectFunctions;
 
 /*!
- * @brief Creates a new OFMapTable with the specified key functions, value
+ * @brief Creates a new OFMapTable with the specified key functions, object
  *	  functions and capacity.
  *
  * @param keyFunctions A structure of functions for handling keys
- * @param valueFunctions A structure of functions for handling values
+ * @param objectFunctions A structure of functions for handling objects
  * @param capacity A hint about the count of elements expected to be in the map
  *	  table
  * @return A new autoreleased OFMapTable
  */
 + (instancetype)mapTableWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-			  valueFunctions: (of_map_table_functions_t)
-					      valueFunctions
+			 objectFunctions: (of_map_table_functions_t)
+					      objectFunctions
 				capacity: (size_t)capacity;
 
 /*!
  * @brief Initializes an already allocated OFMapTable with the specified key
- *	  and value functions.
+ *	  and object functions.
  *
  * @param keyFunctions A structure of functions for handling keys
- * @param valueFunctions A structure of functions for handling values
+ * @param objectFunctions A structure of functions for handling objects
  * @return An initialized OFMapTable
  */
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-	valueFunctions: (of_map_table_functions_t)valueFunctions;
+       objectFunctions: (of_map_table_functions_t)objectFunctions;
 
 /*!
  * @brief Initializes an already allocated OFMapTable with the specified key
- *	  functions, value functions and capacity.
+ *	  functions, object functions and capacity.
  *
  * @param keyFunctions A structure of functions for handling keys
- * @param valueFunctions A structure of functions for handling values
+ * @param objectFunctions A structure of functions for handling objects
  * @param capacity A hint about the count of elements expected to be in the map
  *	  table
  * @return An initialized OFMapTable
  */
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-	valueFunctions: (of_map_table_functions_t)valueFunctions
+       objectFunctions: (of_map_table_functions_t)objectFunctions
 	      capacity: (size_t)capacity;
 
 /*!
@@ -145,52 +145,52 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
 - (size_t)count;
 
 /*!
- * @brief Returns the value for the given key or NULL if the key was not found.
+ * @brief Returns the object for the given key or NULL if the key was not found.
  *
  * @param key The key whose object should be returned
- * @return The value for the given key or NULL if the key was not found
+ * @return The object for the given key or NULL if the key was not found
  */
-- (nullable void*)valueForKey: (void*)key;
+- (nullable void*)objectForKey: (void*)key;
 
 /*!
- * @brief Sets a value for a key.
+ * @brief Sets an object for a key.
  *
  * @param key The key to set
- * @param value The value to set the key to
+ * @param object The object to set the key to
  */
-- (void)setValue: (void*)value
-	  forKey: (void*)key;
+- (void)setObject: (void*)object
+	   forKey: (void*)key;
 
 /*!
- * @brief Removes the value for the specified key from the map table.
+ * @brief Removes the object for the specified key from the map table.
  *
  * @param key The key whose object should be removed
  */
-- (void)removeValueForKey: (void*)key;
+- (void)removeObjectForKey: (void*)key;
 
 /*!
- * @brief Removes all values.
+ * @brief Removes all objects.
  */
-- (void)removeAllValues;
+- (void)removeAllObjects;
 
 /*!
- * @brief Checks whether the map table contains a value equal to the specified
- *	  value.
+ * @brief Checks whether the map table contains an object equal to the
+ *	  specified object.
  *
- * @param value The value which is checked for being in the map table
- * @return A boolean whether the map table contains the specified value
+ * @param object The object which is checked for being in the map table
+ * @return A boolean whether the map table contains the specified object
 */
-- (bool)containsValue: (nullable void*)value;
+- (bool)containsObject: (nullable void*)object;
 
 /*!
- * @brief Checks whether the map table contains a value with the specified
+ * @brief Checks whether the map table contains an object with the specified
  *        address.
  *
- * @param value The value which is checked for being in the map table
- * @return A boolean whether the map table contains a value with the specified
- *	   address.
+ * @param object The object which is checked for being in the map table
+ * @return A boolean whether the map table contains an object with the
+ *	   specified address.
  */
-- (bool)containsValueIdenticalTo: (nullable void*)value;
+- (bool)containsObjectIdenticalTo: (nullable void*)object;
 
 /*!
  * @brief Returns an OFMapTableEnumerator to enumerate through the map table's
@@ -202,11 +202,11 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
 
 /*!
  * @brief Returns an OFMapTableEnumerator to enumerate through the map table's
- *	  values.
+ *	  objects.
  *
- * @return An OFMapTableEnumerator to enumerate through the map table's values
+ * @return An OFMapTableEnumerator to enumerate through the map table's objects
  */
-- (OFMapTableEnumerator*)valueEnumerator;
+- (OFMapTableEnumerator*)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -214,15 +214,15 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
  *
  * @param block The block to execute for each key / object pair.
  */
-- (void)enumerateKeysAndValuesUsingBlock:
+- (void)enumerateKeysAndObjectsUsingBlock:
     (of_map_table_enumeration_block_t)block;
 
 /*!
- * @brief Replaces each value with the value returned by the block.
+ * @brief Replaces each object with the object returned by the block.
  *
- * @param block The block which returns a new value for each value
+ * @param block The block which returns a new object for each object
  */
-- (void)replaceValuesUsingBlock: (of_map_table_replace_block_t)block;
+- (void)replaceObjectsUsingBlock: (of_map_table_replace_block_t)block;
 #endif
 @end
 
@@ -230,7 +230,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
  * @class OFMapTableEnumerator OFMapTable.h ObjFW/OFMapTable.h
  *
  * @brief A class which provides methods to enumerate through an OFMapTable's
- *	  keys or values.
+ *	  keys or objects.
  */
 @interface OFMapTableEnumerator: OFObject
 {
@@ -243,11 +243,11 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *value);
 }
 
 /*!
- * @brief Returns the next value.
+ * @brief Returns the next object.
  *
- * @return The next value
+ * @return The next object
  */
-- (void*)nextValue;
+- (void*)nextObject;
 
 /*!
  * @brief Resets the enumerator, so the next call to nextKey returns the first

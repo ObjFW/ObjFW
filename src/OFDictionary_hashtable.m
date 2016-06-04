@@ -31,33 +31,33 @@
 #import "OFInvalidFormatException.h"
 
 static void*
-copy(void *value)
+copy(void *object)
 {
-	return [(id)value copy];
+	return [(id)object copy];
 }
 
 static void*
-retain(void *value)
+retain(void *object)
 {
-	return [(id)value retain];
+	return [(id)object retain];
 }
 
 static void
-release(void *value)
+release(void *object)
 {
-	[(id)value release];
+	[(id)object release];
 }
 
 static uint32_t
-hash(void *value)
+hash(void *object)
 {
-	return [(id)value hash];
+	return [(id)object hash];
 }
 
 static bool
-equal(void *value1, void *value2)
+equal(void *object1, void *object2)
 {
-	return [(id)value1 isEqual: (id)value2];
+	return [(id)object1 isEqual: (id)object2];
 }
 
 static const of_map_table_functions_t keyFunctions = {
@@ -66,7 +66,7 @@ static const of_map_table_functions_t keyFunctions = {
 	.hash = hash,
 	.equal = equal
 };
-static const of_map_table_functions_t valueFunctions = {
+static const of_map_table_functions_t objectFunctions = {
 	.retain = retain,
 	.release = release,
 	.hash = hash,
@@ -86,7 +86,7 @@ static const of_map_table_functions_t valueFunctions = {
 	@try {
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
-			  valueFunctions: valueFunctions
+			 objectFunctions: objectFunctions
 				capacity: capacity];
 	} @catch (id e) {
 		[self release];
@@ -138,8 +138,8 @@ static const of_map_table_functions_t valueFunctions = {
 		objectEnumerator = [dictionary objectEnumerator];
 		while ((key = [keyEnumerator nextObject]) != nil &&
 		    (object = [objectEnumerator nextObject]) != nil)
-			[_mapTable setValue: object
-				     forKey: key];
+			[_mapTable setObject: object
+				      forKey: key];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -156,8 +156,8 @@ static const of_map_table_functions_t valueFunctions = {
 	self = [self initWithCapacity: 1];
 
 	@try {
-		[_mapTable setValue: object
-			     forKey: key];
+		[_mapTable setObject: object
+			      forKey: key];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -176,8 +176,8 @@ static const of_map_table_functions_t valueFunctions = {
 		size_t i;
 
 		for (i = 0; i < count; i++)
-			[_mapTable setValue: objects[i]
-				     forKey: keys[i]];
+			[_mapTable setObject: objects[i]
+				      forKey: keys[i]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -216,11 +216,11 @@ static const of_map_table_functions_t valueFunctions = {
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
-			  valueFunctions: valueFunctions
+			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setValue: object
-			     forKey: key];
+		[_mapTable setObject: object
+			      forKey: key];
 
 		for (i = 1; i < count; i++) {
 			key = va_arg(arguments, id);
@@ -229,8 +229,8 @@ static const of_map_table_functions_t valueFunctions = {
 			if (key == nil || object == nil)
 				@throw [OFInvalidArgumentException exception];
 
-			[_mapTable setValue: object
-				     forKey: key];
+			[_mapTable setObject: object
+				      forKey: key];
 		}
 	} @catch (id e) {
 		[self release];
@@ -260,7 +260,7 @@ static const of_map_table_functions_t valueFunctions = {
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
-			  valueFunctions: valueFunctions
+			 objectFunctions: objectFunctions
 				capacity: [keys count]];
 
 		keyEnumerator = [keys objectEnumerator];
@@ -278,8 +278,8 @@ static const of_map_table_functions_t valueFunctions = {
 			if (key == nil || object == nil)
 				@throw [OFInvalidFormatException exception];
 
-			[_mapTable setValue: [object objectByDeserializing]
-				     forKey: [key objectByDeserializing]];
+			[_mapTable setObject: [object objectByDeserializing]
+				      forKey: [key objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -302,7 +302,7 @@ static const of_map_table_functions_t valueFunctions = {
 
 - (id)objectForKey: (id)key
 {
-	return [_mapTable valueForKey: key];
+	return [_mapTable objectForKey: key];
 }
 
 - (size_t)count
@@ -325,12 +325,12 @@ static const of_map_table_functions_t valueFunctions = {
 
 - (bool)containsObject: (id)object
 {
-	return [_mapTable containsValue: object];
+	return [_mapTable containsObject: object];
 }
 
 - (bool)containsObjectIdenticalTo: (id)object
 {
-	return [_mapTable containsValueIdenticalTo: object];
+	return [_mapTable containsObjectIdenticalTo: object];
 }
 
 - (OFArray*)allKeys
@@ -351,7 +351,7 @@ static const of_map_table_functions_t valueFunctions = {
 
 		i = 0;
 		enumerator = [_mapTable keyEnumerator];
-		while ((key = [enumerator nextValue]) != nil) {
+		while ((key = [enumerator nextObject]) != nil) {
 			assert(i < count);
 
 			keys[i++] = key;
@@ -385,8 +385,8 @@ static const of_map_table_functions_t valueFunctions = {
 		size_t i;
 
 		i = 0;
-		enumerator = [_mapTable valueEnumerator];
-		while ((object = [enumerator nextValue]) != nil) {
+		enumerator = [_mapTable objectEnumerator];
+		while ((object = [enumerator nextObject]) != nil) {
 			assert(i < count);
 
 			objects[i++] = object;
@@ -413,7 +413,7 @@ static const of_map_table_functions_t valueFunctions = {
 - (OFEnumerator*)objectEnumerator
 {
 	return [[[OFMapTable_EnumeratorWrapper alloc]
-	    initWithEnumerator: [_mapTable valueEnumerator]
+	    initWithEnumerator: [_mapTable objectEnumerator]
 			object: self] autorelease];
 }
 
@@ -431,9 +431,9 @@ static const of_map_table_functions_t valueFunctions = {
     (of_dictionary_enumeration_block_t)block
 {
 	@try {
-		[_mapTable enumerateKeysAndValuesUsingBlock:
-		    ^ (void *key, void *value, bool *stop) {
-			block(key, value, stop);
+		[_mapTable enumerateKeysAndObjectsUsingBlock:
+		    ^ (void *key, void *object, bool *stop) {
+			block(key, object, stop);
 		}];
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
