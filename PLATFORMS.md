@@ -173,8 +173,8 @@ Windows
 Others
 ------
 
-Basically, it should run on any POSIX system to which GCC 4 or a recent Clang
-version has been ported. If not, please send an e-mail with a bug report.
+Basically, it should run on any POSIX system to which GCC >= 4.6 or a recent
+Clang version has been ported. If not, please send an e-mail with a bug report.
 
 If you successfully ran ObjFW on a platform not listed here, please send an
 e-mail to js@heap.zone so it can be added here!
