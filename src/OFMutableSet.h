@@ -32,6 +32,24 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFMutableSet: OFSet
 #endif
 /*!
+ * @brief Creates a new OFMutableSet with enough memory to hold the specified
+ *	  number of objects.
+ *
+ * @param capacity The initial capacity for the OFMutableSet
+ * @return A new autoreleased OFMutableSet
+ */
++ (instancetype)setWithCapacity: (size_t)capacity;
+
+/*!
+ * @brief Initializes an already allocated OFMutableSet with enough memory to
+ *	  hold the specified number of objects.
+ *
+ * @param capacity The initial capacity for the OFMutableSet
+ * @return An initialized OFMutableSet
+ */
+- initWithCapacity: (size_t)capacity;
+
+/*!
  * @brief Adds the specified object to the set.
  *
  * @param object The object to add to the set

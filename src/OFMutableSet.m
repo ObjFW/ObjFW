@@ -79,6 +79,11 @@ static struct {
 	    initWithSerialization: element];
 }
 
+- initWithCapacity: (size_t)capacity
+{
+	return (id)[[OFMutableSet_hashtable alloc] initWithCapacity: capacity];
+}
+
 - retain
 {
 	return self;
@@ -117,6 +122,11 @@ static struct {
 	return [super alloc];
 }
 
++ (instancetype)setWithCapacity: (size_t)capacity
+{
+	return [[[self alloc] initWithCapacity: capacity] autorelease];
+}
+
 - init
 {
 	if (object_getClass(self) == [OFMutableSet class]) {
@@ -130,6 +140,11 @@ static struct {
 	}
 
 	return [super init];
+}
+
+- initWithCapacity: (size_t)capacity
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)addObject: (id)object
