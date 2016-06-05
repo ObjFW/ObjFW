@@ -85,7 +85,7 @@
 			@throw [OFInvalidFormatException exception];
 
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
-			*tmp2 = tolower((int)*tmp2);
+			*tmp2 = tolower((unsigned char)*tmp2);
 
 		_scheme = [[[OFString stringWithUTF8String: UTF8String
 						    length: tmp - UTF8String]

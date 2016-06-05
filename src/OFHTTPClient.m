@@ -45,7 +45,7 @@
 static OF_INLINE void
 normalizeKey(char *str_)
 {
-	uint8_t *str = (uint8_t*)str_;
+	unsigned char *str = (unsigned char*)str_;
 	bool firstLetter = true;
 
 	while (*str != '\0') {

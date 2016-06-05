@@ -277,7 +277,7 @@
 			_setter = tmp;
 
 			if (first < 0x80) {
-				[tmp setCharacter: toupper((int)first)
+				[tmp setCharacter: toupper((unsigned char)first)
 					  atIndex: 0];
 			}
 

@@ -46,9 +46,11 @@ static inline int
 memcasecmp(const char *first, const char *second, size_t length)
 {
 	for (size_t i = 0; i < length; i++) {
-		if (tolower((int)first[i]) > tolower((int)second[i]))
+		if (tolower((unsigned char)first[i]) >
+		    tolower((unsigned char)second[i]))
 			return OF_ORDERED_DESCENDING;
-		if (tolower((int)first[i]) < tolower((int)second[i]))
+		if (tolower((unsigned char)first[i]) <
+		    tolower((unsigned char)second[i]))
 			return OF_ORDERED_ASCENDING;
 	}
 
