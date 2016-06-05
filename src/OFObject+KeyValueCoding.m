@@ -47,6 +47,9 @@ nextType(const char **typeEncoding)
 	const char *typeEncoding = [self typeEncodingForSelector: selector];
 	id ret;
 
+	if (typeEncoding == NULL)
+		return [self valueForUndefinedKey: key];
+
 	switch (nextType(&typeEncoding)) {
 	case '@':
 		ret = [self performSelector: selector];
@@ -121,8 +124,8 @@ nextType(const char **typeEncoding)
 
 	typeEncoding = [self typeEncodingForSelector: selector];
 
-	if (nextType(&typeEncoding) != 'v' || nextType(&typeEncoding) != '@' ||
-	    nextType(&typeEncoding) != ':') {
+	if (typeEncoding == NULL || nextType(&typeEncoding) != 'v' ||
+	    nextType(&typeEncoding) != '@' || nextType(&typeEncoding) != ':') {
 		[self    setValue: value
 		  forUndefinedKey: key];
 		return;
