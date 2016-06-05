@@ -36,7 +36,8 @@ static OFString *module = @"OFObject";
 
 @interface MyObj: OFObject
 {
-	id _object;
+	id _objectValue;
+	Class _classValue;
 	bool _boolValue;
 	char _charValue;
 	short _shortValue;
@@ -52,7 +53,8 @@ static OFString *module = @"OFObject";
 	double _doubleValue;
 }
 
-@property (retain) id object;
+@property (retain) id objectValue;
+@property Class classValue;
 @property bool boolValue;
 @property char charValue;
 @property short shortValue;
@@ -69,7 +71,8 @@ static OFString *module = @"OFObject";
 @end
 
 @implementation MyObj
-@synthesize object = _object, boolValue = _boolValue, charValue = _charValue;
+@synthesize objectValue = _objectValue, classValue = _classValue;
+@synthesize boolValue = _boolValue, charValue = _charValue;
 @synthesize shortValue = _shortValue, intValue = _intValue;
 @synthesize longValue = _longValue, longLongValue = _longLongValue;
 @synthesize unsignedCharValue = _unsignedCharValue;
@@ -81,7 +84,7 @@ static OFString *module = @"OFObject";
 
 - (void)dealloc
 {
-	[_object release];
+	[_objectValue release];
 
 	[super dealloc];
 }
@@ -148,16 +151,23 @@ static OFString *module = @"OFObject";
 	    [[m description] isEqual:
 	    [OFString stringWithFormat: @"<MyObj: %p>", m]])
 
-	[m setObject: @"Hello"];
+	[m setObjectValue: @"Hello"];
+	[m setClassValue: [m class]];
 	TEST(@"-[valueForKey:]",
-	    [[m valueForKey: @"object"] isEqual: @"Hello"])
+	    [[m valueForKey: @"objectValue"] isEqual: @"Hello"] &&
+	    [[m valueForKey: @"classValue"] isEqual: [m class]] &&
+	    [[m valueForKey: @"class"] isEqual: [m class]])
 
 	EXPECT_EXCEPTION(@"-[valueForKey:] with undefined key",
 	    OFUndefinedKeyException, [m valueForKey: @"undefined"])
 
 	TEST(@"-[setValue:forKey:]",
 	    R([m setValue: @"World"
-		   forKey: @"object"]) && [[m object] isEqual: @"World"])
+		   forKey: @"objectValue"]) &&
+	    R([m setValue: [OFObject class]
+		   forKey: @"classValue"]) &&
+	    [[m objectValue] isEqual: @"World"] &&
+	    [[m classValue] isEqual: [OFObject class]])
 
 	EXPECT_EXCEPTION(@"-[setValue:forKey:] with undefined key",
 	    OFUndefinedKeyException, [m setValue: @"x"

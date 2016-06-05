@@ -52,6 +52,7 @@ nextType(const char **typeEncoding)
 
 	switch (nextType(&typeEncoding)) {
 	case '@':
+	case '#':
 		ret = [self performSelector: selector];
 		break;
 #define CASE(encoding, type, method)					  \
@@ -141,6 +142,7 @@ nextType(const char **typeEncoding)
 
 	switch (valueType) {
 	case '@':
+	case '#':
 		{
 			void (*setter)(id, SEL, id) = (void(*)(id, SEL, id))
 			    [self methodForSelector: selector];
