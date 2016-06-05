@@ -24,6 +24,7 @@
 #import "OFString.h"
 #import "OFNumber.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFUndefinedKeyException.h"
 
@@ -140,6 +141,11 @@ nextType(const char **typeEncoding)
 		return;
 	}
 
+	if (valueType != '@' && valueType != '#' && value == nil) {
+		[self setNilValueForKey: key];
+		return;
+	}
+
 	switch (valueType) {
 	case '@':
 	case '#':
@@ -185,5 +191,10 @@ nextType(const char **typeEncoding)
 	@throw [OFUndefinedKeyException exceptionWithObject: self
 							key: key
 						      value: value];
+}
+
+- (void)setNilValueForKey: (OFString*)key
+{
+	@throw [OFInvalidArgumentException exception];
 }
 @end

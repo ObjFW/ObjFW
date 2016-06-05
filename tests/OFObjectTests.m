@@ -20,6 +20,7 @@
 #import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFUndefinedKeyException.h"
@@ -254,6 +255,10 @@ static OFString *module = @"OFObject";
 	    [m unsignedLongLongValue] == 100 &&
 	    [m floatValue] == 110 &&
 	    [m doubleValue] == 120)
+
+	EXPECT_EXCEPTION(@"Catch -[setValue:forKey:] with nil key for scalar",
+	    OFInvalidArgumentException, [m setValue: nil
+					     forKey: @"intValue"])
 
 	[pool drain];
 }

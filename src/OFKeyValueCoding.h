@@ -68,6 +68,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -  (void)setValue: (nullable id)value
   forUndefinedKey: (OFString*)key;
+
+/*!
+ * @brief This is called by @ref setValue:forKey: if the specified key is a
+ *	  scalar, but the value specified is `nil`.
+ *
+ * By default, this throws an @ref OFInvalidArgumentException.
+ *
+ * @param key The key for which the value `nil` was specified
+ */
+- (void)setNilValueForKey: (OFString*)key;
 @end
 
 OF_ASSUME_NONNULL_END
