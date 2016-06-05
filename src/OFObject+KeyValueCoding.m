@@ -59,15 +59,17 @@ nextType(const char **typeEncoding)
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: keyLength + 3];
 
-		memcpy(name, "is", 2);
-		memcpy(name + 2, [key UTF8String], keyLength);
-		name[keyLength + 2] = '\0';
+		@try {
+			memcpy(name, "is", 2);
+			memcpy(name + 2, [key UTF8String], keyLength);
+			name[keyLength + 2] = '\0';
 
-		name[2] = toupper(name[2]);
+			name[2] = toupper(name[2]);
 
-		selector = sel_registerName(name);
-
-		free(name);
+			selector = sel_registerName(name);
+		} @finally {
+			free(name);
+		}
 
 		typeEncoding = [self typeEncodingForSelector: selector];
 
@@ -139,15 +141,17 @@ nextType(const char **typeEncoding)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: keyLength + 5];
 
-	memcpy(name, "set", 3);
-	memcpy(name + 3, [key UTF8String], keyLength);
-	memcpy(name + keyLength + 3, ":", 2);
+	@try {
+		memcpy(name, "set", 3);
+		memcpy(name + 3, [key UTF8String], keyLength);
+		memcpy(name + keyLength + 3, ":", 2);
 
-	name[3] = toupper(name[3]);
+		name[3] = toupper(name[3]);
 
-	selector = sel_registerName(name);
-
-	free(name);
+		selector = sel_registerName(name);
+	} @finally {
+		free(name);
+	}
 
 	typeEncoding = [self typeEncodingForSelector: selector];
 
