@@ -152,8 +152,8 @@ AX_CHECK_COMPILER_FLAGS(-Wshorten-64-to-32 -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AX_CHECK_COMPILER_FLAGS(-Wsemicolon-before-method-body -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
-AX_CHECK_COMPILER_FLAGS(-Wobjc-property-synthesis -Werror,
-	[OBJCFLAGS="$OBJCFLAGS -Wobjc-property-synthesis"])
+AX_CHECK_COMPILER_FLAGS(-Wobjc-missing-property-synthesis -Werror,
+	[OBJCFLAGS="$OBJCFLAGS -Wobjc-missing-property-synthesis"])
 AX_CHECK_COMPILER_FLAGS(-Wsign-compare -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
 
@@ -921,7 +921,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	esac
 
 	AS_IF([test x"$with_wii" = x"yes"], [
-	       AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
+		AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
 			"OFKernelEventObserver_poll.m")
 	])
 
