@@ -326,7 +326,9 @@ static OFString *c_ary[] = {
 	    [[[OFArray arrayWithObjects: @"foo", @"bar", @"quxqux", nil]
 	    valueForKey: @"length"] isEqual:
 	    [OFArray arrayWithObjects: [OFNumber numberWithSize: 3],
-	    [OFNumber numberWithSize: 3], [OFNumber numberWithSize: 6], nil]])
+	    [OFNumber numberWithSize: 3], [OFNumber numberWithSize: 6], nil]] &&
+	    [[[OFArray arrayWithObjects: @"1", @"2", nil]
+	    valueForKey: @"@count"] isEqual: [OFNumber numberWithSize: 2]])
 
 	m[0] = [OFMutableArray arrayWithObjects:
 	    [OFURL URLWithString: @"http://foo.bar/"],
