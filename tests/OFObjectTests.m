@@ -17,10 +17,12 @@
 #include "config.h"
 
 #import "OFString.h"
+#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFMemoryNotPartOfObjectException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFUndefinedKeyException.h"
 
 #import "TestsAppDelegate.h"
 
@@ -33,9 +35,56 @@
 static OFString *module = @"OFObject";
 
 @interface MyObj: OFObject
+{
+	id _object;
+	bool _boolValue;
+	char _charValue;
+	short _shortValue;
+	int _intValue;
+	long _longValue;
+	long long _longLongValue;
+	unsigned char _unsignedCharValue;
+	unsigned short _unsignedShortValue;
+	unsigned int _unsignedIntValue;
+	unsigned long _unsignedLongValue;
+	unsigned long long _unsignedLongLongValue;
+	float _floatValue;
+	double _doubleValue;
+}
+
+@property (retain) id object;
+@property bool boolValue;
+@property char charValue;
+@property short shortValue;
+@property int intValue;
+@property long longValue;
+@property long long longLongValue;
+@property unsigned char unsignedCharValue;
+@property unsigned short unsignedShortValue;
+@property unsigned int unsignedIntValue;
+@property unsigned long unsignedLongValue;
+@property unsigned long long unsignedLongLongValue;
+@property float floatValue;
+@property double doubleValue;
 @end
 
 @implementation MyObj
+@synthesize object = _object, boolValue = _boolValue, charValue = _charValue;
+@synthesize shortValue = _shortValue, intValue = _intValue;
+@synthesize longValue = _longValue, longLongValue = _longLongValue;
+@synthesize unsignedCharValue = _unsignedCharValue;
+@synthesize unsignedShortValue = _unsignedShortValue;
+@synthesize unsignedIntValue = _unsignedIntValue;
+@synthesize unsignedLongValue = _unsignedLongValue;
+@synthesize unsignedLongLongValue = _unsignedLongLongValue;
+@synthesize floatValue = _floatValue, doubleValue = _doubleValue;
+
+- (void)dealloc
+{
+	[_object release];
+
+	[super dealloc];
+}
 @end
 
 @implementation TestsAppDelegate (OFObjectTests)
@@ -98,6 +147,103 @@ static OFString *module = @"OFObject";
 	    [OFString stringWithFormat: @"<OFObject: %p>", o]] &&
 	    [[m description] isEqual:
 	    [OFString stringWithFormat: @"<MyObj: %p>", m]])
+
+	[m setObject: @"Hello"];
+	TEST(@"-[valueForKey:]",
+	    [[m valueForKey: @"object"] isEqual: @"Hello"])
+
+	EXPECT_EXCEPTION(@"-[valueForKey:] with undefined key",
+	    OFUndefinedKeyException, [m valueForKey: @"undefined"])
+
+	TEST(@"-[setValue:forKey:]",
+	    R([m setValue: @"World"
+		   forKey: @"object"]) && [[m object] isEqual: @"World"])
+
+	EXPECT_EXCEPTION(@"-[setValue:forKey:] with undefined key",
+	    OFUndefinedKeyException, [m setValue: @"x"
+					  forKey: @"undefined"])
+
+	[m setBoolValue: 1];
+	[m setCharValue: 2];
+	[m setShortValue: 3];
+	[m setIntValue: 4];
+	[m setLongValue: 5 ];
+	[m setLongLongValue: 6];
+	[m setUnsignedCharValue: 7];
+	[m setUnsignedShortValue: 8];
+	[m setUnsignedIntValue: 9];
+	[m setUnsignedLongValue: 10];
+	[m setUnsignedLongLongValue: 11];
+	[m setFloatValue: 12];
+	[m setDoubleValue: 13];
+	TEST(@"Auto-wrapping of -[valueForKey:]",
+	    [[m valueForKey: @"boolValue"] isEqual:
+	    [OFNumber numberWithBool: 1]] &&
+	    [[m valueForKey: @"charValue"] isEqual:
+	    [OFNumber numberWithChar: 2]] &&
+	    [[m valueForKey: @"shortValue"] isEqual:
+	    [OFNumber numberWithShort: 3]] &&
+	    [[m valueForKey: @"intValue"] isEqual:
+	    [OFNumber numberWithInt: 4]] &&
+	    [[m valueForKey: @"longValue"] isEqual:
+	    [OFNumber numberWithLong: 5]] &&
+	    [[m valueForKey: @"longLongValue"] isEqual:
+	    [OFNumber numberWithLongLong: 6]] &&
+	    [[m valueForKey: @"unsignedCharValue"] isEqual:
+	    [OFNumber numberWithUnsignedChar: 7]] &&
+	    [[m valueForKey: @"unsignedShortValue"] isEqual:
+	    [OFNumber numberWithUnsignedShort: 8]] &&
+	    [[m valueForKey: @"unsignedIntValue"] isEqual:
+	    [OFNumber numberWithUnsignedInt: 9]] &&
+	    [[m valueForKey: @"unsignedLongValue"] isEqual:
+	    [OFNumber numberWithUnsignedLong: 10]] &&
+	    [[m valueForKey: @"unsignedLongLongValue"] isEqual:
+	    [OFNumber numberWithUnsignedLongLong: 11]] &&
+	    [[m valueForKey: @"floatValue"] isEqual:
+	    [OFNumber numberWithFloat: 12]] &&
+	    [[m valueForKey: @"doubleValue"] isEqual:
+	    [OFNumber numberWithDouble: 13]])
+
+	TEST(@"Auto-wrapping of -[setValue:forKey:]",
+	    R([m setValue: [OFNumber numberWithBool: 0]
+		   forKey: @"boolValue"]) &&
+	    R([m setValue: [OFNumber numberWithChar: 10]
+		   forKey: @"charValue"]) &&
+	    R([m setValue: [OFNumber numberWithShort: 20]
+		   forKey: @"shortValue"]) &&
+	    R([m setValue: [OFNumber numberWithInt: 30]
+		   forKey: @"intValue"]) &&
+	    R([m setValue: [OFNumber numberWithLong: 40]
+		   forKey: @"longValue"]) &&
+	    R([m setValue: [OFNumber numberWithLongLong: 50]
+		   forKey: @"longLongValue"]) &&
+	    R([m setValue: [OFNumber numberWithUnsignedChar: 60]
+		   forKey: @"unsignedCharValue"]) &&
+	    R([m setValue: [OFNumber numberWithUnsignedShort: 70]
+		   forKey: @"unsignedShortValue"]) &&
+	    R([m setValue: [OFNumber numberWithUnsignedInt: 80]
+		   forKey: @"unsignedIntValue"]) &&
+	    R([m setValue: [OFNumber numberWithUnsignedLong: 90]
+		   forKey: @"unsignedLongValue"]) &&
+	    R([m setValue: [OFNumber numberWithUnsignedLongLong: 100]
+		   forKey: @"unsignedLongLongValue"]) &&
+	    R([m setValue: [OFNumber numberWithFloat: 110]
+		   forKey: @"floatValue"]) &&
+	    R([m setValue: [OFNumber numberWithDouble: 120]
+		   forKey: @"doubleValue"]) &&
+	    [m boolValue] == 0 &&
+	    [m charValue] == 10 &&
+	    [m shortValue] == 20 &&
+	    [m intValue] == 30 &&
+	    [m longValue] == 40 &&
+	    [m longLongValue] == 50 &&
+	    [m unsignedCharValue] == 60 &&
+	    [m unsignedShortValue] == 70 &&
+	    [m unsignedIntValue] == 80 &&
+	    [m unsignedLongValue] == 90 &&
+	    [m unsignedLongLongValue] == 100 &&
+	    [m floatValue] == 110 &&
+	    [m doubleValue] == 120)
 
 	[pool drain];
 }
