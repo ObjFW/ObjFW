@@ -62,8 +62,9 @@ static OFString *values[] = {
 	    [OFNumber numberWithSize: 2]])
 
 	EXPECT_EXCEPTION(@"Catching -[setValue:forKey:] on immutable "
-	    @"dictionary", OFUndefinedKeyException, [dict setValue: @"x"
-							    forKey: @"x"])
+	    @"dictionary", OFUndefinedKeyException,
+	    [[OFDictionary dictionary] setValue: @"x"
+					 forKey: @"x"])
 
 	TEST(@"-[containsObject:]",
 	    [dict containsObject: values[0]] &&
