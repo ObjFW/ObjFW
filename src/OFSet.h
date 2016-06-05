@@ -222,6 +222,37 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (bool)containsObject: (nullable ObjectType)object;
 
 /*!
+ * @brief Returns the value for the specified key
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super valueForKey:]` is called.
+ * If the key does not start with an `@`, a new set with the value for the
+ * specified key for each object is returned.
+ *
+ * @note Unlike with @ref OFArray, any nil values are removed!
+ *
+ * @param key The key of the value to return
+ * @return The value for the specified key
+ */
+- (nullable id)valueForKey: (OFString*)key;
+
+/*!
+ * @brief Set the value for the specified key
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super setValue:forKey:]` is called.
+ * If the key does not start with an `@`, @ref setValue:forKey: is called for
+ * each object.
+ *
+ * @note A @ref OFNull value is translated to nil!
+ *
+ * @param value The value for the specified key
+ * @param key The key of the value to set
+ */
+- (void)setValue: (nullable id)value
+	  forKey: (OFString*)key;
+
+/*!
  * @brief Returns an OFEnumerator to enumerate through all objects of the set.
  *
  * @returns An OFEnumerator to enumerate through all objects of the set

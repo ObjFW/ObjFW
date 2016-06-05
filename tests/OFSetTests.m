@@ -18,6 +18,7 @@
 
 #import "OFSet.h"
 #import "OFArray.h"
+#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -129,6 +130,14 @@ static OFString *module = @"OFSet";
 	}
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok);
+
+	TEST(@"-[valueForKey:]",
+	    [(set1 = [[OFSet setWithObjects: @"a", @"ab", @"abc", @"b", nil]
+	    valueForKey: @"length"]) isEqual: [OFSet setWithObjects:
+	    [OFNumber numberWithSize: 1], [OFNumber numberWithSize: 2],
+	    [OFNumber numberWithSize: 3], nil]] &&
+	    [[set1 valueForKey: @"@count"] isEqual:
+	    [OFNumber numberWithSize: 3]])
 
 	[pool drain];
 }

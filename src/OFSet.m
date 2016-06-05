@@ -23,6 +23,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFXMLElement.h"
+#import "OFNull.h"
 
 static struct {
 	Class isa;
@@ -211,6 +212,58 @@ static struct {
 - (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (id)valueForKey: (OFString*)key
+{
+	OFMutableSet *ret;
+
+	if ([key hasPrefix: @"@"]) {
+		void *pool = objc_autoreleasePoolPush();
+		id ret;
+
+		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		ret = [[super valueForKey: key] retain];
+
+		objc_autoreleasePoolPop(pool);
+
+		return [ret autorelease];
+	}
+
+	ret = [OFMutableSet setWithCapacity: [self count]];
+
+	for (id object in self) {
+		id value = [object valueForKey: key];
+
+		if (value != nil)
+			[ret addObject: value];
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
+- (void)setValue: (id)value
+	  forKey: (OFString*)key
+{
+	if ([key hasPrefix: @"@"]) {
+		void *pool = objc_autoreleasePoolPush();
+
+		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		[super setValue: value
+			 forKey: key];
+
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	if (value == [OFNull null])
+		value = nil;
+
+	for (id object in self)
+		[object setValue: value
+			  forKey: key];
 }
 
 - (bool)containsObject: (id)object
