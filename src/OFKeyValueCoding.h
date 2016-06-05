@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFKeyValueCoding
 /*!
- * @brief Return the value for the specified key
+ * @brief Returns the value for the specified key
  *
  * @param key The key of the value to return
  * @return The value for the specified key

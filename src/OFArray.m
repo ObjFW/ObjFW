@@ -27,6 +27,7 @@
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFDataArray.h"
+#import "OFNull.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -273,6 +274,35 @@ static struct {
 - (id)objectAtIndexedSubscript: (size_t)index
 {
 	return [self objectAtIndex: index];
+}
+
+- (id)valueForKey: (OFString*)key
+{
+	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: [self count]];
+
+	for (id object in self) {
+		id value = [object valueForKey: key];
+
+		if (value == nil)
+			value = [OFNull null];
+
+		[ret addObject: value];
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
+- (void)setValue: (id)value
+	  forKey: (OFString*)key
+{
+	if (value == [OFNull null])
+		value = nil;
+
+	for (id object in self)
+		[object setValue: value
+			  forKey: key];
 }
 
 - (size_t)indexOfObject: (id)object

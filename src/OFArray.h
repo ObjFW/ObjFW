@@ -197,6 +197,37 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 - (ObjectType)objectAtIndexedSubscript: (size_t)index;
 
 /*!
+ * @brief Returns the value for the specified key
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super valueForKey:]` is called.
+ * If the key does not start with an `@`, a new array with the value for the
+ * specified key for each object is returned.
+ *
+ * @note Any nil values are replaced with @ref OFNull!
+ *
+ * @param key The key of the value to return
+ * @return The value for the specified key
+ */
+- (nullable id)valueForKey: (OFString*)key;
+
+/*!
+ * @brief Set the value for the specified key
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super setValue:forKey:]` is called.
+ * If the key does not start with an `@`, @ref setValue:forKey: is called for
+ * each object.
+ *
+ * @note A @ref OFNull value is translated to nil!
+ *
+ * @param value The value for the specified key
+ * @param key The key of the value to set
+ */
+- (void)setValue: (nullable id)value
+	  forKey: (OFString*)key;
+
+/*!
  * @brief Copies the objects at the specified range to the specified buffer.
  *
  * @param buffer The buffer to copy the objects to

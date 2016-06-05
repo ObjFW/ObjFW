@@ -18,6 +18,8 @@
 
 #import "OFArray.h"
 #import "OFString.h"
+#import "OFNumber.h"
+#import "OFURL.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -295,7 +297,7 @@ static OFString *c_ary[] = {
 		return nil;
 		}]) && [[m[0] description] isEqual: @"(\n\tfoo,\n\tbar\n)"])
 
-	TEST(@"-[mappedArrayUsingBLock]",
+	TEST(@"-[mappedArrayUsingBlock:]",
 	    [[[m[0] mappedArrayUsingBlock: ^ id (id obj, size_t idx) {
 		switch (idx) {
 		case 0:
@@ -319,6 +321,24 @@ static OFString *c_ary[] = {
 		return left;
 	    }])
 #endif
+
+	TEST(@"-[valueForKey:]",
+	    [[[OFArray arrayWithObjects: @"foo", @"bar", @"quxqux", nil]
+	    valueForKey: @"length"] isEqual:
+	    [OFArray arrayWithObjects: [OFNumber numberWithSize: 3],
+	    [OFNumber numberWithSize: 3], [OFNumber numberWithSize: 6], nil]])
+
+	m[0] = [OFMutableArray arrayWithObjects:
+	    [OFURL URLWithString: @"http://foo.bar/"],
+	    [OFURL URLWithString: @"http://bar.qux/"],
+	    [OFURL URLWithString: @"http://qux.quxqux/"], nil];
+	TEST(@"-[setValue:forKey:]",
+	    R([m[0] setValue: [OFNumber numberWithShort: 1234]
+		      forKey: @"port"]) &&
+	    [m[0] isEqual: [OFArray arrayWithObjects:
+	    [OFURL URLWithString: @"http://foo.bar:1234/"],
+	    [OFURL URLWithString: @"http://bar.qux:1234/"],
+	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])
 
 	[pool drain];
 }
