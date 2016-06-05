@@ -163,6 +163,7 @@
 #endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
+#import "OFUndefinedKeyException.h"
 #import "OFUnlockFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"

@@ -22,42 +22,22 @@
 #import "OFObject.h"
 #import "OFObject+KeyValueCoding.h"
 #import "OFString.h"
-#import "OFNull.h"
+#import "OFNumber.h"
 
 #import "OFOutOfMemoryException.h"
 #import "OFUndefinedKeyException.h"
 
 int _OFObject_KeyValueCoding_reference;
 
-static bool
-checkTypeEncoding(const char *typeEncoding, char returnType, ...)
+static char OF_INLINE
+nextType(const char **typeEncoding)
 {
-	va_list args;
-	char type;
+	char ret = *(*typeEncoding)++;
 
-	if (typeEncoding == NULL)
-		return false;
+	while (**typeEncoding >= '0' && **typeEncoding <= '9')
+		(*typeEncoding)++;
 
-	if (*typeEncoding++ != returnType)
-		return false;
-
-	while (*typeEncoding >= '0' && *typeEncoding <= '9')
-		typeEncoding++;
-
-	va_start(args, returnType);
-
-	while ((type = va_arg(args, int)) != 0) {
-		if (*typeEncoding++ != type)
-			return false;
-
-		while (*typeEncoding >= '0' && *typeEncoding <= '9')
-			typeEncoding++;
-	}
-
-	if (*typeEncoding != '\0')
-		return false;
-
-	return true;
+	return ret;
 }
 
 @implementation OFObject (KeyValueCoding)
@@ -65,11 +45,43 @@ checkTypeEncoding(const char *typeEncoding, char returnType, ...)
 {
 	SEL selector = sel_registerName([key UTF8String]);
 	const char *typeEncoding = [self typeEncodingForSelector: selector];
+	id ret;
 
-	if (!checkTypeEncoding(typeEncoding, '@', '@', ':', 0))
+	switch (nextType(&typeEncoding)) {
+	case '@':
+		ret = [self performSelector: selector];
+		break;
+#define CASE(encoding, type, method)					  \
+	case encoding:							  \
+		{							  \
+			type (*getter)(id, SEL) = (type(*)(id, SEL))	  \
+			    [self methodForSelector: selector];		  \
+			ret = [OFNumber method getter(self, selector)]; \
+		}							  \
+		break;
+	CASE('B', bool, numberWithBool:)
+	CASE('c', char, numberWithChar:)
+	CASE('s', short, numberWithShort:)
+	CASE('i', int, numberWithInt:)
+	CASE('l', long, numberWithLong:)
+	CASE('q', long long, numberWithLongLong:)
+	CASE('C', unsigned char, numberWithUnsignedChar:)
+	CASE('S', unsigned short, numberWithUnsignedShort:)
+	CASE('I', unsigned int, numberWithUnsignedInt:)
+	CASE('L', unsigned long, numberWithUnsignedLong:)
+	CASE('Q', unsigned long long, numberWithUnsignedLongLong:)
+	CASE('f', float, numberWithFloat:)
+	CASE('d', double, numberWithDouble:)
+#undef CASE
+	default:
+		return [self valueForUndefinedKey: key];
+	}
+
+	if (nextType(&typeEncoding) != '@' || nextType(&typeEncoding) != ':' ||
+	    *typeEncoding != 0)
 		return [self valueForUndefinedKey: key];
 
-	return [self performSelector: selector];
+	return ret;
 }
 
 - (id)valueForUndefinedKey: (OFString*)key
@@ -81,15 +93,13 @@ checkTypeEncoding(const char *typeEncoding, char returnType, ...)
 - (void)setValue: (id)value
 	  forKey: (OFString*)key
 {
-	char *name;
 	size_t keyLength;
+	char *name;
 	SEL selector;
 	const char *typeEncoding;
-	id (*setter)(id, SEL, id);
+	char valueType;
 
-	keyLength = [key UTF8StringLength];
-
-	if (keyLength < 1) {
+	if ((keyLength = [key UTF8StringLength]) < 1) {
 		[self	 setValue: value
 		  forUndefinedKey: key];
 		return;
@@ -111,14 +121,57 @@ checkTypeEncoding(const char *typeEncoding, char returnType, ...)
 
 	typeEncoding = [self typeEncodingForSelector: selector];
 
-	if (!checkTypeEncoding(typeEncoding, 'v', '@', ':', '@', 0)) {
-		[self	 setValue: value
+	if (nextType(&typeEncoding) != 'v' || nextType(&typeEncoding) != '@' ||
+	    nextType(&typeEncoding) != ':') {
+		[self    setValue: value
 		  forUndefinedKey: key];
 		return;
 	}
 
-	setter = (id(*)(id, SEL, id))[self methodForSelector: selector];
-	setter(self, selector, value);
+	valueType = nextType(&typeEncoding);
+
+	if (*typeEncoding != 0) {
+		[self    setValue: value
+		  forUndefinedKey: key];
+		return;
+	}
+
+	switch (valueType) {
+	case '@':
+		{
+			void (*setter)(id, SEL, id) = (void(*)(id, SEL, id))
+			    [self methodForSelector: selector];
+			setter(self, selector, value);
+		}
+		break;
+#define CASE(encoding, type, method) \
+	case encoding:						\
+		{						\
+			void (*setter)(id, SEL, type) =		\
+			    (void(*)(id, SEL, type))		\
+			    [self methodForSelector: selector];	\
+			setter(self, selector, [value method]);	\
+		}						\
+		break;
+	CASE('B', bool, boolValue)
+	CASE('c', char, charValue)
+	CASE('s', short, shortValue)
+	CASE('i', int, intValue)
+	CASE('l', long, longValue)
+	CASE('q', long long, longLongValue)
+	CASE('C', unsigned char, unsignedCharValue)
+	CASE('S', unsigned short, unsignedShortValue)
+	CASE('I', unsigned int, unsignedIntValue)
+	CASE('L', unsigned long, unsignedLongValue)
+	CASE('Q', unsigned long long, unsignedLongLongValue)
+	CASE('f', float, floatValue)
+	CASE('d', double, doubleValue)
+#undef CASE
+	default:
+		[self    setValue: value
+		  forUndefinedKey: key];
+		return;
+	}
 }
 
 -  (void)setValue: (id)value
