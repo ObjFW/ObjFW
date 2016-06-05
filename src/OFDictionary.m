@@ -29,6 +29,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
+#import "OFUndefinedKeyException.h"
 
 static struct {
 	Class isa;
@@ -297,6 +298,29 @@ static struct {
 	}
 
 	return [self objectForKey: key];
+}
+
+- (void)setValue: (id)value
+	  forKey: (OFString*)key
+{
+	if ([key hasPrefix: @"@"]) {
+		void *pool = objc_autoreleasePoolPush();
+
+		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		[super setValue: value
+			 forKey: key];
+
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	if (![self isKindOfClass: [OFMutableDictionary class]])
+		@throw [OFUndefinedKeyException exceptionWithObject: self
+								key: key
+							      value: value];
+
+	[(OFMutableDictionary*)self setObject: value
+				       forKey: key];
 }
 
 - (size_t)count

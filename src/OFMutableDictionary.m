@@ -177,24 +177,6 @@ static struct {
 		 forKey: key];
 }
 
-- (void)setValue: (id)value
-	  forKey: (OFString*)key
-{
-	if ([key hasPrefix: @"@"]) {
-		void *pool = objc_autoreleasePoolPush();
-
-		key = [key substringWithRange: of_range(1, [key length] - 1)];
-		[super setValue: value
-			 forKey: key];
-
-		objc_autoreleasePoolPop(pool);
-		return;
-	}
-
-	[self setObject: value
-		 forKey: key];
-}
-
 - (void)removeObjectForKey: (id)key
 {
 	OF_UNRECOGNIZED_SELECTOR

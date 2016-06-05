@@ -23,6 +23,7 @@
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
+#import "OFUndefinedKeyException.h"
 
 #import "TestsAppDelegate.h"
 
@@ -59,6 +60,10 @@ static OFString *values[] = {
 	    [[dict valueForKey: keys[0]] isEqual: values[0]] &&
 	    [[dict valueForKey: @"@count"] isEqual:
 	    [OFNumber numberWithSize: 2]])
+
+	EXPECT_EXCEPTION(@"Catching -[setValue:forKey:] on immutable "
+	    @"dictionary", OFUndefinedKeyException, [dict setValue: @"x"
+							    forKey: @"x"])
 
 	TEST(@"-[containsObject:]",
 	    [dict containsObject: values[0]] &&

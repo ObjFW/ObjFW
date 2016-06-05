@@ -213,6 +213,21 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 - (nullable id)valueForKey: (OFString*)key;
 
 /*!
+ * @brief Sets a value for a key.
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super setValue:forKey:]` is called.
+ * If the key does not start with an `@`, this is equivalent to
+ * @ref setObject:forKey:. In this case, if the dictionary is immutable, an
+ * @ref OFUndefinedKeyException is thrown.
+ *
+ * @param key The key to set
+ * @param value The value to set the key to
+ */
+- (void)setValue: (nullable id)value
+	  forKey: (OFString*)key;
+
+/*!
  * @brief Checks whether the dictionary contains an object equal to the
  *	  specified object.
  *
