@@ -56,7 +56,7 @@ static OFString *module = @"OFObject";
 
 @property (retain) id objectValue;
 @property Class classValue;
-@property bool boolValue;
+@property (getter=isBoolValue) bool boolValue;
 @property char charValue;
 @property short shortValue;
 @property int intValue;
@@ -242,7 +242,7 @@ static OFString *module = @"OFObject";
 		   forKey: @"floatValue"]) &&
 	    R([m setValue: [OFNumber numberWithDouble: 120]
 		   forKey: @"doubleValue"]) &&
-	    [m boolValue] == 0 &&
+	    [m isBoolValue] == 0 &&
 	    [m charValue] == 10 &&
 	    [m shortValue] == 20 &&
 	    [m intValue] == 30 &&

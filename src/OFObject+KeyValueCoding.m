@@ -48,8 +48,33 @@ nextType(const char **typeEncoding)
 	const char *typeEncoding = [self typeEncodingForSelector: selector];
 	id ret;
 
-	if (typeEncoding == NULL)
-		return [self valueForUndefinedKey: key];
+	if (typeEncoding == NULL) {
+		size_t keyLength;
+		char *name;
+
+		if ((keyLength = [key UTF8StringLength]) < 1)
+			return [self valueForUndefinedKey: key];
+
+		if ((name = malloc(keyLength + 3)) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: keyLength + 3];
+
+		memcpy(name, "is", 2);
+		memcpy(name + 2, [key UTF8String], keyLength);
+		name[keyLength + 2] = '\0';
+
+		name[2] = toupper(name[2]);
+
+		selector = sel_registerName(name);
+
+		free(name);
+
+		typeEncoding = [self typeEncodingForSelector: selector];
+
+		if (typeEncoding == NULL ||
+		    *typeEncoding == '@' || *typeEncoding == '#')
+			return [self valueForUndefinedKey: key];
+	}
 
 	switch (nextType(&typeEncoding)) {
 	case '@':
