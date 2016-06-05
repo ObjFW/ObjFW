@@ -78,6 +78,20 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
   forKeyedSubscript: (KeyType)key;
 
 /*!
+ * @brief Sets a value for a key.
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super setValue:forKey:]` is called.
+ * If the key does not start with an `@`, this is equivalent to
+ * @ref setObject:forKey:.
+ *
+ * @param key The key to set
+ * @param value The value to set the key to
+ */
+- (void)setValue: (nullable id)value
+	  forKey: (OFString*)key;
+
+/*!
  * @brief Removes the object for the specified key from the dictionary.
  *
  * @param key The key whose object should be removed

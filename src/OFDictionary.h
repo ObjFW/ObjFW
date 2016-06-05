@@ -199,6 +199,20 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 - (nullable ObjectType)objectForKeyedSubscript: (KeyType)key;
 
 /*!
+ * @brief Returns the value for the given key or `nil` if the key was not
+ *	  found.
+ *
+ * If the key starts with an `@`, the `@` is stripped and
+ * `[super valueForKey:]` is called.
+ * If the key does not start with an `@`, this is equivalent to
+ * @ref objectForKey:.
+ *
+ * @param key The key whose value should be returned
+ * @return The value for the given key or `nil` if the key was not found
+ */
+- (nullable id)valueForKey: (OFString*)key;
+
+/*!
  * @brief Checks whether the dictionary contains an object equal to the
  *	  specified object.
  *

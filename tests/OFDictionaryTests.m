@@ -19,6 +19,7 @@
 #import "OFDictionary.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFNumber.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
@@ -46,13 +47,18 @@ static OFString *values[] = {
 
 	[dict setObject: values[0]
 		 forKey: keys[0]];
-	[dict setObject: values[1]
-		 forKey: keys[1]];
+	[dict setValue: values[1]
+		forKey: keys[1]];
 
 	TEST(@"-[objectForKey:]",
 	    [[dict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[dict objectForKey: keys[1]] isEqual: values[1]] &&
 	    [dict objectForKey: @"key3"] == nil)
+
+	TEST(@"-[valueForKey:]",
+	    [[dict valueForKey: keys[0]] isEqual: values[0]] &&
+	    [[dict valueForKey: @"@count"] isEqual:
+	    [OFNumber numberWithSize: 2]])
 
 	TEST(@"-[containsObject:]",
 	    [dict containsObject: values[0]] &&

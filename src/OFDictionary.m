@@ -282,6 +282,23 @@ static struct {
 	return [self objectForKey: key];
 }
 
+- (id)valueForKey: (OFString*)key
+{
+	if ([key hasPrefix: @"@"]) {
+		void *pool = objc_autoreleasePoolPush();
+		id ret;
+
+		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		ret = [[super valueForKey: key] retain];
+
+		objc_autoreleasePoolPop(pool);
+
+		return [ret autorelease];
+	}
+
+	return [self objectForKey: key];
+}
+
 - (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
