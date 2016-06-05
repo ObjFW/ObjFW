@@ -967,4 +967,5 @@ extern uint32_t of_hash_seed;
 
 OF_ASSUME_NONNULL_END
 
+#import "OFObject+KeyValueCoding.h"
 #import "OFObject+Serialization.h"

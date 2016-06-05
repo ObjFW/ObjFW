@@ -211,6 +211,7 @@ _NSPrintForDebugger(id object)
 void
 _references_to_categories_of_OFObject(void)
 {
+	_OFObject_KeyValueCoding_reference = 1;
 	_OFObject_Serialization_reference = 1;
 }
 

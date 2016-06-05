@@ -41,6 +41,7 @@ SRCS = OFAllocFailedException.m				\
        OFTruncatedDataException.m			\
        OFUnboundNamespaceException.m			\
        OFUnboundPrefixException.m			\
+       OFUndefinedKeyException.m			\
        OFUnknownXMLEntityException.m			\
        OFUnlockFailedException.m			\
        OFUnsupportedProtocolException.m			\

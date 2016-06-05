@@ -38,6 +38,7 @@ SRCS = OFApplication.m			\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\
+       OFObject+KeyValueCoding.m	\
        OFObject+Serialization.m		\
        OFOptionsParser.m		\
        ${OFPROCESS_M}			\
@@ -116,6 +117,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFHash.h				\
 	    OFJSONRepresentation.h		\
+	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
 	    OFSerialization.h			\
