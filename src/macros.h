@@ -238,6 +238,9 @@
 # ifdef OF_ARMV6
 #  define OF_ARMV6_ASM
 # endif
+# ifdef OF_MIPS64
+#  define OF_MIPS64_ASM
+# endif
 # ifdef OF_MIPS
 #  define OF_MIPS_ASM
 # endif
