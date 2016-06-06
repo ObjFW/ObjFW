@@ -295,7 +295,13 @@
 	} while (0)
 
 #define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
-#define OF_INVALID_INIT_METHOD				\
+#if __has_feature(objc_arc)
+# define OF_INVALID_INIT_METHOD			\
+	[self doesNotRecognizeSelector: _cmd];	\
+						\
+	abort();
+#else
+# define OF_INVALID_INIT_METHOD				\
 	@try {						\
 		[self doesNotRecognizeSelector: _cmd];	\
 	} @catch (id e) {				\
@@ -304,6 +310,7 @@
 	}						\
 							\
 	abort();
+#endif
 
 #ifdef __cplusplus
 extern "C" {
