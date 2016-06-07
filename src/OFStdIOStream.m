@@ -177,6 +177,8 @@ of_log(OFConstantString *format, ...)
 		close(_fd);
 
 	_fd = -1;
+
+	[super close];
 }
 
 - autorelease

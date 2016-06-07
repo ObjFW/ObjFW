@@ -255,6 +255,8 @@ normalizeKey(char *str_)
 {
 	[_socket release];
 	_socket = nil;
+
+	[super close];
 }
 @end
 

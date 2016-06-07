@@ -594,5 +594,7 @@ extern char **environ;
 	_readPipe[0] = NULL;
 	_writePipe[1] = NULL;
 #endif
+
+	[super close];
 }
 @end

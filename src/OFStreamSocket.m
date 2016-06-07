@@ -173,6 +173,8 @@
 	_socket = INVALID_SOCKET;
 
 	_atEndOfStream = false;
+
+	[super close];
 }
 
 - (void)dealloc

@@ -154,6 +154,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 - (void)close
 {
 	_atEndOfStream = true;
+
+	[super close];
 }
 
 - (void)OF_skip

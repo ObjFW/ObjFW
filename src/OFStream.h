@@ -1121,6 +1121,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 /*!
  * @brief Closes the stream.
+ *
+ * @note If you override this, make sure to call `[super close]`!
  */
 - (void)close;
 

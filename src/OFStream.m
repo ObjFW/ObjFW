@@ -1538,6 +1538,16 @@
 
 - (void)close
 {
-	OF_UNRECOGNIZED_SELECTOR
+	[self freeMemory: _readBufferMemory];
+	_readBuffer = _readBufferMemory = NULL;
+	_readBufferLength = 0;
+
+	[self freeMemory: _writeBuffer];
+	_writeBuffer = NULL;
+	_writeBufferLength = 0;
+	_writeBuffered = false;
+
+	_waitingForDelimiter = false;
+	_blocking = false;
 }
 @end

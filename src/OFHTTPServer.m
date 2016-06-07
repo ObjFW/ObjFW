@@ -305,6 +305,8 @@ normalizedKey(OFString *key)
 
 	[_socket release];
 	_socket = nil;
+
+	[super close];
 }
 
 - (int)fileDescriptorForWriting

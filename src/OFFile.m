@@ -295,6 +295,8 @@ parseMode(const char *mode)
 		close(_fd);
 
 	_fd = -1;
+
+	[super close];
 }
 
 - (void)dealloc

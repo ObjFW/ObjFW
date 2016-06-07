@@ -567,5 +567,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (void)close
 {
 	_closed = true;
+
+	[super close];
 }
 @end

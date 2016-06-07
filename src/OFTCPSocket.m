@@ -256,13 +256,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
-	_listening = false;
-
-	/* Make sure to clear the read buffer in case the socket is reused */
-	[self freeMemory: _readBuffer];
-	_readBuffer = NULL;
-	_readBufferLength = 0;
-
 	if (_SOCKS5Host != nil) {
 		/* Connect to the SOCKS5 proxy instead */
 		host = _SOCKS5Host;
@@ -666,4 +659,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return v;
 }
 #endif
+
+- (void)close
+{
+	_listening = false;
+
+	[self freeMemory: _address];
+	_address = NULL;
+	_addressLength = 0;
+
+#ifdef OF_WII
+	_port = 0;
+#endif
+
+	[super close];
+}
 @end
