@@ -33,14 +33,25 @@
 	ldr	r2, [r2, #32]
 
 .Lmain_\name:
-#ifdef OF_SELUID24
+#ifndef OF_BIG_ENDIAN
+# ifdef OF_SELUID24
 	ldrb	r3, [r1, #2]
 	ldr	r2, [r2, r3, lsl #2]
-#endif
+# endif
 	ldrb	r3, [r1, #1]
 	ldr	r2, [r2, r3, lsl #2]
 	ldrb	r3, [r1, #0]
 	ldr	r2, [r2, r3, lsl #2]
+#else
+# ifdef OF_SELUID24
+	ldrb	r3, [r1, #1]
+	ldr	r2, [r2, r3, lsl #2]
+# endif
+	ldrb	r3, [r1, #2]
+	ldr	r2, [r2, r3, lsl #2]
+	ldrb	r3, [r1, #3]
+	ldr	r2, [r2, r3, lsl #2]
+#endif
 
 	cmp	r2, #0
 	beq	\not_found(PLT)
