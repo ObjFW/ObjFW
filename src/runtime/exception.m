@@ -93,14 +93,14 @@ struct objc_exception {
 		uint64_t class;
 		void (*cleanup)(_Unwind_Reason_Code, struct _Unwind_Exception*);
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
-# ifdef HAVE_SEH_EXCEPTIONS
-		uint64_t private[6];
-# else
+# ifndef HAVE_SEH_EXCEPTIONS
 		/*
 		 * The Itanium Exception ABI says to have those and never touch
 		 * them.
 		 */
 		uint64_t private1, private2;
+# else
+		uint64_t private[6];
 # endif
 #else
 		/* From "Exception Handling ABI for the ARM(R) Architecture" */
