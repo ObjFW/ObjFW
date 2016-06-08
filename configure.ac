@@ -505,7 +505,7 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 		[Floating point implementation does not conform to IEEE 754!])])
 
 case "$host_cpu" in
-	arm*)
+	arm* | earm*)
 		AC_MSG_CHECKING(if VFP2 or above is available)
 		AC_TRY_COMPILE([], [
 			__asm__ __volatile__ (
