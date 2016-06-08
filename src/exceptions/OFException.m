@@ -60,6 +60,10 @@
 # define HAVE_DWARF_EXCEPTIONS
 #endif
 
+#if defined(OF_ARM) && !defined(__ARM_DWARF_EH__)
+# define HAVE_ARM_EHABI_EXCEPTIONS
+#endif
+
 #ifdef HAVE_DWARF_EXCEPTIONS
 struct _Unwind_Context;
 typedef enum {
@@ -74,10 +78,10 @@ struct backtrace_ctx {
 
 extern _Unwind_Reason_Code _Unwind_Backtrace(
     _Unwind_Reason_Code(*)(struct _Unwind_Context*, void*), void*);
-# ifdef OF_ARM
-extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
-# else
+# ifndef HAVE_ARM_EHABI_EXCEPTIONS
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
+# else
+extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
 # endif
 #endif
 
@@ -215,13 +219,13 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	struct backtrace_ctx *bt = data;
 
 	if (bt->i < OF_BACKTRACE_SIZE) {
-# ifdef OF_ARM
+# ifndef HAVE_ARM_EHABI_EXCEPTIONS
+		bt->backtrace[bt->i++] = (void*)_Unwind_GetIP(ctx);
+# else
 		uintptr_t ip;
 
 		_Unwind_VRS_Get(ctx, 0, 15, 0, &ip);
 		bt->backtrace[bt->i++] = (void*)(ip & ~1);
-# else
-		bt->backtrace[bt->i++] = (void*)_Unwind_GetIP(ctx);
 # endif
 		return _URC_OK;
 	}

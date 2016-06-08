@@ -39,6 +39,10 @@
 # error Unknown exception type!
 #endif
 
+#if defined(OF_ARM) && !defined(__ARM_DWARF_EH__)
+# define HAVE_ARM_EHABI_EXCEPTIONS
+#endif
+
 static const uint64_t objc_exception_class = 0x474E55434F424A43; /* GNUCOBJC */
 
 #define _UA_SEARCH_PHASE  0x01
@@ -88,7 +92,17 @@ struct objc_exception {
 	struct _Unwind_Exception {
 		uint64_t class;
 		void (*cleanup)(_Unwind_Reason_Code, struct _Unwind_Exception*);
-#ifdef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+# ifdef HAVE_SEH_EXCEPTIONS
+		uint64_t private[6];
+# else
+		/*
+		 * The Itanium Exception ABI says to have those and never touch
+		 * them.
+		 */
+		uint64_t private1, private2;
+# endif
+#else
 		/* From "Exception Handling ABI for the ARM(R) Architecture" */
 		struct {
 			uint32_t reserved1, reserved2, reserved3, reserved4;
@@ -108,20 +122,10 @@ struct objc_exception {
 			uint32_t reserved1;
 		} pr_cache;
 		long long int : 0;
-#else
-# ifdef HAVE_SEH_EXCEPTIONS
-		uint64_t private[6];
-# else
-		/*
-		 * The Itanium Exception ABI says to have those and never touch
-		 * them.
-		 */
-		uint64_t private1, private2;
-# endif
 #endif
 	} exception;
 	id object;
-#ifndef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
 	uintptr_t landingpad;
 	intptr_t filter;
 #endif
@@ -143,7 +147,13 @@ extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
 extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
 
-#ifdef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+# define CONTINUE_UNWIND return _URC_CONTINUE_UNWIND
+
+extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
+extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
+extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
+#else
 extern _Unwind_Reason_Code __gnu_unwind_frame(struct _Unwind_Exception*,
     struct _Unwind_Context*);
 extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
@@ -183,12 +193,6 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 	uintptr_t thumb = _Unwind_GetGR(ctx, 15) & 1;
 	_Unwind_SetGR(ctx, 15, (value | thumb));
 }
-#else
-# define CONTINUE_UNWIND return _URC_CONTINUE_UNWIND
-
-extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
-extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
-extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
 #endif
 
 #ifdef HAVE_SEH_EXCEPTIONS
@@ -316,7 +320,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	return value;
 }
 
-#ifndef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
 static uint64_t
 resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 {
@@ -463,7 +467,15 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			uintptr_t c;
 			const uint8_t *tmp;
 
-#ifdef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+			uintptr_t i;
+
+			i = filter * size_for_encoding(lsda->typestable_enc);
+			tmp = lsda->typestable - i;
+			c = (uintptr_t)read_value(lsda->typestable_enc, &tmp);
+			c = (uintptr_t)resolve_value(c, lsda->typestable_enc,
+			    lsda->typestable - i, lsda->typestable_base);
+#else
 			tmp = lsda->typestable - (filter * 4);
 			c = *(uintptr_t*)(void*)tmp;
 
@@ -473,14 +485,6 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 				c = *(uintptr_t*)c;
 # endif
 			}
-#else
-			uintptr_t i;
-
-			i = filter * size_for_encoding(lsda->typestable_enc);
-			tmp = lsda->typestable - i;
-			c = (uintptr_t)read_value(lsda->typestable_enc, &tmp);
-			c = (uintptr_t)resolve_value(c, lsda->typestable_enc,
-			    lsda->typestable - i, lsda->typestable_base);
 #endif
 
 			className = (const char*)c;
@@ -504,7 +508,15 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 	return 0;
 }
 
-#ifdef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+# ifdef HAVE_SEH_EXCEPTIONS
+static
+# endif
+_Unwind_Reason_Code
+PERSONALITY(int version, int actions, uint64_t ex_class,
+    struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
+{
+#else
 _Unwind_Reason_Code
 PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
     struct _Unwind_Context *ctx)
@@ -529,14 +541,6 @@ PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
 	}
 
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
-#else
-# ifdef HAVE_SEH_EXCEPTIONS
-static
-# endif
-_Unwind_Reason_Code
-PERSONALITY(int version, int actions, uint64_t ex_class,
-    struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
-{
 #endif
 	struct objc_exception *e = (struct objc_exception*)ex;
 	bool foreign = (ex_class != objc_exception_class);
@@ -560,14 +564,14 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 		 */
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(0),
 		    (uintptr_t)e->object);
-#ifdef OF_ARM
-		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
-		    ex->barrier_cache.bitpattern[1]);
-		_Unwind_SetIP(ctx, ex->barrier_cache.bitpattern[3]);
-#else
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
 		    e->filter);
 		_Unwind_SetIP(ctx, e->landingpad);
+#else
+		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
+		    ex->barrier_cache.bitpattern[1]);
+		_Unwind_SetIP(ctx, ex->barrier_cache.bitpattern[3]);
 #endif
 
 		_Unwind_DeleteException(ex);
@@ -598,13 +602,13 @@ PERSONALITY(int version, int actions, uint64_t ex_class,
 			CONTINUE_UNWIND;
 
 		/* Cache it so we don't have to search it again in phase 2 */
-#ifdef OF_ARM
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+		e->landingpad = landingpad;
+		e->filter = filter;
+#else
 		ex->barrier_cache.sp = _Unwind_GetGR(ctx, 13);
 		ex->barrier_cache.bitpattern[1] = filter;
 		ex->barrier_cache.bitpattern[3] = landingpad;
-#else
-		e->landingpad = landingpad;
-		e->filter = filter;
 #endif
 
 		return _URC_HANDLER_FOUND;
