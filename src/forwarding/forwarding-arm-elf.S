@@ -150,12 +150,7 @@ sel_forwardingTargetForSelector_$indirect_.L1:
 module$indirect_.L2:
 	.long module-(.L2+8)
 
-#if !defined(OF_NINTENDO_DS) && !defined(OF_NINTENDO_3DS) && \
-    (!defined(OF_NETBSD) || !defined(OF_ARM))
-.section .ctors, "aw", %progbits
-#else
 .section .init_array, "aw", %init_array
-#endif
 	.long init
 
 .section .rodata
