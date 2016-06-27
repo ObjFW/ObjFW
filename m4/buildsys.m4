@@ -1,8 +1,8 @@
 dnl
-dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014
-dnl Jonathan Schleifer <js@webkeks.org>
+dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016
+dnl Jonathan Schleifer <js@heap.zone>
 dnl
-dnl https://webkeks.org/git/?p=buildsys.git
+dnl https://heap.zone/git/?p=buildsys.git
 dnl
 dnl Permission to use, copy, modify, and/or distribute this software for any
 dnl purpose with or without fee is hereby granted, provided that the above
@@ -172,6 +172,20 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			PLUGIN_SUFFIX='.so'
 			INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR} && rm -f ${DESTDIR}${libdir}/$$i && ${LN_S} $$i.${LIB_MAJOR}.${LIB_MINOR} ${DESTDIR}${libdir}/$$i'
 			UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}'
+			CLEAN_LIB=''
+			;;
+		*-androideabi*)
+			AC_MSG_RESULT(Android)
+			LIB_CFLAGS='-fPIC -DPIC'
+			LIB_LDFLAGS='-shared -Wl,-soname=${SHARED_LIB}.${LIB_MAJOR}'
+			LIB_PREFIX='lib'
+			LIB_SUFFIX='.so'
+			LDFLAGS_RPATH=''
+			PLUGIN_CFLAGS='-fPIC -DPIC'
+			PLUGIN_LDFLAGS='-shared'
+			PLUGIN_SUFFIX='.so'
+			INSTALL_LIB='&& ${INSTALL} -m 755 $$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0 && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} && ${LN_S} -f $$i.${LIB_MAJOR}.${LIB_MINOR}.0 ${DESTDIR}${libdir}/$$i'
+			UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR} ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}.0'
 			CLEAN_LIB=''
 			;;
 		*)
