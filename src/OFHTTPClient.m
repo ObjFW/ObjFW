@@ -377,12 +377,15 @@ normalizeKey(char *str_)
 	if ([URL query] != nil)
 		requestString = [OFMutableString stringWithFormat:
 		    @"%s /%@?%@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method), [URL path],
-		    [URL query], [request protocolVersionString]];
+		    of_http_request_method_to_string(method),
+		    [[URL path] stringByURLEncoding],
+		    [[URL query] stringByURLEncoding],
+		    [request protocolVersionString]];
 	else
 		requestString = [OFMutableString stringWithFormat:
 		    @"%s /%@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method), [URL path],
+		    of_http_request_method_to_string(method),
+		    [[URL path] stringByURLEncoding],
 		    [request protocolVersionString]];
 
 	headers = [[[request headers] mutableCopy] autorelease];
