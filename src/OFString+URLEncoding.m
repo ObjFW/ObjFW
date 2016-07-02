@@ -108,8 +108,6 @@ int _OFString_URLEncoding_reference;
 		case 0:
 			if (*string == '%')
 				state = 1;
-			else if (*string == '+')
-				retCString[i++] = ' ';
 			else
 				retCString[i++] = *string;
 			break;

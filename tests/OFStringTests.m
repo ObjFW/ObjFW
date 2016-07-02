@@ -573,7 +573,7 @@ static uint16_t sutf16str[] = {
 	    [[@"foo\"ba'_~$" stringByURLEncoding] isEqual: @"foo%22ba%27_%7E$"])
 
 	TEST(@"-[stringByURLDecoding]",
-	    [[@"foo%20bar%22+%24" stringByURLDecoding] isEqual: @"foo bar\" $"])
+	    [[@"foo%20bar%22+%24" stringByURLDecoding] isEqual: @"foo bar\"+$"])
 
 	TEST(@"-[insertString:atIndex:]",
 	    (s[0] = [OFMutableString stringWithString: @"𝄞öööbä€"]) &&
