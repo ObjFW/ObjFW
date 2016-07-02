@@ -352,6 +352,34 @@ objc_initialize_class(Class cls)
 	objc_global_mutex_unlock();
 }
 
+static void
+process_load_queue()
+{
+	for (size_t i = 0; i < load_queue_cnt; i++) {
+		setup_class(load_queue[i]);
+
+		if (load_queue[i]->info & OBJC_CLASS_INFO_SETUP) {
+			call_load(load_queue[i]);
+
+			load_queue_cnt--;
+
+			if (load_queue_cnt == 0) {
+				free(load_queue);
+				load_queue = NULL;
+				continue;
+			}
+
+			load_queue[i] = load_queue[load_queue_cnt];
+
+			load_queue = realloc(load_queue,
+			    sizeof(Class) * load_queue_cnt);
+
+			if (load_queue == NULL)
+				OBJC_ERROR("Not enough memory for load queue!");
+		}
+	}
+}
+
 void
 objc_register_all_classes(struct objc_abi_symtab *symtab)
 {
@@ -386,30 +414,63 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 			cls->info |= OBJC_CLASS_INFO_LOADED;
 	}
 
-	/* Process load queue */
-	for (size_t i = 0; i < load_queue_cnt; i++) {
-		setup_class(load_queue[i]);
+	process_load_queue();
+}
 
-		if (load_queue[i]->info & OBJC_CLASS_INFO_SETUP) {
-			call_load(load_queue[i]);
+Class
+objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
+{
+	struct objc_class *cls, *metaclass;
+	Class iter, rootclass = Nil;
 
-			load_queue_cnt--;
+	if ((cls = calloc(1, sizeof(*cls))) == NULL ||
+	    (metaclass = calloc(1, sizeof(*cls))) == NULL)
+		OBJC_ERROR("Not enough memory to allocate class pair for class "
+		    "%s!", name)
 
-			if (load_queue_cnt == 0) {
-				free(load_queue);
-				load_queue = NULL;
-				continue;
-			}
+	cls->isa = metaclass;
+	cls->superclass = superclass;
+	cls->name = name;
+	cls->info = OBJC_CLASS_INFO_CLASS;
+	cls->instance_size = (superclass != Nil ?
+	    superclass->instance_size : 0) + extra_bytes;
 
-			load_queue[i] = load_queue[load_queue_cnt];
+	for (iter = superclass; iter != Nil; iter = iter->superclass)
+		rootclass = iter;
 
-			load_queue = realloc(load_queue,
-			    sizeof(Class) * load_queue_cnt);
+	metaclass->isa = (rootclass != Nil ? rootclass->isa : cls);
+	metaclass->superclass = (superclass != Nil ? superclass->isa : Nil);
+	metaclass->name = name;
+	metaclass->info = OBJC_CLASS_INFO_CLASS;
+	metaclass->instance_size = (superclass != Nil ?
+	    superclass->isa->instance_size : 0) + extra_bytes;
 
-			if (load_queue == NULL)
-				OBJC_ERROR("Not enough memory for load queue!");
-		}
+	return cls;
+}
+
+void
+objc_registerClassPair(Class cls)
+{
+	objc_global_mutex_lock();
+
+	register_class((struct objc_abi_class*)cls);
+
+	if (cls->superclass != Nil) {
+		add_subclass(cls);
+		add_subclass(cls->isa);
 	}
+
+	cls->info |= OBJC_CLASS_INFO_SETUP;
+	cls->isa->info |= OBJC_CLASS_INFO_SETUP;
+
+	if (has_load(cls))
+		call_load(cls);
+	else
+		cls->info |= OBJC_CLASS_INFO_LOADED;
+
+	process_load_queue();
+
+	objc_global_mutex_unlock();
 }
 
 id

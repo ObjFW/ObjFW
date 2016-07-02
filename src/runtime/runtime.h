@@ -17,8 +17,16 @@
 #ifndef __OBJFW_RUNTIME_H__
 #define __OBJFW_RUNTIME_H__
 
-#include <stdint.h>
+#ifndef __STDC_LIMIT_MACROS
+# define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifndef __has_feature
 # define __has_feature(x) 0
@@ -193,6 +201,8 @@ extern "C" {
 extern SEL sel_registerName(const char*);
 extern const char* sel_getName(SEL);
 extern bool sel_isEqual(SEL, SEL);
+extern Class objc_allocateClassPair(Class, const char*, size_t);
+extern void objc_registerClassPair(Class);
 extern id objc_lookUpClass(const char*);
 extern id objc_getClass(const char*);
 extern id objc_getRequiredClass(const char*);
