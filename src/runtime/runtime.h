@@ -239,6 +239,8 @@ extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_stret(id, SEL);
 extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
 extern IMP objc_msg_lookup_super_stret(struct objc_super*, SEL);
+extern void objc_enumerationMutation(id);
+extern void objc_setEnumerationMutationHandler(void (*handler)(id));
 #ifdef __cplusplus
 }
 #endif

@@ -13,6 +13,7 @@ SRCS = arc.m			\
        hashtable.m		\
        init.m			\
        lookup.m			\
+       misc.m			\
        property.m		\
        protocol.m		\
        selector.m		\
