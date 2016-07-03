@@ -850,16 +850,27 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 			objc_autoreleasePoolPop(pool2);
 		}
-	}
 
 #ifndef OF_WINDOWS
-	if (remove([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]]) != 0)
+		if (rmdir([path cStringWithEncoding:
+		    [OFSystemInfo native8BitEncoding]]) != 0)
 #else
-	if (_wremove([path UTF16String]) != 0)
+		if (_wrmdir([path UTF16String]) != 0)
 #endif
-		@throw [OFRemoveItemFailedException exceptionWithPath: path
-								errNo: errno];
+			@throw [OFRemoveItemFailedException
+				exceptionWithPath: path
+					    errNo: errno];
+	} else {
+#ifndef OF_WINDOWS
+		if (unlink([path cStringWithEncoding:
+		    [OFSystemInfo native8BitEncoding]]) != 0)
+#else
+		if (_wunlink([path UTF16String]) != 0)
+#endif
+			@throw [OFRemoveItemFailedException
+			    exceptionWithPath: path
+					errNo: errno];
+	}
 
 	objc_autoreleasePoolPop(pool);
 }
