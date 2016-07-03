@@ -667,42 +667,69 @@ class_getMethodImplementation_stret(Class cls, SEL sel)
 	return objc_msg_lookup_stret((id)&dummy, sel);
 }
 
-const char*
-class_getMethodTypeEncoding(Class cls, SEL sel)
+static struct objc_method*
+get_method(Class cls, SEL sel)
 {
 	struct objc_method_list *ml;
 	struct objc_category **cats;
+
+	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
+		for (unsigned int i = 0; i < ml->count; i++)
+			if (sel_isEqual((SEL)&ml->methods[i].sel, sel))
+				return &ml->methods[i];
+
+	if ((cats = objc_categories_for_class(cls)) != NULL) {
+		for (; *cats != NULL; cats++) {
+			if (cls->info & OBJC_CLASS_INFO_METACLASS)
+				ml = (*cats)->class_methods;
+			else
+				ml = (*cats)->instance_methods;
+
+			for (; ml != NULL; ml = ml->next)
+				for (unsigned int i = 0; i < ml->count; i++)
+					if (sel_isEqual(
+					    (SEL)&ml->methods[i].sel, sel))
+						return &ml->methods[i];
+		}
+	}
+
+	return NULL;
+}
+
+static void
+add_method(Class cls, SEL sel, IMP imp, const char *types)
+{
+	struct objc_method_list *ml;
+
+	/* FIXME: We need a way to free this at objc_exit() */
+	if ((ml = malloc(sizeof(struct objc_method_list))) == NULL)
+		OBJC_ERROR("Not enough memory to replace method!");
+
+	ml->next = cls->methodlist;
+	ml->count = 1;
+	ml->methods[0].sel.uid = sel->uid;
+	ml->methods[0].sel.types = types;
+	ml->methods[0].imp = imp;
+
+	cls->methodlist = ml;
+
+	objc_update_dtable(cls);
+}
+
+const char*
+class_getMethodTypeEncoding(Class cls, SEL sel)
+{
+	struct objc_method *method;
 
 	if (cls == Nil)
 		return NULL;
 
 	objc_global_mutex_lock();
 
-	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
-		for (unsigned int i = 0; i < ml->count; i++) {
-			if (sel_isEqual((SEL)&ml->methods[i].sel, sel)) {
-				const char *ret = ml->methods[i].sel.types;
-				objc_global_mutex_unlock();
-				return ret;
-			}
-		}
-	}
-
-	if ((cats = objc_categories_for_class(cls)) != NULL) {
-		for (; *cats != NULL; cats++) {
-			for (ml = (*cats)->instance_methods; ml != NULL;
-			    ml = ml->next) {
-				for (unsigned int i = 0; i < ml->count; i++) {
-					if (ml->methods[i].sel.uid ==
-					    sel->uid) {
-						const char *ret =
-						    ml->methods[i].sel.types;
-						objc_global_mutex_unlock();
-						return ret;
-					}
-				}
-			}
-		}
+	if ((method = get_method(cls, sel)) != NULL) {
+		const char *ret = method->sel.types;
+		objc_global_mutex_unlock();
+		return ret;
 	}
 
 	objc_global_mutex_unlock();
@@ -713,72 +740,44 @@ class_getMethodTypeEncoding(Class cls, SEL sel)
 	return NULL;
 }
 
+bool
+class_addMethod(Class cls, SEL sel, IMP imp, const char *types)
+{
+	bool ret;
+
+	objc_global_mutex_lock();
+
+	if (get_method(cls, sel) == NULL) {
+		add_method(cls, sel, imp, types);
+		ret = true;
+	} else
+		ret = false;
+
+	objc_global_mutex_unlock();
+
+	return ret;
+}
+
 IMP
 class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 {
-	struct objc_method_list *ml;
-	struct objc_category **cats;
+	struct objc_method *method;
 	IMP oldimp;
 
 	objc_global_mutex_lock();
 
-	for (ml = cls->methodlist; ml != NULL; ml = ml->next) {
-		for (unsigned int i = 0; i < ml->count; i++) {
-			if (ml->methods[i].sel.uid == sel->uid) {
-				oldimp = ml->methods[i].imp;
-
-				ml->methods[i].imp = newimp;
-				objc_update_dtable(cls);
-
-				objc_global_mutex_unlock();
-
-				return oldimp;
-			}
-		}
+	if ((method = get_method(cls, sel)) != NULL) {
+		oldimp = method->imp;
+		method->imp = newimp;
+		objc_update_dtable(cls);
+	} else {
+		oldimp = NULL;
+		add_method(cls, sel, newimp, types);
 	}
-
-	if ((cats = objc_categories_for_class(cls)) != NULL) {
-		for (; *cats != NULL; cats++) {
-			if (cls->info & OBJC_CLASS_INFO_METACLASS)
-				ml = (*cats)->class_methods;
-			else
-				ml = (*cats)->instance_methods;
-
-			for (; ml != NULL; ml = ml->next) {
-				for (unsigned int i = 0; i < ml->count; i++) {
-					if (ml->methods[i].sel.uid ==
-					    sel->uid) {
-						oldimp = ml->methods[i].imp;
-
-						ml->methods[i].imp = newimp;
-						objc_update_dtable(cls);
-
-						objc_global_mutex_unlock();
-
-						return oldimp;
-					}
-				}
-			}
-		}
-	}
-
-	/* FIXME: We need a way to free this at objc_exit() */
-	if ((ml = malloc(sizeof(struct objc_method_list))) == NULL)
-		OBJC_ERROR("Not enough memory to replace method!");
-
-	ml->next = cls->methodlist;
-	ml->count = 1;
-	ml->methods[0].sel.uid = sel->uid;
-	ml->methods[0].sel.types = types;
-	ml->methods[0].imp = newimp;
-
-	cls->methodlist = ml;
-
-	objc_update_dtable(cls);
 
 	objc_global_mutex_unlock();
 
-	return NULL;
+	return oldimp;
 }
 
 Class

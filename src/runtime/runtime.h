@@ -217,6 +217,7 @@ extern bool class_conformsToProtocol(Class, Protocol*);
 extern IMP class_getMethodImplementation(Class, SEL);
 extern IMP class_getMethodImplementation_stret(Class, SEL);
 extern const char* class_getMethodTypeEncoding(Class, SEL);
+extern bool class_addMethod(Class, SEL, IMP, const char*);
 extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
 extern Class object_getClass(id);
 extern Class object_setClass(id, Class);
