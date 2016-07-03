@@ -114,10 +114,10 @@ MO_FILES = ${LOCALES:.po=.mo}
 
 all:
 	${MAKE} pre-all
-	${MAKE} ${MFLAGS} subdirs
-	${MAKE} ${MFLAGS} depend
+	${MAKE} subdirs
+	${MAKE} depend
 	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
-	${MAKE} ${MFLAGS} subdirs-after
+	${MAKE} subdirs-after
 	${MAKE} post-all
 
 pre-all post-all:
@@ -128,7 +128,7 @@ subdirs-after: ${SUBDIRS_AFTER}
 ${SUBDIRS} ${SUBDIRS_AFTER}:
 	for i in $@; do \
 		${DIR_ENTER}; \
-		${MAKE} ${MFLAGS} || exit $$?; \
+		${MAKE} || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -172,7 +172,7 @@ depend: pre-depend ${SRCS}
 	done; \
 	if test x"$$regen" = x"1" -a x"$$deps" != x""; then \
 		${DEPEND_STATUS}; \
-		if ${MAKE} ${MFLAGS} $$deps && cat $$deps >.deps; then \
+		if ${MAKE} $$deps && cat $$deps >.deps; then \
 			rm -f $$deps; \
 			${DEPEND_OK}; \
 		else \
@@ -623,7 +623,7 @@ locales: ${MO_FILES}
 install: all install-extra
 	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
-		${MAKE} ${MFLAGS} install || exit $$?; \
+		${MAKE} install || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -704,7 +704,7 @@ install-extra:
 uninstall: uninstall-extra
 	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
-		${MAKE} ${MFLAGS} uninstall || exit $$?; \
+		${MAKE} uninstall || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -797,7 +797,7 @@ uninstall-extra:
 clean:
 	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
-		${MAKE} ${MFLAGS} clean || exit $$?; \
+		${MAKE} clean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -814,7 +814,7 @@ clean:
 distclean: clean
 	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		${DIR_ENTER}; \
-		${MAKE} ${MFLAGS} distclean || exit $$?; \
+		${MAKE} distclean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
@@ -832,7 +832,7 @@ print-hierarchy:
 	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		echo ${PRINT_HIERARCHY_PREFIX}$$i; \
 		cd $$i || exit $$?; \
-		${MAKE} ${MFLAGS} PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
+		${MAKE} PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
 		cd .. || exit $$?; \
 	done
 
