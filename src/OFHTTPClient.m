@@ -318,6 +318,7 @@ normalizeKey(char *str_)
 	OFURL *URL = [request URL];
 	OFString *scheme = [URL scheme];
 	of_http_request_method_t method = [request method];
+	OFString *path;
 	OFMutableString *requestString;
 	OFString *user, *password;
 	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *headers;
@@ -374,18 +375,18 @@ normalizeKey(char *str_)
 	 * HTTPS, we construct the complete request in a buffer string and then
 	 * send it all at once.
 	 */
+	path = [[URL path] stringByURLEncodingWithIgnoredCharacters: "/"];
+
 	if ([URL query] != nil)
 		requestString = [OFMutableString stringWithFormat:
 		    @"%s /%@?%@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method),
-		    [[URL path] stringByURLEncoding],
+		    of_http_request_method_to_string(method), path,
 		    [[URL query] stringByURLEncoding],
 		    [request protocolVersionString]];
 	else
 		requestString = [OFMutableString stringWithFormat:
 		    @"%s /%@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method),
-		    [[URL path] stringByURLEncoding],
+		    of_http_request_method_to_string(method), path,
 		    [request protocolVersionString]];
 
 	headers = [[[request headers] mutableCopy] autorelease];
