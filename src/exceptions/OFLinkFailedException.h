@@ -16,7 +16,7 @@
 
 #import "OFException.h"
 
-#ifdef OF_HAVE_LINK
+#if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
 /*!
  * @class OFLinkFailedException \
  *	  OFLinkFailedException.h ObjFW/OFLinkFailedException.h
@@ -49,12 +49,32 @@
  *
  * @param sourcePath The source for the link
  * @param destinationPath The destination for the link
+ * @return A new, autoreleased link failed exception
+ */
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath;
+
+/*!
+ * @brief Creates a new, autoreleased link failed exception.
+ *
+ * @param sourcePath The source for the link
+ * @param destinationPath The destination for the link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased link failed exception
  */
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
 				  errNo: (int)errNo;
+
+/*!
+ * @brief Initializes an already allocated link failed exception.
+ *
+ * @param sourcePath The source for the link
+ * @param destinationPath The destination for the link
+ * @return An initialized link failed exception
+ */
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath;
 
 /*!
  * @brief Initializes an already allocated link failed exception.

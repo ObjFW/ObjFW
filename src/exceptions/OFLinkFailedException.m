@@ -19,10 +19,17 @@
 #import "OFLinkFailedException.h"
 #import "OFString.h"
 
-#ifdef OF_HAVE_LINK
+#if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
 @implementation OFLinkFailedException
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
+
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath
+{
+	return [[[self alloc] initWithSourcePath: sourcePath
+				 destinationPath: destinationPath] autorelease];
+}
 
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
@@ -36,6 +43,22 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath
+{
+	self = [super init];
+
+	@try {
+		_sourcePath = [sourcePath copy];
+		_destinationPath = [destinationPath copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - initWithSourcePath: (OFString*)sourcePath
@@ -66,9 +89,14 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to link file %@ to %@: %@",
-	    _sourcePath, _destinationPath, of_strerror(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to link file %@ to %@: %@",
+		    _sourcePath, _destinationPath, of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to link file %@ to %@!",
+		    _sourcePath, _destinationPath];
 }
 @end
 #endif

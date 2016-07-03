@@ -50,6 +50,7 @@
 #import "OFLinkFailedException.h"
 #import "OFLockFailedException.h"
 #import "OFMoveItemFailedException.h"
+#import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFReadFailedException.h"
@@ -85,6 +86,10 @@ static OFMutex *passwdMutex;
 #endif
 #if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
 static OFMutex *readdirMutex;
+#endif
+
+#ifdef OF_WINDOWS
+static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
 #endif
 
 int
@@ -128,6 +133,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 @implementation OFFileManager
 + (void)initialize
 {
+#ifdef OF_WINDOWS
+	HMODULE module;
+#endif
+
 	if (self != [OFFileManager class])
 		return;
 
@@ -142,6 +151,13 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 #if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
 	readdirMutex = [[OFMutex alloc] init];
+#endif
+
+#ifdef OF_WINDOWS
+	if ((module = LoadLibrary("kernel32.dll")) != NULL)
+		func_CreateSymbolicLinkW =
+		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
+		    GetProcAddress(module, "CreateSymbolicLinkW");
 #endif
 
 	defaultManager = [[OFFileManager alloc] init];
@@ -875,7 +891,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
-#ifdef OF_HAVE_LINK
+#if defined(OF_HAVE_LINK)
 - (void)linkItemAtPath: (OFString*)source
 		toPath: (OFString*)destination
 {
@@ -897,9 +913,28 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	objc_autoreleasePoolPop(pool);
 }
+#else
+- (void)linkItemAtPath: (OFString*)source
+		toPath: (OFString*)destination
+{
+	void *pool;
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+	if (!CreateHardLinkW([destination UTF16String],
+	    [source UTF16String], NULL))
+		@throw [OFLinkFailedException
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
+
+	objc_autoreleasePoolPop(pool);
+}
 #endif
 
-#ifdef OF_HAVE_SYMLINK
+#if defined(OF_HAVE_SYMLINK)
 - (void)createSymbolicLinkAtPath: (OFString*)destination
 	     withDestinationPath: (OFString*)source
 {
@@ -921,7 +956,32 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	objc_autoreleasePoolPop(pool);
 }
+#elif defined(OF_WINDOWS)
+- (void)createSymbolicLinkAtPath: (OFString*)destination
+	     withDestinationPath: (OFString*)source
+{
+	void *pool;
 
+	if (func_CreateSymbolicLinkW == NULL)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+	if (!func_CreateSymbolicLinkW([destination UTF16String],
+	    [source UTF16String], 0))
+		@throw [OFCreateSymbolicLinkFailedException
+		    exceptionWithSourcePath: source
+			    destinationPath: destination];
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
+
+#ifdef OF_HAVE_READLINK
 - (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path
 {
 	char destination[PATH_MAX];

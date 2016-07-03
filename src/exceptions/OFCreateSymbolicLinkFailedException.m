@@ -19,10 +19,17 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFString.h"
 
-#ifdef OF_HAVE_SYMLINK
+#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
 @implementation OFCreateSymbolicLinkFailedException
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
+
++ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
+			destinationPath: (OFString*)destinationPath
+{
+	return [[[self alloc] initWithSourcePath: sourcePath
+				 destinationPath: destinationPath] autorelease];
+}
 
 + (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
 			destinationPath: (OFString*)destinationPath
@@ -36,6 +43,22 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- initWithSourcePath: (OFString*)sourcePath
+     destinationPath: (OFString*)destinationPath
+{
+	self = [super init];
+
+	@try {
+		_sourcePath = [sourcePath copy];
+		_destinationPath = [destinationPath copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - initWithSourcePath: (OFString*)sourcePath
@@ -66,9 +89,15 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Failed to symlink file %@ to %@: %@",
-	    _sourcePath, _destinationPath, of_strerror(_errNo)];
+	if (_errNo != 0)
+		return [OFString stringWithFormat:
+		    @"Failed to create symbolic link %@ with destination "
+		    @"%@: %@", _destinationPath, _sourcePath,
+		    of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to create symbolic link %@ with destination %@!",
+		    _destinationPath, _sourcePath];
 }
 @end
 #endif

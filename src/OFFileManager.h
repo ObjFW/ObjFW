@@ -227,14 +227,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)removeItemAtPath: (OFString*)path;
 
-#ifdef OF_HAVE_LINK
+#if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
 /*!
  * @brief Creates a hard link for the specified item.
  *
  * The destination path must be a full path, which means it must include the
  * name of the item.
  *
- * This method is not available on some systems, most notably Windows.
+ * This method is not available on some systems.
  *
  * @param source The path to the item for which a link should be created
  * @param destination The path to the item which should link to the source
@@ -243,14 +243,17 @@ OF_ASSUME_NONNULL_BEGIN
 		toPath: (OFString*)destination;
 #endif
 
-#ifdef OF_HAVE_SYMLINK
+#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
 /*!
  * @brief Creates a symbolic link for an item.
  *
  * The destination path must be a full path, which means it must include the
  * name of the item.
  *
- * This method is not available on some systems, most notably Windows.
+ * This method is not available on some systems.
+ *
+ * @note On Windows, this requires at least Windows Vista and administrator
+ *	 privileges!
  *
  * @param destination The path to the item which should symbolically link to the
  *		      source
@@ -259,7 +262,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)createSymbolicLinkAtPath: (OFString*)destination
 	     withDestinationPath: (OFString*)source;
+#endif
 
+#if defined(OF_HAVE_READLINK)
 /*!
  * @brief Returns the destination of the symbolic link at the specified path.
  *
