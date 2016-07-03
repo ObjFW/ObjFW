@@ -178,4 +178,29 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 		[_stream readIntoBuffer: buffer
 			    exactLength: 512 - (_size % 512)];
 }
+
+- (OFString*)description
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret = [OFString stringWithFormat: @"<%@: %p\n"
+	     @"\tFile name = %@\n"
+	     @"\tMode = %06o\n"
+	     @"\tSize = %" PRIu64 @"\n"
+	     @"\tModification date = %@\n"
+	     @"\tType = %u\n"
+	     @"\tTarget file name = %@\n"
+	     @"\tOwner = %@\n"
+	     @"\tGroup = %@\n"
+	     @"\tDevice major = %" PRIu32 @"\n"
+	     @"\tDevice minor = %" PRIu32 @"\n"
+	     @">",
+	    [self class], self, _fileName, _mode, _size, _modificationDate,
+	    _type, _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
 @end

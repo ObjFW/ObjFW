@@ -267,10 +267,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 - (OFString*)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFDate *modificationDate = [self modificationDate];
-	OFString *ret;
-
-	ret = [[OFString alloc] initWithFormat: @"<%@: %p\n"
+	OFString *ret = [OFString stringWithFormat: @"<%@: %p\n"
 	    @"\tFile name = %@\n"
 	    @"\tFile comment = %@\n"
 	    @"\tGeneral purpose bit flag = %u\n"
@@ -280,10 +277,13 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	    @"\tModification date = %@\n"
 	    @"\tCRC32 = %" @PRIu32 @"\n"
 	    @"\tExtra field = %@\n"
-	    @"}",
+	    @">",
 	    [self class], self, _fileName, _fileComment, _generalPurposeBitFlag,
 	    _compressionMethod, (intmax_t)_compressedSize,
-	    (intmax_t)_uncompressedSize, modificationDate, _CRC32, _extraField];
+	    (intmax_t)_uncompressedSize, [self modificationDate], _CRC32,
+	    _extraField];
+
+	[ret retain];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -97,8 +97,8 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 
 			[of_stdout writeFormat:
 			    @"\tSize: %" PRIu64 @" bytes\n"
-			    @"\tModification date: %@\n",
-			    [entry size], date];
+			    @"\tMode: %06o\n",
+			    [entry size], [entry mode]];
 
 			if ([entry owner] != nil)
 				[of_stdout writeFormat: @"\tOwner: %@\n",
@@ -106,6 +106,9 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			if ([entry group] != nil)
 				[of_stdout writeFormat: @"\tGroup: %@\n",
 							[entry group]];
+
+			[of_stdout writeFormat: @"\tModification date: %@\n",
+						date];
 		}
 
 		if (app->_outputLevel >= 2) {
