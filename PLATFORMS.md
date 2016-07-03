@@ -195,6 +195,7 @@ resolveInstanceMethod:, which are always available):
   * MIPS (O32/ELF, EABI/ELF)
   * PPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
-  * x86_64 (SysV/ELF, Apple/Mach-O, Win64/PE)
+  * x86_64 (SysV/ELF, Apple/Mach-O, Mach-O, Win64/PE)
 
-Apple means both, the Apple ABI and runtime.
+Apple/Mach-O means both, the Apple ABI and runtime, while Mach-O means the
+ObjFW runtime on Mach-O.

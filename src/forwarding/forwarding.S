@@ -45,6 +45,10 @@
 #  elif defined(OF_MIPS)
 #   include "forwarding-mips-elf.S"
 #  endif
+# elif defined(OF_MACH_O)
+#  if defined(OF_X86_64)
+#   include "forwarding-x86_64-macho.S"
+#  endif
 # elif defined(OF_WINDOWS)
 #  if defined(OF_X86_64)
 #   include "forwarding-x86_64-win64.S"

@@ -262,6 +262,13 @@
 #    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
 #   endif
 #  endif
+# elif defined(OF_MACH_O)
+#  if defined(OF_X86_64)
+#   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
+#   if __OBJFW_RUNTIME_ABI__ >= 800
+#    define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR_STRET
+#   endif
+#  endif
 # elif defined(OF_WINDOWS)
 #  if defined(OF_X86_64) || defined(OF_X86)
 #   define OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
