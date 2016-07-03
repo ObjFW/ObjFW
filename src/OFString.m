@@ -1992,6 +1992,17 @@ static struct {
 
 	[ret addObject: [self substringWithRange: of_range(last, i - last)]];
 
+#ifdef OF_WINDOWS
+	if ([ret count] >= 2 && [[ret objectAtIndex: 0] hasSuffix: @":"]) {
+		OFString *first = [[ret objectAtIndex: 0]
+		    stringByAppendingPathComponent: [ret objectAtIndex: 1]];
+
+		[ret removeObjectAtIndex: 0];
+		[ret replaceObjectAtIndex: 0
+			       withObject: first];
+	}
+#endif
+
 	[ret makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
