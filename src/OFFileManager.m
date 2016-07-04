@@ -224,7 +224,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return false;
 }
 
-#ifdef OF_HAVE_SYMLINK
+#if defined(OF_HAVE_SYMLINK)
 - (bool)symbolicLinkExistsAtPath: (OFString*)path
 {
 	of_stat_t s;
@@ -236,6 +236,20 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		return false;
 
 	if (S_ISLNK(s.st_mode))
+		return true;
+
+	return false;
+}
+#elif defined(OF_WINDOWS)
+- (bool)symbolicLinkExistsAtPath: (OFString*)path
+{
+	WIN32_FIND_DATAW data;
+
+	if (!FindFirstFileW([path UTF16String], &data))
+		return false;
+
+	if ((data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) &&
+	    data.dwReserved0 == IO_REPARSE_TAG_SYMLINK)
 		return true;
 
 	return false;

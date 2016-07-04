@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (bool)directoryExistsAtPath: (OFString*)path;
 
-#ifdef OF_HAVE_SYMLINK
+#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
 /*!
  * @brief Checks whether a symbolic link exists at the specified path.
  *
