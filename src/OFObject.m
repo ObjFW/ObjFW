@@ -142,14 +142,6 @@ of_method_not_found_stret(void *st, id obj, SEL sel)
 	of_method_not_found(obj, sel);
 }
 
-#if !defined(OF_OBJFW_RUNTIME) && !defined(HAVE_OBJC_ENUMERATIONMUTATION)
-void
-objc_enumerationMutation(id object)
-{
-	enumerationMutationHandler(object);
-}
-#endif
-
 id
 of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
     void **extra)
@@ -228,9 +220,7 @@ _references_to_categories_of_OFObject(void)
 	objc_setForwardHandler((IMP)&of_forward, (IMP)&of_forward_stret);
 #endif
 
-#if defined(OF_OBJFW_RUNTIME) || defined(HAVE_OBJC_ENUMERATIONMUTATION)
 	objc_setEnumerationMutationHandler(enumerationMutationHandler);
-#endif
 
 	of_hash_seed = 0;
 	while (of_hash_seed == 0) {
