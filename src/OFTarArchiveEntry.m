@@ -176,7 +176,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 	if (_size % 512 != 0)
 		[_stream readIntoBuffer: buffer
-			    exactLength: 512 - (_size % 512)];
+			    exactLength: 512 - ((size_t)_size % 512)];
 }
 
 - (OFString*)description
