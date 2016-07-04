@@ -264,11 +264,13 @@ OF_ASSUME_NONNULL_BEGIN
 	     withDestinationPath: (OFString*)source;
 #endif
 
-#if defined(OF_HAVE_READLINK)
+#if defined(OF_HAVE_READLINK) || defined(OF_WINDOWS)
 /*!
  * @brief Returns the destination of the symbolic link at the specified path.
  *
  * @param path The path to the symbolic link
+ *
+ * @note On Windows, at least Windows Vista is required.
  *
  * @return The destination of the symbolic link at the specified path
  */

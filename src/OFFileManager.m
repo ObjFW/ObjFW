@@ -61,6 +61,7 @@
 #ifdef OF_WINDOWS
 # include <windows.h>
 # include <direct.h>
+# include <ntdef.h>
 #endif
 
 #ifndef S_IRGRP
@@ -1016,6 +1017,55 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFString stringWithCString: destination
 				  encoding: encoding
 				    length: length];
+}
+#elif defined(OF_WINDOWS)
+- (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path
+{
+	HANDLE handle;
+
+	/* Check if we're on a version that actually supports symlinks. */
+	if (func_CreateSymbolicLinkW == NULL)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if ((handle = CreateFileW([path UTF16String], 0,
+	    (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
+	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
+		@throw [OFStatItemFailedException exceptionWithPath: path];
+
+	@try {
+		union {
+			char bytes[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
+			REPARSE_DATA_BUFFER data;
+		} buffer;
+		DWORD size;
+		wchar_t *tmp;
+
+		if (!DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, NULL, 0,
+		    buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
+		    NULL))
+			@throw [OFStatItemFailedException
+			    exceptionWithPath: path];
+
+		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
+			@throw [OFStatItemFailedException
+			    exceptionWithPath: path];
+
+#define slrb buffer.data.SymbolicLinkReparseBuffer
+		tmp = slrb.PathBuffer +
+		    (slrb.SubstituteNameOffset / sizeof(wchar_t));
+
+		return [OFString
+		    stringWithUTF16String: tmp
+				   length: slrb.SubstituteNameLength /
+					   sizeof(wchar_t)];
+#undef slrb
+	} @finally {
+		CloseHandle(handle);
+	}
 }
 #endif
 @end
