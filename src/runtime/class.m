@@ -423,6 +423,9 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
 	struct objc_class *cls, *metaclass;
 	Class iter, rootclass = Nil;
 
+	if (extra_bytes > LONG_MAX)
+		OBJC_ERROR("extra_bytes out of range!")
+
 	if ((cls = calloc(1, sizeof(*cls))) == NULL ||
 	    (metaclass = calloc(1, sizeof(*cls))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate class pair for class "
@@ -433,7 +436,7 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
 	cls->name = name;
 	cls->info = OBJC_CLASS_INFO_CLASS;
 	cls->instance_size = (superclass != Nil ?
-	    superclass->instance_size : 0) + extra_bytes;
+	    superclass->instance_size : 0) + (long)extra_bytes;
 
 	for (iter = superclass; iter != Nil; iter = iter->superclass)
 		rootclass = iter;
@@ -443,7 +446,7 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
 	metaclass->name = name;
 	metaclass->info = OBJC_CLASS_INFO_CLASS;
 	metaclass->instance_size = (superclass != Nil ?
-	    superclass->isa->instance_size : 0) + extra_bytes;
+	    superclass->isa->instance_size : 0) + (long)extra_bytes;
 
 	return cls;
 }
