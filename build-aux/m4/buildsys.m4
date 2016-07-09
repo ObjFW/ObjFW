@@ -174,7 +174,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 			UNINSTALL_LIB='&& rm -f ${DESTDIR}${libdir}/$$i ${DESTDIR}${libdir}/$$i.${LIB_MAJOR}.${LIB_MINOR}'
 			CLEAN_LIB=''
 			;;
-		*-androideabi*)
+		*-android*)
 			AC_MSG_RESULT(Android)
 			LIB_CFLAGS='-fPIC -DPIC'
 			LIB_LDFLAGS='-shared -Wl,-soname=${SHARED_LIB}.${LIB_MAJOR}'
