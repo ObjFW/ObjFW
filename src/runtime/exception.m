@@ -24,6 +24,7 @@
 #endif
 
 #import "runtime.h"
+#import "runtime-private.h"
 
 #import "macros.h"
 
@@ -253,7 +254,7 @@ get_base(struct _Unwind_Context *ctx, uint8_t enc)
 		return _Unwind_GetTextRelBase(ctx);
 	}
 
-	abort();
+	OBJC_ERROR("Unknown encoding!")
 }
 
 static size_t
@@ -273,7 +274,7 @@ size_for_encoding(uint8_t enc)
 		return 8;
 	}
 
-	abort();
+	OBJC_ERROR("Unknown encoding!")
 }
 
 static uint64_t
@@ -282,8 +283,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	uint64_t value;
 
 	if (enc == DW_EH_PE_aligned)
-		/* Not implemented */
-		abort();
+		OBJC_ERROR("DW_EH_PE_aligned is not implemented!")
 
 #define READ(type)				\
 	{					\
@@ -313,7 +313,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	case DW_EH_PE_sdata8:
 		READ(int64_t)
 	default:
-		abort();
+		OBJC_ERROR("Unknown encoding!")
 	}
 #undef READ
 
@@ -501,8 +501,8 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			}
 		} else if (filter == 0)
 			return CLEANUP_FOUND;
-		else
-			abort();
+		else if (filter < 0)
+			OBJC_ERROR("Invalid filter!")
 	} while (displacement != 0);
 
 	return 0;
@@ -624,7 +624,7 @@ PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
 		return _URC_INSTALL_CONTEXT;
 	}
 
-	abort();
+	OBJC_ERROR("Neither _UA_SEARCH_PHASE nor _UA_CLEANUP_PHASE in actions!")
 }
 
 static void
@@ -639,7 +639,7 @@ objc_exception_throw(id object)
 	struct objc_exception *e;
 
 	if ((e = malloc(sizeof(*e))) == NULL)
-		abort();
+		OBJC_ERROR("Not enough memory to allocate exception!")
 
 	memset(e, 0, sizeof(*e));
 	e->exception.class = objc_exception_class;
@@ -650,7 +650,7 @@ objc_exception_throw(id object)
 	    uncaught_exception_handler != NULL)
 		uncaught_exception_handler(object);
 
-	abort();
+	OBJC_ERROR("_Unwind_RaiseException() returned!")
 }
 
 objc_uncaught_exception_handler
