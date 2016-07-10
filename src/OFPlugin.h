@@ -46,4 +46,14 @@ OF_ASSUME_NONNULL_BEGIN
 + (OF_KINDOF(OFPlugin*))pluginFromFile: (OFString*)path;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern of_plugin_handle_t of_dlopen(OFString *path, int flags);
+extern void* of_dlsym(of_plugin_handle_t handle, const char *symbol);
+extern void of_dlclose(of_plugin_handle_t handle);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

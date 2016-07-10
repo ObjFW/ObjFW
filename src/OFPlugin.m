@@ -29,12 +29,38 @@
 
 #import "OFInitializationFailedException.h"
 
-#ifdef OF_WINDOWS
-# define dlsym(handle, symbol) GetProcAddress(handle, symbol)
-# define dlclose(handle) FreeLibrary(handle)
-#endif
-
 typedef OFPlugin* (*init_plugin_t)(void);
+
+of_plugin_handle_t
+of_dlopen(OFString *path, int flags)
+{
+#ifndef OF_WINDOWS
+	return dlopen([path cStringWithEncoding:
+	    [OFSystemInfo native8BitEncoding]], flags);
+#else
+	return LoadLibraryW([path UTF16String]);
+#endif
+}
+
+void*
+of_dlsym(of_plugin_handle_t handle, const char *symbol)
+{
+#ifndef OF_WINDOWS
+	return dlsym(handle, symbol);
+#else
+	return GetProcAddress(handle, symbol);
+#endif
+}
+
+void
+of_dlclose(of_plugin_handle_t handle)
+{
+#ifndef OF_WINDOWS
+	dlclose(handle);
+#else
+	FreeLibrary(handle);
+#endif
+}
 
 @implementation OFPlugin
 + (id)pluginFromFile: (OFString*)path
@@ -46,20 +72,15 @@ typedef OFPlugin* (*init_plugin_t)(void);
 
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 
-#ifndef OF_WINDOWS
-	if ((handle = dlopen([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], RTLD_LAZY)) == NULL)
-#else
-	if ((handle = LoadLibraryW([path UTF16String])) == NULL)
-#endif
+	if ((handle = of_dlopen(path, RTLD_LAZY)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 
 	objc_autoreleasePoolPop(pool);
 
-	initPlugin = (init_plugin_t)(uintptr_t)dlsym(handle, "init_plugin");
+	initPlugin = (init_plugin_t)(uintptr_t)of_dlsym(handle, "init_plugin");
 	if (initPlugin == (init_plugin_t)0 || (plugin = initPlugin()) == nil) {
-		dlclose(handle);
+		of_dlclose(handle);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 	}
@@ -89,6 +110,6 @@ typedef OFPlugin* (*init_plugin_t)(void);
 
 	[super dealloc];
 
-	dlclose(h);
+	of_dlclose(h);
 }
 @end
