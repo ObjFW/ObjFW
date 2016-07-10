@@ -647,12 +647,13 @@ normalizeKey(char *str_)
 		}
 
 		if (follow) {
-			OFHTTPRequest *newRequest;
+			OFHTTPRequest *newRequest =
+			    [[request copy] autorelease];
+			OFMutableDictionary *newHeaders =
+			    [[headers mutableCopy] autorelease];
 
-			newRequest = [OFHTTPRequest requestWithURL: newURL];
-			[newRequest setMethod: method];
-			[newRequest setHeaders: headers];
-			[newRequest setBody: body];
+			if (![[newURL host] isEqual: [URL host]])
+				[newHeaders removeObjectForKey: @"Host"];
 
 			/*
 			 * 303 means the request should be converted to a GET
@@ -660,26 +661,26 @@ normalizeKey(char *str_)
 			 * the entity of the request.
 			 */
 			if (status == 303) {
-				OFMutableDictionary *newHeaders;
 				OFEnumerator *keyEnumerator, *objectEnumerator;
 				id key, object;
 
-				newHeaders = [OFMutableDictionary dictionary];
 				keyEnumerator = [headers keyEnumerator];
 				objectEnumerator = [headers objectEnumerator];
 				while ((key = [keyEnumerator nextObject]) !=
 				    nil &&
 				    (object = [objectEnumerator nextObject]) !=
 				    nil)
-					if (![key hasPrefix: @"Content-"])
-						[newHeaders setObject: object
-							       forKey: key];
+					if ([key hasPrefix: @"Content-"])
+						[newHeaders
+						    removeObjectForKey: key];
 
-				[newRequest
-				    setMethod: OF_HTTP_REQUEST_METHOD_GET];
-				[newRequest setHeaders: newHeaders];
+				[newRequest setMethod:
+				    OF_HTTP_REQUEST_METHOD_GET];
 				[newRequest setBody: nil];
 			}
+
+			[newRequest setURL: newURL];
+			[newRequest setHeaders: newHeaders];
 
 			[newRequest retain];
 			objc_autoreleasePoolPop(pool);
