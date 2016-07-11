@@ -38,6 +38,9 @@ of_dlopen(OFString *path, int flags)
 	return dlopen([path cStringWithEncoding:
 	    [OFSystemInfo native8BitEncoding]], flags);
 #else
+	if (path == nil)
+		return GetModuleHandle(NULL);
+
 	return LoadLibraryW([path UTF16String]);
 #endif
 }
@@ -48,7 +51,7 @@ of_dlsym(of_plugin_handle_t handle, const char *symbol)
 #ifndef OF_WINDOWS
 	return dlsym(handle, symbol);
 #else
-	return GetProcAddress(handle, symbol);
+	return (void*)(uintptr_t)GetProcAddress(handle, symbol);
 #endif
 }
 
@@ -72,7 +75,7 @@ of_dlclose(of_plugin_handle_t handle)
 
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 
-	if ((handle = of_dlopen(path, RTLD_LAZY)) == NULL)
+	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 

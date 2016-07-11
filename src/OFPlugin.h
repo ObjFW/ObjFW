@@ -19,9 +19,14 @@
 @class OFString;
 
 #ifndef OF_WINDOWS
+# include <dlfcn.h>
+# define OF_RTLD_LAZY RTLD_LAZY
+# define OF_RTLD_NOW  RTLD_NOW
 typedef void* of_plugin_handle_t;
 #else
 # include <windows.h>
+# define OF_RTLD_LAZY 0
+# define OF_RTLD_NOW  0
 typedef HMODULE of_plugin_handle_t;
 #endif
 
