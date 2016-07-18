@@ -407,6 +407,9 @@ case "$host_os" in
 		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 			AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
 		])
+		AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
+			LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_v0"
+		])
 		;;
 esac
 

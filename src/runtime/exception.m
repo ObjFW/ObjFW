@@ -29,13 +29,16 @@
 #import "macros.h"
 
 #if defined(HAVE_DWARF_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_v0
+# define PERSONALITY	 __gnu_objc_personality_v0
+# define CXX_PERSONALITY __gxx_personality_v0
 #elif defined(HAVE_SJLJ_EXCEPTIONS)
-# define PERSONALITY __gnu_objc_personality_sj0
+# define PERSONALITY	 __gnu_objc_personality_sj0
+# define CXX_PERSONALITY __gxx_personality_sj0
 # define _Unwind_RaiseException _Unwind_SjLj_RaiseException
 # define __builtin_eh_return_data_regno(i) (i)
 #elif defined(HAVE_SEH_EXCEPTIONS)
-# define PERSONALITY gnu_objc_personality
+# define PERSONALITY	 gnu_objc_personality
+# define CXX_PERSONALITY __gxx_personality_seh0
 #else
 # error Unknown exception type!
 #endif
@@ -44,7 +47,23 @@
 # define HAVE_ARM_EHABI_EXCEPTIONS
 #endif
 
-static const uint64_t objc_exception_class = 0x474E55434F424A43; /* GNUCOBJC */
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
+# define PERSONALITY_FUNC(func)						\
+	_Unwind_Reason_Code						\
+	func(int version, int actions, uint64_t ex_class,		\
+	    struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
+# define CALL_PERSONALITY(func) func(version, actions, ex_class, ex, ctx)
+#else
+# define PERSONALITY_FUNC(func)						\
+	_Unwind_Reason_Code						\
+	func(uint32_t state, struct _Unwind_Exception *ex,		\
+	    struct _Unwind_Context *ctx)
+# define CALL_PERSONALITY(func) func(state, ex, ctx)
+#endif
+
+#define GNUCOBJC_EXCEPTION_CLASS UINT64_C(0x474E55434F424A43) /* GNUCOBJC */
+#define GNUCCXX0_EXCEPTION_CLASS UINT64_C(0x474E5543432B2B00) /* GNUCC++\0 */
+#define CLNGCXX0_EXCEPTION_CLASS UINT64_C(0x434C4E47432B2B00) /* CLNGC++\0 */
 
 #define _UA_SEARCH_PHASE  0x01
 #define _UA_CLEANUP_PHASE 0x02
@@ -195,6 +214,8 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 	_Unwind_SetGR(ctx, 15, (value | thumb));
 }
 #endif
+
+extern PERSONALITY_FUNC(CXX_PERSONALITY) __attribute__((__weak__));
 
 #ifdef HAVE_SEH_EXCEPTIONS
 extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void*,
@@ -508,19 +529,12 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 	return 0;
 }
 
-#ifndef HAVE_ARM_EHABI_EXCEPTIONS
-# ifdef HAVE_SEH_EXCEPTIONS
+#ifdef HAVE_SEH_EXCEPTIONS
 static
-# endif
-_Unwind_Reason_Code
-PERSONALITY(int version, int actions, uint64_t ex_class,
-    struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
+#endif
+PERSONALITY_FUNC(PERSONALITY)
 {
-#else
-_Unwind_Reason_Code
-PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
-    struct _Unwind_Context *ctx)
-{
+#ifdef HAVE_ARM_EHABI_EXCEPTIONS
 	int version = 1;
 	uint64_t ex_class = ex->class;
 	int actions;
@@ -543,12 +557,27 @@ PERSONALITY(uint32_t state, struct _Unwind_Exception *ex,
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
 #endif
 	struct objc_exception *e = (struct objc_exception*)ex;
-	bool foreign = (ex_class != objc_exception_class);
+	bool foreign = (ex_class != GNUCOBJC_EXCEPTION_CLASS);
 	const uint8_t *lsda_addr, *actionrecords;
 	struct lsda lsda;
 	uintptr_t landingpad = 0;
 	uint8_t found = 0;
 	intptr_t filter = 0;
+
+	if (foreign) {
+		switch (ex_class) {
+		case GNUCCXX0_EXCEPTION_CLASS:
+		case CLNGCXX0_EXCEPTION_CLASS:
+			if (__gxx_personality_v0 != NULL)
+				return CALL_PERSONALITY(CXX_PERSONALITY);
+			break;
+		}
+
+		/*
+		 * None matched or none available - we'll try to handle it
+		 * anyway, but will most likely fail.
+		 */
+	}
 
 	if (version != 1 || ctx == NULL)
 		return _URC_FATAL_PHASE1_ERROR;
@@ -642,7 +671,7 @@ objc_exception_throw(id object)
 		OBJC_ERROR("Not enough memory to allocate exception!")
 
 	memset(e, 0, sizeof(*e));
-	e->exception.class = objc_exception_class;
+	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 	e->exception.cleanup = cleanup;
 	e->object = object;
 
