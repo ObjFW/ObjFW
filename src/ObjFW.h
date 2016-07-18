@@ -113,6 +113,7 @@
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChangeOwnerFailedException.h"
 #import "OFChangePermissionsFailedException.h"
+#import "OFChecksumFailedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"
 # import "OFConditionSignalFailedException.h"
@@ -126,6 +127,7 @@
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFEnumerationMutationException.h"
+#import "OFGetOptionFailedException.h"
 #import "OFHashAlreadyCalculatedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPRequestFailedException.h"
@@ -146,6 +148,9 @@
 #import "OFMoveItemFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFObserveFailedException.h"
+#endif
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -163,7 +168,9 @@
 #endif
 #import "OFTruncatedDataException.h"
 #import "OFUnboundNamespaceException.h"
+#import "OFUnboundPrefixException.h"
 #import "OFUndefinedKeyException.h"
+#import "OFUnknownXMLEntityException.h"
 #import "OFUnlockFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
@@ -188,6 +195,8 @@
 #endif
 
 #import "base64.h"
+#import "crc32.h"
+#import "instance.h"
 #import "of_asprintf.h"
 #import "of_strptime.h"
 #ifdef OF_HAVE_SOCKETS
