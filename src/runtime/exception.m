@@ -623,7 +623,7 @@ PERSONALITY_FUNC(PERSONALITY)
 	else if (landingpad != 0)
 		found = CLEANUP_FOUND;
 
-	if (!found)
+	if (found == 0)
 		CONTINUE_UNWIND;
 
 	if (actions & _UA_SEARCH_PHASE) {
