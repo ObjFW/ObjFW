@@ -73,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A buffer containing the hash
  */
-- (const uint8_t*)digest OF_RETURNS_INNER_POINTER;
+- (const unsigned char*)digest OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the size of the digest.

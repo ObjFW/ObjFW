@@ -35,7 +35,7 @@ int _OFDataArray_CryptoHashing_reference;
 	void *pool = objc_autoreleasePoolPush();
 	id <OFCryptoHash> hash = [class cryptoHash];
 	size_t digestSize = [class digestSize];
-	const uint8_t *digest;
+	const unsigned char *digest;
 	char cString[digestSize * 2];
 
 	[hash updateWithBuffer: _items

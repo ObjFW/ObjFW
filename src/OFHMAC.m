@@ -108,7 +108,7 @@
 			      length: length];
 }
 
-- (const uint8_t*)digest
+- (const unsigned char*)digest
 {
 	if (_calculated)
 		return [_outerHash digest];

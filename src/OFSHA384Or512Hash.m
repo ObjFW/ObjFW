@@ -188,7 +188,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	}
 }
 
-- (const uint8_t*)digest
+- (const unsigned char*)digest
 {
 	if (_calculated)
 		return (const uint8_t*)_state;
