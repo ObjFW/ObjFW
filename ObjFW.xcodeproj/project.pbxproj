@@ -326,6 +326,8 @@
 		4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */; };
 		4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */; };
 		4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */; };
+		4B6D0A891D4459D900901D8D /* OFHMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6D0A871D4459D900901D8D /* OFHMAC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6D0A8A1D4459D900901D8D /* OFHMAC.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6D0A881D4459D900901D8D /* OFHMAC.m */; };
 		4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7161AB17A6FC7600B74970 /* OFHTTPResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */; };
 		4B72F7DE1AD9311B00CE253C /* OFStatItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B72F7DC1AD9311B00CE253C /* OFStatItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -821,6 +823,8 @@
 		4B6C8AD517BD5C2E00B194F2 /* OFThread+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFThread+Private.h"; path = "src/OFThread+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFTimer+Private.h"; path = "src/OFTimer+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFZIPArchiveEntry+Private.h"; path = "src/OFZIPArchiveEntry+Private.h"; sourceTree = "<group>"; };
+		4B6D0A871D4459D900901D8D /* OFHMAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHMAC.h; path = src/OFHMAC.h; sourceTree = "<group>"; };
+		4B6D0A881D4459D900901D8D /* OFHMAC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHMAC.m; path = src/OFHMAC.m; sourceTree = "<group>"; };
 		4B6EF66E1235358D0076B512 /* OFArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFArrayTests.m; path = tests/OFArrayTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDataArrayTests.m; path = tests/OFDataArrayTests.m; sourceTree = SOURCE_ROOT; };
 		4B6EF6701235358D0076B512 /* OFDictionaryTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDictionaryTests.m; path = tests/OFDictionaryTests.m; sourceTree = SOURCE_ROOT; };
@@ -1346,6 +1350,8 @@
 				4B2C72891B888B6900717583 /* OFFileManager.m */,
 				4BD1125E1CCB739A0076FDB9 /* OFGZIPStream.h */,
 				4BD1125F1CCB739A0076FDB9 /* OFGZIPStream.m */,
+				4B6D0A871D4459D900901D8D /* OFHMAC.h */,
+				4B6D0A881D4459D900901D8D /* OFHMAC.m */,
 				4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */,
 				4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */,
 				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
@@ -1698,6 +1704,7 @@
 				4B3D23C81337FCB000DD29B8 /* OFFile.h in Headers */,
 				4B2C728C1B888B8700717583 /* OFFileManager.h in Headers */,
 				4BD112621CCB73A90076FDB9 /* OFGZIPStream.h in Headers */,
+				4B6D0A891D4459D900901D8D /* OFHMAC.h in Headers */,
 				4BB4B54416775FF4002A2DCE /* OFHTTPClient.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */,
@@ -2086,6 +2093,7 @@
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
 				4B3D23961337FC0D00DD29B8 /* OFFile.m in Sources */,
 				4B2C728B1B888B8300717583 /* OFFileManager.m in Sources */,
+				4B6D0A8A1D4459D900901D8D /* OFHMAC.m in Sources */,
 				4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,

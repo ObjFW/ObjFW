@@ -84,6 +84,8 @@
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
 
+#import "OFHMAC.h"
+
 #import "OFXMLAttribute.h"
 #import "OFXMLElement.h"
 #import "OFXMLAttribute.h"

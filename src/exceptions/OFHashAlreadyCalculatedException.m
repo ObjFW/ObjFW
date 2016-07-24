@@ -22,7 +22,7 @@
 @implementation OFHashAlreadyCalculatedException
 @synthesize object = _object;
 
-+ (instancetype)exceptionWithObject: (id <OFCryptoHash>)object
++ (instancetype)exceptionWithObject: (id)object
 {
 	return [[[self alloc] initWithObject: object] autorelease];
 }
@@ -32,7 +32,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObject: (id <OFCryptoHash>)object
+- initWithObject: (id)object
 {
 	self = [super init];
 

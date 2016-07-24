@@ -26,6 +26,7 @@ SRCS = OFApplication.m			\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFGZIPStream.m			\
+       OFHMAC.m				\
        OFIntrospection.m		\
        OFList.m				\
        OFMapTable.m			\
