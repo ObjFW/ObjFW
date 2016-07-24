@@ -37,7 +37,7 @@ const uint8_t testfile_sha256[32] =
 - (void)SHA256HashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFSHA256Hash *sha256;
+	OFSHA256Hash *sha256, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
@@ -52,7 +52,11 @@ const uint8_t testfile_sha256[32] =
 	}
 	[f close];
 
-	TEST(@"-[digest]", !memcmp([sha256 digest], testfile_sha256, 32))
+	TEST(@"-[copy]", (copy = [[sha256 copy] autorelease]))
+
+	TEST(@"-[digest]",
+	    memcmp([sha256 digest], testfile_sha256, 32) == 0 &&
+	    memcmp([copy digest], testfile_sha256, 32) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,

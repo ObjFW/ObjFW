@@ -36,7 +36,7 @@ const uint8_t testfile_md5[16] =
 - (void)MD5HashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMD5Hash *md5;
+	OFMD5Hash *md5, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
@@ -51,7 +51,11 @@ const uint8_t testfile_md5[16] =
 	}
 	[f close];
 
-	TEST(@"-[digest]", !memcmp([md5 digest], testfile_md5, 16))
+	TEST(@"-[copy]", (copy = [[md5 copy] autorelease]))
+
+	TEST(@"-[digest]",
+	    memcmp([md5 digest], testfile_md5, 16) == 0 &&
+	    memcmp([copy digest], testfile_md5, 16) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,

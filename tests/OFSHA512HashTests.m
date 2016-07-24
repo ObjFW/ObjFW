@@ -39,7 +39,7 @@ const uint8_t testfile_sha512[64] =
 - (void)SHA512HashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFSHA512Hash *sha512;
+	OFSHA512Hash *sha512, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
@@ -54,7 +54,11 @@ const uint8_t testfile_sha512[64] =
 	}
 	[f close];
 
-	TEST(@"-[digest]", !memcmp([sha512 digest], testfile_sha512, 64))
+	TEST(@"-[copy]", (copy = [[sha512 copy] autorelease]))
+
+	TEST(@"-[digest]",
+	    memcmp([sha512 digest], testfile_sha512, 64) == 0 &&
+	    memcmp([copy digest], testfile_sha512, 64) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,

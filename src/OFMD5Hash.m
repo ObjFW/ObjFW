@@ -139,6 +139,19 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return self;
 }
 
+- copy
+{
+	OFMD5Hash *copy = [[OFMD5Hash alloc] init];
+
+	memcpy(copy->_state, _state, sizeof(_state));
+	copy->_bits = _bits;
+	memcpy(&copy->_buffer, &_buffer, sizeof(_buffer));
+	copy->_bufferLength = _bufferLength;
+	copy->_calculated = _calculated;
+
+	return copy;
+}
+
 - (void)OF_resetState
 {
 	_state[0] = 0x67452301;

@@ -37,7 +37,7 @@ const uint8_t testfile_rmd160[20] =
 - (void)RIPEMD160HashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFRIPEMD160Hash *rmd160;
+	OFRIPEMD160Hash *rmd160, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
@@ -52,7 +52,11 @@ const uint8_t testfile_rmd160[20] =
 	}
 	[f close];
 
-	TEST(@"-[digest]", !memcmp([rmd160 digest], testfile_rmd160, 20))
+	TEST(@"-[copy]", (copy = [[rmd160 copy] autorelease]))
+
+	TEST(@"-[digest]",
+	    memcmp([rmd160 digest], testfile_rmd160, 20) == 0 &&
+	    memcmp([copy digest], testfile_rmd160, 20) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,

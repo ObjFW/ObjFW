@@ -145,6 +145,19 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return self;
 }
 
+- copy
+{
+	OFSHA224Or256Hash *copy = [[[self class] alloc] init];
+
+	memcpy(copy->_state, _state, sizeof(_state));
+	copy->_bits = _bits;
+	memcpy(&copy->_buffer, &_buffer, sizeof(_buffer));
+	copy->_bufferLength = _bufferLength;
+	copy->_calculated = _calculated;
+
+	return copy;
+}
+
 - (void)updateWithBuffer: (const void*)buffer_
 		  length: (size_t)length
 {

@@ -38,7 +38,7 @@ const uint8_t testfile_sha384[48] =
 - (void)SHA384HashTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFSHA384Hash *sha384;
+	OFSHA384Hash *sha384, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
@@ -53,7 +53,11 @@ const uint8_t testfile_sha384[48] =
 	}
 	[f close];
 
-	TEST(@"-[digest]", !memcmp([sha384 digest], testfile_sha384, 48))
+	TEST(@"-[copy]", (copy = [[sha384 copy] autorelease]))
+
+	TEST(@"-[digest]",
+	    memcmp([sha384 digest], testfile_sha384, 48) == 0 &&
+	    memcmp([copy digest], testfile_sha384, 48) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,

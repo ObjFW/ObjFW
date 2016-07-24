@@ -22,8 +22,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @protocol OFCryptoHash OFCryptoHash.h ObjFW/OFCryptoHash.h
  *
  * @brief A protocol for classes providing cryptographic hash functions.
+ *
+ * A cryptographic hash implementing this protocol can be copied. The entire
+ * state is copied, allowing to calculate a new hash from there. This is
+ * especially useful for generating many hashes with a common prefix.
  */
-@protocol OFCryptoHash <OFObject>
+@protocol OFCryptoHash <OFObject, OFCopying>
 /*!
  * A boolean whether the hash has already been calculated.
  */
