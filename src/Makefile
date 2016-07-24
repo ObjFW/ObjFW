@@ -18,7 +18,7 @@ SRCS = OFApplication.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFDataArray.m			\
-       OFDataArray+Hashing.m		\
+       OFDataArray+CryptoHashing.m	\
        OFDataArray+MessagePackValue.m	\
        OFDate.m				\
        OFDeflateStream.m		\
@@ -58,7 +58,7 @@ SRCS = OFApplication.m			\
        ${OFSTDIOSTREAM_WIN32CONSOLE_M}	\
        OFStream.m			\
        OFString.m			\
-       OFString+Hashing.m		\
+       OFString+CryptoHashing.m		\
        OFString+JSONValue.m		\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
@@ -115,7 +115,7 @@ SRCS_THREADS = OFCondition.m		\
 
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
-	    OFHash.h				\
+	    OFCryptoHash.h			\
 	    OFJSONRepresentation.h		\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\

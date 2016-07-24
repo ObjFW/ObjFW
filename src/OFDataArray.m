@@ -53,8 +53,8 @@
 void
 _references_to_categories_of_OFDataArray(void)
 {
+	_OFDataArray_CryptoHashing_reference = 1;
 	_OFDataArray_MessagePackValue_reference = 1;
-	_OFDataArray_Hashing_reference = 1;
 }
 
 @implementation OFDataArray

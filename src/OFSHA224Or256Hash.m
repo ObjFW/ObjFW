@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #import "OFSHA224Or256Hash.h"
@@ -120,7 +121,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return 64;
 }
 
-+ (instancetype)hash
++ (instancetype)cryptoHash
 {
 	return [[[self alloc] init] autorelease];
 }
@@ -129,7 +130,17 @@ processBlock(uint32_t *state, uint32_t *buffer)
 {
 	self = [super init];
 
-	[self OF_resetState];
+	@try {
+		if ([self class] == [OFSHA224Or256Hash class]) {
+			[self doesNotRecognizeSelector: _cmd];
+			abort();
+		}
+
+		[self OF_resetState];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
@@ -141,7 +152,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
-		    exceptionWithHash: self];
+		    exceptionWithObject: self];
 
 	_bits += (length * 8);
 

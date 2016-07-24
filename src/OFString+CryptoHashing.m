@@ -17,7 +17,7 @@
 #include "config.h"
 
 #import "OFString.h"
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 #import "OFMD5Hash.h"
 #import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"
@@ -26,14 +26,14 @@
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
 
-int _OFString_Hashing_reference;
+int _OFString_CryptoHashing_reference;
 
-@implementation OFString (Hashing)
-- (OFString*)OF_hashAsStringWithHash: (Class <OFHash>)hashClass
+@implementation OFString (CryptoHashing)
+- (OFString*)OF_cryptoHashWithClass: (Class <OFCryptoHash>)class
 {
 	void *pool = objc_autoreleasePoolPush();
-	id <OFHash> hash = [hashClass hash];
-	size_t digestSize = [hashClass digestSize];
+	id <OFCryptoHash> hash = [class cryptoHash];
+	size_t digestSize = [class digestSize];
 	const uint8_t *digest;
 	char cString[digestSize * 2];
 
@@ -60,36 +60,36 @@ int _OFString_Hashing_reference;
 
 - (OFString*)MD5Hash
 {
-	return [self OF_hashAsStringWithHash: [OFMD5Hash class]];
+	return [self OF_cryptoHashWithClass: [OFMD5Hash class]];
 }
 
 - (OFString*)RIPEMD160Hash
 {
-	return [self OF_hashAsStringWithHash: [OFRIPEMD160Hash class]];
+	return [self OF_cryptoHashWithClass: [OFRIPEMD160Hash class]];
 }
 
 - (OFString*)SHA1Hash
 {
-	return [self OF_hashAsStringWithHash: [OFSHA1Hash class]];
+	return [self OF_cryptoHashWithClass: [OFSHA1Hash class]];
 }
 
 - (OFString*)SHA224Hash
 {
-	return [self OF_hashAsStringWithHash: [OFSHA224Hash class]];
+	return [self OF_cryptoHashWithClass: [OFSHA224Hash class]];
 }
 
 - (OFString*)SHA256Hash
 {
-	return [self OF_hashAsStringWithHash: [OFSHA256Hash class]];
+	return [self OF_cryptoHashWithClass: [OFSHA256Hash class]];
 }
 
 - (OFString*)SHA384Hash
 {
-	return [self OF_hashAsStringWithHash: [OFSHA384Hash class]];
+	return [self OF_cryptoHashWithClass: [OFSHA384Hash class]];
 }
 
 - (OFString*)SHA512Hash
 {
-	return [self OF_hashAsStringWithHash: [OFSHA512Hash class]];
+	return [self OF_cryptoHashWithClass: [OFSHA512Hash class]];
 }
 @end

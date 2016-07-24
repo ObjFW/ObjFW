@@ -47,23 +47,23 @@ help(void)
 	[OFApplication terminateWithStatus: 1];
 }
 
-static id <OFHash>
+static id <OFCryptoHash>
 hashForName(OFString *name)
 {
 	if ([name isEqual: @"md5"])
-		return [OFMD5Hash hash];
+		return [OFMD5Hash cryptoHash];
 	else if ([name isEqual: @"rmd160"] || [name isEqual: @"ripemd160"])
-		return [OFRIPEMD160Hash hash];
+		return [OFRIPEMD160Hash cryptoHash];
 	else if ([name isEqual: @"sha1"])
-		return [OFSHA1Hash hash];
+		return [OFSHA1Hash cryptoHash];
 	else if ([name isEqual: @"sha224"])
-		return [OFSHA224Hash hash];
+		return [OFSHA224Hash cryptoHash];
 	else if ([name isEqual: @"sha256"])
-		return [OFSHA256Hash hash];
+		return [OFSHA256Hash cryptoHash];
 	else if ([name isEqual: @"sha384"])
-		return [OFSHA384Hash hash];
+		return [OFSHA384Hash cryptoHash];
 	else if ([name isEqual: @"sha512"])
-		return [OFSHA512Hash hash];
+		return [OFSHA512Hash cryptoHash];
 
 	return nil;
 }
@@ -72,7 +72,7 @@ hashForName(OFString *name)
 - (void)applicationDidFinishLaunching
 {
 	OFArray OF_GENERIC(OFString*) *arguments = [OFApplication arguments];
-	id <OFHash> hash;
+	id <OFCryptoHash> hash;
 	bool first = true;
 	int exitStatus = 0;
 

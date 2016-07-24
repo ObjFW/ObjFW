@@ -1126,7 +1126,7 @@ OF_ASSUME_NONNULL_END
 
 #import "OFConstantString.h"
 #import "OFMutableString.h"
-#import "OFString+Hashing.h"
+#import "OFString+CryptoHashing.h"
 #import "OFString+JSONValue.h"
 #import "OFString+Serialization.h"
 #import "OFString+URLEncoding.h"

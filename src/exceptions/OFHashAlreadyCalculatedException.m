@@ -20,11 +20,11 @@
 #import "OFString.h"
 
 @implementation OFHashAlreadyCalculatedException
-@synthesize hashObject = _hashObject;
+@synthesize object = _object;
 
-+ (instancetype)exceptionWithHash: (id <OFHash>)hash
++ (instancetype)exceptionWithObject: (id <OFCryptoHash>)object
 {
-	return [[[self alloc] initWithHash: hash] autorelease];
+	return [[[self alloc] initWithObject: object] autorelease];
 }
 
 - init
@@ -32,18 +32,18 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithHash: (id <OFHash>)hashObject
+- initWithObject: (id <OFCryptoHash>)object
 {
 	self = [super init];
 
-	_hashObject = [hashObject retain];
+	_object = [object retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_hashObject release];
+	[_object release];
 
 	[super dealloc];
 }
@@ -52,6 +52,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"The hash of type %@ has already been calculated and thus no new "
-	    @"data can be added!", [_hashObject class]];
+	    @"data can be added!", [_object class]];
 }
 @end

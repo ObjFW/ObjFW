@@ -75,7 +75,7 @@
 # import "OFProcess.h"
 #endif
 
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 #import "OFMD5Hash.h"
 #import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"

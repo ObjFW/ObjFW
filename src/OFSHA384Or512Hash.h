@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A base class for SHA-384 and SHA-512.
  */
-@interface OFSHA384Or512Hash: OFObject <OFHash>
+@interface OFSHA384Or512Hash: OFObject <OFCryptoHash>
 {
 	uint64_t _state[8];
 	uint64_t _bits[2];

@@ -322,5 +322,5 @@ OF_ASSUME_NONNULL_BEGIN
 
 OF_ASSUME_NONNULL_END
 
-#import "OFDataArray+Hashing.h"
+#import "OFDataArray+CryptoHashing.h"
 #import "OFDataArray+MessagePackValue.h"

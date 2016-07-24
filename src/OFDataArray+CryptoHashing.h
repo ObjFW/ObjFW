@@ -23,12 +23,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFDataArray_Hashing_reference;
+extern int _OFDataArray_CryptoHashing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFDataArray (Hashing)
+@interface OFDataArray (CryptoHashing)
 /*!
  * @brief Returns the MD5 hash of the data array as an autoreleased OFString.
  *

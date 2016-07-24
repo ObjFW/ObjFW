@@ -19,39 +19,39 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @protocol OFHash OFHash.h ObjFW/OFHash.h
+ * @protocol OFCryptoHash OFCryptoHash.h ObjFW/OFCryptoHash.h
  *
- * @brief A protocol for classes providing hash functions.
+ * @brief A protocol for classes providing cryptographic hash functions.
  */
-@protocol OFHash <OFObject>
+@protocol OFCryptoHash <OFObject>
 /*!
  * A boolean whether the hash has already been calculated.
  */
 @property (readonly, getter=isCalculated) bool calculated;
 
 /*!
- * @brief Creates a new hash.
+ * @brief Creates a new cryptographic hash.
  *
- * @return A new autoreleased OFHash
+ * @return A new autoreleased OFCryptoHash
  */
-+ (instancetype)hash;
++ (instancetype)cryptoHash;
 
 /*!
- * @brief Returns the digest size of the hash, in bytes.
+ * @brief Returns the digest size of the cryptographic hash, in bytes.
  *
- * @return The digest size of the hash, in bytes
+ * @return The digest size of the cryptographic hash, in bytes
  */
 + (size_t)digestSize;
 
 /*!
- * @brief Returns the block size of the hash, in bytes.
+ * @brief Returns the block size of the cryptographic hash, in bytes.
  *
- * @return The block size of the hash, in bytes
+ * @return The block size of the cryptographic hash, in bytes
  */
 + (size_t)blockSize;
 
 /*!
- * @brief Adds a buffer to the hash to be calculated.
+ * @brief Adds a buffer to the cryptographic hash to be calculated.
  *
  * @param buffer The buffer which should be included into the calculation
  * @param length The length of the buffer
@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
 		  length: (size_t)length;
 
 /*!
- * @brief Returns a buffer containing the hash.
+ * @brief Returns a buffer containing the cryptographic hash.
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
  * receiver's memory pool.

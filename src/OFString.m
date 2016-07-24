@@ -88,7 +88,7 @@ extern bool of_unicode_to_codepage_437(const of_unichar_t*, uint8_t*, size_t,
 void
 _references_to_categories_of_OFString(void)
 {
-	_OFString_Hashing_reference = 1;
+	_OFString_CryptoHashing_reference = 1;
 	_OFString_JSONValue_reference = 1;
 	_OFString_Serialization_reference = 1;
 	_OFString_URLEncoding_reference = 1;

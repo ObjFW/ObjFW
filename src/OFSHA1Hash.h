@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides functions to create an SHA-1 hash.
  */
-@interface OFSHA1Hash: OFObject <OFHash>
+@interface OFSHA1Hash: OFObject <OFCryptoHash>
 {
 	uint32_t _state[5];
 	uint64_t _bits;

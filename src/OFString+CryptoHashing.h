@@ -21,12 +21,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFString_Hashing_reference;
+extern int _OFString_CryptoHashing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFString (Hashing)
+@interface OFString (CryptoHashing)
 /*!
  * @brief Returns the MD5 hash of the string as an autoreleased OFString.
  *

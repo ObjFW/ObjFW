@@ -139,7 +139,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return 64;
 }
 
-+ (instancetype)hash
++ (instancetype)cryptoHash
 {
 	return [[[self alloc] init] autorelease];
 }
@@ -169,7 +169,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
-		    exceptionWithHash: self];
+		    exceptionWithObject: self];
 
 	_bits += (length * 8);
 

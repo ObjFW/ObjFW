@@ -41,7 +41,7 @@ const uint8_t testfile_rmd160[20] =
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
-	TEST(@"+[hash]", (rmd160 = [OFRIPEMD160Hash hash]))
+	TEST(@"+[cryptoHash]", (rmd160 = [OFRIPEMD160Hash cryptoHash]))
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];

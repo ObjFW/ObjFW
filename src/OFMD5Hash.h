@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides functions to create an MD5 hash.
  */
-@interface OFMD5Hash: OFObject <OFHash>
+@interface OFMD5Hash: OFObject <OFCryptoHash>
 {
 	uint32_t _state[4];
 	uint64_t _bits;

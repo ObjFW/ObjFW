@@ -41,7 +41,7 @@ const uint8_t testfile_sha1[20] =
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
-	TEST(@"+[hash]", (sha1 = [OFSHA1Hash hash]))
+	TEST(@"+[cryptoHash]", (sha1 = [OFSHA1Hash cryptoHash]))
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];

@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides functions to create a RIPEMD-160 hash.
  */
-@interface OFRIPEMD160Hash: OFObject <OFHash>
+@interface OFRIPEMD160Hash: OFObject <OFCryptoHash>
 {
 	uint32_t _state[5];
 	uint64_t _bits;

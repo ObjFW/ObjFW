@@ -15,7 +15,7 @@
  */
 
 #import "OFException.h"
-#import "OFHash.h"
+#import "OFCryptoHash.h"
 
 /*!
  * @class OFHashAlreadyCalculatedException \
@@ -26,27 +26,27 @@
  */
 @interface OFHashAlreadyCalculatedException: OFException
 {
-	id <OFHash> _hashObject;
+	id <OFCryptoHash> _object;
 }
 
 /*!
  * The hash which has already been calculated.
  */
-@property (readonly, retain) id <OFHash> hashObject;
+@property (readonly, retain) id <OFCryptoHash> object;
 
 /*!
  * @brief Creates a new, autoreleased hash already calculated exception.
  *
- * @param hash The hash which has already been calculated
+ * @param object The hash which has already been calculated
  * @return A new, autoreleased hash already calculated exception
  */
-+ (instancetype)exceptionWithHash: (id <OFHash>)hash;
++ (instancetype)exceptionWithObject: (id <OFCryptoHash>)object;
 
 /*!
  * @brief Initializes an already allocated hash already calculated exception.
  *
- * @param hash The hash which has already been calculated
+ * @param object The hash which has already been calculated
  * @return An initialized hash already calculated exception
  */
-- initWithHash: (id <OFHash>)hash;
+- initWithObject: (id <OFCryptoHash>)object;
 @end

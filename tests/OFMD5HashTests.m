@@ -40,7 +40,7 @@ const uint8_t testfile_md5[16] =
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"rb"];
 
-	TEST(@"+[hash]", (md5 = [OFMD5Hash hash]))
+	TEST(@"+[cryptoHash]", (md5 = [OFMD5Hash cryptoHash]))
 
 	while (![f isAtEndOfStream]) {
 		char buf[64];
