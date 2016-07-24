@@ -156,6 +156,13 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	return self;
 }
 
+- (void)dealloc
+{
+	[self reset];
+
+	[super dealloc];
+}
+
 - copy
 {
 	OFSHA384Or512Hash *copy = [[[self class] alloc] init];
@@ -228,7 +235,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 - (void)reset
 {
 	[self OF_resetState];
-	memset(&_bits, 0, sizeof(_bits));
+	memset(_bits, 0, sizeof(_bits));
 	memset(&_buffer, 0, sizeof(_buffer));
 	_bufferLength = 0;
 	_calculated = false;

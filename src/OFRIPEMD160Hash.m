@@ -153,6 +153,13 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return self;
 }
 
+- (void)dealloc
+{
+	[self reset];
+
+	[super dealloc];
+}
+
 - copy
 {
 	OFRIPEMD160Hash *copy = [[OFRIPEMD160Hash alloc] init];

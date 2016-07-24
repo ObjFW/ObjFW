@@ -139,6 +139,13 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return self;
 }
 
+- (void)dealloc
+{
+	[self reset];
+
+	[super dealloc];
+}
+
 - copy
 {
 	OFMD5Hash *copy = [[OFMD5Hash alloc] init];

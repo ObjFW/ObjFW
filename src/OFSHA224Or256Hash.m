@@ -145,6 +145,13 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return self;
 }
 
+- (void)dealloc
+{
+	[self reset];
+
+	[super dealloc];
+}
+
 - copy
 {
 	OFSHA224Or256Hash *copy = [[[self class] alloc] init];
