@@ -26,9 +26,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFHMAC: OFObject
 {
+	Class <OFCryptoHash> _hashClass;
 	id <OFCryptoHash> _outerHash, _innerHash;
-	bool _keySet, _calculated;
+	id <OFCryptoHash> _outerHashCopy, _innerHashCopy;
+	bool _calculated;
 }
+
+/*! The class for the cryptographic hash used by the HMAC. */
+@property (assign, readonly) Class <OFCryptoHash> hashClass;
 
 /*!
  * @brief Returns a new OFHMAC with the specified hashing algorithm.
@@ -49,6 +54,12 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @brief Sets the key for the HMAC.
+ *
+ * @note This resets the HMAC!
+ *
+ * @warning This invalidates any pointer previously returned by @ref digest. If
+ *	    you are still interested in the previous digest, you need to memcpy
+ *	    it yourself before calling @ref setKey:length:!
  *
  * @param key The key for the HMAC
  * @param length The length of the key for the HMAC
@@ -83,7 +94,11 @@ OF_ASSUME_NONNULL_BEGIN
 - (size_t)digestSize;
 
 /*!
- * @brief Resets all state so that a new HMAC can be calculated.
+ * @brief Resets the HMAC so that it can be calculated for a new message.
+ *
+ * @note This does not reset the key so that a new HMAC with the same key can
+ *	 be calculated efficiently. If you want to reset both, use
+ *	 @ref setKey:length:.
  *
  * @warning This invalidates any pointer previously returned by @ref digest. If
  *	    you are still interested in the previous digest, you need to memcpy

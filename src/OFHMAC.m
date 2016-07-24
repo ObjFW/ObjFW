@@ -20,26 +20,18 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFHMAC
+@synthesize hashClass = _hashClass;
+
 + (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)class
 {
 	return [[[self alloc] initWithHashClass: class] autorelease];
 }
 
-- initWithHashClass: (id <OFCryptoHash>)class
+- initWithHashClass: (Class <OFCryptoHash>)class
 {
 	self = [super init];
 
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		_outerHash = [[class cryptoHash] retain];
-		_innerHash = [[class cryptoHash] retain];
-
-		objc_autoreleasePoolPop(pool);
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	_hashClass = class;
 
 	return self;
 }
@@ -48,6 +40,8 @@
 {
 	[_outerHash release];
 	[_innerHash release];
+	[_outerHashCopy release];
+	[_innerHashCopy release];
 
 	[super dealloc];
 }
@@ -55,24 +49,28 @@
 - (void)setKey: (const void*)key
 	length: (size_t)length
 {
-	size_t blockSize = [[_outerHash class] blockSize];
+	void *pool = objc_autoreleasePoolPush();
+	size_t blockSize = [_hashClass blockSize];
 	uint8_t outerKeyPad[blockSize], innerKeyPad[blockSize];
 
+	[_outerHash release];
+	[_innerHash release];
+	[_outerHashCopy release];
+	[_innerHashCopy release];
+	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
+
 	if (length > blockSize) {
-		void *pool = objc_autoreleasePoolPush();
-		id <OFCryptoHash> hash = [[_outerHash class] cryptoHash];
+		id <OFCryptoHash> hash = [_hashClass cryptoHash];
 
 		[hash updateWithBuffer: key
 				length: length];
 
-		length = [[hash class] digestSize];
+		length = [_hashClass digestSize];
 		if OF_UNLIKELY (length > blockSize)
 			length = blockSize;
 
 		memcpy(outerKeyPad, [hash digest], length);
 		memcpy(innerKeyPad, [hash digest], length);
-
-		objc_autoreleasePoolPop(pool);
 	} else {
 		memcpy(outerKeyPad, key, length);
 		memcpy(innerKeyPad, key, length);
@@ -86,18 +84,26 @@
 		innerKeyPad[i] ^= 0x36;
 	}
 
+	_outerHash = [[_hashClass cryptoHash] retain];
+	_innerHash = [[_hashClass cryptoHash] retain];
+
 	[_outerHash updateWithBuffer: outerKeyPad
 			      length: blockSize];
 	[_innerHash updateWithBuffer: innerKeyPad
 			      length: blockSize];
 
-	_keySet = true;
+	objc_autoreleasePoolPop(pool);
+
+	_outerHashCopy = [_outerHash copy];
+	_innerHashCopy = [_innerHash copy];
+
+	_calculated = false;
 }
 
 - (void)updateWithBuffer: (const void*)buffer
 		  length: (size_t)length
 {
-	if (!_keySet)
+	if (_innerHash == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (_calculated)
@@ -110,11 +116,14 @@
 
 - (const unsigned char*)digest
 {
+	if (_outerHash == nil || _innerHash == nil)
+		@throw [OFInvalidArgumentException exception];
+
 	if (_calculated)
 		return [_outerHash digest];
 
 	[_outerHash updateWithBuffer: [_innerHash digest]
-			      length: [[_innerHash class] digestSize]];
+			      length: [_hashClass digestSize]];
 	_calculated = true;
 
 	return [_outerHash digest];
@@ -122,15 +131,18 @@
 
 - (size_t)digestSize
 {
-	return [[_outerHash class] digestSize];
+	return [_hashClass digestSize];
 }
 
 - (void)reset
 {
-	[_outerHash reset];
-	[_innerHash reset];
+	[_outerHash release];
+	[_innerHash release];
+	_outerHash = _innerHash = nil;
 
-	_keySet = false;
+	_outerHash = [_outerHashCopy copy];
+	_innerHash = [_innerHashCopy copy];
+
 	_calculated = false;
 }
 @end
