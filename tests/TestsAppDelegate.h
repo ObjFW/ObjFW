@@ -168,6 +168,10 @@
 - (void)SHA512HashTests;
 @end
 
+@interface TestsAppDelegate (OFHMACTests)
+- (void)HMACTests;
+@end
+
 @interface TestsAppDelegate (OFStreamTests)
 - (void)streamTests;
 @end

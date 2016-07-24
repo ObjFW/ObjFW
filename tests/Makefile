@@ -14,6 +14,7 @@ SRCS = ForwardingTests.m		\
        OFDataArrayTests.m		\
        OFDateTests.m			\
        OFDictionaryTests.m		\
+       OFHMACTests.m			\
        OFJSONTests.m			\
        OFListTests.m			\
        OFNumberTests.m			\

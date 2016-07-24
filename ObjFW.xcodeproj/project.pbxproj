@@ -454,6 +454,7 @@
 		4BEC83B919B7CB7100E4BB08 /* OFRIPEMD160Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BEC83B719B7CB7100E4BB08 /* OFRIPEMD160Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BEC83BA19B7CB7100E4BB08 /* OFRIPEMD160Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */; };
 		4BEC83BC19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */; };
+		4BF0DD741D44645D001D9949 /* OFHMACTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF0DD731D44645D001D9949 /* OFHMACTests.m */; };
 		4BF171B21C949A3300F5B47B /* OFStdIOStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF171B11C9499F300F5B47B /* OFStdIOStream+Private.h */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66E1235358D0076B512 /* OFArrayTests.m */; };
@@ -998,6 +999,7 @@
 		4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160Hash.m; path = src/OFRIPEMD160Hash.m; sourceTree = "<group>"; };
 		4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160HashTests.m; path = tests/OFRIPEMD160HashTests.m; sourceTree = "<group>"; };
 		4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLTests.m; path = tests/OFURLTests.m; sourceTree = SOURCE_ROOT; };
+		4BF0DD731D44645D001D9949 /* OFHMACTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHMACTests.m; path = tests/OFHMACTests.m; sourceTree = "<group>"; };
 		4BF171B11C9499F300F5B47B /* OFStdIOStream+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStdIOStream+Private.h"; path = "src/OFStdIOStream+Private.h"; sourceTree = "<group>"; };
 		4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "objfw-defs.h.in"; path = "src/objfw-defs.h.in"; sourceTree = "<group>"; };
 		4BF1BCC011C9663F0025511F /* OFCryptoHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCryptoHash.h; path = src/OFCryptoHash.h; sourceTree = "<group>"; };
@@ -1577,6 +1579,7 @@
 				4B6EF66F1235358D0076B512 /* OFDataArrayTests.m */,
 				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
+				4BF0DD731D44645D001D9949 /* OFHMACTests.m */,
 				4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */,
 				4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */,
 				4BAA60C714D09699006F068D /* OFJSONTests.m */,
@@ -2261,6 +2264,7 @@
 				4BF33AFE133807A20059CEF7 /* OFDataArrayTests.m in Sources */,
 				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
+				4BF0DD741D44645D001D9949 /* OFHMACTests.m in Sources */,
 				4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */,
 				4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */,
 				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
