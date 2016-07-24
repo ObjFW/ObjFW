@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @class OFRIPEMD160Hash OFRIPEMD160Hash.h ObjFW/OFRIPEMD160Hash.h
  *
- * @brief A class which provides functions to create a RIPEMD-160 hash.
+ * @brief A class which provides methods to create a RIPEMD-160 hash.
  */
 @interface OFRIPEMD160Hash: OFObject <OFCryptoHash>
 {

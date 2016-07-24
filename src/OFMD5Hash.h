@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @class OFMD5Hash OFMD5Hash.h ObjFW/OFMD5Hash.h
  *
- * @brief A class which provides functions to create an MD5 hash.
+ * @brief A class which provides methods to create an MD5 hash.
  */
 @interface OFMD5Hash: OFObject <OFCryptoHash>
 {

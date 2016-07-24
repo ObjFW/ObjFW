@@ -39,7 +39,7 @@ typedef struct stat of_stat_t;
 /*!
  * @class OFFile OFFile.h ObjFW/OFFile.h
  *
- * @brief A class which provides functions to read and write files.
+ * @brief A class which provides methods to read and write files.
  */
 @interface OFFile: OFSeekableStream
 {

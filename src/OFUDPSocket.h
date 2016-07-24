@@ -70,7 +70,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
 /*!
  * @class OFUDPSocket OFUDPSocket.h ObjFW/OFUDPSocket.h
  *
- * @brief A class which provides functions to create and use UDP sockets.
+ * @brief A class which provides methods to create and use UDP sockets.
  *
  * Addresses are of type @ref of_udp_socket_address_t. You can use @ref
  * getHost:andPort:forAddress: to create an address for a host / port pair and

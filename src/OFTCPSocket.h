@@ -53,7 +53,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 /*!
  * @class OFTCPSocket OFTCPSocket.h ObjFW/OFTCPSocket.h
  *
- * @brief A class which provides functions to create and use TCP sockets.
+ * @brief A class which provides methods to create and use TCP sockets.
  *
  * To connect to a server, create a socket and connect it.
  * To create a server, create a socket, bind it and listen on it.

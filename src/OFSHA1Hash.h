@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @class OFSHA1Hash OFSHA1Hash.h ObjFW/OFSHA1Hash.h
  *
- * @brief A class which provides functions to create an SHA-1 hash.
+ * @brief A class which provides methods to create an SHA-1 hash.
  */
 @interface OFSHA1Hash: OFObject <OFCryptoHash>
 {
