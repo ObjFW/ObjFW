@@ -208,3 +208,7 @@
     <OFXMLParserDelegate, OFXMLElementBuilderDelegate>
 - (void)XMLParserTests;
 @end
+
+@interface TestsAppDelegate (PBKDF2Tests)
+- (void)PBKDF2Tests;
+@end

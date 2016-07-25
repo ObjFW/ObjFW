@@ -105,6 +105,14 @@ OF_ASSUME_NONNULL_BEGIN
  *	    it yourself before calling @ref reset!
  */
 - (void)reset;
+
+/*!
+ * @brief This is like @ref reset, but also zeroes the hashed key and all state.
+ *
+ * @warning After calling this, you *must* set a new key before reusing the
+ *	    HMAC!
+ */
+- (void)zero;
 @end
 
 OF_ASSUME_NONNULL_END

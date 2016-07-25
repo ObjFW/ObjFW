@@ -145,4 +145,15 @@
 
 	_calculated = false;
 }
+
+- (void)zero
+{
+	[_outerHash release];
+	[_innerHash release];
+	[_outerHashCopy release];
+	[_innerHashCopy release];
+	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
+
+	_calculated = false;
+}
 @end
