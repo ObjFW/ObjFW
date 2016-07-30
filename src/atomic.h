@@ -972,7 +972,7 @@ of_memory_barrier(void)
 {
 #if !defined(OF_HAVE_THREADS)
 	/* nop */
-#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
+#elif defined(OF_X86_64_ASM)
 	__asm__ __volatile__ (
 	    "mfence" ::: "memory"
 	);
