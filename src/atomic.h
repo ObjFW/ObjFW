@@ -971,13 +971,18 @@ static OF_INLINE void
 of_memory_barrier(void)
 {
 #if !defined(OF_HAVE_THREADS)
+	/* nop */
 #elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	__asm__ __volatile__ (
-	    "mfence"
+	    "mfence" ::: "memory"
 	);
 #elif defined(OF_POWERPC_ASM)
 	__asm__ __volatile__ (
-	    "sync"
+	    "sync" ::: "memory"
+	);
+#elif defined(OF_ARMV7_ASM) || defined(OF_ARM64_ASM)
+	__asm__ __volatile__ (
+	    "dmb" ::: "memory"
 	);
 #elif defined(OF_HAVE_GCC_ATOMIC_OPS)
 	__sync_synchronize();
@@ -989,29 +994,15 @@ of_memory_barrier(void)
 }
 
 static OF_INLINE void
-of_memory_read_barrier(void)
+of_memory_enter_barrier(void)
 {
-#if !defined(OF_HAVE_THREADS)
-#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
-	__asm__ __volatile__ (
-	    "lfence"
-	);
-#else
 	of_memory_barrier();
-#endif
 }
 
 static OF_INLINE void
-of_memory_write_barrier(void)
+of_memory_leave_barrier(void)
 {
-#if !defined(OF_HAVE_THREADS)
-#elif defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
-	__asm__ __volatile__ (
-	    "sfence"
-	);
-#else
 	of_memory_barrier();
-#endif
 }
 
 OF_ASSUME_NONNULL_END
