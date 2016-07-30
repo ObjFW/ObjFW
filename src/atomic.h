@@ -71,7 +71,7 @@ of_atomic_int_add(volatile int *_Nonnull p, int i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicAdd32Barrier(i, p);
+	return OSAtomicAdd32(i, p);
 #else
 # error of_atomic_int_add not implemented!
 #endif
@@ -107,7 +107,7 @@ of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicAdd32Barrier(i, p);
+	return OSAtomicAdd32(i, p);
 #else
 # error of_atomic_int32_add not implemented!
 #endif
@@ -154,9 +154,9 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	return (void*)i;
 #elif defined(OF_HAVE_OSATOMIC)
 # ifdef __LP64__
-	return (void*)OSAtomicAdd64Barrier(i, (int64_t*)p);
+	return (void*)OSAtomicAdd64(i, (int64_t*)p);
 # else
-	return (void*)OSAtomicAdd32Barrier(i, (int32_t*)p);
+	return (void*)OSAtomicAdd32(i, (int32_t*)p);
 # endif
 #else
 # error of_atomic_ptr_add not implemented!
@@ -208,7 +208,7 @@ of_atomic_int_sub(volatile int *_Nonnull p, int i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicAdd32Barrier(-i, p);
+	return OSAtomicAdd32(-i, p);
 #else
 # error of_atomic_int_sub not implemented!
 #endif
@@ -245,7 +245,7 @@ of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicAdd32Barrier(-i, p);
+	return OSAtomicAdd32(-i, p);
 #else
 # error of_atomic_int32_sub not implemented!
 #endif
@@ -294,9 +294,9 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	return (void*)i;
 #elif defined(OF_HAVE_OSATOMIC)
 # ifdef __LP64__
-	return (void*)OSAtomicAdd64Barrier(-i, (int64_t*)p);
+	return (void*)OSAtomicAdd64(-i, (int64_t*)p);
 # else
-	return (void*)OSAtomicAdd32Barrier(-i, (int32_t*)p);
+	return (void*)OSAtomicAdd32(-i, (int32_t*)p);
 # endif
 #else
 # error of_atomic_ptr_sub not implemented!
@@ -354,7 +354,7 @@ of_atomic_int_inc(volatile int *_Nonnull p)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicIncrement32Barrier(p);
+	return OSAtomicIncrement32(p);
 #else
 # error of_atomic_int_inc not implemented!
 #endif
@@ -396,7 +396,7 @@ of_atomic_int32_inc(volatile int32_t *_Nonnull p)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicIncrement32Barrier(p);
+	return OSAtomicIncrement32(p);
 #else
 # error of_atomic_int32_inc not implemented!
 #endif
@@ -453,7 +453,7 @@ of_atomic_int_dec(volatile int *_Nonnull p)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicDecrement32Barrier(p);
+	return OSAtomicDecrement32(p);
 #else
 # error of_atomic_int_dec not implemented!
 #endif
@@ -495,7 +495,7 @@ of_atomic_int32_dec(volatile int32_t *_Nonnull p)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicDecrement32Barrier(p);
+	return OSAtomicDecrement32(p);
 #else
 # error of_atomic_int32_dec not implemented!
 #endif
@@ -554,7 +554,7 @@ of_atomic_int_or(volatile unsigned int *_Nonnull p, unsigned int i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicOr32Barrier(i, p);
+	return OSAtomicOr32(i, p);
 #else
 # error of_atomic_int_or not implemented!
 #endif
@@ -595,7 +595,7 @@ of_atomic_int32_or(volatile uint32_t *_Nonnull p, uint32_t i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicOr32Barrier(i, p);
+	return OSAtomicOr32(i, p);
 #else
 # error of_atomic_int32_or not implemented!
 #endif
@@ -654,7 +654,7 @@ of_atomic_int_and(volatile unsigned int *_Nonnull p, unsigned int i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicAnd32Barrier(i, p);
+	return OSAtomicAnd32(i, p);
 #else
 # error of_atomic_int_and not implemented!
 #endif
@@ -695,7 +695,7 @@ of_atomic_int32_and(volatile uint32_t *_Nonnull p, uint32_t i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicAnd32Barrier(i, p);
+	return OSAtomicAnd32(i, p);
 #else
 # error of_atomic_int32_and not implemented!
 #endif
@@ -754,7 +754,7 @@ of_atomic_int_xor(volatile unsigned int *_Nonnull p, unsigned int i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicXor32Barrier(i, p);
+	return OSAtomicXor32(i, p);
 #else
 # error of_atomic_int_xor not implemented!
 #endif
@@ -795,7 +795,7 @@ of_atomic_int32_xor(volatile uint32_t *_Nonnull p, uint32_t i)
 
 	return i;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicXor32Barrier(i, p);
+	return OSAtomicXor32(i, p);
 #else
 # error of_atomic_int32_xor not implemented!
 #endif
@@ -850,7 +850,7 @@ of_atomic_int_cmpswap(volatile int *_Nonnull p, int o, int n)
 
 	return r;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicCompareAndSwapIntBarrier(o, n, p);
+	return OSAtomicCompareAndSwapInt(o, n, p);
 #else
 # error of_atomic_int_cmpswap not implemented!
 #endif
@@ -905,7 +905,7 @@ of_atomic_int32_cmpswap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 
 	return r;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicCompareAndSwap32Barrier(o, n, p);
+	return OSAtomicCompareAndSwap32(o, n, p);
 #else
 # error of_atomic_int32_cmpswap not implemented!
 #endif
@@ -961,7 +961,7 @@ of_atomic_ptr_cmpswap(void *volatile _Nullable *_Nonnull p,
 
 	return r;
 #elif defined(OF_HAVE_OSATOMIC)
-	return OSAtomicCompareAndSwapPtrBarrier(o, n, p);
+	return OSAtomicCompareAndSwapPtr(o, n, p);
 #else
 # error of_atomic_ptr_cmpswap not implemented!
 #endif
