@@ -38,7 +38,7 @@
 # define __builtin_eh_return_data_regno(i) (i)
 #elif defined(HAVE_SEH_EXCEPTIONS)
 # define PERSONALITY	 gnu_objc_personality
-# define CXX_PERSONALITY __gxx_personality_seh0
+# define CXX_PERSONALITY __gxx_personality_v0
 #else
 # error Unknown exception type!
 #endif
@@ -568,7 +568,7 @@ PERSONALITY_FUNC(PERSONALITY)
 		switch (ex_class) {
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
-			if (__gxx_personality_v0 != NULL)
+			if (CXX_PERSONALITY != NULL)
 				return CALL_PERSONALITY(CXX_PERSONALITY);
 			break;
 		}
