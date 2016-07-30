@@ -183,7 +183,12 @@ static OF_INLINE bool
 of_spinlock_trylock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	return of_atomic_int_cmpswap(spinlock, 0, 1);
+	if (of_atomic_int_cmpswap(spinlock, 0, 1)) {
+		of_memory_enter_barrier();
+		return true;
+	}
+
+	return false;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_trylock(spinlock);
 #else
@@ -216,7 +221,11 @@ static OF_INLINE bool
 of_spinlock_unlock(of_spinlock_t *spinlock)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	return of_atomic_int_cmpswap(spinlock, 1, 0);
+	bool ret = of_atomic_int_cmpswap(spinlock, 1, 0);
+
+	of_memory_leave_barrier();
+
+	return ret;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
 	return !pthread_spin_unlock(spinlock);
 #else
