@@ -28,6 +28,8 @@
 # import "atomic_x86.h"
 #elif defined(OF_POWERPC_ASM)
 # import "atomic_powerpc.h"
+#elif defined(OF_HAVE_ATOMIC_BUILTINS)
+# import "atomic_builtins.h"
 #elif defined(OF_HAVE_SYNC_BUILTINS)
 # import "atomic_sync_builtins.h"
 #elif defined(OF_HAVE_OSATOMIC)

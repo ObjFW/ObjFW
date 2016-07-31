@@ -748,6 +748,27 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		AC_MSG_RESULT(no)
 	])
 
+	AC_MSG_CHECKING(whether __atomic_* works)
+	AC_TRY_LINK([
+		#include <stdbool.h>
+		#include <stdint.h>
+	], [
+		int32_t i, j;
+		if (__atomic_add_fetch(&i, 1, __ATOMIC_RELAXED))
+			j = __atomic_sub_fetch(&i, 1, __ATOMIC_RELAXED);
+		while (!__atomic_compare_exchange_n(&i, &j, 1, false,
+		    __ATOMIC_RELAXED, __ATOMIC_RELAXED));
+		__atomic_thread_fence(__ATOMIC_SEQ_CST);
+	], [
+		AC_MSG_RESULT(yes)
+		test x"$atomic_ops" = x"none" && \
+			atomic_ops="__atomic_* builtins"
+		AC_DEFINE(OF_HAVE_ATOMIC_BUILTINS, 1,
+			[Whether __atomic_* builtins are available])
+	], [
+		AC_MSG_RESULT(no)
+	])
+
 	AC_MSG_CHECKING(whether __sync_* works)
 	AC_TRY_LINK([#include <stdint.h>], [
 		int32_t i, j;
