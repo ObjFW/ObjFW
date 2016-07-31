@@ -968,7 +968,7 @@ of_atomic_ptr_cmpswap(void *volatile _Nullable *_Nonnull p,
 }
 
 static OF_INLINE void
-of_memory_barrier(void)
+of_memory_barrier_sync(void)
 {
 #if !defined(OF_HAVE_THREADS)
 	/* nop */
@@ -994,15 +994,35 @@ of_memory_barrier(void)
 }
 
 static OF_INLINE void
-of_memory_enter_barrier(void)
+of_memory_barrier_enter(void)
 {
-	of_memory_barrier();
+	of_memory_barrier_sync();
 }
 
 static OF_INLINE void
-of_memory_leave_barrier(void)
+of_memory_barrier_exit(void)
 {
-	of_memory_barrier();
+	of_memory_barrier_sync();
+}
+
+static OF_INLINE void
+of_memory_barrier_producer(void)
+{
+#if defined(OF_X86_64_ASM)
+	__asm__ __volatile__ ("sfence" ::: "memory");
+#else
+	of_memory_barrier_sync();
+#endif
+}
+
+static OF_INLINE void
+of_memory_barrier_consumer(void)
+{
+#if defined(OF_X86_64_ASM)
+	__asm__ __volatile__ ("lfence" ::: "memory");
+#else
+	of_memory_barrier_sync();
+#endif
 }
 
 OF_ASSUME_NONNULL_END
