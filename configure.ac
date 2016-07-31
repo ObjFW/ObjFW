@@ -798,7 +798,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 AC_MSG_CHECKING(for atomic operations)
 AS_IF([test x"$atomic_ops" != x"none"], [
 	AC_DEFINE(OF_HAVE_ATOMIC_OPS, 1, [Whether we have atomic operations])
-	AC_SUBST(ATOMIC_H, "atomic.h")
+	AC_SUBST(USE_INCLUDES_ATOMIC, '${INCLUDES_ATOMIC}')
 ])
 AC_MSG_RESULT($atomic_ops)
 

@@ -115,6 +115,13 @@ SRCS_THREADS = OFCondition.m		\
 	       OFThreadPool.m		\
 	       threading.m
 
+INCLUDES_ATOMIC = atomic.h			\
+		  atomic_builtins.h		\
+		  atomic_no_threads.h		\
+		  atomic_osatomic.h		\
+		  atomic_powerpc.h		\
+		  atomic_sync_builtins.h	\
+		  atomic_x86.h
 INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFCryptoHash.h			\
@@ -126,12 +133,12 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFTLSSocket.h			\
 	    ObjFW.h				\
 	    autorelease.h			\
-	    ${ATOMIC_H}				\
 	    block.h				\
 	    instance.h				\
 	    macros.h				\
 	    objfw-defs.h			\
-	    platform.h
+	    platform.h				\
+	    ${USE_INCLUDES_ATOMIC}
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
