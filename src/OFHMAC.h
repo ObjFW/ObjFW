@@ -38,19 +38,19 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns a new OFHMAC with the specified hashing algorithm.
  *
- * @param class The class of the hashing algorithm
+ * @param hashClass The class of the hashing algorithm
  * @return A new, autoreleased OFHMAC
  */
-+ (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)class;
++ (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)hashClass;
 
 /*!
  * @brief Initialized an already allocated OFHMAC with the specified hashing
  *	  algorithm.
  *
- * @param class The class of the hashing algorithm
+ * @param hashClass The class of the hashing algorithm
  * @return An initialized OFHMAC
  */
-- initWithHashClass: (Class <OFCryptoHash>)class;
+- initWithHashClass: (Class <OFCryptoHash>)hashClass;
 
 /*!
  * @brief Sets the key for the HMAC.
