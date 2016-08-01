@@ -120,6 +120,12 @@
 		4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
 		4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B187E60163EA4530049A832 /* Foundation.framework */; };
 		4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
+		4B2227A71D4FE23700A41CD3 /* atomic_builtins.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2227A81D4FE23700A41CD3 /* atomic_no_threads.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A21D4FE23700A41CD3 /* atomic_no_threads.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2227A91D4FE23700A41CD3 /* atomic_osatomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A31D4FE23700A41CD3 /* atomic_osatomic.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2227AA1D4FE23700A41CD3 /* atomic_powerpc.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A41D4FE23700A41CD3 /* atomic_powerpc.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2227AB1D4FE23700A41CD3 /* atomic_sync_builtins.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A51D4FE23700A41CD3 /* atomic_sync_builtins.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2227AC1D4FE23700A41CD3 /* atomic_x86.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A61D4FE23700A41CD3 /* atomic_x86.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B22BE201AE594A000CD320A /* OFKernelEventObserverTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */; };
 		4B23CA92133811DC0047A1D9 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
 		4B23CA93133811E20047A1D9 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
@@ -661,6 +667,12 @@
 		4B187E60163EA4530049A832 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
+		4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_builtins.h; path = src/atomic_builtins.h; sourceTree = "<group>"; };
+		4B2227A21D4FE23700A41CD3 /* atomic_no_threads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_no_threads.h; path = src/atomic_no_threads.h; sourceTree = "<group>"; };
+		4B2227A31D4FE23700A41CD3 /* atomic_osatomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_osatomic.h; path = src/atomic_osatomic.h; sourceTree = "<group>"; };
+		4B2227A41D4FE23700A41CD3 /* atomic_powerpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_powerpc.h; path = src/atomic_powerpc.h; sourceTree = "<group>"; };
+		4B2227A51D4FE23700A41CD3 /* atomic_sync_builtins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_sync_builtins.h; path = src/atomic_sync_builtins.h; sourceTree = "<group>"; };
+		4B2227A61D4FE23700A41CD3 /* atomic_x86.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_x86.h; path = src/atomic_x86.h; sourceTree = "<group>"; };
 		4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFKernelEventObserverTests.m; path = tests/OFKernelEventObserverTests.m; sourceTree = "<group>"; };
 		4B23CA8A133811610047A1D9 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B24592619B5397C0059F271 /* OFSHA224Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA224Hash.h; path = src/OFSHA224Hash.h; sourceTree = "<group>"; };
@@ -1541,6 +1553,12 @@
 				4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */,
 				4B6AF97310A8D4450003FB0A /* ObjFW.h */,
 				4BBA36C411406AB700CBA3AC /* atomic.h */,
+				4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */,
+				4B2227A21D4FE23700A41CD3 /* atomic_no_threads.h */,
+				4B2227A31D4FE23700A41CD3 /* atomic_osatomic.h */,
+				4B2227A41D4FE23700A41CD3 /* atomic_powerpc.h */,
+				4B2227A51D4FE23700A41CD3 /* atomic_sync_builtins.h */,
+				4B2227A61D4FE23700A41CD3 /* atomic_x86.h */,
 				4BA9CFA315E129D30076DC74 /* autorelease.h */,
 				4B3D236D1337FB5800DD29B8 /* base64.h */,
 				4B3D236E1337FB5800DD29B8 /* base64.m */,
@@ -1795,6 +1813,12 @@
 				4B8B025917BBA7C7009ED983 /* OFZIPArchiveEntry.h in Headers */,
 				4B3D23E41337FCB000DD29B8 /* ObjFW.h in Headers */,
 				4B3D23E61337FCB000DD29B8 /* atomic.h in Headers */,
+				4B2227A71D4FE23700A41CD3 /* atomic_builtins.h in Headers */,
+				4B2227A81D4FE23700A41CD3 /* atomic_no_threads.h in Headers */,
+				4B2227A91D4FE23700A41CD3 /* atomic_osatomic.h in Headers */,
+				4B2227AA1D4FE23700A41CD3 /* atomic_powerpc.h in Headers */,
+				4B2227AB1D4FE23700A41CD3 /* atomic_sync_builtins.h in Headers */,
+				4B2227AC1D4FE23700A41CD3 /* atomic_x86.h in Headers */,
 				4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */,
 				4B3D23E71337FCB000DD29B8 /* base64.h in Headers */,
 				4B881D3C1CCBFE2600E2F7D8 /* crc32.h in Headers */,
