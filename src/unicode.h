@@ -16,21 +16,21 @@
 
 #import "OFString.h"
 
-#define OF_UNICODE_UPPERCASE_TABLE_SIZE 0x119
-#define OF_UNICODE_LOWERCASE_TABLE_SIZE 0x119
-#define OF_UNICODE_TITLECASE_TABLE_SIZE 0x119
-#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x119
+#define OF_UNICODE_UPPERCASE_TABLE_SIZE 0x1EA
+#define OF_UNICODE_LOWERCASE_TABLE_SIZE 0x1EA
+#define OF_UNICODE_TITLECASE_TABLE_SIZE 0x1EA
+#define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x1EA
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const of_unichar_t* const
+extern const of_unichar_t *const
     of_unicode_uppercase_table[OF_UNICODE_UPPERCASE_TABLE_SIZE];
-extern const of_unichar_t* const
+extern const of_unichar_t *const
     of_unicode_lowercase_table[OF_UNICODE_LOWERCASE_TABLE_SIZE];
-extern const of_unichar_t* const
+extern const of_unichar_t *const
     of_unicode_titlecase_table[OF_UNICODE_TITLECASE_TABLE_SIZE];
-extern const of_unichar_t* const
+extern const of_unichar_t *const
     of_unicode_casefolding_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
 #ifdef __cplusplus
 }

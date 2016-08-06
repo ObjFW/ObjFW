@@ -351,7 +351,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write of_unicode_uppercase_table */
 	[file writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_uppercase_table[0x%X] = "
+	    @"const of_unichar_t *const of_unicode_uppercase_table[0x%X] = "
 	    @"{\n\t", _uppercaseTableSize]];
 
 	for (of_unichar_t i = 0; i < _uppercaseTableSize; i++) {
@@ -373,7 +373,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write of_unicode_lowercase_table */
 	[file writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_lowercase_table[0x%X] = "
+	    @"const of_unichar_t *const of_unicode_lowercase_table[0x%X] = "
 	    @"{\n\t", _lowercaseTableSize]];
 
 	for (of_unichar_t i = 0; i < _lowercaseTableSize; i++) {
@@ -395,7 +395,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write of_unicode_titlecase_table */
 	[file writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_titlecase_table[0x%X] = {"
+	    @"const of_unichar_t *const of_unicode_titlecase_table[0x%X] = {"
 	    @"\n\t", _titlecaseTableSize]];
 
 	for (of_unichar_t i = 0; i < _titlecaseTableSize; i++) {
@@ -420,7 +420,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	/* Write of_unicode_casefolding_table */
 	[file writeString: [OFString stringWithFormat:
-	    @"const of_unichar_t* const of_unicode_casefolding_table[0x%X] = "
+	    @"const of_unichar_t *const of_unicode_casefolding_table[0x%X] = "
 	    @"{\n\t", _casefoldingTableSize]];
 
 	for (of_unichar_t i = 0; i < _casefoldingTableSize; i++) {
@@ -467,16 +467,16 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	    @"#ifdef __cplusplus\n"
 	    @"extern \"C\" {\n"
 	    @"#endif\n"
-	    @"extern const of_unichar_t* const\n"
+	    @"extern const of_unichar_t *const\n"
 	    @"    of_unicode_uppercase_table["
 	    @"OF_UNICODE_UPPERCASE_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t* const\n"
+	    @"extern const of_unichar_t *const\n"
 	    @"    of_unicode_lowercase_table["
 	    @"OF_UNICODE_LOWERCASE_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t* const\n"
+	    @"extern const of_unichar_t *const\n"
 	    @"    of_unicode_titlecase_table["
 	    @"OF_UNICODE_TITLECASE_TABLE_SIZE];\n"
-	    @"extern const of_unichar_t* const\n"
+	    @"extern const of_unichar_t *const\n"
 	    @"    of_unicode_casefolding_table["
 	    @"OF_UNICODE_CASEFOLDING_TABLE_SIZE];\n"
 	    @"#ifdef __cplusplus\n"
