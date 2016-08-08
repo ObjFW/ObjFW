@@ -33,7 +33,7 @@ of_once(of_once_t *control, void (*func)(void))
 	if (of_atomic_int_cmpswap(control, 0, 1)) {
 		func();
 
-		of_memory_barrier();
+		of_memory_barrier_sync();
 
 		of_atomic_int_inc(control);
 	} else
