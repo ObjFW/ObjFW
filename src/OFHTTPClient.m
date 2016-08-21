@@ -618,12 +618,13 @@ normalizeKey(char *str_)
 		newURL = [OFURL URLWithString: redirect
 				relativeToURL: URL];
 
-		if ([_delegate respondsToSelector:
-		    @selector(client:shouldFollowRedirect:statusCode:request:)])
+		if ([_delegate respondsToSelector: @selector(client:
+		    shouldFollowRedirect:statusCode:request:response:)])
 			follow = [_delegate client: self
 			      shouldFollowRedirect: newURL
 					statusCode: status
-					   request: request];
+					   request: request
+					  response: response];
 		else {
 			/*
 			 * 301, 302 and 307 should only redirect with user

@@ -84,12 +84,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL to which it will follow a redirect
  * @param statusCode The status code for the redirection
  * @param request The request for which the OFHTTPClient wants to redirect
+ * @param response The response indicating the redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
 -	  (bool)client: (OFHTTPClient*)client
   shouldFollowRedirect: (OFURL*)URL
 	    statusCode: (int)statusCode
-	       request: (OFHTTPRequest*)request;
+	       request: (OFHTTPRequest*)request
+	      response: (OFHTTPResponse*)response;
 @end
 
 /*!

@@ -326,10 +326,30 @@ help(OFStream *stream, bool full, int status)
   shouldFollowRedirect: (OFURL*)URL
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest*)request
+	      response: (OFHTTPResponse*)response
 {
 	if (!_quiet)
-		[of_stdout writeFormat: @" ➜ %d\n☇ %@",
-					statusCode, [URL string]];
+		[of_stdout writeFormat: @" ➜ %d\n", statusCode];
+
+	if (_verbose) {
+		void *pool = objc_autoreleasePoolPush();
+		OFDictionary OF_GENERIC(OFString*, OFString*) *headers =
+		    [response headers];
+		OFEnumerator *keyEnumerator = [headers keyEnumerator];
+		OFEnumerator *objectEnumerator =
+		    [headers objectEnumerator];
+		OFString *key, *object;
+
+		while ((key = [keyEnumerator nextObject]) != nil &&
+		    (object = [objectEnumerator nextObject]) != nil)
+			[of_stdout writeFormat: @"  %@: %@\n",
+						key, object];
+
+		objc_autoreleasePoolPop(pool);
+	}
+
+	if (!_quiet)
+		[of_stdout writeFormat: @"☇ %@", [URL string]];
 
 	return true;
 }
