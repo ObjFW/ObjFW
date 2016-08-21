@@ -87,15 +87,15 @@
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
 			*tmp2 = tolower((unsigned char)*tmp2);
 
-		_scheme = [[[OFString stringWithUTF8String: UTF8String
-						    length: tmp - UTF8String]
-		    stringByURLDecoding] copy];
+		_scheme = [[OFString alloc]
+		    initWithUTF8String: UTF8String
+				length: tmp - UTF8String];
 
 		UTF8String = tmp + 3;
 
 		if ([_scheme isEqual: @"file"]) {
-			_path = [[[OFString stringWithUTF8String:
-			    UTF8String] stringByURLDecoding] copy];
+			_path = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
 			objc_autoreleasePoolPop(pool);
 			return self;
@@ -116,13 +116,13 @@
 				*tmp3 = '\0';
 				tmp3++;
 
-				_user = [[[OFString stringWithUTF8String:
-				    UTF8String] stringByURLDecoding] copy];
-				_password = [[[OFString stringWithUTF8String:
-				    tmp3] stringByURLDecoding] copy];
+				_user = [[OFString alloc]
+				    initWithUTF8String: UTF8String];
+				_password = [[OFString alloc]
+				    initWithUTF8String: tmp3];
 			} else
-				_user = [[[OFString stringWithUTF8String:
-				    UTF8String] stringByURLDecoding] copy];
+				_user = [[OFString alloc]
+				    initWithUTF8String: UTF8String];
 
 			UTF8String = tmp2;
 		}
@@ -134,8 +134,8 @@
 			*tmp2 = '\0';
 			tmp2++;
 
-			_host = [[[OFString stringWithUTF8String:
-			    UTF8String] stringByURLDecoding] copy];
+			_host = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
 			pool = objc_autoreleasePoolPush();
 			portString = [OFString stringWithUTF8String: tmp2];
@@ -147,8 +147,8 @@
 
 			objc_autoreleasePoolPop(pool);
 		} else {
-			_host = [[[OFString stringWithUTF8String:
-			    UTF8String] stringByURLDecoding] copy];
+			_host = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
 			if ([_scheme isEqual: @"http"])
 				_port = 80;
@@ -162,26 +162,29 @@
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
-				_fragment = [[[OFString stringWithUTF8String:
-				    tmp + 1] stringByURLDecoding] copy];
+				_fragment = [[OFString alloc]
+				    initWithUTF8String: tmp + 1];
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
-				_query = [[[OFString stringWithUTF8String:
-				    tmp + 1] stringByURLDecoding] copy];
+				_query = [[OFString alloc]
+				    initWithUTF8String: tmp + 1];
 			}
 
 			if ((tmp = strchr(UTF8String, ';')) != NULL) {
 				*tmp = '\0';
 
-				_parameters = [[[OFString stringWithUTF8String:
-				    tmp + 1] stringByURLDecoding] copy];
+				_parameters = [[OFString alloc]
+				    initWithUTF8String: tmp + 1];
 			}
 
-			_path = [[[OFString stringWithUTF8String:
-			    UTF8String] stringByURLDecoding] copy];
+			UTF8String--;
+			*UTF8String = '/';
+
+			_path = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -224,30 +227,29 @@
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			_fragment = [[[OFString stringWithUTF8String:
-			    tmp + 1] stringByURLDecoding] copy];
+			_fragment = [[OFString alloc]
+			    initWithUTF8String: tmp + 1];
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			_query = [[[OFString stringWithUTF8String:
-			    tmp + 1] stringByURLDecoding] copy];
+			_query = [[OFString alloc]
+			    initWithUTF8String: tmp + 1];
 		}
 
 		if ((tmp = strchr(UTF8String, ';')) != NULL) {
 			*tmp = '\0';
-			_parameters = [[[OFString stringWithUTF8String:
-			    tmp + 1] stringByURLDecoding] copy];
+			_parameters = [[OFString alloc]
+			    initWithUTF8String: tmp + 1];
 		}
 
 		if (*UTF8String == '/')
-			_path = [[[OFString stringWithUTF8String:
-			    UTF8String + 1] stringByURLDecoding] copy];
+			_path = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 		else {
 			OFString *path, *s;
 
-			path = [[[OFString stringWithUTF8String:
-			    UTF8String] stringByURLDecoding] copy];
+			path = [OFString stringWithUTF8String: UTF8String];
 
 			if ([URL->_path hasSuffix: @"/"])
 				s = [URL->_path stringByAppendingString: path];
@@ -388,44 +390,44 @@
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
 
-	[ret appendFormat: @"%@://", [_scheme stringByURLEncoding]];
+	[ret appendFormat: @"%@://", _scheme];
 
 	if ([_scheme isEqual: @"file"]) {
 		if (_path != nil)
-			[ret appendString: [_path
-			    stringByURLEncodingWithIgnoredCharacters: "/"]];
+			[ret appendString: _path];
 
 		objc_autoreleasePoolPop(pool);
 		return ret;
 	}
 
 	if (_user != nil && _password != nil)
-		[ret appendFormat: @"%@:%@@",
-				   [_user stringByURLEncoding],
-				   [_password stringByURLEncoding]];
+		[ret appendFormat: @"%@:%@@", _user, _password];
 	else if (_user != nil)
-		[ret appendFormat: @"%@@", [_user stringByURLEncoding]];
+		[ret appendFormat: @"%@@", _user];
 
 	if (_host != nil)
-		[ret appendString: [_host stringByURLEncoding]];
+		[ret appendString: _host];
 
 	if (!(([_scheme isEqual: @"http"] && _port == 80) ||
 	    ([_scheme isEqual: @"https"] && _port == 443) ||
 	    ([_scheme isEqual: @"ftp"] && _port == 21)))
 		[ret appendFormat: @":%u", _port];
 
-	if (_path != nil)
-		[ret appendFormat: @"/%@",
-		    [_path stringByURLEncodingWithIgnoredCharacters: "/"]];
+	if (_path != nil) {
+		if (![_path hasPrefix: @"/"])
+			@throw [OFInvalidFormatException exception];
+
+		[ret appendString: _path];
+	}
 
 	if (_parameters != nil)
-		[ret appendFormat: @";%@", [_parameters stringByURLEncoding]];
+		[ret appendFormat: @";%@", _parameters];
 
 	if (_query != nil)
-		[ret appendFormat: @"?%@", [_query stringByURLEncoding]];
+		[ret appendFormat: @"?%@", _query];
 
 	if (_fragment != nil)
-		[ret appendFormat: @"#%@", [_fragment stringByURLEncoding]];
+		[ret appendFormat: @"#%@", _fragment];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -31,10 +31,10 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString*)stringByURLEncoding
 {
-	return [self stringByURLEncodingWithIgnoredCharacters: ""];
+	return [self stringByURLEncodingWithAllowedCharacters: "$-_.!*()"];
 }
 
-- (OFString*)stringByURLEncodingWithIgnoredCharacters: (const char*)ignored
+- (OFString*)stringByURLEncodingWithAllowedCharacters: (const char*)allowed
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *string = [self UTF8String];
@@ -59,9 +59,7 @@ int _OFString_URLEncoding_reference;
 		 * interpreted as space in HTTP. Therefore always escape it to
 		 * make sure it's always interpreted correctly.
 		 */
-		if (!(c & 0x80) && (isalnum(c) || c == '$' || c == '-' ||
-		    c == '_' || c == '.' || c == '!' || c == '*' || c == '(' ||
-		    c == ')' || c == ',' || strchr(ignored, c) != NULL))
+		if (!(c & 0x80) && (isalnum(c) || strchr(allowed, c) != NULL))
 			retCString[i++] = c;
 		else {
 			unsigned char high, low;
