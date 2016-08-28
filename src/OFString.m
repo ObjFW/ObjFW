@@ -1360,6 +1360,7 @@ static struct {
 		of_unichar_t c = characters[i];
 		of_unichar_t oc = otherCharacters[i];
 
+#ifdef OF_HAVE_UNICODE_TABLES
 		if (c >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
 			of_unichar_t tc =
 			    of_unicode_casefolding_table[c >> 8][c & 0xFF];
@@ -1367,7 +1368,6 @@ static struct {
 			if (tc)
 				c = tc;
 		}
-
 		if (oc >> 8 < OF_UNICODE_CASEFOLDING_TABLE_SIZE) {
 			of_unichar_t tc =
 			    of_unicode_casefolding_table[oc >> 8][oc & 0xFF];
@@ -1375,6 +1375,12 @@ static struct {
 			if (tc)
 				oc = tc;
 		}
+#else
+		if (c <= 0x7F)
+			c = toupper(c);
+		if (oc <= 0x7F)
+			oc = toupper(oc);
+#endif
 
 		if (c > oc) {
 			objc_autoreleasePoolPop(pool);

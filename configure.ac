@@ -572,6 +572,14 @@ mingw*)
 	;;
 esac
 
+AC_ARG_ENABLE(unicode-tables,
+	AS_HELP_STRING([--disable-unicode-tables], [Disable Unicode tables]))
+AS_IF([test x"$enable_unicode_tables" != x"no"], [
+	AC_DEFINE(OF_HAVE_UNICODE_TABLES, 1,
+		[Whether to build with Unicode tables])
+	AC_SUBST(UNICODE_M, "unicode.m")
+])
+
 AC_CHECK_FUNCS(sigaction)
 
 AC_CHECK_FUNCS([arc4random random], break)

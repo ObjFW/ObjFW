@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <ctype.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,21 @@
 static struct {
 	Class isa;
 } placeholder;
+
+#ifndef OF_HAVE_UNICODE_TABLES
+/* Wrap these, as they can be macros. */
+static int
+toupperWrapper(int c)
+{
+	return toupper(c);
+}
+
+static int
+tolowerWrapper(int c)
+{
+	return tolower(c);
+}
+#endif
 
 @interface OFMutableString_placeholder: OFMutableString
 @end
@@ -240,6 +256,7 @@ static struct {
 	return [super alloc];
 }
 
+#ifdef OF_HAVE_UNICODE_TABLES
 - (void)OF_convertWithWordStartTable: (const of_unichar_t *const[])startTable
 		     wordMiddleTable: (const of_unichar_t *const[])middleTable
 		  wordStartTableSize: (size_t)startTableSize
@@ -282,6 +299,40 @@ static struct {
 
 	objc_autoreleasePoolPop(pool);
 }
+#else
+- (void)OF_convertWithWordStartFunction: (int (*)(int))startFunction
+		     wordMiddleFunction: (int (*)(int))middleFunction
+{
+	void *pool = objc_autoreleasePoolPush();
+	const of_unichar_t *characters = [self characters];
+	size_t length = [self length];
+	bool isStart = true;
+
+	for (size_t i = 0; i < length; i++) {
+		int (*function)(int) =
+		    (isStart ? startFunction : middleFunction);;
+		of_unichar_t c = characters[i];
+
+		if (c <= 0x7F)
+			[self setCharacter: (int)function(c)
+				   atIndex: i];
+
+		switch (c) {
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\r':
+			isStart = true;
+			break;
+		default:
+			isStart = false;
+			break;
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+#endif
 
 - (void)setCharacter: (of_unichar_t)character
 	     atIndex: (size_t)index
@@ -409,6 +460,7 @@ static struct {
 	}
 }
 
+#ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
 	[self OF_convertWithWordStartTable: of_unicode_uppercase_table
@@ -432,6 +484,25 @@ static struct {
 			wordStartTableSize: OF_UNICODE_TITLECASE_TABLE_SIZE
 		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
 }
+#else
+- (void)uppercase
+{
+	[self OF_convertWithWordStartFunction: toupperWrapper
+			   wordMiddleFunction: toupperWrapper];
+}
+
+- (void)lowercase
+{
+	[self OF_convertWithWordStartFunction: tolowerWrapper
+			   wordMiddleFunction: tolowerWrapper];
+}
+
+- (void)capitalize
+{
+	[self OF_convertWithWordStartFunction: toupperWrapper
+			   wordMiddleFunction: tolowerWrapper];
+}
+#endif
 
 - (void)insertString: (OFString*)string
 	     atIndex: (size_t)index

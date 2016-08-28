@@ -46,11 +46,17 @@ static inline int
 memcasecmp(const char *first, const char *second, size_t length)
 {
 	for (size_t i = 0; i < length; i++) {
-		if (tolower((unsigned char)first[i]) >
-		    tolower((unsigned char)second[i]))
+		unsigned char f = first[i];
+		unsigned char s = second[i];
+
+		if (f <= 0x7F)
+			f = toupper(f);
+		if (s <= 0x7F)
+			s = toupper(s);
+
+		if (f > s)
 			return OF_ORDERED_DESCENDING;
-		if (tolower((unsigned char)first[i]) <
-		    tolower((unsigned char)second[i]))
+		if (f < s)
 			return OF_ORDERED_ASCENDING;
 	}
 
@@ -787,7 +793,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	otherCString = [otherString UTF8String];
 	otherCStringLength = [otherString UTF8StringLength];
 
+#ifdef OF_HAVE_UNICODE_TABLES
 	if (!_s->isUTF8) {
+#endif
 		minimumCStringLength = (_s->cStringLength > otherCStringLength
 		    ? otherCStringLength : _s->cStringLength);
 
@@ -804,6 +812,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			return OF_ORDERED_DESCENDING;
 		else
 			return OF_ORDERED_ASCENDING;
+#ifdef OF_HAVE_UNICODE_TABLES
 	}
 
 	i = j = 0;
@@ -844,6 +853,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		i += l1;
 		j += l2;
 	}
+#endif
 
 	if (_s->cStringLength - i > otherCStringLength - j)
 		return OF_ORDERED_DESCENDING;

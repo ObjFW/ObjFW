@@ -88,7 +88,7 @@ SRCS = OFApplication.m			\
        of_asprintf.m			\
        of_strptime.m			\
        pbkdf2.m				\
-       unicode.m			\
+       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\

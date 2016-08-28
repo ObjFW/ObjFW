@@ -99,6 +99,7 @@ static uint16_t sutf16str[] = {
 	    [@"€" compare: @"ß"] == OF_ORDERED_DESCENDING &&
 	    [@"aa" compare: @"z"] == OF_ORDERED_ASCENDING)
 
+#ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[caseInsensitiveCompare:]",
 	    [@"a" caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
 	    [@"Ä" caseInsensitiveCompare: @"ä"] == OF_ORDERED_SAME &&
@@ -108,6 +109,13 @@ static uint16_t sutf16str[] = {
 	    [@"AA" caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
 	    [[OFString stringWithUTF8String: "ABC"] caseInsensitiveCompare:
 	    [OFString stringWithUTF8String: "AbD"]] == [@"abc" compare: @"abd"])
+#else
+	TEST(@"-[caseInsensitiveCompare:]",
+	    [@"a" caseInsensitiveCompare: @"A"] == OF_ORDERED_SAME &&
+	    [@"AA" caseInsensitiveCompare: @"z"] == OF_ORDERED_ASCENDING &&
+	    [[OFString stringWithUTF8String: "ABC"] caseInsensitiveCompare:
+	    [OFString stringWithUTF8String: "AbD"]] == [@"abc" compare: @"abd"])
+#endif
 
 	TEST(@"-[hash] is the same if -[isEqual:] is true",
 	    [s[0] hash] == [s[2] hash])
@@ -138,6 +146,7 @@ static uint16_t sutf16str[] = {
 
 	s[1] = [OFMutableString stringWithString: @"abc"];
 
+#ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[uppercase]", R([s[0] uppercase]) &&
 	    [s[0] isEqual: @"3𝄞1€SÄT"] &&
 	    R([s[1] uppercase]) && [s[1] isEqual: @"ABC"])
@@ -154,6 +163,24 @@ static uint16_t sutf16str[] = {
 
 	TEST(@"-[capitalizedString]", [[@"ǆbla tǆst TǄST" capitalizedString]
 	    isEqual: @"ǅbla Tǆst Tǆst"])
+#else
+	TEST(@"-[uppercase]", R([s[0] uppercase]) &&
+	    [s[0] isEqual: @"3𝄞1€SäT"] &&
+	    R([s[1] uppercase]) && [s[1] isEqual: @"ABC"])
+
+	TEST(@"-[lowercase]", R([s[0] lowercase]) &&
+	    [s[0] isEqual: @"3𝄞1€sät"] &&
+	    R([s[1] lowercase]) && [s[1] isEqual: @"abc"])
+
+	TEST(@"-[uppercaseString]",
+	    [[s[0] uppercaseString] isEqual: @"3𝄞1€SäT"])
+
+	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
+	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
+
+	TEST(@"-[capitalizedString]", [[@"ǆbla tǆst TǄST" capitalizedString]
+	    isEqual: @"ǆbla Tǆst TǄst"])
+#endif
 
 	TEST(@"+[stringWithUTF8String:length:]",
 	    (s[0] = [OFMutableString stringWithUTF8String: "\xEF\xBB\xBF"
