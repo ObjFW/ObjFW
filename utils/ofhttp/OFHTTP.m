@@ -55,7 +55,7 @@
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath;
-	bool _continue, _detectFileName, _quiet, _verbose;
+	bool _continue, _force, _detectFileName, _quiet, _verbose;
 	OFDataArray *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -83,6 +83,8 @@ help(OFStream *stream, bool full, int status)
 		    @"  Specify the file to send as body\n    "
 		    @"-c  --continue       "
 		    @"  Continue download of existing file\n    "
+		    @"-f  --force          "
+		    @"  Force / overwrite existing file\n    "
 		    @"-h  --help           "
 		    @"  Show this help\n    "
 		    @"-H  --header         "
@@ -227,6 +229,7 @@ help(OFStream *stream, bool full, int status)
 	const of_options_parser_option_t options[] = {
 		{ 'b', @"body",	1, NULL, NULL },
 		{ 'c', @"continue", 0, &_continue, NULL },
+		{ 'f', @"force", 0, &_force, NULL },
 		{ 'h', @"help",	0, NULL, NULL },
 		{ 'H', @"header", 1, NULL, NULL },
 		{ 'm', @"method", 1, NULL, NULL },
@@ -752,7 +755,8 @@ next:
 	if ([_outputPath isEqual: @"-"])
 		_output = of_stdout;
 	else {
-		if (!_continue && [fileManager fileExistsAtPath: fileName]) {
+		if (!_continue && !_force &&
+		    [fileManager fileExistsAtPath: fileName]) {
 			[of_stderr writeFormat:
 			    @"%@: File %@ already exists!\n",
 			    [OFApplication programName], fileName];
