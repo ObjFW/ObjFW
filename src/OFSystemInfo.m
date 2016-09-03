@@ -41,7 +41,11 @@
 #import "OFNotImplementedException.h"
 
 #if defined(OF_MAC_OS_X)
-# include <NSSystemDirectories.h>
+# ifdef HAVE_SYSDIR_H
+#  include <sysdir.h>
+# else
+#  include <NSSystemDirectories.h>
+# endif
 #endif
 #ifdef OF_WINDOWS
 # include <windows.h>
@@ -151,15 +155,26 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #if defined(OF_MAC_OS_X)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
-	NSSearchPathEnumerationState state;
 	OFMutableString *path;
 	OFString *home;
+
+# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+	sysdir_search_path_enumeration_state state;
+
+	state = sysdir_start_search_path_enumeration(
+	    SYSDIR_DIRECTORY_APPLICATION_SUPPORT, SYSDIR_DOMAIN_MASK_USER);
+	if (sysdir_get_next_search_path_enumeration(state, pathC) == 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+# else
+	NSSearchPathEnumerationState state;
 
 	state = NSStartSearchPathEnumeration(NSApplicationSupportDirectory,
 	    NSUserDomainMask);
 	if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
+# endif
 
 	path = [OFMutableString stringWithUTF8String: pathC];
 	if ([path hasPrefix: @"~"]) {
@@ -231,15 +246,26 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #if defined(OF_MAC_OS_X)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
-	NSSearchPathEnumerationState state;
 	OFMutableString *path;
 	OFString *home;
+
+# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+	sysdir_search_path_enumeration_state state;
+
+	state = sysdir_start_search_path_enumeration(
+	    SYSDIR_DIRECTORY_LIBRARY, SYSDIR_DOMAIN_MASK_USER);
+	if (sysdir_get_next_search_path_enumeration(state, pathC) == 0)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+# else
+	NSSearchPathEnumerationState state;
 
 	state = NSStartSearchPathEnumeration(NSLibraryDirectory,
 	    NSUserDomainMask);
 	if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
+# endif
 
 	path = [OFMutableString stringWithUTF8String: pathC];
 	if ([path hasPrefix: @"~"]) {

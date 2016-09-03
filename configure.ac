@@ -407,6 +407,7 @@ case "$host_os" in
 		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 			AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
 		])
+
 		AS_IF([test x"$objc_runtime" = x"ObjFW runtime"], [
 			AS_IF([test x"$exception_type" = x"DWARF"], [
 				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_v0"
@@ -415,6 +416,9 @@ case "$host_os" in
 				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
 			])
 		])
+
+		AC_CHECK_HEADERS(sysdir.h)
+		AC_CHECK_FUNCS(sysdir_start_search_path_enumeration)
 		;;
 esac
 
