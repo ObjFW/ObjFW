@@ -431,7 +431,7 @@ _references_to_categories_of_OFDataArray(void)
 - (void)addItems: (const void*)items
 	   count: (size_t)count
 {
-	if (count > SIZE_MAX - count)
+	if (count > SIZE_MAX - _count)
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
