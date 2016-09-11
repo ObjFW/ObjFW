@@ -22,6 +22,8 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidFormatException.h"
+
 #import "of_strptime.h"
 
 #import "TestsAppDelegate.h"
@@ -57,6 +59,11 @@ static OFString *module = @"OFDate";
 				  format: @"%Y-%m-%dT%H:%M:%S%z"] description]
 	    isEqual: @"2000-06-20T10:34:56Z"]);
 
+	EXPECT_EXCEPTION(@"Detection of unparsed in "
+	    @"+[dateWithDateString:format:]", OFInvalidFormatException,
+	    [OFDate dateWithDateString: @"2000-06-20T12:34:56+0200x"
+				format: @"%Y-%m-%dT%H:%M:%S%z"])
+
 	/*
 	 * We can only test local dates that specify a time zone, as the local
 	 * time zone differs between systems.
@@ -65,6 +72,11 @@ static OFString *module = @"OFDate";
 	    [[[OFDate dateWithLocalDateString: @"2000-06-20T12:34:56-0200"
 				       format: @"%Y-%m-%dT%H:%M:%S%z"]
 	    description] isEqual: @"2000-06-20T14:34:56Z"]);
+
+	EXPECT_EXCEPTION(@"Detection of unparsed in "
+	    @"+[dateWithLocalDateString:format:]", OFInvalidFormatException,
+	    [OFDate dateWithLocalDateString: @"2000-06-20T12:34:56+0200x"
+				     format: @"%Y-%m-%dT%H:%M:%S%z"])
 
 	TEST(@"-[isEqual:]",
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&

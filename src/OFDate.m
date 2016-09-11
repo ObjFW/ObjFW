@@ -270,13 +270,14 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	self = [super init];
 
 	@try {
+		const char *UTF8String = [string UTF8String];
 		struct tm tm = { 0 };
 		int16_t tz = 0;
 
 		tm.tm_isdst = -1;
 
-		if (of_strptime([string UTF8String], [format UTF8String],
-		    &tm, &tz) == NULL)
+		if (of_strptime(UTF8String, [format UTF8String],
+		    &tm, &tz) != UTF8String + [string UTF8StringLength])
 			@throw [OFInvalidFormatException exception];
 
 		_seconds = tmAndTzToTime(&tm, &tz);
@@ -294,6 +295,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	self = [super init];
 
 	@try {
+		const char *UTF8String = [string UTF8String];
 		struct tm tm = { 0 };
 		/*
 		 * of_strptime() can never set this to INT16_MAX, no matter
@@ -304,8 +306,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 		tm.tm_isdst = -1;
 
-		if (of_strptime([string UTF8String], [format UTF8String],
-		    &tm, &tz) == NULL)
+		if (of_strptime(UTF8String, [format UTF8String],
+		    &tm, &tz) != UTF8String + [string UTF8StringLength])
 			@throw [OFInvalidFormatException exception];
 
 		if (tz == INT16_MAX) {
