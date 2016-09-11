@@ -16,9 +16,13 @@
 
 #include "config.h"
 
+#include <time.h>
+
 #import "OFDate.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
+
+#import "of_strptime.h"
 
 #import "TestsAppDelegate.h"
 
@@ -29,6 +33,14 @@ static OFString *module = @"OFDate";
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFDate *d1, *d2;
+
+	struct tm tm;
+	int16_t tz;
+	const char *dstr = "Wed, 09 Jun 2021 +0200x";
+	TEST(@"of_strptime()",
+	    of_strptime(dstr, "%a, %d %b %Y %z", &tm, &tz) == dstr + 22 &&
+	    tm.tm_wday == 3 && tm.tm_mday == 9 && tm.tm_mon == 6 &&
+	    tm.tm_year == 2021 - 1900 && tz == 2 * 60)
 
 	TEST(@"+[dateWithTimeIntervalSince1970:]",
 	    (d1 = [OFDate dateWithTimeIntervalSince1970: 0]))
@@ -41,9 +53,18 @@ static OFString *module = @"OFDate";
 	    [[d2 description] isEqual: @"1970-01-02T01:00:05Z"])
 
 	TEST(@"+[dateWithDateString:format:]",
-	    [[[OFDate dateWithDateString: @"2000-06-20T12:34:56Z"
-				  format: @"%Y-%m-%dT%H:%M:%SZ"] description]
-	    isEqual: @"2000-06-20T12:34:56Z"]);
+	    [[[OFDate dateWithDateString: @"2000-06-20T12:34:56+0200"
+				  format: @"%Y-%m-%dT%H:%M:%S%z"] description]
+	    isEqual: @"2000-06-20T10:34:56Z"]);
+
+	/*
+	 * We can only test local dates that specify a time zone, as the local
+	 * time zone differs between systems.
+	 */
+	TEST(@"+[dateWithLocalDateString:format:]",
+	    [[[OFDate dateWithLocalDateString: @"2000-06-20T12:34:56-0200"
+				       format: @"%Y-%m-%dT%H:%M:%S%z"]
+	    description] isEqual: @"2000-06-20T14:34:56Z"]);
 
 	TEST(@"-[isEqual:]",
 	    [d1 isEqual: [OFDate dateWithTimeIntervalSince1970: 0]] &&

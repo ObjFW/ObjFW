@@ -145,6 +145,40 @@ static int monthToDayOfYear[12] = {
 	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,
 };
 
+static double
+tmAndTzToTime(struct tm *tm, int16_t *tz)
+{
+	double seconds;
+
+	/* Years */
+	seconds = (int64_t)(tm->tm_year - 70) * 31536000;
+	/* Days of leap years, excluding the year to look at */
+	seconds += (((tm->tm_year + 1899) / 4) - 492) * 86400;
+	seconds -= (((tm->tm_year + 1899) / 100) - 19) * 86400;
+	seconds += (((tm->tm_year + 1899) / 400) - 4) * 86400;
+	/* Leap day */
+	if (tm->tm_mon >= 2 && (((tm->tm_year + 1900) % 4 == 0 &&
+	    (tm->tm_year + 1900) % 100 != 0) ||
+	    (tm->tm_year + 1900) % 400 == 0))
+		seconds += 86400;
+	/* Months */
+	if (tm->tm_mon < 0 || tm->tm_mon > 12)
+		@throw [OFInvalidFormatException exception];
+	seconds += monthToDayOfYear[tm->tm_mon] * 86400;
+	/* Days */
+	seconds += (tm->tm_mday - 1) * 86400;
+	/* Hours */
+	seconds += tm->tm_hour * 3600;
+	/* Minutes */
+	seconds += tm->tm_min * 60;
+	/* Seconds */
+	seconds += tm->tm_sec;
+	/* Time zone */
+	seconds += -(float)*tz * 60;
+
+	return seconds;
+}
+
 @implementation OFDate
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
@@ -237,36 +271,15 @@ static int monthToDayOfYear[12] = {
 
 	@try {
 		struct tm tm = { 0 };
+		int16_t tz = 0;
 
 		tm.tm_isdst = -1;
 
 		if (of_strptime([string UTF8String], [format UTF8String],
-		    &tm) == NULL)
+		    &tm, &tz) == NULL)
 			@throw [OFInvalidFormatException exception];
 
-		/* Years */
-		_seconds = (int64_t)(tm.tm_year - 70) * 31536000;
-		/* Days of leap years, excluding the year to look at */
-		_seconds += (((tm.tm_year + 1899) / 4) - 492) * 86400;
-		_seconds -= (((tm.tm_year + 1899) / 100) - 19) * 86400;
-		_seconds += (((tm.tm_year + 1899) / 400) - 4) * 86400;
-		/* Leap day */
-		if (tm.tm_mon >= 2 && (((tm.tm_year + 1900) % 4 == 0 &&
-		    (tm.tm_year + 1900) % 100 != 0) ||
-		    (tm.tm_year + 1900) % 400 == 0))
-			_seconds += 86400;
-		/* Months */
-		if (tm.tm_mon < 0 || tm.tm_mon > 12)
-			@throw [OFInvalidFormatException exception];
-		_seconds += monthToDayOfYear[tm.tm_mon] * 86400;
-		/* Days */
-		_seconds += (tm.tm_mday - 1) * 86400;
-		/* Hours */
-		_seconds += tm.tm_hour * 3600;
-		/* Minutes */
-		_seconds += tm.tm_min * 60;
-		/* Seconds */
-		_seconds += tm.tm_sec;
+		_seconds = tmAndTzToTime(&tm, &tz);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -282,20 +295,29 @@ static int monthToDayOfYear[12] = {
 
 	@try {
 		struct tm tm = { 0 };
+		/*
+		 * of_strptime() can never set this to INT16_MAX, no matter
+		 * what is passed to it, so this is a safe way to figure out if
+		 * the date contains a time zone.
+		 */
+		int16_t tz = INT16_MAX;
 
 		tm.tm_isdst = -1;
 
 		if (of_strptime([string UTF8String], [format UTF8String],
-		    &tm) == NULL)
+		    &tm, &tz) == NULL)
 			@throw [OFInvalidFormatException exception];
 
+		if (tz == INT16_MAX) {
 #ifndef OF_WINDOWS
-		if ((_seconds = mktime(&tm)) == -1)
-			@throw [OFInvalidFormatException exception];
+			if ((_seconds = mktime(&tm)) == -1)
+				@throw [OFInvalidFormatException exception];
 #else
-		if ((_seconds = _mktime64(&tm)) == -1)
-			@throw [OFInvalidFormatException exception];
+			if ((_seconds = _mktime64(&tm)) == -1)
+				@throw [OFInvalidFormatException exception];
 #endif
+		} else
+			_seconds = tmAndTzToTime(&tm, &tz);
 	} @catch (id e) {
 		[self release];
 		@throw e;

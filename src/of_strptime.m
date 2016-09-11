@@ -23,20 +23,20 @@
 #include "macros.h"
 
 const char*
-of_strptime(const char *buffer, const char *format, struct tm *tm)
+of_strptime(const char *buffer, const char *format, struct tm *tm, int16_t *tz)
 {
 	enum {
 		SEARCH_CONVERSION_SPECIFIER,
 		IN_CONVERSION_SPECIFIER
 	} state = SEARCH_CONVERSION_SPECIFIER;
-	size_t j, buffer_len, format_len;
+	size_t j, bufferLen, formatLen;
 
-	buffer_len = strlen(buffer);
-	format_len = strlen(format);
+	bufferLen = strlen(buffer);
+	formatLen = strlen(format);
 
 	j = 0;
-	for (size_t i = 0; i < format_len; i++) {
-		if (j >= buffer_len)
+	for (size_t i = 0; i < formatLen; i++) {
+		if (j >= bufferLen)
 			return NULL;
 
 		switch (state) {
@@ -49,7 +49,7 @@ of_strptime(const char *buffer, const char *format, struct tm *tm)
 			break;
 
 		case IN_CONVERSION_SPECIFIER:;
-			int k, max_len, number = 0;
+			int k, maxLen, number = 0;
 
 			switch (format[i]) {
 			case 'd':
@@ -59,30 +59,89 @@ of_strptime(const char *buffer, const char *format, struct tm *tm)
 			case 'M':
 			case 'S':
 			case 'y':
-				max_len = 2;
+				maxLen = 2;
 				break;
 			case 'Y':
-				max_len = 4;
+				maxLen = 4;
 				break;
 			case '%':
+			case 'a':
+			case 'b':
 			case 'n':
 			case 't':
-				max_len = 0;
+			case 'z':
+				maxLen = 0;
 				break;
 			default:
 				return NULL;
 			}
 
-			if (max_len > 0 && (buffer[j] < '0' || buffer[j] > '9'))
+			if (maxLen > 0 && (buffer[j] < '0' || buffer[j] > '9'))
 				return NULL;
 
-			for (k = 0; k < max_len && j < buffer_len &&
+			for (k = 0; k < maxLen && j < bufferLen &&
 			    buffer[j] >= '0' && buffer[j] <= '9'; k++, j++) {
 				number *= 10;
 				number += buffer[j] - '0';
 			}
 
 			switch (format[i]) {
+			case 'a':
+				if (bufferLen < j + 3)
+					return NULL;
+
+				if (memcmp(buffer + j, "Sun", 3) == 0)
+					tm->tm_wday = 0;
+				else if (memcmp(buffer + j, "Mon", 3) == 0)
+					tm->tm_wday = 1;
+				else if (memcmp(buffer + j, "Tue", 3) == 0)
+					tm->tm_wday = 2;
+				else if (memcmp(buffer + j, "Wed", 3) == 0)
+					tm->tm_wday = 3;
+				else if (memcmp(buffer + j, "Thu", 3) == 0)
+					tm->tm_wday = 4;
+				else if (memcmp(buffer + j, "Fri", 3) == 0)
+					tm->tm_wday = 5;
+				else if (memcmp(buffer + j, "Sat", 3) == 0)
+					tm->tm_wday = 6;
+				else
+					return NULL;
+
+				j += 3;
+				break;
+			case 'b':
+				if (bufferLen < j + 3)
+					return NULL;
+
+				if (memcmp(buffer + j, "Jan", 3) == 0)
+					tm->tm_mon = 1;
+				else if (memcmp(buffer + j, "Feb", 3) == 0)
+					tm->tm_mon = 2;
+				else if (memcmp(buffer + j, "Mar", 3) == 0)
+					tm->tm_mon = 3;
+				else if (memcmp(buffer + j, "Apr", 3) == 0)
+					tm->tm_mon = 4;
+				else if (memcmp(buffer + j, "May", 3) == 0)
+					tm->tm_mon = 5;
+				else if (memcmp(buffer + j, "Jun", 3) == 0)
+					tm->tm_mon = 6;
+				else if (memcmp(buffer + j, "Jul", 3) == 0)
+					tm->tm_mon = 7;
+				else if (memcmp(buffer + j, "Aug", 3) == 0)
+					tm->tm_mon = 8;
+				else if (memcmp(buffer + j, "Sep", 3) == 0)
+					tm->tm_mon = 9;
+				else if (memcmp(buffer + j, "Oct", 3) == 0)
+					tm->tm_mon = 10;
+				else if (memcmp(buffer + j, "Nov", 3) == 0)
+					tm->tm_mon = 11;
+				else if (memcmp(buffer + j, "Dec", 3) == 0)
+					tm->tm_mon = 12;
+				else
+					return NULL;
+
+				j += 3;
+				break;
 			case 'd':
 			case 'e':
 				tm->tm_mday = number;
@@ -110,6 +169,44 @@ of_strptime(const char *buffer, const char *format, struct tm *tm)
 					return NULL;
 
 				tm->tm_year = number - 1900;
+				break;
+			case 'z':
+				if (buffer[j] == '-' || buffer[j] == '+') {
+					const char *b = buffer + j;
+
+					if (bufferLen < j + 5)
+						return NULL;
+
+					if (tz == NULL)
+						break;
+
+					*tz = (((int16_t)b[1] - '0') * 600 +
+					    ((int16_t)b[2] - '0') * 60 +
+					    ((int16_t)b[3] - '0') * 10 +
+					    ((int16_t)b[4] - '0')) *
+					    (b[0] == '-' ? -1 : 1);
+
+					j += 5;
+				} else if (buffer[j] == 'Z') {
+					if (tz != NULL)
+						*tz = 0;
+
+					j++;
+				} else if (buffer[j] == 'G') {
+					if (bufferLen < j + 3)
+						return NULL;
+
+					if (buffer[j + 1] != 'M' ||
+					    buffer[j + 2] != 'T')
+						return NULL;
+
+					if (tz != NULL)
+						*tz = 0;
+
+					j += 3;
+				} else
+					return NULL;
+
 				break;
 			case '%':
 				if (buffer[j++] != '%')

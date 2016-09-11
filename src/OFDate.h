@@ -66,7 +66,8 @@ OF_ASSUME_NONNULL_BEGIN
  * See the manpage for strftime for information on the format.
  *
  * @warning The format is currently limited to the following format specifiers:
- *	    %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%, %%n and %%t.
+ *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
+ *	    %%t.
  *
  * @param string The string describing the date
  * @param format The format of the string describing the date
@@ -82,7 +83,8 @@ OF_ASSUME_NONNULL_BEGIN
  * See the manpage for strftime for information on the format.
  *
  * @warning The format is currently limited to the following format specifiers:
- *	    %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%, %%n and %%t.
+ *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
+ *	    %%t.
  *
  * @param string The string describing the date
  * @param format The format of the string describing the date
