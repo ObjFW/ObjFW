@@ -41,7 +41,7 @@ static OFString *module = @"OFDate";
 	const char *dstr = "Wed, 09 Jun 2021 +0200x";
 	TEST(@"of_strptime()",
 	    of_strptime(dstr, "%a, %d %b %Y %z", &tm, &tz) == dstr + 22 &&
-	    tm.tm_wday == 3 && tm.tm_mday == 9 && tm.tm_mon == 6 &&
+	    tm.tm_wday == 3 && tm.tm_mday == 9 && tm.tm_mon == 5 &&
 	    tm.tm_year == 2021 - 1900 && tz == 2 * 60)
 
 	TEST(@"+[dateWithTimeIntervalSince1970:]",
