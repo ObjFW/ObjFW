@@ -136,6 +136,9 @@
 		4B24592D19B5397C0059F271 /* OFSHA224Or256Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592919B5397C0059F271 /* OFSHA224Or256Hash.m */; };
 		4B24593019B53BC80059F271 /* OFSHA224HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592E19B53BC80059F271 /* OFSHA224HashTests.m */; };
 		4B24593119B53BC80059F271 /* OFSHA256HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B24592F19B53BC80059F271 /* OFSHA256HashTests.m */; };
+		4B2610C31D863007001F16C9 /* OFHTTPCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2610C11D863007001F16C9 /* OFHTTPCookie.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2610C41D863007001F16C9 /* OFHTTPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2610C21D863007001F16C9 /* OFHTTPCookie.m */; };
+		4B2610C61D86305C001F16C9 /* OFHTTPCookieTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2610C51D86305C001F16C9 /* OFHTTPCookieTests.m */; };
 		4B29BC3F133AC4E80004B236 /* OFCreateDirectoryFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC40133AC4E80004B236 /* OFCreateDirectoryFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */; };
 		4B29BC41133AC4E80004B236 /* OFSeekFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -681,6 +684,9 @@
 		4B24592919B5397C0059F271 /* OFSHA224Or256Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA224Or256Hash.m; path = src/OFSHA224Or256Hash.m; sourceTree = "<group>"; };
 		4B24592E19B53BC80059F271 /* OFSHA224HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA224HashTests.m; path = tests/OFSHA224HashTests.m; sourceTree = "<group>"; };
 		4B24592F19B53BC80059F271 /* OFSHA256HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA256HashTests.m; path = tests/OFSHA256HashTests.m; sourceTree = "<group>"; };
+		4B2610C11D863007001F16C9 /* OFHTTPCookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPCookie.h; path = src/OFHTTPCookie.h; sourceTree = "<group>"; };
+		4B2610C21D863007001F16C9 /* OFHTTPCookie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPCookie.m; path = src/OFHTTPCookie.m; sourceTree = "<group>"; };
+		4B2610C51D86305C001F16C9 /* OFHTTPCookieTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPCookieTests.m; path = tests/OFHTTPCookieTests.m; sourceTree = "<group>"; };
 		4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCreateDirectoryFailedException.h; path = src/exceptions/OFCreateDirectoryFailedException.h; sourceTree = "<group>"; };
 		4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCreateDirectoryFailedException.m; path = src/exceptions/OFCreateDirectoryFailedException.m; sourceTree = "<group>"; };
 		4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekFailedException.h; path = src/exceptions/OFSeekFailedException.h; sourceTree = "<group>"; };
@@ -1374,6 +1380,8 @@
 				4B6D0A881D4459D900901D8D /* OFHMAC.m */,
 				4BB4B53F16775FF4002A2DCE /* OFHTTPClient.h */,
 				4BB4B54016775FF4002A2DCE /* OFHTTPClient.m */,
+				4B2610C11D863007001F16C9 /* OFHTTPCookie.h */,
+				4B2610C21D863007001F16C9 /* OFHTTPCookie.m */,
 				4B99250F12E0780000215DBE /* OFHTTPRequest.h */,
 				4B99251012E0780000215DBE /* OFHTTPRequest.m */,
 				4B7161AB17A6FC7600B74970 /* OFHTTPResponse.h */,
@@ -1607,6 +1615,7 @@
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
 				4BF0DD731D44645D001D9949 /* OFHMACTests.m */,
 				4BB4B54916776094002A2DCE /* OFHTTPClientTests.m */,
+				4B2610C51D86305C001F16C9 /* OFHTTPCookieTests.m */,
 				4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */,
 				4BAA60C714D09699006F068D /* OFJSONTests.m */,
 				4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */,
@@ -1736,6 +1745,7 @@
 				4BD112621CCB73A90076FDB9 /* OFGZIPStream.h in Headers */,
 				4B6D0A891D4459D900901D8D /* OFHMAC.h in Headers */,
 				4BB4B54416775FF4002A2DCE /* OFHTTPClient.h in Headers */,
+				4B2610C31D863007001F16C9 /* OFHTTPCookie.h in Headers */,
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */,
 				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
@@ -2132,6 +2142,7 @@
 				4B2C728B1B888B8300717583 /* OFFileManager.m in Sources */,
 				4B6D0A8A1D4459D900901D8D /* OFHMAC.m in Sources */,
 				4BB4B54516775FF4002A2DCE /* OFHTTPClient.m in Sources */,
+				4B2610C41D863007001F16C9 /* OFHTTPCookie.m in Sources */,
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,
 				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
@@ -2301,6 +2312,7 @@
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
 				4BF0DD741D44645D001D9949 /* OFHMACTests.m in Sources */,
 				4BB4B54A16776094002A2DCE /* OFHTTPClientTests.m in Sources */,
+				4B2610C61D86305C001F16C9 /* OFHTTPCookieTests.m in Sources */,
 				4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */,
 				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 				4B22BE201AE594A000CD320A /* OFKernelEventObserverTests.m in Sources */,

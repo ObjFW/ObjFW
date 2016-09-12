@@ -67,6 +67,7 @@
 
 # import "OFHTTPRequest.h"
 # import "OFHTTPResponse.h"
+# import "OFHTTPCookie.h"
 # import "OFHTTPClient.h"
 # import "OFHTTPServer.h"
 #endif

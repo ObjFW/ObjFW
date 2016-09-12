@@ -100,6 +100,7 @@ SRCS_FILES = OFFile.m			\
 	     OFSettings.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m			\
+	       OFHTTPCookie.m			\
 	       OFHTTPRequest.m			\
 	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
