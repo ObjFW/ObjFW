@@ -104,10 +104,7 @@ struct {
 
 - (void)dealloc
 {
-	OF_UNRECOGNIZED_SELECTOR
-
-	/* Get rid of a stupid warning */
-	[super dealloc];
+	OF_DEALLOC_UNSUPPORTED
 }
 @end
 
@@ -223,10 +220,7 @@ struct {
 
 - (void)dealloc
 {
-	OF_UNRECOGNIZED_SELECTOR
-
-	/* Get rid of a stupid warning */
-	[super dealloc];
+	OF_DEALLOC_UNSUPPORTED
 }
 
 /*

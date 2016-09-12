@@ -148,10 +148,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 
 - (void)dealloc
 {
-	OF_UNRECOGNIZED_SELECTOR
-
-	/* Get rid of a stupid warning */
-	[super dealloc];
+	OF_DEALLOC_UNSUPPORTED
 }
 @end
 

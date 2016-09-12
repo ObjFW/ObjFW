@@ -451,9 +451,6 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)dealloc
 {
-	OF_UNRECOGNIZED_SELECTOR
-
-	/* Get rid of a stupid warning */
-	[super dealloc];
+	OF_DEALLOC_UNSUPPORTED
 }
 @end

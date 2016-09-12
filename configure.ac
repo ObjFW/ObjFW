@@ -156,6 +156,8 @@ AX_CHECK_COMPILER_FLAGS(-Wobjc-missing-property-synthesis -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-missing-property-synthesis"])
 AX_CHECK_COMPILER_FLAGS(-Wsign-compare -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
+AX_CHECK_COMPILER_FLAGS(-Wunreachable-code -Werror,
+	[OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([

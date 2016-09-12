@@ -80,10 +80,7 @@
 
 - (void)dealloc
 {
-	OF_UNRECOGNIZED_SELECTOR
-
-	/* Get rid of a stupid warning */
-	[super dealloc];
+	OF_DEALLOC_UNSUPPORTED
 }
 
 - (OFString*)description
