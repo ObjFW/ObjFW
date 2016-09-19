@@ -16,10 +16,12 @@
 
 #import "OFStream.h"
 #import "OFHTTPRequest.h"
+#import "OFHTTPCookie.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFArray OF_GENERIC(ObjectType);
 
 /*!
  * @class OFHTTPResponse OFHTTPResponse.h ObjFW/OFHTTPResponse.h
@@ -31,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	of_http_request_protocol_version_t _protocolVersion;
 	short _statusCode;
 	OFDictionary OF_GENERIC(OFString*, OFString*) *_headers;
+	OFArray OF_GENERIC(OFHTTPCookie*) *_cookies;
 }
 
 /*!
@@ -43,6 +46,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (copy)
     OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
+
+/*!
+ * The cookies to set of the reply to the HTTP request.
+ */
+@property OF_NULLABLE_PROPERTY (copy)
+    OFArray OF_GENERIC(OFHTTPCookie*) *cookies;
 
 /*!
  * @brief Sets the protocol version of the HTTP request reply.

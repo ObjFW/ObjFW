@@ -21,6 +21,7 @@
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFDataArray.h"
+#import "OFHTTPCookie.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
@@ -28,7 +29,7 @@
 #import "OFUnsupportedVersionException.h"
 
 @implementation OFHTTPResponse
-@synthesize statusCode = _statusCode, headers = _headers;
+@synthesize statusCode = _statusCode, headers = _headers, cookies = _cookies;
 
 - init
 {
@@ -43,6 +44,7 @@
 - (void)dealloc
 {
 	[_headers release];
+	[_cookies release];
 
 	[super dealloc];
 }
