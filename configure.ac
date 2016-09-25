@@ -156,8 +156,6 @@ AX_CHECK_COMPILER_FLAGS(-Wobjc-missing-property-synthesis -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-missing-property-synthesis"])
 AX_CHECK_COMPILER_FLAGS(-Wsign-compare -Werror,
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
-AX_CHECK_COMPILER_FLAGS(-Wunreachable-code -Werror,
-	[OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
@@ -1233,6 +1231,66 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 	])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Wunreachable-code"
+	AC_MSG_CHECKING(whether -Wunreachable-code can be used)
+	AC_TRY_COMPILE([
+		#include <stdlib.h>
+
+		typedef void *SEL;
+
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
+		@interface Object
+		- (void)doesNotRecognizeSelector: (SEL)selector
+		#ifdef __clang__
+		    __attribute__((__noreturn__))
+		#endif
+		    ;
+		- (void)dealloc;
+		@end
+
+		@interface Foo: Object
+		@end
+
+		/*
+		 * Unfortunately, this cannot be shorter, as it only works when
+		 * it is used inside a macro.
+		 */
+		#ifdef __clang__
+		# define OF_DEALLOC_UNSUPPORTED				\
+			[self doesNotRecognizeSelector: _cmd];		\
+									\
+			abort();					\
+									\
+			_Pragma("clang diagnostic push ignore \"-Wunreachable-code\"");	\
+			[super dealloc];				\
+			_Pragma("clang diagnostic pop");
+		#else
+		# define OF_DEALLOC_UNSUPPORTED				\
+			[self doesNotRecognizeSelector: _cmd];		\
+									\
+			abort();					\
+									\
+			[super dealloc];
+		#endif
+
+		@implementation Foo
+		- (void)dealloc
+		{
+			OF_DEALLOC_UNSUPPORTED
+		}
+		@end
+	], [], [
+		AC_MSG_RESULT(yes)
+	], [
+		AC_MSG_RESULT(no)
+		OBJCFLAGS="$old_OBJCFLAGS"
+	])
+
+	old_OBJCFLAGS="$OBJCFLAGS"
 	OBJCFLAGS="$OBJCFLAGS -Wdocumentation"
 	AC_MSG_CHECKING(whether -Wdocumentation works correctly)
 	AC_TRY_COMPILE([
@@ -1254,7 +1312,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		OBJCFLAGS="$OBJCFLAGS -pedantic"
 		AC_MSG_CHECKING(whether -pedantic is buggy)
 		AC_TRY_COMPILE([
-			#import <stdlib.h>
+			#include <stdlib.h>
 
 			@interface Foo
 			{
