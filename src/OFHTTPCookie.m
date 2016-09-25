@@ -81,7 +81,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		STATE_ATTR_NAME,
 		STATE_ATTR_VALUE
 	} state = STATE_PRE_NAME;
-	OFString *name, *value;
+	OFString *name = nil, *value = nil;
 
 	for (size_t i = 0; i < length; i++) {
 		switch (state) {
