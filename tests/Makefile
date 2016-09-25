@@ -28,6 +28,7 @@ SRCS = ForwardingTests.m		\
        OFXMLParserTests.m		\
        PBKDF2Tests.m			\
        RuntimeTests.m			\
+       ScryptTests.m			\
        TestsAppDelegate.m		\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\

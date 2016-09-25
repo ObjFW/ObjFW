@@ -299,6 +299,7 @@
 		4B55A115133AC24600B58A93 /* OFReadOrWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */; };
 		4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B55A110133AC24500B58A93 /* OFWriteFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B55A111133AC24600B58A93 /* OFWriteFailedException.m */; };
+		4B5AC54F1D97DEB100FECFAA /* ScryptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5AC54E1D97DEB100FECFAA /* ScryptTests.m */; };
 		4B5B02BE18B288A400CE6AE4 /* OFINIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5B02BC18B288A400CE6AE4 /* OFINIFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */; };
 		4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */; };
@@ -329,6 +330,8 @@
 		4B674404163C395900EB1E59 /* OFMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FB163C395900EB1E59 /* OFMutex.m */; };
 		4B674405163C395900EB1E59 /* OFRecursiveMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743FC163C395900EB1E59 /* OFRecursiveMutex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743FD163C395900EB1E59 /* OFRecursiveMutex.m */; };
+		4B6994471D47FB1A007F34DF /* scrypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6994451D47FB1A007F34DF /* scrypt.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B6994481D47FB1A007F34DF /* scrypt.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6994461D47FB1A007F34DF /* scrypt.m */; };
 		4B6C8AD817BD5C2E00B194F2 /* OFRunLoop+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */; };
 		4B6C8AD917BD5C2E00B194F2 /* OFStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */; };
 		4B6C8ADB17BD5C2E00B194F2 /* OFString_UTF8+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD417BD5C2E00B194F2 /* OFString_UTF8+Private.h */; };
@@ -763,6 +766,7 @@
 		4B55A10F133AC24500B58A93 /* OFReadOrWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFReadOrWriteFailedException.m; path = src/exceptions/OFReadOrWriteFailedException.m; sourceTree = "<group>"; };
 		4B55A110133AC24500B58A93 /* OFWriteFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFWriteFailedException.h; path = src/exceptions/OFWriteFailedException.h; sourceTree = "<group>"; };
 		4B55A111133AC24600B58A93 /* OFWriteFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFWriteFailedException.m; path = src/exceptions/OFWriteFailedException.m; sourceTree = "<group>"; };
+		4B5AC54E1D97DEB100FECFAA /* ScryptTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScryptTests.m; path = tests/ScryptTests.m; sourceTree = "<group>"; };
 		4B5B02BC18B288A400CE6AE4 /* OFINIFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFINIFile.h; path = src/OFINIFile.h; sourceTree = "<group>"; };
 		4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINIFile.m; path = src/OFINIFile.m; sourceTree = "<group>"; };
 		4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINIFileTests.m; path = tests/OFINIFileTests.m; sourceTree = "<group>"; };
@@ -836,6 +840,8 @@
 		4B67998A1099E7C50041064A /* OFXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLParser.m; path = src/OFXMLParser.m; sourceTree = "<group>"; };
 		4B67998B1099E7C50041064A /* threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = threading.h; path = src/threading.h; sourceTree = "<group>"; };
 		4B67998C1099E7C50041064A /* unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode.h; path = src/unicode.h; sourceTree = "<group>"; };
+		4B6994451D47FB1A007F34DF /* scrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scrypt.h; path = src/scrypt.h; sourceTree = "<group>"; };
+		4B6994461D47FB1A007F34DF /* scrypt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = scrypt.m; path = src/scrypt.m; sourceTree = "<group>"; };
 		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
 		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
@@ -1588,6 +1594,8 @@
 				4BF69CE51BD44F8B00DFFC1B /* platform.h */,
 				4B7769EB1895C07D00D12284 /* resolver.h */,
 				4B7769EC1895C07D00D12284 /* resolver.m */,
+				4B6994451D47FB1A007F34DF /* scrypt.h */,
+				4B6994461D47FB1A007F34DF /* scrypt.m */,
 				4B7DD58718943D4A00990FD6 /* socket.h */,
 				4B40EC1A189FE2650031E19E /* socket.m */,
 				4B7DD58118942FE200990FD6 /* socket_helpers.h */,
@@ -1643,6 +1651,7 @@
 				4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */,
 				4BD306301D46CEAE00E2F372 /* PBKDF2Tests.m */,
 				4B44836F1D049887005D12A7 /* RuntimeTests.m */,
+				4B5AC54E1D97DEB100FECFAA /* ScryptTests.m */,
 				4B6EF6801235358D0076B512 /* TestsAppDelegate.h */,
 				4B6EF6811235358D0076B512 /* TestsAppDelegate.m */,
 			);
@@ -1841,6 +1850,7 @@
 				4BD306341D46CEE300E2F372 /* pbkdf2.h in Headers */,
 				4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */,
 				4B7769ED1895C07D00D12284 /* resolver.h in Headers */,
+				4B6994471D47FB1A007F34DF /* scrypt.h in Headers */,
 				4B7DD58818943D4A00990FD6 /* socket.h in Headers */,
 				4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */,
 				4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */,
@@ -2232,6 +2242,7 @@
 				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
 				4BD306351D46CEE300E2F372 /* pbkdf2.m in Sources */,
 				4B7769EE1895C07D00D12284 /* resolver.m in Sources */,
+				4B6994481D47FB1A007F34DF /* scrypt.m in Sources */,
 				4B40EC1B189FE2650031E19E /* socket.m in Sources */,
 				4B3379CF1979326A0088E97E /* threading.m in Sources */,
 				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
@@ -2340,6 +2351,7 @@
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
 				4BD306311D46CEAE00E2F372 /* PBKDF2Tests.m in Sources */,
 				4B4483711D04989C005D12A7 /* RuntimeTests.m in Sources */,
+				4B5AC54F1D97DEB100FECFAA /* ScryptTests.m in Sources */,
 				4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -36,7 +36,7 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 	unsigned char buffer[digestSize];
 	unsigned char digest[digestSize];
 
-	if (HMAC == nil || iterations == 0 || salt == NULL || saltLength == 0 ||
+	if (HMAC == nil || iterations == 0 || salt == NULL ||
 	    password == NULL || key == NULL || keyLength == 0)
 		@throw [OFInvalidArgumentException exception];
 
@@ -91,9 +91,9 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 			i = OF_BSWAP32_IF_LE(OF_BSWAP32_IF_LE(i) + 1);
 		}
 	} @finally {
-		memset(extendedSalt, 0, saltLength + 4);
-		memset(buffer, 0, digestSize);
-		memset(digest, 0, digestSize);
+		of_explicit_memset(extendedSalt, 0, saltLength + 4);
+		of_explicit_memset(buffer, 0, digestSize);
+		of_explicit_memset(digest, 0, digestSize);
 
 		[HMAC zero];
 

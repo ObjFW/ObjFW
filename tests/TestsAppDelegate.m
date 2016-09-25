@@ -386,6 +386,7 @@ main(int argc, char *argv[])
 	[self SHA512HashTests];
 	[self HMACTests];
 	[self PBKDF2Tests];
+	[self scryptTests];
 	[self INIFileTests];
 #endif
 #ifdef OF_HAVE_SOCKETS
