@@ -32,7 +32,7 @@ of_salsa20_8_core(uint32_t buffer[16])
 	uint32_t tmp[16];
 
 	for (uint_fast8_t i = 0; i < 16; i++)
-		tmp[i] = buffer[i];
+		tmp[i] = OF_BSWAP32_IF_BE(buffer[i]);
 
 	for (uint_fast8_t i = 0; i < 8; i+= 2) {
 		tmp[ 4] ^= OF_ROL(tmp[ 0] + tmp[12],  7);
@@ -70,7 +70,8 @@ of_salsa20_8_core(uint32_t buffer[16])
 	}
 
 	for (uint_fast8_t i = 0; i < 16; i++)
-		buffer[i] += tmp[i];
+		buffer[i] = OF_BSWAP32_IF_BE(OF_BSWAP32_IF_BE(buffer[i]) +
+		    tmp[i]);
 
 	of_explicit_memset(tmp, 0, sizeof(tmp));
 }
@@ -123,7 +124,8 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 	}
 
 	for (size_t i = 0; i < costFactor; i++) {
-		uint32_t j = tmp[(2 * blockSize - 1) * 16] & (costFactor - 1);
+		uint32_t j = OF_BSWAP32_IF_BE(tmp[(2 * blockSize - 1) * 16]) &
+		    (costFactor - 1);
 
 		for (size_t k = 0; k < 32 * blockSize; k++)
 			tmp[k] ^= tmp2[j * 32 * blockSize + k];
