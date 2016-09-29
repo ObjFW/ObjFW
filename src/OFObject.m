@@ -59,6 +59,10 @@
 # import "threading.h"
 #endif
 
+#ifdef OF_APPLE_RUNTIME
+extern void* CFRetain(void*) __attribute__((__weak__));
+#endif
+
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id of_forward(id, SEL, ...);
 extern struct stret of_forward_stret(id, SEL, ...);
@@ -215,7 +219,17 @@ _references_to_categories_of_OFObject(void)
 #endif
 
 #if defined(OF_APPLE_RUNTIME)
-	objc_setForwardHandler((void*)&of_forward, (void*)&of_forward_stret);
+	/*
+	 * If the CFRetain symbol is defined, we are linked against
+	 * CoreFoundation. Since CoreFoundation sets its own forward handler
+	 * on load, we should not set ours, as this will break CoreFoundation.
+	 *
+	 * Unfortunately, there is no way to check if a forward handler has
+	 * already been set, so this is the best we can do.
+	 */
+	if (&CFRetain == NULL)
+		objc_setForwardHandler((void*)&of_forward,
+		    (void*)&of_forward_stret);
 #else
 	objc_setForwardHandler((IMP)&of_forward, (IMP)&of_forward_stret);
 #endif
