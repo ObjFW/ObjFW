@@ -205,7 +205,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 			if (_compressedSize == 0xFFFFFFFF)
 				_compressedSize = of_zip_archive_read_field64(
 				    &ZIP64, &ZIP64Size);
-			if (_localFileHeaderOffset == -1)
+			if (_localFileHeaderOffset == 0xFFFFFFFF)
 				_localFileHeaderOffset =
 				    of_zip_archive_read_field64(&ZIP64,
 				    &ZIP64Size);

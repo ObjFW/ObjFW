@@ -237,7 +237,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	    _centralDirectoryEntriesInDisk == 0xFFFF ||
 	    _centralDirectoryEntries == 0xFFFF ||
 	    _centralDirectorySize == 0xFFFFFFFF ||
-	    _centralDirectoryOffset == -1) {
+	    _centralDirectoryOffset == 0xFFFFFFFF) {
 		int64_t offset64;
 		uint64_t size;
 
