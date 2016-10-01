@@ -438,8 +438,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (bool)matchesEntry: (OFZIPArchiveEntry*)entry
 {
-	if (_minVersionNeeded != [entry minVersionNeeded] ||
-	    _compressionMethod != [entry compressionMethod] ||
+	if (_compressionMethod != [entry compressionMethod] ||
 	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
 	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate])
 		return false;
