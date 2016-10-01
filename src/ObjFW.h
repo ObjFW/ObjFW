@@ -206,3 +206,4 @@
 # import "resolver.h"
 #endif
 #import "pbkdf2.h"
+#import "scrypt.h"
