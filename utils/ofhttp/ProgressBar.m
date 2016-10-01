@@ -18,15 +18,6 @@
 
 #include <math.h>
 
-#include <unistd.h>
-
-#ifdef HAVE_SYS_IOCTL_H
-# include <sys/ioctl.h>
-#endif
-#ifdef HAVE_SYS_TTYCOM_H
-# include <sys/ttycom.h>
-#endif
-
 #import "OFDate.h"
 #import "OFStdIOStream.h"
 #import "OFTimer.h"
@@ -93,17 +84,15 @@
 - (void)_drawProgress
 {
 	float bars, percent;
-	unsigned short barWidth;
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ)
-	struct winsize ws;
+	int columns, barWidth;
 
-	if (ioctl(0, TIOCGWINSZ, &ws) == 0 && ws.ws_col > 37)
-		barWidth = ws.ws_col - 37;
-	else
-		barWidth = 0;
-#else
-	barWidth = 43;
-#endif
+	if ((columns = [of_stdout columns]) >= 0) {
+		if (columns > 37)
+			barWidth = columns - 37;
+		else
+			barWidth = 0;
+	} else
+		barWidth = 43;
 
 	bars = (float)(_resumedFrom + _received) /
 	    (float)(_resumedFrom + _length) * barWidth;

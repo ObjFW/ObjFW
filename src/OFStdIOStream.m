@@ -25,6 +25,13 @@
 #include <errno.h>
 #include <unistd.h>
 
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
+#ifdef HAVE_SYS_TTYCOM_H
+# include <sys/ttycom.h>
+#endif
+
 #import "OFStdIOStream.h"
 #import "OFStdIOStream+Private.h"
 #import "OFDate.h"
@@ -203,5 +210,33 @@ of_log(OFConstantString *format, ...)
 - (void)dealloc
 {
 	OF_DEALLOC_UNSUPPORTED
+}
+
+- (int)columns
+{
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ)
+	struct winsize ws;
+
+	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
+		return -1;
+
+	return ws.ws_col;
+#else
+	return -1;
+#endif
+}
+
+- (int)rows
+{
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ)
+	struct winsize ws;
+
+	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
+		return -1;
+
+	return ws.ws_row;
+#else
+	return -1;
+#endif
 }
 @end
