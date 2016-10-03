@@ -71,6 +71,11 @@ L0:
 	ldmfd	sp!, {r0-r4, lr}
 	b	_of_method_not_found
 
+.data_region
+sel_forwardingTargetForSelector_$indirect_L0:
+	.long sel_forwardingTargetForSelector_-(L0+8)
+.end_data_region
+
 .align 2
 _of_forward_stret:
 	stmfd	sp!, {r0-r4, lr}
@@ -115,8 +120,6 @@ L1:
 	b	_of_method_not_found_stret
 
 .data_region
-sel_forwardingTargetForSelector_$indirect_L0:
-	.long sel_forwardingTargetForSelector_-(L0+8)
 sel_forwardingTargetForSelector_$indirect_L1:
 	.long sel_forwardingTargetForSelector_-(L1+8)
 .end_data_region
