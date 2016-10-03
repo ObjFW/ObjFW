@@ -56,7 +56,6 @@
 		4B0E29731DA2A8A400323A76 /* OFDictionary_NSDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */; };
 		4B0E29741DA2A8A400323A76 /* OFDictionary+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */; };
 		4B0E29751DA2A8A400323A76 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
-		4B0E29771DA2A8A400323A76 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B187E60163EA4530049A832 /* Foundation.framework */; };
 		4B0E297A1DA2A8A400323A76 /* NSArray_OFArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E25163EA3DA0049A832 /* NSArray_OFArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B0E297B1DA2A8A400323A76 /* NSArray+OFObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E27163EA3DA0049A832 /* NSArray+OFObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B0E297C1DA2A8A400323A76 /* NSBridging.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E29163EA3DA0049A832 /* NSBridging.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -142,7 +141,6 @@
 		4B187E5B163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */; };
 		4B187E5C163EA3DA0049A832 /* OFString+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E39163EA3DA0049A832 /* OFString+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
-		4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B187E60163EA4530049A832 /* Foundation.framework */; };
 		4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4B2227A71D4FE23700A41CD3 /* atomic_builtins.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2227A81D4FE23700A41CD3 /* atomic_no_threads.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A21D4FE23700A41CD3 /* atomic_no_threads.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -718,9 +716,16 @@
 		4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */; };
 		4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */; };
 		4B5B02C418B28A1B00CE6AE4 /* testfile.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B5B02C218B289ED00CE6AE4 /* testfile.ini */; };
+		4B5BC9591DA2FF0000F97AE8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5BC9581DA2FF0000F97AE8 /* Foundation.framework */; };
+		4B5BC95C1DA301B500F97AE8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5BC95B1DA301B500F97AE8 /* Foundation.framework */; };
 		4B5C112F17E9AB3E003C917F /* forwarding.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C112C17E9AAED003C917F /* forwarding.S */; };
 		4B5CF8F914940BD2007AA324 /* OFString+JSONValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B5CF8FA14940BD2007AA324 /* OFString+JSONValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */; };
+		4B5D70671DA2F7B400B3B2D7 /* OFPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799791099E7C50041064A /* OFPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B5D70681DA2F7B400B3B2D7 /* OFPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B67997A1099E7C50041064A /* OFPlugin.m */; };
+		4B5D70691DA2F81700B3B2D7 /* OFPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6761235358D0076B512 /* OFPluginTests.m */; };
+		4B5D706E1DA2F87A00B3B2D7 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
+		4B5D707A1DA2F96200B3B2D7 /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4B60259F19B76A5C00694BCC /* OFSHA384Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259919B76A5C00694BCC /* OFSHA384Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6025A019B76A5C00694BCC /* OFSHA384Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */; };
 		4B6025A119B76A5C00694BCC /* OFSHA384Or512Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -816,6 +821,7 @@
 		4B9BB7C0141CDE2D000AD1CC /* OFArray_subarray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9BB7BC141CDE2D000AD1CC /* OFArray_subarray.m */; };
 		4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA02B9F15041F5900002F84 /* OFJSONRepresentation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA02BA015041F5900002F84 /* OFTLSSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BA2FD301DA2FA950089E945 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B2C22B01DA292BE00735907 /* ObjFW.framework */; };
 		4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA355B914879BDD00442EF4 /* of_strptime.m */; };
 		4BA355BD14879BF700442EF4 /* of_strptime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA355BC14879BF700442EF4 /* of_strptime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA4846015CC9F1E00D75360 /* OFUnsupportedVersionException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1002,6 +1008,13 @@
 			remoteGlobalIDString = 4BDF37AD1338047700F9A81A;
 			remoteInfo = configure;
 		};
+		4BA2FD2E1DA2FA8B0089E945 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B2C211B1DA292BE00735907;
+			remoteInfo = "ObjFW (iOS)";
+		};
 		4BD9C9FB1DA2C5A400E5AD52 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1033,6 +1046,16 @@
 			dstSubfolderSpec = 16;
 			files = (
 				4B2C22AC1DA292BE00735907 /* module.map in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B5D70791DA2F93F00B3B2D7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = plugin;
+			dstSubfolderSpec = 7;
+			files = (
+				4B5D707A1DA2F96200B3B2D7 /* TestPlugin.bundle in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1179,7 +1202,6 @@
 		4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDictionary+NSObject.m"; path = "src/bridge/OFDictionary+NSObject.m"; sourceTree = "<group>"; };
 		4B187E39163EA3DA0049A832 /* OFString+NSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+NSObject.h"; path = "src/bridge/OFString+NSObject.h"; sourceTree = "<group>"; };
 		4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+NSObject.m"; path = "src/bridge/OFString+NSObject.m"; sourceTree = "<group>"; };
-		4B187E60163EA4530049A832 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
 		4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_builtins.h; path = src/atomic_builtins.h; sourceTree = "<group>"; };
@@ -1281,6 +1303,8 @@
 		4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINIFile.m; path = src/OFINIFile.m; sourceTree = "<group>"; };
 		4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFINIFileTests.m; path = tests/OFINIFileTests.m; sourceTree = "<group>"; };
 		4B5B02C218B289ED00CE6AE4 /* testfile.ini */ = {isa = PBXFileReference; lastKnownFileType = text; name = testfile.ini; path = tests/testfile.ini; sourceTree = "<group>"; };
+		4B5BC9581DA2FF0000F97AE8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		4B5BC95B1DA301B500F97AE8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4B5C112817E9AAED003C917F /* apple-forwarding-arm.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-arm.S"; path = "src/forwarding/apple-forwarding-arm.S"; sourceTree = "<group>"; };
 		4B5C112917E9AAED003C917F /* apple-forwarding-i386.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-i386.S"; path = "src/forwarding/apple-forwarding-i386.S"; sourceTree = "<group>"; };
 		4B5C112A17E9AAED003C917F /* apple-forwarding-ppc.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-ppc.S"; path = "src/forwarding/apple-forwarding-ppc.S"; sourceTree = "<group>"; };
@@ -1289,6 +1313,7 @@
 		4B5C112E17E9AB0C003C917F /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/forwarding/Makefile; sourceTree = "<group>"; };
 		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
+		4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B60259919B76A5C00694BCC /* OFSHA384Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Hash.h; path = src/OFSHA384Hash.h; sourceTree = "<group>"; };
 		4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384Hash.m; path = src/OFSHA384Hash.m; sourceTree = "<group>"; };
 		4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Or512Hash.h; path = src/OFSHA384Or512Hash.h; sourceTree = "<group>"; };
@@ -1576,8 +1601,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B0E29771DA2A8A400323A76 /* Foundation.framework in Frameworks */,
 				4B7E83E31DA2B67F00BA5689 /* ObjFW.framework in Frameworks */,
+				4B5BC9591DA2FF0000F97AE8 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1585,8 +1610,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B187E61163EA4530049A832 /* Foundation.framework in Frameworks */,
 				4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */,
+				4B5BC95C1DA301B500F97AE8 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1609,6 +1634,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B5D706F1DA2F87A00B3B2D7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4BA2FD301DA2FA950089E945 /* ObjFW.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1826,6 +1859,7 @@
 				4B2C22B01DA292BE00735907 /* ObjFW.framework */,
 				4B0E298B1DA2A8A400323A76 /* ObjFW-Bridge.framework */,
 				4B76F4751DA2C2BB00CFF831 /* Tests (iOS).app */,
+				4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2218,9 +2252,10 @@
 		4BF33B1A13380A800059CEF7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4BD9CA261DA2C95400E5AD52 /* UIKit.framework */,
-				4B187E60163EA4530049A832 /* Foundation.framework */,
 				4B3D23761337FBC800DD29B8 /* ObjFW.framework */,
+				4B5BC95B1DA301B500F97AE8 /* Foundation.framework */,
+				4B5BC9581DA2FF0000F97AE8 /* Foundation.framework */,
+				4BD9CA261DA2C95400E5AD52 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2344,6 +2379,7 @@
 				4B2C22081DA292BE00735907 /* OFObject+KeyValueCoding.h in Headers */,
 				4B2C22091DA292BE00735907 /* OFObject+Serialization.h in Headers */,
 				4B2C220A1DA292BE00735907 /* OFOptionsParser.h in Headers */,
+				4B5D70671DA2F7B400B3B2D7 /* OFPlugin.h in Headers */,
 				4B2C220D1DA292BE00735907 /* OFRecursiveMutex.h in Headers */,
 				4B2C220E1DA292BE00735907 /* OFRIPEMD160Hash.h in Headers */,
 				4B2C220F1DA292BE00735907 /* OFRunLoop.h in Headers */,
@@ -2724,6 +2760,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B5D70711DA2F87A00B3B2D7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -2821,6 +2864,24 @@
 			productReference = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		4B5D706A1DA2F87A00B3B2D7 /* TestPlugin (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B5D70721DA2F87A00B3B2D7 /* Build configuration list for PBXNativeTarget "TestPlugin (iOS)" */;
+			buildPhases = (
+				4B5D706D1DA2F87A00B3B2D7 /* Sources */,
+				4B5D706F1DA2F87A00B3B2D7 /* Frameworks */,
+				4B5D70711DA2F87A00B3B2D7 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4BA2FD2F1DA2FA8B0089E945 /* PBXTargetDependency */,
+			);
+			name = "TestPlugin (iOS)";
+			productName = TestPlugin;
+			productReference = 4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		4B76F4741DA2C2BB00CFF831 /* Tests (iOS) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B76F48B1DA2C2BB00CFF831 /* Build configuration list for PBXNativeTarget "Tests (iOS)" */;
@@ -2829,6 +2890,7 @@
 				4B76F4721DA2C2BB00CFF831 /* Frameworks */,
 				4B76F4731DA2C2BB00CFF831 /* Resources */,
 				4BD9CA2E1DA2CF1D00E5AD52 /* Embed Frameworks */,
+				4B5D70791DA2F93F00B3B2D7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2906,6 +2968,7 @@
 				4B187E0D163EA29F0049A832 /* ObjFW-Bridge (Mac) */,
 				4B0E296A1DA2A8A400323A76 /* ObjFW-Bridge (iOS) */,
 				4B23CA89133811610047A1D9 /* TestPlugin (Mac) */,
+				4B5D706A1DA2F87A00B3B2D7 /* TestPlugin (iOS) */,
 				4B5D8DDD1099E1B0000896FF /* autoreconf */,
 				4BDF37AD1338047700F9A81A /* configure */,
 			);
@@ -3073,6 +3136,7 @@
 				4B2C21531DA292BE00735907 /* OFObject.m in Sources */,
 				4B2C21541DA292BE00735907 /* OFObject+Serialization.m in Sources */,
 				4B2C21551DA292BE00735907 /* OFOptionsParser.m in Sources */,
+				4B5D70681DA2F7B400B3B2D7 /* OFPlugin.m in Sources */,
 				4B2C21581DA292BE00735907 /* OFRecursiveMutex.m in Sources */,
 				4B2C21591DA292BE00735907 /* OFRIPEMD160Hash.m in Sources */,
 				4B2C215A1DA292BE00735907 /* OFRunLoop.m in Sources */,
@@ -3388,6 +3452,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B5D706D1DA2F87A00B3B2D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B5D706E1DA2F87A00B3B2D7 /* TestPlugin.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B76F4711DA2C2BB00CFF831 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3408,6 +3480,7 @@
 				4BD9CA0D1DA2C62800E5AD52 /* OFMD5HashTests.m in Sources */,
 				4BD9CA0E1DA2C62B00E5AD52 /* OFNumberTests.m in Sources */,
 				4BD9CA0F1DA2C62D00E5AD52 /* OFObjectTests.m in Sources */,
+				4B5D70691DA2F81700B3B2D7 /* OFPluginTests.m in Sources */,
 				4BD9CA111DA2C63200E5AD52 /* OFRIPEMD160HashTests.m in Sources */,
 				4BD9CA121DA2C63800E5AD52 /* OFSerializationTests.m in Sources */,
 				4BD9CA131DA2C63D00E5AD52 /* OFSetTests.m in Sources */,
@@ -3509,6 +3582,11 @@
 			isa = PBXTargetDependency;
 			target = 4BDF37AD1338047700F9A81A /* configure */;
 			targetProxy = 4B8BA41B133805A700E65070 /* PBXContainerItemProxy */;
+		};
+		4BA2FD2F1DA2FA8B0089E945 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B2C211B1DA292BE00735907 /* ObjFW (iOS) */;
+			targetProxy = 4BA2FD2E1DA2FA8B0089E945 /* PBXContainerItemProxy */;
 		};
 		4BD9C9FC1DA2C5A400E5AD52 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3856,6 +3934,34 @@
 			};
 			name = Release;
 		};
+		4B5D70731DA2F87A00B3B2D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				ENABLE_BITCODE = NO;
+				EXECUTABLE_EXTENSION = bundle;
+				INSTALL_PATH = "";
+				MACH_O_TYPE = mh_bundle;
+				PRODUCT_NAME = TestPlugin;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		4B5D70741DA2F87A00B3B2D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				ENABLE_BITCODE = NO;
+				EXECUTABLE_EXTENSION = bundle;
+				INSTALL_PATH = "";
+				MACH_O_TYPE = mh_bundle;
+				PRODUCT_NAME = TestPlugin;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
 		4B5D8DDE1099E1B1000896FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4025,6 +4131,15 @@
 			buildConfigurations = (
 				4B3D23871337FBC800DD29B8 /* Debug */,
 				4B3D23881337FBC800DD29B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4B5D70721DA2F87A00B3B2D7 /* Build configuration list for PBXNativeTarget "TestPlugin (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B5D70731DA2F87A00B3B2D7 /* Debug */,
+				4B5D70741DA2F87A00B3B2D7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
