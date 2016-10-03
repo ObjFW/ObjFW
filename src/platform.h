@@ -70,8 +70,13 @@
 #endif
 
 #if defined(__APPLE__)
-# if defined(OF_ARM) || defined(OF_ARM64)
+# include <TargetConditionals.h>
+# if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #  define OF_IOS
+/* iOS has dlopen and configure will find it, but it will not work. */
+#  ifdef OF_HAVE_PLUGINS
+#   undef OF_HAVE_PLUGINS
+#  endif
 # else
 #  define OF_MAC_OS_X
 # endif

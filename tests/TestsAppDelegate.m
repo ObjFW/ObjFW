@@ -27,6 +27,10 @@
 # define STDOUT_SIMPLE
 #endif
 
+#ifdef OF_IOS
+# include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #ifdef OF_PSP
 # include <pspmoduleinfo.h>
 # include <pspkernel.h>
@@ -356,6 +360,20 @@ main(int argc, char *argv[])
 
 - (void)applicationDidFinishLaunching
 {
+#if defined(OF_IOS) && defined(OF_HAVE_FILES)
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	UInt8 resourcesPath[PATH_MAX];
+
+	if (!CFURLGetFileSystemRepresentation(resourcesURL, true, resourcesPath,
+	    PATH_MAX)) {
+		[of_stderr writeString: @"Failed to locate resources!\n"];
+		[OFApplication terminateWithStatus: 1];
+	}
+
+	[[OFFileManager defaultManager] changeCurrentDirectoryPath:
+	    [OFString stringWithUTF8String: (const char*)resourcesPath]];
+#endif
 #if defined(OF_WII) && defined(OF_HAVE_FILES)
 	[[OFFileManager defaultManager]
 	    changeCurrentDirectoryPath: @"/apps/objfw-tests"];
@@ -415,7 +433,12 @@ main(int argc, char *argv[])
 	[self pluginTests];
 #endif
 
-#if defined(OF_WII)
+#if defined(OF_IOS)
+	[self outputString: [OFString stringWithFormat: @"%d tests failed!",
+							_fails]
+		   inColor: NO_COLOR];
+	[OFApplication terminateWithStatus: _fails];
+#elif defined(OF_WII)
 	[self outputString: @"Press home button to exit!\n"
 		   inColor: NO_COLOR];
 	for (;;) {

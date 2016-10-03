@@ -1377,6 +1377,7 @@ AC_CONFIG_FILES([
 	extra.mk
 	misc/Bridge-Info.plist
 	misc/Info.plist
+	misc/Tests-Info.plist
 	utils/objfw-config
 ])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])

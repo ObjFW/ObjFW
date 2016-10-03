@@ -25,6 +25,7 @@ generators/gen_tables
 generators/gen_tables.exe
 misc/Bridge-Info.plist
 misc/Info.plist
+misc/Tests-Info.plist
 ObjFW.xcodeproj/*.mode1v3
 ObjFW.xcodeproj/*.pbxuser
 ObjFW.xcodeproj/project.xcworkspace

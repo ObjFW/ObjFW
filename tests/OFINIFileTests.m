@@ -20,6 +20,7 @@
 #import "OFINICategory.h"
 #import "OFString.h"
 #import "OFArray.h"
+#import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
 #import "OFAutoreleasePool.h"
@@ -61,6 +62,9 @@ static OFString *module = @"OFINIFile";
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;
+#ifndef OF_NINTENDO_DS
+	OFString *writePath;
+#endif
 
 	TEST(@"+[fileWithPath:encoding:]",
 	    (file = [OFINIFile fileWithPath: @"testfile.ini"
@@ -132,14 +136,21 @@ static OFString *module = @"OFINIFile";
 
 	/* FIXME: Find a way to write files on Nintendo DS */
 #ifndef OF_NINTENDO_DS
+# ifndef OF_IOS
+	writePath = @"tmpfile.ini";
+# else
+	writePath = [OFString pathWithComponents: [OFArray arrayWithObjects:
+	    [[OFApplication environment] objectForKey: @"HOME"],
+	    @"tmp", @"tmpfile.ini", nil]];
+# endif
 	TEST(@"-[writeToFile:encoding:]",
-	    R([file writeToFile: @"tmpfile.ini"
+	    R([file writeToFile: writePath
 		       encoding: OF_STRING_ENCODING_CODEPAGE_437]) &&
 	    [[OFString
-		stringWithContentsOfFile: @"tmpfile.ini"
+		stringWithContentsOfFile: writePath
 				encoding: OF_STRING_ENCODING_CODEPAGE_437]
 	    isEqual: output])
-	[[OFFileManager defaultManager] removeItemAtPath: @"tmpfile.ini"];
+	[[OFFileManager defaultManager] removeItemAtPath: writePath];
 #else
 	(void)output;
 #endif

@@ -3,17 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>ObjFW</string>
+	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleName</key>
-	<string>ObjFW</string>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.webkeks.objfw</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
-	<key>CFBundleSignature</key>
-	<string>OBJFW</string>
 	<key>CFBundleVersion</key>
 	<string>@PACKAGE_VERSION@</string>
 	<key>CFBundleShortVersionString</key>
