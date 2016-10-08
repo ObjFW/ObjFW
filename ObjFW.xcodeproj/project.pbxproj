@@ -359,7 +359,7 @@
 		4B2C21D41DA292BE00735907 /* forwarding.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B5C112C17E9AAED003C917F /* forwarding.S */; };
 		4B2C21D71DA292BE00735907 /* OFApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B175C1D116D130B003C99CB /* OFApplication.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21D81DA292BE00735907 /* OFArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67995A1099E7C50041064A /* OFArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9BB7BB141CDE2D000AD1CC /* OFArray_subarray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9BB7BB141CDE2D000AD1CC /* OFArray_subarray.h */; };
 		4B2C21DA1DA292BE00735907 /* OFAutoreleasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67995C1099E7C50041064A /* OFAutoreleasePool.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21DB1DA292BE00735907 /* OFBigDataArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21DC1DA292BE00735907 /* OFBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD86D801237A6C600ED9912 /* OFBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -479,7 +479,6 @@
 		4B2C22501DA292BE00735907 /* scrypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6994451D47FB1A007F34DF /* scrypt.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C22511DA292BE00735907 /* socket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD58718943D4A00990FD6 /* socket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C22521DA292BE00735907 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998B1099E7C50041064A /* threading.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B2C22531DA292BE00735907 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C22541DA292BE00735907 /* OFAcceptFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B794133AD87D00BD33CB /* OFAcceptFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C22551DA292BE00735907 /* OFAddressTranslationFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B90B796133AD87D00BD33CB /* OFAddressTranslationFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C22561DA292BE00735907 /* OFAllocFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FF7D133A2D16003E6DCD /* OFAllocFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -670,7 +669,6 @@
 		4B3D23E81337FCB000DD29B8 /* macros.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BBA36C511406AB700CBA3AC /* macros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23E91337FCB000DD29B8 /* of_asprintf.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB50DCF12F863C700C9393F /* of_asprintf.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998B1099E7C50041064A /* threading.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998C1099E7C50041064A /* unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
 		4B3ED7C21AF62C30004C8FF1 /* OFGetOptionFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -817,7 +815,7 @@
 		4B989C2F13771A3700109A30 /* OFSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B989C2E13771A3700109A30 /* OFSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9BB7B9141CDE2D000AD1CC /* OFArray_adjacentSubarray.h */; };
 		4B9BB7BE141CDE2D000AD1CC /* OFArray_adjacentSubarray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9BB7BA141CDE2D000AD1CC /* OFArray_adjacentSubarray.m */; };
-		4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9BB7BB141CDE2D000AD1CC /* OFArray_subarray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B9BB7BB141CDE2D000AD1CC /* OFArray_subarray.h */; };
 		4B9BB7C0141CDE2D000AD1CC /* OFArray_subarray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9BB7BC141CDE2D000AD1CC /* OFArray_subarray.m */; };
 		4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA02B9F15041F5900002F84 /* OFJSONRepresentation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA02BA015041F5900002F84 /* OFTLSSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2329,7 +2327,6 @@
 			files = (
 				4B2C21D71DA292BE00735907 /* OFApplication.h in Headers */,
 				4B2C21D81DA292BE00735907 /* OFArray.h in Headers */,
-				4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */,
 				4B2C21DA1DA292BE00735907 /* OFAutoreleasePool.h in Headers */,
 				4B2C21DB1DA292BE00735907 /* OFBigDataArray.h in Headers */,
 				4B2C21DC1DA292BE00735907 /* OFBlock.h in Headers */,
@@ -2450,7 +2447,6 @@
 				4B2C22501DA292BE00735907 /* scrypt.h in Headers */,
 				4B2C22511DA292BE00735907 /* socket.h in Headers */,
 				4B2C22521DA292BE00735907 /* threading.h in Headers */,
-				4B2C22531DA292BE00735907 /* unicode.h in Headers */,
 				4B2C22541DA292BE00735907 /* OFAcceptFailedException.h in Headers */,
 				4B2C22551DA292BE00735907 /* OFAddressTranslationFailedException.h in Headers */,
 				4B2C22561DA292BE00735907 /* OFAllocFailedException.h in Headers */,
@@ -2511,6 +2507,7 @@
 				4B2C228D1DA292BE00735907 /* OFWriteFailedException.h in Headers */,
 				4B2C228E1DA292BE00735907 /* OFArray_adjacent.h in Headers */,
 				4B2C228F1DA292BE00735907 /* OFArray_adjacentSubarray.h in Headers */,
+				4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */,
 				4B2C22901DA292BE00735907 /* OFAutoreleasePool+Private.h in Headers */,
 				4B2C22911DA292BE00735907 /* OFCountedSet_hashtable.h in Headers */,
 				4B2C22921DA292BE00735907 /* OFDictionary_hashtable.h in Headers */,
@@ -2547,7 +2544,6 @@
 			files = (
 				4B3D23BC1337FC8300DD29B8 /* OFApplication.h in Headers */,
 				4B3D23BD1337FC8300DD29B8 /* OFArray.h in Headers */,
-				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
 				4B3D23BE1337FC8300DD29B8 /* OFAutoreleasePool.h in Headers */,
 				4BF48CE118A95F83000E8D04 /* OFBigDataArray.h in Headers */,
 				4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */,
@@ -2669,7 +2665,6 @@
 				4B6994471D47FB1A007F34DF /* scrypt.h in Headers */,
 				4B7DD58818943D4A00990FD6 /* socket.h in Headers */,
 				4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */,
-				4B3D23EB1337FCB000DD29B8 /* unicode.h in Headers */,
 				4B90B79E133AD87D00BD33CB /* OFAcceptFailedException.h in Headers */,
 				4B90B7A0133AD87D00BD33CB /* OFAddressTranslationFailedException.h in Headers */,
 				4B17FF7F133A2D17003E6DCD /* OFAllocFailedException.h in Headers */,
@@ -2730,6 +2725,7 @@
 				4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */,
 				4B2B3E7D140D430500EC2F7C /* OFArray_adjacent.h in Headers */,
 				4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */,
+				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
 				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
 				4B2B3E7F140D430500EC2F7C /* OFDictionary_hashtable.h in Headers */,

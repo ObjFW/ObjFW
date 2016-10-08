@@ -11,7 +11,6 @@ LIB_MINOR = ${OBJFW_LIB_MINOR}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
-       OFArray_subarray.m		\
        OFAutoreleasePool.m		\
        OFBigDataArray.m			\
        OFBlock.m			\
@@ -89,7 +88,6 @@ SRCS = OFApplication.m			\
        of_strptime.m			\
        pbkdf2.m				\
        scrypt.m				\
-       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\
@@ -144,6 +142,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
+	OFArray_subarray.m		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\
@@ -157,6 +156,7 @@ SRCS += OFArray_adjacent.m		\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\
+	${UNICODE_M}			\
 	windows_1252.m
 SRCS_FILES += OFSettings_INIFile.m
 SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_EPOLL_M}	\
