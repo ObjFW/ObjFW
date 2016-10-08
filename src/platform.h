@@ -73,6 +73,10 @@
 # include <TargetConditionals.h>
 # if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #  define OF_IOS
+/*
+ * iOS has the functions, so configure will find them, but they cannot be used.
+ */
+#  undef OF_HAVE_PROCESSES
 # else
 #  define OF_MAC_OS_X
 # endif
