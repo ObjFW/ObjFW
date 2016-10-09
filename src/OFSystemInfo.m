@@ -40,7 +40,7 @@
 
 #import "OFNotImplementedException.h"
 
-#if defined(OF_MAC_OS_X)
+#if defined(OF_MAC_OS_X) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
 #  include <sysdir.h>
 # else
@@ -151,8 +151,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userDataPath
 {
-	/* TODO: Return something more sensible for iOS */
-#if defined(OF_MAC_OS_X)
+#if defined(OF_MAC_OS_X) || defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	OFMutableString *path;
@@ -215,7 +214,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#else
+#elif !defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -237,13 +236,15 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[var retain];
 	objc_autoreleasePoolPop(pool);
 	return [var autorelease];
+#else
+	@throw [OFNotImplementedException exceptionWithSelector: _cmd
+							 object: self];
 #endif
 }
 
 + (OFString*)userConfigPath
 {
-	/* TODO: Return something more sensible for iOS */
-#if defined(OF_MAC_OS_X)
+#if defined(OF_MAC_OS_X) || defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	OFMutableString *path;
@@ -308,7 +309,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#else
+#elif !defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -329,6 +330,9 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[var retain];
 	objc_autoreleasePoolPop(pool);
 	return [var autorelease];
+#else
+	@throw [OFNotImplementedException OFNotImplementedException: _cmd
+							     object: self];
 #endif
 }
 
