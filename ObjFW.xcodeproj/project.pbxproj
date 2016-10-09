@@ -917,7 +917,6 @@
 		4BD9CA231DA2C66A00E5AD52 /* RuntimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B44836F1D049887005D12A7 /* RuntimeTests.m */; };
 		4BD9CA241DA2C66A00E5AD52 /* ScryptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5AC54E1D97DEB100FECFAA /* ScryptTests.m */; };
 		4BD9CA251DA2C66A00E5AD52 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
-		4BD9CA271DA2C95400E5AD52 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD9CA261DA2C95400E5AD52 /* UIKit.framework */; };
 		4BD9CA281DA2C9C300E5AD52 /* serialization.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4BAE7353139C507F00F682ED /* serialization.xml */; };
 		4BD9CA291DA2C9C300E5AD52 /* testfile.bin in Resources */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
 		4BD9CA2A1DA2C9C300E5AD52 /* testfile.ini in Resources */ = {isa = PBXBuildFile; fileRef = 4B5B02C218B289ED00CE6AE4 /* testfile.ini */; };
@@ -928,7 +927,6 @@
 		4BE52D2217B990B4005958D1 /* OFZIPArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE52D2017B990B4005958D1 /* OFZIPArchive.m */; };
 		4BE52D2517B990DA005958D1 /* OFChecksumFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE52D2317B990DA005958D1 /* OFChecksumFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BE52D2617B990DA005958D1 /* OFChecksumFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE52D2417B990DA005958D1 /* OFChecksumFailedException.m */; };
-		4BEAF52D19A811DA00B61868 /* module.map in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BEAF52519A8107500B61868 /* module.map */; };
 		4BEC83B919B7CB7100E4BB08 /* OFRIPEMD160Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BEC83B719B7CB7100E4BB08 /* OFRIPEMD160Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BEC83BA19B7CB7100E4BB08 /* OFRIPEMD160Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */; };
 		4BEC83BC19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */; };
@@ -1066,16 +1064,6 @@
 				4BD9CA2D1DA2CF1D00E5AD52 /* ObjFW.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4BEAF52C19A811CE00B61868 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = ObjFW.framework;
-			dstSubfolderSpec = 16;
-			files = (
-				4BEAF52D19A811DA00B61868 /* module.map in CopyFiles */,
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4BF33AEE133807310059CEF7 /* CopyFiles */ = {
@@ -1545,7 +1533,6 @@
 		4BD86D801237A6C600ED9912 /* OFBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBlock.h; path = src/OFBlock.h; sourceTree = SOURCE_ROOT; };
 		4BD86D811237A6C600ED9912 /* OFBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlock.m; path = src/OFBlock.m; sourceTree = SOURCE_ROOT; };
 		4BD98C011338140B0048DD5B /* objfw-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "objfw-defs.h"; path = "src/objfw-defs.h"; sourceTree = SOURCE_ROOT; };
-		4BD9CA261DA2C95400E5AD52 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		4BDF37B41338055600F9A81A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = SOURCE_ROOT; };
 		4BE17AD812FD744C002CEB0B /* foundation-compat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "foundation-compat.m"; path = "src/foundation-compat.m"; sourceTree = SOURCE_ROOT; };
 		4BE17AD912FD746D002CEB0B /* OFDataArray+CryptoHashing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+CryptoHashing.h"; path = "src/OFDataArray+CryptoHashing.h"; sourceTree = SOURCE_ROOT; };
@@ -1648,7 +1635,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4BD9C9FF1DA2C5B800E5AD52 /* ObjFW.framework in Frameworks */,
-				4BD9CA271DA2C95400E5AD52 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2253,7 +2239,6 @@
 				4B3D23761337FBC800DD29B8 /* ObjFW.framework */,
 				4B5BC95B1DA301B500F97AE8 /* Foundation.framework */,
 				4B5BC9581DA2FF0000F97AE8 /* Foundation.framework */,
-				4BD9CA261DA2C95400E5AD52 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2848,7 +2833,6 @@
 				4B3D23711337FBC800DD29B8 /* Sources */,
 				4B3D23721337FBC800DD29B8 /* Frameworks */,
 				4B3D23731337FBC800DD29B8 /* Headers */,
-				4BEAF52C19A811CE00B61868 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -3723,6 +3707,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/misc/Bridge-Info.plist";
+				INSTALL_PATH = "@executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = zone.heap.objfw.bridge;
 				PRODUCT_NAME = "ObjFW-Bridge";
 				SDKROOT = iphoneos;
@@ -3752,6 +3737,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/misc/Bridge-Info.plist";
+				INSTALL_PATH = "@executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = zone.heap.objfw.bridge;
 				PRODUCT_NAME = "ObjFW-Bridge";
 				SDKROOT = iphoneos;
@@ -3849,6 +3835,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = MXKNFCKFL6;
 				DYLIB_COMPATIBILITY_VERSION = 8;
 				DYLIB_CURRENT_VERSION = 8;
@@ -3856,6 +3843,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "$(SRCROOT)/misc/Info.plist";
 				INSTALL_PATH = "@executable_path/Frameworks";
+				MODULEMAP_FILE = misc/module.map;
 				OTHER_LDFLAGS = (
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
@@ -3873,6 +3861,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = MXKNFCKFL6;
 				DYLIB_COMPATIBILITY_VERSION = 8;
 				DYLIB_CURRENT_VERSION = 8;
@@ -3880,6 +3869,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "$(SRCROOT)/misc/Info.plist";
 				INSTALL_PATH = "@executable_path/Frameworks";
+				MODULEMAP_FILE = misc/module.map;
 				OTHER_LDFLAGS = (
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
@@ -3895,10 +3885,12 @@
 		4B3D23871337FBC800DD29B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 8;
 				DYLIB_CURRENT_VERSION = 8;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "$(SRCROOT)/misc/Info.plist";
+				MODULEMAP_FILE = misc/module.map;
 				OTHER_LDFLAGS = (
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
@@ -3914,10 +3906,12 @@
 		4B3D23881337FBC800DD29B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 8;
 				DYLIB_CURRENT_VERSION = 8;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "$(SRCROOT)/misc/Info.plist";
+				MODULEMAP_FILE = misc/module.map;
 				OTHER_LDFLAGS = (
 					"-Wl,-reexport-lobjc",
 					"-lobjc",
