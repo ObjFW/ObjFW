@@ -1,10 +1,16 @@
 framework module ObjFW {
 	umbrella header "ObjFW.h"
+
+	/*
+	 * These are included by atomic.h, but should never be included
+	 * directly.
+	 */
 	exclude header "atomic_builtins.h"
 	exclude header "atomic_no_threads.h"
 	exclude header "atomic_osatomic.h"
 	exclude header "atomic_powerpc.h"
 	exclude header "atomic_sync_builtins.h"
 	exclude header "atomic_x86.h"
+
 	export *
 }

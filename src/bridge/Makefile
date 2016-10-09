@@ -8,22 +8,23 @@ LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
 SRCS = OFArray+NSObject.m		\
-       OFArray_NSArray.m		\
        OFDictionary+NSObject.m		\
-       OFDictionary_NSDictionary.m	\
        OFString+NSObject.m		\
        NSArray+OFObject.m		\
-       NSArray_OFArray.m		\
        NSDictionary+OFObject.m		\
-       NSDictionary_OFDictionary.m	\
        NSString+OFObject.m
 
 INCLUDES = ${SRCS:.m=.h}	\
 	   NSBridging.h		\
 	   OFBridging.h		\
-	   ObjFW-Bridge.h
+	   ObjFW_Bridge.h
 
-includesubdir = ObjFW-Bridge
+SRCS += NSArray_OFArray.m		\
+	NSDictionary_OFDictionary.m	\
+	OFArray_NSArray.m		\
+	OFDictionary_NSDictionary.m	\
+
+includesubdir = ObjFW_Bridge
 
 include ../../buildsys.mk
 

@@ -15,7 +15,9 @@
  */
 
 #import "NSArray+OFObject.h"
+#import "NSDictionary+OFObject.h"
 #import "NSString+OFObject.h"
 
 #import "OFArray+NSObject.h"
+#import "OFDictionary+NSObject.h"
 #import "OFString+NSObject.h"

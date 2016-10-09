@@ -1,0 +1,16 @@
+framework module ObjFW_Bridge {
+	umbrella header "ObjFW_Bridge.h"
+
+	/*
+	 * Categories need to be declared as textual, otherwise the they are
+	 * not picked up.
+	 */
+	textual header "NSArray+OFObject.h"
+	textual header "NSDictionary+OFObject.h"
+	textual header "NSString+OFObject.h"
+	textual header "OFArray+NSObject.h"
+	textual header "OFDictionary+NSObject.h"
+	textual header "OFString+NSObject.h"
+
+	export *
+}
