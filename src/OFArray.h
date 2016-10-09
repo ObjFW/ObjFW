@@ -504,7 +504,7 @@ OF_ASSUME_NONNULL_END
 
 #import "OFMutableArray.h"
 
-#ifndef NSINTEGER_DEFINED
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
 /* Required for array literals to work */
 @compatibility_alias NSArray OFArray;
 #endif

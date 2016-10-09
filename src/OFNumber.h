@@ -812,7 +812,7 @@ typedef enum {
 
 OF_ASSUME_NONNULL_END
 
-#ifndef NSINTEGER_DEFINED
+#if !defined(NSINTEGER_DEFINED) && !__has_feature(modules)
 /* Required for number literals to work */
 @compatibility_alias NSNumber OFNumber;
 #endif
