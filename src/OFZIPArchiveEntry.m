@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <inttypes.h>
+
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
 #import "OFString.h"

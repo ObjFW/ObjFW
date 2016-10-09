@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-#include <stdint.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <time.h>
 #include <math.h>

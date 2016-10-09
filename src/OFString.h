@@ -22,7 +22,7 @@
 #endif
 
 #include <stdarg.h>
-#include <inttypes.h>
+#include <stdint.h>
 
 #import "OFObject.h"
 #import "OFSerialization.h"

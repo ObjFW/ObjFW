@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <inttypes.h>
 #include <math.h>
 
 #import "OFNumber.h"

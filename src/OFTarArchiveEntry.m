@@ -18,6 +18,8 @@
 
 #include "config.h"
 
+#include <inttypes.h>
+
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFStream.h"
