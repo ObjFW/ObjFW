@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <inttypes.h>
 #include <string.h>
 
 #import "OFHTTPClient.h"

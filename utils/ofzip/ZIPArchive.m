@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <inttypes.h>
 #include <errno.h>
 
 #import "OFDate.h"

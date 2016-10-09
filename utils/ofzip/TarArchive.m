@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <inttypes.h>
+
 #import "OFDate.h"
 #import "OFSet.h"
 #import "OFApplication.h"
