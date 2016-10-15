@@ -36,13 +36,22 @@ extern void *_NSConcreteMallocBlock;
 
 static void (^g)() = ^ {};
 
+static int
+(^returnStackBlock(void))(void)
+{
+	__block int i = 0;
+
+	return Block_copy(^ int { return ++i; });
+}
+
 @implementation TestsAppDelegate (OFBlockTests)
 - (void)blockTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	__block int x;
-	void (^s)() = ^ { x = 0; };
-	void (^m)();
+	void (^s)(void) = ^ { x = 0; };
+	void (^m)(void);
+	int (^v)(void);
 
 	TEST(@"Class of stack block",
 	    (Class)&_NSConcreteStackBlock == objc_getClass("OFStackBlock") &&
@@ -59,6 +68,9 @@ static void (^g)() = ^ {};
 	    (m = [[s copy] autorelease]) &&
 	    [m class] == objc_getClass("OFMallocBlock") &&
 	    [m isKindOfClass: [OFBlock class]])
+
+	TEST(@"Copying a stack block and using its variable",
+	    (v = returnStackBlock()) && v() == 1 && v() == 2 && v() == 3)
 
 	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
 

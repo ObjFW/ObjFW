@@ -261,10 +261,10 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				    &alloc_failed_exception;
 			}
 
-			if (src->forwarding == src)
-				(*dst)->forwarding = *dst;
-
 			memcpy(*dst, src, src->size);
+
+			if (src == src->forwarding)
+				(*dst)->forwarding = *dst;
 
 			if (src->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				src->byref_keep(*dst, src);
