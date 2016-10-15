@@ -60,7 +60,7 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-extern void* CFRetain(void*) __attribute__((__weak__));
+extern double *NSFoundationVersionNumber __attribute__((__weak__));
 #endif
 
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
@@ -220,14 +220,15 @@ _references_to_categories_of_OFObject(void)
 
 #if defined(OF_APPLE_RUNTIME)
 	/*
-	 * If the CFRetain symbol is defined, we are linked against
-	 * CoreFoundation. Since CoreFoundation sets its own forward handler
-	 * on load, we should not set ours, as this will break CoreFoundation.
+	 * If the NSFoundationVersionNumber symbol is defined, we are linked
+	 * against Foundation. Since CoreFoundation sets its own forward
+	 * handler on load, we should not set ours, as this will break
+	 * Foundation.
 	 *
 	 * Unfortunately, there is no way to check if a forward handler has
 	 * already been set, so this is the best we can do.
 	 */
-	if (&CFRetain == NULL)
+	if (&NSFoundationVersionNumber == NULL)
 		objc_setForwardHandler((void*)&of_forward,
 		    (void*)&of_forward_stret);
 #else
