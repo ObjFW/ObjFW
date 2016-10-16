@@ -39,9 +39,23 @@ static void (^g)() = ^ {};
 static int
 (^returnStackBlock(void))(void)
 {
-	__block int i = 0;
+	__block int i = 42;
 
 	return Block_copy(^ int { return ++i; });
+}
+
+static double
+forwardTest(void)
+{
+	__block double d;
+	void (^b)(void) = Block_copy(^ {
+		d = 5;
+	});
+
+	b();
+	Block_release(b);
+
+	return d;
 }
 
 @implementation TestsAppDelegate (OFBlockTests)
@@ -69,8 +83,11 @@ static int
 	    [m class] == objc_getClass("OFMallocBlock") &&
 	    [m isKindOfClass: [OFBlock class]])
 
-	TEST(@"Copying a stack block and using its variable",
-	    (v = returnStackBlock()) && v() == 1 && v() == 2 && v() == 3)
+	TEST(@"Copying a stack block and referencing its variable",
+	    forwardTest() == 5)
+
+	TEST(@"Copying a stack block and using its copied variable",
+	    (v = returnStackBlock()) && v() == 43 && v() == 44 && v() == 45)
 
 	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
 

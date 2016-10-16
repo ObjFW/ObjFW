@@ -157,7 +157,8 @@ static struct {
 #ifndef OF_HAVE_ATOMIC_OPS
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
 # define SPINLOCK_HASH(p) ((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1)
-static of_spinlock_t spinlocks[NUM_SPINLOCKS];
+static of_spinlock_t blockSpinlocks[NUM_SPINLOCKS];
+static of_spinlock_t byrefSpinlocks[NUM_SPINLOCKS];
 #endif
 
 void*
@@ -190,9 +191,9 @@ _Block_copy(const void *block_)
 #else
 		unsigned hash = SPINLOCK_HASH(block);
 
-		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_lock(&blockSpinlocks[hash]));
 		block->flags++;
-		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]));
 #endif
 	}
 
@@ -217,9 +218,9 @@ _Block_release(const void *block_)
 #else
 	unsigned hash = SPINLOCK_HASH(block);
 
-	OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
+	OF_ENSURE(of_spinlock_lock(&blockSpinlocks[hash]));
 	if ((--block->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
-		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]));
 
 		if (block->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 			block->descriptor->dispose_helper(block);
@@ -228,7 +229,7 @@ _Block_release(const void *block_)
 
 		return;
 	}
-	OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
+	OF_ENSURE(of_spinlock_unlock(&blockSpinlocks[hash]));
 #endif
 }
 
@@ -253,6 +254,8 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 		of_block_byref_t *src = (of_block_byref_t*)src_;
 		of_block_byref_t **dst = (of_block_byref_t**)dst_;
 
+		src = src->forwarding;
+
 		if ((src->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if ((*dst = malloc(src->size)) == NULL) {
 				alloc_failed_exception.isa =
@@ -262,16 +265,47 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			}
 
 			memcpy(*dst, src, src->size);
-
-			if (src == src->forwarding)
-				(*dst)->forwarding = *dst;
+			(*dst)->flags =
+			    ((*dst)->flags & ~OF_BLOCK_REFCOUNT_MASK) | 1;
+			(*dst)->forwarding = *dst;
 
 			if (src->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				src->byref_keep(*dst, src);
+
+#ifdef OF_HAVE_ATOMIC_OPS
+			if (!of_atomic_ptr_cmpswap((void**)&src->forwarding,
+			    src, *dst)) {
+				src->byref_dispose(*dst);
+				free(*dst);
+
+				*dst = src->forwarding;
+			}
+#else
+			unsigned hash = SPINLOCK_HASH(src);
+
+			OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
+			if (src->forwarding == src)
+				src->forwarding = *dst;
+			else {
+				src->byref_dispose(*dst);
+				free(*dst);
+
+				*dst = src->forwarding;
+			}
+			OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+#endif
 		} else
 			*dst = src;
 
+#ifdef OF_HAVE_ATOMIC_OPS
+		of_atomic_int_inc(&(*dst)->flags);
+#else
+		unsigned hash = SPINLOCK_HASH(*dst);
+
+		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
 		(*dst)->flags++;
+		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+#endif
 		break;
 	}
 }
@@ -296,12 +330,30 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	case OF_BLOCK_FIELD_IS_BYREF:;
 		of_block_byref_t *obj = (of_block_byref_t*)obj_;
 
-		if ((--obj->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+		obj = obj->forwarding;
+
+#ifdef OF_HAVE_ATOMIC_OPS
+		if ((of_atomic_int_dec(&obj->flags) &
+		    OF_BLOCK_REFCOUNT_MASK) == 0) {
 			if (obj->flags & OF_BLOCK_HAS_COPY_DISPOSE)
 				obj->byref_dispose(obj);
 
 			free(obj);
 		}
+#else
+		unsigned hash = SPINLOCK_HASH(obj);
+
+		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
+		if ((--obj->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+			OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+
+			if (obj->flags & OF_BLOCK_HAS_COPY_DISPOSE)
+				obj->byref_dispose(obj);
+
+			free(obj);
+		}
+		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
+#endif
 		break;
 	}
 }
@@ -311,7 +363,8 @@ _Block_object_dispose(const void *obj_, const int flags_)
 {
 #ifndef OF_HAVE_ATOMIC_OPS
 	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
-		if (!of_spinlock_new(&spinlocks[i]))
+		if (!of_spinlock_new(&blockSpinlocks[i]) ||
+		    !of_spinlock_new(&byrefSpinlocks[i]))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self];
 #endif
