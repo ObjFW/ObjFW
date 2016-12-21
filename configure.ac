@@ -848,7 +848,22 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_CHECK_FUNC(readlink, [
 		AC_DEFINE(OF_HAVE_READLINK, 1, [Whether we have readlink()])
 	])
-	AC_CHECK_FUNCS([lstat readdir_r])
+	AC_CHECK_FUNCS([lstat])
+
+	AC_MSG_CHECKING(for readdir_r)
+	AC_TRY_COMPILE([
+		#include <dirent.h>
+	], [
+		DIR *dir = 0;
+		struct dirent entry, *result;
+
+		readdir_r(dir, &entry, &result);
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(HAVE_READDIR_R, 1, [Whether we have readdir_r()])
+	], [
+		AC_MSG_RESULT(no)
+	])
 ])
 
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
