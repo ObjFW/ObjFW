@@ -850,6 +850,8 @@ AS_IF([test x"$enable_files" != x"no"], [
 	])
 	AC_CHECK_FUNCS([lstat])
 
+	old_OBJCFLAGS="$OBJCFLAGS"
+	OBJCFLAGS="$OBJCFLAGS -Werror=deprecated"
 	AC_MSG_CHECKING(for readdir_r)
 	AC_TRY_COMPILE([
 		#include <dirent.h>
@@ -864,6 +866,7 @@ AS_IF([test x"$enable_files" != x"no"], [
 	], [
 		AC_MSG_RESULT(no)
 	])
+	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
