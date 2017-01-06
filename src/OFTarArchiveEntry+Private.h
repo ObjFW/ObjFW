@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFTarArchiveEntry ()
-- (instancetype)OF_initWithHeader: (char[512])header
+- (instancetype)OF_initWithHeader: (char[_Nonnull 512])header
 			   stream: (OFStream*)stream;
 - (void)OF_skip;
 @end

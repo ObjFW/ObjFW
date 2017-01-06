@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void of_salsa20_8_core(uint32_t buffer[16]);
+extern void of_salsa20_8_core(uint32_t buffer[_Nonnull 16]);
 extern void of_scrypt_block_mix(uint32_t *output, const uint32_t *input,
     size_t blockSize);
 extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,

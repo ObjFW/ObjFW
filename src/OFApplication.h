@@ -191,7 +191,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param argv A pointer where a pointer to argv should be stored
  */
 - (void)getArgumentCount: (int *_Nonnull *_Nonnull)argc
-       andArgumentValues: (char *_Nonnull *_Nonnull *_Nonnull[])argv;
+       andArgumentValues: (char *_Nonnull *_Nonnull *_Nonnull[_Nonnull])argv;
 
 /*!
  * @brief Returns the delegate of the application.
@@ -223,8 +223,8 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int of_application_main(int *_Nonnull, char *_Nonnull *_Nonnull[],
-    Class);
+extern int of_application_main(int *_Nonnull,
+    char *_Nonnull *_Nonnull[_Nonnull], Class);
 #ifdef __cplusplus
 }
 #endif
