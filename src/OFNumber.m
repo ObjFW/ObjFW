@@ -913,8 +913,7 @@
 
 		return ret;
 	case OF_NUMBER_TYPE_DOUBLE:
-		ret = [OFMutableString stringWithFormat: @"%g",
-							 _value.double_];
+		ret = [OFMutableString stringWithFormat: @"%g", _value.double_];
 
 		if (![ret containsString: @"."])
 			[ret appendString: @".0"];

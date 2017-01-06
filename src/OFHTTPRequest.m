@@ -189,10 +189,10 @@ of_http_request_method_from_string(const char *string)
 - (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion
 {
 	if (protocolVersion.major != 1 || protocolVersion.minor > 1)
-		@throw [OFUnsupportedVersionException
-		    exceptionWithVersion: [OFString stringWithFormat: @"%u.%u",
-					      protocolVersion.major,
-					      protocolVersion.minor]];
+		@throw [OFUnsupportedVersionException exceptionWithVersion:
+		    [OFString stringWithFormat: @"%u.%u",
+						protocolVersion.major,
+						protocolVersion.minor]];
 
 	_protocolVersion = protocolVersion;
 }
@@ -228,7 +228,8 @@ of_http_request_method_from_string(const char *string)
 
 - (OFString*)protocolVersionString
 {
-	return [OFString stringWithFormat: @"%u.%u", _protocolVersion.major,
+	return [OFString stringWithFormat: @"%u.%u",
+					   _protocolVersion.major,
 					   _protocolVersion.minor];
 }
 
