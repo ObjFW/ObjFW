@@ -1,5 +1,5 @@
 dnl
-dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016
+dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017
 dnl Jonathan Schleifer <js@heap.zone>
 dnl
 dnl https://heap.zone/git/?p=buildsys.git
@@ -100,7 +100,7 @@ AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 		cygwin* | mingw*)
 			AC_MSG_RESULT(yes)
 			PROG_IMPLIB_NEEDED='yes'
-			PROG_IMPLIB_LDFLAGS='-Wl,-export-all-symbols,--out-implib,lib${PROG}.a'
+			PROG_IMPLIB_LDFLAGS='-Wl,--export-all-symbols,--out-implib,lib${PROG}.a'
 			;;
 		*)
 			AC_MSG_RESULT(no)
@@ -135,7 +135,7 @@ AC_DEFUN([BUILDSYS_SHARED_LIB], [
 		mingw* | cygwin*)
 			AC_MSG_RESULT(MinGW / Cygwin)
 			LIB_CFLAGS=''
-			LIB_LDFLAGS='-shared -Wl,--out-implib,${SHARED_LIB}.a'
+			LIB_LDFLAGS='-shared -Wl,--export-all-symbols,--out-implib,${SHARED_LIB}.a'
 			LIB_PREFIX='lib'
 			LIB_SUFFIX='.dll'
 			LDFLAGS_RPATH='-Wl,-rpath,${libdir}'
