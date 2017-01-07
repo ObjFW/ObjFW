@@ -121,16 +121,22 @@ CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 
-dnl Clang generates MIPS assembly not accepted by GNU as, however, Clang's
-dnl integrated assembler doesn't accept everything used in ObjFW's assembly
-dnl files. Therefore, use the integrated assembler for ObjC files, but not for
-dnl assembly files.
 case "$OBJC" in
 	*clang*)
-		case "$host_cpu" in
-			mips*)
+		case "$host" in
+			dnl Clang generates MIPS assembly not accepted by GNU
+			dnl as, however, Clang's integrated assembler doesn't
+			dnl accept everything used in ObjFW's assembly files.
+			dnl Therefore, use the integrated assembler for ObjC
+			dnl files, but not for assembly files.
+			mips*-*-*)
 				OBJCFLAGS="$OBJCFLAGS -integrated-as"
 				AC_SUBST(INTEGRATED_AS, "-integrated-as")
+				;;
+			dnl Clang's assembler on Windows is not complete yet
+			dnl and cannot compile all .S files.
+			*-*-mingw*)
+				ASFLAGS="$ASFLAGS -no-integrated-as"
 				;;
 		esac
 		;;
