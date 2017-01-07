@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <inttypes.h>
+#include <locale.h>
 #include <math.h>
 
 #import "OFNumber.h"
@@ -906,8 +907,16 @@
 	case OF_NUMBER_TYPE_FLOAT:
 		ret = [OFMutableString stringWithFormat: @"%g", _value.float_];
 
-		if (![ret containsString: @"."])
-			[ret appendString: @".0"];
+		{
+			void *pool = objc_autoreleasePoolPush();
+			OFString *decimalPoint = [OFString stringWithUTF8String:
+			    localeconv()->decimal_point];
+
+			if (![ret containsString: decimalPoint])
+			       [ret appendFormat: @"%@0", decimalPoint];
+
+			objc_autoreleasePoolPop(pool);
+		}
 
 		[ret makeImmutable];
 
@@ -915,8 +924,16 @@
 	case OF_NUMBER_TYPE_DOUBLE:
 		ret = [OFMutableString stringWithFormat: @"%g", _value.double_];
 
-		if (![ret containsString: @"."])
-			[ret appendString: @".0"];
+		{
+			void *pool = objc_autoreleasePoolPush();
+			OFString *decimalPoint = [OFString stringWithUTF8String:
+			    localeconv()->decimal_point];
+
+			if (![ret containsString: decimalPoint])
+			       [ret appendFormat: @"%@0", decimalPoint];
+
+			objc_autoreleasePoolPop(pool);
+		}
 
 		[ret makeImmutable];
 
