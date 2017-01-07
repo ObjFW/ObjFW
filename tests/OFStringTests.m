@@ -527,11 +527,27 @@ static uint16_t sutf16str[] = {
 	    OFInvalidFormatException, [@"0.0a" floatValue])
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #2",
 	    OFInvalidFormatException, [@"0 0" floatValue])
+#ifdef HAVE_STRTOF_L
+	/*
+	 * Only do this if we have strtof_l, as the locale might allow the
+	 * comma.
+	 */
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #3",
+	    OFInvalidFormatException, [@"0,0" floatValue])
+#endif
 
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #1",
-	    OFInvalidFormatException, [@"0.0a" floatValue])
+	    OFInvalidFormatException, [@"0.0a" doubleValue])
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #2",
-	    OFInvalidFormatException, [@"0 0" floatValue])
+	    OFInvalidFormatException, [@"0 0" doubleValue])
+#ifdef HAVE_STRTOD_L
+	/*
+	 * Only do this if we have strtod_l, as the locale might allow the
+	 * comma.
+	 */
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #3",
+	    OFInvalidFormatException, [@"0,0" doubleValue])
+#endif
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",
 	    OFOutOfRangeException,

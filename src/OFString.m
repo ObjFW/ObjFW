@@ -22,6 +22,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+# include <locale.h>
+#endif
+#ifdef HAVE_XLOCALE_H
+# include <xlocale.h>
+#endif
+
 #include <sys/stat.h>
 
 #import "OFString.h"
@@ -65,6 +72,10 @@
  */
 #ifdef __MINGW32__
 # define strtod __strtod
+#endif
+
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+static locale_t cLocale;
 #endif
 
 @interface OFString ()
@@ -501,8 +512,15 @@ static struct {
 @implementation OFString
 + (void)initialize
 {
-	if (self == [OFString class])
-		placeholder.isa = [OFString_placeholder class];
+	if (self != [OFString class])
+		return;
+
+	placeholder.isa = [OFString_placeholder class];
+
+#if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
+	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
+		@throw [OFInitializationFailedException exception];
+#endif
 }
 
 + alloc
@@ -2336,10 +2354,18 @@ static struct {
 - (float)floatValue
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef HAVE_STRTOF_L
+	const char *UTF8String = [self UTF8String];
+#else
+	/*
+	 * If we have no strtof_l, we have no other choice but to replace "."
+	 * with the locale's decimal point.
+	 */
 	OFString *decimalPoint = [OFSystemInfo decimalPoint];
 	const char *UTF8String = [[self
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint] UTF8String];
+#endif
 	char *endPointer = NULL;
 	float value;
 
@@ -2347,7 +2373,11 @@ static struct {
 	    *UTF8String == '\n' || *UTF8String == '\r' || *UTF8String == '\f')
 		UTF8String++;
 
+#ifdef HAVE_STRTOF_L
+	value = strtof_l(UTF8String, &endPointer, cLocale);
+#else
 	value = strtof(UTF8String, &endPointer);
+#endif
 
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
@@ -2365,10 +2395,18 @@ static struct {
 - (double)doubleValue
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef HAVE_STRTOD_L
+	const char *UTF8String = [self UTF8String];
+#else
+	/*
+	 * If we have no strtod_l, we have no other choice but to replace "."
+	 * with the locale's decimal point.
+	 */
 	OFString *decimalPoint = [OFSystemInfo decimalPoint];
 	const char *UTF8String = [[self
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint] UTF8String];
+#endif
 	char *endPointer = NULL;
 	double value;
 
@@ -2376,7 +2414,11 @@ static struct {
 	    *UTF8String == '\n' || *UTF8String == '\r' || *UTF8String == '\f')
 		UTF8String++;
 
+#ifdef HAVE_STRTOD_L
+	value = strtod_l(UTF8String, &endPointer, cLocale);
+#else
 	value = strtod(UTF8String, &endPointer);
+#endif
 
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)

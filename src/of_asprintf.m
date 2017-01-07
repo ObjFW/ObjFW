@@ -23,10 +23,19 @@
 #include <stdbool.h>
 #include <wchar.h>
 
+#ifdef HAVE_ASPRINTF_L
+# include <locale.h>
+#endif
+#ifdef HAVE_XLOCALE_H
+# include <xlocale.h>
+#endif
+
 #include <sys/types.h>
 
 #import "OFString.h"
 #import "OFSystemInfo.h"
+
+#import "OFInitializationFailedException.h"
 
 #define MAX_SUBFORMAT_LEN 64
 
@@ -69,6 +78,17 @@ struct context {
 	} lengthModifier;
 	bool useLocale;
 };
+
+#ifdef HAVE_ASPRINTF_L
+static locale_t cLocale;
+
+static void __attribute__((init))
+init(void)
+{
+	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
+		@throw [OFInitializationFailedException exception];
+}
+#endif
 
 #ifndef HAVE_ASPRINTF
 static int
@@ -494,6 +514,26 @@ formatConversionSpecifierState(struct context *ctx)
 	case 'G':
 	case 'a':
 	case 'A':
+#ifdef HAVE_ASPRINTF_L
+		{
+			locale_t locale = (ctx->useLocale ? NULL : cLocale);
+
+			switch (ctx->lengthModifier) {
+			case LENGTH_MODIFIER_NONE:
+			case LENGTH_MODIFIER_L:
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, double), locale);
+				break;
+			case LENGTH_MODIFIER_CAPITAL_L:
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, long double),
+				    locale);
+				break;
+			default:
+				return false;
+			}
+		}
+#else
 		switch (ctx->lengthModifier) {
 		case LENGTH_MODIFIER_NONE:
 		case LENGTH_MODIFIER_L:
@@ -509,8 +549,9 @@ formatConversionSpecifierState(struct context *ctx)
 		}
 
 		/*
-		 * Ugly hack to undo locale, as there is nothing such as
-		 * asprintf_l in POSIX.
+		 * If there's no asprintf_l, we have no other choice than to
+		 * use this ugly hack to replace the locale's decimal point
+		 * back to ".".
 		 */
 		if (!ctx->useLocale) {
 			void *pool = objc_autoreleasePoolPush();
@@ -536,6 +577,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 			tmp = tmp2;
 		}
+#endif
 
 		break;
 	case 'c':
