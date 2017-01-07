@@ -276,11 +276,8 @@
 			OFMutableString *tmp = [_name mutableCopy];
 			_setter = tmp;
 
-			if (first < 0x80) {
-				[tmp setCharacter: toupper((unsigned char)first)
-					  atIndex: 0];
-			}
-
+			[tmp setCharacter: of_ascii_toupper(first)
+				  atIndex: 0];
 			[tmp prependString: @"set"];
 
 			[tmp makeImmutable];

@@ -59,7 +59,7 @@ int _OFString_URLEncoding_reference;
 		 * interpreted as space in HTTP. Therefore always escape it to
 		 * make sure it's always interpreted correctly.
 		 */
-		if (!(c & 0x80) && (isalnum(c) || strchr(allowed, c) != NULL))
+		if (of_ascii_isalnum(c) || strchr(allowed, c) != NULL)
 			retCString[i++] = c;
 		else {
 			unsigned char high, low;

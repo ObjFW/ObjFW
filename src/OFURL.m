@@ -85,7 +85,7 @@
 			@throw [OFInvalidFormatException exception];
 
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
-			*tmp2 = tolower((unsigned char)*tmp2);
+			*tmp2 = of_ascii_tolower(*tmp2);
 
 		_scheme = [[OFString alloc]
 		    initWithUTF8String: UTF8String

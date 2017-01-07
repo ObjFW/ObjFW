@@ -1373,10 +1373,8 @@ static struct {
 				oc = tc;
 		}
 #else
-		if (c <= 0x7F)
-			c = toupper(c);
-		if (oc <= 0x7F)
-			oc = toupper(oc);
+		c = of_ascii_toupper(c);
+		oc = of_ascii_toupper(oc);
 #endif
 
 		if (c > oc) {

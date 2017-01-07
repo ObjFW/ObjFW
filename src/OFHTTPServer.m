@@ -154,13 +154,15 @@ normalizedKey(OFString *key)
 		    exceptionWithRequestedSize: strlen([key UTF8String])];
 
 	while (*tmp != '\0') {
-		if (!isalnum(*tmp)) {
+		if (!of_ascii_isalpha(*tmp)) {
 			firstLetter = true;
 			tmp++;
 			continue;
 		}
 
-		*tmp = (firstLetter ? toupper(*tmp) : tolower(*tmp));
+		*tmp = (firstLetter
+		    ? of_ascii_toupper(*tmp)
+		    : of_ascii_tolower(*tmp));
 
 		firstLetter = false;
 		tmp++;

@@ -49,13 +49,15 @@ normalizeKey(char *str_)
 	bool firstLetter = true;
 
 	while (*str != '\0') {
-		if (!isalnum(*str)) {
+		if (!of_ascii_isalpha(*str)) {
 			firstLetter = true;
 			str++;
 			continue;
 		}
 
-		*str = (firstLetter ? toupper(*str) : tolower(*str));
+		*str = (firstLetter
+		    ? of_ascii_toupper(*str)
+		    : of_ascii_tolower(*str));
 
 		firstLetter = false;
 		str++;

@@ -49,10 +49,8 @@ memcasecmp(const char *first, const char *second, size_t length)
 		unsigned char f = first[i];
 		unsigned char s = second[i];
 
-		if (f <= 0x7F)
-			f = toupper(f);
-		if (s <= 0x7F)
-			s = toupper(s);
+		f = of_ascii_toupper(f);
+		s = of_ascii_toupper(s);
 
 		if (f > s)
 			return OF_ORDERED_DESCENDING;
@@ -781,7 +779,10 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 - (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
 {
 	const char *otherCString;
-	size_t i, j, otherCStringLength, minimumCStringLength;
+	size_t otherCStringLength, minimumCStringLength;
+#ifdef OF_HAVE_UNICODE_TABLES
+	size_t i, j;
+#endif
 	int compare;
 
 	if (otherString == self)
@@ -853,12 +854,12 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		i += l1;
 		j += l2;
 	}
-#endif
 
 	if (_s->cStringLength - i > otherCStringLength - j)
 		return OF_ORDERED_DESCENDING;
 	else if (_s->cStringLength - i < otherCStringLength - j)
 		return OF_ORDERED_ASCENDING;
+#endif
 
 	return OF_ORDERED_SAME;
 }

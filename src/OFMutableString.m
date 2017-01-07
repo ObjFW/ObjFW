@@ -37,21 +37,6 @@ static struct {
 	Class isa;
 } placeholder;
 
-#ifndef OF_HAVE_UNICODE_TABLES
-/* Wrap these, as they can be macros. */
-static int
-toupperWrapper(int c)
-{
-	return toupper(c);
-}
-
-static int
-tolowerWrapper(int c)
-{
-	return tolower(c);
-}
-#endif
-
 @interface OFMutableString_placeholder: OFMutableString
 @end
 
@@ -297,8 +282,8 @@ tolowerWrapper(int c)
 	objc_autoreleasePoolPop(pool);
 }
 #else
-- (void)OF_convertWithWordStartFunction: (int (*)(int))startFunction
-		     wordMiddleFunction: (int (*)(int))middleFunction
+- (void)OF_convertWithWordStartFunction: (char (*)(char))startFunction
+		     wordMiddleFunction: (char (*)(char))middleFunction
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
@@ -306,7 +291,7 @@ tolowerWrapper(int c)
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
-		int (*function)(int) =
+		char (*function)(char) =
 		    (isStart ? startFunction : middleFunction);;
 		of_unichar_t c = characters[i];
 
@@ -484,20 +469,20 @@ tolowerWrapper(int c)
 #else
 - (void)uppercase
 {
-	[self OF_convertWithWordStartFunction: toupperWrapper
-			   wordMiddleFunction: toupperWrapper];
+	[self OF_convertWithWordStartFunction: of_ascii_toupper
+			   wordMiddleFunction: of_ascii_toupper];
 }
 
 - (void)lowercase
 {
-	[self OF_convertWithWordStartFunction: tolowerWrapper
-			   wordMiddleFunction: tolowerWrapper];
+	[self OF_convertWithWordStartFunction: of_ascii_tolower
+			   wordMiddleFunction: of_ascii_tolower];
 }
 
 - (void)capitalize
 {
-	[self OF_convertWithWordStartFunction: toupperWrapper
-			   wordMiddleFunction: tolowerWrapper];
+	[self OF_convertWithWordStartFunction: of_ascii_toupper
+			   wordMiddleFunction: of_ascii_tolower];
 }
 #endif
 

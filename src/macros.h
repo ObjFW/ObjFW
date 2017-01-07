@@ -609,3 +609,27 @@ of_explicit_memset(void *buffer_, int character, size_t length)
 	while (buffer < (unsigned char*)buffer_ + length)
 		*buffer++ = character;
 }
+
+static OF_INLINE bool
+of_ascii_isalpha(char c)
+{
+	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+}
+
+static OF_INLINE bool
+of_ascii_isalnum(char c)
+{
+	return (of_ascii_isalpha(c) || (c >= '0' && c <= '9'));
+}
+
+static OF_INLINE char
+of_ascii_toupper(char c)
+{
+	return (c >= 'a' && c <= 'z' ? 'A' + (c - 'a') : c);
+}
+
+static OF_INLINE char
+of_ascii_tolower(char c)
+{
+	return (c >= 'A' && c <= 'Z' ? 'a' + (c - 'A') : c);
+}
