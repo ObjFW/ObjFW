@@ -52,6 +52,13 @@ OF_ASSUME_NONNULL_BEGIN
 + (of_string_encoding_t)native8BitEncoding;
 
 /*!
+ * @brief Returns the decimal point in the system's locale.
+ *
+ * @return The decimal point in the system's locale
+ */
++ (OFString*)decimalPoint;
+
+/*!
  * @brief Returns the path where user data for the application can be stored.
  *
  * On Unix systems, this adheres to the XDG Base Directory specification.@n

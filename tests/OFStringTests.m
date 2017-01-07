@@ -524,17 +524,13 @@ static uint16_t sutf16str[] = {
 	    OFInvalidFormatException, [@"$ " hexadecimalValue])
 
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #1",
-	    OFInvalidFormatException, [@"0,0" floatValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #2",
 	    OFInvalidFormatException, [@"0.0a" floatValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #3",
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[floatValue] #2",
 	    OFInvalidFormatException, [@"0 0" floatValue])
 
 	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #1",
-	    OFInvalidFormatException, [@"0,0" floatValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #2",
 	    OFInvalidFormatException, [@"0.0a" floatValue])
-	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #3",
+	EXPECT_EXCEPTION(@"Detect invalid chars in -[doubleValue] #2",
 	    OFInvalidFormatException, [@"0 0" floatValue])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[decimalValue]",

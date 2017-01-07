@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <locale.h>
 #include <signal.h>
 
 #import "OFApplication.h"
@@ -100,6 +101,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 	wchar_t **wargv, **wenvp;
 	int wargc, si = 0;
 #endif
+
+	setlocale(LC_ALL, "");
 
 	if ([cls isSubclassOfClass: [OFApplication class]]) {
 		fprintf(stderr, "FATAL ERROR:\n  Class %s is a subclass of "

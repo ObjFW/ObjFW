@@ -713,15 +713,15 @@ next:
 		if (_length >= 0) {
 			if (_resumedFrom + _length >= GIBIBYTE)
 				lengthString = [OFString stringWithFormat:
-				    @"%.2f GiB",
+				    @"%,.2f GiB",
 				    (float)(_resumedFrom + _length) / GIBIBYTE];
 			else if (_resumedFrom + _length >= MEBIBYTE)
 				lengthString = [OFString stringWithFormat:
-				    @"%.2f MiB",
+				    @"%,.2f MiB",
 				    (float)(_resumedFrom + _length) / MEBIBYTE];
 			else if (_resumedFrom + _length >= KIBIBYTE)
 				lengthString = [OFString stringWithFormat:
-				    @"%.2f KiB",
+				    @"%,.2f KiB",
 				    (float)(_resumedFrom + _length) / KIBIBYTE];
 			else
 				lengthString = [OFString stringWithFormat:

@@ -30,6 +30,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
+#import "OFSystemInfo.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -2335,7 +2336,10 @@ static struct {
 - (float)floatValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *UTF8String = [self UTF8String];
+	OFString *decimalPoint = [OFSystemInfo decimalPoint];
+	const char *UTF8String = [[self
+	    stringByReplacingOccurrencesOfString: @"."
+				      withString: decimalPoint] UTF8String];
 	char *endPointer = NULL;
 	float value;
 
@@ -2361,7 +2365,10 @@ static struct {
 - (double)doubleValue
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *UTF8String = [self UTF8String];
+	OFString *decimalPoint = [OFSystemInfo decimalPoint];
+	const char *UTF8String = [[self
+	    stringByReplacingOccurrencesOfString: @"."
+				      withString: decimalPoint] UTF8String];
 	char *endPointer = NULL;
 	double value;
 

@@ -26,6 +26,7 @@
 #include <sys/types.h>
 
 #import "OFString.h"
+#import "OFSystemInfo.h"
 
 #define MAX_SUBFORMAT_LEN 64
 
@@ -66,6 +67,7 @@ struct context {
 		LENGTH_MODIFIER_T,
 		LENGTH_MODIFIER_CAPITAL_L
 	} lengthModifier;
+	bool useLocale;
 };
 
 #ifndef HAVE_ASPRINTF
@@ -164,6 +166,10 @@ formatFlagsState(struct context *ctx)
 		if (!appendSubformat(ctx, ctx->format + ctx->i, 1))
 			return false;
 
+		break;
+	case ',':
+		/* ObjFW extension: Use decimal point from locale */
+		ctx->useLocale = true;
 		break;
 	default:
 		ctx->state = STATE_FORMAT_FIELD_WIDTH;
@@ -502,6 +508,35 @@ formatConversionSpecifierState(struct context *ctx)
 			return false;
 		}
 
+		/*
+		 * Ugly hack to undo locale, as there is nothing such as
+		 * asprintf_l in POSIX.
+		 */
+		if (!ctx->useLocale) {
+			void *pool = objc_autoreleasePoolPush();
+			char *tmp2;
+
+			@try {
+				OFMutableString *tmpStr = [OFMutableString
+				    stringWithUTF8String: tmp
+						  length: tmpLen];
+				OFString *decimalPoint =
+				    [OFSystemInfo decimalPoint];
+				[tmpStr replaceOccurrencesOfString: decimalPoint
+							withString: @"."];
+				if ([tmpStr UTF8StringLength] > INT_MAX)
+					return false;
+				tmpLen = (int)[tmpStr UTF8StringLength];
+				tmp2 = malloc(tmpLen);
+				memcpy(tmp2, [tmpStr UTF8String], tmpLen);
+			} @finally {
+				free(tmp);
+				objc_autoreleasePoolPop(pool);
+			}
+
+			tmp = tmp2;
+		}
+
 		break;
 	case 'c':
 		switch (ctx->lengthModifier) {
@@ -612,6 +647,7 @@ formatConversionSpecifierState(struct context *ctx)
 	memset(ctx->subformat, 0, MAX_SUBFORMAT_LEN);
 	ctx->subformatLen = 0;
 	ctx->lengthModifier = LENGTH_MODIFIER_NONE;
+	ctx->useLocale = false;
 
 	ctx->last = ctx->i + 1;
 	ctx->state = STATE_STRING;
@@ -641,6 +677,7 @@ of_vasprintf(char **string, const char *format, va_list arguments)
 	ctx.last = 0;
 	ctx.state = STATE_STRING;
 	ctx.lengthModifier = LENGTH_MODIFIER_NONE;
+	ctx.useLocale = false;
 
 	if ((ctx.buffer = malloc(1)) == NULL)
 		return -1;

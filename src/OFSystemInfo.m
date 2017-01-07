@@ -24,6 +24,7 @@
 # undef __USE_XOPEN
 #endif
 
+#include <locale.h>
 #include <unistd.h>
 
 #include "platform.h"
@@ -147,6 +148,11 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 {
 	/* FIXME */
 	return OF_STRING_ENCODING_UTF_8;
+}
+
++ (OFString*)decimalPoint
+{
+	return [OFString stringWithUTF8String: localeconv()->decimal_point];
 }
 
 + (OFString*)userDataPath

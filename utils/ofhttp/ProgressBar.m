@@ -127,7 +127,7 @@
 			[of_stdout writeString: @" "];
 	}
 
-	[of_stdout writeFormat: @"▏ %6.2f%% ", percent];
+	[of_stdout writeFormat: @"▏ %,6.2f%% ", percent];
 
 	if (percent == 100) {
 		double timeInterval = -[_startDate timeIntervalSinceNow];
@@ -139,35 +139,35 @@
 	if (isinf(_ETA))
 		[of_stdout writeString: @"--:--:-- "];
 	else if (_ETA >= 99 * 3600)
-		[of_stdout writeFormat: @"%4.2f d ", _ETA / (24 * 3600)];
+		[of_stdout writeFormat: @"%,4.2f d ", _ETA / (24 * 3600)];
 	else
 		[of_stdout writeFormat: @"%2u:%02u:%02u ",
 		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
 		    (uint8_t)_ETA % 60];
 
 	if (_BPS >= GIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
+		[of_stdout writeFormat: @"%,7.2f GiB/s", _BPS / GIBIBYTE];
 	else if (_BPS >= MEBIBYTE)
-		[of_stdout writeFormat: @"%7.2f MiB/s", _BPS / MEBIBYTE];
+		[of_stdout writeFormat: @"%,7.2f MiB/s", _BPS / MEBIBYTE];
 	else if (_BPS >= KIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f KiB/s", _BPS / KIBIBYTE];
+		[of_stdout writeFormat: @"%,7.2f KiB/s", _BPS / KIBIBYTE];
 	else
-		[of_stdout writeFormat: @"%7.2f B/s  ", _BPS];
+		[of_stdout writeFormat: @"%,7.2f B/s  ", _BPS];
 }
 
 - (void)_drawReceived
 {
 	if (_resumedFrom + _received >= GIBIBYTE)
 		[of_stdout writeFormat:
-		    @"\r  %7.2f GiB ",
+		    @"\r  %,7.2f GiB ",
 		    (float)(_resumedFrom + _received) / GIBIBYTE];
 	else if (_resumedFrom + _received >= MEBIBYTE)
 		[of_stdout writeFormat:
-		    @"\r  %7.2f MiB ",
+		    @"\r  %,7.2f MiB ",
 		    (float)(_resumedFrom + _received) / MEBIBYTE];
 	else if (_resumedFrom + _received >= KIBIBYTE)
 		[of_stdout writeFormat:
-		    @"\r  %7.2f KiB ",
+		    @"\r  %,7.2f KiB ",
 		    (float)(_resumedFrom + _received) / KIBIBYTE];
 	else
 		[of_stdout writeFormat:
@@ -178,13 +178,13 @@
 		    -(float)[_startDate timeIntervalSinceNow];
 
 	if (_BPS >= GIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f GiB/s", _BPS / GIBIBYTE];
+		[of_stdout writeFormat: @"%,7.2f GiB/s", _BPS / GIBIBYTE];
 	else if (_BPS >= MEBIBYTE)
-		[of_stdout writeFormat: @"%7.2f MiB/s", _BPS / MEBIBYTE];
+		[of_stdout writeFormat: @"%,7.2f MiB/s", _BPS / MEBIBYTE];
 	else if (_BPS >= KIBIBYTE)
-		[of_stdout writeFormat: @"%7.2f KiB/s", _BPS / KIBIBYTE];
+		[of_stdout writeFormat: @"%,7.2f KiB/s", _BPS / KIBIBYTE];
 	else
-		[of_stdout writeFormat: @"%7.2f B/s  ", _BPS];
+		[of_stdout writeFormat: @"%,7.2f B/s  ", _BPS];
 }
 
 - (void)draw
