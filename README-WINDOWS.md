@@ -45,7 +45,7 @@ Installing MinGW-w64 using MSYS2
 
   Now it's time to install MinGW-w64. If you want to build 32 bit binaries:
 
-    $ pacman -S mingw-w64-i686-gcc-objc
+    $ pacman -S mingw-w64-i686-clang mingw-w64-i686-gcc-objc
 
   For 64 bit binaries:
 
@@ -54,6 +54,11 @@ Installing MinGW-w64 using MSYS2
   There is nothing wrong with installing them both, as MSYS2 has created two
   entries in your start menu: MinGW-w64 Win32 Shell and MinGW-w64 Win64 Shell.
   So if you want to build for 32 or 64 bit, you just start the correct shell.
+
+  Notice, though, that Clang is only installed for 32 bit binaries, as its SEH
+  support is not sufficient for ObjFW yet. Therefore, if you follow these
+  instructions, by default, 32 bit binaries will be built with Clang and 64 bit
+  binaries with GCC.
 
   Finally, install a few more things needed to build ObjFW:
 

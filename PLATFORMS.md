@@ -163,10 +163,9 @@ Wii
 Windows
 -------
 
-  * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), Wine (x86 & x64)
+  * OS Versions: XP (x86), 7 (x64), 8 (x64), 8.1 (x64), 10, Wine (x86 & x64)
   * Architectures: x86, x86_64
-  * Compilers: TDM GCC 4.6.1-dw2, TDM GCC 4.7.1-dw2, MinGW-w64 GCC 4.8.2 DWARF,
-               MinGW-w64 GCC 4.8.2 SEH, MinGW-w64 GCC 4.8.2 SjLj
+  * Compilers: GCC 6.2.0 from msys2 (x86 and x64), Clang 3.9.0 from msys2 (x86)
   * Runtimes: ObjFW
 
 
