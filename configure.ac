@@ -20,6 +20,11 @@ case "$host" in
 		enable_threads="no"
 		enable_sockets="no"
 		;;
+	*-*-mingw*)
+		LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+		AC_SUBST(ALLOW_MULTIPLE_DEFINITION,
+			[--Wl,--allow-multiple-definition])
+		;;
 	*-psp-*)
 		AS_IF([test x"$DEVKITPSP" = x""], [
 			AC_MSG_ERROR(
