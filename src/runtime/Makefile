@@ -29,4 +29,4 @@ LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. -I.. -I../..
+CPPFLAGS += -I. -I.. -I../.. -DOF_COMPILING_OBJFW

@@ -30,6 +30,7 @@
 
 #import "macros.h"
 #import "autorelease.h"
+#import "block.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

@@ -69,4 +69,4 @@ INCLUDES = ${SRCS:.m=.h}
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. -I.. -I../.. -I../runtime
+CPPFLAGS += -I. -I.. -I../.. -I../runtime -DOF_COMPILING_OBJFW

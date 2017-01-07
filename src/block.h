@@ -41,6 +41,18 @@ extern "C" {
 #endif
 extern void* _Block_copy(const void*);
 extern void _Block_release(const void*);
+
+# if defined(OF_WINDOWS) && defined(OF_COMPILING_OBJFW)
+/*
+ * Clang has implicit declarations for these, but they are dllimport. When
+ * compiling ObjFW itself, these need to be dllexport.
+ */
+extern __declspec(dllexport) struct objc_abi_class _NSConcreteStackBlock;
+extern __declspec(dllexport) struct objc_abi_class _NSConcreteGlobalBlock;
+extern __declspec(dllexport) void _Block_object_assign(void*, const void*,
+    const int);
+extern __declspec(dllexport) void _Block_object_dispose(const void*, const int);
+# endif
 #ifdef __cplusplus
 }
 #endif
