@@ -882,7 +882,7 @@ AS_IF([test x"$enable_files" != x"no"], [
 
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 
-AC_CHECK_HEADERS(langinfo.h xlocale.h)
+AC_CHECK_HEADERS(xlocale.h)
 AC_CHECK_FUNCS([strtod_l strtof_l vasprintf_l])
 
 AC_CHECK_FUNC(pipe, [

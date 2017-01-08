@@ -72,8 +72,7 @@ extern char **environ;
 @end
 
 static OFApplication *app = nil;
-extern of_string_encoding_t of_system_info_native_8bit_encoding;
-extern OFString *of_system_info_decimal_point;
+extern void of_system_info_parse_locale(char*);
 
 static void
 atexitHandler(void)
@@ -109,48 +108,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 	wchar_t **wargv, **wenvp;
 	int wargc, si = 0;
 #endif
-#ifdef HAVE_LANGINFO_H
-	char *codeset, *lowerCodeset;
-	size_t codesetLen;
-#endif
 
-	setlocale(LC_ALL, "");
-
-#ifdef HAVE_LANGINFO_H
-	codeset = nl_langinfo(CODESET);
-	codesetLen = strlen(codeset);
-
-	if (SIZE_MAX - codesetLen < 1)
-		@throw [OFOutOfRangeException exception];
-
-	if ((lowerCodeset = malloc(codesetLen + 1)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: codesetLen + 1];
-
-	for (size_t i = 0; i < codesetLen; i++)
-		lowerCodeset[i] = of_ascii_tolower(codeset[i]);
-
-	if (strcmp(lowerCodeset, "utf8") == 0 ||
-	    strcmp(lowerCodeset, "utf-8") == 0)
-		of_system_info_native_8bit_encoding = OF_STRING_ENCODING_UTF_8;
-	else if (strcmp(lowerCodeset, "ascii") == 0 ||
-	    strcmp(lowerCodeset, "us-ascii") == 0)
-		of_system_info_native_8bit_encoding = OF_STRING_ENCODING_ASCII;
-	else if (strcmp(lowerCodeset, "iso8859-1") == 0 ||
-	    strcmp(lowerCodeset, "iso-8859-1") == 0)
-		of_system_info_native_8bit_encoding =
-		    OF_STRING_ENCODING_ISO_8859_1;
-	else if (strcmp(lowerCodeset, "iso8859-15") == 0 ||
-	    strcmp(lowerCodeset, "iso-8859-15") == 0)
-		of_system_info_native_8bit_encoding =
-		    OF_STRING_ENCODING_ISO_8859_15;
-
-	free(lowerCodeset);
-#endif
-
-	of_system_info_decimal_point = [[OFString alloc]
-	    initWithCString: localeconv()->decimal_point
-		   encoding: of_system_info_native_8bit_encoding];
+	of_system_info_parse_locale(setlocale(LC_ALL, ""));
 
 	if ([cls isSubclassOfClass: [OFApplication class]]) {
 		fprintf(stderr, "FATAL ERROR:\n  Class %s is a subclass of "

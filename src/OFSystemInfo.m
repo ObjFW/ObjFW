@@ -24,6 +24,7 @@
 # undef __USE_XOPEN
 #endif
 
+#include <locale.h>
 #include <unistd.h>
 
 #include "platform.h"
@@ -65,10 +66,71 @@ struct x86_regs {
 
 static size_t pageSize;
 static size_t numberOfCPUs;
+static of_string_encoding_t native8BitEncoding = OF_STRING_ENCODING_UTF_8;
+static OFString *language = nil;
+static OFString *territory = nil;
+static OFString *decimalPoint = @".";
 
-of_string_encoding_t of_system_info_native_8bit_encoding =
-    OF_STRING_ENCODING_UTF_8;
-OFString *of_system_info_decimal_point = @".";
+void
+of_system_info_parse_locale(char *locale)
+{
+	if (locale == NULL)
+		return;
+
+	locale = of_strdup(locale);
+
+	@try {
+		char *tmp;
+
+		/* We don't care for extras behind the @ */
+		if ((tmp = strrchr(locale, '@')) != NULL)
+			*tmp = '\0';
+
+		/* Encoding */
+		if ((tmp = strrchr(locale, '.')) != NULL) {
+			size_t tmpLen;
+
+			*tmp++ = '\0';
+
+			tmpLen = strlen(tmp);
+			for (size_t i = 0; i < tmpLen; i++)
+				tmp[i] = of_ascii_tolower(tmp[i]);
+
+			if (strcmp(tmp, "utf8") == 0 ||
+			    strcmp(tmp, "utf-8") == 0)
+				native8BitEncoding = OF_STRING_ENCODING_UTF_8;
+			else if (strcmp(tmp, "ascii") == 0 ||
+			    strcmp(tmp, "us-ascii") == 0)
+				native8BitEncoding = OF_STRING_ENCODING_ASCII;
+			else if (strcmp(tmp, "iso8859-1") == 0 ||
+			    strcmp(tmp, "iso-8859-1") == 0)
+				native8BitEncoding =
+				    OF_STRING_ENCODING_ISO_8859_1;
+			else if (strcmp(tmp, "iso8859-15") == 0 ||
+			    strcmp(tmp, "iso-8859-15") == 0)
+				native8BitEncoding =
+				    OF_STRING_ENCODING_ISO_8859_15;
+		}
+
+		/* Territory */
+		if ((tmp = strrchr(locale, '_')) != NULL) {
+			*tmp++ = '\0';
+			territory = [[OFString alloc]
+			    initWithCString: tmp
+				   encoding: OF_STRING_ENCODING_ASCII];
+		}
+
+		language = [[OFString alloc]
+		    initWithCString: locale
+			   encoding: OF_STRING_ENCODING_ASCII];
+	} @finally {
+		free(locale);
+	}
+
+	decimalPoint = [[OFString alloc]
+	    initWithCString: localeconv()->decimal_point
+		   encoding: native8BitEncoding];
+}
 
 #if defined(OF_X86_64) || defined(OF_X86)
 static OF_INLINE struct x86_regs OF_CONST_FUNC
@@ -149,12 +211,22 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (of_string_encoding_t)native8BitEncoding
 {
-	return of_system_info_native_8bit_encoding;
+	return native8BitEncoding;
+}
+
++ (OFString*)language
+{
+	return language;
+}
+
++ (OFString*)territory
+{
+	return territory;
 }
 
 + (OFString*)decimalPoint
 {
-	return of_system_info_decimal_point;
+	return decimalPoint;
 }
 
 + (OFString*)userDataPath
