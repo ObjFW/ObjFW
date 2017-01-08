@@ -24,7 +24,6 @@
 # undef __USE_XOPEN
 #endif
 
-#include <locale.h>
 #include <unistd.h>
 
 #include "platform.h"
@@ -66,6 +65,10 @@ struct x86_regs {
 
 static size_t pageSize;
 static size_t numberOfCPUs;
+
+of_string_encoding_t of_system_info_native_8bit_encoding =
+    OF_STRING_ENCODING_UTF_8;
+OFString *of_system_info_decimal_point = @".";
 
 #if defined(OF_X86_64) || defined(OF_X86)
 static OF_INLINE struct x86_regs OF_CONST_FUNC
@@ -146,13 +149,12 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (of_string_encoding_t)native8BitEncoding
 {
-	/* FIXME */
-	return OF_STRING_ENCODING_UTF_8;
+	return of_system_info_native_8bit_encoding;
 }
 
 + (OFString*)decimalPoint
 {
-	return [OFString stringWithUTF8String: localeconv()->decimal_point];
+	return of_system_info_decimal_point;
 }
 
 + (OFString*)userDataPath
