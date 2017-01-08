@@ -23,7 +23,7 @@ case "$host" in
 	*-*-mingw*)
 		LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
 		AC_SUBST(ALLOW_MULTIPLE_DEFINITION,
-			[--Wl,--allow-multiple-definition])
+			[-Wl,--allow-multiple-definition])
 		;;
 	*-psp-*)
 		AS_IF([test x"$DEVKITPSP" = x""], [
