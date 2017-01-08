@@ -339,15 +339,6 @@
 	[super dealloc];	/* Get rid of a stupid warning */
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
-extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
-#ifdef __cplusplus
-}
-#endif
-
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_CONST(uint16_t i)
 {

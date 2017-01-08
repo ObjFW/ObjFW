@@ -234,11 +234,26 @@ extern void* objc_autoreleasePoolPush(void);
 extern void objc_autoreleasePoolPop(void*);
 extern id _objc_rootAutorelease(id);
 extern void objc_zero_weak_references(id);
-/* Used by the compiler, but can be called manually. */
+
+/*
+ * Used by the compiler, but can also be called manually.
+ *
+ * These declarations are also required to prevent Clang's implicit
+ * declarations which include __declspec(dllimport) on Windows.
+ */
+struct objc_abi_module;
+extern void __objc_exec_class(struct objc_abi_module*);
 extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_stret(id, SEL);
 extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
 extern IMP objc_msg_lookup_super_stret(struct objc_super*, SEL);
+extern void objc_exception_throw(id);
+extern int objc_sync_enter(id);
+extern int objc_sync_exit(id);
+extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
+extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
+extern void objc_getPropertyStruct(void*, const void*, ptrdiff_t, BOOL, BOOL);
+extern void objc_setPropertyStruct(void*, const void*, ptrdiff_t, BOOL, BOOL);
 extern void objc_enumerationMutation(id);
 extern void objc_setEnumerationMutationHandler(void (*handler)(id));
 #ifdef __cplusplus
