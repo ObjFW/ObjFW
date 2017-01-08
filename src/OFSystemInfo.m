@@ -110,6 +110,10 @@ of_system_info_parse_locale(char *locale)
 			    strcmp(tmp, "iso-8859-15") == 0)
 				native8BitEncoding =
 				    OF_STRING_ENCODING_ISO_8859_15;
+			/* Windows uses a codepage */
+			else if (strcmp(tmp, "1252") == 0)
+				native8BitEncoding =
+				    OF_STRING_ENCODING_WINDOWS_1252;
 		}
 
 		/* Territory */
