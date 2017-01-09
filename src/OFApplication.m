@@ -20,9 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_LANGINFO_H
-# include <langinfo.h>
-#endif
 #include <locale.h>
 #include <signal.h>
 
@@ -30,7 +27,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFThread.h"
@@ -72,7 +69,6 @@ extern char **environ;
 @end
 
 static OFApplication *app = nil;
-extern void of_system_info_parse_locale(char*);
 
 static void
 atexitHandler(void)
@@ -109,7 +105,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	int wargc, si = 0;
 #endif
 
-	of_system_info_parse_locale(setlocale(LC_ALL, ""));
+	[[OFLocalization alloc] initWithLocale: setlocale(LC_ALL, "")];
 
 	if ([cls isSubclassOfClass: [OFApplication class]]) {
 		fprintf(stderr, "FATAL ERROR:\n  Class %s is a subclass of "
@@ -248,11 +244,12 @@ of_application_main(int *argc, char **argv[], Class cls)
 		FreeEnvironmentStringsW(env0);
 #elif !defined(OF_IOS)
 		if (env != NULL) {
+			const of_string_encoding_t encoding =
+			    [OFLocalization encoding];
+
 			for (; *env != NULL; env++) {
 				OFString *key, *value;
 				char *sep;
-				const of_string_encoding_t encoding =
-				    [OFSystemInfo native8BitEncoding];
 
 				pool = objc_autoreleasePoolPush();
 
@@ -353,7 +350,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	_argc = argc;
 	_argv = argv;
 
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 # ifndef OF_NINTENDO_DS
 	if (*argc > 0) {

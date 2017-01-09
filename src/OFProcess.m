@@ -41,7 +41,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -149,8 +149,7 @@ extern char **environ;
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		path = [program cStringWithEncoding:
-		    [OFSystemInfo native8BitEncoding]];
+		path = [program cStringWithEncoding: [OFLocalization encoding]];
 		[self OF_getArgV: &argv
 		  forProgramName: programName
 		    andArguments: arguments];
@@ -350,7 +349,7 @@ extern char **environ;
 	*argv = [self allocMemoryWithSize: sizeof(char*)
 				    count: count + 2];
 
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 	(*argv)[0] = (char*)[programName cStringWithEncoding: encoding];
 
@@ -371,7 +370,7 @@ extern char **environ;
 	if (environment == nil)
 		return NULL;
 
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 	count = [environment count];
 	envp = [self allocMemoryWithSize: sizeof(char*)

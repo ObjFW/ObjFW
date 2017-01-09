@@ -21,6 +21,7 @@
 #import "OFDate.h"
 #import "OFStdIOStream.h"
 #import "OFTimer.h"
+#import "OFLocalization.h"
 
 #import "ProgressBar.h"
 
@@ -138,53 +139,101 @@
 
 	if (isinf(_ETA))
 		[of_stdout writeString: @"--:--:-- "];
-	else if (_ETA >= 99 * 3600)
-		[of_stdout writeFormat: @"%,4.2f d ", _ETA / (24 * 3600)];
-	else
+	else if (_ETA >= 99 * 3600) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,4.2f", _ETA / (24 * 3600)];
+		[of_stdout writeString: OF_LOCALIZED(@"eta_days",
+		    @"%[num] d ",
+		    @"num", num)];
+	} else
 		[of_stdout writeFormat: @"%2u:%02u:%02u ",
 		    (uint8_t)(_ETA / 3600), (uint8_t)(_ETA / 60) % 60,
 		    (uint8_t)_ETA % 60];
 
-	if (_BPS >= GIBIBYTE)
-		[of_stdout writeFormat: @"%,7.2f GiB/s", _BPS / GIBIBYTE];
-	else if (_BPS >= MEBIBYTE)
-		[of_stdout writeFormat: @"%,7.2f MiB/s", _BPS / MEBIBYTE];
-	else if (_BPS >= KIBIBYTE)
-		[of_stdout writeFormat: @"%,7.2f KiB/s", _BPS / KIBIBYTE];
-	else
-		[of_stdout writeFormat: @"%,7.2f B/s  ", _BPS];
+	if (_BPS >= GIBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS / GIBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_gibs",
+		    @"%[num] GiB/s",
+		    @"num", num)];
+	} else if (_BPS >= MEBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS / MEBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_mibs",
+		    @"%[num] MiB/s",
+		    @"num", num)];
+	} else if (_BPS >= KIBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS / KIBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_kibs",
+		    @"%[num] KiB/s",
+		    @"num", num)];
+	} else {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_bps",
+		    @"%[num] B/s  ",
+		    @"num", num)];
+	}
 }
 
 - (void)_drawReceived
 {
-	if (_resumedFrom + _received >= GIBIBYTE)
-		[of_stdout writeFormat:
-		    @"\r  %,7.2f GiB ",
-		    (float)(_resumedFrom + _received) / GIBIBYTE];
-	else if (_resumedFrom + _received >= MEBIBYTE)
-		[of_stdout writeFormat:
-		    @"\r  %,7.2f MiB ",
-		    (float)(_resumedFrom + _received) / MEBIBYTE];
-	else if (_resumedFrom + _received >= KIBIBYTE)
-		[of_stdout writeFormat:
-		    @"\r  %,7.2f KiB ",
-		    (float)(_resumedFrom + _received) / KIBIBYTE];
-	else
-		[of_stdout writeFormat:
-		    @"\r  %jd bytes ", _resumedFrom + _received];
+	if (_resumedFrom + _received >= GIBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", (float)(_resumedFrom + _received) / GIBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_gib",
+		    @"\r  %[num] GiB ",
+		    @"num", num)];
+	} else if (_resumedFrom + _received >= MEBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", (float)(_resumedFrom + _received) / MEBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_mib",
+		    @"\r  %[num] MiB ",
+		    @"num", num)];
+	} else if (_resumedFrom + _received >= KIBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", (float)(_resumedFrom + _received) / KIBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_kib",
+		    @"\r  %[num] KiB ",
+		    @"num", num)];
+	} else {
+		OFString *num = [OFString stringWithFormat:
+		    @"%jd", _resumedFrom + _received];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_bytes",
+		    @"\r  %[num] bytes ",
+		    @"num", num)];
+	}
 
 	if (_stopped)
 		_BPS = (float)_received /
 		    -(float)[_startDate timeIntervalSinceNow];
 
-	if (_BPS >= GIBIBYTE)
-		[of_stdout writeFormat: @"%,7.2f GiB/s", _BPS / GIBIBYTE];
-	else if (_BPS >= MEBIBYTE)
-		[of_stdout writeFormat: @"%,7.2f MiB/s", _BPS / MEBIBYTE];
-	else if (_BPS >= KIBIBYTE)
-		[of_stdout writeFormat: @"%,7.2f KiB/s", _BPS / KIBIBYTE];
-	else
-		[of_stdout writeFormat: @"%,7.2f B/s  ", _BPS];
+	if (_BPS >= GIBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS / GIBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_gibs",
+		    @"%[num] GiB/s",
+		    @"num", num)];
+	} else if (_BPS >= MEBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS / MEBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_mibs",
+		    @"%[num] MiB/s",
+		    @"num", num)];
+	} else if (_BPS >= KIBIBYTE) {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS / KIBIBYTE];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_kibs",
+		    @"%[num] KiB/s",
+		    @"num", num)];
+	} else {
+		OFString *num = [OFString stringWithFormat:
+		    @"%,7.2f", _BPS];
+		[of_stdout writeString: OF_LOCALIZED(@"progress_bps",
+		    @"%[num] B/s  ",
+		    @"num", num)];
+	}
 }
 
 - (void)draw

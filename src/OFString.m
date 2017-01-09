@@ -37,7 +37,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFDataArray.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -2361,7 +2361,7 @@ static struct {
 	 * If we have no strtof_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFSystemInfo decimalPoint];
+	OFString *decimalPoint = [OFLocalization decimalPoint];
 	const char *UTF8String = [[self
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint] UTF8String];
@@ -2402,7 +2402,7 @@ static struct {
 	 * If we have no strtod_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFSystemInfo decimalPoint];
+	OFString *decimalPoint = [OFLocalization decimalPoint];
 	const char *UTF8String = [[self
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint] UTF8String];

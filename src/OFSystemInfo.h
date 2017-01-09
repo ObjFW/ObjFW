@@ -42,43 +42,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (size_t)numberOfCPUs;
 
 /*!
- * @brief Returns the native 8-bit string encoding of the operating system.
- *
- * This is useful to encode strings correctly for passing them to operating
- * system calls.
- *
- * If the native 8-bit encoding is unknown, UTF-8 is assumed.
- *
- * @return The native 8-bit string encoding of the operating system
- */
-+ (of_string_encoding_t)native8BitEncoding;
-
-/*!
- * @brief Returns the language of the locale.
- *
- * If the language is unknown, nil is returned.
- *
- * @return The language of the locale.
- */
-+ (OFString*)language;
-
-/*!
- * @brief Returns the territory of the locale.
- *
- * If the territory is unknown, nil is returned.
- *
- * @return The territory of the locale.
- */
-+ (OFString*)territory;
-
-/*!
- * @brief Returns the decimal point in the system's locale.
- *
- * @return The decimal point in the system's locale
- */
-+ (OFString*)decimalPoint;
-
-/*!
  * @brief Returns the path where user data for the application can be stored.
  *
  * On Unix systems, this adheres to the XDG Base Directory specification.@n

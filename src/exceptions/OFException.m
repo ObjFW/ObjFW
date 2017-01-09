@@ -28,7 +28,7 @@
 #import "OFException.h"
 #import "OFString.h"
 #import "OFArray.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
@@ -190,7 +190,7 @@ of_strerror(int errNo)
 		return @"Unknown error (strerror_r failed)";
 
 	ret = [OFString stringWithCString: buffer
-				 encoding: [OFSystemInfo native8BitEncoding]];
+				 encoding: [OFLocalization encoding]];
 #else
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
@@ -200,7 +200,7 @@ of_strerror(int errNo)
 # endif
 		ret = [OFString
 		    stringWithCString: strerror(errNo)
-			     encoding: [OFSystemInfo native8BitEncoding]];
+			     encoding: [OFLocalization encoding]];
 # ifdef OF_HAVE_THREADS
 	} @finally {
 		if (!of_mutex_unlock(&mutex))

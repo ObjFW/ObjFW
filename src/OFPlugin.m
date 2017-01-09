@@ -25,7 +25,7 @@
 
 #import "OFPlugin.h"
 #import "OFString.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
 
@@ -35,8 +35,8 @@ of_plugin_handle_t
 of_dlopen(OFString *path, int flags)
 {
 #ifndef OF_WINDOWS
-	return dlopen([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], flags);
+	return dlopen([path cStringWithEncoding: [OFLocalization encoding]],
+	    flags);
 #else
 	if (path == nil)
 		return GetModuleHandle(NULL);

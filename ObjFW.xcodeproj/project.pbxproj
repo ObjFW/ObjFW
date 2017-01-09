@@ -679,6 +679,10 @@
 		4B4483711D04989C005D12A7 /* RuntimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B44836F1D049887005D12A7 /* RuntimeTests.m */; };
 		4B45355313DCFE1E0037AB4D /* OFCountedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B45355113DCFE1E0037AB4D /* OFCountedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B45355213DCFE1E0037AB4D /* OFCountedSet.m */; };
+		4B46E2211E235EA700121ED6 /* OFLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B46E21F1E235EA700121ED6 /* OFLocalization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B46E2221E235EA700121ED6 /* OFLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B46E21F1E235EA700121ED6 /* OFLocalization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B46E2231E235EA700121ED6 /* OFLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B46E2201E235EA700121ED6 /* OFLocalization.m */; };
+		4B46E2241E235EA700121ED6 /* OFLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B46E2201E235EA700121ED6 /* OFLocalization.m */; };
 		4B48B95414DC23B100546D39 /* OFXMLProcessingInstructions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B48B95514DC23B100546D39 /* OFXMLProcessingInstructions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */; };
 		4B49EA66143B39CE0005BBC6 /* OFXMLNodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */; };
@@ -1252,6 +1256,8 @@
 		4B44836F1D049887005D12A7 /* RuntimeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RuntimeTests.m; path = tests/RuntimeTests.m; sourceTree = "<group>"; };
 		4B45355113DCFE1E0037AB4D /* OFCountedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet.h; path = src/OFCountedSet.h; sourceTree = "<group>"; };
 		4B45355213DCFE1E0037AB4D /* OFCountedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet.m; path = src/OFCountedSet.m; sourceTree = "<group>"; };
+		4B46E21F1E235EA700121ED6 /* OFLocalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFLocalization.h; path = src/OFLocalization.h; sourceTree = "<group>"; };
+		4B46E2201E235EA700121ED6 /* OFLocalization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFLocalization.m; path = src/OFLocalization.m; sourceTree = "<group>"; };
 		4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLProcessingInstructions.h; path = src/OFXMLProcessingInstructions.h; sourceTree = "<group>"; };
 		4B48B95314DC23B100546D39 /* OFXMLProcessingInstructions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLProcessingInstructions.m; path = src/OFXMLProcessingInstructions.m; sourceTree = "<group>"; };
 		4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLNodeTests.m; path = tests/OFXMLNodeTests.m; sourceTree = "<group>"; };
@@ -1975,6 +1981,8 @@
 				4BC176251D04963000C32718 /* OFObject+KeyValueCoding.m */,
 				4B67996C1099E7C50041064A /* OFList.h */,
 				4B67996D1099E7C50041064A /* OFList.m */,
+				4B46E21F1E235EA700121ED6 /* OFLocalization.h */,
+				4B46E2201E235EA700121ED6 /* OFLocalization.m */,
 				4B6743F9163C395900EB1E59 /* OFLocking.h */,
 				4B3B0796166978780044E634 /* OFMapTable.h */,
 				4B3B0797166978780044E634 /* OFMapTable.m */,
@@ -2345,6 +2353,7 @@
 				4B2C21F81DA292BE00735907 /* OFKernelEventObserver.h in Headers */,
 				4B2C21F91DA292BE00735907 /* OFKeyValueCoding.h in Headers */,
 				4B2C21FA1DA292BE00735907 /* OFList.h in Headers */,
+				4B46E2221E235EA700121ED6 /* OFLocalization.h in Headers */,
 				4B2C21FB1DA292BE00735907 /* OFLocking.h in Headers */,
 				4B2C21FC1DA292BE00735907 /* OFMapTable.h in Headers */,
 				4B2C21FD1DA292BE00735907 /* OFMD5Hash.h in Headers */,
@@ -2562,6 +2571,7 @@
 				4B0EA9211898690E00F573A4 /* OFKernelEventObserver.h in Headers */,
 				4BC1762F1D04963000C32718 /* OFKeyValueCoding.h in Headers */,
 				4B3D23CB1337FCB000DD29B8 /* OFList.h in Headers */,
+				4B46E2211E235EA700121ED6 /* OFLocalization.h in Headers */,
 				4B674402163C395900EB1E59 /* OFLocking.h in Headers */,
 				4B3B0798166978780044E634 /* OFMapTable.h in Headers */,
 				4B3D23CC1337FCB000DD29B8 /* OFMD5Hash.h in Headers */,
@@ -3099,6 +3109,7 @@
 				4B2C21421DA292BE00735907 /* OFKernelEventObserver_poll.m in Sources */,
 				4B2C21431DA292BE00735907 /* OFKernelEventObserver_select.m in Sources */,
 				4B2C21441DA292BE00735907 /* OFList.m in Sources */,
+				4B46E2241E235EA700121ED6 /* OFLocalization.m in Sources */,
 				4B2C21451DA292BE00735907 /* OFMapTable.m in Sources */,
 				4B2C21461DA292BE00735907 /* OFMD5Hash.m in Sources */,
 				4B2C21471DA292BE00735907 /* OFMessagePackExtension.m in Sources */,
@@ -3286,6 +3297,7 @@
 				4B0EA91E1898690E00F573A4 /* OFKernelEventObserver_poll.m in Sources */,
 				4B0EA9201898690E00F573A4 /* OFKernelEventObserver_select.m in Sources */,
 				4B3D23991337FC0D00DD29B8 /* OFList.m in Sources */,
+				4B46E2231E235EA700121ED6 /* OFLocalization.m in Sources */,
 				4B3B0799166978780044E634 /* OFMapTable.m in Sources */,
 				4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */,
 				4BCAA9B01772432F003EF859 /* OFMessagePackExtension.m in Sources */,

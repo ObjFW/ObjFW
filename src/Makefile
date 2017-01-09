@@ -28,6 +28,7 @@ SRCS = OFApplication.m			\
        OFHMAC.m				\
        OFIntrospection.m		\
        OFList.m				\
+       OFLocalization.m			\
        OFMapTable.m			\
        OFMD5Hash.m			\
        OFMessagePackExtension.m		\

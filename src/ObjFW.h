@@ -100,8 +100,9 @@
 #import "OFMessagePackExtension.h"
 
 #import "OFApplication.h"
-#import "OFOptionsParser.h"
 #import "OFSystemInfo.h"
+#import "OFLocalization.h"
+#import "OFOptionsParser.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
 

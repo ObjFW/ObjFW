@@ -34,6 +34,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFSystemInfo.h"
+#import "OFLocalization.h"
 
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
@@ -99,11 +100,11 @@ of_stat(OFString *path, of_stat_t *buffer)
 #if defined(OF_WINDOWS)
 	return _wstat64([path UTF16String], buffer);
 #elif defined(OF_HAVE_OFF64_T)
-	return stat64([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], buffer);
+	return stat64([path cStringWithEncoding: [OFLocalization encoding]],
+	    buffer);
 #else
-	return stat([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], buffer);
+	return stat([path cStringWithEncoding: [OFLocalization encoding]],
+	    buffer);
 #endif
 }
 
@@ -114,19 +115,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return _wstat64([path UTF16String], buffer);
 #elif defined(HAVE_LSTAT)
 # ifdef OF_HAVE_OFF64_T
-	return lstat64([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], buffer);
+	return lstat64([path cStringWithEncoding: [OFLocalization encoding]],
+	    buffer);
 # else
-	return lstat([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], buffer);
+	return lstat([path cStringWithEncoding: [OFLocalization encoding]],
+	    buffer);
 # endif
 #else
 # ifdef OF_HAVE_OFF64_T
-	return stat64([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], buffer);
+	return stat64([path cStringWithEncoding: [OFLocalization encoding]],
+	    buffer);
 # else
-	return stat([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]], buffer);
+	return stat([path cStringWithEncoding: [OFLocalization encoding]],
+	    buffer);
 # endif
 #endif
 }
@@ -182,7 +183,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #ifndef OF_WINDOWS
 		ret = [OFString
 		    stringWithCString: buffer
-			     encoding: [OFSystemInfo native8BitEncoding]];
+			     encoding: [OFLocalization encoding]];
 #else
 		ret = [OFString stringWithUTF16String: buffer];
 #endif
@@ -263,7 +264,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFInvalidArgumentException exception];
 
 #ifndef OF_WINDOWS
-	if (mkdir([path cStringWithEncoding: [OFSystemInfo native8BitEncoding]],
+	if (mkdir([path cStringWithEncoding: [OFLocalization encoding]],
 	    DIR_MODE) != 0)
 #else
 	if (_wmkdir([path UTF16String]) != 0)
@@ -322,7 +323,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #ifndef OF_WINDOWS
 	DIR *dir;
 
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
@@ -433,8 +434,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFInvalidArgumentException exception];
 
 #ifndef OF_WINDOWS
-	if (chdir([path cStringWithEncoding:
-	    [OFSystemInfo native8BitEncoding]]) != 0)
+	if (chdir([path cStringWithEncoding: [OFLocalization encoding]]) != 0)
 #else
 	if (_wchdir([path UTF16String]) != 0)
 #endif
@@ -524,7 +524,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFInvalidArgumentException exception];
 
 # ifndef OF_WINDOWS
-	if (chmod([path cStringWithEncoding: [OFSystemInfo native8BitEncoding]],
+	if (chmod([path cStringWithEncoding: [OFLocalization encoding]],
 	    permissions) != 0)
 # else
 	if (_wchmod([path UTF16String], permissions) != 0)
@@ -554,8 +554,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	[passwdMutex lock];
 	@try {
 # endif
-		of_string_encoding_t encoding =
-		    [OFSystemInfo native8BitEncoding];
+		of_string_encoding_t encoding = [OFLocalization encoding];
 
 		if (owner != NULL) {
 			struct passwd *passwd = getpwuid(s.st_uid);
@@ -588,7 +587,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil || (owner == nil && group == nil))
 		@throw [OFInvalidArgumentException exception];
 
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 # ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
@@ -800,7 +799,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 				      errNo: EEXIST];
 
 #ifndef OF_WINDOWS
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 	if (rename([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0) {
@@ -884,7 +883,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 #ifndef OF_WINDOWS
 		if (rmdir([path cStringWithEncoding:
-		    [OFSystemInfo native8BitEncoding]]) != 0)
+		    [OFLocalization encoding]]) != 0)
 #else
 		if (_wrmdir([path UTF16String]) != 0)
 #endif
@@ -894,7 +893,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	} else {
 #ifndef OF_WINDOWS
 		if (unlink([path cStringWithEncoding:
-		    [OFSystemInfo native8BitEncoding]]) != 0)
+		    [OFLocalization encoding]]) != 0)
 #else
 		if (_wunlink([path UTF16String]) != 0)
 #endif
@@ -917,7 +916,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 	if (link([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0)
@@ -960,7 +959,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 
 	if (symlink([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0)
@@ -1006,7 +1005,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	encoding = [OFSystemInfo native8BitEncoding];
+	encoding = [OFLocalization encoding];
 	length = readlink([path cStringWithEncoding: encoding],
 	    destination, PATH_MAX);
 

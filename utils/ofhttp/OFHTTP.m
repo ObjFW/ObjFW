@@ -30,6 +30,7 @@
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
 #import "OFURL.h"
+#import "OFLocalization.h"
 
 #import "OFAddressTranslationFailedException.h"
 #import "OFConnectionFailedException.h"
@@ -72,12 +73,13 @@ OF_APPLICATION_DELEGATE(OFHTTP)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[of_stderr writeFormat:
-	    @"Usage: %@ -[cehHmoOPqv] url1 [url2 ...]\n",
-	    [OFApplication programName]];
+	[of_stderr writeString:
+	    OF_LOCALIZED(@"usage",
+	    @"Usage: %[prog] -[cehHmoOPqv] url1 [url2 ...]\n",
+	    @"prog", [OFApplication programName])];
 
 	if (full)
-		[stream writeString:
+		[stream writeString: OF_LOCALIZED(@"full_usage",
 		    @"\nOptions:\n    "
 		    @"-b  --body           "
 		    @"  Specify the file to send as body\n    "
@@ -100,7 +102,7 @@ help(OFStream *stream, bool full, int status)
 		    @"-q  --quiet          "
 		    @"  Quiet mode (no output, except errors)\n    "
 		    @"-v  --verbose        "
-		    @"  Verbose mode (print headers)\n"];
+		    @"  Verbose mode (print headers)\n")];
 
 	[OFApplication terminateWithStatus: status];
 }
@@ -135,9 +137,9 @@ help(OFStream *stream, bool full, int status)
 	OFString *name, *value;
 
 	if (pos == OF_NOT_FOUND) {
-		[of_stderr writeFormat: @"%@: Headers must to be in format "
-					"name:value!\n",
-					[OFApplication programName]];
+		[of_stderr writeString: OF_LOCALIZED(@"invalid_input_header",
+		    @"%[prog]: Headers must to be in format name:value!\n",
+		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -185,9 +187,10 @@ help(OFStream *stream, bool full, int status)
 	else if ([method isEqual: @"TRACE"])
 		_method = OF_HTTP_REQUEST_METHOD_TRACE;
 	else {
-		[of_stderr writeFormat: @"%@: Invalid request method %@!\n",
-					[OFApplication programName],
-					method];
+		[of_stderr writeString: OF_LOCALIZED(@"invalid_input_method",
+		    @"%[prog]: Invalid request method %[method]!\n",
+		    @"prog", [OFApplication programName],
+		    @"method", method)];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -216,9 +219,9 @@ help(OFStream *stream, bool full, int status)
 		[OFTCPSocket setSOCKS5Host: host];
 		[OFTCPSocket setSOCKS5Port: (uint16_t)port];
 	} @catch (OFInvalidFormatException *e) {
-		[of_stderr writeFormat: @"%@: Proxy must to be in format "
-					"host:port!\n",
-					[OFApplication programName]];
+		[of_stderr writeString: OF_LOCALIZED(@"invalid_input_proxy",
+		    @"%[prog]: Proxy must to be in format host:port!\n",
+		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
 	}
 }
@@ -263,37 +266,52 @@ help(OFStream *stream, bool full, int status)
 			break;
 		case ':':
 			if ([optionsParser lastLongOption] != nil)
-				[of_stderr writeFormat:
-				    @"%@: Argument for option --%@ missing\n",
-				    [OFApplication programName],
-				    [optionsParser lastLongOption]];
-			else
-				[of_stderr writeFormat:
-				    @"%@: Argument for option -%C missing\n",
-				    [OFApplication programName],
+				[of_stderr writeString:
+				    OF_LOCALIZED(@"long_argument_missing",
+				    @"%[prog]: Argument for option --%[opt] "
+				    "missing\n"
+				    @"prog", [OFApplication programName],
+				    @"opt", [optionsParser lastLongOption])];
+			else {
+				OFString *optStr = [OFString
+				    stringWithFormat: @"%c",
 				    [optionsParser lastOption]];
+				[of_stderr writeString:
+				    OF_LOCALIZED(@"argument_missing",
+				    @"%[prog]: Argument for option -%[opt] "
+				    "missing\n",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
 
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case '=':
-			[of_stderr writeFormat: @"%@: Option --%@ takes no "
-						@"argument\n",
-						[OFApplication programName],
-						[optionsParser lastLongOption]];
+			[of_stderr writeString:
+			    OF_LOCALIZED(@"takes_no_argument",
+			    @"%[prog]: Option --%[opt] takes no argument\n",
+			    @"prog", [OFApplication programName],
+			    @"opt", [optionsParser lastLongOption])];
 
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case '?':
 			if ([optionsParser lastLongOption] != nil)
-				[of_stderr writeFormat:
-				    @"%@: Unknown option: --%@\n",
-				    [OFApplication programName],
-				    [optionsParser lastLongOption]];
-			else
-				[of_stderr writeFormat:
-				    @"%@: Unknown option: -%C\n",
-				    [OFApplication programName],
+				[of_stderr writeString:
+				    OF_LOCALIZED(@"unknown_long_option",
+				    @"%[prog]: Unknown option: --%[opt]\n",
+				    @"prog", [OFApplication programName],
+				    @"opt", [optionsParser lastLongOption])];
+			else {
+				OFString *optStr = [OFString
+				    stringWithFormat: @"%c",
 				    [optionsParser lastOption]];
+				[of_stderr writeString:
+				    OF_LOCALIZED(@"unknown_option",
+				    @"%[prog]: Unknown option: -%[opt]\n",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
 
 			[OFApplication terminateWithStatus: 1];
 			break;
@@ -307,17 +325,19 @@ help(OFStream *stream, bool full, int status)
 		help(of_stderr, false, 1);
 
 	if (_quiet && _verbose) {
-		[of_stderr writeFormat: @"%@: -q / --quiet and -v / --verbose "
-					@"are mutually exclusive!\n",
-					[OFApplication programName]];
+		[of_stderr writeString: OF_LOCALIZED(@"quiet_xor_verbose",
+		    @"%[prog]: -q / --quiet and -v / --verbose are mutually "
+		    @"exclusive!\n",
+		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
 	}
 
 	if (_outputPath != nil && [_URLs count] > 1) {
-		[of_stderr writeFormat: @"%@: Cannot use -o / --output when "
-					@"more than one URL has been "
-					@"specified!\n",
-					[OFApplication programName]];
+		[of_stderr writeString:
+		    OF_LOCALIZED(@"output_only_with_one_url",
+		    @"%[prog]: Cannot use -o / --output when more than one URL "
+		    @"has been specified!\n",
+		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -367,58 +387,78 @@ help(OFStream *stream, bool full, int status)
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  Address translation failed: %@\n",
-					[OFApplication programName],
-					[[request URL] string], e];
+		[of_stderr writeString:
+		    OF_LOCALIZED(@"download_failed_address_translation",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  Address translation failed: %[exception]\n",
+		    @"prog", [OFApplication programName],
+		    @"url", [[request URL] string],
+		    @"exception", e)];
 	} @catch (OFConnectionFailedException *e) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  Connection failed: %@\n",
-					[OFApplication programName],
-					[[request URL] string], e];
+		[of_stderr writeString:
+		    OF_LOCALIZED(@"download_failed_connection_failed",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  Connection failed: %[exception]\n",
+		    @"prog", [OFApplication programName],
+		    @"url", [[request URL] string],
+		    @"exception", e)];
 	} @catch (OFInvalidServerReplyException *e) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  Invalid server reply!\n",
-					[OFApplication programName],
-					[[request URL] string]];
+		[of_stderr writeString:
+		    OF_LOCALIZED(@"download_failed_invalid_server_reply",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  Invalid server reply!\n",
+		    @"prog", [OFApplication programName],
+		    @"url", [[request URL] string])];
 	} @catch (OFUnsupportedProtocolException *e) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
-		[of_stderr writeFormat: @"%@: No SSL library loaded!\n"
-					@"  In order to download via https, "
-					@"you need to preload an SSL library "
-					@"for ObjFW\n  such as ObjOpenSSL!\n",
-					[OFApplication programName]];
+		[of_stderr writeString: OF_LOCALIZED(@"no_ssl_library",
+		    @"%[prog]: No SSL library loaded!\n"
+		    @"  In order to download via https, you need to preload an "
+		    @"SSL library for ObjFW\n"
+		    "such as ObjOpenSSL!\n",
+		    @"prog", [OFApplication programName])];
 	} @catch (OFReadOrWriteFailedException *e) {
-		OFString *action = @"Read or write";
+		OFString *error = OF_LOCALIZED(
+		    @"download_failed_read_or_write_failed_any",
+		    @"Read or write failed");
 
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
 		if ([e isKindOfClass: [OFReadFailedException class]])
-			action = @"Read";
+			error = OF_LOCALIZED(
+			    @"download_failed_read_or_write_failed_read",
+			    @"Read failed");
 		else if ([e isKindOfClass: [OFWriteFailedException class]])
-			action = @"Write";
+			error = OF_LOCALIZED(
+			    @"download_failed_read_or_write_failed_write",
+			    @"Write failed");
 
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n"
-					@"  %@ failed: %@\n",
-					[OFApplication programName],
-					[[request URL] string], action, e];
+		[of_stderr writeString:
+		    OF_LOCALIZED(@"download_failed_read_or_write_failed",
+		    @"%[prog]: Failed to download <%[url]>!\n"
+		    @"  %[error]: %[exception]\n",
+		    @"prog", [OFApplication programName],
+		    @"url", [[request URL] string],
+		    @"error", error,
+		    @"exception", e)];
 	} @catch (OFHTTPRequestFailedException *e) {
 		if (!_quiet)
 			[of_stdout writeFormat: @" ➜ %d\n",
 						[[e response] statusCode]];
 
-		[of_stderr writeFormat: @"%@: Failed to download <%@>!\n",
-					[OFApplication programName],
-					[[request URL] string]];
+		[of_stderr writeString: OF_LOCALIZED(@"download_failed",
+		    @"%[prog]: Failed to download <%[url]>!\n",
+		    @"prog", [OFApplication programName],
+		    @"url", [[request URL] string])];
 	}
 
 	if (!_quiet && response != nil)
@@ -564,8 +604,12 @@ help(OFStream *stream, bool full, int status)
 			[of_stdout writeString: @"\n  Error!\n"];
 
 		URL = [_URLs objectAtIndex: _URLIndex - 1];
-		[of_stderr writeFormat: @"%@: Failed to download <%@>: %@\n",
-					[OFApplication programName], URL, e];
+		[of_stderr writeString:
+		    OF_LOCALIZED(@"download_failed_exception",
+		    @"%[prog]: Failed to download <%[url]>: %[exception]\n",
+		    @"prog", [OFApplication programName],
+		    @"url", URL,
+		    @"exception", e)];
 
 		_errorCode = 1;
 		goto next;
@@ -586,7 +630,8 @@ help(OFStream *stream, bool full, int status)
 		_progressBar = nil;
 
 		if (!_quiet)
-			[of_stdout writeString: @"\n  Done!\n"];
+			[of_stdout writeString:
+			    OF_LOCALIZED(@"download_done", @"\n  Done!\n")];
 
 		goto next;
 	}
@@ -624,9 +669,10 @@ next:
 		URLString = [_URLs objectAtIndex: _URLIndex++];
 		URL = [OFURL URLWithString: URLString];
 	} @catch (OFInvalidFormatException *e) {
-		[of_stderr writeFormat: @"%@: Invalid URL: <%@>!\n",
-					[OFApplication programName],
-					URLString];
+		[of_stderr writeString: OF_LOCALIZED(@"invalid_url",
+		    @"%[prog]: Invalid URL: <%[url]>!\n",
+		    @"prog", [OFApplication programName],
+		    @"url", URLString)];
 
 		_errorCode = 1;
 		goto next;
@@ -634,9 +680,10 @@ next:
 
 	if (![[URL scheme] isEqual: @"http"] &&
 	    ![[URL scheme] isEqual: @"https"]) {
-		[of_stderr writeFormat: @"%@: Invalid scheme: <%@:>!\n",
-					[OFApplication programName],
-					URLString];
+		[of_stderr writeString: OF_LOCALIZED(@"invalid_scheme",
+		    @"%[prog]: Invalid scheme: <%[scheme]:>!\n",
+		    @"prog", [OFApplication programName],
+		    @"scheme", URLString)];
 
 		_errorCode = 1;
 		goto next;
@@ -708,28 +755,40 @@ next:
 
 	if (!_quiet) {
 		if (type == nil)
-			type = @"unknown";
+			type = OF_LOCALIZED(@"type_unknown", @"unknown");
 
 		if (_length >= 0) {
-			if (_resumedFrom + _length >= GIBIBYTE)
+			if (_resumedFrom + _length >= GIBIBYTE) {
 				lengthString = [OFString stringWithFormat:
-				    @"%,.2f GiB",
+				    @"%,.2f",
 				    (float)(_resumedFrom + _length) / GIBIBYTE];
-			else if (_resumedFrom + _length >= MEBIBYTE)
+				lengthString = OF_LOCALIZED(@"size_gib",
+				    @"%[num] GiB",
+				    @"num", lengthString);
+			} else if (_resumedFrom + _length >= MEBIBYTE) {
 				lengthString = [OFString stringWithFormat:
-				    @"%,.2f MiB",
+				    @"%,.2f",
 				    (float)(_resumedFrom + _length) / MEBIBYTE];
-			else if (_resumedFrom + _length >= KIBIBYTE)
+				lengthString = OF_LOCALIZED(@"size_mib",
+				    @"%[num] MiB",
+				    @"num", lengthString);
+			} else if (_resumedFrom + _length >= KIBIBYTE) {
 				lengthString = [OFString stringWithFormat:
-				    @"%,.2f KiB",
+				    @"%,.2f",
 				    (float)(_resumedFrom + _length) / KIBIBYTE];
-			else
+				lengthString = OF_LOCALIZED(@"size_kib",
+				    @"%[num] KiB",
+				    @"num", lengthString);
+			} else {
 				lengthString = [OFString stringWithFormat:
-				    @"%jd bytes", _resumedFrom + _length];
+				    @"%jd", _resumedFrom + _length];
+				lengthString = OF_LOCALIZED(@"size_bytes",
+				    @"%[num] bytes",
+				    @"num", lengthString);
+			}
 		} else
-			lengthString = @"unknown";
-
-		[of_stdout writeFormat: @"  Name: %@\n", fileName];
+			lengthString =
+			    OF_LOCALIZED(@"size_unknown", @"unknown");
 
 		if (_verbose) {
 			void *pool = objc_autoreleasePoolPush();
@@ -740,6 +799,10 @@ next:
 			    [headers objectEnumerator];
 			OFString *key, *object;
 
+			[of_stdout writeString: OF_LOCALIZED(@"info_name_nopad",
+			    @"  Name: %[name]\n",
+			    @"name", fileName)];
+
 			while ((key = [keyEnumerator nextObject]) != nil &&
 			    (object = [objectEnumerator nextObject]) != nil)
 				[of_stdout writeFormat: @"  %@: %@\n",
@@ -747,8 +810,15 @@ next:
 
 			objc_autoreleasePoolPop(pool);
 		} else {
-			[of_stdout writeFormat: @"  Type: %@\n", type];
-			[of_stdout writeFormat: @"  Size: %@\n", lengthString];
+			[of_stdout writeString: OF_LOCALIZED(@"info_name",
+			    @"  Name: %[name]\n",
+			    @"name", fileName)];
+			[of_stdout writeString: OF_LOCALIZED(@"info_type",
+			    @"  Type: %[type]\n",
+			    @"type", type)];
+			[of_stdout writeString: OF_LOCALIZED(@"info_size",
+			    @"  Size: %[size]\n",
+			    @"size", lengthString)];
 		}
 	}
 
@@ -757,9 +827,11 @@ next:
 	else {
 		if (!_continue && !_force &&
 		    [fileManager fileExistsAtPath: fileName]) {
-			[of_stderr writeFormat:
-			    @"%@: File %@ already exists!\n",
-			    [OFApplication programName], fileName];
+			[of_stderr writeString:
+			    OF_LOCALIZED(@"ouput_already_exists",
+			    @"%[prog]: File %[filename] already exists!\n",
+			    @"prog", [OFApplication programName],
+			    @"filename", fileName)];
 
 			_errorCode = 1;
 			goto next;
@@ -771,9 +843,13 @@ next:
 			_output = [[OFFile alloc] initWithPath: fileName
 							  mode: mode];
 		} @catch (OFOpenItemFailedException *e) {
-			[of_stderr writeFormat:
-			    @"%@: Failed to open file %@!\n",
-			    [OFApplication programName], fileName];
+			[of_stderr writeString:
+			    OF_LOCALIZED(@"failed_to_open_output",
+			    @"%[prog]: Failed to open file %[filename]: "
+			    @"%[exception]\n",
+			    @"prog", [OFApplication programName],
+			    @"filename",fileName,
+			    @"exception", e)];
 
 			_errorCode = 1;
 			goto next;

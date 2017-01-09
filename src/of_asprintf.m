@@ -33,7 +33,7 @@
 #include <sys/types.h>
 
 #import "OFString.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
 
@@ -562,7 +562,7 @@ formatConversionSpecifierState(struct context *ctx)
 				    stringWithUTF8String: tmp
 						  length: tmpLen];
 				OFString *decimalPoint =
-				    [OFSystemInfo decimalPoint];
+				    [OFLocalization decimalPoint];
 				[tmpStr replaceOccurrencesOfString: decimalPoint
 							withString: @"."];
 				if ([tmpStr UTF8StringLength] > INT_MAX)

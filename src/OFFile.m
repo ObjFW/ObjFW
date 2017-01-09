@@ -36,7 +36,7 @@
 
 #import "OFFile.h"
 #import "OFString.h"
-#import "OFSystemInfo.h"
+#import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -166,11 +166,11 @@ parseMode(const char *mode)
 		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)
 #elif defined(OF_HAVE_OFF64_T)
-		if ((_fd = open64([path cStringWithEncoding: [OFSystemInfo
-		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
+		if ((_fd = open64([path cStringWithEncoding:
+		    [OFLocalization encoding]], flags, DEFAULT_MODE)) == -1)
 #else
-		if ((_fd = open([path cStringWithEncoding: [OFSystemInfo
-		    native8BitEncoding]], flags, DEFAULT_MODE)) == -1)
+		if ((_fd = open([path cStringWithEncoding:
+		    [OFLocalization encoding]], flags, DEFAULT_MODE)) == -1)
 #endif
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
