@@ -119,6 +119,8 @@
 			encoding = OF_STRING_ENCODING_ISO_8859_15;
 		if ([contentType hasSuffix: @"charset=windows-1252"])
 			encoding = OF_STRING_ENCODING_WINDOWS_1252;
+		if ([contentType hasSuffix: @"charset=macintosh"])
+			encoding = OF_STRING_ENCODING_MAC_ROMAN;
 	}
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)

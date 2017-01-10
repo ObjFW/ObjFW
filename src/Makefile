@@ -158,6 +158,7 @@ SRCS += OFArray_adjacent.m		\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\
+	mac_roman.m			\
 	${UNICODE_M}			\
 	windows_1252.m
 SRCS_FILES += OFSettings_INIFile.m

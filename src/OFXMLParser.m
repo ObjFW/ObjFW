@@ -475,6 +475,9 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				else if ([value isEqual: @"windows-1252"])
 					_encoding =
 					    OF_STRING_ENCODING_WINDOWS_1252;
+				else if ([value isEqual: @"macintosh"])
+					_encoding =
+					    OF_STRING_ENCODING_MAC_ROMAN;
 				else
 					return false;
 			}

@@ -38,7 +38,7 @@ const of_char16_t of_windows_1252[128] = {
 };
 
 bool
-of_unicode_to_windows_1252(const of_unichar_t *input, uint8_t *output,
+of_unicode_to_windows_1252(const of_unichar_t *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {

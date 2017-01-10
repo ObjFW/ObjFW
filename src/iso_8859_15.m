@@ -38,7 +38,7 @@ const of_char16_t of_iso_8859_15[128] = {
 };
 
 bool
-of_unicode_to_iso_8859_15(const of_unichar_t *input, uint8_t *output,
+of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,
     size_t length, bool lossy)
 {
 	for (size_t i = 0; i < length; i++) {

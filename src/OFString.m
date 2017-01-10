@@ -89,14 +89,16 @@ static locale_t cLocale;
 					depth: (size_t)depth;
 @end
 
-extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, uint8_t*, size_t,
-    bool);
-extern bool of_unicode_to_windows_1252(const of_unichar_t*, uint8_t*, size_t,
-    bool);
-extern bool of_unicode_to_codepage_437(const of_unichar_t*, uint8_t*, size_t,
-    bool);
-extern bool of_unicode_to_codepage_850(const of_unichar_t*, uint8_t*, size_t,
-    bool);
+extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, unsigned char*,
+    size_t, bool);
+extern bool of_unicode_to_windows_1252(const of_unichar_t*, unsigned char*,
+    size_t, bool);
+extern bool of_unicode_to_codepage_437(const of_unichar_t*, unsigned char*,
+    size_t, bool);
+extern bool of_unicode_to_codepage_850(const of_unichar_t*, unsigned char*,
+    size_t, bool);
+extern bool of_unicode_to_mac_roman(const of_unichar_t*, unsigned char*,
+    size_t, bool);
 
 /* References for static linking */
 void
@@ -957,6 +959,8 @@ static struct {
 				encoding = OF_STRING_ENCODING_ISO_8859_15;
 			if ([contentType hasSuffix: @"charset=windows-1252"])
 				encoding = OF_STRING_ENCODING_WINDOWS_1252;
+			if ([contentType hasSuffix: @"charset=macintosh"])
+				encoding = OF_STRING_ENCODING_MAC_ROMAN;
 		}
 
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
@@ -1068,7 +1072,7 @@ static struct {
 					@throw [OFInvalidEncodingException
 					    exception];
 			} else
-				cString[i] = (char)characters[i];
+				cString[i] = (unsigned char)characters[i];
 		}
 
 		cString[i] = '\0';
@@ -1086,7 +1090,7 @@ static struct {
 					@throw [OFInvalidEncodingException
 					    exception];
 			} else
-				cString[i] = (uint8_t)characters[i];
+				cString[i] = (unsigned char)characters[i];
 		}
 
 		cString[i] = '\0';
@@ -1096,8 +1100,8 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_iso_8859_15(characters, (uint8_t*)cString,
-		    length, lossy))
+		if (!of_unicode_to_iso_8859_15(characters,
+		    (unsigned char*)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1107,8 +1111,8 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_windows_1252(characters, (uint8_t*)cString,
-		    length, lossy))
+		if (!of_unicode_to_windows_1252(characters,
+		    (unsigned char*)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1118,8 +1122,8 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_codepage_437(characters, (uint8_t*)cString,
-		    length, lossy))
+		if (!of_unicode_to_codepage_437(characters,
+		    (unsigned char*)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1129,8 +1133,19 @@ static struct {
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
 
-		if (!of_unicode_to_codepage_850(characters, (uint8_t*)cString,
-		    length, lossy))
+		if (!of_unicode_to_codepage_850(characters,
+		    (unsigned char*)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+	case OF_STRING_ENCODING_MAC_ROMAN:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_mac_roman(characters,
+		    (unsigned char*)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1194,6 +1209,7 @@ static struct {
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
 	case OF_STRING_ENCODING_CODEPAGE_850:
+	case OF_STRING_ENCODING_MAC_ROMAN:
 		cString = [object allocMemoryWithSize: length + 1];
 
 		[self OF_getCString: cString
@@ -1259,6 +1275,7 @@ static struct {
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
 	case OF_STRING_ENCODING_CODEPAGE_850:
+	case OF_STRING_ENCODING_MAC_ROMAN:
 		return [self length];
 	default:
 		@throw [OFInvalidEncodingException exception];
