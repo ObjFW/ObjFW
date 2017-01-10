@@ -728,6 +728,10 @@
 		4B5D70691DA2F81700B3B2D7 /* OFPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6761235358D0076B512 /* OFPluginTests.m */; };
 		4B5D706E1DA2F87A00B3B2D7 /* TestPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF684123535B60076B512 /* TestPlugin.m */; };
 		4B5D707A1DA2F96200B3B2D7 /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */; };
+		4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */; };
+		4B5EBFB91E25A937004FE6A2 /* mac_roman.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5EBFB81E25A937004FE6A2 /* mac_roman.m */; };
+		4B5EBFBA1E25A937004FE6A2 /* mac_roman.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5EBFB81E25A937004FE6A2 /* mac_roman.m */; };
 		4B60259F19B76A5C00694BCC /* OFSHA384Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259919B76A5C00694BCC /* OFSHA384Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6025A019B76A5C00694BCC /* OFSHA384Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */; };
 		4B6025A119B76A5C00694BCC /* OFSHA384Or512Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1306,6 +1310,8 @@
 		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
 		4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_850.m; path = src/codepage_850.m; sourceTree = "<group>"; };
+		4B5EBFB81E25A937004FE6A2 /* mac_roman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = mac_roman.m; path = src/mac_roman.m; sourceTree = "<group>"; };
 		4B60259919B76A5C00694BCC /* OFSHA384Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Hash.h; path = src/OFSHA384Hash.h; sourceTree = "<group>"; };
 		4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384Hash.m; path = src/OFSHA384Hash.m; sourceTree = "<group>"; };
 		4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Or512Hash.h; path = src/OFSHA384Or512Hash.h; sourceTree = "<group>"; };
@@ -2145,12 +2151,14 @@
 				4B3D236E1337FB5800DD29B8 /* base64.m */,
 				4B837D7716829C5F007A3E83 /* block.h */,
 				4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */,
+				4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */,
 				4B881D391CCBFE0700E2F7D8 /* crc32.h */,
 				4B881D3A1CCBFE0700E2F7D8 /* crc32.m */,
 				4B837D7816829C5F007A3E83 /* instance.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
 				4BE17AD812FD744C002CEB0B /* foundation-compat.m */,
 				4BBA36C511406AB700CBA3AC /* macros.h */,
+				4B5EBFB81E25A937004FE6A2 /* mac_roman.m */,
 				4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */,
 				4BB50DCF12F863C700C9393F /* of_asprintf.h */,
 				4BB50DD012F863C700C9393F /* of_asprintf.m */,
@@ -3179,9 +3187,11 @@
 				4B2C21881DA292BE00735907 /* OFZIPArchiveEntry.m in Sources */,
 				4B2C21891DA292BE00735907 /* base64.m in Sources */,
 				4B2C218A1DA292BE00735907 /* codepage_437.m in Sources */,
+				4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */,
 				4B2C218B1DA292BE00735907 /* crc32.m in Sources */,
 				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
 				4B2C218D1DA292BE00735907 /* foundation-compat.m in Sources */,
+				4B5EBFBA1E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4B2C218E1DA292BE00735907 /* of_asprintf.m in Sources */,
 				4B2C218F1DA292BE00735907 /* of_strptime.m in Sources */,
 				4B2C21901DA292BE00735907 /* pbkdf2.m in Sources */,
@@ -3368,9 +3378,11 @@
 				4B8B025A17BBA7C7009ED983 /* OFZIPArchiveEntry.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
 				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
+				4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */,
 				4B881D3D1CCBFE2A00E2F7D8 /* crc32.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
+				4B5EBFB91E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
 				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
 				4BD306351D46CEE300E2F372 /* pbkdf2.m in Sources */,

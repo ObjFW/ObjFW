@@ -447,7 +447,7 @@ of_unicode_to_codepage_850(const of_unichar_t *input, unsigned char *output,
 				break;
 			}
 		} else
-			output[i] = (uint8_t)c;
+			output[i] = (unsigned char)c;
 	}
 
 	return true;

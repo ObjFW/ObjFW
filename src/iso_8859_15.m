@@ -103,7 +103,7 @@ of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,
 
 				break;
 			default:
-				output[i] = (uint8_t)c;
+				output[i] = (unsigned char)c;
 				break;
 			}
 		}

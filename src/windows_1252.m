@@ -150,7 +150,7 @@ of_unicode_to_windows_1252(const of_unichar_t *input, unsigned char *output,
 				else
 					return false;
 			} else
-				output[i] = (uint8_t)c;
+				output[i] = (unsigned char)c;
 		}
 	}
 
