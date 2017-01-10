@@ -41,6 +41,7 @@
 extern const of_char16_t of_iso_8859_15[128];
 extern const of_char16_t of_windows_1252[128];
 extern const of_char16_t of_codepage_437[128];
+extern const of_char16_t of_codepage_850[128];
 
 static inline int
 memcasecmp(const char *first, const char *second, size_t length)
@@ -294,6 +295,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			break;
 		case OF_STRING_ENCODING_CODEPAGE_437:
 			table = of_codepage_437;
+			break;
+		case OF_STRING_ENCODING_CODEPAGE_850:
+			table = of_codepage_850;
 			break;
 		default:
 			@throw [OFInvalidEncodingException exception];

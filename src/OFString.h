@@ -64,6 +64,8 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_WINDOWS_1252,
 	/*! Codepage 437 */
 	OF_STRING_ENCODING_CODEPAGE_437,
+	/*! Codepage 850 */
+	OF_STRING_ENCODING_CODEPAGE_850,
 	/*! Try to automatically detect the encoding */
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;

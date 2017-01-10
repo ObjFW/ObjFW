@@ -154,6 +154,7 @@ SRCS += OFArray_adjacent.m		\
 	OFString_UTF8.m			\
 	${AUTORELEASE_M}		\
 	codepage_437.m			\
+	codepage_850.m			\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\

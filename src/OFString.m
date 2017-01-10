@@ -95,6 +95,8 @@ extern bool of_unicode_to_windows_1252(const of_unichar_t*, uint8_t*, size_t,
     bool);
 extern bool of_unicode_to_codepage_437(const of_unichar_t*, uint8_t*, size_t,
     bool);
+extern bool of_unicode_to_codepage_850(const of_unichar_t*, uint8_t*, size_t,
+    bool);
 
 /* References for static linking */
 void
@@ -1123,6 +1125,17 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+	case OF_STRING_ENCODING_CODEPAGE_850:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_codepage_850(characters, (uint8_t*)cString,
+		    length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
 	default:
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
@@ -1180,6 +1193,7 @@ static struct {
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
+	case OF_STRING_ENCODING_CODEPAGE_850:
 		cString = [object allocMemoryWithSize: length + 1];
 
 		[self OF_getCString: cString
@@ -1244,6 +1258,7 @@ static struct {
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
+	case OF_STRING_ENCODING_CODEPAGE_850:
 		return [self length];
 	default:
 		@throw [OFInvalidEncodingException exception];
