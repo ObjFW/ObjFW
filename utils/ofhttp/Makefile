@@ -12,7 +12,11 @@ PACKAGE_NAME = ofhttp
 
 ${PROG}: ${LIBOBJFW_DEP_LVL2}
 
-CPPFLAGS += -I../../src -I../../src/runtime -I../../src/exceptions -I../..
+CPPFLAGS += -I../../src			\
+	    -I../../src/runtime		\
+	    -I../../src/exceptions	\
+	    -I../..			\
+	    -DDATADIR=\"${datadir}\"
 LIBS := -L../../src -lobjfw ${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}

@@ -247,6 +247,9 @@ help(OFStream *stream, bool full, int status)
 	    parserWithOptions: options];
 	of_unichar_t option;
 
+	[OFLocalization addLanguageDirectory: [OFString pathWithComponents:
+	    [OFArray arrayWithObjects: @DATADIR, @"ofhttp", @"lang", nil]]];
+
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'b':

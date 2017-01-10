@@ -26,6 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
 	    localizedStringForID: ID			\
 			fallback: __VA_ARGS__, nil]
 
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+
 /*!
  * @class OFLocalization OFLocalization.h ObjFW/OFLocalization.h
  *
@@ -37,6 +40,8 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_territory;
 	of_string_encoding_t _encoding;
 	OFString *_decimalPoint;
+	OFMutableArray OF_GENERIC(OFDictionary OF_GENERIC(OFString*, id)*)
+	    *_localizedStrings;
 }
 
 /**
@@ -118,6 +123,13 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFString*)decimalPoint;
 
 /*!
+ * @brief Adds a directory to scan for language files.
+ *
+ * @param path The path to the directory to scan for language files
+ */
++ (void)addLanguageDirectory: (OFString*)path;
+
+/*!
  * @brief Initializes the OFLocalization singleton with the specified locale.
  *
  * @warning You should never call this yourself, except if you do not use
@@ -128,6 +140,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @param locale The locale used, as returned from `setlocale()`
  */
 - initWithLocale: (char*)locale;
+
+/*!
+ * @brief Adds a directory to scan for language files.
+ *
+ * @param path The path to the directory to scan for language files
+ */
+- (void)addLanguageDirectory: (OFString*)path;
 
 /*!
  * @brief Returns the localized string for the specified ID, using the fallback
@@ -149,6 +168,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFString*)localizedStringForID: (OFConstantString*)ID
 			 fallback: (OFConstantString*)fallback, ... OF_SENTINEL;
+
 /**
  * @brief Returns the localized string for the specified ID, using the fallback
  *	  string if it cannot be looked up or is missing.

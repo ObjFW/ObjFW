@@ -3,18 +3,19 @@
     "full_usage": [
         "\n",
         "Optionen:\n",
-        "    -b  --body             Specify the file to send as body\n",
-        "    -c  --continue         Continue download of existing file\n",
-        "    -f  --force            Force / overwrite existing file\n",
-        "    -h  --help             Show this help\n",
-        "    -H  --header           Add a header (e.g. X-Foo:Bar)\n",
-        "    -m  --method           Set the method of the HTTP request\n",
-        "    -o  --output           Specify output file name\n",
-        "    -O  --detect-filename  Do a HEAD request to detect the file name",
-        "\n",
-        "    -P  --proxy            Specify SOCKS5 proxy\n",
-        "    -q  --quiet            Quiet mode (no output, except errors)\n",
-        "    -v  --verbose          Verbose mode (print headers)\n"
+        "    -b  --body             Angegebene Datei als Body übergeben\n",
+        "    -c  --continue         Download von existierender Datei ",
+	"fortsetzen\n",
+        "    -f  --force            Existierende Datei überschreiben\n",
+        "    -h  --help             Diese Hilfe anzeigen\n",
+        "    -H  --header           Einen Header (z.B. X-Foo:Bar) hinzufügen\n",
+        "    -m  --method           HTTP Request-Methode setzen\n",
+        "    -o  --output           Ausgabe-Dateiname angeben\n",
+        "    -O  --detect-filename  Dateiname mittels HEAD-Request ermitteln\n",
+        "    -P  --proxy            SOCKS5-Proxy angeben\n",
+        "    -q  --quiet            Ruhiger Modus (keine Ausgabe außer Fehler)",
+	"\n",
+        "    -v  --verbose          Geschwätziger Modus (gibt Header aus)\n"
     ],
     "invalid_input_header": [
         "%[prog]: Header müssen im Format Name:Wert sein!\n"

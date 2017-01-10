@@ -20,6 +20,8 @@
 
 #import "OFLocalization.h"
 #import "OFString.h"
+#import "OFArray.h"
+#import "OFDictionary.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -54,9 +56,21 @@ static OFLocalization *sharedLocalization = nil;
 	return [sharedLocalization decimalPoint];
 }
 
++ (void)addLanguageDirectory: (OFString*)path
+{
+	[sharedLocalization addLanguageDirectory: path];
+}
+
 - initWithLocale: (char*)locale
 {
 	self = [super init];
+
+	@try {
+		_localizedStrings = [[OFMutableArray alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	if (locale == NULL) {
 		_encoding = OF_STRING_ENCODING_UTF_8;
@@ -68,6 +82,7 @@ static OFLocalization *sharedLocalization = nil;
 
 	@try {
 		char *tmp;
+		size_t tmpLen;
 
 		/* We don't care for extras behind the @ */
 		if ((tmp = strrchr(locale, '@')) != NULL)
@@ -75,8 +90,6 @@ static OFLocalization *sharedLocalization = nil;
 
 		/* Encoding */
 		if ((tmp = strrchr(locale, '.')) != NULL) {
-			size_t tmpLen;
-
 			*tmp++ = '\0';
 
 			tmpLen = strlen(tmp);
@@ -103,14 +116,25 @@ static OFLocalization *sharedLocalization = nil;
 		/* Territory */
 		if ((tmp = strrchr(locale, '_')) != NULL) {
 			*tmp++ = '\0';
+
+			tmpLen = strlen(tmp);
+			for (size_t i = 0; i < tmpLen; i++)
+				tmp[i] = of_ascii_tolower(tmp[i]);
+
 			_territory = [[OFString alloc]
 			    initWithCString: tmp
-				   encoding: OF_STRING_ENCODING_ASCII];
+				   encoding: OF_STRING_ENCODING_ASCII
+				     length: tmpLen];
 		}
+
+		tmpLen = strlen(tmp);
+		for (size_t i = 0; i < tmpLen; i++)
+			tmp[i] = of_ascii_tolower(tmp[i]);
 
 		_language = [[OFString alloc]
 		    initWithCString: locale
-			   encoding: OF_STRING_ENCODING_ASCII];
+			   encoding: OF_STRING_ENCODING_ASCII
+			     length: tmpLen];
 
 		_decimalPoint = [[OFString alloc]
 		    initWithCString: localeconv()->decimal_point
@@ -125,6 +149,44 @@ static OFLocalization *sharedLocalization = nil;
 	sharedLocalization = self;
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[_language release];
+	[_territory release];
+	[_decimalPoint release];
+	[_localizedStrings release];
+
+	[super dealloc];
+}
+
+- (void)addLanguageDirectory: (OFString*)path
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *mapPath =
+	    [path stringByAppendingPathComponent: @"languages.json"];
+	OFDictionary *map =
+	    [[OFString stringWithContentsOfFile: mapPath] JSONValue];
+	OFString *languageFile;
+
+	languageFile = [[map objectForKey: _language] objectForKey: _territory];
+	if (languageFile == nil)
+		languageFile = [[map objectForKey: _language]
+		    objectForKey: @""];
+
+	if (languageFile == nil) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	languageFile = [path stringByAppendingPathComponent:
+	    [languageFile stringByAppendingString: @".json"]];
+
+	[_localizedStrings addObject:
+	    [[OFString stringWithContentsOfFile: languageFile] JSONValue]];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFString*)localizedStringForID: (OFConstantString*)ID
@@ -148,11 +210,31 @@ static OFLocalization *sharedLocalization = nil;
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	const char *UTF8String = [fallback UTF8String];
-	size_t UTF8StringLength = [fallback UTF8StringLength];
-	size_t last = 0;
+	const char *UTF8String = NULL;
+	size_t last, UTF8StringLength;
 	int state = 0;
 
+	for (OFDictionary *strings in _localizedStrings) {
+		id string = [strings objectForKey: ID];
+
+		if (string == nil)
+			continue;
+
+		if ([string isKindOfClass: [OFArray class]])
+			string = [string componentsJoinedByString: @""];
+
+		UTF8String = [string UTF8String];
+		UTF8StringLength = [string UTF8StringLength];
+		break;
+	}
+
+	if (UTF8String == NULL) {
+		UTF8String = [fallback UTF8String];
+		UTF8StringLength = [fallback UTF8StringLength];
+	}
+
+	state = 0;
+	last = 0;
 	for (size_t i = 0; i < UTF8StringLength; i++) {
 		switch (state) {
 		case 0:
