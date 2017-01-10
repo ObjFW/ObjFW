@@ -1,0 +1,85 @@
+{
+    "usage": "Benutzung: %[prog] -[cehHmoOPqv] url1 [url2 ...]\n",
+    "full_usage": [
+        "\n",
+        "Optionen:\n",
+        "    -b  --body             Specify the file to send as body\n",
+        "    -c  --continue         Continue download of existing file\n",
+        "    -f  --force            Force / overwrite existing file\n",
+        "    -h  --help             Show this help\n",
+        "    -H  --header           Add a header (e.g. X-Foo:Bar)\n",
+        "    -m  --method           Set the method of the HTTP request\n",
+        "    -o  --output           Specify output file name\n",
+        "    -O  --detect-filename  Do a HEAD request to detect the file name",
+        "\n",
+        "    -P  --proxy            Specify SOCKS5 proxy\n",
+        "    -q  --quiet            Quiet mode (no output, except errors)\n",
+        "    -v  --verbose          Verbose mode (print headers)\n"
+    ],
+    "invalid_input_header": [
+        "%[prog]: Header müssen im Format Name:Wert sein!\n"
+    ],
+    "invalid_input_method": "%[prog]: Ungültige Request-Methode %[method]!\n",
+    "invalid_input_proxy": "%[prog]: Proxy muss im Format Host:Port sein!\n",
+    "long_argument_missing": "%[prog]: Argument für Option --%[opt] fehlt\n",
+    "argument_missing": "%[prog]: Argument für option -%[opt] fehlt\n",
+    "takes_no_argument": "%[prog]: Option --%[opt] nimmt kein Argument\n",
+    "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]\n",
+    "unknown_option": "%[prog]: Unbekannte Option: -%[opt]\n",
+    "quiet_xor_verbose": [
+        "%[prog]: -q / --quiet und -v / --verbose schließen sich gegenseitig ",
+	"aus!\n"
+    ],
+    "output_only_with_one_url": [
+        "%[prog]: -o / --output kann nicht mit mehr als einer URL benutzt ",
+	"werden!\n"
+    ],
+    "download_failed_address_translation": [
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  Adressauflösung fehlgeschlagen: %[exception]\n"
+    ],
+    "download_failed_connection_failed": [
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  Verbindung fehlgeschlagen: %[exception]\n"
+    ],
+    "download_failed_invalid_server_reply": [
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  Ungültige Antwort vom Server!\n"
+    ],
+    "no_ssl_library": [
+        "%[prog]: Keine SSL-Bibliothek geladen!\n",
+        "  Um Dateien über https zu laden, müssen Sie eine SSL-Bibliothek für ",
+        "ObjFW,\n",
+        "  wie z.B. ObjOpenSSL, mittels LD_PRELOAD laden."
+    ],
+    "download_failed_read_or_write_failed_any": "Lesen oder Schreiben",
+    "download_failed_read_or_write_failed_read": "Lesen",
+    "download_failed_read_or_write_failed_write": "Schreiben",
+    "download_failed_read_or_write_failed": [
+        "%[prog]: Fehler beim Download von <%[url]>!\n",
+        "  %[error]: %[exception]\n"
+    ],
+    "download_failed": "%[prog]: Fehler beim Download von <%[url]>!\n",
+    "download_failed_exception": [
+        "%[prog]: Fehler beim Download von <%[url]>: %[exception]\n"
+    ],
+    "download_done": "\n  Fertig!\n",
+    "invalid_url": "%[prog]: Ungültige URL: <%[url]>!\n",
+    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[scheme]:>!\n",
+    "type_unknown": "unbekannt",
+    "size_gib": "%[num] GiB",
+    "size_mib": "%[num] MiB",
+    "size_kib": "%[num] KiB",
+    "size_bytes": "%[num] Bytes",
+    "size_unknown": "unbekannt",
+    "info_name_nopad": "  Name: %[name]\n",
+    "info_name": "  Name:  %[name]\n",
+    "info_type": "  Typ:   %[type]\n",
+    "info_size": "  Größe: %[size]\n",
+    "output_already_exists": "%[prog]: Datei %[filename] existiert bereits!\n",
+    "failed_to_open_output": [
+        "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]\n"
+    ],
+    "eta_days": "%[num] t ",
+    "progress_bytes": "\r  %[num] Bytes"
+}
