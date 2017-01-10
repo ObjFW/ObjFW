@@ -127,9 +127,9 @@ static OFLocalization *sharedLocalization = nil;
 				     length: tmpLen];
 		}
 
-		tmpLen = strlen(tmp);
+		tmpLen = strlen(locale);
 		for (size_t i = 0; i < tmpLen; i++)
-			tmp[i] = of_ascii_tolower(tmp[i]);
+			locale[i] = of_ascii_tolower(locale[i]);
 
 		_language = [[OFString alloc]
 		    initWithCString: locale
