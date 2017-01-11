@@ -117,10 +117,20 @@
 			encoding = OF_STRING_ENCODING_ISO_8859_1;
 		else if ([contentType hasSuffix: @"charset=iso-8859-15"])
 			encoding = OF_STRING_ENCODING_ISO_8859_15;
-		else if ([contentType hasSuffix: @"charset=windows-1251"])
+		else if ([contentType hasSuffix: @"charset=windows-1251"] ||
+		    [contentType hasSuffix: @"charset=cp1251"] ||
+		    [contentType hasSuffix: @"charset=cp-1251"])
 			encoding = OF_STRING_ENCODING_WINDOWS_1251;
-		else if ([contentType hasSuffix: @"charset=windows-1252"])
+		else if ([contentType hasSuffix: @"charset=windows-1252"] ||
+		    [contentType hasSuffix: @"charset=cp1252"] ||
+		    [contentType hasSuffix: @"charset=cp-1252"])
 			encoding = OF_STRING_ENCODING_WINDOWS_1252;
+		else if ([contentType hasSuffix: @"charset=cp437"] ||
+		    [contentType hasSuffix: @"charset=cp-437"])
+			encoding = OF_STRING_ENCODING_CODEPAGE_437;
+		else if ([contentType hasSuffix: @"charset=cp850"] ||
+		    [contentType hasSuffix: @"charset=cp-850"])
+			encoding = OF_STRING_ENCODING_CODEPAGE_850;
 		else if ([contentType hasSuffix: @"charset=macintosh"])
 			encoding = OF_STRING_ENCODING_MAC_ROMAN;
 	}

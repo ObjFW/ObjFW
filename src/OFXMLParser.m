@@ -472,12 +472,24 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				else if ([value isEqual: @"iso-8859-15"])
 					_encoding =
 					    OF_STRING_ENCODING_ISO_8859_15;
-				else if ([value isEqual: @"windows-1251"])
+				else if ([value isEqual: @"windows-1251"] ||
+				    [value isEqual: @"cp1251"] ||
+				    [value isEqual: @"cp-1251"])
 					_encoding =
 					    OF_STRING_ENCODING_WINDOWS_1251;
-				else if ([value isEqual: @"windows-1252"])
+				else if ([value isEqual: @"windows-1252"] ||
+				    [value isEqual: @"cp1252"] ||
+				    [value isEqual: @"cp-1252"])
 					_encoding =
 					    OF_STRING_ENCODING_WINDOWS_1252;
+				else if ([value isEqual: @"cp437"] ||
+				    [value isEqual: @"cp-437"])
+					_encoding =
+					    OF_STRING_ENCODING_CODEPAGE_437;
+				else if ([value isEqual: @"cp850"] ||
+				    [value isEqual: @"cp-850"])
+					_encoding =
+					    OF_STRING_ENCODING_CODEPAGE_850;
 				else if ([value isEqual: @"macintosh"])
 					_encoding =
 					    OF_STRING_ENCODING_MAC_ROMAN;
