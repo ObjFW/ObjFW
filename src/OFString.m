@@ -91,6 +91,8 @@ static locale_t cLocale;
 
 extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, unsigned char*,
     size_t, bool);
+extern bool of_unicode_to_windows_1251(const of_unichar_t*, unsigned char*,
+    size_t, bool);
 extern bool of_unicode_to_windows_1252(const of_unichar_t*, unsigned char*,
     size_t, bool);
 extern bool of_unicode_to_codepage_437(const of_unichar_t*, unsigned char*,
@@ -953,13 +955,18 @@ static struct {
 
 			if ([contentType hasSuffix: @"charset=utf-8"])
 				encoding = OF_STRING_ENCODING_UTF_8;
-			if ([contentType hasSuffix: @"charset=iso-8859-1"])
+			else if ([contentType hasSuffix: @"charset=iso-8859-1"])
 				encoding = OF_STRING_ENCODING_ISO_8859_1;
-			if ([contentType hasSuffix: @"charset=iso-8859-15"])
+			else if ([contentType hasSuffix:
+			    @"charset=iso-8859-15"])
 				encoding = OF_STRING_ENCODING_ISO_8859_15;
-			if ([contentType hasSuffix: @"charset=windows-1252"])
+			else if ([contentType hasSuffix:
+			    @"charset=windows-1251"])
+				encoding = OF_STRING_ENCODING_WINDOWS_1251;
+			else if ([contentType hasSuffix:
+			    @"charset=windows-1252"])
 				encoding = OF_STRING_ENCODING_WINDOWS_1252;
-			if ([contentType hasSuffix: @"charset=macintosh"])
+			else if ([contentType hasSuffix: @"charset=macintosh"])
 				encoding = OF_STRING_ENCODING_MAC_ROMAN;
 		}
 
@@ -1107,6 +1114,17 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+	case OF_STRING_ENCODING_WINDOWS_1251:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_windows_1251(characters,
+		    (unsigned char*)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1206,6 +1224,7 @@ static struct {
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
 	case OF_STRING_ENCODING_ISO_8859_15:
+	case OF_STRING_ENCODING_WINDOWS_1251:
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
 	case OF_STRING_ENCODING_CODEPAGE_850:
@@ -1272,6 +1291,7 @@ static struct {
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
 	case OF_STRING_ENCODING_ISO_8859_15:
+	case OF_STRING_ENCODING_WINDOWS_1251:
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
 	case OF_STRING_ENCODING_CODEPAGE_850:

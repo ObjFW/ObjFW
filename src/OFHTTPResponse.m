@@ -113,13 +113,15 @@
 
 		if ([contentType hasSuffix: @"charset=utf-8"])
 			encoding = OF_STRING_ENCODING_UTF_8;
-		if ([contentType hasSuffix: @"charset=iso-8859-1"])
+		else if ([contentType hasSuffix: @"charset=iso-8859-1"])
 			encoding = OF_STRING_ENCODING_ISO_8859_1;
-		if ([contentType hasSuffix: @"charset=iso-8859-15"])
+		else if ([contentType hasSuffix: @"charset=iso-8859-15"])
 			encoding = OF_STRING_ENCODING_ISO_8859_15;
-		if ([contentType hasSuffix: @"charset=windows-1252"])
+		else if ([contentType hasSuffix: @"charset=windows-1251"])
+			encoding = OF_STRING_ENCODING_WINDOWS_1251;
+		else if ([contentType hasSuffix: @"charset=windows-1252"])
 			encoding = OF_STRING_ENCODING_WINDOWS_1252;
-		if ([contentType hasSuffix: @"charset=macintosh"])
+		else if ([contentType hasSuffix: @"charset=macintosh"])
 			encoding = OF_STRING_ENCODING_MAC_ROMAN;
 	}
 

@@ -472,6 +472,9 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				else if ([value isEqual: @"iso-8859-15"])
 					_encoding =
 					    OF_STRING_ENCODING_ISO_8859_15;
+				else if ([value isEqual: @"windows-1251"])
+					_encoding =
+					    OF_STRING_ENCODING_WINDOWS_1251;
 				else if ([value isEqual: @"windows-1252"])
 					_encoding =
 					    OF_STRING_ENCODING_WINDOWS_1252;

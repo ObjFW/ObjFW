@@ -160,6 +160,7 @@ SRCS += OFArray_adjacent.m		\
 	iso_8859_15.m			\
 	mac_roman.m			\
 	${UNICODE_M}			\
+	windows_1251.m			\
 	windows_1252.m
 SRCS_FILES += OFSettings_INIFile.m
 SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_EPOLL_M}	\

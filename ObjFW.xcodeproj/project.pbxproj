@@ -962,6 +962,8 @@
 		4BF33B12133807A20059CEF7 /* TestsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF6811235358D0076B512 /* TestsAppDelegate.m */; };
 		4BF33B4713380CE20059CEF7 /* testfile.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4313380CD40059CEF7 /* testfile.txt */; };
 		4BF33B4813380D2D0059CEF7 /* testfile.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BF33B4213380CD40059CEF7 /* testfile.bin */; };
+		4BF3A2291E25EA48002EA46F /* windows_1251.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF3A2281E25EA48002EA46F /* windows_1251.m */; };
+		4BF3A22A1E25EA48002EA46F /* windows_1251.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF3A2281E25EA48002EA46F /* windows_1251.m */; };
 		4BF48CE118A95F83000E8D04 /* OFBigDataArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF48CE218A95F83000E8D04 /* OFBigDataArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */; };
 		4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF69CE51BD44F8B00DFFC1B /* platform.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1585,6 +1587,7 @@
 		4BF33AF0133807310059CEF7 /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BF33B4213380CD40059CEF7 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = testfile.bin; path = tests/testfile.bin; sourceTree = "<group>"; };
 		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
+		4BF3A2281E25EA48002EA46F /* windows_1251.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1251.m; path = src/windows_1251.m; sourceTree = "<group>"; };
 		4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBigDataArray.h; path = src/OFBigDataArray.h; sourceTree = "<group>"; };
 		4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBigDataArray.m; path = src/OFBigDataArray.m; sourceTree = "<group>"; };
 		4BF69CE51BD44F8B00DFFC1B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = src/platform.h; sourceTree = "<group>"; };
@@ -2179,6 +2182,7 @@
 				4BABC29A197A8212006A93BD /* threading_pthread.m */,
 				4B67998C1099E7C50041064A /* unicode.h */,
 				4BFBDD1610A0724800051AFB /* unicode.m */,
+				4BF3A2281E25EA48002EA46F /* windows_1251.m */,
 				4B6AF97210A8D42E0003FB0A /* windows_1252.m */,
 			);
 			name = ObjFW;
@@ -3200,6 +3204,7 @@
 				4B2C21931DA292BE00735907 /* socket.m in Sources */,
 				4B2C21941DA292BE00735907 /* threading.m in Sources */,
 				4B2C21961DA292BE00735907 /* unicode.m in Sources */,
+				4BF3A22A1E25EA48002EA46F /* windows_1251.m in Sources */,
 				4B2C21971DA292BE00735907 /* windows_1252.m in Sources */,
 				4B2C21981DA292BE00735907 /* OFAcceptFailedException.m in Sources */,
 				4B2C21991DA292BE00735907 /* OFObject+KeyValueCoding.m in Sources */,
@@ -3391,6 +3396,7 @@
 				4B40EC1B189FE2650031E19E /* socket.m in Sources */,
 				4B3379CF1979326A0088E97E /* threading.m in Sources */,
 				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
+				4BF3A2291E25EA48002EA46F /* windows_1251.m in Sources */,
 				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
 				4B90B79F133AD87D00BD33CB /* OFAcceptFailedException.m in Sources */,
 				4BC176311D04963000C32718 /* OFObject+KeyValueCoding.m in Sources */,

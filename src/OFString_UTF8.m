@@ -39,6 +39,7 @@
 #import "unicode.h"
 
 extern const of_char16_t of_iso_8859_15[128];
+extern const of_char16_t of_windows_1251[128];
 extern const of_char16_t of_windows_1252[128];
 extern const of_char16_t of_codepage_437[128];
 extern const of_char16_t of_codepage_850[128];
@@ -290,6 +291,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		switch (encoding) {
 		case OF_STRING_ENCODING_ISO_8859_15:
 			table = of_iso_8859_15;
+			break;
+		case OF_STRING_ENCODING_WINDOWS_1251:
+			table = of_windows_1251;
 			break;
 		case OF_STRING_ENCODING_WINDOWS_1252:
 			table = of_windows_1252;
