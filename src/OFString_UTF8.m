@@ -320,7 +320,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 			character = table[(uint8_t)cString[i] - 128];
 
-			if (character == 0xFFFD)
+			if (character == 0xFFFF)
 				@throw [OFInvalidEncodingException exception];
 
 			_s->isUTF8 = true;
