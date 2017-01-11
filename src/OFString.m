@@ -937,53 +937,13 @@ static struct {
 		OFHTTPClient *client = [OFHTTPClient client];
 		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
 		OFHTTPResponse *response = [client performRequest: request];
-		OFDictionary *headers;
-		OFString *contentType, *contentLength;
-		OFDataArray *data;
 
 		if ([response statusCode] != 200)
 			@throw [OFHTTPRequestFailedException
 			    exceptionWithRequest: request
 					response: response];
 
-		headers = [response headers];
-
-		if (encoding == OF_STRING_ENCODING_AUTODETECT &&
-		    (contentType = [headers
-		    objectForKey: @"Content-Type"]) != nil) {
-			contentType = [contentType lowercaseString];
-
-			if ([contentType hasSuffix: @"charset=utf-8"])
-				encoding = OF_STRING_ENCODING_UTF_8;
-			else if ([contentType hasSuffix: @"charset=iso-8859-1"])
-				encoding = OF_STRING_ENCODING_ISO_8859_1;
-			else if ([contentType hasSuffix:
-			    @"charset=iso-8859-15"])
-				encoding = OF_STRING_ENCODING_ISO_8859_15;
-			else if ([contentType hasSuffix:
-			    @"charset=windows-1251"])
-				encoding = OF_STRING_ENCODING_WINDOWS_1251;
-			else if ([contentType hasSuffix:
-			    @"charset=windows-1252"])
-				encoding = OF_STRING_ENCODING_WINDOWS_1252;
-			else if ([contentType hasSuffix: @"charset=macintosh"])
-				encoding = OF_STRING_ENCODING_MAC_ROMAN;
-		}
-
-		if (encoding == OF_STRING_ENCODING_AUTODETECT)
-			encoding = OF_STRING_ENCODING_UTF_8;
-
-		data = [response readDataArrayTillEndOfStream];
-
-		if ((contentLength = [headers
-		    objectForKey: @"Content-Length"]) != nil)
-			if ([data count] !=
-			    (size_t)[contentLength decimalValue])
-				@throw [OFTruncatedDataException exception];
-
-		self = [[c alloc] initWithCString: (char*)[data items]
-					 encoding: encoding
-					   length: [data count]];
+		self = [[response string] retain];
 	} else
 # endif
 		@throw [OFUnsupportedProtocolException exception];
