@@ -99,6 +99,8 @@ extern bool of_unicode_to_codepage_437(const of_unichar_t*, unsigned char*,
     size_t, bool);
 extern bool of_unicode_to_codepage_850(const of_unichar_t*, unsigned char*,
     size_t, bool);
+extern bool of_unicode_to_codepage_858(const of_unichar_t*, unsigned char*,
+    size_t, bool);
 extern bool of_unicode_to_mac_roman(const of_unichar_t*, unsigned char*,
     size_t, bool);
 
@@ -1118,6 +1120,17 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+	case OF_STRING_ENCODING_CODEPAGE_858:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_codepage_858(characters,
+		    (unsigned char*)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
 	case OF_STRING_ENCODING_MAC_ROMAN:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1188,6 +1201,7 @@ static struct {
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
 	case OF_STRING_ENCODING_CODEPAGE_850:
+	case OF_STRING_ENCODING_CODEPAGE_858:
 	case OF_STRING_ENCODING_MAC_ROMAN:
 		cString = [object allocMemoryWithSize: length + 1];
 
@@ -1255,6 +1269,7 @@ static struct {
 	case OF_STRING_ENCODING_WINDOWS_1252:
 	case OF_STRING_ENCODING_CODEPAGE_437:
 	case OF_STRING_ENCODING_CODEPAGE_850:
+	case OF_STRING_ENCODING_CODEPAGE_858:
 	case OF_STRING_ENCODING_MAC_ROMAN:
 		return [self length];
 	default:

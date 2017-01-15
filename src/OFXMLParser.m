@@ -490,6 +490,10 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				    [value isEqual: @"cp-850"])
 					_encoding =
 					    OF_STRING_ENCODING_CODEPAGE_850;
+				else if ([value isEqual: @"cp858"] ||
+				    [value isEqual: @"cp-858"])
+					_encoding =
+					    OF_STRING_ENCODING_CODEPAGE_858;
 				else if ([value isEqual: @"macintosh"])
 					_encoding =
 					    OF_STRING_ENCODING_MAC_ROMAN;

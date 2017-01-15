@@ -742,6 +742,8 @@
 		4B6025A819B76B5000694BCC /* OFSHA512HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */; };
 		4B62ED1518566FCA0004E0E3 /* OFCopyItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B62ED1618566FCA0004E0E3 /* OFCopyItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */; };
+		4B6736121E2B2F6F00681F2C /* codepage_858.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6736111E2B2F6F00681F2C /* codepage_858.m */; };
+		4B6736131E2B2F6F00681F2C /* codepage_858.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6736111E2B2F6F00681F2C /* codepage_858.m */; };
 		4B6743F1163C384A00EB1E59 /* OFLockFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6743F2163C384A00EB1E59 /* OFLockFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6743EC163C384A00EB1E59 /* OFLockFailedException.m */; };
 		4B6743F3163C384A00EB1E59 /* OFStillLockedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6743ED163C384A00EB1E59 /* OFStillLockedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1324,6 +1326,7 @@
 		4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA512HashTests.m; path = tests/OFSHA512HashTests.m; sourceTree = "<group>"; };
 		4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyItemFailedException.h; path = src/exceptions/OFCopyItemFailedException.h; sourceTree = "<group>"; };
 		4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCopyItemFailedException.m; path = src/exceptions/OFCopyItemFailedException.m; sourceTree = "<group>"; };
+		4B6736111E2B2F6F00681F2C /* codepage_858.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_858.m; path = src/codepage_858.m; sourceTree = "<group>"; };
 		4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFLockFailedException.h; path = src/exceptions/OFLockFailedException.h; sourceTree = "<group>"; };
 		4B6743EC163C384A00EB1E59 /* OFLockFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFLockFailedException.m; path = src/exceptions/OFLockFailedException.m; sourceTree = "<group>"; };
 		4B6743ED163C384A00EB1E59 /* OFStillLockedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStillLockedException.h; path = src/exceptions/OFStillLockedException.h; sourceTree = "<group>"; };
@@ -2155,6 +2158,7 @@
 				4B837D7716829C5F007A3E83 /* block.h */,
 				4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */,
 				4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */,
+				4B6736111E2B2F6F00681F2C /* codepage_858.m */,
 				4B881D391CCBFE0700E2F7D8 /* crc32.h */,
 				4B881D3A1CCBFE0700E2F7D8 /* crc32.m */,
 				4B837D7816829C5F007A3E83 /* instance.h */,
@@ -3192,6 +3196,7 @@
 				4B2C21891DA292BE00735907 /* base64.m in Sources */,
 				4B2C218A1DA292BE00735907 /* codepage_437.m in Sources */,
 				4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */,
+				4B6736131E2B2F6F00681F2C /* codepage_858.m in Sources */,
 				4B2C218B1DA292BE00735907 /* crc32.m in Sources */,
 				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
 				4B2C218D1DA292BE00735907 /* foundation-compat.m in Sources */,
@@ -3384,6 +3389,7 @@
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
 				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
 				4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */,
+				4B6736121E2B2F6F00681F2C /* codepage_858.m in Sources */,
 				4B881D3D1CCBFE2A00E2F7D8 /* crc32.m in Sources */,
 				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,

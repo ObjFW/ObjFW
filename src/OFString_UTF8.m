@@ -43,6 +43,7 @@ extern const of_char16_t of_windows_1251[128];
 extern const of_char16_t of_windows_1252[128];
 extern const of_char16_t of_codepage_437[128];
 extern const of_char16_t of_codepage_850[128];
+extern const of_char16_t of_codepage_858[128];
 extern const of_char16_t of_mac_roman[128];
 
 static inline int
@@ -303,6 +304,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 			break;
 		case OF_STRING_ENCODING_CODEPAGE_850:
 			table = of_codepage_850;
+			break;
+		case OF_STRING_ENCODING_CODEPAGE_858:
+			table = of_codepage_858;
 			break;
 		case OF_STRING_ENCODING_MAC_ROMAN:
 			table = of_mac_roman;

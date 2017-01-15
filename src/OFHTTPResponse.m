@@ -131,6 +131,9 @@
 		else if ([contentType hasSuffix: @"charset=cp850"] ||
 		    [contentType hasSuffix: @"charset=cp-850"])
 			encoding = OF_STRING_ENCODING_CODEPAGE_850;
+		else if ([contentType hasSuffix: @"charset=cp858"] ||
+		    [contentType hasSuffix: @"charset=cp-858"])
+			encoding = OF_STRING_ENCODING_CODEPAGE_858;
 		else if ([contentType hasSuffix: @"charset=macintosh"])
 			encoding = OF_STRING_ENCODING_MAC_ROMAN;
 	}

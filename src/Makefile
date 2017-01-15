@@ -155,6 +155,7 @@ SRCS += OFArray_adjacent.m		\
 	${AUTORELEASE_M}		\
 	codepage_437.m			\
 	codepage_850.m			\
+	codepage_858.m			\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\
