@@ -870,7 +870,7 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_CHECK_FUNCS([lstat])
 
 	old_OBJCFLAGS="$OBJCFLAGS"
-	OBJCFLAGS="$OBJCFLAGS -Werror=deprecated"
+	OBJCFLAGS="$OBJCFLAGS -Werror"
 	AC_MSG_CHECKING(for readdir_r)
 	AC_TRY_COMPILE([
 		#include <dirent.h>
