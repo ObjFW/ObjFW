@@ -1,5 +1,6 @@
 #
-#  Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
+#  Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
+#  2017
 #  Jonathan Schleifer <js@heap.zone>
 #
 #  https://heap.zone/git/?p=buildsys.git
@@ -136,8 +137,10 @@ depend: pre-depend ${SRCS}
 	regen=0; \
 	deps=""; \
 	test -f .deps || regen=1; \
-	for i in ${SRCS}; do \
+	for i in "" ${SRCS}; do \
 		case $$i in \
+			"") \
+				;; \
 			*.c) \
 				if test x"${CC_DEPENDS}" = x"yes"; then \
 					test $$i -nt .deps && regen=1; \
@@ -621,13 +624,15 @@ locales: ${MO_FILES}
 	fi
 
 install: all install-extra
-	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
 		${MAKE} install || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
-	for i in ${SHARED_LIB}; do \
+	for i in "" ${SHARED_LIB}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${libdir} ${INSTALL_LIB}; then \
 			${INSTALL_OK}; \
@@ -636,7 +641,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
+	for i in "" ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${libdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${libdir}/$$i; then \
 			${INSTALL_OK}; \
@@ -645,7 +651,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${PLUGIN}; do \
+	for i in "" ${PLUGIN}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${plugindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i; then \
 			${INSTALL_OK}; \
@@ -654,7 +661,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${DATA}; do \
+	for i in "" ${DATA}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} $$(dirname ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i) && ${INSTALL} -m 644 $$i ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i; then \
 			${INSTALL_OK}; \
@@ -663,7 +671,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${PROG}; do \
+	for i in "" ${PROG}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${bindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${bindir}/$$i; then \
 			${INSTALL_OK}; \
@@ -672,7 +681,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${INCLUDES}; do \
+	for i in "" ${INCLUDES}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${includedir}/${includesubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
 			${INSTALL_OK}; \
@@ -681,7 +691,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${MO_FILES}; do \
+	for i in "" ${MO_FILES}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${localedir}/$${i%.mo}/LC_MESSAGES && ${INSTALL} -m 644 $$i ${DESTDIR}${localedir}/$${i%.mo}/LC_MESSAGES/${localename}.mo; then \
 			${INSTALL_OK}; \
@@ -690,7 +701,8 @@ install: all install-extra
 		fi \
 	done
 
-	for i in ${MAN}; do \
+	for i in "" ${MAN}; do \
+		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
 		if ${MKDIR_P} ${DESTDIR}${mandir}/${mansubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${mandir}/${mansubdir}/$$i; then \
 			${INSTALL_OK}; \
@@ -702,13 +714,15 @@ install: all install-extra
 install-extra:
 
 uninstall: uninstall-extra
-	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
 		${MAKE} uninstall || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
-	for i in ${SHARED_LIB}; do \
+	for i in "" ${SHARED_LIB}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${libdir}/$$i; then \
 			if : ${UNINSTALL_LIB}; then \
 				${DELETE_OK}; \
@@ -718,7 +732,8 @@ uninstall: uninstall-extra
 		fi; \
 	done
 
-	for i in ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
+	for i in "" ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${libdir}/$$i; then \
 			if rm -f ${DESTDIR}${libdir}/$$i; then \
 				${DELETE_OK}; \
@@ -728,7 +743,8 @@ uninstall: uninstall-extra
 		fi \
 	done
 
-	for i in ${PLUGIN}; do \
+	for i in "" ${PLUGIN}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${plugindir}/$$i; then \
 			if rm -f ${DESTDIR}${plugindir}/$$i; then \
 				${DELETE_OK}; \
@@ -739,7 +755,8 @@ uninstall: uninstall-extra
 	done
 	-rmdir ${DESTDIR}${plugindir} >/dev/null 2>&1
 
-	for i in ${DATA}; do \
+	for i in "" ${DATA}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i; then \
 			if rm -f ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i; then \
 				${DELETE_OK}; \
@@ -751,7 +768,8 @@ uninstall: uninstall-extra
 	done
 	-rmdir ${DESTDIR}${datadir}/${PACKAGE_NAME} >/dev/null 2>&1
 
-	for i in ${PROG}; do \
+	for i in "" ${PROG}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${bindir}/$$i; then \
 			if rm -f ${DESTDIR}${bindir}/$$i; then \
 				${DELETE_OK}; \
@@ -761,7 +779,8 @@ uninstall: uninstall-extra
 		fi \
 	done
 
-	for i in ${INCLUDES}; do \
+	for i in "" ${INCLUDES}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
 			if rm -f ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
 				${DELETE_OK}; \
@@ -772,7 +791,8 @@ uninstall: uninstall-extra
 	done
 	-rmdir ${DESTDIR}${includedir}/${includesubdir} >/dev/null 2>&1
 
-	for i in ${MO_FILES}; do \
+	for i in "" ${MO_FILES}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${localedir}/$${i%.mo}/LC_MESSAGES/${localename}.mo; then \
 			if rm -f ${DESTDIR}${localedir}/$${i%.mo}/LC_MESSAGES/${localename}.mo; then \
 				${DELETE_OK}; \
@@ -782,7 +802,8 @@ uninstall: uninstall-extra
 		fi \
 	done
 
-	for i in ${MAN}; do \
+	for i in "" ${MAN}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${mandir}/${mansubdir}/$$i; then \
 			if rm -f ${DESTDIR}${mandir}/${mansubdir}/$$i; then \
 				${DELETE_OK}; \
@@ -795,13 +816,15 @@ uninstall: uninstall-extra
 uninstall-extra:
 
 clean:
-	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
 		${MAKE} clean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
-	for i in ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
+	for i in "" ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
+		test x"$$i" = x"" && continue; \
 		if test -f $$i -o -d $$i; then \
 			if rm -fr $$i; then \
 				${DELETE_OK}; \
@@ -812,13 +835,15 @@ clean:
 	done
 
 distclean: clean
-	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
 		${MAKE} distclean || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
-	for i in ${DISTCLEAN} .deps *~; do \
+	for i in "" ${DISTCLEAN} .deps *~; do \
+		test x"$$i" = x"" && continue; \
 		if test -f $$i -o -d $$i; then \
 			if rm -fr $$i; then \
 				${DELETE_OK}; \
@@ -829,7 +854,8 @@ distclean: clean
 	done
 
 print-hierarchy:
-	for i in ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		test x"$$i" = x"" && continue; \
 		echo ${PRINT_HIERARCHY_PREFIX}$$i; \
 		cd $$i || exit $$?; \
 		${MAKE} PRINT_HIERARCHY_PREFIX=$$i/ print-hierarchy || exit $$?; \
