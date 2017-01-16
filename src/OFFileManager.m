@@ -773,7 +773,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
-				      errNo: ENOTSUP];
+				      errNo: EINVAL];
 
 	objc_autoreleasePoolPop(pool);
 }
