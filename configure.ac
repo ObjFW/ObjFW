@@ -839,9 +839,17 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_SUBST(OFHASH, "ofhash")
 	AC_SUBST(OFZIP, "ofzip")
 
-	AC_CHECK_TYPE(off64_t, [
-		AC_DEFINE(OF_HAVE_OFF64_T, 1, [Whether we have off64_t])
-	])
+	case "$host_os" in
+		msdosdjgpp*)
+			dnl DJGPP has the type, but it's not really usable.
+			;;
+		*)
+			AC_CHECK_TYPE(off64_t, [
+				AC_DEFINE(OF_HAVE_OFF64_T, 1,
+					[Whether we have off64_t])
+			])
+			;;
+	esac
 
 	AC_CHECK_HEADERS([pwd.h grp.h])
 	AC_CHECK_FUNC(chmod, [
