@@ -58,6 +58,12 @@ extern char **environ;
 # undef asm
 #endif
 
+#ifdef HAVE_SIGACTION
+# ifndef SA_RESTART
+#  define SA_RESTART 0
+# endif
+#endif
+
 @interface OFApplication ()
 - (void)OF_setArgumentCount: (int*)argc
 	  andArgumentValues: (char**[])argv;
