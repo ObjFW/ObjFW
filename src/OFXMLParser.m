@@ -466,10 +466,12 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 				if ([value isEqual: @"utf-8"])
 					_encoding = OF_STRING_ENCODING_UTF_8;
-				else if ([value isEqual: @"iso-8859-1"])
+				else if ([value isEqual: @"iso-8859-1"] ||
+				    [value isEqual: @"iso_8859-1"])
 					_encoding =
 					    OF_STRING_ENCODING_ISO_8859_1;
-				else if ([value isEqual: @"iso-8859-15"])
+				else if ([value isEqual: @"iso-8859-15"] ||
+				    [value isEqual: @"iso_8859-15"])
 					_encoding =
 					    OF_STRING_ENCODING_ISO_8859_15;
 				else if ([value isEqual: @"windows-1251"] ||

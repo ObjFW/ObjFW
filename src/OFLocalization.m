@@ -103,10 +103,12 @@ static OFLocalization *sharedLocalization = nil;
 			    strcmp(tmp, "us-ascii") == 0)
 				_encoding = OF_STRING_ENCODING_ASCII;
 			else if (strcmp(tmp, "iso8859-1") == 0 ||
-			    strcmp(tmp, "iso-8859-1") == 0)
+			    strcmp(tmp, "iso-8859-1") == 0 ||
+			    strcmp(tmp, "iso_8859-1") == 0)
 				_encoding = OF_STRING_ENCODING_ISO_8859_1;
 			else if (strcmp(tmp, "iso8859-15") == 0 ||
-			    strcmp(tmp, "iso-8859-15") == 0)
+			    strcmp(tmp, "iso-8859-15") == 0 ||
+			    strcmp(tmp, "iso_8859-15") == 0)
 				_encoding = OF_STRING_ENCODING_ISO_8859_15;
 			/* Windows and DJGPP use a codepage */
 			else if (strcmp(tmp, "1251") == 0)
