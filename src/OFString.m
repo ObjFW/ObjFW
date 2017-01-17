@@ -89,6 +89,8 @@ static locale_t cLocale;
 					depth: (size_t)depth;
 @end
 
+extern bool of_unicode_to_iso_8859_2(const of_unichar_t*, unsigned char*,
+    size_t, bool);
 extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, unsigned char*,
     size_t, bool);
 extern bool of_unicode_to_windows_1251(const of_unichar_t*, unsigned char*,
@@ -1065,6 +1067,17 @@ static struct {
 		cString[i] = '\0';
 
 		return length;
+	case OF_STRING_ENCODING_ISO_8859_2:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_iso_8859_2(characters,
+		    (unsigned char*)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
 	case OF_STRING_ENCODING_ISO_8859_15:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1196,6 +1209,7 @@ static struct {
 		break;
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
+	case OF_STRING_ENCODING_ISO_8859_2:
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1251:
 	case OF_STRING_ENCODING_WINDOWS_1252:
@@ -1264,6 +1278,7 @@ static struct {
 		return UTF8StringLength;
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
+	case OF_STRING_ENCODING_ISO_8859_2:
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1251:
 	case OF_STRING_ENCODING_WINDOWS_1252:

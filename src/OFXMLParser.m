@@ -470,6 +470,10 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				    [value isEqual: @"iso_8859-1"])
 					_encoding =
 					    OF_STRING_ENCODING_ISO_8859_1;
+				else if ([value isEqual: @"iso-8859-2"] ||
+				    [value isEqual: @"iso_8859-2"])
+					_encoding =
+					    OF_STRING_ENCODING_ISO_8859_2;
 				else if ([value isEqual: @"iso-8859-15"] ||
 				    [value isEqual: @"iso_8859-15"])
 					_encoding =

@@ -116,6 +116,9 @@
 		else if ([contentType hasSuffix: @"charset=iso-8859-1"] ||
 		    [contentType hasSuffix: @"charset=iso_8859-1"])
 			encoding = OF_STRING_ENCODING_ISO_8859_1;
+		else if ([contentType hasSuffix: @"charset=iso-8859-2"] ||
+		    [contentType hasSuffix: @"charset=iso_8859-2"])
+			encoding = OF_STRING_ENCODING_ISO_8859_2;
 		else if ([contentType hasSuffix: @"charset=iso-8859-15"] ||
 		    [contentType hasSuffix: @"charset=iso_8859-15"])
 			encoding = OF_STRING_ENCODING_ISO_8859_15;

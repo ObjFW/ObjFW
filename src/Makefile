@@ -159,6 +159,7 @@ SRCS += OFArray_adjacent.m		\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
 	iso_8859_15.m			\
+	iso_8859_2.m			\
 	mac_roman.m			\
 	${UNICODE_M}			\
 	windows_1251.m			\

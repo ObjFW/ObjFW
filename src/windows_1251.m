@@ -53,7 +53,7 @@ of_unicode_to_windows_1251(const of_unichar_t *input, unsigned char *output,
 					return false;
 			}
 
-			if (c >= 0x410 && c <= 0x44F)
+			if OF_LIKELY (c >= 0x410 && c <= 0x44F)
 				output[i] = 0xC0 + (c - 0x410);
 			else {
 				switch ((of_char16_t)c) {

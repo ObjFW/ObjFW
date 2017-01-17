@@ -968,6 +968,8 @@
 		4BF3A22A1E25EA48002EA46F /* windows_1251.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF3A2281E25EA48002EA46F /* windows_1251.m */; };
 		4BF48CE118A95F83000E8D04 /* OFBigDataArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BF48CE218A95F83000E8D04 /* OFBigDataArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */; };
+		4BF5CB901E2DC1D800CF7584 /* iso_8859_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */; };
+		4BF5CB911E2DC1D800CF7584 /* iso_8859_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */; };
 		4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF69CE51BD44F8B00DFFC1B /* platform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
@@ -1593,6 +1595,7 @@
 		4BF3A2281E25EA48002EA46F /* windows_1251.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1251.m; path = src/windows_1251.m; sourceTree = "<group>"; };
 		4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBigDataArray.h; path = src/OFBigDataArray.h; sourceTree = "<group>"; };
 		4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBigDataArray.m; path = src/OFBigDataArray.m; sourceTree = "<group>"; };
+		4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_2.m; path = src/iso_8859_2.m; sourceTree = "<group>"; };
 		4BF69CE51BD44F8B00DFFC1B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = src/platform.h; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
@@ -2163,6 +2166,7 @@
 				4B881D3A1CCBFE0700E2F7D8 /* crc32.m */,
 				4B837D7816829C5F007A3E83 /* instance.h */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
+				4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */,
 				4BE17AD812FD744C002CEB0B /* foundation-compat.m */,
 				4BBA36C511406AB700CBA3AC /* macros.h */,
 				4B5EBFB81E25A937004FE6A2 /* mac_roman.m */,
@@ -3198,8 +3202,9 @@
 				4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */,
 				4B6736131E2B2F6F00681F2C /* codepage_858.m in Sources */,
 				4B2C218B1DA292BE00735907 /* crc32.m in Sources */,
-				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
 				4B2C218D1DA292BE00735907 /* foundation-compat.m in Sources */,
+				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
+				4BF5CB911E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
 				4B5EBFBA1E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4B2C218E1DA292BE00735907 /* of_asprintf.m in Sources */,
 				4B2C218F1DA292BE00735907 /* of_strptime.m in Sources */,
@@ -3391,8 +3396,9 @@
 				4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */,
 				4B6736121E2B2F6F00681F2C /* codepage_858.m in Sources */,
 				4B881D3D1CCBFE2A00E2F7D8 /* crc32.m in Sources */,
-				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
+				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
+				4BF5CB901E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
 				4B5EBFB91E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
 				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
