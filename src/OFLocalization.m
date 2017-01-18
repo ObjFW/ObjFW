@@ -24,6 +24,7 @@
 #import "OFDictionary.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
 
 static OFLocalization *sharedLocalization = nil;
 
@@ -92,39 +93,15 @@ static OFLocalization *sharedLocalization = nil;
 		if ((tmp = strrchr(locale, '.')) != NULL) {
 			*tmp++ = '\0';
 
-			tmpLen = strlen(tmp);
-			for (size_t i = 0; i < tmpLen; i++)
-				tmp[i] = of_ascii_tolower(tmp[i]);
+			@try {
+				const of_string_encoding_t ascii =
+				    OF_STRING_ENCODING_ASCII;
 
-			if (strcmp(tmp, "utf8") == 0 ||
-			    strcmp(tmp, "utf-8") == 0)
-				_encoding = OF_STRING_ENCODING_UTF_8;
-			else if (strcmp(tmp, "ascii") == 0 ||
-			    strcmp(tmp, "us-ascii") == 0)
-				_encoding = OF_STRING_ENCODING_ASCII;
-			else if (strcmp(tmp, "iso8859-1") == 0 ||
-			    strcmp(tmp, "iso-8859-1") == 0 ||
-			    strcmp(tmp, "iso_8859-1") == 0)
-				_encoding = OF_STRING_ENCODING_ISO_8859_1;
-			else if (strcmp(tmp, "iso8859-2") == 0 ||
-			    strcmp(tmp, "iso-8859-2") == 0 ||
-			    strcmp(tmp, "iso_8859-2") == 0)
-				_encoding = OF_STRING_ENCODING_ISO_8859_2;
-			else if (strcmp(tmp, "iso8859-15") == 0 ||
-			    strcmp(tmp, "iso-8859-15") == 0 ||
-			    strcmp(tmp, "iso_8859-15") == 0)
-				_encoding = OF_STRING_ENCODING_ISO_8859_15;
-			/* Windows and DJGPP use a codepage */
-			else if (strcmp(tmp, "1251") == 0)
-				_encoding = OF_STRING_ENCODING_WINDOWS_1251;
-			else if (strcmp(tmp, "1252") == 0)
-				_encoding = OF_STRING_ENCODING_WINDOWS_1252;
-			else if (strcmp(tmp, "437") == 0)
-				_encoding = OF_STRING_ENCODING_CODEPAGE_437;
-			else if (strcmp(tmp, "850") == 0)
-				_encoding = OF_STRING_ENCODING_CODEPAGE_850;
-			else if (strcmp(tmp, "858") == 0)
-				_encoding = OF_STRING_ENCODING_CODEPAGE_858;
+				_encoding = of_string_parse_encoding([OFString
+				    stringWithCString: tmp
+					     encoding: ascii]);
+			} @catch (OFInvalidEncodingException *e) {
+			}
 		}
 
 		/* Territory */

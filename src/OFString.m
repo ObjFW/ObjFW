@@ -124,6 +124,54 @@ _reference_to_OFConstantString(void)
 	[OFConstantString class];
 }
 
+of_string_encoding_t
+of_string_parse_encoding(OFString *string)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_string_encoding_t encoding;
+
+	string = [string lowercaseString];
+
+	if ([string isEqual: @"utf8"] || [string isEqual: @"utf-8"])
+		encoding = OF_STRING_ENCODING_UTF_8;
+	else if ([string isEqual: @"ascii"] || [string isEqual: @"us-ascii"])
+		encoding = OF_STRING_ENCODING_ASCII;
+	else if ([string isEqual: @"iso-8859-1"] ||
+	    [string isEqual: @"iso_8859-1"])
+		encoding = OF_STRING_ENCODING_ISO_8859_1;
+	else if ([string isEqual: @"iso-8859-2"] ||
+	    [string isEqual: @"iso_8859-2"])
+		encoding = OF_STRING_ENCODING_ISO_8859_2;
+	else if ([string isEqual: @"iso-8859-15"] ||
+	    [string isEqual: @"iso_8859-15"])
+		encoding = OF_STRING_ENCODING_ISO_8859_15;
+	else if ([string isEqual: @"windows-1251"] ||
+	    [string isEqual: @"cp1251"] || [string isEqual: @"cp-1251"] ||
+	    [string isEqual: @"1251"])
+		encoding = OF_STRING_ENCODING_WINDOWS_1251;
+	else if ([string isEqual: @"windows-1252"] ||
+	    [string isEqual: @"cp1252"] || [string isEqual: @"cp-1252"] ||
+	    [string isEqual: @"1252"])
+		encoding = OF_STRING_ENCODING_WINDOWS_1252;
+	else if ([string isEqual: @"cp437"] || [string isEqual: @"cp-437"] ||
+	    [string isEqual: @"ibm437"] || [string isEqual: @"437"])
+		encoding = OF_STRING_ENCODING_CODEPAGE_437;
+	else if ([string isEqual: @"cp850"] || [string isEqual: @"cp-850"] ||
+	    [string isEqual: @"ibm850"] || [string isEqual: @"850"])
+		encoding = OF_STRING_ENCODING_CODEPAGE_850;
+	else if ([string isEqual: @"cp858"] || [string isEqual: @"cp-858"] ||
+	    [string isEqual: @"ibm858"] || [string isEqual: @"858"])
+		encoding = OF_STRING_ENCODING_CODEPAGE_858;
+	else if ([string isEqual: @"macintosh"] || [string isEqual: @"mac"])
+		encoding = OF_STRING_ENCODING_MAC_ROMAN;
+	else
+		@throw [OFInvalidEncodingException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return encoding;
+}
+
 size_t
 of_string_utf8_encode(of_unichar_t character, char *buffer)
 {

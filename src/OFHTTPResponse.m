@@ -23,10 +23,115 @@
 #import "OFDataArray.h"
 #import "OFHTTPCookie.h"
 
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
+
+static of_string_encoding_t
+encodingForContentType(OFString *contentType)
+{
+	const char *UTF8String = [contentType UTF8String];
+	size_t last, length = [contentType UTF8StringLength];
+	enum {
+		STATE_TYPE,
+		STATE_BEFORE_PARAM_NAME,
+		STATE_PARAM_NAME,
+		STATE_PARAM_VALUE_OR_QUOTE,
+		STATE_PARAM_VALUE,
+		STATE_PARAM_QUOTED_VALUE,
+		STATE_AFTER_PARAM_VALUE
+	} state = STATE_TYPE;
+	OFString *name, *value, *charset = nil;
+
+	last = 0;
+	for (size_t i = 0; i < length; i++) {
+		switch (state) {
+		case STATE_TYPE:
+			if (UTF8String[i] == ';') {
+				state = STATE_BEFORE_PARAM_NAME;
+				last = i + 1;
+			}
+			break;
+		case STATE_BEFORE_PARAM_NAME:
+			if (UTF8String[i] == ' ')
+				last = i + 1;
+			else {
+				state = STATE_PARAM_NAME;
+				i--;
+			}
+			break;
+		case STATE_PARAM_NAME:
+			if (UTF8String[i] == '=') {
+				name = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				state = STATE_PARAM_VALUE_OR_QUOTE;
+				last = i + 1;
+			}
+			break;
+		case STATE_PARAM_VALUE_OR_QUOTE:
+			if (UTF8String[i] == '"') {
+				state = STATE_PARAM_QUOTED_VALUE;
+				last = i + 1;
+			} else {
+				state = STATE_PARAM_VALUE;
+				i--;
+			}
+			break;
+		case STATE_PARAM_VALUE:
+			if (UTF8String[i] == ';') {
+				value = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+				value = [value
+				    stringByDeletingTrailingWhitespaces];
+
+				if ([name isEqual: @"charset"])
+					charset = value;
+
+				state = STATE_BEFORE_PARAM_NAME;
+				last = i + 1;
+			}
+			break;
+		case STATE_PARAM_QUOTED_VALUE:
+			if (UTF8String[i] == '"') {
+				value = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				if ([name isEqual: @"charset"])
+					charset = value;
+
+				state = STATE_AFTER_PARAM_VALUE;
+			}
+			break;
+		case STATE_AFTER_PARAM_VALUE:
+			if (UTF8String[i] == ';') {
+				state = STATE_BEFORE_PARAM_NAME;
+				last = i + 1;
+			} else if (UTF8String[i] != ' ')
+				return OF_STRING_ENCODING_AUTODETECT;
+			break;
+		}
+	}
+	if (state == STATE_PARAM_VALUE) {
+		value = [OFString stringWithUTF8String: UTF8String + last
+						length: length - last];
+		value = [value stringByDeletingTrailingWhitespaces];
+
+		if ([name isEqual: @"charset"])
+			charset = value;
+	}
+
+	@try {
+		return of_string_parse_encoding(charset);
+	} @catch (OFInvalidEncodingException *e) {
+		return OF_STRING_ENCODING_AUTODETECT;
+	}
+}
 
 @implementation OFHTTPResponse
 @synthesize statusCode = _statusCode, headers = _headers, cookies = _cookies;
@@ -108,40 +213,8 @@
 	OFDataArray *data;
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
-	    (contentType = [_headers objectForKey: @"Content-Type"]) != nil) {
-		contentType = [contentType lowercaseString];
-
-		if ([contentType hasSuffix: @"charset=utf-8"])
-			encoding = OF_STRING_ENCODING_UTF_8;
-		else if ([contentType hasSuffix: @"charset=iso-8859-1"] ||
-		    [contentType hasSuffix: @"charset=iso_8859-1"])
-			encoding = OF_STRING_ENCODING_ISO_8859_1;
-		else if ([contentType hasSuffix: @"charset=iso-8859-2"] ||
-		    [contentType hasSuffix: @"charset=iso_8859-2"])
-			encoding = OF_STRING_ENCODING_ISO_8859_2;
-		else if ([contentType hasSuffix: @"charset=iso-8859-15"] ||
-		    [contentType hasSuffix: @"charset=iso_8859-15"])
-			encoding = OF_STRING_ENCODING_ISO_8859_15;
-		else if ([contentType hasSuffix: @"charset=windows-1251"] ||
-		    [contentType hasSuffix: @"charset=cp1251"] ||
-		    [contentType hasSuffix: @"charset=cp-1251"])
-			encoding = OF_STRING_ENCODING_WINDOWS_1251;
-		else if ([contentType hasSuffix: @"charset=windows-1252"] ||
-		    [contentType hasSuffix: @"charset=cp1252"] ||
-		    [contentType hasSuffix: @"charset=cp-1252"])
-			encoding = OF_STRING_ENCODING_WINDOWS_1252;
-		else if ([contentType hasSuffix: @"charset=cp437"] ||
-		    [contentType hasSuffix: @"charset=cp-437"])
-			encoding = OF_STRING_ENCODING_CODEPAGE_437;
-		else if ([contentType hasSuffix: @"charset=cp850"] ||
-		    [contentType hasSuffix: @"charset=cp-850"])
-			encoding = OF_STRING_ENCODING_CODEPAGE_850;
-		else if ([contentType hasSuffix: @"charset=cp858"] ||
-		    [contentType hasSuffix: @"charset=cp-858"])
-			encoding = OF_STRING_ENCODING_CODEPAGE_858;
-		else if ([contentType hasSuffix: @"charset=macintosh"])
-			encoding = OF_STRING_ENCODING_MAC_ROMAN;
-	}
+	    (contentType = [_headers objectForKey: @"Content-Type"]) != nil)
+		encoding = encodingForContentType(contentType);
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)
 		encoding = OF_STRING_ENCODING_UTF_8;

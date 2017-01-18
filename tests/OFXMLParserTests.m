@@ -24,6 +24,7 @@
 #import "OFArray.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidEncodingException.h"
 #import "OFMalformedXMLException.h"
 
 #import "TestsAppDelegate.h"
@@ -383,7 +384,7 @@ enum event_type {
 
 	parser = [OFXMLParser parser];
 	EXPECT_EXCEPTION(@"Detection of invalid XML processing instructions #2",
-	    OFMalformedXMLException,
+	    OFInvalidEncodingException,
 	    [parser parseString: @"<?xml encoding='UTF-7'?>"])
 
 	parser = [OFXMLParser parser];

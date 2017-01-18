@@ -461,51 +461,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				hasVersion = true;
 			}
 
-			if ([attribute isEqual: @"encoding"]) {
-				[value lowercase];
-
-				if ([value isEqual: @"utf-8"])
-					_encoding = OF_STRING_ENCODING_UTF_8;
-				else if ([value isEqual: @"iso-8859-1"] ||
-				    [value isEqual: @"iso_8859-1"])
-					_encoding =
-					    OF_STRING_ENCODING_ISO_8859_1;
-				else if ([value isEqual: @"iso-8859-2"] ||
-				    [value isEqual: @"iso_8859-2"])
-					_encoding =
-					    OF_STRING_ENCODING_ISO_8859_2;
-				else if ([value isEqual: @"iso-8859-15"] ||
-				    [value isEqual: @"iso_8859-15"])
-					_encoding =
-					    OF_STRING_ENCODING_ISO_8859_15;
-				else if ([value isEqual: @"windows-1251"] ||
-				    [value isEqual: @"cp1251"] ||
-				    [value isEqual: @"cp-1251"])
-					_encoding =
-					    OF_STRING_ENCODING_WINDOWS_1251;
-				else if ([value isEqual: @"windows-1252"] ||
-				    [value isEqual: @"cp1252"] ||
-				    [value isEqual: @"cp-1252"])
-					_encoding =
-					    OF_STRING_ENCODING_WINDOWS_1252;
-				else if ([value isEqual: @"cp437"] ||
-				    [value isEqual: @"cp-437"])
-					_encoding =
-					    OF_STRING_ENCODING_CODEPAGE_437;
-				else if ([value isEqual: @"cp850"] ||
-				    [value isEqual: @"cp-850"])
-					_encoding =
-					    OF_STRING_ENCODING_CODEPAGE_850;
-				else if ([value isEqual: @"cp858"] ||
-				    [value isEqual: @"cp-858"])
-					_encoding =
-					    OF_STRING_ENCODING_CODEPAGE_858;
-				else if ([value isEqual: @"macintosh"])
-					_encoding =
-					    OF_STRING_ENCODING_MAC_ROMAN;
-				else
-					return false;
-			}
+			if ([attribute isEqual: @"encoding"])
+				_encoding = of_string_parse_encoding(value);
 
 			last = i + 1;
 			PIState = 0;
