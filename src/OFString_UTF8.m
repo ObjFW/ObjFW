@@ -291,30 +291,46 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 
 		switch (encoding) {
+#ifdef HAVE_ISO_8859_2
 		case OF_STRING_ENCODING_ISO_8859_2:
 			table = of_iso_8859_2;
 			break;
+#endif
+#ifdef HAVE_ISO_8859_15
 		case OF_STRING_ENCODING_ISO_8859_15:
 			table = of_iso_8859_15;
 			break;
+#endif
+#ifdef HAVE_WINDOWS_1251
 		case OF_STRING_ENCODING_WINDOWS_1251:
 			table = of_windows_1251;
 			break;
+#endif
+#ifdef HAVE_WINDOWS_1252
 		case OF_STRING_ENCODING_WINDOWS_1252:
 			table = of_windows_1252;
 			break;
+#endif
+#ifdef HAVE_CODEPAGE_437
 		case OF_STRING_ENCODING_CODEPAGE_437:
 			table = of_codepage_437;
 			break;
+#endif
+#ifdef HAVE_CODEPAGE_850
 		case OF_STRING_ENCODING_CODEPAGE_850:
 			table = of_codepage_850;
 			break;
+#endif
+#ifdef HAVE_CODEPAGE_858
 		case OF_STRING_ENCODING_CODEPAGE_858:
 			table = of_codepage_858;
 			break;
+#endif
+#ifdef HAVE_MAC_ROMAN
 		case OF_STRING_ENCODING_MAC_ROMAN:
 			table = of_mac_roman;
 			break;
+#endif
 		default:
 			@throw [OFInvalidEncodingException exception];
 		}

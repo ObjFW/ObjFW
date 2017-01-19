@@ -1115,6 +1115,7 @@ static struct {
 		cString[i] = '\0';
 
 		return length;
+#ifdef HAVE_ISO_8859_2
 	case OF_STRING_ENCODING_ISO_8859_2:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1126,6 +1127,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_ISO_8859_15
 	case OF_STRING_ENCODING_ISO_8859_15:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1137,6 +1140,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_WINDOWS_1251
 	case OF_STRING_ENCODING_WINDOWS_1251:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1148,6 +1153,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_WINDOWS_1252
 	case OF_STRING_ENCODING_WINDOWS_1252:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1159,6 +1166,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_CODEPAGE_437
 	case OF_STRING_ENCODING_CODEPAGE_437:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1170,6 +1179,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_CODEPAGE_850
 	case OF_STRING_ENCODING_CODEPAGE_850:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1181,6 +1192,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_CODEPAGE_858
 	case OF_STRING_ENCODING_CODEPAGE_858:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1192,6 +1205,8 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
+#ifdef HAVE_MAC_ROMAN
 	case OF_STRING_ENCODING_MAC_ROMAN:
 		if (length + 1 > maxLength)
 			@throw [OFOutOfRangeException exception];
@@ -1203,6 +1218,7 @@ static struct {
 		cString[length] = '\0';
 
 		return length;
+#endif
 	default:
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];

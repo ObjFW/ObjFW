@@ -405,7 +405,9 @@ main(int argc, char *argv[])
 	[self HMACTests];
 	[self PBKDF2Tests];
 	[self scryptTests];
+# ifdef HAVE_CODEPAGE_437
 	[self INIFileTests];
+# endif
 #endif
 #ifdef OF_HAVE_SOCKETS
 	[self TCPSocketTests];

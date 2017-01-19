@@ -596,6 +596,27 @@ AS_IF([test x"$enable_unicode_tables" != x"no"], [
 	AC_SUBST(UNICODE_M, "unicode.m")
 ])
 
+ENCODINGS_SRCS=""
+AC_DEFUN([ENCODING_FLAG], [
+	AC_ARG_ENABLE($1,
+		AS_HELP_STRING([--disable-$1],
+			[Disables support for $3]))
+	AS_IF([test x"$enable_$2" != x"no"], [
+		AC_DEFINE($4, 1,
+			[Whether we have support for $3])
+		ENCODINGS_SRCS="$ENCODINGS_SRCS $2.m"
+	])
+])
+ENCODING_FLAG(codepage-437, codepage_437, [Codepage 437], HAVE_CODEPAGE_437)
+ENCODING_FLAG(codepage-850, codepage_850, [Codepage 850], HAVE_CODEPAGE_850)
+ENCODING_FLAG(codepage-858, codepage_858, [Codepage 858], HAVE_CODEPAGE_858)
+ENCODING_FLAG(iso-8859-2, iso_8859_2, [ISO 8859-2], HAVE_ISO_8859_2)
+ENCODING_FLAG(iso-8859-15, iso_8859_15, [ISO 8859-15], HAVE_ISO_8859_15)
+ENCODING_FLAG(mac-roman, mac_roman, [Mac Roman encoding], HAVE_MAC_ROMAN)
+ENCODING_FLAG(windows-1251, windows_1251, [Windows-1251], HAVE_WINDOWS_1251)
+ENCODING_FLAG(windows-1252, windows_1252, [Windows-1252], HAVE_WINDOWS_1252)
+AC_SUBST(ENCODINGS_SRCS)
+
 AC_CHECK_FUNCS(sigaction)
 
 AC_CHECK_FUNCS([arc4random random], break)

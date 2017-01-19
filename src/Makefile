@@ -153,17 +153,10 @@ SRCS += OFArray_adjacent.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
 	${AUTORELEASE_M}		\
-	codepage_437.m			\
-	codepage_850.m			\
-	codepage_858.m			\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
-	iso_8859_15.m			\
-	iso_8859_2.m			\
-	mac_roman.m			\
 	${UNICODE_M}			\
-	windows_1251.m			\
-	windows_1252.m
+	${ENCODINGS_SRCS}
 SRCS_FILES += OFSettings_INIFile.m
 SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_EPOLL_M}	\
 		${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
