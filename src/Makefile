@@ -89,6 +89,7 @@ SRCS = OFApplication.m			\
        of_strptime.m			\
        pbkdf2.m				\
        scrypt.m				\
+       ${UNICODE_M}			\
        ${USE_SRCS_FILES}		\
        ${USE_SRCS_PLUGINS}		\
        ${USE_SRCS_SOCKETS}		\

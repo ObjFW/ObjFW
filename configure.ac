@@ -588,16 +588,15 @@ mingw*)
 	;;
 esac
 
-ENCODINGS_SRCS=""
-
 AC_ARG_ENABLE(unicode-tables,
 	AS_HELP_STRING([--disable-unicode-tables], [Disable Unicode tables]))
 AS_IF([test x"$enable_unicode_tables" != x"no"], [
 	AC_DEFINE(OF_HAVE_UNICODE_TABLES, 1,
 		[Whether to build with Unicode tables])
-	ENCODINGS_SRCS="$ENCODINGS_SRCS unicode.m"
+	AC_SUBST(UNICODE_M, "unicode.m")
 ])
 
+ENCODINGS_SRCS=""
 AC_DEFUN([ENCODING_FLAG], [
 	AC_ARG_ENABLE($1,
 		AS_HELP_STRING([--disable-$1],
