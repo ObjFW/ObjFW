@@ -588,15 +588,16 @@ mingw*)
 	;;
 esac
 
+ENCODINGS_SRCS=""
+
 AC_ARG_ENABLE(unicode-tables,
 	AS_HELP_STRING([--disable-unicode-tables], [Disable Unicode tables]))
 AS_IF([test x"$enable_unicode_tables" != x"no"], [
 	AC_DEFINE(OF_HAVE_UNICODE_TABLES, 1,
 		[Whether to build with Unicode tables])
-	AC_SUBST(UNICODE_M, "unicode.m")
+	ENCODINGS_SRCS="$ENCODINGS_SRCS unicode.m"
 ])
 
-ENCODINGS_SRCS=""
 AC_DEFUN([ENCODING_FLAG], [
 	AC_ARG_ENABLE($1,
 		AS_HELP_STRING([--disable-$1],
@@ -615,7 +616,20 @@ ENCODING_FLAG(iso-8859-15, iso_8859_15, [ISO 8859-15], HAVE_ISO_8859_15)
 ENCODING_FLAG(mac-roman, mac_roman, [Mac Roman encoding], HAVE_MAC_ROMAN)
 ENCODING_FLAG(windows-1251, windows_1251, [Windows-1251], HAVE_WINDOWS_1251)
 ENCODING_FLAG(windows-1252, windows_1252, [Windows-1252], HAVE_WINDOWS_1252)
+
 AC_SUBST(ENCODINGS_SRCS)
+AS_IF([test x"$ENCODINGS_SRCS" != x""], [
+	AC_SUBST(ENCODINGS, "encodings")
+
+	AS_IF([test x"$enable_shared" != x"no"], [
+		AC_SUBST(ENCODINGS_LIB_A, "encodings.lib.a")
+		AC_SUBST(ENCODINGS_ENCODINGS_LIB_A, "encodings/encodings.lib.a")
+	])
+	AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+		AC_SUBST(ENCODINGS_A, "encodings.a")
+		AC_SUBST(ENCODINGS_ENCODINGS_A, "encodings/encodings.a")
+	])
+])
 
 AC_CHECK_FUNCS(sigaction)
 

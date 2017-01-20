@@ -1316,8 +1316,8 @@
 		4B5CF8F614940BD2007AA324 /* OFString+JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFString+JSONValue.h"; path = "src/OFString+JSONValue.h"; sourceTree = "<group>"; };
 		4B5CF8F714940BD2007AA324 /* OFString+JSONValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+JSONValue.m"; path = "src/OFString+JSONValue.m"; sourceTree = "<group>"; };
 		4B5D70751DA2F87A00B3B2D7 /* TestPlugin.bundle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TestPlugin.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_850.m; path = src/codepage_850.m; sourceTree = "<group>"; };
-		4B5EBFB81E25A937004FE6A2 /* mac_roman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = mac_roman.m; path = src/mac_roman.m; sourceTree = "<group>"; };
+		4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_850.m; path = src/encodings/codepage_850.m; sourceTree = "<group>"; };
+		4B5EBFB81E25A937004FE6A2 /* mac_roman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = mac_roman.m; path = src/encodings/mac_roman.m; sourceTree = "<group>"; };
 		4B60259919B76A5C00694BCC /* OFSHA384Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Hash.h; path = src/OFSHA384Hash.h; sourceTree = "<group>"; };
 		4B60259A19B76A5C00694BCC /* OFSHA384Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384Hash.m; path = src/OFSHA384Hash.m; sourceTree = "<group>"; };
 		4B60259B19B76A5C00694BCC /* OFSHA384Or512Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSHA384Or512Hash.h; path = src/OFSHA384Or512Hash.h; sourceTree = "<group>"; };
@@ -1328,7 +1328,7 @@
 		4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA512HashTests.m; path = tests/OFSHA512HashTests.m; sourceTree = "<group>"; };
 		4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyItemFailedException.h; path = src/exceptions/OFCopyItemFailedException.h; sourceTree = "<group>"; };
 		4B62ED1418566FCA0004E0E3 /* OFCopyItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCopyItemFailedException.m; path = src/exceptions/OFCopyItemFailedException.m; sourceTree = "<group>"; };
-		4B6736111E2B2F6F00681F2C /* codepage_858.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_858.m; path = src/codepage_858.m; sourceTree = "<group>"; };
+		4B6736111E2B2F6F00681F2C /* codepage_858.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_858.m; path = src/encodings/codepage_858.m; sourceTree = "<group>"; };
 		4B6743EB163C384A00EB1E59 /* OFLockFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFLockFailedException.h; path = src/exceptions/OFLockFailedException.h; sourceTree = "<group>"; };
 		4B6743EC163C384A00EB1E59 /* OFLockFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFLockFailedException.m; path = src/exceptions/OFLockFailedException.m; sourceTree = "<group>"; };
 		4B6743ED163C384A00EB1E59 /* OFStillLockedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStillLockedException.h; path = src/exceptions/OFStillLockedException.h; sourceTree = "<group>"; };
@@ -1382,8 +1382,8 @@
 		4B67998C1099E7C50041064A /* unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode.h; path = src/unicode.h; sourceTree = "<group>"; };
 		4B6994451D47FB1A007F34DF /* scrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scrypt.h; path = src/scrypt.h; sourceTree = "<group>"; };
 		4B6994461D47FB1A007F34DF /* scrypt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = scrypt.m; path = src/scrypt.m; sourceTree = "<group>"; };
-		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/iso_8859_15.m; sourceTree = "<group>"; };
-		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/windows_1252.m; sourceTree = "<group>"; };
+		4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_15.m; path = src/encodings/iso_8859_15.m; sourceTree = "<group>"; };
+		4B6AF97210A8D42E0003FB0A /* windows_1252.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1252.m; path = src/encodings/windows_1252.m; sourceTree = "<group>"; };
 		4B6AF97310A8D4450003FB0A /* ObjFW.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjFW.h; path = src/ObjFW.h; sourceTree = "<group>"; };
 		4B6C8AD117BD5C2E00B194F2 /* OFRunLoop+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFRunLoop+Private.h"; path = "src/OFRunLoop+Private.h"; sourceTree = "<group>"; };
 		4B6C8AD217BD5C2E00B194F2 /* OFStream+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFStream+Private.h"; path = "src/OFStream+Private.h"; sourceTree = "<group>"; };
@@ -1520,7 +1520,7 @@
 		4BB50DD012F863C700C9393F /* of_asprintf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = of_asprintf.m; path = src/of_asprintf.m; sourceTree = SOURCE_ROOT; };
 		4BB524BF143D1E4E0085FBCC /* OFProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFProcess.h; path = src/OFProcess.h; sourceTree = "<group>"; };
 		4BB524C0143D1E4E0085FBCC /* OFProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFProcess.m; path = src/OFProcess.m; sourceTree = "<group>"; };
-		4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_437.m; path = src/codepage_437.m; sourceTree = "<group>"; };
+		4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_437.m; path = src/encodings/codepage_437.m; sourceTree = "<group>"; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
@@ -1592,12 +1592,12 @@
 		4BF33AF0133807310059CEF7 /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BF33B4213380CD40059CEF7 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = testfile.bin; path = tests/testfile.bin; sourceTree = "<group>"; };
 		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
-		4BF3A2281E25EA48002EA46F /* windows_1251.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1251.m; path = src/windows_1251.m; sourceTree = "<group>"; };
+		4BF3A2281E25EA48002EA46F /* windows_1251.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = windows_1251.m; path = src/encodings/windows_1251.m; sourceTree = "<group>"; };
 		4BF48CDF18A95F83000E8D04 /* OFBigDataArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFBigDataArray.h; path = src/OFBigDataArray.h; sourceTree = "<group>"; };
 		4BF48CE018A95F83000E8D04 /* OFBigDataArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBigDataArray.m; path = src/OFBigDataArray.m; sourceTree = "<group>"; };
-		4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_2.m; path = src/iso_8859_2.m; sourceTree = "<group>"; };
+		4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_2.m; path = src/encodings/iso_8859_2.m; sourceTree = "<group>"; };
 		4BF69CE51BD44F8B00DFFC1B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = src/platform.h; sourceTree = "<group>"; };
-		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
+		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/encodings/unicode.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1904,11 +1904,28 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		4B610DC41E31A46600AB26BA /* Encodings */ = {
+			isa = PBXGroup;
+			children = (
+				4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */,
+				4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */,
+				4B6736111E2B2F6F00681F2C /* codepage_858.m */,
+				4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */,
+				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
+				4B5EBFB81E25A937004FE6A2 /* mac_roman.m */,
+				4BFBDD1610A0724800051AFB /* unicode.m */,
+				4BF3A2281E25EA48002EA46F /* windows_1251.m */,
+				4B6AF97210A8D42E0003FB0A /* windows_1252.m */,
+			);
+			name = Encodings;
+			sourceTree = "<group>";
+		};
 		4B6EF66C123535340076B512 /* ObjFW */ = {
 			isa = PBXGroup;
 			children = (
 				4B187E07163EA2730049A832 /* Bridge */,
 				4B17FF6E133A28E0003E6DCD /* Exceptions */,
+				4B610DC41E31A46600AB26BA /* Encodings */,
 				4B5C112717E9AAC1003C917F /* Forwarding */,
 				4B3D23801337FBC800DD29B8 /* Supporting Files */,
 				4B175C1D116D130B003C99CB /* OFApplication.h */,
@@ -2159,17 +2176,11 @@
 				4B3D236D1337FB5800DD29B8 /* base64.h */,
 				4B3D236E1337FB5800DD29B8 /* base64.m */,
 				4B837D7716829C5F007A3E83 /* block.h */,
-				4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */,
-				4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */,
-				4B6736111E2B2F6F00681F2C /* codepage_858.m */,
 				4B881D391CCBFE0700E2F7D8 /* crc32.h */,
 				4B881D3A1CCBFE0700E2F7D8 /* crc32.m */,
 				4B837D7816829C5F007A3E83 /* instance.h */,
-				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
-				4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */,
 				4BE17AD812FD744C002CEB0B /* foundation-compat.m */,
 				4BBA36C511406AB700CBA3AC /* macros.h */,
-				4B5EBFB81E25A937004FE6A2 /* mac_roman.m */,
 				4BF1BCBF11C9663F0025511F /* objfw-defs.h.in */,
 				4BB50DCF12F863C700C9393F /* of_asprintf.h */,
 				4BB50DD012F863C700C9393F /* of_asprintf.m */,
@@ -2189,9 +2200,6 @@
 				4B3379CE1979326A0088E97E /* threading.m */,
 				4BABC29A197A8212006A93BD /* threading_pthread.m */,
 				4B67998C1099E7C50041064A /* unicode.h */,
-				4BFBDD1610A0724800051AFB /* unicode.m */,
-				4BF3A2281E25EA48002EA46F /* windows_1251.m */,
-				4B6AF97210A8D42E0003FB0A /* windows_1252.m */,
 			);
 			name = ObjFW;
 			sourceTree = "<group>";
@@ -3198,14 +3206,8 @@
 				4B2C21871DA292BE00735907 /* OFZIPArchive.m in Sources */,
 				4B2C21881DA292BE00735907 /* OFZIPArchiveEntry.m in Sources */,
 				4B2C21891DA292BE00735907 /* base64.m in Sources */,
-				4B2C218A1DA292BE00735907 /* codepage_437.m in Sources */,
-				4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */,
-				4B6736131E2B2F6F00681F2C /* codepage_858.m in Sources */,
 				4B2C218B1DA292BE00735907 /* crc32.m in Sources */,
 				4B2C218D1DA292BE00735907 /* foundation-compat.m in Sources */,
-				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
-				4BF5CB911E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
-				4B5EBFBA1E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4B2C218E1DA292BE00735907 /* of_asprintf.m in Sources */,
 				4B2C218F1DA292BE00735907 /* of_strptime.m in Sources */,
 				4B2C21901DA292BE00735907 /* pbkdf2.m in Sources */,
@@ -3213,9 +3215,6 @@
 				4B2C21921DA292BE00735907 /* scrypt.m in Sources */,
 				4B2C21931DA292BE00735907 /* socket.m in Sources */,
 				4B2C21941DA292BE00735907 /* threading.m in Sources */,
-				4B2C21961DA292BE00735907 /* unicode.m in Sources */,
-				4BF3A22A1E25EA48002EA46F /* windows_1251.m in Sources */,
-				4B2C21971DA292BE00735907 /* windows_1252.m in Sources */,
 				4B2C21981DA292BE00735907 /* OFAcceptFailedException.m in Sources */,
 				4B2C21991DA292BE00735907 /* OFObject+KeyValueCoding.m in Sources */,
 				4B2C219A1DA292BE00735907 /* OFAddressTranslationFailedException.m in Sources */,
@@ -3276,6 +3275,15 @@
 				4B2C21D11DA292BE00735907 /* OFUnsupportedProtocolException.m in Sources */,
 				4B2C21D21DA292BE00735907 /* OFUnsupportedVersionException.m in Sources */,
 				4B2C21D31DA292BE00735907 /* OFWriteFailedException.m in Sources */,
+				4B2C218A1DA292BE00735907 /* codepage_437.m in Sources */,
+				4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */,
+				4B6736131E2B2F6F00681F2C /* codepage_858.m in Sources */,
+				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
+				4BF5CB911E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
+				4B5EBFBA1E25A937004FE6A2 /* mac_roman.m in Sources */,
+				4B2C21961DA292BE00735907 /* unicode.m in Sources */,
+				4BF3A22A1E25EA48002EA46F /* windows_1251.m in Sources */,
+				4B2C21971DA292BE00735907 /* windows_1252.m in Sources */,
 				4B2C21D41DA292BE00735907 /* forwarding.S in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3392,14 +3400,8 @@
 				4BE52D2217B990B4005958D1 /* OFZIPArchive.m in Sources */,
 				4B8B025A17BBA7C7009ED983 /* OFZIPArchiveEntry.m in Sources */,
 				4B3D23B31337FC0D00DD29B8 /* base64.m in Sources */,
-				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
-				4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */,
-				4B6736121E2B2F6F00681F2C /* codepage_858.m in Sources */,
 				4B881D3D1CCBFE2A00E2F7D8 /* crc32.m in Sources */,
 				4B3D23B51337FC0D00DD29B8 /* foundation-compat.m in Sources */,
-				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
-				4BF5CB901E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
-				4B5EBFB91E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */,
 				4BA355BA14879BDD00442EF4 /* of_strptime.m in Sources */,
 				4BD306351D46CEE300E2F372 /* pbkdf2.m in Sources */,
@@ -3407,9 +3409,6 @@
 				4B6994481D47FB1A007F34DF /* scrypt.m in Sources */,
 				4B40EC1B189FE2650031E19E /* socket.m in Sources */,
 				4B3379CF1979326A0088E97E /* threading.m in Sources */,
-				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
-				4BF3A2291E25EA48002EA46F /* windows_1251.m in Sources */,
-				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
 				4B90B79F133AD87D00BD33CB /* OFAcceptFailedException.m in Sources */,
 				4BC176311D04963000C32718 /* OFObject+KeyValueCoding.m in Sources */,
 				4B90B7A1133AD87D00BD33CB /* OFAddressTranslationFailedException.m in Sources */,
@@ -3470,6 +3469,15 @@
 				4B17FFB2133A3664003E6DCD /* OFUnsupportedProtocolException.m in Sources */,
 				4BA4846315CC9F1E00D75360 /* OFUnsupportedVersionException.m in Sources */,
 				4B55A117133AC24600B58A93 /* OFWriteFailedException.m in Sources */,
+				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
+				4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */,
+				4B6736121E2B2F6F00681F2C /* codepage_858.m in Sources */,
+				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
+				4BF5CB901E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
+				4B5EBFB91E25A937004FE6A2 /* mac_roman.m in Sources */,
+				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
+				4BF3A2291E25EA48002EA46F /* windows_1251.m in Sources */,
+				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
 				4B5C112F17E9AB3E003C917F /* forwarding.S in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
