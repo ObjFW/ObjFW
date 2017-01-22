@@ -55,11 +55,11 @@ objfw-config: Available arguments are:
 	--reexport	Outputs LDFLAGS to reexport ObjFW
 	--rpath		Outputs LDFLAGS for using rpath
 	--libs		Outputs the required LIBS
-	--lib-cflags	Outputs CFLAGS for building a library"
-	--lib-ldflags	Outputs LDFLAGS for building a library"
-	--lib-prefix	Outputs the prefix for libraries"
-	--lib-suffix	Outputs the suffix for libraries"
-	--prog-suffix	Outputs the suffix for binaries"
+	--lib-cflags	Outputs CFLAGS for building a library
+	--lib-ldflags	Outputs LDFLAGS for building a library
+	--lib-prefix	Outputs the prefix for libraries
+	--lib-suffix	Outputs the suffix for libraries
+	--prog-suffix	Outputs the suffix for binaries
 	--static-libs	Outputs the required LIBS to link ObjFW statically
 	--version	Outputs the installed version
 __EOF__
