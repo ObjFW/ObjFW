@@ -29,6 +29,7 @@
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
+#import "OFTLSSocket.h"
 #import "OFURL.h"
 #import "OFLocalization.h"
 
@@ -56,7 +57,7 @@
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath;
-	bool _continue, _force, _detectFileName, _quiet, _verbose;
+	bool _continue, _force, _detectFileName, _quiet, _verbose, _insecure;
 	OFDataArray *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -102,7 +103,9 @@ help(OFStream *stream, bool full, int status)
 		    @"-q  --quiet          "
 		    @"  Quiet mode (no output, except errors)\n    "
 		    @"-v  --verbose        "
-		    @"  Verbose mode (print headers)\n")];
+		    @"  Verbose mode (print headers)\n    "
+		    @"    --insecure       "
+		    @"  Ignore TLS errors\n")];
 
 	[OFApplication terminateWithStatus: status];
 }
@@ -241,6 +244,7 @@ help(OFStream *stream, bool full, int status)
 		{ 'P', @"socks5-proxy", 1, NULL, NULL },
 		{ 'q', @"quiet", 0, &_quiet, NULL },
 		{ 'v', @"verbose", 0, &_verbose, NULL },
+		{ '\0', @"insecure", 0, &_insecure, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
 	OFOptionsParser *optionsParser = [OFOptionsParser
@@ -347,6 +351,15 @@ help(OFStream *stream, bool full, int status)
 		   afterDelay: 0];
 }
 
+-    (void)client: (OFHTTPClient*)client
+  didCreateSocket: (OF_KINDOF(OFTCPSocket*))socket
+	  request: (OFHTTPRequest*)request
+{
+	if (_insecure && [socket respondsToSelector:
+	    @selector(setCertificateVerificationEnabled:)])
+		[socket setCertificateVerificationEnabled: false];
+}
+
 -	  (bool)client: (OFHTTPClient*)client
   shouldFollowRedirect: (OFURL*)URL
 	    statusCode: (int)statusCode
@@ -422,9 +435,9 @@ help(OFStream *stream, bool full, int status)
 			[of_stdout writeString: @"\n"];
 
 		[of_stderr writeString: OF_LOCALIZED(@"no_ssl_library",
-		    @"%[prog]: No SSL library loaded!\n"
+		    @"%[prog]: No TLS library loaded!\n"
 		    @"  In order to download via https, you need to preload an "
-		    @"SSL library for ObjFW\n"
+		    @"TLS library for ObjFW\n"
 		    "such as ObjOpenSSL!\n",
 		    @"prog", [OFApplication programName])];
 	} @catch (OFReadOrWriteFailedException *e) {

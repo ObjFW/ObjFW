@@ -5,7 +5,7 @@
         "Optionen:\n",
         "    -b  --body             Angegebene Datei als Body übergeben\n",
         "    -c  --continue         Download von existierender Datei ",
-	"fortsetzen\n",
+        "fortsetzen\n",
         "    -f  --force            Existierende Datei überschreiben\n",
         "    -h  --help             Diese Hilfe anzeigen\n",
         "    -H  --header           Einen Header (z.B. X-Foo:Bar) hinzufügen\n",
@@ -14,8 +14,9 @@
         "    -O  --detect-filename  Dateiname mittels HEAD-Request ermitteln\n",
         "    -P  --proxy            SOCKS5-Proxy angeben\n",
         "    -q  --quiet            Ruhiger Modus (keine Ausgabe außer Fehler)",
-	"\n",
-        "    -v  --verbose          Geschwätziger Modus (gibt Header aus)\n"
+        "\n",
+        "    -v  --verbose          Geschwätziger Modus (gibt Header aus)\n",
+        "        --insecure         TLS-Fehler ignorieren\n"
     ],
     "invalid_input_header": [
         "%[prog]: Header müssen im Format Name:Wert sein!\n"
@@ -29,11 +30,11 @@
     "unknown_option": "%[prog]: Unbekannte Option: -%[opt]\n",
     "quiet_xor_verbose": [
         "%[prog]: -q / --quiet und -v / --verbose schließen sich gegenseitig ",
-	"aus!\n"
+        "aus!\n"
     ],
     "output_only_with_one_url": [
         "%[prog]: -o / --output kann nicht mit mehr als einer URL benutzt ",
-	"werden!\n"
+        "werden!\n"
     ],
     "download_failed_address_translation": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
@@ -48,8 +49,8 @@
         "  Ungültige Antwort vom Server!\n"
     ],
     "no_ssl_library": [
-        "%[prog]: Keine SSL-Bibliothek geladen!\n",
-        "  Um Dateien über https zu laden, müssen Sie eine SSL-Bibliothek für ",
+        "%[prog]: Keine TLS-Bibliothek geladen!\n",
+        "  Um Dateien über https zu laden, müssen Sie eine TLS-Bibliothek für ",
         "ObjFW,\n",
         "  wie z.B. ObjOpenSSL, mittels LD_PRELOAD laden."
     ],
