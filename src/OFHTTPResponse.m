@@ -43,7 +43,7 @@ encodingForContentType(OFString *contentType)
 		STATE_PARAM_QUOTED_VALUE,
 		STATE_AFTER_PARAM_VALUE
 	} state = STATE_TYPE;
-	OFString *name, *value, *charset = nil;
+	OFString *name = nil, *value = nil, *charset = nil;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
