@@ -807,9 +807,9 @@ _references_to_categories_of_OFObject(void)
 
 	OF_HASH_INIT(hash);
 
-	while (ptr != 0) {
+	for (size_t i = 0; i < sizeof(ptr); i++) {
 		OF_HASH_ADD(hash, ptr & 0xFF);
-		ptr <<= 8;
+		ptr >>= 8;
 	}
 
 	OF_HASH_FINALIZE(hash);
