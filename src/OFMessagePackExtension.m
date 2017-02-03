@@ -124,7 +124,7 @@
 		prefix = 0xC8;
 		[ret addItem: &prefix];
 
-		length = OF_BSWAP16((uint16_t)count);
+		length = OF_BSWAP16_IF_LE((uint16_t)count);
 		[ret addItems: &length
 			count: 2];
 
@@ -137,7 +137,7 @@
 		prefix = 0xC9;
 		[ret addItem: &prefix];
 
-		length = OF_BSWAP32((uint32_t)count);
+		length = OF_BSWAP32_IF_LE((uint32_t)count);
 		[ret addItems: &length
 			count: 4];
 
