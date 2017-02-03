@@ -31,7 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const char of_base64_table[64];
 extern OFString *of_base64_encode(const void*, size_t);
 extern bool of_base64_decode(OFDataArray*, const char*, size_t);
 #ifdef __cplusplus
