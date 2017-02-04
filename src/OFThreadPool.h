@@ -67,9 +67,6 @@ typedef void (^of_thread_pool_block_t)(void);
 /*!
  * @brief Returns a new thread pool with the specified number of threads.
  *
- * @warning If for some reason the number of cores in the system could not be
- *	    determined, the pool will only have one thread!
- *
  * @param size The number of threads for the pool
  * @return A new thread pool with the specified number of threads
  */
@@ -78,9 +75,6 @@ typedef void (^of_thread_pool_block_t)(void);
 /*!
  * @brief Initializes an already allocated OFThreadPool with the specified
  *	  number of threads.
- *
- * @warning If for some reason the number of cores in the system could not be
- *	    determined, the pool will only have one thread!
  *
  * @param size The number of threads for the pool
  * @return An initialized OFThreadPool with the specified number of threads

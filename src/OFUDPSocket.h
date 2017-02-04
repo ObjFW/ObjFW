@@ -72,12 +72,13 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *
  * @brief A class which provides methods to create and use UDP sockets.
  *
- * Addresses are of type @ref of_udp_socket_address_t. You can use @ref
- * getHost:andPort:forAddress: to create an address for a host / port pair and
- * @ref getHost:andPort:forAddress: to get the host / port pair for an address.
- * If you want to compare two addresses, you can use
+ * Addresses are of type @ref of_udp_socket_address_t. You can use
+ * @ref resolveAddressForHost:port:address: to create an address for a host /
+ * port pair and @ref getHost:andPort:forAddress: to get the host / port pair
+ * for an address. If you want to compare two addresses, you can use
  * @ref of_udp_socket_address_equal and you can use
- * @ref of_udp_socket_address_hash to get a hash to use in e.g. @ref OFMapTable.
+ * @ref of_udp_socket_address_hash to get a hash to use in e.g.
+ * @ref OFMapTable.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
