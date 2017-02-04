@@ -43,6 +43,8 @@ static OFRunLoop *mainRunLoop = nil;
 	id _target;
 	SEL _selector;
 }
+
+- (bool)handleForObject: (id)object;
 @end
 
 @interface OFRunLoop_ReadQueueItem: OFRunLoop_QueueItem
@@ -98,6 +100,11 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_QueueItem
+- (bool)handleForObject: (id)object
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (void)dealloc
 {
 	[_target release];
@@ -107,6 +114,35 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ReadQueueItem
+- (bool)handleForObject: (id)object
+{
+	size_t length;
+	OFException *exception = nil;
+
+	@try {
+		length = [object readIntoBuffer: _buffer
+					 length: _length];
+	} @catch (OFException *e) {
+		length = 0;
+		exception = e;
+	}
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return _block(object, _buffer, length, exception);
+	else {
+# endif
+		bool (*func)(id, SEL, OFStream*, void*, size_t, OFException*) =
+		    (bool(*)(id, SEL, OFStream*, void*, size_t, OFException*))
+		    [_target methodForSelector: _selector];
+
+		return func(_target, _selector, object, _buffer, length,
+		    exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
@@ -118,6 +154,49 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ExactReadQueueItem
+- (bool)handleForObject: (id)object
+{
+	size_t length;
+	OFException *exception = nil;
+
+	@try {
+		length = [object readIntoBuffer: (char*)_buffer + _readLength
+					 length: _exactLength - _readLength];
+	} @catch (OFException *e) {
+		length = 0;
+		exception = e;
+	}
+
+	_readLength += length;
+
+	if (_readLength != _exactLength && ![object isAtEndOfStream] &&
+	    exception == nil)
+		return true;
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL) {
+		if (!_block(object, _buffer, _readLength, exception))
+			return false;
+
+		_readLength = 0;
+		return true;
+	} else {
+# endif
+		bool (*func)(id, SEL, OFStream*, void*, size_t, OFException*) =
+		    (bool(*)(id, SEL, OFStream*, void*, size_t, OFException*))
+		    [_target methodForSelector: _selector];
+
+		if (!func(_target, _selector, object, _buffer, _readLength,
+		    exception))
+			return false;
+
+		_readLength = 0;
+		return true;
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
@@ -129,6 +208,36 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ReadLineQueueItem
+- (bool)handleForObject: (id)object
+{
+	OFString *line;
+	OFException *exception = nil;
+
+	@try {
+		line = [object tryReadLineWithEncoding: _encoding];
+	} @catch (OFException *e) {
+		line = nil;
+		exception = e;
+	}
+
+	if (line == nil && ![object isAtEndOfStream] && exception == nil)
+		return true;
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return _block(object, line, exception);
+	else {
+# endif
+		bool (*func)(id, SEL, OFStream*, OFString*, OFException*) =
+		    (bool(*)(id, SEL, OFStream*, OFString*, OFException*))
+		    [_target methodForSelector: _selector];
+
+		return func(_target, _selector, object, line, exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
@@ -140,6 +249,34 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_AcceptQueueItem
+- (bool)handleForObject: (id)object
+{
+	OFTCPSocket *newSocket;
+	OFException *exception = nil;
+
+	@try {
+		newSocket = [object accept];
+	} @catch (OFException *e) {
+		newSocket = nil;
+		exception = e;
+	}
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return _block(object, newSocket, exception);
+	else {
+# endif
+		bool (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
+		    OFException*) =
+		    (bool(*)(id, SEL, OFTCPSocket*, OFTCPSocket*, OFException*))
+		    [_target methodForSelector: _selector];
+
+		return func(_target, _selector, object, newSocket, exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
@@ -151,6 +288,39 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_UDPReceiveQueueItem
+- (bool)handleForObject: (id)object
+{
+	size_t length;
+	of_udp_socket_address_t address;
+	OFException *exception = nil;
+
+	@try {
+		length = [object receiveIntoBuffer: _buffer
+					    length: _length
+					    sender: &address];
+	} @catch (OFException *e) {
+		length = 0;
+		exception = e;
+	}
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		return _block(object, _buffer, length, address, exception);
+	else {
+# endif
+		bool (*func)(id, SEL, OFUDPSocket*, void*, size_t,
+		    of_udp_socket_address_t address, OFException*) =
+		    (bool(*)(id, SEL, OFUDPSocket*, void*, size_t,
+		    of_udp_socket_address_t, OFException*))
+		    [_target methodForSelector: _selector];
+
+		return func(_target, _selector, object, _buffer, length,
+		    address, exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
 # ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
@@ -336,6 +506,12 @@ static OFRunLoop *mainRunLoop = nil;
 	if ((queue = [runLoop->_readQueues objectForKey: object]) != nil) {
 		assert([queue count] > 0);
 
+		/*
+		 * Clear the queue now, in case this has been called from a
+		 * handler, as otherwise, we'd do the cleanups below twice.
+		 */
+		[queue removeAllObjects];
+
 		[runLoop->_kernelEventObserver removeObjectForReading: object];
 		[runLoop->_readQueues removeObjectForKey: object];
 	}
@@ -433,31 +609,25 @@ static OFRunLoop *mainRunLoop = nil;
 #ifdef OF_HAVE_SOCKETS
 - (void)objectIsReadyForReading: (id)object
 {
-	OFList *queue = [_readQueues objectForKey: object];
-	of_list_object_t *listObject;
+	/*
+	 * Retain the queue so that it doesn't disappear from us because the
+	 * handler called -[cancelAsyncRequests].
+	 */
+	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_ReadQueueItem*)) *queue =
+	    [[_readQueues objectForKey: object] retain];
 
 	assert(queue != nil);
 
-	listObject = [queue firstListObject];
+	@try {
+		if (![[queue firstObject] handleForObject: object]) {
+			of_list_object_t *listObject = [queue firstListObject];
 
-	if ([listObject->object isKindOfClass:
-	    [OFRunLoop_ReadQueueItem class]]) {
-		OFRunLoop_ReadQueueItem *queueItem = listObject->object;
-		size_t length;
-		OFException *exception = nil;
-
-		@try {
-			length = [object readIntoBuffer: queueItem->_buffer
-						 length: queueItem->_length];
-		} @catch (OFException *e) {
-			length = 0;
-			exception = e;
-		}
-
-# ifdef OF_HAVE_BLOCKS
-		if (queueItem->_block != NULL) {
-			if (!queueItem->_block(object, queueItem->_buffer,
-			    length, exception)) {
+			/*
+			 * The handler might have called -[cancelAsyncRequests]
+			 * so that our queue is now empty, in which case we
+			 * should do nothing.
+			 */
+			if (listObject != NULL) {
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -467,251 +637,10 @@ static OFRunLoop *mainRunLoop = nil;
 					    removeObjectForKey: object];
 				}
 			}
-		} else {
-# endif
-			bool (*func)(id, SEL, OFStream*, void*, size_t,
-			    OFException*) = (bool(*)(id, SEL, OFStream*, void*,
-			    size_t, OFException*))
-			    [queueItem->_target methodForSelector:
-			    queueItem->_selector];
-
-			if (!func(queueItem->_target, queueItem->_selector,
-			    object, queueItem->_buffer, length, exception)) {
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
-# ifdef OF_HAVE_BLOCKS
 		}
-# endif
-	} else if ([listObject->object isKindOfClass:
-	    [OFRunLoop_ExactReadQueueItem class]]) {
-		OFRunLoop_ExactReadQueueItem *queueItem = listObject->object;
-		size_t length;
-		OFException *exception = nil;
-
-		@try {
-			length = [object
-			    readIntoBuffer: (char*)queueItem->_buffer +
-					    queueItem->_readLength
-				    length: queueItem->_exactLength -
-					    queueItem->_readLength];
-		} @catch (OFException *e) {
-			length = 0;
-			exception = e;
-		}
-
-		queueItem->_readLength += length;
-		if (queueItem->_readLength == queueItem->_exactLength ||
-		    [object isAtEndOfStream] || exception != nil) {
-# ifdef OF_HAVE_BLOCKS
-			if (queueItem->_block != NULL) {
-				if (queueItem->_block(object,
-				    queueItem->_buffer, queueItem->_readLength,
-				    exception))
-					queueItem->_readLength = 0;
-				else {
-					[queue removeListObject: listObject];
-
-					if ([queue count] == 0) {
-						[_kernelEventObserver
-						    removeObjectForReading:
-						    object];
-						[_readQueues
-						    removeObjectForKey: object];
-					}
-				}
-			} else {
-# endif
-				bool (*func)(id, SEL, OFStream*, void*,
-				    size_t, OFException*) = (bool(*)(id, SEL,
-				    OFStream*, void*, size_t, OFException*))
-				    [queueItem->_target
-				    methodForSelector: queueItem->_selector];
-
-				if (func(queueItem->_target,
-				    queueItem->_selector, object,
-				    queueItem->_buffer, queueItem->_readLength,
-				    exception))
-					queueItem->_readLength = 0;
-				else {
-					[queue removeListObject: listObject];
-
-					if ([queue count] == 0) {
-						[_kernelEventObserver
-						    removeObjectForReading:
-						    object];
-						[_readQueues
-						    removeObjectForKey: object];
-					}
-				}
-# ifdef OF_HAVE_BLOCKS
-			}
-# endif
-		}
-	} else if ([listObject->object isKindOfClass:
-	    [OFRunLoop_ReadLineQueueItem class]]) {
-		OFRunLoop_ReadLineQueueItem *queueItem = listObject->object;
-		OFString *line;
-		OFException *exception = nil;
-
-		@try {
-			line = [object
-			    tryReadLineWithEncoding: queueItem->_encoding];
-		} @catch (OFException *e) {
-			line = nil;
-			exception = e;
-		}
-
-		if (line != nil || [object isAtEndOfStream] ||
-		    exception != nil) {
-# ifdef OF_HAVE_BLOCKS
-			if (queueItem->_block != NULL) {
-				if (!queueItem->_block(object, line,
-				    exception)) {
-					[queue removeListObject: listObject];
-
-					if ([queue count] == 0) {
-						[_kernelEventObserver
-						    removeObjectForReading:
-						    object];
-						[_readQueues
-						    removeObjectForKey: object];
-					}
-				}
-			} else {
-# endif
-				bool (*func)(id, SEL, OFStream*, OFString*,
-				    OFException*) = (bool(*)(id, SEL, OFStream*,
-				    OFString*, OFException*))
-				    [queueItem->_target methodForSelector:
-				    queueItem->_selector];
-
-				if (!func(queueItem->_target,
-				    queueItem->_selector, object, line,
-				    exception)) {
-					[queue removeListObject: listObject];
-
-					if ([queue count] == 0) {
-						[_kernelEventObserver
-						    removeObjectForReading:
-						    object];
-						[_readQueues
-						    removeObjectForKey: object];
-					}
-				}
-# ifdef OF_HAVE_BLOCKS
-			}
-# endif
-		}
-	} else if ([listObject->object isKindOfClass:
-	    [OFRunLoop_AcceptQueueItem class]]) {
-		OFRunLoop_AcceptQueueItem *queueItem = listObject->object;
-		OFTCPSocket *newSocket;
-		OFException *exception = nil;
-
-		@try {
-			newSocket = [object accept];
-		} @catch (OFException *e) {
-			newSocket = nil;
-			exception = e;
-		}
-
-# ifdef OF_HAVE_BLOCKS
-		if (queueItem->_block != NULL) {
-			if (!queueItem->_block(object, newSocket, exception)) {
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
-		} else {
-# endif
-			bool (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
-			    OFException*) =
-			    (bool(*)(id, SEL, OFTCPSocket*, OFTCPSocket*,
-			    OFException*))
-			    [queueItem->_target methodForSelector:
-			    queueItem->_selector];
-
-			if (!func(queueItem->_target, queueItem->_selector,
-			    object, newSocket, exception)) {
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
-# ifdef OF_HAVE_BLOCKS
-		}
-# endif
-	} else if ([listObject->object isKindOfClass:
-	    [OFRunLoop_UDPReceiveQueueItem class]]) {
-		OFRunLoop_UDPReceiveQueueItem *queueItem = listObject->object;
-		size_t length;
-		of_udp_socket_address_t address;
-		OFException *exception = nil;
-
-		@try {
-			length = [object receiveIntoBuffer: queueItem->_buffer
-						    length: queueItem->_length
-						    sender: &address];
-		} @catch (OFException *e) {
-			length = 0;
-			exception = e;
-		}
-
-# ifdef OF_HAVE_BLOCKS
-		if (queueItem->_block != NULL) {
-			if (!queueItem->_block(object, queueItem->_buffer,
-			    length, address, exception)) {
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
-		} else {
-# endif
-			bool (*func)(id, SEL, OFUDPSocket*, void*, size_t,
-			    of_udp_socket_address_t address, OFException*) =
-			    (bool(*)(id, SEL, OFUDPSocket*, void*, size_t,
-			    of_udp_socket_address_t, OFException*))
-			    [queueItem->_target methodForSelector:
-			    queueItem->_selector];
-
-			if (!func(queueItem->_target, queueItem->_selector,
-			    object, queueItem->_buffer, length, address,
-			    exception)) {
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
-# ifdef OF_HAVE_BLOCKS
-		}
-# endif
-	} else
-		assert(0);
+	} @finally {
+		[queue release];
+	}
 }
 #endif
 
