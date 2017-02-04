@@ -52,11 +52,6 @@ OF_ASSUME_NONNULL_BEGIN
  * always work with the same or similar number of objects and call relaseObjects
  * at the end of the loop, which is probably the most common case for
  * releaseObjects.
- *
- * If a garbage collector is added in the future, it will tell the GC that now
- * is a good time to clean up, as this is often used after a lot of objects
- * have been added to the pool that should be released before the next iteration
- * of a loop, which adds objects again. Thus, it is usually a clean up call.
  */
 - (void)releaseObjects;
 

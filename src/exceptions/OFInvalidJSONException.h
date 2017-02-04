@@ -42,7 +42,7 @@
  * @brief Creates a new, autoreleased invalid JSON exception.
  *
  * @param string The string containing the invalid JSON representation
- * @param line The line in which the parsing error encountered
+ * @param line The line in which the parsing error was encountered
  * @return A new, autoreleased invalid JSON exception
  */
 + (instancetype)exceptionWithString: (OFString*)string
@@ -52,7 +52,7 @@
  * @brief Initializes an already allocated invalid JSON exception.
  *
  * @param string The string containing the invalid JSON representation
- * @param line The line in which the parsing error encountered
+ * @param line The line in which the parsing error was encountered
  * @return An initialized invalid JSON exception
  */
 - initWithString: (OFString*)string
