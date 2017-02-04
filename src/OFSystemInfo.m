@@ -208,7 +208,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#elif !defined(OF_IOS)
+#elif
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -230,9 +230,6 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[var retain];
 	objc_autoreleasePoolPop(pool);
 	return [var autorelease];
-#else
-	@throw [OFNotImplementedException exceptionWithSelector: _cmd
-							 object: self];
 #endif
 }
 
@@ -303,7 +300,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#elif !defined(OF_IOS)
+#else
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -324,9 +321,6 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[var retain];
 	objc_autoreleasePoolPop(pool);
 	return [var autorelease];
-#else
-	@throw [OFNotImplementedException OFNotImplementedException: _cmd
-							     object: self];
 #endif
 }
 
