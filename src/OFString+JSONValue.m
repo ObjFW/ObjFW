@@ -185,7 +185,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				buffer[i++] = '\t';
 				(*pointer)++;
 				break;
-			/* Parse unicode escape sequence */
+			/* Parse Unicode escape sequence */
 			case 'u':;
 				of_char16_t c1, c2;
 				of_unichar_t c;

@@ -36,7 +36,7 @@ extern int _OFString_JSONValue_reference;
  * @warning Although not specified by the JSON specification, this can also
  *          return primitives like strings and numbers. The rationale behind
  *          this is that most JSON parsers allow JSON data just consisting of a
- *          single primitive, leading to realworld JSON files sometimes only
+ *          single primitive, leading to real world JSON files sometimes only
  *          consisting of a single primitive. Therefore, you should not make any
  *          assumptions about the object returned by this method if you don't
  *          want your program to terminate due to a message not understood, but
@@ -55,7 +55,7 @@ extern int _OFString_JSONValue_reference;
  * @warning Although not specified by the JSON specification, this can also
  *          return primitives like strings and numbers. The rationale behind
  *          this is that most JSON parsers allow JSON data just consisting of a
- *          single primitive, leading to realworld JSON files sometimes only
+ *          single primitive, leading to real world JSON files sometimes only
  *          consisting of a single primitive. Therefore, you should not make any
  *          assumptions about the object returned by this method if you don't
  *          want your program to terminate due to a message not understood, but

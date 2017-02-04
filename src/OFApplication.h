@@ -185,7 +185,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
 /*!
- * @brief Gets args and argv.
+ * @brief Gets argc and argv.
  *
  * @param argc A pointer where a pointer to argc should be stored
  * @param argv A pointer where a pointer to argv should be stored

@@ -297,7 +297,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  *
  * If the timer is already scheduled in a run loop, it will be rescheduled.
  * Note that rescheduling is an expensive operation, though it still might be
- * preferrable to reschedule instead of invalidating the timer and creating a
+ * preferable to reschedule instead of invalidating the timer and creating a
  * new one.
  *
  * @param fireDate The next date at which the timer will fire

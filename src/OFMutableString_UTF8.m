@@ -616,7 +616,7 @@
 	 * memmove() the rest of the string to the end.
 	 *
 	 * We must not resize the string if the new string is smaller, because
-	 * then we can't memove() the rest of the string forward as the rest is
+	 * then we can't memmove() the rest of the string forward as the rest is
 	 * lost due to the resize!
 	 */
 	if (newCStringLength > _s->cStringLength)

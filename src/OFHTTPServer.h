@@ -126,7 +126,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)server;
 
 /*!
- * @brief Starts the HTTP server in the current thread's runloop.
+ * @brief Starts the HTTP server in the current thread's run loop.
  */
 - (void)start;
 

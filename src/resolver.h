@@ -47,7 +47,7 @@ extern "C" {
  *		   address struct
  *
  * @return An array of results. The list is terminated by NULL and should be
- *	   free'd after use.
+ *	   freed after use.
  */
 extern of_resolver_result_t *_Nullable *_Nonnull of_resolve_host(OFString *host,
     uint16_t port, int protocol);

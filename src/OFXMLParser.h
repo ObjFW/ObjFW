@@ -128,7 +128,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An event-based XML parser.
  *
  * OFXMLParser is an event-based XML parser which calls the delegate's callbacks
- * as soon asit finds something, thus suitable for streams as well.
+ * as soon as it finds something, thus suitable for streams as well.
  */
 @interface OFXMLParser: OFObject <OFStringXMLUnescapingDelegate>
 {

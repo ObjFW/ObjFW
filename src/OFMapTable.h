@@ -250,8 +250,8 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 - (void*)nextObject;
 
 /*!
- * @brief Resets the enumerator, so the next call to nextKey returns the first
- *	  key again.
+ * @brief Resets the enumerator, so the next call to @ref nextKey returns the
+ *	  first key again.
  */
 - (void)reset;
 @end

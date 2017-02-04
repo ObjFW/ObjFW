@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)CDATAWithString: (OFString*)string;
 
 /*!
- * @brief Initializes an alredy allocated OFXMLCDATA with the specified string.
+ * @brief Initializes an already allocated OFXMLCDATA with the specified string.
  *
  * @param string The string value for the CDATA
  * @return An initialized OFXMLCDATA

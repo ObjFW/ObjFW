@@ -27,7 +27,7 @@
  * read.
  *
  * Therefore, instead of just using the UTF-8 codepage, this captures all reads
- * and writes to of_std{in,out,err} on the lowlevel, interprets the buffer as
+ * and writes to of_std{in,out,err} on the low level, interprets the buffer as
  * UTF-8 and converts to / from UTF-16 to use ReadConsoleW() / WriteConsoleW().
  * Doing so is safe, as the console only supports text anyway and thus it does
  * not matter if binary gets garbled by the conversion (e.g. because invalid

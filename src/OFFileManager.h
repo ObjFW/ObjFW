@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (OFFileManager*)defaultManager;
 
 /*!
- * @brief Returns the path fo the current working directory.
+ * @brief Returns the path for the current working directory.
  *
  * @return The path of the current working directory
  */
@@ -89,7 +89,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @note `.` and `..` are not part of the returned array.
  *
  * @param path The path to the directory whose items should be returned
- * @return An array of OFStrings with the items in the specified directory
+ * @return An array of OFString with the items in the specified directory
  */
 - (OFArray OF_GENERIC(OFString*)*)contentsOfDirectoryAtPath: (OFString*)path;
 

@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param socket The socket which wants to know if it should accept the received
  *		 certificate
  * @param certificate A dictionary with the fields of the received certificate
- * @return Whether the TLS socket should accept the received certificatechain
+ * @return Whether the TLS socket should accept the received certificate chain
  */
 -	     (bool)socket: (id <OFTLSSocket>)socket
   shouldAcceptCertificate: (OFDictionary*)certificate;

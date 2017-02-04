@@ -45,7 +45,7 @@ typedef off_t of_offset_t;
  * @note If you want to subclass this, override
  *	 @ref lowlevelSeekToOffset:whence:. OFSeekableStream uses this method
  *	 and makes it work together with the caching of OFStream. If you
- *	 override this methods without the lowlevel prefix, you *will* break
+ *	 override this methods without the `lowlevel` prefix, you *will* break
  *	 caching, get broken results and seek to the wrong position!
  */
 @interface OFSeekableStream: OFStream

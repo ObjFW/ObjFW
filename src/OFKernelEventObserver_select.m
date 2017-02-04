@@ -158,7 +158,7 @@
 
 	/*
 	 * We cast to int before assigning to tv_usec in order to avoid a
-	 * warning with Apple GCC on PPC. POSIX defines this as suseconds_t,
+	 * warning with Apple GCC on PowerPC. POSIX defines this as suseconds_t,
 	 * however, this is not available on Win32. As an int should always
 	 * satisfy the required range, we just cast to int.
 	 */

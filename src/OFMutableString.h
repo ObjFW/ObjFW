@@ -90,8 +90,9 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Appends a formatted string to the OFMutableString.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See `printf` for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t*`.
  *
  * @param format A format string which generates the string to append
  */

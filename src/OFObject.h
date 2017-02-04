@@ -220,7 +220,7 @@ of_rectangle(float x, float y, float width, float height)
  * @brief Returns a boolean whether the object responds to the specified
  *	  selector.
  *
- * @param selector The selector which should be checked for respondance
+ * @param selector The selector which should be checked for respondence
  * @return A boolean whether the objects responds to the specified selector
  */
 - (bool)respondsToSelector: (SEL)selector;
@@ -466,7 +466,7 @@ OF_ROOT_CLASS
 /*!
  * @brief Checks whether instances of the class respond to a given selector.
  *
- * @param selector The selector which should be checked for respondance
+ * @param selector The selector which should be checked for respondence
  * @return A boolean whether instances of the class respond to the specified
  *	   selector
  */
@@ -645,7 +645,7 @@ OF_ROOT_CLASS
 /*!
  * @brief Allocates memory and stores it in the object's memory pool.
  *
- * It will be free'd automatically when the object is deallocated.
+ * It will be freed automatically when the object is deallocated.
  *
  * @param size The size of the memory to allocate
  * @return A pointer to the allocated memory
@@ -656,7 +656,7 @@ OF_ROOT_CLASS
  * @brief Allocates memory for the specified number of items and stores it in
  *	  the object's memory pool.
  *
- * It will be free'd automatically when the object is deallocated.
+ * It will be freed automatically when the object is deallocated.
  *
  * @param size The size of each item to allocate
  * @param count The number of items to allocate

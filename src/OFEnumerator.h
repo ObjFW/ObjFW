@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*
- * This needs to be exactly like this because it's hardcoded in the compiler.
+ * This needs to be exactly like this because it's hard-coded in the compiler.
  *
  * We need this bad check to see if we already imported Cocoa, which defines
  * this as well.

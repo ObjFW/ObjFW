@@ -87,7 +87,7 @@ typedef void (^of_thread_pool_block_t)(void);
  *
  * @param target The target on which to perform the selector
  * @param selector The selector to perform on the target
- * @param object THe object with which the selector is performed on the target
+ * @param object The object with which the selector is performed on the target
  */
 - (void)dispatchWithTarget: (id)target
 		  selector: (SEL)selector

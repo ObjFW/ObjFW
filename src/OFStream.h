@@ -82,7 +82,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *	 and @ref lowlevelIsAtEndOfStream, but nothing else, as those are are
  *	 the methods that do the actual work. OFStream uses those for all other
  *	 methods and does all the caching and other stuff for you. If you
- *	 override these methods without the lowlevel prefix, you *will* break
+ *	 override these methods without the `lowlevel` prefix, you *will* break
  *	 caching and get broken results!
  */
 @interface OFStream: OFObject <
@@ -145,7 +145,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 #ifdef OF_HAVE_SOCKETS
 /*!
- * @brief Asyncronously reads *at most* size bytes from the stream into a
+ * @brief Asynchronously reads *at most* size bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -158,7 +158,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *	 valid file descriptor in order for this to work!
  *
  * @param buffer The buffer into which the data is read.
- *		 The buffer must not be free'd before the async read completed!
+ *		 The buffer must not be freed before the async read completed!
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @param target The target on which the selector should be called when the
@@ -177,7 +177,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 		   selector: (SEL)selector;
 
 /*!
- * @brief Asyncronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:target:selector:, this method does
@@ -208,7 +208,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 # ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asyncronously reads *at most* ref size bytes from the stream into a
+ * @brief Asynchronously reads *at most* ref size bytes from the stream into a
  *	  buffer.
  *
  * On network streams, this might read less than the specified number of bytes.
@@ -221,7 +221,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *	 valid file descriptor in order for this to work!
  *
  * @param buffer The buffer into which the data is read.
- *		 The buffer must not be free'd before the async read completed!
+ *		 The buffer must not be freed before the async read completed!
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @param block The block to call when the data has been received.
@@ -235,7 +235,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 		      block: (of_stream_async_read_block_t)block;
 
 /*!
- * @brief Asyncronously reads exactly the specified length bytes from the
+ * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
  * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
@@ -609,7 +609,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 #ifdef OF_HAVE_SOCKETS
 /*!
- * @brief Asyncronously reads until a newline, `\0`, end of stream or an
+ * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
@@ -628,7 +628,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 		       selector: (SEL)selector;
 
 /*!
- * @brief Asyncronously reads with the specified encoding until a newline,
+ * @brief Asynchronously reads with the specified encoding until a newline,
  *	  `\0`, end of stream or an exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
@@ -650,7 +650,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 # ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asyncronously reads until a newline, `\0`, end of stream or an
+ * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
@@ -665,7 +665,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block;
 
 /*!
- * @brief Asyncronously reads with the specified encoding until a newline,
+ * @brief Asynchronously reads with the specified encoding until a newline,
  *	  `\0`, end of stream or an exception occurs.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
@@ -684,8 +684,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #endif
 
 /*!
- * @brief Tries to read a line from the stream (see readLine) and returns `nil`
- *	  if no complete line has been received yet.
+ * @brief Tries to read a line from the stream (see @ref readLine) and returns
+ *	  `nil` if no complete line has been received yet.
  *
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
@@ -750,7 +750,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 				  encoding: (of_string_encoding_t)encoding;
 
 /*!
- * @brief Returns a boolen whether writes are buffered.
+ * @brief Returns a boolean whether writes are buffered.
  *
  * @return A boolean whether writes are buffered
  */

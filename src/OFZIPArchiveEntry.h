@@ -30,45 +30,45 @@ enum {
  * @brief Attribute compatibility part of ZIP versions.
  */
 enum of_zip_archive_entry_attribute_compatibility {
-	/** MS-DOS and OS/2 */
+	/*! MS-DOS and OS/2 */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MSDOS	       =  0,
-	/** Amiga */
+	/*! Amiga */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_AMIGA	       =  1,
-	/** OpenVMS */
+	/*! OpenVMS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OPENVMS       =  2,
-	/** UNIX */
+	/*! UNIX */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX	       =  3,
-	/** VM/CMS */
+	/*! VM/CMS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VM_CMS	       =  4,
-	/** Atari ST */
+	/*! Atari ST */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ATARI_ST      =  5,
-	/** OS/2 HPFS */
+	/*! OS/2 HPFS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS2_HPFS      =  6,
-	/** Macintosh */
+	/*! Macintosh */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MACINTOSH     =  7,
-	/** Z-System */
+	/*! Z-System */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_Z_SYSTEM      =  8,
-	/** CP/M */
+	/*! CP/M */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_CP_M	       =  9,
-	/** Windows NTFS */
+	/*! Windows NTFS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_WINDOWS_NTFS  = 10,
-	/** MVS (OS/390 - Z/OS) */
+	/*! MVS (OS/390 - Z/OS) */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS	       = 11,
-	/** VSE */
+	/*! VSE */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE	       = 12,
-	/** Acorn Risc */
+	/*! Acorn Risc */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC    = 13,
-	/** VFAT */
+	/*! VFAT */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT	       = 14,
-	/** Alternate MVS */
+	/*! Alternate MVS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ALTERNATE_MVS = 15,
-	/** BeOS */
+	/*! BeOS */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_BEOS	       = 16,
-	/** Tandem */
+	/*! Tandem */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_TANDEM	       = 17,
-	/** OS/400 */
+	/*! OS/400 */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_400	       = 18,
-	/** OS X (Darwin) */
+	/*! OS X (Darwin) */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_OS_X	       = 19
 };
 

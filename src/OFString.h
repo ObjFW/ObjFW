@@ -174,11 +174,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 + (instancetype)stringWithString: (OFString*)string;
 
 /*!
- * @brief Creates a new OFString from a unicode string with the specified
+ * @brief Creates a new OFString from a Unicode string with the specified
  *	  length.
  *
- * @param characters An array of unicode characters
- * @param length The length of the unicode character array
+ * @param characters An array of Unicode characters
+ * @param length The length of the Unicode character array
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithCharacters: (const of_unichar_t*)characters
@@ -407,11 +407,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - initWithString: (OFString*)string;
 
 /*!
- * @brief Initializes an already allocated OFString with a unicode string with
+ * @brief Initializes an already allocated OFString with a Unicode string with
  *	  the specified length.
  *
- * @param characters An array of unicode characters
- * @param length The length of the unicode character array
+ * @param characters An array of Unicode characters
+ * @param length The length of the Unicode character array
  * @return An initialized OFString
  */
 - initWithCharacters: (const of_unichar_t*)characters

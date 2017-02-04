@@ -120,7 +120,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 #ifdef OF_HAVE_THREADS
 /*!
- * @brief Asyncronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -136,7 +136,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 # ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asyncronously connect the OFTCPSocket to the specified destination.
+ * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
@@ -180,7 +180,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 - (instancetype)accept;
 
 /*!
- * @brief Asyncronously accept an incoming connection.
+ * @brief Asynchronously accept an incoming connection.
  *
  * @param target The target on which to execute the selector when a new
  *		 connection has been accepted. The method returns whether the
@@ -195,7 +195,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 #ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asyncronously accept an incoming connection.
+ * @brief Asynchronously accept an incoming connection.
  *
  * @param block The block to execute when a new connection has been accepted.
  *		Returns whether the next incoming connection should be accepted

@@ -563,7 +563,7 @@ static Class CDATAClass = Nil;
 		objc_autoreleasePoolPop(pool2);
 	}
 
-	/* Childen */
+	/* Children */
 	if (_children != nil) {
 		OFDataArray *tmp = [OFDataArray dataArray];
 		bool indent;

@@ -343,7 +343,7 @@ normalizeKey(char *str_)
 	    [_lastURL port] == [URL port]) {
 		/*
 		 * Set _socket to nil, so that in case of an error it won't be
-		 * reused. If everything is successfull, we set _socket again
+		 * reused. If everything is successful, we set _socket again
 		 * at the end.
 		 */
 		socket = [_socket autorelease];

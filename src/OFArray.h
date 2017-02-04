@@ -258,7 +258,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *	  specified object or `OF_NOT_FOUND` if it was not found.
  *
  * @param object The object whose index is returned
- * @return The index of the first object that has the same aaddress as
+ * @return The index of the first object that has the same address as
  *	   the specified object or `OF_NOT_FOUND` if it was not found
  */
 - (size_t)indexOfObjectIdenticalTo: (ObjectType)object;

@@ -24,9 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
 	/*
 	 * A pointer to the actual data.
 	 *
-	 * Since constant strings don't have _storage, they have to malloc it
-	 * on the first access. Strings created at runtime just set the pointer
-	 * to &_storage.
+	 * Since constant strings don't have `_storage`, they have to allocate
+	 * it on the first access. Strings created at runtime just set the
+	 * pointer to `&_storage`.
 	 */
 	struct of_string_utf8_ivars {
 		char	 *cString;

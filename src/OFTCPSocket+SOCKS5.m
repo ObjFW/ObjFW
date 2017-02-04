@@ -120,7 +120,7 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 	case 1: /* IPv4 */
 		recv_exact(self, _socket, reply, 4);
 		break;
-	case 3: /* Domainname */
+	case 3: /* Domain name */
 		recv_exact(self, _socket, reply, 1);
 		recv_exact(self, _socket, reply, reply[0]);
 		break;

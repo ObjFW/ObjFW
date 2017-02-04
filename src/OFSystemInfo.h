@@ -179,7 +179,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns whether the CPU and OS support AltiVec.
  *
- * @note This method is only available on PowerPC and PowerPC64.
+ * @note This method is only available on PowerPC and PowerPC 64.
  *
  * @return Whether the CPU and OS support AltiVec
  */

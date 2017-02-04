@@ -171,15 +171,15 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * @brief The main routine of the thread. You need to reimplement this!
  *
- * It can access the object passed to the threadWithObject or initWithObject
- * method using the instance variable named object.
+ * It can access the object passed to the @ref threadWithObject: or
+ * @ref initWithObject: method using the instance variable named object.
  *
  * @return The object the join method should return when called for this thread
  */
 - (nullable id)main;
 
 /*!
- * @brief This routine is exectued when the thread's main method has finished
+ * @brief This routine is executed when the thread's main method has finished
  *	  executing or terminate has been called.
  *
  * @note Be sure to call [super handleTermination]!
@@ -208,7 +208,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * @brief Returns the name of the thread or `nil` if none has been set.
  *
- * @return The name of the thread or nik if none has been set
+ * @return The name of the thread or nil if none has been set
  */
 - (nullable OFString*)name;
 
@@ -223,7 +223,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @brief Returns the priority of the thread.
  *
  * This is a value between -1.0 (meaning lowest priority that still schedules)
- * and +1.0 (meaning highest priority that still allows getting preemptted)
+ * and +1.0 (meaning highest priority that still allows getting preempted)
  * with normal priority being 0.0 (meaning being the same as the main thread).
  *
  * @return The priority of the thread
@@ -238,7 +238,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param priority The priority of the thread. This is a value between -1.0
  *		   (meaning lowest priority that still schedules) and +1.0
  *		   (meaning highest priority that still allows getting
- *		   preemptted) with normal priority being 0.0 (meaning being
+ *		   preempted) with normal priority being 0.0 (meaning being
  *		   the same as the main thread).
  */
 - (void)setPriority: (float)priority;

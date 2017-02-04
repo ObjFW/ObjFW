@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  * The time zone used is UTC. See @ref dateWithLocalDateString:format: if you
  * want local time.
  *
- * See the manpage for strftime for information on the format.
+ * See the man page for `strftime` for information on the format.
  *
  * @warning The format is currently limited to the following format specifiers:
  *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new OFDate with the specified string in the specified
  *	  format.
  *
- * See the manpage for strftime for information on the format.
+ * See the man page for `strftime` for information on the format.
  *
  * @warning The format is currently limited to the following format specifiers:
  *	    %%a, %%b, %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%z, %%, %%n and
@@ -137,7 +137,7 @@ OF_ASSUME_NONNULL_BEGIN
  * OFInvalidFormatException is thrown. See @ref initWithLocalDateString:format:
  * if you want to specify a time zone.
  *
- * See the manpage for strftime for information on the format.
+ * See the man page for `strftime` for information on the format.
  *
  * @warning The format is currently limited to the following format specifiers:
  *	    %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%, %%n and %%t.
@@ -155,7 +155,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * If no time zone is specified, local time is assumed.
  *
- * See the manpage for strftime for information on the format.
+ * See the man page for `strftime` for information on the format.
  *
  * @warning The format is currently limited to the following format specifiers:
  *	    %%d, %%e, %%H, %%m, %%M, %%S, %%y, %%Y, %%, %%n and %%t.
@@ -275,7 +275,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a string of the date with the specified format.
  *
- * See the manpage for strftime for information on the format.
+ * See the man page for `strftime` for information on the format.
  *
  * @param format The format for the date string
  * @return A new, autoreleased OFString
@@ -285,7 +285,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a string of the local date with the specified format.
  *
- * See the manpage for strftime for information on the format.
+ * See the man page for `strftime` for information on the format.
  *
  * @param format The format for the date string
  * @return A new, autoreleased OFString
