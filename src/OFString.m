@@ -107,6 +107,8 @@ extern bool of_unicode_to_mac_roman(const of_unichar_t*, unsigned char*,
     size_t, bool);
 extern bool of_unicode_to_koi8_r(const of_unichar_t*, unsigned char*,
     size_t, bool);
+extern bool of_unicode_to_koi8_u(const of_unichar_t*, unsigned char*,
+    size_t, bool);
 
 /* References for static linking */
 void
@@ -168,6 +170,8 @@ of_string_parse_encoding(OFString *string)
 		encoding = OF_STRING_ENCODING_MAC_ROMAN;
 	else if ([string isEqual: @"koi8-r"])
 		encoding = OF_STRING_ENCODING_KOI8_R;
+	else if ([string isEqual: @"koi8-u"])
+		encoding = OF_STRING_ENCODING_KOI8_U;
 	else
 		@throw [OFInvalidEncodingException exception];
 
@@ -1236,6 +1240,19 @@ static struct {
 
 		return length;
 #endif
+#ifdef HAVE_KOI8_U
+	case OF_STRING_ENCODING_KOI8_U:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_koi8_u(characters,
+		    (unsigned char*)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+#endif
 	default:
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
@@ -1299,6 +1316,7 @@ static struct {
 	case OF_STRING_ENCODING_CODEPAGE_858:
 	case OF_STRING_ENCODING_MAC_ROMAN:
 	case OF_STRING_ENCODING_KOI8_R:
+	case OF_STRING_ENCODING_KOI8_U:
 		cString = [object allocMemoryWithSize: length + 1];
 
 		[self OF_getCString: cString
@@ -1369,6 +1387,7 @@ static struct {
 	case OF_STRING_ENCODING_CODEPAGE_858:
 	case OF_STRING_ENCODING_MAC_ROMAN:
 	case OF_STRING_ENCODING_KOI8_R:
+	case OF_STRING_ENCODING_KOI8_U:
 		return [self length];
 	default:
 		@throw [OFInvalidEncodingException exception];

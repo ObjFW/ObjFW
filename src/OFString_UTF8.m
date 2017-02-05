@@ -47,6 +47,7 @@ extern const of_char16_t of_codepage_850[128];
 extern const of_char16_t of_codepage_858[128];
 extern const of_char16_t of_mac_roman[128];
 extern const of_char16_t of_koi8_r[128];
+extern const of_char16_t of_koi8_u[128];
 
 static inline int
 memcasecmp(const char *first, const char *second, size_t length)
@@ -335,6 +336,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 #ifdef HAVE_KOI8_R
 		case OF_STRING_ENCODING_KOI8_R:
 			table = of_koi8_r;
+			break;
+#endif
+#ifdef HAVE_KOI8_U
+		case OF_STRING_ENCODING_KOI8_U:
+			table = of_koi8_u;
 			break;
 #endif
 		default:

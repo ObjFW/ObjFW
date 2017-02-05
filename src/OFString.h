@@ -76,6 +76,8 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_MAC_ROMAN,
 	/*! KOI8-R */
 	OF_STRING_ENCODING_KOI8_R,
+	/*! KOI8-U */
+	OF_STRING_ENCODING_KOI8_U,
 	/*! Try to automatically detect the encoding */
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
