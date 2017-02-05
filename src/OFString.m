@@ -91,6 +91,8 @@ static locale_t cLocale;
 
 extern bool of_unicode_to_iso_8859_2(const of_unichar_t*, unsigned char*,
     size_t, bool);
+extern bool of_unicode_to_iso_8859_3(const of_unichar_t*, unsigned char*,
+    size_t, bool);
 extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, unsigned char*,
     size_t, bool);
 extern bool of_unicode_to_windows_1251(const of_unichar_t*, unsigned char*,
@@ -146,6 +148,9 @@ of_string_parse_encoding(OFString *string)
 	else if ([string isEqual: @"iso-8859-2"] ||
 	    [string isEqual: @"iso_8859-2"])
 		encoding = OF_STRING_ENCODING_ISO_8859_2;
+	else if ([string isEqual: @"iso-8859-3"] ||
+	    [string isEqual: @"iso_8859-3"])
+		encoding = OF_STRING_ENCODING_ISO_8859_3;
 	else if ([string isEqual: @"iso-8859-15"] ||
 	    [string isEqual: @"iso_8859-15"])
 		encoding = OF_STRING_ENCODING_ISO_8859_15;
@@ -1136,6 +1141,19 @@ static struct {
 
 		return length;
 #endif
+#ifdef HAVE_ISO_8859_3
+	case OF_STRING_ENCODING_ISO_8859_3:
+		if (length + 1 > maxLength)
+			@throw [OFOutOfRangeException exception];
+
+		if (!of_unicode_to_iso_8859_3(characters,
+		    (unsigned char*)cString, length, lossy))
+			@throw [OFInvalidEncodingException exception];
+
+		cString[length] = '\0';
+
+		return length;
+#endif
 #ifdef HAVE_ISO_8859_15
 	case OF_STRING_ENCODING_ISO_8859_15:
 		if (length + 1 > maxLength)
@@ -1308,6 +1326,7 @@ static struct {
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
 	case OF_STRING_ENCODING_ISO_8859_2:
+	case OF_STRING_ENCODING_ISO_8859_3:
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1251:
 	case OF_STRING_ENCODING_WINDOWS_1252:
@@ -1379,6 +1398,7 @@ static struct {
 	case OF_STRING_ENCODING_ASCII:
 	case OF_STRING_ENCODING_ISO_8859_1:
 	case OF_STRING_ENCODING_ISO_8859_2:
+	case OF_STRING_ENCODING_ISO_8859_3:
 	case OF_STRING_ENCODING_ISO_8859_15:
 	case OF_STRING_ENCODING_WINDOWS_1251:
 	case OF_STRING_ENCODING_WINDOWS_1252:

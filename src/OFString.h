@@ -60,6 +60,8 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_ISO_8859_1,
 	/*! ISO 8859-2 */
 	OF_STRING_ENCODING_ISO_8859_2,
+	/*! ISO 8859-3 */
+	OF_STRING_ENCODING_ISO_8859_3,
 	/*! ISO 8859-15 */
 	OF_STRING_ENCODING_ISO_8859_15,
 	/*! Windows-1251 */

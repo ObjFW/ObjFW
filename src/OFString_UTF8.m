@@ -39,6 +39,7 @@
 #import "unicode.h"
 
 extern const of_char16_t of_iso_8859_2[128];
+extern const of_char16_t of_iso_8859_3[128];
 extern const of_char16_t of_iso_8859_15[128];
 extern const of_char16_t of_windows_1251[128];
 extern const of_char16_t of_windows_1252[128];
@@ -296,6 +297,11 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 #ifdef HAVE_ISO_8859_2
 		case OF_STRING_ENCODING_ISO_8859_2:
 			table = of_iso_8859_2;
+			break;
+#endif
+#ifdef HAVE_ISO_8859_3
+		case OF_STRING_ENCODING_ISO_8859_3:
+			table = of_iso_8859_3;
 			break;
 #endif
 #ifdef HAVE_ISO_8859_15
