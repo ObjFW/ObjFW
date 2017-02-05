@@ -74,6 +74,8 @@ typedef enum of_string_encoding_t {
 	OF_STRING_ENCODING_CODEPAGE_858,
 	/*! Mac OS Roman */
 	OF_STRING_ENCODING_MAC_ROMAN,
+	/*! KOI8-R */
+	OF_STRING_ENCODING_KOI8_R,
 	/*! Try to automatically detect the encoding */
 	OF_STRING_ENCODING_AUTODETECT = 0xFF
 } of_string_encoding_t;
