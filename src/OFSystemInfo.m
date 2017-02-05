@@ -208,7 +208,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#elif
+#else
 	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
