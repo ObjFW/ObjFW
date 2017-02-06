@@ -161,6 +161,12 @@
 		4B2610C31D863007001F16C9 /* OFHTTPCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2610C11D863007001F16C9 /* OFHTTPCookie.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2610C41D863007001F16C9 /* OFHTTPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2610C21D863007001F16C9 /* OFHTTPCookie.m */; };
 		4B2610C61D86305C001F16C9 /* OFHTTPCookieTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2610C51D86305C001F16C9 /* OFHTTPCookieTests.m */; };
+		4B276E3B1E493D5000E20CE4 /* iso_8859_3.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B276E351E493D4900E20CE4 /* iso_8859_3.m */; };
+		4B276E3C1E493D5000E20CE4 /* koi8_r.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B276E361E493D4900E20CE4 /* koi8_r.m */; };
+		4B276E3D1E493D5000E20CE4 /* koi8_u.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B276E371E493D4900E20CE4 /* koi8_u.m */; };
+		4B276E3E1E493D5000E20CE4 /* iso_8859_3.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B276E351E493D4900E20CE4 /* iso_8859_3.m */; };
+		4B276E3F1E493D5000E20CE4 /* koi8_r.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B276E361E493D4900E20CE4 /* koi8_r.m */; };
+		4B276E401E493D5000E20CE4 /* koi8_u.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B276E371E493D4900E20CE4 /* koi8_u.m */; };
 		4B29BC3F133AC4E80004B236 /* OFCreateDirectoryFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B29BC40133AC4E80004B236 /* OFCreateDirectoryFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */; };
 		4B29BC41133AC4E80004B236 /* OFSeekFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1221,6 +1227,9 @@
 		4B2610C11D863007001F16C9 /* OFHTTPCookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPCookie.h; path = src/OFHTTPCookie.h; sourceTree = "<group>"; };
 		4B2610C21D863007001F16C9 /* OFHTTPCookie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPCookie.m; path = src/OFHTTPCookie.m; sourceTree = "<group>"; };
 		4B2610C51D86305C001F16C9 /* OFHTTPCookieTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPCookieTests.m; path = tests/OFHTTPCookieTests.m; sourceTree = "<group>"; };
+		4B276E351E493D4900E20CE4 /* iso_8859_3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_3.m; path = src/encodings/iso_8859_3.m; sourceTree = "<group>"; };
+		4B276E361E493D4900E20CE4 /* koi8_r.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = koi8_r.m; path = src/encodings/koi8_r.m; sourceTree = "<group>"; };
+		4B276E371E493D4900E20CE4 /* koi8_u.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = koi8_u.m; path = src/encodings/koi8_u.m; sourceTree = "<group>"; };
 		4B29BC37133AC4E80004B236 /* OFCreateDirectoryFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCreateDirectoryFailedException.h; path = src/exceptions/OFCreateDirectoryFailedException.h; sourceTree = "<group>"; };
 		4B29BC38133AC4E80004B236 /* OFCreateDirectoryFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCreateDirectoryFailedException.m; path = src/exceptions/OFCreateDirectoryFailedException.m; sourceTree = "<group>"; };
 		4B29BC39133AC4E80004B236 /* OFSeekFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSeekFailedException.h; path = src/exceptions/OFSeekFailedException.h; sourceTree = "<group>"; };
@@ -1911,7 +1920,10 @@
 				4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */,
 				4B6736111E2B2F6F00681F2C /* codepage_858.m */,
 				4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */,
+				4B276E351E493D4900E20CE4 /* iso_8859_3.m */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
+				4B276E361E493D4900E20CE4 /* koi8_r.m */,
+				4B276E371E493D4900E20CE4 /* koi8_u.m */,
 				4B5EBFB81E25A937004FE6A2 /* mac_roman.m */,
 				4BF3A2281E25EA48002EA46F /* windows_1251.m */,
 				4B6AF97210A8D42E0003FB0A /* windows_1252.m */,
@@ -3279,8 +3291,11 @@
 				4B2C218A1DA292BE00735907 /* codepage_437.m in Sources */,
 				4B5EBFB71E25A8CF004FE6A2 /* codepage_850.m in Sources */,
 				4B6736131E2B2F6F00681F2C /* codepage_858.m in Sources */,
-				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
 				4BF5CB911E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
+				4B276E3E1E493D5000E20CE4 /* iso_8859_3.m in Sources */,
+				4B2C218C1DA292BE00735907 /* iso_8859_15.m in Sources */,
+				4B276E401E493D5000E20CE4 /* koi8_u.m in Sources */,
+				4B276E3F1E493D5000E20CE4 /* koi8_r.m in Sources */,
 				4B5EBFBA1E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4BF3A22A1E25EA48002EA46F /* windows_1251.m in Sources */,
 				4B2C21971DA292BE00735907 /* windows_1252.m in Sources */,
@@ -3473,8 +3488,11 @@
 				4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */,
 				4B5EBFB61E25A8CF004FE6A2 /* codepage_850.m in Sources */,
 				4B6736121E2B2F6F00681F2C /* codepage_858.m in Sources */,
-				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
 				4BF5CB901E2DC1D800CF7584 /* iso_8859_2.m in Sources */,
+				4B276E3B1E493D5000E20CE4 /* iso_8859_3.m in Sources */,
+				4B3D23B41337FC0D00DD29B8 /* iso_8859_15.m in Sources */,
+				4B276E3C1E493D5000E20CE4 /* koi8_r.m in Sources */,
+				4B276E3D1E493D5000E20CE4 /* koi8_u.m in Sources */,
 				4B5EBFB91E25A937004FE6A2 /* mac_roman.m in Sources */,
 				4BF3A2291E25EA48002EA46F /* windows_1251.m in Sources */,
 				4B3D23BA1337FC0D00DD29B8 /* windows_1252.m in Sources */,
