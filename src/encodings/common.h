@@ -39,7 +39,7 @@
 		output[i] = page##nr[index];			\
 		break;
 #define CASE_MISSING_IS_ERROR(nr)					\
-	case nr:							\
+	case 0x##nr:							\
 		if OF_UNLIKELY ((c & 0xFF) < page##nr##Start) {		\
 			if (lossy) {					\
 				output[i] = '?';			\

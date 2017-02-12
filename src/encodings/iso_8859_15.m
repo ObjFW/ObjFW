@@ -18,6 +18,8 @@
 
 #import "OFString.h"
 
+#import "common.h"
+
 const of_char16_t of_iso_8859_15_table[] = {
 	0x00A0, 0x00A1, 0x00A2, 0x00A3, 0x20AC, 0x00A5, 0x0160, 0x00A7,
 	0x0161, 0x00A9, 0x00AA, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF,
@@ -35,6 +37,32 @@ const of_char16_t of_iso_8859_15_table[] = {
 const size_t of_iso_8859_15_table_offset =
     256 - (sizeof(of_iso_8859_15_table) / sizeof(*of_iso_8859_15_table));
 
+static const char page0[] = {
+	0x00, 0xA5, 0x00, 0xA7, 0x00, 0xA9, 0xAA, 0xAB,
+	0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
+	0x00, 0xB5, 0xB6, 0xB7, 0x00, 0xB9, 0xBA, 0xBB,
+	0x00, 0x00, 0x00
+};
+static const uint8_t page0Start = 0xA4;
+static const uint16_t page0Size = sizeof(page0) / sizeof(*page0);
+
+static const char page1[] = {
+	0xBC, 0xBD, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA6, 0xA8,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBE, 0x00,
+	0x00, 0x00, 0x00, 0xB4, 0xB8
+};
+static const uint8_t page1Start = 0x52;
+static const uint16_t page1Size = sizeof(page1) / sizeof(*page1);
+
+static const char page20[] = {
+	0xA4
+};
+static const uint8_t page20Start = 0xAC;
+static const uint16_t page20Size = sizeof(page20) / sizeof(*page20);
+
 bool
 of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,
     size_t length, bool lossy)
@@ -42,7 +70,9 @@ of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,
 	for (size_t i = 0; i < length; i++) {
 		of_unichar_t c = input[i];
 
-		if OF_UNLIKELY (c > 0xFF) {
+		if OF_UNLIKELY (c > 0x7F) {
+			uint8_t index;
+
 			if OF_UNLIKELY (c > 0xFFFF) {
 				if (lossy) {
 					output[i] = '?';
@@ -51,60 +81,19 @@ of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,
 					return false;
 			}
 
-			switch ((of_char16_t)c) {
-			case 0x20AC:
-				output[i] = 0xA4;
-				break;
-			case 0x160:
-				output[i] = 0xA6;
-				break;
-			case 0x161:
-				output[i] = 0xA8;
-				break;
-			case 0x17D:
-				output[i] = 0xB4;
-				break;
-			case 0x17E:
-				output[i] = 0xB8;
-				break;
-			case 0x152:
-				output[i] = 0xBC;
-				break;
-			case 0x153:
-				output[i] = 0xBD;
-				break;
-			case 0x178:
-				output[i] = 0xBE;
-				break;
+			switch (c >> 8) {
+			CASE_MISSING_IS_KEEP(0)
+			CASE_MISSING_IS_ERROR(1)
+			CASE_MISSING_IS_ERROR(20)
 			default:
-				if (lossy)
+				if (lossy) {
 					output[i] = '?';
-				else
+					continue;
+				} else
 					return false;
-
-				break;
 			}
-		} else {
-			switch (c) {
-			case 0xA4:
-			case 0xA6:
-			case 0xA8:
-			case 0xB4:
-			case 0xB8:
-			case 0xBC:
-			case 0xBD:
-			case 0xBE:
-				if (lossy)
-					output[i] = '?';
-				else
-					return false;
-
-				break;
-			default:
-				output[i] = (unsigned char)c;
-				break;
-			}
-		}
+		} else
+			output[i] = (unsigned char)c;
 	}
 
 	return true;
