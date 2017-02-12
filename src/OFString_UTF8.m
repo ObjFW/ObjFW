@@ -38,17 +38,28 @@
 #import "of_asprintf.h"
 #import "unicode.h"
 
-extern const of_char16_t of_iso_8859_2[128];
-extern const of_char16_t of_iso_8859_3[128];
-extern const of_char16_t of_iso_8859_15[128];
-extern const of_char16_t of_windows_1251[128];
-extern const of_char16_t of_windows_1252[128];
-extern const of_char16_t of_codepage_437[128];
-extern const of_char16_t of_codepage_850[128];
-extern const of_char16_t of_codepage_858[128];
-extern const of_char16_t of_mac_roman[128];
-extern const of_char16_t of_koi8_r[128];
-extern const of_char16_t of_koi8_u[128];
+extern const of_char16_t of_iso_8859_2_table[];
+extern const size_t of_iso_8859_2_table_offset;
+extern const of_char16_t of_iso_8859_3_table[];
+extern const size_t of_iso_8859_3_table_offset;
+extern const of_char16_t of_iso_8859_15_table[];
+extern const size_t of_iso_8859_15_table_offset;
+extern const of_char16_t of_windows_1251_table[];
+extern const size_t of_windows_1251_table_offset;
+extern const of_char16_t of_windows_1252_table[];
+extern const size_t of_windows_1252_table_offset;
+extern const of_char16_t of_codepage_437_table[];
+extern const size_t of_codepage_437_table_offset;
+extern const of_char16_t of_codepage_850_table[];
+extern const size_t of_codepage_850_table_offset;
+extern const of_char16_t of_codepage_858_table[];
+extern const size_t of_codepage_858_table_offset;
+extern const of_char16_t of_mac_roman_table[];
+extern const size_t of_mac_roman_table_offset;
+extern const of_char16_t of_koi8_r_table[];
+extern const size_t of_koi8_r_table_offset;
+extern const of_char16_t of_koi8_u_table[];
+extern const size_t of_koi8_u_table_offset;
 
 static inline int
 memcasecmp(const char *first, const char *second, size_t length)
@@ -222,7 +233,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 	@try {
 		const of_char16_t *table;
-		size_t j;
+		size_t tableOffset, j;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 &&
 		    cStringLength >= 3 &&
@@ -294,95 +305,79 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		}
 
 		switch (encoding) {
+#define CASE(encoding, var)			\
+	case encoding:				\
+		table = var;			\
+		tableOffset = var##_offset;	\
+		break;
 #ifdef HAVE_ISO_8859_2
-		case OF_STRING_ENCODING_ISO_8859_2:
-			table = of_iso_8859_2;
-			break;
+		CASE(OF_STRING_ENCODING_ISO_8859_2, of_iso_8859_2_table)
 #endif
 #ifdef HAVE_ISO_8859_3
-		case OF_STRING_ENCODING_ISO_8859_3:
-			table = of_iso_8859_3;
-			break;
+		CASE(OF_STRING_ENCODING_ISO_8859_3, of_iso_8859_3_table)
 #endif
 #ifdef HAVE_ISO_8859_15
-		case OF_STRING_ENCODING_ISO_8859_15:
-			table = of_iso_8859_15;
-			break;
+		CASE(OF_STRING_ENCODING_ISO_8859_15, of_iso_8859_15_table)
 #endif
 #ifdef HAVE_WINDOWS_1251
-		case OF_STRING_ENCODING_WINDOWS_1251:
-			table = of_windows_1251;
-			break;
+		CASE(OF_STRING_ENCODING_WINDOWS_1251, of_windows_1251_table)
 #endif
 #ifdef HAVE_WINDOWS_1252
-		case OF_STRING_ENCODING_WINDOWS_1252:
-			table = of_windows_1252;
-			break;
+		CASE(OF_STRING_ENCODING_WINDOWS_1252, of_windows_1252_table)
 #endif
 #ifdef HAVE_CODEPAGE_437
-		case OF_STRING_ENCODING_CODEPAGE_437:
-			table = of_codepage_437;
-			break;
+		CASE(OF_STRING_ENCODING_CODEPAGE_437, of_codepage_437_table)
 #endif
 #ifdef HAVE_CODEPAGE_850
-		case OF_STRING_ENCODING_CODEPAGE_850:
-			table = of_codepage_850;
-			break;
+		CASE(OF_STRING_ENCODING_CODEPAGE_850, of_codepage_850_table)
 #endif
 #ifdef HAVE_CODEPAGE_858
-		case OF_STRING_ENCODING_CODEPAGE_858:
-			table = of_codepage_858;
-			break;
+		CASE(OF_STRING_ENCODING_CODEPAGE_858, of_codepage_858_table)
 #endif
 #ifdef HAVE_MAC_ROMAN
-		case OF_STRING_ENCODING_MAC_ROMAN:
-			table = of_mac_roman;
-			break;
+		CASE(OF_STRING_ENCODING_MAC_ROMAN, of_mac_roman_table)
 #endif
 #ifdef HAVE_KOI8_R
-		case OF_STRING_ENCODING_KOI8_R:
-			table = of_koi8_r;
-			break;
+		CASE(OF_STRING_ENCODING_KOI8_R, of_koi8_r_table)
 #endif
 #ifdef HAVE_KOI8_U
-		case OF_STRING_ENCODING_KOI8_U:
-			table = of_koi8_u;
-			break;
+		CASE(OF_STRING_ENCODING_KOI8_U, of_koi8_u_table)
 #endif
+#undef CASE
 		default:
 			@throw [OFInvalidEncodingException exception];
 		}
 
 		j = 0;
 		for (size_t i = 0; i < cStringLength; i++) {
+			unsigned char character = (unsigned char)cString[i];
+			of_unichar_t unichar;
 			char buffer[4];
-			of_unichar_t character;
-			size_t characterBytes;
+			size_t byteLength;
 
-			if (!(cString[i] & 0x80)) {
+			if (character < tableOffset) {
 				_s->cString[j++] = cString[i];
 				continue;
 			}
 
-			character = table[(uint8_t)cString[i] - 128];
+			unichar = table[character - tableOffset];
 
-			if (character == 0xFFFF)
+			if (unichar == 0xFFFF)
 				@throw [OFInvalidEncodingException exception];
 
 			_s->isUTF8 = true;
-			characterBytes = of_string_utf8_encode(character,
-			    buffer);
+			byteLength = of_string_utf8_encode(unichar, buffer);
 
-			if (characterBytes == 0)
+			if (byteLength == 0)
 				@throw [OFInvalidEncodingException exception];
 
-			_s->cStringLength += characterBytes - 1;
+			_s->cStringLength += byteLength - 1;
 			_s->cString = [self
 			    resizeMemory: _s->cString
 				    size: _s->cStringLength + 1];
 
-			memcpy(_s->cString + j, buffer, characterBytes);
-			j += characterBytes;
+			memcpy(_s->cString + j, buffer, byteLength);
+			j += byteLength;
 		}
 
 		_s->cString[_s->cStringLength] = 0;
