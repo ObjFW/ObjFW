@@ -18,6 +18,8 @@
 
 #import "OFString.h"
 
+#import "common.h"
+
 const of_char16_t of_iso_8859_2_table[] = {
 	0x00A0, 0x0104, 0x02D8, 0x0141, 0x00A4, 0x013D, 0x015A, 0x00A7,
 	0x00A8, 0x0160, 0x015E, 0x0164, 0x0179, 0x00AD, 0x017D, 0x017B,
@@ -47,7 +49,7 @@ static const char page0[] = {
 	0x00, 0xE1, 0xE2, 0x00, 0xE4, 0x00, 0x00, 0xE7,
 	0x00, 0xE9, 0x00, 0xEB, 0x00, 0xED, 0xEE, 0x00,
 	0x00, 0x00, 0x00, 0xF3, 0xF4, 0x00, 0xF6, 0xF7,
-	0x00, 0x00, 0xFA, 0x00, 0xFC, 0xFD
+	0x00, 0x00, 0xFA, 0x00, 0xFC, 0xFD, 0x00, 0x00
 };
 static const uint8_t page0Start = 0xA0;
 static const uint16_t page0Size = sizeof(page0) / sizeof(*page0);
@@ -100,44 +102,9 @@ of_unicode_to_iso_8859_2(const of_unichar_t *input, unsigned char *output,
 			}
 
 			switch (c >> 8) {
-			case 0:
-				if OF_UNLIKELY ((c & 0xFF) < page0Start) {
-					output[i] = (unsigned char)c;
-					continue;
-				}
-
-				index = (c & 0xFF) - page0Start;
-				if (index >= page0Size || page0[index] == 0) {
-					if (lossy) {
-						output[i] = '?';
-						continue;
-					} else
-						return false;
-				}
-				output[i] = page0[index];
-				break;
-			case 1:
-				index = (c & 0xFF) - page1Start;
-				if (index >= page1Size || page1[index] == 0) {
-					if (lossy) {
-						output[i] = '?';
-						continue;
-					} else
-						return false;
-				}
-				output[i] = page1[index];
-				break;
-			case 2:
-				index = (c & 0xFF) - page2Start;
-				if (index >= page2Size || page2[index] == 0) {
-					if (lossy) {
-						output[i] = '?';
-						continue;
-					} else
-						return false;
-				}
-				output[i] = page2[index];
-				break;
+			CASE_MISSING_IS_KEEP(0)
+			CASE_MISSING_IS_ERROR(1)
+			CASE_MISSING_IS_ERROR(2)
 			default:
 				if (lossy) {
 					output[i] = '?';

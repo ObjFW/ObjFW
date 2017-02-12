@@ -977,6 +977,8 @@
 		4BF5CB901E2DC1D800CF7584 /* iso_8859_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */; };
 		4BF5CB911E2DC1D800CF7584 /* iso_8859_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */; };
 		4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF69CE51BD44F8B00DFFC1B /* platform.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BFC37BD1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
+		4BFC37BE1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
 /* End PBXBuildFile section */
@@ -1607,6 +1609,7 @@
 		4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iso_8859_2.m; path = src/encodings/iso_8859_2.m; sourceTree = "<group>"; };
 		4BF69CE51BD44F8B00DFFC1B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = src/platform.h; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
+		4BFC37BC1E50E11C00EE1269 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/encodings/common.h; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1919,6 +1922,7 @@
 				4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */,
 				4B5EBFB51E25A8CF004FE6A2 /* codepage_850.m */,
 				4B6736111E2B2F6F00681F2C /* codepage_858.m */,
+				4BFC37BC1E50E11C00EE1269 /* common.h */,
 				4BF5CB8F1E2DC1D800CF7584 /* iso_8859_2.m */,
 				4B276E351E493D4900E20CE4 /* iso_8859_3.m */,
 				4B6AF96F10A8D40E0003FB0A /* iso_8859_15.m */,
@@ -2539,6 +2543,7 @@
 				4B2C228B1DA292BE00735907 /* OFUnsupportedProtocolException.h in Headers */,
 				4B2C228C1DA292BE00735907 /* OFUnsupportedVersionException.h in Headers */,
 				4B2C228D1DA292BE00735907 /* OFWriteFailedException.h in Headers */,
+				4B2C22A91DA292BE00735907 /* config.h in Headers */,
 				4B2C228E1DA292BE00735907 /* OFArray_adjacent.h in Headers */,
 				4B2C228F1DA292BE00735907 /* OFArray_adjacentSubarray.h in Headers */,
 				4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */,
@@ -2567,8 +2572,8 @@
 				4B2C22A61DA292BE00735907 /* OFThread+Private.h in Headers */,
 				4B2C22A71DA292BE00735907 /* OFTimer+Private.h in Headers */,
 				4B2C22A81DA292BE00735907 /* OFZIPArchiveEntry+Private.h in Headers */,
-				4B2C22A91DA292BE00735907 /* config.h in Headers */,
 				4B2C22AA1DA292BE00735907 /* socket_helpers.h in Headers */,
+				4BFC37BE1E50E11C00EE1269 /* common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2758,6 +2763,7 @@
 				4B17FFB1133A3664003E6DCD /* OFUnsupportedProtocolException.h in Headers */,
 				4BA4846215CC9F1E00D75360 /* OFUnsupportedVersionException.h in Headers */,
 				4B55A116133AC24600B58A93 /* OFWriteFailedException.h in Headers */,
+				4BDF37B51338055600F9A81A /* config.h in Headers */,
 				4B2B3E7D140D430500EC2F7C /* OFArray_adjacent.h in Headers */,
 				4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */,
 				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
@@ -2786,8 +2792,8 @@
 				4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */,
 				4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */,
 				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
-				4BDF37B51338055600F9A81A /* config.h in Headers */,
 				4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */,
+				4BFC37BD1E50E11C00EE1269 /* common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

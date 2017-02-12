@@ -18,6 +18,8 @@
 
 #import "OFString.h"
 
+#import "common.h"
+
 const of_char16_t of_iso_8859_3_table[] = {
 	0x00A0, 0x0126, 0x02D8, 0x00A3, 0x00A4, 0xFFFF, 0x0124, 0x00A7,
 	0x00A8, 0x0130, 0x015E, 0x011E, 0x0134, 0x00AD, 0xFFFF, 0x017B,
@@ -97,44 +99,9 @@ of_unicode_to_iso_8859_3(const of_unichar_t *input, unsigned char *output,
 			}
 
 			switch (c >> 8) {
-			case 0:
-				if OF_UNLIKELY ((c & 0xFF) < page0Start) {
-					output[i] = (unsigned char)c;
-					continue;
-				}
-
-				index = (c & 0xFF) - page0Start;
-				if (index >= page0Size || page0[index] == 0) {
-					if (lossy) {
-						output[i] = '?';
-						continue;
-					} else
-						return false;
-				}
-				output[i] = page0[index];
-				break;
-			case 1:
-				index = (c & 0xFF) - page1Start;
-				if (index >= page1Size || page1[index] == 0) {
-					if (lossy) {
-						output[i] = '?';
-						continue;
-					} else
-						return false;
-				}
-				output[i] = page1[index];
-				break;
-			case 2:
-				index = (c & 0xFF) - page2Start;
-				if (index >= page2Size || page2[index] == 0) {
-					if (lossy) {
-						output[i] = '?';
-						continue;
-					} else
-						return false;
-				}
-				output[i] = page2[index];
-				break;
+			CASE_MISSING_IS_KEEP(0)
+			CASE_MISSING_IS_ERROR(1)
+			CASE_MISSING_IS_ERROR(2)
 			default:
 				if (lossy) {
 					output[i] = '?';
