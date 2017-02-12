@@ -34,6 +34,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
+#import "OFSeekFailedException.h"
 #import "OFWriteFailedException.h"
 
 #define BUFFER_SIZE 4096
@@ -277,6 +278,10 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		}
 	} @catch (OFReadFailedException *e) {
 		[of_stderr writeFormat: @"Failed to read file %@: %s\n",
+					path, strerror([e errNo])];
+		[OFApplication terminateWithStatus: 1];
+	} @catch (OFSeekFailedException *e) {
+		[of_stderr writeFormat: @"Failed to seek in file %@: %s\n",
 					path, strerror([e errNo])];
 		[OFApplication terminateWithStatus: 1];
 	} @catch (OFInvalidFormatException *e) {
