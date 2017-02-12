@@ -35,6 +35,49 @@ const of_char16_t of_iso_8859_3_table[] = {
 const size_t of_iso_8859_3_table_offset =
     256 - (sizeof(of_iso_8859_3_table) / sizeof(*of_iso_8859_3_table));
 
+static const char page0[] = {
+	0xA0, 0x00, 0x00, 0xA3, 0xA4, 0x00, 0x00, 0xA7,
+	0xA8, 0x00, 0x00, 0x00, 0x00, 0xAD, 0x00, 0x00,
+	0xB0, 0x00, 0xB2, 0xB3, 0xB4, 0xB5, 0x00, 0xB7,
+	0xB8, 0x00, 0x00, 0x00, 0x00, 0xBD, 0x00, 0x00,
+	0xC0, 0xC1, 0xC2, 0x00, 0xC4, 0x00, 0x00, 0xC7,
+	0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
+	0x00, 0xD1, 0xD2, 0xD3, 0xD4, 0x00, 0xD6, 0xD7,
+	0x00, 0xD9, 0xDA, 0xDB, 0xDC, 0x00, 0x00, 0xDF,
+	0xE0, 0xE1, 0xE2, 0x00, 0xE4, 0x00, 0x00, 0xE7,
+	0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+	0x00, 0xF1, 0xF2, 0xF3, 0xF4, 0x00, 0xF6, 0xF7,
+	0x00, 0xF9, 0xFA, 0xFB, 0xFC, 0x00, 0x00, 0x00
+};
+static const uint8_t page0Start = 0xA0;
+static const uint16_t page0Size = sizeof(page0) / sizeof(*page0);
+
+static const uint8_t page1Start = 0x08;
+static const char page1[] = {
+	0xC6, 0xE6, 0xC5, 0xE5, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0xD8, 0xF8, 0xAB, 0xBB,
+	0xD5, 0xF5, 0x00, 0x00, 0xA6, 0xB6, 0xA1, 0xB1,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0xA9, 0xB9, 0x00, 0x00, 0xAC, 0xBC, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0xDE, 0xFE, 0xAA, 0xBA,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0xDD, 0xFD, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0xAF, 0xBF
+};
+static const uint16_t page1Size = sizeof(page1) / sizeof(*page1);
+
+static const char page2[] = {
+	0xA2, 0xFF
+};
+static const uint8_t page2Start = 0xD8;
+static const uint16_t page2Size = sizeof(page2) / sizeof(*page2);
+
 bool
 of_unicode_to_iso_8859_3(const of_unichar_t *input, unsigned char *output,
     size_t length, bool lossy)
@@ -43,6 +86,8 @@ of_unicode_to_iso_8859_3(const of_unichar_t *input, unsigned char *output,
 		of_unichar_t c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
+			uint8_t index;
+
 			if OF_UNLIKELY (c > 0xFFFF) {
 				if (lossy) {
 					output[i] = '?';
@@ -51,285 +96,51 @@ of_unicode_to_iso_8859_3(const of_unichar_t *input, unsigned char *output,
 					return false;
 			}
 
-			if OF_UNLIKELY (c >= 0x80 && c <= 0x9F)
-				output[i] = c;
-			else {
-				switch ((of_char16_t)c) {
-				case 0xA0:
-					output[i] = 0xA0;
-					break;
-				case 0x126:
-					output[i] = 0xA1;
-					break;
-				case 0x2D8:
-					output[i] = 0xA2;
-					break;
-				case 0xA3:
-					output[i] = 0xA3;
-					break;
-				case 0xA4:
-					output[i] = 0xA4;
-					break;
-				case 0x124:
-					output[i] = 0xA6;
-					break;
-				case 0xA7:
-					output[i] = 0xA7;
-					break;
-				case 0xA8:
-					output[i] = 0xA8;
-					break;
-				case 0x130:
-					output[i] = 0xA9;
-					break;
-				case 0x15E:
-					output[i] = 0xAA;
-					break;
-				case 0x11E:
-					output[i] = 0xAB;
-					break;
-				case 0x134:
-					output[i] = 0xAC;
-					break;
-				case 0xAD:
-					output[i] = 0xAD;
-					break;
-				case 0x17B:
-					output[i] = 0xAF;
-					break;
-				case 0xB0:
-					output[i] = 0xB0;
-					break;
-				case 0x127:
-					output[i] = 0xB1;
-					break;
-				case 0xB2:
-					output[i] = 0xB2;
-					break;
-				case 0xB3:
-					output[i] = 0xB3;
-					break;
-				case 0xB4:
-					output[i] = 0xB4;
-					break;
-				case 0xB5:
-					output[i] = 0xB5;
-					break;
-				case 0x125:
-					output[i] = 0xB6;
-					break;
-				case 0xB7:
-					output[i] = 0xB7;
-					break;
-				case 0xB8:
-					output[i] = 0xB8;
-					break;
-				case 0x131:
-					output[i] = 0xB9;
-					break;
-				case 0x15F:
-					output[i] = 0xBA;
-					break;
-				case 0x11F:
-					output[i] = 0xBB;
-					break;
-				case 0x135:
-					output[i] = 0xBC;
-					break;
-				case 0xBD:
-					output[i] = 0xBD;
-					break;
-				case 0x17C:
-					output[i] = 0xBF;
-					break;
-				case 0xC0:
-					output[i] = 0xC0;
-					break;
-				case 0xC1:
-					output[i] = 0xC1;
-					break;
-				case 0xC2:
-					output[i] = 0xC2;
-					break;
-				case 0xC4:
-					output[i] = 0xC4;
-					break;
-				case 0x10A:
-					output[i] = 0xC5;
-					break;
-				case 0x108:
-					output[i] = 0xC6;
-					break;
-				case 0xC7:
-					output[i] = 0xC7;
-					break;
-				case 0xC8:
-					output[i] = 0xC8;
-					break;
-				case 0xC9:
-					output[i] = 0xC9;
-					break;
-				case 0xCA:
-					output[i] = 0xCA;
-					break;
-				case 0xCB:
-					output[i] = 0xCB;
-					break;
-				case 0xCC:
-					output[i] = 0xCC;
-					break;
-				case 0xCD:
-					output[i] = 0xCD;
-					break;
-				case 0xCE:
-					output[i] = 0xCE;
-					break;
-				case 0xCF:
-					output[i] = 0xCF;
-					break;
-				case 0xD1:
-					output[i] = 0xD1;
-					break;
-				case 0xD2:
-					output[i] = 0xD2;
-					break;
-				case 0xD3:
-					output[i] = 0xD3;
-					break;
-				case 0xD4:
-					output[i] = 0xD4;
-					break;
-				case 0x120:
-					output[i] = 0xD5;
-					break;
-				case 0xD6:
-					output[i] = 0xD6;
-					break;
-				case 0xD7:
-					output[i] = 0xD7;
-					break;
-				case 0x11C:
-					output[i] = 0xD8;
-					break;
-				case 0xD9:
-					output[i] = 0xD9;
-					break;
-				case 0xDA:
-					output[i] = 0xDA;
-					break;
-				case 0xDB:
-					output[i] = 0xDB;
-					break;
-				case 0xDC:
-					output[i] = 0xDC;
-					break;
-				case 0x16C:
-					output[i] = 0xDD;
-					break;
-				case 0x15C:
-					output[i] = 0xDE;
-					break;
-				case 0xDF:
-					output[i] = 0xDF;
-					break;
-				case 0xE0:
-					output[i] = 0xE0;
-					break;
-				case 0xE1:
-					output[i] = 0xE1;
-					break;
-				case 0xE2:
-					output[i] = 0xE2;
-					break;
-				case 0xE4:
-					output[i] = 0xE4;
-					break;
-				case 0x10B:
-					output[i] = 0xE5;
-					break;
-				case 0x109:
-					output[i] = 0xE6;
-					break;
-				case 0xE7:
-					output[i] = 0xE7;
-					break;
-				case 0xE8:
-					output[i] = 0xE8;
-					break;
-				case 0xE9:
-					output[i] = 0xE9;
-					break;
-				case 0xEA:
-					output[i] = 0xEA;
-					break;
-				case 0xEB:
-					output[i] = 0xEB;
-					break;
-				case 0xEC:
-					output[i] = 0xEC;
-					break;
-				case 0xED:
-					output[i] = 0xED;
-					break;
-				case 0xEE:
-					output[i] = 0xEE;
-					break;
-				case 0xEF:
-					output[i] = 0xEF;
-					break;
-				case 0xF1:
-					output[i] = 0xF1;
-					break;
-				case 0xF2:
-					output[i] = 0xF2;
-					break;
-				case 0xF3:
-					output[i] = 0xF3;
-					break;
-				case 0xF4:
-					output[i] = 0xF4;
-					break;
-				case 0x121:
-					output[i] = 0xF5;
-					break;
-				case 0xF6:
-					output[i] = 0xF6;
-					break;
-				case 0xF7:
-					output[i] = 0xF7;
-					break;
-				case 0x11D:
-					output[i] = 0xF8;
-					break;
-				case 0xF9:
-					output[i] = 0xF9;
-					break;
-				case 0xFA:
-					output[i] = 0xFA;
-					break;
-				case 0xFB:
-					output[i] = 0xFB;
-					break;
-				case 0xFC:
-					output[i] = 0xFC;
-					break;
-				case 0x16D:
-					output[i] = 0xFD;
-					break;
-				case 0x15D:
-					output[i] = 0xFE;
-					break;
-				case 0x2D9:
-					output[i] = 0xFF;
-					break;
-				default:
-					if (lossy)
-						output[i] = '?';
-					else
-						return false;
-
-					break;
+			switch (c >> 8) {
+			case 0:
+				if OF_UNLIKELY ((c & 0xFF) < page0Start) {
+					output[i] = (unsigned char)c;
+					continue;
 				}
+
+				index = (c & 0xFF) - page0Start;
+				if (index >= page0Size || page0[index] == 0) {
+					if (lossy) {
+						output[i] = '?';
+						continue;
+					} else
+						return false;
+				}
+				output[i] = page0[index];
+				break;
+			case 1:
+				index = (c & 0xFF) - page1Start;
+				if (index >= page1Size || page1[index] == 0) {
+					if (lossy) {
+						output[i] = '?';
+						continue;
+					} else
+						return false;
+				}
+				output[i] = page1[index];
+				break;
+			case 2:
+				index = (c & 0xFF) - page2Start;
+				if (index >= page2Size || page2[index] == 0) {
+					if (lossy) {
+						output[i] = '?';
+						continue;
+					} else
+						return false;
+				}
+				output[i] = page2[index];
+				break;
+			default:
+				if (lossy) {
+					output[i] = '?';
+					continue;
+				} else
+					return false;
 			}
 		} else
 			output[i] = (unsigned char)c;
