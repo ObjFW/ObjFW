@@ -37,16 +37,15 @@ const of_char16_t of_iso_8859_15_table[] = {
 const size_t of_iso_8859_15_table_offset =
     256 - (sizeof(of_iso_8859_15_table) / sizeof(*of_iso_8859_15_table));
 
-static const char page0[] = {
+static const unsigned char page0[] = {
 	0x00, 0xA5, 0x00, 0xA7, 0x00, 0xA9, 0xAA, 0xAB,
 	0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
 	0x00, 0xB5, 0xB6, 0xB7, 0x00, 0xB9, 0xBA, 0xBB,
 	0x00, 0x00, 0x00
 };
 static const uint8_t page0Start = 0xA4;
-static const uint16_t page0Size = sizeof(page0) / sizeof(*page0);
 
-static const char page1[] = {
+static const unsigned char page1[] = {
 	0xBC, 0xBD, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA6, 0xA8,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -55,13 +54,11 @@ static const char page1[] = {
 	0x00, 0x00, 0x00, 0xB4, 0xB8
 };
 static const uint8_t page1Start = 0x52;
-static const uint16_t page1Size = sizeof(page1) / sizeof(*page1);
 
-static const char page20[] = {
+static const unsigned char page20[] = {
 	0xA4
 };
 static const uint8_t page20Start = 0xAC;
-static const uint16_t page20Size = sizeof(page20) / sizeof(*page20);
 
 bool
 of_unicode_to_iso_8859_15(const of_unichar_t *input, unsigned char *output,

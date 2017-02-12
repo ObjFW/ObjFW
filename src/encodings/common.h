@@ -23,7 +23,7 @@
 								\
 		index = (c & 0xFF) - page##nr##Start;		\
 								\
-		if (index >= page##nr##Size) {			\
+		if (index >= sizeof(page##nr)) {		\
 			output[i] = (unsigned char)c;		\
 			continue;				\
 		}						\
@@ -38,25 +38,25 @@
 								\
 		output[i] = page##nr[index];			\
 		break;
-#define CASE_MISSING_IS_ERROR(nr)					\
-	case 0x##nr:							\
-		if OF_UNLIKELY ((c & 0xFF) < page##nr##Start) {		\
-			if (lossy) {					\
-				output[i] = '?';			\
-				continue;				\
-			} else						\
-				return false;				\
-		}							\
-									\
-		index = (c & 0xFF) - page##nr##Start;			\
-									\
-		if (index >= page##nr##Size || page##nr[index] == 0) {	\
-			if (lossy) {					\
-				output[i] = '?';			\
-				continue;				\
-			} else						\
-				return false;				\
-		}							\
-									\
-		output[i] = page##nr[index];				\
+#define CASE_MISSING_IS_ERROR(nr)					 \
+	case 0x##nr:							 \
+		if OF_UNLIKELY ((c & 0xFF) < page##nr##Start) {		 \
+			if (lossy) {					 \
+				output[i] = '?';			 \
+				continue;				 \
+			} else						 \
+				return false;				 \
+		}							 \
+									 \
+		index = (c & 0xFF) - page##nr##Start;			 \
+									 \
+		if (index >= sizeof(page##nr) || page##nr[index] == 0) { \
+			if (lossy) {					 \
+				output[i] = '?';			 \
+				continue;				 \
+			} else						 \
+				return false;				 \
+		}							 \
+									 \
+		output[i] = page##nr[index];				 \
 		break;
