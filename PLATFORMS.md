@@ -63,7 +63,7 @@ iOS
 ---
 
   * Architectures: ARMv7, ARM64
-  * Compilers: GCC 4.2.1
+  * Compilers: Clang, GCC 4.2.1
   * Runtimes: Apple
 
 
@@ -75,12 +75,12 @@ Linux
   * Runtimes: ObjFW
 
 
-Mac OS X
---------
+macOS
+-----
 
-  * OS Versions: 10.5, 10.7-10.11
+  * OS Versions: 10.5, 10.7-10.12
   * Architectures: PPC, PPC64, x86, x86_64
-  * Compilers: Clang 3.1-3.7, LLVM GCC 4.2.1
+  * Compilers: Clang 3.1-4.0, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
 
