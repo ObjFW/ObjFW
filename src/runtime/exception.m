@@ -427,7 +427,7 @@ find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
 #else
 	uintptr_t callsite_landingpad, callsite_action;
 
-	if ((uintptr_t)ip < 1)
+	if ((intptr_t)ip < 1)
 		return false;
 
 	do {
