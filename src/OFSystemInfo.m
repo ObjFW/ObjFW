@@ -28,7 +28,7 @@
 
 #include "platform.h"
 
-#ifdef OF_MAC_OS_X
+#ifdef OF_MACOS
 # include <sys/sysctl.h>
 #endif
 
@@ -40,7 +40,7 @@
 
 #import "OFNotImplementedException.h"
 
-#if defined(OF_MAC_OS_X) || defined(OF_IOS)
+#if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
 #  include <sysdir.h>
 # else
@@ -145,7 +145,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userDataPath
 {
-#if defined(OF_MAC_OS_X) || defined(OF_IOS)
+#if defined(OF_MACOS) || defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	OFMutableString *path;
@@ -235,7 +235,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString*)userConfigPath
 {
-#if defined(OF_MAC_OS_X) || defined(OF_IOS)
+#if defined(OF_MACOS) || defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	OFMutableString *path;
@@ -395,7 +395,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #if defined(OF_POWERPC) || defined(OF_POWERPC64)
 + (bool)supportsAltiVec
 {
-# ifdef OF_MAC_OS_X
+# ifdef OF_MACOS
 	int name[2] = { CTL_HW, HW_VECTORUNIT }, value = 0;
 	size_t length = sizeof(value);
 

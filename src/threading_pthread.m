@@ -183,7 +183,7 @@ of_thread_set_name(of_thread_t thread, const char *name)
 #elif defined(HAVE_PTHREAD_SET_NAME_NP)
 	pthread_set_name_np(pthread_self(), name);
 #elif defined(HAVE_PTHREAD_SETNAME_NP)
-# if defined(OF_MAC_OS_X) || defined(OF_IOS)
+# if defined(OF_MACOS) || defined(OF_IOS)
 	pthread_setname_np(name);
 # elif defined(__GLIBC__)
 	char buffer[16];

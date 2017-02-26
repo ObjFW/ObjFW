@@ -78,7 +78,7 @@
  */
 #  undef OF_HAVE_PROCESSES
 # else
-#  define OF_MAC_OS_X
+#  define OF_MACOS
 # endif
 #elif defined(__linux__)
 # define OF_LINUX

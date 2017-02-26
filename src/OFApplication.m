@@ -36,7 +36,7 @@
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
-#if defined(OF_MAC_OS_X)
+#if defined(OF_MACOS)
 # include <crt_externs.h>
 #elif defined(OF_WINDOWS)
 # include <windows.h>
@@ -193,7 +193,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	@try {
 		void *pool;
 		OFMutableDictionary *environment;
-#if defined(OF_MAC_OS_X)
+#if defined(OF_MACOS)
 		char **env = *_NSGetEnviron();
 #elif defined(OF_WINDOWS)
 		of_char16_t *env, *env0;
