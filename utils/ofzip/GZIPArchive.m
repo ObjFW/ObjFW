@@ -19,6 +19,7 @@
 #import "OFApplication.h"
 #import "OFFileManager.h"
 #import "OFStdIOStream.h"
+#import "OFLocalization.h"
 
 #import "GZIPArchive.h"
 #import "OFZIP.h"
@@ -75,7 +76,8 @@ setPermissions(OFString *destination, OFString *source)
 
 - (void)listFiles
 {
-	[of_stderr writeLine: @"Cannot list files of a .gz archive!"];
+	[of_stderr writeLine: OF_LOCALIZED(@"cannot_list_gz",
+	    @"Cannot list files of a .gz archive!")];
 	app->_exitStatus = 1;
 }
 
@@ -86,7 +88,8 @@ setPermissions(OFString *destination, OFString *source)
 
 	if ([files count] != 0) {
 		[of_stderr writeLine:
-		    @"Cannot extract a specific file of a .gz archive!"];
+		    OF_LOCALIZED(@"cannot_extract_specific_file_from_gz",
+		    @"Cannot extract a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
 		return;
 	}
@@ -95,7 +98,9 @@ setPermissions(OFString *destination, OFString *source)
 	    stringByDeletingPathExtension];
 
 	if (app->_outputLevel >= 0)
-		[of_stdout writeFormat: @"Extracting %@...", fileName];
+		[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+		    @"Extracting %[file]...",
+		    @"file", fileName)];
 
 	if (![app shouldExtractFile: fileName
 			outFileName: fileName])
@@ -116,8 +121,12 @@ setPermissions(OFString *destination, OFString *source)
 		}
 	}
 
-	if (app->_outputLevel >= 0)
-		[of_stdout writeFormat: @"\rExtracting %@... done\n", fileName];
+	if (app->_outputLevel >= 0) {
+		[of_stdout writeString: @"\r"];
+		[of_stdout writeLine: OF_LOCALIZED(@"extracting_file_done",
+		    @"Extracting %[file]... done",
+		    @"file", fileName)];
+	}
 }
 
 - (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files
@@ -126,8 +135,9 @@ setPermissions(OFString *destination, OFString *source)
 	    stringByDeletingPathExtension];
 
 	if ([files count] > 0) {
-		[of_stderr writeLine:
-		    @"Cannot specify a file to print for .gz archives!"];
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"cannot_print_specific_file_from_gz",
+		    @"Cannot print a specific file of a .gz archive!")];
 		app->_exitStatus = 1;
 		return;
 	}

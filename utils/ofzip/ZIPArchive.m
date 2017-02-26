@@ -24,6 +24,7 @@
 #import "OFApplication.h"
 #import "OFFileManager.h"
 #import "OFStdIOStream.h"
+#import "OFLocalization.h"
 
 #import "ZIPArchive.h"
 #import "OFZIP.h"
@@ -93,48 +94,93 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		[of_stdout writeLine: [entry fileName]];
 
 		if (app->_outputLevel >= 1) {
-			OFString *date = [[entry modificationDate]
+			OFString *compressedSize = [OFString
+			    stringWithFormat: @"%" PRIu64,
+					      [entry compressedSize]];
+			OFString *uncompressedSize = [OFString
+			    stringWithFormat: @"%" PRIu64,
+					      [entry uncompressedSize]];
+			OFString *CRC32 = [OFString
+			    stringWithFormat: @"%08X", [entry CRC32]];
+			OFString *modificationDate = [[entry modificationDate]
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 
-			[of_stdout writeFormat:
-			    @"\tCompressed: %" PRIu64 @" bytes\n"
-			    @"\tUncompressed: %" PRIu64 @" bytes\n"
-			    @"\tCRC32: %08X\n"
-			    @"\tModification date: %@\n",
-			    [entry compressedSize], [entry uncompressedSize],
-			    [entry CRC32], date];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"list_compressed_size",
+			    @"Compressed: %[size] bytes",
+			    @"size", compressedSize)];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"list_uncompressed_size",
+			    @"Uncompressed: %[size] bytes",
+			    @"size", uncompressedSize)];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(@"list_crc32",
+			    @"CRC32: %[crc32]",
+			    @"crc32", CRC32)];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"list_modification_date",
+			    @"Modification date: %[date]",
+			    @"date", modificationDate)];
 
 			if (app->_outputLevel >= 2) {
 				uint16_t versionMadeBy = [entry versionMadeBy];
 
-				[of_stdout writeFormat:
-				    @"\tVersion made by: %@\n"
-				    @"\tMinimum version needed: %@\n",
+				[of_stdout writeString: @"\t"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"list_version_made_by",
+				    @"Version made by: %[version]",
+				    @"version",
 				    of_zip_archive_entry_version_to_string(
-				    versionMadeBy),
+				    versionMadeBy))];
+				[of_stdout writeString: @"\t"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"list_min_version_needed",
+				    @"Minimum version needed: %[version]",
+				    @"version",
 				    of_zip_archive_entry_version_to_string(
-				    [entry minVersionNeeded])];
+				    [entry minVersionNeeded]))];
 
 				if ((versionMadeBy >> 8) ==
 				    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
 					uint32_t mode = [entry
 					    versionSpecificAttributes] >> 16;
-					[of_stdout writeFormat:
-					    @"\tMode: %06o\n", mode];
+					OFString *modeString = [OFString
+					    stringWithFormat: @"%06o", mode];
+					[of_stdout writeString: @"\t"];
+					[of_stdout writeLine: OF_LOCALIZED(
+					    @"list_mode",
+					    @"Mode: %[mode]",
+					    @"mode", modeString)];
 				}
 			}
 
-			if (app->_outputLevel >= 3)
-				[of_stdout writeFormat:
-				    @"\tGeneral purpose bit flag: "
-				    @"%04" PRIx16 "\n"
-				    @"\tExtra field: %@\n",
-				    [entry generalPurposeBitFlag],
-				    [entry extraField]];
+			if (app->_outputLevel >= 3) {
+				OFString *GPBF = [OFString stringWithFormat:
+				    @"%04" PRIx16,
+				    [entry generalPurposeBitFlag]];
 
-			if ([[entry fileComment] length] > 0)
-				[of_stdout writeFormat: @"\tComment: %@\n",
-							[entry fileComment]];
+				[of_stdout writeString: @"\t"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"list_general_purpose_bit_flag",
+				    @"General purpose bit flag: %[gpbf]",
+				    @"gpbf", GPBF)];
+				[of_stdout writeString: @"\t"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"list_extra_field",
+				    @"Extra field: %[extra]",
+				    @"extra", [entry extraField])];
+			}
+
+			if ([[entry fileComment] length] > 0) {
+				[of_stdout writeString: @"\t"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"list_comment",
+				    @"Comment: %[comment]",
+				    @"comment", [entry fileComment])];
+			}
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -170,8 +216,10 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		if ([outFileName hasPrefix: @"/"] ||
 		    [outFileName containsString: @":"]) {
 #endif
-			[of_stderr writeFormat: @"Refusing to extract %@!\n",
-						fileName];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"refusing_to_extract_file",
+			    @"Refusing to extract %[file]!",
+			    @"file", fileName)];
 
 			app->_exitStatus = 1;
 			goto outer_loop_end;
@@ -180,8 +228,10 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		pathComponents = [outFileName pathComponents];
 		for (OFString *component in pathComponents) {
 			if ([component isEqual: OF_PATH_PARENT_DIRECTORY]) {
-				[of_stderr writeFormat:
-				    @"Refusing to extract %@!\n", fileName];
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"refusing_to_extract_file",
+				    @"Refusing to extract %[file]!",
+				    @"file", fileName)];
 
 				app->_exitStatus = 1;
 				goto outer_loop_end;
@@ -190,15 +240,22 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 		outFileName = [OFString pathWithComponents: pathComponents];
 
 		if (app->_outputLevel >= 0)
-			[of_stdout writeFormat: @"Extracting %@...", fileName];
+			[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+			    @"Extracting %[file]...",
+			    @"file", fileName)];
 
 		if ([fileName hasSuffix: @"/"]) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
 
-			if (app->_outputLevel >= 0)
-				[of_stdout writeLine: @" done"];
+			if (app->_outputLevel >= 0) {
+				[of_stdout writeString: @"\r"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"extracting_file_done",
+				    @"Extracting %[file]... done",
+				    @"file", fileName)];
+			}
 
 			goto outer_loop_end;
 		}
@@ -232,17 +289,28 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			    ? 100 : (int8_t)(written * 100 / size));
 
 			if (app->_outputLevel >= 0 && percent != newPercent) {
-				percent = newPercent;
+				OFString *percentString;
 
-				[of_stdout writeFormat:
-				    @"\rExtracting %@... %3u%%",
-				    fileName, percent];
+				percent = newPercent;
+				percentString = [OFString stringWithFormat:
+				    @"%3u", percent];
+
+				[of_stdout writeString: @"\r"];
+				[of_stdout writeString: OF_LOCALIZED(
+				    @"extracting_file_percent",
+				    @"Extracting %[file]... %[percent]%",
+				    @"file", fileName,
+				    @"percent", percentString)];
 			}
 		}
 
-		if (app->_outputLevel >= 0)
-			[of_stdout writeFormat: @"\rExtracting %@... done\n",
-						fileName];
+		if (app->_outputLevel >= 0) {
+			[of_stdout writeString: @"\r"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"extracting_file_done",
+			    @"Extracting %[file]... done\n",
+			    @"file", fileName)];
+		}
 
 outer_loop_end:
 		objc_autoreleasePoolPop(pool);
@@ -250,8 +318,10 @@ outer_loop_end:
 
 	if ([missing count] > 0) {
 		for (OFString *file in missing)
-			[of_stderr writeFormat:
-			    @"File %@ is not in the archive!\n", file];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"file_not_in_archive",
+			    @"File %[file] is not in the archive!",
+			    @"file", file)];
 
 		app->_exitStatus = 1;
 	}
@@ -262,7 +332,8 @@ outer_loop_end:
 	OFStream *stream;
 
 	if ([files count] < 1) {
-		[of_stderr writeLine: @"Need one or more files to print!"];
+		[of_stderr writeLine: OF_LOCALIZED(@"print_no_file_specified",
+		    @"Need one or more files to print!")];
 		app->_exitStatus = 1;
 		return;
 	}
@@ -272,9 +343,10 @@ outer_loop_end:
 			stream = [_archive streamForReadingFile: path];
 		} @catch (OFOpenItemFailedException *e) {
 			if ([e errNo] == ENOENT) {
-				[of_stderr writeFormat:
-				    @"File %@ is not in the archive!\n",
-				    [e path]];
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"file_not_in_archive",
+				    @"File %[file] is not in the archive!",
+				    @"file", [e path])];
 				app->_exitStatus = 1;
 				continue;
 			}

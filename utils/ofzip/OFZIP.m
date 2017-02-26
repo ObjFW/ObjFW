@@ -24,6 +24,7 @@
 #import "OFFileManager.h"
 #import "OFOptionsParser.h"
 #import "OFStdIOStream.h"
+#import "OFLocalization.h"
 
 #import "OFZIP.h"
 #import "GZIPArchive.h"
@@ -44,13 +45,14 @@ OF_APPLICATION_DELEGATE(OFZIP)
 static void
 help(OFStream *stream, bool full, int status)
 {
-	[stream writeFormat:
-	    @"Usage: %@ -[fhlnpqtvx] archive.zip [file1 file2 ...]\n",
-	    [OFApplication programName]];
+	[stream writeLine: OF_LOCALIZED(@"usage",
+	    @"Usage: %[prog] -[fhlnpqtvx] archive.zip [file1 file2 ...]",
+	    @"prog", [OFApplication programName])];
 
-	if (full)
-		[stream writeString:
-		    @"\nOptions:\n"
+	if (full) {
+		[stream writeString: @"\n"];
+		[stream writeLine: OF_LOCALIZED(@"full_usage",
+		    @"Options:\n"
 		    @"    -f  --force      Force / overwrite files\n"
 		    @"    -h  --help       Show this help\n"
 		    @"    -l  --list       List all files in the archive\n"
@@ -61,7 +63,8 @@ help(OFStream *stream, bool full, int status)
 		    @"errors)\n"
 		    @"    -t  --type       Archive type (gz, tar, tgz, zip)\n"
 		    @"    -v  --verbose    Verbose output for file list\n"
-		    @"    -x  --extract    Extract files\n"];
+		    @"    -x  --extract    Extract files")];
+	}
 
 	[OFApplication terminateWithStatus: status];
 }
@@ -70,9 +73,19 @@ static void
 mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
     of_unichar_t shortOption2, OFString *longOption2)
 {
-	[of_stderr writeFormat:
-	    @"Error: -%C / --%@ and -%C / --%@ are mutually exclusive!\n",
-	    shortOption1, longOption1, shortOption2, longOption2];
+	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
+								shortOption1];
+	OFString *shortOption2Str = [OFString stringWithFormat: @"%C",
+								shortOption2];
+
+	[of_stderr writeLine: OF_LOCALIZED(@"2_options_mutually_exclusive",
+	    @"Error: -%[shortopt1] / --%[longopt1] and "
+	    @"-%[shortopt2] / --%[longopt2] "
+	    @"are mutually exclusive!",
+	    @"shortopt1", shortOption1Str,
+	    @"longopt1", longOption1,
+	    @"shortopt2", shortOption2Str,
+	    @"longopt2", longOption2)];
 	[OFApplication terminateWithStatus: 1];
 }
 
@@ -81,10 +94,23 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
     of_unichar_t shortOption2, OFString *longOption2,
     of_unichar_t shortOption3, OFString *longOption3)
 {
-	[of_stderr writeFormat:
-	    @"Error: -%C / --%@, -%C / --%@ and -%C / --%@ are mutually "
-	    @"exclusive!\n", shortOption1, longOption1, shortOption2,
-	    longOption2, shortOption3, longOption3];
+	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
+								shortOption1];
+	OFString *shortOption2Str = [OFString stringWithFormat: @"%C",
+								shortOption2];
+	OFString *shortOption3Str = [OFString stringWithFormat: @"%C",
+								shortOption3];
+
+	[of_stderr writeLine: OF_LOCALIZED(@"3_options_mutually_exclusive",
+	    @"Error: -%[shortopt1] / --%[longopt1], "
+	    @"-%[shortopt2] / --%[longopt2] and -%[shortopt3] / --%[longopt3] "
+	    @"are mutually exclusive!",
+	    @"shortopt1", shortOption1Str,
+	    @"longopt1", longOption1,
+	    @"shortopt2", shortOption2Str,
+	    @"longopt2", longOption2,
+	    @"shortopt3", shortOption3Str,
+	    @"longopt3", longOption3)];
 	[OFApplication terminateWithStatus: 1];
 }
 
@@ -109,6 +135,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	of_unichar_t option, mode = '\0';
 	OFArray OF_GENERIC(OFString*) *remainingArguments, *files;
 	id <Archive> archive;
+
+	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
@@ -154,24 +182,31 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 			help(of_stdout, true, 0);
 			break;
 		case '=':
-			[of_stderr writeFormat: @"%@: Option --%@ takes no "
-						@"argument!\n",
-						[OFApplication programName],
-						[optionsParser lastLongOption]];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"option_takes_no_argument",
+			    @"%[prog]: Option --%[opt] takes no argument",
+			    @"prog", [OFApplication programName],
+			    @"opt", [optionsParser lastLongOption])];
 
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case '?':
 			if ([optionsParser lastLongOption] != nil)
-				[of_stderr writeFormat:
-				    @"%@: Unknown option: --%@\n",
-				    [OFApplication programName],
-				    [optionsParser lastLongOption]];
-			else
-				[of_stderr writeFormat:
-				    @"%@: Unknown option: -%C\n",
-				    [OFApplication programName],
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"unknown_long_option",
+				    @"%[prog]: Unknown option: --%[opt]",
+				    @"prog", [OFApplication programName],
+				    @"opt", [optionsParser lastLongOption])];
+			else {
+				OFString *optStr = [OFString
+				    stringWithFormat: @"%c",
 				    [optionsParser lastOption]];
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"unknown_option",
+				    @"%[prog]: Unknown option: -%[opt]",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
 
 			[OFApplication terminateWithStatus: 1];
 		}
@@ -198,14 +233,26 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		@try {
 			[archive extractFiles: files];
 		} @catch (OFCreateDirectoryFailedException *e) {
-			[of_stderr writeFormat:
-			    @"\rFailed to create directory %@: %s\n",
-			    [e path], strerror([e errNo])];
+			OFString *error = [OFString
+			    stringWithCString: strerror([e errNo])
+				     encoding: [OFLocalization encoding]];
+			[of_stderr writeString: @"\r"];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"failed_to_create_directory",
+			    @"Failed to create directory %[dir]: %[error]",
+			    @"dir", [e path],
+			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {
-			[of_stderr writeFormat:
-			    @"\rFailed to open file %@: %s\n",
-			    [e path], strerror([e errNo])];
+			OFString *error = [OFString
+			    stringWithCString: strerror([e errNo])
+				     encoding: [OFLocalization encoding]];
+			[of_stderr writeString: @"\r"];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"failed_to_open_file",
+			    @"Failed to open file %[file]: %[error]",
+			    @"file", [e path],
+			    @"error", error)];
 			_exitStatus = 1;
 		}
 
@@ -243,8 +290,15 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		file = [OFFile fileWithPath: path
 				       mode: @"rb"];
 	} @catch (OFOpenItemFailedException *e) {
-		[of_stderr writeFormat: @"Failed to open file %@: %s\n",
-					[e path], strerror([e errNo])];
+		OFString *error = [OFString
+		    stringWithCString: strerror([e errNo])
+			     encoding: [OFLocalization encoding]];
+		[of_stderr writeString: @"\r"];
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"failed_to_open_file",
+		    @"Failed to open file %[file]: %[error]",
+		    @"file", [e path],
+		    @"error", error)];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -272,21 +326,35 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		else if ([type isEqual: @"zip"])
 			archive = [ZIPArchive archiveWithStream: file];
 		else {
-			[of_stderr writeFormat: @"Unknown archive type: %@!\n",
-						type];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"unknown_archive_type",
+			    @"Unknown archive type: %[type]",
+			    @"type", type)];
 			[OFApplication terminateWithStatus: 1];
 		}
 	} @catch (OFReadFailedException *e) {
-		[of_stderr writeFormat: @"Failed to read file %@: %s\n",
-					path, strerror([e errNo])];
+		OFString *error = [OFString
+		    stringWithCString: strerror([e errNo])
+			     encoding: [OFLocalization encoding]];
+		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
+		    @"Failed to read file %[file]: %[error]",
+		    @"file", path,
+		    @"error", error)];
 		[OFApplication terminateWithStatus: 1];
 	} @catch (OFSeekFailedException *e) {
-		[of_stderr writeFormat: @"Failed to seek in file %@: %s\n",
-					path, strerror([e errNo])];
+		OFString *error = [OFString
+		    stringWithCString: strerror([e errNo])
+			     encoding: [OFLocalization encoding]];
+		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_seek_in_file",
+		    @"Failed to seek in file %[file]: %[error]",
+		    @"file", path,
+		    @"error", error)];
 		[OFApplication terminateWithStatus: 1];
 	} @catch (OFInvalidFormatException *e) {
-		[of_stderr writeFormat: @"File %@ is not a valid archive!\n",
-					path];
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"file_is_not_a_valid_archive",
+		    @"File %[file] is not a valid archive!",
+		    @"file", path)];
 		[OFApplication terminateWithStatus: 1];
 	}
 
@@ -302,23 +370,31 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	    ![[OFFileManager defaultManager] fileExistsAtPath: outFileName])
 		return true;
 
-
 	if (_overwrite == -1) {
-		if (_outputLevel >= 0)
-			[of_stdout writeLine: @" skipped"];
+		if (_outputLevel >= 0) {
+			[of_stdout writeString: @" "];
+			[of_stdout writeLine:
+			    OF_LOCALIZED(@"file_skipped", @"skipped")];
+		}
 		return false;
 	}
 
 	do {
-		[of_stderr writeFormat: @"\rOverwrite %@? [ynAN?] ", fileName];
+		[of_stderr writeString: @"\r"];
+		[of_stderr writeString: OF_LOCALIZED(@"ask_overwrite",
+		    @"Overwrite %[file]? [ynAN?]",
+		    @"file", fileName)];
+		[of_stderr writeString: @" "];
 
 		line = [of_stdin readLine];
 
 		if ([line isEqual: @"?"])
-			[of_stderr writeString: @" y: yes\n"
-						@" n: no\n"
-						@" A: always\n"
-						@" N: never\n"];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"ask_overwrite_help",
+			    @" y: yes\n"
+			    @" n: no\n"
+			    @" A: always\n"
+			    @" N: never")];
 	} while (![line isEqual: @"y"] && ![line isEqual: @"n"] &&
 	    ![line isEqual: @"N"] && ![line isEqual: @"A"]);
 
@@ -329,12 +405,16 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 	if ([line isEqual: @"n"] || [line isEqual: @"N"]) {
 		if (_outputLevel >= 0)
-			[of_stdout writeFormat: @"Skipping %@...\n", fileName];
+			[of_stdout writeLine: OF_LOCALIZED(@"skipping_file",
+			    @"Skipping %[file]...",
+			    @"file", fileName)];
 			return false;
 	}
 
 	if (_outputLevel >= 0)
-		[of_stdout writeFormat: @"Extracting %@...", fileName];
+		[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
+		    @"Extracting %[file]...",
+		    @"file", fileName)];
 
 	return true;
 }
@@ -350,8 +430,14 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		length = [input readIntoBuffer: buffer
 					length: BUFFER_SIZE];
 	} @catch (OFReadFailedException *e) {
-		[of_stderr writeFormat: @"\rFailed to read file %@: %s\n",
-					fileName, strerror([e errNo])];
+		OFString *error = [OFString
+		    stringWithCString: strerror([e errNo])
+			     encoding: [OFLocalization encoding]];
+		[of_stdout writeString: @"\r"];
+		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
+		    @"Failed to read file %[file]: %[error]",
+		    @"file", fileName,
+		    @"error", error)];
 		return -1;
 	}
 
@@ -359,8 +445,14 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		[output writeBuffer: buffer
 			     length: length];
 	} @catch (OFWriteFailedException *e) {
-		[of_stderr writeFormat: @"\rFailed to write file %@: %s\n",
-					fileName, strerror([e errNo])];
+		OFString *error = [OFString
+		    stringWithCString: strerror([e errNo])
+			     encoding: [OFLocalization encoding]];
+		[of_stdout writeString: @"\r"];
+		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_write_file",
+		    @"Failed to write file %[file]: %[error]",
+		    @"file", fileName,
+		    @"error", error)];
 		return -1;
 	}
 

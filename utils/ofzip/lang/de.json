@@ -1,0 +1,85 @@
+{
+    "usage": [
+        "Benutzung: %[prog] -[fhlnpqtvx] archiv.zip [datei1 datei2 ...]"
+    ],
+    "full_usage": [
+        "Optionen:\n",
+        "    -f  --force      Existierende Dateien überschreiben\n",
+        "    -h  --help       Diese Hilfe anzeigen\n",
+        "    -l  --list       Alle Dateien im Archiv auflisten\n",
+        "    -n  --no-clober  Dateien niemals überschreiben\n",
+        "    -p  --print      Eine oder mehr Dateien aus dem Archiv ausgeben\n",
+        "    -q  --quiet      Ruhiger Modus (keine Ausgabe außer Fehler)\n",
+        "    -t  --type       Archiv-Typ (gz, tar, tgz, zip)\n",
+        "    -v  --verbose    Ausführlicher Modus für Datei-Liste\n",
+        "    -x  --extract    Dateien entpacken"
+    ],
+    "2_options_mutually_exclusive": [
+        "Fehler: -%[shortopt1] / --%[longopt1] und ",
+        "-%[shortopt2] / --%[longopt2] schließen sich gegenseitig aus!"
+    ],
+    "3_options_mutually_exclusive": [
+        "Fehler: -%[shortopt1] / --%[longopt1], -%[shortopt2] / --%[longopt2] ",
+        "und -%[shortopt3] / --%[longopt3] schließen sich gegenseitig aus!"
+    ],
+    "option_takes_no_argument": "%[prog]: Option --%[opt] nimmt kein Argument",
+    "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]",
+    "unknown_option": "%[prog]: Unbekannte Option: -%[opt]",
+    "failed_to_create_directory": [
+        "Fehler beim Erstellen des Verzeichnis %[dir]: %[error]"
+    ],
+    "failed_to_open_file": "Fehler beim Öffnen der Datei %[file]: %[error]",
+    "unknown_archive_type": "Unbekannter Archivtyp: %[type]",
+    "failed_to_read_file": "Fehler beim Lesen von Datei %[file]: %[error]",
+    "failed_to_write_file": "Fehler beim Schreiben Datei %[file]: %[error]",
+    "failed_to_seek_in_file": "Fehler beim Suchen in Datei %[file]: %[error]",
+    "file_is_not_a_valid_archiv": "Datei %[file] ist kein gültiges Archiv!",
+    "file_skipped": "übersprungen",
+    "ask_overwrite": "%[file] überschreiben? [ynAN?]",
+    "ask_overwrite_help": [
+        " y: Ja\n",
+        " n: Nein\n",
+        " A: Immer\n",
+        " N: Nie"
+    ],
+    "skipping_file": "Überspringe %[file]...",
+    "extracting_file": "Entpacke %[file]...",
+    "extracting_file_percent": "Entpacke %[file]... %[percent]%",
+    "extracting_file_done": "Entpacke %[file]... fertig",
+    "cannot_list_gz": "Kann Dateien eines .gz-Archivs nicht auflisten!",
+    "cannot_extract_specific_file_from_gz": [
+        "Kann keine spezifische Datei aus einem .gz-Archiv entpacken!"
+    ],
+    "cannot_print_specific_file_from_gz": [
+        "Kann keine spezifische Datei aus einem .gz-Archiv ausgeben!"
+    ],
+    "list_size": "Größe: %[size] Bytes",
+    "list_mode": "Modus: %[mode]",
+    "list_owner": "Besitzer: %[owner]",
+    "list_group": "Gruppe: %[group]",
+    "list_modification_date": "Änderungsdatum: %[date]",
+    "list_type_normal": "Typ: Normale Datei",
+    "list_type_hardlink": "Typ: Harter Link",
+    "list_type_symlink": "Typ: Symbolischer Link",
+    "list_link_target": "Zieldateiname: %[target]",
+    "list_type_character_device": "Typ: Zeichenorientiertes Gerät",
+    "list_type_block_device": "Typ: Blockorientiertes Gerät",
+    "list_device_major": "Major-Nummer des Geräts: %[major]",
+    "list_device_minor": "Minor-Nummer des Geräts: %[minor]",
+    "list_type_directory": "Typ: Verzeichnis",
+    "list_type_fifo": "Typ: FIFO",
+    "list_type_contiguous_file": "Typ: Zusammenhängende Datei",
+    "list_type_unknown": "Typ: Unbekannt",
+    "list_compressed_size": "Komprimierte Größe: %[size] Bytes",
+    "list_uncompressed_size": "Unkomprimierte Größe: %[size] Bytes",
+    "list_version_made_by": "Erstellt mit Version: %[version]",
+    "list_min_version_needed": "Mindestens benötigte Version: %[version]",
+    "list_general_purpose_bit_flag": "General Purpose Bit Flag: %[gpbf]",
+    "list_extra_field": "Extra-Feld: %[extra]",
+    "list_comment": "Kommentar: %[comment]",
+    "refusing_to_extract_file": "Verweigere Entpacken von %[file]!",
+    "file_not_in_archive": "Datei %[file] ist nicht im Archiv!",
+    "print_no_file_specified": [
+        "Benötige eine oder mehrere Dateien zum Ausgeben!"
+    ]
+}
