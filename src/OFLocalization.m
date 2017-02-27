@@ -83,7 +83,6 @@ static OFLocalization *sharedLocalization = nil;
 
 	@try {
 		char *tmp;
-		size_t tmpLen;
 
 		/* We don't care for extras behind the @ */
 		if ((tmp = strrchr(locale, '@')) != NULL)
@@ -108,24 +107,14 @@ static OFLocalization *sharedLocalization = nil;
 		if ((tmp = strrchr(locale, '_')) != NULL) {
 			*tmp++ = '\0';
 
-			tmpLen = strlen(tmp);
-			for (size_t i = 0; i < tmpLen; i++)
-				tmp[i] = of_ascii_tolower(tmp[i]);
-
 			_territory = [[OFString alloc]
 			    initWithCString: tmp
-				   encoding: OF_STRING_ENCODING_ASCII
-				     length: tmpLen];
+				   encoding: OF_STRING_ENCODING_ASCII];
 		}
-
-		tmpLen = strlen(locale);
-		for (size_t i = 0; i < tmpLen; i++)
-			locale[i] = of_ascii_tolower(locale[i]);
 
 		_language = [[OFString alloc]
 		    initWithCString: locale
-			   encoding: OF_STRING_ENCODING_ASCII
-			     length: tmpLen];
+			   encoding: OF_STRING_ENCODING_ASCII];
 
 		_decimalPoint = [[OFString alloc]
 		    initWithCString: localeconv()->decimal_point
@@ -159,11 +148,14 @@ static OFLocalization *sharedLocalization = nil;
 	    [path stringByAppendingPathComponent: @"languages.json"];
 	OFDictionary *map =
 	    [[OFString stringWithContentsOfFile: mapPath] JSONValue];
-	OFString *languageFile;
+	OFString *language, *territory, *languageFile;
 
-	languageFile = [[map objectForKey: _language] objectForKey: _territory];
+	language = [_language lowercaseString];
+	territory = [_territory lowercaseString];
+
+	languageFile = [[map objectForKey: language] objectForKey: territory];
 	if (languageFile == nil)
-		languageFile = [[map objectForKey: _language]
+		languageFile = [[map objectForKey: language]
 		    objectForKey: @""];
 
 	if (languageFile == nil) {
