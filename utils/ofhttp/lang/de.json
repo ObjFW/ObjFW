@@ -1,7 +1,6 @@
 {
-    "usage": "Benutzung: %[prog] -[cehHmoOPqv] url1 [url2 ...]\n",
+    "usage": "Benutzung: %[prog] -[cehHmoOPqv] url1 [url2 ...]",
     "full_usage": [
-        "\n",
         "Optionen:\n",
         "    -b  --body             Angegebene Datei als Body übergeben\n",
         "    -c  --continue         Download von existierender Datei ",
@@ -15,38 +14,36 @@
         "    -P  --proxy            SOCKS5-Proxy angeben\n",
         "    -q  --quiet            Ruhiger Modus (keine Ausgabe außer Fehler)",
         "\n",
-        "    -v  --verbose          Geschwätziger Modus (gibt Header aus)\n",
-        "        --insecure         TLS-Fehler ignorieren\n"
+        "    -v  --verbose          Ausführlicher Modus (gibt Header aus)\n",
+        "        --insecure         TLS-Fehler ignorieren"
     ],
-    "invalid_input_header": [
-        "%[prog]: Header müssen im Format Name:Wert sein!\n"
-    ],
-    "invalid_input_method": "%[prog]: Ungültige Request-Methode %[method]!\n",
-    "invalid_input_proxy": "%[prog]: Proxy muss im Format Host:Port sein!\n",
-    "long_argument_missing": "%[prog]: Argument für Option --%[opt] fehlt\n",
-    "argument_missing": "%[prog]: Argument für option -%[opt] fehlt\n",
-    "takes_no_argument": "%[prog]: Option --%[opt] nimmt kein Argument\n",
-    "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]\n",
-    "unknown_option": "%[prog]: Unbekannte Option: -%[opt]\n",
+    "invalid_input_header": "%[prog]: Header müssen im Format Name:Wert sein!",
+    "invalid_input_method": "%[prog]: Ungültige Request-Methode %[method]!",
+    "invalid_input_proxy": "%[prog]: Proxy muss im Format Host:Port sein!",
+    "long_argument_missing": "%[prog]: Argument für Option --%[opt] fehlt",
+    "argument_missing": "%[prog]: Argument für option -%[opt] fehlt",
+    "option_takes_no_argument": "%[prog]: Option --%[opt] nimmt kein Argument",
+    "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]",
+    "unknown_option": "%[prog]: Unbekannte Option: -%[opt]",
     "quiet_xor_verbose": [
         "%[prog]: -q / --quiet und -v / --verbose schließen sich gegenseitig ",
-        "aus!\n"
+        "aus!"
     ],
     "output_only_with_one_url": [
         "%[prog]: -o / --output kann nicht mit mehr als einer URL benutzt ",
-        "werden!\n"
+        "werden!"
     ],
     "download_failed_address_translation": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
-        "  Adressauflösung fehlgeschlagen: %[exception]\n"
+        "  Adressauflösung fehlgeschlagen: %[exception]"
     ],
     "download_failed_connection_failed": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
-        "  Verbindung fehlgeschlagen: %[exception]\n"
+        "  Verbindung fehlgeschlagen: %[exception]"
     ],
     "download_failed_invalid_server_reply": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
-        "  Ungültige Antwort vom Server!\n"
+        "  Ungültige Antwort vom Server!"
     ],
     "no_ssl_library": [
         "%[prog]: Keine TLS-Bibliothek geladen!\n",
@@ -59,29 +56,29 @@
     "download_failed_read_or_write_failed_write": "Schreiben",
     "download_failed_read_or_write_failed": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
-        "  %[error]: %[exception]\n"
+        "  %[error]: %[exception]"
     ],
-    "download_failed": "%[prog]: Fehler beim Download von <%[url]>!\n",
+    "download_failed": "%[prog]: Fehler beim Download von <%[url]>!",
     "download_failed_exception": [
-        "%[prog]: Fehler beim Download von <%[url]>: %[exception]\n"
+        "%[prog]: Fehler beim Download von <%[url]>: %[exception]"
     ],
-    "download_done": "\n  Fertig!\n",
-    "invalid_url": "%[prog]: Ungültige URL: <%[url]>!\n",
-    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[scheme]:>!\n",
+    "download_done": "Fertig!",
+    "invalid_url": "%[prog]: Ungültige URL: <%[url]>!",
+    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[scheme]:>!",
     "type_unknown": "unbekannt",
     "size_gib": "%[num] GiB",
     "size_mib": "%[num] MiB",
     "size_kib": "%[num] KiB",
     "size_bytes": "%[num] Bytes",
     "size_unknown": "unbekannt",
-    "info_name_nopad": "  Name: %[name]\n",
-    "info_name": "  Name:  %[name]\n",
-    "info_type": "  Typ:   %[type]\n",
-    "info_size": "  Größe: %[size]\n",
-    "output_already_exists": "%[prog]: Datei %[filename] existiert bereits!\n",
+    "info_name_unaligned": "Name: %[name]",
+    "info_name": "Name:  %[name]",
+    "info_type": "Typ:   %[type]",
+    "info_size": "Größe: %[size]",
+    "output_already_exists": "%[prog]: Datei %[filename] existiert bereits!",
     "failed_to_open_output": [
-        "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]\n"
+        "%[prog]: Kann Datei %[filename] nicht öffnen: %[exception]"
     ],
     "eta_days": "%[num] t ",
-    "progress_bytes": "\r  %[num] Bytes"
+    "progress_bytes": "%[num] Bytes"
 }

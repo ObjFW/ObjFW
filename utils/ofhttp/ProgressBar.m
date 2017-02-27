@@ -179,31 +179,35 @@
 
 - (void)_drawReceived
 {
+	[of_stdout writeString: @"\r  "];
+
 	if (_resumedFrom + _received >= GIBIBYTE) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", (float)(_resumedFrom + _received) / GIBIBYTE];
 		[of_stdout writeString: OF_LOCALIZED(@"progress_gib",
-		    @"\r  %[num] GiB ",
+		    @"%[num] GiB",
 		    @"num", num)];
 	} else if (_resumedFrom + _received >= MEBIBYTE) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", (float)(_resumedFrom + _received) / MEBIBYTE];
 		[of_stdout writeString: OF_LOCALIZED(@"progress_mib",
-		    @"\r  %[num] MiB ",
+		    @"%[num] MiB",
 		    @"num", num)];
 	} else if (_resumedFrom + _received >= KIBIBYTE) {
 		OFString *num = [OFString stringWithFormat:
 		    @"%,7.2f", (float)(_resumedFrom + _received) / KIBIBYTE];
 		[of_stdout writeString: OF_LOCALIZED(@"progress_kib",
-		    @"\r  %[num] KiB ",
+		    @"%[num] KiB",
 		    @"num", num)];
 	} else {
 		OFString *num = [OFString stringWithFormat:
 		    @"%jd", _resumedFrom + _received];
 		[of_stdout writeString: OF_LOCALIZED(@"progress_bytes",
-		    @"\r  %[num] bytes ",
+		    @"%[num] bytes",
 		    @"num", num)];
 	}
+
+	[of_stdout writeString: @" "];
 
 	if (_stopped)
 		_BPS = (float)_received /
