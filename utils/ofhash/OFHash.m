@@ -27,6 +27,7 @@
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
 #import "OFStdIOStream.h"
+#import "OFLocalization.h"
 
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
@@ -39,10 +40,10 @@ OF_APPLICATION_DELEGATE(OFHash)
 static void
 help(void)
 {
-	[of_stderr writeFormat:
-	    @"Usage: %@ [md5|rmd160|sha1|sha224|sha256|sha384|sha512] "
-	    @"file1 [file2 ...]\n",
-	    [OFApplication programName]];
+	[of_stderr writeLine: OF_LOCALIZED(@"usage",
+	    @"Usage: %[prog] [md5|rmd160|sha1|sha224|sha256|sha384|sha512] "
+	    @"file1 [file2 ...]",
+	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];
 }
@@ -76,6 +77,8 @@ hashForName(OFString *name)
 	bool first = true;
 	int exitStatus = 0;
 
+	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
+
 	if ([arguments count] < 2)
 		help();
 
@@ -102,9 +105,16 @@ hashForName(OFString *name)
 				file = [OFFile fileWithPath: path
 						       mode: @"rb"];
 			} @catch (OFOpenItemFailedException *e) {
-				[of_stderr writeFormat:
-				    @"Failed to open file %@: %s\n",
-				    [e path], strerror([e errNo])];
+				OFString *error = [OFString
+				    stringWithCString: strerror([e errNo])
+					     encoding: [OFLocalization
+							   encoding]];
+
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"failed_to_open_file",
+				    @"Failed to open file %[file]: %[error]",
+				    @"file", [e path],
+				    @"error", error)];
 
 				exitStatus = 1;
 				goto outer_loop_end;
@@ -121,9 +131,16 @@ hashForName(OFString *name)
 				length = [file readIntoBuffer: buffer
 						       length: 1024];
 			} @catch (OFReadFailedException *e) {
-				[of_stderr writeFormat:
-				    @"Failed to read %@: %s\n",
-				    path, strerror([e errNo])];
+				OFString *error = [OFString
+				    stringWithCString: strerror([e errNo])
+					     encoding: [OFLocalization
+							   encoding]];
+
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"failed_to_read_file",
+				    @"Failed to read %[file]: %[error]",
+				    @"file", path,
+				    @"error", error)];
 
 				exitStatus = 1;
 				goto outer_loop_end;

@@ -1,0 +1,8 @@
+{
+    "usage": [
+        "Benutzung: %[prog] [md5|rmd160|sha1|sha224|sha256|sha384|sha512] ",
+	"datei1 [datei2 ...]"
+    ],
+    "failed_to_open_file": "Fehler beim Öffnen der Datei %[file]: %[error]",
+    "failed_to_read_file": "Fehler beim Lesen der Datei %[file]: %[error]"
+}
