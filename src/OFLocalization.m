@@ -57,10 +57,12 @@ static OFLocalization *sharedLocalization = nil;
 	return [sharedLocalization decimalPoint];
 }
 
+#ifdef OF_HAVE_FILES
 + (void)addLanguageDirectory: (OFString*)path
 {
 	[sharedLocalization addLanguageDirectory: path];
 }
+#endif
 
 - initWithLocale: (char*)locale
 {
@@ -144,6 +146,7 @@ static OFLocalization *sharedLocalization = nil;
 	[super dealloc];
 }
 
+#ifdef OF_HAVE_FILES
 - (void)addLanguageDirectory: (OFString*)path
 {
 	void *pool;
@@ -182,6 +185,7 @@ static OFLocalization *sharedLocalization = nil;
 
 	objc_autoreleasePoolPop(pool);
 }
+#endif
 
 - (OFString*)localizedStringForID: (OFConstantString*)ID
 			 fallback: (OFConstantString*)fallback, ...

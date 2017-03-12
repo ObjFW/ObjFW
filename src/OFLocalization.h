@@ -122,12 +122,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (OFString*)decimalPoint;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Adds a directory to scan for language files.
  *
  * @param path The path to the directory to scan for language files
  */
 + (void)addLanguageDirectory: (OFString*)path;
+#endif
 
 /*!
  * @brief Initializes the OFLocalization singleton with the specified locale.
@@ -141,12 +143,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithLocale: (char*)locale;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Adds a directory to scan for language files.
  *
  * @param path The path to the directory to scan for language files
  */
 - (void)addLanguageDirectory: (OFString*)path;
+#endif
 
 /*!
  * @brief Returns the localized string for the specified ID, using the fallback

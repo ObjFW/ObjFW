@@ -14,7 +14,6 @@ SRCS = ForwardingTests.m		\
        OFDataArrayTests.m		\
        OFDateTests.m			\
        OFDictionaryTests.m		\
-       OFHMACTests.m			\
        OFJSONTests.m			\
        OFListTests.m			\
        OFNumberTests.m			\
@@ -35,7 +34,8 @@ SRCS = ForwardingTests.m		\
        ${USE_SRCS_SOCKETS}		\
        ${USE_SRCS_THREADS}		\
        ${OFHTTPCLIENTTESTS_M}
-SRCS_FILES = OFINIFileTests.m		\
+SRCS_FILES = OFHMACTests.m		\
+	     OFINIFileTests.m		\
 	     OFMD5HashTests.m		\
 	     OFRIPEMD160HashTests.m	\
 	     OFSerializationTests.m	\
