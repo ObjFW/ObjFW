@@ -1394,6 +1394,8 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		AC_TRY_COMPILE([
 			#include <stdlib.h>
 
+			#include <assert.h>
+
 			@interface Foo
 			{
 				void *foo;
@@ -1401,6 +1403,18 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			@end
 
 			@interface Bar: Foo
+			- (void)assert;
+			@end
+
+			@implementation Bar
+			- (void)assert
+			{
+				/*
+				 * Some versions of glibc break with -pedantic
+				 * when using assert.
+				 */
+				assert(1);
+			}
 			@end
 		], [], [
 			AC_MSG_RESULT(no)
