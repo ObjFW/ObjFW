@@ -185,7 +185,16 @@ of_strerror(int errNo)
 	}
 #endif
 
-#ifdef HAVE_STRERROR_R
+#if defined(HAVE_STRERROR_R) && defined(_GNU_SOURCE)
+	/* glibc uses a different strerror_r when _GNU_SOURCE is defined */
+	char *string;
+
+	if ((string = strerror_r(errNo, buffer, 256)) == NULL)
+		return @"Unknown error (strerror_r failed)";
+
+	ret = [OFString stringWithCString: string
+				 encoding: [OFLocalization encoding]];
+#elif defined(HAVE_STRERROR_R)
 	if (strerror_r(errNo, buffer, 256) != 0)
 		return @"Unknown error (strerror_r failed)";
 
