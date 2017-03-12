@@ -76,6 +76,9 @@ static OFLocalization *sharedLocalization = nil;
 	if (locale == NULL) {
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_decimalPoint = @".";
+
+		sharedLocalization = self;
+
 		return self;
 	}
 
