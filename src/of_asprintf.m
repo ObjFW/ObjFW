@@ -82,7 +82,7 @@ struct context {
 #ifdef HAVE_ASPRINTF_L
 static locale_t cLocale;
 
-static void __attribute__((init))
+static void __attribute__((constructor))
 init(void)
 {
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
@@ -514,40 +514,35 @@ formatConversionSpecifierState(struct context *ctx)
 	case 'G':
 	case 'a':
 	case 'A':
-#ifdef HAVE_ASPRINTF_L
-		{
-			locale_t locale = (ctx->useLocale ? NULL : cLocale);
-
-			switch (ctx->lengthModifier) {
-			case LENGTH_MODIFIER_NONE:
-			case LENGTH_MODIFIER_L:
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    va_arg(ctx->arguments, double), locale);
-				break;
-			case LENGTH_MODIFIER_CAPITAL_L:
-				tmpLen = asprintf(&tmp, ctx->subformat,
-				    va_arg(ctx->arguments, long double),
-				    locale);
-				break;
-			default:
-				return false;
-			}
-		}
-#else
 		switch (ctx->lengthModifier) {
 		case LENGTH_MODIFIER_NONE:
 		case LENGTH_MODIFIER_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, double));
+#ifdef HAVE_ASPRINTF_L
+			if (!ctx->useLocale)
+				tmpLen = asprintf_l(&tmp, cLocale,
+				    ctx->subformat,
+				    va_arg(ctx->arguments, double));
+			else
+#endif
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, double));
 			break;
 		case LENGTH_MODIFIER_CAPITAL_L:
-			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, long double));
+#ifdef HAVE_ASPRINTF_L
+			if (!ctx->useLocale)
+				tmpLen = asprintf_l(&tmp, cLocale,
+				    ctx->subformat,
+				    va_arg(ctx->arguments, long double));
+			else
+#endif
+				tmpLen = asprintf(&tmp, ctx->subformat,
+				    va_arg(ctx->arguments, long double));
 			break;
 		default:
 			return false;
 		}
 
+#ifndef HAVE_ASPRINTF_L
 		/*
 		 * If there's no asprintf_l, we have no other choice than to
 		 * use this ugly hack to replace the locale's decimal point
