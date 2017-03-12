@@ -78,6 +78,8 @@
 # define recv(sock, buf, len, flags) net_recv(sock, buf, len, flags)
 # define recvfrom(sock, buf, len, flags, addr, addrlen) \
     net_recvfrom(sock, buf, len, flags, addr, addrlen)
+# define select(nfds, readfds, writefds, errorfds, timeout) \
+    net_select(nfds, readfds, writefds, errorfds, timeout)
 # define send(sock, buf, len, flags) net_send(sock, buf, len, flags)
 # define sendto(sock, buf, len, flags, addr, addrlen) \
     net_sendto(sock, buf, len, flags, addr, addrlen)
