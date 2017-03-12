@@ -146,15 +146,23 @@ static OFLocalization *sharedLocalization = nil;
 
 - (void)addLanguageDirectory: (OFString*)path
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFString *mapPath =
-	    [path stringByAppendingPathComponent: @"languages.json"];
-	OFDictionary *map =
-	    [[OFString stringWithContentsOfFile: mapPath] JSONValue];
-	OFString *language, *territory, *languageFile;
+	void *pool;
+	OFString *mapPath, *language, *territory, *languageFile;
+	OFDictionary *map;
+
+	if (_language == nil)
+		return;
+
+	pool = objc_autoreleasePoolPush();
+
+	mapPath = [path stringByAppendingPathComponent: @"languages.json"];
+	map = [[OFString stringWithContentsOfFile: mapPath] JSONValue];
 
 	language = [_language lowercaseString];
 	territory = [_territory lowercaseString];
+
+	if (territory == nil)
+		territory = @"";
 
 	languageFile = [[map objectForKey: language] objectForKey: territory];
 	if (languageFile == nil)
