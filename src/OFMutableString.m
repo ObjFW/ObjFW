@@ -525,6 +525,9 @@ static struct {
 	size_t searchLength = [string length];
 	size_t replacementLength = [replacement length];
 
+	if (string == nil || replacement == nil)
+		@throw [OFInvalidArgumentException exception];
+
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [self length])
 		@throw [OFOutOfRangeException exception];

@@ -595,6 +595,9 @@
 	size_t end = range.location + range.length;
 	size_t newCStringLength, newLength;
 
+	if (replacement == nil)
+		@throw [OFInvalidArgumentException exception];
+
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
 		@throw [OFOutOfRangeException exception];
 
@@ -652,6 +655,9 @@
 	size_t replacementLength = [replacement UTF8StringLength];
 	size_t last, newCStringLength, newLength;
 	char *newCString;
+
+	if (string == nil || replacement == nil)
+		@throw [OFInvalidArgumentException exception];
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [self length])
