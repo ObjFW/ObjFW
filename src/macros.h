@@ -595,7 +595,7 @@ of_strdup(const char *string)
 static OF_INLINE void
 of_explicit_memset(void *buffer_, int character, size_t length)
 {
-	volatile unsigned char *buffer = buffer_;
+	volatile unsigned char *buffer = (volatile unsigned char*)buffer_;
 
 	while (buffer < (unsigned char*)buffer_ + length)
 		*buffer++ = character;
