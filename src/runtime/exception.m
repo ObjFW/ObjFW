@@ -38,7 +38,6 @@
 # define __builtin_eh_return_data_regno(i) (i)
 #elif defined(HAVE_SEH_EXCEPTIONS)
 # define PERSONALITY	 gnu_objc_personality
-# define CXX_PERSONALITY __gxx_personality_v0
 #else
 # error Unknown exception type!
 #endif
@@ -215,7 +214,9 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 }
 #endif
 
+#ifdef CXX_PERSONALITY
 extern PERSONALITY_FUNC(CXX_PERSONALITY) __attribute__((__weak__));
+#endif
 
 #ifdef HAVE_SEH_EXCEPTIONS
 extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void*,
@@ -566,11 +567,13 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	if (foreign) {
 		switch (ex_class) {
+#ifdef CXX_PERSONALITY
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
 			if (CXX_PERSONALITY != NULL)
 				return CALL_PERSONALITY(CXX_PERSONALITY);
 			break;
+#endif
 		}
 
 		/*
@@ -692,10 +695,42 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 }
 
 #ifdef HAVE_SEH_EXCEPTIONS
+typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void*,
+    PCONTEXT, PDISPATCHER_CONTEXT);
+static seh_personality_fn __gxx_personality_seh0 = NULL;
+
+static void __attribute__((__constructor__))
+gxx_personality_init(void)
+{
+	/*
+	 * This only works if the application uses libstdc++-6.dll.
+	 * There is unfortunately no other way, as Windows does not support
+	 * proper weak linking.
+	 */
+
+	HMODULE module;
+	if ((module = GetModuleHandle("libstdc++-6")) == NULL)
+		return;
+
+	__gxx_personality_seh0 = (seh_personality_fn)
+	    GetProcAddress(module, "__gxx_personality_seh0");
+}
+
 EXCEPTION_DISPOSITION
 __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
     PCONTEXT ms_orig_context, PDISPATCHER_CONTEXT ms_disp)
 {
+	struct _Unwind_Exception *ex =
+	    (struct _Unwind_Exception*)ms_exc->ExceptionInformation[0];
+
+	switch (ex->class) {
+	case GNUCCXX0_EXCEPTION_CLASS:
+	case CLNGCXX0_EXCEPTION_CLASS:
+		if (__gxx_personality_seh0 != NULL)
+			return __gxx_personality_seh0(ms_exc, this_frame,
+			    ms_orig_context, ms_disp);
+	}
+
 	return _GCC_specific_handler(ms_exc, this_frame, ms_orig_context,
 	    ms_disp, PERSONALITY);
 }
