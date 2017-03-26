@@ -46,13 +46,15 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeLine: OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] -[fhlnpqtvx] archive.zip [file1 file2 ...]",
+	    @"Usage: %[prog] -[Cfhlnpqtvx] archive.zip [file1 file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	if (full) {
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n"
+		    @"    -C  --directory  Extract into the specified directory"
+		    @"\n"
 		    @"    -f  --force      Force / overwrite files\n"
 		    @"    -h  --help       Show this help\n"
 		    @"    -l  --list       List all files in the archive\n"
@@ -117,8 +119,9 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 @implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
-	OFString *type = nil;
+	OFString *outputDir = nil, *type = nil;
 	const of_options_parser_option_t options[] = {
+		{ 'C', @"directory", 1, NULL, &outputDir },
 		{ 'f', @"force", 0, NULL, NULL },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 'l', @"list", 0, NULL, NULL },
@@ -215,6 +218,10 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	remainingArguments = [optionsParser remainingArguments];
 	archive = [self openArchiveWithPath: [remainingArguments firstObject]
 				       type: type];
+
+	if (outputDir != nil)
+		[[OFFileManager defaultManager]
+		    changeCurrentDirectoryPath: outputDir];
 
 	switch (mode) {
 	case 'l':

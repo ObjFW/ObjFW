@@ -1,9 +1,10 @@
 {
     "usage": [
-        "Benutzung: %[prog] -[fhlnpqtvx] archiv.zip [datei1 datei2 ...]"
+        "Benutzung: %[prog] -[Cfhlnpqtvx] archiv.zip [datei1 datei2 ...]"
     ],
     "full_usage": [
         "Optionen:\n",
+        "    -C  --directory  In angegebenes Verzeichnis entpacken\n",
         "    -f  --force      Existierende Dateien überschreiben\n",
         "    -h  --help       Diese Hilfe anzeigen\n",
         "    -l  --list       Alle Dateien im Archiv auflisten\n",
