@@ -61,7 +61,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # endif
 	of_thread_t _thread;
 	of_thread_attr_t _attr;
-	enum {
+	enum of_thread_running {
 		OF_THREAD_NOT_RUNNING,
 		OF_THREAD_RUNNING,
 		OF_THREAD_WAITING_FOR_JOIN

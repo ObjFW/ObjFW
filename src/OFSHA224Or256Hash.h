@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	uint32_t _state[8];
 	uint64_t _bits;
-	union {
+	union of_sha_224_or_256_hash_buffer {
 		uint8_t bytes[64];
 		uint32_t words[64];
 	} _buffer;

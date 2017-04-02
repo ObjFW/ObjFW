@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFStream *_stream;
 	OFDeflateStream *_inflateStream;
-	enum {
+	enum of_gzip_stream_state {
 		OF_GZIP_STREAM_ID1,
 		OF_GZIP_STREAM_ID2,
 		OF_GZIP_STREAM_COMPRESSION_METHOD,
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_GZIP_STREAM_CRC32,
 		OF_GZIP_STREAM_UNCOMPRESSED_SIZE
 	} _state;
-	enum {
+	enum of_gzip_stream_flags {
 		OF_GZIP_STREAM_FLAG_TEXT	 = 0x01,
 		OF_GZIP_STREAM_FLAG_HEADER_CRC16 = 0x02,
 		OF_GZIP_STREAM_FLAG_EXTRA	 = 0x04,
@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_GZIP_STREAM_FLAG_COMMENT	 = 0x10
 	} _flags;
 	uint8_t _extraFlags;
-	enum {
+	enum of_gzip_stream_os {
 		OF_GZIP_STREAM_OS_FAT	       =   0,
 		OF_GZIP_STREAM_OS_AMIGA	       =   1,
 		OF_GZIP_STREAM_OS_VMS	       =   2,

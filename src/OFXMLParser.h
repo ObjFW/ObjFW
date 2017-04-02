@@ -133,7 +133,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLParser: OFObject <OFStringXMLUnescapingDelegate>
 {
 	id <OFXMLParserDelegate> _delegate;
-	enum {
+	enum of_xml_parser_state {
 		OF_XMLPARSER_IN_BYTE_ORDER_MARK,
 		OF_XMLPARSER_OUTSIDE_TAG,
 		OF_XMLPARSER_TAG_OPENED,
