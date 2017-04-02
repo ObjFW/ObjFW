@@ -61,15 +61,20 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 }
 
 /*!
- * Whether the timer is valid.
- */
-@property (readonly) bool isValid;
-
-/*!
  * The time interval in which the timer will repeat, if it is a repeating
  * timer.
  */
 @property (readonly) of_time_interval_t timeInterval;
+
+/*!
+ * Whether the timer is repeating.
+ */
+@property (readonly, getter=isRepeating) bool repeating;
+
+/*!
+ * Whether the timer is valid.
+ */
+@property (readonly, getter=isValid) bool valid;
 
 /*!
  * @brief Creates and schedules a new timer with the specified time interval.

@@ -32,7 +32,7 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFTimer
-@synthesize timeInterval = _interval, isValid = _valid;
+@synthesize timeInterval = _interval, repeating = _repeats, valid = _valid;
 @synthesize OF_inRunLoop = _inRunLoop;
 
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
