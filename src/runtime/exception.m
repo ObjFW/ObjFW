@@ -697,7 +697,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 #ifdef HAVE_SEH_EXCEPTIONS
 typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void*,
     PCONTEXT, PDISPATCHER_CONTEXT);
-static seh_personality_fn __gxx_personality_seh0 = NULL;
+static seh_personality_fn __gxx_personality_seh0;
 
 OF_CONSTRUCTOR()
 {

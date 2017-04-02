@@ -1249,7 +1249,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return [OFString stringWithUTF8String: _s->cString
 					       length: 1];
 
-	return @".";
+	return OF_PATH_CURRENT_DIRECTORY;
 }
 
 - (const of_unichar_t*)characters
