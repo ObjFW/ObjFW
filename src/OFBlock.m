@@ -117,8 +117,6 @@ static struct objc_abi_module module = {
 	8, sizeof(module), NULL, (struct objc_abi_symtab*)&symtab
 };
 
-extern void __objc_exec_class(struct objc_abi_module*);
-
 OF_CONSTRUCTOR()
 {
 	__objc_exec_class(&module);

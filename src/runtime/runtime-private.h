@@ -156,7 +156,6 @@ extern void objc_dtable_free(struct objc_dtable*);
 extern void objc_dtable_cleanup(void);
 extern void objc_init_static_instances(struct objc_abi_symtab*);
 extern void objc_forget_pending_static_instances(void);
-extern void __objc_exec_class(struct objc_abi_module*);
 #ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);
 extern void objc_global_mutex_unlock(void);

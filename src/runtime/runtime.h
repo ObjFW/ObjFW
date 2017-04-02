@@ -242,7 +242,7 @@ extern void objc_zero_weak_references(id);
  * declarations which include __declspec(dllimport) on Windows.
  */
 struct objc_abi_module;
-extern void __objc_exec_class(struct objc_abi_module*);
+extern void __objc_exec_class(void*);
 extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_stret(id, SEL);
 extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
