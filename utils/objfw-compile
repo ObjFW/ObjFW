@@ -244,7 +244,8 @@ for i in $srcs; do
 	esac
 	objs="$objs $obj"
 	build="no"
-	deps=$($OBJC -E -M $CPPFLAGS $i | sed 's/.*: //' | sed 's/\\//g')
+	deps=$($OBJC -E -M $CPPFLAGS $OBJCFLAGS $i |
+		sed 's/.*: //' | sed 's/\\//g')
 
 	if test -f "$obj"; then
 		for dep in $deps; do
