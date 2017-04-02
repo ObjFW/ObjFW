@@ -39,8 +39,7 @@ static size_t size = 0;
 #endif
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-static void __attribute__((__constructor__))
-init(void)
+OF_CONSTRUCTOR()
 {
 	OF_ENSURE(of_tlskey_new(&objectsKey));
 	OF_ENSURE(of_tlskey_new(&topKey));

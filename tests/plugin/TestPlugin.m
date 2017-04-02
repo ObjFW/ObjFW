@@ -21,8 +21,7 @@
 #ifdef OF_OBJFW_RUNTIME
 # import "runtime-private.h"
 
-static void __attribute__((destructor))
-unload(void)
+OF_DESTRUCTOR()
 {
 	objc_unregister_class(objc_getClass("TestPlugin"));
 }

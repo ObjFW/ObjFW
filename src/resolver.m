@@ -46,8 +46,7 @@
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)
 static of_mutex_t mutex;
 
-static void __attribute__((__constructor__))
-init(void)
+OF_CONSTRUCTOR()
 {
 	if (!of_mutex_new(&mutex))
 		@throw [OFInitializationFailedException exception];

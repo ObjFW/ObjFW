@@ -699,8 +699,7 @@ typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void*,
     PCONTEXT, PDISPATCHER_CONTEXT);
 static seh_personality_fn __gxx_personality_seh0 = NULL;
 
-static void __attribute__((__constructor__))
-gxx_personality_init(void)
+OF_CONSTRUCTOR()
 {
 	/*
 	 * This only works if the application uses libstdc++-6.dll.

@@ -37,8 +37,7 @@ struct thread_ctx {
  * This is done here to make sure this is done as early as possible in the main
  * thread.
  */
-static void __attribute__((constructor))
-init(void)
+OF_CONSTRUCTOR()
 {
 	pthread_attr_t pattr;
 	int policy;

@@ -119,8 +119,7 @@ static struct objc_abi_module module = {
 
 extern void __objc_exec_class(struct objc_abi_module*);
 
-static void __attribute__((__constructor__))
-constructor(void)
+OF_CONSTRUCTOR()
 {
 	__objc_exec_class(&module);
 }

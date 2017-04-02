@@ -34,8 +34,7 @@ struct lock_s {
 
 static of_mutex_t mutex;
 
-static void __attribute__((__constructor__))
-init(void)
+OF_CONSTRUCTOR()
 {
 	if (!of_mutex_new(&mutex))
 		OBJC_ERROR("Failed to create mutex!")

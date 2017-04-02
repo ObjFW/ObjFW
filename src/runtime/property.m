@@ -31,8 +31,7 @@ static of_spinlock_t spinlocks[NUM_SPINLOCKS];
 #endif
 
 #ifdef OF_HAVE_THREADS
-static void __attribute__((__constructor__))
-init(void)
+OF_CONSTRUCTOR()
 {
 	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
 		if (!of_spinlock_new(&spinlocks[i]))

@@ -82,8 +82,7 @@ struct context {
 #ifdef HAVE_ASPRINTF_L
 static locale_t cLocale;
 
-static void __attribute__((constructor))
-init(void)
+OF_CONSTRUCTOR()
 {
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
 		@throw [OFInitializationFailedException exception];

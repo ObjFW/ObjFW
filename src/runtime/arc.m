@@ -48,8 +48,7 @@ obj_equal(const void *obj1, const void *obj2)
 	return (obj1 == obj2);
 }
 
-static void __attribute__((__constructor__))
-init(void)
+OF_CONSTRUCTOR()
 {
 	hashtable = objc_hashtable_new(obj_hash, obj_equal, 2);
 

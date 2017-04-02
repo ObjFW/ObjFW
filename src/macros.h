@@ -339,6 +339,13 @@
 	[super dealloc];	/* Get rid of a stupid warning */
 #endif
 
+#define OF_CONSTRUCTOR(prio)					\
+	static void __attribute__((__constructor__(prio)))	\
+	constructor##__LINE__(void)
+#define OF_DESTRUCTOR(prio)					\
+	static void __attribute__((__destructor__(prio)))	\
+	destructor##__LINE__(void)
+
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_CONST(uint16_t i)
 {
