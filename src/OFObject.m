@@ -60,7 +60,8 @@
 #endif
 
 #ifdef OF_APPLE_RUNTIME
-extern double *NSFoundationVersionNumber __attribute__((__weak__));
+static double NSFoundationVersionNumber
+    OF_WEAK_REF("NSFoundationVersionNumber");
 #endif
 
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)

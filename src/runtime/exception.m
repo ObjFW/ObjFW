@@ -29,11 +29,11 @@
 #import "macros.h"
 
 #if defined(HAVE_DWARF_EXCEPTIONS)
-# define PERSONALITY	 __gnu_objc_personality_v0
-# define CXX_PERSONALITY __gxx_personality_v0
+# define PERSONALITY __gnu_objc_personality_v0
+# define CXX_PERSONALITY_STR "__gxx_personality_v0"
 #elif defined(HAVE_SJLJ_EXCEPTIONS)
-# define PERSONALITY	 __gnu_objc_personality_sj0
-# define CXX_PERSONALITY __gxx_personality_sj0
+# define PERSONALITY __gnu_objc_personality_sj0
+# define CXX_PERSONALITY_STR "__gxx_personality_sj0"
 # define _Unwind_RaiseException _Unwind_SjLj_RaiseException
 # define __builtin_eh_return_data_regno(i) (i)
 #elif defined(HAVE_SEH_EXCEPTIONS)
@@ -215,7 +215,7 @@ _Unwind_SetIP(struct _Unwind_Context *ctx, uintptr_t value)
 #endif
 
 #ifdef CXX_PERSONALITY
-extern PERSONALITY_FUNC(CXX_PERSONALITY) __attribute__((__weak__));
+static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
 #ifdef HAVE_SEH_EXCEPTIONS
@@ -570,8 +570,8 @@ PERSONALITY_FUNC(PERSONALITY)
 #ifdef CXX_PERSONALITY
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
-			if (CXX_PERSONALITY != NULL)
-				return CALL_PERSONALITY(CXX_PERSONALITY);
+			if (cxx_personality != NULL)
+				return CALL_PERSONALITY(cxx_personality);
 			break;
 #endif
 		}
