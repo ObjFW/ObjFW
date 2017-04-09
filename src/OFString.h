@@ -39,8 +39,8 @@ OF_ASSUME_NONNULL_BEGIN
 typedef char16_t of_char16_t;
 typedef char32_t of_char32_t;
 #else
-typedef uint_least16_t of_char16_t;
-typedef uint_least32_t of_char32_t;
+typedef uint16_t of_char16_t;
+typedef uint32_t of_char32_t;
 #endif
 typedef of_char32_t of_unichar_t;
 
