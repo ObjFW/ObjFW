@@ -383,7 +383,7 @@
 		_s->isUTF8 = true;
 }
 
-- (void)appendCharacters: (of_unichar_t*)characters
+- (void)appendCharacters: (const of_unichar_t*)characters
 		  length: (size_t)length
 {
 	char *tmp;

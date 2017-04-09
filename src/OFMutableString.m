@@ -337,7 +337,7 @@ static struct {
 		   atIndex: [self length]];
 }
 
-- (void)appendCharacters: (of_unichar_t*)characters
+- (void)appendCharacters: (const of_unichar_t*)characters
 		  length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();

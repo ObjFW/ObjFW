@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param characters An array of characters to append
  * @param length The length of the array of characters
  */
-- (void)appendCharacters: (of_unichar_t*)characters
+- (void)appendCharacters: (const of_unichar_t*)characters
 		  length: (size_t)length;
 
 /*!
