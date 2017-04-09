@@ -416,6 +416,9 @@ outer_loop_end:
 
 		[files removeObject: fileName];
 		[entry close];
+
+		if ([files count] == 0)
+			break;
 	}
 
 	for (OFString *file in files) {
