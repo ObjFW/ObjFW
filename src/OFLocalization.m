@@ -28,6 +28,51 @@
 
 static OFLocalization *sharedLocalization = nil;
 
+static void
+parseLocale(char *locale, of_string_encoding_t *encoding,
+    OFString **language, OFString **territory)
+{
+	if ((locale = of_strdup(locale)) == NULL)
+		return;
+
+	@try {
+		const of_string_encoding_t enc = OF_STRING_ENCODING_ASCII;
+		char *tmp;
+
+		/* We don't care for extras behind the @ */
+		if ((tmp = strrchr(locale, '@')) != NULL)
+			*tmp = '\0';
+
+		/* Encoding */
+		if ((tmp = strrchr(locale, '.')) != NULL) {
+			*tmp++ = '\0';
+
+			@try {
+				if (encoding != NULL)
+					*encoding = of_string_parse_encoding(
+					    [OFString stringWithCString: tmp
+							       encoding: enc]);
+			} @catch (OFInvalidEncodingException *e) {
+			}
+		}
+
+		/* Territory */
+		if ((tmp = strrchr(locale, '_')) != NULL) {
+			*tmp++ = '\0';
+
+			if (territory != NULL)
+				*territory = [OFString stringWithCString: tmp
+								encoding: enc];
+		}
+
+		if (language != NULL)
+			*language = [OFString stringWithCString: locale
+						       encoding: enc];
+	} @finally {
+		free(locale);
+	}
+}
+
 @implementation OFLocalization
 @synthesize language = _language, territory = _territory, encoding = _encoding;
 @synthesize decimalPoint = _decimalPoint;
@@ -64,71 +109,42 @@ static OFLocalization *sharedLocalization = nil;
 }
 #endif
 
-- initWithLocale: (char*)locale
+- init
 {
 	self = [super init];
 
 	@try {
-		_localizedStrings = [[OFMutableArray alloc] init];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+		char *locale, *messagesLocale = NULL;
 
-	if (locale == NULL) {
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_decimalPoint = @".";
+		_localizedStrings = [[OFMutableArray alloc] init];
 
-		sharedLocalization = self;
+		if ((locale = setlocale(LC_ALL, "")) != NULL)
+			_decimalPoint = [[OFString alloc]
+			    initWithCString: localeconv()->decimal_point
+				   encoding: _encoding];
 
-		return self;
-	}
+#ifdef LC_MESSAGES
+		messagesLocale = setlocale(LC_MESSAGES, "");
+#endif
+		if (messagesLocale == NULL)
+			messagesLocale = locale;
 
-	locale = of_strdup(locale);
+		if (messagesLocale != NULL) {
+			void *pool = objc_autoreleasePoolPush();
 
-	@try {
-		char *tmp;
+			parseLocale(messagesLocale, &_encoding,
+			    &_language, &_language);
 
-		/* We don't care for extras behind the @ */
-		if ((tmp = strrchr(locale, '@')) != NULL)
-			*tmp = '\0';
+			[_language retain];
+			[_territory retain];
 
-		/* Encoding */
-		if ((tmp = strrchr(locale, '.')) != NULL) {
-			*tmp++ = '\0';
-
-			@try {
-				const of_string_encoding_t ascii =
-				    OF_STRING_ENCODING_ASCII;
-
-				_encoding = of_string_parse_encoding([OFString
-				    stringWithCString: tmp
-					     encoding: ascii]);
-			} @catch (OFInvalidEncodingException *e) {
-			}
+			objc_autoreleasePoolPop(pool);
 		}
-
-		/* Territory */
-		if ((tmp = strrchr(locale, '_')) != NULL) {
-			*tmp++ = '\0';
-
-			_territory = [[OFString alloc]
-			    initWithCString: tmp
-				   encoding: OF_STRING_ENCODING_ASCII];
-		}
-
-		_language = [[OFString alloc]
-		    initWithCString: locale
-			   encoding: OF_STRING_ENCODING_ASCII];
-
-		_decimalPoint = [[OFString alloc]
-		    initWithCString: localeconv()->decimal_point
-			   encoding: _encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
-	} @finally {
-		free(locale);
 	}
 
 	sharedLocalization = self;

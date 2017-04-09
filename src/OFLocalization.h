@@ -45,21 +45,21 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /**
- * The language of the locale.
+ * The language of the locale for messages.
  *
  * If the language is unknown, it is `nil`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy) OFString *language;
 
 /*!
- * The territory of the locale.
+ * The territory of the locale for messages.
  *
  * If the territory is unknown, it is `nil`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy) OFString *territory;
 
 /*!
- * The native 8-bit string encoding for the locale.
+ * The native 8-bit string encoding of the locale for messages.
  *
  * This is useful to encode strings correctly for passing them to operating
  * system calls.
@@ -78,8 +78,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @warning If you don't use @ref OFApplication, this might be `nil`! In this
  *	    case, you need to manually allocate an instance and call
- *	    @ref initWithLocale: once, passing the locale used (as would be
- *	    returned by `setlocale()`).
+ *	    @ref init once.
  *
  * @return The shared OFLocalization instance
  */
@@ -134,14 +133,14 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Initializes the OFLocalization singleton with the specified locale.
  *
+ * @warning This sets the locale via `setlocale()`!
+ *
  * @warning You should never call this yourself, except if you do not use
  *	    @ref OFApplication. In this case, you need to allocate exactly one
  *	    instance of OFLocalization, which will be come the singleton, and
  *	    call this method.
- *
- * @param locale The locale used, as returned from `setlocale()`
  */
-- initWithLocale: (char*)locale;
+- init;
 
 #ifdef OF_HAVE_FILES
 /*!

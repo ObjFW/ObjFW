@@ -115,7 +115,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	int wargc, si = 0;
 #endif
 
-	[[OFLocalization alloc] initWithLocale: setlocale(LC_ALL, "")];
+	[[OFLocalization alloc] init];
 
 	if ([cls isSubclassOfClass: [OFApplication class]]) {
 		fprintf(stderr, "FATAL ERROR:\n  Class %s is a subclass of "
