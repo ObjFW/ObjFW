@@ -25,6 +25,7 @@
 #import "OFOptionsParser.h"
 #import "OFStdIOStream.h"
 #import "OFLocalization.h"
+#import "OFSandbox.h"
 
 #import "OFZIP.h"
 #import "GZIPArchive.h"
@@ -133,14 +134,29 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		{ 'x', @"extract", 0, NULL, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
-	OFOptionsParser *optionsParser =
-	    [OFOptionsParser parserWithOptions: options];
+	OFOptionsParser *optionsParser;
 	of_unichar_t option, mode = '\0';
 	OFArray OF_GENERIC(OFString*) *remainingArguments, *files;
 	id <Archive> archive;
 
+#ifdef OF_HAVE_SANDBOX
+	OFSandbox *sandbox = [[OFSandbox alloc] init];
+	@try {
+		[sandbox setAllowsStdIO: true];
+		[sandbox setAllowsReadingFiles: true];
+		[sandbox setAllowsWritingFiles: true];
+		[sandbox setAllowsCreatingFiles: true];
+		[sandbox setAllowsChangingFileAttributes: true];
+
+		[OFApplication activateSandbox: sandbox];
+	} @finally {
+		[sandbox release];
+	}
+#endif
+
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 
+	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'f':

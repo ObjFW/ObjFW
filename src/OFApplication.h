@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 #endif
+@class OFSandbox;
 
 #define OF_APPLICATION_DELEGATE(cls)					\
 	int								\
@@ -32,6 +33,10 @@ OF_ASSUME_NONNULL_BEGIN
 	{								\
 		return of_application_main(&argc, &argv, [cls class]);	\
 	}
+
+#ifdef OF_HAVE_PLEDGE
+# define OF_HAVE_SANDBOX
+#endif
 
 /*!
  * @protocol OFApplicationDelegate OFApplication.h ObjFW/OFApplication.h
@@ -184,6 +189,17 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (void)terminateWithStatus: (int)status OF_NO_RETURN;
 
+#ifdef OF_HAVE_SANDBOX
+/*!
+ * @brief Activates the specified sandbox for the application.
+ *
+ * This is only available if `OF_HAVE_SANDBOX` is defined.
+ *
+ * @param sandbox The sandbox to activate
+ */
++ (void)activateSandbox: (OFSandbox*)sandbox;
+#endif
+
 /*!
  * @brief Gets argc and argv.
  *
@@ -218,6 +234,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @param status The status with which the application will terminate
  */
 - (void)terminateWithStatus: (int)status OF_NO_RETURN;
+
+#ifdef OF_HAVE_SANDBOX
+/*!
+ * @brief Activates the specified sandbox for the application.
+ *
+ * This is only available if `OF_HAVE_SANDBOX` is defined.
+ *
+ * @param sandbox The sandbox to activate
+ */
+- (void)activateSandbox: (OFSandbox*)sandbox;
+#endif
 @end
 
 #ifdef __cplusplus

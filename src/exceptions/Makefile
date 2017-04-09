@@ -34,6 +34,7 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
+       OFSandboxActivationFailedException.m		\
        OFSeekFailedException.m				\
        OFSetOptionFailedException.m			\
        OFStatItemFailedException.m			\

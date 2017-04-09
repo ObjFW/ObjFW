@@ -1205,6 +1205,10 @@ AS_IF([test x"$have_processes" = x"yes"], [
 
 AC_CHECK_HEADERS_ONCE([sys/ioctl.h sys/ttycom.h])
 
+AC_CHECK_FUNC(pledge, [
+	AC_DEFINE(OF_HAVE_PLEDGE, 1, [Whether we have pledge()])
+])
+
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
 		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")

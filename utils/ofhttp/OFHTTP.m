@@ -32,6 +32,7 @@
 #import "OFTLSSocket.h"
 #import "OFURL.h"
 #import "OFLocalization.h"
+#import "OFSandbox.h"
 
 #import "OFAddressTranslationFailedException.h"
 #import "OFConnectionFailedException.h"
@@ -249,12 +250,29 @@ help(OFStream *stream, bool full, int status)
 		{ '\0', @"insecure", 0, &_insecure, NULL },
 		{ '\0', nil, 0, NULL, NULL }
 	};
-	OFOptionsParser *optionsParser = [OFOptionsParser
-	    parserWithOptions: options];
+	OFOptionsParser *optionsParser;
 	of_unichar_t option;
+
+#ifdef OF_HAVE_SANDBOX
+	OFSandbox *sandbox = [[OFSandbox alloc] init];
+	@try {
+		[sandbox setAllowsStdIO: true];
+		[sandbox setAllowsReadingFiles: true];
+		[sandbox setAllowsWritingFiles: true];
+		[sandbox setAllowsCreatingFiles: true];
+		[sandbox setAllowsIPSockets: true];
+		[sandbox setAllowsDNS: true];
+		[sandbox setAllowsTTY: true];
+
+		[OFApplication activateSandbox: sandbox];
+	} @finally {
+		[sandbox release];
+	}
+#endif
 
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 
+	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case 'b':

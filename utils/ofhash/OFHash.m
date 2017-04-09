@@ -28,6 +28,7 @@
 #import "OFSHA512Hash.h"
 #import "OFStdIOStream.h"
 #import "OFLocalization.h"
+#import "OFSandbox.h"
 
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
@@ -76,6 +77,18 @@ hashForName(OFString *name)
 	id <OFCryptoHash> hash;
 	bool first = true;
 	int exitStatus = 0;
+
+#ifdef OF_HAVE_SANDBOX
+	OFSandbox *sandbox = [[OFSandbox alloc] init];
+	@try {
+		[sandbox setAllowsStdIO: true];
+		[sandbox setAllowsReadingFiles: true];
+
+		[OFApplication activateSandbox: sandbox];
+	} @finally {
+		[sandbox release];
+	}
+#endif
 
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 

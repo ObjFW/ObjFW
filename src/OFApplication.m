@@ -20,8 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <errno.h>
 #include <locale.h>
 #include <signal.h>
+#include <unistd.h>
 
 #import "OFApplication.h"
 #import "OFString.h"
@@ -32,9 +34,11 @@
 #import "OFRunLoop+Private.h"
 #import "OFThread.h"
 #import "OFThread+Private.h"
+#import "OFSandbox.h"
 
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFSandboxActivationFailedException.h"
 
 #if defined(OF_MACOS)
 # include <crt_externs.h>
@@ -185,6 +189,13 @@ of_application_main(int *argc, char **argv[], Class cls)
 	OF_UNREACHABLE
 #endif
 }
+
+#ifdef OF_HAVE_SANDBOX
++ (void)activateSandbox: (OFSandbox*)sandbox
+{
+	[app activateSandbox: sandbox];
+}
+#endif
 
 - init
 {
@@ -503,4 +514,22 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	OF_UNREACHABLE
 }
+
+#ifdef OF_HAVE_SANDBOX
+- (void)activateSandbox: (OFSandbox*)sandbox
+{
+# ifdef OF_HAVE_PLEDGE
+	void *pool = objc_autoreleasePoolPush();
+	const char *promises = [[sandbox pledgeString]
+	    cStringWithEncoding: [OFLocalization encoding]];
+
+	if (pledge(promises, NULL) != 0)
+		@throw [OFSandboxActivationFailedException
+		    exceptionWithSandbox: sandbox
+				   errNo: errno];
+
+	objc_autoreleasePoolPop(pool);
+# endif
+}
+#endif
 @end
