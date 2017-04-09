@@ -84,8 +84,12 @@
 # define OF_LINUX
 #elif defined(_WIN32)
 # define OF_WINDOWS
+#elif defined(__FreeBSD__)
+# define OF_FREEBSD
 #elif defined(__NetBSD__)
 # define OF_NETBSD
+#elif defined(__OpenBSD__)
+# define OF_OPENBSD
 #elif defined(__DragonFly__)
 # define OF_DRAGONFLYBSD
 #elif defined(__HAIKU__)
