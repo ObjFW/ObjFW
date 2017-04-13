@@ -29,34 +29,34 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSandbox: OFObject <OFCopying>
 {
-	bool _allowsStdIO;
-	bool _allowsReadingFiles;
-	bool _allowsWritingFiles;
-	bool _allowsCreatingFiles;
-	bool _allowsCreatingSpecialFiles;
-	bool _allowsTemporaryFiles;
-	bool _allowsIPSockets;
-	bool _allowsMulticastSockets;
-	bool _allowsChangingFileAttributes;
-	bool _allowsFileOwnerChanges;
-	bool _allowsFileLocks;
-	bool _allowsUNIXSockets;
-	bool _allowsDNS;
-	bool _allowsUserDatabaseReading;
-	bool _allowsFileDescriptorSending;
-	bool _allowsFileDescriptorReceiving;
-	bool _allowsTape;
-	bool _allowsTTY;
-	bool _allowsProcessOperations;
-	bool _allowsExec;
-	bool _allowsProtExec;
-	bool _allowsSetTime;
-	bool _allowsPS;
-	bool _allowsVMInfo;
-	bool _allowsChangingProcessRights;
-	bool _allowsPF;
-	bool _allowsAudio;
-	bool _allowsBPF;
+	bool _allowsStdIO: 1;
+	bool _allowsReadingFiles: 1;
+	bool _allowsWritingFiles: 1;
+	bool _allowsCreatingFiles: 1;
+	bool _allowsCreatingSpecialFiles: 1;
+	bool _allowsTemporaryFiles: 1;
+	bool _allowsIPSockets: 1;
+	bool _allowsMulticastSockets: 1;
+	bool _allowsChangingFileAttributes: 1;
+	bool _allowsFileOwnerChanges: 1;
+	bool _allowsFileLocks: 1;
+	bool _allowsUNIXSockets: 1;
+	bool _allowsDNS: 1;
+	bool _allowsUserDatabaseReading: 1;
+	bool _allowsFileDescriptorSending: 1;
+	bool _allowsFileDescriptorReceiving: 1;
+	bool _allowsTape: 1;
+	bool _allowsTTY: 1;
+	bool _allowsProcessOperations: 1;
+	bool _allowsExec: 1;
+	bool _allowsProtExec: 1;
+	bool _allowsSetTime: 1;
+	bool _allowsPS: 1;
+	bool _allowsVMInfo: 1;
+	bool _allowsChangingProcessRights: 1;
+	bool _allowsPF: 1;
+	bool _allowsAudio: 1;
+	bool _allowsBPF: 1;
 }
 
 /*! Allows IO operations on previously allocated file descriptors. */
