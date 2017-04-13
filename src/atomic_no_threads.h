@@ -14,8 +14,6 @@
  * file.
  */
 
-OF_ASSUME_NONNULL_BEGIN
-
 static OF_INLINE int
 of_atomic_int_add(volatile int *_Nonnull p, int i)
 {
@@ -147,33 +145,19 @@ of_atomic_ptr_cmpswap(void *volatile _Nullable *_Nonnull p,
 }
 
 static OF_INLINE void
-of_memory_barrier_sync(void)
+of_memory_barrier(void)
 {
 	/* nop */
 }
 
 static OF_INLINE void
-of_memory_barrier_enter(void)
+of_memory_barrier_acquire(void)
 {
 	/* nop */
 }
 
 static OF_INLINE void
-of_memory_barrier_exit(void)
+of_memory_barrier_release(void)
 {
 	/* nop */
 }
-
-static OF_INLINE void
-of_memory_barrier_producer(void)
-{
-	/* nop */
-}
-
-static OF_INLINE void
-of_memory_barrier_consumer(void)
-{
-	/* nop */
-}
-
-OF_ASSUME_NONNULL_END

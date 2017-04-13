@@ -481,7 +481,7 @@ of_atomic_ptr_cmpswap(void *volatile _Nullable *_Nonnull p,
 }
 
 static OF_INLINE void
-of_memory_barrier_sync(void)
+of_memory_barrier(void)
 {
 	__asm__ __volatile__ (
 	    "mfence" ::: "memory"
@@ -489,35 +489,15 @@ of_memory_barrier_sync(void)
 }
 
 static OF_INLINE void
-of_memory_barrier_enter(void)
+of_memory_barrier_acquire(void)
 {
-	__asm__ __volatile__ (
-	    "mfence" ::: "memory"
-	);
+	__asm__ __volatile__ ("" ::: "memory");
 }
 
 static OF_INLINE void
-of_memory_barrier_exit(void)
+of_memory_barrier_release(void)
 {
-	__asm__ __volatile__ (
-	    "mfence" ::: "memory"
-	);
-}
-
-static OF_INLINE void
-of_memory_barrier_producer(void)
-{
-	__asm__ __volatile__ (
-	    "sfence" ::: "memory"
-	);
-}
-
-static OF_INLINE void
-of_memory_barrier_consumer(void)
-{
-	__asm__ __volatile__ (
-	    "lfence" ::: "memory"
-	);
+	__asm__ __volatile__ ("" ::: "memory");
 }
 
 OF_ASSUME_NONNULL_END
