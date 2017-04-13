@@ -983,8 +983,13 @@ _references_to_categories_of_OFObject(void)
 - (void)release
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
-	if (of_atomic_int_dec(&PRE_IVARS->retainCount) <= 0)
+	of_memory_barrier_release();
+
+	if (of_atomic_int_dec(&PRE_IVARS->retainCount) <= 0) {
+		of_memory_barrier_acquire();
+
 		[self dealloc];
+	}
 #else
 	size_t c;
 
