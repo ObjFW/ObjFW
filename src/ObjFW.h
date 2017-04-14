@@ -105,6 +105,7 @@
 #import "OFOptionsParser.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"
+#import "OFSandbox.h"
 
 #import "OFAllocFailedException.h"
 #import "OFException.h"
@@ -161,6 +162,7 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFStatItemFailedException.h"
