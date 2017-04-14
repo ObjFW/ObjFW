@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,6 +28,9 @@
 #import "runtime-private.h"
 
 #import "macros.h"
+#ifdef OF_HAVE_THREADS
+# include "threading.h"
+#endif
 
 #if defined(HAVE_DWARF_EXCEPTIONS)
 # define PERSONALITY __gnu_objc_personality_v0
@@ -63,6 +67,8 @@
 #define GNUCOBJC_EXCEPTION_CLASS UINT64_C(0x474E55434F424A43) /* GNUCOBJC */
 #define GNUCCXX0_EXCEPTION_CLASS UINT64_C(0x474E5543432B2B00) /* GNUCC++\0 */
 #define CLNGCXX0_EXCEPTION_CLASS UINT64_C(0x434C4E47432B2B00) /* CLNGC++\0 */
+
+#define NUM_EMERGENCY_EXCEPTIONS 4
 
 #define _UA_SEARCH_PHASE  0x01
 #define _UA_CLEANUP_PHASE 0x02
@@ -225,6 +231,16 @@ extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void*,
 #endif
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
+static struct objc_exception emergency_exceptions[NUM_EMERGENCY_EXCEPTIONS];
+#ifdef OF_HAVE_THREADS
+static of_spinlock_t emergency_exceptions_spinlock;
+
+OF_CONSTRUCTOR()
+{
+	if (!of_spinlock_new(&emergency_exceptions_spinlock))
+		OBJC_ERROR("Cannot create spinlock!")
+}
+#endif
 
 static uint64_t
 read_uleb128(const uint8_t **ptr)
@@ -665,17 +681,56 @@ cleanup(_Unwind_Reason_Code reason, struct _Unwind_Exception *ex)
 	free(ex);
 }
 
+static void
+cleanup_emergency(_Unwind_Reason_Code reason, struct _Unwind_Exception *ex)
+{
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_lock(&emergency_exceptions_spinlock))
+		OBJC_ERROR("Cannot lock spinlock!");
+#endif
+
+	ex->class = 0;
+
+#ifdef OF_HAVE_THREADS
+	if (!of_spinlock_unlock(&emergency_exceptions_spinlock))
+		OBJC_ERROR("Cannot unlock spinlock!");
+#endif
+}
+
 void
 objc_exception_throw(id object)
 {
-	struct objc_exception *e;
+	struct objc_exception *e = malloc(sizeof(*e));
+	bool emergency = false;
 
-	if ((e = malloc(sizeof(*e))) == NULL)
+	if (e == NULL) {
+#ifdef OF_HAVE_THREADS
+		if (!of_spinlock_lock(&emergency_exceptions_spinlock))
+			OBJC_ERROR("Cannot lock spinlock!");
+#endif
+
+		for (uint_fast8_t i = 0; i < NUM_EMERGENCY_EXCEPTIONS; i++) {
+			if (emergency_exceptions[i].exception.class == 0) {
+				e = &emergency_exceptions[i];
+				e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
+				emergency = true;
+
+				break;
+			}
+		}
+
+#ifdef OF_HAVE_THREADS
+		if (!of_spinlock_unlock(&emergency_exceptions_spinlock))
+			OBJC_ERROR("Cannot lock spinlock!");
+#endif
+	}
+
+	if (e == NULL)
 		OBJC_ERROR("Not enough memory to allocate exception!")
 
 	memset(e, 0, sizeof(*e));
 	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
-	e->exception.cleanup = cleanup;
+	e->exception.cleanup = (emergency ? cleanup_emergency : cleanup);
 	e->object = object;
 
 	if (_Unwind_RaiseException(&e->exception) == _URC_END_OF_STACK &&
