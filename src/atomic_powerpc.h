@@ -46,7 +46,7 @@ of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
 	return i;
 }
 
-static OF_INLINE void*
+static OF_INLINE void *_Nullable
 of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 	__asm__ __volatile__ (
@@ -94,7 +94,7 @@ of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
 	return i;
 }
 
-static OF_INLINE void*
+static OF_INLINE void *_Nullable
 of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 	__asm__ __volatile__ (

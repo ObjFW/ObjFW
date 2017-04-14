@@ -26,7 +26,7 @@ of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
 	return __atomic_add_fetch(p, i, __ATOMIC_RELAXED);
 }
 
-static OF_INLINE void*
+static OF_INLINE void *_Nullable
 of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 	return __atomic_add_fetch(p, i, __ATOMIC_RELAXED);
@@ -44,7 +44,7 @@ of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
 	return __atomic_sub_fetch(p, i, __ATOMIC_RELAXED);
 }
 
-static OF_INLINE void*
+static OF_INLINE void *_Nullable
 of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 	return __atomic_sub_fetch(p, i, __ATOMIC_RELAXED);
