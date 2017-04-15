@@ -20,16 +20,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_SEH_EXCEPTIONS
-# include <windows.h>
-#endif
-
 #import "runtime.h"
 #import "runtime-private.h"
 
 #import "macros.h"
 #ifdef OF_HAVE_THREADS
 # include "threading.h"
+#endif
+
+#ifdef HAVE_SEH_EXCEPTIONS
+# include <windows.h>
 #endif
 
 #if defined(HAVE_DWARF_EXCEPTIONS)
