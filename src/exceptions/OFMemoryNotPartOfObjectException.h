@@ -37,7 +37,7 @@
 /*!
  * The object which the memory is not part of.
  */
-@property (readonly, retain) id object;
+@property (readonly, nonatomic) id object;
 
 /*!
  * @brief Creates a new, autoreleased memory not part of object exception.

@@ -32,7 +32,7 @@
 /*!
  * The parser which encountered malformed XML.
  */
-@property (readonly, retain) OFXMLParser *parser;
+@property (readonly, nonatomic) OFXMLParser *parser;
 
 /*!
  * @brief Creates a new, autoreleased malformed XML exception.

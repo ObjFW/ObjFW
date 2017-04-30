@@ -31,7 +31,7 @@
 /*!
  * The path of the item which could not be removed.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The errno of the error that occurred.

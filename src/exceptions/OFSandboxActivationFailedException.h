@@ -34,7 +34,7 @@
 /*!
  * The sandbox which could not be activated.
  */
-@property (readonly, retain) OFSandbox *sandbox;
+@property (readonly, nonatomic) OFSandbox *sandbox;
 
 /*!
  * The errno of the error that occurred.

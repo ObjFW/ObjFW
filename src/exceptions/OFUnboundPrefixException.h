@@ -33,12 +33,12 @@
 /*!
  * The unbound prefix.
  */
-@property (readonly, copy) OFString *prefix;
+@property (readonly, nonatomic) OFString *prefix;
 
 /*!
  * The parser which encountered the unbound prefix.
  */
-@property (readonly, retain) OFXMLParser *parser;
+@property (readonly, nonatomic) OFXMLParser *parser;
 
 /*!
  * @brief Creates a new, autoreleased unbound prefix exception.

@@ -37,7 +37,7 @@
 /*!
  * The condition for which could not be waited.
  */
-@property (readonly, retain) OFCondition *condition;
+@property (readonly, nonatomic) OFCondition *condition;
 
 /*!
  * @brief Creates a new, autoreleased condition wait failed exception.

@@ -33,7 +33,7 @@
 /*!
  * The observer which failed to observe.
  */
-@property (readonly, retain) OFKernelEventObserver *observer;
+@property (readonly, nonatomic) OFKernelEventObserver *observer;
 
 /*!
  * The errno of the error that occurred.

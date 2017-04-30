@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @return The data of the extension.
  */
-@property (readonly, retain) OFDataArray *data;
+@property (readonly, nonatomic) OFDataArray *data;
 
 /*!
  * @brief Creates a new OFMessagePackRepresentation with the specified type and

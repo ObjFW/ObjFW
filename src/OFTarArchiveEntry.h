@@ -65,7 +65,7 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The file name of the entry.
  */
-@property (readonly, copy) OFString *fileName;
+@property (readonly, nonatomic) OFString *fileName;
 
 /*!
  * The mode of the entry.
@@ -80,7 +80,7 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The date of the last modification of the file.
  */
-@property (readonly, copy) OFDate *modificationDate;
+@property (readonly, nonatomic) OFDate *modificationDate;
 
 /*!
  * The type of the archive entry.
@@ -92,17 +92,17 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The file name of the target (for a hard link or symbolic link).
  */
-@property (readonly, copy) OFString *targetFileName;
+@property (readonly, nonatomic) OFString *targetFileName;
 
 /*!
  * The owner of the file.
  */
-@property (readonly, copy) OFString *owner;
+@property (readonly, nonatomic) OFString *owner;
 
 /*!
  * The group of the file.
  */
-@property (readonly, copy) OFString *group;
+@property (readonly, nonatomic) OFString *group;
 
 /*!
  * The device major (if the file is a device).

@@ -62,12 +62,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The path to the X.509 certificate file to use.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *certificateFile;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *certificateFile;
 
 /*!
  * The path to the PKCS#8 private key file to use.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *privateKeyFile;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *privateKeyFile;
 
 /*!
  * The passphrase to decrypt the PKCS#8 private key file.

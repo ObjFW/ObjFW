@@ -33,7 +33,7 @@
 /*!
  * The stream for which seeking failed.
  */
-@property (readonly, retain) OFSeekableStream *stream;
+@property (readonly, nonatomic) OFSeekableStream *stream;
 
 /*!
  * The offset to which seeking failed.

@@ -31,12 +31,12 @@
 /*!
  * The path of the source item.
  */
-@property (readonly, copy) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *sourcePath;
 
 /*!
  * The destination path.
  */
-@property (readonly, copy) OFString *destinationPath;
+@property (readonly, nonatomic) OFString *destinationPath;
 
 /*!
  * The errno of the error that occurred.

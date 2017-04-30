@@ -44,13 +44,13 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The headers of the reply to the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (copy)
+@property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
 
 /*!
  * The cookies to set of the reply to the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (copy)
+@property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFHTTPCookie*) *cookies;
 
 /*!

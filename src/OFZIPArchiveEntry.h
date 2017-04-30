@@ -106,12 +106,12 @@ enum {
 /*!
  * The file name of the entry.
  */
-@property (readonly, copy) OFString *fileName;
+@property (readonly, nonatomic) OFString *fileName;
 
 /*!
  * The comment of the entry's file.
  */
-@property (readonly, copy) OFString *fileComment;
+@property (readonly, nonatomic) OFString *fileComment;
 
 /*!
  * The version which made the entry.

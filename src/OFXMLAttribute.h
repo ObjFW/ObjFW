@@ -34,15 +34,15 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the attribute.
  */
-@property (readonly, copy) OFString *name;
+@property (readonly, nonatomic) OFString *name;
 
 /*!
  * The namespace of the attribute.
  */
 #ifndef __cplusplus
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *namespace;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *namespace;
 #else
-@property OF_NULLABLE_PROPERTY (readonly, copy, getter=namespace)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, getter=namespace)
     OFString *namespace_;
 #endif
 

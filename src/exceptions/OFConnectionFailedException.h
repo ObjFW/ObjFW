@@ -37,12 +37,12 @@
 /*!
  * The socket which could not connect.
  */
-@property (readonly, retain) id socket;
+@property (readonly, nonatomic) id socket;
 
 /*!
  * The host to which the connection failed.
  */
-@property (readonly, copy) OFString *host;
+@property (readonly, nonatomic) OFString *host;
 
 /*!
  * The port on the host to which the connection failed.

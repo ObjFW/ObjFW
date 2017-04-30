@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the INI category
  */
-@property (copy) OFString *name;
+@property (nonatomic, copy) OFString *name;
 
 /*!
  * @brief Returns the string value for the specified key, or `nil` if it does

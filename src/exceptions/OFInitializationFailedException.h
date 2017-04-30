@@ -31,7 +31,7 @@
 /*!
  * The class for which initialization failed.
  */
-@property (readonly, assign) Class inClass;
+@property (readonly, nonatomic) Class inClass;
 
 /*!
  * @brief Creates a new, autoreleased initialization failed exception.

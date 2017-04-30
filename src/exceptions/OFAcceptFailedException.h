@@ -35,7 +35,7 @@
 /*!
  * The socket which could not accept a connection.
  */
-@property (readonly, retain) id socket;
+@property (readonly, nonatomic) id socket;
 
 /*!
  * @return The errno from when the exception was created.

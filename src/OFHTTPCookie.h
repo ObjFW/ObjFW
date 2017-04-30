@@ -36,27 +36,27 @@
 /*!
  * The name of the cookie.
  */
-@property (copy) OFString *name;
+@property (nonatomic, copy) OFString *name;
 
 /*!
  * The value of the cookie.
  */
-@property (copy) OFString *value;
+@property (nonatomic, copy) OFString *value;
 
 /*!
  * The date when the cookie expires.
  */
-@property (copy) OFDate *expires;
+@property (nonatomic, copy) OFDate *expires;
 
 /*!
  * The domain for the cookie.
  */
-@property (copy) OFString *domain;
+@property (nonatomic, copy) OFString *domain;
 
 /*!
  * The path for the cookie.
  */
-@property (copy) OFString *path;
+@property (nonatomic, copy) OFString *path;
 
 /*!
  * Whether the cookie is only to be used with HTTPS.
@@ -71,7 +71,8 @@
 /*!
  * An array of other attributes.
  */
-@property (retain, readonly) OFMutableArray OF_GENERIC(OFString*) *extensions;
+@property (readonly, nonatomic)
+    OFMutableArray OF_GENERIC(OFString*) *extensions;
 
 /*!
  * @brief Create a new cookie with the specified name and value.

@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFTimer ()
-@property OF_NULLABLE_PROPERTY (retain, setter=OF_setInRunLoop:)
+@property OF_NULLABLE_PROPERTY (nonatomic, retain, setter=OF_setInRunLoop:)
     OFRunLoop *OF_inRunLoop;
 @end
 

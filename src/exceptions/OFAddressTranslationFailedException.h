@@ -36,7 +36,7 @@
 /*!
  * The host for which the address translation was requested.
  */
-@property (readonly, copy) OFString *host;
+@property (readonly, nonatomic) OFString *host;
 
 /*!
  * @brief Creates a new, autoreleased address translation failed exception.

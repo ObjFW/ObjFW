@@ -31,7 +31,7 @@
 /*!
  * The name of the unknown XML entity.
  */
-@property (readonly, copy) OFString *entityName;
+@property (readonly, nonatomic) OFString *entityName;
 
 /*!
  * @brief Creates a new, autoreleased unknown XML entity exception.

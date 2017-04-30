@@ -34,7 +34,7 @@ static OFString *module = @"Runtime";
 	OFString *_foo, *_bar;
 }
 
-@property (copy, nonatomic) OFString *foo;
+@property (nonatomic, copy) OFString *foo;
 @property (retain) OFString *bar;
 
 - (id)nilSuperTest;

@@ -37,7 +37,7 @@
 /*!
  * The host on which binding failed.
  */
-@property (readonly, copy) OFString *host;
+@property (readonly, nonatomic) OFString *host;
 
 /*!
  * The port on which binding failed.
@@ -47,7 +47,7 @@
 /*!
  * The socket which could not be bound.
  */
-@property (readonly, retain) id socket;
+@property (readonly, nonatomic) id socket;
 
 /*!
  * The errno of the error that occurred.

@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The archive comment.
  */
-@property (readonly, copy) OFString *archiveComment;
+@property (readonly, nonatomic) OFString *archiveComment;
 
 /*!
  * @brief Creates a new OFZIPArchive object with the specified seekable stream.

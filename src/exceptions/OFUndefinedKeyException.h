@@ -32,17 +32,17 @@
 /*!
  * The object on which the key is undefined.
  */
-@property (readonly, retain) id object;
+@property (readonly, nonatomic) id object;
 
 /*!
  * The key which is undefined.
  */
-@property (readonly, copy) OFString *key;
+@property (readonly, nonatomic) OFString *key;
 
 /*!
  * The value for the undefined key
  */
-@property (readonly, retain) id value;
+@property (readonly, nonatomic) id value;
 
 /*!
  * @brief Creates a new, autoreleased undefined key exception.

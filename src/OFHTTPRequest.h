@@ -85,7 +85,7 @@ typedef struct {
 /*!
  * The URL of the HTTP request.
  */
-@property (copy) OFURL *URL;
+@property (nonatomic, copy) OFURL *URL;
 
 /*!
  * The request method of the HTTP request.
@@ -95,24 +95,24 @@ typedef struct {
 /*!
  * The headers for the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (copy)
+@property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
 
 /*!
  * The cookies for the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (copy)
+@property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFHTTPCookie*) *cookies;
 
 /*!
  * The entity body of the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (retain) OFDataArray *body;
+@property OF_NULLABLE_PROPERTY (nonatomic, retain) OFDataArray *body;
 
 /*!
  * The remote address from which the request originates.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *remoteAddress;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *remoteAddress;
 
 /*!
  * @brief Creates a new OFHTTPRequest.

@@ -34,7 +34,7 @@
 /*!
  * The URL whose protocol is unsupported.
  */
-@property (readonly, retain) OFURL *URL;
+@property (readonly, nonatomic) OFURL *URL;
 
 /*!
  * @brief Creates a new, autoreleased unsupported protocol exception.

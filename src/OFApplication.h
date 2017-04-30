@@ -136,17 +136,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the program (argv[0]).
  */
-@property (readonly, assign) OFString *programName;
+@property (readonly, nonatomic) OFString *programName;
 
 /*!
  * The arguments passed to the application.
  */
-@property (readonly, assign) OFArray OF_GENERIC(OFString*) *arguments;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
 
 /*!
  * The environment of the application.
  */
-@property (readonly, assign)
+@property (readonly, nonatomic)
     OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
 
 /*!

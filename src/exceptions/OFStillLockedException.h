@@ -31,7 +31,7 @@
 /*!
  * The lock which is still locked.
  */
-@property (readonly, retain) id <OFLocking> lock;
+@property (readonly, nonatomic) id <OFLocking> lock;
 
 /*!
  * @brief Creates a new, autoreleased still locked exception.

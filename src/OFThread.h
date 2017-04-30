@@ -81,7 +81,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * The block to execute in the thread.
  */
-@property (readonly, copy) of_thread_block_t threadBlock;
+@property (readonly, nonatomic) of_thread_block_t threadBlock;
 #endif
 
 /*!

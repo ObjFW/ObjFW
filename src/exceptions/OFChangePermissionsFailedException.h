@@ -36,7 +36,7 @@
 /*!
  * The path of the item.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The new permissions for the item.

@@ -39,12 +39,12 @@
 /*!
  * The HTTP request which failed.
  */
-@property (readonly, retain) OFHTTPRequest *request;
+@property (readonly, nonatomic) OFHTTPRequest *request;
 
 /*!
  * The response for the failed HTTP request.
  */
-@property (readonly, retain) OFHTTPResponse *response;
+@property (readonly, nonatomic) OFHTTPResponse *response;
 
 /*!
  * @brief Creates a new, autoreleased HTTP request failed exception.

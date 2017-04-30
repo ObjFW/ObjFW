@@ -33,12 +33,12 @@
 /*!
  * The source for the symlink.
  */
-@property (readonly, copy) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *sourcePath;
 
 /*!
  * The destination for the symlink.
  */
-@property (readonly, copy) OFString *destinationPath;
+@property (readonly, nonatomic) OFString *destinationPath;
 
 /*!
  * The errno of the error that occurred.

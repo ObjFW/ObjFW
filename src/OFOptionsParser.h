@@ -101,13 +101,13 @@ typedef struct of_options_parser_option_t {
  *	    user specified a long option, this only returns the long option if
  *	    it was actually specified as a long option by the user.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *lastLongOption;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *lastLongOption;
 
 /*!
  * The argument for the last parsed option, or `nil` if the last parsed option
  * takes no argument.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *argument;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *argument;
 
 /*!
  * @brief Creates a new OFOptionsParser which accepts the specified options.

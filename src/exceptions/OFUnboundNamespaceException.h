@@ -34,15 +34,15 @@
  * The unbound namespace.
  */
 #ifndef __cplusplus
-@property (readonly, copy) OFString *namespace;
+@property (readonly, nonatomic) OFString *namespace;
 #else
-@property (readonly, copy, getter=namespace) OFString *namespace_;
+@property (readonly, nonatomic, getter=namespace) OFString *namespace_;
 #endif
 
 /*!
  * The element in which the namespace was not bound.
  */
-@property (readonly, retain) OFXMLElement *element;
+@property (readonly, nonatomic) OFXMLElement *element;
 
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.

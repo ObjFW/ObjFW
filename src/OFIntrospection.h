@@ -57,7 +57,7 @@ enum {
 /*!
  * The name of the method.
  */
-@property (readonly, copy) OFString *name;
+@property (readonly, nonatomic) OFString *name;
 
 /*!
  * The type encoding for the method.
@@ -80,7 +80,7 @@ enum {
 /*!
  * The name of the property.
  */
-@property (readonly, copy) OFString *name;
+@property (readonly, nonatomic) OFString *name;
 
 /*!
  * The attributes of the property.
@@ -104,12 +104,12 @@ enum {
 /*!
  * The name of the getter.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *getter;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *getter;
 
 /*!
  * @return The name of the setter.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *setter;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *setter;
 @end
 
 /*!
@@ -127,7 +127,7 @@ enum {
 /*!
  * The name of the instance variable.
  */
-@property (readonly, copy) OFString *name;
+@property (readonly, nonatomic) OFString *name;
 
 /*!
  * The offset of the instance variable.
@@ -156,12 +156,12 @@ enum {
 /*!
  * The class methods of the class.
  */
-@property (readonly, copy) OFArray OF_GENERIC(OFMethod*) *classMethods;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod*) *classMethods;
 
 /*!
  * The instance methods of the class.
  */
-@property (readonly, copy) OFArray OF_GENERIC(OFMethod*) *instanceMethods;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod*) *instanceMethods;
 
 /*!
  * The properties of the class.
@@ -183,12 +183,12 @@ enum {
  * @warning GCC does not emit any data for property introspection for the GNU
  *	    ABI.
  */
-@property (readonly, copy) OFArray OF_GENERIC(OFProperty*) *properties;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFProperty*) *properties;
 
 /*!
  * The instance variables of the class.
  */
-@property (readonly, copy)
+@property (readonly, nonatomic)
     OFArray OF_GENERIC(OFInstanceVariable*) *instanceVariables;
 
 /* TODO: protocols */

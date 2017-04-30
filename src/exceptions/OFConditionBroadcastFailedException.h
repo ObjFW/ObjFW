@@ -37,7 +37,7 @@
 /*!
  * The condition which could not be broadcasted.
  */
-@property (readonly, retain) OFCondition *condition;
+@property (readonly, nonatomic) OFCondition *condition;
 
 /*!
  * @brief Returns a new, autoreleased condition broadcast failed exception.

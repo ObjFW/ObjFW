@@ -33,7 +33,7 @@
 /*!
  * The stream which caused the read or write failed exception.
  */
-@property (readonly, retain) id object;
+@property (readonly, nonatomic) id object;
 
 /*!
  * The requested length of the data that could not be read / written.

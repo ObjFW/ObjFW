@@ -32,7 +32,7 @@
 /*!
  * The path of the directory which couldn't be created.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The errno of the error that occurred.

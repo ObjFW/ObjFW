@@ -31,7 +31,7 @@
 /*!
  * A string with the path of the item whose status could not be retrieved.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The errno of the error that occurred.

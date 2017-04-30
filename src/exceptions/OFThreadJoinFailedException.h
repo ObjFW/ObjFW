@@ -36,7 +36,7 @@
 /*!
  * The thread which could not be joined.
  */
-@property (readonly, retain) OFThread *thread;
+@property (readonly, nonatomic) OFThread *thread;
 
 /*!
  * @brief Creates a new, autoreleased thread join failed exception.

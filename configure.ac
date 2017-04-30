@@ -175,7 +175,7 @@ AC_TRY_COMPILE([
 		id bar;
 	}
 
-	@property (retain, nonatomic) id bar;
+	@property (nonatomic, retain) id bar;
 	@end
 ], [
 	Foo *foo = (id)0;

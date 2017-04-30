@@ -31,7 +31,7 @@
 /*!
  * The version which is unsupported.
  */
-@property (readonly, copy) OFString *version;
+@property (readonly, nonatomic) OFString *version;
 
 /*!
  * @brief Creates a new, autoreleased unsupported version exception.

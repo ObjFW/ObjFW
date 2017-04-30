@@ -31,7 +31,7 @@
 /*!
  * The hash which has already been calculated.
  */
-@property (readonly, retain) id object;
+@property (readonly, nonatomic) id object;
 
 /*!
  * @brief Creates a new, autoreleased hash already calculated exception.

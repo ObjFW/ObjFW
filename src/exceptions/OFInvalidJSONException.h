@@ -31,7 +31,7 @@
 /*!
  * The string containing the invalid JSON representation.
  */
-@property (readonly, copy) OFString *string;
+@property (readonly, nonatomic) OFString *string;
 
 /*!
  * The line in which parsing the JSON representation failed.

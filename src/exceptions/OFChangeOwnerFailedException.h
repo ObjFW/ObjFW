@@ -32,17 +32,17 @@
 /*!
  * The path of the item.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The new owner for the item.
  */
-@property (readonly, copy) OFString *owner;
+@property (readonly, nonatomic) OFString *owner;
 
 /*!
  * The new group for the item.
  */
-@property (readonly, copy) OFString *group;
+@property (readonly, nonatomic) OFString *group;
 
 /*!
  * The errno of the error that occurred.

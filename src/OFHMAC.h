@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*! The class for the cryptographic hash used by the HMAC. */
-@property (assign, readonly) Class <OFCryptoHash> hashClass;
+@property (readonly, nonatomic) Class <OFCryptoHash> hashClass;
 
 /*!
  * @brief Returns a new OFHMAC with the specified hashing algorithm.

@@ -36,7 +36,7 @@
 /*!
  * The thread which could not be started.
  */
-@property (readonly, retain) OFThread *thread;
+@property (readonly, nonatomic) OFThread *thread;
 
 /*!
  * @brief Creates a new, autoreleased thread start failed exception.

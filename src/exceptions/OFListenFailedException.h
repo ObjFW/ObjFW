@@ -35,7 +35,7 @@
 /*!
  * The socket which failed to listen.
  */
-@property (readonly, retain) id socket;
+@property (readonly, nonatomic) id socket;
 
 /*!
  * The requested back log.

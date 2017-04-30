@@ -73,7 +73,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 /*!
  * The host to use as a SOCKS5 proxy.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *SOCKS5Host;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *SOCKS5Host;
 
 /*!
  * The port to use on the SOCKS5 proxy.

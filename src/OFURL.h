@@ -36,12 +36,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The scheme part of the URL.
  */
-@property (copy) OFString *scheme;
+@property (nonatomic, copy) OFString *scheme;
 
 /*!
  * The host part of the URL.
  */
-@property (copy) OFString *host;
+@property (nonatomic, copy) OFString *host;
 
 /*!
  * The port part of the URL.
@@ -51,32 +51,32 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The user part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *user;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *user;
 
 /*!
  * The password part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *password;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *password;
 
 /*!
  * The path part of the URL.
  */
-@property (copy) OFString *path;
+@property (nonatomic, copy) OFString *path;
 
 /*!
  * The parameters part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *parameters;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *parameters;
 
 /*!
  * The query part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *query;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *query;
 
 /*!
  * The fragment part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (copy) OFString *fragment;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *fragment;
 
 /*!
  * @brief Creates a new URL.

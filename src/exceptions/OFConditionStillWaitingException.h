@@ -38,7 +38,7 @@
 /*!
  * The condition for which is still being waited.
  */
-@property (readonly, retain) OFCondition *condition;
+@property (readonly, nonatomic) OFCondition *condition;
 
 /*!
  * @brief Creates a new, autoreleased condition still waiting exception.

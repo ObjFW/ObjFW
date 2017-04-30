@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the application whose settings are accessed by the instance.
  */
-@property (readonly, copy) OFString *applicationName;
+@property (readonly, nonatomic) OFString *applicationName;
 
 /*!
  * @brief Create a new OFSettings instance for the application with the

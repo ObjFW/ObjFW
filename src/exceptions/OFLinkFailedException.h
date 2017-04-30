@@ -32,12 +32,12 @@
 /*!
  * A string with the source for the link.
  */
-@property (readonly, copy) OFString *sourcePath;
+@property (readonly, nonatomic) OFString *sourcePath;
 
 /*!
  * A string with the destination for the link.
  */
-@property (readonly, copy) OFString *destinationPath;
+@property (readonly, nonatomic) OFString *destinationPath;
 
 /*!
  * The errno of the error that occurred.

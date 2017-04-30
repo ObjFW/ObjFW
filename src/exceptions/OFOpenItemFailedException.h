@@ -31,12 +31,12 @@
 /*!
  * The path of the item which could not be opened.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The mode in which the item should have been opened.
  */
-@property (readonly, copy) OFString *mode;
+@property (readonly, nonatomic) OFString *mode;
 
 /*!
  * The errno of the error that occurred.

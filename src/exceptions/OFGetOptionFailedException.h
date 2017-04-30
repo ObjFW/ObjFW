@@ -33,7 +33,7 @@
 /*!
  * The stream for which the option could not be retrieved.
  */
-@property (readonly, retain) OFStream *stream;
+@property (readonly, nonatomic) OFStream *stream;
 
 /*!
  * The errno of the error that occurred.

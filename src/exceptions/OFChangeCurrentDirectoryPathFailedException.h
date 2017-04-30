@@ -33,7 +33,7 @@
 /*!
  * The path of the directory to which the current path could not be changed.
  */
-@property (readonly, copy) OFString *path;
+@property (readonly, nonatomic) OFString *path;
 
 /*!
  * The errno of the error that occurred.

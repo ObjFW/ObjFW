@@ -49,14 +49,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * If the language is unknown, it is `nil`.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *language;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *language;
 
 /*!
  * The territory of the locale for messages.
  *
  * If the territory is unknown, it is `nil`.
  */
-@property OF_NULLABLE_PROPERTY (readonly, copy) OFString *territory;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *territory;
 
 /*!
  * The native 8-bit string encoding of the locale for messages.
@@ -71,7 +71,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The decimal point of the system's locale.
  */
-@property (readonly, copy) OFString *decimalPoint;
+@property (readonly, nonatomic) OFString *decimalPoint;
 
 /*!
  * @brief Returns the shared OFLocalization instance.

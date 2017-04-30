@@ -32,7 +32,7 @@
 /*!
  * The object which was mutated during enumeration.
  */
-@property (readonly, retain) id object;
+@property (readonly, nonatomic) id object;
 
 /*!
  * @brief Creates a new, autoreleased enumeration mutation exception.

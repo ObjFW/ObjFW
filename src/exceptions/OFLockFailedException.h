@@ -31,7 +31,7 @@
 /*!
  * The lock which could not be locked.
  */
-@property (readonly, retain) id <OFLocking> lock;
+@property (readonly, nonatomic) id <OFLocking> lock;
 
 /*!
  * @brief Creates a new, autoreleased lock failed exception.

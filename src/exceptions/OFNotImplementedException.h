@@ -37,7 +37,7 @@
 /*!
  * The object which does not (fully) implement the selector.
  */
-@property (readonly, retain) id object;
+@property (readonly, nonatomic) id object;
 
 /*!
  * @brief Creates a new, autoreleased not implemented exception.

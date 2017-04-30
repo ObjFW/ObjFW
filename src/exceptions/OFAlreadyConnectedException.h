@@ -35,7 +35,7 @@
 /*!
  * The socket which is already connected.
  */
-@property (readonly, retain) id socket;
+@property (readonly, nonatomic) id socket;
 
 /*!
  * @brief Creates a new, autoreleased already connected exception.
