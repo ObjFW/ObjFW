@@ -215,7 +215,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	/* Shortcut if old and new character both are ASCII */
-	if (!(character & 0x80) && !(_s->cString[index] & 0x80)) {
+	if (character < 0x80 && !(_s->cString[index] & 0x80)) {
 		_s->hashed = false;
 		_s->cString[index] = character;
 		return;
@@ -246,7 +246,7 @@
 		_s->cStringLength += lenNew;
 		_s->cString[_s->cStringLength] = '\0';
 
-		if (character & 0x80)
+		if (character >= 0x80)
 			_s->isUTF8 = true;
 	} else if (lenNew < (size_t)lenOld) {
 		memmove(_s->cString + index + lenNew,
@@ -257,6 +257,9 @@
 		_s->cStringLength -= lenOld;
 		_s->cStringLength += lenNew;
 		_s->cString[_s->cStringLength] = '\0';
+
+		if (character >= 0x80)
+			_s->isUTF8 = true;
 
 		@try {
 			_s->cString = [self
@@ -346,10 +349,12 @@
 				length: cStringLength];
 	else {
 		void *pool = objc_autoreleasePoolPush();
+
 		[self appendString:
 		    [OFString stringWithCString: cString
 				       encoding: encoding
 					 length: cStringLength]];
+
 		objc_autoreleasePoolPop(pool);
 	}
 }
@@ -642,6 +647,13 @@
 
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
+
+	if ([replacement isKindOfClass: [OFString_UTF8 class]] ||
+	    [replacement isKindOfClass: [OFMutableString_UTF8 class]]) {
+		if (((OFString_UTF8*)replacement)->_s->isUTF8)
+			_s->isUTF8 = true;
+	} else
+		_s->isUTF8 = true;
 }
 
 - (void)replaceOccurrencesOfString: (OFString*)string
@@ -722,6 +734,13 @@
 	_s->cString = newCString;
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
+
+	if ([replacement isKindOfClass: [OFString_UTF8 class]] ||
+	    [replacement isKindOfClass: [OFMutableString_UTF8 class]]) {
+		if (((OFString_UTF8*)replacement)->_s->isUTF8)
+			_s->isUTF8 = true;
+	} else
+		_s->isUTF8 = true;
 }
 
 - (void)deleteLeadingWhitespaces
