@@ -34,6 +34,110 @@ static OFString *c_ary[] = {
 	@"Baz"
 };
 
+@interface SimpleArray: OFArray
+{
+	OFMutableArray *_array;
+}
+@end
+
+@interface SimpleMutableArray: OFMutableArray
+{
+	OFMutableArray *_array;
+}
+@end
+
+@implementation SimpleArray
+- init
+{
+	self = [super init];
+
+	@try {
+		_array = [[OFMutableArray alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithObject: (id)object
+       arguments: (va_list)arguments
+{
+	self = [super init];
+
+	@try {
+		_array = [[OFMutableArray alloc] initWithObject: object
+						      arguments: arguments];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithObjects: (id const*)objects
+	    count: (size_t)count
+{
+	self = [super init];
+
+	@try {
+		_array = [[OFMutableArray alloc] initWithObjects: objects
+							   count: count];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_array release];
+
+	[super dealloc];
+}
+
+- (id)objectAtIndex: (size_t)index
+{
+	return [_array objectAtIndex: index];
+}
+
+- (size_t)count
+{
+	return [_array count];
+}
+@end
+
+@implementation SimpleMutableArray
++ (void)initialize
+{
+	if (self == [SimpleMutableArray class])
+		[self inheritMethodsFromClass: [SimpleArray class]];
+}
+
+- (void)insertObject: (id)object
+	     atIndex: (size_t)index
+{
+	[_array insertObject: object
+		     atIndex: index];
+}
+
+- (void)replaceObjectAtIndex: (size_t)index
+		  withObject: (id)object
+{
+	[_array replaceObjectAtIndex: index
+			  withObject: object];
+}
+
+- (void)removeObjectAtIndex: (size_t)index
+{
+	[_array removeObjectAtIndex: index];
+}
+@end
+
 @implementation TestsAppDelegate (OFArrayTests)
 - (void)arrayTestsWithClass: (Class)arrayClass
 	       mutableClass: (Class)mutableArrayClass
@@ -45,8 +149,6 @@ static OFString *c_ary[] = {
 	id obj;
 	bool ok;
 	size_t i;
-
-	module = [arrayClass className];
 
 	TEST(@"+[array]", (m[0] = [mutableArrayClass array]))
 
@@ -351,6 +453,11 @@ static OFString *c_ary[] = {
 
 - (void)arrayTests
 {
+	module = @"OFArray";
+	[self arrayTestsWithClass: [SimpleArray class]
+		     mutableClass: [SimpleMutableArray class]];
+
+	module = @"OFArray_adjacent";
 	[self arrayTestsWithClass: [OFArray class]
 		     mutableClass: [OFMutableArray class]];
 }

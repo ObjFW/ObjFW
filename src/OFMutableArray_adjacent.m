@@ -235,7 +235,7 @@
 	size_t count = [_array count];
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.length > count - range.location)
+	    range.location >= count || range.length > count - range.location)
 		@throw [OFOutOfRangeException exception];
 
 	copy = [self allocMemoryWithSize: sizeof(*copy)
