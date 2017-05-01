@@ -54,6 +54,152 @@ static uint16_t sutf16str[] = {
 	0
 };
 
+@interface SimpleString: OFString
+{
+	OFMutableString *_string;
+}
+@end
+
+@interface SimpleMutableString: OFMutableString
+{
+	OFMutableString *_string;
+}
+@end
+
+@implementation SimpleString
+- init
+{
+	self = [super init];
+
+	@try {
+		_string = [[OFMutableString alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithString: (OFString*)string
+{
+	self = [super init];
+
+	@try {
+		_string = [string mutableCopy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithCString: (const char*)cString
+	 encoding: (of_string_encoding_t)encoding
+	   length: (size_t)length
+{
+	self = [super init];
+
+	@try {
+		_string = [[OFMutableString alloc] initWithCString: cString
+							  encoding: encoding
+							    length: length];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithUTF16String: (const of_char16_t*)UTF16String
+	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	self = [super init];
+
+	@try {
+		_string = [[OFMutableString alloc]
+		    initWithUTF16String: UTF16String
+				 length: length
+			      byteOrder: byteOrder];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithUTF32String: (const of_char32_t*)UTF32String
+	       length: (size_t)length
+	    byteOrder: (of_byte_order_t)byteOrder
+{
+	self = [super init];
+
+	@try {
+		_string = [[OFMutableString alloc]
+		    initWithUTF32String: UTF32String
+				 length: length
+			      byteOrder: byteOrder];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithFormat: (OFConstantString*)format
+       arguments: (va_list)arguments
+{
+	self = [super init];
+
+	@try {
+		_string = [[OFMutableString alloc] initWithFormat: format
+							arguments: arguments];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_string release];
+
+	[super dealloc];
+}
+
+- (of_unichar_t)characterAtIndex: (size_t)index
+{
+	return [_string characterAtIndex: index];
+}
+
+- (size_t)length
+{
+	return [_string length];
+}
+@end
+
+@implementation SimpleMutableString
++ (void)initialize
+{
+	if (self == [SimpleMutableString class])
+		[self inheritMethodsFromClass: [SimpleString class]];
+}
+
+- (void)replaceCharactersInRange: (of_range_t)range
+		      withString: (OFString*)string
+{
+	[_string replaceCharactersInRange: range
+			       withString: string];
+}
+@end
+
 @interface EntityHandler: OFObject <OFStringXMLUnescapingDelegate>
 @end
 
@@ -81,10 +227,9 @@ static uint16_t sutf16str[] = {
 	const uint16_t *u16a;
 	EntityHandler *h;
 #ifdef OF_HAVE_BLOCKS
+	__block int j;
 	__block bool ok;
 #endif
-
-	module = [stringClass className];
 
 #define C(s) [stringClass stringWithString: s]
 
@@ -795,12 +940,11 @@ static uint16_t sutf16str[] = {
 		    return nil;
 	    }] isEqual: @"xbary"])
 
+	j = 0;
 	ok = true;
 	[C(@"foo\nbar\nbaz") enumerateLinesUsingBlock:
 	    ^ (OFString *line, bool *stop) {
-		static int i = 0;
-
-		switch (i) {
+		switch (j) {
 		case 0:
 			if (![line isEqual: @"foo"])
 				ok = false;
@@ -817,7 +961,7 @@ static uint16_t sutf16str[] = {
 			ok = false;
 		}
 
-		i++;
+		j++;
 	}];
 	TEST(@"-[enumerateLinesUsingBlock:]", ok)
 #endif
@@ -829,7 +973,12 @@ static uint16_t sutf16str[] = {
 
 - (void)stringTests
 {
-	[self stringTestsWithClass: [OFString class]
-		      mutableClass: [OFMutableString class]];
+	module = @"OFString";
+	[self stringTestsWithClass: [SimpleString class]
+		      mutableClass: [SimpleMutableString class]];
+
+	module = @"OFString_UTF8";
+	[self stringTestsWithClass: [OFString_UTF8 class]
+		      mutableClass: [OFMutableString_UTF8 class]];
 }
 @end
