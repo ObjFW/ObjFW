@@ -564,36 +564,49 @@ static struct {
 
 - (void)deleteLeadingWhitespaces
 {
+	void *pool = objc_autoreleasePoolPush();
+	const of_unichar_t *characters = [self characters];
 	size_t i, length = [self length];
 
 	for (i = 0; i < length; i++) {
-		of_unichar_t c = [self characterAtIndex: i];
+		of_unichar_t c = characters[i];
 
-		if (c != ' '  && c != '\t' && c != '\n' && c != '\r' &&
+		if (c != ' ' && c != '\t' && c != '\n' && c != '\r' &&
 		    c != '\f')
 			break;
 	}
+
+	objc_autoreleasePoolPop(pool);
 
 	[self deleteCharactersInRange: of_range(0, i)];
 }
 
 - (void)deleteTrailingWhitespaces
 {
-	size_t length = [self length];
-	ssize_t i;
+	void *pool;
+	const of_unichar_t *characters, *p;
+	size_t length, d;
 
-	if (length - 1 > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
+	length = [self length];
 
-	for (i = length - 1; i >= 0; i--) {
-		of_unichar_t c = [self characterAtIndex: i];
+	if (length == 0)
+		return;
 
-		if (c != ' '  && c != '\t' && c != '\n' && c != '\r' &&
-		    c != '\f')
+	pool = objc_autoreleasePoolPush();
+	characters = [self characters];
+
+	d = 0;
+	for (p = characters + length - 1; p >= characters; p--) {
+		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
+		    *p != '\f')
 			break;
+
+		d++;
 	}
 
-	[self deleteCharactersInRange: of_range(i + 1, length - i - 1)];
+	objc_autoreleasePoolPop(pool);
+
+	[self deleteCharactersInRange: of_range(length - d, d)];
 }
 
 - (void)deleteEnclosingWhitespaces
