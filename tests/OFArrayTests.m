@@ -27,7 +27,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFArray";
+static OFString *module = nil;
 static OFString *c_ary[] = {
 	@"Foo",
 	@"Bar",
@@ -35,7 +35,8 @@ static OFString *c_ary[] = {
 };
 
 @implementation TestsAppDelegate (OFArrayTests)
-- (void)arrayTests
+- (void)arrayTestsWithClass: (Class)arrayClass
+	       mutableClass: (Class)mutableArrayClass
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFArray *a[3];
@@ -45,14 +46,16 @@ static OFString *c_ary[] = {
 	bool ok;
 	size_t i;
 
-	TEST(@"+[array]", (m[0] = [OFMutableArray array]))
+	module = [arrayClass className];
+
+	TEST(@"+[array]", (m[0] = [mutableArrayClass array]))
 
 	TEST(@"+[arrayWithObjects:]",
-	    (a[0] = [OFArray arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
+	    (a[0] = [arrayClass arrayWithObjects: @"Foo", @"Bar", @"Baz", nil]))
 
 	TEST(@"+[arrayWithObjects:count:]",
-	    (a[1] = [OFArray arrayWithObjects: c_ary
-					count: 3]) &&
+	    (a[1] = [arrayClass arrayWithObjects: c_ary
+					   count: 3]) &&
 	    [a[1] isEqual: a[0]])
 
 	TEST(@"-[description]",
@@ -96,7 +99,7 @@ static OFString *c_ary[] = {
 
 	TEST(@"-[objectsInRange:]",
 	    [[a[0] objectsInRange: of_range(1, 2)] isEqual:
-	    [OFArray arrayWithObjects: c_ary[1], c_ary[2], nil]])
+	    [arrayClass arrayWithObjects: c_ary[1], c_ary[2], nil]])
 
 	TEST(@"-[replaceObject:withObject:]",
 	    R([m[0] replaceObject: c_ary[1]
@@ -138,24 +141,24 @@ static OFString *c_ary[] = {
 	[m[1] addObject: @"qux"];
 	[m[1] addObject: @"last"];
 	TEST(@"-[reverse]",
-	    R([m[1] reverse]) && [m[1] isEqual: [OFArray arrayWithObjects:
+	    R([m[1] reverse]) && [m[1] isEqual: [arrayClass arrayWithObjects:
 	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	[m[1] addObject: @"qux"];
 	[m[1] addObject: @"last"];
 	TEST(@"-[reversedArray]",
-	    [[m[1] reversedArray] isEqual: [OFArray arrayWithObjects:
+	    [[m[1] reversedArray] isEqual: [arrayClass arrayWithObjects:
 	    @"last", @"qux", @"Baz", @"Bar", @"Foo", nil]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	[m[1] addObject: @"0"];
 	[m[1] addObject: @"z"];
 	TEST(@"-[sortedArray]",
-	    [[m[1] sortedArray] isEqual: [OFArray arrayWithObjects:
+	    [[m[1] sortedArray] isEqual: [arrayClass arrayWithObjects:
 	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil]] &&
 	    [[m[1] sortedArrayWithOptions: OF_ARRAY_SORT_DESCENDING]
-	    isEqual: [OFArray arrayWithObjects:
+	    isEqual: [arrayClass arrayWithObjects:
 	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
@@ -166,13 +169,14 @@ static OFString *c_ary[] = {
 		of_range(0, [m[0] count] + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
-	    (a[1] = [OFArray arrayWithObjects: @"", @"a", @"b", @"c", nil]) &&
+	    (a[1] = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",
+	    nil]) &&
 	    [[a[1] componentsJoinedByString: @" "] isEqual: @" a b c"] &&
-	    (a[1] = [OFArray arrayWithObject: @"foo"]) &&
+	    (a[1] = [arrayClass arrayWithObject: @"foo"]) &&
 	    [[a[1] componentsJoinedByString: @" "] isEqual: @"foo"])
 
 	TEST(@"-[componentsJoinedByString:options]",
-	    (a[1] = [OFArray arrayWithObjects: @"", @"foo", @"", @"", @"bar",
+	    (a[1] = [arrayClass arrayWithObjects: @"", @"foo", @"", @"", @"bar",
 	    @"", nil]) && [[a[1] componentsJoinedByString: @" "
 						  options: OF_ARRAY_SKIP_EMPTY]
 	    isEqual: @"foo bar"])
@@ -315,7 +319,7 @@ static OFString *c_ary[] = {
 	    }] description] isEqual: @"(\n\tfoo\n)"])
 
 	TEST(@"-[foldUsingBlock:]",
-	    [[OFArray arrayWithObjects: [OFMutableString string], @"foo",
+	    [[arrayClass arrayWithObjects: [OFMutableString string], @"foo",
 	    @"bar", @"baz", nil] foldUsingBlock: ^ id (id left, id right) {
 		[left appendString: right];
 		return left;
@@ -323,25 +327,31 @@ static OFString *c_ary[] = {
 #endif
 
 	TEST(@"-[valueForKey:]",
-	    [[[OFArray arrayWithObjects: @"foo", @"bar", @"quxqux", nil]
+	    [[[arrayClass arrayWithObjects: @"foo", @"bar", @"quxqux", nil]
 	    valueForKey: @"length"] isEqual:
-	    [OFArray arrayWithObjects: [OFNumber numberWithSize: 3],
+	    [arrayClass arrayWithObjects: [OFNumber numberWithSize: 3],
 	    [OFNumber numberWithSize: 3], [OFNumber numberWithSize: 6], nil]] &&
-	    [[[OFArray arrayWithObjects: @"1", @"2", nil]
+	    [[[arrayClass arrayWithObjects: @"1", @"2", nil]
 	    valueForKey: @"@count"] isEqual: [OFNumber numberWithSize: 2]])
 
-	m[0] = [OFMutableArray arrayWithObjects:
+	m[0] = [mutableArrayClass arrayWithObjects:
 	    [OFURL URLWithString: @"http://foo.bar/"],
 	    [OFURL URLWithString: @"http://bar.qux/"],
 	    [OFURL URLWithString: @"http://qux.quxqux/"], nil];
 	TEST(@"-[setValue:forKey:]",
 	    R([m[0] setValue: [OFNumber numberWithShort: 1234]
 		      forKey: @"port"]) &&
-	    [m[0] isEqual: [OFArray arrayWithObjects:
+	    [m[0] isEqual: [arrayClass arrayWithObjects:
 	    [OFURL URLWithString: @"http://foo.bar:1234/"],
 	    [OFURL URLWithString: @"http://bar.qux:1234/"],
 	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])
 
 	[pool drain];
+}
+
+- (void)arrayTests
+{
+	[self arrayTestsWithClass: [OFArray class]
+		     mutableClass: [OFMutableArray class]];
 }
 @end
