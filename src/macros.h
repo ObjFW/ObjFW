@@ -168,6 +168,7 @@
 # define OF_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
 # define OF_ASSUME_NONNULL_END _Pragma("clang assume_nonnull end")
 # define OF_NULLABLE_PROPERTY(...) (__VA_ARGS__, nullable)
+# define OF_NULL_RESETTABLE_PROPERTY(...) (__VA_ARGS__, null_resettable)
 #else
 # define OF_ASSUME_NONNULL_BEGIN
 # define OF_ASSUME_NONNULL_END
@@ -175,6 +176,7 @@
 # define _Nullable
 # define _Null_unspecified
 # define OF_NULLABLE_PROPERTY
+# define OF_NULL_RESETTABLE_PROPERTY
 # define nonnull
 # define nullable
 #endif
