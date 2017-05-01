@@ -27,7 +27,7 @@
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFDictionary";
+static OFString *module = nil;
 static OFString *keys[] = {
 	@"key1",
 	@"key2"
@@ -37,11 +37,132 @@ static OFString *values[] = {
 	@"value2"
 };
 
+@interface SimpleDictionary: OFDictionary
+{
+	OFMutableDictionary *_dictionary;
+}
+@end
+
+@interface SimpleMutableDictionary: OFMutableDictionary
+{
+	OFMutableDictionary *_dictionary;
+}
+@end
+
+@implementation SimpleDictionary
+- init
+{
+	self = [super init];
+
+	@try {
+		_dictionary = [[OFMutableDictionary alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithKey: (id)key
+    arguments: (va_list)arguments
+{
+	self = [super init];
+
+	@try {
+		_dictionary = [[OFMutableDictionary alloc]
+		    initWithKey: key
+		      arguments: arguments];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithObjects: (const id*)objects
+	  forKeys: (const id*)keys
+	    count: (size_t)count
+{
+	self = [super init];
+
+	@try {
+		_dictionary = [[OFMutableDictionary alloc]
+		    initWithObjects: objects
+			    forKeys: keys
+			      count: count];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_dictionary release];
+
+	[super dealloc];
+}
+
+- (id)objectForKey: (id)key
+{
+	return [_dictionary objectForKey: key];
+}
+
+- (size_t)count
+{
+	return [_dictionary count];
+}
+
+- (OFEnumerator*)keyEnumerator
+{
+	return [_dictionary keyEnumerator];
+}
+
+- (OFEnumerator*)objectEnumerator
+{
+	return [_dictionary objectEnumerator];
+}
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+			   objects: (id*)objects
+			     count: (int)count
+{
+	return [_dictionary countByEnumeratingWithState: state
+						objects: objects
+						  count: count];
+}
+@end
+
+@implementation SimpleMutableDictionary
++ (void)initialize
+{
+	if (self == [SimpleMutableDictionary class])
+		[self inheritMethodsFromClass: [SimpleDictionary class]];
+}
+
+- (void)setObject: (id)object
+	   forKey: (id)key
+{
+	[_dictionary setObject: object
+			forKey: key];
+}
+
+- (void)removeObjectForKey: (id)key
+{
+	[_dictionary removeObjectForKey: key];
+}
+@end
+
 @implementation TestsAppDelegate (OFDictionaryTests)
-- (void)dictionaryTests
+- (void)dictionaryTestsWithClass: (Class)dictionaryClass
+		    mutableClass: (Class)mutableDictionaryClass
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFMutableDictionary *dict = [OFMutableDictionary dictionary];
+	OFMutableDictionary *dict = [mutableDictionaryClass dictionary];
 	OFDictionary *idict;
 	OFEnumerator *key_enum, *obj_enum;
 	OFArray *akeys, *avalues;
@@ -63,8 +184,8 @@ static OFString *values[] = {
 
 	EXPECT_EXCEPTION(@"Catching -[setValue:forKey:] on immutable "
 	    @"dictionary", OFUndefinedKeyException,
-	    [[OFDictionary dictionary] setValue: @"x"
-					 forKey: @"x"])
+	    [[dictionaryClass dictionary] setValue: @"x"
+					    forKey: @"x"])
 
 	TEST(@"-[containsObject:]",
 	    [dict containsObject: values[0]] &&
@@ -205,22 +326,21 @@ static OFString *values[] = {
 	TEST(@"-[count]", [dict count] == 2)
 
 	TEST(@"+[dictionaryWithKeysAndObjects:]",
-	    (idict = [OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
-								 @"baz", @"qux",
-								 nil]) &&
+	    (idict = [dictionaryClass dictionaryWithKeysAndObjects:
+	    @"foo", @"bar", @"baz", @"qux", nil]) &&
 	    [[idict objectForKey: @"foo"] isEqual: @"bar"] &&
 	    [[idict objectForKey: @"baz"] isEqual: @"qux"])
 
 	TEST(@"+[dictionaryWithObject:forKey:]",
-	    (idict = [OFDictionary dictionaryWithObject: @"bar"
-						 forKey: @"foo"]) &&
+	    (idict = [dictionaryClass dictionaryWithObject: @"bar"
+						    forKey: @"foo"]) &&
 	    [[idict objectForKey: @"foo"] isEqual: @"bar"])
 
 	akeys = [OFArray arrayWithObjects: keys[0], keys[1], nil];
 	avalues = [OFArray arrayWithObjects: values[0], values[1], nil];
 	TEST(@"+[dictionaryWithObjects:forKeys:]",
-	    (idict = [OFDictionary dictionaryWithObjects: avalues
-						 forKeys: akeys]) &&
+	    (idict = [dictionaryClass dictionaryWithObjects: avalues
+						    forKeys: akeys]) &&
 	    [[idict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[idict objectForKey: keys[1]] isEqual: values[1]])
 
@@ -256,5 +376,16 @@ static OFString *values[] = {
 	    [dict isEqual: idict])
 
 	[pool drain];
+}
+
+- (void)dictionaryTests
+{
+	module = @"OFDictionary";
+	[self dictionaryTestsWithClass: [SimpleDictionary class]
+			  mutableClass: [SimpleMutableDictionary class]];
+
+	module = @"OFDictionary_hashtable";
+	[self dictionaryTestsWithClass: [OFDictionary class]
+			  mutableClass: [OFMutableDictionary class]];
 }
 @end

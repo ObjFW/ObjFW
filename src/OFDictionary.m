@@ -458,7 +458,7 @@ static struct {
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
 			   objects: (id*)objects
-			     count: (int)count_
+			     count: (int)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
