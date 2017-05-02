@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFOpenItemFailedException \
  *	  OFOpenItemFailedException.h ObjFW/OFOpenItemFailedException.h
@@ -36,7 +38,7 @@
 /*!
  * The mode in which the item should have been opened.
  */
-@property (readonly, nonatomic) OFString *mode;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *mode;
 
 /*!
  * The errno of the error that occurred.
@@ -59,7 +61,7 @@
  * @return A new, autoreleased open item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
-			     mode: (OFString*)mode;
+			     mode: (nullable OFString*)mode;
 
 /*!
  * @brief Creates a new, autoreleased open item failed exception.
@@ -80,7 +82,7 @@
  * @return A new, autoreleased open item failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
-			     mode: (OFString*)mode
+			     mode: (nullable OFString*)mode
 			    errNo: (int)errNo;
 
 /*!
@@ -99,7 +101,7 @@
  * @return An initialized open item failed exception
  */
 - initWithPath: (OFString*)path
-	  mode: (OFString*)mode;
+	  mode: (nullable OFString*)mode;
 
 /*!
  * @brief Initializes an already allocated open item failed exception.
@@ -120,6 +122,8 @@
  * @return An initialized open item failed exception
  */
 - initWithPath: (OFString*)path
-	  mode: (OFString*)mode
+	  mode: (nullable OFString*)mode
 	 errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

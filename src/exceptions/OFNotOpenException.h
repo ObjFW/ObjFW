@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFNotOpenException OFNotOpenException.h ObjFW/OFNotOpenException.h
  *
@@ -47,3 +49,5 @@
  */
 - initWithObject: (id)object;
 @end
+
+OF_ASSUME_NONNULL_END

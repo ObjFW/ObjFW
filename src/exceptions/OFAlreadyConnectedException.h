@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFAlreadyConnectedException \
  *	  OFAlreadyConnectedException.h ObjFW/OFAlreadyConnectedException.h
@@ -35,7 +37,7 @@
 /*!
  * The socket which is already connected.
  */
-@property (readonly, nonatomic) id socket;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id socket;
 
 /*!
  * @brief Creates a new, autoreleased already connected exception.
@@ -43,7 +45,7 @@
  * @param socket The socket which is already connected
  * @return A new, autoreleased already connected exception
  */
-+ (instancetype)exceptionWithSocket: (id)socket;
++ (instancetype)exceptionWithSocket: (nullable id)socket;
 
 /*!
  * @brief Initializes an already allocated already connected exception.
@@ -51,5 +53,7 @@
  * @param socket The socket which is already connected
  * @return An initialized already connected exception
  */
-- initWithSocket: (id)socket;
+- initWithSocket: (nullable id)socket;
 @end
+
+OF_ASSUME_NONNULL_END

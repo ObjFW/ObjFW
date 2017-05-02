@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFEnumerationMutationException \
  *	  OFEnumerationMutationException.h \
@@ -50,3 +52,5 @@
  */
 - initWithObject: (id)object;
 @end
+
+OF_ASSUME_NONNULL_END

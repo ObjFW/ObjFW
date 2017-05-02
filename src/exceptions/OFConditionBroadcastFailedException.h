@@ -20,6 +20,8 @@
 # error No threads available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFCondition;
 
 /*!
@@ -37,7 +39,7 @@
 /*!
  * The condition which could not be broadcasted.
  */
-@property (readonly, nonatomic) OFCondition *condition;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 
 /*!
  * @brief Returns a new, autoreleased condition broadcast failed exception.
@@ -45,7 +47,7 @@
  * @param condition The condition which could not be broadcasted
  * @return A new, autoreleased condition broadcast failed exception
  */
-+ (instancetype)exceptionWithCondition: (OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (nullable OFCondition*)condition;
 
 /*!
  * @brief Initializes an already allocated condition broadcast failed exception.
@@ -53,5 +55,7 @@
  * @param condition The condition which could not be broadcasted
  * @return An initialized condition broadcast failed exception
  */
-- initWithCondition: (OFCondition*)condition;
+- initWithCondition: (nullable OFCondition*)condition;
 @end
+
+OF_ASSUME_NONNULL_END

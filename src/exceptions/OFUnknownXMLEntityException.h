@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFUnknownXMLEntityException \
  *	  OFUnknownXMLEntityException.h ObjFW/OFUnknownXMLEntityException.h
@@ -49,3 +51,5 @@
  */
 - initWithEntityName: (OFString*)entityName;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -28,11 +28,6 @@
 	return [[[self alloc] initWithThread: thread] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithThread: (OFThread*)thread
 {
 	self = [super init];
@@ -51,8 +46,13 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Deallocation of a thread of type %@ was tried, even though it "
-	    @"was still running!", [_thread class]];
+	if (_thread)
+		return [OFString stringWithFormat:
+		    @"Deallocation of a thread of type %@ was tried, even "
+		    @"though it was still running!",
+		    [_thread class]];
+	else
+		return @"Deallocation of a thread was tried, even though it "
+		    @"was still running!";
 }
 @end

@@ -28,11 +28,6 @@
 	return [[[self alloc] initWithThread: thread] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithThread: (OFThread*)thread
 {
 	self = [super init];
@@ -51,8 +46,13 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Joining a thread of type %@ failed! Most likely, another thread "
-	    @"already waits for the thread to join.", [_thread class]];
+	if (_thread != nil)
+		return [OFString stringWithFormat:
+		    @"Joining a thread of type %@ failed! Most likely, another "
+		    @"thread already waits for the thread to join.",
+		    [_thread class]];
+	else
+		return @"Joining a thread failed! Most likely, another thread "
+		    @"already waits for the thread to join.";
 }
 @end

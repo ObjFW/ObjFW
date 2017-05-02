@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFMoveItemFailedException \
  *	  OFMoveItemFailedException.h ObjFW/OFMoveItemFailedException.h
@@ -67,3 +69,5 @@
      destinationPath: (OFString*)destinationPath
 	       errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -17,6 +17,8 @@
 #import "OFException.h"
 #import "OFLocking.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFStillLockedException \
  *	  OFStillLockedException.h ObjFW/OFStillLockedException.h
@@ -31,7 +33,7 @@
 /*!
  * The lock which is still locked.
  */
-@property (readonly, nonatomic) id <OFLocking> lock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OFLocking> lock;
 
 /*!
  * @brief Creates a new, autoreleased still locked exception.
@@ -39,7 +41,7 @@
  * @param lock The lock which is still locked
  * @return A new, autoreleased still locked exception
  */
-+ (instancetype)exceptionWithLock: (id <OFLocking>)lock;
++ (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock;
 
 /*!
  * @brief Initializes an already allocated still locked exception.
@@ -47,5 +49,7 @@
  * @param lock The lock which is still locked
  * @return An initialized still locked exception
  */
-- initWithLock: (id <OFLocking>)lock;
+- initWithLock: (nullable id <OFLocking>)lock;
 @end
+
+OF_ASSUME_NONNULL_END

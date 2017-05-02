@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFTruncatedDataException \
  *	  OFTruncatedDataException.h ObjFW/OFTruncatedDataException.h
@@ -25,3 +27,5 @@
  */
 @interface OFTruncatedDataException: OFException
 @end
+
+OF_ASSUME_NONNULL_END

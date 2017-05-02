@@ -16,7 +16,8 @@
 
 #import "OFException.h"
 
-#if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFLinkFailedException \
  *	  OFLinkFailedException.h ObjFW/OFLinkFailedException.h
@@ -88,4 +89,5 @@
      destinationPath: (OFString*)destinationPath
 	       errNo: (int)errNo;
 @end
-#endif
+
+OF_ASSUME_NONNULL_END

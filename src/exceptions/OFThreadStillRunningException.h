@@ -20,6 +20,8 @@
 # error No threads available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFThread;
 
 /*!
@@ -36,7 +38,7 @@
 /*!
  * The thread which is still running.
  */
-@property (readonly, retain) OFThread *thread;
+@property OF_NULLABLE_PROPERTY (readonly, retain) OFThread *thread;
 
 /*!
  * @brief Creates a new, autoreleased thread still running exception.
@@ -44,7 +46,7 @@
  * @param thread The thread which is still running
  * @return A new, autoreleased thread still running exception
  */
-+ (instancetype)exceptionWithThread: (OFThread*)thread;
++ (instancetype)exceptionWithThread: (nullable OFThread*)thread;
 
 /*!
  * @brief Initializes an already allocated thread still running exception.
@@ -52,5 +54,7 @@
  * @param thread The thread which is still running
  * @return An initialized thread still running exception
  */
-- initWithThread: (OFThread*)thread;
+- initWithThread: (nullable OFThread*)thread;
 @end
+
+OF_ASSUME_NONNULL_END

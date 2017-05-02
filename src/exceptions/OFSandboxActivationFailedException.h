@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFSandbox;
 
 /*!
@@ -61,3 +63,5 @@
 - initWithSandbox: (OFSandbox*)sandbox
 	    errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

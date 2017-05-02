@@ -41,7 +41,8 @@ static of_mutex_t mutex;
 		return;
 
 	if (!of_mutex_new(&mutex))
-		@throw [OFInitializationFailedException exception];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: class];
 }
 #endif
 

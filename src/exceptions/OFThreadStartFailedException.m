@@ -28,11 +28,6 @@
 	return [[[self alloc] initWithThread: thread] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithThread: (OFThread*)thread
 {
 	self = [super init];
@@ -51,7 +46,10 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Starting a thread of type %@ failed!", [_thread class]];
+	if (_thread != nil)
+		return [OFString stringWithFormat:
+		    @"Starting a thread of type %@ failed!", [_thread class]];
+	else
+		return @"Starting a thread failed!";
 }
 @end

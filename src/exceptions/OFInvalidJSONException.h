@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInvalidJSONException \
  *	  OFInvalidJSONException.h ObjFW/OFInvalidJSONException.h
@@ -58,3 +60,5 @@
 - initWithString: (OFString*)string
 	    line: (size_t)line;
 @end
+
+OF_ASSUME_NONNULL_END

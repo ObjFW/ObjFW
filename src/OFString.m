@@ -590,7 +590,8 @@ static struct {
 
 #if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)
-		@throw [OFInitializationFailedException exception];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
 #endif
 }
 

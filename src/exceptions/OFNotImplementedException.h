@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFNotImplementedException \
  *	  OFNotImplementedException.h ObjFW/OFNotImplementedException.h
@@ -59,3 +61,5 @@
 - initWithSelector: (SEL)selector
 	    object: (id)object;
 @end
+
+OF_ASSUME_NONNULL_END

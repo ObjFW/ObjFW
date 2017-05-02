@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFXMLParser;
 
 /*!
@@ -60,3 +62,5 @@
 - initWithPrefix: (OFString*)prefix
 	  parser: (OFXMLParser*)parser;
 @end
+
+OF_ASSUME_NONNULL_END

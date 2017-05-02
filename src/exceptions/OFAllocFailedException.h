@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 
 /*!
@@ -41,3 +43,5 @@
  */
 - (OFString*)description;
 @end
+
+OF_ASSUME_NONNULL_END

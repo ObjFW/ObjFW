@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInitializationFailedException \
  *	  OFInitializationFailedException.h \
@@ -31,7 +33,7 @@
 /*!
  * The class for which initialization failed.
  */
-@property (readonly, nonatomic) Class inClass;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class inClass;
 
 /*!
  * @brief Creates a new, autoreleased initialization failed exception.
@@ -39,7 +41,7 @@
  * @param class_ The class for which initialization failed
  * @return A new, autoreleased initialization failed exception
  */
-+ (instancetype)exceptionWithClass: (Class)class_;
++ (instancetype)exceptionWithClass: (nullable Class)class_;
 
 /*!
  * @brief Initializes an already allocated initialization failed exception.
@@ -47,5 +49,7 @@
  * @param class_ The class for which initialization failed
  * @return An initialized initialization failed exception
  */
-- initWithClass: (Class)class_;
+- initWithClass: (nullable Class)class_;
 @end
+
+OF_ASSUME_NONNULL_END

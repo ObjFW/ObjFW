@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFXMLElement;
 
 /*!
@@ -64,3 +66,5 @@
 - initWithNamespace: (OFString*)namespace_
 	    element: (OFXMLElement*)element;
 @end
+
+OF_ASSUME_NONNULL_END

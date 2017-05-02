@@ -16,6 +16,8 @@
 
 #import "OFReadOrWriteFailedException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFWriteFailedException \
  *	  OFWriteFailedException.h ObjFW/OFWriteFailedException.h
@@ -24,3 +26,5 @@
  */
 @interface OFWriteFailedException: OFReadOrWriteFailedException
 @end
+
+OF_ASSUME_NONNULL_END

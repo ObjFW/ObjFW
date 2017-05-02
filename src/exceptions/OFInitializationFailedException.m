@@ -27,11 +27,6 @@
 	return [[[self alloc] initWithClass: class] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithClass: (Class)class
 {
 	self = [super init];
@@ -43,7 +38,10 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Initialization failed for or in class %@!", _inClass];
+	if (_inClass != Nil)
+		return [OFString stringWithFormat:
+		    @"Initialization failed for or in class %@!", _inClass];
+	else
+		return @"Initialization failed!";
 }
 @end

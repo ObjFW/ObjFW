@@ -20,6 +20,8 @@
 # error No threads available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFCondition;
 
 /*!
@@ -37,7 +39,7 @@
 /*!
  * The condition for which could not be waited.
  */
-@property (readonly, nonatomic) OFCondition *condition;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 
 /*!
  * @brief Creates a new, autoreleased condition wait failed exception.
@@ -45,7 +47,7 @@
  * @param condition The condition for which could not be waited
  * @return A new, autoreleased condition wait failed exception
  */
-+ (instancetype)exceptionWithCondition: (OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (nullable OFCondition*)condition;
 
 /*!
  * @brief Initializes an already allocated condition wait failed exception.
@@ -53,5 +55,7 @@
  * @param condition The condition for which could not be waited
  * @return An initialized condition wait failed exception
  */
-- initWithCondition: (OFCondition*)condition;
+- initWithCondition: (nullable OFCondition*)condition;
 @end
+
+OF_ASSUME_NONNULL_END

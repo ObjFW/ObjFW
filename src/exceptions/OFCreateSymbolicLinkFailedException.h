@@ -16,7 +16,8 @@
 
 #import "OFException.h"
 
-#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFCreateSymbolicLinkFailedException \
  *	  OFCreateSymbolicLinkFailedException.h \
@@ -91,4 +92,5 @@
      destinationPath: (OFString*)destinationPath
 	       errNo: (int)errNo;
 @end
-#endif
+
+OF_ASSUME_NONNULL_END

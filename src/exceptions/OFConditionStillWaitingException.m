@@ -28,11 +28,6 @@
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithCondition: (OFCondition*)condition
 {
 	self = [super init];
@@ -51,8 +46,13 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Deallocation of a condition of type %@ was tried, even though a "
-	    @"thread was still waiting for it!", [_condition class]];
+	if (_condition != nil)
+		return [OFString stringWithFormat:
+		    @"Deallocation of a condition of type %@ was tried, even "
+		    "though a thread was still waiting for it!",
+		    [_condition class]];
+	else
+		return @"Deallocation of a condition was tried, even though a "
+		    "thread was still waiting for it!";
 }
 @end

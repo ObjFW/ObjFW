@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFUnsupportedVersionException \
  *	  OFUnsupportedVersionException.h ObjFW/OFUnsupportedVersionException.h
@@ -49,3 +51,5 @@
  */
 - initWithVersion: (OFString*)version;
 @end
+
+OF_ASSUME_NONNULL_END

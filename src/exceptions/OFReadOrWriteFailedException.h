@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFReadOrWriteFailedException \
  *	  OFReadOrWriteFailedException.h ObjFW/OFReadOrWriteFailedException.h
@@ -93,3 +95,5 @@
   requestedLength: (size_t)requestedLength
 	    errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

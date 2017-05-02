@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFKernelEventObserver;
 
 /*!
@@ -60,3 +62,5 @@
 - initWithObserver: (OFKernelEventObserver*)observer
 	     errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 
@@ -66,3 +68,5 @@
 - initWithRequest: (OFHTTPRequest*)request
 	 response: (OFHTTPResponse*)response;
 @end
+
+OF_ASSUME_NONNULL_END

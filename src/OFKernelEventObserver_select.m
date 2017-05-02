@@ -49,7 +49,8 @@
 
 #ifndef OF_WINDOWS
 	if (_cancelFD[0] >= (int)FD_SETSIZE)
-		@throw [OFInitializationFailedException exception];
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: [self class]];
 #endif
 
 	FD_ZERO(&_readFDs);

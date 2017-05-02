@@ -20,6 +20,8 @@
 # error No threads available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFThread;
 
 /*!
@@ -36,7 +38,7 @@
 /*!
  * The thread which could not be started.
  */
-@property (readonly, nonatomic) OFThread *thread;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 
 /*!
  * @brief Creates a new, autoreleased thread start failed exception.
@@ -44,7 +46,7 @@
  * @param thread The thread which could not be started
  * @return A new, autoreleased thread start failed exception
  */
-+ (instancetype)exceptionWithThread: (OFThread*)thread;
++ (instancetype)exceptionWithThread: (nullable OFThread*)thread;
 
 /*!
  * @brief Initializes an already allocated thread start failed exception.
@@ -52,5 +54,7 @@
  * @param thread The thread which could not be started
  * @return An initialized thread start failed exception
  */
-- initWithThread: (OFThread*)thread;
+- initWithThread: (nullable OFThread*)thread;
 @end
+
+OF_ASSUME_NONNULL_END

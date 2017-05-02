@@ -19,7 +19,6 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFString.h"
 
-#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
 @implementation OFCreateSymbolicLinkFailedException
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
@@ -100,4 +99,3 @@
 		    _destinationPath, _sourcePath];
 }
 @end
-#endif

@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFUndefinedKeyException \
  *	  OFUndefinedKeyException.h ObjFW/OFUndefinedKeyException.h
@@ -92,3 +94,5 @@
 	     key: (OFString*)key
 	   value: (id)value;
 @end
+
+OF_ASSUME_NONNULL_END

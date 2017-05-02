@@ -19,7 +19,6 @@
 #import "OFLinkFailedException.h"
 #import "OFString.h"
 
-#if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
 @implementation OFLinkFailedException
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
@@ -99,4 +98,3 @@
 		    _sourcePath, _destinationPath];
 }
 @end
-#endif

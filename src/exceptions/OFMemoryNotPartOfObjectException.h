@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFMemoryNotPartOfObjectException \
  *	  OFMemoryNotPartOfObjectException.h \
@@ -59,3 +61,5 @@
 - initWithPointer: (void*)pointer
 	   object: (id)object;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFListenFailedException \
  *	  OFListenFailedException.h ObjFW/OFListenFailedException.h
@@ -71,3 +73,5 @@
 	 backLog: (int)backLog
 	   errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

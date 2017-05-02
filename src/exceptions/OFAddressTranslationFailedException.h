@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFAddressTranslationFailedException \
  *	  OFAddressTranslationFailedException.h \
@@ -36,7 +38,7 @@
 /*!
  * The host for which the address translation was requested.
  */
-@property (readonly, nonatomic) OFString *host;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
 
 /*!
  * @brief Creates a new, autoreleased address translation failed exception.
@@ -44,9 +46,9 @@
  * @param host The host for which translation was requested
  * @return A new, autoreleased address translation failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString*)host;
++ (instancetype)exceptionWithHost: (nullable OFString*)host;
 
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (nullable OFString*)host
 			    error: (int)error;
 + (instancetype)exceptionWithError: (int)error;
 
@@ -56,9 +58,11 @@
  * @param host The host for which translation was requested
  * @return An initialized address translation failed exception
  */
-- initWithHost: (OFString*)host;
+- initWithHost: (nullable OFString*)host;
 
-- (instancetype)initWithHost: (OFString*)host
+- (instancetype)initWithHost: (nullable OFString*)host
 		       error: (int)error;
 - (instancetype)initWithError: (int)error;
 @end
+
+OF_ASSUME_NONNULL_END

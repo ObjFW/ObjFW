@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInvalidArgumentException \
  *	  OFInvalidArgumentException.h ObjFW/OFInvalidArgumentException.h
@@ -24,3 +26,5 @@
  */
 @interface OFInvalidArgumentException: OFException
 @end
+
+OF_ASSUME_NONNULL_END

@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInvalidFormatException \
  *	  OFInvalidFormatException.h ObjFW/OFInvalidFormatException.h
@@ -24,3 +26,5 @@
  */
 @interface OFInvalidFormatException: OFException
 @end
+
+OF_ASSUME_NONNULL_END

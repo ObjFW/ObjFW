@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFChangeCurrentDirectoryPathFailedException \
  *	  OFChangeCurrentDirectoryPathFailedException.h \
@@ -63,3 +65,5 @@
 - initWithPath: (OFString*)path
 	 errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

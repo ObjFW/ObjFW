@@ -16,7 +16,8 @@
 
 #import "OFException.h"
 
-#ifdef OF_HAVE_CHOWN
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFChangeOwnerFailedException \
  *	  OFChangeOwnerFailedException.h ObjFW/OFChangeOwnerFailedException.h
@@ -37,12 +38,12 @@
 /*!
  * The new owner for the item.
  */
-@property (readonly, nonatomic) OFString *owner;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *owner;
 
 /*!
  * The new group for the item.
  */
-@property (readonly, nonatomic) OFString *group;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *group;
 
 /*!
  * The errno of the error that occurred.
@@ -59,8 +60,8 @@
  * @return A new, autoreleased change owner failed exception
  */
 + (instancetype)exceptionWithPath: (OFString*)path
-			    owner: (OFString*)owner
-			    group: (OFString*)group
+			    owner: (nullable OFString*)owner
+			    group: (nullable OFString*)group
 			    errNo: (int)errNo;
 
 /*!
@@ -73,8 +74,9 @@
  * @return An initialized change owner failed exception
  */
 - initWithPath: (OFString*)path
-	 owner: (OFString*)owner
-	 group: (OFString*)group
+	 owner: (nullable OFString*)owner
+	 group: (nullable OFString*)group
 	 errNo: (int)errNo;
 @end
-#endif
+
+OF_ASSUME_NONNULL_END

@@ -28,11 +28,6 @@
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - initWithCondition: (OFCondition*)condition
 {
 	self = [super init];
@@ -51,7 +46,11 @@
 
 - (OFString*)description
 {
-	return [OFString stringWithFormat:
-	    @"Broadcasting a condition of type %@ failed!", [_condition class]];
+	if (_condition != nil)
+		return [OFString stringWithFormat:
+		    @"Broadcasting a condition of type %@ failed!",
+		    [_condition class]];
+	else
+		return @"Broadcasting a condition failed!";
 }
 @end

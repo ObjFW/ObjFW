@@ -18,6 +18,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFChangePermissionsFailedException \
  *	  OFChangePermissionsFailedException.h \
@@ -72,3 +74,5 @@
    permissions: (mode_t)permissions
 	 errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -17,6 +17,8 @@
 #import "OFException.h"
 #import "OFLocking.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFLockFailedException \
  *	  OFLockFailedException.h ObjFW/OFLockFailedException.h
@@ -31,7 +33,7 @@
 /*!
  * The lock which could not be locked.
  */
-@property (readonly, nonatomic) id <OFLocking> lock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OFLocking> lock;
 
 /*!
  * @brief Creates a new, autoreleased lock failed exception.
@@ -39,7 +41,7 @@
  * @param lock The lock which could not be locked
  * @return A new, autoreleased lock failed exception
  */
-+ (instancetype)exceptionWithLock: (id <OFLocking>)lock;
++ (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock;
 
 /*!
  * @brief Initializes an already allocated lock failed exception.
@@ -47,5 +49,7 @@
  * @param lock The lock which could not be locked
  * @return An initialized lock failed exception
  */
-- initWithLock: (id <OFLocking>)lock;
+- initWithLock: (nullable id <OFLocking>)lock;
 @end
+
+OF_ASSUME_NONNULL_END

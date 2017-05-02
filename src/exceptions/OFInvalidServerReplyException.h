@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInvalidServerReplyException \
  *	  OFInvalidServerReplyException.h ObjFW/OFInvalidServerReplyException.h
@@ -24,3 +26,5 @@
  */
 @interface OFInvalidServerReplyException: OFException
 @end
+
+OF_ASSUME_NONNULL_END

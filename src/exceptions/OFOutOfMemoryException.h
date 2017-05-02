@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFOutOfMemoryException \
  *	  OFOutOfMemoryException.h ObjFW/OFOutOfMemoryException.h
@@ -48,3 +50,5 @@
  */
 - initWithRequestedSize: (size_t)requestedSize;
 @end
+
+OF_ASSUME_NONNULL_END

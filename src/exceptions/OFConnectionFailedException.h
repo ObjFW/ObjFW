@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFConnectionFailedException \
  *	  OFConnectionFailedException.h ObjFW/OFConnectionFailedException.h
@@ -106,3 +108,5 @@
 	socket: (id)socket
 	 errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

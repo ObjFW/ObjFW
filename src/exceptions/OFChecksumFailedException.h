@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFChecksumFailedException \
  *	  OFChecksumFailedException.h ObjFW/OFChecksumFailedException.h
@@ -24,3 +26,5 @@
  */
 @interface OFChecksumFailedException: OFException
 @end
+
+OF_ASSUME_NONNULL_END

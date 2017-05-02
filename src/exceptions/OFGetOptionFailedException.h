@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFStream;
 
 /*!
@@ -60,3 +62,5 @@
 - initWithStream: (OFStream*)stream
 	   errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

@@ -19,7 +19,6 @@
 #import "OFChangeOwnerFailedException.h"
 #import "OFString.h"
 
-#ifdef OF_HAVE_CHOWN
 @implementation OFChangeOwnerFailedException
 @synthesize path = _path, owner = _owner, group = _group, errNo = _errNo;
 
@@ -84,4 +83,3 @@
 		    _path, _owner, _group, of_strerror(_errNo)];
 }
 @end
-#endif

@@ -16,6 +16,8 @@
 
 #import "OFObject.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFString;
 #ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
@@ -166,7 +168,7 @@ extern int of_wsaerr_to_errno(int);
  *
  * @return A backtrace of when the exception was created
  */
-- (OFArray*)backtrace;
+- (nullable OFArray*)backtrace;
 @end
 
 #ifdef __cplusplus
@@ -176,3 +178,5 @@ extern OFString* of_strerror(int errNo);
 #ifdef __cplusplus
 }
 #endif
+
+OF_ASSUME_NONNULL_END

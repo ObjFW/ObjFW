@@ -20,6 +20,8 @@
 # error No sockets available!
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFBindFailedException \
  *	  OFBindFailedException.h ObjFW/OFBindFailedException.h
@@ -82,3 +84,5 @@
 	socket: (id)socket
 	 errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

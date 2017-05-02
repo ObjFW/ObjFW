@@ -17,6 +17,8 @@
 #import "OFException.h"
 #import "OFSeekableStream.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFSeekFailedException \
  *	  OFSeekFailedException.h ObjFW/OFSeekFailedException.h
@@ -78,3 +80,5 @@
 	  whence: (int)whence
 	   errNo: (int)errNo;
 @end
+
+OF_ASSUME_NONNULL_END

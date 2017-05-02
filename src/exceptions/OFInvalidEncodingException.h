@@ -16,6 +16,8 @@
 
 #import "OFException.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFInvalidEncodingException \
  *	  OFInvalidEncodingException.h ObjFW/OFInvalidEncodingException.h
@@ -24,3 +26,5 @@
  */
 @interface OFInvalidEncodingException: OFException
 @end
+
+OF_ASSUME_NONNULL_END
