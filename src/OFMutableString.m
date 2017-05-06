@@ -184,6 +184,7 @@ static struct {
 }
 #endif
 
+#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - initWithContentsOfURL: (OFURL*)URL
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfURL: URL];
@@ -196,6 +197,7 @@ static struct {
 	    initWithContentsOfURL: URL
 			 encoding: encoding];
 }
+#endif
 
 - initWithSerialization: (OFXMLElement*)element
 {
