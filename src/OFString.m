@@ -28,7 +28,9 @@
 # include <xlocale.h>
 #endif
 
-#include <sys/stat.h>
+#ifdef OF_HAVE_FILES
+# include <sys/stat.h>
+#endif
 
 #import "OFString.h"
 #import "OFString_UTF8.h"
