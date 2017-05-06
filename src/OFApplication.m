@@ -98,9 +98,13 @@ atexitHandler(void)
 		    @selector(applicationDidReceive##sig));	\
 	}
 SIGNAL_HANDLER(SIGINT)
-#ifndef OF_WINDOWS
+#ifdef SIGHUP
 SIGNAL_HANDLER(SIGHUP)
+#endif
+#ifdef SIGUSR1
 SIGNAL_HANDLER(SIGUSR1)
+#endif
+#ifdef SIGUSR2
 SIGNAL_HANDLER(SIGUSR2)
 #endif
 #undef SIGNAL_HANDLER
@@ -462,9 +466,13 @@ of_application_main(int *argc, char **argv[], Class cls)
 	_delegate = delegate;
 
 	REGISTER_SIGNAL(SIGINT)
-#ifndef OF_WINDOWS
+#ifdef SIGHUP
 	REGISTER_SIGNAL(SIGHUP)
+#endif
+#ifdef SIGUSR1
 	REGISTER_SIGNAL(SIGUSR1)
+#endif
+#ifdef SIGUSR2
 	REGISTER_SIGNAL(SIGUSR2)
 #endif
 

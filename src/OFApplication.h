@@ -14,6 +14,8 @@
  * file.
  */
 
+#include <signal.h>
+
 #import "OFObject.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -66,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)applicationDidReceiveSIGINT;
 
-#ifndef OF_WINDOWS
+#ifdef SIGHUP
 /*!
  * @brief A method which is called when the application received a SIGHUP.
  *
@@ -78,7 +80,9 @@ OF_ASSUME_NONNULL_BEGIN
  *	    signal-safe function!
  */
 - (void)applicationDidReceiveSIGHUP;
+#endif
 
+#ifdef SIGUSR1
 /*!
  * @brief A method which is called when the application received a SIGUSR1.
  *
@@ -90,7 +94,9 @@ OF_ASSUME_NONNULL_BEGIN
  *	    signal-safe function!
  */
 - (void)applicationDidReceiveSIGUSR1;
+#endif
 
+#ifdef SIGUSR2
 /*!
  * @brief A method which is called when the application received a SIGUSR2.
  *
