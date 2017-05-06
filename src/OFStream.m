@@ -25,7 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
 
 #include "platform.h"
 
