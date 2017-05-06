@@ -494,6 +494,9 @@ AC_CHECK_TYPE(max_align_t,
 AC_CHECK_HEADER(stdnoreturn.h,
 	[AC_DEFINE(OF_HAVE_STDNORETURN_H, 1, [Whether we have stdnoreturn.h])])
 
+AC_CHECK_TYPE(wchar_t)
+AC_CHECK_HEADER(wchar.h)
+
 AC_CHECK_SIZEOF(float)
 AC_CHECK_SIZEOF(double)
 AS_IF([test x"$ac_cv_sizeof_float" != x"4" -o x"$ac_cv_sizeof_double" != x"8"],

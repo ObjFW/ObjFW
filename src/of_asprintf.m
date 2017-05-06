@@ -21,7 +21,10 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <wchar.h>
+
+#ifdef HAVE_WCHAR_H
+# include <wchar.h>
+#endif
 
 #ifdef HAVE_ASPRINTF_L
 # include <locale.h>
@@ -581,14 +584,16 @@ formatConversionSpecifierState(struct context *ctx)
 			    va_arg(ctx->arguments, int));
 			break;
 		case LENGTH_MODIFIER_L:
-#if WINT_MAX >= INT_MAX
+#ifdef HAVE_WCHAR_H
+# if WINT_MAX >= INT_MAX
 			tmpLen = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, wint_t));
-#else
+# else
 			tmpLen = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, int));
-#endif
+# endif
 			break;
+#endif
 		default:
 			return false;
 		}
@@ -600,10 +605,12 @@ formatConversionSpecifierState(struct context *ctx)
 			tmpLen = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, const char*));
 			break;
+#ifdef HAVE_WCHAR_T
 		case LENGTH_MODIFIER_L:
 			tmpLen = asprintf(&tmp, ctx->subformat,
 			    va_arg(ctx->arguments, const wchar_t*));
 			break;
+#endif
 		default:
 			return false;
 		}
