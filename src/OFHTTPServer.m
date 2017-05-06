@@ -18,7 +18,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #import "OFHTTPServer.h"
 #import "OFDataArray.h"

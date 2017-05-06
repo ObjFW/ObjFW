@@ -17,7 +17,6 @@
 #include "config.h"
 
 #include <string.h>
-#include <ctype.h>
 
 #import "OFIntrospection.h"
 #import "OFString.h"

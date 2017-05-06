@@ -20,7 +20,6 @@
 #include <limits.h>
 #include <time.h>
 #include <math.h>
-#include <float.h>
 
 #include <sys/time.h>
 

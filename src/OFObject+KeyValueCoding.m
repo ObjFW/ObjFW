@@ -17,7 +17,6 @@
 #include "config.h"
 
 #include <stdlib.h>
-#include <ctype.h>
 
 #import "OFObject.h"
 #import "OFObject+KeyValueCoding.h"

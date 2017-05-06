@@ -16,7 +16,6 @@
 
 #include "config.h"
 
-#include <ctype.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -1667,8 +1666,8 @@ static struct {
 		if (options & OF_JSON_REPRESENTATION_IDENTIFIER) {
 			const char *cString = [self UTF8String];
 
-			if ((!isalpha((int)cString[0]) && cString[0] != '_' &&
-			    cString[0] != '$') ||
+			if ((!of_ascii_isalpha(cString[0]) &&
+			    cString[0] != '_' && cString[0] != '$') ||
 			    strpbrk(cString, " \n\r\t\b\f\\\"'") != NULL) {
 				[JSON prependString: @"\""];
 				[JSON appendString: @"\""];

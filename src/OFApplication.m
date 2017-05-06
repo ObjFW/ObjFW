@@ -21,7 +21,6 @@
 #include <string.h>
 
 #include <errno.h>
-#include <locale.h>
 #include <signal.h>
 #include <unistd.h>
 
