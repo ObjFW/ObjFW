@@ -63,7 +63,7 @@ extern char **environ;
       andArguments: (OFArray *)arguments;
 - (char **)OF_environmentForDictionary: (OFDictionary *)dictionary;
 #else
-- (of_char16_t *)OF_environmentForDictionary: (OFDictionary *)dictionary;
+- (char16_t *)OF_environmentForDictionary: (OFDictionary *)dictionary;
 #endif
 @end
 
@@ -229,7 +229,7 @@ extern char **environ;
 		STARTUPINFOW si;
 		void *pool;
 		OFMutableString *argumentsString;
-		of_char16_t *argumentsCopy;
+		char16_t *argumentsCopy;
 		size_t length;
 
 		sa.nLength = sizeof(sa);
@@ -298,7 +298,7 @@ extern char **environ;
 		}
 
 		length = [argumentsString UTF16StringLength];
-		argumentsCopy = [self allocMemoryWithSize: sizeof(of_char16_t)
+		argumentsCopy = [self allocMemoryWithSize: sizeof(char16_t)
 						    count: length + 1];
 		memcpy(argumentsCopy, [argumentsString UTF16String],
 		    ([argumentsString UTF16StringLength] + 1) * 2);
@@ -404,18 +404,18 @@ extern char **environ;
 	return envp;
 }
 #else
-- (of_char16_t *)OF_environmentForDictionary: (OFDictionary *)environment
+- (char16_t *)OF_environmentForDictionary: (OFDictionary *)environment
 {
 	OFDataArray *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
-	const of_char16_t equal = '=';
-	const of_char16_t zero[2] = { 0, 0 };
+	const char16_t equal = '=';
+	const char16_t zero[2] = { 0, 0 };
 
 	if (environment == nil)
 		return NULL;
 
-	env = [OFDataArray dataArrayWithItemSize: sizeof(of_char16_t)];
+	env = [OFDataArray dataArrayWithItemSize: sizeof(char16_t)];
 
 	keyEnumerator = [environment keyEnumerator];
 	objectEnumerator = [environment objectEnumerator];

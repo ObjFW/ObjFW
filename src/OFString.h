@@ -35,14 +35,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFConstantString;
 
-#if defined(__cplusplus) && __cplusplus >= 201103L
-typedef char16_t of_char16_t;
-typedef char32_t of_char32_t;
-#else
-typedef uint16_t of_char16_t;
-typedef uint32_t of_char32_t;
+#if !defined(__cplusplus) || __cplusplus < 201103L
+typedef uint_least16_t char16_t;
+typedef uint_least32_t char32_t;
 #endif
-typedef of_char32_t of_unichar_t;
+typedef char32_t of_unichar_t;
 
 /*!
  * @brief The encoding of a string.
@@ -196,7 +193,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-16 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string;
++ (instancetype)stringWithUTF16String: (const char16_t *)string;
 
 /*!
  * @brief Creates a new OFString from a UTF-16 encoded string with the
@@ -206,7 +203,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-16 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 			       length: (size_t)length;
 
 /*!
@@ -217,7 +214,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -230,7 +227,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder;
 
@@ -240,7 +237,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-32 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string;
++ (instancetype)stringWithUTF32String: (const char32_t *)string;
 
 /*!
  * @brief Creates a new OFString from a UTF-32 encoded string with the
@@ -250,7 +247,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-32 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 			       length: (size_t)length;
 
 /*!
@@ -261,7 +258,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -274,7 +271,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder;
 
@@ -430,7 +427,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-16 string
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t *)string;
+- initWithUTF16String: (const char16_t *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
@@ -440,7 +437,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-16 string
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	       length: (size_t)length;
 
 /*!
@@ -451,7 +448,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -464,7 +461,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder;
 
@@ -474,7 +471,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-32 string
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t *)string;
+- initWithUTF32String: (const char32_t *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string with
@@ -484,7 +481,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-32 string
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	       length: (size_t)length;
 
 /*!
@@ -495,7 +492,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -508,7 +505,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder;
 
@@ -1059,7 +1056,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The string in UTF-16 encoding with native byte order
  */
-- (const of_char16_t *)UTF16String OF_RETURNS_INNER_POINTER;
+- (const char16_t *)UTF16String OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the string in UTF-16 encoding with the specified byte order.
@@ -1071,7 +1068,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-16 encoding
  * @return The string in UTF-16 encoding with the specified byte order
  */
-- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
 
 /*!
@@ -1090,7 +1087,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The string in UTF-32 encoding with native byte order
  */
-- (const of_char32_t *)UTF32String OF_RETURNS_INNER_POINTER;
+- (const char32_t *)UTF32String OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the string in UTF-32 encoding with the specified byte order.
@@ -1102,7 +1099,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order
  */
-- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
 
 #ifdef OF_HAVE_FILES
@@ -1140,8 +1137,8 @@ extern "C" {
 extern of_string_encoding_t of_string_parse_encoding(OFString *);
 extern size_t of_string_utf8_encode(of_unichar_t, char *);
 extern ssize_t of_string_utf8_decode(const char *, size_t, of_unichar_t *);
-extern size_t of_string_utf16_length(const of_char16_t *);
-extern size_t of_string_utf32_length(const of_char32_t *);
+extern size_t of_string_utf16_length(const char16_t *);
+extern size_t of_string_utf32_length(const char32_t *);
 #ifdef __cplusplus
 }
 #endif

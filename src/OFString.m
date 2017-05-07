@@ -265,7 +265,7 @@ of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 }
 
 size_t
-of_string_utf16_length(const of_char16_t *string)
+of_string_utf16_length(const char16_t *string)
 {
 	size_t length = 0;
 
@@ -276,7 +276,7 @@ of_string_utf16_length(const of_char16_t *string)
 }
 
 size_t
-of_string_utf32_length(const of_char32_t *string)
+of_string_utf32_length(const char32_t *string)
 {
 	size_t length = 0;
 
@@ -452,26 +452,26 @@ static struct {
 						      length: length];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	       length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						       length: length];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						    byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -480,26 +480,26 @@ static struct {
 						    byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	       length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
 						       length: length];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
 						    byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -658,26 +658,26 @@ static struct {
 					  length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 {
 	return [[[self alloc] initWithUTF16String: string] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					   length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t *)string
++ (instancetype)stringWithUTF16String: (const char16_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -686,26 +686,26 @@ static struct {
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 {
 	return [[[self alloc] initWithUTF32String: string] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF32String: string
 					   length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF32String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t *)string
++ (instancetype)stringWithUTF32String: (const char32_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -835,14 +835,14 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 {
 	return [self initWithUTF16String: string
 				  length: of_string_utf16_length(string)
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
@@ -850,7 +850,7 @@ static struct {
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [self initWithUTF16String: string
@@ -858,21 +858,21 @@ static struct {
 			       byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const of_char16_t *)string
+- initWithUTF16String: (const char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 {
 	return [self initWithUTF32String: string
 				  length: of_string_utf32_length(string)
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	       length: (size_t)length
 {
 	return [self initWithUTF32String: string
@@ -880,7 +880,7 @@ static struct {
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [self initWithUTF32String: string
@@ -888,7 +888,7 @@ static struct {
 			       byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t *)string
+- initWithUTF32String: (const char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -2613,23 +2613,23 @@ static struct {
 	return ret;
 }
 
-- (const of_char16_t *)UTF16String
+- (const char16_t *)UTF16String
 {
 	return [self UTF16StringWithByteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [self characters];
 	size_t length = [self length];
-	of_char16_t *ret;
+	char16_t *ret;
 	size_t j;
 	bool swap = (byteOrder != OF_BYTE_ORDER_NATIVE);
 
 	/* Allocate memory for the worst case */
-	ret = [object allocMemoryWithSize: sizeof(of_char16_t)
+	ret = [object allocMemoryWithSize: sizeof(char16_t)
 				    count: (length + 1) * 2];
 
 	j = 0;
@@ -2659,7 +2659,7 @@ static struct {
 
 	@try {
 		ret = [object resizeMemory: ret
-				      size: sizeof(of_char16_t)
+				      size: sizeof(char16_t)
 				     count: j + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't care, as we only tried to make it smaller */
@@ -2684,18 +2684,18 @@ static struct {
 	return UTF16StringLength;
 }
 
-- (const of_char32_t *)UTF32String
+- (const char32_t *)UTF32String
 {
 	return [self UTF32StringWithByteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = [self length];
-	of_char32_t *ret;
+	char32_t *ret;
 
-	ret = [object allocMemoryWithSize: sizeof(of_char32_t)
+	ret = [object allocMemoryWithSize: sizeof(char32_t)
 				    count: length + 1];
 	[self getCharacters: ret
 		    inRange: of_range(0, length)];
