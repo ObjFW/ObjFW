@@ -244,11 +244,11 @@ encodingForContentType(OFString *contentType)
 				      withString: @"\n\t"];
 
 	ret = [[OFString alloc] initWithFormat:
-	    @"<%@: %p\n"
+	    @"<%@:\n"
 	    @"\tStatus code = %d\n"
 	    @"\tHeaders = %@\n"
 	    @">",
-	    [self class], self, _statusCode, indentedHeaders];
+	    [self class], _statusCode, indentedHeaders];
 
 	objc_autoreleasePoolPop(pool);
 

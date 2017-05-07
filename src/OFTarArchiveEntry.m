@@ -184,7 +184,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 - (OFString*)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *ret = [OFString stringWithFormat: @"<%@: %p\n"
+	OFString *ret = [OFString stringWithFormat: @"<%@:\n"
 	     @"\tFile name = %@\n"
 	     @"\tMode = %06o\n"
 	     @"\tSize = %" PRIu64 @"\n"
@@ -196,8 +196,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
 	     @">",
-	    [self class], self, _fileName, _mode, _size, _modificationDate,
-	    _type, _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
+	    [self class], _fileName, _mode, _size, _modificationDate, _type,
+	    _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
 
 	[ret retain];
 

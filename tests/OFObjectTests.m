@@ -147,10 +147,8 @@ static OFString *module = @"OFObject";
 	m = [[[MyObj alloc] init] autorelease];
 
 	TEST(@"-[description]",
-	    [[o description] isEqual:
-	    [OFString stringWithFormat: @"<OFObject: %p>", o]] &&
-	    [[m description] isEqual:
-	    [OFString stringWithFormat: @"<MyObj: %p>", m]])
+	    [[o description] isEqual: @"<OFObject>"] &&
+	    [[m description] isEqual: @"<MyObj>"])
 
 	[m setObjectValue: @"Hello"];
 	[m setClassValue: [m class]];

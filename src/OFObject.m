@@ -822,7 +822,7 @@ _references_to_categories_of_OFObject(void)
 {
 	/* Classes containing data should reimplement this! */
 
-	return [OFString stringWithFormat: @"<%@: %p>", [self className], self];
+	return [OFString stringWithFormat: @"<%@>", [self className]];
 }
 
 - (void*)allocMemoryWithSize: (size_t)size

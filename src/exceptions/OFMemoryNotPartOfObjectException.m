@@ -55,9 +55,9 @@
 - (OFString*)description
 {
 	return [OFString stringWithFormat:
-	    @"Memory at %p was not allocated as part of object of type %@, "
-	    @"thus the memory allocation was not changed! It is also possible "
-	    @"that there was an attempt to free the same memory twice.",
-	    _pointer, [_object class]];
+	    @"Deallocation or reallocation of memory not allocated as part of "
+	    @"object of type %@ was attempted! It is also possible that there "
+	    @"was an attempt to free the same memory twice.",
+	    [_object class]];
 }
 @end
