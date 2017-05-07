@@ -35,6 +35,8 @@ OF_SUBCLASSING_RESTRICTED
 	bool _atEndOfStream;
 }
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Query the underlying terminal for the number of columns.
  *

@@ -55,6 +55,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)extensionWithType: (int8_t)type
 			     data: (OFDataArray *)data;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFMessagePackRepresentation with the
  *	  specified type and data.

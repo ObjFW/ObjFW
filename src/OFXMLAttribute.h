@@ -89,6 +89,8 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithName: (OFString *)name
      namespace: (nullable OFString *)namespace_
    stringValue: (OFString *)stringValue;
+
+- initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

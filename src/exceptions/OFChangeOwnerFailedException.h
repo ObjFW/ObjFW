@@ -50,6 +50,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased change owner failed exception.
  *
@@ -63,6 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
 			    owner: (nullable OFString *)owner
 			    group: (nullable OFString *)group
 			    errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated change owner failed exception.

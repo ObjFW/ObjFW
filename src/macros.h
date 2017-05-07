@@ -68,6 +68,7 @@
 # define OF_INLINE inline __attribute__((__always_inline__))
 # define OF_LIKELY(cond) (__builtin_expect(!!(cond), 1))
 # define OF_UNLIKELY(cond) (__builtin_expect(!!(cond), 0))
+# define OF_UNAVAILABLE __attribute__((__unavailable__))
 # define OF_CONST_FUNC __attribute__((__const__))
 # define OF_NO_RETURN_FUNC __attribute__((__noreturn__))
 # define OF_WEAK_REF(sym) __attribute__((__weakref__(sym)))
@@ -75,6 +76,7 @@
 # define OF_INLINE inline
 # define OF_LIKELY(cond) cond
 # define OF_UNLIKELY(cond) cond
+# define OF_UNAVAILABLE
 # define OF_CONST_FUNC
 # define OF_NO_RETURN_FUNC
 # define OF_WEAK_REF(sym)

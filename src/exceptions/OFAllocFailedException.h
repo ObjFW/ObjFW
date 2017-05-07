@@ -36,6 +36,9 @@ OF_ASSUME_NONNULL_BEGIN
  * allocate *any* memory.
  */
 @interface OFAllocFailedException: OFObject
++ (instancetype)exception OF_UNAVAILABLE;
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Returns a description of the exception.
  *

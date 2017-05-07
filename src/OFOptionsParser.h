@@ -120,6 +120,8 @@ typedef struct of_options_parser_option_t {
  */
 + (instancetype)parserWithOptions: (const of_options_parser_option_t *)options;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFOptionsParser so that it accepts
  *	  the specified options.

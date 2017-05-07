@@ -46,6 +46,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFXMLElement *element;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased unbound namespace exception.
  *
@@ -55,6 +57,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithNamespace: (OFString *)namespace_
 			       element: (OFXMLElement *)element;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unbound namespace exception.

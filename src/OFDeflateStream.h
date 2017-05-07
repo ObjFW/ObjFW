@@ -78,6 +78,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)streamWithStream: (OFStream *)stream;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFDeflateStream with the specified
  *	  underlying stream.

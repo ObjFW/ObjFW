@@ -19,6 +19,7 @@
 #include <string.h>
 
 #import "OFXMLProcessingInstructions.h"
+#import "OFXMLNode+Private.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 
@@ -32,7 +33,7 @@
 
 - initWithString: (OFString *)string
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		_processingInstructions = [string copy];
@@ -46,7 +47,7 @@
 
 - initWithSerialization: (OFXMLElement *)element
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

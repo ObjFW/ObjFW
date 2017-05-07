@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #import "OFXMLElement.h"
+#import "OFXMLNode+Private.h"
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -160,7 +161,7 @@ static Class CDATAClass = Nil;
      namespace: (OFString *)namespace
    stringValue: (OFString *)stringValue
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		if (name == nil)
@@ -186,7 +187,7 @@ static Class CDATAClass = Nil;
 
 - initWithElement: (OFXMLElement *)element
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		if (element == nil)
@@ -275,7 +276,7 @@ static Class CDATAClass = Nil;
 
 - initWithSerialization: (OFXMLElement *)element
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

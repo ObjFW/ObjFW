@@ -48,6 +48,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFHTTPResponse *response;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased HTTP request failed exception.
  *
@@ -57,6 +59,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
 			    response: (OFHTTPResponse *)response;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated HTTP request failed exception.

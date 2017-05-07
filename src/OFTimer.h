@@ -204,6 +204,8 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 				block: (of_timer_block_t)block;
 #endif
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated timer with the specified time
  *	  interval.

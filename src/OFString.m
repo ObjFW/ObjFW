@@ -1013,7 +1013,7 @@ static struct {
 		self = [[response string] retain];
 	} else
 # endif
-		@throw [OFUnsupportedProtocolException exception];
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
 	objc_autoreleasePoolPop(pool);
 

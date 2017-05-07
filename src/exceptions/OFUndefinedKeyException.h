@@ -46,6 +46,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) id value;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased undefined key exception.
  *
@@ -69,6 +71,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithObject: (id)object
 				key: (OFString *)key
 			      value: (id)value;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated undefined key exception.

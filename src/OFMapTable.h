@@ -112,6 +112,8 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 					      objectFunctions
 				capacity: (size_t)capacity;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFMapTable with the specified key
  *	  and object functions.
@@ -241,6 +243,8 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 	unsigned long *_mutationsPtr;
 	uint32_t _position;
 }
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Returns the next object.

@@ -42,6 +42,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFXMLParser *parser;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased unbound prefix exception.
  *
@@ -51,6 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithPrefix: (OFString *)prefix
 			     parser: (OFXMLParser *)parser;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unbound prefix exception.

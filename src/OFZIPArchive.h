@@ -70,6 +70,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)archiveWithPath: (OFString *)path;
 #endif
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFZIPArchive object with the
  *	  specified seekable stream.

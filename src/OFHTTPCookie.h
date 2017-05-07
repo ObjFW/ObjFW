@@ -92,6 +92,8 @@
  */
 + (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForString: (OFString *)string;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated new cookie with the specified name
  *	  and value.

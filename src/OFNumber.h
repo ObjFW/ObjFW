@@ -376,6 +376,8 @@ typedef enum {
  */
 + (instancetype)numberWithDouble: (double)double_;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFNumber with the specified bool.
  *

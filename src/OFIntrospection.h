@@ -63,6 +63,8 @@ enum {
  * The type encoding for the method.
  */
 @property OF_NULLABLE_PROPERTY (readonly) const char *typeEncoding;
+
+- init OF_UNAVAILABLE;
 @end
 
 /*!
@@ -110,6 +112,8 @@ enum {
  * @return The name of the setter.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *setter;
+
+- init OF_UNAVAILABLE;
 @end
 
 /*!
@@ -138,6 +142,8 @@ enum {
  * The type encoding for the instance variable.
  */
 @property OF_NULLABLE_PROPERTY (readonly) const char *typeEncoding;
+
+- init OF_UNAVAILABLE;
 @end
 
 /*!
@@ -199,6 +205,8 @@ enum {
  * @return A new, autoreleased introspection for the specified class
  */
 + (instancetype)introspectionWithClass: (Class)class_;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFIntrospection with the specified

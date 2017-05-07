@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFXMLAttribute.h"
+#import "OFXMLNode+Private.h"
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
@@ -54,7 +55,7 @@
      namespace: (OFString *)namespace
    stringValue: (OFString *)stringValue
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		_name = [name copy];
@@ -70,7 +71,7 @@
 
 - initWithSerialization: (OFXMLElement *)element
 {
-	self = [super init];
+	self = [super OF_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

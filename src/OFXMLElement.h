@@ -132,6 +132,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)elementWithFile: (OFString *)path;
 #endif
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name.
  *
@@ -207,6 +209,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithFile: (OFString *)path;
 #endif
+
+- initWithSerialization: (OFXMLElement *)element;
 
 /*!
  * @brief Sets a prefix for a namespace.

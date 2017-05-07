@@ -35,6 +35,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *version;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased unsupported version exception.
  *
@@ -42,6 +44,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased unsupported version exception
  */
 + (instancetype)exceptionWithVersion: (OFString *)version;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception.

@@ -42,6 +42,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased observe failed exception.
  *
@@ -51,6 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated observe failed exception.

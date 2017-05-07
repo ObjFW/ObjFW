@@ -50,6 +50,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased change permissions failed exception.
  *
@@ -61,6 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPath: (OFString *)path
 		      permissions: (mode_t)permissions
 			    errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated change permissions failed exception.

@@ -45,6 +45,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased open item failed exception.
  *
@@ -84,6 +86,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPath: (OFString *)path
 			     mode: (nullable OFString *)mode
 			    errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated open item failed exception.

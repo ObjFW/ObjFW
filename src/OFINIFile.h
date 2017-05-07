@@ -53,6 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)fileWithPath: (OFString *)path
 		    encoding: (of_string_encoding_t)encoding;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFINIFile with the contents of the
  *	  specified file.

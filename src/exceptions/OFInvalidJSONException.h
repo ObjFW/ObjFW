@@ -33,12 +33,14 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The string containing the invalid JSON representation.
  */
-@property (readonly, nonatomic) OFString *string;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *string;
 
 /*!
  * The line in which parsing the JSON representation failed.
  */
 @property (readonly) size_t line;
+
++ (instancetype)exception OF_UNAVAILABLE;
 
 /*!
  * @brief Creates a new, autoreleased invalid JSON exception.
@@ -47,8 +49,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param line The line in which the parsing error was encountered
  * @return A new, autoreleased invalid JSON exception
  */
-+ (instancetype)exceptionWithString: (OFString *)string
++ (instancetype)exceptionWithString: (nullable OFString *)string
 			       line: (size_t)line;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated invalid JSON exception.
@@ -57,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param line The line in which the parsing error was encountered
  * @return An initialized invalid JSON exception
  */
-- initWithString: (OFString *)string
+- initWithString: (nullable OFString *)string
 	    line: (size_t)line;
 @end
 

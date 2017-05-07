@@ -52,6 +52,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased seek failed exception.
  *
@@ -65,6 +67,8 @@ OF_ASSUME_NONNULL_BEGIN
 			     offset: (of_offset_t)offset
 			     whence: (int)whence
 			      errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated seek failed exception.

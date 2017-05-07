@@ -47,6 +47,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased read or write failed exception.
  *
@@ -70,6 +72,8 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithObject: (id)object
 		    requestedLength: (size_t)requestedLength
 			      errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated read or write failed exception.

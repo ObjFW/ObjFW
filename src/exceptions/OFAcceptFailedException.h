@@ -44,6 +44,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased accept failed exception.
  *
@@ -53,6 +55,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithSocket: (id)socket
 			      errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated accept failed exception.

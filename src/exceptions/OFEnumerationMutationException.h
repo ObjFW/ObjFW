@@ -36,6 +36,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) id object;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased enumeration mutation exception.
  *
@@ -43,6 +45,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased enumeration mutation exception
  */
 + (instancetype)exceptionWithObject: (id)object;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated enumeration mutation exception.

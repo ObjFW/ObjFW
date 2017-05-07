@@ -40,6 +40,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy) OFString *name;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Returns the string value for the specified key, or `nil` if it does
  *	  not exist.

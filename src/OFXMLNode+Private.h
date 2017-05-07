@@ -18,34 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
- * @class OFXMLComment OFXMLComment.h ObjFW/OFXMLComment.h
- *
- * @brief A class for representing XML comments.
- */
-@interface OFXMLComment: OFXMLNode
-{
-	OFString *_comment;
-}
-
-/*!
- * @brief Creates a new OFXMLComment with the specified string.
- *
- * @param string The string for the comment
- * @return A new OFXMLComment
- */
-+ (instancetype)commentWithString: (OFString *)string;
-
-/*!
- * @brief Initializes an already allocated OFXMLComment with the specified
- *	  string.
- *
- * @param string The string for the comment
- * @return An initialized OFXMLComment
- */
-- initWithString: (OFString *)string;
-
-- initWithSerialization: (OFXMLElement *)element;
+@interface OFXMLNode ()
+- (instancetype)OF_init;
 @end
 
 OF_ASSUME_NONNULL_END

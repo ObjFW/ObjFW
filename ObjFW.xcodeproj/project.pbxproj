@@ -800,6 +800,8 @@
 		4B8385171951BF9500D5358A /* OFSettings_INIFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8385131951BF9500D5358A /* OFSettings_INIFile.m */; };
 		4B8385181951BF9500D5358A /* OFSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B8385141951BF9500D5358A /* OFSettings.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B8385191951BF9500D5358A /* OFSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8385151951BF9500D5358A /* OFSettings.m */; };
+		4B853CEB1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B853CEA1EBFDEB000A4B2C4 /* OFXMLNode+Private.h */; };
+		4B853CEC1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B853CEA1EBFDEB000A4B2C4 /* OFXMLNode+Private.h */; };
 		4B879A8C177231F000EBCEA4 /* OFDataArray+MessagePackValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B879A8D177231F000EBCEA4 /* OFDataArray+MessagePackValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B879A8A177231F000EBCEA4 /* OFDataArray+MessagePackValue.m */; };
 		4B879A8E177231F000EBCEA4 /* OFMessagePackRepresentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B879A8B177231F000EBCEA4 /* OFMessagePackRepresentation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1458,6 +1460,7 @@
 		4B8385131951BF9500D5358A /* OFSettings_INIFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSettings_INIFile.m; path = src/OFSettings_INIFile.m; sourceTree = "<group>"; };
 		4B8385141951BF9500D5358A /* OFSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSettings.h; path = src/OFSettings.h; sourceTree = "<group>"; };
 		4B8385151951BF9500D5358A /* OFSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSettings.m; path = src/OFSettings.m; sourceTree = "<group>"; };
+		4B853CEA1EBFDEB000A4B2C4 /* OFXMLNode+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFXMLNode+Private.h"; path = "src/OFXMLNode+Private.h"; sourceTree = "<group>"; };
 		4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFDataArray+MessagePackValue.h"; path = "src/OFDataArray+MessagePackValue.h"; sourceTree = "<group>"; };
 		4B879A8A177231F000EBCEA4 /* OFDataArray+MessagePackValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFDataArray+MessagePackValue.m"; path = "src/OFDataArray+MessagePackValue.m"; sourceTree = "<group>"; };
 		4B879A8B177231F000EBCEA4 /* OFMessagePackRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMessagePackRepresentation.h; path = src/OFMessagePackRepresentation.h; sourceTree = "<group>"; };
@@ -2186,6 +2189,7 @@
 				4B0D249511DFAA3D00ED6FFC /* OFXMLElementBuilder.m */,
 				4B11005A14329B9A003A45D8 /* OFXMLNode.h */,
 				4B11005B14329B9A003A45D8 /* OFXMLNode.m */,
+				4B853CEA1EBFDEB000A4B2C4 /* OFXMLNode+Private.h */,
 				4B6799891099E7C50041064A /* OFXMLParser.h */,
 				4B67998A1099E7C50041064A /* OFXMLParser.m */,
 				4B48B95214DC23B100546D39 /* OFXMLProcessingInstructions.h */,
@@ -2589,6 +2593,7 @@
 				4B2C22A51DA292BE00735907 /* OFTCPSocket+SOCKS5.h in Headers */,
 				4B2C22A61DA292BE00735907 /* OFThread+Private.h in Headers */,
 				4B2C22A71DA292BE00735907 /* OFTimer+Private.h in Headers */,
+				4B853CEC1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B2C22A81DA292BE00735907 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B2C22AA1DA292BE00735907 /* socket_helpers.h in Headers */,
 				4BFC37BE1E50E11C00EE1269 /* common.h in Headers */,
@@ -2811,6 +2816,7 @@
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
 				4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */,
 				4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */,
+				4B853CEB1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */,
 				4BFC37BD1E50E11C00EE1269 /* common.h in Headers */,

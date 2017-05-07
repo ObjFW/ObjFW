@@ -56,6 +56,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly) int errNo;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased bind failed exception.
  *
@@ -69,6 +71,8 @@ OF_ASSUME_NONNULL_BEGIN
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated bind failed exception.

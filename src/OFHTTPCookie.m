@@ -328,17 +328,16 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 - copy
 {
-	OFHTTPCookie *copy = [[OFHTTPCookie alloc] init];
+	OFHTTPCookie *copy = [[OFHTTPCookie alloc] initWithName: _name
+							  value: _value];
 
 	@try {
-		copy->_name = [_name copy];
-		copy->_value = [_value copy];
 		copy->_expires = [_expires copy];
 		copy->_domain = [_domain copy];
 		copy->_path = [_path copy];
 		copy->_secure = _secure;
 		copy->_HTTPOnly = _HTTPOnly;
-		copy->_extensions = [_extensions mutableCopy];
+		[copy->_extensions addObjectsFromArray: _extensions];
 	} @catch (id e) {
 		[copy release];
 		@throw e;

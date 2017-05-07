@@ -52,6 +52,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)settingsWithApplicationName: (OFString *)applicationName;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFSettings instance with the
  *	  specified application name.

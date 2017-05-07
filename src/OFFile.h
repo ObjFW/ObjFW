@@ -81,6 +81,8 @@ typedef struct stat of_stat_t;
  */
 + (instancetype)fileWithFileDescriptor: (int)fd;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFFile.
  *

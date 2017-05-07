@@ -114,6 +114,8 @@ OF_ASSUME_NONNULL_BEGIN
 	   environment: (nullable OFDictionary
 			    OF_GENERIC(OFString *, OFString *) *)environment;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
  *	  and invokes the program.

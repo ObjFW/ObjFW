@@ -20,6 +20,16 @@
 #import "OFString.h"
 
 @implementation OFXMLNode
+- (instancetype)OF_init
+{
+	return [super init];
+}
+
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD

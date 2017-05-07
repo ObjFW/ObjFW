@@ -33,6 +33,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) id object;
 
++ (instancetype)exception OF_UNAVAILABLE;
+
 /*!
  * @brief Creates a new, autoreleased not open exception.
  *
@@ -40,6 +42,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased not open exception
  */
 + (instancetype)exceptionWithObject: (id)object;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated not open exception.
