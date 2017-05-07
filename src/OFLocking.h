@@ -45,20 +45,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Unlocks the lock.
  */
 - (void)unlock;
-
-/*!
- * @brief Sets a name for the lock.
- *
- * @param name The name for the lock
- */
-- (void)setName: (nullable OFString *)name;
-
-/*!
- * @brief Returns the name for the lock.
- *
- * @return The name for the lock
- */
-- (nullable OFString *)name;
 @end
 
 OF_ASSUME_NONNULL_END
