@@ -172,7 +172,7 @@ typedef struct {
  *
  * @param string The string to use for the entity body
  */
-- (void)setBodyFromString: (nullable OFString *)string;
+- (void)setBodyFromString: (OFString *)string;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -181,7 +181,7 @@ typedef struct {
  * @param string The string to use for the entity body
  * @param encoding The encoding to encode the string with
  */
-- (void)setBodyFromString: (nullable OFString *)string
+- (void)setBodyFromString: (OFString *)string
 		 encoding: (of_string_encoding_t)encoding;
 @end
 
