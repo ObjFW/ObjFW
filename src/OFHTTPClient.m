@@ -375,24 +375,26 @@ normalizeKey(char *str_)
 	 * As a work around for a bug with split packets in lighttpd when using
 	 * HTTPS, we construct the complete request in a buffer string and then
 	 * send it all at once.
+	 *
+	 * We do not use the socket's write buffer in case we need to resend
+	 * the entire request (e.g. in case a keep-alive connection timed out).
 	 */
 
 	path = [URL path];
-
 	if (path == nil)
 		path = @"/";
 
-	if ([URL query] != nil)
-		requestString = [OFMutableString stringWithFormat:
-		    @"%s %@?%@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method), path,
-		    [[URL query] stringByURLEncoding],
-		    [request protocolVersionString]];
-	else
-		requestString = [OFMutableString stringWithFormat:
-		    @"%s %@ HTTP/%@\r\n",
-		    of_http_request_method_to_string(method), path,
-		    [request protocolVersionString]];
+	requestString = [OFMutableString stringWithFormat:
+	    @"%s %@", of_http_request_method_to_string(method), path];
+
+	if ([URL query] != nil) {
+		[requestString appendString: @"?"];
+		[requestString appendString: [URL query]];
+	}
+
+	[requestString appendString: @" HTTP/"];
+	[requestString appendString: [request protocolVersionString]];
+	[requestString appendString: @"\r\n"];
 
 	headers = [[[request headers] mutableCopy] autorelease];
 	if (headers == nil)
