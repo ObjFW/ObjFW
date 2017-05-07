@@ -270,10 +270,11 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	    @"An exception of type %@ occurred!", [self class]];
 }
 
-- (OFArray *)backtrace
+- (OFArray OF_GENERIC(OFString *) *)backtrace
 {
 #ifdef HAVE_DWARF_EXCEPTIONS
-	OFMutableArray *backtrace = [OFMutableArray array];
+	OFMutableArray OF_GENERIC(OFString *) *backtrace =
+	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
 	for (uint8_t i = 0;

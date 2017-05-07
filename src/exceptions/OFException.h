@@ -168,7 +168,7 @@ extern int of_wsaerr_to_errno(int);
  *
  * @return A backtrace of when the exception was created
  */
-- (nullable OFArray *)backtrace;
+- (nullable OFArray OF_GENERIC(OFString *) *)backtrace;
 @end
 
 #ifdef __cplusplus
