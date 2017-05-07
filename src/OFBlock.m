@@ -43,7 +43,7 @@ struct of_block_byref_t {
 	int flags;
 	int size;
 	void (*byref_keep)(void *dest, void *src);
-	void (*byref_dispose)(void*);
+	void (*byref_dispose)(void *);
 };
 
 enum {
@@ -71,18 +71,18 @@ enum {
 #ifdef OF_OBJFW_RUNTIME
 /* Begin of ObjC module */
 static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
-	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFStackBlock", 8,
-	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
+	(struct objc_abi_class *)(void *)"OFBlock", "OFBlock", "OFStackBlock",
+	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteStackBlock = {
-	&_NSConcreteStackBlock_metaclass, "OFBlock", "OFStackBlock", 8,
-	OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
+	&_NSConcreteStackBlock_metaclass, "OFBlock", "OFStackBlock",
+	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
 };
 
 static struct objc_abi_class _NSConcreteGlobalBlock_metaclass = {
-	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFGlobalBlock", 8,
-	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
+	(struct objc_abi_class *)(void *)"OFBlock", "OFBlock", "OFGlobalBlock",
+	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteGlobalBlock = {
@@ -91,8 +91,8 @@ struct objc_abi_class _NSConcreteGlobalBlock = {
 };
 
 static struct objc_abi_class _NSConcreteMallocBlock_metaclass = {
-	(struct objc_abi_class*)(void*)"OFBlock", "OFBlock", "OFMallocBlock", 8,
-	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
+	(struct objc_abi_class *)(void *)"OFBlock", "OFBlock", "OFMallocBlock",
+	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
 };
 
 struct objc_abi_class _NSConcreteMallocBlock = {
@@ -114,7 +114,7 @@ static struct {
 };
 
 static struct objc_abi_module module = {
-	8, sizeof(module), NULL, (struct objc_abi_symtab*)&symtab
+	8, sizeof(module), NULL, (struct objc_abi_symtab *)&symtab
 };
 
 OF_CONSTRUCTOR()
@@ -123,7 +123,7 @@ OF_CONSTRUCTOR()
 }
 /* End of ObjC module */
 #elif defined(OF_APPLE_RUNTIME)
-extern Class objc_initializeClassPair(Class, const char*, Class, Class);
+extern Class objc_initializeClassPair(Class, const char *, Class, Class);
 
 struct class {
 	struct class *isa, *super_class;
@@ -158,10 +158,10 @@ static of_spinlock_t blockSpinlocks[NUM_SPINLOCKS];
 static of_spinlock_t byrefSpinlocks[NUM_SPINLOCKS];
 #endif
 
-void*
+void *
 _Block_copy(const void *block_)
 {
-	of_block_literal_t *block = (of_block_literal_t*)block_;
+	of_block_literal_t *block = (of_block_literal_t *)block_;
 
 	if (object_getClass((id)block) == (Class)&_NSConcreteStackBlock) {
 		of_block_literal_t *copy;
@@ -169,7 +169,8 @@ _Block_copy(const void *block_)
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
 			alloc_failed_exception.isa =
 			    [OFAllocFailedException class];
-			@throw (OFAllocFailedException*)&alloc_failed_exception;
+			@throw (OFAllocFailedException *)
+			    &alloc_failed_exception;
 		}
 		memcpy(copy, block, block->descriptor->size);
 
@@ -200,7 +201,7 @@ _Block_copy(const void *block_)
 void
 _Block_release(const void *block_)
 {
-	of_block_literal_t *block = (of_block_literal_t*)block_;
+	of_block_literal_t *block = (of_block_literal_t *)block_;
 
 	if (object_getClass((id)block) != (Class)&_NSConcreteMallocBlock)
 		return;
@@ -241,15 +242,15 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		*(of_block_literal_t**)dst_ = _Block_copy(src_);
+		*(of_block_literal_t **)dst_ = _Block_copy(src_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
 		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
-			*(id*)dst_ = [(id)src_ retain];
+			*(id *)dst_ = [(id)src_ retain];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *src = (of_block_byref_t*)src_;
-		of_block_byref_t **dst = (of_block_byref_t**)dst_;
+		of_block_byref_t *src = (of_block_byref_t *)src_;
+		of_block_byref_t **dst = (of_block_byref_t **)dst_;
 
 		src = src->forwarding;
 
@@ -257,7 +258,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 			if ((*dst = malloc(src->size)) == NULL) {
 				alloc_failed_exception.isa =
 				    [OFAllocFailedException class];
-				@throw (OFAllocFailedException*)
+				@throw (OFAllocFailedException *)
 				    &alloc_failed_exception;
 			}
 
@@ -270,7 +271,7 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 				src->byref_keep(*dst, src);
 
 #ifdef OF_HAVE_ATOMIC_OPS
-			if (!of_atomic_ptr_cmpswap((void**)&src->forwarding,
+			if (!of_atomic_ptr_cmpswap((void **)&src->forwarding,
 			    src, *dst)) {
 				src->byref_dispose(*dst);
 				free(*dst);
@@ -325,7 +326,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 			[(id)obj_ release];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *obj = (of_block_byref_t*)obj_;
+		of_block_byref_t *obj = (of_block_byref_t *)obj_;
 
 		obj = obj->forwarding;
 
@@ -434,31 +435,31 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	OF_INVALID_INIT_METHOD
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
+- (void *)allocMemoryWithSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count
+- (void *)allocMemoryWithSize: (size_t)size
+			count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)ptr
-		 size: (size_t)size
+- (void *)resizeMemory: (void *)ptr
+		  size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)ptr
-		 size: (size_t)size
-		count: (size_t)count
+- (void *)resizeMemory: (void *)ptr
+		  size: (size_t)size
+		 count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)freeMemory: (void*)ptr
+- (void)freeMemory: (void *)ptr
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -487,7 +488,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 - (unsigned int)retainCount
 {
 	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
-		return ((of_block_literal_t*)self)->flags &
+		return ((of_block_literal_t *)self)->flags &
 		    OF_BLOCK_REFCOUNT_MASK;
 
 	return OF_RETAIN_COUNT_MAX;

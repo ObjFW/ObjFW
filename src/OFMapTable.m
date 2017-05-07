@@ -37,7 +37,7 @@ struct of_map_table_bucket {
 };
 static struct of_map_table_bucket deleted = { 0 };
 
-static void*
+static void *
 defaultRetain(void *object)
 {
 	return object;
@@ -61,16 +61,16 @@ defaultEqual(void *object1, void *object2)
 }
 
 @interface OFMapTable ()
-- (void)OF_setObject: (void*)object
-	      forKey: (void*)key
+- (void)OF_setObject: (void *)object
+	      forKey: (void *)key
 		hash: (uint32_t)hash;
 @end
 
 @interface OFMapTableEnumerator ()
-- (instancetype)OF_initWithMapTable: (OFMapTable*)mapTable
-			    buckets: (struct of_map_table_bucket**)buckets
+- (instancetype)OF_initWithMapTable: (OFMapTable *)mapTable
+			    buckets: (struct of_map_table_bucket **)buckets
 			   capacity: (uint32_t)capacity
-		   mutationsPointer: (unsigned long*)mutationsPtr;
+		   mutationsPointer: (unsigned long *)mutationsPtr;
 @end
 
 @interface OFMapTableKeyEnumerator: OFMapTableEnumerator
@@ -261,7 +261,7 @@ defaultEqual(void *object1, void *object2)
 	return _count;
 }
 
-- (void*)objectForKey: (void*)key
+- (void *)objectForKey: (void *)key
 {
 	uint32_t i, hash, last;
 
@@ -357,8 +357,8 @@ defaultEqual(void *object1, void *object2)
 	_capacity = capacity;
 }
 
-- (void)OF_setObject: (void*)object
-	      forKey: (void*)key
+- (void)OF_setObject: (void *)object
+	      forKey: (void *)key
 		hash: (uint32_t)hash
 {
 	uint32_t i, last;
@@ -445,15 +445,15 @@ defaultEqual(void *object1, void *object2)
 	_objectFunctions.release(old);
 }
 
-- (void)setObject: (void*)object
-	   forKey: (void*)key
+- (void)setObject: (void *)object
+	   forKey: (void *)key
 {
 	[self OF_setObject: object
 		    forKey: key
 		      hash: _keyFunctions.hash(key)];
 }
 
-- (void)removeObjectForKey: (void*)key
+- (void)removeObjectForKey: (void *)key
 {
 	uint32_t i, hash, last;
 
@@ -546,7 +546,7 @@ defaultEqual(void *object1, void *object2)
 #endif
 }
 
-- (bool)containsObject: (void*)object
+- (bool)containsObject: (void *)object
 {
 	if (object == NULL || _count == 0)
 		return false;
@@ -559,7 +559,7 @@ defaultEqual(void *object1, void *object2)
 	return false;
 }
 
-- (bool)containsObjectIdenticalTo: (void*)object
+- (bool)containsObjectIdenticalTo: (void *)object
 {
 	if (object == NULL || _count == 0)
 		return false;
@@ -572,7 +572,7 @@ defaultEqual(void *object1, void *object2)
 	return false;
 }
 
-- (OFMapTableEnumerator*)keyEnumerator
+- (OFMapTableEnumerator *)keyEnumerator
 {
 	return [[[OFMapTableKeyEnumerator alloc]
 	    OF_initWithMapTable: self
@@ -581,7 +581,7 @@ defaultEqual(void *object1, void *object2)
 	       mutationsPointer: &_mutations] autorelease];
 }
 
-- (OFMapTableEnumerator*)objectEnumerator
+- (OFMapTableEnumerator *)objectEnumerator
 {
 	return [[[OFMapTableObjectEnumerator alloc]
 	    OF_initWithMapTable: self
@@ -590,8 +590,8 @@ defaultEqual(void *object1, void *object2)
 	       mutationsPointer: &_mutations] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	uint32_t j = (uint32_t)state->state;
@@ -665,10 +665,10 @@ defaultEqual(void *object1, void *object2)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)OF_initWithMapTable: (OFMapTable*)mapTable
-			    buckets: (struct of_map_table_bucket**)buckets
+- (instancetype)OF_initWithMapTable: (OFMapTable *)mapTable
+			    buckets: (struct of_map_table_bucket **)buckets
 			   capacity: (uint32_t)capacity
-		   mutationsPointer: (unsigned long*)mutationsPtr
+		   mutationsPointer: (unsigned long *)mutationsPtr
 {
 	self = [super init];
 
@@ -688,7 +688,7 @@ defaultEqual(void *object1, void *object2)
 	[super dealloc];
 }
 
-- (void*)nextObject
+- (void *)nextObject
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -704,7 +704,7 @@ defaultEqual(void *object1, void *object2)
 @end
 
 @implementation OFMapTableKeyEnumerator
-- (void*)nextObject
+- (void *)nextObject
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
@@ -721,7 +721,7 @@ defaultEqual(void *object1, void *object2)
 @end
 
 @implementation OFMapTableObjectEnumerator
-- (void*)nextObject
+- (void *)nextObject
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
@@ -738,7 +738,7 @@ defaultEqual(void *object1, void *object2)
 @end
 
 @implementation OFMapTable_EnumeratorWrapper
-- initWithEnumerator: (OFMapTableEnumerator*)enumerator
+- initWithEnumerator: (OFMapTableEnumerator *)enumerator
 	      object: (id)object
 {
 	self = [super init];

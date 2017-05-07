@@ -23,12 +23,12 @@
 @implementation OFMalformedXMLException
 @synthesize parser = _parser;
 
-+ (instancetype)exceptionWithParser: (OFXMLParser*)parser
++ (instancetype)exceptionWithParser: (OFXMLParser *)parser
 {
 	return [[[self alloc] initWithParser: parser] autorelease];
 }
 
-- initWithParser: (OFXMLParser*)parser
+- initWithParser: (OFXMLParser *)parser
 {
 	self = [super init];
 
@@ -44,7 +44,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_parser != nil)
 		return [OFString stringWithFormat:

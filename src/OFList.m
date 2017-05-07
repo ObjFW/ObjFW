@@ -36,7 +36,7 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 
@@ -74,7 +74,7 @@
 	[super dealloc];
 }
 
-- (of_list_object_t*)appendObject: (id)object
+- (of_list_object_t *)appendObject: (id)object
 {
 	of_list_object_t *listObject;
 
@@ -96,7 +96,7 @@
 	return listObject;
 }
 
-- (of_list_object_t*)prependObject: (id)object
+- (of_list_object_t *)prependObject: (id)object
 {
 	of_list_object_t *listObject;
 
@@ -118,8 +118,8 @@
 	return listObject;
 }
 
-- (of_list_object_t*)insertObject: (id)object
-		 beforeListObject: (of_list_object_t*)listObject
+- (of_list_object_t *)insertObject: (id)object
+		  beforeListObject: (of_list_object_t *)listObject
 {
 	of_list_object_t *newListObject;
 
@@ -142,8 +142,8 @@
 	return newListObject;
 }
 
-- (of_list_object_t*)insertObject: (id)object
-		  afterListObject: (of_list_object_t*)listObject
+- (of_list_object_t *)insertObject: (id)object
+		   afterListObject: (of_list_object_t *)listObject
 {
 	of_list_object_t *newListObject;
 
@@ -166,7 +166,7 @@
 	return newListObject;
 }
 
-- (void)removeListObject: (of_list_object_t*)listObject
+- (void)removeListObject: (of_list_object_t *)listObject
 {
 	if (listObject->previous != NULL)
 		listObject->previous->next = listObject->next;
@@ -319,7 +319,7 @@
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	OFMutableString *ret;
 
@@ -348,7 +348,7 @@
 	return ret;
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	OFXMLElement *element =
 	    [OFXMLElement elementWithName: [self className]
@@ -366,8 +366,8 @@
 	return element;
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	of_list_object_t *listObject;
@@ -395,7 +395,7 @@
 	return count;
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	return [[[OFListEnumerator alloc]
 		initWithList: self
@@ -404,8 +404,8 @@
 @end
 
 @implementation OFListEnumerator
--     initWithList: (OFList*)list
-  mutationsPointer: (unsigned long*)mutationsPtr
+-     initWithList: (OFList *)list
+  mutationsPointer: (unsigned long *)mutationsPtr
 {
 	self = [super init];
 

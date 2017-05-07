@@ -187,9 +187,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- (instancetype)OF_initWithUTF8String: (const char*)UTF8String
+- (instancetype)OF_initWithUTF8String: (const char *)UTF8String
 			       length: (size_t)UTF8StringLength
-			      storage: (char*)storage
+			      storage: (char *)storage
 {
 	self = [super init];
 
@@ -224,7 +224,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
@@ -388,7 +388,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF8StringNoCopy: (char*)UTF8String
+- initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone
 {
 	self = [super init];
@@ -404,7 +404,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = (char*)UTF8String;
+		_s->cString = (char *)UTF8String;
 		_s->cStringLength = UTF8StringLength;
 
 		if (freeWhenDone)
@@ -426,7 +426,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -437,7 +437,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		if ([string isKindOfClass: [OFString_UTF8 class]] ||
 		    [string isKindOfClass: [OFMutableString_UTF8 class]])
-			_s->isUTF8 = ((OFString_UTF8*)string)->_s->isUTF8;
+			_s->isUTF8 = ((OFString_UTF8 *)string)->_s->isUTF8;
 		else
 			_s->isUTF8 = true;
 
@@ -453,7 +453,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithCharacters: (const of_unichar_t*)characters
+- initWithCharacters: (const of_unichar_t *)characters
 	      length: (size_t)length
 {
 	self = [super init];
@@ -497,7 +497,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -582,7 +582,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF32String: (const of_char32_t*)characters
+- initWithUTF32String: (const of_char32_t *)characters
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -649,7 +649,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithFormat: (OFConstantString*)format
+- initWithFormat: (OFConstantString *)format
        arguments: (va_list)arguments
 {
 	self = [super init];
@@ -701,7 +701,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	[super dealloc];
 }
 
-- (size_t)getCString: (char*)cString
+- (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
 	    encoding: (of_string_encoding_t)encoding
 {
@@ -724,7 +724,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	}
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	switch (encoding) {
 	case OF_STRING_ENCODING_ASCII:
@@ -738,7 +738,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	}
 }
 
-- (const char*)UTF8String
+- (const char *)UTF8String
 {
 	return _s->cString;
 }
@@ -804,7 +804,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	if (![object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherString = (OFString*)object;
+	otherString = (OFString *)object;
 	otherCStringLength = [otherString UTF8StringLength];
 	minimumCStringLength = (_s->cStringLength > otherCStringLength
 	    ? otherCStringLength : _s->cStringLength);
@@ -824,7 +824,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		return OF_ORDERED_ASCENDING;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString
 {
 	const char *otherCString;
 	size_t otherCStringLength, minimumCStringLength;
@@ -964,7 +964,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return character;
 }
 
-- (void)getCharacters: (of_unichar_t*)buffer
+- (void)getCharacters: (of_unichar_t *)buffer
 	      inRange: (of_range_t)range
 {
 	/* TODO: Could be slightly optimized */
@@ -981,7 +981,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 		      range: (of_range_t)range
 {
@@ -1041,7 +1041,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return of_range(OF_NOT_FOUND, 0);
 }
 
-- (bool)containsString: (OFString*)string
+- (bool)containsString: (OFString *)string
 {
 	const char *cString = [string UTF8String];
 	size_t cStringLength = [string UTF8StringLength];
@@ -1059,7 +1059,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return false;
 }
 
-- (OFString*)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (of_range_t)range
 {
 	size_t start = range.location;
 	size_t end = range.location + range.length;
@@ -1078,7 +1078,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				       length: end - start];
 }
 
-- (bool)hasPrefix: (OFString*)prefix
+- (bool)hasPrefix: (OFString *)prefix
 {
 	size_t cStringLength = [prefix UTF8StringLength];
 
@@ -1088,7 +1088,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return (memcmp(_s->cString, [prefix UTF8String], cStringLength) == 0);
 }
 
-- (bool)hasSuffix: (OFString*)suffix
+- (bool)hasSuffix: (OFString *)suffix
 {
 	size_t cStringLength = [suffix UTF8StringLength];
 
@@ -1099,8 +1099,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	    [suffix UTF8String], cStringLength) == 0);
 }
 
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-				options: (int)options
+- (OFArray *)componentsSeparatedByString: (OFString *)delimiter
+				 options: (int)options
 {
 	void *pool;
 	OFMutableArray *array;
@@ -1144,7 +1144,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return array;
 }
 
-- (OFArray*)pathComponents
+- (OFArray *)pathComponents
 {
 	OFMutableArray *ret;
 	void *pool;
@@ -1190,7 +1190,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return ret;
 }
 
-- (OFString*)lastPathComponent
+- (OFString *)lastPathComponent
 {
 	size_t pathCStringLength = _s->cStringLength;
 	ssize_t i;
@@ -1225,7 +1225,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				       length: pathCStringLength - i];
 }
 
-- (OFString*)stringByDeletingLastPathComponent
+- (OFString *)stringByDeletingLastPathComponent
 {
 	size_t pathCStringLength = _s->cStringLength;
 
@@ -1251,7 +1251,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return OF_PATH_CURRENT_DIRECTORY;
 }
 
-- (const of_unichar_t*)characters
+- (const of_unichar_t *)characters
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	of_unichar_t *ret;
@@ -1279,7 +1279,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return ret;
 }
 
-- (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	of_char32_t *ret;

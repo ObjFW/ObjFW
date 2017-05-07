@@ -81,8 +81,8 @@ static OFString *values[] = {
 	return self;
 }
 
-- initWithObjects: (const id*)objects
-	  forKeys: (const id*)keys
+- initWithObjects: (const id *)objects
+	  forKeys: (const id *)keys
 	    count: (size_t)count
 {
 	self = [super init];
@@ -117,18 +117,18 @@ static OFString *values[] = {
 	return [_dictionary count];
 }
 
-- (OFEnumerator*)keyEnumerator
+- (OFEnumerator *)keyEnumerator
 {
 	return [_dictionary keyEnumerator];
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	return [_dictionary objectEnumerator];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	return [_dictionary countByEnumeratingWithState: state

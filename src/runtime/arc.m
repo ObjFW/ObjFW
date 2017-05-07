@@ -146,7 +146,7 @@ objc_storeWeak(id *object, id value)
 					 * fails.
 					 */
 					if ((locations = realloc(old->locations,
-					    old->count * sizeof(id*))) != NULL)
+					    old->count * sizeof(id *))) != NULL)
 						old->locations = locations;
 				}
 
@@ -168,7 +168,7 @@ objc_storeWeak(id *object, id value)
 		}
 
 		if ((ref->locations = realloc(ref->locations,
-		    (ref->count + 1) * sizeof(id*))) == NULL)
+		    (ref->count + 1) * sizeof(id *))) == NULL)
 			OBJC_ERROR("Not enough memory to allocate weak "
 			    "reference!")
 

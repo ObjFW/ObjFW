@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @return A new, autoreleased OFProcess.
  */
-+ (instancetype)processWithProgram: (OFString*)program;
++ (instancetype)processWithProgram: (OFString *)program;
 
 /*!
  * @brief Creates a new OFProcess with the specified program and arguments and
@@ -72,8 +72,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)
-    processWithProgram: (OFString*)program
-	     arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
+    processWithProgram: (OFString *)program
+	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Creates a new OFProcess with the specified program, program name and
@@ -87,9 +87,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)
-    processWithProgram: (OFString*)program
-	   programName: (OFString*)programName
-	     arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
+    processWithProgram: (OFString *)program
+	   programName: (OFString *)programName
+	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Creates a new OFProcess with the specified program, program name,
@@ -108,11 +108,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFProcess.
  */
 + (instancetype)
-    processWithProgram: (OFString*)program
-	   programName: (OFString*)programName
-	     arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments
+    processWithProgram: (OFString *)program
+	   programName: (OFString *)programName
+	     arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
 	   environment: (nullable OFDictionary
-			    OF_GENERIC(OFString*, OFString*)*)environment;
+			    OF_GENERIC(OFString *, OFString *) *)environment;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
@@ -122,7 +122,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString*)program;
+- initWithProgram: (OFString *)program;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
@@ -133,8 +133,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param arguments The arguments to pass to the program, or `nil`
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString*)program
-	arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
+- initWithProgram: (OFString *)program
+	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -147,9 +147,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param arguments The arguments to pass to the program, or `nil`
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString*)program
-      programName: (OFString*)programName
-	arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments;
+- initWithProgram: (OFString *)program
+      programName: (OFString *)programName
+	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -167,11 +167,11 @@ OF_ASSUME_NONNULL_BEGIN
  *		      environment first, copy it, modify it and then pass it.
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString*)program
-      programName: (OFString*)programName
-	arguments: (nullable OFArray OF_GENERIC(OFString*)*)arguments
+- initWithProgram: (OFString *)program
+      programName: (OFString *)programName
+	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
       environment: (nullable OFDictionary
-		       OF_GENERIC(OFString*, OFString*)*)environment;
+		       OF_GENERIC(OFString *, OFString *) *)environment;
 
 /*!
  * @brief Closes the write direction of the process.

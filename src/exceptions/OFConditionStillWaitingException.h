@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition for which is still being waited
  * @return A new, autoreleased condition still waiting exception
  */
-+ (instancetype)exceptionWithCondition: (nullable OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (nullable OFCondition *)condition;
 
 /*!
  * @brief Initializes an already allocated condition still waiting exception.
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition for which is still being waited
  * @return An initialized condition still waiting exception
  */
-- initWithCondition: (nullable OFCondition*)condition;
+- initWithCondition: (nullable OFCondition *)condition;
 @end
 
 OF_ASSUME_NONNULL_END

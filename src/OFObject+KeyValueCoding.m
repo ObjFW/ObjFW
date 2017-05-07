@@ -41,7 +41,7 @@ nextType(const char **typeEncoding)
 }
 
 @implementation OFObject (KeyValueCoding)
-- (id)valueForKey: (OFString*)key
+- (id)valueForKey: (OFString *)key
 {
 	SEL selector = sel_registerName([key UTF8String]);
 	const char *typeEncoding = [self typeEncodingForSelector: selector];
@@ -85,7 +85,7 @@ nextType(const char **typeEncoding)
 #define CASE(encoding, type, method)					  \
 	case encoding:							  \
 		{							  \
-			type (*getter)(id, SEL) = (type(*)(id, SEL))	  \
+			type (*getter)(id, SEL) = (type (*)(id, SEL))	  \
 			    [self methodForSelector: selector];		  \
 			ret = [OFNumber method getter(self, selector)]; \
 		}							  \
@@ -115,14 +115,14 @@ nextType(const char **typeEncoding)
 	return ret;
 }
 
-- (id)valueForUndefinedKey: (OFString*)key
+- (id)valueForUndefinedKey: (OFString *)key
 {
 	@throw [OFUndefinedKeyException exceptionWithObject: self
 							key: key];
 }
 
 - (void)setValue: (id)value
-	  forKey: (OFString*)key
+	  forKey: (OFString *)key
 {
 	size_t keyLength;
 	char *name;
@@ -178,7 +178,7 @@ nextType(const char **typeEncoding)
 	case '@':
 	case '#':
 		{
-			void (*setter)(id, SEL, id) = (void(*)(id, SEL, id))
+			void (*setter)(id, SEL, id) = (void (*)(id, SEL, id))
 			    [self methodForSelector: selector];
 			setter(self, selector, value);
 		}
@@ -187,7 +187,7 @@ nextType(const char **typeEncoding)
 	case encoding:						\
 		{						\
 			void (*setter)(id, SEL, type) =		\
-			    (void(*)(id, SEL, type))		\
+			    (void (*)(id, SEL, type))		\
 			    [self methodForSelector: selector];	\
 			setter(self, selector, [value method]);	\
 		}						\
@@ -214,14 +214,14 @@ nextType(const char **typeEncoding)
 }
 
 -  (void)setValue: (id)value
-  forUndefinedKey: (OFString*)key
+  forUndefinedKey: (OFString *)key
 {
 	@throw [OFUndefinedKeyException exceptionWithObject: self
 							key: key
 						      value: value];
 }
 
-- (void)setNilValueForKey: (OFString*)key
+- (void)setNilValueForKey: (OFString *)key
 {
 	@throw [OFInvalidArgumentException exception];
 }

@@ -100,7 +100,7 @@
 	return self;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer_
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer_
 			  length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -216,7 +216,7 @@
 	return j;
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer_
+- (void)lowlevelWriteBuffer: (const void *)buffer_
 		     length: (size_t)length
 {
 	const char *buffer = buffer_;

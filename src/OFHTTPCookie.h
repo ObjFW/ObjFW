@@ -30,7 +30,7 @@
 	OFDate *_expires;
 	OFString *_domain, *_path;
 	bool _secure, _HTTPOnly;
-	OFMutableArray OF_GENERIC(OFString*) *_extensions;
+	OFMutableArray OF_GENERIC(OFString *) *_extensions;
 }
 
 /*!
@@ -72,7 +72,7 @@
  * An array of other attributes.
  */
 @property (readonly, nonatomic)
-    OFMutableArray OF_GENERIC(OFString*) *extensions;
+    OFMutableArray OF_GENERIC(OFString *) *extensions;
 
 /*!
  * @brief Create a new cookie with the specified name and value.
@@ -81,8 +81,8 @@
  * @param value The value of the cookie
  * @return A new, autoreleased OFHTTPCookie
  */
-+ (instancetype)cookieWithName: (OFString*)name
-			 value: (OFString*)value;
++ (instancetype)cookieWithName: (OFString *)name
+			 value: (OFString *)value;
 
 /*!
  * @brief Parses the specified string and returns an array of cookies.
@@ -90,7 +90,7 @@
  * @param string The cookie string to parse
  * @return An array of cookies
  */
-+ (OFArray OF_GENERIC(OFHTTPCookie*)*)cookiesForString: (OFString*)string;
++ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated new cookie with the specified name
@@ -100,6 +100,6 @@
  * @param value The value of the cookie
  * @return An initialized OFHTTPCookie
  */
-- initWithName: (OFString*)name
-	 value: (OFString*)value;
+- initWithName: (OFString *)name
+	 value: (OFString *)value;
 @end

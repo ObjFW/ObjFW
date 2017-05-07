@@ -51,7 +51,7 @@ init(void)
 #endif
 }
 
-struct objc_dtable*
+struct objc_dtable *
 objc_dtable_new(void)
 {
 	struct objc_dtable *dtable;

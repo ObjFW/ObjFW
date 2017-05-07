@@ -20,17 +20,17 @@
 #import "OFString.h"
 
 @implementation OFXMLNode
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (OFString*)stringValue
+- (OFString *)stringValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setStringValue: (OFString*)stringValue
+- (void)setStringValue: (OFString *)stringValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -55,30 +55,30 @@
 	return [[self stringValue] doubleValue];
 }
 
-- (OFString*)XMLString
+- (OFString *)XMLString
 {
 	return [self XMLStringWithIndentation: 0
 					level: 0];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
 	return [self XMLStringWithIndentation: 0
 					level: 0];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
+				 level: (unsigned int)level
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [self XMLStringWithIndentation: 2];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

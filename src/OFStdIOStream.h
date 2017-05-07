@@ -72,7 +72,7 @@ extern OFStdIOStream *_Nullable of_stdout;
  */
 extern OFStdIOStream *_Nullable of_stderr;
 
-extern void of_log(OFConstantString*, ...);
+extern void of_log(OFConstantString *, ...);
 #ifdef __cplusplus
 }
 #endif

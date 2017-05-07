@@ -29,7 +29,7 @@
 
 - (void)addObject: (id)object
 {
-	[_mapTable setObject: (void*)1
+	[_mapTable setObject: (void *)1
 		      forKey: object];
 }
 

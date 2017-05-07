@@ -49,8 +49,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which encountered the unbound prefix
  * @return A new, autoreleased unbound prefix exception
  */
-+ (instancetype)exceptionWithPrefix: (OFString*)prefix
-			     parser: (OFXMLParser*)parser;
++ (instancetype)exceptionWithPrefix: (OFString *)prefix
+			     parser: (OFXMLParser *)parser;
 
 /*!
  * @brief Initializes an already allocated unbound prefix exception.
@@ -59,8 +59,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which encountered the unbound prefix
  * @return An initialized unbound prefix exception
  */
-- initWithPrefix: (OFString*)prefix
-	  parser: (OFXMLParser*)parser;
+- initWithPrefix: (OFString *)prefix
+	  parser: (OFXMLParser *)parser;
 @end
 
 OF_ASSUME_NONNULL_END

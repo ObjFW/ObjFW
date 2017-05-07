@@ -23,54 +23,54 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFRunLoop ()
-+ (void)OF_setMainRunLoop: (OFRunLoop*)runLoop;
++ (void)OF_setMainRunLoop: (OFRunLoop *)runLoop;
 #ifdef OF_HAVE_SOCKETS
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 			  length: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector;
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector;
-+ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
++ (void)OF_addAsyncReadLineForStream: (OFStream *)stream
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
 			    selector: (SEL)selector;
-+ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 			       target: (id)target
 			     selector: (SEL)selector;
-+ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket*)socket
-				buffer: (void*)buffer
++ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
+				buffer: (void *)buffer
 				length: (size_t)length
 				target: (id)target
 			      selector: (SEL)selector;
 # ifdef OF_HAVE_BLOCKS
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 			  length: (size_t)length
 			   block: (of_stream_async_read_block_t)block;
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			   block: (of_stream_async_read_block_t)block;
-+ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
++ (void)OF_addAsyncReadLineForStream: (OFStream *)stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block;
-+ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)socket
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				block: (of_tcp_socket_async_accept_block_t)
 					   block;
-+ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket*)socket
-				buffer: (void*)buffer
++ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
+				buffer: (void *)buffer
 				length: (size_t)length
 				 block: (of_udp_socket_async_receive_block_t)
 					    block;
 # endif
 + (void)OF_cancelAsyncRequestsForObject: (id)object;
 #endif
-- (void)OF_removeTimer: (OFTimer*)timer;
+- (void)OF_removeTimer: (OFTimer *)timer;
 @end
 
 OF_ASSUME_NONNULL_END

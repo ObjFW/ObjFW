@@ -39,8 +39,8 @@ typedef struct of_block_literal_t {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void* _Block_copy(const void*);
-extern void _Block_release(const void*);
+extern void *_Block_copy(const void *);
+extern void _Block_release(const void *);
 
 # if defined(OF_WINDOWS) && defined(OF_COMPILING_OBJFW)
 /*
@@ -49,9 +49,10 @@ extern void _Block_release(const void*);
  */
 extern __declspec(dllexport) struct objc_abi_class _NSConcreteStackBlock;
 extern __declspec(dllexport) struct objc_abi_class _NSConcreteGlobalBlock;
-extern __declspec(dllexport) void _Block_object_assign(void*, const void*,
+extern __declspec(dllexport) void _Block_object_assign(void *, const void *,
     const int);
-extern __declspec(dllexport) void _Block_object_dispose(const void*, const int);
+extern __declspec(dllexport) void _Block_object_dispose(const void *,
+    const int);
 # endif
 #ifdef __cplusplus
 }
@@ -59,10 +60,10 @@ extern __declspec(dllexport) void _Block_object_dispose(const void*, const int);
 
 #ifndef Block_copy
 # define Block_copy(...) \
-    ((__typeof__(__VA_ARGS__))_Block_copy((const void*)(__VA_ARGS__)))
+    ((__typeof__(__VA_ARGS__))_Block_copy((const void *)(__VA_ARGS__)))
 #endif
 #ifndef Block_release
-# define Block_release(...) _Block_release((const void*)(__VA_ARGS__))
+# define Block_release(...) _Block_release((const void *)(__VA_ARGS__))
 #endif
 
 OF_ASSUME_NONNULL_END

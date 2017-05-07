@@ -26,7 +26,7 @@
 @synthesize type = _type, data = _data;
 
 + (instancetype)extensionWithType: (int8_t)type
-			     data: (OFDataArray*)data
+			     data: (OFDataArray *)data
 {
 	return [[[self alloc] initWithType: type
 				      data: data] autorelease];
@@ -38,7 +38,7 @@
 }
 
 - initWithType: (int8_t)type
-	  data: (OFDataArray*)data
+	  data: (OFDataArray *)data
 {
 	self = [super init];
 
@@ -63,7 +63,7 @@
 	[super dealloc];
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *ret;
 	uint8_t prefix;
@@ -150,7 +150,7 @@
 	return ret;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat: @"<OFMessagePackExtension: %d, %@>",
 					   _type, _data];

@@ -36,7 +36,7 @@
 		[self inheritMethodsFromClass: [OFMutableSet_hashtable class]];
 }
 
-- initWithSet: (OFSet*)set
+- initWithSet: (OFSet *)set
 {
 	self = [self init];
 
@@ -44,7 +44,7 @@
 		void *pool = objc_autoreleasePoolPush();
 
 		if ([set isKindOfClass: [OFCountedSet class]]) {
-			OFCountedSet *countedSet = (OFCountedSet*)countedSet;
+			OFCountedSet *countedSet = (OFCountedSet *)countedSet;
 
 			for (id object in countedSet) {
 				size_t count =
@@ -66,7 +66,7 @@
 	return self;
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	self = [self init];
 
@@ -84,7 +84,7 @@
 	return self;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	self = [self init];
@@ -120,7 +120,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 
@@ -148,7 +148,7 @@
 
 			count = (size_t)[[count_ stringValue] decimalValue];
 
-			[_mapTable setObject: (void*)(uintptr_t)count
+			[_mapTable setObject: (void *)(uintptr_t)count
 				      forKey: [object objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
@@ -191,7 +191,7 @@
 	if (SIZE_MAX - count < 1 || UINTPTR_MAX - count < 1)
 		@throw [OFOutOfRangeException exception];
 
-	[_mapTable setObject: (void*)(uintptr_t)(count + 1)
+	[_mapTable setObject: (void *)(uintptr_t)(count + 1)
 		      forKey: object];
 }
 
@@ -205,7 +205,7 @@
 	count--;
 
 	if (count > 0)
-		[_mapTable setObject: (void*)(uintptr_t)count
+		[_mapTable setObject: (void *)(uintptr_t)count
 			      forKey: object];
 	else
 		[_mapTable removeObjectForKey: object];

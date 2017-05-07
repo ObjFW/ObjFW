@@ -23,8 +23,8 @@
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
 
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath
++ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
+			destinationPath: (OFString *)destinationPath
 				  errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourcePath: sourcePath
@@ -37,8 +37,8 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath
+- initWithSourcePath: (OFString *)sourcePath
+     destinationPath: (OFString *)destinationPath
 	       errNo: (int)errNo
 {
 	self = [super init];
@@ -63,7 +63,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Failed to move item at path %@ to %@: %@",

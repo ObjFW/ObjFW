@@ -24,7 +24,7 @@
 @synthesize stream = _stream, offset = _offset, whence = _whence;
 @synthesize errNo = _errNo;
 
-+ (instancetype)exceptionWithStream: (OFSeekableStream*)stream
++ (instancetype)exceptionWithStream: (OFSeekableStream *)stream
 			     offset: (of_offset_t)offset
 			     whence: (int)whence
 			      errNo: (int)errNo
@@ -40,7 +40,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFSeekableStream*)stream
+- initWithStream: (OFSeekableStream *)stream
 	  offset: (of_offset_t)offset
 	  whence: (int)whence
 	   errNo: (int)errNo
@@ -62,7 +62,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Seeking failed in stream of type %@: %@",

@@ -116,7 +116,8 @@ typedef enum {
 struct objc_exception {
 	struct _Unwind_Exception {
 		uint64_t class;
-		void (*cleanup)(_Unwind_Reason_Code, struct _Unwind_Exception*);
+		void (*cleanup)(
+		    _Unwind_Reason_Code, struct _Unwind_Exception *);
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
 # ifndef HAVE_SEH_EXCEPTIONS
 		/*
@@ -165,24 +166,26 @@ struct lsda {
 	const uint8_t *callsites, *actiontable;
 };
 
-extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception*);
-extern void _Unwind_DeleteException(struct _Unwind_Exception*);
-extern void* _Unwind_GetLanguageSpecificData(struct _Unwind_Context*);
-extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context*);
-extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context*);
-extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context*);
+extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception *);
+extern void _Unwind_DeleteException(struct _Unwind_Exception *);
+extern void *_Unwind_GetLanguageSpecificData(struct _Unwind_Context *);
+extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context *);
+extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context *);
+extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context *);
 
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
 # define CONTINUE_UNWIND return _URC_CONTINUE_UNWIND
 
-extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
-extern void _Unwind_SetIP(struct _Unwind_Context*, uintptr_t);
-extern void _Unwind_SetGR(struct _Unwind_Context*, int, uintptr_t);
+extern uintptr_t _Unwind_GetIP(struct _Unwind_Context *);
+extern void _Unwind_SetIP(struct _Unwind_Context *, uintptr_t);
+extern void _Unwind_SetGR(struct _Unwind_Context *, int, uintptr_t);
 #else
-extern _Unwind_Reason_Code __gnu_unwind_frame(struct _Unwind_Exception*,
-    struct _Unwind_Context*);
-extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
-extern int _Unwind_VRS_Set(struct _Unwind_Context*, int, uint32_t, int, void*);
+extern _Unwind_Reason_Code __gnu_unwind_frame(struct _Unwind_Exception *,
+    struct _Unwind_Context *);
+extern int _Unwind_VRS_Get(struct _Unwind_Context *, int, uint32_t, int,
+    void *);
+extern int _Unwind_VRS_Set(struct _Unwind_Context *, int, uint32_t, int,
+    void *);
 
 # define CONTINUE_UNWIND					\
 	{							\
@@ -225,9 +228,9 @@ static PERSONALITY_FUNC(cxx_personality) OF_WEAK_REF(CXX_PERSONALITY_STR);
 #endif
 
 #ifdef HAVE_SEH_EXCEPTIONS
-extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void*,
-    PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code(*)(int, int, uint64_t,
-    struct _Unwind_Exception*, struct _Unwind_Context*));
+extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
+    PCONTEXT, PDISPATCHER_CONTEXT, _Unwind_Reason_Code (*)(int, int, uint64_t,
+    struct _Unwind_Exception *, struct _Unwind_Context *));
 #endif
 
 static objc_uncaught_exception_handler uncaught_exception_handler;
@@ -303,7 +306,7 @@ size_for_encoding(uint8_t enc)
 
 	switch (enc & 0x07) {
 	case DW_EH_PE_absptr:
-		return sizeof(void*);
+		return sizeof(void *);
 	case DW_EH_PE_udata2:
 		return 2;
 	case DW_EH_PE_udata4:
@@ -325,7 +328,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 
 #define READ(type)				\
 	{					\
-		value = *(type*)(void*)*ptr;	\
+		value = *(type *)(void *)*ptr;	\
 		*ptr += size_for_encoding(enc);	\
 		break;				\
 	}
@@ -368,7 +371,7 @@ resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 	value += ((enc & 0x70) == DW_EH_PE_pcrel ? (uintptr_t)start : base);
 
 	if (enc & DW_EH_PE_indirect)
-		value = *(uintptr_t*)(uintptr_t)value;
+		value = *(uintptr_t *)(uintptr_t)value;
 
 	return value;
 }
@@ -515,17 +518,17 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			    lsda->typestable - i, lsda->typestable_base);
 #else
 			tmp = lsda->typestable - (filter * 4);
-			c = *(uintptr_t*)(void*)tmp;
+			c = *(uintptr_t *)(void *)tmp;
 
 			if (c != 0) {
 				c += (uintptr_t)tmp;
 # if defined(OF_LINUX) || defined(OF_NETBSD)
-				c = *(uintptr_t*)c;
+				c = *(uintptr_t *)c;
 # endif
 			}
 #endif
 
-			className = (const char*)c;
+			className = (const char *)c;
 
 			if (className != NULL && *className != '\0' &&
 			    strcmp(className, "@id") != 0)
@@ -573,7 +576,7 @@ PERSONALITY_FUNC(PERSONALITY)
 
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
 #endif
-	struct objc_exception *e = (struct objc_exception*)ex;
+	struct objc_exception *e = (struct objc_exception *)ex;
 	bool foreign = (ex_class != GNUCOBJC_EXCEPTION_CLASS);
 	const uint8_t *lsda_addr, *actionrecords;
 	struct lsda lsda;
@@ -750,7 +753,7 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 }
 
 #ifdef HAVE_SEH_EXCEPTIONS
-typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void*,
+typedef EXCEPTION_DISPOSITION (*seh_personality_fn)(PEXCEPTION_RECORD, void *,
     PCONTEXT, PDISPATCHER_CONTEXT);
 static seh_personality_fn __gxx_personality_seh0;
 
@@ -775,7 +778,7 @@ __gnu_objc_personality_seh0(PEXCEPTION_RECORD ms_exc, void *this_frame,
     PCONTEXT ms_orig_context, PDISPATCHER_CONTEXT ms_disp)
 {
 	struct _Unwind_Exception *ex =
-	    (struct _Unwind_Exception*)ms_exc->ExceptionInformation[0];
+	    (struct _Unwind_Exception *)ms_exc->ExceptionInformation[0];
 
 	switch (ex->class) {
 	case GNUCCXX0_EXCEPTION_CLASS:

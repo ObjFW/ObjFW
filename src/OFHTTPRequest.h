@@ -76,8 +76,8 @@ typedef struct {
 	OFURL *_URL;
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
-	OFDictionary OF_GENERIC(OFString*, OFString*) *_headers;
-	OFArray OF_GENERIC(OFHTTPCookie*) *_cookies;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
+	OFArray OF_GENERIC(OFHTTPCookie *) *_cookies;
 	OFDataArray *_body;
 	OFString *_remoteAddress;
 }
@@ -96,13 +96,13 @@ typedef struct {
  * The headers for the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
-    OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
+    OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 
 /*!
  * The cookies for the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
-    OFArray OF_GENERIC(OFHTTPCookie*) *cookies;
+    OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 
 /*!
  * The entity body of the HTTP request.
@@ -127,7 +127,7 @@ typedef struct {
  * @param URL The URL for the request
  * @return A new, autoreleased OFHTTPRequest
  */
-+ (instancetype)requestWithURL: (OFURL*)URL;
++ (instancetype)requestWithURL: (OFURL *)URL;
 
 /*!
  * @brief Initializes an already allocated OFHTTPRequest with the specified URL.
@@ -135,7 +135,7 @@ typedef struct {
  * @param URL The URL for the request
  * @return An initialized OFHTTPRequest
  */
-- initWithURL: (OFURL*)URL;
+- initWithURL: (OFURL *)URL;
 
 /*!
  * @brief Sets the protocol version of the HTTP request.
@@ -157,14 +157,14 @@ typedef struct {
  *
  * @param string A string describing an HTTP version
  */
-- (void)setProtocolVersionFromString: (OFString*)string;
+- (void)setProtocolVersionFromString: (OFString *)string;
 
 /*!
  * @brief Returns the protocol version of the HTTP request as a string.
  *
  * @return The protocol version of the HTTP request as a string
  */
-- (OFString*)protocolVersionString;
+- (OFString *)protocolVersionString;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -172,7 +172,7 @@ typedef struct {
  *
  * @param string The string to use for the entity body
  */
-- (void)setBodyFromString: (nullable OFString*)string;
+- (void)setBodyFromString: (nullable OFString *)string;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string
@@ -181,7 +181,7 @@ typedef struct {
  * @param string The string to use for the entity body
  * @param encoding The encoding to encode the string with
  */
-- (void)setBodyFromString: (nullable OFString*)string
+- (void)setBodyFromString: (nullable OFString *)string
 		 encoding: (of_string_encoding_t)encoding;
 @end
 

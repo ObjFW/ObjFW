@@ -36,6 +36,6 @@
 
 - (void)parseUnicodeData;
 - (void)parseCaseFolding;
-- (void)writeTablesToFile: (OFString*)path;
-- (void)writeHeaderToFile: (OFString*)path;
+- (void)writeTablesToFile: (OFString *)path;
+- (void)writeHeaderToFile: (OFString *)path;
 @end

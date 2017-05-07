@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param entityName The name of the unknown XML entity
  * @return A new, autoreleased unknown XML entity exception
  */
-+ (instancetype)exceptionWithEntityName: (OFString*)entityName;
++ (instancetype)exceptionWithEntityName: (OFString *)entityName;
 
 /*!
  * @brief Initializes an already allocated unknown XML entity exception.
@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param entityName The name of the unknown XML entity
  * @return An initialized unknown XML entity exception
  */
-- initWithEntityName: (OFString*)entityName;
+- initWithEntityName: (OFString *)entityName;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -63,7 +63,7 @@ init(void)
 	if (socInit(ctx, 0x100000) != 0)
 		return;
 
-	atexit((void(*))socExit);
+	atexit((void (*)(void))socExit);
 #endif
 
 #ifdef OF_HAVE_THREADS

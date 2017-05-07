@@ -19,9 +19,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFString_UTF8 ()
-- (instancetype)OF_initWithUTF8String: (const char*)UTF8String
+- (instancetype)OF_initWithUTF8String: (const char *)UTF8String
 			       length: (size_t)UTF8StringLength
-			      storage: (char*)storage;
+			      storage: (char *)storage;
 @end
 
 OF_ASSUME_NONNULL_END

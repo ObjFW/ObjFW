@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the TLS socket should accept the received certificate chain
  */
 -	     (bool)socket: (id <OFTLSSocket>)socket
-  shouldAcceptCertificate: (OFDictionary*)certificate;
+  shouldAcceptCertificate: (OFDictionary *)certificate;
 @end
 
 /*!
@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param socket The TCP socket to use as underlying socket
  */
-- initWithSocket: (OFTCPSocket*)socket;
+- initWithSocket: (OFTCPSocket *)socket;
 
 /*!
  * @brief Initiates the TLS handshake.
@@ -102,7 +102,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host to expect for certificate verification.
  *	       May be `nil` if certificate verification is disabled.
  */
-- (void)startTLSWithExpectedHost: (nullable OFString*)host;
+- (void)startTLSWithExpectedHost: (nullable OFString *)host;
 
 /*!
  * @brief Sets the path to the X.509 certificate file to use for the specified
@@ -113,8 +113,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param certificateFile The path to the X.509 certificate file
  */
-- (void)setCertificateFile: (OFString*)certificateFile
-		forSNIHost: (OFString*)SNIHost;
+- (void)setCertificateFile: (OFString *)certificateFile
+		forSNIHost: (OFString *)SNIHost;
 
 /*!
  * @brief Returns the path of the X.509 certificate file used by the TLS socket
@@ -126,7 +126,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The path of the X.509 certificate file used by the TLS socket for
  *	   the specified SNI host
  */
-- (nullable OFString*)certificateFileForSNIHost: (OFString*)SNIHost;
+- (nullable OFString *)certificateFileForSNIHost: (OFString *)SNIHost;
 
 /*!
  * @brief Sets the path to the PKCS#8 private key file to use for the specified
@@ -136,8 +136,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param SNIHost The SNI host for which the path to the PKCS#8 private key
  *		  file should be set
  */
-- (void)setPrivateKeyFile: (OFString*)privateKeyFile
-	       forSNIHost: (OFString*)SNIHost;
+- (void)setPrivateKeyFile: (OFString *)privateKeyFile
+	       forSNIHost: (OFString *)SNIHost;
 
 /*!
  * @brief Returns the path of the PKCS#8 private key file used by the TLS
@@ -149,7 +149,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The path of the PKCS#8 private key file used by the TLS socket for
  *	   the specified SNI host
  */
-- (nullable OFString*)privateKeyFileForSNIHost: (OFString*)SNIHost;
+- (nullable OFString *)privateKeyFileForSNIHost: (OFString *)SNIHost;
 
 /*!
  * @brief Sets the passphrase to decrypt the PKCS#8 private key file for the
@@ -163,8 +163,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param SNIHost The SNI host for which the passphrase to decrypt the PKCS#8
  *		  private key file should be set
  */
-- (void)setPrivateKeyPassphrase: (const char*)privateKeyPassphrase
-		     forSNIHost: (OFString*)SNIHost;
+- (void)setPrivateKeyPassphrase: (const char *)privateKeyPassphrase
+		     forSNIHost: (OFString *)SNIHost;
 
 /*!
  * @brief Returns the passphrase to decrypt the PKCS#8 private key file for the
@@ -178,7 +178,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The passphrase to decrypt the PKCS#8 private key file for the
  *	   specified SNI host
  */
-- (nullable const char*)privateKeyPassphraseForSNIHost: (OFString*)SNIHost;
+- (nullable const char *)privateKeyPassphraseForSNIHost: (OFString *)SNIHost;
 @end
 
 OF_ASSUME_NONNULL_END

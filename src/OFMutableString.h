@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string An OFString to append
  */
-- (void)appendString: (OFString*)string;
+- (void)appendString: (OFString *)string;
 
 /*!
  * @brief Appends the specified characters to the OFMutableString.
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param characters An array of characters to append
  * @param length The length of the array of characters
  */
-- (void)appendCharacters: (const of_unichar_t*)characters
+- (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length;
 
 /*!
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param UTF8String A UTF-8 encoded C string to append
  */
-- (void)appendUTF8String: (const char*)UTF8String;
+- (void)appendUTF8String: (const char *)UTF8String;
 
 /*!
  * @brief Appends a UTF-8 encoded C string with the specified length to the
@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param UTF8String A UTF-8 encoded C string to append
  * @param UTF8StringLength The length of the UTF-8 encoded C string
  */
-- (void)appendUTF8String: (const char*)UTF8String
+- (void)appendUTF8String: (const char *)UTF8String
 		  length: (size_t)UTF8StringLength;
 
 /*!
@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param cString A C string to append
  * @param encoding The encoding of the C string
  */
-- (void)appendCString: (const char*)cString
+- (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -83,7 +83,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param encoding The encoding of the C string
  * @param cStringLength The length of the UTF-8 encoded C string
  */
-- (void)appendCString: (const char*)cString
+- (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength;
 
@@ -92,22 +92,23 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * See `printf` for the format syntax. As an addition, `%@` is available as
  * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
- * `const of_unichar_t*`.
+ * `const of_unichar_t *`.
  *
  * @param format A format string which generates the string to append
  */
-- (void)appendFormat: (OFConstantString*)format, ...;
+- (void)appendFormat: (OFConstantString *)format, ...;
 
 /*!
  * @brief Appends a formatted string to the OFMutableString.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See printf for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t *`.
  *
  * @param format A format string which generates the string to append
  * @param arguments The arguments used in the format string
  */
-- (void)appendFormat: (OFConstantString*)format
+- (void)appendFormat: (OFConstantString *)format
 	   arguments: (va_list)arguments;
 
 /*!
@@ -115,7 +116,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string An OFString to prepend
  */
-- (void)prependString: (OFString*)string;
+- (void)prependString: (OFString *)string;
 
 /*!
  * @brief Reverses the string.
@@ -147,7 +148,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to insert
  * @param index The index
  */
-- (void)insertString: (OFString*)string
+- (void)insertString: (OFString *)string
 	     atIndex: (size_t)index;
 
 /*!
@@ -164,7 +165,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param replacement The string to the replace the characters with
  */
 - (void)replaceCharactersInRange: (of_range_t)range
-		      withString: (OFString*)replacement;
+		      withString: (OFString *)replacement;
 
 /*!
  * @brief Replaces all occurrences of a string with another string.
@@ -172,8 +173,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to replace
  * @param replacement The string with which it should be replaced
  */
-- (void)replaceOccurrencesOfString: (OFString*)string
-			withString: (OFString*)replacement;
+- (void)replaceOccurrencesOfString: (OFString *)string
+			withString: (OFString *)replacement;
 
 /*!
  * @brief Replaces all occurrences of a string in the specified range with
@@ -185,8 +186,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		  Possible values: None yet
  * @param range The range in which the string should be replaced
  */
-- (void)replaceOccurrencesOfString: (OFString*)string
-			withString: (OFString*)replacement
+- (void)replaceOccurrencesOfString: (OFString *)string
+			withString: (OFString *)replacement
 			   options: (int)options
 			     range: (of_range_t)range;
 

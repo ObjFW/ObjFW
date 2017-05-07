@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_territory;
 	of_string_encoding_t _encoding;
 	OFString *_decimalPoint;
-	OFMutableArray OF_GENERIC(OFDictionary OF_GENERIC(OFString*, id)*)
+	OFMutableArray OF_GENERIC(OFDictionary OF_GENERIC(OFString *, id) *)
 	    *_localizedStrings;
 }
 
@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The language of the locale.
  */
-+ (nullable OFString*)language;
++ (nullable OFString *)language;
 
 /*!
  * @brief Returns the territory of the locale.
@@ -100,7 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The territory of the locale.
  */
-+ (nullable OFString*)territory;
++ (nullable OFString *)territory;
 
 /*!
  * @brief Returns the native 8-bit string encoding for the locale.
@@ -119,7 +119,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The decimal point of the system's locale
  */
-+ (OFString*)decimalPoint;
++ (OFString *)decimalPoint;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -127,7 +127,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to the directory to scan for language files
  */
-+ (void)addLanguageDirectory: (OFString*)path;
++ (void)addLanguageDirectory: (OFString *)path;
 #endif
 
 /*!
@@ -148,7 +148,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to the directory to scan for language files
  */
-- (void)addLanguageDirectory: (OFString*)path;
+- (void)addLanguageDirectory: (OFString *)path;
 #endif
 
 /*!
@@ -169,8 +169,9 @@ OF_ASSUME_NONNULL_BEGIN
  *		   looked up or is missing
  * @return The localized string
  */
-- (OFString*)localizedStringForID: (OFConstantString*)ID
-			 fallback: (OFConstantString*)fallback, ... OF_SENTINEL;
+- (OFString *)localizedStringForID: (OFConstantString *)ID
+			  fallback: (OFConstantString *)fallback, ...
+				    OF_SENTINEL;
 
 /**
  * @brief Returns the localized string for the specified ID, using the fallback
@@ -193,9 +194,9 @@ OF_ASSUME_NONNULL_BEGIN
  *		    terminated with `nil`
  * @return The localized string
  */
-- (OFString*)localizedStringForID: (OFConstantString*)ID
-			 fallback: (OFConstantString*)fallback
-			arguments: (va_list)arguments;
+- (OFString *)localizedStringForID: (OFConstantString *)ID
+			  fallback: (OFConstantString *)fallback
+			 arguments: (va_list)arguments;
 @end
 
 OF_ASSUME_NONNULL_END

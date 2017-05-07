@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased get option failed exception
  */
-+ (instancetype)exceptionWithStream: (OFStream*)stream
++ (instancetype)exceptionWithStream: (OFStream *)stream
 			      errNo: (int)errNo;
 
 /*!
@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized get option failed exception
  */
-- initWithStream: (OFStream*)stream
+- initWithStream: (OFStream *)stream
 	   errNo: (int)errNo;
 @end
 

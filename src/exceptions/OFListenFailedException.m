@@ -56,7 +56,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d: %@",

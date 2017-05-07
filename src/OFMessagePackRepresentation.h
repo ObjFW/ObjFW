@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The MessagePack representation of the object as an OFDataArray.
  */
-- (OFDataArray*)messagePackRepresentation;
+- (OFDataArray *)messagePackRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

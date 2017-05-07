@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition which could not be broadcasted
  * @return A new, autoreleased condition broadcast failed exception
  */
-+ (instancetype)exceptionWithCondition: (nullable OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (nullable OFCondition *)condition;
 
 /*!
  * @brief Initializes an already allocated condition broadcast failed exception.
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition which could not be broadcasted
  * @return An initialized condition broadcast failed exception
  */
-- initWithCondition: (nullable OFCondition*)condition;
+- initWithCondition: (nullable OFCondition *)condition;
 @end
 
 OF_ASSUME_NONNULL_END

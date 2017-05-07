@@ -38,8 +38,8 @@ static struct {
 } placeholder;
 
 @interface OFArray ()
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth;
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth;
 @end
 
 @interface OFArray_placeholder: OFArray
@@ -76,19 +76,19 @@ static struct {
 						  arguments: arguments];
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	return (id)[[OFArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	return (id)[[OFArray_adjacent alloc] initWithObjects: objects
 						       count: count];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFArray_adjacent alloc] initWithSerialization: element];
 }
@@ -151,12 +151,12 @@ static struct {
 	return ret;
 }
 
-+ (instancetype)arrayWithArray: (OFArray*)array
++ (instancetype)arrayWithArray: (OFArray *)array
 {
 	return [[[self alloc] initWithArray: array] autorelease];
 }
 
-+ (instancetype)arrayWithObjects: (id const*)objects
++ (instancetype)arrayWithObjects: (id const *)objects
 			   count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -208,18 +208,18 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -229,14 +229,14 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getObjects: (id*)buffer
+- (void)getObjects: (id *)buffer
 	   inRange: (of_range_t)range
 {
 	for (size_t i = 0; i < range.length; i++)
 		buffer[i] = [self objectAtIndex: range.location + i];
 }
 
-- (id const*)objects
+- (id const *)objects
 {
 	OFObject *container;
 	size_t count;
@@ -273,7 +273,7 @@ static struct {
 	return [self objectAtIndex: index];
 }
 
-- (id)valueForKey: (OFString*)key
+- (id)valueForKey: (OFString *)key
 {
 	OFMutableArray *ret;
 
@@ -306,7 +306,7 @@ static struct {
 }
 
 - (void)setValue: (id)value
-	  forKey: (OFString*)key
+	  forKey: (OFString *)key
 {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
@@ -389,7 +389,7 @@ static struct {
 	return nil;
 }
 
-- (OFArray*)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (of_range_t)range
 {
 	OFArray *ret;
 	id *buffer;
@@ -418,32 +418,32 @@ static struct {
 	return ret;
 }
 
-- (OFString*)componentsJoinedByString: (OFString*)separator
+- (OFString *)componentsJoinedByString: (OFString *)separator
 {
 	return [self componentsJoinedByString: separator
 				usingSelector: @selector(description)
 				      options: 0];
 }
 
-- (OFString*)componentsJoinedByString: (OFString*)separator
-			      options: (int)options
+- (OFString *)componentsJoinedByString: (OFString *)separator
+			       options: (int)options
 {
 	return [self componentsJoinedByString: separator
 				usingSelector: @selector(description)
 				      options: options];
 }
 
-- (OFString*)componentsJoinedByString: (OFString*)separator
-			usingSelector: (SEL)selector
+- (OFString *)componentsJoinedByString: (OFString *)separator
+			 usingSelector: (SEL)selector
 {
 	return [self componentsJoinedByString: separator
 				usingSelector: selector
 				      options: 0];
 }
 
-- (OFString*)componentsJoinedByString: (OFString*)separator
-			usingSelector: (SEL)selector
-			      options: (int)options
+- (OFString *)componentsJoinedByString: (OFString *)separator
+			 usingSelector: (SEL)selector
+			       options: (int)options
 {
 	OFMutableString *ret;
 
@@ -531,7 +531,7 @@ static struct {
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	void *pool;
 	OFMutableString *ret;
@@ -559,7 +559,7 @@ static struct {
 	return [ret autorelease];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -586,20 +586,20 @@ static struct {
 	return [element autorelease];
 }
 
-- (OFString*)JSONRepresentation
+- (OFString *)JSONRepresentation
 {
 	return [self OF_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
-- (OFString*)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions: (int)options
 {
 	return [self OF_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
 	void *pool = objc_autoreleasePoolPush();
@@ -656,7 +656,7 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *data;
 	size_t i, count;
@@ -722,7 +722,7 @@ static struct {
 			     withObject: object];
 }
 
-- (OFArray*)sortedArray
+- (OFArray *)sortedArray
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
 
@@ -733,7 +733,7 @@ static struct {
 	return new;
 }
 
-- (OFArray*)sortedArrayWithOptions: (int)options
+- (OFArray *)sortedArrayWithOptions: (int)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
 
@@ -744,7 +744,7 @@ static struct {
 	return new;
 }
 
-- (OFArray*)reversedArray
+- (OFArray *)reversedArray
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
 
@@ -755,8 +755,8 @@ static struct {
 	return new;
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	of_range_t range = of_range(state->state, count);
@@ -775,12 +775,12 @@ static struct {
 
 	state->state = (unsigned long)(range.location + range.length);
 	state->itemsPtr = objects;
-	state->mutationsPtr = (unsigned long*)self;
+	state->mutationsPtr = (unsigned long *)self;
 
 	return (int)range.length;
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	return [[[OFArrayEnumerator alloc] initWithArray: self
 					    mutationsPtr: NULL] autorelease];
@@ -801,7 +801,7 @@ static struct {
 }
 #endif
 
-- (OFArray*)arrayByAddingObject: (id)object
+- (OFArray *)arrayByAddingObject: (id)object
 {
 	OFMutableArray *ret;
 
@@ -816,7 +816,7 @@ static struct {
 	return ret;
 }
 
-- (OFArray*)arrayByAddingObjectsFromArray: (OFArray*)array
+- (OFArray *)arrayByAddingObjectsFromArray: (OFArray *)array
 {
 	OFMutableArray *ret = [[self mutableCopy] autorelease];
 
@@ -826,7 +826,7 @@ static struct {
 	return ret;
 }
 
-- (OFArray*)arrayByRemovingObject: (id)object
+- (OFArray *)arrayByRemovingObject: (id)object
 {
 	OFMutableArray *ret = [[self mutableCopy] autorelease];
 
@@ -837,7 +837,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFArray*)mappedArrayUsingBlock: (of_array_map_block_t)block
+- (OFArray *)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
 	OFArray *ret;
 	size_t count = [self count];
@@ -859,7 +859,7 @@ static struct {
 	return ret;
 }
 
-- (OFArray*)filteredArrayUsingBlock: (of_array_filter_block_t)block
+- (OFArray *)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
 	OFArray *ret;
 	size_t count = [self count];
@@ -917,8 +917,8 @@ static struct {
 @end
 
 @implementation OFArrayEnumerator
-- initWithArray: (OFArray*)array
-   mutationsPtr: (unsigned long*)mutationsPtr
+- initWithArray: (OFArray *)array
+   mutationsPtr: (unsigned long *)mutationsPtr
 {
 	self = [super init];
 

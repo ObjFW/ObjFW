@@ -86,14 +86,14 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param SOCKS5Host The host to use as a SOCKS5 proxy when creating a new
  *		     socket
  */
-+ (void)setSOCKS5Host: (nullable OFString*)SOCKS5Host;
++ (void)setSOCKS5Host: (nullable OFString *)SOCKS5Host;
 
 /*!
  * @brief Returns the host to use as a SOCKS5 proxy when creating a new socket
  *
  * @return The host to use as a SOCKS5 proxy when creating a new socket
  */
-+ (nullable OFString*)SOCKS5Host;
++ (nullable OFString *)SOCKS5Host;
 
 /*!
  * @brief Sets the global SOCKS5 proxy port to use when creating a new socket
@@ -115,7 +115,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param host The host to connect to
  * @param port The port on the host to connect to
  */
-- (void)connectToHost: (OFString*)host
+- (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port;
 
 #ifdef OF_HAVE_THREADS
@@ -129,7 +129,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param selector The selector to call on the target. The signature must be
  *		   `void (OFTCPSocket *socket, OFException *exception)`.
  */
-- (void)asyncConnectToHost: (OFString*)host
+- (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		    target: (id)target
 		  selector: (SEL)selector;
@@ -142,7 +142,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param port The port on the host to connect to
  * @param block The block to execute once the connection has been established
  */
-- (void)asyncConnectToHost: (OFString*)host
+- (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		     block: (of_tcp_socket_async_connect_block_t)block;
 # endif
@@ -157,7 +157,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString*)host
+- (uint16_t)bindToHost: (OFString *)host
 		  port: (uint16_t)port;
 
 /*!
@@ -211,7 +211,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *
  * @return The remote address as a string
  */
-- (nullable OFString*)remoteAddress;
+- (nullable OFString *)remoteAddress;
 
 /*!
  * @brief Returns whether the socket is a listening socket.

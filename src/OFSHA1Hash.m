@@ -142,7 +142,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	_state[4] = 0xC3D2E1F0;
 }
 
-- (void)updateWithBuffer: (const void*)buffer_
+- (void)updateWithBuffer: (const void *)buffer_
 		  length: (size_t)length
 {
 	const uint8_t *buffer = buffer_;
@@ -172,10 +172,10 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	}
 }
 
-- (const unsigned char*)digest
+- (const unsigned char *)digest
 {
 	if (_calculated)
-		return (const uint8_t*)_state;
+		return (const uint8_t *)_state;
 
 	_buffer.bytes[_bufferLength] = 0x80;
 	memset(_buffer.bytes + _bufferLength + 1, 0, 64 - _bufferLength - 1);
@@ -193,7 +193,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	byteSwapVectorIfLE(_state, 5);
 	_calculated = true;
 
-	return (const uint8_t*)_state;
+	return (const uint8_t *)_state;
 }
 
 - (void)reset

@@ -25,12 +25,12 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLComment
-+ (instancetype)commentWithString: (OFString*)string
++ (instancetype)commentWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -44,7 +44,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -90,23 +90,23 @@
 	return [_comment hash];
 }
 
-- (OFString*)stringValue
+- (OFString *)stringValue
 {
 	return @"";
 }
 
-- (OFString*)XMLString
+- (OFString *)XMLString
 {
 	return [OFString stringWithFormat: @"<!--%@-->", _comment];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
 	return [OFString stringWithFormat: @"<!--%@-->", _comment];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
+				 level: (unsigned int)level
 {
 	OFString *ret;
 
@@ -129,12 +129,12 @@
 	return ret;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat: @"<!--%@-->", _comment];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: [self className]
 				   namespace: OF_SERIALIZATION_NS

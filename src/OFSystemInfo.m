@@ -143,7 +143,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return numberOfCPUs;
 }
 
-+ (OFString*)userDataPath
++ (OFString *)userDataPath
 {
 #if defined(OF_MACOS) || defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
@@ -233,7 +233,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #endif
 }
 
-+ (OFString*)userConfigPath
++ (OFString *)userConfigPath
 {
 #if defined(OF_MACOS) || defined(OF_IOS)
 	void *pool = objc_autoreleasePoolPush();
@@ -324,7 +324,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #endif
 }
 
-+ (OFString*)CPUVendor
++ (OFString *)CPUVendor
 {
 #if defined(OF_X86_64_ASM) || defined(OF_X86_ASM)
 	struct x86_regs regs = x86_cpuid(0, 0);

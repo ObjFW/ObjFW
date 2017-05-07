@@ -23,8 +23,8 @@
 @implementation OFUnboundNamespaceException
 @synthesize namespace = _namespace, element = _element;
 
-+ (instancetype)exceptionWithNamespace: (OFString*)namespace
-			       element: (OFXMLElement*)element
++ (instancetype)exceptionWithNamespace: (OFString *)namespace
+			       element: (OFXMLElement *)element
 {
 	return [[[self alloc] initWithNamespace: namespace
 					element: element] autorelease];
@@ -35,8 +35,8 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithNamespace: (OFString*)namespace
-	    element: (OFXMLElement*)element
+- initWithNamespace: (OFString *)namespace
+	    element: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -59,7 +59,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The namespace %@ is not bound in an element of type %@!",

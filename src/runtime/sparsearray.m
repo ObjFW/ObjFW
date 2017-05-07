@@ -22,7 +22,7 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-struct objc_sparsearray*
+struct objc_sparsearray *
 objc_sparsearray_new(uint8_t index_size)
 {
 	struct objc_sparsearray *sparsearray;
@@ -38,7 +38,7 @@ objc_sparsearray_new(uint8_t index_size)
 	return sparsearray;
 }
 
-void*
+void *
 objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;

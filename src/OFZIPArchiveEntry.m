@@ -28,10 +28,10 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-extern uint32_t of_zip_archive_read_field32(uint8_t**, uint16_t*);
-extern uint64_t of_zip_archive_read_field64(uint8_t**, uint16_t*);
+extern uint32_t of_zip_archive_read_field32(uint8_t **, uint16_t *);
+extern uint64_t of_zip_archive_read_field64(uint8_t **, uint16_t *);
 
-OFString*
+OFString *
 of_zip_archive_entry_version_to_string(uint16_t version)
 {
 	const char *attrCompat = NULL;
@@ -155,7 +155,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 @synthesize OF_lastModifiedFileDate = _lastModifiedFileDate;
 @synthesize OF_localFileHeaderOffset = _localFileHeaderOffset;
 
-- (instancetype)OF_initWithStream: (OFStream*)stream
+- (instancetype)OF_initWithStream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -237,7 +237,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	[super dealloc];
 }
 
-- (OFDate*)modificationDate
+- (OFDate *)modificationDate
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t year = ((_lastModifiedFileDate & 0xFE00) >> 9) + 1980;
@@ -261,12 +261,12 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	return [date autorelease];
 }
 
-- (OFDataArray*)extraField
+- (OFDataArray *)extraField
 {
 	return [[_extraField copy] autorelease];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *ret = [OFString stringWithFormat: @"<%@:\n"

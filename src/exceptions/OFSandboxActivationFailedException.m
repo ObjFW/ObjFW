@@ -23,7 +23,7 @@
 @implementation OFSandboxActivationFailedException
 @synthesize sandbox = _sandbox, errNo = _errNo;
 
-+ (instancetype)exceptionWithSandbox: (OFSandbox*)sandbox
++ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox
 			       errNo: (int)errNo
 {
 	return [[[self alloc] initWithSandbox: sandbox
@@ -35,7 +35,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSandbox: (OFSandbox*)sandbox
+- initWithSandbox: (OFSandbox *)sandbox
 	    errNo: (int)errNo
 {
 	self = [super init];
@@ -53,7 +53,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The sandbox could not be applied: %@", of_strerror(_errNo)];

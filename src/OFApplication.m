@@ -45,7 +45,7 @@
 # include <windows.h>
 
 extern int _CRT_glob;
-extern void __wgetmainargs(int*, wchar_t***, wchar_t***, int, int*);
+extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif !defined(OF_IOS)
 extern char **environ;
 #endif
@@ -68,11 +68,11 @@ extern char **environ;
 #endif
 
 @interface OFApplication ()
-- (void)OF_setArgumentCount: (int*)argc
-	  andArgumentValues: (char**[])argv;
+- (void)OF_setArgumentCount: (int *)argc
+	  andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
 - (void)OF_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t*[])argv;
+      andWideArgumentValues: (wchar_t *[])argv;
 #endif
 - (void)OF_run;
 @end
@@ -155,22 +155,22 @@ of_application_main(int *argc, char **argv[], Class cls)
 @synthesize programName = _programName, arguments = _arguments;
 @synthesize environment = _environment;
 
-+ (OFApplication*)sharedApplication
++ (OFApplication *)sharedApplication
 {
 	return app;
 }
 
-+ (OFString*)programName
++ (OFString *)programName
 {
 	return [app programName];
 }
 
-+ (OFArray*)arguments
++ (OFArray *)arguments
 {
 	return [app arguments];
 }
 
-+ (OFDictionary*)environment
++ (OFDictionary *)environment
 {
 	return [app environment];
 }
@@ -194,7 +194,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 
 #ifdef OF_HAVE_SANDBOX
-+ (void)activateSandbox: (OFSandbox*)sandbox
++ (void)activateSandbox: (OFSandbox *)sandbox
 {
 	[app activateSandbox: sandbox];
 }
@@ -359,8 +359,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 	[super dealloc];
 }
 
-- (void)OF_setArgumentCount: (int*)argc
-	  andArgumentValues: (char***)argv
+- (void)OF_setArgumentCount: (int *)argc
+	  andArgumentValues: (char ***)argv
 {
 #ifndef OF_WINDOWS
 	void *pool = objc_autoreleasePoolPush();
@@ -400,7 +400,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 #ifdef OF_WINDOWS
 - (void)OF_setArgumentCount: (int)argc
-      andWideArgumentValues: (wchar_t**)argv
+      andWideArgumentValues: (wchar_t **)argv
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *arguments;
@@ -421,8 +421,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 #endif
 
-- (void)getArgumentCount: (int**)argc
-       andArgumentValues: (char****)argv
+- (void)getArgumentCount: (int **)argc
+       andArgumentValues: (char ****)argv
 {
 	*argc = _argc;
 	*argv = _argv;
@@ -442,7 +442,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 # define REGISTER_SIGNAL(sig)						\
 	if ([delegate respondsToSelector:				\
 	    @selector(applicationDidReceive##sig)]) {			\
-		_##sig##Handler = (void(*)(id, SEL))[(id)delegate	\
+		_##sig##Handler = (void (*)(id, SEL))[(id)delegate	\
 		    methodForSelector:					\
 		    @selector(applicationDidReceive##sig)];		\
 									\
@@ -455,7 +455,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 # define REGISTER_SIGNAL(sig)						\
 	if ([delegate respondsToSelector:				\
 	    @selector(applicationDidReceive##sig)]) {			\
-		_##sig##Handler = (void(*)(id, SEL))[(id)delegate	\
+		_##sig##Handler = (void (*)(id, SEL))[(id)delegate	\
 		    methodForSelector:					\
 		    @selector(applicationDidReceive##sig)];		\
 		signal(sig, handle##sig);				\
@@ -523,7 +523,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 
 #ifdef OF_HAVE_SANDBOX
-- (void)activateSandbox: (OFSandbox*)sandbox
+- (void)activateSandbox: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();

@@ -28,7 +28,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 
-static OFString*
+static OFString *
 stringFromBuffer(const char *buffer, size_t length)
 {
 	for (size_t i = 0; i < length; i++)
@@ -58,7 +58,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 @synthesize deviceMajor = _deviceMajor, deviceMinor = _deviceMinor;
 
 - (instancetype)OF_initWithHeader: (char[512])header
-			   stream: (OFStream*)stream
+			   stream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -120,7 +120,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	[super dealloc];
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	size_t ret;
@@ -181,7 +181,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 			    exactLength: 512 - ((size_t)_size % 512)];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *ret = [OFString stringWithFormat: @"<%@:\n"

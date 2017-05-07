@@ -22,7 +22,7 @@
 @implementation OFInvalidJSONException
 @synthesize string = _string, line = _line;
 
-+ (instancetype)exceptionWithString: (OFString*)string
++ (instancetype)exceptionWithString: (OFString *)string
 			       line: (size_t)line
 {
 	return [[[self alloc] initWithString: string
@@ -34,7 +34,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 	    line: (size_t)line
 {
 	self = [super init];
@@ -57,7 +57,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The JSON representation is invalid in line %zu!", _line];

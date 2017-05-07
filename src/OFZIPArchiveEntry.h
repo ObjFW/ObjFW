@@ -180,14 +180,14 @@ enum {
  *
  * @return The last modification date of the entry's file
  */
-- (OFDate*)modificationDate;
+- (OFDate *)modificationDate;
 
 /*!
  * @brief Returns the extra field of the entry.
  *
  * @return The extra field of the entry
  */
-- (OFDataArray*)extraField;
+- (OFDataArray *)extraField;
 @end
 
 #ifdef __cplusplus
@@ -199,7 +199,7 @@ extern "C" {
  * @param version The ZIP entry version to convert to a string
  * @return The ZIP entry version as a string
  */
-extern OFString* of_zip_archive_entry_version_to_string(uint16_t version);
+extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
 
 /*!
  * @brief Gets a pointer to and the size of the extensible data field with the

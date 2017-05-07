@@ -69,8 +69,8 @@ typedef struct stat of_stat_t;
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithPath: (OFString*)path
-			mode: (OFString*)mode;
++ (instancetype)fileWithPath: (OFString *)path
+			mode: (OFString *)mode;
 
 /*!
  * @brief Creates a new OFFile with the specified file descriptor.
@@ -103,8 +103,8 @@ typedef struct stat of_stat_t;
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
  */
-- initWithPath: (OFString*)path
-	  mode: (OFString*)mode;
+- initWithPath: (OFString *)path
+	  mode: (OFString *)mode;
 
 /*!
  * @brief Initializes an already allocated OFFile.

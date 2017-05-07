@@ -37,12 +37,12 @@ static struct {
 	return (id)[[OFCountedSet_hashtable alloc] init];
 }
 
-- initWithSet: (OFSet*)set
+- initWithSet: (OFSet *)set
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithSet: set];
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithArray: array];
 }
@@ -60,7 +60,7 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithObjects: objects
@@ -74,7 +74,7 @@ static struct {
 							arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFCountedSet_hashtable alloc]
 	    initWithSerialization: element];
@@ -136,7 +136,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	OFMutableString *ret;
 	void *pool;
@@ -182,7 +182,7 @@ static struct {
 	return [[OFCountedSet alloc] initWithSet: self];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -228,12 +228,12 @@ static struct {
 }
 #endif
 
-- (void)minusSet: (OFSet*)set
+- (void)minusSet: (OFSet *)set
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	if ([set isKindOfClass: [OFCountedSet class]]) {
-		OFCountedSet *countedSet = (OFCountedSet*)set;
+		OFCountedSet *countedSet = (OFCountedSet *)set;
 
 		for (id object in countedSet) {
 			size_t count = [countedSet countForObject: object];
@@ -248,12 +248,12 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)unionSet: (OFSet*)set
+- (void)unionSet: (OFSet *)set
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	if ([set isKindOfClass: [OFCountedSet class]]) {
-		OFCountedSet *countedSet = (OFCountedSet*)set;
+		OFCountedSet *countedSet = (OFCountedSet *)set;
 
 		for (id object in countedSet) {
 			size_t count = [countedSet countForObject: object];

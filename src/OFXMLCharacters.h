@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string value for the characters
  * @return A new OFXMLCharacters
  */
-+ (instancetype)charactersWithString: (OFString*)string;
++ (instancetype)charactersWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFXMLCharacters with the specified
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string value for the characters
  * @return An initialized OFXMLCharacters
  */
-- initWithString: (OFString*)string;
+- initWithString: (OFString *)string;
 @end
 
 OF_ASSUME_NONNULL_END

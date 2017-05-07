@@ -147,21 +147,21 @@ enum {
  */
 @interface OFIntrospection: OFObject
 {
-	OFMutableArray OF_GENERIC(OFMethod*) *_classMethods;
-	OFMutableArray OF_GENERIC(OFMethod*) *_instanceMethods;
-	OFMutableArray OF_GENERIC(OFProperty*) *_properties;
-	OFMutableArray OF_GENERIC(OFInstanceVariable*) *_instanceVariables;
+	OFMutableArray OF_GENERIC(OFMethod *) *_classMethods;
+	OFMutableArray OF_GENERIC(OFMethod *) *_instanceMethods;
+	OFMutableArray OF_GENERIC(OFProperty *) *_properties;
+	OFMutableArray OF_GENERIC(OFInstanceVariable *) *_instanceVariables;
 }
 
 /*!
  * The class methods of the class.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod*) *classMethods;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod *) *classMethods;
 
 /*!
  * The instance methods of the class.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod*) *instanceMethods;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod *) *instanceMethods;
 
 /*!
  * The properties of the class.
@@ -183,13 +183,13 @@ enum {
  * @warning GCC does not emit any data for property introspection for the GNU
  *	    ABI.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFProperty*) *properties;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFProperty *) *properties;
 
 /*!
  * The instance variables of the class.
  */
 @property (readonly, nonatomic)
-    OFArray OF_GENERIC(OFInstanceVariable*) *instanceVariables;
+    OFArray OF_GENERIC(OFInstanceVariable *) *instanceVariables;
 
 /* TODO: protocols */
 

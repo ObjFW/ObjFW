@@ -34,7 +34,7 @@ extern int _OFDataArray_CryptoHashing_reference;
  *
  * @return The MD5 hash of the data array as an autoreleased OFString
  */
-- (OFString*)MD5Hash;
+- (OFString *)MD5Hash;
 
 /*!
  * @brief Returns the RIPEMD-160 hash of the data array as an autoreleased
@@ -42,14 +42,14 @@ extern int _OFDataArray_CryptoHashing_reference;
  *
  * @return The RIPEMD-160 hash of the data array as an autoreleased OFString
  */
-- (OFString*)RIPEMD160Hash;
+- (OFString *)RIPEMD160Hash;
 
 /*!
  * @brief Returns the SHA-1 hash of the data array as an autoreleased OFString.
  *
  * @return The SHA-1 hash of the data array as an autoreleased OFString
  */
-- (OFString*)SHA1Hash;
+- (OFString *)SHA1Hash;
 
 /*!
  * @brief Returns the SHA-224 hash of the data array as an autoreleased
@@ -57,7 +57,7 @@ extern int _OFDataArray_CryptoHashing_reference;
  *
  * @return The SHA-224 hash of the data array as an autoreleased OFString
  */
-- (OFString*)SHA224Hash;
+- (OFString *)SHA224Hash;
 
 /*!
  * @brief Returns the SHA-256 hash of the data array as an autoreleased
@@ -65,7 +65,7 @@ extern int _OFDataArray_CryptoHashing_reference;
  *
  * @return The SHA-256 hash of the data array as an autoreleased OFString
  */
-- (OFString*)SHA256Hash;
+- (OFString *)SHA256Hash;
 
 /*!
  * @brief Returns the SHA-384 hash of the data array as an autoreleased
@@ -73,7 +73,7 @@ extern int _OFDataArray_CryptoHashing_reference;
  *
  * @return The SHA-384 hash of the data array as an autoreleased OFString
  */
-- (OFString*)SHA384Hash;
+- (OFString *)SHA384Hash;
 
 /*!
  * @brief Returns the SHA-512 hash of the data array as an autoreleased
@@ -81,7 +81,7 @@ extern int _OFDataArray_CryptoHashing_reference;
  *
  * @return The SHA-512 hash of the data array as an autoreleased OFString
  */
-- (OFString*)SHA512Hash;
+- (OFString *)SHA512Hash;
 @end
 
 OF_ASSUME_NONNULL_END

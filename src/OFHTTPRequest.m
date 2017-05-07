@@ -29,7 +29,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
-const char*
+const char *
 of_http_request_method_to_string(of_http_request_method_t method)
 {
 	switch (method) {
@@ -86,7 +86,7 @@ of_http_request_method_from_string(const char *string)
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)requestWithURL: (OFURL*)URL
++ (instancetype)requestWithURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithURL: URL] autorelease];
 }
@@ -102,7 +102,7 @@ of_http_request_method_from_string(const char *string)
 	return self;
 }
 
-- initWithURL: (OFURL*)URL
+- initWithURL: (OFURL *)URL
 {
 	self = [self init];
 
@@ -202,7 +202,7 @@ of_http_request_method_from_string(const char *string)
 	return _protocolVersion;
 }
 
-- (void)setProtocolVersionFromString: (OFString*)string
+- (void)setProtocolVersionFromString: (OFString *)string
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
@@ -226,20 +226,20 @@ of_http_request_method_from_string(const char *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFString*)protocolVersionString
+- (OFString *)protocolVersionString
 {
 	return [OFString stringWithFormat: @"%u.%u",
 					   _protocolVersion.major,
 					   _protocolVersion.minor];
 }
 
-- (void)setBodyFromString: (OFString*)string
+- (void)setBodyFromString: (OFString *)string
 {
 	[self setBodyFromString: string
 		       encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)setBodyFromString: (OFString*)string
+- (void)setBodyFromString: (OFString *)string
 		 encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -252,7 +252,7 @@ of_http_request_method_from_string(const char *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *method = of_http_request_method_to_string(_method);

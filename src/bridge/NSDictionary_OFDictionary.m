@@ -23,7 +23,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation NSDictionary_OFDictionary
-- initWithOFDictionary: (OFDictionary*)dictionary
+- initWithOFDictionary: (OFDictionary *)dictionary
 {
 	if ((self = [super init]) != nil) {
 		@try {
@@ -40,12 +40,12 @@
 {
 	id object;
 
-	if ([(NSObject*)key conformsToProtocol: @protocol(NSBridging)])
+	if ([(NSObject *)key conformsToProtocol: @protocol(NSBridging)])
 		key = [key OFObject];
 
 	object = [_dictionary objectForKey: key];
 
-	if ([(OFObject*)object conformsToProtocol: @protocol(OFBridging)])
+	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
 		return [object NSObject];
 
 	return object;

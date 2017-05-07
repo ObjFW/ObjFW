@@ -53,9 +53,9 @@
 #define YES (BOOL)1
 #define NO  (BOOL)0
 
-typedef struct objc_class* Class;
-typedef struct objc_object* id;
-typedef const struct objc_selector* SEL;
+typedef struct objc_class *Class;
+typedef struct objc_object *id;
+typedef const struct objc_selector *SEL;
 typedef signed char BOOL;
 typedef id (*IMP)(id, SEL, ...);
 typedef void (*objc_uncaught_exception_handler)(id);
@@ -198,40 +198,40 @@ struct objc_protocol_list {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern SEL sel_registerName(const char*);
-extern const char* sel_getName(SEL);
+extern SEL sel_registerName(const char *);
+extern const char *sel_getName(SEL);
 extern bool sel_isEqual(SEL, SEL);
-extern Class objc_allocateClassPair(Class, const char*, size_t);
+extern Class objc_allocateClassPair(Class, const char *, size_t);
 extern void objc_registerClassPair(Class);
-extern id objc_lookUpClass(const char*);
-extern id objc_getClass(const char*);
-extern id objc_getRequiredClass(const char*);
-extern unsigned int objc_getClassList(Class*, unsigned int);
-extern Class* objc_copyClassList(unsigned int*);
+extern id objc_lookUpClass(const char *);
+extern id objc_getClass(const char *);
+extern id objc_getRequiredClass(const char *);
+extern unsigned int objc_getClassList(Class *, unsigned int);
+extern Class *objc_copyClassList(unsigned int *);
 extern bool class_isMetaClass(Class);
-extern const char* class_getName(Class);
+extern const char *class_getName(Class);
 extern Class class_getSuperclass(Class);
 extern unsigned long class_getInstanceSize(Class);
 extern bool class_respondsToSelector(Class, SEL);
-extern bool class_conformsToProtocol(Class, Protocol*);
+extern bool class_conformsToProtocol(Class, Protocol *);
 extern IMP class_getMethodImplementation(Class, SEL);
 extern IMP class_getMethodImplementation_stret(Class, SEL);
-extern const char* class_getMethodTypeEncoding(Class, SEL);
-extern bool class_addMethod(Class, SEL, IMP, const char*);
-extern IMP class_replaceMethod(Class, SEL, IMP, const char*);
+extern const char *class_getMethodTypeEncoding(Class, SEL);
+extern bool class_addMethod(Class, SEL, IMP, const char *);
+extern IMP class_replaceMethod(Class, SEL, IMP, const char *);
 extern Class object_getClass(id);
 extern Class object_setClass(id, Class);
-extern const char* object_getClassName(id);
-extern const char* protocol_getName(Protocol*);
-extern bool protocol_isEqual(Protocol*, Protocol*);
-extern bool protocol_conformsToProtocol(Protocol*, Protocol*);
+extern const char *object_getClassName(id);
+extern const char *protocol_getName(Protocol *);
+extern bool protocol_isEqual(Protocol *, Protocol *);
+extern bool protocol_conformsToProtocol(Protocol *, Protocol *);
 extern void objc_exit(void);
 extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
 extern void objc_setForwardHandler(IMP, IMP);
 extern id objc_autorelease(id);
-extern void* objc_autoreleasePoolPush(void);
-extern void objc_autoreleasePoolPop(void*);
+extern void *objc_autoreleasePoolPush(void);
+extern void objc_autoreleasePoolPop(void *);
 extern id _objc_rootAutorelease(id);
 extern void objc_zero_weak_references(id);
 
@@ -242,18 +242,18 @@ extern void objc_zero_weak_references(id);
  * declarations which include __declspec(dllimport) on Windows.
  */
 struct objc_abi_module;
-extern void __objc_exec_class(void*);
+extern void __objc_exec_class(void *);
 extern IMP objc_msg_lookup(id, SEL);
 extern IMP objc_msg_lookup_stret(id, SEL);
-extern IMP objc_msg_lookup_super(struct objc_super*, SEL);
-extern IMP objc_msg_lookup_super_stret(struct objc_super*, SEL);
+extern IMP objc_msg_lookup_super(struct objc_super *, SEL);
+extern IMP objc_msg_lookup_super_stret(struct objc_super *, SEL);
 extern void objc_exception_throw(id);
 extern int objc_sync_enter(id);
 extern int objc_sync_exit(id);
 extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
 extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
-extern void objc_getPropertyStruct(void*, const void*, ptrdiff_t, BOOL, BOOL);
-extern void objc_setPropertyStruct(void*, const void*, ptrdiff_t, BOOL, BOOL);
+extern void objc_getPropertyStruct(void *, const void *, ptrdiff_t, BOOL, BOOL);
+extern void objc_setPropertyStruct(void *, const void *, ptrdiff_t, BOOL, BOOL);
 extern void objc_enumerationMutation(id);
 extern void objc_setEnumerationMutationHandler(void (*handler)(id));
 #ifdef __cplusplus

@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change current directory path failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo;
 
 /*!
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized change current directory path failed exception
  */
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 	 errNo: (int)errNo;
 @end
 

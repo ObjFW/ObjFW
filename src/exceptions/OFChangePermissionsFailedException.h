@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change permissions failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 		      permissions: (mode_t)permissions
 			    errNo: (int)errNo;
 
@@ -70,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized change permissions failed exception
  */
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
    permissions: (mode_t)permissions
 	 errNo: (int)errNo;
 @end

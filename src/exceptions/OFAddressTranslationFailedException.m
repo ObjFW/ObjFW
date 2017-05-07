@@ -46,12 +46,12 @@ static of_mutex_t mutex;
 }
 #endif
 
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 {
 	return [[[self alloc] initWithHost: host] autorelease];
 }
 
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			    error: (int)error
 {
 	return [[[self alloc] initWithHost: host
@@ -63,7 +63,7 @@ static of_mutex_t mutex;
 	return [[[self alloc] initWithError: error] autorelease];
 }
 
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 {
 	self = [super init];
 
@@ -77,7 +77,7 @@ static of_mutex_t mutex;
 	return self;
 }
 
-- (instancetype)initWithHost: (OFString*)host
+- (instancetype)initWithHost: (OFString *)host
 		       error: (int)error
 {
 	self = [super init];
@@ -109,7 +109,7 @@ static of_mutex_t mutex;
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	/* FIXME: Add proper description for Win32 */
 #ifndef OF_WINDOWS

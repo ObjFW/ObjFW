@@ -32,7 +32,7 @@ extern int _OFString_XMLEscaping_reference;
  *
  * @return A new autoreleased string
  */
-- (OFString*)stringByXMLEscaping;
+- (OFString *)stringByXMLEscaping;
 @end
 
 OF_ASSUME_NONNULL_END

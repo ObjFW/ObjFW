@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased bind failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
@@ -79,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized bind failed exception
  */
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket
 	 errNo: (int)errNo;

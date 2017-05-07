@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which is still running
  * @return A new, autoreleased thread still running exception
  */
-+ (instancetype)exceptionWithThread: (nullable OFThread*)thread;
++ (instancetype)exceptionWithThread: (nullable OFThread *)thread;
 
 /*!
  * @brief Initializes an already allocated thread still running exception.
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which is still running
  * @return An initialized thread still running exception
  */
-- initWithThread: (nullable OFThread*)thread;
+- initWithThread: (nullable OFThread *)thread;
 @end
 
 OF_ASSUME_NONNULL_END

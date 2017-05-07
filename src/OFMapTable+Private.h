@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 }
 
-- initWithEnumerator: (OFMapTableEnumerator*)enumerator
+- initWithEnumerator: (OFMapTableEnumerator *)enumerator
 	      object: (id)object;
 @end
 

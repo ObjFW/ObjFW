@@ -57,8 +57,8 @@
 	[super dealloc];
 }
 
--		 (void)parser: (OFXMLParser*)parser
-  foundProcessingInstructions: (OFString*)pi
+-		 (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructions: (OFString *)pi
 {
 	OFXMLProcessingInstructions *node = [OFXMLProcessingInstructions
 	    processingInstructionsWithString: pi];
@@ -72,11 +72,11 @@
 		   didBuildParentlessNode: node];
 }
 
--    (void)parser: (OFXMLParser*)parser
-  didStartElement: (OFString*)name
-	   prefix: (OFString*)prefix
-	namespace: (OFString*)namespace
-       attributes: (OFArray*)attributes
+-    (void)parser: (OFXMLParser *)parser
+  didStartElement: (OFString *)name
+	   prefix: (OFString *)prefix
+	namespace: (OFString *)namespace
+       attributes: (OFArray *)attributes
 {
 	OFXMLElement *element = [OFXMLElement elementWithName: name
 						    namespace: namespace];
@@ -98,10 +98,10 @@
 	[_stack addObject: element];
 }
 
--  (void)parser: (OFXMLParser*)parser
-  didEndElement: (OFString*)name
-	 prefix: (OFString*)prefix
-      namespace: (OFString*)namespace
+-  (void)parser: (OFXMLParser *)parser
+  didEndElement: (OFString *)name
+	 prefix: (OFString *)prefix
+      namespace: (OFString *)namespace
 {
 	switch ([_stack count]) {
 	case 0:
@@ -124,8 +124,8 @@
 	[_stack removeLastObject];
 }
 
--    (void)parser: (OFXMLParser*)parser
-  foundCharacters: (OFString*)characters
+-    (void)parser: (OFXMLParser *)parser
+  foundCharacters: (OFString *)characters
 {
 	OFXMLCharacters *node;
 	OFXMLElement *parent;
@@ -141,8 +141,8 @@
 		    didBuildParentlessNode: node];
 }
 
-- (void)parser: (OFXMLParser*)parser
-    foundCDATA: (OFString*)CDATA
+- (void)parser: (OFXMLParser *)parser
+    foundCDATA: (OFString *)CDATA
 {
 	OFXMLCDATA *node = [OFXMLCDATA CDATAWithString: CDATA];
 	OFXMLElement *parent = [_stack lastObject];
@@ -155,8 +155,8 @@
 		   didBuildParentlessNode: node];
 }
 
-- (void)parser: (OFXMLParser*)parser
-  foundComment: (OFString*)comment
+- (void)parser: (OFXMLParser *)parser
+  foundComment: (OFString *)comment
 {
 	OFXMLComment *node = [OFXMLComment commentWithString: comment];
 	OFXMLElement *parent = [_stack lastObject];
@@ -169,8 +169,8 @@
 		   didBuildParentlessNode: node];
 }
 
--	(OFString*)parser: (OFXMLParser*)parser
-  foundUnknownEntityNamed: (OFString*)entity
+-      (OFString *)parser: (OFXMLParser *)parser
+  foundUnknownEntityNamed: (OFString *)entity
 {
 	if ([_delegate respondsToSelector:
 	    @selector(elementBuilder:foundUnknownEntityNamed:)])

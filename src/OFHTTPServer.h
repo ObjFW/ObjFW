@@ -42,9 +42,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param request The request the HTTP server received
  * @param response The response the server will send to the client
  */
--      (void)server: (OFHTTPServer*)server
-  didReceiveRequest: (OFHTTPRequest*)request
-	   response: (OFHTTPResponse*)response;
+-      (void)server: (OFHTTPServer *)server
+  didReceiveRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response;
 
 @optional
 /*!
@@ -58,8 +58,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	   connections will still be handled and you can start accepting new
  *	   connections again by calling @ref OFHTTPServer::start again.
  */
--			  (bool)server: (OFHTTPServer*)server
-  didReceiveExceptionOnListeningSocket: (OFException*)exception;
+-			  (bool)server: (OFHTTPServer *)server
+  didReceiveExceptionOnListeningSocket: (OFException *)exception;
 
 /*!
  * @brief This method is called when a client socket encountered an exception.
@@ -75,10 +75,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param request The request for the response for which the exception occurred
  * @param exception The exception which occurred
  */
--		    (void)server: (OFHTTPServer*)server
-  didReceiveExceptionForResponse: (OFHTTPResponse*)response
-			 request: (OFHTTPRequest*)request
-		       exception: (OFException*)exception;
+-		    (void)server: (OFHTTPServer *)server
+  didReceiveExceptionForResponse: (OFHTTPResponse *)response
+			 request: (OFHTTPRequest *)request
+		       exception: (OFException *)exception;
 @end
 
 /*!
@@ -98,7 +98,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The host on which the HTTP server will listen.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString* host;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *host;
 
 /*!
  * The port on which the HTTP server will listen.

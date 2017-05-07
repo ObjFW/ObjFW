@@ -49,9 +49,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param socket The socket created by the OFHTTPClient
  * @param request The request for which the socket was created
  */
--    (void)client: (OFHTTPClient*)client
-  didCreateSocket: (OF_KINDOF(OFTCPSocket*))socket
-	  request: (OFHTTPRequest*)request;
+-    (void)client: (OFHTTPClient *)client
+  didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
+	  request: (OFHTTPRequest *)request;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient received headers.
@@ -62,10 +62,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param request The request for which the headers and status code have been
  *		  received
  */
--      (void)client: (OFHTTPClient*)client
-  didReceiveHeaders: (OFDictionary OF_GENERIC(OFString*, OFString*)*)headers
+-      (void)client: (OFHTTPClient *)client
+  didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
 	 statusCode: (int)statusCode
-	    request: (OFHTTPRequest*)request;
+	    request: (OFHTTPRequest *)request;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient wants to follow a
@@ -87,11 +87,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param response The response indicating the redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
--	  (bool)client: (OFHTTPClient*)client
-  shouldFollowRedirect: (OFURL*)URL
+-	  (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirect: (OFURL *)URL
 	    statusCode: (int)statusCode
-	       request: (OFHTTPRequest*)request
-	      response: (OFHTTPResponse*)response;
+	       request: (OFHTTPRequest *)request
+	      response: (OFHTTPResponse *)response;
 @end
 
 /*!
@@ -131,7 +131,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An OFHTTPResponse with the response for the HTTP request
  */
-- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request;
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
 
 /*!
  * @brief Performs the HTTP request and returns an OFHTTPResponse.
@@ -142,8 +142,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		    redirect is returned as an OFHTTPResponse
  * @return An OFHTTPResponse with the response for the HTTP request
  */
-- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
-			redirects: (size_t)redirects;
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (size_t)redirects;
 
 /*!
  * @brief Closes connections that are still open due to keep-alive.

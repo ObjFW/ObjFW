@@ -19,29 +19,29 @@
 #import "OFSortedList.h"
 
 @implementation OFSortedList
-- (of_list_object_t*)appendObject: (id)object
+- (of_list_object_t *)appendObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t*)prependObject: (id)object
+- (of_list_object_t *)prependObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t*)insertObject: (id)object
-		 beforeListObject: (of_list_object_t*)listObject
+- (of_list_object_t *)insertObject: (id)object
+		  beforeListObject: (of_list_object_t *)listObject
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t*)insertObject: (id)object
-		  afterListObject: (of_list_object_t*)listObject
+- (of_list_object_t *)insertObject: (id)object
+		   afterListObject: (of_list_object_t *)listObject
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (of_list_object_t*)insertObject: (id <OFComparing>)object
+- (of_list_object_t *)insertObject: (id <OFComparing>)object
 {
 	of_list_object_t *iter;
 

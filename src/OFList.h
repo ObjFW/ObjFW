@@ -45,7 +45,7 @@ struct of_list_object_t {
  * @brief A class which provides easy to use double-linked lists.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFList <ObjectType>:
+@interface OFList<ObjectType>:
 #else
 # ifndef DOXYGEN
 #  define ObjectType id
@@ -85,7 +85,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)appendObject: (ObjectType)object;
+- (of_list_object_t *)appendObject: (ObjectType)object;
 
 /*!
  * @brief Prepends an object to the list.
@@ -95,7 +95,7 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)prependObject: (ObjectType)object;
+- (of_list_object_t *)prependObject: (ObjectType)object;
 
 /*!
  * @brief Inserts an object before another list object.
@@ -107,8 +107,8 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (ObjectType)object
-		 beforeListObject: (of_list_object_t*)listObject;
+- (of_list_object_t *)insertObject: (ObjectType)object
+		  beforeListObject: (of_list_object_t *)listObject;
 
 /*!
  * @brief Inserts an object after another list object.
@@ -120,15 +120,15 @@ struct of_list_object_t {
  *	   For example, if you want to remove an object from the list, you need
  *	   its of_list_object_t.
  */
-- (of_list_object_t*)insertObject: (ObjectType)object
-		  afterListObject: (of_list_object_t*)listObject;
+- (of_list_object_t *)insertObject: (ObjectType)object
+		   afterListObject: (of_list_object_t *)listObject;
 
 /*!
  * @brief Removes the object with the specified list object from the list.
  *
  * @param listObject The list object returned by append / prepend
  */
-- (void)removeListObject: (of_list_object_t*)listObject;
+- (void)removeListObject: (of_list_object_t *)listObject;
 
 /*!
  * @brief Checks whether the list contains an object equal to the specified
@@ -153,7 +153,7 @@ struct of_list_object_t {
  *
  * @returns An OFEnumerator to enumerate through all objects of the list
  */
-- (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
 
 /*!
  * @brief Returns the first object of the list or `nil`.
@@ -192,8 +192,8 @@ struct of_list_object_t {
 	unsigned long	 *_mutationsPtr;
 }
 
--     initWithList: (OFList*)list
-  mutationsPointer: (unsigned long*)mutationsPtr;
+-     initWithList: (OFList *)list
+  mutationsPointer: (unsigned long *)mutationsPtr;
 @end
 
 OF_ASSUME_NONNULL_END

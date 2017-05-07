@@ -137,7 +137,7 @@ parseUnicodeEscape(const char *pointer, const char *stop)
 	return ret;
 }
 
-static inline OFString*
+static inline OFString *
 parseString(const char **pointer, const char *stop, size_t *line)
 {
 	char *buffer;
@@ -288,7 +288,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 	return nil;
 }
 
-static inline OFString*
+static inline OFString *
 parseIdentifier(const char **pointer, const char *stop)
 {
 	char *buffer;
@@ -388,7 +388,7 @@ parseIdentifier(const char **pointer, const char *stop)
 	return nil;
 }
 
-static inline OFMutableArray*
+static inline OFMutableArray *
 parseArray(const char **pointer, const char *stop, size_t *line,
     size_t depth, size_t depthLimit)
 {
@@ -445,7 +445,7 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 	return array;
 }
 
-static inline OFMutableDictionary*
+static inline OFMutableDictionary *
 parseDictionary(const char **pointer, const char *stop, size_t *line,
     size_t depth, size_t depthLimit)
 {
@@ -524,7 +524,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 	return dictionary;
 }
 
-static inline OFNumber*
+static inline OFNumber *
 parseNumber(const char **pointer, const char *stop, size_t *line)
 {
 	bool isHex = (*pointer + 1 < stop && (*pointer)[1] == 'x');

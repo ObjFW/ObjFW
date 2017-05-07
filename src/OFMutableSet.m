@@ -36,12 +36,12 @@ static struct {
 	return (id)[[OFMutableSet_hashtable alloc] init];
 }
 
-- initWithSet: (OFSet*)set
+- initWithSet: (OFSet *)set
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithSet: set];
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithArray: array];
 }
@@ -59,7 +59,7 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithObjects: objects
@@ -73,7 +73,7 @@ static struct {
 							arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableSet_hashtable alloc]
 	    initWithSerialization: element];
@@ -154,13 +154,13 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)minusSet: (OFSet*)set
+- (void)minusSet: (OFSet *)set
 {
 	for (id object in set)
 		[self removeObject: object];
 }
 
-- (void)intersectSet: (OFSet*)set
+- (void)intersectSet: (OFSet *)set
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t count = [self count];
@@ -188,7 +188,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)unionSet: (OFSet*)set
+- (void)unionSet: (OFSet *)set
 {
 	for (id object in set)
 		[self addObject: object];

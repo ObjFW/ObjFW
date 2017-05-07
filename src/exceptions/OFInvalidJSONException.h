@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param line The line in which the parsing error was encountered
  * @return A new, autoreleased invalid JSON exception
  */
-+ (instancetype)exceptionWithString: (OFString*)string
++ (instancetype)exceptionWithString: (OFString *)string
 			       line: (size_t)line;
 
 /*!
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param line The line in which the parsing error was encountered
  * @return An initialized invalid JSON exception
  */
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 	    line: (size_t)line;
 @end
 

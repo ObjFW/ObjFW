@@ -22,7 +22,7 @@
 @implementation OFMemoryNotPartOfObjectException
 @synthesize pointer = _pointer, object = _object;
 
-+ (instancetype)exceptionWithPointer: (void*)pointer
++ (instancetype)exceptionWithPointer: (void *)pointer
 			      object: (id)object
 {
 	return [[[self alloc] initWithPointer: pointer
@@ -34,7 +34,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPointer: (void*)pointer
+- initWithPointer: (void *)pointer
 	   object: (id)object
 {
 	self = [super init];
@@ -52,7 +52,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Deallocation or reallocation of memory not allocated as part of "

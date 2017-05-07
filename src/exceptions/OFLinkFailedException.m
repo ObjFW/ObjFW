@@ -23,15 +23,15 @@
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
 
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath
++ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
+			destinationPath: (OFString *)destinationPath
 {
 	return [[[self alloc] initWithSourcePath: sourcePath
 				 destinationPath: destinationPath] autorelease];
 }
 
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath
++ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
+			destinationPath: (OFString *)destinationPath
 				  errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourcePath: sourcePath
@@ -44,8 +44,8 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath
+- initWithSourcePath: (OFString *)sourcePath
+     destinationPath: (OFString *)destinationPath
 {
 	self = [super init];
 
@@ -60,8 +60,8 @@
 	return self;
 }
 
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath
+- initWithSourcePath: (OFString *)sourcePath
+     destinationPath: (OFString *)destinationPath
 	       errNo: (int)errNo
 {
 	self = [super init];
@@ -86,7 +86,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_errNo != 0)
 		return [OFString stringWithFormat:

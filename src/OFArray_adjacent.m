@@ -85,7 +85,7 @@
 	return self;
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	id const *objects;
 	size_t count;
@@ -127,7 +127,7 @@
 	return self;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	self = [self init];
@@ -158,7 +158,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 
@@ -196,22 +196,22 @@
 	return [_array count];
 }
 
-- (id const*)objects
+- (id const *)objects
 {
 	return [_array items];
 }
 
 - (id)objectAtIndex: (size_t)index
 {
-	return *((id*)[_array itemAtIndex: index]);
+	return *((id *)[_array itemAtIndex: index]);
 }
 
 - (id)objectAtIndexedSubscript: (size_t)index
 {
-	return *((id*)[_array itemAtIndex: index]);
+	return *((id *)[_array itemAtIndex: index]);
 }
 
-- (void)getObjects: (id*)buffer
+- (void)getObjects: (id *)buffer
 	   inRange: (of_range_t)range
 {
 	id *objects = [_array items];
@@ -262,7 +262,7 @@
 }
 
 
-- (OFArray*)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > [_array count])
@@ -270,7 +270,7 @@
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		return [OFArray
-		    arrayWithObjects: (id*)[_array items] + range.location
+		    arrayWithObjects: (id *)[_array items] + range.location
 			       count: range.length];
 
 	return [OFArray_adjacentSubarray arrayWithArray: self
@@ -320,8 +320,8 @@
 	return hash;
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count_
 {
 	size_t count = [_array count];
@@ -340,7 +340,7 @@
 
 	state->state = (unsigned long)count;
 	state->itemsPtr = [_array items];
-	state->mutationsPtr = (unsigned long*)self;
+	state->mutationsPtr = (unsigned long *)self;
 
 	return (int)count;
 }

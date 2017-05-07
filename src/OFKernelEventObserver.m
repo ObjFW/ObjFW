@@ -129,14 +129,14 @@ enum {
 # endif
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-		if (bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
+		if (bind(_cancelFD[0], (struct sockaddr *)&_cancelAddr,
 		    sizeof(_cancelAddr)) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
 		cancelAddrLen = sizeof(_cancelAddr);
-		if (of_getsockname(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
-		    &cancelAddrLen) != 0)
+		if (of_getsockname(_cancelFD[0],
+		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 # else
@@ -148,7 +148,8 @@ enum {
 				rnd = (uint16_t)rand();
 
 			_cancelAddr.sin_port = OF_BSWAP16_IF_LE(rnd);
-			ret = bind(_cancelFD[0], (struct sockaddr*)&_cancelAddr,
+			ret = bind(_cancelFD[0],
+			    (struct sockaddr *)&_cancelAddr,
 			    sizeof(_cancelAddr));
 
 			if (ret == 0)
@@ -401,7 +402,7 @@ enum {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)observeUntilDate: (OFDate*)date
+- (void)observeUntilDate: (OFDate *)date
 {
 	[self observeForTimeInterval: [date timeIntervalSinceNow]];
 }
@@ -413,10 +414,10 @@ enum {
 #else
 # ifndef OF_WII
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
-	    (struct sockaddr*)&_cancelAddr, sizeof(_cancelAddr)) > 0);
+	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) > 0);
 # else
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
-	    (struct sockaddr*)&_cancelAddr, 8) > 0);
+	    (struct sockaddr *)&_cancelAddr, 8) > 0);
 # endif
 #endif
 }

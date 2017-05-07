@@ -74,8 +74,8 @@ OF_ASSUME_NONNULL_BEGIN
 	uint32_t _CRC32, _uncompressedSize;
 }
 
-+ (instancetype)streamWithStream: (OFStream*)stream;
-- initWithStream: (OFStream*)stream;
++ (instancetype)streamWithStream: (OFStream *)stream;
+- initWithStream: (OFStream *)stream;
 @end
 
 OF_ASSUME_NONNULL_END

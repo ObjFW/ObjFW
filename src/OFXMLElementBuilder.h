@@ -41,8 +41,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which built an OFXMLElement
  * @param element The OFXMLElement the OFXMLElementBuilder built
  */
-- (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)element;
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+       didBuildElement: (OFXMLElement *)element;
 
 @optional
 /*!
@@ -55,8 +55,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param builder The builder which built the OFXMLNode without parent
  * @param node The OFXMLNode the OFXMLElementBuilder built
  */
--   (void)elementBuilder: (OFXMLElementBuilder*)builder
-  didBuildParentlessNode: (OFXMLNode*)node;
+-   (void)elementBuilder: (OFXMLElementBuilder *)builder
+  didBuildParentlessNode: (OFXMLNode *)node;
 
 /*!
  * @brief This callback is called when the OFXMLElementBuilder gets a close tag
@@ -76,10 +76,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix of the close tag
  * @param namespace_ The namespace of the close tag
  */
-- (void)elementBuilder: (OFXMLElementBuilder*)builder
-  didNotExpectCloseTag: (OFString*)name
-		prefix: (nullable OFString*)prefix
-	     namespace: (nullable OFString*)namespace_;
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+  didNotExpectCloseTag: (OFString *)name
+		prefix: (nullable OFString *)prefix
+	     namespace: (nullable OFString *)namespace_;
 
 /*!
  * @brief This callback is called when the XML parser for the element builder
@@ -89,8 +89,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param entity The name of the entity
  * @return The substitution for the entity
  */
-- (OFString*)elementBuilder: (OFXMLElementBuilder*)builder
-    foundUnknownEntityNamed: (OFString*)entity;
+- (OFString *)elementBuilder: (OFXMLElementBuilder *)builder
+     foundUnknownEntityNamed: (OFString *)entity;
 @end
 
 /*!
@@ -105,7 +105,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
-	OFMutableArray OF_GENERIC(OFXMLElement*) *_stack;
+	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
 	id <OFXMLElementBuilderDelegate> _delegate;
 }
 

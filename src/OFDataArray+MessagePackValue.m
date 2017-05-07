@@ -29,7 +29,7 @@
 
 int _OFDataArray_MessagePackValue_reference;
 
-static size_t parseObject(const uint8_t*, size_t, id*);
+static size_t parseObject(const uint8_t *, size_t, id *);
 
 static uint16_t
 readUInt16(const uint8_t *buffer)
@@ -165,7 +165,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 			goto error;
 
 		*object = [OFString
-		    stringWithUTF8String: (const char*)buffer + 1
+		    stringWithUTF8String: (const char *)buffer + 1
 				  length: count];
 		return count + 1;
 	}
@@ -495,7 +495,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 			goto error;
 
 		*object = [OFString
-		    stringWithUTF8String: (const char*)buffer + 2
+		    stringWithUTF8String: (const char *)buffer + 2
 				  length: count];
 		return count + 2;
 	case 0xDA: /* str 16 */
@@ -508,7 +508,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 			goto error;
 
 		*object = [OFString
-		    stringWithUTF8String: (const char*)buffer + 3
+		    stringWithUTF8String: (const char *)buffer + 3
 				  length: count];
 		return count + 3;
 	case 0xDB: /* str 32 */
@@ -521,7 +521,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 			goto error;
 
 		*object = [OFString
-		    stringWithUTF8String: (const char*)buffer + 5
+		    stringWithUTF8String: (const char *)buffer + 5
 				  length: count];
 		return count + 5;
 	/* Arrays */

@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path A string with the path of the item tried to open
  * @return A new, autoreleased open item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString *)path;
 
 /*!
  * @brief Creates a new, autoreleased open item failed exception.
@@ -60,8 +60,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param mode A string with the mode in which the item should have been opened
  * @return A new, autoreleased open item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
-			     mode: (nullable OFString*)mode;
++ (instancetype)exceptionWithPath: (OFString *)path
+			     mode: (nullable OFString *)mode;
 
 /*!
  * @brief Creates a new, autoreleased open item failed exception.
@@ -70,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo;
 
 /*!
@@ -81,8 +81,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
-			     mode: (nullable OFString*)mode
++ (instancetype)exceptionWithPath: (OFString *)path
+			     mode: (nullable OFString *)mode
 			    errNo: (int)errNo;
 
 /*!
@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path A string with the path of the item which could not be opened
  * @return An initialized open item failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated open item failed exception.
@@ -100,8 +100,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param mode A string with the mode in which the item should have been opened
  * @return An initialized open item failed exception
  */
-- initWithPath: (OFString*)path
-	  mode: (nullable OFString*)mode;
+- initWithPath: (OFString *)path
+	  mode: (nullable OFString *)mode;
 
 /*!
  * @brief Initializes an already allocated open item failed exception.
@@ -110,7 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 	 errNo: (int)errNo;
 
 /*!
@@ -121,8 +121,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
-- initWithPath: (OFString*)path
-	  mode: (nullable OFString*)mode
+- initWithPath: (OFString *)path
+	  mode: (nullable OFString *)mode
 	 errNo: (int)errNo;
 @end
 

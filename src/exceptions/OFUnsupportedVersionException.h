@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param version The version which is unsupported
  * @return A new, autoreleased unsupported version exception
  */
-+ (instancetype)exceptionWithVersion: (OFString*)version;
++ (instancetype)exceptionWithVersion: (OFString *)version;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception.
@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param version The version which is unsupported
  * @return An initialized unsupported version exception
  */
-- initWithVersion: (OFString*)version;
+- initWithVersion: (OFString *)version;
 @end
 
 OF_ASSUME_NONNULL_END

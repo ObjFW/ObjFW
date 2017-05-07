@@ -52,7 +52,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The selector %s is not understood by an object of type %@ or not "

@@ -24,8 +24,8 @@
 @implementation OFHTTPRequestFailedException
 @synthesize request = _request, response = _response;
 
-+ (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
-			    response: (OFHTTPResponse*)response
++ (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
+			    response: (OFHTTPResponse *)response
 {
 	return [[[self alloc] initWithRequest: request
 				     response: response] autorelease];
@@ -36,8 +36,8 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithRequest: (OFHTTPRequest*)request
-	 response: (OFHTTPResponse*)response
+- initWithRequest: (OFHTTPRequest *)request
+	 response: (OFHTTPResponse *)response
 {
 	self = [super init];
 
@@ -55,7 +55,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	const char *method =
 	    of_http_request_method_to_string([_request method]);

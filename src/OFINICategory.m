@@ -39,7 +39,7 @@
 }
 @end
 
-static OFString*
+static OFString *
 escapeString(OFString *string)
 {
 	OFMutableString *mutableString;
@@ -72,7 +72,7 @@ escapeString(OFString *string)
 	return mutableString;
 }
 
-static OFString*
+static OFString *
 unescapeString(OFString *string)
 {
 	OFMutableString *mutableString;
@@ -148,7 +148,7 @@ unescapeString(OFString *string)
 	[super dealloc];
 }
 
-- (void)OF_parseLine: (OFString*)line
+- (void)OF_parseLine: (OFString *)line
 {
 	if (![line hasPrefix: @";"]) {
 		OFINICategory_Pair *pair =
@@ -183,14 +183,14 @@ unescapeString(OFString *string)
 	}
 }
 
-- (OFString*)stringForKey: (OFString*)key
+- (OFString *)stringForKey: (OFString *)key
 {
 	return [self stringForKey: key
 		     defaultValue: nil];
 }
 
-- (OFString*)stringForKey: (OFString*)key
-	     defaultValue: (OFString*)defaultValue
+- (OFString *)stringForKey: (OFString *)key
+	      defaultValue: (OFString *)defaultValue
 {
 	for (id line in _lines) {
 		OFINICategory_Pair *pair;
@@ -207,7 +207,7 @@ unescapeString(OFString *string)
 	return defaultValue;
 }
 
-- (intmax_t)integerForKey: (OFString*)key
+- (intmax_t)integerForKey: (OFString *)key
 	     defaultValue: (intmax_t)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -228,7 +228,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (bool)boolForKey: (OFString*)key
+- (bool)boolForKey: (OFString *)key
       defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -251,7 +251,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (float)floatForKey: (OFString*)key
+- (float)floatForKey: (OFString *)key
 	defaultValue: (float)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -269,7 +269,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (double)doubleForKey: (OFString*)key
+- (double)doubleForKey: (OFString *)key
 	  defaultValue: (double)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -287,7 +287,7 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (OFArray*)arrayForKey: (OFString*)key
+- (OFArray *)arrayForKey: (OFString *)key
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
@@ -311,8 +311,8 @@ unescapeString(OFString *string)
 	return ret;
 }
 
-- (void)setString: (OFString*)string
-	   forKey: (OFString*)key
+- (void)setString: (OFString *)string
+	   forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFINICategory_Pair *pair;
@@ -353,7 +353,7 @@ unescapeString(OFString *string)
 }
 
 - (void)setInteger: (intmax_t)integer
-	    forKey: (OFString*)key
+	    forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -364,14 +364,14 @@ unescapeString(OFString *string)
 }
 
 - (void)setBool: (bool)bool_
-	 forKey: (OFString*)key
+	 forKey: (OFString *)key
 {
 	[self setString: (bool_ ? @"true" : @"false")
 		 forKey: key];
 }
 
 - (void)setFloat: (float)float_
-	  forKey: (OFString*)key
+	  forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -382,7 +382,7 @@ unescapeString(OFString *string)
 }
 
 - (void)setDouble: (double)double_
-	   forKey: (OFString*)key
+	   forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -392,8 +392,8 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setArray: (OFArray*)array
-	  forKey: (OFString*)key
+- (void)setArray: (OFArray *)array
+	  forKey: (OFString *)key
 {
 	void *pool;
 	OFMutableArray *pairs;
@@ -461,7 +461,7 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)removeValueForKey: (OFString*)key
+- (void)removeValueForKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
 	id const *lines = [_lines objects];
@@ -489,7 +489,7 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (bool)OF_writeToStream: (OFStream*)stream
+- (bool)OF_writeToStream: (OFStream *)stream
 		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first
 {

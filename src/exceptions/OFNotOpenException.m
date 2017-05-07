@@ -48,7 +48,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The object of type %@ is not open, connected or bound!",

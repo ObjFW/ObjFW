@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFReadFailedException
-- (OFString*)description
+- (OFString *)description
 {
 	if (_errNo != 0)
 		return [OFString stringWithFormat:

@@ -150,7 +150,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  * @param key The key whose object should be returned
  * @return The object for the given key or NULL if the key was not found
  */
-- (nullable void*)objectForKey: (void*)key;
+- (nullable void *)objectForKey: (void *)key;
 
 /*!
  * @brief Sets an object for a key.
@@ -158,15 +158,15 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (void*)object
-	   forKey: (void*)key;
+- (void)setObject: (void *)object
+	   forKey: (void *)key;
 
 /*!
  * @brief Removes the object for the specified key from the map table.
  *
  * @param key The key whose object should be removed
  */
-- (void)removeObjectForKey: (void*)key;
+- (void)removeObjectForKey: (void *)key;
 
 /*!
  * @brief Removes all objects.
@@ -180,7 +180,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  * @param object The object which is checked for being in the map table
  * @return A boolean whether the map table contains the specified object
 */
-- (bool)containsObject: (nullable void*)object;
+- (bool)containsObject: (nullable void *)object;
 
 /*!
  * @brief Checks whether the map table contains an object with the specified
@@ -190,7 +190,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  * @return A boolean whether the map table contains an object with the
  *	   specified address.
  */
-- (bool)containsObjectIdenticalTo: (nullable void*)object;
+- (bool)containsObjectIdenticalTo: (nullable void *)object;
 
 /*!
  * @brief Returns an OFMapTableEnumerator to enumerate through the map table's
@@ -198,7 +198,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  *
  * @return An OFMapTableEnumerator to enumerate through the map table's keys
  */
-- (OFMapTableEnumerator*)keyEnumerator;
+- (OFMapTableEnumerator *)keyEnumerator;
 
 /*!
  * @brief Returns an OFMapTableEnumerator to enumerate through the map table's
@@ -206,7 +206,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  *
  * @return An OFMapTableEnumerator to enumerate through the map table's objects
  */
-- (OFMapTableEnumerator*)objectEnumerator;
+- (OFMapTableEnumerator *)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -247,7 +247,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  *
  * @return The next object
  */
-- (void*)nextObject;
+- (void *)nextObject;
 
 /*!
  * @brief Resets the enumerator, so the next call to @ref nextKey returns the

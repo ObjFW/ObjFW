@@ -75,7 +75,7 @@
 		@throw [OFUnlockFailedException exceptionWithLock: self];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_name == nil)
 		return [super description];

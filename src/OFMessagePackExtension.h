@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFMessagePackRepresentation
  */
 + (instancetype)extensionWithType: (int8_t)type
-			     data: (OFDataArray*)data;
+			     data: (OFDataArray *)data;
 
 /*!
  * @brief Initializes an already allocated OFMessagePackRepresentation with the
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFMessagePackRepresentation
  */
 - initWithType: (int8_t)type
-	  data: (OFDataArray*)data;
+	  data: (OFDataArray *)data;
 @end
 
 OF_ASSUME_NONNULL_END

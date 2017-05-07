@@ -122,7 +122,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 The buffer *must* be *at least* this big!
  * @return The number of bytes read
  */
-- (size_t)readIntoBuffer: (void*)buffer
+- (size_t)readIntoBuffer: (void *)buffer
 		  length: (size_t)length;
 
 /*!
@@ -140,7 +140,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  */
- - (void)readIntoBuffer: (void*)buffer
+ - (void)readIntoBuffer: (void *)buffer
 	    exactLength: (size_t)length;
 
 #ifdef OF_HAVE_SOCKETS
@@ -171,7 +171,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		   `bool (OFStream *stream, void *buffer, size_t length,
  *		   OFException *exception)`.
  */
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		     target: (id)target
 		   selector: (SEL)selector;
@@ -201,7 +201,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		   `bool (OFStream *stream, void *buffer, size_t size,
  *		   OFException *exception)`.
  */
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		     target: (id)target
 		   selector: (SEL)selector;
@@ -230,7 +230,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		you want the next block in the queue to handle the data
  *		received next, you need to return false from the block.
  */
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		      block: (of_stream_async_read_block_t)block;
 
@@ -255,7 +255,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		you want the next block in the queue to handle the data
  *		received next, you need to return false from the block.
  */
- - (void)asyncReadIntoBuffer: (void*)buffer
+ - (void)asyncReadIntoBuffer: (void *)buffer
 		 exactLength: (size_t)length
 		       block: (of_stream_async_read_block_t)block;
 # endif
@@ -333,7 +333,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint16_ts to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t*)buffer
+- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer
 				  count: (size_t)count;
 
 /*!
@@ -348,7 +348,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint32_ts to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t*)buffer
+- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer
 				  count: (size_t)count;
 
 /*!
@@ -363,7 +363,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint64_ts to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t*)buffer
+- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer
 				  count: (size_t)count;
 
 /*!
@@ -378,7 +378,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of floats to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianFloatsIntoBuffer: (float*)buffer
+- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer
 				  count: (size_t)count;
 
 /*!
@@ -393,7 +393,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of doubles to read
  * @return The number of bytes read
  */
-- (size_t)readBigEndianDoublesIntoBuffer: (double*)buffer
+- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer
 				   count: (size_t)count;
 
 /*!
@@ -458,7 +458,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint16_ts to read
  * @return The number of bytes read
  */
-- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t*)buffer
+- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
 				     count: (size_t)count;
 
 /*!
@@ -473,7 +473,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint32_ts to read
  * @return The number of bytes read
  */
-- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t*)buffer
+- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t *)buffer
 				     count: (size_t)count;
 
 /*!
@@ -488,7 +488,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint64_ts to read
  * @return The number of bytes read
  */
-- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t*)buffer
+- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t *)buffer
 				     count: (size_t)count;
 
 /*!
@@ -503,7 +503,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of floats to read
  * @return The number of bytes read
  */
-- (size_t)readLittleEndianFloatsIntoBuffer: (float*)buffer
+- (size_t)readLittleEndianFloatsIntoBuffer: (float *)buffer
 				     count: (size_t)count;
 
 /*!
@@ -518,7 +518,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of doubles to read
  * @return The number of bytes read
  */
-- (size_t)readLittleEndianDoublesIntoBuffer: (double*)buffer
+- (size_t)readLittleEndianDoublesIntoBuffer: (double *)buffer
 				      count: (size_t)count;
 
 /*!
@@ -531,7 +531,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of items to read
  * @return An OFDataArray with count items.
  */
-- (OFDataArray*)readDataArrayWithCount: (size_t)count;
+- (OFDataArray *)readDataArrayWithCount: (size_t)count;
 
 /*!
  * @brief Reads the specified number of items with the specified item size from
@@ -544,8 +544,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of items to read
  * @return An OFDataArray with count items.
  */
-- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
-				    count: (size_t)count;
+- (OFDataArray *)readDataArrayWithItemSize: (size_t)itemSize
+				     count: (size_t)count;
 
 /*!
  * @brief Returns an OFDataArray with all the remaining data of the stream.
@@ -553,7 +553,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return An OFDataArray with an item size of 1 with all the data of the
  *	   stream until the end of the stream is reached.
  */
-- (OFDataArray*)readDataArrayTillEndOfStream;
+- (OFDataArray *)readDataArrayTillEndOfStream;
 
 /*!
  * @brief Reads a string with the specified length from the stream.
@@ -569,7 +569,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param length The length (in bytes) of the string to read from the stream
  * @return A string with the specified length
  */
-- (OFString*)readStringWithLength: (size_t)length;
+- (OFString *)readStringWithLength: (size_t)length;
 
 /*!
  * @brief Reads a string with the specified encoding and length from the stream.
@@ -586,8 +586,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param length The length (in bytes) of the string to read from the stream
  * @return A string with the specified length
  */
-- (OFString*)readStringWithLength: (size_t)length
-			 encoding: (of_string_encoding_t)encoding;
+- (OFString *)readStringWithLength: (size_t)length
+			  encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Reads until a newline, `\0` or end of stream occurs.
@@ -595,7 +595,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString*)readLine;
+- (nullable OFString *)readLine;
 
 /*!
  * @brief Reads with the specified encoding until a newline, `\0` or end of
@@ -605,7 +605,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString*)readLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)readLineWithEncoding: (of_string_encoding_t)encoding;
 
 #ifdef OF_HAVE_SOCKETS
 /*!
@@ -690,7 +690,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
  */
-- (nullable OFString*)tryReadLine;
+- (nullable OFString *)tryReadLine;
 
 /*!
  * @brief Tries to read a line from the stream with the specified encoding (see
@@ -701,7 +701,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the line is not
  *	   complete yet
  */
-- (nullable OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Reads until the specified string or `\0` is found or the end of
@@ -711,7 +711,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString*)readTillDelimiter: (OFString*)delimiter;
+- (nullable OFString *)readTillDelimiter: (OFString *)delimiter;
 
 /*!
  * @brief Reads until the specified string or `\0` is found or the end of
@@ -722,8 +722,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString*)readTillDelimiter: (OFString*)delimiter
-			       encoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)readTillDelimiter: (OFString *)delimiter
+				encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Tries to reads until the specified string or `\0` is found or the end
@@ -734,7 +734,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString*)tryReadTillDelimiter: (OFString*)delimiter;
+- (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter;
 
 /*!
  * @brief Tries to read until the specified string or `\0` is found or the end
@@ -746,8 +746,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @return The line that was read, autoreleased, or `nil` if the end of the
  *	   stream has been reached.
  */
-- (nullable OFString*)tryReadTillDelimiter: (OFString*)delimiter
-				  encoding: (of_string_encoding_t)encoding;
+- (nullable OFString *)tryReadTillDelimiter: (OFString *)delimiter
+				   encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Returns a boolean whether writes are buffered.
@@ -774,7 +774,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param buffer The buffer from which the data is written to the stream
  * @param length The length of the data that should be written
  */
-- (void)writeBuffer: (const void*)buffer
+- (void)writeBuffer: (const void *)buffer
 	     length: (size_t)length;
 
 /*!
@@ -828,7 +828,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint16_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt16s: (const uint16_t*)buffer
+- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer
 			 count: (size_t)count;
 
 /*!
@@ -840,7 +840,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint32_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt32s: (const uint32_t*)buffer
+- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer
 			 count: (size_t)count;
 
 /*!
@@ -852,7 +852,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint64_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianInt64s: (const uint64_t*)buffer
+- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer
 			 count: (size_t)count;
 
 /*!
@@ -864,7 +864,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of floats to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianFloats: (const float*)buffer
+- (size_t)writeBigEndianFloats: (const float *)buffer
 			 count: (size_t)count;
 
 /*!
@@ -876,7 +876,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of doubles to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeBigEndianDoubles: (const double*)buffer
+- (size_t)writeBigEndianDoubles: (const double *)buffer
 			  count: (size_t)count;
 
 /*!
@@ -923,7 +923,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint16_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianInt16s: (const uint16_t*)buffer
+- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer
 			    count: (size_t)count;
 
 /*!
@@ -935,7 +935,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 it has been byte swapped if necessary
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianInt32s: (const uint32_t*)buffer
+- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer
 			    count: (size_t)count;
 
 /*!
@@ -947,7 +947,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of uint64_ts to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianInt64s: (const uint64_t*)buffer
+- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer
 			    count: (size_t)count;
 
 /*!
@@ -959,7 +959,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of floats to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianFloats: (const float*)buffer
+- (size_t)writeLittleEndianFloats: (const float *)buffer
 			    count: (size_t)count;
 
 /*!
@@ -971,7 +971,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param count The number of doubles to write
  * @return The number of bytes written to the stream
  */
-- (size_t)writeLittleEndianDoubles: (const double*)buffer
+- (size_t)writeLittleEndianDoubles: (const double *)buffer
 			     count: (size_t)count;
 
 /*!
@@ -980,7 +980,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param dataArray The OFDataArray to write into the stream
  * @return The number of bytes written
  */
-- (size_t)writeDataArray: (OFDataArray*)dataArray;
+- (size_t)writeDataArray: (OFDataArray *)dataArray;
 
 /*!
  * @brief Writes a string into the stream, without the trailing zero.
@@ -988,7 +988,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param string The string from which the data is written to the stream
  * @return The number of bytes written
  */
-- (size_t)writeString: (OFString*)string;
+- (size_t)writeString: (OFString *)string;
 
 /*!
  * @brief Writes a string into the stream in the specified encoding, without
@@ -998,7 +998,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param encoding The encoding in which to write the string to the stream
  * @return The number of bytes written
  */
-- (size_t)writeString: (OFString*)string
+- (size_t)writeString: (OFString *)string
 	     encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -1007,7 +1007,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param string The string from which the data is written to the stream
  * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString*)string;
+- (size_t)writeLine: (OFString *)string;
 
 /*!
  * @brief Writes a string into the stream in the specified encoding with a
@@ -1017,31 +1017,33 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param encoding The encoding in which to write the string to the stream
  * @return The number of bytes written
  */
-- (size_t)writeLine: (OFString*)string
+- (size_t)writeLine: (OFString *)string
 	   encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Writes a formatted string into the stream.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See printf for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t *`.
  *
  * @param format A string used as format
  * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString*)format, ...;
+- (size_t)writeFormat: (OFConstantString *)format, ...;
 
 /*!
  * @brief Writes a formatted string into the stream.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See printf for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t *`.
  *
  * @param format A string used as format
  * @param arguments The arguments used in the format string
  * @return The number of bytes written
  */
-- (size_t)writeFormat: (OFConstantString*)format
+- (size_t)writeFormat: (OFConstantString *)format
 	    arguments: (va_list)arguments;
 
 /*!
@@ -1110,7 +1112,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param buffer The buffer to unread
  * @param length The length of the buffer to unread
  */
-- (void)unreadFromBuffer: (const void*)buffer
+- (void)unreadFromBuffer: (const void *)buffer
 		  length: (size_t)length;
 
 /*!
@@ -1132,7 +1134,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param length The length of the buffer
  * @return The number of bytes read
  */
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length;
 
 /*!
@@ -1146,7 +1148,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param buffer The buffer with the data to write
  * @param length The length of the data to write
  */
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length;
 
 /*!

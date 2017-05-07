@@ -53,8 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stringValue The string value of the attribute
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
-+ (instancetype)attributeWithName: (OFString*)name
-		      stringValue: (OFString*)stringValue;
++ (instancetype)attributeWithName: (OFString *)name
+		      stringValue: (OFString *)stringValue;
 
 /*!
  * @brief Creates a new XML attribute.
@@ -64,9 +64,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stringValue The string value of the attribute
  * @return A new autoreleased OFXMLAttribute with the specified parameters
  */
-+ (instancetype)attributeWithName: (OFString*)name
-			namespace: (nullable OFString*)namespace_
-		      stringValue: (OFString*)stringValue;
++ (instancetype)attributeWithName: (OFString *)name
+			namespace: (nullable OFString *)namespace_
+		      stringValue: (OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLAttribute.
@@ -75,8 +75,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
-- initWithName: (OFString*)name
-   stringValue: (OFString*)stringValue;
+- initWithName: (OFString *)name
+   stringValue: (OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLAttribute.
@@ -86,9 +86,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
-- initWithName: (OFString*)name
-     namespace: (nullable OFString*)namespace_
-   stringValue: (OFString*)stringValue;
+- initWithName: (OFString *)name
+     namespace: (nullable OFString *)namespace_
+   stringValue: (OFString *)stringValue;
 @end
 
 OF_ASSUME_NONNULL_END

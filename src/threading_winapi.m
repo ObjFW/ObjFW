@@ -32,7 +32,7 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
     const of_thread_attr_t *attr)
 {
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
-	    (LPTHREAD_START_ROUTINE)function, (__bridge void*)object, 0, NULL);
+	    (LPTHREAD_START_ROUTINE)function, (__bridge void *)object, 0, NULL);
 
 	if (thread == NULL)
 		return false;

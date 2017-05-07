@@ -38,7 +38,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *	  array.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFMutableArray <ObjectType>: OFArray <ObjectType>
+@interface OFMutableArray<ObjectType>: OFArray<ObjectType>
 #else
 # ifndef DOXYGEN
 #  define ObjectType id
@@ -75,7 +75,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @param array An array of objects to add
  */
-- (void)addObjectsFromArray: (OFArray OF_GENERIC(ObjectType)*)array;
+- (void)addObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
 /*!
  * @brief Inserts an object to the OFArray at the specified index.
@@ -92,7 +92,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param array An array of objects
  * @param index The index where the objects should be inserted
  */
-- (void)insertObjectsFromArray: (OFArray OF_GENERIC(ObjectType)*)array
+- (void)insertObjectsFromArray: (OFArray OF_GENERIC(ObjectType) *)array
 		       atIndex: (size_t)index;
 
 /*!

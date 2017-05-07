@@ -80,37 +80,37 @@ static locale_t cLocale;
 #endif
 
 @interface OFString ()
-- (size_t)OF_getCString: (char*)cString
+- (size_t)OF_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding
 		  lossy: (bool)lossy;
-- (const char*)OF_cStringWithEncoding: (of_string_encoding_t)encoding
-				lossy: (bool)lossy;
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth;
+- (const char *)OF_cStringWithEncoding: (of_string_encoding_t)encoding
+				 lossy: (bool)lossy;
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth;
 @end
 
-extern bool of_unicode_to_iso_8859_2(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_iso_8859_2(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_iso_8859_3(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_iso_8859_3(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_iso_8859_15(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_iso_8859_15(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_windows_1251(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_windows_1251(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_windows_1252(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_windows_1252(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_codepage_437(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_codepage_437(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_codepage_850(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_codepage_850(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_codepage_858(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_codepage_858(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_mac_roman(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_mac_roman(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_koi8_r(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_koi8_r(const of_unichar_t *, unsigned char *,
     size_t, bool);
-extern bool of_unicode_to_koi8_u(const of_unichar_t*, unsigned char*,
+extern bool of_unicode_to_koi8_u(const of_unichar_t *, unsigned char *,
     size_t, bool);
 
 /* References for static linking */
@@ -217,7 +217,7 @@ of_string_utf8_encode(of_unichar_t character, char *buffer)
 ssize_t
 of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 {
-	const uint8_t *buffer = (const uint8_t*)buffer_;
+	const uint8_t *buffer = (const uint8_t *)buffer_;
 
 	if (!(*buffer & 0x80)) {
 		*ret = buffer[0];
@@ -286,7 +286,7 @@ of_string_utf32_length(const of_char32_t *string)
 	return length;
 }
 
-static OFString*
+static OFString *
 standardizePath(OFArray *components, OFString *currentDirectory,
     OFString *parentDirectory, OFString *joinString)
 {
@@ -361,7 +361,7 @@ static struct {
 	return (id)[[OFString_UTF8 alloc] init];
 }
 
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 {
 	id string;
 	size_t length;
@@ -376,7 +376,7 @@ static struct {
 					 storage: storage];
 }
 
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 	      length: (size_t)UTF8StringLength
 {
 	id string;
@@ -390,7 +390,7 @@ static struct {
 					 storage: storage];
 }
 
-- initWithUTF8StringNoCopy: (char*)UTF8String
+- initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone
 {
 	return (id)[[OFString_UTF8 alloc]
@@ -398,7 +398,7 @@ static struct {
 			freeWhenDone: freeWhenDone];
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 {
 	if (encoding == OF_STRING_ENCODING_UTF_8) {
@@ -419,7 +419,7 @@ static struct {
 						 encoding: encoding];
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
@@ -440,38 +440,38 @@ static struct {
 						   length: cStringLength];
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithString: string];
 }
 
-- initWithCharacters: (const of_unichar_t*)string
+- initWithCharacters: (const of_unichar_t *)string
 	      length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithCharacters: string
 						      length: length];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						       length: length];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
 						    byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -480,26 +480,26 @@ static struct {
 						    byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
 						       length: length];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
 						    byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -508,7 +508,7 @@ static struct {
 						    byteOrder: byteOrder];
 }
 
-- initWithFormat: (OFConstantString*)format, ...
+- initWithFormat: (OFConstantString *)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -521,7 +521,7 @@ static struct {
 	return ret;
 }
 
-- initWithFormat: (OFConstantString*)format
+- initWithFormat: (OFConstantString *)format
        arguments: (va_list)arguments
 {
 	return (id)[[OFString_UTF8 alloc] initWithFormat: format
@@ -529,12 +529,12 @@ static struct {
 }
 
 #ifdef OF_HAVE_FILES
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path];
 }
 
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 		encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path
@@ -543,12 +543,12 @@ static struct {
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfURL: URL];
 }
 
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 	       encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFString_UTF8 alloc] initWithContentsOfURL: URL
@@ -556,7 +556,7 @@ static struct {
 }
 #endif
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFString_UTF8 alloc] initWithSerialization: element];
 }
@@ -609,12 +609,12 @@ static struct {
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)stringWithUTF8String: (const char*)UTF8String
++ (instancetype)stringWithUTF8String: (const char *)UTF8String
 {
 	return [[[self alloc] initWithUTF8String: UTF8String] autorelease];
 }
 
-+ (instancetype)stringWithUTF8String: (const char*)UTF8String
++ (instancetype)stringWithUTF8String: (const char *)UTF8String
 			      length: (size_t)UTF8StringLength
 {
 	return [[[self alloc]
@@ -622,7 +622,7 @@ static struct {
 			length: UTF8StringLength] autorelease];
 }
 
-+ (instancetype)stringWithUTF8StringNoCopy: (char*)UTF8String
++ (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 			      freeWhenDone: (bool)freeWhenDone
 {
 	return [[[self alloc]
@@ -630,14 +630,14 @@ static struct {
 			freeWhenDone: freeWhenDone] autorelease];
 }
 
-+ (instancetype)stringWithCString: (const char*)cString
++ (instancetype)stringWithCString: (const char *)cString
 			 encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithCString: cString
 				     encoding: encoding] autorelease];
 }
 
-+ (instancetype)stringWithCString: (const char*)cString
++ (instancetype)stringWithCString: (const char *)cString
 			 encoding: (of_string_encoding_t)encoding
 			   length: (size_t)cStringLength
 {
@@ -646,38 +646,38 @@ static struct {
 				       length: cStringLength] autorelease];
 }
 
-+ (instancetype)stringWithString: (OFString*)string
++ (instancetype)stringWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ (instancetype)stringWithCharacters: (const of_unichar_t*)string
++ (instancetype)stringWithCharacters: (const of_unichar_t *)string
 			      length: (size_t)length
 {
 	return [[[self alloc] initWithCharacters: string
 					  length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 {
 	return [[[self alloc] initWithUTF16String: string] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF16String: string
 					   length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF16String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -686,26 +686,26 @@ static struct {
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 {
 	return [[[self alloc] initWithUTF32String: string] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			       length: (size_t)length
 {
 	return [[[self alloc] initWithUTF32String: string
 					   length: length] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [[[self alloc] initWithUTF32String: string
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -714,7 +714,7 @@ static struct {
 					byteOrder: byteOrder] autorelease];
 }
 
-+ (instancetype)stringWithFormat: (OFConstantString*)format, ...
++ (instancetype)stringWithFormat: (OFConstantString *)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -728,12 +728,12 @@ static struct {
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)stringWithContentsOfFile: (OFString*)path
++ (instancetype)stringWithContentsOfFile: (OFString *)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfFile: (OFString*)path
++ (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithContentsOfFile: path
@@ -742,12 +742,12 @@ static struct {
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-+ (instancetype)stringWithContentsOfURL: (OFURL*)URL
++ (instancetype)stringWithContentsOfURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 
-+ (instancetype)stringWithContentsOfURL: (OFURL*)URL
++ (instancetype)stringWithContentsOfURL: (OFURL *)URL
 			       encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithContentsOfURL: URL
@@ -755,7 +755,7 @@ static struct {
 }
 #endif
 
-+ (OFString*)pathWithComponents: (OFArray*)components
++ (OFString *)pathWithComponents: (OFArray *)components
 {
 	OFMutableString *ret = [OFMutableString string];
 	bool first = true;
@@ -788,14 +788,14 @@ static struct {
 	return [super init];
 }
 
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 {
 	return [self initWithCString: UTF8String
 			    encoding: OF_STRING_ENCODING_UTF_8
 			      length: strlen(UTF8String)];
 }
 
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 	      length: (size_t)UTF8StringLength
 {
 	return [self initWithCString: UTF8String
@@ -803,13 +803,13 @@ static struct {
 			      length: UTF8StringLength];
 }
 
-- initWithUTF8StringNoCopy: (char*)UTF8String
+- initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone
 {
 	return [self initWithUTF8String: UTF8String];
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 {
 	return [self initWithCString: cString
@@ -817,32 +817,32 @@ static struct {
 			      length: strlen(cString)];
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithCharacters: (const of_unichar_t*)string
+- initWithCharacters: (const of_unichar_t *)string
 	      length: (size_t)length
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 {
 	return [self initWithUTF16String: string
 				  length: of_string_utf16_length(string)
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 {
 	return [self initWithUTF16String: string
@@ -850,7 +850,7 @@ static struct {
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [self initWithUTF16String: string
@@ -858,21 +858,21 @@ static struct {
 			       byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 {
 	return [self initWithUTF32String: string
 				  length: of_string_utf32_length(string)
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 {
 	return [self initWithUTF32String: string
@@ -880,7 +880,7 @@ static struct {
 			       byteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return [self initWithUTF32String: string
@@ -888,14 +888,14 @@ static struct {
 			       byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithFormat: (OFConstantString*)format, ...
+- initWithFormat: (OFConstantString *)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -908,20 +908,20 @@ static struct {
 	return ret;
 }
 
-- initWithFormat: (OFConstantString*)format
+- initWithFormat: (OFConstantString *)format
        arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
 
 #ifdef OF_HAVE_FILES
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 {
 	return [self initWithContentsOfFile: path
 				   encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 		encoding: (of_string_encoding_t)encoding
 {
 	char *tmp;
@@ -969,13 +969,13 @@ static struct {
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 {
 	return [self initWithContentsOfURL: URL
 				  encoding: OF_STRING_ENCODING_AUTODETECT];
 }
 
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 	       encoding: (of_string_encoding_t)encoding
 {
 	void *pool;
@@ -1021,7 +1021,7 @@ static struct {
 }
 #endif
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -1048,7 +1048,7 @@ static struct {
 	return self;
 }
 
-- (size_t)OF_getCString: (char*)cString
+- (size_t)OF_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding
 		  lossy: (bool)lossy
@@ -1136,7 +1136,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_iso_8859_2(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1149,7 +1149,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_iso_8859_3(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1162,7 +1162,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_iso_8859_15(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1175,7 +1175,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_windows_1251(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1188,7 +1188,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_windows_1252(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1201,7 +1201,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_codepage_437(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1214,7 +1214,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_codepage_850(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1227,7 +1227,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_codepage_858(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1240,7 +1240,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_mac_roman(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1253,7 +1253,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_koi8_r(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1266,7 +1266,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		if (!of_unicode_to_koi8_u(characters,
-		    (unsigned char*)cString, length, lossy))
+		    (unsigned char *)cString, length, lossy))
 			@throw [OFInvalidEncodingException exception];
 
 		cString[length] = '\0';
@@ -1279,7 +1279,7 @@ static struct {
 	}
 }
 
-- (size_t)getCString: (char*)cString
+- (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
 	    encoding: (of_string_encoding_t)encoding
 {
@@ -1289,7 +1289,7 @@ static struct {
 			     lossy: false];
 }
 
-- (size_t)getLossyCString: (char*)cString
+- (size_t)getLossyCString: (char *)cString
 		maxLength: (size_t)maxLength
 		 encoding: (of_string_encoding_t)encoding
 {
@@ -1299,8 +1299,8 @@ static struct {
 			     lossy: true];
 }
 
-- (const char*)OF_cStringWithEncoding: (of_string_encoding_t)encoding
-				lossy: (bool)lossy
+- (const char *)OF_cStringWithEncoding: (of_string_encoding_t)encoding
+				 lossy: (bool)lossy
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = [self length];
@@ -1353,19 +1353,19 @@ static struct {
 	return cString;
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	return [self OF_cStringWithEncoding: encoding
 				      lossy: false];
 }
 
-- (const char*)lossyCStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)lossyCStringWithEncoding: (of_string_encoding_t)encoding
 {
 	return [self OF_cStringWithEncoding: encoding
 				      lossy: true];
 }
 
-- (const char*)UTF8String
+- (const char *)UTF8String
 {
 	return [self cStringWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
@@ -1426,7 +1426,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)getCharacters: (of_unichar_t*)buffer
+- (void)getCharacters: (of_unichar_t *)buffer
 	      inRange: (of_range_t)range
 {
 	for (size_t i = 0; i < range.length; i++)
@@ -1491,7 +1491,7 @@ static struct {
 	if (![object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherString = (OFString*)object;
+	otherString = (OFString *)object;
 	minimumLength = ([self length] > [otherString length]
 	    ? [otherString length] : [self length]);
 
@@ -1522,7 +1522,7 @@ static struct {
 	return OF_ORDERED_SAME;
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString
 {
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters, *otherCharacters;
@@ -1603,12 +1603,12 @@ static struct {
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [[self copy] autorelease];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -1630,20 +1630,20 @@ static struct {
 	return [element autorelease];
 }
 
-- (OFString*)JSONRepresentation
+- (OFString *)JSONRepresentation
 {
 	return [self OF_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
-- (OFString*)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions: (int)options
 {
 	return [self OF_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth
 {
 	OFMutableString *JSON = [[self mutableCopy] autorelease];
 
@@ -1691,7 +1691,7 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *data;
 	size_t length;
@@ -1743,14 +1743,14 @@ static struct {
 	return data;
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 {
 	return [self rangeOfString: string
 			   options: 0
 			     range: of_range(0, [self length])];
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 {
 	return [self rangeOfString: string
@@ -1758,7 +1758,7 @@ static struct {
 			     range: of_range(0, [self length])];
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 		      range: (of_range_t)range
 {
@@ -1822,7 +1822,7 @@ static struct {
 	return of_range(OF_NOT_FOUND, 0);
 }
 
-- (bool)containsString: (OFString*)string
+- (bool)containsString: (OFString *)string
 {
 	void *pool;
 	const of_unichar_t *characters, *searchCharacters;
@@ -1852,7 +1852,7 @@ static struct {
 	return false;
 }
 
-- (OFString*)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (of_range_t)range
 {
 	void *pool;
 	OFString *ret;
@@ -1870,7 +1870,7 @@ static struct {
 	return [ret autorelease];
 }
 
-- (OFString*)stringByAppendingString: (OFString*)string
+- (OFString *)stringByAppendingString: (OFString *)string
 {
 	OFMutableString *new;
 
@@ -1882,7 +1882,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByAppendingFormat: (OFConstantString*)format, ...
+- (OFString *)stringByAppendingFormat: (OFConstantString *)format, ...
 {
 	OFString *ret;
 	va_list arguments;
@@ -1895,8 +1895,8 @@ static struct {
 	return ret;
 }
 
-- (OFString*)stringByAppendingFormat: (OFConstantString*)format
-			   arguments: (va_list)arguments
+- (OFString *)stringByAppendingFormat: (OFConstantString *)format
+			    arguments: (va_list)arguments
 {
 	OFMutableString *new;
 
@@ -1909,7 +1909,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByAppendingPathComponent: (OFString*)component
+- (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *ret;
@@ -1922,7 +1922,7 @@ static struct {
 	return [ret autorelease];
 }
 
-- (OFString*)stringByPrependingString: (OFString*)string
+- (OFString *)stringByPrependingString: (OFString *)string
 {
 	OFMutableString *new = [[string mutableCopy] autorelease];
 
@@ -1933,8 +1933,8 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
-				       withString: (OFString*)replacement
+- (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
+					withString: (OFString *)replacement
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -1946,10 +1946,10 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
-				       withString: (OFString*)replacement
-					  options: (int)options
-					    range: (of_range_t)range
+- (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
+					withString: (OFString *)replacement
+					   options: (int)options
+					     range: (of_range_t)range
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -1963,7 +1963,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)uppercaseString
+- (OFString *)uppercaseString
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -1974,7 +1974,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)lowercaseString
+- (OFString *)lowercaseString
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -1985,7 +1985,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)capitalizedString
+- (OFString *)capitalizedString
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -1996,7 +1996,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByDeletingLeadingWhitespaces
+- (OFString *)stringByDeletingLeadingWhitespaces
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -2007,7 +2007,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByDeletingTrailingWhitespaces
+- (OFString *)stringByDeletingTrailingWhitespaces
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -2018,7 +2018,7 @@ static struct {
 	return new;
 }
 
-- (OFString*)stringByDeletingEnclosingWhitespaces
+- (OFString *)stringByDeletingEnclosingWhitespaces
 {
 	OFMutableString *new = [[self mutableCopy] autorelease];
 
@@ -2029,7 +2029,7 @@ static struct {
 	return new;
 }
 
-- (bool)hasPrefix: (OFString*)prefix
+- (bool)hasPrefix: (OFString *)prefix
 {
 	of_unichar_t *tmp;
 	const of_unichar_t *prefixCharacters;
@@ -2059,7 +2059,7 @@ static struct {
 	return hasPrefix;
 }
 
-- (bool)hasSuffix: (OFString*)suffix
+- (bool)hasSuffix: (OFString *)suffix
 {
 	of_unichar_t *tmp;
 	const of_unichar_t *suffixCharacters;
@@ -2092,14 +2092,14 @@ static struct {
 	return hasSuffix;
 }
 
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+- (OFArray *)componentsSeparatedByString: (OFString *)delimiter
 {
 	return [self componentsSeparatedByString: delimiter
 					 options: 0];
 }
 
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-				options: (int)options
+- (OFArray *)componentsSeparatedByString: (OFString *)delimiter
+				 options: (int)options
 {
 	void *pool;
 	OFMutableArray *array = [OFMutableArray array];
@@ -2148,7 +2148,7 @@ static struct {
 	return array;
 }
 
-- (OFArray*)pathComponents
+- (OFArray *)pathComponents
 {
 	OFMutableArray *ret;
 	void *pool;
@@ -2196,7 +2196,7 @@ static struct {
 	return ret;
 }
 
-- (OFString*)lastPathComponent
+- (OFString *)lastPathComponent
 {
 	void *pool;
 	const of_unichar_t *characters;
@@ -2241,7 +2241,7 @@ static struct {
 	return [self substringWithRange: of_range(i, length - i)];
 }
 
-- (OFString*)pathExtension
+- (OFString *)pathExtension
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *ret, *fileName;
@@ -2261,7 +2261,7 @@ static struct {
 	return [ret autorelease];
 }
 
-- (OFString*)stringByDeletingLastPathComponent
+- (OFString *)stringByDeletingLastPathComponent
 {
 	void *pool;
 	const of_unichar_t *characters;
@@ -2299,7 +2299,7 @@ static struct {
 	return OF_PATH_CURRENT_DIRECTORY;
 }
 
-- (OFString*)stringByDeletingPathExtension
+- (OFString *)stringByDeletingPathExtension
 {
 	void *pool;
 	OFMutableArray *components;
@@ -2331,14 +2331,14 @@ static struct {
 	return [ret autorelease];
 }
 
-- (OFString*)stringByStandardizingPath
+- (OFString *)stringByStandardizingPath
 {
 	return standardizePath([self pathComponents],
 	    OF_PATH_CURRENT_DIRECTORY, OF_PATH_PARENT_DIRECTORY,
 	    OF_PATH_DELIMITER_STRING);
 }
 
-- (OFString*)stringByStandardizingURLPath
+- (OFString *)stringByStandardizingURLPath
 {
 	return standardizePath([self componentsSeparatedByString: @"/"],
 	    @".", @"..", @"/");
@@ -2599,7 +2599,7 @@ static struct {
 	return value;
 }
 
-- (const of_unichar_t*)characters
+- (const of_unichar_t *)characters
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = [self length];
@@ -2613,12 +2613,12 @@ static struct {
 	return ret;
 }
 
-- (const of_char16_t*)UTF16String
+- (const of_char16_t *)UTF16String
 {
 	return [self UTF16StringWithByteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- (const of_char16_t*)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	void *pool = objc_autoreleasePoolPush();
@@ -2684,12 +2684,12 @@ static struct {
 	return UTF16StringLength;
 }
 
-- (const of_char32_t*)UTF32String
+- (const of_char32_t *)UTF32String
 {
 	return [self UTF32StringWithByteOrder: OF_BYTE_ORDER_NATIVE];
 }
 
-- (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
 	size_t length = [self length];
@@ -2709,13 +2709,13 @@ static struct {
 }
 
 #ifdef OF_HAVE_FILES
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 {
 	[self writeToFile: path
 		 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();

@@ -205,7 +205,7 @@ main(int argc, char *argv[])
 }
 
 @implementation TestsAppDelegate
-- (void)outputString: (OFString*)str
+- (void)outputString: (OFString *)str
 	     inColor: (int)color
 {
 #if defined(OF_PSP)
@@ -261,8 +261,8 @@ main(int argc, char *argv[])
 #endif
 }
 
-- (void)outputTesting: (OFString*)test
-	     inModule: (OFString*)module
+- (void)outputTesting: (OFString *)test
+	     inModule: (OFString *)module
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 #ifndef STDOUT_SIMPLE
@@ -277,8 +277,8 @@ main(int argc, char *argv[])
 	[pool release];
 }
 
-- (void)outputSuccess: (OFString*)test
-	     inModule: (OFString*)module
+- (void)outputSuccess: (OFString *)test
+	     inModule: (OFString *)module
 {
 #ifndef STDOUT_SIMPLE
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -292,8 +292,8 @@ main(int argc, char *argv[])
 #endif
 }
 
-- (void)outputFailure: (OFString*)test
-	     inModule: (OFString*)module
+- (void)outputFailure: (OFString *)test
+	     inModule: (OFString *)module
 {
 #ifndef STDOUT_SIMPLE
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -372,7 +372,7 @@ main(int argc, char *argv[])
 	}
 
 	[[OFFileManager defaultManager] changeCurrentDirectoryPath:
-	    [OFString stringWithUTF8String: (const char*)resourcesPath]];
+	    [OFString stringWithUTF8String: (const char *)resourcesPath]];
 #endif
 #if defined(OF_WII) && defined(OF_HAVE_FILES)
 	[[OFFileManager defaultManager]

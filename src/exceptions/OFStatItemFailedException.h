@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       retrieved
  * @return A new, autoreleased stat item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path;
++ (instancetype)exceptionWithPath: (OFString *)path;
 
 /*!
  * @brief Creates a new, autoreleased stat item failed exception.
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased stat item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo;
 
 /*!
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       retrieved
  * @return An initialized stat item failed exception
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated stat item failed exception.
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized stat item failed exception
  */
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 	 errNo: (int)errNo;
 @end
 

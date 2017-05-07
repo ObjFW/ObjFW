@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern id objc_constructInstance(Class _Nullable, void *_Nullable);
-extern void* objc_destructInstance(id);
+extern void *objc_destructInstance(id);
 #ifdef __cplusplus
 }
 #endif

@@ -43,7 +43,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_socket)
 		return [OFString stringWithFormat:

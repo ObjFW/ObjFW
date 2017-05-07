@@ -99,7 +99,7 @@ static OFThread *mainThread;
 static void
 callMain(id object)
 {
-	OFThread *thread = (OFThread*)object;
+	OFThread *thread = (OFThread *)object;
 
 	if (!of_tlskey_set(threadSelfKey, thread))
 		@throw [OFInitializationFailedException
@@ -157,17 +157,17 @@ callMain(id object)
 }
 # endif
 
-+ (OFThread*)currentThread
++ (OFThread *)currentThread
 {
 	return of_tlskey_get(threadSelfKey);
 }
 
-+ (OFThread*)mainThread
++ (OFThread *)mainThread
 {
 	return mainThread;
 }
 
-+ (OFMutableDictionary*)threadDictionary
++ (OFMutableDictionary *)threadDictionary
 {
 	OFThread *thread = of_tlskey_get(threadSelfKey);
 
@@ -222,7 +222,7 @@ callMain(id object)
 #endif
 }
 
-+ (void)sleepUntilDate: (OFDate*)date
++ (void)sleepUntilDate: (OFDate *)date
 {
 	[self sleepForTimeInterval: [date timeIntervalSinceNow]];
 }
@@ -369,13 +369,13 @@ callMain(id object)
 	return [self retain];
 }
 
-- (OFRunLoop*)runLoop
+- (OFRunLoop *)runLoop
 {
 # ifdef OF_HAVE_ATOMIC_OPS
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 
-		if (!of_atomic_ptr_cmpswap((void**)&_runLoop, nil, tmp))
+		if (!of_atomic_ptr_cmpswap((void **)&_runLoop, nil, tmp))
 			[tmp release];
 	}
 # else
@@ -388,12 +388,12 @@ callMain(id object)
 	return [[_runLoop retain] autorelease];
 }
 
-- (OFString*)name
+- (OFString *)name
 {
 	return [[_name copy] autorelease];
 }
 
-- (void)setName: (OFString*)name
+- (void)setName: (OFString *)name
 {
 	OFString *old = name;
 	_name = [name copy];

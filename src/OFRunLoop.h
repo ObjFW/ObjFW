@@ -61,21 +61,21 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The run loop for the main thread
  */
-+ (OFRunLoop*)mainRunLoop;
++ (OFRunLoop *)mainRunLoop;
 
 /*!
  * @brief Returns the run loop for the current thread.
  *
  * @return The run loop for the current thread
  */
-+ (OFRunLoop*)currentRunLoop;
++ (OFRunLoop *)currentRunLoop;
 
 /*!
  * @brief Adds an OFTimer to the run loop.
  *
  * @param timer The timer to add
  */
-- (void)addTimer: (OFTimer*)timer;
+- (void)addTimer: (OFTimer *)timer;
 
 /*!
  * @brief Starts the run loop.
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param deadline The date until which the run loop should run
  */
-- (void)runUntilDate: (nullable OFDate*)deadline;
+- (void)runUntilDate: (nullable OFDate *)deadline;
 
 /*!
  * @brief Stops the run loop. If there is still an operation being executed, it

@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFInvalidArgumentException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"An invalid argument or receiver has been specified!";
 }

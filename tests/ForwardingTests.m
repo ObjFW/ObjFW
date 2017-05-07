@@ -49,7 +49,7 @@ struct stret_test {
 				: (intptr_t)a1
 				: (double)a2
 				: (double)a3;
-- (OFString*)forwardingTargetVarArgTest: (OFConstantString*)fmt, ...;
+- (OFString *)forwardingTargetVarArgTest: (OFConstantString *)fmt, ...;
 - (long double)forwardingTargetFPRetTest;
 - (struct stret_test)forwardingTargetStRetTest;
 - (void)forwardingTargetNilTest;
@@ -114,7 +114,7 @@ test(id self, SEL _cmd)
 	    sel_isEqual(selector, @selector(forwardingTargetVarArgTest:)) ||
 	    sel_isEqual(selector, @selector(forwardingTargetFPRetTest)) ||
 	    sel_isEqual(selector, @selector(forwardingTargetStRetTest)))
-		return (id)((char*)target + (ptrdiff_t)add);
+		return (id)((char *)target + (ptrdiff_t)add);
 
 	if (sel_isEqual(selector, @selector(forwardingTargetNilTest)) ||
 	    sel_isEqual(selector, @selector(forwardingTargetNilStRetTest)))
@@ -148,7 +148,7 @@ test(id self, SEL _cmd)
 	return 0x12345678;
 }
 
-- (OFString*)forwardingTargetVarArgTest: (OFConstantString*)fmt, ...
+- (OFString *)forwardingTargetVarArgTest: (OFConstantString *)fmt, ...
 {
 	va_list args;
 	OFString *ret;

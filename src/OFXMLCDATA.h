@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string value for the CDATA
  * @return A new OFXMLCDATA
  */
-+ (instancetype)CDATAWithString: (OFString*)string;
++ (instancetype)CDATAWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFXMLCDATA with the specified string.
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string value for the CDATA
  * @return An initialized OFXMLCDATA
  */
-- initWithString: (OFString*)string;
+- initWithString: (OFString *)string;
 @end
 
 OF_ASSUME_NONNULL_END

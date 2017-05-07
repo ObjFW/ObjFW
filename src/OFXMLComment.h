@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string for the comment
  * @return A new OFXMLComment
  */
-+ (instancetype)commentWithString: (OFString*)string;
++ (instancetype)commentWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFXMLComment with the specified
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string for the comment
  * @return An initialized OFXMLComment
  */
-- initWithString: (OFString*)string;
+- initWithString: (OFString *)string;
 @end
 
 OF_ASSUME_NONNULL_END

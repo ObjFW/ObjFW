@@ -41,7 +41,7 @@ enum {
  *
  * @return The JSON representation of the object as a string
  */
-- (OFString*)JSONRepresentation;
+- (OFString *)JSONRepresentation;
 
 /*!
  * @brief Returns the JSON representation of the object as a string.
@@ -55,7 +55,7 @@ enum {
  *
  * @return The JSON representation of the object as a string
  */
-- (OFString*)JSONRepresentationWithOptions: (int)options;
+- (OFString *)JSONRepresentationWithOptions: (int)options;
 @end
 
 OF_ASSUME_NONNULL_END

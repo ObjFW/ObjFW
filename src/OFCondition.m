@@ -68,7 +68,7 @@
 	return of_condition_timed_wait(&_condition, &_mutex, timeInterval);
 }
 
-- (bool)waitUntilDate: (OFDate*)date
+- (bool)waitUntilDate: (OFDate *)date
 {
 	return of_condition_timed_wait(&_condition, &_mutex,
 	    [date timeIntervalSinceNow]);

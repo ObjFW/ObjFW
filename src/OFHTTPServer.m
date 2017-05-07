@@ -47,12 +47,12 @@
  */
 
 @interface OFHTTPServer ()
-- (bool)OF_socket: (OFTCPSocket*)socket
-  didAcceptSocket: (OFTCPSocket*)clientSocket
-	exception: (OFException*)exception;
+- (bool)OF_socket: (OFTCPSocket *)socket
+  didAcceptSocket: (OFTCPSocket *)clientSocket
+	exception: (OFException *)exception;
 @end
 
-static const char*
+static const char *
 statusCodeToString(short code)
 {
 	switch (code) {
@@ -141,11 +141,11 @@ statusCodeToString(short code)
 	}
 }
 
-static OF_INLINE OFString*
+static OF_INLINE OFString *
 normalizedKey(OFString *key)
 {
 	char *cString = of_strdup([key UTF8String]);
-	unsigned char *tmp = (unsigned char*)cString;
+	unsigned char *tmp = (unsigned char *)cString;
 	bool firstLetter = true;
 
 	if (cString == NULL)
@@ -179,15 +179,15 @@ normalizedKey(OFString *key)
 	bool _chunked, _headersSent;
 }
 
-- initWithSocket: (OFTCPSocket*)socket
-	  server: (OFHTTPServer*)server
-	 request: (OFHTTPRequest*)request;
+- initWithSocket: (OFTCPSocket *)socket
+	  server: (OFHTTPServer *)server
+	 request: (OFHTTPRequest *)request;
 @end
 
 @implementation OFHTTPServerResponse
-- initWithSocket: (OFTCPSocket*)socket
-	  server: (OFHTTPServer*)server
-	 request: (OFHTTPRequest*)request
+- initWithSocket: (OFTCPSocket *)socket
+	  server: (OFHTTPServer *)server
+	 request: (OFHTTPRequest *)request
 {
 	self = [super init];
 
@@ -213,7 +213,7 @@ normalizedKey(OFString *key)
 - (void)OF_sendHeaders
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *headers;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFEnumerator *keyEnumerator, *valueEnumerator;
 	OFString *key, *value;
 
@@ -254,7 +254,7 @@ normalizedKey(OFString *key)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
 	void *pool;
@@ -338,24 +338,24 @@ normalizedKey(OFString *key)
 	OFDataArray *_body;
 }
 
-- initWithSocket: (OFTCPSocket*)socket
-	  server: (OFHTTPServer*)server;
-- (bool)socket: (OFTCPSocket*)socket
-   didReadLine: (OFString*)line
-     exception: (OFException*)exception;
-- (bool)parseProlog: (OFString*)line;
-- (bool)parseHeaders: (OFString*)line;
--      (bool)socket: (OFTCPSocket*)socket
-  didReadIntoBuffer: (char*)buffer
+- initWithSocket: (OFTCPSocket *)socket
+	  server: (OFHTTPServer *)server;
+- (bool)socket: (OFTCPSocket *)socket
+   didReadLine: (OFString *)line
+     exception: (OFException *)exception;
+- (bool)parseProlog: (OFString *)line;
+- (bool)parseHeaders: (OFString *)line;
+-      (bool)socket: (OFTCPSocket *)socket
+  didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
-	  exception: (OFException*)exception;
+	  exception: (OFException *)exception;
 - (bool)sendErrorAndClose: (short)statusCode;
 - (void)createResponse;
 @end
 
 @implementation OFHTTPServer_Connection
-- initWithSocket: (OFTCPSocket*)socket
-	  server: (OFHTTPServer*)server
+- initWithSocket: (OFTCPSocket *)socket
+	  server: (OFHTTPServer *)server
 {
 	self = [super init];
 
@@ -393,9 +393,9 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
-- (bool)socket: (OFTCPSocket*)socket
-   didReadLine: (OFString*)line
-     exception: (OFException*)exception
+- (bool)socket: (OFTCPSocket *)socket
+   didReadLine: (OFString *)line
+     exception: (OFException *)exception
 {
 	if (line == nil || exception != nil)
 		return false;
@@ -424,7 +424,7 @@ normalizedKey(OFString *key)
 	OF_ENSURE(0);
 }
 
-- (bool)parseProlog: (OFString*)line
+- (bool)parseProlog: (OFString *)line
 {
 	OFString *method;
 	OFMutableString *path;
@@ -483,7 +483,7 @@ normalizedKey(OFString *key)
 	return true;
 }
 
-- (bool)parseHeaders: (OFString*)line
+- (bool)parseHeaders: (OFString *)line
 {
 	OFString *key, *value, *old;
 	size_t pos;
@@ -571,10 +571,10 @@ normalizedKey(OFString *key)
 	return true;
 }
 
--      (bool)socket: (OFTCPSocket*)socket
-  didReadIntoBuffer: (char*)buffer
+-      (bool)socket: (OFTCPSocket *)socket
+  didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
-	  exception: (OFException*)exception
+	  exception: (OFException *)exception
 {
 	if ([socket isAtEndOfStream] || exception != nil)
 		return false;
@@ -731,9 +731,9 @@ normalizedKey(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (bool)OF_socket: (OFTCPSocket*)socket
-  didAcceptSocket: (OFTCPSocket*)clientSocket
-	exception: (OFException*)exception
+- (bool)OF_socket: (OFTCPSocket *)socket
+  didAcceptSocket: (OFTCPSocket *)clientSocket
+	exception: (OFException *)exception
 {
 	OFHTTPServer_Connection *connection;
 

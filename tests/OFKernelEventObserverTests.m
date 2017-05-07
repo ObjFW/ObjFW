@@ -55,7 +55,7 @@ static OFString *module;
 @end
 
 @implementation ObserverTest
-- initWithTestsAppDelegate: (TestsAppDelegate*)testsAppDelegate
+- initWithTestsAppDelegate: (TestsAppDelegate *)testsAppDelegate
 {
 	self = [super init];
 

@@ -26,33 +26,33 @@
 @implementation OFXMLAttribute
 @synthesize name = _name, namespace = _namespace;
 
-+ (instancetype)attributeWithName: (OFString*)name
-			namespace: (OFString*)namespace
-		      stringValue: (OFString*)stringValue
++ (instancetype)attributeWithName: (OFString *)name
+			namespace: (OFString *)namespace
+		      stringValue: (OFString *)stringValue
 {
 	return [[[self alloc] initWithName: name
 				 namespace: namespace
 			       stringValue: stringValue] autorelease];
 }
 
-+ (instancetype)attributeWithName: (OFString*)name
-		      stringValue: (OFString*)stringValue
++ (instancetype)attributeWithName: (OFString *)name
+		      stringValue: (OFString *)stringValue
 {
 	return [[[self alloc] initWithName: name
 			       stringValue: stringValue] autorelease];
 }
 
-- initWithName: (OFString*)name
-   stringValue: (OFString*)stringValue
+- initWithName: (OFString *)name
+   stringValue: (OFString *)stringValue
 {
 	return [self initWithName: name
 			namespace: nil
 		      stringValue: stringValue];
 }
 
-- initWithName: (OFString*)name
-     namespace: (OFString*)namespace
-   stringValue: (OFString*)stringValue
+- initWithName: (OFString *)name
+     namespace: (OFString *)namespace
+   stringValue: (OFString *)stringValue
 {
 	self = [super init];
 
@@ -68,7 +68,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -104,12 +104,12 @@
 	[super dealloc];
 }
 
-- (OFString*)stringValue
+- (OFString *)stringValue
 {
 	return [[_stringValue copy] autorelease];
 }
 
-- (void)setStringValue: (OFString*)stringValue
+- (void)setStringValue: (OFString *)stringValue
 {
 	OFString *old = _stringValue;
 	_stringValue = [stringValue copy];
@@ -151,7 +151,7 @@
 	return hash;
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -176,7 +176,7 @@
 	return [element autorelease];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat: @"<OFXMLAttribute: name=%@, "
 					   @"namespace=%@, stringValue=%@>",

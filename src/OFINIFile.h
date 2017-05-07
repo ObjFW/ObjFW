@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFINIFile: OFObject
 {
-	OFMutableArray OF_GENERIC(OFINICategory*) *_categories;
+	OFMutableArray OF_GENERIC(OFINICategory *) *_categories;
 }
 
 /*!
@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  */
-+ (instancetype)fileWithPath: (OFString*)path;
++ (instancetype)fileWithPath: (OFString *)path;
 
 /*!
  * @brief Creates a new OFINIFile with the contents of the specified file in
@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A new, autoreleased OFINIFile with the contents of the specified file
  */
-+ (instancetype)fileWithPath: (OFString*)path
++ (instancetype)fileWithPath: (OFString *)path
 		    encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized OFINIFile with the contents of the specified file
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated OFINIFile with the contents of the
@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized OFINIFile with the contents of the specified file
  */
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
       encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -84,14 +84,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An @ref OFINICategory for the category with the specified name
  */
-- (OFINICategory*)categoryForName: (OFString*)name;
+- (OFINICategory *)categoryForName: (OFString *)name;
 
 /*!
  * @brief Writes the contents of the OFINIFile to a file.
  *
  * @param path The path of the file to write to
  */
-- (void)writeToFile: (OFString*)path;
+- (void)writeToFile: (OFString *)path;
 
 /*!
  * @brief Writes the contents of the OFINIFile to a file in the specified
@@ -100,7 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path of the file to write to
  * @param encoding The encoding to use
  */
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding;
 @end
 

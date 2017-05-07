@@ -205,7 +205,7 @@
 }
 
 #ifdef OF_HAVE_PLEDGE
-- (OFString*)pledgeString
+- (OFString *)pledgeString
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableArray *pledges = [OFMutableArray array];

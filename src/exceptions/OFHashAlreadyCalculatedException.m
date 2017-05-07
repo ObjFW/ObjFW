@@ -48,7 +48,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The hash of type %@ has already been calculated and thus no new "

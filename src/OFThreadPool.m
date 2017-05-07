@@ -131,17 +131,17 @@
 	volatile int *_doneCount;
 }
 
-+ (instancetype)threadWithThreadPool: (OFThreadPool*)threadPool;
-- initWithThreadPool: (OFThreadPool*)threadPool;
++ (instancetype)threadWithThreadPool: (OFThreadPool *)threadPool;
+- initWithThreadPool: (OFThreadPool *)threadPool;
 @end
 
 @implementation OFThreadPoolThread
-+ (instancetype)threadWithThreadPool: (OFThreadPool*)threadPool
++ (instancetype)threadWithThreadPool: (OFThreadPool *)threadPool
 {
 	return [[[self alloc] initWithThreadPool: threadPool] autorelease];
 }
 
-- initWithThreadPool: (OFThreadPool*)threadPool
+- initWithThreadPool: (OFThreadPool *)threadPool
 {
 	self = [super init];
 
@@ -316,7 +316,7 @@
 	[super dealloc];
 }
 
-- (void)OF_dispatchJob: (OFThreadPoolJob*)job
+- (void)OF_dispatchJob: (OFThreadPoolJob *)job
 {
 	[_countCondition lock];
 	_count++;

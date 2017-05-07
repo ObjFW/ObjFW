@@ -22,12 +22,12 @@
 @implementation OFStatItemFailedException
 @synthesize path = _path, errNo = _errNo;
 
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
 }
 
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
@@ -39,7 +39,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 {
 	self = [super init];
 
@@ -53,7 +53,7 @@
 	return self;
 }
 
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 	 errNo: (int)errNo
 {
 	self = [super init];
@@ -76,7 +76,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_errNo != 0)
 		return [OFString stringWithFormat:

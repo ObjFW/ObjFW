@@ -43,8 +43,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found processing instructions
  * @param pi The processing instructions
  */
--		 (void)parser: (OFXMLParser*)parser
-  foundProcessingInstructions: (OFString*)pi;
+-		 (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructions: (OFString *)pi;
 
 /*!
  * @brief This callback is called when the XML parser found the start of a new
@@ -57,11 +57,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributes The attributes included in the tag which just started or
  *		     `nil`
  */
--    (void)parser: (OFXMLParser*)parser
-  didStartElement: (OFString*)name
-	   prefix: (nullable OFString*)prefix
-	namespace: (nullable OFString*)ns
-       attributes: (nullable OFArray OF_GENERIC(OFXMLAttribute*)*)attributes;
+-    (void)parser: (OFXMLParser *)parser
+  didStartElement: (OFString *)name
+	   prefix: (nullable OFString *)prefix
+	namespace: (nullable OFString *)ns
+       attributes: (nullable OFArray OF_GENERIC(OFXMLAttribute *) *)attributes;
 
 /*!
  * @brief This callback is called when the XML parser found the end of a tag.
@@ -71,10 +71,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix of the tag which just ended or `nil`
  * @param ns The namespace of the tag which just ended or `nil`
  */
--  (void)parser: (OFXMLParser*)parser
-  didEndElement: (OFString*)name
-	 prefix: (nullable OFString*)prefix
-      namespace: (nullable OFString*)ns;
+-  (void)parser: (OFXMLParser *)parser
+  didEndElement: (OFString *)name
+	 prefix: (nullable OFString *)prefix
+      namespace: (nullable OFString *)ns;
 
 /*!
  * @brief This callback is called when the XML parser found characters.
@@ -85,8 +85,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a string
  * @param characters The characters the XML parser found
  */
--    (void)parser: (OFXMLParser*)parser
-  foundCharacters: (OFString*)characters;
+-    (void)parser: (OFXMLParser *)parser
+  foundCharacters: (OFString *)characters;
 
 /*!
  * @brief This callback is called when the XML parser found CDATA.
@@ -94,8 +94,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a string
  * @param CDATA The CDATA the XML parser found
  */
-- (void)parser: (OFXMLParser*)parser
-    foundCDATA: (OFString*)CDATA;
+- (void)parser: (OFXMLParser *)parser
+    foundCDATA: (OFString *)CDATA;
 
 /*!
  * @brief This callback is called when the XML parser found a comment.
@@ -103,8 +103,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which found a comment
  * @param comment The comment the XML parser found
  */
-- (void)parser: (OFXMLParser*)parser
-  foundComment: (OFString*)comment;
+- (void)parser: (OFXMLParser *)parser
+  foundComment: (OFString *)comment;
 
 /*!
  * @brief This callback is called when the XML parser found an entity it
@@ -118,8 +118,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param entity The name of the entity the XML parser didn't know
  * @return A substitution for the entity or `nil`
  */
--	(OFString*)parser: (OFXMLParser*)parser
-  foundUnknownEntityNamed: (OFString*)entity;
+-      (OFString *)parser: (OFXMLParser *)parser
+  foundUnknownEntityNamed: (OFString *)entity;
 @end
 
 /*!
@@ -161,12 +161,12 @@ OF_ASSUME_NONNULL_BEGIN
 	OFDataArray *_buffer;
 	OFString *_name, *_prefix;
 	OFMutableArray
-	    OF_GENERIC(OFMutableDictionary OF_GENERIC(OFString*, OFString*)*)
+	    OF_GENERIC(OFMutableDictionary OF_GENERIC(OFString *, OFString *) *)
 	    *_namespaces;
-	OFMutableArray OF_GENERIC(OFXMLAttribute*) *_attributes;
+	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_attributes;
 	OFString *_attributeName, *_attributePrefix;
 	char _delimiter;
-	OFMutableArray OF_GENERIC(OFString*) *_previous;
+	OFMutableArray OF_GENERIC(OFString *) *_previous;
 	size_t _level;
 	bool _acceptProlog;
 	size_t _lineNumber;
@@ -202,7 +202,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param buffer The buffer to parse
  * @param length The length of the buffer
  */
-- (void)parseBuffer: (const char*)buffer
+- (void)parseBuffer: (const char *)buffer
 	     length: (size_t)length;
 
 /*!
@@ -210,14 +210,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string The string to parse
  */
-- (void)parseString: (OFString*)string;
+- (void)parseString: (OFString *)string;
 
 /*!
  * @brief Parses the specified stream.
  *
  * @param stream The stream to parse
  */
-- (void)parseStream: (OFStream*)stream;
+- (void)parseStream: (OFStream *)stream;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -225,7 +225,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to the file to parse
 */
-- (void)parseFile: (OFString*)path;
+- (void)parseFile: (OFString *)path;
 #endif
 
 /*!

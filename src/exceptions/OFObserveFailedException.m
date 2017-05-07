@@ -23,7 +23,7 @@
 @implementation OFObserveFailedException
 @synthesize observer = _observer, errNo = _errNo;
 
-+ (instancetype)exceptionWithObserver: (OFKernelEventObserver*)observer
++ (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo
 {
 	return [[[self alloc] initWithObserver: observer
@@ -35,7 +35,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObserver: (OFKernelEventObserver*)observer
+- initWithObserver: (OFKernelEventObserver *)observer
 	     errNo: (int)errNo
 {
 	self = [super init];
@@ -58,7 +58,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"An observer of class %@ failed to observe: %@",

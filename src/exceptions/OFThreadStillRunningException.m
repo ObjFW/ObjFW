@@ -23,12 +23,12 @@
 @implementation OFThreadStillRunningException
 @synthesize thread = _thread;
 
-+ (instancetype)exceptionWithThread: (OFThread*)thread
++ (instancetype)exceptionWithThread: (OFThread *)thread
 {
 	return [[[self alloc] initWithThread: thread] autorelease];
 }
 
-- initWithThread: (OFThread*)thread
+- initWithThread: (OFThread *)thread
 {
 	self = [super init];
 
@@ -44,7 +44,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_thread)
 		return [OFString stringWithFormat:

@@ -231,7 +231,7 @@ of_rectangle(float x, float y, float width, float height)
  * @param protocol The protocol which should be checked for conformance
  * @return A boolean whether the object conforms to the specified protocol
  */
-- (bool)conformsToProtocol: (Protocol*)protocol;
+- (bool)conformsToProtocol: (Protocol *)protocol;
 
 /*!
  * @brief Returns the implementation for the specified selector.
@@ -247,7 +247,7 @@ of_rectangle(float x, float y, float width, float height)
  * @param selector The selector for which the type encoding should be returned
  * @return The type encoding for the specified selector
  */
-- (nullable const char*)typeEncodingForSelector: (SEL)selector;
+- (nullable const char *)typeEncodingForSelector: (SEL)selector;
 
 /*!
  * @brief Performs the specified selector.
@@ -445,7 +445,7 @@ OF_ROOT_CLASS
  *
  * @return The name of the class as a string
  */
-+ (OFString*)className;
++ (OFString *)className;
 
 /*!
  * @brief Returns a boolean whether the class is a subclass of the specified
@@ -478,7 +478,7 @@ OF_ROOT_CLASS
  * @param protocol The protocol which should be checked for conformance
  * @return A boolean whether the class conforms to the specified protocol
  */
-+ (bool)conformsToProtocol: (Protocol*)protocol;
++ (bool)conformsToProtocol: (Protocol *)protocol;
 
 /*!
  * @brief Returns the implementation of the instance method for the specified
@@ -497,7 +497,7 @@ OF_ROOT_CLASS
  * @param selector The selector for which the type encoding should be returned
  * @return The type encoding of the instance method for the specified selector
  */
-+ (nullable const char*)typeEncodingForInstanceSelector: (SEL)selector;
++ (nullable const char *)typeEncodingForInstanceSelector: (SEL)selector;
 
 /*!
  * @brief Returns a description for the class, which is usually the class name.
@@ -506,7 +506,7 @@ OF_ROOT_CLASS
  *
  * @return A description for the class, which is usually the class name
  */
-+ (OFString*)description;
++ (OFString *)description;
 
 /*!
  * @brief Replaces a class method with a class method from another class.
@@ -543,7 +543,7 @@ OF_ROOT_CLASS
  */
 + (nullable IMP)replaceClassMethod: (SEL)selector
 		withImplementation: (IMP)implementation
-		      typeEncoding: (const char*)typeEncoding;
+		      typeEncoding: (const char *)typeEncoding;
 
 /*!
  * @brief Replaces or adds an instance method.
@@ -559,7 +559,7 @@ OF_ROOT_CLASS
  */
 + (nullable IMP)replaceInstanceMethod: (SEL)selector
 		   withImplementation: (IMP)implementation
-			 typeEncoding: (const char*)typeEncoding;
+			 typeEncoding: (const char *)typeEncoding;
 
 /*!
  * @brief Adds all methods from the specified class to the class that is the
@@ -631,7 +631,7 @@ OF_ROOT_CLASS
  *
  * @return The name of the object's class
  */
-- (OFString*)className;
+- (OFString *)className;
 
 /*!
  * @brief Returns a description for the object.
@@ -640,7 +640,7 @@ OF_ROOT_CLASS
  *
  * @return A description for the object
  */
-- (OFString*)description;
+- (OFString *)description;
 
 /*!
  * @brief Allocates memory and stores it in the object's memory pool.
@@ -650,7 +650,7 @@ OF_ROOT_CLASS
  * @param size The size of the memory to allocate
  * @return A pointer to the allocated memory
  */
-- (void*)allocMemoryWithSize: (size_t)size;
+- (void *)allocMemoryWithSize: (size_t)size;
 
 /*!
  * @brief Allocates memory for the specified number of items and stores it in
@@ -662,8 +662,8 @@ OF_ROOT_CLASS
  * @param count The number of items to allocate
  * @return A pointer to the allocated memory
  */
-- (void*)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count;
+- (void *)allocMemoryWithSize: (size_t)size
+			count: (size_t)count;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specified size.
@@ -675,8 +675,8 @@ OF_ROOT_CLASS
  * @param size The new size for the memory chunk
  * @return A pointer to the resized memory chunk
  */
-- (nullable void*)resizeMemory: (nullable void*)pointer
-			  size: (size_t)size;
+- (nullable void *)resizeMemory: (nullable void *)pointer
+			   size: (size_t)size;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specific number of
@@ -690,9 +690,9 @@ OF_ROOT_CLASS
  * @param count The number of items to resize to
  * @return A pointer to the resized memory chunk
  */
-- (nullable void*)resizeMemory: (nullable void*)pointer
-			  size: (size_t)size
-			 count: (size_t)count;
+- (nullable void *)resizeMemory: (nullable void *)pointer
+			   size: (size_t)size
+			  count: (size_t)count;
 
 /*!
  * @brief Frees allocated memory and removes it from the object's memory pool.
@@ -701,7 +701,7 @@ OF_ROOT_CLASS
  *
  * @param pointer A pointer to the allocated memory
  */
-- (void)freeMemory: (nullable void*)pointer;
+- (void)freeMemory: (nullable void *)pointer;
 
 /*!
  * @brief Deallocates the object.
@@ -759,7 +759,7 @@ OF_ROOT_CLASS
  * @param waitUntilDone Whether to wait until the perform finished
  */
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
@@ -773,7 +773,7 @@ OF_ROOT_CLASS
  * @param waitUntilDone Whether to wait until the perform finished
  */
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object
 	  waitUntilDone: (bool)waitUntilDone;
 
@@ -790,7 +790,7 @@ OF_ROOT_CLASS
  * @param waitUntilDone Whether to wait until the perform finished
  */
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
 	  waitUntilDone: (bool)waitUntilDone;
@@ -842,7 +842,7 @@ OF_ROOT_CLASS
  * @param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     afterDelay: (of_time_interval_t)delay;
 
 /*!
@@ -856,7 +856,7 @@ OF_ROOT_CLASS
  * @param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object
 	     afterDelay: (of_time_interval_t)delay;
 
@@ -873,7 +873,7 @@ OF_ROOT_CLASS
  * @param delay The delay after which the selector will be performed
  */
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
 	     afterDelay: (of_time_interval_t)delay;

@@ -47,7 +47,7 @@ OF_CONSTRUCTOR()
 }
 #endif
 
-void*
+void *
 objc_autoreleasePoolPush()
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -56,7 +56,7 @@ objc_autoreleasePoolPush()
 #endif
 	ptrdiff_t offset = top - objects;
 
-	return (void*)offset;
+	return (void *)offset;
 }
 
 void
@@ -105,7 +105,7 @@ _objc_rootAutorelease(id object)
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		OF_ENSURE(of_tlskey_set(objectsKey, objects));
-		OF_ENSURE(of_tlskey_set(sizeKey, (void*)(uintptr_t)size));
+		OF_ENSURE(of_tlskey_set(sizeKey, (void *)(uintptr_t)size));
 #endif
 	}
 
@@ -117,7 +117,7 @@ _objc_rootAutorelease(id object)
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		OF_ENSURE(of_tlskey_set(objectsKey, objects));
-		OF_ENSURE(of_tlskey_set(sizeKey, (void*)(uintptr_t)size));
+		OF_ENSURE(of_tlskey_set(sizeKey, (void *)(uintptr_t)size));
 #endif
 
 		top = objects + diff;

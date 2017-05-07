@@ -591,13 +591,13 @@ of_bitset_clear(uint8_t *storage, size_t index)
 	storage[index / 8] &= ~(1 << (index % 8));
 }
 
-static OF_INLINE char*
+static OF_INLINE char *
 of_strdup(const char *string)
 {
 	char *copy;
 	size_t length = strlen(string);
 
-	if ((copy = (char*)malloc(length + 1)) == NULL)
+	if ((copy = (char *)malloc(length + 1)) == NULL)
 		return NULL;
 
 	memcpy(copy, string, length + 1);
@@ -608,9 +608,9 @@ of_strdup(const char *string)
 static OF_INLINE void
 of_explicit_memset(void *buffer_, int character, size_t length)
 {
-	volatile unsigned char *buffer = (volatile unsigned char*)buffer_;
+	volatile unsigned char *buffer = (volatile unsigned char *)buffer_;
 
-	while (buffer < (unsigned char*)buffer_ + length)
+	while (buffer < (unsigned char *)buffer_ + length)
 		*buffer++ = character;
 }
 

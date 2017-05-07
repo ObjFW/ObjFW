@@ -22,12 +22,12 @@
 @implementation OFUnknownXMLEntityException
 @synthesize entityName = _entityName;
 
-+ (instancetype)exceptionWithEntityName: (OFString*)entityName
++ (instancetype)exceptionWithEntityName: (OFString *)entityName
 {
 	return [[[self alloc] initWithEntityName: entityName] autorelease];
 }
 
-- initWithEntityName: (OFString*)entityName
+- initWithEntityName: (OFString *)entityName
 {
 	self = [super init];
 
@@ -48,7 +48,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"A parser encountered an unknown XML entity named %@!",

@@ -23,12 +23,12 @@
 @implementation OFConditionWaitFailedException
 @synthesize condition = _condition;
 
-+ (instancetype)exceptionWithCondition: (OFCondition*)condition
++ (instancetype)exceptionWithCondition: (OFCondition *)condition
 {
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- initWithCondition: (OFCondition*)condition
+- initWithCondition: (OFCondition *)condition
 {
 	self = [super init];
 
@@ -44,7 +44,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_condition != nil)
 		return [OFString stringWithFormat:

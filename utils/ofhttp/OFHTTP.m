@@ -54,7 +54,7 @@
 
 @interface OFHTTP: OFObject <OFHTTPClientDelegate>
 {
-	OFArray OF_GENERIC(OFString*) *_URLs;
+	OFArray OF_GENERIC(OFString *) *_URLs;
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath;
@@ -137,7 +137,7 @@ help(OFStream *stream, bool full, int status)
 	return self;
 }
 
-- (void)addHeader: (OFString*)header
+- (void)addHeader: (OFString *)header
 {
 	size_t pos = [header rangeOfString: @":"].location;
 	OFString *name, *value;
@@ -160,7 +160,7 @@ help(OFStream *stream, bool full, int status)
 			   forKey: name];
 }
 
-- (void)setBody: (OFString*)file
+- (void)setBody: (OFString *)file
 {
 	[_body release];
 
@@ -174,7 +174,7 @@ help(OFStream *stream, bool full, int status)
 		_body = [[OFDataArray alloc] initWithContentsOfFile: file];
 }
 
-- (void)setMethod: (OFString*)method
+- (void)setMethod: (OFString *)method
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -203,7 +203,7 @@ help(OFStream *stream, bool full, int status)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setProxy: (OFString*)proxy
+- (void)setProxy: (OFString *)proxy
 {
 	@try {
 		size_t pos = [proxy
@@ -371,27 +371,27 @@ help(OFStream *stream, bool full, int status)
 		   afterDelay: 0];
 }
 
--    (void)client: (OFHTTPClient*)client
-  didCreateSocket: (OF_KINDOF(OFTCPSocket*))socket
-	  request: (OFHTTPRequest*)request
+-    (void)client: (OFHTTPClient *)client
+  didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
+	  request: (OFHTTPRequest *)request
 {
 	if (_insecure && [socket respondsToSelector:
 	    @selector(setCertificateVerificationEnabled:)])
 		[socket setCertificateVerificationEnabled: false];
 }
 
--	  (bool)client: (OFHTTPClient*)client
-  shouldFollowRedirect: (OFURL*)URL
+-	  (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirect: (OFURL *)URL
 	    statusCode: (int)statusCode
-	       request: (OFHTTPRequest*)request
-	      response: (OFHTTPResponse*)response
+	       request: (OFHTTPRequest *)request
+	      response: (OFHTTPResponse *)response
 {
 	if (!_quiet)
 		[of_stdout writeFormat: @" ➜ %d\n", statusCode];
 
 	if (_verbose) {
 		void *pool = objc_autoreleasePoolPush();
-		OFDictionary OF_GENERIC(OFString*, OFString*) *headers =
+		OFDictionary OF_GENERIC(OFString *, OFString *) *headers =
 		    [response headers];
 		OFEnumerator *keyEnumerator = [headers keyEnumerator];
 		OFEnumerator *objectEnumerator =
@@ -412,7 +412,7 @@ help(OFStream *stream, bool full, int status)
 	return true;
 }
 
-- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 {
 	OFHTTPResponse *response = nil;
 
@@ -502,7 +502,7 @@ help(OFStream *stream, bool full, int status)
 	return response;
 }
 
-- (OFString*)fileNameFromContentDisposition: (OFString*)contentDisposition
+- (OFString *)fileNameFromContentDisposition: (OFString *)contentDisposition
 {
 	void *pool;
 	const char *UTF8String;
@@ -622,10 +622,10 @@ help(OFStream *stream, bool full, int status)
 	return [fileName autorelease];
 }
 
--      (bool)stream: (OFHTTPResponse*)response
-  didReadIntoBuffer: (void*)buffer
+-      (bool)stream: (OFHTTPResponse *)response
+  didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	  exception: (OFException*)e
+	  exception: (OFException *)e
 {
 	if (e != nil) {
 		OFString *URL;
@@ -689,7 +689,7 @@ next:
 	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
 	OFHTTPResponse *response;
-	OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFString *fileName = nil, *lengthString, *type;
 
 	_length = -1;
@@ -829,8 +829,8 @@ next:
 
 		if (_verbose) {
 			void *pool = objc_autoreleasePoolPush();
-			OFDictionary OF_GENERIC(OFString*, OFString*) *headers =
-			    [response headers];
+			OFDictionary OF_GENERIC(OFString *, OFString *)
+			    *headers = [response headers];
 			OFEnumerator *keyEnumerator = [headers keyEnumerator];
 			OFEnumerator *objectEnumerator =
 			    [headers objectEnumerator];

@@ -23,7 +23,7 @@
 @implementation OFGetOptionFailedException
 @synthesize stream = _stream, errNo = _errNo;
 
-+ (instancetype)exceptionWithStream: (OFStream*)stream
++ (instancetype)exceptionWithStream: (OFStream *)stream
 			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithStream: stream
@@ -35,7 +35,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFStream*)stream
+- initWithStream: (OFStream *)stream
 	   errNo: (int)errNo
 {
 	self = [super init];
@@ -53,7 +53,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Getting an option in a stream of type %@ failed: %@",

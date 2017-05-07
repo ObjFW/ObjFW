@@ -21,14 +21,14 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFArray_subarray
-+ (instancetype)arrayWithArray: (OFArray*)array
++ (instancetype)arrayWithArray: (OFArray *)array
 			 range: (of_range_t)range
 {
 	return [[[self alloc] initWithArray: array
 				      range: range] autorelease];
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 	  range: (of_range_t)range
 {
 	self = [super init];
@@ -65,7 +65,7 @@
 	return [_array objectAtIndex: index + _range.location];
 }
 
-- (void)getObjects: (id*)buffer
+- (void)getObjects: (id *)buffer
 	   inRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||
@@ -108,7 +108,7 @@
 	return index;
 }
 
-- (OFArray*)objectsInRange: (of_range_t)range
+- (OFArray *)objectsInRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _range.length)

@@ -73,7 +73,7 @@ hashForName(OFString *name)
 @implementation OFHash
 - (void)applicationDidFinishLaunching
 {
-	OFArray OF_GENERIC(OFString*) *arguments = [OFApplication arguments];
+	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
 	id <OFCryptoHash> hash;
 	bool first = true;
 	int exitStatus = 0;

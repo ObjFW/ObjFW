@@ -89,7 +89,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
-		OFArray OF_GENERIC(OFString*) *split;
+		OFArray OF_GENERIC(OFString *) *split;
 		OFString *const *splitObjects;
 		of_unichar_t codep;
 
@@ -138,7 +138,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
-		OFArray OF_GENERIC(OFString*) *split;
+		OFArray OF_GENERIC(OFString *) *split;
 		OFString *const *splitObjects;
 		of_unichar_t codep;
 
@@ -170,7 +170,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeTablesToFile: (OFString*)path
+- (void)writeTablesToFile: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
@@ -446,7 +446,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeHeaderToFile: (OFString*)path
+- (void)writeHeaderToFile: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path

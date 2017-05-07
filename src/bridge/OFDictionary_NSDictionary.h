@@ -27,5 +27,5 @@
 	NSDictionary *_dictionary;
 }
 
-- initWithNSDictionary: (NSDictionary*)dictionary;
+- initWithNSDictionary: (NSDictionary *)dictionary;
 @end

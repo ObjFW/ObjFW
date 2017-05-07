@@ -144,7 +144,7 @@ static OFAutoreleasePool **cache = NULL;
 	objc_autoreleasePoolPop(_pool);
 
 	if (cache == NULL) {
-		cache = calloc(sizeof(OFAutoreleasePool*), MAX_CACHE_SIZE);
+		cache = calloc(sizeof(OFAutoreleasePool *), MAX_CACHE_SIZE);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		if (!of_tlskey_set(cacheKey, cache)) {

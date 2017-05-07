@@ -37,7 +37,7 @@
 	return self;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_requestedSize != 0)
 		return [OFString stringWithFormat:

@@ -304,10 +304,10 @@ case "$objc_runtime" in
 			}
 			@end
 
-			void*
+			void *
 			objc_msg_lookup(void *obj, void *sel)
 			{
-				return (void*)0;
+				return (void *)0;
 			}
 
 			void
@@ -1244,7 +1244,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			struct objc_class *_isa;
 		} object;
 	], [
-		Foo *test = (Foo*)&object;
+		Foo *test = (Foo *)&object;
 		(void)test; /* Get rid of unused variable warning */
 	], [
 		AC_MSG_RESULT(no)
@@ -1269,15 +1269,15 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 		@property (readonly, retain) Foo *foo;
 
-		+ (Foo*)foo;
+		+ (Foo *)foo;
 		@end
 
 		@implementation Foo
 		@synthesize foo = _foo;
 
-		+ (Foo*)foo
+		+ (Foo *)foo
 		{
-			return (Foo*)0;
+			return (Foo *)0;
 		}
 		@end
 	], [

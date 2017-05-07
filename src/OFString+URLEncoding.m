@@ -28,12 +28,12 @@
 int _OFString_URLEncoding_reference;
 
 @implementation OFString (URLEncoding)
-- (OFString*)stringByURLEncoding
+- (OFString *)stringByURLEncoding
 {
 	return [self stringByURLEncodingWithAllowedCharacters: "$-_.!*()"];
 }
 
-- (OFString*)stringByURLEncodingWithAllowedCharacters: (const char*)allowed
+- (OFString *)stringByURLEncodingWithAllowedCharacters: (const char *)allowed
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *string = [self UTF8String];
@@ -86,7 +86,7 @@ int _OFString_URLEncoding_reference;
 	return ret;
 }
 
-- (OFString*)stringByURLDecoding
+- (OFString *)stringByURLDecoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *ret;

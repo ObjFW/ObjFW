@@ -123,38 +123,38 @@ struct objc_dtable {
 	} *buckets[256];
 };
 
-extern void objc_register_all_categories(struct objc_abi_symtab*);
-extern struct objc_category** objc_categories_for_class(Class);
+extern void objc_register_all_categories(struct objc_abi_symtab *);
+extern struct objc_category **objc_categories_for_class(Class);
 extern void objc_unregister_all_categories(void);
 extern void objc_initialize_class(Class);
 extern void objc_update_dtable(Class);
-extern void objc_register_all_classes(struct objc_abi_symtab*);
-extern Class objc_classname_to_class(const char*, bool);
+extern void objc_register_all_classes(struct objc_abi_symtab *);
+extern Class objc_classname_to_class(const char *, bool);
 extern void objc_unregister_class(Class);
 extern void objc_unregister_all_classes(void);
-extern uint32_t objc_hash_string(const void*);
-extern bool objc_equal_string(const void*, const void*);
-extern struct objc_hashtable* objc_hashtable_new(uint32_t (*)(const void*),
-    bool (*)(const void*, const void*), uint32_t);
+extern uint32_t objc_hash_string(const void *);
+extern bool objc_equal_string(const void *, const void *);
+extern struct objc_hashtable *objc_hashtable_new(uint32_t (*)(const void *),
+    bool (*)(const void *, const void *), uint32_t);
 extern struct objc_hashtable_bucket objc_deleted_bucket;
-extern void objc_hashtable_set(struct objc_hashtable*, const void*,
-    const void*);
-extern void* objc_hashtable_get(struct objc_hashtable*, const void*);
-extern void objc_hashtable_delete(struct objc_hashtable*, const void*);
-extern void objc_hashtable_free(struct objc_hashtable*);
-extern void objc_register_selector(struct objc_abi_selector*);
-extern void objc_register_all_selectors(struct objc_abi_symtab*);
+extern void objc_hashtable_set(struct objc_hashtable *, const void *,
+    const void *);
+extern void *objc_hashtable_get(struct objc_hashtable *, const void *);
+extern void objc_hashtable_delete(struct objc_hashtable *, const void *);
+extern void objc_hashtable_free(struct objc_hashtable *);
+extern void objc_register_selector(struct objc_abi_selector *);
+extern void objc_register_all_selectors(struct objc_abi_symtab *);
 extern void objc_unregister_all_selectors(void);
-extern struct objc_sparsearray* objc_sparsearray_new(uint8_t);
-extern void* objc_sparsearray_get(struct objc_sparsearray*, uintptr_t);
-extern void objc_sparsearray_set(struct objc_sparsearray*, uintptr_t, void*);
-extern void objc_sparsearray_free(struct objc_sparsearray*);
-extern struct objc_dtable* objc_dtable_new(void);
-extern void objc_dtable_copy(struct objc_dtable*, struct objc_dtable*);
-extern void objc_dtable_set(struct objc_dtable*, uint32_t, IMP);
-extern void objc_dtable_free(struct objc_dtable*);
+extern struct objc_sparsearray *objc_sparsearray_new(uint8_t);
+extern void *objc_sparsearray_get(struct objc_sparsearray *, uintptr_t);
+extern void objc_sparsearray_set(struct objc_sparsearray *, uintptr_t, void *);
+extern void objc_sparsearray_free(struct objc_sparsearray *);
+extern struct objc_dtable *objc_dtable_new(void);
+extern void objc_dtable_copy(struct objc_dtable *, struct objc_dtable *);
+extern void objc_dtable_set(struct objc_dtable *, uint32_t, IMP);
+extern void objc_dtable_free(struct objc_dtable *);
 extern void objc_dtable_cleanup(void);
-extern void objc_init_static_instances(struct objc_abi_symtab*);
+extern void objc_init_static_instances(struct objc_abi_symtab *);
 extern void objc_forget_pending_static_instances(void);
 #ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);

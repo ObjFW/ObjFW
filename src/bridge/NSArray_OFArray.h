@@ -23,5 +23,5 @@
 	OFArray *_array;
 }
 
-- initWithOFArray: (OFArray*)array;
+- initWithOFArray: (OFArray *)array;
 @end

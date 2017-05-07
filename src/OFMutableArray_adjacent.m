@@ -76,7 +76,7 @@
 	_mutations++;
 }
 
-- (void)insertObjectsFromArray: (OFArray*)array
+- (void)insertObjectsFromArray: (OFArray *)array
 		       atIndex: (size_t)index
 {
 	id const *objects = [array objects];
@@ -298,8 +298,8 @@
 	}
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count_
 {
 	size_t count = [_array count];
@@ -327,7 +327,7 @@
 	return (int)count;
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	return [[[OFArrayEnumerator alloc]
 	    initWithArray: self

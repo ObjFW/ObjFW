@@ -170,7 +170,7 @@ encodingForContentType(OFString *contentType)
 	return _protocolVersion;
 }
 
-- (void)setProtocolVersionFromString: (OFString*)string
+- (void)setProtocolVersionFromString: (OFString *)string
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];
@@ -194,19 +194,19 @@ encodingForContentType(OFString *contentType)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFString*)protocolVersionString
+- (OFString *)protocolVersionString
 {
 	return [OFString stringWithFormat: @"%u.%u",
 					   _protocolVersion.major,
 					   _protocolVersion.minor];
 }
 
-- (OFString*)string
+- (OFString *)string
 {
 	return [self stringWithEncoding: OF_STRING_ENCODING_AUTODETECT];
 }
 
-- (OFString*)stringWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *contentType, *contentLength, *ret;
@@ -225,7 +225,7 @@ encodingForContentType(OFString *contentType)
 		if ([data count] != (size_t)[contentLength decimalValue])
 			@throw [OFTruncatedDataException exception];
 
-	ret = [[OFString alloc] initWithCString: (char*)[data items]
+	ret = [[OFString alloc] initWithCString: (char *)[data items]
 				       encoding: encoding
 					 length: [data count]];
 
@@ -234,7 +234,7 @@ encodingForContentType(OFString *contentType)
 	return [ret autorelease];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *indentedHeaders, *ret;

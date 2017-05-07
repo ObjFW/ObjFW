@@ -23,9 +23,9 @@
 @implementation OFUnsupportedProtocolException
 @synthesize URL = _URL;
 
-+ (instancetype)exceptionWithURL: (OFURL*)url
++ (instancetype)exceptionWithURL: (OFURL *)URL
 {
-	return [[[self alloc] initWithURL: url] autorelease];
+	return [[[self alloc] initWithURL: URL] autorelease];
 }
 
 - init
@@ -33,7 +33,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithURL: (OFURL*)URL
+- initWithURL: (OFURL *)URL
 {
 	self = [super init];
 
@@ -49,7 +49,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The protocol of URL %@ is not supported!", _URL];

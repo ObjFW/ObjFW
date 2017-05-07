@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased sandboxing failed exception
  */
-+ (instancetype)exceptionWithSandbox: (OFSandbox*)sandbox
++ (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox
 			       errNo: (int)errNo;
 
 /*!
@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized sandboxing failed exception
  */
-- initWithSandbox: (OFSandbox*)sandbox
+- initWithSandbox: (OFSandbox *)sandbox
 	    errNo: (int)errNo;
 @end
 

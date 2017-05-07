@@ -112,7 +112,7 @@ of_log(OFConstantString *format, ...)
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	ssize_t ret;
@@ -142,7 +142,7 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
 	if (_fd == -1 || _atEndOfStream)

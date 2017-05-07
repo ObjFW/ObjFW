@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief An abstract class for a mutable unordered set of unique objects.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFMutableSet <ObjectType>: OFSet <ObjectType>
+@interface OFMutableSet<ObjectType>: OFSet<ObjectType>
 #else
 # ifndef DOXYGEN
 #  define ObjectType id
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param set The set whose objects will be removed from the receiver
  */
-- (void)minusSet: (OFSet OF_GENERIC(ObjectType)*)set;
+- (void)minusSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Removes all objects from the receiver which are not in the specified
@@ -76,14 +76,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param set The set to intersect with
  */
-- (void)intersectSet: (OFSet OF_GENERIC(ObjectType)*)set;
+- (void)intersectSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Creates a union of the receiver and the specified set.
  *
  * @param set The set to create the union with
  */
-- (void)unionSet: (OFSet OF_GENERIC(ObjectType)*)set;
+- (void)unionSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Converts the mutable set to an immutable set.

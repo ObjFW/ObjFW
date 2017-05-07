@@ -27,7 +27,7 @@
 int _OFObject_Serialization_reference;
 
 @implementation OFObject (Serialization)
-- (OFString*)stringBySerializing
+- (OFString *)stringBySerializing
 {
 	void *pool;
 	OFXMLElement *element;

@@ -71,7 +71,7 @@
 	return self;
 }
 
-- (void)addItem: (const void*)item
+- (void)addItem: (const void *)item
 {
 	if (SIZE_MAX - _count < 1 || _count + 1 > SIZE_MAX / _itemSize)
 		@throw [OFOutOfRangeException exception];
@@ -94,7 +94,7 @@
 	_count++;
 }
 
-- (void)addItems: (const void*)items
+- (void)addItems: (const void *)items
 	   count: (size_t)count
 {
 	if (count > SIZE_MAX - _count || _count + count > SIZE_MAX / _itemSize)
@@ -118,7 +118,7 @@
 	_count += count;
 }
 
-- (void)insertItems: (const void*)items
+- (void)insertItems: (const void *)items
 	    atIndex: (size_t)index
 	      count: (size_t)count
 {

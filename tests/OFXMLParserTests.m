@@ -44,11 +44,11 @@ enum event_type {
 
 @implementation TestsAppDelegate (OFXMLParser)
 - (void)parserCallbackWithEventType: (enum event_type)et
-			       name: (OFString*)name
-			     prefix: (OFString*)prefix
-			  namespace: (OFString*)ns
-			 attributes: (OFArray*)attrs
-			     string: (OFString*)string
+			       name: (OFString *)name
+			     prefix: (OFString *)prefix
+			  namespace: (OFString *)ns
+			 attributes: (OFArray *)attrs
+			     string: (OFString *)string
 {
 	OFString *msg;
 
@@ -241,8 +241,8 @@ enum event_type {
 	}
 }
 
--		 (void)parser: (OFXMLParser*)parser
-  foundProcessingInstructions: (OFString*)pi
+-		 (void)parser: (OFXMLParser *)parser
+  foundProcessingInstructions: (OFString *)pi
 {
 	[self parserCallbackWithEventType: PROCESSING_INSTRUCTIONS
 				     name: nil
@@ -252,11 +252,11 @@ enum event_type {
 				   string: pi];
 }
 
--    (void)parser: (OFXMLParser*)parser
-  didStartElement: (OFString*)name
-	   prefix: (OFString*)prefix
-	namespace: (OFString*)ns
-       attributes: (OFArray*)attrs
+-    (void)parser: (OFXMLParser *)parser
+  didStartElement: (OFString *)name
+	   prefix: (OFString *)prefix
+	namespace: (OFString *)ns
+       attributes: (OFArray *)attrs
 {
 	[self parserCallbackWithEventType: TAG_START
 				     name: name
@@ -266,10 +266,10 @@ enum event_type {
 				   string: nil];
 }
 
--  (void)parser: (OFXMLParser*)parser
-  didEndElement: (OFString*)name
-	 prefix: (OFString*)prefix
-      namespace: (OFString*)ns
+-  (void)parser: (OFXMLParser *)parser
+  didEndElement: (OFString *)name
+	 prefix: (OFString *)prefix
+      namespace: (OFString *)ns
 {
 	[self parserCallbackWithEventType: TAG_END
 				     name: name
@@ -279,8 +279,8 @@ enum event_type {
 				   string: nil];
 }
 
--    (void)parser: (OFXMLParser*)parser
-  foundCharacters: (OFString*)string
+-    (void)parser: (OFXMLParser *)parser
+  foundCharacters: (OFString *)string
 {
 	[self parserCallbackWithEventType: STRING
 				     name: nil
@@ -290,8 +290,8 @@ enum event_type {
 				   string: string];
 }
 
-- (void)parser: (OFXMLParser*)parser
-    foundCDATA: (OFString*)cdata
+- (void)parser: (OFXMLParser *)parser
+    foundCDATA: (OFString *)cdata
 {
 	[self parserCallbackWithEventType: CDATA
 				     name: nil
@@ -301,8 +301,8 @@ enum event_type {
 				   string: cdata];
 }
 
-- (void)parser: (OFXMLParser*)parser
-  foundComment: (OFString*)comment
+- (void)parser: (OFXMLParser *)parser
+  foundComment: (OFString *)comment
 {
 	[self parserCallbackWithEventType: COMMENT
 				     name: nil
@@ -312,8 +312,8 @@ enum event_type {
 				   string: comment];
 }
 
--	(OFString*)parser: (OFXMLParser*)parser
-  foundUnknownEntityNamed: (OFString*)entity
+-      (OFString *)parser: (OFXMLParser *)parser
+  foundUnknownEntityNamed: (OFString *)entity
 {
 	if ([entity isEqual: @"foo"])
 		return @"foobar";

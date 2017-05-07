@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which could not be joined
  * @return A new, autoreleased thread join failed exception
  */
-+ (instancetype)exceptionWithThread: (nullable OFThread*)thread;
++ (instancetype)exceptionWithThread: (nullable OFThread *)thread;
 
 /*!
  * @brief Initializes an already allocated thread join failed exception.
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which could not be joined
  * @return An initialized thread join failed exception
  */
-- initWithThread: (nullable OFThread*)thread;
+- initWithThread: (nullable OFThread *)thread;
 @end
 
 OF_ASSUME_NONNULL_END

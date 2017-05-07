@@ -27,19 +27,19 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFTarArchive: OFObject
-+ (instancetype)archiveWithStream: (OFStream*)stream
++ (instancetype)archiveWithStream: (OFStream *)stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString*)path
++ (instancetype)archiveWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
 }
 #endif
 
-- initWithStream: (OFStream*)stream
+- initWithStream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -49,7 +49,7 @@
 }
 
 #ifdef OF_HAVE_FILES
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 {
 	self = [super init];
 
@@ -73,7 +73,7 @@
 	[super dealloc];
 }
 
-- (OFTarArchiveEntry*)nextEntry
+- (OFTarArchiveEntry *)nextEntry
 {
 	union {
 		char c[512];

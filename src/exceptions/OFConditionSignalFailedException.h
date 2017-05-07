@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition which could not be signaled
  * @return A new, autoreleased condition signal failed exception
  */
-+ (instancetype)exceptionWithCondition: (nullable OFCondition*)condition;
++ (instancetype)exceptionWithCondition: (nullable OFCondition *)condition;
 
 /*!
  * @brief Initializes an already allocated condition signal failed exception.
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition which could not be signaled
  * @return An initialized condition signal failed exception
  */
-- initWithCondition: (nullable OFCondition*)condition;
+- initWithCondition: (nullable OFCondition *)condition;
 @end
 
 OF_ASSUME_NONNULL_END

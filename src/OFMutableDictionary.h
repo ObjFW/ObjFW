@@ -37,8 +37,8 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  * @brief An abstract class for storing and changing objects in a dictionary.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFMutableDictionary <KeyType, ObjectType>:
-    OFDictionary <KeyType, ObjectType>
+@interface OFMutableDictionary<KeyType, ObjectType>:
+    OFDictionary<KeyType, ObjectType>
 #else
 # ifndef DOXYGEN
 #  define KeyType id

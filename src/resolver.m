@@ -53,7 +53,7 @@ OF_CONSTRUCTOR()
 }
 #endif
 
-of_resolver_result_t**
+of_resolver_result_t **
 of_resolve_host(OFString *host, uint16_t port, int type)
 {
 	of_resolver_result_t **ret, **retIter;
@@ -175,7 +175,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			tmp->family = AF_INET;
 			tmp->type = type;
 			tmp->protocol = 0;
-			tmp->address = (struct sockaddr*)addr;
+			tmp->address = (struct sockaddr *)addr;
 #ifndef OF_WII
 			tmp->addressLength = sizeof(*addr);
 #else
@@ -235,7 +235,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			resultsIter->family = he->h_addrtype;
 			resultsIter->type = type;
 			resultsIter->protocol = 0;
-			resultsIter->address = (struct sockaddr*)addrsIter;
+			resultsIter->address = (struct sockaddr *)addrsIter;
 			resultsIter->addressLength = sizeof(*addrsIter);
 
 			*retIter = resultsIter;
@@ -310,7 +310,7 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 	@try {
 # endif
 		if ((hostCString = inet_ntoa(
-		    ((struct sockaddr_in*)(void*)address)->sin_addr)) == NULL)
+		    ((struct sockaddr_in *)(void *)address)->sin_addr)) == NULL)
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithError: h_errno];
 
@@ -319,7 +319,7 @@ of_address_to_string_and_port(struct sockaddr *address, socklen_t addressLength,
 
 		if (port != NULL)
 			*port = OF_BSWAP16_IF_LE(
-			    ((struct sockaddr_in*)(void*)address)->sin_port);
+			    ((struct sockaddr_in *)(void *)address)->sin_port);
 # if OF_HAVE_THREADS
 	} @finally {
 		if (!of_mutex_unlock(&mutex))

@@ -55,8 +55,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param response The response for the failed HTTP request
  * @return A new, autoreleased HTTP request failed exception
  */
-+ (instancetype)exceptionWithRequest: (OFHTTPRequest*)request
-			    response: (OFHTTPResponse*)response;
++ (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
+			    response: (OFHTTPResponse *)response;
 
 /*!
  * @brief Initializes an already allocated HTTP request failed exception.
@@ -65,8 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param response The response for the failed HTTP request
  * @return A new HTTP request failed exception
  */
-- initWithRequest: (OFHTTPRequest*)request
-	 response: (OFHTTPResponse*)response;
+- initWithRequest: (OFHTTPRequest *)request
+	 response: (OFHTTPResponse *)response;
 @end
 
 OF_ASSUME_NONNULL_END

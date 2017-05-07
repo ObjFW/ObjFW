@@ -205,15 +205,15 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	    initWithTimeIntervalSinceNow: seconds] autorelease];
 }
 
-+ (instancetype)dateWithDateString: (OFString*)string
-			    format: (OFString*)format
++ (instancetype)dateWithDateString: (OFString *)string
+			    format: (OFString *)format
 {
 	return [[[self alloc] initWithDateString: string
 					  format: format] autorelease];
 }
 
-+ (instancetype)dateWithLocalDateString: (OFString*)string
-				 format: (OFString*)format
++ (instancetype)dateWithLocalDateString: (OFString *)string
+				 format: (OFString *)format
 {
 	return [[[self alloc] initWithLocalDateString: string
 					       format: format] autorelease];
@@ -263,8 +263,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithDateString: (OFString*)string
-	      format: (OFString*)format
+- initWithDateString: (OFString *)string
+	      format: (OFString *)format
 {
 	self = [super init];
 
@@ -288,8 +288,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithLocalDateString: (OFString*)string
-		   format: (OFString*)format
+- initWithLocalDateString: (OFString *)string
+		   format: (OFString *)format
 {
 	self = [super init];
 
@@ -327,7 +327,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -410,7 +410,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	if (![object isKindOfClass: [OFDate class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherDate = (OFDate*)object;
+	otherDate = (OFDate *)object;
 
 	if (_seconds < otherDate->_seconds)
 		return OF_ORDERED_ASCENDING;
@@ -420,7 +420,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return OF_ORDERED_SAME;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (isinf(_seconds))
 		return (_seconds > 0 ? @"Distant Future" : @"Distant Past");
@@ -428,7 +428,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -531,7 +531,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	LOCALTIME_RET(tm_yday + 1)
 }
 
-- (OFString*)dateStringWithFormat: (OFConstantString*)format
+- (OFString *)dateStringWithFormat: (OFConstantString *)format
 {
 	OFString *ret;
 	time_t seconds = (time_t)_seconds;
@@ -591,7 +591,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return ret;
 }
 
-- (OFString*)localDateStringWithFormat: (OFConstantString*)format
+- (OFString *)localDateStringWithFormat: (OFConstantString *)format
 {
 	OFString *ret;
 	time_t seconds = (time_t)_seconds;
@@ -651,7 +651,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return ret;
 }
 
-- (OFDate*)earlierDate: (OFDate*)otherDate
+- (OFDate *)earlierDate: (OFDate *)otherDate
 {
 	if (otherDate == nil)
 		return [[self retain] autorelease];
@@ -662,7 +662,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return [[self retain] autorelease];
 }
 
-- (OFDate*)laterDate: (OFDate*)otherDate
+- (OFDate *)laterDate: (OFDate *)otherDate
 {
 	if (otherDate == nil)
 		return [[self retain] autorelease];
@@ -678,7 +678,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return _seconds;
 }
 
-- (of_time_interval_t)timeIntervalSinceDate: (OFDate*)otherDate
+- (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate
 {
 	return _seconds - otherDate->_seconds;
 }
@@ -696,7 +696,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return _seconds - seconds;
 }
 
-- (OFDate*)dateByAddingTimeInterval: (of_time_interval_t)seconds
+- (OFDate *)dateByAddingTimeInterval: (of_time_interval_t)seconds
 {
 	return [OFDate dateWithTimeIntervalSince1970: _seconds + seconds];
 }

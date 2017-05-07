@@ -123,7 +123,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF8String: (const char*)UTF8String;
++ (instancetype)stringWithUTF8String: (const char *)UTF8String;
 
 /*!
  * @brief Creates a new OFString from a UTF-8 encoded C string with the
@@ -133,7 +133,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param UTF8StringLength The length of the UTF-8 encoded C string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF8String: (const char*)UTF8String
++ (instancetype)stringWithUTF8String: (const char *)UTF8String
 			      length: (size_t)UTF8StringLength;
 
 /*!
@@ -145,7 +145,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		       deallocated
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF8StringNoCopy: (char*)UTF8String
++ (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
 			      freeWhenDone: (bool)freeWhenDone;
 
 /*!
@@ -155,7 +155,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding of the C string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithCString: (const char*)cString
++ (instancetype)stringWithCString: (const char *)cString
 			 encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -167,7 +167,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param cStringLength The length of the C string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithCString: (const char*)cString
++ (instancetype)stringWithCString: (const char *)cString
 			 encoding: (of_string_encoding_t)encoding
 			   length: (size_t)cStringLength;
 
@@ -177,7 +177,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string A string to initialize the OFString with
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithString: (OFString*)string;
++ (instancetype)stringWithString: (OFString *)string;
 
 /*!
  * @brief Creates a new OFString from a Unicode string with the specified
@@ -187,7 +187,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the Unicode character array
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithCharacters: (const of_unichar_t*)characters
++ (instancetype)stringWithCharacters: (const of_unichar_t *)characters
 			      length: (size_t)length;
 
 /*!
@@ -196,7 +196,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-16 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string;
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string;
 
 /*!
  * @brief Creates a new OFString from a UTF-16 encoded string with the
@@ -206,7 +206,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-16 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			       length: (size_t)length;
 
 /*!
@@ -217,7 +217,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -230,7 +230,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF16String: (const of_char16_t*)string
++ (instancetype)stringWithUTF16String: (const of_char16_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder;
 
@@ -240,7 +240,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-32 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string;
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string;
 
 /*!
  * @brief Creates a new OFString from a UTF-32 encoded string with the
@@ -250,7 +250,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-32 string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			       length: (size_t)length;
 
 /*!
@@ -261,7 +261,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -274,20 +274,21 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithUTF32String: (const of_char32_t*)string
++ (instancetype)stringWithUTF32String: (const of_char32_t *)string
 			       length: (size_t)length
 			    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Creates a new OFString from a format string.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See printf for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t *`.
  *
  * @param format A string used as format to initialize the OFString
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithFormat: (OFConstantString*)format, ...;
++ (instancetype)stringWithFormat: (OFConstantString *)format, ...;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -297,7 +298,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param path The path to the file
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithContentsOfFile: (OFString*)path;
++ (instancetype)stringWithContentsOfFile: (OFString *)path;
 
 /*!
  * @brief Creates a new OFString with the contents of the specified file in the
@@ -307,7 +308,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding of the file
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithContentsOfFile: (OFString*)path
++ (instancetype)stringWithContentsOfFile: (OFString *)path
 				encoding: (of_string_encoding_t)encoding;
 #endif
 
@@ -324,7 +325,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param URL The URL to the contents for the string
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithContentsOfURL: (OFURL*)URL;
++ (instancetype)stringWithContentsOfURL: (OFURL *)URL;
 
 /*!
  * @brief Creates a new OFString with the contents of the specified URL in the
@@ -334,7 +335,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding to assume
  * @return A new autoreleased OFString
  */
-+ (instancetype)stringWithContentsOfURL: (OFURL*)URL
++ (instancetype)stringWithContentsOfURL: (OFURL *)URL
 			       encoding: (of_string_encoding_t)encoding;
 #endif
 
@@ -344,7 +345,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param components An array of components for the path
  * @return A new autoreleased OFString
  */
-+ (OFString*)pathWithComponents: (OFArray OF_GENERIC(OFString*)*)components;
++ (OFString *)pathWithComponents: (OFArray OF_GENERIC(OFString *) *)components;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -353,7 +354,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @return An initialized OFString
  */
-- initWithUTF8String: (const char*)UTF8String;
+- initWithUTF8String: (const char *)UTF8String;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -363,7 +364,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param UTF8StringLength The length of the UTF-8 encoded C string
  * @return An initialized OFString
  */
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 	      length: (size_t)UTF8StringLength;
 
 /*!
@@ -377,7 +378,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		       anymore
  * @return An initialized OFString
  */
-- initWithUTF8StringNoCopy: (char*)UTF8String
+- initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone;
 
 /*!
@@ -388,7 +389,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding of the C string
  * @return An initialized OFString
  */
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding;
 
 /*!
@@ -400,7 +401,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param cStringLength The length of the C string
  * @return An initialized OFString
  */
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength;
 
@@ -410,7 +411,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string A string to initialize the OFString with
  * @return An initialized OFString
  */
-- initWithString: (OFString*)string;
+- initWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a Unicode string with
@@ -420,7 +421,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the Unicode character array
  * @return An initialized OFString
  */
-- initWithCharacters: (const of_unichar_t*)characters
+- initWithCharacters: (const of_unichar_t *)characters
 	      length: (size_t)length;
 
 /*!
@@ -429,7 +430,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-16 string
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t*)string;
+- initWithUTF16String: (const of_char16_t *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
@@ -439,7 +440,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-16 string
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length;
 
 /*!
@@ -450,7 +451,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -463,7 +464,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder;
 
@@ -473,7 +474,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-32 string
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t*)string;
+- initWithUTF32String: (const of_char32_t *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string with
@@ -483,7 +484,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-32 string
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length;
 
 /*!
@@ -494,7 +495,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
@@ -507,32 +508,34 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Initializes an already allocated OFString with a format string.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See printf for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t *`.
  *
  * @param format A string used as format to initialize the OFString
  * @return An initialized OFString
  */
-- initWithFormat: (OFConstantString*)format, ...;
+- initWithFormat: (OFConstantString *)format, ...;
 
 /*!
  * @brief Initializes an already allocated OFString with a format string.
  *
- * See printf for the format syntax. As an addition, %@ is available as format
- * specifier for objects, %C for of_unichar_t and %S for const of_unichar_t*.
+ * See printf for the format syntax. As an addition, `%@` is available as
+ * format specifier for objects, `%C` for `of_unichar_t` and `%S` for
+ * `const of_unichar_t *`.
  *
  * @param format A string used as format to initialize the OFString
  * @param arguments The arguments used in the format string
  * @return An initialized OFString
  */
-- initWithFormat: (OFConstantString*)format
+- initWithFormat: (OFConstantString *)format
        arguments: (va_list)arguments;
 
 #ifdef OF_HAVE_FILES
@@ -543,7 +546,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param path The path to the file
  * @return An initialized OFString
  */
-- initWithContentsOfFile: (OFString*)path;
+- initWithContentsOfFile: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
@@ -553,7 +556,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding of the file
  * @return An initialized OFString
  */
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 		encoding: (of_string_encoding_t)encoding;
 #endif
 
@@ -571,7 +574,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param URL The URL to the contents for the string
  * @return An initialized OFString
  */
-- initWithContentsOfURL: (OFURL*)URL;
+- initWithContentsOfURL: (OFURL *)URL;
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
@@ -581,7 +584,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding to assume
  * @return An initialized OFString
  */
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 	       encoding: (of_string_encoding_t)encoding;
 #endif
 
@@ -596,7 +599,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The number of bytes written into the C string, without the
  *	   terminating zero
  */
-- (size_t)getCString: (char*)cString
+- (size_t)getCString: (char *)cString
 	   maxLength: (size_t)maxLength
 	    encoding: (of_string_encoding_t)encoding;
 
@@ -612,7 +615,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The number of bytes written into the C string, without the
  *	   terminating zero
  */
-- (size_t)getLossyCString: (char*)cString
+- (size_t)getLossyCString: (char *)cString
 		maxLength: (size_t)maxLength
 		 encoding: (of_string_encoding_t)encoding;
 
@@ -626,7 +629,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
     OF_RETURNS_INNER_POINTER;
 
 /*!
@@ -641,7 +644,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding for the C string
  * @return The OFString as a C string in the specified encoding
  */
-- (const char*)lossyCStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)lossyCStringWithEncoding: (of_string_encoding_t)encoding
     OF_RETURNS_INNER_POINTER;
 
 /*!
@@ -653,7 +656,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The OFString as a UTF-8 encoded C string
  */
-- (const char*)UTF8String OF_RETURNS_INNER_POINTER;
+- (const char *)UTF8String OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the length of the string in Unicode characters.
@@ -685,7 +688,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param otherString A string to compare with
  * @return An of_comparison_result_t
  */
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString;
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString;
 
 /*!
  * @brief Returns the Unicode character at the specified index.
@@ -702,7 +705,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param buffer The buffer to store the Unicode characters
  * @param range The range of the Unicode characters to copy
  */
-- (void)getCharacters: (of_unichar_t*)buffer
+- (void)getCharacters: (of_unichar_t *)buffer
 	      inRange: (of_range_t)range;
 
 /*!
@@ -712,7 +715,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString*)string;
+- (of_range_t)rangeOfString: (OFString *)string;
 
 /*!
  * @brief Returns the range of the string.
@@ -726,7 +729,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options;
 
 /*!
@@ -742,7 +745,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The range of the first occurrence of the string or a range with
  *	   `OF_NOT_FOUND` as start position if it was not found
  */
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 		      range: (of_range_t)range;
 
@@ -752,7 +755,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to search
  * @return Whether the string contains the specified string
  */
-- (bool)containsString: (OFString*)string;
+- (bool)containsString: (OFString *)string;
 
 /*!
  * @brief Creates a substring with the specified range.
@@ -760,7 +763,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param range The range of the substring
  * @return The substring as a new autoreleased OFString
  */
-- (OFString*)substringWithRange: (of_range_t)range;
+- (OFString *)substringWithRange: (of_range_t)range;
 
 /*!
  * @brief Creates a new string by appending another string.
@@ -768,7 +771,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to append
  * @return A new, autoreleased OFString with the specified string appended
  */
-- (OFString*)stringByAppendingString: (OFString*)string;
+- (OFString *)stringByAppendingString: (OFString *)string;
 
 /*!
  * @brief Creates a new string by appending the specified format.
@@ -776,7 +779,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param format A format string which generates the string to append
  * @return A new, autoreleased OFString with the specified format appended
  */
-- (OFString*)stringByAppendingFormat: (OFConstantString*)format, ...;
+- (OFString *)stringByAppendingFormat: (OFConstantString *)format, ...;
 
 /*!
  * @brief Creates a new string by appending the specified format.
@@ -785,8 +788,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param arguments The arguments used in the format string
  * @return A new, autoreleased OFString with the specified format appended
  */
-- (OFString*)stringByAppendingFormat: (OFConstantString*)format
-			   arguments: (va_list)arguments;
+- (OFString *)stringByAppendingFormat: (OFConstantString *)format
+			    arguments: (va_list)arguments;
 
 /*!
  * @brief Creates a new string by appending a path component.
@@ -794,7 +797,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param component The path component to append
  * @return A new, autoreleased OFString with the path component appended
  */
-- (OFString*)stringByAppendingPathComponent: (OFString*)component;
+- (OFString *)stringByAppendingPathComponent: (OFString *)component;
 
 /*!
  * @brief Creates a new string by prepending another string.
@@ -802,7 +805,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The string to prepend
  * @return A new autoreleased OFString with the specified string prepended
  */
-- (OFString*)stringByPrependingString: (OFString*)string;
+- (OFString *)stringByPrependingString: (OFString *)string;
 
 /*!
  * @brief Creates a new string by replacing the occurrences of the specified
@@ -812,8 +815,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param replacement The string with which it should be replaced
  * @return A new string with the occurrences of the specified string replaced
  */
-- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
-				       withString: (OFString*)replacement;
+- (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
+					withString: (OFString *)replacement;
 
 /*!
  * @brief Creates a new string by replacing the occurrences of the specified
@@ -827,24 +830,24 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param range The range in which to replace the string
  * @return A new string with the occurrences of the specified string replaced
  */
-- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
-				       withString: (OFString*)replacement
-					  options: (int)options
-					    range: (of_range_t)range;
+- (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
+					withString: (OFString *)replacement
+					   options: (int)options
+					     range: (of_range_t)range;
 
 /*!
  * @brief Returns the string in uppercase.
  *
  * @return The string in uppercase
  */
-- (OFString*)uppercaseString;
+- (OFString *)uppercaseString;
 
 /*!
  * @brief Returns the string in lowercase.
  *
  * @return The string in lowercase
  */
-- (OFString*)lowercaseString;
+- (OFString *)lowercaseString;
 
 /*!
  * @brief Returns the string capitalized.
@@ -855,21 +858,21 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The capitalized string
  */
-- (OFString*)capitalizedString;
+- (OFString *)capitalizedString;
 
 /*!
  * @brief Creates a new string by deleting leading whitespaces.
  *
  * @return A new autoreleased OFString with leading whitespaces deleted
  */
-- (OFString*)stringByDeletingLeadingWhitespaces;
+- (OFString *)stringByDeletingLeadingWhitespaces;
 
 /*!
  * @brief Creates a new string by deleting trailing whitespaces.
  *
  * @return A new autoreleased OFString with trailing whitespaces deleted
  */
-- (OFString*)stringByDeletingTrailingWhitespaces;
+- (OFString *)stringByDeletingTrailingWhitespaces;
 
 /*!
  * @brief Creates a new string by deleting leading and trailing whitespaces.
@@ -877,7 +880,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString with leading and trailing whitespaces
  *	   deleted
  */
-- (OFString*)stringByDeletingEnclosingWhitespaces;
+- (OFString *)stringByDeletingEnclosingWhitespaces;
 
 /*!
  * @brief Checks whether the string has the specified prefix.
@@ -885,7 +888,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param prefix The prefix to check for
  * @return A boolean whether the string has the specified prefix
  */
-- (bool)hasPrefix: (OFString*)prefix;
+- (bool)hasPrefix: (OFString *)prefix;
 
 /*!
  * @brief Checks whether the string has the specified suffix.
@@ -893,7 +896,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param suffix The suffix to check for
  * @return A boolean whether the string has the specified suffix
  */
-- (bool)hasSuffix: (OFString*)suffix;
+- (bool)hasSuffix: (OFString *)suffix;
 
 /*!
  * @brief Separates an OFString into an OFArray of OFStrings.
@@ -901,8 +904,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param delimiter The delimiter for separating
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray OF_GENERIC(OFString*)*)componentsSeparatedByString:
-    (OFString*)delimiter;
+- (OFArray OF_GENERIC(OFString *) *)componentsSeparatedByString:
+    (OFString *)delimiter;
 
 /*!
  * @brief Separates an OFString into an OFArray of OFStrings.
@@ -915,8 +918,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray OF_GENERIC(OFString*)*)
-    componentsSeparatedByString: (OFString*)delimiter
+- (OFArray OF_GENERIC(OFString *) *)
+    componentsSeparatedByString: (OFString *)delimiter
 			options: (int)options;
 
 /*!
@@ -924,42 +927,42 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The components of the path
  */
-- (OFArray OF_GENERIC(OFString*)*)pathComponents;
+- (OFArray OF_GENERIC(OFString *) *)pathComponents;
 
 /*!
  * @brief Returns the last component of the path.
  *
  * @return The last component of the path
  */
-- (OFString*)lastPathComponent;
+- (OFString *)lastPathComponent;
 
 /*!
  * @brief Returns the file extension of the path.
  *
  * @return The file extension of the path
  */
-- (OFString*)pathExtension;
+- (OFString *)pathExtension;
 
 /*!
  * @brief Returns the directory name of the path.
  *
  * @return The directory name of the path
  */
-- (OFString*)stringByDeletingLastPathComponent;
+- (OFString *)stringByDeletingLastPathComponent;
 
 /*!
  * @brief Returns a new string with the file extension of the path removed.
  *
  * @return A new string with the file extension of the path removed
  */
-- (OFString*)stringByDeletingPathExtension;
+- (OFString *)stringByDeletingPathExtension;
 
 /*!
  * @brief Returns the path with relative sub paths resolved.
  *
  * @return The path with relative sub paths resolved
  */
-- (OFString*)stringByStandardizingPath;
+- (OFString *)stringByStandardizingPath;
 
 /*!
  * @brief Returns the URL path with relative sub paths resolved.
@@ -969,7 +972,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The URL path with relative sub paths resolved
  */
-- (OFString*)stringByStandardizingURLPath;
+- (OFString *)stringByStandardizingURLPath;
 
 /*!
  * @brief Returns the decimal value of the string as an `intmax_t`.
@@ -1045,7 +1048,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The string as an array of Unicode characters
  */
-- (const of_unichar_t*)characters OF_RETURNS_INNER_POINTER;
+- (const of_unichar_t *)characters OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the string in UTF-16 encoding with native byte order.
@@ -1056,7 +1059,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The string in UTF-16 encoding with native byte order
  */
-- (const of_char16_t*)UTF16String OF_RETURNS_INNER_POINTER;
+- (const of_char16_t *)UTF16String OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the string in UTF-16 encoding with the specified byte order.
@@ -1068,7 +1071,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-16 encoding
  * @return The string in UTF-16 encoding with the specified byte order
  */
-- (const of_char16_t*)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
 
 /*!
@@ -1087,7 +1090,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @return The string in UTF-32 encoding with native byte order
  */
-- (const of_char32_t*)UTF32String OF_RETURNS_INNER_POINTER;
+- (const of_char32_t *)UTF32String OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the string in UTF-32 encoding with the specified byte order.
@@ -1099,7 +1102,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order for the UTF-32 encoding
  * @return The string in UTF-32 encoding with the specified byte order
  */
-- (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
 
 #ifdef OF_HAVE_FILES
@@ -1108,7 +1111,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *
  * @param path The path of the file to write to
  */
-- (void)writeToFile: (OFString*)path;
+- (void)writeToFile: (OFString *)path;
 
 /*!
  * @brief Writes the string into the specified file using the specified
@@ -1117,7 +1120,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param path The path of the file to write to
  * @param encoding The encoding to use to write the string into the file
  */
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding;
 #endif
 
@@ -1134,11 +1137,11 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern of_string_encoding_t of_string_parse_encoding(OFString*);
-extern size_t of_string_utf8_encode(of_unichar_t, char*);
-extern ssize_t of_string_utf8_decode(const char*, size_t, of_unichar_t*);
-extern size_t of_string_utf16_length(const of_char16_t*);
-extern size_t of_string_utf32_length(const of_char32_t*);
+extern of_string_encoding_t of_string_parse_encoding(OFString *);
+extern size_t of_string_utf8_encode(of_unichar_t, char *);
+extern ssize_t of_string_utf8_decode(const char *, size_t, of_unichar_t *);
+extern size_t of_string_utf16_length(const of_char16_t *);
+extern size_t of_string_utf32_length(const of_char32_t *);
 #ifdef __cplusplus
 }
 #endif

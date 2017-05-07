@@ -61,7 +61,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  *	    objects in a set breaks the internal representation of the set!
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFSet <ObjectType>:
+@interface OFSet<ObjectType>:
 #else
 # ifndef DOXYGEN
 #  define ObjectType id
@@ -82,7 +82,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param set The set to initialize the set with
  * @return A new, autoreleased set with the specified set
  */
-+ (instancetype)setWithSet: (OFSet OF_GENERIC(ObjectType)*)set;
++ (instancetype)setWithSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Creates a new set with the specified array.
@@ -90,7 +90,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param array The array to initialize the set with
  * @return A new, autoreleased set with the specified array
  */
-+ (instancetype)setWithArray: (OFArray OF_GENERIC(ObjectType)*)array;
++ (instancetype)setWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
 /*!
  * @brief Creates a new set with the specified objects.
@@ -116,7 +116,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param set The set to initialize the set with
  * @return An initialized set with the specified set
  */
-- initWithSet: (OFSet OF_GENERIC(ObjectType)*)set;
+- initWithSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Initializes an already allocated set with the specified array.
@@ -124,7 +124,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param array The array to initialize the set with
  * @return An initialized set with the specified array
  */
-- initWithArray: (OFArray OF_GENERIC(ObjectType)*)array;
+- initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
 /*!
  * @brief Initializes an already allocated set with the specified objects.
@@ -160,7 +160,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @return Whether the receiver is a subset of the specified set
  */
-- (bool)isSubsetOfSet: (OFSet OF_GENERIC(ObjectType)*)set;
+- (bool)isSubsetOfSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Returns whether the receiver and the specified set have at least one
@@ -169,7 +169,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @return Whether the receiver and the specified set have at least one object
  *	   in common
  */
-- (bool)intersectsSet: (OFSet OF_GENERIC(ObjectType)*)set;
+- (bool)intersectsSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Creates a new set which contains the objects which are in the
@@ -177,8 +177,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param set The set whose objects will not be in the new set
  */
-- (OFSet OF_GENERIC(ObjectType)*)setBySubtractingSet:
-    (OFSet OF_GENERIC(ObjectType)*)set;
+- (OFSet OF_GENERIC(ObjectType) *)setBySubtractingSet:
+    (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Creates a new set by creating the intersection of the receiver and
@@ -186,8 +186,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param set The set to intersect with
  */
-- (OFSet OF_GENERIC(ObjectType)*)setByIntersectingWithSet:
-    (OFSet OF_GENERIC(ObjectType)*)set;
+- (OFSet OF_GENERIC(ObjectType) *)setByIntersectingWithSet:
+    (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Creates a new set by creating the union of the receiver and the
@@ -195,15 +195,15 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @param set The set to create the union with
  */
-- (OFSet OF_GENERIC(ObjectType)*)setByAddingSet:
-    (OFSet OF_GENERIC(ObjectType)*)set;
+- (OFSet OF_GENERIC(ObjectType) *)setByAddingSet:
+    (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Returns an array of all objects in the set.
  *
  * @return An array of all objects in the set
  */
-- (OFArray OF_GENERIC(ObjectType)*)allObjects;
+- (OFArray OF_GENERIC(ObjectType) *)allObjects;
 
 /*!
  * @brief Returns an arbitrary object in the set.
@@ -234,7 +234,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param key The key of the value to return
  * @return The value for the specified key
  */
-- (nullable id)valueForKey: (OFString*)key;
+- (nullable id)valueForKey: (OFString *)key;
 
 /*!
  * @brief Set the value for the specified key
@@ -250,14 +250,14 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param key The key of the value to set
  */
 - (void)setValue: (nullable id)value
-	  forKey: (OFString*)key;
+	  forKey: (OFString *)key;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through all objects of the set.
  *
  * @returns An OFEnumerator to enumerate through all objects of the set
  */
-- (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -274,7 +274,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param block A block which determines if the object should be in the new set
  * @return A new, autoreleased OFSet
  */
-- (OFSet OF_GENERIC(ObjectType)*)filteredSetUsingBlock:
+- (OFSet OF_GENERIC(ObjectType) *)filteredSetUsingBlock:
     (of_set_filter_block_t)block;
 #endif
 @end

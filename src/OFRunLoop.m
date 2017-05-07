@@ -132,8 +132,9 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream*, void*, size_t, OFException*) =
-		    (bool(*)(id, SEL, OFStream*, void*, size_t, OFException*))
+		bool (*func)(id, SEL, OFStream *, void *, size_t,
+		    OFException *) = (bool (*)(id, SEL, OFStream *, void *,
+		    size_t, OFException *))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
@@ -160,7 +161,7 @@ static OFRunLoop *mainRunLoop = nil;
 	OFException *exception = nil;
 
 	@try {
-		length = [object readIntoBuffer: (char*)_buffer + _readLength
+		length = [object readIntoBuffer: (char *)_buffer + _readLength
 					 length: _exactLength - _readLength];
 	} @catch (OFException *e) {
 		length = 0;
@@ -182,8 +183,9 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		bool (*func)(id, SEL, OFStream*, void*, size_t, OFException*) =
-		    (bool(*)(id, SEL, OFStream*, void*, size_t, OFException*))
+		bool (*func)(id, SEL, OFStream *, void *, size_t,
+		    OFException *) = (bool (*)(id, SEL, OFStream *, void *,
+		    size_t, OFException *))
 		    [_target methodForSelector: _selector];
 
 		if (!func(_target, _selector, object, _buffer, _readLength,
@@ -228,8 +230,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, line, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream*, OFString*, OFException*) =
-		    (bool(*)(id, SEL, OFStream*, OFString*, OFException*))
+		bool (*func)(id, SEL, OFStream *, OFString *, OFException *) =
+		    (bool (*)(id, SEL, OFStream *, OFString *, OFException *))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, line, exception);
@@ -266,9 +268,9 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, newSocket, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFTCPSocket*, OFTCPSocket*,
-		    OFException*) =
-		    (bool(*)(id, SEL, OFTCPSocket*, OFTCPSocket*, OFException*))
+		bool (*func)(id, SEL, OFTCPSocket *, OFTCPSocket *,
+		    OFException *) = (bool (*)(id, SEL, OFTCPSocket *,
+		    OFTCPSocket *, OFException *))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, newSocket, exception);
@@ -308,10 +310,10 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, address, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFUDPSocket*, void*, size_t,
-		    of_udp_socket_address_t address, OFException*) =
-		    (bool(*)(id, SEL, OFUDPSocket*, void*, size_t,
-		    of_udp_socket_address_t, OFException*))
+		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
+		    of_udp_socket_address_t address, OFException *) =
+		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
+		    of_udp_socket_address_t, OFException *))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
@@ -333,12 +335,12 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 
 @implementation OFRunLoop
-+ (OFRunLoop*)mainRunLoop
++ (OFRunLoop *)mainRunLoop
 {
 	return [[mainRunLoop retain] autorelease];
 }
 
-+ (OFRunLoop*)currentRunLoop
++ (OFRunLoop *)currentRunLoop
 {
 #ifdef OF_HAVE_THREADS
 	return [[OFThread currentThread] runLoop];
@@ -347,7 +349,7 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 }
 
-+ (void)OF_setMainRunLoop: (OFRunLoop*)runLoop
++ (void)OF_setMainRunLoop: (OFRunLoop *)runLoop
 {
 	mainRunLoop = [runLoop retain];
 }
@@ -375,8 +377,8 @@ static OFRunLoop *mainRunLoop = nil;
 									\
 	objc_autoreleasePoolPop(pool);
 
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 			  length: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector
@@ -389,8 +391,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
 			  target: (id)target
 			selector: (SEL)selector
@@ -403,7 +405,7 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
++ (void)OF_addAsyncReadLineForStream: (OFStream *)stream
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
 			    selector: (SEL)selector
@@ -415,7 +417,7 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)stream
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 			       target: (id)target
 			     selector: (SEL)selector
 {
@@ -425,8 +427,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket*)socket
-				buffer: (void*)buffer
++ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
+				buffer: (void *)buffer
 				length: (size_t)length
 				target: (id)target
 			      selector: (SEL)selector
@@ -440,8 +442,8 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 			  length: (size_t)length
 			   block: (of_stream_async_read_block_t)block
 {
@@ -452,8 +454,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncReadForStream: (OFStream*)stream
-			  buffer: (void*)buffer
++ (void)OF_addAsyncReadForStream: (OFStream *)stream
+			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
 			   block: (of_stream_async_read_block_t)block
 {
@@ -464,7 +466,7 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncReadLineForStream: (OFStream*)stream
++ (void)OF_addAsyncReadLineForStream: (OFStream *)stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block
 {
@@ -474,7 +476,7 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket*)stream
++ (void)OF_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 				block: (of_tcp_socket_async_accept_block_t)block
 {
 	ADD_READ(OFRunLoop_AcceptQueueItem, stream, {
@@ -482,8 +484,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket*)socket
-				buffer: (void*)buffer
++ (void)OF_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
+				buffer: (void *)buffer
 				length: (size_t)length
 				 block: (of_udp_socket_async_receive_block_t)
 					    block
@@ -562,7 +564,7 @@ static OFRunLoop *mainRunLoop = nil;
 	[super dealloc];
 }
 
-- (void)addTimer: (OFTimer*)timer
+- (void)addTimer: (OFTimer *)timer
 {
 #ifdef OF_HAVE_THREADS
 	[_timersQueueLock lock];
@@ -584,7 +586,7 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 }
 
-- (void)OF_removeTimer: (OFTimer*)timer
+- (void)OF_removeTimer: (OFTimer *)timer
 {
 #ifdef OF_HAVE_THREADS
 	[_timersQueueLock lock];
@@ -613,7 +615,7 @@ static OFRunLoop *mainRunLoop = nil;
 	 * Retain the queue so that it doesn't disappear from us because the
 	 * handler called -[cancelAsyncRequests].
 	 */
-	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_ReadQueueItem*)) *queue =
+	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_ReadQueueItem *)) *queue =
 	    [[_readQueues objectForKey: object] retain];
 
 	assert(queue != nil);
@@ -649,7 +651,7 @@ static OFRunLoop *mainRunLoop = nil;
 	[self runUntilDate: nil];
 }
 
-- (void)runUntilDate: (OFDate*)deadline
+- (void)runUntilDate: (OFDate *)deadline
 {
 	_stop = false;
 

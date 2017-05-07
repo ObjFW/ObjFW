@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased remove item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo;
 
 /*!
@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized remove item failed exception
  */
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 	 errNo: (int)errNo;
 @end
 

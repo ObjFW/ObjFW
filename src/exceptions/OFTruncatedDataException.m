@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFTruncatedDataException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"Truncated data was received or produced when it should not "
 	    @"have been truncated!";

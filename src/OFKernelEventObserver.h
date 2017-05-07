@@ -200,7 +200,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param date The until which to observe
  */
-- (void)observeUntilDate: (OFDate*)date;
+- (void)observeUntilDate: (OFDate *)date;
 
 /*!
  * @brief Cancels the currently blocking observe call.

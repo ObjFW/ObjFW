@@ -48,7 +48,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Object of class %@ was mutated during enumeration!",

@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A new, autoreleased OFDeflateStream
  */
-+ (instancetype)streamWithStream: (OFStream*)stream;
++ (instancetype)streamWithStream: (OFStream *)stream;
 
 /*!
  * @brief Initializes an already allocated OFDeflateStream with the specified
@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A initialized OFDeflateStream
  */
-- initWithStream: (OFStream*)stream;
+- initWithStream: (OFStream *)stream;
 @end
 
 OF_ASSUME_NONNULL_END

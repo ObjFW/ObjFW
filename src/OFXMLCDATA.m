@@ -23,12 +23,12 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLCDATA
-+ (instancetype)CDATAWithString: (OFString*)string
++ (instancetype)CDATAWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -42,7 +42,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -88,19 +88,19 @@
 	return [_CDATA hash];
 }
 
-- (OFString*)stringValue
+- (OFString *)stringValue
 {
 	return [[_CDATA copy] autorelease];
 }
 
-- (void)setStringValue: (OFString*)stringValue
+- (void)setStringValue: (OFString *)stringValue
 {
 	OFString *old = _CDATA;
 	_CDATA = [stringValue copy];
 	[old release];
 }
 
-- (OFString*)XMLString
+- (OFString *)XMLString
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *tmp = [_CDATA
@@ -113,23 +113,23 @@
 	return [ret autorelease];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
 	return [self XMLString];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 				level: (unsigned int)level
 {
 	return [self XMLString];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [self XMLString];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	OFXMLElement *element =
 	    [OFXMLElement elementWithName: [self className]

@@ -39,11 +39,11 @@ const int8_t of_base64_decode_table[128] = {
 	48, 49, 50, 51, -1, -1, -1, -1, -1
 };
 
-OFString*
+OFString *
 of_base64_encode(const void *data, size_t length)
 {
 	OFMutableString *ret = [OFMutableString string];
-	uint8_t *buffer = (uint8_t*)data;
+	uint8_t *buffer = (uint8_t *)data;
 	size_t i;
 	uint8_t rest;
 	char tb[4];
@@ -98,7 +98,7 @@ of_base64_encode(const void *data, size_t length)
 bool
 of_base64_decode(OFDataArray *data, const char *string, size_t length)
 {
-	const uint8_t *buffer = (const uint8_t*)string;
+	const uint8_t *buffer = (const uint8_t *)string;
 	size_t i;
 
 	if ((length & 3) != 0)

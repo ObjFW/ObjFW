@@ -61,7 +61,7 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 0) {
-		if (!of_tlskey_set(rmutex->count, (void*)(count + 1)))
+		if (!of_tlskey_set(rmutex->count, (void *)(count + 1)))
 			return false;
 
 		return true;
@@ -70,7 +70,7 @@ of_rmutex_lock(of_rmutex_t *rmutex)
 	if (!of_mutex_lock(&rmutex->mutex))
 		return false;
 
-	if (!of_tlskey_set(rmutex->count, (void*)1)) {
+	if (!of_tlskey_set(rmutex->count, (void *)1)) {
 		of_mutex_unlock(&rmutex->mutex);
 		return false;
 	}
@@ -84,7 +84,7 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 0) {
-		if (!of_tlskey_set(rmutex->count, (void*)(count + 1)))
+		if (!of_tlskey_set(rmutex->count, (void *)(count + 1)))
 			return false;
 
 		return true;
@@ -93,7 +93,7 @@ of_rmutex_trylock(of_rmutex_t *rmutex)
 	if (!of_mutex_trylock(&rmutex->mutex))
 		return false;
 
-	if (!of_tlskey_set(rmutex->count, (void*)1)) {
+	if (!of_tlskey_set(rmutex->count, (void *)1)) {
 		of_mutex_unlock(&rmutex->mutex);
 		return false;
 	}
@@ -107,13 +107,13 @@ of_rmutex_unlock(of_rmutex_t *rmutex)
 	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
 
 	if (count > 1) {
-		if (!of_tlskey_set(rmutex->count, (void*)(count - 1)))
+		if (!of_tlskey_set(rmutex->count, (void *)(count - 1)))
 			return false;
 
 		return true;
 	}
 
-	if (!of_tlskey_set(rmutex->count, (void*)0))
+	if (!of_tlskey_set(rmutex->count, (void *)0))
 		return false;
 
 	if (!of_mutex_unlock(&rmutex->mutex))

@@ -24,7 +24,7 @@
 @implementation Protocol
 @end
 
-const char*
+const char *
 protocol_getName(Protocol *p)
 {
 	return p->name;

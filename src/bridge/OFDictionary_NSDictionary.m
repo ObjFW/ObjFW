@@ -24,7 +24,7 @@
 #import "OFInitializationFailedException.h"
 
 @implementation OFDictionary_NSDictionary
-- initWithNSDictionary: (NSDictionary*)dictionary
+- initWithNSDictionary: (NSDictionary *)dictionary
 {
 	self = [super init];
 
@@ -46,12 +46,12 @@
 {
 	id object;
 
-	if ([(OFObject*)key conformsToProtocol: @protocol(OFBridging)])
+	if ([(OFObject *)key conformsToProtocol: @protocol(OFBridging)])
 		key = [key NSObject];
 
 	object = [_dictionary objectForKey: key];
 
-	if ([(NSObject*)object conformsToProtocol: @protocol(NSBridging)])
+	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
 
 	return object;

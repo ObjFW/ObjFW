@@ -83,26 +83,26 @@ _references_to_categories_of_OFDataArray(void)
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)dataArrayWithContentsOfFile: (OFString*)path
++ (instancetype)dataArrayWithContentsOfFile: (OFString *)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-+ (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL
++ (instancetype)dataArrayWithContentsOfURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 #endif
 
-+ (instancetype)dataArrayWithStringRepresentation: (OFString*)string
++ (instancetype)dataArrayWithStringRepresentation: (OFString *)string
 {
 	return [[[self alloc]
 	    initWithStringRepresentation: string] autorelease];
 }
 
-+ (instancetype)dataArrayWithBase64EncodedString: (OFString*)string
++ (instancetype)dataArrayWithBase64EncodedString: (OFString *)string
 {
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }
@@ -154,7 +154,7 @@ _references_to_categories_of_OFDataArray(void)
 }
 
 #ifdef OF_HAVE_FILES
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 {
 	@try {
 		OFFile *file = [[OFFile alloc] initWithPath: path
@@ -196,7 +196,7 @@ _references_to_categories_of_OFDataArray(void)
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 {
 	void *pool;
 	OFString *scheme;
@@ -276,7 +276,7 @@ _references_to_categories_of_OFDataArray(void)
 }
 #endif
 
-- initWithStringRepresentation: (OFString*)string
+- initWithStringRepresentation: (OFString *)string
 {
 	@try {
 		const char *cString;
@@ -328,7 +328,7 @@ _references_to_categories_of_OFDataArray(void)
 	return self;
 }
 
-- initWithBase64EncodedString: (OFString*)string
+- initWithBase64EncodedString: (OFString *)string
 {
 	self = [self initWithItemSize: 1
 			     capacity: [string length] / 3];
@@ -346,7 +346,7 @@ _references_to_categories_of_OFDataArray(void)
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -374,12 +374,12 @@ _references_to_categories_of_OFDataArray(void)
 	return _count;
 }
 
-- (void*)items
+- (void *)items
 {
 	return _items;
 }
 
-- (void*)itemAtIndex: (size_t)index
+- (void *)itemAtIndex: (size_t)index
 {
 	if (index >= _count)
 		@throw [OFOutOfRangeException exception];
@@ -387,7 +387,7 @@ _references_to_categories_of_OFDataArray(void)
 	return _items + index * _itemSize;
 }
 
-- (void*)firstItem
+- (void *)firstItem
 {
 	if (_items == NULL || _count == 0)
 		return NULL;
@@ -395,7 +395,7 @@ _references_to_categories_of_OFDataArray(void)
 	return _items;
 }
 
-- (void*)lastItem
+- (void *)lastItem
 {
 	if (_items == NULL || _count == 0)
 		return NULL;
@@ -403,7 +403,7 @@ _references_to_categories_of_OFDataArray(void)
 	return _items + (_count - 1) * _itemSize;
 }
 
-- (void)addItem: (const void*)item
+- (void)addItem: (const void *)item
 {
 	if (SIZE_MAX - _count < 1)
 		@throw [OFOutOfRangeException exception];
@@ -420,7 +420,7 @@ _references_to_categories_of_OFDataArray(void)
 	_count++;
 }
 
-- (void)insertItem: (const void*)item
+- (void)insertItem: (const void *)item
 	   atIndex: (size_t)index
 {
 	[self insertItems: item
@@ -428,7 +428,7 @@ _references_to_categories_of_OFDataArray(void)
 		    count: 1];
 }
 
-- (void)addItems: (const void*)items
+- (void)addItems: (const void *)items
 	   count: (size_t)count
 {
 	if (count > SIZE_MAX - _count)
@@ -445,7 +445,7 @@ _references_to_categories_of_OFDataArray(void)
 	_count += count;
 }
 
-- (void)insertItems: (const void*)items
+- (void)insertItems: (const void *)items
 	    atIndex: (size_t)index
 	      count: (size_t)count
 {
@@ -555,7 +555,7 @@ _references_to_categories_of_OFDataArray(void)
 	if (![object isKindOfClass: [OFDataArray class]])
 		@throw [OFInvalidArgumentException exception];
 
-	dataArray = (OFDataArray*)object;
+	dataArray = (OFDataArray *)object;
 
 	if ([dataArray itemSize] != _itemSize)
 		@throw [OFInvalidArgumentException exception];
@@ -586,14 +586,14 @@ _references_to_categories_of_OFDataArray(void)
 	OF_HASH_INIT(hash);
 
 	for (size_t i = 0; i < _count * _itemSize; i++)
-		OF_HASH_ADD(hash, ((uint8_t*)_items)[i]);
+		OF_HASH_ADD(hash, ((uint8_t *)_items)[i]);
 
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	OFMutableString *ret = [OFMutableString stringWithString: @"<"];
 
@@ -611,7 +611,7 @@ _references_to_categories_of_OFDataArray(void)
 	return ret;
 }
 
-- (OFString*)stringRepresentation
+- (OFString *)stringRepresentation
 {
 	OFMutableString *ret = [OFMutableString string];
 
@@ -623,13 +623,13 @@ _references_to_categories_of_OFDataArray(void)
 	return ret;
 }
 
-- (OFString*)stringByBase64Encoding
+- (OFString *)stringByBase64Encoding
 {
 	return of_base64_encode(_items, _count * _itemSize);
 }
 
 #ifdef OF_HAVE_FILES
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: @"wb"];
@@ -643,7 +643,7 @@ _references_to_categories_of_OFDataArray(void)
 }
 #endif
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool;
 	OFXMLElement *element;
@@ -664,7 +664,7 @@ _references_to_categories_of_OFDataArray(void)
 	return [element autorelease];
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *data;
 

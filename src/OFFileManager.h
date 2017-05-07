@@ -32,14 +32,14 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the default file manager.
  */
-+ (OFFileManager*)defaultManager;
++ (OFFileManager *)defaultManager;
 
 /*!
  * @brief Returns the path for the current working directory.
  *
  * @return The path of the current working directory
  */
-- (OFString*)currentDirectoryPath;
+- (OFString *)currentDirectoryPath;
 
 /*!
  * @brief Checks whether a file exists at the specified path.
@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to check
  * @return A boolean whether there is a file at the specified path
  */
-- (bool)fileExistsAtPath: (OFString*)path;
+- (bool)fileExistsAtPath: (OFString *)path;
 
 /*!
  * @brief Checks whether a directory exists at the specified path.
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to check
  * @return A boolean whether there is a directory at the specified path
  */
-- (bool)directoryExistsAtPath: (OFString*)path;
+- (bool)directoryExistsAtPath: (OFString *)path;
 
 #if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
 /*!
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to check
  * @return A boolean whether there is a symbolic link at the specified path
  */
-- (bool)symbolicLinkExistsAtPath: (OFString*)path;
+- (bool)symbolicLinkExistsAtPath: (OFString *)path;
 #endif
 
 /*!
@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path of the directory to create
  */
-- (void)createDirectoryAtPath: (OFString*)path;
+- (void)createDirectoryAtPath: (OFString *)path;
 
 /*!
  * @brief Creates a directory at the specified path.
@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path of the directory to create
  * @param createParents Whether to create the parents of the directory
  */
-- (void)createDirectoryAtPath: (OFString*)path
+- (void)createDirectoryAtPath: (OFString *)path
 		createParents: (bool)createParents;
 
 /*!
@@ -91,14 +91,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the directory whose items should be returned
  * @return An array of OFString with the items in the specified directory
  */
-- (OFArray OF_GENERIC(OFString*)*)contentsOfDirectoryAtPath: (OFString*)path;
+- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path;
 
 /*!
  * @brief Changes the current working directory.
  *
  * @param path The new directory to change to
  */
-- (void)changeCurrentDirectoryPath: (OFString*)path;
+- (void)changeCurrentDirectoryPath: (OFString *)path;
 
 /*!
  * @brief Returns the size of the specified file.
@@ -107,7 +107,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The size of the specified file
  */
-- (of_offset_t)sizeOfFileAtPath: (OFString*)path;
+- (of_offset_t)sizeOfFileAtPath: (OFString *)path;
 
 /*!
  * @brief Returns the last access time of the specified item.
@@ -116,7 +116,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The last access time of the specified item
  */
-- (OFDate*)accessTimeOfItemAtPath: (OFString*)path;
+- (OFDate *)accessTimeOfItemAtPath: (OFString *)path;
 
 /*!
  * @brief Returns the last modification time of the specified item.
@@ -126,7 +126,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The last modification time of the specified item
  */
-- (OFDate*)modificationTimeOfItemAtPath: (OFString*)path;
+- (OFDate *)modificationTimeOfItemAtPath: (OFString *)path;
 
 /*!
  * @brief Returns the last status change time of the specified item.
@@ -136,7 +136,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The last status change time of the specified item
  */
-- (OFDate*)statusChangeTimeOfItemAtPath: (OFString*)path;
+- (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path;
 
 #ifdef OF_HAVE_CHMOD
 /*!
@@ -146,7 +146,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The permissions of the specified item
  */
-- (mode_t)permissionsOfItemAtPath: (OFString*)path;
+- (mode_t)permissionsOfItemAtPath: (OFString *)path;
 
 /*!
  * @brief Changes the permissions of an item.
@@ -156,7 +156,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the item whose permissions should be changed
  * @param permissions The new permissions for the item
  */
-- (void)changePermissionsOfItemAtPath: (OFString*)path
+- (void)changePermissionsOfItemAtPath: (OFString *)path
 			  permissions: (mode_t)permissions;
 #endif
 
@@ -164,13 +164,13 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Get the owner and group of the specified item.
  *
- * @param owner A pointer to an OFString* to store the owner, or nil
- * @param group A pointer to an OFString* to store the group, or nil
+ * @param owner A pointer to an `OFString *` to store the owner, or nil
+ * @param group A pointer to an `OFString *` to store the group, or nil
  * @param path The path to the item whose owner and group should be retrieved
  */
 - (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner
 	   group: (OFString *__autoreleasing _Nonnull *_Nullable)group
-    ofItemAtPath: (OFString*)path;
+    ofItemAtPath: (OFString *)path;
 
 /*!
  * @brief Changes the owner of an item.
@@ -181,9 +181,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param owner The new owner for the item
  * @param group The new group for the item
  */
-- (void)changeOwnerOfItemAtPath: (OFString*)path
-			  owner: (OFString*)owner
-			  group: (OFString*)group;
+- (void)changeOwnerOfItemAtPath: (OFString *)path
+			  owner: (OFString *)owner
+			  group: (OFString *)group;
 #endif
 
 /*!
@@ -199,8 +199,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param source The file, directory or symlink to copy
  * @param destination The destination path
  */
-- (void)copyItemAtPath: (OFString*)source
-		toPath: (OFString*)destination;
+- (void)copyItemAtPath: (OFString *)source
+		toPath: (OFString *)destination;
 
 /*!
  * @brief Moves an item.
@@ -215,8 +215,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param source The item to rename
  * @param destination The new name for the item
  */
-- (void)moveItemAtPath: (OFString*)source
-		toPath: (OFString*)destination;
+- (void)moveItemAtPath: (OFString *)source
+		toPath: (OFString *)destination;
 
 /*!
  * @brief Removes the item at the specified path.
@@ -225,7 +225,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path to the item which should be removed
  */
-- (void)removeItemAtPath: (OFString*)path;
+- (void)removeItemAtPath: (OFString *)path;
 
 #if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
 /*!
@@ -239,8 +239,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param source The path to the item for which a link should be created
  * @param destination The path to the item which should link to the source
  */
-- (void)linkItemAtPath: (OFString*)source
-		toPath: (OFString*)destination;
+- (void)linkItemAtPath: (OFString *)source
+		toPath: (OFString *)destination;
 #endif
 
 #if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
@@ -260,8 +260,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param source The path to the item for which a symbolic link should be
  *		 created
  */
-- (void)createSymbolicLinkAtPath: (OFString*)destination
-	     withDestinationPath: (OFString*)source;
+- (void)createSymbolicLinkAtPath: (OFString *)destination
+	     withDestinationPath: (OFString *)source;
 #endif
 
 #if defined(OF_HAVE_READLINK) || defined(OF_WINDOWS)
@@ -274,7 +274,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The destination of the symbolic link at the specified path
  */
-- (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path;
+- (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path;
 #endif
 @end
 

@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A stream from which the tar archive will be read
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithStream: (OFStream*)stream;
++ (instancetype)archiveWithStream: (OFStream *)stream;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the tar archive
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithPath: (OFString*)path;
++ (instancetype)archiveWithPath: (OFString *)path;
 #endif
 
 /*!
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A stream from which the tar archive will be read
  * @return An initialized OFTarArchive
  */
-- initWithStream: (OFStream*)stream;
+- initWithStream: (OFStream *)stream;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the tar archive
  * @return An initialized OFTarArchive
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString *)path;
 #endif
 
 /*!
@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The next entry from the tar archive or `nil` if all entries have
  *	   been read
  */
-- (OFTarArchiveEntry*)nextEntry;
+- (OFTarArchiveEntry *)nextEntry;
 @end
 
 OF_ASSUME_NONNULL_END

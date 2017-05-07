@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased seek failed exception
  */
-+ (instancetype)exceptionWithStream: (OFSeekableStream*)stream
++ (instancetype)exceptionWithStream: (OFSeekableStream *)stream
 			     offset: (of_offset_t)offset
 			     whence: (int)whence
 			      errNo: (int)errNo;
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized seek failed exception
  */
-- initWithStream: (OFSeekableStream*)stream
+- initWithStream: (OFSeekableStream *)stream
 	  offset: (of_offset_t)offset
 	  whence: (int)whence
 	   errNo: (int)errNo;

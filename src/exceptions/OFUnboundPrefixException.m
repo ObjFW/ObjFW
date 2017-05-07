@@ -23,8 +23,8 @@
 @implementation OFUnboundPrefixException
 @synthesize prefix = _prefix, parser = _parser;
 
-+ (instancetype)exceptionWithPrefix: (OFString*)prefix
-			     parser: (OFXMLParser*)parser
++ (instancetype)exceptionWithPrefix: (OFString *)prefix
+			     parser: (OFXMLParser *)parser
 {
 	return [[[self alloc] initWithPrefix: prefix
 				      parser: parser] autorelease];
@@ -35,8 +35,8 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPrefix: (OFString*)prefix
-	  parser: (OFXMLParser*)parser
+- initWithPrefix: (OFString *)prefix
+	  parser: (OFXMLParser *)parser
 {
 	self = [super init];
 
@@ -59,7 +59,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"An XML parser of type %@ encountered the unbound prefix %@ in "

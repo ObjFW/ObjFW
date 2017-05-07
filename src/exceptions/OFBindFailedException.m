@@ -24,7 +24,7 @@
 @implementation OFBindFailedException
 @synthesize host = _host, port = _port, socket = _socket, errNo = _errNo;
 
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo
@@ -40,7 +40,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket
 	 errNo: (int)errNo
@@ -68,7 +68,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Binding to port %" @PRIu16 @" on host %@ failed in socket of "

@@ -35,7 +35,7 @@ static struct {
 	return (id)[[OFMutableDictionary_hashtable alloc] init];
 }
 
-- initWithDictionary: (OFDictionary*)dictionary
+- initWithDictionary: (OFDictionary *)dictionary
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithDictionary: dictionary];
@@ -48,16 +48,16 @@ static struct {
 								  forKey: key];
 }
 
-- initWithObjects: (OFArray*)objects
-	  forKeys: (OFArray*)keys
+- initWithObjects: (OFArray *)objects
+	  forKeys: (OFArray *)keys
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithObjects: objects
 		    forKeys: keys];
 }
 
-- initWithObjects: (id const*)objects
-	  forKeys: (id const*)keys
+- initWithObjects: (id const *)objects
+	  forKeys: (id const *)keys
 	    count: (size_t)count
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
@@ -88,7 +88,7 @@ static struct {
 	      arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithSerialization: element];

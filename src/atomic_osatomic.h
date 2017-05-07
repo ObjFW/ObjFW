@@ -32,9 +32,9 @@ static OF_INLINE void *_Nullable
 of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 #ifdef __LP64__
-	return (void*)OSAtomicAdd64(i, (int64_t*)p);
+	return (void *)OSAtomicAdd64(i, (int64_t *)p);
 #else
-	return (void*)OSAtomicAdd32(i, (int32_t*)p);
+	return (void *)OSAtomicAdd32(i, (int32_t *)p);
 #endif
 }
 
@@ -54,9 +54,9 @@ static OF_INLINE void *_Nullable
 of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 {
 #ifdef __LP64__
-	return (void*)OSAtomicAdd64(-i, (int64_t*)p);
+	return (void *)OSAtomicAdd64(-i, (int64_t *)p);
 #else
-	return (void*)OSAtomicAdd32(-i, (int32_t*)p);
+	return (void *)OSAtomicAdd32(-i, (int32_t *)p);
 #endif
 }
 

@@ -32,7 +32,7 @@ extern int _OFString_URLEncoding_reference;
  *
  * @return A new autoreleased string
  */
-- (OFString*)stringByURLEncoding;
+- (OFString *)stringByURLEncoding;
 
 /*!
  * @brief Encodes a string for use in a URL, but does not escape the specified
@@ -42,14 +42,14 @@ extern int _OFString_URLEncoding_reference;
  *
  * @return A new autoreleased string
  */
-- (OFString*)stringByURLEncodingWithAllowedCharacters: (const char*)allowed;
+- (OFString *)stringByURLEncodingWithAllowedCharacters: (const char *)allowed;
 
 /*!
  * @brief Decodes a string used in a URL.
  *
  * @return A new autoreleased string
  */
-- (OFString*)stringByURLDecoding;
+- (OFString *)stringByURLDecoding;
 @end
 
 OF_ASSUME_NONNULL_END

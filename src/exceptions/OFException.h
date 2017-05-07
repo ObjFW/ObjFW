@@ -160,7 +160,7 @@ extern int of_wsaerr_to_errno(int);
  *
  * @return A description of the exception
  */
-- (OFString*)description;
+- (OFString *)description;
 
 /*!
  * @brief Returns a backtrace of when the exception was created or nil if no
@@ -168,13 +168,13 @@ extern int of_wsaerr_to_errno(int);
  *
  * @return A backtrace of when the exception was created
  */
-- (nullable OFArray*)backtrace;
+- (nullable OFArray *)backtrace;
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern OFString* of_strerror(int errNo);
+extern OFString *of_strerror(int errNo);
 #ifdef __cplusplus
 }
 #endif

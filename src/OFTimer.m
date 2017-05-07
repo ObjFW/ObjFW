@@ -212,7 +212,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)OF_initWithFireDate: (OFDate*)fireDate
+- (instancetype)OF_initWithFireDate: (OFDate *)fireDate
 			   interval: (of_time_interval_t)interval
 			     target: (id)target
 			   selector: (SEL)selector
@@ -244,7 +244,7 @@
 	return self;
 }
 
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
@@ -260,7 +260,7 @@
 				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
@@ -277,7 +277,7 @@
 				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
@@ -296,7 +296,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	   interval: (of_time_interval_t)interval
 	    repeats: (bool)repeats
 	      block: (of_timer_block_t)block
@@ -350,7 +350,7 @@
 	if (![object isKindOfClass: [OFTimer class]])
 		@throw [OFInvalidArgumentException exception];
 
-	timer = (OFTimer*)object;
+	timer = (OFTimer *)object;
 
 	return [_fireDate compare: timer->_fireDate];
 }
@@ -410,12 +410,12 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFDate*)fireDate
+- (OFDate *)fireDate
 {
 	return [[_fireDate copy] autorelease];
 }
 
-- (void)setFireDate: (OFDate*)fireDate
+- (void)setFireDate: (OFDate *)fireDate
 {
 	[self retain];
 	@try {

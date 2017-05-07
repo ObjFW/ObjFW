@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key for which the string value should be returned
  * @return The string value for the specified key, or `nil` if it does not exist
  */
-- (nullable OFString*)stringForKey: (OFString*)key;
+- (nullable OFString *)stringForKey: (OFString *)key;
 
 /*!
  * @brief Returns the string value for the specified key or the specified
@@ -64,8 +64,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The string value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (nullable OFString*)stringForKey: (OFString*)key
-		      defaultValue: (nullable OFString*)defaultValue;
+- (nullable OFString *)stringForKey: (OFString *)key
+		       defaultValue: (nullable OFString *)defaultValue;
 
 /*!
  * @brief Returns the integer value for the specified key or the specified
@@ -79,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The integer value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (intmax_t)integerForKey: (OFString*)key
+- (intmax_t)integerForKey: (OFString *)key
 	     defaultValue: (intmax_t)defaultValue;
 
 /*!
@@ -94,7 +94,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The bool value for the specified key or the specified default value
  *	   if it does not exist
  */
-- (bool)boolForKey: (OFString*)key
+- (bool)boolForKey: (OFString *)key
       defaultValue: (bool)defaultValue;
 
 /*!
@@ -109,7 +109,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The float value for the specified key or the specified default value
  *	   if it does not exist
  */
-- (float)floatForKey: (OFString*)key
+- (float)floatForKey: (OFString *)key
 	defaultValue: (float)defaultValue;
 
 /*!
@@ -124,7 +124,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The double value for the specified key or the specified default
  *	   value if it does not exist
  */
-- (double)doubleForKey: (OFString*)key
+- (double)doubleForKey: (OFString *)key
 	  defaultValue: (double)defaultValue;
 
 /*!
@@ -138,7 +138,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The array for the specified key, or an empty array if it does not
  *	   exist
  */
-- (OFArray OF_GENERIC(OFString*)*)arrayForKey: (OFString*)key;
+- (OFArray OF_GENERIC(OFString *) *)arrayForKey: (OFString *)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified string.
@@ -149,8 +149,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to which the value of the key should be set
  * @param key The key for which the new value should be set
  */
-- (void)setString: (OFString*)string
-	   forKey: (OFString*)key;
+- (void)setString: (OFString *)string
+	   forKey: (OFString *)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified integer.
@@ -162,7 +162,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key for which the new value should be set
  */
 - (void)setInteger: (intmax_t)integer
-	    forKey: (OFString*)key;
+	    forKey: (OFString *)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified bool.
@@ -174,7 +174,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key for which the new value should be set
  */
 - (void)setBool: (bool)bool_
-	 forKey: (OFString*)key;
+	 forKey: (OFString *)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified float.
@@ -186,7 +186,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key for which the new value should be set
  */
 - (void)setFloat: (float)float_
-	  forKey: (OFString*)key;
+	  forKey: (OFString *)key;
 
 /*!
  * @brief Sets the value of the specified key to the specified double.
@@ -198,7 +198,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key for which the new value should be set
  */
 - (void)setDouble: (double)double_
-	   forKey: (OFString*)key;
+	   forKey: (OFString *)key;
 
 /*!
  * @brief Sets the specified multi-key to the specified array of strings.
@@ -212,8 +212,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param array The array of strings to which the multi-key should be set
  * @param key The multi-key for which the new values should be set
  */
-- (void)setArray: (OFArray OF_GENERIC(OFString*)*)array
-	  forKey: (OFString*)key;
+- (void)setArray: (OFArray OF_GENERIC(OFString *) *)array
+	  forKey: (OFString *)key;
 
 /*!
  * @brief Removes the value for the specified key
@@ -223,7 +223,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param key The key of the value to remove
  */
-- (void)removeValueForKey: (OFString*)key;
+- (void)removeValueForKey: (OFString *)key;
 @end
 
 OF_ASSUME_NONNULL_END

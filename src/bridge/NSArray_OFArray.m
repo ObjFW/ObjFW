@@ -21,7 +21,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation NSArray_OFArray
-- initWithOFArray: (OFArray*)array
+- initWithOFArray: (OFArray *)array
 {
 	if ((self = [super init]) != nil) {
 		@try {
@@ -38,7 +38,7 @@
 {
 	id object = [_array objectAtIndex: index];
 
-	if ([(OFObject*)object conformsToProtocol: @protocol(OFBridging)])
+	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
 		return [object NSObject];
 
 	return object;

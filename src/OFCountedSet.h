@@ -40,7 +40,7 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
  *	  often it contains an object.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFCountedSet <ObjectType>: OFMutableSet <ObjectType>
+@interface OFCountedSet<ObjectType>: OFMutableSet<ObjectType>
 #else
 # ifndef DOXYGEN
 #  define ObjectType id

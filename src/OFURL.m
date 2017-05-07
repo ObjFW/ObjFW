@@ -38,19 +38,19 @@
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)URLWithString: (OFString*)string
++ (instancetype)URLWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-+ (instancetype)URLWithString: (OFString*)string
-		relativeToURL: (OFURL*)URL
++ (instancetype)URLWithString: (OFString *)string
+		relativeToURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithString: string
 			       relativeToURL: URL] autorelease];
 }
 
-+ (instancetype)fileURLWithPath: (OFString*)path
++ (instancetype)fileURLWithPath: (OFString *)path
 {
 	OFURL *URL = [OFURL URL];
 	void *pool = objc_autoreleasePoolPush();
@@ -63,7 +63,7 @@
 	return URL;
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	char *UTF8String, *UTF8String2 = NULL;
 
@@ -197,8 +197,8 @@
 	return self;
 }
 
-- initWithString: (OFString*)string
-   relativeToURL: (OFURL*)URL
+- initWithString: (OFString *)string
+   relativeToURL: (OFURL *)URL
 {
 	char *UTF8String, *UTF8String2 = NULL;
 
@@ -271,7 +271,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -384,7 +384,7 @@
 	return copy;
 }
 
-- (OFString*)string
+- (OFString *)string
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
@@ -435,13 +435,13 @@
 	return ret;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",
 					   [self class], [self string]];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;

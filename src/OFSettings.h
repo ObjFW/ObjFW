@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  *			  accessed
  * @return A new, autoreleased OFSettings instance
  */
-+ (instancetype)settingsWithApplicationName: (OFString*)applicationName;
++ (instancetype)settingsWithApplicationName: (OFString *)applicationName;
 
 /*!
  * @brief Initializes an already allocated OFSettings instance with the
@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  *			  accessed
  * @return An initialized OFSettings instance
  */
-- initWithApplicationName: (OFString*)applicationName;
+- initWithApplicationName: (OFString *)applicationName;
 
 /*!
  * @brief Sets the specified path to the specified string.
@@ -68,8 +68,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to set
  * @param path The path to store the string at
  */
-- (void)setString: (OFString*)string
-	  forPath: (OFString*)path;
+- (void)setString: (OFString *)string
+	  forPath: (OFString *)path;
 
 /*!
  * @brief Sets the specified path to the specified integer.
@@ -78,7 +78,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to store the integer at
  */
 - (void)setInteger: (intmax_t)integer
-	   forPath: (OFString*)path;
+	   forPath: (OFString *)path;
 
 /*!
  * @brief Sets the specified path to the specified bool.
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to store the bool at
  */
 - (void)setBool: (bool)bool_
-	forPath: (OFString*)path;
+	forPath: (OFString *)path;
 
 /*!
  * @brief Sets the specified path to the specified float.
@@ -96,7 +96,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to store the float at
  */
 - (void)setFloat: (float)float_
-	 forPath: (OFString*)path;
+	 forPath: (OFString *)path;
 
 /*!
  * @brief Sets the specified path to the specified double.
@@ -105,7 +105,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to store the double at
  */
 - (void)setDouble: (double)double_
-	  forPath: (OFString*)path;
+	  forPath: (OFString *)path;
 
 /*!
  * @brief Sets the specified path to the specified array of strings.
@@ -113,8 +113,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param array The array of strings to set
  * @param path The path to store the array of strings at
  */
-- (void)setArray: (OFArray OF_GENERIC(OFString*)*)array
-	 forPath: (OFString*)path;
+- (void)setArray: (OFArray OF_GENERIC(OFString *) *)array
+	 forPath: (OFString *)path;
 
 /*!
  * @brief Returns the string for the specified path, or `nil` if the path does
@@ -123,7 +123,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path for which the string value should be returned
  * @return The string value of the specified path
  */
-- (nullable OFString*)stringForPath: (OFString*)path;
+- (nullable OFString *)stringForPath: (OFString *)path;
 
 /*!
  * @brief Returns the string for the specified path, or the default value if
@@ -133,8 +133,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The string value of the specified path
  */
-- (nullable OFString*)stringForPath: (OFString*)path
-		       defaultValue: (nullable OFString*)defaultValue;
+- (nullable OFString *)stringForPath: (OFString *)path
+			defaultValue: (nullable OFString *)defaultValue;
 
 /*!
  * @brief Returns the integer for the specified path, or the default value if
@@ -144,7 +144,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The integer value of the specified path
  */
-- (intmax_t)integerForPath: (OFString*)path
+- (intmax_t)integerForPath: (OFString *)path
 	      defaultValue: (intmax_t)defaultValue;
 
 /*!
@@ -155,7 +155,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The bool value of the specified path
  */
-- (bool)boolForPath: (OFString*)path
+- (bool)boolForPath: (OFString *)path
        defaultValue: (bool)defaultValue;
 
 /*!
@@ -166,7 +166,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The float value of the specified path
  */
-- (float)floatForPath: (OFString*)path
+- (float)floatForPath: (OFString *)path
 	 defaultValue: (float)defaultValue;
 
 /*!
@@ -177,7 +177,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param defaultValue The default value to return if the path does not exist
  * @return The double value of the specified path
  */
-- (double)doubleForPath: (OFString*)path
+- (double)doubleForPath: (OFString *)path
 	   defaultValue: (double)defaultValue;
 
 /*!
@@ -187,14 +187,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path for which the array of strings should be returned
  * @return The array of strings of the specified path
  */
-- (OFArray OF_GENERIC(OFString*)*)arrayForPath: (OFString*)path;
+- (OFArray OF_GENERIC(OFString *) *)arrayForPath: (OFString *)path;
 
 /*!
  * @brief Removes the value for the specified path.
  *
  * @param path The path for which the value should be removed
  */
-- (void)removeValueForPath: (OFString*)path;
+- (void)removeValueForPath: (OFString *)path;
 
 /*!
  * @brief Saves the settings to disk.

@@ -36,7 +36,7 @@ static struct {
 } placeholder;
 
 @interface OFDictionary ()
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth;
 @end
 
@@ -49,7 +49,7 @@ static struct {
 	return (id)[[OFDictionary_hashtable alloc] init];
 }
 
-- initWithDictionary: (OFDictionary*)dictionary
+- initWithDictionary: (OFDictionary *)dictionary
 {
 	return (id)[[OFDictionary_hashtable alloc]
 	    initWithDictionary: dictionary];
@@ -62,15 +62,15 @@ static struct {
 							   forKey: key];
 }
 
-- initWithObjects: (OFArray*)objects
-	  forKeys: (OFArray*)keys
+- initWithObjects: (OFArray *)objects
+	  forKeys: (OFArray *)keys
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
 							   forKeys: keys];
 }
 
-- initWithObjects: (id const*)objects
-	  forKeys: (id const*)keys
+- initWithObjects: (id const *)objects
+	  forKeys: (id const *)keys
 	    count: (size_t)count
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
@@ -98,7 +98,7 @@ static struct {
 						     arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFDictionary_hashtable alloc]
 	    initWithSerialization: element];
@@ -144,7 +144,7 @@ static struct {
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)dictionaryWithDictionary: (OFDictionary*)dictionary
++ (instancetype)dictionaryWithDictionary: (OFDictionary *)dictionary
 {
 	return [[[self alloc] initWithDictionary: dictionary] autorelease];
 }
@@ -156,15 +156,15 @@ static struct {
 				      forKey: key] autorelease];
 }
 
-+ (instancetype)dictionaryWithObjects: (OFArray*)objects
-			      forKeys: (OFArray*)keys
++ (instancetype)dictionaryWithObjects: (OFArray *)objects
+			      forKeys: (OFArray *)keys
 {
 	return [[[self alloc] initWithObjects: objects
 				      forKeys: keys] autorelease];
 }
 
-+ (instancetype)dictionaryWithObjects: (id const*)objects
-			      forKeys: (id const*)keys
++ (instancetype)dictionaryWithObjects: (id const *)objects
+			      forKeys: (id const *)keys
 		  count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -201,7 +201,7 @@ static struct {
 	return [super init];
 }
 
-- initWithDictionary: (OFDictionary*)dictionary
+- initWithDictionary: (OFDictionary *)dictionary
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -215,8 +215,8 @@ static struct {
 	return [self initWithKeysAndObjects: key, object, nil];
 }
 
-- initWithObjects: (OFArray*)objects_
-	  forKeys: (OFArray*)keys_
+- initWithObjects: (OFArray *)objects_
+	  forKeys: (OFArray *)keys_
 {
 	id const *objects, *keys;
 	size_t count;
@@ -239,8 +239,8 @@ static struct {
 			       count: count];
 }
 
-- initWithObjects: (id const*)objects
-	  forKeys: (id const*)keys
+- initWithObjects: (id const *)objects
+	  forKeys: (id const *)keys
 	    count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
@@ -265,7 +265,7 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -280,7 +280,7 @@ static struct {
 	return [self objectForKey: key];
 }
 
-- (id)valueForKey: (OFString*)key
+- (id)valueForKey: (OFString *)key
 {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
@@ -298,7 +298,7 @@ static struct {
 }
 
 - (void)setValue: (id)value
-	  forKey: (OFString*)key
+	  forKey: (OFString *)key
 {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
@@ -316,8 +316,8 @@ static struct {
 								key: key
 							      value: value];
 
-	[(OFMutableDictionary*)self setObject: value
-				       forKey: key];
+	[(OFMutableDictionary *)self setObject: value
+					forKey: key];
 }
 
 - (size_t)count
@@ -417,7 +417,7 @@ static struct {
 	return false;
 }
 
-- (OFArray*)allKeys
+- (OFArray *)allKeys
 {
 	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: [self count]];
 
@@ -429,7 +429,7 @@ static struct {
 	return ret;
 }
 
-- (OFArray*)allObjects
+- (OFArray *)allObjects
 {
 	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: [self count]];
 	void *pool = objc_autoreleasePoolPush();
@@ -446,18 +446,18 @@ static struct {
 	return ret;
 }
 
-- (OFEnumerator*)keyEnumerator
+- (OFEnumerator *)keyEnumerator
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -477,7 +477,7 @@ static struct {
 	}
 }
 
-- (OFDictionary*)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
+- (OFDictionary *)mappedDictionaryUsingBlock: (of_dictionary_map_block_t)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
 
@@ -492,7 +492,7 @@ static struct {
 	return new;
 }
 
-- (OFDictionary*)filteredDictionaryUsingBlock:
+- (OFDictionary *)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block
 {
 	OFMutableDictionary *new = [OFMutableDictionary dictionary];
@@ -529,7 +529,7 @@ static struct {
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	OFMutableString *ret;
 	void *pool;
@@ -570,7 +570,7 @@ static struct {
 	return ret;
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -614,19 +614,19 @@ static struct {
 	return [element autorelease];
 }
 
-- (OFString*)JSONRepresentation
+- (OFString *)JSONRepresentation
 {
 	return [self OF_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
-- (OFString*)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions: (int)options
 {
 	return [self OF_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
@@ -707,7 +707,7 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *data;
 	size_t i, count;

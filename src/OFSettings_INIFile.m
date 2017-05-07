@@ -23,7 +23,7 @@
 #import "OFSystemInfo.h"
 
 @implementation OFSettings_INIFile
-- initWithApplicationName: (OFString*)applicationName
+- initWithApplicationName: (OFString *)applicationName
 {
 	self = [super initWithApplicationName: applicationName];
 
@@ -53,9 +53,9 @@
 	[super dealloc];
 }
 
-- (void)OF_getCategory: (OFString**)category
-		andKey: (OFString**)key
-	       forPath: (OFString*)path
+- (void)OF_getCategory: (OFString **)category
+		andKey: (OFString **)key
+	       forPath: (OFString *)path
 {
 	size_t pos = [path rangeOfString: @"."
 				 options: OF_STRING_SEARCH_BACKWARDS].location;
@@ -71,8 +71,8 @@
 	    of_range(pos + 1, [path length] - pos - 1)];
 }
 
-- (void)setString: (OFString*)string
-	  forPath: (OFString*)path
+- (void)setString: (OFString *)string
+	  forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -88,7 +88,7 @@
 }
 
 - (void)setInteger: (intmax_t)integer
-	   forPath: (OFString*)path
+	   forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -104,7 +104,7 @@
 }
 
 - (void)setBool: (bool)bool_
-	forPath: (OFString*)path
+	forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -120,7 +120,7 @@
 }
 
 - (void)setFloat: (float)float_
-	 forPath: (OFString*)path
+	 forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -136,7 +136,7 @@
 }
 
 - (void)setDouble: (double)double_
-	  forPath: (OFString*)path
+	  forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -151,8 +151,8 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)setArray: (OFArray*)array
-	 forPath: (OFString*)path
+- (void)setArray: (OFArray *)array
+	 forPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -167,8 +167,8 @@
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFString*)stringForPath: (OFString*)path
-	      defaultValue: (OFString*)defaultValue
+- (OFString *)stringForPath: (OFString *)path
+	       defaultValue: (OFString *)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key, *ret;
@@ -185,7 +185,7 @@
 	return [ret autorelease];
 }
 
-- (intmax_t)integerForPath: (OFString*)path
+- (intmax_t)integerForPath: (OFString *)path
 	      defaultValue: (intmax_t)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -205,7 +205,7 @@
 	return ret;
 }
 
-- (bool)boolForPath: (OFString*)path
+- (bool)boolForPath: (OFString *)path
        defaultValue: (bool)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -224,7 +224,7 @@
 	return ret;
 }
 
-- (float)floatForPath: (OFString*)path
+- (float)floatForPath: (OFString *)path
 	 defaultValue: (float)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -243,7 +243,7 @@
 	return ret;
 }
 
-- (double)doubleForPath: (OFString*)path
+- (double)doubleForPath: (OFString *)path
 	   defaultValue: (double)defaultValue
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -262,7 +262,7 @@
 	return ret;
 }
 
-- (OFArray*)arrayForPath: (OFString*)path
+- (OFArray *)arrayForPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
@@ -279,7 +279,7 @@
 	return [ret autorelease];
 }
 
-- (void)removeValueForPath: (OFString*)path
+- (void)removeValueForPath: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;

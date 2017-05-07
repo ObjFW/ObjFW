@@ -92,8 +92,8 @@
 	}
 
 @interface OFNumber ()
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth;
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth;
 @end
 
 @implementation OFNumber
@@ -524,7 +524,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -765,7 +765,7 @@
 	if (![object isKindOfClass: [OFNumber class]])
 		@throw [OFInvalidArgumentException exception];
 
-	number = (OFNumber*)object;
+	number = (OFNumber *)object;
 
 	if (_type & OF_NUMBER_TYPE_FLOAT ||
 	    number->_type & OF_NUMBER_TYPE_FLOAT) {
@@ -869,7 +869,7 @@
 	return [self retain];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	OFMutableString *ret;
 
@@ -926,7 +926,7 @@
 	}
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -1010,20 +1010,20 @@
 	return [element autorelease];
 }
 
-- (OFString*)JSONRepresentation
+- (OFString *)JSONRepresentation
 {
 	return [self OF_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
-- (OFString*)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions: (int)options
 {
 	return [self OF_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth
 {
 	double doubleValue;
 
@@ -1044,7 +1044,7 @@
 	return [self description];
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *data;
 

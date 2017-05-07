@@ -30,7 +30,7 @@
 int _OFDataArray_CryptoHashing_reference;
 
 @implementation OFDataArray (Hashing)
-- (OFString*)OF_cryptoHashWithClass: (Class <OFCryptoHash>)class
+- (OFString *)OF_cryptoHashWithClass: (Class <OFCryptoHash>)class
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFCryptoHash> hash = [class cryptoHash];
@@ -59,37 +59,37 @@ int _OFDataArray_CryptoHashing_reference;
 				    length: digestSize * 2];
 }
 
-- (OFString*)MD5Hash
+- (OFString *)MD5Hash
 {
 	return [self OF_cryptoHashWithClass: [OFMD5Hash class]];
 }
 
-- (OFString*)RIPEMD160Hash
+- (OFString *)RIPEMD160Hash
 {
 	return [self OF_cryptoHashWithClass: [OFRIPEMD160Hash class]];
 }
 
-- (OFString*)SHA1Hash
+- (OFString *)SHA1Hash
 {
 	return [self OF_cryptoHashWithClass: [OFSHA1Hash class]];
 }
 
-- (OFString*)SHA224Hash
+- (OFString *)SHA224Hash
 {
 	return [self OF_cryptoHashWithClass: [OFSHA224Hash class]];
 }
 
-- (OFString*)SHA256Hash
+- (OFString *)SHA256Hash
 {
 	return [self OF_cryptoHashWithClass: [OFSHA256Hash class]];
 }
 
-- (OFString*)SHA384Hash
+- (OFString *)SHA384Hash
 {
 	return [self OF_cryptoHashWithClass: [OFSHA384Hash class]];
 }
 
-- (OFString*)SHA512Hash
+- (OFString *)SHA512Hash
 {
 	return [self OF_cryptoHashWithClass: [OFSHA512Hash class]];
 }

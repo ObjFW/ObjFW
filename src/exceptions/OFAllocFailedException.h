@@ -41,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A description of the exception
  */
-- (OFString*)description;
+- (OFString *)description;
 @end
 
 OF_ASSUME_NONNULL_END

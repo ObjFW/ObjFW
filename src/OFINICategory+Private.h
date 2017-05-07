@@ -23,8 +23,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFINICategory ()
 - (instancetype)OF_init;
-- (void)OF_parseLine: (OFString*)line;
-- (bool)OF_writeToStream: (OFStream*)stream
+- (void)OF_parseLine: (OFString *)line;
+- (bool)OF_writeToStream: (OFStream *)stream
 		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first;
 @end

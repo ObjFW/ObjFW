@@ -154,7 +154,7 @@ tryReadBits(OFDeflateStream *stream,
 	return true;
 }
 
-static struct huffman_tree*
+static struct huffman_tree *
 newTree(void)
 {
 	struct huffman_tree *tree;
@@ -188,7 +188,7 @@ treeInsert(struct huffman_tree *tree, uint16_t code, uint8_t length,
 	tree->value = value;
 }
 
-static struct huffman_tree*
+static struct huffman_tree *
 constructTree(uint8_t lengths[], uint16_t count)
 {
 	struct huffman_tree *tree;
@@ -285,7 +285,7 @@ releaseTree(struct huffman_tree *tree)
 }
 
 #ifndef DEFLATE64
-+ (instancetype)streamWithStream: (OFStream*)stream
++ (instancetype)streamWithStream: (OFStream *)stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
@@ -295,7 +295,7 @@ releaseTree(struct huffman_tree *tree)
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFStream*)stream
+- initWithStream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -340,7 +340,7 @@ releaseTree(struct huffman_tree *tree)
 #endif
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer_
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer_
 			  length: (size_t)length
 {
 	struct of_deflate_stream_decompression_ivars *ivars = _decompression;

@@ -28,7 +28,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFEnumerationMutationException.h"
 
-static void*
+static void *
 retain(void *object)
 {
 	return [(id)object retain];
@@ -83,7 +83,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- initWithSet: (OFSet*)set
+- initWithSet: (OFSet *)set
 {
 	size_t count;
 
@@ -101,7 +101,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (id object in set)
-			[_mapTable setObject: (void*)1
+			[_mapTable setObject: (void *)1
 				      forKey: object];
 	} @catch (id e) {
 		[self release];
@@ -111,7 +111,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	size_t count;
 
@@ -129,7 +129,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 
 	@try {
 		for (id object in array)
-			[_mapTable setObject: (void*)1
+			[_mapTable setObject: (void *)1
 				      forKey: object];
 	} @catch (id e) {
 		[self release];
@@ -139,14 +139,14 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	self = [self initWithCapacity: count];
 
 	@try {
 		for (size_t i = 0; i < count; i++)
-			[_mapTable setObject: (void*)1
+			[_mapTable setObject: (void *)1
 				      forKey: objects[i]];
 	} @catch (id e) {
 		[self release];
@@ -175,11 +175,11 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 			 objectFunctions: objectFunctions
 				capacity: count];
 
-		[_mapTable setObject: (void*)1
+		[_mapTable setObject: (void *)1
 			      forKey: firstObject];
 
 		while ((object = va_arg(arguments, id)) != nil)
-			[_mapTable setObject: (void*)1
+			[_mapTable setObject: (void *)1
 				      forKey: object];
 	} @catch (id e) {
 		[self release];
@@ -189,7 +189,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 
@@ -205,7 +205,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
 			void *pool2  = objc_autoreleasePoolPush();
 
-			[_mapTable setObject: (void*)1
+			[_mapTable setObject: (void *)1
 				      forKey: [child objectByDeserializing]];
 
 			objc_autoreleasePoolPop(pool2);
@@ -267,15 +267,15 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	return [object autorelease];
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	return [[[OFMapTable_EnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable keyEnumerator]
 			object: self] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	return [_mapTable countByEnumeratingWithState: state

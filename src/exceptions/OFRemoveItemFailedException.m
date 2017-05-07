@@ -22,7 +22,7 @@
 @implementation OFRemoveItemFailedException
 @synthesize path = _path, errNo = _errNo;
 
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
@@ -34,7 +34,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 	 errNo: (int)errNo
 {
 	self = [super init];
@@ -57,7 +57,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Failed to remove item at path %@: %@",

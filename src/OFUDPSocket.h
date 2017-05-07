@@ -112,9 +112,9 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @param address A pointer to the address that should be filled with the
  *		  host / port pair
  */
-+ (void)resolveAddressForHost: (OFString*)host
++ (void)resolveAddressForHost: (OFString *)host
 			 port: (uint16_t)port
-		      address: (of_udp_socket_address_t*)address;
+		      address: (of_udp_socket_address_t *)address;
 
 #ifdef OF_HAVE_THREADS
 /*!
@@ -129,7 +129,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		   `void (OFString *host, uint16_t port,
  *		   of_udp_socket_address_t address, OFException *exception)`.
  */
-+ (void)asyncResolveAddressForHost: (OFString*)host
++ (void)asyncResolveAddressForHost: (OFString *)host
 			      port: (uint16_t)port
 			    target: (id)target
 			  selector: (SEL)selector;
@@ -143,7 +143,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @param port The port for the resulting address
  * @param block The block to execute once the host has been resolved
  */
-+ (void)asyncResolveAddressForHost: (OFString*)host
++ (void)asyncResolveAddressForHost: (OFString *)host
 			      port: (uint16_t)port
 			     block: (of_udp_socket_async_resolve_block_t)block;
 # endif
@@ -152,15 +152,15 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
 /*!
  * @brief Gets the host and port for the specified address.
  *
- * @param host A pointer to an OFString*. If it is not NULL, it will be set to
- *	       the host of the host / port pair.
+ * @param host A pointer to an @ref OFString *. If it is not NULL, it will be
+ *	       set to the host of the host / port pair.
  * @param port A pointer to an uint16_t. If it is not NULL, the port of the
  *	       host / port pair will be written to it.
  * @param address The address for which the host and port should be retrieved
  */
 + (void)getHost: (OFString *__autoreleasing _Nonnull *_Nullable)host
 	andPort: (uint16_t *_Nullable)port
-     forAddress: (of_udp_socket_address_t*)address;
+     forAddress: (of_udp_socket_address_t *)address;
 
 /*!
  * @brief Binds the socket to the specified host and port.
@@ -171,7 +171,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *	       chosen, which can be obtained using the return value.
  * @return The port the socket was bound to
  */
-- (uint16_t)bindToHost: (OFString*)host
+- (uint16_t)bindToHost: (OFString *)host
 		  port: (uint16_t)port;
 
 /*!
@@ -185,9 +185,9 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		 set to the address of the sender
  * @return The length of the received datagram
  */
-- (size_t)receiveIntoBuffer: (void*)buffer
+- (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_udp_socket_address_t*)sender;
+		     sender: (of_udp_socket_address_t *)sender;
 
 /*!
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -207,7 +207,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
  *		   of_udp_socket_address_t, OFException *exception)`.
  */
-- (void)asyncReceiveIntoBuffer: (void*)buffer
+- (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 			target: (id)target
 		      selector: (SEL)selector;
@@ -228,7 +228,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		the datagram received next, you need to return false from the
  *		method.
  */
-- (void)asyncReceiveIntoBuffer: (void*)buffer
+- (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 			 block: (of_udp_socket_async_receive_block_t)block;
 #endif
@@ -241,9 +241,9 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @param receiver A pointer to an @ref of_udp_socket_address_t to which the
  *		   datagram should be sent
  */
-- (void)sendBuffer: (const void*)buffer
+- (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_udp_socket_address_t*)receiver;
+	  receiver: (const of_udp_socket_address_t *)receiver;
 
 /*!
  * @brief Cancels all pending asynchronous requests on the socket.

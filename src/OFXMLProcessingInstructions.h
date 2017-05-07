@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string for the processing instructions
  * @return A new OFXMLProcessingInstructions
  */
-+ (instancetype)processingInstructionsWithString: (OFString*)string;
++ (instancetype)processingInstructionsWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFXMLProcessingInstructions with the
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string for the processing instructions
  * @return An initialized OFXMLProcessingInstructions
  */
-- initWithString: (OFString*)string;
+- initWithString: (OFString *)string;
 @end
 
 OF_ASSUME_NONNULL_END

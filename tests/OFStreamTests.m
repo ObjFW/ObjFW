@@ -39,7 +39,7 @@ static OFString *module = @"OFStream";
 	return (state > 1);
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)size
 {
 	size_t pageSize = [OFSystemInfo pageSize];
@@ -58,7 +58,7 @@ static OFString *module = @"OFStream";
 			return 0;
 
 		memcpy(buffer, "oo\n", 3);
-		memset((char*)buffer + 3, 'X', pageSize - 3);
+		memset((char *)buffer + 3, 'X', pageSize - 3);
 
 		state++;
 		return pageSize;

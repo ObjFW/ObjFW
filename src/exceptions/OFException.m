@@ -77,11 +77,12 @@ struct backtrace_ctx {
 };
 
 extern _Unwind_Reason_Code _Unwind_Backtrace(
-    _Unwind_Reason_Code(*)(struct _Unwind_Context*, void*), void*);
+    _Unwind_Reason_Code (*)(struct _Unwind_Context *, void *), void *);
 # ifndef HAVE_ARM_EHABI_EXCEPTIONS
-extern uintptr_t _Unwind_GetIP(struct _Unwind_Context*);
+extern uintptr_t _Unwind_GetIP(struct _Unwind_Context *);
 # else
-extern int _Unwind_VRS_Get(struct _Unwind_Context*, int, uint32_t, int, void*);
+extern int _Unwind_VRS_Get(struct _Unwind_Context *, int, uint32_t, int,
+    void *);
 # endif
 #endif
 
@@ -95,7 +96,7 @@ OF_CONSTRUCTOR()
 }
 #endif
 
-OFString*
+OFString *
 of_strerror(int errNo)
 {
 	OFString *ret;
@@ -228,12 +229,12 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 
 	if (bt->i < OF_BACKTRACE_SIZE) {
 # ifndef HAVE_ARM_EHABI_EXCEPTIONS
-		bt->backtrace[bt->i++] = (void*)_Unwind_GetIP(ctx);
+		bt->backtrace[bt->i++] = (void *)_Unwind_GetIP(ctx);
 # else
 		uintptr_t ip;
 
 		_Unwind_VRS_Get(ctx, 0, 15, 0, &ip);
-		bt->backtrace[bt->i++] = (void*)(ip & ~1);
+		bt->backtrace[bt->i++] = (void *)(ip & ~1);
 # endif
 		return _URC_OK;
 	}
@@ -263,13 +264,13 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 }
 #endif
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"An exception of type %@ occurred!", [self class]];
 }
 
-- (OFArray*)backtrace
+- (OFArray *)backtrace
 {
 #ifdef HAVE_DWARF_EXCEPTIONS
 	OFMutableArray *backtrace = [OFMutableArray array];
@@ -284,8 +285,8 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 			OFString *frame;
 
 			if (info.dli_sname != NULL) {
-				ptrdiff_t offset = (char*)_backtrace[i] -
-				    (char*)info.dli_saddr;
+				ptrdiff_t offset = (char *)_backtrace[i] -
+				    (char *)info.dli_saddr;
 
 				frame = [OFString stringWithFormat:
 				    @"%p <%s+%td> at %s",

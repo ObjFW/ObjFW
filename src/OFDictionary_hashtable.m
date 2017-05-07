@@ -30,13 +30,13 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-static void*
+static void *
 copy(void *object)
 {
 	return [(id)object copy];
 }
 
-static void*
+static void *
 retain(void *object)
 {
 	return [(id)object retain];
@@ -96,7 +96,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithDictionary: (OFDictionary*)dictionary
+- initWithDictionary: (OFDictionary *)dictionary
 {
 	size_t count;
 
@@ -109,7 +109,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 		@try {
 			OFDictionary_hashtable *dictionary_ =
-			    (OFDictionary_hashtable*)dictionary;
+			    (OFDictionary_hashtable *)dictionary;
 
 			_mapTable = [dictionary_->_mapTable copy];
 		} @catch (id e) {
@@ -166,8 +166,8 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithObjects: (id const*)objects
-	  forKeys: (id const*)keys
+- initWithObjects: (id const *)objects
+	  forKeys: (id const *)keys
 	    count: (size_t)count
 {
 	self = [self initWithCapacity: count];
@@ -240,7 +240,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -318,7 +318,7 @@ static const of_map_table_functions_t objectFunctions = {
 	    ![dictionary isKindOfClass: [OFMutableDictionary_hashtable class]])
 		return [super isEqual: dictionary];
 
-	dictionary_ = (OFDictionary_hashtable*)dictionary;
+	dictionary_ = (OFDictionary_hashtable *)dictionary;
 
 	return [dictionary_->_mapTable isEqual: _mapTable];
 }
@@ -333,7 +333,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return [_mapTable containsObjectIdenticalTo: object];
 }
 
-- (OFArray*)allKeys
+- (OFArray *)allKeys
 {
 	OFArray *ret;
 	id *keys;
@@ -368,7 +368,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return ret;
 }
 
-- (OFArray*)allObjects
+- (OFArray *)allObjects
 {
 	OFArray *ret;
 	id *objects;
@@ -403,22 +403,22 @@ static const of_map_table_functions_t objectFunctions = {
 	return ret;
 }
 
-- (OFEnumerator*)keyEnumerator
+- (OFEnumerator *)keyEnumerator
 {
 	return [[[OFMapTable_EnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable keyEnumerator]
 			object: self] autorelease];
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	return [[[OFMapTable_EnumeratorWrapper alloc]
 	    initWithEnumerator: [_mapTable objectEnumerator]
 			object: self] autorelease];
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	return [_mapTable countByEnumeratingWithState: state

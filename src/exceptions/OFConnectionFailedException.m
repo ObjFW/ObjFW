@@ -24,7 +24,7 @@
 @implementation OFConnectionFailedException
 @synthesize host = _host, port = _port, socket = _socket, errNo = _errNo;
 
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 {
@@ -33,7 +33,7 @@
 				    socket: socket] autorelease];
 }
 
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo
@@ -49,7 +49,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket
 {
@@ -67,7 +67,7 @@
 	return self;
 }
 
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket
 	 errNo: (int)errNo
@@ -95,7 +95,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_errNo != 0)
 		return [OFString stringWithFormat:

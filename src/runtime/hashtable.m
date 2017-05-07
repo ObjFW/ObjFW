@@ -53,9 +53,9 @@ objc_equal_string(const void *obj1, const void *obj2)
 	return (strcmp(obj1, obj2) == 0);
 }
 
-struct objc_hashtable*
-objc_hashtable_new(uint32_t (*hash)(const void*),
-    bool (*equal)(const void*, const void*), uint32_t size)
+struct objc_hashtable *
+objc_hashtable_new(uint32_t (*hash)(const void *),
+    bool (*equal)(const void *, const void *), uint32_t size)
 {
 	struct objc_hashtable *table;
 
@@ -67,7 +67,7 @@ objc_hashtable_new(uint32_t (*hash)(const void*),
 
 	table->count = 0;
 	table->size = size;
-	table->data = calloc(size, sizeof(struct objc_hashtable_bucket*));
+	table->data = calloc(size, sizeof(struct objc_hashtable_bucket *));
 
 	if (table->data == NULL)
 		OBJC_ERROR("Not enough memory to allocate hash table!");
@@ -204,7 +204,7 @@ objc_hashtable_set(struct objc_hashtable *table, const void *key,
 	table->count++;
 }
 
-void*
+void *
 objc_hashtable_get(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
@@ -212,7 +212,7 @@ objc_hashtable_get(struct objc_hashtable *table, const void *key)
 	if (!index_for_key(table, key, &idx))
 		return NULL;
 
-	return (void*)table->data[idx]->obj;
+	return (void *)table->data[idx]->obj;
 }
 
 void

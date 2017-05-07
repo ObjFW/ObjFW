@@ -165,12 +165,12 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	defaultManager = [[OFFileManager alloc] init];
 }
 
-+ (OFFileManager*)defaultManager
++ (OFFileManager *)defaultManager
 {
 	return defaultManager;
 }
 
-- (OFString*)currentDirectoryPath
+- (OFString *)currentDirectoryPath
 {
 	OFString *ret;
 #ifndef OF_WINDOWS
@@ -194,7 +194,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return ret;
 }
 
-- (bool)fileExistsAtPath: (OFString*)path
+- (bool)fileExistsAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -210,7 +210,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return false;
 }
 
-- (bool)directoryExistsAtPath: (OFString*)path
+- (bool)directoryExistsAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -227,7 +227,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 
 #if defined(OF_HAVE_SYMLINK)
-- (bool)symbolicLinkExistsAtPath: (OFString*)path
+- (bool)symbolicLinkExistsAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -243,7 +243,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return false;
 }
 #elif defined(OF_WINDOWS)
-- (bool)symbolicLinkExistsAtPath: (OFString*)path
+- (bool)symbolicLinkExistsAtPath: (OFString *)path
 {
 	WIN32_FIND_DATAW data;
 
@@ -258,7 +258,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 #endif
 
-- (void)createDirectoryAtPath: (OFString*)path
+- (void)createDirectoryAtPath: (OFString *)path
 {
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -274,7 +274,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 				errNo: errno];
 }
 
-- (void)createDirectoryAtPath: (OFString*)path
+- (void)createDirectoryAtPath: (OFString *)path
 		createParents: (bool)createParents
 {
 	OFString *currentPath = nil;
@@ -308,7 +308,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	}
 }
 
-- (OFArray*)contentsOfDirectoryAtPath: (OFString*)path
+- (OFArray *)contentsOfDirectoryAtPath: (OFString *)path
 {
 	OFMutableArray *files;
 #ifndef OF_WINDOWS
@@ -428,7 +428,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return files;
 }
 
-- (void)changeCurrentDirectoryPath: (OFString*)path
+- (void)changeCurrentDirectoryPath: (OFString *)path
 {
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -443,7 +443,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 				errNo: errno];
 }
 
-- (of_offset_t)sizeOfFileAtPath: (OFString*)path
+- (of_offset_t)sizeOfFileAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -457,7 +457,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return s.st_size;
 }
 
-- (OFDate*)accessTimeOfItemAtPath: (OFString*)path
+- (OFDate *)accessTimeOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -472,7 +472,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_atime];
 }
 
-- (OFDate*)modificationTimeOfItemAtPath: (OFString*)path
+- (OFDate *)modificationTimeOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -487,7 +487,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
 }
 
-- (OFDate*)statusChangeTimeOfItemAtPath: (OFString*)path
+- (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -503,7 +503,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 
 #ifdef OF_HAVE_CHMOD
-- (mode_t)permissionsOfItemAtPath: (OFString*)path
+- (mode_t)permissionsOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -517,7 +517,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return s.st_mode;
 }
 
-- (void)changePermissionsOfItemAtPath: (OFString*)path
+- (void)changePermissionsOfItemAtPath: (OFString *)path
 			  permissions: (mode_t)permissions
 {
 	if (path == nil)
@@ -537,9 +537,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 
 #ifdef OF_HAVE_CHOWN
-- (void)getOwner: (OFString**)owner
-	   group: (OFString**)group
-    ofItemAtPath: (OFString*)path
+- (void)getOwner: (OFString **)owner
+	   group: (OFString **)group
+    ofItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -576,9 +576,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 }
 
-- (void)changeOwnerOfItemAtPath: (OFString*)path
-			  owner: (OFString*)owner
-			  group: (OFString*)group
+- (void)changeOwnerOfItemAtPath: (OFString *)path
+			  owner: (OFString *)owner
+			  group: (OFString *)group
 {
 	uid_t uid = -1;
 	gid_t gid = -1;
@@ -634,8 +634,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 #endif
 
-- (void)copyItemAtPath: (OFString*)source
-		toPath: (OFString*)destination
+- (void)copyItemAtPath: (OFString *)source
+		toPath: (OFString *)destination
 {
 	void *pool;
 	of_stat_t s;
@@ -778,8 +778,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)moveItemAtPath: (OFString*)source
-		toPath: (OFString*)destination
+- (void)moveItemAtPath: (OFString *)source
+		toPath: (OFString *)destination
 {
 	void *pool;
 	of_stat_t s;
@@ -837,7 +837,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)removeItemAtPath: (OFString*)path
+- (void)removeItemAtPath: (OFString *)path
 {
 	void *pool;
 	of_stat_t s;
@@ -906,8 +906,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 
 #if defined(OF_HAVE_LINK)
-- (void)linkItemAtPath: (OFString*)source
-		toPath: (OFString*)destination
+- (void)linkItemAtPath: (OFString *)source
+		toPath: (OFString *)destination
 {
 	void *pool;
 	of_string_encoding_t encoding;
@@ -928,8 +928,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 #else
-- (void)linkItemAtPath: (OFString*)source
-		toPath: (OFString*)destination
+- (void)linkItemAtPath: (OFString *)source
+		toPath: (OFString *)destination
 {
 	void *pool;
 
@@ -949,8 +949,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 
 #if defined(OF_HAVE_SYMLINK)
-- (void)createSymbolicLinkAtPath: (OFString*)destination
-	     withDestinationPath: (OFString*)source
+- (void)createSymbolicLinkAtPath: (OFString *)destination
+	     withDestinationPath: (OFString *)source
 {
 	void *pool;
 	of_string_encoding_t encoding;
@@ -971,8 +971,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 #elif defined(OF_WINDOWS)
-- (void)createSymbolicLinkAtPath: (OFString*)destination
-	     withDestinationPath: (OFString*)source
+- (void)createSymbolicLinkAtPath: (OFString *)destination
+	     withDestinationPath: (OFString *)source
 {
 	void *pool;
 
@@ -996,7 +996,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 
 #ifdef OF_HAVE_READLINK
-- (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path
+- (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path
 {
 	char destination[PATH_MAX];
 	ssize_t length;
@@ -1018,7 +1018,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 				    length: length];
 }
 #elif defined(OF_WINDOWS)
-- (OFString*)destinationOfSymbolicLinkAtPath: (OFString*)path
+- (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path
 {
 	HANDLE handle;
 

@@ -23,12 +23,12 @@
 #import "OFInvalidArgumentException.h"
 
 @implementation OFXMLCharacters
-+ (instancetype)charactersWithString: (OFString*)string
++ (instancetype)charactersWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -42,7 +42,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -88,40 +88,40 @@
 	return [_characters hash];
 }
 
-- (OFString*)stringValue
+- (OFString *)stringValue
 {
 	return [[_characters copy] autorelease];
 }
 
-- (void)setStringValue: (OFString*)stringValue
+- (void)setStringValue: (OFString *)stringValue
 {
 	OFString *old = _characters;
 	_characters = [stringValue copy];
 	[old release];
 }
 
-- (OFString*)XMLString
+- (OFString *)XMLString
 {
 	return [_characters stringByXMLEscaping];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
 	return [_characters stringByXMLEscaping];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
+				 level: (unsigned int)level
 {
 	return [_characters stringByXMLEscaping];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [_characters stringByXMLEscaping];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	return [OFXMLElement elementWithName: [self className]
 				   namespace: OF_SERIALIZATION_NS

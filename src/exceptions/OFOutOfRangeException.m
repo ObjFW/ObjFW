@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFOutOfRangeException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"Value out of range!";
 }

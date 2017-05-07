@@ -21,7 +21,7 @@
 #import "OFMutableArray_adjacent.h"
 
 @implementation OFArray_adjacentSubarray
-- (const id*)objects
+- (const id *)objects
 {
 	return [_array objects] + _range.location;
 }

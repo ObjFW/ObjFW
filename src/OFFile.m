@@ -131,8 +131,8 @@ parseMode(const char *mode)
 #endif
 }
 
-+ (instancetype)fileWithPath: (OFString*)path
-			mode: (OFString*)mode
++ (instancetype)fileWithPath: (OFString *)path
+			mode: (OFString *)mode
 {
 	return [[[self alloc] initWithPath: path
 				      mode: mode] autorelease];
@@ -149,8 +149,8 @@ parseMode(const char *mode)
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString*)path
-	  mode: (OFString*)mode
+- initWithPath: (OFString *)path
+	  mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -201,7 +201,7 @@ parseMode(const char *mode)
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	ssize_t ret;
@@ -231,7 +231,7 @@ parseMode(const char *mode)
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
 	if (_fd == -1 || _atEndOfStream)

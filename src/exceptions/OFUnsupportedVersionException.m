@@ -22,7 +22,7 @@
 @implementation OFUnsupportedVersionException
 @synthesize version = _version;
 
-+ (instancetype)exceptionWithVersion: (OFString*)version
++ (instancetype)exceptionWithVersion: (OFString *)version
 {
 	return [[[self alloc] initWithVersion: version] autorelease];
 }
@@ -32,7 +32,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithVersion: (OFString*)version
+- initWithVersion: (OFString *)version
 {
 	self = [super init];
 
@@ -53,7 +53,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Version %@ of the format or protocol is not supported!",

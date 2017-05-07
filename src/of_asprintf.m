@@ -408,7 +408,7 @@ formatConversionSpecifierState(struct context *ctx)
 
 		{
 			const of_unichar_t *arg =
-			    va_arg(ctx->arguments, const of_unichar_t*);
+			    va_arg(ctx->arguments, const of_unichar_t *);
 			size_t j, len = of_string_utf32_length(arg);
 			char *buffer;
 
@@ -603,12 +603,12 @@ formatConversionSpecifierState(struct context *ctx)
 		switch (ctx->lengthModifier) {
 		case LENGTH_MODIFIER_NONE:
 			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, const char*));
+			    va_arg(ctx->arguments, const char *));
 			break;
 #ifdef HAVE_WCHAR_T
 		case LENGTH_MODIFIER_L:
 			tmpLen = asprintf(&tmp, ctx->subformat,
-			    va_arg(ctx->arguments, const wchar_t*));
+			    va_arg(ctx->arguments, const wchar_t *));
 			break;
 #endif
 		default:
@@ -621,41 +621,40 @@ formatConversionSpecifierState(struct context *ctx)
 			return false;
 
 		tmpLen = asprintf(&tmp, ctx->subformat,
-		    va_arg(ctx->arguments, void*));
+		    va_arg(ctx->arguments, void *));
 
 		break;
 	case 'n':
 		switch (ctx->lengthModifier) {
 		case LENGTH_MODIFIER_NONE:
-			*va_arg(ctx->arguments, int*) =
-			    (int)ctx->bufferLen;
+			*va_arg(ctx->arguments, int *) = (int)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_HH:
-			*va_arg(ctx->arguments, signed char*) =
+			*va_arg(ctx->arguments, signed char *) =
 			    (signed char)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_H:
-			*va_arg(ctx->arguments, short*) =
+			*va_arg(ctx->arguments, short *) =
 			    (short)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_L:
-			*va_arg(ctx->arguments, long*) =
+			*va_arg(ctx->arguments, long *) =
 			    (long)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_LL:
-			*va_arg(ctx->arguments, long long*) =
+			*va_arg(ctx->arguments, long long *) =
 			    (long long)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_J:
-			*va_arg(ctx->arguments, intmax_t*) =
+			*va_arg(ctx->arguments, intmax_t *) =
 			    (intmax_t)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_Z:
-			*va_arg(ctx->arguments, size_t*) =
+			*va_arg(ctx->arguments, size_t *) =
 			    (size_t)ctx->bufferLen;
 			break;
 		case LENGTH_MODIFIER_T:
-			*va_arg(ctx->arguments, ptrdiff_t*) =
+			*va_arg(ctx->arguments, ptrdiff_t *) =
 			    (ptrdiff_t)ctx->bufferLen;
 			break;
 		default:
@@ -698,7 +697,7 @@ formatConversionSpecifierState(struct context *ctx)
 	return true;
 }
 
-static bool (*states[])(struct context*) = {
+static bool (*states[])(struct context *) = {
 	stringState,
 	formatFlagsState,
 	formatFieldWidthState,

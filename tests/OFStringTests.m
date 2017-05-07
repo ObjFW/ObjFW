@@ -35,7 +35,7 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = nil;
-static OFString* whitespace[] = {
+static OFString *whitespace[] = {
 	@" \r \t\n\t \tasd  \t \t\t\r\n",
 	@" \t\t  \t\t  \t \t"
 };
@@ -81,7 +81,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -95,7 +95,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)length
 {
@@ -113,7 +113,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithUTF16String: (const of_char16_t*)UTF16String
+- initWithUTF16String: (const of_char16_t *)UTF16String
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -132,7 +132,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithUTF32String: (const of_char32_t*)UTF32String
+- initWithUTF32String: (const of_char32_t *)UTF32String
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -151,7 +151,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithFormat: (OFConstantString*)format
+- initWithFormat: (OFConstantString *)format
        arguments: (va_list)arguments
 {
 	self = [super init];
@@ -193,7 +193,7 @@ static uint16_t sutf16str[] = {
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
-		      withString: (OFString*)string
+		      withString: (OFString *)string
 {
 	[_string replaceCharactersInRange: range
 			       withString: string];
@@ -204,8 +204,8 @@ static uint16_t sutf16str[] = {
 @end
 
 @implementation EntityHandler
--	   (OFString*)string: (OFString*)string
-  containsUnknownEntityNamed: (OFString*)entity
+-	  (OFString *)string: (OFString *)string
+  containsUnknownEntityNamed: (OFString *)entity
 {
 	if ([entity isEqual: @"foo"])
 		return @"bar";
@@ -933,7 +933,7 @@ static uint16_t sutf16str[] = {
 #ifdef OF_HAVE_BLOCKS
 	TEST(@"-[stringByXMLUnescapingWithBlock:]",
 	    [[C(@"x&foo;y") stringByXMLUnescapingWithBlock:
-	        ^ OFString* (OFString *str, OFString *entity) {
+	        ^ OFString *(OFString *str, OFString *entity) {
 		    if ([entity isEqual: @"foo"])
 			    return @"bar";
 

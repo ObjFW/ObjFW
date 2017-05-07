@@ -58,41 +58,41 @@ extern char **environ;
 
 @interface OFProcess ()
 #ifndef OF_WINDOWS
-- (void)OF_getArgV: (char***)argv
-    forProgramName: (OFString*)programName
-      andArguments: (OFArray*)arguments;
-- (char**)OF_environmentForDictionary: (OFDictionary*)dictionary;
+- (void)OF_getArgV: (char ***)argv
+    forProgramName: (OFString *)programName
+      andArguments: (OFArray *)arguments;
+- (char **)OF_environmentForDictionary: (OFDictionary *)dictionary;
 #else
-- (of_char16_t*)OF_environmentForDictionary: (OFDictionary*)dictionary;
+- (of_char16_t *)OF_environmentForDictionary: (OFDictionary *)dictionary;
 #endif
 @end
 
 @implementation OFProcess
-+ (instancetype)processWithProgram: (OFString*)program
++ (instancetype)processWithProgram: (OFString *)program
 {
 	return [[[self alloc] initWithProgram: program] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString*)program
-			 arguments: (OFArray*)arguments
++ (instancetype)processWithProgram: (OFString *)program
+			 arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString*)program
-		       programName: (OFString*)programName
-			 arguments: (OFArray*)arguments
++ (instancetype)processWithProgram: (OFString *)program
+		       programName: (OFString *)programName
+			 arguments: (OFArray *)arguments
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
 				    arguments: arguments] autorelease];
 }
 
-+ (instancetype)processWithProgram: (OFString*)program
-		       programName: (OFString*)programName
-			 arguments: (OFArray*)arguments
-		       environment: (OFDictionary*)environment
++ (instancetype)processWithProgram: (OFString *)program
+		       programName: (OFString *)programName
+			 arguments: (OFArray *)arguments
+		       environment: (OFDictionary *)environment
 {
 	return [[[self alloc] initWithProgram: program
 				  programName: programName
@@ -105,7 +105,7 @@ extern char **environ;
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithProgram: (OFString*)program
+- initWithProgram: (OFString *)program
 {
 	return [self initWithProgram: program
 			 programName: program
@@ -113,8 +113,8 @@ extern char **environ;
 			 environment: nil];
 }
 
-- initWithProgram: (OFString*)program
-	arguments: (OFArray*)arguments
+- initWithProgram: (OFString *)program
+	arguments: (OFArray *)arguments
 {
 	return [self initWithProgram: program
 			 programName: program
@@ -122,9 +122,9 @@ extern char **environ;
 			 environment: nil];
 }
 
-- initWithProgram: (OFString*)program
-      programName: (OFString*)programName
-	arguments: (OFArray*)arguments
+- initWithProgram: (OFString *)program
+      programName: (OFString *)programName
+	arguments: (OFArray *)arguments
 {
 	return [self initWithProgram: program
 			 programName: program
@@ -132,10 +132,10 @@ extern char **environ;
 			 environment: nil];
 }
 
-- initWithProgram: (OFString*)program
-      programName: (OFString*)programName
-	arguments: (OFArray*)arguments
-      environment: (OFDictionary*)environment
+- initWithProgram: (OFString *)program
+      programName: (OFString *)programName
+	arguments: (OFArray *)arguments
+      environment: (OFDictionary *)environment
 {
 	self = [super init];
 
@@ -338,29 +338,29 @@ extern char **environ;
 }
 
 #ifndef OF_WINDOWS
-- (void)OF_getArgV: (char***)argv
-    forProgramName: (OFString*)programName
-      andArguments: (OFArray*)arguments
+- (void)OF_getArgV: (char ***)argv
+    forProgramName: (OFString *)programName
+      andArguments: (OFArray *)arguments
 {
 	OFString *const *objects = [arguments objects];
 	size_t i, count = [arguments count];
 	of_string_encoding_t encoding;
 
-	*argv = [self allocMemoryWithSize: sizeof(char*)
+	*argv = [self allocMemoryWithSize: sizeof(char *)
 				    count: count + 2];
 
 	encoding = [OFLocalization encoding];
 
-	(*argv)[0] = (char*)[programName cStringWithEncoding: encoding];
+	(*argv)[0] = (char *)[programName cStringWithEncoding: encoding];
 
 	for (i = 0; i < count; i++)
 		(*argv)[i + 1] =
-		    (char*)[objects[i] cStringWithEncoding: encoding];
+		    (char *)[objects[i] cStringWithEncoding: encoding];
 
 	(*argv)[i + 1] = NULL;
 }
 
-- (char**)OF_environmentForDictionary: (OFDictionary*)environment
+- (char **)OF_environmentForDictionary: (OFDictionary *)environment
 {
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	char **envp;
@@ -373,7 +373,7 @@ extern char **environ;
 	encoding = [OFLocalization encoding];
 
 	count = [environment count];
-	envp = [self allocMemoryWithSize: sizeof(char*)
+	envp = [self allocMemoryWithSize: sizeof(char *)
 				   count: count + 1];
 
 	keyEnumerator = [environment keyEnumerator];
@@ -404,7 +404,7 @@ extern char **environ;
 	return envp;
 }
 #else
-- (of_char16_t*)OF_environmentForDictionary: (OFDictionary*)environment
+- (of_char16_t *)OF_environmentForDictionary: (OFDictionary *)environment
 {
 	OFDataArray *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -449,7 +449,7 @@ extern char **environ;
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 #ifndef OF_WINDOWS
@@ -490,7 +490,7 @@ extern char **environ;
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
 #ifndef OF_WINDOWS

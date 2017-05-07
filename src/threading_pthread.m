@@ -54,7 +54,7 @@ OF_CONSTRUCTOR()
 	pthread_attr_destroy(&pattr);
 }
 
-static void*
+static void *
 function_wrapper(void *data)
 {
 	struct thread_ctx *ctx = data;

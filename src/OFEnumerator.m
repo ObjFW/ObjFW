@@ -42,7 +42,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray*)allObjects
+- (OFArray *)allObjects
 {
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();

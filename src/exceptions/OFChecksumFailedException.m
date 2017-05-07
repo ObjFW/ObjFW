@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFChecksumFailedException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"Checksum mismatch!";
 }

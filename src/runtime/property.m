@@ -43,7 +43,7 @@ id
 objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 {
 	if (atomic) {
-		id *ptr = (id*)(void*)((char*)self + offset);
+		id *ptr = (id *)(void *)((char *)self + offset);
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
@@ -58,7 +58,7 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 #endif
 	}
 
-	return *(id*)(void*)((char*)self + offset);
+	return *(id *)(void *)((char *)self + offset);
 }
 
 void
@@ -66,7 +66,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
     signed char copy)
 {
 	if (atomic) {
-		id *ptr = (id*)(void*)((char*)self + offset);
+		id *ptr = (id *)(void *)((char *)self + offset);
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
@@ -96,7 +96,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 		return;
 	}
 
-	id *ptr = (id*)(void*)((char*)self + offset);
+	id *ptr = (id *)(void *)((char *)self + offset);
 	id old = *ptr;
 
 	switch (copy) {

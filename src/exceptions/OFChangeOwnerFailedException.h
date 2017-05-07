@@ -59,9 +59,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased change owner failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString*)path
-			    owner: (nullable OFString*)owner
-			    group: (nullable OFString*)group
++ (instancetype)exceptionWithPath: (OFString *)path
+			    owner: (nullable OFString *)owner
+			    group: (nullable OFString *)group
 			    errNo: (int)errNo;
 
 /*!
@@ -73,9 +73,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized change owner failed exception
  */
-- initWithPath: (OFString*)path
-	 owner: (nullable OFString*)owner
-	 group: (nullable OFString*)group
+- initWithPath: (OFString *)path
+	 owner: (nullable OFString *)owner
+	 group: (nullable OFString *)group
 	 errNo: (int)errNo;
 @end
 

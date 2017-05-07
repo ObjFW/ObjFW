@@ -136,7 +136,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @warning Only available on systems with the pledge() call!
  */
-- (OFString*)pledgeString;
+- (OFString *)pledgeString;
 #endif
 @end
 

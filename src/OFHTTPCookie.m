@@ -57,16 +57,16 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 @synthesize path = _path, secure = _secure, HTTPOnly = _HTTPOnly;
 @synthesize extensions = _extensions;
 
-+ (instancetype)cookieWithName: (OFString*)name
-			 value: (OFString*)value
++ (instancetype)cookieWithName: (OFString *)name
+			 value: (OFString *)value
 {
 	return [[[self alloc] initWithName: name
 				     value: value] autorelease];
 }
 
-+ (OFArray OF_GENERIC(OFHTTPCookie*)*)cookiesForString: (OFString*)string
++ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForString: (OFString *)string
 {
-	OFMutableArray OF_GENERIC(OFHTTPCookie*) *ret = [OFMutableArray array];
+	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	const of_unichar_t *characters = [string characters];
 	size_t length = [string length], last = 0;
@@ -249,8 +249,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithName: (OFString*)name
-	 value: (OFString*)value
+- initWithName: (OFString *)name
+	 value: (OFString *)value
 {
 	self = [super init];
 
@@ -347,7 +347,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	return copy;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	OFMutableString *ret = [OFMutableString
 	    stringWithFormat: @"%@=%@", _name, _value];

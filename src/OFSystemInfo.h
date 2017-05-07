@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The path where user data for the application can be stored
  */
-+ (OFString*)userDataPath;
++ (OFString *)userDataPath;
 
 /*!
  * @brief Returns the path where user configuration for the application can be
@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The path where user configuration for the application can be stored
  */
-+ (OFString*)userConfigPath;
++ (OFString *)userConfigPath;
 
 /*!
  * @brief Returns the vendor of the CPU.
@@ -74,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The vendor of the CPU
  */
-+ (nullable OFString*)CPUVendor;
++ (nullable OFString *)CPUVendor;
 
 #if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
 /*!

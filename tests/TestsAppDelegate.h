@@ -62,14 +62,14 @@
 	int _fails;
 }
 
-- (void)outputString: (OFString*)str
+- (void)outputString: (OFString *)str
 	     inColor: (int)color;
-- (void)outputTesting: (OFString*)test
-	     inModule: (OFString*)module;
-- (void)outputSuccess: (OFString*)test
-	     inModule: (OFString*)module;
-- (void)outputFailure: (OFString*)test
-	     inModule: (OFString*)module;
+- (void)outputTesting: (OFString *)test
+	     inModule: (OFString *)module;
+- (void)outputSuccess: (OFString *)test
+	     inModule: (OFString *)module;
+- (void)outputFailure: (OFString *)test
+	     inModule: (OFString *)module;
 @end
 
 @interface TestsAppDelegate (OFArrayTests)

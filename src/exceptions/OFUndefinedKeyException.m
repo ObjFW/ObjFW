@@ -23,14 +23,14 @@
 @synthesize object = _object, key = _key, value = _value;
 
 + (instancetype)exceptionWithObject: (id)object
-				key: (OFString*)key
+				key: (OFString *)key
 {
 	return [[[self alloc] initWithObject: object
 					 key: key] autorelease];
 }
 
 + (instancetype)exceptionWithObject: (id)object
-				key: (OFString*)key
+				key: (OFString *)key
 			      value: (id)value
 {
 	return [[[self alloc] initWithObject: object
@@ -44,7 +44,7 @@
 }
 
 - initWithObject: (id)object
-	     key: (OFString*)key
+	     key: (OFString *)key
 {
 	self = [super init];
 
@@ -60,7 +60,7 @@
 }
 
 - initWithObject: (id)object
-	     key: (OFString*)key
+	     key: (OFString *)key
 	   value: (id)value
 {
 	self = [super init];
@@ -86,7 +86,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"The key \"%@\" is undefined for an object of type %@!",

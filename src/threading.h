@@ -129,7 +129,7 @@ extern bool of_condition_free(of_condition_t *condition);
 /* TLS keys and spinlocks are inlined for performance. */
 
 #if defined(OF_HAVE_PTHREADS)
-static OF_INLINE void*
+static OF_INLINE void *
 of_tlskey_get(of_tlskey_t key)
 {
 	return pthread_getspecific(key);
@@ -141,7 +141,7 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 	return !pthread_setspecific(key, ptr);
 }
 #elif defined(OF_WINDOWS)
-static OF_INLINE void*
+static OF_INLINE void *
 of_tlskey_get(of_tlskey_t key)
 {
 	return TlsGetValue(key);

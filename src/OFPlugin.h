@@ -22,7 +22,7 @@
 # include <dlfcn.h>
 # define OF_RTLD_LAZY RTLD_LAZY
 # define OF_RTLD_NOW  RTLD_NOW
-typedef void* of_plugin_handle_t;
+typedef void *of_plugin_handle_t;
 #else
 # include <windows.h>
 # define OF_RTLD_LAZY 0
@@ -48,14 +48,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path Path to the plugin file. The suffix is appended automatically.
  * @return The loaded plugin
  */
-+ (OF_KINDOF(OFPlugin*))pluginFromFile: (OFString*)path;
++ (OF_KINDOF(OFPlugin *))pluginFromFile: (OFString *)path;
 @end
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 extern of_plugin_handle_t of_dlopen(OFString *path, int flags);
-extern void* of_dlsym(of_plugin_handle_t handle, const char *symbol);
+extern void *of_dlsym(of_plugin_handle_t handle, const char *symbol);
 extern void of_dlclose(of_plugin_handle_t handle);
 #ifdef __cplusplus
 }

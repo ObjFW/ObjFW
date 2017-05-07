@@ -114,19 +114,19 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 							 arguments: arguments];
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithObjects: objects
 							      count: count];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableArray_adjacent alloc]
 	    initWithSerialization: element];
@@ -203,7 +203,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 		   atIndex: [self count]];
 }
 
-- (void)addObjectsFromArray: (OFArray*)array
+- (void)addObjectsFromArray: (OFArray *)array
 {
 	[self insertObjectsFromArray: array
 			     atIndex: [self count]];
@@ -215,7 +215,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)insertObjectsFromArray: (OFArray*)array
+- (void)insertObjectsFromArray: (OFArray *)array
 		       atIndex: (size_t)index
 {
 	size_t i = 0;

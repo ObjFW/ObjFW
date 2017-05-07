@@ -28,7 +28,7 @@
 @synthesize selector = _selector, name = _name, typeEncoding = _typeEncoding;
 
 #if defined(OF_OBJFW_RUNTIME)
-- (instancetype)OF_initWithMethod: (struct objc_method*)method
+- (instancetype)OF_initWithMethod: (struct objc_method *)method
 {
 	self = [super init];
 
@@ -77,7 +77,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@ [%s]>",
 					   [self class], _name, _typeEncoding];
@@ -135,7 +135,7 @@
 @synthesize getter = _getter, setter = _setter;
 
 #if defined(OF_OBJFW_RUNTIME)
-- (instancetype)OF_initWithProperty: (struct objc_property*)property
+- (instancetype)OF_initWithProperty: (struct objc_property *)property
 {
 	self = [super init];
 
@@ -301,7 +301,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString
 	    stringWithFormat: @"<%@: %@\n"
@@ -356,7 +356,7 @@
 @synthesize name = _name, offset = _offset, typeEncoding = _typeEncoding;
 
 #if defined(OF_OBJFW_RUNTIME)
-- (instancetype)OF_initWithIvar: (struct objc_ivar*)ivar
+- (instancetype)OF_initWithIvar: (struct objc_ivar *)ivar
 {
 	self = [super init];
 
@@ -404,7 +404,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"<OFInstanceVariable: %@ [%s] @ 0x%tx>",

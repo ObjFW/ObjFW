@@ -56,22 +56,22 @@
 	OFException *_exception;
 }
 
-- initWithSourceThread: (OFThread*)sourceThread
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector;
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread*)sourceThread
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		 block: (of_udp_socket_async_resolve_block_t)block;
 # endif
 @end
 
 @implementation OFUDPSocket_ResolveThread
-- initWithSourceThread: (OFThread*)sourceThread
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector
@@ -93,8 +93,8 @@
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread*)sourceThread
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		 block: (of_udp_socket_async_resolve_block_t)block
 {
@@ -136,10 +136,10 @@
 		_block(_host, _port, _address, _exception);
 	else {
 # endif
-		void (*func)(id, SEL, OFString*, uint16_t,
-		    of_udp_socket_address_t, OFException*) =
-		    (void(*)(id, SEL, OFString*, uint16_t,
-		    of_udp_socket_address_t, OFException*))[_target
+		void (*func)(id, SEL, OFString *, uint16_t,
+		    of_udp_socket_address_t, OFException *) =
+		    (void (*)(id, SEL, OFString *, uint16_t,
+		    of_udp_socket_address_t, OFException *))[_target
 		    methodForSelector: _selector];
 
 		func(_target, _selector, _host, _port, _address, _exception);
@@ -194,8 +194,8 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		sin_1 = (struct sockaddr_in*)&address1->address;
-		sin_2 = (struct sockaddr_in*)&address2->address;
+		sin_1 = (struct sockaddr_in *)&address1->address;
+		sin_2 = (struct sockaddr_in *)&address2->address;
 
 		if (sin_1->sin_port != sin_2->sin_port)
 			return false;
@@ -209,8 +209,8 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 		    address2->length < sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
-		sin6_1 = (struct sockaddr_in6*)&address1->address;
-		sin6_2 = (struct sockaddr_in6*)&address2->address;
+		sin6_1 = (struct sockaddr_in6 *)&address1->address;
+		sin6_2 = (struct sockaddr_in6 *)&address2->address;
 
 		if (sin6_1->sin6_port != sin6_2->sin6_port)
 			return false;
@@ -250,7 +250,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		sin = (struct sockaddr_in*)&address->address;
+		sin = (struct sockaddr_in *)&address->address;
 
 		hash += (sin->sin_port << 1);
 		hash ^= sin->sin_addr.s_addr;
@@ -261,7 +261,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		if (address->length < sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
-		sin6 = (struct sockaddr_in6*)&address->address;
+		sin6 = (struct sockaddr_in6 *)&address->address;
 
 		hash += (sin6->sin6_port << 1);
 
@@ -299,9 +299,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	return [[[self alloc] init] autorelease];
 }
 
-+ (void)resolveAddressForHost: (OFString*)host
++ (void)resolveAddressForHost: (OFString *)host
 			 port: (uint16_t)port
-		      address: (of_udp_socket_address_t*)address
+		      address: (of_udp_socket_address_t *)address
 {
 	of_resolver_result_t **results =
 	    of_resolve_host(host, port, SOCK_DGRAM);
@@ -317,7 +317,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 }
 
 #ifdef OF_HAVE_THREADS
-+ (void)asyncResolveAddressForHost: (OFString*)host
++ (void)asyncResolveAddressForHost: (OFString *)host
 			      port: (uint16_t)port
 			    target: (id)target
 			  selector: (SEL)selector
@@ -335,7 +335,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (void)asyncResolveAddressForHost: (OFString*)host
++ (void)asyncResolveAddressForHost: (OFString *)host
 			      port: (uint16_t)port
 			     block: (of_udp_socket_async_resolve_block_t)block
 {
@@ -352,12 +352,12 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 # endif
 #endif
 
-+ (void)getHost: (OFString *__autoreleasing*)host
-	andPort: (uint16_t*)port
-     forAddress: (of_udp_socket_address_t*)address
++ (void)getHost: (OFString *__autoreleasing *)host
+	andPort: (uint16_t *)port
+     forAddress: (of_udp_socket_address_t *)address
 {
 	of_address_to_string_and_port(
-	    (struct sockaddr*)&address->address, address->length, host, port);
+	    (struct sockaddr *)&address->address, address->length, host, port);
 }
 
 - init
@@ -382,7 +382,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	return [self retain];
 }
 
-- (uint16_t)bindToHost: (OFString*)host
+- (uint16_t)bindToHost: (OFString *)host
 		  port: (uint16_t)port
 {
 	of_resolver_result_t **results;
@@ -444,13 +444,13 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 				switch (results[0]->family) {
 				case AF_INET:
-					((struct sockaddr_in*)
+					((struct sockaddr_in *)
 					    results[0]->address)->sin_port =
 					    OF_BSWAP16_IF_LE(rnd);
 					break;
 # ifdef HAVE_IPV6
 				case AF_INET6:
-					((struct sockaddr_in6*)
+					((struct sockaddr_in6 *)
 					    results[0]->address)->sin6_port =
 					    OF_BSWAP16_IF_LE(rnd);
 					break;
@@ -492,7 +492,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	addrLen = (socklen_t)sizeof(addr.storage);
-	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
+	if (of_getsockname(_socket, (struct sockaddr *)&addr.storage,
 	    &addrLen) != 0) {
 		int errNo = of_socket_errno();
 
@@ -521,9 +521,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 						  errNo: EAFNOSUPPORT];
 }
 
-- (size_t)receiveIntoBuffer: (void*)buffer
+- (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_udp_socket_address_t*)sender
+		     sender: (of_udp_socket_address_t *)sender
 {
 	ssize_t ret;
 
@@ -534,7 +534,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 #ifndef OF_WINDOWS
 	if ((ret = recvfrom(_socket, buffer, length, 0,
-	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
+	    (struct sockaddr *)&sender->address, &sender->length)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -544,7 +544,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
-	    (struct sockaddr*)&sender->address, &sender->length)) < 0)
+	    (struct sockaddr *)&sender->address, &sender->length)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -554,7 +554,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	return ret;
 }
 
-- (void)asyncReceiveIntoBuffer: (void*)buffer
+- (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 			target: (id)target
 		      selector: (SEL)selector
@@ -567,7 +567,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncReceiveIntoBuffer: (void*)buffer
+- (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 			 block: (of_udp_socket_async_receive_block_t)block
 {
@@ -578,9 +578,9 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 }
 #endif
 
-- (void)sendBuffer: (const void*)buffer
+- (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_udp_socket_address_t*)receiver
+	  receiver: (const of_udp_socket_address_t *)receiver
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -590,7 +590,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		@throw [OFOutOfRangeException exception];
 
 	if (sendto(_socket, buffer, length, 0,
-	    (struct sockaddr*)&receiver->address,
+	    (struct sockaddr *)&receiver->address,
 	    receiver->length) != (ssize_t)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
@@ -601,7 +601,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		@throw [OFOutOfRangeException exception];
 
 	if (sendto(_socket, buffer, (int)length, 0,
-	    (struct sockaddr*)&receiver->address,
+	    (struct sockaddr *)&receiver->address,
 	    receiver->length) != (int)length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self

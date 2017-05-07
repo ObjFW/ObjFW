@@ -34,7 +34,7 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @return An OFNull singleton
  */
-+ (OFNull*)null;
++ (OFNull *)null;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -32,13 +32,13 @@ register_selectors(struct objc_abi_category *cat)
 	    ml != NULL; ml = ml->next)
 		for (unsigned int i = 0; i < ml->count; i++)
 			objc_register_selector(
-			    (struct objc_abi_selector*)&ml->methods[i]);
+			    (struct objc_abi_selector *)&ml->methods[i]);
 
 	for (struct objc_abi_method_list *ml = cat->class_methods;
 	    ml != NULL; ml = ml->next)
 		for (unsigned int i = 0; i < ml->count; i++)
 			objc_register_selector(
-			    (struct objc_abi_selector*)&ml->methods[i]);
+			    (struct objc_abi_selector *)&ml->methods[i]);
 }
 
 static void
@@ -51,7 +51,7 @@ register_category(struct objc_abi_category *cat)
 		categories = objc_hashtable_new(
 		    objc_hash_string, objc_equal_string, 2);
 
-	cats = (struct objc_abi_category**)objc_hashtable_get(categories,
+	cats = (struct objc_abi_category **)objc_hashtable_get(categories,
 	    cat->class_name);
 
 	if (cats != NULL) {
@@ -61,7 +61,7 @@ register_category(struct objc_abi_category *cat)
 		for (i = 0; cats[i] != NULL; i++);
 
 		if ((ncats = realloc(cats,
-		    (i + 2) * sizeof(struct objc_abi_category*))) == NULL)
+		    (i + 2) * sizeof(struct objc_abi_category *))) == NULL)
 			OBJC_ERROR("Not enough memory for category %s of "
 			    "class %s!", cat->category_name, cat->class_name);
 
@@ -77,7 +77,7 @@ register_category(struct objc_abi_category *cat)
 		return;
 	}
 
-	if ((cats = malloc(2 * sizeof(struct objc_abi_category*))) == NULL)
+	if ((cats = malloc(2 * sizeof(struct objc_abi_category *))) == NULL)
 		OBJC_ERROR("Not enough memory for category %s of class %s!\n",
 		    cat->category_name, cat->class_name);
 
@@ -95,7 +95,7 @@ void
 objc_register_all_categories(struct objc_abi_symtab *symtab)
 {
 	struct objc_abi_category **cats =
-	    (struct objc_abi_category**)symtab->defs + symtab->cls_def_cnt;
+	    (struct objc_abi_category **)symtab->defs + symtab->cls_def_cnt;
 
 	for (size_t i = 0; i < symtab->cat_def_cnt; i++) {
 		register_selectors(cats[i]);
@@ -103,13 +103,13 @@ objc_register_all_categories(struct objc_abi_symtab *symtab)
 	}
 }
 
-struct objc_category**
+struct objc_category **
 objc_categories_for_class(Class cls)
 {
 	if (categories == NULL)
 		return NULL;
 
-	return (struct objc_category**)objc_hashtable_get(categories,
+	return (struct objc_category **)objc_hashtable_get(categories,
 	    cls->name);
 }
 
@@ -121,7 +121,7 @@ objc_unregister_all_categories(void)
 
 	for (uint32_t i = 0; i < categories->size; i++)
 		if (categories->data[i] != NULL)
-			free((void*)categories->data[i]->obj);
+			free((void *)categories->data[i]->obj);
 
 	objc_hashtable_free(categories);
 	categories = NULL;

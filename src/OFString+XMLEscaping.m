@@ -27,7 +27,7 @@
 int _OFString_XMLEscaping_reference;
 
 @implementation OFString (XMLEscaping)
-- (OFString*)stringByXMLEscaping
+- (OFString *)stringByXMLEscaping
 {
 	void *pool = objc_autoreleasePoolPush();
 	char *retCString;

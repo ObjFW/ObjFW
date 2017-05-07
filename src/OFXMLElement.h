@@ -35,9 +35,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLElement: OFXMLNode
 {
 	OFString *_name, *_namespace, *_defaultNamespace;
-	OFMutableArray OF_GENERIC(OFXMLAttribute*) *_attributes;
-	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *_namespaces;
-	OFMutableArray OF_GENERIC(OFXMLNode*) *_children;
+	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_attributes;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_namespaces;
+	OFMutableArray OF_GENERIC(OFXMLNode *) *_children;
 }
 
 /*!
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param name The name for the element
  * @return A new autoreleased OFXMLElement with the specified element name
  */
-+ (instancetype)elementWithName: (OFString*)name;
++ (instancetype)elementWithName: (OFString *)name;
 
 /*!
  * @brief Creates a new XML element with the specified name and string value.
@@ -76,8 +76,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the specified element name and
  *	   value
  */
-+ (instancetype)elementWithName: (OFString*)name
-		    stringValue: (nullable OFString*)stringValue;
++ (instancetype)elementWithName: (OFString *)name
+		    stringValue: (nullable OFString *)stringValue;
 
 /*!
  * @brief Creates a new XML element with the specified name and namespace.
@@ -87,8 +87,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the specified element name and
  *	   namespace
  */
-+ (instancetype)elementWithName: (OFString*)name
-		      namespace: (nullable OFString*)namespace_;
++ (instancetype)elementWithName: (OFString *)name
+		      namespace: (nullable OFString *)namespace_;
 
 /*!
  * @brief Creates a new XML element with the specified name, namespace and
@@ -100,9 +100,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the specified element name,
  *	   namespace and value
  */
-+ (instancetype)elementWithName: (OFString*)name
-		      namespace: (nullable OFString*)namespace_
-		    stringValue: (nullable OFString*)stringValue;
++ (instancetype)elementWithName: (OFString *)name
+		      namespace: (nullable OFString *)namespace_
+		    stringValue: (nullable OFString *)stringValue;
 
 /*!
  * @brief Creates a new element with the specified element.
@@ -111,7 +111,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   element
  */
-+ (instancetype)elementWithElement: (OFXMLElement*)element;
++ (instancetype)elementWithElement: (OFXMLElement *)element;
 
 /*!
  * @brief Parses the string and returns an OFXMLElement for it.
@@ -119,7 +119,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to parse
  * @return A new autoreleased OFXMLElement with the contents of the string
  */
-+ (instancetype)elementWithXMLString: (OFString*)string;
++ (instancetype)elementWithXMLString: (OFString *)string;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -129,7 +129,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   file
  */
-+ (instancetype)elementWithFile: (OFString*)path;
++ (instancetype)elementWithFile: (OFString *)path;
 #endif
 
 /*!
@@ -138,7 +138,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param name The name for the element
  * @return An initialized OFXMLElement with the specified element name
  */
-- initWithName: (OFString*)name;
+- initWithName: (OFString *)name;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name
@@ -149,8 +149,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the specified element name and
  *	   value
  */
-- initWithName: (OFString*)name
-   stringValue: (nullable OFString*)stringValue;
+- initWithName: (OFString *)name
+   stringValue: (nullable OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name
@@ -161,8 +161,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the specified element name and
  *	   namespace
  */
-- initWithName: (OFString*)name
-     namespace: (nullable OFString*)namespace_;
+- initWithName: (OFString *)name
+     namespace: (nullable OFString *)namespace_;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name,
@@ -174,9 +174,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the specified element name,
  *	   namespace and value
  */
-- initWithName: (OFString*)name
-     namespace: (nullable OFString*)namespace_
-   stringValue: (nullable OFString*)stringValue;
+- initWithName: (OFString *)name
+     namespace: (nullable OFString *)namespace_
+   stringValue: (nullable OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified
@@ -186,7 +186,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   element
  */
-- initWithElement: (OFXMLElement*)element;
+- initWithElement: (OFXMLElement *)element;
 
 /*!
  * @brief Parses the string and initializes an already allocated OFXMLElement
@@ -195,7 +195,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to parse
  * @return An initialized OFXMLElement with the contents of the string
  */
-- initWithXMLString: (OFString*)string;
+- initWithXMLString: (OFString *)string;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -205,7 +205,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the file
  * @return An initialized OFXMLElement with the contents of the specified file
  */
-- initWithFile: (OFString*)path;
+- initWithFile: (OFString *)path;
 #endif
 
 /*!
@@ -214,8 +214,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix for the namespace
  * @param namespace_ The namespace for which the prefix is set
  */
-- (void)setPrefix: (OFString*)prefix
-     forNamespace: (OFString*)namespace_;
+- (void)setPrefix: (OFString *)prefix
+     forNamespace: (OFString *)namespace_;
 
 /*!
  * @brief Binds a prefix for a namespace.
@@ -223,15 +223,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @param prefix The prefix for the namespace
  * @param namespace_ The namespace for which the prefix is bound
  */
-- (void)bindPrefix: (OFString*)prefix
-      forNamespace: (OFString*)namespace_;
+- (void)bindPrefix: (OFString *)prefix
+      forNamespace: (OFString *)namespace_;
 
 /*!
  * @brief Returns an OFArray with the attributes of the element.
  *
  * @return An OFArray with the attributes of the element
  */
-- (nullable OFArray OF_GENERIC(OFXMLAttribute*)*)attributes;
+- (nullable OFArray OF_GENERIC(OFXMLAttribute *) *)attributes;
 
 /*!
  * @brief Adds the specified attribute.
@@ -241,7 +241,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param attribute The attribute to add
  */
-- (void)addAttribute: (OFXMLAttribute*)attribute;
+- (void)addAttribute: (OFXMLAttribute *)attribute;
 
 /*!
  * @brief Adds the specified attribute with the specified string value.
@@ -252,8 +252,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param name The name of the attribute
  * @param stringValue The value of the attribute
  */
-- (void)addAttributeWithName: (OFString*)name
-		 stringValue: (OFString*)stringValue;
+- (void)addAttributeWithName: (OFString *)name
+		 stringValue: (OFString *)stringValue;
 
 /*!
  * @brief Adds the specified attribute with the specified namespace and string
@@ -266,9 +266,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param namespace_ The namespace of the attribute
  * @param stringValue The value of the attribute
  */
-- (void)addAttributeWithName: (OFString*)name
-		   namespace: (nullable OFString*)namespace_
-		 stringValue: (OFString*)stringValue;
+- (void)addAttributeWithName: (OFString *)name
+		   namespace: (nullable OFString *)namespace_
+		 stringValue: (OFString *)stringValue;
 
 /*!
  * @brief Returns the attribute with the specified name.
@@ -276,7 +276,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributeName The name of the attribute
  * @return The attribute with the specified name
  */
-- (OFXMLAttribute*)attributeForName: (OFString*)attributeName;
+- (OFXMLAttribute *)attributeForName: (OFString *)attributeName;
 
 /*!
  * @brief Returns the attribute with the specified name and namespace.
@@ -285,15 +285,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributeNS The namespace of the attribute
  * @return The attribute with the specified name and namespace
  */
-- (OFXMLAttribute*)attributeForName: (OFString*)attributeName
-			  namespace: (nullable OFString*)attributeNS;
+- (OFXMLAttribute *)attributeForName: (OFString *)attributeName
+			   namespace: (nullable OFString *)attributeNS;
 
 /*!
  * @brief Removes the attribute with the specified name.
  *
  * @param attributeName The name of the attribute
  */
-- (void)removeAttributeForName: (OFString*)attributeName;
+- (void)removeAttributeForName: (OFString *)attributeName;
 
 /*!
  * @brief Removes the attribute with the specified name and namespace.
@@ -301,29 +301,29 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributeName The name of the attribute
  * @param attributeNS The namespace of the attribute
  */
-- (void)removeAttributeForName: (OFString*)attributeName
-		     namespace: (nullable OFString*)attributeNS;
+- (void)removeAttributeForName: (OFString *)attributeName
+		     namespace: (nullable OFString *)attributeNS;
 
 /*!
  * @brief Removes all children and adds the children from the specified array.
  *
  * @param children The new children to add
  */
-- (void)setChildren: (nullable OFArray OF_GENERIC(OFXMLNode*)*)children;
+- (void)setChildren: (nullable OFArray OF_GENERIC(OFXMLNode *) *)children;
 
 /*!
  * @brief Returns an array of OFXMLNodes with all children of the element.
  *
  * @return An array of OFXMLNodes with all children of the element
  */
-- (nullable OFArray OF_GENERIC(OFXMLNode*)*)children;
+- (nullable OFArray OF_GENERIC(OFXMLNode *) *)children;
 
 /*!
  * @brief Adds a child to the OFXMLElement.
  *
  * @param child An OFXMLNode which is added as a child
  */
-- (void)addChild: (OFXMLNode*)child;
+- (void)addChild: (OFXMLNode *)child;
 
 /*!
  * @brief Inserts a child at the specified index.
@@ -331,7 +331,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param child An OFXMLNode which is added as a child
  * @param index The index where the child is added
  */
-- (void)insertChild: (OFXMLNode*)child
+- (void)insertChild: (OFXMLNode *)child
 	    atIndex: (size_t)index;
 
 /*!
@@ -340,7 +340,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param children An array of OFXMLNodes which are added as children
  * @param index The index where the child is added
  */
-- (void)insertChildren: (OFArray OF_GENERIC(OFXMLNode*)*)children
+- (void)insertChildren: (OFArray OF_GENERIC(OFXMLNode *) *)children
 	       atIndex: (size_t)index;
 
 /*!
@@ -348,7 +348,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param child The child to remove from the OFXMLElement
  */
-- (void)removeChild: (OFXMLNode*)child;
+- (void)removeChild: (OFXMLNode *)child;
 
 /*!
  * @brief Removes the child at the specified index.
@@ -364,8 +364,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param child The child to replace
  * @param node The node to replace the child with
  */
-- (void)replaceChild: (OFXMLNode*)child
-	    withNode: (OFXMLNode*)node;
+- (void)replaceChild: (OFXMLNode *)child
+	    withNode: (OFXMLNode *)node;
 
 /*!
  * @brief Replaces the child at the specified index with the specified node.
@@ -374,22 +374,22 @@ OF_ASSUME_NONNULL_BEGIN
  * @param node The node to replace the child with
  */
 - (void)replaceChildAtIndex: (size_t)index
-		   withNode: (OFXMLNode*)node;
+		   withNode: (OFXMLNode *)node;
 
 /*!
  * @brief Returns all children that are elements.
  *
  * @return All children that are elements
  */
-- (OFArray OF_GENERIC(OFXMLElement*)*)elements;
+- (OFArray OF_GENERIC(OFXMLElement *) *)elements;
 
 /*!
  * @brief Returns all children that have the specified namespace.
  *
  * @return All children that have the specified namespace
  */
-- (OFArray OF_GENERIC(OFXMLElement*)*)elementsForNamespace:
-    (nullable OFString*)elementNS;
+- (OFArray OF_GENERIC(OFXMLElement *) *)elementsForNamespace:
+    (nullable OFString *)elementNS;
 
 /*!
  * @brief Returns the first child element with the specified name.
@@ -397,7 +397,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementName The name of the element
  * @return The first child element with the specified name
  */
-- (OFXMLElement*)elementForName: (OFString*)elementName;
+- (OFXMLElement *)elementForName: (OFString *)elementName;
 
 /*!
  * @brief Returns the child elements with the specified name.
@@ -405,7 +405,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementName The name of the elements
  * @return The child elements with the specified name
  */
-- (OFArray OF_GENERIC(OFXMLElement*)*)elementsForName: (OFString*)elementName;
+- (OFArray OF_GENERIC(OFXMLElement *) *)elementsForName:
+    (OFString *)elementName;
 
 /*!
  * @brief Returns the first child element with the specified name and namespace.
@@ -414,8 +415,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementNS The namespace of the element
  * @return The first child element with the specified name and namespace
  */
-- (OFXMLElement*)elementForName: (OFString*)elementName
-		      namespace: (nullable OFString*)elementNS;
+- (OFXMLElement *)elementForName: (OFString *)elementName
+		       namespace: (nullable OFString *)elementNS;
 
 /*!
  * @brief Returns the child elements with the specified name and namespace.
@@ -424,9 +425,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementNS The namespace of the elements
  * @return The child elements with the specified name and namespace
  */
-- (OFArray OF_GENERIC(OFXMLElement*)*)
-    elementsForName: (OFString*)elementName
-	  namespace: (nullable OFString*)elementNS;
+- (OFArray OF_GENERIC(OFXMLElement *) *)
+    elementsForName: (OFString *)elementName
+	  namespace: (nullable OFString *)elementNS;
 @end
 
 OF_ASSUME_NONNULL_END

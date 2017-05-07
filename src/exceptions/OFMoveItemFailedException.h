@@ -53,8 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased move item failed exception
  */
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath
++ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
+			destinationPath: (OFString *)destinationPath
 				  errNo: (int)errNo;
 
 /*!
@@ -65,8 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized move item failed exception
  */
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath
+- initWithSourcePath: (OFString *)sourcePath
+     destinationPath: (OFString *)destinationPath
 	       errNo: (int)errNo;
 @end
 

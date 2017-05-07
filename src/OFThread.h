@@ -106,14 +106,14 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return The current thread
  */
-+ (OFThread*)currentThread;
++ (OFThread *)currentThread;
 
 /*!
  * @brief Returns the main thread.
  *
  * @return The main thread
  */
-+ (OFThread*)mainThread;
++ (OFThread *)mainThread;
 
 /*!
  * @brief Returns a dictionary to store thread-specific data, meaning it
@@ -121,7 +121,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return A dictionary to store thread-specific data.
  */
-+ (OFMutableDictionary*)threadDictionary;
++ (OFMutableDictionary *)threadDictionary;
 #endif
 
 /*!
@@ -137,7 +137,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @param date The date to wait for
  */
-+ (void)sleepUntilDate: (OFDate*)date;
++ (void)sleepUntilDate: (OFDate *)date;
 
 /*!
  * @brief Yields a processor voluntarily and moves the thread to the end of the
@@ -203,21 +203,21 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return The run loop for the thread
  */
-- (OFRunLoop*)runLoop;
+- (OFRunLoop *)runLoop;
 
 /*!
  * @brief Returns the name of the thread or `nil` if none has been set.
  *
  * @return The name of the thread or nil if none has been set
  */
-- (nullable OFString*)name;
+- (nullable OFString *)name;
 
 /*!
  * @brief Sets the name for the thread.
  *
  * @param name The name for the thread
  */
-- (void)setName: (nullable OFString*)name;
+- (void)setName: (nullable OFString *)name;
 
 /*!
  * @brief Returns the priority of the thread.

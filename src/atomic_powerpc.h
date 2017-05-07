@@ -59,7 +59,7 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    : "r"(i), "r"(p)
 	);
 
-	return (void*)i;
+	return (void *)i;
 }
 
 static OF_INLINE int
@@ -107,7 +107,7 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    : "r"(i), "r"(p)
 	);
 
-	return (void*)i;
+	return (void *)i;
 }
 
 static OF_INLINE int

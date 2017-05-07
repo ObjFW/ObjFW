@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @returns An OFEnumerator to enumerate through all objects of the collection
  */
-- (OFEnumerator*)objectEnumerator;
+- (OFEnumerator *)objectEnumerator;
 @end
 
 /*!
@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which provides methods to enumerate through collections.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFEnumerator <ObjectType>: OFObject
+@interface OFEnumerator<ObjectType>: OFObject
 #else
 # ifndef DOXYGEN
 #  define ObjectType id
@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An array of all remaining objects in the collection
  */
-- (OFArray OF_GENERIC(ObjectType)*)allObjects;
+- (OFArray OF_GENERIC(ObjectType) *)allObjects;
 
 /*!
  * @brief Resets the enumerator, so the next call to nextObject returns the
@@ -119,7 +119,7 @@ typedef struct {
  * @return The number of objects returned in objects or 0 when the enumeration
  *	   finished.
  */
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
 			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
 					objects
 			     count: (int)count;

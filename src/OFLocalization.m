@@ -82,12 +82,12 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	return sharedLocalization;
 }
 
-+ (OFString*)language
++ (OFString *)language
 {
 	return [sharedLocalization language];
 }
 
-+ (OFString*)territory
++ (OFString *)territory
 {
 	return [sharedLocalization territory];
 }
@@ -97,13 +97,13 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	return [sharedLocalization encoding];
 }
 
-+ (OFString*)decimalPoint
++ (OFString *)decimalPoint
 {
 	return [sharedLocalization decimalPoint];
 }
 
 #ifdef OF_HAVE_FILES
-+ (void)addLanguageDirectory: (OFString*)path
++ (void)addLanguageDirectory: (OFString *)path
 {
 	[sharedLocalization addLanguageDirectory: path];
 }
@@ -163,7 +163,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 }
 
 #ifdef OF_HAVE_FILES
-- (void)addLanguageDirectory: (OFString*)path
+- (void)addLanguageDirectory: (OFString *)path
 {
 	void *pool;
 	OFString *mapPath, *language, *territory, *languageFile;
@@ -203,8 +203,8 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 }
 #endif
 
-- (OFString*)localizedStringForID: (OFConstantString*)ID
-			 fallback: (OFConstantString*)fallback, ...
+- (OFString *)localizedStringForID: (OFConstantString *)ID
+			  fallback: (OFConstantString *)fallback, ...
 {
 	OFString *ret;
 	va_list args;
@@ -218,9 +218,9 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	return ret;
 }
 
-- (OFString*)localizedStringForID: (OFConstantString*)ID
-			 fallback: (OFConstantString*)fallback
-			arguments: (va_list)arguments
+- (OFString *)localizedStringForID: (OFConstantString *)ID
+			  fallback: (OFConstantString *)fallback
+			 arguments: (va_list)arguments
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
@@ -285,7 +285,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 				 */
 				va_copy(argsCopy, arguments);
 				while ((name = va_arg(argsCopy,
-				    OFConstantString*)) != nil) {
+				    OFConstantString *)) != nil) {
 					id value = va_arg(argsCopy, id);
 
 					if (value == nil)

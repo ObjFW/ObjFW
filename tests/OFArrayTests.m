@@ -77,7 +77,7 @@ static OFString *c_ary[] = {
 	return self;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	self = [super init];

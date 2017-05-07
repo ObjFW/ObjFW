@@ -26,12 +26,12 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFGZIPStream
-+ (instancetype)streamWithStream: (OFStream*)stream
++ (instancetype)streamWithStream: (OFStream *)stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- initWithStream: (OFStream*)stream
+- initWithStream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -55,7 +55,7 @@
 	[super dealloc];
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	uint8_t byte;

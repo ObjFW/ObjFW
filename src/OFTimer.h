@@ -216,7 +216,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
@@ -235,7 +235,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
@@ -258,7 +258,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	    target: (id)target
 	  selector: (SEL)selector
@@ -278,7 +278,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param block The block to invoke when the timer fires
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate*)fireDate
+- initWithFireDate: (OFDate *)fireDate
 	  interval: (of_time_interval_t)interval
 	   repeats: (bool)repeats
 	     block: (of_timer_block_t)block;
@@ -295,7 +295,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  *
  * @return The next date at which the timer will fire
  */
-- (OFDate*)fireDate;
+- (OFDate *)fireDate;
 
 /*!
  * @brief Sets the next date at which the timer will fire.
@@ -307,7 +307,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  *
  * @param fireDate The next date at which the timer will fire
  */
-- (void)setFireDate: (OFDate*)fireDate;
+- (void)setFireDate: (OFDate *)fireDate;
 
 /*!
  * @brief Invalidates the timer, preventing it from firing.

@@ -66,8 +66,8 @@
 	OFDataArray *_extraField;
 }
 
-- initWithStream: (OFStream*)stream;
-- (bool)matchesEntry: (OFZIPArchiveEntry*)entry;
+- initWithStream: (OFStream *)stream;
+- (bool)matchesEntry: (OFZIPArchiveEntry *)entry;
 @end
 
 @interface OFZIPArchive_FileStream: OFStream
@@ -80,8 +80,8 @@
 	bool _atEndOfStream, _closed;
 }
 
--  initWithStream: (OFStream*)path
-  localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader;
+-  initWithStream: (OFStream *)path
+  localFileHeader: (OFZIPArchive_LocalFileHeader *)localFileHeader;
 @end
 
 uint32_t
@@ -136,13 +136,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @implementation OFZIPArchive
 @synthesize archiveComment = _archiveComment;
 
-+ (instancetype)archiveWithSeekableStream: (OFSeekableStream*)stream
++ (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream
 {
 	return [[[self alloc] initWithSeekableStream: stream] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)archiveWithPath: (OFString*)path
++ (instancetype)archiveWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
 }
@@ -153,7 +153,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSeekableStream: (OFSeekableStream*)stream
+- initWithSeekableStream: (OFSeekableStream *)stream
 {
 	self = [super init];
 
@@ -171,7 +171,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 
 #ifdef OF_HAVE_FILES
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 {
 	self = [super init];
 
@@ -322,12 +322,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFArray*)entries
+- (OFArray *)entries
 {
 	return [[_entries copy] autorelease];
 }
 
-- (OFStream*)streamForReadingFile: (OFString*)path
+- (OFStream *)streamForReadingFile: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
@@ -374,7 +374,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchive_LocalFileHeader
-- initWithStream: (OFStream*)stream
+- initWithStream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -436,7 +436,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[super dealloc];
 }
 
-- (bool)matchesEntry: (OFZIPArchiveEntry*)entry
+- (bool)matchesEntry: (OFZIPArchiveEntry *)entry
 {
 	if (_compressionMethod != [entry compressionMethod] ||
 	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
@@ -457,8 +457,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchive_FileStream
--  initWithStream: (OFStream*)stream
-  localFileHeader: (OFZIPArchive_LocalFileHeader*)localFileHeader
+-  initWithStream: (OFStream *)stream
+  localFileHeader: (OFZIPArchive_LocalFileHeader *)localFileHeader
 {
 	self = [super init];
 
@@ -510,7 +510,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	size_t min, ret;

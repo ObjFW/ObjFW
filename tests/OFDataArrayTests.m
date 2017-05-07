@@ -127,7 +127,7 @@ const char *str = "Hello!";
 
 	TEST(@"Building strings",
 	    (array[0] = [class dataArray]) &&
-	    R([array[0] addItems: (void*)str
+	    R([array[0] addItems: (void *)str
 			   count: 6]) && R([array[0] addItem: ""]) &&
 	    !strcmp([array[0] items], str))
 

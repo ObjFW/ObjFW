@@ -54,7 +54,7 @@
 {
 	@try {
 		[_mapTable replaceObjectsUsingBlock:
-		    ^ void* (void *key, void *object) {
+		    ^ void *(void *key, void *object) {
 			return block(key, object);
 		}];
 	} @catch (OFEnumerationMutationException *e) {

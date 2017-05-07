@@ -46,7 +46,7 @@
 	[super dealloc];
 }
 
-- (void)setKey: (const void*)key
+- (void)setKey: (const void *)key
 	length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -100,7 +100,7 @@
 	_calculated = false;
 }
 
-- (void)updateWithBuffer: (const void*)buffer
+- (void)updateWithBuffer: (const void *)buffer
 		  length: (size_t)length
 {
 	if (_innerHash == nil)
@@ -114,7 +114,7 @@
 			      length: length];
 }
 
-- (const unsigned char*)digest
+- (const unsigned char *)digest
 {
 	if (_outerHash == nil || _innerHash == nil)
 		@throw [OFInvalidArgumentException exception];

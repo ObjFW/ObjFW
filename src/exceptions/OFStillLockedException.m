@@ -43,7 +43,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_lock != nil)
 		return [OFString stringWithFormat:

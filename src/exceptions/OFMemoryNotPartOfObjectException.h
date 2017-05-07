@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which the memory is not part of
  * @return A new, autoreleased memory not part of object exception
  */
-+ (instancetype)exceptionWithPointer: (void*)pointer
++ (instancetype)exceptionWithPointer: (void *)pointer
 			      object: (id)object;
 
 /*!
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which the memory is not part of
  * @return An initialized memory not part of object exception
  */
-- initWithPointer: (void*)pointer
+- initWithPointer: (void *)pointer
 	   object: (id)object;
 @end
 

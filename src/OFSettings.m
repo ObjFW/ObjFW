@@ -31,7 +31,7 @@
 	return [super alloc];
 }
 
-+ (instancetype)settingsWithApplicationName: (OFString*)applicationName
++ (instancetype)settingsWithApplicationName: (OFString *)applicationName
 {
 	return [[[self alloc]
 	    initWithApplicationName: applicationName] autorelease];
@@ -42,7 +42,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithApplicationName: (OFString*)applicationName
+- initWithApplicationName: (OFString *)applicationName
 {
 	self = [super init];
 
@@ -63,84 +63,84 @@
 	[super dealloc];
 }
 
-- (void)setString: (OFString*)string
-	  forPath: (OFString*)path
+- (void)setString: (OFString *)string
+	  forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)setInteger: (intmax_t)integer
-	   forPath: (OFString*)path
+	   forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)setBool: (bool)bool_
-	forPath: (OFString*)path
+	forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)setFloat: (float)float_
-	 forPath: (OFString*)path
+	 forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)setDouble: (double)double_
-	  forPath: (OFString*)path
+	  forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)setArray: (OFArray*)array
-	 forPath: (OFString*)path
+- (void)setArray: (OFArray *)array
+	 forPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFString*)stringForPath: (OFString*)path
+- (OFString *)stringForPath: (OFString *)path
 {
 	return [self stringForPath: path
 		      defaultValue: nil];
 }
 
-- (OFString*)stringForPath: (OFString*)path
-	      defaultValue: (OFString*)defaultValue
+- (OFString *)stringForPath: (OFString *)path
+	       defaultValue: (OFString *)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (intmax_t)integerForPath: (OFString*)path
+- (intmax_t)integerForPath: (OFString *)path
 	      defaultValue: (intmax_t)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (bool)boolForPath: (OFString*)path
+- (bool)boolForPath: (OFString *)path
        defaultValue: (bool)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (float)floatForPath: (OFString*)path
+- (float)floatForPath: (OFString *)path
 	 defaultValue: (float)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (double)doubleForPath: (OFString*)path
+- (double)doubleForPath: (OFString *)path
 	   defaultValue: (double)defaultValue
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFArray*)arrayForPath: (OFString*)path
+- (OFArray *)arrayForPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)removeValueForPath: (OFString*)path
+- (void)removeValueForPath: (OFString *)path
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

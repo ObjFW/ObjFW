@@ -125,8 +125,8 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFApplication: OFObject
 {
 	OFString *_programName;
-	OFArray OF_GENERIC(OFString*) *_arguments;
-	OFDictionary OF_GENERIC(OFString*, OFString*) *_environment;
+	OFArray OF_GENERIC(OFString *) *_arguments;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *_environment;
 	int *_argc;
 	char ***_argv;
 @public
@@ -147,41 +147,41 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The arguments passed to the application.
  */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFString*) *arguments;
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *arguments;
 
 /*!
  * The environment of the application.
  */
 @property (readonly, nonatomic)
-    OFDictionary OF_GENERIC(OFString*, OFString*) *environment;
+    OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
 
 /*!
  * @brief Returns the only OFApplication instance in the application.
  *
  * @return The only OFApplication instance in the application
  */
-+ (OFApplication*)sharedApplication;
++ (OFApplication *)sharedApplication;
 
 /*!
  * @brief Returns the name of the program (argv[0]).
  *
  * @return The name of the program (argv[0])
  */
-+ (OFString*)programName;
++ (OFString *)programName;
 
 /*!
  * @brief Returns the arguments passed to the application.
  *
  * @return The arguments passed to the application
  */
-+ (OFArray OF_GENERIC(OFString*)*)arguments;
++ (OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
-+ (OFDictionary OF_GENERIC(OFString*, OFString*)*)environment;
++ (OFDictionary OF_GENERIC(OFString *, OFString *) *)environment;
 
 /*!
  * @brief Terminates the application with the EXIT_SUCCESS status.
@@ -203,7 +203,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param sandbox The sandbox to activate
  */
-+ (void)activateSandbox: (OFSandbox*)sandbox;
++ (void)activateSandbox: (OFSandbox *)sandbox;
 #endif
 
 /*!
@@ -249,7 +249,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param sandbox The sandbox to activate
  */
-- (void)activateSandbox: (OFSandbox*)sandbox;
+- (void)activateSandbox: (OFSandbox *)sandbox;
 #endif
 @end
 

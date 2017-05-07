@@ -46,9 +46,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host for which translation was requested
  * @return A new, autoreleased address translation failed exception
  */
-+ (instancetype)exceptionWithHost: (nullable OFString*)host;
++ (instancetype)exceptionWithHost: (nullable OFString *)host;
 
-+ (instancetype)exceptionWithHost: (nullable OFString*)host
++ (instancetype)exceptionWithHost: (nullable OFString *)host
 			    error: (int)error;
 + (instancetype)exceptionWithError: (int)error;
 
@@ -58,9 +58,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host for which translation was requested
  * @return An initialized address translation failed exception
  */
-- initWithHost: (nullable OFString*)host;
+- initWithHost: (nullable OFString *)host;
 
-- (instancetype)initWithHost: (nullable OFString*)host
+- (instancetype)initWithHost: (nullable OFString *)host
 		       error: (int)error;
 - (instancetype)initWithError: (int)error;
 @end

@@ -29,7 +29,7 @@
 #import "OFOpenItemFailedException.h"
 
 @interface OFINIFile ()
-- (void)OF_parseFile: (OFString*)path
+- (void)OF_parseFile: (OFString *)path
 	    encoding: (of_string_encoding_t)encoding;
 @end
 
@@ -55,12 +55,12 @@ isWhitespaceLine(OFString *line)
 }
 
 @implementation OFINIFile
-+ (instancetype)fileWithPath: (OFString*)path
++ (instancetype)fileWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
 }
 
-+ (instancetype)fileWithPath: (OFString*)path
++ (instancetype)fileWithPath: (OFString *)path
 		    encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithPath: path
@@ -72,13 +72,13 @@ isWhitespaceLine(OFString *line)
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
 {
 	return [self initWithPath: path
 			 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
       encoding: (of_string_encoding_t)encoding
 {
 	self = [super init];
@@ -103,7 +103,7 @@ isWhitespaceLine(OFString *line)
 	[super dealloc];
 }
 
-- (OFINICategory*)categoryForName: (OFString*)name
+- (OFINICategory *)categoryForName: (OFString *)name
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFINICategory *category;
@@ -129,7 +129,7 @@ isWhitespaceLine(OFString *line)
 	return [category autorelease];
 }
 
-- (void)OF_parseFile: (OFString*)path
+- (void)OF_parseFile: (OFString *)path
 	    encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -176,13 +176,13 @@ isWhitespaceLine(OFString *line)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 {
 	[self writeToFile: path
 		 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();

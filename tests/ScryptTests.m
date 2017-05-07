@@ -160,22 +160,22 @@ static const unsigned char testVector4[64] = {
 	    memcmp(ROMixBuffer, ROMixOutput, 128) == 0)
 
 	TEST(@"scrypt test vector #1",
-	    R(of_scrypt(1, 16, 1, (unsigned char*)"", 0, "", 0, output, 64)) &&
+	    R(of_scrypt(1, 16, 1, (unsigned char *)"", 0, "", 0, output, 64)) &&
 	    memcmp(output, testVector1, 64) == 0)
 
 	TEST(@"scrypt test vector #2",
-	    R(of_scrypt(8, 1024, 16, (unsigned char*)"NaCl", 4, "password", 8,
+	    R(of_scrypt(8, 1024, 16, (unsigned char *)"NaCl", 4, "password", 8,
 	    output, 64)) && memcmp(output, testVector2, 64) == 0)
 
 	TEST(@"scrypt test vector #3",
-	    R(of_scrypt(8, 16384, 1, (unsigned char*)"SodiumChloride", 14,
+	    R(of_scrypt(8, 16384, 1, (unsigned char *)"SodiumChloride", 14,
 	    "pleaseletmein", 13, output, 64)) &&
 	    memcmp(output, testVector3, 64) == 0)
 
 	/* The forth test vector is too expensive to include it in the tests. */
 #if 0
 	TEST(@"scrypt test vector #4",
-	    R(of_scrypt(8, 1048576, 1, (unsigned char*)"SodiumChloride", 14,
+	    R(of_scrypt(8, 1048576, 1, (unsigned char *)"SodiumChloride", 14,
 	    "pleaseletmein", 13, output, 64)) &&
 	    memcmp(output, testVector4, 64) == 0)
 #endif

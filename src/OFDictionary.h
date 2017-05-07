@@ -52,7 +52,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *	 dictionary.
  */
 #ifdef OF_HAVE_GENERICS
-@interface OFDictionary <KeyType, ObjectType>:
+@interface OFDictionary<KeyType, ObjectType>:
 #else
 # ifndef DOXYGEN
 #  define KeyType id
@@ -76,7 +76,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @return A new autoreleased OFDictionary
  */
 + (instancetype)dictionaryWithDictionary:
-   (OFDictionary OF_GENERIC(KeyType, ObjectType)*)dictionary;
+   (OFDictionary OF_GENERIC(KeyType, ObjectType) *)dictionary;
 
 /*!
  * @brief Creates a new OFDictionary with the specified key and object.
@@ -96,8 +96,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @return A new autoreleased OFDictionary
  */
 + (instancetype)
-    dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType)*)objects
-		  forKeys: (OFArray OF_GENERIC(KeyType)*)keys;
+    dictionaryWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
+		  forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
 
 /*!
  * @brief Creates a new OFDictionary with the specified keys and objects.
@@ -128,7 +128,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param dictionary An OFDictionary
  * @return An initialized OFDictionary
  */
-- initWithDictionary: (OFDictionary OF_GENERIC(KeyType, ObjectType)*)dictionary;
+- initWithDictionary:
+    (OFDictionary OF_GENERIC(KeyType, ObjectType) *)dictionary;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified key
@@ -149,8 +150,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param objects An array of objects
  * @return An initialized OFDictionary
  */
-- initWithObjects: (OFArray OF_GENERIC(ObjectType)*)objects
-	  forKeys: (OFArray OF_GENERIC(KeyType)*)keys;
+- initWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
+	  forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -210,7 +211,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param key The key whose value should be returned
  * @return The value for the given key or `nil` if the key was not found
  */
-- (nullable id)valueForKey: (OFString*)key;
+- (nullable id)valueForKey: (OFString *)key;
 
 /*!
  * @brief Sets a value for a key.
@@ -225,7 +226,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param value The value to set the key to
  */
 - (void)setValue: (nullable id)value
-	  forKey: (OFString*)key;
+	  forKey: (OFString *)key;
 
 /*!
  * @brief Checks whether the dictionary contains an object equal to the
@@ -251,28 +252,28 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *
  * @return An array of all keys
  */
-- (OFArray OF_GENERIC(KeyType)*)allKeys;
+- (OFArray OF_GENERIC(KeyType) *)allKeys;
 
 /*!
  * @brief Returns an array of all objects.
  *
  * @return An array of all objects
  */
-- (OFArray OF_GENERIC(ObjectType)*)allObjects;
+- (OFArray OF_GENERIC(ObjectType) *)allObjects;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through the dictionary's keys.
  *
  * @return An OFEnumerator to enumerate through the dictionary's keys
  */
-- (OFEnumerator OF_GENERIC(KeyType)*)keyEnumerator;
+- (OFEnumerator OF_GENERIC(KeyType) *)keyEnumerator;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through the dictionary's objects.
  *
  * @return An OFEnumerator to enumerate through the dictionary's objects
  */
-- (OFEnumerator OF_GENERIC(ObjectType)*)objectEnumerator;
+- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -290,7 +291,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param block A block which maps an object for each object
  * @return A new autoreleased OFDictionary
  */
-- (OFDictionary OF_GENERIC(KeyType, id)*)mappedDictionaryUsingBlock:
+- (OFDictionary OF_GENERIC(KeyType, id) *)mappedDictionaryUsingBlock:
     (of_dictionary_map_block_t)block;
 
 /*!
@@ -301,7 +302,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *		dictionary
  * @return A new autoreleased OFDictionary
  */
-- (OFDictionary OF_GENERIC(KeyType, ObjectType)*)filteredDictionaryUsingBlock:
+- (OFDictionary OF_GENERIC(KeyType, ObjectType) *)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block;
 #endif
 @end

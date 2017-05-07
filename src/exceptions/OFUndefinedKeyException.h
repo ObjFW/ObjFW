@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased undefined key exception
  */
 + (instancetype)exceptionWithObject: (id)object
-				key: (OFString*)key;
+				key: (OFString *)key;
 
 /*!
  * @brief Creates a new, autoreleased undefined key exception.
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased undefined key exception
  */
 + (instancetype)exceptionWithObject: (id)object
-				key: (OFString*)key
+				key: (OFString *)key
 			      value: (id)value;
 
 /*!
@@ -79,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized undefined key exception
  */
 - initWithObject: (id)object
-	     key: (OFString*)key;
+	     key: (OFString *)key;
 
 /*!
  * @brief Initializes an already allocated undefined key exception.
@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized undefined key exception
  */
 - initWithObject: (id)object
-	     key: (OFString*)key
+	     key: (OFString *)key
 	   value: (id)value;
 @end
 

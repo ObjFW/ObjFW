@@ -29,7 +29,7 @@
 
 #import "OFInitializationFailedException.h"
 
-typedef OFPlugin* (*init_plugin_t)(void);
+typedef OFPlugin *(*init_plugin_t)(void);
 
 of_plugin_handle_t
 of_dlopen(OFString *path, int flags)
@@ -45,13 +45,13 @@ of_dlopen(OFString *path, int flags)
 #endif
 }
 
-void*
+void *
 of_dlsym(of_plugin_handle_t handle, const char *symbol)
 {
 #ifndef OF_WINDOWS
 	return dlsym(handle, symbol);
 #else
-	return (void*)(uintptr_t)GetProcAddress(handle, symbol);
+	return (void *)(uintptr_t)GetProcAddress(handle, symbol);
 #endif
 }
 
@@ -66,7 +66,7 @@ of_dlclose(of_plugin_handle_t handle)
 }
 
 @implementation OFPlugin
-+ (id)pluginFromFile: (OFString*)path
++ (id)pluginFromFile: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_plugin_handle_t handle;

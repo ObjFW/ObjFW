@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key of the value to return
  * @return The value for the specified key
  */
-- (nullable id)valueForKey: (OFString*)key;
+- (nullable id)valueForKey: (OFString *)key;
 
 /*!
  * @brief This is called by @ref valueForKey: if the specified key does not
@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The undefined key of the value to return
  * @return The value for the specified undefined key
  */
-- (nullable id)valueForUndefinedKey: (OFString*)key;
+- (nullable id)valueForUndefinedKey: (OFString *)key;
 
 /*!
  * @brief Set the value for the specified key
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key of the value to set
  */
 - (void)setValue: (nullable id)value
-	  forKey: (OFString*)key;
+	  forKey: (OFString *)key;
 
 /*!
  * @brief This is called by @ref setValue:forKey: if the specified key does not
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The undefined key of the value to set
  */
 -  (void)setValue: (nullable id)value
-  forUndefinedKey: (OFString*)key;
+  forUndefinedKey: (OFString *)key;
 
 /*!
  * @brief This is called by @ref setValue:forKey: if the specified key is a
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param key The key for which the value `nil` was specified
  */
-- (void)setNilValueForKey: (OFString*)key;
+- (void)setNilValueForKey: (OFString *)key;
 @end
 
 OF_ASSUME_NONNULL_END

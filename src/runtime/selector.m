@@ -52,7 +52,7 @@ objc_register_selector(struct objc_abi_selector *sel)
 		selectors = objc_hashtable_new(
 		    objc_hash_string, objc_equal_string, 2);
 	else if ((rsel = objc_hashtable_get(selectors, sel->name)) != NULL) {
-		((struct objc_selector*)sel)->uid = rsel->uid;
+		((struct objc_selector *)sel)->uid = rsel->uid;
 		return;
 	}
 
@@ -60,11 +60,11 @@ objc_register_selector(struct objc_abi_selector *sel)
 		selector_names = objc_sparsearray_new(SEL_SIZE);
 
 	name = sel->name;
-	rsel = (struct objc_selector*)sel;
+	rsel = (struct objc_selector *)sel;
 	rsel->uid = selectors_cnt++;
 
 	objc_hashtable_set(selectors, name, rsel);
-	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, (void*)name);
+	objc_sparsearray_set(selector_names, (uint32_t)rsel->uid, (void *)name);
 }
 
 SEL
@@ -90,11 +90,11 @@ sel_registerName(const char *name)
 	sel->types = NULL;
 
 	if ((free_list = realloc(free_list,
-	    sizeof(void*) * (free_list_cnt + 2))) == NULL)
+	    sizeof(void *) * (free_list_cnt + 2))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
 	free_list[free_list_cnt++] = sel;
-	free_list[free_list_cnt++] = (char*)sel->name;
+	free_list[free_list_cnt++] = (char *)sel->name;
 
 	objc_register_selector(sel);
 
@@ -114,7 +114,7 @@ objc_register_all_selectors(struct objc_abi_symtab *symtab)
 		objc_register_selector(sel);
 }
 
-const char*
+const char *
 sel_getName(SEL sel)
 {
 	const char *ret;

@@ -23,7 +23,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFArray_NSArray
-- initWithNSArray: (NSArray*)array
+- initWithNSArray: (NSArray *)array
 {
 	self = [super init];
 
@@ -50,7 +50,7 @@
 
 	object = [_array objectAtIndex: index];
 
-	if ([(NSObject*)object conformsToProtocol: @protocol(NSBridging)])
+	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
 
 	return object;

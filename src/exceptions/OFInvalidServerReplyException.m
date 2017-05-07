@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFInvalidServerReplyException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"Got an invalid reply from the server!";
 }

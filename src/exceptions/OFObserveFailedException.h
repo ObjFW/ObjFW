@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased observe failed exception
  */
-+ (instancetype)exceptionWithObserver: (OFKernelEventObserver*)observer
++ (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo;
 
 /*!
@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized observe failed exception
  */
-- initWithObserver: (OFKernelEventObserver*)observer
+- initWithObserver: (OFKernelEventObserver *)observer
 	     errNo: (int)errNo;
 @end
 

@@ -24,9 +24,9 @@ OF_ASSUME_NONNULL_BEGIN
 	of_range_t _range;
 }
 
-+ (instancetype)arrayWithArray: (OFArray*)array
++ (instancetype)arrayWithArray: (OFArray *)array
 			 range: (of_range_t)range;
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 	  range: (of_range_t)range;
 @end
 

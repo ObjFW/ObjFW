@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFInvalidEncodingException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"An encoding is invalid!";
 }

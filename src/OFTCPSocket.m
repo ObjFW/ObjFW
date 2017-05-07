@@ -78,25 +78,25 @@ static uint16_t defaultSOCKS5Port = 1080;
 	OFException *_exception;
 }
 
-- initWithSourceThread: (OFThread*)sourceThread
-		socket: (OFTCPSocket*)socket
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		socket: (OFTCPSocket *)socket
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector;
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread*)sourceThread
-		socket: (OFTCPSocket*)socket
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		socket: (OFTCPSocket *)socket
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		 block: (of_tcp_socket_async_connect_block_t)block;
 # endif
 @end
 
 @implementation OFTCPSocket_ConnectThread
-- initWithSourceThread: (OFThread*)sourceThread
-		socket: (OFTCPSocket*)socket
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		socket: (OFTCPSocket *)socket
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector
@@ -119,9 +119,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread*)sourceThread
-		socket: (OFTCPSocket*)socket
-		  host: (OFString*)host
+- initWithSourceThread: (OFThread *)sourceThread
+		socket: (OFTCPSocket *)socket
+		  host: (OFString *)host
 		  port: (uint16_t)port
 		 block: (of_tcp_socket_async_connect_block_t)block
 {
@@ -165,8 +165,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_block(_socket, _exception);
 	else {
 # endif
-		void (*func)(id, SEL, OFTCPSocket*, OFException*) =
-		    (void(*)(id, SEL, OFTCPSocket*, OFException*))[_target
+		void (*func)(id, SEL, OFTCPSocket *, OFException *) =
+		    (void (*)(id, SEL, OFTCPSocket *, OFException *))[_target
 		    methodForSelector: _selector];
 
 		func(_target, _selector, _socket, _exception);
@@ -200,14 +200,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 @implementation OFTCPSocket
 @synthesize SOCKS5Host = _SOCKS5Host, SOCKS5Port = _SOCKS5Port;
 
-+ (void)setSOCKS5Host: (OFString*)host
++ (void)setSOCKS5Host: (OFString *)host
 {
 	id old = defaultSOCKS5Host;
 	defaultSOCKS5Host = [host copy];
 	[old release];
 }
 
-+ (OFString*)SOCKS5Host
++ (OFString *)SOCKS5Host
 {
 	return [[defaultSOCKS5Host copy] autorelease];
 }
@@ -245,7 +245,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
-- (void)connectToHost: (OFString*)host
+- (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port
 {
 	OFString *destinationHost = host;
@@ -310,7 +310,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 
 #ifdef OF_HAVE_THREADS
-- (void)asyncConnectToHost: (OFString*)host
+- (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		    target: (id)target
 		  selector: (SEL)selector
@@ -329,7 +329,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (void)asyncConnectToHost: (OFString*)host
+- (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		     block: (of_tcp_socket_async_connect_block_t)block
 {
@@ -347,7 +347,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 #endif
 
-- (uint16_t)bindToHost: (OFString*)host
+- (uint16_t)bindToHost: (OFString *)host
 		  port: (uint16_t)port
 {
 	of_resolver_result_t **results;
@@ -391,7 +391,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
-		    (const char*)&one, (socklen_t)sizeof(one));
+		    (const char *)&one, (socklen_t)sizeof(one));
 
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 		if (port != 0) {
@@ -420,13 +420,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 				switch (results[0]->family) {
 				case AF_INET:
-					((struct sockaddr_in*)
+					((struct sockaddr_in *)
 					    results[0]->address)->sin_port =
 					    OF_BSWAP16_IF_LE(rnd);
 					break;
 # ifdef HAVE_IPV6
 				case AF_INET6:
-					((struct sockaddr_in6*)
+					((struct sockaddr_in6 *)
 					    results[0]->address)->sin6_port =
 					    OF_BSWAP16_IF_LE(rnd);
 					break;
@@ -468,7 +468,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	addrLen = (socklen_t)sizeof(addr.storage);
-	if (of_getsockname(_socket, (struct sockaddr*)&addr.storage,
+	if (of_getsockname(_socket, (struct sockaddr *)&addr.storage,
 	    &addrLen) != 0) {
 		int errNo = of_socket_errno();
 
@@ -586,7 +586,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (OFString*)remoteAddress
+- (OFString *)remoteAddress
 {
 	OFString *ret;
 
@@ -612,7 +612,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int v = enabled;
 
 	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
-	    (char*)&v, (socklen_t)sizeof(v)) != 0)
+	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
@@ -624,7 +624,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	socklen_t len = sizeof(v);
 
 	if (getsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
-	    (char*)&v, &len) != 0 || len != sizeof(v))
+	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
@@ -639,7 +639,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int v = enabled;
 
 	if (setsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
-	    (char*)&v, (socklen_t)sizeof(v)) != 0)
+	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];
@@ -651,7 +651,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	socklen_t len = sizeof(v);
 
 	if (getsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
-	    (char*)&v, &len) != 0 || len != sizeof(v))
+	    (char *)&v, &len) != 0 || len != sizeof(v))
 		@throw [OFGetOptionFailedException
 		    exceptionWithStream: self
 				  errNo: of_socket_errno()];

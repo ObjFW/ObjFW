@@ -41,8 +41,8 @@ OF_ASSUME_NONNULL_BEGIN
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
 	OFString *_archiveComment;
-	OFMutableArray OF_GENERIC(OFZIPArchiveEntry*) *_entries;
-	OFMutableDictionary OF_GENERIC(OFString*, OFZIPArchiveEntry*)
+	OFMutableArray OF_GENERIC(OFZIPArchiveEntry *) *_entries;
+	OFMutableDictionary OF_GENERIC(OFString *, OFZIPArchiveEntry *)
 	    *_pathToEntryMap;
 	OFStream *_lastReturnedStream;
 }
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A seekable stream from which the ZIP archive will be read
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithSeekableStream: (OFSeekableStream*)stream;
++ (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the ZIP file
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithPath: (OFString*)path;
++ (instancetype)archiveWithPath: (OFString *)path;
 #endif
 
 /*!
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A seekable stream from which the ZIP archive will be read
  * @return An initialized OFZIPArchive
  */
-- initWithSeekableStream: (OFSeekableStream*)stream;
+- initWithSeekableStream: (OFSeekableStream *)stream;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -87,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the ZIP file
  * @return An initialized OFZIPArchive
  */
-- initWithPath: (OFString*)path;
+- initWithPath: (OFString *)path;
 #endif
 
 /*!
@@ -100,7 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The entries of the central directory of the archive as an array
  */
-- (OFArray OF_GENERIC(OFZIPArchiveEntry*)*)entries;
+- (OFArray OF_GENERIC(OFZIPArchiveEntry *) *)entries;
 
 /*!
  * @brief Returns a stream for reading the specified file from the archive.
@@ -112,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the file inside the archive
  * @return A stream for reading the specified file form the archive
  */
-- (OFStream*)streamForReadingFile: (OFString*)path;
+- (OFStream *)streamForReadingFile: (OFString *)path;
 @end
 
 OF_ASSUME_NONNULL_END

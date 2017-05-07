@@ -56,15 +56,15 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 + (void)initialize
 {
 	if (self == [ZIPArchive class])
-		app = (OFZIP*)[[OFApplication sharedApplication] delegate];
+		app = (OFZIP *)[[OFApplication sharedApplication] delegate];
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- initWithStream: (OF_KINDOF(OFStream*))stream
+- initWithStream: (OF_KINDOF(OFStream *))stream
 {
 	self = [super init];
 
@@ -187,18 +187,18 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	}
 }
 
-- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = ([files count] == 0);
-	OFMutableSet OF_GENERIC(OFString*) *missing =
+	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 
 	for (OFZIPArchiveEntry *entry in [_archive entries]) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		OFString *outFileName = [fileName stringByStandardizingPath];
-		OFArray OF_GENERIC(OFString*) *pathComponents;
+		OFArray OF_GENERIC(OFString *) *pathComponents;
 		OFString *directory;
 		OFStream *stream;
 		OFFile *output;
@@ -327,7 +327,7 @@ outer_loop_end:
 	}
 }
 
-- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files
+- (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
 	OFStream *stream;
 

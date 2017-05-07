@@ -22,9 +22,9 @@
 @implementation OFChangeOwnerFailedException
 @synthesize path = _path, owner = _owner, group = _group, errNo = _errNo;
 
-+ (instancetype)exceptionWithPath: (OFString*)path
-			    owner: (OFString*)owner
-			    group: (OFString*)group
++ (instancetype)exceptionWithPath: (OFString *)path
+			    owner: (OFString *)owner
+			    group: (OFString *)group
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
@@ -38,9 +38,9 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString*)path
-	 owner: (OFString*)owner
-	 group: (OFString*)group
+- initWithPath: (OFString *)path
+	 owner: (OFString *)owner
+	 group: (OFString *)group
 	 errNo: (int)errNo
 {
 	self = [super init];
@@ -67,7 +67,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_group == nil)
 		return [OFString stringWithFormat:

@@ -25,7 +25,7 @@
 
 int _OFString_XMLUnescaping_reference;
 
-static OF_INLINE OFString*
+static OF_INLINE OFString *
 parseNumericEntity(const char *entity, size_t length)
 {
 	of_unichar_t c;
@@ -73,8 +73,8 @@ parseNumericEntity(const char *entity, size_t length)
 				       length: i];
 }
 
-static OFString*
-parseEntities(OFString *self, id (*lookup)(void*, OFString*, OFString*),
+static OFString *
+parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
     void *context)
 {
 	OFMutableString *ret;
@@ -205,19 +205,19 @@ lookupUsingBlock(void *context, OFString *self, OFString *entity)
 #endif
 
 @implementation OFString (XMLUnescaping)
-- (OFString*)stringByXMLUnescaping
+- (OFString *)stringByXMLUnescaping
 {
 	return [self stringByXMLUnescapingWithDelegate: nil];
 }
 
-- (OFString*)stringByXMLUnescapingWithDelegate:
+- (OFString *)stringByXMLUnescapingWithDelegate:
     (id <OFStringXMLUnescapingDelegate>)delegate
 {
 	return parseEntities(self, lookupUsingDelegate, delegate);
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (OFString*)stringByXMLUnescapingWithBlock:
+- (OFString *)stringByXMLUnescapingWithBlock:
     (of_string_xml_unescaping_block_t)block
 {
 	return parseEntities(self, lookupUsingBlock, block);

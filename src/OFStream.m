@@ -88,13 +88,13 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -113,7 +113,7 @@
 	return [self lowlevelIsAtEndOfStream];
 }
 
-- (size_t)readIntoBuffer: (void*)buffer
+- (size_t)readIntoBuffer: (void *)buffer
 		  length: (size_t)length
 {
 	if (_readBufferLength == 0) {
@@ -171,18 +171,18 @@
 	}
 }
 
-- (void)readIntoBuffer: (void*)buffer
+- (void)readIntoBuffer: (void *)buffer
 	   exactLength: (size_t)length
 {
 	size_t readLength = 0;
 
 	while (readLength < length)
-		readLength += [self readIntoBuffer: (char*)buffer + readLength
+		readLength += [self readIntoBuffer: (char *)buffer + readLength
 					    length: length - readLength];
 }
 
 #ifdef OF_HAVE_SOCKETS
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		     target: (id)target
 		   selector: (SEL)selector
@@ -194,7 +194,7 @@
 				   selector: selector];
 }
 
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		     target: (id)target
 		   selector: (SEL)selector
@@ -207,7 +207,7 @@
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		      block: (of_stream_async_read_block_t)block
 {
@@ -217,7 +217,7 @@
 				      block: block];
 }
 
-- (void)asyncReadIntoBuffer: (void*)buffer
+- (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		      block: (of_stream_async_read_block_t)block
 {
@@ -233,7 +233,7 @@
 {
 	uint8_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 1];
 
 	return ret;
@@ -243,7 +243,7 @@
 {
 	uint16_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 2];
 
 	return OF_BSWAP16_IF_LE(ret);
@@ -253,7 +253,7 @@
 {
 	uint32_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 4];
 
 	return OF_BSWAP32_IF_LE(ret);
@@ -263,7 +263,7 @@
 {
 	uint64_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 8];
 
 	return OF_BSWAP64_IF_LE(ret);
@@ -273,7 +273,7 @@
 {
 	float ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 4];
 
 	return OF_BSWAP_FLOAT_IF_LE(ret);
@@ -283,13 +283,13 @@
 {
 	double ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 8];
 
 	return OF_BSWAP_DOUBLE_IF_LE(ret);
 }
 
-- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t*)buffer
+- (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer
 				  count: (size_t)count
 {
 	size_t size = count * sizeof(uint16_t);
@@ -305,7 +305,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t*)buffer
+- (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer
 				  count: (size_t)count
 {
 	size_t size = count * sizeof(uint32_t);
@@ -321,7 +321,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t*)buffer
+- (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer
 				  count: (size_t)count
 {
 	size_t size = count * sizeof(uint64_t);
@@ -337,7 +337,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianFloatsIntoBuffer: (float*)buffer
+- (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer
 				  count: (size_t)count
 {
 	size_t size = count * sizeof(float);
@@ -353,7 +353,7 @@
 	return size;
 }
 
-- (size_t)readBigEndianDoublesIntoBuffer: (double*)buffer
+- (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer
 				   count: (size_t)count
 {
 	size_t size = count * sizeof(double);
@@ -373,7 +373,7 @@
 {
 	uint16_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 2];
 
 	return OF_BSWAP16_IF_BE(ret);
@@ -383,7 +383,7 @@
 {
 	uint32_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 4];
 
 	return OF_BSWAP32_IF_BE(ret);
@@ -393,7 +393,7 @@
 {
 	uint64_t ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 8];
 
 	return OF_BSWAP64_IF_BE(ret);
@@ -403,7 +403,7 @@
 {
 	float ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 4];
 
 	return OF_BSWAP_FLOAT_IF_BE(ret);
@@ -413,13 +413,13 @@
 {
 	double ret;
 
-	[self readIntoBuffer: (char*)&ret
+	[self readIntoBuffer: (char *)&ret
 		 exactLength: 8];
 
 	return OF_BSWAP_DOUBLE_IF_BE(ret);
 }
 
-- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t*)buffer
+- (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
 				     count: (size_t)count
 {
 	size_t size = count * sizeof(uint16_t);
@@ -435,7 +435,7 @@
 	return size;
 }
 
-- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t*)buffer
+- (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t *)buffer
 				     count: (size_t)count
 {
 	size_t size = count * sizeof(uint32_t);
@@ -451,7 +451,7 @@
 	return size;
 }
 
-- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t*)buffer
+- (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t *)buffer
 				     count: (size_t)count
 {
 	size_t size = count * sizeof(uint64_t);
@@ -467,7 +467,7 @@
 	return size;
 }
 
-- (size_t)readLittleEndianFloatsIntoBuffer: (float*)buffer
+- (size_t)readLittleEndianFloatsIntoBuffer: (float *)buffer
 				     count: (size_t)count
 {
 	size_t size = count * sizeof(float);
@@ -483,7 +483,7 @@
 	return size;
 }
 
-- (size_t)readLittleEndianDoublesIntoBuffer: (double*)buffer
+- (size_t)readLittleEndianDoublesIntoBuffer: (double *)buffer
 				      count: (size_t)count
 {
 	size_t size = count * sizeof(double);
@@ -499,14 +499,14 @@
 	return size;
 }
 
-- (OFDataArray*)readDataArrayWithCount: (size_t)count
+- (OFDataArray *)readDataArrayWithCount: (size_t)count
 {
 	return [self readDataArrayWithItemSize: 1
 					 count: count];
 }
 
-- (OFDataArray*)readDataArrayWithItemSize: (size_t)itemSize
-				    count: (size_t)count
+- (OFDataArray *)readDataArrayWithItemSize: (size_t)itemSize
+				     count: (size_t)count
 {
 	OFDataArray *dataArray;
 	char *tmp;
@@ -528,7 +528,7 @@
 	return dataArray;
 }
 
-- (OFDataArray*)readDataArrayTillEndOfStream
+- (OFDataArray *)readDataArrayTillEndOfStream
 {
 	OFDataArray *dataArray;
 	size_t pageSize;
@@ -554,14 +554,14 @@
 	return dataArray;
 }
 
-- (OFString*)readStringWithLength: (size_t)length
+- (OFString *)readStringWithLength: (size_t)length
 {
 	return [self readStringWithLength: length
 				 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)readStringWithLength: (size_t)length
-			 encoding: (of_string_encoding_t)encoding
+- (OFString *)readStringWithLength: (size_t)length
+			  encoding: (of_string_encoding_t)encoding
 {
 	OFString *ret;
 	char *buffer = [self allocMemoryWithSize: length + 1];
@@ -580,7 +580,7 @@
 	return ret;
 }
 
-- (OFString*)tryReadLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)tryReadLineWithEncoding: (of_string_encoding_t)encoding
 {
 	size_t pageSize, bufferLength, retLength;
 	char *retCString, *buffer, *readBuffer;
@@ -733,12 +733,12 @@
 	return nil;
 }
 
-- (OFString*)readLine
+- (OFString *)readLine
 {
 	return [self readLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)readLineWithEncoding: (of_string_encoding_t)encoding
+- (OFString *)readLineWithEncoding: (of_string_encoding_t)encoding
 {
 	OFString *line = nil;
 
@@ -785,13 +785,13 @@
 # endif
 #endif
 
-- (OFString*)tryReadLine
+- (OFString *)tryReadLine
 {
 	return [self tryReadLineWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
-			 encoding: (of_string_encoding_t)encoding
+- (OFString *)tryReadTillDelimiter: (OFString *)delimiter
+			  encoding: (of_string_encoding_t)encoding
 {
 	const char *delimiterCString;
 	size_t j, delimiterLength, pageSize, bufferLength, retLength;
@@ -929,14 +929,14 @@
 }
 
 
-- (OFString*)readTillDelimiter: (OFString*)delimiter
+- (OFString *)readTillDelimiter: (OFString *)delimiter
 {
 	return [self readTillDelimiter: delimiter
 			      encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (OFString*)readTillDelimiter: (OFString*)delimiter
-		      encoding: (of_string_encoding_t)encoding
+- (OFString *)readTillDelimiter: (OFString *)delimiter
+		       encoding: (of_string_encoding_t)encoding
 {
 	OFString *ret = nil;
 
@@ -949,7 +949,7 @@
 	return ret;
 }
 
-- (OFString*)tryReadTillDelimiter: (OFString*)delimiter
+- (OFString *)tryReadTillDelimiter: (OFString *)delimiter
 {
 	return [self tryReadTillDelimiter: delimiter
 				 encoding: OF_STRING_ENCODING_UTF_8];
@@ -978,7 +978,7 @@
 	_writeBufferLength = 0;
 }
 
-- (void)writeBuffer: (const void*)buffer
+- (void)writeBuffer: (const void *)buffer
 	     length: (size_t)length
 {
 	if (!_writeBuffered)
@@ -994,7 +994,7 @@
 
 - (void)writeInt8: (uint8_t)int8
 {
-	[self writeBuffer: (char*)&int8
+	[self writeBuffer: (char *)&int8
 		   length: 1];
 }
 
@@ -1002,7 +1002,7 @@
 {
 	int16 = OF_BSWAP16_IF_LE(int16);
 
-	[self writeBuffer: (char*)&int16
+	[self writeBuffer: (char *)&int16
 		   length: 2];
 }
 
@@ -1010,7 +1010,7 @@
 {
 	int32 = OF_BSWAP32_IF_LE(int32);
 
-	[self writeBuffer: (char*)&int32
+	[self writeBuffer: (char *)&int32
 		   length: 4];
 }
 
@@ -1018,7 +1018,7 @@
 {
 	int64 = OF_BSWAP64_IF_LE(int64);
 
-	[self writeBuffer: (char*)&int64
+	[self writeBuffer: (char *)&int64
 		   length: 8];
 }
 
@@ -1026,7 +1026,7 @@
 {
 	float_ = OF_BSWAP_FLOAT_IF_LE(float_);
 
-	[self writeBuffer: (char*)&float_
+	[self writeBuffer: (char *)&float_
 		   length: 4];
 }
 
@@ -1034,11 +1034,11 @@
 {
 	double_ = OF_BSWAP_DOUBLE_IF_LE(double_);
 
-	[self writeBuffer: (char*)&double_
+	[self writeBuffer: (char *)&double_
 		   length: 8];
 }
 
-- (size_t)writeBigEndianInt16s: (const uint16_t*)buffer
+- (size_t)writeBigEndianInt16s: (const uint16_t *)buffer
 			 count: (size_t)count
 {
 	size_t size = count * sizeof(uint16_t);
@@ -1064,7 +1064,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianInt32s: (const uint32_t*)buffer
+- (size_t)writeBigEndianInt32s: (const uint32_t *)buffer
 			 count: (size_t)count
 {
 	size_t size = count * sizeof(uint32_t);
@@ -1090,7 +1090,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianInt64s: (const uint64_t*)buffer
+- (size_t)writeBigEndianInt64s: (const uint64_t *)buffer
 			 count: (size_t)count
 {
 	size_t size = count * sizeof(uint64_t);
@@ -1116,7 +1116,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianFloats: (const float*)buffer
+- (size_t)writeBigEndianFloats: (const float *)buffer
 			 count: (size_t)count
 {
 	size_t size = count * sizeof(float);
@@ -1142,7 +1142,7 @@
 	return size;
 }
 
-- (size_t)writeBigEndianDoubles: (const double*)buffer
+- (size_t)writeBigEndianDoubles: (const double *)buffer
 			  count: (size_t)count
 {
 	size_t size = count * sizeof(double);
@@ -1172,7 +1172,7 @@
 {
 	int16 = OF_BSWAP16_IF_BE(int16);
 
-	[self writeBuffer: (char*)&int16
+	[self writeBuffer: (char *)&int16
 		   length: 2];
 }
 
@@ -1180,7 +1180,7 @@
 {
 	int32 = OF_BSWAP32_IF_BE(int32);
 
-	[self writeBuffer: (char*)&int32
+	[self writeBuffer: (char *)&int32
 		   length: 4];
 }
 
@@ -1188,7 +1188,7 @@
 {
 	int64 = OF_BSWAP64_IF_BE(int64);
 
-	[self writeBuffer: (char*)&int64
+	[self writeBuffer: (char *)&int64
 		   length: 8];
 }
 
@@ -1196,7 +1196,7 @@
 {
 	float_ = OF_BSWAP_FLOAT_IF_BE(float_);
 
-	[self writeBuffer: (char*)&float_
+	[self writeBuffer: (char *)&float_
 		   length: 4];
 }
 
@@ -1204,11 +1204,11 @@
 {
 	double_ = OF_BSWAP_DOUBLE_IF_BE(double_);
 
-	[self writeBuffer: (char*)&double_
+	[self writeBuffer: (char *)&double_
 		   length: 8];
 }
 
-- (size_t)writeLittleEndianInt16s: (const uint16_t*)buffer
+- (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer
 			    count: (size_t)count
 {
 	size_t size = count * sizeof(uint16_t);
@@ -1234,7 +1234,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianInt32s: (const uint32_t*)buffer
+- (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer
 			    count: (size_t)count
 {
 	size_t size = count * sizeof(uint32_t);
@@ -1260,7 +1260,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianInt64s: (const uint64_t*)buffer
+- (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer
 			    count: (size_t)count
 {
 	size_t size = count * sizeof(uint64_t);
@@ -1286,7 +1286,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianFloats: (const float*)buffer
+- (size_t)writeLittleEndianFloats: (const float *)buffer
 			    count: (size_t)count
 {
 	size_t size = count * sizeof(float);
@@ -1312,7 +1312,7 @@
 	return size;
 }
 
-- (size_t)writeLittleEndianDoubles: (const double*)buffer
+- (size_t)writeLittleEndianDoubles: (const double *)buffer
 			     count: (size_t)count
 {
 	size_t size = count * sizeof(double);
@@ -1338,7 +1338,7 @@
 	return size;
 }
 
-- (size_t)writeDataArray: (OFDataArray*)dataArray
+- (size_t)writeDataArray: (OFDataArray *)dataArray
 {
 	size_t length = [dataArray count] * [dataArray itemSize];
 
@@ -1348,13 +1348,13 @@
 	return length;
 }
 
-- (size_t)writeString: (OFString*)string
+- (size_t)writeString: (OFString *)string
 {
 	return [self writeString: string
 			encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (size_t)writeString: (OFString*)string
+- (size_t)writeString: (OFString *)string
 	     encoding: (of_string_encoding_t)encoding
 {
 	size_t length = [string cStringLengthWithEncoding: encoding];
@@ -1365,13 +1365,13 @@
 	return length;
 }
 
-- (size_t)writeLine: (OFString*)string
+- (size_t)writeLine: (OFString *)string
 {
 	return [self writeLine: string
 		      encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (size_t)writeLine: (OFString*)string
+- (size_t)writeLine: (OFString *)string
 	   encoding: (of_string_encoding_t)encoding
 {
 	size_t stringLength = [string cStringLengthWithEncoding: encoding];
@@ -1393,7 +1393,7 @@
 	return stringLength + 1;
 }
 
-- (size_t)writeFormat: (OFConstantString*)format, ...
+- (size_t)writeFormat: (OFConstantString *)format, ...
 {
 	va_list arguments;
 	size_t ret;
@@ -1406,7 +1406,7 @@
 	return ret;
 }
 
-- (size_t)writeFormat: (OFConstantString*)format
+- (size_t)writeFormat: (OFConstantString *)format
 	    arguments: (va_list)arguments
 {
 	char *UTF8String;
@@ -1521,7 +1521,7 @@
 }
 #endif
 
-- (void)unreadFromBuffer: (const void*)buffer
+- (void)unreadFromBuffer: (const void *)buffer
 		  length: (size_t)length
 {
 	char *readBuffer;

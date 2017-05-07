@@ -52,8 +52,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param destinationPath The destination for the link
  * @return A new, autoreleased link failed exception
  */
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath;
++ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
+			destinationPath: (OFString *)destinationPath;
 
 /*!
  * @brief Creates a new, autoreleased link failed exception.
@@ -63,8 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased link failed exception
  */
-+ (instancetype)exceptionWithSourcePath: (OFString*)sourcePath
-			destinationPath: (OFString*)destinationPath
++ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
+			destinationPath: (OFString *)destinationPath
 				  errNo: (int)errNo;
 
 /*!
@@ -74,8 +74,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param destinationPath The destination for the link
  * @return An initialized link failed exception
  */
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath;
+- initWithSourcePath: (OFString *)sourcePath
+     destinationPath: (OFString *)destinationPath;
 
 /*!
  * @brief Initializes an already allocated link failed exception.
@@ -85,8 +85,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized link failed exception
  */
-- initWithSourcePath: (OFString*)sourcePath
-     destinationPath: (OFString*)destinationPath
+- initWithSourcePath: (OFString *)sourcePath
+     destinationPath: (OFString *)destinationPath
 	       errNo: (int)errNo;
 @end
 

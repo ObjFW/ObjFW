@@ -58,7 +58,7 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 }
 
 @implementation OFTCPSocket (SOCKS5)
-- (void)OF_SOCKS5ConnectToHost: (OFString*)host
+- (void)OF_SOCKS5ConnectToHost: (OFString *)host
 			  port: (uint16_t)port
 {
 	char request[] = { 5, 1, 0, 3 };

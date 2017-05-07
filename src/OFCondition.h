@@ -69,7 +69,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param date The date at which the timeout is reached
  * @return Whether the condition has been signaled
  */
-- (bool)waitUntilDate: (OFDate*)date;
+- (bool)waitUntilDate: (OFDate *)date;
 
 /*!
  * @brief Signals the next waiting thread to continue.

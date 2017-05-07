@@ -32,8 +32,8 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_http_request_protocol_version_t _protocolVersion;
 	short _statusCode;
-	OFDictionary OF_GENERIC(OFString*, OFString*) *_headers;
-	OFArray OF_GENERIC(OFHTTPCookie*) *_cookies;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
+	OFArray OF_GENERIC(OFHTTPCookie *) *_cookies;
 }
 
 /*!
@@ -45,13 +45,13 @@ OF_ASSUME_NONNULL_BEGIN
  * The headers of the reply to the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
-    OFDictionary OF_GENERIC(OFString*, OFString*) *headers;
+    OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 
 /*!
  * The cookies to set of the reply to the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
-    OFArray OF_GENERIC(OFHTTPCookie*) *cookies;
+    OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 
 /*!
  * @brief Sets the protocol version of the HTTP request reply.
@@ -73,21 +73,21 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param string A string describing an HTTP version
  */
-- (void)setProtocolVersionFromString: (OFString*)string;
+- (void)setProtocolVersionFromString: (OFString *)string;
 
 /*!
  * @brief Returns the protocol version of the HTTP request reply as a string.
  *
  * @return The protocol version of the HTTP request reply as a string
  */
-- (OFString*)protocolVersionString;
+- (OFString *)protocolVersionString;
 
 /*!
  * @brief Returns the reply as a string, trying to detect the encoding.
  *
  * @return The reply as a string
  */
-- (OFString*)string;
+- (OFString *)string;
 
 /*!
  * @brief Returns the reply as a string, trying to detect the encoding and
@@ -95,7 +95,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The reply as a string
  */
-- (OFString*)stringWithEncoding: (of_string_encoding_t)encoding;
+- (OFString *)stringWithEncoding: (of_string_encoding_t)encoding;
 @end
 
 OF_ASSUME_NONNULL_END

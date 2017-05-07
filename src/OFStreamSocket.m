@@ -53,7 +53,7 @@
 	return _atEndOfStream;
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	ssize_t ret;
@@ -89,7 +89,7 @@
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void*)buffer
+- (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
 	if (_socket == INVALID_SOCKET)

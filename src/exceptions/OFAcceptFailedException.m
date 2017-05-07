@@ -52,7 +52,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Failed to accept connection in socket of class %@: %@",

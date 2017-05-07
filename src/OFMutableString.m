@@ -45,13 +45,13 @@ static struct {
 	return (id)[[OFMutableString_UTF8 alloc] init];
 }
 
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF8String: UTF8String];
 }
 
-- initWithUTF8String: (const char*)UTF8String
+- initWithUTF8String: (const char *)UTF8String
 	      length: (size_t)UTF8StringLength
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -59,14 +59,14 @@ static struct {
 			length: UTF8StringLength];
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithCString: cString
 							encoding: encoding];
 }
 
-- initWithCString: (const char*)cString
+- initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength
 {
@@ -76,31 +76,31 @@ static struct {
 		     length: cStringLength];
 }
 
-- initWithString: (OFString*)string
+- initWithString: (OFString *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithString: string];
 }
 
-- initWithCharacters: (const of_unichar_t*)characters
+- initWithCharacters: (const of_unichar_t *)characters
 	      length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithCharacters: characters
 							     length: length];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string
 							      length: length];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -108,7 +108,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const of_char16_t*)string
+- initWithUTF16String: (const of_char16_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -118,19 +118,19 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string
 							      length: length];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	    byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -138,7 +138,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const of_char32_t*)string
+- initWithUTF32String: (const of_char32_t *)string
 	       length: (size_t)length
 	    byteOrder: (of_byte_order_t)byteOrder
 {
@@ -148,7 +148,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithFormat: (OFConstantString*)format, ...
+- initWithFormat: (OFConstantString *)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -161,7 +161,7 @@ static struct {
 	return ret;
 }
 
-- initWithFormat: (OFConstantString*)format
+- initWithFormat: (OFConstantString *)format
        arguments: (va_list)arguments
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithFormat: format
@@ -169,12 +169,12 @@ static struct {
 }
 
 #ifdef OF_HAVE_FILES
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfFile: path];
 }
 
-- initWithContentsOfFile: (OFString*)path
+- initWithContentsOfFile: (OFString *)path
 		encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -184,12 +184,12 @@ static struct {
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfURL: URL];
 }
 
-- initWithContentsOfURL: (OFURL*)URL
+- initWithContentsOfURL: (OFURL *)URL
 	       encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -198,7 +198,7 @@ static struct {
 }
 #endif
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithSerialization: element];
@@ -332,13 +332,13 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)appendString: (OFString*)string
+- (void)appendString: (OFString *)string
 {
 	[self insertString: string
 		   atIndex: [self length]];
 }
 
-- (void)appendCharacters: (const of_unichar_t*)characters
+- (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -349,7 +349,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)appendUTF8String: (const char*)UTF8String
+- (void)appendUTF8String: (const char *)UTF8String
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -358,7 +358,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)appendUTF8String: (const char*)UTF8String
+- (void)appendUTF8String: (const char *)UTF8String
 		  length: (size_t)UTF8StringLength
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -369,7 +369,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)appendCString: (const char*)cString
+- (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -380,7 +380,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)appendCString: (const char*)cString
+- (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
@@ -393,7 +393,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)appendFormat: (OFConstantString*)format, ...
+- (void)appendFormat: (OFConstantString *)format, ...
 {
 	va_list arguments;
 
@@ -403,7 +403,7 @@ static struct {
 	va_end(arguments);
 }
 
-- (void)appendFormat: (OFConstantString*)format
+- (void)appendFormat: (OFConstantString *)format
 	   arguments: (va_list)arguments
 {
 	char *UTF8String;
@@ -424,7 +424,7 @@ static struct {
 	}
 }
 
-- (void)prependString: (OFString*)string
+- (void)prependString: (OFString *)string
 {
 	[self insertString: string
 		   atIndex: 0];
@@ -487,7 +487,7 @@ static struct {
 }
 #endif
 
-- (void)insertString: (OFString*)string
+- (void)insertString: (OFString *)string
 	     atIndex: (size_t)index
 {
 	[self replaceCharactersInRange: of_range(index, 0)
@@ -501,13 +501,13 @@ static struct {
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
-		      withString: (OFString*)replacement
+		      withString: (OFString *)replacement
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)replaceOccurrencesOfString: (OFString*)string
-			withString: (OFString*)replacement
+- (void)replaceOccurrencesOfString: (OFString *)string
+			withString: (OFString *)replacement
 {
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
@@ -515,8 +515,8 @@ static struct {
 				   range: of_range(0, [self length])];
 }
 
-- (void)replaceOccurrencesOfString: (OFString*)string
-			withString: (OFString*)replacement
+- (void)replaceOccurrencesOfString: (OFString *)string
+			withString: (OFString *)replacement
 			   options: (int)options
 			     range: (of_range_t)range
 {

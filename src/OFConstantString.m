@@ -54,31 +54,31 @@ struct {
 }
 
 
-- (void*)allocMemoryWithSize: (size_t)size
+- (void *)allocMemoryWithSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count
+- (void *)allocMemoryWithSize: (size_t)size
+			count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
+- (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
-		count: (size_t)count
+- (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
+		 count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)freeMemory: (void*)pointer
+- (void)freeMemory: (void *)pointer
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -160,7 +160,7 @@ struct {
 				@throw [OFInvalidEncodingException exception];
 		}
 
-		_cString = (char*)ivars;
+		_cString = (char *)ivars;
 		object_setClass(self, [OFString_const class]);
 	}
 }
@@ -170,31 +170,31 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
+- (void *)allocMemoryWithSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count
+- (void *)allocMemoryWithSize: (size_t)size
+			count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
+- (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
-		count: (size_t)count
+- (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
+		 count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)freeMemory: (void*)pointer
+- (void)freeMemory: (void *)pointer
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -267,7 +267,7 @@ struct {
 	return [self hash];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	[self finishInitialization];
 
@@ -275,14 +275,14 @@ struct {
 }
 
 /* From OFString */
-- (const char*)UTF8String
+- (const char *)UTF8String
 {
 	[self finishInitialization];
 
 	return [self UTF8String];
 }
 
-- (size_t)getCString: (char*)cString_
+- (size_t)getCString: (char *)cString_
 	   maxLength: (size_t)maxLength
 	    encoding: (of_string_encoding_t)encoding
 {
@@ -293,7 +293,7 @@ struct {
 		       encoding: encoding];
 }
 
-- (const char*)cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
 {
 	[self finishInitialization];
 
@@ -321,7 +321,7 @@ struct {
 	return [self cStringLengthWithEncoding: encoding];
 }
 
-- (of_comparison_result_t)caseInsensitiveCompare: (OFString*)otherString
+- (of_comparison_result_t)caseInsensitiveCompare: (OFString *)otherString
 {
 	[self finishInitialization];
 
@@ -335,7 +335,7 @@ struct {
 	return [self characterAtIndex: index];
 }
 
-- (void)getCharacters: (of_unichar_t*)buffer
+- (void)getCharacters: (of_unichar_t *)buffer
 	      inRange: (of_range_t)range
 {
 	[self finishInitialization];
@@ -344,14 +344,14 @@ struct {
 		    inRange: range];
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 {
 	[self finishInitialization];
 
 	return [self rangeOfString: string];
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 {
 	[self finishInitialization];
@@ -360,7 +360,7 @@ struct {
 			   options: options];
 }
 
-- (of_range_t)rangeOfString: (OFString*)string
+- (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 		      range: (of_range_t)range
 {
@@ -371,29 +371,29 @@ struct {
 			     range: range];
 }
 
-- (bool)containsString: (OFString*)string
+- (bool)containsString: (OFString *)string
 {
 	[self finishInitialization];
 
 	return [self containsString: string];
 }
 
-- (OFString*)substringWithRange: (of_range_t)range
+- (OFString *)substringWithRange: (of_range_t)range
 {
 	[self finishInitialization];
 
 	return [self substringWithRange: range];
 }
 
-- (OFString*)stringByAppendingString: (OFString*)string
+- (OFString *)stringByAppendingString: (OFString *)string
 {
 	[self finishInitialization];
 
 	return [self stringByAppendingString: string];
 }
 
-- (OFString*)stringByAppendingFormat: (OFConstantString*)format
-			   arguments: (va_list)arguments
+- (OFString *)stringByAppendingFormat: (OFConstantString *)format
+			    arguments: (va_list)arguments
 {
 	[self finishInitialization];
 
@@ -401,22 +401,22 @@ struct {
 				   arguments: arguments];
 }
 
-- (OFString*)stringByAppendingPathComponent: (OFString*)component
+- (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
 	[self finishInitialization];
 
 	return [self stringByAppendingPathComponent: component];
 }
 
-- (OFString*)stringByPrependingString: (OFString*)string
+- (OFString *)stringByPrependingString: (OFString *)string
 {
 	[self finishInitialization];
 
 	return [self stringByPrependingString: string];
 }
 
-- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
-				       withString: (OFString*)replacement
+- (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
+					withString: (OFString *)replacement
 {
 	[self finishInitialization];
 
@@ -424,10 +424,10 @@ struct {
 					       withString: replacement];
 }
 
-- (OFString*)stringByReplacingOccurrencesOfString: (OFString*)string
-				       withString: (OFString*)replacement
-					  options: (int)options
-					    range: (of_range_t)range
+- (OFString *)stringByReplacingOccurrencesOfString: (OFString *)string
+					withString: (OFString *)replacement
+					   options: (int)options
+					     range: (of_range_t)range
 {
 	[self finishInitialization];
 
@@ -437,71 +437,71 @@ struct {
 						    range: range];
 }
 
-- (OFString*)uppercaseString
+- (OFString *)uppercaseString
 {
 	[self finishInitialization];
 
 	return [self uppercaseString];
 }
 
-- (OFString*)lowercaseString
+- (OFString *)lowercaseString
 {
 	[self finishInitialization];
 
 	return [self lowercaseString];
 }
 
-- (OFString*)capitalizedString
+- (OFString *)capitalizedString
 {
 	[self finishInitialization];
 
 	return [self capitalizedString];
 }
 
-- (OFString*)stringByDeletingLeadingWhitespaces
+- (OFString *)stringByDeletingLeadingWhitespaces
 {
 	[self finishInitialization];
 
 	return [self stringByDeletingLeadingWhitespaces];
 }
 
-- (OFString*)stringByDeletingTrailingWhitespaces
+- (OFString *)stringByDeletingTrailingWhitespaces
 {
 	[self finishInitialization];
 
 	return [self stringByDeletingTrailingWhitespaces];
 }
 
-- (OFString*)stringByDeletingEnclosingWhitespaces
+- (OFString *)stringByDeletingEnclosingWhitespaces
 {
 	[self finishInitialization];
 
 	return [self stringByDeletingEnclosingWhitespaces];
 }
 
-- (bool)hasPrefix: (OFString*)prefix
+- (bool)hasPrefix: (OFString *)prefix
 {
 	[self finishInitialization];
 
 	return [self hasPrefix: prefix];
 }
 
-- (bool)hasSuffix: (OFString*)suffix
+- (bool)hasSuffix: (OFString *)suffix
 {
 	[self finishInitialization];
 
 	return [self hasSuffix: suffix];
 }
 
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
+- (OFArray *)componentsSeparatedByString: (OFString *)delimiter
 {
 	[self finishInitialization];
 
 	return [self componentsSeparatedByString: delimiter];
 }
 
-- (OFArray*)componentsSeparatedByString: (OFString*)delimiter
-				options: (int)options
+- (OFArray *)componentsSeparatedByString: (OFString *)delimiter
+				 options: (int)options
 {
 	[self finishInitialization];
 
@@ -509,21 +509,21 @@ struct {
 					 options: options];
 }
 
-- (OFArray*)pathComponents
+- (OFArray *)pathComponents
 {
 	[self finishInitialization];
 
 	return [self pathComponents];
 }
 
-- (OFString*)lastPathComponent
+- (OFString *)lastPathComponent
 {
 	[self finishInitialization];
 
 	return [self lastPathComponent];
 }
 
-- (OFString*)stringByDeletingLastPathComponent
+- (OFString *)stringByDeletingLastPathComponent
 {
 	[self finishInitialization];
 
@@ -565,21 +565,21 @@ struct {
 	return [self doubleValue];
 }
 
-- (const of_unichar_t*)characters
+- (const of_unichar_t *)characters
 {
 	[self finishInitialization];
 
 	return [self characters];
 }
 
-- (const of_char16_t*)UTF16String
+- (const of_char16_t *)UTF16String
 {
 	[self finishInitialization];
 
 	return [self UTF16String];
 }
 
-- (const of_char16_t*)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	[self finishInitialization];
 
@@ -593,28 +593,28 @@ struct {
 	return [self UTF16StringLength];
 }
 
-- (const of_char32_t*)UTF32String
+- (const of_char32_t *)UTF32String
 {
 	[self finishInitialization];
 
 	return [self UTF32String];
 }
 
-- (const of_char32_t*)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	[self finishInitialization];
 
 	return [self UTF32StringWithByteOrder: byteOrder];
 }
 
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 {
 	[self finishInitialization];
 
 	[self writeToFile: path];
 }
 
-- (void)writeToFile: (OFString*)path
+- (void)writeToFile: (OFString *)path
 	   encoding: (of_string_encoding_t)encoding
 {
 	[self finishInitialization];

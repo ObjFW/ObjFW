@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param key The key for the HMAC
  * @param length The length of the key for the HMAC
  */
-- (void)setKey: (const void*)key
+- (void)setKey: (const void *)key
 	length: (size_t)length;
 
 /*!
@@ -73,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param buffer The buffer which should be included into the calculation
  * @param length The length of the buffer
  */
-- (void)updateWithBuffer: (const void*)buffer
+- (void)updateWithBuffer: (const void *)buffer
 		  length: (size_t)length;
 
 /*!
@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A buffer containing the hash
  */
-- (const unsigned char*)digest OF_RETURNS_INNER_POINTER;
+- (const unsigned char *)digest OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the size of the digest.

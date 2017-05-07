@@ -181,13 +181,13 @@ void of_scrypt(size_t blockSize, size_t costFactor,
 		HMAC = [[OFHMAC alloc] initWithHashClass: [OFSHA256Hash class]];
 
 		of_pbkdf2(HMAC, 1, salt, saltLength, password, passwordLength,
-		    (unsigned char*)buffer, parallelization * 128 * blockSize);
+		    (unsigned char *)buffer, parallelization * 128 * blockSize);
 
 		for (size_t i = 0; i < parallelization; i++)
 			of_scrypt_romix(buffer + i * 32 * blockSize, blockSize,
 			    costFactor, tmp);
 
-		of_pbkdf2(HMAC, 1, (unsigned char*)buffer, parallelization *
+		of_pbkdf2(HMAC, 1, (unsigned char *)buffer, parallelization *
 		    128 * blockSize, password, passwordLength, key, keyLength);
 	} @finally {
 		of_explicit_memset(tmp, 0, (costFactor + 1) * blockSize * 128);

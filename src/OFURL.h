@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string A string describing a URL
  * @return A new, autoreleased OFURL
  */
-+ (instancetype)URLWithString: (OFString*)string;
++ (instancetype)URLWithString: (OFString *)string;
 
 /*!
  * @brief Creates a new URL with the specified string relative to the
@@ -101,8 +101,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL An URL to which the string is relative
  * @return A new, autoreleased OFURL
  */
-+ (instancetype)URLWithString: (OFString*)string
-		relativeToURL: (OFURL*)URL;
++ (instancetype)URLWithString: (OFString *)string
+		relativeToURL: (OFURL *)URL;
 
 /*!
  * @brief Creates a new URL with the specified local file path.
@@ -110,7 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The local file path
  * @return A new, autoreleased OFURL
  */
-+ (instancetype)fileURLWithPath: (OFString*)path;
++ (instancetype)fileURLWithPath: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated OFURL with the specified string.
@@ -118,7 +118,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string A string describing a URL
  * @return An initialized OFURL
  */
-- initWithString: (OFString*)string;
+- initWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFURL with the specified string and
@@ -128,15 +128,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL A URL to which the string is relative
  * @return An initialized OFURL
  */
-- initWithString: (OFString*)string
-   relativeToURL: (OFURL*)URL;
+- initWithString: (OFString *)string
+   relativeToURL: (OFURL *)URL;
 
 /*!
  * @brief Returns the URL as a string.
  *
  * @return The URL as a string
  */
-- (OFString*)string;
+- (OFString *)string;
 @end
 
 OF_ASSUME_NONNULL_END

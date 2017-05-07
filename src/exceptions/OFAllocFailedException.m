@@ -30,31 +30,31 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
+- (void *)allocMemoryWithSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)allocMemoryForNItems: (size_t)nitems
-                     withSize: (size_t)size
+- (void *)allocMemoryForNItems: (size_t)nitems
+		      withSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)ptr
-	       toSize: (size_t)size
+- (void *)resizeMemory: (void *)ptr
+		toSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void*)resizeMemory: (void*)ptr
-	     toNItems: (size_t)nitems
-	     withSize: (size_t)size
+- (void *)resizeMemory: (void *)ptr
+	      toNItems: (size_t)nitems
+	      withSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)freeMemory: (void*)ptr
+- (void)freeMemory: (void *)ptr
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -83,7 +83,7 @@
 	OF_DEALLOC_UNSUPPORTED
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return @"Allocating an object failed!";
 }

@@ -54,8 +54,8 @@ typedef struct of_options_parser_option_t {
 	bool *_Nullable isSpecifiedPtr;
 
 	/*!
-	 * An optional pointer to an @ref OFString* that is set to the argument
-	 * specified for the option or `nil` for no argument.
+	 * An optional pointer to an @ref OFString * that is set to the
+	 * argument specified for the option or `nil` for no argument.
 	 */
 	OFString *__autoreleasing _Nullable *_Nullable argumentPtr;
 } of_options_parser_option_t;
@@ -69,7 +69,7 @@ typedef struct of_options_parser_option_t {
 {
 	of_options_parser_option_t *_options;
 	OFMapTable *_longOptions;
-	OFArray OF_GENERIC(OFString*) *_arguments;
+	OFArray OF_GENERIC(OFString *) *_arguments;
 	size_t _index, _subIndex;
 	of_unichar_t _lastOption;
 	OFString *_lastLongOption, *_argument;
@@ -118,7 +118,7 @@ typedef struct of_options_parser_option_t {
  *
  * @return A new, autoreleased OFOptionsParser
  */
-+ (instancetype)parserWithOptions: (const of_options_parser_option_t*)options;
++ (instancetype)parserWithOptions: (const of_options_parser_option_t *)options;
 
 /*!
  * @brief Initializes an already allocated OFOptionsParser so that it accepts
@@ -130,7 +130,7 @@ typedef struct of_options_parser_option_t {
  *
  * @return An initialized OFOptionsParser
  */
-- initWithOptions: (const of_options_parser_option_t*)options;
+- initWithOptions: (const of_options_parser_option_t *)options;
 
 /*!
  * @brief Returns the next option.
@@ -157,7 +157,7 @@ typedef struct of_options_parser_option_t {
  *
  * @return The arguments following the last option
  */
-- (OFArray OF_GENERIC(OFString*)*)remainingArguments;
+- (OFArray OF_GENERIC(OFString *) *)remainingArguments;
 @end
 
 OF_ASSUME_NONNULL_END

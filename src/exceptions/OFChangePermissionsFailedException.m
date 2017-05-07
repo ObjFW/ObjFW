@@ -22,7 +22,7 @@
 @implementation OFChangePermissionsFailedException
 @synthesize path = _path, permissions = _permissions, errNo = _errNo;
 
-+ (instancetype)exceptionWithPath: (OFString*)path
++ (instancetype)exceptionWithPath: (OFString *)path
 		      permissions: (mode_t)permissions
 			    errNo: (int)errNo
 {
@@ -36,7 +36,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString*)path
+- initWithPath: (OFString *)path
    permissions: (mode_t)permissions
 	 errNo: (int)errNo
 {
@@ -61,7 +61,7 @@
 	[super dealloc];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return [OFString stringWithFormat:
 	    @"Failed to change permissions of item at path %@ to %d: %@",

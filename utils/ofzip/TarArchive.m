@@ -56,15 +56,15 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 + (void)initialize
 {
 	if (self == [TarArchive class])
-		app = (OFZIP*)[[OFApplication sharedApplication] delegate];
+		app = (OFZIP *)[[OFApplication sharedApplication] delegate];
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- initWithStream: (OF_KINDOF(OFStream*))stream
+- initWithStream: (OF_KINDOF(OFStream *))stream
 {
 	self = [super init];
 
@@ -235,11 +235,11 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 	}
 }
 
-- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	bool all = ([files count] == 0);
-	OFMutableSet OF_GENERIC(OFString*) *missing =
+	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFTarArchiveEntry *entry;
 
@@ -247,7 +247,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		OFString *outFileName = [fileName stringByStandardizingPath];
-		OFArray OF_GENERIC(OFString*) *pathComponents;
+		OFArray OF_GENERIC(OFString *) *pathComponents;
 		OFString *directory;
 		OFFile *output;
 		uint64_t written = 0, size = [entry size];
@@ -383,7 +383,7 @@ outer_loop_end:
 	}
 }
 
-- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files_
+- (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files_
 {
 	OFMutableSet *files;
 	OFTarArchiveEntry *entry;

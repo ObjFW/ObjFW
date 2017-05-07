@@ -69,7 +69,7 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    : "r"(i), "m"(*p)
 	);
 
-	return (void*)i;
+	return (void *)i;
 #elif defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "lock\n\t"
@@ -79,7 +79,7 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    : "r"(i), "m"(*p)
 	);
 
-	return (void*)i;
+	return (void *)i;
 #endif
 }
 
@@ -140,7 +140,7 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    : "r"(i), "m"(*p)
 	);
 
-	return (void*)i;
+	return (void *)i;
 #elif defined(OF_X86_ASM)
 	__asm__ __volatile__ (
 	    "negl	%0\n\t"
@@ -151,7 +151,7 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    : "r"(i), "m"(*p)
 	);
 
-	return (void*)i;
+	return (void *)i;
 #endif
 }
 

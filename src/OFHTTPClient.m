@@ -44,7 +44,7 @@
 static OF_INLINE void
 normalizeKey(char *str_)
 {
-	unsigned char *str = (unsigned char*)str_;
+	unsigned char *str = (unsigned char *)str_;
 	bool firstLetter = true;
 
 	while (*str != '\0') {
@@ -70,12 +70,12 @@ normalizeKey(char *str_)
 	size_t _toRead;
 }
 
-- initWithSocket: (OFTCPSocket*)socket;
+- initWithSocket: (OFTCPSocket *)socket;
 - (void)OF_setKeepAlive: (bool)keepAlive;
 @end
 
 @implementation OFHTTPClientResponse
-- initWithSocket: (OFTCPSocket*)socket
+- initWithSocket: (OFTCPSocket *)socket
 {
 	self = [super init];
 
@@ -96,7 +96,7 @@ normalizeKey(char *str_)
 	[super dealloc];
 }
 
-- (void)setHeaders: (OFDictionary*)headers
+- (void)setHeaders: (OFDictionary *)headers
 {
 	OFString *contentLength;
 
@@ -127,7 +127,7 @@ normalizeKey(char *str_)
 	}
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void*)buffer
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
 	if (_atEndOfStream)
@@ -277,13 +277,13 @@ normalizeKey(char *str_)
 	[super dealloc];
 }
 
-- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 {
 	return [self performRequest: request
 			  redirects: 10];
 }
 
-- (OFTCPSocket*)OF_closeAndCreateSocketForRequest: (OFHTTPRequest*)request
+- (OFTCPSocket *)OF_closeAndCreateSocketForRequest: (OFHTTPRequest *)request
 {
 	OFURL *URL = [request URL];
 	OFTCPSocket *socket;
@@ -312,8 +312,8 @@ normalizeKey(char *str_)
 	return socket;
 }
 
-- (OFHTTPResponse*)performRequest: (OFHTTPRequest*)request
-			redirects: (size_t)redirects
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (size_t)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
@@ -322,13 +322,13 @@ normalizeKey(char *str_)
 	OFString *path;
 	OFMutableString *requestString;
 	OFString *user, *password;
-	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *headers;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFDataArray *body = [request body];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
 	OFString *line, *version, *redirect, *connectionHeader;
 	bool keepAlive;
-	OFMutableDictionary OF_GENERIC(OFString*, OFString*) *serverHeaders;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *serverHeaders;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 	int status;

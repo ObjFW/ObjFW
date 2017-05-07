@@ -51,7 +51,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 			    static_instances[static_instances_cnt];
 
 			static_instances = realloc(static_instances,
-			    sizeof(struct objc_abi_static_instances*) *
+			    sizeof(struct objc_abi_static_instances *) *
 			    static_instances_cnt);
 
 			if (static_instances == NULL)
@@ -60,7 +60,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 		}
 	}
 
-	si = (struct objc_abi_static_instances**)
+	si = (struct objc_abi_static_instances **)
 	    symtab->defs[symtab->cls_def_cnt + symtab->cat_def_cnt];
 
 	if (si == NULL)
@@ -75,7 +75,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 				object_setClass(*instances, cls);
 		} else {
 			static_instances = realloc(static_instances,
-			    sizeof(struct objc_abi_static_instances*) *
+			    sizeof(struct objc_abi_static_instances *) *
 			    (static_instances_cnt + 1));
 
 			if (static_instances == NULL)

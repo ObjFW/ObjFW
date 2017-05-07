@@ -136,7 +136,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	};
 	OFOptionsParser *optionsParser;
 	of_unichar_t option, mode = '\0';
-	OFArray OF_GENERIC(OFString*) *remainingArguments, *files;
+	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
 
 #ifdef OF_HAVE_SANDBOX
@@ -297,8 +297,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	[OFApplication terminateWithStatus: _exitStatus];
 }
 
-- (id <Archive>)openArchiveWithPath: (OFString*)path
-			       type: (OFString*)type
+- (id <Archive>)openArchiveWithPath: (OFString *)path
+			       type: (OFString *)type
 {
 	OFFile *file = nil;
 	id <Archive> archive = nil;
@@ -384,8 +384,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	return archive;
 }
 
-- (bool)shouldExtractFile: (OFString*)fileName
-	      outFileName: (OFString*)outFileName
+- (bool)shouldExtractFile: (OFString *)fileName
+	      outFileName: (OFString *)outFileName
 {
 	OFString *line;
 
@@ -442,9 +442,9 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	return true;
 }
 
-- (ssize_t)copyBlockFromStream: (OFStream*)input
-		      toStream: (OFStream*)output
-		      fileName: (OFString*)fileName
+- (ssize_t)copyBlockFromStream: (OFStream *)input
+		      toStream: (OFStream *)output
+		      fileName: (OFString *)fileName
 {
 	char buffer[BUFFER_SIZE];
 	size_t length;

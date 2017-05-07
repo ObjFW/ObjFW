@@ -27,5 +27,5 @@
 	NSArray *_array;
 }
 
-- initWithNSArray: (NSArray*)array;
+- initWithNSArray: (NSArray *)array;
 @end

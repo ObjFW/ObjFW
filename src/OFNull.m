@@ -24,8 +24,8 @@
 #import "OFInvalidArgumentException.h"
 
 @interface OFNull ()
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth;
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth;
 @end
 
 static OFNull *null = nil;
@@ -36,12 +36,12 @@ static OFNull *null = nil;
 	null = [[self alloc] init];
 }
 
-+ (OFNull*)null
++ (OFNull *)null
 {
 	return null;
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	void *pool;
 
@@ -58,7 +58,7 @@ static OFNull *null = nil;
 	return [OFNull null];
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	return @"<null>";
 }
@@ -68,7 +68,7 @@ static OFNull *null = nil;
 	return self;
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -83,25 +83,25 @@ static OFNull *null = nil;
 	return [element autorelease];
 }
 
-- (OFString*)JSONRepresentation
+- (OFString *)JSONRepresentation
 {
 	return [self OF_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
-- (OFString*)JSONRepresentationWithOptions: (int)options
+- (OFString *)JSONRepresentationWithOptions: (int)options
 {
 	return [self OF_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString*)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)OF_JSONRepresentationWithOptions: (int)options
 					depth: (size_t)depth
 {
 	return @"null";
 }
 
-- (OFDataArray*)messagePackRepresentation
+- (OFDataArray *)messagePackRepresentation
 {
 	OFDataArray *data = [OFDataArray dataArrayWithItemSize: 1
 						      capacity: 1];

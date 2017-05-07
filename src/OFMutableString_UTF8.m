@@ -41,7 +41,7 @@
 		[self inheritMethodsFromClass: [OFString_UTF8 class]];
 }
 
-- initWithUTF8StringNoCopy: (char*)UTF8String
+- initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone
 {
 	@try {
@@ -271,7 +271,7 @@
 	}
 }
 
-- (void)appendUTF8String: (const char*)UTF8String
+- (void)appendUTF8String: (const char *)UTF8String
 {
 	size_t UTF8StringLength = strlen(UTF8String);
 	size_t length;
@@ -301,7 +301,7 @@
 	_s->length += length;
 }
 
-- (void)appendUTF8String: (const char*)UTF8String
+- (void)appendUTF8String: (const char *)UTF8String
 		  length: (size_t)UTF8StringLength
 {
 	size_t length;
@@ -332,7 +332,7 @@
 	_s->cString[_s->cStringLength] = 0;
 }
 
-- (void)appendCString: (const char*)cString
+- (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding
 {
 	[self appendCString: cString
@@ -340,7 +340,7 @@
 		     length: strlen(cString)];
 }
 
-- (void)appendCString: (const char*)cString
+- (void)appendCString: (const char *)cString
 	     encoding: (of_string_encoding_t)encoding
 	       length: (size_t)cStringLength
 {
@@ -359,7 +359,7 @@
 	}
 }
 
-- (void)appendString: (OFString*)string
+- (void)appendString: (OFString *)string
 {
 	size_t UTF8StringLength;
 
@@ -382,13 +382,13 @@
 
 	if ([string isKindOfClass: [OFString_UTF8 class]] ||
 	    [string isKindOfClass: [OFMutableString_UTF8 class]]) {
-		if (((OFString_UTF8*)string)->_s->isUTF8)
+		if (((OFString_UTF8 *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;
 }
 
-- (void)appendCharacters: (const of_unichar_t*)characters
+- (void)appendCharacters: (const of_unichar_t *)characters
 		  length: (size_t)length
 {
 	char *tmp;
@@ -428,7 +428,7 @@
 	}
 }
 
-- (void)appendFormat: (OFConstantString*)format
+- (void)appendFormat: (OFConstantString *)format
 	   arguments: (va_list)arguments
 {
 	char *UTF8String;
@@ -529,7 +529,7 @@
 	}
 }
 
-- (void)insertString: (OFString*)string
+- (void)insertString: (OFString *)string
 	     atIndex: (size_t)index
 {
 	size_t newCStringLength;
@@ -557,7 +557,7 @@
 
 	if ([string isKindOfClass: [OFString_UTF8 class]] ||
 	    [string isKindOfClass: [OFMutableString_UTF8 class]]) {
-		if (((OFString_UTF8*)string)->_s->isUTF8)
+		if (((OFString_UTF8 *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;
@@ -594,7 +594,7 @@
 }
 
 - (void)replaceCharactersInRange: (of_range_t)range
-		      withString: (OFString*)replacement
+		      withString: (OFString *)replacement
 {
 	size_t start = range.location;
 	size_t end = range.location + range.length;
@@ -650,14 +650,14 @@
 
 	if ([replacement isKindOfClass: [OFString_UTF8 class]] ||
 	    [replacement isKindOfClass: [OFMutableString_UTF8 class]]) {
-		if (((OFString_UTF8*)replacement)->_s->isUTF8)
+		if (((OFString_UTF8 *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;
 }
 
-- (void)replaceOccurrencesOfString: (OFString*)string
-			withString: (OFString*)replacement
+- (void)replaceOccurrencesOfString: (OFString *)string
+			withString: (OFString *)replacement
 			   options: (int)options
 			     range: (of_range_t)range
 {
@@ -737,7 +737,7 @@
 
 	if ([replacement isKindOfClass: [OFString_UTF8 class]] ||
 	    [replacement isKindOfClass: [OFMutableString_UTF8 class]]) {
-		if (((OFString_UTF8*)replacement)->_s->isUTF8)
+		if (((OFString_UTF8 *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;

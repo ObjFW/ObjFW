@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFInvalidFormatException
-- (OFString*)description
+- (OFString *)description
 {
 	return @"A format is invalid!";
 }

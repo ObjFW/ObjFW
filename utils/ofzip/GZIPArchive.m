@@ -45,15 +45,15 @@ setPermissions(OFString *destination, OFString *source)
 + (void)initialize
 {
 	if (self == [GZIPArchive class])
-		app = (OFZIP*)[[OFApplication sharedApplication] delegate];
+		app = (OFZIP *)[[OFApplication sharedApplication] delegate];
 }
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream*))stream
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- initWithStream: (OF_KINDOF(OFStream*))stream
+- initWithStream: (OF_KINDOF(OFStream *))stream
 {
 	self = [super init];
 
@@ -81,7 +81,7 @@ setPermissions(OFString *destination, OFString *source)
 	app->_exitStatus = 1;
 }
 
-- (void)extractFiles: (OFArray OF_GENERIC(OFString*)*)files
+- (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
 	OFString *fileName;
 	OFFile *output;
@@ -129,7 +129,7 @@ setPermissions(OFString *destination, OFString *source)
 	}
 }
 
-- (void)printFiles: (OFArray OF_GENERIC(OFString*)*)files
+- (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
 	OFString *fileName = [[app->_archivePath lastPathComponent]
 	    stringByDeletingPathExtension];

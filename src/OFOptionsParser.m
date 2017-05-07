@@ -26,20 +26,20 @@
 static uint32_t
 stringHash(void *object)
 {
-	return [(OFString*)object hash];
+	return [(OFString *)object hash];
 }
 
 static bool
 stringEqual(void *object1, void *object2)
 {
-	return [(OFString*)object1 isEqual: (OFString*)object2];
+	return [(OFString *)object1 isEqual: (OFString *)object2];
 }
 
 @implementation OFOptionsParser
 @synthesize lastOption = _lastOption, lastLongOption = _lastLongOption;
 @synthesize argument = _argument;
 
-+ (instancetype)parserWithOptions: (const of_options_parser_option_t*)options
++ (instancetype)parserWithOptions: (const of_options_parser_option_t *)options
 {
 	return [[[self alloc] initWithOptions: options] autorelease];
 }
@@ -49,7 +49,7 @@ stringEqual(void *object1, void *object2)
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithOptions: (const of_options_parser_option_t*)options
+- initWithOptions: (const of_options_parser_option_t *)options
 {
 	self = [super init];
 
@@ -275,7 +275,7 @@ stringEqual(void *object1, void *object2)
 	return '?';
 }
 
-- (OFArray*)remainingArguments
+- (OFArray *)remainingArguments
 {
 	return [_arguments objectsInRange:
 	    of_range(_index, [_arguments count] - _index)];

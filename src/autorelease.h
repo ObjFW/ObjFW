@@ -28,7 +28,7 @@ extern "C" {
  *
  * @return An identifier for the created autorelease pool
  */
-extern void* objc_autoreleasePoolPush();
+extern void *objc_autoreleasePoolPush();
 
 /*!
  * @brief Drains an autorelease pool.

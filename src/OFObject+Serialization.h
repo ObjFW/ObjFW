@@ -34,7 +34,7 @@ extern int _OFObject_Serialization_reference;
  *
  * @return The object serialized as a string
  */
-- (OFString*)stringBySerializing;
+- (OFString *)stringBySerializing;
 @end
 
 OF_ASSUME_NONNULL_END

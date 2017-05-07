@@ -60,7 +60,7 @@ appendToBuffer(OFDataArray *buffer, const char *string,
 	}
 }
 
-static OFString*
+static OFString *
 transformString(OFXMLParser *parser, OFDataArray *buffer, size_t cut,
     bool unescape)
 {
@@ -98,7 +98,7 @@ transformString(OFXMLParser *parser, OFDataArray *buffer, size_t cut,
 	return ret;
 }
 
-static OFString*
+static OFString *
 namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 {
 	OFDictionary *const *objects = [namespaces objects];
@@ -232,7 +232,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	[super dealloc];
 }
 
-- (void)parseBuffer: (const char*)buffer
+- (void)parseBuffer: (const char *)buffer
 	     length: (size_t)length
 {
 	_data = buffer;
@@ -259,13 +259,13 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		    length - _last);
 }
 
-- (void)parseString: (OFString*)string
+- (void)parseString: (OFString *)string
 {
 	[self parseBuffer: [string UTF8String]
 		   length: [string UTF8StringLength]];
 }
 
-- (void)parseStream: (OFStream*)stream
+- (void)parseStream: (OFStream *)stream
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 	char *buffer = [self allocMemoryWithSize: pageSize];
@@ -284,7 +284,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 #ifdef OF_HAVE_FILES
-- (void)parseFile: (OFString*)path
+- (void)parseFile: (OFString *)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
@@ -390,7 +390,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* <?xml […]?> */
-- (bool)OF_parseXMLProcessingInstructions: (OFString*)pi
+- (bool)OF_parseXMLProcessingInstructions: (OFString *)pi
 {
 	const char *cString;
 	size_t length, last;
@@ -1010,8 +1010,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	return _finishedParsing;
 }
 
--	   (OFString*)string: (OFString*)string
-  containsUnknownEntityNamed: (OFString*)entity
+-	  (OFString *)string: (OFString *)string
+  containsUnknownEntityNamed: (OFString *)entity
 {
 	if ([_delegate respondsToSelector:
 	    @selector(parser:foundUnknownEntityNamed:)])

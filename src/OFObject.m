@@ -87,11 +87,11 @@ struct pre_mem {
 
 #define PRE_IVARS_ALIGN ((sizeof(struct pre_ivar) + \
     (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_IVARS ((struct pre_ivar*)(void*)((char*)self - PRE_IVARS_ALIGN))
+#define PRE_IVARS ((struct pre_ivar *)(void *)((char *)self - PRE_IVARS_ALIGN))
 
 #define PRE_MEM_ALIGN ((sizeof(struct pre_mem) + \
     (OF_BIGGEST_ALIGNMENT - 1)) & ~(OF_BIGGEST_ALIGNMENT - 1))
-#define PRE_MEM(mem) ((struct pre_mem*)(void*)((char*)mem - PRE_MEM_ALIGN))
+#define PRE_MEM(mem) ((struct pre_mem *)(void *)((char *)mem - PRE_MEM_ALIGN))
 
 static struct {
 	Class isa;
@@ -168,36 +168,36 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 		@throw (id)&allocFailedException;
 	}
 
-	((struct pre_ivar*)instance)->retainCount = 1;
-	((struct pre_ivar*)instance)->firstMem = NULL;
-	((struct pre_ivar*)instance)->lastMem = NULL;
+	((struct pre_ivar *)instance)->retainCount = 1;
+	((struct pre_ivar *)instance)->firstMem = NULL;
+	((struct pre_ivar *)instance)->lastMem = NULL;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 	if OF_UNLIKELY (!of_spinlock_new(
-	    &((struct pre_ivar*)instance)->retainCountSpinlock)) {
+	    &((struct pre_ivar *)instance)->retainCountSpinlock)) {
 		free(instance);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
 #endif
 
-	instance = (OFObject*)((char*)instance + PRE_IVARS_ALIGN);
+	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
 
 	memset(instance, 0, instanceSize);
 
 	if (!objc_constructInstance(class, instance)) {
-		free((char*)instance - PRE_IVARS_ALIGN);
+		free((char *)instance - PRE_IVARS_ALIGN);
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: class];
 	}
 
 	if OF_UNLIKELY (extra != NULL)
-		*extra = (char*)instance + instanceSize + extraAlignment;
+		*extra = (char *)instance + instanceSize + extraAlignment;
 
 	return instance;
 }
 
-const char*
+const char *
 _NSPrintForDebugger(id object)
 {
 	return [[object description]
@@ -230,8 +230,8 @@ _references_to_categories_of_OFObject(void)
 	 * already been set, so this is the best we can do.
 	 */
 	if (&NSFoundationVersionNumber == NULL)
-		objc_setForwardHandler((void*)&of_forward,
-		    (void*)&of_forward_stret);
+		objc_setForwardHandler((void *)&of_forward,
+		    (void *)&of_forward_stret);
 #else
 	objc_setForwardHandler((IMP)&of_forward, (IMP)&of_forward_stret);
 #endif
@@ -280,7 +280,7 @@ _references_to_categories_of_OFObject(void)
 	return self;
 }
 
-+ (OFString*)className
++ (OFString *)className
 {
 	return [OFString stringWithCString: class_getName(self)
 				  encoding: OF_STRING_ENCODING_ASCII];
@@ -305,7 +305,7 @@ _references_to_categories_of_OFObject(void)
 	return class_respondsToSelector(self, selector);
 }
 
-+ (bool)conformsToProtocol: (Protocol*)protocol
++ (bool)conformsToProtocol: (Protocol *)protocol
 {
 	Class c;
 
@@ -321,7 +321,7 @@ _references_to_categories_of_OFObject(void)
 	return class_getMethodImplementation(self, selector);
 }
 
-+ (const char*)typeEncodingForInstanceSelector: (SEL)selector
++ (const char *)typeEncodingForInstanceSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
 	return class_getMethodTypeEncoding(self, selector);
@@ -335,7 +335,7 @@ _references_to_categories_of_OFObject(void)
 #endif
 }
 
-+ (OFString*)description
++ (OFString *)description
 {
 	return [self className];
 }
@@ -370,7 +370,7 @@ _references_to_categories_of_OFObject(void)
 
 + (IMP)replaceInstanceMethod: (SEL)selector
 	  withImplementation: (IMP)implementation
-		typeEncoding: (const char*)typeEncoding
+		typeEncoding: (const char *)typeEncoding
 {
 	return class_replaceMethod(self, selector, implementation,
 	    typeEncoding);
@@ -378,7 +378,7 @@ _references_to_categories_of_OFObject(void)
 
 + (IMP)replaceClassMethod: (SEL)selector
        withImplementation: (IMP)implementation
-	     typeEncoding: (const char*)typeEncoding
+	     typeEncoding: (const char *)typeEncoding
 {
 	return class_replaceMethod(object_getClass(self), selector,
 	    implementation, typeEncoding);
@@ -501,7 +501,7 @@ _references_to_categories_of_OFObject(void)
 	return class_getSuperclass(object_getClass(self));
 }
 
-- (OFString*)className
+- (OFString *)className
 {
 	return [OFString stringWithCString: object_getClassName(self)
 				  encoding: OF_STRING_ENCODING_ASCII];
@@ -527,7 +527,7 @@ _references_to_categories_of_OFObject(void)
 	return class_respondsToSelector(object_getClass(self), selector);
 }
 
-- (bool)conformsToProtocol: (Protocol*)protocol
+- (bool)conformsToProtocol: (Protocol *)protocol
 {
 	return [object_getClass(self) conformsToProtocol: protocol];
 }
@@ -540,9 +540,9 @@ _references_to_categories_of_OFObject(void)
 - (id)performSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
-	id (*imp)(id, SEL) = (id(*)(id, SEL))objc_msg_lookup(self, selector);
+	id (*imp)(id, SEL) = (id (*)(id, SEL))objc_msg_lookup(self, selector);
 #elif defined(OF_APPLE_RUNTIME)
-	id (*imp)(id, SEL) = (id(*)(id, SEL))objc_msgSend;
+	id (*imp)(id, SEL) = (id (*)(id, SEL))objc_msgSend;
 #endif
 
 	return imp(self, selector);
@@ -553,9 +553,9 @@ _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_OBJFW_RUNTIME)
 	id (*imp)(id, SEL, id) =
-	    (id(*)(id, SEL, id))objc_msg_lookup(self, selector);
+	    (id (*)(id, SEL, id))objc_msg_lookup(self, selector);
 #elif defined(OF_APPLE_RUNTIME)
-	id (*imp)(id, SEL, id) = (id(*)(id, SEL, id))objc_msgSend;
+	id (*imp)(id, SEL, id) = (id (*)(id, SEL, id))objc_msgSend;
 #endif
 
 	return imp(self, selector, object);
@@ -567,9 +567,9 @@ _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_OBJFW_RUNTIME)
 	id (*imp)(id, SEL, id, id) =
-	    (id(*)(id, SEL, id, id))objc_msg_lookup(self, selector);
+	    (id (*)(id, SEL, id, id))objc_msg_lookup(self, selector);
 #elif defined(OF_APPLE_RUNTIME)
-	id (*imp)(id, SEL, id, id) = (id(*)(id, SEL, id, id))objc_msgSend;
+	id (*imp)(id, SEL, id, id) = (id (*)(id, SEL, id, id))objc_msgSend;
 #endif
 
 	return imp(self, selector, object1, object2);
@@ -622,7 +622,7 @@ _references_to_categories_of_OFObject(void)
 
 #ifdef OF_HAVE_THREADS
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	  waitUntilDone: (bool)waitUntilDone
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -639,7 +639,7 @@ _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (id)object
 	  waitUntilDone: (bool)waitUntilDone
 {
@@ -658,7 +658,7 @@ _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
 	  waitUntilDone: (bool)waitUntilDone
@@ -733,7 +733,7 @@ _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     afterDelay: (of_time_interval_t)delay
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -747,7 +747,7 @@ _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (id)object
 	     afterDelay: (of_time_interval_t)delay
 {
@@ -763,7 +763,7 @@ _references_to_categories_of_OFObject(void)
 }
 
 - (void)performSelector: (SEL)selector
-	       onThread: (OFThread*)thread
+	       onThread: (OFThread *)thread
 	     withObject: (id)object1
 	     withObject: (id)object2
 	     afterDelay: (of_time_interval_t)delay
@@ -781,7 +781,7 @@ _references_to_categories_of_OFObject(void)
 }
 #endif
 
-- (const char*)typeEncodingForSelector: (SEL)selector
+- (const char *)typeEncodingForSelector: (SEL)selector
 {
 #if defined(OF_OBJFW_RUNTIME)
 	return class_getMethodTypeEncoding(object_getClass(self), selector);
@@ -818,14 +818,14 @@ _references_to_categories_of_OFObject(void)
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	/* Classes containing data should reimplement this! */
 
 	return [OFString stringWithFormat: @"<%@>", [self className]];
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
+- (void *)allocMemoryWithSize: (size_t)size
 {
 	void *pointer;
 	struct pre_mem *preMem;
@@ -852,11 +852,11 @@ _references_to_categories_of_OFObject(void)
 		PRE_IVARS->firstMem = preMem;
 	PRE_IVARS->lastMem = preMem;
 
-	return (char*)pointer + PRE_MEM_ALIGN;
+	return (char *)pointer + PRE_MEM_ALIGN;
 }
 
-- (void*)allocMemoryWithSize: (size_t)size
-		       count: (size_t)count
+- (void *)allocMemoryWithSize: (size_t)size
+			count: (size_t)count
 {
 	if OF_UNLIKELY (count > SIZE_MAX / size)
 		@throw [OFOutOfRangeException exception];
@@ -864,8 +864,8 @@ _references_to_categories_of_OFObject(void)
 	return [self allocMemoryWithSize: size * count];
 }
 
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
+- (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
 {
 	void *new;
 	struct pre_mem *preMem;
@@ -901,12 +901,12 @@ _references_to_categories_of_OFObject(void)
 			PRE_IVARS->lastMem = preMem;
 	}
 
-	return (char*)new + PRE_MEM_ALIGN;
+	return (char *)new + PRE_MEM_ALIGN;
 }
 
-- (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
-		count: (size_t)count
+- (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
+		 count: (size_t)count
 {
 	if OF_UNLIKELY (pointer == NULL)
 		return [self allocMemoryWithSize: size
@@ -924,7 +924,7 @@ _references_to_categories_of_OFObject(void)
 			     size: size * count];
 }
 
-- (void)freeMemory: (void*)pointer
+- (void)freeMemory: (void *)pointer
 {
 	if OF_UNLIKELY (pointer == NULL)
 		return;
@@ -1050,11 +1050,11 @@ _references_to_categories_of_OFObject(void)
 		iter = next;
 	}
 
-	free((char*)self - PRE_IVARS_ALIGN);
+	free((char *)self - PRE_IVARS_ALIGN);
 }
 
 /* Required to use properties with the Apple runtime */
-- copyWithZone: (void*)zone
+- copyWithZone: (void *)zone
 {
 	if OF_UNLIKELY (zone != NULL) {
 		[self doesNotRecognizeSelector: _cmd];
@@ -1064,7 +1064,7 @@ _references_to_categories_of_OFObject(void)
 	return [(id)self copy];
 }
 
-- mutableCopyWithZone: (void*)zone
+- mutableCopyWithZone: (void *)zone
 {
 	if OF_UNLIKELY (zone != NULL) {
 		[self doesNotRecognizeSelector: _cmd];
@@ -1078,31 +1078,31 @@ _references_to_categories_of_OFObject(void)
  * Those are needed as the root class is the superclass of the root class's
  * metaclass and thus instance methods can be sent to class objects as well.
  */
-+ (void*)allocMemoryWithSize: (size_t)size
++ (void *)allocMemoryWithSize: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (void*)allocMemoryWithSize: (size_t)size
++ (void *)allocMemoryWithSize: (size_t)size
 		       count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
++ (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (void*)resizeMemory: (void*)pointer
-		 size: (size_t)size
-		count: (size_t)count
++ (void *)resizeMemory: (void *)pointer
+		  size: (size_t)size
+		 count: (size_t)count
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (void)freeMemory: (void*)pointer
++ (void)freeMemory: (void *)pointer
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -1136,13 +1136,13 @@ _references_to_categories_of_OFObject(void)
 	return self;
 }
 
-+ mutableCopyWithZone: (void*)zone
++ mutableCopyWithZone: (void *)zone
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 /* Required to use ObjFW from Swift */
-+ allocWithZone: (void*)zone
++ allocWithZone: (void *)zone
 {
 	if OF_UNLIKELY (zone != NULL) {
 		[self doesNotRecognizeSelector: _cmd];

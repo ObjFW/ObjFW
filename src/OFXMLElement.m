@@ -56,8 +56,8 @@ static Class CDATAClass = Nil;
 @end
 
 @implementation OFXMLElement_OFXMLElementBuilderDelegate
-- (void)elementBuilder: (OFXMLElementBuilder*)builder
-       didBuildElement: (OFXMLElement*)element
+- (void)elementBuilder: (OFXMLElementBuilder *)builder
+       didBuildElement: (OFXMLElement *)element
 {
 	if (_element == nil)
 		_element = [element retain];
@@ -83,46 +83,46 @@ static Class CDATAClass = Nil;
 	}
 }
 
-+ (instancetype)elementWithName: (OFString*)name
++ (instancetype)elementWithName: (OFString *)name
 {
 	return [[[self alloc] initWithName: name] autorelease];
 }
 
-+ (instancetype)elementWithName: (OFString*)name
-		    stringValue: (OFString*)stringValue
++ (instancetype)elementWithName: (OFString *)name
+		    stringValue: (OFString *)stringValue
 {
 	return [[[self alloc] initWithName: name
 			       stringValue: stringValue] autorelease];
 }
 
-+ (instancetype)elementWithName: (OFString*)name
-		      namespace: (OFString*)ns
++ (instancetype)elementWithName: (OFString *)name
+		      namespace: (OFString *)ns
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns] autorelease];
 }
 
-+ (instancetype)elementWithName: (OFString*)name
-		      namespace: (OFString*)ns
-		    stringValue: (OFString*)stringValue
++ (instancetype)elementWithName: (OFString *)name
+		      namespace: (OFString *)ns
+		    stringValue: (OFString *)stringValue
 {
 	return [[[self alloc] initWithName: name
 				 namespace: ns
 			       stringValue: stringValue] autorelease];
 }
 
-+ (instancetype)elementWithElement: (OFXMLElement*)element
++ (instancetype)elementWithElement: (OFXMLElement *)element
 {
 	return [[[self alloc] initWithElement: element] autorelease];
 }
 
-+ (instancetype)elementWithXMLString: (OFString*)string
++ (instancetype)elementWithXMLString: (OFString *)string
 {
 	return [[[self alloc] initWithXMLString: string] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)elementWithFile: (OFString*)path
++ (instancetype)elementWithFile: (OFString *)path
 {
 	return [[[self alloc] initWithFile: path] autorelease];
 }
@@ -133,32 +133,32 @@ static Class CDATAClass = Nil;
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithName: (OFString*)name
+- initWithName: (OFString *)name
 {
 	return [self initWithName: name
 			namespace: nil
 		      stringValue: nil];
 }
 
-- initWithName: (OFString*)name
-   stringValue: (OFString*)stringValue
+- initWithName: (OFString *)name
+   stringValue: (OFString *)stringValue
 {
 	return [self initWithName: name
 			namespace: nil
 		      stringValue: stringValue];
 }
 
-- initWithName: (OFString*)name
-     namespace: (OFString*)namespace
+- initWithName: (OFString *)name
+     namespace: (OFString *)namespace
 {
 	return [self initWithName: name
 			namespace: namespace
 		      stringValue: nil];
 }
 
-- initWithName: (OFString*)name
-     namespace: (OFString*)namespace
-   stringValue: (OFString*)stringValue
+- initWithName: (OFString *)name
+     namespace: (OFString *)namespace
+   stringValue: (OFString *)stringValue
 {
 	self = [super init];
 
@@ -184,7 +184,7 @@ static Class CDATAClass = Nil;
 	return self;
 }
 
-- initWithElement: (OFXMLElement*)element
+- initWithElement: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -206,7 +206,7 @@ static Class CDATAClass = Nil;
 	return self;
 }
 
-- initWithXMLString: (OFString*)string
+- initWithXMLString: (OFString *)string
 {
 	void *pool;
 	OFXMLParser *parser;
@@ -241,7 +241,7 @@ static Class CDATAClass = Nil;
 }
 
 #ifdef OF_HAVE_FILES
-- initWithFile: (OFString*)path
+- initWithFile: (OFString *)path
 {
 	void *pool;
 	OFXMLParser *parser;
@@ -273,7 +273,7 @@ static Class CDATAClass = Nil;
 }
 #endif
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -372,24 +372,24 @@ static Class CDATAClass = Nil;
 	[super dealloc];
 }
 
-- (OFArray*)attributes
+- (OFArray *)attributes
 {
 	return [[_attributes copy] autorelease];
 }
 
-- (void)setChildren: (OFArray*)children
+- (void)setChildren: (OFArray *)children
 {
 	OFArray *old = _children;
 	_children = [children copy];
 	[old release];
 }
 
-- (OFArray*)children
+- (OFArray *)children
 {
 	return [[_children copy] autorelease];
 }
 
-- (void)setStringValue: (OFString*)stringValue
+- (void)setStringValue: (OFString *)stringValue
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -399,7 +399,7 @@ static Class CDATAClass = Nil;
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFString*)stringValue
+- (OFString *)stringValue
 {
 	OFMutableString *ret;
 
@@ -421,10 +421,10 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (OFString*)OF_XMLStringWithParent: (OFXMLElement*)parent
-			 namespaces: (OFDictionary*)allNamespaces
-			indentation: (unsigned int)indentation
-			      level: (unsigned int)level
+- (OFString *)OF_XMLStringWithParent: (OFXMLElement *)parent
+			  namespaces: (OFDictionary *)allNamespaces
+			 indentation: (unsigned int)indentation
+			       level: (unsigned int)level
 {
 	void *pool;
 	char *cString;
@@ -437,7 +437,7 @@ static Class CDATAClass = Nil;
 
 	parentPrefix = [allNamespaces objectForKey:
 	    (parent != nil && parent->_namespace != nil
-	    ? parent->_namespace : (OFString*)@"")];
+	    ? parent->_namespace : (OFString *)@"")];
 
 	/* Add the namespaces of the current element */
 	if (allNamespaces != nil) {
@@ -458,7 +458,7 @@ static Class CDATAClass = Nil;
 		allNamespaces = _namespaces;
 
 	prefix = [allNamespaces objectForKey:
-	    (_namespace != nil ? _namespace : (OFString*)@"")];
+	    (_namespace != nil ? _namespace : (OFString *)@"")];
 
 	if (parent != nil && parent->_namespace != nil && parentPrefix == nil)
 		defaultNS = parent->_namespace;
@@ -589,7 +589,7 @@ static Class CDATAClass = Nil;
 				[tmp addItem: "\n"];
 
 			if ([child isKindOfClass: [OFXMLElement class]])
-				childString = [(OFXMLElement*)child
+				childString = [(OFXMLElement *)child
 				    OF_XMLStringWithParent: self
 						namespaces: allNamespaces
 					       indentation: ind
@@ -663,7 +663,7 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (OFString*)XMLString
+- (OFString *)XMLString
 {
 	return [self OF_XMLStringWithParent: nil
 				 namespaces: nil
@@ -671,7 +671,7 @@ static Class CDATAClass = Nil;
 				      level: 0];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
 	return [self OF_XMLStringWithParent: nil
 				 namespaces: nil
@@ -679,8 +679,8 @@ static Class CDATAClass = Nil;
 				      level: 0];
 }
 
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
+				 level: (unsigned int)level
 {
 	return [self OF_XMLStringWithParent: nil
 				 namespaces: nil
@@ -688,7 +688,7 @@ static Class CDATAClass = Nil;
 				      level: level];
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -756,7 +756,7 @@ static Class CDATAClass = Nil;
 	return [element autorelease];
 }
 
-- (void)addAttribute: (OFXMLAttribute*)attribute
+- (void)addAttribute: (OFXMLAttribute *)attribute
 {
 	if (_attributes == nil)
 		_attributes = [[OFMutableArray alloc] init];
@@ -766,17 +766,17 @@ static Class CDATAClass = Nil;
 		[_attributes addObject: attribute];
 }
 
-- (void)addAttributeWithName: (OFString*)name
-		 stringValue: (OFString*)stringValue
+- (void)addAttributeWithName: (OFString *)name
+		 stringValue: (OFString *)stringValue
 {
 	[self addAttributeWithName: name
 			 namespace: nil
 		       stringValue: stringValue];
 }
 
-- (void)addAttributeWithName: (OFString*)name
-		   namespace: (OFString*)namespace
-		 stringValue: (OFString*)stringValue
+- (void)addAttributeWithName: (OFString *)name
+		   namespace: (OFString *)namespace
+		 stringValue: (OFString *)stringValue
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -787,7 +787,7 @@ static Class CDATAClass = Nil;
 	objc_autoreleasePoolPop(pool);
 }
 
-- (OFXMLAttribute*)attributeForName: (OFString*)attributeName
+- (OFXMLAttribute *)attributeForName: (OFString *)attributeName
 {
 	for (OFXMLAttribute *attribute in _attributes)
 		if (attribute->_namespace == nil &&
@@ -797,8 +797,8 @@ static Class CDATAClass = Nil;
 	return nil;
 }
 
-- (OFXMLAttribute*)attributeForName: (OFString*)attributeName
-			  namespace: (OFString*)attributeNS
+- (OFXMLAttribute *)attributeForName: (OFString *)attributeName
+			   namespace: (OFString *)attributeNS
 {
 	if (attributeNS == nil)
 		return [self attributeForName: attributeName];
@@ -811,7 +811,7 @@ static Class CDATAClass = Nil;
 	return nil;
 }
 
-- (void)removeAttributeForName: (OFString*)attributeName
+- (void)removeAttributeForName: (OFString *)attributeName
 {
 	OFXMLAttribute *const *objects = [_attributes objects];
 	size_t count = [_attributes count];
@@ -826,8 +826,8 @@ static Class CDATAClass = Nil;
 	}
 }
 
-- (void)removeAttributeForName: (OFString*)attributeName
-		     namespace: (OFString*)attributeNS
+- (void)removeAttributeForName: (OFString *)attributeName
+		     namespace: (OFString *)attributeNS
 {
 	OFXMLAttribute *const *objects;
 	size_t count;
@@ -849,8 +849,8 @@ static Class CDATAClass = Nil;
 	}
 }
 
-- (void)setPrefix: (OFString*)prefix
-     forNamespace: (OFString*)namespace
+- (void)setPrefix: (OFString *)prefix
+     forNamespace: (OFString *)namespace
 {
 	if ([prefix length] == 0)
 		@throw [OFInvalidArgumentException exception];
@@ -861,8 +861,8 @@ static Class CDATAClass = Nil;
 			forKey: namespace];
 }
 
-- (void)bindPrefix: (OFString*)prefix
-      forNamespace: (OFString*)namespace
+- (void)bindPrefix: (OFString *)prefix
+      forNamespace: (OFString *)namespace
 {
 	[self setPrefix: prefix
 	   forNamespace: namespace];
@@ -871,7 +871,7 @@ static Class CDATAClass = Nil;
 		       stringValue: namespace];
 }
 
-- (void)addChild: (OFXMLNode*)child
+- (void)addChild: (OFXMLNode *)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
@@ -882,7 +882,7 @@ static Class CDATAClass = Nil;
 	[_children addObject: child];
 }
 
-- (void)insertChild: (OFXMLNode*)child
+- (void)insertChild: (OFXMLNode *)child
 	    atIndex: (size_t)index
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
@@ -895,7 +895,7 @@ static Class CDATAClass = Nil;
 			atIndex: index];
 }
 
-- (void)insertChildren: (OFArray*)children
+- (void)insertChildren: (OFArray *)children
 	       atIndex: (size_t)index
 {
 	for (OFXMLNode *node in children)
@@ -906,7 +906,7 @@ static Class CDATAClass = Nil;
 				  atIndex: index];
 }
 
-- (void)removeChild: (OFXMLNode*)child
+- (void)removeChild: (OFXMLNode *)child
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
@@ -919,8 +919,8 @@ static Class CDATAClass = Nil;
 	[_children removeObjectAtIndex: index];
 }
 
-- (void)replaceChild: (OFXMLNode*)child
-	    withNode: (OFXMLNode*)node
+- (void)replaceChild: (OFXMLNode *)child
+	    withNode: (OFXMLNode *)node
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]] ||
 	    [child isKindOfClass: [OFXMLAttribute class]])
@@ -931,7 +931,7 @@ static Class CDATAClass = Nil;
 }
 
 - (void)replaceChildAtIndex: (size_t)index
-		   withNode: (OFXMLNode*)node
+		   withNode: (OFXMLNode *)node
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
@@ -940,38 +940,38 @@ static Class CDATAClass = Nil;
 			     withObject: node];
 }
 
-- (OFXMLElement*)elementForName: (OFString*)elementName
+- (OFXMLElement *)elementForName: (OFString *)elementName
 {
 	return [[self elementsForName: elementName] firstObject];
 }
 
-- (OFXMLElement*)elementForName: (OFString*)elementName
-		      namespace: (OFString*)elementNS
+- (OFXMLElement *)elementForName: (OFString *)elementName
+		       namespace: (OFString *)elementNS
 {
 	return [[self elementsForName: elementName
 			    namespace: elementNS] firstObject];
 }
 
-- (OFArray*)elements
+- (OFArray *)elements
 {
-	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
+	OFMutableArray OF_GENERIC(OFXMLElement *) *ret = [OFMutableArray array];
 
 	for (OFXMLNode *child in _children)
 		if ([child isKindOfClass: [OFXMLElement class]])
-			[ret addObject: (OFXMLElement*)child];
+			[ret addObject: (OFXMLElement *)child];
 
 	[ret makeImmutable];
 
 	return ret;
 }
 
-- (OFArray*)elementsForName: (OFString*)elementName
+- (OFArray *)elementsForName: (OFString *)elementName
 {
-	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
+	OFMutableArray OF_GENERIC(OFXMLElement *) *ret = [OFMutableArray array];
 
 	for (OFXMLNode *child in _children) {
 		if ([child isKindOfClass: [OFXMLElement class]]) {
-			OFXMLElement *element = (OFXMLElement*)child;
+			OFXMLElement *element = (OFXMLElement *)child;
 
 			if (element->_namespace == nil &&
 			    [element->_name isEqual: elementName])
@@ -984,13 +984,13 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (OFArray*)elementsForNamespace: (OFString*)elementNS
+- (OFArray *)elementsForNamespace: (OFString *)elementNS
 {
-	OFMutableArray OF_GENERIC(OFXMLElement*) *ret = [OFMutableArray array];
+	OFMutableArray OF_GENERIC(OFXMLElement *) *ret = [OFMutableArray array];
 
 	for (OFXMLNode *child in _children) {
 		if ([child isKindOfClass: [OFXMLElement class]]) {
-			OFXMLElement *element = (OFXMLElement*)child;
+			OFXMLElement *element = (OFXMLElement *)child;
 
 			if (element->_name != nil &&
 			    [element->_namespace isEqual: elementNS])
@@ -1003,10 +1003,10 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (OFArray*)elementsForName: (OFString*)elementName
-		  namespace: (OFString*)elementNS
+- (OFArray *)elementsForName: (OFString *)elementName
+		   namespace: (OFString *)elementNS
 {
-	OFMutableArray OF_GENERIC(OFXMLElement*) *ret;
+	OFMutableArray OF_GENERIC(OFXMLElement *) *ret;
 
 	if (elementNS == nil)
 		return [self elementsForName: elementName];
@@ -1015,7 +1015,7 @@ static Class CDATAClass = Nil;
 
 	for (OFXMLNode *child in _children) {
 		if ([child isKindOfClass: [OFXMLElement class]]) {
-			OFXMLElement *element = (OFXMLElement*)child;
+			OFXMLElement *element = (OFXMLElement *)child;
 
 			if ([element->_namespace isEqual: elementNS] &&
 			    [element->_name isEqual: elementName])

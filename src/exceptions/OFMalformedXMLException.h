@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which encountered malformed XML
  * @return A new, autoreleased malformed XML exception
  */
-+ (instancetype)exceptionWithParser: (nullable OFXMLParser*)parser;
++ (instancetype)exceptionWithParser: (nullable OFXMLParser *)parser;
 
 /*!
  * @brief Initializes an already allocated malformed XML exception.
@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which encountered malformed XML
  * @return An initialized malformed XML exception
  */
-- initWithParser: (nullable OFXMLParser*)parser;
+- initWithParser: (nullable OFXMLParser *)parser;
 @end
 
 OF_ASSUME_NONNULL_END

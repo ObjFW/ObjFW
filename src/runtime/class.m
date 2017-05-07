@@ -72,7 +72,7 @@ register_selectors(struct objc_abi_class *cls)
 	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
 		for (unsigned int i = 0; i < ml->count; i++)
 			objc_register_selector(
-			    (struct objc_abi_selector*)&ml->methods[i]);
+			    (struct objc_abi_selector *)&ml->methods[i]);
 }
 
 Class
@@ -135,7 +135,7 @@ call_method(Class cls, const char *method)
 	    ml != NULL; ml = ml->next)
 		for (unsigned int i = 0; i < ml->count; i++)
 			if (sel_isEqual((SEL)&ml->methods[i].sel, selector))
-				((void(*)(id, SEL))ml->methods[i].imp)(cls,
+				((void (*)(id, SEL))ml->methods[i].imp)(cls,
 				    selector);
 }
 
@@ -272,7 +272,7 @@ setup_class(Class cls)
 	if (cls->info & OBJC_CLASS_INFO_SETUP)
 		return;
 
-	if ((superclass = ((struct objc_abi_class*)cls)->superclass) != NULL) {
+	if ((superclass = ((struct objc_abi_class *)cls)->superclass) != NULL) {
 		Class super = objc_classname_to_class(superclass, false);
 
 		if (super == Nil)
@@ -385,7 +385,7 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 {
 	for (uint16_t i = 0; i < symtab->cls_def_cnt; i++) {
 		struct objc_abi_class *cls =
-		    (struct objc_abi_class*)symtab->defs[i];
+		    (struct objc_abi_class *)symtab->defs[i];
 
 		register_class(cls);
 		register_selectors(cls);
@@ -456,7 +456,7 @@ objc_registerClassPair(Class cls)
 {
 	objc_global_mutex_lock();
 
-	register_class((struct objc_abi_class*)cls);
+	register_class((struct objc_abi_class *)cls);
 
 	if (cls->superclass != Nil) {
 		add_subclass(cls);
@@ -568,7 +568,7 @@ objc_getClassList(Class *buf, unsigned int count)
 	return j;
 }
 
-Class*
+Class *
 objc_copyClassList(unsigned int *len)
 {
 	Class *ret;
@@ -601,7 +601,7 @@ class_isMetaClass(Class cls)
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
 
-const char*
+const char *
 class_getName(Class cls)
 {
 	if (cls == Nil)
@@ -670,7 +670,7 @@ class_getMethodImplementation_stret(Class cls, SEL sel)
 	return objc_msg_lookup_stret((id)&dummy, sel);
 }
 
-static struct objc_method*
+static struct objc_method *
 get_method(Class cls, SEL sel)
 {
 	struct objc_method_list *ml;
@@ -719,7 +719,7 @@ add_method(Class cls, SEL sel, IMP imp, const char *types)
 	objc_update_dtable(cls);
 }
 
-const char*
+const char *
 class_getMethodTypeEncoding(Class cls, SEL sel)
 {
 	struct objc_method *method;
@@ -791,7 +791,7 @@ object_getClass(id obj_)
 	if (obj_ == nil)
 		return Nil;
 
-	obj = (struct objc_object*)obj_;
+	obj = (struct objc_object *)obj_;
 
 	return obj->isa;
 }
@@ -805,7 +805,7 @@ object_setClass(id obj_, Class cls)
 	if (obj_ == nil)
 		return Nil;
 
-	obj = (struct objc_object*)obj_;
+	obj = (struct objc_object *)obj_;
 
 	old = obj->isa;
 	obj->isa = cls;
@@ -813,7 +813,7 @@ object_setClass(id obj_, Class cls)
 	return old;
 }
 
-const char*
+const char *
 object_getClassName(id obj)
 {
 	return class_getName(object_getClass(obj));
@@ -822,7 +822,7 @@ object_getClassName(id obj)
 static void
 unregister_class(Class rcls)
 {
-	struct objc_abi_class *cls = (struct objc_abi_class*)rcls;
+	struct objc_abi_class *cls = (struct objc_abi_class *)rcls;
 
 	if ((rcls->info & OBJC_CLASS_INFO_SETUP) &&
 	    rcls->superclass != Nil &&

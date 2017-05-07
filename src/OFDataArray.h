@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path of the file
  * @return A new autoreleased OFDataArray
  */
-+ (instancetype)dataArrayWithContentsOfFile: (OFString*)path;
++ (instancetype)dataArrayWithContentsOfFile: (OFString *)path;
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
@@ -101,7 +101,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL to the contents for the OFDataArray
  * @return A new autoreleased OFDataArray
  */
-+ (instancetype)dataArrayWithContentsOfURL: (OFURL*)URL;
++ (instancetype)dataArrayWithContentsOfURL: (OFURL *)URL;
 #endif
 
 /*!
@@ -111,7 +111,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string representation of the data
  * @return A new autoreleased OFDataArray
  */
-+ (instancetype)dataArrayWithStringRepresentation: (OFString*)string;
++ (instancetype)dataArrayWithStringRepresentation: (OFString *)string;
 
 /*!
  * @brief Creates a new OFDataArray with an item size of 1, containing the data
@@ -120,7 +120,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string with the Base64-encoded data
  * @return A new autoreleased OFDataArray
  */
-+ (instancetype)dataArrayWithBase64EncodedString: (OFString*)string;
++ (instancetype)dataArrayWithBase64EncodedString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFDataArray whose items all have the
@@ -160,7 +160,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path of the file
  * @return An initialized OFDataArray
  */
-- initWithContentsOfFile: (OFString*)path;
+- initWithContentsOfFile: (OFString *)path;
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
@@ -171,7 +171,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL to the contents for the OFDataArray
  * @return A new autoreleased OFDataArray
  */
-- initWithContentsOfURL: (OFURL*)URL;
+- initWithContentsOfURL: (OFURL *)URL;
 #endif
 
 /*!
@@ -181,7 +181,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string representation of the data
  * @return A new autoreleased OFDataArray
  */
-- initWithStringRepresentation: (OFString*)string;
+- initWithStringRepresentation: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFDataArray with an item size of 1,
@@ -190,7 +190,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string with the Base64-encoded data
  * @return An initialized OFDataArray
  */
-- initWithBase64EncodedString: (OFString*)string;
+- initWithBase64EncodedString: (OFString *)string;
 
 /*!
  * @brief Returns the number of items in the OFDataArray.
@@ -209,7 +209,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return All elements of the OFDataArray as a C array
  */
-- (void*)items OF_RETURNS_INNER_POINTER;
+- (void *)items OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns a specific item of the OFDataArray.
@@ -217,28 +217,28 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The number of the item to return
  * @return The specified item of the OFDataArray
  */
-- (void*)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
+- (void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the first item of the OFDataArray.
  *
  * @return The first item of the OFDataArray or NULL
  */
-- (nullable void*)firstItem OF_RETURNS_INNER_POINTER;
+- (nullable void *)firstItem OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the last item of the OFDataArray.
  *
  * @return The last item of the OFDataArray or NULL
  */
-- (nullable void*)lastItem OF_RETURNS_INNER_POINTER;
+- (nullable void *)lastItem OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Adds an item to the OFDataArray.
  *
  * @param item A pointer to an arbitrary item
  */
-- (void)addItem: (const void*)item;
+- (void)addItem: (const void *)item;
 
 /*!
  * @brief Adds an item to the OFDataArray at the specified index.
@@ -246,7 +246,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param item A pointer to an arbitrary item
  * @param index The index where the item should be added
  */
-- (void)insertItem: (const void*)item
+- (void)insertItem: (const void *)item
 	   atIndex: (size_t)index;
 
 /*!
@@ -255,7 +255,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param items A C array containing the items to add
  * @param count The number of items to add
  */
-- (void)addItems: (const void*)items
+- (void)addItems: (const void *)items
 	   count: (size_t)count;
 
 /*!
@@ -265,7 +265,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param index The index where the items should be added
  * @param count The number of items to add
  */
-- (void)insertItems: (const void*)items
+- (void)insertItems: (const void *)items
 	    atIndex: (size_t)index
 	      count: (size_t)count;
 
@@ -301,14 +301,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The string representation of the data array.
  */
-- (OFString*)stringRepresentation;
+- (OFString *)stringRepresentation;
 
 /*!
  * @brief Returns a string containing the data in Base64 encoding.
  *
  * @return A string containing the data in Base64 encoding
  */
-- (OFString*)stringByBase64Encoding;
+- (OFString *)stringByBase64Encoding;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -316,7 +316,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path of the file to write to
  */
-- (void)writeToFile: (OFString*)path;
+- (void)writeToFile: (OFString *)path;
 #endif
 @end
 

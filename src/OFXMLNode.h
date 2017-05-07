@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return A string with the string value
  */
-- (OFString*)stringValue;
+- (OFString *)stringValue;
 
 /*!
  * @brief Sets the string value of the receiver to the specified string.
@@ -40,7 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param stringValue The new string value for the node
  */
-- (void)setStringValue: (OFString*)stringValue;
+- (void)setStringValue: (OFString *)stringValue;
 
 /*!
  * @brief Returns the contents of the receiver as a decimal value.
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An OFString representing the OFXMLNode as an XML string
  */
-- (OFString*)XMLString;
+- (OFString *)XMLString;
 
 /*!
  * @brief Returns an OFString representing the OFXMLNode as an XML string with
@@ -85,7 +85,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An OFString representing the OFXMLNode as an XML string with
  *	   indentation
  */
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation;
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation;
 
 /*!
  * @brief Returns an OFString representing the OFXMLNode as an XML string with
@@ -96,8 +96,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An OFString representing the OFXMLNode as an XML string with
  *	   indentation
  */
-- (OFString*)XMLStringWithIndentation: (unsigned int)indentation
-				level: (unsigned int)level;
+- (OFString *)XMLStringWithIndentation: (unsigned int)indentation
+				 level: (unsigned int)level;
 @end
 
 OF_ASSUME_NONNULL_END

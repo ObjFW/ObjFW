@@ -36,7 +36,7 @@
 	return self;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	if (_inClass != Nil)
 		return [OFString stringWithFormat:

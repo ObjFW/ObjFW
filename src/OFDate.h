@@ -73,8 +73,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format of the string describing the date
  * @return A new, autoreleased OFDate with the specified date and time
  */
-+ (instancetype)dateWithDateString: (OFString*)string
-			    format: (OFString*)format;
++ (instancetype)dateWithDateString: (OFString *)string
+			    format: (OFString *)format;
 
 /*!
  * @brief Creates a new OFDate with the specified string in the specified
@@ -90,8 +90,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format of the string describing the date
  * @return A new, autoreleased OFDate with the specified date and time
  */
-+ (instancetype)dateWithLocalDateString: (OFString*)string
-				 format: (OFString*)format;
++ (instancetype)dateWithLocalDateString: (OFString *)string
+				 format: (OFString *)format;
 
 /*!
  * @brief Returns a date in the distant future.
@@ -146,8 +146,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format of the string describing the date
  * @return An initialized OFDate with the specified date and time
  */
-- initWithDateString: (OFString*)string
-	      format: (OFString*)format;
+- initWithDateString: (OFString *)string
+	      format: (OFString *)format;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified string in
@@ -164,8 +164,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format of the string describing the date
  * @return An initialized OFDate with the specified date and time
  */
-- initWithLocalDateString: (OFString*)string
-		   format: (OFString*)format;
+- initWithLocalDateString: (OFString *)string
+		   format: (OFString *)format;
 
 /*!
  * @brief Returns the microsecond of the date.
@@ -280,7 +280,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format for the date string
  * @return A new, autoreleased OFString
  */
-- (OFString*)dateStringWithFormat: (OFConstantString*)format;
+- (OFString *)dateStringWithFormat: (OFConstantString *)format;
 
 /*!
  * @brief Creates a string of the local date with the specified format.
@@ -290,7 +290,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format for the date string
  * @return A new, autoreleased OFString
  */
-- (OFString*)localDateStringWithFormat: (OFConstantString*)format;
+- (OFString *)localDateStringWithFormat: (OFConstantString *)format;
 
 /*!
  * @brief Returns the earlier of the two dates.
@@ -300,7 +300,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param otherDate Another date
  * @return The earlier date of the two dates
  */
-- (OFDate*)earlierDate: (OFDate*)otherDate;
+- (OFDate *)earlierDate: (OFDate *)otherDate;
 
 /*!
  * @brief Returns the later of the two dates.
@@ -310,7 +310,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param otherDate Another date
  * @return The later date of the two dates
  */
-- (OFDate*)laterDate: (OFDate*)otherDate;
+- (OFDate *)laterDate: (OFDate *)otherDate;
 
 /*!
  * @brief Returns the seconds since 1970-01-01T00:00:00Z.
@@ -325,7 +325,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param otherDate Date date to generate the difference with receiver
  * @return The seconds the receiver is after the date.
  */
-- (of_time_interval_t)timeIntervalSinceDate: (OFDate*)otherDate;
+- (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate;
 
 /*!
  * @brief Returns the seconds the receiver is in the future.
@@ -340,7 +340,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param seconds The seconds after the date
  * @return A new, autoreleased OFDate
  */
-- (OFDate*)dateByAddingTimeInterval: (of_time_interval_t)seconds;
+- (OFDate *)dateByAddingTimeInterval: (of_time_interval_t)seconds;
 @end
 
 OF_ASSUME_NONNULL_END

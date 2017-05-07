@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param socket The socket which could not connect
  * @return A new, autoreleased connection failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket;
 
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased connection failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString*)host
++ (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param socket The socket which could not connect
  * @return An initialized connection failed exception
  */
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket;
 
@@ -103,7 +103,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized connection failed exception
  */
-- initWithHost: (OFString*)host
+- initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket
 	 errNo: (int)errNo;

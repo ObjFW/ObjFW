@@ -23,5 +23,5 @@
 	OFDictionary *_dictionary;
 }
 
-- initWithOFDictionary: (OFDictionary*)dictionary;
+- initWithOFDictionary: (OFDictionary *)dictionary;
 @end

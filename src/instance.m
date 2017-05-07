@@ -38,9 +38,9 @@ callConstructors(Class cls, id obj)
 	if (!class_respondsToSelector(cls, constructSel))
 		return true;
 
-	construct = (id(*)(id, SEL))
+	construct = (id (*)(id, SEL))
 	    class_getMethodImplementation(cls, constructSel);
-	last = (id(*)(id, SEL))
+	last = (id (*)(id, SEL))
 	    class_getMethodImplementation(super, constructSel);
 
 	if (construct == last)
@@ -65,7 +65,7 @@ objc_constructInstance(Class cls, void *bytes)
 	return obj;
 }
 
-void*
+void *
 objc_destructInstance(id obj)
 {
 	Class cls;
@@ -83,7 +83,7 @@ objc_destructInstance(id obj)
 		void (*destruct)(id, SEL);
 
 		if (class_respondsToSelector(cls, destructSel)) {
-			if ((destruct = (void(*)(id, SEL))
+			if ((destruct = (void (*)(id, SEL))
 			    class_getMethodImplementation(cls,
 			    destructSel)) != last)
 				destruct(obj, destructSel);

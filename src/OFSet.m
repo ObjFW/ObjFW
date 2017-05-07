@@ -38,12 +38,12 @@ static struct {
 	return (id)[[OFSet_hashtable alloc] init];
 }
 
-- initWithSet: (OFSet*)set
+- initWithSet: (OFSet *)set
 {
 	return (id)[[OFSet_hashtable alloc] initWithSet: set];
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	return (id)[[OFSet_hashtable alloc] initWithArray: array];
 }
@@ -61,7 +61,7 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	return (id)[[OFSet_hashtable alloc] initWithObjects: objects
@@ -75,7 +75,7 @@ static struct {
 						 arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFSet_hashtable alloc] initWithSerialization: element];
 }
@@ -120,12 +120,12 @@ static struct {
 	return [[[self alloc] init] autorelease];
 }
 
-+ (instancetype)setWithSet: (OFSet*)set
++ (instancetype)setWithSet: (OFSet *)set
 {
 	return [[[self alloc] initWithSet: set] autorelease];
 }
 
-+ (instancetype)setWithArray: (OFArray*)array
++ (instancetype)setWithArray: (OFArray *)array
 {
 	return [[[self alloc] initWithArray: array] autorelease];
 }
@@ -143,7 +143,7 @@ static struct {
 	return ret;
 }
 
-+ (instancetype)setWithObjects: (id const*)objects
++ (instancetype)setWithObjects: (id const *)objects
 			 count: (size_t)count
 {
 	return [[[self alloc] initWithObjects: objects
@@ -166,17 +166,17 @@ static struct {
 	return [super init];
 }
 
-- initWithSet: (OFSet*)set
+- initWithSet: (OFSet *)set
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithArray: (OFArray*)array
+- initWithArray: (OFArray *)array
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObjects: (id const*)objects
+- initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
@@ -201,7 +201,7 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSerialization: (OFXMLElement*)element
+- initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -211,7 +211,7 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (id)valueForKey: (OFString*)key
+- (id)valueForKey: (OFString *)key
 {
 	OFMutableSet *ret;
 
@@ -242,7 +242,7 @@ static struct {
 }
 
 - (void)setValue: (id)value
-	  forKey: (OFString*)key
+	  forKey: (OFString *)key
 {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
@@ -268,13 +268,13 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (OFEnumerator*)objectEnumerator
+- (OFEnumerator *)objectEnumerator
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t*)state
-			   objects: (id*)objects
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
 			     count: (int)count
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -308,7 +308,7 @@ static struct {
 	return hash;
 }
 
-- (OFString*)description
+- (OFString *)description
 {
 	void *pool;
 	OFMutableString *ret;
@@ -353,7 +353,7 @@ static struct {
 	return [[OFMutableSet alloc] initWithSet: self];
 }
 
-- (bool)isSubsetOfSet: (OFSet*)set
+- (bool)isSubsetOfSet: (OFSet *)set
 {
 	for (id object in self)
 		if (![set containsObject: object])
@@ -362,7 +362,7 @@ static struct {
 	return true;
 }
 
-- (bool)intersectsSet: (OFSet*)set
+- (bool)intersectsSet: (OFSet *)set
 {
 	for (id object in self)
 		if ([set containsObject: object])
@@ -371,7 +371,7 @@ static struct {
 	return false;
 }
 
-- (OFXMLElement*)XMLElementBySerializing
+- (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
@@ -398,7 +398,7 @@ static struct {
 	return [element autorelease];
 }
 
-- (OFSet*)setBySubtractingSet: (OFSet*)set
+- (OFSet *)setBySubtractingSet: (OFSet *)set
 {
 	OFMutableSet *new;
 
@@ -410,7 +410,7 @@ static struct {
 	return new;
 }
 
-- (OFSet*)setByIntersectingWithSet: (OFSet*)set
+- (OFSet *)setByIntersectingWithSet: (OFSet *)set
 {
 	OFMutableSet *new;
 
@@ -422,7 +422,7 @@ static struct {
 	return new;
 }
 
-- (OFSet*)setByAddingSet: (OFSet*)set
+- (OFSet *)setByAddingSet: (OFSet *)set
 {
 	OFMutableSet *new;
 
@@ -434,7 +434,7 @@ static struct {
 	return new;
 }
 
-- (OFArray*)allObjects
+- (OFArray *)allObjects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *ret = [[[self objectEnumerator] allObjects] retain];
@@ -465,7 +465,7 @@ static struct {
 	}
 }
 
-- (OFSet*)filteredSetUsingBlock: (of_set_filter_block_t)block
+- (OFSet *)filteredSetUsingBlock: (of_set_filter_block_t)block
 {
 	OFMutableSet *ret = [OFMutableSet set];
 
