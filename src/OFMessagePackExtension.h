@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFMessagePackRepresentation
  */
 - initWithType: (int8_t)type
-	  data: (OFDataArray *)data;
+	  data: (OFDataArray *)data OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -288,7 +288,6 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
-
 	@try {
 		[self parseStream: file];
 	} @finally {

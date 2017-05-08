@@ -222,6 +222,19 @@
 # define OF_SUBCLASSING_RESTRICTED
 #endif
 
+#if __has_attribute(__objc_method_family__)
+# define OF_METHOD_FAMILY(f) __attribute__((__objc_method_family__(f)))
+#else
+# define OF_METHOD_FAMILY(f)
+#endif
+
+#if __has_attribute(__objc_designated_initializer__)
+# define OF_DESIGNATED_INITIALIZER \
+    __attribute__((__objc_designated_initializer__))
+#else
+# define OF_DESIGNATED_INITIALIZER
+#endif
+
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM

@@ -57,6 +57,11 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 @synthesize owner = _owner, group = _group;
 @synthesize deviceMajor = _deviceMajor, deviceMinor = _deviceMinor;
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)OF_initWithHeader: (char[512])header
 			   stream: (OFStream *)stream
 {

@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A stream from which the tar archive will be read
  * @return An initialized OFTarArchive
  */
-- initWithStream: (OFStream *)stream;
+- initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!

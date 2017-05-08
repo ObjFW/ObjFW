@@ -68,6 +68,7 @@ extern char **environ;
 #endif
 
 @interface OFApplication ()
+- (instancetype)OF_init OF_METHOD_FAMILY(init);
 - (void)OF_setArgumentCount: (int *)argc
 	  andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
@@ -130,7 +131,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 		exit(1);
 	}
 
-	app = [[OFApplication alloc] init];
+	app = [[OFApplication alloc] OF_init];
 
 	[app OF_setArgumentCount: argc
 	       andArgumentValues: argv];
@@ -200,7 +201,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 #endif
 
-- init
+- OF_init
 {
 	self = [super init];
 

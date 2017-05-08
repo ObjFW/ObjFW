@@ -70,7 +70,8 @@ defaultEqual(void *object1, void *object2)
 - (instancetype)OF_initWithMapTable: (OFMapTable *)mapTable
 			    buckets: (struct of_map_table_bucket **)buckets
 			   capacity: (uint32_t)capacity
-		   mutationsPointer: (unsigned long *)mutationsPtr;
+		   mutationsPointer: (unsigned long *)mutationsPtr
+    OF_METHOD_FAMILY(init);
 @end
 
 @interface OFMapTableKeyEnumerator: OFMapTableEnumerator

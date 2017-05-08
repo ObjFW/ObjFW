@@ -173,20 +173,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 #ifdef OF_HAVE_FILES
 - initWithPath: (OFString *)path
 {
-	self = [super init];
-
+	OFFile *file = [[OFFile alloc] initWithPath: path
+					       mode: @"rb"];
 	@try {
-		_stream = [[OFFile alloc] initWithPath: path
-						  mode: @"rb"];
-
-		[self OF_readZIPInfo];
-		[self OF_readEntries];
-	} @catch (id e) {
-		[self release];
-		@throw e;
+		return [self initWithSeekableStream: file];
+	} @finally {
+		[file release];
 	}
-
-	return self;
 }
 #endif
 

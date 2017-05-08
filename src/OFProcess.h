@@ -173,7 +173,8 @@ OF_ASSUME_NONNULL_BEGIN
       programName: (OFString *)programName
 	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
       environment: (nullable OFDictionary
-		       OF_GENERIC(OFString *, OFString *) *)environment;
+		       OF_GENERIC(OFString *, OFString *) *)environment
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Closes the write direction of the process.

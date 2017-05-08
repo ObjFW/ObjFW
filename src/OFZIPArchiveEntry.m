@@ -155,6 +155,11 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 @synthesize OF_lastModifiedFileDate = _lastModifiedFileDate;
 @synthesize OF_localFileHeaderOffset = _localFileHeaderOffset;
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)OF_initWithStream: (OFStream *)stream
 {
 	self = [super init];

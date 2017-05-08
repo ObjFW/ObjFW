@@ -88,7 +88,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A initialized OFDeflateStream
  */
-- initWithStream: (OFStream *)stream;
+- initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

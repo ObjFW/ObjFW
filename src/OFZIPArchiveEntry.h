@@ -175,6 +175,8 @@ enum {
  */
 @property (readonly) uint16_t generalPurposeBitFlag;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Returns the last modification date of the entry's file.
  *

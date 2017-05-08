@@ -79,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A seekable stream from which the ZIP archive will be read
  * @return An initialized OFZIPArchive
  */
-- initWithSeekableStream: (OFSeekableStream *)stream;
+- initWithSeekableStream: (OFSeekableStream *)stream OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!

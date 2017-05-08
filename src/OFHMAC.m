@@ -27,6 +27,11 @@
 	return [[[self alloc] initWithHashClass: class] autorelease];
 }
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - initWithHashClass: (Class <OFCryptoHash>)class
 {
 	self = [super init];

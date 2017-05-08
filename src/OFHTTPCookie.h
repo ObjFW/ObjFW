@@ -103,5 +103,5 @@
  * @return An initialized OFHTTPCookie
  */
 - initWithName: (OFString *)name
-	 value: (OFString *)value;
+	 value: (OFString *)value OF_DESIGNATED_INITIALIZER;
 @end

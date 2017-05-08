@@ -51,17 +51,13 @@
 #ifdef OF_HAVE_FILES
 - initWithPath: (OFString *)path
 {
-	self = [super init];
-
+	OFFile *file = [[OFFile alloc] initWithPath: path
+					       mode: @"rb"];
 	@try {
-		_stream = [[OFFile alloc] initWithPath: path
-						  mode: @"rb"];
-	} @catch (id e) {
-		[self release];
-		@throw e;
+		return [self initWithStream: file];
+	} @finally {
+		[file release];
 	}
-
-	return self;
 }
 #endif
 

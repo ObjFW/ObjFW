@@ -31,6 +31,11 @@
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - initWithStream: (OFStream *)stream
 {
 	self = [super init];

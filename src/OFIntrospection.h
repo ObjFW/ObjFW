@@ -214,7 +214,7 @@ enum {
  *
  * @return An initialized OFIntrospection
  */
-- initWithClass: (Class)class_;
+- initWithClass: (Class)class_ OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

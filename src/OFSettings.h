@@ -62,7 +62,8 @@ OF_ASSUME_NONNULL_BEGIN
  *			  accessed
  * @return An initialized OFSettings instance
  */
-- initWithApplicationName: (OFString *)applicationName;
+- initWithApplicationName: (OFString *)applicationName
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Sets the specified path to the specified string.

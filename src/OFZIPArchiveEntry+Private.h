@@ -22,7 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly) uint16_t OF_lastModifiedFileTime, OF_lastModifiedFileDate;
 @property (readonly) int64_t OF_localFileHeaderOffset;
 
-- (instancetype)OF_initWithStream: (OFStream *)stream;
+- (instancetype)OF_initWithStream: (OFStream *)stream OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

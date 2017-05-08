@@ -43,6 +43,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)hashClass;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initialized an already allocated OFHMAC with the specified hashing
  *	  algorithm.
@@ -50,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param hashClass The class of the hashing algorithm
  * @return An initialized OFHMAC
  */
-- initWithHashClass: (Class <OFCryptoHash>)hashClass;
+- initWithHashClass: (Class <OFCryptoHash>)hashClass OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Sets the key for the HMAC.

@@ -132,7 +132,8 @@ typedef struct of_options_parser_option_t {
  *
  * @return An initialized OFOptionsParser
  */
-- initWithOptions: (const of_options_parser_option_t *)options;
+- initWithOptions: (const of_options_parser_option_t *)options
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Returns the next option.

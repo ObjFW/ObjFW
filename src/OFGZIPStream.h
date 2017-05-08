@@ -75,7 +75,8 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)streamWithStream: (OFStream *)stream;
-- initWithStream: (OFStream *)stream;
+- init OF_UNAVAILABLE;
+- initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

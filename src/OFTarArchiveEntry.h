@@ -113,6 +113,8 @@ typedef enum of_tar_archive_entry_type_t {
  * The device major (if the file is a device).
  */
 @property (readonly) uint32_t deviceMinor;
+
+- init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

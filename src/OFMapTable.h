@@ -137,7 +137,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  */
 - initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
        objectFunctions: (of_map_table_functions_t)objectFunctions
-	      capacity: (size_t)capacity;
+	      capacity: (size_t)capacity OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Returns the number of objects in the map table.
