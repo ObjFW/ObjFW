@@ -18,6 +18,8 @@
 
 #import "NSBridging.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @category NSString (OFObject)
  *	     NSString+OFObject.h ObjFW-Bridge/NSString+OFObject.h
@@ -30,3 +32,5 @@
  */
 @interface NSString (OFObject) <NSBridging>
 @end
+
+OF_ASSUME_NONNULL_END

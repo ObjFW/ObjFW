@@ -14,6 +14,10 @@
  * file.
  */
 
+#import "macros.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @protocol OFBridging OFBridging.h ObjFW-Bridge/OFBridging.h
  *
@@ -32,3 +36,5 @@
  */
 - (id)NSObject;
 @end
+
+OF_ASSUME_NONNULL_END

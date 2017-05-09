@@ -18,6 +18,8 @@
 
 #import "NSBridging.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @category NSDictionary (OFObject) \
  *	     NSDictionary+OFObject.h ObjFW-Bridge/NSDictionary+OFObject.h
@@ -26,3 +28,5 @@
  */
 @interface NSDictionary (OFObject) <NSBridging>
 @end
+
+OF_ASSUME_NONNULL_END

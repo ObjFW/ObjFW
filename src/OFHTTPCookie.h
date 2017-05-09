@@ -19,6 +19,8 @@
 #import "OFDate.h"
 #import "OFArray.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @class OFHTTPCookie OFHTTPCookie.h ObjFW/OFHTTPCookie.h
  *
@@ -105,3 +107,5 @@
 - initWithName: (OFString *)name
 	 value: (OFString *)value OF_DESIGNATED_INITIALIZER;
 @end
+
+OF_ASSUME_NONNULL_END

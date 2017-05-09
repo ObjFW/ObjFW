@@ -20,6 +20,8 @@
 # import <ObjFW/OFDictionary.h>
 #endif
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class NSDictionary;
 
 @interface OFDictionary_NSDictionary: OFDictionary
@@ -29,3 +31,5 @@
 
 - initWithNSDictionary: (NSDictionary *)dictionary;
 @end
+
+OF_ASSUME_NONNULL_END

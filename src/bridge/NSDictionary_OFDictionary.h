@@ -16,6 +16,8 @@
 
 #import <Foundation/NSDictionary.h>
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFDictionary;
 
 @interface NSDictionary_OFDictionary: NSDictionary
@@ -25,3 +27,5 @@
 
 - initWithOFDictionary: (OFDictionary *)dictionary;
 @end
+
+OF_ASSUME_NONNULL_END

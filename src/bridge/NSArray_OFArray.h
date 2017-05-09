@@ -16,6 +16,8 @@
 
 #import <Foundation/NSArray.h>
 
+OF_ASSUME_NONNULL_BEGIN
+
 @class OFArray;
 
 @interface NSArray_OFArray: NSArray
@@ -25,3 +27,5 @@
 
 - initWithOFArray: (OFArray *)array;
 @end
+
+OF_ASSUME_NONNULL_END

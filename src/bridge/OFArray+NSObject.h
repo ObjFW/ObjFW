@@ -22,6 +22,8 @@
 
 #import "OFBridging.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 /*!
  * @category OFArray (NSObject) \
  *	     OFArray+NSObject.h ObjFW-Bridge/OFArray+NSObject.h
@@ -29,3 +31,5 @@
  */
 @interface OFArray (NSObject) <OFBridging>
 @end
+
+OF_ASSUME_NONNULL_END
