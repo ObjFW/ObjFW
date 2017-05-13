@@ -42,88 +42,88 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*! Allows IO operations on previously allocated file descriptors. */
-@property bool allowsStdIO;
+@property (nonatomic) bool allowsStdIO;
 
 /*! Allows read access to the file system. */
-@property bool allowsReadingFiles;
+@property (nonatomic) bool allowsReadingFiles;
 
 /*! Allows write access to the file system. */
-@property bool allowsWritingFiles;
+@property (nonatomic) bool allowsWritingFiles;
 
 /*! Allows creating files in the file system. */
-@property bool allowsCreatingFiles;
+@property (nonatomic) bool allowsCreatingFiles;
 
 /*! Allows creating special files in the file system. */
-@property bool allowsCreatingSpecialFiles;
+@property (nonatomic) bool allowsCreatingSpecialFiles;
 
 /*! Allows creating, reading and writing temporary files in /tmp. */
-@property bool allowsTemporaryFiles;
+@property (nonatomic) bool allowsTemporaryFiles;
 
 /*! Allows using IP sockets. */
-@property bool allowsIPSockets;
+@property (nonatomic) bool allowsIPSockets;
 
 /*! Allows multicast sockets. */
-@property bool allowsMulticastSockets;
+@property (nonatomic) bool allowsMulticastSockets;
 
 /*! Allows explicit changes to file attributes. */
-@property bool allowsChangingFileAttributes;
+@property (nonatomic) bool allowsChangingFileAttributes;
 
 /*! Allows changing ownership of files. */
-@property bool allowsFileOwnerChanges;
+@property (nonatomic) bool allowsFileOwnerChanges;
 
 /*! Allows file locks. */
-@property bool allowsFileLocks;
+@property (nonatomic) bool allowsFileLocks;
 
 /*! Allows UNIX sockets. */
-@property bool allowsUNIXSockets;
+@property (nonatomic) bool allowsUNIXSockets;
 
 /*! Allows syscalls necessary for DNS lookups. */
-@property bool allowsDNS;
+@property (nonatomic) bool allowsDNS;
 
 /*! Allows to look up users and groups. */
-@property bool allowsUserDatabaseReading;
+@property (nonatomic) bool allowsUserDatabaseReading;
 
 /*! Allows sending file descriptors via sendmsg(). */
-@property bool allowsFileDescriptorSending;
+@property (nonatomic) bool allowsFileDescriptorSending;
 
 /*! Allows receiving file descriptors via recvmsg(). */
-@property bool allowsFileDescriptorReceiving;
+@property (nonatomic) bool allowsFileDescriptorReceiving;
 
 /*! Allows MTIOCGET and MTIOCTOP operations on tape devices. */
-@property bool allowsTape;
+@property (nonatomic) bool allowsTape;
 
 /*! Allows read-write operations and ioctls on the TTY. */
-@property bool allowsTTY;
+@property (nonatomic) bool allowsTTY;
 
 /*! Allows various process relationshop operations. */
-@property bool allowsProcessOperations;
+@property (nonatomic) bool allowsProcessOperations;
 
 /*! Allows execve(). */
-@property bool allowsExec;
+@property (nonatomic) bool allowsExec;
 
 /*! Allows PROT_EXEC for mmap() and mprotect(). */
-@property bool allowsProtExec;
+@property (nonatomic) bool allowsProtExec;
 
 /*! Allows settime(). */
-@property bool allowsSetTime;
+@property (nonatomic) bool allowsSetTime;
 
 /*! Allows introspection of processes on the system. */
-@property bool allowsPS;
+@property (nonatomic) bool allowsPS;
 
 /*! Allows introspection of the system's virtual memory. */
-@property bool allowsVMInfo;
+@property (nonatomic) bool allowsVMInfo;
 
 /*! Allows changing the rights of process, for example the UID. */
-@property bool allowsChangingProcessRights;
+@property (nonatomic) bool allowsChangingProcessRights;
 
 /*! Allows certain ioctls on the PF device. */
-@property bool allowsPF;
+@property (nonatomic) bool allowsPF;
 
 /*! Allows certain ioctls on audio devices. */
-@property bool allowsAudio;
+@property (nonatomic) bool allowsAudio;
 
 /*! Allows BIOCGSTATS to collect statistics from a BPF device. */
-@property bool allowsBPF;
+@property (nonatomic) bool allowsBPF;
 
 /*!
  * @brief Create a new, autorelease OFSandbox.

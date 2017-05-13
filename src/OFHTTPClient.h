@@ -112,12 +112,13 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate of the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (assign) id <OFHTTPClientDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+    id <OFHTTPClientDelegate> delegate;
 
 /*!
  * Whether redirects from HTTPS to HTTP will be allowed.
  */
-@property bool insecureRedirectsAllowed;
+@property (nonatomic) bool insecureRedirectsAllowed;
 
 /*!
  * @brief Creates a new OFHTTPClient.

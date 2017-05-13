@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The size of a single item in the OFDataArray in bytes.
  */
-@property (readonly) size_t itemSize;
+@property (readonly, nonatomic) size_t itemSize;
 
 /*!
  * @brief Creates a new OFDataArray with an item size of 1.

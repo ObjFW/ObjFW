@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * A boolean whether the hash has already been calculated.
  */
-@property (readonly, getter=isCalculated) bool calculated;
+@property (readonly, nonatomic, getter=isCalculated) bool calculated;
 
 /*!
  * @brief Creates a new cryptographic hash.

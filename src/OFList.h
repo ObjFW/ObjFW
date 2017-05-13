@@ -63,12 +63,14 @@ struct of_list_object_t {
 /*!
  * The first list object of the list.
  */
-@property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *firstListObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    of_list_object_t *firstListObject;
 
 /*!
  * The last list object of the list.
  */
-@property OF_NULLABLE_PROPERTY (readonly) of_list_object_t *lastListObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    of_list_object_t *lastListObject;
 
 /*!
  * @brief Creates a new OFList.

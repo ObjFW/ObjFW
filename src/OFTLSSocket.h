@@ -57,7 +57,8 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate for the TLS socket.
  */
-@property OF_NULLABLE_PROPERTY (assign) id <OFTLSSocketDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+    id <OFTLSSocketDelegate> delegate;
 
 /*!
  * The path to the X.509 certificate file to use.
@@ -75,14 +76,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @warning You have to ensure that this is in secure memory protected from
  *	    swapping! This is also the reason why this is not an OFString.
  */
-@property OF_NULLABLE_PROPERTY (assign) const char *privateKeyPassphrase;
+@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+    const char *privateKeyPassphrase;
 
 /**
  * Whether certificate verification is enabled.
  *
  * The default is enabled.
  */
-@property (getter=isCertificateVerificationEnabled)
+@property (nonatomic, getter=isCertificateVerificationEnabled)
     bool certificateVerificationEnabled;
 
 /*!

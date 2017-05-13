@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The size of the memory that could not be allocated.
  */
-@property (readonly) size_t requestedSize;
+@property (readonly, nonatomic) size_t requestedSize;
 
 /*!
  * @brief Creates a new, autoreleased no memory exception.

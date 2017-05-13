@@ -79,12 +79,12 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 /*!
  * The key functions used by the map table.
  */
-@property (readonly) of_map_table_functions_t keyFunctions;
+@property (readonly, nonatomic) of_map_table_functions_t keyFunctions;
 
 /*!
  * The object functions used by the map table.
  */
-@property (readonly) of_map_table_functions_t objectFunctions;
+@property (readonly, nonatomic) of_map_table_functions_t objectFunctions;
 
 /*!
  * @brief Creates a new OFMapTable with the specified key and object functions.

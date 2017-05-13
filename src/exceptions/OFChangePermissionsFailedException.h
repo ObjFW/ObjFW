@@ -43,12 +43,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The new permissions for the item.
  */
-@property (readonly) mode_t permissions;
+@property (readonly, nonatomic) mode_t permissions;
 
 /*!
  * The errno of the error that occurred.
  */
-@property (readonly) int errNo;
+@property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

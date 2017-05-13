@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The status code of the reply to the HTTP request.
  */
-@property short statusCode;
+@property (nonatomic) short statusCode;
 
 /*!
  * The headers of the reply to the HTTP request.

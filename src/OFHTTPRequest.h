@@ -90,7 +90,7 @@ typedef struct {
 /*!
  * The request method of the HTTP request.
  */
-@property of_http_request_method_t method;
+@property (nonatomic) of_http_request_method_t method;
 
 /*!
  * The headers for the HTTP request.

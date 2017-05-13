@@ -52,7 +52,7 @@ enum {
 /*!
  * The selector of the method.
  */
-@property (readonly) SEL selector;
+@property (readonly, nonatomic) SEL selector;
 
 /*!
  * The name of the method.
@@ -62,7 +62,7 @@ enum {
 /*!
  * The type encoding for the method.
  */
-@property OF_NULLABLE_PROPERTY (readonly) const char *typeEncoding;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const char *typeEncoding;
 
 - init OF_UNAVAILABLE;
 @end
@@ -101,7 +101,7 @@ enum {
  * OF_PROPERTY_SYNTHESIZED       | The property is synthesized
  * OF_PROPERTY_DYNAMIC           | The property is dynamic
  */
-@property (readonly) unsigned attributes;
+@property (readonly, nonatomic) unsigned attributes;
 
 /*!
  * The name of the getter.
@@ -136,12 +136,12 @@ enum {
 /*!
  * The offset of the instance variable.
  */
-@property (readonly) ptrdiff_t offset;
+@property (readonly, nonatomic) ptrdiff_t offset;
 
 /*!
  * The type encoding for the instance variable.
  */
-@property OF_NULLABLE_PROPERTY (readonly) const char *typeEncoding;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const char *typeEncoding;
 
 - init OF_UNAVAILABLE;
 @end

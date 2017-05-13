@@ -63,12 +63,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * Whether the cookie is only to be used with HTTPS.
  */
-@property (getter=isSecure) bool secure;
+@property (nonatomic, getter=isSecure) bool secure;
 
 /*!
  * Whether the cookie is only to be accessed through HTTP.
  */
-@property (getter=isHTTPOnly) bool HTTPOnly;
+@property (nonatomic, getter=isHTTPOnly) bool HTTPOnly;
 
 /*!
  * An array of other attributes.

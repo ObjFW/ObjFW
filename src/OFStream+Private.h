@@ -19,7 +19,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFStream ()
-@property (readonly) bool OF_isWaitingForDelimiter;
+@property (readonly, nonatomic, getter=OF_isWaitingForDelimiter)
+    bool OF_waitingForDelimiter;
 @end
 
 OF_ASSUME_NONNULL_END

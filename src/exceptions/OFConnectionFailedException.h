@@ -49,12 +49,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The port on the host to which the connection failed.
  */
-@property (readonly) uint16_t port;
+@property (readonly, nonatomic) uint16_t port;
 
 /*!
  * The errno of the error that occurred.
  */
-@property (readonly) int errNo;
+@property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

@@ -150,7 +150,7 @@ typedef enum {
 /*!
  * The type of the number.
  */
-@property (readonly) of_number_type_t type;
+@property (readonly, nonatomic) of_number_type_t type;
 
 /*!
  * @brief Creates a new OFNumber with the specified bool.

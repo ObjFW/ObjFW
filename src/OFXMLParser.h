@@ -178,7 +178,8 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate that is used by the XML parser.
  */
-@property OF_NULLABLE_PROPERTY (assign) id <OFXMLParserDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+    id <OFXMLParserDelegate> delegate;
 
 /*!
  * The depth limit for the XML parser.
@@ -187,7 +188,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * The default is 32. 0 means unlimited (insecure!).
  */
-@property size_t depthLimit;
+@property (nonatomic) size_t depthLimit;
 
 /*!
  * @brief Creates a new XML parser.

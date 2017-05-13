@@ -103,12 +103,13 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The port on which the HTTP server will listen.
  */
-@property uint16_t port;
+@property (nonatomic) uint16_t port;
 
 /*!
  * The delegate for the HTTP server.
  */
-@property OF_NULLABLE_PROPERTY (assign) id <OFHTTPServerDelegate> delegate;
+@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+    id <OFHTTPServerDelegate> delegate;
 
 /*!
  * The server name the server presents to clients.

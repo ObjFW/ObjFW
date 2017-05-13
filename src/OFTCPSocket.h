@@ -78,7 +78,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 /*!
  * The port to use on the SOCKS5 proxy.
  */
-@property uint16_t SOCKS5Port;
+@property (nonatomic) uint16_t SOCKS5Port;
 
 /*!
  * @brief Sets the global SOCKS5 proxy host to use when creating a new socket

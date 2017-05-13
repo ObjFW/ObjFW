@@ -70,12 +70,12 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The mode of the entry.
  */
-@property (readonly) uint32_t mode;
+@property (readonly, nonatomic) uint32_t mode;
 
 /*!
  * The size of the file.
  */
-@property (readonly) uint64_t size;
+@property (readonly, nonatomic) uint64_t size;
 
 /*!
  * The date of the last modification of the file.
@@ -87,7 +87,7 @@ typedef enum of_tar_archive_entry_type_t {
  *
  * See @ref of_tar_archive_entry_type_t.
  */
-@property (readonly) of_tar_archive_entry_type_t type;
+@property (readonly, nonatomic) of_tar_archive_entry_type_t type;
 
 /*!
  * The file name of the target (for a hard link or symbolic link).
@@ -107,12 +107,12 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The device major (if the file is a device).
  */
-@property (readonly) uint32_t deviceMajor;
+@property (readonly, nonatomic) uint32_t deviceMajor;
 
 /*!
  * The device major (if the file is a device).
  */
-@property (readonly) uint32_t deviceMinor;
+@property (readonly, nonatomic) uint32_t deviceMinor;
 
 - init OF_UNAVAILABLE;
 @end

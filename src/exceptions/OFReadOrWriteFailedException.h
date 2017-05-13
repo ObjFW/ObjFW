@@ -40,12 +40,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The requested length of the data that could not be read / written.
  */
-@property (readonly) size_t requestedLength;
+@property (readonly, nonatomic) size_t requestedLength;
 
 /*!
  * The errno of the error that occurred.
  */
-@property (readonly) int errNo;
+@property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

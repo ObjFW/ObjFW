@@ -54,21 +54,21 @@ static OFString *module = @"OFObject";
 	double _doubleValue;
 }
 
-@property (retain) id objectValue;
-@property Class classValue;
-@property (getter=isBoolValue) bool boolValue;
-@property char charValue;
-@property short shortValue;
-@property int intValue;
-@property long longValue;
-@property long long longLongValue;
-@property unsigned char unsignedCharValue;
-@property unsigned short unsignedShortValue;
-@property unsigned int unsignedIntValue;
-@property unsigned long unsignedLongValue;
-@property unsigned long long unsignedLongLongValue;
-@property float floatValue;
-@property double doubleValue;
+@property (nonatomic, retain) id objectValue;
+@property (nonatomic) Class classValue;
+@property (nonatomic, getter=isBoolValue) bool boolValue;
+@property (nonatomic) char charValue;
+@property (nonatomic) short shortValue;
+@property (nonatomic) int intValue;
+@property (nonatomic) long longValue;
+@property (nonatomic) long long longLongValue;
+@property (nonatomic) unsigned char unsignedCharValue;
+@property (nonatomic) unsigned short unsignedShortValue;
+@property (nonatomic) unsigned int unsignedIntValue;
+@property (nonatomic) unsigned long unsignedLongValue;
+@property (nonatomic) unsigned long long unsignedLongLongValue;
+@property (nonatomic) float floatValue;
+@property (nonatomic) double doubleValue;
 @end
 
 @implementation MyObj

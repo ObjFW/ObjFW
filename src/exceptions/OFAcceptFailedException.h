@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @return The errno from when the exception was created.
  */
-@property (readonly) int errNo;
+@property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

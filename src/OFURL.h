@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The port part of the URL.
  */
-@property uint16_t port;
+@property (nonatomic) uint16_t port;
 
 /*!
  * The user part of the URL.

@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * If the native 8-bit encoding is unknown, UTF-8 is assumed.
  */
-@property (readonly) of_string_encoding_t encoding;
+@property (readonly, nonatomic) of_string_encoding_t encoding;
 
 /*!
  * The decimal point of the system's locale.

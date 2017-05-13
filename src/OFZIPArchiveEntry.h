@@ -120,7 +120,7 @@ enum {
  * The upper 8 bits are the attribute compatibility.
  * See @ref of_zip_archive_entry_attribute_compatibility.
  */
-@property (readonly) uint16_t versionMadeBy;
+@property (readonly, nonatomic) uint16_t versionMadeBy;
 
 /*!
  * The minimum version required to extract the file.
@@ -129,7 +129,7 @@ enum {
  * The upper 8 bits are the attribute compatibility.
  * See @ref of_zip_archive_entry_attribute_compatibility.
  */
-@property (readonly) uint16_t minVersionNeeded;
+@property (readonly, nonatomic) uint16_t minVersionNeeded;
 
 /*!
  * The compression method of the entry.
@@ -143,22 +143,22 @@ enum {
  *
  * Other values may be returned, but the file cannot be extracted then.
  */
-@property (readonly) uint16_t compressionMethod;
+@property (readonly, nonatomic) uint16_t compressionMethod;
 
 /*!
  * The compressed size of the entry's file.
  */
-@property (readonly) uint64_t compressedSize;
+@property (readonly, nonatomic) uint64_t compressedSize;
 
 /*!
  * The uncompressed size of the entry's file.
  */
-@property (readonly) uint64_t uncompressedSize;
+@property (readonly, nonatomic) uint64_t uncompressedSize;
 
 /*!
  * The CRC32 checksum of the entry's file.
  */
-@property (readonly) uint32_t CRC32;
+@property (readonly, nonatomic) uint32_t CRC32;
 
 /*!
  * The version specific attributes.
@@ -166,14 +166,14 @@ enum {
  * The meaning of the version specific attributes depends on the attribute
  * compatibility part of the version that made the entry.
  */
-@property (readonly) uint32_t versionSpecificAttributes;
+@property (readonly, nonatomic) uint32_t versionSpecificAttributes;
 
 /*!
  * The general purpose bit flag of the entry.
  *
  * See the ZIP specification for details.
  */
-@property (readonly) uint16_t generalPurposeBitFlag;
+@property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
 
 - init OF_UNAVAILABLE;
 

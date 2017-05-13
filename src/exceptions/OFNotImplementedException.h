@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The selector which is not or not fully implemented.
  */
-@property (readonly) SEL selector;
+@property (readonly, nonatomic) SEL selector;
 
 /*!
  * The object which does not (fully) implement the selector.

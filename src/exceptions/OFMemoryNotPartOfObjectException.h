@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * A pointer to the memory which is not part of the object.
  */
-@property (readonly) void *pointer;
+@property (readonly, nonatomic) void *pointer;
 
 /*!
  * The object which the memory is not part of.

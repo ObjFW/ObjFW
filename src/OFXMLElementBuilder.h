@@ -112,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate for the OFXMLElementBuilder.
  */
-@property OF_NULLABLE_PROPERTY (assign)
+@property OF_NULLABLE_PROPERTY (nonatomic, assign)
     id <OFXMLElementBuilderDelegate> delegate;
 
 /*!

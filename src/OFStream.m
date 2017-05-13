@@ -54,7 +54,7 @@
 #define MIN_READ_SIZE 512
 
 @implementation OFStream
-@synthesize OF_isWaitingForDelimiter = _waitingForDelimiter;
+@synthesize OF_waitingForDelimiter = _waitingForDelimiter;
 
 #ifndef OF_WINDOWS
 + (void)initialize

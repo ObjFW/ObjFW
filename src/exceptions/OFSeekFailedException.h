@@ -40,17 +40,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The offset to which seeking failed.
  */
-@property (readonly) of_offset_t offset;
+@property (readonly, nonatomic) of_offset_t offset;
 
 /*!
  * To what the offset is relative.
  */
-@property (readonly) int whence;
+@property (readonly, nonatomic) int whence;
 
 /*!
  * The errno of the error that occurred.
  */
-@property (readonly) int errNo;
+@property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

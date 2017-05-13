@@ -84,7 +84,7 @@ typedef struct of_options_parser_option_t {
  * If this returns `-`, the last option is only available as a long option (see
  * lastLongOption).
  */
-@property (readonly) of_unichar_t lastOption;
+@property (readonly, nonatomic) of_unichar_t lastOption;
 
 /*!
  * The long option for the last parsed option, or `nil` if the last parsed

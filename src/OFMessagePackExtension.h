@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The MessagePack extension type.
  */
-@property (readonly) int8_t type;
+@property (readonly, nonatomic) int8_t type;
 
 /*!
  * @return The data of the extension.

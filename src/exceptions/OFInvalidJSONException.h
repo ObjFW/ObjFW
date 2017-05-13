@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The line in which parsing the JSON representation failed.
  */
-@property (readonly) size_t line;
+@property (readonly, nonatomic) size_t line;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

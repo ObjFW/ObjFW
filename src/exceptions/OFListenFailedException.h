@@ -42,12 +42,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The requested back log.
  */
-@property (readonly) int backLog;
+@property (readonly, nonatomic) int backLog;
 
 /*!
  * The errno of the error that occurred.
  */
-@property (readonly) int errNo;
+@property (readonly, nonatomic) int errNo;
 
 + (instancetype)exception OF_UNAVAILABLE;
 
