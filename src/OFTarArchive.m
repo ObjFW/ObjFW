@@ -54,10 +54,12 @@
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
 	@try {
-		return [self initWithStream: file];
+		self = [self initWithStream: file];
 	} @finally {
 		[file release];
 	}
+
+	return self;
 }
 #endif
 

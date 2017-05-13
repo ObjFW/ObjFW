@@ -44,6 +44,7 @@ encodingForContentType(OFString *contentType)
 		STATE_AFTER_PARAM_VALUE
 	} state = STATE_TYPE;
 	OFString *name = nil, *value = nil, *charset = nil;
+	of_string_encoding_t ret;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
@@ -127,10 +128,12 @@ encodingForContentType(OFString *contentType)
 	}
 
 	@try {
-		return of_string_parse_encoding(charset);
+		ret = of_string_parse_encoding(charset);
 	} @catch (OFInvalidEncodingException *e) {
-		return OF_STRING_ENCODING_AUTODETECT;
+		ret = OF_STRING_ENCODING_AUTODETECT;
 	}
+
+	return ret;
 }
 
 @implementation OFHTTPResponse

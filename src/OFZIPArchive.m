@@ -176,10 +176,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
 	@try {
-		return [self initWithSeekableStream: file];
+		self = [self initWithSeekableStream: file];
 	} @finally {
 		[file release];
 	}
+
+	return self;
 }
 #endif
 
