@@ -412,7 +412,7 @@
 
 - (OFDate *)fireDate
 {
-	return [[_fireDate copy] autorelease];
+	return _fireDate;
 }
 
 - (void)setFireDate: (OFDate *)fireDate

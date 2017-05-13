@@ -146,10 +146,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (OFString *)userDataPath
 {
 #if defined(OF_MACOS) || defined(OF_IOS)
-	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	OFMutableString *path;
-	OFString *home;
 
 # ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
 	sysdir_search_path_enumeration_state state;
@@ -172,6 +170,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	path = [OFMutableString stringWithUTF8String: pathC];
 	if ([path hasPrefix: @"~"]) {
 		OFDictionary *env = [OFApplication environment];
+		OFString *home;
 
 		if ((home = [env objectForKey: @"HOME"]) == nil)
 			@throw [OFNotImplementedException
@@ -184,11 +183,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 	[path makeImmutable];
 
-	[path retain];
-	objc_autoreleasePoolPop(pool);
-	return [path autorelease];
+	return path;
 #elif defined(OF_WINDOWS)
-	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
 
@@ -196,9 +192,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	[appData retain];
-	objc_autoreleasePoolPop(pool);
-	return [appData autorelease];
+	return appData;
 #elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -209,26 +203,25 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 	return [OFString stringWithUTF8String: pathC];
 #else
-	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
+	void *pool;
 
 	if ((var = [env objectForKey: @"XDG_DATA_HOME"]) != nil &&
-	    [var length] > 0) {
-		[var retain];
-		objc_autoreleasePoolPop(pool);
-		return [var autorelease];
-	}
+	    [var length] > 0)
+		return var;
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	var = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    var, @".local", @"share", nil]];
+	pool = objc_autoreleasePoolPush();
 
-	[var retain];
+	var = [[OFString pathWithComponents: [OFArray arrayWithObjects:
+	    var, @".local", @"share", nil]] retain];
+
 	objc_autoreleasePoolPop(pool);
+
 	return [var autorelease];
 #endif
 }
@@ -236,10 +229,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (OFString *)userConfigPath
 {
 #if defined(OF_MACOS) || defined(OF_IOS)
-	void *pool = objc_autoreleasePoolPush();
 	char pathC[PATH_MAX];
 	OFMutableString *path;
-	OFString *home;
 
 # ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
 	sysdir_search_path_enumeration_state state;
@@ -262,6 +253,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	path = [OFMutableString stringWithUTF8String: pathC];
 	if ([path hasPrefix: @"~"]) {
 		OFDictionary *env = [OFApplication environment];
+		OFString *home;
 
 		if ((home = [env objectForKey: @"HOME"]) == nil)
 			@throw [OFNotImplementedException
@@ -276,11 +268,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 	[path makeImmutable];
 
-	[path retain];
-	objc_autoreleasePoolPop(pool);
-	return [path autorelease];
+	return path;
 #elif defined(OF_WINDOWS)
-	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
 
@@ -288,9 +277,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	[appData retain];
-	objc_autoreleasePoolPop(pool);
-	return [appData autorelease];
+	return appData;
 #elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
@@ -301,26 +288,18 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 	return [OFString stringWithUTF8String: pathC];
 #else
-	void *pool = objc_autoreleasePoolPush();
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
 
 	if ((var = [env objectForKey: @"XDG_CONFIG_HOME"]) != nil &&
-	    [var length] > 0) {
-		[var retain];
-		objc_autoreleasePoolPop(pool);
-		return [var autorelease];
-	}
+	    [var length] > 0)
+		return var;
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	var = [var stringByAppendingPathComponent: @".config"];
-
-	[var retain];
-	objc_autoreleasePoolPop(pool);
-	return [var autorelease];
+	return [var stringByAppendingPathComponent: @".config"];
 #endif
 }
 
@@ -403,7 +382,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 		return value;
 # endif
 
-	return 0;
+	return false;
 }
 #endif
 @end

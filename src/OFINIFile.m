@@ -108,25 +108,17 @@ isWhitespaceLine(OFString *line)
 	void *pool = objc_autoreleasePoolPush();
 	OFINICategory *category;
 
-	for (category in _categories) {
-		if ([[category name] isEqual: name]) {
-			OFINICategory *ret = [category retain];
-
-			objc_autoreleasePoolPop(pool);
-
-			return [ret autorelease];
-		}
-	}
+	for (category in _categories)
+		if ([[category name] isEqual: name])
+			return category;
 
 	category = [[[OFINICategory alloc] OF_init] autorelease];
 	[category setName: name];
 	[_categories addObject: category];
 
-	[category retain];
-
 	objc_autoreleasePoolPop(pool);
 
-	return [category autorelease];
+	return category;
 }
 
 - (void)OF_parseFile: (OFString *)path

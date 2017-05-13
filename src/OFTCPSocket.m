@@ -209,7 +209,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 + (OFString *)SOCKS5Host
 {
-	return [[defaultSOCKS5Host copy] autorelease];
+	return defaultSOCKS5Host;
 }
 
 + (void)setSOCKS5Port: (uint16_t)port

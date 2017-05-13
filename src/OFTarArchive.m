@@ -109,6 +109,6 @@
 	    OF_initWithHeader: buffer.c
 		       stream: _stream];
 
-	return [[_lastReturnedEntry retain] autorelease];
+	return _lastReturnedEntry;
 }
 @end

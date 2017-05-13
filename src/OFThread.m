@@ -385,7 +385,7 @@ callMain(id object)
 	}
 # endif
 
-	return [[_runLoop retain] autorelease];
+	return _runLoop;
 }
 
 - (OFString *)name

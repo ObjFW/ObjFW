@@ -654,23 +654,23 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 - (OFDate *)earlierDate: (OFDate *)otherDate
 {
 	if (otherDate == nil)
-		return [[self retain] autorelease];
+		return self;
 
 	if ([self compare: otherDate] == OF_ORDERED_DESCENDING)
-		return [[otherDate retain] autorelease];
+		return otherDate;
 
-	return [[self retain] autorelease];
+	return self;
 }
 
 - (OFDate *)laterDate: (OFDate *)otherDate
 {
 	if (otherDate == nil)
-		return [[self retain] autorelease];
+		return self;
 
 	if ([self compare: otherDate] == OF_ORDERED_ASCENDING)
-		return [[otherDate retain] autorelease];
+		return otherDate;
 
-	return [[self retain] autorelease];
+	return self;
 }
 
 - (of_time_interval_t)timeIntervalSince1970

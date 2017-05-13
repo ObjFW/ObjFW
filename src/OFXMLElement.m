@@ -793,7 +793,7 @@ static Class CDATAClass = Nil;
 	for (OFXMLAttribute *attribute in _attributes)
 		if (attribute->_namespace == nil &&
 		    [attribute->_name isEqual: attributeName])
-			return [[attribute retain] autorelease];
+			return attribute;
 
 	return nil;
 }
@@ -807,7 +807,7 @@ static Class CDATAClass = Nil;
 	for (OFXMLAttribute *attribute in _attributes)
 		if ([attribute->_namespace isEqual: attributeNS] &&
 		    [attribute->_name isEqual: attributeName])
-			return [[attribute retain] autorelease];
+			return attribute;
 
 	return nil;
 }

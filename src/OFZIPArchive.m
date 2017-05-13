@@ -364,7 +364,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	return _lastReturnedStream;
 }
 @end
 

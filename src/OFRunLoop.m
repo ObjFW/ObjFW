@@ -337,7 +337,7 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop
 + (OFRunLoop *)mainRunLoop
 {
-	return [[mainRunLoop retain] autorelease];
+	return mainRunLoop;
 }
 
 + (OFRunLoop *)currentRunLoop

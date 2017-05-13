@@ -258,6 +258,8 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param stackSize The stack size for the thread
  */
 - (void)setStackSize: (size_t)stackSize;
+#else
+- init OF_UNAVAILABLE;
 #endif
 @end
 
