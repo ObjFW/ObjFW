@@ -23,6 +23,11 @@
 @synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
 @synthesize errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
 			destinationPath: (OFString *)destinationPath
 {

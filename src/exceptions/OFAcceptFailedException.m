@@ -22,6 +22,11 @@
 @implementation OFAcceptFailedException
 @synthesize socket = _socket, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithSocket: (id)socket
 			      errNo: (int)errNo
 {

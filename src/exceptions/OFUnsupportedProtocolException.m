@@ -23,6 +23,11 @@
 @implementation OFUnsupportedProtocolException
 @synthesize URL = _URL;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithURL: URL] autorelease];

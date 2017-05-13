@@ -23,6 +23,11 @@
 @implementation OFUnboundNamespaceException
 @synthesize namespace = _namespace, element = _element;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithNamespace: (OFString *)namespace
 			       element: (OFXMLElement *)element
 {

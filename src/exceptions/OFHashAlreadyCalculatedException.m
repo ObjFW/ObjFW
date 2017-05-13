@@ -22,6 +22,11 @@
 @implementation OFHashAlreadyCalculatedException
 @synthesize object = _object;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithObject: (id)object
 {
 	return [[[self alloc] initWithObject: object] autorelease];

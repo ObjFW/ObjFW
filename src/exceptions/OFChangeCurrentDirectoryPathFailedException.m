@@ -22,6 +22,11 @@
 @implementation OFChangeCurrentDirectoryPathFailedException
 @synthesize path = _path, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo
 {

@@ -27,6 +27,11 @@
 @implementation OFMethod
 @synthesize selector = _selector, name = _name, typeEncoding = _typeEncoding;
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 #if defined(OF_OBJFW_RUNTIME)
 - (instancetype)OF_initWithMethod: (struct objc_method *)method
 {
@@ -64,11 +69,6 @@
 #else
 # error Invalid ObjC runtime!
 #endif
-
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
 
 - (void)dealloc
 {
@@ -133,6 +133,11 @@
 @implementation OFProperty
 @synthesize name = _name, attributes = _attributes;
 @synthesize getter = _getter, setter = _setter;
+
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
 
 #if defined(OF_OBJFW_RUNTIME)
 - (instancetype)OF_initWithProperty: (struct objc_property *)property
@@ -355,6 +360,11 @@
 @implementation OFInstanceVariable
 @synthesize name = _name, offset = _offset, typeEncoding = _typeEncoding;
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 #if defined(OF_OBJFW_RUNTIME)
 - (instancetype)OF_initWithIvar: (struct objc_ivar *)ivar
 {
@@ -392,11 +402,6 @@
 # error Invalid ObjC runtime!
 #endif
 
-- init
-{
-	OF_INVALID_INIT_METHOD
-}
-
 - (void)dealloc
 {
 	[_name release];
@@ -419,6 +424,11 @@
 + (instancetype)introspectionWithClass: (Class)class
 {
 	return [[[self alloc] initWithClass: class] autorelease];
+}
+
+- init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - initWithClass: (Class)class
@@ -561,11 +571,6 @@
 	}
 
 	return self;
-}
-
-- init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

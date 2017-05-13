@@ -22,6 +22,11 @@
 @implementation OFUnsupportedVersionException
 @synthesize version = _version;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithVersion: (OFString *)version
 {
 	return [[[self alloc] initWithVersion: version] autorelease];

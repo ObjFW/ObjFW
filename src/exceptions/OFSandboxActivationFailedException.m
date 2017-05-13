@@ -23,6 +23,11 @@
 @implementation OFSandboxActivationFailedException
 @synthesize sandbox = _sandbox, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithSandbox: (OFSandbox *)sandbox
 			       errNo: (int)errNo
 {

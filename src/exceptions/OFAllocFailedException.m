@@ -20,6 +20,11 @@
 #import "OFString.h"
 
 @implementation OFAllocFailedException
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + alloc
 {
 	OF_UNRECOGNIZED_SELECTOR

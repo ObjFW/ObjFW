@@ -22,6 +22,11 @@
 @implementation OFUndefinedKeyException
 @synthesize object = _object, key = _key, value = _value;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithObject: (id)object
 				key: (OFString *)key
 {

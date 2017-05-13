@@ -24,6 +24,11 @@
 @implementation OFConnectionFailedException
 @synthesize host = _host, port = _port, socket = _socket, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket

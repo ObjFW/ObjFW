@@ -23,6 +23,11 @@
 @implementation OFObserveFailedException
 @synthesize observer = _observer, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo
 {

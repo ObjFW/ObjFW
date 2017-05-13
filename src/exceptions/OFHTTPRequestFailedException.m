@@ -24,6 +24,11 @@
 @implementation OFHTTPRequestFailedException
 @synthesize request = _request, response = _response;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithRequest: (OFHTTPRequest *)request
 			    response: (OFHTTPResponse *)response
 {

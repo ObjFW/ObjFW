@@ -23,6 +23,11 @@
 @synthesize object = _object, requestedLength = _requestedLength;
 @synthesize errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithObject: (id)object
 		    requestedLength: (size_t)requestedLength
 {

@@ -22,6 +22,11 @@
 @implementation OFMemoryNotPartOfObjectException
 @synthesize pointer = _pointer, object = _object;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithPointer: (void *)pointer
 			      object: (id)object
 {

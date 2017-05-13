@@ -23,6 +23,11 @@
 @implementation OFUnboundPrefixException
 @synthesize prefix = _prefix, parser = _parser;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithPrefix: (OFString *)prefix
 			     parser: (OFXMLParser *)parser
 {

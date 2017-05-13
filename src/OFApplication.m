@@ -201,6 +201,11 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 #endif
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - OF_init
 {
 	self = [super init];

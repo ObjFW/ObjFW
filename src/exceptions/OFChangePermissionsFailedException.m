@@ -22,6 +22,11 @@
 @implementation OFChangePermissionsFailedException
 @synthesize path = _path, permissions = _permissions, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithPath: (OFString *)path
 		      permissions: (mode_t)permissions
 			    errNo: (int)errNo

@@ -22,6 +22,11 @@
 @implementation OFInvalidJSONException
 @synthesize string = _string, line = _line;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithString: (OFString *)string
 			       line: (size_t)line
 {

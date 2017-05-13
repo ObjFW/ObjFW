@@ -23,6 +23,11 @@
 @implementation OFSetOptionFailedException
 @synthesize stream = _stream, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithStream: (OFStream *)stream
 			      errNo: (int)errNo
 {

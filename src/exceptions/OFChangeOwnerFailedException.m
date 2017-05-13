@@ -22,6 +22,11 @@
 @implementation OFChangeOwnerFailedException
 @synthesize path = _path, owner = _owner, group = _group, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithPath: (OFString *)path
 			    owner: (OFString *)owner
 			    group: (OFString *)group

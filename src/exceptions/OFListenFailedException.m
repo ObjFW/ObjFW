@@ -22,6 +22,11 @@
 @implementation OFListenFailedException
 @synthesize socket = _socket, backLog = _backLog, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithSocket: (id)socket
 			    backLog: (int)backLog
 			      errNo: (int)errNo

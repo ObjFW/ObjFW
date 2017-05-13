@@ -24,6 +24,11 @@
 @synthesize stream = _stream, offset = _offset, whence = _whence;
 @synthesize errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
 			     offset: (of_offset_t)offset
 			     whence: (int)whence

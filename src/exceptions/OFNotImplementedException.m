@@ -22,6 +22,11 @@
 @implementation OFNotImplementedException
 @synthesize selector = _selector, object = _object;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithSelector: (SEL)selector
 			       object: (id)object
 {

@@ -22,6 +22,11 @@
 @implementation OFStatItemFailedException
 @synthesize path = _path, errNo = _errNo;
 
++ (instancetype)exception
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 + (instancetype)exceptionWithPath: (OFString *)path
 {
 	return [[[self alloc] initWithPath: path] autorelease];
