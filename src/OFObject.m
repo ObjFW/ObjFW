@@ -24,6 +24,10 @@
 
 #include <sys/time.h>
 
+#ifdef OF_APPLE_RUNTIME
+# include <dlfcn.h>
+#endif
+
 #import "OFObject.h"
 #import "OFArray.h"
 #import "OFLocalization.h"
@@ -57,10 +61,6 @@
 # import "atomic.h"
 #elif defined(OF_HAVE_THREADS)
 # import "threading.h"
-#endif
-
-#ifdef OF_APPLE_RUNTIME
-extern double NSFoundationVersionNumber;
 #endif
 
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
@@ -228,7 +228,7 @@ _references_to_categories_of_OFObject(void)
 	 * Unfortunately, there is no way to check if a forward handler has
 	 * already been set, so this is the best we can do.
 	 */
-	if (&NSFoundationVersionNumber == NULL)
+	if (dlsym(RTLD_DEFAULT, "NSFoundationVersionNumber") == NULL)
 		objc_setForwardHandler((void *)&of_forward,
 		    (void *)&of_forward_stret);
 #else
