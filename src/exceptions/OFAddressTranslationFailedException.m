@@ -42,7 +42,7 @@ static of_mutex_t mutex;
 
 	if (!of_mutex_new(&mutex))
 		@throw [OFInitializationFailedException
-		    exceptionWithClass: class];
+		    exceptionWithClass: [self class]];
 }
 #endif
 
