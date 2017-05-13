@@ -34,7 +34,7 @@
 int _OFString_JSONValue_reference;
 
 static id nextObject(const char **pointer, const char *stop, size_t *line,
-    size_t depth, size_t depthLimit);
+    size_t depthLimit);
 
 static void
 skipWhitespaces(const char **pointer, const char *stop, size_t *line)
@@ -390,14 +390,14 @@ parseIdentifier(const char **pointer, const char *stop)
 
 static inline OFMutableArray *
 parseArray(const char **pointer, const char *stop, size_t *line,
-    size_t depth, size_t depthLimit)
+    size_t depthLimit)
 {
 	OFMutableArray *array = [OFMutableArray array];
 
 	if (++(*pointer) >= stop)
 		return nil;
 
-	if (++depth > depthLimit)
+	if (--depthLimit == 0)
 		return nil;
 
 	while (**pointer != ']') {
@@ -420,7 +420,7 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 			break;
 		}
 
-		object = nextObject(pointer, stop, line, depth, depthLimit);
+		object = nextObject(pointer, stop, line, depthLimit);
 		if (object == nil)
 			return nil;
 
@@ -447,14 +447,14 @@ parseArray(const char **pointer, const char *stop, size_t *line,
 
 static inline OFMutableDictionary *
 parseDictionary(const char **pointer, const char *stop, size_t *line,
-    size_t depth, size_t depthLimit)
+    size_t depthLimit)
 {
 	OFMutableDictionary *dictionary = [OFMutableDictionary dictionary];
 
 	if (++(*pointer) >= stop)
 		return nil;
 
-	if (++depth > depthLimit)
+	if (--depthLimit == 0)
 		return nil;
 
 	while (**pointer != '}') {
@@ -486,8 +486,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		    **pointer == '_' || **pointer == '$' || **pointer == '\\')
 			key = parseIdentifier(pointer, stop);
 		else
-			key = nextObject(pointer, stop, line,
-			    depth, depthLimit);
+			key = nextObject(pointer, stop, line, depthLimit);
 
 		if (key == nil)
 			return nil;
@@ -498,7 +497,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 
 		(*pointer)++;
 
-		object = nextObject(pointer, stop, line, depth, depthLimit);
+		object = nextObject(pointer, stop, line, depthLimit);
 		if (object == nil)
 			return nil;
 
@@ -575,7 +574,7 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 
 static id
 nextObject(const char **pointer, const char *stop, size_t *line,
-    size_t depth, size_t depthLimit)
+    size_t depthLimit)
 {
 	skipWhitespacesAndComments(pointer, stop, line);
 
@@ -587,9 +586,9 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	case '\'':
 		return parseString(pointer, stop, line);
 	case '[':
-		return parseArray(pointer, stop, line, depth, depthLimit);
+		return parseArray(pointer, stop, line, depthLimit);
 	case '{':
-		return parseDictionary(pointer, stop, line, depth, depthLimit);
+		return parseDictionary(pointer, stop, line, depthLimit);
 	case 't':
 		if (*pointer + 3 >= stop)
 			return nil;
@@ -654,7 +653,7 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	id object;
 	size_t line = 1;
 
-	object = nextObject(&pointer, stop, &line, 0, depthLimit);
+	object = nextObject(&pointer, stop, &line, depthLimit);
 	skipWhitespacesAndComments(&pointer, stop, &line);
 
 	if (pointer < stop || object == nil)

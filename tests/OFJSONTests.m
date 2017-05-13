@@ -69,6 +69,30 @@ static OFString *module = @"OFJSON";
 	EXPECT_EXCEPTION(@"-[JSONValue] #5", OFInvalidJSONException,
 	    [@"[\"a\" \"b\"]" JSONValue])
 
+	TEST(@"-[JSONValue] #6",
+	    [[@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
+	    JSONValue] isEqual: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject: [OFArray arrayWithObject:
+	    [OFArray arrayWithObject:
+	    [OFDictionary dictionary]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]])
+
+	EXPECT_EXCEPTION(@"-[JSONValue] #7", OFInvalidJSONException,
+	    [@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
+	    JSONValue])
+
 	[pool drain];
 }
 @end

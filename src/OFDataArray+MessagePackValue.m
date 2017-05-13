@@ -29,7 +29,8 @@
 
 int _OFDataArray_MessagePackValue_reference;
 
-static size_t parseObject(const uint8_t *, size_t, id *);
+static size_t parseObject(const uint8_t *buffer, size_t length, id *object,
+    size_t depthLimit);
 
 static uint16_t
 readUInt16(const uint8_t *buffer)
@@ -54,10 +55,16 @@ readUInt64(const uint8_t *buffer)
 }
 
 static size_t
-parseArray(const uint8_t *buffer, size_t length, id *object, size_t count)
+parseArray(const uint8_t *buffer, size_t length, id *object, size_t count,
+    size_t depthLimit)
 {
 	void *pool;
 	size_t pos = 0;
+
+	if (--depthLimit == 0) {
+		*object = nil;
+		return 0;
+	}
 
 	/*
 	 * Don't use capacity! For data and strings, this is safe, as we can
@@ -72,7 +79,8 @@ parseArray(const uint8_t *buffer, size_t length, id *object, size_t count)
 
 		pool = objc_autoreleasePoolPush();
 
-		childLength = parseObject(buffer + pos, length - pos, &child);
+		childLength = parseObject(buffer + pos, length - pos, &child,
+		    depthLimit);
 		if (childLength == 0 || child == nil) {
 			objc_autoreleasePoolPop(pool);
 
@@ -90,10 +98,16 @@ parseArray(const uint8_t *buffer, size_t length, id *object, size_t count)
 }
 
 static size_t
-parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
+parseTable(const uint8_t *buffer, size_t length, id *object, size_t count,
+    size_t depthLimit)
 {
 	void *pool;
 	size_t pos = 0;
+
+	if (--depthLimit == 0) {
+		*object = nil;
+		return 0;
+	}
 
 	/*
 	 * Don't use capacity! For data and strings, this is safe, as we can
@@ -108,7 +122,8 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 
 		pool = objc_autoreleasePoolPush();
 
-		keyLength = parseObject(buffer + pos, length - pos, &key);
+		keyLength = parseObject(buffer + pos, length - pos, &key,
+		    depthLimit);
 		if (keyLength == 0 || key == nil) {
 			objc_autoreleasePoolPop(pool);
 
@@ -117,7 +132,8 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 		}
 		pos += keyLength;
 
-		valueLength = parseObject(buffer + pos, length - pos, &value);
+		valueLength = parseObject(buffer + pos, length - pos, &value,
+		    depthLimit);
 		if (valueLength == 0 || value == nil) {
 			objc_autoreleasePoolPop(pool);
 
@@ -136,7 +152,8 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count)
 }
 
 static size_t
-parseObject(const uint8_t *buffer, size_t length, id *object)
+parseObject(const uint8_t *buffer, size_t length, id *object,
+    size_t depthLimit)
 {
 	size_t count;
 	int8_t type;
@@ -173,12 +190,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 	/* fixarray */
 	if ((buffer[0] & 0xF0) == 0x90)
 		return parseArray(buffer + 1, length - 1, object,
-		    buffer[0] & 0xF) + 1;
+		    buffer[0] & 0xF, depthLimit) + 1;
 
 	/* fixmap */
 	if ((buffer[0] & 0xF0) == 0x80)
 		return parseTable(buffer + 1, length - 1, object,
-		    buffer[0] & 0xF) + 1;
+		    buffer[0] & 0xF, depthLimit) + 1;
 
 	/* Prefix byte */
 	switch (*buffer) {
@@ -427,7 +444,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 		}
 
 		return 4;
-	case 0xD6: /* fixtext 4 */
+	case 0xD6: /* fixext 4 */
 		if (length < 6)
 			goto error;
 
@@ -446,7 +463,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 		}
 
 		return 6;
-	case 0xD7: /* fixtext 8 */
+	case 0xD7: /* fixext 8 */
 		if (length < 10)
 			goto error;
 
@@ -530,26 +547,26 @@ parseObject(const uint8_t *buffer, size_t length, id *object)
 			goto error;
 
 		return parseArray(buffer + 3, length - 3, object,
-		    readUInt16(buffer + 1)) + 3;
+		    readUInt16(buffer + 1), depthLimit) + 3;
 	case 0xDD: /* array 32 */
 		if (length < 5)
 			goto error;
 
 		return parseArray(buffer + 5, length - 5, object,
-		    readUInt32(buffer + 1)) + 5;
+		    readUInt32(buffer + 1), depthLimit) + 5;
 	/* Maps */
 	case 0xDE: /* map 16 */
 		if (length < 3)
 			goto error;
 
 		return parseTable(buffer + 3, length - 3, object,
-		    readUInt16(buffer + 1)) + 3;
+		    readUInt16(buffer + 1), depthLimit) + 3;
 	case 0xDF: /* map 32 */
 		if (length < 5)
 			goto error;
 
 		return parseTable(buffer + 5, length - 5, object,
-		    readUInt32(buffer + 1)) + 5;
+		    readUInt32(buffer + 1), depthLimit) + 5;
 	}
 
 error:
@@ -560,12 +577,22 @@ error:
 @implementation OFDataArray (MessagePackValue)
 - (id)messagePackValue
 {
+	return [self messagePackValueWithDepthLimit: 32];
+}
+
+- (id)messagePackValueWithDepthLimit: (size_t)depthLimit
+{
+	void *pool = objc_autoreleasePoolPush();
 	size_t count = [self count];
 	id object;
 
-	if (parseObject([self items], count, &object) != count ||
+	if (parseObject([self items], count, &object, depthLimit) != count ||
 	    object == nil)
 		@throw [OFInvalidFormatException exception];
+
+	[object retain];
+
+	objc_autoreleasePoolPop(pool);
 
 	return object;
 }

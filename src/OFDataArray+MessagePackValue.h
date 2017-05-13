@@ -33,6 +33,15 @@ extern int _OFDataArray_MessagePackValue_reference;
  * @return The MessagePack representation as an object
  */
 - (id)messagePackValue;
+
+/*!
+ * @brief Parses the MessagePack representation and returns it as an object.
+ *
+ * @param depthLimit The maximum depth the parser should accept (defaults to 32
+ *		     if not specified, 0 means no limit (insecure!))
+ * @return The MessagePack representation as an object
+ */
+- (id)messagePackValueWithDepthLimit: (size_t)depthLimit;
 @end
 
 OF_ASSUME_NONNULL_END
