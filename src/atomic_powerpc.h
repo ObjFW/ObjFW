@@ -25,6 +25,7 @@ of_atomic_int_add(volatile int *_Nonnull p, int i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -41,6 +42,7 @@ of_atomic_int32_add(volatile int32_t *_Nonnull p, int32_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -57,6 +59,7 @@ of_atomic_ptr_add(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return (void *)i;
@@ -73,6 +76,7 @@ of_atomic_int_sub(volatile int *_Nonnull p, int i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -89,6 +93,7 @@ of_atomic_int32_sub(volatile int32_t *_Nonnull p, int32_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -105,6 +110,7 @@ of_atomic_ptr_sub(void *volatile _Nullable *_Nonnull p, intptr_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return (void *)i;
@@ -123,6 +129,7 @@ of_atomic_int_inc(volatile int *_Nonnull p)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -141,6 +148,7 @@ of_atomic_int32_inc(volatile int32_t *_Nonnull p)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -159,6 +167,7 @@ of_atomic_int_dec(volatile int *_Nonnull p)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -177,6 +186,7 @@ of_atomic_int32_dec(volatile int32_t *_Nonnull p)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -193,6 +203,7 @@ of_atomic_int_or(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -209,6 +220,7 @@ of_atomic_int32_or(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -225,6 +237,7 @@ of_atomic_int_and(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -241,6 +254,7 @@ of_atomic_int32_and(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -257,6 +271,7 @@ of_atomic_int_xor(volatile unsigned int *_Nonnull p, unsigned int i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -273,6 +288,7 @@ of_atomic_int32_xor(volatile uint32_t *_Nonnull p, uint32_t i)
 	    "bne-	0b"
 	    : "=&r"(i)
 	    : "r"(i), "r"(p)
+	    : "cc", "memory"
 	);
 
 	return i;
@@ -298,7 +314,7 @@ of_atomic_int_cmpswap(volatile int *_Nonnull p, int o, int n)
 	    "2:"
 	    : "=&r"(r)
 	    : "r"(o), "r"(n), "r"(p)
-	    : "cc"
+	    : "cc", "memory"
 	);
 
 	return r;
@@ -324,7 +340,7 @@ of_atomic_int32_cmpswap(volatile int32_t *_Nonnull p, int32_t o, int32_t n)
 	    "2:"
 	    : "=&r"(r)
 	    : "r"(o), "r"(n), "r"(p)
-	    : "cc"
+	    : "cc", "memory"
 	);
 
 	return r;
@@ -351,7 +367,7 @@ of_atomic_ptr_cmpswap(void *volatile _Nullable *_Nonnull p,
 	    "2:"
 	    : "=&r"(r)
 	    : "r"(o), "r"(n), "r"(p)
-	    : "cc"
+	    : "cc", "memory"
 	);
 
 	return r;
