@@ -813,7 +813,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_EGREP_CPP(yes, [
 		#if defined(__GNUC__) && (defined(__i386__) || \
 			defined(__x86_64__) || defined(__amd64__)) || \
-			defined(__ppc__)
+			(defined(__ppc__) && !defined(__APPLE_CC__))
 		yes
 		#endif
 	], [
