@@ -42,6 +42,11 @@
 # define OBJC_UNSAFE_UNRETAINED
 #endif
 
+#if !__has_feature(nullability)
+# define _Nonnull
+# define _Nullable
+#endif
+
 #if __has_attribute(__objc_root_class__)
 # define OBJC_ROOT_CLASS __attribute__((__objc_root_class__))
 #else
@@ -57,26 +62,27 @@ typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
 typedef signed char BOOL;
-typedef id (*IMP)(id, SEL, ...);
-typedef void (*objc_uncaught_exception_handler)(id);
+typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
+typedef void (*objc_uncaught_exception_handler)(id _Nullable);
+typedef void (*objc_enumeration_mutation_handler)(id _Nonnull);
 
 struct objc_class {
-	Class isa;
-	Class superclass;
-	const char *name;
+	Class _Nonnull isa;
+	Class _Nullable superclass;
+	const char *_Nonnull name;
 	unsigned long version;
 	unsigned long info;
 	long instance_size;
-	struct objc_ivar_list *ivars;
-	struct objc_method_list *methodlist;
-	struct objc_dtable *dtable;
-	Class *subclass_list;
-	void *sibling_class;
-	struct objc_protocol_list *protocols;
-	void *gc_object_type;
+	struct objc_ivar_list *_Nullable ivars;
+	struct objc_method_list *_Nullable methodlist;
+	struct objc_dtable *_Nullable dtable;
+	Class _Nonnull *_Nullable subclass_list;
+	void *_Nullable sibling_class;
+	struct objc_protocol_list *_Nullable protocols;
+	void *_Nullable gc_object_type;
 	unsigned long abi_version;
-	int32_t **ivar_offsets;
-	struct objc_property_list *properties;
+	int32_t *_Nonnull *_Nullable ivar_offsets;
+	struct objc_property_list *_Nullable properties;
 };
 
 enum objc_class_info {
@@ -90,41 +96,41 @@ enum objc_class_info {
 };
 
 struct objc_object {
-	Class isa;
+	Class _Nonnull isa;
 };
 
 struct objc_selector {
 	uintptr_t uid;
-	const char *types;
+	const char *_Nullable types;
 };
 
 struct objc_super {
-	id OBJC_UNSAFE_UNRETAINED self;
-	Class cls;
+	id OBJC_UNSAFE_UNRETAINED _Nullable self;
+	Class _Nonnull cls;
 };
 
 struct objc_method {
 	struct objc_selector sel;
-	IMP imp;
+	IMP _Nonnull imp;
 };
 
 struct objc_method_list {
-	struct objc_method_list *next;
+	struct objc_method_list *_Nullable next;
 	unsigned int count;
 	struct objc_method methods[1];
 };
 
 struct objc_category {
-	const char *category_name;
-	const char *class_name;
-	struct objc_method_list *instance_methods;
-	struct objc_method_list *class_methods;
-	struct objc_protocol_list *protocols;
+	const char *_Nonnull category_name;
+	const char *_Nonnull class_name;
+	struct objc_method_list *_Nullable instance_methods;
+	struct objc_method_list *_Nullable class_methods;
+	struct objc_protocol_list *_Nullable protocols;
 };
 
 struct objc_ivar {
-	const char *name;
-	const char *type;
+	const char *_Nonnull name;
+	const char *_Nonnull type;
 	unsigned int offset;
 };
 
@@ -155,17 +161,17 @@ enum objc_property_extended_attributes {
 };
 
 struct objc_property {
-	const char *name;
+	const char *_Nonnull name;
 	unsigned char attributes, extended_attributes;
 	struct {
-		const char *name;
-		const char *type;
+		const char *_Nullable name;
+		const char *_Nullable type;
 	} getter, setter;
 };
 
 struct objc_property_list {
 	unsigned int count;
-	struct objc_property_list *next;
+	struct objc_property_list *_Nullable next;
 	struct objc_property properties[1];
 };
 
@@ -177,11 +183,11 @@ OBJC_ROOT_CLASS
 #else
 typedef struct {
 #endif
-	Class isa;
-	const char *name;
-	struct objc_protocol_list *protocol_list;
-	struct objc_abi_method_description_list *instance_methods;
-	struct objc_abi_method_description_list *class_methods;
+	Class _Nonnull isa;
+	const char *_Nonnull name;
+	struct objc_protocol_list *_Nullable protocol_list;
+	struct objc_abi_method_description_list *_Nullable instance_methods;
+	struct objc_abi_method_description_list *_Nullable class_methods;
 #ifdef __OBJC__
 }
 @end
@@ -190,46 +196,52 @@ typedef struct {
 #endif
 
 struct objc_protocol_list {
-	struct objc_protocol_list *next;
+	struct objc_protocol_list *_Nullable next;
 	long count;
-	Protocol *OBJC_UNSAFE_UNRETAINED list[1];
+	Protocol *OBJC_UNSAFE_UNRETAINED _Nonnull list[1];
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern SEL sel_registerName(const char *);
-extern const char *sel_getName(SEL);
-extern bool sel_isEqual(SEL, SEL);
-extern Class objc_allocateClassPair(Class, const char *, size_t);
-extern void objc_registerClassPair(Class);
-extern id objc_lookUpClass(const char *);
-extern id objc_getClass(const char *);
-extern id objc_getRequiredClass(const char *);
-extern unsigned int objc_getClassList(Class *, unsigned int);
-extern Class *objc_copyClassList(unsigned int *);
-extern bool class_isMetaClass(Class);
-extern const char *class_getName(Class);
-extern Class class_getSuperclass(Class);
-extern unsigned long class_getInstanceSize(Class);
-extern bool class_respondsToSelector(Class, SEL);
-extern bool class_conformsToProtocol(Class, Protocol *);
-extern IMP class_getMethodImplementation(Class, SEL);
-extern IMP class_getMethodImplementation_stret(Class, SEL);
-extern const char *class_getMethodTypeEncoding(Class, SEL);
-extern bool class_addMethod(Class, SEL, IMP, const char *);
-extern IMP class_replaceMethod(Class, SEL, IMP, const char *);
-extern Class object_getClass(id);
-extern Class object_setClass(id, Class);
-extern const char *object_getClassName(id);
-extern const char *protocol_getName(Protocol *);
-extern bool protocol_isEqual(Protocol *, Protocol *);
-extern bool protocol_conformsToProtocol(Protocol *, Protocol *);
+extern SEL _Nonnull sel_registerName(const char *_Nonnull);
+extern const char *_Nonnull sel_getName(SEL _Nonnull);
+extern bool sel_isEqual(SEL _Nonnull, SEL _Nonnull);
+extern Class _Nonnull objc_allocateClassPair(Class _Nullable,
+    const char *_Nonnull, size_t);
+extern void objc_registerClassPair(Class _Nonnull);
+extern id _Nullable objc_lookUpClass(const char *_Nonnull);
+extern id _Nullable objc_getClass(const char *_Nonnull);
+extern id _Nonnull objc_getRequiredClass(const char *_Nonnull);
+extern unsigned int objc_getClassList(Class _Nonnull *_Nullable, unsigned int);
+extern Class _Nonnull *_Nonnull objc_copyClassList(unsigned int *_Nullable);
+extern bool class_isMetaClass(Class _Nullable);
+extern const char *_Nonnull class_getName(Class _Nullable);
+extern Class _Nullable class_getSuperclass(Class _Nullable);
+extern unsigned long class_getInstanceSize(Class _Nullable);
+extern bool class_respondsToSelector(Class _Nullable, SEL _Nonnull);
+extern bool class_conformsToProtocol(Class _Nullable, Protocol *_Nonnull);
+extern IMP _Nullable class_getMethodImplementation(Class _Nullable,
+    SEL _Nonnull);
+extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable,
+    SEL _Nonnull);
+extern const char *_Nullable class_getMethodTypeEncoding(Class _Nullable,
+    SEL _Nonnull);
+extern bool class_addMethod(Class _Nonnull, SEL _Nonnull, IMP _Nonnull,
+    const char *_Nullable);
+extern IMP _Nullable class_replaceMethod(Class _Nonnull, SEL _Nonnull,
+    IMP _Nonnull, const char *_Nullable);
+extern Class _Nullable object_getClass(id _Nullable);
+extern Class _Nullable object_setClass(id _Nullable, Class _Nonnull);
+extern const char *_Nonnull object_getClassName(id _Nullable);
+extern const char *_Nonnull protocol_getName(Protocol *_Nonnull);
+extern bool protocol_isEqual(Protocol *_Nonnull, Protocol *_Nonnull);
+extern bool protocol_conformsToProtocol(Protocol *_Nonnull, Protocol *_Nonnull);
 extern void objc_exit(void);
-extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
-    objc_uncaught_exception_handler);
-extern void objc_setForwardHandler(IMP, IMP);
-extern void objc_zero_weak_references(id);
+extern _Nullable objc_uncaught_exception_handler
+    objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler _Nullable);
+extern void objc_setForwardHandler(IMP _Nullable, IMP _Nullable);
+extern void objc_zero_weak_references(id _Nonnull);
 
 /*
  * Used by the compiler, but can also be called manually.
@@ -238,25 +250,37 @@ extern void objc_zero_weak_references(id);
  * declarations which include __declspec(dllimport) on Windows.
  */
 struct objc_abi_module;
-extern void __objc_exec_class(void *);
-extern IMP objc_msg_lookup(id, SEL);
-extern IMP objc_msg_lookup_stret(id, SEL);
-extern IMP objc_msg_lookup_super(struct objc_super *, SEL);
-extern IMP objc_msg_lookup_super_stret(struct objc_super *, SEL);
-extern void objc_exception_throw(id);
-extern int objc_sync_enter(id);
-extern int objc_sync_exit(id);
-extern id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
-extern void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
-extern void objc_getPropertyStruct(void *, const void *, ptrdiff_t, BOOL, BOOL);
-extern void objc_setPropertyStruct(void *, const void *, ptrdiff_t, BOOL, BOOL);
-extern void objc_enumerationMutation(id);
-extern void objc_setEnumerationMutationHandler(void (*handler)(id));
+extern void __objc_exec_class(void *_Nonnull);
+extern IMP _Nonnull objc_msg_lookup(id _Nullable, SEL _Nonnull);
+extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable, SEL _Nonnull);
+extern IMP _Nonnull objc_msg_lookup_super(struct objc_super *_Nonnull,
+    SEL _Nonnull);
+extern IMP _Nonnull objc_msg_lookup_super_stret(struct objc_super *_Nonnull,
+    SEL _Nonnull);
+extern void objc_exception_throw(id _Nullable);
+extern int objc_sync_enter(id _Nullable);
+extern int objc_sync_exit(id _Nullable);
+extern id _Nullable objc_getProperty(id _Nonnull, SEL _Nonnull, ptrdiff_t,
+    BOOL);
+extern void objc_setProperty(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable,
+    BOOL, signed char);
+extern void objc_getPropertyStruct(void *_Nonnull, const void *_Nonnull,
+    ptrdiff_t, BOOL, BOOL);
+extern void objc_setPropertyStruct(void *_Nonnull, const void *_Nonnull,
+    ptrdiff_t, BOOL, BOOL);
+extern void objc_enumerationMutation(id _Nonnull);
+extern void objc_setEnumerationMutationHandler(
+    objc_enumeration_mutation_handler _Nullable);
 #ifdef __cplusplus
 }
 #endif
 
 #undef OBJC_UNSAFE_UNRETAINED
 #undef OBJC_ROOT_CLASS
+
+#if !__has_feature(nullability)
+# undef _Nonnull
+# undef _Nullable
+#endif
 
 #endif

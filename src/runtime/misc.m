@@ -22,7 +22,7 @@
 #include "runtime.h"
 #include "runtime-private.h"
 
-static void (*enumeration_mutation_handler)(id) = NULL;
+static objc_enumeration_mutation_handler enumeration_mutation_handler = NULL;
 
 void
 objc_enumerationMutation(id obj)

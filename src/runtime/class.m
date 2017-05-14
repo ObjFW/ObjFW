@@ -614,7 +614,7 @@ Class
 class_getSuperclass(Class cls)
 {
 	if (cls == Nil)
-		return nil;
+		return Nil;
 
 	return cls->superclass;
 }

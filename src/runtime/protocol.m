@@ -56,6 +56,9 @@ class_conformsToProtocol(Class cls, Protocol *p)
 {
 	struct objc_category **cats;
 
+	if (cls == Nil)
+		return false;
+
 	for (struct objc_protocol_list *pl = cls->protocols;
 	    pl != NULL; pl = pl->next)
 		for (long i = 0; i < pl->count; i++)

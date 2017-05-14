@@ -44,6 +44,9 @@ OF_CONSTRUCTOR()
 int
 objc_sync_enter(id object)
 {
+	if (object == nil)
+		return 0;
+
 #ifdef OF_HAVE_THREADS
 	struct lock_s *lock;
 
@@ -92,6 +95,9 @@ objc_sync_enter(id object)
 int
 objc_sync_exit(id object)
 {
+	if (object == nil)
+		return 0;
+
 #ifdef OF_HAVE_THREADS
 	struct lock_s *lock, *last = NULL;
 
