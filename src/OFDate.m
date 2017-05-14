@@ -222,13 +222,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 + (instancetype)distantFuture
 {
 	return [[[self alloc]
-	    initWithTimeIntervalSince1970: INFINITY] autorelease];
+	    initWithTimeIntervalSince1970: 64060588800.0] autorelease];
 }
 
 + (instancetype)distantPast
 {
 	return [[[self alloc]
-	    initWithTimeIntervalSince1970: -INFINITY] autorelease];
+	    initWithTimeIntervalSince1970: -62167219200.0] autorelease];
 }
 
 - init
@@ -333,7 +333,6 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *stringValue;
 		union {
 			double d;
 			uint64_t u;
@@ -343,16 +342,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		stringValue = [element stringValue];
-
-		if ([stringValue isEqual: @"DISTANT_PAST"])
-			_seconds = -INFINITY;
-		else if ([stringValue isEqual: @"DISTANT_FUTURE"])
-			_seconds = INFINITY;
-		else {
-			d.u = (uint64_t)[element hexadecimalValue];
-			_seconds = d.d;
-		}
+		d.u = OF_BSWAP64_IF_LE((uint64_t)[element hexadecimalValue]);
+		_seconds = OF_BSWAP_DOUBLE_IF_LE(d.d);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -422,10 +413,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (OFString *)description
 {
-	if (isinf(_seconds))
-		return (_seconds > 0 ? @"Distant Future" : @"Distant Past");
-	else
-		return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
+	return [self dateStringWithFormat: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
 - (OFXMLElement *)XMLElementBySerializing
@@ -440,14 +428,9 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	element = [OFXMLElement elementWithName: [self className]
 				      namespace: OF_SERIALIZATION_NS];
 
-	if (isinf(_seconds))
-		[element setStringValue:
-		    (_seconds > 0 ? @"DISTANT_FUTURE" : @"DISTANT_PAST")];
-	else {
-		d.d = _seconds;
-		[element setStringValue:
-		    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
-	}
+	d.d = OF_BSWAP_DOUBLE_IF_LE(_seconds);
+	[element setStringValue:
+	    [OFString stringWithFormat: @"%016" PRIx64, OF_BSWAP64_IF_LE(d.u)]];
 
 	[element retain];
 
