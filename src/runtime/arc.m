@@ -109,9 +109,11 @@ objc_retainAutoreleasedReturnValue(id object)
 id
 objc_storeStrong(id *object, id value)
 {
-	id old = *object;
-	*object = objc_retain(value);
-	objc_release(old);
+	if (*object != value) {
+		id old = *object;
+		*object = objc_retain(value);
+		objc_release(old);
+	}
 
 	return value;
 }
