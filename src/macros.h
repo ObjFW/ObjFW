@@ -179,6 +179,7 @@
 # define OF_NULL_RESETTABLE_PROPERTY
 # define nonnull
 # define nullable
+# define null_unspecified
 #endif
 
 #if __has_feature(objc_kindof)

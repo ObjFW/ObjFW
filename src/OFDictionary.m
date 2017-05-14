@@ -37,7 +37,7 @@ static struct {
 
 @interface OFDictionary ()
 - (OFString *)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth;
+					 depth: (size_t)depth;
 @end
 
 @interface OFDictionary_placeholder: OFDictionary
