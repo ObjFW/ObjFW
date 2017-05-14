@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFDataArray+MessagePackValue.h"
 #import "OFNumber.h"
 #import "OFNull.h"
@@ -198,7 +200,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		    buffer[0] & 0xF, depthLimit) + 1;
 
 	/* Prefix byte */
-	switch (*buffer) {
+	switch (buffer[0]) {
 	/* Unsigned integers */
 	case 0xCC: /* uint8 */
 		if (length < 2)
@@ -259,8 +261,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 5)
 			goto error;
 
-		for (size_t i = 0; i < 4; i++)
-			f.u8[i] = buffer[i + 1];
+		memcpy(&f.u8, buffer + 1, 4);
 
 		*object = [OFNumber numberWithFloat: OF_BSWAP_FLOAT_IF_LE(f.f)];
 		return 5;
@@ -273,8 +274,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 9)
 			goto error;
 
-		for (size_t i = 0; i < 8; i++)
-			d.u8[i] = buffer[i + 1];
+		memcpy(&d.u8, buffer + 1, 8);
 
 		*object = [OFNumber numberWithDouble:
 		    OF_BSWAP_DOUBLE_IF_LE(d.d)];
