@@ -563,20 +563,22 @@
 				uint32_t u;
 			} f;
 
-			f.u = (uint32_t)[element hexadecimalValue];
+			f.u = OF_BSWAP32_IF_LE(
+			    (uint32_t)[element hexadecimalValue]);
 
 			_type = OF_NUMBER_TYPE_FLOAT;
-			_value.float_ = f.f;
+			_value.float_ = OF_BSWAP_FLOAT_IF_LE(f.f);
 		} else if ([typeString isEqual: @"double"]) {
 			union {
 				double d;
 				uint64_t u;
 			} d;
 
-			d.u = (uint64_t)[element hexadecimalValue];
+			d.u = OF_BSWAP64_IF_LE(
+			    (uint64_t)[element hexadecimalValue]);
 
 			_type = OF_NUMBER_TYPE_DOUBLE;
-			_value.double_ = d.d;
+			_value.double_ = OF_BSWAP_DOUBLE_IF_LE(d.d);
 		} else
 			@throw [OFInvalidArgumentException exception];
 
@@ -977,12 +979,13 @@
 			uint32_t u;
 		} f;
 
-		f.f = _value.float_;
+		f.f = OF_BSWAP_FLOAT_IF_LE(_value.float_);
 
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%08" PRIx32, f.u]];
+		    [OFString stringWithFormat: @"%08" PRIx32,
+						OF_BSWAP32_IF_LE(f.u)]];
 
 		break;
 	case OF_NUMBER_TYPE_DOUBLE:;
@@ -991,12 +994,13 @@
 			uint64_t u;
 		} d;
 
-		d.d = _value.double_;
+		d.d = OF_BSWAP_DOUBLE_IF_LE(_value.double_);
 
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
 		[element setStringValue:
-		    [OFString stringWithFormat: @"%016" PRIx64, d.u]];
+		    [OFString stringWithFormat: @"%016" PRIx64,
+						OF_BSWAP64_IF_LE(d.u)]];
 
 		break;
 	default:
