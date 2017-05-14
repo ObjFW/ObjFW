@@ -104,6 +104,10 @@
 - (void)HTTPCookieTests;
 @end
 
+@interface TestsAppDelegate (OFHTTPCookieManagerTests)
+- (void)HTTPCookieManagerTests;
+@end
+
 @interface TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests;
 @end

@@ -26,6 +26,10 @@ SRCS = OFApplication.m			\
        OFEnumerator.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
+       OFHTTPCookie.m			\
+       OFHTTPCookieManager.m		\
+       OFHTTPRequest.m			\
+       OFHTTPResponse.m			\
        OFIntrospection.m		\
        OFList.m				\
        OFLocalization.m			\
@@ -102,9 +106,6 @@ SRCS_FILES = OFFile.m			\
 	     OFSettings.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m			\
-	       OFHTTPCookie.m			\
-	       OFHTTPRequest.m			\
-	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
 	       OFKernelEventObserver.m		\
 	       OFStreamSocket.m			\

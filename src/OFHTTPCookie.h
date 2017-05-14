@@ -48,17 +48,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The date when the cookie expires.
  */
-@property (nonatomic, copy) OFDate *expires;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFDate *expires;
 
 /*!
  * The domain for the cookie.
  */
-@property (nonatomic, copy) OFString *domain;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *domain;
 
 /*!
  * The path for the cookie.
  */
-@property (nonatomic, copy) OFString *path;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *path;
 
 /*!
  * Whether the cookie is only to be used with HTTPS.

@@ -18,10 +18,6 @@
 #import "OFString.h"
 #import "OFHTTPCookie.h"
 
-#ifndef OF_HAVE_SOCKETS
-# error No sockets available!
-#endif
-
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;

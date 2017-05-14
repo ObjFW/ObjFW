@@ -64,10 +64,12 @@
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
 # import "OFKernelEventObserver.h"
-
-# import "OFHTTPRequest.h"
-# import "OFHTTPResponse.h"
-# import "OFHTTPCookie.h"
+#endif
+#import "OFHTTPCookie.h"
+#import "OFHTTPCookieManager.h"
+#import "OFHTTPRequest.h"
+#import "OFHTTPResponse.h"
+#ifdef OF_HAVE_SOCKETS
 # import "OFHTTPClient.h"
 # import "OFHTTPServer.h"
 #endif

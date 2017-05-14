@@ -14,6 +14,8 @@ SRCS = ForwardingTests.m		\
        OFDataArrayTests.m		\
        OFDateTests.m			\
        OFDictionaryTests.m		\
+       OFHTTPCookieTests.m		\
+       OFHTTPCookieManagerTests.m	\
        OFJSONTests.m			\
        OFListTests.m			\
        OFNumberTests.m			\
@@ -45,8 +47,7 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA384HashTests.m	\
 	     OFSHA512HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SOCKETS = OFHTTPCookieTests.m		\
-	       OFKernelEventObserverTests.m	\
+SRCS_SOCKETS = OFKernelEventObserverTests.m	\
 	       OFTCPSocketTests.m		\
 	       OFUDPSocketTests.m
 SRCS_THREADS = OFThreadTests.m
