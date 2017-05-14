@@ -138,7 +138,7 @@ of_tlskey_get(of_tlskey_t key)
 static OF_INLINE bool
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-	return !pthread_setspecific(key, ptr);
+	return (pthread_setspecific(key, ptr) == 0);
 }
 #elif defined(OF_WINDOWS)
 static OF_INLINE void *
@@ -173,7 +173,7 @@ of_spinlock_new(of_spinlock_t *spinlock)
 	*spinlock = 0;
 	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_init(spinlock, 0);
+	return (pthread_spin_init(spinlock, 0) == 0);
 #else
 	return of_mutex_new(spinlock);
 #endif
@@ -190,7 +190,7 @@ of_spinlock_trylock(of_spinlock_t *spinlock)
 
 	return false;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_trylock(spinlock);
+	return (pthread_spin_trylock(spinlock) == 0);
 #else
 	return of_mutex_trylock(spinlock);
 #endif
@@ -211,7 +211,7 @@ of_spinlock_lock(of_spinlock_t *spinlock)
 
 	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_lock(spinlock);
+	return (pthread_spin_lock(spinlock) == 0);
 #else
 	return of_mutex_lock(spinlock);
 #endif
@@ -227,7 +227,7 @@ of_spinlock_unlock(of_spinlock_t *spinlock)
 
 	return ret;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_unlock(spinlock);
+	return (pthread_spin_unlock(spinlock) == 0);
 #else
 	return of_mutex_unlock(spinlock);
 #endif
@@ -239,7 +239,7 @@ of_spinlock_free(of_spinlock_t *spinlock)
 #if defined(OF_HAVE_ATOMIC_OPS)
 	return true;
 #elif defined(OF_HAVE_PTHREAD_SPINLOCKS)
-	return !pthread_spin_destroy(spinlock);
+	return (pthread_spin_destroy(spinlock) == 0);
 #else
 	return of_mutex_free(spinlock);
 #endif

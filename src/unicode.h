@@ -24,13 +24,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const of_unichar_t *const
+extern const of_unichar_t *const _Nonnull
     of_unicode_uppercase_table[OF_UNICODE_UPPERCASE_TABLE_SIZE];
-extern const of_unichar_t *const
+extern const of_unichar_t *const _Nonnull
     of_unicode_lowercase_table[OF_UNICODE_LOWERCASE_TABLE_SIZE];
-extern const of_unichar_t *const
+extern const of_unichar_t *const _Nonnull
     of_unicode_titlecase_table[OF_UNICODE_TITLECASE_TABLE_SIZE];
-extern const of_unichar_t *const
+extern const of_unichar_t *const _Nonnull
     of_unicode_casefolding_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
 #ifdef __cplusplus
 }
