@@ -16,7 +16,6 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#import "OFHTTPCookie.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -73,7 +72,6 @@ typedef struct {
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OFArray OF_GENERIC(OFHTTPCookie *) *_cookies;
 	OFDataArray *_body;
 	OFString *_remoteAddress;
 }
@@ -93,12 +91,6 @@ typedef struct {
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-
-/*!
- * The cookies for the HTTP request.
- */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy)
-    OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 
 /*!
  * The entity body of the HTTP request.

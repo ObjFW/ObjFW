@@ -78,8 +78,8 @@ of_http_request_method_from_string(const char *string)
 }
 
 @implementation OFHTTPRequest
-@synthesize URL = _URL, method = _method, headers = _headers;
-@synthesize cookies = _cookies, body = _body, remoteAddress = _remoteAddress;
+@synthesize URL = _URL, method = _method, headers = _headers, body = _body;
+@synthesize remoteAddress = _remoteAddress;
 
 + (instancetype)request
 {
@@ -120,7 +120,6 @@ of_http_request_method_from_string(const char *string)
 {
 	[_URL release];
 	[_headers release];
-	[_cookies release];
 	[_body release];
 	[_remoteAddress release];
 

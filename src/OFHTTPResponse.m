@@ -21,7 +21,6 @@
 #import "OFDictionary.h"
 #import "OFArray.h"
 #import "OFDataArray.h"
-#import "OFHTTPCookie.h"
 
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
@@ -137,7 +136,7 @@ encodingForContentType(OFString *contentType)
 }
 
 @implementation OFHTTPResponse
-@synthesize statusCode = _statusCode, headers = _headers, cookies = _cookies;
+@synthesize statusCode = _statusCode, headers = _headers;
 
 - init
 {
@@ -152,7 +151,6 @@ encodingForContentType(OFString *contentType)
 - (void)dealloc
 {
 	[_headers release];
-	[_cookies release];
 
 	[super dealloc];
 }
