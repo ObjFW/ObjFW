@@ -18,6 +18,7 @@
 
 #import "OFHTTPCookieManager.h"
 #import "OFArray.h"
+#import "OFDate.h"
 #import "OFHTTPCookie.h"
 #import "OFURL.h"
 
@@ -60,10 +61,7 @@
 	OFString *cookieDomain, *URLHost;
 	size_t i;
 
-	if ([cookie domain] == nil)
-		[cookie setDomain: [URL host]];
-
-	if ([cookie path] == nil || ![[cookie path] hasPrefix: @"/"])
+	if (![[cookie path] hasPrefix: @"/"])
 		[cookie setPath: @"/"];
 
 	if ([cookie isSecure] && ![[URL scheme] isEqual: @"https"]) {

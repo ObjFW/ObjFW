@@ -17,6 +17,10 @@
 #include "config.h"
 
 #import "OFHTTPCookie.h"
+#import "OFArray.h"
+#import "OFDate.h"
+#import "OFDictionary.h"
+#import "OFURL.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -27,37 +31,46 @@ static OFString *module = @"OFHTTPCookie";
 - (void)HTTPCookieTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFURL *URL = [OFURL URLWithString: @"http://heap.zone"];
 	OFHTTPCookie *cookie[2];
 
 	cookie[0] = [OFHTTPCookie cookieWithName: @"foo"
-					   value: @"bar"];
+					   value: @"bar"
+					  domain: @"heap.zone"];
 	TEST(@"+[cookiesForString:] #1",
-	    [[OFHTTPCookie cookiesForString: @"foo=bar"] isEqual:
-	    [OFArray arrayWithObject: cookie[0]]])
+	    [[OFHTTPCookie cookiesFromHeaders: [OFDictionary
+	    dictionaryWithObject: @"foo=bar"
+	    forKey: @"Set-Cookie"] forURL: URL]
+	    isEqual: [OFArray arrayWithObject: cookie[0]]])
 
 	cookie[1] = [OFHTTPCookie cookieWithName: @"qux"
-					   value: @"cookie"];
+					   value: @"cookie"
+					  domain: @"heap.zone"];
 	TEST(@"+[cookiesForString:] #2",
-	    [[OFHTTPCookie cookiesForString: @"foo=bar,qux=cookie"] isEqual:
-	    [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
+	    [[OFHTTPCookie cookiesFromHeaders: [OFDictionary
+	    dictionaryWithObject: @"foo=bar,qux=cookie"
+	    forKey: @"Set-Cookie"] forURL: URL]
+	    isEqual: [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
 
 	[cookie[0] setExpires:
 	    [OFDate dateWithTimeIntervalSince1970: 1234567890]];
 	[cookie[1] setExpires:
 	    [OFDate dateWithTimeIntervalSince1970: 1234567890]];
 	[cookie[0] setPath: @"/x"];
-	[cookie[1] setDomain: @"heap.zone"];
+	[cookie[1] setDomain: @"webkeks.org"];
 	[cookie[1] setPath: @"/objfw"];
 	[cookie[1] setSecure: true];
 	[cookie[1] setHTTPOnly: true];
 	[[cookie[1] extensions] addObject: @"foo"];
 	[[cookie[1] extensions] addObject: @"bar"];
 	TEST(@"+[cookiesForString:] #3",
-	    [[OFHTTPCookie cookiesForString:
+	    [[OFHTTPCookie cookiesFromHeaders: [OFDictionary
+	    dictionaryWithObject:
 	    @"foo=bar; Expires=Fri, 13 Feb 2009 23:31:30 GMT; Path=/x,"
 	    @"qux=cookie; Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
-	    @"Domain=heap.zone; Path=/objfw; Secure; HTTPOnly; foo; bar"]
-	    isEqual: [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
+	    @"Domain=webkeks.org; Path=/objfw; Secure; HTTPOnly; foo; bar"
+	    forKey: @"Set-Cookie"] forURL: URL] isEqual:
+	    [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
 
 	[pool drain];
 }

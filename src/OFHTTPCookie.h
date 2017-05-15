@@ -16,10 +16,14 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#import "OFDate.h"
-#import "OFArray.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+@class OFArray OF_GENERIC(ObjectType);
+@class OFDate;
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFURL;
 
 /*!
  * @class OFHTTPCookie OFHTTPCookie.h ObjFW/OFHTTPCookie.h
@@ -28,9 +32,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFHTTPCookie: OFObject <OFCopying>
 {
-	OFString *_name, *_value;
+	OFString *_name, *_value, *_domain, *_path;
 	OFDate *_expires;
-	OFString *_domain, *_path;
 	bool _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
 }
@@ -46,19 +49,19 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) OFString *value;
 
 /*!
- * The date when the cookie expires.
- */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFDate *expires;
-
-/*!
  * The domain for the cookie.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *domain;
+@property (nonatomic, copy) OFString *domain;
 
 /*!
  * The path for the cookie.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *path;
+@property (nonatomic, copy) OFString *path;
+
+/*!
+ * The date when the cookie expires.
+ */
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFDate *expires;
 
 /*!
  * Whether the cookie is only to be used with HTTPS.
@@ -81,18 +84,23 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param name The name of the cookie
  * @param value The value of the cookie
+ * @param domain The domain for the cookie
  * @return A new, autoreleased OFHTTPCookie
  */
 + (instancetype)cookieWithName: (OFString *)name
-			 value: (OFString *)value;
+			 value: (OFString *)value
+			domain: (OFString *)domain;
 
 /*!
  * @brief Parses the specified string and returns an array of cookies.
  *
- * @param string The cookie string to parse
+ * @param headers The headers to parse
+ * @param URL The URL for the cookies to parse
  * @return An array of cookies
  */
-+ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForString: (OFString *)string;
++ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesFromHeaders:
+    (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
+    forURL: (OFURL *)URL;
 
 - init OF_UNAVAILABLE;
 
@@ -102,10 +110,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param name The name of the cookie
  * @param value The value of the cookie
+ * @param domain The domain for the cookie
  * @return An initialized OFHTTPCookie
  */
 - initWithName: (OFString *)name
-	 value: (OFString *)value OF_DESIGNATED_INITIALIZER;
+	 value: (OFString *)value
+	domain: (OFString *)domain OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

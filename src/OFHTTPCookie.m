@@ -17,6 +17,10 @@
 #include "config.h"
 
 #import "OFHTTPCookie.h"
+#import "OFArray.h"
+#import "OFDate.h"
+#import "OFDictionary.h"
+#import "OFURL.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -53,21 +57,27 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 }
 
 @implementation OFHTTPCookie
-@synthesize name = _name, value = _value, expires = _expires, domain = _domain;
-@synthesize path = _path, secure = _secure, HTTPOnly = _HTTPOnly;
+@synthesize name = _name, value = _value, domain = _domain, path = _path;
+@synthesize expires = _expires, secure = _secure, HTTPOnly = _HTTPOnly;
 @synthesize extensions = _extensions;
 
 + (instancetype)cookieWithName: (OFString *)name
 			 value: (OFString *)value
+			domain: (OFString *)domain
 {
 	return [[[self alloc] initWithName: name
-				     value: value] autorelease];
+				     value: value
+				    domain: domain] autorelease];
 }
 
-+ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesForString: (OFString *)string
++ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesFromHeaders:
+    (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
+    forURL: (OFURL *)URL
 {
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
+	OFString *string = [headers objectForKey: @"Set-Cookie"];
+	OFString *domain = [URL host];
 	const of_unichar_t *characters = [string characters];
 	size_t length = [string length], last = 0;
 	enum {
@@ -117,7 +127,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
-							   value: value]];
+							   value: value
+							  domain: domain]];
 
 				state = (characters[i] == ';'
 				    ? STATE_PRE_ATTR_NAME : STATE_PRE_NAME);
@@ -129,7 +140,8 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				    of_range(last, i - last)];
 				[ret addObject:
 				    [OFHTTPCookie cookieWithName: name
-							   value: value]];
+							   value: value
+							  domain: domain]];
 
 				state = STATE_POST_QUOTED_VALUE;
 			}
@@ -215,12 +227,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		value = [string substringWithRange:
 		    of_range(last, length - last)];
 		[ret addObject: [OFHTTPCookie cookieWithName: name
-						       value: value]];
+						       value: value
+						      domain: domain]];
 		break;
 	/* We end up here if the cookie is just foo= */
 	case STATE_EXPECT_VALUE:
 		[ret addObject: [OFHTTPCookie cookieWithName: name
-						       value: @""]];
+						       value: @""
+						      domain: domain]];
 		break;
 	case STATE_ATTR_NAME:
 		if (last != length) {
@@ -251,12 +265,15 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 
 - initWithName: (OFString *)name
 	 value: (OFString *)value
+	domain: (OFString *)domain
 {
 	self = [super init];
 
 	@try {
 		_name = [name copy];
 		_value = [value copy];
+		_domain = [domain copy];
+		_path = @"/";
 		_extensions = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		[self release];
@@ -270,9 +287,9 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 {
 	[_name release];
 	[_value release];
-	[_expires release];
 	[_domain release];
 	[_path release];
+	[_expires release];
 	[_extensions release];
 
 	[super dealloc];
@@ -291,11 +308,11 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		return false;
 	if (![_value isEqual: other->_value])
 		return false;
-	if (_expires != other->_expires && ![_expires isEqual: other->_expires])
-		return false;
 	if (_domain != other->_domain && ![_domain isEqual: other->_domain])
 		return false;
 	if (_path != other->_path && ![_path isEqual: other->_path])
+		return false;
+	if (_expires != other->_expires && ![_expires isEqual: other->_expires])
 		return false;
 	if (_secure != other->_secure)
 		return false;
@@ -315,9 +332,9 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OF_HASH_INIT(hash);
 	OF_HASH_ADD_HASH(hash, [_name hash]);
 	OF_HASH_ADD_HASH(hash, [_value hash]);
-	OF_HASH_ADD_HASH(hash, [_expires hash]);
 	OF_HASH_ADD_HASH(hash, [_domain hash]);
 	OF_HASH_ADD_HASH(hash, [_path hash]);
+	OF_HASH_ADD_HASH(hash, [_expires hash]);
 	OF_HASH_ADD(hash, _secure);
 	OF_HASH_ADD(hash, _HTTPOnly);
 	OF_HASH_ADD_HASH(hash, [_extensions hash]);
@@ -329,12 +346,12 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 - copy
 {
 	OFHTTPCookie *copy = [[OFHTTPCookie alloc] initWithName: _name
-							  value: _value];
+							  value: _value
+							 domain: _domain];
 
 	@try {
-		copy->_expires = [_expires copy];
-		copy->_domain = [_domain copy];
 		copy->_path = [_path copy];
+		copy->_expires = [_expires copy];
 		copy->_secure = _secure;
 		copy->_HTTPOnly = _HTTPOnly;
 		[copy->_extensions addObjectsFromArray: _extensions];
@@ -352,16 +369,12 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	    stringWithFormat: @"%@=%@", _name, _value];
 	void *pool = objc_autoreleasePoolPush();
 
+	[ret appendFormat: @"; Domain=%@; Path=%@", _domain, _path];
+
 	if (_expires != nil)
 		[ret appendString:
 		    [_expires dateStringWithFormat: @"; Expires=%a, %d %b %Y "
 						    @"%H:%M:%S +0000"]];
-
-	if (_domain != nil)
-		[ret appendFormat: @"; Domain=%@", _domain];
-
-	if (_path != nil)
-		[ret appendFormat: @"; Path=%@", _path];
 
 	if (_secure)
 		[ret appendString: @"; Secure"];

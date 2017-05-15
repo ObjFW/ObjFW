@@ -17,6 +17,8 @@
 #include "config.h"
 
 #import "OFHTTPCookieManager.h"
+#import "OFArray.h"
+#import "OFDate.h"
 #import "OFHTTPCookie.h"
 #import "OFURL.h"
 #import "OFAutoreleasePool.h"
@@ -39,7 +41,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	URL[3] = [OFURL URLWithString: @"http://webkeks.org/foo/bar"];
 
 	cookie[0] = [OFHTTPCookie cookieWithName: @"test"
-					   value: @"1"];
+					   value: @"1"
+					  domain: @"heap.zone"];
 	TEST(@"-[addCookie:forURL:] #1", R([manager addCookie: cookie[0]
 						       forURL: URL[0]]))
 
@@ -48,8 +51,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	    [OFArray arrayWithObject: cookie[0]]])
 
 	cookie[1] = [OFHTTPCookie cookieWithName: @"test"
-					   value: @"2"];
-	[cookie[1] setDomain: @"webkeks.org"];
+					   value: @"2"
+					  domain: @"webkeks.org"];
 	TEST(@"-[addCookie:forURL:] #2", R([manager addCookie: cookie[1]
 						       forURL: URL[0]]))
 
@@ -59,7 +62,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	    [[manager cookiesForURL: URL[3]] isEqual: [OFArray array]])
 
 	cookie[2] = [OFHTTPCookie cookieWithName: @"test"
-					   value: @"3"];
+					   value: @"3"
+					  domain: @"heap.zone"];
 	[cookie[2] setSecure: true];
 	TEST(@"-[addCookie:forURL:] #3", R([manager addCookie: cookie[2]
 						       forURL: URL[1]]))
@@ -71,7 +75,8 @@ static OFString *module = @"OFHTTPCookieManager";
 
 	[cookie[2] setExpires: [OFDate dateWithTimeIntervalSinceNow: -1]];
 	cookie[3] = [OFHTTPCookie cookieWithName: @"test"
-					   value: @"4"];
+					   value: @"4"
+					  domain: @"heap.zone"];
 	[cookie[3] setDomain: @".heap.zone"];
 	TEST(@"-[addCookie:forURL:] #4", R([manager addCookie: cookie[3]
 						       forURL: URL[1]]))
@@ -83,8 +88,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	    [OFArray arrayWithObject: cookie[3]]])
 
 	cookie[4] = [OFHTTPCookie cookieWithName: @"bar"
-					   value: @"5"];
-	[cookie[4] setDomain: @"test.heap.zone"];
+					   value: @"5"
+					  domain: @"test.heap.zone"];
 	TEST(@"-[addCookie:forURL:] #5", R([manager addCookie: cookie[4]
 						       forURL: URL[0]]))
 
