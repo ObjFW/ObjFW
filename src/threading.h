@@ -29,7 +29,6 @@
 
 #if defined(OF_HAVE_PTHREADS)
 # include <pthread.h>
-# include <sched.h>
 typedef pthread_t of_thread_t;
 typedef pthread_key_t of_tlskey_t;
 typedef pthread_mutex_t of_mutex_t;
