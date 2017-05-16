@@ -114,7 +114,7 @@ of_forward:
 	addi	%r1, %r1, 112
 
 	b	of_method_not_found@plt
-.type of_forward, %function
+.type of_forward, @function
 .size of_forward, .-of_forward
 
 of_forward_stret:
@@ -211,7 +211,7 @@ of_forward_stret:
 	addi	%r1, %r1, 112
 
 	b	of_method_not_found_stret@plt
-.type of_forward_stret, %function
+.type of_forward_stret, @function
 .size of_forward_stret, .-of_forward_stret
 
 init:
@@ -219,7 +219,7 @@ init:
 	la	%r3, module@l(%r3)
 	b	__objc_exec_class@plt
 
-.section .ctors, "aw", %progbits
+.section .ctors, "aw", @progbits
 	.long init
 
 .section .rodata
@@ -239,5 +239,5 @@ module:
 	.long 8, 16, 0, symtab
 
 #ifdef OF_LINUX
-.section .note.GNU-stack, "", %progbits
+.section .note.GNU-stack, "", @progbits
 #endif
