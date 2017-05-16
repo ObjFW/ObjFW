@@ -18,6 +18,11 @@
 
 #include "platform.h"
 
+#if !defined(__has_feature) || !__has_feature(nullability)
+# define _Nonnull
+# define _Nullable
+#endif
+
 struct objc_abi_class {
 	struct objc_abi_class *_Nonnull metaclass;
 	const char *_Nullable superclass;
@@ -216,3 +221,8 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 		fputs("\n", stderr);					\
 		abort();						\
 	}
+
+#if !defined(__has_feature) || !__has_feature(nullability)
+# undef _Nonnull
+# undef _Nullable
+#endif
