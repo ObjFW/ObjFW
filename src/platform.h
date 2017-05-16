@@ -94,6 +94,8 @@
 # define OF_DRAGONFLYBSD
 #elif defined(__HAIKU__)
 # define OF_HAIKU
+#elif defined(__MORPHOS__)
+# define OF_MORPHOS
 #elif defined(__sun__)
 # define OF_SOLARIS
 #elif defined(__QNX__)

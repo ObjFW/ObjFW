@@ -45,6 +45,11 @@
 # include <ws2tcpip.h>
 #endif
 
+#ifdef OF_MORPHOS
+/* Strangely, MorphOS defines socklen_t in pthread.h */
+# include <pthread.h>
+#endif
+
 #ifdef OF_WII
 # define BOOL OGC_BOOL
 # include <network.h>
