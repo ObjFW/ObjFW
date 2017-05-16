@@ -54,7 +54,7 @@
 
 0:
 	b	\not_found@plt
-.type \name, %function
+.type \name, @function
 .size \name, .-\name
 .endm
 
@@ -69,7 +69,7 @@
 	lwz	%r5, 32(%r5)
 
 	b	.Lmain_\lookup
-.type \name, %function
+.type \name, @function
 .size \name, .-\name
 .endm
 
@@ -95,5 +95,5 @@ get_pc:
 	blr
 
 #ifdef OF_LINUX
-.section .note.GNU-stack, "", %progbits
+.section .note.GNU-stack, "", @progbits
 #endif
