@@ -377,7 +377,7 @@ static OF_INLINE void
 of_memory_barrier(void)
 {
 	__asm__ __volatile__ (
-	    "lwsync" ::: "memory"
+	    ".long 0x7C2004AC /* lwsync */" ::: "memory"
 	);
 }
 
@@ -385,7 +385,7 @@ static OF_INLINE void
 of_memory_barrier_acquire(void)
 {
 	__asm__ __volatile__ (
-	    "lwsync" ::: "memory"
+	    ".long 0x7C2004AC /* lwsync */" ::: "memory"
 	);
 }
 
@@ -393,6 +393,6 @@ static OF_INLINE void
 of_memory_barrier_release(void)
 {
 	__asm__ __volatile__ (
-	    "lwsync" ::: "memory"
+	    ".long 0x7C2004AC /* lwsync */" ::: "memory"
 	);
 }
