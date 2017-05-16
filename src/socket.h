@@ -48,6 +48,12 @@
 #ifdef OF_MORPHOS
 /* Strangely, MorphOS defines socklen_t in pthread.h */
 # include <pthread.h>
+
+struct sockaddr_storage {
+	uint8_t ss_len;
+	uint8_t ss_family;
+	char ss_data[2 + sizeof(struct in_addr) + 8];
+};
 #endif
 
 #ifdef OF_WII
