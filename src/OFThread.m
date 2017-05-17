@@ -87,7 +87,6 @@
 
 #ifdef __DJGPP__
 # define lrint(x) rint(x)
-# define useconds_t unsigned int
 #endif
 
 #ifdef OF_HAVE_THREADS
@@ -217,7 +216,7 @@ callMain(id object)
 		@throw [OFOutOfRangeException exception];
 
 	sleep((unsigned int)timeInterval);
-	usleep((useconds_t)lrint(
+	usleep((unsigned int)lrint(
 	    (timeInterval - floor(timeInterval)) * 1000000));
 #endif
 }
