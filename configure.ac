@@ -644,7 +644,7 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 
 AC_CHECK_FUNCS(sigaction)
 
-AC_CHECK_FUNCS([arc4random random], break)
+AC_CHECK_FUNCS(arc4random random, break)
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
 AC_CHECK_HEADERS_ONCE(dlfcn.h)
@@ -1014,29 +1014,29 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		#endif
 	])
 
-	AC_CHECK_FUNCS([paccept accept4])
+	AC_CHECK_FUNCS(paccept accept4, break)
 
-	AC_CHECK_FUNC(kqueue, [
+	AC_CHECK_FUNCS(kqueue1 kqueue, [
 		AC_DEFINE(HAVE_KQUEUE, 1, [Whether we have kqueue])
 		AC_SUBST(OFKERNELEVENTOBSERVER_KQUEUE_M,
 			"OFKernelEventObserver_kqueue.m")
-
-		AC_CHECK_FUNCS(kqueue1)
+		break
 	])
-	AC_CHECK_FUNC(epoll_create, [
+	AC_CHECK_FUNCS(epoll_create1 epoll_create, [
 		AC_DEFINE(HAVE_EPOLL, 1, [Whether we have epoll])
 		AC_SUBST(OFKERNELEVENTOBSERVER_EPOLL_M,
 			"OFKernelEventObserver_epoll.m")
-
-		AC_CHECK_FUNCS(epoll_create1)
+		break
 	])
-	AC_CHECK_HEADER(poll.h, [
-		AC_DEFINE(HAVE_POLL_H, 1, [Whether we have poll.h])
+	AC_CHECK_HEADERS(poll.h)
+	AC_CHECK_FUNC(poll, [
+		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
 		AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
 			"OFKernelEventObserver_poll.m")
 	])
-	AC_CHECK_HEADER(sys/select.h, [
-		AC_DEFINE(HAVE_SYS_SELECT_H, 1, [Whether we have sys/select.h])
+	AC_CHECK_HEADERS(sys/select.h)
+	AC_CHECK_FUNC(select, [
+		AC_DEFINE(HAVE_SELECT, 1, [Whether we have select()])
 		AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
 			"OFKernelEventObserver_select.m")
 	])
@@ -1185,7 +1185,7 @@ case "$host" in
 	*)
 		AC_CHECK_FUNCS(kill)
 
-		AC_CHECK_FUNCS(posix_spawnp, [
+		AC_CHECK_FUNC(posix_spawnp, [
 			AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
 				have_processes="yes"
 

@@ -40,10 +40,10 @@
 #ifdef HAVE_EPOLL
 # import "OFKernelEventObserver_epoll.h"
 #endif
-#if defined(HAVE_POLL_H) || defined(OF_WII)
+#if HAVE_POLL
 # import "OFKernelEventObserver_poll.h"
 #endif
-#if defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
+#if HAVE_SELECT
 # import "OFKernelEventObserver_select.h"
 #endif
 
@@ -87,9 +87,9 @@ enum {
 		return [OFKernelEventObserver_kqueue alloc];
 #elif defined(HAVE_EPOLL)
 		return [OFKernelEventObserver_epoll alloc];
-#elif defined(HAVE_POLL_H) || defined(OF_WII)
+#elif defined(HAVE_POLL)
 		return [OFKernelEventObserver_poll alloc];
-#elif defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
+#elif defined(HAVE_SELECT)
 		return [OFKernelEventObserver_select alloc];
 #else
 # error No kqueue / epoll / poll / select found!
