@@ -84,6 +84,16 @@ macOS
   * Runtimes: Apple, ObjFW
 
 
+MorphOS
+-------
+
+  * OS Versions: 3.9
+  * Architectures: PPC
+  * Compilers: GCC 5.3.0
+  * Runtimes: ObjFW
+  * Limitations: No threads
+
+
 NetBSD
 ------
 
