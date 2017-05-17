@@ -227,7 +227,8 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			addrsIter->sin_family = he->h_addrtype;
 			addrsIter->sin_port = OF_BSWAP16_IF_LE(port);
 
-			if (he->h_length > sizeof(addrsIter->sin_addr.s_addr))
+			if ((size_t)he->h_length >
+			    sizeof(addrsIter->sin_addr.s_addr))
 				@throw [OFOutOfRangeException exception];
 
 			memcpy(&addrsIter->sin_addr.s_addr, *ip, he->h_length);
