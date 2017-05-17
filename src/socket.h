@@ -46,8 +46,7 @@
 #endif
 
 #ifdef OF_MORPHOS
-/* Strangely, MorphOS defines socklen_t in pthread.h */
-# include <pthread.h>
+typedef int socklen_t;
 
 struct sockaddr_storage {
 	uint8_t ss_len;
