@@ -15,6 +15,10 @@ dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
 case "$host" in
+	*-morphos*)
+		enable_shared="no"
+		enable_threads="no"
+		;;
 	*-msdosdjgpp*)
 		enable_shared="no"
 		enable_threads="no"
