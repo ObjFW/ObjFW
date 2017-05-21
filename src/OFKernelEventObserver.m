@@ -40,10 +40,10 @@
 #ifdef HAVE_EPOLL
 # import "OFKernelEventObserver_epoll.h"
 #endif
-#if HAVE_POLL
+#ifdef HAVE_POLL
 # import "OFKernelEventObserver_poll.h"
 #endif
-#if HAVE_SELECT
+#ifdef HAVE_SELECT
 # import "OFKernelEventObserver_select.h"
 #endif
 
