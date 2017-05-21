@@ -424,7 +424,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			    results[0]->addressLength) != 0) {
 				int errNo = of_socket_errno();
 
-				close(_socket);
+				closesocket(_socket);
 				_socket = INVALID_SOCKET;
 
 				@throw [OFBindFailedException
@@ -471,7 +471,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 				if (of_socket_errno() != EADDRINUSE) {
 					int errNo = of_socket_errno();
 
-					close(_socket);
+					closesocket(_socket);
 					_socket = INVALID_SOCKET;
 
 					@throw [OFBindFailedException
@@ -496,7 +496,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	    &addrLen) != 0) {
 		int errNo = of_socket_errno();
 
-		close(_socket);
+		closesocket(_socket);
 		_socket = INVALID_SOCKET;
 
 		@throw [OFBindFailedException exceptionWithHost: host
@@ -513,7 +513,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 # endif
 #endif
 
-	close(_socket);
+	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
@@ -650,7 +650,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	close(_socket);
+	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 }
 @end

@@ -287,7 +287,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		    result->addressLength) == -1) {
 			errNo = of_socket_errno();
 
-			close(_socket);
+			closesocket(_socket);
 			_socket = INVALID_SOCKET;
 
 			continue;
@@ -400,7 +400,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    results[0]->addressLength) != 0) {
 				int errNo = of_socket_errno();
 
-				close(_socket);
+				closesocket(_socket);
 				_socket = INVALID_SOCKET;
 
 				@throw [OFBindFailedException
@@ -447,7 +447,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				if (of_socket_errno() != EADDRINUSE) {
 					int errNo = of_socket_errno();
 
-					close(_socket);
+					closesocket(_socket);
 					_socket = INVALID_SOCKET;
 
 					@throw [OFBindFailedException
@@ -472,7 +472,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    &addrLen) != 0) {
 		int errNo = of_socket_errno();
 
-		close(_socket);
+		closesocket(_socket);
 		_socket = INVALID_SOCKET;
 
 		@throw [OFBindFailedException exceptionWithHost: host
@@ -489,7 +489,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 #endif
 
-	close(_socket);
+	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port

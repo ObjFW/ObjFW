@@ -169,7 +169,7 @@
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	close(_socket);
+	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 
 	_atEndOfStream = false;

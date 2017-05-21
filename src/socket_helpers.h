@@ -61,8 +61,8 @@
 # define SOCK_CLOEXEC 0
 #endif
 
-#ifdef OF_WINDOWS
-# define close(sock) closesocket(sock)
+#if !defined(OF_WINDOWS) && !defined(OF_WII)
+# define closesocket(sock) close(sock)
 #endif
 
 #ifdef OF_MORPHOS
@@ -72,7 +72,7 @@ typedef uint32_t in_addr_t;
 #ifdef OF_WII
 # define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
 # define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)
-# define close(sock) net_close(sock)
+# define closesocket(sock) net_close(sock)
 # define connect(sock, addr, addrlen) net_connect(sock, addr, addrlen)
 # define gethostbyname(name) net_gethostbyname(name)
 # define h_errno 0

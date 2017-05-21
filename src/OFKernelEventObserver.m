@@ -180,9 +180,15 @@ enum {
 
 - (void)dealloc
 {
+#ifdef OF_HAVE_PIPE
 	close(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
+#else
+	closesocket(_cancelFD[0]);
+	if (_cancelFD[1] != _cancelFD[0])
+		closesocket(_cancelFD[1]);
+#endif
 
 	[_readObjects release];
 	[_writeObjects release];
