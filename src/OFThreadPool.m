@@ -33,12 +33,6 @@
 #endif
 }
 
-+ (instancetype)jobWithTarget: (id)target
-		     selector: (SEL)selector
-		       object: (id)object;
-#ifdef OF_HAVE_BLOCKS
-+ (instancetype)jobWithBlock: (of_thread_pool_block_t)block;
-#endif
 - initWithTarget: (id)target
 	selector: (SEL)selector
 	  object: (id)object;
@@ -49,22 +43,6 @@
 @end
 
 @implementation OFThreadPoolJob
-+ (instancetype)jobWithTarget: (id)target
-		     selector: (SEL)selector
-		       object: (id)object
-{
-	return [[[self alloc] initWithTarget: target
-				    selector: selector
-				      object: object] autorelease];
-}
-
-#ifdef OF_HAVE_BLOCKS
-+ (instancetype)jobWithBlock: (of_thread_pool_block_t)block
-{
-	return [[[self alloc] initWithBlock: block] autorelease];
-}
-#endif
-
 - initWithTarget: (id)target
 	selector: (SEL)selector
 	  object: (id)object
@@ -350,15 +328,25 @@
 		  selector: (SEL)selector
 		    object: (id)object
 {
-	[self of_dispatchJob: [OFThreadPoolJob jobWithTarget: target
-						    selector: selector
-						      object: object]];
+	OFThreadPoolJob *job = [[OFThreadPoolJob alloc] initWithTarget: target
+							      selector: selector
+								object: object];
+	@try {
+		[self of_dispatchJob: job];
+	} @finally {
+		[job release];
+	}
 }
 
 #ifdef OF_HAVE_BLOCKS
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block
 {
-	[self of_dispatchJob: [OFThreadPoolJob jobWithBlock: block]];
+	OFThreadPoolJob *job = [[OFThreadPoolJob alloc] initWithBlock: block];
+	@try {
+		[self of_dispatchJob: job];
+	} @finally {
+		[job release];
+	}
 }
 #endif
 
