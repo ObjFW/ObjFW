@@ -927,7 +927,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	objc_autoreleasePoolPop(pool);
 }
-#else
+#elif defined(OF_WINDOWS)
 - (void)linkItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
