@@ -143,7 +143,8 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 		 * Wii for example, the resolver will return an error if you
 		 * specify an IP address.
 		 */
-		if ((s_addr = inet_addr([host UTF8String])) != INADDR_NONE) {
+		if ((s_addr = inet_addr((const void *)[host UTF8String])) !=
+		    INADDR_NONE) {
 			of_resolver_result_t *tmp;
 			struct sockaddr_in *addr;
 
@@ -188,8 +189,8 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 			return ret;
 		}
 
-		if ((he = gethostbyname([host UTF8String])) == NULL ||
-		    he->h_addrtype != AF_INET)
+		if ((he = gethostbyname((const void *)[host UTF8String])) ==
+		    NULL || he->h_addrtype != AF_INET)
 			@throw [OFAddressTranslationFailedException
 			    exceptionWithHost: host
 					error: h_errno];

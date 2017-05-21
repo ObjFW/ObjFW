@@ -33,7 +33,7 @@ static void
 send_or_exception(OFTCPSocket *self, of_socket_t socket, char *buffer,
     int length)
 {
-	if (send(socket, buffer, length, 0) != length)
+	if (send(socket, (const void *)buffer, length, 0) != length)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -44,7 +44,7 @@ static void
 recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 {
 	while (length > 0) {
-		ssize_t ret = recv(socket, buffer, length, 0);
+		ssize_t ret = recv(socket, (void *)buffer, length, 0);
 
 		if (ret < 0)
 			@throw [OFReadFailedException
