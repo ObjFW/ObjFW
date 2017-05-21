@@ -72,7 +72,7 @@ static OFAutoreleasePool **cache = NULL;
 	return _objc_rootAutorelease(object);
 }
 
-+ (void)OF_handleThreadTermination
++ (void)of_handleThreadTermination
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
@@ -80,7 +80,7 @@ static OFAutoreleasePool **cache = NULL;
 
 	if (cache != NULL) {
 		for (size_t i = 0; i < MAX_CACHE_SIZE; i++)
-			[cache[i] OF_super_dealloc];
+			[cache[i] of_super_dealloc];
 
 		free(cache);
 		cache = NULL;
@@ -125,7 +125,7 @@ static OFAutoreleasePool **cache = NULL;
 	[self dealloc];
 }
 
-- (void)OF_super_dealloc
+- (void)of_super_dealloc
 {
 	[super dealloc];
 }

@@ -122,7 +122,7 @@ callMain(id object)
 	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
 	objc_autoreleasePoolPop(thread->_pool);
-	[OFAutoreleasePool OF_handleThreadTermination];
+	[OFAutoreleasePool of_handleThreadTermination];
 
 	[thread release];
 }
@@ -261,14 +261,14 @@ callMain(id object)
 		objc_autoreleasePoolPop(thread->_pool);
 	}
 
-	[OFAutoreleasePool OF_handleThreadTermination];
+	[OFAutoreleasePool of_handleThreadTermination];
 
 	[thread release];
 
 	of_thread_exit();
 }
 
-+ (void)OF_createMainThread
++ (void)of_createMainThread
 {
 	mainThread = [[OFThread alloc] init];
 	mainThread->_thread = of_thread_current();

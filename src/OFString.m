@@ -80,13 +80,13 @@ static locale_t cLocale;
 #endif
 
 @interface OFString ()
-- (size_t)OF_getCString: (char *)cString
+- (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding
 		  lossy: (bool)lossy;
-- (const char *)OF_cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
 				 lossy: (bool)lossy;
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
@@ -371,7 +371,7 @@ static struct {
 	string = of_alloc_object([OFString_UTF8 class],
 	    length + 1, 1, &storage);
 
-	return (id)[string OF_initWithUTF8String: UTF8String
+	return (id)[string of_initWithUTF8String: UTF8String
 					  length: length
 					 storage: storage];
 }
@@ -385,7 +385,7 @@ static struct {
 	string = of_alloc_object([OFString_UTF8 class],
 	    UTF8StringLength + 1, 1, &storage);
 
-	return (id)[string OF_initWithUTF8String: UTF8String
+	return (id)[string of_initWithUTF8String: UTF8String
 					  length: UTF8StringLength
 					 storage: storage];
 }
@@ -410,7 +410,7 @@ static struct {
 		string = of_alloc_object([OFString_UTF8 class],
 		    length + 1, 1, &storage);
 
-		return (id)[string OF_initWithUTF8String: cString
+		return (id)[string of_initWithUTF8String: cString
 						  length: length
 						 storage: storage];
 	}
@@ -430,7 +430,7 @@ static struct {
 		string = of_alloc_object([OFString_UTF8 class],
 		    cStringLength + 1, 1, &storage);
 
-		return (id)[string OF_initWithUTF8String: cString
+		return (id)[string of_initWithUTF8String: cString
 						  length: cStringLength
 						 storage: storage];
 	}
@@ -1048,7 +1048,7 @@ static struct {
 	return self;
 }
 
-- (size_t)OF_getCString: (char *)cString
+- (size_t)of_getCString: (char *)cString
 	      maxLength: (size_t)maxLength
 	       encoding: (of_string_encoding_t)encoding
 		  lossy: (bool)lossy
@@ -1283,7 +1283,7 @@ static struct {
 	   maxLength: (size_t)maxLength
 	    encoding: (of_string_encoding_t)encoding
 {
-	return [self OF_getCString: cString
+	return [self of_getCString: cString
 			 maxLength: maxLength
 			  encoding: encoding
 			     lossy: false];
@@ -1293,13 +1293,13 @@ static struct {
 		maxLength: (size_t)maxLength
 		 encoding: (of_string_encoding_t)encoding
 {
-	return [self OF_getCString: cString
+	return [self of_getCString: cString
 			 maxLength: maxLength
 			  encoding: encoding
 			     lossy: true];
 }
 
-- (const char *)OF_cStringWithEncoding: (of_string_encoding_t)encoding
+- (const char *)of_cStringWithEncoding: (of_string_encoding_t)encoding
 				 lossy: (bool)lossy
 {
 	OFObject *object = [[[OFObject alloc] init] autorelease];
@@ -1312,7 +1312,7 @@ static struct {
 
 		cString = [object allocMemoryWithSize: (length * 4) + 1];
 
-		cStringLength = [self OF_getCString: cString
+		cStringLength = [self of_getCString: cString
 					  maxLength: (length * 4) + 1
 					   encoding: OF_STRING_ENCODING_UTF_8
 					      lossy: lossy];
@@ -1340,7 +1340,7 @@ static struct {
 	case OF_STRING_ENCODING_KOI8_U:
 		cString = [object allocMemoryWithSize: length + 1];
 
-		[self OF_getCString: cString
+		[self of_getCString: cString
 			  maxLength: length + 1
 			   encoding: encoding
 			      lossy: lossy];
@@ -1355,13 +1355,13 @@ static struct {
 
 - (const char *)cStringWithEncoding: (of_string_encoding_t)encoding
 {
-	return [self OF_cStringWithEncoding: encoding
+	return [self of_cStringWithEncoding: encoding
 				      lossy: false];
 }
 
 - (const char *)lossyCStringWithEncoding: (of_string_encoding_t)encoding
 {
-	return [self OF_cStringWithEncoding: encoding
+	return [self of_cStringWithEncoding: encoding
 				      lossy: true];
 }
 
@@ -1632,17 +1632,17 @@ static struct {
 
 - (OFString *)JSONRepresentation
 {
-	return [self OF_JSONRepresentationWithOptions: 0
+	return [self of_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self OF_JSONRepresentationWithOptions: options
+	return [self of_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth
 {
 	OFMutableString *JSON = [[self mutableCopy] autorelease];

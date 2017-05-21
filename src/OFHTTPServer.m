@@ -47,7 +47,7 @@
  */
 
 @interface OFHTTPServer ()
-- (bool)OF_socket: (OFTCPSocket *)socket
+- (bool)of_socket: (OFTCPSocket *)socket
   didAcceptSocket: (OFTCPSocket *)clientSocket
 	exception: (OFException *)exception;
 @end
@@ -210,7 +210,7 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
-- (void)OF_sendHeaders
+- (void)of_sendHeaders
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
@@ -263,7 +263,7 @@ normalizedKey(OFString *key)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!_headersSent)
-		[self OF_sendHeaders];
+		[self of_sendHeaders];
 
 	if (!_chunked) {
 		[_socket writeBuffer: buffer
@@ -288,7 +288,7 @@ normalizedKey(OFString *key)
 
 	@try {
 		if (!_headersSent)
-			[self OF_sendHeaders];
+			[self of_sendHeaders];
 
 		if (_chunked)
 			[_socket writeBuffer: "0\r\n\r\n"
@@ -719,7 +719,7 @@ normalizedKey(OFString *key)
 	[_listeningSocket listen];
 
 	[_listeningSocket asyncAcceptWithTarget: self
-				       selector: @selector(OF_socket:
+				       selector: @selector(of_socket:
 						     didAcceptSocket:
 						     exception:)];
 }
@@ -731,7 +731,7 @@ normalizedKey(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (bool)OF_socket: (OFTCPSocket *)socket
+- (bool)of_socket: (OFTCPSocket *)socket
   didAcceptSocket: (OFTCPSocket *)clientSocket
 	exception: (OFException *)exception
 {

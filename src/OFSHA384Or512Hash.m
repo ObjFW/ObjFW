@@ -23,6 +23,10 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 
+@interface OFSHA384Or512Hash ()
+- (void)of_resetState;
+@end
+
 static const uint64_t table[] = {
 	0x428A2F98D728AE22, 0x7137449123EF65CD, 0xB5C0FBCFEC4D3B2F,
 	0xE9B5DBA58189DBBC, 0x3956C25BF348B538, 0x59F111F1B605D019,
@@ -147,7 +151,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 			abort();
 		}
 
-		[self OF_resetState];
+		[self of_resetState];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -234,14 +238,14 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 - (void)reset
 {
-	[self OF_resetState];
+	[self of_resetState];
 	memset(_bits, 0, sizeof(_bits));
 	memset(&_buffer, 0, sizeof(_buffer));
 	_bufferLength = 0;
 	_calculated = false;
 }
 
-- (void)OF_resetState
+- (void)of_resetState
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

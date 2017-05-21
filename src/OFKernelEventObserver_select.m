@@ -65,7 +65,7 @@
 	return self;
 }
 
-- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	int fd = [object fileDescriptorForReading];
 
@@ -83,7 +83,7 @@
 	FD_SET((of_socket_t)fd, &_readFDs);
 }
 
-- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	int fd = [object fileDescriptorForWriting];
 
@@ -101,7 +101,7 @@
 	FD_SET((of_socket_t)fd, &_writeFDs);
 }
 
-- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
 
@@ -118,7 +118,7 @@
 	FD_CLR((of_socket_t)fd, &_readFDs);
 }
 
-- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
 
@@ -144,9 +144,9 @@
 	int events;
 	size_t count;
 
-	[self OF_processQueue];
+	[self of_processQueue];
 
-	if ([self OF_processReadBuffers])
+	if ([self of_processReadBuffers])
 		return;
 
 #ifdef FD_COPY

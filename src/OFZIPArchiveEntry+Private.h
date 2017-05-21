@@ -20,10 +20,10 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFZIPArchiveEntry ()
 @property (readonly, nonatomic)
-    uint16_t OF_lastModifiedFileTime, OF_lastModifiedFileDate;
-@property (readonly, nonatomic) int64_t OF_localFileHeaderOffset;
+    uint16_t of_lastModifiedFileTime, of_lastModifiedFileDate;
+@property (readonly, nonatomic) int64_t of_localFileHeaderOffset;
 
-- (instancetype)OF_initWithStream: (OFStream *)stream OF_METHOD_FAMILY(init);
+- (instancetype)of_initWithStream: (OFStream *)stream OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

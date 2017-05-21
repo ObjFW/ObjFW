@@ -559,7 +559,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			target: (id)target
 		      selector: (SEL)selector
 {
-	[OFRunLoop OF_addAsyncReceiveForUDPSocket: self
+	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
 					   target: target
@@ -571,7 +571,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			length: (size_t)length
 			 block: (of_udp_socket_async_receive_block_t)block
 {
-	[OFRunLoop OF_addAsyncReceiveForUDPSocket: self
+	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
 					    block: block];
@@ -612,7 +612,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop OF_cancelAsyncRequestsForObject: self];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self];
 }
 
 - (int)fileDescriptorForReading

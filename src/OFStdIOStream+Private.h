@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFStdIOStream ()
-- (instancetype)OF_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
+- (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

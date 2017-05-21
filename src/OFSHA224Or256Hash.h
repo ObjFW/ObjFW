@@ -34,8 +34,6 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _bufferLength;
 	bool _calculated;
 }
-
-- (void)OF_resetState;
 @end
 
 OF_ASSUME_NONNULL_END

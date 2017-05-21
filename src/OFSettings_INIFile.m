@@ -53,7 +53,7 @@
 	[super dealloc];
 }
 
-- (void)OF_getCategory: (OFString **)category
+- (void)of_getCategory: (OFString **)category
 		andKey: (OFString **)key
 	       forPath: (OFString *)path
 {
@@ -77,7 +77,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -93,7 +93,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -109,7 +109,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -125,7 +125,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -141,7 +141,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -157,7 +157,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -173,7 +173,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key, *ret;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -192,7 +192,7 @@
 	OFString *category, *key;
 	intmax_t ret;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -212,7 +212,7 @@
 	OFString *category, *key;
 	bool ret;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -231,7 +231,7 @@
 	OFString *category, *key;
 	float ret;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -250,7 +250,7 @@
 	OFString *category, *key;
 	double ret;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -268,7 +268,7 @@
 	OFString *category, *key;
 	OFArray *ret;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 
@@ -284,7 +284,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *category, *key;
 
-	[self OF_getCategory: &category
+	[self of_getCategory: &category
 		      andKey: &key
 		     forPath: path];
 

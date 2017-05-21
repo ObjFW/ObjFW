@@ -92,7 +92,7 @@
 	}
 
 @interface OFNumber ()
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
@@ -1016,17 +1016,17 @@
 
 - (OFString *)JSONRepresentation
 {
-	return [self OF_JSONRepresentationWithOptions: 0
+	return [self of_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self OF_JSONRepresentationWithOptions: options
+	return [self of_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth
 {
 	double doubleValue;

@@ -29,7 +29,7 @@
 #import "OFOpenItemFailedException.h"
 
 @interface OFINIFile ()
-- (void)OF_parseFile: (OFString *)path
+- (void)of_parseFile: (OFString *)path
 	    encoding: (of_string_encoding_t)encoding;
 @end
 
@@ -86,7 +86,7 @@ isWhitespaceLine(OFString *line)
 	@try {
 		_categories = [[OFMutableArray alloc] init];
 
-		[self OF_parseFile: path
+		[self of_parseFile: path
 			  encoding: encoding];
 	} @catch (id e) {
 		[self release];
@@ -112,7 +112,7 @@ isWhitespaceLine(OFString *line)
 		if ([[category name] isEqual: name])
 			return category;
 
-	category = [[[OFINICategory alloc] OF_init] autorelease];
+	category = [[[OFINICategory alloc] of_init] autorelease];
 	[category setName: name];
 	[_categories addObject: category];
 
@@ -121,7 +121,7 @@ isWhitespaceLine(OFString *line)
 	return category;
 }
 
-- (void)OF_parseFile: (OFString *)path
+- (void)of_parseFile: (OFString *)path
 	    encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -154,14 +154,14 @@ isWhitespaceLine(OFString *line)
 			    of_range(1, [line length] - 2)];
 
 			category = [[[OFINICategory alloc]
-			    OF_init] autorelease];
+			    of_init] autorelease];
 			[category setName: categoryName];
 			[_categories addObject: category];
 		} else {
 			if (category == nil)
 				@throw [OFInvalidFormatException exception];
 
-			[category OF_parseLine: line];
+			[category of_parseLine: line];
 		}
 	}
 
@@ -183,7 +183,7 @@ isWhitespaceLine(OFString *line)
 	bool first = true;
 
 	for (OFINICategory *category in _categories)
-		if ([category OF_writeToStream: file
+		if ([category of_writeToStream: file
 				      encoding: encoding
 					 first: first])
 			first = false;

@@ -63,7 +63,7 @@ struct huffman_tree {
 };
 
 @interface OFDeflateStream ()
-- (void)OF_initDecompression;
+- (void)of_initDecompression;
 @end
 
 #ifndef DEFLATE64
@@ -326,7 +326,7 @@ releaseTree(struct huffman_tree *tree)
 }
 #endif
 
-- (void)OF_initDecompression
+- (void)of_initDecompression
 {
 	_decompression = [self allocMemoryWithSize: sizeof(*_decompression)];
 	memset(_decompression, 0, sizeof(*_decompression));
@@ -352,7 +352,7 @@ releaseTree(struct huffman_tree *tree)
 	uint16_t slidingWindowIndex;
 
 	if (ivars == NULL) {
-		[self OF_initDecompression];
+		[self of_initDecompression];
 		ivars = _decompression;
 	}
 

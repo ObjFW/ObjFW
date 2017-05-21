@@ -85,7 +85,7 @@
 	[super dealloc];
 }
 
-- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -104,7 +104,7 @@
 								 errNo: errno];
 }
 
-- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -123,7 +123,7 @@
 								 errNo: errno];
 }
 
-- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -137,7 +137,7 @@
 								 errNo: errno];
 }
 
-- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -157,9 +157,9 @@
 	struct kevent eventList[EVENTLIST_SIZE];
 	int events;
 
-	[self OF_processQueue];
+	[self of_processQueue];
 
-	if ([self OF_processReadBuffers])
+	if ([self of_processReadBuffers])
 		return;
 
 	timeout.tv_sec = (time_t)timeInterval;

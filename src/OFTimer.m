@@ -33,7 +33,7 @@
 
 @implementation OFTimer
 @synthesize timeInterval = _interval, repeating = _repeats, valid = _valid;
-@synthesize OF_inRunLoop = _inRunLoop;
+@synthesize of_inRunLoop = _inRunLoop;
 
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
@@ -212,14 +212,14 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)OF_initWithFireDate: (OFDate *)fireDate
+- (instancetype)of_initWithFireDate: (OFDate *)fireDate
 			   interval: (of_time_interval_t)interval
 			     target: (id)target
 			   selector: (SEL)selector
 			     object: (id)object1
 			     object: (id)object2
 			  arguments: (uint8_t)arguments
-			    repeats: (bool)repeats
+			    repeats: (bool)repeats OF_METHOD_FAMILY(init)
 {
 	self = [super init];
 
@@ -250,7 +250,7 @@
 	  selector: (SEL)selector
 	   repeats: (bool)repeats
 {
-	return [self OF_initWithFireDate: fireDate
+	return [self of_initWithFireDate: fireDate
 				interval: interval
 				  target: target
 				selector: selector
@@ -267,7 +267,7 @@
 	    object: (id)object
 	   repeats: (bool)repeats
 {
-	return [self OF_initWithFireDate: fireDate
+	return [self of_initWithFireDate: fireDate
 				interval: interval
 				  target: target
 				selector: selector
@@ -285,7 +285,7 @@
 	    object: (id)object2
 	   repeats: (bool)repeats
 {
-	return [self OF_initWithFireDate: fireDate
+	return [self of_initWithFireDate: fireDate
 				interval: interval
 				  target: target
 				selector: selector
@@ -422,7 +422,7 @@
 		@synchronized (self) {
 			OFDate *old;
 
-			[_inRunLoop OF_removeTimer: self];
+			[_inRunLoop of_removeTimer: self];
 
 			old = _fireDate;
 			_fireDate = [fireDate copy];

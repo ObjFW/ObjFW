@@ -33,7 +33,7 @@
 
 - initWithString: (OFString *)string
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		_processingInstructions = [string copy];
@@ -47,7 +47,7 @@
 
 - initWithSerialization: (OFXMLElement *)element
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

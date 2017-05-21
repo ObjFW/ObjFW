@@ -92,7 +92,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[super dealloc];
 }
 
-- (void)OF_addObject: (id)object
+- (void)of_addObject: (id)object
       fileDescriptor: (int)fd
 	      events: (int)addEvents
 {
@@ -115,7 +115,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 			forKey: (void *)((intptr_t)fd + 1)];
 }
 
-- (void)OF_removeObject: (id)object
+- (void)of_removeObject: (id)object
 	 fileDescriptor: (int)fd
 		 events: (int)removeEvents
 {
@@ -149,30 +149,30 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	}
 }
 
-- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	[self OF_addObject: object
+	[self of_addObject: object
 	    fileDescriptor: [object fileDescriptorForReading]
 		    events: EPOLLIN];
 }
 
-- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self OF_addObject: object
+	[self of_addObject: object
 	    fileDescriptor: [object fileDescriptorForWriting]
 		    events: EPOLLOUT];
 }
 
-- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	[self OF_removeObject: object
+	[self of_removeObject: object
 	       fileDescriptor: [object fileDescriptorForReading]
 		       events: EPOLLIN];
 }
 
-- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	[self OF_removeObject: object
+	[self of_removeObject: object
 	       fileDescriptor: [object fileDescriptorForWriting]
 		       events: EPOLLOUT];
 }
@@ -183,9 +183,9 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	struct epoll_event eventList[EVENTLIST_SIZE];
 	int events;
 
-	[self OF_processQueue];
+	[self of_processQueue];
 
-	if ([self OF_processReadBuffers])
+	if ([self of_processReadBuffers])
 		return;
 
 	events = epoll_wait(_epfd, eventList, EVENTLIST_SIZE,

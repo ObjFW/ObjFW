@@ -316,7 +316,7 @@
 	[super dealloc];
 }
 
-- (void)OF_dispatchJob: (OFThreadPoolJob *)job
+- (void)of_dispatchJob: (OFThreadPoolJob *)job
 {
 	[_countCondition lock];
 	_count++;
@@ -350,7 +350,7 @@
 		  selector: (SEL)selector
 		    object: (id)object
 {
-	[self OF_dispatchJob: [OFThreadPoolJob jobWithTarget: target
+	[self of_dispatchJob: [OFThreadPoolJob jobWithTarget: target
 						    selector: selector
 						      object: object]];
 }
@@ -358,7 +358,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)dispatchWithBlock: (of_thread_pool_block_t)block
 {
-	[self OF_dispatchJob: [OFThreadPoolJob jobWithBlock: block]];
+	[self of_dispatchJob: [OFThreadPoolJob jobWithBlock: block]];
 }
 #endif
 

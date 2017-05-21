@@ -22,6 +22,10 @@
 
 #import "OFHashAlreadyCalculatedException.h"
 
+@interface OFMD5Hash ()
+- (void)of_resetState;
+@end
+
 #define F(a, b, c) (((a) & (b)) | (~(a) & (c)))
 #define G(a, b, c) (((a) & (c)) | ((b) & ~(c)))
 #define H(a, b, c) ((a) ^ (b) ^ (c))
@@ -134,7 +138,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 {
 	self = [super init];
 
-	[self OF_resetState];
+	[self of_resetState];
 
 	return self;
 }
@@ -159,7 +163,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return copy;
 }
 
-- (void)OF_resetState
+- (void)of_resetState
 {
 	_state[0] = 0x67452301;
 	_state[1] = 0xEFCDAB89;
@@ -223,7 +227,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 - (void)reset
 {
-	[self OF_resetState];
+	[self of_resetState];
 	_bits = 0;
 	memset(&_buffer, 0, sizeof(_buffer));
 	_bufferLength = 0;

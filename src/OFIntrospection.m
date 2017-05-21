@@ -33,7 +33,7 @@
 }
 
 #if defined(OF_OBJFW_RUNTIME)
-- (instancetype)OF_initWithMethod: (struct objc_method *)method
+- (instancetype)of_initWithMethod: (struct objc_method *)method
 {
 	self = [super init];
 
@@ -50,7 +50,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- (instancetype)OF_initWithMethod: (Method)method
+- (instancetype)of_initWithMethod: (Method)method
 {
 	self = [super init];
 
@@ -140,7 +140,7 @@
 }
 
 #if defined(OF_OBJFW_RUNTIME)
-- (instancetype)OF_initWithProperty: (struct objc_property *)property
+- (instancetype)of_initWithProperty: (struct objc_property *)property
 {
 	self = [super init];
 
@@ -163,7 +163,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- (instancetype)OF_initWithProperty: (objc_property_t)property
+- (instancetype)of_initWithProperty: (objc_property_t)property
 {
 	self = [super init];
 
@@ -366,7 +366,7 @@
 }
 
 #if defined(OF_OBJFW_RUNTIME)
-- (instancetype)OF_initWithIvar: (struct objc_ivar *)ivar
+- (instancetype)of_initWithIvar: (struct objc_ivar *)ivar
 {
 	self = [super init];
 
@@ -382,7 +382,7 @@
 	return self;
 }
 #elif defined(OF_APPLE_RUNTIME)
-- (instancetype)OF_initWithIvar: (Ivar)ivar
+- (instancetype)of_initWithIvar: (Ivar)ivar
 {
 	self = [super init];
 
@@ -459,7 +459,7 @@
 
 			for (unsigned int i = 0; i < methodList->count; i++)
 				[_classMethods addObject: [[[OFMethod alloc]
-				    OF_initWithMethod:
+				    of_initWithMethod:
 				    &methodList->methods[i]] autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -471,7 +471,7 @@
 
 			for (unsigned int i = 0; i < methodList->count; i++)
 				[_instanceMethods addObject: [[[OFMethod alloc]
-				    OF_initWithMethod:
+				    of_initWithMethod:
 				    &methodList->methods[i]] autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -483,7 +483,7 @@
 
 			for (unsigned int i = 0; i < propertyList->count; i++)
 				[_properties addObject: [[[OFProperty alloc]
-				    OF_initWithProperty:
+				    of_initWithProperty:
 				    &propertyList->properties[i]] autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -495,7 +495,7 @@
 			for (unsigned int i = 0; i < class->ivars->count; i++)
 				[_instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
-				    OF_initWithIvar:
+				    of_initWithIvar:
 				    &class->ivars->ivars[i]] autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -508,7 +508,7 @@
 
 			for (unsigned int i = 0; i < count; i++)
 				[_classMethods addObject: [[[OFMethod alloc]
-				    OF_initWithMethod: methodList[i]]
+				    of_initWithMethod: methodList[i]]
 				    autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -522,7 +522,7 @@
 
 			for (unsigned int i = 0; i < count; i++)
 				[_instanceMethods addObject: [[[OFMethod alloc]
-				    OF_initWithMethod: methodList[i]]
+				    of_initWithMethod: methodList[i]]
 				    autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -536,7 +536,7 @@
 
 			for (unsigned int i = 0; i < count; i++)
 				[_properties addObject: [[[OFProperty alloc]
-				    OF_initWithProperty: propertyList[i]]
+				    of_initWithProperty: propertyList[i]]
 				    autorelease]];
 
 			objc_autoreleasePoolPop(pool);
@@ -551,7 +551,7 @@
 			for (unsigned int i = 0; i < count; i++)
 				[_instanceVariables addObject:
 				    [[[OFInstanceVariable alloc]
-				    OF_initWithIvar: ivarList[i]] autorelease]];
+				    of_initWithIvar: ivarList[i]] autorelease]];
 
 			objc_autoreleasePoolPop(pool);
 		} @finally {

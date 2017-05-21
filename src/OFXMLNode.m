@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFXMLNode
-- (instancetype)OF_init
+- (instancetype)of_init
 {
 	return [super init];
 }

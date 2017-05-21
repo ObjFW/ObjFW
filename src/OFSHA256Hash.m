@@ -24,7 +24,7 @@
 	return 32;
 }
 
-- (void)OF_resetState
+- (void)of_resetState
 {
 	_state[0] = 0x6A09E667;
 	_state[1] = 0xBB67AE85;

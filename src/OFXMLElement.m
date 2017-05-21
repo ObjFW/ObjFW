@@ -161,7 +161,7 @@ static Class CDATAClass = Nil;
      namespace: (OFString *)namespace
    stringValue: (OFString *)stringValue
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		if (name == nil)
@@ -187,7 +187,7 @@ static Class CDATAClass = Nil;
 
 - initWithElement: (OFXMLElement *)element
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		if (element == nil)
@@ -276,7 +276,7 @@ static Class CDATAClass = Nil;
 
 - initWithSerialization: (OFXMLElement *)element
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -422,7 +422,7 @@ static Class CDATAClass = Nil;
 	return ret;
 }
 
-- (OFString *)OF_XMLStringWithParent: (OFXMLElement *)parent
+- (OFString *)of_XMLStringWithParent: (OFXMLElement *)parent
 			  namespaces: (OFDictionary *)allNamespaces
 			 indentation: (unsigned int)indentation
 			       level: (unsigned int)level
@@ -591,7 +591,7 @@ static Class CDATAClass = Nil;
 
 			if ([child isKindOfClass: [OFXMLElement class]])
 				childString = [(OFXMLElement *)child
-				    OF_XMLStringWithParent: self
+				    of_XMLStringWithParent: self
 						namespaces: allNamespaces
 					       indentation: ind
 						     level: level + 1];
@@ -666,7 +666,7 @@ static Class CDATAClass = Nil;
 
 - (OFString *)XMLString
 {
-	return [self OF_XMLStringWithParent: nil
+	return [self of_XMLStringWithParent: nil
 				 namespaces: nil
 				indentation: 0
 				      level: 0];
@@ -674,7 +674,7 @@ static Class CDATAClass = Nil;
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [self OF_XMLStringWithParent: nil
+	return [self of_XMLStringWithParent: nil
 				 namespaces: nil
 				indentation: indentation
 				      level: 0];
@@ -683,7 +683,7 @@ static Class CDATAClass = Nil;
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 				 level: (unsigned int)level
 {
-	return [self OF_XMLStringWithParent: nil
+	return [self of_XMLStringWithParent: nil
 				 namespaces: nil
 				indentation: indentation
 				      level: level];

@@ -79,7 +79,7 @@
 	} buffer;
 	bool empty = true;
 
-	[_lastReturnedEntry OF_skip];
+	[_lastReturnedEntry of_skip];
 	[_lastReturnedEntry close];
 	[_lastReturnedEntry release];
 	_lastReturnedEntry = nil;
@@ -106,7 +106,7 @@
 	}
 
 	_lastReturnedEntry = [[OFTarArchiveEntry alloc]
-	    OF_initWithHeader: buffer.c
+	    of_initWithHeader: buffer.c
 		       stream: _stream];
 
 	return _lastReturnedEntry;

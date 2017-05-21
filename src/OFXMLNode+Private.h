@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFXMLNode ()
-- (instancetype)OF_init;
+- (instancetype)of_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

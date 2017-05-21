@@ -61,16 +61,16 @@
 + (void)load
 {
 	of_stdin = [[OFStdIOStream_Win32Console alloc]
-	    OF_initWithFileDescriptor: 0];
+	    of_initWithFileDescriptor: 0];
 	of_stdout = [[OFStdIOStream_Win32Console alloc]
-	    OF_initWithFileDescriptor: 1];
+	    of_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream_Win32Console alloc]
-	    OF_initWithFileDescriptor: 2];
+	    of_initWithFileDescriptor: 2];
 }
 
-- (instancetype)OF_initWithFileDescriptor: (int)fd
+- (instancetype)of_initWithFileDescriptor: (int)fd
 {
-	self = [super OF_initWithFileDescriptor: fd];
+	self = [super of_initWithFileDescriptor: fd];
 
 	@try {
 		DWORD mode;

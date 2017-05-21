@@ -55,7 +55,7 @@
      namespace: (OFString *)namespace
    stringValue: (OFString *)stringValue
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		_name = [name copy];
@@ -71,7 +71,7 @@
 
 - initWithSerialization: (OFXMLElement *)element
 {
-	self = [super OF_init];
+	self = [super of_init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();

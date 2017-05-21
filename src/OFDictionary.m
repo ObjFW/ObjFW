@@ -36,7 +36,7 @@ static struct {
 } placeholder;
 
 @interface OFDictionary ()
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
@@ -616,18 +616,18 @@ static struct {
 
 - (OFString *)JSONRepresentation
 {
-	return [self OF_JSONRepresentationWithOptions: 0
+	return [self of_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self OF_JSONRepresentationWithOptions: options
+	return [self of_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
-					depth: (size_t)depth
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
+					 depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"{"];
 	void *pool = objc_autoreleasePoolPush();
@@ -657,11 +657,11 @@ static struct {
 			[JSON appendString: indentation];
 			[JSON appendString: @"\t"];
 			[JSON appendString: [key
-			    OF_JSONRepresentationWithOptions: identifierOptions
+			    of_JSONRepresentationWithOptions: identifierOptions
 						       depth: depth + 1]];
 			[JSON appendString: @": "];
 			[JSON appendString: [object
-			    OF_JSONRepresentationWithOptions: options
+			    of_JSONRepresentationWithOptions: options
 						       depth: depth + 1]];
 
 			if (++i < count)
@@ -685,11 +685,11 @@ static struct {
 				@throw [OFInvalidArgumentException exception];
 
 			[JSON appendString: [key
-			    OF_JSONRepresentationWithOptions: identifierOptions
+			    of_JSONRepresentationWithOptions: identifierOptions
 						       depth: depth + 1]];
 			[JSON appendString: @":"];
 			[JSON appendString: [object
-			    OF_JSONRepresentationWithOptions: options
+			    of_JSONRepresentationWithOptions: options
 						       depth: depth + 1]];
 
 			if (++i < count)

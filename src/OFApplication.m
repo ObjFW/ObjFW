@@ -68,14 +68,14 @@ extern char **environ;
 #endif
 
 @interface OFApplication ()
-- (instancetype)OF_init OF_METHOD_FAMILY(init);
-- (void)OF_setArgumentCount: (int *)argc
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+- (void)of_setArgumentCount: (int *)argc
 	  andArgumentValues: (char **[])argv;
 #ifdef OF_WINDOWS
-- (void)OF_setArgumentCount: (int)argc
+- (void)of_setArgumentCount: (int)argc
       andWideArgumentValues: (wchar_t *[])argv;
 #endif
-- (void)OF_run;
+- (void)of_run;
 @end
 
 static OFApplication *app = nil;
@@ -131,21 +131,21 @@ of_application_main(int *argc, char **argv[], Class cls)
 		exit(1);
 	}
 
-	app = [[OFApplication alloc] OF_init];
+	app = [[OFApplication alloc] of_init];
 
-	[app OF_setArgumentCount: argc
+	[app of_setArgumentCount: argc
 	       andArgumentValues: argv];
 
 #ifdef OF_WINDOWS
 	__wgetmainargs(&wargc, &wargv, &wenvp, _CRT_glob, &si);
-	[app OF_setArgumentCount: wargc
+	[app of_setArgumentCount: wargc
 	   andWideArgumentValues: wargv];
 #endif
 
 	delegate = [[cls alloc] init];
 	[app setDelegate: delegate];
 
-	[app OF_run];
+	[app of_run];
 
 	[delegate release];
 
@@ -206,7 +206,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	OF_INVALID_INIT_METHOD
 }
 
-- OF_init
+- of_init
 {
 	self = [super init];
 
@@ -365,7 +365,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 	[super dealloc];
 }
 
-- (void)OF_setArgumentCount: (int *)argc
+- (void)of_setArgumentCount: (int *)argc
 	  andArgumentValues: (char ***)argv
 {
 #ifndef OF_WINDOWS
@@ -405,7 +405,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 
 #ifdef OF_WINDOWS
-- (void)OF_setArgumentCount: (int)argc
+- (void)of_setArgumentCount: (int)argc
       andWideArgumentValues: (wchar_t **)argv
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -485,25 +485,25 @@ of_application_main(int *argc, char **argv[], Class cls)
 #undef REGISTER_SIGNAL
 }
 
-- (void)OF_run
+- (void)of_run
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop;
 
 #ifdef OF_HAVE_THREADS
-	[OFThread OF_createMainThread];
+	[OFThread of_createMainThread];
 	runLoop = [OFRunLoop currentRunLoop];
 #else
 	runLoop = [[[OFRunLoop alloc] init] autorelease];
 #endif
 
-	[OFRunLoop OF_setMainRunLoop: runLoop];
+	[OFRunLoop of_setMainRunLoop: runLoop];
 
 	objc_autoreleasePoolPop(pool);
 
 	/*
 	 * Note: runLoop is still valid after the release of the pool, as
-	 * OF_setMainRunLoop: retained it. However, we only have a weak
+	 * of_setMainRunLoop: retained it. However, we only have a weak
 	 * reference to it now, whereas we had a strong reference before.
 	 */
 

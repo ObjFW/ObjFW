@@ -84,9 +84,9 @@ of_log(OFConstantString *format, ...)
 #ifndef OF_WINDOWS
 + (void)load
 {
-	of_stdin = [[OFStdIOStream alloc] OF_initWithFileDescriptor: 0];
-	of_stdout = [[OFStdIOStream alloc] OF_initWithFileDescriptor: 1];
-	of_stderr = [[OFStdIOStream alloc] OF_initWithFileDescriptor: 2];
+	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: 0];
+	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
+	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
 }
 #endif
 
@@ -95,7 +95,7 @@ of_log(OFConstantString *format, ...)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)OF_initWithFileDescriptor: (int)fd
+- (instancetype)of_initWithFileDescriptor: (int)fd
 {
 	self = [super init];
 

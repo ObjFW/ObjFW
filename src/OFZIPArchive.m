@@ -51,8 +51,8 @@
  */
 
 @interface OFZIPArchive ()
-- (void)OF_readZIPInfo;
-- (void)OF_readEntries;
+- (void)of_readZIPInfo;
+- (void)of_readEntries;
 @end
 
 @interface OFZIPArchive_LocalFileHeader: OFObject
@@ -160,8 +160,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	@try {
 		_stream = [stream retain];
 
-		[self OF_readZIPInfo];
-		[self OF_readEntries];
+		[self of_readZIPInfo];
+		[self of_readEntries];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -196,7 +196,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[super dealloc];
 }
 
-- (void)OF_readZIPInfo
+- (void)of_readZIPInfo
 {
 	void *pool = objc_autoreleasePoolPush();
 	uint16_t commentLength;
@@ -285,7 +285,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)OF_readEntries
+- (void)of_readEntries
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -301,7 +301,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
-		    OF_initWithStream: _stream] autorelease];
+		    of_initWithStream: _stream] autorelease];
 
 		if ([_pathToEntryMap objectForKey: [entry fileName]] != nil)
 			@throw [OFInvalidFormatException exception];
@@ -338,7 +338,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	offset64 = [entry OF_localFileHeaderOffset];
+	offset64 = [entry of_localFileHeaderOffset];
 	if (offset64 < 0 || (of_offset_t)offset64 != offset64)
 		@throw [OFOutOfRangeException exception];
 
@@ -434,8 +434,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry
 {
 	if (_compressionMethod != [entry compressionMethod] ||
-	    _lastModifiedFileTime != [entry OF_lastModifiedFileTime] ||
-	    _lastModifiedFileDate != [entry OF_lastModifiedFileDate])
+	    _lastModifiedFileTime != [entry of_lastModifiedFileTime] ||
+	    _lastModifiedFileDate != [entry of_lastModifiedFileDate])
 		return false;
 
 	if (!(_generalPurposeBitFlag & (1 << 3)))

@@ -54,7 +54,7 @@
 #define MIN_READ_SIZE 512
 
 @implementation OFStream
-@synthesize OF_waitingForDelimiter = _waitingForDelimiter;
+@synthesize of_waitingForDelimiter = _waitingForDelimiter;
 
 #ifndef OF_WINDOWS
 + (void)initialize
@@ -187,7 +187,7 @@
 		     target: (id)target
 		   selector: (SEL)selector
 {
-	[OFRunLoop OF_addAsyncReadForStream: self
+	[OFRunLoop of_addAsyncReadForStream: self
 				     buffer: buffer
 				     length: length
 				     target: target
@@ -199,7 +199,7 @@
 		     target: (id)target
 		   selector: (SEL)selector
 {
-	[OFRunLoop OF_addAsyncReadForStream: self
+	[OFRunLoop of_addAsyncReadForStream: self
 				     buffer: buffer
 				exactLength: length
 				     target: target
@@ -211,7 +211,7 @@
 		     length: (size_t)length
 		      block: (of_stream_async_read_block_t)block
 {
-	[OFRunLoop OF_addAsyncReadForStream: self
+	[OFRunLoop of_addAsyncReadForStream: self
 				     buffer: buffer
 				     length: length
 				      block: block];
@@ -221,7 +221,7 @@
 		exactLength: (size_t)length
 		      block: (of_stream_async_read_block_t)block
 {
-	[OFRunLoop OF_addAsyncReadForStream: self
+	[OFRunLoop of_addAsyncReadForStream: self
 				     buffer: buffer
 				exactLength: length
 				      block: block];
@@ -762,7 +762,7 @@
 			   target: (id)target
 			 selector: (SEL)selector
 {
-	[OFRunLoop OF_addAsyncReadLineForStream: self
+	[OFRunLoop of_addAsyncReadLineForStream: self
 				       encoding: encoding
 					 target: target
 				       selector: selector];
@@ -778,7 +778,7 @@
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			    block: (of_stream_async_read_line_block_t)block
 {
-	[OFRunLoop OF_addAsyncReadLineForStream: self
+	[OFRunLoop of_addAsyncReadLineForStream: self
 				       encoding: encoding
 					  block: block];
 }
@@ -1517,7 +1517,7 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop OF_cancelAsyncRequestsForObject: self];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self];
 }
 #endif
 

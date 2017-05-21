@@ -147,26 +147,26 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 + (void)initialize
 {
 	const SEL selectors_[OF_XMLPARSER_NUM_STATES] = {
-		@selector(OF_inByteOrderMarkState),
-		@selector(OF_outsideTagState),
-		@selector(OF_tagOpenedState),
-		@selector(OF_inProcessingInstructionsState),
-		@selector(OF_inTagNameState),
-		@selector(OF_inCloseTagNameState),
-		@selector(OF_inTagState),
-		@selector(OF_inAttributeNameState),
-		@selector(OF_expectAttributeEqualSignState),
-		@selector(OF_expectAttributeDelimiterState),
-		@selector(OF_inAttributeValueState),
-		@selector(OF_expectTagCloseState),
-		@selector(OF_expectSpaceOrTagCloseState),
-		@selector(OF_inExclamationMarkState),
-		@selector(OF_inCDATAOpeningState),
-		@selector(OF_inCDATAState),
-		@selector(OF_inCommentOpeningState),
-		@selector(OF_inCommentState1),
-		@selector(OF_inCommentState2),
-		@selector(OF_inDOCTYPEState)
+		@selector(of_inByteOrderMarkState),
+		@selector(of_outsideTagState),
+		@selector(of_tagOpenedState),
+		@selector(of_inProcessingInstructionsState),
+		@selector(of_inTagNameState),
+		@selector(of_inCloseTagNameState),
+		@selector(of_inTagState),
+		@selector(of_inAttributeNameState),
+		@selector(of_expectAttributeEqualSignState),
+		@selector(of_expectAttributeDelimiterState),
+		@selector(of_inAttributeValueState),
+		@selector(of_expectTagCloseState),
+		@selector(of_expectSpaceOrTagCloseState),
+		@selector(of_inExclamationMarkState),
+		@selector(of_inCDATAOpeningState),
+		@selector(of_inCDATAState),
+		@selector(of_inCommentOpeningState),
+		@selector(of_inCommentState1),
+		@selector(of_inCommentState2),
+		@selector(of_inDOCTYPEState)
 	};
 	memcpy(selectors, selectors_, sizeof(selectors_));
 
@@ -302,7 +302,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
  * One dispatch for every character would be way too slow!
  */
 
-- (void)OF_inByteOrderMarkState
+- (void)of_inByteOrderMarkState
 {
 	if (_data[_i] != "\xEF\xBB\xBF"[_level]) {
 		if (_level == 0) {
@@ -321,7 +321,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Not in a tag */
-- (void)OF_outsideTagState
+- (void)of_outsideTagState
 {
 	size_t length;
 
@@ -355,7 +355,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Tag was just opened */
-- (void)OF_tagOpenedState
+- (void)of_tagOpenedState
 {
 	if (_finishedParsing && _data[_i] != '!' && _data[_i] != '?')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
@@ -389,7 +389,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* <?xml […]?> */
-- (bool)OF_parseXMLProcessingInstructions: (OFString *)pi
+- (bool)of_parseXMLProcessingInstructions: (OFString *)pi
 {
 	const char *cString;
 	size_t length, last;
@@ -477,7 +477,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside processing instructions */
-- (void)OF_inProcessingInstructionsState
+- (void)of_inProcessingInstructionsState
 {
 	if (_data[_i] == '?')
 		_level = 1;
@@ -491,7 +491,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		if ([PI isEqual: @"xml"] || [PI hasPrefix: @"xml "] ||
 		    [PI hasPrefix: @"xml\t"] || [PI hasPrefix: @"xml\r"] ||
 		    [PI hasPrefix: @"xml\n"])
-			if (![self OF_parseXMLProcessingInstructions: PI])
+			if (![self of_parseXMLProcessingInstructions: PI])
 				@throw [OFMalformedXMLException
 				    exceptionWithParser: self];
 
@@ -511,7 +511,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside a tag, no name yet */
-- (void)OF_inTagNameState
+- (void)of_inTagNameState
 {
 	void *pool;
 	const char *bufferCString, *tmp;
@@ -596,7 +596,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside a close tag, no name yet */
-- (void)OF_inCloseTagNameState
+- (void)of_inCloseTagNameState
 {
 	void *pool;
 	const char *bufferCString, *tmp;
@@ -666,7 +666,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Inside a tag, name found */
-- (void)OF_inTagState
+- (void)of_inTagState
 {
 	void *pool;
 	OFString *namespace;
@@ -740,7 +740,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Looking for attribute name */
-- (void)OF_inAttributeNameState
+- (void)of_inAttributeNameState
 {
 	void *pool;
 	OFString *bufferString;
@@ -786,7 +786,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting equal sign of an attribute */
-- (void)OF_expectAttributeEqualSignState
+- (void)of_expectAttributeEqualSignState
 {
 	if (_data[_i] == '=') {
 		_last = _i + 1;
@@ -800,7 +800,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting name/value delimiter of an attribute */
-- (void)OF_expectAttributeDelimiterState
+- (void)of_expectAttributeDelimiterState
 {
 	_last = _i + 1;
 
@@ -816,7 +816,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Looking for attribute value */
-- (void)OF_inAttributeValueState
+- (void)of_inAttributeValueState
 {
 	void *pool;
 	OFString *attributeValue;
@@ -855,7 +855,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting closing '>' */
-- (void)OF_expectTagCloseState
+- (void)of_expectTagCloseState
 {
 	if (_data[_i] == '>') {
 		_last = _i + 1;
@@ -865,7 +865,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Expecting closing '>' or space */
-- (void)OF_expectSpaceOrTagCloseState
+- (void)of_expectSpaceOrTagCloseState
 {
 	if (_data[_i] == '>') {
 		_last = _i + 1;
@@ -876,7 +876,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* In <! */
-- (void)OF_inExclamationMarkState
+- (void)of_inExclamationMarkState
 {
 	if (_finishedParsing && _data[_i] != '-')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
@@ -896,7 +896,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* CDATA */
-- (void)OF_inCDATAOpeningState
+- (void)of_inCDATAOpeningState
 {
 	if (_data[_i] != "CDATA["[_level])
 		@throw [OFMalformedXMLException exceptionWithParser: self];
@@ -909,7 +909,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	_last = _i + 1;
 }
 
-- (void)OF_inCDATAState
+- (void)of_inCDATAState
 {
 
 	if (_data[_i] == ']')
@@ -937,7 +937,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* Comment */
-- (void)OF_inCommentOpeningState
+- (void)of_inCommentOpeningState
 {
 	if (_data[_i] != '-')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
@@ -947,7 +947,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	_level = 0;
 }
 
-- (void)OF_inCommentState1
+- (void)of_inCommentState1
 {
 	if (_data[_i] == '-')
 		_level++;
@@ -958,7 +958,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_state = OF_XMLPARSER_IN_COMMENT_2;
 }
 
-- (void)OF_inCommentState2
+- (void)of_inCommentState2
 {
 	void *pool;
 	OFString *comment;
@@ -984,7 +984,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 }
 
 /* In <!DOCTYPE ...> */
-- (void)OF_inDOCTYPEState
+- (void)of_inDOCTYPEState
 {
 	if ((_level < 6 && _data[_i] != "OCTYPE"[_level]) ||
 	    (_level == 6 && _data[_i] != ' ' && _data[_i] != '\t' &&

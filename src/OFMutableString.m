@@ -240,7 +240,7 @@ static struct {
 }
 
 #ifdef OF_HAVE_UNICODE_TABLES
-- (void)OF_convertWithWordStartTable: (const of_unichar_t *const[])startTable
+- (void)of_convertWithWordStartTable: (const of_unichar_t *const[])startTable
 		     wordMiddleTable: (const of_unichar_t *const[])middleTable
 		  wordStartTableSize: (size_t)startTableSize
 		 wordMiddleTableSize: (size_t)middleTableSize
@@ -283,7 +283,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 #else
-- (void)OF_convertWithWordStartFunction: (char (*)(char))startFunction
+- (void)of_convertWithWordStartFunction: (char (*)(char))startFunction
 		     wordMiddleFunction: (char (*)(char))middleFunction
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -446,7 +446,7 @@ static struct {
 #ifdef OF_HAVE_UNICODE_TABLES
 - (void)uppercase
 {
-	[self OF_convertWithWordStartTable: of_unicode_uppercase_table
+	[self of_convertWithWordStartTable: of_unicode_uppercase_table
 			   wordMiddleTable: of_unicode_uppercase_table
 			wordStartTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE
 		       wordMiddleTableSize: OF_UNICODE_UPPERCASE_TABLE_SIZE];
@@ -454,7 +454,7 @@ static struct {
 
 - (void)lowercase
 {
-	[self OF_convertWithWordStartTable: of_unicode_lowercase_table
+	[self of_convertWithWordStartTable: of_unicode_lowercase_table
 			   wordMiddleTable: of_unicode_lowercase_table
 			wordStartTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE
 		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
@@ -462,7 +462,7 @@ static struct {
 
 - (void)capitalize
 {
-	[self OF_convertWithWordStartTable: of_unicode_titlecase_table
+	[self of_convertWithWordStartTable: of_unicode_titlecase_table
 			   wordMiddleTable: of_unicode_lowercase_table
 			wordStartTableSize: OF_UNICODE_TITLECASE_TABLE_SIZE
 		       wordMiddleTableSize: OF_UNICODE_LOWERCASE_TABLE_SIZE];
@@ -470,19 +470,19 @@ static struct {
 #else
 - (void)uppercase
 {
-	[self OF_convertWithWordStartFunction: of_ascii_toupper
+	[self of_convertWithWordStartFunction: of_ascii_toupper
 			   wordMiddleFunction: of_ascii_toupper];
 }
 
 - (void)lowercase
 {
-	[self OF_convertWithWordStartFunction: of_ascii_tolower
+	[self of_convertWithWordStartFunction: of_ascii_tolower
 			   wordMiddleFunction: of_ascii_tolower];
 }
 
 - (void)capitalize
 {
-	[self OF_convertWithWordStartFunction: of_ascii_toupper
+	[self of_convertWithWordStartFunction: of_ascii_toupper
 			   wordMiddleFunction: of_ascii_tolower];
 }
 #endif

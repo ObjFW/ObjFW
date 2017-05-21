@@ -273,27 +273,27 @@ enum {
 	[self cancel];
 }
 
-- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)OF_processQueue
+- (void)of_processQueue
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -316,7 +316,7 @@ enum {
 				[_readObjects addObject: object];
 
 				@try {
-					[self OF_addObjectForReading: object];
+					[self of_addObjectForReading: object];
 				} @catch (id e) {
 					[_readObjects
 					    removeObjectIdenticalTo: object];
@@ -329,7 +329,7 @@ enum {
 				[_writeObjects addObject: object];
 
 				@try {
-					[self OF_addObjectForWriting: object];
+					[self of_addObjectForWriting: object];
 				} @catch (id e) {
 					[_writeObjects
 					    removeObjectIdenticalTo: object];
@@ -339,13 +339,13 @@ enum {
 
 				break;
 			case QUEUE_REMOVE | QUEUE_READ:
-				[self OF_removeObjectForReading: object];
+				[self of_removeObjectForReading: object];
 
 				[_readObjects removeObjectIdenticalTo: object];
 
 				break;
 			case QUEUE_REMOVE | QUEUE_WRITE:
-				[self OF_removeObjectForWriting: object];
+				[self of_removeObjectForWriting: object];
 
 				[_writeObjects removeObjectIdenticalTo: object];
 
@@ -366,7 +366,7 @@ enum {
 	objc_autoreleasePoolPop(pool);
 }
 
-- (bool)OF_processReadBuffers
+- (bool)of_processReadBuffers
 {
 	bool foundInReadBuffer = false;
 
@@ -375,7 +375,7 @@ enum {
 
 		if ([object isKindOfClass: [OFStream class]] &&
 		    [object hasDataInReadBuffer] &&
-		    ![object OF_isWaitingForDelimiter]) {
+		    ![object of_isWaitingForDelimiter]) {
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading: object];

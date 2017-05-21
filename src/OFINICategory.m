@@ -121,7 +121,7 @@ unescapeString(OFString *string)
 @implementation OFINICategory
 @synthesize name = _name;
 
-- (instancetype)OF_init
+- (instancetype)of_init
 {
 	self = [super init];
 
@@ -148,7 +148,7 @@ unescapeString(OFString *string)
 	[super dealloc];
 }
 
-- (void)OF_parseLine: (OFString *)line
+- (void)of_parseLine: (OFString *)line
 {
 	if (![line hasPrefix: @";"]) {
 		OFINICategory_Pair *pair =
@@ -489,7 +489,7 @@ unescapeString(OFString *string)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (bool)OF_writeToStream: (OFStream *)stream
+- (bool)of_writeToStream: (OFStream *)stream
 		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first
 {

@@ -70,11 +70,14 @@ normalizeKey(char *str_)
 	size_t _toRead;
 }
 
+@property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
+
 - initWithSocket: (OFTCPSocket *)socket;
-- (void)OF_setKeepAlive: (bool)keepAlive;
 @end
 
 @implementation OFHTTPClientResponse
+@synthesize of_keepAlive = _keepAlive;
+
 - initWithSocket: (OFTCPSocket *)socket
 {
 	self = [super init];
@@ -82,11 +85,6 @@ normalizeKey(char *str_)
 	_socket = [socket retain];
 
 	return self;
-}
-
-- (void)OF_setKeepAlive: (bool)keepAlive
-{
-	_keepAlive = keepAlive;
 }
 
 - (void)dealloc
@@ -283,7 +281,7 @@ normalizeKey(char *str_)
 			  redirects: 10];
 }
 
-- (OFTCPSocket *)OF_closeAndCreateSocketForRequest: (OFHTTPRequest *)request
+- (OFTCPSocket *)of_closeAndCreateSocketForRequest: (OFHTTPRequest *)request
 {
 	OFURL *URL = [request URL];
 	OFTCPSocket *socket;
@@ -369,7 +367,7 @@ normalizeKey(char *str_)
 			_lastResponse = nil;
 		}
 	} else
-		socket = [self OF_closeAndCreateSocketForRequest: request];
+		socket = [self of_closeAndCreateSocketForRequest: request];
 
 	/*
 	 * As a work around for a bug with split packets in lighttpd when using
@@ -476,7 +474,7 @@ normalizeKey(char *str_)
 			@throw e;
 
 		/* Reconnect in case a keep-alive connection timed out */
-		socket = [self OF_closeAndCreateSocketForRequest: request];
+		socket = [self of_closeAndCreateSocketForRequest: request];
 		[socket writeString: requestString];
 	}
 
@@ -496,7 +494,7 @@ normalizeKey(char *str_)
 	 * end due to a timeout. In this case, we need to reconnect.
 	 */
 	if (line == nil) {
-		socket = [self OF_closeAndCreateSocketForRequest: request];
+		socket = [self of_closeAndCreateSocketForRequest: request];
 		[socket writeString: requestString];
 
 		if (body != nil)
@@ -607,7 +605,7 @@ normalizeKey(char *str_)
 	}
 
 	if (keepAlive) {
-		[response OF_setKeepAlive: true];
+		[response of_setKeepAlive: true];
 
 		_socket = [socket retain];
 		_lastURL = [URL copy];

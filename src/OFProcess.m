@@ -58,12 +58,12 @@ extern char **environ;
 
 @interface OFProcess ()
 #ifndef OF_WINDOWS
-- (void)OF_getArgV: (char ***)argv
+- (void)of_getArgv: (char ***)argv
     forProgramName: (OFString *)programName
       andArguments: (OFArray *)arguments;
-- (char **)OF_environmentForDictionary: (OFDictionary *)dictionary;
+- (char **)of_environmentForDictionary: (OFDictionary *)dictionary;
 #else
-- (char16_t *)OF_environmentForDictionary: (OFDictionary *)dictionary;
+- (char16_t *)of_environmentForDictionary: (OFDictionary *)dictionary;
 #endif
 @end
 
@@ -150,13 +150,13 @@ extern char **environ;
 			    exceptionWithClass: [self class]];
 
 		path = [program cStringWithEncoding: [OFLocalization encoding]];
-		[self OF_getArgV: &argv
+		[self of_getArgv: &argv
 		  forProgramName: programName
 		    andArguments: arguments];
 
 		@try {
 			char **env = [self
-			    OF_environmentForDictionary: environment];
+			    of_environmentForDictionary: environment];
 # ifdef HAVE_POSIX_SPAWNP
 			posix_spawn_file_actions_t actions;
 			posix_spawnattr_t attr;
@@ -306,7 +306,7 @@ extern char **environ;
 			if (!CreateProcessW([program UTF16String],
 			    argumentsCopy, NULL, NULL, TRUE,
 			    CREATE_UNICODE_ENVIRONMENT,
-			    [self OF_environmentForDictionary: environment],
+			    [self of_environmentForDictionary: environment],
 			    NULL, &si, &pi))
 				@throw [OFInitializationFailedException
 				    exceptionWithClass: [self class]];
@@ -338,7 +338,7 @@ extern char **environ;
 }
 
 #ifndef OF_WINDOWS
-- (void)OF_getArgV: (char ***)argv
+- (void)of_getArgv: (char ***)argv
     forProgramName: (OFString *)programName
       andArguments: (OFArray *)arguments
 {
@@ -360,7 +360,7 @@ extern char **environ;
 	(*argv)[i + 1] = NULL;
 }
 
-- (char **)OF_environmentForDictionary: (OFDictionary *)environment
+- (char **)of_environmentForDictionary: (OFDictionary *)environment
 {
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	char **envp;
@@ -404,7 +404,7 @@ extern char **environ;
 	return envp;
 }
 #else
-- (char16_t *)OF_environmentForDictionary: (OFDictionary *)environment
+- (char16_t *)of_environmentForDictionary: (OFDictionary *)environment
 {
 	OFDataArray *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;

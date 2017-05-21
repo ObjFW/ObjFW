@@ -62,7 +62,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)OF_initWithHeader: (char[512])header
+- (instancetype)of_initWithHeader: (char [512])header
 			   stream: (OFStream *)stream
 {
 	self = [super init];
@@ -165,7 +165,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	[super close];
 }
 
-- (void)OF_skip
+- (void)of_skip
 {
 	char buffer[512];
 

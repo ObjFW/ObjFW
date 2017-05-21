@@ -19,12 +19,12 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFKernelEventObserver ()
-- (void)OF_addObjectForReading: (id <OFReadyForReadingObserving>)object;
-- (void)OF_addObjectForWriting: (id <OFReadyForWritingObserving>)object;
-- (void)OF_removeObjectForReading: (id <OFReadyForReadingObserving>)object;
-- (void)OF_removeObjectForWriting: (id <OFReadyForWritingObserving>)object;
-- (void)OF_processQueue;
-- (bool)OF_processReadBuffers;
+- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object;
+- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object;
+- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object;
+- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object;
+- (void)of_processQueue;
+- (bool)of_processReadBuffers;
 @end
 
 OF_ASSUME_NONNULL_END

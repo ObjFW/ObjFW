@@ -187,7 +187,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- (instancetype)OF_initWithUTF8String: (const char *)UTF8String
+- (instancetype)of_initWithUTF8String: (const char *)UTF8String
 			       length: (size_t)UTF8StringLength
 			      storage: (char *)storage
 {

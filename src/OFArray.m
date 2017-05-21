@@ -38,7 +38,7 @@ static struct {
 } placeholder;
 
 @interface OFArray ()
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
@@ -588,17 +588,17 @@ static struct {
 
 - (OFString *)JSONRepresentation
 {
-	return [self OF_JSONRepresentationWithOptions: 0
+	return [self of_JSONRepresentationWithOptions: 0
 						depth: 0];
 }
 
 - (OFString *)JSONRepresentationWithOptions: (int)options
 {
-	return [self OF_JSONRepresentationWithOptions: options
+	return [self of_JSONRepresentationWithOptions: options
 						depth: 0];
 }
 
-- (OFString *)OF_JSONRepresentationWithOptions: (int)options
+- (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
@@ -620,7 +620,7 @@ static struct {
 			[JSON appendString: indentation];
 			[JSON appendString: @"\t"];
 			[JSON appendString: [object
-			    OF_JSONRepresentationWithOptions: options
+			    of_JSONRepresentationWithOptions: options
 						       depth: depth + 1]];
 
 			if (++i < count)
@@ -638,7 +638,7 @@ static struct {
 			void *pool2 = objc_autoreleasePoolPush();
 
 			[JSON appendString: [object
-			    OF_JSONRepresentationWithOptions: options
+			    of_JSONRepresentationWithOptions: options
 						       depth: depth + 1]];
 
 			if (++i < count)
