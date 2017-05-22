@@ -24,7 +24,9 @@
 # undef __USE_XOPEN
 #endif
 
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #include "platform.h"
 

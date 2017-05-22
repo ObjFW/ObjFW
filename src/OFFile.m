@@ -18,8 +18,12 @@
 
 #include <errno.h>
 
-#include <fcntl.h>
-#include <unistd.h>
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #include "platform.h"
 

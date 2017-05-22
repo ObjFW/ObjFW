@@ -18,8 +18,12 @@
 
 #include <errno.h>
 
-#include <dirent.h>
-#include <unistd.h>
+#ifdef HAVE_DIRENT_H
+# include <dirent.h>
+#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #ifdef HAVE_PWD_H
 # include <pwd.h>

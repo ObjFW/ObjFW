@@ -26,9 +26,13 @@
 
 #include "platform.h"
 
-#ifndef OF_WINDOWS
+#include <signal.h>
+
+#ifdef HAVE_UNISTD_H
 # include <unistd.h>
-# include <signal.h>
+#endif
+
+#ifndef OF_WINDOWS
 # include <sys/wait.h>
 #endif
 

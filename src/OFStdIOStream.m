@@ -23,7 +23,10 @@
 #endif
 
 #include <errno.h>
-#include <unistd.h>
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #ifdef HAVE_SYS_IOCTL_H
 # include <sys/ioctl.h>

@@ -31,7 +31,7 @@
 
 #include "platform.h"
 
-#ifndef OF_WINDOWS
+#ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 

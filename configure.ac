@@ -939,7 +939,7 @@ AS_IF([test x"$enable_files" != x"no"], [
 	OBJCFLAGS="$old_OBJCFLAGS"
 ])
 
-AC_CHECK_HEADERS(fcntl.h)
+AC_CHECK_HEADERS(fcntl.h dirent.h)
 AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 
 AC_CHECK_HEADERS(xlocale.h)

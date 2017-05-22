@@ -20,7 +20,9 @@
 #include <errno.h>
 #include <string.h>
 
-#include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
 
 #import "OFUDPSocket.h"
 #ifdef OF_HAVE_THREADS
