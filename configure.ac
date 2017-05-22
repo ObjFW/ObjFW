@@ -1032,30 +1032,36 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			"OFKernelEventObserver_epoll.m")
 		break
 	])
-	AC_CHECK_HEADERS(poll.h)
-	AC_CHECK_FUNC(poll, [
-		AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
-		AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
-			"OFKernelEventObserver_poll.m")
-	])
-	AC_CHECK_HEADERS(sys/select.h)
-	AC_CHECK_FUNC(select, [
-		AC_DEFINE(HAVE_SELECT, 1, [Whether we have select()])
-		AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
-			"OFKernelEventObserver_select.m")
-	])
-
-	case "$host_os" in
-		mingw*)
-			AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
-				"OFKernelEventObserver_select.m")
-			;;
-	esac
 
 	AS_IF([test x"$with_wii" = x"yes"], [
 		AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
 			"OFKernelEventObserver_poll.m")
+	], [
+		AC_CHECK_HEADERS(poll.h)
+		AC_CHECK_FUNC(poll, [
+			AC_DEFINE(HAVE_POLL, 1, [Whether we have poll()])
+			AC_SUBST(OFKERNELEVENTOBSERVER_POLL_M,
+				"OFKernelEventObserver_poll.m")
+		])
 	])
+
+	case "$host_os" in
+		mingw* | morphos*)
+			AC_DEFINE(HAVE_SELECT, 1,
+				[Whether we have select() or similar])
+			AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
+				"OFKernelEventObserver_select.m")
+			;;
+		*)
+			AC_CHECK_HEADERS(sys/select.h)
+			AC_CHECK_FUNC(select, [
+				AC_DEFINE(HAVE_SELECT, 1,
+					[Whether we have select() or similar])
+				AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
+					"OFKernelEventObserver_select.m")
+			])
+			;;
+	esac
 
 	AC_MSG_CHECKING(for getaddrinfo)
 	AC_TRY_COMPILE([
