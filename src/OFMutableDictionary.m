@@ -194,6 +194,21 @@ static struct {
 	return [[OFDictionary alloc] initWithDictionary: self];
 }
 
+- (void)addEntriesFromDictionary: (OFDictionary *)dictionary
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFEnumerator *keyEnumerator = [dictionary keyEnumerator];
+	OFEnumerator *objectEnumerator = [dictionary objectEnumerator];
+	id key, object;
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil)
+		[self setObject: object
+			 forKey: key];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 #ifdef OF_HAVE_BLOCKS
 - (void)replaceObjectsUsingBlock: (of_dictionary_replace_block_t)block
 {

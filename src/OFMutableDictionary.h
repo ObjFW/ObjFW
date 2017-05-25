@@ -89,6 +89,14 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  */
 - (void)removeAllObjects;
 
+/*!
+ * @brief Adds the entries from the specified dictionary.
+ *
+ * @param dictionary The dictionary whose entries should be added
+ */
+- (void)addEntriesFromDictionary:
+    (OFDictionary OF_GENERIC(KeyType, ObjectType) *)dictionary;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Replaces each object with the object returned by the block.
