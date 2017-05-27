@@ -1232,7 +1232,7 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 
 dnl This needs to be after all other header checks, as they include unistd.h,
 dnl which in old glibc versions uses __block. This is worked around in the code
-dnl by undefining __USE_XOPEN.
+dnl by providing a wrapper for unistd.h which takes care of this.
 AC_MSG_CHECKING(whether Objective C compiler supports blocks)
 old_OBJCFLAGS="$OBJCFLAGS"
 OBJCFLAGS="$OBJCFLAGS -fblocks"

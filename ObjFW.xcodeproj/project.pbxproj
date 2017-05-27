@@ -901,6 +901,8 @@
 		4BC1C3EB184B5EB200BBF50F /* OFMapTable+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC1C3EA184B5EB200BBF50F /* OFMapTable+Private.h */; };
 		4BCAA9AF1772432F003EF859 /* OFMessagePackExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BCAA9B01772432F003EF859 /* OFMessagePackExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BCAA9AE1772432E003EF859 /* OFMessagePackExtension.m */; };
+		4BCE4EC41ED98D1400502FF0 /* unistd_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BCE4EC31ED98D1400502FF0 /* unistd_wrapper.h */; };
+		4BCE4EC51ED98D1400502FF0 /* unistd_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BCE4EC31ED98D1400502FF0 /* unistd_wrapper.h */; };
 		4BD112611CCB73A60076FDB9 /* OFGZIPStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD1125F1CCB739A0076FDB9 /* OFGZIPStream.m */; };
 		4BD112621CCB73A90076FDB9 /* OFGZIPStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD1125E1CCB739A0076FDB9 /* OFGZIPStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BD306311D46CEAE00E2F372 /* PBKDF2Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD306301D46CEAE00E2F372 /* PBKDF2Tests.m */; };
@@ -1575,6 +1577,7 @@
 		4BC1C3EA184B5EB200BBF50F /* OFMapTable+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFMapTable+Private.h"; path = "src/OFMapTable+Private.h"; sourceTree = "<group>"; };
 		4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMessagePackExtension.h; path = src/OFMessagePackExtension.h; sourceTree = "<group>"; };
 		4BCAA9AE1772432E003EF859 /* OFMessagePackExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMessagePackExtension.m; path = src/OFMessagePackExtension.m; sourceTree = "<group>"; };
+		4BCE4EC31ED98D1400502FF0 /* unistd_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unistd_wrapper.h; path = src/unistd_wrapper.h; sourceTree = "<group>"; };
 		4BD1125E1CCB739A0076FDB9 /* OFGZIPStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFGZIPStream.h; path = src/OFGZIPStream.h; sourceTree = "<group>"; };
 		4BD1125F1CCB739A0076FDB9 /* OFGZIPStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFGZIPStream.m; path = src/OFGZIPStream.m; sourceTree = "<group>"; };
 		4BD306301D46CEAE00E2F372 /* PBKDF2Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PBKDF2Tests.m; path = tests/PBKDF2Tests.m; sourceTree = "<group>"; };
@@ -2247,6 +2250,7 @@
 				4BABC29A197A8212006A93BD /* threading_pthread.m */,
 				4B67998C1099E7C50041064A /* unicode.h */,
 				4BFBDD1610A0724800051AFB /* unicode.m */,
+				4BCE4EC31ED98D1400502FF0 /* unistd_wrapper.h */,
 			);
 			name = ObjFW;
 			sourceTree = "<group>";
@@ -2609,6 +2613,7 @@
 				4B853CEC1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B2C22A81DA292BE00735907 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B2C22AA1DA292BE00735907 /* socket_helpers.h in Headers */,
+				4BCE4EC51ED98D1400502FF0 /* unistd_wrapper.h in Headers */,
 				4BFC37BE1E50E11C00EE1269 /* common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2833,6 +2838,7 @@
 				4B853CEB1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */,
+				4BCE4EC41ED98D1400502FF0 /* unistd_wrapper.h in Headers */,
 				4BFC37BD1E50E11C00EE1269 /* common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

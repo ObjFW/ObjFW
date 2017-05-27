@@ -18,15 +18,7 @@
 
 #include <errno.h>
 
-#ifdef HAVE_UNISTD_H
-# ifdef __GLIBC__
-#  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */
-# endif
-# include <unistd.h>
-# ifdef __GLIBC__
-#  define __USE_XOPEN 1
-# endif
-#endif
+#include "unistd_wrapper.h"
 
 #ifdef HAVE_SYS_IOCTL_H
 # include <sys/ioctl.h>
