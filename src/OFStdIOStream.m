@@ -39,6 +39,25 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
+#ifdef OF_MORPHOS
+# define BOOL EXEC_BOOL
+# include <exec/execbase.h>
+# include <proto/dos.h>
+# undef BOOL
+
+# define INVALID_FD 0
+# define getpid() ((int)SysBase->ThisTask)
+# define read(fd, buf, len) Read(fd, buf, len)
+# define write(fd, buf, len) Write(fd, buf, len)
+# define close(fd) Close(fd)
+
+extern struct ExecBase *SysBase;
+#endif
+
+#ifndef INVALID_FD
+# define INVALID_FD -1
+#endif
+
 /* References for static linking */
 #ifdef OF_WINDOWS
 void
@@ -79,9 +98,15 @@ of_log(OFConstantString *format, ...)
 #ifndef OF_WINDOWS
 + (void)load
 {
+# ifndef OF_MORPHOS
 	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: 0];
 	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
+# else
+	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: Input()];
+	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: Output()];
+	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: Output()];
+# endif
 }
 #endif
 
@@ -101,7 +126,7 @@ of_log(OFConstantString *format, ...)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_fd == -1)
+	if (_fd == INVALID_FD)
 		return true;
 
 	return _atEndOfStream;
@@ -112,7 +137,7 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-	if (_fd == -1 || _atEndOfStream)
+	if (_fd == INVALID_FD || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
@@ -140,7 +165,7 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-	if (_fd == -1 || _atEndOfStream)
+	if (_fd == INVALID_FD || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 
@@ -148,7 +173,7 @@ of_log(OFConstantString *format, ...)
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, buffer, length) != (ssize_t)length)
+	if (write(_fd, (void *)buffer, length) != (ssize_t)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
@@ -163,6 +188,7 @@ of_log(OFConstantString *format, ...)
 #endif
 }
 
+#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
 - (int)fileDescriptorForReading
 {
 	return _fd;
@@ -172,13 +198,14 @@ of_log(OFConstantString *format, ...)
 {
 	return _fd;
 }
+#endif
 
 - (void)close
 {
-	if (_fd != -1)
+	if (_fd != INVALID_FD)
 		close(_fd);
 
-	_fd = -1;
+	_fd = INVALID_FD;
 
 	[super close];
 }
