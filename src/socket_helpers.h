@@ -16,13 +16,16 @@
 
 #include "config.h"
 
-/* Work around __block being used by glibc */
-#ifdef __GLIBC__
-# undef __USE_XOPEN
-#endif
+#include <stdlib.h>	/* include any libc header to get the libc defines */
 
 #ifdef HAVE_UNISTD_H
+# ifdef __GLIBC__
+#  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */
+# endif
 # include <unistd.h>
+# ifdef __GLIBC__
+#  define __USE_XOPEN 1
+# endif
 #endif
 
 #ifdef HAVE_ARPA_INET_H

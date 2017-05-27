@@ -24,20 +24,21 @@
 #include <math.h>
 #include <time.h>
 
-/* Work around __block being used by glibc */
-#ifdef __GLIBC__
-# undef __USE_XOPEN
-#endif
-
-#include "platform.h"
-
 #ifdef HAVE_UNISTD_H
+# ifdef __GLIBC__
+#  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */
+# endif
 # include <unistd.h>
+# ifdef __GLIBC__
+#  define __USE_XOPEN 1
+# endif
 #endif
 
 #ifdef OF_HAVE_SCHED_YIELD
 # include <sched.h>
 #endif
+
+#include "platform.h"
 
 #ifdef OF_WII
 # define BOOL OGC_BOOL

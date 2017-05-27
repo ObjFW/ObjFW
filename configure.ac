@@ -196,21 +196,6 @@ AC_TRY_COMPILE([
 	AC_MSG_ERROR(Compiler does not support properties!)
 ])
 
-AC_MSG_CHECKING(whether Objective C compiler supports blocks)
-old_OBJCFLAGS="$OBJCFLAGS"
-OBJCFLAGS="$OBJCFLAGS -fblocks"
-AC_TRY_COMPILE([], [
-	int (^foo)(int bar);
-	foo = ^ (int bar) { return 0; }
-], [
-	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
-	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
-	AC_MSG_RESULT(yes)
-], [
-	AC_MSG_RESULT(no)
-	OBJCFLAGS="$old_OBJCFLAGS"
-])
-
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
 AC_ARG_ENABLE(shared,
@@ -1193,6 +1178,7 @@ case "$host" in
 		have_processes="no"
 		;;
 	*)
+		AC_HEADER_SYS_WAIT
 		AC_CHECK_FUNCS(kill)
 
 		AC_CHECK_FUNC(posix_spawnp, [
@@ -1244,6 +1230,24 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	])
 ])
 
+dnl This needs to be after all other header checks, as they include unistd.h,
+dnl which in old glibc versions uses __block. This is worked around in the code
+dnl by undefining __USE_XOPEN.
+AC_MSG_CHECKING(whether Objective C compiler supports blocks)
+old_OBJCFLAGS="$OBJCFLAGS"
+OBJCFLAGS="$OBJCFLAGS -fblocks"
+AC_TRY_COMPILE([], [
+	int (^foo)(int bar);
+	foo = ^ (int bar) { return 0; }
+], [
+	AC_SUBST(BLOCKS_FLAGS, "-fblocks")
+	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+	OBJCFLAGS="$old_OBJCFLAGS"
+])
+
 AS_IF([test x"$GOBJC" = x"yes"], [
 	OBJCFLAGS="$OBJCFLAGS -Wwrite-strings -Wpointer-arith -Werror"
 
@@ -1282,7 +1286,7 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			Foo *_foo;
 		}
 
-		@property (readonly, retain) Foo *foo;
+		@property (readonly, nonatomic) Foo *foo;
 
 		+ (Foo *)foo;
 		@end
@@ -1357,6 +1361,17 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 		@interface Foo: Object
 		@end
+
+		void
+		test(void)
+		{
+			if (sizeof(int) == 4)
+				__asm__ ("");
+			else if (sizeof(int) == 8)
+				__asm__ ("");
+			else
+				abort();
+		}
 
 		/*
 		 * Unfortunately, this cannot be shorter, as it only works when
