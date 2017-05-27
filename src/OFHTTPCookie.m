@@ -61,22 +61,13 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 @synthesize expires = _expires, secure = _secure, HTTPOnly = _HTTPOnly;
 @synthesize extensions = _extensions;
 
-+ (instancetype)cookieWithName: (OFString *)name
-			 value: (OFString *)value
-			domain: (OFString *)domain
-{
-	return [[[self alloc] initWithName: name
-				     value: value
-				    domain: domain] autorelease];
-}
-
-+ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesFromHeaders:
-    (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
++ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
+    (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
     forURL: (OFURL *)URL
 {
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	OFString *string = [headers objectForKey: @"Set-Cookie"];
+	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
 	OFString *domain = [URL host];
 	const of_unichar_t *characters = [string characters];
 	size_t length = [string length], last = 0;
@@ -256,6 +247,48 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
+}
+
++ (OFDictionary *)requestHeaderFieldsWithCookies:
+    (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies
+{
+	OFDictionary OF_GENERIC(OFString *, OFString *) *ret;
+	void *pool;
+	OFMutableString *cookieString;
+	bool first = true;
+
+	if ([cookies count] == 0)
+		return [OFDictionary dictionary];
+
+	pool = objc_autoreleasePoolPush();
+	cookieString = [OFMutableString string];
+
+	for (OFHTTPCookie *cookie in cookies) {
+		if OF_UNLIKELY (first)
+			first = false;
+		else
+			[cookieString appendString: @"; "];
+
+		[cookieString appendString: [cookie name]];
+		[cookieString appendString: @"="];
+		[cookieString appendString: [cookie value]];
+	}
+
+	ret = [[OFDictionary alloc] initWithObject: cookieString
+					    forKey: @"Cookie"];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
++ (instancetype)cookieWithName: (OFString *)name
+			 value: (OFString *)value
+			domain: (OFString *)domain
+{
+	return [[[self alloc] initWithName: name
+				     value: value
+				    domain: domain] autorelease];
 }
 
 - init

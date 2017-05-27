@@ -80,6 +80,27 @@ OF_ASSUME_NONNULL_BEGIN
     OFMutableArray OF_GENERIC(OFString *) *extensions;
 
 /*!
+ * @brief Parses the specified response header fields for the specified URL and
+ *	  returns an array of cookies.
+ *
+ * @param headerFields The response header fields to parse
+ * @param URL The URL for the response header fields to parse
+ * @return An array of cookies
+ */
++ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesWithResponseHeaderFields:
+    (OFDictionary OF_GENERIC(OFString *, OFString *) *)headerFields
+    forURL: (OFURL *)URL;
+
+/*!
+ * @brief Returns the request header fields for the specified cookies.
+ *
+ * @param cookies The cookies to return the request header fields for
+ * @return The request header fields for the specified cookies
+ */
++ (OFDictionary *)requestHeaderFieldsWithCookies:
+    (OFArray OF_GENERIC(OFHTTPCookie *) *)cookies;
+
+/*!
  * @brief Create a new cookie with the specified name and value.
  *
  * @param name The name of the cookie
@@ -90,17 +111,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)cookieWithName: (OFString *)name
 			 value: (OFString *)value
 			domain: (OFString *)domain;
-
-/*!
- * @brief Parses the specified string and returns an array of cookies.
- *
- * @param headers The headers to parse
- * @param URL The URL for the cookies to parse
- * @return An array of cookies
- */
-+ (OFArray OF_GENERIC(OFHTTPCookie *) *)cookiesFromHeaders:
-    (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
-    forURL: (OFURL *)URL;
 
 - init OF_UNAVAILABLE;
 

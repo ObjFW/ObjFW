@@ -83,7 +83,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param client The OFHTTPClient which wants to follow a redirect
  * @param URL The URL to which it will follow a redirect
  * @param statusCode The status code for the redirection
- * @param request The request for which the OFHTTPClient wants to redirect
+ * @param request The request for which the OFHTTPClient wants to redirect.
+ *		  You are allowed to change the request's headers from this
+ *		  callback and they will be used when following the redirect
+ *		  (e.g. to set the cookies for the new URL), however, keep in
+ *		  mind that this will change the request you originally passed.
  * @param response The response indicating the redirect
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */

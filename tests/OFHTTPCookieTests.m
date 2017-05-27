@@ -33,12 +33,13 @@ static OFString *module = @"OFHTTPCookie";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFURL *URL = [OFURL URLWithString: @"http://heap.zone"];
 	OFHTTPCookie *cookie[2];
+	OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 
 	cookie[0] = [OFHTTPCookie cookieWithName: @"foo"
 					   value: @"bar"
 					  domain: @"heap.zone"];
-	TEST(@"+[cookiesForString:] #1",
-	    [[OFHTTPCookie cookiesFromHeaders: [OFDictionary
+	TEST(@"+[cookiesWithResponseHeaderFields:forURL:] #1",
+	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
 	    dictionaryWithObject: @"foo=bar"
 	    forKey: @"Set-Cookie"] forURL: URL]
 	    isEqual: [OFArray arrayWithObject: cookie[0]]])
@@ -46,8 +47,8 @@ static OFString *module = @"OFHTTPCookie";
 	cookie[1] = [OFHTTPCookie cookieWithName: @"qux"
 					   value: @"cookie"
 					  domain: @"heap.zone"];
-	TEST(@"+[cookiesForString:] #2",
-	    [[OFHTTPCookie cookiesFromHeaders: [OFDictionary
+	TEST(@"+[cookiesWithResponseHeaderFields:forURL:] #2",
+	    [[OFHTTPCookie cookiesWithResponseHeaderFields: [OFDictionary
 	    dictionaryWithObject: @"foo=bar,qux=cookie"
 	    forKey: @"Set-Cookie"] forURL: URL]
 	    isEqual: [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
@@ -63,14 +64,19 @@ static OFString *module = @"OFHTTPCookie";
 	[cookie[1] setHTTPOnly: true];
 	[[cookie[1] extensions] addObject: @"foo"];
 	[[cookie[1] extensions] addObject: @"bar"];
-	TEST(@"+[cookiesForString:] #3",
-	    [[OFHTTPCookie cookiesFromHeaders: [OFDictionary
-	    dictionaryWithObject:
+	TEST(@"+[cookiesWithResponseHeaderFields:forURL:] #3",
+	    [(cookies = [OFHTTPCookie cookiesWithResponseHeaderFields:
+	    [OFDictionary dictionaryWithObject:
 	    @"foo=bar; Expires=Fri, 13 Feb 2009 23:31:30 GMT; Path=/x,"
 	    @"qux=cookie; Expires=Fri, 13 Feb 2009 23:31:30 GMT; "
 	    @"Domain=webkeks.org; Path=/objfw; Secure; HTTPOnly; foo; bar"
-	    forKey: @"Set-Cookie"] forURL: URL] isEqual:
+	    forKey: @"Set-Cookie"] forURL: URL]) isEqual:
 	    [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
+
+	TEST(@"+[requestHeaderFieldsWithCookies:]",
+	    [[OFHTTPCookie requestHeaderFieldsWithCookies: cookies] isEqual:
+	    [OFDictionary dictionaryWithObject: @"foo=bar; qux=cookie"
+					forKey: @"Cookie"]])
 
 	[pool drain];
 }
