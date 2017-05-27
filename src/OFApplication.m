@@ -467,7 +467,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 		    @selector(applicationDidReceive##sig)];		\
 		signal(sig, handle##sig);				\
 	} else								\
-		signal(sig, SIG_DFL);
+		signal(sig, (void (*)(int))SIG_DFL);
 #endif
 
 	_delegate = delegate;
