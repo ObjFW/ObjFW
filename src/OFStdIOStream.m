@@ -49,7 +49,6 @@
 # define getpid() ((int)SysBase->ThisTask)
 # define read(fd, buf, len) Read(fd, buf, len)
 # define write(fd, buf, len) Write(fd, buf, len)
-# define close(fd) Close(fd)
 
 extern struct ExecBase *SysBase;
 #endif
@@ -70,6 +69,15 @@ _reference_to_OFStdIOStream_Win32Console(void)
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
+
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+OF_DESTRUCTOR()
+{
+	[of_stdin dealloc];
+	[of_stdout dealloc];
+	[of_stderr dealloc];
+}
+#endif
 
 void
 of_log(OFConstantString *format, ...)
@@ -103,9 +111,35 @@ of_log(OFConstantString *format, ...)
 	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
 # else
-	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: Input()];
-	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: Output()];
-	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: Output()];
+	BPTR input = Input(), output = Output();
+	BPTR error = ((struct Process *)SysBase->ThisTask)->pr_CES;
+	bool inputClosable = false, outputClosable = false,
+	    errorClosable = false;
+
+	if (input == INVALID_FD) {
+		input = Open("*", MODE_OLDFILE);
+		inputClosable = true;
+	}
+
+	if (output == INVALID_FD) {
+		output = Open("*", MODE_OLDFILE);
+		outputClosable = true;
+	}
+
+	if (error == INVALID_FD) {
+		error = Open("*", MODE_OLDFILE);
+		errorClosable = true;
+	}
+
+	of_stdin = [[OFStdIOStream alloc]
+	    of_initWithFileDescriptor: input
+			     closable: inputClosable];
+	of_stdout = [[OFStdIOStream alloc]
+	    of_initWithFileDescriptor: output
+			     closable: outputClosable];
+	of_stderr = [[OFStdIOStream alloc]
+	    of_initWithFileDescriptor: error
+			     closable: errorClosable];
 # endif
 }
 #endif
@@ -115,6 +149,7 @@ of_log(OFConstantString *format, ...)
 	OF_INVALID_INIT_METHOD
 }
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 - (instancetype)of_initWithFileDescriptor: (int)fd
 {
 	self = [super init];
@@ -122,6 +157,25 @@ of_log(OFConstantString *format, ...)
 	_fd = fd;
 
 	return self;
+}
+#else
+- (instancetype)of_initWithFileDescriptor: (long)fd
+				 closable: (bool)closable
+{
+	self = [super init];
+
+	_fd = fd;
+	_closable = closable;
+
+	return self;
+}
+#endif
+
+- (void)dealloc
+{
+	[self close];
+
+	[super dealloc];
 }
 
 - (bool)lowlevelIsAtEndOfStream
@@ -202,8 +256,13 @@ of_log(OFConstantString *format, ...)
 
 - (void)close
 {
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 	if (_fd != INVALID_FD)
 		close(_fd);
+#else
+	if (_closable && _fd != INVALID_FD)
+		Close(_fd);
+#endif
 
 	_fd = INVALID_FD;
 
@@ -227,11 +286,6 @@ of_log(OFConstantString *format, ...)
 - (unsigned int)retainCount
 {
 	return OF_RETAIN_COUNT_MAX;
-}
-
-- (void)dealloc
-{
-	OF_DEALLOC_UNSUPPORTED
 }
 
 - (int)columns

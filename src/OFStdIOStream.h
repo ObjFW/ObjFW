@@ -31,7 +31,12 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFStdIOStream: OFStream
 {
-	int  _fd;
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+	int _fd;
+#else
+	long _fd;
+	bool _closable;
+#endif
 	bool _atEndOfStream;
 }
 
