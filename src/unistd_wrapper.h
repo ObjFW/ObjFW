@@ -17,7 +17,9 @@
 
 #include <stdlib.h>	/* Make sure we have any libc include */
 
-#ifdef HAVE_UNISTD_H
+#import "platform.h"
+
+#if defined(HAVE_UNISTD_H) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
 # ifdef __GLIBC__
 #  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */
 # endif
