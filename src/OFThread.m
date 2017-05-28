@@ -31,6 +31,12 @@
 
 #include "platform.h"
 
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# define BOOL EXEC_BOOL
+# include <proto/dos.h>
+# undef BOOL
+#endif
+
 #ifdef OF_WII
 # define BOOL OGC_BOOL
 # define nanosleep ogc_nanosleep
@@ -189,6 +195,11 @@ callMain(id object)
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+	if (timeInterval * 50 > ULONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	Delay(timeInterval * 50);
 #elif defined(OF_NINTENDO_DS)
 	uint64_t counter;
 
