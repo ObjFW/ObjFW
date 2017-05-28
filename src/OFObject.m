@@ -475,14 +475,14 @@ _references_to_categories_of_OFObject(void)
 	[self inheritMethodsFromClass: [class superclass]];
 }
 
-+ (bool)resolveClassMethod: (SEL)selector
++ (BOOL)resolveClassMethod: (SEL)selector
 {
-	return false;
+	return NO;
 }
 
-+ (bool)resolveInstanceMethod: (SEL)selector
++ (BOOL)resolveInstanceMethod: (SEL)selector
 {
-	return false;
+	return NO;
 }
 
 - init

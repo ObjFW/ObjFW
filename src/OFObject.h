@@ -589,7 +589,7 @@ OF_ROOT_CLASS
  *
  * @return Whether the method has been added to the class
  */
-+ (bool)resolveClassMethod: (SEL)selector;
++ (BOOL)resolveClassMethod: (SEL)selector;
 
 /*!
  * @brief Try to resolve the specified instance method.
@@ -599,7 +599,7 @@ OF_ROOT_CLASS
  *
  * @return Whether the method has been added to the class
  */
-+ (bool)resolveInstanceMethod: (SEL)selector;
++ (BOOL)resolveInstanceMethod: (SEL)selector;
 
 /*!
  * @brief Returns the class.

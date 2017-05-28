@@ -68,7 +68,7 @@ test(id self, SEL _cmd)
 }
 
 @implementation ForwardingTest
-+ (bool)resolveClassMethod: (SEL)selector
++ (BOOL)resolveClassMethod: (SEL)selector
 {
 	forwardings++;
 
@@ -76,13 +76,13 @@ test(id self, SEL _cmd)
 		[self replaceClassMethod: @selector(test)
 		      withImplementation: (IMP)test
 			    typeEncoding: "v#:"];
-		return true;
+		return YES;
 	}
 
-	return false;
+	return NO;
 }
 
-+ (bool)resolveInstanceMethod: (SEL)selector
++ (BOOL)resolveInstanceMethod: (SEL)selector
 {
 	forwardings++;
 
@@ -90,10 +90,10 @@ test(id self, SEL _cmd)
 		[self replaceInstanceMethod: @selector(test)
 			 withImplementation: (IMP)test
 			       typeEncoding: "v@:"];
-		return true;
+		return YES;
 	}
 
-	return false;
+	return NO;
 }
 
 - (id)forwardingTargetForSelector: (SEL)selector
