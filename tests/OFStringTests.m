@@ -658,7 +658,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"\r-INFINITY\n") floatValue] == -INFINITY &&
 	    isnan([C(@"   NAN\t\t") floatValue]))
 
-#if !defined(__ANDROID__) && !defined(OF_SOLARIS) && !defined(__DJGPP__)
+#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP)
 # define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
 # define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else

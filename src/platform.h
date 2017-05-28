@@ -92,6 +92,8 @@
 # define OF_OPENBSD
 #elif defined(__DragonFly__)
 # define OF_DRAGONFLYBSD
+#elif defined(__ANDROID__)
+# define OF_ANDROID
 #elif defined(__HAIKU__)
 # define OF_HAIKU
 #elif defined(__MORPHOS__)
@@ -108,6 +110,7 @@
 #elif defined(_PSP)
 # define OF_PSP
 #elif defined(__DJGPP__)
+# define OF_DJGPP
 # define OF_MSDOS
 #endif
 

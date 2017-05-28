@@ -83,7 +83,7 @@
 # import "atomic.h"
 #endif
 
-#ifdef __DJGPP__
+#ifdef OF_DJGPP
 # define lrint(x) rint(x)
 #endif
 

@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 #if defined(OF_WINDOWS)
 typedef __int64 of_offset_t;
-#elif defined(__ANDROID__)
+#elif defined(OF_ANDROID)
 typedef long long of_offset_t;
 #elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 typedef signed long long of_offset_t;
