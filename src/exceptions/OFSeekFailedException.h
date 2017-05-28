@@ -60,6 +60,18 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream The stream for which seeking failed
  * @param offset The offset to which seeking failed
  * @param whence To what the offset is relative
+ * @return A new, autoreleased seek failed exception
+ */
++ (instancetype)exceptionWithStream: (OFSeekableStream *)stream
+			     offset: (of_offset_t)offset
+			     whence: (int)whence;
+
+/*!
+ * @brief Creates a new, autoreleased seek failed exception.
+ *
+ * @param stream The stream for which seeking failed
+ * @param offset The offset to which seeking failed
+ * @param whence To what the offset is relative
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased seek failed exception
  */
@@ -69,6 +81,18 @@ OF_ASSUME_NONNULL_BEGIN
 			      errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated seek failed exception.
+ *
+ * @param stream The stream for which seeking failed
+ * @param offset The offset to which seeking failed
+ * @param whence To what the offset is relative
+ * @return An initialized seek failed exception
+ */
+- initWithStream: (OFSeekableStream *)stream
+	  offset: (of_offset_t)offset
+	  whence: (int)whence;
 
 /*!
  * @brief Initializes an already allocated seek failed exception.

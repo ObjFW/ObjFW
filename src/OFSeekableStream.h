@@ -31,6 +31,8 @@ OF_ASSUME_NONNULL_BEGIN
 typedef __int64 of_offset_t;
 #elif defined(__ANDROID__)
 typedef long long of_offset_t;
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+typedef signed long long of_offset_t;
 #elif defined(OF_HAVE_OFF64_T)
 typedef off64_t of_offset_t;
 #else

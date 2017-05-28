@@ -23,19 +23,6 @@
 #endif
 #include "unistd_wrapper.h"
 
-#include "platform.h"
-
-#ifdef OF_WII
-# define BOOL OGC_BOOL
-# include <fat.h>
-# undef BOOL
-#endif
-
-#ifdef OF_NINTENDO_DS
-# include <stdbool.h>
-# include <filesystem.h>
-#endif
-
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFLocalization.h"
@@ -52,11 +39,37 @@
 # include <windows.h>
 #endif
 
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# define BOOL EXEC_BOOL
+# include <proto/dos.h>
+# undef BOOL
+# define INVALID_FD 0
+# define close(fd) Close(fd)
+#endif
+
+#ifdef OF_WII
+# define BOOL OGC_BOOL
+# include <fat.h>
+# undef BOOL
+#endif
+
+#ifdef OF_NINTENDO_DS
+# include <stdbool.h>
+# include <filesystem.h>
+#endif
+
+#ifndef INVALID_FD
+# define INVALID_FD -1
+#endif
+
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif
 #ifndef O_CLOEXEC
 # define O_CLOEXEC 0
+#endif
+#ifndef O_EXCL
+# define O_EXCL 0
 #endif
 #ifndef O_EXLOCK
 # define O_EXLOCK 0
@@ -77,6 +90,7 @@
 
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 static int
 parseMode(const char *mode)
 {
@@ -113,6 +127,52 @@ parseMode(const char *mode)
 
 	return -1;
 }
+#else
+static int
+parseMode(const char *mode, bool *append)
+{
+	if (strcmp(mode, "r") == 0)
+		return MODE_OLDFILE;
+	if (strcmp(mode, "w") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "wx") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "a") == 0) {
+		*append = true;
+		return MODE_READWRITE;
+	}
+	if (strcmp(mode, "rb") == 0)
+		return MODE_OLDFILE;
+	if (strcmp(mode, "wb") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "wbx") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "ab") == 0) {
+		*append = true;
+		return MODE_READWRITE;
+	}
+	if (strcmp(mode, "r+") == 0)
+		return MODE_OLDFILE;
+	if (strcmp(mode, "w+") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "a+") == 0) {
+		*append = true;
+		return MODE_READWRITE;
+	}
+	if (strcmp(mode, "r+b") == 0 || strcmp(mode, "rb+") == 0)
+		return MODE_OLDFILE;
+	if (strcmp(mode, "w+b") == 0 || strcmp(mode, "wb+") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "w+bx") == 0 || strcmp(mode, "wb+x") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "ab+") == 0 || strcmp(mode, "a+b") == 0) {
+		*append = true;
+		return MODE_READWRITE;
+	}
+
+	return -1;
+}
+#endif
 
 @implementation OFFile
 + (void)initialize
@@ -159,25 +219,43 @@ parseMode(const char *mode)
 	@try {
 		int flags;
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 		if ((flags = parseMode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException exception];
 
 		flags |= O_CLOEXEC;
 
-#if defined(OF_WINDOWS)
+# if defined(OF_WINDOWS)
 		if ((_fd = _wopen([path UTF16String], flags,
 		    DEFAULT_MODE)) == -1)
-#elif defined(OF_HAVE_OFF64_T)
+# elif defined(OF_HAVE_OFF64_T)
 		if ((_fd = open64([path cStringWithEncoding:
 		    [OFLocalization encoding]], flags, DEFAULT_MODE)) == -1)
-#else
+# else
 		if ((_fd = open([path cStringWithEncoding:
 		    [OFLocalization encoding]], flags, DEFAULT_MODE)) == -1)
-#endif
+# endif
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: mode
 					errNo: errno];
+#else
+		if ((flags = parseMode([mode UTF8String], &_append)) == -1)
+			@throw [OFInvalidArgumentException exception];
+
+		if ((_fd = Open([path cStringWithEncoding:
+		    [OFLocalization encoding]], flags)) == INVALID_FD)
+			@throw [OFOpenItemFailedException
+			    exceptionWithPath: path
+					 mode: mode];
+
+		if (_append) {
+			if (Seek64(_fd, 0, OFFSET_END) == -1)
+				@throw [OFOpenItemFailedException
+				    exceptionWithPath: path
+						 mode: mode];
+		}
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -197,7 +275,7 @@ parseMode(const char *mode)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_fd == -1)
+	if (_fd == INVALID_FD)
 		return true;
 
 	return _atEndOfStream;
@@ -208,20 +286,27 @@ parseMode(const char *mode)
 {
 	ssize_t ret;
 
-	if (_fd == -1 || _atEndOfStream)
+	if (_fd == INVALID_FD || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
-#ifndef OF_WINDOWS
-	if ((ret = read(_fd, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: errno];
-#else
+#if defined(OF_WINDOWS)
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = read(_fd, buffer, (unsigned int)length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: errno];
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+	if (length > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((ret = Read(_fd, buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+#else
+	if ((ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
@@ -236,23 +321,37 @@ parseMode(const char *mode)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-	if (_fd == -1 || _atEndOfStream)
+	if (_fd == INVALID_FD || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 
-#ifndef OF_WINDOWS
-	if (length > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	if (write(_fd, buffer, length) != (ssize_t)length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-							     errNo: errno];
-#else
+#if defined(OF_WINDOWS)
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if (write(_fd, buffer, (int)length) != (int)length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: errno];
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+	if (length > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (_append) {
+		if (Seek64(_fd, 0, OFFSET_END) == -1)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length];
+	}
+
+	if (Write(_fd, (void *)buffer, length) != (LONG)length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
+#else
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (write(_fd, buffer, length) != (ssize_t)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
@@ -262,25 +361,55 @@ parseMode(const char *mode)
 - (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset
 			     whence: (int)whence
 {
-#if defined(OF_WINDOWS)
-	of_offset_t ret = _lseeki64(_fd, offset, whence);
-#elif defined(OF_HAVE_OFF64_T)
-	of_offset_t ret = lseek64(_fd, offset, whence);
-#else
-	of_offset_t ret = lseek(_fd, offset, whence);
-#endif
+	of_offset_t ret;
+
+	if (_fd == INVALID_FD)
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence];
+
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+# if defined(OF_WINDOWS)
+	ret = _lseeki64(_fd, offset, whence);
+# elif defined(OF_HAVE_OFF64_T)
+	ret = lseek64(_fd, offset, whence);
+# else
+	ret = lseek(_fd, offset, whence);
+# endif
 
 	if (ret == -1)
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
 							   whence: whence
 							    errNo: errno];
+#else
+	switch (whence) {
+	case SEEK_SET:
+		ret = Seek64(_fd, offset, OFFSET_BEGINNING);
+		break;
+	case SEEK_CUR:
+		ret = Seek64(_fd, offset, OFFSET_CURRENT);
+		break;
+	case SEEK_END:
+		ret = Seek64(_fd, offset, OFFSET_END);
+		break;
+	default:
+		ret = -1;
+		break;
+	}
+
+	if (ret == -1)
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence];
+#endif
 
 	_atEndOfStream = false;
 
 	return ret;
 }
 
+#if !defined(OF_WINDOWS) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
 - (int)fileDescriptorForReading
 {
 	return _fd;
@@ -290,20 +419,21 @@ parseMode(const char *mode)
 {
 	return _fd;
 }
+#endif
 
 - (void)close
 {
-	if (_fd != -1)
+	if (_fd != INVALID_FD)
 		close(_fd);
 
-	_fd = -1;
+	_fd = INVALID_FD;
 
 	[super close];
 }
 
 - (void)dealloc
 {
-	if (_fd != -1)
+	if (_fd != INVALID_FD)
 		close(_fd);
 
 	[super dealloc];

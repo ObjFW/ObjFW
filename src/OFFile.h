@@ -43,7 +43,12 @@ typedef struct stat of_stat_t;
  */
 @interface OFFile: OFSeekableStream
 {
-	int  _fd;
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+	int _fd;
+#else
+	long _fd;
+	bool _append;
+#endif
 	bool _atEndOfStream;
 }
 
