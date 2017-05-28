@@ -11,11 +11,21 @@ AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 AC_CANONICAL_HOST
 
+AC_ARG_WITH(ixemul,
+	AS_HELP_STRING([--with-ixemul], [build with ixemul]))
+
 dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
 case "$host" in
 	*-morphos*)
+		AS_IF([test x"$with_ixemul" != x"yes"], [
+			OBJCFLAGS="$OBJCFLAGS -noixemul"
+			LDFLAGS="$LDFLAGS -noixemul"
+
+			AC_SUBST(NOIXEMUL, -noixemul)
+		])
+
 		enable_shared="no"
 		enable_threads="no"
 		;;
