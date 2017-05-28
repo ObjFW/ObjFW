@@ -4,16 +4,17 @@
     ],
     "full_usage": [
         "Optionen:\n",
-        "    -C  --directory  In angegebenes Verzeichnis entpacken\n",
-        "    -f  --force      Existierende Dateien überschreiben\n",
-        "    -h  --help       Diese Hilfe anzeigen\n",
-        "    -l  --list       Alle Dateien im Archiv auflisten\n",
-        "    -n  --no-clober  Dateien niemals überschreiben\n",
-        "    -p  --print      Eine oder mehr Dateien aus dem Archiv ausgeben\n",
-        "    -q  --quiet      Ruhiger Modus (keine Ausgabe außer Fehler)\n",
-        "    -t  --type       Archiv-Typ (gz, tar, tgz, zip)\n",
-        "    -v  --verbose    Ausführlicher Modus für Datei-Liste\n",
-        "    -x  --extract    Dateien entpacken"
+        "    -C  --directory   In angegebenes Verzeichnis entpacken\n",
+        "    -f  --force       Existierende Dateien überschreiben\n",
+        "    -h  --help        Diese Hilfe anzeigen\n",
+        "    -l  --list        Alle Dateien im Archiv auflisten\n",
+        "    -n  --no-clobber  Dateien niemals überschreiben\n",
+        "    -p  --print       Eine oder mehr Dateien aus dem Archiv ausgeben",
+	"\n",
+        "    -q  --quiet       Ruhiger Modus (keine Ausgabe außer Fehler)\n",
+        "    -t  --type        Archiv-Typ (gz, tar, tgz, zip)\n",
+        "    -v  --verbose     Ausführlicher Modus für Datei-Liste\n",
+        "    -x  --extract     Dateien entpacken"
     ],
     "2_options_mutually_exclusive": [
         "Fehler: -%[shortopt1] / --%[longopt1] und ",

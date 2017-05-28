@@ -54,19 +54,19 @@ help(OFStream *stream, bool full, int status)
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n"
-		    @"    -C  --directory  Extract into the specified directory"
-		    @"\n"
-		    @"    -f  --force      Force / overwrite files\n"
-		    @"    -h  --help       Show this help\n"
-		    @"    -l  --list       List all files in the archive\n"
-		    @"    -n  --no-clober  Never overwrite files\n"
-		    @"    -p  --print      Print one or more files from the "
+		    @"    -C  --directory   Extract into the specified "
+		    @"directory\n"
+		    @"    -f  --force       Force / overwrite files\n"
+		    @"    -h  --help        Show this help\n"
+		    @"    -l  --list        List all files in the archive\n"
+		    @"    -n  --no-clobber  Never overwrite files\n"
+		    @"    -p  --print       Print one or more files from the "
 		    @"archive\n"
-		    @"    -q  --quiet      Quiet mode (no output, except "
+		    @"    -q  --quiet       Quiet mode (no output, except "
 		    @"errors)\n"
-		    @"    -t  --type       Archive type (gz, tar, tgz, zip)\n"
-		    @"    -v  --verbose    Verbose output for file list\n"
-		    @"    -x  --extract    Extract files")];
+		    @"    -t  --type        Archive type (gz, tar, tgz, zip)\n"
+		    @"    -v  --verbose     Verbose output for file list\n"
+		    @"    -x  --extract     Extract files")];
 	}
 
 	[OFApplication terminateWithStatus: status];
