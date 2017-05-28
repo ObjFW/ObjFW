@@ -39,7 +39,7 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifdef OF_MORPHOS
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 # define BOOL EXEC_BOOL
 # include <exec/execbase.h>
 # include <proto/dos.h>
@@ -98,7 +98,7 @@ of_log(OFConstantString *format, ...)
 #ifndef OF_WINDOWS
 + (void)load
 {
-# ifndef OF_MORPHOS
+# if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: 0];
 	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
@@ -188,7 +188,7 @@ of_log(OFConstantString *format, ...)
 #endif
 }
 
-#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
+#if !defined(OF_WINDOWS) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
 - (int)fileDescriptorForReading
 {
 	return _fd;

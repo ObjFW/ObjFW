@@ -96,6 +96,9 @@
 # define OF_HAIKU
 #elif defined(__MORPHOS__)
 # define OF_MORPHOS
+# ifdef __ixemul__
+#  define OF_IXEMUL
+# endif
 #elif defined(__sun__)
 # define OF_SOLARIS
 #elif defined(__QNX__)
