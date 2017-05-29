@@ -86,6 +86,12 @@
 # define OF_BYTE_ORDER_NATIVE OF_BYTE_ORDER_LITTLE_ENDIAN
 #endif
 
+#if __STDC_VERSION__ >= 201112L
+# define OF_ALIGNAS(type) _Alignas(type)
+#else
+# define OF_ALIGNAS(type) __attribute__((__aligned__(sizeof(type))))
+#endif
+
 #if __STDC_VERSION__ >= 201112L && defined(OF_HAVE_MAX_ALIGN_T)
 # define OF_BIGGEST_ALIGNMENT _Alignof(max_align_t)
 #else
