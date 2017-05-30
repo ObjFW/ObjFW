@@ -22,9 +22,8 @@ OF_ASSUME_NONNULL_BEGIN
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 - (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
 #else
-- (instancetype)of_initWithFileDescriptor: (long)handle
-				 closable: (bool)closable
-    OF_METHOD_FAMILY(init);
+- (instancetype)of_initWithHandle: (BPTR)handle
+			 closable: (bool)closable OF_METHOD_FAMILY(init);
 #endif
 @end
 

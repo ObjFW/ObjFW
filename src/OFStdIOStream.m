@@ -44,17 +44,8 @@
 # include <exec/execbase.h>
 # include <proto/dos.h>
 # undef BOOL
-
-# define INVALID_FD 0
 # define getpid() ((int)SysBase->ThisTask)
-# define read(fd, buf, len) Read(fd, buf, len)
-# define write(fd, buf, len) Write(fd, buf, len)
-
 extern struct ExecBase *SysBase;
-#endif
-
-#ifndef INVALID_FD
-# define INVALID_FD -1
 #endif
 
 /* References for static linking */
@@ -116,30 +107,27 @@ of_log(OFConstantString *format, ...)
 	bool inputClosable = false, outputClosable = false,
 	    errorClosable = false;
 
-	if (input == INVALID_FD) {
+	if (input == 0) {
 		input = Open("*", MODE_OLDFILE);
 		inputClosable = true;
 	}
 
-	if (output == INVALID_FD) {
+	if (output == 0) {
 		output = Open("*", MODE_OLDFILE);
 		outputClosable = true;
 	}
 
-	if (error == INVALID_FD) {
+	if (error == 0) {
 		error = Open("*", MODE_OLDFILE);
 		errorClosable = true;
 	}
 
-	of_stdin = [[OFStdIOStream alloc]
-	    of_initWithFileDescriptor: input
-			     closable: inputClosable];
-	of_stdout = [[OFStdIOStream alloc]
-	    of_initWithFileDescriptor: output
-			     closable: outputClosable];
-	of_stderr = [[OFStdIOStream alloc]
-	    of_initWithFileDescriptor: error
-			     closable: errorClosable];
+	of_stdin = [[OFStdIOStream alloc] of_initWithHandle: input
+						   closable: inputClosable];
+	of_stdout = [[OFStdIOStream alloc] of_initWithHandle: output
+						    closable: outputClosable];
+	of_stderr = [[OFStdIOStream alloc] of_initWithHandle: error
+						    closable: errorClosable];
 # endif
 }
 #endif
@@ -159,12 +147,12 @@ of_log(OFConstantString *format, ...)
 	return self;
 }
 #else
-- (instancetype)of_initWithFileDescriptor: (long)fd
-				 closable: (bool)closable
+- (instancetype)of_initWithHandle: (BPTR)handle
+			 closable: (bool)closable
 {
 	self = [super init];
 
-	_fd = fd;
+	_handle = handle;
 	_closable = closable;
 
 	return self;
@@ -180,8 +168,13 @@ of_log(OFConstantString *format, ...)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_fd == INVALID_FD)
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+	if (_fd == -1)
 		return true;
+#else
+	if (_handle == 0)
+		return true;
+#endif
 
 	return _atEndOfStream;
 }
@@ -191,16 +184,17 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-	if (_fd == INVALID_FD || _atEndOfStream)
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+	if (_fd == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
-#ifndef OF_WINDOWS
+# ifndef OF_WINDOWS
 	if ((ret = read(_fd, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
-#else
+# else
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -208,6 +202,18 @@ of_log(OFConstantString *format, ...)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
+# endif
+#else
+	if (_handle == 0 || _atEndOfStream)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
+
+	if (length > LONG_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((ret = Read(_handle, buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length];
 #endif
 
 	if (ret == 0)
@@ -219,19 +225,20 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-	if (_fd == INVALID_FD || _atEndOfStream)
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+	if (_fd == -1 || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
 
-#ifndef OF_WINDOWS
+# ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, (void *)buffer, length) != (ssize_t)length)
+	if (write(_fd, buffer, length) != (ssize_t)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
-#else
+# else
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -239,6 +246,18 @@ of_log(OFConstantString *format, ...)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
+# endif
+#else
+	if (_handle == 0 || _atEndOfStream)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
+
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (Write(_handle, (void *)buffer, length) != (LONG)length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length];
 #endif
 }
 
@@ -257,14 +276,16 @@ of_log(OFConstantString *format, ...)
 - (void)close
 {
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	if (_fd != INVALID_FD)
+	if (_fd != -1)
 		close(_fd);
-#else
-	if (_closable && _fd != INVALID_FD)
-		Close(_fd);
-#endif
 
-	_fd = INVALID_FD;
+	_fd = -1;
+#else
+	if (_closable && _handle != 0)
+		Close(_handle);
+
+	_handle = 0;
+#endif
 
 	[super close];
 }
@@ -290,7 +311,8 @@ of_log(OFConstantString *format, ...)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ)
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+    (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
@@ -304,7 +326,8 @@ of_log(OFConstantString *format, ...)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ)
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
+    (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)

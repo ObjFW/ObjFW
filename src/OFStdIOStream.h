@@ -18,6 +18,10 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+typedef long BPTR;
+#endif
+
 /*!
  * @class OFStdIOStream OFStdIOStream.h ObjFW/OFStdIOStream.h
  *
@@ -34,7 +38,7 @@ OF_SUBCLASSING_RESTRICTED
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 	int _fd;
 #else
-	long _fd;
+	BPTR _handle;
 	bool _closable;
 #endif
 	bool _atEndOfStream;

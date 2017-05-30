@@ -36,6 +36,10 @@ typedef struct stat64 of_stat_t;
 typedef struct stat of_stat_t;
 #endif
 
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+typedef long BPTR;
+#endif
+
 /*!
  * @class OFFile OFFile.h ObjFW/OFFile.h
  *
@@ -46,7 +50,7 @@ typedef struct stat of_stat_t;
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 	int _fd;
 #else
-	long _fd;
+	BPTR _handle;
 	bool _append;
 #endif
 	bool _atEndOfStream;
@@ -77,14 +81,25 @@ typedef struct stat of_stat_t;
 + (instancetype)fileWithPath: (OFString *)path
 			mode: (OFString *)mode;
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 /*!
  * @brief Creates a new OFFile with the specified file descriptor.
  *
  * @param fd A file descriptor, returned from for example open().
- *	     It is not closed when the OFFile object is deallocated!
+ *	     It is closed when the OFFile object is deallocated!
  * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithFileDescriptor: (int)fd;
+#else
+/*!
+ * @brief Creates a new OFFile with the specified handle.
+ *
+ * @param handle A handle, returned from for example Open().
+ *		 It is closed when the OFFile object is deallocated!
+ * @return A new autoreleased OFFile
+ */
++ (instancetype)fileWithHandle: (BPTR)handle;
+#endif
 
 - init OF_UNAVAILABLE;
 
@@ -113,13 +128,25 @@ typedef struct stat of_stat_t;
 - initWithPath: (OFString *)path
 	  mode: (OFString *)mode;
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 /*!
  * @brief Initializes an already allocated OFFile.
  *
  * @param fd A file descriptor, returned from for example open().
- *	     It is not closed when the OFFile object is deallocated!
+ *	     It is closed when the OFFile object is deallocated!
+ * @return An initialized OFFile
  */
 - initWithFileDescriptor: (int)fd;
+#else
+/*!
+ * @brief Initializes an already allocated OFFile.
+ *
+ * @param handle A handle, returned from for example Open().
+ *		 It is closed when the OFFile object is deallocated!
+ * @return An initialized OFFile
+ */
+- initWithHandle: (BPTR)handle;
+#endif
 @end
 
 #ifdef __cplusplus

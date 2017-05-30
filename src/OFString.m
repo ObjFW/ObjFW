@@ -28,7 +28,7 @@
 # include <xlocale.h>
 #endif
 
-#ifdef OF_HAVE_FILES
+#ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
 
