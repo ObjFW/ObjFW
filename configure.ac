@@ -189,6 +189,11 @@ AX_CHECK_COMPILER_FLAGS(-Watomic-properties -Werror, [
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([
+	#ifdef __has_attribute
+	# if __has_attribute(objc_root_class)
+	__attribute__((__objc_root_class__))
+	# endif
+	#endif
 	@interface Foo
 	{
 		id bar;
@@ -298,6 +303,11 @@ case "$objc_runtime" in
 		old_OBJCFLAGS="$OBJCFLAGS"
 		OBJCFLAGS="$OBJCFLAGS -fobjc-runtime=objfw"
 		AC_TRY_LINK([
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
 			@interface Test
 			+ (void)test;
 			@end
@@ -1267,6 +1277,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 	AC_MSG_CHECKING(whether we need -Wno-strict-aliasing due to GCC bugs)
 	AC_TRY_COMPILE([
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
 		@interface Foo
 		{
 			struct objc_class *_isa;
@@ -1429,6 +1444,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		/*!
 		 * @class Test conftest.m conftest.m
 		 */
+		#ifdef __has_attribute
+		# if __has_attribute(objc_root_class)
+		__attribute__((__objc_root_class__))
+		# endif
+		#endif
 		@interface Test
 		@end
 	], [
@@ -1448,6 +1468,11 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 
 			#include <assert.h>
 
+			#ifdef __has_attribute
+			# if __has_attribute(objc_root_class)
+			__attribute__((__objc_root_class__))
+			# endif
+			#endif
 			@interface Foo
 			{
 				void *foo;
