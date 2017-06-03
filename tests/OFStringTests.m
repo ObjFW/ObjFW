@@ -655,7 +655,8 @@ static uint16_t sutf16str[] = {
 	 */
 	TEST(@"-[floatValue]",
 	    [C(@"\t-0.25 ") floatValue] == -0.25 &&
-	    [C(@"\r-INFINITY\n") floatValue] == -INFINITY &&
+	    [C(@"\r\n\tINF\t\n") doubleValue] == INFINITY &&
+	    [C(@"\r -INFINITY\n") floatValue] == -INFINITY &&
 	    isnan([C(@"   NAN\t\t") floatValue]))
 
 #if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP)
@@ -674,7 +675,8 @@ static uint16_t sutf16str[] = {
 #endif
 	TEST(@"-[doubleValue]",
 	    [INPUT doubleValue] == EXPECTED &&
-	    [C(@"\r-INFINITY\n") doubleValue] == -INFINITY &&
+	    [C(@"\r\n\tINF\t\n") doubleValue] == INFINITY &&
+	    [C(@"\r -INFINITY\n") doubleValue] == -INFINITY &&
 	    isnan([C(@"   NAN\t\t") doubleValue]))
 #undef INPUT
 #undef EXPECTED

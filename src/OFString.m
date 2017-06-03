@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <errno.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2519,6 +2520,18 @@ static struct {
 - (float)floatValue
 {
 	void *pool = objc_autoreleasePoolPush();
+
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
+
+	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
+	    [stripped caseInsensitiveCompare: @"INFINITY"] == OF_ORDERED_SAME)
+		return INFINITY;
+	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
+	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
+		return -INFINITY;
+#endif
+
 #ifdef HAVE_STRTOF_L
 	const char *UTF8String = [self UTF8String];
 #else
@@ -2560,6 +2573,18 @@ static struct {
 - (double)doubleValue
 {
 	void *pool = objc_autoreleasePoolPush();
+
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
+
+	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
+	    [stripped caseInsensitiveCompare: @"INFINITY"] == OF_ORDERED_SAME)
+		return INFINITY;
+	if ([stripped caseInsensitiveCompare: @"-INF"] == OF_ORDERED_SAME ||
+	    [stripped caseInsensitiveCompare: @"-INFINITY"] == OF_ORDERED_SAME)
+		return -INFINITY;
+#endif
+
 #ifdef HAVE_STRTOD_L
 	const char *UTF8String = [self UTF8String];
 #else
