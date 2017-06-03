@@ -42,7 +42,6 @@
 #if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 # define BOOL EXEC_BOOL
 # include <proto/exec.h>
-# include <proto/dos.h>
 # undef BOOL
 #endif
 

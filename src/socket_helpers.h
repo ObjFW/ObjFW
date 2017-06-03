@@ -61,6 +61,9 @@
 #endif
 
 #ifdef OF_MORPHOS
+# ifndef OF_IXEMUL
+#  define hstrerror(err) "unknown (no hstrerror)"
+# endif
 typedef uint32_t in_addr_t;
 #endif
 

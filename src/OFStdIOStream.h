@@ -19,7 +19,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 #if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
-typedef long BPTR;
+# define BOOL EXEC_BOOL
+# include <proto/dos.h>
+# undef BOOL
 #endif
 
 /*!

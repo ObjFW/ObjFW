@@ -22,8 +22,16 @@
 
 #include <stdbool.h>
 
+#import "platform.h"
+
 #ifdef OF_HAVE_SYS_SOCKET_H
+# if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#  define BOOL EXEC_BOOL
+# endif
 # include <sys/socket.h>
+# if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#  undef BOOL
+# endif
 #endif
 #ifdef OF_HAVE_NETINET_IN_H
 # include <netinet/in.h>
@@ -46,7 +54,11 @@
 #endif
 
 #ifdef OF_MORPHOS
+# ifndef OF_IXEMUL
+typedef long socklen_t;
+# else
 typedef int socklen_t;
+#endif
 
 struct sockaddr_storage {
 	uint8_t ss_len;

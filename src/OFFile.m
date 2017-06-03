@@ -43,12 +43,6 @@
 # include <windows.h>
 #endif
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
-# define BOOL EXEC_BOOL
-# include <proto/dos.h>
-# undef BOOL
-#endif
-
 #ifdef OF_WII
 # define BOOL OGC_BOOL
 # include <fat.h>
