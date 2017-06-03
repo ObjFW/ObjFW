@@ -28,27 +28,15 @@
 #import "TarArchive.h"
 #import "OFZIP.h"
 
-#ifndef S_IRWXG
-# define S_IRWXG 0
-#endif
-#ifndef S_IRWXO
-# define S_IRWXO 0
-#endif
-
 static OFZIP *app;
 
 static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_HAVE_CHMOD
-	uint32_t mode = [entry mode];
-
-	/* Only allow modes that are safe */
-	mode &= (S_IRWXU | S_IRWXG | S_IRWXO);
-
 	[[OFFileManager defaultManager]
 	    changePermissionsOfItemAtPath: path
-			      permissions: mode];
+			      permissions: [entry mode]];
 #endif
 }
 

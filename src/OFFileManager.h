@@ -142,14 +142,22 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the permissions of the specified item.
  *
+ * This returns only the permissions, meaning read, write and execute for
+ * owner, user and group, along with the sticky, setuid and setgid bit. In
+ * other words, only bits that match the mask 07777.
+ *
  * @param path The path to the item whose permissions should be returned
  *
  * @return The permissions of the specified item
  */
-- (mode_t)permissionsOfItemAtPath: (OFString *)path;
+- (uint16_t)permissionsOfItemAtPath: (OFString *)path;
 
 /*!
  * @brief Changes the permissions of an item.
+ *
+ * This only changes the permissions, meaning read, write and execute for
+ * owner, user and group. For security reasons, it ignores all other bits. In
+ * other words, the permissions are masked with 0777.
  *
  * This method only changes the read-only flag on Windows.
  *
@@ -157,7 +165,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param permissions The new permissions for the item
  */
 - (void)changePermissionsOfItemAtPath: (OFString *)path
-			  permissions: (mode_t)permissions;
+			  permissions: (uint16_t)permissions;
 #endif
 
 #ifdef OF_HAVE_CHOWN

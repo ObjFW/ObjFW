@@ -69,7 +69,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to change permissions of item at path %@ to %d: %@",
+	    @"Failed to change permissions of item at path %@ to %04o: %@",
 	    _path, _permissions, of_strerror(_errNo)];
 }
 @end

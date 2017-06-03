@@ -40,10 +40,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 #ifdef OF_HAVE_CHMOD
 	if (([entry versionMadeBy] >> 8) ==
 	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
-		uint32_t mode = [entry versionSpecificAttributes] >> 16;
-
-		/* Only allow modes that are safe */
-		mode &= (S_IRWXU | S_IRWXG | S_IRWXO);
+		uint16_t mode = [entry versionSpecificAttributes] >> 16;
 
 		[[OFFileManager defaultManager]
 		    changePermissionsOfItemAtPath: path

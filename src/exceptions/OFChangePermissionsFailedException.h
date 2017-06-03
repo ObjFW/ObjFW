@@ -14,8 +14,6 @@
  * file.
  */
 
-#include <sys/types.h>
-
 #import "OFException.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -31,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFChangePermissionsFailedException: OFException
 {
 	OFString *_path;
-	mode_t _permissions;
+	uint16_t _permissions;
 	int _errNo;
 }
 
@@ -43,7 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The new permissions for the item.
  */
-@property (readonly, nonatomic) mode_t permissions;
+@property (readonly, nonatomic) uint16_t permissions;
 
 /*!
  * The errno of the error that occurred.
@@ -61,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased change permissions failed exception
  */
 + (instancetype)exceptionWithPath: (OFString *)path
-		      permissions: (mode_t)permissions
+		      permissions: (uint16_t)permissions
 			    errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
@@ -75,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized change permissions failed exception
  */
 - initWithPath: (OFString *)path
-   permissions: (mode_t)permissions
+   permissions: (uint16_t)permissions
 	 errNo: (int)errNo;
 @end
 

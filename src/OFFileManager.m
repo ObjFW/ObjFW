@@ -71,22 +71,6 @@
 # include <ntdef.h>
 #endif
 
-#ifndef S_IRGRP
-# define S_IRGRP 0
-#endif
-#ifndef S_IROTH
-# define S_IROTH 0
-#endif
-#ifndef S_IWGRP
-# define S_IWGRP 0
-#endif
-#ifndef S_IWOTH
-# define S_IWOTH 0
-#endif
-
-#define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
-#define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
-
 #if defined(OF_WINDOWS)
 typedef struct __stat64 of_stat_t;
 #elif defined(OF_HAVE_OFF64_T)
@@ -279,7 +263,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 #ifndef OF_WINDOWS
 	if (mkdir([path cStringWithEncoding: [OFLocalization encoding]],
-	    DIR_MODE) != 0)
+	    0777) != 0)
 #else
 	if (_wmkdir([path UTF16String]) != 0)
 #endif
@@ -517,7 +501,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 
 #ifdef OF_HAVE_CHMOD
-- (mode_t)permissionsOfItemAtPath: (OFString *)path
+- (uint16_t)permissionsOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -528,14 +512,16 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
-	return s.st_mode;
+	return s.st_mode & 07777;
 }
 
 - (void)changePermissionsOfItemAtPath: (OFString *)path
-			  permissions: (mode_t)permissions
+			  permissions: (uint16_t)permissions
 {
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
+
+	permissions &= 0777;
 
 # ifndef OF_WINDOWS
 	if (chmod([path cStringWithEncoding: [OFLocalization encoding]],

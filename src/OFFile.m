@@ -23,6 +23,10 @@
 #endif
 #include "unistd_wrapper.h"
 
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFLocalization.h"
@@ -68,21 +72,6 @@
 #ifndef O_EXLOCK
 # define O_EXLOCK 0
 #endif
-
-#ifndef S_IRGRP
-# define S_IRGRP 0
-#endif
-#ifndef S_IROTH
-# define S_IROTH 0
-#endif
-#ifndef S_IWGRP
-# define S_IWGRP 0
-#endif
-#ifndef S_IWOTH
-# define S_IWOTH 0
-#endif
-
-#define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 static int
@@ -227,13 +216,13 @@ parseMode(const char *mode, bool *append)
 
 # if defined(OF_WINDOWS)
 		if ((_fd = _wopen([path UTF16String], flags,
-		    DEFAULT_MODE)) == -1)
+		    _S_IREAD | _S_IWRITE)) == -1)
 # elif defined(OF_HAVE_OFF64_T)
 		if ((_fd = open64([path cStringWithEncoding:
-		    [OFLocalization encoding]], flags, DEFAULT_MODE)) == -1)
+		    [OFLocalization encoding]], flags, 0666)) == -1)
 # else
 		if ((_fd = open([path cStringWithEncoding:
-		    [OFLocalization encoding]], flags, DEFAULT_MODE)) == -1)
+		    [OFLocalization encoding]], flags, 0666)) == -1)
 # endif
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
