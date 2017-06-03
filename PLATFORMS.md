@@ -20,7 +20,7 @@ Bare metal ARM Cortex-M4
   * Architectures: ARMv7E-M
   * Compilers: Clang 3.5
   * Runtimes: ObjFW
-  * Note: Bootloader, libc (newlib) and possibly external RAM required
+  * Notes: Bootloader, libc (newlib) and possibly external RAM required
 
 
 DOS
@@ -87,11 +87,12 @@ macOS
 MorphOS
 -------
 
-  * OS Versions: 3.9
+  * OS Versions: 3.9, 3.10
   * Architectures: PPC
-  * Compilers: GCC 5.3.0
+  * Compilers: GCC 5.3.0, GCC 5.4.0
   * Runtimes: ObjFW
   * Limitations: No threads
+  * Notes: libnix and ixemul are both supported
 
 
 NetBSD
@@ -120,7 +121,7 @@ Nintendo DS
   * Compilers: GCC 4.8.2 (devkitARM release 42)
   * Runtimes: ObjFW
   * Limitations: No threads, no sockets
-  * Note: File support requires an argv-compatible launcher (such as HBMenu)
+  * Notes: File support requires an argv-compatible launcher (such as HBMenu)
 
 
 OpenBSD
