@@ -304,7 +304,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 		proc = (struct Process *)FindTask(NULL);
 		firstLocalVar = (struct LocalVar *)proc->pr_LocalVars.mlh_Head;
 
-		for (struct LocalVar *iter = firstLocalVar; iter != NULL;
+		for (struct LocalVar *iter = firstLocalVar;
+		    iter->lv_Node.ln_Succ != NULL;
 		    iter = (struct LocalVar *)iter->lv_Node.ln_Succ) {
 			size_t length;
 			OFString *key, *value;
