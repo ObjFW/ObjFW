@@ -16,13 +16,13 @@
 
 #import "OFSeekableStream.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
 #if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # undef BOOL
 #endif
+
+OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @class OFFile OFFile.h ObjFW/OFFile.h
