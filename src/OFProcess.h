@@ -21,7 +21,11 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#include <sys/types.h>
+#include "objfw-defs.h"
+
+#ifdef OF_HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
 
 #import "OFStream.h"
 #import "OFString.h"

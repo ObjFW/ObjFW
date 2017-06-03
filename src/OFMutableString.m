@@ -20,8 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/types.h>
-
 #import "OFString.h"
 #import "OFMutableString_UTF8.h"
 

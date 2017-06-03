@@ -18,8 +18,6 @@
 
 #include <string.h>
 
-#include <sys/types.h>
-
 #import "OFXMLParser.h"
 #import "OFString.h"
 #import "OFArray.h"
@@ -107,13 +105,10 @@ namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 	if (prefix == nil)
 		prefix = @"";
 
-	if (count - 1 > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	for (ssize_t i = count - 1; i >= 0; i--) {
+	while (count > 0) {
 		OFString *tmp;
 
-		if ((tmp = [objects[i] objectForKey: prefix]) != nil)
+		if ((tmp = [objects[--count] objectForKey: prefix]) != nil)
 			return tmp;
 	}
 

@@ -492,6 +492,9 @@ AC_EGREP_CPP(yes, [
 		[Maximum value for ssize_t])
 ])
 
+AC_CHECK_HEADER(sys/types.h,
+	[AC_DEFINE(OF_HAVE_SYS_TYPES_H, 1, [Whether we have <sys/types.h>])])
+
 AC_CHECK_TYPE(max_align_t,
 	[AC_DEFINE(OF_HAVE_MAX_ALIGN_T, 1, [Whether we have max_align_t])])
 
@@ -1062,7 +1065,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_MSG_CHECKING(for getaddrinfo)
 	AC_TRY_COMPILE([
 		#include <stddef.h>
-		#ifndef _WIN32
+		#ifdef OF_HAVE_SYS_TYPES_H
 		# include <sys/types.h>
 		#endif
 		#ifdef HAVE_SYS_SOCKET_H
@@ -1115,7 +1118,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			AS_IF([test x"$have_threadsafe_getaddrinfo" = \
 					x"unknown"], [
 				AC_EGREP_CPP(yes, [
-					#ifndef _WIN32
+					#ifdef OF_HAVE_SYS_TYPES_H
 					# include <sys/types.h>
 					#endif
 					#ifdef HAVE_SYS_SOCKET_H

@@ -20,7 +20,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <sys/types.h>
+#ifdef OF_HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
 
 #import "OFString_UTF8.h"
 #import "OFString_UTF8+Private.h"

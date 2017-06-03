@@ -33,7 +33,9 @@
 # include <xlocale.h>
 #endif
 
-#include <sys/types.h>
+#ifdef OF_HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
 
 #import "OFString.h"
 #import "OFLocalization.h"
