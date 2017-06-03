@@ -14,27 +14,9 @@
  * file.
  */
 
-#ifndef __STDC_LIMIT_MACROS
-# define __STDC_LIMIT_MACROS
-#endif
-#ifndef __STDC_CONSTANT_MACROS
-# define __STDC_CONSTANT_MACROS
-#endif
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #import "OFSeekableStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
-
-#if defined(OF_WINDOWS)
-typedef struct __stat64 of_stat_t;
-#elif defined(OF_HAVE_OFF64_T)
-typedef struct stat64 of_stat_t;
-#else
-typedef struct stat of_stat_t;
-#endif
 
 #if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 typedef long BPTR;
@@ -148,14 +130,5 @@ typedef long BPTR;
 - initWithHandle: (BPTR)handle;
 #endif
 @end
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern int of_stat(OFString *path, of_stat_t *buffer);
-extern int of_lstat(OFString *path, of_stat_t *buffer);
-#ifdef __cplusplus
-}
-#endif
 
 OF_ASSUME_NONNULL_END

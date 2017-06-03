@@ -28,10 +28,6 @@
 # include <xlocale.h>
 #endif
 
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
-
 #import "OFString.h"
 #import "OFString_UTF8.h"
 #import "OFString_UTF8+Private.h"
@@ -41,6 +37,7 @@
 #import "OFLocalization.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
+# import "OFFileManager.h"
 #endif
 #import "OFURL.h"
 #ifdef OF_HAVE_SOCKETS
@@ -61,6 +58,7 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFStatItemFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -925,32 +923,33 @@ static struct {
 		encoding: (of_string_encoding_t)encoding
 {
 	char *tmp;
-	of_stat_t st;
+	of_offset_t fileSize;
 
 	@try {
 		OFFile *file;
 
-		/* Make sure the file system is initialized */
-		[OFFile class];
-
-		if (of_stat(path, &st) != 0)
+		@try {
+			fileSize = [[OFFileManager defaultManager]
+			    sizeOfFileAtPath: path];
+		} @catch (OFStatItemFailedException *e) {
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: @"rb"
 					errNo: errno];
+		}
 
 		if (sizeof(of_offset_t) > sizeof(size_t) &&
-		    st.st_size > (of_offset_t)SIZE_MAX)
+		    fileSize > (of_offset_t)SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"rb"];
 
 		@try {
-			tmp = [self allocMemoryWithSize: (size_t)st.st_size];
+			tmp = [self allocMemoryWithSize: (size_t)fileSize];
 
 			[file readIntoBuffer: tmp
-				 exactLength: (size_t)st.st_size];
+				 exactLength: (size_t)fileSize];
 		} @finally {
 			[file release];
 		}
@@ -961,7 +960,7 @@ static struct {
 
 	self = [self initWithCString: tmp
 			    encoding: encoding
-			      length: (size_t)st.st_size];
+			      length: (size_t)fileSize];
 	[self freeMemory: tmp];
 
 	return self;

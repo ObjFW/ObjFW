@@ -15,7 +15,7 @@
  */
 
 #import "OFObject.h"
-#import "OFFile.h"
+#import "OFSeekableStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

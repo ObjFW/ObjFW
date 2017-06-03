@@ -23,6 +23,10 @@
 #endif
 #include "unistd_wrapper.h"
 
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
 #ifdef HAVE_PWD_H
 # include <pwd.h>
 #endif
@@ -83,6 +87,14 @@
 #define DEFAULT_MODE S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
 #define DIR_MODE DEFAULT_MODE | S_IXUSR | S_IXGRP | S_IXOTH
 
+#if defined(OF_WINDOWS)
+typedef struct __stat64 of_stat_t;
+#elif defined(OF_HAVE_OFF64_T)
+typedef struct stat64 of_stat_t;
+#else
+typedef struct stat of_stat_t;
+#endif
+
 static OFFileManager *defaultManager;
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
@@ -96,7 +108,7 @@ static OFMutex *readdirMutex;
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
 #endif
 
-int
+static int
 of_stat(OFString *path, of_stat_t *buffer)
 {
 #if defined(OF_WINDOWS)
@@ -110,7 +122,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 #endif
 }
 
-int
+static int
 of_lstat(OFString *path, of_stat_t *buffer)
 {
 #if defined(OF_WINDOWS)
