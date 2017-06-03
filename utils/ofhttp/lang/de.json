@@ -64,7 +64,7 @@
     ],
     "download_done": "Fertig!",
     "invalid_url": "%[prog]: Ungültige URL: <%[url]>!",
-    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[scheme]:>!",
+    "invalid_scheme": "%[prog]: Ungültiges Schema: <%[url]>!",
     "type_unknown": "unbekannt",
     "size_gib": "%[num] GiB",
     "size_mib": "%[num] MiB",

@@ -718,9 +718,9 @@ next:
 	if (![[URL scheme] isEqual: @"http"] &&
 	    ![[URL scheme] isEqual: @"https"]) {
 		[of_stderr writeLine: OF_LOCALIZED(@"invalid_scheme",
-		    @"%[prog]: Invalid scheme: <%[scheme]:>!",
+		    @"%[prog]: Invalid scheme: <%[url]>!",
 		    @"prog", [OFApplication programName],
-		    @"scheme", URLString)];
+		    @"url", URLString)];
 
 		_errorCode = 1;
 		goto next;
