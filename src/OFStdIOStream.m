@@ -41,11 +41,9 @@
 
 #if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 # define BOOL EXEC_BOOL
-# include <exec/execbase.h>
+# include <proto/exec.h>
 # include <proto/dos.h>
 # undef BOOL
-# define getpid() ((int)SysBase->ThisTask)
-extern struct ExecBase *SysBase;
 #endif
 
 /* References for static linking */
@@ -103,7 +101,7 @@ of_log(OFConstantString *format, ...)
 	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
 # else
 	BPTR input = Input(), output = Output();
-	BPTR error = ((struct Process *)SysBase->ThisTask)->pr_CES;
+	BPTR error = ((struct Process *)FindTask(NULL))->pr_CES;
 	bool inputClosable = false, outputClosable = false,
 	    errorClosable = false;
 

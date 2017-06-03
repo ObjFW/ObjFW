@@ -19,7 +19,13 @@
 
 #import "platform.h"
 
-#if defined(HAVE_UNISTD_H) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# define BOOL EXEC_BOOL
+# include <exec/types.h>
+# undef BOOL
+#endif
+
+#if defined(HAVE_UNISTD_H)
 # ifdef __GLIBC__
 #  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */
 # endif
