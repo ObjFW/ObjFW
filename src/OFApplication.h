@@ -126,7 +126,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_programName;
 	OFArray OF_GENERIC(OFString *) *_arguments;
-	OFDictionary OF_GENERIC(OFString *, OFString *) *_environment;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_environment;
 	int *_argc;
 	char ***_argv;
 @public

@@ -35,6 +35,10 @@
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFSandbox.h"
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# import "OFFile.h"
+# import "OFFileManager.h"
+#endif
 
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
@@ -47,6 +51,11 @@
 
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# define BOOL EXEC_BOOL
+# include <proto/exec.h>
+# include <proto/dos.h>
+# undef BOOL
 #elif !defined(OF_IOS)
 extern char **environ;
 #endif
@@ -212,29 +221,18 @@ of_application_main(int *argc, char **argv[], Class cls)
 	self = [super init];
 
 	@try {
-		void *pool;
-		OFMutableDictionary *environment;
-#if defined(OF_MACOS)
-		char **env = *_NSGetEnviron();
-#elif defined(OF_WINDOWS)
-		char16_t *env, *env0;
-#elif !defined(OF_IOS)
-		char **env = environ;
-#else
-		char *env;
-#endif
-
-		environment = [[OFMutableDictionary alloc] init];
+		_environment = [[OFMutableDictionary alloc] init];
 
 		atexit(atexitHandler);
+
 #if defined(OF_WINDOWS)
+		char16_t *env, *env0;
 		env = env0 = GetEnvironmentStringsW();
 
 		while (*env != 0) {
+			void *pool = objc_autoreleasePoolPush();
 			OFString *tmp, *key, *value;
 			size_t length, pos;
-
-			pool = objc_autoreleasePoolPush();
 
 			length = of_string_utf16_length(env);
 			tmp = [OFString stringWithUTF16String: env
@@ -262,23 +260,90 @@ of_application_main(int *argc, char **argv[], Class cls)
 			value = [tmp substringWithRange:
 			    of_range(pos + 1, [tmp length] - pos - 1)];
 
-			[environment setObject: value
-					forKey: key];
+			[_environment setObject: value
+					 forKey: key];
 
 			objc_autoreleasePoolPop(pool);
 		}
 
 		FreeEnvironmentStringsW(env0);
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+		void *pool = objc_autoreleasePoolPush();
+		OFFileManager *fileManager = [OFFileManager defaultManager];
+		OFArray *envContents =
+		    [fileManager contentsOfDirectoryAtPath: @"ENV:"];
+		const of_string_encoding_t encoding = [OFLocalization encoding];
+		struct Process *proc;
+		struct LocalVar *firstLocalVar;
+
+		for (OFString *name in envContents) {
+			void *pool2 = objc_autoreleasePoolPush();
+			OFString *path, *value;
+			OFFile *file;
+
+			if ([name containsString: @"."])
+				continue;
+
+			path = [@"ENV:" stringByAppendingString: name];
+
+			if ([fileManager directoryExistsAtPath: path])
+				continue;
+
+			file = [OFFile fileWithPath: path
+					       mode: @"rb"];
+
+			value = [file readLineWithEncoding: encoding];
+			if (value != nil)
+				[_environment setObject: value
+						 forKey: name];
+
+			objc_autoreleasePoolPop(pool2);
+		}
+
+		/* Local variables override global variables */
+		proc = (struct Process *)FindTask(NULL);
+		firstLocalVar = (struct LocalVar *)proc->pr_LocalVars.mlh_Head;
+
+		for (struct LocalVar *iter = firstLocalVar; iter != NULL;
+		    iter = (struct LocalVar *)iter->lv_Node.ln_Succ) {
+			size_t length;
+			OFString *key, *value;
+
+			if (iter->lv_Node.ln_Type != LV_VAR ||
+			    iter->lv_Flags & GVF_BINARY_VAR)
+				continue;
+
+			for (length = 0; length < iter->lv_Len; length++)
+				if (iter->lv_Value[length] == 0)
+					break;
+
+			key = [OFString stringWithCString: iter->lv_Node.ln_Name
+						 encoding: encoding];
+			value = [OFString
+			    stringWithCString: (const char *)iter->lv_Value
+				     encoding: encoding
+				       length: length];
+
+			[_environment setObject: value
+					 forKey: key];
+		}
+
+		objc_autoreleasePoolPop(pool);
 #elif !defined(OF_IOS)
+# ifndef OF_MACOS
+		char **env = environ;
+# else
+		char **env = *_NSGetEnviron();
+# endif
+
 		if (env != NULL) {
 			const of_string_encoding_t encoding =
 			    [OFLocalization encoding];
 
 			for (; *env != NULL; env++) {
+				void *pool = objc_autoreleasePoolPush();
 				OFString *key, *value;
 				char *sep;
-
-				pool = objc_autoreleasePoolPush();
 
 				if ((sep = strchr(*env, '=')) == NULL) {
 					fprintf(stderr, "Warning: Invalid "
@@ -294,8 +359,8 @@ of_application_main(int *argc, char **argv[], Class cls)
 				    stringWithCString: sep + 1
 					     encoding: encoding];
 
-				[environment setObject: value
-						forKey: key];
+				[_environment setObject: value
+						 forKey: key];
 
 				objc_autoreleasePoolPop(pool);
 			}
@@ -307,49 +372,50 @@ of_application_main(int *argc, char **argv[], Class cls)
 		 * variables from the environment which applications might
 		 * expect.
 		 */
-		pool = objc_autoreleasePoolPush();
+
+		void *pool = objc_autoreleasePoolPush();
+		char *env;
 
 		if ((env = getenv("HOME")) != NULL) {
 			OFString *home = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[environment setObject: home
-					forKey: @"HOME"];
+			[_environment setObject: home
+					 forKey: @"HOME"];
 		}
 		if ((env = getenv("PATH")) != NULL) {
 			OFString *path = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[environment setObject: path
-					forKey: @"PATH"];
+			[_environment setObject: path
+					 forKey: @"PATH"];
 		}
 		if ((env = getenv("SHELL")) != NULL) {
 			OFString *shell = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[environment setObject: shell
-					forKey: @"SHELL"];
+			[_environment setObject: shell
+					 forKey: @"SHELL"];
 		}
 		if ((env = getenv("TMPDIR")) != NULL) {
 			OFString *tmpdir = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[environment setObject: tmpdir
-					forKey: @"TMPDIR"];
+			[_environment setObject: tmpdir
+					 forKey: @"TMPDIR"];
 		}
 		if ((env = getenv("USER")) != NULL) {
 			OFString *user = [[[OFString alloc]
 			    initWithUTF8StringNoCopy: env
 					freeWhenDone: false] autorelease];
-			[environment setObject: user
-					forKey: @"USER"];
+			[_environment setObject: user
+					 forKey: @"USER"];
 		}
 
 		objc_autoreleasePoolPop(pool);
 #endif
 
-		[environment makeImmutable];
-		_environment = environment;
+		[_environment makeImmutable];
 	} @catch (id e) {
 		[self release];
 		@throw e;
