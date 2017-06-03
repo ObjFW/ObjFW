@@ -22,6 +22,7 @@ case "$host" in
 		AS_IF([test x"$with_ixemul" != x"yes"], [
 			OBJCFLAGS="$OBJCFLAGS -noixemul"
 			LDFLAGS="$LDFLAGS -noixemul"
+			enable_files="yes"	# Required for reading ENV:
 
 			AC_SUBST(NOIXEMUL, -noixemul)
 		])
