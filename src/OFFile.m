@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <errno.h>
 
 #ifdef HAVE_FCNTL_H
@@ -30,6 +31,7 @@
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFLocalization.h"
+#import "OFDataArray.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -65,6 +67,37 @@
 #endif
 #ifndef O_EXLOCK
 # define O_EXLOCK 0
+#endif
+
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+# define closeHandle(h) close(h)
+#else
+static OFDataArray *openHandles = nil;
+
+static void
+closeHandle(of_file_handle_t handle)
+{
+	if (handle.index != SIZE_MAX) {
+		BPTR *handles = [openHandles items];
+		size_t count = [openHandles count];
+
+		assert(handles[handle.index] == handle.handle);
+
+		handles[handle.index] = handles[count - 1];
+		[openHandles removeItemAtIndex: count - 1];
+	}
+
+	Close(handle.handle);
+}
+
+OF_DESTRUCTOR()
+{
+	BPTR *handles = [openHandles items];
+	size_t count = [openHandles count];
+
+	for (size_t i = 0; i < count; i++)
+		Close(handles[i]);
+}
 #endif
 
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
@@ -159,6 +192,10 @@ parseMode(const char *mode, bool *append)
 	if (self != [OFFile class])
 		return;
 
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+	openHandles = [[OFDataArray alloc] initWithItemSize: sizeof(BPTR)];
+#endif
+
 #ifdef OF_WII
 	if (!fatInitDefault())
 		@throw [OFInitializationFailedException
@@ -219,6 +256,8 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
+		handle.index = SIZE_MAX;
+
 		if ((flags = parseMode([mode UTF8String],
 		    &handle.append)) == -1)
 			@throw [OFInvalidArgumentException exception];
@@ -229,9 +268,12 @@ parseMode(const char *mode, bool *append)
 			    exceptionWithPath: path
 					 mode: mode];
 
+		[openHandles addItem: &handle.handle];
+		handle.index = [openHandles count] - 1;
+
 		if (handle.append) {
 			if (Seek64(handle.handle, 0, OFFSET_END) == -1) {
-				Close(handle.handle);
+				closeHandle(handle);
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
 						 mode: mode];
@@ -248,11 +290,7 @@ parseMode(const char *mode, bool *append)
 	@try {
 		self = [self initWithHandle: handle];
 	} @catch (id e) {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-		close(handle);
-#else
-		Close(handle.handle);
-#endif
+		closeHandle(handle);
 		@throw e;
 	}
 
@@ -419,11 +457,7 @@ parseMode(const char *mode, bool *append)
 - (void)close
 {
 	if (OF_FILE_HANDLE_IS_VALID(_handle))
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-		close(_handle);
-#else
-		Close(_handle.handle);
-#endif
+		closeHandle(_handle);
 
 	_handle = OF_INVALID_FILE_HANDLE;
 

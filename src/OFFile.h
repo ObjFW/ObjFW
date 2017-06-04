@@ -29,6 +29,7 @@ typedef int of_file_handle_t;
 # define OF_FILE_HANDLE_IS_VALID(h) (h.handle != 0)
 typedef struct of_file_handle_t {
 	BPTR handle;
+	size_t index;
 	bool append;
 } of_file_handle_t;
 #endif
