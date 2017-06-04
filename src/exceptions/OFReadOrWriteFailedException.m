@@ -52,12 +52,9 @@
 -  initWithObject: (id)object
   requestedLength: (size_t)requestedLength
 {
-	self = [super init];
-
-	_object = [object retain];
-	_requestedLength = requestedLength;
-
-	return self;
+	return [self initWithObject: object
+		    requestedLength: requestedLength
+			      errNo: 0];
 }
 
 -  initWithObject: (id)object

@@ -27,6 +27,11 @@
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
 
+- init
+{
+	return [self initWithSocket: nil];
+}
+
 - initWithSocket: (id)socket
 {
 	self = [super init];

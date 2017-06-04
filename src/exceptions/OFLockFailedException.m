@@ -27,6 +27,11 @@
 	return [[[self alloc] initWithLock: lock] autorelease];
 }
 
+- init
+{
+	return [self initWithLock: nil];
+}
+
 - initWithLock: (id <OFLocking>)lock
 {
 	self = [super init];

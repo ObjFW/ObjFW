@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
-- initWithURL: (OFURL*)URL;
+- initWithURL: (OFURL*)URL OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

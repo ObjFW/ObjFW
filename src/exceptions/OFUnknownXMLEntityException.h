@@ -43,13 +43,15 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithEntityName: (OFString *)entityName;
 
+- init OF_UNAVAILABLE;
+
 /*!
  * @brief Initializes an already allocated unknown XML entity exception.
  *
  * @param entityName The name of the unknown XML entity
  * @return An initialized unknown XML entity exception
  */
-- initWithEntityName: (OFString *)entityName;
+- initWithEntityName: (OFString *)entityName OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

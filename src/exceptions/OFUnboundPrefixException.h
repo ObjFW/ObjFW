@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized unbound prefix exception
  */
 - initWithPrefix: (OFString *)prefix
-	  parser: (OFXMLParser *)parser;
+	  parser: (OFXMLParser *)parser OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

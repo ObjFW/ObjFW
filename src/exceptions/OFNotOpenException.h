@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which is not open, connected or bound
  * @return An initialized not open exception
  */
-- initWithObject: (id)object;
+- initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

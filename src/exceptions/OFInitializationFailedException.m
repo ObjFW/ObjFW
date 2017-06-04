@@ -27,6 +27,11 @@
 	return [[[self alloc] initWithClass: class] autorelease];
 }
 
+- init
+{
+	return [self initWithClass: Nil];
+}
+
 - initWithClass: (Class)class
 {
 	self = [super init];

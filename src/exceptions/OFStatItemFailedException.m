@@ -46,16 +46,8 @@
 
 - initWithPath: (OFString *)path
 {
-	self = [super init];
-
-	@try {
-		_path = [path copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithPath: path
+			    errNo: 0];
 }
 
 - initWithPath: (OFString *)path

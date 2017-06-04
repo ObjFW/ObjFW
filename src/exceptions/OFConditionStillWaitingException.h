@@ -56,7 +56,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition for which is still being waited
  * @return An initialized condition still waiting exception
  */
-- initWithCondition: (nullable OFCondition *)condition;
+- initWithCondition: (nullable OFCondition *)condition
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

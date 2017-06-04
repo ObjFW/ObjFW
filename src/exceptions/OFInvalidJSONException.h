@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized invalid JSON exception
  */
 - initWithString: (nullable OFString *)string
-	    line: (size_t)line;
+	    line: (size_t)line OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

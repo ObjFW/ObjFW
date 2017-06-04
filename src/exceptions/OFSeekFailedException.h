@@ -106,7 +106,7 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithStream: (OFSeekableStream *)stream
 	  offset: (of_offset_t)offset
 	  whence: (int)whence
-	   errNo: (int)errNo;
+	   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

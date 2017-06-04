@@ -110,7 +110,7 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithHost: (OFString *)host
 	  port: (uint16_t)port
 	socket: (id)socket
-	 errNo: (int)errNo;
+	 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

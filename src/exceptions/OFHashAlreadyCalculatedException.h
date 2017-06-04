@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The hash which has already been calculated
  * @return An initialized hash already calculated exception
  */
-- initWithObject: (id)object;
+- initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

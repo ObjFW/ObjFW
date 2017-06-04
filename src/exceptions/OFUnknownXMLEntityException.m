@@ -27,6 +27,11 @@
 	return [[[self alloc] initWithEntityName: entityName] autorelease];
 }
 
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - initWithEntityName: (OFString *)entityName
 {
 	self = [super init];

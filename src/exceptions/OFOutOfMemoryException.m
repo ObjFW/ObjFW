@@ -28,6 +28,11 @@
 	    initWithRequestedSize: requestedSize] autorelease];
 }
 
+- init
+{
+	return [self initWithRequestedSize: 0];
+}
+
 - initWithRequestedSize: (size_t)requestedSize
 {
 	self = [super init];

@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which could not be joined
  * @return An initialized thread join failed exception
  */
-- initWithThread: (nullable OFThread *)thread;
+- initWithThread: (nullable OFThread *)thread OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -58,18 +58,10 @@
 	  port: (uint16_t)port
 	socket: (id)socket
 {
-	self = [super init];
-
-	@try {
-		_host = [host copy];
-		_socket = [socket retain];
-		_port = port;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithHost: host
+			     port: port
+			   socket: socket
+			    errNo: 0];
 }
 
 - initWithHost: (OFString *)host

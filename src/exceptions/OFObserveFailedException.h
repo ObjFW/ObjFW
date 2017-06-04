@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized observe failed exception
  */
 - initWithObserver: (OFKernelEventObserver *)observer
-	     errNo: (int)errNo;
+	     errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

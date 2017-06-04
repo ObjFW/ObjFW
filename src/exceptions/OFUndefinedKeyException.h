@@ -70,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object
 				key: (OFString *)key
-			      value: (id)value;
+			      value: (nullable id)value;
 
 - init OF_UNAVAILABLE;
 
@@ -96,7 +96,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithObject: (id)object
 	     key: (OFString *)key
-	   value: (id)value;
+	   value: (nullable id)value OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

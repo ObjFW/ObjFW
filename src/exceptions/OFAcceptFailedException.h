@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized accept failed exception
  */
 - initWithSocket: (id)socket
-	   errNo: (int)errNo;
+	   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

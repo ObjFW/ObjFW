@@ -48,9 +48,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithHost: (nullable OFString *)host;
 
++ (instancetype)exceptionWithError: (int)error;
 + (instancetype)exceptionWithHost: (nullable OFString *)host
 			    error: (int)error;
-+ (instancetype)exceptionWithError: (int)error;
 
 /*!
  * @brief Initializes an already allocated address translation failed exception.
@@ -60,9 +60,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithHost: (nullable OFString *)host;
 
-- (instancetype)initWithHost: (nullable OFString *)host
-		       error: (int)error;
 - (instancetype)initWithError: (int)error;
+- (instancetype)initWithHost: (nullable OFString *)host
+		       error: (int)error OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

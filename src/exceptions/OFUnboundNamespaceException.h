@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized unbound namespace exception
  */
 - initWithNamespace: (OFString *)namespace_
-	    element: (OFXMLElement *)element;
+	    element: (OFXMLElement *)element OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

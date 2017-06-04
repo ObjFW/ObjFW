@@ -70,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new HTTP request failed exception
  */
 - initWithRequest: (OFHTTPRequest *)request
-	 response: (OFHTTPResponse *)response;
+	 response: (OFHTTPResponse *)response OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param version The version which is unsupported
  * @return An initialized unsupported version exception
  */
-- initWithVersion: (OFString *)version;
+- initWithVersion: (OFString *)version OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

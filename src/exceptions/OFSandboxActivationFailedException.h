@@ -65,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized sandboxing failed exception
  */
 - initWithSandbox: (OFSandbox *)sandbox
-	    errNo: (int)errNo;
+	    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

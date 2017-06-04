@@ -62,48 +62,25 @@
 
 - initWithPath: (OFString *)path
 {
-	self = [super init];
-
-	@try {
-		_path = [path copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithPath: path
+			     mode: nil
+			    errNo: 0];
 }
 
 - initWithPath: (OFString *)path
 	  mode: (OFString *)mode
 {
-	self = [super init];
-
-	@try {
-		_path  = [path copy];
-		_mode  = [mode copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithPath: path
+			     mode: mode
+			    errNo: 0];
 }
 
 - initWithPath: (OFString *)path
 	 errNo: (int)errNo
 {
-	self = [super init];
-
-	@try {
-		_path  = [path copy];
-		_errNo = errNo;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithPath: path
+			     mode: nil
+			    errNo: errNo];
 }
 
 - initWithPath: (OFString *)path

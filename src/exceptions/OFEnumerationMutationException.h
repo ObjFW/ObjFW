@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which was mutated during enumeration
  * @return An initialized enumeration mutation exception
  */
-- initWithObject: (id)object;
+- initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param lock The lock which could not be locked
  * @return An initialized lock failed exception
  */
-- initWithLock: (nullable id <OFLocking>)lock;
+- initWithLock: (nullable id <OFLocking>)lock OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

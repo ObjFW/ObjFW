@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param requestedSize The size of the memory that could not be allocated
  * @return An initialized no memory exception
  */
-- initWithRequestedSize: (size_t)requestedSize;
+- initWithRequestedSize: (size_t)requestedSize OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

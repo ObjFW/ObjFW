@@ -28,6 +28,11 @@
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
+- init
+{
+	return [self initWithCondition: nil];
+}
+
 - initWithCondition: (OFCondition *)condition
 {
 	self = [super init];

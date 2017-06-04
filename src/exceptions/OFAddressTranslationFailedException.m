@@ -51,6 +51,11 @@ static of_mutex_t mutex;
 	return [[[self alloc] initWithHost: host] autorelease];
 }
 
++ (instancetype)exceptionWithError: (int)error
+{
+	return [[[self alloc] initWithError: error] autorelease];
+}
+
 + (instancetype)exceptionWithHost: (OFString *)host
 			    error: (int)error
 {
@@ -58,23 +63,22 @@ static of_mutex_t mutex;
 				     error: error] autorelease];
 }
 
-+ (instancetype)exceptionWithError: (int)error
+- init
 {
-	return [[[self alloc] initWithError: error] autorelease];
+	return [self initWithHost: nil
+			    error: 0];
 }
 
 - initWithHost: (OFString *)host
 {
-	self = [super init];
+	return [self initWithHost: host
+			    error: 0];
+}
 
-	@try {
-		_host = [host copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+- (instancetype)initWithError: (int)error
+{
+	return [self initWithHost: nil
+			    error: error];
 }
 
 - (instancetype)initWithHost: (OFString *)host
@@ -89,15 +93,6 @@ static of_mutex_t mutex;
 		[self release];
 		@throw e;
 	}
-
-	return self;
-}
-
-- (instancetype)initWithError: (int)error
-{
-	self = [super init];
-
-	_error = error;
 
 	return self;
 }

@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param class_ The class for which initialization failed
  * @return An initialized initialization failed exception
  */
-- initWithClass: (nullable Class)class_;
+- initWithClass: (nullable Class)class_ OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

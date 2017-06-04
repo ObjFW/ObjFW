@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - initWithSocket: (id)socket
 	 backLog: (int)backLog
-	   errNo: (int)errNo;
+	   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

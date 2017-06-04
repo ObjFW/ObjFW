@@ -52,17 +52,9 @@
 - initWithSourcePath: (OFString *)sourcePath
      destinationPath: (OFString *)destinationPath
 {
-	self = [super init];
-
-	@try {
-		_sourcePath = [sourcePath copy];
-		_destinationPath = [destinationPath copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithSourcePath: sourcePath
+			destinationPath: destinationPath
+				  errNo: 0];
 }
 
 - initWithSourcePath: (OFString *)sourcePath

@@ -51,17 +51,9 @@
 - initWithObject: (id)object
 	     key: (OFString *)key
 {
-	self = [super init];
-
-	@try {
-		_object = [object retain];
-		_key = [key copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
+	return [self initWithObject: object
+				key: key
+			      value: nil];
 }
 
 - initWithObject: (id)object

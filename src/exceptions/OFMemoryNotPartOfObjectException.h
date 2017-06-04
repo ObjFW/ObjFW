@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized memory not part of object exception
  */
 - initWithPointer: (void *)pointer
-	   object: (id)object;
+	   object: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

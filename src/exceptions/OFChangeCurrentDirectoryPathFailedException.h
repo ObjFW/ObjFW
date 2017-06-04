@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized change current directory path failed exception
  */
 - initWithPath: (OFString *)path
-	 errNo: (int)errNo;
+	 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

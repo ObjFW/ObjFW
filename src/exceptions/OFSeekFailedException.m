@@ -58,13 +58,10 @@
 	  offset: (of_offset_t)offset
 	  whence: (int)whence
 {
-	self = [super init];
-
-	_stream = [stream retain];
-	_offset = offset;
-	_whence = whence;
-
-	return self;
+	return [self initWithStream: stream
+			     offset: offset
+			     whence: whence
+			      errNo: 0];
 }
 
 - initWithStream: (OFSeekableStream *)stream
