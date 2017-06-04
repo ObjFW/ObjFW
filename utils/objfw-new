@@ -1,0 +1,58 @@
+#!/bin/sh
+
+show_help() {
+	echo "Usage: objfw-new app|class name"
+	exit 1
+}
+
+already_exists() {
+	echo "$1 already exists! Aborting..."
+	exit 1
+}
+
+type="$1"
+name="$2"
+
+test -z "$name" && show_help
+
+case "$1" in
+	app)
+		test -f "$name.m" && already_exists "$name.m"
+
+		cat >"$name.m" <<__EOF__
+#import <ObjFW/ObjFW.h>
+
+@interface $name: OFObject <OFApplicationDelegate>
+@end
+
+OF_APPLICATION_DELEGATE($name)
+
+@implementation $name
+- (void)applicationDidFinishLaunching
+{
+	[OFApplication terminate];
+}
+@end
+__EOF__
+		;;
+	class)
+		test -f "$name.h" && already_exists "$name.h"
+		test -f "$name.m" && already_exists "$name.m"
+
+		cat >"$name.h" <<__EOF__
+#import <ObjFW/ObjFW.h>
+
+@interface $name: OFObject
+@end
+__EOF__
+		cat >"$name.m" <<__EOF__
+#import "$name.h"
+
+@implementation $name
+@end
+__EOF__
+		;;
+	*)
+		show_help
+		;;
+esac
