@@ -2521,7 +2521,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
@@ -2574,7 +2574,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||

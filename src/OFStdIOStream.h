@@ -16,7 +16,7 @@
 
 #import "OFStream.h"
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # undef BOOL
@@ -37,7 +37,7 @@ OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFStdIOStream: OFStream
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	int _fd;
 #else
 	BPTR _handle;

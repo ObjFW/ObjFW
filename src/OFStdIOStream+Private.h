@@ -19,7 +19,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFStdIOStream ()
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 - (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
 #else
 - (instancetype)of_initWithHandle: (BPTR)handle

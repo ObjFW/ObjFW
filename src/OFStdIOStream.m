@@ -39,7 +39,7 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
 # include <proto/exec.h>
 # undef BOOL
@@ -58,7 +58,7 @@ OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 OF_DESTRUCTOR()
 {
 	[of_stdin dealloc];
@@ -94,7 +94,7 @@ of_log(OFConstantString *format, ...)
 #ifndef OF_WINDOWS
 + (void)load
 {
-# if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+# ifndef OF_MORPHOS
 	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: 0];
 	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
@@ -134,7 +134,7 @@ of_log(OFConstantString *format, ...)
 	OF_INVALID_INIT_METHOD
 }
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 - (instancetype)of_initWithFileDescriptor: (int)fd
 {
 	self = [super init];
@@ -165,7 +165,7 @@ of_log(OFConstantString *format, ...)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	if (_fd == -1)
 		return true;
 #else
@@ -181,7 +181,7 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	if (_fd == -1 || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
@@ -222,7 +222,7 @@ of_log(OFConstantString *format, ...)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	if (_fd == -1 || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
@@ -258,7 +258,7 @@ of_log(OFConstantString *format, ...)
 #endif
 }
 
-#if !defined(OF_WINDOWS) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
 - (int)fileDescriptorForReading
 {
 	return _fd;
@@ -272,7 +272,7 @@ of_log(OFConstantString *format, ...)
 
 - (void)close
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	if (_fd != -1)
 		close(_fd);
 
@@ -308,8 +308,7 @@ of_log(OFConstantString *format, ...)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
-    (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_MORPHOS)
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
@@ -323,8 +322,7 @@ of_log(OFConstantString *format, ...)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && \
-    (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_MORPHOS)
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)

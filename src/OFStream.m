@@ -31,7 +31,7 @@
 
 #include "platform.h"
 
-#if !defined(OF_WINDOWS) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
 # include <signal.h>
 #endif
 
@@ -56,7 +56,7 @@
 @implementation OFStream
 @synthesize of_waitingForDelimiter = _waitingForDelimiter;
 
-#if !defined(OF_WINDOWS) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
 + (void)initialize
 {
 	if (self == [OFStream class])

@@ -19,7 +19,7 @@
 
 #import "platform.h"
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
 # include <exec/types.h>
 # undef BOOL

@@ -69,7 +69,7 @@
 # define O_EXLOCK 0
 #endif
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 # define closeHandle(h) close(h)
 #else
 static OFDataArray *openHandles = nil;
@@ -100,7 +100,7 @@ OF_DESTRUCTOR()
 }
 #endif
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 static int
 parseMode(const char *mode)
 {
@@ -192,7 +192,7 @@ parseMode(const char *mode, bool *append)
 	if (self != [OFFile class])
 		return;
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 	openHandles = [[OFDataArray alloc] initWithItemSize: sizeof(BPTR)];
 #endif
 
@@ -235,7 +235,7 @@ parseMode(const char *mode, bool *append)
 		void *pool = objc_autoreleasePoolPush();
 		int flags;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 		if ((flags = parseMode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException exception];
 
@@ -331,7 +331,7 @@ parseMode(const char *mode, bool *append)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
-#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#elif defined(OF_MORPHOS)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -366,7 +366,7 @@ parseMode(const char *mode, bool *append)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
-#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#elif defined(OF_MORPHOS)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -401,7 +401,7 @@ parseMode(const char *mode, bool *append)
 							   offset: offset
 							   whence: whence];
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 # if defined(OF_WINDOWS)
 	ret = _lseeki64(_handle, offset, whence);
 # elif defined(OF_HAVE_OFF64_T)

@@ -26,7 +26,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # include <proto/locale.h>
@@ -35,7 +35,7 @@
 
 static OFLocalization *sharedLocalization = nil;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 static void
 parseLocale(char *locale, of_string_encoding_t *encoding,
     OFString **language, OFString **territory)
@@ -123,7 +123,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	self = [super init];
 
 	@try {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 		char *locale, *messagesLocale = NULL;
 
 		_encoding = OF_STRING_ENCODING_UTF_8;

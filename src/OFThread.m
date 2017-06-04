@@ -31,7 +31,7 @@
 
 #include "platform.h"
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # undef BOOL
@@ -195,7 +195,7 @@ callMain(id object)
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
-#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#elif defined(OF_MORPHOS)
 	if (timeInterval * 50 > ULONG_MAX)
 		@throw [OFOutOfRangeException exception];
 

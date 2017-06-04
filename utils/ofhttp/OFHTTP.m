@@ -270,7 +270,7 @@ help(OFStream *stream, bool full, int status)
 	}
 #endif
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 #else
 	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofhttp/lang"];

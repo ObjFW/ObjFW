@@ -25,11 +25,11 @@
 #import "platform.h"
 
 #ifdef OF_HAVE_SYS_SOCKET_H
-# if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# ifdef OF_MORPHOS
 #  define BOOL EXEC_BOOL
 # endif
 # include <sys/socket.h>
-# if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# ifdef OF_MORPHOS
 #  undef BOOL
 # endif
 #endif
@@ -54,11 +54,17 @@
 #endif
 
 #ifdef OF_MORPHOS
-# ifndef OF_IXEMUL
 typedef long socklen_t;
-# else
-typedef int socklen_t;
+
+struct sockaddr_storage {
+	uint8_t ss_len;
+	uint8_t ss_family;
+	char ss_data[2 + sizeof(struct in_addr) + 8];
+};
 #endif
+
+#ifdef OF_MORPHOS_IXEMUL
+typedef int socklen_t;
 
 struct sockaddr_storage {
 	uint8_t ss_len;

@@ -16,7 +16,7 @@
 
 #import "OFSeekableStream.h"
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 # define OF_FILE_HANDLE_IS_FD
 # define OF_INVALID_FILE_HANDLE (-1)
 # define OF_FILE_HANDLE_IS_VALID(h) (h != -1)

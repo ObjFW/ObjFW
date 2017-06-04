@@ -154,7 +154,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	}
 #endif
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+#ifndef OF_MORPHOS
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 #else
 	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofzip/lang"];

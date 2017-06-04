@@ -35,7 +35,7 @@
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFSandbox.h"
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#ifdef OF_MORPHOS
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
@@ -51,7 +51,7 @@
 
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
-#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#elif defined(OF_MORPHOS)
 # define BOOL EXEC_BOOL
 # include <proto/exec.h>
 # include <proto/dos.h>
@@ -267,7 +267,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 		}
 
 		FreeEnvironmentStringsW(env0);
-#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#elif defined(OF_MORPHOS)
 		void *pool = objc_autoreleasePoolPush();
 		OFFileManager *fileManager = [OFFileManager defaultManager];
 		OFArray *envContents =
