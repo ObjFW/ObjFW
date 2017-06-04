@@ -90,7 +90,11 @@ hashForName(OFString *name)
 	}
 #endif
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
+#else
+	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
+#endif
 
 	if ([arguments count] < 2)
 		help();

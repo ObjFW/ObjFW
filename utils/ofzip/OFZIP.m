@@ -154,7 +154,11 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	}
 #endif
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
+#else
+	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofzip/lang"];
+#endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
 	while ((option = [optionsParser nextOption]) != '\0') {

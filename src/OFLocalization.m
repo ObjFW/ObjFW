@@ -26,8 +26,16 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 
+#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+# define BOOL EXEC_BOOL
+# include <proto/dos.h>
+# include <proto/locale.h>
+# undef BOOL
+#endif
+
 static OFLocalization *sharedLocalization = nil;
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 static void
 parseLocale(char *locale, of_string_encoding_t *encoding,
     OFString **language, OFString **territory)
@@ -72,6 +80,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 		free(locale);
 	}
 }
+#endif
 
 @implementation OFLocalization
 @synthesize language = _language, territory = _territory, encoding = _encoding;
@@ -114,6 +123,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	self = [super init];
 
 	@try {
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 		char *locale, *messagesLocale = NULL;
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
@@ -125,9 +135,9 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 			    initWithCString: localeconv()->decimal_point
 				   encoding: _encoding];
 
-#ifdef LC_MESSAGES
+# ifdef LC_MESSAGES
 		messagesLocale = setlocale(LC_MESSAGES, "");
-#endif
+# endif
 		if (messagesLocale == NULL)
 			messagesLocale = locale;
 
@@ -142,6 +152,70 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 
 			objc_autoreleasePoolPop(pool);
 		}
+#else
+		void *pool = objc_autoreleasePoolPush();
+		char buffer[32];
+		struct Locale *locale;
+
+		/*
+		 * Returns an empty string on MorphOS + libnix, but still
+		 * applies it so that printf etc. work as expected.
+		 */
+		setlocale(LC_ALL, "");
+
+		if (GetVar("CODEPAGE", buffer, sizeof(buffer), 0) > 0) {
+			of_string_encoding_t ASCII = OF_STRING_ENCODING_ASCII;
+
+			@try {
+				_encoding = of_string_parse_encoding(
+				    [OFString stringWithCString: buffer
+						       encoding: ASCII]);
+			} @catch (OFInvalidEncodingException *e) {
+				_encoding = OF_STRING_ENCODING_ISO_8859_1;
+			}
+		} else
+			_encoding = OF_STRING_ENCODING_ISO_8859_1;
+
+		/*
+		 * Get it via localeconv() instead of from the Locale struct,
+		 * to make sure we and printf etc. have the same expectations.
+		 */
+		_decimalPoint = [[OFString alloc]
+		    initWithCString: localeconv()->decimal_point
+			   encoding: _encoding];
+
+		_localizedStrings = [[OFMutableArray alloc] init];
+
+		if (GetVar("Language", buffer, sizeof(buffer), 0) > 0)
+			_language = [[OFString alloc]
+			    initWithCString: buffer
+				   encoding: _encoding];
+
+		locale = OpenLocale(NULL);
+		@try {
+			union {
+				uint32_t u32;
+				char c[4];
+			} territory;
+			size_t length;
+
+			territory.u32 =
+			    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
+
+			for (length = 0; length < 4; length++)
+				if (territory.c[length] == 0)
+					break;
+
+			_territory = [[OFString alloc]
+			    initWithCString: territory.c
+				   encoding: _encoding
+				     length: length];
+		} @finally {
+			CloseLocale(locale);
+		}
+
+		objc_autoreleasePoolPop(pool);
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
