@@ -108,6 +108,8 @@ parseMode(const char *mode)
 static int
 parseMode(const char *mode, bool *append)
 {
+	*append = false;
+
 	if (strcmp(mode, "r") == 0)
 		return MODE_OLDFILE;
 	if (strcmp(mode, "w") == 0)
@@ -177,17 +179,10 @@ parseMode(const char *mode, bool *append)
 				      mode: mode] autorelease];
 }
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-+ (instancetype)fileWithFileDescriptor: (int)fd
-{
-	return [[[self alloc] initWithFileDescriptor: fd] autorelease];
-}
-#else
-+ (instancetype)fileWithHandle: (BPTR)handle
++ (instancetype)fileWithHandle: (of_file_handle_t)handle
 {
 	return [[[self alloc] initWithHandle: handle] autorelease];
 }
-#endif
 
 - init
 {
@@ -197,9 +192,10 @@ parseMode(const char *mode, bool *append)
 - initWithPath: (OFString *)path
 	  mode: (OFString *)mode
 {
-	self = [super init];
+	of_file_handle_t handle;
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 		int flags;
 
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
@@ -209,13 +205,13 @@ parseMode(const char *mode, bool *append)
 		flags |= O_CLOEXEC;
 
 # if defined(OF_WINDOWS)
-		if ((_fd = _wopen([path UTF16String], flags,
+		if ((handle = _wopen([path UTF16String], flags,
 		    _S_IREAD | _S_IWRITE)) == -1)
 # elif defined(OF_HAVE_OFF64_T)
-		if ((_fd = open64([path cStringWithEncoding:
+		if ((handle = open64([path cStringWithEncoding:
 		    [OFLocalization encoding]], flags, 0666)) == -1)
 # else
-		if ((_fd = open([path cStringWithEncoding:
+		if ((handle = open([path cStringWithEncoding:
 		    [OFLocalization encoding]], flags, 0666)) == -1)
 # endif
 			@throw [OFOpenItemFailedException
@@ -223,41 +219,47 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
-		if ((flags = parseMode([mode UTF8String], &_append)) == -1)
+		if ((flags = parseMode([mode UTF8String],
+		    &handle.append)) == -1)
 			@throw [OFInvalidArgumentException exception];
 
-		if ((_handle = Open([path cStringWithEncoding:
+		if ((handle.handle = Open([path cStringWithEncoding:
 		    [OFLocalization encoding]], flags)) == 0)
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: mode];
 
-		if (_append) {
-			if (Seek64(_handle, 0, OFFSET_END) == -1)
+		if (handle.append) {
+			if (Seek64(handle.handle, 0, OFFSET_END) == -1) {
+				Close(handle.handle);
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
 						 mode: mode];
+			}
 		}
 #endif
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithHandle: handle];
+	} @catch (id e) {
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+		close(handle);
+#else
+		Close(handle.handle);
+#endif
 		@throw e;
 	}
 
 	return self;
 }
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-- initWithFileDescriptor: (int)fd
-{
-	self = [super init];
-
-	_fd = fd;
-
-	return self;
-}
-#else
-- initWithHandle: (BPTR)handle
+- initWithHandle: (of_file_handle_t)handle
 {
 	self = [super init];
 
@@ -265,17 +267,11 @@ parseMode(const char *mode, bool *append)
 
 	return self;
 }
-#endif
 
 - (bool)lowlevelIsAtEndOfStream
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	if (_fd == -1)
+	if (!OF_FILE_HANDLE_IS_VALID(_handle))
 		return true;
-#else
-	if (_handle == 0)
-		return true;
-#endif
 
 	return _atEndOfStream;
 }
@@ -285,36 +281,30 @@ parseMode(const char *mode, bool *append)
 {
 	ssize_t ret;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	if (_fd == -1 || _atEndOfStream)
+	if (!OF_FILE_HANDLE_IS_VALID(_handle) || _atEndOfStream)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
 
-# ifndef OF_WINDOWS
-	if ((ret = read(_fd, buffer, length)) < 0)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: errno];
-# else
+#if defined(OF_WINDOWS)
 	if (length > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = read(_fd, buffer, (unsigned int)length)) < 0)
+	if ((ret = read(_handle, buffer, (unsigned int)length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
-# endif
-#else
-	if (_handle == 0 || _atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
-
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = Read(_handle, buffer, length)) < 0)
+	if ((ret = Read(_handle.handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length];
+#else
+	if ((ret = read(_handle, buffer, length)) < 0)
+		@throw [OFReadFailedException exceptionWithObject: self
+						  requestedLength: length
+							    errNo: errno];
 #endif
 
 	if (ret == 0)
@@ -326,44 +316,40 @@ parseMode(const char *mode, bool *append)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	if (_fd == -1 || _atEndOfStream)
+	if (!OF_FILE_HANDLE_IS_VALID(_handle) || _atEndOfStream)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
-# ifndef OF_WINDOWS
-	if (length > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, buffer, length) != (ssize_t)length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-							     errNo: errno];
-# else
+#if defined(OF_WINDOWS)
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, buffer, (int)length) != (int)length)
+	if (write(_handle, buffer, (int)length) != (int)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: errno];
-# endif
-#else
-	if (_handle == 0 || _atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+#elif defined(OF_MORPHOS) && !defined(OF_IXEMUL)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_append) {
-		if (Seek64(_handle, 0, OFFSET_END) == -1)
+	if (_handle.append) {
+		if (Seek64(_handle.handle, 0, OFFSET_END) == -1)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length];
 	}
 
-	if (Write(_handle, (void *)buffer, length) != (LONG)length)
+	if (Write(_handle.handle, (void *)buffer, length) != (LONG)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length];
+#else
+	if (length > SSIZE_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if (write(_handle, buffer, length) != (ssize_t)length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+							     errNo: errno];
 #endif
 }
 
@@ -372,18 +358,18 @@ parseMode(const char *mode, bool *append)
 {
 	of_offset_t ret;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	if (_fd == -1)
+	if (!OF_FILE_HANDLE_IS_VALID(_handle))
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
 							   whence: whence];
 
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 # if defined(OF_WINDOWS)
-	ret = _lseeki64(_fd, offset, whence);
+	ret = _lseeki64(_handle, offset, whence);
 # elif defined(OF_HAVE_OFF64_T)
-	ret = lseek64(_fd, offset, whence);
+	ret = lseek64(_handle, offset, whence);
 # else
-	ret = lseek(_fd, offset, whence);
+	ret = lseek(_handle, offset, whence);
 # endif
 
 	if (ret == -1)
@@ -392,20 +378,15 @@ parseMode(const char *mode, bool *append)
 							   whence: whence
 							    errNo: errno];
 #else
-	if (_handle == 0)
-		@throw [OFSeekFailedException exceptionWithStream: self
-							   offset: offset
-							   whence: whence];
-
 	switch (whence) {
 	case SEEK_SET:
-		ret = Seek64(_handle, offset, OFFSET_BEGINNING);
+		ret = Seek64(_handle.handle, offset, OFFSET_BEGINNING);
 		break;
 	case SEEK_CUR:
-		ret = Seek64(_handle, offset, OFFSET_CURRENT);
+		ret = Seek64(_handle.handle, offset, OFFSET_CURRENT);
 		break;
 	case SEEK_END:
-		ret = Seek64(_handle, offset, OFFSET_END);
+		ret = Seek64(_handle.handle, offset, OFFSET_END);
 		break;
 	default:
 		ret = -1;
@@ -423,31 +404,28 @@ parseMode(const char *mode, bool *append)
 	return ret;
 }
 
-#if !defined(OF_WINDOWS) && (!defined(OF_MORPHOS) || defined(OF_IXEMUL))
+#ifdef OF_FILE_HANDLE_IS_FD
 - (int)fileDescriptorForReading
 {
-	return _fd;
+	return _handle;
 }
 
 - (int)fileDescriptorForWriting
 {
-	return _fd;
+	return _handle;
 }
 #endif
 
 - (void)close
 {
+	if (OF_FILE_HANDLE_IS_VALID(_handle))
 #if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	if (_fd != -1)
-		close(_fd);
-
-	_fd = -1;
+		close(_handle);
 #else
-	if (_handle != 0)
-		Close(_handle);
-
-	_handle = 0;
+		Close(_handle.handle);
 #endif
+
+	_handle = OF_INVALID_FILE_HANDLE;
 
 	[super close];
 }

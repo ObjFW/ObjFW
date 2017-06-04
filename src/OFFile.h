@@ -16,10 +16,21 @@
 
 #import "OFSeekableStream.h"
 
-#if defined(OF_MORPHOS) && !defined(OF_IXEMUL)
+#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
+# define OF_FILE_HANDLE_IS_FD
+# define OF_INVALID_FILE_HANDLE (-1)
+# define OF_FILE_HANDLE_IS_VALID(h) (h != -1)
+typedef int of_file_handle_t;
+#else
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # undef BOOL
+# define OF_INVALID_FILE_HANDLE ((of_file_handle_t){ 0, false })
+# define OF_FILE_HANDLE_IS_VALID(h) (h.handle != 0)
+typedef struct of_file_handle_t {
+	BPTR handle;
+	bool append;
+} of_file_handle_t;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -31,12 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFFile: OFSeekableStream
 {
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
-	int _fd;
-#else
-	BPTR _handle;
-	bool _append;
-#endif
+	of_file_handle_t _handle;
 	bool _atEndOfStream;
 }
 
@@ -65,25 +71,15 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)fileWithPath: (OFString *)path
 			mode: (OFString *)mode;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 /*!
- * @brief Creates a new OFFile with the specified file descriptor.
+ * @brief Creates a new OFFile with the specified native file handle.
  *
- * @param fd A file descriptor, returned from for example open().
- *	     It is closed when the OFFile object is deallocated!
+ * @param handle A native file handle. If OF_FILE_HANDLE_IS_FD is defined, this
+ *		 is a file descriptor. The handle is closed when the OFFile
+ *		 object is deallocated!
  * @return A new autoreleased OFFile
  */
-+ (instancetype)fileWithFileDescriptor: (int)fd;
-#else
-/*!
- * @brief Creates a new OFFile with the specified handle.
- *
- * @param handle A handle, returned from for example Open().
- *		 It is closed when the OFFile object is deallocated!
- * @return A new autoreleased OFFile
- */
-+ (instancetype)fileWithHandle: (BPTR)handle;
-#endif
++ (instancetype)fileWithHandle: (of_file_handle_t)handle;
 
 - init OF_UNAVAILABLE;
 
@@ -112,25 +108,15 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithPath: (OFString *)path
 	  mode: (OFString *)mode;
 
-#if !defined(OF_MORPHOS) || defined(OF_IXEMUL)
 /*!
  * @brief Initializes an already allocated OFFile.
  *
- * @param fd A file descriptor, returned from for example open().
- *	     It is closed when the OFFile object is deallocated!
+ * @param handle A native file handle. If OF_FILE_HANDLE_IS_FD is defined, this
+ *		 is a file descriptor. The handle is closed when the OFFile
+ *		 object is deallocated!
  * @return An initialized OFFile
  */
-- initWithFileDescriptor: (int)fd;
-#else
-/*!
- * @brief Initializes an already allocated OFFile.
- *
- * @param handle A handle, returned from for example Open().
- *		 It is closed when the OFFile object is deallocated!
- * @return An initialized OFFile
- */
-- initWithHandle: (BPTR)handle;
-#endif
+- initWithHandle: (of_file_handle_t)handle OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END
