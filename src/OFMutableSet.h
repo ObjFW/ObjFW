@@ -23,13 +23,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief An abstract class for a mutable unordered set of unique objects.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFMutableSet<ObjectType>: OFSet<ObjectType>
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFMutableSet: OFSet
+@interface OFMutableSet OF_GENERIC(ObjectType): OFSet OF_GENERIC(ObjectType)
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
 /*!
  * @brief Creates a new OFMutableSet with enough memory to hold the specified
@@ -89,9 +85,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Converts the mutable set to an immutable set.
  */
 - (void)makeImmutable;
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END

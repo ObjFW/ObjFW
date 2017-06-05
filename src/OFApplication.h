@@ -20,14 +20,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
-#ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-#endif
 @class OFSandbox;
+@class OFString;
 
 #define OF_APPLICATION_DELEGATE(cls)					\
 	int								\

@@ -18,13 +18,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
-@class OFMutableString;
-#ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-#endif
+@class OFMutableString;
+@class OFString;
 @class OFXMLAttribute;
 
 /*!

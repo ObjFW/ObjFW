@@ -20,11 +20,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-#endif
 @class OFSeekableStream;
 @class OFStream;
 

@@ -86,16 +86,12 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *
  * @brief An abstract class for storing objects in an array.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFArray<ObjectType>:
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFArray:
+@interface OFArray OF_GENERIC(ObjectType): OFObject <OFCopying,
+    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMessagePackRepresentation>
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
-    OFObject <OFCopying, OFMutableCopying, OFCollection, OFSerialization,
-    OFJSONRepresentation, OFMessagePackRepresentation>
 /*!
  * @brief Creates a new OFArray.
  *
@@ -482,10 +478,10 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  */
 - (nullable id)foldUsingBlock: (of_array_fold_block_t)block;
 #endif
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 @interface OFArrayEnumerator: OFEnumerator
 {

@@ -60,15 +60,11 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @warning Do not mutate objects that are in a set! Changing the hash of
  *	    objects in a set breaks the internal representation of the set!
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFSet<ObjectType>:
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFSet:
+@interface OFSet OF_GENERIC(ObjectType): OFObject <OFCollection, OFCopying,
+    OFMutableCopying, OFSerialization>
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
-    OFObject <OFCollection, OFCopying, OFMutableCopying, OFSerialization>
 /*!
  * @brief Creates a new set.
  *
@@ -277,10 +273,10 @@ typedef bool (^of_set_filter_block_t)(id object);
 - (OFSet OF_GENERIC(ObjectType) *)filteredSetUsingBlock:
     (of_set_filter_block_t)block;
 #endif
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END
 

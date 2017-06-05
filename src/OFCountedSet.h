@@ -39,13 +39,10 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
  * @brief An abstract class for a mutable unordered set of objects, counting how
  *	  often it contains an object.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFCountedSet<ObjectType>: OFMutableSet<ObjectType>
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFCountedSet: OFMutableSet
+@interface OFCountedSet OF_GENERIC(ObjectType):
+    OFMutableSet OF_GENERIC(ObjectType)
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
 /*!
  * @brief Returns how often the object is in the set.
@@ -63,9 +60,9 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
 - (void)enumerateObjectsAndCountUsingBlock:
     (of_counted_set_enumeration_block_t)block;
 #endif
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END

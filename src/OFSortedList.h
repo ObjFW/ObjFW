@@ -26,13 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @warning Because the list is sorted, all methods inserting an object at a
  *	    specific place are unavailable, even though they exist in OFList!
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFSortedList<ObjectType>: OFList<ObjectType>
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFSortedList: OFList
+@interface OFSortedList OF_GENERIC(ObjectType): OFList OF_GENERIC(ObjectType)
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
 /*!
  * @brief Inserts the object to the list while keeping the list sorted.
@@ -41,9 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The list object for the object just added
  */
 - (of_list_object_t *)insertObject: (ObjectType <OFComparing>)object;
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END

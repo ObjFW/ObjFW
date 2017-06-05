@@ -18,9 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifndef DOXYGEN
 @class OFArray OF_GENERIC(ObjectType);
-#endif
 
 /*!
  * @class OFSandbox OFSandbox.h ObjFW/OFSandbox.h

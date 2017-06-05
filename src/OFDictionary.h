@@ -51,17 +51,13 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @note Fast enumeration on a dictionary enumerates through the keys of the
  *	 dictionary.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFDictionary<KeyType, ObjectType>:
-#else
-# ifndef DOXYGEN
-#  define KeyType id
-#  define ObjectType id
-# endif
-@interface OFDictionary:
+@interface OFDictionary OF_GENERIC(KeyType, ObjectType): OFObject <OFCopying,
+    OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
+    OFMessagePackRepresentation>
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define KeyType id
+# define ObjectType id
 #endif
-    OFObject <OFCopying, OFMutableCopying, OFCollection, OFSerialization,
-    OFJSONRepresentation, OFMessagePackRepresentation>
 /*!
  * @brief Creates a new OFDictionary.
  *
@@ -305,11 +301,11 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 - (OFDictionary OF_GENERIC(KeyType, ObjectType) *)filteredDictionaryUsingBlock:
     (of_dictionary_filter_block_t)block;
 #endif
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef KeyType
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END
 

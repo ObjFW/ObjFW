@@ -36,15 +36,11 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  *
  * @brief An abstract class for storing and changing objects in a dictionary.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFMutableDictionary<KeyType, ObjectType>:
-    OFDictionary<KeyType, ObjectType>
-#else
-# ifndef DOXYGEN
-#  define KeyType id
-#  define ObjectType id
-# endif
-@interface OFMutableDictionary: OFDictionary
+@interface OFMutableDictionary OF_GENERIC(KeyType, ObjectType):
+    OFDictionary OF_GENERIC(KeyType, ObjectType)
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define KeyType id
+# define ObjectType id
 #endif
 /*!
  * @brief Creates a new OFMutableDictionary with enough memory to hold the
@@ -110,10 +106,10 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  * @brief Converts the mutable dictionary to an immutable dictionary.
  */
 - (void)makeImmutable;
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef KeyType
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END

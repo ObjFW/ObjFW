@@ -44,15 +44,11 @@ struct of_list_object_t {
  *
  * @brief A class which provides easy to use double-linked lists.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFList<ObjectType>:
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFList:
+@interface OFList OF_GENERIC(ObjectType): OFObject <OFCopying, OFCollection,
+    OFSerialization>
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
-    OFObject <OFCopying, OFCollection, OFSerialization>
 {
 	of_list_object_t *_firstListObject;
 	of_list_object_t *_lastListObject;
@@ -181,10 +177,10 @@ struct of_list_object_t {
  * @brief Removes all objects from the list.
  */
 - (void)removeAllObjects;
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 @interface OFListEnumerator: OFEnumerator
 {

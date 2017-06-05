@@ -37,13 +37,9 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @brief An abstract class for storing, adding and removing objects in an
  *	  array.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFMutableArray<ObjectType>: OFArray<ObjectType>
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFMutableArray: OFArray
+@interface OFMutableArray OF_GENERIC(ObjectType): OFArray OF_GENERIC(ObjectType)
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
 /*!
  * @brief Creates a new OFMutableArray with enough memory to hold the specified
@@ -208,9 +204,9 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @brief Converts the mutable array to an immutable array.
  */
 - (void)makeImmutable;
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 OF_ASSUME_NONNULL_END

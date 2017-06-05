@@ -27,11 +27,9 @@ OF_ASSUME_NONNULL_BEGIN
 typedef void (^of_thread_pool_block_t)(void);
 #endif
 
-#ifndef DOXYGEN
-@class OFMutableArray OF_GENERIC(ObjectType);
-@class OFList OF_GENERIC(ObjectType);
-#endif
 @class OFCondition;
+@class OFList OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFThreadPoolJob;
 
 /*!

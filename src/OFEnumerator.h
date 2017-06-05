@@ -18,10 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#ifndef DOXYGEN
-@class OFEnumerator OF_GENERIC(ObjectType);
 @class OFArray OF_GENERIC(ObjectType);
-#endif
+@class OFEnumerator OF_GENERIC(ObjectType);
 
 /*!
  * @protocol OFEnumerating OFEnumerator.h ObjFW/OFEnumerator.h
@@ -43,13 +41,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to enumerate through collections.
  */
-#ifdef OF_HAVE_GENERICS
-@interface OFEnumerator<ObjectType>: OFObject
-#else
-# ifndef DOXYGEN
-#  define ObjectType id
-# endif
-@interface OFEnumerator: OFObject
+@interface OFEnumerator OF_GENERIC(ObjectType): OFObject
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
 #endif
 /*!
  * @brief Returns the next object or `nil` if there is none left.
@@ -70,10 +64,10 @@ OF_ASSUME_NONNULL_BEGIN
  *	  first object again.
  */
 - (void)reset;
-@end
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif
+@end
 
 /*
  * This needs to be exactly like this because it's hard-coded in the compiler.
