@@ -30,13 +30,6 @@
 
 + (instancetype)exceptionWithObject: (id)object
 		    requestedLength: (size_t)requestedLength
-{
-	return [[[self alloc] initWithObject: object
-			     requestedLength: requestedLength] autorelease];
-}
-
-+ (instancetype)exceptionWithObject: (id)object
-		    requestedLength: (size_t)requestedLength
 			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithObject: object
@@ -47,14 +40,6 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
-}
-
--  initWithObject: (id)object
-  requestedLength: (size_t)requestedLength
-{
-	return [self initWithObject: object
-		    requestedLength: requestedLength
-			      errNo: 0];
 }
 
 -  initWithObject: (id)object
@@ -79,15 +64,9 @@
 
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to read or write %zu bytes from / to an object of "
-		    @"type %@: %@",
-		    _requestedLength, [_object class], of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to read or write %zu bytes from / to an object of "
-		    @"type %@!",
-		    _requestedLength, [_object class]];
+	return [OFString stringWithFormat:
+	    @"Failed to read or write %zu bytes from / to an object of type "
+	    @"%@: %@",
+	    _requestedLength, [_object class], of_strerror(_errNo)];
 }
 @end

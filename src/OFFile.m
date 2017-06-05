@@ -264,10 +264,34 @@ parseMode(const char *mode, bool *append)
 			@throw [OFInvalidArgumentException exception];
 
 		if ((handle.handle = Open([path cStringWithEncoding:
-		    [OFLocalization encoding]], flags)) == 0)
+		    [OFLocalization encoding]], flags)) == 0) {
+			int errNo;
+
+			switch (IoErr()) {
+			case ERROR_OBJECT_IN_USE:
+			case ERROR_DISK_NOT_VALIDATED:
+				errNo = EBUSY;
+				break;
+			case ERROR_OBJECT_NOT_FOUND:
+				errNo = ENOENT;
+				break;
+			case ERROR_DISK_WRITE_PROTECTED:
+				errNo = EROFS;
+				break;
+			case ERROR_WRITE_PROTECTED:
+			case ERROR_READ_PROTECTED:
+				errNo = EACCES;
+				break;
+			default:
+				errNo = 0;
+				break;
+			}
+
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
-					 mode: mode];
+					 mode: mode
+					errNo: errNo];
+		}
 
 		[openHandles addItem: &handle.handle];
 		handle.index = [openHandles count] - 1;
@@ -277,7 +301,8 @@ parseMode(const char *mode, bool *append)
 				closeHandle(handle);
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
-						 mode: mode];
+						 mode: mode
+						errNo: EIO];
 			}
 		}
 #endif
@@ -337,7 +362,8 @@ parseMode(const char *mode, bool *append)
 
 	if ((ret = Read(_handle.handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+						  requestedLength: length
+							    errNo: EIO];
 #else
 	if ((ret = read(_handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
@@ -373,12 +399,14 @@ parseMode(const char *mode, bool *append)
 		if (Seek64(_handle.handle, 0, OFFSET_END) == -1)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
-				requestedLength: length];
+				requestedLength: length
+					  errNo: EIO];
 	}
 
 	if (Write(_handle.handle, (void *)buffer, length) != (LONG)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+						   requestedLength: length
+							     errNo: EIO];
 #else
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -431,7 +459,8 @@ parseMode(const char *mode, bool *append)
 	if (ret == -1)
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
-							   whence: whence];
+							   whence: whence
+							    errNo: EINVAL];
 #endif
 
 	_atEndOfStream = false;

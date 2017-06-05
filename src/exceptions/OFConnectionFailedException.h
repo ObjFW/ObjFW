@@ -64,18 +64,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host to which the connection failed
  * @param port The port on the host to which the connection failed
  * @param socket The socket which could not connect
- * @return A new, autoreleased connection failed exception
- */
-+ (instancetype)exceptionWithHost: (OFString *)host
-			     port: (uint16_t)port
-			   socket: (id)socket;
-
-/*!
- * @brief Creates a new, autoreleased connection failed exception.
- *
- * @param host The host to which the connection failed
- * @param port The port on the host to which the connection failed
- * @param socket The socket which could not connect
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased connection failed exception
  */
@@ -85,18 +73,6 @@ OF_ASSUME_NONNULL_BEGIN
 			    errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
-
-/*!
- * @brief Initializes an already allocated connection failed exception.
- *
- * @param host The host to which the connection failed
- * @param port The port on the host to which the connection failed
- * @param socket The socket which could not connect
- * @return An initialized connection failed exception
- */
-- initWithHost: (OFString *)host
-	  port: (uint16_t)port
-	socket: (id)socket;
 
 /*!
  * @brief Initializes an already allocated connection failed exception.

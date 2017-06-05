@@ -132,7 +132,6 @@ OF_ASSUME_NONNULL_BEGIN
 # ifndef EWOULDBLOCK
 #  define EWOULDBLOCK WSAEWOULDBLOCK
 # endif
-extern int of_wsaerr_to_errno(int);
 #endif
 
 /*!

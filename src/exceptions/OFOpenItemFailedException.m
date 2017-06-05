@@ -28,25 +28,6 @@
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
-{
-	return [[[self alloc] initWithPath: path] autorelease];
-}
-
-+ (instancetype)exceptionWithPath: (OFString *)path
-			     mode: (OFString *)mode
-{
-	return [[[self alloc] initWithPath: path
-				      mode: mode] autorelease];
-}
-
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo
-{
-	return [[[self alloc] initWithPath: path
-				     errNo: errNo] autorelease];
-}
-
-+ (instancetype)exceptionWithPath: (OFString *)path
 			     mode: (OFString *)mode
 			    errNo: (int)errNo
 {
@@ -58,29 +39,6 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- initWithPath: (OFString *)path
-{
-	return [self initWithPath: path
-			     mode: nil
-			    errNo: 0];
-}
-
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode
-{
-	return [self initWithPath: path
-			     mode: mode
-			    errNo: 0];
-}
-
-- initWithPath: (OFString *)path
-	 errNo: (int)errNo
-{
-	return [self initWithPath: path
-			     mode: nil
-			    errNo: errNo];
 }
 
 - initWithPath: (OFString *)path
@@ -111,23 +69,12 @@
 
 - (OFString *)description
 {
-	if (_mode != nil) {
-		if (_errNo != 0)
-			return [OFString stringWithFormat:
-			    @"Failed to open item %@ with mode %@: %@",
-			    _path, _mode, of_strerror(_errNo)];
-		else
-			return [OFString stringWithFormat:
-			    @"Failed to open item %@ with mode %@!",
-			    _path, _mode];
-	} else {
-		if (_errNo != 0)
-			return [OFString stringWithFormat:
-			    @"Failed to open item %@: %@",
-			    _path, of_strerror(_errNo)];
-		else
-			return [OFString stringWithFormat:
-			    @"Failed to open item %@!", _path];
-	}
+	if (_mode != nil)
+		return [OFString stringWithFormat:
+		    @"Failed to open item %@ with mode %@: %@",
+		    _path, _mode, of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"Failed to open item %@: %@", _path, of_strerror(_errNo)];
 }
 @end

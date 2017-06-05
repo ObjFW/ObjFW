@@ -473,7 +473,8 @@ extern char **environ;
 		}
 
 		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+						  requestedLength: length
+							    errNo: EIO];
 	}
 #endif
 
@@ -508,7 +509,7 @@ extern char **environ;
 
 	if (!WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
 	    ret != (DWORD)length) {
-		int errNo = 0;
+		int errNo = EIO;
 
 		if (GetLastError() == ERROR_BROKEN_PIPE)
 			errNo = EPIPE;

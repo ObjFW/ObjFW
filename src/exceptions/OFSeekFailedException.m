@@ -32,15 +32,6 @@
 + (instancetype)exceptionWithStream: (OFSeekableStream *)stream
 			     offset: (of_offset_t)offset
 			     whence: (int)whence
-{
-	return [[[self alloc] initWithStream: stream
-				      offset: offset
-				      whence: whence] autorelease];
-}
-
-+ (instancetype)exceptionWithStream: (OFSeekableStream *)stream
-			     offset: (of_offset_t)offset
-			     whence: (int)whence
 			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithStream: stream
@@ -52,16 +43,6 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- initWithStream: (OFSeekableStream *)stream
-	  offset: (of_offset_t)offset
-	  whence: (int)whence
-{
-	return [self initWithStream: stream
-			     offset: offset
-			     whence: whence
-			      errNo: 0];
 }
 
 - initWithStream: (OFSeekableStream *)stream
@@ -88,12 +69,8 @@
 
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Seeking failed in stream of type %@: %@",
-		    [_stream class], of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Seeking failed in stream of type %@!", [_stream class]];
+	return [OFString stringWithFormat:
+	    @"Seeking failed in stream of type %@: %@",
+	    [_stream class], of_strerror(_errNo)];
 }
 @end

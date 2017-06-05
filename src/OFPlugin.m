@@ -28,6 +28,7 @@
 #import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFOpenItemFailedException.h"
 
 typedef OFPlugin *(*init_plugin_t)(void);
 
@@ -76,8 +77,9 @@ of_dlclose(of_plugin_handle_t handle)
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 
 	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
+		@throw [OFOpenItemFailedException exceptionWithPath: path
+							       mode: nil
+							      errNo: 0];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -97,11 +99,12 @@ of_dlclose(of_plugin_handle_t handle)
 	if (object_getClass(self) == [OFPlugin class]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
-			abort();
 		} @catch (id e) {
 			[self release];
 			@throw e;
 		}
+
+		abort();
 	}
 
 	return [super init];

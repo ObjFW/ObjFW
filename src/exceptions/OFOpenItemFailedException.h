@@ -51,34 +51,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new, autoreleased open item failed exception.
  *
  * @param path A string with the path of the item tried to open
- * @return A new, autoreleased open item failed exception
- */
-+ (instancetype)exceptionWithPath: (OFString *)path;
-
-/*!
- * @brief Creates a new, autoreleased open item failed exception.
- *
- * @param path A string with the path of the item tried to open
- * @param mode A string with the mode in which the item should have been opened
- * @return A new, autoreleased open item failed exception
- */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			     mode: (nullable OFString *)mode;
-
-/*!
- * @brief Creates a new, autoreleased open item failed exception.
- *
- * @param path A string with the path of the item tried to open
- * @param errNo The errno of the error that occurred
- * @return A new, autoreleased open item failed exception
- */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo;
-
-/*!
- * @brief Creates a new, autoreleased open item failed exception.
- *
- * @param path A string with the path of the item tried to open
  * @param mode A string with the mode in which the item should have been opened
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
@@ -88,34 +60,6 @@ OF_ASSUME_NONNULL_BEGIN
 			    errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
-
-/*!
- * @brief Initializes an already allocated open item failed exception.
- *
- * @param path A string with the path of the item which could not be opened
- * @return An initialized open item failed exception
- */
-- initWithPath: (OFString *)path;
-
-/*!
- * @brief Initializes an already allocated open item failed exception.
- *
- * @param path A string with the path of the item which could not be opened
- * @param mode A string with the mode in which the item should have been opened
- * @return An initialized open item failed exception
- */
-- initWithPath: (OFString *)path
-	  mode: (nullable OFString *)mode;
-
-/*!
- * @brief Initializes an already allocated open item failed exception.
- *
- * @param path A string with the path of the item which could not be opened
- * @param errNo The errno of the error that occurred
- * @return An initialized open item failed exception
- */
-- initWithPath: (OFString *)path
-	 errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated open item failed exception.

@@ -30,13 +30,6 @@
 
 + (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
 			destinationPath: (OFString *)destinationPath
-{
-	return [[[self alloc] initWithSourcePath: sourcePath
-				 destinationPath: destinationPath] autorelease];
-}
-
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath
 				  errNo: (int)errNo
 {
 	return [[[self alloc] initWithSourcePath: sourcePath
@@ -47,14 +40,6 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- initWithSourcePath: (OFString *)sourcePath
-     destinationPath: (OFString *)destinationPath
-{
-	return [self initWithSourcePath: sourcePath
-			destinationPath: destinationPath
-				  errNo: 0];
 }
 
 - initWithSourcePath: (OFString *)sourcePath
@@ -85,14 +70,8 @@
 
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to create symbolic link %@ with destination "
-		    @"%@: %@", _destinationPath, _sourcePath,
-		    of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to create symbolic link %@ with destination %@!",
-		    _destinationPath, _sourcePath];
+	return [OFString stringWithFormat:
+	    @"Failed to create symbolic link %@ with destination %@: %@",
+	    _destinationPath, _sourcePath, of_strerror(_errNo)];
 }
 @end

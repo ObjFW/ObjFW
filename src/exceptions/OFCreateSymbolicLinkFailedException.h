@@ -53,16 +53,6 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param sourcePath The source for the symbolic link
  * @param destinationPath The destination for the symbolic link
- * @return A new, autoreleased create symbolic link failed exception
- */
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath;
-
-/*!
- * @brief Creates a new, autoreleased create symbolic link failed exception.
- *
- * @param sourcePath The source for the symbolic link
- * @param destinationPath The destination for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create symbolic link failed exception
  */
@@ -71,17 +61,6 @@ OF_ASSUME_NONNULL_BEGIN
 				  errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
-
-/*!
- * @brief Initializes an already allocated create symbolic link failed
- *	  exception.
- *
- * @param sourcePath The source for the symbolic link
- * @param destinationPath The destination for the symbolic link
- * @return An initialized create symbolic link failed exception
- */
-- initWithSourcePath: (OFString *)sourcePath
-     destinationPath: (OFString *)destinationPath;
 
 /*!
  * @brief Initializes an already allocated create symbolic link failed

@@ -55,17 +55,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object from which reading or to which writing failed
  * @param requestedLength The requested length of the data that could not be
  *			  read / written
- * @return A new, autoreleased read or write failed exception
- */
-+ (instancetype)exceptionWithObject: (id)object
-		    requestedLength: (size_t)requestedLength;
-
-/*!
- * @brief Creates a new, autoreleased read or write failed exception.
- *
- * @param object The object from which reading or to which writing failed
- * @param requestedLength The requested length of the data that could not be
- *			  read / written
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased read or write failed exception
  */
@@ -74,17 +63,6 @@ OF_ASSUME_NONNULL_BEGIN
 			      errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
-
-/*!
- * @brief Initializes an already allocated read or write failed exception.
- *
- * @param object The object from which reading or to which writing failed
- * @param requestedLength The requested length of the data that could not be
- *			  read / written
- * @return A new open file failed exception
- */
--  initWithObject: (id)object
-  requestedLength: (size_t)requestedLength;
 
 /*!
  * @brief Initializes an already allocated read or write failed exception.

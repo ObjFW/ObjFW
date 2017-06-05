@@ -47,15 +47,6 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path A string with the path of the item whose status could not be
  *	       retrieved
- * @return A new, autoreleased stat item failed exception
- */
-+ (instancetype)exceptionWithPath: (OFString *)path;
-
-/*!
- * @brief Creates a new, autoreleased stat item failed exception.
- *
- * @param path A string with the path of the item whose status could not be
- *	       retrieved
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased stat item failed exception
  */
@@ -63,15 +54,6 @@ OF_ASSUME_NONNULL_BEGIN
 			    errNo: (int)errNo;
 
 - init OF_UNAVAILABLE;
-
-/*!
- * @brief Initializes an already allocated stat item failed exception.
- *
- * @param path A string with the path of the item whose status could not be
- *	       retrieved
- * @return An initialized stat item failed exception
- */
-- initWithPath: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated stat item failed exception.

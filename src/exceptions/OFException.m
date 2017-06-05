@@ -104,6 +104,9 @@ of_strerror(int errNo)
 	char buffer[256];
 #endif
 
+	if (errNo == 0)
+		return @"Unknown error";
+
 #ifdef OF_WINDOWS
 	/*
 	 * These were translated from WSAE* errors to errno and thus Win32's

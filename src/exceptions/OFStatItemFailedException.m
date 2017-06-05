@@ -28,11 +28,6 @@
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
-{
-	return [[[self alloc] initWithPath: path] autorelease];
-}
-
-+ (instancetype)exceptionWithPath: (OFString *)path
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
@@ -42,12 +37,6 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- initWithPath: (OFString *)path
-{
-	return [self initWithPath: path
-			    errNo: 0];
 }
 
 - initWithPath: (OFString *)path
@@ -75,11 +64,7 @@
 
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to stat item %@: %@", _path, of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to stat item %@!", _path];
+	return [OFString stringWithFormat:
+	    @"Failed to stat item %@: %@", _path, of_strerror(_errNo)];
 }
 @end

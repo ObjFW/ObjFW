@@ -43,6 +43,7 @@
 #include "config.h"
 
 #include <assert.h>
+#include <errno.h>
 
 #import "OFStdIOStream_Win32Console.h"
 #import "OFStdIOStream+Private.h"
@@ -122,7 +123,8 @@
 		    NULL))
 			@throw [OFReadFailedException
 			    exceptionWithObject: self
-				requestedLength: length * 2];
+				requestedLength: length * 2
+					  errNo: EIO];
 
 		if (UTF16Len > 0 && _incompleteUTF16Surrogate != 0) {
 			of_unichar_t c =
@@ -273,7 +275,8 @@
 		    written != UTF16Len)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
-				requestedLength: UTF16Len * 2];
+				requestedLength: UTF16Len * 2
+					  errNo: EIO];
 
 		_incompleteUTF8SurrogateLen = 0;
 		i += toCopy;
@@ -324,7 +327,8 @@
 		    written != j)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
-				requestedLength: j * 2];
+				requestedLength: j * 2
+					  errNo: EIO];
 	} @finally {
 		[self freeMemory: tmp];
 	}

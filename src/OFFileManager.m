@@ -325,6 +325,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
+							       mode: nil
 							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
@@ -393,6 +394,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			errNo = ENOENT;
 
 		@throw [OFOpenItemFailedException exceptionWithPath: path
+							       mode: nil
 							      errNo: errNo];
 	}
 
@@ -413,7 +415,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 		if (GetLastError() != ERROR_NO_MORE_FILES)
 			@throw [OFReadFailedException exceptionWithObject: self
-							  requestedLength: 0];
+							  requestedLength: 0
+								    errNo: EIO];
 	} @finally {
 		FindClose(handle);
 	}
@@ -942,7 +945,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	    [source UTF16String], NULL))
 		@throw [OFLinkFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
+			    destinationPath: destination
+				      errNo: 0];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -989,7 +993,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	    [source UTF16String], 0))
 		@throw [OFCreateSymbolicLinkFailedException
 		    exceptionWithSourcePath: source
-			    destinationPath: destination];
+			    destinationPath: destination
+				      errNo: 0];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1033,7 +1038,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if ((handle = CreateFileW([path UTF16String], 0,
 	    (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
 	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
-		@throw [OFStatItemFailedException exceptionWithPath: path];
+		@throw [OFStatItemFailedException exceptionWithPath: path
+							      errNo: 0];
 
 	@try {
 		union {
@@ -1047,11 +1053,13 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
 		    NULL))
 			@throw [OFStatItemFailedException
-			    exceptionWithPath: path];
+			    exceptionWithPath: path
+					errNo: 0];
 
 		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
 			@throw [OFStatItemFailedException
-			    exceptionWithPath: path];
+			    exceptionWithPath: path
+					errNo: 0];
 
 #define slrb buffer.data.SymbolicLinkReparseBuffer
 		tmp = slrb.PathBuffer +

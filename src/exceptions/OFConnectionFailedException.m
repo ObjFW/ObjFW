@@ -32,15 +32,6 @@
 + (instancetype)exceptionWithHost: (OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
-{
-	return [[[self alloc] initWithHost: host
-				      port: port
-				    socket: socket] autorelease];
-}
-
-+ (instancetype)exceptionWithHost: (OFString *)host
-			     port: (uint16_t)port
-			   socket: (id)socket
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithHost: host
@@ -52,16 +43,6 @@
 - init
 {
 	OF_INVALID_INIT_METHOD
-}
-
-- initWithHost: (OFString *)host
-	  port: (uint16_t)port
-	socket: (id)socket
-{
-	return [self initWithHost: host
-			     port: port
-			   socket: socket
-			    errNo: 0];
 }
 
 - initWithHost: (OFString *)host
@@ -94,15 +75,9 @@
 
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"A connection to %@ on port %" @PRIu16 @" could not be "
-		    @"established in socket of type %@: %@",
-		    _host, _port, [_socket class], of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"A connection to %@ on port %" @PRIu16 @" could not be "
-		    @"established in socket of type %@!",
-		    _host, _port, [_socket class]];
+	return [OFString stringWithFormat:
+	    @"A connection to %@ on port %" @PRIu16 @" could not be "
+	    @"established in socket of type %@: %@",
+	    _host, _port, [_socket class], of_strerror(_errNo)];
 }
 @end

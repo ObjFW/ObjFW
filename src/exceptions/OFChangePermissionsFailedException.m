@@ -28,7 +28,7 @@
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
-		      permissions: (mode_t)permissions
+		      permissions: (uint16_t)permissions
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
@@ -42,7 +42,7 @@
 }
 
 - initWithPath: (OFString *)path
-   permissions: (mode_t)permissions
+   permissions: (uint16_t)permissions
 	 errNo: (int)errNo
 {
 	self = [super init];

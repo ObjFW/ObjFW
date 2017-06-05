@@ -22,13 +22,8 @@
 @implementation OFWriteFailedException
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to write %zu bytes to an object of type %@: %@",
-		    _requestedLength, [_object class], of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to write %zu bytes to an object of type %@!",
-		    _requestedLength, [_object class]];
+	return [OFString stringWithFormat:
+	    @"Failed to write %zu bytes to an object of type %@: %@",
+	    _requestedLength, [_object class], of_strerror(_errNo)];
 }
 @end

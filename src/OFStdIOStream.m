@@ -208,7 +208,8 @@ of_log(OFConstantString *format, ...)
 
 	if ((ret = Read(_handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+						  requestedLength: length
+							    errNo: EIO];
 #endif
 
 	if (ret == 0)
@@ -250,7 +251,8 @@ of_log(OFConstantString *format, ...)
 
 	if (Write(_handle, (void *)buffer, length) != (LONG)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+						   requestedLength: length
+							     errNo: EIO];
 #endif
 }
 

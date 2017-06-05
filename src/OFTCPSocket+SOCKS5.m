@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFDataArray.h"
 
@@ -76,9 +78,11 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 
 	if (reply[0] != 5 || reply[1] != 0) {
 		[self close];
-		@throw [OFConnectionFailedException exceptionWithHost: host
-								 port: port
-							       socket: self];
+		@throw [OFConnectionFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: EPROTONOSUPPORT];
 	}
 
 	/* CONNECT request */
@@ -108,11 +112,51 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 
 	recv_exact(self, _socket, reply, 4);
 
-	if (reply[0] != 5 || reply[1] != 0 || reply[2] != 0) {
+	if (reply[0] != 5 || reply[2] != 0) {
 		[self close];
+		@throw [OFConnectionFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: EPROTONOSUPPORT];
+	}
+
+	if (reply[1] != 0) {
+		int errNo;
+
+		[self close];
+
+		switch (reply[1]) {
+		case 0x02:
+			errNo = EACCES;
+			break;
+		case 0x03:
+			errNo = ENETUNREACH;
+			break;
+		case 0x04:
+			errNo = EHOSTUNREACH;
+			break;
+		case 0x05:
+			errNo = ECONNREFUSED;
+			break;
+		case 0x06:
+			errNo = ETIMEDOUT;
+			break;
+		case 0x07:
+			errNo = EPROTONOSUPPORT;
+			break;
+		case 0x08:
+			errNo = EAFNOSUPPORT;
+			break;
+		default:
+			errNo = 0;
+			break;
+		}
+
 		@throw [OFConnectionFailedException exceptionWithHost: host
 								 port: port
-							       socket: self];
+							       socket: self
+								errNo: errNo];
 	}
 
 	/* Skip the rest of the reply */
@@ -129,9 +173,11 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 		break;
 	default:
 		[self close];
-		@throw [OFConnectionFailedException exceptionWithHost: host
-								 port: port
-							       socket: self];
+		@throw [OFConnectionFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: EPROTONOSUPPORT];
 	}
 
 	recv_exact(self, _socket, reply, 2);

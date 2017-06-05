@@ -22,13 +22,8 @@
 @implementation OFReadFailedException
 - (OFString *)description
 {
-	if (_errNo != 0)
-		return [OFString stringWithFormat:
-		    @"Failed to read %zu bytes from an object of type %@: %@",
-		    _requestedLength, [_object class], of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to read %zu bytes from an object of type %@!",
-		    _requestedLength, [_object class]];
+	return [OFString stringWithFormat:
+	    @"Failed to read %zu bytes from an object of type %@: %@",
+	    _requestedLength, [_object class], of_strerror(_errNo)];
 }
 @end
