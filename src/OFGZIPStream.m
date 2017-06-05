@@ -24,6 +24,8 @@
 
 #import "OFChecksumFailedException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotOpenException.h"
+#import "OFTruncatedDataException.h"
 
 @implementation OFGZIPStream
 + (instancetype)streamWithStream: (OFStream *)stream
@@ -53,7 +55,8 @@
 
 - (void)dealloc
 {
-	[_stream release];
+	[self close];
+
 	[_inflateStream release];
 	[_modificationDate release];
 
@@ -63,9 +66,19 @@
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
-	uint8_t byte;
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	for (;;) {
+		uint8_t byte;
+
+		if ([_stream isAtEndOfStream]) {
+			if (_state != OF_GZIP_STREAM_ID1)
+				@throw [OFTruncatedDataException exception];
+
+			return 0;
+		}
+
 		switch (_state) {
 		case OF_GZIP_STREAM_ID1:
 		case OF_GZIP_STREAM_ID2:
@@ -97,6 +110,9 @@
 
 			if (_bytesRead < 4)
 				return 0;
+
+			[_modificationDate release];
+			_modificationDate = nil;
 
 			_modificationDate = [[OFDate alloc]
 			    initWithTimeIntervalSince1970:
@@ -262,6 +278,9 @@
 
 - (bool)lowlevelIsAtEndOfStream
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	return [_stream isAtEndOfStream];
 }
 
@@ -272,5 +291,13 @@
 		    [_inflateStream hasDataInReadBuffer]);
 
 	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+}
+
+- (void)close
+{
+	[_stream release];
+	_stream = nil;
+
+	[super close];
 }
 @end

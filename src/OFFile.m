@@ -35,6 +35,7 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFNotOpenException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -309,7 +310,7 @@ parseMode(const char *mode, bool *append)
 - (bool)lowlevelIsAtEndOfStream
 {
 	if (!OF_FILE_HANDLE_IS_VALID(_handle))
-		return true;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
 }
@@ -319,9 +320,8 @@ parseMode(const char *mode, bool *append)
 {
 	ssize_t ret;
 
-	if (!OF_FILE_HANDLE_IS_VALID(_handle) || _atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+	if (!OF_FILE_HANDLE_IS_VALID(_handle))
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
 	if (length > UINT_MAX)
@@ -354,9 +354,8 @@ parseMode(const char *mode, bool *append)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-	if (!OF_FILE_HANDLE_IS_VALID(_handle) || _atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+	if (!OF_FILE_HANDLE_IS_VALID(_handle))
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
 	if (length > INT_MAX)
@@ -397,9 +396,7 @@ parseMode(const char *mode, bool *append)
 	of_offset_t ret;
 
 	if (!OF_FILE_HANDLE_IS_VALID(_handle))
-		@throw [OFSeekFailedException exceptionWithStream: self
-							   offset: offset
-							   whence: whence];
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_MORPHOS
 # if defined(OF_WINDOWS)

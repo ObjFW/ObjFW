@@ -33,9 +33,9 @@
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFNotImplementedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-#import "OFReadFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
@@ -128,10 +128,11 @@ normalizeKey(char *str_)
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (_atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: ENOTCONN];
+		return 0;
 
 	if (!_hasContentLength && !_chunked)
 		return [_socket readIntoBuffer: buffer
@@ -231,6 +232,9 @@ normalizeKey(char *str_)
 
 - (bool)lowlevelIsAtEndOfStream
 {
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (!_hasContentLength && !_chunked)
 		return [_socket isAtEndOfStream];
 

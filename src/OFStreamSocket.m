@@ -50,6 +50,9 @@
 
 - (bool)lowlevelIsAtEndOfStream
 {
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	return _atEndOfStream;
 }
 
@@ -60,11 +63,6 @@
 
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (_atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length
-							    errNo: ENOTCONN];
 
 #ifndef OF_WINDOWS
 	if ((ret = recv(_socket, buffer, length, 0)) < 0)
@@ -94,11 +92,6 @@
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (_atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-							     errNo: ENOTCONN];
 
 #ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)

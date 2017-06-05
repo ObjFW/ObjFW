@@ -37,9 +37,9 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
+#import "OFNotOpenException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
-#import "OFReadFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFUnsupportedVersionException.h"
 
@@ -77,7 +77,7 @@
 	bool _hasDataDescriptor;
 	uint64_t _size;
 	uint32_t _CRC32;
-	bool _atEndOfStream, _closed;
+	bool _atEndOfStream;
 }
 
 -  initWithStream: (OFStream *)path
@@ -493,7 +493,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)dealloc
 {
-	[_stream release];
+	[self close];
+
 	[_decompressedStream release];
 	[_localFileHeader release];
 
@@ -510,9 +511,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	size_t min, ret;
 
-	if (_atEndOfStream || _closed)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_atEndOfStream)
+		return 0;
 
 	if (_hasDataDescriptor) {
 		if ([_decompressedStream isAtEndOfStream]) {
@@ -560,7 +563,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)close
 {
-	_closed = true;
+	[_stream release];
+	_stream = nil;
 
 	[super close];
 }

@@ -48,6 +48,7 @@
 #import "OFNotImplementedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
+#import "OFTruncatedDataException.h"
 
 #import "of_asprintf.h"
 
@@ -176,9 +177,13 @@
 {
 	size_t readLength = 0;
 
-	while (readLength < length)
+	while (readLength < length) {
+		if ([self isAtEndOfStream])
+			@throw [OFTruncatedDataException exception];
+
 		readLength += [self readIntoBuffer: (char *)buffer + readLength
 					    length: length - readLength];
+	}
 }
 
 #ifdef OF_HAVE_SOCKETS

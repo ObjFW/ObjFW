@@ -25,8 +25,8 @@
 #import "OFStream.h"
 #import "OFDate.h"
 
+#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
-#import "OFReadFailedException.h"
 
 static OFString *
 stringFromBuffer(const char *buffer, size_t length)
@@ -115,7 +115,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 - (void)dealloc
 {
-	[_stream release];
+	[self close];
+
 	[_fileName release];
 	[_modificationDate release];
 	[_targetFileName release];
@@ -130,9 +131,11 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 {
 	size_t ret;
 
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (_atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+		return 0;
 
 	if ((uint64_t)length > _toRead)
 		length = (size_t)_toRead;
@@ -150,6 +153,9 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 - (bool)lowlevelIsAtEndOfStream
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	return _atEndOfStream;
 }
 
@@ -160,7 +166,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 - (void)close
 {
-	_atEndOfStream = true;
+	[_stream release];
+	_stream = nil;
 
 	[super close];
 }

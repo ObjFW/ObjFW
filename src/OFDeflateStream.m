@@ -33,8 +33,8 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
-#import "OFReadFailedException.h"
 
 #define BUFFER_SIZE		  OF_INFLATE_STREAM_BUFFER_SIZE
 
@@ -306,7 +306,7 @@ releaseTree(struct huffman_tree *tree)
 
 - (void)dealloc
 {
-	[_stream release];
+	[self close];
 
 	if (_decompression != NULL && _decompression->state == HUFFMAN_TREE)
 		if (_decompression->context.huffmanTree.codeLenTree != NULL)
@@ -351,14 +351,16 @@ releaseTree(struct huffman_tree *tree)
 	uint8_t *slidingWindow;
 	uint16_t slidingWindowIndex;
 
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	if (ivars == NULL) {
 		[self of_initDecompression];
 		ivars = _decompression;
 	}
 
 	if (ivars->atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+		return 0;
 
 start:
 	switch ((enum state)ivars->state) {
@@ -823,8 +825,8 @@ start:
 #ifndef DEFLATE64
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (_decompression == NULL)
-		return false;
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _decompression->atEndOfStream;
 }
@@ -839,4 +841,12 @@ start:
 	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
 }
 #endif
+
+- (void)close
+{
+	[_stream release];
+	_stream = nil;
+
+	[super close];
+}
 @end

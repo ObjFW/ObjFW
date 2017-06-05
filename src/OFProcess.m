@@ -38,6 +38,7 @@
 #import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
+#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
@@ -438,7 +439,7 @@ extern char **environ;
 #else
 	if (_readPipe[0] == NULL)
 #endif
-		return true;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
 }
@@ -449,9 +450,8 @@ extern char **environ;
 #ifndef OF_WINDOWS
 	ssize_t ret;
 
-	if (_readPipe[0] == -1 || _atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+	if (_readPipe[0] == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if ((ret = read(_readPipe[0], buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
@@ -463,9 +463,8 @@ extern char **environ;
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_readPipe[0] == NULL || _atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+	if (_readPipe[0] == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!ReadFile(_readPipe[0], buffer, (DWORD)length, &ret, NULL)) {
 		if (GetLastError() == ERROR_BROKEN_PIPE) {
@@ -488,9 +487,8 @@ extern char **environ;
 		     length: (size_t)length
 {
 #ifndef OF_WINDOWS
-	if (_writePipe[1] == -1 || _atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+	if (_writePipe[1] == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -505,9 +503,8 @@ extern char **environ;
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_writePipe[1] == NULL || _atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+	if (_writePipe[1] == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
 	    ret != (DWORD)length) {

@@ -35,6 +35,7 @@
 # include "OFStdIOStream_Win32Console.h"
 #endif
 
+#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
@@ -167,11 +168,10 @@ of_log(OFConstantString *format, ...)
 {
 #ifndef OF_MORPHOS
 	if (_fd == -1)
-		return true;
 #else
 	if (_handle == 0)
-		return true;
 #endif
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
 }
@@ -182,9 +182,8 @@ of_log(OFConstantString *format, ...)
 	ssize_t ret;
 
 #ifndef OF_MORPHOS
-	if (_fd == -1 || _atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+	if (_fd == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 # ifndef OF_WINDOWS
 	if ((ret = read(_fd, buffer, length)) < 0)
@@ -201,9 +200,8 @@ of_log(OFConstantString *format, ...)
 							    errNo: errno];
 # endif
 #else
-	if (_handle == 0 || _atEndOfStream)
-		@throw [OFReadFailedException exceptionWithObject: self
-						  requestedLength: length];
+	if (_handle == 0)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -223,9 +221,8 @@ of_log(OFConstantString *format, ...)
 		     length: (size_t)length
 {
 #ifndef OF_MORPHOS
-	if (_fd == -1 || _atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+	if (_fd == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 # ifndef OF_WINDOWS
 	if (length > SSIZE_MAX)
@@ -245,9 +242,8 @@ of_log(OFConstantString *format, ...)
 							     errNo: errno];
 # endif
 #else
-	if (_handle == 0 || _atEndOfStream)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length];
+	if (_handle == 0)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
