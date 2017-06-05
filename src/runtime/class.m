@@ -676,11 +676,6 @@ get_method(Class cls, SEL sel)
 	struct objc_method_list *ml;
 	struct objc_category **cats;
 
-	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
-		for (unsigned int i = 0; i < ml->count; i++)
-			if (sel_isEqual((SEL)&ml->methods[i].sel, sel))
-				return &ml->methods[i];
-
 	if ((cats = objc_categories_for_class(cls)) != NULL) {
 		for (; *cats != NULL; cats++) {
 			if (cls->info & OBJC_CLASS_INFO_METACLASS)
@@ -695,6 +690,11 @@ get_method(Class cls, SEL sel)
 						return &ml->methods[i];
 		}
 	}
+
+	for (ml = cls->methodlist; ml != NULL; ml = ml->next)
+		for (unsigned int i = 0; i < ml->count; i++)
+			if (sel_isEqual((SEL)&ml->methods[i].sel, sel))
+				return &ml->methods[i];
 
 	return NULL;
 }
