@@ -19,6 +19,19 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#if defined(OF_HAVE_CHMOD) && !defined(OF_MORPHOS)
+# define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+#endif
+#if defined(OF_HAVE_CHOWN) && !defined(OF_MORPHOS)
+# define OF_FILE_MANAGER_SUPPORTS_OWNER
+#endif
+#if (defined(OF_HAVE_LINK) && !defined(OF_MORPHOS)) || defined(OF_WINDOWS)
+# define OF_FILE_MANAGER_SUPPORTS_LINKS
+#endif
+#if (defined(OF_HAVE_SYMLINK) && !defined(OF_MORPHOS)) || defined(OF_WINDOWS)
+# define OF_FILE_MANAGER_SUPPORTS_SYMLINKS
+#endif
+
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
 
@@ -57,7 +70,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (bool)directoryExistsAtPath: (OFString *)path;
 
-#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /*!
  * @brief Checks whether a symbolic link exists at the specified path.
  *
@@ -138,7 +151,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path;
 
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 /*!
  * @brief Returns the permissions of the specified item.
  *
@@ -168,7 +181,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  permissions: (uint16_t)permissions;
 #endif
 
-#ifdef OF_HAVE_CHOWN
+#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 /*!
  * @brief Get the owner and group of the specified item.
  *
@@ -235,7 +248,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)removeItemAtPath: (OFString *)path;
 
-#if defined(OF_HAVE_LINK) || defined(OF_WINDOWS)
+#ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
 /*!
  * @brief Creates a hard link for the specified item.
  *
@@ -251,7 +264,7 @@ OF_ASSUME_NONNULL_BEGIN
 		toPath: (OFString *)destination;
 #endif
 
-#if defined(OF_HAVE_SYMLINK) || defined(OF_WINDOWS)
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /*!
  * @brief Creates a symbolic link for an item.
  *
@@ -270,9 +283,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)createSymbolicLinkAtPath: (OFString *)destination
 	     withDestinationPath: (OFString *)source;
-#endif
 
-#if defined(OF_HAVE_READLINK) || defined(OF_WINDOWS)
 /*!
  * @brief Returns the destination of the symbolic link at the specified path.
  *

@@ -37,7 +37,7 @@ static OFZIP *app;
 static void
 setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 {
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	if (([entry versionMadeBy] >> 8) ==
 	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
 		uint16_t mode = [entry versionSpecificAttributes] >> 16;

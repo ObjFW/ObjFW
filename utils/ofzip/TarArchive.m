@@ -33,7 +33,7 @@ static OFZIP *app;
 static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	[[OFFileManager defaultManager]
 	    changePermissionsOfItemAtPath: path
 			      permissions: [entry mode]];

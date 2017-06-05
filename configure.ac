@@ -924,9 +924,6 @@ AS_IF([test x"$enable_files" != x"no"], [
 	AC_CHECK_FUNC(symlink, [
 		AC_DEFINE(OF_HAVE_SYMLINK, 1, [Whether we have symlink()])
 	])
-	AC_CHECK_FUNC(readlink, [
-		AC_DEFINE(OF_HAVE_READLINK, 1, [Whether we have readlink()])
-	])
 	AC_CHECK_FUNCS([lstat])
 
 	old_OBJCFLAGS="$OBJCFLAGS"

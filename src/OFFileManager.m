@@ -71,8 +71,21 @@
 # include <ntdef.h>
 #endif
 
+#ifdef OF_MORPHOS
+# define BOOL EXEC_BOOL
+# include <proto/dos.h>
+# include <proto/locale.h>
+# undef BOOL
+#endif
+
 #if defined(OF_WINDOWS)
 typedef struct __stat64 of_stat_t;
+#elif defined(OF_MORPHOS)
+typedef struct {
+	of_offset_t st_size;
+	mode_t st_mode;
+	of_time_interval_t st_atime, st_mtime, st_ctime;
+} of_stat_t;
 #elif defined(OF_HAVE_OFF64_T)
 typedef struct stat64 of_stat_t;
 #else
@@ -81,10 +94,10 @@ typedef struct stat of_stat_t;
 
 static OFFileManager *defaultManager;
 
-#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
+#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
 static OFMutex *passwdMutex;
 #endif
-#if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
+#if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
 static OFMutex *readdirMutex;
 #endif
 
@@ -97,6 +110,61 @@ of_stat(OFString *path, of_stat_t *buffer)
 {
 #if defined(OF_WINDOWS)
 	return _wstat64([path UTF16String], buffer);
+#elif defined(OF_MORPHOS)
+	BPTR lock;
+	struct FileInfoBlock fib;
+	of_time_interval_t timeInterval;
+	struct Locale *locale;
+
+	if ((lock = Lock([path cStringWithEncoding: [OFLocalization encoding]],
+	    SHARED_LOCK)) == 0) {
+		switch (IoErr()) {
+		case ERROR_OBJECT_IN_USE:
+		case ERROR_DISK_NOT_VALIDATED:
+			errno = EBUSY;
+			break;
+		case ERROR_OBJECT_NOT_FOUND:
+			errno = ENOENT;
+			break;
+		default:
+			errno = 0;
+			break;
+		}
+
+		return -1;
+	}
+
+	if (!Examine64(lock, &fib, TAG_DONE)) {
+		UnLock(lock);
+
+		errno = 0;
+		return -1;
+	}
+
+	UnLock(lock);
+
+	buffer->st_size = fib.fib_Size64;
+	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
+
+	timeInterval = 252460800;	/* 1978-01-01 */
+
+	locale = OpenLocale(NULL);
+	/*
+	 * FIXME: This does not take DST into account. But unfortunately, there
+	 * is no way to figure out if DST was in effect when the file was
+	 * modified.
+	 */
+	timeInterval += locale->loc_GMTOffset * 60.0;
+	CloseLocale(locale);
+
+	timeInterval += fib.fib_Date.ds_Days * 86400.0;
+	timeInterval += fib.fib_Date.ds_Minute * 60.0;
+	timeInterval +=
+	    fib.fib_Date.ds_Tick / (of_time_interval_t)TICKS_PER_SECOND;
+
+	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
+
+	return 0;
 #elif defined(OF_HAVE_OFF64_T)
 	return stat64([path cStringWithEncoding: [OFLocalization encoding]],
 	    buffer);
@@ -109,9 +177,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 static int
 of_lstat(OFString *path, of_stat_t *buffer)
 {
-#if defined(OF_WINDOWS)
-	return _wstat64([path UTF16String], buffer);
-#elif defined(HAVE_LSTAT)
+#if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
 # ifdef OF_HAVE_OFF64_T
 	return lstat64([path cStringWithEncoding: [OFLocalization encoding]],
 	    buffer);
@@ -120,13 +186,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	    buffer);
 # endif
 #else
-# ifdef OF_HAVE_OFF64_T
-	return stat64([path cStringWithEncoding: [OFLocalization encoding]],
-	    buffer);
-# else
-	return stat([path cStringWithEncoding: [OFLocalization encoding]],
-	    buffer);
-# endif
+	return of_stat(path, buffer);
 #endif
 }
 
@@ -202,10 +262,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (of_stat(path, &s) == -1)
 		return false;
 
-	if (S_ISREG(s.st_mode))
-		return true;
-
-	return false;
+	return S_ISREG(s.st_mode);
 }
 
 - (bool)directoryExistsAtPath: (OFString *)path
@@ -218,15 +275,13 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (of_stat(path, &s) == -1)
 		return false;
 
-	if (S_ISDIR(s.st_mode))
-		return true;
-
-	return false;
+	return S_ISDIR(s.st_mode);
 }
 
-#if defined(OF_HAVE_SYMLINK)
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 - (bool)symbolicLinkExistsAtPath: (OFString *)path
 {
+# ifndef OF_WINDOWS
 	of_stat_t s;
 
 	if (path == nil)
@@ -235,14 +290,8 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (of_lstat(path, &s) == -1)
 		return false;
 
-	if (S_ISLNK(s.st_mode))
-		return true;
-
-	return false;
-}
-#elif defined(OF_WINDOWS)
-- (bool)symbolicLinkExistsAtPath: (OFString *)path
-{
+	return S_ISLNK(s.st_mode);
+# else
 	WIN32_FIND_DATAW data;
 
 	if (!FindFirstFileW([path UTF16String], &data))
@@ -253,6 +302,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		return true;
 
 	return false;
+# endif
 }
 #endif
 
@@ -503,7 +553,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_ctime];
 }
 
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 - (uint16_t)permissionsOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
@@ -539,7 +589,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 }
 #endif
 
-#ifdef OF_HAVE_CHOWN
+#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 - (void)getOwner: (OFString **)owner
 	   group: (OFString **)group
     ofItemAtPath: (OFString *)path
@@ -576,7 +626,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	} @finally {
 		[passwdMutex unlock];
 	}
-#endif
+# endif
 }
 
 - (void)changeOwnerOfItemAtPath: (OFString *)path
@@ -665,7 +715,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 		@try {
 			[self createDirectoryAtPath: destination];
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 			[self changePermissionsOfItemAtPath: destination
 						permissions: s.st_mode];
 #endif
@@ -726,7 +776,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 						      length: length];
 			}
 
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 			[self changePermissionsOfItemAtPath: destination
 						permissions: s.st_mode];
 #endif
@@ -749,7 +799,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			[destinationFile close];
 			free(buffer);
 		}
-#ifdef OF_HAVE_SYMLINK
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	} else if (S_ISLNK(s.st_mode)) {
 		@try {
 			source = [self destinationOfSymbolicLinkAtPath: source];
@@ -786,9 +836,6 @@ of_lstat(OFString *path, of_stat_t *buffer)
 {
 	void *pool;
 	of_stat_t s;
-#ifndef OF_WINDOWS
-	of_string_encoding_t encoding;
-#endif
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -802,7 +849,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 				      errNo: EEXIST];
 
 #ifndef OF_WINDOWS
-	encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocalization encoding];
 
 	if (rename([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0) {
@@ -908,18 +955,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
-#if defined(OF_HAVE_LINK)
+#ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
 - (void)linkItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
 	void *pool;
-	of_string_encoding_t encoding;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	encoding = [OFLocalization encoding];
+
+# ifndef OF_WINDOWS
+	of_string_encoding_t encoding = [OFLocalization encoding];
 
 	if (link([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0)
@@ -927,20 +975,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
 				      errNo: errno];
-
-	objc_autoreleasePoolPop(pool);
-}
-#elif defined(OF_WINDOWS)
-- (void)linkItemAtPath: (OFString *)source
-		toPath: (OFString *)destination
-{
-	void *pool;
-
-	if (source == nil || destination == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	pool = objc_autoreleasePoolPush();
-
+# else
 	if (!CreateHardLinkW([destination UTF16String],
 	    [source UTF16String], NULL))
 		@throw [OFLinkFailedException
@@ -948,22 +983,25 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			    destinationPath: destination
 				      errNo: 0];
 
+# endif
+
 	objc_autoreleasePoolPop(pool);
 }
 #endif
 
-#if defined(OF_HAVE_SYMLINK)
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 - (void)createSymbolicLinkAtPath: (OFString *)destination
 	     withDestinationPath: (OFString *)source
 {
 	void *pool;
-	of_string_encoding_t encoding;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	encoding = [OFLocalization encoding];
+
+# ifndef OF_WINDOWS
+	of_string_encoding_t encoding = [OFLocalization encoding];
 
 	if (symlink([source cStringWithEncoding: encoding],
 	    [destination cStringWithEncoding: encoding]) != 0)
@@ -971,23 +1009,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
 				      errNo: errno];
-
-	objc_autoreleasePoolPop(pool);
-}
-#elif defined(OF_WINDOWS)
-- (void)createSymbolicLinkAtPath: (OFString *)destination
-	     withDestinationPath: (OFString *)source
-{
-	void *pool;
-
+# else
 	if (func_CreateSymbolicLinkW == NULL)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
-
-	if (source == nil || destination == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	pool = objc_autoreleasePoolPush();
 
 	if (!func_CreateSymbolicLinkW([destination UTF16String],
 	    [source UTF16String], 0))
@@ -995,20 +1020,20 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
 				      errNo: 0];
+# endif
 
 	objc_autoreleasePoolPop(pool);
 }
-#endif
 
-#ifdef OF_HAVE_READLINK
 - (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path
 {
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+# ifndef OF_WINDOWS
 	char destination[PATH_MAX];
 	ssize_t length;
 	of_string_encoding_t encoding;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
 
 	encoding = [OFLocalization encoding];
 	length = readlink([path cStringWithEncoding: encoding],
@@ -1021,19 +1046,13 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFString stringWithCString: destination
 				  encoding: encoding
 				    length: length];
-}
-#elif defined(OF_WINDOWS)
-- (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path
-{
+# else
 	HANDLE handle;
 
 	/* Check if we're on a version that actually supports symlinks. */
 	if (func_CreateSymbolicLinkW == NULL)
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
 
 	if ((handle = CreateFileW([path UTF16String], 0,
 	    (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
@@ -1061,7 +1080,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			    exceptionWithPath: path
 					errNo: 0];
 
-#define slrb buffer.data.SymbolicLinkReparseBuffer
+# define slrb buffer.data.SymbolicLinkReparseBuffer
 		tmp = slrb.PathBuffer +
 		    (slrb.SubstituteNameOffset / sizeof(wchar_t));
 
@@ -1069,10 +1088,11 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    stringWithUTF16String: tmp
 				   length: slrb.SubstituteNameLength /
 					   sizeof(wchar_t)];
-#undef slrb
+# undef slrb
 	} @finally {
 		CloseHandle(handle);
 	}
+# endif
 }
 #endif
 @end

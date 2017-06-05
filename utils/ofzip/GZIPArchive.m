@@ -29,7 +29,7 @@ static OFZIP *app;
 static void
 setPermissions(OFString *destination, OFString *source)
 {
-#ifdef OF_HAVE_CHMOD
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	uint16_t mode = [fileManager permissionsOfItemAtPath: source];
 
