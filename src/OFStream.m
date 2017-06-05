@@ -292,7 +292,12 @@
 - (size_t)readBigEndianInt16sIntoBuffer: (uint16_t *)buffer
 				  count: (size_t)count
 {
-	size_t size = count * sizeof(uint16_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint16_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -308,7 +313,12 @@
 - (size_t)readBigEndianInt32sIntoBuffer: (uint32_t *)buffer
 				  count: (size_t)count
 {
-	size_t size = count * sizeof(uint32_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint32_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -324,7 +334,12 @@
 - (size_t)readBigEndianInt64sIntoBuffer: (uint64_t *)buffer
 				  count: (size_t)count
 {
-	size_t size = count * sizeof(uint64_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint64_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -340,7 +355,12 @@
 - (size_t)readBigEndianFloatsIntoBuffer: (float *)buffer
 				  count: (size_t)count
 {
-	size_t size = count * sizeof(float);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(float);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -356,7 +376,12 @@
 - (size_t)readBigEndianDoublesIntoBuffer: (double *)buffer
 				   count: (size_t)count
 {
-	size_t size = count * sizeof(double);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(double);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -422,7 +447,12 @@
 - (size_t)readLittleEndianInt16sIntoBuffer: (uint16_t *)buffer
 				     count: (size_t)count
 {
-	size_t size = count * sizeof(uint16_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint16_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -438,7 +468,12 @@
 - (size_t)readLittleEndianInt32sIntoBuffer: (uint32_t *)buffer
 				     count: (size_t)count
 {
-	size_t size = count * sizeof(uint32_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint32_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -454,7 +489,12 @@
 - (size_t)readLittleEndianInt64sIntoBuffer: (uint64_t *)buffer
 				     count: (size_t)count
 {
-	size_t size = count * sizeof(uint64_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint64_t);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -470,7 +510,12 @@
 - (size_t)readLittleEndianFloatsIntoBuffer: (float *)buffer
 				     count: (size_t)count
 {
-	size_t size = count * sizeof(float);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(float);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -486,7 +531,12 @@
 - (size_t)readLittleEndianDoublesIntoBuffer: (double *)buffer
 				      count: (size_t)count
 {
-	size_t size = count * sizeof(double);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(double);
 
 	[self readIntoBuffer: buffer
 		 exactLength: size];
@@ -1041,7 +1091,12 @@
 - (size_t)writeBigEndianInt16s: (const uint16_t *)buffer
 			 count: (size_t)count
 {
-	size_t size = count * sizeof(uint16_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint16_t);
 
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1067,7 +1122,12 @@
 - (size_t)writeBigEndianInt32s: (const uint32_t *)buffer
 			 count: (size_t)count
 {
-	size_t size = count * sizeof(uint32_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint32_t);
 
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1093,7 +1153,12 @@
 - (size_t)writeBigEndianInt64s: (const uint64_t *)buffer
 			 count: (size_t)count
 {
-	size_t size = count * sizeof(uint64_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint64_t);
 
 #ifdef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1119,7 +1184,12 @@
 - (size_t)writeBigEndianFloats: (const float *)buffer
 			 count: (size_t)count
 {
-	size_t size = count * sizeof(float);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(float);
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1145,7 +1215,12 @@
 - (size_t)writeBigEndianDoubles: (const double *)buffer
 			  count: (size_t)count
 {
-	size_t size = count * sizeof(double);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(double);
 
 #ifdef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1211,7 +1286,12 @@
 - (size_t)writeLittleEndianInt16s: (const uint16_t *)buffer
 			    count: (size_t)count
 {
-	size_t size = count * sizeof(uint16_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint16_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint16_t);
 
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1237,7 +1317,12 @@
 - (size_t)writeLittleEndianInt32s: (const uint32_t *)buffer
 			    count: (size_t)count
 {
-	size_t size = count * sizeof(uint32_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint32_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint32_t);
 
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1263,7 +1348,12 @@
 - (size_t)writeLittleEndianInt64s: (const uint64_t *)buffer
 			    count: (size_t)count
 {
-	size_t size = count * sizeof(uint64_t);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(uint64_t))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(uint64_t);
 
 #ifndef OF_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1289,7 +1379,12 @@
 - (size_t)writeLittleEndianFloats: (const float *)buffer
 			    count: (size_t)count
 {
-	size_t size = count * sizeof(float);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(float))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(float);
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
@@ -1315,7 +1410,12 @@
 - (size_t)writeLittleEndianDoubles: (const double *)buffer
 			     count: (size_t)count
 {
-	size_t size = count * sizeof(double);
+	size_t size;
+
+	if OF_UNLIKELY (count > SIZE_MAX / sizeof(double))
+		@throw [OFOutOfRangeException exception];
+
+	size = count * sizeof(double);
 
 #ifndef OF_FLOAT_BIG_ENDIAN
 	[self writeBuffer: buffer
