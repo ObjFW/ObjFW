@@ -25,7 +25,7 @@
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
 
-struct lock_s {
+static struct lock_s {
 	id	      object;
 	int	      count;
 	of_rmutex_t   rmutex;

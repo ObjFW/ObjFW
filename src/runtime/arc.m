@@ -31,7 +31,7 @@ struct weak_ref {
 	size_t count;
 };
 
-struct objc_hashtable *hashtable;
+static struct objc_hashtable *hashtable;
 #ifdef OF_HAVE_THREADS
 static of_spinlock_t spinlock;
 #endif
