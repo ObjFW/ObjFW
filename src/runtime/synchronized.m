@@ -22,21 +22,16 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
+#import "globals.h"
+#define synchronized_locks objc_globals.synchronized_locks
+#define synchronized_locks_lock objc_globals.synchronized_locks_lock
+
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
 
-static struct lock_s {
-	id	      object;
-	int	      count;
-	of_rmutex_t   rmutex;
-	struct lock_s *next;
-} *locks = NULL;
-
-static of_mutex_t mutex;
-
 OF_CONSTRUCTOR()
 {
-	if (!of_mutex_new(&mutex))
+	if (!of_mutex_new(&synchronized_locks_lock))
 		OBJC_ERROR("Failed to create mutex!")
 }
 #endif
@@ -48,19 +43,19 @@ objc_sync_enter(id object)
 		return 0;
 
 #ifdef OF_HAVE_THREADS
-	struct lock_s *lock;
+	struct synchronized_lock *lock;
 
-	if (!of_mutex_lock(&mutex))
+	if (!of_mutex_lock(&synchronized_locks_lock))
 		OBJC_ERROR("Failed to lock mutex!");
 
 	/* Look if we already have a lock */
-	for (lock = locks; lock != NULL; lock = lock->next) {
+	for (lock = synchronized_locks; lock != NULL; lock = lock->next) {
 		if (lock->object != object)
 			continue;
 
 		lock->count++;
 
-		if (!of_mutex_unlock(&mutex))
+		if (!of_mutex_unlock(&synchronized_locks_lock))
 			OBJC_ERROR("Failed to unlock mutex!");
 
 		if (!of_rmutex_lock(&lock->rmutex))
@@ -78,11 +73,11 @@ objc_sync_enter(id object)
 
 	lock->object = object;
 	lock->count = 1;
-	lock->next = locks;
+	lock->next = synchronized_locks;
 
-	locks = lock;
+	synchronized_locks = lock;
 
-	if (!of_mutex_unlock(&mutex))
+	if (!of_mutex_unlock(&synchronized_locks_lock))
 		OBJC_ERROR("Failed to unlock mutex!");
 
 	if (!of_rmutex_lock(&lock->rmutex))
@@ -99,12 +94,12 @@ objc_sync_exit(id object)
 		return 0;
 
 #ifdef OF_HAVE_THREADS
-	struct lock_s *lock, *last = NULL;
+	struct synchronized_lock *lock, *last = NULL;
 
-	if (!of_mutex_lock(&mutex))
+	if (!of_mutex_lock(&synchronized_locks_lock))
 		OBJC_ERROR("Failed to lock mutex!");
 
-	for (lock = locks; lock != NULL; lock = lock->next) {
+	for (lock = synchronized_locks; lock != NULL; lock = lock->next) {
 		if (lock->object != object) {
 			last = lock;
 			continue;
@@ -119,13 +114,13 @@ objc_sync_exit(id object)
 
 			if (last != NULL)
 				last->next = lock->next;
-			if (locks == lock)
-				locks = lock->next;
+			if (synchronized_locks == lock)
+				synchronized_locks = lock->next;
 
 			free(lock);
 		}
 
-		if (!of_mutex_unlock(&mutex))
+		if (!of_mutex_unlock(&synchronized_locks_lock))
 			OBJC_ERROR("Failed to unlock mutex!");
 
 		return 0;

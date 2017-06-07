@@ -31,10 +31,9 @@ struct weak_ref {
 	size_t count;
 };
 
-static struct objc_hashtable *hashtable;
-#ifdef OF_HAVE_THREADS
-static of_spinlock_t spinlock;
-#endif
+#import "globals.h"
+#define weak_refs objc_globals.weak_refs
+#define weak_refs_lock objc_globals.weak_refs_lock
 
 static uint32_t
 obj_hash(const void *obj)
@@ -50,10 +49,10 @@ obj_equal(const void *obj1, const void *obj2)
 
 OF_CONSTRUCTOR()
 {
-	hashtable = objc_hashtable_new(obj_hash, obj_equal, 2);
+	weak_refs = objc_hashtable_new(obj_hash, obj_equal, 2);
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_new(&spinlock))
+	if (!of_spinlock_new(&weak_refs_lock))
 		OBJC_ERROR("Failed to create spinlock!")
 #endif
 }
@@ -124,16 +123,16 @@ objc_storeWeak(id *object, id value)
 	struct weak_ref *old;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
+	if (!of_spinlock_lock(&weak_refs_lock))
 		OBJC_ERROR("Failed to lock spinlock!")
 #endif
 
 	if (*object != nil &&
-	    (old = objc_hashtable_get(hashtable, *object)) != NULL) {
+	    (old = objc_hashtable_get(weak_refs, *object)) != NULL) {
 		for (size_t i = 0; i < old->count; i++) {
 			if (old->locations[i] == object) {
 				if (--old->count == 0) {
-					objc_hashtable_delete(hashtable,
+					objc_hashtable_delete(weak_refs,
 					    *object);
 					free(old->locations);
 					free(old);
@@ -159,14 +158,14 @@ objc_storeWeak(id *object, id value)
 
 	if (value != nil && class_respondsToSelector(object_getClass(value),
 	    @selector(allowsWeakReference)) && [value allowsWeakReference]) {
-		struct weak_ref *ref = objc_hashtable_get(hashtable, value);
+		struct weak_ref *ref = objc_hashtable_get(weak_refs, value);
 
 		if (ref == NULL) {
 			if ((ref = calloc(1, sizeof(*ref))) == NULL)
 				OBJC_ERROR("Not enough memory to allocate weak "
 				    "reference!");
 
-			objc_hashtable_set(hashtable, value, ref);
+			objc_hashtable_set(weak_refs, value, ref);
 		}
 
 		if ((ref->locations = realloc(ref->locations,
@@ -181,7 +180,7 @@ objc_storeWeak(id *object, id value)
 	*object = value;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
+	if (!of_spinlock_unlock(&weak_refs_lock))
 		OBJC_ERROR("Failed to unlock spinlock!")
 #endif
 
@@ -195,15 +194,15 @@ objc_loadWeakRetained(id *object)
 	struct weak_ref *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
+	if (!of_spinlock_lock(&weak_refs_lock))
 		OBJC_ERROR("Failed to lock spinlock!")
 #endif
 
-	if ((ref = objc_hashtable_get(hashtable, *object)) != NULL)
+	if ((ref = objc_hashtable_get(weak_refs, *object)) != NULL)
 		value = *object;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
+	if (!of_spinlock_unlock(&weak_refs_lock))
 		OBJC_ERROR("Failed to unlock spinlock!")
 #endif
 
@@ -245,11 +244,11 @@ objc_moveWeak(id *dest, id *src)
 	struct weak_ref *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
+	if (!of_spinlock_lock(&weak_refs_lock))
 		OBJC_ERROR("Failed to lock spinlock!")
 #endif
 
-	if ((ref = objc_hashtable_get(hashtable, *src)) != NULL) {
+	if ((ref = objc_hashtable_get(weak_refs, *src)) != NULL) {
 		for (size_t i = 0; i < ref->count; i++) {
 			if (ref->locations[i] == src) {
 				ref->locations[i] = dest;
@@ -262,7 +261,7 @@ objc_moveWeak(id *dest, id *src)
 	*src = nil;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
+	if (!of_spinlock_unlock(&weak_refs_lock))
 		OBJC_ERROR("Failed to unlock spinlock!")
 #endif
 }
@@ -273,21 +272,21 @@ objc_zero_weak_references(id value)
 	struct weak_ref *ref;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&spinlock))
+	if (!of_spinlock_lock(&weak_refs_lock))
 		OBJC_ERROR("Failed to lock spinlock!")
 #endif
 
-	if ((ref = objc_hashtable_get(hashtable, value)) != NULL) {
+	if ((ref = objc_hashtable_get(weak_refs, value)) != NULL) {
 		for (size_t i = 0; i < ref->count; i++)
 			*ref->locations[i] = nil;
 
-		objc_hashtable_delete(hashtable, value);
+		objc_hashtable_delete(weak_refs, value);
 		free(ref->locations);
 		free(ref);
 	}
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&spinlock))
+	if (!of_spinlock_unlock(&weak_refs_lock))
 		OBJC_ERROR("Failed to unlock spinlock!")
 #endif
 }

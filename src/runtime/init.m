@@ -19,6 +19,15 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
+#import "globals.h"
+
+struct objc_globals objc_globals = {
+#ifdef OF_HAVE_THREADS
+	.global_once_control = OF_ONCE_INIT,
+#endif
+	.lookups_till_fast_path = 128
+};
+
 void
 __objc_exec_class(void *module_)
 {

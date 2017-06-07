@@ -22,7 +22,8 @@
 #include "runtime.h"
 #include "runtime-private.h"
 
-static objc_enumeration_mutation_handler enumeration_mutation_handler = NULL;
+#import "globals.h"
+#define enumeration_mutation_handler objc_globals.enumeration_mutation_handler
 
 void
 objc_enumerationMutation(id obj)
