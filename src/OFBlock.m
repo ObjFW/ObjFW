@@ -101,7 +101,7 @@ struct objc_abi_class _NSConcreteMallocBlock = {
 };
 
 static struct {
-	unsigned int unknown;
+	unsigned long unknown;
 	struct objc_abi_selector *sel_refs;
 	uint16_t cls_def_cnt, cat_def_cnt;
 	void *defs[4];
