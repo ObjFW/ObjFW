@@ -60,6 +60,7 @@
 #import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
 #import "OFStatItemFailedException.h"
@@ -103,6 +104,17 @@ static OFMutex *readdirMutex;
 
 #ifdef OF_WINDOWS
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
+#endif
+
+#ifdef OF_MORPHOS
+static bool dirChanged = false;
+static BPTR originalDirLock = 0;
+
+OF_DESTRUCTOR()
+{
+	if (dirChanged)
+		UnLock(CurrentDir(originalDirLock));
+}
 #endif
 
 static int
@@ -230,26 +242,44 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 - (OFString *)currentDirectoryPath
 {
+#if defined(OF_WINDOWS)
 	OFString *ret;
-#ifndef OF_WINDOWS
-	char *buffer = getcwd(NULL, 0);
-#else
 	wchar_t *buffer = _wgetcwd(NULL, 0);
-#endif
 
 	@try {
-#ifndef OF_WINDOWS
-		ret = [OFString
-		    stringWithCString: buffer
-			     encoding: [OFLocalization encoding]];
-#else
 		ret = [OFString stringWithUTF16String: buffer];
-#endif
 	} @finally {
 		free(buffer);
 	}
 
 	return ret;
+#elif defined(OF_MORPHOS)
+	char buffer[512];
+
+	if (!NameFromLock(((struct Process *)FindTask(NULL))->pr_CurrentDir,
+	    buffer, 512)) {
+		if (IoErr() == ERROR_LINE_TOO_LONG)
+			@throw [OFOutOfRangeException exception];
+
+		return nil;
+	}
+
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocalization encoding]];
+#else
+	OFString *ret;
+	char *buffer = getcwd(NULL, 0);
+
+	@try {
+		ret = [OFString
+		    stringWithCString: buffer
+			     encoding: [OFLocalization encoding]];
+	} @finally {
+		free(buffer);
+	}
+
+	return ret;
+#endif
 }
 
 - (bool)fileExistsAtPath: (OFString *)path
@@ -311,15 +341,54 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef OF_WINDOWS
-	if (mkdir([path cStringWithEncoding: [OFLocalization encoding]],
-	    0777) != 0)
-#else
+#if defined(OF_WINDOWS)
 	if (_wmkdir([path UTF16String]) != 0)
-#endif
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithPath: path
 				errNo: errno];
+#elif defined(OF_MORPHOS)
+	BPTR lock;
+
+	if ((lock = CreateDir(
+	    [path cStringWithEncoding: [OFLocalization encoding]])) == 0) {
+		int errNo;
+
+		switch (IoErr()) {
+		case ERROR_NO_FREE_STORE:
+		case ERROR_DISK_FULL:
+			errNo = ENOSPC;
+			break;
+		case ERROR_OBJECT_IN_USE:
+		case ERROR_DISK_NOT_VALIDATED:
+			errNo = EBUSY;
+			break;
+		case ERROR_OBJECT_EXISTS:
+			errNo = EEXIST;
+			break;
+		case ERROR_OBJECT_NOT_FOUND:
+			errNo = ENOENT;
+			break;
+		case ERROR_DISK_WRITE_PROTECTED:
+			errNo = EROFS;
+			break;
+		default:
+			errNo = 0;
+			break;
+		}
+
+		@throw [OFCreateDirectoryFailedException
+		    exceptionWithPath: path
+				errNo: errNo];
+	}
+
+	UnLock(lock);
+#else
+	if (mkdir([path cStringWithEncoding: [OFLocalization encoding]],
+	    0777) != 0)
+		@throw [OFCreateDirectoryFailedException
+		    exceptionWithPath: path
+				errNo: errno];
+#endif
 }
 
 - (void)createDirectoryAtPath: (OFString *)path
@@ -484,14 +553,50 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
-#ifndef OF_WINDOWS
-	if (chdir([path cStringWithEncoding: [OFLocalization encoding]]) != 0)
-#else
+#if defined(OF_WINDOWS)
 	if (_wchdir([path UTF16String]) != 0)
-#endif
 		@throw [OFChangeCurrentDirectoryPathFailedException
 		    exceptionWithPath: path
 				errNo: errno];
+#elif defined(OF_MORPHOS)
+	BPTR lock, oldLock;
+
+	if ((lock = Lock([path cStringWithEncoding: [OFLocalization encoding]],
+	    SHARED_LOCK)) == 0) {
+		int errNo;
+
+		switch (IoErr()) {
+		case ERROR_OBJECT_IN_USE:
+		case ERROR_DISK_NOT_VALIDATED:
+			errNo = EBUSY;
+			break;
+		case ERROR_OBJECT_NOT_FOUND:
+			errNo = ENOENT;
+			break;
+		default:
+			errNo = 0;
+			break;
+		}
+
+		@throw [OFChangeCurrentDirectoryPathFailedException
+		    exceptionWithPath: path
+				errNo: errNo];
+	}
+
+	oldLock = CurrentDir(lock);
+
+	if (!dirChanged)
+		originalDirLock = oldLock;
+	else
+		UnLock(oldLock);
+
+	dirChanged = true;
+#else
+	if (chdir([path cStringWithEncoding: [OFLocalization encoding]]) != 0)
+		@throw [OFChangeCurrentDirectoryPathFailedException
+		    exceptionWithPath: path
+				errNo: errno];
+#endif
 }
 
 - (of_offset_t)sizeOfFileAtPath: (OFString *)path
