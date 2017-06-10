@@ -1005,7 +1005,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	pool = objc_autoreleasePoolPush();
 
 	if (of_lstat(destination, &s) == 0)
-		@throw [OFCopyItemFailedException
+		@throw [OFMoveItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
 				      errNo: EEXIST];
