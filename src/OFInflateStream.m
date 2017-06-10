@@ -23,11 +23,11 @@
 
 #include <assert.h>
 
-#ifndef DEFLATE64
-# import "OFDeflateStream.h"
+#ifndef INFLATE64
+# import "OFInflateStream.h"
 #else
-# import "OFDeflate64Stream.h"
-# define OFDeflateStream OFDeflate64Stream
+# import "OFInflate64Stream.h"
+# define OFInflateStream OFInflate64Stream
 #endif
 #import "OFDataArray.h"
 
@@ -62,11 +62,7 @@ struct huffman_tree {
 	uint16_t value;
 };
 
-@interface OFDeflateStream ()
-- (void)of_initDecompression;
-@end
-
-#ifndef DEFLATE64
+#ifndef INFLATE64
 static const uint8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
@@ -112,43 +108,41 @@ static const uint8_t codeLengthsOrder[19] = {
 static struct huffman_tree *fixedLitLenTree, *fixedDistTree;
 
 static bool
-tryReadBits(OFDeflateStream *stream,
-    struct of_deflate_stream_decompression_ivars *ivars,
-    uint16_t *bits, uint8_t count)
+tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
-	uint16_t ret = ivars->savedBits;
+	uint16_t ret = stream->_savedBits;
 
-	assert(ivars->savedBitsLength < count);
+	assert(stream->_savedBitsLength < count);
 
-	for (uint8_t i = ivars->savedBitsLength; i < count; i++) {
-		if OF_UNLIKELY (ivars->bitIndex == 8) {
-			if (ivars->bufferIndex < ivars->bufferLength)
-				ivars->byte =
-				    ivars->buffer[ivars->bufferIndex++];
+	for (uint8_t i = stream->_savedBitsLength; i < count; i++) {
+		if OF_UNLIKELY (stream->_bitIndex == 8) {
+			if (stream->_bufferIndex < stream->_bufferLength)
+				stream->_byte =
+				    stream->_buffer[stream->_bufferIndex++];
 			else {
 				size_t length = [stream->_stream
-				    readIntoBuffer: ivars->buffer
+				    readIntoBuffer: stream->_buffer
 					    length: BUFFER_SIZE];
 
 				if OF_UNLIKELY (length < 1) {
-					ivars->savedBits = ret;
-					ivars->savedBitsLength = i;
+					stream->_savedBits = ret;
+					stream->_savedBitsLength = i;
 					return false;
 				}
 
-				ivars->byte = ivars->buffer[0];
-				ivars->bufferIndex = 1;
-				ivars->bufferLength = (uint16_t)length;
+				stream->_byte = stream->_buffer[0];
+				stream->_bufferIndex = 1;
+				stream->_bufferLength = (uint16_t)length;
 			}
 
-			ivars->bitIndex = 0;
+			stream->_bitIndex = 0;
 		}
 
-		ret |= ((ivars->byte >> ivars->bitIndex++) & 1) << i;
+		ret |= ((stream->_byte >> stream->_bitIndex++) & 1) << i;
 	}
 
-	ivars->savedBits = 0;
-	ivars->savedBitsLength = 0;
+	stream->_savedBits = 0;
+	stream->_savedBitsLength = 0;
 	*bits = ret;
 
 	return true;
@@ -226,15 +220,13 @@ constructTree(uint8_t lengths[], uint16_t count)
 }
 
 static bool
-walkTree(OFDeflateStream *stream,
-    struct of_deflate_stream_decompression_ivars *ivars,
-    struct huffman_tree **tree, uint16_t *value)
+walkTree(OFInflateStream *stream, struct huffman_tree **tree, uint16_t *value)
 {
 	struct huffman_tree *iter = *tree;
 	uint16_t bits;
 
 	while (iter->value == 0xFFFF) {
-		if OF_UNLIKELY (!tryReadBits(stream, ivars, &bits, 1)) {
+		if OF_UNLIKELY (!tryReadBits(stream, &bits, 1)) {
 			*tree = iter;
 			return false;
 		}
@@ -259,12 +251,12 @@ releaseTree(struct huffman_tree *tree)
 	free(tree);
 }
 
-@implementation OFDeflateStream
+@implementation OFInflateStream
 + (void)initialize
 {
 	uint8_t lengths[288];
 
-	if (self != [OFDeflateStream class])
+	if (self != [OFInflateStream class])
 		return;
 
 	for (uint16_t i = 0; i <= 143; i++)
@@ -284,7 +276,7 @@ releaseTree(struct huffman_tree *tree)
 	fixedDistTree = constructTree(lengths, 32);
 }
 
-#ifndef DEFLATE64
+#ifndef INFLATE64
 + (instancetype)streamWithStream: (OFStream *)stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
@@ -301,6 +293,14 @@ releaseTree(struct huffman_tree *tree)
 
 	_stream = [stream retain];
 
+	/* 0-7 address the bit, 8 means fetch next byte */
+	_bitIndex = 8;
+#ifdef INFLATE64
+	_slidingWindowMask = 0xFFFF;
+#else
+	_slidingWindowMask = 0x7FFF;
+#endif
+
 	return self;
 }
 
@@ -308,42 +308,24 @@ releaseTree(struct huffman_tree *tree)
 {
 	[self close];
 
-	if (_decompression != NULL && _decompression->state == HUFFMAN_TREE)
-		if (_decompression->context.huffmanTree.codeLenTree != NULL)
-			releaseTree(
-			    _decompression->context.huffmanTree.codeLenTree);
+	if (_state == HUFFMAN_TREE)
+		if (_context.huffmanTree.codeLenTree != NULL)
+			releaseTree(_context.huffmanTree.codeLenTree);
 
-	if (_decompression != NULL && (_decompression->state == HUFFMAN_TREE ||
-	    _decompression->state == HUFFMAN_BLOCK)) {
-		if (_decompression->context.huffman.litLenTree !=
-		    fixedLitLenTree)
-			releaseTree(_decompression->context.huffman.litLenTree);
-		if (_decompression->context.huffman.distTree != fixedDistTree)
-			releaseTree(_decompression->context.huffman.distTree);
+	if (_state == HUFFMAN_TREE || _state == HUFFMAN_BLOCK) {
+		if (_context.huffman.litLenTree != fixedLitLenTree)
+			releaseTree(_context.huffman.litLenTree);
+		if (_context.huffman.distTree != fixedDistTree)
+			releaseTree(_context.huffman.distTree);
 	}
 
 	[super dealloc];
 }
 #endif
 
-- (void)of_initDecompression
-{
-	_decompression = [self allocMemoryWithSize: sizeof(*_decompression)];
-	memset(_decompression, 0, sizeof(*_decompression));
-
-	/* 0-7 address the bit, 8 means fetch next byte */
-	_decompression->bitIndex = 8;
-#ifdef DEFLATE64
-	_decompression->slidingWindowMask = 0xFFFF;
-#else
-	_decompression->slidingWindowMask = 0x7FFF;
-#endif
-}
-
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer_
 			  length: (size_t)length
 {
-	struct of_deflate_stream_decompression_ivars *ivars = _decompression;
 	uint8_t *buffer = buffer_;
 	uint16_t bits, tmp;
 	uint16_t value;
@@ -354,54 +336,48 @@ releaseTree(struct huffman_tree *tree)
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (ivars == NULL) {
-		[self of_initDecompression];
-		ivars = _decompression;
-	}
-
-	if (ivars->atEndOfStream)
+	if (_atEndOfStream)
 		return 0;
 
 start:
-	switch ((enum state)ivars->state) {
+	switch ((enum state)_state) {
 	case BLOCK_HEADER:
-		if OF_UNLIKELY (ivars->inLastBlock) {
-			[_stream unreadFromBuffer: ivars->buffer +
-						   ivars->bufferIndex
-					   length: ivars->bufferLength -
-						   ivars->bufferIndex];
+		if OF_UNLIKELY (_inLastBlock) {
+			[_stream unreadFromBuffer: _buffer + _bufferIndex
+					   length: _bufferLength -
+						   _bufferIndex];
 
-			ivars->atEndOfStream = true;
+			_atEndOfStream = true;
 			return bytesWritten;
 		}
 
-		if OF_UNLIKELY (!tryReadBits(self, ivars, &bits, 3))
+		if OF_UNLIKELY (!tryReadBits(self, &bits, 3))
 			return bytesWritten;
 
-		ivars->inLastBlock = (bits & 1);
+		_inLastBlock = (bits & 1);
 
 		switch (bits >> 1) {
 		case 0: /* No compression */
-			ivars->state = UNCOMPRESSED_BLOCK_HEADER;
-			ivars->bitIndex = 8;
-			ivars->context.uncompressedHeader.position = 0;
-			memset(ivars->context.uncompressedHeader.length, 0, 4);
+			_state = UNCOMPRESSED_BLOCK_HEADER;
+			_bitIndex = 8;
+			_context.uncompressedHeader.position = 0;
+			memset(_context.uncompressedHeader.length, 0, 4);
 			break;
 		case 1: /* Fixed Huffman */
-			ivars->state = HUFFMAN_BLOCK;
-			ivars->context.huffman.state = AWAIT_CODE;
-			ivars->context.huffman.litLenTree = fixedLitLenTree;
-			ivars->context.huffman.distTree = fixedDistTree;
-			ivars->context.huffman.treeIter = fixedLitLenTree;
+			_state = HUFFMAN_BLOCK;
+			_context.huffman.state = AWAIT_CODE;
+			_context.huffman.litLenTree = fixedLitLenTree;
+			_context.huffman.distTree = fixedDistTree;
+			_context.huffman.treeIter = fixedLitLenTree;
 			break;
 		case 2: /* Dynamic Huffman */
-			ivars->state = HUFFMAN_TREE;
-			ivars->context.huffmanTree.lengths = NULL;
-			ivars->context.huffmanTree.receivedCount = 0;
-			ivars->context.huffmanTree.value = 0xFE;
-			ivars->context.huffmanTree.litLenCodesCount = 0xFF;
-			ivars->context.huffmanTree.distCodesCount = 0xFF;
-			ivars->context.huffmanTree.codeLenCodesCount = 0xFF;
+			_state = HUFFMAN_TREE;
+			_context.huffmanTree.lengths = NULL;
+			_context.huffmanTree.receivedCount = 0;
+			_context.huffmanTree.value = 0xFE;
+			_context.huffmanTree.litLenCodesCount = 0xFF;
+			_context.huffmanTree.distCodesCount = 0xFF;
+			_context.huffmanTree.codeLenCodesCount = 0xFF;
 			break;
 		default:
 			@throw [OFInvalidFormatException exception];
@@ -409,12 +385,11 @@ start:
 
 		goto start;
 	case UNCOMPRESSED_BLOCK_HEADER:
-#define CTX ivars->context.uncompressedHeader
+#define CTX _context.uncompressedHeader
 		/* FIXME: This can be done more efficiently than unreading */
-		[_stream unreadFromBuffer: ivars->buffer + ivars->bufferIndex
-				   length: ivars->bufferLength -
-					   ivars->bufferIndex];
-		ivars->bufferIndex = ivars->bufferLength = 0;
+		[_stream unreadFromBuffer: _buffer + _bufferIndex
+				   length: _bufferLength - _bufferIndex];
+		_bufferIndex = _bufferLength = 0;
 
 		CTX.position += [_stream
 		    readIntoBuffer: CTX.length + CTX.position
@@ -427,20 +402,20 @@ start:
 		    (uint16_t)~(CTX.length[2] | (CTX.length[3] << 8)))
 			@throw [OFInvalidFormatException exception];
 
-		ivars->state = UNCOMPRESSED_BLOCK;
+		_state = UNCOMPRESSED_BLOCK;
 
 		/*
-		 * Do not reorder! ivars->context.uncompressed.position and
-		 * ivars->context.uncompressedHeader.length overlap!
+		 * Do not reorder! _context.uncompressed.position and
+		 * _context.uncompressedHeader.length overlap!
 		 */
-		ivars->context.uncompressed.length =
+		_context.uncompressed.length =
 		    CTX.length[0] | (CTX.length[1] << 8);
-		ivars->context.uncompressed.position = 0;
+		_context.uncompressed.position = 0;
 
 		goto start;
 #undef CTX
 	case UNCOMPRESSED_BLOCK:
-#define CTX ivars->context.uncompressed
+#define CTX _context.uncompressed
 		if OF_UNLIKELY (length == 0)
 			return bytesWritten;
 
@@ -450,39 +425,37 @@ start:
 		tmp = (uint16_t)[_stream readIntoBuffer: buffer + bytesWritten
 						 length: tmp];
 
-		if OF_UNLIKELY (ivars->slidingWindow == NULL) {
-			ivars->slidingWindow = [self allocMemoryWithSize:
-			    ivars->slidingWindowMask + 1];
+		if OF_UNLIKELY (_slidingWindow == NULL) {
+			_slidingWindow =
+			    [self allocMemoryWithSize: _slidingWindowMask + 1];
 			/* Avoid leaking data */
-			memset(ivars->slidingWindow, 0,
-			    ivars->slidingWindowMask + 1);
+			memset(_slidingWindow, 0, _slidingWindowMask + 1);
 		}
 
-		slidingWindow = ivars->slidingWindow;
-		slidingWindowIndex = ivars->slidingWindowIndex;
+		slidingWindow = _slidingWindow;
+		slidingWindowIndex = _slidingWindowIndex;
 		for (uint16_t i = 0; i < tmp; i++) {
 			slidingWindow[slidingWindowIndex] =
 			    buffer[bytesWritten + i];
 			slidingWindowIndex = (slidingWindowIndex + 1) &
-			    ivars->slidingWindowMask;
+			    _slidingWindowMask;
 		}
-		ivars->slidingWindowIndex = slidingWindowIndex;
+		_slidingWindowIndex = slidingWindowIndex;
 
 		length -= tmp;
 		bytesWritten += tmp;
 
 		CTX.position += tmp;
 		if OF_UNLIKELY (CTX.position == CTX.length)
-			ivars->state = BLOCK_HEADER;
+			_state = BLOCK_HEADER;
 
 		goto start;
 #undef CTX
 	case HUFFMAN_TREE:
-#define CTX ivars->context.huffmanTree
+#define CTX _context.huffmanTree
 		if OF_LIKELY (CTX.value == 0xFE) {
 			if OF_LIKELY (CTX.litLenCodesCount == 0xFF) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 5))
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 					return bytesWritten;
 
 				if OF_UNLIKELY (bits > 29)
@@ -493,16 +466,14 @@ start:
 			}
 
 			if OF_LIKELY (CTX.distCodesCount == 0xFF) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 5))
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 					return bytesWritten;
 
 				CTX.distCodesCount = bits;
 			}
 
 			if OF_LIKELY (CTX.codeLenCodesCount == 0xFF) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 4))
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 4))
 					return bytesWritten;
 
 				CTX.codeLenCodesCount = bits;
@@ -515,8 +486,7 @@ start:
 
 			for (uint16_t i = CTX.receivedCount;
 			    i < CTX.codeLenCodesCount + 4; i++) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 3)) {
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 3)) {
 					CTX.receivedCount = i;
 					return bytesWritten;
 				}
@@ -542,8 +512,8 @@ start:
 			uint8_t j, count;
 
 			if OF_LIKELY (CTX.value == 0xFF) {
-				if OF_UNLIKELY (!walkTree(self, ivars,
-				    &CTX.treeIter, &value)) {
+				if OF_UNLIKELY (!walkTree(self, &CTX.treeIter,
+				    &value)) {
 					CTX.receivedCount = i;
 					return bytesWritten;
 				}
@@ -563,8 +533,7 @@ start:
 					@throw [OFInvalidFormatException
 					    exception];
 
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 2)) {
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 2)) {
 					CTX.receivedCount = i;
 					CTX.value = value;
 					return bytesWritten;
@@ -575,8 +544,7 @@ start:
 
 				break;
 			case 17:
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 3)) {
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 3)) {
 					CTX.receivedCount = i;
 					CTX.value = value;
 					return bytesWritten;
@@ -587,8 +555,7 @@ start:
 
 				break;
 			case 18:
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, 7)) {
+				if OF_UNLIKELY (!tryReadBits(self, &bits, 7)) {
 					CTX.receivedCount = i;
 					CTX.value = value;
 					return bytesWritten;
@@ -625,17 +592,17 @@ start:
 
 		/*
 		 * litLenTree and distTree are at the same location in
-		 * ivars->context.huffman and ivars->context.huffmanTree, thus
-		 * no need to set them.
+		 * _context.huffman and _context.huffmanTree, thus no need to
+		 * set them.
 		 */
-		ivars->state = HUFFMAN_BLOCK;
-		ivars->context.huffman.state = AWAIT_CODE;
-		ivars->context.huffman.treeIter = CTX.litLenTree;
+		_state = HUFFMAN_BLOCK;
+		_context.huffman.state = AWAIT_CODE;
+		_context.huffman.treeIter = CTX.litLenTree;
 
 		goto start;
 #undef CTX
 	case HUFFMAN_BLOCK:
-#define CTX ivars->context.huffman
+#define CTX _context.huffman
 		for (;;) {
 			uint8_t extraBits, lengthCodeIndex;
 
@@ -646,28 +613,27 @@ start:
 				buffer[bytesWritten++] = CTX.value;
 				length--;
 
-				if (ivars->slidingWindow == NULL) {
-					ivars->slidingWindow = [self
+				if (_slidingWindow == NULL) {
+					_slidingWindow = [self
 					    allocMemoryWithSize:
-					    ivars->slidingWindowMask + 1];
+					    _slidingWindowMask + 1];
 					/* Avoid leaking data */
-					memset(ivars->slidingWindow, 0,
-					    ivars->slidingWindowMask + 1);
+					memset(_slidingWindow, 0,
+					    _slidingWindowMask + 1);
 				}
 
-				ivars->slidingWindow[
-				    ivars->slidingWindowIndex] = CTX.value;
-				ivars->slidingWindowIndex =
-				    (ivars->slidingWindowIndex + 1) &
-				    ivars->slidingWindowMask;
+				_slidingWindow[_slidingWindowIndex] = CTX.value;
+				_slidingWindowIndex =
+				    (_slidingWindowIndex + 1) &
+				    _slidingWindowMask;
 
 				CTX.state = AWAIT_CODE;
 				CTX.treeIter = CTX.litLenTree;
 			}
 
 			if OF_UNLIKELY (CTX.state == AWAIT_LENGTH_EXTRA_BITS) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, CTX.extraBits))
+				if OF_UNLIKELY (!tryReadBits(self, &bits,
+				    CTX.extraBits))
 					return bytesWritten;
 
 				CTX.length += bits;
@@ -678,8 +644,8 @@ start:
 
 			/* Distance of length distance pair */
 			if (CTX.state == AWAIT_DISTANCE) {
-				if OF_UNLIKELY (!walkTree(self, ivars,
-				    &CTX.treeIter, &value))
+				if OF_UNLIKELY (!walkTree(self, &CTX.treeIter,
+				    &value))
 					return bytesWritten;
 
 				if OF_UNLIKELY (value >= numDistanceCodes)
@@ -691,7 +657,7 @@ start:
 
 				if (extraBits > 0) {
 					if OF_UNLIKELY (!tryReadBits(self,
-					    ivars, &bits, extraBits)) {
+					    &bits, extraBits)) {
 						CTX.state =
 						    AWAIT_DISTANCE_EXTRA_BITS;
 						CTX.extraBits = extraBits;
@@ -703,8 +669,8 @@ start:
 
 				CTX.state = PROCESS_PAIR;
 			} else if (CTX.state == AWAIT_DISTANCE_EXTRA_BITS) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, CTX.extraBits))
+				if OF_UNLIKELY (!tryReadBits(self, &bits,
+				    CTX.extraBits))
 					return bytesWritten;
 
 				CTX.distance += bits;
@@ -716,7 +682,7 @@ start:
 			if (CTX.state == PROCESS_PAIR) {
 				uint16_t j;
 
-				if OF_UNLIKELY (ivars->slidingWindow == NULL)
+				if OF_UNLIKELY (_slidingWindow == NULL)
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -728,27 +694,25 @@ start:
 						return bytesWritten;
 					}
 
-					index = (ivars->slidingWindowIndex -
-					    CTX.distance) &
-					    ivars->slidingWindowMask;
-					value = ivars->slidingWindow[index];
+					index = (_slidingWindowIndex -
+					    CTX.distance) & _slidingWindowMask;
+					value = _slidingWindow[index];
 
 					buffer[bytesWritten++] = value;
 					length--;
 
-					ivars->slidingWindow[
-					    ivars->slidingWindowIndex] = value;
-					ivars->slidingWindowIndex =
-					    (ivars->slidingWindowIndex + 1) &
-					    ivars->slidingWindowMask;
+					_slidingWindow[_slidingWindowIndex] =
+					    value;
+					_slidingWindowIndex =
+					    (_slidingWindowIndex + 1) &
+					    _slidingWindowMask;
 				}
 
 				CTX.state = AWAIT_CODE;
 				CTX.treeIter = CTX.litLenTree;
 			}
 
-			if OF_UNLIKELY (!walkTree(self, ivars,
-			    &CTX.treeIter, &value))
+			if OF_UNLIKELY (!walkTree(self, &CTX.treeIter, &value))
 				return bytesWritten;
 
 			/* End of block */
@@ -758,7 +722,7 @@ start:
 				if (CTX.distTree != fixedDistTree)
 					releaseTree(CTX.distTree);
 
-				ivars->state = BLOCK_HEADER;
+				_state = BLOCK_HEADER;
 				goto start;
 			}
 
@@ -773,20 +737,19 @@ start:
 				buffer[bytesWritten++] = value;
 				length--;
 
-				if (ivars->slidingWindow == NULL) {
-					ivars->slidingWindow = [self
+				if (_slidingWindow == NULL) {
+					_slidingWindow = [self
 					    allocMemoryWithSize:
-					    ivars->slidingWindowMask + 1];
+					    _slidingWindowMask + 1];
 					/* Avoid leaking data */
-					memset(ivars->slidingWindow, 0,
-					    ivars->slidingWindowMask + 1);
+					memset(_slidingWindow, 0,
+					    _slidingWindowMask + 1);
 				}
 
-				ivars->slidingWindow[
-				    ivars->slidingWindowIndex] = value;
-				ivars->slidingWindowIndex =
-				    (ivars->slidingWindowIndex + 1) &
-				    ivars->slidingWindowMask;
+				_slidingWindow[_slidingWindowIndex] = value;
+				_slidingWindowIndex =
+				    (_slidingWindowIndex + 1) &
+				    _slidingWindowMask;
 
 				CTX.treeIter = CTX.litLenTree;
 				continue;
@@ -801,8 +764,8 @@ start:
 			extraBits = lengthExtraBits[lengthCodeIndex];
 
 			if (extraBits > 0) {
-				if OF_UNLIKELY (!tryReadBits(self, ivars,
-				    &bits, extraBits)) {
+				if OF_UNLIKELY (!tryReadBits(self, &bits,
+				    extraBits)) {
 					CTX.extraBits = extraBits;
 					CTX.state = AWAIT_LENGTH_EXTRA_BITS;
 					return bytesWritten;
@@ -822,13 +785,13 @@ start:
 	OF_UNREACHABLE
 }
 
-#ifndef DEFLATE64
+#ifndef INFLATE64
 - (bool)lowlevelIsAtEndOfStream
 {
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	return _decompression->atEndOfStream;
+	return _atEndOfStream;
 }
 
 - (int)fileDescriptorForReading

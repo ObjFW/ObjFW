@@ -20,8 +20,6 @@ SRCS = OFApplication.m			\
        OFDataArray+CryptoHashing.m	\
        OFDataArray+MessagePackValue.m	\
        OFDate.m				\
-       OFDeflateStream.m		\
-       OFDeflate64Stream.m		\
        OFDictionary.m			\
        OFEnumerator.m			\
        OFGZIPStream.m			\
@@ -30,6 +28,8 @@ SRCS = OFApplication.m			\
        OFHTTPCookieManager.m		\
        OFHTTPRequest.m			\
        OFHTTPResponse.m			\
+       OFInflateStream.m		\
+       OFInflate64Stream.m		\
        OFIntrospection.m		\
        OFList.m				\
        OFLocalization.m			\

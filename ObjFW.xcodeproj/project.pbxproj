@@ -206,8 +206,6 @@
 		4B2C212C1DA292BE00735907 /* OFDataArray+CryptoHashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE17ADA12FD746D002CEB0B /* OFDataArray+CryptoHashing.m */; };
 		4B2C212D1DA292BE00735907 /* OFDataArray+MessagePackValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B879A8A177231F000EBCEA4 /* OFDataArray+MessagePackValue.m */; };
 		4B2C212E1DA292BE00735907 /* OFDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0DA12DF4225005C7A0C /* OFDate.m */; };
-		4B2C212F1DA292BE00735907 /* OFDeflate64Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC176201D04963000C32718 /* OFDeflate64Stream.m */; };
-		4B2C21301DA292BE00735907 /* OFDeflateStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC176221D04963000C32718 /* OFDeflateStream.m */; };
 		4B2C21311DA292BE00735907 /* OFDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6799631099E7C50041064A /* OFDictionary.m */; };
 		4B2C21321DA292BE00735907 /* OFDictionary_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2B3E76140D430500EC2F7C /* OFDictionary_hashtable.m */; };
 		4B2C21331DA292BE00735907 /* OFEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B0108CA10EB8C9300631877 /* OFEnumerator.m */; };
@@ -384,8 +382,6 @@
 		4B2C21E31DA292BE00735907 /* OFDataArray+CryptoHashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE17AD912FD746D002CEB0B /* OFDataArray+CryptoHashing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21E41DA292BE00735907 /* OFDataArray+MessagePackValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B879A89177231F000EBCEA4 /* OFDataArray+MessagePackValue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21E51DA292BE00735907 /* OFDate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BE5F0D912DF4225005C7A0C /* OFDate.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B2C21E61DA292BE00735907 /* OFDeflateStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC176211D04963000C32718 /* OFDeflateStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4B2C21E71DA292BE00735907 /* OFDeflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC1761F1D04963000C32718 /* OFDeflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21E81DA292BE00735907 /* OFDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6799621099E7C50041064A /* OFDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21E91DA292BE00735907 /* OFEnumerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0108C910EB8C9300631877 /* OFEnumerator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2C21EA1DA292BE00735907 /* OFException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B17FF70133A28FC003E6DCD /* OFException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -886,10 +882,6 @@
 		4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
-		4BC1762B1D04963000C32718 /* OFDeflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC1761F1D04963000C32718 /* OFDeflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BC1762C1D04963000C32718 /* OFDeflate64Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC176201D04963000C32718 /* OFDeflate64Stream.m */; };
-		4BC1762D1D04963000C32718 /* OFDeflateStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC176211D04963000C32718 /* OFDeflateStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4BC1762E1D04963000C32718 /* OFDeflateStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC176221D04963000C32718 /* OFDeflateStream.m */; };
 		4BC1762F1D04963000C32718 /* OFKeyValueCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC176231D04963000C32718 /* OFKeyValueCoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC176301D04963000C32718 /* OFObject+KeyValueCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC176241D04963000C32718 /* OFObject+KeyValueCoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC176311D04963000C32718 /* OFObject+KeyValueCoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC176251D04963000C32718 /* OFObject+KeyValueCoding.m */; };
@@ -966,6 +958,14 @@
 		4BEC83BC19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */; };
 		4BF0DD741D44645D001D9949 /* OFHMACTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF0DD731D44645D001D9949 /* OFHMACTests.m */; };
 		4BF171B21C949A3300F5B47B /* OFStdIOStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF171B11C9499F300F5B47B /* OFStdIOStream+Private.h */; };
+		4BF20C511EEBF5F000C53220 /* OFInflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF20C4D1EEBF5F000C53220 /* OFInflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF20C521EEBF5F000C53220 /* OFInflate64Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF20C4D1EEBF5F000C53220 /* OFInflate64Stream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF20C531EEBF5F000C53220 /* OFInflate64Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF20C4E1EEBF5F000C53220 /* OFInflate64Stream.m */; };
+		4BF20C541EEBF5F000C53220 /* OFInflate64Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF20C4E1EEBF5F000C53220 /* OFInflate64Stream.m */; };
+		4BF20C551EEBF5F000C53220 /* OFInflateStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF20C4F1EEBF5F000C53220 /* OFInflateStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF20C561EEBF5F000C53220 /* OFInflateStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF20C4F1EEBF5F000C53220 /* OFInflateStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF20C571EEBF5F000C53220 /* OFInflateStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF20C501EEBF5F000C53220 /* OFInflateStream.m */; };
+		4BF20C581EEBF5F000C53220 /* OFInflateStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF20C501EEBF5F000C53220 /* OFInflateStream.m */; };
 		4BF33AFB133807590059CEF7 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
 		4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6EF66E1235358D0076B512 /* OFArrayTests.m */; };
 		4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */; };
@@ -1562,10 +1562,6 @@
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
 		4BC090431584F6760040640F /* OFInvalidJSONException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvalidJSONException.m; path = src/exceptions/OFInvalidJSONException.m; sourceTree = "<group>"; };
-		4BC1761F1D04963000C32718 /* OFDeflate64Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDeflate64Stream.h; path = src/OFDeflate64Stream.h; sourceTree = "<group>"; };
-		4BC176201D04963000C32718 /* OFDeflate64Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDeflate64Stream.m; path = src/OFDeflate64Stream.m; sourceTree = "<group>"; };
-		4BC176211D04963000C32718 /* OFDeflateStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFDeflateStream.h; path = src/OFDeflateStream.h; sourceTree = "<group>"; };
-		4BC176221D04963000C32718 /* OFDeflateStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDeflateStream.m; path = src/OFDeflateStream.m; sourceTree = "<group>"; };
 		4BC176231D04963000C32718 /* OFKeyValueCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFKeyValueCoding.h; path = src/OFKeyValueCoding.h; sourceTree = "<group>"; };
 		4BC176241D04963000C32718 /* OFObject+KeyValueCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFObject+KeyValueCoding.h"; path = "src/OFObject+KeyValueCoding.h"; sourceTree = "<group>"; };
 		4BC176251D04963000C32718 /* OFObject+KeyValueCoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFObject+KeyValueCoding.m"; path = "src/OFObject+KeyValueCoding.m"; sourceTree = "<group>"; };
@@ -1627,6 +1623,10 @@
 		4BF1BCCD11C9663F0025511F /* OFString+XMLUnescaping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+XMLUnescaping.m"; path = "src/OFString+XMLUnescaping.m"; sourceTree = "<group>"; };
 		4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFXMLAttribute.h; path = src/OFXMLAttribute.h; sourceTree = "<group>"; };
 		4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFXMLAttribute.m; path = src/OFXMLAttribute.m; sourceTree = "<group>"; };
+		4BF20C4D1EEBF5F000C53220 /* OFInflate64Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInflate64Stream.h; path = src/OFInflate64Stream.h; sourceTree = "<group>"; };
+		4BF20C4E1EEBF5F000C53220 /* OFInflate64Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInflate64Stream.m; path = src/OFInflate64Stream.m; sourceTree = "<group>"; };
+		4BF20C4F1EEBF5F000C53220 /* OFInflateStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInflateStream.h; path = src/OFInflateStream.h; sourceTree = "<group>"; };
+		4BF20C501EEBF5F000C53220 /* OFInflateStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInflateStream.m; path = src/OFInflateStream.m; sourceTree = "<group>"; };
 		4BF33AF0133807310059CEF7 /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BF33B4213380CD40059CEF7 /* testfile.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = testfile.bin; path = tests/testfile.bin; sourceTree = "<group>"; };
 		4BF33B4313380CD40059CEF7 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testfile.txt; path = tests/testfile.txt; sourceTree = "<group>"; };
@@ -2007,10 +2007,6 @@
 				4B879A8A177231F000EBCEA4 /* OFDataArray+MessagePackValue.m */,
 				4BE5F0D912DF4225005C7A0C /* OFDate.h */,
 				4BE5F0DA12DF4225005C7A0C /* OFDate.m */,
-				4BC1761F1D04963000C32718 /* OFDeflate64Stream.h */,
-				4BC176201D04963000C32718 /* OFDeflate64Stream.m */,
-				4BC176211D04963000C32718 /* OFDeflateStream.h */,
-				4BC176221D04963000C32718 /* OFDeflateStream.m */,
 				4B6799621099E7C50041064A /* OFDictionary.h */,
 				4B6799631099E7C50041064A /* OFDictionary.m */,
 				4B2B3E75140D430500EC2F7C /* OFDictionary_hashtable.h */,
@@ -2037,6 +2033,10 @@
 				4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */,
 				4BB4B54116775FF4002A2DCE /* OFHTTPServer.h */,
 				4BB4B54216775FF4002A2DCE /* OFHTTPServer.m */,
+				4BF20C4D1EEBF5F000C53220 /* OFInflate64Stream.h */,
+				4BF20C4E1EEBF5F000C53220 /* OFInflate64Stream.m */,
+				4BF20C4F1EEBF5F000C53220 /* OFInflateStream.h */,
+				4BF20C501EEBF5F000C53220 /* OFInflateStream.m */,
 				4B06855018B2AD3800FC731A /* OFINICategory.h */,
 				4B06855118B2AD3800FC731A /* OFINICategory.m */,
 				4B06855218B2AD3800FC731A /* OFINICategory+Private.h */,
@@ -2412,8 +2412,6 @@
 				4B2C21E31DA292BE00735907 /* OFDataArray+CryptoHashing.h in Headers */,
 				4B2C21E41DA292BE00735907 /* OFDataArray+MessagePackValue.h in Headers */,
 				4B2C21E51DA292BE00735907 /* OFDate.h in Headers */,
-				4B2C21E61DA292BE00735907 /* OFDeflateStream.h in Headers */,
-				4B2C21E71DA292BE00735907 /* OFDeflate64Stream.h in Headers */,
 				4B2C21E81DA292BE00735907 /* OFDictionary.h in Headers */,
 				4B2C21E91DA292BE00735907 /* OFEnumerator.h in Headers */,
 				4B2C21EA1DA292BE00735907 /* OFException.h in Headers */,
@@ -2427,6 +2425,8 @@
 				4B2C21F11DA292BE00735907 /* OFHTTPRequest.h in Headers */,
 				4B2C21F21DA292BE00735907 /* OFHTTPResponse.h in Headers */,
 				4B2C21F31DA292BE00735907 /* OFHTTPServer.h in Headers */,
+				4BF20C521EEBF5F000C53220 /* OFInflate64Stream.h in Headers */,
+				4BF20C561EEBF5F000C53220 /* OFInflateStream.h in Headers */,
 				4B2C21F41DA292BE00735907 /* OFINICategory.h in Headers */,
 				4B2C21F51DA292BE00735907 /* OFINIFile.h in Headers */,
 				4B2C21F61DA292BE00735907 /* OFIntrospection.h in Headers */,
@@ -2636,8 +2636,6 @@
 				4B3D23C31337FC8300DD29B8 /* OFDataArray+CryptoHashing.h in Headers */,
 				4B879A8C177231F000EBCEA4 /* OFDataArray+MessagePackValue.h in Headers */,
 				4B3D23C41337FC8300DD29B8 /* OFDate.h in Headers */,
-				4BC1762D1D04963000C32718 /* OFDeflateStream.h in Headers */,
-				4BC1762B1D04963000C32718 /* OFDeflate64Stream.h in Headers */,
 				4B3D23C51337FCB000DD29B8 /* OFDictionary.h in Headers */,
 				4B3D23C61337FCB000DD29B8 /* OFEnumerator.h in Headers */,
 				4B17FF74133A2AAB003E6DCD /* OFException.h in Headers */,
@@ -2651,6 +2649,8 @@
 				4B3D23CA1337FCB000DD29B8 /* OFHTTPRequest.h in Headers */,
 				4B7161AD17A6FC7600B74970 /* OFHTTPResponse.h in Headers */,
 				4BB4B54616775FF4002A2DCE /* OFHTTPServer.h in Headers */,
+				4BF20C511EEBF5F000C53220 /* OFInflate64Stream.h in Headers */,
+				4BF20C551EEBF5F000C53220 /* OFInflateStream.h in Headers */,
 				4B06855318B2AD3800FC731A /* OFINICategory.h in Headers */,
 				4B5B02BE18B288A400CE6AE4 /* OFINIFile.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
@@ -3179,8 +3179,6 @@
 				4B2C212C1DA292BE00735907 /* OFDataArray+CryptoHashing.m in Sources */,
 				4B2C212D1DA292BE00735907 /* OFDataArray+MessagePackValue.m in Sources */,
 				4B2C212E1DA292BE00735907 /* OFDate.m in Sources */,
-				4B2C212F1DA292BE00735907 /* OFDeflate64Stream.m in Sources */,
-				4B2C21301DA292BE00735907 /* OFDeflateStream.m in Sources */,
 				4B2C21311DA292BE00735907 /* OFDictionary.m in Sources */,
 				4B2C21321DA292BE00735907 /* OFDictionary_hashtable.m in Sources */,
 				4B2C21331DA292BE00735907 /* OFEnumerator.m in Sources */,
@@ -3193,6 +3191,8 @@
 				4B2C21391DA292BE00735907 /* OFHTTPRequest.m in Sources */,
 				4B2C213A1DA292BE00735907 /* OFHTTPResponse.m in Sources */,
 				4B2C213B1DA292BE00735907 /* OFHTTPServer.m in Sources */,
+				4BF20C541EEBF5F000C53220 /* OFInflate64Stream.m in Sources */,
+				4BF20C581EEBF5F000C53220 /* OFInflateStream.m in Sources */,
 				4B2C213C1DA292BE00735907 /* OFINICategory.m in Sources */,
 				4B2C213D1DA292BE00735907 /* OFINIFile.m in Sources */,
 				4B2C213E1DA292BE00735907 /* OFIntrospection.m in Sources */,
@@ -3378,8 +3378,6 @@
 				4B3D23911337FC0D00DD29B8 /* OFDataArray+CryptoHashing.m in Sources */,
 				4B879A8D177231F000EBCEA4 /* OFDataArray+MessagePackValue.m in Sources */,
 				4B3D23921337FC0D00DD29B8 /* OFDate.m in Sources */,
-				4BC1762C1D04963000C32718 /* OFDeflate64Stream.m in Sources */,
-				4BC1762E1D04963000C32718 /* OFDeflateStream.m in Sources */,
 				4B3D23931337FC0D00DD29B8 /* OFDictionary.m in Sources */,
 				4B2B3E80140D430500EC2F7C /* OFDictionary_hashtable.m in Sources */,
 				4B3D23941337FC0D00DD29B8 /* OFEnumerator.m in Sources */,
@@ -3392,6 +3390,8 @@
 				4B3D23981337FC0D00DD29B8 /* OFHTTPRequest.m in Sources */,
 				4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */,
 				4BB4B54716775FF4002A2DCE /* OFHTTPServer.m in Sources */,
+				4BF20C531EEBF5F000C53220 /* OFInflate64Stream.m in Sources */,
+				4BF20C571EEBF5F000C53220 /* OFInflateStream.m in Sources */,
 				4B06855418B2AD3800FC731A /* OFINICategory.m in Sources */,
 				4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
