@@ -428,19 +428,114 @@ of_lstat(OFString *path, of_stat_t *buffer)
 - (OFArray *)contentsOfDirectoryAtPath: (OFString *)path
 {
 	OFMutableArray *files;
-#ifndef OF_WINDOWS
-	of_string_encoding_t encoding;
-#endif
 
 	if (path == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	files = [OFMutableArray array];
 
-#ifndef OF_WINDOWS
-	DIR *dir;
+#if defined(OF_WINDOWS)
+	void *pool = objc_autoreleasePoolPush();
+	HANDLE handle;
+	WIN32_FIND_DATAW fd;
 
-	encoding = [OFLocalization encoding];
+	path = [path stringByAppendingString: @"\\*"];
+
+	if ((handle = FindFirstFileW([path UTF16String],
+	    &fd)) == INVALID_HANDLE_VALUE) {
+		int errNo = 0;
+
+		if (GetLastError() == ERROR_FILE_NOT_FOUND)
+			errNo = ENOENT;
+
+		@throw [OFOpenItemFailedException exceptionWithPath: path
+							       mode: nil
+							      errNo: errNo];
+	}
+
+	@try {
+		do {
+			OFString *file;
+
+			if (!wcscmp(fd.cFileName, L".") ||
+			    !wcscmp(fd.cFileName, L".."))
+				continue;
+
+			file = [OFString stringWithUTF16String: fd.cFileName];
+			@try {
+				[files addObject: file];
+			} @finally {
+				[file release];
+			}
+		} while (FindNextFileW(handle, &fd));
+
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+			@throw [OFReadFailedException exceptionWithObject: self
+							  requestedLength: 0
+								    errNo: EIO];
+	} @finally {
+		FindClose(handle);
+	}
+
+	objc_autoreleasePoolPop(pool);
+#elif defined(OF_MORPHOS)
+	of_string_encoding_t encoding = [OFLocalization encoding];
+	BPTR lock;
+	struct FileInfoBlock fib;
+
+	if ((lock = Lock([path cStringWithEncoding: encoding],
+	    SHARED_LOCK)) == 0) {
+		int errNo;
+
+		switch (IoErr()) {
+		case ERROR_OBJECT_IN_USE:
+		case ERROR_DISK_NOT_VALIDATED:
+			errNo = EBUSY;
+			break;
+		case ERROR_OBJECT_NOT_FOUND:
+			errNo = ENOENT;
+			break;
+		default:
+			errNo = 0;
+			break;
+		}
+
+		@throw [OFOpenItemFailedException exceptionWithPath: path
+							       mode: nil
+							      errNo: errNo];
+	}
+
+	@try {
+		if (!Examine(lock, &fib))
+			@throw [OFOpenItemFailedException
+			    exceptionWithPath: path
+					 mode: nil
+					errNo: 0];
+
+		while (ExNext(lock, &fib)) {
+			OFString *file;
+
+			file = [[OFString alloc]
+			    initWithCString: fib.fib_FileName
+				   encoding: encoding];
+			@try {
+				[files addObject: file];
+			} @finally {
+				[file release];
+			}
+		}
+
+		if (IoErr() != ERROR_NO_MORE_ENTRIES)
+			@throw [OFReadFailedException
+			    exceptionWithObject: self
+				requestedLength: 0
+					  errNo: EIO];
+	} @finally {
+		UnLock(lock);
+	}
+#else
+	of_string_encoding_t encoding = [OFLocalization encoding];
+	DIR *dir;
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
@@ -448,15 +543,20 @@ of_lstat(OFString *path, of_stat_t *buffer)
 							      errNo: errno];
 
 # if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS)
-	[readdirMutex lock];
+	@try {
+		[readdirMutex lock];
+	} @catch (id e) {
+		closedir(dir);
+		@throw e;
+	}
 # endif
+
 	@try {
 		for (;;) {
 			struct dirent *dirent;
 # ifdef HAVE_READDIR_R
 			struct dirent buffer;
 # endif
-			void *pool;
 			OFString *file;
 
 # ifdef HAVE_READDIR_R
@@ -484,13 +584,13 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			    strcmp(dirent->d_name, "..") == 0)
 				continue;
 
-			pool = objc_autoreleasePoolPush();
-
-			file = [OFString stringWithCString: dirent->d_name
-						  encoding: encoding];
-			[files addObject: file];
-
-			objc_autoreleasePoolPop(pool);
+			file = [[OFString alloc] initWithCString: dirent->d_name
+							encoding: encoding];
+			@try {
+				[files addObject: file];
+			} @finally {
+				[file release];
+			}
 		}
 	} @finally {
 		closedir(dir);
@@ -498,49 +598,6 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		[readdirMutex unlock];
 # endif
 	}
-#else
-	void *pool = objc_autoreleasePoolPush();
-	HANDLE handle;
-	WIN32_FIND_DATAW fd;
-
-	path = [path stringByAppendingString: @"\\*"];
-
-	if ((handle = FindFirstFileW([path UTF16String],
-	    &fd)) == INVALID_HANDLE_VALUE) {
-		int errNo = 0;
-
-		if (GetLastError() == ERROR_FILE_NOT_FOUND)
-			errNo = ENOENT;
-
-		@throw [OFOpenItemFailedException exceptionWithPath: path
-							       mode: nil
-							      errNo: errNo];
-	}
-
-	@try {
-		do {
-			void *pool2 = objc_autoreleasePoolPush();
-			OFString *file;
-
-			if (!wcscmp(fd.cFileName, L".") ||
-			    !wcscmp(fd.cFileName, L".."))
-				continue;
-
-			file = [OFString stringWithUTF16String: fd.cFileName];
-			[files addObject: file];
-
-			objc_autoreleasePoolPop(pool2);
-		} while (FindNextFileW(handle, &fd));
-
-		if (GetLastError() != ERROR_NO_MORE_FILES)
-			@throw [OFReadFailedException exceptionWithObject: self
-							  requestedLength: 0
-								    errNo: EIO];
-	} @finally {
-		FindClose(handle);
-	}
-
-	objc_autoreleasePoolPop(pool);
 #endif
 
 	[files makeImmutable];
