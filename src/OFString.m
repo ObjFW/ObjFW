@@ -2352,9 +2352,7 @@ static struct {
 	intmax_t value = 0;
 	bool expectWhitespace = false;
 
-	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
-	    *characters == '\n' || *characters == '\r' ||
-	    *characters == '\f')) {
+	while (length > 0 && of_ascii_isspace(*characters)) {
 		characters++;
 		length--;
 	}
@@ -2369,11 +2367,10 @@ static struct {
 
 	for (; i < length; i++) {
 		if (expectWhitespace) {
-			if (characters[i] != ' ' && characters[i] != '\t' &&
-			    characters[i] != '\n' && characters[i] != '\r' &&
-			    characters[i] != '\f')
-				@throw [OFInvalidFormatException exception];
-			continue;
+			if (of_ascii_isspace(characters[i]))
+				continue;
+
+			@throw [OFInvalidFormatException exception];
 		}
 
 		if (characters[i] >= '0' && characters[i] <= '9') {
@@ -2382,9 +2379,7 @@ static struct {
 				@throw [OFOutOfRangeException exception];
 
 			value = (value * 10) + (characters[i] - '0');
-		} else if (characters[i] == ' ' || characters[i] == '\t' ||
-		    characters[i] == '\n' || characters[i] == '\r' ||
-		    characters[i] == '\f')
+		} else if (of_ascii_isspace(characters[i]))
 			expectWhitespace = true;
 		else
 			@throw [OFInvalidFormatException exception];
@@ -2406,9 +2401,7 @@ static struct {
 	uintmax_t value = 0;
 	bool expectWhitespace = false, foundValue = false;
 
-	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
-	    *characters == '\n' || *characters == '\r' ||
-	    *characters == '\f')) {
+	while (length > 0 && of_ascii_isspace(*characters)) {
 		characters++;
 		length--;
 	}
@@ -2427,11 +2420,10 @@ static struct {
 		uintmax_t newValue;
 
 		if (expectWhitespace) {
-			if (characters[i] != ' ' && characters[i] != '\t' &&
-			    characters[i] != '\n' && characters[i] != '\r' &&
-			    characters[i] != '\f')
-				@throw [OFInvalidFormatException exception];
-			continue;
+			if (of_ascii_isspace(characters[i]))
+				continue;
+
+			@throw [OFInvalidFormatException exception];
 		}
 
 		if (characters[i] >= '0' && characters[i] <= '9') {
@@ -2443,9 +2435,8 @@ static struct {
 		} else if (characters[i] >= 'a' && characters[i] <= 'f') {
 			newValue = (value << 4) | (characters[i] - 'a' + 10);
 			foundValue = true;
-		} else if (characters[i] == 'h' || characters[i] == ' ' ||
-		    characters[i] == '\t' || characters[i] == '\n' ||
-		    characters[i] == '\r' || characters[i] == '\f') {
+		} else if (characters[i] == 'h' ||
+		    of_ascii_isspace(characters[i])) {
 			expectWhitespace = true;
 			continue;
 		} else
@@ -2473,9 +2464,7 @@ static struct {
 	uintmax_t value = 0;
 	bool expectWhitespace = false;
 
-	while (length > 0 && (*characters == ' ' || *characters == '\t' ||
-	    *characters == '\n' || *characters == '\r' ||
-	    *characters == '\f')) {
+	while (length > 0 && of_ascii_isspace(*characters)) {
 		characters++;
 		length--;
 	}
@@ -2489,18 +2478,15 @@ static struct {
 		uintmax_t newValue;
 
 		if (expectWhitespace) {
-			if (characters[i] != ' ' && characters[i] != '\t' &&
-			    characters[i] != '\n' && characters[i] != '\r' &&
-			    characters[i] != '\f')
-				@throw [OFInvalidFormatException exception];
-			continue;
+			if (of_ascii_isspace(characters[i]))
+				continue;
+
+			@throw [OFInvalidFormatException exception];
 		}
 
 		if (characters[i] >= '0' && characters[i] <= '7')
 			newValue = (value << 3) | (characters[i] - '0');
-		else if (characters[i] == ' ' || characters[i] == '\t' ||
-		    characters[i] == '\n' || characters[i] == '\r' ||
-		    characters[i] == '\f') {
+		else if (of_ascii_isspace(characters[i])) {
 			expectWhitespace = true;
 			continue;
 		} else
@@ -2547,8 +2533,7 @@ static struct {
 	char *endPointer = NULL;
 	float value;
 
-	while (*UTF8String == ' ' || *UTF8String == '\t' ||
-	    *UTF8String == '\n' || *UTF8String == '\r' || *UTF8String == '\f')
+	while (of_ascii_isspace(*UTF8String))
 		UTF8String++;
 
 #ifdef HAVE_STRTOF_L
@@ -2560,9 +2545,7 @@ static struct {
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
-			if (*endPointer != ' ' && *endPointer != '\t' &&
-			    *endPointer != '\n' && *endPointer != '\r' &&
-			    *endPointer != '\f')
+			if (!of_ascii_isspace(*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -2600,8 +2583,7 @@ static struct {
 	char *endPointer = NULL;
 	double value;
 
-	while (*UTF8String == ' ' || *UTF8String == '\t' ||
-	    *UTF8String == '\n' || *UTF8String == '\r' || *UTF8String == '\f')
+	while (of_ascii_isspace(*UTF8String))
 		UTF8String++;
 
 #ifdef HAVE_STRTOD_L
@@ -2613,9 +2595,7 @@ static struct {
 	/* Check if there are any invalid chars left */
 	if (endPointer != NULL)
 		for (; *endPointer != '\0'; endPointer++)
-			if (*endPointer != ' ' && *endPointer != '\t' &&
-			    *endPointer != '\n' && *endPointer != '\r' &&
-			    *endPointer != '\f')
+			if (!of_ascii_isspace(*endPointer))
 				@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);

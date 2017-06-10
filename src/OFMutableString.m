@@ -265,17 +265,7 @@ static struct {
 			[self setCharacter: table[c >> 8][c & 0xFF]
 				   atIndex: i];
 
-		switch (c) {
-		case ' ':
-		case '\t':
-		case '\n':
-		case '\r':
-			isStart = true;
-			break;
-		default:
-			isStart = false;
-			break;
-		}
+		isStart = of_ascii_isspace(c);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -298,17 +288,7 @@ static struct {
 			[self setCharacter: (int)function(c)
 				   atIndex: i];
 
-		switch (c) {
-		case ' ':
-		case '\t':
-		case '\n':
-		case '\r':
-			isStart = true;
-			break;
-		default:
-			isStart = false;
-			break;
-		}
+		isStart = of_ascii_isspace(c);
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -570,8 +550,7 @@ static struct {
 	for (i = 0; i < length; i++) {
 		of_unichar_t c = characters[i];
 
-		if (c != ' ' && c != '\t' && c != '\n' && c != '\r' &&
-		    c != '\f')
+		if (!of_ascii_isspace(c))
 			break;
 	}
 
@@ -596,8 +575,7 @@ static struct {
 
 	d = 0;
 	for (p = characters + length - 1; p >= characters; p--) {
-		if (*p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' &&
-		    *p != '\f')
+		if (!of_ascii_isspace(*p))
 			break;
 
 		d++;

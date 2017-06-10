@@ -213,13 +213,12 @@ of_strptime(const char *buffer, const char *format, struct tm *tm, int16_t *tz)
 					return NULL;
 				break;
 			case 'n':
-			case 't':
-				if (buffer[j] != ' ' && buffer[j] != '\r' &&
-				    buffer[j] != '\n' && buffer[j] != '\t' &&
-				    buffer[j] != '\f')
+				if (buffer[j++] != '\n')
 					return NULL;
-
-				j++;
+				break;
+			case 't':
+				if (buffer[j++] != '\t')
+					return NULL;
 				break;
 			}
 

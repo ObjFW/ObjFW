@@ -652,6 +652,13 @@ of_ascii_isalnum(char c)
 	return (of_ascii_isalpha(c) || (c >= '0' && c <= '9'));
 }
 
+static OF_INLINE bool
+of_ascii_isspace(char c)
+{
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' ||
+	    c == '\v');
+}
+
 static OF_INLINE char
 of_ascii_toupper(char c)
 {

@@ -39,17 +39,9 @@ isWhitespaceLine(OFString *line)
 	const char *cString = [line UTF8String];
 	size_t length = [line UTF8StringLength];
 
-	for (size_t i = 0; i < length; i++) {
-		switch (cString[i]) {
-		case ' ':
-		case '\t':
-		case '\n':
-		case '\r':
-			continue;
-		default:
+	for (size_t i = 0; i < length; i++)
+		if (!of_ascii_isspace(cString[i]))
 			return false;
-		}
-	}
 
 	return true;
 }
