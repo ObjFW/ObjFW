@@ -996,13 +996,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 - (void)moveItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
-	void *pool;
 	of_stat_t s;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
-
-	pool = objc_autoreleasePoolPush();
 
 	if (of_lstat(destination, &s) == 0)
 		@throw [OFMoveItemFailedException
@@ -1010,19 +1007,60 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			    destinationPath: destination
 				      errNo: EEXIST];
 
-#ifndef OF_WINDOWS
-	of_string_encoding_t encoding = [OFLocalization encoding];
+#if defined(OF_WINDOWS)
+	void *pool = objc_autoreleasePoolPush();
 
-	if (rename([source cStringWithEncoding: encoding],
-	    [destination cStringWithEncoding: encoding]) != 0) {
-#else
 	if (_wrename([source UTF16String], [destination UTF16String]) != 0) {
-#endif
 		if (errno != EXDEV)
 			@throw [OFMoveItemFailedException
 			    exceptionWithSourcePath: source
 				    destinationPath: destination
 					      errNo: errno];
+#elif defined(OF_MORPHOS)
+	of_string_encoding_t encoding = [OFLocalization encoding];
+
+	if (!Rename([source cStringWithEncoding: encoding],
+	    [destination cStringWithEncoding: encoding]) != 0) {
+		LONG err;
+
+		if ((err = IoErr()) != ERROR_RENAME_ACROSS_DEVICES) {
+			int errNo;
+
+			switch (err) {
+			case ERROR_OBJECT_IN_USE:
+			case ERROR_DISK_NOT_VALIDATED:
+				errNo = EBUSY;
+				break;
+			case ERROR_OBJECT_EXISTS:
+				errNo = EEXIST;
+				break;
+			case ERROR_OBJECT_NOT_FOUND:
+				errNo = ENOENT;
+				break;
+			case ERROR_DISK_WRITE_PROTECTED:
+				errNo = EROFS;
+				break;
+			default:
+				errNo = 0;
+				break;
+			}
+
+			@throw [OFMoveItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination
+					      errNo: errNo];
+		}
+#else
+	of_string_encoding_t encoding = [OFLocalization encoding];
+
+	if (rename([source cStringWithEncoding: encoding],
+	    [destination cStringWithEncoding: encoding]) != 0) {
+		if (errno != EXDEV)
+			@throw [OFMoveItemFailedException
+			    exceptionWithSourcePath: source
+				    destinationPath: destination
+					      errNo: errno];
+#endif
 
 		@try {
 			[self copyItemAtPath: source
@@ -1046,7 +1084,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		}
 	}
 
+#ifdef OF_WINDOWS
 	objc_autoreleasePoolPop(pool);
+#endif
 }
 
 - (void)removeItemAtPath: (OFString *)path
@@ -1093,26 +1133,57 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			objc_autoreleasePoolPop(pool2);
 		}
 
-#ifndef OF_WINDOWS
+#ifndef OF_MORPHOS
+# ifndef OF_WINDOWS
 		if (rmdir([path cStringWithEncoding:
 		    [OFLocalization encoding]]) != 0)
-#else
+# else
 		if (_wrmdir([path UTF16String]) != 0)
-#endif
+# endif
 			@throw [OFRemoveItemFailedException
 				exceptionWithPath: path
 					    errNo: errno];
 	} else {
-#ifndef OF_WINDOWS
+# ifndef OF_WINDOWS
 		if (unlink([path cStringWithEncoding:
 		    [OFLocalization encoding]]) != 0)
-#else
+# else
 		if (_wunlink([path UTF16String]) != 0)
-#endif
+# endif
 			@throw [OFRemoveItemFailedException
 			    exceptionWithPath: path
 					errNo: errno];
+#endif
 	}
+
+#ifdef OF_MORPHOS
+	if (!DeleteFile(
+	    [path cStringWithEncoding: [OFLocalization encoding]])) {
+		int errNo;
+
+		switch (IoErr()) {
+		case ERROR_OBJECT_IN_USE:
+		case ERROR_DISK_NOT_VALIDATED:
+			errNo = EBUSY;
+			break;
+		case ERROR_OBJECT_NOT_FOUND:
+			errNo = ENOENT;
+			break;
+		case ERROR_DISK_WRITE_PROTECTED:
+			errNo = EROFS;
+			break;
+		case ERROR_DELETE_PROTECTED:
+			errNo = EACCES;
+			break;
+		default:
+			errNo = 0;
+			break;
+		}
+
+		@throw [OFRemoveItemFailedException exceptionWithPath: path
+								errNo: errNo];
+	}
+#endif
 
 	objc_autoreleasePoolPop(pool);
 }
