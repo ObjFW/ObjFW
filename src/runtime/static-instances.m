@@ -44,7 +44,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 			if (static_instances_cnt == 0) {
 				free(static_instances);
 				static_instances = NULL;
-				continue;
+				break;
 			}
 
 			static_instances[i] =
@@ -57,6 +57,12 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 			if (static_instances == NULL)
 				OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
+
+			/*
+			 * We moved the last entry to the current index,
+			 * therefore we need to run again for the current index.
+			 */
+			i--;
 		}
 	}
 
