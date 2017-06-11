@@ -135,7 +135,7 @@ of_forward_stret:
 
 	movq	%rax, %rcx
 	movq	-0x40(%rbp), %rdx
-	call	objc_msg_lookup_stret@PLT
+	call	objc_msg_lookup_stret
 	movq	%rax, %r11
 
 	/* Restore all arguments */

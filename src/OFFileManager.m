@@ -93,6 +93,10 @@ typedef struct stat64 of_stat_t;
 typedef struct stat of_stat_t;
 #endif
 
+#ifndef S_ISLNK
+# define S_ISLNK(s) 0
+#endif
+
 static OFFileManager *defaultManager;
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
