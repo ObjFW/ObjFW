@@ -2,8 +2,10 @@ include ../../extra.mk
 
 SUBDIRS = lookup-asm
 
-STATIC_PIC_LIB_NOINST = ${RUNTIME_LIB_A}
-STATIC_LIB_NOINST = ${RUNTIME_A}
+SHARED_LIB = ${OBJFW_RT_SHARED_LIB}
+STATIC_LIB = ${OBJFW_RT_STATIC_LIB}
+LIB_MAJOR = ${OBJFW_RT_LIB_MAJOR}
+LIB_MINOR = ${OBJFW_RT_LIB_MINOR}
 
 SRCS = arc.m			\
        category.m		\
@@ -21,7 +23,8 @@ SRCS = arc.m			\
        static-instances.m	\
        synchronized.m		\
        ${USE_SRCS_THREADS}
-SRCS_THREADS = threading.m
+SRCS_THREADS = threading.m	\
+	       ../threading.m
 INCLUDES = runtime.h
 
 OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
@@ -29,4 +32,5 @@ LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. -I.. -I../.. -DOF_COMPILING_OBJFW
+CPPFLAGS += -I. -I.. -I../..
+LD = ${OBJC}

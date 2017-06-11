@@ -178,4 +178,5 @@ include ../buildsys.mk
 
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime -DOF_COMPILING_OBJFW
 LD = ${OBJC}
-LDFLAGS += ${REEXPORT_LIBOBJC}
+LDFLAGS += ${REEXPORT_RUNTIME}
+LIBS += -Lruntime ${RUNTIME_LIBS}

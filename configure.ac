@@ -343,15 +343,15 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME, "runtime")
 		AC_SUBST(RUNTIME_FLAGS)
 
-		if test x"$enable_shared" != x"no"; then
-			AC_SUBST(RUNTIME_LIB_A, "runtime.lib.a")
-			AC_SUBST(RUNTIME_RUNTIME_LIB_A, "runtime/runtime.lib.a")
-		fi
-		if test x"$enable_static" = x"yes" \
-		    -o x"$enable_shared" = x"no"; then
-			AC_SUBST(RUNTIME_A, "runtime.a")
-			AC_SUBST(RUNTIME_RUNTIME_A, "runtime/runtime.a")
-		fi
+		AS_IF([test x"$enable_shared" != x"no"], [
+			AC_SUBST(OBJFW_RT_SHARED_LIB,
+				"${LIB_PREFIX}objfw-rt${LIB_SUFFIX}")
+		])
+		AS_IF([test x"$enable_static" = x"yes" \
+			-o x"$enable_shared" = x"no"],
+			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw-rt.a")
+		])
+		AC_SUBST(RUNTIME_LIBS, "-lobjfw-rt")
 
 		AS_IF([test x"$enable_seluid24" = x"yes"], [
 			AC_DEFINE(OF_SELUID24, 1,
@@ -411,7 +411,7 @@ case "$objc_runtime" in
 			[Whether we use the Apple ObjC runtime])
 
 		AC_CHECK_LIB(objc, objc_msgSend, [
-			LIBS="-lobjc $LIBS"
+			AC_SUBST(RUNTIME_LIBS, "-lobjc")
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
@@ -430,7 +430,7 @@ case "$host_os" in
 	darwin*)
 		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
 		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
-			AC_SUBST(REEXPORT_LIBOBJC, ["-Wl,-reexport-lobjc"])
+			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
 			AC_SUBST(WEAK_NSFOUNDATIONVERSIONNUMBER,
 				["-Wl,-U,_NSFoundationVersionNumber"])
 			LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
@@ -443,6 +443,7 @@ case "$host_os" in
 			AS_IF([test x"$exception_type" = x"SjLj"], [
 				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
 			])
+			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfw-rt"])
 		])
 
 		AC_CHECK_HEADERS(sysdir.h)
