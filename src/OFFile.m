@@ -37,6 +37,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFNotOpenException.h"
 #import "OFOpenItemFailedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFSeekFailedException.h"
@@ -73,31 +74,33 @@
 #ifndef OF_MORPHOS
 # define closeHandle(h) close(h)
 #else
-static OFDataArray *openHandles = nil;
+struct of_file_handle {
+	of_file_handle_t previous, next;
+	BPTR handle;
+	bool append;
+} *firstHandle = NULL;
 
 static void
 closeHandle(of_file_handle_t handle)
 {
-	if (handle.index != SIZE_MAX) {
-		BPTR *handles = [openHandles items];
-		size_t count = [openHandles count];
+	Close(handle->handle);
 
-		assert(handles[handle.index] == handle.handle);
+	if (handle->previous != NULL)
+		handle->previous->next = handle->next;
+	if (handle->next != NULL)
+		handle->next->previous = handle->previous;
 
-		handles[handle.index] = handles[count - 1];
-		[openHandles removeItemAtIndex: count - 1];
-	}
+	if (firstHandle == handle)
+		firstHandle = handle->next;
 
-	Close(handle.handle);
+	free(handle);
 }
 
 OF_DESTRUCTOR()
 {
-	BPTR *handles = [openHandles items];
-	size_t count = [openHandles count];
-
-	for (size_t i = 0; i < count; i++)
-		Close(handles[i]);
+	for (of_file_handle_t iter = firstHandle; iter != NULL;
+	    iter = iter->next)
+		Close(iter->handle);
 }
 #endif
 
@@ -193,10 +196,6 @@ parseMode(const char *mode, bool *append)
 	if (self != [OFFile class])
 		return;
 
-#ifdef OF_MORPHOS
-	openHandles = [[OFDataArray alloc] initWithItemSize: sizeof(BPTR)];
-#endif
-
 #ifdef OF_WII
 	if (!fatInitDefault())
 		@throw [OFInitializationFailedException
@@ -257,53 +256,66 @@ parseMode(const char *mode, bool *append)
 					 mode: mode
 					errNo: errno];
 #else
-		handle.index = SIZE_MAX;
+		if ((handle = malloc(sizeof(*handle))) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: sizeof(*handle)];
 
-		if ((flags = parseMode([mode UTF8String],
-		    &handle.append)) == -1)
-			@throw [OFInvalidArgumentException exception];
+		@try {
+			if ((flags = parseMode([mode UTF8String],
+			    &handle->append)) == -1)
+				@throw [OFInvalidArgumentException exception];
 
-		if ((handle.handle = Open([path cStringWithEncoding:
-		    [OFLocalization encoding]], flags)) == 0) {
-			int errNo;
+			if ((handle->handle = Open([path cStringWithEncoding:
+			    [OFLocalization encoding]], flags)) == 0) {
+				int errNo;
 
-			switch (IoErr()) {
-			case ERROR_OBJECT_IN_USE:
-			case ERROR_DISK_NOT_VALIDATED:
-				errNo = EBUSY;
-				break;
-			case ERROR_OBJECT_NOT_FOUND:
-				errNo = ENOENT;
-				break;
-			case ERROR_DISK_WRITE_PROTECTED:
-				errNo = EROFS;
-				break;
-			case ERROR_WRITE_PROTECTED:
-			case ERROR_READ_PROTECTED:
-				errNo = EACCES;
-				break;
-			default:
-				errNo = 0;
-				break;
-			}
+				switch (IoErr()) {
+				case ERROR_OBJECT_IN_USE:
+				case ERROR_DISK_NOT_VALIDATED:
+					errNo = EBUSY;
+					break;
+				case ERROR_OBJECT_NOT_FOUND:
+					errNo = ENOENT;
+					break;
+				case ERROR_DISK_WRITE_PROTECTED:
+					errNo = EROFS;
+					break;
+				case ERROR_WRITE_PROTECTED:
+				case ERROR_READ_PROTECTED:
+					errNo = EACCES;
+					break;
+				default:
+					errNo = 0;
+					break;
+				}
 
-			@throw [OFOpenItemFailedException
-			    exceptionWithPath: path
-					 mode: mode
-					errNo: errNo];
-		}
-
-		[openHandles addItem: &handle.handle];
-		handle.index = [openHandles count] - 1;
-
-		if (handle.append) {
-			if (Seek64(handle.handle, 0, OFFSET_END) == -1) {
-				closeHandle(handle);
 				@throw [OFOpenItemFailedException
 				    exceptionWithPath: path
 						 mode: mode
-						errNo: EIO];
+						errNo: errNo];
 			}
+
+			if (handle->append) {
+				if (Seek64(handle->handle, 0,
+				    OFFSET_END) == -1) {
+					Close(handle->handle);
+					@throw [OFOpenItemFailedException
+					    exceptionWithPath: path
+							 mode: mode
+							errNo: EIO];
+				}
+			}
+
+			handle->previous = NULL;
+			handle->next = firstHandle;
+
+			if (firstHandle != NULL)
+				firstHandle->previous = handle;
+
+			firstHandle = handle;
+		} @catch (id e) {
+			free(handle);
+			@throw e;
 		}
 #endif
 
@@ -334,7 +346,7 @@ parseMode(const char *mode, bool *append)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-	if (!OF_FILE_HANDLE_IS_VALID(_handle))
+	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	return _atEndOfStream;
@@ -345,7 +357,7 @@ parseMode(const char *mode, bool *append)
 {
 	ssize_t ret;
 
-	if (!OF_FILE_HANDLE_IS_VALID(_handle))
+	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
@@ -360,7 +372,7 @@ parseMode(const char *mode, bool *append)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((ret = Read(_handle.handle, buffer, length)) < 0)
+	if ((ret = Read(_handle->handle, buffer, length)) < 0)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: EIO];
@@ -380,7 +392,7 @@ parseMode(const char *mode, bool *append)
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-	if (!OF_FILE_HANDLE_IS_VALID(_handle))
+	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
@@ -395,15 +407,15 @@ parseMode(const char *mode, bool *append)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (_handle.append) {
-		if (Seek64(_handle.handle, 0, OFFSET_END) == -1)
+	if (_handle->append) {
+		if (Seek64(_handle->handle, 0, OFFSET_END) == -1)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length
 					  errNo: EIO];
 	}
 
-	if (Write(_handle.handle, (void *)buffer, length) != (LONG)length)
+	if (Write(_handle->handle, (void *)buffer, length) != (LONG)length)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
 							     errNo: EIO];
@@ -423,7 +435,7 @@ parseMode(const char *mode, bool *append)
 {
 	of_offset_t ret;
 
-	if (!OF_FILE_HANDLE_IS_VALID(_handle))
+	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_MORPHOS
@@ -443,13 +455,13 @@ parseMode(const char *mode, bool *append)
 #else
 	switch (whence) {
 	case SEEK_SET:
-		ret = Seek64(_handle.handle, offset, OFFSET_BEGINNING);
+		ret = Seek64(_handle->handle, offset, OFFSET_BEGINNING);
 		break;
 	case SEEK_CUR:
-		ret = Seek64(_handle.handle, offset, OFFSET_CURRENT);
+		ret = Seek64(_handle->handle, offset, OFFSET_CURRENT);
 		break;
 	case SEEK_END:
-		ret = Seek64(_handle.handle, offset, OFFSET_END);
+		ret = Seek64(_handle->handle, offset, OFFSET_END);
 		break;
 	default:
 		ret = -1;
@@ -482,7 +494,7 @@ parseMode(const char *mode, bool *append)
 
 - (void)close
 {
-	if (OF_FILE_HANDLE_IS_VALID(_handle))
+	if (_handle != OF_INVALID_FILE_HANDLE)
 		closeHandle(_handle);
 
 	_handle = OF_INVALID_FILE_HANDLE;

@@ -19,19 +19,13 @@
 #ifndef OF_MORPHOS
 # define OF_FILE_HANDLE_IS_FD
 # define OF_INVALID_FILE_HANDLE (-1)
-# define OF_FILE_HANDLE_IS_VALID(h) (h != -1)
 typedef int of_file_handle_t;
 #else
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # undef BOOL
-# define OF_INVALID_FILE_HANDLE ((of_file_handle_t){ 0, false })
-# define OF_FILE_HANDLE_IS_VALID(h) (h.handle != 0)
-typedef struct of_file_handle_t {
-	BPTR handle;
-	size_t index;
-	bool append;
-} of_file_handle_t;
+# define OF_INVALID_FILE_HANDLE NULL
+typedef struct of_file_handle *of_file_handle_t;
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
