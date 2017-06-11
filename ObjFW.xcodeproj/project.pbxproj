@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
+		4B596D8D1EED62A500A6D140 /* configure (iOS) */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 4B596D911EED62A500A6D140 /* Build configuration list for PBXAggregateTarget "configure (iOS)" */;
+			buildPhases = (
+				4B596D901EED62A500A6D140 /* Run Script */,
+			);
+			dependencies = (
+				4B596D8E1EED62A500A6D140 /* PBXTargetDependency */,
+			);
+			name = "configure (iOS)";
+			productName = configure;
+		};
 		4B5D8DDD1099E1B0000896FF /* autoreconf */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 4B5D8DE51099E1C5000896FF /* Build configuration list for PBXAggregateTarget "autoreconf" */;
@@ -18,16 +30,16 @@
 			name = autoreconf;
 			productName = autoreconf;
 		};
-		4BDF37AD1338047700F9A81A /* configure */ = {
+		4BDF37AD1338047700F9A81A /* configure (Mac) */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4BDF37AE1338047700F9A81A /* Build configuration list for PBXAggregateTarget "configure" */;
+			buildConfigurationList = 4BDF37AE1338047700F9A81A /* Build configuration list for PBXAggregateTarget "configure (Mac)" */;
 			buildPhases = (
 				4BDF37B11338047D00F9A81A /* Run Script */,
 			);
 			dependencies = (
 				4BDF37B31338049600F9A81A /* PBXTargetDependency */,
 			);
-			name = configure;
+			name = "configure (Mac)";
 			productName = configure;
 		};
 /* End PBXAggregateTarget section */
@@ -1016,12 +1028,19 @@
 			remoteGlobalIDString = 4B3D23751337FBC800DD29B8;
 			remoteInfo = ObjFW;
 		};
-		4B2C211D1DA292BE00735907 /* PBXContainerItemProxy */ = {
+		4B596D8F1EED62A500A6D140 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4BDF37AD1338047700F9A81A;
-			remoteInfo = configure;
+			remoteGlobalIDString = 4B5D8DDD1099E1B0000896FF;
+			remoteInfo = autoreconf;
+		};
+		4B596D941EED62B300A6D140 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B596D8D1EED62A500A6D140;
+			remoteInfo = "configure (iOS)";
 		};
 		4B7E83E91DA2B78100BA5689 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2921,7 +2940,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4B2C211C1DA292BE00735907 /* PBXTargetDependency */,
+				4B596D951EED62B300A6D140 /* PBXTargetDependency */,
 			);
 			name = "ObjFW (iOS)";
 			productName = ObjFW;
@@ -3052,7 +3071,8 @@
 				4B23CA89133811610047A1D9 /* TestPlugin (Mac) */,
 				4B5D706A1DA2F87A00B3B2D7 /* TestPlugin (iOS) */,
 				4B5D8DDD1099E1B0000896FF /* autoreconf */,
-				4BDF37AD1338047700F9A81A /* configure */,
+				4BDF37AD1338047700F9A81A /* configure (Mac) */,
+				4B596D8D1EED62A500A6D140 /* configure (iOS) */,
 			);
 		};
 /* End PBXProject section */
@@ -3086,6 +3106,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4B596D901EED62A500A6D140 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n    ./configure --host=arm-apple-darwin OBJC=\"xcrun clang -arch arm64\" || exit 1\nfi";
+		};
 		4B5D8DE11099E1BF000896FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3112,7 +3146,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n    for i in $VALID_ARCHS; do\n        export CFLAGS=\"-arch $i $CFLAGS\"\n        export OBJCFLAGS=\"-arch $i $OBJCFLAGS\"\n        export LDFLAGS=\"-arch $i $LDFLAGS\"\n    done\n    ./configure || exit 1\nfi";
+			shellScript = "if [ \"configure\" -nt \"buildsys.mk\" -o \"buildsys.mk.in\" -nt \"buildsys.mk\" ]; then\n    ./configure || exit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3671,10 +3705,15 @@
 			target = 4B3D23751337FBC800DD29B8 /* ObjFW (Mac) */;
 			targetProxy = 4B23CA90133811BA0047A1D9 /* PBXContainerItemProxy */;
 		};
-		4B2C211C1DA292BE00735907 /* PBXTargetDependency */ = {
+		4B596D8E1EED62A500A6D140 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4BDF37AD1338047700F9A81A /* configure */;
-			targetProxy = 4B2C211D1DA292BE00735907 /* PBXContainerItemProxy */;
+			target = 4B5D8DDD1099E1B0000896FF /* autoreconf */;
+			targetProxy = 4B596D8F1EED62A500A6D140 /* PBXContainerItemProxy */;
+		};
+		4B596D951EED62B300A6D140 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B596D8D1EED62A500A6D140 /* configure (iOS) */;
+			targetProxy = 4B596D941EED62B300A6D140 /* PBXContainerItemProxy */;
 		};
 		4B7E83EA1DA2B78100BA5689 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3688,7 +3727,7 @@
 		};
 		4B8BA41C133805A700E65070 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4BDF37AD1338047700F9A81A /* configure */;
+			target = 4BDF37AD1338047700F9A81A /* configure (Mac) */;
 			targetProxy = 4B8BA41B133805A700E65070 /* PBXContainerItemProxy */;
 		};
 		4BA2FD2F1DA2FA8B0089E945 /* PBXTargetDependency */ = {
@@ -4062,6 +4101,22 @@
 			};
 			name = Release;
 		};
+		4B596D921EED62A500A6D140 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		4B596D931EED62A500A6D140 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
 		4B5D70731DA2F87A00B3B2D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4263,6 +4318,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		4B596D911EED62A500A6D140 /* Build configuration list for PBXAggregateTarget "configure (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B596D921EED62A500A6D140 /* Debug */,
+				4B596D931EED62A500A6D140 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4B5D70721DA2F87A00B3B2D7 /* Build configuration list for PBXNativeTarget "TestPlugin (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4290,7 +4354,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4BDF37AE1338047700F9A81A /* Build configuration list for PBXAggregateTarget "configure" */ = {
+		4BDF37AE1338047700F9A81A /* Build configuration list for PBXAggregateTarget "configure (Mac)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4BDF37AF1338047700F9A81A /* Debug */,
