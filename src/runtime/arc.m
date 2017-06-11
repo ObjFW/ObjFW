@@ -67,7 +67,7 @@ objc_retain(id object)
 id
 objc_retainBlock(id block)
 {
-	return (id)_Block_copy(block);
+	return [block copy];
 }
 
 id
