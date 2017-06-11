@@ -32,9 +32,8 @@
 + (BOOL)resolveInstanceMethod: (SEL)selector;
 @end
 
-#import "globals.h"
-#define forward_handler objc_globals.forward_handler
-#define forward_handler_stret objc_globals.forward_handler_stret
+static IMP forward_handler = (IMP)0;
+static IMP forward_handler_stret = (IMP)0;
 
 static IMP
 common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)

@@ -23,18 +23,18 @@
 
 #import "OFObject.h"
 
-#import "globals.h"
-#define property_locks objc_globals.property_locks
-
 #ifdef OF_HAVE_THREADS
 # import "threading.h"
-# define SPINLOCK_HASH(p) \
-    ((unsigned)((uintptr_t)p >> 4) & (NUM_PROPERTY_LOCKS - 1))
+# define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
+# define SPINLOCK_HASH(p) ((unsigned)((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1))
+static of_spinlock_t spinlocks[NUM_SPINLOCKS];
+#endif
 
+#ifdef OF_HAVE_THREADS
 OF_CONSTRUCTOR()
 {
-	for (size_t i = 0; i < NUM_PROPERTY_LOCKS; i++)
-		if (!of_spinlock_new(&property_locks[i]))
+	for (size_t i = 0; i < NUM_SPINLOCKS; i++)
+		if (!of_spinlock_new(&spinlocks[i]))
 			OBJC_ERROR("Failed to initialize spinlocks!")
 }
 #endif
@@ -47,11 +47,11 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		OF_ENSURE(of_spinlock_lock(&property_locks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 		@try {
 			return [[*ptr retain] autorelease];
 		} @finally {
-			OF_ENSURE(of_spinlock_unlock(&property_locks[hash]));
+			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 		}
 #else
 		return [[*ptr retain] autorelease];
@@ -70,7 +70,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(ptr);
 
-		OF_ENSURE(of_spinlock_lock(&property_locks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 		@try {
 #endif
 			id old = *ptr;
@@ -89,7 +89,7 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 			[old release];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			OF_ENSURE(of_spinlock_unlock(&property_locks[hash]));
+			OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 		}
 #endif
 
@@ -122,11 +122,11 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		OF_ENSURE(of_spinlock_lock(&property_locks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(of_spinlock_unlock(&property_locks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 
 		return;
@@ -143,11 +143,11 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
 #ifdef OF_HAVE_THREADS
 		unsigned hash = SPINLOCK_HASH(src);
 
-		OF_ENSURE(of_spinlock_lock(&property_locks[hash]));
+		OF_ENSURE(of_spinlock_lock(&spinlocks[hash]));
 #endif
 		memcpy(dest, src, size);
 #ifdef OF_HAVE_THREADS
-		OF_ENSURE(of_spinlock_unlock(&property_locks[hash]));
+		OF_ENSURE(of_spinlock_unlock(&spinlocks[hash]));
 #endif
 
 		return;

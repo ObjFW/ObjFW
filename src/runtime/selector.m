@@ -33,12 +33,11 @@
 # define SEL_SIZE 2
 #endif
 
-#import "globals.h"
-#define selectors objc_globals.selectors
-#define selectors_cnt objc_globals.selectors_cnt
-#define selector_names objc_globals.selector_names
-#define ptrs_to_free objc_globals.ptrs_to_free
-#define ptrs_to_free_cnt objc_globals.ptrs_to_free_cnt
+static struct objc_hashtable *selectors = NULL;
+static uint32_t selectors_cnt = 0;
+static struct objc_sparsearray *selector_names = NULL;
+static void **free_list = NULL;
+static size_t free_list_cnt = 0;
 
 void
 objc_register_selector(struct objc_abi_selector *sel)
@@ -90,12 +89,12 @@ sel_registerName(const char *name)
 
 	sel->types = NULL;
 
-	if ((ptrs_to_free = realloc(ptrs_to_free,
-	    sizeof(void *) * (ptrs_to_free_cnt + 2))) == NULL)
+	if ((free_list = realloc(free_list,
+	    sizeof(void *) * (free_list_cnt + 2))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	ptrs_to_free[ptrs_to_free_cnt++] = sel;
-	ptrs_to_free[ptrs_to_free_cnt++] = (char *)sel->name;
+	free_list[free_list_cnt++] = sel;
+	free_list[free_list_cnt++] = (char *)sel->name;
 
 	objc_register_selector(sel);
 
@@ -139,16 +138,16 @@ objc_unregister_all_selectors(void)
 	objc_hashtable_free(selectors);
 	objc_sparsearray_free(selector_names);
 
-	if (ptrs_to_free != NULL) {
-		for (size_t i = 0; i < ptrs_to_free_cnt; i++)
-			free(ptrs_to_free[i]);
+	if (free_list != NULL) {
+		for (size_t i = 0; i < free_list_cnt; i++)
+			free(free_list[i]);
 
-		free(ptrs_to_free);
+		free(free_list);
 	}
 
 	selectors = NULL;
 	selectors_cnt = 0;
 	selector_names = NULL;
-	ptrs_to_free = NULL;
-	ptrs_to_free_cnt = 0;
+	free_list = NULL;
+	free_list_cnt = 0;
 }

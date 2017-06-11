@@ -26,14 +26,13 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-#import "globals.h"
-#define classes objc_globals.classes
-#define classes_cnt objc_globals.classes_cnt
-#define load_queue objc_globals.load_queue
-#define load_queue_cnt objc_globals.load_queue_cnt
-#define empty_dtable objc_globals.empty_dtable
-#define lookups_till_fast_path objc_globals.lookups_till_fast_path
-#define fast_path objc_globals.fast_path
+static struct objc_hashtable *classes = NULL;
+static unsigned classes_cnt = 0;
+static Class *load_queue = NULL;
+static size_t load_queue_cnt = 0;
+static struct objc_dtable *empty_dtable = NULL;
+static unsigned lookups_till_fast_path = 128;
+static struct objc_sparsearray *fast_path = NULL;
 
 static void
 register_class(struct objc_abi_class *cls)

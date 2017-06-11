@@ -22,9 +22,8 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-#import "globals.h"
-#define static_instances objc_globals.static_instances
-#define static_instances_cnt objc_globals.static_instances_cnt
+static struct objc_abi_static_instances **static_instances = NULL;
+static size_t static_instances_cnt = 0;
 
 void
 objc_init_static_instances(struct objc_abi_symtab *symtab)

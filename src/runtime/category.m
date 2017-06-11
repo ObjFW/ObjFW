@@ -23,8 +23,7 @@
 #import "runtime.h"
 #import "runtime-private.h"
 
-#import "globals.h"
-#define categories objc_globals.categories
+static struct objc_hashtable *categories = NULL;
 
 static void
 register_selectors(struct objc_abi_category *cat)
