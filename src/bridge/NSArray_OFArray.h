@@ -16,13 +16,9 @@
 
 #import <Foundation/NSArray.h>
 
-#ifdef OF_BRIDGE_LOCAL_INCLUDES
-# import "OFArray.h"
-#else
-# import <ObjFW/OFArray.h>
-#endif
+@class OFArray;
 
-OF_ASSUME_NONNULL_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @interface NSArray_OFArray: NSArray
 {
@@ -32,4 +28,4 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithOFArray: (OFArray *)array;
 @end
 
-OF_ASSUME_NONNULL_END
+NS_ASSUME_NONNULL_END

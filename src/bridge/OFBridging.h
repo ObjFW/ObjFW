@@ -14,7 +14,11 @@
  * file.
  */
 
-#import "macros.h"
+#ifdef OF_BRIDGE_LOCAL_INCLUDES
+# import "macros.h"
+#else
+# import <ObjFW/macros.h>
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 

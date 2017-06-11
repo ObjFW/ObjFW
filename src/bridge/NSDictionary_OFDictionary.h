@@ -16,13 +16,9 @@
 
 #import <Foundation/NSDictionary.h>
 
-#ifdef OF_BRIDGE_LOCAL_INCLUDES
-# import "OFDictionary.h"
-#else
-# import <ObjFW/OFDictionary.h>
-#endif
+@class OFDictionary;
 
-OF_ASSUME_NONNULL_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 @interface NSDictionary_OFDictionary: NSDictionary
 {
@@ -32,4 +28,4 @@ OF_ASSUME_NONNULL_BEGIN
 - initWithOFDictionary: (OFDictionary *)dictionary;
 @end
 
-OF_ASSUME_NONNULL_END
+NS_ASSUME_NONNULL_END

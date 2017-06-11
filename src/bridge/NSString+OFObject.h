@@ -18,7 +18,7 @@
 
 #import "NSBridging.h"
 
-OF_ASSUME_NONNULL_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 /*!
  * @category NSString (OFObject)
@@ -33,4 +33,4 @@ OF_ASSUME_NONNULL_BEGIN
 @interface NSString (OFObject) <NSBridging>
 @end
 
-OF_ASSUME_NONNULL_END
+NS_ASSUME_NONNULL_END

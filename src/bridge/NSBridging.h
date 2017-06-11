@@ -14,9 +14,9 @@
  * file.
  */
 
-#import "macros.h"
+#import <Foundation/Foundation.h>
 
-OF_ASSUME_NONNULL_BEGIN
+NS_ASSUME_NONNULL_BEGIN
 
 /*!
  * @protocol NSBridging NSBridging.h ObjFW-Bridge/NSBridging.h
@@ -36,4 +36,4 @@ OF_ASSUME_NONNULL_BEGIN
 - (id)OFObject;
 @end
 
-OF_ASSUME_NONNULL_END
+NS_ASSUME_NONNULL_END
