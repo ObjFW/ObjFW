@@ -488,18 +488,21 @@ extern char **environ;
 		     length: (size_t)length
 {
 #ifndef OF_WINDOWS
+	ssize_t bytesWritten;
+
 	if (_writePipe[1] == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_writePipe[1], buffer, length) != (ssize_t)length)
+	if ((bytesWritten = write(_writePipe[1], buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: errno];
 #else
-	DWORD ret;
+	DWORD bytesWritten;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -507,8 +510,8 @@ extern char **environ;
 	if (_writePipe[1] == NULL)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (!WriteFile(_writePipe[1], buffer, (DWORD)length, &ret, NULL) ||
-	    ret != (DWORD)length) {
+	if (!WriteFile(_writePipe[1], buffer, (DWORD)length, &bytesWritten,
+	    NULL)) {
 		int errNo = EIO;
 
 		if (GetLastError() == ERROR_BROKEN_PIPE)
@@ -516,9 +519,16 @@ extern char **environ;
 
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: errNo];
 	}
 #endif
+
+	if ((size_t)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
 }
 
 - (int)fileDescriptorForReading

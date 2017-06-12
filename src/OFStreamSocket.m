@@ -94,24 +94,36 @@
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
+	ssize_t bytesWritten;
+
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (send(_socket, buffer, length, 0) != (ssize_t)length)
+	if ((bytesWritten = send(_socket, buffer, length, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
+			   bytesWritten: 0
 				  errNo: of_socket_errno()];
 #else
+	int bytesWritten;
+
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (send(_socket, buffer, (int)length, 0) != (int)length)
+	if ((bytesWritten = send(_socket, buffer, (int)length, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
+			   bytesWritten: 0
 				  errNo: of_socket_errno()];
 #endif
+
+	if ((size_t)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
 }
 
 #ifdef OF_WINDOWS

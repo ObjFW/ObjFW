@@ -396,14 +396,19 @@ parseMode(const char *mode, bool *append)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #if defined(OF_WINDOWS)
+	int bytesWritten;
+
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_handle, buffer, (int)length) != (int)length)
+	if ((bytesWritten = write(_handle, buffer, (int)length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: errno];
 #elif defined(OF_MORPHOS)
+	LONG bytesWritten;
+
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -412,22 +417,33 @@ parseMode(const char *mode, bool *append)
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length
+				   bytesWritten: 0
 					  errNo: EIO];
 	}
 
-	if (Write(_handle->handle, (void *)buffer, length) != (LONG)length)
+	if ((bytesWritten = Write(_handle->handle, (void *)buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: EIO];
 #else
+	ssize_t bytesWritten;
+
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_handle, buffer, length) != (ssize_t)length)
+	if ((bytesWritten = write(_handle, buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: errno];
 #endif
+
+	if ((size_t)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
 }
 
 - (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset

@@ -226,34 +226,49 @@ of_log(OFConstantString *format, ...)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 # ifndef OF_WINDOWS
+	ssize_t bytesWritten;
+
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, buffer, length) != (ssize_t)length)
+	if ((bytesWritten = write(_fd, buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: errno];
 # else
+	int bytesWritten;
+
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (write(_fd, buffer, (int)length) != (int)length)
+	if ((bytesWritten = write(_fd, buffer, (int)length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: errno];
 # endif
 #else
+	LONG bytesWritten;
+
 	if (_handle == 0)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (Write(_handle, (void *)buffer, length) != (LONG)length)
+	if ((bytesWritten = Write(_handle, (void *)buffer, length)) < 0)
 		@throw [OFWriteFailedException exceptionWithObject: self
 						   requestedLength: length
+						      bytesWritten: 0
 							     errNo: EIO];
 #endif
+
+	if ((size_t)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
 }
 
 #if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)

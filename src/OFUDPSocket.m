@@ -588,28 +588,39 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 #ifndef OF_WINDOWS
+	ssize_t bytesWritten;
+
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (sendto(_socket, buffer, length, 0,
-	    (struct sockaddr *)&receiver->address,
-	    receiver->length) != (ssize_t)length)
+	if ((bytesWritten = sendto(_socket, buffer, length, 0,
+	    (struct sockaddr *)&receiver->address, receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
+			   bytesWritten: 0
 				  errNo: of_socket_errno()];
 #else
+	int bytesWritten;
+
 	if (length > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if (sendto(_socket, buffer, (int)length, 0,
+	if ((bytesWritten = sendto(_socket, buffer, (int)length, 0,
 	    (struct sockaddr *)&receiver->address,
-	    receiver->length) != (int)length)
+	    receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
+			   bytesWritten: 0
 				  errNo: of_socket_errno()];
 #endif
+
+	if ((size_t)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
 }
 
 - (void)cancelAsyncRequests

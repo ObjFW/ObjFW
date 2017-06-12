@@ -20,10 +20,55 @@
 #import "OFString.h"
 
 @implementation OFWriteFailedException
+@synthesize bytesWritten = _bytesWritten;
+
++ (instancetype)exceptionWithObject: (id)object
+		    requestedLength: (size_t)requestedLength
+			      errNo: (int)errNo
+{
+	return [[[self alloc] initWithObject: object
+			     requestedLength: requestedLength
+				       errNo: errNo] autorelease];
+}
+
++ (instancetype)exceptionWithObject: (id)object
+		    requestedLength: (size_t)requestedLength
+		       bytesWritten: (size_t)bytesWritten
+			      errNo: (int)errNo
+{
+	return [[[self alloc] initWithObject: object
+			     requestedLength: requestedLength
+				bytesWritten: bytesWritten
+				       errNo: errNo] autorelease];
+}
+
+-  initWithObject: (id)object
+  requestedLength: (size_t)requestedLength
+	    errNo: (int)errNo
+{
+	OF_INVALID_INIT_METHOD
+}
+
+-  initWithObject: (id)object
+  requestedLength: (size_t)requestedLength
+     bytesWritten: (size_t)bytesWritten
+	    errNo: (int)errNo
+{
+	self = [super initWithObject: object
+		     requestedLength: requestedLength
+			       errNo: errNo];
+
+	_bytesWritten = bytesWritten;
+
+	return self;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to write %zu bytes to an object of type %@: %@",
-	    _requestedLength, [_object class], of_strerror(_errNo)];
+	    @"Failed to write %zu bytes (after %zu bytes written)  to an "
+	    @"object of type %@: %@",
+	    _requestedLength, _bytesWritten, [_object class],
+	    of_strerror(_errNo)];
 }
 @end

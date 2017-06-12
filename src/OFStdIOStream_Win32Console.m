@@ -233,7 +233,7 @@
 		char16_t UTF16[2];
 		ssize_t UTF8Len;
 		size_t toCopy;
-		DWORD UTF16Len, written;
+		DWORD UTF16Len, bytesWritten;
 
 		UTF8Len = -of_string_utf8_decode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
@@ -271,12 +271,20 @@
 			}
 		}
 
-		if (!WriteConsoleW(_handle, UTF16, UTF16Len, &written, NULL) ||
-		    written != UTF16Len)
+		if (!WriteConsoleW(_handle, UTF16, UTF16Len, &bytesWritten,
+		    NULL))
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: UTF16Len * 2
+				   bytesWritten: 0
 					  errNo: EIO];
+
+		if (bytesWritten != UTF16Len)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: UTF16Len * 2
+				   bytesWritten: bytesWritten * 2
+					  errNo: 0];
 
 		_incompleteUTF8SurrogateLen = 0;
 		i += toCopy;
@@ -285,7 +293,7 @@
 	tmp = [self allocMemoryWithSize: sizeof(char16_t)
 				  count: length * 2];
 	@try {
-		DWORD written;
+		DWORD bytesWritten;
 
 		while (i < length) {
 			of_unichar_t c;
@@ -323,12 +331,19 @@
 		if (j > UINT32_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		if (!WriteConsoleW(_handle, tmp, (DWORD)j, &written, NULL) ||
-		    written != j)
+		if (!WriteConsoleW(_handle, tmp, (DWORD)j, &bytesWritten, NULL))
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: j * 2
+				   bytesWritten: 0
 					  errNo: EIO];
+
+		if (bytesWritten != j)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: j * 2
+				   bytesWritten: bytesWritten * 2
+					  errNo: 0];
 	} @finally {
 		[self freeMemory: tmp];
 	}

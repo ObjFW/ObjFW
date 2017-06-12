@@ -35,11 +35,24 @@ static void
 send_or_exception(OFTCPSocket *self, of_socket_t socket, char *buffer,
     int length)
 {
-	if (send(socket, (const void *)buffer, length, 0) != length)
+#ifndef OF_WINDOWS
+	ssize_t bytesWritten;
+#else
+	int bytesWritten;
+#endif
+
+	if ((bytesWritten = send(socket, (const void *)buffer, length, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
+			   bytesWritten: 0
 				  errNo: of_socket_errno()];
+
+	if ((int)bytesWritten != length)
+		@throw [OFWriteFailedException exceptionWithObject: self
+						   requestedLength: length
+						      bytesWritten: bytesWritten
+							     errNo: 0];
 }
 
 static void
