@@ -28,6 +28,13 @@
 # include <sys/sysctl.h>
 #endif
 
+#ifdef OF_MORPHOS
+# define BOOL EXEC_BOOL
+# include <exec/system.h>
+# include <proto/exec.h>
+# undef BOOL
+#endif
+
 #import "OFSystemInfo.h"
 #import "OFString.h"
 #import "OFArray.h"
@@ -370,12 +377,20 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #if defined(OF_POWERPC) || defined(OF_POWERPC64)
 + (bool)supportsAltiVec
 {
-# ifdef OF_MACOS
+# if defined(OF_MACOS)
 	int name[2] = { CTL_HW, HW_VECTORUNIT }, value = 0;
 	size_t length = sizeof(value);
 
 	if (sysctl(name, 2, &value, &length, NULL, 0) == 0)
 		return value;
+# elif defined(OF_MORPHOS)
+	uint32_t supportsAltiVec;
+
+	if (NewGetSystemAttrs(&supportsAltiVec, sizeof(supportsAltiVec),
+	    SYSTEMINFOTYPE_PPC_ALTIVEC, TAG_DONE) > 0)
+		return supportsAltiVec;
+
+	return false;
 # endif
 
 	return false;
