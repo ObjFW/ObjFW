@@ -469,12 +469,10 @@ normalizedKey(OFString *key)
 	}
 
 	[path deleteEnclosingWhitespaces];
+	[path makeImmutable];
 
 	if (![path hasPrefix: @"/"])
 		return [self sendErrorAndClose: 400];
-
-	[path deleteCharactersInRange: of_range(0, 1)];
-	[path makeImmutable];
 
 	_headers = [[OFMutableDictionary alloc] init];
 	_path = [path copy];
