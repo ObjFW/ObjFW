@@ -348,7 +348,7 @@ case "$objc_runtime" in
 				"${LIB_PREFIX}objfw-rt${LIB_SUFFIX}")
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
-			-o x"$enable_shared" = x"no"],
+			-o x"$enable_shared" = x"no"], [
 			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw-rt.a")
 		])
 		AC_SUBST(RUNTIME_LIBS, "-lobjfw-rt")
