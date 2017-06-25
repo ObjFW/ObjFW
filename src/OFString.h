@@ -656,9 +656,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (const char *)UTF8String OF_RETURNS_INNER_POINTER;
 
 /*!
- * @brief Returns the length of the string in Unicode characters.
+ * @brief Returns the length of the string in Unicode codepoints.
  *
- * @return The length of the string in Unicode characters
+ * @return The length of the string in Unicode codepoints
  */
 - (size_t)length;
 
