@@ -258,6 +258,13 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 - (OFArray OF_GENERIC(ObjectType) *)allObjects;
 
 /*!
+ * @brief Creates a string by URL-encoding the contents of the dictionary.
+ *
+ * @return A URL-encoded string with the contents of the dictionary
+ */
+- (OFString *)stringByURLEncoding;
+
+/*!
  * @brief Returns an OFEnumerator to enumerate through the dictionary's keys.
  *
  * @return An OFEnumerator to enumerate through the dictionary's keys

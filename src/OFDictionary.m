@@ -570,6 +570,34 @@ static struct {
 	return ret;
 }
 
+- (OFString *)stringByURLEncoding
+{
+	OFMutableString *ret = [OFMutableString string];
+	void *pool = objc_autoreleasePoolPush();
+	OFEnumerator *keyEnumerator = [self keyEnumerator];
+	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	bool first = true;
+	id key, object;
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		if OF_UNLIKELY (first)
+			first = false;
+		else
+			[ret appendString: @"&"];
+
+		[ret appendString: [[key description] stringByURLEncoding]];
+		[ret appendString: @"="];
+		[ret appendString: [[object description] stringByURLEncoding]];
+	}
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
 - (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool = objc_autoreleasePoolPush();

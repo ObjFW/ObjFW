@@ -261,6 +261,11 @@ static OFString *values[] = {
 
 	[mutDict removeObjectForKey: @""];
 
+	TEST(@"-[stringByURLEncoding]",
+	    [[[OFDictionary dictionaryWithKeysAndObjects: @"foo", @"bar",
+							  @"q&x", @"q=x", nil]
+	    stringByURLEncoding] isEqual: @"q%26x=q%3Dx&foo=bar"])
+
 #ifdef OF_HAVE_BLOCKS
 	{
 		__block size_t i = 0;
