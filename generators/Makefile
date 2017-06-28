@@ -34,6 +34,6 @@ run: all
 
 include ../buildsys.mk
 
-CPPFLAGS += -I../src -I../src/runtime -I..
-LIBS := -L../src -lobjfw ${LIBS}
+CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I..
+LIBS := -L../src -lobjfw -L../src/runtime ${RUNTIME_LIBS} ${LIBS}
 LD = ${OBJC}

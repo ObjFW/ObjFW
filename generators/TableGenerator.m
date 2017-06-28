@@ -28,6 +28,8 @@
 #import "OFFile.h"
 #import "OFStdIOStream.h"
 
+#import "OFOutOfRangeException.h"
+
 #import "TableGenerator.h"
 #import "copyright.h"
 
@@ -57,7 +59,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[self parseUnicodeData];
 	[self parseCaseFolding];
 
-	[of_stdout writeString: @"Writing files..."];
+	[of_stdout writeString: @"Writing files…"];
 
 	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
 	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.m", nil]];
@@ -80,7 +82,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	OFHTTPResponse *response;
 	OFString *line;
 
-	[of_stdout writeString: @"Downloading and parsing UnicodeData.txt..."];
+	[of_stdout writeString: @"Downloading and parsing UnicodeData.txt…"];
 
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: UNICODE_DATA_URL]];
@@ -89,29 +91,32 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
-		OFArray OF_GENERIC(OFString *) *split;
-		OFString *const *splitObjects;
-		of_unichar_t codep;
+		OFArray OF_GENERIC(OFString *) *components;
+		of_unichar_t codePoint;
 
 		if ([line length] == 0)
 			continue;
 
 		pool2 = objc_autoreleasePoolPush();
 
-		split = [line componentsSeparatedByString: @";"];
-		if ([split count] != 15) {
+		components = [line componentsSeparatedByString: @";"];
+		if ([components count] != 15) {
 			of_log(@"Invalid line: %@\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splitObjects = [split objects];
 
-		codep = (of_unichar_t)[splitObjects[0] hexadecimalValue];
-		_uppercaseTable[codep] =
-		    (of_unichar_t)[splitObjects[12] hexadecimalValue];
-		_lowercaseTable[codep] =
-		    (of_unichar_t)[splitObjects[13] hexadecimalValue];
-		_titlecaseTable[codep] =
-		    (of_unichar_t)[splitObjects[14] hexadecimalValue];
+		codePoint = (of_unichar_t)
+		    [[components objectAtIndex: 0] hexadecimalValue];
+
+		if (codePoint > 0x10FFFF)
+			@throw [OFOutOfRangeException exception];
+
+		_uppercaseTable[codePoint] = (of_unichar_t)
+		    [[components objectAtIndex: 12] hexadecimalValue];
+		_lowercaseTable[codePoint] = (of_unichar_t)
+		    [[components objectAtIndex: 13] hexadecimalValue];
+		_titlecaseTable[codePoint] = (of_unichar_t)
+		    [[components objectAtIndex: 14] hexadecimalValue];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -129,7 +134,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	OFHTTPResponse *response;
 	OFString *line;
 
-	[of_stdout writeString: @"Downloading and parsing CaseFolding.txt..."];
+	[of_stdout writeString: @"Downloading and parsing CaseFolding.txt…"];
 
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: CASE_FOLDING_URL]];
@@ -138,29 +143,32 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
-		OFArray OF_GENERIC(OFString *) *split;
-		OFString *const *splitObjects;
-		of_unichar_t codep;
+		OFArray OF_GENERIC(OFString *) *components;
+		of_unichar_t codePoint;
 
 		if ([line length] == 0 || [line hasPrefix: @"#"])
 			continue;
 
 		pool2 = objc_autoreleasePoolPush();
 
-		split = [line componentsSeparatedByString: @"; "];
-		if ([split count] != 4) {
+		components = [line componentsSeparatedByString: @"; "];
+		if ([components count] != 4) {
 			of_log(@"Invalid line: %s\n", line);
 			[OFApplication terminateWithStatus: 1];
 		}
-		splitObjects = [split objects];
 
-		if (![splitObjects[1] isEqual: @"S"] &&
-		    ![splitObjects[1] isEqual: @"C"])
+		if (![[components objectAtIndex: 1] isEqual: @"S"] &&
+		    ![[components objectAtIndex: 1] isEqual: @"C"])
 			continue;
 
-		codep = (of_unichar_t)[splitObjects[0] hexadecimalValue];
-		_casefoldingTable[codep] =
-		    (of_unichar_t)[splitObjects[2] hexadecimalValue];
+		codePoint = (of_unichar_t)
+		    [[components objectAtIndex: 0] hexadecimalValue];
+
+		if (codePoint > 0x10FFFF)
+			@throw [OFOutOfRangeException exception];
+
+		_casefoldingTable[codePoint] = (of_unichar_t)
+		    [[components objectAtIndex: 2] hexadecimalValue];
 
 		objc_autoreleasePoolPop(pool2);
 	}
