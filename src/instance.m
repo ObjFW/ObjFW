@@ -71,6 +71,9 @@ objc_destructInstance(id obj)
 	Class cls;
 	void (*last)(id, SEL) = NULL;
 
+	if (obj == nil)
+		return NULL;
+
 #ifdef OF_OBJFW_RUNTIME
 	objc_zero_weak_references(obj);
 #endif
