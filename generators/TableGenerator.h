@@ -24,14 +24,17 @@
 	of_unichar_t _lowercaseTable[0x110000];
 	of_unichar_t _titlecaseTable[0x110000];
 	of_unichar_t _casefoldingTable[0x110000];
+	OFMutableString *_decompositionTable[0x110000];
 	char _uppercaseTableUsed[0x1100];
 	char _lowercaseTableUsed[0x1100];
 	char _titlecaseTableUsed[0x1100];
 	char _casefoldingTableUsed[0x1100];
+	char _decompositionTableUsed[0x1100];
 	size_t _uppercaseTableSize;
 	size_t _lowercaseTableSize;
 	size_t _titlecaseTableSize;
 	size_t _casefoldingTableSize;
+	size_t _decompositionTableSize;
 }
 
 - (void)parseUnicodeData;
