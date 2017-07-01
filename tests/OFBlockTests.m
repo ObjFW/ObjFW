@@ -34,7 +34,7 @@ extern void *_NSConcreteStackBlock;
 extern void *_NSConcreteGlobalBlock;
 extern void *_NSConcreteMallocBlock;
 
-static void (^g)() = ^ {};
+static void (^g)(void) = ^ {};
 
 static int
 (^returnStackBlock(void))(void)
