@@ -607,6 +607,15 @@ struct {
 	return [self UTF32StringWithByteOrder: byteOrder];
 }
 
+#ifdef OF_HAVE_UNICODE_TABLES
+- (OFString *)decomposedStringWithCanonicalMapping
+{
+	[self finishInitialization];
+
+	return [self decomposedStringWithCanonicalMapping];
+}
+#endif
+
 - (void)writeToFile: (OFString *)path
 {
 	[self finishInitialization];

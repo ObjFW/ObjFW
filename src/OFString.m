@@ -2712,6 +2712,38 @@ static struct {
 	return ret;
 }
 
+#ifdef OF_HAVE_UNICODE_TABLES
+- (OFString *)decomposedStringWithCanonicalMapping
+{
+	OFMutableString *ret = [OFMutableString string];
+	void *pool = objc_autoreleasePoolPush();
+	const of_unichar_t *characters = [self characters];
+	size_t length = [self length];
+
+	for (size_t i = 0; i < length; i++) {
+		of_unichar_t c = characters[i];
+		const char *const *table;
+
+		if (c >= OF_UNICODE_DECOMPOSITION_TABLE_SIZE) {
+			[ret appendCharacters: &c
+				       length: 1];
+			continue;
+		}
+
+		table = of_unicode_decomposition_table[c >> 8];
+		if (table != NULL && table[c & 0xFF] != NULL)
+			[ret appendUTF8String: table[c & 0xFF]];
+		else
+			[ret appendCharacters: &c
+				       length: 1];
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+#endif
+
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {

@@ -901,6 +901,10 @@ static uint16_t sutf16str[] = {
 	    (s[0] = [mutableStringClass stringWithString: whitespace[1]]) &&
 	    R([s[0] deleteEnclosingWhitespaces]) && [s[0] isEqual: @""])
 
+	TEST(@"-[decomposedStringWithCanonicalMapping]",
+	    [[@"H\xC3\xA4ll\xC3\xB6" decomposedStringWithCanonicalMapping]
+	    isEqual: @"H\x61\xCC\x88ll\x6F\xCC\x88"]);
+
 	TEST(@"-[stringByXMLEscaping]",
 	    (is = [C(@"<hello> &world'\"!&") stringByXMLEscaping]) &&
 	    [is isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
