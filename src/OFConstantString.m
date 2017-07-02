@@ -614,6 +614,13 @@ struct {
 
 	return [self decomposedStringWithCanonicalMapping];
 }
+
+- (OFString *)decomposedStringWithCompatibilityMapping
+{
+	[self finishInitialization];
+
+	return [self decomposedStringWithCompatibilityMapping];
+}
 #endif
 
 - (void)writeToFile: (OFString *)path

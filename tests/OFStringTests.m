@@ -901,9 +901,15 @@ static uint16_t sutf16str[] = {
 	    (s[0] = [mutableStringClass stringWithString: whitespace[1]]) &&
 	    R([s[0] deleteEnclosingWhitespaces]) && [s[0] isEqual: @""])
 
+#ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[decomposedStringWithCanonicalMapping]",
-	    [[@"H\xC3\xA4ll\xC3\xB6" decomposedStringWithCanonicalMapping]
-	    isEqual: @"H\x61\xCC\x88ll\x6F\xCC\x88"]);
+	    [[@"H\xC3\xA4lǉ\xC3\xB6" decomposedStringWithCanonicalMapping]
+	    isEqual: @"H\x61\xCC\x88lǉ\x6F\xCC\x88"]);
+
+	TEST(@"-[decomposedStringWithCompatibilityMapping]",
+	    [[@"H\xC3\xA4lǉ\xC3\xB6" decomposedStringWithCompatibilityMapping]
+	    isEqual: @"H\x61\xCC\x88llj\x6F\xCC\x88"]);
+#endif
 
 	TEST(@"-[stringByXMLEscaping]",
 	    (is = [C(@"<hello> &world'\"!&") stringByXMLEscaping]) &&

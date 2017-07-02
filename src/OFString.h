@@ -1109,6 +1109,13 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The string in Unicode Normalization Form D (NFD)
  */
 - (OFString *)decomposedStringWithCanonicalMapping;
+
+/*!
+ * @brief Returns the string in Unicode Normalization Form KD (NFKD).
+ *
+ * @return The string in Unicode Normalization Form KD (NFKD)
+ */
+- (OFString *)decomposedStringWithCompatibilityMapping;
 #endif
 
 #ifdef OF_HAVE_FILES
