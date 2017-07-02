@@ -24,21 +24,22 @@
 OFObject *lock;
 
 @interface MyThread: OFThread
-- main;
 @end
 
 @implementation MyThread
-- main
+- (id)main
 {
-	printf("[%s] Entering #1\n", [object UTF8String]);
+	const char *name = [[[OFThread currentThread] name] UTF8String];
+
+	printf("[%s] Entering #1\n", name);
 	@synchronized (lock) {
-		printf("[%s] Entering #2\n", [object UTF8String]);
+		printf("[%s] Entering #2\n", name);
 		@synchronized (lock) {
-			printf("[%s] Hello!\n", [object UTF8String]);
+			printf("[%s] Hello!\n", name);
 		}
-		printf("[%s] Left #2\n", [object UTF8String]);
+		printf("[%s] Left #2\n", name);
 	}
-	printf("[%s] Left #1\n", [object UTF8String]);
+	printf("[%s] Left #1\n", name);
 
 	return nil;
 }
@@ -47,9 +48,15 @@ OFObject *lock;
 int
 main()
 {
+	MyThread *t1, *t2;
+
 	lock = [[OFObject alloc] init];
-	MyThread *t1 = [MyThread threadWithObject: @"A"];
-	MyThread *t2 = [MyThread threadWithObject: @"B"];
+
+	t1 = [MyThread thread];
+	[t1 setName: @"A"];
+
+	t2 = [MyThread thread];
+	[t2 setName: @"B"];
 
 	[t1 start];
 	[t2 start];

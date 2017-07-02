@@ -171,9 +171,6 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * @brief The main routine of the thread. You need to reimplement this!
  *
- * It can access the object passed to the @ref threadWithObject: or
- * @ref initWithObject: method using the instance variable named object.
- *
  * @return The object the join method should return when called for this thread
  */
 - (nullable id)main;
