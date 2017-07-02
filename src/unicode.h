@@ -21,6 +21,7 @@
 #define OF_UNICODE_TITLECASE_TABLE_SIZE 0x1EA
 #define OF_UNICODE_CASEFOLDING_TABLE_SIZE 0x1EA
 #define OF_UNICODE_DECOMPOSITION_TABLE_SIZE 0x2FB
+#define OF_UNICODE_DECOMPOSITION_COMPAT_TABLE_SIZE 0x2FB
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +36,8 @@ extern const of_unichar_t *const _Nonnull
     of_unicode_casefolding_table[OF_UNICODE_CASEFOLDING_TABLE_SIZE];
 extern const char *const _Nullable *const _Nonnull
     of_unicode_decomposition_table[OF_UNICODE_DECOMPOSITION_TABLE_SIZE];
+extern const char *const _Nullable *const _Nonnull
+    of_unicode_decomposition_compat_table[OF_UNICODE_DECOMPOSITION_COMPAT_TABLE_SIZE];
 #ifdef __cplusplus
 }
 #endif
