@@ -101,7 +101,7 @@ run:
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
-	${TEST_LAUNCHER} ./${PROG_NOINST}; EXIT=$$?; \
+	${WRAPPER} ./${PROG_NOINST}; EXIT=$$?; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} libobjfw.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
@@ -127,7 +127,7 @@ run-on-ios: all
 	    ${IOS_USER}@${IOS_HOST}:${IOS_TMP}/plugin/
 	echo "Running tests binary on iOS device ${IOS_HOST}..."
 	ssh ${IOS_USER}@${IOS_HOST} \
-	    'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${TEST_LAUNCHER} ./tests'
+	    'cd ${IOS_TMP} && DYLD_LIBRARY_PATH=. ${WRAPPER} ./tests'
 
 run-on-android: all
 	echo "Uploading files to Android device..."
@@ -149,7 +149,7 @@ run-on-android: all
 		    /data/local/tmp/objfw/plugin/TestPlugin.so; \
 	fi
 	echo "Running tests binary on Android device..."
-	adb shell 'cd /data/local/tmp/objfw && LD_LIBRARY_PATH=. exec ./tests'
+	adb shell 'cd /data/local/tmp/objfw && LD_LIBRARY_PATH=. exec ${WRAPPER} ./tests'
 
 EBOOT.PBP: ${PROG_NOINST}
 	psp-fixup-imports ${PROG_NOINST}

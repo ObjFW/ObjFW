@@ -1509,7 +1509,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 
 			AS_IF([test x"$WINE" != x""], [
 				AC_SUBST(RUN_TESTS, "run")
-				AC_SUBST(TEST_LAUNCHER, "$WINE")
+				AC_SUBST(WRAPPER, "$WINE")
 			])
 			;;
 	esac
@@ -1522,7 +1522,7 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 
 		AS_IF([test x"$wiiload" != x""], [
 			AC_SUBST(RUN_TESTS, "run")
-			AC_SUBST(TEST_LAUNCHER, "$wiiload")
+			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])
 ], [
