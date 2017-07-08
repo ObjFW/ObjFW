@@ -113,6 +113,8 @@ objc_set_exit(void OF_NO_RETURN_FUNC (*exit_fn_)(int status))
 static struct Library *lib_init(struct ObjFWRTBase *base, BPTR seg_list,
     struct ExecBase *exec_base)
 {
+	SysBase = exec_base;
+
 	base->seg_list = seg_list;
 
 	return &base->library;
@@ -130,6 +132,22 @@ lib_open(void)
 }
 
 static BPTR
+expunge(struct ObjFWRTBase *base)
+{
+	/* Still in use - set delayed expunge flag and refuse to expunge */
+	if (base->library.lib_OpenCnt > 0) {
+		base->library.lib_Flags |= LIBF_DELEXP;
+		return 0;
+	}
+
+	Remove(&base->library.lib_Node);
+	FreeMem((char *)base - base->library.lib_NegSize,
+	    base->library.lib_NegSize + base->library.lib_PosSize);
+
+	return base->seg_list;
+}
+
+static BPTR
 lib_close(void)
 {
 	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
@@ -137,7 +155,7 @@ lib_close(void)
 	/* Not used anymore and delayed expunge flag set -> expunge */
 	if (--base->library.lib_OpenCnt == 0 &&
 	    (base->library.lib_Flags & LIBF_DELEXP))
-		return lib_expunge();
+		return expunge(base);
 
 	return 0;
 }
@@ -145,15 +163,7 @@ lib_close(void)
 static BPTR
 lib_expunge(void)
 {
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
-
-	/* Still in use - set delayed expunge flag and refuse to expunge */
-	if (base->library.lib_OpenCnt > 0) {
-		base->library.lib_Flags |= LIBF_DELEXP;
-		return 0;
-	}
-
-	return base->seg_list;
+	return expunge((struct ObjFWRTBase *)REG_A6);
 }
 
 static void
