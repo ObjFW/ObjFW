@@ -30,9 +30,9 @@
 
 static OFString *module = @"OFBlock";
 
-extern void *_NSConcreteStackBlock;
-extern void *_NSConcreteGlobalBlock;
-extern void *_NSConcreteMallocBlock;
+extern struct objc_abi_class _NSConcreteStackBlock;
+extern struct objc_abi_class _NSConcreteGlobalBlock;
+extern struct objc_abi_class _NSConcreteMallocBlock;
 
 static void (^g)(void) = ^ {};
 
