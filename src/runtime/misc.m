@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "runtime.h"
-#include "runtime-private.h"
+#include "ObjFW-RT.h"
+#include "private.h"
 
 static objc_enumeration_mutation_handler enumeration_mutation_handler = NULL;
 

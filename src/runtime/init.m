@@ -16,8 +16,8 @@
 
 #include "config.h"
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 
 void
 __objc_exec_class(void *module_)

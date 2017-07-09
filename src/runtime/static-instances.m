@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 
 static struct objc_abi_static_instances **static_instances = NULL;
 static size_t static_instances_cnt = 0;

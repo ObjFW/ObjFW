@@ -16,8 +16,8 @@
 
 #include "config.h"
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 
 #ifdef OF_HAVE_THREADS
 # import "threading.h"

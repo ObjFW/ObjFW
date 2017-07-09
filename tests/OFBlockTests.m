@@ -21,7 +21,7 @@
 #import "OFAutoreleasePool.h"
 
 #if defined(OF_OBJFW_RUNTIME)
-# include "runtime.h"
+# include "ObjFW-RT.h"
 #elif defined(OF_APPLE_RUNTIME)
 # include <objc/runtime.h>
 #endif

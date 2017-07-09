@@ -7,4 +7,4 @@ SRCS = ${ENCODINGS_SRCS}
 
 include ../../buildsys.mk
 
-CPPFLAGS += -I. -I.. -I../.. -I../runtime -I../exceptions -DOF_COMPILING_OBJFW
+CPPFLAGS += -I. -I.. -I../.. -I../runtime -I../exceptions

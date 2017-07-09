@@ -23,8 +23,8 @@
 
 #include <assert.h>
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 
 static struct objc_hashtable *classes = NULL;
 static unsigned classes_cnt = 0;

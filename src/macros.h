@@ -33,7 +33,11 @@
 #include "platform.h"
 
 #ifdef OF_OBJFW_RUNTIME
-# import "runtime.h"
+# ifdef OF_COMPILING_OBJFW
+#  import "ObjFW-RT.h"
+# else
+#  import <ObjFW-RT/ObjFW-RT.h>
+# endif
 #endif
 #ifdef OF_APPLE_RUNTIME
 # import <objc/objc.h>

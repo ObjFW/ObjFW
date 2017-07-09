@@ -26,7 +26,7 @@
 #import "OFInitializationFailedException.h"
 
 #if defined(OF_OBJFW_RUNTIME)
-# import "runtime-private.h"
+# import "runtime/private.h"
 #endif
 
 #ifdef OF_HAVE_ATOMIC_OPS

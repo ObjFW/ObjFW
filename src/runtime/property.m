@@ -18,8 +18,8 @@
 
 #include <string.h>
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 
 #import "OFObject.h"
 

@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 
 struct objc_sparsearray *
 objc_sparsearray_new(uint8_t index_size)

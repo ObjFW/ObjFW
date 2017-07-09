@@ -47,7 +47,7 @@
 #if defined(OF_APPLE_RUNTIME) && __OBJC2__
 # import <objc/objc-exception.h>
 #elif defined(OF_OBJFW_RUNTIME)
-# import "runtime.h"
+# import "ObjFW-RT.h"
 #endif
 
 #ifdef OF_WINDOWS

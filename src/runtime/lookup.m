@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "runtime.h"
-#import "runtime-private.h"
+#import "ObjFW-RT.h"
+#import "private.h"
 #import "macros.h"
 
 @interface DummyObject

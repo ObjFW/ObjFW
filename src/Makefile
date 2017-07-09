@@ -176,7 +176,7 @@ LIB_OBJS_EXTRA = ${RUNTIME_RUNTIME_LIB_A}	\
 
 include ../buildsys.mk
 
-CPPFLAGS += -I. -I.. -Iexceptions -Iruntime -DOF_COMPILING_OBJFW
+CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_RUNTIME}
 LIBS += -Lruntime ${RUNTIME_LIBS}

@@ -133,7 +133,7 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 ])
 
 CPP="$OBJCPP"
-CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS"
+CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
 

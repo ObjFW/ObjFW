@@ -26,7 +26,8 @@ SRCS = arc.m			\
        ${USE_SRCS_THREADS}
 SRCS_THREADS = threading.m	\
 	       ../threading.m
-INCLUDES = runtime.h
+INCLUDES = ObjFW-RT.h
+includesubdir = ObjFW-RT
 
 OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
 LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}

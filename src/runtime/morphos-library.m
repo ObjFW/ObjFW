@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-#import "runtime.h"
+#import "ObjFW-RT.h"
 #import "macros.h"
 
 #define BOOL EXEC_BOOL
@@ -71,7 +71,7 @@ static ULONG func_table[] = {
 	(ULONG)objc_getPropertyStruct,
 	(ULONG)objc_setPropertyStruct,
 	(ULONG)objc_enumerationMutation,
-	/* Functions declared in runtime.h */
+	/* Functions declared in ObjFW-RT.h */
 	(ULONG)sel_registerName,
 	(ULONG)sel_getName,
 	(ULONG)sel_isEqual,

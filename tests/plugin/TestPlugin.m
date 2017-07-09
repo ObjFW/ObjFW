@@ -19,7 +19,7 @@
 #import "TestPlugin.h"
 
 #ifdef OF_OBJFW_RUNTIME
-# import "runtime-private.h"
+# import "runtime/private.h"
 
 OF_DESTRUCTOR()
 {
