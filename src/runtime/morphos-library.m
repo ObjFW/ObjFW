@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#import "runtime.h"
 #import "macros.h"
 
 #define BOOL EXEC_BOOL
@@ -51,7 +52,55 @@ static ULONG func_table[] = {
 	(ULONG)lib_null,
 	-1,
 	FUNCARRAY_32BIT_SYSTEMV,
+	/* Functions for the glue code */
 	(ULONG)objc_set_exit,
+	/* Used by the compiler - these need glue code */
+	(ULONG)__objc_exec_class,
+	(ULONG)objc_msg_lookup,
+	(ULONG)objc_msg_lookup_stret,
+	(ULONG)objc_msg_lookup_super,
+	(ULONG)objc_msg_lookup_super_stret,
+	(ULONG)objc_lookUpClass,
+	(ULONG)objc_getClass,
+	(ULONG)objc_getRequiredClass,
+	(ULONG)objc_exception_throw,
+	(ULONG)objc_sync_enter,
+	(ULONG)objc_sync_exit,
+	(ULONG)objc_getProperty,
+	(ULONG)objc_setProperty,
+	(ULONG)objc_getPropertyStruct,
+	(ULONG)objc_setPropertyStruct,
+	(ULONG)objc_enumerationMutation,
+	/* Functions declared in runtime.h */
+	(ULONG)sel_registerName,
+	(ULONG)sel_getName,
+	(ULONG)sel_isEqual,
+	(ULONG)objc_allocateClassPair,
+	(ULONG)objc_registerClassPair,
+	(ULONG)objc_getClassList,
+	(ULONG)objc_copyClassList,
+	(ULONG)class_isMetaClass,
+	(ULONG)class_getName,
+	(ULONG)class_getSuperclass,
+	(ULONG)class_getInstanceSize,
+	(ULONG)class_respondsToSelector,
+	(ULONG)class_conformsToProtocol,
+	(ULONG)class_getMethodImplementation,
+	(ULONG)class_getMethodImplementation_stret,
+	(ULONG)class_getMethodTypeEncoding,
+	(ULONG)class_addMethod,
+	(ULONG)class_replaceMethod,
+	(ULONG)object_getClass,
+	(ULONG)object_setClass,
+	(ULONG)object_getClassName,
+	(ULONG)protocol_getName,
+	(ULONG)protocol_isEqual,
+	(ULONG)protocol_conformsToProtocol,
+	(ULONG)objc_exit,
+	(ULONG)objc_setUncaughtExceptionHandler,
+	(ULONG)objc_setForwardHandler,
+	(ULONG)objc_zero_weak_references,
+	(ULONG)objc_setEnumerationMutationHandler,
 	-1,
 	FUNCARRAY_END
 };
