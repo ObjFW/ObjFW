@@ -60,6 +60,8 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	OFString *path;
 	[self parseUnicodeData];
 	[self parseCaseFolding];
+	[self applyDecompositionRecursivelyForTable: _decompositionTable];
+	[self applyDecompositionRecursivelyForTable: _decompositionCompatTable];
 
 	[of_stdout writeString: @"Writing files…"];
 
@@ -134,9 +136,13 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 			string = [OFMutableString string];
 
-			for (OFString *character in decomposed)
-				[string appendFormat: @"%C",
-				    (of_unichar_t)[character hexadecimalValue]];
+			for (OFString *character in decomposed) {
+				of_unichar_t unichar =
+				    (of_unichar_t)[character hexadecimalValue];
+
+				[string appendCharacters: &unichar
+						  length: 1];
+			}
 
 			[string makeImmutable];
 
@@ -203,6 +209,56 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[of_stdout writeLine: @" done"];
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)applyDecompositionRecursivelyForTable: (OFString *[0x110000])table
+{
+	bool done;
+
+	do {
+		done = true;
+
+		for (of_unichar_t i = 0; i < 0x110000; i++) {
+			void *pool;
+			const of_unichar_t *characters;
+			size_t length;
+			OFMutableString *replacement;
+			bool changed = false;
+
+			if (table[i] == nil)
+				continue;
+
+			pool = objc_autoreleasePoolPush();
+			characters = [table[i] characters];
+			length = [table[i] length];
+			replacement = [OFMutableString string];
+
+			for (size_t j = 0; j < length; j++) {
+				if (characters[j] > 0x10FFFF)
+					@throw [OFOutOfRangeException
+					    exception];
+
+				if (table[characters[j]] == nil)
+					[replacement
+					    appendCharacters: &characters[j]
+						      length: 1];
+				else {
+					[replacement
+					    appendString: table[characters[j]]];
+					changed = true;
+				}
+			}
+
+			[replacement makeImmutable];
+
+			if (changed) {
+				[table[i] release];
+				table[i] = [replacement copy];
+
+				done = false;
+			}
+		}
+	} while (!done);
 }
 
 - (void)writeTablesToFile: (OFString *)path

@@ -42,6 +42,7 @@
 
 - (void)parseUnicodeData;
 - (void)parseCaseFolding;
+- (void)applyDecompositionRecursivelyForTable: (OFString *[0x110000])table;
 - (void)writeTablesToFile: (OFString *)path;
 - (void)writeHeaderToFile: (OFString *)path;
 @end
