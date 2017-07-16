@@ -38,9 +38,9 @@ include ../../buildsys.mk
 ${MORPHOS_LIB}: ppcinline.h
 ppcinline.h: ObjFW-RT.fd ObjFW-RT.h
 	cvinclude.pl			\
-		--root ObjFW-RT		\
+		--root ObjFW_RT		\
 		--fd ObjFW-RT.fd	\
-		--clib ObjFW-RT.h	\
+		--clib protos.h		\
 		--inline $@
 
 CPPFLAGS += -I. -I.. -I../..				\
