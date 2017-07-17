@@ -2,6 +2,7 @@
 *.bundle
 *.dll
 *.dylib
+*.library
 *.o
 *.orig
 *.so
@@ -31,7 +32,7 @@ ObjFW.xcodeproj/*.pbxuser
 ObjFW.xcodeproj/project.xcworkspace
 ObjFW.xcodeproj/xcuserdata
 src/objfw-defs.h
-src/ObjFW
+src/runtime/ppcinline.h
 tests/*.map
 tests/tests
 tests/tests.3dsx
