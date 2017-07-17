@@ -16,14 +16,31 @@
 
 #error This file is only to generate ppcinline.h - do not use it!
 
+/*
+ * Used by the glue code.
+ */
+void __objc_exec_class_inline(void *);
+IMP objc_msg_lookup_inline(id, SEL);
+IMP objc_msg_lookup_stret_inline(id, SEL);
+IMP objc_msg_lookup_super_inline(struct objc_super *, SEL);
+IMP objc_msg_lookup_super_stret_inline(struct objc_super *, SEL);
+id objc_lookUpClass_inline(const char *);
+id objc_getClass_inline(const char *);
+id objc_getRequiredClass_inline(const char *);
+void objc_exception_throw_inline(id);
+int objc_sync_enter_inline(id);
+int objc_sync_exit_inline(id);
+id objc_getProperty_inline(id, SEL, ptrdiff_t, BOOL);
+void objc_setProperty_inline(id, SEL, ptrdiff_t, id, BOOL, signed char);
+void objc_getPropertyStruct_inline(void *, const void *, ptrdiff_t, BOOL, BOOL);
+void objc_setPropertyStruct_inline(void *, const void *, ptrdiff_t, BOOL, BOOL);
+void objc_enumerationMutation_inline(id);
+
 SEL sel_registerName(const char *);
 const char *sel_getName(SEL);
 bool sel_isEqual(SEL, SEL);
 Class objc_allocateClassPair(Class, const char *, size_t);
 void objc_registerClassPair(Class);
-id objc_lookUpClass(const char *);
-id objc_getClass(const char *);
-id objc_getRequiredClass(const char *);
 unsigned int objc_getClassList(Class *, unsigned int);
 Class *objc_copyClassList(unsigned int *);
 bool class_isMetaClass(Class);
@@ -47,22 +64,5 @@ void objc_exit(void);
 objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler);
 void objc_setForwardHandler(IMP, IMP);
-void objc_zero_weak_references(id);
-
-/*
- * Used by the compiler, but can also be called manually.
- */
-void __objc_exec_class(void *);
-IMP objc_msg_lookup(id, SEL);
-IMP objc_msg_lookup_stret(id, SEL);
-IMP objc_msg_lookup_super(struct objc_super *, SEL);
-IMP objc_msg_lookup_super_stret(struct objc_super *, SEL);
-void objc_exception_throw(id);
-int objc_sync_enter(id);
-int objc_sync_exit(id);
-id objc_getProperty(id, SEL, ptrdiff_t, BOOL);
-void objc_setProperty(id, SEL, ptrdiff_t, id, BOOL, signed char);
-void objc_getPropertyStruct(void *, const void *, ptrdiff_t, BOOL, BOOL);
-void objc_setPropertyStruct(void *, const void *, ptrdiff_t, BOOL, BOOL);
-void objc_enumerationMutation(id);
 void objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler);
+void objc_zero_weak_references(id);

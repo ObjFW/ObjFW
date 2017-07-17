@@ -36,7 +36,7 @@ MORPHOS_LIB_OBJS_EXTRA = morphos-library.o ${LOOKUP_ASM_LOOKUP_ASM_A}
 include ../../buildsys.mk
 
 ${MORPHOS_LIB}: ppcinline.h
-ppcinline.h: ObjFW-RT.fd ObjFW-RT.h
+ppcinline.h: ObjFW-RT.fd protos.h
 	cvinclude.pl			\
 		--root ObjFW_RT		\
 		--fd ObjFW-RT.fd	\
@@ -44,6 +44,7 @@ ppcinline.h: ObjFW-RT.fd ObjFW-RT.h
 		--inline $@
 
 CPPFLAGS += -I. -I.. -I../..				\
+	    -DOF_COMPILING_OBJFW_RT			\
 	    -DOBJFW_RT_LIB_MAJOR=${OBJFW_RT_LIB_MAJOR}	\
 	    -DOBJFW_RT_LIB_MINOR=${OBJFW_RT_LIB_MINOR}
 LD = ${OBJC}

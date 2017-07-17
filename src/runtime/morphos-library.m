@@ -99,8 +99,8 @@ static ULONG func_table[] = {
 	(ULONG)objc_exit,
 	(ULONG)objc_setUncaughtExceptionHandler,
 	(ULONG)objc_setForwardHandler,
-	(ULONG)objc_zero_weak_references,
 	(ULONG)objc_setEnumerationMutationHandler,
+	(ULONG)objc_zero_weak_references,
 	-1,
 	FUNCARRAY_END
 };
