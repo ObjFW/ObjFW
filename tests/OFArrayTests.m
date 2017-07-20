@@ -437,9 +437,9 @@ static OFString *c_ary[] = {
 	    valueForKey: @"@count"] isEqual: [OFNumber numberWithSize: 2]])
 
 	m[0] = [mutableArrayClass arrayWithObjects:
-	    [OFURL URLWithString: @"http://foo.bar/"],
-	    [OFURL URLWithString: @"http://bar.qux/"],
-	    [OFURL URLWithString: @"http://qux.quxqux/"], nil];
+	    [OFMutableURL URLWithString: @"http://foo.bar/"],
+	    [OFMutableURL URLWithString: @"http://bar.qux/"],
+	    [OFMutableURL URLWithString: @"http://qux.quxqux/"], nil];
 	TEST(@"-[setValue:forKey:]",
 	    R([m[0] setValue: [OFNumber numberWithShort: 1234]
 		      forKey: @"port"]) &&

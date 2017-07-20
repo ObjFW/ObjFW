@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for parsing URLs and accessing parts of it.
  */
-@interface OFURL: OFObject <OFCopying, OFSerialization>
+@interface OFURL: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
 	OFString *_scheme, *_host;
 	uint16_t _port;
@@ -36,54 +36,47 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The scheme part of the URL.
  */
-@property (nonatomic, copy) OFString *scheme;
+@property (readonly, nonatomic, copy) OFString *scheme;
 
 /*!
  * The host part of the URL.
  */
-@property (nonatomic, copy) OFString *host;
+@property (readonly, nonatomic, copy) OFString *host;
 
 /*!
  * The port part of the URL.
  */
-@property (nonatomic) uint16_t port;
+@property (readonly, nonatomic) uint16_t port;
 
 /*!
  * The user part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *user;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *user;
 
 /*!
  * The password part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *password;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *password;
 
 /*!
  * The path part of the URL.
  */
-@property (nonatomic, copy) OFString *path;
+@property (readonly, nonatomic, copy) OFString *path;
 
 /*!
  * The parameters part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *parameters;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *parameters;
 
 /*!
  * The query part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *query;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *query;
 
 /*!
  * The fragment part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *fragment;
-
-/*!
- * @brief Creates a new URL.
- *
- * @return A new, autoreleased OFURL
- */
-+ (instancetype)URL;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *fragment;
 
 /*!
  * @brief Creates a new URL with the specified string.
@@ -111,6 +104,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFURL
  */
 + (instancetype)fileURLWithPath: (OFString *)path;
+
+- init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFURL with the specified string.
@@ -140,3 +135,5 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 OF_ASSUME_NONNULL_END
+
+#import "OFMutableURL.h"

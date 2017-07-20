@@ -40,6 +40,7 @@ SRCS = OFApplication.m			\
        OFMutableDictionary.m		\
        OFMutableSet.m			\
        OFMutableString.m		\
+       OFMutableURL.m			\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\

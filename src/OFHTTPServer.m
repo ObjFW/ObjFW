@@ -620,7 +620,7 @@ normalizedKey(OFString *key)
 
 - (void)createResponse
 {
-	OFURL *URL;
+	OFMutableURL *URL;
 	OFHTTPRequest *request;
 	OFHTTPServerResponse *response;
 	size_t pos;
@@ -640,7 +640,7 @@ normalizedKey(OFString *key)
 		_port = [_server port];
 	}
 
-	URL = [OFURL URL];
+	URL = [OFMutableURL URL];
 	[URL setScheme: @"http"];
 	[URL setHost: _host];
 	[URL setPort: _port];
@@ -656,6 +656,8 @@ normalizedKey(OFString *key)
 		[URL setQuery: query];
 	} else
 		[URL setPath: _path];
+
+	[URL makeImmutable];
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setMethod: _method];

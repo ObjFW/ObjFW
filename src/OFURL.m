@@ -20,6 +20,7 @@
 #include <string.h>
 
 #import "OFURL.h"
+#import "OFURL+Private.h"
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFXMLElement.h"
@@ -29,10 +30,6 @@
 #import "OFOutOfMemoryException.h"
 
 @implementation OFURL
-@synthesize scheme = _scheme, host = _host, port = _port, user = _user;
-@synthesize password = _password, path = _path, parameters = _parameters;
-@synthesize query = _query, fragment = _fragment;
-
 + (instancetype)URL
 {
 	return [[[self alloc] init] autorelease];
@@ -52,15 +49,27 @@
 
 + (instancetype)fileURLWithPath: (OFString *)path
 {
-	OFURL *URL = [OFURL URL];
+	OFMutableURL *URL = [OFMutableURL URL];
 	void *pool = objc_autoreleasePoolPush();
 
 	[URL setScheme: @"file"];
 	[URL setPath: [[path pathComponents] componentsJoinedByString: @"/"]];
 
+	[URL makeImmutable];
+
 	objc_autoreleasePoolPop(pool);
 
 	return URL;
+}
+
+- init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	return [super init];
 }
 
 - initWithString: (OFString *)string
@@ -362,20 +371,70 @@
 	return hash;
 }
 
+- (OFString *)scheme
+{
+	return _scheme;
+}
+
+- (OFString *)host
+{
+	return _host;
+}
+
+- (uint16_t)port
+{
+	return _port;
+}
+
+- (OFString *)user
+{
+	return _user;
+}
+
+- (OFString *)password
+{
+	return _password;
+}
+
+- (OFString *)path
+{
+	return _path;
+}
+
+- (OFString *)parameters
+{
+	return _parameters;
+}
+
+- (OFString *)query
+{
+	return _query;
+}
+
+- (OFString *)fragment
+{
+	return _fragment;
+}
+
 - copy
 {
-	OFURL *copy = [[[self class] alloc] init];
+	return [self retain];
+}
+
+- mutableCopy
+{
+	OFMutableURL *copy = [[OFMutableURL alloc] init];
 
 	@try {
-		copy->_scheme = [_scheme copy];
-		copy->_host = [_host copy];
-		copy->_port = _port;
-		copy->_user = [_user copy];
-		copy->_password = [_password copy];
-		copy->_path = [_path copy];
-		copy->_parameters = [_parameters copy];
-		copy->_query = [_query copy];
-		copy->_fragment = [_fragment copy];
+		[copy setScheme: _scheme];
+		[copy setHost: _host];
+		[copy setPort: _port];
+		[copy setUser: _user];
+		[copy setPassword: _password];
+		[copy setPath: _path];
+		[copy setParameters: _parameters];
+		[copy setQuery: _query];
+		[copy setFragment: _fragment];
 	} @catch (id e) {
 		[copy release];
 		@throw e;

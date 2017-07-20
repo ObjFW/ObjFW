@@ -694,6 +694,12 @@
 		4B3ED7C21AF62C30004C8FF1 /* OFGetOptionFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3ED7C31AF62C30004C8FF1 /* OFGetOptionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */; };
 		4B40EC1B189FE2650031E19E /* socket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B40EC1A189FE2650031E19E /* socket.m */; };
+		4B4116D01F21654200E78916 /* OFMutableURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4116CD1F21654200E78916 /* OFMutableURL.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B4116D11F21654200E78916 /* OFMutableURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4116CD1F21654200E78916 /* OFMutableURL.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B4116D21F21654200E78916 /* OFMutableURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B4116CE1F21654200E78916 /* OFMutableURL.m */; };
+		4B4116D31F21654200E78916 /* OFMutableURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B4116CE1F21654200E78916 /* OFMutableURL.m */; };
+		4B4116D41F21654200E78916 /* OFURL+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4116CF1F21654200E78916 /* OFURL+Private.h */; };
+		4B4116D51F21654200E78916 /* OFURL+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B4116CF1F21654200E78916 /* OFURL+Private.h */; };
 		4B44836D1D0497DE005D12A7 /* OFUndefinedKeyException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B44836B1D0497DE005D12A7 /* OFUndefinedKeyException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B44836E1D0497DE005D12A7 /* OFUndefinedKeyException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B44836C1D0497DE005D12A7 /* OFUndefinedKeyException.m */; };
 		4B4483711D04989C005D12A7 /* RuntimeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B44836F1D049887005D12A7 /* RuntimeTests.m */; };
@@ -1312,6 +1318,9 @@
 		4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFGetOptionFailedException.h; path = src/exceptions/OFGetOptionFailedException.h; sourceTree = "<group>"; };
 		4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFGetOptionFailedException.m; path = src/exceptions/OFGetOptionFailedException.m; sourceTree = "<group>"; };
 		4B40EC1A189FE2650031E19E /* socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = socket.m; path = src/socket.m; sourceTree = "<group>"; };
+		4B4116CD1F21654200E78916 /* OFMutableURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableURL.h; path = src/OFMutableURL.h; sourceTree = "<group>"; };
+		4B4116CE1F21654200E78916 /* OFMutableURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableURL.m; path = src/OFMutableURL.m; sourceTree = "<group>"; };
+		4B4116CF1F21654200E78916 /* OFURL+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFURL+Private.h"; path = "src/OFURL+Private.h"; sourceTree = "<group>"; };
 		4B44836B1D0497DE005D12A7 /* OFUndefinedKeyException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUndefinedKeyException.h; path = src/exceptions/OFUndefinedKeyException.h; sourceTree = "<group>"; };
 		4B44836C1D0497DE005D12A7 /* OFUndefinedKeyException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUndefinedKeyException.m; path = src/exceptions/OFUndefinedKeyException.m; sourceTree = "<group>"; };
 		4B44836F1D049887005D12A7 /* RuntimeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RuntimeTests.m; path = tests/RuntimeTests.m; sourceTree = "<group>"; };
@@ -2102,6 +2111,8 @@
 				4B6799741099E7C50041064A /* OFMutableString.m */,
 				4B55254E147AA5DB0003BF47 /* OFMutableString_UTF8.h */,
 				4B55254F147AA5DB0003BF47 /* OFMutableString_UTF8.m */,
+				4B4116CD1F21654200E78916 /* OFMutableURL.h */,
+				4B4116CE1F21654200E78916 /* OFMutableURL.m */,
 				4B6743FA163C395900EB1E59 /* OFMutex.h */,
 				4B6743FB163C395900EB1E59 /* OFMutex.m */,
 				4B511B7A139C0A34003764A5 /* OFNull.h */,
@@ -2205,6 +2216,7 @@
 				4B7769F01895ED0C00D12284 /* OFUDPSocket.m */,
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
+				4B4116CF1F21654200E78916 /* OFURL+Private.h */,
 				4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */,
 				4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */,
 				4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */,
@@ -2462,6 +2474,7 @@
 				4B2C22011DA292BE00735907 /* OFMutableDictionary.h in Headers */,
 				4B2C22021DA292BE00735907 /* OFMutableSet.h in Headers */,
 				4B2C22031DA292BE00735907 /* OFMutableString.h in Headers */,
+				4B4116D11F21654200E78916 /* OFMutableURL.h in Headers */,
 				4B2C22041DA292BE00735907 /* OFMutex.h in Headers */,
 				4B2C22051DA292BE00735907 /* OFNull.h in Headers */,
 				4B2C22061DA292BE00735907 /* OFNumber.h in Headers */,
@@ -2628,6 +2641,7 @@
 				4B2C22A51DA292BE00735907 /* OFTCPSocket+SOCKS5.h in Headers */,
 				4B2C22A61DA292BE00735907 /* OFThread+Private.h in Headers */,
 				4B2C22A71DA292BE00735907 /* OFTimer+Private.h in Headers */,
+				4B4116D51F21654200E78916 /* OFURL+Private.h in Headers */,
 				4B853CEC1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B2C22A81DA292BE00735907 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B2C22AA1DA292BE00735907 /* socket_helpers.h in Headers */,
@@ -2686,6 +2700,7 @@
 				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
 				4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */,
 				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
+				4B4116D01F21654200E78916 /* OFMutableURL.h in Headers */,
 				4B674403163C395900EB1E59 /* OFMutex.h in Headers */,
 				4B511B7C139C0A34003764A5 /* OFNull.h in Headers */,
 				4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */,
@@ -2853,6 +2868,7 @@
 				4BD653C5143B8489006182F0 /* OFTCPSocket+SOCKS5.h in Headers */,
 				4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */,
 				4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */,
+				4B4116D41F21654200E78916 /* OFURL+Private.h in Headers */,
 				4B853CEB1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */,
@@ -3247,6 +3263,7 @@
 				4B2C214D1DA292BE00735907 /* OFMutableSet_hashtable.m in Sources */,
 				4B2C214E1DA292BE00735907 /* OFMutableString.m in Sources */,
 				4B2C214F1DA292BE00735907 /* OFMutableString_UTF8.m in Sources */,
+				4B4116D31F21654200E78916 /* OFMutableURL.m in Sources */,
 				4B2C21501DA292BE00735907 /* OFMutex.m in Sources */,
 				4B2C21511DA292BE00735907 /* OFNull.m in Sources */,
 				4B2C21521DA292BE00735907 /* OFNumber.m in Sources */,
@@ -3446,6 +3463,7 @@
 				4BA85BCD140ECCE800E91D51 /* OFMutableSet_hashtable.m in Sources */,
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
 				4B552553147AA5DB0003BF47 /* OFMutableString_UTF8.m in Sources */,
+				4B4116D21F21654200E78916 /* OFMutableURL.m in Sources */,
 				4B674404163C395900EB1E59 /* OFMutex.m in Sources */,
 				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,

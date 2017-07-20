@@ -107,7 +107,7 @@ of_http_request_method_from_string(const char *string)
 	self = [self init];
 
 	@try {
-		[self setURL: URL];
+		_URL = [URL copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
