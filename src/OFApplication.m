@@ -290,7 +290,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 				continue;
 
 			file = [OFFile fileWithPath: path
-					       mode: @"rb"];
+					       mode: @"r"];
 
 			value = [file readLineWithEncoding: encoding];
 			if (value != nil)

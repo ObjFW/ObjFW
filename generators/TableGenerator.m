@@ -265,7 +265,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"wb"];
+				       mode: @"w"];
 
 	[file writeString: COPYRIGHT
 	    @"#include \"config.h\"\n"
@@ -711,7 +711,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFFile *file = [OFFile fileWithPath: path
-				       mode: @"wb"];
+				       mode: @"w"];
 
 	[file writeString: COPYRIGHT
 	    @"#import \"OFString.h\"\n\n"];

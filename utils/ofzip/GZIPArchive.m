@@ -104,7 +104,7 @@ setPermissions(OFString *destination, OFString *source)
 		return;
 
 	output = [OFFile fileWithPath: fileName
-				 mode: @"wb"];
+				 mode: @"w"];
 	setPermissions(fileName, app->_archivePath);
 
 	while (![_stream isAtEndOfStream]) {

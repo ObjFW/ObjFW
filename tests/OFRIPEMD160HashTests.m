@@ -39,7 +39,7 @@ const uint8_t testfile_rmd160[20] =
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFRIPEMD160Hash *rmd160, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"rb"];
+				    mode: @"r"];
 
 	TEST(@"+[cryptoHash]", (rmd160 = [OFRIPEMD160Hash cryptoHash]))
 

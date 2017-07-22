@@ -315,7 +315,7 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 	@try {
 		file = [OFFile fileWithPath: path
-				       mode: @"rb"];
+				       mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])

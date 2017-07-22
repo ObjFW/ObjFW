@@ -174,7 +174,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - initWithPath: (OFString *)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"rb"];
+					       mode: @"r"];
 	@try {
 		self = [self initWithSeekableStream: file];
 	} @finally {
@@ -331,7 +331,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	if (entry == nil)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
-							       mode: @"rb"
+							       mode: @"r"
 							      errNo: ENOENT];
 
 	[_lastReturnedStream close];

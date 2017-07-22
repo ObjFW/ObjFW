@@ -966,7 +966,7 @@ static struct {
 		} @catch (OFStatItemFailedException *e) {
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
-					 mode: @"rb"
+					 mode: @"r"
 					errNo: errno];
 		}
 
@@ -975,7 +975,7 @@ static struct {
 			@throw [OFOutOfRangeException exception];
 
 		file = [[OFFile alloc] initWithPath: path
-					       mode: @"rb"];
+					       mode: @"r"];
 
 		@try {
 			tmp = [self allocMemoryWithSize: (size_t)fileSize];
@@ -2768,7 +2768,7 @@ static struct {
 	OFFile *file;
 
 	file = [OFFile fileWithPath: path
-			       mode: @"wb"];
+			       mode: @"w"];
 	[file writeString: self
 		 encoding: encoding];
 

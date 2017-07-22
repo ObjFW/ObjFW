@@ -885,7 +885,7 @@ next:
 
 		@try {
 			OFString *mode =
-			    ([response statusCode] == 206 ? @"ab" : @"wb");
+			    ([response statusCode] == 206 ? @"a" : @"w");
 			_output = [[OFFile alloc] initWithPath: fileName
 							  mode: mode];
 		} @catch (OFOpenItemFailedException *e) {

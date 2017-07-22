@@ -38,7 +38,7 @@ const uint8_t testfile_md5[16] =
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFMD5Hash *md5, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"rb"];
+				    mode: @"r"];
 
 	TEST(@"+[cryptoHash]", (md5 = [OFMD5Hash cryptoHash]))
 

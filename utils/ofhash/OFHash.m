@@ -120,7 +120,7 @@ hashForName(OFString *name)
 		else {
 			@try {
 				file = [OFFile fileWithPath: path
-						       mode: @"rb"];
+						       mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror([e errNo])

@@ -929,9 +929,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 		@try {
 			sourceFile = [OFFile fileWithPath: source
-						     mode: @"rb"];
+						     mode: @"r"];
 			destinationFile = [OFFile fileWithPath: destination
-							  mode: @"wb"];
+							  mode: @"w"];
 
 			while (![sourceFile isAtEndOfStream]) {
 				size_t length;

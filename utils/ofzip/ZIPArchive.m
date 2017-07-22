@@ -268,7 +268,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 		stream = [_archive streamForReadingFile: fileName];
 		output = [OFFile fileWithPath: outFileName
-					 mode: @"wb"];
+					 mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (![stream isAtEndOfStream]) {

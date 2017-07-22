@@ -52,7 +52,7 @@
 - initWithPath: (OFString *)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"rb"];
+					       mode: @"r"];
 	@try {
 		self = [self initWithStream: file];
 	} @finally {

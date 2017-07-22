@@ -49,18 +49,14 @@ OF_ASSUME_NONNULL_BEGIN
  *	       Possible modes are:
  *	       Mode           | Description
  *	       ---------------|-------------------------------------
- *	       `r`            | read-only
- *	       `rb`           | read-only, binary
- *	       `r+`           | read-write
- *	       `rb+` or `r+b` | read-write, binary
- *	       `w`            | write-only, create, truncate
- *	       `wb`           | write-only, create, truncate, binary
- *	       `w`            | read-write, create, truncate
- *	       `wb+` or `w+b` | read-write, create, truncate, binary
- *	       `a`            | write-only, create, append
- *	       `ab`           | write-only, create, append, binary
- *	       `a+`           | read-write, create, append
- *	       `ab+` or `a+b` | read-write, create, append, binary
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
  * @return A new autoreleased OFFile
  */
 + (instancetype)fileWithPath: (OFString *)path

@@ -109,34 +109,20 @@ parseMode(const char *mode)
 {
 	if (strcmp(mode, "r") == 0)
 		return O_RDONLY;
+	if (strcmp(mode, "r+") == 0)
+		return O_RDWR;
 	if (strcmp(mode, "w") == 0)
 		return O_WRONLY | O_CREAT | O_TRUNC;
 	if (strcmp(mode, "wx") == 0)
 		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "a") == 0)
-		return O_WRONLY | O_CREAT | O_APPEND;
-	if (strcmp(mode, "rb") == 0)
-		return O_RDONLY | O_BINARY;
-	if (strcmp(mode, "wb") == 0)
-		return O_WRONLY | O_CREAT | O_TRUNC | O_BINARY;
-	if (strcmp(mode, "wbx") == 0)
-		return O_WRONLY | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "ab") == 0)
-		return O_WRONLY | O_CREAT | O_APPEND | O_BINARY;
-	if (strcmp(mode, "r+") == 0)
-		return O_RDWR;
 	if (strcmp(mode, "w+") == 0)
 		return O_RDWR | O_CREAT | O_TRUNC;
+	if (strcmp(mode, "w+x") == 0)
+		return O_RDWR | O_CREAT | O_EXCL | O_EXLOCK;
+	if (strcmp(mode, "a") == 0)
+		return O_WRONLY | O_CREAT | O_APPEND;
 	if (strcmp(mode, "a+") == 0)
 		return O_RDWR | O_CREAT | O_APPEND;
-	if (strcmp(mode, "r+b") == 0 || strcmp(mode, "rb+") == 0)
-		return O_RDWR | O_BINARY;
-	if (strcmp(mode, "w+b") == 0 || strcmp(mode, "wb+") == 0)
-		return O_RDWR | O_CREAT | O_TRUNC | O_BINARY;
-	if (strcmp(mode, "w+bx") == 0 || strcmp(mode, "wb+x") == 0)
-		return O_RDWR | O_CREAT | O_EXCL | O_EXLOCK;
-	if (strcmp(mode, "ab+") == 0 || strcmp(mode, "a+b") == 0)
-		return O_RDWR | O_CREAT | O_APPEND | O_BINARY;
 
 	return -1;
 }
@@ -238,7 +224,7 @@ parseMode(const char *mode, bool *append)
 		if ((flags = parseMode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException exception];
 
-		flags |= O_CLOEXEC;
+		flags |= O_BINARY | O_CLOEXEC;
 
 # if defined(OF_WINDOWS)
 		if ((handle = _wopen([path UTF16String], flags,

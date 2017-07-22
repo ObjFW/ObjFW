@@ -216,7 +216,7 @@ _references_to_categories_of_OFData(void)
 
 		@try {
 			OFFile *file = [[OFFile alloc] initWithPath: path
-							       mode: @"rb"];
+							       mode: @"r"];
 			@try {
 				[file readIntoBuffer: buffer
 					 exactLength: size];
@@ -594,7 +594,7 @@ _references_to_categories_of_OFData(void)
 - (void)writeToFile: (OFString *)path
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"wb"];
+					       mode: @"w"];
 
 	@try {
 		[file writeBuffer: _items

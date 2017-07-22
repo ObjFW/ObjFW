@@ -67,7 +67,7 @@ static const uint8_t digest_sha512[] =
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"rb"];
+				    mode: @"r"];
 	OFHMAC *HMAC_MD5, *HMAC_SHA1, *HMAC_RMD160;
 	OFHMAC *HMAC_SHA256, *HMAC_SHA384, *HMAC_SHA512;
 

@@ -315,7 +315,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			goto outer_loop_end;
 
 		output = [OFFile fileWithPath: outFileName
-					 mode: @"wb"];
+					 mode: @"w"];
 		setPermissions(outFileName, entry);
 
 		while (![entry isAtEndOfStream]) {

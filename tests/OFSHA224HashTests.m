@@ -39,7 +39,7 @@ const uint8_t testfile_sha224[28] =
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFSHA224Hash *sha224, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
-				    mode: @"rb"];
+				    mode: @"r"];
 
 	TEST(@"+[cryptoHash]", (sha224 = [OFSHA224Hash cryptoHash]))
 
