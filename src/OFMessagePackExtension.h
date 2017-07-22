@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFDataArray;
+@class OFData;
 
 /*!
  * @class OFMessagePackExtension \
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFCopying>
 {
 	int8_t _type;
-	OFDataArray *_data;
+	OFData *_data;
 }
 
 /*!
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @return The data of the extension.
  */
-@property (readonly, nonatomic) OFDataArray *data;
+@property (readonly, nonatomic) OFData *data;
 
 /*!
  * @brief Creates a new OFMessagePackRepresentation with the specified type and
@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFMessagePackRepresentation
  */
 + (instancetype)extensionWithType: (int8_t)type
-			     data: (OFDataArray *)data;
+			     data: (OFData *)data;
 
 - init OF_UNAVAILABLE;
 
@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFMessagePackRepresentation
  */
 - initWithType: (int8_t)type
-	  data: (OFDataArray *)data OF_DESIGNATED_INITIALIZER;
+	  data: (OFData *)data OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

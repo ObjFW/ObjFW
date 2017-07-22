@@ -34,7 +34,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
@@ -401,7 +401,7 @@ extern char **environ;
 #else
 - (char16_t *)of_environmentForDictionary: (OFDictionary *)environment
 {
-	OFDataArray *env;
+	OFMutableData *env;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 	const char16_t equal = '=';
@@ -410,7 +410,7 @@ extern char **environ;
 	if (environment == nil)
 		return NULL;
 
-	env = [OFDataArray dataArrayWithItemSize: sizeof(char16_t)];
+	env = [OFMutableData dataWithItemSize: sizeof(char16_t)];
 
 	keyEnumerator = [environment keyEnumerator];
 	objectEnumerator = [environment objectEnumerator];

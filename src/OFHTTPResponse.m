@@ -20,7 +20,7 @@
 #import "OFString.h"
 #import "OFDictionary.h"
 #import "OFArray.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
@@ -211,7 +211,7 @@ encodingForContentType(OFString *contentType)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *contentType, *contentLength, *ret;
-	OFDataArray *data;
+	OFData *data;
 
 	if (encoding == OF_STRING_ENCODING_AUTODETECT &&
 	    (contentType = [_headers objectForKey: @"Content-Type"]) != nil)
@@ -220,7 +220,7 @@ encodingForContentType(OFString *contentType)
 	if (encoding == OF_STRING_ENCODING_AUTODETECT)
 		encoding = OF_STRING_ENCODING_UTF_8;
 
-	data = [self readDataArrayTillEndOfStream];
+	data = [self readDataUntilEndOfStream];
 
 	if ((contentLength = [_headers objectForKey: @"Content-Length"]) != nil)
 		if ([data count] != (size_t)[contentLength decimalValue])

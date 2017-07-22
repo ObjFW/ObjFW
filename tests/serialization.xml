@@ -39,7 +39,7 @@ How are you?</OFString>
       <OFString>list</OFString>
     </object>
     <key>
-      <OFDataArray>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFDataArray>
+      <OFData>MDEyMzQ1Njc4OTo7PEFCQ0RFRkdISklLTE1OT1BRUlNUVVZXWFla</OFData>
     </key>
     <object>
       <OFString>data</OFString>

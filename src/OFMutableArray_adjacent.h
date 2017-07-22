@@ -18,11 +18,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFDataArray;
+@class OFMutableData;
 
 @interface OFMutableArray_adjacent: OFMutableArray
 {
-	OFDataArray   *_array;
+	OFMutableData *_array;
 	unsigned long _mutations;
 }
 @end

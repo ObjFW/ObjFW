@@ -20,7 +20,7 @@
 #include <string.h>
 
 #import "OFHTTPServer.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFURL.h"
@@ -335,7 +335,7 @@ normalizedKey(OFString *key)
 	uint16_t _port;
 	OFMutableDictionary *_headers;
 	size_t _contentLength;
-	OFDataArray *_body;
+	OFMutableData *_body;
 }
 
 - initWithSocket: (OFTCPSocket *)socket
@@ -500,7 +500,7 @@ normalizedKey(OFString *key)
 			char *buffer;
 
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			_body = [[OFDataArray alloc] init];
+			_body = [[OFMutableData alloc] init];
 
 			[_socket asyncReadIntoBuffer: buffer
 					      length: BUFFER_SIZE
@@ -588,6 +588,8 @@ normalizedKey(OFString *key)
 		 * Connection: keep-alive is implemented.
 		 */
 		[self freeMemory: buffer];
+
+		[_body makeImmutable];
 
 		@try {
 			[self createResponse];

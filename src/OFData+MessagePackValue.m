@@ -18,10 +18,9 @@
 
 #include <string.h>
 
-#import "OFDataArray+MessagePackValue.h"
+#import "OFData+MessagePackValue.h"
 #import "OFNumber.h"
 #import "OFNull.h"
-#import "OFDataArray.h"
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -29,7 +28,7 @@
 
 #import "OFInvalidFormatException.h"
 
-int _OFDataArray_MessagePackValue_reference;
+int _OFData_MessagePackValue_reference;
 
 static size_t parseObject(const uint8_t *buffer, size_t length, id *object,
     size_t depthLimit);
@@ -159,7 +158,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 {
 	size_t count;
 	int8_t type;
-	OFDataArray *data;
+	OFData *data;
 
 	if (length < 1)
 		goto error;
@@ -301,9 +300,8 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < count + 2)
 			goto error;
 
-		*object = [OFDataArray dataArrayWithCapacity: count];
-		[*object addItems: buffer + 2
-			    count: count];
+		*object = [OFData dataWithItems: buffer + 2
+					  count: count];
 
 		return count + 2;
 	case 0xC5: /* bin 16 */
@@ -315,9 +313,8 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < count + 3)
 			goto error;
 
-		*object = [OFDataArray dataArrayWithCapacity: count];
-		[*object addItems: buffer + 3
-			    count: count];
+		*object = [OFData dataWithItems: buffer + 3
+					  count: count];
 
 		return count + 3;
 	case 0xC6: /* bin 32 */
@@ -329,9 +326,8 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < count + 5)
 			goto error;
 
-		*object = [OFDataArray dataArrayWithCapacity: count];
-		[*object addItems: buffer + 5
-			    count: count];
+		*object = [OFData dataWithItems: buffer + 5
+					  count: count];
 
 		return count + 5;
 	/* Extensions */
@@ -346,11 +342,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[2];
 
-		data = [[OFDataArray alloc] initWithCapacity: count];
+		data = [[OFData alloc] initWithItems: buffer + 3
+					       count: count];
 		@try {
-			[data addItems: buffer + 3
-				 count: count];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -370,11 +364,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[3];
 
-		data = [[OFDataArray alloc] initWithCapacity: count];
+		data = [[OFData alloc] initWithItems: buffer + 4
+					       count: count];
 		@try {
-			[data addItems: buffer + 4
-				 count: count];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -394,11 +386,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[5];
 
-		data = [[OFDataArray alloc] initWithCapacity: count];
+		data = [[OFData alloc] initWithItems: buffer + 6
+					       count: count];
 		@try {
-			[data addItems: buffer + 6
-				 count: count];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -413,10 +403,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[1];
 
-		data = [[OFDataArray alloc] initWithCapacity: 1];
+		data = [[OFData alloc] initWithItems: buffer + 2
+					       count: 1];
 		@try {
-			[data addItem: buffer + 2];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -431,11 +420,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[1];
 
-		data = [[OFDataArray alloc] initWithCapacity: 2];
+		data = [[OFData alloc] initWithItems: buffer + 2
+					       count: 2];
 		@try {
-			[data addItems: buffer + 2
-				 count: 2];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -450,11 +437,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[1];
 
-		data = [[OFDataArray alloc] initWithCapacity: 4];
+		data = [[OFData alloc] initWithItems: buffer + 2
+					       count: 4];
 		@try {
-			[data addItems: buffer + 2
-				 count: 4];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -469,11 +454,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[1];
 
-		data = [[OFDataArray alloc] initWithCapacity: 8];
+		data = [[OFData alloc] initWithItems: buffer + 2
+					       count: 8];
 		@try {
-			[data addItems: buffer + 2
-				 count: 8];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -488,11 +471,9 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 
 		type = buffer[1];
 
-		data = [[OFDataArray alloc] initWithCapacity: 16];
+		data = [[OFData alloc] initWithItems: buffer + 2
+					       count: 16];
 		@try {
-			[data addItems: buffer + 2
-				 count: 16];
-
 			*object = [OFMessagePackExtension
 			    extensionWithType: type
 					 data: data];
@@ -574,7 +555,7 @@ error:
 	return 0;
 }
 
-@implementation OFDataArray (MessagePackValue)
+@implementation OFData (MessagePackValue)
 - (id)messagePackValue
 {
 	return [self messagePackValueWithDepthLimit: 32];

@@ -20,8 +20,7 @@
 #import "OFAutoreleasePool.h"
 #import "OFString.h"
 
-#import "OFDataArray.h"
-#import "OFBigDataArray.h"
+#import "OFData.h"
 #import "OFArray.h"
 
 #import "OFList.h"

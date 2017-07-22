@@ -14,23 +14,12 @@
  * file.
  */
 
-#import "OFDataArray.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-/*!
- * @class OFBigDataArray OFBigDataArray.h ObjFW/OFBigDataArray.h
- *
- * @brief A class for storing arbitrary big data in an array.
- *
- * The OFBigDataArray class is a class for storing arbitrary data in an array
- * and is designed to store large hunks of data. Therefore, it allocates
- * memory in pages rather than a chunk of memory for each item.
- */
-@interface OFBigDataArray: OFDataArray
-{
-	size_t _size;
-}
+@interface OFData ()
+- (instancetype)of_init OF_METHOD_FAMILY(init);
 @end
 
 OF_ASSUME_NONNULL_END

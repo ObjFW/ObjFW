@@ -22,7 +22,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFBigDataArray.h"
+#import "OFData.h"
 #import "OFXMLAttribute.h"
 #import "OFStream.h"
 #ifdef OF_HAVE_FILES
@@ -41,7 +41,7 @@ static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function_t lookupTable[OF_XMLPARSER_NUM_STATES];
 
 static OF_INLINE void
-appendToBuffer(OFDataArray *buffer, const char *string,
+appendToBuffer(OFMutableData *buffer, const char *string,
     of_string_encoding_t encoding, size_t length)
 {
 	if (OF_LIKELY(encoding == OF_STRING_ENCODING_UTF_8))
@@ -59,7 +59,7 @@ appendToBuffer(OFDataArray *buffer, const char *string,
 }
 
 static OFString *
-transformString(OFXMLParser *parser, OFDataArray *buffer, size_t cut,
+transformString(OFXMLParser *parser, OFMutableData *buffer, size_t cut,
     bool unescape)
 {
 	char *items = [buffer items];
@@ -188,7 +188,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		void *pool;
 		OFMutableDictionary *dict;
 
-		_buffer = [[OFBigDataArray alloc] init];
+		_buffer = [[OFMutableData alloc] init];
 		_previous = [[OFMutableArray alloc] init];
 		_namespaces = [[OFMutableArray alloc] init];
 		_attributes = [[OFMutableArray alloc] init];

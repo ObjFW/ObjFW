@@ -26,7 +26,7 @@
 #import "OFURL.h"
 #import "OFTCPSocket.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidEncodingException.h"
@@ -325,7 +325,7 @@ normalizeKey(char *str_)
 	OFMutableString *requestString;
 	OFString *user, *password;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
-	OFDataArray *body = [request body];
+	OFData *body = [request body];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
 	OFString *line, *version, *redirect, *connectionHeader;
@@ -420,7 +420,7 @@ normalizeKey(char *str_)
 
 	if (([user length] > 0 || [password length] > 0) &&
 	    [headers objectForKey: @"Authorization"] == nil) {
-		OFDataArray *authorizationData = [OFDataArray dataArray];
+		OFMutableData *authorizationData = [OFMutableData data];
 		OFString *authorization;
 
 		[authorizationData addItems: [user UTF8String]

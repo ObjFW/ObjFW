@@ -28,7 +28,7 @@
 #import "OFCondition.h"
 #import "OFURL.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
@@ -93,7 +93,7 @@ static OFCondition *cond;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
 	OFHTTPResponse *response = nil;
-	OFDataArray *data;
+	OFData *data;
 
 	cond = [OFCondition condition];
 	[cond lock];
@@ -117,8 +117,8 @@ static OFCondition *cond;
 	    [[response headers] objectForKey: @"Content-Length"] != nil)
 
 	TEST(@"Correct parsing of data",
-	    (data = [response readDataArrayTillEndOfStream]) &&
-	    [data count] == 7 && !memcmp([data items], "foo\nbar", 7))
+	    (data = [response readDataUntilEndOfStream]) &&
+	    [data count] == 7 && memcmp([data items], "foo\nbar", 7) == 0)
 
 	[server join];
 

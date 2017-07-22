@@ -26,7 +26,7 @@
 #import "OFArray_adjacent.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFNull.h"
 
 #import "OFEnumerationMutationException.h"
@@ -656,13 +656,13 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray *)messagePackRepresentation
+- (OFData *)messagePackRepresentation
 {
-	OFDataArray *data;
+	OFMutableData *data;
 	size_t i, count;
 	void *pool;
 
-	data = [OFDataArray dataArray];
+	data = [OFMutableData data];
 	count = [self count];
 
 	if (count <= 15) {
@@ -690,7 +690,7 @@ static struct {
 	i = 0;
 	for (id object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
-		OFDataArray *child;
+		OFData *child;
 
 		i++;
 
@@ -702,6 +702,8 @@ static struct {
 	}
 
 	assert(i == count);
+
+	[data makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
 

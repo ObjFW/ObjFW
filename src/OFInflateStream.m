@@ -29,7 +29,6 @@
 # import "OFInflate64Stream.h"
 # define OFInflateStream OFInflate64Stream
 #endif
-#import "OFDataArray.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidFormatException.h"

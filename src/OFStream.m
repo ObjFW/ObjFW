@@ -38,7 +38,7 @@
 #import "OFStream.h"
 #import "OFStream+Private.h"
 #import "OFString.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFSystemInfo.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
@@ -46,6 +46,7 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFTruncatedDataException.h"
@@ -554,44 +555,46 @@
 	return size;
 }
 
-- (OFDataArray *)readDataArrayWithCount: (size_t)count
+- (OFData *)readDataWithCount: (size_t)count
 {
-	return [self readDataArrayWithItemSize: 1
-					 count: count];
+	return [self readDataWithItemSize: 1
+				    count: count];
 }
 
-- (OFDataArray *)readDataArrayWithItemSize: (size_t)itemSize
-				     count: (size_t)count
+- (OFData *)readDataWithItemSize: (size_t)itemSize
+			   count: (size_t)count
 {
-	OFDataArray *dataArray;
-	char *tmp;
-
-	dataArray = [OFDataArray dataArrayWithItemSize: itemSize];
-	tmp = [self allocMemoryWithSize: itemSize
-				  count: count];
-
-	@try {
-		[self readIntoBuffer: tmp
-			 exactLength: count * itemSize];
-
-		[dataArray addItems: tmp
-			      count: count];
-	} @finally {
-		[self freeMemory: tmp];
-	}
-
-	return dataArray;
-}
-
-- (OFDataArray *)readDataArrayTillEndOfStream
-{
-	OFDataArray *dataArray;
-	size_t pageSize;
+	OFData *ret;
 	char *buffer;
 
-	dataArray = [OFDataArray dataArray];
-	pageSize = [OFSystemInfo pageSize];
-	buffer = [self allocMemoryWithSize: pageSize];
+	if OF_UNLIKELY (count > SIZE_MAX / itemSize)
+		@throw [OFOutOfRangeException exception];
+
+	if OF_UNLIKELY ((buffer = malloc(count * itemSize)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: count * itemSize];
+
+	@try {
+		[self readIntoBuffer: buffer
+			 exactLength: count * itemSize];
+
+		ret = [OFData dataWithItemsNoCopy: buffer
+					 itemSize: itemSize
+					    count: count
+				     freeWhenDone: true];
+	} @catch (id e) {
+		free(buffer);
+		@throw e;
+	}
+
+	return ret;
+}
+
+- (OFData *)readDataUntilEndOfStream
+{
+	OFMutableData *data = [OFMutableData data];
+	size_t pageSize = [OFSystemInfo pageSize];
+	char *buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
 		while (![self isAtEndOfStream]) {
@@ -599,14 +602,16 @@
 
 			length = [self readIntoBuffer: buffer
 					       length: pageSize];
-			[dataArray addItems: buffer
-				      count: length];
+			[data addItems: buffer
+				 count: length];
 		}
 	} @finally {
 		[self freeMemory: buffer];
 	}
 
-	return dataArray;
+	[data makeImmutable];
+
+	return data;
 }
 
 - (OFString *)readStringWithLength: (size_t)length
@@ -1443,11 +1448,11 @@
 	return size;
 }
 
-- (size_t)writeDataArray: (OFDataArray *)dataArray
+- (size_t)writeData: (OFData *)data
 {
-	size_t length = [dataArray count] * [dataArray itemSize];
+	size_t length = [data count] * [data itemSize];
 
-	[self writeBuffer: [dataArray items]
+	[self writeBuffer: [data items]
 		   length: length];
 
 	return length;

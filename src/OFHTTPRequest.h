@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
-@class OFDataArray;
+@class OFData;
 @class OFString;
 
 /*! @file */
@@ -72,7 +72,7 @@ typedef struct {
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OFDataArray *_body;
+	OFData *_body;
 	OFString *_remoteAddress;
 }
 
@@ -95,7 +95,7 @@ typedef struct {
 /*!
  * The entity body of the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, retain) OFDataArray *body;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFData *body;
 
 /*!
  * The remote address from which the request originates.

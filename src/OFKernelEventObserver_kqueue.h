@@ -18,7 +18,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFDataArray;
 @class OFMutableArray OF_GENERIC(ObjectType);
 
 @interface OFKernelEventObserver_kqueue: OFKernelEventObserver

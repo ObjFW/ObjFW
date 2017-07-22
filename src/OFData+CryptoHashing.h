@@ -14,7 +14,7 @@
  * file.
  */
 
-#import "OFDataArray.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,12 +23,12 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFDataArray_CryptoHashing_reference;
+extern int _OFData_CryptoHashing_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFDataArray (CryptoHashing)
+@interface OFData (CryptoHashing)
 /*!
  * @brief Returns the MD5 hash of the data array as an autoreleased OFString.
  *

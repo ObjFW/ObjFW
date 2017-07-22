@@ -28,7 +28,6 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFURL;
 @class OFTCPSocket;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
-@class OFDataArray;
 
 /*!
  * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h

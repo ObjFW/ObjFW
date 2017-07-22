@@ -77,7 +77,7 @@ enum {
 };
 
 @class OFString;
-@class OFDataArray;
+@class OFData;
 @class OFFile;
 @class OFDate;
 
@@ -95,7 +95,7 @@ enum {
 	uint32_t _CRC32;
 	uint64_t _compressedSize, _uncompressedSize;
 	OFString *_fileName;
-	OFDataArray *_extraField;
+	OFData *_extraField;
 	OFString *_fileComment;
 	uint32_t _startDiskNumber;
 	uint16_t _internalAttributes;
@@ -189,7 +189,7 @@ enum {
  *
  * @return The extra field of the entry
  */
-- (OFDataArray *)extraField;
+- (OFData *)extraField;
 @end
 
 #ifdef __cplusplus
@@ -214,8 +214,8 @@ extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
  *	       extra field with the specified tag
  * @param size A pointer to an uint16_t that should be set to the size
  */
-extern void of_zip_archive_entry_extra_field_find(OFDataArray *extraField,
-    uint16_t tag, uint8_t *_Nonnull *_Nonnull data, uint16_t *size);
+extern void of_zip_archive_entry_extra_field_find(OFData *extraField,
+    uint16_t tag, const uint8_t *_Nonnull *_Nonnull data, uint16_t *size);
 #ifdef __cplusplus
 }
 #endif

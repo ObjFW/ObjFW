@@ -26,7 +26,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFXMLAttribute.h"
 #import "OFXMLCharacters.h"
 #import "OFXMLCDATA.h"
@@ -566,7 +566,7 @@ static Class CDATAClass = Nil;
 
 	/* Children */
 	if (_children != nil) {
-		OFDataArray *tmp = [OFDataArray dataArray];
+		OFMutableData *tmp = [OFMutableData data];
 		bool indent;
 
 		if (indentation > 0) {

@@ -31,7 +31,6 @@
 #import "OFFile.h"
 #import "OFString.h"
 #import "OFLocalization.h"
-#import "OFDataArray.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"

@@ -19,7 +19,7 @@
 #include <errno.h>
 
 #import "OFTCPSocket+SOCKS5.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFConnectionFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -79,7 +79,7 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 	char request[] = { 5, 1, 0, 3 };
 	char reply[256];
 	void *pool;
-	OFDataArray *connectRequest;
+	OFMutableData *connectRequest;
 
 	if ([host UTF8StringLength] > 255)
 		@throw [OFOutOfRangeException exception];
@@ -100,7 +100,7 @@ recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
 
 	/* CONNECT request */
 	pool = objc_autoreleasePoolPush();
-	connectRequest = [OFDataArray dataArray];
+	connectRequest = [OFMutableData data];
 
 	[connectRequest addItems: request
 			   count: 4];

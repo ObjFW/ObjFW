@@ -18,11 +18,11 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFDataArray;
+@class OFMutableData;
 
 @interface OFKernelEventObserver_poll: OFKernelEventObserver
 {
-	OFDataArray *_FDs;
+	OFMutableData *_FDs;
 	int _maxFD;
 	id __unsafe_unretained *_FDToObject;
 }

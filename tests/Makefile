@@ -11,7 +11,7 @@ PROG_NOINST = tests${PROG_SUFFIX}
 SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
        ${OFBLOCKTESTS_M}		\
-       OFDataArrayTests.m		\
+       OFDataTests.m			\
        OFDateTests.m			\
        OFDictionaryTests.m		\
        OFHTTPCookieTests.m		\

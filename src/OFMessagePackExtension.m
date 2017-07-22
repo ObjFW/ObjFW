@@ -17,7 +17,7 @@
 #include "config.h"
 
 #import "OFMessagePackExtension.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -26,7 +26,7 @@
 @synthesize type = _type, data = _data;
 
 + (instancetype)extensionWithType: (int8_t)type
-			     data: (OFDataArray *)data
+			     data: (OFData *)data
 {
 	return [[[self alloc] initWithType: type
 				      data: data] autorelease];
@@ -38,7 +38,7 @@
 }
 
 - initWithType: (int8_t)type
-	  data: (OFDataArray *)data
+	  data: (OFData *)data
 {
 	self = [super init];
 
@@ -47,7 +47,7 @@
 			@throw [OFInvalidArgumentException exception];
 
 		_type = type;
-		_data = [data retain];
+		_data = [data copy];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -63,42 +63,42 @@
 	[super dealloc];
 }
 
-- (OFDataArray *)messagePackRepresentation
+- (OFData *)messagePackRepresentation
 {
-	OFDataArray *ret;
+	OFMutableData *ret;
 	uint8_t prefix;
 	size_t count = [_data count];
 
 	if (count == 1) {
-		ret = [OFDataArray dataArrayWithCapacity: 3];
+		ret = [OFMutableData dataWithCapacity: 3];
 
 		prefix = 0xD4;
 		[ret addItem: &prefix];
 
 		[ret addItem: &_type];
 	} else if (count == 2) {
-		ret = [OFDataArray dataArrayWithCapacity: 4];
+		ret = [OFMutableData dataWithCapacity: 4];
 
 		prefix = 0xD5;
 		[ret addItem: &prefix];
 
 		[ret addItem: &_type];
 	} else if (count == 4) {
-		ret = [OFDataArray dataArrayWithCapacity: 6];
+		ret = [OFMutableData dataWithCapacity: 6];
 
 		prefix = 0xD6;
 		[ret addItem: &prefix];
 
 		[ret addItem: &_type];
 	} else if (count == 8) {
-		ret = [OFDataArray dataArrayWithCapacity: 10];
+		ret = [OFMutableData dataWithCapacity: 10];
 
 		prefix = 0xD7;
 		[ret addItem: &prefix];
 
 		[ret addItem: &_type];
 	} else if (count == 16) {
-		ret = [OFDataArray dataArrayWithCapacity: 18];
+		ret = [OFMutableData dataWithCapacity: 18];
 
 		prefix = 0xD8;
 		[ret addItem: &prefix];
@@ -107,7 +107,7 @@
 	} else if (count < 0x100) {
 		uint8_t length;
 
-		ret = [OFDataArray dataArrayWithCapacity: count + 3];
+		ret = [OFMutableData dataWithCapacity: count + 3];
 
 		prefix = 0xC7;
 		[ret addItem: &prefix];
@@ -119,7 +119,7 @@
 	} else if (count < 0x10000) {
 		uint16_t length;
 
-		ret = [OFDataArray dataArrayWithCapacity: count + 4];
+		ret = [OFMutableData dataWithCapacity: count + 4];
 
 		prefix = 0xC8;
 		[ret addItem: &prefix];
@@ -132,7 +132,7 @@
 	} else {
 		uint32_t length;
 
-		ret = [OFDataArray dataArrayWithCapacity: count + 6];
+		ret = [OFMutableData dataWithCapacity: count + 6];
 
 		prefix = 0xC9;
 		[ret addItem: &prefix];
@@ -146,6 +146,8 @@
 
 	[ret addItems: [_data items]
 		count: [_data count]];
+
+	[ret makeImmutable];
 
 	return ret;
 }
@@ -187,17 +189,6 @@
 
 - copy
 {
-	OFMessagePackExtension *ret;
-	OFDataArray *data;
-
-	data = [_data copy];
-	@try {
-		ret = [[OFMessagePackExtension alloc] initWithType: _type
-							      data: data];
-	} @finally {
-		[data release];
-	}
-
-	return ret;
+	return [self retain];
 }
 @end

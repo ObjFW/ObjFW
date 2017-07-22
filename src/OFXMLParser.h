@@ -21,7 +21,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
-@class OFDataArray;
+@class OFMutableData;
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFStream;
@@ -156,7 +156,7 @@ OF_ASSUME_NONNULL_BEGIN
 	} _state;
 	size_t _i, _last;
 	const char *_data;
-	OFDataArray *_buffer;
+	OFMutableData *_buffer;
 	OFString *_name, *_prefix;
 	OFMutableArray
 	    OF_GENERIC(OFMutableDictionary OF_GENERIC(OFString *, OFString *) *)

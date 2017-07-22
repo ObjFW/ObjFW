@@ -32,7 +32,6 @@
 #import "OFKernelEventObserver.h"
 #import "OFKernelEventObserver+Private.h"
 #import "OFKernelEventObserver_kqueue.h"
-#import "OFDataArray.h"
 #import "OFArray.h"
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"

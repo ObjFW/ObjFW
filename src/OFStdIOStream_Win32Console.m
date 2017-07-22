@@ -48,7 +48,7 @@
 #import "OFStdIOStream_Win32Console.h"
 #import "OFStdIOStream+Private.h"
 #import "OFString.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -116,7 +116,7 @@
 				    count: length];
 	@try {
 		DWORD UTF16Len;
-		OFDataArray *rest = nil;
+		OFMutableData *rest = nil;
 		size_t i = 0;
 
 		if (!ReadConsoleW(_handle, UTF16, (DWORD)length, &UTF16Len,
@@ -141,7 +141,7 @@
 				j += UTF8Len;
 			} else {
 				if (rest == nil)
-					rest = [OFDataArray dataArray];
+					rest = [OFMutableData data];
 
 				[rest addItems: UTF8
 					 count: UTF8Len];
@@ -199,7 +199,7 @@
 				j += UTF8Len;
 			} else {
 				if (rest == nil)
-					rest = [OFDataArray dataArray];
+					rest = [OFMutableData data];
 
 				[rest addItems: UTF8
 					 count: UTF8Len];

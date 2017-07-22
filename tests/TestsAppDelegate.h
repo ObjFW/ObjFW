@@ -80,8 +80,8 @@
 - (void)blockTests;
 @end
 
-@interface TestsAppDelegate (OFDataArrayTests)
-- (void)dataArrayTests;
+@interface TestsAppDelegate (OFDataTests)
+- (void)dataTests;
 @end
 
 @interface TestsAppDelegate (OFDateTests)

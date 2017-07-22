@@ -18,7 +18,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFDataArray;
+@class OFData;
 
 /*!
  * @protocol OFMessagePackRepresentation
@@ -29,12 +29,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFMessagePackRepresentation
 /*!
- * @brief Returns the MessagePack representation of the object as an
- *	  OFDataArray.
+ * @brief Returns the MessagePack representation of the object as OFData.
  *
- * @return The MessagePack representation of the object as an OFDataArray.
+ * @return The MessagePack representation of the object as OFData.
  */
-- (OFDataArray *)messagePackRepresentation;
+- (OFData *)messagePackRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

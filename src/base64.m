@@ -17,7 +17,7 @@
 #include "config.h"
 
 #import "OFString.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "base64.h"
 
 const uint8_t of_base64_encode_table[64] = {
@@ -96,7 +96,7 @@ of_base64_encode(const void *data, size_t length)
 }
 
 bool
-of_base64_decode(OFDataArray *data, const char *string, size_t length)
+of_base64_decode(OFMutableData *data, const char *string, size_t length)
 {
 	const uint8_t *buffer = (const uint8_t *)string;
 	size_t i;

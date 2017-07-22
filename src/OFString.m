@@ -34,7 +34,7 @@
 #import "OFString_UTF8+Private.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFLocalization.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -1009,29 +1009,21 @@ static struct {
 - initWithContentsOfURL: (OFURL *)URL
 	       encoding: (of_string_encoding_t)encoding
 {
-	void *pool;
-	OFString *scheme;
-# ifdef OF_HAVE_FILES
-	Class c = [self class];
-# endif
-
-	[self release];
-
-	pool = objc_autoreleasePoolPush();
-
-	scheme = [URL scheme];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *scheme = [URL scheme];
 
 # ifdef OF_HAVE_FILES
 	if ([scheme isEqual: @"file"]) {
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
 			encoding = OF_STRING_ENCODING_UTF_8;
 
-		self = [[c alloc] initWithContentsOfFile: [URL path]
-						encoding: encoding];
+		self = [self initWithContentsOfFile: [URL path]
+					   encoding: encoding];
 	} else
 # endif
 # ifdef OF_HAVE_SOCKETS
 	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
+		bool mutable = [self isKindOfClass: [OFMutableString class]];
 		OFHTTPClient *client = [OFHTTPClient client];
 		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
 		OFHTTPResponse *response = [client performRequest: request];
@@ -1041,7 +1033,12 @@ static struct {
 			    exceptionWithRequest: request
 					response: response];
 
-		self = [[response string] retain];
+		[self release];
+
+		if (mutable)
+			self = [[response string] mutableCopy];
+		else
+			self = [[response string] copy];
 	} else
 # endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
@@ -1722,9 +1719,9 @@ static struct {
 	return JSON;
 }
 
-- (OFDataArray *)messagePackRepresentation
+- (OFData *)messagePackRepresentation
 {
-	OFDataArray *data;
+	OFMutableData *data;
 	size_t length;
 
 	length = [self UTF8StringLength];
@@ -1732,16 +1729,16 @@ static struct {
 	if (length <= 31) {
 		uint8_t tmp = 0xA0 | ((uint8_t)length & 0x1F);
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: length + 1];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: length + 1];
 
 		[data addItem: &tmp];
 	} else if (length <= UINT8_MAX) {
 		uint8_t type = 0xD9;
 		uint8_t tmp = (uint8_t)length;
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: length + 2];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: length + 2];
 
 		[data addItem: &type];
 		[data addItem: &tmp];
@@ -1749,8 +1746,8 @@ static struct {
 		uint8_t type = 0xDA;
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)length);
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: length + 3];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: length + 3];
 
 		[data addItem: &type];
 		[data addItems: &tmp
@@ -1759,8 +1756,8 @@ static struct {
 		uint8_t type = 0xDB;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)length);
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: length + 5];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: length + 5];
 
 		[data addItem: &type];
 		[data addItems: &tmp

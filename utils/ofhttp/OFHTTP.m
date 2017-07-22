@@ -18,7 +18,7 @@
 
 #import "OFApplication.h"
 #import "OFArray.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
@@ -59,7 +59,7 @@
 	int _errorCode;
 	OFString *_outputPath;
 	bool _continue, _force, _detectFileName, _quiet, _verbose, _insecure;
-	OFDataArray *_body;
+	OFData *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
@@ -167,11 +167,11 @@ help(OFStream *stream, bool full, int status)
 	if ([file isEqual: @"-"]) {
 		void *pool = objc_autoreleasePoolPush();
 
-		_body = [[of_stdin readDataArrayTillEndOfStream] retain];
+		_body = [[of_stdin readDataUntilEndOfStream] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} else
-		_body = [[OFDataArray alloc] initWithContentsOfFile: file];
+		_body = [[OFData alloc] initWithContentsOfFile: file];
 }
 
 - (void)setMethod: (OFString *)method

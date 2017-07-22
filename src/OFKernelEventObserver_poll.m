@@ -28,7 +28,7 @@
 #import "OFKernelEventObserver.h"
 #import "OFKernelEventObserver+Private.h"
 #import "OFKernelEventObserver_poll.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -48,7 +48,7 @@
 	@try {
 		struct pollfd p = { _cancelFD[0], POLLIN, 0 };
 
-		_FDs = [[OFDataArray alloc] initWithItemSize:
+		_FDs = [[OFMutableData alloc] initWithItemSize:
 		    sizeof(struct pollfd)];
 		[_FDs addItem: &p];
 

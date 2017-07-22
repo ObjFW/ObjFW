@@ -21,7 +21,7 @@
 #import "OFArray_adjacent.h"
 #import "OFMutableArray_adjacent.h"
 #import "OFArray_adjacentSubarray.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 
@@ -35,7 +35,7 @@
 	self = [super init];
 
 	@try {
-		_array = [[OFDataArray alloc] initWithItemSize: sizeof(id)];
+		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -99,8 +99,8 @@
 		objects = [array objects];
 		count = [array count];
 
-		_array = [[OFDataArray alloc] initWithItemSize: sizeof(id)
-						      capacity: count];
+		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
+							capacity: count];
 	} @catch (id e) {
 		[self release];
 		@throw e;

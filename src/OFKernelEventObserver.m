@@ -23,7 +23,7 @@
 #import "OFKernelEventObserver.h"
 #import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFStream.h"
 #import "OFStream+Private.h"
 #ifndef OF_HAVE_PIPE
@@ -167,7 +167,7 @@ enum {
 		_mutex = [[OFMutex alloc] init];
 #endif
 
-		_queueActions = [[OFDataArray alloc]
+		_queueActions = [[OFMutableData alloc]
 		    initWithItemSize: sizeof(int)];
 		_queueObjects = [[OFMutableArray alloc] init];
 	} @catch (id e) {

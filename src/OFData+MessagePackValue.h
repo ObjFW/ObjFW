@@ -14,19 +14,19 @@
  * file.
  */
 
-#import "OFDataArray.h"
+#import "OFData.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int _OFDataArray_MessagePackValue_reference;
+extern int _OFData_MessagePackValue_reference;
 #ifdef __cplusplus
 }
 #endif
 
-@interface OFDataArray (MessagePackValue)
+@interface OFData (MessagePackValue)
 /*!
  * @brief Parses the MessagePack representation and returns it as an object.
  *

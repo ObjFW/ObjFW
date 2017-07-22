@@ -22,7 +22,7 @@
 #import "OFString.h"
 #import "OFURL.h"
 #import "OFDictionary.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFArray.h"
 
 #import "OFInvalidFormatException.h"
@@ -242,11 +242,10 @@ of_http_request_method_from_string(const char *string)
 		 encoding: (of_string_encoding_t)encoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFDataArray *body = [OFDataArray dataArray];
 
-	[body addItems: [string cStringWithEncoding: encoding]
-		 count: [string cStringLengthWithEncoding: encoding]];
-	[self setBody: body];
+	[self setBody: [OFData
+	    dataWithItems: [string cStringWithEncoding: encoding]
+		    count: [string cStringLengthWithEncoding: encoding]]];
 
 	objc_autoreleasePoolPop(pool);
 }

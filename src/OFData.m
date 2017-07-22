@@ -16,11 +16,12 @@
 
 #include "config.h"
 
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
-#import "OFDataArray.h"
+#import "OFData.h"
+#import "OFData+Private.h"
 #import "OFString.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -51,88 +52,97 @@
 
 /* References for static linking */
 void
-_references_to_categories_of_OFDataArray(void)
+_references_to_categories_of_OFData(void)
 {
-	_OFDataArray_CryptoHashing_reference = 1;
-	_OFDataArray_MessagePackValue_reference = 1;
+	_OFData_CryptoHashing_reference = 1;
+	_OFData_MessagePackValue_reference = 1;
 }
 
-@implementation OFDataArray
+@implementation OFData
 @synthesize itemSize = _itemSize;
 
-+ (instancetype)dataArray
++ (instancetype)dataWithItems: (const void *)items
+			count: (size_t)count
 {
-	return [[[self alloc] init] autorelease];
+	return [[[self alloc] initWithItems: items
+				      count: count] autorelease];
 }
 
-+ (instancetype)dataArrayWithItemSize: (size_t)itemSize
++ (instancetype)dataWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count
 {
-	return [[[self alloc] initWithItemSize: itemSize] autorelease];
+	return [[[self alloc] initWithItems: items
+				   itemSize: itemSize
+				      count: count] autorelease];
 }
 
-+ (instancetype)dataArrayWithCapacity: (size_t)capacity
++ (instancetype)dataWithItemsNoCopy: (const void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc] initWithCapacity: capacity] autorelease];
+	return [[[self alloc] initWithItemsNoCopy: items
+					    count: count
+				     freeWhenDone: freeWhenDone] autorelease];
 }
 
-+ (instancetype)dataArrayWithItemSize: (size_t)itemSize
-			     capacity: (size_t)capacity
++ (instancetype)dataWithItemsNoCopy: (const void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
 {
-	return [[[self alloc] initWithItemSize: itemSize
-				      capacity: capacity] autorelease];
+	return [[[self alloc] initWithItemsNoCopy: items
+					 itemSize: itemSize
+					    count: count
+				     freeWhenDone: freeWhenDone] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
-+ (instancetype)dataArrayWithContentsOfFile: (OFString *)path
++ (instancetype)dataWithContentsOfFile: (OFString *)path
 {
 	return [[[self alloc] initWithContentsOfFile: path] autorelease];
 }
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-+ (instancetype)dataArrayWithContentsOfURL: (OFURL *)URL
++ (instancetype)dataWithContentsOfURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
 #endif
 
-+ (instancetype)dataArrayWithStringRepresentation: (OFString *)string
++ (instancetype)dataWithStringRepresentation: (OFString *)string
 {
 	return [[[self alloc]
 	    initWithStringRepresentation: string] autorelease];
 }
 
-+ (instancetype)dataArrayWithBase64EncodedString: (OFString *)string
++ (instancetype)dataWithBase64EncodedString: (OFString *)string
 {
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }
 
 - init
 {
-	self = [super init];
-
-	_itemSize = 1;
-
-	return self;
+	OF_INVALID_INIT_METHOD
 }
 
-- initWithItemSize: (size_t)itemSize
+- (instancetype)of_init
 {
-	self = [super init];
-
-	_itemSize = itemSize;
-
-	return self;
+	return [super init];
 }
 
-- initWithCapacity: (size_t)capacity
+- initWithItems: (const void *)items
+	  count: (size_t)count
 {
-	return [self initWithItemSize: 1
-			     capacity: capacity];
+	return [self initWithItems: items
+			  itemSize: 1
+			     count: count];
 }
 
-- initWithItemSize: (size_t)itemSize
-	  capacity: (size_t)capacity
+- initWithItems: (const void *)items
+       itemSize: (size_t)itemSize
+	  count: (size_t)count
 {
 	self = [super init];
 
@@ -140,11 +150,45 @@ _references_to_categories_of_OFDataArray(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = [self allocMemoryWithSize: itemSize
-					     count: capacity];
-
 		_itemSize = itemSize;
-		_capacity = capacity;
+		_count = count;
+		_items = [self allocMemoryWithSize: itemSize
+					     count: count];
+
+		memcpy(_items, items, itemSize * count);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- initWithItemsNoCopy: (const void *)items
+		count: (size_t)count
+	 freeWhenDone: (bool)freeWhenDone
+{
+	return [self initWithItemsNoCopy: items
+				itemSize: 1
+				   count: count
+			    freeWhenDone: freeWhenDone];
+}
+
+- initWithItemsNoCopy: (const void *)items
+	     itemSize: (size_t)itemSize
+		count: (size_t)count
+	 freeWhenDone: (bool)freeWhenDone
+{
+	self = [super init];
+
+	@try {
+		if (itemSize == 0)
+			@throw [OFInvalidArgumentException exception];
+
+		_items = (char *)items;
+		_itemSize = itemSize;
+		_count = count;
+		_freeWhenDone = freeWhenDone;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -157,34 +201,35 @@ _references_to_categories_of_OFDataArray(void)
 - initWithContentsOfFile: (OFString *)path
 {
 	@try {
-		OFFile *file = [[OFFile alloc] initWithPath: path
-						       mode: @"rb"];
 		of_offset_t size = [[OFFileManager defaultManager]
 		    sizeOfFileAtPath: path];
+		char *buffer;
 
 		if (sizeof(of_offset_t) > sizeof(size_t) &&
 		    size > (of_offset_t)SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		self = [self initWithItemSize: 1
-				     capacity: (size_t)size];
+		buffer = malloc(size);
+		if (buffer == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: size];
 
 		@try {
-			size_t pageSize = [OFSystemInfo pageSize];
-			char *buffer = [self allocMemoryWithSize: pageSize];
-
-			while (![file isAtEndOfStream]) {
-				size_t length;
-
-				length = [file readIntoBuffer: buffer
-						       length: pageSize];
-				[self addItems: buffer
-					 count: length];
+			OFFile *file = [[OFFile alloc] initWithPath: path
+							       mode: @"rb"];
+			@try {
+				[file readIntoBuffer: buffer
+					 exactLength: size];
+			} @finally {
+				[file release];
 			}
 
-			[self freeMemory: buffer];
-		} @finally {
-			[file release];
+			self = [self initWithItemsNoCopy: buffer
+						   count: size
+					    freeWhenDone: true];
+		} @catch (id e) {
+			free(buffer);
+			@throw e;
 		}
 	} @catch (id e) {
 		[self release];
@@ -212,7 +257,14 @@ _references_to_categories_of_OFDataArray(void)
 # endif
 # ifdef OF_HAVE_SOCKETS
 	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
-		self = [self init];
+		bool mutable = [self isKindOfClass: [OFMutableData class]];
+
+		if (!mutable) {
+			[self release];
+			self = [OFMutableData alloc];
+		}
+
+		self = [(OFMutableData *)self init];
 
 		@try {
 			OFHTTPClient *client = [OFHTTPClient client];
@@ -240,8 +292,9 @@ _references_to_categories_of_OFDataArray(void)
 					length = [response
 					    readIntoBuffer: buffer
 						    length: pageSize];
-					[self addItems: buffer
-						 count: length];
+					[(OFMutableData *)self
+					    addItems: buffer
+					       count: length];
 				}
 			} @finally {
 				[self freeMemory: buffer];
@@ -266,6 +319,9 @@ _references_to_categories_of_OFDataArray(void)
 			[self release];
 			@throw e;
 		}
+
+		if (!mutable)
+			[(OFMutableData *)self makeImmutable];
 	} else
 # endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
@@ -278,19 +334,21 @@ _references_to_categories_of_OFDataArray(void)
 
 - initWithStringRepresentation: (OFString *)string
 {
-	@try {
-		const char *cString;
-		size_t count;
+	self = [super init];
 
-		count = [string
+	@try {
+		size_t count = [string
 		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII];
+		const char *cString;
 
 		if (count % 2 != 0)
 			@throw [OFInvalidFormatException exception];
 
 		count /= 2;
 
-		self = [self initWithCapacity: count];
+		_items = [self allocMemoryWithSize: count];
+		_itemSize = 1;
+		_count = count;
 
 		cString = [string
 		    cStringWithEncoding: OF_STRING_ENCODING_ASCII];
@@ -318,7 +376,7 @@ _references_to_categories_of_OFDataArray(void)
 			else
 				@throw [OFInvalidFormatException exception];
 
-			[self addItem: &byte];
+			_items[i] = byte;
 		}
 	} @catch (id e) {
 		[self release];
@@ -330,18 +388,28 @@ _references_to_categories_of_OFDataArray(void)
 
 - initWithBase64EncodedString: (OFString *)string
 {
-	self = [self initWithItemSize: 1
-			     capacity: [string length] / 3];
+	bool mutable = [self isKindOfClass: [OFMutableData class]];
+
+	if (!mutable) {
+		[self release];
+		self = [OFMutableData alloc];
+	}
+
+	self = [(OFMutableData *)self initWithCapacity: [string length] / 3];
 
 	@try {
-		if (!of_base64_decode(self, [string cStringWithEncoding:
-		    OF_STRING_ENCODING_ASCII], [string
-		    cStringLengthWithEncoding: OF_STRING_ENCODING_ASCII]))
+		if (!of_base64_decode((OFMutableData *)self,
+		    [string cStringWithEncoding: OF_STRING_ENCODING_ASCII],
+		    [string cStringLengthWithEncoding:
+		    OF_STRING_ENCODING_ASCII]))
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	if (!mutable)
+		[(OFMutableData *)self makeImmutable];
 
 	return self;
 }
@@ -369,17 +437,25 @@ _references_to_categories_of_OFDataArray(void)
 	return self;
 }
 
+- (void)dealloc
+{
+	if (_freeWhenDone)
+		free(_items);
+
+	[super dealloc];
+}
+
 - (size_t)count
 {
 	return _count;
 }
 
-- (void *)items
+- (const void *)items
 {
 	return _items;
 }
 
-- (void *)itemAtIndex: (size_t)index
+- (const void *)itemAtIndex: (size_t)index
 {
 	if (index >= _count)
 		@throw [OFOutOfRangeException exception];
@@ -387,7 +463,7 @@ _references_to_categories_of_OFDataArray(void)
 	return _items + index * _itemSize;
 }
 
-- (void *)firstItem
+- (const void *)firstItem
 {
 	if (_items == NULL || _count == 0)
 		return NULL;
@@ -395,7 +471,7 @@ _references_to_categories_of_OFDataArray(void)
 	return _items;
 }
 
-- (void *)lastItem
+- (const void *)lastItem
 {
 	if (_items == NULL || _count == 0)
 		return NULL;
@@ -403,144 +479,30 @@ _references_to_categories_of_OFDataArray(void)
 	return _items + (_count - 1) * _itemSize;
 }
 
-- (void)addItem: (const void *)item
-{
-	if (SIZE_MAX - _count < 1)
-		@throw [OFOutOfRangeException exception];
-
-	if (_count + 1 > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + 1];
-		_capacity = _count + 1;
-	}
-
-	memcpy(_items + _count * _itemSize, item, _itemSize);
-
-	_count++;
-}
-
-- (void)insertItem: (const void *)item
-	   atIndex: (size_t)index
-{
-	[self insertItems: item
-		  atIndex: index
-		    count: 1];
-}
-
-- (void)addItems: (const void *)items
-	   count: (size_t)count
-{
-	if (count > SIZE_MAX - _count)
-		@throw [OFOutOfRangeException exception];
-
-	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
-		_capacity = _count + count;
-	}
-
-	memcpy(_items + _count * _itemSize, items, count * _itemSize);
-	_count += count;
-}
-
-- (void)insertItems: (const void *)items
-	    atIndex: (size_t)index
-	      count: (size_t)count
-{
-	if (count > SIZE_MAX - _count || index > _count)
-		@throw [OFOutOfRangeException exception];
-
-	if (_count + count > _capacity) {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count + count];
-		_capacity = _count + count;
-	}
-
-	memmove(_items + (index + count) * _itemSize,
-	    _items + index * _itemSize, (_count - index) * _itemSize);
-	memcpy(_items + index * _itemSize, items, count * _itemSize);
-
-	_count += count;
-}
-
-- (void)removeItemAtIndex: (size_t)index
-{
-	[self removeItemsInRange: of_range(index, 1)];
-}
-
-- (void)removeItemsInRange: (of_range_t)range
-{
-	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > _count)
-		@throw [OFOutOfRangeException exception];
-
-	memmove(_items + range.location * _itemSize,
-	    _items + (range.location + range.length) * _itemSize,
-	    (_count - range.location - range.length) * _itemSize);
-
-	_count -= range.length;
-	@try {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count];
-		_capacity = _count;
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't really care, as we only made it smaller */
-	}
-}
-
-- (void)removeLastItem
-{
-	if (_count == 0)
-		return;
-
-	_count--;
-	@try {
-		_items = [self resizeMemory: _items
-				       size: _itemSize
-				      count: _count];
-		_capacity = _count;
-	} @catch (OFOutOfMemoryException *e) {
-		/* We don't care, as we only made it smaller */
-	}
-}
-
-- (void)removeAllItems
-{
-	[self freeMemory: _items];
-
-	_items = NULL;
-	_count = 0;
-	_capacity = 0;
-}
-
 - copy
 {
-	OFDataArray *copy = [[[self class] alloc] initWithItemSize: _itemSize
-							  capacity: _count];
+	return [self retain];
+}
 
-	[copy addItems: _items
-		 count: _count];
-
-	return copy;
+- mutableCopy
+{
+	return [[OFMutableData alloc] initWithItems: _items
+					   itemSize: _itemSize
+					      count: _count];
 }
 
 - (bool)isEqual: (id)object
 {
-	OFDataArray *dataArray;
+	OFData *data;
 
-	if (![object isKindOfClass: [OFDataArray class]])
+	if (![object isKindOfClass: [OFData class]])
 		return false;
 
-	dataArray = object;
+	data = object;
 
-	if ([dataArray count] != _count ||
-	    [dataArray itemSize] != _itemSize)
+	if ([data count] != _count || [data itemSize] != _itemSize)
 		return false;
-	if (memcmp([dataArray items], _items, _count * _itemSize) != 0)
+	if (memcmp([data items], _items, _count * _itemSize) != 0)
 		return false;
 
 	return true;
@@ -548,22 +510,22 @@ _references_to_categories_of_OFDataArray(void)
 
 - (of_comparison_result_t)compare: (id <OFComparing>)object
 {
-	OFDataArray *dataArray;
+	OFData *data;
 	int comparison;
 	size_t count, minCount;
 
-	if (![object isKindOfClass: [OFDataArray class]])
+	if (![object isKindOfClass: [OFData class]])
 		@throw [OFInvalidArgumentException exception];
 
-	dataArray = (OFDataArray *)object;
+	data = (OFData *)object;
 
-	if ([dataArray itemSize] != _itemSize)
+	if ([data itemSize] != _itemSize)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [dataArray count];
+	count = [data count];
 	minCount = (_count > count ? count : _count);
 
-	if ((comparison = memcmp(_items, [dataArray items],
+	if ((comparison = memcmp(_items, [data items],
 	    minCount * _itemSize)) == 0) {
 		if (_count > count)
 			return OF_ORDERED_DESCENDING;
@@ -664,9 +626,9 @@ _references_to_categories_of_OFDataArray(void)
 	return [element autorelease];
 }
 
-- (OFDataArray *)messagePackRepresentation
+- (OFData *)messagePackRepresentation
 {
-	OFDataArray *data;
+	OFMutableData *data;
 
 	if (_itemSize != 1)
 		@throw [OFInvalidArgumentException exception];
@@ -675,8 +637,8 @@ _references_to_categories_of_OFDataArray(void)
 		uint8_t type = 0xC4;
 		uint8_t tmp = (uint8_t)_count;
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: _count + 2];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: _count + 2];
 
 		[data addItem: &type];
 		[data addItem: &tmp];
@@ -684,8 +646,8 @@ _references_to_categories_of_OFDataArray(void)
 		uint8_t type = 0xC5;
 		uint16_t tmp = OF_BSWAP16_IF_LE((uint16_t)_count);
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: _count + 3];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: _count + 3];
 
 		[data addItem: &type];
 		[data addItems: &tmp
@@ -694,8 +656,8 @@ _references_to_categories_of_OFDataArray(void)
 		uint8_t type = 0xC6;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)_count);
 
-		data = [OFDataArray dataArrayWithItemSize: 1
-						 capacity: _count + 5];
+		data = [OFMutableData dataWithItemSize: 1
+					      capacity: _count + 5];
 
 		[data addItem: &type];
 		[data addItems: &tmp
@@ -705,6 +667,8 @@ _references_to_categories_of_OFDataArray(void)
 
 	[data addItems: _items
 		 count: _count];
+
+	[data makeImmutable];
 
 	return data;
 }

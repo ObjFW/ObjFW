@@ -21,7 +21,7 @@
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFSeekableStream.h"
@@ -63,7 +63,7 @@
 	uint32_t _CRC32;
 	uint64_t _compressedSize, _uncompressedSize;
 	OFString *_fileName;
-	OFDataArray *_extraField;
+	OFData *_extraField;
 }
 
 - initWithStream: (OFStream *)stream;
@@ -85,7 +85,7 @@
 @end
 
 uint32_t
-of_zip_archive_read_field32(uint8_t **data, uint16_t *size)
+of_zip_archive_read_field32(const uint8_t **data, uint16_t *size)
 {
 	uint32_t field = 0;
 
@@ -102,7 +102,7 @@ of_zip_archive_read_field32(uint8_t **data, uint16_t *size)
 }
 
 uint64_t
-of_zip_archive_read_field64(uint8_t **data, uint16_t *size)
+of_zip_archive_read_field64(const uint8_t **data, uint16_t *size)
 {
 	uint64_t field = 0;
 
@@ -376,7 +376,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	@try {
 		uint16_t fileNameLength, extraFieldLength;
 		of_string_encoding_t encoding;
-		uint8_t *ZIP64;
+		const uint8_t *ZIP64;
 		uint16_t ZIP64Size;
 
 		if ([stream readLittleEndianInt32] != 0x04034B50)
@@ -398,8 +398,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
-		_extraField = [[stream
-		    readDataArrayWithCount: extraFieldLength] retain];
+		_extraField =
+		    [[stream readDataWithCount: extraFieldLength] copy];
 
 		of_zip_archive_entry_extra_field_find(_extraField,
 		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);

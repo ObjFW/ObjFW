@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*! @file */
 
 @class OFStream;
-@class OFDataArray;
+@class OFData;
 @class OFException;
 
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_BLOCKS)
@@ -523,37 +523,37 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 
 /*!
  * @brief Reads the specified number of items with an item size of 1 from the
- *	  stream and returns them in an OFDataArray.
+ *	  stream and returns them as OFData.
  *
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * @param count The number of items to read
- * @return An OFDataArray with count items.
+ * @return OFData with count items.
  */
-- (OFDataArray *)readDataArrayWithCount: (size_t)count;
+- (OFData *)readDataWithCount: (size_t)count;
 
 /*!
  * @brief Reads the specified number of items with the specified item size from
- *	  the stream and returns them in an OFDataArray.
+ *	  the stream and returns them as OFData.
  *
  * @warning Only call this when you know that enough data is available!
  *	    Otherwise you will get an exception!
  *
  * @param itemSize The size of each item
  * @param count The number of items to read
- * @return An OFDataArray with count items.
+ * @return OFData with count items.
  */
-- (OFDataArray *)readDataArrayWithItemSize: (size_t)itemSize
-				     count: (size_t)count;
+- (OFData *)readDataWithItemSize: (size_t)itemSize
+			   count: (size_t)count;
 
 /*!
- * @brief Returns an OFDataArray with all the remaining data of the stream.
+ * @brief Returns OFData with all the remaining data of the stream.
  *
- * @return An OFDataArray with an item size of 1 with all the data of the
- *	   stream until the end of the stream is reached.
+ * @return OFData with an item size of 1 with all the data of the stream until
+ *	   the end of the stream is reached.
  */
-- (OFDataArray *)readDataArrayTillEndOfStream;
+- (OFData *)readDataUntilEndOfStream;
 
 /*!
  * @brief Reads a string with the specified length from the stream.
@@ -975,12 +975,12 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 			     count: (size_t)count;
 
 /*!
- * @brief Writes from an OFDataArray into the stream.
+ * @brief Writes OFData into the stream.
  *
- * @param dataArray The OFDataArray to write into the stream
+ * @param data The OFData to write into the stream
  * @return The number of bytes written
  */
-- (size_t)writeDataArray: (OFDataArray *)dataArray;
+- (size_t)writeData: (OFData *)data;
 
 /*!
  * @brief Writes a string into the stream, without the trailing zero.

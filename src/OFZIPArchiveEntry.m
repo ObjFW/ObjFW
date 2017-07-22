@@ -21,15 +21,15 @@
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
 #import "OFString.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 #import "OFDate.h"
 #import "OFStream.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-extern uint32_t of_zip_archive_read_field32(uint8_t **, uint16_t *);
-extern uint64_t of_zip_archive_read_field64(uint8_t **, uint16_t *);
+extern uint32_t of_zip_archive_read_field32(const uint8_t **, uint16_t *);
+extern uint64_t of_zip_archive_read_field64(const uint8_t **, uint16_t *);
 
 OFString *
 of_zip_archive_entry_version_to_string(uint16_t version)
@@ -110,10 +110,10 @@ of_zip_archive_entry_version_to_string(uint16_t version)
 }
 
 void
-of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
-    uint8_t **data, uint16_t *size)
+of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
+    const uint8_t **data, uint16_t *size)
 {
-	uint8_t *bytes = [extraField items];
+	const uint8_t *bytes = [extraField items];
 	size_t count = [extraField count];
 
 	for (size_t i = 0; i < count;) {
@@ -168,7 +168,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 		void *pool = objc_autoreleasePoolPush();
 		uint16_t fileNameLength, extraFieldLength, fileCommentLength;
 		of_string_encoding_t encoding;
-		uint8_t *ZIP64 = NULL;
+		const uint8_t *ZIP64 = NULL;
 		uint16_t ZIP64Size;
 
 		if ([stream readLittleEndianInt32] != 0x02014B50)
@@ -197,8 +197,8 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
-		_extraField = [[stream
-		    readDataArrayWithCount: extraFieldLength] retain];
+		_extraField =
+		    [[stream readDataWithCount: extraFieldLength] copy];
 		_fileComment = [[stream readStringWithLength: fileCommentLength
 						    encoding: encoding] copy];
 
@@ -266,7 +266,7 @@ of_zip_archive_entry_extra_field_find(OFDataArray *extraField, uint16_t tag,
 	return [date autorelease];
 }
 
-- (OFDataArray *)extraField
+- (OFData *)extraField
 {
 	return [[_extraField copy] autorelease];
 }

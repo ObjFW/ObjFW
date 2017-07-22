@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-#import "OFDataArray.h"
+#import "OFData+CryptoHashing.h"
 #import "OFString.h"
 #import "OFCryptoHash.h"
 #import "OFMD5Hash.h"
@@ -27,9 +27,9 @@
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
 
-int _OFDataArray_CryptoHashing_reference;
+int _OFData_CryptoHashing_reference;
 
-@implementation OFDataArray (Hashing)
+@implementation OFData (CryptoHashing)
 - (OFString *)of_cryptoHashWithClass: (Class <OFCryptoHash>)class
 {
 	void *pool = objc_autoreleasePoolPush();

@@ -19,7 +19,7 @@
 #import "OFNull.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -101,15 +101,12 @@ static OFNull *null = nil;
 	return @"null";
 }
 
-- (OFDataArray *)messagePackRepresentation
+- (OFData *)messagePackRepresentation
 {
-	OFDataArray *data = [OFDataArray dataArrayWithItemSize: 1
-						      capacity: 1];
 	uint8_t type = 0xC0;
 
-	[data addItem: &type];
-
-	return data;
+	return [OFData dataWithItems: &type
+			       count: 1];
 }
 
 - autorelease

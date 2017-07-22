@@ -12,13 +12,12 @@ LIB_MINOR = ${OBJFW_LIB_MINOR}
 SRCS = OFApplication.m			\
        OFArray.m			\
        OFAutoreleasePool.m		\
-       OFBigDataArray.m			\
        OFBlock.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
-       OFDataArray.m			\
-       OFDataArray+CryptoHashing.m	\
-       OFDataArray+MessagePackValue.m	\
+       OFData.m				\
+       OFData+CryptoHashing.m		\
+       OFData+MessagePackValue.m	\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\
@@ -37,6 +36,7 @@ SRCS = OFApplication.m			\
        OFMD5Hash.m			\
        OFMessagePackExtension.m		\
        OFMutableArray.m			\
+       OFMutableData.m			\
        OFMutableDictionary.m		\
        OFMutableSet.m			\
        OFMutableString.m		\

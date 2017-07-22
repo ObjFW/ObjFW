@@ -20,7 +20,7 @@
 
 #import "OFMutableArray_adjacent.h"
 #import "OFArray_adjacent.h"
-#import "OFDataArray.h"
+#import "OFData.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -38,8 +38,8 @@
 	self = [super init];
 
 	@try {
-		_array = [[OFDataArray alloc] initWithItemSize: sizeof(id)
-						      capacity: capacity];
+		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
+							capacity: capacity];
 	} @catch (id e) {
 		[self release];
 		@throw e;
