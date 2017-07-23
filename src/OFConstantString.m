@@ -607,6 +607,13 @@ struct {
 	return [self UTF32StringWithByteOrder: byteOrder];
 }
 
+- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding
+{
+	[self finishInitialization];
+
+	return [self dataWithEncoding: encoding];
+}
+
 #ifdef OF_HAVE_UNICODE_TABLES
 - (OFString *)decomposedStringWithCanonicalMapping
 {

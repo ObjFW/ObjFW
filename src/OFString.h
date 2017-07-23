@@ -1123,6 +1123,14 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (const char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
 
+/*!
+ * @brief Returns the string as OFData with the specified encoding.
+ *
+ * @param encoding The encoding to use for the returned OFData
+ * @return The string as OFData with the specified encoding
+ */
+- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding;
+
 #ifdef OF_HAVE_UNICODE_TABLES
 /*!
  * @brief Returns the string in Unicode Normalization Form D (NFD).

@@ -2772,6 +2772,20 @@ static struct {
 	return ret;
 }
 
+- (OFData *)dataWithEncoding: (of_string_encoding_t)encoding
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data =
+	    [OFData dataWithItems: [self cStringWithEncoding: encoding]
+			    count: [self cStringLengthWithEncoding: encoding]];
+
+	[data retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [data autorelease];
+}
+
 #ifdef OF_HAVE_UNICODE_TABLES
 - (OFString *)decomposedStringWithCanonicalMapping
 {
