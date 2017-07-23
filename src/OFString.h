@@ -169,6 +169,16 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 			   length: (size_t)cStringLength;
 
 /*!
+ * @brief Creates a new OFString from OFData with the specified encoding.
+ *
+ * @param data OFData with the contents of the string
+ * @param encoding The encoding in which the string is stored in the OFData
+ * @return An new autoreleased OFString
+ */
++ (instancetype)stringWithData: (OFData *)data
+		      encoding: (of_string_encoding_t)encoding;
+
+/*!
  * @brief Creates a new OFString from another string.
  *
  * @param string A string to initialize the OFString with
@@ -401,6 +411,17 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - initWithCString: (const char *)cString
 	 encoding: (of_string_encoding_t)encoding
 	   length: (size_t)cStringLength;
+
+/*!
+ * @brief Initializes an already allocated OFString from OFData with the
+ *	  specified encoding.
+ *
+ * @param data OFData with the contents of the string
+ * @param encoding The encoding in which the string is stored in the OFData
+ * @return An initialized OFString
+ */
+- initWithData: (OFData *)data
+      encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Initializes an already allocated OFString with another string.

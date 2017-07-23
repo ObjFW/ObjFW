@@ -470,6 +470,13 @@ static struct {
 						   length: cStringLength];
 }
 
+- initWithData: (OFData *)data
+      encoding: (of_string_encoding_t)encoding
+{
+	return (id)[[OFString_UTF8 alloc] initWithData: data
+					      encoding: encoding];
+}
+
 - initWithString: (OFString *)string
 {
 	return (id)[[OFString_UTF8 alloc] initWithString: string];
@@ -676,6 +683,13 @@ static struct {
 				       length: cStringLength] autorelease];
 }
 
++ (instancetype)stringWithData: (OFData *)data
+		      encoding: (of_string_encoding_t)encoding
+{
+	return [[[self alloc] initWithData: data
+				  encoding: encoding] autorelease];
+}
+
 + (instancetype)stringWithString: (OFString *)string
 {
 	return [[[self alloc] initWithString: string] autorelease];
@@ -852,6 +866,24 @@ static struct {
 	   length: (size_t)cStringLength
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- initWithData: (OFData *)data
+      encoding: (of_string_encoding_t)encoding
+{
+	@try {
+		if ([data itemSize] != 1)
+			@throw [OFInvalidArgumentException exception];
+
+		self = [self initWithCString: [data items]
+				    encoding: encoding
+				      length: [data count]];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - initWithString: (OFString *)string
