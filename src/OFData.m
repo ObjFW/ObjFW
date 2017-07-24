@@ -209,23 +209,23 @@ _references_to_categories_of_OFData(void)
 		    size > (of_offset_t)SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 
-		buffer = malloc(size);
+		buffer = malloc((size_t)size);
 		if (buffer == NULL)
 			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: size];
+			    exceptionWithRequestedSize: (size_t)size];
 
 		@try {
 			OFFile *file = [[OFFile alloc] initWithPath: path
 							       mode: @"r"];
 			@try {
 				[file readIntoBuffer: buffer
-					 exactLength: size];
+					 exactLength: (size_t)size];
 			} @finally {
 				[file release];
 			}
 
 			self = [self initWithItemsNoCopy: buffer
-						   count: size
+						   count: (size_t)size
 					    freeWhenDone: true];
 		} @catch (id e) {
 			free(buffer);
