@@ -27,38 +27,32 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
-# define NL @"\r\n"
-#else
-# define NL @"\n"
-#endif
-
 static OFString *module = @"OFINIFile";
 
 @implementation TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *output = @"[tests]" NL
-	    @"foo=baz" NL
-	    @"foobar=baz" NL
-	    @";comment" NL
-	    @"new=new" NL
-	    NL
-	    @"[foobar]" NL
-	    @";foobarcomment" NL
-	    @"qux=\" asd\"" NL
-	    @"quxquxqux=\"hello\\\"wörld\"" NL
-	    @"qux2=\"a\\f\"" NL
-	    @"qux3=a\fb" NL
-	    NL
-	    @"[types]" NL
-	    @"integer=16" NL
-	    @"bool=false" NL
-	    @"float=0.25" NL
-	    @"array1=foo" NL
-	    @"array1=bar" NL
-	    @"double=0.75" NL;
+	OFString *output = @"[tests]\r\n"
+	    @"foo=baz\r\n"
+	    @"foobar=baz\r\n"
+	    @";comment\r\n"
+	    @"new=new\r\n"
+	    @"\r\n"
+	    @"[foobar]\r\n"
+	    @";foobarcomment\r\n"
+	    @"qux=\" asd\"\r\n"
+	    @"quxquxqux=\"hello\\\"wörld\"\r\n"
+	    @"qux2=\"a\\f\"\r\n"
+	    @"qux3=a\fb\r\n"
+	    @"\r\n"
+	    @"[types]\r\n"
+	    @"integer=16\r\n"
+	    @"bool=false\r\n"
+	    @"float=0.25\r\n"
+	    @"array1=foo\r\n"
+	    @"array1=bar\r\n"
+	    @"double=0.75\r\n";
 	OFINIFile *file;
 	OFINICategory *tests, *foobar, *types;
 	OFArray *array;

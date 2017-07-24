@@ -497,20 +497,20 @@ unescapeString(OFString *string)
 		return false;
 
 	if (first)
-		[stream writeFormat: @"[%@]\n", _name];
+		[stream writeFormat: @"[%@]\r\n", _name];
 	else
-		[stream writeFormat: @"\n[%@]\n", _name];
+		[stream writeFormat: @"\r\n[%@]\r\n", _name];
 
 	for (id line in _lines) {
 		if ([line isKindOfClass: [OFINICategory_Comment class]]) {
 			OFINICategory_Comment *comment = line;
-			[stream writeLine: comment->_comment];
+			[stream writeFormat: @"%@\r\n", comment->_comment];
 		} else if ([line isKindOfClass: [OFINICategory_Pair class]]) {
 			OFINICategory_Pair *pair = line;
 			OFString *key = escapeString(pair->_key);
 			OFString *value = escapeString(pair->_value);
 			OFString *line = [OFString
-			    stringWithFormat: @"%@=%@\n", key, value];
+			    stringWithFormat: @"%@=%@\r\n", key, value];
 
 			[stream writeString: line
 				   encoding: encoding];
