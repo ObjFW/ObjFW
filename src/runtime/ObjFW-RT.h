@@ -28,8 +28,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#import "platform.h"
-
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
@@ -201,7 +199,7 @@ struct objc_protocol_list {
 	Protocol *__unsafe_unretained _Nonnull list[1];
 };
 
-#if 1 /* !defined(OF_MORPHOS) || defined(OF_COMPILING_OBJFW_RT) */
+#if 1 /* !defined(__MORPHOS__) || defined(OF_COMPILING_OBJFW_RT) */
 # ifdef __cplusplus
 extern "C" {
 # endif
