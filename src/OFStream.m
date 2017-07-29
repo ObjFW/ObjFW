@@ -58,7 +58,7 @@
 @implementation OFStream
 @synthesize of_waitingForDelimiter = _waitingForDelimiter;
 
-#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
+#if defined(SIGPIPE) && defined(SIG_IGN)
 + (void)initialize
 {
 	if (self == [OFStream class])
