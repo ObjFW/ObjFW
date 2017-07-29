@@ -71,9 +71,15 @@ forwardTest(void)
 	    (Class)&_NSConcreteStackBlock == objc_getClass("OFStackBlock") &&
 	    [s isKindOfClass: [OFBlock class]])
 
+#if !defined(OF_WINDOWS) || !defined(__clang__)
+	/*
+	 * Causes a linker error on Windows with Clang when compiling as a
+	 * static library. This is a bug in Clang.
+	 */
 	TEST(@"Class of global block",
 	    (Class)&_NSConcreteGlobalBlock == objc_getClass("OFGlobalBlock") &&
 	    [g isKindOfClass: [OFBlock class]])
+#endif
 
 	TEST(@"Class of a malloc block",
 	    (Class)&_NSConcreteMallocBlock == objc_getClass("OFMallocBlock"))
