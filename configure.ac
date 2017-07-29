@@ -1071,6 +1071,12 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			;;
 	esac
 
+	AS_IF([test x"$with_wii" = x"yes"], [
+		AC_DEFINE(HAVE_SELECT, 1, [Whether we have select() or similar])
+		AC_SUBST(OFKERNELEVENTOBSERVER_SELECT_M,
+			"OFKernelEventObserver_select.m")
+	])
+
 	AC_MSG_CHECKING(for getaddrinfo)
 	AC_TRY_COMPILE([
 		#include <stddef.h>
