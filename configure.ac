@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 0.9-dev, js@heap.zone)
+AC_INIT(ObjFW, 0.90, js@heap.zone)
 BUILDSYS_INIT
 
 AS_IF([test configure.ac -nt configure], [
