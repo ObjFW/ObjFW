@@ -4,7 +4,6 @@ SUBDIRS = lookup-asm
 
 SHARED_LIB = ${OBJFW_RT_SHARED_LIB}
 STATIC_LIB = ${OBJFW_RT_STATIC_LIB}
-MORPHOS_LIB = ${OBJFW_RT_MORPHOS_LIB}
 LIB_MAJOR = ${OBJFW_RT_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_RT_LIB_MINOR}
 
@@ -31,17 +30,8 @@ includesubdir = ObjFW-RT
 
 OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
 LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
-MORPHOS_LIB_OBJS_EXTRA = morphos-library.o ${LOOKUP_ASM_LOOKUP_ASM_A}
 
 include ../../buildsys.mk
-
-${MORPHOS_LIB}: ppcinline.h
-ppcinline.h: ObjFW-RT.fd protos.h
-	cvinclude.pl			\
-		--root ObjFW_RT		\
-		--fd ObjFW-RT.fd	\
-		--clib protos.h		\
-		--inline $@
 
 CPPFLAGS += -I. -I.. -I../..				\
 	    -DOF_COMPILING_OBJFW_RT			\

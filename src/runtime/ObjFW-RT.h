@@ -199,10 +199,9 @@ struct objc_protocol_list {
 	Protocol *__unsafe_unretained _Nonnull list[1];
 };
 
-#if 1 /* !defined(__MORPHOS__) || defined(OF_COMPILING_OBJFW_RT) */
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif
+#endif
 extern SEL _Nonnull sel_registerName(const char *_Nonnull);
 extern const char *_Nonnull sel_getName(SEL _Nonnull);
 extern bool sel_isEqual(SEL _Nonnull, SEL _Nonnull);
@@ -241,26 +240,7 @@ extern void objc_setForwardHandler(IMP _Nullable, IMP _Nullable);
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler _Nullable);
 extern void objc_zero_weak_references(id _Nonnull);
-# ifdef __cplusplus
-}
-# endif
-#else
-# define BOOL EXEC_BOOL
-# include <ppcinline/macros.h>
-# undef BOOL
-# ifdef __cplusplus
-extern "C" {
-# endif
-extern struct Library *ObjFWRTBase;
-# ifdef __cplusplus
-}
-# endif
-# include "ppcinline.h"
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /*
  * Used by the compiler, but can also be called manually.
  *
