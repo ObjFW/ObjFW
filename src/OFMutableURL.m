@@ -18,6 +18,7 @@
 
 #import "OFMutableURL.h"
 #import "OFURL+Private.h"
+#import "OFString.h"
 
 @implementation OFMutableURL
 @dynamic scheme, host, port, user, password, path, parameters, query, fragment;
