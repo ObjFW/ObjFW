@@ -21,6 +21,12 @@
 # define __STDC_CONSTANT_MACROS
 #endif
 
+#import "objfw-defs.h"
+
+#ifdef OF_HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
 #include <stdarg.h>
 #include <stdint.h>
 
