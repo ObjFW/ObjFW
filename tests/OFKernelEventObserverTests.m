@@ -22,17 +22,17 @@
 #import "OFTCPSocket.h"
 #import "OFAutoreleasePool.h"
 
-#if defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
-# import "OFKernelEventObserver_select.h"
-#endif
-#if defined(HAVE_POLL_H) || defined(OF_WII)
-# import "OFKernelEventObserver_poll.h"
+#ifdef HAVE_KQUEUE
+# import "OFKernelEventObserver_kqueue.h"
 #endif
 #ifdef HAVE_EPOLL
 # import "OFKernelEventObserver_epoll.h"
 #endif
-#ifdef HAVE_KQUEUE
-# import "OFKernelEventObserver_kqueue.h"
+#ifdef HAVE_POLL
+# import "OFKernelEventObserver_poll.h"
+#endif
+#ifdef HAVE_SELECT
+# import "OFKernelEventObserver_select.h"
 #endif
 
 #import "TestsAppDelegate.h"
@@ -224,12 +224,12 @@ static OFString *module;
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-#if defined(HAVE_SYS_SELECT_H) || defined(OF_WINDOWS)
+#ifdef HAVE_SELECT
 	[self kernelEventObserverTestsWithClass:
 	    [OFKernelEventObserver_select class]];
 #endif
 
-#if defined(HAVE_POLL_H) || defined(OF_WII)
+#ifdef HAVE_POLL
 	[self kernelEventObserverTestsWithClass:
 	    [OFKernelEventObserver_poll class]];
 #endif
