@@ -203,6 +203,7 @@ static OFString *module;
 @implementation TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTestsWithClass: (Class)class
 {
+	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	ObserverTest *test;
 
 	module = [class className];
@@ -218,12 +219,12 @@ static OFString *module;
 
 	[test run];
 	_fails += test->_fails;
+
+	[pool drain];
 }
 
 - (void)kernelEventObserverTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-
 #ifdef HAVE_SELECT
 	[self kernelEventObserverTestsWithClass:
 	    [OFKernelEventObserver_select class]];
@@ -243,7 +244,5 @@ static OFString *module;
 	[self kernelEventObserverTestsWithClass:
 	    [OFKernelEventObserver_kqueue class]];
 #endif
-
-	[pool drain];
 }
 @end
