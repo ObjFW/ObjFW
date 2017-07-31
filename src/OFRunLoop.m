@@ -719,8 +719,13 @@ static OFRunLoop *mainRunLoop = nil;
 				timeout = 0;
 
 #if defined(OF_HAVE_SOCKETS)
-			[_kernelEventObserver
-			    observeForTimeInterval: timeout];
+			@try {
+				[_kernelEventObserver
+				    observeForTimeInterval: timeout];
+			} @catch (OFObserveFailedException *e) {
+				if ([e errNo] != EINTR)
+					@throw e;
+			}
 #elif defined(OF_HAVE_THREADS)
 			[_condition lock];
 			[_condition waitForTimeInterval: timeout];
@@ -735,7 +740,12 @@ static OFRunLoop *mainRunLoop = nil;
 			 * another thread, it cancels the observe.
 			 */
 #if defined(OF_HAVE_SOCKETS)
-			[_kernelEventObserver observe];
+			@try {
+				[_kernelEventObserver observe];
+			} @catch (OFObserveFailedException *e) {
+				if ([e errNo] != EINTR)
+					@throw e;
+			}
 #elif defined(OF_HAVE_THREADS)
 			[_condition lock];
 			[_condition wait];
