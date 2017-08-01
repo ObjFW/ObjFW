@@ -2,6 +2,40 @@ Legend:
  * Changes of existing features or bugfixes
  + New features
 
+This file only contains the most significant changes.
+
+ObjFW 0.8.1 -> ObjFW 0.90, 01.08.2017
+ + New classes: OFFileManager, OFGZIPStream, OFTarArchive, OFTarArchiveEntry
+		OFHMAC, OFSandbox, OFHTTPCookie, OFHTTPCookieManager,
+		OFLocalization
+ + New platforms: Nintendo 3DS, MorphOS
+ + New lookup assembly for platforms: SPARC64/ELF, ARM64/ELF
+ + New forwarding for: ARM64/ELF
+ + New tools: objfw-new (to create boilerplate code)
+ + New options: --disable-unicode-tables
+ * Required GCC version increased to 4.6
+ * OFDataArray was split into OFData and OFMutableData
+ * OFURL was split into OFURL and OFMutableURL
+ * Most properties are now nonatomic
+   (this changes from returned retained + autoreleased to +0 retained)
+ * Correct handling of encoding on Win32 console
+   (stream is read and written in UTF-8 and translated to UTF-16 on the fly)
+ * Runtime is now built as a separate library
+ + More encodings for strings
+ * Reworked OFOptionsParser API
+ * Refactored OFKernelEventObserver
+ * Better randomization of HTTP header order
+ * Allow overriding all HTTP headers
+ * Definition of thread priorities changed
+ + Key Value Coding
+ + Exceptions in ObjC++
+ * OFHash was renamed to OFCryptoHash
+ + PBKDF2
+ + scrypt
+ + Xcode project to build for iOS
+ + String decomposition to NFD
+ * OFFile modes simplified ('b' removed)
+
 ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
  * Adjust to __nullable / __nonnull being changed to _Nullable / _Nonnull in
    Clang 3.7 (this fixes compilation with Clang 3.7)
