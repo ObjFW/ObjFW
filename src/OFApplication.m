@@ -71,12 +71,6 @@ extern char **environ;
 # undef asm
 #endif
 
-#ifdef HAVE_SIGACTION
-# ifndef SA_RESTART
-#  define SA_RESTART 0
-# endif
-#endif
-
 @interface OFApplication ()
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 - (void)of_setArgumentCount: (int *)argc
@@ -509,24 +503,7 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 - (void)setDelegate: (id <OFApplicationDelegate>)delegate
 {
-#ifdef HAVE_SIGACTION
-	struct sigaction sa = { .sa_flags = SA_RESTART };
-	sigemptyset(&sa.sa_mask);
-
-# define REGISTER_SIGNAL(sig)						\
-	if ([delegate respondsToSelector:				\
-	    @selector(applicationDidReceive##sig)]) {			\
-		_##sig##Handler = (void (*)(id, SEL))[(id)delegate	\
-		    methodForSelector:					\
-		    @selector(applicationDidReceive##sig)];		\
-									\
-		sa.sa_handler = handle##sig;				\
-	} else								\
-		sa.sa_handler = SIG_DFL;				\
-									\
-	OF_ENSURE(sigaction(sig, &sa, NULL) == 0);
-#else
-# define REGISTER_SIGNAL(sig)						\
+#define REGISTER_SIGNAL(sig)						\
 	if ([delegate respondsToSelector:				\
 	    @selector(applicationDidReceive##sig)]) {			\
 		_##sig##Handler = (void (*)(id, SEL))[(id)delegate	\
@@ -535,7 +512,6 @@ of_application_main(int *argc, char **argv[], Class cls)
 		signal(sig, handle##sig);				\
 	} else								\
 		signal(sig, (void (*)(int))SIG_DFL);
-#endif
 
 	_delegate = delegate;
 
