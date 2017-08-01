@@ -1,0 +1,292 @@
+Legend:
+ * Changes of existing features or bugfixes
+ + New features
+
+ObjFW 0.8 -> ObjFW 0.8.1, 04.10.2015
+ * Adjust to __nullable / __nonnull being changed to _Nullable / _Nonnull in
+   Clang 3.7 (this fixes compilation with Clang 3.7)
+ * Blocks: Proper handling when called from a byref handler
+ * Fix compilation on Solaris
+ * Fix compilation for Wii, PSP and Nintendo DS
+ * OFProcess: Send SIGTERM on close instead of SIGKILL
+ * OFZIPArchive: Throw invalid format exception on failed seeks
+ * Make sure of_hash_seed is never initialized to 0
+ * Special cases for the Wii's weird network stack (fixes the tests)
+ * Better length checks for write / send calls
+ * Don't use -pedantic on platforms where it's broken by the system headers
+ * Documentation fixes
+
+ObjFW 0.7.1 -> ObjFW 0.8, 14.08.2015
+
+ + An insanely huge amount of new APIs
+ + New classes: OFHTTPServer, OFINICategory, OFINIFile, OFInflate64Stream,
+   OFInflateStream, OFMapTable, OFRIPEMD160Hash, OFSHA224Hash, OFSHA256Hash,
+   OFSHA384Hash, OFSHA512Hash, OFSettings, OFStdIOStream, OFSystemInfo,
+   OFUDPSocket, OFZIPArchive, OFZIPArchiveEntry
+ + New utils: ofzip, ofhash, ofhttp
+ + Support for -[forwardingTargetForSelector:] on a lot of platforms
+   (see PLATFORMS.md)
+ * OFHTTPRequest: Split into OFHTTPRequest and OFHTTPClient
+ * Rename OFHTTPRequestReply to OFHTTPResponse
+ * OFDictionary now uses OFMapTable internally
+ + Highly randomized, DoS-resistant hashtables (different seed per hashtable,
+   additionally rotated by a random number of bits)
+ * Reworked exceptions API that explicitly passes errno around
+ + OFHTTPClient: Keep-alive and Basic Authorization support
+ + Support for (and use of) ObjC generics, nullability and kindof
+ + Fast path for resolving classes when using GCC (Clang doesn't need the fast
+   path, as it directly references classes)
+ * OFStreamObserver: Refactored and renamed to OFKernelEventObserver (as it is
+   no longer limited to streams)
+ + Support for SjLj and SEH exceptions
+ + Support for DOS/DJGPP, Nintendo Wii, Nintendo DS and PlayStation Portable
+ + Support for bare metal (in other words: running without any OS; tested on
+   ARM)
+ + Full support for ARM64 on iOS
+ + Full MessagePack implementation (the new MessagePack version that supports
+   strings)
+ + Backtraces for uncaught exceptions
+ + Bridge to Cocoa now part of ObjFW
+ * Default depth limit for XML and JSON parser
+ + Optional support for outputting JSON5 (default is JSON)
+ * 16 bit selector UIDs are now the default
+ * BOOL replaced with bool everywhere (except where required by the ABI)
+ * Fix for a nasty bug in -[replaceCharactersInRange:withString:]
+ * Fix for a nasty bug in atomic ops
+ * OFTLSKey replaced with +[OFThread threadDictionary]
+ * Documentation improvements (for example, imports should now be shown
+   correctly everywhere and many APIs have been documented in more detail)
+ + Property introspection
+ * OFProcess: Use posix_spawnp if available
+ * OFProcess improvements for Win32
+ + epoll support for OFKernelEventObserver
+ * Rewritten OFMD5Hash and OFSHA1Hash
+ * Reworked OFTLSSocket API (easier verification)
+ * Unicode support updated to Unicode 8.0
+ * OFURL: Proper escaping and unescaping
+
+ObjFW 0.7 -> ObjFW 0.7.1, 12.11.2012
+ + Support for Haiku
+ * Autorelease pools now work properly without __thread
+ * Incorrect framework version in Xcode project fixed
+ * Documentation fixes and improvements
+ * Blocks now only use 16 bits for the reference count in order to avoid
+   problems with newer Clang versions
+ * More use of OF_SENTINEL
+
+ObjFW 0.6 -> ObjFW 0.7, 27.10.2012
+ Again, the differences are more than in any release before, thus listing them
+ all would be too much. The major differences are:
+ + ObjFW now comes with its own runtime, which greatly increases performance
+   compared to the GNU runtime and is even faster than the Apple runtime
+   (using Clang >= 3.2 is recommended, but not necessary)
+ * Support for the GNU runtime has been dropped
+ + New, much faster autorelease pool implementation (now inside the runtime)
+ + Support for Automatic Reference Counting (requires Clang >= 3.2)
+ + Forwarding has been implemented
+ + Asynchronous stream handling
+ + New classes: OFThreadPool, OFRecursiveMutex, OFSortedList, OFTimer, OFRunLoop
+ + New protocols: OFLocking, OFTLSSocket
+ * Lots of API changes to make APIs more future-proof
+ + Support for the new Objective-C literals
+ * OFHTTPRequest now implements HTTP/1.1
+ * OFObject's memory handling has been improved, leading to better performance
+ * Strings are allocated faster now
+ + Support for JSON5
+ * All private methods use the prefix OF_ now instead of _, making it possible
+   to use the _ prefix in applications
+ * Most ObjC compiler feature checks are not part of configure anymore, making
+   it possible to use the same installation with different compilers
+
+ObjFW 0.5.4 -> ObjFW 0.6, 27.02.2012
+ The differences between 0.5.4 and 0.6 are too big to list them all. However,
+ the major new features are:
+ * OFString, OFArray, OFDictionary, OFSet and OFCountedSet are now class
+   clusters
+ + Serialization and deserialization of objects into/from XML and JSON
+ + New class OFIntrospection for introspecting classes
+ + New class OFProcess for working with and controlling child processes
+ * Lots of OFXMLParser and OFXMLElement improvements
+ + OFHTTPRequests can have a delegate now for status updates and processing
+   data as soon as it arrives
+ + There are several backends for OFStreamObserver now, including kqueue, poll
+   and select
+ + SOCKS5 support for OFTCPSockets (client only)
+ * Several API changes
+
+ObjFW 0.5.3 -> ObjFW 0.5.4, 30.08.2011
+ * The blocks runtime is now working correctly
+ * Documentation fixes
+ * -framework works with objfw-compile now
+ + Support for QNX
+ * Various small fixes
+
+ObjFW 0.5.2 -> ObjFW 0.5.3, 01.07.2011
+ * Lots of bugfixes, see Git log for details
+
+ObjFW 0.5.1 -> ObjFW 0.5.2, 25.04.2011
+ * Fix double-retain in OFList
+ * Don't ignore the timeout in OFStreamObserver when using select()
+ * Do -[OFURL copy] in a try block to prevent a leak when an exception occurs
+ * Fix too big buffer in -[OFMutableString _applyTable:withSize:]
+ * Call madvise() on the correct length variable so it covers the whole string
+ * Fix a warning when sizeof(size_t) < sizeof(long long)
+ * Skip possible BOMs when appending strings
+
+ObjFW 0.5 -> ObjFW 0.5.1, 21.04.2011
+ * Work around a wrong warning produced by Apple GCC 4.0.1 which would cause
+   the build to fail due to -Werror
+ * Call objc_thread_{add,remove} when using the GNU runtime to make sure the
+   runtime knows about our thread
+ * Detach a thread before restarting if it was never joined
+ * Release the old return value when restarting a thread
+
+ObjFW 0.4-alpha1 -> 0.5, 09.04.2011
+ + %@ is now allowed in format strings
+ + Added of_log for easy logging
+ * Exceptions have one header per exception now
+ * Lots of exception improvements
+ * Huge improvements in XML handling
+ * Improvements in socket handling, including improved API
+ * OFStreamObserver is now thread-safe and stops the current observe call when
+   the set of streams to observe is modified
+ + New class OFURL
+ + New class OFHTTPRequest
+ + New class OFCondition
+ * Improvements in objfw-compile
+ + Blocks can be used together with Cocoa now
+ + When linking ObjFW and Cocoa, OFAutoreleasePools are used by both now
+ + Support for Base64
+ + Use a real Xcode project instead of just calling make
+ + Add Haiku to the list of supported platforms
+ * Lots of small bugfixes and countless small changes. Read the commits!
+
+ObjFW 0.3.1 -> 0.4-alpha1, 03.01.2011
+ * ObjFW is now available under the terms of the QPL, GPLv2 and GPLv3
+ + Support for blocks was added, including a blocks runtime
+ + Added support for the new GNU runtime, introduced in GCC 4.6
+ * Objects returned from collections are no longer retained and autoreleased
+ + Added new classes OFXMLParser, OFXMLElement, OFXMLAttribute and
+   OFXMLElementBuilder
+ + Added new class OFStreamObserver to observe streams
+ + Added new class OFDate for storing dates
+ + Many new methods in almost all classes
+ * OFAutoreleasePool was optimized
+ * Handling of ASCII strings was optimized
+ * OFSocket was renamed to OFStreamSocket
+ * OFConstString was renamed to OFConstantString
+ * objfw-compile now has a new syntax
+ + objfw-compile can now compile libraries and plugins
+ * Many small changes and new features that would be too much to list here
+   The diff between 0.3.1 and 0.4-alpha1 has almost 24000 lines!
+
+ObjFW 0.3 -> 0.3.1, 19.06.2010
+ * Fix a typo in OFMutableDictionary that prevented termination in case
+   the last bucket is already used when the dictionary is resized
+ * The mutations pointer is now correctly initialized in enumerators for
+   immutable collections
+ * The objc_sync test was still using the old threads API and was
+   updated to use the new one now
+ * PLATFORMS has been updated to be more specific
+
+ObjFW 0.2.1 -> 0.3, 09.05.2010
+ + Many new methods were added to different classes
+ + A huge amount of methods was added to OFStream, allowing easy binary
+   stream handling and even mixing string-based and binary operations
+ + An optional write buffer was added to OFStream
+ + OFSeekableStream was added for streams that allow seeking, for example
+   OFFiles
+ * OFNumber was completely reworked and got many new features now
+ * Large parts of OFDictionary were rewritten for better readability, better
+   memory usage and to fix a bug with removing objects
+ * OFThread has been greatly improved
+ * Many small optimizations
+ * Many documentation improvements
+ * Method replacing was reworked and the methods renamed
+ + Tests for OFStream were added
+ * A bug with building ObjFW as a Universal Binary Framework was fixed
+ + Support for ObjFW-RT, the ObjFW Objective C runtime, was added
+ * Sockets are now properly closed before an exception is thrown
+ * Error handling with sockets was improved
+ * OFFile now uses open(), read() and write(), thus allowing -[readLine] to be
+   used on of_stdin and fixing many other annoyances
+ * A few misc methods were renamed
+ + OFApplication was added
+ * All tests and the table generator are now using OFApplication
+ + It is now possible to get the remote address of an OFTCPSocket
+ + OFString can now build paths in the OS-native format
+ + It is now possible to create a string with the contents of a file
+ + Many new file operations were added to OFFile
+ * The existing file operations in OFFile were improved
+ * Almost all functions that returned self before now return void
+ + OFHash was added as a superclass for OFMD5Hash and OFSHA1Hash and OFHashes
+   renamed to OFHash
+ + objfw-compile was added for easy compilation of ObjFW projects, which
+   includes dependency checking for headers etc.
+ * The instance variable naming convention was changed so that properties work
+ + Properties were added to the interfaces and are used if they are supported
+   by the compiler
+ + The library version is now included in the resulting dylib and libobjc is
+   reexported now. Additionally, objfw-config offers --reexport now to produce
+   libraries that link against ObjFW and reexport it
+
+ObjFW 0.2 -> 0.2.1, 14.03.2010
+ * Fix for OFNumbers not doing calculations
+ * Improved -[hash] for OFNumbers with floats and doubles
+ + Tests for OFNumber
+ * Small optimization for OFArray's -[componentsJoinedByString:]
+ * Documentation improvements
+ * Updated copyright
+
+ObjFW 0.1.2 -> 0.2, 01.02.2010
+ + Support for ObjC 2 Fast Enumerations on every platform which has
+   compiler support for fast enumerations
+ + Support for ObjC 2 properties on every platform with compiler support
+ + Fast Enumeration through arrays and dictionaries
+ * OFIterator has been removed
+ + OFEnumerator was added to replace OFIterator, which is more general
+   and works with arrays and dictionaries
+ + Portable implementation for atomic operations
+ + Portable implementation for spinlocks. They use atomic operations if
+   available, if not they fall back to pthread spinlocks. If both are
+   unavailable, mutexes are used as a last fallback
+ * -[retain] and -[release] are now atomic. If no atomic operations are
+   available, spinlocks are used (which can fall back to mutexes, see
+   above)
+ * -[readLine] now handles \r\n without having the \r included in the
+   returned line
+ + OFThread now has -[tryLock]
+ * Mutation methods have been removed from immutable interfaces, thus
+   already giving an error at compilation instead of at runtime
+ * Dependencies between headers have been reduced, leading to faster
+   compile times
+ * The interfaces of OFSocket and OFStream were cleaned up and some
+   methods were moved to OFTCPSocket, as they make sense only there
+ * File methods unavailable on Windows don't throw an exception at
+   runtime anymore, but instead are not even in the interface on
+   Windows. This way, it is a compile time error instead of a runtime
+   error
+
+ObjFW 0.1.1 -> 0.1.2, 15.01.2010
+ * Fix a bug in OFMutableArray's -[removeObject:] and
+   -[removeObjectIdenticalTo:] that could lead to not removing all
+   occurrences of the object from the array and to out of bounds reads
+ * Change the URL in the framework plist to the homepage
+
+ObjFW 0.1 -> 0.1.1, 04.01.2010
+ * Fix a missing out of range check for -[removeNItems:atIndex:] that
+   allowed the programmer to specify too big ranges so it would crash
+   instead of throwing an exception
+ * Fix missing calls to -[retain] and -[autorelease] when getting
+   objects from an OFArray or OFDictionary
+ * Safer and more fault-tolerant way to remove objects from an
+   OFMutableArray
+ * Calling +[dealloc] throws an exception now. If someone really calls
+   [SomeClass dealloc], this should be punished and not ignored, as
+   this is a serious programmer error
+ * -[readLineWithEncoding:] is more fault-tolerant now and does not
+   lose data when it stumbles upon invalid encoding. Instead, it allows
+   recalling with the correct encoding now
+
+ObjFW 0.1, 24.12.2009
+ + Initial release
