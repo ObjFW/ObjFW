@@ -657,8 +657,6 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 	])
 ])
 
-AC_CHECK_FUNCS(sigaction)
-
 AC_CHECK_FUNCS(arc4random random, break)
 
 AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
