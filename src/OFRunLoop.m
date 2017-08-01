@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <assert.h>
+#include <errno.h>
 
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
@@ -33,6 +34,8 @@
 #import "OFTimer.h"
 #import "OFTimer+Private.h"
 #import "OFDate.h"
+
+#import "OFObserveFailedException.h"
 
 static OFRunLoop *mainRunLoop = nil;
 
