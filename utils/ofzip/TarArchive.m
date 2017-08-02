@@ -57,7 +57,8 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 	self = [super init];
 
 	@try {
-		_archive = [[OFTarArchive alloc] initWithStream: stream];
+		_archive = [[OFTarArchive alloc] initWithStream: stream
+							   mode: @"r"];
 	} @catch (id e) {
 		[self release];
 		@throw e;

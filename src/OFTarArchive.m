@@ -24,37 +24,55 @@
 # import "OFFile.h"
 #endif
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 @implementation OFTarArchive: OFObject
 + (instancetype)archiveWithStream: (OFStream *)stream
+			     mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return [[[self alloc] initWithStream: stream
+					mode: mode] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)archiveWithPath: (OFString *)path
+			   mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc] initWithPath: path
+				      mode: mode] autorelease];
 }
 #endif
 
 - initWithStream: (OFStream *)stream
+	    mode: (OFString *)mode
 {
 	self = [super init];
 
-	_stream = [stream retain];
+	@try {
+		_stream = [stream retain];
+
+		if ([mode isEqual: @"r"])
+			_mode = OF_TAR_ARCHIVE_MODE_READ;
+		else
+			@throw [OFInvalidArgumentException exception];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
 
 #ifdef OF_HAVE_FILES
 - initWithPath: (OFString *)path
+	  mode: (OFString *)mode
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"r"];
+					       mode: mode];
 	@try {
-		self = [self initWithStream: file];
+		self = [self initWithStream: file
+				       mode: mode];
 	} @finally {
 		[file release];
 	}
@@ -78,6 +96,9 @@
 		uint32_t u32[512 / sizeof(uint32_t)];
 	} buffer;
 	bool empty = true;
+
+	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
+		@throw [OFInvalidArgumentException exception];
 
 	[_lastReturnedEntry of_skip];
 	[_lastReturnedEntry close];

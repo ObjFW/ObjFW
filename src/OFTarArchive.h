@@ -34,6 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFStream *_stream;
 @protected
+	enum {
+		OF_TAR_ARCHIVE_MODE_READ,
+		OF_TAR_ARCHIVE_MODE_WRITE,
+		OF_TAR_ARCHIVE_MODE_APPEND
+	} _mode;
 	OFTarArchiveEntry *_lastReturnedEntry;
 }
 
@@ -41,18 +46,26 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new OFTarArchive object with the specified stream.
  *
  * @param stream A stream from which the tar archive will be read
+ * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithStream: (OFStream *)stream;
++ (instancetype)archiveWithStream: (OFStream *)stream
+			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new OFTarArchive object with the specified file.
  *
  * @param path The path to the tar archive
+ * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithPath: (OFString *)path;
++ (instancetype)archiveWithPath: (OFString *)path
+			   mode: (OFString *)mode;
 #endif
 
 /*!
@@ -60,9 +73,13 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified stream.
  *
  * @param stream A stream from which the tar archive will be read
+ * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return An initialized OFTarArchive
  */
-- initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
+- initWithStream: (OFStream *)stream
+	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -70,14 +87,20 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified file.
  *
  * @param path The path to the tar archive
+ * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return An initialized OFTarArchive
  */
-- initWithPath: (OFString *)path;
+- initWithPath: (OFString *)path
+	  mode: (OFString *)mode;
 #endif
 
 /*!
  * @brief Returns the next entry from the tar archive or `nil` if all entries
  *	  have been read.
+ *
+ * This is only available in read mode.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by the
  *	    previous entry! Reading from an invalidated stream will throw an
