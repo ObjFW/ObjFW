@@ -134,39 +134,21 @@ parseMode(const char *mode, bool *append)
 
 	if (strcmp(mode, "r") == 0)
 		return MODE_OLDFILE;
+	if (strcmp(mode, "r+") == 0)
+		return MODE_OLDFILE;
 	if (strcmp(mode, "w") == 0)
 		return MODE_NEWFILE;
 	if (strcmp(mode, "wx") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "w+") == 0)
+		return MODE_NEWFILE;
+	if (strcmp(mode, "w+x") == 0)
 		return MODE_NEWFILE;
 	if (strcmp(mode, "a") == 0) {
 		*append = true;
 		return MODE_READWRITE;
 	}
-	if (strcmp(mode, "rb") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "wb") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "wbx") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "ab") == 0) {
-		*append = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "r+") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "w+") == 0)
-		return MODE_NEWFILE;
 	if (strcmp(mode, "a+") == 0) {
-		*append = true;
-		return MODE_READWRITE;
-	}
-	if (strcmp(mode, "r+b") == 0 || strcmp(mode, "rb+") == 0)
-		return MODE_OLDFILE;
-	if (strcmp(mode, "w+b") == 0 || strcmp(mode, "wb+") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "w+bx") == 0 || strcmp(mode, "wb+x") == 0)
-		return MODE_NEWFILE;
-	if (strcmp(mode, "ab+") == 0 || strcmp(mode, "a+b") == 0) {
 		*append = true;
 		return MODE_READWRITE;
 	}
