@@ -137,14 +137,18 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @synthesize archiveComment = _archiveComment;
 
 + (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream
+				     mode: (OFString *)mode
 {
-	return [[[self alloc] initWithSeekableStream: stream] autorelease];
+	return [[[self alloc] initWithSeekableStream: stream
+						mode: mode] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
 + (instancetype)archiveWithPath: (OFString *)path
+			   mode: (OFString *)mode
 {
-	return [[[self alloc] initWithPath: path] autorelease];
+	return [[[self alloc] initWithPath: path
+				      mode: mode] autorelease];
 }
 #endif
 
@@ -154,14 +158,20 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 
 - initWithSeekableStream: (OFSeekableStream *)stream
+		    mode: (OFString *)mode
 {
 	self = [super init];
 
 	@try {
 		_stream = [stream retain];
 
-		[self of_readZIPInfo];
-		[self of_readEntries];
+		if ([mode isEqual: @"r"]) {
+			_mode = OF_ZIP_ARCHIVE_MODE_READ;
+
+			[self of_readZIPInfo];
+			[self of_readEntries];
+		} else
+			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -172,11 +182,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 #ifdef OF_HAVE_FILES
 - initWithPath: (OFString *)path
+	  mode: (OFString *)mode
 {
 	OFFile *file = [[OFFile alloc] initWithPath: path
-					       mode: @"r"];
+					       mode: mode];
 	@try {
-		self = [self initWithSeekableStream: file];
+		self = [self initWithSeekableStream: file
+					       mode: mode];
 	} @finally {
 		[file release];
 	}
@@ -329,7 +341,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFZIPArchive_LocalFileHeader *localFileHeader;
 	int64_t offset64;
 
-	if (entry == nil)
+	if (_mode != OF_ZIP_ARCHIVE_MODE_READ &&
+	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
+		@throw [OFInvalidArgumentException exception];
+
+	if ((entry = [_pathToEntryMap objectForKey: path]) == nil)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
 							       mode: @"r"
 							      errNo: ENOENT];

@@ -34,6 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFZIPArchive: OFObject
 {
 	OFSeekableStream *_stream;
+	enum {
+		OF_ZIP_ARCHIVE_MODE_READ,
+		OF_ZIP_ARCHIVE_MODE_WRITE,
+		OF_ZIP_ARCHIVE_MODE_APPEND
+	} _mode;
 	uint32_t _diskNumber, _centralDirectoryDisk;
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
@@ -54,18 +59,26 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new OFZIPArchive object with the specified seekable stream.
  *
  * @param stream A seekable stream from which the ZIP archive will be read
+ * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream;
++ (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream
+				     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new OFZIPArchive object with the specified file.
  *
  * @param path The path to the ZIP file
+ * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithPath: (OFString *)path;
++ (instancetype)archiveWithPath: (OFString *)path
+			   mode: (OFString *)mode;
 #endif
 
 - init OF_UNAVAILABLE;
@@ -75,9 +88,13 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified seekable stream.
  *
  * @param stream A seekable stream from which the ZIP archive will be read
+ * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return An initialized OFZIPArchive
  */
-- initWithSeekableStream: (OFSeekableStream *)stream OF_DESIGNATED_INITIALIZER;
+- initWithSeekableStream: (OFSeekableStream *)stream
+		    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -85,9 +102,13 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified file.
  *
  * @param path The path to the ZIP file
+ * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
+ *	       "w" for creating a new file and "a" for appending to an existing
+ *	       file.
  * @return An initialized OFZIPArchive
  */
-- initWithPath: (OFString *)path;
+- initWithPath: (OFString *)path
+	  mode: (OFString *)mode;
 #endif
 
 /*!
@@ -104,6 +125,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @brief Returns a stream for reading the specified file from the archive.
+ *
+ * This method is only available in read and append mode.
  *
  * @warning Calling @ref streamForReadingFile: will invalidate all streams
  *	    previously returned by @ref streamForReadingFile:! Reading from an
