@@ -573,6 +573,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			if (dirent == NULL)
 				break;
 # else
+			errno = 0;
 			if ((dirent = readdir(dir)) == NULL) {
 				if (errno == 0)
 					break;
