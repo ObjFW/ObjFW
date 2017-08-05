@@ -454,6 +454,11 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	GMTIME_RET(tm_min)
 }
 
+- (uint8_t)localMinute
+{
+	LOCALTIME_RET(tm_min)
+}
+
 - (uint8_t)hour
 {
 	GMTIME_RET(tm_hour)

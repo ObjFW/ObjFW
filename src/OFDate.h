@@ -189,6 +189,13 @@ OF_ASSUME_NONNULL_BEGIN
 - (uint8_t)minute;
 
 /*!
+ * @brief Returns the minute of the date in local time.
+ *
+ * @return The minute of the date in local time
+ */
+- (uint8_t)localMinute;
+
+/*!
  * @brief Returns the hour of the date.
  *
  * @return The hour of the date
