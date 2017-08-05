@@ -61,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A seekable stream from which the ZIP archive will be read
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
 + (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream
@@ -74,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
 + (instancetype)archiveWithPath: (OFString *)path
@@ -90,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stream A seekable stream from which the ZIP archive will be read
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return An initialized OFZIPArchive
  */
 - initWithSeekableStream: (OFSeekableStream *)stream
@@ -104,7 +104,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the ZIP file
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return An initialized OFZIPArchive
  */
 - initWithPath: (OFString *)path

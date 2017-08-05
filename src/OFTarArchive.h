@@ -21,7 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 @class OFStream;
-@class OFTarArchive_FileReadStream;
 
 /*!
  * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
@@ -36,16 +35,17 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_TAR_ARCHIVE_MODE_WRITE,
 		OF_TAR_ARCHIVE_MODE_APPEND
 	} _mode;
-	OFTarArchive_FileReadStream *_lastReturnedStream;
+	OF_KINDOF(OFStream *) _lastReturnedStream;
 }
 
 /*!
  * @brief Creates a new OFTarArchive object with the specified stream.
  *
- * @param stream A stream from which the tar archive will be read
+ * @param stream A stream from which the tar archive will be read.
+ *		 For append mode, this needs to be a seekable stream.
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return A new, autoreleased OFTarArchive
  */
 + (instancetype)archiveWithStream: (OFStream *)stream
@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return A new, autoreleased OFTarArchive
  */
 + (instancetype)archiveWithPath: (OFString *)path
@@ -69,10 +69,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated OFTarArchive object with the
  *	  specified stream.
  *
- * @param stream A stream from which the tar archive will be read
+ * @param stream A stream from which the tar archive will be read.
+ *		 For append mode, this needs to be a seekable stream.
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return An initialized OFTarArchive
  */
 - initWithStream: (OFStream *)stream
@@ -86,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the tar archive
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
- *	       file.
+ *	       archive.
  * @return An initialized OFTarArchive
  */
 - initWithPath: (OFString *)path
@@ -100,8 +101,10 @@ OF_ASSUME_NONNULL_BEGIN
  * This is only available in read mode.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by
- *	    @ref streamForReadingCurrentEntry entry! Reading from an
- *	    invalidated stream will throw an @ref OFReadFailedException!
+ *	    @ref streamForReadingCurrentEntry or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
  *
  * @return The next entry from the tar archive or `nil` if all entries have
  *	   been read
@@ -114,6 +117,25 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A stream for reading the current entry
  */
 - (OFStream *)streamForReadingCurrentEntry;
+
+/*!
+ * @brief Returns a stream for writing the specified entry.
+ *
+ * @warning Calling @ref nextEntry will invalidate all streams returned by
+ *	    @ref streamForReadingCurrentEntry or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
+ *
+ * @param entry The entry for which a stream for writing should be returned
+ * @return A stream for writing the specified entry
+ */
+- (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry;
+
+/*!
+ * @brief Closes the OFTarArchive.
+ */
+- (void)close;
 @end
 
 OF_ASSUME_NONNULL_END

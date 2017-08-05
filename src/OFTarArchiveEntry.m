@@ -116,6 +116,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 	@try {
 		_fileName = [fileName copy];
+		_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
+		_mode = 0644;
 	} @catch (id e) {
 		[self release];
 		@throw e;
