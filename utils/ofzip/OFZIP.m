@@ -139,7 +139,6 @@ writingNotSupported(OFString *type)
 	    @"writing_not_supported",
 	    @"Writing archives of type %[type] is not (yet) supported!",
 	    @"type", type)];
-	[OFApplication terminateWithStatus: 1];
 }
 
 @implementation OFZIP
@@ -415,12 +414,15 @@ writingNotSupported(OFString *type)
 			    @"unknown_archive_type",
 			    @"Unknown archive type: %[type]",
 			    @"type", type)];
-			[OFApplication terminateWithStatus: 1];
+			goto error;
 		}
 	} @catch (OFNotImplementedException *e) {
 		if ((mode == 'a' || mode == 'c') &&
-		    sel_isEqual([e selector], @selector(initWithStream:mode:)))
+		    sel_isEqual([e selector],
+		    @selector(initWithStream:mode:))) {
 			writingNotSupported(type);
+			goto error;
+		}
 
 		@throw e;
 	} @catch (OFReadFailedException *e) {
@@ -431,7 +433,7 @@ writingNotSupported(OFString *type)
 		    @"Failed to read file %[file]: %[error]",
 		    @"file", path,
 		    @"error", error)];
-		[OFApplication terminateWithStatus: 1];
+		goto error;
 	} @catch (OFSeekFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
@@ -440,20 +442,28 @@ writingNotSupported(OFString *type)
 		    @"Failed to seek in file %[file]: %[error]",
 		    @"file", path,
 		    @"error", error)];
-		[OFApplication terminateWithStatus: 1];
+		goto error;
 	} @catch (OFInvalidFormatException *e) {
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"file_is_not_a_valid_archive",
 		    @"File %[file] is not a valid archive!",
 		    @"file", path)];
-		[OFApplication terminateWithStatus: 1];
+		goto error;
 	}
 
 	if ((mode == 'a' || mode == 'c') &&
-	    ![archive respondsToSelector: @selector(addFiles:)])
+	    ![archive respondsToSelector: @selector(addFiles:)]) {
 		writingNotSupported(type);
+		goto error;
+	}
 
 	return archive;
+
+error:
+	if (mode == 'c')
+		[[OFFileManager defaultManager] removeItemAtPath: path];
+
+	[OFApplication terminateWithStatus: 1];
 }
 
 - (bool)shouldExtractFile: (OFString *)fileName
