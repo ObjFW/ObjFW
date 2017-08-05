@@ -349,7 +349,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 			archive = [TarArchive archiveWithStream: file];
 		else if ([type isEqual: @"tgz"])
 			archive = [TarArchive archiveWithStream:
-			    [OFGZIPStream streamWithStream: file]];
+			    [OFGZIPStream streamWithStream: file
+						      mode: @"r"]];
 		else if ([type isEqual: @"zip"])
 			archive = [ZIPArchive archiveWithStream: file];
 		else {

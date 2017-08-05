@@ -84,9 +84,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new OFGZIPStream with the specified underlying stream.
  *
  * @param stream The underlying stream for the OFGZIPStream
+ * @param mode The mode for the OFGZIPStream. Valid modes are "r" for reading
+ *	       and "w" for writing.
  * @return A new, autoreleased OFGZIPStream
  */
-+ (instancetype)streamWithStream: (OFStream *)stream;
++ (instancetype)streamWithStream: (OFStream *)stream
+			    mode: (OFString *)mode;
 
 - init OF_UNAVAILABLE;
 
@@ -95,9 +98,12 @@ OF_ASSUME_NONNULL_BEGIN
  *	  underlying stream.
  *
  * @param stream The underlying stream for the OFGZIPStream
+ * @param mode The mode for the OFGZIPStream. Valid modes are "r" for reading
+ *	       and "w" for writing.
  * @return An initialized OFGZIPStream
  */
-- initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
+- initWithStream: (OFStream *)stream
+	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

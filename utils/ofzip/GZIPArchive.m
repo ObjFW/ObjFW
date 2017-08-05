@@ -55,7 +55,8 @@ setPermissions(OFString *destination, OFString *source)
 	self = [super init];
 
 	@try {
-		_stream = [[OFGZIPStream alloc] initWithStream: stream];
+		_stream = [[OFGZIPStream alloc] initWithStream: stream
+							  mode: @"r"];
 	} @catch (id e) {
 		[self release];
 		@throw e;

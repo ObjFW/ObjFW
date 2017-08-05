@@ -24,13 +24,16 @@
 
 #import "OFChecksumFailedException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFTruncatedDataException.h"
 
 @implementation OFGZIPStream
 + (instancetype)streamWithStream: (OFStream *)stream
+			    mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return [[[self alloc] initWithStream: stream
+					mode: mode] autorelease];
 }
 
 - init
@@ -39,10 +42,16 @@
 }
 
 - initWithStream: (OFStream *)stream
+	    mode: (OFString *)mode
 {
 	self = [super init];
 
 	@try {
+		if (![mode isEqual: @"r"])
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+
 		_stream = [stream retain];
 		_CRC32 = ~0;
 	} @catch (id e) {

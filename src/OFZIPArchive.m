@@ -170,7 +170,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 			[self of_readZIPInfo];
 			[self of_readEntries];
-		} else
+		} else if ([mode isEqual: @"w"] || [mode isEqual: @"a"])
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+		else
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
