@@ -426,4 +426,117 @@ outer_loop_end:
 		app->_exitStatus = 1;
 	}
 }
+
+- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+{
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+
+	if ([files count] < 1) {
+		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		    @"Need one or more files to add!")];
+		app->_exitStatus = 1;
+		return;
+	}
+
+	for (OFString *fileName in files) {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableTarArchiveEntry *entry;
+		OFStream *output;
+
+		if (app->_outputLevel >= 0)
+			[of_stdout writeString: OF_LOCALIZED(@"adding_file",
+			    @"Adding %[file]...",
+			    @"file", fileName)];
+
+		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+		[entry setMode:
+		    [fileManager permissionsOfItemAtPath: fileName]];
+#endif
+		[entry setSize: [fileManager sizeOfFileAtPath: fileName]];
+		[entry setModificationDate:
+		    [fileManager modificationTimeOfItemAtPath: fileName]];
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+		OFString *owner, *group;
+		[fileManager getOwner: &owner
+				group: &group
+			 ofItemAtPath: fileName];
+		[entry setOwner: owner];
+		[entry setGroup: group];
+#endif
+
+		if ([fileManager fileExistsAtPath: fileName])
+			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_FILE];
+		else if ([fileManager directoryExistsAtPath: fileName]) {
+			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY];
+			[entry setSize: 0];
+		} else if ([fileManager symbolicLinkExistsAtPath: fileName]) {
+			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK];
+			[entry setTargetFileName: [fileManager
+			    destinationOfSymbolicLinkAtPath: fileName]];
+			[entry setSize: 0];
+		}
+
+		[entry makeImmutable];
+
+		output = [_archive streamForWritingEntry: entry];
+
+		if ([entry type] == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE) {
+			uint64_t written = 0, size = [entry size];
+			int8_t percent = -1, newPercent;
+
+			OFFile *input = [OFFile fileWithPath: fileName
+							mode: @"r"];
+
+			while (![input isAtEndOfStream]) {
+				ssize_t length = [app
+				    copyBlockFromStream: input
+					       toStream: output
+					       fileName: fileName];
+
+				if (length < 0) {
+					app->_exitStatus = 1;
+					goto outer_loop_end;
+				}
+
+				written += length;
+				newPercent = (written == size
+				    ? 100 : (int8_t)(written * 100 / size));
+
+				if (app->_outputLevel >= 0 &&
+				    percent != newPercent) {
+					OFString *percentString;
+
+					percent = newPercent;
+					percentString = [OFString
+					    stringWithFormat: @"%3u", percent];
+
+					[of_stdout writeString: @"\r"];
+					[of_stdout writeString: OF_LOCALIZED(
+					    @"adding_file_percent",
+					    @"Adding %[file]... %[percent]%",
+					    @"file", fileName,
+					    @"percent", percentString)];
+				}
+			}
+		}
+
+		if (app->_outputLevel >= 0) {
+			[of_stdout writeString: @"\r"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"adding_file_done",
+			    @"Adding %[file]... done",
+			    @"file", fileName)];
+		}
+
+		[output close];
+
+outer_loop_end:
+		objc_autoreleasePoolPop(pool);
+	}
+
+	[_archive close];
+}
 @end

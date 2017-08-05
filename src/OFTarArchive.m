@@ -295,6 +295,9 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 
 - (void)close
 {
+	if (_stream == nil)
+		return;
+
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
@@ -477,6 +480,9 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 
 - (void)close
 {
+	if (_stream == nil)
+		return;
+
 	uint64_t remainder = 512 - [_entry size] % 512;
 
 	if (_toWrite > 0)

@@ -90,5 +90,11 @@
     "file_not_in_archive": "Datei %[file] ist nicht im Archiv!",
     "print_no_file_specified": [
         "Benötige eine oder mehrere Dateien zum Ausgeben!"
-    ]
+    ],
+    "add_no_file_specified": [
+        "Benötige eine oder mehrere Dateien zum Hinzufügen!"
+    ],
+    "adding_file": "Füge %[file] hinzu...",
+    "adding_file_percent": "Füge %[file] hinzu... %[percent]%",
+    "adding_file_done": "Füge %[file] hinzu... fertig"
 }

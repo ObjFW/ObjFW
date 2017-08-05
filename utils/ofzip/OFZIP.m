@@ -276,11 +276,30 @@ writingNotSupported(OFString *type)
 		    changeCurrentDirectoryPath: outputDir];
 
 	switch (mode) {
+	case 'a':
+	case 'c':
+		if ([remainingArguments count] < 1)
+			help(of_stderr, false, 1);
+
+		files = [remainingArguments objectsInRange:
+		    of_range(1, [remainingArguments count] - 1)];
+
+		[archive addFiles: files];
+		break;
 	case 'l':
 		if ([remainingArguments count] != 1)
 			help(of_stderr, false, 1);
 
 		[archive listFiles];
+		break;
+	case 'p':
+		if ([remainingArguments count] < 1)
+			help(of_stderr, false, 1);
+
+		files = [remainingArguments objectsInRange:
+		    of_range(1, [remainingArguments count] - 1)];
+
+		[archive printFiles: files];
 		break;
 	case 'x':
 		if ([remainingArguments count] < 1)
@@ -315,15 +334,6 @@ writingNotSupported(OFString *type)
 			_exitStatus = 1;
 		}
 
-		break;
-	case 'p':
-		if ([remainingArguments count] < 1)
-			help(of_stderr, false, 1);
-
-		files = [remainingArguments objectsInRange:
-		    of_range(1, [remainingArguments count] - 1)];
-
-		[archive printFiles: files];
 		break;
 	default:
 		help(of_stderr, true, 1);
