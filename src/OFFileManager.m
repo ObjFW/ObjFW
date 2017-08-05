@@ -690,7 +690,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_atime];
 }
 
-- (OFDate *)modificationTimeOfItemAtPath: (OFString *)path
+- (OFDate *)modificationDateOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 

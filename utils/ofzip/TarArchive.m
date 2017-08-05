@@ -456,7 +456,7 @@ outer_loop_end:
 #endif
 		[entry setSize: [fileManager sizeOfFileAtPath: fileName]];
 		[entry setModificationDate:
-		    [fileManager modificationTimeOfItemAtPath: fileName]];
+		    [fileManager modificationDateOfItemAtPath: fileName]];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 		OFString *owner, *group;

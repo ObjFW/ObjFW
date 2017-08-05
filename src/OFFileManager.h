@@ -132,14 +132,14 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFDate *)accessTimeOfItemAtPath: (OFString *)path;
 
 /*!
- * @brief Returns the last modification time of the specified item.
+ * @brief Returns the last modification date of the specified item.
  *
- * @param path The path to the item whose last modification time should be
+ * @param path The path to the item whose last modification date should be
  *	       returned
  *
- * @return The last modification time of the specified item
+ * @return The last modification date of the specified item
  */
-- (OFDate *)modificationTimeOfItemAtPath: (OFString *)path;
+- (OFDate *)modificationDateOfItemAtPath: (OFString *)path;
 
 /*!
  * @brief Returns the last status change time of the specified item.
