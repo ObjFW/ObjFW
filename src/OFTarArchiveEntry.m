@@ -88,7 +88,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 			_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
 
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
-			OFString *fileName;
+			OFString *prefix;
 
 			_owner = [stringFromBuffer(header + 265, 32) copy];
 			_group = [stringFromBuffer(header + 297, 32) copy];
@@ -98,10 +98,14 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 			_deviceMinor = (uint32_t)octalValueFromBuffer(
 			    header + 337, 8, UINT32_MAX);
 
-			fileName = [OFString stringWithFormat: @"%@/%@",
-			    stringFromBuffer(header + 345, 155), _fileName];
-			[_fileName release];
-			_fileName = [fileName copy];
+			prefix = stringFromBuffer(header + 345, 155);
+			if ([prefix length] > 0) {
+				OFString *fileName = [OFString
+				    stringWithFormat: @"%@/%@",
+						      prefix, _fileName];
+				[_fileName release];
+				_fileName = [fileName copy];
+			}
 		}
 
 		objc_autoreleasePoolPop(pool);
