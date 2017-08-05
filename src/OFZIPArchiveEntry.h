@@ -87,7 +87,7 @@ enum {
  * @brief A class which represents an entry in the central directory of a ZIP
  *	  archive.
  */
-@interface OFZIPArchiveEntry: OFObject
+@interface OFZIPArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
 	uint16_t _versionMadeBy, _minVersionNeeded, _generalPurposeBitFlag;
 	uint16_t _compressionMethod;
@@ -111,7 +111,12 @@ enum {
 /*!
  * The comment of the entry's file.
  */
-@property (readonly, nonatomic) OFString *fileComment;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *fileComment;
+
+/*!
+ * The extra field of the entry.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFData *extraField;
 
 /*!
  * The version which made the entry.
@@ -130,6 +135,13 @@ enum {
  * See @ref of_zip_archive_entry_attribute_compatibility.
  */
 @property (readonly, nonatomic) uint16_t minVersionNeeded;
+
+/*!
+ * The last modification date of the entry's file.
+ *
+ * @note Due to limitations of the ZIP format, this has only 2 second precision.
+ */
+@property (readonly, nonatomic) OFDate *modificationDate;
 
 /*!
  * The compression method of the entry.
@@ -175,21 +187,24 @@ enum {
  */
 @property (readonly, nonatomic) uint16_t generalPurposeBitFlag;
 
+/*!
+ * @brief Creates a new OFZIPArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFZIPArchiveEntry
+ * @return A new, autoreleased OFZIPArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
 - init OF_UNAVAILABLE;
 
 /*!
- * @brief Returns the last modification date of the entry's file.
+ * @brief Initializes an already allocated OFZIPArchiveEntry with the specified
+ *	  file name.
  *
- * @return The last modification date of the entry's file
+ * @param fileName The file name for the OFZIPArchiveEntry
+ * @return An initialized OFZIPArchiveEntry
  */
-- (OFDate *)modificationDate;
-
-/*!
- * @brief Returns the extra field of the entry.
- *
- * @return The extra field of the entry
- */
-- (OFData *)extraField;
+- initWithFileName: (OFString *)fileName;
 @end
 
 #ifdef __cplusplus
@@ -221,3 +236,5 @@ extern void of_zip_archive_entry_extra_field_find(OFData *extraField,
 #endif
 
 OF_ASSUME_NONNULL_END
+
+#import "OFMutableZIPArchiveEntry.h"

@@ -856,6 +856,10 @@
 		4B90B7A7133AD87D00BD33CB /* OFListenFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */; };
 		4B91FD12196B4F5900C5C25E /* OFUnknownXMLEntityException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B91FD10196B4F5900C5C25E /* OFUnknownXMLEntityException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B91FD13196B4F5900C5C25E /* OFUnknownXMLEntityException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B91FD11196B4F5900C5C25E /* OFUnknownXMLEntityException.m */; };
+		4B92FDDF1F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B92FDDC1F35DFAC000D541D /* OFMutableZIPArchiveEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B92FDE01F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B92FDDC1F35DFAC000D541D /* OFMutableZIPArchiveEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B92FDE11F35DFBB000D541D /* OFMutableZIPArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B92FDDD1F35DFAC000D541D /* OFMutableZIPArchiveEntry.m */; };
+		4B92FDE21F35DFBC000D541D /* OFMutableZIPArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B92FDDD1F35DFAC000D541D /* OFMutableZIPArchiveEntry.m */; };
 		4B935D121E9A7DC3001F2957 /* OFSandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B935D101E9A7DC3001F2957 /* OFSandbox.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B935D131E9A7DC3001F2957 /* OFSandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B935D101E9A7DC3001F2957 /* OFSandbox.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B935D141E9A7DC3001F2957 /* OFSandbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B935D111E9A7DC3001F2957 /* OFSandbox.m */; };
@@ -1538,6 +1542,8 @@
 		4B90B79D133AD87D00BD33CB /* OFListenFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFListenFailedException.m; path = src/exceptions/OFListenFailedException.m; sourceTree = "<group>"; };
 		4B91FD10196B4F5900C5C25E /* OFUnknownXMLEntityException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFUnknownXMLEntityException.h; path = src/exceptions/OFUnknownXMLEntityException.h; sourceTree = "<group>"; };
 		4B91FD11196B4F5900C5C25E /* OFUnknownXMLEntityException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFUnknownXMLEntityException.m; path = src/exceptions/OFUnknownXMLEntityException.m; sourceTree = "<group>"; };
+		4B92FDDC1F35DFAC000D541D /* OFMutableZIPArchiveEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableZIPArchiveEntry.h; path = src/OFMutableZIPArchiveEntry.h; sourceTree = "<group>"; };
+		4B92FDDD1F35DFAC000D541D /* OFMutableZIPArchiveEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableZIPArchiveEntry.m; path = src/OFMutableZIPArchiveEntry.m; sourceTree = "<group>"; };
 		4B935D101E9A7DC3001F2957 /* OFSandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSandbox.h; path = src/OFSandbox.h; sourceTree = "<group>"; };
 		4B935D111E9A7DC3001F2957 /* OFSandbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSandbox.m; path = src/OFSandbox.m; sourceTree = "<group>"; };
 		4B9361A61511000C00DCD16B /* OFThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFThreadPool.h; path = src/OFThreadPool.h; sourceTree = "<group>"; };
@@ -2117,6 +2123,8 @@
 				4B55254F147AA5DB0003BF47 /* OFMutableString_UTF8.m */,
 				4B4116CD1F21654200E78916 /* OFMutableURL.h */,
 				4B4116CE1F21654200E78916 /* OFMutableURL.m */,
+				4B92FDDC1F35DFAC000D541D /* OFMutableZIPArchiveEntry.h */,
+				4B92FDDD1F35DFAC000D541D /* OFMutableZIPArchiveEntry.m */,
 				4B6743FA163C395900EB1E59 /* OFMutex.h */,
 				4B6743FB163C395900EB1E59 /* OFMutex.m */,
 				4B511B7A139C0A34003764A5 /* OFNull.h */,
@@ -2479,6 +2487,7 @@
 				4B2C22021DA292BE00735907 /* OFMutableSet.h in Headers */,
 				4B2C22031DA292BE00735907 /* OFMutableString.h in Headers */,
 				4B4116D11F21654200E78916 /* OFMutableURL.h in Headers */,
+				4B92FDE01F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */,
 				4B2C22041DA292BE00735907 /* OFMutex.h in Headers */,
 				4B2C22051DA292BE00735907 /* OFNull.h in Headers */,
 				4B2C22061DA292BE00735907 /* OFNumber.h in Headers */,
@@ -2706,6 +2715,7 @@
 				4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */,
 				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
 				4B4116D01F21654200E78916 /* OFMutableURL.h in Headers */,
+				4B92FDDF1F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */,
 				4B674403163C395900EB1E59 /* OFMutex.h in Headers */,
 				4B511B7C139C0A34003764A5 /* OFNull.h in Headers */,
 				4B3D23D01337FCB000DD29B8 /* OFNumber.h in Headers */,
@@ -3270,6 +3280,7 @@
 				4B2C214E1DA292BE00735907 /* OFMutableString.m in Sources */,
 				4B2C214F1DA292BE00735907 /* OFMutableString_UTF8.m in Sources */,
 				4B4116D31F21654200E78916 /* OFMutableURL.m in Sources */,
+				4B92FDE21F35DFBC000D541D /* OFMutableZIPArchiveEntry.m in Sources */,
 				4B2C21501DA292BE00735907 /* OFMutex.m in Sources */,
 				4B2C21511DA292BE00735907 /* OFNull.m in Sources */,
 				4B2C21521DA292BE00735907 /* OFNumber.m in Sources */,
@@ -3470,6 +3481,7 @@
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
 				4B552553147AA5DB0003BF47 /* OFMutableString_UTF8.m in Sources */,
 				4B4116D21F21654200E78916 /* OFMutableURL.m in Sources */,
+				4B92FDE11F35DFBB000D541D /* OFMutableZIPArchiveEntry.m in Sources */,
 				4B674404163C395900EB1E59 /* OFMutex.m in Sources */,
 				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,

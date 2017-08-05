@@ -142,22 +142,28 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 }
 
 @implementation OFZIPArchiveEntry
-@synthesize fileName = _fileName, fileComment = _fileComment;
-@synthesize versionMadeBy = _versionMadeBy;
-@synthesize minVersionNeeded = _minVersionNeeded;
-@synthesize compressionMethod = _compressionMethod;
-@synthesize compressedSize = _compressedSize;
-@synthesize uncompressedSize = _uncompressedSize;
-@synthesize CRC32 = _CRC32;
-@synthesize versionSpecificAttributes = _versionSpecificAttributes;
-@synthesize generalPurposeBitFlag = _generalPurposeBitFlag;
-@synthesize of_lastModifiedFileTime = _lastModifiedFileTime;
-@synthesize of_lastModifiedFileDate = _lastModifiedFileDate;
-@synthesize of_localFileHeaderOffset = _localFileHeaderOffset;
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
 
 - init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- initWithFileName: (OFString *)fileName
+{
+	self = [super init];
+
+	@try {
+		_fileName = [_fileName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)of_initWithStream: (OFStream *)stream
@@ -197,10 +203,13 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
-		_extraField =
-		    [[stream readDataWithCount: extraFieldLength] copy];
-		_fileComment = [[stream readStringWithLength: fileCommentLength
-						    encoding: encoding] copy];
+		if (extraFieldLength > 0)
+			_extraField =
+			    [[stream readDataWithCount: extraFieldLength] copy];
+		if (fileCommentLength > 0)
+			_fileComment = [[stream
+			    readStringWithLength: fileCommentLength
+					encoding: encoding] copy];
 
 		of_zip_archive_entry_extra_field_find(_extraField,
 		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);
@@ -242,6 +251,63 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	[super dealloc];
 }
 
+- copy
+{
+	return [self retain];
+}
+
+- mutableCopy
+{
+	OFZIPArchiveEntry *copy =
+	    [[OFMutableZIPArchiveEntry alloc] initWithFileName: _fileName];
+
+	@try {
+		copy->_versionMadeBy = _versionMadeBy;
+		copy->_minVersionNeeded = _minVersionNeeded;
+		copy->_generalPurposeBitFlag = _generalPurposeBitFlag;
+		copy->_compressionMethod = _compressionMethod;
+		copy->_lastModifiedFileTime = _lastModifiedFileTime;
+		copy->_lastModifiedFileDate = _lastModifiedFileDate;
+		copy->_CRC32 = _CRC32;
+		copy->_compressedSize = _compressedSize;
+		copy->_uncompressedSize = _uncompressedSize;
+		copy->_extraField = [_extraField copy];
+		copy->_fileComment = [_extraField copy];
+		copy->_startDiskNumber = _startDiskNumber;
+		copy->_internalAttributes = _internalAttributes;
+		copy->_versionSpecificAttributes = _versionSpecificAttributes;
+		copy->_localFileHeaderOffset = _localFileHeaderOffset;
+	} @catch (id e) {
+		[copy release];
+		@throw e;
+	}
+}
+
+- (OFString *)fileName
+{
+	return _fileName;
+}
+
+- (OFString *)fileComment
+{
+	return _fileComment;
+}
+
+- (OFData *)extraField
+{
+	return _extraField;
+}
+
+- (uint16_t)versionMadeBy
+{
+	return _versionMadeBy;
+}
+
+- (uint16_t)minVersionNeeded
+{
+	return _minVersionNeeded;
+}
+
 - (OFDate *)modificationDate
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -266,9 +332,49 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	return [date autorelease];
 }
 
-- (OFData *)extraField
+- (uint16_t)compressionMethod
 {
-	return [[_extraField copy] autorelease];
+	return _compressionMethod;
+}
+
+- (uint64_t)compressedSize
+{
+	return _compressedSize;
+}
+
+- (uint64_t)uncompressedSize
+{
+	return _uncompressedSize;
+}
+
+- (uint32_t)CRC32
+{
+	return _CRC32;
+}
+
+- (uint32_t)versionSpecificAttributes
+{
+	return _versionSpecificAttributes;
+}
+
+- (uint16_t)generalPurposeBitFlag
+{
+	return _generalPurposeBitFlag;
+}
+
+- (uint16_t)of_lastModifiedFileTime
+{
+	return _lastModifiedFileTime;
+}
+
+- (uint16_t)of_lastModifiedFileDate
+{
+	return _lastModifiedFileDate;
+}
+
+- (int64_t)of_localFileHeaderOffset
+{
+	return _localFileHeaderOffset;
 }
 
 - (OFString *)description

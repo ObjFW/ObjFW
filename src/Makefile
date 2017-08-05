@@ -41,6 +41,7 @@ SRCS = OFApplication.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFMutableURL.m			\
+       OFMutableZIPArchiveEntry.m	\
        OFNull.m				\
        OFNumber.m			\
        OFObject.m			\
