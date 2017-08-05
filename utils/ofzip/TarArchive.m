@@ -239,6 +239,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 		OFArray OF_GENERIC(OFString *) *pathComponents;
 		OFString *directory;
 		OFFile *output;
+		OFStream *stream;
 		uint64_t written = 0, size = [entry size];
 		int8_t percent = -1, newPercent;
 
@@ -319,8 +320,10 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 					 mode: @"w"];
 		setPermissions(outFileName, entry);
 
-		while (![entry isAtEndOfStream]) {
-			ssize_t length = [app copyBlockFromStream: entry
+		stream = [_archive streamForReadingCurrentEntry];
+
+		while (![stream isAtEndOfStream]) {
+			ssize_t length = [app copyBlockFromStream: stream
 							 toStream: output
 							 fileName: fileName];
 
@@ -388,12 +391,15 @@ outer_loop_end:
 
 	while ((entry = [_archive nextEntry]) != nil) {
 		OFString *fileName = [entry fileName];
+		OFStream *stream;
 
 		if (![files containsObject: fileName])
 			continue;
 
-		while (![entry isAtEndOfStream]) {
-			ssize_t length = [app copyBlockFromStream: entry
+		stream = [_archive streamForReadingCurrentEntry];
+
+		while (![stream isAtEndOfStream]) {
+			ssize_t length = [app copyBlockFromStream: stream
 							 toStream: of_stdout
 							 fileName: fileName];
 
@@ -404,7 +410,7 @@ outer_loop_end:
 		}
 
 		[files removeObject: fileName];
-		[entry close];
+		[stream close];
 
 		if ([files count] == 0)
 			break;

@@ -881,6 +881,10 @@
 		4BA4846615CC9FAD00D75360 /* ForwardingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA4846515CC9FAD00D75360 /* ForwardingTests.m */; };
 		4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA49D8E13DB113B00381CDB /* OFIntrospection.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA49D8F13DB113B00381CDB /* OFIntrospection.m */; };
+		4BA842E61F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA842E41F35E53800292FC6 /* OFMutableTarArchiveEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BA842E71F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA842E41F35E53800292FC6 /* OFMutableTarArchiveEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BA842E81F35E53800292FC6 /* OFMutableTarArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA842E51F35E53800292FC6 /* OFMutableTarArchiveEntry.m */; };
+		4BA842E91F35E53800292FC6 /* OFMutableTarArchiveEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA842E51F35E53800292FC6 /* OFMutableTarArchiveEntry.m */; };
 		4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA85BC4140ECCE800E91D51 /* OFCountedSet_hashtable.h */; };
 		4BA85BCB140ECCE800E91D51 /* OFCountedSet_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA85BC5140ECCE800E91D51 /* OFCountedSet_hashtable.m */; };
 		4BA85BCC140ECCE800E91D51 /* OFMutableSet_hashtable.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA85BC6140ECCE800E91D51 /* OFMutableSet_hashtable.h */; };
@@ -1566,6 +1570,8 @@
 		4BA4846515CC9FAD00D75360 /* ForwardingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ForwardingTests.m; path = tests/ForwardingTests.m; sourceTree = "<group>"; };
 		4BA49D8E13DB113B00381CDB /* OFIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFIntrospection.h; path = src/OFIntrospection.h; sourceTree = "<group>"; };
 		4BA49D8F13DB113B00381CDB /* OFIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFIntrospection.m; path = src/OFIntrospection.m; sourceTree = "<group>"; };
+		4BA842E41F35E53800292FC6 /* OFMutableTarArchiveEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableTarArchiveEntry.h; path = src/OFMutableTarArchiveEntry.h; sourceTree = "<group>"; };
+		4BA842E51F35E53800292FC6 /* OFMutableTarArchiveEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableTarArchiveEntry.m; path = src/OFMutableTarArchiveEntry.m; sourceTree = "<group>"; };
 		4BA85BC4140ECCE800E91D51 /* OFCountedSet_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCountedSet_hashtable.h; path = src/OFCountedSet_hashtable.h; sourceTree = "<group>"; };
 		4BA85BC5140ECCE800E91D51 /* OFCountedSet_hashtable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCountedSet_hashtable.m; path = src/OFCountedSet_hashtable.m; sourceTree = "<group>"; };
 		4BA85BC6140ECCE800E91D51 /* OFMutableSet_hashtable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableSet_hashtable.h; path = src/OFMutableSet_hashtable.h; sourceTree = "<group>"; };
@@ -2121,6 +2127,8 @@
 				4B6799741099E7C50041064A /* OFMutableString.m */,
 				4B55254E147AA5DB0003BF47 /* OFMutableString_UTF8.h */,
 				4B55254F147AA5DB0003BF47 /* OFMutableString_UTF8.m */,
+				4BA842E41F35E53800292FC6 /* OFMutableTarArchiveEntry.h */,
+				4BA842E51F35E53800292FC6 /* OFMutableTarArchiveEntry.m */,
 				4B4116CD1F21654200E78916 /* OFMutableURL.h */,
 				4B4116CE1F21654200E78916 /* OFMutableURL.m */,
 				4B92FDDC1F35DFAC000D541D /* OFMutableZIPArchiveEntry.h */,
@@ -2486,6 +2494,7 @@
 				4B2C22011DA292BE00735907 /* OFMutableDictionary.h in Headers */,
 				4B2C22021DA292BE00735907 /* OFMutableSet.h in Headers */,
 				4B2C22031DA292BE00735907 /* OFMutableString.h in Headers */,
+				4BA842E71F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */,
 				4B4116D11F21654200E78916 /* OFMutableURL.h in Headers */,
 				4B92FDE01F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */,
 				4B2C22041DA292BE00735907 /* OFMutex.h in Headers */,
@@ -2714,6 +2723,7 @@
 				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
 				4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */,
 				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
+				4BA842E61F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */,
 				4B4116D01F21654200E78916 /* OFMutableURL.h in Headers */,
 				4B92FDDF1F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */,
 				4B674403163C395900EB1E59 /* OFMutex.h in Headers */,
@@ -3279,6 +3289,7 @@
 				4B2C214D1DA292BE00735907 /* OFMutableSet_hashtable.m in Sources */,
 				4B2C214E1DA292BE00735907 /* OFMutableString.m in Sources */,
 				4B2C214F1DA292BE00735907 /* OFMutableString_UTF8.m in Sources */,
+				4BA842E91F35E53800292FC6 /* OFMutableTarArchiveEntry.m in Sources */,
 				4B4116D31F21654200E78916 /* OFMutableURL.m in Sources */,
 				4B92FDE21F35DFBC000D541D /* OFMutableZIPArchiveEntry.m in Sources */,
 				4B2C21501DA292BE00735907 /* OFMutex.m in Sources */,
@@ -3480,6 +3491,7 @@
 				4BA85BCD140ECCE800E91D51 /* OFMutableSet_hashtable.m in Sources */,
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
 				4B552553147AA5DB0003BF47 /* OFMutableString_UTF8.m in Sources */,
+				4BA842E81F35E53800292FC6 /* OFMutableTarArchiveEntry.m in Sources */,
 				4B4116D21F21654200E78916 /* OFMutableURL.m in Sources */,
 				4B92FDE11F35DFBB000D541D /* OFMutableZIPArchiveEntry.m in Sources */,
 				4B674404163C395900EB1E59 /* OFMutex.m in Sources */,

@@ -21,6 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFString;
 @class OFStream;
+@class OFTarArchive_FileReadStream;
 
 /*!
  * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
@@ -29,17 +30,13 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFTarArchive: OFObject
 {
-#ifdef OF_TAR_ARCHIVE_ENTRY_M
-@public
-#endif
 	OFStream *_stream;
-@protected
 	enum {
 		OF_TAR_ARCHIVE_MODE_READ,
 		OF_TAR_ARCHIVE_MODE_WRITE,
 		OF_TAR_ARCHIVE_MODE_APPEND
 	} _mode;
-	OFTarArchiveEntry *_lastReturnedEntry;
+	OFTarArchive_FileReadStream *_lastReturnedStream;
 }
 
 /*!
@@ -102,14 +99,21 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This is only available in read mode.
  *
- * @warning Calling @ref nextEntry will invalidate all streams returned by the
- *	    previous entry! Reading from an invalidated stream will throw an
- *	    @ref OFReadFailedException!
+ * @warning Calling @ref nextEntry will invalidate all streams returned by
+ *	    @ref streamForReadingCurrentEntry entry! Reading from an
+ *	    invalidated stream will throw an @ref OFReadFailedException!
  *
  * @return The next entry from the tar archive or `nil` if all entries have
  *	   been read
  */
 - (OFTarArchiveEntry *)nextEntry;
+
+/*!
+ * @brief Returns a stream for reading the current entry.
+ *
+ * @return A stream for reading the current entry
+ */
+- (OFStream *)streamForReadingCurrentEntry;
 @end
 
 OF_ASSUME_NONNULL_END

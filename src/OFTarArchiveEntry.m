@@ -14,8 +14,6 @@
  * file.
  */
 
-#define OF_TAR_ARCHIVE_ENTRY_M
-
 #include "config.h"
 
 #include <inttypes.h>
@@ -25,7 +23,6 @@
 #import "OFStream.h"
 #import "OFDate.h"
 
-#import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 
 static OFString *
@@ -51,11 +48,10 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 }
 
 @implementation OFTarArchiveEntry
-@synthesize fileName = _fileName, mode = _mode, size = _size;
-@synthesize modificationDate = _modificationDate, type = _type;
-@synthesize targetFileName = _targetFileName;
-@synthesize owner = _owner, group = _group;
-@synthesize deviceMajor = _deviceMajor, deviceMinor = _deviceMinor;
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
 
 - init
 {
@@ -63,26 +59,27 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 }
 
 - (instancetype)of_initWithHeader: (char [512])header
-			   stream: (OFStream *)stream
 {
 	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
-		_stream = [stream retain];
+		OFString *targetFileName;
 
 		_fileName = [stringFromBuffer(header, 100) copy];
 		_mode = (uint32_t)octalValueFromBuffer(
 		    header + 100, 8, UINT32_MAX);
-		_size = _toRead = (uint64_t)octalValueFromBuffer(
+		_size = (uint64_t)octalValueFromBuffer(
 		    header + 124, 12, UINT64_MAX);
 		_modificationDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970:
 		    (of_time_interval_t)octalValueFromBuffer(
 		    header + 136, 12, UINTMAX_MAX)];
 		_type = header[156];
-		_targetFileName = [stringFromBuffer(header + 157, 100) copy];
+
+		targetFileName = stringFromBuffer(header + 157, 100);
+		if ([targetFileName length] > 0)
+			_targetFileName = [targetFileName copy];
 
 		if (_type == '\0')
 			_type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
@@ -113,10 +110,22 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	return self;
 }
 
+- initWithFileName: (OFString *)fileName
+{
+	self = [super init];
+
+	@try {
+		_fileName = [fileName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)dealloc
 {
-	[self close];
-
 	[_fileName release];
 	[_modificationDate release];
 	[_targetFileName release];
@@ -126,71 +135,82 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	[super dealloc];
 }
 
-- (size_t)lowlevelReadIntoBuffer: (void *)buffer
-			  length: (size_t)length
+- copy
 {
-	size_t ret;
-
-	if (_stream == nil)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	if (_atEndOfStream)
-		return 0;
-
-	if ((uint64_t)length > _toRead)
-		length = (size_t)_toRead;
-
-	ret = [_stream readIntoBuffer: buffer
-			       length: length];
-
-	if (ret == 0)
-		_atEndOfStream = true;
-
-	_toRead -= ret;
-
-	return ret;
+	return [self retain];
 }
 
-- (bool)lowlevelIsAtEndOfStream
+- mutableCopy
 {
-	if (_stream == nil)
-		@throw [OFNotOpenException exceptionWithObject: self];
+	OFTarArchiveEntry *copy = [[OFMutableTarArchiveEntry alloc]
+	    initWithFileName: _fileName];
 
-	return _atEndOfStream;
-}
-
-- (bool)hasDataInReadBuffer
-{
-	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
-}
-
-- (void)close
-{
-	[_stream release];
-	_stream = nil;
-
-	[super close];
-}
-
-- (void)of_skip
-{
-	char buffer[512];
-
-	while (_toRead >= 512) {
-		[_stream readIntoBuffer: buffer
-			    exactLength: 512];
-		_toRead -= 512;
+	@try {
+		copy->_mode = _mode;
+		copy->_size = _size;
+		copy->_modificationDate = [_modificationDate copy];
+		copy->_type = _type;
+		copy->_targetFileName = [_targetFileName copy];
+		copy->_owner = [_owner copy];
+		copy->_group = [_group copy];
+		copy->_deviceMajor = _deviceMajor;
+		copy->_deviceMinor = _deviceMinor;
+	} @catch (id e) {
+		[copy release];
+		@throw e;
 	}
 
-	if (_toRead > 0) {
-		[_stream readIntoBuffer: buffer
-			    exactLength: (size_t)_toRead];
-		_toRead = 0;
-	}
+	return copy;
+}
 
-	if (_size % 512 != 0)
-		[_stream readIntoBuffer: buffer
-			    exactLength: 512 - ((size_t)_size % 512)];
+- (OFString *)fileName
+{
+	return _fileName;
+}
+
+- (uint32_t)mode
+{
+	return _mode;
+}
+
+- (uint64_t)size
+{
+	return _size;
+}
+
+- (OFDate *)modificationDate
+{
+	return _modificationDate;
+}
+
+- (of_tar_archive_entry_type_t)type
+{
+	return _type;
+}
+
+- (OFString *)targetFileName
+{
+	return _targetFileName;
+}
+
+- (OFString *)owner
+{
+	return _owner;
+}
+
+- (OFString *)group
+{
+	return _group;
+}
+
+- (uint32_t)deviceMajor
+{
+	return _deviceMajor;
+}
+
+- (uint32_t)deviceMinor
+{
+	return _deviceMinor;
 }
 
 - (OFString *)description

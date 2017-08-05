@@ -15,7 +15,6 @@
  */
 
 #import "OFObject.h"
-#import "OFStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -48,13 +47,11 @@ typedef enum of_tar_archive_entry_type_t {
  *
  * @brief A class which represents an entry of a tar archive.
  */
-@interface OFTarArchiveEntry: OFStream
+@interface OFTarArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
-	OFStream *_stream;
-	bool _atEndOfStream;
 	OFString *_fileName;
 	uint32_t _mode;
-	uint64_t _size, _toRead;
+	uint64_t _size;
 	OFDate *_modificationDate;
 	of_tar_archive_entry_type_t _type;
 	OFString *_targetFileName;
@@ -92,17 +89,17 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The file name of the target (for a hard link or symbolic link).
  */
-@property (readonly, nonatomic) OFString *targetFileName;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *targetFileName;
 
 /*!
  * The owner of the file.
  */
-@property (readonly, nonatomic) OFString *owner;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *owner;
 
 /*!
  * The group of the file.
  */
-@property (readonly, nonatomic) OFString *group;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *group;
 
 /*!
  * The device major (if the file is a device).
@@ -114,7 +111,26 @@ typedef enum of_tar_archive_entry_type_t {
  */
 @property (readonly, nonatomic) uint32_t deviceMinor;
 
+/*!
+ * @brief Creates a new OFTarArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFTarArchiveEntry
+ * @return A new, autoreleased OFTarArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
 - init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFTarArchiveEntry with the specified
+ *	  file name.
+ *
+ * @param fileName The file name for the OFTarArchiveEntry
+ * @return An initialized OFTarArchiveEntry
+ */
+- initWithFileName: (OFString *)fileName;
 @end
 
 OF_ASSUME_NONNULL_END
+
+#import "OFMutableTarArchiveEntry.h"

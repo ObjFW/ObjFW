@@ -113,7 +113,8 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) uint16_t generalPurposeBitFlag;
 
 /*!
- * @brief Converts the OFMutableZIPArchive to an immutable OFZIPArchive.
+ * @brief Converts the OFMutableZIPArchiveEntry to an immutable
+ *	  OFZIPArchiveEntry.
  */
 - (void)makeImmutable;
 @end
