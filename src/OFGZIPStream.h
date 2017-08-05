@@ -21,6 +21,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*!
+ * @class OFGZIPStream OFGZIPStream.h ObjFW/OFGZIPStream.h
+ *
+ * @brief A class that handles GZIP compression and decompression transparently
+ *	  for an underlying stream.
+ */
 @interface OFGZIPStream: OFStream
 {
 	OFStream *_stream;
@@ -74,8 +80,23 @@ OF_ASSUME_NONNULL_BEGIN
 	uint32_t _CRC32, _uncompressedSize;
 }
 
+/*!
+ * @brief Creates a new OFGZIPStream with the specified underlying stream.
+ *
+ * @param stream The underlying stream for the OFGZIPStream
+ * @return A new, autoreleased OFGZIPStream
+ */
 + (instancetype)streamWithStream: (OFStream *)stream;
+
 - init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFGZIPStream with the specified
+ *	  underlying stream.
+ *
+ * @param stream The underlying stream for the OFGZIPStream
+ * @return An initialized OFGZIPStream
+ */
 - initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
 @end
 
