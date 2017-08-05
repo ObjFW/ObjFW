@@ -48,7 +48,7 @@
 	_size = size;
 }
 
-- (void)setDate: (OFDate *)modificationDate
+- (void)setModificationDate: (OFDate *)modificationDate
 {
 	OFDate *old = _modificationDate;
 	_modificationDate = [modificationDate retain];
