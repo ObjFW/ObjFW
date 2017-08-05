@@ -19,9 +19,13 @@
 #import "OFArray.h"
 
 @protocol Archive <OFObject>
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream;
-- initWithStream: (OF_KINDOF(OFStream *))stream;
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
+			     mode: (OFString *)mode;
+- initWithStream: (OF_KINDOF(OFStream *))stream
+	    mode: (OFString *)mode;
 - (void)listFiles;
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files;
-- (void)printFiles: (OFArray OF_GENERIC(OFString* ) *)files;
+- (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files;
+@optional
+- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files;
 @end

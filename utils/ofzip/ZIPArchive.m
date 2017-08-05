@@ -57,18 +57,20 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
+			     mode: (OFString *)mode
 {
-	return [[[self alloc] initWithStream: stream] autorelease];
+	return [[[self alloc] initWithStream: stream
+					mode: mode] autorelease];
 }
 
 - initWithStream: (OF_KINDOF(OFStream *))stream
+	    mode: (OFString *)mode
 {
 	self = [super init];
 
 	@try {
-		_archive = [[OFZIPArchive alloc]
-		    initWithSeekableStream: stream
-				      mode: @"r"];
+		_archive = [[OFZIPArchive alloc] initWithSeekableStream: stream
+								   mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;

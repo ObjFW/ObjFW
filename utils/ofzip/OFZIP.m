@@ -33,7 +33,9 @@
 #import "ZIPArchive.h"
 
 #import "OFCreateDirectoryFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 #import "OFSeekFailedException.h"
@@ -47,13 +49,15 @@ static void
 help(OFStream *stream, bool full, int status)
 {
 	[stream writeLine: OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] -[Cfhlnpqtvx] archive.zip [file1 file2 ...]",
+	    @"Usage: %[prog] -[acCfhlnpqtvx] archive.zip [file1 file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	if (full) {
 		[stream writeString: @"\n"];
 		[stream writeLine: OF_LOCALIZED(@"full_usage",
 		    @"Options:\n"
+		    @"    -a  --append      Append to archive\n"
+		    @"    -c  --create      Create archive\n"
 		    @"    -C  --directory   Extract into the specified "
 		    @"directory\n"
 		    @"    -f  --force       Force / overwrite files\n"
@@ -93,9 +97,11 @@ mutuallyExclusiveError(of_unichar_t shortOption1, OFString *longOption1,
 }
 
 static void
-mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
+mutuallyExclusiveError5(of_unichar_t shortOption1, OFString *longOption1,
     of_unichar_t shortOption2, OFString *longOption2,
-    of_unichar_t shortOption3, OFString *longOption3)
+    of_unichar_t shortOption3, OFString *longOption3,
+    of_unichar_t shortOption4, OFString *longOption4,
+    of_unichar_t shortOption5, OFString *longOption5)
 {
 	OFString *shortOption1Str = [OFString stringWithFormat: @"%C",
 								shortOption1];
@@ -103,17 +109,36 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 								shortOption2];
 	OFString *shortOption3Str = [OFString stringWithFormat: @"%C",
 								shortOption3];
+	OFString *shortOption4Str = [OFString stringWithFormat: @"%C",
+								shortOption4];
+	OFString *shortOption5Str = [OFString stringWithFormat: @"%C",
+								shortOption5];
 
-	[of_stderr writeLine: OF_LOCALIZED(@"3_options_mutually_exclusive",
+	[of_stderr writeLine: OF_LOCALIZED(@"5_options_mutually_exclusive",
 	    @"Error: -%[shortopt1] / --%[longopt1], "
-	    @"-%[shortopt2] / --%[longopt2] and -%[shortopt3] / --%[longopt3] "
-	    @"are mutually exclusive!",
+	    @"-%[shortopt2] / --%[longopt2], -%[shortopt3] / --%[longopt3], "
+	    @"-%[shortopt4] / --%[longopt4] and\n"
+	    @"       -%[shortopt5] / --%[longopt5] are mutually exclusive!",
 	    @"shortopt1", shortOption1Str,
 	    @"longopt1", longOption1,
 	    @"shortopt2", shortOption2Str,
 	    @"longopt2", longOption2,
 	    @"shortopt3", shortOption3Str,
-	    @"longopt3", longOption3)];
+	    @"longopt3", longOption3,
+	    @"shortopt4", shortOption4Str,
+	    @"longopt4", longOption4,
+	    @"shortopt5", shortOption5Str,
+	    @"longopt5", longOption5)];
+	[OFApplication terminateWithStatus: 1];
+}
+
+static void
+writingNotSupported(OFString *type)
+{
+	[of_stderr writeLine: OF_LOCALIZED(
+	    @"writing_not_supported",
+	    @"Writing archives of type %[type] is not (yet) supported!",
+	    @"type", type)];
 	[OFApplication terminateWithStatus: 1];
 }
 
@@ -122,6 +147,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 {
 	OFString *outputDir = nil, *type = nil;
 	const of_options_parser_option_t options[] = {
+		{ 'a', @"append", 0, NULL, NULL },
+		{ 'c', @"create", 0, NULL, NULL },
 		{ 'C', @"directory", 1, NULL, &outputDir },
 		{ 'f', @"force", 0, NULL, NULL },
 		{ 'h', @"help", 0, NULL, NULL },
@@ -191,13 +218,18 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 			_outputLevel--;
 			break;
+		case 'a':
+		case 'c':
 		case 'l':
-		case 'x':
 		case 'p':
+		case 'x':
 			if (mode != '\0')
-				mutuallyExclusiveError3(
-				    'l', @"list", 'x', @"extract",
-				    'p', @"print");
+				mutuallyExclusiveError5(
+				    'a', @"append",
+				    'c', @"create",
+				    'l', @"list",
+				    'p', @"print",
+				    'x', @"extract");
 
 			mode = option;
 			break;
@@ -237,7 +269,8 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 	remainingArguments = [optionsParser remainingArguments];
 	archive = [self openArchiveWithPath: [remainingArguments firstObject]
-				       type: type];
+				       type: type
+				       mode: mode];
 
 	if (outputDir != nil)
 		[[OFFileManager defaultManager]
@@ -303,7 +336,9 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 - (id <Archive>)openArchiveWithPath: (OFString *)path
 			       type: (OFString *)type
+			       mode: (char)mode
 {
+	OFString *modeString, *fileModeString;
 	OFFile *file = nil;
 	id <Archive> archive = nil;
 
@@ -313,9 +348,26 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 	if (path == nil)
 		return nil;
 
+	switch (mode) {
+	case 'a':
+		modeString = @"a";
+		fileModeString = @"r+";
+		break;
+	case 'c':
+		modeString = fileModeString = @"w";
+		break;
+	case 'l':
+	case 'p':
+	case 'x':
+		modeString = fileModeString = @"r";
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+
 	@try {
 		file = [OFFile fileWithPath: path
-				       mode: @"r"];
+				       mode: fileModeString];
 	} @catch (OFOpenItemFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
@@ -344,15 +396,20 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 
 	@try {
 		if ([type isEqual: @"gz"])
-			archive = [GZIPArchive archiveWithStream: file];
+			archive = [GZIPArchive archiveWithStream: file
+							    mode: modeString];
 		else if ([type isEqual: @"tar"])
-			archive = [TarArchive archiveWithStream: file];
-		else if ([type isEqual: @"tgz"])
-			archive = [TarArchive archiveWithStream:
-			    [OFGZIPStream streamWithStream: file
-						      mode: @"r"]];
-		else if ([type isEqual: @"zip"])
-			archive = [ZIPArchive archiveWithStream: file];
+			archive = [TarArchive archiveWithStream: file
+							   mode: modeString];
+		else if ([type isEqual: @"tgz"]) {
+			OFStream *GZIPStream = [OFGZIPStream
+			    streamWithStream: file
+					mode: modeString];
+			archive = [TarArchive archiveWithStream: GZIPStream
+							   mode: modeString];
+		} else if ([type isEqual: @"zip"])
+			archive = [ZIPArchive archiveWithStream: file
+							   mode: modeString];
 		else {
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"unknown_archive_type",
@@ -360,6 +417,12 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 			    @"type", type)];
 			[OFApplication terminateWithStatus: 1];
 		}
+	} @catch (OFNotImplementedException *e) {
+		if ((mode == 'a' || mode == 'c') &&
+		    sel_isEqual([e selector], @selector(initWithStream:mode:)))
+			writingNotSupported(type);
+
+		@throw e;
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
@@ -385,6 +448,10 @@ mutuallyExclusiveError3(of_unichar_t shortOption1, OFString *longOption1,
 		    @"file", path)];
 		[OFApplication terminateWithStatus: 1];
 	}
+
+	if ((mode == 'a' || mode == 'c') &&
+	    ![archive respondsToSelector: @selector(addFiles:)])
+		writingNotSupported(type);
 
 	return archive;
 }
