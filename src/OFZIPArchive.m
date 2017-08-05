@@ -24,6 +24,7 @@
 #import "OFData.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
+#import "OFStream.h"
 #import "OFSeekableStream.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -136,11 +137,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @implementation OFZIPArchive
 @synthesize archiveComment = _archiveComment;
 
-+ (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream
-				     mode: (OFString *)mode
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
+			     mode: (OFString *)mode
 {
-	return [[[self alloc] initWithSeekableStream: stream
-						mode: mode] autorelease];
+	return [[[self alloc] initWithStream: stream
+					mode: mode] autorelease];
 }
 
 #ifdef OF_HAVE_FILES
@@ -157,8 +158,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSeekableStream: (OFSeekableStream *)stream
-		    mode: (OFString *)mode
+- initWithStream: (OF_KINDOF(OFStream *))stream
+	    mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -166,6 +167,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_stream = [stream retain];
 
 		if ([mode isEqual: @"r"]) {
+			if (![stream isKindOfClass: [OFSeekableStream class]])
+				@throw [OFInvalidArgumentException exception];
+
 			_mode = OF_ZIP_ARCHIVE_MODE_READ;
 
 			[self of_readZIPInfo];
@@ -191,8 +195,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFFile *file = [[OFFile alloc] initWithPath: path
 					       mode: mode];
 	@try {
-		self = [self initWithSeekableStream: file
-					       mode: mode];
+		self = [self initWithStream: file
+				       mode: mode];
 	} @finally {
 		[file release];
 	}

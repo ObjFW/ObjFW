@@ -73,7 +73,7 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 }
 
 @implementation OFTarArchive: OFObject
-+ (instancetype)archiveWithStream: (OFStream *)stream
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
 {
 	return [[[self alloc] initWithStream: stream
@@ -89,7 +89,7 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 }
 #endif
 
-- initWithStream: (OFStream *)stream
+- initWithStream: (OF_KINDOF(OFStream *))stream
 	    mode: (OFString *)mode
 {
 	self = [super init];
@@ -116,8 +116,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 			if (![_stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
-			[(OFSeekableStream *)stream seekToOffset: -1024
-							  whence: SEEK_END];
+			[stream seekToOffset: -1024
+				      whence: SEEK_END];
 			[stream readIntoBuffer: buffer.c
 				   exactLength: 1024];
 
@@ -128,8 +128,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 			if (!empty)
 				@throw [OFInvalidFormatException exception];
 
-			[(OFSeekableStream *)stream seekToOffset: -1024
-							  whence: SEEK_END];
+			[stream seekToOffset: -1024
+				      whence: SEEK_END];
 		}
 	} @catch (id e) {
 		[self release];

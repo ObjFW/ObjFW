@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFTarArchive: OFObject
 {
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	enum {
 		OF_TAR_ARCHIVE_MODE_READ,
 		OF_TAR_ARCHIVE_MODE_WRITE,
@@ -42,13 +42,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new OFTarArchive object with the specified stream.
  *
  * @param stream A stream from which the tar archive will be read.
- *		 For append mode, this needs to be a seekable stream.
+ *		 For append mode, this needs to be an OFSeekableStream.
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithStream: (OFStream *)stream
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
@@ -70,13 +70,13 @@ OF_ASSUME_NONNULL_BEGIN
  *	  specified stream.
  *
  * @param stream A stream from which the tar archive will be read.
- *		 For append mode, this needs to be a seekable stream.
+ *		 For append mode, this needs to be an OFSeekableStream.
  * @param mode The mode for the tar file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFTarArchive
  */
-- initWithStream: (OFStream *)stream
+- initWithStream: (OF_KINDOF(OFStream *))stream
 	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES

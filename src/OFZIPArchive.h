@@ -23,7 +23,6 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
-@class OFSeekableStream;
 @class OFStream;
 
 /*!
@@ -33,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFZIPArchive: OFObject
 {
-	OFSeekableStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	enum {
 		OF_ZIP_ARCHIVE_MODE_READ,
 		OF_ZIP_ARCHIVE_MODE_WRITE,
@@ -56,16 +55,17 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *archiveComment;
 
 /*!
- * @brief Creates a new OFZIPArchive object with the specified seekable stream.
+ * @brief Creates a new OFZIPArchive object with the specified stream.
  *
- * @param stream A seekable stream from which the ZIP archive will be read
+ * @param stream A stream from which the ZIP archive will be read.
+ *		 For read and append mode, this needs to be an OFSeekableStream.
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithSeekableStream: (OFSeekableStream *)stream
-				     mode: (OFString *)mode;
++ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
+			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -85,16 +85,17 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @brief Initializes an already allocated OFZIPArchive object with the
- *	  specified seekable stream.
+ *	  specified stream.
  *
- * @param stream A seekable stream from which the ZIP archive will be read
+ * @param stream A stream from which the ZIP archive will be read.
+ *		 For read and append mode, this needs to be an OFSeekableStream.
  * @param mode The mode for the ZIP file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- initWithSeekableStream: (OFSeekableStream *)stream
-		    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
+- initWithStream: (OF_KINDOF(OFStream *))stream
+	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!

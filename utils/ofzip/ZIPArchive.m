@@ -69,8 +69,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	self = [super init];
 
 	@try {
-		_archive = [[OFZIPArchive alloc] initWithSeekableStream: stream
-								   mode: mode];
+		_archive = [[OFZIPArchive alloc] initWithStream: stream
+							   mode: mode];
 	} @catch (id e) {
 		[self release];
 		@throw e;
