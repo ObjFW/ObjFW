@@ -183,10 +183,21 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
 /*!
+ * @brief Get the UID and GID of the specified item.
+ *
+ * @param UID A pointer to an uint16_t to store the UID, or NULL
+ * @param GID A pointer to an uint16_t to store the GID, or NULL
+ * @param path The path to the item whose UID and GID should be retrieved
+ */
+- (void)getUID: (nullable uint16_t *)UID
+	   GID: (nullable uint16_t *)GID
+  ofItemAtPath: (OFString *)path;
+
+/*!
  * @brief Get the owner and group of the specified item.
  *
- * @param owner A pointer to an `OFString *` to store the owner, or nil
- * @param group A pointer to an `OFString *` to store the group, or nil
+ * @param owner A pointer to an `OFString *` to store the owner, or NULL
+ * @param group A pointer to an `OFString *` to store the group, or NULL
  * @param path The path to the item whose owner and group should be retrieved
  */
 - (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner

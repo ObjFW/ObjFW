@@ -757,9 +757,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-- (void)getOwner: (OFString **)owner
-	   group: (OFString **)group
-    ofItemAtPath: (OFString *)path
+- (void)getUID: (uint16_t *)UID
+	   GID: (uint16_t *)GID
+  ofItemAtPath: (OFString *)path
 {
 	of_stat_t s;
 
@@ -770,6 +770,22 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		@throw [OFStatItemFailedException exceptionWithPath: path
 							      errNo: errno];
 
+	if (UID != NULL)
+		*UID = s.st_uid;
+	if (GID != NULL)
+		*GID = s.st_gid;
+}
+
+- (void)getOwner: (OFString **)owner
+	   group: (OFString **)group
+    ofItemAtPath: (OFString *)path
+{
+	uint16_t UID, GID;
+
+	[self	  getUID: &UID
+		     GID: &GID
+	    ofItemAtPath: path];
+
 # ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
 	@try {
@@ -777,14 +793,14 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		of_string_encoding_t encoding = [OFLocalization encoding];
 
 		if (owner != NULL) {
-			struct passwd *passwd = getpwuid(s.st_uid);
+			struct passwd *passwd = getpwuid(UID);
 
 			*owner = [OFString stringWithCString: passwd->pw_name
 						    encoding: encoding];
 		}
 
 		if (group != NULL) {
-			struct group *group_ = getgrgid(s.st_gid);
+			struct group *group_ = getgrgid(GID);
 
 			*group = [OFString stringWithCString: group_->gr_name
 						    encoding: encoding];
