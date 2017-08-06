@@ -471,10 +471,18 @@ outer_loop_end:
 		    [fileManager modificationDateOfItemAtPath: fileName]];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+		uint16_t UID, GID;
 		OFString *owner, *group;
+
+		[fileManager getUID: &UID
+				GID: &GID
+		       ofItemAtPath: fileName];
 		[fileManager getOwner: &owner
 				group: &group
 			 ofItemAtPath: fileName];
+
+		[entry setUID: UID];
+		[entry setGID: GID];
 		[entry setOwner: owner];
 		[entry setGroup: group];
 #endif
