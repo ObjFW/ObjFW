@@ -24,6 +24,12 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int64_t of_localFileHeaderOffset;
 
 - (instancetype)of_initWithStream: (OFStream *)stream OF_METHOD_FAMILY(init);
+- (uint64_t)of_writeToStream: (OFStream *)stream;
+@end
+
+@interface OFMutableZIPArchiveEntry ()
+@property (readwrite, nonatomic, setter=of_setLocalFileHeaderOffset:)
+    int64_t of_localFileHeaderOffset;
 @end
 
 OF_ASSUME_NONNULL_END

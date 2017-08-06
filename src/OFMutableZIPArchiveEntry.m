@@ -17,14 +17,19 @@
 #include "config.h"
 
 #import "OFMutableZIPArchiveEntry.h"
+#import "OFZIPArchiveEntry+Private.h"
 #import "OFString.h"
 #import "OFData.h"
 #import "OFDate.h"
+
+#import "OFInvalidArgumentException.h"
+#import "OFOutOfRangeException.h"
 
 @implementation OFMutableZIPArchiveEntry
 @dynamic fileName, fileComment, extraField, versionMadeBy, minVersionNeeded;
 @dynamic modificationDate, compressionMethod, compressedSize, uncompressedSize;
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
+@dynamic of_localFileHeaderOffset;
 
 - copy
 {
@@ -37,23 +42,50 @@
 
 - (void)setFileName: (OFString *)fileName
 {
-	OFString *old = _fileName;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *old;
+
+	if ([fileName UTF8StringLength] > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	old = _fileName;
 	_fileName = [fileName copy];
 	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setFileComment: (OFString *)fileComment
 {
-	OFString *old = _fileComment;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *old;
+
+	if ([fileComment UTF8StringLength] > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	old = _fileComment;
 	_fileComment = [fileComment copy];
 	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setExtraField: (OFData *)extraField
 {
-	OFData *old = _extraField;
+	void *pool = objc_autoreleasePoolPush();
+	OFData *old;
+
+	if ([extraField itemSize] != 1)
+		@throw [OFInvalidArgumentException exception];
+
+	if ([extraField count] > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	old = _extraField;
 	_extraField = [extraField copy];
 	[old release];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setVersionMadeBy: (uint16_t)versionMadeBy
@@ -107,6 +139,14 @@
 - (void)setGeneralPurposeBitFlag: (uint16_t)generalPurposeBitFlag
 {
 	_generalPurposeBitFlag = generalPurposeBitFlag;
+}
+
+- (void)of_setLocalFileHeaderOffset: (int64_t)localFileHeaderOffset
+{
+	if (localFileHeaderOffset < 0)
+		@throw [OFInvalidArgumentException exception];
+
+	_localFileHeaderOffset = localFileHeaderOffset;
 }
 
 - (void)makeImmutable

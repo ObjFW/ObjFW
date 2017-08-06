@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFZIPArchive: OFObject
 {
 	OF_KINDOF(OFStream *) _stream;
+	int64_t _offset;
 	enum {
 		OF_ZIP_ARCHIVE_MODE_READ,
 		OF_ZIP_ARCHIVE_MODE_WRITE,
@@ -52,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The archive comment.
  */
-@property (readonly, nonatomic) OFString *archiveComment;
+@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *archiveComment;
 
 /*!
  * @brief Creates a new OFZIPArchive object with the specified stream.
@@ -127,16 +128,46 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns a stream for reading the specified file from the archive.
  *
- * This method is only available in read and append mode.
+ * @note This method is only available in read mode.
  *
  * @warning Calling @ref streamForReadingFile: will invalidate all streams
- *	    previously returned by @ref streamForReadingFile:! Reading from an
- *	    invalidated stream will throw an @ref OFReadFailedException!
+ *	    previously returned by @ref streamForReadingFile: or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
  *
  * @param path The path to the file inside the archive
  * @return A stream for reading the specified file form the archive
  */
 - (OFStream *)streamForReadingFile: (OFString *)path;
+
+/*!
+ * @brief Returns a stream for writing the specified entry to the archive.
+ *
+ * @note This method is only available in write and append mode.
+ *
+ * @warning Calling @ref streamForWritingEntry: will invalidate all streams
+ *	    previously returned by @ref streamForReadingFile: or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
+ *
+ * @param entry The entry to write to the archive.@n
+ *		The following parts of the specified entry will be ignored:
+ *		  * The lower 8 bits of the version made by.
+ *		  * The lower 8 bits of the minimum version needed.
+ *		  * The compressed size.
+ *		  * The uncompressed size.
+ *		  * The CRC32.
+ *		  * Bit 3 and 11 of the general purpose bit flag.
+ * @return A stream for writing the specified entry to the archive
+ */
+- (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry;
+
+/*!
+ * @brief Closes the OFZIPArchive.
+ */
+- (void)close;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -42,8 +42,8 @@
 	bool _atEndOfStream;
 }
 
-- initWithEntry: (OFTarArchiveEntry *)entry
-	 stream: (OFStream *)stream;
+- initWithStream: (OFStream *)stream
+	   entry: (OFTarArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
@@ -54,8 +54,8 @@
 	uint64_t _toWrite;
 }
 
-- initWithEntry: (OFTarArchiveEntry *)entry
-	 stream: (OFStream *)stream;
+- initWithStream: (OFStream *)stream
+	   entry: (OFTarArchiveEntry *)entry;
 @end
 
 static void
@@ -212,8 +212,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 	    of_initWithHeader: buffer.c] autorelease];
 
 	_lastReturnedStream = [[OFTarArchive_FileReadStream alloc]
-	    initWithEntry: entry
-		   stream: _stream];
+	    initWithStream: _stream
+		     entry: entry];
 
 	return entry;
 }
@@ -285,8 +285,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 		      length: sizeof(buffer)];
 
 	_lastReturnedStream = [[OFTarArchive_FileWriteStream alloc]
-	    initWithEntry: entry
-		   stream: _stream];
+	    initWithStream: _stream
+		     entry: entry];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -316,8 +316,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 @end
 
 @implementation OFTarArchive_FileReadStream
-- initWithEntry: (OFTarArchiveEntry *)entry
-	 stream: (OFStream *)stream
+- initWithStream: (OFStream *)stream
+	   entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
@@ -419,8 +419,8 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 @end
 
 @implementation OFTarArchive_FileWriteStream
-- initWithEntry: (OFTarArchiveEntry *)entry
-	 stream: (OFStream *)stream
+- initWithStream: (OFStream *)stream
+	   entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 

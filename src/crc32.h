@@ -26,7 +26,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern uint32_t of_crc32(uint32_t crc, unsigned char *_Nonnull bytes,
+extern uint32_t of_crc32(uint32_t crc, const unsigned char *_Nonnull bytes,
     size_t length);
 #ifdef __cplusplus
 }

@@ -40,6 +40,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * The extra field of the entry.
+ *
+ * The item size *must* be 1!
  */
 @property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy) OFData *extraField;
 

@@ -27,6 +27,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 
 extern uint32_t of_zip_archive_read_field32(const uint8_t **, uint16_t *);
 extern uint64_t of_zip_archive_read_field64(const uint8_t **, uint16_t *);
@@ -157,7 +158,14 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	self = [super init];
 
 	@try {
-		_fileName = [_fileName copy];
+		void *pool = objc_autoreleasePoolPush();
+
+		if ([fileName UTF8StringLength] > UINT16_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		_fileName = [fileName copy];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -229,7 +237,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 				_startDiskNumber = of_zip_archive_read_field32(
 				    &ZIP64, &ZIP64Size);
 
-			if (ZIP64Size > 0)
+			if (ZIP64Size > 0 || _localFileHeaderOffset < 0)
 				@throw [OFInvalidFormatException exception];
 		}
 
@@ -281,6 +289,8 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 		[copy release];
 		@throw e;
 	}
+
+	return copy;
 }
 
 - (OFString *)fileName
@@ -401,5 +411,51 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
+}
+
+- (uint64_t)of_writeToStream: (OFStream *)stream
+{
+	void *pool;
+	uint64_t size = 0;
+
+	if (_compressedSize > UINT32_MAX ||
+	    _uncompressedSize > UINT32_MAX ||
+	    _localFileHeaderOffset > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+	[stream writeLittleEndianInt32: 0x02014B50];
+	[stream writeLittleEndianInt16: _versionMadeBy];
+	[stream writeLittleEndianInt16: _minVersionNeeded];
+	[stream writeLittleEndianInt16: _generalPurposeBitFlag];
+	[stream writeLittleEndianInt16: _compressionMethod];
+	[stream writeLittleEndianInt16: _lastModifiedFileTime];
+	[stream writeLittleEndianInt16: _lastModifiedFileDate];
+	[stream writeLittleEndianInt32: _CRC32];
+	[stream writeLittleEndianInt32: (uint32_t)_compressedSize];
+	[stream writeLittleEndianInt32: (uint32_t)_uncompressedSize];
+	[stream writeLittleEndianInt16: (uint16_t)[_fileName UTF8StringLength]];
+	[stream writeLittleEndianInt16: (uint16_t)[_extraField count]];
+	[stream writeLittleEndianInt16:
+	    (uint16_t)[_fileComment UTF8StringLength]];
+	[stream writeLittleEndianInt16: _startDiskNumber];
+	[stream writeLittleEndianInt16: _internalAttributes];
+	[stream writeLittleEndianInt32: _versionSpecificAttributes];
+	[stream writeLittleEndianInt32: (uint32_t)_localFileHeaderOffset];
+	size += (4 + (6 * 2) + (3 * 4) + (5 * 2) + (2 * 4));
+
+	[stream writeString: _fileName];
+	if (_extraField != nil)
+		[stream writeData: _extraField];
+	if (_fileComment != nil)
+		[stream writeString: _fileComment];
+	size += (uint64_t)[_fileName UTF8StringLength] +
+	    (uint64_t)[_extraField count] +
+	    (uint64_t)[_fileComment UTF8StringLength];
+
+	objc_autoreleasePoolPop(pool);
+
+	return size;
 }
 @end

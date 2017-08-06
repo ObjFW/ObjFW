@@ -98,7 +98,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the next entry from the tar archive or `nil` if all entries
  *	  have been read.
  *
- * This is only available in read mode.
+ * @note This is only available in read mode.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by
  *	    @ref streamForReadingCurrentEntry or
@@ -114,12 +114,16 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns a stream for reading the current entry.
  *
+ * @note This is only available in read mode.
+ *
  * @return A stream for reading the current entry
  */
 - (OFStream *)streamForReadingCurrentEntry;
 
 /*!
  * @brief Returns a stream for writing the specified entry.
+ *
+ * @note This is only available in write and append mode.
  *
  * @warning Calling @ref nextEntry will invalidate all streams returned by
  *	    @ref streamForReadingCurrentEntry or

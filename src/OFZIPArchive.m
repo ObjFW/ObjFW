@@ -49,11 +49,14 @@
  *  - Split archives are not supported.
  *  - Write support is missing.
  *  - Encrypted files cannot be read.
+ *  - No support for writing ZIP64 files.
  */
 
 @interface OFZIPArchive ()
 - (void)of_readZIPInfo;
 - (void)of_readEntries;
+- (void)of_closeLastReturnedStream;
+- (void)of_writeCentralDirectory;
 @end
 
 @interface OFZIPArchive_LocalFileHeader: OFObject
@@ -71,7 +74,7 @@
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry;
 @end
 
-@interface OFZIPArchive_FileStream: OFStream
+@interface OFZIPArchive_FileReadStream: OFStream
 {
 	OFStream *_stream, *_decompressedStream;
 	OFZIPArchive_LocalFileHeader *_localFileHeader;
@@ -81,8 +84,21 @@
 	bool _atEndOfStream;
 }
 
--  initWithStream: (OFStream *)path
+-  initWithStream: (OFStream *)stream
   localFileHeader: (OFZIPArchive_LocalFileHeader *)localFileHeader;
+@end
+
+@interface OFZIPArchive_FileWriteStream: OFStream
+{
+	OFStream *_stream;
+	uint32_t _CRC32;
+@public
+	uint64_t _bytesWritten;
+	OFMutableZIPArchiveEntry *_entry;
+}
+
+- initWithStream: (OFStream *)stream
+	   entry: (OFMutableZIPArchiveEntry *)entry;
 @end
 
 uint32_t
@@ -164,22 +180,33 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	self = [super init];
 
 	@try {
-		_stream = [stream retain];
+		if ([mode isEqual: @"r"])
+			_mode = OF_ZIP_ARCHIVE_MODE_READ;
+		else if ([mode isEqual: @"w"])
+			_mode = OF_ZIP_ARCHIVE_MODE_WRITE;
+		else if ([mode isEqual: @"a"])
+			_mode = OF_ZIP_ARCHIVE_MODE_APPEND;
+		else
+			@throw [OFInvalidArgumentException exception];
 
-		if ([mode isEqual: @"r"]) {
+		_stream = [stream retain];
+		_entries = [[OFMutableArray alloc] init];
+		_pathToEntryMap = [[OFMutableDictionary alloc] init];
+
+		if (_mode == OF_ZIP_ARCHIVE_MODE_READ ||
+		    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
 			if (![stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
-			_mode = OF_ZIP_ARCHIVE_MODE_READ;
-
 			[self of_readZIPInfo];
 			[self of_readEntries];
-		} else if ([mode isEqual: @"w"] || [mode isEqual: @"a"])
-			@throw [OFNotImplementedException
-			    exceptionWithSelector: _cmd
-					   object: self];
-		else
-			@throw [OFInvalidArgumentException exception];
+		}
+
+		if (_mode == OF_ZIP_ARCHIVE_MODE_APPEND) {
+			_offset = _centralDirectoryOffset;
+			seekOrThrowInvalidFormat(_stream,
+			    (of_offset_t)_offset, SEEK_SET);
+		}
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -192,8 +219,15 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - initWithPath: (OFString *)path
 	  mode: (OFString *)mode
 {
-	OFFile *file = [[OFFile alloc] initWithPath: path
+	OFFile *file;
+
+	if ([mode isEqual: @"a"])
+		file = [[OFFile alloc] initWithPath: path
+					       mode: @"r+"];
+	else
+		file = [[OFFile alloc] initWithPath: path
 					       mode: mode];
+
 	@try {
 		self = [self initWithStream: file
 				       mode: mode];
@@ -207,6 +241,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)dealloc
 {
+	[self close];
+
 	[_stream release];
 	[_archiveComment release];
 	[_entries release];
@@ -316,9 +352,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	seekOrThrowInvalidFormat(_stream,
 	    (of_offset_t)_centralDirectoryOffset, SEEK_SET);
 
-	_entries = [[OFMutableArray alloc] init];
-	_pathToEntryMap = [[OFMutableDictionary alloc] init];
-
 	for (size_t i = 0; i < _centralDirectoryEntries; i++) {
 		OFZIPArchiveEntry *entry = [[[OFZIPArchiveEntry alloc]
 		    of_initWithStream: _stream] autorelease];
@@ -331,9 +364,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 				    forKey: [entry fileName]];
 	}
 
-	[_entries makeImmutable];
-	[_pathToEntryMap makeImmutable];
-
 	objc_autoreleasePoolPop(pool);
 }
 
@@ -342,15 +372,58 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	return [[_entries copy] autorelease];
 }
 
+- (OFString *)archiveComment
+{
+	return _archiveComment;
+}
+
+- (void)setArchiveComment: (OFString *)comment
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *old;
+
+	if ([comment UTF8StringLength] > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	old = _archiveComment;
+	_archiveComment = [comment copy];
+	[old release];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)of_closeLastReturnedStream
+{
+	[_lastReturnedStream close];
+
+	if ((_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
+	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) &&
+	    [_lastReturnedStream isKindOfClass:
+	    [OFZIPArchive_FileWriteStream class]]) {
+		OFZIPArchive_FileWriteStream *stream =
+		    (OFZIPArchive_FileWriteStream *)_lastReturnedStream;
+
+		_offset += stream->_bytesWritten;
+
+		if (stream->_entry != nil) {
+			[_entries addObject: stream->_entry];
+			[_pathToEntryMap setObject: stream->_entry
+					    forKey: [stream->_entry fileName]];
+		}
+	}
+
+	[_lastReturnedStream release];
+	_lastReturnedStream = nil;
+}
+
 - (OFStream *)streamForReadingFile: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFZIPArchiveEntry *entry = [_pathToEntryMap objectForKey: path];
+	OFZIPArchiveEntry *entry;
 	OFZIPArchive_LocalFileHeader *localFileHeader;
 	int64_t offset64;
 
-	if (_mode != OF_ZIP_ARCHIVE_MODE_READ &&
-	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
+	if (_mode != OF_ZIP_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
 
 	if ((entry = [_pathToEntryMap objectForKey: path]) == nil)
@@ -358,9 +431,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 							       mode: @"r"
 							      errNo: ENOENT];
 
-	[_lastReturnedStream close];
-	[_lastReturnedStream release];
-	_lastReturnedStream = nil;
+	[self of_closeLastReturnedStream];
 
 	offset64 = [entry of_localFileHeaderOffset];
 	if (offset64 < 0 || (of_offset_t)offset64 != offset64)
@@ -382,13 +453,139 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		    exceptionWithVersion: version];
 	}
 
-	_lastReturnedStream = [[OFZIPArchive_FileStream alloc]
+	_lastReturnedStream = [[OFZIPArchive_FileReadStream alloc]
 	     initWithStream: _stream
 	    localFileHeader: localFileHeader];
 
 	objc_autoreleasePoolPop(pool);
 
 	return [[_lastReturnedStream retain] autorelease];
+}
+
+- (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
+{
+	/* TODO: Avoid data descriptor when _stream is an OFSeekableStream */
+	void *pool;
+	OFMutableZIPArchiveEntry *entry;
+	OFString *fileName;
+	OFData *extraField;
+	uint16_t fileNameLength, extraFieldLength;
+
+	if (_mode != OF_ZIP_ARCHIVE_MODE_WRITE &&
+	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+	entry = [[entry_ mutableCopy] autorelease];
+
+	if ([_pathToEntryMap objectForKey: [entry fileName]] != nil)
+		@throw [OFOpenItemFailedException
+		    exceptionWithPath: [entry fileName]
+				 mode: @"w"
+				errNo: EEXIST];
+
+	if ([entry compressionMethod] !=
+	    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	[self of_closeLastReturnedStream];
+
+	if (_offset > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	[entry setVersionMadeBy: ([entry versionMadeBy] & 0xFF00) | 45];
+	[entry setMinVersionNeeded: ([entry minVersionNeeded] & 0xFF00) | 45];
+	[entry setCompressedSize: 0];
+	[entry setUncompressedSize: 0];
+	[entry setCRC32: 0];
+	[entry setGeneralPurposeBitFlag:
+	    [entry generalPurposeBitFlag] | (1 << 3) | (1 << 11)];
+	[entry of_setLocalFileHeaderOffset: _offset];
+
+	[_stream writeLittleEndianInt32: 0x04034B50];
+	[_stream writeLittleEndianInt16: [entry minVersionNeeded]];
+	[_stream writeLittleEndianInt16: [entry generalPurposeBitFlag]];
+	[_stream writeLittleEndianInt16: [entry compressionMethod]];
+	[_stream writeLittleEndianInt16: [entry of_lastModifiedFileTime]];
+	[_stream writeLittleEndianInt16: [entry of_lastModifiedFileDate]];
+	/* We use the data descriptor */
+	[_stream writeLittleEndianInt32: 0];
+	[_stream writeLittleEndianInt32: 0];
+	[_stream writeLittleEndianInt32: 0];
+	_offset += 4 + (5 * 2) + (3 * 4);
+
+	fileName = [entry fileName];
+	fileNameLength = [fileName UTF8StringLength];
+	extraField = [entry extraField];
+	extraFieldLength = [extraField count];
+
+	[_stream writeLittleEndianInt16: fileNameLength];
+	[_stream writeLittleEndianInt16: extraFieldLength];
+	_offset += 2 * 2;
+
+	[_stream writeString: fileName];
+	if (extraField != nil)
+		[_stream writeData: extraField];
+	_offset += fileNameLength + extraFieldLength;
+
+	_lastReturnedStream = [[OFZIPArchive_FileWriteStream alloc]
+	     initWithStream: _stream
+		      entry: entry];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [[_lastReturnedStream retain] autorelease];
+}
+
+- (void)of_writeCentralDirectory
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	if (_offset > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	_centralDirectoryEntries = 0;
+	_centralDirectoryEntriesInDisk = 0;
+	_centralDirectorySize = 0;
+	_centralDirectoryOffset = _offset;
+
+	for (OFZIPArchiveEntry *entry in _entries) {
+		_centralDirectorySize += [entry of_writeToStream: _stream];
+		_centralDirectoryEntries++;
+		_centralDirectoryEntriesInDisk++;
+	}
+
+	if (_centralDirectorySize > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	[_stream writeLittleEndianInt32: 0x06054B50];
+	[_stream writeLittleEndianInt16: _diskNumber];
+	[_stream writeLittleEndianInt16: _centralDirectoryDisk];
+	[_stream writeLittleEndianInt16: _centralDirectoryEntriesInDisk];
+	[_stream writeLittleEndianInt16: _centralDirectoryEntries];
+	[_stream writeLittleEndianInt32: (uint32_t)_centralDirectorySize];
+	[_stream writeLittleEndianInt32: (uint32_t)_centralDirectoryOffset];
+	[_stream writeLittleEndianInt16: [_archiveComment UTF8StringLength]];
+	if (_archiveComment != nil)
+		[_stream writeString: _archiveComment];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)close
+{
+	if (_stream == nil)
+		return;
+
+	[self of_closeLastReturnedStream];
+
+	if (_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
+	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND)
+		[self of_writeCentralDirectory];
+
+	[_stream release];
+	_stream = nil;
 }
 @end
 
@@ -475,7 +672,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 @end
 
-@implementation OFZIPArchive_FileStream
+@implementation OFZIPArchive_FileReadStream
 -  initWithStream: (OFStream *)stream
   localFileHeader: (OFZIPArchive_LocalFileHeader *)localFileHeader
 {
@@ -591,5 +788,69 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	_stream = nil;
 
 	[super close];
+}
+@end
+
+@implementation OFZIPArchive_FileWriteStream
+- initWithStream: (OFStream *)stream
+	   entry: (OFMutableZIPArchiveEntry *)entry
+{
+	self = [super init];
+
+	_stream = [stream retain];
+	_entry = [entry retain];
+	_CRC32 = ~0;
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
+
+	[_stream release];
+	[_entry release];
+
+	[super dealloc];
+}
+
+- (void)lowlevelWriteBuffer: (const void *)buffer
+		     length: (size_t)length
+{
+	if (length > INT64_MAX || INT64_MAX - _bytesWritten < length)
+		@throw [OFOutOfRangeException exception];
+
+	[_stream writeBuffer: buffer
+		      length: length];
+
+	_bytesWritten += length;
+	_CRC32 = of_crc32(_CRC32, buffer, length);
+}
+
+- (void)close
+{
+	uint32_t bytesWritten;
+
+	if (_stream == nil)
+		return;
+
+	if (_bytesWritten > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	bytesWritten = (uint32_t)_bytesWritten;
+
+	[_stream writeLittleEndianInt32: 0x08074B50];
+	[_stream writeLittleEndianInt32: _CRC32];
+	[_stream writeLittleEndianInt32: bytesWritten];
+	[_stream writeLittleEndianInt32: bytesWritten];
+	_bytesWritten += (4 * 4);
+
+	[_stream release];
+	_stream = nil;
+
+	[_entry setCRC32: ~_CRC32];
+	[_entry setCompressedSize: bytesWritten];
+	[_entry setUncompressedSize: bytesWritten];
+	[_entry makeImmutable];
 }
 @end

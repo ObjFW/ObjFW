@@ -115,6 +115,8 @@ enum {
 
 /*!
  * The extra field of the entry.
+ *
+ * The item size *must* be 1!
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFData *extraField;
 
