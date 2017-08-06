@@ -73,15 +73,14 @@
 @interface OFZIPArchive_FileStream: OFStream
 {
 	OFStream *_stream, *_decompressedStream;
-	OFZIPArchive_LocalFileHeader *_localFileHeader;
-	bool _hasDataDescriptor;
-	uint64_t _size;
+	OFZIPArchiveEntry *_entry;
+	uint64_t _toRead;
 	uint32_t _CRC32;
 	bool _atEndOfStream;
 }
 
 -  initWithStream: (OFStream *)path
-  localFileHeader: (OFZIPArchive_LocalFileHeader *)localFileHeader;
+	    entry: (OFZIPArchiveEntry *)localFileHeader;
 @end
 
 uint32_t
@@ -360,7 +359,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	_lastReturnedStream = [[OFZIPArchive_FileStream alloc]
 	     initWithStream: _stream
-	    localFileHeader: localFileHeader];
+		      entry: entry];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -453,14 +452,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 @implementation OFZIPArchive_FileStream
 -  initWithStream: (OFStream *)stream
-  localFileHeader: (OFZIPArchive_LocalFileHeader *)localFileHeader
+	    entry: (OFZIPArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
 		_stream = [stream retain];
 
-		switch (localFileHeader->_compressionMethod) {
+		switch ([entry compressionMethod]) {
 		case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
 			_decompressedStream = [stream retain];
 			break;
@@ -478,10 +477,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 					   object: self];
 		}
 
-		_localFileHeader = [localFileHeader retain];
-		_hasDataDescriptor = (localFileHeader->_generalPurposeBitFlag &
-		    (1 << 3));
-		_size = localFileHeader->_uncompressedSize;
+		_entry = [entry retain];
+		_toRead = [entry uncompressedSize];
 		_CRC32 = ~0;
 	} @catch (id e) {
 		[self release];
@@ -495,8 +492,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	[self close];
 
+	[_stream release];
 	[_decompressedStream release];
-	[_localFileHeader release];
+	[_entry release];
 
 	[super dealloc];
 }
@@ -509,7 +507,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer
 			  length: (size_t)length
 {
-	size_t min, ret;
+	size_t ret;
 
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -517,46 +515,24 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (_atEndOfStream)
 		return 0;
 
-	if (_hasDataDescriptor) {
-		if ([_decompressedStream isAtEndOfStream]) {
-			uint32_t CRC32;
+	if (length > UINT64_MAX)
+		@throw [OFOutOfRangeException exception];
 
-			_atEndOfStream = true;
+	if ((uint64_t)length > _toRead)
+		length = (size_t)_toRead;
 
-			CRC32 = [_stream readLittleEndianInt32];
-			if (CRC32 == 0x08074B50)
-				CRC32 = [_stream readLittleEndianInt32];
+	ret = [_decompressedStream readIntoBuffer: buffer
+					   length: length];
 
-			if (~_CRC32 != CRC32)
-				@throw [OFChecksumFailedException exception];
+	if (ret == 0)
+		_atEndOfStream = true;
 
-			/*
-			 * FIXME: Check (un)compressed length!
-			 * (Note: Both are 64 bit if the entry uses ZIP64!)
-			 */
-
-			return 0;
-		}
-
-		ret = [_decompressedStream readIntoBuffer: buffer
-						   length: length];
-	} else {
-		if (_size == 0) {
-			_atEndOfStream = true;
-
-			if (~_CRC32 != _localFileHeader->_CRC32)
-				@throw [OFChecksumFailedException exception];
-
-			return 0;
-		}
-
-		min = (length < _size ? length : (size_t)_size);
-		ret = [_decompressedStream readIntoBuffer: buffer
-						   length: min];
-		_size -= ret;
-	}
-
+	_toRead -= ret;
 	_CRC32 = of_crc32(_CRC32, buffer, ret);
+
+	if (_toRead == 0)
+		if (~_CRC32 != [_entry CRC32])
+			@throw [OFChecksumFailedException exception];
 
 	return ret;
 }
