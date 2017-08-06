@@ -167,11 +167,14 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 				    @"list_general_purpose_bit_flag",
 				    @"General purpose bit flag: %[gpbf]",
 				    @"gpbf", GPBF)];
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
-				    @"list_extra_field",
-				    @"Extra field: %[extra]",
-				    @"extra", [entry extraField])];
+
+				if ([entry extraField] != nil) {
+					[of_stdout writeString: @"\t"];
+					[of_stdout writeLine: OF_LOCALIZED(
+					    @"list_extra_field",
+					    @"Extra field: %[extra]",
+					    @"extra", [entry extraField])];
+				}
 			}
 
 			if ([[entry fileComment] length] > 0) {
