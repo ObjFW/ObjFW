@@ -16,8 +16,6 @@
 
 #include "config.h"
 
-#include <inttypes.h>
-
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
@@ -57,20 +55,6 @@
 - initWithStream: (OFStream *)stream
 	   entry: (OFTarArchiveEntry *)entry;
 @end
-
-static void
-stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
-{
-	size_t UTF8StringLength = [string UTF8StringLength];
-
-	if (UTF8StringLength > length)
-		@throw [OFOutOfRangeException exception];
-
-	memcpy(buffer, [string UTF8String], UTF8StringLength);
-
-	for (size_t i = UTF8StringLength; i < length; i++)
-		buffer[i] = '\0';
-}
 
 @implementation OFTarArchive: OFObject
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
@@ -229,9 +213,6 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
 	void *pool;
-	uint64_t modificationDate;
-	unsigned char buffer[512];
-	uint16_t checksum = 0;
 
 	if (_mode != OF_TAR_ARCHIVE_MODE_WRITE &&
 	    _mode != OF_TAR_ARCHIVE_MODE_APPEND)
@@ -243,46 +224,7 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	stringToBuffer(buffer, [entry fileName], 100);
-	stringToBuffer(buffer + 100,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", [entry mode]], 8);
-	memcpy(buffer + 108, "000000 \0" "000000 \0", 16);
-	stringToBuffer(buffer + 124,
-	    [OFString stringWithFormat: @"%011" PRIo64 " ", [entry size]], 12);
-	modificationDate = [[entry modificationDate] timeIntervalSince1970];
-	stringToBuffer(buffer + 136,
-	    [OFString stringWithFormat: @"%011" PRIo64 " ", modificationDate],
-	    12);
-
-	/*
-	 * During checksumming, the checksum field is expected to be set to 8
-	 * spaces.
-	 */
-	memset(buffer + 148, ' ', 8);
-
-	buffer[156] = [entry type];
-	stringToBuffer(buffer + 157, [entry targetFileName], 100);
-
-	/* ustar */
-	memcpy(buffer + 257, "ustar\0" "00", 8);
-	stringToBuffer(buffer + 265, [entry owner], 32);
-	stringToBuffer(buffer + 297, [entry group], 32);
-	stringToBuffer(buffer + 329,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", [entry deviceMajor]],
-	    8);
-	stringToBuffer(buffer + 337,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", [entry deviceMinor]],
-	    8);
-	memset(buffer + 345, '\0', 155 + 12);
-
-	/* Fill in the checksum */
-	for (size_t i = 0; i < 500; i++)
-		checksum += buffer[i];
-	stringToBuffer(buffer + 148,
-	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7);
-
-	[_stream writeBuffer: buffer
-		      length: sizeof(buffer)];
+	[entry of_writeToStream: _stream];
 
 	_lastReturnedStream = [[OFTarArchive_FileWriteStream alloc]
 	    initWithStream: _stream
