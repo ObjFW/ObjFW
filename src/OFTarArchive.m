@@ -353,6 +353,9 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 	if (_atEndOfStream)
 		return 0;
 
+	if (length > UINT64_MAX)
+		@throw [OFOutOfRangeException exception];
+
 	if ((uint64_t)length > _toRead)
 		length = (size_t)_toRead;
 
