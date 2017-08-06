@@ -93,7 +93,7 @@
 	OFStream *_stream;
 	uint32_t _CRC32;
 @public
-	uint64_t _bytesWritten;
+	int64_t _bytesWritten;
 	OFMutableZIPArchiveEntry *_entry;
 }
 
@@ -403,6 +403,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		OFZIPArchive_FileWriteStream *stream =
 		    (OFZIPArchive_FileWriteStream *)_lastReturnedStream;
 
+		if (INT64_MAX - _offset < stream->_bytesWritten)
+			@throw [OFOutOfRangeException exception];
+
 		_offset += stream->_bytesWritten;
 
 		if (stream->_entry != nil) {
@@ -470,6 +473,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	OFString *fileName;
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
+	int64_t offsetAdd = 0;
 
 	if (_mode != OF_ZIP_ARCHIVE_MODE_WRITE &&
 	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
@@ -513,7 +517,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeLittleEndianInt32: 0];
 	[_stream writeLittleEndianInt32: 0];
 	[_stream writeLittleEndianInt32: 0];
-	_offset += 4 + (5 * 2) + (3 * 4);
+	offsetAdd += 4 + (5 * 2) + (3 * 4);
 
 	fileName = [entry fileName];
 	fileNameLength = [fileName UTF8StringLength];
@@ -522,12 +526,17 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	[_stream writeLittleEndianInt16: fileNameLength];
 	[_stream writeLittleEndianInt16: extraFieldLength];
-	_offset += 2 * 2;
+	offsetAdd += 2 * 2;
 
 	[_stream writeString: fileName];
 	if (extraField != nil)
 		[_stream writeData: extraField];
-	_offset += fileNameLength + extraFieldLength;
+	offsetAdd += fileNameLength + extraFieldLength;
+
+	if (INT64_MAX - _offset < offsetAdd)
+		@throw [OFOutOfRangeException exception];
+
+	_offset += offsetAdd;
 
 	_lastReturnedStream = [[OFZIPArchive_FileWriteStream alloc]
 	     initWithStream: _stream
@@ -817,13 +826,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (void)lowlevelWriteBuffer: (const void *)buffer
 		     length: (size_t)length
 {
-	if (length > INT64_MAX || INT64_MAX - _bytesWritten < length)
+	if (length > INT64_MAX || INT64_MAX - _bytesWritten < (int64_t)length)
 		@throw [OFOutOfRangeException exception];
 
 	[_stream writeBuffer: buffer
 		      length: length];
 
-	_bytesWritten += length;
+	_bytesWritten += (int64_t)length;
 	_CRC32 = of_crc32(_CRC32, buffer, length);
 }
 
