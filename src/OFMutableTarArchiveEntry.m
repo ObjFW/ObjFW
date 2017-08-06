@@ -19,7 +19,7 @@
 #import "OFMutableTarArchiveEntry.h"
 
 @implementation OFMutableTarArchiveEntry
-@dynamic fileName, mode, size, modificationDate, type, targetFileName;
+@dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
 @dynamic owner, group, deviceMajor, deviceMinor;
 
 - copy
@@ -38,9 +38,19 @@
 	[old release];
 }
 
-- (void)setMode: (uint32_t)mode
+- (void)setMode: (uint16_t)mode
 {
 	_mode = mode;
+}
+
+- (void)setUID: (uint16_t)UID
+{
+	_UID = UID;
+}
+
+- (void)setGID: (uint16_t)GID
+{
+	_GID = GID;
 }
 
 - (void)setSize: (uint64_t)size

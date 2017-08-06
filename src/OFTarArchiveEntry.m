@@ -81,8 +81,12 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 		OFString *targetFileName;
 
 		_fileName = [stringFromBuffer(header, 100) copy];
-		_mode = (uint32_t)octalValueFromBuffer(
-		    header + 100, 8, UINT32_MAX);
+		_mode = (uint16_t)octalValueFromBuffer(
+		    header + 100, 8, UINT16_MAX);
+		_UID = (uint16_t)octalValueFromBuffer(
+		    header + 108, 8, UINT16_MAX);
+		_GID = (uint16_t)octalValueFromBuffer(
+		    header + 116, 8, UINT16_MAX);
 		_size = (uint64_t)octalValueFromBuffer(
 		    header + 124, 12, UINT64_MAX);
 		_modificationDate = [[OFDate alloc]
@@ -188,9 +192,19 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	return _fileName;
 }
 
-- (uint32_t)mode
+- (uint16_t)mode
 {
 	return _mode;
+}
+
+- (uint16_t)UID
+{
+	return _UID;
+}
+
+- (uint16_t)GID
+{
+	return _GID;
 }
 
 - (uint64_t)size
@@ -239,6 +253,8 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	OFString *ret = [OFString stringWithFormat: @"<%@:\n"
 	     @"\tFile name = %@\n"
 	     @"\tMode = %06o\n"
+	     @"\tUID = %u\n",
+	     @"\tGID = %u\n",
 	     @"\tSize = %" PRIu64 @"\n"
 	     @"\tModification date = %@\n"
 	     @"\tType = %u\n"
@@ -248,8 +264,9 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
 	     @">",
-	    [self class], _fileName, _mode, _size, _modificationDate, _type,
-	    _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
+	    [self class], _fileName, _mode, _UID, _GID, _size,
+	    _modificationDate, _type, _targetFileName, _owner, _group,
+	    _deviceMajor, _deviceMinor];
 
 	[ret retain];
 
@@ -266,8 +283,11 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 
 	stringToBuffer(buffer, _fileName, 100);
 	stringToBuffer(buffer + 100,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", _mode], 8);
-	memcpy(buffer + 108, "000000 \0" "000000 \0", 16);
+	    [OFString stringWithFormat: @"%06" PRIo16 " ", _mode], 8);
+	stringToBuffer(buffer + 108,
+	    [OFString stringWithFormat: @"%06" PRIo16 " ", _UID], 8);
+	stringToBuffer(buffer + 116,
+	    [OFString stringWithFormat: @"%06" PRIo16 " ", _GID], 8);
 	stringToBuffer(buffer + 124,
 	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12);
 	modificationDate = [_modificationDate timeIntervalSince1970];

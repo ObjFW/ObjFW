@@ -50,8 +50,9 @@ typedef enum of_tar_archive_entry_type_t {
 @interface OFTarArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
 	OFString *_fileName;
-	uint32_t _mode;
+	uint16_t _mode;
 	uint64_t _size;
+	uint16_t _UID, _GID;
 	OFDate *_modificationDate;
 	of_tar_archive_entry_type_t _type;
 	OFString *_targetFileName;
@@ -67,7 +68,17 @@ typedef enum of_tar_archive_entry_type_t {
 /*!
  * The mode of the entry.
  */
-@property (readonly, nonatomic) uint32_t mode;
+@property (readonly, nonatomic) uint16_t mode;
+
+/*!
+ * The UID of the owner.
+ */
+@property (readonly, nonatomic) uint16_t UID;
+
+/*!
+ * The GID of the group.
+ */
+@property (readonly, nonatomic) uint16_t GID;
 
 /*!
  * The size of the file.

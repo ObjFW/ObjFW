@@ -93,6 +93,10 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			    @"%" PRIu64, [entry size]];
 			OFString *mode = [OFString stringWithFormat:
 			    @"%06o", [entry mode]];
+			OFString *UID = [OFString stringWithFormat:
+			    @"%u", [entry UID]];
+			OFString *GID = [OFString stringWithFormat:
+			    @"%u", [entry GID]];
 
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_size",
@@ -102,6 +106,14 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			[of_stdout writeLine: OF_LOCALIZED(@"list_mode",
 			    @"Mode: %[mode]",
 			    @"mode", mode)];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(@"list_uid",
+			    @"UID: %[uid]",
+			    @"uid", UID)];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(@"list_gid",
+			    @"GID: %[gid]",
+			    @"gid", GID)];
 
 			if ([entry owner] != nil) {
 				[of_stdout writeString: @"\t"];
