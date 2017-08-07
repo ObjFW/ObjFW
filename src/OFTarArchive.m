@@ -20,6 +20,7 @@
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
 #import "OFStream.h"
+#import "OFSeekableStream.h"
 #import "OFDate.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -35,7 +36,7 @@
 @interface OFTarArchive_FileReadStream: OFStream
 {
 	OFTarArchiveEntry *_entry;
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	uint64_t _toRead;
 	bool _atEndOfStream;
 }
@@ -340,26 +341,42 @@
 
 - (void)of_skip
 {
-	char buffer[512];
-	uint64_t size;
+	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
+	    _toRead <= INT64_MAX && (of_offset_t)_toRead == (int64_t)_toRead) {
+		uint64_t size;
 
-	while (_toRead >= 512) {
-		[_stream readIntoBuffer: buffer
-			    exactLength: 512];
-		_toRead -= 512;
-	}
+		[_stream seekToOffset: (of_offset_t)_toRead
+			       whence: SEEK_CUR];
 
-	if (_toRead > 0) {
-		[_stream readIntoBuffer: buffer
-			    exactLength: (size_t)_toRead];
 		_toRead = 0;
+
+		size = [_entry size];
+
+		if (size % 512 != 0)
+			[_stream seekToOffset: 512 - (size % 512)
+				       whence: SEEK_CUR];
+	} else {
+		char buffer[512];
+		uint64_t size;
+
+		while (_toRead >= 512) {
+			[_stream readIntoBuffer: buffer
+				    exactLength: 512];
+			_toRead -= 512;
+		}
+
+		if (_toRead > 0) {
+			[_stream readIntoBuffer: buffer
+				    exactLength: (size_t)_toRead];
+			_toRead = 0;
+		}
+
+		size = [_entry size];
+
+		if (size % 512 != 0)
+			[_stream readIntoBuffer: buffer
+				    exactLength: 512 - (size % 512)];
 	}
-
-	size = [_entry size];
-
-	if (size % 512 != 0)
-		[_stream readIntoBuffer: buffer
-			    exactLength: 512 - ((size_t)size % 512)];
 }
 @end
 
