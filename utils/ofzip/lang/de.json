@@ -42,7 +42,7 @@
     "failed_to_read_file": "Fehler beim Lesen der Datei %[file]: %[error]",
     "failed_to_write_file": "Fehler beim Schreiben der Datei %[file]: %[error]",
     "failed_to_seek_in_file": "Fehler beim Suchen in Datei %[file]: %[error]",
-    "file_is_not_a_valid_archiv": "Datei %[file] ist kein gültiges Archiv!",
+    "file_is_not_a_valid_archive": "Datei %[file] ist kein gültiges Archiv!",
     "file_skipped": "übersprungen",
     "ask_overwrite": "%[file] überschreiben? [ynAN?]",
     "ask_overwrite_help": [
