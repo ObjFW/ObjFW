@@ -31,6 +31,7 @@
 
 #import "OFInvalidFormatException.h"
 #import "OFOpenItemFailedException.h"
+#import "OFOutOfRangeException.h"
 
 static OFZIP *app;
 
@@ -370,5 +371,117 @@ outer_loop_end:
 
 		[stream close];
 	}
+}
+
+- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+{
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+
+	if ([files count] < 1) {
+		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		    @"Need one or more files to add!")];
+		app->_exitStatus = 1;
+		return;
+	}
+
+	for (OFString *localFileName in files) {
+		void *pool = objc_autoreleasePoolPush();
+		OFArray OF_GENERIC (OFString *) *components;
+		OFString *fileName;
+		bool isDirectory = false;
+		OFMutableZIPArchiveEntry *entry;
+		of_offset_t size;
+		OFStream *output;
+
+		components = [localFileName pathComponents];
+		fileName = [components componentsJoinedByString: @"/"];
+
+		if ([fileManager directoryExistsAtPath: localFileName]) {
+			isDirectory = true;
+			fileName = [fileName stringByAppendingString: @"/"];
+		}
+
+		if (app->_outputLevel >= 0)
+			[of_stdout writeString: OF_LOCALIZED(@"adding_file",
+			    @"Adding %[file]...",
+			    @"file", fileName)];
+
+		entry = [OFMutableZIPArchiveEntry entryWithFileName: fileName];
+
+		if (isDirectory)
+			size = 0;
+		else
+			size = [fileManager sizeOfFileAtPath: localFileName];
+
+		if (size > INT64_MAX)
+			@throw [OFOutOfRangeException exception];
+
+		[entry setCompressedSize: (int64_t)size];
+		[entry setUncompressedSize: (int64_t)size];
+
+		[entry setCompressionMethod:
+		    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE];
+		[entry setModificationDate:
+		    [fileManager modificationDateOfItemAtPath: localFileName]];
+
+		[entry makeImmutable];
+
+		output = [_archive streamForWritingEntry: entry];
+
+		if (!isDirectory) {
+			int64_t written = 0;
+			int8_t percent = -1, newPercent;
+
+			OFFile *input = [OFFile fileWithPath: fileName
+							mode: @"r"];
+
+			while (![input isAtEndOfStream]) {
+				ssize_t length = [app
+				    copyBlockFromStream: input
+					       toStream: output
+					       fileName: fileName];
+
+				if (length < 0) {
+					app->_exitStatus = 1;
+					goto outer_loop_end;
+				}
+
+				written += length;
+				newPercent = (written == size
+				    ? 100 : (int8_t)(written * 100 / size));
+
+				if (app->_outputLevel >= 0 &&
+				    percent != newPercent) {
+					OFString *percentString;
+
+					percent = newPercent;
+					percentString = [OFString
+					    stringWithFormat: @"%3u", percent];
+
+					[of_stdout writeString: @"\r"];
+					[of_stdout writeString: OF_LOCALIZED(
+					    @"adding_file_percent",
+					    @"Adding %[file]... %[percent]%",
+					    @"file", fileName,
+					    @"percent", percentString)];
+				}
+			}
+		}
+
+		if (app->_outputLevel >= 0) {
+			[of_stdout writeString: @"\r"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"adding_file_done",
+			    @"Adding %[file]... done",
+			    @"file", fileName)];
+		}
+
+		[output close];
+
+outer_loop_end:
+		objc_autoreleasePoolPop(pool);
+	}
+
+	[_archive close];
 }
 @end
