@@ -207,6 +207,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			    (of_offset_t)_offset, SEEK_SET);
 		}
 	} @catch (id e) {
+		/*
+		 * If we are in write or append mode, we do not want -[close]
+		 * to write anything to it on error - after all, it might not
+		 * be a ZIP file which we would destroy otherwise.
+		 */
+		[_stream release];
+		_stream = nil;
+
 		[self release];
 		@throw e;
 	}
