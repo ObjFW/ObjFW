@@ -474,6 +474,7 @@ error:
 		[[OFFileManager defaultManager] removeItemAtPath: path];
 
 	[OFApplication terminateWithStatus: 1];
+	return nil;
 }
 
 - (bool)shouldExtractFile: (OFString *)fileName
