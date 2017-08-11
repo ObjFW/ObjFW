@@ -106,19 +106,20 @@ enum {
 /*!
  * The file name of the entry.
  */
-@property (readonly, nonatomic) OFString *fileName;
+@property (readonly, nonatomic, copy) OFString *fileName;
 
 /*!
  * The comment of the entry's file.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *fileComment;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy)
+    OFString *fileComment;
 
 /*!
  * The extra field of the entry.
  *
  * The item size *must* be 1!
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFData *extraField;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFData *extraField;
 
 /*!
  * The version which made the entry.
@@ -143,7 +144,7 @@ enum {
  *
  * @note Due to limitations of the ZIP format, this has only 2 second precision.
  */
-@property (readonly, nonatomic) OFDate *modificationDate;
+@property (readonly, nonatomic, retain) OFDate *modificationDate;
 
 /*!
  * The compression method of the entry.

@@ -17,6 +17,8 @@
 #include "config.h"
 
 #import "OFMutableTarArchiveEntry.h"
+#import "OFString.h"
+#import "OFDate.h"
 
 @implementation OFMutableTarArchiveEntry
 @dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
