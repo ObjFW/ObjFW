@@ -365,10 +365,20 @@
 	OF_ENSURE(_arguments <= 2);
 
 	if (_repeats && _valid) {
-		OFDate *old = _fireDate;
+		int missedIntervals =
+		    -[_fireDate timeIntervalSinceNow] / _interval;
+		of_time_interval_t newFireDate;
+
+		/* In case the clock was changed backwards */
+		if (missedIntervals < 0)
+			missedIntervals = 0;
+
+		newFireDate = [_fireDate timeIntervalSince1970] +
+		    (missedIntervals + 1) * _interval;
+
+		[_fireDate release];
 		_fireDate = [[OFDate alloc]
-		    initWithTimeIntervalSinceNow: _interval];
-		[old release];
+		    initWithTimeIntervalSince1970: newFireDate];
 
 		[[OFRunLoop currentRunLoop] addTimer: self];
 	} else
