@@ -27,12 +27,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The scheme part of the URL.
  */
-@property (readwrite, nonatomic, copy) OFString *scheme;
+@property (readwrite, copy, nonatomic) OFString *scheme;
 
 /*!
  * The host part of the URL.
  */
-@property (readwrite, nonatomic, copy) OFString *host;
+@property (readwrite, copy, nonatomic) OFString *host;
 
 /*!
  * The port part of the URL.
@@ -42,33 +42,33 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The user part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy) OFString *user;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *user;
 
 /*!
  * The password part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy) OFString *password;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *password;
 
 /*!
  * The path part of the URL.
  */
-@property (readwrite, nonatomic, copy) OFString *path;
+@property (readwrite, copy, nonatomic) OFString *path;
 
 /*!
  * The parameters part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy)
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *parameters;
 
 /*!
  * The query part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy) OFString *query;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *query;
 
 /*!
  * The fragment part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy) OFString *fragment;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *fragment;
 
 /*!
  * @brief Creates a new mutable URL.

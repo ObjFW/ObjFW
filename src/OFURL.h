@@ -36,12 +36,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The scheme part of the URL.
  */
-@property (readonly, nonatomic, copy) OFString *scheme;
+@property (readonly, copy, nonatomic) OFString *scheme;
 
 /*!
  * The host part of the URL.
  */
-@property (readonly, nonatomic, copy) OFString *host;
+@property (readonly, copy, nonatomic) OFString *host;
 
 /*!
  * The port part of the URL.
@@ -51,32 +51,32 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The user part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *user;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *user;
 
 /*!
  * The password part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *password;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *password;
 
 /*!
  * The path part of the URL.
  */
-@property (readonly, nonatomic, copy) OFString *path;
+@property (readonly, copy, nonatomic) OFString *path;
 
 /*!
  * The parameters part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *parameters;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *parameters;
 
 /*!
  * The query part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *query;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
 
 /*!
  * The fragment part of the URL.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic, copy) OFString *fragment;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *fragment;
 
 /*!
  * @brief Creates a new URL with the specified string.

@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The headers of the reply to the HTTP request.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy)
+@property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 
 /*!

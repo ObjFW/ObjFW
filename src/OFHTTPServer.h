@@ -98,7 +98,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The host on which the HTTP server will listen.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *host;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
 /*!
  * The port on which the HTTP server will listen.
@@ -117,7 +117,7 @@ OF_ASSUME_NONNULL_BEGIN
  * Setting it to `nil` means no `Server` header will be sent, unless one is
  * specified in the response headers.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *name;
 
 /*!
  * @brief Creates a new HTTP server.

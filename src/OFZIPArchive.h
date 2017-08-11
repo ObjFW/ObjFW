@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The archive comment.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *archiveComment;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *archiveComment;
 
 /*!
  * @brief Creates a new OFZIPArchive object with the specified stream.

@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the INI category
  */
-@property (nonatomic, copy) OFString *name;
+@property (copy, nonatomic) OFString *name;
 
 - init OF_UNAVAILABLE;
 

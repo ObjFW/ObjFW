@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the lock.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *name;
 
 /*!
  * @brief Locks the lock.

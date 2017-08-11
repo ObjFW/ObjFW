@@ -41,22 +41,22 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The name of the element.
  */
-@property (nonatomic, copy) OFString *name;
+@property (copy, nonatomic) OFString *name;
 
 /*!
  * The namespace of the element.
  */
 #ifndef __cplusplus
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *namespace;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *namespace;
 #else
-@property OF_NULLABLE_PROPERTY (nonatomic, copy,
+@property OF_NULLABLE_PROPERTY (copy, nonatomic,
     getter=namespace, setter=setNamespace:) OFString *namespace_;
 #endif
 
 /*!
  * The default namespace for the element to be used if there is no parent.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, copy) OFString *defaultNamespace;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *defaultNamespace;
 
 /*!
  * @brief Creates a new XML element with the specified name.

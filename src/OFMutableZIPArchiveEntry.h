@@ -30,12 +30,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The file name of the entry.
  */
-@property (readwrite, nonatomic, copy) OFString *fileName;
+@property (readwrite, copy, nonatomic) OFString *fileName;
 
 /*!
  * The comment of the entry's file.
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy)
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
     OFString *fileComment;
 
 /*!
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * The item size *must* be 1!
  */
-@property OF_NULLABLE_PROPERTY (readwrite, nonatomic, copy) OFData *extraField;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFData *extraField;
 
 /*!
  * The version which made the entry.
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @note Due to limitations of the ZIP format, this has only 2 second precision.
  */
-@property (readwrite, nonatomic, retain) OFDate *modificationDate;
+@property (readwrite, retain, nonatomic) OFDate *modificationDate;
 
 /*!
  * The compression method of the entry.
