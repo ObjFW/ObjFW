@@ -34,7 +34,7 @@ of_salsa20_8_core(uint32_t buffer[16])
 	for (uint_fast8_t i = 0; i < 16; i++)
 		tmp[i] = OF_BSWAP32_IF_BE(buffer[i]);
 
-	for (uint_fast8_t i = 0; i < 8; i+= 2) {
+	for (uint_fast8_t i = 0; i < 8; i += 2) {
 		tmp[ 4] ^= OF_ROL(tmp[ 0] + tmp[12],  7);
 		tmp[ 8] ^= OF_ROL(tmp[ 4] + tmp[ 0],  9);
 		tmp[12] ^= OF_ROL(tmp[ 8] + tmp[ 4], 13);
