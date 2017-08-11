@@ -296,7 +296,7 @@
 	if (_atEndOfStream)
 		return 0;
 
-	if (length > UINT64_MAX)
+	if (sizeof(length) >= sizeof(uint64_t) && length > UINT64_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if ((uint64_t)length > _toRead)
