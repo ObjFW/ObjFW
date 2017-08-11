@@ -560,10 +560,12 @@ formatConversionSpecifierState(struct context *ctx)
 				OFMutableString *tmpStr = [OFMutableString
 				    stringWithUTF8String: tmp
 						  length: tmpLen];
-				OFString *decimalPoint =
+				OFString *point =
 				    [OFLocalization decimalPoint];
-				[tmpStr replaceOccurrencesOfString: decimalPoint
-							withString: @"."];
+				if (point != nil)
+					[tmpStr
+					    replaceOccurrencesOfString: point
+							    withString: @"."];
 				if ([tmpStr UTF8StringLength] > INT_MAX)
 					return false;
 				tmpLen = (int)[tmpStr UTF8StringLength];
