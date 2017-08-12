@@ -375,15 +375,18 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 			withObject: (nullable id)object;
 
 /*!
- * @brief Returns a sorted copy of the array.
+ * @brief Returns a copy of the array sorted in ascending order.
  *
  * @return A sorted copy of the array
  */
 - (OFArray OF_GENERIC(ObjectType) *)sortedArray;
 
 /*!
- * @brief Returns a sorted copy of the array.
+ * @brief Returns a copy of the array sorted using the specified selector and
+ *	  options.
  *
+ * @param selector The selector to use to sort the array. It's signature
+ *		   should be the same as that of @ref compare:.
  * @param options The options to use when sorting the array.@n
  *		  Possible values are:
  *		  Value                      | Description
@@ -391,7 +394,26 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
  * @return A sorted copy of the array
  */
-- (OFArray OF_GENERIC(ObjectType) *)sortedArrayWithOptions: (int)options;
+- (OFArray OF_GENERIC(ObjectType) *)sortedArrayUsingSelector: (SEL)selector
+						     options: (int)options;
+
+#ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief Returns a copy of the array sorted using the specified selector and
+ *	  options.
+ *
+ * @param comparator The comparator to use to sort the array
+ * @param options The options to use when sorting the array.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------
+ *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ * @return A sorted copy of the array
+ */
+- (OFArray OF_GENERIC(ObjectType) *)
+    sortedArrayUsingComparator: (of_comparator_t)comparator
+		       options: (int)options;
+#endif
 
 /*!
  * @brief Returns a copy of the array with the order reversed.

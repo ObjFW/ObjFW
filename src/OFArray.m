@@ -735,16 +735,33 @@ static struct {
 	return new;
 }
 
-- (OFArray *)sortedArrayWithOptions: (int)options
+- (OFArray *)sortedArrayUsingSelector: (SEL)selector
+			      options: (int)options
 {
 	OFMutableArray *new = [[self mutableCopy] autorelease];
 
-	[new sortWithOptions: options];
+	[new sortUsingSelector: selector
+		       options: options];
 
 	[new makeImmutable];
 
 	return new;
 }
+
+#ifdef OF_HAVE_BLOCKS
+- (OFArray *)sortedArrayUsingComparator: (of_comparator_t)comparator
+				options: (int)options
+{
+	OFMutableArray *new = [[self mutableCopy] autorelease];
+
+	[new sortUsingComparator: comparator
+			 options: options];
+
+	[new makeImmutable];
+
+	return new;
+}
+#endif
 
 - (OFArray *)reversedArray
 {

@@ -48,6 +48,18 @@ typedef enum {
 	OF_ORDERED_DESCENDING = 1
 } of_comparison_result_t;
 
+#ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief A comparator to compare two objects.
+ *
+ * @param left The left object
+ * @param right The right object
+ * @return The order of the objects
+ */
+typedef of_comparison_result_t (^of_comparator_t)(id _Nonnull left,
+    id _Nonnull right);
+#endif
+
 /*!
  * @brief An enum for storing endianess.
  */

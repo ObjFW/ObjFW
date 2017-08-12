@@ -259,7 +259,8 @@ static OFString *c_ary[] = {
 	TEST(@"-[sortedArray]",
 	    [[m[1] sortedArray] isEqual: [arrayClass arrayWithObjects:
 	    @"0", @"Bar", @"Baz", @"Foo", @"z", nil]] &&
-	    [[m[1] sortedArrayWithOptions: OF_ARRAY_SORT_DESCENDING]
+	    [[m[1] sortedArrayUsingSelector: @selector(compare:)
+				    options: OF_ARRAY_SORT_DESCENDING]
 	    isEqual: [arrayClass arrayWithObjects:
 	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
 

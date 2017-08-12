@@ -180,20 +180,38 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 	    withObjectAtIndex: (size_t)index2;
 
 /*!
- * @brief Sorts the array.
+ * @brief Sorts the array in ascending order.
  */
 - (void)sort;
 
 /*!
- * @brief Sorts the array.
+ * @brief Sorts the array using the specified selector and options.
  *
+ * @param selector The selector to use to sort the array. It's signature
+ *		   should be the same as that of @ref compare:.
  * @param options The options to use when sorting the array.@n
  *		  Possible values are:
  *		  Value                      | Description
  *		  ---------------------------|-------------------------
  *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
  */
-- (void)sortWithOptions: (int)options;
+- (void)sortUsingSelector: (SEL)selector
+		  options: (int)options;
+
+#ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief Sorts the array using the specified comparator and options.
+ *
+ * @param comparator The comparator to use to sort the array
+ * @param options The options to use when sorting the array.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-------------------------
+ *		  `OF_ARRAY_SORT_DESCENDING` | Sort in descending order
+ */
+- (void)sortUsingComparator: (of_comparator_t)comparator
+		    options: (int)options;
+#endif
 
 /*!
  * @brief Reverts the order of the objects in the array.
