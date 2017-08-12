@@ -1450,10 +1450,19 @@
 
 - (size_t)writeData: (OFData *)data
 {
-	size_t length = [data count] * [data itemSize];
+	void *pool;
+	size_t length;
+
+	if (data == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+	length = [data count] * [data itemSize];
 
 	[self writeBuffer: [data items]
 		   length: length];
+
+	objc_autoreleasePoolPop(pool);
 
 	return length;
 }
@@ -1467,10 +1476,19 @@
 - (size_t)writeString: (OFString *)string
 	     encoding: (of_string_encoding_t)encoding
 {
-	size_t length = [string cStringLengthWithEncoding: encoding];
+	void *pool;
+	size_t length;
+
+	if (string == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+	length = [string cStringLengthWithEncoding: encoding];
 
 	[self writeBuffer: [string cStringWithEncoding: encoding]
 		   length: length];
+
+	objc_autoreleasePoolPop(pool);
 
 	return length;
 }
