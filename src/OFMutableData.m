@@ -220,6 +220,22 @@
 	_count += count;
 }
 
+- (void)increaseCountBy: (size_t)count
+{
+	if (count > SIZE_MAX - _count)
+		@throw [OFOutOfRangeException exception];
+
+	if (_count + count > _capacity) {
+		_items = [self resizeMemory: _items
+				       size: _itemSize
+				      count: _count + count];
+		_capacity = _count + count;
+	}
+
+	memset(_items + _count * _itemSize, '\0', count * _itemSize);
+	_count += count;
+}
+
 - (void)removeItemAtIndex: (size_t)index
 {
 	[self removeItemsInRange: of_range(index, 1)];

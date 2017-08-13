@@ -158,6 +158,14 @@ OF_ASSUME_NONNULL_BEGIN
 	      count: (size_t)count;
 
 /*!
+ * @brief Increases the count by the specified number. The new items are all
+ *	  filled with null bytes.
+ *
+ * @param count The count by which to increase the count
+ */
+- (void)increaseCountBy: (size_t)count;
+
+/*!
  * @brief Removes the item at the specified index.
  *
  * @param index The index of the item to remove
