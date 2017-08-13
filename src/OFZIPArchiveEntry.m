@@ -110,9 +110,9 @@ of_zip_archive_entry_version_to_string(uint16_t version)
 		    (version % 0xFF) / 10, (version & 0xFF) % 10, version >> 8];
 }
 
-void
+size_t
 of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
-    const uint8_t **data, uint16_t *size)
+    uint16_t *size)
 {
 	const uint8_t *bytes = [extraField items];
 	size_t count = [extraField count];
@@ -130,16 +130,15 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 			@throw [OFInvalidFormatException exception];
 
 		if (currentTag == tag) {
-			*data = bytes + i + 4;
 			*size = currentSize;
-			return;
+			return i + 4;
 		}
 
 		i += 4 + currentSize;
 	}
 
-	*data = NULL;
 	*size = 0;
+	return OF_NOT_FOUND;
 }
 
 @implementation OFZIPArchiveEntry
@@ -180,9 +179,10 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+		OFMutableData *extraField = nil;
 		uint16_t fileNameLength, extraFieldLength, fileCommentLength;
 		of_string_encoding_t encoding;
-		const uint8_t *ZIP64 = NULL;
+		size_t ZIP64Index;
 		uint16_t ZIP64Size;
 
 		if ([stream readLittleEndianInt32] != 0x02014B50)
@@ -212,17 +212,20 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
 		if (extraFieldLength > 0)
-			_extraField =
-			    [[stream readDataWithCount: extraFieldLength] copy];
+			extraField = [[[stream readDataWithCount:
+			    extraFieldLength] mutableCopy] autorelease];
 		if (fileCommentLength > 0)
 			_fileComment = [[stream
 			    readStringWithLength: fileCommentLength
 					encoding: encoding] copy];
 
-		of_zip_archive_entry_extra_field_find(_extraField,
-		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);
+		ZIP64Index = of_zip_archive_entry_extra_field_find(_extraField,
+		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
 
-		if (ZIP64 != NULL) {
+		if (ZIP64Index != OF_NOT_FOUND) {
+			const uint8_t *ZIP64 =
+			    [_extraField itemAtIndex: ZIP64Index];
+
 			if (_uncompressedSize == 0xFFFFFFFF)
 				_uncompressedSize = of_zip_archive_read_field64(
 				    &ZIP64, &ZIP64Size);
@@ -239,7 +242,13 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 
 			if (ZIP64Size > 0 || _localFileHeaderOffset < 0)
 				@throw [OFInvalidFormatException exception];
+
+			[extraField removeItemsInRange:
+			    of_range(ZIP64Index - 4, ZIP64Size + 4)];
 		}
+
+		[extraField makeImmutable];
+		_extraField = [extraField copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

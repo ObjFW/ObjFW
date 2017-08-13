@@ -611,9 +611,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableData *extraField = nil;
 		uint16_t fileNameLength, extraFieldLength;
 		of_string_encoding_t encoding;
-		const uint8_t *ZIP64;
+		size_t ZIP64Index;
 		uint16_t ZIP64Size;
 
 		if ([stream readLittleEndianInt32] != 0x04034B50)
@@ -635,13 +637,17 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 		_fileName = [[stream readStringWithLength: fileNameLength
 						 encoding: encoding] copy];
-		_extraField =
-		    [[stream readDataWithCount: extraFieldLength] copy];
+		if (extraFieldLength > 0)
+			extraField = [[[stream readDataWithCount:
+			    extraFieldLength] mutableCopy] autorelease];
 
 		of_zip_archive_entry_extra_field_find(_extraField,
-		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64, &ZIP64Size);
+		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
 
-		if (ZIP64 != NULL) {
+		if (ZIP64Index != OF_NOT_FOUND) {
+			const uint8_t *ZIP64 =
+			    [extraField itemAtIndex: ZIP64Index];
+
 			if (_uncompressedSize == 0xFFFFFFFF)
 				_uncompressedSize = of_zip_archive_read_field64(
 				    &ZIP64, &ZIP64Size);
@@ -651,7 +657,15 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 			if (ZIP64Size > 0)
 				@throw [OFInvalidFormatException exception];
+
+			[extraField removeItemsInRange:
+			    of_range(ZIP64Index - 4, ZIP64Size + 4)];
 		}
+
+		[extraField makeImmutable];
+		_extraField = [extraField copy];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
