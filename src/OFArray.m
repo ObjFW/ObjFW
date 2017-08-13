@@ -676,7 +676,7 @@ static struct {
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else if (count <= UINT32_MAX) {
-		uint8_t type = 0xDC;
+		uint8_t type = 0xDD;
 		uint32_t tmp = OF_BSWAP32_IF_LE((uint32_t)count);
 
 		[data addItem: &type];
