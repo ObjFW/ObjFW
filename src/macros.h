@@ -568,6 +568,156 @@ OF_BSWAP_DOUBLE(double d)
 # define OF_BSWAP_DOUBLE_IF_LE(i) OF_BSWAP_DOUBLE(i)
 #endif
 
+static OF_INLINE uint16_t
+of_be16_ptr_read(void *ptr)
+{
+	uint16_t value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP16_IF_LE(value);
+}
+
+static OF_INLINE uint32_t
+of_be32_ptr_read(void *ptr)
+{
+	uint32_t value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP32_IF_LE(value);
+}
+
+static OF_INLINE uint64_t
+of_be64_ptr_read(void *ptr)
+{
+	uint64_t value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP64_IF_LE(value);
+}
+
+static OF_INLINE float
+of_be_float_ptr_read(void *ptr)
+{
+	float value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP_FLOAT_IF_LE(value);
+}
+
+static OF_INLINE double
+of_be_double_ptr_read(void *ptr)
+{
+	double value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP_DOUBLE_IF_LE(value);
+}
+
+static OF_INLINE uint16_t
+of_le16_ptr_read(void *ptr)
+{
+	uint16_t value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP16_IF_BE(value);
+}
+
+static OF_INLINE uint32_t
+of_le32_ptr_read(void *ptr)
+{
+	uint32_t value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP32_IF_BE(value);
+}
+
+static OF_INLINE uint64_t
+of_le64_ptr_read(void *ptr)
+{
+	uint64_t value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP64_IF_BE(value);
+}
+
+static OF_INLINE float
+of_le_float_ptr_read(void *ptr)
+{
+	float value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP_FLOAT_IF_BE(value);
+}
+
+static OF_INLINE double
+of_le_double_ptr_read(void *ptr)
+{
+	double value;
+	memcpy(&value, ptr, sizeof(value));
+	return OF_BSWAP_DOUBLE_IF_BE(value);
+}
+
+static OF_INLINE void
+of_be16_ptr_write(void *ptr, uint16_t value)
+{
+	value = OF_BSWAP16_IF_LE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_be32_ptr_write(void *ptr, uint32_t value)
+{
+	value = OF_BSWAP32_IF_LE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_be64_ptr_write(void *ptr, uint64_t value)
+{
+	value = OF_BSWAP64_IF_LE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_be_float_ptr_write(void *ptr, float value)
+{
+	value = OF_BSWAP_FLOAT_IF_LE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_be_double_ptr_write(void *ptr, double value)
+{
+	value = OF_BSWAP_DOUBLE_IF_LE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_le16_ptr_write(void *ptr, uint16_t value)
+{
+	value = OF_BSWAP16_IF_BE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_le32_ptr_write(void *ptr, uint32_t value)
+{
+	value = OF_BSWAP32_IF_BE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_le64_ptr_write(void *ptr, uint64_t value)
+{
+	value = OF_BSWAP64_IF_BE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_le_float_ptr_write(void *ptr, float value)
+{
+	value = OF_BSWAP_FLOAT_IF_BE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
+static OF_INLINE void
+of_le_double_ptr_write(void *ptr, double value)
+{
+	value = OF_BSWAP_DOUBLE_IF_BE(value);
+	memcpy(ptr, &value, sizeof(value));
+}
+
 #define OF_ROL(value, bits)						\
     (((bits) % (sizeof(value) * 8)) > 0					\
     ? ((value) << ((bits) % (sizeof(value) * 8))) |			\
