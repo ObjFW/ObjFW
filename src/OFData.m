@@ -185,7 +185,7 @@ _references_to_categories_of_OFData(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_items = (char *)items;
+		_items = (unsigned char *)items;
 		_itemSize = itemSize;
 		_count = count;
 		_freeWhenDone = freeWhenDone;
