@@ -113,6 +113,127 @@ help(OFStream *stream, bool full, int status)
 	[OFApplication terminateWithStatus: status];
 }
 
+static OFString *
+fileNameFromContentDisposition(OFString *contentDisposition)
+{
+	void *pool;
+	const char *UTF8String;
+	size_t UTF8StringLength;
+	enum {
+		DISPOSITION_TYPE,
+		DISPOSITION_TYPE_SEMICOLON,
+		DISPOSITION_PARAM_NAME_SKIP_SPACE,
+		DISPOSITION_PARAM_NAME,
+		DISPOSITION_PARAM_VALUE,
+		DISPOSITION_PARAM_QUOTED,
+		DISPOSITION_EXPECT_SEMICOLON
+	} state;
+	size_t last;
+	OFString *type = nil, *paramName = nil, *paramValue;
+	OFMutableDictionary *params;
+	OFString *fileName;
+
+	if (contentDisposition == nil)
+		return nil;
+
+	pool = objc_autoreleasePoolPush();
+
+	UTF8String = [contentDisposition UTF8String];
+	UTF8StringLength = [contentDisposition UTF8StringLength];
+	state = DISPOSITION_TYPE;
+	params = [OFMutableDictionary dictionary];
+	last = 0;
+
+	for (size_t i = 0; i < UTF8StringLength; i++) {
+		switch (state) {
+		case DISPOSITION_TYPE:
+			if (UTF8String[i] == ';' || UTF8String[i] == ' ') {
+				type = [OFString
+				    stringWithUTF8String: UTF8String
+						  length: i];
+
+				state = (UTF8String[i] == ';'
+				    ? DISPOSITION_PARAM_NAME_SKIP_SPACE
+				    : DISPOSITION_TYPE_SEMICOLON);
+				last = i + 1;
+			}
+			break;
+		case DISPOSITION_TYPE_SEMICOLON:
+			if (UTF8String[i] == ';') {
+				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				last = i + 1;
+			} else if (UTF8String[i] != ' ') {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+			break;
+		case DISPOSITION_PARAM_NAME_SKIP_SPACE:
+			if (UTF8String[i] != ' ') {
+				state = DISPOSITION_PARAM_NAME;
+				last = i;
+				i--;
+			}
+			break;
+		case DISPOSITION_PARAM_NAME:
+			if (UTF8String[i] == '=') {
+				paramName = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				state = DISPOSITION_PARAM_VALUE;
+			}
+			break;
+		case DISPOSITION_PARAM_VALUE:
+			if (UTF8String[i] == '"') {
+				state = DISPOSITION_PARAM_QUOTED;
+				last = i + 1;
+			} else {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+			break;
+		case DISPOSITION_PARAM_QUOTED:
+			if (UTF8String[i] == '"') {
+				paramValue = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				[params setObject: paramValue
+					   forKey: paramName];
+
+				state = DISPOSITION_EXPECT_SEMICOLON;
+			}
+			break;
+		case DISPOSITION_EXPECT_SEMICOLON:
+			if (UTF8String[i] == ';') {
+				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				last = i + 1;
+			} else if (UTF8String[i] != ' ') {
+				objc_autoreleasePoolPop(pool);
+				return nil;
+			}
+			break;
+		}
+	}
+
+	if (state != DISPOSITION_EXPECT_SEMICOLON) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	if (![type isEqual: @"attachment"] ||
+	    (fileName = [params objectForKey: @"filename"]) == nil) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	fileName = [fileName lastPathComponent];
+
+	[fileName retain];
+	objc_autoreleasePoolPop(pool);
+	return [fileName autorelease];
+}
+
 @implementation OFHTTP
 - init
 {
@@ -506,126 +627,6 @@ help(OFStream *stream, bool full, int status)
 	return response;
 }
 
-- (OFString *)fileNameFromContentDisposition: (OFString *)contentDisposition
-{
-	void *pool;
-	const char *UTF8String;
-	size_t UTF8StringLength;
-	enum {
-		DISPOSITION_TYPE,
-		DISPOSITION_TYPE_SEMICOLON,
-		DISPOSITION_PARAM_NAME_SKIP_SPACE,
-		DISPOSITION_PARAM_NAME,
-		DISPOSITION_PARAM_VALUE,
-		DISPOSITION_PARAM_QUOTED,
-		DISPOSITION_EXPECT_SEMICOLON
-	} state;
-	size_t last;
-	OFString *type = nil, *paramName = nil, *paramValue;
-	OFMutableDictionary *params;
-	OFString *fileName;
-
-	if (contentDisposition == nil)
-		return nil;
-
-	pool = objc_autoreleasePoolPush();
-
-	UTF8String = [contentDisposition UTF8String];
-	UTF8StringLength = [contentDisposition UTF8StringLength];
-	state = DISPOSITION_TYPE;
-	params = [OFMutableDictionary dictionary];
-	last = 0;
-
-	for (size_t i = 0; i < UTF8StringLength; i++) {
-		switch (state) {
-		case DISPOSITION_TYPE:
-			if (UTF8String[i] == ';' || UTF8String[i] == ' ') {
-				type = [OFString
-				    stringWithUTF8String: UTF8String
-						  length: i];
-
-				state = (UTF8String[i] == ';'
-				    ? DISPOSITION_PARAM_NAME_SKIP_SPACE
-				    : DISPOSITION_TYPE_SEMICOLON);
-				last = i + 1;
-			}
-			break;
-		case DISPOSITION_TYPE_SEMICOLON:
-			if (UTF8String[i] == ';') {
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
-				last = i + 1;
-			} else if (UTF8String[i] != ' ') {
-				objc_autoreleasePoolPop(pool);
-				return nil;
-			}
-			break;
-		case DISPOSITION_PARAM_NAME_SKIP_SPACE:
-			if (UTF8String[i] != ' ') {
-				state = DISPOSITION_PARAM_NAME;
-				last = i;
-				i--;
-			}
-			break;
-		case DISPOSITION_PARAM_NAME:
-			if (UTF8String[i] == '=') {
-				paramName = [OFString
-				    stringWithUTF8String: UTF8String + last
-						  length: i - last];
-
-				state = DISPOSITION_PARAM_VALUE;
-			}
-			break;
-		case DISPOSITION_PARAM_VALUE:
-			if (UTF8String[i] == '"') {
-				state = DISPOSITION_PARAM_QUOTED;
-				last = i + 1;
-			} else {
-				objc_autoreleasePoolPop(pool);
-				return nil;
-			}
-			break;
-		case DISPOSITION_PARAM_QUOTED:
-			if (UTF8String[i] == '"') {
-				paramValue = [OFString
-				    stringWithUTF8String: UTF8String + last
-						  length: i - last];
-
-				[params setObject: paramValue
-					   forKey: paramName];
-
-				state = DISPOSITION_EXPECT_SEMICOLON;
-			}
-			break;
-		case DISPOSITION_EXPECT_SEMICOLON:
-			if (UTF8String[i] == ';') {
-				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
-				last = i + 1;
-			} else if (UTF8String[i] != ' ') {
-				objc_autoreleasePoolPop(pool);
-				return nil;
-			}
-			break;
-		}
-	}
-
-	if (state != DISPOSITION_EXPECT_SEMICOLON) {
-		objc_autoreleasePoolPop(pool);
-		return nil;
-	}
-
-	if (![type isEqual: @"attachment"] ||
-	    (fileName = [params objectForKey: @"filename"]) == nil) {
-		objc_autoreleasePoolPop(pool);
-		return nil;
-	}
-
-	fileName = [fileName lastPathComponent];
-
-	[fileName retain];
-	objc_autoreleasePoolPop(pool);
-	return [fileName autorelease];
-}
-
 -      (bool)stream: (OFHTTPResponse *)response
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
@@ -745,8 +746,8 @@ next:
 			goto next;
 		}
 
-		fileName = [self fileNameFromContentDisposition:
-		    [[response headers] objectForKey: @"Content-Disposition"]];
+		fileName = fileNameFromContentDisposition(
+		    [[response headers] objectForKey: @"Content-Disposition"]);
 	}
 
 	if (!_quiet)
