@@ -128,7 +128,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate for the OFKernelEventObserver.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFKernelEventObserverDelegate> delegate;
 
 /*!

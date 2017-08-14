@@ -57,7 +57,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate for the TLS socket.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFTLSSocketDelegate> delegate;
 
 /*!
@@ -76,7 +76,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @warning You have to ensure that this is in secure memory protected from
  *	    swapping! This is also the reason why this is not an OFString.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
     const char *privateKeyPassphrase;
 
 /**

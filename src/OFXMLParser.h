@@ -176,7 +176,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate that is used by the XML parser.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFXMLParserDelegate> delegate;
 
 /*!

@@ -108,7 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The delegate for the HTTP server.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, assign)
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFHTTPServerDelegate> delegate;
 
 /*!
