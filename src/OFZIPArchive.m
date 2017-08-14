@@ -661,12 +661,14 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			extraField = [[[stream readDataWithCount:
 			    extraFieldLength] mutableCopy] autorelease];
 
-		of_zip_archive_entry_extra_field_find(_extraField,
+		of_zip_archive_entry_extra_field_find(extraField,
 		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
 
 		if (ZIP64Index != OF_NOT_FOUND) {
 			const uint8_t *ZIP64 =
 			    [extraField itemAtIndex: ZIP64Index];
+			of_range_t range =
+			    of_range(ZIP64Index - 4, ZIP64Size + 4);
 
 			if (_uncompressedSize == 0xFFFFFFFF)
 				_uncompressedSize = of_zip_archive_read_field64(
@@ -678,12 +680,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			if (ZIP64Size > 0)
 				@throw [OFInvalidFormatException exception];
 
-			[extraField removeItemsInRange:
-			    of_range(ZIP64Index - 4, ZIP64Size + 4)];
+			[extraField removeItemsInRange: range];
 		}
 
-		[extraField makeImmutable];
-		_extraField = [extraField copy];
+		if ([extraField count] > 0) {
+			[extraField makeImmutable];
+			_extraField = [extraField copy];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
