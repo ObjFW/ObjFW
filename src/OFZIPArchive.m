@@ -47,9 +47,7 @@
 /*
  * FIXME: Current limitations:
  *  - Split archives are not supported.
- *  - Write support is missing.
  *  - Encrypted files cannot be read.
- *  - No support for writing ZIP64 files.
  */
 
 @interface OFZIPArchive ()
@@ -475,12 +473,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
 {
 	/* TODO: Avoid data descriptor when _stream is an OFSeekableStream */
+	int64_t offsetAdd = 0;
 	void *pool;
 	OFMutableZIPArchiveEntry *entry;
 	OFString *fileName;
 	OFData *extraField;
 	uint16_t fileNameLength, extraFieldLength;
-	int64_t offsetAdd = 0;
 
 	if (_mode != OF_ZIP_ARCHIVE_MODE_WRITE &&
 	    _mode != OF_ZIP_ARCHIVE_MODE_APPEND)
@@ -502,7 +500,12 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	[self of_closeLastReturnedStream];
 
-	if (_offset > UINT32_MAX)
+	fileName = [entry fileName];
+	fileNameLength = [fileName UTF8StringLength];
+	extraField = [entry extraField];
+	extraFieldLength = [extraField count];
+
+	if (UINT16_MAX - extraFieldLength < 20)
 		@throw [OFOutOfRangeException exception];
 
 	[entry setVersionMadeBy: ([entry versionMadeBy] & 0xFF00) | 45];
@@ -520,25 +523,28 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeLittleEndianInt16: [entry compressionMethod]];
 	[_stream writeLittleEndianInt16: [entry of_lastModifiedFileTime]];
 	[_stream writeLittleEndianInt16: [entry of_lastModifiedFileDate]];
-	/* We use the data descriptor */
-	[_stream writeLittleEndianInt32: 0];
-	[_stream writeLittleEndianInt32: 0];
-	[_stream writeLittleEndianInt32: 0];
-	offsetAdd += 4 + (5 * 2) + (3 * 4);
-
-	fileName = [entry fileName];
-	fileNameLength = [fileName UTF8StringLength];
-	extraField = [entry extraField];
-	extraFieldLength = [extraField count];
-
+	/* We use ZIP64 */
+	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
+	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
+	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
 	[_stream writeLittleEndianInt16: fileNameLength];
-	[_stream writeLittleEndianInt16: extraFieldLength];
-	offsetAdd += 2 * 2;
+	[_stream writeLittleEndianInt16: extraFieldLength + 20];
+	offsetAdd += 4 + (5 * 2) + (3 * 4) + (2 * 2);
 
 	[_stream writeString: fileName];
+	offsetAdd += fileNameLength;
+
+	[_stream writeLittleEndianInt16:
+	    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64];
+	[_stream writeLittleEndianInt16: 16];
+	/* We use the data descriptor */
+	[_stream writeLittleEndianInt64: 0];
+	[_stream writeLittleEndianInt64: 0];
+	offsetAdd += (2 * 2) + (2 * 8);
+
 	if (extraField != nil)
 		[_stream writeData: extraField];
-	offsetAdd += fileNameLength + extraFieldLength;
+	offsetAdd += extraFieldLength;
 
 	if (INT64_MAX - _offset < offsetAdd)
 		@throw [OFOutOfRangeException exception];
@@ -558,9 +564,6 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	if (_offset > UINT32_MAX)
-		@throw [OFOutOfRangeException exception];
-
 	_centralDirectoryEntries = 0;
 	_centralDirectoryEntriesInDisk = 0;
 	_centralDirectorySize = 0;
@@ -572,16 +575,33 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_centralDirectoryEntriesInDisk++;
 	}
 
-	if (_centralDirectorySize > UINT32_MAX)
-		@throw [OFOutOfRangeException exception];
+	/* ZIP64 end of central directory */
+	[_stream writeLittleEndianInt32: 0x06064B50];
+	[_stream writeLittleEndianInt64: 44];	/* Remaining size */
+	[_stream writeLittleEndianInt16: 45];	/* Version made by */
+	[_stream writeLittleEndianInt16: 45];	/* Version required */
+	[_stream writeLittleEndianInt32: _diskNumber];
+	[_stream writeLittleEndianInt32: _centralDirectoryDisk];
+	[_stream writeLittleEndianInt64: _centralDirectoryEntriesInDisk];
+	[_stream writeLittleEndianInt64: _centralDirectoryEntries];
+	[_stream writeLittleEndianInt64: _centralDirectorySize];
+	[_stream writeLittleEndianInt64: _centralDirectoryOffset];
 
+	/* ZIP64 end of central directory locator */
+	[_stream writeLittleEndianInt32: 0x07064B50];
+	[_stream writeLittleEndianInt32: _diskNumber];
+	[_stream writeLittleEndianInt64:
+	    _centralDirectoryOffset + _centralDirectorySize];
+	[_stream writeLittleEndianInt32: 1];	/* Total number of disks */
+
+	/* End of central directory */
 	[_stream writeLittleEndianInt32: 0x06054B50];
-	[_stream writeLittleEndianInt16: _diskNumber];
-	[_stream writeLittleEndianInt16: _centralDirectoryDisk];
-	[_stream writeLittleEndianInt16: _centralDirectoryEntriesInDisk];
-	[_stream writeLittleEndianInt16: _centralDirectoryEntries];
-	[_stream writeLittleEndianInt32: (uint32_t)_centralDirectorySize];
-	[_stream writeLittleEndianInt32: (uint32_t)_centralDirectoryOffset];
+	[_stream writeLittleEndianInt16: 0xFFFF];	/* Disk number */
+	[_stream writeLittleEndianInt16: 0xFFFF];	/* CD disk */
+	[_stream writeLittleEndianInt16: 0xFFFF];	/* CD entries in disk */
+	[_stream writeLittleEndianInt16: 0xFFFF];	/* CD entries */
+	[_stream writeLittleEndianInt32: 0xFFFFFFFF];	/* CD size */
+	[_stream writeLittleEndianInt32: 0xFFFFFFFF];	/* CD offset */
 	[_stream writeLittleEndianInt16: [_archiveComment UTF8StringLength]];
 	if (_archiveComment != nil)
 		[_stream writeString: _archiveComment];
@@ -837,28 +857,22 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)close
 {
-	uint32_t bytesWritten;
-
 	if (_stream == nil)
 		return;
 
-	if (_bytesWritten > UINT32_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	bytesWritten = (uint32_t)_bytesWritten;
-
 	[_stream writeLittleEndianInt32: 0x08074B50];
 	[_stream writeLittleEndianInt32: _CRC32];
-	[_stream writeLittleEndianInt32: bytesWritten];
-	[_stream writeLittleEndianInt32: bytesWritten];
-	_bytesWritten += (4 * 4);
+	[_stream writeLittleEndianInt64: _bytesWritten];
+	[_stream writeLittleEndianInt64: _bytesWritten];
 
 	[_stream release];
 	_stream = nil;
 
 	[_entry setCRC32: ~_CRC32];
-	[_entry setCompressedSize: bytesWritten];
-	[_entry setUncompressedSize: bytesWritten];
+	[_entry setCompressedSize: _bytesWritten];
+	[_entry setUncompressedSize: _bytesWritten];
 	[_entry makeImmutable];
+
+	_bytesWritten += (2 * 4 + 2 * 8);
 }
 @end
