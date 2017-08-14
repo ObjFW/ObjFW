@@ -523,8 +523,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeLittleEndianInt16: [entry compressionMethod]];
 	[_stream writeLittleEndianInt16: [entry of_lastModifiedFileTime]];
 	[_stream writeLittleEndianInt16: [entry of_lastModifiedFileDate]];
+	/* We use the data descriptor */
+	[_stream writeLittleEndianInt32: 0];
 	/* We use ZIP64 */
-	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
 	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
 	[_stream writeLittleEndianInt32: 0xFFFFFFFF];
 	[_stream writeLittleEndianInt16: fileNameLength];
