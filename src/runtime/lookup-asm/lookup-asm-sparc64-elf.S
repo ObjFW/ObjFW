@@ -52,11 +52,16 @@
 	ldx	[%o2 + %o5], %o2
 
 	cmp	%o2, 0
-	be,pn	%xcc, \not_found
+	be,pn	%xcc, 0f
 	 nop
 
 	retl
 	 mov	%o2, %o0
+
+0:
+	mov	%o7, %g1
+	call	\not_found
+	 mov	%g1, %o7
 .type \name, %function
 .size \name, .-\name
 .endm
