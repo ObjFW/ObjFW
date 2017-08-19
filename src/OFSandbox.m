@@ -19,38 +19,289 @@
 #import "OFArray.h"
 
 @implementation OFSandbox
-@synthesize allowsStdIO = _allowsStdIO;
-@synthesize allowsReadingFiles = _allowsReadingFiles;
-@synthesize allowsWritingFiles = _allowsWritingFiles;
-@synthesize allowsCreatingFiles = _allowsCreatingFiles;
-@synthesize allowsCreatingSpecialFiles = _allowsCreatingSpecialFiles;
-@synthesize allowsTemporaryFiles = _allowsTemporaryFiles;
-@synthesize allowsIPSockets = _allowsIPSockets;
-@synthesize allowsMulticastSockets = _allowsMulticastSockets;
-@synthesize allowsChangingFileAttributes = _allowsChangingFileAttributes;
-@synthesize allowsFileOwnerChanges = _allowsFileOwnerChanges;
-@synthesize allowsFileLocks = _allowsFileLocks;
-@synthesize allowsUNIXSockets = _allowsUNIXSockets;
-@synthesize allowsDNS = _allowsDNS;
-@synthesize allowsUserDatabaseReading = _allowsUserDatabaseReading;
-@synthesize allowsFileDescriptorSending = _allowsFileDescriptorSending;
-@synthesize allowsFileDescriptorReceiving = _allowsFileDescriptorReceiving;
-@synthesize allowsTape = _allowsTape;
-@synthesize allowsTTY = _allowsTTY;
-@synthesize allowsProcessOperations = _allowsProcessOperations;
-@synthesize allowsExec = _allowsExec;
-@synthesize allowsProtExec = _allowsProtExec;
-@synthesize allowsSetTime = _allowsSetTime;
-@synthesize allowsPS = _allowsPS;
-@synthesize allowsVMInfo = _allowsVMInfo;
-@synthesize allowsChangingProcessRights = _allowsChangingProcessRights;
-@synthesize allowsPF = _allowsPF;
-@synthesize allowsAudio = _allowsAudio;
-@synthesize allowsBPF = _allowsBPF;
-
 + (instancetype)sandbox
 {
 	return [[[self alloc] init] autorelease];
+}
+
+- (void)setAllowsStdIO: (bool)allowsStdIO
+{
+	_allowsStdIO = allowsStdIO;
+}
+
+- (bool)allowsStdIO
+{
+	return _allowsStdIO;
+}
+
+- (void)setAllowsReadingFiles: (bool)allowsReadingFiles
+{
+	_allowsReadingFiles = allowsReadingFiles;
+}
+
+- (bool)allowsReadingFiles
+{
+	return _allowsReadingFiles;
+}
+
+- (void)setAllowsWritingFiles: (bool)allowsWritingFiles
+{
+	_allowsWritingFiles = allowsWritingFiles;
+}
+
+- (bool)allowsWritingFiles
+{
+	return _allowsWritingFiles;
+}
+
+- (void)setAllowsCreatingFiles: (bool)allowsCreatingFiles
+{
+	_allowsCreatingFiles = allowsCreatingFiles;
+}
+
+- (bool)allowsCreatingFiles
+{
+	return _allowsCreatingFiles;
+}
+
+- (void)setAllowsCreatingSpecialFiles: (bool)allowsCreatingSpecialFiles
+{
+	_allowsCreatingSpecialFiles = allowsCreatingSpecialFiles;
+}
+
+- (bool)allowsCreatingSpecialFiles
+{
+	return _allowsCreatingSpecialFiles;
+}
+
+- (void)setAllowsTemporaryFiles: (bool)allowsTemporaryFiles
+{
+	_allowsTemporaryFiles = allowsTemporaryFiles;
+}
+
+- (bool)allowsTemporaryFiles
+{
+	return _allowsTemporaryFiles;
+}
+
+- (void)setAllowsIPSockets: (bool)allowsIPSockets
+{
+	_allowsIPSockets = allowsIPSockets;
+}
+
+- (bool)allowsIPSockets
+{
+	return _allowsIPSockets;
+}
+
+- (void)setAllowsMulticastSockets: (bool)allowsMulticastSockets
+{
+	_allowsMulticastSockets = allowsMulticastSockets;
+}
+
+- (bool)allowsMulticastSockets
+{
+	return _allowsMulticastSockets;
+}
+
+- (void)setAllowsChangingFileAttributes: (bool)allowsChangingFileAttributes
+{
+	_allowsChangingFileAttributes = allowsChangingFileAttributes;
+}
+
+- (bool)allowsChangingFileAttributes
+{
+	return _allowsChangingFileAttributes;
+}
+
+- (void)setAllowsFileOwnerChanges: (bool)allowsFileOwnerChanges
+{
+	_allowsFileOwnerChanges = allowsFileOwnerChanges;
+}
+
+- (bool)allowsFileOwnerChanges
+{
+	return _allowsFileOwnerChanges;
+}
+
+- (void)setAllowsFileLocks: (bool)allowsFileLocks
+{
+	_allowsFileLocks = allowsFileLocks;
+}
+
+- (bool)allowsFileLocks
+{
+	return _allowsFileLocks;
+}
+
+- (void)setAllowsUNIXSockets: (bool)allowsUNIXSockets
+{
+	_allowsUNIXSockets = allowsUNIXSockets;
+}
+
+- (bool)allowsUNIXSockets
+{
+	return _allowsUNIXSockets;
+}
+
+- (void)setAllowsDNS: (bool)allowsDNS
+{
+	_allowsDNS = allowsDNS;
+}
+
+- (bool)allowsDNS
+{
+	return _allowsDNS;
+}
+
+- (void)setAllowsUserDatabaseReading: (bool)allowsUserDatabaseReading
+{
+	_allowsUserDatabaseReading = allowsUserDatabaseReading;
+}
+
+- (bool)allowsUserDatabaseReading
+{
+	return _allowsUserDatabaseReading;
+}
+
+- (void)setAllowsFileDescriptorSending: (bool)allowsFileDescriptorSending
+{
+	_allowsFileDescriptorSending = allowsFileDescriptorSending;
+}
+
+- (bool)allowsFileDescriptorSending
+{
+	return _allowsFileDescriptorSending;
+}
+
+- (void)setAllowsFileDescriptorReceiving: (bool)allowsFileDescriptorReceiving
+{
+	_allowsFileDescriptorReceiving = allowsFileDescriptorReceiving;
+}
+
+- (bool)allowsFileDescriptorReceiving
+{
+	return _allowsFileDescriptorReceiving;
+}
+
+- (void)setAllowsTape: (bool)allowsTape
+{
+	_allowsTape = allowsTape;
+}
+
+- (bool)allowsTape
+{
+	return _allowsTape;
+}
+
+- (void)setAllowsTTY: (bool)allowsTTY
+{
+	_allowsTTY = allowsTTY;
+}
+
+- (bool)allowsTTY
+{
+	return _allowsTTY;
+}
+
+- (void)setAllowsProcessOperations: (bool)allowsProcessOperations
+{
+	_allowsProcessOperations = allowsProcessOperations;
+}
+
+- (bool)allowsProcessOperations
+{
+	return _allowsProcessOperations;
+}
+
+- (void)setAllowsExec: (bool)allowsExec
+{
+	_allowsExec = allowsExec;
+}
+
+- (bool)allowsExec
+{
+	return _allowsExec;
+}
+
+- (void)setAllowsProtExec: (bool)allowsProtExec
+{
+	_allowsProtExec = allowsProtExec;
+}
+
+- (bool)allowsProtExec
+{
+	return _allowsProtExec;
+}
+
+- (void)setAllowsSetTime: (bool)allowsSetTime
+{
+	_allowsSetTime = allowsSetTime;
+}
+
+- (bool)allowsSetTime
+{
+	return _allowsSetTime;
+}
+
+- (void)setAllowsPS: (bool)allowsPS
+{
+	_allowsPS = allowsPS;
+}
+
+- (bool)allowsPS
+{
+	return _allowsPS;
+}
+
+- (void)setAllowsVMInfo: (bool)allowsVMInfo
+{
+	_allowsVMInfo = allowsVMInfo;
+}
+
+- (bool)allowsVMInfo
+{
+	return _allowsVMInfo;
+}
+
+- (void)setAllowsChangingProcessRights: (bool)allowsChangingProcessRights
+{
+	_allowsChangingProcessRights = allowsChangingProcessRights;
+}
+
+- (bool)allowsChangingProcessRights
+{
+	return _allowsChangingProcessRights;
+}
+
+- (void)setAllowsPF: (bool)allowsPF
+{
+	_allowsPF = allowsPF;
+}
+
+- (bool)allowsPF
+{
+	return _allowsPF;
+}
+
+- (void)setAllowsAudio: (bool)allowsAudio
+{
+	_allowsAudio = allowsAudio;
+}
+
+- (bool)allowsAudio
+{
+	return _allowsAudio;
+}
+
+- (void)setAllowsBPF: (bool)allowsBPF
+{
+	_allowsBPF = allowsBPF;
+}
+
+- (bool)allowsBPF
+{
+	return _allowsBPF;
 }
 
 - copy

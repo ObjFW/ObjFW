@@ -27,16 +27,34 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSandbox: OFObject <OFCopying>
 {
-	bool _allowsStdIO, _allowsReadingFiles, _allowsWritingFiles;
-	bool _allowsCreatingFiles, _allowsCreatingSpecialFiles;
-	bool _allowsTemporaryFiles, _allowsIPSockets, _allowsMulticastSockets;
-	bool _allowsChangingFileAttributes, _allowsFileOwnerChanges;
-	bool _allowsFileLocks, _allowsUNIXSockets, _allowsDNS;
-	bool _allowsUserDatabaseReading, _allowsFileDescriptorSending;
-	bool _allowsFileDescriptorReceiving, _allowsTape, _allowsTTY;
-	bool _allowsProcessOperations, _allowsExec, _allowsProtExec;
-	bool _allowsSetTime, _allowsPS, _allowsVMInfo;
-	bool _allowsChangingProcessRights, _allowsPF, _allowsAudio, _allowsBPF;
+	unsigned int _allowsStdIO: 1;
+	unsigned int _allowsReadingFiles: 1;
+	unsigned int _allowsWritingFiles: 1;
+	unsigned int _allowsCreatingFiles: 1;
+	unsigned int _allowsCreatingSpecialFiles: 1;
+	unsigned int _allowsTemporaryFiles: 1;
+	unsigned int _allowsIPSockets: 1;
+	unsigned int _allowsMulticastSockets: 1;
+	unsigned int _allowsChangingFileAttributes: 1;
+	unsigned int _allowsFileOwnerChanges: 1;
+	unsigned int _allowsFileLocks: 1;
+	unsigned int _allowsUNIXSockets: 1;
+	unsigned int _allowsDNS: 1;
+	unsigned int _allowsUserDatabaseReading: 1;
+	unsigned int _allowsFileDescriptorSending: 1;
+	unsigned int _allowsFileDescriptorReceiving: 1;
+	unsigned int _allowsTape: 1;
+	unsigned int _allowsTTY: 1;
+	unsigned int _allowsProcessOperations: 1;
+	unsigned int _allowsExec: 1;
+	unsigned int _allowsProtExec: 1;
+	unsigned int _allowsSetTime: 1;
+	unsigned int _allowsPS: 1;
+	unsigned int _allowsVMInfo: 1;
+	unsigned int _allowsChangingProcessRights: 1;
+	unsigned int _allowsPF: 1;
+	unsigned int _allowsAudio: 1;
+	unsigned int _allowsBPF: 1;
 }
 
 /*! Allows IO operations on previously allocated file descriptors. */
