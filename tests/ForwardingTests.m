@@ -36,7 +36,7 @@ static bool success = false;
 static id target = nil;
 
 struct stret_test {
-	char s[27];
+	char s[1024];
 };
 
 @interface ForwardingTest: OFObject
@@ -172,7 +172,7 @@ test(id self, SEL _cmd)
 
 - (struct stret_test)forwardingTargetStRetTest
 {
-	struct stret_test ret;
+	struct stret_test ret = { 0 };
 
 	OF_ENSURE(self == target);
 
