@@ -204,6 +204,7 @@ resolveInstanceMethod:, which are always available):
   * ARM64 (ARM64/ELF, Apple/Mach-O)
   * MIPS (O32/ELF, EABI/ELF)
   * PPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
+  * SPARC64 (SysV/ELF)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
   * x86_64 (SysV/ELF, Apple/Mach-O, Mach-O, Win64/PE)
 
