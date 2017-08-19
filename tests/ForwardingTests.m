@@ -172,7 +172,7 @@ test(id self, SEL _cmd)
 
 - (struct stret_test)forwardingTargetStRetTest
 {
-	struct stret_test ret = { 0 };
+	struct stret_test ret = { { 0 } };
 
 	OF_ENSURE(self == target);
 
