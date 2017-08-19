@@ -662,7 +662,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 			extraField = [[[stream readDataWithCount:
 			    extraFieldLength] mutableCopy] autorelease];
 
-		of_zip_archive_entry_extra_field_find(extraField,
+		ZIP64Index = of_zip_archive_entry_extra_field_find(extraField,
 		    OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64, &ZIP64Size);
 
 		if (ZIP64Index != OF_NOT_FOUND) {
