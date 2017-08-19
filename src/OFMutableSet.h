@@ -82,6 +82,11 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)unionSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
+ * @brief Removes all objects from the set.
+ */
+- (void)removeAllObjects;
+
+/*!
  * @brief Converts the mutable set to an immutable set.
  */
 - (void)makeImmutable;

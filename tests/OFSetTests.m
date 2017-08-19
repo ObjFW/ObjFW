@@ -90,6 +90,10 @@ static OFString *module = @"OFSet";
 	    nil]]) && [mutableSet isEqual: [OFSet setWithObjects: @"baz",
 	    @"bar", @"x", nil]])
 
+	TEST(@"-[removeAllObjects]",
+	    R([mutableSet removeAllObjects]) &&
+	    [mutableSet isEqual: [OFSet set]])
+
 	ok = true;
 	i = 0;
 
@@ -122,6 +126,8 @@ static OFString *module = @"OFSet";
 	TEST(@"Fast enumeration", ok)
 
 	ok = false;
+	[mutableSet addObject: @"foo"];
+	[mutableSet addObject: @"bar"];
 	@try {
 		for (OFString *s in mutableSet)
 			[mutableSet removeObject: s];

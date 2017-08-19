@@ -211,6 +211,11 @@
 		[_mapTable removeObjectForKey: object];
 }
 
+- (void)removeAllObjects
+{
+	[_mapTable removeAllObjects];
+}
+
 - (void)makeImmutable
 {
 }

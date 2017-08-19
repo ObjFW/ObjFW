@@ -38,6 +38,11 @@
 	[_mapTable removeObjectForKey: object];
 }
 
+- (void)removeAllObjects
+{
+	[_mapTable removeAllObjects];
+}
+
 - (void)makeImmutable
 {
 	object_setClass(self, [OFSet_hashtable class]);

@@ -194,6 +194,17 @@ static struct {
 		[self addObject: object];
 }
 
+- (void)removeAllObjects
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFSet *copy = [[self copy] autorelease];
+
+	for (id object in copy)
+		[self removeObject: object];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)makeImmutable
 {
 }

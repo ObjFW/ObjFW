@@ -267,4 +267,19 @@ static struct {
 
 	objc_autoreleasePoolPop(pool);
 }
+
+- (void)removeAllObjects
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFSet *copy = [[self copy] autorelease];
+
+	for (id object in copy) {
+		size_t count = [self countForObject: object];
+
+		for (size_t i = 0; i < count; i++)
+			[self removeObject: object];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
 @end
