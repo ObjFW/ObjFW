@@ -4,6 +4,19 @@ Legend:
 
 This file only contains the most significant changes.
 
+ObjFW 0.90 -> ObjFW 0.90.1, 20.08.2017
+ * OFData: Fix -[description]
+ * OFFileManager: Set errno to 0 before readdir()
+ * OFDate: Add -[localMinute]
+ * OFTarArchiveEntry: Fix prefix handling for ustar
+ * OFZIPArchive: Fix uncompressed + data descriptor
+ * OFArray: Fix MessagePack encoding
+ * of_asprintf: Don't require set up OFLocalization
+ * OFGZIPStream: Add missing documentation
+ * Fix a linker warning on OpenBSD/SPARC64
+ * Remove the OFFile b modes from MorphOS
+   (they were already removed for all other OSes)
+
 ObjFW 0.8.1 -> ObjFW 0.90, 01.08.2017
  + New classes: OFFileManager, OFGZIPStream, OFTarArchive, OFTarArchiveEntry
 		OFHMAC, OFSandbox, OFHTTPCookie, OFHTTPCookieManager,
