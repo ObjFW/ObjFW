@@ -128,8 +128,8 @@ OpenBSD
 -------
 
   * OS Versions: 5.2-5.7
-  * Architectures: MIPS64, PPC, SPARC64, x86_64
-  * Compilers: GCC 4.2.1, Clang 3.5
+  * Architectures: MIPS64, PA-RISC, PPC, SPARC64, x86_64
+  * Compilers: GCC 6.3.0, Clang 4.0
   * Runtimes: ObjFW
 
 
