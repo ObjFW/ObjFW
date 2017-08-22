@@ -278,6 +278,9 @@
 # ifdef OF_MIPS
 #  define OF_MIPS_ASM
 # endif
+# ifdef OF_PA_RISC
+#  define OF_PA_RISC_ASM
+# endif
 #endif
 
 #ifdef OF_APPLE_RUNTIME
