@@ -703,6 +703,14 @@
 		4B3DE12C1F5F4F2F0090AA3E /* OFPair.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1251F5F4F2F0090AA3E /* OFPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3DE12D1F5F4F2F0090AA3E /* OFPair.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1261F5F4F2F0090AA3E /* OFPair.m */; };
 		4B3DE12E1F5F4F2F0090AA3E /* OFPair.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1261F5F4F2F0090AA3E /* OFPair.m */; };
+		4B3DE1331F5F553E0090AA3E /* OFMutableTriple.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE12F1F5F553E0090AA3E /* OFMutableTriple.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE1341F5F553E0090AA3E /* OFMutableTriple.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE12F1F5F553E0090AA3E /* OFMutableTriple.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE1351F5F553E0090AA3E /* OFMutableTriple.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1301F5F553E0090AA3E /* OFMutableTriple.m */; };
+		4B3DE1361F5F553E0090AA3E /* OFMutableTriple.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1301F5F553E0090AA3E /* OFMutableTriple.m */; };
+		4B3DE1371F5F553E0090AA3E /* OFTriple.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1311F5F553E0090AA3E /* OFTriple.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE1381F5F553E0090AA3E /* OFTriple.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1311F5F553E0090AA3E /* OFTriple.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE1391F5F553E0090AA3E /* OFTriple.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1321F5F553E0090AA3E /* OFTriple.m */; };
+		4B3DE13A1F5F553E0090AA3E /* OFTriple.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1321F5F553E0090AA3E /* OFTriple.m */; };
 		4B3ED7C21AF62C30004C8FF1 /* OFGetOptionFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3ED7C31AF62C30004C8FF1 /* OFGetOptionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */; };
 		4B40EC1B189FE2650031E19E /* socket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B40EC1A189FE2650031E19E /* socket.m */; };
@@ -1340,6 +1348,10 @@
 		4B3DE1241F5F4F2F0090AA3E /* OFMutablePair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutablePair.m; path = src/OFMutablePair.m; sourceTree = "<group>"; };
 		4B3DE1251F5F4F2F0090AA3E /* OFPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFPair.h; path = src/OFPair.h; sourceTree = "<group>"; };
 		4B3DE1261F5F4F2F0090AA3E /* OFPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFPair.m; path = src/OFPair.m; sourceTree = "<group>"; };
+		4B3DE12F1F5F553E0090AA3E /* OFMutableTriple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutableTriple.h; path = src/OFMutableTriple.h; sourceTree = "<group>"; };
+		4B3DE1301F5F553E0090AA3E /* OFMutableTriple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutableTriple.m; path = src/OFMutableTriple.m; sourceTree = "<group>"; };
+		4B3DE1311F5F553E0090AA3E /* OFTriple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFTriple.h; path = src/OFTriple.h; sourceTree = "<group>"; };
+		4B3DE1321F5F553E0090AA3E /* OFTriple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFTriple.m; path = src/OFTriple.m; sourceTree = "<group>"; };
 		4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFGetOptionFailedException.h; path = src/exceptions/OFGetOptionFailedException.h; sourceTree = "<group>"; };
 		4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFGetOptionFailedException.m; path = src/exceptions/OFGetOptionFailedException.m; sourceTree = "<group>"; };
 		4B40EC1A189FE2650031E19E /* socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = socket.m; path = src/socket.m; sourceTree = "<group>"; };
@@ -2143,6 +2155,8 @@
 				4B55254F147AA5DB0003BF47 /* OFMutableString_UTF8.m */,
 				4BA842E41F35E53800292FC6 /* OFMutableTarArchiveEntry.h */,
 				4BA842E51F35E53800292FC6 /* OFMutableTarArchiveEntry.m */,
+				4B3DE12F1F5F553E0090AA3E /* OFMutableTriple.h */,
+				4B3DE1301F5F553E0090AA3E /* OFMutableTriple.m */,
 				4B4116CD1F21654200E78916 /* OFMutableURL.h */,
 				4B4116CE1F21654200E78916 /* OFMutableURL.m */,
 				4B92FDDC1F35DFAC000D541D /* OFMutableZIPArchiveEntry.h */,
@@ -2248,6 +2262,8 @@
 				4B325EDC1605F3A0007836CA /* OFTimer.m */,
 				4B6C8AD617BD5C2E00B194F2 /* OFTimer+Private.h */,
 				4BA02BA015041F5900002F84 /* OFTLSSocket.h */,
+				4B3DE1311F5F553E0090AA3E /* OFTriple.h */,
+				4B3DE1321F5F553E0090AA3E /* OFTriple.m */,
 				4B7769EF1895ED0C00D12284 /* OFUDPSocket.h */,
 				4B7769F01895ED0C00D12284 /* OFUDPSocket.m */,
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
@@ -2512,6 +2528,7 @@
 				4B2C22021DA292BE00735907 /* OFMutableSet.h in Headers */,
 				4B2C22031DA292BE00735907 /* OFMutableString.h in Headers */,
 				4BA842E71F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */,
+				4B3DE1341F5F553E0090AA3E /* OFMutableTriple.h in Headers */,
 				4B4116D11F21654200E78916 /* OFMutableURL.h in Headers */,
 				4B92FDE01F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */,
 				4B2C22041DA292BE00735907 /* OFMutex.h in Headers */,
@@ -2557,6 +2574,7 @@
 				4B2C222B1DA292BE00735907 /* OFThreadPool.h in Headers */,
 				4B2C222C1DA292BE00735907 /* OFTimer.h in Headers */,
 				4B2C222D1DA292BE00735907 /* OFTLSSocket.h in Headers */,
+				4B3DE1381F5F553E0090AA3E /* OFTriple.h in Headers */,
 				4B2C222E1DA292BE00735907 /* OFUDPSocket.h in Headers */,
 				4B2C222F1DA292BE00735907 /* OFURL.h in Headers */,
 				4B2C22301DA292BE00735907 /* OFXMLAttribute.h in Headers */,
@@ -2743,6 +2761,7 @@
 				4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */,
 				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
 				4BA842E61F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */,
+				4B3DE1331F5F553E0090AA3E /* OFMutableTriple.h in Headers */,
 				4B4116D01F21654200E78916 /* OFMutableURL.h in Headers */,
 				4B92FDDF1F35DFB5000D541D /* OFMutableZIPArchiveEntry.h in Headers */,
 				4B674403163C395900EB1E59 /* OFMutex.h in Headers */,
@@ -2789,6 +2808,7 @@
 				4B9361A81511000C00DCD16B /* OFThreadPool.h in Headers */,
 				4B325EDF1605F3A0007836CA /* OFTimer.h in Headers */,
 				4BA02BA215041F5900002F84 /* OFTLSSocket.h in Headers */,
+				4B3DE1371F5F553E0090AA3E /* OFTriple.h in Headers */,
 				4B7769F11895ED0C00D12284 /* OFUDPSocket.h in Headers */,
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
@@ -3311,6 +3331,7 @@
 				4B2C214E1DA292BE00735907 /* OFMutableString.m in Sources */,
 				4B2C214F1DA292BE00735907 /* OFMutableString_UTF8.m in Sources */,
 				4BA842E91F35E53800292FC6 /* OFMutableTarArchiveEntry.m in Sources */,
+				4B3DE1361F5F553E0090AA3E /* OFMutableTriple.m in Sources */,
 				4B4116D31F21654200E78916 /* OFMutableURL.m in Sources */,
 				4B92FDE21F35DFBC000D541D /* OFMutableZIPArchiveEntry.m in Sources */,
 				4B2C21501DA292BE00735907 /* OFMutex.m in Sources */,
@@ -3357,6 +3378,7 @@
 				4B2C21781DA292BE00735907 /* OFThread.m in Sources */,
 				4B2C21791DA292BE00735907 /* OFThreadPool.m in Sources */,
 				4B2C217A1DA292BE00735907 /* OFTimer.m in Sources */,
+				4B3DE13A1F5F553E0090AA3E /* OFTriple.m in Sources */,
 				4B2C217B1DA292BE00735907 /* OFUDPSocket.m in Sources */,
 				4B2C217C1DA292BE00735907 /* OFURL.m in Sources */,
 				4B2C217D1DA292BE00735907 /* OFXMLAttribute.m in Sources */,
@@ -3515,6 +3537,7 @@
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
 				4B552553147AA5DB0003BF47 /* OFMutableString_UTF8.m in Sources */,
 				4BA842E81F35E53800292FC6 /* OFMutableTarArchiveEntry.m in Sources */,
+				4B3DE1351F5F553E0090AA3E /* OFMutableTriple.m in Sources */,
 				4B4116D21F21654200E78916 /* OFMutableURL.m in Sources */,
 				4B92FDE11F35DFBB000D541D /* OFMutableZIPArchiveEntry.m in Sources */,
 				4B674404163C395900EB1E59 /* OFMutex.m in Sources */,
@@ -3562,6 +3585,7 @@
 				4B3D23AC1337FC0D00DD29B8 /* OFThread.m in Sources */,
 				4B9361A91511000C00DCD16B /* OFThreadPool.m in Sources */,
 				4B325EE01605F3A0007836CA /* OFTimer.m in Sources */,
+				4B3DE1391F5F553E0090AA3E /* OFTriple.m in Sources */,
 				4B7769F21895ED0C00D12284 /* OFUDPSocket.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,

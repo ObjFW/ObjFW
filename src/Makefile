@@ -42,6 +42,7 @@ SRCS = OFApplication.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
+       OFMutableTriple.m		\
        OFMutableURL.m			\
        OFMutableZIPArchiveEntry.m	\
        OFNull.m				\
@@ -80,6 +81,7 @@ SRCS = OFApplication.m			\
        OFTarArchiveEntry.m		\
        OFThread.m			\
        OFTimer.m			\
+       OFTriple.m			\
        OFURL.m				\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
