@@ -695,6 +695,14 @@
 		4B3D23EA1337FCB000DD29B8 /* threading.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B67998B1099E7C50041064A /* threading.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3D23EE1337FFD000DD29B8 /* of_asprintf.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB50DD012F863C700C9393F /* of_asprintf.m */; };
 		4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D5693139A617D0010A78F /* OFSerializationTests.m */; };
+		4B3DE1271F5F4F2F0090AA3E /* OFMutablePair.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1231F5F4F2F0090AA3E /* OFMutablePair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE1281F5F4F2F0090AA3E /* OFMutablePair.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1231F5F4F2F0090AA3E /* OFMutablePair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE1291F5F4F2F0090AA3E /* OFMutablePair.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1241F5F4F2F0090AA3E /* OFMutablePair.m */; };
+		4B3DE12A1F5F4F2F0090AA3E /* OFMutablePair.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1241F5F4F2F0090AA3E /* OFMutablePair.m */; };
+		4B3DE12B1F5F4F2F0090AA3E /* OFPair.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1251F5F4F2F0090AA3E /* OFPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE12C1F5F4F2F0090AA3E /* OFPair.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3DE1251F5F4F2F0090AA3E /* OFPair.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B3DE12D1F5F4F2F0090AA3E /* OFPair.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1261F5F4F2F0090AA3E /* OFPair.m */; };
+		4B3DE12E1F5F4F2F0090AA3E /* OFPair.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3DE1261F5F4F2F0090AA3E /* OFPair.m */; };
 		4B3ED7C21AF62C30004C8FF1 /* OFGetOptionFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B3ED7C31AF62C30004C8FF1 /* OFGetOptionFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */; };
 		4B40EC1B189FE2650031E19E /* socket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B40EC1A189FE2650031E19E /* socket.m */; };
@@ -1328,6 +1336,10 @@
 		4B3D23761337FBC800DD29B8 /* ObjFW.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjFW.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B3D23BB1337FC5800DD29B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = misc/Info.plist; sourceTree = SOURCE_ROOT; };
 		4B3D5693139A617D0010A78F /* OFSerializationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSerializationTests.m; path = tests/OFSerializationTests.m; sourceTree = "<group>"; };
+		4B3DE1231F5F4F2F0090AA3E /* OFMutablePair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMutablePair.h; path = src/OFMutablePair.h; sourceTree = "<group>"; };
+		4B3DE1241F5F4F2F0090AA3E /* OFMutablePair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMutablePair.m; path = src/OFMutablePair.m; sourceTree = "<group>"; };
+		4B3DE1251F5F4F2F0090AA3E /* OFPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFPair.h; path = src/OFPair.h; sourceTree = "<group>"; };
+		4B3DE1261F5F4F2F0090AA3E /* OFPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFPair.m; path = src/OFPair.m; sourceTree = "<group>"; };
 		4B3ED7C01AF62C30004C8FF1 /* OFGetOptionFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFGetOptionFailedException.h; path = src/exceptions/OFGetOptionFailedException.h; sourceTree = "<group>"; };
 		4B3ED7C11AF62C30004C8FF1 /* OFGetOptionFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFGetOptionFailedException.m; path = src/exceptions/OFGetOptionFailedException.m; sourceTree = "<group>"; };
 		4B40EC1A189FE2650031E19E /* socket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = socket.m; path = src/socket.m; sourceTree = "<group>"; };
@@ -2119,6 +2131,8 @@
 				4B6799721099E7C50041064A /* OFMutableDictionary.m */,
 				4B2B3E79140D430500EC2F7C /* OFMutableDictionary_hashtable.h */,
 				4B2B3E7A140D430500EC2F7C /* OFMutableDictionary_hashtable.m */,
+				4B3DE1231F5F4F2F0090AA3E /* OFMutablePair.h */,
+				4B3DE1241F5F4F2F0090AA3E /* OFMutablePair.m */,
 				4B39844513D3AFB400E6F825 /* OFMutableSet.h */,
 				4B39844613D3AFB400E6F825 /* OFMutableSet.m */,
 				4BA85BC6140ECCE800E91D51 /* OFMutableSet_hashtable.h */,
@@ -2147,6 +2161,8 @@
 				4BB25E83139C388A00F574EA /* OFObject+Serialization.m */,
 				4BAFC166182EAA7800BE5E57 /* OFOptionsParser.h */,
 				4BAFC167182EAA7800BE5E57 /* OFOptionsParser.m */,
+				4B3DE1251F5F4F2F0090AA3E /* OFPair.h */,
+				4B3DE1261F5F4F2F0090AA3E /* OFPair.m */,
 				4B6799791099E7C50041064A /* OFPlugin.h */,
 				4B67997A1099E7C50041064A /* OFPlugin.m */,
 				4BB524BF143D1E4E0085FBCC /* OFProcess.h */,
@@ -2492,6 +2508,7 @@
 				4B2C22001DA292BE00735907 /* OFMutableArray.h in Headers */,
 				4B1223181F23E6C100D9F8FF /* OFMutableData.h in Headers */,
 				4B2C22011DA292BE00735907 /* OFMutableDictionary.h in Headers */,
+				4B3DE1281F5F4F2F0090AA3E /* OFMutablePair.h in Headers */,
 				4B2C22021DA292BE00735907 /* OFMutableSet.h in Headers */,
 				4B2C22031DA292BE00735907 /* OFMutableString.h in Headers */,
 				4BA842E71F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */,
@@ -2504,6 +2521,7 @@
 				4B2C22081DA292BE00735907 /* OFObject+KeyValueCoding.h in Headers */,
 				4B2C22091DA292BE00735907 /* OFObject+Serialization.h in Headers */,
 				4B2C220A1DA292BE00735907 /* OFOptionsParser.h in Headers */,
+				4B3DE12C1F5F4F2F0090AA3E /* OFPair.h in Headers */,
 				4B5D70671DA2F7B400B3B2D7 /* OFPlugin.h in Headers */,
 				4B2C220D1DA292BE00735907 /* OFRecursiveMutex.h in Headers */,
 				4B2C220E1DA292BE00735907 /* OFRIPEMD160Hash.h in Headers */,
@@ -2721,6 +2739,7 @@
 				4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */,
 				4B1223151F23E6C000D9F8FF /* OFMutableData.h in Headers */,
 				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
+				4B3DE1271F5F4F2F0090AA3E /* OFMutablePair.h in Headers */,
 				4B39844713D3AFB400E6F825 /* OFMutableSet.h in Headers */,
 				4B3D23CF1337FCB000DD29B8 /* OFMutableString.h in Headers */,
 				4BA842E61F35E53800292FC6 /* OFMutableTarArchiveEntry.h in Headers */,
@@ -2733,6 +2752,7 @@
 				4BC176301D04963000C32718 /* OFObject+KeyValueCoding.h in Headers */,
 				4BB25E88139C388A00F574EA /* OFObject+Serialization.h in Headers */,
 				4BAFC168182EAA7800BE5E57 /* OFOptionsParser.h in Headers */,
+				4B3DE12B1F5F4F2F0090AA3E /* OFPair.h in Headers */,
 				4B3D23D21337FCB000DD29B8 /* OFPlugin.h in Headers */,
 				4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */,
 				4B674405163C395900EB1E59 /* OFRecursiveMutex.h in Headers */,
@@ -3285,6 +3305,7 @@
 				4B1223191F23E6C100D9F8FF /* OFMutableData.m in Sources */,
 				4B2C214A1DA292BE00735907 /* OFMutableDictionary.m in Sources */,
 				4B2C214B1DA292BE00735907 /* OFMutableDictionary_hashtable.m in Sources */,
+				4B3DE12A1F5F4F2F0090AA3E /* OFMutablePair.m in Sources */,
 				4B2C214C1DA292BE00735907 /* OFMutableSet.m in Sources */,
 				4B2C214D1DA292BE00735907 /* OFMutableSet_hashtable.m in Sources */,
 				4B2C214E1DA292BE00735907 /* OFMutableString.m in Sources */,
@@ -3298,6 +3319,7 @@
 				4B2C21531DA292BE00735907 /* OFObject.m in Sources */,
 				4B2C21541DA292BE00735907 /* OFObject+Serialization.m in Sources */,
 				4B2C21551DA292BE00735907 /* OFOptionsParser.m in Sources */,
+				4B3DE12E1F5F4F2F0090AA3E /* OFPair.m in Sources */,
 				4B5D70681DA2F7B400B3B2D7 /* OFPlugin.m in Sources */,
 				4B2C21581DA292BE00735907 /* OFRecursiveMutex.m in Sources */,
 				4B2C21591DA292BE00735907 /* OFRIPEMD160Hash.m in Sources */,
@@ -3487,6 +3509,7 @@
 				4B1223161F23E6C000D9F8FF /* OFMutableData.m in Sources */,
 				4B3D239C1337FC0D00DD29B8 /* OFMutableDictionary.m in Sources */,
 				4B2B3E84140D430500EC2F7C /* OFMutableDictionary_hashtable.m in Sources */,
+				4B3DE1291F5F4F2F0090AA3E /* OFMutablePair.m in Sources */,
 				4B39844813D3AFB400E6F825 /* OFMutableSet.m in Sources */,
 				4BA85BCD140ECCE800E91D51 /* OFMutableSet_hashtable.m in Sources */,
 				4B3D239D1337FC0D00DD29B8 /* OFMutableString.m in Sources */,
@@ -3500,6 +3523,7 @@
 				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
 				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
 				4BAFC169182EAA7800BE5E57 /* OFOptionsParser.m in Sources */,
+				4B3DE12D1F5F4F2F0090AA3E /* OFPair.m in Sources */,
 				4B3D23A01337FC0D00DD29B8 /* OFPlugin.m in Sources */,
 				4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */,
 				4B674406163C395900EB1E59 /* OFRecursiveMutex.m in Sources */,

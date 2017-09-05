@@ -38,6 +38,7 @@ SRCS = OFApplication.m			\
        OFMutableArray.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
+       OFMutablePair.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
        OFMutableTarArchiveEntry.m	\
@@ -49,6 +50,7 @@ SRCS = OFApplication.m			\
        OFObject+KeyValueCoding.m	\
        OFObject+Serialization.m		\
        OFOptionsParser.m		\
+       OFPair.m				\
        ${OFPROCESS_M}			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
