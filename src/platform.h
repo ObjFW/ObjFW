@@ -70,6 +70,8 @@
 #elif defined(__hppa__) || defined(__HPPA__) || \
     defined(_PA_RISC1_0) || defined(_PA_RISC1_1)
 # define OF_PA_RISC
+#elif defined(__ia64__) || defined(__IA64__)
+# define OF_ITANIUM
 #endif
 
 #if defined(__APPLE__)
