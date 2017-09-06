@@ -70,7 +70,8 @@ iOS
 Linux
 -----
 
-  * Architectures: Alpha, ARMv6, ARM64, m68k, MIPS (O32), PPC, SH4, x86, x86_64
+  * Architectures: Alpha, ARMv6, ARM64, Itanium, m68k, MIPS (O32), PowerPC, SH4,
+                   x86, x86_64
   * Compilers: Clang 3.0-3.6, GCC 4.2, GCC 4.6-4.8
   * Runtimes: ObjFW
 
@@ -79,7 +80,7 @@ macOS
 -----
 
   * OS Versions: 10.5, 10.7-10.12
-  * Architectures: PPC, PPC64, x86, x86_64
+  * Architectures: PowerPC, PowerPC 64, x86, x86_64
   * Compilers: Clang 3.1-4.0, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
@@ -88,7 +89,7 @@ MorphOS
 -------
 
   * OS Versions: 3.9, 3.10
-  * Architectures: PPC
+  * Architectures: PowerPC
   * Compilers: GCC 5.3.0, GCC 5.4.0
   * Runtimes: ObjFW
   * Limitations: No threads
@@ -128,7 +129,7 @@ OpenBSD
 -------
 
   * OS Versions: 5.2-5.7
-  * Architectures: MIPS64, PA-RISC, PPC, SPARC64, x86_64
+  * Architectures: MIPS64, PA-RISC, PowerPC, SPARC64, x86_64
   * Compilers: GCC 6.3.0, Clang 4.0
   * Runtimes: ObjFW
 
@@ -165,7 +166,7 @@ Wii
 ---
 
   * OS Versions: 4.3E / Homebrew Channel 1.1.0
-  * Architectures: PPC
+  * Architectures: PowerPC
   * Compilers: GCC 4.6.3 (devkitPPC release 26)
   * Runtimes: ObjFW
   * Limitations: No threads
@@ -203,7 +204,7 @@ resolveInstanceMethod:, which are always available):
   * ARM (EABI/ELF, Apple/Mach-O)
   * ARM64 (ARM64/ELF, Apple/Mach-O)
   * MIPS (O32/ELF, EABI/ELF)
-  * PPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
+  * PowerPC (SysV/ELF, EABI/ELF, Apple/Mach-O)
   * SPARC64 (SysV/ELF)
   * x86 (SysV/ELF, Apple/Mach-O, Win32/PE)
   * x86_64 (SysV/ELF, Apple/Mach-O, Mach-O, Win64/PE)
