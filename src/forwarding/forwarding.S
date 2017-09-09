@@ -28,7 +28,7 @@
 # elif defined(OF_ARM)
 #  include "apple-forwarding-arm.S"
 # elif defined(OF_POWERPC)
-#  include "apple-forwarding-ppc.S"
+#  include "apple-forwarding-powerpc.S"
 # endif
 #else
 # if defined(OF_ELF)
@@ -41,7 +41,7 @@
 #  elif defined(OF_ARM)
 #   include "forwarding-arm-elf.S"
 #  elif defined(OF_POWERPC)
-#   include "forwarding-ppc-elf.S"
+#   include "forwarding-powerpc-elf.S"
 #  elif defined(OF_MIPS)
 #   include "forwarding-mips-elf.S"
 #  elif defined(OF_SPARC64)
