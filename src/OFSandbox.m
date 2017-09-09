@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFSandbox.h"
 #import "OFString.h"
 #import "OFArray.h"

@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFMutableTriple.h"
 
 @implementation OFMutableTriple

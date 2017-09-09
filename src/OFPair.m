@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFPair.h"
 #import "OFString.h"
 

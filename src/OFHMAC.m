@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFHMAC.h"
 
 #import "OFHashAlreadyCalculatedException.h"

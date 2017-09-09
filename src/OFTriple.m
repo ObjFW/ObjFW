@@ -14,6 +14,8 @@
  * file.
  */
 
+#include "config.h"
+
 #import "OFTriple.h"
 #import "OFString.h"
 
