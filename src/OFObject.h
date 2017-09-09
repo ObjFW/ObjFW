@@ -188,6 +188,7 @@ of_rectangle(float x, float y, float width, float height)
 	return rectangle;
 }
 
+@class OFMethodSignature;
 @class OFString;
 @class OFThread;
 
@@ -252,14 +253,6 @@ of_rectangle(float x, float y, float width, float height)
  * @return The implementation for the specified selector
  */
 - (nullable IMP)methodForSelector: (SEL)selector;
-
-/*!
- * @brief Returns the type encoding for the specified selector.
- *
- * @param selector The selector for which the type encoding should be returned
- * @return The type encoding for the specified selector
- */
-- (nullable const char *)typeEncodingForSelector: (SEL)selector;
 
 /*!
  * @brief Performs the specified selector.
@@ -503,13 +496,16 @@ OF_ROOT_CLASS
 + (nullable IMP)instanceMethodForSelector: (SEL)selector;
 
 /*!
- * @brief Returns the type encoding of the instance method for the specified
+ * @brief Returns the method signature of the instance method for the specified
  *	  selector.
  *
- * @param selector The selector for which the type encoding should be returned
- * @return The type encoding of the instance method for the specified selector
+ * @param selector The selector for which the method signature should be
+ *		   returned
+ * @return The method signature of the instance method for the specified
+ *	   selector
  */
-+ (nullable const char *)typeEncodingForInstanceSelector: (SEL)selector;
++ (nullable OFMethodSignature *)
+    instanceMethodSignatureForSelector: (SEL)selector;
 
 /*!
  * @brief Returns a description for the class, which is usually the class name.
@@ -540,38 +536,6 @@ OF_ROOT_CLASS
  */
 + (nullable IMP)replaceInstanceMethod: (SEL)selector
 		  withMethodFromClass: (Class)class_;
-
-/*!
- * @brief Replaces or adds a class method.
- *
- * If the method already exists, it is replaced and the old implementation
- * returned. If the method does not exist, it is added with the specified type
- * encoding.
- *
- * @param selector The selector for the new method
- * @param implementation The implementation for the new method
- * @param typeEncoding The type encoding for the new method
- * @return The old implementation or `nil` if the method was added
- */
-+ (nullable IMP)replaceClassMethod: (SEL)selector
-		withImplementation: (IMP)implementation
-		      typeEncoding: (const char *)typeEncoding;
-
-/*!
- * @brief Replaces or adds an instance method.
- *
- * If the method already exists, it is replaced and the old implementation
- * returned. If the method does not exist, it is added with the specified type
- * encoding.
- *
- * @param selector The selector for the new method
- * @param implementation The implementation for the new method
- * @param typeEncoding The type encoding for the new method
- * @return The old implementation or `nil` if the method was added
- */
-+ (nullable IMP)replaceInstanceMethod: (SEL)selector
-		   withImplementation: (IMP)implementation
-			 typeEncoding: (const char *)typeEncoding;
 
 /*!
  * @brief Adds all methods from the specified class to the class that is the
@@ -637,6 +601,15 @@ OF_ROOT_CLASS
  * @return An initialized object
  */
 - init;
+
+/*!
+ * @brief Returns the method signature for the specified selector.
+ *
+ * @param selector The selector for which the method signature should be
+ *		   returned
+ * @return The method signature for the specified selector
+ */
+- (nullable OFMethodSignature *)methodSignatureForSelector: (SEL)selector;
 
 /*!
  * @brief Returns the name of the object's class.

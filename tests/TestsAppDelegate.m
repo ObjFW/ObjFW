@@ -380,6 +380,7 @@ main(int argc, char *argv[])
 #endif
 
 	[self runtimeTests];
+	[self methodSignatureTests];
 	[self forwardingTests];
 	[self objectTests];
 #ifdef OF_HAVE_BLOCKS

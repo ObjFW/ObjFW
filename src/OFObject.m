@@ -31,9 +31,10 @@
 #import "OFObject.h"
 #import "OFArray.h"
 #import "OFLocalization.h"
-#import "OFTimer.h"
+#import "OFMethodSignature.h"
 #import "OFRunLoop.h"
 #import "OFThread.h"
+#import "OFTimer.h"
 
 #import "OFAllocFailedException.h"
 #import "OFEnumerationMutationException.h"
@@ -97,6 +98,21 @@ static struct {
 } allocFailedException;
 
 uint32_t of_hash_seed;
+
+static const char *
+typeEncodingForSelector(Class class, SEL selector)
+{
+#if defined(OF_OBJFW_RUNTIME)
+	return class_getMethodTypeEncoding(class, selector);
+#else
+	Method m;
+
+	if ((m = class_getInstanceMethod(class, selector)) == NULL)
+		return NULL;
+
+	return method_getTypeEncoding(m);
+#endif
+}
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)
 static void
@@ -320,18 +336,14 @@ _references_to_categories_of_OFObject(void)
 	return class_getMethodImplementation(self, selector);
 }
 
-+ (const char *)typeEncodingForInstanceSelector: (SEL)selector
++ (OFMethodSignature *)instanceMethodSignatureForSelector: (SEL)selector
 {
-#if defined(OF_OBJFW_RUNTIME)
-	return class_getMethodTypeEncoding(self, selector);
-#else
-	Method m;
+	const char *typeEncoding = typeEncodingForSelector(self, selector);
 
-	if ((m = class_getInstanceMethod(self, selector)) == NULL)
-		return NULL;
+	if (typeEncoding == NULL)
+		return nil;
 
-	return method_getTypeEncoding(m);
-#endif
+	return [OFMethodSignature signatureWithObjCTypes: typeEncoding];
 }
 
 + (OFString *)description
@@ -342,45 +354,17 @@ _references_to_categories_of_OFObject(void)
 + (IMP)replaceClassMethod: (SEL)selector
       withMethodFromClass: (Class)class
 {
-	IMP newImp;
-	const char *typeEncoding;
-
-	newImp = [class methodForSelector: selector];
-	typeEncoding = [class typeEncodingForSelector: selector];
-
-	return [self replaceClassMethod: selector
-		     withImplementation: newImp
-			   typeEncoding: typeEncoding];
+	return class_replaceMethod(object_getClass(self), selector,
+	    [class methodForSelector: selector],
+	    typeEncodingForSelector(object_getClass(class), selector));
 }
 
 + (IMP)replaceInstanceMethod: (SEL)selector
 	 withMethodFromClass: (Class)class
 {
-	IMP newImp;
-	const char *typeEncoding;
-
-	newImp = [class instanceMethodForSelector: selector];
-	typeEncoding = [class typeEncodingForInstanceSelector: selector];
-
-	return [self replaceInstanceMethod: selector
-			withImplementation: newImp
-			      typeEncoding: typeEncoding];
-}
-
-+ (IMP)replaceInstanceMethod: (SEL)selector
-	  withImplementation: (IMP)implementation
-		typeEncoding: (const char *)typeEncoding
-{
-	return class_replaceMethod(self, selector, implementation,
-	    typeEncoding);
-}
-
-+ (IMP)replaceClassMethod: (SEL)selector
-       withImplementation: (IMP)implementation
-	     typeEncoding: (const char *)typeEncoding
-{
-	return class_replaceMethod(object_getClass(self), selector,
-	    implementation, typeEncoding);
+	return class_replaceMethod(self, selector,
+	    [class instanceMethodForSelector: selector],
+	    typeEncodingForSelector(class, selector));
 }
 
 + (void)inheritMethodsFromClass: (Class)class
@@ -780,19 +764,15 @@ _references_to_categories_of_OFObject(void)
 }
 #endif
 
-- (const char *)typeEncodingForSelector: (SEL)selector
+- (OFMethodSignature *)methodSignatureForSelector: (SEL)selector
 {
-#if defined(OF_OBJFW_RUNTIME)
-	return class_getMethodTypeEncoding(object_getClass(self), selector);
-#else
-	Method m;
+	const char *typeEncoding =
+	    typeEncodingForSelector(object_getClass(self), selector);
 
-	if ((m = class_getInstanceMethod(object_getClass(self),
-	    selector)) == NULL)
-		return NULL;
+	if (typeEncoding == NULL)
+		return nil;
 
-	return method_getTypeEncoding(m);
-#endif
+	return [OFMethodSignature signatureWithObjCTypes: typeEncoding];
 }
 
 - (bool)isEqual: (id)object

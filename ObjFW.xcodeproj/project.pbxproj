@@ -786,6 +786,12 @@
 		4B6025A419B76A5C00694BCC /* OFSHA512Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B60259E19B76A5C00694BCC /* OFSHA512Hash.m */; };
 		4B6025A719B76B5000694BCC /* OFSHA384HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6025A519B76B5000694BCC /* OFSHA384HashTests.m */; };
 		4B6025A819B76B5000694BCC /* OFSHA512HashTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */; };
+		4B61CB041F647CC60000DDDA /* OFMethodSignature.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B61CB021F647CC60000DDDA /* OFMethodSignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B61CB051F647CC60000DDDA /* OFMethodSignature.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B61CB021F647CC60000DDDA /* OFMethodSignature.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4B61CB061F647CC60000DDDA /* OFMethodSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B61CB031F647CC60000DDDA /* OFMethodSignature.m */; };
+		4B61CB071F647CC60000DDDA /* OFMethodSignature.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B61CB031F647CC60000DDDA /* OFMethodSignature.m */; };
+		4B61CB091F6497C40000DDDA /* OFMethodSignatureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B61CB081F6497C40000DDDA /* OFMethodSignatureTests.m */; };
+		4B61CB0A1F6497FB0000DDDA /* OFMethodSignatureTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B61CB081F6497C40000DDDA /* OFMethodSignatureTests.m */; };
 		4B6255161EC274FA003D49F4 /* OFHTTPCookieManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6255141EC274FA003D49F4 /* OFHTTPCookieManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6255171EC274FA003D49F4 /* OFHTTPCookieManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6255141EC274FA003D49F4 /* OFHTTPCookieManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B6255181EC274FA003D49F4 /* OFHTTPCookieManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6255151EC274FA003D49F4 /* OFHTTPCookieManager.m */; };
@@ -1423,6 +1429,9 @@
 		4B60259E19B76A5C00694BCC /* OFSHA512Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA512Hash.m; path = src/OFSHA512Hash.m; sourceTree = "<group>"; };
 		4B6025A519B76B5000694BCC /* OFSHA384HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA384HashTests.m; path = tests/OFSHA384HashTests.m; sourceTree = "<group>"; };
 		4B6025A619B76B5000694BCC /* OFSHA512HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSHA512HashTests.m; path = tests/OFSHA512HashTests.m; sourceTree = "<group>"; };
+		4B61CB021F647CC60000DDDA /* OFMethodSignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFMethodSignature.h; path = src/OFMethodSignature.h; sourceTree = "<group>"; };
+		4B61CB031F647CC60000DDDA /* OFMethodSignature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMethodSignature.m; path = src/OFMethodSignature.m; sourceTree = "<group>"; };
+		4B61CB081F6497C40000DDDA /* OFMethodSignatureTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFMethodSignatureTests.m; path = tests/OFMethodSignatureTests.m; sourceTree = "<group>"; };
 		4B6255141EC274FA003D49F4 /* OFHTTPCookieManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFHTTPCookieManager.h; path = src/OFHTTPCookieManager.h; sourceTree = "<group>"; };
 		4B6255151EC274FA003D49F4 /* OFHTTPCookieManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPCookieManager.m; path = src/OFHTTPCookieManager.m; sourceTree = "<group>"; };
 		4B62ED1318566FCA0004E0E3 /* OFCopyItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCopyItemFailedException.h; path = src/exceptions/OFCopyItemFailedException.h; sourceTree = "<group>"; };
@@ -2133,6 +2142,8 @@
 				4BCAA9AD1772432E003EF859 /* OFMessagePackExtension.h */,
 				4BCAA9AE1772432E003EF859 /* OFMessagePackExtension.m */,
 				4B879A8B177231F000EBCEA4 /* OFMessagePackRepresentation.h */,
+				4B61CB021F647CC60000DDDA /* OFMethodSignature.h */,
+				4B61CB031F647CC60000DDDA /* OFMethodSignature.m */,
 				4B67996F1099E7C50041064A /* OFMutableArray.h */,
 				4B6799701099E7C50041064A /* OFMutableArray.m */,
 				4B2B3E77140D430500EC2F7C /* OFMutableArray_adjacent.h */,
@@ -2358,6 +2369,7 @@
 				4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
 				4B6EF6731235358D0076B512 /* OFMD5HashTests.m */,
+				4B61CB081F6497C40000DDDA /* OFMethodSignatureTests.m */,
 				4B6EF6741235358D0076B512 /* OFNumberTests.m */,
 				4B6EF6751235358D0076B512 /* OFObjectTests.m */,
 				4B6EF6761235358D0076B512 /* OFPluginTests.m */,
@@ -2521,6 +2533,7 @@
 				4B2C21FD1DA292BE00735907 /* OFMD5Hash.h in Headers */,
 				4B2C21FE1DA292BE00735907 /* OFMessagePackExtension.h in Headers */,
 				4B2C21FF1DA292BE00735907 /* OFMessagePackRepresentation.h in Headers */,
+				4B61CB051F647CC60000DDDA /* OFMethodSignature.h in Headers */,
 				4B2C22001DA292BE00735907 /* OFMutableArray.h in Headers */,
 				4B1223181F23E6C100D9F8FF /* OFMutableData.h in Headers */,
 				4B2C22011DA292BE00735907 /* OFMutableDictionary.h in Headers */,
@@ -2754,6 +2767,7 @@
 				4B3D23CC1337FCB000DD29B8 /* OFMD5Hash.h in Headers */,
 				4BCAA9AF1772432F003EF859 /* OFMessagePackExtension.h in Headers */,
 				4B879A8E177231F000EBCEA4 /* OFMessagePackRepresentation.h in Headers */,
+				4B61CB041F647CC60000DDDA /* OFMethodSignature.h in Headers */,
 				4B3D23CD1337FCB000DD29B8 /* OFMutableArray.h in Headers */,
 				4B1223151F23E6C000D9F8FF /* OFMutableData.h in Headers */,
 				4B3D23CE1337FCB000DD29B8 /* OFMutableDictionary.h in Headers */,
@@ -3320,6 +3334,7 @@
 				4B2C21451DA292BE00735907 /* OFMapTable.m in Sources */,
 				4B2C21461DA292BE00735907 /* OFMD5Hash.m in Sources */,
 				4B2C21471DA292BE00735907 /* OFMessagePackExtension.m in Sources */,
+				4B61CB071F647CC60000DDDA /* OFMethodSignature.m in Sources */,
 				4B2C21481DA292BE00735907 /* OFMutableArray.m in Sources */,
 				4B2C21491DA292BE00735907 /* OFMutableArray_adjacent.m in Sources */,
 				4B1223191F23E6C100D9F8FF /* OFMutableData.m in Sources */,
@@ -3338,6 +3353,7 @@
 				4B2C21511DA292BE00735907 /* OFNull.m in Sources */,
 				4B2C21521DA292BE00735907 /* OFNumber.m in Sources */,
 				4B2C21531DA292BE00735907 /* OFObject.m in Sources */,
+				4B2C21991DA292BE00735907 /* OFObject+KeyValueCoding.m in Sources */,
 				4B2C21541DA292BE00735907 /* OFObject+Serialization.m in Sources */,
 				4B2C21551DA292BE00735907 /* OFOptionsParser.m in Sources */,
 				4B3DE12E1F5F4F2F0090AA3E /* OFPair.m in Sources */,
@@ -3405,7 +3421,6 @@
 				4B2C21941DA292BE00735907 /* threading.m in Sources */,
 				4B2C21961DA292BE00735907 /* unicode.m in Sources */,
 				4B2C21981DA292BE00735907 /* OFAcceptFailedException.m in Sources */,
-				4B2C21991DA292BE00735907 /* OFObject+KeyValueCoding.m in Sources */,
 				4B2C219A1DA292BE00735907 /* OFAddressTranslationFailedException.m in Sources */,
 				4B2C219B1DA292BE00735907 /* OFAllocFailedException.m in Sources */,
 				4B2C219C1DA292BE00735907 /* OFAlreadyConnectedException.m in Sources */,
@@ -3526,6 +3541,7 @@
 				4B3B0799166978780044E634 /* OFMapTable.m in Sources */,
 				4B3D239A1337FC0D00DD29B8 /* OFMD5Hash.m in Sources */,
 				4BCAA9B01772432F003EF859 /* OFMessagePackExtension.m in Sources */,
+				4B61CB061F647CC60000DDDA /* OFMethodSignature.m in Sources */,
 				4B3D239B1337FC0D00DD29B8 /* OFMutableArray.m in Sources */,
 				4B2B3E82140D430500EC2F7C /* OFMutableArray_adjacent.m in Sources */,
 				4B1223161F23E6C000D9F8FF /* OFMutableData.m in Sources */,
@@ -3544,6 +3560,7 @@
 				4B511B7D139C0A34003764A5 /* OFNull.m in Sources */,
 				4B3D239E1337FC0D00DD29B8 /* OFNumber.m in Sources */,
 				4B3D239F1337FC0D00DD29B8 /* OFObject.m in Sources */,
+				4BC176311D04963000C32718 /* OFObject+KeyValueCoding.m in Sources */,
 				4BB25E89139C388A00F574EA /* OFObject+Serialization.m in Sources */,
 				4BAFC169182EAA7800BE5E57 /* OFOptionsParser.m in Sources */,
 				4B3DE12D1F5F4F2F0090AA3E /* OFPair.m in Sources */,
@@ -3612,7 +3629,6 @@
 				4B3379CF1979326A0088E97E /* threading.m in Sources */,
 				4B3D23B91337FC0D00DD29B8 /* unicode.m in Sources */,
 				4B90B79F133AD87D00BD33CB /* OFAcceptFailedException.m in Sources */,
-				4BC176311D04963000C32718 /* OFObject+KeyValueCoding.m in Sources */,
 				4B90B7A1133AD87D00BD33CB /* OFAddressTranslationFailedException.m in Sources */,
 				4B17FF80133A2D17003E6DCD /* OFAllocFailedException.m in Sources */,
 				4B90B78E133AD46700BD33CB /* OFAlreadyConnectedException.m in Sources */,
@@ -3714,6 +3730,7 @@
 				4BD9CA0B1DA2C62200E5AD52 /* OFKernelEventObserverTests.m in Sources */,
 				4BD9CA0C1DA2C62500E5AD52 /* OFListTests.m in Sources */,
 				4BD9CA0D1DA2C62800E5AD52 /* OFMD5HashTests.m in Sources */,
+				4B61CB0A1F6497FB0000DDDA /* OFMethodSignatureTests.m in Sources */,
 				4BD9CA0E1DA2C62B00E5AD52 /* OFNumberTests.m in Sources */,
 				4BD9CA0F1DA2C62D00E5AD52 /* OFObjectTests.m in Sources */,
 				4B5D70691DA2F81700B3B2D7 /* OFPluginTests.m in Sources */,
@@ -3767,6 +3784,7 @@
 				4B3D5694139A617D0010A78F /* OFSerializationTests.m in Sources */,
 				4B4B6904191437D500334775 /* OFSetTests.m in Sources */,
 				4BF33B08133807A20059CEF7 /* OFSHA1HashTests.m in Sources */,
+				4B61CB091F6497C40000DDDA /* OFMethodSignatureTests.m in Sources */,
 				4B24593019B53BC80059F271 /* OFSHA224HashTests.m in Sources */,
 				4B24593119B53BC80059F271 /* OFSHA256HashTests.m in Sources */,
 				4B6025A719B76B5000694BCC /* OFSHA384HashTests.m in Sources */,

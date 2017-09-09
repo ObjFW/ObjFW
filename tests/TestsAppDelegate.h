@@ -128,6 +128,10 @@
 - (void)MD5HashTests;
 @end
 
+@interface TestsAppDelegate (OFMethodSignatureTests)
+- (void)methodSignatureTests;
+@end
+
 @interface TestsAppDelegate (OFNumberTests)
 - (void)numberTests;
 @end

@@ -20,6 +20,7 @@
 
 #import "OFObject.h"
 #import "OFObject+KeyValueCoding.h"
+#import "OFMethodSignature.h"
 #import "OFString.h"
 #import "OFNumber.h"
 
@@ -29,25 +30,15 @@
 
 int _OFObject_KeyValueCoding_reference;
 
-static char OF_INLINE
-nextType(const char **typeEncoding)
-{
-	char ret = *(*typeEncoding)++;
-
-	while (**typeEncoding >= '0' && **typeEncoding <= '9')
-		(*typeEncoding)++;
-
-	return ret;
-}
-
 @implementation OFObject (KeyValueCoding)
 - (id)valueForKey: (OFString *)key
 {
 	SEL selector = sel_registerName([key UTF8String]);
-	const char *typeEncoding = [self typeEncodingForSelector: selector];
+	OFMethodSignature *methodSignature =
+	    [self methodSignatureForSelector: selector];
 	id ret;
 
-	if (typeEncoding == NULL) {
+	if (methodSignature == nil) {
 		size_t keyLength;
 		char *name;
 
@@ -70,14 +61,24 @@ nextType(const char **typeEncoding)
 			free(name);
 		}
 
-		typeEncoding = [self typeEncodingForSelector: selector];
+		methodSignature = [self methodSignatureForSelector: selector];
 
-		if (typeEncoding == NULL ||
-		    *typeEncoding == '@' || *typeEncoding == '#')
+		if (methodSignature == NULL)
 			return [self valueForUndefinedKey: key];
+
+		switch (*[methodSignature methodReturnType]) {
+		case '@':
+		case '#':
+			return [self valueForUndefinedKey: key];
+		}
 	}
 
-	switch (nextType(&typeEncoding)) {
+	if ([methodSignature numberOfArguments] != 2 ||
+	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
+	    *[methodSignature argumentTypeAtIndex: 1] != ':')
+		return [self valueForUndefinedKey: key];
+
+	switch (*[methodSignature methodReturnType]) {
 	case '@':
 	case '#':
 		ret = [self performSelector: selector];
@@ -108,10 +109,6 @@ nextType(const char **typeEncoding)
 		return [self valueForUndefinedKey: key];
 	}
 
-	if (nextType(&typeEncoding) != '@' || nextType(&typeEncoding) != ':' ||
-	    *typeEncoding != 0)
-		return [self valueForUndefinedKey: key];
-
 	return ret;
 }
 
@@ -127,8 +124,8 @@ nextType(const char **typeEncoding)
 	size_t keyLength;
 	char *name;
 	SEL selector;
-	const char *typeEncoding;
-	char valueType;
+	OFMethodSignature *methodSignature;
+	const char *valueType;
 
 	if ((keyLength = [key UTF8StringLength]) < 1) {
 		[self	 setValue: value
@@ -152,29 +149,26 @@ nextType(const char **typeEncoding)
 		free(name);
 	}
 
-	typeEncoding = [self typeEncodingForSelector: selector];
+	methodSignature = [self methodSignatureForSelector: selector];
 
-	if (typeEncoding == NULL || nextType(&typeEncoding) != 'v' ||
-	    nextType(&typeEncoding) != '@' || nextType(&typeEncoding) != ':') {
+	if (methodSignature == nil ||
+	    [methodSignature numberOfArguments] != 3 ||
+	    *[methodSignature methodReturnType] != 'v' ||
+	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
+	    *[methodSignature argumentTypeAtIndex: 1] != ':') {
 		[self    setValue: value
 		  forUndefinedKey: key];
 		return;
 	}
 
-	valueType = nextType(&typeEncoding);
+	valueType = [methodSignature argumentTypeAtIndex: 2];
 
-	if (*typeEncoding != 0) {
-		[self    setValue: value
-		  forUndefinedKey: key];
-		return;
-	}
-
-	if (valueType != '@' && valueType != '#' && value == nil) {
+	if (*valueType != '@' && *valueType != '#' && value == nil) {
 		[self setNilValueForKey: key];
 		return;
 	}
 
-	switch (valueType) {
+	switch (*valueType) {
 	case '@':
 	case '#':
 		{

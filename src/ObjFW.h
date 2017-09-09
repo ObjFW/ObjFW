@@ -32,10 +32,14 @@
 #import "OFSet.h"
 #import "OFCountedSet.h"
 
+#import "OFPair.h"
+#import "OFTriple.h"
+
 #import "OFEnumerator.h"
 
 #import "OFNull.h"
 
+#import "OFMethodSignature.h"
 #import "OFIntrospection.h"
 
 #import "OFNumber.h"

@@ -73,9 +73,8 @@ test(id self, SEL _cmd)
 	forwardings++;
 
 	if (sel_isEqual(selector, @selector(test))) {
-		[self replaceClassMethod: @selector(test)
-		      withImplementation: (IMP)test
-			    typeEncoding: "v#:"];
+		class_replaceMethod(object_getClass(self), @selector(test),
+		    (IMP)test, "v#:");
 		return YES;
 	}
 
@@ -87,9 +86,7 @@ test(id self, SEL _cmd)
 	forwardings++;
 
 	if (sel_isEqual(selector, @selector(test))) {
-		[self replaceInstanceMethod: @selector(test)
-			 withImplementation: (IMP)test
-			       typeEncoding: "v@:"];
+		class_replaceMethod(self, @selector(test), (IMP)test, "v@:");
 		return YES;
 	}
 
