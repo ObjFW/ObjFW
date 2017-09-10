@@ -40,7 +40,11 @@ static OFString *module = @"OFMethodSignature";
 	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 2], "S") == 0 &&
-	    strcmp([ms argumentTypeAtIndex: 3], "*") == 0)
+	    strcmp([ms argumentTypeAtIndex: 3], "*") == 0 &&
+	    [ms frameLength] == 28 && [ms argumentOffsetAtIndex: 0] == 0 &&
+	    [ms argumentOffsetAtIndex: 1] == 8 &&
+	    [ms argumentOffsetAtIndex: 2] == 16 &&
+	    [ms argumentOffsetAtIndex: 3] == 20)
 
 	TEST(@"-[signatureWithObjCTypes:] #2",
 	    (ms = [OFMethodSignature signatureWithObjCTypes:
@@ -52,7 +56,10 @@ static OFString *module = @"OFMethodSignature";
 	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 2],
-	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0)
+	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
+	    [ms frameLength] == 24 && [ms argumentOffsetAtIndex: 0] == 0 &&
+	    [ms argumentOffsetAtIndex: 1] == 8 &&
+	    [ms argumentOffsetAtIndex: 2] == 16)
 
 	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #3",
 	    OFInvalidFormatException,

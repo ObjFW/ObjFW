@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFMethodSignature: OFObject
 {
 	char *_types;
-	OFMutableData *_typesPointers;
+	OFMutableData *_typesPointers, *_offsets;
 }
 
 /*!
@@ -40,6 +40,13 @@ OF_ASSUME_NONNULL_BEGIN
  * The return type of the method.
  */
 @property (readonly, nonatomic) const char *methodReturnType;
+
+/*!
+ * The size of the arguments on the stack frame.
+ *
+ * @note This is platform-dependent!
+ */
+@property (readonly, nonatomic) size_t frameLength;
 
 /*!
  * @brief Creates a new, autoreleased OFMethodSignature with the specified
@@ -62,10 +69,22 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Returns the ObjC type for the argument at the specified index.
  *
- * @param index The index for which to return the ObjC type
+ * @param index The index of the argument for which to return the ObjC type
  * @return The ObjC type for the argument at the specified index
  */
 - (const char *)argumentTypeAtIndex: (size_t)index;
+
+/*!
+ * @brief Returns the offset on the stack frame of the argument at the
+ *	  specified index.
+ *
+ * @note This is platform-dependent!
+ *
+ * @param index The index of the argument for which to return the offset
+ * @returns The offset on the stack frame of the argument at the
+ *	    specified index
+ */
+- (size_t)argumentOffsetAtIndex: (size_t)index;
 @end
 
 OF_ASSUME_NONNULL_END

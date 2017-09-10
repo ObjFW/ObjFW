@@ -51,10 +51,14 @@
 
 		_typesPointers = [[OFMutableData alloc]
 		    initWithItemSize: sizeof(char *)];
+		_offsets = [[OFMutableData alloc]
+		    initWithItemSize: sizeof(size_t)];
 
 		last = _types;
 		for (size_t i = 0; i < length; i++) {
 			if (isdigit(_types[i])) {
+				size_t offset = _types[i] - '0';
+
 				if (last == _types + i)
 					@throw [OFInvalidFormatException
 					    exception];
@@ -63,7 +67,10 @@
 				[_typesPointers addItem: &last];
 
 				i++;
-				for (; i < length && isdigit(_types[i]); i++);
+				for (; i < length && isdigit(_types[i]); i++)
+					offset = offset * 10 + _types[i] - '0';
+
+				[_offsets addItem: &offset];
 
 				last = _types + i;
 				i--;
@@ -113,6 +120,7 @@
 - (void)dealloc
 {
 	[_typesPointers release];
+	[_offsets release];
 
 	[super dealloc];
 }
@@ -127,8 +135,18 @@
 	return *(const char **)[_typesPointers firstItem];
 }
 
+- (size_t)frameLength
+{
+	return *(size_t *)[_offsets firstItem];
+}
+
 - (const char *)argumentTypeAtIndex: (size_t)index
 {
 	return *(const char **)[_typesPointers itemAtIndex: index + 1];
+}
+
+- (size_t)argumentOffsetAtIndex: (size_t)index
+{
+	return *(size_t *)[_offsets itemAtIndex: index + 1];
 }
 @end
