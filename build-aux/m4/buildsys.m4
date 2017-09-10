@@ -59,6 +59,20 @@ AC_DEFUN([BUILDSYS_INIT], [
 					"$($TPUT setaf 4 2>/dev/null)")
 				AC_SUBST(TERM_SETAF6,
 					"$($TPUT setaf 6 2>/dev/null)")
+			dnl OpenBSD seems to want 3 parameters for terminals
+			dnl ending in -256color, but the additional two
+			dnl parameters don't seem to do anything, so we set
+			dnl them to 0.
+			elif x=$($TPUT setaf 1 0 0 2>/dev/null); then
+				AC_SUBST(TERM_SETAF1, "$x")
+				AC_SUBST(TERM_SETAF2,
+					"$($TPUT setaf 2 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF3,
+					"$($TPUT setaf 3 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF4,
+					"$($TPUT setaf 4 0 0 2>/dev/null)")
+				AC_SUBST(TERM_SETAF6,
+					"$($TPUT setaf 6 0 0 2>/dev/null)")
 			else
 				AC_SUBST(TERM_SETAF1,
 					"$($TPUT AF 1 2>/dev/null)")
