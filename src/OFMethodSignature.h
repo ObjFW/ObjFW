@@ -87,4 +87,26 @@ OF_ASSUME_NONNULL_BEGIN
 - (size_t)argumentOffsetAtIndex: (size_t)index;
 @end
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief Returns the size for the specified type encoding.
+ *
+ * @param type The type encoding to return the size for
+ * @return The size for the specified type encoding
+ */
+extern size_t of_sizeof_type_encoding(const char *type);
+
+/*!
+ * @brief Returns the alignment for the specified type encoding.
+ *
+ * @param type The type encoding to return the alignment for
+ * @return The alignment for the specified type encoding
+ */
+extern size_t of_alignof_type_encoding(const char *type);
+#ifdef __cplusplus
+}
+#endif
+
 OF_ASSUME_NONNULL_END

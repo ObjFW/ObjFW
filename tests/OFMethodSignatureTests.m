@@ -27,6 +27,42 @@
 
 static OFString *module = @"OFMethodSignature";
 
+struct test1_struct {
+	char c;
+	int i;
+};
+
+struct test2_struct {
+	char c;
+	struct {
+		short s;
+		int i;
+	} st;
+	union {
+		char c;
+		int i;
+	} u;
+	long double d;
+};
+
+union test3_union {
+	char c;
+	int i;
+	long double d;
+};
+
+union test4_union {
+	char c;
+	struct {
+		short x, y;
+	} st;
+	int i;
+	union {
+		float f;
+		long double d;
+	} u;
+};
+
 @implementation TestsAppDelegate (OFMethodSignatureTests)
 - (void)methodSignatureTests
 {
@@ -76,6 +112,46 @@ static OFString *module = @"OFMethodSignature";
 	EXPECT_EXCEPTION(@"-[signatureWithObjCTypes:] #6",
 	    OFInvalidFormatException,
 	    [OFMethodSignature signatureWithObjCTypes: "{{}0"])
+
+	TEST(@"of_sizeof_type_encoding() #1",
+	    of_sizeof_type_encoding(@encode(struct test1_struct)) ==
+	    sizeof(struct test1_struct))
+
+	TEST(@"of_sizeof_type_encoding() #2",
+	    of_sizeof_type_encoding(@encode(struct test2_struct)) ==
+	    sizeof(struct test2_struct))
+
+	TEST(@"of_sizeof_type_encoding() #3",
+	    of_sizeof_type_encoding(@encode(union test3_union)) ==
+	    sizeof(union test3_union))
+
+	TEST(@"of_sizeof_type_encoding() #4",
+	    of_sizeof_type_encoding(@encode(union test4_union)) ==
+	    sizeof(union test4_union))
+
+	TEST(@"of_sizeof_type_encoding() #5",
+	    of_sizeof_type_encoding(@encode(struct test1_struct [5])) ==
+	    sizeof(struct test1_struct [5]))
+
+	TEST(@"of_alignof() #1",
+	    of_alignof_type_encoding(@encode(struct test1_struct)) ==
+	    OF_ALIGNOF(struct test1_struct))
+
+	TEST(@"of_alignof_type_encoding() #2",
+	    of_alignof_type_encoding(@encode(struct test2_struct)) ==
+	    OF_ALIGNOF(struct test2_struct))
+
+	TEST(@"of_alignof_type_encoding() #3",
+	    of_alignof_type_encoding(@encode(union test3_union)) ==
+	    OF_ALIGNOF(union test3_union))
+
+	TEST(@"of_alignof_type_encoding() #4",
+	    of_alignof_type_encoding(@encode(union test4_union)) ==
+	    OF_ALIGNOF(union test4_union))
+
+	TEST(@"of_alignof_type_encoding() #5",
+	    of_alignof_type_encoding(@encode(struct test1_struct [5])) ==
+	    OF_ALIGNOF(struct test1_struct [5]))
 
 	[pool drain];
 }
