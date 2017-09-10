@@ -79,7 +79,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     const char *privateKeyPassphrase;
 
-/**
+/*!
  * Whether certificate verification is enabled.
  *
  * The default is enabled.

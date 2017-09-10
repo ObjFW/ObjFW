@@ -915,6 +915,12 @@
 		4BA85BCF140ECCE800E91D51 /* OFSet_hashtable.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BA85BC9140ECCE800E91D51 /* OFSet_hashtable.m */; };
 		4BA9CFA415E129D30076DC74 /* autorelease.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BA9CFA315E129D30076DC74 /* autorelease.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA60C714D09699006F068D /* OFJSONTests.m */; };
+		4BAD891F1F65E6B300CF44B7 /* OFInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAD891E1F65E68800CF44B7 /* OFInvocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BAD89201F65E6B300CF44B7 /* OFInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAD891E1F65E68800CF44B7 /* OFInvocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BAD89211F65E6B600CF44B7 /* OFInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAD891D1F65E68800CF44B7 /* OFInvocation.m */; };
+		4BAD89221F65E6B700CF44B7 /* OFInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAD891D1F65E68800CF44B7 /* OFInvocation.m */; };
+		4BAD89241F65E80A00CF44B7 /* OFInvocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAD89231F65E80A00CF44B7 /* OFInvocationTests.m */; };
+		4BAD89251F65E80A00CF44B7 /* OFInvocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAD89231F65E80A00CF44B7 /* OFInvocationTests.m */; };
 		4BAE7354139C508E00F682ED /* serialization.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BAE7353139C507F00F682ED /* serialization.xml */; };
 		4BAFC168182EAA7800BE5E57 /* OFOptionsParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAFC166182EAA7800BE5E57 /* OFOptionsParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BAFC169182EAA7800BE5E57 /* OFOptionsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAFC167182EAA7800BE5E57 /* OFOptionsParser.m */; };
@@ -1614,6 +1620,9 @@
 		4BA9CFA315E129D30076DC74 /* autorelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = autorelease.h; path = src/autorelease.h; sourceTree = "<group>"; };
 		4BAA60C714D09699006F068D /* OFJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFJSONTests.m; path = tests/OFJSONTests.m; sourceTree = "<group>"; };
 		4BABC29A197A8212006A93BD /* threading_pthread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = threading_pthread.m; path = src/threading_pthread.m; sourceTree = "<group>"; };
+		4BAD891D1F65E68800CF44B7 /* OFInvocation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OFInvocation.m; path = src/OFInvocation.m; sourceTree = "<group>"; };
+		4BAD891E1F65E68800CF44B7 /* OFInvocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OFInvocation.h; path = src/OFInvocation.h; sourceTree = "<group>"; };
+		4BAD89231F65E80A00CF44B7 /* OFInvocationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFInvocationTests.m; path = tests/OFInvocationTests.m; sourceTree = "<group>"; };
 		4BAE7353139C507F00F682ED /* serialization.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = serialization.xml; path = tests/serialization.xml; sourceTree = "<group>"; };
 		4BAF5F46123460C900F4E111 /* OFCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCollection.h; path = src/OFCollection.h; sourceTree = "<group>"; };
 		4BAF5F49123460C900F4E111 /* OFStreamSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStreamSocket.h; path = src/OFStreamSocket.h; sourceTree = "<group>"; };
@@ -2118,6 +2127,8 @@
 				4B5B02BD18B288A400CE6AE4 /* OFINIFile.m */,
 				4BA49D8E13DB113B00381CDB /* OFIntrospection.h */,
 				4BA49D8F13DB113B00381CDB /* OFIntrospection.m */,
+				4BAD891E1F65E68800CF44B7 /* OFInvocation.h */,
+				4BAD891D1F65E68800CF44B7 /* OFInvocation.m */,
 				4BA02B9F15041F5900002F84 /* OFJSONRepresentation.h */,
 				4B0EA9181898690E00F573A4 /* OFKernelEventObserver.h */,
 				4B0EA9191898690E00F573A4 /* OFKernelEventObserver.m */,
@@ -2365,6 +2376,7 @@
 				4B2610C51D86305C001F16C9 /* OFHTTPCookieTests.m */,
 				4B11D09B1EC901440094423D /* OFHTTPCookieManagerTests.m */,
 				4B5B02C018B2897500CE6AE4 /* OFINIFileTests.m */,
+				4BAD89231F65E80A00CF44B7 /* OFInvocationTests.m */,
 				4BAA60C714D09699006F068D /* OFJSONTests.m */,
 				4B22BE1F1AE594A000CD320A /* OFKernelEventObserverTests.m */,
 				4B6EF6721235358D0076B512 /* OFListTests.m */,
@@ -2523,6 +2535,7 @@
 				4B2C21F41DA292BE00735907 /* OFINICategory.h in Headers */,
 				4B2C21F51DA292BE00735907 /* OFINIFile.h in Headers */,
 				4B2C21F61DA292BE00735907 /* OFIntrospection.h in Headers */,
+				4BAD891F1F65E6B300CF44B7 /* OFInvocation.h in Headers */,
 				4B2C21F71DA292BE00735907 /* OFJSONRepresentation.h in Headers */,
 				4B2C21F81DA292BE00735907 /* OFKernelEventObserver.h in Headers */,
 				4B2C21F91DA292BE00735907 /* OFKeyValueCoding.h in Headers */,
@@ -2757,6 +2770,7 @@
 				4B06855318B2AD3800FC731A /* OFINICategory.h in Headers */,
 				4B5B02BE18B288A400CE6AE4 /* OFINIFile.h in Headers */,
 				4BA49D9013DB113B00381CDB /* OFIntrospection.h in Headers */,
+				4BAD89201F65E6B300CF44B7 /* OFInvocation.h in Headers */,
 				4BA02BA115041F5900002F84 /* OFJSONRepresentation.h in Headers */,
 				4B0EA9211898690E00F573A4 /* OFKernelEventObserver.h in Headers */,
 				4BC1762F1D04963000C32718 /* OFKeyValueCoding.h in Headers */,
@@ -3324,6 +3338,7 @@
 				4B2C213C1DA292BE00735907 /* OFINICategory.m in Sources */,
 				4B2C213D1DA292BE00735907 /* OFINIFile.m in Sources */,
 				4B2C213E1DA292BE00735907 /* OFIntrospection.m in Sources */,
+				4BAD89221F65E6B700CF44B7 /* OFInvocation.m in Sources */,
 				4B2C213F1DA292BE00735907 /* OFGZIPStream.m in Sources */,
 				4B2C21401DA292BE00735907 /* OFKernelEventObserver.m in Sources */,
 				4B2C21411DA292BE00735907 /* OFKernelEventObserver_kqueue.m in Sources */,
@@ -3531,6 +3546,7 @@
 				4B06855418B2AD3800FC731A /* OFINICategory.m in Sources */,
 				4B5B02BF18B288A400CE6AE4 /* OFINIFile.m in Sources */,
 				4BA49D9113DB113B00381CDB /* OFIntrospection.m in Sources */,
+				4BAD89211F65E6B600CF44B7 /* OFInvocation.m in Sources */,
 				4BD112611CCB73A60076FDB9 /* OFGZIPStream.m in Sources */,
 				4B0EA9221898690E00F573A4 /* OFKernelEventObserver.m in Sources */,
 				4B0EA91C1898690E00F573A4 /* OFKernelEventObserver_kqueue.m in Sources */,
@@ -3726,6 +3742,7 @@
 				4BD9CA081DA2C61900E5AD52 /* OFHTTPCookieTests.m in Sources */,
 				4B11D09D1EC901440094423D /* OFHTTPCookieManagerTests.m in Sources */,
 				4BD9CA091DA2C61E00E5AD52 /* OFINIFileTests.m in Sources */,
+				4BAD89251F65E80A00CF44B7 /* OFInvocationTests.m in Sources */,
 				4BD9CA0A1DA2C62000E5AD52 /* OFJSONTests.m in Sources */,
 				4BD9CA0B1DA2C62200E5AD52 /* OFKernelEventObserverTests.m in Sources */,
 				4BD9CA0C1DA2C62500E5AD52 /* OFListTests.m in Sources */,
@@ -3773,6 +3790,7 @@
 				4B2610C61D86305C001F16C9 /* OFHTTPCookieTests.m in Sources */,
 				4B11D09C1EC901440094423D /* OFHTTPCookieManagerTests.m in Sources */,
 				4B5B02C118B2897500CE6AE4 /* OFINIFileTests.m in Sources */,
+				4BAD89241F65E80A00CF44B7 /* OFInvocationTests.m in Sources */,
 				4BAA60C814D09699006F068D /* OFJSONTests.m in Sources */,
 				4B22BE201AE594A000CD320A /* OFKernelEventObserverTests.m in Sources */,
 				4BF33B03133807A20059CEF7 /* OFListTests.m in Sources */,

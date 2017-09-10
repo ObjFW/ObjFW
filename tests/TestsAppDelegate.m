@@ -381,6 +381,7 @@ main(int argc, char *argv[])
 
 	[self runtimeTests];
 	[self methodSignatureTests];
+	[self invocationTests];
 	[self forwardingTests];
 	[self objectTests];
 #ifdef OF_HAVE_BLOCKS

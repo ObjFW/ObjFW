@@ -16,6 +16,7 @@ SRCS = ForwardingTests.m		\
        OFDictionaryTests.m		\
        OFHTTPCookieTests.m		\
        OFHTTPCookieManagerTests.m	\
+       OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
        OFMethodSignatureTests.m		\

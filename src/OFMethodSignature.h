@@ -49,8 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) size_t frameLength;
 
 /*!
- * @brief Creates a new, autoreleased OFMethodSignature with the specified
- *	  ObjC types.
+ * @brief Creates a new OFMethodSignature with the specified ObjC types.
  *
  * @param types The ObjC types of the method
  * @return A new, autoreleased OFMethodSignature
@@ -81,8 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @note This is platform-dependent!
  *
  * @param index The index of the argument for which to return the offset
- * @returns The offset on the stack frame of the argument at the
- *	    specified index
+ * @return The offset on the stack frame of the argument at the specified index
  */
 - (size_t)argumentOffsetAtIndex: (size_t)index;
 @end

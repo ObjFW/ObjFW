@@ -27,9 +27,10 @@ SRCS = OFApplication.m			\
        OFHTTPCookieManager.m		\
        OFHTTPRequest.m			\
        OFHTTPResponse.m			\
-       OFInflateStream.m		\
        OFInflate64Stream.m		\
+       OFInflateStream.m		\
        OFIntrospection.m		\
+       OFInvocation.m			\
        OFList.m				\
        OFLocalization.m			\
        OFMapTable.m			\

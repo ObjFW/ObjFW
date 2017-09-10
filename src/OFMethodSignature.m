@@ -26,6 +26,8 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 
+#import "macros.h"
+
 size_t sizeofEncoding(const char **type, size_t *length);
 size_t alignofEncoding(const char **type, size_t *length);
 

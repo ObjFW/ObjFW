@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_localizedStrings;
 }
 
-/**
+/*!
  * The language of the locale for messages.
  *
  * If the language is unknown, it is `nil`.
@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)sharedLocalization;
 
-/**
+/*!
  * @brief Returns the language of the locale.
  *
  * If the language is unknown, `nil` is returned.
@@ -173,7 +173,7 @@ OF_ASSUME_NONNULL_BEGIN
 			  fallback: (OFConstantString *)fallback, ...
 				    OF_SENTINEL;
 
-/**
+/*!
  * @brief Returns the localized string for the specified ID, using the fallback
  *	  string if it cannot be looked up or is missing.
  *
