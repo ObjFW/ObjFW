@@ -64,7 +64,7 @@ case "$host" in
 esac
 
 AC_LANG([Objective C])
-AC_PROG_OBJC([clang gcc])
+AC_PROG_OBJC([clang egcc gcc])
 AC_PROG_OBJCPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
