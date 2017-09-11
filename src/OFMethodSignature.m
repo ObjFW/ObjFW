@@ -195,7 +195,7 @@ sizeofEncoding(const char **type, size_t *length)
 #ifdef __SIZEOF_INT128__
 	case 't':
 	case 'T':
-		size = sizeof(__int128);
+		size = __extension__ sizeof(__int128);
 		break;
 #endif
 	case 'f':
@@ -414,7 +414,7 @@ alignofEncoding(const char **type, size_t *length)
 #ifdef __SIZEOF_INT128__
 	case 't':
 	case 'T':
-		align = OF_ALIGNOF(__int128);
+		align = __extension__ OF_ALIGNOF(__int128);
 		break;
 #endif
 	case 'f':
