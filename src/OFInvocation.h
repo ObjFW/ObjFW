@@ -18,6 +18,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#ifdef OF_APPLE_RUNTIME
+# ifdef OF_X86_64
+#  define OF_INVOCATION_CAN_INVOKE
+# endif
+#endif
+
 @class OFMethodSignature;
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFMutableData;
@@ -87,6 +93,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @param buffer The buffer in which the return value is stored
  */
 - (void)getReturnValue: (void *)buffer;
+
+#ifdef OF_INVOCATION_CAN_INVOKE
+/*!
+ * @brief Invokes the method.
+ */
+- (void)invoke;
+#endif
 @end
 
 OF_ASSUME_NONNULL_END

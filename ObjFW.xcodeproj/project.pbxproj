@@ -166,6 +166,10 @@
 		4B187E5C163EA3DA0049A832 /* OFString+NSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B187E39163EA3DA0049A832 /* OFString+NSObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */; };
 		4B187E62163EA46D0049A832 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3D23761337FBC800DD29B8 /* ObjFW.framework */; };
+		4B1F61B61F6623B800278BCB /* call.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B1F61B21F6623B700278BCB /* call.S */; };
+		4B1F61B71F6623B800278BCB /* call.S in Sources */ = {isa = PBXBuildFile; fileRef = 4B1F61B21F6623B700278BCB /* call.S */; };
+		4B1F61B81F6623B800278BCB /* invoke.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1F61B31F6623B700278BCB /* invoke.m */; };
+		4B1F61B91F6623B800278BCB /* invoke.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1F61B31F6623B700278BCB /* invoke.m */; };
 		4B2227A71D4FE23700A41CD3 /* atomic_builtins.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2227A81D4FE23700A41CD3 /* atomic_no_threads.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A21D4FE23700A41CD3 /* atomic_no_threads.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B2227A91D4FE23700A41CD3 /* atomic_osatomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2227A31D4FE23700A41CD3 /* atomic_osatomic.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1299,6 +1303,10 @@
 		4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFString+NSObject.m"; path = "src/bridge/OFString+NSObject.m"; sourceTree = "<group>"; };
 		4B19023A1338D6A2000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/Makefile; sourceTree = SOURCE_ROOT; };
 		4B19023D1338D6D5000374C9 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = tests/Makefile; sourceTree = "<group>"; };
+		4B1F61B21F6623B700278BCB /* call.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = call.S; path = src/invocation/call.S; sourceTree = "<group>"; };
+		4B1F61B31F6623B700278BCB /* invoke.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = invoke.m; path = src/invocation/invoke.m; sourceTree = "<group>"; };
+		4B1F61B41F6623B800278BCB /* apple-call-x86_64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = "apple-call-x86_64.S"; path = "src/invocation/apple-call-x86_64.S"; sourceTree = "<group>"; };
+		4B1F61B51F6623B800278BCB /* invoke-x86_64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "invoke-x86_64.m"; path = "src/invocation/invoke-x86_64.m"; sourceTree = "<group>"; };
 		4B2227A11D4FE23700A41CD3 /* atomic_builtins.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_builtins.h; path = src/atomic_builtins.h; sourceTree = "<group>"; };
 		4B2227A21D4FE23700A41CD3 /* atomic_no_threads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_no_threads.h; path = src/atomic_no_threads.h; sourceTree = "<group>"; };
 		4B2227A31D4FE23700A41CD3 /* atomic_osatomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic_osatomic.h; path = src/atomic_osatomic.h; sourceTree = "<group>"; };
@@ -1981,6 +1989,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		4B1F61B11F66239200278BCB /* Invocation */ = {
+			isa = PBXGroup;
+			children = (
+				4B1F61B41F6623B800278BCB /* apple-call-x86_64.S */,
+				4B1F61B21F6623B700278BCB /* call.S */,
+				4B1F61B51F6623B800278BCB /* invoke-x86_64.m */,
+				4B1F61B31F6623B700278BCB /* invoke.m */,
+			);
+			name = Invocation;
+			sourceTree = "<group>";
+		};
 		4B3D23771337FBC800DD29B8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2055,6 +2074,7 @@
 				4B17FF6E133A28E0003E6DCD /* Exceptions */,
 				4B610DC41E31A46600AB26BA /* Encodings */,
 				4B5C112717E9AAC1003C917F /* Forwarding */,
+				4B1F61B11F66239200278BCB /* Invocation */,
 				4B3D23801337FBC800DD29B8 /* Supporting Files */,
 				4B175C1D116D130B003C99CB /* OFApplication.h */,
 				4B175C1E116D130B003C99CB /* OFApplication.m */,
@@ -3507,6 +3527,8 @@
 				4BF3A22A1E25EA48002EA46F /* windows-1251.m in Sources */,
 				4B2C21971DA292BE00735907 /* windows-1252.m in Sources */,
 				4B2C21D41DA292BE00735907 /* forwarding.S in Sources */,
+				4B1F61B71F6623B800278BCB /* call.S in Sources */,
+				4B1F61B91F6623B800278BCB /* invoke.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3716,6 +3738,8 @@
 				4BF3A2291E25EA48002EA46F /* windows-1251.m in Sources */,
 				4B3D23BA1337FC0D00DD29B8 /* windows-1252.m in Sources */,
 				4B5C112F17E9AB3E003C917F /* forwarding.S in Sources */,
+				4B1F61B61F6623B800278BCB /* call.S in Sources */,
+				4B1F61B81F6623B800278BCB /* invoke.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -40,6 +40,7 @@
 #import "OFNull.h"
 
 #import "OFMethodSignature.h"
+#import "OFInvocation.h"
 #import "OFIntrospection.h"
 
 #import "OFNumber.h"
