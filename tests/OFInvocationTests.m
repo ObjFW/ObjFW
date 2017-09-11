@@ -82,6 +82,27 @@ struct test_struct {
 	    d12 + d13 + d14 + d15 + d16) / 16;
 }
 
+- (long double)invocationTestMethod4: (long double)d1
+				    : (long double)d2
+				    : (long double)d3
+				    : (long double)d4
+				    : (long double)d5
+				    : (long double)d6
+				    : (long double)d7
+				    : (long double)d8
+				    : (long double)d9
+				    : (long double)d10
+				    : (long double)d11
+				    : (long double)d12
+				    : (long double)d13
+				    : (long double)d14
+				    : (long double)d15
+				    : (long double)d16
+{
+	return (d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8 + d9 + d10 + d11 +
+	    d12 + d13 + d14 + d15 + d16) / 16;
+}
+
 - (void)invocationTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -175,6 +196,30 @@ struct test_struct {
 	TEST(@"-[invoke] #2", R([invocation invoke]) &&
 	    R([invocation getReturnValue: &doubleResult]) &&
 	    doubleResult == 8.5)
+
+	/* Only when encoding long doubles is supported */
+	if (strcmp(@encode(double), @encode(long double)) != 0) {
+		/* -[invoke] #3 */
+		selector = @selector(invocationTestMethod4::::::::::::::::);
+		invocation = [OFInvocation invocationWithMethodSignature:
+		    [self methodSignatureForSelector: selector]];
+
+		[invocation setArgument: &self
+				atIndex: 0];
+		[invocation setArgument: &selector
+				atIndex: 1];
+
+		for (int i = 1; i <= 16; i++) {
+			long double d = i;
+			[invocation setArgument: &d
+					atIndex: i + 1];
+		}
+
+		long double longDoubleResult;
+		TEST(@"-[invoke] #3", R([invocation invoke]) &&
+		    R([invocation getReturnValue: &longDoubleResult]) &&
+		    longDoubleResult == 8.5)
+	}
 #endif
 
 	[pool drain];

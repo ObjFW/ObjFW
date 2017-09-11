@@ -29,12 +29,20 @@
 #define NUM_GPR_IN 6
 #define NUM_GPR_OUT 2
 #define NUM_SSE_IN 8
-#define NUM_SSE_OUT 2
+#define NUM_X87_OUT 2
+
+enum {
+	RETURN_TYPE_NORMAL,
+	RETURN_TYPE_STRUCT,
+	RETURN_TYPE_X87
+};
 
 struct call_context {
 	uint64_t gpr[NUM_GPR_IN + NUM_GPR_OUT];
 	__m128 sse[NUM_SSE_IN];
+	long double x87[NUM_X87_OUT];
 	uint8_t num_sse_used;
+	uint8_t return_type;
 	uint64_t stack_size;
 	uint64_t stack[];
 };
@@ -57,10 +65,12 @@ of_invocation_invoke(OFInvocation *invocation)
 		union {
 			uint64_t gpr;
 			__m128 sse;
+			long double x87;
 		} value;
 		enum {
 			VALUE_GPR,
-			VALUE_SSE
+			VALUE_SSE,
+			VALUE_X87
 		} valueType;
 
 		typeEncoding = [methodSignature argumentTypeAtIndex: i];
@@ -89,29 +99,25 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('L', unsigned long)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
-#ifdef __SIZEOF_INT128__
-		/* TODO: 't' */
-		/* TODO: 'T' */
-#endif
-		case 'f':
-			{
-				float tmp;
-				[invocation getArgument: &tmp
-						atIndex: i];
-				value.sse = _mm_set_ss(tmp);
-				valueType = VALUE_SSE;
-			}
+		case 'f':;
+			float floatTmp;
+			[invocation getArgument: &floatTmp
+					atIndex: i];
+			value.sse = _mm_set_ss(floatTmp);
+			valueType = VALUE_SSE;
 			break;
-		case 'd':
-			{
-				double tmp;
-				[invocation getArgument: &tmp
-						atIndex: i];
-				value.sse = _mm_set_sd(tmp);
-				valueType = VALUE_SSE;
-			}
+		case 'd':;
+			double doubleTmp;
+			[invocation getArgument: &doubleTmp
+					atIndex: i];
+			value.sse = _mm_set_sd(doubleTmp);
+			valueType = VALUE_SSE;
 			break;
-		/* TODO: 'D' */
+		case 'D':
+			[invocation getArgument: &value.x87
+					atIndex: i];
+			valueType = VALUE_X87;
+			break;
 		CASE_GPR('B', _Bool)
 		CASE_GPR('*', uintptr_t)
 		CASE_GPR('@', uintptr_t)
@@ -124,13 +130,18 @@ of_invocation_invoke(OFInvocation *invocation)
 #ifndef __STDC_NO_COMPLEX__
 		/* TODO: 'j' */
 #endif
+#ifdef __SIZEOF_INT128__
+		/* TODO: 't' */
+		/* TODO: 'T' */
+#endif
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
 #undef CASE_GPR
 		}
 
-		if (valueType == VALUE_GPR) {
+		switch (valueType) {
+		case VALUE_GPR:
 			if (currentGPR < NUM_GPR_IN)
 				context->gpr[currentGPR++] = value.gpr;
 			else {
@@ -152,7 +163,8 @@ of_invocation_invoke(OFInvocation *invocation)
 				context->stack[context->stack_size - 1] =
 				    value.gpr;
 			}
-		} else if (valueType == VALUE_SSE) {
+			break;
+		case VALUE_SSE:
 			if (currentSSE < NUM_SSE_IN) {
 				context->sse[currentSSE++] = value.sse;
 				context->num_sse_used++;
@@ -177,15 +189,76 @@ of_invocation_invoke(OFInvocation *invocation)
 				memcpy(&context->stack[context->stack_size - 1],
 				    &tmp, 8);
 			}
+			break;
+		case VALUE_X87:
+			{
+				struct call_context *newContext;
+
+				context->stack_size += 2;
+
+				newContext = realloc(context,
+				    sizeof(*context) + context->stack_size * 8);
+				if (newContext == NULL) {
+					free(context);
+					@throw [OFOutOfMemoryException
+					    exceptionWithRequestedSize:
+					    sizeof(*context) +
+					    context->stack_size * 8];
+				}
+
+				context = newContext;
+				memcpy(&context->stack[context->stack_size - 2],
+				    &value.x87, 16);
+			}
+			break;
 		}
 	}
-
-	of_invocation_call(context);
 
 	typeEncoding = [methodSignature methodReturnType];
 
 	if (*typeEncoding == 'r')
 		typeEncoding++;
+
+	switch (*typeEncoding) {
+	case 'c':
+	case 'C':
+	case 'i':
+	case 'I':
+	case 's':
+	case 'S':
+	case 'l':
+	case 'L':
+	case 'q':
+	case 'Q':
+	case 'f':
+	case 'd':
+	case 'B':
+	case '*':
+	case '@':
+	case '#':
+	case ':':
+	case '^':
+		context->return_type = RETURN_TYPE_NORMAL;
+		break;
+	case 'D':
+		context->return_type = RETURN_TYPE_X87;
+		break;
+	/* TODO: '[' */
+	/* TODO: '{' */
+	/* TODO: '(' */
+#ifndef __STDC_NO_COMPLEX__
+	/* TODO: 'j' */
+#endif
+#ifdef __SIZEOF_INT128__
+	/* TODO: 't' */
+	/* TODO: 'T' */
+#endif
+	default:
+		free(context);
+		@throw [OFInvalidFormatException exception];
+	}
+
+	of_invocation_call(context);
 
 	switch (*typeEncoding) {
 #define CASE_GPR(encoding, type)					   \
@@ -205,25 +278,19 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('L', unsigned long)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
-#ifdef __SIZEOF_INT128__
-		/* TODO: 't' */
-		/* TODO: 'T' */
-#endif
-		case 'f':
-			{
-				float tmp;
-				_mm_store_ss(&tmp, context->sse[0]);
-				[invocation setReturnValue: &tmp];
-			}
+		case 'f':;
+			float floatTmp;
+			_mm_store_ss(&floatTmp, context->sse[0]);
+			[invocation setReturnValue: &floatTmp];
 			break;
-		case 'd':
-			{
-				double tmp;
-				_mm_store_sd(&tmp, context->sse[0]);
-				[invocation setReturnValue: &tmp];
-			}
+		case 'd':;
+			double doubleTmp;
+			_mm_store_sd(&doubleTmp, context->sse[0]);
+			[invocation setReturnValue: &doubleTmp];
 			break;
-		/* TODO: 'D' */
+		case 'D':
+			[invocation setReturnValue: &context->x87[0]];
+			break;
 		CASE_GPR('B', _Bool)
 		CASE_GPR('*', uintptr_t)
 		CASE_GPR('@', uintptr_t)
@@ -235,6 +302,10 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('^', uintptr_t)
 #ifndef __STDC_NO_COMPLEX__
 		/* TODO: 'j' */
+#endif
+#ifdef __SIZEOF_INT128__
+		/* TODO: 't' */
+		/* TODO: 'T' */
 #endif
 		default:
 			free(context);

@@ -27,24 +27,24 @@ _of_invocation_call:
 	andq	$-16, %rsp
 	movq	%rdi, -8(%rbp)
 
-	leaq	208(%rdi), %rdx
-	movq	200(%rdi), %rcx
+	leaq	240(%rdi), %rdx
+	movq	232(%rdi), %rcx
 
 	testq	$1, %rcx
-	jnz	.fix_align
+	jnz	Lfix_align
 
-.fill_stack:
+Lfill_stack:
 	testq	%rcx, %rcx
-	jz	.stack_filled
+	jz	Lstack_filled
 
 	decq	%rcx
 	movq	(%rdx,%rcx,8), %r11
 	pushq	%r11
 
-	jmp	.fill_stack
+	jmp	Lfill_stack
 
-.stack_filled:
-	movb	192(%rdi), %al
+Lstack_filled:
+	movb	224(%rdi), %al
 
 	movdqa	176(%rdi), %xmm7
 	movdqa	160(%rdi), %xmm6
@@ -70,12 +70,20 @@ _of_invocation_call:
 	movdqa	%xmm0, 64(%rdi)
 	movdqa	%xmm1, 80(%rdi)
 
+	cmpb	$2, 225(%rdi)
+	je	Lpop_long_double
+
+Lreturn:
 	movq	%rbp, %rsp
 	popq	%rbp
 
 	ret
 
-.fix_align:
+Lfix_align:
 	xorq	%r11, %r11
 	pushq	%r11
-	jmp	.fill_stack
+	jmp	Lfill_stack
+
+Lpop_long_double:
+	fstpt	192(%rdi)
+	jmp	Lreturn
