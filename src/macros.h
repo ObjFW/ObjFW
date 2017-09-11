@@ -283,6 +283,9 @@
 # ifdef OF_PA_RISC
 #  define OF_PA_RISC_ASM
 # endif
+# ifdef OF_ITANIUM
+#  define OF_ITANIUM_ASM
+# endif
 #endif
 
 #ifdef OF_APPLE_RUNTIME
