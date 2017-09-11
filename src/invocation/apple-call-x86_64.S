@@ -24,9 +24,27 @@ _of_invocation_call:
 	movq	%rsp, %rbp
 
 	subq	$16, %rsp
+	andq	$-16, %rsp
 	movq	%rdi, -8(%rbp)
 
-	movb	177(%rdi), %al
+	leaq	208(%rdi), %rdx
+	movq	200(%rdi), %rcx
+
+	testq	$1, %rcx
+	jnz	.fix_align
+
+.fill_stack:
+	testq	%rcx, %rcx
+	jz	.stack_filled
+
+	decq	%rcx
+	movq	(%rdx,%rcx,8), %r11
+	pushq	%r11
+
+	jmp	.fill_stack
+
+.stack_filled:
+	movb	192(%rdi), %al
 
 	movdqa	176(%rdi), %xmm7
 	movdqa	160(%rdi), %xmm6
@@ -56,3 +74,8 @@ _of_invocation_call:
 	popq	%rbp
 
 	ret
+
+.fix_align:
+	xorq	%r11, %r11
+	pushq	%r11
+	jmp	.fill_stack
