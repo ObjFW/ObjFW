@@ -32,6 +32,7 @@
 struct registers {
 	uint64_t gpr[NUM_GPR_IN + NUM_GPR_OUT];
 	__m128 sse[NUM_SSE_IN];
+	uint8_t num_sse;
 };
 
 extern void of_invocation_call(struct registers *);
@@ -44,6 +45,8 @@ of_invocation_invoke(OFInvocation *invocation)
 	const char *typeEncoding;
 	struct registers registers;
 	size_t currentGPR = 0, currentSSE = 0;
+
+	memset(&registers, '\0', sizeof(registers));
 
 	for (size_t i = 0; i < numberOfArguments; i++) {
 		union {
@@ -128,9 +131,10 @@ of_invocation_invoke(OFInvocation *invocation)
 				/* TODO */
 				abort();
 		} else if (valueType == VALUE_SSE) {
-			if (currentSSE < NUM_SSE_IN)
+			if (currentSSE < NUM_SSE_IN) {
 				registers.sse[currentSSE++] = value.sse;
-			else
+				registers.num_sse++;
+			} else
 				/* TODO */
 				abort();
 		}

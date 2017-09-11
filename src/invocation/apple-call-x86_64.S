@@ -26,6 +26,8 @@ _of_invocation_call:
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
 
+	movb	177(%rdi), %al
+
 	movdqa	176(%rdi), %xmm7
 	movdqa	160(%rdi), %xmm6
 	movdqa	144(%rdi), %xmm5
