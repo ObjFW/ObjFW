@@ -19,7 +19,9 @@
 #include "platform.h"
 
 #ifdef OF_X86_64
-# include "invoke-x86_64.m"
+# ifdef OF_APPLE_RUNTIME
+#  include "invoke-x86_64.m"
+# endif
 #else
 /* To not have an empty translation unit otherwise */
 int of_invocation_cannot_invoke;
