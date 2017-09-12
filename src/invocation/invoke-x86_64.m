@@ -49,6 +49,68 @@ struct call_context {
 
 extern void of_invocation_call(struct call_context *);
 
+static void
+pushGPR(struct call_context **context, size_t *currentGPR, uint64_t value)
+{
+	struct call_context *newContext;
+
+	if (*currentGPR < NUM_GPR_IN) {
+		(*context)->gpr[(*currentGPR)++] = value;
+		return;
+	}
+
+	if ((newContext = realloc(*context,
+	    sizeof(**context) + ((*context)->stack_size + 1) * 8)) == NULL) {
+		free(*context);
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    sizeof(**context) + ((*context)->stack_size + 1) * 8];
+	}
+
+	newContext->stack[newContext->stack_size] = value;
+	newContext->stack_size++;
+	*context = newContext;
+}
+
+static void
+pushDouble(struct call_context **context, size_t *currentSSE, double value)
+{
+	struct call_context *newContext;
+
+	if (*currentSSE < NUM_SSE_IN) {
+		(*context)->sse[(*currentSSE)++] = _mm_set_sd(value);
+		(*context)->num_sse_used++;
+		return;
+	}
+
+	if ((newContext = realloc(*context,
+	    sizeof(**context) + ((*context)->stack_size + 1) * 8)) == NULL) {
+		free(*context);
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    sizeof(**context) + ((*context)->stack_size + 1) * 8];
+	}
+
+	memcpy(&newContext->stack[newContext->stack_size], &value, 8);
+	newContext->stack_size++;
+	*context = newContext;
+}
+
+static void
+pushLongDouble(struct call_context **context, long double value)
+{
+	struct call_context *newContext;
+
+	if ((newContext = realloc(*context,
+	    sizeof(**context) + ((*context)->stack_size + 2) * 8)) == NULL) {
+		free(*context);
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    sizeof(**context) + ((*context)->stack_size + 2) * 8];
+	}
+
+	memcpy(&newContext->stack[newContext->stack_size], &value, 16);
+	newContext->stack_size += 2;
+	*context = newContext;
+}
+
 void
 of_invocation_invoke(OFInvocation *invocation)
 {
@@ -62,32 +124,20 @@ of_invocation_invoke(OFInvocation *invocation)
 		@throw [OFOutOfMemoryException exception];
 
 	for (size_t i = 0; i < numberOfArguments; i++) {
-		union {
-			uint64_t gpr;
-			__m128 sse;
-			long double x87;
-		} value;
-		enum {
-			VALUE_GPR,
-			VALUE_SSE,
-			VALUE_X87
-		} valueType;
-
 		typeEncoding = [methodSignature argumentTypeAtIndex: i];
 
 		if (*typeEncoding == 'r')
 			typeEncoding++;
 
 		switch (*typeEncoding) {
-#define CASE_GPR(encoding, type)				\
-		case encoding:					\
-			{					\
-				type tmp;			\
-				[invocation getArgument: &tmp	\
-						atIndex: i];	\
-				value.gpr = tmp;		\
-				valueType = VALUE_GPR;		\
-			}					\
+#define CASE_GPR(encoding, type)					\
+		case encoding:						\
+			{						\
+				type tmp;				\
+				[invocation getArgument: &tmp		\
+						atIndex: i];		\
+				pushGPR(&context, &currentGPR, tmp);	\
+			}						\
 			break;
 		CASE_GPR('c', char)
 		CASE_GPR('C', unsigned char)
@@ -103,20 +153,19 @@ of_invocation_invoke(OFInvocation *invocation)
 			float floatTmp;
 			[invocation getArgument: &floatTmp
 					atIndex: i];
-			value.sse = _mm_set_ss(floatTmp);
-			valueType = VALUE_SSE;
+			pushDouble(&context, &currentSSE, floatTmp);
 			break;
 		case 'd':;
 			double doubleTmp;
 			[invocation getArgument: &doubleTmp
 					atIndex: i];
-			value.sse = _mm_set_sd(doubleTmp);
-			valueType = VALUE_SSE;
+			pushDouble(&context, &currentSSE, doubleTmp);
 			break;
-		case 'D':
-			[invocation getArgument: &value.x87
+		case 'D':;
+			long double longDoubleTmp;
+			[invocation getArgument: &longDoubleTmp
 					atIndex: i];
-			valueType = VALUE_X87;
+			pushLongDouble(&context, longDoubleTmp);
 			break;
 		CASE_GPR('B', _Bool)
 		CASE_GPR('*', uintptr_t)
@@ -138,79 +187,6 @@ of_invocation_invoke(OFInvocation *invocation)
 			free(context);
 			@throw [OFInvalidFormatException exception];
 #undef CASE_GPR
-		}
-
-		switch (valueType) {
-		case VALUE_GPR:
-			if (currentGPR < NUM_GPR_IN)
-				context->gpr[currentGPR++] = value.gpr;
-			else {
-				struct call_context *newContext;
-
-				context->stack_size++;
-
-				newContext = realloc(context,
-				    sizeof(*context) + context->stack_size * 8);
-				if (newContext == NULL) {
-					free(context);
-					@throw [OFOutOfMemoryException
-					    exceptionWithRequestedSize:
-					    sizeof(*context) +
-					    context->stack_size * 8];
-				}
-
-				context = newContext;
-				context->stack[context->stack_size - 1] =
-				    value.gpr;
-			}
-			break;
-		case VALUE_SSE:
-			if (currentSSE < NUM_SSE_IN) {
-				context->sse[currentSSE++] = value.sse;
-				context->num_sse_used++;
-			} else {
-				struct call_context *newContext;
-				double tmp;
-
-				context->stack_size++;
-
-				newContext = realloc(context,
-				    sizeof(*context) + context->stack_size * 8);
-				if (newContext == NULL) {
-					free(context);
-					@throw [OFOutOfMemoryException
-					    exceptionWithRequestedSize:
-					    sizeof(*context) +
-					    context->stack_size * 8];
-				}
-
-				context = newContext;
-				_mm_store_sd(&tmp, value.sse);
-				memcpy(&context->stack[context->stack_size - 1],
-				    &tmp, 8);
-			}
-			break;
-		case VALUE_X87:
-			{
-				struct call_context *newContext;
-
-				context->stack_size += 2;
-
-				newContext = realloc(context,
-				    sizeof(*context) + context->stack_size * 8);
-				if (newContext == NULL) {
-					free(context);
-					@throw [OFOutOfMemoryException
-					    exceptionWithRequestedSize:
-					    sizeof(*context) +
-					    context->stack_size * 8];
-				}
-
-				context = newContext;
-				memcpy(&context->stack[context->stack_size - 2],
-				    &value.x87, 16);
-			}
-			break;
 		}
 	}
 

@@ -259,6 +259,8 @@ sizeofEncoding(const char **type, size_t *length)
 		default:
 			@throw [OFInvalidFormatException exception];
 		}
+
+		break;
 #endif
 	default:
 		@throw [OFInvalidFormatException exception];
@@ -478,6 +480,8 @@ alignofEncoding(const char **type, size_t *length)
 		default:
 			@throw [OFInvalidFormatException exception];
 		}
+
+		break;
 #endif
 	default:
 		@throw [OFInvalidFormatException exception];
