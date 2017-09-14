@@ -62,8 +62,20 @@ Lstack_filled:
 	movq	8(%rdi), %rsi
 	movq	0(%rdi), %rdi
 
+	movb	225(%rdi), %r11b
+
+	cmpb	$1, %r11b
+	je	Lcall_send_stret
+
+	cmpb	$3, %r11b
+	je	_objc_msgSend
+
+	cmpb	$4, %r11b
+	je	_objc_msgSend_stret
+
 	call	_objc_msgSend
 
+Lafter_send:
 	movq	-8(%rbp), %rdi
 	movq	%rax, 48(%rdi)
 	movq	%rdx, 56(%rdi)
@@ -83,6 +95,10 @@ Lfix_align:
 	xorq	%r11, %r11
 	pushq	%r11
 	jmp	Lfill_stack
+
+Lcall_send_stret:
+	call	_objc_msgSend_stret
+	jmp	Lafter_send
 
 Lpop_long_double:
 	fstpt	192(%rdi)
