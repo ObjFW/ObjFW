@@ -151,6 +151,16 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('L', unsigned long)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
+#ifdef __SIZEOF_INT128__
+		case 't':
+		case 'T':;
+			uint64_t int128Tmp[2];
+			[invocation getArgument: int128Tmp
+					atIndex: i];
+			pushGPR(&context, &currentGPR, int128Tmp[0]);
+			pushGPR(&context, &currentGPR, int128Tmp[1]);
+			break;
+#endif
 		case 'f':;
 			float floatTmp;
 			[invocation getArgument: &floatTmp
@@ -181,10 +191,6 @@ of_invocation_invoke(OFInvocation *invocation)
 #ifndef __STDC_NO_COMPLEX__
 		/* TODO: 'j' */
 #endif
-#ifdef __SIZEOF_INT128__
-		/* TODO: 't' */
-		/* TODO: 'T' */
-#endif
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
@@ -208,6 +214,10 @@ of_invocation_invoke(OFInvocation *invocation)
 	case 'L':
 	case 'q':
 	case 'Q':
+#ifdef __SIZEOF_INT128__
+	case 't':
+	case 'T':
+#endif
 	case 'f':
 	case 'd':
 	case 'B':
@@ -226,10 +236,6 @@ of_invocation_invoke(OFInvocation *invocation)
 	/* TODO: '(' */
 #ifndef __STDC_NO_COMPLEX__
 	/* TODO: 'j' */
-#endif
-#ifdef __SIZEOF_INT128__
-	/* TODO: 't' */
-	/* TODO: 'T' */
 #endif
 	default:
 		free(context);
@@ -256,6 +262,12 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('L', unsigned long)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
+#ifdef __SIZEOF_INT128__
+		case 't':
+		case 'T':;
+			[invocation setReturnValue: &context->gpr[NUM_GPR_IN]];
+			break;
+#endif
 		case 'f':;
 			float floatTmp;
 			_mm_store_ss(&floatTmp, context->sse[0]);
@@ -280,10 +292,6 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('^', uintptr_t)
 #ifndef __STDC_NO_COMPLEX__
 		/* TODO: 'j' */
-#endif
-#ifdef __SIZEOF_INT128__
-		/* TODO: 't' */
-		/* TODO: 'T' */
 #endif
 		default:
 			free(context);

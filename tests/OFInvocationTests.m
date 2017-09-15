@@ -103,6 +103,49 @@ struct test_struct {
 	    d12 + d13 + d14 + d15 + d16) / 16;
 }
 
+#ifdef __SIZEOF_INT128__
+- (__int128)invocationTestMethod5: (__int128)i1
+				 : (__int128)i2
+				 : (int)i3	 /* to check alignment */
+				 : (__int128)i4
+				 : (__int128)i5
+				 : (__int128)i6
+				 : (__int128)i7
+				 : (__int128)i8
+				 : (__int128)i9
+				 : (__int128)i10
+				 : (__int128)i11
+				 : (__int128)i12
+				 : (__int128)i13
+				 : (__int128)i14
+				 : (__int128)i15
+				 : (__int128)i16
+{
+	__int128 mask = (__int128)0xFFFFFFFFFFFFFFFF << 64;
+
+	OF_ENSURE(i1 == mask + 1);
+	OF_ENSURE(i2 == mask + 2);
+	OF_ENSURE(i3 == 3);
+	OF_ENSURE(i4 == mask + 4);
+	OF_ENSURE(i5 == mask + 5);
+	OF_ENSURE(i6 == mask + 6);
+	OF_ENSURE(i7 == mask + 7);
+	OF_ENSURE(i8 == mask + 8);
+	OF_ENSURE(i9 == mask + 9);
+	OF_ENSURE(i10 == mask + 10);
+	OF_ENSURE(i11 == mask + 11);
+	OF_ENSURE(i12 == mask + 12);
+	OF_ENSURE(i13 == mask + 13);
+	OF_ENSURE(i14 == mask + 14);
+	OF_ENSURE(i15 == mask + 15);
+	OF_ENSURE(i16 == mask + 16);
+
+	return (((int)i1 + (int)i2 + (int)i3 + (int)i4 + (int)i5 + (int)i6 +
+	    (int)i7 + (int)i8 + (int)i9 + (int)i10 + (int)i11 + (int)i12 +
+	    (int)i13 + (int)i14 + (int)i15 + (int)i16) / 16) + mask;
+}
+#endif
+
 - (void)invocationTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -220,6 +263,36 @@ struct test_struct {
 		    R([invocation getReturnValue: &longDoubleResult]) &&
 		    longDoubleResult == 8.5)
 	}
+
+# ifdef __SIZEOF_INT128__
+	/* -[invoke] #4 */
+	selector = @selector(invocationTestMethod5::::::::::::::::);
+	invocation = [OFInvocation invocationWithMethodSignature:
+	    [self methodSignatureForSelector: selector]];
+
+	[invocation setArgument: &self
+			atIndex: 0];
+	[invocation setArgument: &selector
+			atIndex: 1];
+
+	for (int i = 1; i <= 16; i++) {
+		__int128 i128 = 0xFFFFFFFFFFFFFFFF;
+		i128 <<= 64;
+		i128 |= i;
+
+		if (i == 3)
+			[invocation setArgument: &i
+					atIndex: i + 1];
+		else
+			[invocation setArgument: &i128
+					atIndex: i + 1];
+	}
+
+	__int128 int128Result;
+	TEST(@"-[invoke] #4", R([invocation invoke]) &&
+	    R([invocation getReturnValue: &int128Result]) &&
+	    int128Result == ((__int128)0xFFFFFFFFFFFFFFFF << 64) + 8)
+# endif
 #endif
 
 	[pool drain];
