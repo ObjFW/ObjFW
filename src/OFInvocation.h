@@ -22,6 +22,12 @@ OF_ASSUME_NONNULL_BEGIN
 # ifdef OF_X86_64
 #  define OF_INVOCATION_CAN_INVOKE
 # endif
+#else
+# ifdef OF_ELF
+#  ifdef OF_X86_64
+#   define OF_INVOCATION_CAN_INVOKE
+#  endif
+# endif
 #endif
 
 @class OFMethodSignature;

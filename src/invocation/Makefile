@@ -9,4 +9,4 @@ SRCS = call.S	\
 include ../../buildsys.mk
 
 ASFLAGS += -I../.. -I..
-OBJCFLAGS += -I../.. -I.. -I../exceptions
+OBJCFLAGS += -I../.. -I.. -I../exceptions -I../runtime

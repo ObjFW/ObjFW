@@ -19,7 +19,13 @@
 #include "platform.h"
 
 #ifdef OF_APPLE_RUNTIME
-# if defined(OF_X86_64)
+# ifdef OF_X86_64
 #  include "apple-call-x86_64.S"
+# endif
+#else
+# ifdef OF_ELF
+#  ifdef OF_X86_64
+#   include "call-x86_64-elf.S"
+#  endif
 # endif
 #endif
