@@ -113,6 +113,32 @@ pushLongDouble(struct call_context **context, long double value)
 	*context = newContext;
 }
 
+#ifndef __clang__
+static void
+alignStack(struct call_context **context, size_t alignment)
+{
+	size_t stackSize = (*context)->stack_size;
+	struct call_context *newContext;
+
+	if (stackSize % alignment == 0)
+		return;
+
+	stackSize += alignment - stackSize % alignment;
+
+	if ((newContext = realloc(*context,
+	    sizeof(**context) + stackSize * 8)) == NULL) {
+		free(*context);
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    sizeof(**context) + stackSize * 8];
+	}
+
+	memset(&newContext->stack[newContext->stack_size], '\0',
+	    (stackSize - newContext->stack_size) * 8);
+	newContext->stack_size = stackSize;
+	*context = newContext;
+}
+#endif
+
 void
 of_invocation_invoke(OFInvocation *invocation)
 {
@@ -157,6 +183,13 @@ of_invocation_invoke(OFInvocation *invocation)
 			uint64_t int128Tmp[2];
 			[invocation getArgument: int128Tmp
 					atIndex: i];
+# ifndef __clang__
+			/*
+			 * Clang violates the x86_64 ABI and does not properly
+			 * align __int128 on the stack.
+			 */
+			alignStack(&context, 2);
+# endif
 			pushGPR(&context, &currentGPR, int128Tmp[0]);
 			pushGPR(&context, &currentGPR, int128Tmp[1]);
 			break;
