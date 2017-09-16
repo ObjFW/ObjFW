@@ -79,7 +79,7 @@ pushDouble(struct call_context **context, size_t *currentSSE, double value)
 	struct call_context *newContext;
 
 	if (*currentSSE < NUM_SSE_IN) {
-		(*context)->sse[(*currentSSE)++] = _mm_set_sd(value);
+		(*context)->sse[(*currentSSE)++] = (__m128)_mm_set_sd(value);
 		(*context)->num_sse_used++;
 		return;
 	}
@@ -275,7 +275,7 @@ of_invocation_invoke(OFInvocation *invocation)
 			break;
 		case 'd':;
 			double doubleTmp;
-			_mm_store_sd(&doubleTmp, context->sse[0]);
+			_mm_store_sd(&doubleTmp, (__m128d)context->sse[0]);
 			[invocation setReturnValue: &doubleTmp];
 			break;
 		case 'D':

@@ -104,6 +104,7 @@ struct test_struct {
 }
 
 #ifdef __SIZEOF_INT128__
+__extension__
 - (__int128)invocationTestMethod5: (__int128)i1
 				 : (__int128)i2
 				 : (int)i3	 /* to check alignment */
@@ -276,7 +277,7 @@ struct test_struct {
 			atIndex: 1];
 
 	for (int i = 1; i <= 16; i++) {
-		__int128 i128 = 0xFFFFFFFFFFFFFFFF;
+		__extension__ __int128 i128 = 0xFFFFFFFFFFFFFFFF;
 		i128 <<= 64;
 		i128 |= i;
 
@@ -288,10 +289,11 @@ struct test_struct {
 					atIndex: i + 1];
 	}
 
-	__int128 int128Result;
+	__extension__ __int128 int128Result;
 	TEST(@"-[invoke] #4", R([invocation invoke]) &&
 	    R([invocation getReturnValue: &int128Result]) &&
-	    int128Result == ((__int128)0xFFFFFFFFFFFFFFFF << 64) + 8)
+	    int128Result == __extension__ ((__int128)0xFFFFFFFFFFFFFFFF << 64) +
+	    8)
 # endif
 #endif
 
