@@ -26,6 +26,8 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "macros.h"
+
 #define NUM_GPR_IN 6
 #define NUM_GPR_OUT 2
 #define NUM_SSE_IN 8
@@ -52,7 +54,7 @@ struct call_context {
 extern void of_invocation_call(struct call_context *);
 
 static void
-pushGPR(struct call_context **context, size_t *currentGPR, uint64_t value)
+pushGPR(struct call_context **context, uint_fast8_t *currentGPR, uint64_t value)
 {
 	struct call_context *newContext;
 
@@ -74,7 +76,8 @@ pushGPR(struct call_context **context, size_t *currentGPR, uint64_t value)
 }
 
 static void
-pushDouble(struct call_context **context, size_t *currentSSE, double value)
+pushDouble(struct call_context **context, uint_fast8_t *currentSSE,
+    double value)
 {
 	struct call_context *newContext;
 
@@ -113,17 +116,21 @@ pushLongDouble(struct call_context **context, long double value)
 	*context = newContext;
 }
 
-#ifndef __clang__
+#if defined(__SIZEOF_INT128__) && !defined(__clang__)
 static void
-alignStack(struct call_context **context, size_t alignment)
+pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
+    uint64_t low, uint64_t high)
 {
-	size_t stackSize = (*context)->stack_size;
 	struct call_context *newContext;
+	size_t stackSize;
 
-	if (stackSize % alignment == 0)
+	if (*currentGPR + 1 < NUM_GPR_IN) {
+		(*context)->gpr[(*currentGPR)++] = low;
+		(*context)->gpr[(*currentGPR)++] = high;
 		return;
+	}
 
-	stackSize += alignment - stackSize % alignment;
+	stackSize = OF_ROUND_UP_POW2(2, (*context)->stack_size) + 2;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
@@ -134,6 +141,8 @@ alignStack(struct call_context **context, size_t alignment)
 
 	memset(&newContext->stack[newContext->stack_size], '\0',
 	    (stackSize - newContext->stack_size) * 8);
+	newContext->stack[stackSize - 2] = low;
+	newContext->stack[stackSize - 1] = high;
 	newContext->stack_size = stackSize;
 	*context = newContext;
 }
@@ -146,7 +155,7 @@ of_invocation_invoke(OFInvocation *invocation)
 	size_t numberOfArguments = [methodSignature numberOfArguments];
 	struct call_context *context;
 	const char *typeEncoding;
-	size_t currentGPR = 0, currentSSE = 0;
+	uint_fast8_t currentGPR = 0, currentSSE = 0;
 
 	if ((context = calloc(sizeof(*context), 1)) == NULL)
 		@throw [OFOutOfMemoryException exception];
@@ -180,18 +189,18 @@ of_invocation_invoke(OFInvocation *invocation)
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
-			uint64_t int128Tmp[2];
-			[invocation getArgument: int128Tmp
+			struct {
+				uint64_t low, high;
+			} int128Tmp;
+			[invocation getArgument: &int128Tmp
 					atIndex: i];
 # ifndef __clang__
-			/*
-			 * Clang violates the x86_64 ABI and does not properly
-			 * align __int128 on the stack.
-			 */
-			alignStack(&context, 2);
+			pushInt128(&context, &currentGPR,
+			    int128Tmp.low, int128Tmp.high);
+# else
+			pushGPR(&context, &currentGPR, int128Tmp.low);
+			pushGPR(&context, &currentGPR, int128Tmp.high);
 # endif
-			pushGPR(&context, &currentGPR, int128Tmp[0]);
-			pushGPR(&context, &currentGPR, int128Tmp[1]);
 			break;
 #endif
 		case 'f':;

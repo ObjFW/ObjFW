@@ -107,7 +107,7 @@ struct test_struct {
 __extension__
 - (__int128)invocationTestMethod5: (int)i1
 				 : (__int128)i2
-				 : (int)i3
+				 : (__int128)i3
 				 : (__int128)i4
 				 : (int)i5
 				 : (__int128)i6
@@ -126,7 +126,7 @@ __extension__
 
 	OF_ENSURE(i1 == 1);
 	OF_ENSURE(i2 == mask + 2);
-	OF_ENSURE(i3 == 3);
+	OF_ENSURE(i3 == mask + 3);
 	OF_ENSURE(i4 == mask + 4);
 	OF_ENSURE(i5 == 5);
 	OF_ENSURE(i6 == mask + 6);
@@ -141,7 +141,7 @@ __extension__
 	OF_ENSURE(i15 == mask + 15);
 	OF_ENSURE(i16 == mask + 16);
 
-	return ((i1 + (int)i2 + i3 + (int)i4 + i5 + (int)i6 + (int)i7 +
+	return ((i1 + (int)i2 + (int)i3 + (int)i4 + i5 + (int)i6 + (int)i7 +
 	    (int)i8 + (int)i9 + (int)i10 + (int)i11 + (int)i12 + (int)i13 +
 	    (int)i14 + (int)i15 + (int)i16) / 16) + mask;
 }
@@ -281,7 +281,7 @@ __extension__
 		i128 <<= 64;
 		i128 |= i;
 
-		if (i == 1 || i == 3 || i == 5)
+		if (i == 1 || i == 5)
 			[invocation setArgument: &i
 					atIndex: i + 1];
 		else
