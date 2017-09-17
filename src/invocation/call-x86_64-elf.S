@@ -76,13 +76,15 @@ of_invocation_call:
 	movq	8(%rdi), %rsi
 	movq	0(%rdi), %rdi
 
+	movq	-8(%rbp), %r11
+	movb	225(%r11), %r11b
+
+	cmpb	$3, %r11b
+	je	.jmp_into_method
+	cmpb	$4, %r11b
+	je	.jmp_into_method
+
 	movq	-16(%rbp), %r11
-
-	cmpb	$3, 225(%rdi)
-	je	.jmp_r11
-	cmpb	$4, 225(%rdi)
-	je	.jmp_r11
-
 	call	*%r11
 
 .after_send:
@@ -113,7 +115,8 @@ of_invocation_call:
 
 	jmp	.after_lookup
 
-.jmp_r11:
+.jmp_into_method:
+	movq	-16(%rbp), %r11
 	jmp	*%r11
 
 .pop_long_double:
