@@ -67,10 +67,10 @@ Lstack_filled:
 	cmpb	$1, %r11b
 	je	Lcall_send_stret
 
-	cmpb	$3, %r11b
+	cmpb	$4, %r11b
 	je	_objc_msgSend
 
-	cmpb	$4, %r11b
+	cmpb	$5, %r11b
 	je	_objc_msgSend_stret
 
 	call	_objc_msgSend
@@ -82,8 +82,13 @@ Lafter_send:
 	movdqa	%xmm0, 64(%rdi)
 	movdqa	%xmm1, 80(%rdi)
 
-	cmpb	$2, 225(%rdi)
+	movb	225(%rdi), %r11b
+
+	cmpb	$2, %r11b
 	je	Lpop_long_double
+
+	cmpb	$3, %r11b
+	je	Lpop_complex_long_double
 
 Lreturn:
 	movq	%rbp, %rsp
@@ -102,4 +107,9 @@ Lcall_send_stret:
 
 Lpop_long_double:
 	fstpt	192(%rdi)
+	jmp	Lreturn
+
+Lpop_complex_long_double:
+	fstpt	192(%rdi)
+	fstpt	208(%rdi)
 	jmp	Lreturn

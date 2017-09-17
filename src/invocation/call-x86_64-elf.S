@@ -79,9 +79,9 @@ of_invocation_call:
 	movq	-8(%rbp), %r11
 	movb	225(%r11), %r11b
 
-	cmpb	$3, %r11b
-	je	.jmp_into_method
 	cmpb	$4, %r11b
+	je	.jmp_into_method
+	cmpb	$5, %r11b
 	je	.jmp_into_method
 
 	movq	-16(%rbp), %r11
@@ -94,8 +94,13 @@ of_invocation_call:
 	movdqa	%xmm0, 64(%rdi)
 	movdqa	%xmm1, 80(%rdi)
 
-	cmpb	$2, 225(%rdi)
+	movb	225(%rdi), %r11b
+
+	cmpb	$2, %r11b
 	je	.pop_long_double
+
+	cmpb	$3, %r11b
+	je	.pop_complex_long_double
 
 .return:
 	movq	%rbp, %rsp
@@ -121,6 +126,11 @@ of_invocation_call:
 
 .pop_long_double:
 	fstpt	192(%rdi)
+	jmp	.return
+
+.pop_complex_long_double:
+	fstpt	192(%rdi)
+	fstpt	208(%rdi)
 	jmp	.return
 
 #ifdef OF_LINUX

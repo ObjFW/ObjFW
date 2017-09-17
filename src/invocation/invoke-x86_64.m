@@ -37,6 +37,7 @@ enum {
 	RETURN_TYPE_NORMAL,
 	RETURN_TYPE_STRUCT,
 	RETURN_TYPE_X87,
+	RETURN_TYPE_COMPLEX_X87,
 	RETURN_TYPE_JMP,
 	RETURN_TYPE_JMP_STRET
 };
@@ -147,17 +148,39 @@ pushLongDouble(struct call_context **context, long double value)
 	*context = newContext;
 }
 
+static void
+pushLongDoublePair(struct call_context **context, long double value[2])
+{
+	size_t stackSize;
+	struct call_context *newContext;
+
+	stackSize = OF_ROUND_UP_POW2(2, (*context)->stack_size) + 4;
+
+	if ((newContext = realloc(*context,
+	    sizeof(**context) + stackSize * 8)) == NULL) {
+		free(*context);
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    sizeof(**context) + stackSize * 8];
+	}
+
+	memset(&newContext->stack[newContext->stack_size], '\0',
+	    (stackSize - newContext->stack_size) * 8);
+	memcpy(&newContext->stack[stackSize - 4], value, 32);
+	newContext->stack_size = stackSize;
+	*context = newContext;
+}
+
 #if defined(__SIZEOF_INT128__) && !defined(__clang__)
 static void
 pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
-    uint64_t low, uint64_t high)
+    uint64_t value[2])
 {
 	size_t stackSize;
 	struct call_context *newContext;
 
 	if (*currentGPR + 1 < NUM_GPR_IN) {
-		(*context)->gpr[(*currentGPR)++] = low;
-		(*context)->gpr[(*currentGPR)++] = high;
+		(*context)->gpr[(*currentGPR)++] = value[0];
+		(*context)->gpr[(*currentGPR)++] = value[1];
 		return;
 	}
 
@@ -172,8 +195,7 @@ pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
 
 	memset(&newContext->stack[newContext->stack_size], '\0',
 	    (stackSize - newContext->stack_size) * 8);
-	newContext->stack[stackSize - 2] = low;
-	newContext->stack[stackSize - 1] = high;
+	memcpy(&newContext->stack[stackSize - 2], value, 16);
 	newContext->stack_size = stackSize;
 	*context = newContext;
 }
@@ -226,18 +248,15 @@ of_invocation_invoke(OFInvocation *invocation)
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
-			struct {
-				uint64_t low, high;
-			} int128Tmp;
+			uint64_t int128Tmp[2];
 			[invocation getArgument: &int128Tmp
 					atIndex: i];
 # ifndef __clang__
-			pushInt128(&context, &currentGPR,
-			    int128Tmp.low, int128Tmp.high);
+			pushInt128(&context, &currentGPR, int128Tmp);
 # else
 			/* See https://bugs.llvm.org/show_bug.cgi?id=34646 */
-			pushGPR(&context, &currentGPR, int128Tmp.low);
-			pushGPR(&context, &currentGPR, int128Tmp.high);
+			pushGPR(&context, &currentGPR, int128Tmp[0]);
+			pushGPR(&context, &currentGPR, int128Tmp[1]);
 # endif
 			break;
 #endif
@@ -276,7 +295,13 @@ of_invocation_invoke(OFInvocation *invocation)
 				pushQuad(&context, &currentSSE,
 				    complexDoubleTmp[0], complexDoubleTmp[1]);
 				break;
-			/* TODO: 'D' */
+			case 'D':;
+				long double complexLongDoubleTmp[2];
+				[invocation getArgument: &complexLongDoubleTmp
+						atIndex: i];
+				pushLongDoublePair(&context,
+				    complexLongDoubleTmp);
+				break;
 			default:
 				free(context);
 				@throw [OFInvalidFormatException exception];
@@ -334,7 +359,9 @@ of_invocation_invoke(OFInvocation *invocation)
 		case 'd':
 			context->return_type = RETURN_TYPE_NORMAL;
 			break;
-		/* TODO: 'D' */
+		case 'D':
+			context->return_type = RETURN_TYPE_COMPLEX_X87;
+			break;
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
@@ -412,7 +439,9 @@ of_invocation_invoke(OFInvocation *invocation)
 				    (__m128d)context->sse[1]);
 				[invocation setReturnValue: &complexDoubleTmp];
 				break;
-			/* TODO: 'D' */
+			case 'D':
+				[invocation setReturnValue: context->x87];
+				break;
 			default:
 				free(context);
 				@throw [OFInvalidFormatException exception];
