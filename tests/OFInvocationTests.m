@@ -18,6 +18,10 @@
 
 #include <string.h>
 
+#ifndef __STDC_NO_COMPLEX__
+# include <complex.h>
+#endif
+
 #import "OFInvocation.h"
 #import "OFMethodSignature.h"
 #import "OFAutoreleasePool.h"
@@ -103,9 +107,49 @@ struct test_struct {
 	    d12 + d13 + d14 + d15 + d16) / 16;
 }
 
+#ifndef __STDC_NO_COMPLEX__
+- (complex double)invocationTestMethod5: (complex float)c1
+				       : (complex double)c2
+				       : (complex float)c3
+				       : (complex double)c4
+				       : (complex float)c5
+				       : (complex double)c6
+				       : (complex float)c7
+				       : (complex double)c8
+				       : (complex float)c9
+				       : (complex double)c10
+				       : (complex float)c11
+				       : (complex double)c12
+				       : (complex float)c13
+				       : (complex double)c14
+				       : (complex float)c15
+				       : (complex double)c16
+{
+	OF_ENSURE(creal(c1) == 1.0 && cimag(c1) == 0.5);
+	OF_ENSURE(creal(c2) == 2.0 && cimag(c2) == 1.0);
+	OF_ENSURE(creal(c3) == 3.0 && cimag(c3) == 1.5);
+	OF_ENSURE(creal(c4) == 4.0 && cimag(c4) == 2.0);
+	OF_ENSURE(creal(c5) == 5.0 && cimag(c5) == 2.5);
+	OF_ENSURE(creal(c6) == 6.0 && cimag(c6) == 3.0);
+	OF_ENSURE(creal(c7) == 7.0 && cimag(c7) == 3.5);
+	OF_ENSURE(creal(c8) == 8.0 && cimag(c8) == 4.0);
+	OF_ENSURE(creal(c9) == 9.0 && cimag(c9) == 4.5);
+	OF_ENSURE(creal(c10) == 10.0 && cimag(c10) == 5.0);
+	OF_ENSURE(creal(c11) == 11.0 && cimag(c11) == 5.5);
+	OF_ENSURE(creal(c12) == 12.0 && cimag(c12) == 6.0);
+	OF_ENSURE(creal(c13) == 13.0 && cimag(c13) == 6.5);
+	OF_ENSURE(creal(c14) == 14.0 && cimag(c14) == 7.0);
+	OF_ENSURE(creal(c15) == 15.0 && cimag(c15) == 7.5);
+	OF_ENSURE(creal(c16) == 16.0 && cimag(c16) == 8.0);
+
+	return (c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 +
+	    c12 + c13 + c14 + c15 + c16) / 16;
+}
+#endif
+
 #ifdef __SIZEOF_INT128__
 __extension__
-- (__int128)invocationTestMethod5: (int)i1
+- (__int128)invocationTestMethod6: (int)i1
 				 : (__int128)i2
 				 : (__int128)i3
 				 : (__int128)i4
@@ -265,9 +309,38 @@ __extension__
 		    longDoubleResult == 8.5)
 	}
 
-# ifdef __SIZEOF_INT128__
+# ifndef __STDC_NO_COMPLEX__
 	/* -[invoke] #4 */
 	selector = @selector(invocationTestMethod5::::::::::::::::);
+	invocation = [OFInvocation invocationWithMethodSignature:
+	    [self methodSignatureForSelector: selector]];
+
+	[invocation setArgument: &self
+			atIndex: 0];
+	[invocation setArgument: &selector
+			atIndex: 1];
+
+	for (int i = 1; i <= 16; i++) {
+		complex float cf = i + 0.5 * i * I;
+		complex double cd = i + 0.5 * i * I;
+
+		if (i & 1)
+			[invocation setArgument: &cf
+					atIndex: i + 1];
+		else
+			[invocation setArgument: &cd
+					atIndex: i + 1];
+	}
+
+	complex double complexDoubleResult;
+	TEST(@"-[invoke] #4", R([invocation invoke]) &&
+	    R([invocation getReturnValue: &complexDoubleResult]) &&
+	    complexDoubleResult == 8.5 + 4.25 * I)
+# endif
+
+# ifdef __SIZEOF_INT128__
+	/* -[invoke] #5 */
+	selector = @selector(invocationTestMethod6::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
@@ -290,7 +363,7 @@ __extension__
 	}
 
 	__extension__ __int128 int128Result;
-	TEST(@"-[invoke] #4", R([invocation invoke]) &&
+	TEST(@"-[invoke] #5", R([invocation invoke]) &&
 	    R([invocation getReturnValue: &int128Result]) &&
 	    int128Result == __extension__ ((__int128)0xFFFFFFFFFFFFFFFF << 64) +
 	    8)

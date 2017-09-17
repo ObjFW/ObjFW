@@ -100,6 +100,37 @@ pushDouble(struct call_context **context, uint_fast8_t *currentSSE,
 }
 
 static void
+pushQuad(struct call_context **context, uint_fast8_t *currentSSE,
+    double low, double high)
+{
+	size_t stackSize;
+	struct call_context *newContext;
+
+	if (*currentSSE + 1 < NUM_SSE_IN) {
+		(*context)->sse[(*currentSSE)++] = (__m128)_mm_set_sd(low);
+		(*context)->sse[(*currentSSE)++] = (__m128)_mm_set_sd(high);
+		(*context)->num_sse_used += 2;
+		return;
+	}
+
+	stackSize = (*context)->stack_size + 2;
+
+	if ((newContext = realloc(*context,
+	    sizeof(**context) + stackSize * 8)) == NULL) {
+		free(*context);
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    sizeof(**context) + stackSize * 8];
+	}
+
+	memset(&newContext->stack[newContext->stack_size], '\0',
+	    (stackSize - newContext->stack_size) * 8);
+	memcpy(&newContext->stack[stackSize - 2], &low, 8);
+	memcpy(&newContext->stack[stackSize - 1], &high, 8);
+	newContext->stack_size = stackSize;
+	*context = newContext;
+}
+
+static void
 pushLongDouble(struct call_context **context, long double value)
 {
 	struct call_context *newContext;
@@ -121,8 +152,8 @@ static void
 pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
     uint64_t low, uint64_t high)
 {
-	struct call_context *newContext;
 	size_t stackSize;
+	struct call_context *newContext;
 
 	if (*currentGPR + 1 < NUM_GPR_IN) {
 		(*context)->gpr[(*currentGPR)++] = low;
@@ -186,6 +217,12 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('L', unsigned long)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
+		CASE_GPR('B', _Bool)
+		CASE_GPR('*', uintptr_t)
+		CASE_GPR('@', uintptr_t)
+		CASE_GPR('#', uintptr_t)
+		CASE_GPR(':', uintptr_t)
+		CASE_GPR('^', uintptr_t)
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
@@ -198,6 +235,7 @@ of_invocation_invoke(OFInvocation *invocation)
 			pushInt128(&context, &currentGPR,
 			    int128Tmp.low, int128Tmp.high);
 # else
+			/* See https://bugs.llvm.org/show_bug.cgi?id=34646 */
 			pushGPR(&context, &currentGPR, int128Tmp.low);
 			pushGPR(&context, &currentGPR, int128Tmp.high);
 # endif
@@ -221,18 +259,34 @@ of_invocation_invoke(OFInvocation *invocation)
 					atIndex: i];
 			pushLongDouble(&context, longDoubleTmp);
 			break;
-		CASE_GPR('B', _Bool)
-		CASE_GPR('*', uintptr_t)
-		CASE_GPR('@', uintptr_t)
-		CASE_GPR('#', uintptr_t)
-		CASE_GPR(':', uintptr_t)
+#ifndef __STDC_NO_COMPLEX__
+		case 'j':
+			switch (typeEncoding[1]) {
+			case 'f':;
+				double complexFloatTmp;
+				[invocation getArgument: &complexFloatTmp
+						atIndex: i];
+				pushDouble(&context, &currentSSE,
+				    complexFloatTmp);
+				break;
+			case 'd':;
+				double complexDoubleTmp[2];
+				[invocation getArgument: &complexDoubleTmp
+						atIndex: i];
+				pushQuad(&context, &currentSSE,
+				    complexDoubleTmp[0], complexDoubleTmp[1]);
+				break;
+			/* TODO: 'D' */
+			default:
+				free(context);
+				@throw [OFInvalidFormatException exception];
+			}
+
+			break;
+#endif
 		/* TODO: '[' */
 		/* TODO: '{' */
 		/* TODO: '(' */
-		CASE_GPR('^', uintptr_t)
-#ifndef __STDC_NO_COMPLEX__
-		/* TODO: 'j' */
-#endif
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
@@ -256,29 +310,41 @@ of_invocation_invoke(OFInvocation *invocation)
 	case 'L':
 	case 'q':
 	case 'Q':
-#ifdef __SIZEOF_INT128__
-	case 't':
-	case 'T':
-#endif
-	case 'f':
-	case 'd':
 	case 'B':
 	case '*':
 	case '@':
 	case '#':
 	case ':':
 	case '^':
+#ifdef __SIZEOF_INT128__
+	case 't':
+	case 'T':
+#endif
+	case 'f':
+	case 'd':
 		context->return_type = RETURN_TYPE_NORMAL;
 		break;
 	case 'D':
 		context->return_type = RETURN_TYPE_X87;
 		break;
+#ifndef __STDC_NO_COMPLEX__
+	case 'j':
+		switch (typeEncoding[1]) {
+		case 'f':
+		case 'd':
+			context->return_type = RETURN_TYPE_NORMAL;
+			break;
+		/* TODO: 'D' */
+		default:
+			free(context);
+			@throw [OFInvalidFormatException exception];
+		}
+
+		break;
+#endif
 	/* TODO: '[' */
 	/* TODO: '{' */
 	/* TODO: '(' */
-#ifndef __STDC_NO_COMPLEX__
-	/* TODO: 'j' */
-#endif
 	default:
 		free(context);
 		@throw [OFInvalidFormatException exception];
@@ -304,6 +370,12 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('L', unsigned long)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
+		CASE_GPR('B', _Bool)
+		CASE_GPR('*', uintptr_t)
+		CASE_GPR('@', uintptr_t)
+		CASE_GPR('#', uintptr_t)
+		CASE_GPR(':', uintptr_t)
+		CASE_GPR('^', uintptr_t)
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
@@ -323,18 +395,34 @@ of_invocation_invoke(OFInvocation *invocation)
 		case 'D':
 			[invocation setReturnValue: &context->x87[0]];
 			break;
-		CASE_GPR('B', _Bool)
-		CASE_GPR('*', uintptr_t)
-		CASE_GPR('@', uintptr_t)
-		CASE_GPR('#', uintptr_t)
-		CASE_GPR(':', uintptr_t)
+#ifndef __STDC_NO_COMPLEX__
+		case 'j':
+			switch (typeEncoding[1]) {
+			case 'f':;
+				double complexFloatTmp;
+				_mm_store_sd(&complexFloatTmp,
+				    (__m128d)context->sse[0]);
+				[invocation setReturnValue: &complexFloatTmp];
+				break;
+			case 'd':;
+				double complexDoubleTmp[2];
+				_mm_store_sd(&complexDoubleTmp[0],
+				    (__m128d)context->sse[0]);
+				_mm_store_sd(&complexDoubleTmp[1],
+				    (__m128d)context->sse[1]);
+				[invocation setReturnValue: &complexDoubleTmp];
+				break;
+			/* TODO: 'D' */
+			default:
+				free(context);
+				@throw [OFInvalidFormatException exception];
+			}
+
+			break;
+#endif
 		/* TODO: '[' */
 		/* TODO: '{' */
 		/* TODO: '(' */
-		CASE_GPR('^', uintptr_t)
-#ifndef __STDC_NO_COMPLEX__
-		/* TODO: 'j' */
-#endif
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
