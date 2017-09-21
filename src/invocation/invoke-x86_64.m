@@ -43,12 +43,12 @@ enum {
 };
 
 struct call_context {
-	uint64_t gpr[NUM_GPR_IN + NUM_GPR_OUT];
-	__m128 sse[NUM_SSE_IN];
-	long double x87[NUM_X87_OUT];
-	uint8_t num_sse_used;
-	uint8_t return_type;
-	uint64_t stack_size;
+	uint64_t GPR[NUM_GPR_IN + NUM_GPR_OUT];
+	__m128 SSE[NUM_SSE_IN];
+	long double X87[NUM_X87_OUT];
+	uint8_t numSSEUsed;
+	uint8_t returnType;
+	uint64_t stackSize;
 	uint64_t stack[];
 };
 
@@ -60,19 +60,19 @@ pushGPR(struct call_context **context, uint_fast8_t *currentGPR, uint64_t value)
 	struct call_context *newContext;
 
 	if (*currentGPR < NUM_GPR_IN) {
-		(*context)->gpr[(*currentGPR)++] = value;
+		(*context)->GPR[(*currentGPR)++] = value;
 		return;
 	}
 
 	if ((newContext = realloc(*context,
-	    sizeof(**context) + ((*context)->stack_size + 1) * 8)) == NULL) {
+	    sizeof(**context) + ((*context)->stackSize + 1) * 8)) == NULL) {
 		free(*context);
 		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
-		    sizeof(**context) + ((*context)->stack_size + 1) * 8];
+		    sizeof(**context) + ((*context)->stackSize + 1) * 8];
 	}
 
-	newContext->stack[newContext->stack_size] = value;
-	newContext->stack_size++;
+	newContext->stack[newContext->stackSize] = value;
+	newContext->stackSize++;
 	*context = newContext;
 }
 
@@ -83,20 +83,20 @@ pushDouble(struct call_context **context, uint_fast8_t *currentSSE,
 	struct call_context *newContext;
 
 	if (*currentSSE < NUM_SSE_IN) {
-		(*context)->sse[(*currentSSE)++] = (__m128)_mm_set_sd(value);
-		(*context)->num_sse_used++;
+		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(value);
+		(*context)->numSSEUsed++;
 		return;
 	}
 
 	if ((newContext = realloc(*context,
-	    sizeof(**context) + ((*context)->stack_size + 1) * 8)) == NULL) {
+	    sizeof(**context) + ((*context)->stackSize + 1) * 8)) == NULL) {
 		free(*context);
 		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
-		    sizeof(**context) + ((*context)->stack_size + 1) * 8];
+		    sizeof(**context) + ((*context)->stackSize + 1) * 8];
 	}
 
-	memcpy(&newContext->stack[newContext->stack_size], &value, 8);
-	newContext->stack_size++;
+	memcpy(&newContext->stack[newContext->stackSize], &value, 8);
+	newContext->stackSize++;
 	*context = newContext;
 }
 
@@ -108,13 +108,13 @@ pushQuad(struct call_context **context, uint_fast8_t *currentSSE,
 	struct call_context *newContext;
 
 	if (*currentSSE + 1 < NUM_SSE_IN) {
-		(*context)->sse[(*currentSSE)++] = (__m128)_mm_set_sd(low);
-		(*context)->sse[(*currentSSE)++] = (__m128)_mm_set_sd(high);
-		(*context)->num_sse_used += 2;
+		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(low);
+		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(high);
+		(*context)->numSSEUsed += 2;
 		return;
 	}
 
-	stackSize = (*context)->stack_size + 2;
+	stackSize = (*context)->stackSize + 2;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
@@ -123,11 +123,11 @@ pushQuad(struct call_context **context, uint_fast8_t *currentSSE,
 		    sizeof(**context) + stackSize * 8];
 	}
 
-	memset(&newContext->stack[newContext->stack_size], '\0',
-	    (stackSize - newContext->stack_size) * 8);
+	memset(&newContext->stack[newContext->stackSize], '\0',
+	    (stackSize - newContext->stackSize) * 8);
 	memcpy(&newContext->stack[stackSize - 2], &low, 8);
 	memcpy(&newContext->stack[stackSize - 1], &high, 8);
-	newContext->stack_size = stackSize;
+	newContext->stackSize = stackSize;
 	*context = newContext;
 }
 
@@ -137,14 +137,14 @@ pushLongDouble(struct call_context **context, long double value)
 	struct call_context *newContext;
 
 	if ((newContext = realloc(*context,
-	    sizeof(**context) + ((*context)->stack_size + 2) * 8)) == NULL) {
+	    sizeof(**context) + ((*context)->stackSize + 2) * 8)) == NULL) {
 		free(*context);
 		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
-		    sizeof(**context) + ((*context)->stack_size + 2) * 8];
+		    sizeof(**context) + ((*context)->stackSize + 2) * 8];
 	}
 
-	memcpy(&newContext->stack[newContext->stack_size], &value, 16);
-	newContext->stack_size += 2;
+	memcpy(&newContext->stack[newContext->stackSize], &value, 16);
+	newContext->stackSize += 2;
 	*context = newContext;
 }
 
@@ -154,7 +154,7 @@ pushLongDoublePair(struct call_context **context, long double value[2])
 	size_t stackSize;
 	struct call_context *newContext;
 
-	stackSize = OF_ROUND_UP_POW2(2, (*context)->stack_size) + 4;
+	stackSize = OF_ROUND_UP_POW2(2, (*context)->stackSize) + 4;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
@@ -163,10 +163,10 @@ pushLongDoublePair(struct call_context **context, long double value[2])
 		    sizeof(**context) + stackSize * 8];
 	}
 
-	memset(&newContext->stack[newContext->stack_size], '\0',
-	    (stackSize - newContext->stack_size) * 8);
+	memset(&newContext->stack[newContext->stackSize], '\0',
+	    (stackSize - newContext->stackSize) * 8);
 	memcpy(&newContext->stack[stackSize - 4], value, 32);
-	newContext->stack_size = stackSize;
+	newContext->stackSize = stackSize;
 	*context = newContext;
 }
 
@@ -179,12 +179,12 @@ pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
 	struct call_context *newContext;
 
 	if (*currentGPR + 1 < NUM_GPR_IN) {
-		(*context)->gpr[(*currentGPR)++] = value[0];
-		(*context)->gpr[(*currentGPR)++] = value[1];
+		(*context)->GPR[(*currentGPR)++] = value[0];
+		(*context)->GPR[(*currentGPR)++] = value[1];
 		return;
 	}
 
-	stackSize = OF_ROUND_UP_POW2(2, (*context)->stack_size) + 2;
+	stackSize = OF_ROUND_UP_POW2(2, (*context)->stackSize) + 2;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
@@ -193,10 +193,10 @@ pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
 		    sizeof(**context) + stackSize * 8];
 	}
 
-	memset(&newContext->stack[newContext->stack_size], '\0',
-	    (stackSize - newContext->stack_size) * 8);
+	memset(&newContext->stack[newContext->stackSize], '\0',
+	    (stackSize - newContext->stackSize) * 8);
 	memcpy(&newContext->stack[stackSize - 2], value, 16);
-	newContext->stack_size = stackSize;
+	newContext->stackSize = stackSize;
 	*context = newContext;
 }
 #endif
@@ -220,14 +220,14 @@ of_invocation_invoke(OFInvocation *invocation)
 			typeEncoding++;
 
 		switch (*typeEncoding) {
-#define CASE_GPR(encoding, type)					\
-		case encoding:						\
-			{						\
-				type tmp;				\
-				[invocation getArgument: &tmp		\
-						atIndex: i];		\
-				pushGPR(&context, &currentGPR, tmp);	\
-			}						\
+#define CASE_GPR(encoding, type)					       \
+		case encoding:						       \
+			{						       \
+				type tmp;				       \
+				[invocation getArgument: &tmp		       \
+						atIndex: i];		       \
+				pushGPR(&context, &currentGPR, (uint64_t)tmp); \
+			}						       \
 			break;
 		CASE_GPR('c', char)
 		CASE_GPR('C', unsigned char)
@@ -240,11 +240,16 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
 		CASE_GPR('B', _Bool)
-		CASE_GPR('*', uintptr_t)
-		CASE_GPR('@', uintptr_t)
-		CASE_GPR('#', uintptr_t)
-		CASE_GPR(':', uintptr_t)
-		CASE_GPR('^', uintptr_t)
+		CASE_GPR('*', char *)
+		CASE_GPR('@', id)
+		CASE_GPR('#', Class)
+		/*
+		 * Using SEL triggers a warning that casting a SEL to an
+		 * integer is deprecated.
+		 */
+		CASE_GPR(':', void *)
+		CASE_GPR('^', void *)
+#undef CASE_GPR
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
@@ -315,7 +320,6 @@ of_invocation_invoke(OFInvocation *invocation)
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
-#undef CASE_GPR
 		}
 	}
 
@@ -347,20 +351,20 @@ of_invocation_invoke(OFInvocation *invocation)
 #endif
 	case 'f':
 	case 'd':
-		context->return_type = RETURN_TYPE_NORMAL;
+		context->returnType = RETURN_TYPE_NORMAL;
 		break;
 	case 'D':
-		context->return_type = RETURN_TYPE_X87;
+		context->returnType = RETURN_TYPE_X87;
 		break;
 #ifndef __STDC_NO_COMPLEX__
 	case 'j':
 		switch (typeEncoding[1]) {
 		case 'f':
 		case 'd':
-			context->return_type = RETURN_TYPE_NORMAL;
+			context->returnType = RETURN_TYPE_NORMAL;
 			break;
 		case 'D':
-			context->return_type = RETURN_TYPE_COMPLEX_X87;
+			context->returnType = RETURN_TYPE_COMPLEX_X87;
 			break;
 		default:
 			free(context);
@@ -383,7 +387,7 @@ of_invocation_invoke(OFInvocation *invocation)
 #define CASE_GPR(encoding, type)					   \
 		case encoding:						   \
 			{						   \
-				type tmp = (type)context->gpr[NUM_GPR_IN]; \
+				type tmp = (type)context->GPR[NUM_GPR_IN]; \
 				[invocation setReturnValue: &tmp];	   \
 			}						   \
 			break;
@@ -398,29 +402,30 @@ of_invocation_invoke(OFInvocation *invocation)
 		CASE_GPR('q', long long)
 		CASE_GPR('Q', unsigned long long)
 		CASE_GPR('B', _Bool)
-		CASE_GPR('*', uintptr_t)
-		CASE_GPR('@', uintptr_t)
-		CASE_GPR('#', uintptr_t)
-		CASE_GPR(':', uintptr_t)
-		CASE_GPR('^', uintptr_t)
+		CASE_GPR('*', char *)
+		CASE_GPR('@', id)
+		CASE_GPR('#', Class)
+		CASE_GPR(':', SEL)
+		CASE_GPR('^', void *)
+#undef CASE_GPR
 #ifdef __SIZEOF_INT128__
 		case 't':
 		case 'T':;
-			[invocation setReturnValue: &context->gpr[NUM_GPR_IN]];
+			[invocation setReturnValue: &context->GPR[NUM_GPR_IN]];
 			break;
 #endif
 		case 'f':;
 			float floatTmp;
-			_mm_store_ss(&floatTmp, context->sse[0]);
+			_mm_store_ss(&floatTmp, context->SSE[0]);
 			[invocation setReturnValue: &floatTmp];
 			break;
 		case 'd':;
 			double doubleTmp;
-			_mm_store_sd(&doubleTmp, (__m128d)context->sse[0]);
+			_mm_store_sd(&doubleTmp, (__m128d)context->SSE[0]);
 			[invocation setReturnValue: &doubleTmp];
 			break;
 		case 'D':
-			[invocation setReturnValue: &context->x87[0]];
+			[invocation setReturnValue: &context->X87[0]];
 			break;
 #ifndef __STDC_NO_COMPLEX__
 		case 'j':
@@ -428,19 +433,19 @@ of_invocation_invoke(OFInvocation *invocation)
 			case 'f':;
 				double complexFloatTmp;
 				_mm_store_sd(&complexFloatTmp,
-				    (__m128d)context->sse[0]);
+				    (__m128d)context->SSE[0]);
 				[invocation setReturnValue: &complexFloatTmp];
 				break;
 			case 'd':;
 				double complexDoubleTmp[2];
 				_mm_store_sd(&complexDoubleTmp[0],
-				    (__m128d)context->sse[0]);
+				    (__m128d)context->SSE[0]);
 				_mm_store_sd(&complexDoubleTmp[1],
-				    (__m128d)context->sse[1]);
+				    (__m128d)context->SSE[1]);
 				[invocation setReturnValue: &complexDoubleTmp];
 				break;
 			case 'D':
-				[invocation setReturnValue: context->x87];
+				[invocation setReturnValue: context->X87];
 				break;
 			default:
 				free(context);
@@ -455,7 +460,6 @@ of_invocation_invoke(OFInvocation *invocation)
 		default:
 			free(context);
 			@throw [OFInvalidFormatException exception];
-#undef CASE_GPR
 	}
 
 	free(context);
