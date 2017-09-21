@@ -266,7 +266,7 @@ of_invocation_invoke(OFInvocation *invocation)
 			break;
 #endif
 		case 'f':;
-			float floatTmp;
+			double floatTmp = 0;
 			[invocation getArgument: &floatTmp
 					atIndex: i];
 			pushDouble(&context, &currentSSE, floatTmp);

@@ -86,7 +86,28 @@ struct test_struct {
 	    d12 + d13 + d14 + d15 + d16) / 16;
 }
 
-- (long double)invocationTestMethod4: (long double)d1
+- (float)invocationTestMethod4: (double)d1
+			      : (float)f2
+			      : (float)f3
+			      : (float)f4
+			      : (float)f5
+			      : (float)f6
+			      : (float)f7
+			      : (float)f8
+			      : (float)f9
+			      : (double)d10
+			      : (float)f11
+			      : (float)f12
+			      : (float)f13
+			      : (float)f14
+			      : (float)f15
+			      : (float)f16
+{
+	return (d1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + d10 + f11 +
+	    f12 + f13 + f14 + f15 + f16) / 16;
+}
+
+- (long double)invocationTestMethod5: (long double)d1
 				    : (long double)d2
 				    : (long double)d3
 				    : (long double)d4
@@ -108,7 +129,7 @@ struct test_struct {
 }
 
 #ifndef __STDC_NO_COMPLEX__
-- (complex double)invocationTestMethod5: (complex float)c1
+- (complex double)invocationTestMethod6: (complex float)c1
 				       : (complex double)c2
 				       : (complex float)c3
 				       : (complex double)c4
@@ -146,7 +167,7 @@ struct test_struct {
 	    c12 + c13 + c14 + c15 + c16) / 16;
 }
 
-- (complex long double)invocationTestMethod6: (complex double)c1
+- (complex long double)invocationTestMethod7: (complex double)c1
 					    : (complex float)c2
 					    : (complex long double)c3
 					    : (complex double)c4
@@ -187,7 +208,7 @@ struct test_struct {
 
 #ifdef __SIZEOF_INT128__
 __extension__
-- (__int128)invocationTestMethod7: (int)i1
+- (__int128)invocationTestMethod8: (int)i1
 				 : (__int128)i2
 				 : (__int128)i3
 				 : (__int128)i4
@@ -323,10 +344,36 @@ __extension__
 	    R([invocation getReturnValue: &doubleResult]) &&
 	    doubleResult == 8.5)
 
+	/* -[invoke] #3 */
+	selector = @selector(invocationTestMethod4::::::::::::::::);
+	invocation = [OFInvocation invocationWithMethodSignature:
+	    [self methodSignatureForSelector: selector]];
+
+	[invocation setArgument: &self
+			atIndex: 0];
+	[invocation setArgument: &selector
+			atIndex: 1];
+
+	for (int i = 1; i <= 16; i++) {
+		float f = i;
+		double d = i;
+
+		if (i == 1 || i == 10)
+			[invocation setArgument: &d
+					atIndex: i + 1];
+		else
+			[invocation setArgument: &f
+					atIndex: i + 1];
+	}
+
+	float floatResult;
+	TEST(@"-[invoke] #3", R([invocation invoke]) &&
+	    R([invocation getReturnValue: &floatResult]) && floatResult == 8.5)
+
 	/* Only when encoding long doubles is supported */
 	if (strcmp(@encode(double), @encode(long double)) != 0) {
-		/* -[invoke] #3 */
-		selector = @selector(invocationTestMethod4::::::::::::::::);
+		/* -[invoke] #4 */
+		selector = @selector(invocationTestMethod5::::::::::::::::);
 		invocation = [OFInvocation invocationWithMethodSignature:
 		    [self methodSignatureForSelector: selector]];
 
@@ -342,14 +389,14 @@ __extension__
 		}
 
 		long double longDoubleResult;
-		TEST(@"-[invoke] #3", R([invocation invoke]) &&
+		TEST(@"-[invoke] #4", R([invocation invoke]) &&
 		    R([invocation getReturnValue: &longDoubleResult]) &&
 		    longDoubleResult == 8.5)
 	}
 
 # ifndef __STDC_NO_COMPLEX__
-	/* -[invoke] #4 */
-	selector = @selector(invocationTestMethod5::::::::::::::::);
+	/* -[invoke] #5 */
+	selector = @selector(invocationTestMethod6::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
@@ -371,15 +418,15 @@ __extension__
 	}
 
 	complex double complexDoubleResult;
-	TEST(@"-[invoke] #4", R([invocation invoke]) &&
+	TEST(@"-[invoke] #5", R([invocation invoke]) &&
 	    R([invocation getReturnValue: &complexDoubleResult]) &&
 	    complexDoubleResult == 8.5 + 4.25 * I)
 
 	/* Only when encoding complex long doubles is supported */
 	if (strcmp(@encode(complex double),
 	    @encode(complex long double)) != 0) {
-		/* -[invoke] #5 */
-		selector = @selector(invocationTestMethod6::::::::::::::::);
+		/* -[invoke] #6 */
+		selector = @selector(invocationTestMethod7::::::::::::::::);
 		invocation = [OFInvocation invocationWithMethodSignature:
 		    [self methodSignatureForSelector: selector]];
 
@@ -410,15 +457,15 @@ __extension__
 		}
 
 		complex long double complexLongDoubleResult;
-		TEST(@"-[invoke] #5", R([invocation invoke]) &&
+		TEST(@"-[invoke] #6", R([invocation invoke]) &&
 		    R([invocation getReturnValue: &complexLongDoubleResult]) &&
 		    complexLongDoubleResult == 8.5 + 4.25 * I)
 	}
 # endif
 
 # ifdef __SIZEOF_INT128__
-	/* -[invoke] #6 */
-	selector = @selector(invocationTestMethod7::::::::::::::::);
+	/* -[invoke] #7 */
+	selector = @selector(invocationTestMethod8::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
 	    [self methodSignatureForSelector: selector]];
 
@@ -441,7 +488,7 @@ __extension__
 	}
 
 	__extension__ __int128 int128Result;
-	TEST(@"-[invoke] #6", R([invocation invoke]) &&
+	TEST(@"-[invoke] #7", R([invocation invoke]) &&
 	    R([invocation getReturnValue: &int128Result]) &&
 	    int128Result == __extension__ ((__int128)0xFFFFFFFFFFFFFFFF << 64) +
 	    8)
