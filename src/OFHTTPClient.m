@@ -735,10 +735,15 @@ parseServerHeader(
 				response: response];
 
 	if ([_delegate respondsToSelector: @selector(client:didPerformRequest:
-					       response:)])
+					       response:)]) {
+		pool = objc_autoreleasePoolPush();
+
 		[_delegate     client: self
 		    didPerformRequest: request
 			     response: response];
+
+		objc_autoreleasePoolPop(pool);
+	}
 
 	return response;
 }

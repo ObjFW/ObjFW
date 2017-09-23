@@ -57,8 +57,9 @@
 	OFArray OF_GENERIC(OFString *) *_URLs;
 	size_t _URLIndex;
 	int _errorCode;
-	OFString *_outputPath;
-	bool _continue, _force, _detectFileName, _quiet, _verbose, _insecure;
+	OFString *_outputPath, *_currentFileName;
+	bool _continue, _force, _detectFileName, _detectedFileName;
+	bool _quiet, _verbose, _insecure;
 	OFData *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -537,12 +538,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	return true;
 }
 
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+- (bool)performRequest: (OFHTTPRequest *)request
 {
-	OFHTTPResponse *response = nil;
-
 	@try {
-		response = [_HTTPClient performRequest: request];
+		[_HTTPClient performRequest: request];
+		return true;
 	} @catch (OFAddressTranslationFailedException *e) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
@@ -621,10 +621,175 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"url", [[request URL] string])];
 	}
 
-	if (!_quiet && response != nil)
+	return false;
+}
+
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response
+{
+	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFString *lengthString, *type;
+
+	/* Was a request to retrieve the file name */
+	if (_detectFileName && _currentFileName == nil) {
+		_currentFileName = [fileNameFromContentDisposition(
+		    [[response headers] objectForKey: @"Content-Disposition"])
+		    copy];
+		_detectedFileName = true;
+
+		if (!_quiet)
+			[of_stdout writeFormat: @" ➜ %d\n",
+						[response statusCode]];
+
+		[self performSelector: @selector(downloadNextURL)
+			   afterDelay: 0];
+		return;
+	}
+
+	if (!_quiet)
 		[of_stdout writeFormat: @" ➜ %d\n", [response statusCode]];
 
-	return response;
+	headers = [response headers];
+	lengthString = [headers objectForKey: @"Content-Length"];
+	type = [headers objectForKey: @"Content-Type"];
+
+	if (lengthString != nil)
+		_length = [lengthString decimalValue];
+
+	if (!_quiet) {
+		if (type == nil)
+			type = OF_LOCALIZED(@"type_unknown", @"unknown");
+
+		if (_length >= 0) {
+			if (_resumedFrom + _length >= GIBIBYTE) {
+				lengthString = [OFString stringWithFormat:
+				    @"%,.2f",
+				    (float)(_resumedFrom + _length) / GIBIBYTE];
+				lengthString = OF_LOCALIZED(@"size_gib",
+				    @"%[num] GiB",
+				    @"num", lengthString);
+			} else if (_resumedFrom + _length >= MEBIBYTE) {
+				lengthString = [OFString stringWithFormat:
+				    @"%,.2f",
+				    (float)(_resumedFrom + _length) / MEBIBYTE];
+				lengthString = OF_LOCALIZED(@"size_mib",
+				    @"%[num] MiB",
+				    @"num", lengthString);
+			} else if (_resumedFrom + _length >= KIBIBYTE) {
+				lengthString = [OFString stringWithFormat:
+				    @"%,.2f",
+				    (float)(_resumedFrom + _length) / KIBIBYTE];
+				lengthString = OF_LOCALIZED(@"size_kib",
+				    @"%[num] KiB",
+				    @"num", lengthString);
+			} else {
+				lengthString = [OFString stringWithFormat:
+				    @"%jd", _resumedFrom + _length];
+				lengthString = OF_LOCALIZED(@"size_bytes",
+				    @"%[num] bytes",
+				    @"num", lengthString);
+			}
+		} else
+			lengthString =
+			    OF_LOCALIZED(@"size_unknown", @"unknown");
+
+		if (_verbose) {
+			void *pool = objc_autoreleasePoolPush();
+			OFDictionary OF_GENERIC(OFString *, OFString *)
+			    *headers = [response headers];
+			OFEnumerator *keyEnumerator = [headers keyEnumerator];
+			OFEnumerator *objectEnumerator =
+			    [headers objectEnumerator];
+			OFString *key, *object;
+
+			[of_stdout writeString: @"  "];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"info_name_unaligned",
+			    @"Name: %[name]",
+			    @"name", _currentFileName)];
+
+			while ((key = [keyEnumerator nextObject]) != nil &&
+			    (object = [objectEnumerator nextObject]) != nil)
+				[of_stdout writeFormat: @"  %@: %@\n",
+							key, object];
+
+			objc_autoreleasePoolPop(pool);
+		} else {
+			[of_stdout writeString: @"  "];
+			[of_stdout writeLine: OF_LOCALIZED(@"info_name",
+			    @"Name: %[name]",
+			    @"name", _currentFileName)];
+			[of_stdout writeString: @"  "];
+			[of_stdout writeLine: OF_LOCALIZED(@"info_type",
+			    @"Type: %[type]",
+			    @"type", type)];
+			[of_stdout writeString: @"  "];
+			[of_stdout writeLine: OF_LOCALIZED(@"info_size",
+			    @"Size: %[size]",
+			    @"size", lengthString)];
+		}
+	}
+
+	if ([_outputPath isEqual: @"-"])
+		_output = of_stdout;
+	else {
+		if (!_continue && !_force && [[OFFileManager defaultManager]
+		    fileExistsAtPath: _currentFileName]) {
+			[of_stderr writeLine:
+			    OF_LOCALIZED(@"output_already_exists",
+			    @"%[prog]: File %[filename] already exists!",
+			    @"prog", [OFApplication programName],
+			    @"filename", _currentFileName)];
+
+			_errorCode = 1;
+			goto next;
+		}
+
+		@try {
+			OFString *mode =
+			    ([response statusCode] == 206 ? @"a" : @"w");
+			_output = [[OFFile alloc] initWithPath: _currentFileName
+							  mode: mode];
+		} @catch (OFOpenItemFailedException *e) {
+			[of_stderr writeLine:
+			    OF_LOCALIZED(@"failed_to_open_output",
+			    @"%[prog]: Failed to open file %[filename]: "
+			    @"%[exception]",
+			    @"prog", [OFApplication programName],
+			    @"filename", _currentFileName,
+			    @"exception", e)];
+
+			_errorCode = 1;
+			goto next;
+		}
+	}
+
+	if (!_quiet) {
+		_progressBar = [[ProgressBar alloc]
+		    initWithLength: _length
+		       resumedFrom: _resumedFrom];
+		[_progressBar setReceived: _received];
+		[_progressBar draw];
+	}
+
+	[_currentFileName release];
+	_currentFileName = nil;
+
+	[response asyncReadIntoBuffer: _buffer
+			       length: [OFSystemInfo pageSize]
+			       target: self
+			     selector: @selector(stream:didReadIntoBuffer:
+					   length:exception:)];
+
+	return;
+
+next:
+	[_currentFileName release];
+	_currentFileName = nil;
+
+	[self performSelector: @selector(downloadNextURL)
+		   afterDelay: 0];
 }
 
 -      (bool)stream: (OFHTTPResponse *)response
@@ -688,14 +853,10 @@ next:
 
 - (void)downloadNextURL
 {
-	OFFileManager *fileManager = [OFFileManager defaultManager];
 	OFString *URLString = nil;
 	OFURL *URL;
 	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
-	OFHTTPResponse *response;
-	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-	OFString *fileName = nil, *lengthString, *type;
 
 	_length = -1;
 	_received = _resumedFrom = 0;
@@ -733,7 +894,10 @@ next:
 
 	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
 
-	if (_detectFileName) {
+	if (_detectFileName && !_detectedFileName) {
+		/* Handle this URL on the next -[downloadNextURL] call */
+		_URLIndex--;
+
 		if (!_quiet)
 			[of_stdout writeFormat: @"⠒ %@", [URL string]];
 
@@ -741,28 +905,31 @@ next:
 		[request setHeaders: clientHeaders];
 		[request setMethod: OF_HTTP_REQUEST_METHOD_HEAD];
 
-		if ((response = [self performRequest: request]) == nil) {
+		if (![self performRequest: request]) {
 			_errorCode = 1;
 			goto next;
 		}
 
-		fileName = fileNameFromContentDisposition(
-		    [[response headers] objectForKey: @"Content-Disposition"]);
+		return;
 	}
+
+	_detectedFileName = false;
 
 	if (!_quiet)
 		[of_stdout writeFormat: @"⇣ %@", [URL string]];
 
-	if (_outputPath != nil)
-		fileName = _outputPath;
+	if (_outputPath != nil) {
+		[_currentFileName release];
+		_currentFileName = [_outputPath copy];
+	}
 
-	if (fileName == nil)
-		fileName = [[URL path] lastPathComponent];
+	if (_currentFileName == nil)
+		_currentFileName = [[[URL path] lastPathComponent] copy];
 
 	if (_continue) {
 		@try {
-			of_offset_t size =
-			    [fileManager sizeOfFileAtPath: fileName];
+			of_offset_t size = [[OFFileManager defaultManager]
+			    sizeOfFileAtPath: _currentFileName];
 			OFString *range;
 
 			if (size > INTMAX_MAX)
@@ -783,139 +950,11 @@ next:
 	[request setMethod: _method];
 	[request setBody: _body];
 
-	if ((response = [self performRequest: request]) == nil) {
+	if (![self performRequest: request]) {
 		_errorCode = 1;
 		goto next;
 	}
 
-	headers = [response headers];
-	lengthString = [headers objectForKey: @"Content-Length"];
-	type = [headers objectForKey: @"Content-Type"];
-
-	if (lengthString != nil)
-		_length = [lengthString decimalValue];
-
-	if (!_quiet) {
-		if (type == nil)
-			type = OF_LOCALIZED(@"type_unknown", @"unknown");
-
-		if (_length >= 0) {
-			if (_resumedFrom + _length >= GIBIBYTE) {
-				lengthString = [OFString stringWithFormat:
-				    @"%,.2f",
-				    (float)(_resumedFrom + _length) / GIBIBYTE];
-				lengthString = OF_LOCALIZED(@"size_gib",
-				    @"%[num] GiB",
-				    @"num", lengthString);
-			} else if (_resumedFrom + _length >= MEBIBYTE) {
-				lengthString = [OFString stringWithFormat:
-				    @"%,.2f",
-				    (float)(_resumedFrom + _length) / MEBIBYTE];
-				lengthString = OF_LOCALIZED(@"size_mib",
-				    @"%[num] MiB",
-				    @"num", lengthString);
-			} else if (_resumedFrom + _length >= KIBIBYTE) {
-				lengthString = [OFString stringWithFormat:
-				    @"%,.2f",
-				    (float)(_resumedFrom + _length) / KIBIBYTE];
-				lengthString = OF_LOCALIZED(@"size_kib",
-				    @"%[num] KiB",
-				    @"num", lengthString);
-			} else {
-				lengthString = [OFString stringWithFormat:
-				    @"%jd", _resumedFrom + _length];
-				lengthString = OF_LOCALIZED(@"size_bytes",
-				    @"%[num] bytes",
-				    @"num", lengthString);
-			}
-		} else
-			lengthString =
-			    OF_LOCALIZED(@"size_unknown", @"unknown");
-
-		if (_verbose) {
-			void *pool = objc_autoreleasePoolPush();
-			OFDictionary OF_GENERIC(OFString *, OFString *)
-			    *headers = [response headers];
-			OFEnumerator *keyEnumerator = [headers keyEnumerator];
-			OFEnumerator *objectEnumerator =
-			    [headers objectEnumerator];
-			OFString *key, *object;
-
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(
-			    @"info_name_unaligned",
-			    @"Name: %[name]",
-			    @"name", fileName)];
-
-			while ((key = [keyEnumerator nextObject]) != nil &&
-			    (object = [objectEnumerator nextObject]) != nil)
-				[of_stdout writeFormat: @"  %@: %@\n",
-							key, object];
-
-			objc_autoreleasePoolPop(pool);
-		} else {
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_name",
-			    @"Name: %[name]",
-			    @"name", fileName)];
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_type",
-			    @"Type: %[type]",
-			    @"type", type)];
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(@"info_size",
-			    @"Size: %[size]",
-			    @"size", lengthString)];
-		}
-	}
-
-	if ([_outputPath isEqual: @"-"])
-		_output = of_stdout;
-	else {
-		if (!_continue && !_force &&
-		    [fileManager fileExistsAtPath: fileName]) {
-			[of_stderr writeLine:
-			    OF_LOCALIZED(@"output_already_exists",
-			    @"%[prog]: File %[filename] already exists!",
-			    @"prog", [OFApplication programName],
-			    @"filename", fileName)];
-
-			_errorCode = 1;
-			goto next;
-		}
-
-		@try {
-			OFString *mode =
-			    ([response statusCode] == 206 ? @"a" : @"w");
-			_output = [[OFFile alloc] initWithPath: fileName
-							  mode: mode];
-		} @catch (OFOpenItemFailedException *e) {
-			[of_stderr writeLine:
-			    OF_LOCALIZED(@"failed_to_open_output",
-			    @"%[prog]: Failed to open file %[filename]: "
-			    @"%[exception]",
-			    @"prog", [OFApplication programName],
-			    @"filename",fileName,
-			    @"exception", e)];
-
-			_errorCode = 1;
-			goto next;
-		}
-	}
-
-	if (!_quiet) {
-		_progressBar = [[ProgressBar alloc]
-		    initWithLength: _length
-		       resumedFrom: _resumedFrom];
-		[_progressBar setReceived: _received];
-		[_progressBar draw];
-	}
-
-	[response asyncReadIntoBuffer: _buffer
-			       length: [OFSystemInfo pageSize]
-			       target: self
-			     selector: @selector(stream:didReadIntoBuffer:
-					   length:exception:)];
 	return;
 
 next:
