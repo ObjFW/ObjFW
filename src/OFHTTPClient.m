@@ -63,6 +63,112 @@ normalizeKey(char *str_)
 	}
 }
 
+static OFString *
+constructRequestString(OFHTTPRequest *request)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_http_request_method_t method = [request method];
+	OFURL *URL = [request URL];
+	OFString *scheme = [URL scheme], *path = [URL path];
+	OFString *user = [URL user], *password = [URL password];
+	OFData *body = [request body];
+	OFMutableString *requestString;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
+	OFString *key, *object;
+
+	if (path == nil)
+		path = @"/";
+
+	requestString = [OFMutableString stringWithFormat:
+	    @"%s %@", of_http_request_method_to_string(method), path];
+
+	if ([URL query] != nil) {
+		[requestString appendString: @"?"];
+		[requestString appendString: [URL query]];
+	}
+
+	[requestString appendString: @" HTTP/"];
+	[requestString appendString: [request protocolVersionString]];
+	[requestString appendString: @"\r\n"];
+
+	headers = [[[request headers] mutableCopy] autorelease];
+	if (headers == nil)
+		headers = [OFMutableDictionary dictionary];
+
+	if ([headers objectForKey: @"Host"] == nil) {
+		if (([scheme isEqual: @"http"] && [URL port] != 80) ||
+		    ([scheme isEqual: @"https"] && [URL port] != 443)) {
+			OFString *host = [OFString stringWithFormat:
+			    @"%@:%d", [URL host], [URL port]];
+
+			[headers setObject: host
+				    forKey: @"Host"];
+		} else
+			[headers setObject: [URL host]
+				    forKey: @"Host"];
+	}
+
+	if (([user length] > 0 || [password length] > 0) &&
+	    [headers objectForKey: @"Authorization"] == nil) {
+		OFMutableData *authorizationData = [OFMutableData data];
+		OFString *authorization;
+
+		[authorizationData addItems: [user UTF8String]
+				      count: [user UTF8StringLength]];
+		[authorizationData addItem: ":"];
+		[authorizationData addItems: [password UTF8String]
+				      count: [password UTF8StringLength]];
+
+		authorization = [OFString stringWithFormat:
+		    @"Basic %@", [authorizationData stringByBase64Encoding]];
+
+		[headers setObject: authorization
+			    forKey: @"Authorization"];
+	}
+
+	if ([headers objectForKey: @"User-Agent"] == nil)
+		[headers setObject: @"Something using ObjFW "
+				    @"<https://heap.zone/objfw>"
+			    forKey: @"User-Agent"];
+
+	if (body != nil) {
+		if ([headers objectForKey: @"Content-Length"] == nil) {
+			OFString *contentLength = [OFString stringWithFormat:
+			    @"%zd", [body itemSize] * [body count]];
+
+			[headers setObject: contentLength
+				    forKey: @"Content-Length"];
+		}
+
+		if ([headers objectForKey: @"Content-Type"] == nil)
+			[headers setObject: @"application/x-www-form-"
+					    @"urlencoded; charset=UTF-8"
+				    forKey: @"Content-Type"];
+	}
+
+	if ([request protocolVersion].major == 1 &&
+	    [request protocolVersion].minor == 0 &&
+	    [headers objectForKey: @"Connection"] == nil)
+		[headers setObject: @"keep-alive"
+			    forKey: @"Connection"];
+
+	keyEnumerator = [headers keyEnumerator];
+	objectEnumerator = [headers objectEnumerator];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil)
+		[requestString appendFormat: @"%@: %@\r\n", key, object];
+
+	[requestString appendString: @"\r\n"];
+
+	[requestString retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [requestString autorelease];
+}
+
 @interface OFHTTPClientResponse: OFHTTPResponse
 {
 	OFTCPSocket *_socket;
@@ -321,18 +427,13 @@ normalizeKey(char *str_)
 	OFURL *URL = [request URL];
 	OFString *scheme = [URL scheme];
 	of_http_request_method_t method = [request method];
-	OFString *path;
-	OFMutableString *requestString;
-	OFString *user, *password;
-	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
+	OFString *requestString;
 	OFData *body = [request body];
 	OFTCPSocket *socket;
 	OFHTTPClientResponse *response;
 	OFString *line, *version, *redirect, *connectionHeader;
 	bool keepAlive;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *serverHeaders;
-	OFEnumerator *keyEnumerator, *objectEnumerator;
-	OFString *key, *object;
 	int status;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
@@ -382,94 +483,7 @@ normalizeKey(char *str_)
 	 * the entire request (e.g. in case a keep-alive connection timed out).
 	 */
 
-	path = [URL path];
-	if (path == nil)
-		path = @"/";
-
-	requestString = [OFMutableString stringWithFormat:
-	    @"%s %@", of_http_request_method_to_string(method), path];
-
-	if ([URL query] != nil) {
-		[requestString appendString: @"?"];
-		[requestString appendString: [URL query]];
-	}
-
-	[requestString appendString: @" HTTP/"];
-	[requestString appendString: [request protocolVersionString]];
-	[requestString appendString: @"\r\n"];
-
-	headers = [[[request headers] mutableCopy] autorelease];
-	if (headers == nil)
-		headers = [OFMutableDictionary dictionary];
-
-	if ([headers objectForKey: @"Host"] == nil) {
-		if (([scheme isEqual: @"http"] && [URL port] != 80) ||
-		    ([scheme isEqual: @"https"] && [URL port] != 443)) {
-			OFString *host = [OFString stringWithFormat:
-			    @"%@:%d", [URL host], [URL port]];
-
-			[headers setObject: host
-				    forKey: @"Host"];
-		} else
-			[headers setObject: [URL host]
-				    forKey: @"Host"];
-	}
-
-	user = [URL user];
-	password = [URL password];
-
-	if (([user length] > 0 || [password length] > 0) &&
-	    [headers objectForKey: @"Authorization"] == nil) {
-		OFMutableData *authorizationData = [OFMutableData data];
-		OFString *authorization;
-
-		[authorizationData addItems: [user UTF8String]
-				      count: [user UTF8StringLength]];
-		[authorizationData addItem: ":"];
-		[authorizationData addItems: [password UTF8String]
-				      count: [password UTF8StringLength]];
-
-		authorization = [OFString stringWithFormat:
-		    @"Basic %@", [authorizationData stringByBase64Encoding]];
-
-		[headers setObject: authorization
-			    forKey: @"Authorization"];
-	}
-
-	if ([headers objectForKey: @"User-Agent"] == nil)
-		[headers setObject: @"Something using ObjFW "
-				    @"<https://heap.zone/objfw>"
-			    forKey: @"User-Agent"];
-
-	if (body != nil) {
-		if ([headers objectForKey: @"Content-Length"] == nil) {
-			OFString *contentLength = [OFString stringWithFormat:
-			    @"%zd", [body itemSize] * [body count]];
-
-			[headers setObject: contentLength
-				    forKey: @"Content-Length"];
-		}
-
-		if ([headers objectForKey: @"Content-Type"] == nil)
-			[headers setObject: @"application/x-www-form-"
-					    @"urlencoded; charset=UTF-8"
-				    forKey: @"Content-Type"];
-	}
-
-	if ([request protocolVersion].major == 1 &&
-	    [request protocolVersion].minor == 0 &&
-	    [headers objectForKey: @"Connection"] == nil)
-		[headers setObject: @"keep-alive"
-			    forKey: @"Connection"];
-
-	keyEnumerator = [headers keyEnumerator];
-	objectEnumerator = [headers objectEnumerator];
-
-	while ((key = [keyEnumerator nextObject]) != nil &&
-	    (object = [objectEnumerator nextObject]) != nil)
-		[requestString appendFormat: @"%@: %@\r\n", key, object];
-
-	[requestString appendString: @"\r\n"];
+	requestString = constructRequestString(request);
 
 	@try {
 		[socket writeString: requestString];
@@ -657,6 +671,8 @@ normalizeKey(char *str_)
 		}
 
 		if (follow) {
+			OFDictionary OF_GENERIC(OFString *, OFString *)
+			    *headers = [request headers];
 			OFHTTPRequest *newRequest =
 			    [[request copy] autorelease];
 			OFMutableDictionary *newHeaders =
