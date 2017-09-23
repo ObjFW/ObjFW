@@ -41,28 +41,6 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
-static OF_INLINE void
-normalizeKey(char *str_)
-{
-	unsigned char *str = (unsigned char *)str_;
-	bool firstLetter = true;
-
-	while (*str != '\0') {
-		if (!of_ascii_isalpha(*str)) {
-			firstLetter = true;
-			str++;
-			continue;
-		}
-
-		*str = (firstLetter
-		    ? of_ascii_toupper(*str)
-		    : of_ascii_tolower(*str));
-
-		firstLetter = false;
-		str++;
-	}
-}
-
 static OFString *
 constructRequestString(OFHTTPRequest *request)
 {
@@ -167,6 +145,80 @@ constructRequestString(OFHTTPRequest *request)
 	objc_autoreleasePoolPop(pool);
 
 	return [requestString autorelease];
+}
+
+static OF_INLINE void
+normalizeKey(char *str_)
+{
+	unsigned char *str = (unsigned char *)str_;
+	bool firstLetter = true;
+
+	while (*str != '\0') {
+		if (!of_ascii_isalpha(*str)) {
+			firstLetter = true;
+			str++;
+			continue;
+		}
+
+		*str = (firstLetter
+		    ? of_ascii_toupper(*str)
+		    : of_ascii_tolower(*str));
+
+		firstLetter = false;
+		str++;
+	}
+}
+
+static bool
+parseServerHeader(
+    OFMutableDictionary OF_GENERIC(OFString *, OFString *) *serverHeaders,
+    OFString *line)
+{
+	OFString *key, *value, *old;
+	const char *lineC, *tmp;
+	char *keyC;
+
+	if (line == nil)
+		@throw [OFInvalidServerReplyException exception];
+
+	if ([line length] == 0)
+		return false;
+
+	lineC = [line UTF8String];
+
+	if ((tmp = strchr(lineC, ':')) == NULL)
+		@throw [OFInvalidServerReplyException exception];
+
+	if ((keyC = malloc(tmp - lineC + 1)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: tmp - lineC + 1];
+
+	memcpy(keyC, lineC, tmp - lineC);
+	keyC[tmp - lineC] = '\0';
+	normalizeKey(keyC);
+
+	@try {
+		key = [OFString stringWithUTF8StringNoCopy: keyC
+					      freeWhenDone: true];
+	} @catch (id e) {
+		free(keyC);
+		@throw e;
+	}
+
+	do {
+		tmp++;
+	} while (*tmp == ' ');
+
+	value = [OFString stringWithUTF8String: tmp];
+
+	old = [serverHeaders objectForKey: key];
+	if (old != nil)
+		value = [old stringByAppendingFormat: @",%@", value];
+
+	[serverHeaders setObject: value
+			  forKey: key];
+
+	return true;
 }
 
 @interface OFHTTPClientResponse: OFHTTPResponse
@@ -540,57 +592,13 @@ constructRequestString(OFHTTPRequest *request)
 
 	serverHeaders = [OFMutableDictionary dictionary];
 
-	for (;;) {
-		OFString *key, *value, *old;
-		const char *lineC, *tmp;
-		char *keyC;
-
+	do {
 		@try {
 			line = [socket readLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
-
-		if (line == nil)
-			@throw [OFInvalidServerReplyException exception];
-
-		if ([line length] == 0)
-			break;
-
-		lineC = [line UTF8String];
-
-		if ((tmp = strchr(lineC, ':')) == NULL)
-			@throw [OFInvalidServerReplyException exception];
-
-		if ((keyC = malloc(tmp - lineC + 1)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: tmp - lineC + 1];
-
-		memcpy(keyC, lineC, tmp - lineC);
-		keyC[tmp - lineC] = '\0';
-		normalizeKey(keyC);
-
-		@try {
-			key = [OFString stringWithUTF8StringNoCopy: keyC
-						      freeWhenDone: true];
-		} @catch (id e) {
-			free(keyC);
-			@throw e;
-		}
-
-		do {
-			tmp++;
-		} while (*tmp == ' ');
-
-		value = [OFString stringWithUTF8String: tmp];
-
-		old = [serverHeaders objectForKey: key];
-		if (old != nil)
-			value = [old stringByAppendingFormat: @",%@", value];
-
-		[serverHeaders setObject: value
-				  forKey: key];
-	}
+	} while (parseServerHeader(serverHeaders, line));
 
 	[serverHeaders makeImmutable];
 
