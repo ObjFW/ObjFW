@@ -128,7 +128,7 @@ Nintendo DS
 OpenBSD
 -------
 
-  * OS Versions: 5.2-5.7
+  * OS Versions: 5.2-6.1
   * Architectures: MIPS64, PA-RISC, PowerPC, SPARC64, x86_64
   * Compilers: GCC 6.3.0, Clang 4.0
   * Runtimes: ObjFW
