@@ -185,7 +185,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[_socket connectToHost: _host
 				  port: _port];
 	} @catch (OFException *e) {
-		_exception = e;
+		_exception = [e retain];
 	}
 
 	[self performSelector: @selector(didConnect)
