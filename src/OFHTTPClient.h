@@ -95,6 +95,17 @@ OF_ASSUME_NONNULL_BEGIN
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response;
+
+/*!
+ * @brief A callback which is called when an OFHTTPClient performed a request.
+ *
+ * @param client The OFHTTPClient which performed the request
+ * @param request The request the OFHTTPClient performed
+ * @param response The response to the request performed
+ */
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response;
 @end
 
 /*!

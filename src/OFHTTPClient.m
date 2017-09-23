@@ -734,6 +734,12 @@ parseServerHeader(
 		    exceptionWithRequest: request
 				response: response];
 
+	if ([_delegate respondsToSelector: @selector(client:didPerformRequest:
+					       response:)])
+		[_delegate     client: self
+		    didPerformRequest: request
+			     response: response];
+
 	return response;
 }
 
