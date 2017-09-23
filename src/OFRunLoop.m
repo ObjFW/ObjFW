@@ -45,6 +45,7 @@ static OFRunLoop *mainRunLoop = nil;
 @public
 	id _target;
 	SEL _selector;
+	id _context;
 }
 
 - (bool)handleForObject: (id)object;
@@ -111,6 +112,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[_target release];
+	[_context release];
 
 	[super dealloc];
 }
@@ -135,13 +137,13 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream *, void *, size_t,
+		bool (*func)(id, SEL, OFStream *, void *, size_t, id,
 		    OFException *) = (bool (*)(id, SEL, OFStream *, void *,
-		    size_t, OFException *))
+		    size_t, id, OFException *))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
-		    exception);
+		    _context, exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -186,13 +188,13 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		bool (*func)(id, SEL, OFStream *, void *, size_t,
+		bool (*func)(id, SEL, OFStream *, void *, size_t, id,
 		    OFException *) = (bool (*)(id, SEL, OFStream *, void *,
-		    size_t, OFException *))
+		    size_t, id, OFException *))
 		    [_target methodForSelector: _selector];
 
 		if (!func(_target, _selector, object, _buffer, _readLength,
-		    exception))
+		    _context, exception))
 			return false;
 
 		_readLength = 0;
@@ -233,11 +235,12 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, line, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream *, OFString *, OFException *) =
-		    (bool (*)(id, SEL, OFStream *, OFString *, OFException *))
-		    [_target methodForSelector: _selector];
+		bool (*func)(id, SEL, OFStream *, OFString *, id,
+		    OFException *) = (bool (*)(id, SEL, OFStream *, OFString *,
+		    id, OFException *))[_target methodForSelector: _selector];
 
-		return func(_target, _selector, object, line, exception);
+		return func(_target, _selector, object, line, _context,
+		    exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -271,12 +274,13 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, newSocket, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFTCPSocket *, OFTCPSocket *,
+		bool (*func)(id, SEL, OFTCPSocket *, OFTCPSocket *, id,
 		    OFException *) = (bool (*)(id, SEL, OFTCPSocket *,
-		    OFTCPSocket *, OFException *))
+		    OFTCPSocket *, id, OFException *))
 		    [_target methodForSelector: _selector];
 
-		return func(_target, _selector, object, newSocket, exception);
+		return func(_target, _selector, object, newSocket, _context,
+		    exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -314,13 +318,13 @@ static OFRunLoop *mainRunLoop = nil;
 	else {
 # endif
 		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t address, OFException *) =
+		    of_udp_socket_address_t address, id, OFException *) =
 		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t, OFException *))
+		    of_udp_socket_address_t, id, OFException *))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
-		    address, exception);
+		    address, _context, exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -385,10 +389,12 @@ static OFRunLoop *mainRunLoop = nil;
 			  length: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector
+			 context: (id)context
 {
 	ADD_READ(OFRunLoop_ReadQueueItem, stream, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 	})
@@ -399,10 +405,12 @@ static OFRunLoop *mainRunLoop = nil;
 		     exactLength: (size_t)exactLength
 			  target: (id)target
 			selector: (SEL)selector
+			 context: (id)context
 {
 	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
 		queueItem->_buffer = buffer;
 		queueItem->_exactLength = exactLength;
 	})
@@ -412,10 +420,12 @@ static OFRunLoop *mainRunLoop = nil;
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
 			    selector: (SEL)selector
+			     context: (id)context
 {
 	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
 		queueItem->_encoding = encoding;
 	})
 }
@@ -423,10 +433,12 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 			       target: (id)target
 			     selector: (SEL)selector
+			      context: (id)context
 {
 	ADD_READ(OFRunLoop_AcceptQueueItem, stream, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
 	})
 }
 
@@ -435,12 +447,14 @@ static OFRunLoop *mainRunLoop = nil;
 				length: (size_t)length
 				target: (id)target
 			      selector: (SEL)selector
+			       context: (id)context
 {
 	ADD_READ(OFRunLoop_UDPReceiveQueueItem, socket, {
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
+		queueItem->_buffer = buffer;
+		queueItem->_length = length;
 	})
 }
 

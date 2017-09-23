@@ -29,24 +29,29 @@ OF_ASSUME_NONNULL_BEGIN
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			  target: (id)target
-			selector: (SEL)selector;
+			selector: (SEL)selector
+			 context: (nullable id)context;
 + (void)of_addAsyncReadForStream: (OFStream *)stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			  target: (id)target
-			selector: (SEL)selector;
+			selector: (SEL)selector
+			 context: (nullable id)context;
 + (void)of_addAsyncReadLineForStream: (OFStream *)stream
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
-			    selector: (SEL)selector;
+			    selector: (SEL)selector
+			     context: (nullable id)context;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 			       target: (id)target
-			     selector: (SEL)selector;
+			     selector: (SEL)selector
+			      context: (nullable id)context;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
 				buffer: (void *)buffer
 				length: (size_t)length
 				target: (id)target
-			      selector: (SEL)selector;
+			      selector: (SEL)selector
+			       context: (nullable id)context;
 # ifdef OF_HAVE_BLOCKS
 + (void)of_addAsyncReadForStream: (OFStream *)stream
 			  buffer: (void *)buffer

@@ -192,24 +192,28 @@
 		     length: (size_t)length
 		     target: (id)target
 		   selector: (SEL)selector
+		    context: (id)context
 {
 	[OFRunLoop of_addAsyncReadForStream: self
 				     buffer: buffer
 				     length: length
 				     target: target
-				   selector: selector];
+				   selector: selector
+				    context: context];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		     target: (id)target
 		   selector: (SEL)selector
+		    context: (id)context
 {
 	[OFRunLoop of_addAsyncReadForStream: self
 				     buffer: buffer
 				exactLength: length
 				     target: target
-				   selector: selector];
+				   selector: selector
+				    context: context];
 }
 
 # ifdef OF_HAVE_BLOCKS
@@ -812,20 +816,24 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector
+			context: (id)context
 {
 	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
 				 target: target
-			       selector: selector];
+			       selector: selector
+				context: context];
 }
 
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target
 			 selector: (SEL)selector
+			  context: (id)context
 {
 	[OFRunLoop of_addAsyncReadLineForStream: self
 				       encoding: encoding
 					 target: target
-				       selector: selector];
+				       selector: selector
+					context: context];
 }
 
 # ifdef OF_HAVE_BLOCKS

@@ -74,6 +74,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	uint16_t _port;
 	id _target;
 	SEL _selector;
+	id _context;
 # ifdef OF_HAVE_BLOCKS
 	of_tcp_socket_async_connect_block_t _block;
 # endif
@@ -85,7 +86,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
-	      selector: (SEL)selector;
+	      selector: (SEL)selector
+	       context: (id)context;
 # ifdef OF_HAVE_BLOCKS
 - initWithSourceThread: (OFThread *)sourceThread
 		socket: (OFTCPSocket *)socket
@@ -102,6 +104,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector
+	       context: (id)context
 {
 	self = [super init];
 
@@ -112,6 +115,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_port = port;
 		_target = [target retain];
 		_selector = selector;
+		_context = [context retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -150,6 +154,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[_socket release];
 	[_host release];
 	[_target release];
+	[_context release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
@@ -167,11 +172,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_block(_socket, _exception);
 	else {
 # endif
-		void (*func)(id, SEL, OFTCPSocket *, OFException *) =
-		    (void (*)(id, SEL, OFTCPSocket *, OFException *))[_target
-		    methodForSelector: _selector];
+		void (*func)(id, SEL, OFTCPSocket *, id, OFException *) =
+		    (void (*)(id, SEL, OFTCPSocket *, id, OFException *))
+		    [_target methodForSelector: _selector];
 
-		func(_target, _selector, _socket, _exception);
+		func(_target, _selector, _socket, _context, _exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -316,6 +321,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      port: (uint16_t)port
 		    target: (id)target
 		  selector: (SEL)selector
+		   context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -325,7 +331,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    host: host
 			    port: port
 			  target: target
-			selector: selector] autorelease] start];
+			selector: selector
+			 context: context] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -574,10 +581,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)asyncAcceptWithTarget: (id)target
 		     selector: (SEL)selector
+		      context: (id)context
 {
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
 					  target: target
-					selector: selector];
+					selector: selector
+					 context: context];
 }
 
 #ifdef OF_HAVE_BLOCKS

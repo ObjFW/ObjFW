@@ -51,6 +51,7 @@
 	uint16_t _port;
 	id _target;
 	SEL _selector;
+	id _context;
 # ifdef OF_HAVE_BLOCKS
 	of_udp_socket_async_resolve_block_t _block;
 # endif
@@ -62,7 +63,8 @@
 		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
-	      selector: (SEL)selector;
+	      selector: (SEL)selector
+	       context: (id)context;
 # ifdef OF_HAVE_BLOCKS
 - initWithSourceThread: (OFThread *)sourceThread
 		  host: (OFString *)host
@@ -77,6 +79,7 @@
 		  port: (uint16_t)port
 		target: (id)target
 	      selector: (SEL)selector
+	       context: (id)context
 {
 	self = [super init];
 
@@ -86,6 +89,7 @@
 		_port = port;
 		_target = [target retain];
 		_selector = selector;
+		_context = [context retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -121,6 +125,7 @@
 	[_sourceThread release];
 	[_host release];
 	[_target release];
+	[_context release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
@@ -139,12 +144,13 @@
 	else {
 # endif
 		void (*func)(id, SEL, OFString *, uint16_t,
-		    of_udp_socket_address_t, OFException *) =
+		    of_udp_socket_address_t, id, OFException *) =
 		    (void (*)(id, SEL, OFString *, uint16_t,
-		    of_udp_socket_address_t, OFException *))[_target
-		    methodForSelector: _selector];
+		    of_udp_socket_address_t, id, OFException *))
+		    [_target methodForSelector: _selector];
 
-		func(_target, _selector, _host, _port, _address, _exception);
+		func(_target, _selector, _host, _port, _address, _context,
+		    _exception);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -323,6 +329,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			      port: (uint16_t)port
 			    target: (id)target
 			  selector: (SEL)selector
+			   context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 
@@ -331,7 +338,8 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			    host: host
 			    port: port
 			  target: target
-			selector: selector] autorelease] start];
+			selector: selector
+			 context: context] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -560,12 +568,14 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			length: (size_t)length
 			target: (id)target
 		      selector: (SEL)selector
+		       context: (id)context
 {
 	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
 					   target: target
-					 selector: selector];
+					 selector: selector
+					  context: context];
 }
 
 #ifdef OF_HAVE_BLOCKS

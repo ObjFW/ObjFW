@@ -49,6 +49,7 @@
 @interface OFHTTPServer ()
 - (bool)of_socket: (OFTCPSocket *)socket
   didAcceptSocket: (OFTCPSocket *)clientSocket
+	  context: (id)context
 	exception: (OFException *)exception;
 @end
 
@@ -342,12 +343,14 @@ normalizedKey(OFString *key)
 	  server: (OFHTTPServer *)server;
 - (bool)socket: (OFTCPSocket *)socket
    didReadLine: (OFString *)line
+       context: (id)context
      exception: (OFException *)exception;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
 -      (bool)socket: (OFTCPSocket *)socket
   didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
+	    context: (id)context
 	  exception: (OFException *)exception;
 - (bool)sendErrorAndClose: (short)statusCode;
 - (void)createResponse;
@@ -395,6 +398,7 @@ normalizedKey(OFString *key)
 
 - (bool)socket: (OFTCPSocket *)socket
    didReadLine: (OFString *)line
+       context: (id)context
      exception: (OFException *)exception
 {
 	if (line == nil || exception != nil)
@@ -507,7 +511,9 @@ normalizedKey(OFString *key)
 					      target: self
 					    selector: @selector(socket:
 							  didReadIntoBuffer:
-							  length:exception:)];
+							  length:context:
+							  exception:)
+					     context: nil];
 			[_timer setFireDate:
 			    [OFDate dateWithTimeIntervalSinceNow: 5]];
 
@@ -572,6 +578,7 @@ normalizedKey(OFString *key)
 -      (bool)socket: (OFTCPSocket *)socket
   didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
+	    context: (id)context
 	  exception: (OFException *)exception
 {
 	if ([socket isAtEndOfStream] || exception != nil)
@@ -722,8 +729,9 @@ normalizedKey(OFString *key)
 
 	[_listeningSocket asyncAcceptWithTarget: self
 				       selector: @selector(of_socket:
-						     didAcceptSocket:
-						     exception:)];
+						     didAcceptSocket:context:
+						     exception:)
+					context: nil];
 }
 
 - (void)stop
@@ -735,6 +743,7 @@ normalizedKey(OFString *key)
 
 - (bool)of_socket: (OFTCPSocket *)socket
   didAcceptSocket: (OFTCPSocket *)clientSocket
+	  context: (id)context
 	exception: (OFException *)exception
 {
 	OFHTTPServer_Connection *connection;
@@ -754,7 +763,8 @@ normalizedKey(OFString *key)
 
 	[clientSocket asyncReadLineWithTarget: connection
 				     selector: @selector(socket:didReadLine:
-						  exception:)];
+						  context:exception:)
+				      context: nil];
 
 	return true;
 }

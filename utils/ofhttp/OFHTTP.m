@@ -780,7 +780,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			       length: [OFSystemInfo pageSize]
 			       target: self
 			     selector: @selector(stream:didReadIntoBuffer:
-					   length:exception:)];
+					   length:context:exception:)
+			      context: nil];
 
 	return;
 
@@ -795,6 +796,7 @@ next:
 -      (bool)stream: (OFHTTPResponse *)response
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
+	    context: (id)context
 	  exception: (OFException *)e
 {
 	if (e != nil) {

@@ -150,9 +150,9 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
- * return 0 bytes - this does not necessarily mean that the stream ended, so
- * you still need to check @ref isAtEndOfStream.
+ * @ref asyncReadIntoBuffer:exactLength:target:selector:context:. Note that a
+ * read can even return 0 bytes - this does not necessarily mean that the
+ * stream ended, so you still need to check @ref isAtEndOfStream.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
  *	 valid file descriptor in order for this to work!
@@ -169,19 +169,20 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, void *buffer, size_t length,
- *		   OFException *exception)`.
+ *		   id context, OFException *exception)`.
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		     target: (id)target
-		   selector: (SEL)selector;
+		   selector: (SEL)selector
+		    context: (nullable id)context;
 
 /*!
  * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike @ref asyncReadIntoBuffer:length:target:selector:, this method does
- * not call the method when less than the specified length has been read -
+ * Unlike @ref asyncReadIntoBuffer:length:target:selector:context:, this method
+ * does not call the method when less than the specified length has been read -
  * instead, it waits until it got exactly the specified length, the stream has
  * ended or an exception occurred.
  *
@@ -199,12 +200,13 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, void *buffer, size_t size,
- *		   OFException *exception)`.
+ *		   id context, OFException *exception)`.
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		     target: (id)target
-		   selector: (SEL)selector;
+		   selector: (SEL)selector
+		    context: (nullable id)context;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
@@ -621,11 +623,12 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 next method in the queue to handle the next line, you need to
  *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, OFString *line,
+ *		   `bool (OFStream *stream, OFString *line, id context,
  *		   OFException *exception)`.
  */
 - (void)asyncReadLineWithTarget: (id)target
-		       selector: (SEL)selector;
+		       selector: (SEL)selector
+			context: (nullable id)context;
 
 /*!
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -642,11 +645,12 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, OFString *line,
- *		   OFException *exception)`.
+ *		   id context, OFException *exception)`.
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target
-			 selector: (SEL)selector;
+			 selector: (SEL)selector
+			  context: (nullable id)context;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
