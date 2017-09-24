@@ -126,6 +126,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @param selector The selector to call on the target. The signature must be
  *		   `void (OFString *host, uint16_t port,
  *		   of_udp_socket_address_t address, id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 + (void)asyncResolveAddressForHost: (OFString *)host
 			      port: (uint16_t)port
@@ -205,6 +206,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
  *		   of_udp_socket_address_t, id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length

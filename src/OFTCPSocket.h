@@ -128,6 +128,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *		 has been established
  * @param selector The selector to call on the target. The signature must be
  *		   `void (OFTCPSocket *socket, id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
@@ -190,6 +191,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
  *		   id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncAcceptWithTarget: (id)target
 		     selector: (SEL)selector

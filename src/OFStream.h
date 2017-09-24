@@ -187,6 +187,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, void *buffer, size_t length,
  *		   id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
@@ -218,6 +219,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, void *buffer, size_t size,
  *		   id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
@@ -642,6 +644,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, OFString *line, id context,
  *		   id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector
@@ -663,6 +666,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, OFString *line, id context,
  *		   id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target
@@ -819,6 +823,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, const void *buffer,
  *		   size_t bytesWritten, id context, id exception)`.
+ * @param context A context object to pass along to the target
  */
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
