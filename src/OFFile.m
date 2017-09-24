@@ -356,8 +356,8 @@ parseMode(const char *mode, bool *append)
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
 	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -406,11 +406,7 @@ parseMode(const char *mode, bool *append)
 							     errNo: errno];
 #endif
 
-	if ((size_t)bytesWritten != length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: bytesWritten
-							     errNo: 0];
+	return (size_t)bytesWritten;
 }
 
 - (of_offset_t)lowlevelSeekToOffset: (of_offset_t)offset

@@ -49,7 +49,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 #if defined(OF_HAVE_SOCKETS)
 	OFKernelEventObserver *_kernelEventObserver;
-	OFMutableDictionary *_readQueues;
+	OFMutableDictionary *_readQueues, *_writeQueues;
 #elif defined(OF_HAVE_THREADS)
 	OFCondition *_condition;
 #endif

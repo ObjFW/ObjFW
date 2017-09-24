@@ -484,8 +484,8 @@ extern char **environ;
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
 #ifndef OF_WINDOWS
 	ssize_t bytesWritten;
@@ -524,11 +524,7 @@ extern char **environ;
 	}
 #endif
 
-	if ((size_t)bytesWritten != length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: bytesWritten
-							     errNo: 0];
+	return (size_t)bytesWritten;
 }
 
 - (int)fileDescriptorForReading

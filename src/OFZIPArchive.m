@@ -845,18 +845,22 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[super dealloc];
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
+	size_t bytesWritten;
+
 	if ((sizeof(length) >= sizeof(int64_t) && length > INT64_MAX) ||
 	    INT64_MAX - _bytesWritten < (int64_t)length)
 		@throw [OFOutOfRangeException exception];
 
-	[_stream writeBuffer: buffer
-		      length: length];
+	bytesWritten = [_stream writeBuffer: buffer
+				     length: length];
 
-	_bytesWritten += (int64_t)length;
+	_bytesWritten += (int64_t)bytesWritten;
 	_CRC32 = of_crc32(_CRC32, buffer, length);
+
+	return bytesWritten;
 }
 
 - (void)close

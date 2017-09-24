@@ -218,8 +218,8 @@
 	return j;
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer_
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer_
+		       length: (size_t)length
 {
 	const char *buffer = buffer_;
 	char16_t *tmp;
@@ -347,5 +347,12 @@
 	} @finally {
 		[self freeMemory: tmp];
 	}
+
+	/*
+	 * We do not count in bytes when writing to the Win32 console. But
+	 * since any incomplete write is an exception here anyway, we can just
+	 * return length.
+	 */
+	return length;
 }
 @end

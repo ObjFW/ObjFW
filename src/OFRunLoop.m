@@ -48,7 +48,7 @@ static OFRunLoop *mainRunLoop = nil;
 	id _context;
 }
 
-- (bool)handleForObject: (id)object;
+- (bool)handleObject: (id)object;
 @end
 
 @interface OFRunLoop_ReadQueueItem: OFRunLoop_QueueItem
@@ -83,6 +83,17 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+@interface OFRunLoop_WriteQueueItem: OFRunLoop_QueueItem
+{
+@public
+# ifdef OF_HAVE_BLOCKS
+	of_stream_async_write_block_t _block;
+# endif
+	const void *_buffer;
+	size_t _length, _writtenLength;
+}
+@end
+
 @interface OFRunLoop_AcceptQueueItem: OFRunLoop_QueueItem
 {
 @public
@@ -104,7 +115,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_QueueItem
-- (bool)handleForObject: (id)object
+- (bool)handleObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -119,7 +130,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ReadQueueItem
-- (bool)handleForObject: (id)object
+- (bool)handleObject: (id)object
 {
 	size_t length;
 	id exception = nil;
@@ -159,7 +170,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ExactReadQueueItem
-- (bool)handleForObject: (id)object
+- (bool)handleObject: (id)object
 {
 	size_t length;
 	id exception = nil;
@@ -213,7 +224,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_ReadLineQueueItem
-- (bool)handleForObject: (id)object
+- (bool)handleObject: (id)object
 {
 	OFString *line;
 	id exception = nil;
@@ -254,8 +265,55 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
+@implementation OFRunLoop_WriteQueueItem
+# ifdef OF_HAVE_BLOCKS
+- (bool)handleObject: (id)object
+{
+	size_t length;
+	id exception = nil;
+
+	@try {
+		length = [object writeBuffer: (char *)_buffer + _writtenLength
+				      length: _length - _writtenLength];
+	} @catch (id e) {
+		length = 0;
+		exception = e;
+	}
+
+	_writtenLength += length;
+
+	if (_writtenLength != _length && exception == nil)
+		return true;
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+		_block(object, _buffer, _writtenLength, exception);
+	else {
+# endif
+		void (*func)(id, SEL, OFStream *, const void *, size_t, id,
+		    id) = (void (*)(id, SEL, OFStream *, const void *, size_t,
+		    id, id))[_target methodForSelector: _selector];
+
+		func(_target, _selector, object, _buffer, _writtenLength,
+		    _context, exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+
+	return false;
+}
+
+- (void)dealloc
+{
+	[_block release];
+
+	[super dealloc];
+}
+# endif
+@end
+
 @implementation OFRunLoop_AcceptQueueItem
-- (bool)handleForObject: (id)object
+- (bool)handleObject: (id)object
 {
 	OFTCPSocket *newSocket;
 	id exception = nil;
@@ -294,7 +352,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_UDPReceiveQueueItem
-- (bool)handleForObject: (id)object
+- (bool)handleObject: (id)object
 {
 	size_t length;
 	of_udp_socket_address_t address;
@@ -380,6 +438,27 @@ static OFRunLoop *mainRunLoop = nil;
 	[queue appendObject: queueItem];				\
 									\
 	objc_autoreleasePoolPop(pool);
+# define ADD_WRITE(type, object, code)					\
+	void *pool = objc_autoreleasePoolPush();			\
+	OFRunLoop *runLoop = [self currentRunLoop];			\
+	OFList *queue = [runLoop->_writeQueues objectForKey: object];	\
+	type *queueItem;						\
+									\
+	if (queue == nil) {						\
+		queue = [OFList list];					\
+		[runLoop->_writeQueues setObject: queue			\
+					  forKey: object];		\
+	}								\
+									\
+	if ([queue count] == 0)						\
+		[runLoop->_kernelEventObserver				\
+		    addObjectForWriting: object];			\
+									\
+	queueItem = [[[type alloc] init] autorelease];			\
+	code								\
+	[queue appendObject: queueItem];				\
+									\
+	objc_autoreleasePoolPop(pool);
 
 + (void)of_addAsyncReadForStream: (OFStream *)stream
 			  buffer: (void *)buffer
@@ -424,6 +503,22 @@ static OFRunLoop *mainRunLoop = nil;
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
 		queueItem->_encoding = encoding;
+	})
+}
+
++ (void)of_addAsyncWriteForStream: (OFStream *)stream
+			   buffer: (const void *)buffer
+			   length: (size_t)length
+			   target: (id)target
+			 selector: (SEL)selector
+			  context: (id)context
+{
+	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, {
+		queueItem->_target = [target retain];
+		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
+		queueItem->_buffer = buffer;
+		queueItem->_length = length;
 	})
 }
 
@@ -490,6 +585,18 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
++ (void)of_addAsyncWriteForStream: (OFStream *)stream
+			   buffer: (const void *)buffer
+			   length: (size_t)length
+			    block: (of_stream_async_write_block_t)block
+{
+	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, {
+		queueItem->_block = [block copy];
+		queueItem->_buffer = buffer;
+		queueItem->_length = length;
+	})
+}
+
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 				block: (of_tcp_socket_async_accept_block_t)block
 {
@@ -512,12 +619,26 @@ static OFRunLoop *mainRunLoop = nil;
 }
 # endif
 # undef ADD_READ
+# undef ADD_WRITE
 
 + (void)of_cancelAsyncRequestsForObject: (id)object
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
 	OFList *queue;
+
+	if ((queue = [runLoop->_writeQueues objectForKey: object]) != nil) {
+		assert([queue count] > 0);
+
+		/*
+		 * Clear the queue now, in case this has been called from a
+		 * handler, as otherwise, we'd do the cleanups below twice.
+		 */
+		[queue removeAllObjects];
+
+		[runLoop->_kernelEventObserver removeObjectForWriting: object];
+		[runLoop->_writeQueues removeObjectForKey: object];
+	}
 
 	if ((queue = [runLoop->_readQueues objectForKey: object]) != nil) {
 		assert([queue count] > 0);
@@ -551,6 +672,7 @@ static OFRunLoop *mainRunLoop = nil;
 		[_kernelEventObserver setDelegate: self];
 
 		_readQueues = [[OFMutableDictionary alloc] init];
+		_writeQueues = [[OFMutableDictionary alloc] init];
 #elif defined(OF_HAVE_THREADS)
 		_condition = [[OFCondition alloc] init];
 #endif
@@ -571,6 +693,7 @@ static OFRunLoop *mainRunLoop = nil;
 #if defined(OF_HAVE_SOCKETS)
 	[_kernelEventObserver release];
 	[_readQueues release];
+	[_writeQueues release];
 #elif defined(OF_HAVE_THREADS)
 	[_condition release];
 #endif
@@ -635,7 +758,7 @@ static OFRunLoop *mainRunLoop = nil;
 	assert(queue != nil);
 
 	@try {
-		if (![[queue firstObject] handleForObject: object]) {
+		if (![[queue firstObject] handleObject: object]) {
 			of_list_object_t *listObject = [queue firstListObject];
 
 			/*
@@ -650,6 +773,42 @@ static OFRunLoop *mainRunLoop = nil;
 					[_kernelEventObserver
 					    removeObjectForReading: object];
 					[_readQueues
+					    removeObjectForKey: object];
+				}
+			}
+		}
+	} @finally {
+		[queue release];
+	}
+}
+
+- (void)objectIsReadyForWriting: (id)object
+{
+	/*
+	 * Retain the queue so that it doesn't disappear from us because the
+	 * handler called -[cancelAsyncRequests].
+	 */
+	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_WriteQueueItem *)) *queue =
+	    [[_writeQueues objectForKey: object] retain];
+
+	assert(queue != nil);
+
+	@try {
+		if (![[queue firstObject] handleObject: object]) {
+			of_list_object_t *listObject = [queue firstListObject];
+
+			/*
+			 * The handler might have called -[cancelAsyncRequests]
+			 * so that our queue is now empty, in which case we
+			 * should do nothing.
+			 */
+			if (listObject != NULL) {
+				[queue removeListObject: listObject];
+
+				if ([queue count] == 0) {
+					[_kernelEventObserver
+					    removeObjectForWriting: object];
+					[_writeQueues
 					    removeObjectForKey: object];
 				}
 			}

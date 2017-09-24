@@ -407,9 +407,11 @@
 	[super dealloc];
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
+	size_t bytesWritten;
+
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -417,14 +419,16 @@
 		@throw [OFOutOfRangeException exception];
 
 	@try {
-		[_stream writeBuffer: buffer
-			      length: length];
+		bytesWritten = [_stream writeBuffer: buffer
+					     length: length];
 	} @catch (OFWriteFailedException *e) {
 		_toWrite -= [e bytesWritten];
 		@throw e;
 	}
 
-	_toWrite -= length;
+	_toWrite -= bytesWritten;
+
+	return bytesWritten;
 }
 
 - (bool)lowlevelIsAtEndOfStream

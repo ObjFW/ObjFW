@@ -62,6 +62,18 @@ typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
  */
 typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
     OFString *_Nullable line, id _Nullable exception);
+
+/*!
+ * @brief A block which is called when data was written to the stream.
+ *
+ * @param stream The stream to which data was written
+ * @param buffer The buffer which was written to the stream
+ * @param length The length of the data that bas been written
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ */
+typedef void (^of_stream_async_write_block_t)(OFStream *stream,
+    const void *buffer, size_t length, id _Nullable exception);
 #endif
 
 /*!
@@ -776,9 +788,51 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @param buffer The buffer from which the data is written into the stream
  * @param length The length of the data that should be written
+ * @return The number of bytes written. This can only differ from the specified
+ *	   length in non-blocking mode.
  */
-- (void)writeBuffer: (const void *)buffer
-	     length: (size_t)length;
+- (size_t)writeBuffer: (const void *)buffer
+	       length: (size_t)length;
+
+#ifdef OF_HAVE_SOCKETS
+/*!
+ * @brief Asynchronously writes a buffer into the stream.
+ *
+ * @note The stream must implement @ref fileDescriptorForWriting and return a
+ *	 valid file descriptor in order for this to work!
+ *
+ * @param buffer The buffer from which the data is written into the stream. The
+ *		 buffer needs to be valid until the write request is completed!
+ * @param length The length of the data that should be written
+ * @param target The target on which the selector should be called when the data
+ *		 has been written.
+ * @param selector The selector to call on the target. The signature must be
+ *		   `void (OFStream *stream, const void *buffer, size_t length,
+ *		   id context, id exception)`.
+ */
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (nullable id)context;
+
+# ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief Asynchronously writes a buffer into the stream.
+ *
+ * @note The stream must implement @ref fileDescriptorForWriting and return a
+ *	 valid file descriptor in order for this to work!
+ *
+ * @param buffer The buffer from which the data is written into the stream. The
+ *		 buffer needs to be valid until the write request is completed!
+ * @param length The length of the data that should be written
+ * @param block The block to call when the data has been written
+ */
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+		   block: (of_stream_async_write_block_t)block;
+# endif
+#endif
 
 /*!
  * @brief Writes a uint8_t into the stream.
@@ -1150,9 +1204,10 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @param buffer The buffer with the data to write
  * @param length The length of the data to write
+ * @return The number of bytes written
  */
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length;
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length;
 
 /*!
  * @brief Returns whether the lowlevel is at the end of the stream.

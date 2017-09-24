@@ -218,8 +218,8 @@ of_log(OFConstantString *format, ...)
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
 #ifndef OF_MORPHOS
 	if (_fd == -1)
@@ -264,11 +264,7 @@ of_log(OFConstantString *format, ...)
 							     errNo: EIO];
 #endif
 
-	if ((size_t)bytesWritten != length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: bytesWritten
-							     errNo: 0];
+	return (size_t)bytesWritten;
 }
 
 #if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)

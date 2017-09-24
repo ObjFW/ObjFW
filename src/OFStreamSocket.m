@@ -87,8 +87,8 @@
 	return ret;
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -119,11 +119,7 @@
 				  errNo: of_socket_errno()];
 #endif
 
-	if ((size_t)bytesWritten != length)
-		@throw [OFWriteFailedException exceptionWithObject: self
-						   requestedLength: length
-						      bytesWritten: bytesWritten
-							     errNo: 0];
+	return (size_t)bytesWritten;
 }
 
 #ifdef OF_WINDOWS

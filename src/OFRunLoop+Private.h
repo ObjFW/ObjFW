@@ -42,6 +42,12 @@ OF_ASSUME_NONNULL_BEGIN
 			      target: (id)target
 			    selector: (SEL)selector
 			     context: (nullable id)context;
++ (void)of_addAsyncWriteForStream: (OFStream *)stream
+			   buffer: (const void *)buffer
+			   length: (size_t)length
+			   target: (id)target
+			 selector: (SEL)selector
+			  context: (nullable id)context;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 			       target: (id)target
 			     selector: (SEL)selector
@@ -64,6 +70,10 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)of_addAsyncReadLineForStream: (OFStream *)stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block;
++ (void)of_addAsyncWriteForStream: (OFStream *)stream
+			   buffer: (const void *)buffer
+			   length: (size_t)length
+			    block: (of_stream_async_write_block_t)block;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				block: (of_tcp_socket_async_accept_block_t)
 					   block;

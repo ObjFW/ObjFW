@@ -255,9 +255,11 @@ normalizedKey(OFString *key)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
+	/* TODO: Use non-blocking writes */
+
 	void *pool;
 
 	if (_socket == nil)
@@ -266,11 +268,9 @@ normalizedKey(OFString *key)
 	if (!_headersSent)
 		[self of_sendHeaders];
 
-	if (!_chunked) {
-		[_socket writeBuffer: buffer
-			      length: length];
-		return;
-	}
+	if (!_chunked)
+		return [_socket writeBuffer: buffer
+				     length: length];
 
 	pool = objc_autoreleasePoolPush();
 	[_socket writeString: [OFString stringWithFormat: @"%zx\r\n", length]];
@@ -280,6 +280,8 @@ normalizedKey(OFString *key)
 		      length: length];
 	[_socket writeBuffer: "\r\n"
 		      length: 2];
+
+	return length;
 }
 
 - (void)close

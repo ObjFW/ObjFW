@@ -50,6 +50,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 #import "OFTruncatedDataException.h"
+#import "OFWriteFailedException.h"
 
 #import "of_asprintf.h"
 
@@ -96,8 +97,8 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (void)lowlevelWriteBuffer: (const void *)buffer
-		     length: (size_t)length
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -1046,19 +1047,58 @@
 	_writeBufferLength = 0;
 }
 
-- (void)writeBuffer: (const void *)buffer
-	     length: (size_t)length
+- (size_t)writeBuffer: (const void *)buffer
+	       length: (size_t)length
 {
-	if (!_writeBuffered)
-		[self lowlevelWriteBuffer: buffer
-				   length: length];
-	else {
+	if (!_writeBuffered) {
+		size_t bytesWritten = [self lowlevelWriteBuffer: buffer
+							 length: length];
+
+		if (_blocking && bytesWritten < length)
+			@throw [OFWriteFailedException
+			    exceptionWithObject: self
+				requestedLength: length
+				   bytesWritten: bytesWritten
+					  errNo: 0];
+
+		return bytesWritten;
+	} else {
 		_writeBuffer = [self resizeMemory: _writeBuffer
 					     size: _writeBufferLength + length];
 		memcpy(_writeBuffer + _writeBufferLength, buffer, length);
 		_writeBufferLength += length;
+
+		return length;
 	}
 }
+
+#ifdef OF_HAVE_SOCKETS
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
+	[OFRunLoop of_addAsyncWriteForStream: self
+				      buffer: buffer
+				      length: length
+				      target: target
+				    selector: selector
+				     context: context];
+}
+
+# ifdef OF_HAVE_BLOCKS
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+		   block: (of_stream_async_write_block_t)block
+{
+	[OFRunLoop of_addAsyncWriteForStream: self
+				      buffer: buffer
+				      length: length
+				       block: block];
+}
+# endif
+#endif
 
 - (void)writeInt8: (uint8_t)int8
 {
