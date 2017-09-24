@@ -67,11 +67,13 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @brief A block which is called when data was written to the stream.
  *
  * @param stream The stream to which data was written
- * @param buffer The buffer which was written to the stream
+ * @param buffer A pointer to the buffer which was written to the stream. This
+ *		 can be changed to point to a different buffer to be used on the
+ *		 next write.
  * @param bytesWritten The number of bytes which have been written. This
  *		       matches the length specified on the asynchronous write
  *		       if no exception was encountered.
- * @param exception An exception which occurred while reading or `nil` on
+ * @param exception An exception which occurred while writing or `nil` on
  *		    success
  * @return The length to repeat the write with or 0 if it should not repeat.
  *	   The buffer may be changed, so that every time a new buffer and length
@@ -821,7 +823,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  *		 buffer and length can be specified while the callback stays
  *		 the same.
  * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, const void *buffer,
+ *		   `size_t (OFStream *stream, const void *buffer,
  *		   size_t bytesWritten, id context, id exception)`.
  * @param context A context object to pass along to the target
  */

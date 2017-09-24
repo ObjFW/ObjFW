@@ -526,6 +526,13 @@ normalizeKey(char *str_)
 	 context: (id)context
        exception: (id)exception
 {
+	if (exception != nil) {
+		[_client->_delegate client: _client
+		     didEncounterException: exception
+				forRequest: _request];
+		return 0;
+	}
+
 	[socket asyncReadLineWithTarget: self
 			       selector: @selector(socket:didReadLine:context:
 					      exception:)
@@ -553,7 +560,7 @@ normalizeKey(char *str_)
 		[_client->_delegate client: _client
 		     didEncounterException: exception
 				forRequest: _request];
-		return false;
+		return 0;
 	}
 
 	if ((body = [_request body]) != nil) {

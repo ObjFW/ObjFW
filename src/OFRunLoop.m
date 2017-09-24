@@ -114,6 +114,18 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+@interface OFRunLoop_UDPSendQueueItem: OFRunLoop_QueueItem
+{
+@public
+# ifdef OF_HAVE_BLOCKS
+	of_udp_socket_async_send_block_t _block;
+# endif
+	const void *_buffer;
+	size_t _length;
+	of_udp_socket_address_t _receiver;
+}
+@end
+
 @implementation OFRunLoop_QueueItem
 - (bool)handleObject: (id)object
 {
@@ -383,13 +395,60 @@ static OFRunLoop *mainRunLoop = nil;
 	else {
 # endif
 		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t address, id, id) =
+		    of_udp_socket_address_t, id, id) =
 		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
 		    of_udp_socket_address_t, id, id))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
 		    address, _context, exception);
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
+# ifdef OF_HAVE_BLOCKS
+- (void)dealloc
+{
+	[_block release];
+
+	[super dealloc];
+}
+# endif
+@end
+
+@implementation OFRunLoop_UDPSendQueueItem
+- (bool)handleObject: (id)object
+{
+	id exception = nil;
+
+	@try {
+		[object sendBuffer: _buffer
+			    length: _length
+			  receiver: &_receiver];
+	} @catch (id e) {
+		exception = e;
+	}
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL) {
+		_length = _block(object, &_buffer,
+		    (exception == nil ? _length : 0), &_receiver, exception);
+
+		return (_length > 0);
+	} else {
+# endif
+		size_t (*func)(id, SEL, OFUDPSocket *, const void *, size_t,
+		    of_udp_socket_address_t *, id, id) =
+		    (size_t (*)(id, SEL, OFUDPSocket *, const void *, size_t,
+		    of_udp_socket_address_t *, id, id))
+		    [_target methodForSelector: _selector];
+
+		_length = func(_target, _selector, object, &_buffer,
+		    (exception == nil ? _length : 0), &_receiver, _context,
+		    exception);
+
+		return (_length > 0);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -560,6 +619,24 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
++ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
+			     buffer: (const void *)buffer
+			     length: (size_t)length
+			   receiver: (of_udp_socket_address_t)receiver
+			     target: (id)target
+			   selector: (SEL)selector
+			    context: (id)context
+{
+	ADD_WRITE(OFRunLoop_UDPSendQueueItem, socket, {
+		queueItem->_target = [target retain];
+		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
+		queueItem->_buffer = buffer;
+		queueItem->_length = length;
+		queueItem->_receiver = receiver;
+	})
+}
+
 # ifdef OF_HAVE_BLOCKS
 + (void)of_addAsyncReadForStream: (OFStream *)stream
 			  buffer: (void *)buffer
@@ -622,9 +699,23 @@ static OFRunLoop *mainRunLoop = nil;
 					    block
 {
 	ADD_READ(OFRunLoop_UDPReceiveQueueItem, socket, {
+		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
+	})
+}
+
++ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
+			     buffer: (const void *)buffer
+			     length: (size_t)length
+			   receiver: (of_udp_socket_address_t)receiver
+			      block: (of_udp_socket_async_send_block_t)block
+{
+	ADD_WRITE(OFRunLoop_UDPSendQueueItem, socket, {
 		queueItem->_block = [block copy];
+		queueItem->_buffer = buffer;
+		queueItem->_length = length;
+		queueItem->_receiver = receiver;
 	})
 }
 # endif

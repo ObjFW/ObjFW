@@ -633,6 +633,36 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 							     errNo: 0];
 }
 
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_udp_socket_address_t)receiver
+		 target: (id)target
+	       selector: (SEL)selector
+		context: (id)context
+{
+	[OFRunLoop of_addAsyncSendForUDPSocket: self
+					buffer: buffer
+					length: length
+				      receiver: receiver
+					target: target
+				      selector: selector
+				       context: context];
+}
+
+#ifdef OF_HAVE_BLOCKS
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_udp_socket_address_t)receiver
+		  block: (of_udp_socket_async_send_block_t)block
+{
+	[OFRunLoop of_addAsyncSendForUDPSocket: self
+					buffer: buffer
+					length: length
+				      receiver: receiver
+					 block: block];
+}
+#endif
+
 - (void)cancelAsyncRequests
 {
 	[OFRunLoop of_cancelAsyncRequestsForObject: self];

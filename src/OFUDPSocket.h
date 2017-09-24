@@ -52,7 +52,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
 /*!
  * @brief A block which is called when a packet has been received.
  *
- * @param socket The UDP which received a packet
+ * @param socket The UDP socket which received a packet
  * @param buffer The buffer the packet has been written to
  * @param length The length of the packet
  * @param sender The address of the sender of the packet
@@ -63,6 +63,28 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
 typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
     void *buffer, size_t length, of_udp_socket_address_t sender,
     id _Nullable exception);
+
+/*!
+ * @brief A block which is called when a packet has been sent.
+ *
+ * @param socket The UDP socket which sent a packet
+ * @param buffer A pointer to the buffer which was sent. This can be changed to
+ *		 point to a different buffer to be used on the next send.
+ * @param bytesSent The number of bytes which have been sent. This matches the
+ *		    length specified on the asynchronous send if no exception
+ *		    was encountered.
+ * @param receiver The receiver for the UDP packet. This may be set to a new
+ *		   receiver to which the next packet is sent.
+ * @param exception An exception which occurred while reading or `nil` on
+ *		    success
+ * @return The length to repeat the send with or 0 if it should not repeat.
+ *	   The buffer and receiver may be changed, so that every time a new
+ *	   buffer, length and receiver can be specified while the callback
+ *	   stays the same.
+ */
+typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
+    const void *_Nonnull *_Nonnull buffer, size_t bytesSent,
+    of_udp_socket_address_t *_Nonnull receiver, id exception);
 #endif
 
 /*!
@@ -205,7 +227,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		 need to return false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
- *		   of_udp_socket_address_t, id context, id exception)`.
+ *		   of_udp_socket_address_t sender, id context, id exception)`.
  * @param context A context object to pass along to the target
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
@@ -246,6 +268,52 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
 	  receiver: (const of_udp_socket_address_t *)receiver;
+
+/*!
+ * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @param buffer The buffer to send as a datagram
+ * @param length The length of the buffer
+ * @param receiver A pointer to an @ref of_udp_socket_address_t to which the
+ *		   datagram should be sent
+ * @param target The target on which the selector should be called when the
+ *		 packet has been sent. The method should return the length for
+ *		 the next send with the same callback or 0 if it should not
+ *		 repeat. The buffer and receiver may be changed, so that every
+ *		 time a new buffer, length and receiver can be specified while
+ *		 the callback stays the same.
+ * @param selector The selector to call on the target. The signature must be
+ *		   `size_t (OFUDPSocket *socket, const void **buffer,
+ *		   size_t bytesSent, of_udp_socket_address_t *receiver,
+ *		   id context, id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_udp_socket_address_t)receiver
+		 target: (id)target
+	       selector: (SEL)selector
+		context: (nullable id)context;
+
+#ifdef OF_HAVE_BLOCKS
+/*!
+ * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @param buffer The buffer to send as a datagram
+ * @param length The length of the buffer
+ * @param receiver A pointer to an @ref of_udp_socket_address_t to which the
+ *		   datagram should be sent
+ * @param block The block to call when the packet has been sent. It should
+ *		return the length for the next send with the same callback or 0
+ *		if it should not repeat. The buffer and receiver may be
+ *		changed, so that every time a new buffer, length and receiver
+ *		can be specified while the callback stays the same.
+ */
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_udp_socket_address_t)receiver
+		  block: (of_udp_socket_async_send_block_t)block;
+#endif
 
 /*!
  * @brief Cancels all pending asynchronous requests on the socket.
