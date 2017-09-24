@@ -520,6 +520,58 @@ normalizeKey(char *str_)
 	}
 }
 
+-    (bool)socket: (OFTCPSocket *)socket
+  didWriteRequest: (const void *)request
+	   length: (size_t)length
+	  context: (id)context
+	exception: (id)exception
+{
+	OFData *body;
+
+	if (exception != nil) {
+		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
+		    ([exception errNo] == ECONNRESET ||
+		    [exception errNo] == EPIPE)) {
+			/* In case a keep-alive connection timed out */
+			[self closeAndReconnect];
+			return false;
+		}
+
+		[_client->_delegate client: _client
+		     didEncounterException: exception
+				forRequest: _request];
+		return false;
+	}
+
+	if ((body = [_request body]) != nil) {
+		[socket asyncWriteBuffer: [body items]
+				  length: [body count] * [body itemSize]
+				  target: self
+				selector: @selector(socket:didWriteBody:length:
+					      context:exception:)
+				 context: nil];
+		return false;
+	} else
+		return [self socket: socket
+		       didWriteBody: NULL
+			     length: 0
+			    context: nil
+			  exception: nil];
+}
+
+- (bool)socket: (OFTCPSocket *)socket
+  didWriteBody: (const void *)body
+	length: (size_t)length
+       context: (id)context
+     exception: (id)exception
+{
+	[socket asyncReadLineWithTarget: self
+			       selector: @selector(socket:didReadLine:context:
+					      exception:)
+				context: nil];
+	return false;
+}
+
 - (void)handleSocket: (OFTCPSocket *)socket
 {
 	/*
@@ -532,36 +584,22 @@ normalizeKey(char *str_)
 	 */
 
 	@try {
-		OFData *body;
+		OFString *requestString = constructRequestString(_request);
+		const char *UTF8String = [requestString UTF8String];
+		size_t UTF8StringLength = [requestString UTF8StringLength];
 
-		@try {
-			/* TODO: Do this asynchronously */
-			[socket writeString: constructRequestString(_request)];
-		} @catch (OFWriteFailedException *e) {
-			if ([e errNo] != ECONNRESET && [e errNo] == EPIPE)
-				@throw e;
-
-			/*
-			 * Reconnect in case a keep-alive connection timed out.
-			 */
-			[self closeAndReconnect];
-			return;
-		}
-
-		if ((body = [_request body]) != nil)
-			[socket writeBuffer: [body items]
-				     length: [body count] * [body itemSize]];
+		[socket asyncWriteBuffer: UTF8String
+				  length: UTF8StringLength
+				  target: self
+				selector: @selector(socket:didWriteRequest:
+					      length:context:exception:)
+				 context: nil];
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
 				forRequest: _request];
 		return;
 	}
-
-	[socket asyncReadLineWithTarget: self
-			       selector: @selector(socket:didReadLine:context:
-					      exception:)
-				context: nil];
 }
 
 - (void)socketDidConnect: (OFTCPSocket *)socket
