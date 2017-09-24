@@ -122,10 +122,10 @@ static OFHTTPResponse *response = nil;
 	    [OFString stringWithFormat: @"http://127.0.0.1:%" @PRIu16 "/foo",
 					server->_port]];
 
-	TEST(@"-[performRequest:]",
+	TEST(@"-[asyncPerformRequest:]",
 	    (client = [OFHTTPClient client]) && R([client setDelegate: self]) &&
 	    R(request = [OFHTTPRequest requestWithURL: URL]) &&
-	    R([client performRequest: request]))
+	    R([client asyncPerformRequest: request]))
 
 	[[OFRunLoop mainRunLoop] runUntilDate:
 	    [OFDate dateWithTimeIntervalSinceNow: 2]];

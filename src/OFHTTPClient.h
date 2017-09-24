@@ -159,7 +159,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Asynchronously performs the specified HTTP request.
  */
-- (void)performRequest: (OFHTTPRequest *)request;
+- (void)asyncPerformRequest: (OFHTTPRequest *)request;
 
 /*!
  * @brief Asynchronously performs the specified HTTP request.
@@ -169,8 +169,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
  */
-- (void)performRequest: (OFHTTPRequest *)request
-	     redirects: (unsigned int)redirects;
+- (void)asyncPerformRequest: (OFHTTPRequest *)request
+		  redirects: (unsigned int)redirects;
 
 /*!
  * @brief Closes connections that are still open due to keep-alive.

@@ -378,8 +378,8 @@ normalizeKey(char *str_)
 
 			_client->_inProgress = false;
 
-			[_client performRequest: newRequest
-				      redirects: _redirects - 1];
+			[_client asyncPerformRequest: newRequest
+					   redirects: _redirects - 1];
 			return;
 		}
 	}
@@ -915,14 +915,14 @@ normalizeKey(char *str_)
 	[super dealloc];
 }
 
-- (void)performRequest: (OFHTTPRequest *)request
+- (void)asyncPerformRequest: (OFHTTPRequest *)request
 {
-	[self performRequest: request
-		   redirects: 10];
+	[self asyncPerformRequest: request
+			redirects: 10];
 }
 
-- (void)performRequest: (OFHTTPRequest *)request
-	     redirects: (unsigned int)redirects
+- (void)asyncPerformRequest: (OFHTTPRequest *)request
+		  redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];

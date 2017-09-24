@@ -908,7 +908,7 @@ next:
 		[request setHeaders: clientHeaders];
 		[request setMethod: OF_HTTP_REQUEST_METHOD_HEAD];
 
-		[_HTTPClient performRequest: request];
+		[_HTTPClient asyncPerformRequest: request];
 		return;
 	}
 
@@ -949,7 +949,7 @@ next:
 	[request setMethod: _method];
 	[request setBody: _body];
 
-	[_HTTPClient performRequest: request];
+	[_HTTPClient asyncPerformRequest: request];
 	return;
 
 next:
