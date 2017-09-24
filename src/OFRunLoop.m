@@ -286,21 +286,27 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(object, _buffer, _writtenLength, exception);
-	else {
+	if (_block != NULL) {
+		if (!_block(object, _buffer, _writtenLength, exception))
+			return false;
+
+		_writtenLength = 0;
+		return true;
+	} else {
 # endif
-		void (*func)(id, SEL, OFStream *, const void *, size_t, id,
-		    id) = (void (*)(id, SEL, OFStream *, const void *, size_t,
+		bool (*func)(id, SEL, OFStream *, const void *, size_t, id,
+		    id) = (bool (*)(id, SEL, OFStream *, const void *, size_t,
 		    id, id))[_target methodForSelector: _selector];
 
-		func(_target, _selector, object, _buffer, _writtenLength,
-		    _context, exception);
+		if (!func(_target, _selector, object, _buffer, _writtenLength,
+		    _context, exception))
+			return false;
+
+		_writtenLength = 0;
+		return true;
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
-
-	return false;
 }
 
 - (void)dealloc

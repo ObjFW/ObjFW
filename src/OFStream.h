@@ -71,8 +71,10 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  * @param length The length of the data that bas been written
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
+ * @return A bool whether another write with the same buffer, length and
+ *	   callback block should be performed
  */
-typedef void (^of_stream_async_write_block_t)(OFStream *stream,
+typedef bool (^of_stream_async_write_block_t)(OFStream *stream,
     const void *buffer, size_t length, id _Nullable exception);
 #endif
 
@@ -804,10 +806,12 @@ typedef void (^of_stream_async_write_block_t)(OFStream *stream,
  * @param buffer The buffer from which the data is written into the stream. The
  *		 buffer needs to be valid until the write request is completed!
  * @param length The length of the data that should be written
- * @param target The target on which the selector should be called when the data
- *		 has been written.
+ * @param target The target on which the selector should be called when the
+ *		 data has been received. If the method returns true, the same
+ *		 buffer and length will be written again and same method will
+ *		 be called again.
  * @param selector The selector to call on the target. The signature must be
- *		   `void (OFStream *stream, const void *buffer, size_t length,
+ *		   `bool (OFStream *stream, const void *buffer, size_t length,
  *		   id context, id exception)`.
  */
 - (void)asyncWriteBuffer: (const void *)buffer
