@@ -287,7 +287,9 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		if (!_block(object, _buffer, _writtenLength, exception))
+		_length = _block(object, &_buffer, _writtenLength, exception);
+
+		if (_length == 0)
 			return false;
 
 		_writtenLength = 0;
@@ -298,8 +300,10 @@ static OFRunLoop *mainRunLoop = nil;
 		    id) = (bool (*)(id, SEL, OFStream *, const void *, size_t,
 		    id, id))[_target methodForSelector: _selector];
 
-		if (!func(_target, _selector, object, _buffer, _writtenLength,
-		    _context, exception))
+		_length = func(_target, _selector, object, &_buffer,
+		    _writtenLength, _context, exception);
+
+		if (_length == 0)
 			return false;
 
 		_writtenLength = 0;

@@ -520,8 +520,8 @@ normalizeKey(char *str_)
 	}
 }
 
--    (bool)socket: (OFTCPSocket *)socket
-  didWriteRequest: (const void *)request
+-  (size_t)socket: (OFTCPSocket *)socket
+  didWriteRequest: (const void **)request
 	   length: (size_t)length
 	  context: (id)context
 	exception: (id)exception
@@ -550,7 +550,7 @@ normalizeKey(char *str_)
 				selector: @selector(socket:didWriteBody:length:
 					      context:exception:)
 				 context: nil];
-		return false;
+		return 0;
 	} else
 		return [self socket: socket
 		       didWriteBody: NULL
@@ -559,17 +559,17 @@ normalizeKey(char *str_)
 			  exception: nil];
 }
 
-- (bool)socket: (OFTCPSocket *)socket
-  didWriteBody: (const void *)body
-	length: (size_t)length
-       context: (id)context
-     exception: (id)exception
+- (size_t)socket: (OFTCPSocket *)socket
+    didWriteBody: (const void **)body
+	  length: (size_t)length
+	 context: (id)context
+       exception: (id)exception
 {
 	[socket asyncReadLineWithTarget: self
 			       selector: @selector(socket:didReadLine:context:
 					      exception:)
 				context: nil];
-	return false;
+	return 0;
 }
 
 - (void)handleSocket: (OFTCPSocket *)socket

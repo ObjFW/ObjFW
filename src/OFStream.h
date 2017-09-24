@@ -68,14 +68,18 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *
  * @param stream The stream to which data was written
  * @param buffer The buffer which was written to the stream
- * @param length The length of the data that bas been written
+ * @param bytesWritten The number of bytes which have been written. This
+ *		       matches the length specified on the asynchronous write
+ *		       if no exception was encountered.
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
- * @return A bool whether another write with the same buffer, length and
- *	   callback block should be performed
+ * @return The length to repeat the write with or 0 if it should not repeat.
+ *	   The buffer may be changed, so that every time a new buffer and length
+ *	   can be specified while the callback stays the same.
  */
-typedef bool (^of_stream_async_write_block_t)(OFStream *stream,
-    const void *buffer, size_t length, id _Nullable exception);
+typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
+    const void *_Nonnull *_Nonnull buffer, size_t bytesWritten,
+    id _Nullable exception);
 #endif
 
 /*!
@@ -807,12 +811,14 @@ typedef bool (^of_stream_async_write_block_t)(OFStream *stream,
  *		 buffer needs to be valid until the write request is completed!
  * @param length The length of the data that should be written
  * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns true, the same
- *		 buffer and length will be written again and same method will
- *		 be called again.
+ *		 data has been written. The method should return the length for
+ *		 the next write with the same callback or 0 if it should not
+ *		 repeat. The buffer may be changed, so that every time a new
+ *		 buffer and length can be specified while the callback stays
+ *		 the same.
  * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, const void *buffer, size_t length,
- *		   id context, id exception)`.
+ *		   `bool (OFStream *stream, const void *buffer,
+ *		   size_t bytesWritten, id context, id exception)`.
  */
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
@@ -830,7 +836,11 @@ typedef bool (^of_stream_async_write_block_t)(OFStream *stream,
  * @param buffer The buffer from which the data is written into the stream. The
  *		 buffer needs to be valid until the write request is completed!
  * @param length The length of the data that should be written
- * @param block The block to call when the data has been written
+ * @param block The block to call when the data has been written. It should
+ *		return the length for the next write with the same callback or
+ *		0 if it should not repeat. The buffer may be changed, so that
+ *		every time a new buffer and length can be specified while the
+ *		callback stays the same.
  */
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
