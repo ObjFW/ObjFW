@@ -266,7 +266,6 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 @implementation OFRunLoop_WriteQueueItem
-# ifdef OF_HAVE_BLOCKS
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -313,6 +312,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 }
 
+# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
 	[_block release];
