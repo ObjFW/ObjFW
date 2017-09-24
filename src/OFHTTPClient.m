@@ -520,6 +520,19 @@ normalizeKey(char *str_)
 	}
 }
 
+- (size_t)socket: (OFTCPSocket *)socket
+    didWriteBody: (const void **)body
+	  length: (size_t)length
+	 context: (id)context
+       exception: (id)exception
+{
+	[socket asyncReadLineWithTarget: self
+			       selector: @selector(socket:didReadLine:context:
+					      exception:)
+				context: nil];
+	return 0;
+}
+
 -  (size_t)socket: (OFTCPSocket *)socket
   didWriteRequest: (const void **)request
 	   length: (size_t)length
@@ -557,19 +570,6 @@ normalizeKey(char *str_)
 			     length: 0
 			    context: nil
 			  exception: nil];
-}
-
-- (size_t)socket: (OFTCPSocket *)socket
-    didWriteBody: (const void **)body
-	  length: (size_t)length
-	 context: (id)context
-       exception: (id)exception
-{
-	[socket asyncReadLineWithTarget: self
-			       selector: @selector(socket:didReadLine:context:
-					      exception:)
-				context: nil];
-	return 0;
 }
 
 - (void)handleSocket: (OFTCPSocket *)socket
