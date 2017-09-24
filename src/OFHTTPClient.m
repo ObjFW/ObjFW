@@ -588,12 +588,16 @@ normalizeKey(char *str_)
 		const char *UTF8String = [requestString UTF8String];
 		size_t UTF8StringLength = [requestString UTF8StringLength];
 
+		/*
+		 * Pass requestString as context to retain it so that the
+		 * underlying buffer lives long enough.
+		 */
 		[socket asyncWriteBuffer: UTF8String
 				  length: UTF8StringLength
 				  target: self
 				selector: @selector(socket:didWriteRequest:
 					      length:context:exception:)
-				 context: nil];
+				 context: requestString];
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
