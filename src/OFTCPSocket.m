@@ -78,7 +78,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 # ifdef OF_HAVE_BLOCKS
 	of_tcp_socket_async_connect_block_t _block;
 # endif
-	OFException *_exception;
+	id _exception;
 }
 
 - initWithSourceThread: (OFThread *)sourceThread
@@ -172,8 +172,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_block(_socket, _exception);
 	else {
 # endif
-		void (*func)(id, SEL, OFTCPSocket *, id, OFException *) =
-		    (void (*)(id, SEL, OFTCPSocket *, id, OFException *))
+		void (*func)(id, SEL, OFTCPSocket *, id, id) =
+		    (void (*)(id, SEL, OFTCPSocket *, id, id))
 		    [_target methodForSelector: _selector];
 
 		func(_target, _selector, _socket, _context, _exception);
@@ -189,7 +189,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	@try {
 		[_socket connectToHost: _host
 				  port: _port];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		_exception = [e retain];
 	}
 

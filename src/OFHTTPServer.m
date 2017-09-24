@@ -50,7 +50,7 @@
 - (bool)of_socket: (OFTCPSocket *)socket
   didAcceptSocket: (OFTCPSocket *)clientSocket
 	  context: (id)context
-	exception: (OFException *)exception;
+	exception: (id)exception;
 @end
 
 static const char *
@@ -344,14 +344,14 @@ normalizedKey(OFString *key)
 - (bool)socket: (OFTCPSocket *)socket
    didReadLine: (OFString *)line
        context: (id)context
-     exception: (OFException *)exception;
+     exception: (id)exception;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
 -      (bool)socket: (OFTCPSocket *)socket
   didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
 	    context: (id)context
-	  exception: (OFException *)exception;
+	  exception: (id)exception;
 - (bool)sendErrorAndClose: (short)statusCode;
 - (void)createResponse;
 @end
@@ -399,7 +399,7 @@ normalizedKey(OFString *key)
 - (bool)socket: (OFTCPSocket *)socket
    didReadLine: (OFString *)line
        context: (id)context
-     exception: (OFException *)exception
+     exception: (id)exception
 {
 	if (line == nil || exception != nil)
 		return false;
@@ -579,7 +579,7 @@ normalizedKey(OFString *key)
   didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
 	    context: (id)context
-	  exception: (OFException *)exception
+	  exception: (id)exception
 {
 	if ([socket isAtEndOfStream] || exception != nil)
 		return false;
@@ -744,7 +744,7 @@ normalizedKey(OFString *key)
 - (bool)of_socket: (OFTCPSocket *)socket
   didAcceptSocket: (OFTCPSocket *)clientSocket
 	  context: (id)context
-	exception: (OFException *)exception
+	exception: (id)exception
 {
 	OFHTTPServer_Connection *connection;
 

@@ -26,7 +26,6 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFTCPSocket;
-@class OFException;
 
 /*!
  * @protocol OFHTTPServerDelegate OFHTTPServer.h ObjFW/OFHTTPServer.h
@@ -59,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	   connections again by calling @ref OFHTTPServer::start again.
  */
 -			  (bool)server: (OFHTTPServer *)server
-  didReceiveExceptionOnListeningSocket: (OFException *)exception;
+  didReceiveExceptionOnListeningSocket: (id)exception;
 
 /*!
  * @brief This method is called when a client socket encountered an exception.
@@ -78,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
 -		    (void)server: (OFHTTPServer *)server
   didReceiveExceptionForResponse: (OFHTTPResponse *)response
 			 request: (OFHTTPRequest *)request
-		       exception: (OFException *)exception;
+		       exception: (id)exception;
 @end
 
 /*!

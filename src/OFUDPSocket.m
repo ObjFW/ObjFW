@@ -56,7 +56,7 @@
 	of_udp_socket_async_resolve_block_t _block;
 # endif
 	of_udp_socket_address_t _address;
-	OFException *_exception;
+	id _exception;
 }
 
 - initWithSourceThread: (OFThread *)sourceThread
@@ -144,9 +144,9 @@
 	else {
 # endif
 		void (*func)(id, SEL, OFString *, uint16_t,
-		    of_udp_socket_address_t, id, OFException *) =
+		    of_udp_socket_address_t, id, id) =
 		    (void (*)(id, SEL, OFString *, uint16_t,
-		    of_udp_socket_address_t, id, OFException *))
+		    of_udp_socket_address_t, id, id))
 		    [_target methodForSelector: _selector];
 
 		func(_target, _selector, _host, _port, _address, _context,
@@ -164,7 +164,7 @@
 		[OFUDPSocket resolveAddressForHost: _host
 					      port: _port
 					   address: &_address];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		_exception = e;
 	}
 

@@ -122,12 +122,12 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleForObject: (id)object
 {
 	size_t length;
-	OFException *exception = nil;
+	id exception = nil;
 
 	@try {
 		length = [object readIntoBuffer: _buffer
 					 length: _length];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
@@ -137,9 +137,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream *, void *, size_t, id,
-		    OFException *) = (bool (*)(id, SEL, OFStream *, void *,
-		    size_t, id, OFException *))
+		bool (*func)(id, SEL, OFStream *, void *, size_t, id, id) =
+		    (bool (*)(id, SEL, OFStream *, void *, size_t, id, id))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
@@ -163,12 +162,12 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleForObject: (id)object
 {
 	size_t length;
-	OFException *exception = nil;
+	id exception = nil;
 
 	@try {
 		length = [object readIntoBuffer: (char *)_buffer + _readLength
 					 length: _exactLength - _readLength];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
@@ -188,9 +187,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		bool (*func)(id, SEL, OFStream *, void *, size_t, id,
-		    OFException *) = (bool (*)(id, SEL, OFStream *, void *,
-		    size_t, id, OFException *))
+		bool (*func)(id, SEL, OFStream *, void *, size_t, id, id) =
+		    (bool (*)(id, SEL, OFStream *, void *, size_t, id, id))
 		    [_target methodForSelector: _selector];
 
 		if (!func(_target, _selector, object, _buffer, _readLength,
@@ -218,11 +216,11 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleForObject: (id)object
 {
 	OFString *line;
-	OFException *exception = nil;
+	id exception = nil;
 
 	@try {
 		line = [object tryReadLineWithEncoding: _encoding];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		line = nil;
 		exception = e;
 	}
@@ -235,9 +233,9 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, line, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream *, OFString *, id,
-		    OFException *) = (bool (*)(id, SEL, OFStream *, OFString *,
-		    id, OFException *))[_target methodForSelector: _selector];
+		bool (*func)(id, SEL, OFStream *, OFString *, id, id) =
+		    (bool (*)(id, SEL, OFStream *, OFString *, id, id))
+		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, line, _context,
 		    exception);
@@ -260,11 +258,11 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleForObject: (id)object
 {
 	OFTCPSocket *newSocket;
-	OFException *exception = nil;
+	id exception = nil;
 
 	@try {
 		newSocket = [object accept];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		newSocket = nil;
 		exception = e;
 	}
@@ -274,9 +272,8 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, newSocket, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFTCPSocket *, OFTCPSocket *, id,
-		    OFException *) = (bool (*)(id, SEL, OFTCPSocket *,
-		    OFTCPSocket *, id, OFException *))
+		bool (*func)(id, SEL, OFTCPSocket *, OFTCPSocket *, id, id) =
+		    (bool (*)(id, SEL, OFTCPSocket *, OFTCPSocket *, id, id))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, newSocket, _context,
@@ -301,13 +298,13 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	size_t length;
 	of_udp_socket_address_t address;
-	OFException *exception = nil;
+	id exception = nil;
 
 	@try {
 		length = [object receiveIntoBuffer: _buffer
 					    length: _length
 					    sender: &address];
-	} @catch (OFException *e) {
+	} @catch (id e) {
 		length = 0;
 		exception = e;
 	}
@@ -318,9 +315,9 @@ static OFRunLoop *mainRunLoop = nil;
 	else {
 # endif
 		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t address, id, OFException *) =
+		    of_udp_socket_address_t address, id, id) =
 		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t, id, OFException *))
+		    of_udp_socket_address_t, id, id))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,

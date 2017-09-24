@@ -24,7 +24,6 @@ OF_ASSUME_NONNULL_BEGIN
 /*! @file */
 
 @class OFUDPSocket;
-@class OFException;
 
 /*!
  * @struct of_udp_socket_address_t OFUDPSocket.h ObjFW/OFUDPSocket.h
@@ -48,8 +47,7 @@ typedef struct {
  *		    success
  */
 typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
-    uint16_t port, of_udp_socket_address_t address,
-    OFException *_Nullable exception);
+    uint16_t port, of_udp_socket_address_t address, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a packet has been received.
@@ -64,7 +62,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
  */
 typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
     void *buffer, size_t length, of_udp_socket_address_t sender,
-    OFException *_Nullable exception);
+    id _Nullable exception);
 #endif
 
 /*!
@@ -127,8 +125,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		 resolved
  * @param selector The selector to call on the target. The signature must be
  *		   `void (OFString *host, uint16_t port,
- *		   of_udp_socket_address_t address, id context,
- *		   OFException *exception)`.
+ *		   of_udp_socket_address_t address, id context, id exception)`.
  */
 + (void)asyncResolveAddressForHost: (OFString *)host
 			      port: (uint16_t)port
@@ -207,8 +204,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  *		 need to return false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
- *		   of_udp_socket_address_t, id context,
- *		   OFException *exception)`.
+ *		   of_udp_socket_address_t, id context, id exception)`.
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length

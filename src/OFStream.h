@@ -35,7 +35,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 @class OFData;
-@class OFException;
 
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_BLOCKS)
 /*!
@@ -49,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
-    size_t length, OFException *_Nullable exception);
+    size_t length, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read from the stream.
@@ -62,7 +61,7 @@ typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
  * @return A bool whether the same block should be used for the next read
  */
 typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
-    OFString *_Nullable line, OFException *_Nullable exception);
+    OFString *_Nullable line, id _Nullable exception);
 #endif
 
 /*!
@@ -169,7 +168,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, void *buffer, size_t length,
- *		   id context, OFException *exception)`.
+ *		   id context, id exception)`.
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
@@ -200,7 +199,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, void *buffer, size_t size,
- *		   id context, OFException *exception)`.
+ *		   id context, id exception)`.
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
@@ -624,7 +623,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFStream *stream, OFString *line, id context,
- *		   OFException *exception)`.
+ *		   id exception)`.
  */
 - (void)asyncReadLineWithTarget: (id)target
 		       selector: (SEL)selector
@@ -644,8 +643,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *		 next method in the queue to handle the next line, you need to
  *		 return false from the method
  * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, OFString *line,
- *		   id context, OFException *exception)`.
+ *		   `bool (OFStream *stream, OFString *line, id context,
+ *		   id exception)`.
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 			   target: (id)target
@@ -775,7 +774,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 /*!
  * @brief Writes from a buffer into the stream.
  *
- * @param buffer The buffer from which the data is written to the stream
+ * @param buffer The buffer from which the data is written into the stream
  * @param length The length of the data that should be written
  */
 - (void)writeBuffer: (const void *)buffer

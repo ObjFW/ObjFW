@@ -566,7 +566,7 @@ normalizeKey(char *str_)
 
 - (void)socketDidConnect: (OFTCPSocket *)socket
 		 context: (id)context
-	       exception: (OFException *)exception
+	       exception: (id)exception
 {
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:forRequest:)])

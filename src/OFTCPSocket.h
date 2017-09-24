@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		    `nil` on success
  */
 typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
-    OFException *_Nullable exception);
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when the socket accepted a connection.
@@ -47,7 +47,7 @@ typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
  *	   connection
  */
 typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
-    OFTCPSocket *acceptedSocket, OFException *_Nullable exception);
+    OFTCPSocket *acceptedSocket, id _Nullable exception);
 #endif
 
 /*!
@@ -127,8 +127,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  * @param target The target on which to call the selector once the connection
  *		 has been established
  * @param selector The selector to call on the target. The signature must be
- *		   `void (OFTCPSocket *socket, id context,
- *		   OFException *exception)`.
+ *		   `void (OFTCPSocket *socket, id context, id exception)`.
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
@@ -190,7 +189,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *		 block as well.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
- *		   id context, OFException *exception)`.
+ *		   id context, id exception)`.
  */
 - (void)asyncAcceptWithTarget: (id)target
 		     selector: (SEL)selector

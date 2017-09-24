@@ -23,7 +23,6 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
-@class OFException;
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
