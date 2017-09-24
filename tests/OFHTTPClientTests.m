@@ -20,21 +20,27 @@
 #include <string.h>
 
 #import "OFHTTPClient.h"
+#import "OFCondition.h"
+#import "OFData.h"
+#import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFRunLoop.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFThread.h"
-#import "OFCondition.h"
 #import "OFURL.h"
-#import "OFDictionary.h"
-#import "OFData.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFHTTPClient";
 static OFCondition *cond;
+static OFHTTPResponse *response = nil;
+
+@interface TestsAppDelegate (HTTPClientTests) <OFHTTPClientDelegate>
+@end
 
 @interface HTTPClientTestsServer: OFThread
 {
@@ -85,6 +91,15 @@ static OFCondition *cond;
 @end
 
 @implementation TestsAppDelegate (OFHTTPClientTests)
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response_
+{
+	response = [response_ retain];
+
+	[[OFRunLoop mainRunLoop] stop];
+}
+
 - (void)HTTPClientTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
@@ -92,7 +107,6 @@ static OFCondition *cond;
 	OFURL *URL;
 	OFHTTPClient *client;
 	OFHTTPRequest *request;
-	OFHTTPResponse *response = nil;
 	OFData *data;
 
 	cond = [OFCondition condition];
@@ -109,9 +123,15 @@ static OFCondition *cond;
 					server->_port]];
 
 	TEST(@"-[performRequest:]",
-	    (client = [OFHTTPClient client]) &&
+	    (client = [OFHTTPClient client]) && R([client setDelegate: self]) &&
 	    R(request = [OFHTTPRequest requestWithURL: URL]) &&
-	    R(response = [client performRequest: request]))
+	    R([client performRequest: request]))
+
+	[[OFRunLoop mainRunLoop] runUntilDate:
+	    [OFDate dateWithTimeIntervalSinceNow: 2]];
+	[response autorelease];
+
+	TEST(@"Asynchronous handling of requests", response != nil)
 
 	TEST(@"Normalization of server header keys",
 	    [[response headers] objectForKey: @"Content-Length"] != nil)

@@ -22,12 +22,13 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFException;
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
-@class OFURL;
 @class OFTCPSocket;
-@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFURL;
 
 /*!
  * @protocol OFHTTPClientDelegate OFHTTPClient.h ObjFW/OFHTTPClient.h
@@ -35,6 +36,29 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A delegate for OFHTTPClient.
  */
 @protocol OFHTTPClientDelegate <OFObject>
+/*!
+ * @brief A callback which is called when an OFHTTPClient performed a request.
+ *
+ * @param client The OFHTTPClient which performed the request
+ * @param request The request the OFHTTPClient performed
+ * @param response The response to the request performed
+ */
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response;
+
+/*!
+ * @brief A callback which is called when an OFHTTPClient encountered an
+ *	  exception while performing a request.
+ *
+ * @param client The client which encountered an exception
+ * @param exception The exception the client encountered
+ * @param request The request during which the client encountered the exception
+ */
+-	   (void)client: (OFHTTPClient *)client
+  didEncounterException: (id)exception
+	     forRequest: (OFHTTPRequest *)request;
+
 @optional
 /*!
  * @brief A callback which is called when an OFHTTPClient creates a socket.
@@ -50,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -    (void)client: (OFHTTPClient *)client
   didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
-	  request: (OFHTTPRequest *)request;
+       forRequest: (OFHTTPRequest *)request;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient received headers.
@@ -95,17 +119,6 @@ OF_ASSUME_NONNULL_BEGIN
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response;
-
-/*!
- * @brief A callback which is called when an OFHTTPClient performed a request.
- *
- * @param client The OFHTTPClient which performed the request
- * @param request The request the OFHTTPClient performed
- * @param response The response to the request performed
- */
--      (void)client: (OFHTTPClient *)client
-  didPerformRequest: (OFHTTPRequest *)request
-	   response: (OFHTTPResponse *)response;
 @end
 
 /*!
@@ -115,8 +128,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFHTTPClient: OFObject
 {
+#ifdef OF_HTTPCLIENT_M
+@public
+#endif
 	id <OFHTTPClientDelegate> _delegate;
-	bool _insecureRedirectsAllowed;
+	bool _insecureRedirectsAllowed, _inProgress;
 	OFTCPSocket *_socket;
 	OFURL *_lastURL;
 	bool _lastWasHEAD;
@@ -142,23 +158,20 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)client;
 
 /*!
- * @brief Performs the specified HTTP request and returns an OFHTTPResponse.
- *
- * @return An OFHTTPResponse with the response for the HTTP request
+ * @brief Asynchronously performs the specified HTTP request.
  */
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
+- (void)performRequest: (OFHTTPRequest *)request;
 
 /*!
- * @brief Performs the HTTP request and returns an OFHTTPResponse.
+ * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
- *		    redirect is returned as an OFHTTPResponse
- * @return An OFHTTPResponse with the response for the HTTP request
+ *		    redirect is treated as an OFHTTPResponse
  */
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (size_t)redirects;
+- (void)performRequest: (OFHTTPRequest *)request
+	     redirects: (unsigned int)redirects;
 
 /*!
  * @brief Closes connections that are still open due to keep-alive.

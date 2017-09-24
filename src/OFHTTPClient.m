@@ -14,6 +14,8 @@
  * file.
  */
 
+#define OF_HTTPCLIENT_M
+
 #include "config.h"
 
 #include <errno.h>
@@ -28,6 +30,7 @@
 #import "OFDictionary.h"
 #import "OFData.h"
 
+#import "OFAlreadyConnectedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
@@ -40,6 +43,35 @@
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
+
+@interface OFHTTPClientRequestHandler: OFObject
+{
+	OFHTTPClient *_client;
+	OFHTTPRequest *_request;
+	unsigned int _redirects;
+	bool _firstLine;
+	OFString *_version;
+	int _status;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_serverHeaders;
+}
+
+- initWithClient: (OFHTTPClient *)client
+	 request: (OFHTTPRequest *)request
+       redirects: (unsigned int)redirects;
+- (void)start;
+@end
+
+@interface OFHTTPClientResponse: OFHTTPResponse
+{
+	OFTCPSocket *_socket;
+	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
+	size_t _toRead;
+}
+
+@property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
+
+- initWithSocket: (OFTCPSocket *)socket;
+@end
 
 static OFString *
 constructRequestString(OFHTTPRequest *request)
@@ -169,10 +201,236 @@ normalizeKey(char *str_)
 	}
 }
 
-static bool
-parseServerHeader(
-    OFMutableDictionary OF_GENERIC(OFString *, OFString *) *serverHeaders,
-    OFString *line)
+@implementation OFHTTPClientRequestHandler
+- initWithClient: (OFHTTPClient *)client
+	 request: (OFHTTPRequest *)request
+       redirects: (unsigned int)redirects
+{
+	self = [super init];
+
+	@try {
+		_client = [client retain];
+		_request = [request retain];
+		_redirects = redirects;
+		_firstLine = true;
+		_serverHeaders = [[OFMutableDictionary alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_client release];
+	[_request release];
+	[_version release];
+	[_serverHeaders release];
+
+	[super dealloc];
+}
+
+- (void)closeAndReconnect
+{
+	OFURL *URL = [_request URL];
+	OFTCPSocket *socket;
+
+	[_client close];
+
+	if ([[URL scheme] isEqual: @"https"]) {
+		if (of_tls_socket_class == Nil)
+			@throw [OFUnsupportedProtocolException
+			    exceptionWithURL: URL];
+
+		socket = [[[of_tls_socket_class alloc] init]
+		    autorelease];
+	} else
+		socket = [OFTCPSocket socket];
+
+	[socket asyncConnectToHost: [URL host]
+			      port: [URL port]
+			    target: self
+			  selector: @selector(socketDidConnect:context:
+					exception:)
+			   context: nil];
+}
+
+- (void)didCreateResponse: (OFHTTPResponse *)response
+{
+	[_client->_delegate client:_client
+		 didPerformRequest:_request
+			  response:response];
+}
+
+- (void)createResponseWithSocket: (OFTCPSocket *)socket
+{
+	OFURL *URL = [_request URL];
+	OFHTTPClientResponse *response;
+	OFString *connectionHeader;
+	bool keepAlive;
+	OFString *location;
+
+	response = [[[OFHTTPClientResponse alloc] initWithSocket: socket]
+	    autorelease];
+	[response setProtocolVersionFromString: _version];
+	[response setStatusCode: _status];
+	[response setHeaders: _serverHeaders];
+
+	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
+	if ([_version isEqual: @"1.1"]) {
+		if (connectionHeader != nil)
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"close"] != OF_ORDERED_SAME);
+		else
+			keepAlive = true;
+	} else {
+		if (connectionHeader != nil)
+			keepAlive = ([connectionHeader caseInsensitiveCompare:
+			    @"keep-alive"] == OF_ORDERED_SAME);
+		else
+			keepAlive = false;
+	}
+
+	if (keepAlive) {
+		[response of_setKeepAlive: true];
+
+		_client->_socket = [socket retain];
+		_client->_lastURL = [URL copy];
+		_client->_lastWasHEAD =
+		    ([_request method] == OF_HTTP_REQUEST_METHOD_HEAD);
+		_client->_lastResponse = [response retain];
+	}
+
+	/* FIXME: Case-insensitive check of redirect's scheme */
+	if (_redirects > 0 && (_status == 301 || _status == 302 ||
+	    _status == 303 || _status == 307) &&
+	    (location = [_serverHeaders objectForKey: @"Location"]) != nil &&
+	    (_client->_insecureRedirectsAllowed ||
+	    [[URL scheme] isEqual: @"http"] ||
+	    [location hasPrefix: @"https://"])) {
+		OFURL *newURL;
+		bool follow;
+
+		newURL = [OFURL URLWithString: location
+				relativeToURL: URL];
+
+		if ([_client->_delegate respondsToSelector: @selector(
+		    client:shouldFollowRedirect:statusCode:request:response:)])
+			follow = [_client->_delegate client: _client
+				       shouldFollowRedirect: newURL
+						 statusCode: _status
+						    request: _request
+						   response: response];
+		else {
+			of_http_request_method_t method = [_request method];
+
+			/*
+			 * 301, 302 and 307 should only redirect with user
+			 * confirmation if the request method is not GET or
+			 * HEAD. Asking the delegate and getting true returned
+			 * is considered user confirmation.
+			 */
+			if (method == OF_HTTP_REQUEST_METHOD_GET ||
+			    method == OF_HTTP_REQUEST_METHOD_HEAD)
+				follow = true;
+			/*
+			 * 303 should always be redirected and converted to a
+			 * GET request.
+			 */
+			else if (_status == 303)
+				follow = true;
+			else
+				follow = false;
+		}
+
+		if (follow) {
+			OFDictionary OF_GENERIC(OFString *, OFString *)
+			    *headers = [_request headers];
+			OFHTTPRequest *newRequest =
+			    [[_request copy] autorelease];
+			OFMutableDictionary *newHeaders =
+			    [[headers mutableCopy] autorelease];
+
+			if (![[newURL host] isEqual: [URL host]])
+				[newHeaders removeObjectForKey: @"Host"];
+
+			/*
+			 * 303 means the request should be converted to a GET
+			 * request before redirection. This also means stripping
+			 * the entity of the request.
+			 */
+			if (_status == 303) {
+				OFEnumerator *keyEnumerator, *objectEnumerator;
+				id key, object;
+
+				keyEnumerator = [headers keyEnumerator];
+				objectEnumerator = [headers objectEnumerator];
+				while ((key = [keyEnumerator nextObject]) !=
+				    nil &&
+				    (object = [objectEnumerator nextObject]) !=
+				    nil)
+					if ([key hasPrefix: @"Content-"])
+						[newHeaders
+						    removeObjectForKey: key];
+
+				[newRequest setMethod:
+				    OF_HTTP_REQUEST_METHOD_GET];
+				[newRequest setBody: nil];
+			}
+
+			[newRequest setURL: newURL];
+			[newRequest setHeaders: newHeaders];
+
+			_client->_inProgress = false;
+
+			[_client performRequest: newRequest
+				      redirects: _redirects - 1];
+			return;
+		}
+	}
+
+	if (_status / 100 != 2)
+		@throw [OFHTTPRequestFailedException
+		    exceptionWithRequest: _request
+				response: response];
+
+	_client->_inProgress = false;
+
+	[self performSelector: @selector(didCreateResponse:)
+		   withObject: response
+		   afterDelay: 0];
+}
+
+- (bool)handleFirstLine: (OFString *)line
+{
+	/*
+	 * It's possible that the write succeeds on a connection that is
+	 * keep-alive, but the connection has already been closed by the remote
+	 * end due to a timeout. In this case, we need to reconnect.
+	 */
+	if (line == nil) {
+		[self closeAndReconnect];
+		return false;
+	}
+
+	if (![line hasPrefix: @"HTTP/"] || [line length] < 9 ||
+	    [line characterAtIndex: 8] != ' ')
+		@throw [OFInvalidServerReplyException exception];
+
+	_version = [[line substringWithRange: of_range(5, 3)] copy];
+	if (![_version isEqual: @"1.0"] && ![_version isEqual: @"1.1"])
+		@throw [OFUnsupportedVersionException
+		    exceptionWithVersion: _version];
+
+	_status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
+
+	return true;
+}
+
+- (bool)handleServerHeader: (OFString *)line
+		    socket: (OFTCPSocket *)socket
 {
 	OFString *key, *value, *old;
 	const char *lineC, *tmp;
@@ -181,8 +439,22 @@ parseServerHeader(
 	if (line == nil)
 		@throw [OFInvalidServerReplyException exception];
 
-	if ([line length] == 0)
+	if ([line length] == 0) {
+		[_serverHeaders makeImmutable];
+
+		if ([_client->_delegate respondsToSelector:
+		    @selector(client:didReceiveHeaders:statusCode:request:)])
+			[_client->_delegate client: _client
+				 didReceiveHeaders: _serverHeaders
+					statusCode: _status
+					   request: _request];
+
+		[self performSelector: @selector(createResponseWithSocket:)
+			   withObject: socket
+			   afterDelay: 0];
+
 		return false;
+	}
 
 	lineC = [line UTF8String];
 
@@ -211,26 +483,178 @@ parseServerHeader(
 
 	value = [OFString stringWithUTF8String: tmp];
 
-	old = [serverHeaders objectForKey: key];
+	old = [_serverHeaders objectForKey: key];
 	if (old != nil)
 		value = [old stringByAppendingFormat: @",%@", value];
 
-	[serverHeaders setObject: value
-			  forKey: key];
+	[_serverHeaders setObject: value
+			   forKey: key];
 
 	return true;
 }
 
-@interface OFHTTPClientResponse: OFHTTPResponse
+- (bool)socket: (OFTCPSocket *)socket
+   didReadLine: (OFString *)line
+       context: (id)context
+     exception: (id)exception
 {
-	OFTCPSocket *_socket;
-	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
-	size_t _toRead;
+	if (exception != nil) {
+		if ([exception isKindOfClass:
+		    [OFInvalidEncodingException class]])
+			exception = [OFInvalidServerReplyException exception];
+
+		[_client->_delegate client: _client
+		     didEncounterException: exception
+				forRequest: _request];
+		return false;
+	}
+
+	@try {
+		if (_firstLine) {
+			_firstLine = false;
+			return [self handleFirstLine: line];
+		} else
+			return [self handleServerHeader: line
+						 socket: socket];
+	} @catch (id e) {
+		[_client->_delegate client: _client
+		     didEncounterException: e
+				forRequest: _request];
+		return false;
+	}
 }
 
-@property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
+- (void)handleSocket: (OFTCPSocket *)socket
+{
+	/*
+	 * As a work around for a bug with split packets in lighttpd when using
+	 * HTTPS, we construct the complete request in a buffer string and then
+	 * send it all at once.
+	 *
+	 * We do not use the socket's write buffer in case we need to resend
+	 * the entire request (e.g. in case a keep-alive connection timed out).
+	 */
 
-- initWithSocket: (OFTCPSocket *)socket;
+	@try {
+		OFData *body;
+
+		@try {
+			/* TODO: Do this asynchronously */
+			[socket writeString: constructRequestString(_request)];
+		} @catch (OFWriteFailedException *e) {
+			if ([e errNo] != ECONNRESET && [e errNo] == EPIPE)
+				@throw e;
+
+			/*
+			 * Reconnect in case a keep-alive connection timed out.
+			 */
+			[self closeAndReconnect];
+			return;
+		}
+
+		if ((body = [_request body]) != nil)
+			[socket writeBuffer: [body items]
+				     length: [body count] * [body itemSize]];
+	} @catch (id e) {
+		[_client->_delegate client: _client
+		     didEncounterException: e
+				forRequest: _request];
+		return;
+	}
+
+	[socket asyncReadLineWithTarget: self
+			       selector: @selector(socket:didReadLine:context:
+					      exception:)
+				context: nil];
+}
+
+- (void)socketDidConnect: (OFTCPSocket *)socket
+		 context: (id)context
+	       exception: (OFException *)exception
+{
+	if ([_client->_delegate respondsToSelector:
+	    @selector(client:didCreateSocket:forRequest:)])
+		[_client->_delegate client: _client
+			   didCreateSocket: socket
+				forRequest: _request];
+
+	[self performSelector: @selector(handleSocket:)
+		   withObject: socket
+		   afterDelay: 0];
+}
+
+- (bool)throwAwayContent: (OFHTTPClientResponse *)response
+		  buffer: (char *)buffer
+		  length: (size_t)length
+		 context: (OFTCPSocket *)socket
+	       exception: (id)exception
+{
+	if (exception != nil) {
+		[_client->_delegate client: _client
+		     didEncounterException: exception
+				forRequest: _request];
+		return false;
+	}
+
+	if ([response isAtEndOfStream]) {
+		[self freeMemory: buffer];
+
+		[_client->_lastResponse release];
+		_client->_lastResponse = nil;
+
+		[self performSelector: @selector(handleSocket:)
+			   withObject: socket
+			   afterDelay: 0];
+		return false;
+	}
+
+	return true;
+}
+
+- (void)start
+{
+	OFURL *URL = [_request URL];
+	OFTCPSocket *socket;
+
+	/* Can we reuse the last socket? */
+	if (_client->_socket != nil &&
+	    [[_client->_lastURL scheme] isEqual: [URL scheme]] &&
+	    [[_client->_lastURL host] isEqual: [URL host]] &&
+	    [_client->_lastURL port] == [URL port]) {
+		/*
+		 * Set _socket to nil, so that in case of an error it won't be
+		 * reused. If everything is successful, we set _socket again
+		 * at the end.
+		 */
+		socket = [_client->_socket autorelease];
+		_client->_socket = nil;
+
+		[_client->_lastURL release];
+		_client->_lastURL = nil;
+
+		if (!_client->_lastWasHEAD) {
+			/* Throw away content that has not been read yet */
+			char *buffer = [self allocMemoryWithSize: 512];
+
+			[_client->_lastResponse
+			    asyncReadIntoBuffer: buffer
+					 length: 512
+					 target: self
+				       selector: @selector(throwAwayContent:
+						     buffer:length:context:
+						     exception:)
+				   context: socket];
+		} else {
+			[_client->_lastResponse release];
+			_client->_lastResponse = nil;
+
+			[self performSelector: @selector(handleSocket:)
+				   withObject: socket
+				   afterDelay: 0];
+		}
+	} else
+		[self closeAndReconnect];
+}
 @end
 
 @implementation OFHTTPClientResponse
@@ -303,8 +727,10 @@ parseServerHeader(
 		if (_toRead == 0) {
 			_atEndOfStream = true;
 
-			if (!_keepAlive)
-				[_socket close];
+			if (!_keepAlive) {
+				[_socket release];
+				_socket = nil;
+			}
 
 			return 0;
 		}
@@ -378,8 +804,10 @@ parseServerHeader(
 				if ([line length] > 0)
 					@throw [OFInvalidServerReplyException
 					    exception];
-			} else
-				[_socket close];
+			} else {
+				[_socket release];
+				_socket = nil;
+			}
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -390,6 +818,9 @@ parseServerHeader(
 
 - (bool)lowlevelIsAtEndOfStream
 {
+	if (_atEndOfStream)
+		return true;
+
 	if (_socket == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -414,6 +845,8 @@ parseServerHeader(
 
 - (void)close
 {
+	_atEndOfStream = false;
+
 	[_socket release];
 	_socket = nil;
 
@@ -437,320 +870,38 @@ parseServerHeader(
 	[super dealloc];
 }
 
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+- (void)performRequest: (OFHTTPRequest *)request
 {
-	return [self performRequest: request
-			  redirects: 10];
+	[self performRequest: request
+		   redirects: 10];
 }
 
-- (OFTCPSocket *)of_closeAndCreateSocketForRequest: (OFHTTPRequest *)request
-{
-	OFURL *URL = [request URL];
-	OFTCPSocket *socket;
-
-	[self close];
-
-	if ([[URL scheme] isEqual: @"https"]) {
-		if (of_tls_socket_class == Nil)
-			@throw [OFUnsupportedProtocolException
-			    exceptionWithURL: URL];
-
-		socket = [[[of_tls_socket_class alloc] init]
-		    autorelease];
-	} else
-		socket = [OFTCPSocket socket];
-
-	if ([_delegate respondsToSelector:
-	    @selector(client:didCreateSocket:request:)])
-		[_delegate client: self
-		  didCreateSocket: socket
-			  request: request];
-
-	[socket connectToHost: [URL host]
-			 port: [URL port]];
-
-	return socket;
-}
-
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (size_t)redirects
+- (void)performRequest: (OFHTTPRequest *)request
+	     redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
 	OFString *scheme = [URL scheme];
-	of_http_request_method_t method = [request method];
-	OFString *requestString;
-	OFData *body = [request body];
-	OFTCPSocket *socket;
-	OFHTTPClientResponse *response;
-	OFString *line, *version, *redirect, *connectionHeader;
-	bool keepAlive;
-	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *serverHeaders;
-	int status;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 
-	/* Can we reuse the socket? */
-	if (_socket != nil && [[_lastURL scheme] isEqual: scheme] &&
-	    [[_lastURL host] isEqual: [URL host]] &&
-	    [_lastURL port] == [URL port]) {
-		/*
-		 * Set _socket to nil, so that in case of an error it won't be
-		 * reused. If everything is successful, we set _socket again
-		 * at the end.
-		 */
-		socket = [_socket autorelease];
-		_socket = nil;
+	if (_inProgress)
+		/* TODO: Find a better exception */
+		@throw [OFAlreadyConnectedException exception];
 
-		[_lastURL release];
-		_lastURL = nil;
+	_inProgress = true;
 
-		@try {
-			if (!_lastWasHEAD) {
-				/*
-				 * Throw away content that has not been read
-				 * yet.
-				 */
-				while (![_lastResponse isAtEndOfStream]) {
-					char buffer[512];
+	[[[[OFHTTPClientRequestHandler alloc]
+	    initWithClient: self
+		   request: request
+		 redirects: redirects] autorelease] start];
 
-					[_lastResponse readIntoBuffer: buffer
-							       length: 512];
-				}
-			}
-		} @finally {
-			[_lastResponse release];
-			_lastResponse = nil;
-		}
-	} else
-		socket = [self of_closeAndCreateSocketForRequest: request];
-
-	/*
-	 * As a work around for a bug with split packets in lighttpd when using
-	 * HTTPS, we construct the complete request in a buffer string and then
-	 * send it all at once.
-	 *
-	 * We do not use the socket's write buffer in case we need to resend
-	 * the entire request (e.g. in case a keep-alive connection timed out).
-	 */
-
-	requestString = constructRequestString(request);
-
-	@try {
-		[socket writeString: requestString];
-	} @catch (OFWriteFailedException *e) {
-		if ([e errNo] != ECONNRESET && [e errNo] != EPIPE)
-			@throw e;
-
-		/* Reconnect in case a keep-alive connection timed out */
-		socket = [self of_closeAndCreateSocketForRequest: request];
-		[socket writeString: requestString];
-	}
-
-	if (body != nil)
-		[socket writeBuffer: [body items]
-			     length: [body count] * [body itemSize]];
-
-	@try {
-		line = [socket readLine];
-	} @catch (OFInvalidEncodingException *e) {
-		@throw [OFInvalidServerReplyException exception];
-	}
-
-	/*
-	 * It's possible that the write succeeds on a connection that is
-	 * keep-alive, but the connection has already been closed by the remote
-	 * end due to a timeout. In this case, we need to reconnect.
-	 */
-	if (line == nil) {
-		socket = [self of_closeAndCreateSocketForRequest: request];
-		[socket writeString: requestString];
-
-		if (body != nil)
-			[socket writeBuffer: [body items]
-				     length: [body count] *
-					     [body itemSize]];
-
-		@try {
-			line = [socket readLine];
-		} @catch (OFInvalidEncodingException *e) {
-			@throw [OFInvalidServerReplyException exception];
-		}
-	}
-
-	if (![line hasPrefix: @"HTTP/"] || [line length] < 9 ||
-	    [line characterAtIndex: 8] != ' ')
-		@throw [OFInvalidServerReplyException exception];
-
-	version = [line substringWithRange: of_range(5, 3)];
-	if (![version isEqual: @"1.0"] && ![version isEqual: @"1.1"])
-		@throw [OFUnsupportedVersionException
-		    exceptionWithVersion: version];
-
-	status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
-
-	serverHeaders = [OFMutableDictionary dictionary];
-
-	do {
-		@try {
-			line = [socket readLine];
-		} @catch (OFInvalidEncodingException *e) {
-			@throw [OFInvalidServerReplyException exception];
-		}
-	} while (parseServerHeader(serverHeaders, line));
-
-	[serverHeaders makeImmutable];
-
-	if ([_delegate respondsToSelector:
-	    @selector(client:didReceiveHeaders:statusCode:request:)])
-		[_delegate     client: self
-		    didReceiveHeaders: serverHeaders
-			   statusCode: status
-			      request: request];
-
-	response = [[[OFHTTPClientResponse alloc] initWithSocket: socket]
-	    autorelease];
-	[response setProtocolVersionFromString: version];
-	[response setStatusCode: status];
-	[response setHeaders: serverHeaders];
-
-	connectionHeader = [serverHeaders objectForKey: @"Connection"];
-	if ([version isEqual: @"1.1"]) {
-		if (connectionHeader != nil)
-			keepAlive = ([connectionHeader caseInsensitiveCompare:
-			    @"close"] != OF_ORDERED_SAME);
-		else
-			keepAlive = true;
-	} else {
-		if (connectionHeader != nil)
-			keepAlive = ([connectionHeader caseInsensitiveCompare:
-			    @"keep-alive"] == OF_ORDERED_SAME);
-		else
-			keepAlive = false;
-	}
-
-	if (keepAlive) {
-		[response of_setKeepAlive: true];
-
-		_socket = [socket retain];
-		_lastURL = [URL copy];
-		_lastWasHEAD = (method == OF_HTTP_REQUEST_METHOD_HEAD);
-		_lastResponse = [response retain];
-	}
-
-	/* FIXME: Case-insensitive check of redirect's scheme */
-	if (redirects > 0 && (status == 301 || status == 302 ||
-	    status == 303 || status == 307) &&
-	    (redirect = [serverHeaders objectForKey: @"Location"]) != nil &&
-	    (_insecureRedirectsAllowed || [scheme isEqual: @"http"] ||
-	    [redirect hasPrefix: @"https://"])) {
-		OFURL *newURL;
-		bool follow;
-
-		newURL = [OFURL URLWithString: redirect
-				relativeToURL: URL];
-
-		if ([_delegate respondsToSelector: @selector(client:
-		    shouldFollowRedirect:statusCode:request:response:)])
-			follow = [_delegate client: self
-			      shouldFollowRedirect: newURL
-					statusCode: status
-					   request: request
-					  response: response];
-		else {
-			/*
-			 * 301, 302 and 307 should only redirect with user
-			 * confirmation if the request method is not GET or
-			 * HEAD. Asking the delegate and getting true returned
-			 * is considered user confirmation.
-			 */
-			if (method == OF_HTTP_REQUEST_METHOD_GET ||
-			    method == OF_HTTP_REQUEST_METHOD_HEAD)
-				follow = true;
-			/*
-			 * 303 should always be redirected and converted to a
-			 * GET request.
-			 */
-			else if (status == 303)
-				follow = true;
-			else
-				follow = false;
-		}
-
-		if (follow) {
-			OFDictionary OF_GENERIC(OFString *, OFString *)
-			    *headers = [request headers];
-			OFHTTPRequest *newRequest =
-			    [[request copy] autorelease];
-			OFMutableDictionary *newHeaders =
-			    [[headers mutableCopy] autorelease];
-
-			if (![[newURL host] isEqual: [URL host]])
-				[newHeaders removeObjectForKey: @"Host"];
-
-			/*
-			 * 303 means the request should be converted to a GET
-			 * request before redirection. This also means stripping
-			 * the entity of the request.
-			 */
-			if (status == 303) {
-				OFEnumerator *keyEnumerator, *objectEnumerator;
-				id key, object;
-
-				keyEnumerator = [headers keyEnumerator];
-				objectEnumerator = [headers objectEnumerator];
-				while ((key = [keyEnumerator nextObject]) !=
-				    nil &&
-				    (object = [objectEnumerator nextObject]) !=
-				    nil)
-					if ([key hasPrefix: @"Content-"])
-						[newHeaders
-						    removeObjectForKey: key];
-
-				[newRequest setMethod:
-				    OF_HTTP_REQUEST_METHOD_GET];
-				[newRequest setBody: nil];
-			}
-
-			[newRequest setURL: newURL];
-			[newRequest setHeaders: newHeaders];
-
-			[newRequest retain];
-			objc_autoreleasePoolPop(pool);
-			[newRequest autorelease];
-
-			return [self performRequest: newRequest
-					  redirects: redirects - 1];
-		}
-	}
-
-	[response retain];
 	objc_autoreleasePoolPop(pool);
-	[response autorelease];
-
-	if (status / 100 != 2)
-		@throw [OFHTTPRequestFailedException
-		    exceptionWithRequest: request
-				response: response];
-
-	if ([_delegate respondsToSelector: @selector(client:didPerformRequest:
-					       response:)]) {
-		pool = objc_autoreleasePoolPush();
-
-		[_delegate     client: self
-		    didPerformRequest: request
-			     response: response];
-
-		objc_autoreleasePoolPop(pool);
-	}
-
-	return response;
 }
 
 - (void)close
 {
-	[_socket close];
 	[_socket release];
 	_socket = nil;
 

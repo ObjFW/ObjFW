@@ -41,16 +41,8 @@
 # import "OFFileManager.h"
 #endif
 #import "OFURL.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFHTTPClient.h"
-# import "OFHTTPRequest.h"
-# import "OFHTTPResponse.h"
-#endif
 #import "OFXMLElement.h"
 
-#ifdef OF_HAVE_SOCKETS
-# import "OFHTTPRequestFailedException.h"
-#endif
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
@@ -1051,26 +1043,6 @@ static struct {
 
 		self = [self initWithContentsOfFile: [URL path]
 					   encoding: encoding];
-	} else
-# endif
-# ifdef OF_HAVE_SOCKETS
-	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
-		bool mutable = [self isKindOfClass: [OFMutableString class]];
-		OFHTTPClient *client = [OFHTTPClient client];
-		OFHTTPRequest *request = [OFHTTPRequest requestWithURL: URL];
-		OFHTTPResponse *response = [client performRequest: request];
-
-		if ([response statusCode] != 200)
-			@throw [OFHTTPRequestFailedException
-			    exceptionWithRequest: request
-					response: response];
-
-		[self release];
-
-		if (mutable)
-			self = [[response string] mutableCopy];
-		else
-			self = [[response string] copy];
 	} else
 # endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];

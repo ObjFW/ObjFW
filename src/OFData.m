@@ -28,18 +28,10 @@
 # import "OFFileManager.h"
 #endif
 #import "OFURL.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFHTTPClient.h"
-# import "OFHTTPRequest.h"
-# import "OFHTTPResponse.h"
-#endif
 #import "OFDictionary.h"
 #import "OFXMLElement.h"
 #import "OFSystemInfo.h"
 
-#ifdef OF_HAVE_SOCKETS
-# import "OFHTTPRequestFailedException.h"
-#endif
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
@@ -254,75 +246,6 @@ _references_to_categories_of_OFData(void)
 	if ([scheme isEqual: @"file"])
 		self = [self initWithContentsOfFile: [URL path]];
 	else
-# endif
-# ifdef OF_HAVE_SOCKETS
-	if ([scheme isEqual: @"http"] || [scheme isEqual: @"https"]) {
-		bool mutable = [self isKindOfClass: [OFMutableData class]];
-
-		if (!mutable) {
-			[self release];
-			self = [OFMutableData alloc];
-		}
-
-		self = [(OFMutableData *)self init];
-
-		@try {
-			OFHTTPClient *client = [OFHTTPClient client];
-			OFHTTPRequest *request = [OFHTTPRequest
-			    requestWithURL: URL];
-			OFHTTPResponse *response = [client
-			    performRequest: request];
-			size_t pageSize;
-			char *buffer;
-			OFDictionary *headers;
-			OFString *contentLengthString;
-
-			if ([response statusCode] != 200)
-				@throw [OFHTTPRequestFailedException
-				    exceptionWithRequest: request
-						response: response];
-
-			pageSize = [OFSystemInfo pageSize];
-			buffer = [self allocMemoryWithSize: pageSize];
-
-			@try {
-				while (![response isAtEndOfStream]) {
-					size_t length;
-
-					length = [response
-					    readIntoBuffer: buffer
-						    length: pageSize];
-					[(OFMutableData *)self
-					    addItems: buffer
-					       count: length];
-				}
-			} @finally {
-				[self freeMemory: buffer];
-			}
-
-			headers = [response headers];
-			if ((contentLengthString =
-			    [headers objectForKey: @"Content-Length"]) != nil) {
-				intmax_t contentLength =
-				    [contentLengthString decimalValue];
-
-				if (contentLength < 0)
-					@throw [OFInvalidServerReplyException
-					    exception];
-
-				if ((uintmax_t)[self count] !=
-				    (uintmax_t)contentLength)
-					@throw [OFTruncatedDataException
-					    exception];
-			}
-		} @catch (id e) {
-			[self release];
-			@throw e;
-		}
-
-		if (!mutable)
-			[(OFMutableData *)self makeImmutable];
-	} else
 # endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
 

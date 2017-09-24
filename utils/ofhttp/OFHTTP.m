@@ -538,12 +538,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	return true;
 }
 
-- (bool)performRequest: (OFHTTPRequest *)request
+-	   (void)client: (OFHTTPClient *)client
+  didEncounterException: (id)e
+	     forRequest: (OFHTTPRequest *)request
 {
-	@try {
-		[_HTTPClient performRequest: request];
-		return true;
-	} @catch (OFAddressTranslationFailedException *e) {
+	if ([e isKindOfClass: [OFAddressTranslationFailedException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
@@ -554,7 +553,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"prog", [OFApplication programName],
 		    @"url", [[request URL] string],
 		    @"exception", e)];
-	} @catch (OFConnectionFailedException *e) {
+	} else if ([e isKindOfClass: [OFConnectionFailedException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
@@ -565,7 +564,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"prog", [OFApplication programName],
 		    @"url", [[request URL] string],
 		    @"exception", e)];
-	} @catch (OFInvalidServerReplyException *e) {
+	} else if ([e isKindOfClass: [OFInvalidServerReplyException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
@@ -575,7 +574,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"  Invalid server reply!",
 		    @"prog", [OFApplication programName],
 		    @"url", [[request URL] string])];
-	} @catch (OFUnsupportedProtocolException *e) {
+	} else if ([e isKindOfClass: [OFUnsupportedProtocolException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
@@ -585,7 +584,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"TLS library for ObjFW\n"
 		    @"  such as ObjOpenSSL!",
 		    @"prog", [OFApplication programName])];
-	} @catch (OFReadOrWriteFailedException *e) {
+	} else if ([e isKindOfClass: [OFReadOrWriteFailedException class]]) {
 		OFString *error = OF_LOCALIZED(
 		    @"download_failed_read_or_write_failed_any",
 		    @"Read or write failed");
@@ -610,7 +609,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"url", [[request URL] string],
 		    @"error", error,
 		    @"exception", e)];
-	} @catch (OFHTTPRequestFailedException *e) {
+	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
 		if (!_quiet)
 			[of_stdout writeFormat: @" ➜ %d\n",
 						[[e response] statusCode]];
@@ -619,9 +618,11 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"%[prog]: Failed to download <%[url]>!",
 		    @"prog", [OFApplication programName],
 		    @"url", [[request URL] string])];
-	}
+	} else
+		@throw e;
 
-	return false;
+	[self performSelector: @selector(downloadNextURL)
+		   afterDelay: 0];
 }
 
 -      (void)client: (OFHTTPClient *)client
@@ -907,11 +908,7 @@ next:
 		[request setHeaders: clientHeaders];
 		[request setMethod: OF_HTTP_REQUEST_METHOD_HEAD];
 
-		if (![self performRequest: request]) {
-			_errorCode = 1;
-			goto next;
-		}
-
+		[_HTTPClient performRequest: request];
 		return;
 	}
 
@@ -952,11 +949,7 @@ next:
 	[request setMethod: _method];
 	[request setBody: _body];
 
-	if (![self performRequest: request]) {
-		_errorCode = 1;
-		goto next;
-	}
-
+	[_HTTPClient performRequest: request];
 	return;
 
 next:
