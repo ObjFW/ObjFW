@@ -257,13 +257,6 @@ normalizeKey(char *str_)
 			   context: nil];
 }
 
-- (void)didCreateResponse: (OFHTTPResponse *)response
-{
-	[_client->_delegate client:_client
-		 didPerformRequest:_request
-			  response:response];
-}
-
 - (void)createResponseWithSocket: (OFTCPSocket *)socket
 {
 	OFURL *URL = [_request URL];
@@ -398,9 +391,12 @@ normalizeKey(char *str_)
 
 	_client->_inProgress = false;
 
-	[self performSelector: @selector(didCreateResponse:)
-		   withObject: response
-		   afterDelay: 0];
+	[_client->_delegate performSelector: @selector(client:didPerformRequest:
+						 response:)
+				 withObject: _client
+				 withObject: _request
+				 withObject: response
+				 afterDelay: 0];
 }
 
 - (bool)handleFirstLine: (OFString *)line

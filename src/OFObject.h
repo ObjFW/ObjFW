@@ -288,6 +288,23 @@ of_rectangle(float x, float y, float width, float height)
 		    withObject: (nullable id)object2;
 
 /*!
+ * @brief Performs the specified selector with the specified objects.
+ *
+ * @param selector The selector to perform
+ * @param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * @param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * @param object3 The third object that is passed to the method specified by the
+ *		  selector
+ * @return The object returned by the method specified by the selector
+ */
+- (nullable id)performSelector: (SEL)selector
+		    withObject: (nullable id)object1
+		    withObject: (nullable id)object2
+		    withObject: (nullable id)object3;
+
+/*!
  * @brief Checks two objects for equality.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
@@ -735,6 +752,25 @@ OF_ROOT_CLASS
 	     withObject: (nullable id)object2
 	     afterDelay: (of_time_interval_t)delay;
 
+/*!
+ * @brief Performs the specified selector with the specified objects after the
+ *	  specified delay.
+ *
+ * @param selector The selector to perform
+ * @param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * @param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * @param object3 The third object that is passed to the method specified by the
+ *		  selector
+ * @param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	     withObject: (nullable id)object1
+	     withObject: (nullable id)object2
+	     withObject: (nullable id)object3
+	     afterDelay: (of_time_interval_t)delay;
+
 #ifdef OF_HAVE_THREADS
 /*!
  * @brief Performs the specified selector on the specified thread.
@@ -781,6 +817,27 @@ OF_ROOT_CLASS
 	  waitUntilDone: (bool)waitUntilDone;
 
 /*!
+ * @brief Performs the specified selector on the specified thread with the
+ *	  specified objects.
+ *
+ * @param selector The selector to perform
+ * @param thread The thread on which to perform the selector
+ * @param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * @param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * @param object3 The third object that is passed to the method specified by the
+ *		  selector
+ * @param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread *)thread
+	     withObject: (nullable id)object1
+	     withObject: (nullable id)object2
+	     withObject: (nullable id)object3
+	  waitUntilDone: (bool)waitUntilDone;
+
+/*!
  * @brief Performs the specified selector on the main thread.
  *
  * @param selector The selector to perform
@@ -816,6 +873,25 @@ OF_ROOT_CLASS
 - (void)performSelectorOnMainThread: (SEL)selector
 			 withObject: (nullable id)object1
 			 withObject: (nullable id)object2
+		      waitUntilDone: (bool)waitUntilDone;
+
+/*!
+ * @brief Performs the specified selector on the main thread with the specified
+ *	  objects.
+ *
+ * @param selector The selector to perform
+ * @param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * @param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * @param object3 The third object that is passed to the method specified by the
+ *		  selector
+ * @param waitUntilDone Whether to wait until the perform finished
+ */
+- (void)performSelectorOnMainThread: (SEL)selector
+			 withObject: (nullable id)object1
+			 withObject: (nullable id)object2
+			 withObject: (nullable id)object3
 		      waitUntilDone: (bool)waitUntilDone;
 
 /*!
@@ -861,6 +937,27 @@ OF_ROOT_CLASS
 	       onThread: (OFThread *)thread
 	     withObject: (nullable id)object1
 	     withObject: (nullable id)object2
+	     afterDelay: (of_time_interval_t)delay;
+
+/*!
+ * @brief Performs the specified selector on the specified thread with the
+ *	  specified objects after the specified delay.
+ *
+ * @param selector The selector to perform
+ * @param thread The thread on which to perform the selector
+ * @param object1 The first object that is passed to the method specified by the
+ *		 selector
+ * @param object2 The second object that is passed to the method specified by
+ *		  the selector
+ * @param object3 The third object that is passed to the method specified by the
+ *		  selector
+ * @param delay The delay after which the selector will be performed
+ */
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread *)thread
+	     withObject: (nullable id)object1
+	     withObject: (nullable id)object2
+	     withObject: (nullable id)object3
 	     afterDelay: (of_time_interval_t)delay;
 #endif
 

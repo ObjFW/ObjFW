@@ -131,7 +131,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HTTPCLIENT_M
 @public
 #endif
-	id <OFHTTPClientDelegate> _delegate;
+	OFObject <OFHTTPClientDelegate> *_delegate;
 	bool _insecureRedirectsAllowed, _inProgress;
 	OFTCPSocket *_socket;
 	OFURL *_lastURL;
@@ -143,7 +143,7 @@ OF_ASSUME_NONNULL_BEGIN
  * The delegate of the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
-    id <OFHTTPClientDelegate> delegate;
+    OFObject <OFHTTPClientDelegate> *delegate;
 
 /*!
  * Whether redirects from HTTPS to HTTP will be allowed.
