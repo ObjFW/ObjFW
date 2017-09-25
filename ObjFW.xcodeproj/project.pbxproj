@@ -19,15 +19,15 @@
 			name = "configure (iOS)";
 			productName = configure;
 		};
-		4B5D8DDD1099E1B0000896FF /* autoreconf */ = {
+		4B5D8DDD1099E1B0000896FF /* autogen.sh */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4B5D8DE51099E1C5000896FF /* Build configuration list for PBXAggregateTarget "autoreconf" */;
+			buildConfigurationList = 4B5D8DE51099E1C5000896FF /* Build configuration list for PBXAggregateTarget "autogen.sh" */;
 			buildPhases = (
 				4B5D8DE11099E1BF000896FF /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = autoreconf;
+			name = autogen.sh;
 			productName = autoreconf;
 		};
 		4BDF37AD1338047700F9A81A /* configure (Mac) */ = {
@@ -3199,7 +3199,7 @@
 				4B0E296A1DA2A8A400323A76 /* ObjFW_Bridge (iOS) */,
 				4B23CA89133811610047A1D9 /* TestPlugin (Mac) */,
 				4B5D706A1DA2F87A00B3B2D7 /* TestPlugin (iOS) */,
-				4B5D8DDD1099E1B0000896FF /* autoreconf */,
+				4B5D8DDD1099E1B0000896FF /* autogen.sh */,
 				4BDF37AD1338047700F9A81A /* configure (Mac) */,
 				4B596D8D1EED62A500A6D140 /* configure (iOS) */,
 			);
@@ -3260,7 +3260,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"configure.ac\" -nt \"configure\" ]; then\n\tautoreconf || exit 1\nfi";
+			shellScript = "if [ \"configure.ac\" -nt \"configure\" ]; then\n\t./autogen.sh || exit 1\nfi";
 			showEnvVarsInLog = 0;
 		};
 		4BDF37B11338047D00F9A81A /* Run Script */ = {
@@ -3862,7 +3862,7 @@
 		};
 		4B596D8E1EED62A500A6D140 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4B5D8DDD1099E1B0000896FF /* autoreconf */;
+			target = 4B5D8DDD1099E1B0000896FF /* autogen.sh */;
 			targetProxy = 4B596D8F1EED62A500A6D140 /* PBXContainerItemProxy */;
 		};
 		4B596D951EED62B300A6D140 /* PBXTargetDependency */ = {
@@ -3897,7 +3897,7 @@
 		};
 		4BDF37B31338049600F9A81A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 4B5D8DDD1099E1B0000896FF /* autoreconf */;
+			target = 4B5D8DDD1099E1B0000896FF /* autogen.sh */;
 			targetProxy = 4BDF37B21338049600F9A81A /* PBXContainerItemProxy */;
 		};
 		4BF33AFA1338074A0059CEF7 /* PBXTargetDependency */ = {
@@ -4503,7 +4503,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4B5D8DE51099E1C5000896FF /* Build configuration list for PBXAggregateTarget "autoreconf" */ = {
+		4B5D8DE51099E1C5000896FF /* Build configuration list for PBXAggregateTarget "autogen.sh" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4B5D8DDE1099E1B1000896FF /* Debug */,
