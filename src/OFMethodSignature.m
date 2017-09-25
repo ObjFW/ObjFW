@@ -49,6 +49,9 @@ sizeofArray(const char **type, size_t *length)
 		(*length)--;
 	}
 
+	if (count == 0)
+		@throw [OFInvalidFormatException exception];
+
 	size = sizeofEncoding(type, length);
 
 	if (*length == 0 || **type != ']')
