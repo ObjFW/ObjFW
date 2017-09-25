@@ -15,11 +15,13 @@
  */
 
 #import "OFObject.h"
+#import "OFHTTPClient.h"
 
 @class OFString;
 
-@interface TableGenerator: OFObject
+@interface TableGenerator: OFObject <OFHTTPClientDelegate>
 {
+	OFHTTPClient *_HTTPClient;
 	of_unichar_t _uppercaseTable[0x110000];
 	of_unichar_t _lowercaseTable[0x110000];
 	of_unichar_t _titlecaseTable[0x110000];
@@ -40,9 +42,10 @@
 	size_t _decompositionCompatTableSize;
 }
 
-- (void)parseUnicodeData;
-- (void)parseCaseFolding;
+- (void)parseUnicodeData: (OFHTTPResponse *)response;
+- (void)parseCaseFolding: (OFHTTPResponse *)response;
 - (void)applyDecompositionRecursivelyForTable: (OFString *[0x110000])table;
+- (void)writeFiles;
 - (void)writeTablesToFile: (OFString *)path;
 - (void)writeHeaderToFile: (OFString *)path;
 @end

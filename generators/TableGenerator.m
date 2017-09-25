@@ -45,53 +45,62 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 {
 	self = [super init];
 
-	_uppercaseTableSize           = SIZE_MAX;
-	_lowercaseTableSize           = SIZE_MAX;
-	_titlecaseTableSize           = SIZE_MAX;
-	_casefoldingTableSize         = SIZE_MAX;
-	_decompositionTableSize       = SIZE_MAX;
-	_decompositionCompatTableSize = SIZE_MAX;
+	@try {
+		_HTTPClient = [[OFHTTPClient alloc] init];
+		[_HTTPClient setDelegate: self];
+
+		_uppercaseTableSize           = SIZE_MAX;
+		_lowercaseTableSize           = SIZE_MAX;
+		_titlecaseTableSize           = SIZE_MAX;
+		_casefoldingTableSize         = SIZE_MAX;
+		_decompositionTableSize       = SIZE_MAX;
+		_decompositionCompatTableSize = SIZE_MAX;
+	} @catch (id e) {
+		@throw e;
+		[self release];
+	}
 
 	return self;
 }
 
 - (void)applicationDidFinishLaunching
 {
-	OFString *path;
-	[self parseUnicodeData];
-	[self parseCaseFolding];
-	[self applyDecompositionRecursivelyForTable: _decompositionTable];
-	[self applyDecompositionRecursivelyForTable: _decompositionCompatTable];
-
-	[of_stdout writeString: @"Writing files…"];
-
-	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.m", nil]];
-	[self writeTablesToFile: path];
-
-	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.h", nil]];
-	[self writeHeaderToFile: path];
-
-	[of_stdout writeLine: @" done"];
-
-	[OFApplication terminate];
-}
-
-- (void)parseUnicodeData
-{
-	void *pool = objc_autoreleasePoolPush();
 	OFHTTPRequest *request;
-	OFHTTPClient *client;
-	OFHTTPResponse *response;
-	OFString *line;
 
-	[of_stdout writeString: @"Downloading and parsing UnicodeData.txt…"];
-
+	[of_stdout writeString: @"Downloading UnicodeData.txt…"];
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: UNICODE_DATA_URL]];
-	client = [OFHTTPClient client];
-	response = [client performRequest: request];
+	[_HTTPClient asyncPerformRequest: request
+				 context: @"UnicodeData"];
+}
+
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response
+	    context: (id)context
+{
+	[of_stdout writeLine: @" done"];
+
+	if ([context isEqual: @"UnicodeData"])
+		[self parseUnicodeData: response];
+	else if ([context isEqual: @"CaseFolding"])
+		[self parseCaseFolding: response];
+}
+
+-	   (void)client: (OFHTTPClient *)client
+  didEncounterException: (id)exception
+	     forRequest: (OFHTTPRequest *)request
+		context: (id)context
+{
+	@throw exception;
+}
+
+- (void)parseUnicodeData: (OFHTTPResponse *)response
+{
+	OFString *line;
+	OFHTTPRequest *request;
+
+	[of_stdout writeString: @"Parsing UnicodeData.txt…"];
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
@@ -154,25 +163,23 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 		objc_autoreleasePoolPop(pool2);
 	}
 
+	[self applyDecompositionRecursivelyForTable: _decompositionTable];
+	[self applyDecompositionRecursivelyForTable: _decompositionCompatTable];
+
 	[of_stdout writeLine: @" done"];
 
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)parseCaseFolding
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFHTTPRequest *request;
-	OFHTTPClient *client;
-	OFHTTPResponse *response;
-	OFString *line;
-
-	[of_stdout writeString: @"Downloading and parsing CaseFolding.txt…"];
-
+	[of_stdout writeString: @"Downloading CaseFolding.txt…"];
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: CASE_FOLDING_URL]];
-	client = [OFHTTPClient client];
-	response = [client performRequest: request];
+	[_HTTPClient asyncPerformRequest: request
+				 context: @"CaseFolding"];
+}
+
+- (void)parseCaseFolding: (OFHTTPResponse *)response
+{
+	OFString *line;
+
+	[of_stdout writeString: @"Parsing CaseFolding.txt…"];
 
 	while ((line = [response readLine]) != nil) {
 		void *pool2;
@@ -208,7 +215,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 	[of_stdout writeLine: @" done"];
 
-	objc_autoreleasePoolPop(pool);
+	[self writeFiles];
 }
 
 - (void)applyDecompositionRecursivelyForTable: (OFString *[0x110000])table
@@ -259,6 +266,25 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 			}
 		}
 	} while (!done);
+}
+
+- (void)writeFiles
+{
+	OFString *path;
+
+	[of_stdout writeString: @"Writing files…"];
+
+	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
+	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.m", nil]];
+	[self writeTablesToFile: path];
+
+	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
+	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.h", nil]];
+	[self writeHeaderToFile: path];
+
+	[of_stdout writeLine: @" done"];
+
+	[OFApplication terminate];
 }
 
 - (void)writeTablesToFile: (OFString *)path
