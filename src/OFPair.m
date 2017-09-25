@@ -100,8 +100,8 @@
 
 - mutableCopy
 {
-	return [OFMutablePair pairWithFirstObject: _firstObject
-				     secondObject: _secondObject];
+	return [[OFMutablePair alloc] initWithFirstObject: _firstObject
+					     secondObject: _secondObject];
 }
 
 - (OFString *)description

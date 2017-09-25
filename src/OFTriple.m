@@ -114,9 +114,9 @@
 
 - mutableCopy
 {
-	return [OFMutableTriple tripleWithFirstObject: _firstObject
-					 secondObject: _secondObject
-					  thirdObject: _thirdObject];
+	return [[OFMutableTriple alloc] initWithFirstObject: _firstObject
+					       secondObject: _secondObject
+						thirdObject: _thirdObject];
 }
 
 - (OFString *)description
