@@ -131,6 +131,35 @@
 	return [timer autorelease];
 }
 
++ (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
+					target: (id)target
+				      selector: (SEL)selector
+					object: (id)object1
+					object: (id)object2
+					object: (id)object3
+					object: (id)object4
+				       repeats: (bool)repeats
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
+	id timer = [[[self alloc] initWithFireDate: fireDate
+					  interval: timeInterval
+					    target: target
+					  selector: selector
+					    object: object1
+					    object: object2
+					    object: object3
+					    object: object4
+					   repeats: repeats] autorelease];
+
+	[[OFRunLoop currentRunLoop] addTimer: timer];
+
+	[timer retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [timer autorelease];
+}
+
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 				       repeats: (bool)repeats
@@ -240,6 +269,33 @@
 	return [timer autorelease];
 }
 
++ (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
+			       target: (id)target
+			     selector: (SEL)selector
+			       object: (id)object1
+			       object: (id)object2
+			       object: (id)object3
+			       object: (id)object4
+			      repeats: (bool)repeats
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *fireDate = [OFDate dateWithTimeIntervalSinceNow: timeInterval];
+	id timer = [[[self alloc] initWithFireDate: fireDate
+					  interval: timeInterval
+					    target: target
+					  selector: selector
+					    object: object1
+					    object: object2
+					    object: object3
+					    object: object4
+					   repeats: repeats] autorelease];
+
+	[timer retain];
+	objc_autoreleasePoolPop(pool);
+
+	return [timer autorelease];
+}
+
 #ifdef OF_HAVE_BLOCKS
 + (instancetype)timerWithTimeInterval: (of_time_interval_t)timeInterval
 			      repeats: (bool)repeats
@@ -271,6 +327,7 @@
 			     object: (id)object1
 			     object: (id)object2
 			     object: (id)object3
+			     object: (id)object4
 			  arguments: (uint8_t)arguments
 			    repeats: (bool)repeats OF_METHOD_FAMILY(init)
 {
@@ -284,6 +341,7 @@
 		_object1 = [object1 retain];
 		_object2 = [object2 retain];
 		_object3 = [object3 retain];
+		_object4 = [object4 retain];
 		_arguments = arguments;
 		_repeats = repeats;
 		_valid = true;
@@ -311,6 +369,7 @@
 				  object: nil
 				  object: nil
 				  object: nil
+				  object: nil
 			       arguments: 0
 				 repeats: repeats];
 }
@@ -327,6 +386,7 @@
 				  target: target
 				selector: selector
 				  object: object
+				  object: nil
 				  object: nil
 				  object: nil
 			       arguments: 1
@@ -348,6 +408,7 @@
 				  object: object1
 				  object: object2
 				  object: nil
+				  object: nil
 			       arguments: 2
 				 repeats: repeats];
 }
@@ -368,7 +429,30 @@
 				  object: object1
 				  object: object2
 				  object: object3
+				  object: nil
 			       arguments: 3
+				 repeats: repeats];
+}
+
+- initWithFireDate: (OFDate *)fireDate
+	  interval: (of_time_interval_t)interval
+	    target: (id)target
+	  selector: (SEL)selector
+	    object: (id)object1
+	    object: (id)object2
+	    object: (id)object3
+	    object: (id)object4
+	   repeats: (bool)repeats
+{
+	return [self of_initWithFireDate: fireDate
+				interval: interval
+				  target: target
+				selector: selector
+				  object: object1
+				  object: object2
+				  object: object3
+				  object: object4
+			       arguments: 4
 				 repeats: repeats];
 }
 
@@ -411,6 +495,7 @@
 	[_object1 release];
 	[_object2 release];
 	[_object3 release];
+	[_object4 release];
 #ifdef OF_HAVE_BLOCKS
 	[_block release];
 #endif
@@ -440,8 +525,9 @@
 	id object1 = [[_object1 retain] autorelease];
 	id object2 = [[_object2 retain] autorelease];
 	id object3 = [[_object3 retain] autorelease];
+	id object4 = [[_object4 retain] autorelease];
 
-	OF_ENSURE(_arguments <= 3);
+	OF_ENSURE(_arguments <= 4);
 
 	if (_repeats && _valid) {
 		int missedIntervals =
@@ -486,6 +572,13 @@
 				     withObject: object1
 				     withObject: object2
 				     withObject: object3];
+			break;
+		case 4:
+			[target performSelector: _selector
+				     withObject: object1
+				     withObject: object2
+				     withObject: object3
+				     withObject: object4];
 			break;
 		}
 #ifdef OF_HAVE_BLOCKS
@@ -538,11 +631,13 @@
 	[_object1 release];
 	[_object2 release];
 	[_object3 release];
+	[_object4 release];
 
 	_target = nil;
 	_object1 = nil;
 	_object2 = nil;
 	_object3 = nil;
+	_object4 = nil;
 }
 
 #ifdef OF_HAVE_THREADS

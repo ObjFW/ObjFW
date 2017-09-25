@@ -574,6 +574,23 @@ _references_to_categories_of_OFObject(void)
 	return imp(self, selector, object1, object2, object3);
 }
 
+- (id)performSelector: (SEL)selector
+	   withObject: (id)object1
+	   withObject: (id)object2
+	   withObject: (id)object3
+	   withObject: (id)object4
+{
+#if defined(OF_OBJFW_RUNTIME)
+	id (*imp)(id, SEL, id, id, id, id) =
+	    (id (*)(id, SEL, id, id, id, id))objc_msg_lookup(self, selector);
+#elif defined(OF_APPLE_RUNTIME)
+	id (*imp)(id, SEL, id, id, id, id) =
+	    (id (*)(id, SEL, id, id, id, id))objc_msgSend;
+#endif
+
+	return imp(self, selector, object1, object2, object3, object4);
+}
+
 - (void)performSelector: (SEL)selector
 	     afterDelay: (of_time_interval_t)delay
 {
@@ -633,6 +650,27 @@ _references_to_categories_of_OFObject(void)
 					 object: object1
 					 object: object2
 					 object: object3
+					repeats: false];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	     withObject: (id)object1
+	     withObject: (id)object2
+	     withObject: (id)object3
+	     withObject: (id)object4
+	     afterDelay: (of_time_interval_t)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[OFTimer scheduledTimerWithTimeInterval: delay
+					 target: self
+				       selector: selector
+					 object: object1
+					 object: object2
+					 object: object3
+					 object: object4
 					repeats: false];
 
 	objc_autoreleasePoolPop(pool);
@@ -719,6 +757,31 @@ _references_to_categories_of_OFObject(void)
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread *)thread
+	     withObject: (id)object1
+	     withObject: (id)object2
+	     withObject: (id)object3
+	     withObject: (id)object4
+	  waitUntilDone: (bool)waitUntilDone
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
+						 target: self
+					       selector: selector
+						 object: object1
+						 object: object2
+						 object: object3
+						 object: object4
+						repeats: false];
+	[[thread runLoop] addTimer: timer];
+
+	if (waitUntilDone)
+		[timer waitUntilDone];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)performSelectorOnMainThread: (SEL)selector
 		      waitUntilDone: (bool)waitUntilDone
 {
@@ -795,6 +858,30 @@ _references_to_categories_of_OFObject(void)
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)performSelectorOnMainThread: (SEL)selector
+			 withObject: (id)object1
+			 withObject: (id)object2
+			 withObject: (id)object3
+			 withObject: (id)object4
+		      waitUntilDone: (bool)waitUntilDone
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFTimer *timer = [OFTimer timerWithTimeInterval: 0
+						 target: self
+					       selector: selector
+						 object: object1
+						 object: object2
+						 object: object3
+						 object: object4
+						repeats: false];
+	[[OFRunLoop mainRunLoop] addTimer: timer];
+
+	if (waitUntilDone)
+		[timer waitUntilDone];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)performSelector: (SEL)selector
 	       onThread: (OFThread *)thread
 	     afterDelay: (of_time_interval_t)delay
@@ -858,6 +945,28 @@ _references_to_categories_of_OFObject(void)
 							    object: object1
 							    object: object2
 							    object: object3
+							   repeats: false]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)performSelector: (SEL)selector
+	       onThread: (OFThread *)thread
+	     withObject: (id)object1
+	     withObject: (id)object2
+	     withObject: (id)object3
+	     withObject: (id)object4
+	     afterDelay: (of_time_interval_t)delay
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
+							    target: self
+							  selector: selector
+							    object: object1
+							    object: object2
+							    object: object3
+							    object: object4
 							   repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
