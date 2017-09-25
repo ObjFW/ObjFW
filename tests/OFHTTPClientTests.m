@@ -94,6 +94,7 @@ static OFHTTPResponse *response = nil;
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response_
+	    context: (id)context
 {
 	response = [response_ retain];
 
@@ -125,7 +126,8 @@ static OFHTTPResponse *response = nil;
 	TEST(@"-[asyncPerformRequest:]",
 	    (client = [OFHTTPClient client]) && R([client setDelegate: self]) &&
 	    R(request = [OFHTTPRequest requestWithURL: URL]) &&
-	    R([client asyncPerformRequest: request]))
+	    R([client asyncPerformRequest: request
+				  context: nil]))
 
 	[[OFRunLoop mainRunLoop] runUntilDate:
 	    [OFDate dateWithTimeIntervalSinceNow: 2]];

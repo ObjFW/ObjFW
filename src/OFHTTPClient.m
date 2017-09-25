@@ -49,6 +49,7 @@
 	OFHTTPClient *_client;
 	OFHTTPRequest *_request;
 	unsigned int _redirects;
+	id _context;
 	bool _firstLine;
 	OFString *_version;
 	int _status;
@@ -57,7 +58,8 @@
 
 - initWithClient: (OFHTTPClient *)client
 	 request: (OFHTTPRequest *)request
-       redirects: (unsigned int)redirects;
+       redirects: (unsigned int)redirects
+	 context: (id)context;
 - (void)start;
 @end
 
@@ -205,6 +207,7 @@ normalizeKey(char *str_)
 - initWithClient: (OFHTTPClient *)client
 	 request: (OFHTTPRequest *)request
        redirects: (unsigned int)redirects
+	 context: (id)context
 {
 	self = [super init];
 
@@ -212,6 +215,7 @@ normalizeKey(char *str_)
 		_client = [client retain];
 		_request = [request retain];
 		_redirects = redirects;
+		_context = [context retain];
 		_firstLine = true;
 		_serverHeaders = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
@@ -226,6 +230,7 @@ normalizeKey(char *str_)
 {
 	[_client release];
 	[_request release];
+	[_context release];
 	[_version release];
 	[_serverHeaders release];
 
@@ -309,13 +314,14 @@ normalizeKey(char *str_)
 		newURL = [OFURL URLWithString: location
 				relativeToURL: URL];
 
-		if ([_client->_delegate respondsToSelector: @selector(
-		    client:shouldFollowRedirect:statusCode:request:response:)])
+		if ([_client->_delegate respondsToSelector: @selector(client:
+		    shouldFollowRedirect:statusCode:request:response:context:)])
 			follow = [_client->_delegate client: _client
 				       shouldFollowRedirect: newURL
 						 statusCode: _status
 						    request: _request
-						   response: response];
+						   response: response
+						    context: _context];
 		else {
 			of_http_request_method_t method = [_request method];
 
@@ -379,7 +385,8 @@ normalizeKey(char *str_)
 			_client->_inProgress = false;
 
 			[_client asyncPerformRequest: newRequest
-					   redirects: _redirects - 1];
+					   redirects: _redirects - 1
+					     context: _context];
 			return;
 		}
 	}
@@ -392,10 +399,11 @@ normalizeKey(char *str_)
 	_client->_inProgress = false;
 
 	[_client->_delegate performSelector: @selector(client:didPerformRequest:
-						 response:)
+						 response:context:)
 				 withObject: _client
 				 withObject: _request
 				 withObject: response
+				 withObject: _context
 				 afterDelay: 0];
 }
 
@@ -438,12 +446,13 @@ normalizeKey(char *str_)
 	if ([line length] == 0) {
 		[_serverHeaders makeImmutable];
 
-		if ([_client->_delegate respondsToSelector:
-		    @selector(client:didReceiveHeaders:statusCode:request:)])
+		if ([_client->_delegate respondsToSelector: @selector(client:
+		    didReceiveHeaders:statusCode:request:context:)])
 			[_client->_delegate client: _client
 				 didReceiveHeaders: _serverHeaders
 					statusCode: _status
-					   request: _request];
+					   request: _request
+					   context: _context];
 
 		[self performSelector: @selector(createResponseWithSocket:)
 			   withObject: socket
@@ -501,7 +510,8 @@ normalizeKey(char *str_)
 
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 		return false;
 	}
 
@@ -515,7 +525,8 @@ normalizeKey(char *str_)
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 		return false;
 	}
 }
@@ -529,7 +540,8 @@ normalizeKey(char *str_)
 	if (exception != nil) {
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 		return 0;
 	}
 
@@ -559,7 +571,8 @@ normalizeKey(char *str_)
 
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 		return 0;
 	}
 
@@ -608,7 +621,8 @@ normalizeKey(char *str_)
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 		return;
 	}
 }
@@ -618,10 +632,11 @@ normalizeKey(char *str_)
 	       exception: (id)exception
 {
 	if ([_client->_delegate respondsToSelector:
-	    @selector(client:didCreateSocket:forRequest:)])
+	    @selector(client:didCreateSocket:forRequest:context:)])
 		[_client->_delegate client: _client
 			   didCreateSocket: socket
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 
 	[self performSelector: @selector(handleSocket:)
 		   withObject: socket
@@ -637,7 +652,8 @@ normalizeKey(char *str_)
 	if (exception != nil) {
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request];
+				forRequest: _request
+				   context: _context];
 		return false;
 	}
 
@@ -688,7 +704,7 @@ normalizeKey(char *str_)
 				       selector: @selector(throwAwayContent:
 						     buffer:length:context:
 						     exception:)
-				   context: socket];
+					context: socket];
 		} else {
 			[_client->_lastResponse release];
 			_client->_lastResponse = nil;
@@ -916,13 +932,16 @@ normalizeKey(char *str_)
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
+		    context: (id)context
 {
 	[self asyncPerformRequest: request
-			redirects: 10];
+			redirects: 10
+			  context: context];
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects
+		    context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
@@ -940,7 +959,8 @@ normalizeKey(char *str_)
 	[[[[OFHTTPClientRequestHandler alloc]
 	    initWithClient: self
 		   request: request
-		 redirects: redirects] autorelease] start];
+		 redirects: redirects
+		   context: context] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }

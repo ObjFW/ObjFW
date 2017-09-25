@@ -500,6 +500,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -    (void)client: (OFHTTPClient *)client
   didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
 	  request: (OFHTTPRequest *)request
+	  context: (id)context
 {
 	if (_insecure && [socket respondsToSelector:
 	    @selector(setCertificateVerificationEnabled:)])
@@ -511,6 +512,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response
+	       context: (id)context
 {
 	if (!_quiet)
 		[of_stdout writeFormat: @" ➜ %d\n", statusCode];
@@ -541,6 +543,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -	   (void)client: (OFHTTPClient *)client
   didEncounterException: (id)e
 	     forRequest: (OFHTTPRequest *)request
+		context: (id)context
 {
 	if ([e isKindOfClass: [OFAddressTranslationFailedException class]]) {
 		if (!_quiet)
@@ -628,12 +631,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
+	    context: (id)context
 {
 	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFString *lengthString, *type;
 
-	/* Was a request to retrieve the file name */
-	if (_detectFileName && _currentFileName == nil) {
+	if ([context isEqual: @"detectFileName"]) {
 		_currentFileName = [fileNameFromContentDisposition(
 		    [[response headers] objectForKey: @"Content-Disposition"])
 		    copy];
@@ -908,7 +911,8 @@ next:
 		[request setHeaders: clientHeaders];
 		[request setMethod: OF_HTTP_REQUEST_METHOD_HEAD];
 
-		[_HTTPClient asyncPerformRequest: request];
+		[_HTTPClient asyncPerformRequest: request
+					 context: @"detectFileName"];
 		return;
 	}
 
@@ -949,7 +953,8 @@ next:
 	[request setMethod: _method];
 	[request setBody: _body];
 
-	[_HTTPClient asyncPerformRequest: request];
+	[_HTTPClient asyncPerformRequest: request
+				 context: nil];
 	return;
 
 next:
