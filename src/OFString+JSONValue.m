@@ -653,6 +653,10 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 	id object;
 	size_t line = 1;
 
+#ifdef __clang_analyzer__
+	assert(pointer != NULL);
+#endif
+
 	object = nextObject(&pointer, stop, &line, depthLimit);
 	skipWhitespacesAndComments(&pointer, stop, &line);
 

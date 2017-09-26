@@ -211,11 +211,13 @@
 
 - (void)removeObjectAtIndex: (size_t)index
 {
+#ifndef __clang_analyzer__
 	id object = [self objectAtIndex: index];
 	[_array removeItemAtIndex: index];
 	[object release];
 
 	_mutations++;
+#endif
 }
 
 - (void)removeAllObjects
@@ -255,6 +257,7 @@
 
 - (void)removeLastObject
 {
+#ifndef __clang_analyzer__
 	size_t count = [_array count];
 	id object;
 
@@ -266,6 +269,7 @@
 	[object release];
 
 	_mutations++;
+#endif
 }
 
 - (void)exchangeObjectAtIndex: (size_t)index1

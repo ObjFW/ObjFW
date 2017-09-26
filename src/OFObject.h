@@ -421,7 +421,11 @@ OF_ROOT_CLASS
 @interface OFObject <OFObject>
 {
 @private
+#ifndef __clang_analyzer__
 	Class _isa;
+#else
+	Class _isa __attribute__((__unused__));
+#endif
 }
 
 /*!

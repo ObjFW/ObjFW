@@ -373,7 +373,7 @@ callMain(id object)
 
 - (OFRunLoop *)runLoop
 {
-# ifdef OF_HAVE_ATOMIC_OPS
+# if defined(OF_HAVE_ATOMIC_OPS) && !defined(__clang_analyzer__)
 	if (_runLoop == nil) {
 		OFRunLoop *tmp = [[OFRunLoop alloc] init];
 

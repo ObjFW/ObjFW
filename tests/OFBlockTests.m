@@ -97,14 +97,18 @@ forwardTest(void)
 
 	TEST(@"Copying a global block", (id)g == [[g copy] autorelease])
 
+#ifndef __clang_analyzer__
 	TEST(@"Copying a malloc block",
 	    (id)m == [m copy] && [m retainCount] == 2)
+#endif
 
 	TEST(@"Autorelease a stack block", R([s autorelease]))
 
 	TEST(@"Autorelease a global block", R([g autorelease]))
 
+#ifndef __clang_analyzer__
 	TEST(@"Autorelease a malloc block", R([m autorelease]))
+#endif
 
 	[pool drain];
 }

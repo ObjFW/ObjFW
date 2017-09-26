@@ -16,6 +16,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <string.h>
 
 #ifndef __STDC_NO_COMPLEX__
@@ -268,6 +269,10 @@ __extension__
 
 	TEST(@"+[invocationWithMethodSignature:]",
 	    (invocation = [OFInvocation invocationWithMethodSignature: sig]))
+
+#ifdef __clang_analyzer__
+	assert(invocation != nil);
+#endif
 
 	TEST(@"-[setReturnValue]", R([invocation setReturnValue: &st]))
 
