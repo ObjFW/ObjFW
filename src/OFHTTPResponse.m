@@ -142,8 +142,14 @@ encodingForContentType(OFString *contentType)
 {
 	self = [super init];
 
-	_protocolVersion.major = 1;
-	_protocolVersion.minor = 1;
+	@try {
+		_protocolVersion.major = 1;
+		_protocolVersion.minor = 1;
+		_headers = [[OFDictionary alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }

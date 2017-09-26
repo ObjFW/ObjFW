@@ -94,7 +94,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
 #if !defined(OF_SEEKABLE_STREAM_M) && !defined(OF_TCP_SOCKET_M)
 @private
 #endif
-	char *_readBuffer, *_readBufferMemory, *_writeBuffer;
+	char *_Nullable _readBuffer, *_Nullable _readBufferMemory;
+	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _writeBuffered, _waitingForDelimiter;
 @protected

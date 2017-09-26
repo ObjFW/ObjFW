@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFGZIPStream: OFStream
 {
 	OFStream *_stream;
-	OFInflateStream *_inflateStream;
+	OFInflateStream *_Nullable _inflateStream;
 	enum of_gzip_stream_state {
 		OF_GZIP_STREAM_ID1,
 		OF_GZIP_STREAM_ID2,
@@ -75,7 +75,7 @@ OF_ASSUME_NONNULL_BEGIN
 	} _OS;
 	size_t _bytesRead;
 	uint8_t _buffer[4];
-	OFDate *_modificationDate;
+	OFDate *_Nullable _modificationDate;
 	uint16_t _extraLength;
 	uint32_t _CRC32, _uncompressedSize;
 }

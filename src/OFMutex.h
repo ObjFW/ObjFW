@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_mutex_t _mutex;
 	bool _initialized;
-	OFString *_name;
+	OFString *_Nullable _name;
 }
 
 /*!

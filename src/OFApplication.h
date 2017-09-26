@@ -128,12 +128,12 @@ OF_ASSUME_NONNULL_BEGIN
 	int *_argc;
 	char ***_argv;
 @public
-	id <OFApplicationDelegate> _delegate;
-	void (*_SIGINTHandler)(id, SEL);
+	id <OFApplicationDelegate> _Nullable _delegate;
+	void (*_Nullable _SIGINTHandler)(id, SEL);
 #ifndef OF_WINDOWS
-	void (*_SIGHUPHandler)(id, SEL);
-	void (*_SIGUSR1Handler)(id, SEL);
-	void (*_SIGUSR2Handler)(id, SEL);
+	void (*_Nullable _SIGHUPHandler)(id, SEL);
+	void (*_Nullable _SIGUSR1Handler)(id, SEL);
+	void (*_Nullable _SIGUSR2Handler)(id, SEL);
 #endif
 }
 

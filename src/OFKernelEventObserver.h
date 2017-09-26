@@ -111,7 +111,7 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_readObjects;
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
-	id <OFKernelEventObserverDelegate> _delegate;
+	id <OFKernelEventObserverDelegate> _Nullable _delegate;
 #ifdef OF_HAVE_PIPE
 	int _cancelFD[2];
 #else

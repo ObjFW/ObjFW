@@ -104,12 +104,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFHTTPClient: OFObject
 {
-	id <OFHTTPClientDelegate> _delegate;
+	id <OFHTTPClientDelegate> _Nullable _delegate;
 	bool _insecureRedirectsAllowed;
-	OFTCPSocket *_socket;
-	OFURL *_lastURL;
+	OFTCPSocket *_Nullable _socket;
+	OFURL *_Nullable _lastURL;
 	bool _lastWasHEAD;
-	OFHTTPResponse *_lastResponse;
+	OFHTTPResponse *_Nullable _lastResponse;
 }
 
 /*!

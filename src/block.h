@@ -30,8 +30,8 @@ typedef struct of_block_literal_t {
 	struct of_block_descriptor_t {
 		unsigned long reserved;
 		unsigned long size;
-		void (*copy_helper)(void *dest, void *src);
-		void (*dispose_helper)(void *src);
+		void (*_Nullable copy_helper)(void *dest, void *src);
+		void (*_Nullable dispose_helper)(void *src);
 		const char *signature;
 	} *descriptor;
 } of_block_literal_t;

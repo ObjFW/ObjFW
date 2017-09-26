@@ -38,7 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which is checked for being in the collection
  * @return A boolean whether the collection contains the specified object
  */
-- (bool)containsObject: (nullable id)object;
+- (bool)containsObject: (id)object;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -50,10 +50,10 @@ struct of_list_object_t {
 # define ObjectType id
 #endif
 {
-	of_list_object_t *_firstListObject;
-	of_list_object_t *_lastListObject;
-	size_t		 _count;
-	unsigned long	 _mutations;
+	of_list_object_t *_Nullable _firstListObject;
+	of_list_object_t *_Nullable _lastListObject;
+	size_t _count;
+	unsigned long  _mutations;
 }
 
 /*!
@@ -184,10 +184,10 @@ struct of_list_object_t {
 
 @interface OFListEnumerator: OFEnumerator
 {
-	OFList		 *_list;
-	of_list_object_t *_current;
-	unsigned long	 _mutations;
-	unsigned long	 *_mutationsPtr;
+	OFList *_list;
+	of_list_object_t *_Nullable _current;
+	unsigned long _mutations;
+	unsigned long *_Nullable _mutationsPtr;
 }
 
 -     initWithList: (OFList *)list

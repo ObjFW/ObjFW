@@ -88,11 +88,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFHTTPServer: OFObject
 {
-	OFString *_host;
+	OFString *_Nullable _host;
 	uint16_t _port;
-	id <OFHTTPServerDelegate> _delegate;
-	OFString *_name;
-	OFTCPSocket *_listeningSocket;
+	id <OFHTTPServerDelegate> _Nullable _delegate;
+	OFString *_Nullable _name;
+	OFTCPSocket *_Nullable _listeningSocket;
 }
 
 /*!

@@ -71,9 +71,9 @@ typedef struct {
 	OFURL *_URL;
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
-	OFDictionary OF_GENERIC(OFString *, OFString *) *_headers;
-	OFData *_body;
-	OFString *_remoteAddress;
+	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
+	OFData *_Nullable _body;
+	OFString *_Nullable _remoteAddress;
 }
 
 /*!

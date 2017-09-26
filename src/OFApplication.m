@@ -510,8 +510,10 @@ of_application_main(int *argc, char **argv[], Class cls)
 		    methodForSelector:					\
 		    @selector(applicationDidReceive##sig)];		\
 		signal(sig, handle##sig);				\
-	} else								\
-		signal(sig, (void (*)(int))SIG_DFL);
+	} else {							\
+		_##sig##Handler = NULL;					\
+		signal(sig, (void (*)(int))SIG_DFL);			\
+	}
 
 	_delegate = delegate;
 

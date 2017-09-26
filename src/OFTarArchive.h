@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFStream *_stream;
 @protected
-	OFTarArchiveEntry *_lastReturnedEntry;
+	OFTarArchiveEntry *_Nullable _lastReturnedEntry;
 }
 
 /*!

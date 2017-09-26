@@ -30,7 +30,9 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_scheme, *_host;
 	uint16_t _port;
-	OFString *_user, *_password, *_path, *_parameters, *_query, *_fragment;
+	OFString *_Nullable _user, *_Nullable _password, *_path;
+	OFString *_Nullable _parameters, *_Nullable _query;
+	OFString *_Nullable _fragment;
 }
 
 /*!

@@ -32,10 +32,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLElement: OFXMLNode
 {
-	OFString *_name, *_namespace, *_defaultNamespace;
-	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_attributes;
-	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_namespaces;
-	OFMutableArray OF_GENERIC(OFXMLNode *) *_children;
+	OFString *_name, *_Nullable _namespace, *_Nullable _defaultNamespace;
+	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_Nullable _attributes;
+	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
+	    _namespaces;
+	OFMutableArray OF_GENERIC(OFXMLNode *) *_Nullable _children;
 }
 
 /*!

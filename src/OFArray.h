@@ -266,7 +266,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param object The object which is checked for being in the array
  * @return A boolean whether the array contains the specified object
  */
-- (bool)containsObject: (nullable ObjectType)object;
+- (bool)containsObject: (ObjectType)object;
 
 /*!
  * @brief Checks whether the array contains an object with the specified
@@ -276,7 +276,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @return A boolean whether the array contains an object with the specified
  *	   address
  */
-- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
+- (bool)containsObjectIdenticalTo: (ObjectType)object;
 
 /*!
  * @brief Returns the first object of the array or `nil`.
@@ -485,11 +485,11 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 
 @interface OFArrayEnumerator: OFEnumerator
 {
-	OFArray	      *_array;
-	size_t	      _count;
+	OFArray	*_array;
+	size_t _count;
 	unsigned long _mutations;
-	unsigned long *_mutationsPtr;
-	size_t	      _position;
+	unsigned long *_Nullable _mutationsPtr;
+	size_t _position;
 }
 
 - initWithArray: (OFArray *)data

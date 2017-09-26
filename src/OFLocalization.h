@@ -36,8 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFLocalization: OFObject
 {
-	OFString *_language;
-	OFString *_territory;
+	OFString *_Nullable _language, *_Nullable _territory;
 	of_string_encoding_t _encoding;
 	OFString *_decimalPoint;
 	OFMutableArray OF_GENERIC(OFDictionary OF_GENERIC(OFString *, id) *)

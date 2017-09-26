@@ -74,7 +74,7 @@ enum {
 {
 	OFString *_name;
 	unsigned _attributes;
-	OFString *_getter, *_setter;
+	OFString *_Nullable _getter, *_Nullable _setter;
 }
 
 /*!

@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFHTTPCookie: OFObject <OFCopying>
 {
 	OFString *_name, *_value, *_domain, *_path;
-	OFDate *_expires;
+	OFDate *_Nullable _expires;
 	bool _secure, _HTTPOnly;
 	OFMutableArray OF_GENERIC(OFString *) *_extensions;
 }

@@ -72,7 +72,7 @@ typedef struct of_options_parser_option_t {
 	OFArray OF_GENERIC(OFString *) *_arguments;
 	size_t _index, _subIndex;
 	of_unichar_t _lastOption;
-	OFString *_lastLongOption, *_argument;
+	OFString *_Nullable _lastLongOption, *_Nullable _argument;
 	bool _done;
 }
 

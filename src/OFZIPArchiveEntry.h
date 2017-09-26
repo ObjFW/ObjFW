@@ -95,8 +95,8 @@ enum {
 	uint32_t _CRC32;
 	uint64_t _compressedSize, _uncompressedSize;
 	OFString *_fileName;
-	OFData *_extraField;
-	OFString *_fileComment;
+	OFData *_Nullable _extraField;
+	OFString *_Nullable _fileComment;
 	uint32_t _startDiskNumber;
 	uint16_t _internalAttributes;
 	uint32_t _versionSpecificAttributes;
