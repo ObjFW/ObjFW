@@ -83,13 +83,13 @@ OF_ASSUME_NONNULL_BEGIN
 #define of_fast_enumeration_state_t NSFastEnumerationState
 #ifndef NSINTEGER_DEFINED
 typedef struct {
-	/// Arbitrary state information for the enumeration
+	/*! Arbitrary state information for the enumeration */
 	unsigned long state;
-	/// Pointer to a C array of objects to return
+	/*! Pointer to a C array of objects to return */
 	id __unsafe_unretained _Nullable *_Nullable itemsPtr;
-	/// Arbitrary state information to detect mutations
+	/*! Arbitrary state information to detect mutations */
 	unsigned long *_Nullable mutationsPtr;
-	/// Additional arbitrary state information
+	/*! Additional arbitrary state information */
 	unsigned long extra[5];
 } of_fast_enumeration_state_t;
 #endif
