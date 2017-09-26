@@ -31,11 +31,11 @@ typedef struct of_list_object_t of_list_object_t;
  * object and the object.
  */
 struct of_list_object_t {
-	/// A pointer to the next list object in the list
-	of_list_object_t *next;
-	/// A pointer to the previous list object in the list
-	of_list_object_t *previous;
-	/// The object for the list object
+	/*! A pointer to the next list object in the list */
+	of_list_object_t *_Nullable next;
+	/*! A pointer to the previous list object in the list */
+	of_list_object_t *_Nullable previous;
+	/*! The object for the list object */
 	id __unsafe_unretained object;
 };
 

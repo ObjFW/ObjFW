@@ -116,8 +116,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param entity The name of the entity the XML parser didn't know
  * @return A substitution for the entity or `nil`
  */
--      (OFString *)parser: (OFXMLParser *)parser
-  foundUnknownEntityNamed: (OFString *)entity;
+- (nullable OFString *)parser: (OFXMLParser *)parser
+      foundUnknownEntityNamed: (OFString *)entity;
 @end
 
 /*!

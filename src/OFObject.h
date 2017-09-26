@@ -670,9 +670,10 @@ OF_ROOT_CLASS
  * It will be freed automatically when the object is deallocated.
  *
  * @param size The size of the memory to allocate
- * @return A pointer to the allocated memory
+ * @return A pointer to the allocated memory. May return NULL if the specified
+ *	   size is 0.
  */
-- (void *)allocMemoryWithSize: (size_t)size;
+- (nullable void *)allocMemoryWithSize: (size_t)size;
 
 /*!
  * @brief Allocates memory for the specified number of items and stores it in
@@ -682,10 +683,11 @@ OF_ROOT_CLASS
  *
  * @param size The size of each item to allocate
  * @param count The number of items to allocate
- * @return A pointer to the allocated memory
+ * @return A pointer to the allocated memory. May return NULL if the specified
+ *	   size or count is 0.
  */
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count;
+- (nullable void *)allocMemoryWithSize: (size_t)size
+				 count: (size_t)count;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specified size.

@@ -60,8 +60,8 @@ typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
  * @param entity The name of the entity that is unknown
  * @return A substitution for the entity or `nil`
  */
--	  (OFString *)string: (OFString *)string
-  containsUnknownEntityNamed: (OFString *)entity;
+- (nullable OFString *)string: (OFString *)string
+   containsUnknownEntityNamed: (OFString *)entity;
 @end
 
 @interface OFString (XMLUnescaping)
