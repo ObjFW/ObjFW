@@ -121,11 +121,12 @@ unescapeString(OFString *string)
 @implementation OFINICategory
 @synthesize name = _name;
 
-- (instancetype)of_init
+- (instancetype)of_initWithName: (OFString *)name
 {
 	self = [super init];
 
 	@try {
+		_name = [name copy];
 		_lines = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		[self release];

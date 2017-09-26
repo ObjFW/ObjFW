@@ -106,7 +106,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLElementBuilder: OFObject <OFXMLParserDelegate>
 {
 	OFMutableArray OF_GENERIC(OFXMLElement *) *_stack;
-	id <OFXMLElementBuilderDelegate> _delegate;
+	id <OFXMLElementBuilderDelegate> _Nullable _delegate;
 }
 
 /*!

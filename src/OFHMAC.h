@@ -27,8 +27,8 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFHMAC: OFObject
 {
 	Class <OFCryptoHash> _hashClass;
-	id <OFCryptoHash> _outerHash, _innerHash;
-	id <OFCryptoHash> _outerHashCopy, _innerHashCopy;
+	id <OFCryptoHash> _Nullable _outerHash, _innerHash;
+	id <OFCryptoHash> _Nullable _outerHashCopy, _innerHashCopy;
 	bool _calculated;
 }
 

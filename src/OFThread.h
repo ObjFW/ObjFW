@@ -71,10 +71,10 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	of_thread_block_t _threadBlock;
 # endif
 	id _returnValue;
-	OFRunLoop *_runLoop;
+	OFRunLoop *_Nullable _runLoop;
 	OFMutableDictionary *_threadDictionary;
 @private
-	OFString *_name;
+	OFString *_Nullable _name;
 }
 
 #ifdef OF_HAVE_BLOCKS

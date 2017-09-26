@@ -45,7 +45,8 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 {
 	OFDate *_fireDate;
 	of_time_interval_t _interval;
-	id _target, _object1, _object2, _object3, _object4;
+	id _target;
+	id _Nullable _object1, _object2, _object3, _object4;
 	SEL _selector;
 	uint8_t _arguments;
 	bool _repeats;
@@ -57,7 +58,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 	OFCondition *_condition;
 	bool _done;
 #endif
-	OFRunLoop *_inRunLoop;
+	OFRunLoop *_Nullable _inRunLoop;
 }
 
 /*!

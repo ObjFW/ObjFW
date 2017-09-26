@@ -104,8 +104,7 @@ isWhitespaceLine(OFString *line)
 		if ([[category name] isEqual: name])
 			return category;
 
-	category = [[[OFINICategory alloc] of_init] autorelease];
-	[category setName: name];
+	category = [[[OFINICategory alloc] of_initWithName: name] autorelease];
 	[_categories addObject: category];
 
 	objc_autoreleasePoolPop(pool);
@@ -146,8 +145,7 @@ isWhitespaceLine(OFString *line)
 			    of_range(1, [line length] - 2)];
 
 			category = [[[OFINICategory alloc]
-			    of_init] autorelease];
-			[category setName: categoryName];
+			    of_initWithName: categoryName] autorelease];
 			[_categories addObject: category];
 		} else {
 			if (category == nil)

@@ -80,13 +80,16 @@
 
 	triple = object;
 
-	if (![triple->_firstObject isEqual: _firstObject])
+	if (triple->_firstObject != _firstObject &&
+	    ![triple->_firstObject isEqual: _firstObject])
 		return false;
 
-	if (![triple->_secondObject isEqual: _secondObject])
+	if (triple->_secondObject != _secondObject &&
+	    ![triple->_secondObject isEqual: _secondObject])
 		return false;
 
-	if (![triple->_thirdObject isEqual: _thirdObject])
+	if (triple->_thirdObject != _thirdObject &&
+	    ![triple->_thirdObject isEqual: _thirdObject])
 		return false;
 
 	return true;

@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_TAR_ARCHIVE_MODE_WRITE,
 		OF_TAR_ARCHIVE_MODE_APPEND
 	} _mode;
-	OF_KINDOF(OFStream *) _lastReturnedStream;
+	OF_KINDOF(OFStream *) _Nullable _lastReturnedStream;
 }
 
 /*!

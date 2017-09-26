@@ -31,25 +31,28 @@ OF_ASSUME_NONNULL_BEGIN
 # define ThirdType id
 #endif
 {
-	FirstType _firstObject;
-	SecondType _secondObject;
-	ThirdType _thirdObject;
+	FirstType _Nullable _firstObject;
+	SecondType _Nullable _secondObject;
+	ThirdType _Nullable _thirdObject;
 }
 
 /*!
  * The first object of the triple.
  */
-@property (readonly, nonatomic, retain) FirstType firstObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
+    FirstType firstObject;
 
 /*!
  * The second object of the triple.
  */
-@property (readonly, nonatomic, retain) SecondType secondObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
+    SecondType secondObject;
 
 /*!
  * The third object of the triple.
  */
-@property (readonly, nonatomic, retain) ThirdType thirdObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
+    ThirdType thirdObject;
 
 /*!
  * @brief Creates a new OFTriple with the specified objects.
@@ -59,9 +62,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thirdObject The second object for the triple
  * @return A new, autoreleased OFTriple
  */
-+ (instancetype)tripleWithFirstObject: (FirstType)firstObject
-			 secondObject: (SecondType)secondObject
-			  thirdObject: (ThirdType)thirdObject;
++ (instancetype)tripleWithFirstObject: (nullable FirstType)firstObject
+			 secondObject: (nullable SecondType)secondObject
+			  thirdObject: (nullable ThirdType)thirdObject;
 
 /*!
  * @brief Initializes an already allocated OFTriple with the specified objects.
@@ -71,9 +74,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thirdObject The second object for the triple
  * @return An initialized OFTriple
  */
-- initWithFirstObject: (FirstType)firstObject
-	 secondObject: (SecondType)secondObject
-	  thirdObject: (ThirdType)thirdObject;
+- initWithFirstObject: (nullable FirstType)firstObject
+	 secondObject: (nullable SecondType)secondObject
+	  thirdObject: (nullable ThirdType)thirdObject;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef FirstType
 # undef SecondType

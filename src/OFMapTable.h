@@ -70,7 +70,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 @interface OFMapTable: OFObject <OFCopying, OFFastEnumeration>
 {
 	of_map_table_functions_t _keyFunctions, _objectFunctions;
-	struct of_map_table_bucket **_buckets;
+	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
 	uint32_t _count, _capacity;
 	uint8_t _rotate;
 	unsigned long _mutations;
@@ -237,10 +237,10 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 @interface OFMapTableEnumerator: OFObject
 {
 	OFMapTable *_mapTable;
-	struct of_map_table_bucket **_buckets;
+	struct of_map_table_bucket *_Nonnull *_Nullable _buckets;
 	uint32_t _capacity;
 	unsigned long _mutations;
-	unsigned long *_mutationsPtr;
+	unsigned long *_Nullable _mutationsPtr;
 	uint32_t _position;
 }
 

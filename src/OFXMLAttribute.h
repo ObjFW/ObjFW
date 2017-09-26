@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLAttribute: OFXMLNode
 {
 @public
-	OFString *_name, *_namespace, *_stringValue;
+	OFString *_name, *_Nullable _namespace, *_stringValue;
 }
 
 /*!

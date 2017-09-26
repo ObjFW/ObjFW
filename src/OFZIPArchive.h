@@ -43,11 +43,11 @@ OF_ASSUME_NONNULL_BEGIN
 	uint64_t _centralDirectoryEntriesInDisk, _centralDirectoryEntries;
 	uint64_t _centralDirectorySize;
 	int64_t _centralDirectoryOffset;
-	OFString *_archiveComment;
+	OFString *_Nullable _archiveComment;
 	OFMutableArray OF_GENERIC(OFZIPArchiveEntry *) *_entries;
 	OFMutableDictionary OF_GENERIC(OFString *, OFZIPArchiveEntry *)
 	    *_pathToEntryMap;
-	OFStream *_lastReturnedStream;
+	OFStream *_Nullable _lastReturnedStream;
 }
 
 /*!

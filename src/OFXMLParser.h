@@ -130,7 +130,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLParser: OFObject <OFStringXMLUnescapingDelegate>
 {
-	id <OFXMLParserDelegate> _delegate;
+	id <OFXMLParserDelegate> _Nullable _delegate;
 	enum of_xml_parser_state {
 		OF_XMLPARSER_IN_BYTE_ORDER_MARK,
 		OF_XMLPARSER_OUTSIDE_TAG,
@@ -155,14 +155,14 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_XMLPARSER_NUM_STATES
 	} _state;
 	size_t _i, _last;
-	const char *_data;
+	const char *_Nullable _data;
 	OFMutableData *_buffer;
-	OFString *_name, *_prefix;
+	OFString *_Nullable _name, *_Nullable _prefix;
 	OFMutableArray
 	    OF_GENERIC(OFMutableDictionary OF_GENERIC(OFString *, OFString *) *)
 	    *_namespaces;
 	OFMutableArray OF_GENERIC(OFXMLAttribute *) *_attributes;
-	OFString *_attributeName, *_attributePrefix;
+	OFString *_Nullable _attributeName, *_Nullable _attributePrefix;
 	char _delimiter;
 	OFMutableArray OF_GENERIC(OFString *) *_previous;
 	size_t _level;

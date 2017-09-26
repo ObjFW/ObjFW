@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 		size_t	 length;
 		bool	 hashed;
 		uint32_t hash;
-		char	 *freeWhenDone;
+		char	 *_Nullable freeWhenDone;
 	} *restrict _s;
 	struct of_string_utf8_ivars _storage;
 }

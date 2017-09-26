@@ -70,10 +70,12 @@
 
 	pair = object;
 
-	if (![pair->_firstObject isEqual: _firstObject])
+	if (pair->_firstObject != _firstObject &&
+	    ![pair->_firstObject isEqual: _firstObject])
 		return false;
 
-	if (![pair->_secondObject isEqual: _secondObject])
+	if (pair->_secondObject != _secondObject &&
+	    ![pair->_secondObject isEqual: _secondObject])
 		return false;
 
 	return true;

@@ -30,19 +30,21 @@ OF_ASSUME_NONNULL_BEGIN
 # define SecondType id
 #endif
 {
-	FirstType _firstObject;
-	SecondType _secondObject;
+	FirstType _Nullable _firstObject;
+	SecondType _Nullable _secondObject;
 }
 
 /*!
  * The first object of the pair.
  */
-@property (readonly, nonatomic, retain) FirstType firstObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
+    FirstType firstObject;
 
 /*!
  * The second object of the pair.
  */
-@property (readonly, nonatomic, retain) SecondType secondObject;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
+    SecondType secondObject;
 
 /*!
  * @brief Creates a new OFPair with the specified objects.
@@ -51,8 +53,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param secondObject The second object for the pair
  * @return A new, autoreleased OFPair
  */
-+ (instancetype)pairWithFirstObject: (FirstType)firstObject
-		       secondObject: (SecondType)secondObject;
++ (instancetype)pairWithFirstObject: (nullable FirstType)firstObject
+		       secondObject: (nullable SecondType)secondObject;
 
 /*!
  * @brief Initializes an already allocated OFPair with the specified objects.
@@ -61,8 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param secondObject The second object for the pair
  * @return An initialized OFPair
  */
-- initWithFirstObject: (FirstType)firstObject
-	 secondObject: (SecondType)secondObject;
+- initWithFirstObject: (nullable FirstType)firstObject
+	 secondObject: (nullable SecondType)secondObject;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef FirstType
 # undef SecondType

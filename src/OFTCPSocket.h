@@ -61,9 +61,9 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 @interface OFTCPSocket: OFStreamSocket
 {
 	bool _listening;
-	struct sockaddr *_address;
+	struct sockaddr *_Nullable _address;
 	socklen_t _addressLength;
-	OFString *_SOCKS5Host;
+	OFString *_Nullable _SOCKS5Host;
 	uint16_t _SOCKS5Port;
 #ifdef OF_WII
 	uint16_t _port;

@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint8_t _byte;
 	uint8_t _bitIndex, _savedBitsLength;
 	uint16_t _savedBits;
-	uint8_t *_slidingWindow;
+	uint8_t *_Nullable _slidingWindow;
 	uint16_t _slidingWindowIndex, _slidingWindowMask;
 	int _state;
 	union {
@@ -49,16 +49,19 @@ OF_ASSUME_NONNULL_BEGIN
 			uint16_t position, length;
 		} uncompressed;
 		struct {
-			struct huffman_tree *litLenTree, *distTree;
-			struct huffman_tree *codeLenTree, *treeIter;
-			uint8_t *lengths;
+			struct huffman_tree *_Nullable litLenTree;
+			struct huffman_tree *_Nullable distTree;
+			struct huffman_tree *_Nullable codeLenTree;
+			struct huffman_tree *_Nullable treeIter;
+			uint8_t *_Nullable lengths;
 			uint16_t receivedCount;
 			uint8_t value, litLenCodesCount, distCodesCount;
 			uint8_t codeLenCodesCount;
 		} huffmanTree;
 		struct {
-			struct huffman_tree *litLenTree, *distTree;
-			struct huffman_tree *treeIter;
+			struct huffman_tree *_Nullable litLenTree;
+			struct huffman_tree *_Nullable distTree;
+			struct huffman_tree *_Nullable treeIter;
 			int state;
 			uint16_t value, length, distance, extraBits;
 		} huffman;
