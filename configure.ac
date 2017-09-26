@@ -1209,7 +1209,7 @@ case "$host" in
 		AC_HEADER_SYS_WAIT
 		AC_CHECK_FUNCS(kill)
 
-		AC_CHECK_FUNC(posix_spawnp, [
+		AC_CHECK_FUNCS(posix_spawnp, [
 			AS_IF([test x"$ac_cv_func_kill" = x"yes"], [
 				have_processes="yes"
 
