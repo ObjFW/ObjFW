@@ -278,7 +278,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributeName The name of the attribute
  * @return The attribute with the specified name
  */
-- (OFXMLAttribute *)attributeForName: (OFString *)attributeName;
+- (nullable OFXMLAttribute *)attributeForName: (OFString *)attributeName;
 
 /*!
  * @brief Returns the attribute with the specified name and namespace.
@@ -287,8 +287,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param attributeNS The namespace of the attribute
  * @return The attribute with the specified name and namespace
  */
-- (OFXMLAttribute *)attributeForName: (OFString *)attributeName
-			   namespace: (nullable OFString *)attributeNS;
+- (nullable OFXMLAttribute *)attributeForName: (OFString *)attributeName
+				    namespace: (nullable OFString *)attributeNS;
 
 /*!
  * @brief Removes the attribute with the specified name.
@@ -399,7 +399,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementName The name of the element
  * @return The first child element with the specified name
  */
-- (OFXMLElement *)elementForName: (OFString *)elementName;
+- (nullable OFXMLElement *)elementForName: (OFString *)elementName;
 
 /*!
  * @brief Returns the child elements with the specified name.
@@ -417,8 +417,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param elementNS The namespace of the element
  * @return The first child element with the specified name and namespace
  */
-- (OFXMLElement *)elementForName: (OFString *)elementName
-		       namespace: (nullable OFString *)elementNS;
+- (nullable OFXMLElement *)elementForName: (OFString *)elementName
+				namespace: (nullable OFString *)elementNS;
 
 /*!
  * @brief Returns the child elements with the specified name and namespace.

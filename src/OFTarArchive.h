@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The next entry from the tar archive or `nil` if all entries have
  *	   been read
  */
-- (OFTarArchiveEntry *)nextEntry;
+- (nullable OFTarArchiveEntry *)nextEntry;
 @end
 
 OF_ASSUME_NONNULL_END

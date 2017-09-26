@@ -251,7 +251,7 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  *
  * @return The next object
  */
-- (void *)nextObject;
+- (nullable void *)nextObject;
 
 /*!
  * @brief Resets the enumerator, so the next call to @ref nextKey returns the
