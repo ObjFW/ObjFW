@@ -1426,7 +1426,7 @@
 		4B5BC95B1DA301B500F97AE8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		4B5C112817E9AAED003C917F /* apple-forwarding-arm.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-arm.S"; path = "src/forwarding/apple-forwarding-arm.S"; sourceTree = "<group>"; };
 		4B5C112917E9AAED003C917F /* apple-forwarding-i386.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-i386.S"; path = "src/forwarding/apple-forwarding-i386.S"; sourceTree = "<group>"; };
-		4B5C112A17E9AAED003C917F /* apple-forwarding-ppc.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-ppc.S"; path = "src/forwarding/apple-forwarding-ppc.S"; sourceTree = "<group>"; };
+		4B5C112A17E9AAED003C917F /* apple-forwarding-powerpc.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-powerpc.S"; path = "src/forwarding/apple-forwarding-powerpc.S"; sourceTree = "<group>"; };
 		4B5C112B17E9AAED003C917F /* apple-forwarding-x86_64.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = "apple-forwarding-x86_64.S"; path = "src/forwarding/apple-forwarding-x86_64.S"; sourceTree = "<group>"; };
 		4B5C112C17E9AAED003C917F /* forwarding.S */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; name = forwarding.S; path = src/forwarding/forwarding.S; sourceTree = "<group>"; };
 		4B5C112E17E9AB0C003C917F /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; name = Makefile; path = src/forwarding/Makefile; sourceTree = "<group>"; };
@@ -2033,7 +2033,7 @@
 				4B5C112817E9AAED003C917F /* apple-forwarding-arm.S */,
 				4B7DD58918944A7900990FD6 /* apple-forwarding-arm64.S */,
 				4B5C112917E9AAED003C917F /* apple-forwarding-i386.S */,
-				4B5C112A17E9AAED003C917F /* apple-forwarding-ppc.S */,
+				4B5C112A17E9AAED003C917F /* apple-forwarding-powerpc.S */,
 				4B5C112B17E9AAED003C917F /* apple-forwarding-x86_64.S */,
 				4B5C112C17E9AAED003C917F /* forwarding.S */,
 			);
