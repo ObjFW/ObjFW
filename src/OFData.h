@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFData: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFMessagePackRepresentation>
 {
-	unsigned char *_Nullable _items;
+	unsigned char *_items;
 	size_t _count, _itemSize;
 	bool _freeWhenDone;
 }

@@ -830,7 +830,7 @@ _references_to_categories_of_OFObject(void)
 	struct pre_mem *preMem;
 
 	if OF_UNLIKELY (size == 0)
-		return NULL;
+		return (void *_Nonnull)NULL;
 
 	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
 		@throw [OFOutOfRangeException exception];

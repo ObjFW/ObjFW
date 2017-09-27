@@ -255,7 +255,7 @@ static OFString *module = @"OFObject";
 	    [m doubleValue] == 120)
 
 	EXPECT_EXCEPTION(@"Catch -[setValue:forKey:] with nil key for scalar",
-	    OFInvalidArgumentException, [m setValue: nil
+	    OFInvalidArgumentException, [m setValue: (id _Nonnull)nil
 					     forKey: @"intValue"])
 
 	[pool drain];
