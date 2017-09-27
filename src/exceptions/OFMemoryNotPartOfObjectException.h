@@ -27,14 +27,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMemoryNotPartOfObjectException: OFException
 {
-	void *_pointer;
+	void *_Nullable _pointer;
 	id _object;
 }
 
 /*!
  * A pointer to the memory which is not part of the object.
  */
-@property (readonly, nonatomic) void *pointer;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *pointer;
 
 /*!
  * The object which the memory is not part of.
@@ -50,7 +50,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which the memory is not part of
  * @return A new, autoreleased memory not part of object exception
  */
-+ (instancetype)exceptionWithPointer: (void *)pointer
++ (instancetype)exceptionWithPointer: (nullable void *)pointer
 			      object: (id)object;
 
 - init OF_UNAVAILABLE;
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which the memory is not part of
  * @return An initialized memory not part of object exception
  */
-- initWithPointer: (void *)pointer
+- initWithPointer: (nullable void *)pointer
 	   object: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 

@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
+- (void)setValue: (id)value
 	  forKey: (OFString *)key;
 
 /*!

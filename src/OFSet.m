@@ -255,9 +255,6 @@ static struct {
 		return;
 	}
 
-	if (value == [OFNull null])
-		value = nil;
-
 	for (id object in self)
 		[object setValue: value
 			  forKey: key];

@@ -221,7 +221,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param key The key to set
  * @param value The value to set the key to
  */
-- (void)setValue: (nullable id)value
+- (void)setValue: (id)value
 	  forKey: (OFString *)key;
 
 /*!

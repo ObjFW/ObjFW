@@ -319,9 +319,6 @@ static struct {
 		return;
 	}
 
-	if (value == [OFNull null])
-		value = nil;
-
 	for (id object in self)
 		[object setValue: value
 			  forKey: key];
@@ -452,8 +449,16 @@ static struct {
 
 	if ([self count] == 0)
 		return @"";
-	if ([self count] == 1)
-		return [[self firstObject] performSelector: selector];
+
+	if ([self count] == 1) {
+		OFString *component =
+		    [[self firstObject] performSelector: selector];
+
+		if (component == nil)
+			@throw [OFInvalidArgumentException exception];
+
+		return component;
+	}
 
 	ret = [OFMutableString string];
 
@@ -462,6 +467,9 @@ static struct {
 			void *pool = objc_autoreleasePoolPush();
 			OFString *component =
 			    [object performSelector: selector];
+
+			if (component == nil)
+				@throw [OFInvalidArgumentException exception];
 
 			if ([component length] > 0) {
 				if ([ret length] > 0)
@@ -476,13 +484,18 @@ static struct {
 
 		for (id object in self) {
 			void *pool = objc_autoreleasePoolPush();
+			OFString *component =
+			    [object performSelector: selector];
+
+			if (component == nil)
+				@throw [OFInvalidArgumentException exception];
 
 			if OF_UNLIKELY (first)
 				first = false;
 			else
 				[ret appendString: separator];
 
-			[ret appendString: [object performSelector: selector]];
+			[ret appendString: component];
 
 			objc_autoreleasePoolPop(pool);
 		}

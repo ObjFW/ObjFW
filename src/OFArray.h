@@ -220,7 +220,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (nullable id)value
+- (void)setValue: (id)value
 	  forKey: (OFString *)key;
 
 /*!

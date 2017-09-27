@@ -307,7 +307,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param otherDate Another date
  * @return The earlier date of the two dates
  */
-- (OFDate *)earlierDate: (OFDate *)otherDate;
+- (OFDate *)earlierDate: (nullable OFDate *)otherDate;
 
 /*!
  * @brief Returns the later of the two dates.
@@ -317,7 +317,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param otherDate Another date
  * @return The later date of the two dates
  */
-- (OFDate *)laterDate: (OFDate *)otherDate;
+- (OFDate *)laterDate: (nullable OFDate *)otherDate;
 
 /*!
  * @brief Returns the seconds since 1970-01-01T00:00:00Z.
