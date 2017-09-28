@@ -18,9 +18,17 @@
 
 #import "OFString+NSObject.h"
 
+#import "OFInitializationFailedException.h"
+
 @implementation OFString (NSObject)
 - (id)NSObject
 {
-	return [NSString stringWithUTF8String: [self UTF8String]];
+	NSString *string = [NSString stringWithUTF8String: [self UTF8String]];
+
+	if (string == nil)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: [NSString class]];
+
+	return string;
 }
 @end

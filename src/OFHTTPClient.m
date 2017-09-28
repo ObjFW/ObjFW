@@ -97,7 +97,7 @@ constructRequestString(OFHTTPRequest *request)
 
 	if ([URL query] != nil) {
 		[requestString appendString: @"?"];
-		[requestString appendString: [URL query]];
+		[requestString appendString: (OFString *)[URL query]];
 	}
 
 	[requestString appendString: @" HTTP/"];

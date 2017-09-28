@@ -208,7 +208,10 @@
 	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[_lastReturnedStream retain] autorelease];
+	if (_lastReturnedStream == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	return [[(OFStream *)_lastReturnedStream retain] autorelease];
 }
 
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
@@ -233,7 +236,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFStream *)_lastReturnedStream retain] autorelease];
 }
 
 - (void)close

@@ -176,7 +176,7 @@ static Class CDATAClass = Nil;
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
 
 		if (stringValue != nil)
-			[self setStringValue: stringValue];
+			[self setStringValue: (OFString *)stringValue];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -438,7 +438,7 @@ static Class CDATAClass = Nil;
 
 	parentPrefix = [allNamespaces objectForKey:
 	    (parent != nil && parent->_namespace != nil
-	    ? parent->_namespace : (OFString *)@"")];
+	    ? (OFString *)parent->_namespace : (OFString *)@"")];
 
 	/* Add the namespaces of the current element */
 	if (allNamespaces != nil) {
@@ -459,7 +459,7 @@ static Class CDATAClass = Nil;
 		allNamespaces = _namespaces;
 
 	prefix = [allNamespaces objectForKey:
-	    (_namespace != nil ? _namespace : (OFString *)@"")];
+	    (_namespace != nil ? (OFString *)_namespace : (OFString *)@"")];
 
 	if (parent != nil && parent->_namespace != nil && parentPrefix == nil)
 		defaultNS = parent->_namespace;
@@ -527,9 +527,10 @@ static Class CDATAClass = Nil;
 
 		if ([attribute namespace] != nil &&
 		    (attributePrefix = [allNamespaces objectForKey:
-		    [attribute namespace]]) == nil)
+		    (OFString *)[attribute namespace]]) == nil)
 			@throw [OFUnboundNamespaceException
-			    exceptionWithNamespace: [attribute namespace]
+			    exceptionWithNamespace: (OFString *)
+							[attribute namespace]
 					   element: self];
 
 		length += [attributeName UTF8StringLength] +
@@ -703,11 +704,11 @@ static Class CDATAClass = Nil;
 
 	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"
-				  stringValue: _namespace];
+				  stringValue: (OFString *)_namespace];
 
 	if (_defaultNamespace != nil)
 		[element addAttributeWithName: @"defaultNamespace"
-				  stringValue: _defaultNamespace];
+				  stringValue: (OFString *)_defaultNamespace];
 
 	if (_attributes != nil) {
 		OFXMLElement *attributesElement;
@@ -716,7 +717,7 @@ static Class CDATAClass = Nil;
 		    [OFXMLElement elementWithName: @"attributes"
 					namespace: OF_SERIALIZATION_NS];
 		[attributesElement addChild:
-		    [_attributes XMLElementBySerializing]];
+		    [(OFArray *)_attributes XMLElementBySerializing]];
 		[element addChild: attributesElement];
 	}
 
@@ -746,7 +747,8 @@ static Class CDATAClass = Nil;
 		childrenElement =
 		    [OFXMLElement elementWithName: @"children"
 					namespace: OF_SERIALIZATION_NS];
-		[childrenElement addChild: [_children XMLElementBySerializing]];
+		[childrenElement addChild:
+		    [(OFArray *)_children XMLElementBySerializing]];
 		[element addChild: childrenElement];
 	}
 

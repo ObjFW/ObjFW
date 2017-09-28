@@ -387,7 +387,7 @@ callMain(id object)
 	}
 # endif
 
-	return _runLoop;
+	return (OFRunLoop *)_runLoop;
 }
 
 - (OFString *)name

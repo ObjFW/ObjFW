@@ -255,7 +255,8 @@ __extension__
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	SEL selector = @selector(invocationTestMethod1::::);
-	OFMethodSignature *sig = [self methodSignatureForSelector: selector];
+	OFMethodSignature *sig =
+	    (OFMethodSignature *)[self methodSignatureForSelector: selector];
 	OFInvocation *invocation;
 	struct test_struct st, st2, *stp = &st, *stp2;
 	unsigned const char c = 0xAA;
@@ -313,7 +314,7 @@ __extension__
 	/* -[invoke] #1 */
 	selector = @selector(invocationTestMethod2::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
-	    [self methodSignatureForSelector: selector]];
+	    (OFMethodSignature *)[self methodSignatureForSelector: selector]];
 
 	[invocation setArgument: &self
 			atIndex: 0];
@@ -331,7 +332,7 @@ __extension__
 	/* -[invoke] #2 */
 	selector = @selector(invocationTestMethod3::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
-	    [self methodSignatureForSelector: selector]];
+	    (OFMethodSignature *)[self methodSignatureForSelector: selector]];
 
 	[invocation setArgument: &self
 			atIndex: 0];
@@ -352,7 +353,7 @@ __extension__
 	/* -[invoke] #3 */
 	selector = @selector(invocationTestMethod4::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
-	    [self methodSignatureForSelector: selector]];
+	    (OFMethodSignature *)[self methodSignatureForSelector: selector]];
 
 	[invocation setArgument: &self
 			atIndex: 0];
@@ -380,6 +381,7 @@ __extension__
 		/* -[invoke] #4 */
 		selector = @selector(invocationTestMethod5::::::::::::::::);
 		invocation = [OFInvocation invocationWithMethodSignature:
+		    (OFMethodSignature *)
 		    [self methodSignatureForSelector: selector]];
 
 		[invocation setArgument: &self
@@ -403,7 +405,7 @@ __extension__
 	/* -[invoke] #5 */
 	selector = @selector(invocationTestMethod6::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
-	    [self methodSignatureForSelector: selector]];
+	    (OFMethodSignature *)[self methodSignatureForSelector: selector]];
 
 	[invocation setArgument: &self
 			atIndex: 0];
@@ -433,6 +435,7 @@ __extension__
 		/* -[invoke] #6 */
 		selector = @selector(invocationTestMethod7::::::::::::::::);
 		invocation = [OFInvocation invocationWithMethodSignature:
+		    (OFMethodSignature *)
 		    [self methodSignatureForSelector: selector]];
 
 		[invocation setArgument: &self
@@ -472,7 +475,7 @@ __extension__
 	/* -[invoke] #7 */
 	selector = @selector(invocationTestMethod8::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
-	    [self methodSignatureForSelector: selector]];
+	    (OFMethodSignature *)[self methodSignatureForSelector: selector]];
 
 	[invocation setArgument: &self
 			atIndex: 0];

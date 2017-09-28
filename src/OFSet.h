@@ -215,7 +215,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param object The object which is checked for being in the set
  * @return A boolean whether the set contains the specified object
  */
-- (bool)containsObject: (nullable ObjectType)object;
+- (bool)containsObject: (ObjectType)object;
 
 /*!
  * @brief Returns the value for the specified key

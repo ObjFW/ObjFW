@@ -346,15 +346,15 @@ static const of_map_table_functions_t objectFunctions = {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFMapTableEnumerator *enumerator;
-		id key;
+		void **keyPtr;
 		size_t i;
 
 		i = 0;
 		enumerator = [_mapTable keyEnumerator];
-		while ((key = [enumerator nextObject]) != nil) {
+		while ((keyPtr = [enumerator nextObject]) != NULL) {
 			assert(i < count);
 
-			keys[i++] = key;
+			keys[i++] = (id)*keyPtr;
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -381,15 +381,15 @@ static const of_map_table_functions_t objectFunctions = {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		OFMapTableEnumerator *enumerator;
-		id object;
+		void **objectPtr;
 		size_t i;
 
 		i = 0;
 		enumerator = [_mapTable objectEnumerator];
-		while ((object = [enumerator nextObject]) != nil) {
+		while ((objectPtr = [enumerator nextObject]) != NULL) {
 			assert(i < count);
 
-			objects[i++] = object;
+			objects[i++] = (id)*objectPtr;
 		}
 
 		objc_autoreleasePoolPop(pool);

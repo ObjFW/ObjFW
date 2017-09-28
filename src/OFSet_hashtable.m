@@ -257,10 +257,17 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 - (id)anyObject
 {
 	void *pool = objc_autoreleasePoolPush();
+	void **objectPtr;
 	id object;
 
-	object = [[_mapTable keyEnumerator] nextObject];
-	object = [object retain];
+	objectPtr = [[_mapTable keyEnumerator] nextObject];
+
+	if (objectPtr == NULL) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	object = [(id)*objectPtr retain];
 
 	objc_autoreleasePoolPop(pool);
 

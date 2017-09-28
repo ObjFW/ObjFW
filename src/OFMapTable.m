@@ -689,7 +689,7 @@ defaultEqual(void *object1, void *object2)
 	[super dealloc];
 }
 
-- (void *)nextObject
+- (void **)nextObject
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -705,7 +705,7 @@ defaultEqual(void *object1, void *object2)
 @end
 
 @implementation OFMapTableKeyEnumerator
-- (void *)nextObject
+- (void **)nextObject
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
@@ -715,14 +715,14 @@ defaultEqual(void *object1, void *object2)
 	    _buckets[_position] == &deleted); _position++);
 
 	if (_position < _capacity)
-		return _buckets[_position++]->key;
+		return &_buckets[_position++]->key;
 	else
 		return NULL;
 }
 @end
 
 @implementation OFMapTableObjectEnumerator
-- (void *)nextObject
+- (void **)nextObject
 {
 	if (*_mutationsPtr != _mutations)
 		@throw [OFEnumerationMutationException
@@ -732,7 +732,7 @@ defaultEqual(void *object1, void *object2)
 	    _buckets[_position] == &deleted); _position++);
 
 	if (_position < _capacity)
-		return _buckets[_position++]->object;
+		return &_buckets[_position++]->object;
 	else
 		return NULL;
 }
@@ -760,16 +760,19 @@ defaultEqual(void *object1, void *object2)
 
 - (id)nextObject
 {
-	id ret;
+	void **objectPtr;
 
 	@try {
-		ret = [_enumerator nextObject];
+		objectPtr = [_enumerator nextObject];
+
+		if (objectPtr == NULL)
+			return nil;
 	} @catch (OFEnumerationMutationException *e) {
 		@throw [OFEnumerationMutationException
 		    exceptionWithObject: _object];
 	}
 
-	return ret;
+	return (id)*objectPtr;
 }
 
 - (void)reset

@@ -467,7 +467,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFStream *)_lastReturnedStream retain] autorelease];
 }
 
 - (OFStream *)streamForWritingEntry: (OFZIPArchiveEntry *)entry_
@@ -558,7 +558,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFStream *)_lastReturnedStream retain] autorelease];
 }
 
 - (void)of_writeCentralDirectory
@@ -605,7 +605,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_stream writeLittleEndianInt32: 0xFFFFFFFF];	/* CD offset */
 	[_stream writeLittleEndianInt16: [_archiveComment UTF8StringLength]];
 	if (_archiveComment != nil)
-		[_stream writeString: _archiveComment];
+		[_stream writeString: (OFString *)_archiveComment];
 
 	objc_autoreleasePoolPop(pool);
 }

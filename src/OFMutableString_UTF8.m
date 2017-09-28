@@ -213,9 +213,9 @@
 	if (lenNew == (size_t)lenOld)
 		memcpy(_s->cString + index, buffer, lenNew);
 	else if (lenNew > (size_t)lenOld) {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength -
-						  lenOld + lenNew + 1];
+		_s->cString = (void *)[self resizeMemory: _s->cString
+						    size: _s->cStringLength -
+							  lenOld + lenNew + 1];
 
 		memmove(_s->cString + index + lenNew,
 		    _s->cString + index + lenOld,
@@ -242,7 +242,7 @@
 			_s->isUTF8 = true;
 
 		@try {
-			_s->cString = [self
+			_s->cString = (void *)[self
 			    resizeMemory: _s->cString
 				    size: _s->cStringLength + 1];
 		} @catch (OFOutOfMemoryException *e) {
@@ -271,9 +271,9 @@
 	}
 
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->cString = (void *)[self resizeMemory: _s->cString
+					    size: _s->cStringLength +
+						  UTF8StringLength + 1];
 	memcpy(_s->cString + _s->cStringLength, UTF8String,
 	    UTF8StringLength + 1);
 
@@ -301,9 +301,9 @@
 	}
 
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->cString = (void *)[self resizeMemory: _s->cString
+					    size: _s->cStringLength +
+						  UTF8StringLength + 1];
 	memcpy(_s->cString + _s->cStringLength, UTF8String, UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
@@ -349,9 +349,9 @@
 	UTF8StringLength = [string UTF8StringLength];
 
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: _s->cStringLength +
-					  UTF8StringLength + 1];
+	_s->cString = (void *)[self resizeMemory: _s->cString
+					    size: _s->cStringLength +
+						  UTF8StringLength + 1];
 	memcpy(_s->cString + _s->cStringLength, [string UTF8String],
 	    UTF8StringLength);
 
@@ -394,8 +394,9 @@
 		tmp[j] = '\0';
 
 		_s->hashed = false;
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + j + 1];
+		_s->cString = (void *)[self
+		    resizeMemory: _s->cString
+			    size: _s->cStringLength + j + 1];
 		memcpy(_s->cString + _s->cStringLength, tmp, j + 1);
 
 		_s->cStringLength += j;
@@ -523,8 +524,8 @@
 
 	newCStringLength = _s->cStringLength + [string UTF8StringLength];
 	_s->hashed = false;
-	_s->cString = [self resizeMemory: _s->cString
-				    size: newCStringLength + 1];
+	_s->cString = (void *)[self resizeMemory: _s->cString
+					    size: newCStringLength + 1];
 
 	memmove(_s->cString + index + [string UTF8StringLength],
 	    _s->cString + index, _s->cStringLength - index);
@@ -566,8 +567,9 @@
 	_s->cString[_s->cStringLength] = 0;
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = (void *)[self
+		    resizeMemory: _s->cString
+			    size: _s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -608,8 +610,8 @@
 	 * lost due to the resize!
 	 */
 	if (newCStringLength > _s->cStringLength)
-		_s->cString = [self resizeMemory: _s->cString
-					    size: newCStringLength + 1];
+		_s->cString = (void *)[self resizeMemory: _s->cString
+						    size: newCStringLength + 1];
 
 	memmove(_s->cString + start + [replacement UTF8StringLength],
 	    _s->cString + end, _s->cStringLength - end);
@@ -622,8 +624,8 @@
 	 * done with memmove().
 	 */
 	if (newCStringLength < _s->cStringLength)
-		_s->cString = [self resizeMemory: _s->cString
-					    size: newCStringLength + 1];
+		_s->cString = (void *)[self resizeMemory: _s->cString
+						    size: newCStringLength + 1];
 
 	_s->cStringLength = newCStringLength;
 	_s->length = newLength;
@@ -739,8 +741,9 @@
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = (void *)[self
+		    resizeMemory: _s->cString
+			    size: _s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -766,8 +769,9 @@
 	_s->length -= d;
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = (void *)[self
+		    resizeMemory: _s->cString
+			    size: _s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}
@@ -803,8 +807,9 @@
 	_s->cString[_s->cStringLength] = '\0';
 
 	@try {
-		_s->cString = [self resizeMemory: _s->cString
-					    size: _s->cStringLength + 1];
+		_s->cString = (void *)[self
+		    resizeMemory: _s->cString
+			    size: _s->cStringLength + 1];
 	} @catch (OFOutOfMemoryException *e) {
 		/* We don't really care, as we only made it smaller */
 	}

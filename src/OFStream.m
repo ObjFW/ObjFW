@@ -661,9 +661,10 @@
 				if (i > 0 && _readBuffer[i - 1] == '\r')
 					retLength--;
 
-				ret = [OFString stringWithCString: _readBuffer
-							 encoding: encoding
-							   length: retLength];
+				ret = [OFString
+				    stringWithCString: (char *)_readBuffer
+					     encoding: encoding
+					       length: retLength];
 
 				_readBuffer += i + 1;
 				_readBufferLength -= i + 1;
@@ -690,7 +691,7 @@
 			if (retLength > 0 && _readBuffer[retLength - 1] == '\r')
 				retLength--;
 
-			ret = [OFString stringWithCString: _readBuffer
+			ret = [OFString stringWithCString: (char *)_readBuffer
 						 encoding: encoding
 						   length: retLength];
 
@@ -885,7 +886,7 @@
 					delimiterLength = 1;
 
 				ret = [OFString
-				    stringWithCString: _readBuffer
+				    stringWithCString: (char *)_readBuffer
 					     encoding: encoding
 					      length: i + 1 - delimiterLength];
 
@@ -909,7 +910,7 @@
 				return nil;
 			}
 
-			ret = [OFString stringWithCString: _readBuffer
+			ret = [OFString stringWithCString: (char *)_readBuffer
 						 encoding: encoding
 						   length: _readBufferLength];
 
@@ -1039,7 +1040,7 @@
 	if (_writeBuffer == NULL)
 		return;
 
-	[self lowlevelWriteBuffer: _writeBuffer
+	[self lowlevelWriteBuffer: (char *)_writeBuffer
 			   length: _writeBufferLength];
 
 	[self freeMemory: _writeBuffer];

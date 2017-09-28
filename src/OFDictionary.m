@@ -470,7 +470,7 @@ static struct {
 	bool stop = false;
 
 	for (id key in self) {
-		block(key, [self objectForKey: key], &stop);
+		block(key, (id)[self objectForKey: key], &stop);
 
 		if (stop)
 			break;

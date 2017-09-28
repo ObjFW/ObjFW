@@ -135,7 +135,7 @@ struct of_list_object_t {
  * @param object The object which is checked for being in the list
  * @return A boolean whether the list contains the specified object
  */
-- (bool)containsObject: (nullable ObjectType)object;
+- (bool)containsObject: (ObjectType)object;
 
 /*!
  * @brief Checks whether the list contains an object with the specified address.
@@ -144,7 +144,7 @@ struct of_list_object_t {
  * @return A boolean whether the list contains an object with the specified
  *	   address
  */
-- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
+- (bool)containsObjectIdenticalTo: (ObjectType)object;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through all objects of the list.

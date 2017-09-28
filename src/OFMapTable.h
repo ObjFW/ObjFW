@@ -47,8 +47,8 @@ typedef struct {
  * @param stop A pointer to a variable that can be set to true to stop the
  *	       enumeration
  */
-typedef void (^of_map_table_enumeration_block_t)(void *key, void *object,
-    bool *stop);
+typedef void (^of_map_table_enumeration_block_t)(void *_Nullable key,
+    void *_Nullable object, bool *stop);
 
 /*!
  * @brief A block for replacing objects in an OFMapTable.
@@ -57,7 +57,8 @@ typedef void (^of_map_table_enumeration_block_t)(void *key, void *object,
  * @param object The object to replace
  * @return The object to replace the object with
  */
-typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
+typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
+    void *_Nullable object);
 #endif
 
 @class OFMapTableEnumerator;
@@ -161,15 +162,15 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
  * @param key The key to set
  * @param object The object to set the key to
  */
-- (void)setObject: (void *)object
-	   forKey: (void *)key;
+- (void)setObject: (nullable void *)object
+	   forKey: (nullable void *)key;
 
 /*!
  * @brief Removes the object for the specified key from the map table.
  *
  * @param key The key whose object should be removed
  */
-- (void)removeObjectForKey: (void *)key;
+- (void)removeObjectForKey: (nullable void *)key;
 
 /*!
  * @brief Removes all objects.
@@ -248,15 +249,16 @@ typedef void *_Nonnull (^of_map_table_replace_block_t)(void *key, void *object);
 - init OF_UNAVAILABLE;
 
 /*!
- * @brief Returns the next object.
+ * @brief Returns a pointer to the next object, or NULL if the enumeration
+ *	  finished.
  *
  * @return The next object
  */
-- (nullable void *)nextObject;
+- (void *_Nullable *_Nullable)nextObject;
 
 /*!
- * @brief Resets the enumerator, so the next call to @ref nextKey returns the
- *	  first key again.
+ * @brief Resets the enumerator, so the next call to @ref nextObject returns the
+ *	  first object again.
  */
 - (void)reset;
 @end

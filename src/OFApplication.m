@@ -99,7 +99,8 @@ atexitHandler(void)
 	static void						\
 	handle##sig(int signal)					\
 	{							\
-		app->_##sig##Handler(app->_delegate,		\
+		app->_##sig##Handler(				\
+		    (id <OFApplicationDelegate>)app->_delegate,	\
 		    @selector(applicationDidReceive##sig));	\
 	}
 SIGNAL_HANDLER(SIGINT)
