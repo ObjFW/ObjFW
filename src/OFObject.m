@@ -354,16 +354,25 @@ _references_to_categories_of_OFObject(void)
 + (IMP)replaceClassMethod: (SEL)selector
       withMethodFromClass: (Class)class
 {
+	IMP method = [class methodForSelector: selector];
+
+	if (method == NULL)
+		@throw [OFInvalidArgumentException exception];
+
 	return class_replaceMethod(object_getClass(self), selector,
-	    [class methodForSelector: selector],
+	    (IMP _Nonnull)method,
 	    typeEncodingForSelector(object_getClass(class), selector));
 }
 
 + (IMP)replaceInstanceMethod: (SEL)selector
 	 withMethodFromClass: (Class)class
 {
-	return class_replaceMethod(self, selector,
-	    [class instanceMethodForSelector: selector],
+	IMP method = [class instanceMethodForSelector: selector];
+
+	if (method == NULL)
+		@throw [OFInvalidArgumentException exception];
+
+	return class_replaceMethod(self, selector, (IMP _Nonnull)method,
 	    typeEncodingForSelector(class, selector));
 }
 
@@ -456,7 +465,7 @@ _references_to_categories_of_OFObject(void)
 	}
 #endif
 
-	[self inheritMethodsFromClass: [class superclass]];
+	[self inheritMethodsFromClass: superclass];
 }
 
 + (BOOL)resolveClassMethod: (SEL)selector
@@ -476,7 +485,7 @@ _references_to_categories_of_OFObject(void)
 
 - (Class)class
 {
-	return object_getClass(self);
+	return (Class _Nonnull)object_getClass(self);
 }
 
 - (Class)superclass

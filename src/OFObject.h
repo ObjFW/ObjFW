@@ -210,7 +210,7 @@ of_rectangle(float x, float y, float width, float height)
  *
  * @return The superclass of the object
  */
-- (Class)superclass;
+- (nullable Class)superclass;
 
 /*!
  * @brief Returns a boolean whether the object of the specified kind.
@@ -507,7 +507,7 @@ OF_ROOT_CLASS
  *
  * @return The superclass of the class
  */
-+ (Class)superclass;
++ (nullable Class)superclass;
 
 /*!
  * @brief Checks whether instances of the class respond to a given selector.

@@ -57,7 +57,7 @@ objc_constructInstance(Class cls, void *bytes)
 	if (cls == Nil || bytes == NULL)
 		return nil;
 
-	object_setClass(obj, cls);
+	object_setClass(obj, (Class _Nonnull)cls);
 
 	if (!callConstructors(cls, obj))
 		return nil;
