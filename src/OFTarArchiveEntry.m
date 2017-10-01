@@ -53,7 +53,7 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 static uintmax_t
 octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 {
-	uintmax_t value;
+	uintmax_t value = 0;
 
 	if (length == 0)
 		return 0;

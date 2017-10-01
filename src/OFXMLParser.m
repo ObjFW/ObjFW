@@ -40,6 +40,29 @@ typedef void (*state_function_t)(id, SEL);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function_t lookupTable[OF_XMLPARSER_NUM_STATES];
 
+@interface OFXMLParser ()
+- (void)of_inByteOrderMarkState;
+- (void)of_outsideTagState;
+- (void)of_tagOpenedState;
+- (void)of_inProcessingInstructionsState;
+- (void)of_inTagNameState;
+- (void)of_inCloseTagNameState;
+- (void)of_inTagState;
+- (void)of_inAttributeNameState;
+- (void)of_expectAttributeEqualSignState;
+- (void)of_expectAttributeDelimiterState;
+- (void)of_inAttributeValueState;
+- (void)of_expectTagCloseState;
+- (void)of_expectSpaceOrTagCloseState;
+- (void)of_inExclamationMarkState;
+- (void)of_inCDATAOpeningState;
+- (void)of_inCDATAState;
+- (void)of_inCommentOpeningState;
+- (void)of_inCommentState1;
+- (void)of_inCommentState2;
+- (void)of_inDOCTYPEState;
+@end
+
 static OF_INLINE void
 appendToBuffer(OFMutableData *buffer, const char *string,
     of_string_encoding_t encoding, size_t length)

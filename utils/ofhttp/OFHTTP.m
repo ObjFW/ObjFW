@@ -69,6 +69,8 @@
 	intmax_t _received, _length, _resumedFrom;
 	ProgressBar *_progressBar;
 }
+
+- (void)downloadNextURL;
 @end
 
 OF_APPLICATION_DELEGATE(OFHTTP)
@@ -628,6 +630,66 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		   afterDelay: 0];
 }
 
+-      (bool)stream: (OFHTTPResponse *)response
+  didReadIntoBuffer: (void *)buffer
+	     length: (size_t)length
+	    context: (id)context
+	  exception: (OFException *)e
+{
+	if (e != nil) {
+		OFString *URL;
+
+		[_progressBar stop];
+		[_progressBar draw];
+		[_progressBar release];
+		_progressBar = nil;
+
+		if (!_quiet)
+			[of_stdout writeString: @"\n  Error!\n"];
+
+		URL = [_URLs objectAtIndex: _URLIndex - 1];
+		[of_stderr writeLine:
+		    OF_LOCALIZED(@"download_failed_exception",
+		    @"%[prog]: Failed to download <%[url]>: %[exception]",
+		    @"prog", [OFApplication programName],
+		    @"url", URL,
+		    @"exception", e)];
+
+		_errorCode = 1;
+		goto next;
+	}
+
+	_received += length;
+
+	[_output writeBuffer: buffer
+		      length: length];
+
+	[_progressBar setReceived: _received];
+
+	if ([response isAtEndOfStream] ||
+	    (_length >= 0 && _received >= _length)) {
+		[_progressBar stop];
+		[_progressBar draw];
+		[_progressBar release];
+		_progressBar = nil;
+
+		if (!_quiet) {
+			[of_stdout writeString: @"\n  "];
+			[of_stdout writeLine:
+			    OF_LOCALIZED(@"download_done", @"Done!")];
+		}
+
+		goto next;
+	}
+
+	return true;
+
+next:
+	[self performSelector: @selector(downloadNextURL)
+		   afterDelay: 0];
+	return false;
+}
+
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
@@ -795,66 +857,6 @@ next:
 
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
-}
-
--      (bool)stream: (OFHTTPResponse *)response
-  didReadIntoBuffer: (void *)buffer
-	     length: (size_t)length
-	    context: (id)context
-	  exception: (OFException *)e
-{
-	if (e != nil) {
-		OFString *URL;
-
-		[_progressBar stop];
-		[_progressBar draw];
-		[_progressBar release];
-		_progressBar = nil;
-
-		if (!_quiet)
-			[of_stdout writeString: @"\n  Error!\n"];
-
-		URL = [_URLs objectAtIndex: _URLIndex - 1];
-		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_exception",
-		    @"%[prog]: Failed to download <%[url]>: %[exception]",
-		    @"prog", [OFApplication programName],
-		    @"url", URL,
-		    @"exception", e)];
-
-		_errorCode = 1;
-		goto next;
-	}
-
-	_received += length;
-
-	[_output writeBuffer: buffer
-		      length: length];
-
-	[_progressBar setReceived: _received];
-
-	if ([response isAtEndOfStream] ||
-	    (_length >= 0 && _received >= _length)) {
-		[_progressBar stop];
-		[_progressBar draw];
-		[_progressBar release];
-		_progressBar = nil;
-
-		if (!_quiet) {
-			[of_stdout writeString: @"\n  "];
-			[of_stdout writeLine:
-			    OF_LOCALIZED(@"download_done", @"Done!")];
-		}
-
-		goto next;
-	}
-
-	return true;
-
-next:
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
-	return false;
 }
 
 - (void)downloadNextURL

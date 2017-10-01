@@ -61,6 +61,7 @@
        redirects: (unsigned int)redirects
 	 context: (id)context;
 - (void)start;
+- (void)closeAndReconnect;
 @end
 
 @interface OFHTTPClientResponse: OFHTTPResponse
@@ -235,31 +236,6 @@ normalizeKey(char *str_)
 	[_serverHeaders release];
 
 	[super dealloc];
-}
-
-- (void)closeAndReconnect
-{
-	OFURL *URL = [_request URL];
-	OFTCPSocket *socket;
-
-	[_client close];
-
-	if ([[URL scheme] isEqual: @"https"]) {
-		if (of_tls_socket_class == Nil)
-			@throw [OFUnsupportedProtocolException
-			    exceptionWithURL: URL];
-
-		socket = [[[of_tls_socket_class alloc] init]
-		    autorelease];
-	} else
-		socket = [OFTCPSocket socket];
-
-	[socket asyncConnectToHost: [URL host]
-			      port: [URL port]
-			    target: self
-			  selector: @selector(socketDidConnect:context:
-					exception:)
-			   context: nil];
 }
 
 - (void)createResponseWithSocket: (OFTCPSocket *)socket
@@ -715,6 +691,31 @@ normalizeKey(char *str_)
 		}
 	} else
 		[self closeAndReconnect];
+}
+
+- (void)closeAndReconnect
+{
+	OFURL *URL = [_request URL];
+	OFTCPSocket *socket;
+
+	[_client close];
+
+	if ([[URL scheme] isEqual: @"https"]) {
+		if (of_tls_socket_class == Nil)
+			@throw [OFUnsupportedProtocolException
+			    exceptionWithURL: URL];
+
+		socket = [[[of_tls_socket_class alloc] init]
+		    autorelease];
+	} else
+		socket = [OFTCPSocket socket];
+
+	[socket asyncConnectToHost: [URL host]
+			      port: [URL port]
+			    target: self
+			  selector: @selector(socketDidConnect:context:
+					exception:)
+			   context: nil];
 }
 @end
 
