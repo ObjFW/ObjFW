@@ -181,7 +181,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  * @param address The address for which the host and port should be retrieved
  */
 + (void)getHost: (OFString *__autoreleasing _Nonnull *_Nullable)host
-	andPort: (uint16_t *_Nullable)port
+	andPort: (nullable uint16_t *)port
      forAddress: (of_udp_socket_address_t *)address;
 
 /*!

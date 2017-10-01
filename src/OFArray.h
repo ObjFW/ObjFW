@@ -515,7 +515,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 }
 
 - initWithArray: (OFArray *)data
-   mutationsPtr: (unsigned long *_Nullable)mutationsPtr;
+   mutationsPtr: (nullable unsigned long *)mutationsPtr;
 @end
 
 OF_ASSUME_NONNULL_END
