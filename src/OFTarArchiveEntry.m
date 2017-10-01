@@ -26,13 +26,13 @@
 #import "OFOutOfRangeException.h"
 
 static OFString *
-stringFromBuffer(const char *buffer, size_t length)
+stringFromBuffer(const unsigned char *buffer, size_t length)
 {
 	for (size_t i = 0; i < length; i++)
 		if (buffer[i] == '\0')
 			length = i;
 
-	return [OFString stringWithUTF8String: buffer
+	return [OFString stringWithUTF8String: (const char *)buffer
 				       length: length];
 }
 
@@ -51,9 +51,18 @@ stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
 }
 
 static uintmax_t
-octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
+octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 {
-	uintmax_t value = [stringFromBuffer(buffer, length) octalValue];
+	uintmax_t value;
+
+	if (length == 0)
+		return 0;
+
+	if (buffer[0] == 0x80) {
+		for (size_t i = 1; i < length; i++)
+			value = (value << 8) | buffer[i];
+	} else
+		value = [stringFromBuffer(buffer, length) octalValue];
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];
@@ -72,7 +81,7 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)of_initWithHeader: (char [512])header
+- (instancetype)of_initWithHeader: (unsigned char [512])header
 {
 	self = [super init];
 
@@ -81,12 +90,12 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 		OFString *targetFileName;
 
 		_fileName = [stringFromBuffer(header, 100) copy];
-		_mode = (uint16_t)octalValueFromBuffer(
-		    header + 100, 8, UINT16_MAX);
-		_UID = (uint16_t)octalValueFromBuffer(
-		    header + 108, 8, UINT16_MAX);
-		_GID = (uint16_t)octalValueFromBuffer(
-		    header + 116, 8, UINT16_MAX);
+		_mode = (uint32_t)octalValueFromBuffer(
+		    header + 100, 8, UINT32_MAX);
+		_UID = (uint32_t)octalValueFromBuffer(
+		    header + 108, 8, UINT32_MAX);
+		_GID = (uint32_t)octalValueFromBuffer(
+		    header + 116, 8, UINT32_MAX);
 		_size = (uint64_t)octalValueFromBuffer(
 		    header + 124, 12, UINT64_MAX);
 		_modificationDate = [[OFDate alloc]
@@ -192,17 +201,17 @@ octalValueFromBuffer(const char *buffer, size_t length, uintmax_t max)
 	return _fileName;
 }
 
-- (uint16_t)mode
+- (uint32_t)mode
 {
 	return _mode;
 }
 
-- (uint16_t)UID
+- (uint32_t)UID
 {
 	return _UID;
 }
 
-- (uint16_t)GID
+- (uint32_t)GID
 {
 	return _GID;
 }

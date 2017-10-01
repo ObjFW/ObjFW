@@ -34,17 +34,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The mode of the entry.
  */
-@property (readwrite, nonatomic) uint16_t mode;
+@property (readwrite, nonatomic) uint32_t mode;
 
 /*!
  * The UID of the owner.
  */
-@property (readwrite, nonatomic) uint16_t UID;
+@property (readwrite, nonatomic) uint32_t UID;
 
 /*!
  * The GID of the group.
  */
-@property (readwrite, nonatomic) uint16_t GID;
+@property (readwrite, nonatomic) uint32_t GID;
 
 /*!
  * The size of the file.

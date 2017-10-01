@@ -40,17 +40,17 @@
 	[old release];
 }
 
-- (void)setMode: (uint16_t)mode
+- (void)setMode: (uint32_t)mode
 {
 	_mode = mode;
 }
 
-- (void)setUID: (uint16_t)UID
+- (void)setUID: (uint32_t)UID
 {
 	_UID = UID;
 }
 
-- (void)setGID: (uint16_t)GID
+- (void)setGID: (uint32_t)GID
 {
 	_GID = GID;
 }

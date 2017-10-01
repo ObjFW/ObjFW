@@ -159,7 +159,7 @@
 {
 	OFTarArchiveEntry *entry;
 	union {
-		char c[512];
+		unsigned char c[512];
 		uint32_t u32[512 / sizeof(uint32_t)];
 	} buffer;
 	bool empty = true;

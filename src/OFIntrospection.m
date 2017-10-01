@@ -371,7 +371,10 @@
 	self = [super init];
 
 	@try {
-		_name = [[OFString alloc] initWithUTF8String: ivar->name];
+		if (ivar->name != NULL)
+			_name = [[OFString alloc]
+			    initWithUTF8String: ivar->name];
+
 		_typeEncoding = ivar->type;
 		_offset = ivar->offset;
 	} @catch (id e) {
@@ -390,8 +393,8 @@
 		const char *name = ivar_getName(ivar);
 
 		if (name != NULL)
-			_name = [[OFString alloc] initWithUTF8String:
-			    ivar_getName(ivar)];
+			_name = [[OFString alloc] initWithUTF8String: name];
+
 		_typeEncoding = ivar_getTypeEncoding(ivar);
 		_offset = ivar_getOffset(ivar);
 	} @catch (id e) {

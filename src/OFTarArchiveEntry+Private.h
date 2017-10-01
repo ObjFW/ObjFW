@@ -21,7 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFStream;
 
 @interface OFTarArchiveEntry ()
-- (instancetype)of_initWithHeader: (char [_Nonnull 512])header
+- (instancetype)of_initWithHeader: (unsigned char [_Nonnull 512])header
     OF_METHOD_FAMILY(init);
 - (void)of_writeToStream: (OFStream *)stream;
 @end
