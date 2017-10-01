@@ -405,9 +405,9 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	[ret appendFormat: @"; Domain=%@; Path=%@", _domain, _path];
 
 	if (_expires != nil)
-		[ret appendString: [(OFDate *)_expires
-		    dateStringWithFormat: @"; Expires=%a, %d %b %Y "
-					  @"%H:%M:%S +0000"]];
+		[ret appendString:
+		    [_expires dateStringWithFormat: @"; Expires=%a, %d %b %Y "
+						    @"%H:%M:%S +0000"]];
 
 	if (_secure)
 		[ret appendString: @"; Secure"];

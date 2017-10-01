@@ -869,7 +869,7 @@ void
 objc_unregister_class(Class cls)
 {
 	while (cls->subclass_list != NULL && cls->subclass_list[0] != Nil)
-		objc_unregister_class((Class)cls->subclass_list[0]);
+		objc_unregister_class(cls->subclass_list[0]);
 
 	if (cls->info & OBJC_CLASS_INFO_LOADED)
 		call_method(cls, "unload");

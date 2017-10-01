@@ -67,7 +67,7 @@ class_conformsToProtocol(Class cls, Protocol *p)
 
 	objc_global_mutex_lock();
 
-	if ((cats = objc_categories_for_class((Class)cls)) == NULL) {
+	if ((cats = objc_categories_for_class(cls)) == NULL) {
 		objc_global_mutex_unlock();
 		return false;
 	}

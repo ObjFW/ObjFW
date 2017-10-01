@@ -265,7 +265,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if (_SOCKS5Host != nil) {
 		/* Connect to the SOCKS5 proxy instead */
-		host = (OFString *)_SOCKS5Host;
+		host = _SOCKS5Host;
 		port = _SOCKS5Port;
 	}
 
@@ -607,8 +607,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	of_address_to_string_and_port((struct sockaddr *)_address,
-	    _addressLength, &ret, NULL);
+	of_address_to_string_and_port(_address, _addressLength, &ret, NULL);
 
 	return ret;
 }

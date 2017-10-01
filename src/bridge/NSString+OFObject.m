@@ -20,6 +20,6 @@
 @implementation NSString (OFObject)
 - (id)OFObject
 {
-	return [OFString stringWithUTF8String: (const char *)[self UTF8String]];
+	return [OFString stringWithUTF8String: [self UTF8String]];
 }
 @end

@@ -107,16 +107,14 @@ stringEqual(void *object1, void *object2)
 					    [iter->longOption copy];
 
 					if ([_longOptions objectForKey:
-					    (OFString *)iter2->longOption] !=
-					    NULL)
+					    iter2->longOption] != NULL)
 						@throw
 						    [OFInvalidArgumentException
 						    exception];
 
 					[_longOptions
 					    setObject: iter2
-					       forKey: (OFString *)
-							   iter2->longOption];
+					       forKey: iter2->longOption];
 				} @catch (id e) {
 					/*
 					 * Make sure we are in a consistent
@@ -211,8 +209,7 @@ stringEqual(void *object1, void *object2)
 
 			objc_autoreleasePoolPop(pool);
 
-			option = [_longOptions objectForKey:
-			    (OFString *)_lastLongOption];
+			option = [_longOptions objectForKey: _lastLongOption];
 			if (option == NULL)
 				return '?';
 

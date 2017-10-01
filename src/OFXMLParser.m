@@ -547,13 +547,13 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 		if (_prefix != nil && namespace == nil)
 			@throw [OFUnboundPrefixException
-			    exceptionWithPrefix: (OFString *)_prefix
+			    exceptionWithPrefix: _prefix
 					 parser: self];
 
 		if ([_delegate respondsToSelector: @selector(parser:
 		    didStartElement:prefix:namespace:attributes:)])
 			[_delegate parser: self
-			  didStartElement: (OFString *)_name
+			  didStartElement: _name
 				   prefix: _prefix
 				namespace: namespace
 			       attributes: nil];
@@ -562,7 +562,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 			if ([_delegate respondsToSelector:
 			    @selector(parser:didEndElement:prefix:namespace:)])
 				[_delegate parser: self
-				    didEndElement: (OFString *)_name
+				    didEndElement: _name
 					   prefix: _prefix
 					namespace: namespace];
 
@@ -634,14 +634,13 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	namespace = namespaceForPrefix(_prefix, _namespaces);
 	if (_prefix != nil && namespace == nil)
-		@throw [OFUnboundPrefixException
-		    exceptionWithPrefix: (OFString *)_prefix
-				 parser: self];
+		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
+							      parser: self];
 
 	if ([_delegate respondsToSelector:
 	    @selector(parser:didEndElement:prefix:namespace:)])
 		[_delegate parser: self
-		    didEndElement: (OFString *)_name
+		    didEndElement: _name
 			   prefix: _prefix
 			namespace: namespace];
 
@@ -686,9 +685,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	namespace = namespaceForPrefix(_prefix, _namespaces);
 
 	if (_prefix != nil && namespace == nil)
-		@throw [OFUnboundPrefixException
-		    exceptionWithPrefix: (OFString *)_prefix
-				 parser: self];
+		@throw [OFUnboundPrefixException exceptionWithPrefix: _prefix
+							      parser: self];
 
 	for (size_t j = 0; j < attributesCount; j++)
 		resolveAttributeNamespace(attributesObjects[j], _namespaces,
@@ -699,7 +697,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ([_delegate respondsToSelector:
 	    @selector(parser:didStartElement:prefix:namespace:attributes:)])
 		[_delegate parser: self
-		  didStartElement: (OFString *)_name
+		  didStartElement: _name
 			   prefix: _prefix
 			namespace: namespace
 		       attributes: _attributes];
@@ -708,7 +706,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		if ([_delegate respondsToSelector:
 		    @selector(parser:didEndElement:prefix:namespace:)])
 			[_delegate parser: self
-			    didEndElement: (OFString *)_name
+			    didEndElement: _name
 				   prefix: _prefix
 				namespace: namespace];
 
@@ -721,7 +719,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 							    _prefix, _name];
 		[_previous addObject: str];
 	} else
-		[_previous addObject: (OFString *)_name];
+		[_previous addObject: _name];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -832,12 +830,11 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[[_namespaces lastObject] setObject: attributeValue
 					     forKey: @""];
 	if ([_attributePrefix isEqual: @"xmlns"])
-		[[_namespaces lastObject]
-		    setObject: attributeValue
-		       forKey: (OFString *)_attributeName];
+		[[_namespaces lastObject] setObject: attributeValue
+					     forKey: _attributeName];
 
 	[_attributes addObject:
-	    [OFXMLAttribute attributeWithName: (OFString *)_attributeName
+	    [OFXMLAttribute attributeWithName: _attributeName
 				    namespace: _attributePrefix
 				  stringValue: attributeValue]];
 

@@ -179,7 +179,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	@try {
 		_s = &_storage;
 
-		_s->cString = (void *)[self allocMemoryWithSize: 1];
+		_s->cString = [self allocMemoryWithSize: 1];
 		_s->cString[0] = '\0';
 	} @catch (id e) {
 		[self release];
@@ -245,8 +245,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = (void *)[self
-		    allocMemoryWithSize: cStringLength + 1];
+		_s->cString = [self allocMemoryWithSize: cStringLength + 1];
 		_s->cStringLength = cStringLength;
 
 		if (encoding == OF_STRING_ENCODING_UTF_8 ||
@@ -293,7 +292,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 					    exception];
 
 				_s->cStringLength += bytes - 1;
-				_s->cString = (void *)[self
+				_s->cString = [self
 				    resizeMemory: _s->cString
 					    size: _s->cStringLength + 1];
 
@@ -374,7 +373,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				@throw [OFInvalidEncodingException exception];
 
 			_s->cStringLength += byteLength - 1;
-			_s->cString = (void *)[self
+			_s->cString = [self
 			    resizeMemory: _s->cString
 				    size: _s->cStringLength + 1];
 
@@ -446,8 +445,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		_s->length = [string length];
 
-		_s->cString = (void *)[self
-		    allocMemoryWithSize: _s->cStringLength + 1];
+		_s->cString = [self allocMemoryWithSize: _s->cStringLength + 1];
 		memcpy(_s->cString, [string UTF8String], _s->cStringLength + 1);
 	} @catch (id e) {
 		[self release];
@@ -467,8 +465,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = (void *)[self
-		    allocMemoryWithSize: (length * 4) + 1];
+		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		_s->length = length;
 
 		j = 0;
@@ -489,8 +486,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->cStringLength = j;
 
 		@try {
-			_s->cString = (void *)[self resizeMemory: _s->cString
-							    size: j + 1];
+			_s->cString = [self resizeMemory: _s->cString
+						    size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -524,8 +521,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = (void *)[self
-		    allocMemoryWithSize: (length * 4) + 1];
+		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		_s->length = length;
 
 		j = 0;
@@ -575,8 +571,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->cStringLength = j;
 
 		@try {
-			_s->cString = (void *)[self resizeMemory: _s->cString
-							    size: j + 1];
+			_s->cString = [self resizeMemory: _s->cString
+						    size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -610,8 +606,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 
 		_s = &_storage;
 
-		_s->cString = (void *)[self
-		    allocMemoryWithSize: (length * 4) + 1];
+		_s->cString = [self allocMemoryWithSize: (length * 4) + 1];
 		_s->length = length;
 
 		j = 0;
@@ -643,8 +638,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 		_s->cStringLength = j;
 
 		@try {
-			_s->cString = (void *)[self resizeMemory: _s->cString
-							    size: j + 1];
+			_s->cString = [self resizeMemory: _s->cString
+						    size: j + 1];
 		} @catch (OFOutOfMemoryException *e) {
 			/* We don't care, as we only tried to make it smaller */
 		}
@@ -686,7 +681,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 				@throw [OFInvalidEncodingException exception];
 			}
 
-			_s->cString = (void *)[self
+			_s->cString = [self
 			    allocMemoryWithSize: cStringLength + 1];
 			memcpy(_s->cString, tmp, cStringLength + 1);
 		} @finally {

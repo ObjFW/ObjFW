@@ -725,7 +725,7 @@ normalizedKey(OFString *key)
 		@throw [OFAlreadyConnectedException exception];
 
 	_listeningSocket = [[OFTCPSocket alloc] init];
-	_port = [_listeningSocket bindToHost: (OFString *)_host
+	_port = [_listeningSocket bindToHost: _host
 					port: _port];
 	[_listeningSocket listen];
 

@@ -60,23 +60,20 @@ static OFString *strings[] = {
 	    [[list lastListObject]->previous->object isEqual: strings[1]])
 
 	TEST(@"-[removeListObject:]",
-	    R([list removeListObject:
-	    (of_list_object_t *)[list lastListObject]]) &&
+	    R([list removeListObject: [list lastListObject]]) &&
 	    [[list lastListObject]->object isEqual: strings[1]] &&
-	    R([list removeListObject:
-	    (of_list_object_t *)[list firstListObject]]) &&
+	    R([list removeListObject: [list firstListObject]]) &&
 	    [[list firstListObject]->object isEqual:
 	    [list lastListObject]->object])
 
 	TEST(@"-[insertObject:beforeListObject:]",
 	    [list insertObject: strings[0]
-	      beforeListObject: (of_list_object_t *)[list lastListObject]] &&
+	      beforeListObject: [list lastListObject]] &&
 	    [[list lastListObject]->previous->object isEqual: strings[0]])
 
 	TEST(@"-[insertObject:afterListObject:]",
 	    [list insertObject: strings[2]
-	       afterListObject: (of_list_object_t *)
-				    [list firstListObject]->next] &&
+	       afterListObject: [list firstListObject]->next] &&
 	    [[list lastListObject]->object isEqual: strings[2]])
 
 	TEST(@"-[count]", [list count] == 3)
@@ -119,7 +116,7 @@ static OFString *strings[] = {
 	TEST(@"OFEnumerator's -[nextObject]", ok);
 
 	[enumerator reset];
-	[list removeListObject: (of_list_object_t *)[list firstListObject]];
+	[list removeListObject: [list firstListObject]];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
 	    OFEnumerationMutationException, [enumerator nextObject])
@@ -148,8 +145,7 @@ static OFString *strings[] = {
 		for (OFString *obj in list) {
 			(void)obj;
 
-			[list removeListObject:
-			    (of_list_object_t *)[list lastListObject]];
+			[list removeListObject: [list lastListObject]];
 		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = true;

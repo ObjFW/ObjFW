@@ -165,7 +165,7 @@
 
 	if (_namespace != nil)
 		[element addAttributeWithName: @"namespace"
-				  stringValue: (OFString *)_namespace];
+				  stringValue: _namespace];
 
 	[element addAttributeWithName: @"stringValue"
 			  stringValue: _stringValue];

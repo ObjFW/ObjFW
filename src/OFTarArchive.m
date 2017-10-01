@@ -211,7 +211,7 @@
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFStream *)_lastReturnedStream retain] autorelease];
+	return [[_lastReturnedStream retain] autorelease];
 }
 
 - (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
@@ -236,7 +236,7 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[(OFStream *)_lastReturnedStream retain] autorelease];
+	return [[_lastReturnedStream retain] autorelease];
 }
 
 - (void)close

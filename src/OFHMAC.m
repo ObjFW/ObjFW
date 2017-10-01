@@ -127,13 +127,13 @@
 		@throw [OFInvalidArgumentException exception];
 
 	if (_calculated)
-		return (const unsigned char *)[_outerHash digest];
+		return [_outerHash digest];
 
-	[_outerHash updateWithBuffer: (const unsigned char *)[_innerHash digest]
+	[_outerHash updateWithBuffer: [_innerHash digest]
 			      length: [_hashClass digestSize]];
 	_calculated = true;
 
-	return (const unsigned char *)[_outerHash digest];
+	return [_outerHash digest];
 }
 
 - (size_t)digestSize

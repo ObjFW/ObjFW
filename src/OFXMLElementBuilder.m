@@ -117,8 +117,7 @@
 		return;
 	case 1:
 		[_delegate elementBuilder: self
-			  didBuildElement: (OFXMLElement *)
-					       [_stack firstObject]];
+			  didBuildElement: [_stack firstObject]];
 		break;
 	}
 

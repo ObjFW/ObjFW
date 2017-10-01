@@ -189,8 +189,6 @@ AX_CHECK_COMPILER_FLAGS([-Watomic-properties -Werror], [
 	OBJCFLAGS="$OBJCFLAGS -Watomic-properties"
 	TESTS_OBJCFLAGS="$TESTS_OBJCFLAGS -Wno-atomic-properties"
 ])
-AX_CHECK_COMPILER_FLAGS([-Wnullable-to-nonnull-conversion -Werror],
-	[OBJCFLAGS="$OBJCFLAGS -Wnullable-to-nonnull-conversion"])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([

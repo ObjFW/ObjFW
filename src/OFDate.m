@@ -644,8 +644,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	if (otherDate == nil)
 		return self;
 
-	if ([self compare: (OFDate *)otherDate] == OF_ORDERED_DESCENDING)
-		return (OFDate *)otherDate;
+	if ([self compare: otherDate] == OF_ORDERED_DESCENDING)
+		return otherDate;
 
 	return self;
 }
@@ -655,8 +655,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	if (otherDate == nil)
 		return self;
 
-	if ([self compare: (OFDate *)otherDate] == OF_ORDERED_ASCENDING)
-		return (OFDate *)otherDate;
+	if ([self compare: otherDate] == OF_ORDERED_ASCENDING)
+		return otherDate;
 
 	return self;
 }

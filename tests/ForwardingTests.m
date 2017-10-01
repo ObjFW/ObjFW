@@ -73,8 +73,8 @@ test(id self, SEL _cmd)
 	forwardings++;
 
 	if (sel_isEqual(selector, @selector(test))) {
-		class_replaceMethod((Class)object_getClass(self),
-		    @selector(test), (IMP)test, "v#:");
+		class_replaceMethod(object_getClass(self), @selector(test),
+		    (IMP)test, "v#:");
 		return YES;
 	}
 

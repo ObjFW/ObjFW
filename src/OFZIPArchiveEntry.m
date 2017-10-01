@@ -465,11 +465,11 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	size += (2 * 2) + (3 * 8) + 4;
 
 	if (_extraField != nil)
-		[stream writeData: (OFData *)_extraField];
+		[stream writeData: _extraField];
 	size += (uint64_t)[_extraField count];
 
 	if (_fileComment != nil)
-		[stream writeString: (OFString *)_fileComment];
+		[stream writeString: _fileComment];
 	size += (uint64_t)[_fileComment UTF8StringLength];
 
 	objc_autoreleasePoolPop(pool);

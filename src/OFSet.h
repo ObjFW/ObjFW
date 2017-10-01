@@ -206,7 +206,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @return An arbitrary object in the set
  */
-- (ObjectType)anyObject;
+- (nullable ObjectType)anyObject;
 
 /*!
  * @brief Checks whether the set contains an object equal to the specified

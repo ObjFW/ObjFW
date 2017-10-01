@@ -238,7 +238,7 @@ static OFString *values[] = {
 			break;
 		}
 
-		[mutDict setObject: (OFString *)[mutDict objectForKey: key]
+		[mutDict setObject: [mutDict objectForKey: key]
 			    forKey: key];
 		i++;
 	}
@@ -279,9 +279,8 @@ static OFString *values[] = {
 				return;
 			}
 
-			[mutDict
-			    setObject: (OFString *)[mutDict objectForKey: key]
-			       forKey: key];
+			[mutDict setObject: [mutDict objectForKey: key]
+				    forKey: key];
 			i++;
 		}];
 
