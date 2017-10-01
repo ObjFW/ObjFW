@@ -297,8 +297,9 @@ _references_to_categories_of_OFObject(void)
 
 + (OFString *)className
 {
-	return [OFString stringWithCString: class_getName(self)
-				  encoding: OF_STRING_ENCODING_ASCII];
+	return [OFString
+	    stringWithCString: (const char *)class_getName(self)
+		     encoding: OF_STRING_ENCODING_ASCII];
 }
 
 + (bool)isSubclassOfClass: (Class)class
@@ -359,9 +360,9 @@ _references_to_categories_of_OFObject(void)
 	if (method == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	return class_replaceMethod(object_getClass(self), selector,
-	    (IMP _Nonnull)method,
-	    typeEncodingForSelector(object_getClass(class), selector));
+	return class_replaceMethod((Class)object_getClass(self), selector,
+	    (IMP)method, typeEncodingForSelector(object_getClass(class),
+	    selector));
 }
 
 + (IMP)replaceInstanceMethod: (SEL)selector
@@ -372,7 +373,7 @@ _references_to_categories_of_OFObject(void)
 	if (method == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	return class_replaceMethod(self, selector, (IMP _Nonnull)method,
+	return class_replaceMethod(self, selector, (IMP)method,
 	    typeEncodingForSelector(class, selector));
 }
 
@@ -485,7 +486,7 @@ _references_to_categories_of_OFObject(void)
 
 - (Class)class
 {
-	return (Class _Nonnull)object_getClass(self);
+	return (Class)object_getClass(self);
 }
 
 - (Class)superclass
@@ -495,8 +496,9 @@ _references_to_categories_of_OFObject(void)
 
 - (OFString *)className
 {
-	return [OFString stringWithCString: object_getClassName(self)
-				  encoding: OF_STRING_ENCODING_ASCII];
+	return [OFString
+	    stringWithCString: (const char *)object_getClassName(self)
+		     encoding: OF_STRING_ENCODING_ASCII];
 }
 
 - (bool)isKindOfClass: (Class)class
@@ -1028,7 +1030,7 @@ _references_to_categories_of_OFObject(void)
 	struct pre_mem *preMem;
 
 	if OF_UNLIKELY (size == 0)
-		return (void *_Nonnull)NULL;
+		return NULL;
 
 	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
 		@throw [OFOutOfRangeException exception];

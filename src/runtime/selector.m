@@ -72,6 +72,7 @@ sel_registerName(const char *name)
 {
 	const struct objc_abi_selector *rsel;
 	struct objc_abi_selector *sel;
+	char *name_copy;
 
 	objc_global_mutex_lock();
 
@@ -84,9 +85,10 @@ sel_registerName(const char *name)
 	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	if ((sel->name = of_strdup(name)) == NULL)
+	if ((name_copy = of_strdup(name)) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
+	sel->name = name_copy;
 	sel->types = NULL;
 
 	if ((free_list = realloc(free_list,

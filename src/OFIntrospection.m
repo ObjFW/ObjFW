@@ -150,11 +150,11 @@
 		    property->attributes | (property->extended_attributes << 8);
 
 		if (property->getter.name != NULL)
-			_getter = [[OFString alloc]
-			    initWithUTF8String: property->getter.name];
+			_getter = [[OFString alloc] initWithUTF8String:
+			    (const char *)property->getter.name];
 		if (property->setter.name != NULL)
-			_setter = [[OFString alloc]
-			    initWithUTF8String: property->setter.name];
+			_setter = [[OFString alloc] initWithUTF8String:
+			    (const char *)property->setter.name];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -391,7 +391,7 @@
 
 		if (name != NULL)
 			_name = [[OFString alloc] initWithUTF8String:
-			    (const char *_Nonnull)ivar_getName(ivar)];
+			    (const char *)ivar_getName(ivar)];
 		_typeEncoding = ivar_getTypeEncoding(ivar);
 		_offset = ivar_getOffset(ivar);
 	} @catch (id e) {
