@@ -49,8 +49,8 @@
 # define __unsafe_unretained
 #endif
 
-#define Nil (Class)0
-#define nil (id)0
+#define Nil (Class _Null_unspecified)0
+#define nil (id _Null_unspecified)0
 #define YES (BOOL)1
 #define NO  (BOOL)0
 
@@ -71,8 +71,8 @@ struct objc_class {
 	long instance_size;
 	struct objc_ivar_list *_Nullable ivars;
 	struct objc_method_list *_Nullable methodlist;
-	struct objc_dtable *_Nullable dtable;
-	Class _Nonnull *_Nullable subclass_list;
+	struct objc_dtable *_Nonnull dtable;
+	Class _Nullable *_Nullable subclass_list;
 	void *_Nullable sibling_class;
 	struct objc_protocol_list *_Nullable protocols;
 	void *_Nullable gc_object_type;
@@ -228,7 +228,7 @@ extern IMP _Nullable class_replaceMethod(Class _Nonnull, SEL _Nonnull,
     IMP _Nonnull, const char *_Nullable);
 extern Class _Nullable object_getClass(id _Nullable);
 extern Class _Nullable object_setClass(id _Nullable, Class _Nonnull);
-extern const char *_Nonnull object_getClassName(id _Nullable);
+extern const char *_Nullable object_getClassName(id _Nullable);
 extern const char *_Nonnull protocol_getName(Protocol *_Nonnull);
 extern bool protocol_isEqual(Protocol *_Nonnull, Protocol *_Nonnull);
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull, Protocol *_Nonnull);

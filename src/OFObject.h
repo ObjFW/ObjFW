@@ -197,7 +197,7 @@ of_rectangle(float x, float y, float width, float height)
  *
  * @return The superclass of the object
  */
-- (Class)superclass;
+- (nullable Class)superclass;
 
 /*!
  * @brief Returns a boolean whether the object of the specified kind.
@@ -461,7 +461,7 @@ OF_ROOT_CLASS
  *
  * @return The superclass of the class
  */
-+ (Class)superclass;
++ (nullable Class)superclass;
 
 /*!
  * @brief Checks whether instances of the class respond to a given selector.
@@ -651,7 +651,7 @@ OF_ROOT_CLASS
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size is 0.
  */
-- (void *)allocMemoryWithSize: (size_t)size;
+- (nullable void *)allocMemoryWithSize: (size_t)size;
 
 /*!
  * @brief Allocates memory for the specified number of items and stores it in
@@ -664,8 +664,8 @@ OF_ROOT_CLASS
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size or count is 0.
  */
-- (void *)allocMemoryWithSize: (size_t)size
-			count: (size_t)count;
+- (nullable void *)allocMemoryWithSize: (size_t)size
+				 count: (size_t)count;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specified size.

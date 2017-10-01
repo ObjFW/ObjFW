@@ -158,28 +158,28 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The only OFApplication instance in the application
  */
-+ (OFApplication *)sharedApplication;
++ (nullable OFApplication *)sharedApplication;
 
 /*!
  * @brief Returns the name of the program (argv[0]).
  *
  * @return The name of the program (argv[0])
  */
-+ (OFString *)programName;
++ (nullable OFString *)programName;
 
 /*!
  * @brief Returns the arguments passed to the application.
  *
  * @return The arguments passed to the application
  */
-+ (OFArray OF_GENERIC(OFString *) *)arguments;
++ (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Returns the environment of the application.
  *
  * @return The environment of the application
  */
-+ (OFDictionary OF_GENERIC(OFString *, OFString *) *)environment;
++ (nullable OFDictionary OF_GENERIC(OFString *, OFString *) *)environment;
 
 /*!
  * @brief Terminates the application with the EXIT_SUCCESS status.

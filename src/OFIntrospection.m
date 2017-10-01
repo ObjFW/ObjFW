@@ -387,8 +387,11 @@
 	self = [super init];
 
 	@try {
-		_name = [[OFString alloc]
-		    initWithUTF8String: ivar_getName(ivar)];
+		const char *name = ivar_getName(ivar);
+
+		if (name != NULL)
+			_name = [[OFString alloc] initWithUTF8String: name];
+
 		_typeEncoding = ivar_getTypeEncoding(ivar);
 		_offset = ivar_getOffset(ivar);
 	} @catch (id e) {

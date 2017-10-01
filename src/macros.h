@@ -604,25 +604,25 @@ OF_BSWAP_DOUBLE(double d)
 	}
 
 static OF_INLINE bool
-of_bitset_isset(uint8_t *storage, size_t index)
+of_bitset_isset(uint8_t *_Nonnull storage, size_t index)
 {
 	return storage[index / 8] & (1 << (index % 8));
 }
 
 static OF_INLINE void
-of_bitset_set(uint8_t *storage, size_t index)
+of_bitset_set(uint8_t *_Nonnull storage, size_t index)
 {
 	storage[index / 8] |= (1 << (index % 8));
 }
 
 static OF_INLINE void
-of_bitset_clear(uint8_t *storage, size_t index)
+of_bitset_clear(uint8_t *_Nonnull storage, size_t index)
 {
 	storage[index / 8] &= ~(1 << (index % 8));
 }
 
-static OF_INLINE char *
-of_strdup(const char *string)
+static OF_INLINE char *_Nullable
+of_strdup(const char *_Nonnull string)
 {
 	char *copy;
 	size_t length = strlen(string);
@@ -636,7 +636,7 @@ of_strdup(const char *string)
 }
 
 static OF_INLINE void
-of_explicit_memset(void *buffer_, int character, size_t length)
+of_explicit_memset(void *_Nonnull buffer_, int character, size_t length)
 {
 	volatile unsigned char *buffer = (volatile unsigned char *)buffer_;
 

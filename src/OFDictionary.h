@@ -231,7 +231,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object which is checked for being in the dictionary
  * @return A boolean whether the dictionary contains the specified object
  */
-- (bool)containsObject: (nullable ObjectType)object;
+- (bool)containsObject: (ObjectType)object;
 
 /*!
  * @brief Checks whether the dictionary contains an object with the specified
@@ -241,7 +241,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @return A boolean whether the dictionary contains an object with the
  *	   specified address
  */
-- (bool)containsObjectIdenticalTo: (nullable ObjectType)object;
+- (bool)containsObjectIdenticalTo: (ObjectType)object;
 
 /*!
  * @brief Returns an array of all keys.
