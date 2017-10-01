@@ -210,8 +210,7 @@ static OFString *module;
 	test = [[[ObserverTest alloc]
 	    initWithTestsAppDelegate: self] autorelease];
 
-	TEST(@"+[observer]",
-	    (test->_observer = [OFKernelEventObserver observer]))
+	TEST(@"+[observer]", (test->_observer = [class observer]))
 	[test->_observer setDelegate: test];
 
 	TEST(@"-[addObjectForReading:]",
