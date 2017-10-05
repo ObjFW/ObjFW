@@ -249,7 +249,7 @@
 		_incompleteUTF8SurrogateLen += toCopy;
 
 		if (_incompleteUTF8SurrogateLen < (size_t)UTF8Len)
-			return;
+			return 0;
 
 		UTF8Len = of_string_utf8_decode(
 		    _incompleteUTF8Surrogate, _incompleteUTF8SurrogateLen, &c);
