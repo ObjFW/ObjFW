@@ -60,9 +60,9 @@ Lstack_filled:
 	movq	24(%rdi), %rcx
 	movq	16(%rdi), %rdx
 	movq	8(%rdi), %rsi
-	movq	0(%rdi), %rdi
 
 	movb	225(%rdi), %r11b
+	movq	0(%rdi), %rdi
 
 	cmpb	$1, %r11b
 	je	Lcall_send_stret
