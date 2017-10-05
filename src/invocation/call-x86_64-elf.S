@@ -74,10 +74,9 @@ of_invocation_call:
 	movq	24(%rdi), %rcx
 	movq	16(%rdi), %rdx
 	movq	8(%rdi), %rsi
-	movq	0(%rdi), %rdi
 
-	movq	-8(%rbp), %r11
 	movb	225(%r11), %r11b
+	movq	0(%rdi), %rdi
 
 	cmpb	$4, %r11b
 	je	.jmp_into_method
