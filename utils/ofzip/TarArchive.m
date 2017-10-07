@@ -250,6 +250,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
+		of_tar_archive_entry_type_t type = [entry type];
 		OFString *outFileName = [fileName stringByStandardizingPath];
 		OFArray OF_GENERIC(OFString *) *pathComponents;
 		OFString *directory;
@@ -261,7 +262,8 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 		if (!all && ![files containsObject: fileName])
 			continue;
 
-		if ([entry type] != OF_TAR_ARCHIVE_ENTRY_TYPE_FILE) {
+		if (type != OF_TAR_ARCHIVE_ENTRY_TYPE_FILE &&
+		    type != OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY) {
 			if (app->_outputLevel >= 0)
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"skipping_file",
@@ -306,7 +308,9 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			    @"Extracting %[file]...",
 			    @"file", fileName)];
 
-		if ([fileName hasSuffix: @"/"]) {
+		if (type == OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY ||
+		    (type == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE &&
+		    [fileName hasSuffix: @"/"])) {
 			[fileManager createDirectoryAtPath: outFileName
 					     createParents: true];
 			setPermissions(outFileName, entry);
