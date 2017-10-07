@@ -68,7 +68,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	} _running;
 	void *_pool;
 # ifdef OF_HAVE_BLOCKS
-	of_thread_block_t _threadBlock;
+	of_thread_block_t _Nullable _threadBlock;
 # endif
 	id _returnValue;
 	OFRunLoop *_Nullable _runLoop;
@@ -86,7 +86,8 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * The block to execute in the thread.
  */
-@property (readonly, nonatomic) of_thread_block_t threadBlock;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    of_thread_block_t threadBlock;
 # endif
 
 /*!
