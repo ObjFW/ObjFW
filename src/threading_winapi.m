@@ -86,7 +86,7 @@ of_thread_exit(void)
 }
 
 void
-of_thread_set_name(of_thread_t thread, const char *name)
+of_thread_set_name(const char *name)
 {
 }
 

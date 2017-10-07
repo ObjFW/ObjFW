@@ -77,12 +77,17 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	OFString *_Nullable _name;
 }
 
-#ifdef OF_HAVE_BLOCKS
+/*!
+ * The name for the thread to use when starting it.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *name;
+
+# ifdef OF_HAVE_BLOCKS
 /*!
  * The block to execute in the thread.
  */
 @property (readonly, nonatomic) of_thread_block_t threadBlock;
-#endif
+# endif
 
 /*!
  * @brief Creates a new thread.
@@ -201,20 +206,6 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @return The run loop for the thread
  */
 - (OFRunLoop *)runLoop;
-
-/*!
- * @brief Returns the name of the thread or `nil` if none has been set.
- *
- * @return The name of the thread or nil if none has been set
- */
-- (nullable OFString *)name;
-
-/*!
- * @brief Sets the name for the thread.
- *
- * @param name The name for the thread
- */
-- (void)setName: (nullable OFString *)name;
 
 /*!
  * @brief Returns the priority of the thread.
