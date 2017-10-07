@@ -79,8 +79,13 @@ typedef id _Nullable (^of_thread_block_t)(void);
 
 /*!
  * The name for the thread to use when starting it.
+ *
+ * @note While this can be changed after the thread has been started, it will
+ *	 have no effect once the thread started. If you want to change the name
+ *	 of the current thread after it has been started, look at the class
+ *	 method @ref setName:.
  */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy) OFString *name;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
@@ -163,6 +168,23 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param object The object which the terminated thread will return
  */
 + (void)terminateWithObject: (nullable id)object OF_NO_RETURN;
+
+/*!
+ * @brief Sets the name of the current thread.
+ *
+ * Unlike the instance method, this can be used after the thread has been
+ * started.
+ *
+ * @param name The new name for the current thread.
+ */
++ (void)setName: (nullable OFString *)name;
+
+/*!
+ * @brief Returns the name of the current thread.
+ *
+ * @return The name of the current thread.
+ */
++ (nullable OFString *)name;
 
 # ifdef OF_HAVE_BLOCKS
 /*!

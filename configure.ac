@@ -185,10 +185,6 @@ AX_CHECK_COMPILER_FLAGS([-Wsemicolon-before-method-body -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsemicolon-before-method-body"])
 AX_CHECK_COMPILER_FLAGS([-Wobjc-missing-property-synthesis -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wobjc-missing-property-synthesis"])
-AX_CHECK_COMPILER_FLAGS([-Watomic-properties -Werror], [
-	OBJCFLAGS="$OBJCFLAGS -Watomic-properties"
-	TESTS_OBJCFLAGS="$TESTS_OBJCFLAGS -Wno-atomic-properties"
-])
 
 AC_MSG_CHECKING(whether Objective C compiler supports properties)
 AC_TRY_COMPILE([

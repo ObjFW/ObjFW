@@ -51,13 +51,14 @@
 
 #import "OFThread.h"
 #import "OFThread+Private.h"
-#import "OFRunLoop.h"
-#import "OFString.h"
-#import "OFList.h"
+#import "OFAutoreleasePool+Private.h"
+#import "OFAutoreleasePool.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFAutoreleasePool.h"
-#import "OFAutoreleasePool+Private.h"
+#import "OFList.h"
+#import "OFLocalization.h"
+#import "OFRunLoop.h"
+#import "OFString.h"
 
 #ifdef OF_WINDOWS
 # include <windows.h>
@@ -272,6 +273,22 @@ callMain(id object)
 	of_thread_exit();
 }
 
++ (void)setName: (OFString *)name
+{
+	[[OFThread currentThread] setName: name];
+
+	if (name != nil)
+		of_thread_set_name(
+		    [name cStringWithEncoding: [OFLocalization encoding]]);
+	else
+		of_thread_set_name(class_getName([self class]));
+}
+
++ (OFString *)name
+{
+	return [[OFThread currentThread] name];
+}
+
 + (void)of_createMainThread
 {
 	mainThread = [[OFThread alloc] init];
@@ -352,7 +369,8 @@ callMain(id object)
 	}
 
 	if (_name != nil)
-		of_thread_set_name([_name UTF8String]);
+		of_thread_set_name(
+		    [_name cStringWithEncoding: [OFLocalization encoding]]);
 	else
 		of_thread_set_name(class_getName([self class]));
 }
