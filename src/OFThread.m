@@ -98,12 +98,20 @@ static void
 callMain(id object)
 {
 	OFThread *thread = (OFThread *)object;
+	OFString *name;
 
 	if (!of_tlskey_set(threadSelfKey, thread))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: [thread class]];
 
 	thread->_pool = objc_autoreleasePoolPush();
+
+	name = [thread name];
+	if (name != nil)
+		of_thread_set_name(
+		    [name cStringWithEncoding: [OFLocalization encoding]]);
+	else
+		of_thread_set_name(object_getClassName(thread));
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
@@ -367,12 +375,6 @@ callMain(id object)
 		[self release];
 		@throw [OFThreadStartFailedException exceptionWithThread: self];
 	}
-
-	if (_name != nil)
-		of_thread_set_name(
-		    [_name cStringWithEncoding: [OFLocalization encoding]]);
-	else
-		of_thread_set_name(class_getName([self class]));
 }
 
 - (id)join
