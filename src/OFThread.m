@@ -128,6 +128,7 @@ callMain(id object)
 
 @implementation OFThread
 #ifdef OF_HAVE_THREADS
+@synthesize name = _name;
 # ifdef OF_HAVE_BLOCKS
 @synthesize threadBlock = _threadBlock;
 # endif
@@ -351,9 +352,9 @@ callMain(id object)
 	}
 
 	if (_name != nil)
-		of_thread_set_name(_thread, [_name UTF8String]);
+		of_thread_set_name([_name UTF8String]);
 	else
-		of_thread_set_name(_thread, class_getName([self class]));
+		of_thread_set_name(class_getName([self class]));
 }
 
 - (id)join
@@ -388,22 +389,6 @@ callMain(id object)
 # endif
 
 	return _runLoop;
-}
-
-- (OFString *)name
-{
-	return [[_name copy] autorelease];
-}
-
-- (void)setName: (OFString *)name
-{
-	OFString *old = name;
-	_name = [name copy];
-	[old release];
-
-	if (_running == OF_THREAD_RUNNING)
-		of_thread_set_name(_thread, (_name != nil
-		    ? [_name UTF8String] : class_getName([self class])));
 }
 
 - (float)priority
