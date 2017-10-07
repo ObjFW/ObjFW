@@ -542,7 +542,7 @@ normalizeKey(char *str_)
 		    [exception errNo] == EPIPE)) {
 			/* In case a keep-alive connection timed out */
 			[self closeAndReconnect];
-			return false;
+			return 0;
 		}
 
 		[_client->_delegate client: _client
@@ -607,6 +607,14 @@ normalizeKey(char *str_)
 		 context: (id)context
 	       exception: (id)exception
 {
+	if (exception != nil) {
+		[_client->_delegate client: _client
+		     didEncounterException: exception
+				forRequest: _request
+				   context: _context];
+		return;
+	}
+
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:forRequest:context:)])
 		[_client->_delegate client: _client
