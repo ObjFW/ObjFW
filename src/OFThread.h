@@ -80,7 +80,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 /*!
  * The name for the thread to use when starting it.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *name;
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *name;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
