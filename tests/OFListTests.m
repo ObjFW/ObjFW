@@ -127,8 +127,8 @@ static OFString *strings[] = {
 	i = 0;
 	ok = true;
 
-	for (OFString *obj in list) {
-		if (![obj isEqual: loe->object])
+	for (OFString *object in list) {
+		if (![object isEqual: loe->object])
 			ok = false;
 
 		loe = loe->next;
@@ -142,8 +142,8 @@ static OFString *strings[] = {
 
 	ok = false;
 	@try {
-		for (OFString *obj in list) {
-			(void)obj;
+		for (OFString *object in list) {
+			(void)object;
 
 			[list removeListObject: [list lastListObject]];
 		}

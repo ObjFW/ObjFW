@@ -213,11 +213,10 @@ static struct {
 
 - (id)valueForKey: (OFString *)key
 {
-	OFMutableSet *ret;
+	id ret;
 
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
-		id ret;
 
 		key = [key substringWithRange: of_range(1, [key length] - 1)];
 		ret = [[super valueForKey: key] retain];

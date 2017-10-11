@@ -320,9 +320,9 @@ __extension__
 	[invocation setArgument: &selector
 			atIndex: 1];
 
-	for (int i = 1; i <= 16; i++)
-		[invocation setArgument: &i
-				atIndex: i + 1];
+	for (int j = 1; j <= 16; j++)
+		[invocation setArgument: &j
+				atIndex: j + 1];
 
 	int intResult;
 	TEST(@"-[invoke] #1", R([invocation invoke]) &&
@@ -338,10 +338,10 @@ __extension__
 	[invocation setArgument: &selector
 			atIndex: 1];
 
-	for (int i = 1; i <= 16; i++) {
-		double d = i;
+	for (int j = 1; j <= 16; j++) {
+		double d = j;
 		[invocation setArgument: &d
-				atIndex: i + 1];
+				atIndex: j + 1];
 	}
 
 	double doubleResult;
@@ -359,16 +359,16 @@ __extension__
 	[invocation setArgument: &selector
 			atIndex: 1];
 
-	for (int i = 1; i <= 16; i++) {
-		float f = i;
-		double d = i;
+	for (int j = 1; j <= 16; j++) {
+		float f = j;
+		double d = j;
 
-		if (i == 1 || i == 10)
+		if (j == 1 || j == 10)
 			[invocation setArgument: &d
-					atIndex: i + 1];
+					atIndex: j + 1];
 		else
 			[invocation setArgument: &f
-					atIndex: i + 1];
+					atIndex: j + 1];
 	}
 
 	float floatResult;
@@ -387,10 +387,10 @@ __extension__
 		[invocation setArgument: &selector
 				atIndex: 1];
 
-		for (int i = 1; i <= 16; i++) {
-			long double d = i;
+		for (int j = 1; j <= 16; j++) {
+			long double d = j;
 			[invocation setArgument: &d
-					atIndex: i + 1];
+					atIndex: j + 1];
 		}
 
 		long double longDoubleResult;
@@ -410,16 +410,16 @@ __extension__
 	[invocation setArgument: &selector
 			atIndex: 1];
 
-	for (int i = 1; i <= 16; i++) {
-		complex float cf = i + 0.5 * i * I;
-		complex double cd = i + 0.5 * i * I;
+	for (int j = 1; j <= 16; j++) {
+		complex float cf = j + 0.5 * j * I;
+		complex double cd = j + 0.5 * j * I;
 
-		if (i & 1)
+		if (j & 1)
 			[invocation setArgument: &cf
-					atIndex: i + 1];
+					atIndex: j + 1];
 		else
 			[invocation setArgument: &cd
-					atIndex: i + 1];
+					atIndex: j + 1];
 	}
 
 	complex double complexDoubleResult;
@@ -440,23 +440,23 @@ __extension__
 		[invocation setArgument: &selector
 				atIndex: 1];
 
-		for (int i = 1; i <= 16; i++) {
-			complex double cd = i + 0.5 * i * I;
-			complex float cf = i + 0.5 * i * I;
-			complex long double cld = i + 0.5 * i * I;
+		for (int j = 1; j <= 16; j++) {
+			complex double cd = j + 0.5 * j * I;
+			complex float cf = j + 0.5 * j * I;
+			complex long double cld = j + 0.5 * j * I;
 
-			switch (i % 3) {
+			switch (j % 3) {
 			case 0:
 				[invocation setArgument: &cld
-						atIndex: i + 1];
+						atIndex: j + 1];
 				break;
 			case 1:
 				[invocation setArgument: &cd
-						atIndex: i + 1];
+						atIndex: j + 1];
 				break;
 			case 2:
 				[invocation setArgument: &cf
-						atIndex: i + 1];
+						atIndex: j + 1];
 				break;
 			}
 		}
@@ -479,17 +479,17 @@ __extension__
 	[invocation setArgument: &selector
 			atIndex: 1];
 
-	for (int i = 1; i <= 16; i++) {
+	for (int j = 1; j <= 16; j++) {
 		__extension__ __int128 i128 = 0xFFFFFFFFFFFFFFFF;
 		i128 <<= 64;
-		i128 |= i;
+		i128 |= j;
 
-		if (i == 1 || i == 5)
-			[invocation setArgument: &i
-					atIndex: i + 1];
+		if (j == 1 || j == 5)
+			[invocation setArgument: &j
+					atIndex: j + 1];
 		else
 			[invocation setArgument: &i128
-					atIndex: i + 1];
+					atIndex: j + 1];
 	}
 
 	__extension__ __int128 int128Result;

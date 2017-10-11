@@ -177,6 +177,8 @@ AX_CHECK_COMPILER_FLAGS(-fno-constant-cfstrings, [
 ])
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
+AX_CHECK_COMPILER_FLAGS([-Wshadow -Werror],
+	[OBJCFLAGS="$OBJCFLAGS -Wshadow"])
 AX_CHECK_COMPILER_FLAGS([-Wshorten-64-to-32 -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wshorten-64-to-32"])
 AX_CHECK_COMPILER_FLAGS([-Wundeclared-selector -Werror],

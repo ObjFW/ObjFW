@@ -510,10 +510,10 @@ unescapeString(OFString *string)
 			OFINICategory_Pair *pair = line;
 			OFString *key = escapeString(pair->_key);
 			OFString *value = escapeString(pair->_value);
-			OFString *line = [OFString
+			OFString *tmp = [OFString
 			    stringWithFormat: @"%@=%@\r\n", key, value];
 
-			[stream writeString: line
+			[stream writeString: tmp
 				   encoding: encoding];
 		} else
 			@throw [OFInvalidArgumentException exception];

@@ -209,10 +209,10 @@ defaultEqual(void *object1, void *object2)
 
 	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {
-			void *object =
+			void *objectIter =
 			    [mapTable objectForKey: _buckets[i]->key];
 
-			if (!_objectFunctions.equal(object,
+			if (!_objectFunctions.equal(objectIter,
 			    _buckets[i]->object))
 				return false;
 		}
