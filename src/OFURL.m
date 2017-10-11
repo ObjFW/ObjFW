@@ -136,7 +136,7 @@
 		}
 
 		if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
-			void *pool;
+			void *pool2;
 			OFString *portString;
 
 			*tmp2 = '\0';
@@ -145,7 +145,7 @@
 			_host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-			pool = objc_autoreleasePoolPush();
+			pool2 = objc_autoreleasePoolPush();
 			portString = [OFString stringWithUTF8String: tmp2];
 
 			if ([portString decimalValue] > 65535)
@@ -153,7 +153,7 @@
 
 			_port = [portString decimalValue];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		} else {
 			_host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];

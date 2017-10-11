@@ -129,10 +129,10 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 					  encoding: OF_STRING_ENCODING_ASCII
 					    length: 1];
 			else if (entity[0] == '#') {
-				void *pool;
+				void *pool2;
 				OFString *tmp;
 
-				pool = objc_autoreleasePoolPush();
+				pool2 = objc_autoreleasePoolPush();
 				tmp = parseNumericEntity(entity,
 				    entityLength);
 
@@ -141,12 +141,13 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 					    exception];
 
 				[ret appendString: tmp];
-				objc_autoreleasePoolPop(pool);
+
+				objc_autoreleasePoolPop(pool2);
 			} else {
-				void *pool;
+				void *pool2;
 				OFString *name, *tmp;
 
-				pool = objc_autoreleasePoolPush();
+				pool2 = objc_autoreleasePoolPush();
 
 				name = [OFString
 				    stringWithUTF8String: entity
@@ -158,7 +159,8 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 					    exceptionWithEntityName: name];
 
 				[ret appendString: tmp];
-				objc_autoreleasePoolPop(pool);
+
+				objc_autoreleasePoolPop(pool2);
 			}
 
 			last = i + 1;

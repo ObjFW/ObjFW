@@ -353,33 +353,33 @@ static OFString *c_ary[] = {
 
 #ifdef OF_HAVE_BLOCKS
 	{
-		__block bool ok = true;
+		__block bool blockOk = true;
 		__block size_t count = 0;
 		OFArray *cmp = a[0];
 		OFMutableArray *a2;
 
 		m[0] = [[a[0] mutableCopy] autorelease];
 		[m[0] enumerateObjectsUsingBlock:
-		    ^ (id obj, size_t idx, bool *stop) {
+		    ^ (id object, size_t idx, bool *stop) {
 			    count++;
-			    if (![obj isEqual: [cmp objectAtIndex: idx]])
-				    ok = false;
+			    if (![object isEqual: [cmp objectAtIndex: idx]])
+				    blockOk = false;
 		}];
 
 		if (count != [cmp count])
-			ok = false;
+			blockOk = false;
 
-		TEST(@"Enumeration using blocks", ok)
+		TEST(@"Enumeration using blocks", blockOk)
 
-		ok = false;
+		blockOk = false;
 		a2 = m[0];
 		@try {
 			[a2 enumerateObjectsUsingBlock:
-			    ^ (id obj, size_t idx, bool *stop) {
+			    ^ (id object, size_t idx, bool *stop) {
 				[a2 removeObjectAtIndex: idx];
 			}];
 		} @catch (OFEnumerationMutationException *e) {
-			ok = true;
+			blockOk = true;
 		} @catch (OFOutOfRangeException *e) {
 			/*
 			 * Out of bounds access due to enumeration not being
@@ -388,11 +388,11 @@ static OFString *c_ary[] = {
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",
-		    ok)
+		    blockOk)
 	}
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([m[0] replaceObjectsUsingBlock: ^ id (id obj, size_t idx) {
+	    R([m[0] replaceObjectsUsingBlock: ^ id (id object, size_t idx) {
 		switch (idx) {
 		case 0:
 			return @"foo";
@@ -404,7 +404,7 @@ static OFString *c_ary[] = {
 		}]) && [[m[0] description] isEqual: @"(\n\tfoo,\n\tbar\n)"])
 
 	TEST(@"-[mappedArrayUsingBlock:]",
-	    [[[m[0] mappedArrayUsingBlock: ^ id (id obj, size_t idx) {
+	    [[[m[0] mappedArrayUsingBlock: ^ id (id object, size_t idx) {
 		switch (idx) {
 		case 0:
 			return @"foobar";
@@ -416,8 +416,8 @@ static OFString *c_ary[] = {
 	    }] description] isEqual: @"(\n\tfoobar,\n\tqux\n)"])
 
 	TEST(@"-[filteredArrayUsingBlock:]",
-	   [[[m[0] filteredArrayUsingBlock: ^ bool (id obj, size_t idx) {
-		return [obj isEqual: @"foo"];
+	    [[[m[0] filteredArrayUsingBlock: ^ bool (id object, size_t idx) {
+		return [object isEqual: @"foo"];
 	    }] description] isEqual: @"(\n\tfoo\n)"])
 
 	TEST(@"-[foldUsingBlock:]",

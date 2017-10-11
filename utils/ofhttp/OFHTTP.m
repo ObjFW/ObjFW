@@ -834,10 +834,11 @@ next:
 		if (_verbose) {
 			void *pool = objc_autoreleasePoolPush();
 			OFDictionary OF_GENERIC(OFString *, OFString *)
-			    *headers = [response headers];
-			OFEnumerator *keyEnumerator = [headers keyEnumerator];
+			    *responseHeaders = [response headers];
+			OFEnumerator *keyEnumerator =
+			    [responseHeaders keyEnumerator];
 			OFEnumerator *objectEnumerator =
-			    [headers objectEnumerator];
+			    [responseHeaders objectEnumerator];
 			OFString *key, *object;
 
 			[of_stdout writeString: @"  "];

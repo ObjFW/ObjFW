@@ -268,43 +268,43 @@ static OFString *values[] = {
 
 #ifdef OF_HAVE_BLOCKS
 	{
-		__block size_t i = 0;
-		__block bool ok = true;
+		__block size_t j = 0;
+		__block bool blockOk = true;
 
 		[mutDict enumerateKeysAndObjectsUsingBlock:
-		    ^ (id key, id obj, bool *stop) {
-			if (i > 1 || ![key isEqual: keys[i]]) {
-				ok = false;
+		    ^ (id key, id object, bool *stop) {
+			if (j > 1 || ![key isEqual: keys[j]]) {
+				blockOk = false;
 				*stop = true;
 				return;
 			}
 
 			[mutDict setObject: [mutDict objectForKey: key]
 				    forKey: key];
-			i++;
+			j++;
 		}];
 
-		TEST(@"Enumeration using blocks", ok)
+		TEST(@"Enumeration using blocks", blockOk)
 
-		ok = false;
+		blockOk = false;
 		@try {
 			[mutDict enumerateKeysAndObjectsUsingBlock:
-			    ^ (id key, id obj, bool *stop) {
+			    ^ (id key, id object, bool *stop) {
 				[mutDict setObject: @""
 					    forKey: @""];
 			}];
 		} @catch (OFEnumerationMutationException *e) {
-			ok = true;
+			blockOk = true;
 		}
 
 		TEST(@"Detection of mutation during enumeration using blocks",
-		    ok)
+		    blockOk)
 
 		[mutDict removeObjectForKey: @""];
 	}
 
 	TEST(@"-[replaceObjectsUsingBlock:]",
-	    R([mutDict replaceObjectsUsingBlock: ^ id (id key, id obj) {
+	    R([mutDict replaceObjectsUsingBlock: ^ id (id key, id object) {
 		if ([key isEqual: keys[0]])
 			return @"value_1";
 		if ([key isEqual: keys[1]])
@@ -315,7 +315,7 @@ static OFString *values[] = {
 	    [[mutDict objectForKey: keys[1]] isEqual: @"value_2"])
 
 	TEST(@"-[mappedDictionaryUsingBlock:]",
-	    [[[mutDict mappedDictionaryUsingBlock: ^ id (id key, id obj) {
+	    [[[mutDict mappedDictionaryUsingBlock: ^ id (id key, id object) {
 		if ([key isEqual: keys[0]])
 			return @"val1";
 		if ([key isEqual: keys[1]])
@@ -325,7 +325,8 @@ static OFString *values[] = {
 	    }] description] isEqual: @"{\n\tkey1 = val1;\n\tkey2 = val2;\n}"])
 
 	TEST(@"-[filteredDictionaryUsingBlock:]",
-	    [[[mutDict filteredDictionaryUsingBlock: ^ bool (id key, id obj) {
+	    [[[mutDict filteredDictionaryUsingBlock:
+	    ^ bool (id key, id object) {
 		return [key isEqual: keys[0]];
 	    }] description] isEqual: @"{\n\tkey1 = value_1;\n}"])
 #endif

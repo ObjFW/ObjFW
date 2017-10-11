@@ -275,11 +275,10 @@ static struct {
 
 - (id)valueForKey: (OFString *)key
 {
-	OFMutableArray *ret;
+	id ret;
 
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
-		id ret;
 
 		key = [key substringWithRange: of_range(1, [key length] - 1)];
 		ret = [[super valueForKey: key] retain];
@@ -732,9 +731,9 @@ static struct {
 - (void)makeObjectsPerformSelector: (SEL)selector
 			withObject: (id)object
 {
-	for (id object in self)
-		[object performSelector: selector
-			     withObject: object];
+	for (id objectIter in self)
+		[objectIter performSelector: selector
+				 withObject: object];
 }
 
 - (OFArray *)sortedArray
