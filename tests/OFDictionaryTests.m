@@ -82,7 +82,7 @@ static OFString *values[] = {
 }
 
 - initWithObjects: (const id *)objects
-	  forKeys: (const id *)keys
+	  forKeys: (const id *)keys_
 	    count: (size_t)count
 {
 	self = [super init];
@@ -90,7 +90,7 @@ static OFString *values[] = {
 	@try {
 		_dictionary = [[OFMutableDictionary alloc]
 		    initWithObjects: objects
-			    forKeys: keys
+			    forKeys: keys_
 			      count: count];
 	} @catch (id e) {
 		[self release];
