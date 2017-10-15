@@ -31,6 +31,7 @@ ObjFW.xcodeproj/xcuserdata
 src/Info.plist
 src/ObjFW.framework
 src/bridge/Info.plist
+src/bridge/ObjFW_Bridge.framework
 src/objfw-defs.h
 src/runtime/ppcinline.h
 tests/*.map
