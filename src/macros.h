@@ -110,9 +110,9 @@
 #endif
 
 #ifdef __GNUC__
-# define __GCC_VERSION__ (__GNUC__ * 100 + __GNUC_MINOR__)
+# define OF_GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
 #else
-# define __GCC_VERSION__ 0
+# define OF_GCC_VERSION 0
 #endif
 
 #ifndef __has_feature
@@ -200,13 +200,13 @@
 # define OF_KINDOF(cls) id
 #endif
 
-#if defined(__clang__) || __GCC_VERSION__ >= 405
+#if defined(__clang__) || OF_GCC_VERSION >= 405
 # define OF_UNREACHABLE __builtin_unreachable();
 #else
 # define OF_UNREACHABLE abort();
 #endif
 
-#if defined(__clang__) || __GCC_VERSION__ >= 406
+#if defined(__clang__) || OF_GCC_VERSION >= 406
 # define OF_SENTINEL __attribute__((__sentinel__))
 # define OF_NO_RETURN __attribute__((__noreturn__))
 #else
