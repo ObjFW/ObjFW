@@ -1,5 +1,5 @@
 framework module ObjFW {
-	umbrella header "ObjFW.h"
+	umbrella header "ObjFW/ObjFW.h"
 
 	/*
 	 * These are included by atomic.h, but should never be included

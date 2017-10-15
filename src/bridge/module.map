@@ -1,0 +1,5 @@
+framework module ObjFW_Bridge {
+	umbrella header "ObjFW_Bridge/ObjFW_Bridge.h"
+
+	export *
+}
