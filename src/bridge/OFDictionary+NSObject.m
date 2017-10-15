@@ -18,6 +18,8 @@
 
 #import "OFDictionary+NSObject.h"
 
+int _OFDictionary_NSObject_reference;
+
 @implementation OFDictionary (NSObject)
 - (id)NSObject
 {

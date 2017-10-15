@@ -28,6 +28,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _OFDictionary_NSObject_reference;
+#ifdef __cplusplus
+}
+#endif
+
 /*!
  * @category OFDictionary (NSObject) \
  *	     OFDictionary+NSObject.h ObjFW-Bridge/OFDictionary+NSObject.h

@@ -20,6 +20,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _NSString_OFObject_reference;
+#ifdef __cplusplus
+}
+#endif
+
 /*!
  * @category NSString (OFObject)
  *	     NSString+OFObject.h ObjFW-Bridge/NSString+OFObject.h

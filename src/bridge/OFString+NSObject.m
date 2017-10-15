@@ -20,6 +20,8 @@
 
 #import "OFInitializationFailedException.h"
 
+int _OFString_NSObject_reference;
+
 @implementation OFString (NSObject)
 - (id)NSObject
 {

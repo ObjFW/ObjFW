@@ -17,6 +17,8 @@
 #import "NSString+OFObject.h"
 #import "OFString.h"
 
+int _NSString_OFObject_reference;
+
 @implementation NSString (OFObject)
 - (id)OFObject
 {

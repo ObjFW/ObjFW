@@ -28,6 +28,14 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _OFArray_NSObject_reference;
+#ifdef __cplusplus
+}
+#endif
+
 /*!
  * @category OFArray (NSObject) \
  *	     OFArray+NSObject.h ObjFW-Bridge/OFArray+NSObject.h

@@ -18,6 +18,8 @@
 
 #import "OFArray+NSObject.h"
 
+int _OFArray_NSObject_reference;
+
 @implementation OFArray (NSObject)
 - (id)NSObject
 {
