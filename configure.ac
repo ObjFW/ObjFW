@@ -1247,11 +1247,11 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFW_BRIDGE_SHARED_LIB,
-				"${LIB_PREFIX}objfw-bridge${LIB_SUFFIX}")
+				"${LIB_PREFIX}objfw_bridge${LIB_SUFFIX}")
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
-			AC_SUBST(OBJFW_BRIDGE_STATIC_LIB, "libobjfw-bridge.a")
+			AC_SUBST(OBJFW_BRIDGE_STATIC_LIB, "libobjfw_bridge.a")
 		])
 	])
 ])
