@@ -393,30 +393,23 @@
 static OF_INLINE uint16_t OF_CONST_FUNC
 OF_BSWAP16_CONST(uint16_t i)
 {
-	return (i & UINT16_C(0xFF00)) >> 8 |
-	    (i & UINT16_C(0x00FF)) << 8;
+	return (i & 0xFF00) >> 8 | (i & 0x00FF) << 8;
 }
 
 static OF_INLINE uint32_t OF_CONST_FUNC
 OF_BSWAP32_CONST(uint32_t i)
 {
-	return (i & UINT32_C(0xFF000000)) >> 24 |
-	    (i & UINT32_C(0x00FF0000)) >>  8 |
-	    (i & UINT32_C(0x0000FF00)) <<  8 |
-	    (i & UINT32_C(0x000000FF)) << 24;
+	return (i & 0xFF000000) >> 24 | (i & 0x00FF0000) >> 8 |
+	    (i & 0x0000FF00) << 8 | (i & 0x000000FF) << 24;
 }
 
 static OF_INLINE uint64_t OF_CONST_FUNC
 OF_BSWAP64_CONST(uint64_t i)
 {
-	return (i & UINT64_C(0xFF00000000000000)) >> 56 |
-	    (i & UINT64_C(0x00FF000000000000)) >> 40 |
-	    (i & UINT64_C(0x0000FF0000000000)) >> 24 |
-	    (i & UINT64_C(0x000000FF00000000)) >>  8 |
-	    (i & UINT64_C(0x00000000FF000000)) <<  8 |
-	    (i & UINT64_C(0x0000000000FF0000)) << 24 |
-	    (i & UINT64_C(0x000000000000FF00)) << 40 |
-	    (i & UINT64_C(0x00000000000000FF)) << 56;
+	return (i & 0xFF00000000000000) >> 56 | (i & 0x00FF000000000000) >> 40 |
+	    (i & 0x0000FF0000000000) >> 24 | (i & 0x000000FF00000000) >> 8 |
+	    (i & 0x00000000FF000000) << 8 | (i & 0x0000000000FF0000) << 24 |
+	    (i & 0x000000000000FF00) << 40 | (i & 0x00000000000000FF) << 56;
 }
 
 static OF_INLINE uint16_t OF_CONST_FUNC

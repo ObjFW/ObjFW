@@ -154,7 +154,7 @@ pushLongDoublePair(struct call_context **context, long double value[2])
 	size_t stackSize;
 	struct call_context *newContext;
 
-	stackSize = OF_ROUND_UP_POW2(2, (*context)->stackSize) + 4;
+	stackSize = OF_ROUND_UP_POW2(2UL, (*context)->stackSize) + 4;
 
 	if ((newContext = realloc(*context,
 	    sizeof(**context) + stackSize * 8)) == NULL) {
