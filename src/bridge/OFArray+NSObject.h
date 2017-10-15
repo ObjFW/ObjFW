@@ -17,7 +17,11 @@
 #ifdef OF_BRIDGE_LOCAL_INCLUDES
 # import "OFArray.h"
 #else
-# import <ObjFW/OFArray.h>
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFArray.h>
+# endif
 #endif
 
 #import "OFBridging.h"

@@ -17,7 +17,11 @@
 #ifdef OF_BRIDGE_LOCAL_INCLUDES
 # import "macros.h"
 #else
-# import <ObjFW/macros.h>
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/macros.h>
+# endif
 #endif
 
 OF_ASSUME_NONNULL_BEGIN

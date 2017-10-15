@@ -17,7 +17,11 @@
 #ifdef OF_BRIDGE_LOCAL_INCLUDES
 # import "OFDictionary.h"
 #else
-# import <ObjFW/OFDictionary.h>
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFDictionary.h>
+# endif
 #endif
 
 #import "OFBridging.h"
