@@ -594,7 +594,7 @@
 		4B2C22A81DA292BE00735907 /* OFZIPArchiveEntry+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6C8AD717BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h */; };
 		4B2C22A91DA292BE00735907 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BDF37B41338055600F9A81A /* config.h */; };
 		4B2C22AA1DA292BE00735907 /* socket_helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7DD58118942FE200990FD6 /* socket_helpers.h */; };
-		4B2C22AC1DA292BE00735907 /* module.map in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BEAF52519A8107500B61868 /* module.map */; };
+		4B2C22AC1DA292BE00735907 /* module.modulemap in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BEAF52519A8107500B61868 /* module.modulemap */; };
 		4B2C728B1B888B8300717583 /* OFFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B2C72891B888B6900717583 /* OFFileManager.m */; };
 		4B2C728C1B888B8700717583 /* OFFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B2C72881B888B6900717583 /* OFFileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B325EDD1605F3A0007836CA /* OFRunLoop.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B325ED91605F3A0007836CA /* OFRunLoop.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -831,9 +831,9 @@
 		4B7161AE17A6FC7600B74970 /* OFHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */; };
 		4B72F7DE1AD9311B00CE253C /* OFStatItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B72F7DC1AD9311B00CE253C /* OFStatItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B72F7DF1AD9311B00CE253C /* OFStatItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B72F7DD1AD9311B00CE253C /* OFStatItemFailedException.m */; };
-		4B7327771F93EC3A00E1607F /* module.map in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7327731F93EBC400E1607F /* module.map */; };
-		4B7327791F93EC5700E1607F /* module.map in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BEAF52519A8107500B61868 /* module.map */; };
-		4B73277B1F93EC6A00E1607F /* module.map in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7327731F93EBC400E1607F /* module.map */; };
+		4B7327771F93EC3A00E1607F /* module.modulemap in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7327731F93EBC400E1607F /* module.modulemap */; };
+		4B7327791F93EC5700E1607F /* module.modulemap in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BEAF52519A8107500B61868 /* module.modulemap */; };
+		4B73277B1F93EC6A00E1607F /* module.modulemap in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B7327731F93EBC400E1607F /* module.modulemap */; };
 		4B745BA5168B25E600A6C20E /* OFSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B745BA3168B25E600A6C20E /* OFSystemInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4B745BA6168B25E600A6C20E /* OFSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B745BA4168B25E600A6C20E /* OFSystemInfo.m */; };
 		4B7769ED1895C07D00D12284 /* resolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B7769EB1895C07D00D12284 /* resolver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1148,10 +1148,10 @@
 		4B2C22AB1DA292BE00735907 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = ObjFW.framework;
+			dstPath = ObjFW.framework/Modules;
 			dstSubfolderSpec = 16;
 			files = (
-				4B2C22AC1DA292BE00735907 /* module.map in CopyFiles */,
+				4B2C22AC1DA292BE00735907 /* module.modulemap in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1168,30 +1168,30 @@
 		4B7327761F93EC1E00E1607F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = ObjFW_Bridge.framework;
+			dstPath = ObjFW_Bridge.framework/Modules;
 			dstSubfolderSpec = 16;
 			files = (
-				4B7327771F93EC3A00E1607F /* module.map in CopyFiles */,
+				4B7327771F93EC3A00E1607F /* module.modulemap in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4B7327781F93EC4100E1607F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = ObjFW.framework;
+			dstPath = ObjFW.framework/Modules;
 			dstSubfolderSpec = 16;
 			files = (
-				4B7327791F93EC5700E1607F /* module.map in CopyFiles */,
+				4B7327791F93EC5700E1607F /* module.modulemap in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4B73277A1F93EC6100E1607F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = ObjFW_Bridge.framework;
+			dstPath = ObjFW_Bridge.framework/Modules;
 			dstSubfolderSpec = 16;
 			files = (
-				4B73277B1F93EC6A00E1607F /* module.map in CopyFiles */,
+				4B73277B1F93EC6A00E1607F /* module.modulemap in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1571,7 +1571,7 @@
 		4B7161AC17A6FC7600B74970 /* OFHTTPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFHTTPResponse.m; path = src/OFHTTPResponse.m; sourceTree = "<group>"; };
 		4B72F7DC1AD9311B00CE253C /* OFStatItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFStatItemFailedException.h; path = src/exceptions/OFStatItemFailedException.h; sourceTree = "<group>"; };
 		4B72F7DD1AD9311B00CE253C /* OFStatItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFStatItemFailedException.m; path = src/exceptions/OFStatItemFailedException.m; sourceTree = "<group>"; };
-		4B7327731F93EBC400E1607F /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.map; path = src/bridge/module.map; sourceTree = "<group>"; };
+		4B7327731F93EBC400E1607F /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = src/bridge/module.modulemap; sourceTree = "<group>"; };
 		4B745BA3168B25E600A6C20E /* OFSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFSystemInfo.h; path = src/OFSystemInfo.h; sourceTree = "<group>"; };
 		4B745BA4168B25E600A6C20E /* OFSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFSystemInfo.m; path = src/OFSystemInfo.m; sourceTree = "<group>"; };
 		4B76F4751DA2C2BB00CFF831 /* Tests (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tests (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1729,7 +1729,7 @@
 		4BE5F0DA12DF4225005C7A0C /* OFDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDate.m; path = src/OFDate.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFBlockTests.m; path = tests/OFBlockTests.m; sourceTree = SOURCE_ROOT; };
 		4BE5F0E512DF4259005C7A0C /* OFDateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFDateTests.m; path = tests/OFDateTests.m; sourceTree = SOURCE_ROOT; };
-		4BEAF52519A8107500B61868 /* module.map */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.map; path = src/module.map; sourceTree = SOURCE_ROOT; };
+		4BEAF52519A8107500B61868 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = src/module.modulemap; sourceTree = SOURCE_ROOT; };
 		4BEC83B719B7CB7100E4BB08 /* OFRIPEMD160Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRIPEMD160Hash.h; path = src/OFRIPEMD160Hash.h; sourceTree = "<group>"; };
 		4BEC83B819B7CB7100E4BB08 /* OFRIPEMD160Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160Hash.m; path = src/OFRIPEMD160Hash.m; sourceTree = "<group>"; };
 		4BEC83BB19B7CBDE00E4BB08 /* OFRIPEMD160HashTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRIPEMD160HashTests.m; path = tests/OFRIPEMD160HashTests.m; sourceTree = "<group>"; };
@@ -2019,7 +2019,7 @@
 			children = (
 				4B187E23163EA3DA0049A832 /* Info.plist */,
 				4B187E24163EA3DA0049A832 /* Makefile */,
-				4B7327731F93EBC400E1607F /* module.map */,
+				4B7327731F93EBC400E1607F /* module.modulemap */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -2055,7 +2055,7 @@
 				4B3D23BB1337FC5800DD29B8 /* Info.plist */,
 				4B19023A1338D6A2000374C9 /* Makefile */,
 				4BDF37B41338055600F9A81A /* config.h */,
-				4BEAF52519A8107500B61868 /* module.map */,
+				4BEAF52519A8107500B61868 /* module.modulemap */,
 				4BD98C011338140B0048DD5B /* objfw-defs.h */,
 			);
 			name = "Supporting Files";

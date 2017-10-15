@@ -315,15 +315,24 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 		rm -fr $$dir; \
 	done; \
 	${MAKE} includedir=$$PWD/$$out/Headers INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} install-includes; \
-	for i in Info.plist module.map; do \
-		test -f $$i || continue; \
+	if test -f Info.plist; then \
+		i=Info.plist; \
 		${INSTALL_STATUS}; \
 		if ${INSTALL} -m 644 $$i $$out/$$i; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
 		fi \
-	done
+	fi; \
+	if test -f module.modulemap; then \
+		i=module.modulemap; \
+		${INSTALL_STATUS}; \
+		if ${MKDIR_P} $$out/Modules && ${INSTALL} -m 644 $$i $$out/Modules/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	fi
 
 ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
