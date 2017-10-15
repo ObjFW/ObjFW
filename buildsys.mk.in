@@ -46,7 +46,6 @@ OBJCFLAGS = @OBJCFLAGS@
 OBJCXXFLAGS = @OBJCXXFLAGS@
 LDFLAGS = @LDFLAGS@
 LDFLAGS_RPATH = @LDFLAGS_RPATH@
-LDFLAGS_INSTALL_NAME = @LDFLAGS_INSTALL_NAME@
 LIBS = @LIBS@
 PYTHON_FLAGS = @PYTHON_FLAGS@
 PROG_IMPLIB_NEEDED = @PROG_IMPLIB_NEEDED@
@@ -54,11 +53,14 @@ PROG_IMPLIB_LDFLAGS = @PROG_IMPLIB_LDFLAGS@
 PROG_SUFFIX = @EXEEXT@
 LIB_CFLAGS = @LIB_CFLAGS@
 LIB_LDFLAGS = @LIB_LDFLAGS@
+LIB_LDFLAGS_INSTALL_NAME = @LIB_LDFLAGS_INSTALL_NAME@
 LIB_PREFIX = @LIB_PREFIX@
 LIB_SUFFIX = @LIB_SUFFIX@
 PLUGIN_CFLAGS = @PLUGIN_CFLAGS@
 PLUGIN_LDFLAGS = @PLUGIN_LDFLAGS@
 PLUGIN_SUFFIX = @PLUGIN_SUFFIX@
+FRAMEWORK_LDFLAGS = @FRAMEWORK_LDFLAGS@
+FRAMEWORK_LDFLAGS_INSTALL_NAME = @FRAMEWORK_LDFLAGS_INSTALL_NAME@
 INSTALL_LIB = @INSTALL_LIB@
 UNINSTALL_LIB = @UNINSTALL_LIB@
 CLEAN_LIB = @CLEAN_LIB@
@@ -264,7 +266,7 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 		done; \
 		cd ..; \
 	done; \
-	if ${LD} -o $@ $$objs ${LIB_LDFLAGS} ${LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ $$objs ${LIB_LDFLAGS} ${LIB_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
@@ -302,7 +304,7 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	done; \
 	rm -fr $$out; \
 	${MKDIR_P} $$out; \
-	if ${LD} -o $$out/$${out%.framework} $$objs ${LIB_LDFLAGS} -Wl,-install_name,@executable_path/../Frameworks/$$out/$${out%.framework} ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $$out/$${out%.framework} $$objs ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; \
@@ -313,15 +315,15 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 		rm -fr $$dir; \
 	done; \
 	${MAKE} includedir=$$PWD/$$out/Headers INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} install-includes; \
-	if test -f module.map; then \
-		i=module.map; \
+	for i in Info.plist module.map; do \
+		test -f $$i || continue; \
 		${INSTALL_STATUS}; \
 		if ${INSTALL} -m 644 $$i $$out/$$i; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
 		fi \
-	fi
+	done
 
 ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
