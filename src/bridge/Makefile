@@ -15,10 +15,10 @@ SRCS = OFArray+NSObject.m		\
        NSDictionary+OFObject.m		\
        NSString+OFObject.m
 
-INCLUDES = ${SRCS:.m=.h}	\
-	   NSBridging.h		\
-	   OFBridging.h		\
-	   ObjFW_Bridge.h
+INCLUDES := ${SRCS:.m=.h}	\
+	    NSBridging.h	\
+	    OFBridging.h	\
+	    ObjFW_Bridge.h
 
 SRCS += NSArray_OFArray.m		\
 	NSDictionary_OFDictionary.m	\

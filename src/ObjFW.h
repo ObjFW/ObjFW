@@ -216,3 +216,4 @@
 #endif
 #import "pbkdf2.h"
 #import "scrypt.h"
+#import "unicode.h"
