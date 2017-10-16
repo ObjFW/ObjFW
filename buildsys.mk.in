@@ -314,7 +314,7 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
 		rm -fr $$dir; \
 	done; \
-	${MAKE} includedir=$$PWD/$$out/Headers INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} install-includes; \
+	${MAKE} INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} INSTALL_INCLUDES_DESTINATION=$$PWD/$$out/Headers install-includes; \
 	if test -f Info.plist; then \
 		i=Info.plist; \
 		${INSTALL_STATUS}; \
@@ -852,10 +852,16 @@ install-includes:
 	done
 
 	if test x"${INSTALL_INCLUDES_IF_SUBDIR}" = x"" -o x"${includesubdir}" = x"${INSTALL_INCLUDES_IF_SUBDIR}"; then \
+		if test x"${INSTALL_INCLUDES_DESTINATION}" != x""; then \
+			destination="${INSTALL_INCLUDES_DESTINATION}"; \
+		else \
+			destination="${DESTDIR}${includedir}/${includesubdir}"; \
+		fi; \
+		\
 		for i in "" ${INCLUDES}; do \
 			test x"$$i" = x"" && continue; \
 			${INSTALL_STATUS}; \
-			if ${MKDIR_P} ${DESTDIR}${includedir}/${includesubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+			if ${MKDIR_P} $$destination && ${INSTALL} -m 644 $$i $$destination/$$i; then \
 				${INSTALL_OK}; \
 			else \
 				${INSTALL_FAILED}; \
