@@ -33,12 +33,12 @@
 	return [[[self alloc] initWithURL: URL] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithURL: (OFURL *)URL
+- (instancetype)initWithURL: (OFURL *)URL
 {
 	self = [super init];
 

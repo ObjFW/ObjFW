@@ -147,12 +147,12 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	return [[[self alloc] initWithFileName: fileName] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithFileName: (OFString *)fileName
+- (instancetype)initWithFileName: (OFString *)fileName
 {
 	self = [super init];
 
@@ -271,12 +271,12 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	[super dealloc];
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	OFZIPArchiveEntry *copy =
 	    [[OFMutableZIPArchiveEntry alloc] initWithFileName: _fileName];

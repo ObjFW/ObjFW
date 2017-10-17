@@ -28,8 +28,8 @@
 				      range: range] autorelease];
 }
 
-- initWithArray: (OFArray *)array
-	  range: (of_range_t)range
+- (instancetype)initWithArray: (OFArray *)array
+			range: (of_range_t)range
 {
 	self = [super init];
 

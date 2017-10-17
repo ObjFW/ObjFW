@@ -112,7 +112,7 @@ OF_ASSUME_NONNULL_BEGIN
 			 value: (OFString *)value
 			domain: (OFString *)domain;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated new cookie with the specified name
@@ -123,9 +123,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param domain The domain for the cookie
  * @return An initialized OFHTTPCookie
  */
-- initWithName: (OFString *)name
-	 value: (OFString *)value
-	domain: (OFString *)domain OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName: (OFString *)name
+		       value: (OFString *)value
+		      domain: (OFString *)domain OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

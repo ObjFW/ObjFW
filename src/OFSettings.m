@@ -23,7 +23,7 @@
 @implementation OFSettings
 @synthesize applicationName = _applicationName;
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFSettings class])
 		return [OFSettings_INIFile alloc];
@@ -37,12 +37,12 @@
 	    initWithApplicationName: applicationName] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithApplicationName: (OFString *)applicationName
+- (instancetype)initWithApplicationName: (OFString *)applicationName
 {
 	self = [super init];
 

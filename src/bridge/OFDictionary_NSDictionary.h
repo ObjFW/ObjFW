@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	NSDictionary *_dictionary;
 }
 
-- initWithNSDictionary: (NSDictionary *)dictionary;
+- (instancetype)initWithNSDictionary: (NSDictionary *)dictionary;
 @end
 
 OF_ASSUME_NONNULL_END

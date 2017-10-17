@@ -41,8 +41,8 @@
 	bool _atEndOfStream;
 }
 
-- initWithStream: (OFStream *)stream
-	   entry: (OFTarArchiveEntry *)entry;
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFTarArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
@@ -53,8 +53,8 @@
 	uint64_t _toWrite;
 }
 
-- initWithStream: (OFStream *)stream
-	   entry: (OFTarArchiveEntry *)entry;
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFTarArchiveEntry *)entry;
 @end
 
 @implementation OFTarArchive: OFObject
@@ -74,8 +74,8 @@
 }
 #endif
 
-- initWithStream: (OF_KINDOF(OFStream *))stream
-	    mode: (OFString *)mode
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -125,8 +125,8 @@
 }
 
 #ifdef OF_HAVE_FILES
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path
+			mode: (OFString *)mode
 {
 	OFFile *file;
 
@@ -262,8 +262,8 @@
 @end
 
 @implementation OFTarArchive_FileReadStream
-- initWithStream: (OFStream *)stream
-	   entry: (OFTarArchiveEntry *)entry
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
@@ -384,8 +384,8 @@
 @end
 
 @implementation OFTarArchive_FileWriteStream
-- initWithStream: (OFStream *)stream
-	   entry: (OFTarArchiveEntry *)entry
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 

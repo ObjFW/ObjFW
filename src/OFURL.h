@@ -107,7 +107,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)fileURLWithPath: (OFString *)path;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFURL with the specified string.
@@ -115,7 +115,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string A string describing a URL
  * @return An initialized OFURL
  */
-- initWithString: (OFString *)string;
+- (instancetype)initWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFURL with the specified string and
@@ -125,8 +125,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL A URL to which the string is relative
  * @return An initialized OFURL
  */
-- initWithString: (OFString *)string
-   relativeToURL: (OFURL *)URL;
+- (instancetype)initWithString: (OFString *)string
+		 relativeToURL: (OFURL *)URL;
 
 /*!
  * @brief Returns the URL as a string.

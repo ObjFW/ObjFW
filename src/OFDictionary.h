@@ -124,7 +124,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param dictionary An OFDictionary
  * @return An initialized OFDictionary
  */
-- initWithDictionary:
+- (instancetype)initWithDictionary:
     (OFDictionary OF_GENERIC(KeyType, ObjectType) *)dictionary;
 
 /*!
@@ -135,8 +135,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param object The object
  * @return An initialized OFDictionary
  */
-- initWithObject: (ObjectType)object
-	  forKey: (KeyType)key;
+- (instancetype)initWithObject: (ObjectType)object
+			forKey: (KeyType)key;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -146,8 +146,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param objects An array of objects
  * @return An initialized OFDictionary
  */
-- initWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
-	  forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
+- (instancetype)initWithObjects: (OFArray OF_GENERIC(ObjectType) *)objects
+			forKeys: (OFArray OF_GENERIC(KeyType) *)keys;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -158,9 +158,9 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param count The number of objects in the arrays
  * @return An initialized OFDictionary
  */
-- initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-	  forKeys: (KeyType const _Nonnull *_Nonnull)keys
-	    count: (size_t)count;
+- (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
+			forKeys: (KeyType const _Nonnull *_Nonnull)keys
+			  count: (size_t)count;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified keys
@@ -169,7 +169,7 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param firstKey The first key
  * @return An initialized OFDictionary
  */
-- initWithKeysAndObjects: (KeyType)firstKey, ... OF_SENTINEL;
+- (instancetype)initWithKeysAndObjects: (KeyType)firstKey, ... OF_SENTINEL;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified key
@@ -179,8 +179,8 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @param arguments A va_list of the other arguments
  * @return An initialized OFDictionary
  */
-- initWithKey: (KeyType)firstKey
-    arguments: (va_list)arguments;
+- (instancetype)initWithKey: (KeyType)firstKey
+		  arguments: (va_list)arguments;
 
 /*!
  * @brief Returns the object for the given key or `nil` if the key was not

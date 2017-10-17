@@ -41,8 +41,8 @@
 		[self inheritMethodsFromClass: [OFString_UTF8 class]];
 }
 
-- initWithUTF8StringNoCopy: (char *)UTF8String
-	      freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+			    freeWhenDone: (bool)freeWhenDone
 {
 	@try {
 		self = [self initWithUTF8String: UTF8String];

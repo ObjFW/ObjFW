@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithPointer: (nullable void *)pointer
 			      object: (id)object;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated memory not part of object exception.
@@ -62,8 +62,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which the memory is not part of
  * @return An initialized memory not part of object exception
  */
-- initWithPointer: (nullable void *)pointer
-	   object: (id)object OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPointer: (nullable void *)pointer
+			 object: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

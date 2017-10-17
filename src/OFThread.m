@@ -307,7 +307,7 @@ callMain(id object)
 		    exceptionWithClass: self];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -324,7 +324,7 @@ callMain(id object)
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithThreadBlock: (of_thread_block_t)threadBlock
+- (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock
 {
 	self = [self init];
 
@@ -387,7 +387,7 @@ callMain(id object)
 	return _returnValue;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
@@ -460,7 +460,7 @@ callMain(id object)
 	[super dealloc];
 }
 #else
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }

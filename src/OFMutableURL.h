@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized OFMutableURL
  */
-- init;
+- (instancetype)init;
 
 /*!
  * @brief Converts the mutable URL to an immutable URL.

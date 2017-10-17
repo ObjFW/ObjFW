@@ -82,7 +82,7 @@ OF_ASSUME_NONNULL_BEGIN
 			   mode: (OFString *)mode;
 #endif
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFZIPArchive object with the
@@ -95,8 +95,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- initWithStream: (OF_KINDOF(OFStream *))stream
-	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -109,8 +109,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode;
+- (instancetype)initWithPath: (OFString *)path
+			mode: (OFString *)mode;
 #endif
 
 /*!

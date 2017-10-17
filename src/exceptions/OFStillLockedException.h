@@ -49,7 +49,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param lock The lock which is still locked
  * @return An initialized still locked exception
  */
-- initWithLock: (nullable id <OFLocking>)lock OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLock: (nullable id <OFLocking>)lock
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

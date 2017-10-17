@@ -44,7 +44,7 @@
 static const of_map_table_functions_t mapFunctions = { NULL };
 
 @implementation OFKernelEventObserver_epoll
-- init
+- (instancetype)init
 {
 	self = [super init];
 

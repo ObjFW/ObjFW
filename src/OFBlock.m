@@ -64,7 +64,7 @@ enum {
 };
 
 @protocol RetainRelease
-- retain;
+- (instancetype)retain;
 - (void)release;
 @end
 
@@ -425,12 +425,12 @@ _Block_object_dispose(const void *obj_, const int flags_)
 #endif
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -464,7 +464,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- retain
+- (instancetype)retain
 {
 	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
 		return Block_copy(self);
@@ -472,12 +472,12 @@ _Block_object_dispose(const void *obj_, const int flags_)
 	return self;
 }
 
-- copy
+- (id)copy
 {
 	return Block_copy(self);
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
 		return [super autorelease];

@@ -204,7 +204,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)activateSandbox: (OFSandbox *)sandbox;
 #endif
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Gets argc and argv.

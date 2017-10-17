@@ -28,12 +28,12 @@
 	return [[[self alloc] initWithCondition: condition] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithCondition: nil];
 }
 
-- initWithCondition: (OFCondition *)condition
+- (instancetype)initWithCondition: (OFCondition *)condition
 {
 	self = [super init];
 

@@ -758,7 +758,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

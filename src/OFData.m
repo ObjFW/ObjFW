@@ -114,7 +114,7 @@ _references_to_categories_of_OFData(void)
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -124,17 +124,17 @@ _references_to_categories_of_OFData(void)
 	return [super init];
 }
 
-- initWithItems: (const void *)items
-	  count: (size_t)count
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
 {
 	return [self initWithItems: items
 			  itemSize: 1
 			     count: count];
 }
 
-- initWithItems: (const void *)items
-       itemSize: (size_t)itemSize
-	  count: (size_t)count
+- (instancetype)initWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count
 {
 	self = [super init];
 
@@ -156,9 +156,9 @@ _references_to_categories_of_OFData(void)
 	return self;
 }
 
-- initWithItemsNoCopy: (const void *)items
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
 {
 	return [self initWithItemsNoCopy: items
 				itemSize: 1
@@ -166,10 +166,10 @@ _references_to_categories_of_OFData(void)
 			    freeWhenDone: freeWhenDone];
 }
 
-- initWithItemsNoCopy: (const void *)items
-	     itemSize: (size_t)itemSize
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
 {
 	self = [super init];
 
@@ -190,7 +190,7 @@ _references_to_categories_of_OFData(void)
 }
 
 #ifdef OF_HAVE_FILES
-- initWithContentsOfFile: (OFString *)path
+- (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	@try {
 		of_offset_t size = [[OFFileManager defaultManager]
@@ -233,7 +233,7 @@ _references_to_categories_of_OFData(void)
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-- initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
 	void *pool;
 	OFString *scheme;
@@ -255,7 +255,7 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-- initWithStringRepresentation: (OFString *)string
+- (instancetype)initWithStringRepresentation: (OFString *)string
 {
 	self = [super init];
 
@@ -309,7 +309,7 @@ _references_to_categories_of_OFData(void)
 	return self;
 }
 
-- initWithBase64EncodedString: (OFString *)string
+- (instancetype)initWithBase64EncodedString: (OFString *)string
 {
 	bool mutable = [self isKindOfClass: [OFMutableData class]];
 
@@ -337,7 +337,7 @@ _references_to_categories_of_OFData(void)
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -402,12 +402,12 @@ _references_to_categories_of_OFData(void)
 	return _items + (_count - 1) * _itemSize;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	return [[OFMutableData alloc] initWithItems: _items
 					   itemSize: _itemSize

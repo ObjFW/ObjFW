@@ -526,7 +526,7 @@ of_alignof_type_encoding(const char *type)
 	return [[[self alloc] initWithObjCTypes: types] autorelease];
 }
 
-- initWithObjCTypes: (const char *)types
+- (instancetype)initWithObjCTypes: (const char *)types
 {
 	self = [super init];
 

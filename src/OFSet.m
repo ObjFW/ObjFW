@@ -33,22 +33,22 @@ static struct {
 @end
 
 @implementation OFSet_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFSet_hashtable alloc] init];
 }
 
-- initWithSet: (OFSet *)set
+- (instancetype)initWithSet: (OFSet *)set
 {
 	return (id)[[OFSet_hashtable alloc] initWithSet: set];
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	return (id)[[OFSet_hashtable alloc] initWithArray: array];
 }
 
-- initWithObjects: (id)firstObject, ...
+- (instancetype)initWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -61,31 +61,31 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	return (id)[[OFSet_hashtable alloc] initWithObjects: objects
 						      count: count];
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	return (id)[[OFSet_hashtable alloc] initWithObject: firstObject
 						 arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFSet_hashtable alloc] initWithSerialization: element];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -107,7 +107,7 @@ static struct {
 		placeholder.isa = [OFSet_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFSet class])
 		return (id)&placeholder;
@@ -150,7 +150,7 @@ static struct {
 					count: count] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFSet class]) {
 		@try {
@@ -166,23 +166,23 @@ static struct {
 	return [super init];
 }
 
-- initWithSet: (OFSet *)set
+- (instancetype)initWithSet: (OFSet *)set
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObjects: (id const *)objects
+- (instancetype)initWithObjects: (id const *)objects
 	    count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- (id)initWithObjects: (id)firstObject, ...
+- (instancetype)initWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -195,13 +195,13 @@ static struct {
 	return ret;
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -339,12 +339,12 @@ static struct {
 	return ret;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	return [[OFMutableSet alloc] initWithSet: self];
 }

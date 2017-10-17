@@ -29,9 +29,9 @@
 				      thirdObject: thirdObject] autorelease];
 }
 
-- initWithFirstObject: (id)firstObject
-	 secondObject: (id)secondObject
-	  thirdObject: (id)thirdObject
+- (instancetype)initWithFirstObject: (id)firstObject
+		       secondObject: (id)secondObject
+			thirdObject: (id)thirdObject
 {
 	self = [super init];
 
@@ -110,12 +110,12 @@
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	return [[OFMutableTriple alloc] initWithFirstObject: _firstObject
 					       secondObject: _secondObject

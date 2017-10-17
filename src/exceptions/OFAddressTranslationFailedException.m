@@ -63,13 +63,13 @@ static of_mutex_t mutex;
 				     error: error] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithHost: nil
 			    error: 0];
 }
 
-- initWithHost: (OFString *)host
+- (instancetype)initWithHost: (OFString *)host
 {
 	return [self initWithHost: host
 			    error: 0];

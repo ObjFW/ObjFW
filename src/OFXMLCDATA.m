@@ -29,7 +29,7 @@
 	return [[[self alloc] initWithString: string] autorelease];
 }
 
-- initWithString: (OFString *)string
+- (instancetype)initWithString: (OFString *)string
 {
 	self = [super of_init];
 
@@ -43,7 +43,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [super of_init];
 

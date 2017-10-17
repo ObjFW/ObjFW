@@ -358,7 +358,7 @@ of_rectangle(float x, float y, float width, float height)
  * Each time an object is released, the retain count gets decreased and the
  * object deallocated if it reaches 0.
  */
-- retain;
+- (instancetype)retain;
 
 /*!
  * @brief Returns the retain count.
@@ -381,14 +381,14 @@ of_rectangle(float x, float y, float width, float height)
  *
  * @return The object
  */
-- autorelease;
+- (instancetype)autorelease;
 
 /*!
  * @brief Returns the receiver.
  *
  * @return The receiver
  */
-- self;
+- (instancetype)self;
 
 /*!
  * @brief Returns whether the object is a proxy object.
@@ -471,13 +471,13 @@ OF_ROOT_CLASS
  *
  * @return The allocated object
  */
-+ alloc;
++ (instancetype)alloc;
 
 /*!
  * @brief Allocates memory for a new instance and calls @ref init on it.
  * @return An allocated and initialized object
  */
-+ new;
++ (instancetype)new;
 
 /*!
  * @brief Returns the class.
@@ -626,7 +626,7 @@ OF_ROOT_CLASS
  *
  * @return The class of the object
  */
-+ copy;
++ (id)copy;
 
 /*!
  * @brief Initializes an already allocated object.
@@ -641,7 +641,7 @@ OF_ROOT_CLASS
  *
  * @return An initialized object
  */
-- init;
+- (instancetype)init;
 
 /*!
  * @brief Returns the method signature for the specified selector.
@@ -1118,7 +1118,7 @@ OF_ROOT_CLASS
  *
  * @return A copy of the object
  */
-- copy;
+- (id)copy;
 @end
 
 /*!
@@ -1135,7 +1135,7 @@ OF_ROOT_CLASS
  *
  * @return A mutable copy of the object
  */
-- mutableCopy;
+- (id)mutableCopy;
 @end
 
 /*!

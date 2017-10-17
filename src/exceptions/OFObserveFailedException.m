@@ -35,13 +35,13 @@
 					 errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObserver: (OFKernelEventObserver *)observer
-	     errNo: (int)errNo
+- (instancetype)initWithObserver: (OFKernelEventObserver *)observer
+			   errNo: (int)errNo
 {
 	self = [super init];
 

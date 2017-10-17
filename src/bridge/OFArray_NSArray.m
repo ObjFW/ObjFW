@@ -23,7 +23,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFArray_NSArray
-- initWithNSArray: (NSArray *)array
+- (instancetype)initWithNSArray: (NSArray *)array
 {
 	self = [super init];
 

@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithObserver: (OFKernelEventObserver *)observer
 				errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated observe failed exception.
@@ -63,8 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized observe failed exception
  */
-- initWithObserver: (OFKernelEventObserver *)observer
-	     errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithObserver: (OFKernelEventObserver *)observer
+			   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

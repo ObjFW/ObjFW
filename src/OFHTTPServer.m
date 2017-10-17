@@ -180,15 +180,15 @@ normalizedKey(OFString *key)
 	bool _chunked, _headersSent;
 }
 
-- initWithSocket: (OFTCPSocket *)socket
-	  server: (OFHTTPServer *)server
-	 request: (OFHTTPRequest *)request;
+- (instancetype)initWithSocket: (OFTCPSocket *)socket
+			server: (OFHTTPServer *)server
+		       request: (OFHTTPRequest *)request;
 @end
 
 @implementation OFHTTPServerResponse
-- initWithSocket: (OFTCPSocket *)socket
-	  server: (OFHTTPServer *)server
-	 request: (OFHTTPRequest *)request
+- (instancetype)initWithSocket: (OFTCPSocket *)socket
+			server: (OFHTTPServer *)server
+		       request: (OFHTTPRequest *)request
 {
 	self = [super init];
 
@@ -341,8 +341,8 @@ normalizedKey(OFString *key)
 	OFMutableData *_body;
 }
 
-- initWithSocket: (OFTCPSocket *)socket
-	  server: (OFHTTPServer *)server;
+- (instancetype)initWithSocket: (OFTCPSocket *)socket
+			server: (OFHTTPServer *)server;
 - (bool)socket: (OFTCPSocket *)socket
    didReadLine: (OFString *)line
        context: (id)context
@@ -359,8 +359,8 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServer_Connection
-- initWithSocket: (OFTCPSocket *)socket
-	  server: (OFHTTPServer *)server
+- (instancetype)initWithSocket: (OFTCPSocket *)socket
+			server: (OFHTTPServer *)server
 {
 	self = [super init];
 
@@ -697,7 +697,7 @@ normalizedKey(OFString *key)
 	return [[[self alloc] init] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

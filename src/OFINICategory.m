@@ -136,7 +136,7 @@ unescapeString(OFString *string)
 	return self;
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }

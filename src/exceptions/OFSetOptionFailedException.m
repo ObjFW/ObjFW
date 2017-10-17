@@ -35,13 +35,13 @@
 				       errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFStream *)stream
-	   errNo: (int)errNo
+- (instancetype)initWithStream: (OFStream *)stream
+			 errNo: (int)errNo
 {
 	self = [super init];
 

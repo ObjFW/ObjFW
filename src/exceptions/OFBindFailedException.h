@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
 			   socket: (id)socket
 			    errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated bind failed exception.
@@ -83,10 +83,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized bind failed exception
  */
-- initWithHost: (OFString *)host
-	  port: (uint16_t)port
-	socket: (id)socket
-	 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHost: (OFString *)host
+			port: (uint16_t)port
+		      socket: (id)socket
+		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

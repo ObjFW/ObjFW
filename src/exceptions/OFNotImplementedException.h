@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithSelector: (SEL)selector
 			       object: (id)object;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated not implemented exception.
@@ -62,8 +62,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which does not (fully) implement the selector
  * @return An initialized not implemented exception
  */
-- initWithSelector: (SEL)selector
-	    object: (id)object OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSelector: (SEL)selector
+			  object: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -66,7 +66,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- init
+- (instancetype)init
 {
 	self = [super of_init];
 
@@ -75,7 +75,7 @@
 	return self;
 }
 
-- initWithItemSize: (size_t)itemSize
+- (instancetype)initWithItemSize: (size_t)itemSize
 {
 	self = [super of_init];
 
@@ -92,14 +92,14 @@
 	return self;
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	return [self initWithItemSize: 1
 			     capacity: capacity];
 }
 
-- initWithItemSize: (size_t)itemSize
-	  capacity: (size_t)capacity
+- (instancetype)initWithItemSize: (size_t)itemSize
+			capacity: (size_t)capacity
 {
 	self = [super of_init];
 
@@ -120,9 +120,9 @@
 	return self;
 }
 
-- initWithItems: (const void *)items
-       itemSize: (size_t)itemSize
-	  count: (size_t)count
+- (instancetype)initWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count
 {
 	self = [super initWithItems: items
 			   itemSize: itemSize
@@ -133,22 +133,22 @@
 	return self;
 }
 
-- initWithItemsNoCopy: (const void *)items
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithItemsNoCopy: (const void *)items
-	     itemSize: (size_t)itemSize
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStringRepresentation: (OFString *)string
+- (instancetype)initWithStringRepresentation: (OFString *)string
 {
 	self = [super initWithStringRepresentation: string];
 
@@ -287,7 +287,7 @@
 	_capacity = 0;
 }
 
-- copy
+- (id)copy
 {
 	return [[OFData alloc] initWithItems: _items
 				    itemSize: _itemSize

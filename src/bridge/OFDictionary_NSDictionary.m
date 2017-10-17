@@ -24,7 +24,7 @@
 #import "OFInitializationFailedException.h"
 
 @implementation OFDictionary_NSDictionary
-- initWithNSDictionary: (NSDictionary *)dictionary
+- (instancetype)initWithNSDictionary: (NSDictionary *)dictionary
 {
 	self = [super init];
 

@@ -28,7 +28,7 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [super of_init];
 }
@@ -94,7 +94,7 @@
 	[old release];
 }
 
-- copy
+- (id)copy
 {
 	OFMutableURL *copy = [self mutableCopy];
 

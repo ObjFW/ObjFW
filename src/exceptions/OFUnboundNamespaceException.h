@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithNamespace: (OFString *)namespace_
 			       element: (OFXMLElement *)element;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unbound namespace exception.
@@ -67,8 +67,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param element The element in which the namespace was not bound
  * @return An initialized unbound namespace exception
  */
-- initWithNamespace: (OFString *)namespace_
-	    element: (OFXMLElement *)element OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNamespace: (OFString *)namespace_
+			  element: (OFXMLElement *)element
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

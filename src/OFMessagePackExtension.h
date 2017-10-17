@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)extensionWithType: (int8_t)type
 			     data: (OFData *)data;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFMessagePackRepresentation with the
@@ -65,8 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param data The data for the extension
  * @return An initialized OFMessagePackRepresentation
  */
-- initWithType: (int8_t)type
-	  data: (OFData *)data OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType: (int8_t)type
+			data: (OFData *)data OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

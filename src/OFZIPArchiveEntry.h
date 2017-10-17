@@ -198,7 +198,7 @@ enum {
  */
 + (instancetype)entryWithFileName: (OFString *)fileName;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFZIPArchiveEntry with the specified
@@ -207,7 +207,7 @@ enum {
  * @param fileName The file name for the OFZIPArchiveEntry
  * @return An initialized OFZIPArchiveEntry
  */
-- initWithFileName: (OFString *)fileName;
+- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 #ifdef __cplusplus

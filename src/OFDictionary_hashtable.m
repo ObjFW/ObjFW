@@ -74,12 +74,12 @@ static const of_map_table_functions_t objectFunctions = {
 };
 
 @implementation OFDictionary_hashtable
-- init
+- (instancetype)init
 {
 	return [self initWithCapacity: 0];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	self = [super init];
 
@@ -96,7 +96,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithDictionary: (OFDictionary *)dictionary
+- (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
 	size_t count;
 
@@ -150,8 +150,8 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithObject: (id)object
-	  forKey: (id)key
+- (instancetype)initWithObject: (id)object
+			forKey: (id)key
 {
 	self = [self initWithCapacity: 1];
 
@@ -166,9 +166,9 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithObjects: (id const *)objects
-	  forKeys: (id const *)keys
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			forKeys: (id const *)keys
+			  count: (size_t)count
 {
 	self = [self initWithCapacity: count];
 
@@ -186,8 +186,8 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithKey: (id)firstKey
-    arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey
+		  arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -240,7 +240,7 @@ static const of_map_table_functions_t objectFunctions = {
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 

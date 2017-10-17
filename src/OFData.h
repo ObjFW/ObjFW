@@ -137,7 +137,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initialized an already allocated OFData with the specified `count`
@@ -147,8 +147,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param count The number of items
  * @return An initialized OFData
  */
-- initWithItems: (const void *)items
-	  count: (size_t)count;
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count;
 
 /*!
  * @brief Initialized an already allocated OFData with the specified `count`
@@ -159,9 +159,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param count The number of items
  * @return An initialized OFData
  */
-- initWithItems: (const void *)items
-       itemSize: (size_t)itemSize
-	  count: (size_t)count;
+- (instancetype)initWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count;
 
 /*!
  * @brief Initializes an already allocated OFData with the specified `count`
@@ -174,9 +174,9 @@ OF_ASSUME_NONNULL_BEGIN
  *		       by the OFData
  * @return An initialized OFData
  */
-- initWithItemsNoCopy: (const void *)items
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone;
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone;
 
 /*!
  * @brief Initializes an already allocated OFData with the specified `count`
@@ -190,10 +190,10 @@ OF_ASSUME_NONNULL_BEGIN
  *		       by the OFData
  * @return An initialized OFData
  */
-- initWithItemsNoCopy: (const void *)items
-	     itemSize: (size_t)itemSize
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone;
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -203,7 +203,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path of the file
  * @return An initialized OFData
  */
-- initWithContentsOfFile: (OFString *)path;
+- (instancetype)initWithContentsOfFile: (OFString *)path;
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
@@ -214,7 +214,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL to the contents for the OFData
  * @return A new autoreleased OFData
  */
-- initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfURL: (OFURL *)URL;
 #endif
 
 /*!
@@ -224,7 +224,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string representation of the data
  * @return A new autoreleased OFData
  */
-- initWithStringRepresentation: (OFString *)string;
+- (instancetype)initWithStringRepresentation: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFData with an item size of 1,
@@ -233,7 +233,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string with the Base64-encoded data
  * @return An initialized OFData
  */
-- initWithBase64EncodedString: (OFString *)string;
+- (instancetype)initWithBase64EncodedString: (OFString *)string;
 
 /*!
  * @brief Returns the number of items in the OFData.

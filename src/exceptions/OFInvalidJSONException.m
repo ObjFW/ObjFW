@@ -34,13 +34,13 @@
 					line: line] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithString: (OFString *)string
-	    line: (size_t)line
+- (instancetype)initWithString: (OFString *)string
+			  line: (size_t)line
 {
 	self = [super init];
 

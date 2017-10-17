@@ -34,13 +34,13 @@
 				       errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSocket: (id)socket
-	   errNo: (int)errNo
+- (instancetype)initWithSocket: (id)socket
+			 errNo: (int)errNo
 {
 	self = [super init];
 

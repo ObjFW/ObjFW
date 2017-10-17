@@ -27,7 +27,7 @@
 @implementation OFMethod
 @synthesize selector = _selector, name = _name, typeEncoding = _typeEncoding;
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -134,7 +134,7 @@
 @synthesize name = _name, attributes = _attributes;
 @synthesize getter = _getter, setter = _setter;
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -360,7 +360,7 @@
 @implementation OFInstanceVariable
 @synthesize name = _name, offset = _offset, typeEncoding = _typeEncoding;
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -432,12 +432,12 @@
 	return [[[self alloc] initWithClass: class] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithClass: (Class)class
+- (instancetype)initWithClass: (Class)class
 {
 	self = [super init];
 

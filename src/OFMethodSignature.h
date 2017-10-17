@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param types The ObjC types of the method
  * @return An Initialized OFMethodSignature
  */
-- initWithObjCTypes: (const char *)types;
+- (instancetype)initWithObjCTypes: (const char *)types;
 
 /*!
  * @brief Returns the ObjC type for the argument at the specified index.

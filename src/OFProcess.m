@@ -95,12 +95,12 @@ extern char **environ;
 				  environment: environment] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithProgram: (OFString *)program
+- (instancetype)initWithProgram: (OFString *)program
 {
 	return [self initWithProgram: program
 			 programName: program
@@ -108,8 +108,8 @@ extern char **environ;
 			 environment: nil];
 }
 
-- initWithProgram: (OFString *)program
-	arguments: (OFArray *)arguments
+- (instancetype)initWithProgram: (OFString *)program
+		      arguments: (OFArray *)arguments
 {
 	return [self initWithProgram: program
 			 programName: program
@@ -117,9 +117,9 @@ extern char **environ;
 			 environment: nil];
 }
 
-- initWithProgram: (OFString *)program
-      programName: (OFString *)programName
-	arguments: (OFArray *)arguments
+- (instancetype)initWithProgram: (OFString *)program
+		    programName: (OFString *)programName
+		      arguments: (OFArray *)arguments
 {
 	return [self initWithProgram: program
 			 programName: program
@@ -127,10 +127,10 @@ extern char **environ;
 			 environment: nil];
 }
 
-- initWithProgram: (OFString *)program
-      programName: (OFString *)programName
-	arguments: (OFArray *)arguments
-      environment: (OFDictionary *)environment
+- (instancetype)initWithProgram: (OFString *)program
+		    programName: (OFString *)programName
+		      arguments: (OFArray *)arguments
+		    environment: (OFDictionary *)environment
 {
 	self = [super init];
 

@@ -190,8 +190,8 @@ struct of_list_object_t {
 	unsigned long *_Nullable _mutationsPtr;
 }
 
--     initWithList: (OFList *)list
-  mutationsPointer: (unsigned long *)mutationsPtr;
+- (instancetype)initWithList: (OFList *)list
+	    mutationsPointer: (unsigned long *)mutationsPtr;
 @end
 
 OF_ASSUME_NONNULL_END

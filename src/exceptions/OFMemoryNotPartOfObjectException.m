@@ -34,13 +34,13 @@
 				       object: object] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPointer: (void *)pointer
-	   object: (id)object
+- (instancetype)initWithPointer: (void *)pointer
+			 object: (id)object
 {
 	self = [super init];
 

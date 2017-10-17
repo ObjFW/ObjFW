@@ -36,13 +36,13 @@
 					mode: mode] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFStream *)stream
-	    mode: (OFString *)mode
+- (instancetype)initWithStream: (OFStream *)stream
+			  mode: (OFString *)mode
 {
 	self = [super init];
 

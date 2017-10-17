@@ -280,12 +280,12 @@ _references_to_categories_of_OFObject(void)
 {
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	return of_alloc_object(self, 0, 0, NULL);
 }
 
-+ new
++ (instancetype)new
 {
 	return [[self alloc] init];
 }
@@ -477,7 +477,7 @@ _references_to_categories_of_OFObject(void)
 	return NO;
 }
 
-- init
+- (instancetype)init
 {
 	return self;
 }
@@ -1157,7 +1157,7 @@ _references_to_categories_of_OFObject(void)
 							 object: self];
 }
 
-- retain
+- (instancetype)retain
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	of_atomic_int_inc(&PRE_IVARS->retainCount);
@@ -1198,12 +1198,12 @@ _references_to_categories_of_OFObject(void)
 #endif
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return _objc_rootAutorelease(self);
 }
 
-- self
+- (instancetype)self
 {
 	return self;
 }
@@ -1250,7 +1250,7 @@ _references_to_categories_of_OFObject(void)
 }
 
 /* Required to use properties with the Apple runtime */
-- copyWithZone: (void *)zone
+- (id)copyWithZone: (void *)zone
 {
 	if OF_UNLIKELY (zone != NULL) {
 		[self doesNotRecognizeSelector: _cmd];
@@ -1260,7 +1260,7 @@ _references_to_categories_of_OFObject(void)
 	return [(id)self copy];
 }
 
-- mutableCopyWithZone: (void *)zone
+- (id)mutableCopyWithZone: (void *)zone
 {
 	if OF_UNLIKELY (zone != NULL) {
 		[self doesNotRecognizeSelector: _cmd];
@@ -1303,12 +1303,12 @@ _references_to_categories_of_OFObject(void)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ retain
++ (id)retain
 {
 	return self;
 }
 
-+ autorelease
++ (id)autorelease
 {
 	return self;
 }
@@ -1327,18 +1327,18 @@ _references_to_categories_of_OFObject(void)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ copy
++ (id)copy
 {
 	return self;
 }
 
-+ mutableCopyWithZone: (void *)zone
++ (id)mutableCopyWithZone: (void *)zone
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 /* Required to use ObjFW from Swift */
-+ allocWithZone: (void *)zone
++ (instancetype)allocWithZone: (void *)zone
 {
 	if OF_UNLIKELY (zone != NULL) {
 		[self doesNotRecognizeSelector: _cmd];

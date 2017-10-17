@@ -114,7 +114,7 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
 					      objectFunctions
 				capacity: (size_t)capacity;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFMapTable with the specified key
@@ -124,8 +124,8 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
  * @param objectFunctions A structure of functions for handling objects
  * @return An initialized OFMapTable
  */
-- initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-       objectFunctions: (of_map_table_functions_t)objectFunctions;
+- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
+		     objectFunctions: (of_map_table_functions_t)objectFunctions;
 
 /*!
  * @brief Initializes an already allocated OFMapTable with the specified key
@@ -137,9 +137,10 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
  *	  table
  * @return An initialized OFMapTable
  */
-- initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-       objectFunctions: (of_map_table_functions_t)objectFunctions
-	      capacity: (size_t)capacity OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
+		     objectFunctions: (of_map_table_functions_t)objectFunctions
+			    capacity: (size_t)capacity
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Returns the number of objects in the map table.
@@ -246,7 +247,7 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
 	uint32_t _position;
 }
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Returns a pointer to the next object, or NULL if the enumeration

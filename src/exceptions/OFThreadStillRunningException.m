@@ -28,12 +28,12 @@
 	return [[[self alloc] initWithThread: thread] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithThread: nil];
 }
 
-- initWithThread: (OFThread *)thread
+- (instancetype)initWithThread: (OFThread *)thread
 {
 	self = [super init];
 

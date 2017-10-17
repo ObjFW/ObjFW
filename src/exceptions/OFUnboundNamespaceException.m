@@ -35,13 +35,13 @@
 					element: element] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithNamespace: (OFString *)namespace
-	    element: (OFXMLElement *)element
+- (instancetype)initWithNamespace: (OFString *)namespace
+			  element: (OFXMLElement *)element
 {
 	self = [super init];
 

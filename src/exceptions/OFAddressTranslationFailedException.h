@@ -58,7 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param host The host for which translation was requested
  * @return An initialized address translation failed exception
  */
-- initWithHost: (nullable OFString *)host;
+- (instancetype)initWithHost: (nullable OFString *)host;
 
 - (instancetype)initWithError: (int)error;
 - (instancetype)initWithHost: (nullable OFString *)host

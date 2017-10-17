@@ -27,12 +27,12 @@
 	return [[[self alloc] initWithLock: lock] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithLock: nil];
 }
 
-- initWithLock: (id <OFLocking>)lock
+- (instancetype)initWithLock: (id <OFLocking>)lock
 {
 	self = [super init];
 

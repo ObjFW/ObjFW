@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated hash already calculated exception.
@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The hash which has already been calculated
  * @return An initialized hash already calculated exception
  */
-- initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

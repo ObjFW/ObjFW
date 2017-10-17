@@ -48,7 +48,7 @@ static OFAutoreleasePool **cache = NULL;
 }
 #endif
 
-+ alloc
++ (instancetype)alloc
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	OFAutoreleasePool **cache = of_tlskey_get(cacheKey);
@@ -87,7 +87,7 @@ static OFAutoreleasePool **cache = NULL;
 	}
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -170,12 +170,12 @@ static OFAutoreleasePool **cache = NULL;
 	[super dealloc];
 }
 
-- retain
+- (instancetype)retain
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

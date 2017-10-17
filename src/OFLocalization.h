@@ -139,7 +139,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	    instance of OFLocalization, which will be come the singleton, and
  *	    call this method.
  */
-- init;
+- (instancetype)init;
 
 #ifdef OF_HAVE_FILES
 /*!

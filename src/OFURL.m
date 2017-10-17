@@ -62,7 +62,7 @@
 	return URL;
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -72,7 +72,7 @@
 	return [super init];
 }
 
-- initWithString: (OFString *)string
+- (instancetype)initWithString: (OFString *)string
 {
 	char *UTF8String, *UTF8String2 = NULL;
 
@@ -206,8 +206,8 @@
 	return self;
 }
 
-- initWithString: (OFString *)string
-   relativeToURL: (OFURL *)URL
+- (instancetype)initWithString: (OFString *)string
+		 relativeToURL: (OFURL *)URL
 {
 	char *UTF8String, *UTF8String2 = NULL;
 
@@ -280,7 +280,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
@@ -416,12 +416,12 @@
 	return _fragment;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	OFMutableURL *copy = [[OFMutableURL alloc] init];
 

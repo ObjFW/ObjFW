@@ -123,7 +123,7 @@ typedef struct {
  * @param URL The URL for the request
  * @return An initialized OFHTTPRequest
  */
-- initWithURL: (OFURL *)URL;
+- (instancetype)initWithURL: (OFURL *)URL;
 
 /*!
  * @brief Sets the protocol version of the HTTP request.

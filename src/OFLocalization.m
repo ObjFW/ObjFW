@@ -118,7 +118,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

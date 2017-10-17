@@ -315,7 +315,7 @@
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -356,11 +356,11 @@
 	return self;
 }
 
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	   repeats: (bool)repeats
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			 repeats: (bool)repeats
 {
 	return [self of_initWithFireDate: fireDate
 				interval: interval
@@ -374,12 +374,12 @@
 				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (id)object
-	   repeats: (bool)repeats
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (id)object
+			 repeats: (bool)repeats
 {
 	return [self of_initWithFireDate: fireDate
 				interval: interval
@@ -393,13 +393,13 @@
 				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (id)object1
-	    object: (id)object2
-	   repeats: (bool)repeats
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (id)object1
+			  object: (id)object2
+			 repeats: (bool)repeats
 {
 	return [self of_initWithFireDate: fireDate
 				interval: interval
@@ -413,14 +413,14 @@
 				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (id)object1
-	    object: (id)object2
-	    object: (id)object3
-	   repeats: (bool)repeats
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (id)object1
+			  object: (id)object2
+			  object: (id)object3
+			 repeats: (bool)repeats
 {
 	return [self of_initWithFireDate: fireDate
 				interval: interval
@@ -434,15 +434,15 @@
 				 repeats: repeats];
 }
 
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (id)object1
-	    object: (id)object2
-	    object: (id)object3
-	    object: (id)object4
-	   repeats: (bool)repeats
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (id)object1
+			  object: (id)object2
+			  object: (id)object3
+			  object: (id)object4
+			 repeats: (bool)repeats
 {
 	return [self of_initWithFireDate: fireDate
 				interval: interval
@@ -457,10 +457,10 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- initWithFireDate: (OFDate *)fireDate
-	   interval: (of_time_interval_t)interval
-	    repeats: (bool)repeats
-	      block: (of_timer_block_t)block
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			 repeats: (bool)repeats
+			   block: (of_timer_block_t)block
 {
 	self = [super init];
 

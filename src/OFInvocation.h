@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param signature The method signature for the invocation
  * @return An initialized OFInvocation
  */
-- initWithMethodSignature: (OFMethodSignature *)signature;
+- (instancetype)initWithMethodSignature: (OFMethodSignature *)signature;
 
 /*!
  * @brief Sets the argument for the specified index.

@@ -76,7 +76,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	return [[[self alloc] initWithFileName: fileName] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -141,7 +141,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	return self;
 }
 
-- initWithFileName: (OFString *)fileName
+- (instancetype)initWithFileName: (OFString *)fileName
 {
 	self = [super init];
 
@@ -168,12 +168,12 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	[super dealloc];
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	OFTarArchiveEntry *copy = [[OFMutableTarArchiveEntry alloc]
 	    initWithFileName: _fileName];

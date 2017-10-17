@@ -37,14 +37,14 @@
 				       errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
--  initWithObject: (id)object
-  requestedLength: (size_t)requestedLength
-	    errNo: (int)errNo
+- (instancetype)initWithObject: (id)object
+	       requestedLength: (size_t)requestedLength
+			 errNo: (int)errNo
 {
 	self = [super init];
 

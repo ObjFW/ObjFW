@@ -172,7 +172,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 }
 
 @implementation OFString_UTF8
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -226,9 +226,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithCString: (const char *)cString
-	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)cStringLength
+- (instancetype)initWithCString: (const char *)cString
+		       encoding: (of_string_encoding_t)encoding
+			 length: (size_t)cStringLength
 {
 	self = [super init];
 
@@ -390,8 +390,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF8StringNoCopy: (char *)UTF8String
-	      freeWhenDone: (bool)freeWhenDone
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+			    freeWhenDone: (bool)freeWhenDone
 {
 	self = [super init];
 
@@ -428,7 +428,7 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithString: (OFString *)string
+- (instancetype)initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -455,8 +455,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithCharacters: (const of_unichar_t *)characters
-	      length: (size_t)length
+- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+			    length: (size_t)length
 {
 	self = [super init];
 
@@ -499,9 +499,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF16String: (const char16_t *)string
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
@@ -584,9 +584,9 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithUTF32String: (const char32_t *)characters
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF32String: (const char32_t *)characters
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
@@ -651,8 +651,8 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return self;
 }
 
-- initWithFormat: (OFConstantString *)format
-       arguments: (va_list)arguments
+- (instancetype)initWithFormat: (OFConstantString *)format
+		     arguments: (va_list)arguments
 {
 	self = [super init];
 

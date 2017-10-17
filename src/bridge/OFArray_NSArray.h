@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	NSArray *_array;
 }
 
-- initWithNSArray: (NSArray *)array;
+- (instancetype)initWithNSArray: (NSArray *)array;
 @end
 
 OF_ASSUME_NONNULL_END

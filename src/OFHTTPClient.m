@@ -56,10 +56,10 @@
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_serverHeaders;
 }
 
-- initWithClient: (OFHTTPClient *)client
-	 request: (OFHTTPRequest *)request
-       redirects: (unsigned int)redirects
-	 context: (id)context;
+- (instancetype)initWithClient: (OFHTTPClient *)client
+		       request: (OFHTTPRequest *)request
+		     redirects: (unsigned int)redirects
+		       context: (id)context;
 - (void)start;
 - (void)closeAndReconnect;
 @end
@@ -73,7 +73,7 @@
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
 
-- initWithSocket: (OFTCPSocket *)socket;
+- (instancetype)initWithSocket: (OFTCPSocket *)socket;
 @end
 
 static OFString *
@@ -205,10 +205,10 @@ normalizeKey(char *str_)
 }
 
 @implementation OFHTTPClientRequestHandler
-- initWithClient: (OFHTTPClient *)client
-	 request: (OFHTTPRequest *)request
-       redirects: (unsigned int)redirects
-	 context: (id)context
+- (instancetype)initWithClient: (OFHTTPClient *)client
+		       request: (OFHTTPRequest *)request
+		     redirects: (unsigned int)redirects
+		       context: (id)context
 {
 	self = [super init];
 
@@ -730,7 +730,7 @@ normalizeKey(char *str_)
 @implementation OFHTTPClientResponse
 @synthesize of_keepAlive = _keepAlive;
 
-- initWithSocket: (OFTCPSocket *)socket
+- (instancetype)initWithSocket: (OFTCPSocket *)socket
 {
 	self = [super init];
 

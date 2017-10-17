@@ -26,8 +26,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The class for all blocks, since all blocks are also objects.
  */
 @interface OFBlock: OFObject
-+ alloc OF_UNAVAILABLE;
-- init OF_UNAVAILABLE;
++ (instancetype)alloc OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 @interface OFStackBlock: OFBlock

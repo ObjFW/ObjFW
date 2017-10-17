@@ -91,7 +91,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)streamWithStream: (OFStream *)stream
 			    mode: (OFString *)mode;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFGZIPStream with the specified
@@ -102,8 +102,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       and "w" for writing.
  * @return An initialized OFGZIPStream
  */
-- initWithStream: (OFStream *)stream
-	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OFStream *)stream
+			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

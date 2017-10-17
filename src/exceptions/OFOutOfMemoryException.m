@@ -28,12 +28,12 @@
 	    initWithRequestedSize: requestedSize] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithRequestedSize: 0];
 }
 
-- initWithRequestedSize: (size_t)requestedSize
+- (instancetype)initWithRequestedSize: (size_t)requestedSize
 {
 	self = [super init];
 

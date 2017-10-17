@@ -68,7 +68,7 @@
 	OFData *_extraField;
 }
 
-- initWithStream: (OFStream *)stream;
+- (instancetype)initWithStream: (OFStream *)stream;
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry;
 @end
 
@@ -81,8 +81,8 @@
 	bool _atEndOfStream;
 }
 
--  initWithStream: (OFStream *)stream
-	    entry: (OFZIPArchiveEntry *)entry;
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFZIPArchiveEntry *)entry;
 @end
 
 @interface OFZIPArchive_FileWriteStream: OFStream
@@ -94,8 +94,8 @@
 	OFMutableZIPArchiveEntry *_entry;
 }
 
-- initWithStream: (OFStream *)stream
-	   entry: (OFMutableZIPArchiveEntry *)entry;
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFMutableZIPArchiveEntry *)entry;
 @end
 
 uint32_t
@@ -166,13 +166,13 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OF_KINDOF(OFStream *))stream
-	    mode: (OFString *)mode
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
 {
 	self = [super init];
 
@@ -221,8 +221,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 
 #ifdef OF_HAVE_FILES
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path
+			mode: (OFString *)mode
 {
 	OFFile *file;
 
@@ -627,7 +627,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchive_LocalFileHeader
-- initWithStream: (OFStream *)stream
+- (instancetype)initWithStream: (OFStream *)stream
 {
 	self = [super init];
 
@@ -727,8 +727,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchive_FileReadStream
--  initWithStream: (OFStream *)stream
-	    entry: (OFZIPArchiveEntry *)entry
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFZIPArchiveEntry *)entry
 {
 	self = [super init];
 
@@ -823,8 +823,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchive_FileWriteStream
-- initWithStream: (OFStream *)stream
-	   entry: (OFMutableZIPArchiveEntry *)entry
+- (instancetype)initWithStream: (OFStream *)stream
+			 entry: (OFMutableZIPArchiveEntry *)entry
 {
 	self = [super init];
 

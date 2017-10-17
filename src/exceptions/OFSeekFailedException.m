@@ -40,15 +40,15 @@
 				       errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFSeekableStream *)stream
-	  offset: (of_offset_t)offset
-	  whence: (int)whence
-	   errNo: (int)errNo
+- (instancetype)initWithStream: (OFSeekableStream *)stream
+			offset: (of_offset_t)offset
+			whence: (int)whence
+			 errNo: (int)errNo
 {
 	self = [super init];
 

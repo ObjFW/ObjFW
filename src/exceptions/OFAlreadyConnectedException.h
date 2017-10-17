@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param socket The socket which is already connected
  * @return An initialized already connected exception
  */
-- initWithSocket: (nullable id)socket OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSocket: (nullable id)socket OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

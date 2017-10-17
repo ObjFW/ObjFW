@@ -57,7 +57,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @param capacity The initial capacity for the OFMutableArray
  * @return An initialized OFMutableArray
  */
-- initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity;
 
 /*!
  * @brief Adds an object to the end of the array.

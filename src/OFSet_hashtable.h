@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMapTable *_mapTable;
 }
 
-- initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity;
 @end
 
 OF_ASSUME_NONNULL_END

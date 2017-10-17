@@ -47,7 +47,7 @@ static OFString *c_ary[] = {
 @end
 
 @implementation SimpleArray
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -61,8 +61,8 @@ static OFString *c_ary[] = {
 	return self;
 }
 
-- initWithObject: (id)object
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)object
+		     arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -77,8 +77,8 @@ static OFString *c_ary[] = {
 	return self;
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	self = [super init];
 

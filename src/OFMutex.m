@@ -32,7 +32,7 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

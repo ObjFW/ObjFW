@@ -253,7 +253,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 }
 
 #ifdef HAVE_DWARF_EXCEPTIONS
-- init
+- (instancetype)init
 {
 	struct backtrace_ctx ctx;
 

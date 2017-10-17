@@ -94,7 +94,7 @@ of_dlclose(of_plugin_handle_t handle)
 	return plugin;
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFPlugin class]) {
 		@try {

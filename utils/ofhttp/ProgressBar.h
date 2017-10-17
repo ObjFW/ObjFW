@@ -29,8 +29,8 @@
 	double _ETA;
 }
 
-- initWithLength: (intmax_t)length
-     resumedFrom: (intmax_t)resumedFrom;
+- (instancetype)initWithLength: (intmax_t)length
+		   resumedFrom: (intmax_t)resumedFrom;
 - (void)setReceived: (intmax_t)received;
 - (void)draw;
 - (void)calculateBPSAndETA;

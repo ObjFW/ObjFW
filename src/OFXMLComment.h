@@ -43,9 +43,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string for the comment
  * @return An initialized OFXMLComment
  */
-- initWithString: (OFString *)string;
+- (instancetype)initWithString: (OFString *)string;
 
-- initWithSerialization: (OFXMLElement *)element;
+- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

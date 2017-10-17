@@ -81,30 +81,31 @@ static uint16_t defaultSOCKS5Port = 1080;
 	id _exception;
 }
 
-- initWithSourceThread: (OFThread *)sourceThread
-		socket: (OFTCPSocket *)socket
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		target: (id)target
-	      selector: (SEL)selector
-	       context: (id)context;
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+			      socket: (OFTCPSocket *)socket
+				host: (OFString *)host
+				port: (uint16_t)port
+			      target: (id)target
+			    selector: (SEL)selector
+			     context: (id)context;
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread *)sourceThread
-		socket: (OFTCPSocket *)socket
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		 block: (of_tcp_socket_async_connect_block_t)block;
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+			      socket: (OFTCPSocket *)socket
+				host: (OFString *)host
+				port: (uint16_t)port
+			       block: (of_tcp_socket_async_connect_block_t)
+					  block;
 # endif
 @end
 
 @implementation OFTCPSocket_ConnectThread
-- initWithSourceThread: (OFThread *)sourceThread
-		socket: (OFTCPSocket *)socket
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		target: (id)target
-	      selector: (SEL)selector
-	       context: (id)context
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+			      socket: (OFTCPSocket *)socket
+				host: (OFString *)host
+				port: (uint16_t)port
+			      target: (id)target
+			    selector: (SEL)selector
+			     context: (id)context
 {
 	self = [super init];
 
@@ -125,11 +126,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread *)sourceThread
-		socket: (OFTCPSocket *)socket
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		 block: (of_tcp_socket_async_connect_block_t)block
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+			      socket: (OFTCPSocket *)socket
+				host: (OFString *)host
+				port: (uint16_t)port
+			       block: (of_tcp_socket_async_connect_block_t)block
 {
 	self = [super init];
 
@@ -229,7 +230,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return defaultSOCKS5Port;
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

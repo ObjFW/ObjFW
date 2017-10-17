@@ -27,12 +27,12 @@
 	return [[[self alloc] initWithSocket: socket] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithSocket: nil];
 }
 
-- initWithSocket: (id)socket
+- (instancetype)initWithSocket: (id)socket
 {
 	self = [super init];
 

@@ -34,13 +34,13 @@
 					object: object] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSelector: (SEL)selector
-	    object: (id)object
+- (instancetype)initWithSelector: (SEL)selector
+			  object: (id)object
 {
 	self = [super init];
 

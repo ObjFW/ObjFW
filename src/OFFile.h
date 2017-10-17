@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)fileWithHandle: (of_file_handle_t)handle;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFFile.
@@ -96,8 +96,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       `ab+` or `a+b` | read-write, create, append, binary
  * @return An initialized OFFile
  */
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode;
+- (instancetype)initWithPath: (OFString *)path
+			mode: (OFString *)mode;
 
 /*!
  * @brief Initializes an already allocated OFFile.
@@ -107,7 +107,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		 object is deallocated!
  * @return An initialized OFFile
  */
-- initWithHandle: (of_file_handle_t)handle OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHandle: (of_file_handle_t)handle
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -48,11 +48,10 @@ struct {
 @end
 
 @implementation OFString_const
-+ alloc
++ (instancetype)alloc
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
-
 
 - (void *)allocMemoryWithSize: (size_t)size
 {
@@ -83,12 +82,12 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -165,7 +164,7 @@ struct {
 	}
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -199,12 +198,12 @@ struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -229,7 +228,7 @@ struct {
  */
 
 /* From protocol OFCopying */
-- copy
+- (id)copy
 {
 	[self finishInitialization];
 
@@ -237,7 +236,7 @@ struct {
 }
 
 /* From protocol OFMutableCopying */
-- mutableCopy
+- (id)mutableCopy
 {
 	[self finishInitialization];
 

@@ -238,7 +238,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 @implementation OFHTTP
-- init
+- (instancetype)init
 {
 	self = [super init];
 

@@ -36,13 +36,13 @@
 				     response: response] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithRequest: (OFHTTPRequest *)request
-	 response: (OFHTTPResponse *)response
+- (instancetype)initWithRequest: (OFHTTPRequest *)request
+		       response: (OFHTTPResponse *)response
 {
 	self = [super init];
 

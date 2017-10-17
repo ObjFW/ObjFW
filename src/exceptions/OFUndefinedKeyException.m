@@ -43,22 +43,22 @@
 				       value: value] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObject: (id)object
-	     key: (OFString *)key
+- (instancetype)initWithObject: (id)object
+			   key: (OFString *)key
 {
 	return [self initWithObject: object
 				key: key
 			      value: nil];
 }
 
-- initWithObject: (id)object
-	     key: (OFString *)key
-	   value: (id)value
+- (instancetype)initWithObject: (id)object
+			   key: (OFString *)key
+			 value: (id)value
 {
 	self = [super init];
 

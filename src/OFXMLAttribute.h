@@ -75,8 +75,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
-- initWithName: (OFString *)name
-   stringValue: (OFString *)stringValue;
+- (instancetype)initWithName: (OFString *)name
+		 stringValue: (OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLAttribute.
@@ -86,11 +86,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param stringValue The string value of the attribute
  * @return An initialized OFXMLAttribute with the specified parameters
  */
-- initWithName: (OFString *)name
-     namespace: (nullable OFString *)namespace_
-   stringValue: (OFString *)stringValue;
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (nullable OFString *)namespace_
+		 stringValue: (OFString *)stringValue;
 
-- initWithSerialization: (OFXMLElement *)element;
+- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

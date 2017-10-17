@@ -130,7 +130,7 @@ of_log(OFConstantString *format, ...)
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -296,12 +296,12 @@ of_log(OFConstantString *format, ...)
 	[super close];
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }

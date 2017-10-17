@@ -239,12 +239,12 @@
 	return [[[self alloc] initWithDouble: double_] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithBool: (bool)bool_
+- (instancetype)initWithBool: (bool)bool_
 {
 	self = [super init];
 
@@ -254,7 +254,7 @@
 	return self;
 }
 
-- initWithChar: (signed char)schar
+- (instancetype)initWithChar: (signed char)schar
 {
 	self = [super init];
 
@@ -264,7 +264,7 @@
 	return self;
 }
 
-- initWithShort: (signed short)sshort
+- (instancetype)initWithShort: (signed short)sshort
 {
 	self = [super init];
 
@@ -274,7 +274,7 @@
 	return self;
 }
 
-- initWithInt: (signed int)sint
+- (instancetype)initWithInt: (signed int)sint
 {
 	self = [super init];
 
@@ -284,7 +284,7 @@
 	return self;
 }
 
-- initWithLong: (signed long)slong
+- (instancetype)initWithLong: (signed long)slong
 {
 	self = [super init];
 
@@ -294,7 +294,7 @@
 	return self;
 }
 
-- initWithLongLong: (signed long long)slonglong
+- (instancetype)initWithLongLong: (signed long long)slonglong
 {
 	self = [super init];
 
@@ -304,7 +304,7 @@
 	return self;
 }
 
-- initWithUnsignedChar: (unsigned char)uchar
+- (instancetype)initWithUnsignedChar: (unsigned char)uchar
 {
 	self = [super init];
 
@@ -314,7 +314,7 @@
 	return self;
 }
 
-- initWithUnsignedShort: (unsigned short)ushort
+- (instancetype)initWithUnsignedShort: (unsigned short)ushort
 {
 	self = [super init];
 
@@ -324,7 +324,7 @@
 	return self;
 }
 
-- initWithUnsignedInt: (unsigned int)uint
+- (instancetype)initWithUnsignedInt: (unsigned int)uint
 {
 	self = [super init];
 
@@ -334,7 +334,7 @@
 	return self;
 }
 
-- initWithUnsignedLong: (unsigned long)ulong
+- (instancetype)initWithUnsignedLong: (unsigned long)ulong
 {
 	self = [super init];
 
@@ -344,7 +344,7 @@
 	return self;
 }
 
-- initWithUnsignedLongLong: (unsigned long long)ulonglong
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)ulonglong
 {
 	self = [super init];
 
@@ -354,7 +354,7 @@
 	return self;
 }
 
-- initWithInt8: (int8_t)int8
+- (instancetype)initWithInt8: (int8_t)int8
 {
 	self = [super init];
 
@@ -364,7 +364,7 @@
 	return self;
 }
 
-- initWithInt16: (int16_t)int16
+- (instancetype)initWithInt16: (int16_t)int16
 {
 	self = [super init];
 
@@ -374,7 +374,7 @@
 	return self;
 }
 
-- initWithInt32: (int32_t)int32
+- (instancetype)initWithInt32: (int32_t)int32
 {
 	self = [super init];
 
@@ -384,7 +384,7 @@
 	return self;
 }
 
-- initWithInt64: (int64_t)int64
+- (instancetype)initWithInt64: (int64_t)int64
 {
 	self = [super init];
 
@@ -394,7 +394,7 @@
 	return self;
 }
 
-- initWithUInt8: (uint8_t)uint8
+- (instancetype)initWithUInt8: (uint8_t)uint8
 {
 	self = [super init];
 
@@ -404,7 +404,7 @@
 	return self;
 }
 
-- initWithUInt16: (uint16_t)uint16
+- (instancetype)initWithUInt16: (uint16_t)uint16
 {
 	self = [super init];
 
@@ -414,7 +414,7 @@
 	return self;
 }
 
-- initWithUInt32: (uint32_t)uint32
+- (instancetype)initWithUInt32: (uint32_t)uint32
 {
 	self = [super init];
 
@@ -424,7 +424,7 @@
 	return self;
 }
 
-- initWithUInt64: (uint64_t)uint64
+- (instancetype)initWithUInt64: (uint64_t)uint64
 {
 	self = [super init];
 
@@ -434,7 +434,7 @@
 	return self;
 }
 
-- initWithSize: (size_t)size
+- (instancetype)initWithSize: (size_t)size
 {
 	self = [super init];
 
@@ -444,7 +444,7 @@
 	return self;
 }
 
-- initWithSSize: (ssize_t)ssize
+- (instancetype)initWithSSize: (ssize_t)ssize
 {
 	self = [super init];
 
@@ -454,7 +454,7 @@
 	return self;
 }
 
-- initWithIntMax: (intmax_t)intmax
+- (instancetype)initWithIntMax: (intmax_t)intmax
 {
 	self = [super init];
 
@@ -464,7 +464,7 @@
 	return self;
 }
 
-- initWithUIntMax: (uintmax_t)uintmax
+- (instancetype)initWithUIntMax: (uintmax_t)uintmax
 {
 	self = [super init];
 
@@ -474,7 +474,7 @@
 	return self;
 }
 
-- initWithPtrDiff: (ptrdiff_t)ptrdiff
+- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrdiff
 {
 	self = [super init];
 
@@ -484,7 +484,7 @@
 	return self;
 }
 
-- initWithIntPtr: (intptr_t)intptr
+- (instancetype)initWithIntPtr: (intptr_t)intptr
 {
 	self = [super init];
 
@@ -494,7 +494,7 @@
 	return self;
 }
 
-- initWithUIntPtr: (uintptr_t)uintptr
+- (instancetype)initWithUIntPtr: (uintptr_t)uintptr
 {
 	self = [super init];
 
@@ -504,7 +504,7 @@
 	return self;
 }
 
-- initWithFloat: (float)float_
+- (instancetype)initWithFloat: (float)float_
 {
 	self = [super init];
 
@@ -514,7 +514,7 @@
 	return self;
 }
 
-- initWithDouble: (double)double_
+- (instancetype)initWithDouble: (double)double_
 {
 	self = [super init];
 
@@ -524,7 +524,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -866,7 +866,7 @@
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }

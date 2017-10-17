@@ -41,7 +41,7 @@ static OFNull *null = nil;
 	return null;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	void *pool;
 
@@ -63,7 +63,7 @@ static OFNull *null = nil;
 	return @"<null>";
 }
 
-- copy
+- (id)copy
 {
 	return self;
 }
@@ -109,12 +109,12 @@ static OFNull *null = nil;
 			       count: 1];
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }

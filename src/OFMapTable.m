@@ -103,22 +103,22 @@ defaultEqual(void *object1, void *object2)
 			capacity: capacity] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-       objectFunctions: (of_map_table_functions_t)objectFunctions
+- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
+		     objectFunctions: (of_map_table_functions_t)objectFunctions
 {
 	return [self initWithKeyFunctions: keyFunctions
 			  objectFunctions: objectFunctions
 				 capacity: 0];
 }
 
-- initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
-       objectFunctions: (of_map_table_functions_t)objectFunctions
-	      capacity: (size_t)capacity
+- (instancetype)initWithKeyFunctions: (of_map_table_functions_t)keyFunctions
+		     objectFunctions: (of_map_table_functions_t)objectFunctions
+			    capacity: (size_t)capacity
 {
 	self = [super init];
 
@@ -235,7 +235,7 @@ defaultEqual(void *object1, void *object2)
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	OFMapTable *copy = [[OFMapTable alloc]
 	    initWithKeyFunctions: _keyFunctions
@@ -661,7 +661,7 @@ defaultEqual(void *object1, void *object2)
 @end
 
 @implementation OFMapTableEnumerator
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -739,8 +739,8 @@ defaultEqual(void *object1, void *object2)
 @end
 
 @implementation OFMapTable_EnumeratorWrapper
-- initWithEnumerator: (OFMapTableEnumerator *)enumerator
-	      object: (id)object
+- (instancetype)initWithEnumerator: (OFMapTableEnumerator *)enumerator
+			    object: (id)object
 {
 	self = [super init];
 

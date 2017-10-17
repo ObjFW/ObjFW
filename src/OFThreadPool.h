@@ -77,7 +77,7 @@ typedef void (^of_thread_pool_block_t)(void);
  * @param size The number of threads for the pool
  * @return An initialized OFThreadPool with the specified number of threads
  */
-- initWithSize: (size_t)size OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSize: (size_t)size OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Execute the specified selector on the specified target with the

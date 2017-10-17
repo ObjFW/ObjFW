@@ -120,7 +120,7 @@ typedef struct of_options_parser_option_t {
  */
 + (instancetype)parserWithOptions: (const of_options_parser_option_t *)options;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFOptionsParser so that it accepts
@@ -132,7 +132,7 @@ typedef struct of_options_parser_option_t {
  *
  * @return An initialized OFOptionsParser
  */
-- initWithOptions: (const of_options_parser_option_t *)options
+- (instancetype)initWithOptions: (const of_options_parser_option_t *)options
     OF_DESIGNATED_INITIALIZER;
 
 /*!

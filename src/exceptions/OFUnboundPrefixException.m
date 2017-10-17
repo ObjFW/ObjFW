@@ -35,13 +35,13 @@
 				      parser: parser] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPrefix: (OFString *)prefix
-	  parser: (OFXMLParser *)parser
+- (instancetype)initWithPrefix: (OFString *)prefix
+			parser: (OFXMLParser *)parser
 {
 	self = [super init];
 

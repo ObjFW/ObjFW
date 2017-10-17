@@ -112,7 +112,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param set The set to initialize the set with
  * @return An initialized set with the specified set
  */
-- initWithSet: (OFSet OF_GENERIC(ObjectType) *)set;
+- (instancetype)initWithSet: (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
  * @brief Initializes an already allocated set with the specified array.
@@ -120,7 +120,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param array The array to initialize the set with
  * @return An initialized set with the specified array
  */
-- initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
+- (instancetype)initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
 /*!
  * @brief Initializes an already allocated set with the specified objects.
@@ -128,7 +128,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param firstObject The first object for the set
  * @return An initialized set with the specified objects
  */
-- initWithObjects: (ObjectType)firstObject, ...;
+- (instancetype)initWithObjects: (ObjectType)firstObject, ...;
 
 /*!
  * @brief Initializes an already allocated set with the specified objects.
@@ -137,8 +137,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param count The number of objects in the specified array
  * @return An initialized set with the specified objects
  */
-- initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-	    count: (size_t)count;
+- (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
+			  count: (size_t)count;
 
 /*!
  * @brief Initializes an already allocated set with the specified object and
@@ -148,8 +148,8 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param arguments A va_list with the other objects
  * @return An initialized set with the specified object and va_list
  */
-- initWithObject: (ObjectType)firstObject
-       arguments: (va_list)arguments;
+- (instancetype)initWithObject: (ObjectType)firstObject
+		     arguments: (va_list)arguments;
 
 /*!
  * @brief Returns whether the receiver is a subset of the specified set.

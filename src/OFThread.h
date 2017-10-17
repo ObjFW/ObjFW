@@ -193,7 +193,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @param threadBlock A block which is executed by the thread
  * @return An initialized OFThread.
  */
-- initWithThreadBlock: (of_thread_block_t)threadBlock;
+- (instancetype)initWithThreadBlock: (of_thread_block_t)threadBlock;
 # endif
 
 /*!
@@ -270,7 +270,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  */
 - (void)setStackSize: (size_t)stackSize;
 #else
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 #endif
 @end
 

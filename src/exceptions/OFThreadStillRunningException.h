@@ -54,7 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which is still running
  * @return An initialized thread still running exception
  */
-- initWithThread: (nullable OFThread *)thread OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread: (nullable OFThread *)thread
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -43,7 +43,7 @@
 #import "socket_helpers.h"
 
 @implementation OFKernelEventObserver_select
-- init
+- (instancetype)init
 {
 	self = [super init];
 

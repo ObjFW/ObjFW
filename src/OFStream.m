@@ -67,7 +67,7 @@
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFStream class]) {
 		@try {
@@ -103,7 +103,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }

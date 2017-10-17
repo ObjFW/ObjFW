@@ -131,7 +131,7 @@ typedef enum of_tar_archive_entry_type_t {
  */
 + (instancetype)entryWithFileName: (OFString *)fileName;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFTarArchiveEntry with the specified
@@ -140,7 +140,7 @@ typedef enum of_tar_archive_entry_type_t {
  * @param fileName The file name for the OFTarArchiveEntry
  * @return An initialized OFTarArchiveEntry
  */
-- initWithFileName: (OFString *)fileName;
+- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 OF_ASSUME_NONNULL_END

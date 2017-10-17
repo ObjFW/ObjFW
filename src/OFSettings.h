@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)settingsWithApplicationName: (OFString *)applicationName;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFSettings instance with the
@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
  *			  accessed
  * @return An initialized OFSettings instance
  */
-- initWithApplicationName: (OFString *)applicationName
+- (instancetype)initWithApplicationName: (OFString *)applicationName
     OF_DESIGNATED_INITIALIZER;
 
 /*!

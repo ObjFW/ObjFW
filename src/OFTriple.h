@@ -74,9 +74,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thirdObject The second object for the triple
  * @return An initialized OFTriple
  */
-- initWithFirstObject: (nullable FirstType)firstObject
-	 secondObject: (nullable SecondType)secondObject
-	  thirdObject: (nullable ThirdType)thirdObject;
+- (instancetype)initWithFirstObject: (nullable FirstType)firstObject
+		       secondObject: (nullable SecondType)secondObject
+			thirdObject: (nullable ThirdType)thirdObject;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef FirstType
 # undef SecondType

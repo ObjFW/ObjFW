@@ -62,7 +62,7 @@ OF_ASSUME_NONNULL_BEGIN
 		    requestedLength: (size_t)requestedLength
 			      errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated read or write failed exception.
@@ -73,9 +73,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new open file failed exception
  */
--  initWithObject: (id)object
-  requestedLength: (size_t)requestedLength
-	    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithObject: (id)object
+	       requestedLength: (size_t)requestedLength
+			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

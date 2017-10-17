@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
 				key: (OFString *)key
 			      value: (nullable id)value;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated undefined key exception.
@@ -82,8 +82,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized undefined key exception
  */
-- initWithObject: (id)object
-	     key: (OFString *)key;
+- (instancetype)initWithObject: (id)object
+			   key: (OFString *)key;
 
 /*!
  * @brief Initializes an already allocated undefined key exception.
@@ -94,9 +94,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized undefined key exception
  */
-- initWithObject: (id)object
-	     key: (OFString *)key
-	   value: (nullable id)value OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithObject: (id)object
+			   key: (OFString *)key
+			 value: (nullable id)value OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param element An OFXMLElement with the serialized object
  * @return An initialized object
  */
-- initWithSerialization: (OFXMLElement *)element;
+- (instancetype)initWithSerialization: (OFXMLElement *)element;
 
 /*!
  * @brief Serializes the object into an XML element.

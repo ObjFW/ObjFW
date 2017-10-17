@@ -231,7 +231,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	    initWithTimeIntervalSince1970: -62167219200.0] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	struct timeval t;
 
@@ -245,7 +245,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithTimeIntervalSince1970: (of_time_interval_t)seconds
+- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds
 {
 	self = [super init];
 
@@ -254,7 +254,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
+- (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds
 {
 	self = [self init];
 
@@ -263,8 +263,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithDateString: (OFString *)string
-	      format: (OFString *)format
+- (instancetype)initWithDateString: (OFString *)string
+			    format: (OFString *)format
 {
 	self = [super init];
 
@@ -288,8 +288,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithLocalDateString: (OFString *)string
-		   format: (OFString *)format
+- (instancetype)initWithLocalDateString: (OFString *)string
+				 format: (OFString *)format
 {
 	self = [super init];
 
@@ -327,7 +327,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [super init];
 
@@ -389,7 +389,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }

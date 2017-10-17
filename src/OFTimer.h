@@ -303,7 +303,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 				block: (of_timer_block_t)block;
 #endif
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -317,11 +317,11 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	   repeats: (bool)repeats;
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			 repeats: (bool)repeats;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -336,12 +336,12 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (nullable id)object
-	   repeats: (bool)repeats;
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (nullable id)object
+			 repeats: (bool)repeats;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -359,13 +359,13 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (nullable id)object1
-	    object: (nullable id)object2
-	   repeats: (bool)repeats;
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (nullable id)object1
+			  object: (nullable id)object2
+			 repeats: (bool)repeats;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -385,14 +385,14 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (nullable id)object1
-	    object: (nullable id)object2
-	    object: (nullable id)object3
-	   repeats: (bool)repeats;
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (nullable id)object1
+			  object: (nullable id)object2
+			  object: (nullable id)object3
+			 repeats: (bool)repeats;
 
 /*!
  * @brief Initializes an already allocated timer with the specified time
@@ -414,15 +414,15 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param repeats Whether the timer repeats after it has been executed
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	    target: (id)target
-	  selector: (SEL)selector
-	    object: (nullable id)object1
-	    object: (nullable id)object2
-	    object: (nullable id)object3
-	    object: (nullable id)object4
-	   repeats: (bool)repeats;
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			  target: (id)target
+			selector: (SEL)selector
+			  object: (nullable id)object1
+			  object: (nullable id)object2
+			  object: (nullable id)object3
+			  object: (nullable id)object4
+			 repeats: (bool)repeats;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -436,10 +436,10 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  * @param block The block to invoke when the timer fires
  * @return An initialized timer
  */
-- initWithFireDate: (OFDate *)fireDate
-	  interval: (of_time_interval_t)interval
-	   repeats: (bool)repeats
-	     block: (of_timer_block_t)block;
+- (instancetype)initWithFireDate: (OFDate *)fireDate
+			interval: (of_time_interval_t)interval
+			 repeats: (bool)repeats
+			   block: (of_timer_block_t)block;
 #endif
 
 /*!

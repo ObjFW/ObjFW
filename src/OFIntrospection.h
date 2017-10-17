@@ -62,7 +62,7 @@ enum {
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const char *typeEncoding;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 /*!
@@ -111,7 +111,7 @@ enum {
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *setter;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 /*!
@@ -141,7 +141,7 @@ enum {
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const char *typeEncoding;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 /*!
@@ -204,7 +204,7 @@ enum {
  */
 + (instancetype)introspectionWithClass: (Class)class_;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFIntrospection with the specified
@@ -212,7 +212,7 @@ enum {
  *
  * @return An initialized OFIntrospection
  */
-- initWithClass: (Class)class_ OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithClass: (Class)class_ OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

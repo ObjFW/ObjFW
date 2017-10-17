@@ -58,7 +58,7 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  * @param capacity The initial capacity for the OFMutableDictionary
  * @return An initialized OFMutableDictionary
  */
-- initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity;
 
 /*!
  * @brief Sets an object for a key.

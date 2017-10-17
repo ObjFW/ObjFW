@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)fileWithPath: (OFString *)path
 		    encoding: (of_string_encoding_t)encoding;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFINIFile with the contents of the
@@ -63,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized OFINIFile with the contents of the specified file
  */
-- initWithPath: (OFString *)path;
+- (instancetype)initWithPath: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated OFINIFile with the contents of the
@@ -74,8 +74,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized OFINIFile with the contents of the specified file
  */
-- initWithPath: (OFString *)path
-      encoding: (of_string_encoding_t)encoding OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPath: (OFString *)path
+		    encoding: (of_string_encoding_t)encoding
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Returns an @ref OFINICategory for the category with the specified

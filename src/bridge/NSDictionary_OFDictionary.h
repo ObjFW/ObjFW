@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 	OFDictionary *_dictionary;
 }
 
-- initWithOFDictionary: (OFDictionary *)dictionary;
+- (instancetype)initWithOFDictionary: (OFDictionary *)dictionary;
 @end
 
 NS_ASSUME_NONNULL_END

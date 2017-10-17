@@ -38,35 +38,35 @@ static struct {
 @end
 
 @implementation OFMutableString_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFMutableString_UTF8 alloc] init];
 }
 
-- initWithUTF8String: (const char *)UTF8String
+- (instancetype)initWithUTF8String: (const char *)UTF8String
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF8String: UTF8String];
 }
 
-- initWithUTF8String: (const char *)UTF8String
-	      length: (size_t)UTF8StringLength
+- (instancetype)initWithUTF8String: (const char *)UTF8String
+			    length: (size_t)UTF8StringLength
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF8String: UTF8String
 			length: UTF8StringLength];
 }
 
-- initWithCString: (const char *)cString
-	 encoding: (of_string_encoding_t)encoding
+- (instancetype)initWithCString: (const char *)cString
+		       encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithCString: cString
 							encoding: encoding];
 }
 
-- initWithCString: (const char *)cString
-	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)cStringLength
+- (instancetype)initWithCString: (const char *)cString
+		       encoding: (of_string_encoding_t)encoding
+			 length: (size_t)cStringLength
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithCString: cString
@@ -74,41 +74,41 @@ static struct {
 		     length: cStringLength];
 }
 
-- initWithString: (OFString *)string
+- (instancetype)initWithString: (OFString *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithString: string];
 }
 
-- initWithCharacters: (const of_unichar_t *)characters
-	      length: (size_t)length
+- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+			    length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithCharacters: characters
 							     length: length];
 }
 
-- initWithUTF16String: (const char16_t *)string
+- (instancetype)initWithUTF16String: (const char16_t *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
 }
 
-- initWithUTF16String: (const char16_t *)string
-	       length: (size_t)length
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			     length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string
 							      length: length];
 }
 
-- initWithUTF16String: (const char16_t *)string
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF16String: string
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF16String: (const char16_t *)string
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF16String: string
@@ -116,29 +116,29 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const char32_t *)string
+- (instancetype)initWithUTF32String: (const char32_t *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string];
 }
 
-- initWithUTF32String: (const char32_t *)string
-	       length: (size_t)length
+- (instancetype)initWithUTF32String: (const char32_t *)string
+			     length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string
 							      length: length];
 }
 
-- initWithUTF32String: (const char32_t *)string
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF32String: (const char32_t *)string
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF32String: string
 		      byteOrder: byteOrder];
 }
 
-- initWithUTF32String: (const char32_t *)string
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF32String: (const char32_t *)string
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithUTF32String: string
@@ -146,7 +146,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- initWithFormat: (OFConstantString *)format, ...
+- (instancetype)initWithFormat: (OFConstantString *)format, ...
 {
 	id ret;
 	va_list arguments;
@@ -159,21 +159,21 @@ static struct {
 	return ret;
 }
 
-- initWithFormat: (OFConstantString *)format
-       arguments: (va_list)arguments
+- (instancetype)initWithFormat: (OFConstantString *)format
+		     arguments: (va_list)arguments
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithFormat: format
 						      arguments: arguments];
 }
 
 #ifdef OF_HAVE_FILES
-- initWithContentsOfFile: (OFString *)path
+- (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfFile: path];
 }
 
-- initWithContentsOfFile: (OFString *)path
-		encoding: (of_string_encoding_t)encoding
+- (instancetype)initWithContentsOfFile: (OFString *)path
+			      encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithContentsOfFile: path
@@ -182,13 +182,13 @@ static struct {
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
-- initWithContentsOfURL: (OFURL *)URL
+- (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfURL: URL];
 }
 
-- initWithContentsOfURL: (OFURL *)URL
-	       encoding: (of_string_encoding_t)encoding
+- (instancetype)initWithContentsOfURL: (OFURL *)URL
+			     encoding: (of_string_encoding_t)encoding
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithContentsOfURL: URL
@@ -196,18 +196,18 @@ static struct {
 }
 #endif
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableString_UTF8 alloc]
 	    initWithSerialization: element];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -229,7 +229,7 @@ static struct {
 		placeholder.isa = [OFMutableString_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFMutableString class])
 		return (id)&placeholder;
@@ -592,7 +592,7 @@ static struct {
 	[self deleteTrailingWhitespaces];
 }
 
-- copy
+- (id)copy
 {
 	return [[OFString alloc] initWithString: self];
 }

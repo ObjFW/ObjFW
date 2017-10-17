@@ -23,7 +23,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation NSDictionary_OFDictionary
-- initWithOFDictionary: (OFDictionary *)dictionary
+- (instancetype)initWithOFDictionary: (OFDictionary *)dictionary
 {
 	if ((self = [super init]) != nil) {
 		@try {

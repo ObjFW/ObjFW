@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
 			     mode: (nullable OFString *)mode
 			    errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated open item failed exception.
@@ -69,9 +69,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
-- initWithPath: (OFString *)path
-	  mode: (nullable OFString *)mode
-	 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPath: (OFString *)path
+			mode: (nullable OFString *)mode
+		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

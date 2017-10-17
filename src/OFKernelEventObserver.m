@@ -80,7 +80,7 @@ enum {
 	return [[[self alloc] init] autorelease];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFKernelEventObserver class])
 #if defined(HAVE_KQUEUE)
@@ -98,7 +98,7 @@ enum {
 	return [super alloc];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

@@ -59,27 +59,28 @@
 	id _exception;
 }
 
-- initWithSourceThread: (OFThread *)sourceThread
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		target: (id)target
-	      selector: (SEL)selector
-	       context: (id)context;
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+				host: (OFString *)host
+				port: (uint16_t)port
+			      target: (id)target
+			    selector: (SEL)selector
+			     context: (id)context;
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread *)sourceThread
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		 block: (of_udp_socket_async_resolve_block_t)block;
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+				host: (OFString *)host
+				port: (uint16_t)port
+			       block: (of_udp_socket_async_resolve_block_t)
+					  block;
 # endif
 @end
 
 @implementation OFUDPSocket_ResolveThread
-- initWithSourceThread: (OFThread *)sourceThread
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		target: (id)target
-	      selector: (SEL)selector
-	       context: (id)context
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+				host: (OFString *)host
+				port: (uint16_t)port
+			      target: (id)target
+			    selector: (SEL)selector
+			     context: (id)context
 {
 	self = [super init];
 
@@ -99,10 +100,10 @@
 }
 
 # ifdef OF_HAVE_BLOCKS
-- initWithSourceThread: (OFThread *)sourceThread
-		  host: (OFString *)host
-		  port: (uint16_t)port
-		 block: (of_udp_socket_async_resolve_block_t)block
+- (instancetype)initWithSourceThread: (OFThread *)sourceThread
+				host: (OFString *)host
+				port: (uint16_t)port
+			       block: (of_udp_socket_async_resolve_block_t)block
 {
 	self = [super init];
 
@@ -370,7 +371,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	    (struct sockaddr *)&address->address, address->length, host, port);
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -387,7 +388,7 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 	[super dealloc];
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }

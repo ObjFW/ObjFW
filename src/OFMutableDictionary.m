@@ -30,35 +30,35 @@ static struct {
 @end
 
 @implementation OFMutableDictionary_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFMutableDictionary_hashtable alloc] init];
 }
 
-- initWithDictionary: (OFDictionary *)dictionary
+- (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithDictionary: dictionary];
 }
 
-- initWithObject: (id)object
-	  forKey: (id)key
+- (instancetype)initWithObject: (id)object
+			forKey: (id)key
 {
 	return (id)[[OFMutableDictionary_hashtable alloc] initWithObject: object
 								  forKey: key];
 }
 
-- initWithObjects: (OFArray *)objects
-	  forKeys: (OFArray *)keys
+- (instancetype)initWithObjects: (OFArray *)objects
+			forKeys: (OFArray *)keys
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithObjects: objects
 		    forKeys: keys];
 }
 
-- initWithObjects: (id const *)objects
-	  forKeys: (id const *)keys
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			forKeys: (id const *)keys
+			  count: (size_t)count
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithObjects: objects
@@ -66,7 +66,7 @@ static struct {
 		      count: count];
 }
 
-- initWithKeysAndObjects: (id)firstKey, ...
+- (instancetype)initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
 	va_list arguments;
@@ -80,32 +80,32 @@ static struct {
 	return ret;
 }
 
-- initWithKey: (id)firstKey
-    arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey
+		  arguments: (va_list)arguments
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithKey: firstKey
 	      arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithSerialization: element];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	return (id)[[OFMutableDictionary_hashtable alloc]
 	    initWithCapacity: capacity];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -127,7 +127,7 @@ static struct {
 		placeholder.isa = [OFMutableDictionary_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFMutableDictionary class])
 		return (id)&placeholder;
@@ -140,7 +140,7 @@ static struct {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFMutableDictionary class]) {
 		@try {
@@ -156,7 +156,7 @@ static struct {
 	return [super init];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -189,7 +189,7 @@ static struct {
 	objc_autoreleasePoolPop(pool);
 }
 
-- copy
+- (id)copy
 {
 	return [[OFDictionary alloc] initWithDictionary: self];
 }

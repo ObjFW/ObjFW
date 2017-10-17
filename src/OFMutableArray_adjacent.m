@@ -33,7 +33,7 @@
 		[self inheritMethodsFromClass: [OFArray_adjacent class]];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	self = [super init];
 

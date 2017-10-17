@@ -44,41 +44,41 @@ static struct {
 @end
 
 @implementation OFDictionary_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFDictionary_hashtable alloc] init];
 }
 
-- initWithDictionary: (OFDictionary *)dictionary
+- (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
 	return (id)[[OFDictionary_hashtable alloc]
 	    initWithDictionary: dictionary];
 }
 
-- initWithObject: (id)object
-	  forKey: (id)key
+- (instancetype)initWithObject: (id)object
+			forKey: (id)key
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObject: object
 							   forKey: key];
 }
 
-- initWithObjects: (OFArray *)objects
-	  forKeys: (OFArray *)keys
+- (instancetype)initWithObjects: (OFArray *)objects
+			forKeys: (OFArray *)keys
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
 							   forKeys: keys];
 }
 
-- initWithObjects: (id const *)objects
-	  forKeys: (id const *)keys
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			forKeys: (id const *)keys
+			  count: (size_t)count
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
 							   forKeys: keys
 							     count: count];
 }
 
-- initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
+- (instancetype)initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
 {
 	id ret;
 	va_list arguments;
@@ -91,25 +91,25 @@ static struct {
 	return ret;
 }
 
-- initWithKey: (id <OFCopying>)firstKey
-    arguments: (va_list)arguments
+- (instancetype)initWithKey: (id <OFCopying>)firstKey
+		  arguments: (va_list)arguments
 {
 	return (id)[[OFDictionary_hashtable alloc] initWithKey: firstKey
 						     arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFDictionary_hashtable alloc]
 	    initWithSerialization: element];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -131,7 +131,7 @@ static struct {
 		placeholder.isa = [OFDictionary_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFDictionary class])
 		return (id)&placeholder;
@@ -185,7 +185,7 @@ static struct {
 	return ret;
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFDictionary class]) {
 		@try {
@@ -201,13 +201,13 @@ static struct {
 	return [super init];
 }
 
-- initWithDictionary: (OFDictionary *)dictionary
+- (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObject: (id)object
-	  forKey: (id)key
+- (instancetype)initWithObject: (id)object
+			forKey: (id)key
 {
 	if (key == nil || object == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -215,8 +215,8 @@ static struct {
 	return [self initWithKeysAndObjects: key, object, nil];
 }
 
-- initWithObjects: (OFArray *)objects_
-	  forKeys: (OFArray *)keys_
+- (instancetype)initWithObjects: (OFArray *)objects_
+			forKeys: (OFArray *)keys_
 {
 	id const *objects, *keys;
 	size_t count;
@@ -239,14 +239,14 @@ static struct {
 			       count: count];
 }
 
-- initWithObjects: (id const *)objects
-	  forKeys: (id const *)keys
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			forKeys: (id const *)keys
+			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithKeysAndObjects: (id)firstKey, ...
+- (instancetype)initWithKeysAndObjects: (id)firstKey, ...
 {
 	id ret;
 	va_list arguments;
@@ -259,13 +259,13 @@ static struct {
 	return ret;
 }
 
-- initWithKey: (id)firstKey
-    arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)firstKey
+		  arguments: (va_list)arguments
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -325,12 +325,12 @@ static struct {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	return [[OFMutableDictionary alloc] initWithDictionary: self];
 }

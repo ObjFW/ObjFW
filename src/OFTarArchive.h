@@ -76,8 +76,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return An initialized OFTarArchive
  */
-- initWithStream: (OF_KINDOF(OFStream *))stream
-	    mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -90,8 +90,8 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return An initialized OFTarArchive
  */
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode;
+- (instancetype)initWithPath: (OFString *)path
+			mode: (OFString *)mode;
 #endif
 
 /*!

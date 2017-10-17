@@ -64,8 +64,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 					mode: mode] autorelease];
 }
 
-- initWithStream: (OF_KINDOF(OFStream *))stream
-	    mode: (OFString *)mode
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+			  mode: (OFString *)mode
 {
 	self = [super init];
 

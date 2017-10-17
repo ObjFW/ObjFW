@@ -23,7 +23,7 @@
 #import "OFSystemInfo.h"
 
 @implementation OFSettings_INIFile
-- initWithApplicationName: (OFString *)applicationName
+- (instancetype)initWithApplicationName: (OFString *)applicationName
 {
 	self = [super initWithApplicationName: applicationName];
 

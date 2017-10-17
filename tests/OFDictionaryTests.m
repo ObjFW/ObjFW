@@ -50,7 +50,7 @@ static OFString *values[] = {
 @end
 
 @implementation SimpleDictionary
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -64,8 +64,8 @@ static OFString *values[] = {
 	return self;
 }
 
-- initWithKey: (id)key
-    arguments: (va_list)arguments
+- (instancetype)initWithKey: (id)key
+		  arguments: (va_list)arguments
 {
 	self = [super init];
 
@@ -81,9 +81,9 @@ static OFString *values[] = {
 	return self;
 }
 
-- initWithObjects: (const id *)objects
-	  forKeys: (const id *)keys_
-	    count: (size_t)count
+- (instancetype)initWithObjects: (const id *)objects
+			forKeys: (const id *)keys_
+			  count: (size_t)count
 {
 	self = [super init];
 

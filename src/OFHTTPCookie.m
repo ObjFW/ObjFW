@@ -291,14 +291,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				    domain: domain] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithName: (OFString *)name
-	 value: (OFString *)value
-	domain: (OFString *)domain
+- (instancetype)initWithName: (OFString *)name
+		       value: (OFString *)value
+		      domain: (OFString *)domain
 {
 	self = [super init];
 
@@ -376,7 +376,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	OFHTTPCookie *copy = [[OFHTTPCookie alloc] initWithName: _name
 							  value: _value

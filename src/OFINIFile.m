@@ -59,19 +59,19 @@ isWhitespaceLine(OFString *line)
 				  encoding: encoding] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString *)path
+- (instancetype)initWithPath: (OFString *)path
 {
 	return [self initWithPath: path
 			 encoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- initWithPath: (OFString *)path
-      encoding: (of_string_encoding_t)encoding
+- (instancetype)initWithPath: (OFString *)path
+		    encoding: (of_string_encoding_t)encoding
 {
 	self = [super init];
 

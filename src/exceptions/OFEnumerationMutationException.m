@@ -32,12 +32,12 @@
 	return [[[self alloc] initWithObject: object] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithObject: (id)object
+- (instancetype)initWithObject: (id)object
 {
 	self = [super init];
 

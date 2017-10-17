@@ -129,37 +129,37 @@ static Class CDATAClass = Nil;
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithName: (OFString *)name
+- (instancetype)initWithName: (OFString *)name
 {
 	return [self initWithName: name
 			namespace: nil
 		      stringValue: nil];
 }
 
-- initWithName: (OFString *)name
-   stringValue: (OFString *)stringValue
+- (instancetype)initWithName: (OFString *)name
+		 stringValue: (OFString *)stringValue
 {
 	return [self initWithName: name
 			namespace: nil
 		      stringValue: stringValue];
 }
 
-- initWithName: (OFString *)name
-     namespace: (OFString *)namespace
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (OFString *)namespace
 {
 	return [self initWithName: name
 			namespace: namespace
 		      stringValue: nil];
 }
 
-- initWithName: (OFString *)name
-     namespace: (OFString *)namespace
-   stringValue: (OFString *)stringValue
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (OFString *)namespace
+		 stringValue: (OFString *)stringValue
 {
 	self = [super of_init];
 
@@ -185,7 +185,7 @@ static Class CDATAClass = Nil;
 	return self;
 }
 
-- initWithElement: (OFXMLElement *)element
+- (instancetype)initWithElement: (OFXMLElement *)element
 {
 	self = [super of_init];
 
@@ -207,7 +207,7 @@ static Class CDATAClass = Nil;
 	return self;
 }
 
-- initWithXMLString: (OFString *)string
+- (instancetype)initWithXMLString: (OFString *)string
 {
 	void *pool;
 	OFXMLParser *parser;
@@ -242,7 +242,7 @@ static Class CDATAClass = Nil;
 }
 
 #ifdef OF_HAVE_FILES
-- initWithFile: (OFString *)path
+- (instancetype)initWithFile: (OFString *)path
 {
 	void *pool;
 	OFXMLParser *parser;
@@ -274,7 +274,7 @@ static Class CDATAClass = Nil;
 }
 #endif
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [super of_init];
 
@@ -1077,7 +1077,7 @@ static Class CDATAClass = Nil;
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	return [[[self class] alloc] initWithElement: self];
 }

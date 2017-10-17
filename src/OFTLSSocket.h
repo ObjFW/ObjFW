@@ -93,7 +93,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param socket The TCP socket to use as underlying socket
  */
-- initWithSocket: (OFTCPSocket *)socket;
+- (instancetype)initWithSocket: (OFTCPSocket *)socket;
 
 /*!
  * @brief Initiates the TLS handshake.

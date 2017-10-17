@@ -138,22 +138,22 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 #endif
 
 @implementation OFMutableArray_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFMutableArray_adjacent alloc] init];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithCapacity: capacity];
 }
 
-- initWithObject: (id)object
+- (instancetype)initWithObject: (id)object
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithObject: object];
 }
 
-- initWithObjects: (id)firstObject, ...
+- (instancetype)initWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -166,37 +166,37 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	return ret;
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithObject: firstObject
 							 arguments: arguments];
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	return (id)[[OFMutableArray_adjacent alloc] initWithObjects: objects
 							      count: count];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableArray_adjacent alloc]
 	    initWithSerialization: element];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -218,7 +218,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 		placeholder.isa = [OFMutableArray_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFMutableArray class])
 		return (id)&placeholder;
@@ -231,7 +231,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFMutableArray class]) {
 		@try {
@@ -246,12 +246,12 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	return [super init];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- copy
+- (id)copy
 {
 	return [[OFArray alloc] initWithArray: self];
 }

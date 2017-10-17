@@ -25,12 +25,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -64,12 +64,12 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }

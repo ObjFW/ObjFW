@@ -54,7 +54,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param thread The thread which could not be started
  * @return An initialized thread start failed exception
  */
-- initWithThread: (nullable OFThread *)thread OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread: (nullable OFThread *)thread
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

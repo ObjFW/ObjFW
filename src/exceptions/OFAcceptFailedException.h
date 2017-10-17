@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithSocket: (id)socket
 			      errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated accept failed exception.
@@ -65,8 +65,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno for the error
  * @return An initialized accept failed exception
  */
-- initWithSocket: (id)socket
-	   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSocket: (id)socket
+			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

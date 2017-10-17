@@ -42,7 +42,7 @@
 	[old release];
 }
 
-- copy
+- (id)copy
 {
 	OFMutableTriple *copy = [self mutableCopy];
 

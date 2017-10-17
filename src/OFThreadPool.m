@@ -33,19 +33,19 @@
 #endif
 }
 
-- initWithTarget: (id)target
-	selector: (SEL)selector
-	  object: (id)object;
+- (instancetype)initWithTarget: (id)target
+		      selector: (SEL)selector
+			object: (id)object;
 #ifdef OF_HAVE_BLOCKS
-- initWithBlock: (of_thread_pool_block_t)block;
+- (instancetype)initWithBlock: (of_thread_pool_block_t)block;
 #endif
 - (void)perform;
 @end
 
 @implementation OFThreadPoolJob
-- initWithTarget: (id)target
-	selector: (SEL)selector
-	  object: (id)object
+- (instancetype)initWithTarget: (id)target
+		      selector: (SEL)selector
+			object: (id)object
 {
 	self = [super init];
 
@@ -62,7 +62,7 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- initWithBlock: (of_thread_pool_block_t)block
+- (instancetype)initWithBlock: (of_thread_pool_block_t)block
 {
 	self = [super init];
 
@@ -110,7 +110,7 @@
 }
 
 + (instancetype)threadWithThreadPool: (OFThreadPool *)threadPool;
-- initWithThreadPool: (OFThreadPool *)threadPool;
+- (instancetype)initWithThreadPool: (OFThreadPool *)threadPool;
 @end
 
 @implementation OFThreadPoolThread
@@ -119,7 +119,7 @@
 	return [[[self alloc] initWithThreadPool: threadPool] autorelease];
 }
 
-- initWithThreadPool: (OFThreadPool *)threadPool
+- (instancetype)initWithThreadPool: (OFThreadPool *)threadPool
 {
 	self = [super init];
 
@@ -228,12 +228,12 @@
 	return [[[self alloc] initWithSize: size] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithSize: [OFSystemInfo numberOfCPUs]];
 }
 
-- initWithSize: (size_t)size
+- (instancetype)initWithSize: (size_t)size
 {
 	self = [super init];
 

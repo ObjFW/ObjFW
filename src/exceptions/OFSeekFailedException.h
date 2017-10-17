@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
 			     whence: (int)whence
 			      errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated seek failed exception.
@@ -79,10 +79,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized seek failed exception
  */
-- initWithStream: (OFSeekableStream *)stream
-	  offset: (of_offset_t)offset
-	  whence: (int)whence
-	   errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OFSeekableStream *)stream
+			offset: (of_offset_t)offset
+			whence: (int)whence
+			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

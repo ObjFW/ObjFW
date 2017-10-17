@@ -50,7 +50,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param parser The parser which encountered malformed XML
  * @return An initialized malformed XML exception
  */
-- initWithParser: (nullable OFXMLParser *)parser OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithParser: (nullable OFXMLParser *)parser
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -36,7 +36,7 @@
 		[self inheritMethodsFromClass: [OFMutableSet_hashtable class]];
 }
 
-- initWithSet: (OFSet *)set
+- (instancetype)initWithSet: (OFSet *)set
 {
 	self = [self init];
 
@@ -66,7 +66,7 @@
 	return self;
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	self = [self init];
 
@@ -84,8 +84,8 @@
 	return self;
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	self = [self init];
 
@@ -100,8 +100,8 @@
 	return self;
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	self = [self init];
 
@@ -120,7 +120,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 

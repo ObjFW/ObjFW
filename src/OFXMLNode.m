@@ -25,12 +25,12 @@
 	return [super init];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -93,7 +93,7 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }

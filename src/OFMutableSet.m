@@ -31,22 +31,22 @@ static struct {
 @end
 
 @implementation OFMutableSet_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFMutableSet_hashtable alloc] init];
 }
 
-- initWithSet: (OFSet *)set
+- (instancetype)initWithSet: (OFSet *)set
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithSet: set];
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithArray: array];
 }
 
-- initWithObjects: (id)firstObject, ...
+- (instancetype)initWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -59,37 +59,37 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithObjects: objects
 							     count: count];
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithObject: firstObject
 							arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFMutableSet_hashtable alloc]
 	    initWithSerialization: element];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	return (id)[[OFMutableSet_hashtable alloc] initWithCapacity: capacity];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -111,7 +111,7 @@ static struct {
 		placeholder.isa = [OFMutableSet_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFMutableSet class])
 		return (id)&placeholder;
@@ -124,7 +124,7 @@ static struct {
 	return [[[self alloc] initWithCapacity: capacity] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFMutableSet class]) {
 		@try {
@@ -139,7 +139,7 @@ static struct {
 	return [super init];
 }
 
-- initWithCapacity: (size_t)capacity
+- (instancetype)initWithCapacity: (size_t)capacity
 {
 	OF_INVALID_INIT_METHOD
 }

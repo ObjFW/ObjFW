@@ -205,12 +205,12 @@ of_application_main(int *argc, char **argv[], Class cls)
 }
 #endif
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- of_init
+- (instancetype)of_init
 {
 	self = [super init];
 

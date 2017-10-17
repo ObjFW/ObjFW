@@ -281,12 +281,12 @@ releaseTree(struct huffman_tree *tree)
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithStream: (OFStream *)stream
+- (instancetype)initWithStream: (OFStream *)stream
 {
 	self = [super init];
 

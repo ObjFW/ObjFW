@@ -44,9 +44,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string for the processing instructions
  * @return An initialized OFXMLProcessingInstructions
  */
-- initWithString: (OFString *)string;
+- (instancetype)initWithString: (OFString *)string;
 
-- initWithSerialization: (OFXMLElement *)element;
+- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

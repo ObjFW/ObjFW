@@ -24,8 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
 	id _object;
 }
 
-- initWithEnumerator: (OFMapTableEnumerator *)enumerator
-	      object: (id)object;
+- (instancetype)initWithEnumerator: (OFMapTableEnumerator *)enumerator
+			    object: (id)object;
 @end
 
 OF_ASSUME_NONNULL_END

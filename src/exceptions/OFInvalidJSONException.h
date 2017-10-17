@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exceptionWithString: (nullable OFString *)string
 			       line: (size_t)line;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated invalid JSON exception.
@@ -61,8 +61,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param line The line in which the parsing error was encountered
  * @return An initialized invalid JSON exception
  */
-- initWithString: (nullable OFString *)string
-	    line: (size_t)line OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString: (nullable OFString *)string
+			  line: (size_t)line OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -32,8 +32,8 @@
 #define UPDATE_INTERVAL 0.1
 
 @implementation ProgressBar
-- initWithLength: (intmax_t)length
-     resumedFrom: (intmax_t)resumedFrom
+- (instancetype)initWithLength: (intmax_t)length
+		   resumedFrom: (intmax_t)resumedFrom
 {
 	self = [super init];
 

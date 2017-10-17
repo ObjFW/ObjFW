@@ -28,12 +28,12 @@
 	return [[[self alloc] initWithParser: parser] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	return [self initWithParser: nil];
 }
 
-- initWithParser: (OFXMLParser *)parser
+- (instancetype)initWithParser: (OFXMLParser *)parser
 {
 	self = [super init];
 

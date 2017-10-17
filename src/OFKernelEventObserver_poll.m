@@ -41,7 +41,7 @@
 #endif
 
 @implementation OFKernelEventObserver_poll
-- init
+- (instancetype)init
 {
 	self = [super init];
 

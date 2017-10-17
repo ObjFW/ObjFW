@@ -118,7 +118,7 @@ OF_ASSUME_NONNULL_BEGIN
 	   environment: (nullable OFDictionary
 			    OF_GENERIC(OFString *, OFString *) *)environment;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
@@ -128,7 +128,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		  search path specified in PATH is used.
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString *)program;
+- (instancetype)initWithProgram: (OFString *)program;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program
@@ -139,8 +139,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param arguments The arguments to pass to the program, or `nil`
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString *)program
-	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
+- (instancetype)
+    initWithProgram: (OFString *)program
+	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -153,9 +154,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param arguments The arguments to pass to the program, or `nil`
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString *)program
-      programName: (OFString *)programName
-	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
+- (instancetype)
+    initWithProgram: (OFString *)program
+	programName: (OFString *)programName
+	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments;
 
 /*!
  * @brief Initializes an already allocated OFProcess with the specified program,
@@ -173,11 +175,12 @@ OF_ASSUME_NONNULL_BEGIN
  *		      environment first, copy it, modify it and then pass it.
  * @return An initialized OFProcess.
  */
-- initWithProgram: (OFString *)program
-      programName: (OFString *)programName
-	arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
-      environment: (nullable OFDictionary
-		       OF_GENERIC(OFString *, OFString *) *)environment
+- (instancetype)
+    initWithProgram: (OFString *)program
+	programName: (OFString *)programName
+	  arguments: (nullable OFArray OF_GENERIC(OFString *) *)arguments
+	environment: (nullable OFDictionary
+			 OF_GENERIC(OFString *, OFString *) *)environment
     OF_DESIGNATED_INITIALIZER;
 
 /*!

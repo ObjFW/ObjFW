@@ -32,13 +32,13 @@
 				      data: data] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithType: (int8_t)type
-	  data: (OFData *)data
+- (instancetype)initWithType: (int8_t)type
+			data: (OFData *)data
 {
 	self = [super init];
 
@@ -187,7 +187,7 @@
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }

@@ -367,7 +367,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @return An initialized OFString
  */
-- initWithUTF8String: (const char *)UTF8String;
+- (instancetype)initWithUTF8String: (const char *)UTF8String;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -377,8 +377,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param UTF8StringLength The length of the UTF-8 encoded C string
  * @return An initialized OFString
  */
-- initWithUTF8String: (const char *)UTF8String
-	      length: (size_t)UTF8StringLength;
+- (instancetype)initWithUTF8String: (const char *)UTF8String
+			    length: (size_t)UTF8StringLength;
 
 /*!
  * @brief Initializes an already allocated OFString from an UTF-8 encoded C
@@ -391,8 +391,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  *		       anymore
  * @return An initialized OFString
  */
-- initWithUTF8StringNoCopy: (char *)UTF8String
-	      freeWhenDone: (bool)freeWhenDone;
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+			    freeWhenDone: (bool)freeWhenDone;
 
 /*!
  * @brief Initializes an already allocated OFString from a C string with the
@@ -402,8 +402,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding of the C string
  * @return An initialized OFString
  */
-- initWithCString: (const char *)cString
-	 encoding: (of_string_encoding_t)encoding;
+- (instancetype)initWithCString: (const char *)cString
+		       encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Initializes an already allocated OFString from a C string with the
@@ -414,9 +414,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param cStringLength The length of the C string
  * @return An initialized OFString
  */
-- initWithCString: (const char *)cString
-	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)cStringLength;
+- (instancetype)initWithCString: (const char *)cString
+		       encoding: (of_string_encoding_t)encoding
+			 length: (size_t)cStringLength;
 
 /*!
  * @brief Initializes an already allocated OFString from OFData with the
@@ -426,8 +426,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding in which the string is stored in the OFData
  * @return An initialized OFString
  */
-- initWithData: (OFData *)data
-      encoding: (of_string_encoding_t)encoding;
+- (instancetype)initWithData: (OFData *)data
+		    encoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Initializes an already allocated OFString with another string.
@@ -435,7 +435,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string A string to initialize the OFString with
  * @return An initialized OFString
  */
-- initWithString: (OFString *)string;
+- (instancetype)initWithString: (OFString *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a Unicode string with
@@ -445,8 +445,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the Unicode character array
  * @return An initialized OFString
  */
-- initWithCharacters: (const of_unichar_t *)characters
-	      length: (size_t)length;
+- (instancetype)initWithCharacters: (const of_unichar_t *)characters
+			    length: (size_t)length;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string.
@@ -454,7 +454,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-16 string
  * @return An initialized OFString
  */
-- initWithUTF16String: (const char16_t *)string;
+- (instancetype)initWithUTF16String: (const char16_t *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
@@ -464,8 +464,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-16 string
  * @return An initialized OFString
  */
-- initWithUTF16String: (const char16_t *)string
-	       length: (size_t)length;
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			     length: (size_t)length;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string,
@@ -475,8 +475,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF16String: (const char16_t *)string
-	    byteOrder: (of_byte_order_t)byteOrder;
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			  byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-16 string with
@@ -488,9 +488,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF16String: (const char16_t *)string
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder;
+- (instancetype)initWithUTF16String: (const char16_t *)string
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string.
@@ -498,7 +498,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param string The UTF-32 string
  * @return An initialized OFString
  */
-- initWithUTF32String: (const char32_t *)string;
+- (instancetype)initWithUTF32String: (const char32_t *)string;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string with
@@ -508,8 +508,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param length The length of the UTF-32 string
  * @return An initialized OFString
  */
-- initWithUTF32String: (const char32_t *)string
-	       length: (size_t)length;
+- (instancetype)initWithUTF32String: (const char32_t *)string
+			     length: (size_t)length;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string,
@@ -519,8 +519,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF32String: (const char32_t *)string
-	    byteOrder: (of_byte_order_t)byteOrder;
+- (instancetype)initWithUTF32String: (const char32_t *)string
+			  byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Initializes an already allocated OFString with a UTF-32 string with
@@ -532,9 +532,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param byteOrder The byte order to assume if there is no byte order mark
  * @return An initialized OFString
  */
-- initWithUTF32String: (const char32_t *)string
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder;
+- (instancetype)initWithUTF32String: (const char32_t *)string
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder;
 
 /*!
  * @brief Initializes an already allocated OFString with a format string.
@@ -546,7 +546,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param format A string used as format to initialize the OFString
  * @return An initialized OFString
  */
-- initWithFormat: (OFConstantString *)format, ...;
+- (instancetype)initWithFormat: (OFConstantString *)format, ...;
 
 /*!
  * @brief Initializes an already allocated OFString with a format string.
@@ -559,8 +559,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param arguments The arguments used in the format string
  * @return An initialized OFString
  */
-- initWithFormat: (OFConstantString *)format
-       arguments: (va_list)arguments;
+- (instancetype)initWithFormat: (OFConstantString *)format
+		     arguments: (va_list)arguments;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -570,7 +570,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param path The path to the file
  * @return An initialized OFString
  */
-- initWithContentsOfFile: (OFString *)path;
+- (instancetype)initWithContentsOfFile: (OFString *)path;
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
@@ -580,8 +580,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding of the file
  * @return An initialized OFString
  */
-- initWithContentsOfFile: (OFString *)path
-		encoding: (of_string_encoding_t)encoding;
+- (instancetype)initWithContentsOfFile: (OFString *)path
+			      encoding: (of_string_encoding_t)encoding;
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
@@ -598,7 +598,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param URL The URL to the contents for the string
  * @return An initialized OFString
  */
-- initWithContentsOfURL: (OFURL *)URL;
+- (instancetype)initWithContentsOfURL: (OFURL *)URL;
 
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
@@ -608,8 +608,8 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @param encoding The encoding to assume
  * @return An initialized OFString
  */
-- initWithContentsOfURL: (OFURL *)URL
-	       encoding: (of_string_encoding_t)encoding;
+- (instancetype)initWithContentsOfURL: (OFURL *)URL
+			     encoding: (of_string_encoding_t)encoding;
 #endif
 
 /*!

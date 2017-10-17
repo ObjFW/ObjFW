@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return An initialized OFMutableData
  */
-- init;
+- (instancetype)init;
 
 /*!
  * @brief Initializes an already allocated OFMutableData whose items all have
@@ -89,7 +89,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param itemSize The size of a single element in the OFMutableData
  * @return An initialized OFMutableData
  */
-- initWithItemSize: (size_t)itemSize;
+- (instancetype)initWithItemSize: (size_t)itemSize;
 
 /*!
  * @brief Initializes an already allocated OFMutableData with enough memory to
@@ -99,7 +99,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param capacity The initial capacity for the OFMutableData
  * @return An initialized OFMutableData
  */
-- initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity;
 
 /*!
  * @brief Initializes an already allocated OFMutableData with enough memory to
@@ -110,16 +110,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @param capacity The initial capacity for the OFMutableData
  * @return An initialized OFMutableData
  */
-- initWithItemSize: (size_t)itemSize
-	  capacity: (size_t)capacity;
+- (instancetype)initWithItemSize: (size_t)itemSize
+			capacity: (size_t)capacity;
 
-- initWithItemsNoCopy: (const void *)items
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
-- initWithItemsNoCopy: (const void *)items
-	     itemSize: (size_t)itemSize
-		count: (size_t)count
-	 freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
+- (instancetype)initWithItemsNoCopy: (const void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 
 /*!
  * @brief Adds an item to the OFMutableData.

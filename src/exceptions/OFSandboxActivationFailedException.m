@@ -35,13 +35,13 @@
 					errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithSandbox: (OFSandbox *)sandbox
-	    errNo: (int)errNo
+- (instancetype)initWithSandbox: (OFSandbox *)sandbox
+			  errNo: (int)errNo
 {
 	self = [super init];
 

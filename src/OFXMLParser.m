@@ -203,7 +203,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	return [[[self alloc] init] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

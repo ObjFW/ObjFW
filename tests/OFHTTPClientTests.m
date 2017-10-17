@@ -50,7 +50,7 @@ static OFHTTPResponse *response = nil;
 @end
 
 @implementation HTTPClientTestsServer
-- main
+- (id)main
 {
 	OFTCPSocket *listener, *client;
 

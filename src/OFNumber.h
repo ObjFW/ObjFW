@@ -380,7 +380,7 @@ typedef enum {
  */
 + (instancetype)numberWithDouble: (double)double_;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified bool.
@@ -388,7 +388,7 @@ typedef enum {
  * @param bool_ A bool which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithBool: (bool)bool_;
+- (instancetype)initWithBool: (bool)bool_;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
@@ -397,7 +397,7 @@ typedef enum {
  * @param schar A signed char which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithChar: (signed char)schar;
+- (instancetype)initWithChar: (signed char)schar;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
@@ -406,7 +406,7 @@ typedef enum {
  * @param sshort A signed short which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithShort: (signed short)sshort;
+- (instancetype)initWithShort: (signed short)sshort;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
@@ -415,7 +415,7 @@ typedef enum {
  * @param sint A signed int which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithInt: (signed int)sint;
+- (instancetype)initWithInt: (signed int)sint;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
@@ -424,7 +424,7 @@ typedef enum {
  * @param slong A signed long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithLong: (signed long)slong;
+- (instancetype)initWithLong: (signed long)slong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
@@ -433,7 +433,7 @@ typedef enum {
  * @param slonglong A signed long long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithLongLong: (signed long long)slonglong;
+- (instancetype)initWithLongLong: (signed long long)slonglong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
@@ -442,7 +442,7 @@ typedef enum {
  * @param uchar An unsigned char which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUnsignedChar: (unsigned char)uchar;
+- (instancetype)initWithUnsignedChar: (unsigned char)uchar;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
@@ -451,7 +451,7 @@ typedef enum {
  * @param ushort An unsigned short which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUnsignedShort: (unsigned short)ushort;
+- (instancetype)initWithUnsignedShort: (unsigned short)ushort;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
@@ -460,7 +460,7 @@ typedef enum {
  * @param uint An unsigned int which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUnsignedInt: (unsigned int)uint;
+- (instancetype)initWithUnsignedInt: (unsigned int)uint;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
@@ -469,7 +469,7 @@ typedef enum {
  * @param ulong An unsigned long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUnsignedLong: (unsigned long)ulong;
+- (instancetype)initWithUnsignedLong: (unsigned long)ulong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
@@ -478,7 +478,7 @@ typedef enum {
  * @param ulonglong An unsigned long long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUnsignedLongLong: (unsigned long long)ulonglong;
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)ulonglong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified int8_t.
@@ -486,7 +486,7 @@ typedef enum {
  * @param int8 An int8_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithInt8: (int8_t)int8;
+- (instancetype)initWithInt8: (int8_t)int8;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified int16_t.
@@ -494,7 +494,7 @@ typedef enum {
  * @param int16 An int16_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithInt16: (int16_t)int16;
+- (instancetype)initWithInt16: (int16_t)int16;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified int32_t.
@@ -502,7 +502,7 @@ typedef enum {
  * @param int32 An int32_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithInt32: (int32_t)int32;
+- (instancetype)initWithInt32: (int32_t)int32;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified int64_t.
@@ -510,7 +510,7 @@ typedef enum {
  * @param int64 An int64_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithInt64: (int64_t)int64;
+- (instancetype)initWithInt64: (int64_t)int64;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint8_t.
@@ -518,7 +518,7 @@ typedef enum {
  * @param uint8 A uint8_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUInt8: (uint8_t)uint8;
+- (instancetype)initWithUInt8: (uint8_t)uint8;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint16_t.
@@ -526,7 +526,7 @@ typedef enum {
  * @param uint16 A uint16_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUInt16: (uint16_t)uint16;
+- (instancetype)initWithUInt16: (uint16_t)uint16;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint32_t.
@@ -534,7 +534,7 @@ typedef enum {
  * @param uint32 A uint32_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUInt32: (uint32_t)uint32;
+- (instancetype)initWithUInt32: (uint32_t)uint32;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint64_t.
@@ -542,7 +542,7 @@ typedef enum {
  * @param uint64 A uint64_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUInt64: (uint64_t)uint64;
+- (instancetype)initWithUInt64: (uint64_t)uint64;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified size_t.
@@ -550,7 +550,7 @@ typedef enum {
  * @param size A size_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithSize: (size_t)size;
+- (instancetype)initWithSize: (size_t)size;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified ssize_t.
@@ -558,7 +558,7 @@ typedef enum {
  * @param ssize An ssize_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithSSize: (ssize_t)ssize;
+- (instancetype)initWithSSize: (ssize_t)ssize;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified intmax_t.
@@ -566,7 +566,7 @@ typedef enum {
  * @param intmax An intmax_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithIntMax: (intmax_t)intmax;
+- (instancetype)initWithIntMax: (intmax_t)intmax;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
@@ -575,7 +575,7 @@ typedef enum {
  * @param uintmax A uintmax_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUIntMax: (uintmax_t)uintmax;
+- (instancetype)initWithUIntMax: (uintmax_t)uintmax;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
@@ -584,7 +584,7 @@ typedef enum {
  * @param ptrdiff A ptrdiff_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithPtrDiff: (ptrdiff_t)ptrdiff;
+- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrdiff;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified intptr_t.
@@ -592,7 +592,7 @@ typedef enum {
  * @param intptr An intptr_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithIntPtr: (intptr_t)intptr;
+- (instancetype)initWithIntPtr: (intptr_t)intptr;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
@@ -601,7 +601,7 @@ typedef enum {
  * @param uintptr A uintptr_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithUIntPtr: (uintptr_t)uintptr;
+- (instancetype)initWithUIntPtr: (uintptr_t)uintptr;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified float.
@@ -609,7 +609,7 @@ typedef enum {
  * @param float_ A float which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithFloat: (float)float_;
+- (instancetype)initWithFloat: (float)float_;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified double.
@@ -617,7 +617,7 @@ typedef enum {
  * @param double_ A double which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- initWithDouble: (double)double_;
+- (instancetype)initWithDouble: (double)double_;
 
 /*!
  * @brief Returns the OFNumber as a bool.

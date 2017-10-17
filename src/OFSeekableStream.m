@@ -24,7 +24,7 @@
 #import "OFSeekableStream.h"
 
 @implementation OFSeekableStream
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFSeekableStream class]) {
 		@try {

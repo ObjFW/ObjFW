@@ -35,7 +35,7 @@ extern void of_invocation_invoke(OFInvocation *);
 	return [[[self alloc] initWithMethodSignature: signature] autorelease];
 }
 
-- initWithMethodSignature: (OFMethodSignature *)signature
+- (instancetype)initWithMethodSignature: (OFMethodSignature *)signature
 {
 	self = [super init];
 

@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithURL: (OFURL*)URL;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception
@@ -56,7 +56,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param URL The URL whose protocol is unsupported
  * @return An initialized unsupported protocol exception
  */
-- initWithURL: (OFURL*)URL OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (OFURL*)URL OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

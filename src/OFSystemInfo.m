@@ -131,7 +131,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #endif
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

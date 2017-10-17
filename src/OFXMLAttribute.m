@@ -43,17 +43,17 @@
 			       stringValue: stringValue] autorelease];
 }
 
-- initWithName: (OFString *)name
-   stringValue: (OFString *)stringValue
+- (instancetype)initWithName: (OFString *)name
+		 stringValue: (OFString *)stringValue
 {
 	return [self initWithName: name
 			namespace: nil
 		      stringValue: stringValue];
 }
 
-- initWithName: (OFString *)name
-     namespace: (OFString *)namespace
-   stringValue: (OFString *)stringValue
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (OFString *)namespace
+		 stringValue: (OFString *)stringValue
 {
 	self = [super of_init];
 
@@ -69,7 +69,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [super of_init];
 

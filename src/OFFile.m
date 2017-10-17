@@ -188,13 +188,13 @@ parseMode(const char *mode, bool *append)
 	return [[[self alloc] initWithHandle: handle] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString *)path
-	  mode: (OFString *)mode
+- (instancetype)initWithPath: (OFString *)path
+			mode: (OFString *)mode
 {
 	of_file_handle_t handle;
 
@@ -302,7 +302,7 @@ parseMode(const char *mode, bool *append)
 	return self;
 }
 
-- initWithHandle: (of_file_handle_t)handle
+- (instancetype)initWithHandle: (of_file_handle_t)handle
 {
 	self = [super init];
 

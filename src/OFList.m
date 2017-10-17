@@ -36,7 +36,7 @@
 	return [[[self alloc] init] autorelease];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 
@@ -268,7 +268,7 @@
 	_firstListObject = _lastListObject = NULL;
 }
 
-- copy
+- (id)copy
 {
 	OFList *copy = [[[self class] alloc] init];
 	of_list_object_t *listObject, *previous;
@@ -404,8 +404,8 @@
 @end
 
 @implementation OFListEnumerator
--     initWithList: (OFList *)list
-  mutationsPointer: (unsigned long *)mutationsPtr
+- (instancetype)initWithList: (OFList *)list
+	    mutationsPointer: (unsigned long *)mutationsPtr
 {
 	self = [super init];
 

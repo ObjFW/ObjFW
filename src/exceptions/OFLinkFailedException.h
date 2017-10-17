@@ -59,7 +59,7 @@ OF_ASSUME_NONNULL_BEGIN
 			destinationPath: (OFString *)destinationPath
 				  errNo: (int)errNo;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated link failed exception.
@@ -69,9 +69,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized link failed exception
  */
-- initWithSourcePath: (OFString *)sourcePath
-     destinationPath: (OFString *)destinationPath
-	       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSourcePath: (OFString *)sourcePath
+		   destinationPath: (OFString *)destinationPath
+			     errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

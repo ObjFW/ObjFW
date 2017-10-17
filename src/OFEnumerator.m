@@ -22,7 +22,7 @@
 #import "OFArray.h"
 
 @implementation OFEnumerator
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFEnumerator class]) {
 		@try {

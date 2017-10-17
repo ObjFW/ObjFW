@@ -118,7 +118,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param seconds The seconds since 1970-01-01T00:00:00Z
  * @return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSince1970: (of_time_interval_t)seconds;
+- (instancetype)initWithTimeIntervalSince1970: (of_time_interval_t)seconds;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified date and
@@ -127,7 +127,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param seconds The seconds since now
  * @return An initialized OFDate with the specified date and time
  */
-- initWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
+- (instancetype)initWithTimeIntervalSinceNow: (of_time_interval_t)seconds;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified string in
@@ -146,8 +146,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format of the string describing the date
  * @return An initialized OFDate with the specified date and time
  */
-- initWithDateString: (OFString *)string
-	      format: (OFString *)format;
+- (instancetype)initWithDateString: (OFString *)string
+			    format: (OFString *)format;
 
 /*!
  * @brief Initializes an already allocated OFDate with the specified string in
@@ -164,8 +164,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param format The format of the string describing the date
  * @return An initialized OFDate with the specified date and time
  */
-- initWithLocalDateString: (OFString *)string
-		   format: (OFString *)format;
+- (instancetype)initWithLocalDateString: (OFString *)string
+				 format: (OFString *)format;
 
 /*!
  * @brief Returns the microsecond of the date.

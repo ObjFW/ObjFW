@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated not open exception.
@@ -51,7 +51,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which is not open, connected or bound
  * @return An initialized not open exception
  */
-- initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

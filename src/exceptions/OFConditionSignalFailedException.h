@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param condition The condition which could not be signaled
  * @return An initialized condition signal failed exception
  */
-- initWithCondition: (nullable OFCondition *)condition
+- (instancetype)initWithCondition: (nullable OFCondition *)condition
     OF_DESIGNATED_INITIALIZER;
 @end
 

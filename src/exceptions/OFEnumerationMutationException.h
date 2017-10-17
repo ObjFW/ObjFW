@@ -46,7 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithObject: (id)object;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated enumeration mutation exception.
@@ -54,7 +54,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which was mutated during enumeration
  * @return An initialized enumeration mutation exception
  */
-- initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithObject: (id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

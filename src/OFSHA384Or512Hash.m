@@ -141,7 +141,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	return [[[self alloc] init] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -167,7 +167,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	[super dealloc];
 }
 
-- copy
+- (id)copy
 {
 	OFSHA384Or512Hash *copy = [[[self class] alloc] init];
 

@@ -138,7 +138,7 @@ encodingForContentType(OFString *contentType)
 @implementation OFHTTPResponse
 @synthesize statusCode = _statusCode, headers = _headers;
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 

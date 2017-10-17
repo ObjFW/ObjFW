@@ -32,22 +32,22 @@ static struct {
 @end
 
 @implementation OFCountedSet_placeholder
-- init
+- (instancetype)init
 {
 	return (id)[[OFCountedSet_hashtable alloc] init];
 }
 
-- initWithSet: (OFSet *)set
+- (instancetype)initWithSet: (OFSet *)set
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithSet: set];
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithArray: array];
 }
 
-- initWithObjects: (id)firstObject, ...
+- (instancetype)initWithObjects: (id)firstObject, ...
 {
 	id ret;
 	va_list arguments;
@@ -60,32 +60,32 @@ static struct {
 	return ret;
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithObjects: objects
 							     count: count];
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	return (id)[[OFCountedSet_hashtable alloc] initWithObject: firstObject
 							arguments: arguments];
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	return (id)[[OFCountedSet_hashtable alloc]
 	    initWithSerialization: element];
 }
 
-- retain
+- (instancetype)retain
 {
 	return self;
 }
 
-- autorelease
+- (instancetype)autorelease
 {
 	return self;
 }
@@ -107,7 +107,7 @@ static struct {
 		placeholder.isa = [OFCountedSet_placeholder class];
 }
 
-+ alloc
++ (instancetype)alloc
 {
 	if (self == [OFCountedSet class])
 		return (id)&placeholder;
@@ -115,7 +115,7 @@ static struct {
 	return [super alloc];
 }
 
-- init
+- (instancetype)init
 {
 	if (object_getClass(self) == [OFCountedSet class]) {
 		@try {
@@ -172,12 +172,12 @@ static struct {
 	return ret;
 }
 
-- copy
+- (id)copy
 {
 	return [[OFCountedSet alloc] initWithSet: self];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	return [[OFCountedSet alloc] initWithSet: self];
 }

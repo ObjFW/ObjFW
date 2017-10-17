@@ -42,9 +42,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string value for the CDATA
  * @return An initialized OFXMLCDATA
  */
-- initWithString: (OFString *)string;
+- (instancetype)initWithString: (OFString *)string;
 
-- initWithSerialization: (OFXMLElement *)element;
+- (instancetype)initWithSerialization: (OFXMLElement *)element;
 @end
 
 OF_ASSUME_NONNULL_END

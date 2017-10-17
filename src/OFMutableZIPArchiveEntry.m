@@ -31,7 +31,7 @@
 @dynamic CRC32, versionSpecificAttributes, generalPurposeBitFlag;
 @dynamic of_localFileHeaderOffset;
 
-- copy
+- (id)copy
 {
 	OFMutableZIPArchiveEntry *copy = [self mutableCopy];
 

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 	OFArray *_array;
 }
 
-- initWithOFArray: (OFArray *)array;
+- (instancetype)initWithOFArray: (OFArray *)array;
 @end
 
 NS_ASSUME_NONNULL_END

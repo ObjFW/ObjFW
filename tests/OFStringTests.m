@@ -67,7 +67,7 @@ static uint16_t sutf16str[] = {
 @end
 
 @implementation SimpleString
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -81,7 +81,7 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithString: (OFString *)string
+- (instancetype)initWithString: (OFString *)string
 {
 	self = [super init];
 
@@ -95,9 +95,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithCString: (const char *)cString
-	 encoding: (of_string_encoding_t)encoding
-	   length: (size_t)length
+- (instancetype)initWithCString: (const char *)cString
+		       encoding: (of_string_encoding_t)encoding
+			 length: (size_t)length
 {
 	self = [super init];
 
@@ -113,9 +113,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithUTF16String: (const char16_t *)UTF16String
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF16String: (const char16_t *)UTF16String
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
@@ -132,9 +132,9 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithUTF32String: (const char32_t *)UTF32String
-	       length: (size_t)length
-	    byteOrder: (of_byte_order_t)byteOrder
+- (instancetype)initWithUTF32String: (const char32_t *)UTF32String
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
 {
 	self = [super init];
 
@@ -151,8 +151,8 @@ static uint16_t sutf16str[] = {
 	return self;
 }
 
-- initWithFormat: (OFConstantString *)format
-       arguments: (va_list)arguments
+- (instancetype)initWithFormat: (OFConstantString *)format
+		     arguments: (va_list)arguments
 {
 	self = [super init];
 

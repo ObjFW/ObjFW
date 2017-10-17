@@ -21,7 +21,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation NSArray_OFArray
-- initWithOFArray: (OFArray *)array
+- (instancetype)initWithOFArray: (OFArray *)array
 {
 	if ((self = [super init]) != nil) {
 		@try {

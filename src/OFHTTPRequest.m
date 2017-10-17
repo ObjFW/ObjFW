@@ -91,7 +91,7 @@ of_http_request_method_from_string(const char *string)
 	return [[[self alloc] initWithURL: URL] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -102,7 +102,7 @@ of_http_request_method_from_string(const char *string)
 	return self;
 }
 
-- initWithURL: (OFURL *)URL
+- (instancetype)initWithURL: (OFURL *)URL
 {
 	self = [self init];
 
@@ -126,7 +126,7 @@ of_http_request_method_from_string(const char *string)
 	[super dealloc];
 }
 
-- copy
+- (id)copy
 {
 	OFHTTPRequest *copy = [[OFHTTPRequest alloc] init];
 

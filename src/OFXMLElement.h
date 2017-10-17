@@ -131,7 +131,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)elementWithFile: (OFString *)path;
 #endif
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name.
@@ -139,7 +139,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param name The name for the element
  * @return An initialized OFXMLElement with the specified element name
  */
-- initWithName: (OFString *)name;
+- (instancetype)initWithName: (OFString *)name;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name
@@ -150,8 +150,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the specified element name and
  *	   value
  */
-- initWithName: (OFString *)name
-   stringValue: (nullable OFString *)stringValue;
+- (instancetype)initWithName: (OFString *)name
+		 stringValue: (nullable OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name
@@ -162,8 +162,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the specified element name and
  *	   namespace
  */
-- initWithName: (OFString *)name
-     namespace: (nullable OFString *)namespace_;
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (nullable OFString *)namespace_;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified name,
@@ -175,9 +175,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFXMLElement with the specified element name,
  *	   namespace and value
  */
-- initWithName: (OFString *)name
-     namespace: (nullable OFString *)namespace_
-   stringValue: (nullable OFString *)stringValue;
+- (instancetype)initWithName: (OFString *)name
+		   namespace: (nullable OFString *)namespace_
+		 stringValue: (nullable OFString *)stringValue;
 
 /*!
  * @brief Initializes an already allocated OFXMLElement with the specified
@@ -187,7 +187,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFXMLElement with the contents of the specified
  *	   element
  */
-- initWithElement: (OFXMLElement *)element;
+- (instancetype)initWithElement: (OFXMLElement *)element;
 
 /*!
  * @brief Parses the string and initializes an already allocated OFXMLElement
@@ -196,7 +196,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string The string to parse
  * @return An initialized OFXMLElement with the contents of the string
  */
-- initWithXMLString: (OFString *)string;
+- (instancetype)initWithXMLString: (OFString *)string;
 
 #ifdef OF_HAVE_FILES
 /*!
@@ -206,10 +206,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the file
  * @return An initialized OFXMLElement with the contents of the specified file
  */
-- initWithFile: (OFString *)path;
+- (instancetype)initWithFile: (OFString *)path;
 #endif
 
-- initWithSerialization: (OFXMLElement *)element;
+- (instancetype)initWithSerialization: (OFXMLElement *)element;
 
 /*!
  * @brief Sets a prefix for a namespace.

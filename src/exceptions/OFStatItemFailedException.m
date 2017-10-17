@@ -34,13 +34,13 @@
 				     errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithPath: (OFString *)path
-	 errNo: (int)errNo
+- (instancetype)initWithPath: (OFString *)path
+		       errNo: (int)errNo
 {
 	self = [super init];
 

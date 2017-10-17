@@ -78,7 +78,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)streamWithStream: (OFStream *)stream;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFInflateStream with the specified
@@ -88,7 +88,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A initialized OFInflateStream
  */
-- initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

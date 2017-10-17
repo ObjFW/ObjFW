@@ -42,17 +42,17 @@
 				       errNo: errNo] autorelease];
 }
 
--  initWithObject: (id)object
-  requestedLength: (size_t)requestedLength
-	    errNo: (int)errNo
+- (instancetype)initWithObject: (id)object
+	       requestedLength: (size_t)requestedLength
+			 errNo: (int)errNo
 {
 	OF_INVALID_INIT_METHOD
 }
 
--  initWithObject: (id)object
-  requestedLength: (size_t)requestedLength
-     bytesWritten: (size_t)bytesWritten
-	    errNo: (int)errNo
+- (instancetype)initWithObject: (id)object
+	       requestedLength: (size_t)requestedLength
+		  bytesWritten: (size_t)bytesWritten
+			 errNo: (int)errNo
 {
 	self = [super initWithObject: object
 		     requestedLength: requestedLength

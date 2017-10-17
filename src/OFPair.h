@@ -63,8 +63,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param secondObject The second object for the pair
  * @return An initialized OFPair
  */
-- initWithFirstObject: (nullable FirstType)firstObject
-	 secondObject: (nullable SecondType)secondObject;
+- (instancetype)initWithFirstObject: (nullable FirstType)firstObject
+		       secondObject: (nullable SecondType)secondObject;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef FirstType
 # undef SecondType

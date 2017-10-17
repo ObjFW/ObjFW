@@ -44,12 +44,12 @@ stringEqual(void *object1, void *object2)
 	return [[[self alloc] initWithOptions: options] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithOptions: (const of_options_parser_option_t *)options
+- (instancetype)initWithOptions: (const of_options_parser_option_t *)options
 {
 	self = [super init];
 

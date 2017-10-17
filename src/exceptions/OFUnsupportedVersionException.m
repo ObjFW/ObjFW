@@ -32,12 +32,12 @@
 	return [[[self alloc] initWithVersion: version] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithVersion: (OFString *)version
+- (instancetype)initWithVersion: (OFString *)version
 {
 	self = [super init];
 

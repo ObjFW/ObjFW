@@ -30,7 +30,7 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFArray_adjacent
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -44,7 +44,7 @@
 	return self;
 }
 
-- initWithObject: (id)object
+- (instancetype)initWithObject: (id)object
 {
 	self = [self init];
 
@@ -62,8 +62,8 @@
 	return self;
 }
 
-- initWithObject: (id)firstObject
-       arguments: (va_list)arguments
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
 {
 	self = [self init];
 
@@ -85,7 +85,7 @@
 	return self;
 }
 
-- initWithArray: (OFArray *)array
+- (instancetype)initWithArray: (OFArray *)array
 {
 	id const *objects;
 	size_t count;
@@ -127,8 +127,8 @@
 	return self;
 }
 
-- initWithObjects: (id const *)objects
-	    count: (size_t)count
+- (instancetype)initWithObjects: (id const *)objects
+			  count: (size_t)count
 {
 	self = [self init];
 
@@ -158,7 +158,7 @@
 	return self;
 }
 
-- initWithSerialization: (OFXMLElement *)element
+- (instancetype)initWithSerialization: (OFXMLElement *)element
 {
 	self = [self init];
 

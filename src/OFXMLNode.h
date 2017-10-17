@@ -27,8 +27,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which stores an XML element.
  */
 @interface OFXMLNode: OFObject <OFCopying, OFSerialization>
-- init OF_UNAVAILABLE;
-- initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
+- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /*!
  * @brief Returns the contents of the receiver as a string value.

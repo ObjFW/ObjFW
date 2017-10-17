@@ -44,7 +44,7 @@
 #define EVENTLIST_SIZE 64
 
 @implementation OFKernelEventObserver_kqueue
-- init
+- (instancetype)init
 {
 	self = [super init];
 

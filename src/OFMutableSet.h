@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param capacity The initial capacity for the OFMutableSet
  * @return An initialized OFMutableSet
  */
-- initWithCapacity: (size_t)capacity;
+- (instancetype)initWithCapacity: (size_t)capacity;
 
 /*!
  * @brief Adds the specified object to the set.

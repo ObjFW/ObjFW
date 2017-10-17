@@ -35,7 +35,7 @@
 	[old release];
 }
 
-- copy
+- (id)copy
 {
 	OFMutablePair *copy = [self mutableCopy];
 

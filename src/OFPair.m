@@ -27,8 +27,8 @@
 				     secondObject: secondObject] autorelease];
 }
 
-- initWithFirstObject: (id)firstObject
-	 secondObject: (id)secondObject
+- (instancetype)initWithFirstObject: (id)firstObject
+		       secondObject: (id)secondObject
 {
 	self = [super init];
 
@@ -95,12 +95,12 @@
 	return hash;
 }
 
-- copy
+- (id)copy
 {
 	return [self retain];
 }
 
-- mutableCopy
+- (id)mutableCopy
 {
 	return [[OFMutablePair alloc] initWithFirstObject: _firstObject
 					     secondObject: _secondObject];

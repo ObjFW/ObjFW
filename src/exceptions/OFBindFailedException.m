@@ -40,15 +40,15 @@
 				     errNo: errNo] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
 }
 
-- initWithHost: (OFString *)host
-	  port: (uint16_t)port
-	socket: (id)socket
-	 errNo: (int)errNo
+- (instancetype)initWithHost: (OFString *)host
+			port: (uint16_t)port
+		      socket: (id)socket
+		       errNo: (int)errNo
 {
 	self = [super init];
 

@@ -306,7 +306,7 @@
 	return _allowsBPF;
 }
 
-- copy
+- (id)copy
 {
 	OFSandbox *copy = [[OFSandbox alloc] init];
 

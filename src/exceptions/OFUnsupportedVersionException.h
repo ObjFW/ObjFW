@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)exceptionWithVersion: (OFString *)version;
 
-- init OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception.
@@ -53,7 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param version The version which is unsupported
  * @return An initialized unsupported version exception
  */
-- initWithVersion: (OFString *)version OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithVersion: (OFString *)version OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

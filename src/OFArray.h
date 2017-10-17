@@ -141,7 +141,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param object An object
  * @return An initialized OFArray
  */
-- initWithObject: (ObjectType)object;
+- (instancetype)initWithObject: (ObjectType)object;
 
 /*!
  * @brief Initializes an OFArray with the specified objects.
@@ -149,7 +149,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param firstObject The first object
  * @return An initialized OFArray
  */
-- initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
+- (instancetype)initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
 /*!
  * @brief Initializes an OFArray with the specified object and a va_list.
@@ -158,8 +158,8 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param arguments A va_list
  * @return An initialized OFArray
  */
-- initWithObject: (ObjectType)firstObject
-       arguments: (va_list)arguments;
+- (instancetype)initWithObject: (ObjectType)firstObject
+		     arguments: (va_list)arguments;
 
 /*!
  * @brief Initializes an OFArray with the objects from the specified array.
@@ -167,7 +167,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param array An array
  * @return An initialized OFArray
  */
-- initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
+- (instancetype)initWithArray: (OFArray OF_GENERIC(ObjectType) *)array;
 
 /*!
  * @brief Initializes an OFArray with the objects from the specified C array of
@@ -177,8 +177,8 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @param count The length of the C array
  * @return An initialized OFArray
  */
-- initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
-	    count: (size_t)count;
+- (instancetype)initWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
+			  count: (size_t)count;
 
 /*!
  * @brief Returns the object at the specified index in the array.
@@ -514,8 +514,8 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 	size_t _position;
 }
 
-- initWithArray: (OFArray *)data
-   mutationsPtr: (nullable unsigned long *)mutationsPtr;
+- (instancetype)initWithArray: (OFArray *)data
+		 mutationsPtr: (nullable unsigned long *)mutationsPtr;
 @end
 
 OF_ASSUME_NONNULL_END

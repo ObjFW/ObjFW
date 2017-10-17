@@ -148,7 +148,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return [[[self alloc] init] autorelease];
 }
 
-- init
+- (instancetype)init
 {
 	self = [super init];
 
@@ -164,7 +164,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	[super dealloc];
 }
 
-- copy
+- (id)copy
 {
 	OFRIPEMD160Hash *copy = [[OFRIPEMD160Hash alloc] init];
 

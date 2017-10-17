@@ -24,7 +24,7 @@
 @dynamic fileName, mode, UID, GID, size, modificationDate, type, targetFileName;
 @dynamic owner, group, deviceMajor, deviceMinor;
 
-- copy
+- (id)copy
 {
 	OFMutableTarArchiveEntry *copy = [self mutableCopy];
 
