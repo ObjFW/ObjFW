@@ -76,7 +76,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithFirstObject: (nullable FirstType)firstObject
 		       secondObject: (nullable SecondType)secondObject
-			thirdObject: (nullable ThirdType)thirdObject;
+			thirdObject: (nullable ThirdType)thirdObject
+    OF_DESIGNATED_INITIALIZER;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef FirstType
 # undef SecondType

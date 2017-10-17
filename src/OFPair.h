@@ -64,7 +64,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFPair
  */
 - (instancetype)initWithFirstObject: (nullable FirstType)firstObject
-		       secondObject: (nullable SecondType)secondObject;
+		       secondObject: (nullable SecondType)secondObject
+    OF_DESIGNATED_INITIALIZER;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef FirstType
 # undef SecondType
