@@ -144,6 +144,11 @@ static struct {
 	OF_INVALID_INIT_METHOD
 }
 
+- (id)copy
+{
+	return [[OFSet alloc] initWithSet: self];
+}
+
 - (void)addObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
