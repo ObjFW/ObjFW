@@ -76,7 +76,8 @@
 
 #if defined(__APPLE__)
 # include <TargetConditionals.h>
-# if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+# if (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
+    (defined(TARGET_OS_SIMULATOR) && TARGET_OS_SIMULATOR)
 #  define OF_IOS
 # else
 #  define OF_MACOS
