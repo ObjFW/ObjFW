@@ -49,6 +49,7 @@ build() {
 
 build armv7 arm-apple-darwin iPhoneOS
 build arm64 arm64-apple-darwin iPhoneOS
+build i386 i386-apple-darwin iPhoneSimulator
 build x86_64 x86_64-apple-darwin iPhoneSimulator
 
 msg "Sanity checking"
@@ -57,6 +58,11 @@ diff -Nru $prefix/armv7/Frameworks/ObjFW.framework/Headers \
 	$prefix/arm64/Frameworks/ObjFW.framework/Headers
 diff -Nru $prefix/armv7/Frameworks/ObjFW_Bridge.framework/Headers \
 	$prefix/arm64/Frameworks/ObjFW_Bridge.framework/Headers
+diff -Nru $prefix/i386/include $prefix/x86_64/include
+diff -Nru $prefix/i386/Frameworks/ObjFW.framework/Headers \
+	$prefix/x86_64/Frameworks/ObjFW.framework/Headers
+diff -Nru $prefix/i386/Frameworks/ObjFW_Bridge.framework/Headers \
+	$prefix/x86_64/Frameworks/ObjFW_Bridge.framework/Headers
 
 mv $prefix/armv7/include $prefix/
 mkdir -p						\
@@ -69,6 +75,7 @@ combine() {
 	lipo \
 		$prefix/armv7/$1 \
 		$prefix/arm64/$1 \
+		$prefix/i386/$1 \
 		$prefix/x86_64/$1 \
 		-create -output $prefix/$1
 }
@@ -85,4 +92,4 @@ mv $prefix/armv7/Frameworks/ObjFW_Bridge.framework/* \
 	$prefix/Frameworks/ObjFW_Bridge.framework/
 
 msg "Cleaning up"
-rm -fr $prefix/armv7 $prefix/arm64 $prefix/x86_64
+rm -fr $prefix/armv7 $prefix/arm64 $prefix/i386 $prefix/x86_64
