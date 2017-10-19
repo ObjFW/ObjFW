@@ -396,4 +396,9 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return false;
 }
 #endif
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
 @end

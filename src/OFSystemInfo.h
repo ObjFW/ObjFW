@@ -185,6 +185,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (bool)supportsAltiVec;
 #endif
+
++ (instancetype)alloc OF_UNAVAILABLE;
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END
