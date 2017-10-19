@@ -1,4 +1,7 @@
 AC_INIT(ObjFW, 0.91-dev, js@heap.zone)
+dnl This may only be set to 0.91 once 0.91 is released
+AC_SUBST(BUNDLE_VERSION, 0.90.9900)
+AC_SUBST(BUNDLE_SHORT_VERSION, 0.90)
 BUILDSYS_INIT
 
 AS_IF([test configure.ac -nt configure], [

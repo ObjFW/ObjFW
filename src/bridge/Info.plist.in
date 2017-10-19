@@ -13,8 +13,10 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleVersion</key>
-	<string>@PACKAGE_VERSION@</string>
+	<string>@BUNDLE_VERSION@</string>
 	<key>CFBundleShortVersionString</key>
-	<string>@PACKAGE_VERSION@</string>
+	<string>@BUNDLE_SHORT_VERSION@</string>
+	<key>MinimumOSVersion</key>
+	<string>9.0</string>
 </dict>
 </plist>
