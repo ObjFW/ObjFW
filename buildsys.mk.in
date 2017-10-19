@@ -278,6 +278,27 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	done
 
 ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
+	rm -fr $@
+	${MKDIR_P} $@
+	${MAKE} INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} INSTALL_INCLUDES_DESTINATION=$$PWD/$@/Headers install-includes
+	if test -f Info.plist; then \
+		i=Info.plist; \
+		${INSTALL_STATUS}; \
+		if ${INSTALL} -m 644 $$i $@/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	fi
+	if test -f module.modulemap; then \
+		i=module.modulemap; \
+		${INSTALL_STATUS}; \
+		if ${MKDIR_P} $@/Modules && ${INSTALL} -m 644 $$i $@/Modules/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	fi
 	${LINK_STATUS}
 	out="$@"; \
 	objs=""; \
@@ -303,8 +324,6 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 		done; \
 		cd ..; \
 	done; \
-	rm -fr $$out; \
-	${MKDIR_P} $$out; \
 	if ${LD} -o $$out/$${out%.framework} $$objs ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS} && codesign -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
 		${LINK_OK}; \
 	else \
@@ -314,26 +333,7 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	for i in $$ars; do \
 		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
 		rm -fr $$dir; \
-	done; \
-	${MAKE} INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} INSTALL_INCLUDES_DESTINATION=$$PWD/$$out/Headers install-includes; \
-	if test -f Info.plist; then \
-		i=Info.plist; \
-		${INSTALL_STATUS}; \
-		if ${INSTALL} -m 644 $$i $$out/$$i; then \
-			${INSTALL_OK}; \
-		else \
-			${INSTALL_FAILED}; \
-		fi \
-	fi; \
-	if test -f module.modulemap; then \
-		i=module.modulemap; \
-		${INSTALL_STATUS}; \
-		if ${MKDIR_P} $$out/Modules && ${INSTALL} -m 644 $$i $$out/Modules/$$i; then \
-			${INSTALL_OK}; \
-		else \
-			${INSTALL_FAILED}; \
-		fi \
-	fi
+	done
 
 ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
