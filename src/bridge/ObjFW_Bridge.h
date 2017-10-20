@@ -19,6 +19,6 @@
 #import "NSString+OFObject.h"
 
 #import "OFArray+NSObject.h"
-#import "OFException+NSError.h"
+#import "OFException+Swift.h"
 #import "OFDictionary+NSObject.h"
 #import "OFString+NSObject.h"

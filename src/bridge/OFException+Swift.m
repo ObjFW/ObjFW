@@ -14,34 +14,46 @@
  * file.
  */
 
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSError.h>
-#import <Foundation/NSString.h>
-
-#import "OFString.h"
-
-#import "OFException+NSError.h"
+#import "OFException+Swift.h"
 
 @implementation OFException (NSError)
 #ifdef OF_HAVE_BLOCKS
-+ (BOOL)tryBlock: (void (^)(void))block
-	   error: (NSError **)error
++ (void)try: (void (^)(void))try
+      catch: (void (^)(OF_KINDOF(OFException *e)))catch
 {
 	@try {
-		block();
-		return YES;
+		try();
 	} @catch (OFException *e) {
-		if (error != NULL) {
-			NSDictionary *userInfo = [NSDictionary
-			    dictionaryWithObject: e
-					  forKey: @"exception"];
-			*error = [NSError errorWithDomain: @"OFException"
-						     code: 0
-						 userInfo: userInfo];
-		}
+		catch(e);
+	}
+}
 
-		return NO;
++ (void)try: (void (^)(void))try
+    finally: (void (^)(void))finally
+{
+	@try {
+		try();
+	} @finally {
+		finally();
+	}
+}
+
++ (void)try: (void (^)(void))try
+      catch: (void (^)(OF_KINDOF(OFException *e)))catch
+    finally: (void (^)(void))finally
+{
+	@try {
+		try();
+	} @catch (OFException *e) {
+		catch(e);
+	} @finally {
+		finally();
 	}
 }
 #endif
+
+- (void)throw
+{
+	@throw self;
+}
 @end

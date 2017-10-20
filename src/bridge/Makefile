@@ -8,12 +8,12 @@ LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 FRAMEWORK = ObjFW_Bridge.framework
 
-SRCS = OFArray+NSObject.m		\
-       OFException+NSError.m		\
-       OFDictionary+NSObject.m		\
-       OFString+NSObject.m		\
-       NSArray+OFObject.m		\
-       NSDictionary+OFObject.m		\
+SRCS = OFArray+NSObject.m	\
+       OFException+Swift.m	\
+       OFDictionary+NSObject.m	\
+       OFString+NSObject.m	\
+       NSArray+OFObject.m	\
+       NSDictionary+OFObject.m	\
        NSString+OFObject.m
 
 INCLUDES := ${SRCS:.m=.h}	\
@@ -35,5 +35,3 @@ LD = ${OBJC}
 LIBS = -framework Foundation
 LIB_LDFLAGS += -L.. -lobjfw
 FRAMEWORK_LDFLAGS += -F.. -framework ObjFW
-
-OBJCFLAGS_OFException+NSError.m += -fconstant-cfstrings
