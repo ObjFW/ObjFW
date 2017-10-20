@@ -14,11 +14,34 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSString+OFObject.h"
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSString.h>
 
-#import "OFArray+NSObject.h"
+#import "OFString.h"
+
 #import "OFException+NSError.h"
-#import "OFDictionary+NSObject.h"
-#import "OFString+NSObject.h"
+
+@implementation OFException (NSError)
+#ifdef OF_HAVE_BLOCKS
++ (BOOL)tryBlock: (void (^)(void))block
+	   error: (NSError **)error
+{
+	@try {
+		block();
+		return YES;
+	} @catch (OFException *e) {
+		if (error != NULL) {
+			NSDictionary *userInfo = [NSDictionary
+			    dictionaryWithObject: e
+					  forKey: @"exception"];
+			*error = [NSError errorWithDomain: @"OFException"
+						     code: 0
+						 userInfo: userInfo];
+		}
+
+		return NO;
+	}
+}
+#endif
+@end

@@ -14,11 +14,25 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSString+OFObject.h"
+#ifdef OF_BRIDGE_LOCAL_INCLUDES
+# import "OFException.h"
+#else
+# if defined(__has_feature) && __has_feature(modules)
+@import ObjFW;
+# else
+#  import <ObjFW/OFException.h>
+# endif
+#endif
 
-#import "OFArray+NSObject.h"
-#import "OFException+NSError.h"
-#import "OFDictionary+NSObject.h"
-#import "OFString+NSObject.h"
+OF_ASSUME_NONNULL_BEGIN
+
+@class NSError;
+
+@interface OFException (NSError)
+#ifdef OF_HAVE_BLOCKS
++ (BOOL)tryBlock: (void (^)(void))block
+	   error: (NSError **)error;
+#endif
+@end
+
+OF_ASSUME_NONNULL_END

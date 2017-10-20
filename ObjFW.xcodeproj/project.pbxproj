@@ -1058,6 +1058,10 @@
 		4BF5CB901E2DC1D800CF7584 /* iso_8859-2.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF5CB8F1E2DC1D800CF7584 /* iso_8859-2.m */; };
 		4BF5CB911E2DC1D800CF7584 /* iso_8859-2.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF5CB8F1E2DC1D800CF7584 /* iso_8859-2.m */; };
 		4BF69CE61BD44F8B00DFFC1B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF69CE51BD44F8B00DFFC1B /* platform.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF8FE561F9A97E100CB9F9C /* OFException+NSError.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF8FE541F9A97E100CB9F9C /* OFException+NSError.m */; settings = {COMPILER_FLAGS = "-fconstant-cfstrings"; }; };
+		4BF8FE571F9A97E100CB9F9C /* OFException+NSError.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BF8FE541F9A97E100CB9F9C /* OFException+NSError.m */; settings = {COMPILER_FLAGS = "-fconstant-cfstrings"; }; };
+		4BF8FE581F9A97E100CB9F9C /* OFException+NSError.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF8FE551F9A97E100CB9F9C /* OFException+NSError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BF8FE591F9A97E100CB9F9C /* OFException+NSError.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF8FE551F9A97E100CB9F9C /* OFException+NSError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFC37BD1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
 		4BFC37BE1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1762,6 +1766,8 @@
 		4BF3A2281E25EA48002EA46F /* windows-1251.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "windows-1251.m"; path = "src/encodings/windows-1251.m"; sourceTree = "<group>"; };
 		4BF5CB8F1E2DC1D800CF7584 /* iso_8859-2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "iso_8859-2.m"; path = "src/encodings/iso_8859-2.m"; sourceTree = "<group>"; };
 		4BF69CE51BD44F8B00DFFC1B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = src/platform.h; sourceTree = "<group>"; };
+		4BF8FE541F9A97E100CB9F9C /* OFException+NSError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "OFException+NSError.m"; path = "src/bridge/OFException+NSError.m"; sourceTree = "<group>"; };
+		4BF8FE551F9A97E100CB9F9C /* OFException+NSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFException+NSError.h"; path = "src/bridge/OFException+NSError.h"; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 		4BFC37BC1E50E11C00EE1269 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/encodings/common.h; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
@@ -2007,6 +2013,8 @@
 				4B187E36163EA3DA0049A832 /* OFDictionary_NSDictionary.m */,
 				4B187E37163EA3DA0049A832 /* OFDictionary+NSObject.h */,
 				4B187E38163EA3DA0049A832 /* OFDictionary+NSObject.m */,
+				4BF8FE551F9A97E100CB9F9C /* OFException+NSError.h */,
+				4BF8FE541F9A97E100CB9F9C /* OFException+NSError.m */,
 				4B187E39163EA3DA0049A832 /* OFString+NSObject.h */,
 				4B187E3A163EA3DA0049A832 /* OFString+NSObject.m */,
 				4B187E22163EA3DA0049A832 /* ObjFW_Bridge.h */,
@@ -2519,6 +2527,7 @@
 				4B0E29811DA2A8A400323A76 /* OFArray+NSObject.h in Headers */,
 				4B0E29821DA2A8A400323A76 /* OFBridging.h in Headers */,
 				4B0E29841DA2A8A400323A76 /* OFDictionary+NSObject.h in Headers */,
+				4BF8FE591F9A97E100CB9F9C /* OFException+NSError.h in Headers */,
 				4B0E29851DA2A8A400323A76 /* OFString+NSObject.h in Headers */,
 				4B0E29861DA2A8A400323A76 /* ObjFW_Bridge.h in Headers */,
 				4B0E297A1DA2A8A400323A76 /* NSArray_OFArray.h in Headers */,
@@ -2535,6 +2544,7 @@
 				4B187E42163EA3DA0049A832 /* NSArray+OFObject.h in Headers */,
 				4B187E45163EA3DA0049A832 /* NSBridging.h in Headers */,
 				4B187E49163EA3DA0049A832 /* NSDictionary+OFObject.h in Headers */,
+				4BF8FE581F9A97E100CB9F9C /* OFException+NSError.h in Headers */,
 				4B187E4C163EA3DA0049A832 /* NSString+OFObject.h in Headers */,
 				4B187E52163EA3DA0049A832 /* OFArray+NSObject.h in Headers */,
 				4B187E55163EA3DA0049A832 /* OFBridging.h in Headers */,
@@ -3315,6 +3325,7 @@
 				4B0E29721DA2A8A400323A76 /* OFArray+NSObject.m in Sources */,
 				4B0E29731DA2A8A400323A76 /* OFDictionary_NSDictionary.m in Sources */,
 				4B0E29741DA2A8A400323A76 /* OFDictionary+NSObject.m in Sources */,
+				4BF8FE571F9A97E100CB9F9C /* OFException+NSError.m in Sources */,
 				4B0E29751DA2A8A400323A76 /* OFString+NSObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3332,6 +3343,7 @@
 				4B187E54163EA3DA0049A832 /* OFArray+NSObject.m in Sources */,
 				4B187E58163EA3DA0049A832 /* OFDictionary_NSDictionary.m in Sources */,
 				4B187E5B163EA3DA0049A832 /* OFDictionary+NSObject.m in Sources */,
+				4BF8FE561F9A97E100CB9F9C /* OFException+NSError.m in Sources */,
 				4B187E5E163EA3DA0049A832 /* OFString+NSObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
