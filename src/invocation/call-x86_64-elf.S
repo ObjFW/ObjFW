@@ -75,7 +75,7 @@ of_invocation_call:
 	movq	16(%rdi), %rdx
 	movq	8(%rdi), %rsi
 
-	movb	225(%r11), %r11b
+	movb	225(%rdi), %r11b
 	movq	0(%rdi), %rdi
 
 	cmpb	$4, %r11b
