@@ -60,14 +60,14 @@
 }
 
 - (void)insertObject: (id)object
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	@try {
 		[_array insertItem: &object
-			   atIndex: index];
+			   atIndex: idx];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
 	}
@@ -77,14 +77,14 @@
 }
 
 - (void)insertObjectsFromArray: (OFArray *)array
-		       atIndex: (size_t)index
+		       atIndex: (size_t)idx
 {
 	id const *objects = [array objects];
 	size_t count = [array count];
 
 	@try {
 		[_array insertItems: objects
-			    atIndex: index
+			    atIndex: idx
 			      count: count];
 	} @catch (OFOutOfRangeException *e) {
 		@throw [OFOutOfRangeException exception];
@@ -119,7 +119,7 @@
 	}
 }
 
-- (void)replaceObjectAtIndex: (size_t)index
+- (void)replaceObjectAtIndex: (size_t)idx
 		  withObject: (id)object
 {
 	id *objects;
@@ -130,11 +130,11 @@
 
 	objects = [_array items];
 
-	if (index >= [_array count])
+	if (idx >= [_array count])
 		@throw [OFOutOfRangeException exception];
 
-	oldObject = objects[index];
-	objects[index] = [object retain];
+	oldObject = objects[idx];
+	objects[idx] = [object retain];
 	[oldObject release];
 }
 
@@ -209,11 +209,11 @@
 	}
 }
 
-- (void)removeObjectAtIndex: (size_t)index
+- (void)removeObjectAtIndex: (size_t)idx
 {
 #ifndef __clang_analyzer__
-	id object = [self objectAtIndex: index];
-	[_array removeItemAtIndex: index];
+	id object = [self objectAtIndex: idx];
+	[_array removeItemAtIndex: idx];
 	[object release];
 
 	_mutations++;
@@ -272,19 +272,19 @@
 #endif
 }
 
-- (void)exchangeObjectAtIndex: (size_t)index1
-	    withObjectAtIndex: (size_t)index2
+- (void)exchangeObjectAtIndex: (size_t)idx1
+	    withObjectAtIndex: (size_t)idx2
 {
 	id *objects = [_array items];
 	size_t count = [_array count];
 	id tmp;
 
-	if (index1 >= count || index2 >= count)
+	if (idx1 >= count || idx2 >= count)
 		@throw [OFOutOfRangeException exception];
 
-	tmp = objects[index1];
-	objects[index1] = objects[index2];
-	objects[index2] = tmp;
+	tmp = objects[idx1];
+	objects[idx1] = objects[idx2];
+	objects[idx2] = tmp;
 }
 
 - (void)reverse

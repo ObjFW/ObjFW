@@ -175,10 +175,10 @@
 }
 
 - (void)insertItem: (const void *)item
-	   atIndex: (size_t)index
+	   atIndex: (size_t)idx
 {
 	[self insertItems: item
-		  atIndex: index
+		  atIndex: idx
 		    count: 1];
 }
 
@@ -200,10 +200,10 @@
 }
 
 - (void)insertItems: (const void *)items
-	    atIndex: (size_t)index
+	    atIndex: (size_t)idx
 	      count: (size_t)count
 {
-	if (count > SIZE_MAX - _count || index > _count)
+	if (count > SIZE_MAX - _count || idx > _count)
 		@throw [OFOutOfRangeException exception];
 
 	if (_count + count > _capacity) {
@@ -213,9 +213,9 @@
 		_capacity = _count + count;
 	}
 
-	memmove(_items + (index + count) * _itemSize,
-	    _items + index * _itemSize, (_count - index) * _itemSize);
-	memcpy(_items + index * _itemSize, items, count * _itemSize);
+	memmove(_items + (idx + count) * _itemSize, _items + idx * _itemSize,
+	    (_count - idx) * _itemSize);
+	memcpy(_items + idx * _itemSize, items, count * _itemSize);
 
 	_count += count;
 }
@@ -236,9 +236,9 @@
 	_count += count;
 }
 
-- (void)removeItemAtIndex: (size_t)index
+- (void)removeItemAtIndex: (size_t)idx
 {
-	[self removeItemsInRange: of_range(index, 1)];
+	[self removeItemsInRange: of_range(idx, 1)];
 }
 
 - (void)removeItemsInRange: (of_range_t)range

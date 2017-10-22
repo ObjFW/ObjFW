@@ -120,31 +120,31 @@ typedef enum {
 {
 	union of_number_value {
 		bool		   bool_;
-		signed char	   schar;
-		signed short	   sshort;
-		signed int	   sint;
-		signed long	   slong;
-		signed long long   slonglong;
-		unsigned char	   uchar;
-		unsigned short	   ushort;
-		unsigned int	   uint;
-		unsigned long	   ulong;
-		unsigned long long ulonglong;
+		signed char	   sChar;
+		signed short	   sShort;
+		signed int	   sInt;
+		signed long	   sLong;
+		signed long long   sLongLong;
+		unsigned char	   uChar;
+		unsigned short	   uShort;
+		unsigned int	   uInt;
+		unsigned long	   uLong;
+		unsigned long long uLongLong;
 		int8_t		   int8;
 		int16_t		   int16;
 		int32_t		   int32;
 		int64_t		   int64;
-		uint8_t		   uint8;
-		uint16_t	   uint16;
-		uint32_t	   uint32;
-		uint64_t	   uint64;
+		uint8_t		   uInt8;
+		uint16_t	   uInt16;
+		uint32_t	   uInt32;
+		uint64_t	   uInt64;
 		size_t		   size;
-		ssize_t		   ssize;
-		intmax_t	   intmax;
-		uintmax_t	   uintmax;
-		ptrdiff_t	   ptrdiff;
-		intptr_t	   intptr;
-		uintptr_t	   uintptr;
+		ssize_t		   sSize;
+		intmax_t	   intMax;
+		uintmax_t	   uIntMax;
+		ptrdiff_t	   ptrDiff;
+		intptr_t	   intPtr;
+		uintptr_t	   uIntPtr;
 		float		   float_;
 		double		   double_;
 	} _value;
@@ -167,82 +167,82 @@ typedef enum {
 /*!
  * @brief Creates a new OFNumber with the specified signed char.
  *
- * @param schar A signed char which the OFNumber should contain
+ * @param sChar A signed char which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithChar: (signed char)schar;
++ (instancetype)numberWithChar: (signed char)sChar;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed short.
  *
- * @param sshort A signed short which the OFNumber should contain
+ * @param sShort A signed short which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithShort: (signed short)sshort;
++ (instancetype)numberWithShort: (signed short)sShort;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed int.
  *
- * @param sint A signed int which the OFNumber should contain
+ * @param sInt A signed int which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithInt: (signed int)sint;
++ (instancetype)numberWithInt: (signed int)sInt;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed long.
  *
- * @param slong A signed long which the OFNumber should contain
+ * @param sLong A signed long which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithLong: (signed long)slong;
++ (instancetype)numberWithLong: (signed long)sLong;
 
 /*!
  * @brief Creates a new OFNumber with the specified signed long long.
  *
- * @param slonglong A signed long long which the OFNumber should contain
+ * @param sLongLong A signed long long which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithLongLong: (signed long long)slonglong;
++ (instancetype)numberWithLongLong: (signed long long)sLongLong;
 
 /*!
  * @brief Creates a new OFNumber with the specified unsigned char.
  *
- * @param uchar An unsigned char which the OFNumber should contain
+ * @param uChar An unsigned char which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUnsignedChar: (unsigned char)uchar;
++ (instancetype)numberWithUnsignedChar: (unsigned char)uChar;
 
 /*!
  * @brief Creates a new OFNumber with the specified unsigned short.
  *
- * @param ushort An unsigned short which the OFNumber should contain
+ * @param uShort An unsigned short which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUnsignedShort: (unsigned short)ushort;
++ (instancetype)numberWithUnsignedShort: (unsigned short)uShort;
 
 /*!
  * @brief Creates a new OFNumber with the specified unsigned int.
  *
- * @param uint An unsigned int which the OFNumber should contain
+ * @param uInt An unsigned int which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUnsignedInt: (unsigned int)uint;
++ (instancetype)numberWithUnsignedInt: (unsigned int)uInt;
 
 /*!
  * @brief Creates a new OFNumber with the specified unsigned long.
  *
- * @param ulong An unsigned long which the OFNumber should contain
+ * @param uLong An unsigned long which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUnsignedLong: (unsigned long)ulong;
++ (instancetype)numberWithUnsignedLong: (unsigned long)uLong;
 
 /*!
  * @brief Creates a new OFNumber with the specified unsigned long long.
  *
- * @param ulonglong An unsigned long long which the OFNumber should contain
+ * @param uLongLong An unsigned long long which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUnsignedLongLong: (unsigned long long)ulonglong;
++ (instancetype)numberWithUnsignedLongLong: (unsigned long long)uLongLong;
 
 /*!
  * @brief Creates a new OFNumber with the specified int8_t.
@@ -279,34 +279,34 @@ typedef enum {
 /*!
  * @brief Creates a new OFNumber with the specified uint8_t.
  *
- * @param uint8 A uint8_t which the OFNumber should contain
+ * @param uInt8 A uint8_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUInt8: (uint8_t)uint8;
++ (instancetype)numberWithUInt8: (uint8_t)uInt8;
 
 /*!
  * @brief Creates a new OFNumber with the specified uint16_t.
  *
- * @param uint16 A uint16_t which the OFNumber should contain
+ * @param uInt16 A uint16_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUInt16: (uint16_t)uint16;
++ (instancetype)numberWithUInt16: (uint16_t)uInt16;
 
 /*!
  * @brief Creates a new OFNumber with the specified uint32_t.
  *
- * @param uint32 A uint32_t which the OFNumber should contain
+ * @param uInt32 A uint32_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUInt32: (uint32_t)uint32;
++ (instancetype)numberWithUInt32: (uint32_t)uInt32;
 
 /*!
  * @brief Creates a new OFNumber with the specified uint64_t.
  *
- * @param uint64 A uint64_t which the OFNumber should contain
+ * @param uInt64 A uint64_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUInt64: (uint64_t)uint64;
++ (instancetype)numberWithUInt64: (uint64_t)uInt64;
 
 /*!
  * @brief Creates a new OFNumber with the specified size_t.
@@ -319,50 +319,50 @@ typedef enum {
 /*!
  * @brief Creates a new OFNumber with the specified ssize_t.
  *
- * @param ssize An ssize_t which the OFNumber should contain
+ * @param sSize An ssize_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithSSize: (ssize_t)ssize;
++ (instancetype)numberWithSSize: (ssize_t)sSize;
 
 /*!
  * @brief Creates a new OFNumber with the specified intmax_t.
  *
- * @param intmax An intmax_t which the OFNumber should contain
+ * @param intMax An intmax_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithIntMax: (intmax_t)intmax;
++ (instancetype)numberWithIntMax: (intmax_t)intMax;
 
 /*!
  * @brief Creates a new OFNumber with the specified uintmax_t.
  *
- * @param uintmax A uintmax_t which the OFNumber should contain
+ * @param uIntMax A uintmax_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUIntMax: (uintmax_t)uintmax;
++ (instancetype)numberWithUIntMax: (uintmax_t)uIntMax;
 
 /*!
  * @brief Creates a new OFNumber with the specified ptrdiff_t.
  *
- * @param ptrdiff A ptrdiff_t which the OFNumber should contain
+ * @param ptrDiff A ptrdiff_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrdiff;
++ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrDiff;
 
 /*!
  * @brief Creates a new OFNumber with the specified intptr_t.
  *
- * @param intptr An intptr_t which the OFNumber should contain
+ * @param intPtr An intptr_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithIntPtr: (intptr_t)intptr;
++ (instancetype)numberWithIntPtr: (intptr_t)intPtr;
 
 /*!
  * @brief Creates a new OFNumber with the specified uintptr_t.
  *
- * @param uintptr A uintptr_t which the OFNumber should contain
+ * @param uIntPtr A uintptr_t which the OFNumber should contain
  * @return A new autoreleased OFNumber
  */
-+ (instancetype)numberWithUIntPtr: (uintptr_t)uintptr;
++ (instancetype)numberWithUIntPtr: (uintptr_t)uIntPtr;
 
 /*!
  * @brief Creates a new OFNumber with the specified float.
@@ -394,91 +394,91 @@ typedef enum {
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  char.
  *
- * @param schar A signed char which the OFNumber should contain
+ * @param sChar A signed char which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithChar: (signed char)schar;
+- (instancetype)initWithChar: (signed char)sChar;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  short.
  *
- * @param sshort A signed short which the OFNumber should contain
+ * @param sShort A signed short which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithShort: (signed short)sshort;
+- (instancetype)initWithShort: (signed short)sShort;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  int.
  *
- * @param sint A signed int which the OFNumber should contain
+ * @param sInt A signed int which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithInt: (signed int)sint;
+- (instancetype)initWithInt: (signed int)sInt;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  long.
  *
- * @param slong A signed long which the OFNumber should contain
+ * @param sLong A signed long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithLong: (signed long)slong;
+- (instancetype)initWithLong: (signed long)sLong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified signed
  *	  long long.
  *
- * @param slonglong A signed long long which the OFNumber should contain
+ * @param sLongLong A signed long long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithLongLong: (signed long long)slonglong;
+- (instancetype)initWithLongLong: (signed long long)sLongLong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
  *	  char.
  *
- * @param uchar An unsigned char which the OFNumber should contain
+ * @param uChar An unsigned char which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUnsignedChar: (unsigned char)uchar;
+- (instancetype)initWithUnsignedChar: (unsigned char)uChar;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
  *	  short.
  *
- * @param ushort An unsigned short which the OFNumber should contain
+ * @param uShort An unsigned short which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUnsignedShort: (unsigned short)ushort;
+- (instancetype)initWithUnsignedShort: (unsigned short)uShort;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
  *	  int.
  *
- * @param uint An unsigned int which the OFNumber should contain
+ * @param uInt An unsigned int which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUnsignedInt: (unsigned int)uint;
+- (instancetype)initWithUnsignedInt: (unsigned int)uInt;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
  *	  long.
  *
- * @param ulong An unsigned long which the OFNumber should contain
+ * @param uLong An unsigned long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUnsignedLong: (unsigned long)ulong;
+- (instancetype)initWithUnsignedLong: (unsigned long)uLong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified unsigned
  *	  long long.
  *
- * @param ulonglong An unsigned long long which the OFNumber should contain
+ * @param uLongLong An unsigned long long which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUnsignedLongLong: (unsigned long long)ulonglong;
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified int8_t.
@@ -515,34 +515,34 @@ typedef enum {
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint8_t.
  *
- * @param uint8 A uint8_t which the OFNumber should contain
+ * @param uInt8 A uint8_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUInt8: (uint8_t)uint8;
+- (instancetype)initWithUInt8: (uint8_t)uInt8;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint16_t.
  *
- * @param uint16 A uint16_t which the OFNumber should contain
+ * @param uInt16 A uint16_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUInt16: (uint16_t)uint16;
+- (instancetype)initWithUInt16: (uint16_t)uInt16;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint32_t.
  *
- * @param uint32 A uint32_t which the OFNumber should contain
+ * @param uInt32 A uint32_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUInt32: (uint32_t)uint32;
+- (instancetype)initWithUInt32: (uint32_t)uInt32;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified uint64_t.
  *
- * @param uint64 A uint64_t which the OFNumber should contain
+ * @param uInt64 A uint64_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUInt64: (uint64_t)uint64;
+- (instancetype)initWithUInt64: (uint64_t)uInt64;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified size_t.
@@ -555,53 +555,53 @@ typedef enum {
 /*!
  * @brief Initializes an already allocated OFNumber with the specified ssize_t.
  *
- * @param ssize An ssize_t which the OFNumber should contain
+ * @param sSize An ssize_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithSSize: (ssize_t)ssize;
+- (instancetype)initWithSSize: (ssize_t)sSize;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified intmax_t.
  *
- * @param intmax An intmax_t which the OFNumber should contain
+ * @param intMax An intmax_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithIntMax: (intmax_t)intmax;
+- (instancetype)initWithIntMax: (intmax_t)intMax;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
  *	  uintmax_t.
  *
- * @param uintmax A uintmax_t which the OFNumber should contain
+ * @param uIntMax A uintmax_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUIntMax: (uintmax_t)uintmax;
+- (instancetype)initWithUIntMax: (uintmax_t)uIntMax;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
  *	  ptrdiff_t.
  *
- * @param ptrdiff A ptrdiff_t which the OFNumber should contain
+ * @param ptrDiff A ptrdiff_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrdiff;
+- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified intptr_t.
  *
- * @param intptr An intptr_t which the OFNumber should contain
+ * @param intPtr An intptr_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithIntPtr: (intptr_t)intptr;
+- (instancetype)initWithIntPtr: (intptr_t)intPtr;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified
  *	  uintptr_t.
  *
- * @param uintptr A uintptr_t which the OFNumber should contain
+ * @param uIntPtr A uintptr_t which the OFNumber should contain
  * @return An initialized OFNumber
  */
-- (instancetype)initWithUIntPtr: (uintptr_t)uintptr;
+- (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr;
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified float.

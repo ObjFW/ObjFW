@@ -34,9 +34,9 @@
 	return self;
 }
 
-- (id)objectAtIndex: (NSUInteger)index
+- (id)objectAtIndex: (NSUInteger)idx
 {
-	id object = [_array objectAtIndex: index];
+	id object = [_array objectAtIndex: idx];
 
 	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
 		return [object NSObject];

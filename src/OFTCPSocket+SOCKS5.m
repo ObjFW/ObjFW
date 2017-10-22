@@ -32,7 +32,7 @@
 int _OFTCPSocket_SOCKS5_reference;
 
 static void
-send_or_exception(OFTCPSocket *self, of_socket_t socket, char *buffer,
+send_or_exception(OFTCPSocket *self, of_socket_t sock, char *buffer,
     int length)
 {
 #ifndef OF_WINDOWS
@@ -41,7 +41,7 @@ send_or_exception(OFTCPSocket *self, of_socket_t socket, char *buffer,
 	int bytesWritten;
 #endif
 
-	if ((bytesWritten = send(socket, (const void *)buffer, length, 0)) < 0)
+	if ((bytesWritten = send(sock, (const void *)buffer, length, 0)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -56,10 +56,10 @@ send_or_exception(OFTCPSocket *self, of_socket_t socket, char *buffer,
 }
 
 static void
-recv_exact(OFTCPSocket *self, of_socket_t socket, char *buffer, int length)
+recv_exact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 {
 	while (length > 0) {
-		ssize_t ret = recv(socket, (void *)buffer, length, 0);
+		ssize_t ret = recv(sock, (void *)buffer, length, 0);
 
 		if (ret < 0)
 			@throw [OFReadFailedException

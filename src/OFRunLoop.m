@@ -603,14 +603,14 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
++ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
 				target: (id)target
 			      selector: (SEL)selector
 			       context: (id)context
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, socket, {
+	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -619,7 +619,7 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
++ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_udp_socket_address_t)receiver
@@ -627,7 +627,7 @@ static OFRunLoop *mainRunLoop = nil;
 			   selector: (SEL)selector
 			    context: (id)context
 {
-	ADD_WRITE(OFRunLoop_UDPSendQueueItem, socket, {
+	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -692,26 +692,26 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
++ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
 				 block: (of_udp_socket_async_receive_block_t)
 					    block
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, socket, {
+	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 	})
 }
 
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
++ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_udp_socket_address_t)receiver
 			      block: (of_udp_socket_async_send_block_t)block
 {
-	ADD_WRITE(OFRunLoop_UDPSendQueueItem, socket, {
+	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;

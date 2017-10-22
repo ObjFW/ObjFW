@@ -100,9 +100,9 @@ static OFString *c_ary[] = {
 	[super dealloc];
 }
 
-- (id)objectAtIndex: (size_t)index
+- (id)objectAtIndex: (size_t)idx
 {
-	return [_array objectAtIndex: index];
+	return [_array objectAtIndex: idx];
 }
 
 - (size_t)count
@@ -119,22 +119,22 @@ static OFString *c_ary[] = {
 }
 
 - (void)insertObject: (id)object
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
 	[_array insertObject: object
-		     atIndex: index];
+		     atIndex: idx];
 }
 
-- (void)replaceObjectAtIndex: (size_t)index
+- (void)replaceObjectAtIndex: (size_t)idx
 		  withObject: (id)object
 {
-	[_array replaceObjectAtIndex: index
+	[_array replaceObjectAtIndex: idx
 			  withObject: object];
 }
 
-- (void)removeObjectAtIndex: (size_t)index
+- (void)removeObjectAtIndex: (size_t)idx
 {
-	[_array removeObjectAtIndex: index];
+	[_array removeObjectAtIndex: idx];
 }
 @end
 

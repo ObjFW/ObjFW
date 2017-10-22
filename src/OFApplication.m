@@ -95,12 +95,12 @@ atexitHandler(void)
 	[delegate release];
 }
 
-#define SIGNAL_HANDLER(sig)					\
+#define SIGNAL_HANDLER(signal)					\
 	static void						\
-	handle##sig(int signal)					\
+	handle##signal(int sig)					\
 	{							\
-		app->_##sig##Handler(app->_delegate,		\
-		    @selector(applicationDidReceive##sig));	\
+		app->_##signal##Handler(app->_delegate,		\
+		    @selector(applicationDidReceive##signal));	\
 	}
 SIGNAL_HANDLER(SIGINT)
 #ifdef SIGHUP

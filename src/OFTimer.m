@@ -530,7 +530,7 @@
 	OF_ENSURE(_arguments <= 4);
 
 	if (_repeats && _valid) {
-		int missedIntervals =
+		int64_t missedIntervals =
 		    -[_fireDate timeIntervalSinceNow] / _interval;
 		of_time_interval_t newFireDate;
 

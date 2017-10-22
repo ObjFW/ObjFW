@@ -174,9 +174,9 @@ static uint16_t sutf16str[] = {
 	[super dealloc];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)index
+- (of_unichar_t)characterAtIndex: (size_t)idx
 {
-	return [_string characterAtIndex: index];
+	return [_string characterAtIndex: idx];
 }
 
 - (size_t)length

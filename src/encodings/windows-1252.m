@@ -106,7 +106,7 @@ of_unicode_to_windows_1252(const of_unichar_t *input, unsigned char *output,
 		of_unichar_t c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
-			uint8_t index;
+			uint8_t idx;
 
 			if OF_UNLIKELY (c > 0xFFFF) {
 				if (lossy) {

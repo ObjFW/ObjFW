@@ -1453,7 +1453,7 @@ static struct {
 	return [self cStringLengthWithEncoding: OF_STRING_ENCODING_UTF_8];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)index
+- (of_unichar_t)characterAtIndex: (size_t)idx
 {
 	OF_UNRECOGNIZED_SELECTOR
 }

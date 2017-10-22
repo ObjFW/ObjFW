@@ -113,8 +113,8 @@ extern "C" {
 extern bool of_socket_init(void);
 extern int of_socket_errno(void);
 # ifndef OF_WII
-extern int of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
-    socklen_t *restrict address_len);
+extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
+    socklen_t *restrict addrLen);
 # endif
 #ifdef __cplusplus
 }

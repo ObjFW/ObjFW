@@ -18,7 +18,7 @@
 
 #import "NSBridging.h"
 
-NS_ASSUME_NONNULL_BEGIN
+OF_ASSUME_NONNULL_BEGIN
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,4 +41,4 @@ extern int _NSString_OFObject_reference;
 @interface NSString (OFObject) <NSBridging>
 @end
 
-NS_ASSUME_NONNULL_END
+OF_ASSUME_NONNULL_END

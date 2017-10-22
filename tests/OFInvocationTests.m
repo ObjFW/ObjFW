@@ -104,8 +104,8 @@ struct test_struct {
 			      : (float)f15
 			      : (float)f16
 {
-	return (d1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + d10 + f11 +
-	    f12 + f13 + f14 + f15 + f16) / 16;
+	return (float)((d1 + f2 + f3 + f4 + f5 + f6 + f7 + f8 + f9 + d10 + f11 +
+	    f12 + f13 + f14 + f15 + f16) / 16);
 }
 
 - (long double)invocationTestMethod5: (long double)d1

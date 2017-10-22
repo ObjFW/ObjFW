@@ -180,7 +180,7 @@
 }
 
 - (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
 	char buffer[4];
 	of_unichar_t c;
@@ -188,39 +188,38 @@
 	ssize_t lenOld;
 
 	if (_s->isUTF8)
-		index = of_string_utf8_get_position(_s->cString, index,
+		idx = of_string_utf8_get_position(_s->cString, idx,
 		    _s->cStringLength);
 
-	if (index > _s->cStringLength)
+	if (idx > _s->cStringLength)
 		@throw [OFOutOfRangeException exception];
 
 	/* Shortcut if old and new character both are ASCII */
-	if (character < 0x80 && !(_s->cString[index] & 0x80)) {
+	if (character < 0x80 && !(_s->cString[idx] & 0x80)) {
 		_s->hashed = false;
-		_s->cString[index] = character;
+		_s->cString[idx] = character;
 		return;
 	}
 
 	if ((lenNew = of_string_utf8_encode(character, buffer)) == 0)
 		@throw [OFInvalidEncodingException exception];
 
-	if ((lenOld = of_string_utf8_decode(_s->cString + index,
-	    _s->cStringLength - index, &c)) <= 0)
+	if ((lenOld = of_string_utf8_decode(_s->cString + idx,
+	    _s->cStringLength - idx, &c)) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
 	_s->hashed = false;
 
 	if (lenNew == (size_t)lenOld)
-		memcpy(_s->cString + index, buffer, lenNew);
+		memcpy(_s->cString + idx, buffer, lenNew);
 	else if (lenNew > (size_t)lenOld) {
 		_s->cString = [self resizeMemory: _s->cString
 					    size: _s->cStringLength -
 						  lenOld + lenNew + 1];
 
-		memmove(_s->cString + index + lenNew,
-		    _s->cString + index + lenOld,
-		    _s->cStringLength - index - lenOld);
-		memcpy(_s->cString + index, buffer, lenNew);
+		memmove(_s->cString + idx + lenNew, _s->cString + idx + lenOld,
+		    _s->cStringLength - idx - lenOld);
+		memcpy(_s->cString + idx, buffer, lenNew);
 
 		_s->cStringLength -= lenOld;
 		_s->cStringLength += lenNew;
@@ -229,10 +228,9 @@
 		if (character >= 0x80)
 			_s->isUTF8 = true;
 	} else if (lenNew < (size_t)lenOld) {
-		memmove(_s->cString + index + lenNew,
-		    _s->cString + index + lenOld,
-		    _s->cStringLength - index - lenOld);
-		memcpy(_s->cString + index, buffer, lenNew);
+		memmove(_s->cString + idx + lenNew, _s->cString + idx + lenOld,
+		    _s->cStringLength - idx - lenOld);
+		memcpy(_s->cString + idx, buffer, lenNew);
 
 		_s->cStringLength -= lenOld;
 		_s->cStringLength += lenNew;
@@ -510,15 +508,15 @@
 }
 
 - (void)insertString: (OFString *)string
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
 	size_t newCStringLength;
 
-	if (index > _s->length)
+	if (idx > _s->length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8)
-		index = of_string_utf8_get_position(_s->cString, index,
+		idx = of_string_utf8_get_position(_s->cString, idx,
 		    _s->cStringLength);
 
 	newCStringLength = _s->cStringLength + [string UTF8StringLength];
@@ -526,9 +524,9 @@
 	_s->cString = [self resizeMemory: _s->cString
 				    size: newCStringLength + 1];
 
-	memmove(_s->cString + index + [string UTF8StringLength],
-	    _s->cString + index, _s->cStringLength - index);
-	memcpy(_s->cString + index, [string UTF8String],
+	memmove(_s->cString + idx + [string UTF8StringLength],
+	    _s->cString + idx, _s->cStringLength - idx);
+	memcpy(_s->cString + idx, [string UTF8String],
 	    [string UTF8StringLength]);
 	_s->cString[newCStringLength] = '\0';
 

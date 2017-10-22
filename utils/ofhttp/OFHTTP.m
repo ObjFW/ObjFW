@@ -500,13 +500,13 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 -    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
+  didCreateSocket: (OF_KINDOF(OFTCPSocket *))sock
 	  request: (OFHTTPRequest *)request
 	  context: (id)context
 {
-	if (_insecure && [socket respondsToSelector:
+	if (_insecure && [sock respondsToSelector:
 	    @selector(setCertificateVerificationEnabled:)])
-		[socket setCertificateVerificationEnabled: false];
+		[sock setCertificateVerificationEnabled: false];
 }
 
 -	  (bool)client: (OFHTTPClient *)client

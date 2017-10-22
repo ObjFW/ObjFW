@@ -16,9 +16,11 @@
 
 #import <Foundation/NSArray.h>
 
+#import "macros.h"
+
 @class OFArray;
 
-NS_ASSUME_NONNULL_BEGIN
+OF_ASSUME_NONNULL_BEGIN
 
 @interface NSArray_OFArray: NSArray
 {
@@ -28,4 +30,4 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithOFArray: (OFArray *)array;
 @end
 
-NS_ASSUME_NONNULL_END
+OF_ASSUME_NONNULL_END

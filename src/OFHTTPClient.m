@@ -73,7 +73,7 @@
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
 
-- (instancetype)initWithSocket: (OFTCPSocket *)socket;
+- (instancetype)initWithSocket: (OFTCPSocket *)sock;
 @end
 
 static OFString *
@@ -238,7 +238,7 @@ normalizeKey(char *str_)
 	[super dealloc];
 }
 
-- (void)createResponseWithSocket: (OFTCPSocket *)socket
+- (void)createResponseWithSocket: (OFTCPSocket *)sock
 {
 	OFURL *URL = [_request URL];
 	OFHTTPClientResponse *response;
@@ -246,7 +246,7 @@ normalizeKey(char *str_)
 	bool keepAlive;
 	OFString *location;
 
-	response = [[[OFHTTPClientResponse alloc] initWithSocket: socket]
+	response = [[[OFHTTPClientResponse alloc] initWithSocket: sock]
 	    autorelease];
 	[response setProtocolVersionFromString: _version];
 	[response setStatusCode: _status];
@@ -270,7 +270,7 @@ normalizeKey(char *str_)
 	if (keepAlive) {
 		[response of_setKeepAlive: true];
 
-		_client->_socket = [socket retain];
+		_client->_socket = [sock retain];
 		_client->_lastURL = [URL copy];
 		_client->_lastWasHEAD =
 		    ([_request method] == OF_HTTP_REQUEST_METHOD_HEAD);
@@ -410,7 +410,7 @@ normalizeKey(char *str_)
 }
 
 - (bool)handleServerHeader: (OFString *)line
-		    socket: (OFTCPSocket *)socket
+		    socket: (OFTCPSocket *)sock
 {
 	OFString *key, *value, *old;
 	const char *lineC, *tmp;
@@ -431,7 +431,7 @@ normalizeKey(char *str_)
 					   context: _context];
 
 		[self performSelector: @selector(createResponseWithSocket:)
-			   withObject: socket
+			   withObject: sock
 			   afterDelay: 0];
 
 		return false;
@@ -474,11 +474,13 @@ normalizeKey(char *str_)
 	return true;
 }
 
-- (bool)socket: (OFTCPSocket *)socket
+- (bool)socket: (OFTCPSocket *)sock
    didReadLine: (OFString *)line
        context: (id)context
      exception: (id)exception
 {
+	bool ret;
+
 	if (exception != nil) {
 		if ([exception isKindOfClass:
 		    [OFInvalidEncodingException class]])
@@ -494,20 +496,22 @@ normalizeKey(char *str_)
 	@try {
 		if (_firstLine) {
 			_firstLine = false;
-			return [self handleFirstLine: line];
+			ret = [self handleFirstLine: line];
 		} else
-			return [self handleServerHeader: line
-						 socket: socket];
+			ret = [self handleServerHeader: line
+						socket: sock];
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
 				forRequest: _request
 				   context: _context];
-		return false;
+		ret = false;
 	}
+
+	return ret;
 }
 
-- (size_t)socket: (OFTCPSocket *)socket
+- (size_t)socket: (OFTCPSocket *)sock
     didWriteBody: (const void **)body
 	  length: (size_t)length
 	 context: (id)context
@@ -521,14 +525,14 @@ normalizeKey(char *str_)
 		return 0;
 	}
 
-	[socket asyncReadLineWithTarget: self
-			       selector: @selector(socket:didReadLine:context:
-					      exception:)
-				context: nil];
+	[sock asyncReadLineWithTarget: self
+			     selector: @selector(socket:didReadLine:context:
+					   exception:)
+			      context: nil];
 	return 0;
 }
 
--  (size_t)socket: (OFTCPSocket *)socket
+-  (size_t)socket: (OFTCPSocket *)sock
   didWriteRequest: (const void **)request
 	   length: (size_t)length
 	  context: (id)context
@@ -553,22 +557,22 @@ normalizeKey(char *str_)
 	}
 
 	if ((body = [_request body]) != nil) {
-		[socket asyncWriteBuffer: [body items]
-				  length: [body count] * [body itemSize]
-				  target: self
-				selector: @selector(socket:didWriteBody:length:
-					      context:exception:)
-				 context: nil];
+		[sock asyncWriteBuffer: [body items]
+				length: [body count] * [body itemSize]
+				target: self
+			      selector: @selector(socket:didWriteBody:length:
+					    context:exception:)
+			       context: nil];
 		return 0;
 	} else
-		return [self socket: socket
+		return [self socket: sock
 		       didWriteBody: NULL
 			     length: 0
 			    context: nil
 			  exception: nil];
 }
 
-- (void)handleSocket: (OFTCPSocket *)socket
+- (void)handleSocket: (OFTCPSocket *)sock
 {
 	/*
 	 * As a work around for a bug with split packets in lighttpd when using
@@ -588,12 +592,12 @@ normalizeKey(char *str_)
 		 * Pass requestString as context to retain it so that the
 		 * underlying buffer lives long enough.
 		 */
-		[socket asyncWriteBuffer: UTF8String
-				  length: UTF8StringLength
-				  target: self
-				selector: @selector(socket:didWriteRequest:
-					      length:context:exception:)
-				 context: requestString];
+		[sock asyncWriteBuffer: UTF8String
+				length: UTF8StringLength
+				target: self
+			      selector: @selector(socket:didWriteRequest:
+					    length:context:exception:)
+			       context: requestString];
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
@@ -603,7 +607,7 @@ normalizeKey(char *str_)
 	}
 }
 
-- (void)socketDidConnect: (OFTCPSocket *)socket
+- (void)socketDidConnect: (OFTCPSocket *)sock
 		 context: (id)context
 	       exception: (id)exception
 {
@@ -618,19 +622,19 @@ normalizeKey(char *str_)
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:forRequest:context:)])
 		[_client->_delegate client: _client
-			   didCreateSocket: socket
+			   didCreateSocket: sock
 				forRequest: _request
 				   context: _context];
 
 	[self performSelector: @selector(handleSocket:)
-		   withObject: socket
+		   withObject: sock
 		   afterDelay: 0];
 }
 
 - (bool)throwAwayContent: (OFHTTPClientResponse *)response
 		  buffer: (char *)buffer
 		  length: (size_t)length
-		 context: (OFTCPSocket *)socket
+		 context: (OFTCPSocket *)sock
 	       exception: (id)exception
 {
 	if (exception != nil) {
@@ -648,7 +652,7 @@ normalizeKey(char *str_)
 		_client->_lastResponse = nil;
 
 		[self performSelector: @selector(handleSocket:)
-			   withObject: socket
+			   withObject: sock
 			   afterDelay: 0];
 		return false;
 	}
@@ -659,7 +663,7 @@ normalizeKey(char *str_)
 - (void)start
 {
 	OFURL *URL = [_request URL];
-	OFTCPSocket *socket;
+	OFTCPSocket *sock;
 
 	/* Can we reuse the last socket? */
 	if (_client->_socket != nil &&
@@ -671,7 +675,7 @@ normalizeKey(char *str_)
 		 * reused. If everything is successful, we set _socket again
 		 * at the end.
 		 */
-		socket = [_client->_socket autorelease];
+		sock = [_client->_socket autorelease];
 		_client->_socket = nil;
 
 		[_client->_lastURL release];
@@ -688,13 +692,13 @@ normalizeKey(char *str_)
 				       selector: @selector(throwAwayContent:
 						     buffer:length:context:
 						     exception:)
-					context: socket];
+					context: sock];
 		} else {
 			[_client->_lastResponse release];
 			_client->_lastResponse = nil;
 
 			[self performSelector: @selector(handleSocket:)
-				   withObject: socket
+				   withObject: sock
 				   afterDelay: 0];
 		}
 	} else
@@ -704,7 +708,7 @@ normalizeKey(char *str_)
 - (void)closeAndReconnect
 {
 	OFURL *URL = [_request URL];
-	OFTCPSocket *socket;
+	OFTCPSocket *sock;
 
 	[_client close];
 
@@ -713,28 +717,27 @@ normalizeKey(char *str_)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithURL: URL];
 
-		socket = [[[of_tls_socket_class alloc] init]
-		    autorelease];
+		sock = [[[of_tls_socket_class alloc] init] autorelease];
 	} else
-		socket = [OFTCPSocket socket];
+		sock = [OFTCPSocket socket];
 
-	[socket asyncConnectToHost: [URL host]
-			      port: [URL port]
-			    target: self
-			  selector: @selector(socketDidConnect:context:
-					exception:)
-			   context: nil];
+	[sock asyncConnectToHost: [URL host]
+			    port: [URL port]
+			  target: self
+			selector: @selector(socketDidConnect:context:
+				      exception:)
+			 context: nil];
 }
 @end
 
 @implementation OFHTTPClientResponse
 @synthesize of_keepAlive = _keepAlive;
 
-- (instancetype)initWithSocket: (OFTCPSocket *)socket
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
 {
 	self = [super init];
 
-	_socket = [socket retain];
+	_socket = [sock retain];
 
 	return self;
 }

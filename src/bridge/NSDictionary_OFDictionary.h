@@ -16,9 +16,11 @@
 
 #import <Foundation/NSDictionary.h>
 
+#import "macros.h"
+
 @class OFDictionary;
 
-NS_ASSUME_NONNULL_BEGIN
+OF_ASSUME_NONNULL_BEGIN
 
 @interface NSDictionary_OFDictionary: NSDictionary
 {
@@ -28,4 +30,4 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithOFDictionary: (OFDictionary *)dictionary;
 @end
 
-NS_ASSUME_NONNULL_END
+OF_ASSUME_NONNULL_END

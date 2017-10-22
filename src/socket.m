@@ -193,8 +193,8 @@ of_socket_errno()
 
 #ifndef OF_WII
 int
-of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
-    socklen_t *restrict address_len)
+of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
+    socklen_t *restrict addrLen)
 {
 	int ret;
 
@@ -204,7 +204,7 @@ of_getsockname(of_socket_t socket, struct sockaddr *restrict address,
 
 # endif
 
-	ret = getsockname(socket, address, address_len);
+	ret = getsockname(sock, addr, addrLen);
 
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_unlock(&mutex))

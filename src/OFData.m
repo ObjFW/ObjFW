@@ -378,12 +378,12 @@ _references_to_categories_of_OFData(void)
 	return _items;
 }
 
-- (const void *)itemAtIndex: (size_t)index
+- (const void *)itemAtIndex: (size_t)idx
 {
-	if (index >= _count)
+	if (idx >= _count)
 		@throw [OFOutOfRangeException exception];
 
-	return _items + index * _itemSize;
+	return _items + idx * _itemSize;
 }
 
 - (const void *)firstItem

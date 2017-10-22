@@ -263,14 +263,14 @@ static struct {
 	return [[OFMutableArray alloc] initWithArray: self];
 }
 
-- (id)objectAtIndex: (size_t)index
+- (id)objectAtIndex: (size_t)idx
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-- (id)objectAtIndexedSubscript: (size_t)index
+- (id)objectAtIndexedSubscript: (size_t)idx
 {
-	return [self objectAtIndex: index];
+	return [self objectAtIndex: idx];
 }
 
 - (id)valueForKey: (OFString *)key
@@ -876,9 +876,9 @@ static struct {
 				      count: count];
 
 	@try {
-		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+		[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 		    bool *stop) {
-			tmp[index] = block(object, index);
+			tmp[idx] = block(object, idx);
 		}];
 
 		ret = [OFArray arrayWithObjects: tmp
@@ -900,9 +900,9 @@ static struct {
 	@try {
 		__block size_t i = 0;
 
-		[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+		[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 		    bool *stop) {
-			if (block(object, index))
+			if (block(object, idx))
 				tmp[i++] = object;
 		}];
 
@@ -925,11 +925,11 @@ static struct {
 	if (count == 1)
 		return [[[self firstObject] retain] autorelease];
 
-	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {
 		id new;
 
-		if (index == 0) {
+		if (idx == 0) {
 			current = [object retain];
 			return;
 		}

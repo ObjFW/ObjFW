@@ -327,11 +327,11 @@ struct {
 	return [self caseInsensitiveCompare: otherString];
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)index
+- (of_unichar_t)characterAtIndex: (size_t)idx
 {
 	[self finishInitialization];
 
-	return [self characterAtIndex: index];
+	return [self characterAtIndex: idx];
 }
 
 - (void)getCharacters: (of_unichar_t *)buffer

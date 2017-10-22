@@ -636,13 +636,13 @@ of_alignof_type_encoding(const char *type)
 	return *(size_t *)[_offsets firstItem];
 }
 
-- (const char *)argumentTypeAtIndex: (size_t)index
+- (const char *)argumentTypeAtIndex: (size_t)idx
 {
-	return *(const char **)[_typesPointers itemAtIndex: index + 1];
+	return *(const char **)[_typesPointers itemAtIndex: idx + 1];
 }
 
-- (size_t)argumentOffsetAtIndex: (size_t)index
+- (size_t)argumentOffsetAtIndex: (size_t)idx
 {
-	return *(size_t *)[_offsets itemAtIndex: index + 1];
+	return *(size_t *)[_offsets itemAtIndex: idx + 1];
 }
 @end

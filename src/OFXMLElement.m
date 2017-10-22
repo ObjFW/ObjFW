@@ -884,7 +884,7 @@ static Class CDATAClass = Nil;
 }
 
 - (void)insertChild: (OFXMLNode *)child
-	    atIndex: (size_t)index
+	    atIndex: (size_t)idx
 {
 	if ([child isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
@@ -893,18 +893,18 @@ static Class CDATAClass = Nil;
 		_children = [[OFMutableArray alloc] init];
 
 	[_children insertObject: child
-			atIndex: index];
+			atIndex: idx];
 }
 
 - (void)insertChildren: (OFArray *)children
-	       atIndex: (size_t)index
+	       atIndex: (size_t)idx
 {
 	for (OFXMLNode *node in children)
 		if ([node isKindOfClass: [OFXMLAttribute class]])
 			@throw [OFInvalidArgumentException exception];
 
 	[_children insertObjectsFromArray: children
-				  atIndex: index];
+				  atIndex: idx];
 }
 
 - (void)removeChild: (OFXMLNode *)child
@@ -915,9 +915,9 @@ static Class CDATAClass = Nil;
 	[_children removeObject: child];
 }
 
-- (void)removeChildAtIndex: (size_t)index
+- (void)removeChildAtIndex: (size_t)idx
 {
-	[_children removeObjectAtIndex: index];
+	[_children removeObjectAtIndex: idx];
 }
 
 - (void)replaceChild: (OFXMLNode *)child
@@ -931,13 +931,13 @@ static Class CDATAClass = Nil;
 		      withObject: node];
 }
 
-- (void)replaceChildAtIndex: (size_t)index
+- (void)replaceChildAtIndex: (size_t)idx
 		   withNode: (OFXMLNode *)node
 {
 	if ([node isKindOfClass: [OFXMLAttribute class]])
 		@throw [OFInvalidArgumentException exception];
 
-	[_children replaceObjectAtIndex: index
+	[_children replaceObjectAtIndex: idx
 			     withObject: node];
 }
 

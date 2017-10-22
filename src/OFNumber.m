@@ -34,25 +34,25 @@
 	case OF_NUMBER_TYPE_BOOL:					\
 		return (t)_value.bool_;					\
 	case OF_NUMBER_TYPE_CHAR:					\
-		return (t)_value.schar;					\
+		return (t)_value.sChar;					\
 	case OF_NUMBER_TYPE_SHORT:					\
-		return (t)_value.sshort;				\
+		return (t)_value.sShort;				\
 	case OF_NUMBER_TYPE_INT:					\
-		return (t)_value.sint;					\
+		return (t)_value.sInt;					\
 	case OF_NUMBER_TYPE_LONG:					\
-		return (t)_value.slong;					\
+		return (t)_value.sLong;					\
 	case OF_NUMBER_TYPE_LONGLONG:					\
-		return (t)_value.slonglong;				\
+		return (t)_value.sLongLong;				\
 	case OF_NUMBER_TYPE_UCHAR:					\
-		return (t)_value.uchar;					\
+		return (t)_value.uChar;					\
 	case OF_NUMBER_TYPE_USHORT:					\
-		return (t)_value.ushort;				\
+		return (t)_value.uShort;				\
 	case OF_NUMBER_TYPE_UINT:					\
-		return (t)_value.uint;					\
+		return (t)_value.uInt;					\
 	case OF_NUMBER_TYPE_ULONG:					\
-		return (t)_value.ulong;					\
+		return (t)_value.uLong;					\
 	case OF_NUMBER_TYPE_ULONGLONG:					\
-		return (t)_value.ulonglong;				\
+		return (t)_value.uLongLong;				\
 	case OF_NUMBER_TYPE_INT8:					\
 		return (t)_value.int8;					\
 	case OF_NUMBER_TYPE_INT16:					\
@@ -62,27 +62,27 @@
 	case OF_NUMBER_TYPE_INT64:					\
 		return (t)_value.int64;					\
 	case OF_NUMBER_TYPE_UINT8:					\
-		return (t)_value.uint8;					\
+		return (t)_value.uInt8;					\
 	case OF_NUMBER_TYPE_UINT16:					\
-		return (t)_value.uint16;				\
+		return (t)_value.uInt16;				\
 	case OF_NUMBER_TYPE_UINT32:					\
-		return (t)_value.uint32;				\
+		return (t)_value.uInt32;				\
 	case OF_NUMBER_TYPE_UINT64:					\
-		return (t)_value.uint64;				\
+		return (t)_value.uInt64;				\
 	case OF_NUMBER_TYPE_SIZE:					\
 		return (t)_value.size;					\
 	case OF_NUMBER_TYPE_SSIZE:					\
-		return (t)_value.ssize;					\
+		return (t)_value.sSize;					\
 	case OF_NUMBER_TYPE_INTMAX:					\
-		return (t)_value.intmax;				\
+		return (t)_value.intMax;				\
 	case OF_NUMBER_TYPE_UINTMAX:					\
-		return (t)_value.uintmax;				\
+		return (t)_value.uIntMax;				\
 	case OF_NUMBER_TYPE_PTRDIFF:					\
-		return (t)_value.ptrdiff;				\
+		return (t)_value.ptrDiff;				\
 	case OF_NUMBER_TYPE_INTPTR:					\
-		return (t)_value.intptr;				\
+		return (t)_value.intPtr;				\
 	case OF_NUMBER_TYPE_UINTPTR:					\
-		return (t)_value.uintptr;				\
+		return (t)_value.uIntPtr;				\
 	case OF_NUMBER_TYPE_FLOAT:					\
 		return (t)_value.float_;				\
 	case OF_NUMBER_TYPE_DOUBLE:					\
@@ -104,54 +104,54 @@
 	return [[[self alloc] initWithBool: bool_] autorelease];
 }
 
-+ (instancetype)numberWithChar: (signed char)schar
++ (instancetype)numberWithChar: (signed char)sChar
 {
-	return [[[self alloc] initWithChar: schar] autorelease];
+	return [[[self alloc] initWithChar: sChar] autorelease];
 }
 
-+ (instancetype)numberWithShort: (signed short)sshort
++ (instancetype)numberWithShort: (signed short)sShort
 {
-	return [[[self alloc] initWithShort: sshort] autorelease];
+	return [[[self alloc] initWithShort: sShort] autorelease];
 }
 
-+ (instancetype)numberWithInt: (signed int)sint
++ (instancetype)numberWithInt: (signed int)sInt
 {
-	return [[[self alloc] initWithInt: sint] autorelease];
+	return [[[self alloc] initWithInt: sInt] autorelease];
 }
 
-+ (instancetype)numberWithLong: (signed long)slong
++ (instancetype)numberWithLong: (signed long)sLong
 {
-	return [[[self alloc] initWithLong: slong] autorelease];
+	return [[[self alloc] initWithLong: sLong] autorelease];
 }
 
-+ (instancetype)numberWithLongLong: (signed long long)slonglong
++ (instancetype)numberWithLongLong: (signed long long)sLongLong
 {
-	return [[[self alloc] initWithLongLong: slonglong] autorelease];
+	return [[[self alloc] initWithLongLong: sLongLong] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedChar: (unsigned char)uchar
++ (instancetype)numberWithUnsignedChar: (unsigned char)uChar
 {
-	return [[[self alloc] initWithUnsignedChar: uchar] autorelease];
+	return [[[self alloc] initWithUnsignedChar: uChar] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedShort: (unsigned short)ushort
++ (instancetype)numberWithUnsignedShort: (unsigned short)uShort
 {
-	return [[[self alloc] initWithUnsignedShort: ushort] autorelease];
+	return [[[self alloc] initWithUnsignedShort: uShort] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedInt: (unsigned int)uint
++ (instancetype)numberWithUnsignedInt: (unsigned int)uInt
 {
-	return [[[self alloc] initWithUnsignedInt: uint] autorelease];
+	return [[[self alloc] initWithUnsignedInt: uInt] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedLong: (unsigned long)ulong
++ (instancetype)numberWithUnsignedLong: (unsigned long)uLong
 {
-	return [[[self alloc] initWithUnsignedLong: ulong] autorelease];
+	return [[[self alloc] initWithUnsignedLong: uLong] autorelease];
 }
 
-+ (instancetype)numberWithUnsignedLongLong: (unsigned long long)ulonglong
++ (instancetype)numberWithUnsignedLongLong: (unsigned long long)uLongLong
 {
-	return [[[self alloc] initWithUnsignedLongLong: ulonglong] autorelease];
+	return [[[self alloc] initWithUnsignedLongLong: uLongLong] autorelease];
 }
 
 + (instancetype)numberWithInt8: (int8_t)int8
@@ -174,24 +174,24 @@
 	return [[[self alloc] initWithInt64: int64] autorelease];
 }
 
-+ (instancetype)numberWithUInt8: (uint8_t)uint8
++ (instancetype)numberWithUInt8: (uint8_t)uInt8
 {
-	return [[[self alloc] initWithUInt8: uint8] autorelease];
+	return [[[self alloc] initWithUInt8: uInt8] autorelease];
 }
 
-+ (instancetype)numberWithUInt16: (uint16_t)uint16
++ (instancetype)numberWithUInt16: (uint16_t)uInt16
 {
-	return [[[self alloc] initWithUInt16: uint16] autorelease];
+	return [[[self alloc] initWithUInt16: uInt16] autorelease];
 }
 
-+ (instancetype)numberWithUInt32: (uint32_t)uint32
++ (instancetype)numberWithUInt32: (uint32_t)uInt32
 {
-	return [[[self alloc] initWithUInt32: uint32] autorelease];
+	return [[[self alloc] initWithUInt32: uInt32] autorelease];
 }
 
-+ (instancetype)numberWithUInt64: (uint64_t)uint64
++ (instancetype)numberWithUInt64: (uint64_t)uInt64
 {
-	return [[[self alloc] initWithUInt64: uint64] autorelease];
+	return [[[self alloc] initWithUInt64: uInt64] autorelease];
 }
 
 + (instancetype)numberWithSize: (size_t)size
@@ -199,34 +199,34 @@
 	return [[[self alloc] initWithSize: size] autorelease];
 }
 
-+ (instancetype)numberWithSSize: (ssize_t)ssize
++ (instancetype)numberWithSSize: (ssize_t)sSize
 {
-	return [[[self alloc] initWithSSize: ssize] autorelease];
+	return [[[self alloc] initWithSSize: sSize] autorelease];
 }
 
-+ (instancetype)numberWithIntMax: (intmax_t)intmax
++ (instancetype)numberWithIntMax: (intmax_t)intMax
 {
-	return [[[self alloc] initWithIntMax: intmax] autorelease];
+	return [[[self alloc] initWithIntMax: intMax] autorelease];
 }
 
-+ (instancetype)numberWithUIntMax: (uintmax_t)uintmax
++ (instancetype)numberWithUIntMax: (uintmax_t)uIntMax
 {
-	return [[[self alloc] initWithUIntMax: uintmax] autorelease];
+	return [[[self alloc] initWithUIntMax: uIntMax] autorelease];
 }
 
-+ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrdiff
++ (instancetype)numberWithPtrDiff: (ptrdiff_t)ptrDiff
 {
-	return [[[self alloc] initWithPtrDiff: ptrdiff] autorelease];
+	return [[[self alloc] initWithPtrDiff: ptrDiff] autorelease];
 }
 
-+ (instancetype)numberWithIntPtr: (intptr_t)intptr
++ (instancetype)numberWithIntPtr: (intptr_t)intPtr
 {
-	return [[[self alloc] initWithIntPtr: intptr] autorelease];
+	return [[[self alloc] initWithIntPtr: intPtr] autorelease];
 }
 
-+ (instancetype)numberWithUIntPtr: (uintptr_t)uintptr
++ (instancetype)numberWithUIntPtr: (uintptr_t)uIntPtr
 {
-	return [[[self alloc] initWithUIntPtr: uintptr] autorelease];
+	return [[[self alloc] initWithUIntPtr: uIntPtr] autorelease];
 }
 
 + (instancetype)numberWithFloat: (float)float_
@@ -254,101 +254,101 @@
 	return self;
 }
 
-- (instancetype)initWithChar: (signed char)schar
+- (instancetype)initWithChar: (signed char)sChar
 {
 	self = [super init];
 
-	_value.schar = schar;
+	_value.sChar = sChar;
 	_type = OF_NUMBER_TYPE_CHAR;
 
 	return self;
 }
 
-- (instancetype)initWithShort: (signed short)sshort
+- (instancetype)initWithShort: (signed short)sShort
 {
 	self = [super init];
 
-	_value.sshort = sshort;
+	_value.sShort = sShort;
 	_type = OF_NUMBER_TYPE_SHORT;
 
 	return self;
 }
 
-- (instancetype)initWithInt: (signed int)sint
+- (instancetype)initWithInt: (signed int)sInt
 {
 	self = [super init];
 
-	_value.sint = sint;
+	_value.sInt = sInt;
 	_type = OF_NUMBER_TYPE_INT;
 
 	return self;
 }
 
-- (instancetype)initWithLong: (signed long)slong
+- (instancetype)initWithLong: (signed long)sLong
 {
 	self = [super init];
 
-	_value.slong = slong;
+	_value.sLong = sLong;
 	_type = OF_NUMBER_TYPE_LONG;
 
 	return self;
 }
 
-- (instancetype)initWithLongLong: (signed long long)slonglong
+- (instancetype)initWithLongLong: (signed long long)sLongLong
 {
 	self = [super init];
 
-	_value.slonglong = slonglong;
+	_value.sLongLong = sLongLong;
 	_type = OF_NUMBER_TYPE_LONGLONG;
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedChar: (unsigned char)uchar
+- (instancetype)initWithUnsignedChar: (unsigned char)uChar
 {
 	self = [super init];
 
-	_value.uchar = uchar;
+	_value.uChar = uChar;
 	_type = OF_NUMBER_TYPE_UCHAR;
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedShort: (unsigned short)ushort
+- (instancetype)initWithUnsignedShort: (unsigned short)uShort
 {
 	self = [super init];
 
-	_value.ushort = ushort;
+	_value.uShort = uShort;
 	_type = OF_NUMBER_TYPE_USHORT;
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedInt: (unsigned int)uint
+- (instancetype)initWithUnsignedInt: (unsigned int)uInt
 {
 	self = [super init];
 
-	_value.uint = uint;
+	_value.uInt = uInt;
 	_type = OF_NUMBER_TYPE_UINT;
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedLong: (unsigned long)ulong
+- (instancetype)initWithUnsignedLong: (unsigned long)uLong
 {
 	self = [super init];
 
-	_value.ulong = ulong;
+	_value.uLong = uLong;
 	_type = OF_NUMBER_TYPE_ULONG;
 
 	return self;
 }
 
-- (instancetype)initWithUnsignedLongLong: (unsigned long long)ulonglong
+- (instancetype)initWithUnsignedLongLong: (unsigned long long)uLongLong
 {
 	self = [super init];
 
-	_value.ulonglong = ulonglong;
+	_value.uLongLong = uLongLong;
 	_type = OF_NUMBER_TYPE_ULONGLONG;
 
 	return self;
@@ -394,41 +394,41 @@
 	return self;
 }
 
-- (instancetype)initWithUInt8: (uint8_t)uint8
+- (instancetype)initWithUInt8: (uint8_t)uInt8
 {
 	self = [super init];
 
-	_value.uint8 = uint8;
+	_value.uInt8 = uInt8;
 	_type = OF_NUMBER_TYPE_UINT8;
 
 	return self;
 }
 
-- (instancetype)initWithUInt16: (uint16_t)uint16
+- (instancetype)initWithUInt16: (uint16_t)uInt16
 {
 	self = [super init];
 
-	_value.uint16 = uint16;
+	_value.uInt16 = uInt16;
 	_type = OF_NUMBER_TYPE_UINT16;
 
 	return self;
 }
 
-- (instancetype)initWithUInt32: (uint32_t)uint32
+- (instancetype)initWithUInt32: (uint32_t)uInt32
 {
 	self = [super init];
 
-	_value.uint32 = uint32;
+	_value.uInt32 = uInt32;
 	_type = OF_NUMBER_TYPE_UINT32;
 
 	return self;
 }
 
-- (instancetype)initWithUInt64: (uint64_t)uint64
+- (instancetype)initWithUInt64: (uint64_t)uInt64
 {
 	self = [super init];
 
-	_value.uint64 = uint64;
+	_value.uInt64 = uInt64;
 	_type = OF_NUMBER_TYPE_UINT64;
 
 	return self;
@@ -444,61 +444,61 @@
 	return self;
 }
 
-- (instancetype)initWithSSize: (ssize_t)ssize
+- (instancetype)initWithSSize: (ssize_t)sSize
 {
 	self = [super init];
 
-	_value.ssize = ssize;
+	_value.sSize = sSize;
 	_type = OF_NUMBER_TYPE_SSIZE;
 
 	return self;
 }
 
-- (instancetype)initWithIntMax: (intmax_t)intmax
+- (instancetype)initWithIntMax: (intmax_t)intMax
 {
 	self = [super init];
 
-	_value.intmax = intmax;
+	_value.intMax = intMax;
 	_type = OF_NUMBER_TYPE_INTMAX;
 
 	return self;
 }
 
-- (instancetype)initWithUIntMax: (uintmax_t)uintmax
+- (instancetype)initWithUIntMax: (uintmax_t)uIntMax
 {
 	self = [super init];
 
-	_value.uintmax = uintmax;
+	_value.uIntMax = uIntMax;
 	_type = OF_NUMBER_TYPE_UINTMAX;
 
 	return self;
 }
 
-- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrdiff
+- (instancetype)initWithPtrDiff: (ptrdiff_t)ptrDiff
 {
 	self = [super init];
 
-	_value.ptrdiff = ptrdiff;
+	_value.ptrDiff = ptrDiff;
 	_type = OF_NUMBER_TYPE_PTRDIFF;
 
 	return self;
 }
 
-- (instancetype)initWithIntPtr: (intptr_t)intptr
+- (instancetype)initWithIntPtr: (intptr_t)intPtr
 {
 	self = [super init];
 
-	_value.intptr = intptr;
+	_value.intPtr = intPtr;
 	_type = OF_NUMBER_TYPE_INTPTR;
 
 	return self;
 }
 
-- (instancetype)initWithUIntPtr: (uintptr_t)uintptr
+- (instancetype)initWithUIntPtr: (uintptr_t)uIntPtr
 {
 	self = [super init];
 
-	_value.uintptr = uintptr;
+	_value.uIntPtr = uIntPtr;
 	_type = OF_NUMBER_TYPE_UINTPTR;
 
 	return self;
@@ -553,10 +553,10 @@
 			 *	  INTMAX_MAX!
 			 */
 			_type = OF_NUMBER_TYPE_UINTMAX;
-			_value.uintmax = [element decimalValue];
+			_value.uIntMax = [element decimalValue];
 		} else if ([typeString isEqual: @"signed"]) {
 			_type = OF_NUMBER_TYPE_INTMAX;
-			_value.intmax = [element decimalValue];
+			_value.intMax = [element decimalValue];
 		} else if ([typeString isEqual: @"float"]) {
 			union {
 				float f;

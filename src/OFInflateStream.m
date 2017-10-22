@@ -686,16 +686,16 @@ start:
 					    exception];
 
 				for (j = 0; j < CTX.length; j++) {
-					uint16_t index;
+					uint16_t idx;
 
 					if OF_UNLIKELY (length == 0) {
 						CTX.length -= j;
 						return bytesWritten;
 					}
 
-					index = (_slidingWindowIndex -
+					idx = (_slidingWindowIndex -
 					    CTX.distance) & _slidingWindowMask;
-					value = _slidingWindow[index];
+					value = _slidingWindow[idx];
 
 					buffer[bytesWritten++] = value;
 					length--;
