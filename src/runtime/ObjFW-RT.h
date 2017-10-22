@@ -43,6 +43,9 @@
 # ifndef _Nullable
 #  define _Nullable
 # endif
+# ifndef _Null_unspecified
+#  define _Null_unspecified
+# endif
 #endif
 
 #if !__has_feature(objc_arc) && !defined(__unsafe_unretained)
