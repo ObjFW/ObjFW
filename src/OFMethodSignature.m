@@ -28,252 +28,8 @@
 
 #import "macros.h"
 
-size_t sizeofEncoding(const char **type, size_t *length);
 size_t alignofEncoding(const char **type, size_t *length);
-
-size_t
-sizeofArray(const char **type, size_t *length)
-{
-	size_t count = 0;
-	size_t size;
-
-	assert(*length > 0);
-
-	(*type)++;
-	(*length)--;
-
-	while (*length > 0 && isdigit(**type)) {
-		count = count * 10 + **type - '0';
-
-		(*type)++;
-		(*length)--;
-	}
-
-	if (count == 0)
-		@throw [OFInvalidFormatException exception];
-
-	size = sizeofEncoding(type, length);
-
-	if (*length == 0 || **type != ']')
-		@throw [OFInvalidFormatException exception];
-
-	(*type)++;
-	(*length)--;
-
-	if (SIZE_MAX / count < size)
-		@throw [OFOutOfRangeException exception];
-
-	return count * size;
-}
-
-size_t
-sizeofStruct(const char **type, size_t *length)
-{
-	size_t size = 0;
-
-	assert(*length > 0);
-
-	(*type)++;
-	(*length)--;
-
-	/* Skip name */
-	while (*length > 0 && **type != '=') {
-		(*type)++;
-		(*length)--;
-	}
-
-	if (*length == 0)
-		@throw [OFInvalidFormatException exception];
-
-	/* Skip '=' */
-	(*type)++;
-	(*length)--;
-
-	while (*length > 0 && **type != '}') {
-		const char *typeCopy = *type;
-		size_t lengthCopy = *length;
-		size_t fieldSize = sizeofEncoding(type, length);
-		size_t fieldAlign = alignofEncoding(&typeCopy, &lengthCopy);
-
-		if (size % fieldAlign != 0) {
-			size_t padding = fieldAlign - (size % fieldAlign);
-
-			if (SIZE_MAX - size < padding)
-				@throw [OFOutOfRangeException exception];
-
-			size += padding;
-		}
-
-		if (SIZE_MAX - size < fieldSize)
-			@throw [OFOutOfRangeException exception];
-
-		size += fieldSize;
-	}
-
-	if (*length == 0 || **type != '}')
-		@throw [OFInvalidFormatException exception];
-
-	(*type)++;
-	(*length)--;
-
-	return size;
-}
-
-size_t
-sizeofUnion(const char **type, size_t *length)
-{
-	size_t size = 0;
-
-	assert(*length > 0);
-
-	(*type)++;
-	(*length)--;
-
-	/* Skip name */
-	while (*length > 0 && **type != '=') {
-		(*type)++;
-		(*length)--;
-	}
-
-	if (*length == 0)
-		@throw [OFInvalidFormatException exception];
-
-	/* Skip '=' */
-	(*type)++;
-	(*length)--;
-
-	while (*length > 0 && **type != ')') {
-		size_t fieldSize = sizeofEncoding(type, length);
-
-		if (fieldSize > size)
-			size = fieldSize;
-	}
-
-	if (*length == 0 || **type != ')')
-		@throw [OFInvalidFormatException exception];
-
-	(*type)++;
-	(*length)--;
-
-	return size;
-}
-
-size_t
-sizeofEncoding(const char **type, size_t *length)
-{
-	size_t size;
-
-	if (*length == 0)
-		@throw [OFInvalidFormatException exception];
-
-	if (**type == 'r') {
-		(*type)++;
-		(*length)--;
-
-		if (*length == 0)
-			@throw [OFInvalidFormatException exception];
-	}
-
-	switch (**type) {
-	case 'c':
-	case 'C':
-		size = sizeof(char);
-		break;
-	case 'i':
-	case 'I':
-		size = sizeof(int);
-		break;
-	case 's':
-	case 'S':
-		size = sizeof(short);
-		break;
-	case 'l':
-	case 'L':
-		size = sizeof(long);
-		break;
-	case 'q':
-	case 'Q':
-		size = sizeof(long long);
-		break;
-#ifdef __SIZEOF_INT128__
-	case 't':
-	case 'T':
-		size = __extension__ sizeof(__int128);
-		break;
-#endif
-	case 'f':
-		size = sizeof(float);
-		break;
-	case 'd':
-		size = sizeof(double);
-		break;
-	case 'D':
-		size = sizeof(long double);
-		break;
-	case 'B':
-		size = sizeof(_Bool);
-		break;
-	case 'v':
-		size = 0;
-		break;
-	case '*':
-		size = sizeof(char *);
-		break;
-	case '@':
-		size = sizeof(id);
-		break;
-	case '#':
-		size = sizeof(Class);
-		break;
-	case ':':
-		size = sizeof(SEL);
-		break;
-	case '[':
-		return sizeofArray(type, length);
-	case '{':
-		return sizeofStruct(type, length);
-	case '(':
-		return sizeofUnion(type, length);
-	case '^':
-		/* Just to skip over the rest */
-		(*type)++;
-		(*length)--;
-		sizeofEncoding(type, length);
-
-		return sizeof(void *);
-#ifndef __STDC_NO_COMPLEX__
-	case 'j':
-		(*type)++;
-		(*length)--;
-
-		if (*length == 0)
-			@throw [OFInvalidFormatException exception];
-
-		switch (**type) {
-		case 'f':
-			size = sizeof(float _Complex);
-			break;
-		case 'd':
-			size = sizeof(double _Complex);
-			break;
-		case 'D':
-			size = sizeof(long double _Complex);
-			break;
-		default:
-			@throw [OFInvalidFormatException exception];
-		}
-
-		break;
-#endif
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
-
-	(*type)++;
-	(*length)--;
-
-	return size;
-}
+size_t sizeofEncoding(const char **type, size_t *length);
 
 size_t
 alignofArray(const char **type, size_t *length)
@@ -305,6 +61,9 @@ size_t
 alignofStruct(const char **type, size_t *length)
 {
 	size_t align = 0;
+#if defined(OF_POWERPC) && defined(OF_MACOS)
+	bool first = true;
+#endif
 
 	assert(*length > 0);
 
@@ -326,6 +85,13 @@ alignofStruct(const char **type, size_t *length)
 
 	while (*length > 0 && **type != '}') {
 		size_t fieldAlign = alignofEncoding(type, length);
+
+#if defined(OF_POWERPC) && defined(OF_MACOS)
+		if (!first && fieldAlign > 4)
+			fieldAlign = 4;
+
+		first = false;
+#endif
 
 		if (fieldAlign > align)
 			align = fieldAlign;
@@ -494,6 +260,278 @@ alignofEncoding(const char **type, size_t *length)
 	(*length)--;
 
 	return align;
+}
+
+size_t
+sizeofArray(const char **type, size_t *length)
+{
+	size_t count = 0;
+	size_t size;
+
+	assert(*length > 0);
+
+	(*type)++;
+	(*length)--;
+
+	while (*length > 0 && isdigit(**type)) {
+		count = count * 10 + **type - '0';
+
+		(*type)++;
+		(*length)--;
+	}
+
+	if (count == 0)
+		@throw [OFInvalidFormatException exception];
+
+	size = sizeofEncoding(type, length);
+
+	if (*length == 0 || **type != ']')
+		@throw [OFInvalidFormatException exception];
+
+	(*type)++;
+	(*length)--;
+
+	if (SIZE_MAX / count < size)
+		@throw [OFOutOfRangeException exception];
+
+	return count * size;
+}
+
+size_t
+sizeofStruct(const char **type, size_t *length)
+{
+	size_t size = 0;
+#if defined(OF_POWERPC) && defined(OF_MACOS)
+	bool first = true;
+	size_t alignment;
+
+	{
+		const char *typeCopy = *type;
+		size_t lengthCopy = *length;
+		alignment = alignofStruct(&typeCopy, &lengthCopy);
+	}
+#endif
+
+	assert(*length > 0);
+
+	(*type)++;
+	(*length)--;
+
+	/* Skip name */
+	while (*length > 0 && **type != '=') {
+		(*type)++;
+		(*length)--;
+	}
+
+	if (*length == 0)
+		@throw [OFInvalidFormatException exception];
+
+	/* Skip '=' */
+	(*type)++;
+	(*length)--;
+
+	while (*length > 0 && **type != '}') {
+		const char *typeCopy = *type;
+		size_t lengthCopy = *length;
+		size_t fieldSize = sizeofEncoding(type, length);
+		size_t fieldAlign = alignofEncoding(&typeCopy, &lengthCopy);
+
+#if defined(OF_POWERPC) && defined(OF_MACOS)
+		if (!first && fieldAlign > 4)
+			fieldAlign = 4;
+
+		first = false;
+#endif
+
+		if (size % fieldAlign != 0) {
+			size_t padding = fieldAlign - (size % fieldAlign);
+
+			if (SIZE_MAX - size < padding)
+				@throw [OFOutOfRangeException exception];
+
+			size += padding;
+		}
+
+		if (SIZE_MAX - size < fieldSize)
+			@throw [OFOutOfRangeException exception];
+
+		size += fieldSize;
+	}
+
+	if (*length == 0 || **type != '}')
+		@throw [OFInvalidFormatException exception];
+
+	(*type)++;
+	(*length)--;
+
+#if defined(OF_POWERPC) && defined(OF_MACOS)
+	if (size % alignment != 0) {
+		size_t padding = alignment - (size % alignment);
+
+		if (SIZE_MAX - size < padding)
+			@throw [OFOutOfRangeException exception];
+
+		size += padding;
+	}
+#endif
+
+	return size;
+}
+
+size_t
+sizeofUnion(const char **type, size_t *length)
+{
+	size_t size = 0;
+
+	assert(*length > 0);
+
+	(*type)++;
+	(*length)--;
+
+	/* Skip name */
+	while (*length > 0 && **type != '=') {
+		(*type)++;
+		(*length)--;
+	}
+
+	if (*length == 0)
+		@throw [OFInvalidFormatException exception];
+
+	/* Skip '=' */
+	(*type)++;
+	(*length)--;
+
+	while (*length > 0 && **type != ')') {
+		size_t fieldSize = sizeofEncoding(type, length);
+
+		if (fieldSize > size)
+			size = fieldSize;
+	}
+
+	if (*length == 0 || **type != ')')
+		@throw [OFInvalidFormatException exception];
+
+	(*type)++;
+	(*length)--;
+
+	return size;
+}
+
+size_t
+sizeofEncoding(const char **type, size_t *length)
+{
+	size_t size;
+
+	if (*length == 0)
+		@throw [OFInvalidFormatException exception];
+
+	if (**type == 'r') {
+		(*type)++;
+		(*length)--;
+
+		if (*length == 0)
+			@throw [OFInvalidFormatException exception];
+	}
+
+	switch (**type) {
+	case 'c':
+	case 'C':
+		size = sizeof(char);
+		break;
+	case 'i':
+	case 'I':
+		size = sizeof(int);
+		break;
+	case 's':
+	case 'S':
+		size = sizeof(short);
+		break;
+	case 'l':
+	case 'L':
+		size = sizeof(long);
+		break;
+	case 'q':
+	case 'Q':
+		size = sizeof(long long);
+		break;
+#ifdef __SIZEOF_INT128__
+	case 't':
+	case 'T':
+		size = __extension__ sizeof(__int128);
+		break;
+#endif
+	case 'f':
+		size = sizeof(float);
+		break;
+	case 'd':
+		size = sizeof(double);
+		break;
+	case 'D':
+		size = sizeof(long double);
+		break;
+	case 'B':
+		size = sizeof(_Bool);
+		break;
+	case 'v':
+		size = 0;
+		break;
+	case '*':
+		size = sizeof(char *);
+		break;
+	case '@':
+		size = sizeof(id);
+		break;
+	case '#':
+		size = sizeof(Class);
+		break;
+	case ':':
+		size = sizeof(SEL);
+		break;
+	case '[':
+		return sizeofArray(type, length);
+	case '{':
+		return sizeofStruct(type, length);
+	case '(':
+		return sizeofUnion(type, length);
+	case '^':
+		/* Just to skip over the rest */
+		(*type)++;
+		(*length)--;
+		sizeofEncoding(type, length);
+
+		return sizeof(void *);
+#ifndef __STDC_NO_COMPLEX__
+	case 'j':
+		(*type)++;
+		(*length)--;
+
+		if (*length == 0)
+			@throw [OFInvalidFormatException exception];
+
+		switch (**type) {
+		case 'f':
+			size = sizeof(float _Complex);
+			break;
+		case 'd':
+			size = sizeof(double _Complex);
+			break;
+		case 'D':
+			size = sizeof(long double _Complex);
+			break;
+		default:
+			@throw [OFInvalidFormatException exception];
+		}
+
+		break;
+#endif
+	default:
+		@throw [OFInvalidFormatException exception];
+	}
+
+	(*type)++;
+	(*length)--;
+
+	return size;
 }
 
 size_t

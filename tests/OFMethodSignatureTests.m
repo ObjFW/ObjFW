@@ -30,6 +30,7 @@ static OFString *module = @"OFMethodSignature";
 struct test1_struct {
 	char c;
 	int i;
+	char d;
 };
 
 struct test2_struct {
@@ -42,13 +43,13 @@ struct test2_struct {
 		char c;
 		int i;
 	} u;
-	long double d;
+	double d;
 };
 
 union test3_union {
 	char c;
 	int i;
-	long double d;
+	double d;
 };
 
 union test4_union {
@@ -59,7 +60,7 @@ union test4_union {
 	int i;
 	union {
 		float f;
-		long double d;
+		double d;
 	} u;
 };
 
@@ -133,7 +134,7 @@ union test4_union {
 	    of_sizeof_type_encoding(@encode(struct test1_struct [5])) ==
 	    sizeof(struct test1_struct [5]))
 
-	TEST(@"of_alignof() #1",
+	TEST(@"of_alignof_type_encoding() #1",
 	    of_alignof_type_encoding(@encode(struct test1_struct)) ==
 	    OF_ALIGNOF(struct test1_struct))
 
