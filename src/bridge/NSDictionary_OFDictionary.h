@@ -18,7 +18,9 @@
 
 @class OFDictionary;
 
+#ifdef NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_BEGIN
+#endif
 
 @interface NSDictionary_OFDictionary: NSDictionary
 {
@@ -28,4 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 - initWithOFDictionary: (OFDictionary *)dictionary;
 @end
 
+#ifdef NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_END
+#endif

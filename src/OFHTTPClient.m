@@ -72,17 +72,17 @@ normalizeKey(char *str_)
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
 
-- initWithSocket: (OFTCPSocket *)socket;
+- initWithSocket: (OFTCPSocket *)sock;
 @end
 
 @implementation OFHTTPClientResponse
 @synthesize of_keepAlive = _keepAlive;
 
-- initWithSocket: (OFTCPSocket *)socket
+- initWithSocket: (OFTCPSocket *)sock
 {
 	self = [super init];
 
-	_socket = [socket retain];
+	_socket = [sock retain];
 
 	return self;
 }
@@ -288,7 +288,7 @@ normalizeKey(char *str_)
 - (OFTCPSocket *)of_closeAndCreateSocketForRequest: (OFHTTPRequest *)request
 {
 	OFURL *URL = [request URL];
-	OFTCPSocket *socket;
+	OFTCPSocket *sock;
 
 	[self close];
 
@@ -297,21 +297,20 @@ normalizeKey(char *str_)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithURL: URL];
 
-		socket = [[[of_tls_socket_class alloc] init]
-		    autorelease];
+		sock = [[[of_tls_socket_class alloc] init] autorelease];
 	} else
-		socket = [OFTCPSocket socket];
+		sock = [OFTCPSocket socket];
 
 	if ([_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:)])
 		[_delegate client: self
-		  didCreateSocket: socket
+		  didCreateSocket: sock
 			  request: request];
 
-	[socket connectToHost: [URL host]
-			 port: [URL port]];
+	[sock connectToHost: [URL host]
+		       port: [URL port]];
 
-	return socket;
+	return sock;
 }
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
@@ -326,7 +325,7 @@ normalizeKey(char *str_)
 	OFString *user, *password;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFData *body = [request body];
-	OFTCPSocket *socket;
+	OFTCPSocket *sock;
 	OFHTTPClientResponse *response;
 	OFString *line, *version, *redirect, *connectionHeader;
 	bool keepAlive;
@@ -347,7 +346,7 @@ normalizeKey(char *str_)
 		 * reused. If everything is successful, we set _socket again
 		 * at the end.
 		 */
-		socket = [_socket autorelease];
+		sock = [_socket autorelease];
 		_socket = nil;
 
 		[_lastURL release];
@@ -371,7 +370,7 @@ normalizeKey(char *str_)
 			_lastResponse = nil;
 		}
 	} else
-		socket = [self of_closeAndCreateSocketForRequest: request];
+		sock = [self of_closeAndCreateSocketForRequest: request];
 
 	/*
 	 * As a work around for a bug with split packets in lighttpd when using
@@ -472,22 +471,22 @@ normalizeKey(char *str_)
 	[requestString appendString: @"\r\n"];
 
 	@try {
-		[socket writeString: requestString];
+		[sock writeString: requestString];
 	} @catch (OFWriteFailedException *e) {
 		if ([e errNo] != ECONNRESET && [e errNo] != EPIPE)
 			@throw e;
 
 		/* Reconnect in case a keep-alive connection timed out */
-		socket = [self of_closeAndCreateSocketForRequest: request];
-		[socket writeString: requestString];
+		sock = [self of_closeAndCreateSocketForRequest: request];
+		[sock writeString: requestString];
 	}
 
 	if (body != nil)
-		[socket writeBuffer: [body items]
-			     length: [body count] * [body itemSize]];
+		[sock writeBuffer: [body items]
+			   length: [body count] * [body itemSize]];
 
 	@try {
-		line = [socket readLine];
+		line = [sock readLine];
 	} @catch (OFInvalidEncodingException *e) {
 		@throw [OFInvalidServerReplyException exception];
 	}
@@ -498,16 +497,15 @@ normalizeKey(char *str_)
 	 * end due to a timeout. In this case, we need to reconnect.
 	 */
 	if (line == nil) {
-		socket = [self of_closeAndCreateSocketForRequest: request];
-		[socket writeString: requestString];
+		sock = [self of_closeAndCreateSocketForRequest: request];
+		[sock writeString: requestString];
 
 		if (body != nil)
-			[socket writeBuffer: [body items]
-				     length: [body count] *
-					     [body itemSize]];
+			[sock writeBuffer: [body items]
+				   length: [body count] * [body itemSize]];
 
 		@try {
-			line = [socket readLine];
+			line = [sock readLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -527,12 +525,12 @@ normalizeKey(char *str_)
 	serverHeaders = [OFMutableDictionary dictionary];
 
 	for (;;) {
-		OFString *key, *value, *old;
+		OFString *value, *old;
 		const char *lineC, *tmp;
 		char *keyC;
 
 		@try {
-			line = [socket readLine];
+			line = [sock readLine];
 		} @catch (OFInvalidEncodingException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -587,7 +585,7 @@ normalizeKey(char *str_)
 			   statusCode: status
 			      request: request];
 
-	response = [[[OFHTTPClientResponse alloc] initWithSocket: socket]
+	response = [[[OFHTTPClientResponse alloc] initWithSocket: sock]
 	    autorelease];
 	[response setProtocolVersionFromString: version];
 	[response setStatusCode: status];
@@ -611,7 +609,7 @@ normalizeKey(char *str_)
 	if (keepAlive) {
 		[response of_setKeepAlive: true];
 
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_lastURL = [URL copy];
 		_lastWasHEAD = (method == OF_HTTP_REQUEST_METHOD_HEAD);
 		_lastResponse = [response retain];
@@ -671,9 +669,6 @@ normalizeKey(char *str_)
 			 * the entity of the request.
 			 */
 			if (status == 303) {
-				OFEnumerator *keyEnumerator, *objectEnumerator;
-				id key, object;
-
 				keyEnumerator = [headers keyEnumerator];
 				objectEnumerator = [headers objectEnumerator];
 				while ((key = [keyEnumerator nextObject]) !=

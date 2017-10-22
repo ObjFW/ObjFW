@@ -515,8 +515,10 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (_atEndOfStream)
 		return 0;
 
-	if (sizeof(length) >= sizeof(uint64_t) && length > UINT64_MAX)
+#if SIZE_MAX >= UINT64_MAX
+	if (length > UINT64_MAX)
 		@throw [OFOutOfRangeException exception];
+#endif
 
 	if ((uint64_t)length > _toRead)
 		length = (size_t)_toRead;

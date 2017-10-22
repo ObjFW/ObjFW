@@ -296,7 +296,7 @@ static struct {
 #endif
 
 - (void)setCharacter: (of_unichar_t)character
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string;
@@ -304,7 +304,7 @@ static struct {
 	string = [OFString stringWithCharacters: &character
 					 length: 1];
 
-	[self replaceCharactersInRange: of_range(index, 1)
+	[self replaceCharactersInRange: of_range(idx, 1)
 			    withString: string];
 
 	objc_autoreleasePoolPop(pool);
@@ -466,9 +466,9 @@ static struct {
 #endif
 
 - (void)insertString: (OFString *)string
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
-	[self replaceCharactersInRange: of_range(index, 0)
+	[self replaceCharactersInRange: of_range(idx, 0)
 			    withString: string];
 }
 

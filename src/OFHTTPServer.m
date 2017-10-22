@@ -47,7 +47,7 @@
  */
 
 @interface OFHTTPServer ()
-- (bool)of_socket: (OFTCPSocket *)socket
+- (bool)of_socket: (OFTCPSocket *)sock
   didAcceptSocket: (OFTCPSocket *)clientSocket
 	exception: (OFException *)exception;
 @end
@@ -179,20 +179,20 @@ normalizedKey(OFString *key)
 	bool _chunked, _headersSent;
 }
 
-- initWithSocket: (OFTCPSocket *)socket
+- initWithSocket: (OFTCPSocket *)sock
 	  server: (OFHTTPServer *)server
 	 request: (OFHTTPRequest *)request;
 @end
 
 @implementation OFHTTPServerResponse
-- initWithSocket: (OFTCPSocket *)socket
+- initWithSocket: (OFTCPSocket *)sock
 	  server: (OFHTTPServer *)server
 	 request: (OFHTTPRequest *)request
 {
 	self = [super init];
 
 	_statusCode = 500;
-	_socket = [socket retain];
+	_socket = [sock retain];
 	_server = [server retain];
 	_request = [request retain];
 
@@ -338,14 +338,14 @@ normalizedKey(OFString *key)
 	OFMutableData *_body;
 }
 
-- initWithSocket: (OFTCPSocket *)socket
+- initWithSocket: (OFTCPSocket *)sock
 	  server: (OFHTTPServer *)server;
-- (bool)socket: (OFTCPSocket *)socket
+- (bool)socket: (OFTCPSocket *)sock
    didReadLine: (OFString *)line
      exception: (OFException *)exception;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
--      (bool)socket: (OFTCPSocket *)socket
+-      (bool)socket: (OFTCPSocket *)sock
   didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
 	  exception: (OFException *)exception;
@@ -354,17 +354,17 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServer_Connection
-- initWithSocket: (OFTCPSocket *)socket
+- initWithSocket: (OFTCPSocket *)sock
 	  server: (OFHTTPServer *)server
 {
 	self = [super init];
 
 	@try {
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_server = [server retain];
 		_timer = [[OFTimer
 		    scheduledTimerWithTimeInterval: 10
-					    target: socket
+					    target: _socket
 					  selector: @selector(
 							cancelAsyncRequests)
 					   repeats: false] retain];
@@ -393,7 +393,7 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
-- (bool)socket: (OFTCPSocket *)socket
+- (bool)socket: (OFTCPSocket *)sock
    didReadLine: (OFString *)line
      exception: (OFException *)exception
 {
@@ -569,12 +569,12 @@ normalizedKey(OFString *key)
 	return true;
 }
 
--      (bool)socket: (OFTCPSocket *)socket
+-      (bool)socket: (OFTCPSocket *)sock
   didReadIntoBuffer: (char *)buffer
 	     length: (size_t)length
 	  exception: (OFException *)exception
 {
-	if ([socket isAtEndOfStream] || exception != nil)
+	if ([sock isAtEndOfStream] || exception != nil)
 		return false;
 
 	[_body addItems: buffer
@@ -733,7 +733,7 @@ normalizedKey(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (bool)of_socket: (OFTCPSocket *)socket
+- (bool)of_socket: (OFTCPSocket *)sock
   didAcceptSocket: (OFTCPSocket *)clientSocket
 	exception: (OFException *)exception
 {

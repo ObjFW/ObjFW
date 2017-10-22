@@ -314,7 +314,7 @@ static OFRunLoop *mainRunLoop = nil;
 	else {
 # endif
 		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t address, OFException *) =
+		    of_udp_socket_address_t, OFException *) =
 		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
 		    of_udp_socket_address_t, OFException *))
 		    [_target methodForSelector: _selector];
@@ -430,13 +430,13 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
++ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
 				target: (id)target
 			      selector: (SEL)selector
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, socket, {
+	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, {
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 		queueItem->_target = [target retain];
@@ -487,13 +487,13 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
++ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
 				 block: (of_udp_socket_async_receive_block_t)
 					    block
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, socket, {
+	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, {
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 		queueItem->_block = [block copy];

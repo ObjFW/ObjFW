@@ -151,24 +151,24 @@ of_string_utf8_check(const char *UTF8String, size_t UTF8Length, size_t *length)
 size_t
 of_string_utf8_get_index(const char *string, size_t position)
 {
-	size_t index = position;
+	size_t idx = position;
 
 	for (size_t i = 0; i < position; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
-			index--;
+			idx--;
 
-	return index;
+	return idx;
 }
 
 size_t
-of_string_utf8_get_position(const char *string, size_t index, size_t length)
+of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 {
-	for (size_t i = 0; i <= index; i++)
+	for (size_t i = 0; i <= idx; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
-			if (++index > length)
+			if (++idx > length)
 				return OF_NOT_FOUND;
 
-	return index;
+	return idx;
 }
 
 @implementation OFString_UTF8
@@ -946,21 +946,20 @@ of_string_utf8_get_position(const char *string, size_t index, size_t length)
 	return hash;
 }
 
-- (of_unichar_t)characterAtIndex: (size_t)index
+- (of_unichar_t)characterAtIndex: (size_t)idx
 {
 	of_unichar_t character;
 
-	if (index >= _s->length)
+	if (idx >= _s->length)
 		@throw [OFOutOfRangeException exception];
 
 	if (!_s->isUTF8)
-		return _s->cString[index];
+		return _s->cString[idx];
 
-	index = of_string_utf8_get_position(_s->cString, index,
-	    _s->cStringLength);
+	idx = of_string_utf8_get_position(_s->cString, idx, _s->cStringLength);
 
-	if (of_string_utf8_decode(_s->cString + index,
-	    _s->cStringLength - index, &character) <= 0)
+	if (of_string_utf8_decode(_s->cString + idx,
+	    _s->cStringLength - idx, &character) <= 0)
 		@throw [OFInvalidEncodingException exception];
 
 	return character;

@@ -18,7 +18,9 @@
 
 @class OFArray;
 
+#ifdef NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_BEGIN
+#endif
 
 @interface NSArray_OFArray: NSArray
 {
@@ -28,4 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 - initWithOFArray: (OFArray *)array;
 @end
 
+#ifdef NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_END
+#endif

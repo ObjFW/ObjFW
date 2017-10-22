@@ -105,21 +105,21 @@
 	for (size_t i = 0; i < (size_t)bars; i++)
 		[of_stdout writeString: @"█"];
 	if (bars < barWidth) {
-		float remainder = bars - floorf(bars);
+		float rem = bars - floorf(bars);
 
-		if (remainder >= 0.875)
+		if (rem >= 0.875)
 			[of_stdout writeString: @"▉"];
-		else if (remainder >= 0.75)
+		else if (rem >= 0.75)
 			[of_stdout writeString: @"▊"];
-		else if (remainder >= 0.625)
+		else if (rem >= 0.625)
 			[of_stdout writeString: @"▋"];
-		else if (remainder >= 0.5)
+		else if (rem >= 0.5)
 			[of_stdout writeString: @"▌"];
-		else if (remainder >= 0.375)
+		else if (rem >= 0.375)
 			[of_stdout writeString: @"▍"];
-		else if (remainder >= 0.25)
+		else if (rem >= 0.25)
 			[of_stdout writeString: @"▎"];
-		else if (remainder >= 0.125)
+		else if (rem >= 0.125)
 			[of_stdout writeString: @"▏"];
 		else
 			[of_stdout writeString: @" "];

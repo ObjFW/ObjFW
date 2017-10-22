@@ -97,7 +97,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 @implementation OFTCPSocket_ConnectThread
 - initWithSourceThread: (OFThread *)sourceThread
-		socket: (OFTCPSocket *)socket
+		socket: (OFTCPSocket *)sock
 		  host: (OFString *)host
 		  port: (uint16_t)port
 		target: (id)target
@@ -107,7 +107,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	@try {
 		_sourceThread = [sourceThread retain];
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_host = [host copy];
 		_port = port;
 		_target = [target retain];
@@ -122,7 +122,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 # ifdef OF_HAVE_BLOCKS
 - initWithSourceThread: (OFThread *)sourceThread
-		socket: (OFTCPSocket *)socket
+		socket: (OFTCPSocket *)sock
 		  host: (OFString *)host
 		  port: (uint16_t)port
 		 block: (of_tcp_socket_async_connect_block_t)block
@@ -131,7 +131,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	@try {
 		_sourceThread = [sourceThread retain];
-		_socket = [socket retain];
+		_socket = [sock retain];
 		_host = [host copy];
 		_port = port;
 		_block = [block copy];

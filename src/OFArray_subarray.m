@@ -57,12 +57,12 @@
 	return _range.length;
 }
 
-- (id)objectAtIndex: (size_t)index
+- (id)objectAtIndex: (size_t)idx
 {
-	if (index >= _range.length)
+	if (idx >= _range.length)
 		@throw [OFOutOfRangeException exception];
 
-	return [_array objectAtIndex: index + _range.location];
+	return [_array objectAtIndex: idx + _range.location];
 }
 
 - (void)getObjects: (id *)buffer
@@ -80,32 +80,32 @@
 
 - (size_t)indexOfObject: (id)object
 {
-	size_t index = [_array indexOfObject: object];
+	size_t idx = [_array indexOfObject: object];
 
-	if (index < _range.location)
+	if (idx < _range.location)
 		return OF_NOT_FOUND;
 
-	index -= _range.location;
+	idx -= _range.location;
 
-	if (index >= _range.length)
+	if (idx >= _range.length)
 		return OF_NOT_FOUND;
 
-	return index;
+	return idx;
 }
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	size_t index = [_array indexOfObjectIdenticalTo: object];
+	size_t idx = [_array indexOfObjectIdenticalTo: object];
 
-	if (index < _range.location)
+	if (idx < _range.location)
 		return OF_NOT_FOUND;
 
-	index -= _range.location;
+	idx -= _range.location;
 
-	if (index >= _range.length)
+	if (idx >= _range.length)
 		return OF_NOT_FOUND;
 
-	return index;
+	return idx;
 }
 
 - (OFArray *)objectsInRange: (of_range_t)range

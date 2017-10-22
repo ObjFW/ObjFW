@@ -201,14 +201,14 @@
 	return [_array items];
 }
 
-- (id)objectAtIndex: (size_t)index
+- (id)objectAtIndex: (size_t)idx
 {
-	return *((id *)[_array itemAtIndex: index]);
+	return *((id *)[_array itemAtIndex: idx]);
 }
 
-- (id)objectAtIndexedSubscript: (size_t)index
+- (id)objectAtIndexedSubscript: (size_t)idx
 {
-	return *((id *)[_array itemAtIndex: index]);
+	return *((id *)[_array itemAtIndex: idx]);
 }
 
 - (void)getObjects: (id *)buffer

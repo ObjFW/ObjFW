@@ -604,21 +604,21 @@ OF_BSWAP_DOUBLE(double d)
 	}
 
 static OF_INLINE bool
-of_bitset_isset(uint8_t *_Nonnull storage, size_t index)
+of_bitset_isset(uint8_t *_Nonnull storage, size_t idx)
 {
-	return storage[index / 8] & (1 << (index % 8));
+	return storage[idx / 8] & (1 << (idx % 8));
 }
 
 static OF_INLINE void
-of_bitset_set(uint8_t *_Nonnull storage, size_t index)
+of_bitset_set(uint8_t *_Nonnull storage, size_t idx)
 {
-	storage[index / 8] |= (1 << (index % 8));
+	storage[idx / 8] |= (1 << (idx % 8));
 }
 
 static OF_INLINE void
-of_bitset_clear(uint8_t *_Nonnull storage, size_t index)
+of_bitset_clear(uint8_t *_Nonnull storage, size_t idx)
 {
-	storage[index / 8] &= ~(1 << (index % 8));
+	storage[idx / 8] &= ~(1 << (idx % 8));
 }
 
 static OF_INLINE char *_Nullable

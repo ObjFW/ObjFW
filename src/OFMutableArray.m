@@ -210,31 +210,31 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 }
 
 - (void)insertObject: (id)object
-	     atIndex: (size_t)index
+	     atIndex: (size_t)idx
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)insertObjectsFromArray: (OFArray *)array
-		       atIndex: (size_t)index
+		       atIndex: (size_t)idx
 {
 	size_t i = 0;
 
 	for (id object in array)
 		[self insertObject: object
-			   atIndex: index + i++];
+			   atIndex: idx + i++];
 }
 
-- (void)replaceObjectAtIndex: (size_t)index
+- (void)replaceObjectAtIndex: (size_t)idx
 		  withObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
 -    (void)setObject: (id)object
-  atIndexedSubscript: (size_t)index
+  atIndexedSubscript: (size_t)idx
 {
-	[self replaceObjectAtIndex: index
+	[self replaceObjectAtIndex: idx
 			withObject: object];
 }
 
@@ -277,7 +277,7 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 	}
 }
 
-- (void)removeObjectAtIndex: (size_t)index
+- (void)removeObjectAtIndex: (size_t)idx
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
@@ -342,28 +342,28 @@ quicksort(OFMutableArray *array, size_t left, size_t right, int options)
 #ifdef OF_HAVE_BLOCKS
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	[self enumerateObjectsUsingBlock: ^ (id object, size_t index,
+	[self enumerateObjectsUsingBlock: ^ (id object, size_t idx,
 	    bool *stop) {
-		id new = block(object, index);
+		id new = block(object, idx);
 
 		if (new != object)
-			[self replaceObjectAtIndex: index
+			[self replaceObjectAtIndex: idx
 					withObject: new];
 	}];
 }
 #endif
 
-- (void)exchangeObjectAtIndex: (size_t)index1
-	    withObjectAtIndex: (size_t)index2
+- (void)exchangeObjectAtIndex: (size_t)idx1
+	    withObjectAtIndex: (size_t)idx2
 {
-	id object1 = [self objectAtIndex: index1];
-	id object2 = [self objectAtIndex: index2];
+	id object1 = [self objectAtIndex: idx1];
+	id object2 = [self objectAtIndex: idx2];
 
 	[object1 retain];
 	@try {
-		[self replaceObjectAtIndex: index1
+		[self replaceObjectAtIndex: idx1
 				withObject: object2];
-		[self replaceObjectAtIndex: index2
+		[self replaceObjectAtIndex: idx2
 				withObject: object1];
 	} @finally {
 		[object1 release];

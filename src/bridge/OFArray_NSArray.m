@@ -41,14 +41,14 @@
 	return self;
 }
 
-- (id)objectAtIndex: (size_t)index
+- (id)objectAtIndex: (size_t)idx
 {
 	id object;
 
-	if (index > NSUIntegerMax)
+	if (idx > NSUIntegerMax)
 		@throw [OFOutOfRangeException exception];
 
-	object = [_array objectAtIndex: index];
+	object = [_array objectAtIndex: idx];
 
 	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];

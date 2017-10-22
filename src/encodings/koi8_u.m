@@ -131,7 +131,7 @@ of_unicode_to_koi8_u(const of_unichar_t *input, unsigned char *output,
 		of_unichar_t c = input[i];
 
 		if OF_UNLIKELY (c > 0x7F) {
-			uint8_t index;
+			uint8_t idx;
 
 			if OF_UNLIKELY (c > 0xFFFF) {
 				if (lossy) {

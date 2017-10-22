@@ -21,14 +21,14 @@
 			continue;				\
 		}						\
 								\
-		index = (c & 0xFF) - page##nr##Start;		\
+		idx = (c & 0xFF) - page##nr##Start;		\
 								\
-		if (index >= sizeof(page##nr)) {		\
+		if (idx >= sizeof(page##nr)) {			\
 			output[i] = (unsigned char)c;		\
 			continue;				\
 		}						\
 								\
-		if (page##nr[index] == 0x00) {			\
+		if (page##nr[idx] == 0x00) {			\
 			if (lossy) {				\
 				output[i] = '?';		\
 				continue;			\
@@ -36,7 +36,7 @@
 				return false;			\
 		}						\
 								\
-		output[i] = page##nr[index];			\
+		output[i] = page##nr[idx];			\
 		break;
 #define CASE_MISSING_IS_ERROR(nr)					 \
 	case 0x##nr:							 \
@@ -48,9 +48,9 @@
 				return false;				 \
 		}							 \
 									 \
-		index = (c & 0xFF) - page##nr##Start;			 \
+		idx = (c & 0xFF) - page##nr##Start;			 \
 									 \
-		if (index >= sizeof(page##nr) || page##nr[index] == 0) { \
+		if (idx >= sizeof(page##nr) || page##nr[idx] == 0) { \
 			if (lossy) {					 \
 				output[i] = '?';			 \
 				continue;				 \
@@ -58,5 +58,5 @@
 				return false;				 \
 		}							 \
 									 \
-		output[i] = page##nr[index];				 \
+		output[i] = page##nr[idx];				 \
 		break;

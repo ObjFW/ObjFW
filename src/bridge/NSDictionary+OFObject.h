@@ -18,7 +18,9 @@
 
 #import "NSBridging.h"
 
+#ifdef NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_BEGIN
+#endif
 
 /*!
  * @category NSDictionary (OFObject) \
@@ -29,4 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NSDictionary (OFObject) <NSBridging>
 @end
 
+#ifdef NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_END
+#endif

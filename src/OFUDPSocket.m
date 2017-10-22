@@ -177,9 +177,9 @@ bool
 of_udp_socket_address_equal(of_udp_socket_address_t *address1,
     of_udp_socket_address_t *address2)
 {
-	struct sockaddr_in *sin_1, *sin_2;
+	struct sockaddr_in *addrIn1, *addrIn2;
 #ifdef HAVE_IPV6
-	struct sockaddr_in6 *sin6_1, *sin6_2;
+	struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
 #endif
 
 	if (address1->address.ss_family != address2->address.ss_family)
@@ -196,12 +196,12 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		sin_1 = (struct sockaddr_in *)&address1->address;
-		sin_2 = (struct sockaddr_in *)&address2->address;
+		addrIn1 = (struct sockaddr_in *)&address1->address;
+		addrIn2 = (struct sockaddr_in *)&address2->address;
 
-		if (sin_1->sin_port != sin_2->sin_port)
+		if (addrIn1->sin_port != addrIn2->sin_port)
 			return false;
-		if (sin_1->sin_addr.s_addr != sin_2->sin_addr.s_addr)
+		if (addrIn1->sin_addr.s_addr != addrIn2->sin_addr.s_addr)
 			return false;
 
 		break;
@@ -211,14 +211,14 @@ of_udp_socket_address_equal(of_udp_socket_address_t *address1,
 		    address2->length < sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
-		sin6_1 = (struct sockaddr_in6 *)&address1->address;
-		sin6_2 = (struct sockaddr_in6 *)&address2->address;
+		addrIn6_1 = (struct sockaddr_in6 *)&address1->address;
+		addrIn6_2 = (struct sockaddr_in6 *)&address2->address;
 
-		if (sin6_1->sin6_port != sin6_2->sin6_port)
+		if (addrIn6_1->sin6_port != addrIn6_2->sin6_port)
 			return false;
-		if (memcmp(sin6_1->sin6_addr.s6_addr,
-		    sin6_2->sin6_addr.s6_addr,
-		    sizeof(sin6_1->sin6_addr.s6_addr)) != 0)
+		if (memcmp(addrIn6_1->sin6_addr.s6_addr,
+		    addrIn6_2->sin6_addr.s6_addr,
+		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
 			return false;
 
 		break;
@@ -234,9 +234,9 @@ uint32_t
 of_udp_socket_address_hash(of_udp_socket_address_t *address)
 {
 	uint32_t hash = of_hash_seed;
-	struct sockaddr_in *sin;
+	struct sockaddr_in *addrIn;
 #ifdef HAVE_IPV6
-	struct sockaddr_in6 *sin6;
+	struct sockaddr_in6 *addrIn6;
 	uint32_t subhash;
 #endif
 
@@ -252,10 +252,10 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 			@throw [OFInvalidArgumentException exception];
 #endif
 
-		sin = (struct sockaddr_in *)&address->address;
+		addrIn = (struct sockaddr_in *)&address->address;
 
-		hash += (sin->sin_port << 1);
-		hash ^= sin->sin_addr.s_addr;
+		hash += (addrIn->sin_port << 1);
+		hash ^= addrIn->sin_addr.s_addr;
 
 		break;
 #ifdef HAVE_IPV6
@@ -263,14 +263,14 @@ of_udp_socket_address_hash(of_udp_socket_address_t *address)
 		if (address->length < sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
-		sin6 = (struct sockaddr_in6 *)&address->address;
+		addrIn6 = (struct sockaddr_in6 *)&address->address;
 
-		hash += (sin6->sin6_port << 1);
+		hash += (addrIn6->sin6_port << 1);
 
 		OF_HASH_INIT(subhash);
 
-		for (size_t i = 0; i < sizeof(sin6->sin6_addr.s6_addr); i++)
-			OF_HASH_ADD(subhash, sin6->sin6_addr.s6_addr[i]);
+		for (size_t i = 0; i < sizeof(addrIn6->sin6_addr.s6_addr); i++)
+			OF_HASH_ADD(subhash, adrIn6->sin6_addr.s6_addr[i]);
 
 		OF_HASH_FINALIZE(subhash);
 
