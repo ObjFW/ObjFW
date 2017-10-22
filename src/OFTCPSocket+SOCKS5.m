@@ -32,8 +32,7 @@
 int _OFTCPSocket_SOCKS5_reference;
 
 static void
-send_or_exception(OFTCPSocket *self, of_socket_t sock, char *buffer,
-    int length)
+sendOrThrow(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 {
 #ifndef OF_WINDOWS
 	ssize_t bytesWritten;
@@ -56,7 +55,7 @@ send_or_exception(OFTCPSocket *self, of_socket_t sock, char *buffer,
 }
 
 static void
-recv_exact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
+recvExact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 {
 	while (length > 0) {
 		ssize_t ret = recv(sock, (void *)buffer, length, 0);
@@ -85,9 +84,9 @@ recv_exact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 		@throw [OFOutOfRangeException exception];
 
 	/* 5 1 0 -> no authentication */
-	send_or_exception(self, _socket, request, 3);
+	sendOrThrow(self, _socket, request, 3);
 
-	recv_exact(self, _socket, reply, 2);
+	recvExact(self, _socket, reply, 2);
 
 	if (reply[0] != 5 || reply[1] != 0) {
 		[self close];
@@ -118,12 +117,12 @@ recv_exact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 	if ([connectRequest count] > INT_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	send_or_exception(self, _socket,
+	sendOrThrow(self, _socket,
 	    [connectRequest items], (int)[connectRequest count]);
 
 	objc_autoreleasePoolPop(pool);
 
-	recv_exact(self, _socket, reply, 4);
+	recvExact(self, _socket, reply, 4);
 
 	if (reply[0] != 5 || reply[2] != 0) {
 		[self close];
@@ -175,14 +174,14 @@ recv_exact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 	/* Skip the rest of the reply */
 	switch (reply[3]) {
 	case 1: /* IPv4 */
-		recv_exact(self, _socket, reply, 4);
+		recvExact(self, _socket, reply, 4);
 		break;
 	case 3: /* Domain name */
-		recv_exact(self, _socket, reply, 1);
-		recv_exact(self, _socket, reply, reply[0]);
+		recvExact(self, _socket, reply, 1);
+		recvExact(self, _socket, reply, reply[0]);
 		break;
 	case 4: /* IPv6 */
-		recv_exact(self, _socket, reply, 16);
+		recvExact(self, _socket, reply, 16);
 		break;
 	default:
 		[self close];
@@ -193,6 +192,6 @@ recv_exact(OFTCPSocket *self, of_socket_t sock, char *buffer, int length)
 				errNo: EPROTONOSUPPORT];
 	}
 
-	recv_exact(self, _socket, reply, 2);
+	recvExact(self, _socket, reply, 2);
 }
 @end
