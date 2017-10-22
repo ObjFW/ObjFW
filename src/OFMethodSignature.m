@@ -301,15 +301,11 @@ size_t
 sizeofStruct(const char **type, size_t *length)
 {
 	size_t size = 0;
+	const char *typeCopy = *type;
+	size_t lengthCopy = *length;
+	size_t alignment = alignofStruct(&typeCopy, &lengthCopy);
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 	bool first = true;
-	size_t alignment;
-
-	{
-		const char *typeCopy = *type;
-		size_t lengthCopy = *length;
-		alignment = alignofStruct(&typeCopy, &lengthCopy);
-	}
 #endif
 
 	assert(*length > 0);
@@ -331,10 +327,12 @@ sizeofStruct(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != '}') {
-		const char *typeCopy = *type;
-		size_t lengthCopy = *length;
-		size_t fieldSize = sizeofEncoding(type, length);
-		size_t fieldAlign = alignofEncoding(&typeCopy, &lengthCopy);
+		size_t fieldSize, fieldAlign;
+
+		typeCopy = *type;
+		lengthCopy = *length;
+		fieldSize = sizeofEncoding(type, length);
+		fieldAlign = alignofEncoding(&typeCopy, &lengthCopy);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 		if (!first && fieldAlign > 4)
@@ -364,7 +362,6 @@ sizeofStruct(const char **type, size_t *length)
 	(*type)++;
 	(*length)--;
 
-#if defined(OF_POWERPC) && defined(OF_MACOS)
 	if (size % alignment != 0) {
 		size_t padding = alignment - (size % alignment);
 
@@ -373,7 +370,6 @@ sizeofStruct(const char **type, size_t *length)
 
 		size += padding;
 	}
-#endif
 
 	return size;
 }
