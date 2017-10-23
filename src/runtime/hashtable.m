@@ -131,7 +131,7 @@ resize(struct objc_hashtable *table, uint32_t count)
 }
 
 static inline bool
-index_for_key(struct objc_hashtable *table, const void *key, uint32_t *index)
+index_for_key(struct objc_hashtable *table, const void *key, uint32_t *idx)
 {
 	uint32_t i, hash;
 
@@ -142,7 +142,7 @@ index_for_key(struct objc_hashtable *table, const void *key, uint32_t *index)
 			continue;
 
 		if (table->equal(table->data[i]->key, key)) {
-			*index = i;
+			*idx = i;
 			return true;
 		}
 	}
@@ -155,7 +155,7 @@ index_for_key(struct objc_hashtable *table, const void *key, uint32_t *index)
 			continue;
 
 		if (table->equal(table->data[i]->key, key)) {
-			*index = i;
+			*idx = i;
 			return true;
 		}
 	}
