@@ -241,6 +241,8 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_REQUIRE([BUILDSYS_SHARED_LIB])
 
+	AC_CHECK_TOOL(CODESIGN, codesign)
+
 	case "$host_os" in
 		darwin*)
 			AC_MSG_CHECKING(whether host is iOS)

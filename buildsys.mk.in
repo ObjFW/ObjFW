@@ -61,6 +61,7 @@ PLUGIN_LDFLAGS = @PLUGIN_LDFLAGS@
 PLUGIN_SUFFIX = @PLUGIN_SUFFIX@
 FRAMEWORK_LDFLAGS = @FRAMEWORK_LDFLAGS@
 FRAMEWORK_LDFLAGS_INSTALL_NAME = @FRAMEWORK_LDFLAGS_INSTALL_NAME@
+CODESIGN = @CODESIGN@
 CODESIGN_IDENTITY ?= -
 INSTALL_LIB = @INSTALL_LIB@
 UNINSTALL_LIB = @UNINSTALL_LIB@
@@ -244,38 +245,11 @@ ${JARFILE}: ${EXT_DEPS} ${JAR_MANIFEST} ${OBJS} ${OBJS_EXTRA}
 ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}
 	out="$@"; \
-	objs=""; \
-	ars=""; \
-	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
-		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
-		esac \
-	done; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-		mkdir -p $$dir; \
-		cd $$dir; \
-		${AR} x ../$$i; \
-		for j in *.o; do \
-			objs="$$objs $$dir/$$j"; \
-		done; \
-		cd ..; \
-	done; \
-	if ${LD} -o $@ $$objs ${LIB_LDFLAGS} ${LIB_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${LIB_LDFLAGS} ${LIB_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-	done
+	fi
 
 ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	rm -fr $@
@@ -301,111 +275,29 @@ ${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	fi
 	${LINK_STATUS}
 	out="$@"; \
-	objs=""; \
-	ars=""; \
-	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
-		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
-		esac \
-	done; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-		mkdir -p $$dir; \
-		cd $$dir; \
-		${AR} x ../$$i; \
-		for j in *.o; do \
-			objs="$$objs $$dir/$$j"; \
-		done; \
-		cd ..; \
-	done; \
-	if ${LD} -o $$out/$${out%.framework} $$objs ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS} && codesign -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
+	if ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; \
 		${LINK_FAILED}; \
-	fi; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-	done
+	fi
 
 ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
-	out="$@"; \
-	objs=""; \
-	ars=""; \
-	for i in ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}; do \
-		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
-		esac \
-	done; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-		mkdir -p $$dir; \
-		cd $$dir; \
-		${AR} x ../$$i; \
-		for j in *.o; do \
-			objs="$$objs $$dir/$$j"; \
-		done; \
-		cd ..; \
-	done; \
-	if ${LD} -o $@ $$objs -nostartfiles ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA} -nostartfiles ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-	done
+	fi
 
 ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	${LINK_STATUS}
 	out="$@"; \
-	objs=""; \
-	ars=""; \
-	for i in ${PLUGIN_OBJS}; do \
-		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
-		esac \
-	done; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-		mkdir -p $$dir; \
-		cd $$dir; \
-		${AR} x ../$$i; \
-		for j in *.o; do \
-			objs="$$objs $$dir/$$j"; \
-		done; \
-		cd ..; \
-	done; \
-	if ${LD} -o $@ $$objs ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
-	fi; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-	done
+	fi
 
 ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
