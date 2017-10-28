@@ -100,6 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)URLWithString: (OFString *)string
 		relativeToURL: (OFURL *)URL;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Creates a new URL with the specified local file path.
  *
@@ -107,6 +108,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFURL
  */
 + (instancetype)fileURLWithPath: (OFString *)path;
+#endif
 
 - (instancetype)init OF_UNAVAILABLE;
 

@@ -22,6 +22,9 @@
 #import "OFURL.h"
 #import "OFURL+Private.h"
 #import "OFArray.h"
+#ifdef OF_HAVE_FILES
+# import "OFFileManager.h"
+#endif
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -48,20 +51,31 @@
 			       relativeToURL: URL] autorelease];
 }
 
+#ifdef OF_HAVE_FILES
 + (instancetype)fileURLWithPath: (OFString *)path
 {
-	OFMutableURL *URL = [OFMutableURL URL];
 	void *pool = objc_autoreleasePoolPush();
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+	OFURL *currentDirectoryURL, *URL;
 
-	[URL setScheme: @"file"];
-	[URL setPath: [[path pathComponents] componentsJoinedByString: @"/"]];
+	if (![path hasSuffix: OF_PATH_DELIMITER_STRING] &&
+	    [fileManager directoryExistsAtPath: path])
+		path = [path stringByAppendingString: @"/"];
 
-	[URL makeImmutable];
+# if OF_PATH_DELIMITER != '/'
+	path = [[path pathComponents] componentsJoinedByString: @"/"];
+# endif
+
+	currentDirectoryURL =
+	    [[OFFileManager defaultManager] currentDirectoryURL];
+	URL = [[OFURL alloc] initWithString: path
+			      relativeToURL: currentDirectoryURL];
 
 	objc_autoreleasePoolPop(pool);
 
-	return URL;
+	return [URL autorelease];
 }
+#endif
 
 - (instancetype)init
 {

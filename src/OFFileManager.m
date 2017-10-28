@@ -291,10 +291,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 {
 	OFMutableURL *URL = [OFMutableURL URL];
 	void *pool = objc_autoreleasePoolPush();
+	OFString *path;
 
 	[URL setScheme: @"file"];
-	[URL setPath: [[[self currentDirectoryPath] pathComponents]
-	    componentsJoinedByString: @"/"]];
+
+#if OF_PATH_DELIMITER != '/'
+	path = [[[self currentDirectoryPath] pathComponents]
+	    componentsJoinedByString: @"/"];
+#else
+	path = [self currentDirectoryPath];
+#endif
+
+	[URL setPath: [path stringByAppendingString: @"/"]];
+
 	[URL makeImmutable];
 
 	objc_autoreleasePoolPop(pool);
