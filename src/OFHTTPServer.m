@@ -23,11 +23,12 @@
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFURL.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFNumber.h"
 #import "OFTCPSocket.h"
 #import "OFTimer.h"
+#import "OFURL.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFInvalidArgumentException.h"
@@ -654,7 +655,8 @@ normalizedKey(OFString *key)
 	URL = [OFMutableURL URL];
 	[URL setScheme: @"http"];
 	[URL setHost: _host];
-	[URL setPort: _port];
+	if (_port != 80)
+		[URL setPort: [OFNumber numberWithUInt16: _port]];
 
 	if ((pos = [_path rangeOfString: @"?"].location) != OF_NOT_FOUND) {
 		OFString *path, *query;

@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFURL.h"
+#import "OFNumber.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
@@ -55,7 +56,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	TEST(@"-[string]",
 	    [[u1 string] isEqual: url_str] &&
-	    [[u2 string] isEqual: @"http://foo"] &&
+	    [[u2 string] isEqual: @"http://foo:80"] &&
 	    [[u3 string] isEqual: @"http://bar/"] &&
 	    [[u4 string] isEqual: @"file:///etc/passwd"])
 
@@ -66,7 +67,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	TEST(@"-[password]",
 	    [[u1 password] isEqual: @"p%40w"] && [u4 password] == nil)
 	TEST(@"-[host]", [[u1 host] isEqual: @"ho%3Ast"] && [u4 port] == 0)
-	TEST(@"-[port]", [u1 port] == 1234)
+	TEST(@"-[port]", [[u1 port] isEqual: [OFNumber numberWithUInt16: 1234]])
 	TEST(@"-[path]",
 	    [[u1 path] isEqual: @"/pa%3Bth"] &&
 	    [[u4 path] isEqual: @"/etc/passwd"])

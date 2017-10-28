@@ -27,17 +27,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The scheme part of the URL.
  */
-@property (readwrite, copy, nonatomic) OFString *scheme;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
 
 /*!
  * The host part of the URL.
  */
-@property (readwrite, copy, nonatomic) OFString *host;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *host;
 
 /*!
  * The port part of the URL.
  */
-@property (readwrite, nonatomic) uint16_t port;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFNumber *port;
 
 /*!
  * The user part of the URL.
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The path part of the URL.
  */
-@property (readwrite, copy, nonatomic) OFString *path;
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *path;
 
 /*!
  * The parameters part of the URL.

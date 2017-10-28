@@ -21,8 +21,9 @@
 
 #import "OFURL.h"
 #import "OFURL+Private.h"
-#import "OFString.h"
 #import "OFArray.h"
+#import "OFNumber.h"
+#import "OFString.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
@@ -89,7 +90,10 @@
 
 		UTF8String = UTF8String2;
 
-		if ((tmp = strstr(UTF8String, "://")) == NULL)
+		if ((tmp = strchr(UTF8String, ':')) == NULL)
+			@throw [OFInvalidFormatException exception];
+
+		if (strncmp(tmp, "://", 3) != 0)
 			@throw [OFInvalidFormatException exception];
 
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
@@ -100,14 +104,6 @@
 				length: tmp - UTF8String];
 
 		UTF8String = tmp + 3;
-
-		if ([_scheme isEqual: @"file"]) {
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
-
-			objc_autoreleasePoolPop(pool);
-			return self;
-		}
 
 		if ((tmp = strchr(UTF8String, '/')) != NULL) {
 			*tmp = '\0';
@@ -151,20 +147,13 @@
 			if ([portString decimalValue] > 65535)
 				@throw [OFInvalidFormatException exception];
 
-			_port = [portString decimalValue];
+			_port = [[OFNumber alloc] initWithUInt16:
+			    (uint16_t)[portString decimalValue]];
 
 			objc_autoreleasePoolPop(pool2);
-		} else {
+		} else
 			_host = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
-
-			if ([_scheme isEqual: @"http"])
-				_port = 80;
-			else if ([_scheme isEqual: @"https"])
-				_port = 443;
-			else if ([_scheme isEqual: @"ftp"])
-				_port = 21;
-		}
 
 		if ((UTF8String = tmp) != NULL) {
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
@@ -222,7 +211,7 @@
 
 		_scheme = [URL->_scheme copy];
 		_host = [URL->_host copy];
-		_port = URL->_port;
+		_port = [URL->_port copy];
 		_user = [URL->_user copy];
 		_password = [URL->_password copy];
 
@@ -304,6 +293,7 @@
 {
 	[_scheme release];
 	[_host release];
+	[_port release];
 	[_user release];
 	[_password release];
 	[_path release];
@@ -323,27 +313,24 @@
 
 	URL = object;
 
-	if (![URL->_scheme isEqual: _scheme])
+	if (URL->_scheme != _scheme && ![URL->_scheme isEqual: _scheme])
 		return false;
-	if (![URL->_host isEqual: _host])
+	if (URL->_host != _host && ![URL->_host isEqual: _host])
 		return false;
-	if (URL->_port != _port)
+	if (URL->_port != _port && ![URL->_port isEqual: _port])
 		return false;
 	if (URL->_user != _user && ![URL->_user isEqual: _user])
 		return false;
-	if (URL->_password != _password &&
-	    ![URL->_password isEqual: _password])
+	if (URL->_password != _password && ![URL->_password isEqual: _password])
 		return false;
-	if (![URL->_path isEqual: _path])
+	if (URL->_path != _path && ![URL->_path isEqual: _path])
 		return false;
 	if (URL->_parameters != _parameters &&
 	    ![URL->_parameters isEqual: _parameters])
 		return false;
-	if (URL->_query != _query &&
-	    ![URL->_query isEqual: _query])
+	if (URL->_query != _query && ![URL->_query isEqual: _query])
 		return false;
-	if (URL->_fragment != _fragment &&
-	    ![URL->_fragment isEqual: _fragment])
+	if (URL->_fragment != _fragment && ![URL->_fragment isEqual: _fragment])
 		return false;
 
 	return true;
@@ -357,8 +344,7 @@
 
 	OF_HASH_ADD_HASH(hash, [_scheme hash]);
 	OF_HASH_ADD_HASH(hash, [_host hash]);
-	OF_HASH_ADD(hash, (_port & 0xFF00) >> 8);
-	OF_HASH_ADD(hash, _port & 0xFF);
+	OF_HASH_ADD_HASH(hash, [_port hash]);
 	OF_HASH_ADD_HASH(hash, [_user hash]);
 	OF_HASH_ADD_HASH(hash, [_password hash]);
 	OF_HASH_ADD_HASH(hash, [_path hash]);
@@ -381,7 +367,7 @@
 	return _host;
 }
 
-- (uint16_t)port
+- (OFNumber *)port
 {
 	return _port;
 }
@@ -450,14 +436,6 @@
 
 	[ret appendFormat: @"%@://", _scheme];
 
-	if ([_scheme isEqual: @"file"]) {
-		if (_path != nil)
-			[ret appendString: _path];
-
-		objc_autoreleasePoolPop(pool);
-		return ret;
-	}
-
 	if (_user != nil && _password != nil)
 		[ret appendFormat: @"%@:%@@", _user, _password];
 	else if (_user != nil)
@@ -465,11 +443,8 @@
 
 	if (_host != nil)
 		[ret appendString: _host];
-
-	if (!(([_scheme isEqual: @"http"] && _port == 80) ||
-	    ([_scheme isEqual: @"https"] && _port == 443) ||
-	    ([_scheme isEqual: @"ftp"] && _port == 21)))
-		[ret appendFormat: @":%u", _port];
+	if (_port != nil)
+		[ret appendFormat: @":%@", _port];
 
 	if (_path != nil) {
 		if (![_path hasPrefix: @"/"])

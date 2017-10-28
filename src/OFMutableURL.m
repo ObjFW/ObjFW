@@ -18,6 +18,7 @@
 
 #import "OFMutableURL.h"
 #import "OFURL+Private.h"
+#import "OFNumber.h"
 #import "OFString.h"
 
 @implementation OFMutableURL
@@ -47,9 +48,11 @@
 	[old release];
 }
 
-- (void)setPort: (uint16_t)port
+- (void)setPort: (OFNumber *)port
 {
-	_port = port;
+	OFNumber *old = _port;
+	_port = [port copy];
+	[old release];
 }
 
 - (void)setUser: (OFString *)user

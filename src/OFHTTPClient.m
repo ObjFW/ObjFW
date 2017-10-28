@@ -22,13 +22,14 @@
 #include <string.h>
 
 #import "OFHTTPClient.h"
+#import "OFData.h"
+#import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFNumber.h"
 #import "OFString.h"
-#import "OFURL.h"
 #import "OFTCPSocket.h"
-#import "OFDictionary.h"
-#import "OFData.h"
+#import "OFURL.h"
 
 #import "OFAlreadyConnectedException.h"
 #import "OFHTTPRequestFailedException.h"
@@ -82,7 +83,7 @@ constructRequestString(OFHTTPRequest *request)
 	void *pool = objc_autoreleasePoolPush();
 	of_http_request_method_t method = [request method];
 	OFURL *URL = [request URL];
-	OFString *scheme = [URL scheme], *path = [URL path];
+	OFString *path = [URL path];
 	OFString *user = [URL user], *password = [URL password];
 	OFData *body = [request body];
 	OFMutableString *requestString;
@@ -110,10 +111,11 @@ constructRequestString(OFHTTPRequest *request)
 		headers = [OFMutableDictionary dictionary];
 
 	if ([headers objectForKey: @"Host"] == nil) {
-		if (([scheme isEqual: @"http"] && [URL port] != 80) ||
-		    ([scheme isEqual: @"https"] && [URL port] != 443)) {
+		OFNumber *port = [URL port];
+
+		if (port != nil) {
 			OFString *host = [OFString stringWithFormat:
-			    @"%@:%d", [URL host], [URL port]];
+			    @"%@:%@", [URL host], port];
 
 			[headers setObject: host
 				    forKey: @"Host"];
@@ -709,6 +711,8 @@ normalizeKey(char *str_)
 {
 	OFURL *URL = [_request URL];
 	OFTCPSocket *sock;
+	uint16_t port;
+	OFNumber *URLPort;
 
 	[_client close];
 
@@ -718,11 +722,18 @@ normalizeKey(char *str_)
 			    exceptionWithURL: URL];
 
 		sock = [[[of_tls_socket_class alloc] init] autorelease];
-	} else
+		port = 443;
+	} else {
 		sock = [OFTCPSocket socket];
+		port = 80;
+	}
+
+	URLPort = [URL port];
+	if (URLPort != nil)
+		port = [URLPort uInt16Value];
 
 	[sock asyncConnectToHost: [URL host]
-			    port: [URL port]
+			    port: port
 			  target: self
 			selector: @selector(socketDidConnect:context:
 				      exception:)

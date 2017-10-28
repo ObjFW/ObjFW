@@ -359,8 +359,7 @@ static uint16_t sutf16str[] = {
 	    [is isEqual: @"testäöü"])
 
 	TEST(@"+[stringWithContentsOfURL:encoding]", (is = [stringClass
-	    stringWithContentsOfURL: [OFURL URLWithString:
-					 @"file://testfile.txt"]
+	    stringWithContentsOfURL: [OFURL fileURLWithPath: @"testfile.txt"]
 			   encoding: OF_STRING_ENCODING_ISO_8859_1]) &&
 	    [is isEqual: @"testäöü"])
 #endif

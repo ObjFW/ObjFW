@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFNumber;
 @class OFString;
 
 /*!
@@ -28,8 +29,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFURL: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
-	OFString *_scheme, *_host;
-	uint16_t _port;
+	OFString *_Nullable _scheme, *_Nullable _host;
+	OFNumber *_Nullable _port;
 	OFString *_Nullable _user, *_Nullable _password, *_path;
 	OFString *_Nullable _parameters, *_Nullable _query;
 	OFString *_Nullable _fragment;
@@ -38,17 +39,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The scheme part of the URL.
  */
-@property (readonly, copy, nonatomic) OFString *scheme;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *scheme;
 
 /*!
  * The host part of the URL.
  */
-@property (readonly, copy, nonatomic) OFString *host;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *host;
 
 /*!
  * The port part of the URL.
  */
-@property (readonly, nonatomic) uint16_t port;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFNumber *port;
 
 /*!
  * The user part of the URL.
@@ -63,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The path part of the URL.
  */
-@property (readonly, copy, nonatomic) OFString *path;
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *path;
 
 /*!
  * The parameters part of the URL.
