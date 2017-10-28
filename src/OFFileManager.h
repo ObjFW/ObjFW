@@ -34,6 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
+@class OFURL;
 
 /*!
  * @class OFFileManager OFFileManager.h ObjFW/OFFileManager.h
@@ -53,6 +54,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The path of the current working directory
  */
 - (OFString *)currentDirectoryPath;
+
+/*!
+ * @brief Returns the URL for the current working directory.
+ *
+ * @return The URL of the current working directory
+ */
+- (OFURL *)currentDirectoryURL;
 
 /*!
  * @brief Checks whether a file exists at the specified path.

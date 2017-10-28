@@ -35,12 +35,13 @@
 #endif
 
 #import "OFFileManager.h"
-#import "OFFile.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFDate.h"
-#import "OFSystemInfo.h"
+#import "OFFile.h"
 #import "OFLocalization.h"
+#import "OFString.h"
+#import "OFSystemInfo.h"
+#import "OFURL.h"
 
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
@@ -284,6 +285,21 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	return ret;
 #endif
+}
+
+- (OFURL *)currentDirectoryURL
+{
+	OFMutableURL *URL = [OFMutableURL URL];
+	void *pool = objc_autoreleasePoolPush();
+
+	[URL setScheme: @"file"];
+	[URL setPath: [[[self currentDirectoryPath] pathComponents]
+	    componentsJoinedByString: @"/"]];
+	[URL makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return URL;
 }
 
 - (bool)fileExistsAtPath: (OFString *)path
