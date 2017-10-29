@@ -658,7 +658,7 @@ locales: ${MO_FILES}
 		${COMPILE_PLUGIN_FAILED}; \
 	fi
 
-install: all install-includes install-extra
+install: all install-extra
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
@@ -716,6 +716,16 @@ install: all install-includes install-extra
 		fi \
 	done
 
+	for i in "" ${INCLUDES}; do \
+		test x"$$i" = x"" && continue; \
+		${INSTALL_STATUS}; \
+		if ${MKDIR_P} ${DESTDIR}${includedir}/${includesubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	done
+
 	for i in "" ${MO_FILES}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
@@ -740,7 +750,7 @@ install-includes:
 	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
 		test x"$$i" = x"" && continue; \
 		${DIR_ENTER}; \
-		${MAKE} install || exit $$?; \
+		${MAKE} install-includes || exit $$?; \
 		${DIR_LEAVE}; \
 	done
 
