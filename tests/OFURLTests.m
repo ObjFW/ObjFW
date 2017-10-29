@@ -17,6 +17,9 @@
 #include "config.h"
 
 #import "OFURL.h"
+#ifdef OF_HAVE_FILES
+# import "OFFileManager.h"
+#endif
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
@@ -53,6 +56,13 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    string] isEqual: @"http://h/qux/foo/bar"] &&
 	    [[[OFURL URLWithString: @"http://foo/?q"
 		     relativeToURL: u1] string] isEqual: @"http://foo/?q"])
+
+#ifdef OF_HAVE_FILES
+	TEST(@"+[fileURLWithPath:isDirectory:]",
+	    [[[OFURL fileURLWithPath: @"testfile.txt"] fileSystemRepresentation]
+	    isEqual: [[[OFFileManager defaultManager] currentDirectoryPath]
+	    stringByAppendingPathComponent: @"testfile.txt"]])
+#endif
 
 	TEST(@"-[string]",
 	    [[u1 string] isEqual: url_str] &&

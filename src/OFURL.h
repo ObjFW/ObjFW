@@ -104,11 +104,25 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new URL with the specified local file path.
  *
+ * If a directory exists at the specified path, a slash is appended if there is
+ * no slash yet.
+ *
  * @param path The local file path
  * @return A new, autoreleased OFURL
  */
 + (instancetype)fileURLWithPath: (OFString *)path;
 #endif
+
+/*!
+ * @brief Creates a new URL with the specified local file path.
+ *
+ * @param path The local file path
+ * @param isDirectory Whether the path is a directory, in which case a slash is
+ *		      appened if there is no slash yet
+ * @return An Initialized OFURL
+ */
+- (instancetype)initFileURLWithPath: (OFString *)path
+			isDirectory: (bool)isDirectory;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -130,6 +144,32 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithString: (OFString *)string
 		 relativeToURL: (OFURL *)URL;
+
+#ifdef OF_HAVE_FILES
+/*!
+ * @brief Initializes an already allocated OFURL with the specified local file
+ *	  path.
+ *
+ * If a directory exists at the specified path, a slash is appended if there is
+ * no slash yet.
+ *
+ * @param path The local file path
+ * @return An initialized OFURL
+ */
+- (instancetype)initFileURLWithPath: (OFString *)path;
+
+/*!
+ * @brief Initializes an already allocated OFURL with the specified local file
+ *	  path.
+ *
+ * @param path The local file path
+ * @param isDirectory Whether the path is a directory, in which case a slash is
+ *		      appened if there is no slash yet
+ * @return An Initialized OFURL
+ */
++ (instancetype)fileURLWithPath: (OFString *)path
+		    isDirectory: (bool)isDirectory;
+#endif
 
 /*!
  * @brief Returns the URL as a string.

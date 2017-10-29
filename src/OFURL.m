@@ -54,26 +54,14 @@
 #ifdef OF_HAVE_FILES
 + (instancetype)fileURLWithPath: (OFString *)path
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFFileManager *fileManager = [OFFileManager defaultManager];
-	OFURL *currentDirectoryURL, *URL;
+	return [[[self alloc] initFileURLWithPath: path] autorelease];
+}
 
-	if (![path hasSuffix: OF_PATH_DELIMITER_STRING] &&
-	    [fileManager directoryExistsAtPath: path])
-		path = [path stringByAppendingString: @"/"];
-
-# if OF_PATH_DELIMITER != '/'
-	path = [[path pathComponents] componentsJoinedByString: @"/"];
-# endif
-
-	currentDirectoryURL =
-	    [[OFFileManager defaultManager] currentDirectoryURL];
-	URL = [[OFURL alloc] initWithString: path
-			      relativeToURL: currentDirectoryURL];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [URL autorelease];
++ (instancetype)fileURLWithPath: (OFString *)path
+		    isDirectory: (bool)isDirectory
+{
+	return [[[self alloc] initFileURLWithPath: path
+				      isDirectory: isDirectory] autorelease];
 }
 #endif
 
@@ -282,6 +270,58 @@
 
 	return self;
 }
+
+#ifdef OF_HAVE_FILES
+- (instancetype)initFileURLWithPath: (OFString *)path
+{
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFFileManager *fileManager = [OFFileManager defaultManager];
+		bool isDirectory;
+
+		isDirectory = ([path hasSuffix: OF_PATH_DELIMITER_STRING] ||
+		    [fileManager directoryExistsAtPath: path]);
+		self = [self initFileURLWithPath: path
+				     isDirectory: isDirectory];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initFileURLWithPath: (OFString *)path
+			isDirectory: (bool)isDirectory
+{
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFURL *currentDirectoryURL;
+
+# if OF_PATH_DELIMITER != '/'
+		path = [[path pathComponents] componentsJoinedByString: @"/"];
+# endif
+
+		if (isDirectory && ![path hasSuffix: OF_PATH_DELIMITER_STRING])
+			path = [path stringByAppendingString: @"/"];
+
+		currentDirectoryURL =
+		    [[OFFileManager defaultManager] currentDirectoryURL];
+
+		self = [self initWithString: path
+			      relativeToURL: currentDirectoryURL];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+#endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
