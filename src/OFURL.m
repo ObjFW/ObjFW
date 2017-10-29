@@ -101,9 +101,9 @@
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
 			*tmp2 = of_ascii_tolower(*tmp2);
 
-		_scheme = [[OFString alloc]
-		    initWithUTF8String: UTF8String
-				length: tmp - UTF8String];
+		_scheme = [[[OFString stringWithUTF8String: UTF8String
+						    length: tmp - UTF8String]
+		    stringByURLDecoding] copy];
 
 		UTF8String = tmp + 3;
 
@@ -122,13 +122,13 @@
 				*tmp3 = '\0';
 				tmp3++;
 
-				_user = [[OFString alloc]
-				    initWithUTF8String: UTF8String];
-				_password = [[OFString alloc]
-				    initWithUTF8String: tmp3];
+				_user = [[[OFString stringWithUTF8String:
+				    UTF8String] stringByURLDecoding] copy];
+				_password = [[[OFString stringWithUTF8String:
+				    tmp3] stringByURLDecoding] copy];
 			} else
-				_user = [[OFString alloc]
-				    initWithUTF8String: UTF8String];
+				_user = [[[OFString stringWithUTF8String:
+				    UTF8String] stringByURLDecoding] copy];
 
 			UTF8String = tmp2;
 		}
@@ -140,8 +140,8 @@
 			*tmp2 = '\0';
 			tmp2++;
 
-			_host = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_host = [[[OFString stringWithUTF8String: UTF8String]
+			    stringByURLDecoding] copy];
 
 			pool2 = objc_autoreleasePoolPush();
 			portString = [OFString stringWithUTF8String: tmp2];
@@ -154,36 +154,36 @@
 
 			objc_autoreleasePoolPop(pool2);
 		} else
-			_host = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_host = [[[OFString stringWithUTF8String: UTF8String]
+			    stringByURLDecoding] copy];
 
 		if ((UTF8String = tmp) != NULL) {
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
-				_fragment = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
+				_fragment = [[[OFString stringWithUTF8String:
+				    tmp + 1] stringByURLDecoding] copy];
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
-				_query = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
+				_query = [[[OFString stringWithUTF8String:
+				    tmp + 1] stringByURLDecoding] copy];
 			}
 
 			if ((tmp = strchr(UTF8String, ';')) != NULL) {
 				*tmp = '\0';
 
-				_parameters = [[OFString alloc]
-				    initWithUTF8String: tmp + 1];
+				_parameters = [[[OFString stringWithUTF8String:
+				    tmp + 1] stringByURLDecoding] copy];
 			}
 
 			UTF8String--;
 			*UTF8String = '/';
 
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_path = [[[OFString stringWithUTF8String: UTF8String]
+			    stringByURLDecoding] copy];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -226,29 +226,30 @@
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			_fragment = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+			_fragment = [[[OFString stringWithUTF8String: tmp + 1]
+			    stringByURLDecoding] copy];
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			_query = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+			_query = [[[OFString stringWithUTF8String: tmp + 1]
+			    stringByURLDecoding] copy];
 		}
 
 		if ((tmp = strchr(UTF8String, ';')) != NULL) {
 			*tmp = '\0';
-			_parameters = [[OFString alloc]
-			    initWithUTF8String: tmp + 1];
+			_parameters = [[[OFString stringWithUTF8String: tmp + 1]
+			    stringByURLDecoding] copy];
 		}
 
 		if (*UTF8String == '/')
-			_path = [[OFString alloc]
-			    initWithUTF8String: UTF8String];
+			_path = [[[OFString stringWithUTF8String: UTF8String]
+			    stringByURLDecoding] copy];
 		else {
 			OFString *path, *s;
 
-			path = [OFString stringWithUTF8String: UTF8String];
+			path = [[OFString stringWithUTF8String: UTF8String]
+			    stringByURLDecoding];
 
 			if ([URL->_path hasSuffix: @"/"])
 				s = [URL->_path stringByAppendingString: path];
@@ -533,15 +534,17 @@
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
 
-	[ret appendFormat: @"%@://", _scheme];
+	[ret appendFormat: @"%@://", [_scheme stringByURLEncoding]];
 
 	if (_user != nil && _password != nil)
-		[ret appendFormat: @"%@:%@@", _user, _password];
+		[ret appendFormat: @"%@:%@@",
+				   [_user stringByURLEncoding],
+				   [_password stringByURLEncoding]];
 	else if (_user != nil)
-		[ret appendFormat: @"%@@", _user];
+		[ret appendFormat: @"%@@", [_user stringByURLEncoding]];
 
 	if (_host != nil)
-		[ret appendString: _host];
+		[ret appendString: [_host stringByURLEncoding]];
 	if (_port != nil)
 		[ret appendFormat: @":%@", _port];
 
@@ -549,17 +552,18 @@
 		if (![_path hasPrefix: @"/"])
 			@throw [OFInvalidFormatException exception];
 
-		[ret appendString: _path];
+		[ret appendString: [_path
+		    stringByURLEncodingWithAllowedCharacters: "$-_.!*()/"]];
 	}
 
 	if (_parameters != nil)
-		[ret appendFormat: @";%@", _parameters];
+		[ret appendFormat: @";%@", [_parameters stringByURLEncoding]];
 
 	if (_query != nil)
-		[ret appendFormat: @"?%@", _query];
+		[ret appendFormat: @"?%@", [_query stringByURLEncoding]];
 
 	if (_fragment != nil)
-		[ret appendFormat: @"#%@", _fragment];
+		[ret appendFormat: @"#%@", [_fragment stringByURLEncoding]];
 
 	objc_autoreleasePoolPop(pool);
 
