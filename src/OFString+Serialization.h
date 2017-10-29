@@ -28,11 +28,9 @@ extern int _OFString_Serialization_reference;
 
 @interface OFString (Serialization)
 /*!
- * @brief Deserializes the receiver into an object.
- *
- * @return The deserialized object
+ * The string interpreted as serialization and parsed as an object.
  */
-- (id)objectByDeserializing;
+@property (readonly, nonatomic) id objectByDeserializing;
 @end
 
 OF_ASSUME_NONNULL_END

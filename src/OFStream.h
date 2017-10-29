@@ -122,11 +122,37 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
 }
 
 /*!
- * @brief Returns a boolean whether the end of the stream has been reached.
- *
- * @return A boolean whether the end of the stream has been reached
+ * Whether the end of the stream has been reached.
  */
-- (bool)isAtEndOfStream;
+@property (readonly, nonatomic, getter=isAtEndOfStream) bool atEndOfStream;
+
+/*!
+ * Whether writes are buffered.
+ */
+@property (nonatomic, nonatomic, getter=isWriteBuffered) bool writeBuffered;
+
+/*!
+ * Whether data is present in the internal read buffer.
+ */
+@property (readonly, nonatomic) bool hasDataInReadBuffer;
+
+/*!
+ * Whether the stream is in blocking mode.
+ *
+ * By default, a stream is in blocking mode.
+ * On Win32, setting this currently only works for sockets!
+ */
+@property (readonly, nonatomic, getter=isBlocking) bool blocking;
+
+/*!
+ * The file descriptor for the read end of the stream.
+ */
+@property (readonly, nonatomic) int fileDescriptorForReading;
+
+/*!
+ * The file descriptor for the write end of the stream.
+ */
+@property (readonly, nonatomic) int fileDescriptorForWriting;
 
 /*!
  * @brief Reads *at most* size bytes from the stream into a buffer.
@@ -778,20 +804,6 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
 				   encoding: (of_string_encoding_t)encoding;
 
 /*!
- * @brief Returns a boolean whether writes are buffered.
- *
- * @return A boolean whether writes are buffered
- */
-- (bool)isWriteBuffered;
-
-/*!
- * @brief Enables or disables the write buffer.
- *
- * @param enable Whether the write buffer should be enabled or disabled
- */
-- (void)setWriteBuffered: (bool)enable;
-
-/*!
  * @brief Writes everything in the write buffer to the stream.
  */
 - (void)flushWriteBuffer;
@@ -1124,44 +1136,6 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  */
 - (size_t)writeFormat: (OFConstantString *)format
 	    arguments: (va_list)arguments;
-
-/*!
- * @brief Returns whether data is present in the internal read buffer.
- *
- * @return Whether data is present in the internal read buffer
- */
-- (bool)hasDataInReadBuffer;
-
-/*!
- * @brief Returns whether the stream is in blocking mode.
- *
- * @return Whether the stream is in blocking mode
- */
-- (bool)isBlocking;
-
-/*!
- * @brief Enables or disables non-blocking I/O.
- *
- * By default, a stream is in blocking mode.
- * On Win32, this currently only works for sockets!
- *
- * @param enable Whether the stream should be blocking
- */
-- (void)setBlocking: (bool)enable;
-
-/*!
- * @brief Returns the file descriptor for the read end of the stream.
- *
- * @return The file descriptor for the read end of the stream
- */
-- (int)fileDescriptorForReading;
-
-/*!
- * @brief Returns the file descriptor for the write end of the stream.
- *
- * @return The file descriptor for the write end of the stream
- */
-- (int)fileDescriptorForWriting;
 
 #ifdef OF_HAVE_SOCKETS
 /*!

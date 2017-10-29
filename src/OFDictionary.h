@@ -118,6 +118,21 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
     OF_SENTINEL;
 
 /*!
+ * An array of all keys.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(KeyType) *allKeys;
+
+/*!
+ * An array of all objects.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
+
+/*!
+ * A URL-encoded string with the contents of the dictionary.
+ */
+@property (readonly, nonatomic) OFString *stringByURLEncoding;
+
+/*!
  * @brief Initializes an already allocated OFDictionary with the specified
  *	  OFDictionary.
  *
@@ -242,27 +257,6 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *	   specified address
  */
 - (bool)containsObjectIdenticalTo: (ObjectType)object;
-
-/*!
- * @brief Returns an array of all keys.
- *
- * @return An array of all keys
- */
-- (OFArray OF_GENERIC(KeyType) *)allKeys;
-
-/*!
- * @brief Returns an array of all objects.
- *
- * @return An array of all objects
- */
-- (OFArray OF_GENERIC(ObjectType) *)allObjects;
-
-/*!
- * @brief Creates a string by URL-encoding the contents of the dictionary.
- *
- * @return A URL-encoded string with the contents of the dictionary
- */
-- (OFString *)stringByURLEncoding;
 
 /*!
  * @brief Returns an OFEnumerator to enumerate through the dictionary's keys.

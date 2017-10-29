@@ -197,16 +197,32 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFMutableData (MutableRetrieving)
 /*!
- * @brief Returns all items of the OFMutableData as a C array.
+ * All items of the OFMutableData as a C array.
  *
  * @warning The pointer is only valid until the OFMutableData is changed!
  *
  * Modifying the returned array directly is allowed and will change the contents
  * of the data array.
- *
- * @return All elements of the OFMutableData as a C array
  */
-- (void *)items OF_RETURNS_INNER_POINTER;
+@property (readonly, nonatomic) void *items OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The first item of the OFMutableData or NULL.
+ *
+ * Modifying the returned item directly is allowed and will change the contents
+ * of the data array.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *firstItem
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * Last item of the OFMutableData or NULL.
+ *
+ * Modifying the returned item directly is allowed and will change the contents
+ * of the data array.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *lastItem
+    OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns a specific item of the OFMutableData.
@@ -218,26 +234,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The specified item of the OFMutableData
  */
 - (void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the first item of the OFMutableData.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data array.
- *
- * @return The first item of the OFMutableData or NULL
- */
-- (nullable void *)firstItem OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the last item of the OFMutableData.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data array.
- *
- * @return The last item of the OFMutableData or NULL
- */
-- (nullable void *)lastItem OF_RETURNS_INNER_POINTER;
 @end
 
 OF_ASSUME_NONNULL_END

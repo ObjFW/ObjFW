@@ -73,7 +73,7 @@ enum {
 @interface OFProperty: OFObject
 {
 	OFString *_name;
-	unsigned _attributes;
+	unsigned int _attributes;
 	OFString *_Nullable _getter, *_Nullable _setter;
 }
 
@@ -99,7 +99,7 @@ enum {
  * OF_PROPERTY_SYNTHESIZED       | The property is synthesized
  * OF_PROPERTY_DYNAMIC           | The property is dynamic
  */
-@property (readonly, nonatomic) unsigned attributes;
+@property (readonly, nonatomic) unsigned int attributes;
 
 /*!
  * The name of the getter.

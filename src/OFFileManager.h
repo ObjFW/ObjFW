@@ -44,23 +44,19 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFFileManager: OFObject
 /*!
+ * The path of the current working directory.
+ */
+@property (readonly, nonatomic) OFString *currentDirectoryPath;
+
+/*!
+ * The URL of the current working directory.
+ */
+@property (readonly, nonatomic) OFURL *currentDirectoryURL;
+
+/*!
  * @brief Returns the default file manager.
  */
 + (OFFileManager *)defaultManager;
-
-/*!
- * @brief Returns the path for the current working directory.
- *
- * @return The path of the current working directory
- */
-- (OFString *)currentDirectoryPath;
-
-/*!
- * @brief Returns the URL for the current working directory.
- *
- * @return The URL of the current working directory
- */
-- (OFURL *)currentDirectoryURL;
 
 /*!
  * @brief Checks whether a file exists at the specified path.

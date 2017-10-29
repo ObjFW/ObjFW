@@ -46,23 +46,19 @@ OF_SUBCLASSING_RESTRICTED
 	bool _atEndOfStream;
 }
 
+/*!
+ * The number of columns, or -1 if there is no underlying terminal or the
+ * number of columns could not be queried.
+ */
+@property (readonly, nonatomic) int columns;
+
+/*!
+ * The number of rows, or -1 if there is no underlying terminal or the number
+ * of rows could not be queried
+ */
+@property (readonly, nonatomic) int rows;
+
 - (instancetype)init OF_UNAVAILABLE;
-
-/*!
- * @brief Query the underlying terminal for the number of columns.
- *
- * @return The number of columns, or -1 if there is no underlying terminal or
- *	   the number of columns could not be queried
- */
-- (int)columns;
-
-/*!
- * @brief Query the underlying terminal for the number of rows.
- *
- * @return The number of rows, or -1 if there is no underlying terminal or the
- *	   number of rows could not be queried
- */
-- (int)rows;
 @end
 
 #ifdef __cplusplus

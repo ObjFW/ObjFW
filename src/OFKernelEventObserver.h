@@ -69,13 +69,10 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFReadyForReadingObserving <OFObject>
 /*!
- * @brief Returns the file descriptor for reading that should be checked by the
- *	  OFKernelEventObserver.
- *
- * @return The file descriptor for reading that should be checked by the
- *	   OFKernelEventObserver
+ * The file descriptor for reading that should be checked by the
+ * OFKernelEventObserver.
  */
-- (int)fileDescriptorForReading;
+@property (readonly, nonatomic) int fileDescriptorForReading;
 @end
 
 /*!
@@ -87,13 +84,10 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFReadyForWritingObserving <OFObject>
 /*!
- * @brief Returns the file descriptor for writing that should be checked by the
- *	  OFKernelEventObserver.
- *
- * @return The file descriptor for writing that should be checked by the
- *	   OFKernelEventObserver
+ * The file descriptor for writing that should be checked by the
+ * OFKernelEventObserver.
  */
-- (int)fileDescriptorForWriting;
+@property (readonly, nonatomic) int fileDescriptorForWriting;
 @end
 
 /*!

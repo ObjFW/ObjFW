@@ -29,11 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFMessagePackRepresentation
 /*!
- * @brief Returns the MessagePack representation of the object as OFData.
- *
  * @return The MessagePack representation of the object as OFData.
  */
-- (OFData *)messagePackRepresentation;
+@property (readonly, nonatomic) OFData *messagePackRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

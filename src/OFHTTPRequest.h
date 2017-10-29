@@ -82,6 +82,16 @@ typedef struct {
 @property (copy, nonatomic) OFURL *URL;
 
 /*!
+ * The protocol version of the HTTP request.
+ */
+@property (nonatomic) of_http_request_protocol_version_t protocolVersion;
+
+/*!
+ * The protocol version of the HTTP request as a string.
+ */
+@property (readonly, nonatomic) OFString *protocolVersionString;
+
+/*!
  * The request method of the HTTP request.
  */
 @property (nonatomic) of_http_request_method_t method;
@@ -126,33 +136,12 @@ typedef struct {
 - (instancetype)initWithURL: (OFURL *)URL;
 
 /*!
- * @brief Sets the protocol version of the HTTP request.
- *
- * @param protocolVersion The protocol version of the HTTP request
- */
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion;
-
-/*!
- * @brief Returns the protocol version of the HTTP request.
- *
- * @return The protocol version of the HTTP request
- */
-- (of_http_request_protocol_version_t)protocolVersion;
-
-/*!
  * @brief Sets the protocol version of the HTTP request to the version
  *	  described by the specified string.
  *
  * @param string A string describing an HTTP version
  */
 - (void)setProtocolVersionFromString: (OFString *)string;
-
-/*!
- * @brief Returns the protocol version of the HTTP request as a string.
- *
- * @return The protocol version of the HTTP request as a string
- */
-- (OFString *)protocolVersionString;
 
 /*!
  * @brief Sets the entity body of the HTTP request to the specified string

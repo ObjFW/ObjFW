@@ -89,6 +89,11 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
 @property (readonly, nonatomic) of_map_table_functions_t objectFunctions;
 
 /*!
+ * The number of objects in the map table.
+ */
+@property (readonly, nonatomic) size_t count;
+
+/*!
  * @brief Creates a new OFMapTable with the specified key and object functions.
  *
  * @param keyFunctions A structure of functions for handling keys
@@ -141,13 +146,6 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
 		     objectFunctions: (of_map_table_functions_t)objectFunctions
 			    capacity: (size_t)capacity
     OF_DESIGNATED_INITIALIZER;
-
-/*!
- * @brief Returns the number of objects in the map table.
- *
- * @return The number of objects in the map table
- */
-- (size_t)count;
 
 /*!
  * @brief Returns the object for the given key or NULL if the key was not found.

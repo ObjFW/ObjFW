@@ -30,11 +30,9 @@ extern int _OFObject_Serialization_reference;
 
 @interface OFObject (OFSerialization)
 /*!
- * @brief Creates a string by serializing the receiver.
- *
- * @return The object serialized as a string
+ * The object serialized as a string.
  */
-- (OFString *)stringBySerializing;
+@property (readonly, nonatomic) OFString *stringBySerializing;
 @end
 
 OF_ASSUME_NONNULL_END

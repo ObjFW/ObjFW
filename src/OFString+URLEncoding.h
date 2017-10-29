@@ -28,11 +28,14 @@ extern int _OFString_URLEncoding_reference;
 
 @interface OFString (URLEncoding)
 /*!
- * @brief Encodes a string for use in a URL.
- *
- * @return A new autoreleased string
+ * The string as an URL encoded string for use in a URL.
  */
-- (OFString *)stringByURLEncoding;
+@property (readonly, nonatomic) OFString *stringByURLEncoding;
+
+/*!
+ * The string as an URL decoded string.
+ */
+@property (readonly, nonatomic) OFString *stringByURLDecoding;
 
 /*!
  * @brief Encodes a string for use in a URL, but does not escape the specified
@@ -43,13 +46,6 @@ extern int _OFString_URLEncoding_reference;
  * @return A new autoreleased string
  */
 - (OFString *)stringByURLEncodingWithAllowedCharacters: (const char *)allowed;
-
-/*!
- * @brief Decodes a string used in a URL.
- *
- * @return A new autoreleased string
- */
-- (OFString *)stringByURLDecoding;
 @end
 
 OF_ASSUME_NONNULL_END

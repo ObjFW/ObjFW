@@ -28,11 +28,9 @@ extern int _OFString_XMLEscaping_reference;
 
 @interface OFString (XMLEscaping)
 /*!
- * @brief Escapes a string for use in an XML document.
- *
- * @return A new autoreleased string
+ * The string in a form escaped for use in an XML document.
  */
-- (OFString *)stringByXMLEscaping;
+@property (readonly, nonatomic) OFString *stringByXMLEscaping;
 @end
 
 OF_ASSUME_NONNULL_END

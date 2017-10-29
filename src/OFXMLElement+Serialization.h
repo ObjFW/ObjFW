@@ -28,11 +28,9 @@ extern int _OFXMLElement_Serialization_reference;
 
 @interface OFXMLElement (OFSerialization)
 /*!
- * @brief Deserializes the receiver into an object.
- *
- * @return The deserialized object
+ * The XML element interpreted as serialization and parsed into an object.
  */
-- (id)objectByDeserializing;
+@property (readonly, nonatomic) id objectByDeserializing;
 @end
 
 OF_ASSUME_NONNULL_END

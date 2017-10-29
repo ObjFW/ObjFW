@@ -28,53 +28,39 @@ extern int _OFString_CryptoHashing_reference;
 
 @interface OFString (CryptoHashing)
 /*!
- * @brief Returns the MD5 hash of the string as an autoreleased OFString.
- *
- * @return The MD5 hash of the string as an autoreleased OFString
+ * The MD5 hash of the string as a string.
  */
-- (OFString *)MD5Hash;
+@property (readonly, nonatomic) OFString *MD5Hash;
 
 /*!
- * @brief Returns the RIPEMD-160 hash of the string as an autoreleased OFString.
- *
- * @return The RIPEMD-160 hash of the string as an autoreleased OFString
+ * The RIPEMD-160 hash of the string as a string.
  */
-- (OFString *)RIPEMD160Hash;
+@property (readonly, nonatomic) OFString *RIPEMD160Hash;
 
 /*!
- * @brief Returns the SHA-1 hash of the string as an autoreleased OFString.
- *
- * @return The SHA-1 hash of the string as an autoreleased OFString
+ * The SHA-1 hash of the string as a string.
  */
-- (OFString *)SHA1Hash;
+@property (readonly, nonatomic) OFString *SHA1Hash;
 
 /*!
- * @brief Returns the SHA-224 hash of the string as an autoreleased OFString.
- *
- * @return The SHA-224 hash of the string as an autoreleased OFString
+ * The SHA-224 hash of the string as a string.
  */
-- (OFString *)SHA224Hash;
+@property (readonly, nonatomic) OFString *SHA224Hash;
 
 /*!
- * @brief Returns the SHA-256 hash of the string as an autoreleased OFString.
- *
- * @return The SHA-256 hash of the string as an autoreleased OFString
+ * The SHA-256 hash of the string as a string.
  */
-- (OFString *)SHA256Hash;
+@property (readonly, nonatomic) OFString *SHA256Hash;
 
 /*!
- * @brief Returns the SHA-384 hash of the string as an autoreleased OFString.
- *
- * @return The SHA-384 hash of the string as an autoreleased OFString
+ * The SHA-384 hash of the string as a string.
  */
-- (OFString *)SHA384Hash;
+@property (readonly, nonatomic) OFString *SHA384Hash;
 
 /*!
- * @brief Returns the SHA-512 hash of the string as an autoreleased OFString.
- *
- * @return The SHA-512 hash of the string as an autoreleased OFString
+ * The SHA-512 hash of the string as a string.
  */
-- (OFString *)SHA512Hash;
+@property (readonly, nonatomic) OFString *SHA512Hash;
 @end
 
 OF_ASSUME_NONNULL_END

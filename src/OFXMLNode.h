@@ -27,60 +27,41 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which stores an XML element.
  */
 @interface OFXMLNode: OFObject <OFCopying, OFSerialization>
+/*!
+ * The contents of the node as a string value.
+ *
+ * For an @ref OFXMLElement, setting it removes all children and creates a
+ * single child with the specified string value.
+ */
+@property (nonatomic, copy) OFString *stringValue;
+
+/*!
+ * The contents of the receiver as a decimal value.
+ */
+@property (readonly, nonatomic) intmax_t decimalValue;
+
+/*!
+ * The contents of the receiver as a hexadecimal value.
+ */
+@property (readonly, nonatomic) uintmax_t hexadecimalValue;
+
+/*!
+ * The contents of the receiver as a float value.
+ */
+@property (readonly, nonatomic) float floatValue;
+
+/*!
+ * The contents of the receiver as a double value.
+ */
+@property (readonly, nonatomic) double doubleValue;
+
+/*!
+ * A string representing the node as an XML string.
+ */
+@property (readonly, nonatomic) OFString *XMLString;
+
 - (instancetype)init OF_UNAVAILABLE;
 - (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
-
-/*!
- * @brief Returns the contents of the receiver as a string value.
- *
- * @return A string with the string value
- */
-- (OFString *)stringValue;
-
-/*!
- * @brief Sets the string value of the receiver to the specified string.
- *
- * For an @ref OFXMLElement, it removes all children and creates a single child
- * with the specified string value.
- *
- * @param stringValue The new string value for the node
- */
-- (void)setStringValue: (OFString *)stringValue;
-
-/*!
- * @brief Returns the contents of the receiver as a decimal value.
- *
- * @return An integer with the decimal value
- */
-- (intmax_t)decimalValue;
-
-/*!
- * @brief Returns the contents of the receiver as a hexadecimal value.
- *
- * @return An integer with the hexadecimal value
- */
-- (uintmax_t)hexadecimalValue;
-
-/*!
- * @brief Returns the contents of the receiver as a float value.
- *
- * @return A float with the float value
- */
-- (float)floatValue;
-
-/*!
- * @brief Returns the contents of the receiver as a double value.
- *
- * @return A double with the double value
- */
-- (double)doubleValue;
-
-/*!
- * @brief Returns an OFString representing the OFXMLNode as an XML string.
- *
- * @return An OFString representing the OFXMLNode as an XML string
- */
-- (OFString *)XMLString;
 
 /*!
  * @brief Returns an OFString representing the OFXMLNode as an XML string with

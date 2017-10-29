@@ -180,6 +180,16 @@ OF_ASSUME_NONNULL_BEGIN
     id <OFXMLParserDelegate> delegate;
 
 /*!
+ * The current line number.
+ */
+@property (readonly, nonatomic) size_t lineNumber;
+
+/*!
+ * @return Whether the XML parser has finished parsing.
+ */
+@property (readonly, nonatomic) bool hasFinishedParsing;
+
+/*!
  * The depth limit for the XML parser.
  *
  * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
@@ -226,20 +236,6 @@ OF_ASSUME_NONNULL_BEGIN
 */
 - (void)parseFile: (OFString *)path;
 #endif
-
-/*!
- * @brief Returns the current line number.
- *
- * @return The current line number
- */
-- (size_t)lineNumber;
-
-/*!
- * @brief Returns whether the XML parser has finished parsing.
- *
- * @return Whether the XML parser has finished parsing
- */
-- (bool)hasFinishedParsing;
 @end
 
 OF_ASSUME_NONNULL_END

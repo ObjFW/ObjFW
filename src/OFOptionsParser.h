@@ -110,6 +110,12 @@ typedef struct of_options_parser_option_t {
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *argument;
 
 /*!
+ * The arguments following the last option.
+ */
+@property (readonly, nonatomic)
+    OFArray OF_GENERIC(OFString *) *remainingArguments;
+
+/*!
  * @brief Creates a new OFOptionsParser which accepts the specified options.
  *
  * @param options An array of @ref of_options_parser_option_t specifying all
@@ -154,13 +160,6 @@ typedef struct of_options_parser_option_t {
  * @return The next option
  */
 - (of_unichar_t)nextOption;
-
-/*!
- * @brief Returns the arguments following the last option.
- *
- * @return The arguments following the last option
- */
-- (OFArray OF_GENERIC(OFString *) *)remainingArguments;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -45,6 +45,44 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) size_t itemSize;
 
 /*!
+ * The number of items in the OFData.
+ */
+@property (readonly, nonatomic) size_t count;
+
+/*!
+ * All elements of the OFData as a C array.
+ *
+ * @warning The pointer is only valid until the OFData is changed!
+ *
+ */
+@property (readonly, nonatomic) const void *items OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The first item of the OFData or NULL.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *firstItem
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The last item of the OFData or NULL.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *lastItem
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The string representation of the data.
+ *
+ * The string representation is a hex dump of the data, grouped by itemSize
+ * bytes.
+ */
+@property (readonly, nonatomic) OFString *stringRepresentation;
+
+/*!
+ * A string containing the data in Base64 encoding.
+ */
+@property (readonly, nonatomic) OFString *stringByBase64Encoding;
+
+/*!
  * @brief Creates a new OFData with the specified `count` items of size 1.
  *
  * @param items The items to store in the OFData
@@ -236,59 +274,12 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBase64EncodedString: (OFString *)string;
 
 /*!
- * @brief Returns the number of items in the OFData.
- *
- * @return The number of items in the OFData
- */
-- (size_t)count;
-
-/*!
- * @brief Returns all items of the OFData as a C array.
- *
- * @warning The pointer is only valid until the OFData is changed!
- *
- * @return All elements of the OFData as a C array
- */
-- (const void *)items OF_RETURNS_INNER_POINTER;
-
-/*!
  * @brief Returns a specific item of the OFData.
  *
  * @param index The number of the item to return
  * @return The specified item of the OFData
  */
 - (const void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the first item of the OFData.
- *
- * @return The first item of the OFData or NULL
- */
-- (nullable const void *)firstItem OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the last item of the OFData.
- *
- * @return The last item of the OFData or NULL
- */
-- (nullable const void *)lastItem OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the string representation of the data.
- *
- * The string representation is a hex dump of the data, grouped by itemSize
- * bytes.
- *
- * @return The string representation of the data.
- */
-- (OFString *)stringRepresentation;
-
-/*!
- * @brief Returns a string containing the data in Base64 encoding.
- *
- * @return A string containing the data in Base64 encoding
- */
-- (OFString *)stringByBase64Encoding;
 
 #ifdef OF_HAVE_FILES
 /*!

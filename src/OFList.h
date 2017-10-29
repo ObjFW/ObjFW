@@ -63,10 +63,26 @@ struct of_list_object_t {
     of_list_object_t *firstListObject;
 
 /*!
+ * The first object of the list or `nil`.
+ *
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
+
+/*!
  * The last list object of the list.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_list_object_t *lastListObject;
+
+/*!
+ * The last object of the list or `nil`.
+ *
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
 
 /*!
  * @brief Creates a new OFList.
@@ -145,33 +161,6 @@ struct of_list_object_t {
  *	   address
  */
 - (bool)containsObjectIdenticalTo: (ObjectType)object;
-
-/*!
- * @brief Returns an OFEnumerator to enumerate through all objects of the list.
- *
- * @returns An OFEnumerator to enumerate through all objects of the list
- */
-- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
-
-/*!
- * @brief Returns the first object of the list or `nil`.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- *
- * @return The first object of the list or `nil`
- */
-- (nullable ObjectType)firstObject;
-
-/*!
- * @brief Returns the last object of the list or `nil`.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- *
- * @return The last object of the list or `nil`
- */
-- (nullable ObjectType)lastObject;
 
 /*!
  * @brief Removes all objects from the list.

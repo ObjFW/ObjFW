@@ -39,6 +39,13 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
+ * @return A stream for reading the current entry
+ *
+ * @note This is only available in read mode.
+ */
+@property (readonly, nonatomic) OFStream *streamForReadingCurrentEntry;
+
+/*!
  * @brief Creates a new OFTarArchive object with the specified stream.
  *
  * @param stream A stream from which the tar archive will be read.
@@ -110,15 +117,6 @@ OF_ASSUME_NONNULL_BEGIN
  *	   been read
  */
 - (nullable OFTarArchiveEntry *)nextEntry;
-
-/*!
- * @brief Returns a stream for reading the current entry.
- *
- * @note This is only available in read mode.
- *
- * @return A stream for reading the current entry
- */
-- (OFStream *)streamForReadingCurrentEntry;
 
 /*!
  * @brief Returns a stream for writing the specified entry.

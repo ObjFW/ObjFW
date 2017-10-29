@@ -154,6 +154,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
 
 /*!
+ * The delegate of the application.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    id <OFApplicationDelegate> delegate;
+
+/*!
  * @brief Returns the only OFApplication instance in the application.
  *
  * @return The only OFApplication instance in the application
@@ -214,20 +220,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)getArgumentCount: (int *_Nonnull *_Nonnull)argc
        andArgumentValues: (char *_Nonnull *_Nonnull *_Nonnull[_Nonnull])argv;
-
-/*!
- * @brief Returns the delegate of the application.
- *
- * @return The delegate of the application
- */
-- (nullable id <OFApplicationDelegate>)delegate;
-
-/*!
- * @brief Sets the delegate of the application.
- *
- * @param delegate The delegate for the application
- */
-- (void)setDelegate: (nullable id <OFApplicationDelegate>)delegate;
 
 /*!
  * @brief Terminates the application.

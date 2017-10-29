@@ -34,6 +34,15 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic, getter=isCalculated) bool calculated;
 
 /*!
+ * A buffer containing the cryptographic hash.
+ *
+ * The size of the buffer depends on the hash used. The buffer is part of the
+ * receiver's memory pool.
+ */
+@property (readonly, nonatomic) const unsigned char *digest
+    OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Creates a new cryptographic hash.
  *
  * @return A new autoreleased OFCryptoHash
@@ -62,16 +71,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)updateWithBuffer: (const void *)buffer
 		  length: (size_t)length;
-
-/*!
- * @brief Returns a buffer containing the cryptographic hash.
- *
- * The size of the buffer depends on the hash used. The buffer is part of the
- * receiver's memory pool.
- *
- * @return A buffer containing the hash
- */
-- (const unsigned char *)digest OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Resets all state so that a new hash can be calculated.

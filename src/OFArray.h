@@ -136,6 +136,42 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 	       count: (size_t)count;
 
 /*!
+ * The objects of the array as a C array.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ */
+@property (readonly, nonatomic)
+    ObjectType const __unsafe_unretained _Nonnull *_Nonnull objects;
+
+/*!
+ * The first object of the array or `nil`.
+ *
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
+
+/*!
+ * The last object of the array or `nil`.
+ *
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
+
+/*!
+ * The array sorted in ascending order.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *sortedArray;
+
+/*!
+ * The array with the order reversed.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *reversedArray;
+
+/*!
  * @brief Initializes an OFArray with the specified object.
  *
  * @param object An object
@@ -233,13 +269,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 	   inRange: (of_range_t)range;
 
 /*!
- * @brief Returns the objects of the array as a C array.
- *
- * @return The objects of the array as a C array
- */
-- (ObjectType const __unsafe_unretained _Nonnull *_Nonnull)objects;
-
-/*!
  * @brief Returns the index of the first object that is equivalent to the
  *	  specified object or `OF_NOT_FOUND` if it was not found.
  *
@@ -277,26 +306,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *	   address
  */
 - (bool)containsObjectIdenticalTo: (ObjectType)object;
-
-/*!
- * @brief Returns the first object of the array or `nil`.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- *
- * @return The first object of the array or `nil`
- */
-- (nullable ObjectType)firstObject;
-
-/*!
- * @brief Returns the last object of the array or `nil`.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- *
- * @return The last object of the array or `nil`
- */
-- (nullable ObjectType)lastObject;
 
 /*!
  * @brief Returns the objects in the specified range as a new OFArray.
@@ -375,13 +384,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 			withObject: (nullable id)object;
 
 /*!
- * @brief Returns a copy of the array sorted in ascending order.
- *
- * @return A sorted copy of the array
- */
-- (OFArray OF_GENERIC(ObjectType) *)sortedArray;
-
-/*!
  * @brief Returns a copy of the array sorted using the specified selector and
  *	  options.
  *
@@ -416,13 +418,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 #endif
 
 /*!
- * @brief Returns a copy of the array with the order reversed.
- *
- * @return A copy of the array with the order reversed
- */
-- (OFArray OF_GENERIC(ObjectType) *)reversedArray;
-
-/*!
  * @brief Creates a new array with the specified object added.
  *
  * @param object The object to add
@@ -446,14 +441,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @return A new array with the specified object removed
  */
 - (OFArray OF_GENERIC(ObjectType) *)arrayByRemovingObject: (ObjectType)object;
-
-/*!
- * @brief Returns an OFEnumerator to enumerate through all objects of the
- *	  array.
- *
- * @returns An OFEnumerator to enumerate through all objects of the array
- */
-- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!

@@ -32,8 +32,24 @@ OF_ASSUME_NONNULL_BEGIN
 	bool _calculated;
 }
 
-/*! The class for the cryptographic hash used by the HMAC. */
+/*!
+ * The class for the cryptographic hash used by the HMAC.
+ */
 @property (readonly, nonatomic) Class <OFCryptoHash> hashClass;
+
+/*!
+ * A buffer containing the HMAC.
+ *
+ * The size of the buffer depends on the hash used. The buffer is part of the
+ * receiver's memory pool.
+ */
+@property (readonly, nonatomic) const unsigned char *digest
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The size of the digest.
+ */
+@property (readonly, nonatomic) size_t digestSize;
 
 /*!
  * @brief Returns a new OFHMAC with the specified hashing algorithm.
@@ -78,23 +94,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)updateWithBuffer: (const void *)buffer
 		  length: (size_t)length;
-
-/*!
- * @brief Returns a buffer containing the HMAC.
- *
- * The size of the buffer depends on the hash used. The buffer is part of the
- * receiver's memory pool.
- *
- * @return A buffer containing the hash
- */
-- (const unsigned char *)digest OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the size of the digest.
- *
- * @return The size of the digest.
- */
-- (size_t)digestSize;
 
 /*!
  * @brief Resets the HMAC so that it can be calculated for a new message.

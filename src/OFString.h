@@ -113,6 +113,201 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
+
+/*!
+ * The length of the string in Unicode codepoints.
+ */
+@property (readonly, nonatomic) size_t length;
+
+/*!
+ * The OFString as a UTF-8 encoded C string.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ */
+@property (readonly, nonatomic) const char *UTF8String OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The number of bytes the string needs in UTF-8 encoding.
+ */
+@property (readonly, nonatomic) size_t UTF8StringLength;
+
+/*!
+ * The components of the string when interpreted as a path.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *pathComponents;
+
+/*!
+ * The last path component of the string when interpreted as a path.
+ */
+@property (readonly, nonatomic) OFString *lastPathComponent;
+
+/*!
+ * The file extension of string when interpreted as a path.
+ */
+@property (readonly, nonatomic) OFString *pathExtension;
+
+/*!
+ * The string in uppercase.
+ */
+@property (readonly, nonatomic) OFString *uppercaseString;
+
+/*!
+ * The string in lowercase.
+ */
+@property (readonly, nonatomic) OFString *lowercaseString;
+
+/*!
+ * The string in capitalized form.
+ *
+ * @note This only considers spaces, tabs and newlines to be word delimiters!
+ *	 Also note that this might change in the future to all word delimiters
+ *	 specified by Unicode!
+ */
+@property (readonly, nonatomic) OFString *capitalizedString;
+
+/*!
+ * The decimal value of the string as an `intmax_t`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidEncodingException is thrown.
+ *
+ * If the number is too big to fit into an `intmax_t`, an
+ * @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) intmax_t decimalValue;
+
+/*!
+ * The hexadecimal value of the string as an `uintmax_t`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidEncodingException is thrown.
+ *
+ * If the number is too big to fit into an `uintmax_t`, an
+ * @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) uintmax_t hexadecimalValue;
+
+/*!
+ * The octal value of the string as an `uintmax_t`.
+ *
+ * Leading and trailing whitespaces are ignored.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidEncodingException is thrown.
+ *
+ * If the number is too big to fit into an `uintmax_t`, an
+ * @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) uintmax_t octalValue;
+
+/*!
+ * The float value of the string as a float.
+ *
+ * If the string contains any non-number characters, an
+ * @ref OFInvalidEncodingException is thrown.
+ */
+@property (readonly, nonatomic) float floatValue;
+
+/*!
+ * The double value of the string as a double.
+ *
+ * If the string contains any non-number characters, an
+ * OFInvalidEncodingException is thrown.
+ */
+@property (readonly, nonatomic) double doubleValue;
+
+/*!
+ * The directory name of the string when interpreted as a path.
+ */
+@property (readonly, nonatomic) OFString *stringByDeletingLastPathComponent;
+
+/*!
+ * The string with the file extension of the path removed.
+ */
+@property (readonly, nonatomic) OFString *stringByDeletingPathExtension;
+
+/*!
+ * The string interpreted as a path with relative sub paths resolved.
+ */
+@property (readonly, nonatomic) OFString *stringByStandardizingPath;
+
+/*!
+ * The string interpreted as a URL path with relative sub paths resolved.
+ *
+ * This works similar to @ref stringByStandardizingPath, but is intended for
+ * standardization of paths that are part of a URL.
+ */
+@property (readonly, nonatomic) OFString *stringByStandardizingURLPath;
+
+/*!
+ * The string as an array of Unicode characters.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ */
+@property (readonly, nonatomic) const of_unichar_t *characters
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The string in UTF-16 encoding with native byte order.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ */
+@property (readonly, nonatomic) const char16_t *UTF16String
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The length of the string in UTF-16 characters.
+ */
+@property (readonly, nonatomic) size_t UTF16StringLength;
+
+/*!
+ * The string in UTF-32 encoding with native byte order.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ */
+@property (readonly, nonatomic) const char32_t *UTF32String
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * The string with leading whitespaces deleted.
+ */
+@property (readonly, nonatomic) OFString *stringByDeletingLeadingWhitespaces;
+
+/*!
+ * The string with trailing whitespaces deleted.
+ */
+@property (readonly, nonatomic) OFString *stringByDeletingTrailingWhitespaces;
+
+/*!
+ * The string with leading and trailing whitespaces deleted.
+ */
+@property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
+
+#ifdef OF_HAVE_UNICODE_TABLES
+/*!
+ * The string in Unicode Normalization Form D (NFD).
+ */
+@property (readonly, nonatomic) OFString *decomposedStringWithCanonicalMapping;
+
+/*!
+ * The string in Unicode Normalization Form KD (NFKD).
+ */
+@property (readonly, nonatomic)
+    OFString *decomposedStringWithCompatibilityMapping;
+#endif
+
 /*!
  * @brief Creates a new OFString.
  *
@@ -672,24 +867,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * @brief Returns the OFString as a UTF-8 encoded C string.
- *
- * The result is valid until the autorelease pool is released. If you want to
- * use the result outside the scope of the current autorelease pool, you have to
- * copy it.
- *
- * @return The OFString as a UTF-8 encoded C string
- */
-- (const char *)UTF8String OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the length of the string in Unicode codepoints.
- *
- * @return The length of the string in Unicode codepoints
- */
-- (size_t)length;
-
-/*!
  * @brief Returns the number of bytes the string needs in the specified
  *	  encoding.
  *
@@ -697,13 +874,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The number of bytes the string needs in the specified encoding.
  */
 - (size_t)cStringLengthWithEncoding: (of_string_encoding_t)encoding;
-
-/*!
- * @brief Returns the number of bytes the string needs in UTF-8 encoding.
- *
- * @return The number of bytes the string needs in UTF-8 encoding.
- */
-- (size_t)UTF8StringLength;
 
 /*!
  * @brief Compares the OFString to another OFString without caring about the
@@ -860,53 +1030,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 					     range: (of_range_t)range;
 
 /*!
- * @brief Returns the string in uppercase.
- *
- * @return The string in uppercase
- */
-- (OFString *)uppercaseString;
-
-/*!
- * @brief Returns the string in lowercase.
- *
- * @return The string in lowercase
- */
-- (OFString *)lowercaseString;
-
-/*!
- * @brief Returns the string capitalized.
- *
- * @note This only considers spaces, tabs and newlines to be word delimiters!
- *	 Also note that this might change in the future to all word delimiters
- *	 specified by Unicode!
- *
- * @return The capitalized string
- */
-- (OFString *)capitalizedString;
-
-/*!
- * @brief Creates a new string by deleting leading whitespaces.
- *
- * @return A new autoreleased OFString with leading whitespaces deleted
- */
-- (OFString *)stringByDeletingLeadingWhitespaces;
-
-/*!
- * @brief Creates a new string by deleting trailing whitespaces.
- *
- * @return A new autoreleased OFString with trailing whitespaces deleted
- */
-- (OFString *)stringByDeletingTrailingWhitespaces;
-
-/*!
- * @brief Creates a new string by deleting leading and trailing whitespaces.
- *
- * @return A new autoreleased OFString with leading and trailing whitespaces
- *	   deleted
- */
-- (OFString *)stringByDeletingEnclosingWhitespaces;
-
-/*!
  * @brief Checks whether the string has the specified prefix.
  *
  * @param prefix The prefix to check for
@@ -947,145 +1070,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 			options: (int)options;
 
 /*!
- * @brief Returns the components of the path.
- *
- * @return The components of the path
- */
-- (OFArray OF_GENERIC(OFString *) *)pathComponents;
-
-/*!
- * @brief Returns the last component of the path.
- *
- * @return The last component of the path
- */
-- (OFString *)lastPathComponent;
-
-/*!
- * @brief Returns the file extension of the path.
- *
- * @return The file extension of the path
- */
-- (OFString *)pathExtension;
-
-/*!
- * @brief Returns the directory name of the path.
- *
- * @return The directory name of the path
- */
-- (OFString *)stringByDeletingLastPathComponent;
-
-/*!
- * @brief Returns a new string with the file extension of the path removed.
- *
- * @return A new string with the file extension of the path removed
- */
-- (OFString *)stringByDeletingPathExtension;
-
-/*!
- * @brief Returns the path with relative sub paths resolved.
- *
- * @return The path with relative sub paths resolved
- */
-- (OFString *)stringByStandardizingPath;
-
-/*!
- * @brief Returns the URL path with relative sub paths resolved.
- *
- * This works similar to @ref stringByStandardizingPath, but is intended for
- * standardization of paths that are part of a URL.
- *
- * @return The URL path with relative sub paths resolved
- */
-- (OFString *)stringByStandardizingURLPath;
-
-/*!
- * @brief Returns the decimal value of the string as an `intmax_t`.
- *
- * Leading and trailing whitespaces are ignored.
- *
- * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
- *
- * If the number is too big to fit into an `intmax_t`, an
- * @ref OFOutOfRangeException is thrown.
- *
- * @return An `intmax_t` with the value of the string
- */
-- (intmax_t)decimalValue;
-
-/*!
- * @brief Returns the hexadecimal value of the string as an `uintmax_t`.
- *
- * Leading and trailing whitespaces are ignored.
- *
- * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
- *
- * If the number is too big to fit into an `uintmax_t`, an
- * @ref OFOutOfRangeException is thrown.
- *
- * @return A `uintmax_t` with the value of the string
- */
-- (uintmax_t)hexadecimalValue;
-
-/*!
- * @brief Returns the octal value of the string as an `uintmax_t`.
- *
- * Leading and trailing whitespaces are ignored.
- *
- * If the string contains any non-number characters, an
- * @ref OFInvalidEncodingException is thrown.
- *
- * If the number is too big to fit into an `uintmax_t`, an
- * @ref OFOutOfRangeException is thrown.
- *
- * @return A `uintmax_t` with the value of the string
- */
-- (uintmax_t)octalValue;
-
-/*!
- * @brief Returns the float value of the string as a float.
- *
- * If the string contains any non-number characters, an
- * OFInvalidEncodingException is thrown.
- *
- * @return A float with the value of the string
- */
-- (float)floatValue;
-
-/*!
- * @brief Returns the double value of the string as a double.
- *
- * If the string contains any non-number characters, an
- * OFInvalidEncodingException is thrown.
- *
- * @return A double with the value of the string
- */
-- (double)doubleValue;
-
-/*!
- * @brief Returns the string as an array of Unicode characters.
- *
- * The result is valid until the autorelease pool is released. If you want to
- * use the result outside the scope of the current autorelease pool, you have to
- * copy it.
- *
- * @return The string as an array of Unicode characters
- */
-- (const of_unichar_t *)characters OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the string in UTF-16 encoding with native byte order.
- *
- * The result is valid until the autorelease pool is released. If you want to
- * use the result outside the scope of the current autorelease pool, you have to
- * copy it.
- *
- * @return The string in UTF-16 encoding with native byte order
- */
-- (const char16_t *)UTF16String OF_RETURNS_INNER_POINTER;
-
-/*!
  * @brief Returns the string in UTF-16 encoding with the specified byte order.
  *
  * The result is valid until the autorelease pool is released. If you want to
@@ -1097,24 +1081,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (const char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
     OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Returns the length of the string in UTF-16 characters.
- *
- * @return The length of string in UTF-16 characters
- */
-- (size_t)UTF16StringLength;
-
-/*!
- * @brief Returns the string in UTF-32 encoding with native byte order.
- *
- * The result is valid until the autorelease pool is released. If you want to
- * use the result outside the scope of the current autorelease pool, you have to
- * copy it.
- *
- * @return The string in UTF-32 encoding with native byte order
- */
-- (const char32_t *)UTF32String OF_RETURNS_INNER_POINTER;
 
 /*!
  * @brief Returns the string in UTF-32 encoding with the specified byte order.
@@ -1136,22 +1102,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return The string as OFData with the specified encoding
  */
 - (OFData *)dataWithEncoding: (of_string_encoding_t)encoding;
-
-#ifdef OF_HAVE_UNICODE_TABLES
-/*!
- * @brief Returns the string in Unicode Normalization Form D (NFD).
- *
- * @return The string in Unicode Normalization Form D (NFD)
- */
-- (OFString *)decomposedStringWithCanonicalMapping;
-
-/*!
- * @brief Returns the string in Unicode Normalization Form KD (NFKD).
- *
- * @return The string in Unicode Normalization Form KD (NFKD)
- */
-- (OFString *)decomposedStringWithCompatibilityMapping;
-#endif
 
 #ifdef OF_HAVE_FILES
 /*!

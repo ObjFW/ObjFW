@@ -33,6 +33,96 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
+ * The microsecond of the date.
+ */
+@property (readonly, nonatomic) uint32_t microsecond;
+
+/*!
+ * The second of the date.
+ */
+@property (readonly, nonatomic) uint8_t second;
+
+/*!
+ * The minute of the date.
+ */
+@property (readonly, nonatomic) uint8_t minute;
+
+/*!
+ * The minute of the date in local time.
+ */
+@property (readonly, nonatomic) uint8_t localMinute;
+
+/*!
+ * The hour of the date.
+ */
+@property (readonly, nonatomic) uint8_t hour;
+
+/*!
+ * The hour of the date in local time.
+ */
+@property (readonly, nonatomic) uint8_t localHour;
+
+/*!
+ * The day of the month of the date.
+ */
+@property (readonly, nonatomic) uint8_t dayOfMonth;
+
+/*!
+ * The day of the month of the date in local time.
+ */
+@property (readonly, nonatomic) uint8_t localDayOfMonth;
+
+/*!
+ * The month of the year of the date.
+ */
+@property (readonly, nonatomic) uint8_t monthOfYear;
+
+/*!
+ * The month of the year of the date in local time.
+ */
+@property (readonly, nonatomic) uint8_t localMonthOfYear;
+
+/*!
+ * The year of the date.
+ */
+@property (readonly, nonatomic) uint16_t year;
+
+/*!
+ * The year of the date in local time.
+ */
+@property (readonly, nonatomic) uint16_t localYear;
+
+/*!
+ * The day of the week of the date.
+ */
+@property (readonly, nonatomic) uint8_t dayOfWeek;
+
+/*!
+ * The day of the week of the date in local time.
+ */
+@property (readonly, nonatomic) uint8_t localDayOfWeek;
+
+/*!
+ * The day of the year of the date.
+ */
+@property (readonly, nonatomic) uint16_t dayOfYear;
+
+/*!
+ * The day of the year of the date in local time.
+ */
+@property (readonly, nonatomic) uint16_t localDayOfYear;
+
+/*!
+ * The seconds since 1970-01-01T00:00:00Z.
+ */
+@property (readonly, nonatomic) of_time_interval_t timeIntervalSince1970;
+
+/*!
+ * The seconds the date is in the future.
+ */
+@property (readonly, nonatomic) of_time_interval_t timeIntervalSinceNow;
+
+/*!
  * @brief Creates a new OFDate with the current date and time.
  *
  * @return A new, autoreleased OFDate with the current date and time
@@ -168,118 +258,6 @@ OF_ASSUME_NONNULL_BEGIN
 				 format: (OFString *)format;
 
 /*!
- * @brief Returns the microsecond of the date.
- *
- * @return The microsecond of the date
- */
-- (uint32_t)microsecond;
-
-/*!
- * @brief Returns the second of the date.
- *
- * @return The second of the date
- */
-- (uint8_t)second;
-
-/*!
- * @brief Returns the minute of the date.
- *
- * @return The minute of the date
- */
-- (uint8_t)minute;
-
-/*!
- * @brief Returns the minute of the date in local time.
- *
- * @return The minute of the date in local time
- */
-- (uint8_t)localMinute;
-
-/*!
- * @brief Returns the hour of the date.
- *
- * @return The hour of the date
- */
-- (uint8_t)hour;
-
-/*!
- * @brief Returns the hour of the date in local time.
- *
- * @return The hour of the date in local time
- */
-- (uint8_t)localHour;
-
-/*!
- * @brief Returns the day of the month.
- *
- * @return The day of the month of the date
- */
-- (uint8_t)dayOfMonth;
-
-/*!
- * @brief Returns the day of the month of the date in local time.
- *
- * @return The day of the month of the date in local time
- */
-- (uint8_t)localDayOfMonth;
-
-/*!
- * @brief Returns the month of the year of the date.
- *
- * @return The month of the year of the date
- */
-- (uint8_t)monthOfYear;
-
-/*!
- * @brief Returns the month of the year of the date in local time.
- *
- * @return The month of the year of the date in local time
- */
-- (uint8_t)localMonthOfYear;
-
-/*!
- * @brief Returns the year of the date.
- *
- * @return The year of the date
- */
-- (uint16_t)year;
-
-/*!
- * @brief Returns the year of the date in local time.
- *
- * @return The year of the date in local time
- */
-- (uint16_t)localYear;
-
-/*!
- * @brief Returns the day of the week of the date.
- *
- * @return The day of the week of the date
- */
-- (uint8_t)dayOfWeek;
-
-/*!
- * @brief Returns the day of the week of the date in local time.
- *
- * @return The day of the week of the date in local time
- */
-- (uint8_t)localDayOfWeek;
-
-/*!
- * @brief Returns the day of the year of the date.
- *
- * @return The day of the year of the date
- */
-- (uint16_t)dayOfYear;
-
-/*!
- * @brief Returns the day of the year of the date in local time.
- *
- * @return The day of the year of the date in local time
- */
-- (uint16_t)localDayOfYear;
-
-/*!
  * @brief Creates a string of the date with the specified format.
  *
  * See the man page for `strftime` for information on the format.
@@ -320,26 +298,12 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFDate *)laterDate: (nullable OFDate *)otherDate;
 
 /*!
- * @brief Returns the seconds since 1970-01-01T00:00:00Z.
- *
- * @return The seconds since 1970-01-01T00:00:00Z
- */
-- (of_time_interval_t)timeIntervalSince1970;
-
-/*!
  * @brief Returns the seconds the receiver is after the date.
  *
  * @param otherDate Date date to generate the difference with receiver
  * @return The seconds the receiver is after the date.
  */
 - (of_time_interval_t)timeIntervalSinceDate: (OFDate *)otherDate;
-
-/*!
- * @brief Returns the seconds the receiver is in the future.
- *
- * @return The seconds the receiver is in the future
- */
-- (of_time_interval_t)timeIntervalSinceNow;
 
 /*!
  * @brief Creates a new date with the specified time interval added.

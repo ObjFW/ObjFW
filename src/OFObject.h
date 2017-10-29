@@ -199,18 +199,41 @@ of_rectangle(float x, float y, float width, float height)
  */
 @protocol OFObject
 /*!
- * @brief Returns the class of the object.
- *
- * @return The class of the object
+ * The class of the object.
  */
-- (Class)class;
+@property (readonly, nonatomic) Class class;
 
 /*!
- * @brief Returns the superclass of the object.
- *
- * @return The superclass of the object
+ * The superclass of the object.
  */
-- (nullable Class)superclass;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
+
+/*!
+ * A 32 bit hash for the object.
+ *
+ * Classes containing data (like strings, arrays, lists etc.) should reimplement
+ * this!
+ *
+ * @warning If you reimplement this, you also need to reimplement @ref isEqual:
+ *	    to behave in a way compatible to your reimplementation of this
+ *	    method!
+ */
+@property (readonly, nonatomic) uint32_t hash;
+
+/*!
+ * The retain count.
+ */
+@property (readonly, nonatomic) unsigned int retainCount;
+
+/*!
+ * Whether the object is a proxy object.
+ */
+@property (readonly, nonatomic) bool isProxy;
+
+/*!
+ * Whether the object allows weak references.
+ */
+@property (readonly, nonatomic) bool allowsWeakReference;
 
 /*!
  * @brief Returns a boolean whether the object of the specified kind.
@@ -339,33 +362,12 @@ of_rectangle(float x, float y, float width, float height)
 - (bool)isEqual: (nullable id)object;
 
 /*!
- * @brief Calculates a hash for the object.
- *
- * Classes containing data (like strings, arrays, lists etc.) should reimplement
- * this!
- *
- * @warning If you reimplement this, you also need to reimplement @ref isEqual:
- *	    to behave in a way compatible to your reimplementation of this
- *	    method!
- *
- * @return A 32 bit hash for the object
- */
-- (uint32_t)hash;
-
-/*!
  * @brief Increases the retain count.
  *
  * Each time an object is released, the retain count gets decreased and the
  * object deallocated if it reaches 0.
  */
 - (instancetype)retain;
-
-/*!
- * @brief Returns the retain count.
- *
- * @return The retain count
- */
-- (unsigned int)retainCount;
 
 /*!
  * @brief Decreases the retain count.
@@ -391,20 +393,6 @@ of_rectangle(float x, float y, float width, float height)
 - (instancetype)self;
 
 /*!
- * @brief Returns whether the object is a proxy object.
- *
- * @return A boolean whether the object is a proxy object
- */
-- (bool)isProxy;
-
-/*!
- * @brief Returns whether the class allows weak references.
- *
- * @return Whether the class allows weak references
- */
-- (bool)allowsWeakReference;
-
-/*!
  * @brief Retain a weak reference to this object.
  *
  * @return Whether a weak reference to this object has been retained
@@ -427,6 +415,19 @@ OF_ROOT_CLASS
 	Class _isa __attribute__((__unused__));
 #endif
 }
+
+/*!
+ * The name of the object's class.
+ */
+@property (readonly, nonatomic) OFString *className;
+
+/*!
+ * A description for the object.
+ *
+ * This is used when the object is used in a format string and for debugging
+ * purposes.
+ */
+@property (readonly, nonatomic) OFString *description;
 
 /*!
  * @brief A method which is called once when the class is loaded into the
@@ -651,22 +652,6 @@ OF_ROOT_CLASS
  * @return The method signature for the specified selector
  */
 - (nullable OFMethodSignature *)methodSignatureForSelector: (SEL)selector;
-
-/*!
- * @brief Returns the name of the object's class.
- *
- * @return The name of the object's class
- */
-- (OFString *)className;
-
-/*!
- * @brief Returns a description for the object.
- *
- * This is mostly for debugging purposes.
- *
- * @return A description for the object
- */
-- (OFString *)description;
 
 /*!
  * @brief Allocates memory and stores it in the object's memory pool.

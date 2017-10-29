@@ -66,6 +66,16 @@ typedef bool (^of_set_filter_block_t)(id object);
 # define ObjectType id
 #endif
 /*!
+ * An array of all objects in the set.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
+
+/*!
+ * @return An arbitrary object in the set.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType anyObject;
+
+/*!
  * @brief Creates a new set.
  *
  * @return A new, autoreleased set
@@ -195,20 +205,6 @@ typedef bool (^of_set_filter_block_t)(id object);
     (OFSet OF_GENERIC(ObjectType) *)set;
 
 /*!
- * @brief Returns an array of all objects in the set.
- *
- * @return An array of all objects in the set
- */
-- (OFArray OF_GENERIC(ObjectType) *)allObjects;
-
-/*!
- * @brief Returns an arbitrary object in the set.
- *
- * @return An arbitrary object in the set
- */
-- (nullable ObjectType)anyObject;
-
-/*!
  * @brief Checks whether the set contains an object equal to the specified
  *	  object.
  *
@@ -247,13 +243,6 @@ typedef bool (^of_set_filter_block_t)(id object);
  */
 - (void)setValue: (id)value
 	  forKey: (OFString *)key;
-
-/*!
- * @brief Returns an OFEnumerator to enumerate through all objects of the set.
- *
- * @returns An OFEnumerator to enumerate through all objects of the set
- */
-- (OFEnumerator OF_GENERIC(ObjectType) *)objectEnumerator;
 
 #ifdef OF_HAVE_BLOCKS
 /*!

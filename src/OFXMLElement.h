@@ -60,6 +60,23 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *defaultNamespace;
 
 /*!
+ * An array with the attributes of the element
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
+
+/*!
+ * An array of OFXMLNodes with all children of the element.
+ */
+@property OF_NULLABLE_PROPERTY (nonatomic, copy)
+    OFArray OF_GENERIC(OFXMLNode *) *children;
+
+/*!
+ * All children that are elements.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(OFXMLElement *) *elements;
+
+/*!
  * @brief Creates a new XML element with the specified name.
  *
  * @param name The name for the element
@@ -230,13 +247,6 @@ OF_ASSUME_NONNULL_BEGIN
       forNamespace: (OFString *)namespace_;
 
 /*!
- * @brief Returns an OFArray with the attributes of the element.
- *
- * @return An OFArray with the attributes of the element
- */
-- (nullable OFArray OF_GENERIC(OFXMLAttribute *) *)attributes;
-
-/*!
  * @brief Adds the specified attribute.
  *
  * If an attribute with the same name and namespace already exists, it is not
@@ -308,20 +318,6 @@ OF_ASSUME_NONNULL_BEGIN
 		     namespace: (nullable OFString *)attributeNS;
 
 /*!
- * @brief Removes all children and adds the children from the specified array.
- *
- * @param children The new children to add
- */
-- (void)setChildren: (nullable OFArray OF_GENERIC(OFXMLNode *) *)children;
-
-/*!
- * @brief Returns an array of OFXMLNodes with all children of the element.
- *
- * @return An array of OFXMLNodes with all children of the element
- */
-- (nullable OFArray OF_GENERIC(OFXMLNode *) *)children;
-
-/*!
  * @brief Adds a child to the OFXMLElement.
  *
  * @param child An OFXMLNode which is added as a child
@@ -378,13 +374,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)replaceChildAtIndex: (size_t)index
 		   withNode: (OFXMLNode *)node;
-
-/*!
- * @brief Returns all children that are elements.
- *
- * @return All children that are elements
- */
-- (OFArray OF_GENERIC(OFXMLElement *) *)elements;
 
 /*!
  * @brief Returns all children that have the specified namespace.

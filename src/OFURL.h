@@ -99,6 +99,21 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *fragment;
 
 /*!
+ * The URL as a string.
+ */
+@property (readonly, nonatomic) OFString *string;
+
+/*!
+ * The local file system representation for a file URL.
+ *
+ * @note This only exists for URLs with the file scheme and throws an exception
+ *	 otherwise.
+ *
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFString *fileSystemRepresentation;
+
+/*!
  * @brief Creates a new URL with the specified string.
  *
  * @param string A string describing a URL
@@ -187,23 +202,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)fileURLWithPath: (OFString *)path
 		    isDirectory: (bool)isDirectory;
 #endif
-
-/*!
- * @brief Returns the URL as a string.
- *
- * @return The URL as a string
- */
-- (OFString *)string;
-
-/*!
- * @brief Returns the local file system representation for a file URL.
- *
- * This only exists for URLs with the file scheme and throws an exception
- * otherwise.
- *
- * @return The local file system representation for a file URL
- */
-- (nullable OFString *)fileSystemRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

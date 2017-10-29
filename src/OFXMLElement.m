@@ -381,7 +381,7 @@ static Class CDATAClass = Nil;
 - (void)setChildren: (OFArray *)children
 {
 	OFArray *old = _children;
-	_children = [children copy];
+	_children = [children mutableCopy];
 	[old release];
 }
 

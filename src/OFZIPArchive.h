@@ -56,6 +56,17 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *archiveComment;
 
 /*!
+ * The entries in the central directory of the archive as an array of objects
+ * of class @ref OFZIPArchiveEntry.
+ *
+ * The objects of the array have the same order as the entries in the central
+ * directory, which does not need to be the order in which the actual files are
+ * stored.
+ */
+@property (readonly, nonatomic)
+    OFArray OF_GENERIC(OFZIPArchiveEntry *) *entries;
+
+/*!
  * @brief Creates a new OFZIPArchive object with the specified stream.
  *
  * @param stream A stream from which the ZIP archive will be read.
@@ -112,18 +123,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPath: (OFString *)path
 			mode: (OFString *)mode;
 #endif
-
-/*!
- * @brief Returns the entries of the central directory of the archive as an
- * 	  array of objects of class @ref OFZIPArchiveEntry.
- *
- * The objects of the array have the same order as the entries in the central
- * directory, which does not need to be the order in which the actual files are
- * stored.
- *
- * @return The entries of the central directory of the archive as an array
- */
-- (OFArray OF_GENERIC(OFZIPArchiveEntry *) *)entries;
 
 /*!
  * @brief Returns a stream for reading the specified file from the archive.

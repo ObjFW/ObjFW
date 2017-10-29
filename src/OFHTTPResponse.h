@@ -35,6 +35,16 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
+ * The protocol version of the HTTP request reply.
+ */
+@property (nonatomic) of_http_request_protocol_version_t protocolVersion;
+
+/*!
+ * The protocol version of the HTTP request reply as a string.
+ */
+@property (readonly, nonatomic) OFString *protocolVersionString;
+
+/*!
  * The status code of the reply to the HTTP request.
  */
 @property (nonatomic) short statusCode;
@@ -46,18 +56,9 @@ OF_ASSUME_NONNULL_BEGIN
     *headers;
 
 /*!
- * @brief Sets the protocol version of the HTTP request reply.
- *
- * @param protocolVersion The protocol version of the HTTP request reply
+ * The reply as a string, trying to detect the encoding.
  */
-- (void)setProtocolVersion: (of_http_request_protocol_version_t)protocolVersion;
-
-/*!
- * @brief Returns the protocol version of the HTTP request reply.
- *
- * @return The protocol version of the HTTP request reply
- */
-- (of_http_request_protocol_version_t)protocolVersion;
+@property (readonly, nonatomic) OFString *string;
 
 /*!
  * @brief Sets the protocol version of the HTTP request reply to the version
@@ -66,20 +67,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @param string A string describing an HTTP version
  */
 - (void)setProtocolVersionFromString: (OFString *)string;
-
-/*!
- * @brief Returns the protocol version of the HTTP request reply as a string.
- *
- * @return The protocol version of the HTTP request reply as a string
- */
-- (OFString *)protocolVersionString;
-
-/*!
- * @brief Returns the reply as a string, trying to detect the encoding.
- *
- * @return The reply as a string
- */
-- (OFString *)string;
 
 /*!
  * @brief Returns the reply as a string, trying to detect the encoding and

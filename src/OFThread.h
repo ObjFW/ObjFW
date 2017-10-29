@@ -96,6 +96,29 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # endif
 
 /*!
+ * The run loop for the thread.
+ */
+@property (readonly, nonatomic) OFRunLoop *runLoop;
+
+/*!
+ * The priority of the thread.
+ *
+ * @note This has to be set before the thread is started!
+ *
+ * This is a value between -1.0 (meaning lowest priority that still schedules)
+ * and +1.0 (meaning highest priority that still allows getting preempted)
+ * with normal priority being 0.0 (meaning being the same as the main thread).
+ */
+@property (nonatomic) float priority;
+
+/*!
+ * The stack size of the thread.
+ *
+ * @note This has to be set before the thread is started!
+ */
+@property (nonatomic) size_t stackSize;
+
+/*!
  * @brief Creates a new thread.
  *
  * @return A new, autoreleased thread
@@ -222,53 +245,6 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @return The object returned by the main method of the thread.
  */
 - (id)join;
-
-/*!
- * @brief Returns the run loop for the thread.
- *
- * @return The run loop for the thread
- */
-- (OFRunLoop *)runLoop;
-
-/*!
- * @brief Returns the priority of the thread.
- *
- * This is a value between -1.0 (meaning lowest priority that still schedules)
- * and +1.0 (meaning highest priority that still allows getting preempted)
- * with normal priority being 0.0 (meaning being the same as the main thread).
- *
- * @return The priority of the thread
- */
-- (float)priority;
-
-/*!
- * @brief Sets the priority of the thread.
- *
- * @note This has to be set before the thread is started!
- *
- * @param priority The priority of the thread. This is a value between -1.0
- *		   (meaning lowest priority that still schedules) and +1.0
- *		   (meaning highest priority that still allows getting
- *		   preempted) with normal priority being 0.0 (meaning being
- *		   the same as the main thread).
- */
-- (void)setPriority: (float)priority;
-
-/*!
- * @brief Returns the stack size of the thread.
- *
- * @return The stack size of the thread
- */
-- (size_t)stackSize;
-
-/*!
- * @brief Sets the stack size of the thread.
- *
- * @note This has to be set before the thread is started!
- *
- * @param stackSize The stack size for the thread
- */
-- (void)setStackSize: (size_t)stackSize;
 #else
 - (instancetype)init OF_UNAVAILABLE;
 #endif

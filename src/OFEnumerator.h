@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns an OFEnumerator to enumerate through all objects of the
  *	  collection.
  *
- * @returns An OFEnumerator to enumerate through all objects of the collection
+ * @return An OFEnumerator to enumerate through all objects of the collection
  */
 - (OFEnumerator *)objectEnumerator;
 @end
@@ -46,18 +46,16 @@ OF_ASSUME_NONNULL_BEGIN
 # define ObjectType id
 #endif
 /*!
- * @brief Returns the next object or `nil` if there is none left.
+ * An array of all remaining objects in the collection.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
+
+/*!
+ * Returns the next object or `nil` if there is none left.
  *
  * @return The next object or `nil` if there is none left
  */
 - (nullable ObjectType)nextObject;
-
-/*!
- * @brief Returns an array of all remaining objects in the collection.
- *
- * @return An array of all remaining objects in the collection
- */
-- (OFArray OF_GENERIC(ObjectType) *)allObjects;
 
 /*!
  * @brief Resets the enumerator, so the next call to nextObject returns the

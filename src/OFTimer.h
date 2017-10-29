@@ -78,6 +78,16 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 @property (readonly, nonatomic, getter=isValid) bool valid;
 
 /*!
+ * The next date at which the timer will fire.
+ *
+ * If the timer is already scheduled in a run loop, it will be rescheduled.
+ * Note that rescheduling is an expensive operation, though it still might be
+ * preferable to reschedule instead of invalidating the timer and creating a
+ * new one.
+ */
+@property (copy, nonatomic) OFDate *fireDate;
+
+/*!
  * @brief Creates and schedules a new timer with the specified time interval.
  *
  * @param timeInterval The time interval after which the timer should be fired
@@ -447,25 +457,6 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  *	  target.
  */
 - (void)fire;
-
-/*!
- * @brief Returns the next date at which the timer will fire.
- *
- * @return The next date at which the timer will fire
- */
-- (OFDate *)fireDate;
-
-/*!
- * @brief Sets the next date at which the timer will fire.
- *
- * If the timer is already scheduled in a run loop, it will be rescheduled.
- * Note that rescheduling is an expensive operation, though it still might be
- * preferable to reschedule instead of invalidating the timer and creating a
- * new one.
- *
- * @param fireDate The next date at which the timer will fire
- */
-- (void)setFireDate: (OFDate *)fireDate;
 
 /*!
  * @brief Invalidates the timer, preventing it from firing.

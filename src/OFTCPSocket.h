@@ -71,6 +71,36 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 }
 
 /*!
+ * Whether the socket is a listening socket.
+ */
+@property (readonly, nonatomic, getter=isListening) bool listening;
+
+/*!
+ * The remote address as a string
+ *
+ * @note This only works for accepted sockets!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *remoteAddress;
+
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+/*!
+ * Whether keep alives are enabled for the connection.
+ *
+ * @warning This is not available on the Wii or Nintendo 3DS!
+ */
+@property (nonatomic, getter=isKeepAliveEnabled) bool keepAliveEnabled;
+#endif
+
+#ifndef OF_WII
+/*!
+ * Whether TCP_NODELAY is enabled for the connection
+ *
+ * @warning This is not available on the Wii!
+ */
+@property (nonatomic, getter=isTCPNoDelayEnabled) bool TCPNoDelayEnabled;
+#endif
+
+/*!
  * The host to use as a SOCKS5 proxy.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *SOCKS5Host;
@@ -206,62 +236,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
  *		by the specified block as well.
  */
 - (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block;
-#endif
-
-/*!
- * @brief Returns the remote address of the socket.
- *
- * Only works with accepted sockets!
- *
- * @return The remote address as a string
- */
-- (nullable OFString *)remoteAddress;
-
-/*!
- * @brief Returns whether the socket is a listening socket.
- *
- * @return Whether the socket is a listening socket
- */
-- (bool)isListening;
-
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-/*!
- * @brief Enable or disable keep alive for the connection.
- *
- * @warning This is not available on the Wii or Nintendo 3DS!
- *
- * @param enabled Whether to enable or disable keep alives for the connection
- */
-- (void)setKeepAliveEnabled: (bool)enabled;
-
-/*!
- * @brief Returns whether keep alive is enabled for the connection.
- *
- * @warning This is not available on the Wii or Nintendo 3DS!
- *
- * @return Whether keep alives are enabled for the connection
- */
-- (bool)isKeepAliveEnabled;
-#endif
-
-#ifndef OF_WII
-/*!
- * @brief Enable or disable TCP_NODELAY for the connection.
- *
- * @warning This is not available on the Wii!
- *
- * @param enabled Whether to enable or disable TCP_NODELAY for the connection
- */
-- (void)setTCPNoDelayEnabled: (bool)enabled;
-
-/*!
- * @brief Returns whether TCP_NODELAY is enabled for the connection.
- *
- * @warning This is not available on the Wii!
- *
- * @return Whether TCP_NODELAY is enabled for the connection
- */
-- (bool)isTCPNoDelayEnabled;
 #endif
 @end
 

@@ -37,11 +37,9 @@ enum {
  */
 @protocol OFJSONRepresentation
 /*!
- * @brief Returns the JSON representation of the object as a string.
- *
- * @return The JSON representation of the object as a string
+ * The JSON representation of the object as a string.
  */
-- (OFString *)JSONRepresentation;
+@property (readonly, nonatomic) OFString *JSONRepresentation;
 
 /*!
  * @brief Returns the JSON representation of the object as a string.

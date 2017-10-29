@@ -53,6 +53,11 @@ typedef void (^of_thread_pool_block_t)(void);
 }
 
 /*!
+ * The size of the thread pool.
+ */
+@property (readonly, nonatomic) size_t size;
+
+/*!
  * @brief Returns a new thread pool with one thread for each core in the system.
  *
  * @warning If for some reason the number of cores in the system could not be
@@ -104,13 +109,6 @@ typedef void (^of_thread_pool_block_t)(void);
  * @brief Waits until all jobs are done.
  */
 - (void)waitUntilDone;
-
-/*!
- * @brief Returns the size of the thread pool.
- *
- * @return The size of the thread pool
- */
-- (size_t)size;
 @end
 
 OF_ASSUME_NONNULL_END

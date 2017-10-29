@@ -157,6 +157,146 @@ typedef enum {
 @property (readonly, nonatomic) of_number_type_t type;
 
 /*!
+ * Returns the OFNumber as a bool.
+ */
+@property (readonly, nonatomic) bool boolValue;
+
+/*!
+ * The OFNumber as a signed char.
+ */
+@property (readonly, nonatomic) signed char charValue;
+
+/*!
+ * The OFNumber as a signed short.
+ */
+@property (readonly, nonatomic) signed short shortValue;
+
+/*!
+ * The OFNumber as a signed int.
+ */
+@property (readonly, nonatomic) signed int intValue;
+
+/*!
+ * The OFNumber as a signed long.
+ */
+@property (readonly, nonatomic) signed long longValue;
+
+/*!
+ * The OFNumber as a signed long long.
+ */
+@property (readonly, nonatomic) signed long long longLongValue;
+
+/*!
+ * The OFNumber as an unsigned char.
+ */
+@property (readonly, nonatomic) unsigned char unsignedCharValue;
+
+/*!
+ * The OFNumber as an unsigned short.
+ */
+@property (readonly, nonatomic) unsigned short unsignedShortValue;
+
+/*!
+ * The OFNumber as an unsigned int.
+ */
+@property (readonly, nonatomic) unsigned int unsignedIntValue;
+
+/*!
+ * The OFNumber as an unsigned long.
+ */
+@property (readonly, nonatomic) unsigned long unsignedLongValue;
+
+/*!
+ * The OFNumber as an unsigned long long.
+ */
+@property (readonly, nonatomic) unsigned long long unsignedLongLongValue;
+
+/*!
+ * The OFNumber as an int8_t.
+ */
+@property (readonly, nonatomic) int8_t int8Value;
+
+/*!
+ * The OFNumber as an int16_t.
+ */
+@property (readonly, nonatomic) int16_t int16Value;
+
+/*!
+ * The OFNumber as an int32_t.
+ */
+@property (readonly, nonatomic) int32_t int32Value;
+
+/*!
+ * The OFNumber as an int64_t.
+ */
+@property (readonly, nonatomic) int64_t int64Value;
+
+/*!
+ * The OFNumber as a uint8_t.
+ */
+@property (readonly, nonatomic) uint8_t uInt8Value;
+
+/*!
+ * The OFNumber as a uint16_t.
+ */
+@property (readonly, nonatomic) uint16_t uInt16Value;
+
+/*!
+ * The OFNumber as a uint32_t.
+ */
+@property (readonly, nonatomic) uint32_t uInt32Value;
+
+/*!
+ * The OFNumber as a uint64_t.
+ */
+@property (readonly, nonatomic) uint64_t uInt64Value;
+
+/*!
+ * The OFNumber as a size_t.
+ */
+@property (readonly, nonatomic) size_t sizeValue;
+
+/*!
+ * The OFNumber as an ssize_t.
+ */
+@property (readonly, nonatomic) ssize_t sSizeValue;
+
+/*!
+ * The OFNumber as an intmax_t.
+ */
+@property (readonly, nonatomic) intmax_t intMaxValue;
+
+/*!
+ * The OFNumber as a uintmax_t.
+ */
+@property (readonly, nonatomic) uintmax_t uIntMaxValue;
+
+/*!
+ * The OFNumber as a ptrdiff_t.
+ */
+@property (readonly, nonatomic) ptrdiff_t ptrDiffValue;
+
+/*!
+ * The OFNumber as an intptr_t.
+ */
+@property (readonly, nonatomic) intptr_t intPtrValue;
+
+/*!
+ * The OFNumber as a uintptr_t.
+ */
+@property (readonly, nonatomic) uintptr_t uIntPtrValue;
+
+/*!
+ * The OFNumber as a float.
+ */
+@property (readonly, nonatomic) float floatValue;
+
+/*!
+ * The OFNumber as a double.
+ */
+@property (readonly, nonatomic) double doubleValue;
+
+/*!
  * @brief Creates a new OFNumber with the specified bool.
  *
  * @param bool_ A bool which the OFNumber should contain
@@ -618,202 +758,6 @@ typedef enum {
  * @return An initialized OFNumber
  */
 - (instancetype)initWithDouble: (double)double_;
-
-/*!
- * @brief Returns the OFNumber as a bool.
- *
- * @return The OFNumber as a bool
- */
-- (bool)boolValue;
-
-/*!
- * @brief Returns the OFNumber as a signed char.
- *
- * @return The OFNumber as a signed char
- */
-- (signed char)charValue;
-
-/*!
- * @brief Returns the OFNumber as a signed short.
- *
- * @return The OFNumber as a signed short
- */
-- (signed short)shortValue;
-
-/*!
- * @brief Returns the OFNumber as a signed int.
- *
- * @return The OFNumber as a signed int
- */
-- (signed int)intValue;
-
-/*!
- * @brief Returns the OFNumber as a signed long.
- *
- * @return The OFNumber as a signed long
- */
-- (signed long)longValue;
-
-/*!
- * @brief Returns the OFNumber as a signed long long.
- *
- * @return The OFNumber as a signed long long
- */
-- (signed long long)longLongValue;
-
-/*!
- * @brief Returns the OFNumber as an unsigned char.
- *
- * @return The OFNumber as an unsigned char
- */
-- (unsigned char)unsignedCharValue;
-
-/*!
- * @brief Returns the OFNumber as an unsigned short.
- *
- * @return The OFNumber as an unsigned short
- */
-- (unsigned short)unsignedShortValue;
-
-/*!
- * @brief Returns the OFNumber as an unsigned int.
- *
- * @return The OFNumber as an unsigned int
- */
-- (unsigned int)unsignedIntValue;
-
-/*!
- * @brief Returns the OFNumber as an unsigned long.
- *
- * @return The OFNumber as an unsigned long
- */
-- (unsigned long)unsignedLongValue;
-
-/*!
- * @brief Returns the OFNumber as an unsigned long long.
- *
- * @return The OFNumber as an unsigned long long
- */
-- (unsigned long long)unsignedLongLongValue;
-
-/*!
- * @brief Returns the OFNumber as an int8_t.
- *
- * @return The OFNumber as an int8_t
- */
-- (int8_t)int8Value;
-
-/*!
- * @brief Returns the OFNumber as an int16_t.
- *
- * @return The OFNumber as an int16_t
- */
-- (int16_t)int16Value;
-
-/*!
- * @brief Returns the OFNumber as an int32_t.
- *
- * @return The OFNumber as an int32_t
- */
-- (int32_t)int32Value;
-
-/*!
- * @brief Returns the OFNumber as an int64_t.
- *
- * @return The OFNumber as an int64_t
- */
-- (int64_t)int64Value;
-
-/*!
- * @brief Returns the OFNumber as a uint8_t.
- *
- * @return The OFNumber as a uint8_t
- */
-- (uint8_t)uInt8Value;
-
-/*!
- * @brief Returns the OFNumber as a uint16_t.
- *
- * @return The OFNumber as a uint16_t
- */
-- (uint16_t)uInt16Value;
-
-/*!
- * @brief Returns the OFNumber as a uint32_t.
- *
- * @return The OFNumber as a uint32_t
- */
-- (uint32_t)uInt32Value;
-
-/*!
- * @brief Returns the OFNumber as a uint64_t.
- *
- * @return The OFNumber as a uint64_t
- */
-- (uint64_t)uInt64Value;
-
-/*!
- * @brief Returns the OFNumber as a size_t.
- *
- * @return The OFNumber as a size_t
- */
-- (size_t)sizeValue;
-
-/*!
- * @brief Returns the OFNumber as an ssize_t.
- *
- * @return The OFNumber as an ssize_t
- */
-- (ssize_t)sSizeValue;
-
-/*!
- * @brief Returns the OFNumber as an intmax_t.
- *
- * @return The OFNumber as an intmax_t
- */
-- (intmax_t)intMaxValue;
-
-/*!
- * @brief Returns the OFNumber as a uintmax_t.
- *
- * @return The OFNumber as a uintmax_t
- */
-- (uintmax_t)uIntMaxValue;
-
-/*!
- * @brief Returns the OFNumber as a ptrdiff_t.
- *
- * @return The OFNumber as a ptrdiff_t
- */
-- (ptrdiff_t)ptrDiffValue;
-
-/*!
- * @brief Returns the OFNumber as an intptr_t.
- *
- * @return The OFNumber as an intptr_t
- */
-- (intptr_t)intPtrValue;
-
-/*!
- * @brief Returns the OFNumber as a uintptr_t.
- *
- * @return The OFNumber as a uintptr_t
- */
-- (uintptr_t)uIntPtrValue;
-
-/*!
- * @brief Returns the OFNumber as a float.
- *
- * @return The OFNumber as a float
- */
-- (float)floatValue;
-
-/*!
- * @brief Returns the OFNumber as a double.
- *
- * @return The OFNumber as a double
- */
-- (double)doubleValue;
 @end
 
 OF_ASSUME_NONNULL_END
