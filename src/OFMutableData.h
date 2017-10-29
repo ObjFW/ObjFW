@@ -196,6 +196,8 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 @interface OFMutableData (MutableRetrieving)
+/* GCC does not like overriding properties with a different type. */
+#if defined(__clang__) || defined(DOXYGEN)
 /*!
  * All items of the OFMutableData as a C array.
  *
@@ -223,6 +225,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *lastItem
     OF_RETURNS_INNER_POINTER;
+#else
+- (void *)items;
+- (nullable void *)firstItem;
+- (nullable void *)lastItem;
+#endif
 
 /*!
  * @brief Returns a specific item of the OFMutableData.
