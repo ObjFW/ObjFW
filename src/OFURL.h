@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFArray OF_GENERIC(ObjectType);
 @class OFNumber;
 @class OFString;
 
@@ -177,6 +178,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The URL as a string
  */
 - (OFString *)string;
+
+/*!
+ * @brief Returns the path of the URL split into components.
+ *
+ * The first component is always empty to designate the root.
+ *
+ * @return The path of the URL split into components
+ */
+- (nullable OFArray OF_GENERIC(OFString *) *)pathComponents;
 
 /*!
  * @brief Returns the local file system representation for a file URL.

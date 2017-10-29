@@ -17,9 +17,12 @@
 #include "config.h"
 
 #import "OFMutableURL.h"
-#import "OFURL+Private.h"
+#import "OFArray.h"
 #import "OFNumber.h"
 #import "OFString.h"
+#import "OFURL+Private.h"
+
+#import "OFInvalidFormatException.h"
 
 @implementation OFMutableURL
 @dynamic scheme, host, port, user, password, path, parameters, query, fragment;
@@ -95,6 +98,26 @@
 	OFString *old = _fragment;
 	_fragment = [fragment copy];
 	[old release];
+}
+
+- (void)setPathComponents: (OFArray *)components
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	if (components == nil) {
+		[self setPath: nil];
+		return;
+	}
+
+	if ([components count] == 0)
+		@throw [OFInvalidFormatException exception];
+
+	if ([[components firstObject] length] != 0)
+		@throw [OFInvalidFormatException exception];
+
+	[self setPath: [components componentsJoinedByString: @"/"]];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (id)copy

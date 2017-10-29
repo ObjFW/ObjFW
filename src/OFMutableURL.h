@@ -85,6 +85,16 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)init;
 
 /*!
+ * @brief Sets the URL's path from the specified path components.
+ *
+ * The first component must always be empty to designate the root.
+ *
+ * @param components The path components to set the URL's path from
+ */
+- (void)setPathComponents:
+    (nullable OFArray OF_GENERIC(OFString *) *)components;
+
+/*!
  * @brief Converts the mutable URL to an immutable URL.
  */
 - (void)makeImmutable;

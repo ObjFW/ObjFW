@@ -523,6 +523,11 @@
 	return ret;
 }
 
+- (OFArray *)pathComponents
+{
+	return [_path componentsSeparatedByString: @"/"];
+}
+
 - (OFString *)fileSystemRepresentation
 {
 	void *pool = objc_autoreleasePoolPush();
