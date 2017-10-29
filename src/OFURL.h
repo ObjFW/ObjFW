@@ -68,6 +68,22 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *path;
 
 /*!
+ * The path of the URL split into components.
+ *
+ * The first component must always be empty to designate the root.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFArray OF_GENERIC(OFString *) *pathComponents;
+
+/*!
+ * The last path component of the URL.
+ *
+ * Returns the empty string if the path is the root.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *lastPathComponent;
+
+/*!
  * The parameters part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *parameters;
@@ -178,15 +194,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The URL as a string
  */
 - (OFString *)string;
-
-/*!
- * @brief Returns the path of the URL split into components.
- *
- * The first component is always empty to designate the root.
- *
- * @return The path of the URL split into components
- */
-- (nullable OFArray OF_GENERIC(OFString *) *)pathComponents;
 
 /*!
  * @brief Returns the local file system representation for a file URL.

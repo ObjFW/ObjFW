@@ -55,6 +55,14 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *path;
 
 /*!
+ * The path of the URL split into components.
+ *
+ * The first component must always be empty to designate the root.
+ */
+@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
+    OFArray OF_GENERIC(OFString *) *pathComponents;
+
+/*!
  * The parameters part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
@@ -83,16 +91,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFMutableURL
  */
 - (instancetype)init;
-
-/*!
- * @brief Sets the URL's path from the specified path components.
- *
- * The first component must always be empty to designate the root.
- *
- * @param components The path components to set the URL's path from
- */
-- (void)setPathComponents:
-    (nullable OFArray OF_GENERIC(OFString *) *)components;
 
 /*!
  * @brief Converts the mutable URL to an immutable URL.

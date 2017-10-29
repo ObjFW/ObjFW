@@ -17,6 +17,7 @@
 #include "config.h"
 
 #import "OFURL.h"
+#import "OFArray.h"
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
 #endif
@@ -81,6 +82,20 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	TEST(@"-[path]",
 	    [[u1 path] isEqual: @"/pa%3Bth"] &&
 	    [[u4 path] isEqual: @"/etc/passwd"])
+	TEST(@"-[pathComponents]",
+	    [[u1 pathComponents] isEqual:
+	    [OFArray arrayWithObjects: @"", @"pa%3Bth", nil]] &&
+	    [[u4 pathComponents] isEqual:
+	    [OFArray arrayWithObjects: @"", @"etc", @"passwd", nil]])
+	TEST(@"-[lastPathComponent",
+	    [[[OFURL URLWithString: @"http://host/foo//bar/baz"]
+	    lastPathComponent] isEqual: @"baz"] &&
+	    [[[OFURL URLWithString: @"http://host/foo//bar/baz/"]
+	    lastPathComponent] isEqual: @"baz"] &&
+	    [[[OFURL URLWithString: @"http://host/foo/"]
+	    lastPathComponent] isEqual: @"foo"] &&
+	    [[[OFURL URLWithString: @"http://host/"]
+	    lastPathComponent] isEqual: @""])
 	TEST(@"-[parameters]",
 	    [[u1 parameters] isEqual: @"pa%3Fram"] && [u4 parameters] == nil)
 	TEST(@"-[query]",

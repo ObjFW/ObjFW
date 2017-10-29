@@ -25,7 +25,8 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFMutableURL
-@dynamic scheme, host, port, user, password, path, parameters, query, fragment;
+@dynamic scheme, host, port, user, password, path, pathComponents, parameters;
+@dynamic query, fragment;
 
 + (instancetype)URL
 {
@@ -79,6 +80,26 @@
 	[old release];
 }
 
+- (void)setPathComponents: (OFArray *)components
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	if (components == nil) {
+		[self setPath: nil];
+		return;
+	}
+
+	if ([components count] == 0)
+		@throw [OFInvalidFormatException exception];
+
+	if ([[components firstObject] length] != 0)
+		@throw [OFInvalidFormatException exception];
+
+	[self setPath: [components componentsJoinedByString: @"/"]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)setParameters: (OFString *)parameters
 {
 	OFString *old = _parameters;
@@ -98,26 +119,6 @@
 	OFString *old = _fragment;
 	_fragment = [fragment copy];
 	[old release];
-}
-
-- (void)setPathComponents: (OFArray *)components
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	if (components == nil) {
-		[self setPath: nil];
-		return;
-	}
-
-	if ([components count] == 0)
-		@throw [OFInvalidFormatException exception];
-
-	if ([[components firstObject] length] != 0)
-		@throw [OFInvalidFormatException exception];
-
-	[self setPath: [components componentsJoinedByString: @"/"]];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (id)copy

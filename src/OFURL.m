@@ -441,6 +441,51 @@
 	return _path;
 }
 
+- (OFArray *)pathComponents
+{
+	return [_path componentsSeparatedByString: @"/"];
+}
+
+- (OFString *)lastPathComponent
+{
+	void *pool;
+	OFString *path;
+	const char *UTF8String, *lastComponent;
+	size_t length;
+	OFString *ret;
+
+	if (_path == nil)
+		return nil;
+
+	if ([_path isEqual: @"/"])
+		return @"";
+
+	pool = objc_autoreleasePoolPush();
+	path = _path;
+
+	if ([path hasSuffix: @"/"])
+		path = [path substringWithRange:
+		    of_range(0, [path length] - 1)];
+
+	UTF8String = lastComponent = [path UTF8String];
+	length = [path UTF8StringLength];
+
+	for (size_t i = 1; i <= length; i++) {
+		if (UTF8String[length - i] == '/') {
+			lastComponent = UTF8String + (length - i) + 1;
+			break;
+		}
+	}
+
+	ret = [[OFString alloc]
+	    initWithUTF8String: lastComponent
+			length: length - (lastComponent - UTF8String)];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
 - (OFString *)parameters
 {
 	return _parameters;
@@ -523,11 +568,6 @@
 	return ret;
 }
 
-- (OFArray *)pathComponents
-{
-	return [_path componentsSeparatedByString: @"/"];
-}
-
 - (OFString *)fileSystemRepresentation
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -539,7 +579,7 @@
 	if (![_path hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];
 
-	path = [[_path copy] autorelease];
+	path = _path;
 
 	if ([path hasSuffix: @"/"])
 		path = [path substringWithRange:
