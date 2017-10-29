@@ -328,6 +328,16 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return S_ISREG(s.st_mode);
 }
 
+- (bool)fileExistsAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	bool ret = [self fileExistsAtPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
 - (bool)directoryExistsAtPath: (OFString *)path
 {
 	of_stat_t s;
@@ -339,6 +349,16 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		return false;
 
 	return S_ISDIR(s.st_mode);
+}
+
+- (bool)directoryExistsAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	bool ret = [self directoryExistsAtPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
@@ -366,6 +386,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	return false;
 # endif
+}
+
+- (bool)symbolicLinkExistsAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	bool ret = [self symbolicLinkExistsAtPath:
+	    [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 #endif
 
@@ -456,6 +487,26 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 		[currentPath autorelease];
 	}
+}
+
+- (void)createDirectoryAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self createDirectoryAtPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)createDirectoryAtURL: (OFURL *)URL
+	       createParents: (bool)createParents
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self createDirectoryAtPath: [URL fileSystemRepresentation]
+		      createParents: createParents];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFArray *)contentsOfDirectoryAtPath: (OFString *)path
@@ -639,6 +690,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return files;
 }
 
+- (OFArray *)contentsOfDirectoryAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *ret = [self contentsOfDirectoryAtPath:
+	    [URL fileSystemRepresentation]];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
 - (void)changeCurrentDirectoryPath: (OFString *)path
 {
 	if (path == nil)
@@ -690,6 +754,15 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #endif
 }
 
+- (void)changeCurrentDirectoryURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self changeCurrentDirectoryPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (of_offset_t)sizeOfFileAtPath: (OFString *)path
 {
 	of_stat_t s;
@@ -702,6 +775,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 							      errNo: errno];
 
 	return s.st_size;
+}
+
+- (of_offset_t)sizeOfFileAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_offset_t ret = [self sizeOfFileAtPath:
+	    [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (OFDate *)accessTimeOfItemAtPath: (OFString *)path
@@ -719,6 +803,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_atime];
 }
 
+- (OFDate *)accessTimeOfItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *ret = [self accessTimeOfItemAtPath:
+	    [URL fileSystemRepresentation]];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
 - (OFDate *)modificationDateOfItemAtPath: (OFString *)path
 {
 	of_stat_t s;
@@ -732,6 +829,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	/* FIXME: We could be more precise on some OSes */
 	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
+}
+
+- (OFDate *)modificationDateOfItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *ret = [self modificationDateOfItemAtPath:
+	    [URL fileSystemRepresentation]];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path
@@ -749,6 +859,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [OFDate dateWithTimeIntervalSince1970: s.st_ctime];
 }
 
+- (OFDate *)statusChangeTimeOfItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDate *ret = [self statusChangeTimeOfItemAtPath:
+	    [URL fileSystemRepresentation]];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 - (uint16_t)permissionsOfItemAtPath: (OFString *)path
 {
@@ -762,6 +885,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 							      errNo: errno];
 
 	return s.st_mode & 07777;
+}
+
+- (uint16_t)permissionsOfItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	uint16_t ret = [self permissionsOfItemAtPath:
+	    [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (void)changePermissionsOfItemAtPath: (OFString *)path
@@ -783,6 +917,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			  permissions: permissions
 				errNo: errno];
 }
+
+- (void)changePermissionsOfItemAtURL: (OFURL *)URL
+			 permissions: (uint16_t)permissions
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self changePermissionsOfItemAtPath: [URL fileSystemRepresentation]
+				permissions: permissions];
+
+	objc_autoreleasePoolPop(pool);
+}
 #endif
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
@@ -803,6 +948,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		*UID = s.st_uid;
 	if (GID != NULL)
 		*GID = s.st_gid;
+}
+
+- (void)getUID: (uint16_t *)UID
+	   GID: (uint16_t *)GID
+   ofItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self	  getUID: UID
+		     GID: GID
+	    ofItemAtPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)getOwner: (OFString **)owner
@@ -839,6 +997,26 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		[passwdMutex unlock];
 	}
 # endif
+}
+
+- (void)getOwner: (OFString **)owner
+	   group: (OFString **)group
+     ofItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path = [URL fileSystemRepresentation];
+
+	[path retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	@try {
+		[self   getOwner: owner
+			   group: group
+		    ofItemAtPath: path];
+	} @finally {
+		[path release];
+	}
 }
 
 - (void)changeOwnerOfItemAtPath: (OFString *)path
@@ -896,6 +1074,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 								 owner: owner
 								 group: group
 								 errNo: errno];
+}
+
+- (void)changeOwnerOfItemAtURL: (OFURL *)URL
+			 owner: (OFString *)owner
+			 group: (OFString *)group
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self changeOwnerOfItemAtPath: [URL fileSystemRepresentation]
+				owner: owner
+				group: group];
+
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 
@@ -1043,6 +1234,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)copyItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self copyItemAtPath: [source fileSystemRepresentation]
+		      toPath: [destination fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (void)moveItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
@@ -1137,6 +1339,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #ifdef OF_WINDOWS
 	objc_autoreleasePoolPop(pool);
 #endif
+}
+
+- (void)moveItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self moveItemAtPath: [source fileSystemRepresentation]
+		      toPath: [destination fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)removeItemAtPath: (OFString *)path
@@ -1238,6 +1451,15 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
+- (void)removeItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self removeItemAtPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
 - (void)linkItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
@@ -1267,6 +1489,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 				      errNo: 0];
 
 # endif
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)linkItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self linkItemAtPath: [source fileSystemRepresentation]
+		      toPath: [destination fileSystemRepresentation]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1304,6 +1537,17 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			    destinationPath: destination
 				      errNo: 0];
 # endif
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)createSymbolicLinkAtURL: (OFURL *)destination
+	     withDestinationURL: (OFURL *)source
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self createSymbolicLinkAtPath: [destination fileSystemRepresentation]
+		   withDestinationPath: [source fileSystemRepresentation]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1376,6 +1620,19 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		CloseHandle(handle);
 	}
 # endif
+}
+
+- (OFString *)destinationOfSymbolicLinkAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret = [self destinationOfSymbolicLinkAtPath:
+	    [URL fileSystemRepresentation]];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 #endif
 @end

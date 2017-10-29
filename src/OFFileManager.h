@@ -71,12 +71,28 @@ OF_ASSUME_NONNULL_BEGIN
 - (bool)fileExistsAtPath: (OFString *)path;
 
 /*!
+ * @brief Checks whether a file exists at the specified URL.
+ *
+ * @param URL The URL to check
+ * @return A boolean whether there is a file at the specified URL
+ */
+- (bool)fileExistsAtURL: (OFURL *)URL;
+
+/*!
  * @brief Checks whether a directory exists at the specified path.
  *
  * @param path The path to check
  * @return A boolean whether there is a directory at the specified path
  */
 - (bool)directoryExistsAtPath: (OFString *)path;
+
+/*!
+ * @brief Checks whether a directory exists at the specified URL.
+ *
+ * @param URL The URL to check
+ * @return A boolean whether there is a directory at the specified URL
+ */
+- (bool)directoryExistsAtURL: (OFURL *)URL;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /*!
@@ -86,6 +102,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A boolean whether there is a symbolic link at the specified path
  */
 - (bool)symbolicLinkExistsAtPath: (OFString *)path;
+
+/*!
+ * @brief Checks whether a symbolic link exists at the specified URL.
+ *
+ * @param URL The URL to check
+ * @return A boolean whether there is a symbolic link at the specified URL
+ */
+- (bool)symbolicLinkExistsAtURL: (OFURL *)URL;
 #endif
 
 /*!
@@ -105,6 +129,22 @@ OF_ASSUME_NONNULL_BEGIN
 		createParents: (bool)createParents;
 
 /*!
+ * @brief Creates a directory at the specified URL.
+ *
+ * @param URL The URL of the directory to create
+ */
+- (void)createDirectoryAtURL: (OFURL *)URL;
+
+/*!
+ * @brief Creates a directory at the specified URL.
+ *
+ * @param URL The URL of the directory to create
+ * @param createParents Whether to create the parents of the directory
+ */
+- (void)createDirectoryAtURL: (OFURL *)URL
+	       createParents: (bool)createParents;
+
+/*!
  * @brief Returns an array with the items in the specified directory.
  *
  * @note `.` and `..` are not part of the returned array.
@@ -115,11 +155,28 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtPath: (OFString *)path;
 
 /*!
+ * @brief Returns an array with the items in the specified directory.
+ *
+ * @note `.` and `..` are not part of the returned array.
+ *
+ * @param URL The URL to the directory whose items should be returned
+ * @return An array of OFString with the items in the specified directory
+ */
+- (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL;
+
+/*!
  * @brief Changes the current working directory.
  *
  * @param path The new directory to change to
  */
 - (void)changeCurrentDirectoryPath: (OFString *)path;
+
+/*!
+ * @brief Changes the current working directory.
+ *
+ * @param URL The new directory to change to
+ */
+- (void)changeCurrentDirectoryURL: (OFURL *)URL;
 
 /*!
  * @brief Returns the size of the specified file.
@@ -131,6 +188,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (of_offset_t)sizeOfFileAtPath: (OFString *)path;
 
 /*!
+ * @brief Returns the size of the specified file.
+ *
+ * @param URL The URL to the file whose size should be returned
+ *
+ * @return The size of the specified file
+ */
+- (of_offset_t)sizeOfFileAtURL: (OFURL *)URL;
+
+/*!
  * @brief Returns the last access time of the specified item.
  *
  * @param path The path to the item whose last access time should be returned
@@ -138,6 +204,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The last access time of the specified item
  */
 - (OFDate *)accessTimeOfItemAtPath: (OFString *)path;
+
+/*!
+ * @brief Returns the last access time of the specified item.
+ *
+ * @param URL The URL to the item whose last access time should be returned
+ *
+ * @return The last access time of the specified item
+ */
+- (OFDate *)accessTimeOfItemAtURL: (OFURL *)URL;
 
 /*!
  * @brief Returns the last modification date of the specified item.
@@ -150,6 +225,16 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFDate *)modificationDateOfItemAtPath: (OFString *)path;
 
 /*!
+ * @brief Returns the last modification date of the specified item.
+ *
+ * @param URL The URL to the item whose last modification date should be
+ *	       returned
+ *
+ * @return The last modification date of the specified item
+ */
+- (OFDate *)modificationDateOfItemAtURL: (OFURL *)URL;
+
+/*!
  * @brief Returns the last status change time of the specified item.
  *
  * @param path The path to the item whose last status change time should be
@@ -158,6 +243,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The last status change time of the specified item
  */
 - (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path;
+
+/*!
+ * @brief Returns the last status change time of the specified item.
+ *
+ * @param URL The URL to the item whose last status change time should be
+ *	      returned
+ *
+ * @return The last status change time of the specified item
+ */
+- (OFDate *)statusChangeTimeOfItemAtURL: (OFURL *)URL;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 /*!
@@ -174,6 +269,19 @@ OF_ASSUME_NONNULL_BEGIN
 - (uint16_t)permissionsOfItemAtPath: (OFString *)path;
 
 /*!
+ * @brief Returns the permissions of the specified item.
+ *
+ * This returns only the permissions, meaning read, write and execute for
+ * owner, user and group, along with the sticky, setuid and setgid bit. In
+ * other words, only bits that match the mask 07777.
+ *
+ * @param URL The URL to the item whose permissions should be returned
+ *
+ * @return The permissions of the specified item
+ */
+- (uint16_t)permissionsOfItemAtURL: (OFURL *)URL;
+
+/*!
  * @brief Changes the permissions of an item.
  *
  * This only changes the permissions, meaning read, write and execute for
@@ -187,6 +295,21 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)changePermissionsOfItemAtPath: (OFString *)path
 			  permissions: (uint16_t)permissions;
+
+/*!
+ * @brief Changes the permissions of an item.
+ *
+ * This only changes the permissions, meaning read, write and execute for
+ * owner, user and group. For security reasons, it ignores all other bits. In
+ * other words, the permissions are masked with 0777.
+ *
+ * This method only changes the read-only flag on Windows.
+ *
+ * @param URL The URL to the item whose permissions should be changed
+ * @param permissions The new permissions for the item
+ */
+- (void)changePermissionsOfItemAtURL: (OFURL *)URL
+			 permissions: (uint16_t)permissions;
 #endif
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
@@ -202,6 +325,17 @@ OF_ASSUME_NONNULL_BEGIN
   ofItemAtPath: (OFString *)path;
 
 /*!
+ * @brief Get the UID and GID of the specified item.
+ *
+ * @param UID A pointer to an uint16_t to store the UID, or NULL
+ * @param GID A pointer to an uint16_t to store the GID, or NULL
+ * @param URL The URL to the item whose UID and GID should be retrieved
+ */
+- (void)getUID: (nullable uint16_t *)UID
+	   GID: (nullable uint16_t *)GID
+   ofItemAtURL: (OFURL *)URL;
+
+/*!
  * @brief Get the owner and group of the specified item.
  *
  * @param owner A pointer to an `OFString *` to store the owner, or NULL
@@ -211,6 +345,17 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner
 	   group: (OFString *__autoreleasing _Nonnull *_Nullable)group
     ofItemAtPath: (OFString *)path;
+
+/*!
+ * @brief Get the owner and group of the specified item.
+ *
+ * @param owner A pointer to an `OFString *` to store the owner, or NULL
+ * @param group A pointer to an `OFString *` to store the group, or NULL
+ * @param URL The URL to the item whose owner and group should be retrieved
+ */
+- (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner
+	   group: (OFString *__autoreleasing _Nonnull *_Nullable)group
+     ofItemAtURL: (OFURL *)URL;
 
 /*!
  * @brief Changes the owner of an item.
@@ -224,6 +369,19 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)changeOwnerOfItemAtPath: (OFString *)path
 			  owner: (OFString *)owner
 			  group: (OFString *)group;
+
+/*!
+ * @brief Changes the owner of an item.
+ *
+ * This method is not available on some systems, most notably Windows.
+ *
+ * @param URL The URL to the item whose owner should be changed
+ * @param owner The new owner for the item
+ * @param group The new group for the item
+ */
+- (void)changeOwnerOfItemAtURL: (OFURL *)URL
+			 owner: (OFString *)owner
+			 group: (OFString *)group;
 #endif
 
 /*!
@@ -243,6 +401,22 @@ OF_ASSUME_NONNULL_BEGIN
 		toPath: (OFString *)destination;
 
 /*!
+ * @brief Copies a file, directory or symlink (if supported by the OS).
+ *
+ * The destination URL must have a full path, which means it must include the
+ * name of the item.
+ *
+ * If an item already exists, the copy operation fails. This is also the case
+ * if a directory is copied and an item already exists in the destination
+ * directory.
+ *
+ * @param source The file, directory or symlink to copy
+ * @param destination The destination URL
+ */
+- (void)copyItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination;
+
+/*!
  * @brief Moves an item.
  *
  * The destination path must be a full path, which means it must include the
@@ -259,6 +433,22 @@ OF_ASSUME_NONNULL_BEGIN
 		toPath: (OFString *)destination;
 
 /*!
+ * @brief Moves an item.
+ *
+ * The destination URL must have a full path, which means it must include the
+ * name of the item.
+ *
+ * If the destination is on a different logical device, the source will be
+ * copied to the destination using @ref copyItemAtURL:toURL: and the source
+ * removed using @ref removeItemAtURL:.
+ *
+ * @param source The item to rename
+ * @param destination The new name for the item
+ */
+- (void)moveItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination;
+
+/*!
  * @brief Removes the item at the specified path.
  *
  * If the item at the specified path is a directory, it is removed recursively.
@@ -266,6 +456,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @param path The path to the item which should be removed
  */
 - (void)removeItemAtPath: (OFString *)path;
+
+/*!
+ * @brief Removes the item at the specified URL.
+ *
+ * If the item at the specified URL is a directory, it is removed recursively.
+ *
+ * @param URL The URL to the item which should be removed
+ */
+- (void)removeItemAtURL: (OFURL *)URL;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
 /*!
@@ -281,6 +480,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)linkItemAtPath: (OFString *)source
 		toPath: (OFString *)destination;
+
+/*!
+ * @brief Creates a hard link for the specified item.
+ *
+ * The destination URL must have a full path, which means it must include the
+ * name of the item.
+ *
+ * This method is not available on some systems.
+ *
+ * @param source The URL to the item for which a link should be created
+ * @param destination The URL to the item which should link to the source
+ */
+- (void)linkItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination;
 #endif
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
@@ -304,6 +517,25 @@ OF_ASSUME_NONNULL_BEGIN
 	     withDestinationPath: (OFString *)source;
 
 /*!
+ * @brief Creates a symbolic link for an item.
+ *
+ * The destination uRL must have a full path, which means it must include the
+ * name of the item.
+ *
+ * This method is not available on some systems.
+ *
+ * @note On Windows, this requires at least Windows Vista and administrator
+ *	 privileges!
+ *
+ * @param destination The URL to the item which should symbolically link to the
+ *		      source
+ * @param source The URL to the item for which a symbolic link should be
+ *		 created
+ */
+- (void)createSymbolicLinkAtURL: (OFURL *)destination
+	     withDestinationURL: (OFURL *)source;
+
+/*!
  * @brief Returns the destination of the symbolic link at the specified path.
  *
  * @param path The path to the symbolic link
@@ -313,6 +545,17 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The destination of the symbolic link at the specified path
  */
 - (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path;
+
+/*!
+ * @brief Returns the destination of the symbolic link at the specified URL.
+ *
+ * @param URL The URL to the symbolic link
+ *
+ * @note On Windows, at least Windows Vista is required.
+ *
+ * @return The destination of the symbolic link at the specified URL
+ */
+- (OFString *)destinationOfSymbolicLinkAtURL: (OFURL *)URL;
 #endif
 @end
 
