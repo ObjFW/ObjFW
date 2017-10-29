@@ -1041,8 +1041,9 @@ static struct {
 		if (encoding == OF_STRING_ENCODING_AUTODETECT)
 			encoding = OF_STRING_ENCODING_UTF_8;
 
-		self = [self initWithContentsOfFile: [URL path]
-					   encoding: encoding];
+		self = [self
+		    initWithContentsOfFile: [URL fileSystemRepresentation]
+				  encoding: encoding];
 	} else
 # endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
@@ -2207,19 +2208,7 @@ static struct {
 			last = i + 1;
 		}
 	}
-
 	[ret addObject: [self substringWithRange: of_range(last, i - last)]];
-
-#ifdef OF_WINDOWS
-	if ([ret count] >= 2 && [[ret objectAtIndex: 0] hasSuffix: @":"]) {
-		OFString *first = [[ret objectAtIndex: 0]
-		    stringByAppendingPathComponent: [ret objectAtIndex: 1]];
-
-		[ret removeObjectAtIndex: 0];
-		[ret replaceObjectAtIndex: 0
-			       withObject: first];
-	}
-#endif
 
 	[ret makeImmutable];
 

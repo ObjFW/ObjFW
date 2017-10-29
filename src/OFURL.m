@@ -483,6 +483,39 @@
 	return ret;
 }
 
+- (OFString *)fileSystemRepresentation
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path;
+
+	if (![_scheme isEqual: @"file"])
+		@throw [OFInvalidArgumentException exception];
+
+	if (![_path hasPrefix: @"/"])
+		@throw [OFInvalidFormatException exception];
+
+	path = [[_path copy] autorelease];
+
+	if ([path hasSuffix: @"/"])
+		path = [path substringWithRange:
+		    of_range(0, [path length] - 1)];
+
+#ifndef OF_PATH_STARTS_WITH_SLASH
+	path = [path substringWithRange: of_range(1, [path length] - 1)];
+#endif
+
+#if OF_PATH_DELIMITER != '/'
+	path = [OFString pathWithComponents:
+	    [path componentsSeparatedByString: @"/"]];
+#endif
+
+	[path retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [path autorelease];
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",

@@ -137,6 +137,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The URL as a string
  */
 - (OFString *)string;
+
+/*!
+ * @brief Returns the local file system representation for a file URL.
+ *
+ * This only exists for URLs with the file scheme and throws an exception
+ * otherwise.
+ *
+ * @return The local file system representation for a file URL
+ */
+- (nullable OFString *)fileSystemRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

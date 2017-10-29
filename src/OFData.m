@@ -244,7 +244,8 @@ _references_to_categories_of_OFData(void)
 
 # ifdef OF_HAVE_FILES
 	if ([scheme isEqual: @"file"])
-		self = [self initWithContentsOfFile: [URL path]];
+		self = [self initWithContentsOfFile:
+		    [URL fileSystemRepresentation]];
 	else
 # endif
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];

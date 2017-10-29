@@ -302,6 +302,10 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	path = [self currentDirectoryPath];
 #endif
 
+#ifndef OF_PATH_STARTS_WITH_SLASH
+	path = [path stringByPrependingString: @"/"];
+#endif
+
 	[URL setPath: [path stringByAppendingString: @"/"]];
 
 	[URL makeImmutable];

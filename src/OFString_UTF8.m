@@ -1169,20 +1169,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			last = i + 1;
 		}
 	}
-
 	[ret addObject: [OFString stringWithUTF8String: _s->cString + last
 						length: i - last]];
-
-#ifdef OF_WINDOWS
-	if ([ret count] >= 2 && [[ret objectAtIndex: 0] hasSuffix: @":"]) {
-		OFString *first = [[ret objectAtIndex: 0]
-		    stringByAppendingPathComponent: [ret objectAtIndex: 1]];
-
-		[ret removeObjectAtIndex: 0];
-		[ret replaceObjectAtIndex: 0
-			       withObject: first];
-	}
-#endif
 
 	[ret makeImmutable];
 

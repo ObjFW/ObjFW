@@ -328,6 +328,7 @@
 # define OF_PATH_DELIMITER '/'
 # define OF_PATH_DELIMITER_STRING @"/"
 # define OF_IS_PATH_DELIMITER(c) (c == '/')
+# define OF_PATH_STARTS_WITH_SLASH
 #else
 # define OF_PATH_DELIMITER '\\'
 # define OF_PATH_DELIMITER_STRING @"\\"
