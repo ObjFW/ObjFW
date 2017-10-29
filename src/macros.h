@@ -252,6 +252,12 @@
 # define OF_DESIGNATED_INITIALIZER
 #endif
 
+#if __has_attribute(__swift_name__)
+# define OF_SWIFT_NAME(name) __attribute__((__swift_name__(name)))
+#else
+# define OF_SWIFT_NAME(name)
+#endif
+
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM
