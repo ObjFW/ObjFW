@@ -29,8 +29,9 @@
 #endif
 
 #import "OFFile.h"
-#import "OFString.h"
 #import "OFLocalization.h"
+#import "OFString.h"
+#import "OFURL.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -183,6 +184,13 @@ parseMode(const char *mode, bool *append)
 				      mode: mode] autorelease];
 }
 
++ (instancetype)fileWithURL: (OFURL *)URL
+		       mode: (OFString *)mode
+{
+	return [[[self alloc] initWithURL: URL
+				     mode: mode] autorelease];
+}
+
 + (instancetype)fileWithHandle: (of_file_handle_t)handle
 {
 	return [[[self alloc] initWithHandle: handle] autorelease];
@@ -296,6 +304,24 @@ parseMode(const char *mode, bool *append)
 		self = [self initWithHandle: handle];
 	} @catch (id e) {
 		closeHandle(handle);
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithURL: (OFURL *)URL
+		       mode: (OFString *)mode
+{
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		self = [self initWithPath: [URL fileSystemRepresentation]
+				     mode: mode];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
 		@throw e;
 	}
 
