@@ -200,6 +200,10 @@
 # define OF_KINDOF(cls) id
 #endif
 
+#if __has_feature(objc_class_property)
+# define OF_HAVE_CLASS_PROPERTIES
+#endif
+
 #if defined(__clang__) || OF_GCC_VERSION >= 405
 # define OF_UNREACHABLE __builtin_unreachable();
 #else

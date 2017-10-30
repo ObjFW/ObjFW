@@ -416,6 +416,13 @@ OF_ROOT_CLASS
 #endif
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) Class class;
+@property (class, readonly, nonatomic) OFString *className;
+@property (class, readonly, nullable, nonatomic) Class superclass;
+@property (class, readonly, nonatomic) OFString *description;
+#endif
+
 /*!
  * The name of the object's class.
  */

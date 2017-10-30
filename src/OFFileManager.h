@@ -43,6 +43,10 @@ OF_ASSUME_NONNULL_BEGIN
  *	  directories, deleting files, renaming files, etc.
  */
 @interface OFFileManager: OFObject
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) OFFileManager *defaultManager;
+#endif
+
 /*!
  * The path of the current working directory.
  */

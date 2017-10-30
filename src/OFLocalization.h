@@ -43,6 +43,15 @@ OF_ASSUME_NONNULL_BEGIN
 	    *_localizedStrings;
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nullable, nonatomic)
+    OFLocalization *sharedLocalization;
+@property (class, readonly, nullable, nonatomic) OFString *language;
+@property (class, readonly, nullable, nonatomic) OFString *territory;
+@property (class, readonly, nonatomic) of_string_encoding_t encoding;
+@property (class, readonly, nullable, nonatomic) OFString *decimalPoint;
+#endif
+
 /*!
  * The language of the locale for messages.
  *
@@ -81,7 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The shared OFLocalization instance
  */
-+ (instancetype)sharedLocalization;
++ (nullable OFLocalization *)sharedLocalization;
 
 /*!
  * @brief Returns the language of the locale.
@@ -118,7 +127,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The decimal point of the system's locale
  */
-+ (OFString *)decimalPoint;
++ (nullable OFString *)decimalPoint;
 
 #ifdef OF_HAVE_FILES
 /*!

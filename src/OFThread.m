@@ -178,6 +178,9 @@ callMain(id object)
 {
 	OFThread *thread = of_tlskey_get(threadSelfKey);
 
+	if (thread == nil)
+		return nil;
+
 	if (thread->_threadDictionary == nil)
 		thread->_threadDictionary = [[OFMutableDictionary alloc] init];
 

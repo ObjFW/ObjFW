@@ -70,6 +70,11 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #endif
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, nullable, copy, nonatomic) OFString *SOCKS5Host;
+@property (class, nonatomic) uint16_t SOCKS5Port;
+#endif
+
 /*!
  * Whether the socket is a listening socket.
  */

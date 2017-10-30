@@ -77,6 +77,14 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	OFString *_Nullable _name;
 }
 
+# ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nullable, nonatomic) OFThread *currentThread;
+@property (class, readonly, nullable, nonatomic) OFThread *mainThread;
+@property (class, readonly, nullable, nonatomic)
+    OFMutableDictionary *threadDictionary;
+@property (class, nullable, copy, nonatomic) OFString *name;
+# endif
+
 /*!
  * The name for the thread to use when starting it.
  *
@@ -140,14 +148,14 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return The current thread
  */
-+ (OFThread *)currentThread;
++ (nullable OFThread *)currentThread;
 
 /*!
  * @brief Returns the main thread.
  *
  * @return The main thread
  */
-+ (OFThread *)mainThread;
++ (nullable OFThread *)mainThread;
 
 /*!
  * @brief Returns a dictionary to store thread-specific data, meaning it
@@ -155,7 +163,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return A dictionary to store thread-specific data.
  */
-+ (OFMutableDictionary *)threadDictionary;
++ (nullable OFMutableDictionary *)threadDictionary;
 #endif
 
 /*!

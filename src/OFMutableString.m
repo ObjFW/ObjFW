@@ -281,7 +281,7 @@ static struct {
 
 	for (size_t i = 0; i < length; i++) {
 		char (*function)(char) =
-		    (isStart ? startFunction : middleFunction);;
+		    (isStart ? startFunction : middleFunction);
 		of_unichar_t c = characters[i];
 
 		if (c <= 0x7F)

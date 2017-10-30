@@ -137,6 +137,16 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nullable, nonatomic)
+    OFApplication *sharedApplication;
+@property (class, readonly, nullable, nonatomic) OFString *programName;
+@property (class, readonly, nullable, nonatomic)
+    OFArray OF_GENERIC(OFString *) *arguments;
+@property (class, readonly, nullable, nonatomic)
+    OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
+#endif
+
 /*!
  * The name of the program (argv[0]).
  */

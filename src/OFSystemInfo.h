@@ -25,6 +25,28 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for querying information about the system.
  */
 @interface OFSystemInfo: OFObject
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) size_t pageSize;
+@property (class, readonly, nonatomic) size_t numberOfCPUs;
+@property (class, readonly, nullable, nonatomic) OFString *userDataPath;
+@property (class, readonly, nullable, nonatomic) OFString *userConfigPath;
+@property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
+# if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
+@property (class, readonly, nonatomic) bool supportsMMX;
+@property (class, readonly, nonatomic) bool supportsSSE;
+@property (class, readonly, nonatomic) bool supportsSSE2;
+@property (class, readonly, nonatomic) bool supportsSSE3;
+@property (class, readonly, nonatomic) bool supportsSSSE3;
+@property (class, readonly, nonatomic) bool supportsSSE41;
+@property (class, readonly, nonatomic) bool supportsSSE42;
+@property (class, readonly, nonatomic) bool supportsAVX;
+@property (class, readonly, nonatomic) bool supportsAVX2;
+# endif
+# if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
+@property (class, readonly, nonatomic) bool supportsAltiVec;
+# endif
+#endif
+
 /*!
  * @brief Returns the size of a page.
  *
@@ -51,7 +73,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The path where user data for the application can be stored
  */
-+ (OFString *)userDataPath;
++ (nullable OFString *)userDataPath;
 
 /*!
  * @brief Returns the path where user configuration for the application can be
@@ -65,7 +87,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The path where user configuration for the application can be stored
  */
-+ (OFString *)userConfigPath;
++ (nullable OFString *)userConfigPath;
 
 /*!
  * @brief Returns the vendor of the CPU.

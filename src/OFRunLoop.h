@@ -56,19 +56,24 @@ OF_ASSUME_NONNULL_BEGIN
 	volatile bool _stop;
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nullable, nonatomic) OFRunLoop *mainRunLoop;
+@property (class, readonly, nullable, nonatomic) OFRunLoop *currentRunLoop;
+#endif
+
 /*!
  * @brief Returns the run loop for the main thread.
  *
  * @return The run loop for the main thread
  */
-+ (OFRunLoop *)mainRunLoop;
++ (nullable OFRunLoop *)mainRunLoop;
 
 /*!
  * @brief Returns the run loop for the current thread.
  *
  * @return The run loop for the current thread
  */
-+ (OFRunLoop *)currentRunLoop;
++ (nullable OFRunLoop *)currentRunLoop;
 
 /*!
  * @brief Adds an OFTimer to the run loop.

@@ -28,6 +28,11 @@ OF_ASSUME_NONNULL_BEGIN
  * especially useful for generating many hashes with a common prefix.
  */
 @protocol OFCryptoHash <OFObject, OFCopying>
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) size_t digestSize;
+@property (class, readonly, nonatomic) size_t blockSize;
+#endif
+
 /*!
  * A boolean whether the hash has already been calculated.
  */
