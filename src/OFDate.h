@@ -32,6 +32,11 @@ OF_ASSUME_NONNULL_BEGIN
 	of_time_interval_t _seconds;
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) OFDate *distantFuture;
+@property (class, readonly, nonatomic) OFDate *distantPast;
+#endif
+
 /*!
  * The microsecond of the date.
  */
