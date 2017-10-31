@@ -63,12 +63,6 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /*!
- * The parameters part of the URL.
- */
-@property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic)
-    OFString *parameters;
-
-/*!
  * The query part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *query;

@@ -33,8 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _scheme, *_Nullable _host;
 	OFNumber *_Nullable _port;
 	OFString *_Nullable _user, *_Nullable _password, *_path;
-	OFString *_Nullable _parameters, *_Nullable _query;
-	OFString *_Nullable _fragment;
+	OFString *_Nullable _query, *_Nullable _fragment;
 }
 
 /*!
@@ -82,11 +81,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *lastPathComponent;
-
-/*!
- * The parameters part of the URL.
- */
-@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *parameters;
 
 /*!
  * The query part of the URL.

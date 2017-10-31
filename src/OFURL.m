@@ -172,13 +172,6 @@
 				    tmp + 1] stringByURLDecoding] copy];
 			}
 
-			if ((tmp = strchr(UTF8String, ';')) != NULL) {
-				*tmp = '\0';
-
-				_parameters = [[[OFString stringWithUTF8String:
-				    tmp + 1] stringByURLDecoding] copy];
-			}
-
 			UTF8String--;
 			*UTF8String = '/';
 
@@ -233,12 +226,6 @@
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
 			_query = [[[OFString stringWithUTF8String: tmp + 1]
-			    stringByURLDecoding] copy];
-		}
-
-		if ((tmp = strchr(UTF8String, ';')) != NULL) {
-			*tmp = '\0';
-			_parameters = [[[OFString stringWithUTF8String: tmp + 1]
 			    stringByURLDecoding] copy];
 		}
 
@@ -352,7 +339,6 @@
 	[_user release];
 	[_password release];
 	[_path release];
-	[_parameters release];
 	[_query release];
 	[_fragment release];
 
@@ -380,9 +366,6 @@
 		return false;
 	if (URL->_path != _path && ![URL->_path isEqual: _path])
 		return false;
-	if (URL->_parameters != _parameters &&
-	    ![URL->_parameters isEqual: _parameters])
-		return false;
 	if (URL->_query != _query && ![URL->_query isEqual: _query])
 		return false;
 	if (URL->_fragment != _fragment && ![URL->_fragment isEqual: _fragment])
@@ -403,7 +386,6 @@
 	OF_HASH_ADD_HASH(hash, [_user hash]);
 	OF_HASH_ADD_HASH(hash, [_password hash]);
 	OF_HASH_ADD_HASH(hash, [_path hash]);
-	OF_HASH_ADD_HASH(hash, [_parameters hash]);
 	OF_HASH_ADD_HASH(hash, [_query hash]);
 	OF_HASH_ADD_HASH(hash, [_fragment hash]);
 
@@ -487,11 +469,6 @@
 	return [ret autorelease];
 }
 
-- (OFString *)parameters
-{
-	return _parameters;
-}
-
 - (OFString *)query
 {
 	return _query;
@@ -518,7 +495,6 @@
 		[copy setUser: _user];
 		[copy setPassword: _password];
 		[copy setPath: _path];
-		[copy setParameters: _parameters];
 		[copy setQuery: _query];
 		[copy setFragment: _fragment];
 	} @catch (id e) {
@@ -553,17 +529,19 @@
 			@throw [OFInvalidFormatException exception];
 
 		[ret appendString: [_path
-		    stringByURLEncodingWithAllowedCharacters: "$-_.!*()/"]];
+		    stringByURLEncodingWithAllowedCharacters:
+		    "-._~!$&'()*+,;=:@/"]];
 	}
 
-	if (_parameters != nil)
-		[ret appendFormat: @";%@", [_parameters stringByURLEncoding]];
-
 	if (_query != nil)
-		[ret appendFormat: @"?%@", [_query stringByURLEncoding]];
+		[ret appendFormat: @"?%@",
+		    [_query stringByURLEncodingWithAllowedCharacters:
+		    "-._~!$&'()*+,;=:@/?"]];
 
 	if (_fragment != nil)
-		[ret appendFormat: @"#%@", [_fragment stringByURLEncoding]];
+		[ret appendFormat: @"#%@",
+		    [_fragment stringByURLEncodingWithAllowedCharacters:
+		    "-._~!$&'()*+,;=:@/?"]];
 
 	objc_autoreleasePoolPop(pool);
 

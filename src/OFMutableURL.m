@@ -25,8 +25,8 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFMutableURL
-@dynamic scheme, host, port, user, password, path, pathComponents, parameters;
-@dynamic query, fragment;
+@dynamic scheme, host, port, user, password, path, pathComponents, query;
+@dynamic fragment;
 
 + (instancetype)URL
 {
@@ -98,13 +98,6 @@
 	[self setPath: [components componentsJoinedByString: @"/"]];
 
 	objc_autoreleasePoolPop(pool);
-}
-
-- (void)setParameters: (OFString *)parameters
-{
-	OFString *old = _parameters;
-	_parameters = [parameters copy];
-	[old release];
 }
 
 - (void)setQuery: (OFString *)query

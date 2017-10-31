@@ -31,7 +31,7 @@
 
 static OFString *module = @"OFURL";
 static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
-    @"pa%3Bth;pa%3Fram?que%23ry#frag%23ment";
+    @"pa%3Fth?que%23ry#frag%23ment";
 
 @implementation TestsAppDelegate (OFURLTests)
 - (void)URLTests
@@ -80,11 +80,11 @@ static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	TEST(@"-[host]", [[u1 host] isEqual: @"ho:st"] && [u4 port] == 0)
 	TEST(@"-[port]", [[u1 port] isEqual: [OFNumber numberWithUInt16: 1234]])
 	TEST(@"-[path]",
-	    [[u1 path] isEqual: @"/pa;th"] &&
+	    [[u1 path] isEqual: @"/pa?th"] &&
 	    [[u4 path] isEqual: @"/etc/passwd"])
 	TEST(@"-[pathComponents]",
 	    [[u1 pathComponents] isEqual:
-	    [OFArray arrayWithObjects: @"", @"pa;th", nil]] &&
+	    [OFArray arrayWithObjects: @"", @"pa?th", nil]] &&
 	    [[u4 pathComponents] isEqual:
 	    [OFArray arrayWithObjects: @"", @"etc", @"passwd", nil]])
 	TEST(@"-[lastPathComponent",
@@ -96,8 +96,6 @@ static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    lastPathComponent] isEqual: @"foo"] &&
 	    [[[OFURL URLWithString: @"http://host/"]
 	    lastPathComponent] isEqual: @""])
-	TEST(@"-[parameters]",
-	    [[u1 parameters] isEqual: @"pa?ram"] && [u4 parameters] == nil)
 	TEST(@"-[query]",
 	    [[u1 query] isEqual: @"que#ry"] && [u4 query] == nil)
 	TEST(@"-[fragment]",
