@@ -83,7 +83,7 @@ constructRequestString(OFHTTPRequest *request)
 	void *pool = objc_autoreleasePoolPush();
 	of_http_request_method_t method = [request method];
 	OFURL *URL = [request URL];
-	OFString *path = [URL path];
+	OFString *path;
 	OFString *user = [URL user], *password = [URL password];
 	OFData *body = [request body];
 	OFMutableString *requestString;
@@ -91,7 +91,9 @@ constructRequestString(OFHTTPRequest *request)
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
-	if (path == nil)
+	if ([URL path] != nil)
+		path = [URL URLEncodedPath];
+	else
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
@@ -99,7 +101,7 @@ constructRequestString(OFHTTPRequest *request)
 
 	if ([URL query] != nil) {
 		[requestString appendString: @"?"];
-		[requestString appendString: [URL query]];
+		[requestString appendString: [URL URLEncodedQuery]];
 	}
 
 	[requestString appendString: @" HTTP/"];
@@ -115,12 +117,12 @@ constructRequestString(OFHTTPRequest *request)
 
 		if (port != nil) {
 			OFString *host = [OFString stringWithFormat:
-			    @"%@:%@", [URL host], port];
+			    @"%@:%@", [URL URLEncodedHost], port];
 
 			[headers setObject: host
 				    forKey: @"Host"];
 		} else
-			[headers setObject: [URL host]
+			[headers setObject: [URL URLEncodedHost]
 				    forKey: @"Host"];
 	}
 
