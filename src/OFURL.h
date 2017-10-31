@@ -42,9 +42,21 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *scheme;
 
 /*!
+ * The scheme part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedScheme;
+
+/*!
  * The host part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *host;
+
+/*!
+ * The host part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedHost;
 
 /*!
  * The port part of the URL.
@@ -57,14 +69,32 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *user;
 
 /*!
+ * The user part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedUser;
+
+/*!
  * The password part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *password;
 
 /*!
+ * The password part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedPassword;
+
+/*!
  * The path part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *path;
+
+/*!
+ * The path part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedPath;
 
 /*!
  * The path of the URL split into components.
@@ -88,9 +118,21 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
 
 /*!
+ * The query part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedQuery;
+
+/*!
  * The fragment part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *fragment;
+
+/*!
+ * The fragment part of the URL in URL-encoded form.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *URLEncodedFragment;
 
 /*!
  * The URL as a string.

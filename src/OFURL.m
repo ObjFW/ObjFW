@@ -399,9 +399,19 @@
 	return _scheme;
 }
 
+- (OFString *)URLEncodedScheme
+{
+	return [_scheme stringByURLEncoding];
+}
+
 - (OFString *)host
 {
 	return _host;
+}
+
+- (OFString *)URLEncodedHost
+{
+	return [_host stringByURLEncoding];
 }
 
 - (OFNumber *)port
@@ -414,14 +424,30 @@
 	return _user;
 }
 
+- (OFString *)URLEncodedUser
+{
+	return [_user stringByURLEncoding];
+}
+
 - (OFString *)password
 {
 	return _password;
 }
 
+- (OFString *)URLEncodedPassword
+{
+	return [_password stringByURLEncoding];
+}
+
 - (OFString *)path
 {
 	return _path;
+}
+
+- (OFString *)URLEncodedPath
+{
+	return [_path stringByURLEncodingWithAllowedCharacters:
+	    "-._~!$&'()*+,;=:@/"];
 }
 
 - (OFArray *)pathComponents
@@ -474,9 +500,21 @@
 	return _query;
 }
 
+- (OFString *)URLEncodedQuery
+{
+	return [_query stringByURLEncodingWithAllowedCharacters:
+	    "-._~!$&'()*+,;=:@/?"];
+}
+
 - (OFString *)fragment
 {
 	return _fragment;
+}
+
+- (OFString *)URLEncodedFragment
+{
+	return [_fragment stringByURLEncodingWithAllowedCharacters:
+	    "-._~!$&'()*+,;=:@/?"];
 }
 
 - (id)copy
@@ -510,17 +548,17 @@
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
 
-	[ret appendFormat: @"%@://", [_scheme stringByURLEncoding]];
+	[ret appendFormat: @"%@://", [self URLEncodedScheme]];
 
 	if (_user != nil && _password != nil)
 		[ret appendFormat: @"%@:%@@",
-				   [_user stringByURLEncoding],
-				   [_password stringByURLEncoding]];
+				   [self URLEncodedUser],
+				   [self URLEncodedPassword]];
 	else if (_user != nil)
-		[ret appendFormat: @"%@@", [_user stringByURLEncoding]];
+		[ret appendFormat: @"%@@", [self URLEncodedUser]];
 
 	if (_host != nil)
-		[ret appendString: [_host stringByURLEncoding]];
+		[ret appendString: [self URLEncodedHost]];
 	if (_port != nil)
 		[ret appendFormat: @":%@", _port];
 
@@ -528,20 +566,14 @@
 		if (![_path hasPrefix: @"/"])
 			@throw [OFInvalidFormatException exception];
 
-		[ret appendString: [_path
-		    stringByURLEncodingWithAllowedCharacters:
-		    "-._~!$&'()*+,;=:@/"]];
+		[ret appendString: [self URLEncodedPath]];
 	}
 
 	if (_query != nil)
-		[ret appendFormat: @"?%@",
-		    [_query stringByURLEncodingWithAllowedCharacters:
-		    "-._~!$&'()*+,;=:@/?"]];
+		[ret appendFormat: @"?%@", [self URLEncodedQuery]];
 
 	if (_fragment != nil)
-		[ret appendFormat: @"#%@",
-		    [_fragment stringByURLEncodingWithAllowedCharacters:
-		    "-._~!$&'()*+,;=:@/?"]];
+		[ret appendFormat: @"#%@", [self URLEncodedFragment]];
 
 	objc_autoreleasePoolPop(pool);
 
