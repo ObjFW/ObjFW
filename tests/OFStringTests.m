@@ -783,8 +783,8 @@ static uint16_t sutf16str[] = {
 	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
 
 	TEST(@"-[stringByURLEncoding]",
-	    [[C(@"foo\"ba'_~$") stringByURLEncoding]
-	    isEqual: @"foo%22ba%27_%7E$"])
+	    [[C(@"foo\"ba'_~$]") stringByURLEncoding]
+	    isEqual: @"foo%22ba'_~$%5D"])
 
 	TEST(@"-[stringByURLDecoding]",
 	    [[C(@"foo%20bar%22+%24") stringByURLDecoding]

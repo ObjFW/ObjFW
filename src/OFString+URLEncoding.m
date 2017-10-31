@@ -30,7 +30,8 @@ int _OFString_URLEncoding_reference;
 @implementation OFString (URLEncoding)
 - (OFString *)stringByURLEncoding
 {
-	return [self stringByURLEncodingWithAllowedCharacters: "$-_.!*()"];
+	return [self stringByURLEncodingWithAllowedCharacters:
+	    "-._~!$&'()*+,;="];
 }
 
 - (OFString *)stringByURLEncodingWithAllowedCharacters: (const char *)allowed
@@ -53,11 +54,6 @@ int _OFString_URLEncoding_reference;
 	for (i = 0; *string != '\0'; string++) {
 		unsigned char c = *string;
 
-		/*
-		 * '+' is also listed in RFC 1738, however, '+' is sometimes
-		 * interpreted as space in HTTP. Therefore always escape it to
-		 * make sure it's always interpreted correctly.
-		 */
 		if (of_ascii_isalnum(c) || strchr(allowed, c) != NULL)
 			retCString[i++] = c;
 		else {

@@ -586,9 +586,11 @@ static struct {
 		else
 			[ret appendString: @"&"];
 
-		[ret appendString: [[key description] stringByURLEncoding]];
+		[ret appendString: [[key description]
+		    stringByURLEncodingWithAllowedCharacters: "-._~!$'()*+,;"]];
 		[ret appendString: @"="];
-		[ret appendString: [[object description] stringByURLEncoding]];
+		[ret appendString: [[object description]
+		    stringByURLEncodingWithAllowedCharacters: "-._~!$'()*+,;"]];
 	}
 
 	[ret makeImmutable];
