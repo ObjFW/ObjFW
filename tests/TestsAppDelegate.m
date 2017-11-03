@@ -420,6 +420,7 @@ main(int argc, char *argv[])
 	[self threadTests];
 #endif
 	[self URLTests];
+    [self ValueTest];
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif

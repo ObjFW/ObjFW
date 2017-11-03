@@ -1074,6 +1074,8 @@
 		4BFC37BE1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
+		EDE092F61FAC834B00E8A1D2 /* OFValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EDE092F51FAC834B00E8A1D2 /* OFValueTests.m */; };
+		EDE092F71FAC972300E8A1D2 /* OFValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EDE092F51FAC834B00E8A1D2 /* OFValueTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1784,6 +1786,7 @@
 		4BFC37BC1E50E11C00EE1269 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/encodings/common.h; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
+		EDE092F51FAC834B00E8A1D2 /* OFValueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFValueTests.m; path = tests/OFValueTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2478,6 +2481,7 @@
 				4B6EF67B1235358D0076B512 /* OFThreadTests.m */,
 				4B0EA924189869D900F573A4 /* OFUDPSocketTests.m */,
 				4BF0749512DFAFCA00A4ADD1 /* OFURLTests.m */,
+				EDE092F51FAC834B00E8A1D2 /* OFValueTests.m */,
 				4B6EF67C1235358D0076B512 /* OFXMLElementBuilderTests.m */,
 				4B49EA65143B39CE0005BBC6 /* OFXMLNodeTests.m */,
 				4B6EF67E1235358D0076B512 /* OFXMLParserTests.m */,
@@ -3847,6 +3851,7 @@
 				4BD9CA1C1DA2C66A00E5AD52 /* OFThreadTests.m in Sources */,
 				4BD9CA1D1DA2C66A00E5AD52 /* OFUDPSocketTests.m in Sources */,
 				4BD9CA1E1DA2C66A00E5AD52 /* OFURLTests.m in Sources */,
+				EDE092F71FAC972300E8A1D2 /* OFValueTests.m in Sources */,
 				4BD9CA1F1DA2C66A00E5AD52 /* OFXMLElementBuilderTests.m in Sources */,
 				4BD9CA201DA2C66A00E5AD52 /* OFXMLNodeTests.m in Sources */,
 				4BD9CA211DA2C66A00E5AD52 /* OFXMLParserTests.m in Sources */,
@@ -3895,6 +3900,7 @@
 				4BF33B0C133807A20059CEF7 /* OFThreadTests.m in Sources */,
 				4B0EA925189869D900F573A4 /* OFUDPSocketTests.m in Sources */,
 				4BF33B0D133807A20059CEF7 /* OFURLTests.m in Sources */,
+				EDE092F61FAC834B00E8A1D2 /* OFValueTests.m in Sources */,
 				4BF33B0E133807A20059CEF7 /* OFXMLElementBuilderTests.m in Sources */,
 				4B49EA66143B39CE0005BBC6 /* OFXMLNodeTests.m in Sources */,
 				4BF33B10133807A20059CEF7 /* OFXMLParserTests.m in Sources */,
