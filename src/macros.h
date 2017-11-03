@@ -262,6 +262,12 @@
 # define OF_SWIFT_NAME(name)
 #endif
 
+#if __has_attribute(objc_boxable)
+# define OF_BOXABLE __attribute__((objc_boxable))
+#else
+# define OF_BOXABLE
+#endif
+
 #ifdef __GNUC__
 # ifdef OF_X86_64
 #  define OF_X86_64_ASM
