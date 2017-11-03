@@ -1,8 +1,7 @@
 //
-//  OFValue__adjacent.m
-//  test
+//  OFValue_adjacent.m
 //
-//  Created by Юрий Вовк on 02.11.2017.
+//  Created by Yury Vovk on 02.11.2017.
 //
 
 #import "OFValue_adjacent.h"
