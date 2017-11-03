@@ -18,7 +18,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * A C string containing the Objective-C type of the data contained in the value object.
  *
- * @note This property provides the same string produced by the @encode() compiler directive.
+ * @note This property provides the same string produced by the \@encode() compiler directive.
  *
  */
 @property (readonly) const char *objCType OF_RETURNS_INNER_POINTER;
@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  * You should use valueWithBytes:objCType: instead. (APPLE legacy)
  *
  * @param value A pointer to data to be stored in the new value object
- * @param type The Objective-C type of value, as provided by the @encode() compiler directive. 
+ * @param type The Objective-C type of value, as provided by the \@encode() compiler directive.
  *    Do not hard-code this parameter as a C string.
  * @return A new, autoreleased value object that contains value, 
  *    which is interpreted as being of the Objective-C type type.
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  *    interpreted with the specified Objective-C type.
  *
  * @param value A pointer to data to be stored in the new value object
- * @param type The Objective-C type of value, as provided by the @encode() compiler directive.
+ * @param type The Objective-C type of value, as provided by the \@encode() compiler directive.
  *    Do not hard-code this parameter as a C string.
  * @return A new, autoreleased value object that contains value,
  *    which is interpreted as being of the Objective-C type type.
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
  *    interpreted with the specified Objective-C type.
  *
  * @param value A pointer to data to be stored in the new value object
- * @param type The Objective-C type of value, as provided by the @encode() compiler directive.
+ * @param type The Objective-C type of value, as provided by the \@encode() compiler directive.
  *    Do not hard-code this parameter as a C string.
  * @return An initialized value object that contains value, which is interpreted as being of the Objective-C 
  *    type type. The returned object might be different than the original receiver.
