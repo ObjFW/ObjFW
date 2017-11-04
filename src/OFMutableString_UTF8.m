@@ -54,6 +54,21 @@
 	return self;
 }
 
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+				  length: (size_t)UTF8StringLength
+			    freeWhenDone: (bool)freeWhenDone
+{
+	@try {
+		self = [self initWithUTF8String: UTF8String
+					 length: UTF8StringLength];
+	} @finally {
+		if (freeWhenDone)
+			free(UTF8String);
+	}
+
+	return self;
+}
+
 - (void)of_convertWithWordStartTable: (const of_unichar_t *const[])startTable
 		     wordMiddleTable: (const of_unichar_t *const[])middleTable
 		  wordStartTableSize: (size_t)startTableSize

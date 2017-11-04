@@ -862,15 +862,25 @@ static struct {
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone
 {
-	return [self initWithUTF8String: UTF8String];
+	@try {
+		return [self initWithUTF8String: UTF8String];
+	} @finally {
+		if (freeWhenDone)
+			free(UTF8String);
+	}
 }
 
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	return [self initWithUTF8String: UTF8String
-				 length: UTF8StringLength];
+	@try {
+		return [self initWithUTF8String: UTF8String
+					 length: UTF8StringLength];
+	} @finally {
+		if (freeWhenDone)
+			free(UTF8String);
+	}
 }
 
 - (instancetype)initWithCString: (const char *)cString
