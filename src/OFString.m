@@ -850,7 +850,12 @@ static struct {
 - initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone
 {
-	return [self initWithUTF8String: UTF8String];
+	@try {
+		return [self initWithUTF8String: UTF8String];
+	} @finally {
+		if (freeWhenDone)
+			free(UTF8String);
+	}
 }
 
 - initWithCString: (const char *)cString

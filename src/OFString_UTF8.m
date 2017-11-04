@@ -393,7 +393,13 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 - initWithUTF8StringNoCopy: (char *)UTF8String
 	      freeWhenDone: (bool)freeWhenDone
 {
-	self = [super init];
+	@try {
+		self = [super init];
+	} @catch (id e) {
+		if (freeWhenDone)
+			free(UTF8String);
+		@throw e;
+	}
 
 	@try {
 		size_t UTF8StringLength = strlen(UTF8String);

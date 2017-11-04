@@ -141,7 +141,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Creates a new OFString from a UTF-8 encoded C string without copying
- *	  the string.
+ *	  the string, if possible.
+ *
+ * If initialization fails for whatever reason, the passed C string is free'd
+ * if `freeWhenDone` is true.
+ *
+ * @note OFMutableString always creates a copy!
  *
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @param freeWhenDone Whether to free the C string when the OFString gets
@@ -382,9 +387,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Initializes an already allocated OFString from an UTF-8 encoded C
- *	  string without copying it, if possible.
+ *	  string without copying the string, if possible.
  *
- * @note Mutable versions always create a copy!
+ * If initialization fails for whatever reason, the passed C string is free'd
+ * if `freeWhenDone` is true.
+ *
+ * @note OFMutableString always creates a copy!
  *
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @param freeWhenDone Whether to free the C string when it is not needed
