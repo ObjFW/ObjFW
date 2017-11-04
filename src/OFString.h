@@ -336,7 +336,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Creates a new OFString from a UTF-8 encoded C string without copying
- *	  the string.
+ *	  the string, if possible.
+ *
+ * @note OFMutableString always creates a copy!
  *
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @param freeWhenDone Whether to free the C string when the OFString gets
@@ -344,6 +346,22 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return A new autoreleased OFString
  */
 + (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
+			      freeWhenDone: (bool)freeWhenDone;
+
+/*!
+ * @brief Creates a new OFString from a UTF-8 encoded C string with the
+ *	  specified length without copying the string, if possible.
+ *
+ * @note OFMutableString always creates a copy!
+ *
+ * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
+ * @param UTF8StringLength The length of the UTF-8 encoded C string
+ * @param freeWhenDone Whether to free the C string when the OFString gets
+ *		       deallocated
+ * @return A new autoreleased OFString
+ */
++ (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
+				    length: (size_t)UTF8StringLength
 			      freeWhenDone: (bool)freeWhenDone;
 
 /*!
@@ -577,9 +595,9 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 
 /*!
  * @brief Initializes an already allocated OFString from an UTF-8 encoded C
- *	  string without copying it, if possible.
+ *	  string without copying the string, if possible.
  *
- * @note Mutable versions always create a copy!
+ * @note OFMutableString always creates a copy!
  *
  * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
  * @param freeWhenDone Whether to free the C string when it is not needed
@@ -587,6 +605,23 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @return An initialized OFString
  */
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+			    freeWhenDone: (bool)freeWhenDone;
+
+/*!
+ * @brief Initializes an already allocated OFString from an UTF-8 encoded C
+ *	  string with the specified length without copying the string, if
+ *	  possible.
+ *
+ * @note OFMutableString always creates a copy!
+ *
+ * @param UTF8String A UTF-8 encoded C string to initialize the OFString with
+ * @param UTF8StringLength The length of the UTF-8 encoded C string
+ * @param freeWhenDone Whether to free the C string when it is not needed
+ *		       anymore
+ * @return An initialized OFString
+ */
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone;
 
 /*!

@@ -393,10 +393,23 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone
 {
+	return [self initWithUTF8StringNoCopy: UTF8String
+				       length: strlen(UTF8String)
+				 freeWhenDone: freeWhenDone];
+
+}
+
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+				  length: (size_t)UTF8StringLength
+			    freeWhenDone: (bool)freeWhenDone
+{
 	self = [super init];
 
 	@try {
-		size_t UTF8StringLength = strlen(UTF8String);
+		_s = &_storage;
+
+		if (freeWhenDone)
+			_s->freeWhenDone = UTF8String;
 
 		if (UTF8StringLength >= 3 &&
 		    memcmp(UTF8String, "\xEF\xBB\xBF", 3) == 0) {
@@ -404,13 +417,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			UTF8StringLength -= 3;
 		}
 
-		_s = &_storage;
-
 		_s->cString = (char *)UTF8String;
 		_s->cStringLength = UTF8StringLength;
-
-		if (freeWhenDone)
-			_s->freeWhenDone = UTF8String;
 
 		switch (of_string_utf8_check(UTF8String, UTF8StringLength,
 		    &_s->length)) {

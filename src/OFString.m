@@ -420,6 +420,16 @@ static struct {
 			freeWhenDone: freeWhenDone];
 }
 
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+				  length: (size_t)UTF8StringLength
+			    freeWhenDone: (bool)freeWhenDone
+{
+	return (id)[[OFString_UTF8 alloc]
+	    initWithUTF8StringNoCopy: UTF8String
+			      length: UTF8StringLength
+			freeWhenDone: freeWhenDone];
+}
+
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (of_string_encoding_t)encoding
 {
@@ -659,6 +669,16 @@ static struct {
 			freeWhenDone: freeWhenDone] autorelease];
 }
 
++ (instancetype)stringWithUTF8StringNoCopy: (char *)UTF8String
+				    length: (size_t)UTF8StringLength
+			      freeWhenDone: (bool)freeWhenDone
+{
+	return [[[self alloc]
+	    initWithUTF8StringNoCopy: UTF8String
+			      length: UTF8StringLength
+			freeWhenDone: freeWhenDone] autorelease];
+}
+
 + (instancetype)stringWithCString: (const char *)cString
 			 encoding: (of_string_encoding_t)encoding
 {
@@ -843,6 +863,14 @@ static struct {
 			    freeWhenDone: (bool)freeWhenDone
 {
 	return [self initWithUTF8String: UTF8String];
+}
+
+- (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
+				  length: (size_t)UTF8StringLength
+			    freeWhenDone: (bool)freeWhenDone
+{
+	return [self initWithUTF8String: UTF8String
+				 length: UTF8StringLength];
 }
 
 - (instancetype)initWithCString: (const char *)cString
