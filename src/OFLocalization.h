@@ -81,7 +81,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The shared OFLocalization instance
  */
-+ (instancetype)sharedLocalization;
++ (nullable instancetype)sharedLocalization;
 
 /**
  * @brief Returns the language of the locale.
@@ -118,7 +118,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The decimal point of the system's locale
  */
-+ (OFString *)decimalPoint;
++ (nullable OFString *)decimalPoint;
 
 #ifdef OF_HAVE_FILES
 /*!

@@ -61,14 +61,14 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The run loop for the main thread
  */
-+ (OFRunLoop *)mainRunLoop;
++ (nullable OFRunLoop *)mainRunLoop;
 
 /*!
  * @brief Returns the run loop for the current thread.
  *
  * @return The run loop for the current thread
  */
-+ (OFRunLoop *)currentRunLoop;
++ (nullable OFRunLoop *)currentRunLoop;
 
 /*!
  * @brief Adds an OFTimer to the run loop.

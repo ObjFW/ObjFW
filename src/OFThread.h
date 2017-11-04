@@ -112,14 +112,14 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return The current thread
  */
-+ (OFThread *)currentThread;
++ (nullable OFThread *)currentThread;
 
 /*!
  * @brief Returns the main thread.
  *
  * @return The main thread
  */
-+ (OFThread *)mainThread;
++ (nullable OFThread *)mainThread;
 
 /*!
  * @brief Returns a dictionary to store thread-specific data, meaning it
@@ -127,7 +127,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @return A dictionary to store thread-specific data.
  */
-+ (OFMutableDictionary *)threadDictionary;
++ (nullable OFMutableDictionary *)threadDictionary;
 #endif
 
 /*!
