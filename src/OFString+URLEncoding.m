@@ -23,6 +23,7 @@
 #import "OFCharacterSet.h"
 
 #import "OFInvalidFormatException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFOutOfMemoryException.h"
 
 /* Reference for static linking */
@@ -48,16 +49,27 @@ int _OFString_URLEncoding_reference;
 			[ret appendCharacters: &c
 				       length: 1];
 		else {
-			unsigned char high = c >> 4;
-			unsigned char low = c & 0x0F;
-			of_unichar_t escaped[3];
+			char buffer[4];
+			size_t bufferLen;
 
-			escaped[0] = '%';
-			escaped[1] = (high > 9 ? high - 10 + 'A' : high + '0');
-			escaped[2] = (low  > 9 ? low  - 10 + 'A' : low  + '0');
+			if ((bufferLen = of_string_utf8_encode(c, buffer)) == 0)
+				@throw [OFInvalidEncodingException exception];
 
-			[ret appendCharacters: escaped
-				       length: 3];
+			for (size_t j = 0; j < bufferLen; j++) {
+				unsigned char byte = buffer[j];
+				unsigned char high = byte >> 4;
+				unsigned char low = byte & 0x0F;
+				char escaped[3];
+
+				escaped[0] = '%';
+				escaped[1] =
+				    (high > 9 ? high - 10 + 'A' : high + '0');
+				escaped[2] =
+				    (low  > 9 ? low  - 10 + 'A' : low  + '0');
+
+				[ret appendUTF8String: escaped
+					       length: 3];
+			}
 		}
 	}
 

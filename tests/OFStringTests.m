@@ -783,14 +783,15 @@ static uint16_t sutf16str[] = {
 	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
 	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
 
+	OFCharacterSet *cs = [OFCharacterSet
+	    characterSetWithCharactersInString: @"abfo'_~$🍏"];
 	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",
-	    [[C(@"foo\"ba'_~$]") stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLPathAllowedCharacterSet]]
-	    isEqual: @"foo%22ba'_~$%5D"])
+	    [[C(@"foo\"ba'_~$]🍏🍌") stringByURLEncodingWithAllowedCharacters:
+	    cs] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
 
 	TEST(@"-[stringByURLDecoding]",
-	    [[C(@"foo%20bar%22+%24") stringByURLDecoding]
-	    isEqual: @"foo bar\"+$"])
+	    [[C(@"foo%20bar%22+%24%F0%9F%8D%8C") stringByURLDecoding]
+	    isEqual: @"foo bar\"+$🍌"])
 
 	TEST(@"-[insertString:atIndex:]",
 	    (s[0] = [mutableStringClass stringWithString: @"𝄞öööbä€"]) &&
