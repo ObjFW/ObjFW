@@ -126,7 +126,7 @@ static struct {
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFMutableSet class]) {
+	if ([self isMemberOfClass: [OFMutableSet class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();

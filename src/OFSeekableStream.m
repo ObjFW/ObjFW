@@ -26,7 +26,7 @@
 @implementation OFSeekableStream
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFSeekableStream class]) {
+	if ([self isMemberOfClass: [OFSeekableStream class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();

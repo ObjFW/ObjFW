@@ -165,7 +165,7 @@ static struct {
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFArray class]) {
+	if ([self isMemberOfClass: [OFArray class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

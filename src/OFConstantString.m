@@ -138,7 +138,7 @@ struct {
 	@synchronized (self) {
 		struct of_string_utf8_ivars *ivars;
 
-		if (object_getClass(self) == [OFString_const class])
+		if ([self isMemberOfClass: [OFString_const class]])
 			return;
 
 		if ((ivars = calloc(1, sizeof(*ivars))) == NULL)

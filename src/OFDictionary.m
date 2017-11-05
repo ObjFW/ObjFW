@@ -187,7 +187,7 @@ static struct {
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFDictionary class]) {
+	if ([self isMemberOfClass: [OFDictionary class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

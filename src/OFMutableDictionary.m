@@ -142,7 +142,7 @@ static struct {
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFMutableDictionary class]) {
+	if ([self isMemberOfClass: [OFMutableDictionary class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

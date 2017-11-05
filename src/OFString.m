@@ -830,7 +830,7 @@ static struct {
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFString class]) {
+	if ([self isMemberOfClass: [OFString class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

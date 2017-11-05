@@ -96,7 +96,7 @@ of_dlclose(of_plugin_handle_t handle)
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFPlugin class]) {
+	if ([self isMemberOfClass: [OFPlugin class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

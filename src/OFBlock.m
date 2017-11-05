@@ -163,7 +163,7 @@ _Block_copy(const void *block_)
 {
 	of_block_literal_t *block = (of_block_literal_t *)block_;
 
-	if (object_getClass((id)block) == (Class)&_NSConcreteStackBlock) {
+	if ([(id)block isMemberOfClass: (Class)&_NSConcreteStackBlock]) {
 		of_block_literal_t *copy;
 
 		if ((copy = malloc(block->descriptor->size)) == NULL) {
@@ -183,7 +183,7 @@ _Block_copy(const void *block_)
 		return copy;
 	}
 
-	if (object_getClass((id)block) == (Class)&_NSConcreteMallocBlock) {
+	if ([(id)block isMemberOfClass: (Class)&_NSConcreteMallocBlock]) {
 #ifdef OF_HAVE_ATOMIC_OPS
 		of_atomic_int_inc(&block->flags);
 #else
@@ -466,7 +466,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (instancetype)retain
 {
-	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
+	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])
 		return Block_copy(self);
 
 	return self;
@@ -479,7 +479,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (instancetype)autorelease
 {
-	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
+	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])
 		return [super autorelease];
 
 	return self;
@@ -487,7 +487,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (unsigned int)retainCount
 {
-	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
+	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])
 		return ((of_block_literal_t *)self)->flags &
 		    OF_BLOCK_REFCOUNT_MASK;
 
@@ -496,7 +496,7 @@ _Block_object_dispose(const void *obj_, const int flags_)
 
 - (void)release
 {
-	if (object_getClass(self) == (Class)&_NSConcreteMallocBlock)
+	if ([self isMemberOfClass: (Class)&_NSConcreteMallocBlock])
 		Block_release(self);
 }
 

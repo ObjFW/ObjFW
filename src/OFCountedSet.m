@@ -117,7 +117,7 @@ static struct {
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFCountedSet class]) {
+	if ([self isMemberOfClass: [OFCountedSet class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 		} @catch (id e) {

@@ -69,7 +69,7 @@
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFStream class]) {
+	if ([self isMemberOfClass: [OFStream class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();

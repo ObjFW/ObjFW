@@ -233,7 +233,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFMutableArray class]) {
+	if ([self isMemberOfClass: [OFMutableArray class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();

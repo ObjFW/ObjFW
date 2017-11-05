@@ -24,7 +24,7 @@
 @implementation OFEnumerator
 - (instancetype)init
 {
-	if (object_getClass(self) == [OFEnumerator class]) {
+	if ([self isMemberOfClass: [OFEnumerator class]]) {
 		@try {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
