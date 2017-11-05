@@ -768,19 +768,19 @@ of_le_double_ptr_write(void *_Nonnull ptr, double value)
 	}
 
 static OF_INLINE bool
-of_bitset_isset(uint8_t *_Nonnull storage, size_t idx)
+of_bitset_isset(unsigned char *_Nonnull storage, size_t idx)
 {
 	return storage[idx / 8] & (1 << (idx % 8));
 }
 
 static OF_INLINE void
-of_bitset_set(uint8_t *_Nonnull storage, size_t idx)
+of_bitset_set(unsigned char *_Nonnull storage, size_t idx)
 {
 	storage[idx / 8] |= (1 << (idx % 8));
 }
 
 static OF_INLINE void
-of_bitset_clear(uint8_t *_Nonnull storage, size_t idx)
+of_bitset_clear(unsigned char *_Nonnull storage, size_t idx)
 {
 	storage[idx / 8] &= ~(1 << (idx % 8));
 }

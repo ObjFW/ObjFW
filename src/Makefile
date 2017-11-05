@@ -14,6 +14,7 @@ SRCS = OFApplication.m			\
        OFArray.m			\
        OFAutoreleasePool.m		\
        OFBlock.m			\
+       OFCharacterSet.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
@@ -157,6 +158,8 @@ INCLUDES := ${SRCS:.m=.h}			\
 SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
 	OFArray_subarray.m		\
+	OFCharacterSet_bitset.m		\
+	OFCharacterSet_range.m		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
 	OFMutableArray_adjacent.m	\

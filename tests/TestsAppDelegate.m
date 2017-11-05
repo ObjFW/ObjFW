@@ -380,14 +380,15 @@ main(int argc, char *argv[])
 #endif
 
 	[self runtimeTests];
+	[self objectTests];
 	[self methodSignatureTests];
 	[self invocationTests];
 	[self forwardingTests];
-	[self objectTests];
 #ifdef OF_HAVE_BLOCKS
 	[self blockTests];
 #endif
 	[self stringTests];
+	[self characterSetTests];
 	[self dataTests];
 	[self arrayTests];
 	[self dictionaryTests];

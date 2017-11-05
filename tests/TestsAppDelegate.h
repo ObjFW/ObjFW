@@ -80,6 +80,10 @@
 - (void)blockTests;
 @end
 
+@interface TestsAppDelegate (OFCharacterSetTests)
+- (void)characterSetTests;
+@end
+
 @interface TestsAppDelegate (OFDataTests)
 - (void)dataTests;
 @end

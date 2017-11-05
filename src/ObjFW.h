@@ -19,6 +19,7 @@
 
 #import "OFAutoreleasePool.h"
 #import "OFString.h"
+#import "OFCharacterSet.h"
 
 #import "OFData.h"
 #import "OFArray.h"

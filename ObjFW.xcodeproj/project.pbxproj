@@ -945,6 +945,20 @@
 		4BB524C1143D1E4E0085FBCC /* OFProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB524BF143D1E4E0085FBCC /* OFProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB524C2143D1E4E0085FBCC /* OFProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB524C0143D1E4E0085FBCC /* OFProcess.m */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BB52CC717B8EA7F00B7EBF5 /* codepage_437.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */; };
+		4BB99CDA1FAEC9DA00CC79A9 /* OFCharacterSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CD61FAEC9D900CC79A9 /* OFCharacterSet.m */; };
+		4BB99CDB1FAEC9DA00CC79A9 /* OFCharacterSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CD61FAEC9D900CC79A9 /* OFCharacterSet.m */; };
+		4BB99CDC1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB99CD71FAEC9D900CC79A9 /* OFCharacterSet_bitset.h */; };
+		4BB99CDD1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB99CD71FAEC9D900CC79A9 /* OFCharacterSet_bitset.h */; };
+		4BB99CDE1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CD81FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m */; };
+		4BB99CDF1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CD81FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m */; };
+		4BB99CE01FAEC9DA00CC79A9 /* OFCharacterSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB99CD91FAEC9DA00CC79A9 /* OFCharacterSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB99CE11FAEC9DA00CC79A9 /* OFCharacterSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB99CD91FAEC9DA00CC79A9 /* OFCharacterSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BB99CE41FAF542000CC79A9 /* OFCharacterSet_range.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB99CE21FAF542000CC79A9 /* OFCharacterSet_range.h */; };
+		4BB99CE51FAF542000CC79A9 /* OFCharacterSet_range.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB99CE21FAF542000CC79A9 /* OFCharacterSet_range.h */; };
+		4BB99CE61FAF542000CC79A9 /* OFCharacterSet_range.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CE31FAF542000CC79A9 /* OFCharacterSet_range.m */; };
+		4BB99CE71FAF542000CC79A9 /* OFCharacterSet_range.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CE31FAF542000CC79A9 /* OFCharacterSet_range.m */; };
+		4BB99CE91FAF77BC00CC79A9 /* OFCharacterSetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CE81FAF77BC00CC79A9 /* OFCharacterSetTests.m */; };
+		4BB99CEA1FAF77BC00CC79A9 /* OFCharacterSetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB99CE81FAF77BC00CC79A9 /* OFCharacterSetTests.m */; };
 		4BC090441584F6760040640F /* OFInvalidJSONException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC090421584F6760040640F /* OFInvalidJSONException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BC090451584F6760040640F /* OFInvalidJSONException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC090431584F6760040640F /* OFInvalidJSONException.m */; };
 		4BC1762F1D04963000C32718 /* OFKeyValueCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC176231D04963000C32718 /* OFKeyValueCoding.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1691,6 +1705,13 @@
 		4BB524BF143D1E4E0085FBCC /* OFProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFProcess.h; path = src/OFProcess.h; sourceTree = "<group>"; };
 		4BB524C0143D1E4E0085FBCC /* OFProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFProcess.m; path = src/OFProcess.m; sourceTree = "<group>"; };
 		4BB52CC617B8EA7F00B7EBF5 /* codepage_437.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = codepage_437.m; path = src/encodings/codepage_437.m; sourceTree = "<group>"; };
+		4BB99CD61FAEC9D900CC79A9 /* OFCharacterSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCharacterSet.m; path = src/OFCharacterSet.m; sourceTree = "<group>"; };
+		4BB99CD71FAEC9D900CC79A9 /* OFCharacterSet_bitset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCharacterSet_bitset.h; path = src/OFCharacterSet_bitset.h; sourceTree = "<group>"; };
+		4BB99CD81FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCharacterSet_bitset.m; path = src/OFCharacterSet_bitset.m; sourceTree = "<group>"; };
+		4BB99CD91FAEC9DA00CC79A9 /* OFCharacterSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCharacterSet.h; path = src/OFCharacterSet.h; sourceTree = "<group>"; };
+		4BB99CE21FAF542000CC79A9 /* OFCharacterSet_range.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCharacterSet_range.h; path = src/OFCharacterSet_range.h; sourceTree = "<group>"; };
+		4BB99CE31FAF542000CC79A9 /* OFCharacterSet_range.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCharacterSet_range.m; path = src/OFCharacterSet_range.m; sourceTree = "<group>"; };
+		4BB99CE81FAF77BC00CC79A9 /* OFCharacterSetTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCharacterSetTests.m; path = tests/OFCharacterSetTests.m; sourceTree = "<group>"; };
 		4BBA36C411406AB700CBA3AC /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomic.h; path = src/atomic.h; sourceTree = "<group>"; };
 		4BBA36C511406AB700CBA3AC /* macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = macros.h; path = src/macros.h; sourceTree = "<group>"; };
 		4BC090421584F6760040640F /* OFInvalidJSONException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFInvalidJSONException.h; path = src/exceptions/OFInvalidJSONException.h; sourceTree = "<group>"; };
@@ -2134,6 +2155,12 @@
 				4B1473CA17E6391900B46BB8 /* OFAutoreleasePool+Private.h */,
 				4BD86D801237A6C600ED9912 /* OFBlock.h */,
 				4BD86D811237A6C600ED9912 /* OFBlock.m */,
+				4BB99CD91FAEC9DA00CC79A9 /* OFCharacterSet.h */,
+				4BB99CD61FAEC9D900CC79A9 /* OFCharacterSet.m */,
+				4BB99CD71FAEC9D900CC79A9 /* OFCharacterSet_bitset.h */,
+				4BB99CD81FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m */,
+				4BB99CE21FAF542000CC79A9 /* OFCharacterSet_range.h */,
+				4BB99CE31FAF542000CC79A9 /* OFCharacterSet_range.m */,
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
 				4B6743F7163C395900EB1E59 /* OFCondition.h */,
 				4B6743F8163C395900EB1E59 /* OFCondition.m */,
@@ -2431,6 +2458,7 @@
 				4BA4846515CC9FAD00D75360 /* ForwardingTests.m */,
 				4B6EF66E1235358D0076B512 /* OFArrayTests.m */,
 				4BE5F0E412DF4259005C7A0C /* OFBlockTests.m */,
+				4BB99CE81FAF77BC00CC79A9 /* OFCharacterSetTests.m */,
 				4B6EF66F1235358D0076B512 /* OFDataTests.m */,
 				4BE5F0E512DF4259005C7A0C /* OFDateTests.m */,
 				4B6EF6701235358D0076B512 /* OFDictionaryTests.m */,
@@ -2573,6 +2601,7 @@
 				4B2C21D81DA292BE00735907 /* OFArray.h in Headers */,
 				4B2C21DA1DA292BE00735907 /* OFAutoreleasePool.h in Headers */,
 				4B2C21DC1DA292BE00735907 /* OFBlock.h in Headers */,
+				4BB99CE11FAEC9DA00CC79A9 /* OFCharacterSet.h in Headers */,
 				4B2C21DD1DA292BE00735907 /* OFCollection.h in Headers */,
 				4B2C21DE1DA292BE00735907 /* OFCondition.h in Headers */,
 				4B2C21DF1DA292BE00735907 /* OFConstantString.h in Headers */,
@@ -2767,6 +2796,8 @@
 				4B2C228F1DA292BE00735907 /* OFArray_adjacentSubarray.h in Headers */,
 				4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */,
 				4B2C22901DA292BE00735907 /* OFAutoreleasePool+Private.h in Headers */,
+				4BB99CDD1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.h in Headers */,
+				4BB99CE51FAF542000CC79A9 /* OFCharacterSet_range.h in Headers */,
 				4B2C22911DA292BE00735907 /* OFCountedSet_hashtable.h in Headers */,
 				4B1223171F23E6C100D9F8FF /* OFData+Private.h in Headers */,
 				4B2C22921DA292BE00735907 /* OFDictionary_hashtable.h in Headers */,
@@ -2808,6 +2839,7 @@
 				4B3D23BD1337FC8300DD29B8 /* OFArray.h in Headers */,
 				4B3D23BE1337FC8300DD29B8 /* OFAutoreleasePool.h in Headers */,
 				4B3D23BF1337FC8300DD29B8 /* OFBlock.h in Headers */,
+				4BB99CE01FAEC9DA00CC79A9 /* OFCharacterSet.h in Headers */,
 				4B3D23C01337FC8300DD29B8 /* OFCollection.h in Headers */,
 				4B674400163C395900EB1E59 /* OFCondition.h in Headers */,
 				4B3D23C11337FC8300DD29B8 /* OFConstantString.h in Headers */,
@@ -3003,6 +3035,8 @@
 				4B9BB7BD141CDE2D000AD1CC /* OFArray_adjacentSubarray.h in Headers */,
 				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
 				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,
+				4BB99CDC1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.h in Headers */,
+				4BB99CE41FAF542000CC79A9 /* OFCharacterSet_range.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
 				4B1223141F23E6C000D9F8FF /* OFData+Private.h in Headers */,
 				4B2B3E7F140D430500EC2F7C /* OFDictionary_hashtable.h in Headers */,
@@ -3367,6 +3401,9 @@
 				4B2C21231DA292BE00735907 /* OFArray_subarray.m in Sources */,
 				4B2C21241DA292BE00735907 /* OFAutoreleasePool.m in Sources */,
 				4B2C21261DA292BE00735907 /* OFBlock.m in Sources */,
+				4BB99CDB1FAEC9DA00CC79A9 /* OFCharacterSet.m in Sources */,
+				4BB99CDF1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m in Sources */,
+				4BB99CE71FAF542000CC79A9 /* OFCharacterSet_range.m in Sources */,
 				4B2C21271DA292BE00735907 /* OFCondition.m in Sources */,
 				4B2C21281DA292BE00735907 /* OFConstantString.m in Sources */,
 				4B2C21291DA292BE00735907 /* OFCountedSet.m in Sources */,
@@ -3577,6 +3614,9 @@
 				4B9BB7C0141CDE2D000AD1CC /* OFArray_subarray.m in Sources */,
 				4B3D238D1337FC0D00DD29B8 /* OFAutoreleasePool.m in Sources */,
 				4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */,
+				4BB99CDA1FAEC9DA00CC79A9 /* OFCharacterSet.m in Sources */,
+				4BB99CDE1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m in Sources */,
+				4BB99CE61FAF542000CC79A9 /* OFCharacterSet_range.m in Sources */,
 				4B674401163C395900EB1E59 /* OFCondition.m in Sources */,
 				4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */,
 				4B45355413DCFE1E0037AB4D /* OFCountedSet.m in Sources */,
@@ -3792,6 +3832,7 @@
 				4BD9CA001DA2C5FC00E5AD52 /* ForwardingTests.m in Sources */,
 				4BD9CA011DA2C5FE00E5AD52 /* OFArrayTests.m in Sources */,
 				4BD9CA021DA2C60200E5AD52 /* OFBlockTests.m in Sources */,
+				4BB99CEA1FAF77BC00CC79A9 /* OFCharacterSetTests.m in Sources */,
 				4BD9CA031DA2C60400E5AD52 /* OFDataTests.m in Sources */,
 				4BD9CA041DA2C60700E5AD52 /* OFDateTests.m in Sources */,
 				4BD9CA051DA2C60900E5AD52 /* OFDictionaryTests.m in Sources */,
@@ -3840,6 +3881,7 @@
 				4BA4846615CC9FAD00D75360 /* ForwardingTests.m in Sources */,
 				4BF33AFC133807A20059CEF7 /* OFArrayTests.m in Sources */,
 				4BF33AFD133807A20059CEF7 /* OFBlockTests.m in Sources */,
+				4BB99CE91FAF77BC00CC79A9 /* OFCharacterSetTests.m in Sources */,
 				4BF33AFE133807A20059CEF7 /* OFDataTests.m in Sources */,
 				4BF33AFF133807A20059CEF7 /* OFDateTests.m in Sources */,
 				4BF33B00133807A20059CEF7 /* OFDictionaryTests.m in Sources */,
