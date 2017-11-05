@@ -118,14 +118,14 @@ static OFString *module = @"OFObject";
 	    OFMemoryNotPartOfObjectException, [obj freeMemory: tmp])
 
 	EXPECT_EXCEPTION(@"Detect out of memory on alloc",
-	    OFOutOfMemoryException, [obj allocMemoryWithSize: TOO_BIG])
+	    OFOutOfMemoryException, tmp = [obj allocMemoryWithSize: TOO_BIG])
 
 	EXPECT_EXCEPTION(@"Detect out of memory on resize",
 	    OFOutOfMemoryException,
 	    {
 		p = [obj allocMemoryWithSize: 1];
-		[obj resizeMemory: p
-			     size: TOO_BIG];
+		p = [obj resizeMemory: p
+				 size: TOO_BIG];
 	    })
 	[obj freeMemory: p];
 
@@ -135,8 +135,8 @@ static OFString *module = @"OFObject";
 	[obj freeMemory: p];
 
 	EXPECT_EXCEPTION(@"Detect resizing of memory not allocated by object",
-	    OFMemoryNotPartOfObjectException, [obj resizeMemory: tmp
-							   size: 2048])
+	    OFMemoryNotPartOfObjectException, tmp = [obj resizeMemory: tmp
+								 size: 2048])
 	[self freeMemory: tmp];
 
 	TEST(@"+[description]",
