@@ -669,7 +669,7 @@ OF_ROOT_CLASS
  * @return A pointer to the allocated memory. May return NULL if the specified
  *	   size is 0.
  */
-- (nullable void *)allocMemoryWithSize: (size_t)size;
+- (nullable void *)allocMemoryWithSize: (size_t)size OF_WARN_UNUSED_RESULT;
 
 /*!
  * @brief Allocates memory for the specified number of items and stores it in
@@ -683,7 +683,7 @@ OF_ROOT_CLASS
  *	   size or count is 0.
  */
 - (nullable void *)allocMemoryWithSize: (size_t)size
-				 count: (size_t)count;
+				 count: (size_t)count OF_WARN_UNUSED_RESULT;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specified size.
@@ -696,7 +696,7 @@ OF_ROOT_CLASS
  * @return A pointer to the resized memory chunk
  */
 - (nullable void *)resizeMemory: (nullable void *)pointer
-			   size: (size_t)size;
+			   size: (size_t)size OF_WARN_UNUSED_RESULT;
 
 /*!
  * @brief Resizes memory in the object's memory pool to the specific number of
@@ -712,7 +712,7 @@ OF_ROOT_CLASS
  */
 - (nullable void *)resizeMemory: (nullable void *)pointer
 			   size: (size_t)size
-			  count: (size_t)count;
+			  count: (size_t)count OF_WARN_UNUSED_RESULT;
 
 /*!
  * @brief Frees allocated memory and removes it from the object's memory pool.

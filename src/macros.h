@@ -213,9 +213,11 @@
 #if defined(__clang__) || OF_GCC_VERSION >= 406
 # define OF_SENTINEL __attribute__((__sentinel__))
 # define OF_NO_RETURN __attribute__((__noreturn__))
+# define OF_WARN_UNUSED_RESULT __attribute__((__warn_unused_result__))
 #else
 # define OF_SENTINEL
 # define OF_NO_RETURN
+# define OF_WARN_UNUSED_RESULT
 #endif
 
 #if __has_attribute(__unavailable__)
