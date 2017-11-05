@@ -20,6 +20,7 @@
 #include <string.h>
 
 #import "OFString+URLEncoding.h"
+#import "OFCharacterSet.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
@@ -28,58 +29,41 @@
 int _OFString_URLEncoding_reference;
 
 @implementation OFString (URLEncoding)
-- (OFString *)stringByURLEncoding
+- (OFString *)stringByURLEncodingWithAllowedCharacters:
+    (OFCharacterSet *)allowedCharacters
 {
-	return [self stringByURLEncodingWithAllowedCharacters:
-	    "-._~!$&'()*+,;="];
-}
-
-- (OFString *)stringByURLEncodingWithAllowedCharacters: (const char *)allowed
-{
+	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	const char *string = [self UTF8String];
-	size_t length = [self UTF8StringLength];
-	char *retCString, *retCString2;
-	size_t i = 0;
+	const of_unichar_t *characters = [self characters];
+	size_t length = [self length];
+	bool (*characterIsMember)(id, SEL, of_unichar_t) =
+	    (bool (*)(id, SEL, of_unichar_t))[allowedCharacters
+	    methodForSelector: @selector(characterIsMember:)];
 
-	/*
-	 * Worst case: 3 times longer than before.
-	 * Oh, and we can't use [self allocWithSize:] here as self might be a
-	 * @"" literal.
-	 */
-	if ((retCString = malloc(length * 3 + 1)) == NULL)
-		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
-		    length * 3 + 1];
+	for (size_t i = 0; i < length; i++) {
+		of_unichar_t c = characters[i];
 
-	while (length--) {
-		unsigned char c = *string++;
-
-		if (of_ascii_isalnum(c) || strchr(allowed, c) != NULL)
-			retCString[i++] = c;
+		if (characterIsMember(allowedCharacters,
+		    @selector(characterIsMember:), c))
+			[ret appendCharacters: &c
+				       length: 1];
 		else {
-			unsigned char high, low;
+			unsigned char high = c >> 4;
+			unsigned char low = c & 0x0F;
+			of_unichar_t escaped[3];
 
-			high = c >> 4;
-			low = c & 0x0F;
+			escaped[0] = '%';
+			escaped[1] = (high > 9 ? high - 10 + 'A' : high + '0');
+			escaped[2] = (low  > 9 ? low  - 10 + 'A' : low  + '0');
 
-			retCString[i++] = '%';
-			retCString[i++] =
-			    (high > 9 ? high - 10 + 'A' : high + '0');
-			retCString[i++] =
-			    (low  > 9 ? low  - 10 + 'A' : low  + '0');
+			[ret appendCharacters: escaped
+				       length: 3];
 		}
 	}
-	retCString[i] = '\0';
 
 	objc_autoreleasePoolPop(pool);
 
-	/* We don't care if it fails, as we only made it smaller. */
-	if ((retCString2 = realloc(retCString, i + 1)) == NULL)
-		retCString2 = retCString;
-
-	return [OFString stringWithUTF8StringNoCopy: retCString2
-					     length: i
-				       freeWhenDone: true];
+	return ret;
 }
 
 - (OFString *)stringByURLDecoding

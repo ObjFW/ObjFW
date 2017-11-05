@@ -23,6 +23,7 @@
 #import "OFDictionary.h"
 #import "OFDictionary_hashtable.h"
 #import "OFArray.h"
+#import "OFCharacterSet.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
 #import "OFData.h"
@@ -35,12 +36,18 @@ static struct {
 	Class isa;
 } placeholder;
 
+static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
+
 @interface OFDictionary ()
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
 @end
 
 @interface OFDictionary_placeholder: OFDictionary
+@end
+
+@interface OFCharacterSet_URLQueryPartAllowed: OFCharacterSet
++ (OFCharacterSet *)URLQueryPartAllowedCharacterSet;
 @end
 
 @implementation OFDictionary_placeholder
@@ -121,6 +128,66 @@ static struct {
 - (void)dealloc
 {
 	OF_DEALLOC_UNSUPPORTED
+}
+@end
+
+@implementation OFCharacterSet_URLQueryPartAllowed
++ (void)initialize
+{
+	if (self != [OFCharacterSet_URLQueryPartAllowed class])
+		return;
+
+	URLQueryPartAllowedCharacterSet =
+	    [[OFCharacterSet_URLQueryPartAllowed alloc] init];
+}
+
++ (OFCharacterSet *)URLQueryPartAllowedCharacterSet
+{
+	return URLQueryPartAllowedCharacterSet;
+}
+
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	if (character < CHAR_MAX && of_ascii_isalnum(character))
+		return true;
+
+	switch (character) {
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '!':
+	case '$':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case '+':
+	case ',':
+	case ';':
+		return true;
+	default:
+		return false;
+	}
 }
 @end
 
@@ -576,6 +643,8 @@ static struct {
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *keyEnumerator = [self keyEnumerator];
 	OFEnumerator *objectEnumerator = [self objectEnumerator];
+	OFCharacterSet *allowed = [OFCharacterSet_URLQueryPartAllowed
+	    URLQueryPartAllowedCharacterSet];
 	bool first = true;
 	id key, object;
 
@@ -587,10 +656,10 @@ static struct {
 			[ret appendString: @"&"];
 
 		[ret appendString: [[key description]
-		    stringByURLEncodingWithAllowedCharacters: "-._~!$'()*+,;"]];
+		    stringByURLEncodingWithAllowedCharacters: allowed]];
 		[ret appendString: @"="];
 		[ret appendString: [[object description]
-		    stringByURLEncodingWithAllowedCharacters: "-._~!$'()*+,;"]];
+		    stringByURLEncodingWithAllowedCharacters: allowed]];
 	}
 
 	[ret makeImmutable];

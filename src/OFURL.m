@@ -33,6 +33,253 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
+static OFCharacterSet *URLAllowedCharacterSet = nil;
+static OFCharacterSet *URLPathAllowedCharacterSet = nil;
+static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
+
+@interface OFCharacterSet_URLAllowed: OFCharacterSet
++ (OFCharacterSet *)URLAllowedCharacterSet;
+@end
+
+@interface OFCharacterSet_URLPathAllowed: OFCharacterSet
++ (OFCharacterSet *)URLPathAllowedCharacterSet;
+@end
+
+@interface OFCharacterSet_URLQueryOrFragmentAllowed: OFCharacterSet
++ (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet;
+@end
+
+@implementation OFCharacterSet_URLAllowed
++ (void)initialize
+{
+	if (self != [OFCharacterSet_URLAllowed class])
+		return;
+
+	URLAllowedCharacterSet = [[OFCharacterSet_URLAllowed alloc] init];
+}
+
++ (OFCharacterSet *)URLAllowedCharacterSet
+{
+	return URLAllowedCharacterSet;
+}
+
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	if (character < CHAR_MAX && of_ascii_isalnum(character))
+		return true;
+
+	switch (character) {
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '!':
+	case '$':
+	case '&':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case '+':
+	case ',':
+	case ';':
+	case '=':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
+@implementation OFCharacterSet_URLPathAllowed
++ (void)initialize
+{
+	if (self != [OFCharacterSet_URLPathAllowed class])
+		return;
+
+	URLPathAllowedCharacterSet =
+	    [[OFCharacterSet_URLPathAllowed alloc] init];
+}
+
++ (OFCharacterSet *)URLPathAllowedCharacterSet
+{
+	return URLPathAllowedCharacterSet;
+}
+
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	if (character < CHAR_MAX && of_ascii_isalnum(character))
+		return true;
+
+	switch (character) {
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '!':
+	case '$':
+	case '&':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case '+':
+	case ',':
+	case ';':
+	case '=':
+	case ':':
+	case '@':
+	case '/':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
+@implementation OFCharacterSet_URLQueryOrFragmentAllowed
++ (void)initialize
+{
+	if (self != [OFCharacterSet_URLQueryOrFragmentAllowed class])
+		return;
+
+	URLQueryOrFragmentAllowedCharacterSet =
+	    [[OFCharacterSet_URLQueryOrFragmentAllowed alloc] init];
+}
+
++ (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet
+{
+	return URLQueryOrFragmentAllowedCharacterSet;
+}
+
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	if (character < CHAR_MAX && of_ascii_isalnum(character))
+		return true;
+
+	switch (character) {
+	case '-':
+	case '.':
+	case '_':
+	case '~':
+	case '!':
+	case '$':
+	case '&':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case '+':
+	case ',':
+	case ';':
+	case '=':
+	case ':':
+	case '@':
+	case '/':
+	case '?':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
+@implementation OFCharacterSet (URLCharacterSets)
++ (OFCharacterSet *)URLSchemeAllowedCharacterSet
+{
+	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+}
+
++ (OFCharacterSet *)URLHostAllowedCharacterSet
+{
+	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+}
+
++ (OFCharacterSet *)URLUserAllowedCharacterSet
+{
+	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+}
+
++ (OFCharacterSet *)URLPasswordAllowedCharacterSet
+{
+	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+}
+
++ (OFCharacterSet *)URLPathAllowedCharacterSet
+{
+	return [OFCharacterSet_URLPathAllowed URLPathAllowedCharacterSet];
+}
+
++ (OFCharacterSet *)URLQueryAllowedCharacterSet
+{
+	return [OFCharacterSet_URLQueryOrFragmentAllowed
+	    URLQueryOrFragmentAllowedCharacterSet];
+}
+
++ (OFCharacterSet *)URLFragmentAllowedCharacterSet
+{
+	return [OFCharacterSet_URLQueryOrFragmentAllowed
+	    URLQueryOrFragmentAllowedCharacterSet];
+}
+@end
+
 @implementation OFURL
 + (instancetype)URL
 {
@@ -401,7 +648,8 @@
 
 - (OFString *)URLEncodedScheme
 {
-	return [_scheme stringByURLEncoding];
+	return [_scheme stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLSchemeAllowedCharacterSet]];
 }
 
 - (OFString *)host
@@ -411,7 +659,8 @@
 
 - (OFString *)URLEncodedHost
 {
-	return [_host stringByURLEncoding];
+	return [_host stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLHostAllowedCharacterSet]];
 }
 
 - (OFNumber *)port
@@ -426,7 +675,8 @@
 
 - (OFString *)URLEncodedUser
 {
-	return [_user stringByURLEncoding];
+	return [_user stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLUserAllowedCharacterSet]];
 }
 
 - (OFString *)password
@@ -436,7 +686,8 @@
 
 - (OFString *)URLEncodedPassword
 {
-	return [_password stringByURLEncoding];
+	return [_password stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLPasswordAllowedCharacterSet]];
 }
 
 - (OFString *)path
@@ -447,7 +698,7 @@
 - (OFString *)URLEncodedPath
 {
 	return [_path stringByURLEncodingWithAllowedCharacters:
-	    "-._~!$&'()*+,;=:@/"];
+	    [OFCharacterSet URLPathAllowedCharacterSet]];
 }
 
 - (OFArray *)pathComponents
@@ -503,7 +754,7 @@
 - (OFString *)URLEncodedQuery
 {
 	return [_query stringByURLEncodingWithAllowedCharacters:
-	    "-._~!$&'()*+,;=:@/?"];
+	    [OFCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 - (OFString *)fragment
@@ -514,7 +765,7 @@
 - (OFString *)URLEncodedFragment
 {
 	return [_fragment stringByURLEncodingWithAllowedCharacters:
-	    "-._~!$&'()*+,;=:@/?"];
+	    [OFCharacterSet URLFragmentAllowedCharacterSet]];
 }
 
 - (id)copy

@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFCharacterSet;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,24 +30,21 @@ extern int _OFString_URLEncoding_reference;
 
 @interface OFString (URLEncoding)
 /*!
- * The string as an URL encoded string for use in a URL.
- */
-@property (readonly, nonatomic) OFString *stringByURLEncoding;
-
-/*!
  * The string as an URL decoded string.
  */
 @property (readonly, nonatomic) OFString *stringByURLDecoding;
 
 /*!
  * @brief Encodes a string for use in a URL, but does not escape the specified
- *	  ignored characters.
+ *	  allowed characters.
  *
- * @param allowed A C string of characters that should not be escaped
+ * @param allowedCharacters A character set of characters that should not be
+ *			    escaped
  *
  * @return A new autoreleased string
  */
-- (OFString *)stringByURLEncodingWithAllowedCharacters: (const char *)allowed;
+- (OFString *)stringByURLEncodingWithAllowedCharacters:
+    (OFCharacterSet *)allowedCharacters;
 @end
 
 OF_ASSUME_NONNULL_END

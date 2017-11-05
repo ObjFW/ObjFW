@@ -15,6 +15,7 @@
  */
 
 #import "OFObject.h"
+#import "OFCharacterSet.h"
 #import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -238,6 +239,74 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)fileURLWithPath: (OFString *)path
 		    isDirectory: (bool)isDirectory;
 #endif
+@end
+
+@interface OFCharacterSet (URLCharacterSets)
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLSchemeAllowedCharacterSet;
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLHostAllowedCharacterSet;
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLUserAllowedCharacterSet;
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLPasswordAllowedCharacterSet;
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLPathAllowedCharacterSet;
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLQueryAllowedCharacterSet;
+@property (class, readonly, nonatomic)
+    OFCharacterSet *URLFragmentAllowedCharacterSet;
+#endif
+
+/*!
+ * @brief Returns the characters allowed in the scheme part of a URL.
+ *
+ * @return The characters allowed in the scheme part of a URL.
+ */
++ (OFCharacterSet *)URLSchemeAllowedCharacterSet;
+
+/*!
+ * @brief Returns the characters allowed in the host part of a URL.
+ *
+ * @return The characters allowed in the host part of a URL.
+ */
++ (OFCharacterSet *)URLHostAllowedCharacterSet;
+
+/*!
+ * @brief Returns the characters allowed in the user part of a URL.
+ *
+ * @return The characters allowed in the user part of a URL.
+ */
++ (OFCharacterSet *)URLUserAllowedCharacterSet;
+
+/*!
+ * @brief Returns the characters allowed in the password part of a URL.
+ *
+ * @return The characters allowed in the password part of a URL.
+ */
++ (OFCharacterSet *)URLPasswordAllowedCharacterSet;
+
+/*!
+ * @brief Returns the characters allowed in the path part of a URL.
+ *
+ * @return The characters allowed in the path part of a URL.
+ */
++ (OFCharacterSet *)URLPathAllowedCharacterSet;
+
+/*!
+ * @brief Returns the characters allowed in the query part of a URL.
+ *
+ * @return The characters allowed in the query part of a URL.
+ */
++ (OFCharacterSet *)URLQueryAllowedCharacterSet;
+
+/*!
+ * @brief Returns the characters allowed in the fragment part of a URL.
+ *
+ * @return The characters allowed in the fragment part of a URL.
+ */
++ (OFCharacterSet *)URLFragmentAllowedCharacterSet;
 @end
 
 OF_ASSUME_NONNULL_END

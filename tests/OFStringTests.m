@@ -23,6 +23,7 @@
 #import "OFString.h"
 #import "OFMutableString_UTF8.h"
 #import "OFArray.h"
+#import "OFCharacterSet.h"
 #import "OFURL.h"
 #import "OFAutoreleasePool.h"
 
@@ -782,8 +783,9 @@ static uint16_t sutf16str[] = {
 	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
 	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
 
-	TEST(@"-[stringByURLEncoding]",
-	    [[C(@"foo\"ba'_~$]") stringByURLEncoding]
+	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",
+	    [[C(@"foo\"ba'_~$]") stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLPathAllowedCharacterSet]]
 	    isEqual: @"foo%22ba'_~$%5D"])
 
 	TEST(@"-[stringByURLDecoding]",
