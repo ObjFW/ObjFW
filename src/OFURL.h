@@ -31,10 +31,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFURL: OFObject <OFCopying, OFMutableCopying, OFSerialization>
 {
-	OFString *_Nullable _scheme, *_Nullable _host;
+	OFString *_Nullable _URLEncodedScheme, *_Nullable _URLEncodedHost;
 	OFNumber *_Nullable _port;
-	OFString *_Nullable _user, *_Nullable _password, *_path;
-	OFString *_Nullable _query, *_Nullable _fragment;
+	OFString *_Nullable _URLEncodedUser, *_Nullable _URLEncodedPassword;
+	OFString *_Nullable _URLEncodedPath;
+	OFString *_Nullable _URLEncodedQuery, *_Nullable _URLEncodedFragment;
 }
 
 /*!

@@ -25,8 +25,9 @@
 #import "OFInvalidFormatException.h"
 
 @implementation OFMutableURL
-@dynamic scheme, host, port, user, password, path, pathComponents, query;
-@dynamic fragment;
+@dynamic scheme, URLEncodedScheme, host, URLEncodedHost, port, user;
+@dynamic URLEncodedUser, password, URLEncodedPassword, path, URLEncodedPath;
+@dynamic pathComponents, query, URLEncodedQuery, fragment, URLEncodedFragment;
 
 + (instancetype)URL
 {
@@ -40,15 +41,36 @@
 
 - (void)setScheme: (OFString *)scheme
 {
-	OFString *old = _scheme;
-	_scheme = [scheme copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedScheme:
+	    [scheme stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLSchemeAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedScheme: (OFString *)URLEncodedScheme
+{
+	OFString *old = _URLEncodedScheme;
+	_URLEncodedScheme = [URLEncodedScheme copy];
 	[old release];
 }
 
 - (void)setHost: (OFString *)host
 {
-	OFString *old = _host;
-	_host = [host copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedHost: [host stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLHostAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedHost: (OFString *)URLEncodedHost
+{
+	OFString *old = _URLEncodedHost;
+	_URLEncodedHost = [URLEncodedHost copy];
 	[old release];
 }
 
@@ -61,22 +83,53 @@
 
 - (void)setUser: (OFString *)user
 {
-	OFString *old = _user;
-	_user = [user copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedUser: [user stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLUserAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedUser: (OFString *)URLEncodedUser
+{
+	OFString *old = _URLEncodedUser;
+	_URLEncodedUser = [URLEncodedUser copy];
 	[old release];
 }
 
 - (void)setPassword: (OFString *)password
 {
-	OFString *old = _password;
-	_password = [password copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedPassword:
+	    [password stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLPasswordAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedPassword: (OFString *)URLEncodedPassword
+{
+	OFString *old = _URLEncodedPassword;
+	_URLEncodedPassword = [URLEncodedPassword copy];
 	[old release];
 }
 
 - (void)setPath: (OFString *)path
 {
-	OFString *old = _path;
-	_path = [path copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedPath: [path stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLPathAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedPath: (OFString *)URLEncodedPath
+{
+	OFString *old = _URLEncodedPath;
+	_URLEncodedPath = [URLEncodedPath copy];
 	[old release];
 }
 
@@ -102,15 +155,37 @@
 
 - (void)setQuery: (OFString *)query
 {
-	OFString *old = _query;
-	_query = [query copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedQuery:
+	    [query stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLQueryAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedQuery: (OFString *)URLEncodedQuery
+{
+	OFString *old = _URLEncodedQuery;
+	_URLEncodedQuery = [URLEncodedQuery copy];
 	[old release];
 }
 
 - (void)setFragment: (OFString *)fragment
 {
-	OFString *old = _fragment;
-	_fragment = [fragment copy];
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setURLEncodedFragment:
+	    [fragment stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLFragmentAllowedCharacterSet]]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setURLEncodedFragment: (OFString *)URLEncodedFragment
+{
+	OFString *old = _URLEncodedFragment;
+	_URLEncodedFragment = [URLEncodedFragment copy];
 	[old release];
 }
 

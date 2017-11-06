@@ -348,9 +348,9 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 		for (tmp2 = UTF8String; tmp2 < tmp; tmp2++)
 			*tmp2 = of_ascii_tolower(*tmp2);
 
-		_scheme = [[[OFString stringWithUTF8String: UTF8String
-						    length: tmp - UTF8String]
-		    stringByURLDecoding] copy];
+		_URLEncodedScheme = [[OFString alloc]
+		    initWithUTF8String: UTF8String
+				length: tmp - UTF8String];
 
 		UTF8String = tmp + 3;
 
@@ -369,28 +369,26 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 				*tmp3 = '\0';
 				tmp3++;
 
-				_user = [[[OFString stringWithUTF8String:
-				    UTF8String] stringByURLDecoding] copy];
-				_password = [[[OFString stringWithUTF8String:
-				    tmp3] stringByURLDecoding] copy];
+				_URLEncodedUser = [[OFString alloc]
+				    initWithUTF8String: UTF8String];
+				_URLEncodedPassword = [[OFString alloc]
+				    initWithUTF8String: tmp3];
 			} else
-				_user = [[[OFString stringWithUTF8String:
-				    UTF8String] stringByURLDecoding] copy];
+				_URLEncodedUser = [[OFString alloc]
+				    initWithUTF8String: UTF8String];
 
 			UTF8String = tmp2;
 		}
 
 		if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
-			void *pool2;
 			OFString *portString;
 
 			*tmp2 = '\0';
 			tmp2++;
 
-			_host = [[[OFString stringWithUTF8String: UTF8String]
-			    stringByURLDecoding] copy];
+			_URLEncodedHost = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
-			pool2 = objc_autoreleasePoolPush();
 			portString = [OFString stringWithUTF8String: tmp2];
 
 			if ([portString decimalValue] > 65535)
@@ -398,32 +396,30 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 			_port = [[OFNumber alloc] initWithUInt16:
 			    (uint16_t)[portString decimalValue]];
-
-			objc_autoreleasePoolPop(pool2);
 		} else
-			_host = [[[OFString stringWithUTF8String: UTF8String]
-			    stringByURLDecoding] copy];
+			_URLEncodedHost = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 
 		if ((UTF8String = tmp) != NULL) {
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
-				_fragment = [[[OFString stringWithUTF8String:
-				    tmp + 1] stringByURLDecoding] copy];
+				_URLEncodedFragment = [[OFString alloc]
+				    initWithUTF8String: tmp + 1];
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
 				*tmp = '\0';
 
-				_query = [[[OFString stringWithUTF8String:
-				    tmp + 1] stringByURLDecoding] copy];
+				_URLEncodedQuery = [[OFString alloc]
+				    initWithUTF8String: tmp + 1];
 			}
 
 			UTF8String--;
 			*UTF8String = '/';
 
-			_path = [[[OFString stringWithUTF8String: UTF8String]
-			    stringByURLDecoding] copy];
+			_URLEncodedPath = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -451,11 +447,11 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 		void *pool = objc_autoreleasePoolPush();
 		char *tmp;
 
-		_scheme = [URL->_scheme copy];
-		_host = [URL->_host copy];
+		_URLEncodedScheme = [URL->_URLEncodedScheme copy];
+		_URLEncodedHost = [URL->_URLEncodedHost copy];
 		_port = [URL->_port copy];
-		_user = [URL->_user copy];
-		_password = [URL->_password copy];
+		_URLEncodedUser = [URL->_URLEncodedUser copy];
+		_URLEncodedPassword = [URL->_URLEncodedPassword copy];
 
 		if ((UTF8String2 = of_strdup([string UTF8String])) == NULL)
 			@throw [OFOutOfMemoryException
@@ -466,33 +462,33 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 		if ((tmp = strchr(UTF8String, '#')) != NULL) {
 			*tmp = '\0';
-			_fragment = [[[OFString stringWithUTF8String: tmp + 1]
-			    stringByURLDecoding] copy];
+			_URLEncodedFragment = [[OFString alloc]
+			    initWithUTF8String: tmp + 1];
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
-			_query = [[[OFString stringWithUTF8String: tmp + 1]
-			    stringByURLDecoding] copy];
+			_URLEncodedQuery = [[OFString alloc]
+			    initWithUTF8String: tmp + 1];
 		}
 
 		if (*UTF8String == '/')
-			_path = [[[OFString stringWithUTF8String: UTF8String]
-			    stringByURLDecoding] copy];
+			_URLEncodedPath = [[OFString alloc]
+			    initWithUTF8String: UTF8String];
 		else {
 			OFString *path, *s;
 
-			path = [[OFString stringWithUTF8String: UTF8String]
-			    stringByURLDecoding];
+			path = [OFString stringWithUTF8String: UTF8String];
 
-			if ([URL->_path hasSuffix: @"/"])
-				s = [URL->_path stringByAppendingString: path];
+			if ([URL->_URLEncodedPath hasSuffix: @"/"])
+				s = [URL->_URLEncodedPath
+				    stringByAppendingString: path];
 			else
-				s = [OFString stringWithFormat: @"%@/../%@",
-								URL->_path,
-								path];
+				s = [OFString stringWithFormat:
+				    @"%@/../%@", URL->_URLEncodedPath, path];
 
-			_path = [[s stringByStandardizingURLPath] copy];
+			_URLEncodedPath =
+			    [[s stringByStandardizingURLPath] copy];
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -580,14 +576,14 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 - (void)dealloc
 {
-	[_scheme release];
-	[_host release];
+	[_URLEncodedScheme release];
+	[_URLEncodedHost release];
 	[_port release];
-	[_user release];
-	[_password release];
-	[_path release];
-	[_query release];
-	[_fragment release];
+	[_URLEncodedUser release];
+	[_URLEncodedPassword release];
+	[_URLEncodedPath release];
+	[_URLEncodedQuery release];
+	[_URLEncodedFragment release];
 
 	[super dealloc];
 }
@@ -601,21 +597,28 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 	URL = object;
 
-	if (URL->_scheme != _scheme && ![URL->_scheme isEqual: _scheme])
+	if (URL->_URLEncodedScheme != _URLEncodedScheme &&
+	    ![URL->_URLEncodedScheme isEqual: _URLEncodedScheme])
 		return false;
-	if (URL->_host != _host && ![URL->_host isEqual: _host])
+	if (URL->_URLEncodedHost != _URLEncodedHost &&
+	    ![URL->_URLEncodedHost isEqual: _URLEncodedHost])
 		return false;
 	if (URL->_port != _port && ![URL->_port isEqual: _port])
 		return false;
-	if (URL->_user != _user && ![URL->_user isEqual: _user])
+	if (URL->_URLEncodedUser != _URLEncodedUser &&
+	    ![URL->_URLEncodedUser isEqual: _URLEncodedUser])
 		return false;
-	if (URL->_password != _password && ![URL->_password isEqual: _password])
+	if (URL->_URLEncodedPassword != _URLEncodedPassword &&
+	    ![URL->_URLEncodedPassword isEqual: _URLEncodedPassword])
 		return false;
-	if (URL->_path != _path && ![URL->_path isEqual: _path])
+	if (URL->_URLEncodedPath != _URLEncodedPath &&
+	    ![URL->_URLEncodedPath isEqual: _URLEncodedPath])
 		return false;
-	if (URL->_query != _query && ![URL->_query isEqual: _query])
+	if (URL->_URLEncodedQuery != _URLEncodedQuery &&
+	    ![URL->_URLEncodedQuery isEqual: _URLEncodedQuery])
 		return false;
-	if (URL->_fragment != _fragment && ![URL->_fragment isEqual: _fragment])
+	if (URL->_URLEncodedFragment != _URLEncodedFragment &&
+	    ![URL->_URLEncodedFragment isEqual: _URLEncodedFragment])
 		return false;
 
 	return true;
@@ -627,14 +630,14 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_scheme hash]);
-	OF_HASH_ADD_HASH(hash, [_host hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedScheme hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedHost hash]);
 	OF_HASH_ADD_HASH(hash, [_port hash]);
-	OF_HASH_ADD_HASH(hash, [_user hash]);
-	OF_HASH_ADD_HASH(hash, [_password hash]);
-	OF_HASH_ADD_HASH(hash, [_path hash]);
-	OF_HASH_ADD_HASH(hash, [_query hash]);
-	OF_HASH_ADD_HASH(hash, [_fragment hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedUser hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedPassword hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedPath hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedQuery hash]);
+	OF_HASH_ADD_HASH(hash, [_URLEncodedFragment hash]);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -643,24 +646,22 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 - (OFString *)scheme
 {
-	return _scheme;
+	return [_URLEncodedScheme stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedScheme
 {
-	return [_scheme stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLSchemeAllowedCharacterSet]];
+	return _URLEncodedScheme;
 }
 
 - (OFString *)host
 {
-	return _host;
+	return [_URLEncodedHost stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedHost
 {
-	return [_host stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLHostAllowedCharacterSet]];
+	return _URLEncodedHost;
 }
 
 - (OFNumber *)port
@@ -670,58 +671,58 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 - (OFString *)user
 {
-	return _user;
+	return [_URLEncodedUser stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedUser
 {
-	return [_user stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLUserAllowedCharacterSet]];
+	return _URLEncodedUser;
 }
 
 - (OFString *)password
 {
-	return _password;
+	return [_URLEncodedPassword stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedPassword
 {
-	return [_password stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLPasswordAllowedCharacterSet]];
+	return _URLEncodedPassword;
 }
 
 - (OFString *)path
 {
-	return _path;
+	return [_URLEncodedPath stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedPath
 {
-	return [_path stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLPathAllowedCharacterSet]];
+	return _URLEncodedPath;
 }
 
 - (OFArray *)pathComponents
 {
-	return [_path componentsSeparatedByString: @"/"];
+	return [[self path] componentsSeparatedByString: @"/"];
 }
 
 - (OFString *)lastPathComponent
 {
-	void *pool;
-	OFString *path;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *path = [self path];
 	const char *UTF8String, *lastComponent;
 	size_t length;
 	OFString *ret;
 
-	if (_path == nil)
+	if (path == nil) {
+		objc_autoreleasePoolPop(pool);
+
 		return nil;
+	}
 
-	if ([_path isEqual: @"/"])
+	if ([path isEqual: @"/"]) {
+		objc_autoreleasePoolPop(pool);
+
 		return @"";
-
-	pool = objc_autoreleasePoolPush();
-	path = _path;
+	}
 
 	if ([path hasSuffix: @"/"])
 		path = [path substringWithRange:
@@ -748,24 +749,22 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 - (OFString *)query
 {
-	return _query;
+	return [_URLEncodedQuery stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedQuery
 {
-	return [_query stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLQueryAllowedCharacterSet]];
+	return _URLEncodedQuery;
 }
 
 - (OFString *)fragment
 {
-	return _fragment;
+	return [_URLEncodedFragment stringByURLDecoding];
 }
 
 - (OFString *)URLEncodedFragment
 {
-	return [_fragment stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLFragmentAllowedCharacterSet]];
+	return _URLEncodedFragment;
 }
 
 - (id)copy
@@ -778,14 +777,14 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 	OFMutableURL *copy = [[OFMutableURL alloc] init];
 
 	@try {
-		[copy setScheme: _scheme];
-		[copy setHost: _host];
+		[copy setURLEncodedScheme: _URLEncodedScheme];
+		[copy setURLEncodedHost: _URLEncodedHost];
 		[copy setPort: _port];
-		[copy setUser: _user];
-		[copy setPassword: _password];
-		[copy setPath: _path];
-		[copy setQuery: _query];
-		[copy setFragment: _fragment];
+		[copy setURLEncodedUser: _URLEncodedUser];
+		[copy setURLEncodedPassword: _URLEncodedPassword];
+		[copy setURLEncodedPath: _URLEncodedPath];
+		[copy setURLEncodedQuery: _URLEncodedQuery];
+		[copy setURLEncodedFragment: _URLEncodedFragment];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -797,36 +796,32 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 - (OFString *)string
 {
 	OFMutableString *ret = [OFMutableString string];
-	void *pool = objc_autoreleasePoolPush();
 
-	[ret appendFormat: @"%@://", [self URLEncodedScheme]];
+	[ret appendFormat: @"%@://", _URLEncodedScheme];
 
-	if (_user != nil && _password != nil)
+	if (_URLEncodedUser != nil && _URLEncodedPassword != nil)
 		[ret appendFormat: @"%@:%@@",
-				   [self URLEncodedUser],
-				   [self URLEncodedPassword]];
-	else if (_user != nil)
-		[ret appendFormat: @"%@@", [self URLEncodedUser]];
+				   _URLEncodedUser, _URLEncodedPassword];
+	else if (_URLEncodedUser != nil)
+		[ret appendFormat: @"%@@", _URLEncodedUser];
 
-	if (_host != nil)
-		[ret appendString: [self URLEncodedHost]];
+	if (_URLEncodedHost != nil)
+		[ret appendString: _URLEncodedHost];
 	if (_port != nil)
 		[ret appendFormat: @":%@", _port];
 
-	if (_path != nil) {
-		if (![_path hasPrefix: @"/"])
+	if (_URLEncodedPath != nil) {
+		if (![_URLEncodedPath hasPrefix: @"/"])
 			@throw [OFInvalidFormatException exception];
 
-		[ret appendString: [self URLEncodedPath]];
+		[ret appendString: _URLEncodedPath];
 	}
 
-	if (_query != nil)
-		[ret appendFormat: @"?%@", [self URLEncodedQuery]];
+	if (_URLEncodedQuery != nil)
+		[ret appendFormat: @"?%@", _URLEncodedQuery];
 
-	if (_fragment != nil)
-		[ret appendFormat: @"#%@", [self URLEncodedFragment]];
-
-	objc_autoreleasePoolPop(pool);
+	if (_URLEncodedFragment != nil)
+		[ret appendFormat: @"#%@", _URLEncodedFragment];
 
 	[ret makeImmutable];
 
@@ -838,13 +833,13 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 	void *pool = objc_autoreleasePoolPush();
 	OFString *path;
 
-	if (![_scheme isEqual: @"file"])
+	if (![_URLEncodedScheme isEqual: @"file"])
 		@throw [OFInvalidArgumentException exception];
 
-	if (![_path hasPrefix: @"/"])
+	if (![_URLEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];
 
-	path = _path;
+	path = [self path];
 
 	if ([path hasSuffix: @"/"])
 		path = [path substringWithRange:

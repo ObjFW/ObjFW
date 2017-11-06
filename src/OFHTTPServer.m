@@ -665,10 +665,10 @@ normalizedKey(OFString *key)
 		query = [_path substringWithRange:
 		    of_range(pos + 1, [_path length] - pos - 1)];
 
-		[URL setPath: path];
-		[URL setQuery: query];
+		[URL setURLEncodedPath: path];
+		[URL setURLEncodedQuery: query];
 	} else
-		[URL setPath: _path];
+		[URL setURLEncodedPath: _path];
 
 	[URL makeImmutable];
 

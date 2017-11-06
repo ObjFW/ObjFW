@@ -30,7 +30,7 @@
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFURL";
-static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
+static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
     @"pa%3Fth?que%23ry#frag%23ment";
 
 @implementation TestsAppDelegate (OFURLTests)
@@ -38,6 +38,7 @@ static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFURL *u1, *u2, *u3, *u4;
+	OFMutableURL *mu;
 
 	TEST(@"+[URLWithString:]",
 	    R(u1 = [OFURL URLWithString: url_str]) &&
@@ -48,7 +49,7 @@ static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	TEST(@"+[URLWithString:relativeToURL:]",
 	    [[[OFURL URLWithString: @"/foo"
 		     relativeToURL: u1] string] isEqual:
-	    @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
+	    @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/foo"] &&
 	    [[[OFURL URLWithString: @"foo/bar?q"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/quux"]]
 	    string] isEqual: @"http://h/qux/foo/bar?q"] &&
@@ -110,6 +111,36 @@ static OFString *url_str = @"ht%3Atp://us%3Aer:p%40w@ho%3Ast:1234/"
 
 	EXPECT_EXCEPTION(@"Detection of invalid format",
 	    OFInvalidFormatException, [OFURL URLWithString: @"http"])
+
+	mu = [OFMutableURL URL];
+
+	TEST(@"-[setScheme:]",
+	    R([mu setScheme: @"ht:tp"]) &&
+	    [[mu URLEncodedScheme] isEqual: @"ht%3Atp"])
+
+	TEST(@"-[setHost:]",
+	    R([mu setHost: @"ho:st"]) &&
+	    [[mu URLEncodedHost] isEqual: @"ho%3Ast"])
+
+	TEST(@"-[setUser:]",
+	    R([mu setUser: @"us:er"]) &&
+	    [[mu URLEncodedUser] isEqual: @"us%3Aer"])
+
+	TEST(@"-[setPassword:]",
+	    R([mu setPassword: @"pass:word"]) &&
+	    [[mu URLEncodedPassword] isEqual: @"pass%3Aword"])
+
+	TEST(@"-[setPath:]",
+	    R([mu setPath: @"pa/th@?"]) &&
+	    [[mu URLEncodedPath] isEqual: @"pa/th@%3F"])
+
+	TEST(@"-[setQuery:]",
+	    R([mu setQuery: @"que/ry?#"]) &&
+	    [[mu URLEncodedQuery] isEqual: @"que/ry?%23"])
+
+	TEST(@"-[setFragment:]",
+	    R([mu setFragment: @"frag/ment?#"]) &&
+	    [[mu URLEncodedFragment] isEqual: @"frag/ment?%23"])
 
 	[pool drain];
 }
