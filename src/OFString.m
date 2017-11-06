@@ -66,6 +66,10 @@
 # define strtod __strtod
 #endif
 
+static struct {
+	Class isa;
+} placeholder;
+
 #if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
 static locale_t cLocale;
 #endif
@@ -79,6 +83,9 @@ static locale_t cLocale;
 				 lossy: (bool)lossy;
 - (OFString *)of_JSONRepresentationWithOptions: (int)options
 					 depth: (size_t)depth;
+@end
+
+@interface OFString_placeholder: OFString
 @end
 
 extern bool of_unicode_to_iso_8859_2(const of_unichar_t *, unsigned char *,
@@ -180,25 +187,23 @@ of_string_parse_encoding(OFString *string)
 size_t
 of_string_utf8_encode(of_unichar_t character, char *buffer)
 {
-	size_t i = 0;
-
 	if (character < 0x80) {
-		buffer[i] = character;
+		buffer[0] = character;
 		return 1;
 	} else if (character < 0x800) {
-		buffer[i++] = 0xC0 | (character >> 6);
-		buffer[i] = 0x80 | (character & 0x3F);
+		buffer[0] = 0xC0 | (character >> 6);
+		buffer[1] = 0x80 | (character & 0x3F);
 		return 2;
 	} else if (character < 0x10000) {
-		buffer[i++] = 0xE0 | (character >> 12);
-		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
-		buffer[i] = 0x80 | (character & 0x3F);
+		buffer[0] = 0xE0 | (character >> 12);
+		buffer[1] = 0x80 | (character >> 6 & 0x3F);
+		buffer[2] = 0x80 | (character & 0x3F);
 		return 3;
 	} else if (character < 0x110000) {
-		buffer[i++] = 0xF0 | (character >> 18);
-		buffer[i++] = 0x80 | (character >> 12 & 0x3F);
-		buffer[i++] = 0x80 | (character >> 6 & 0x3F);
-		buffer[i] = 0x80 | (character & 0x3F);
+		buffer[0] = 0xF0 | (character >> 18);
+		buffer[1] = 0x80 | (character >> 12 & 0x3F);
+		buffer[2] = 0x80 | (character >> 6 & 0x3F);
+		buffer[3] = 0x80 | (character & 0x3F);
 		return 4;
 	}
 
@@ -369,13 +374,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	return ret;
 }
-
-static struct {
-	Class isa;
-} placeholder;
-
-@interface OFString_placeholder: OFString
-@end
 
 @implementation OFString_placeholder
 - (instancetype)init
