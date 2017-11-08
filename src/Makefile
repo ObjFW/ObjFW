@@ -87,6 +87,7 @@ SRCS = OFApplication.m			\
        OFTimer.m			\
        OFTriple.m			\
        OFURL.m				\
+       OFValue.m 			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
        OFXMLCharacters.m		\
@@ -168,6 +169,7 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableString_UTF8.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
+	OFValue_adjacent.m 		\
 	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}
