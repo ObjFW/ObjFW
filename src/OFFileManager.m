@@ -98,6 +98,9 @@ typedef struct stat of_stat_t;
 # define S_ISLNK(s) 0
 #endif
 
+@interface OFFileManager_default: OFFileManager
+@end
+
 static OFFileManager *defaultManager;
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
@@ -237,7 +240,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 		    GetProcAddress(module, "CreateSymbolicLinkW");
 #endif
 
-	defaultManager = [[OFFileManager alloc] init];
+	defaultManager = [[OFFileManager_default alloc] init];
 }
 
 + (OFFileManager *)defaultManager
@@ -1635,4 +1638,25 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return [ret autorelease];
 }
 #endif
+@end
+
+@implementation OFFileManager_default
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
 @end
