@@ -121,6 +121,9 @@
 {
 	OFXMLAttribute *attribute;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFXMLAttribute class]])
 		return false;
 

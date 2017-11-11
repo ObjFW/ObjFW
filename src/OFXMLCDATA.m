@@ -76,6 +76,9 @@
 {
 	OFXMLCDATA *CDATA;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFXMLCDATA class]])
 		return false;
 

@@ -78,6 +78,9 @@
 {
 	OFXMLProcessingInstructions *processingInstructions;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFXMLProcessingInstructions class]])
 		return false;
 

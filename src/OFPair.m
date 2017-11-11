@@ -65,6 +65,9 @@
 {
 	OFPair *pair;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFPair class]])
 		return false;
 

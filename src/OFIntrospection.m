@@ -87,6 +87,9 @@
 {
 	OFMethod *method;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFMethod class]])
 		return false;
 
@@ -321,6 +324,9 @@
 - (bool)isEqual: (id)object
 {
 	OFProperty *otherProperty;
+
+	if (object == self)
+		return true;
 
 	if ([object isKindOfClass: [OFProperty class]])
 		return false;

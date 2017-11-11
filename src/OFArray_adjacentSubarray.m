@@ -31,6 +31,9 @@
 	OFArray *otherArray;
 	id const *objects, *otherObjects;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFArray_adjacent class]] &&
 	    ![object isKindOfClass: [OFMutableArray_adjacent class]])
 		return [super isEqual: object];

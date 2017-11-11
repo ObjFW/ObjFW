@@ -244,6 +244,9 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 {
 	OFSet_hashtable *set;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFSet_hashtable class]] &&
 	    ![object isKindOfClass: [OFMutableSet_hashtable class]] &&
 	    ![object isKindOfClass: [OFCountedSet_hashtable class]])

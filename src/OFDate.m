@@ -358,6 +358,9 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 {
 	OFDate *otherDate;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFDate class]])
 		return false;
 

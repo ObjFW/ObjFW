@@ -278,17 +278,20 @@ static struct {
 
 - (bool)isEqual: (id)object
 {
-	OFSet *otherSet;
+	OFSet *set;
+
+	if (object == self)
+		return true;
 
 	if (![object isKindOfClass: [OFSet class]])
 		return false;
 
-	otherSet = object;
+	set = object;
 
-	if ([otherSet count] != [self count])
+	if ([set count] != [self count])
 		return false;
 
-	return [otherSet isSubsetOfSet: self];
+	return [set isSubsetOfSet: self];
 }
 
 - (uint32_t)hash

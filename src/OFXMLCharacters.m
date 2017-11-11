@@ -76,6 +76,9 @@
 {
 	OFXMLCharacters *characters;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFXMLCharacters class]])
 		return false;
 

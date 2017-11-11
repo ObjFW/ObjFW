@@ -328,31 +328,35 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFHTTPCookie *other;
+	OFHTTPCookie *cookie;
 
-	if (![otherObject isKindOfClass: [OFHTTPCookie class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFHTTPCookie class]])
 		return false;
 
-	other = otherObject;
+	cookie = object;
 
-	if (![_name isEqual: other->_name])
+	if (![cookie->_name isEqual: _name])
 		return false;
-	if (![_value isEqual: other->_value])
+	if (![cookie->_value isEqual: _value])
 		return false;
-	if (_domain != other->_domain && ![_domain isEqual: other->_domain])
+	if (cookie->_domain != _domain && ![cookie->_domain isEqual: _domain])
 		return false;
-	if (_path != other->_path && ![_path isEqual: other->_path])
+	if (cookie->_path != _path && ![cookie->_path isEqual: _path])
 		return false;
-	if (_expires != other->_expires && ![_expires isEqual: other->_expires])
+	if (cookie->_expires != _expires &&
+	    ![cookie->_expires isEqual: _expires])
 		return false;
-	if (_secure != other->_secure)
+	if (cookie->_secure != _secure)
 		return false;
-	if (_HTTPOnly != other->_HTTPOnly)
+	if (cookie->_HTTPOnly != _HTTPOnly)
 		return false;
-	if (_extensions != other->_extensions &&
-	    ![_extensions isEqual: other->_extensions])
+	if (cookie->_extensions != _extensions &&
+	    ![cookie->_extensions isEqual: _extensions])
 		return false;
 
 	return true;

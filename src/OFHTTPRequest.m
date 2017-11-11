@@ -149,6 +149,9 @@ of_http_request_method_from_string(const char *string)
 {
 	OFHTTPRequest *request;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFHTTPRequest class]])
 		return false;
 

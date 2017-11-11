@@ -197,6 +197,9 @@ defaultEqual(void *object1, void *object2)
 {
 	OFMapTable *mapTable;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFMapTable class]])
 		return false;
 

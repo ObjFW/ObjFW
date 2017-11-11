@@ -511,6 +511,9 @@ static struct {
 	OFArray *otherArray;
 	size_t count;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFArray class]])
 		return false;
 

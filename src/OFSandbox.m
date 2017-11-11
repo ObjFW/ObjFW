@@ -342,76 +342,77 @@
 	return copy;
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFSandbox *otherSandbox;
+	OFSandbox *sandbox;
 
-	if (![otherObject isKindOfClass: [OFSandbox class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFSandbox class]])
 		return false;
 
-	otherSandbox = otherObject;
+	sandbox = object;
 
-	if (otherSandbox->_allowsStdIO != _allowsStdIO)
+	if (sandbox->_allowsStdIO != _allowsStdIO)
 		return false;
-	if (otherSandbox->_allowsReadingFiles != _allowsReadingFiles)
+	if (sandbox->_allowsReadingFiles != _allowsReadingFiles)
 		return false;
-	if (otherSandbox->_allowsWritingFiles != _allowsWritingFiles)
+	if (sandbox->_allowsWritingFiles != _allowsWritingFiles)
 		return false;
-	if (otherSandbox->_allowsCreatingFiles != _allowsCreatingFiles)
+	if (sandbox->_allowsCreatingFiles != _allowsCreatingFiles)
 		return false;
-	if (otherSandbox->_allowsCreatingSpecialFiles !=
-	    _allowsCreatingSpecialFiles)
+	if (sandbox->_allowsCreatingSpecialFiles != _allowsCreatingSpecialFiles)
 		return false;
-	if (otherSandbox->_allowsTemporaryFiles != _allowsTemporaryFiles)
+	if (sandbox->_allowsTemporaryFiles != _allowsTemporaryFiles)
 		return false;
-	if (otherSandbox->_allowsIPSockets != _allowsIPSockets)
+	if (sandbox->_allowsIPSockets != _allowsIPSockets)
 		return false;
-	if (otherSandbox->_allowsMulticastSockets != _allowsMulticastSockets)
+	if (sandbox->_allowsMulticastSockets != _allowsMulticastSockets)
 		return false;
-	if (otherSandbox->_allowsChangingFileAttributes !=
+	if (sandbox->_allowsChangingFileAttributes !=
 	    _allowsChangingFileAttributes)
 		return false;
-	if (otherSandbox->_allowsFileOwnerChanges != _allowsFileOwnerChanges)
+	if (sandbox->_allowsFileOwnerChanges != _allowsFileOwnerChanges)
 		return false;
-	if (otherSandbox->_allowsFileLocks != _allowsFileLocks)
+	if (sandbox->_allowsFileLocks != _allowsFileLocks)
 		return false;
-	if (otherSandbox->_allowsUNIXSockets != _allowsUNIXSockets)
+	if (sandbox->_allowsUNIXSockets != _allowsUNIXSockets)
 		return false;
-	if (otherSandbox->_allowsDNS != _allowsDNS)
+	if (sandbox->_allowsDNS != _allowsDNS)
 		return false;
-	if (otherSandbox->_allowsUserDatabaseReading !=
-	    _allowsUserDatabaseReading)
+	if (sandbox->_allowsUserDatabaseReading != _allowsUserDatabaseReading)
 		return false;
-	if (otherSandbox->_allowsFileDescriptorSending !=
+	if (sandbox->_allowsFileDescriptorSending !=
 	    _allowsFileDescriptorSending)
 		return false;
-	if (otherSandbox->_allowsFileDescriptorReceiving !=
+	if (sandbox->_allowsFileDescriptorReceiving !=
 	    _allowsFileDescriptorReceiving)
 		return false;
-	if (otherSandbox->_allowsTape != _allowsTape)
+	if (sandbox->_allowsTape != _allowsTape)
 		return false;
-	if (otherSandbox->_allowsTTY != _allowsTTY)
+	if (sandbox->_allowsTTY != _allowsTTY)
 		return false;
-	if (otherSandbox->_allowsProcessOperations != _allowsProcessOperations)
+	if (sandbox->_allowsProcessOperations != _allowsProcessOperations)
 		return false;
-	if (otherSandbox->_allowsExec != _allowsExec)
+	if (sandbox->_allowsExec != _allowsExec)
 		return false;
-	if (otherSandbox->_allowsProtExec != _allowsProtExec)
+	if (sandbox->_allowsProtExec != _allowsProtExec)
 		return false;
-	if (otherSandbox->_allowsSetTime != _allowsSetTime)
+	if (sandbox->_allowsSetTime != _allowsSetTime)
 		return false;
-	if (otherSandbox->_allowsPS != _allowsPS)
+	if (sandbox->_allowsPS != _allowsPS)
 		return false;
-	if (otherSandbox->_allowsVMInfo != _allowsVMInfo)
+	if (sandbox->_allowsVMInfo != _allowsVMInfo)
 		return false;
-	if (otherSandbox->_allowsChangingProcessRights !=
+	if (sandbox->_allowsChangingProcessRights !=
 	    _allowsChangingProcessRights)
 		return false;
-	if (otherSandbox->_allowsPF != _allowsPF)
+	if (sandbox->_allowsPF != _allowsPF)
 		return false;
-	if (otherSandbox->_allowsAudio != _allowsAudio)
+	if (sandbox->_allowsAudio != _allowsAudio)
 		return false;
-	if (otherSandbox->_allowsBPF != _allowsBPF)
+	if (sandbox->_allowsBPF != _allowsBPF)
 		return false;
 
 	return true;

@@ -994,7 +994,7 @@ _references_to_categories_of_OFObject(void)
 
 - (bool)isEqual: (id)object
 {
-	return (self == object);
+	return (object == self);
 }
 
 - (uint32_t)hash

@@ -78,6 +78,9 @@
 {
 	OFXMLComment *comment;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFXMLComment class]])
 		return false;
 

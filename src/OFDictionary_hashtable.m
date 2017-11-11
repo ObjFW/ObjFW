@@ -310,17 +310,20 @@ static const of_map_table_functions_t objectFunctions = {
 	return [_mapTable count];
 }
 
-- (bool)isEqual: (id)dictionary
+- (bool)isEqual: (id)object
 {
-	OFDictionary_hashtable *dictionary_;
+	OFDictionary_hashtable *dictionary;
 
-	if (![dictionary isKindOfClass: [OFDictionary_hashtable class]] &&
-	    ![dictionary isKindOfClass: [OFMutableDictionary_hashtable class]])
-		return [super isEqual: dictionary];
+	if (object == self)
+		return true;
 
-	dictionary_ = (OFDictionary_hashtable *)dictionary;
+	if (![object isKindOfClass: [OFDictionary_hashtable class]] &&
+	    ![object isKindOfClass: [OFMutableDictionary_hashtable class]])
+		return [super isEqual: object];
 
-	return [dictionary_->_mapTable isEqual: _mapTable];
+	dictionary = (OFDictionary_hashtable *)object;
+
+	return [dictionary->_mapTable isEqual: _mapTable];
 }
 
 - (bool)containsObject: (id)object

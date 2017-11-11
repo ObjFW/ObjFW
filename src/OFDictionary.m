@@ -409,6 +409,9 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
 	id key;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFDictionary class]])
 		return false;
 

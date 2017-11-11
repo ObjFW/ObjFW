@@ -735,6 +735,9 @@
 {
 	OFNumber *number;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFNumber class]])
 		return false;
 

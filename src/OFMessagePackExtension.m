@@ -162,6 +162,9 @@
 {
 	OFMessagePackExtension *extension;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFMessagePackExtension class]])
 		return false;
 

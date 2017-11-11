@@ -592,6 +592,9 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 {
 	OFURL *URL;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFURL class]])
 		return false;
 

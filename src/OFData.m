@@ -419,6 +419,9 @@ _references_to_categories_of_OFData(void)
 {
 	OFData *data;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFData class]])
 		return false;
 

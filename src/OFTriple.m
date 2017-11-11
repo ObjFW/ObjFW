@@ -75,6 +75,9 @@
 {
 	OFTriple *triple;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFTriple class]])
 		return false;
 

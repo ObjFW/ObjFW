@@ -206,6 +206,9 @@
 	OFList *list;
 	of_list_object_t *iter, *iter2;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFList class]])
 		return false;
 

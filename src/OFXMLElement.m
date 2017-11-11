@@ -1033,6 +1033,9 @@ static Class CDATAClass = Nil;
 {
 	OFXMLElement *element;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFXMLElement class]])
 		return false;
 
