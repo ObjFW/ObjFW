@@ -1570,18 +1570,23 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	objc_autoreleasePoolPop(pool);
 }
+#endif
 
 - (void)linkItemAtURL: (OFURL *)source
 		toURL: (OFURL *)destination
 {
+#ifdef OF_FILE_MANAGER_SUPPORTS_LINKS
 	void *pool = objc_autoreleasePoolPush();
 
 	[self linkItemAtPath: [source fileSystemRepresentation]
 		      toPath: [destination fileSystemRepresentation]];
 
 	objc_autoreleasePoolPop(pool);
-}
+#else
+	@throw [OFNotImplementedException exceptionWithSelector: _cmd
+							 object: self];
 #endif
+}
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 - (void)createSymbolicLinkAtPath: (OFString *)destination
@@ -1618,18 +1623,23 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	objc_autoreleasePoolPop(pool);
 }
+#endif
 
 - (void)createSymbolicLinkAtURL: (OFURL *)destination
 	     withDestinationURL: (OFURL *)source
 {
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	void *pool = objc_autoreleasePoolPush();
 
 	[self createSymbolicLinkAtPath: [destination fileSystemRepresentation]
 		   withDestinationPath: [source fileSystemRepresentation]];
 
 	objc_autoreleasePoolPop(pool);
-}
+#else
+	@throw [OFNotImplementedException exceptionWithSelector: _cmd
+							 object: self];
 #endif
+}
 @end
 
 @implementation OFDictionary (FileAttributes)

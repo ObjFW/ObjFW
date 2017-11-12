@@ -483,6 +483,7 @@ extern const of_file_type_t of_file_type_socket;
  */
 - (void)linkItemAtPath: (OFString *)source
 		toPath: (OFString *)destination;
+#endif
 
 /*!
  * @brief Creates a hard link for the specified item.
@@ -490,14 +491,13 @@ extern const of_file_type_t of_file_type_socket;
  * The destination URL must have a full path, which means it must include the
  * name of the item.
  *
- * This method is not available on some systems.
+ * This method is not available for all URLs.
  *
  * @param source The URL to the item for which a link should be created
  * @param destination The URL to the item which should link to the source
  */
 - (void)linkItemAtURL: (OFURL *)source
 		toURL: (OFURL *)destination;
-#endif
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 /*!
@@ -518,6 +518,7 @@ extern const of_file_type_t of_file_type_socket;
  */
 - (void)createSymbolicLinkAtPath: (OFString *)destination
 	     withDestinationPath: (OFString *)source;
+#endif
 
 /*!
  * @brief Creates a symbolic link for an item.
@@ -525,7 +526,7 @@ extern const of_file_type_t of_file_type_socket;
  * The destination uRL must have a full path, which means it must include the
  * name of the item.
  *
- * This method is not available on some systems.
+ * This method is not available for all URLs.
  *
  * @note On Windows, this requires at least Windows Vista and administrator
  *	 privileges!
@@ -537,7 +538,6 @@ extern const of_file_type_t of_file_type_socket;
  */
 - (void)createSymbolicLinkAtURL: (OFURL *)destination
 	     withDestinationURL: (OFURL *)source;
-#endif
 @end
 
 @interface OFDictionary (FileAttributes)
