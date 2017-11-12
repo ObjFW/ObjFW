@@ -25,6 +25,7 @@ PREDEFINED = DOXYGEN				\
 	     OF_RETURNS_RETAINED		\
 	     OF_ROOT_CLASS			\
 	     OF_SENTINEL			\
+	     OF_WARN_UNUSED_RESULT		\
 	     OF_WEAK_UNAVAILABLE		\
 	     SIGHUP				\
 	     SIGUSR1				\
