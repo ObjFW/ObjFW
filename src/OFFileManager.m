@@ -616,8 +616,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		      failedAttribute: of_file_attribute_key_posix_permissions
 				errNo: errno];
 #else
-	@throw [OFNotImplementedException exceptionWithSelector: _cmd
-							 object: self];
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 
@@ -681,8 +680,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		      failedAttribute: attributeKey
 				errNo: errno];
 #else
-	@throw [OFNotImplementedException exceptionWithSelector: _cmd
-							 object: self];
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 
@@ -1583,8 +1581,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	objc_autoreleasePoolPop(pool);
 #else
-	@throw [OFNotImplementedException exceptionWithSelector: _cmd
-							 object: self];
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 
@@ -1626,18 +1623,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 #endif
 
 - (void)createSymbolicLinkAtURL: (OFURL *)destination
-	     withDestinationURL: (OFURL *)source
+	    withDestinationPath: (OFString *)source
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	void *pool = objc_autoreleasePoolPush();
 
 	[self createSymbolicLinkAtPath: [destination fileSystemRepresentation]
-		   withDestinationPath: [source fileSystemRepresentation]];
+		   withDestinationPath: source];
 
 	objc_autoreleasePoolPop(pool);
 #else
-	@throw [OFNotImplementedException exceptionWithSelector: _cmd
-							 object: self];
+	OF_UNRECOGNIZED_SELECTOR
 #endif
 }
 @end

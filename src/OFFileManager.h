@@ -533,11 +533,11 @@ extern const of_file_type_t of_file_type_socket;
  *
  * @param destination The URL to the item which should symbolically link to the
  *		      source
- * @param source The URL to the item for which a symbolic link should be
+ * @param source The path to the item for which a symbolic link should be
  *		 created
  */
 - (void)createSymbolicLinkAtURL: (OFURL *)destination
-	     withDestinationURL: (OFURL *)source;
+	    withDestinationPath: (OFString *)source;
 @end
 
 @interface OFDictionary (FileAttributes)
