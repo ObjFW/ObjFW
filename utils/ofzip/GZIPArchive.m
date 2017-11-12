@@ -31,10 +31,15 @@ setPermissions(OFString *destination, OFString *source)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	uint16_t mode = [fileManager permissionsOfItemAtPath: source];
+	of_file_attributes_t attributes =
+	    [fileManager attributesOfItemAtPath: source];
+	of_file_attribute_key_t key = of_file_attribute_key_size;
+	of_file_attributes_t destinationAttributes = [OFDictionary
+	    dictionaryWithObject: [attributes objectForKey: key]
+			  forKey: key];
 
-	[fileManager changePermissionsOfItemAtPath: destination
-				       permissions: mode];
+	[fileManager setAttributes: destinationAttributes
+		      ofItemAtPath: destination];
 #endif
 }
 

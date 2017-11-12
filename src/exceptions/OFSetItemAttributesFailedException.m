@@ -16,11 +16,12 @@
 
 #include "config.h"
 
-#import "OFChangeOwnerFailedException.h"
+#import "OFSetItemAttributesFailedException.h"
 #import "OFString.h"
 
-@implementation OFChangeOwnerFailedException
-@synthesize path = _path, owner = _owner, group = _group, errNo = _errNo;
+@implementation OFSetItemAttributesFailedException
+@synthesize path = _path, attributes = _attributes;
+@synthesize failedAttribute = _failedAttribute, errNo = _errNo;
 
 + (instancetype)exception
 {
@@ -28,13 +29,13 @@
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
-			    owner: (OFString *)owner
-			    group: (OFString *)group
+		       attributes: (of_file_attributes_t)attributes
+		  failedAttribute: (of_file_attribute_key_t)failedAttribute
 			    errNo: (int)errNo
 {
 	return [[[self alloc] initWithPath: path
-				     owner: owner
-				     group: group
+				attributes: attributes
+			   failedAttribute: failedAttribute
 				     errNo: errNo] autorelease];
 }
 
@@ -44,16 +45,16 @@
 }
 
 - (instancetype)initWithPath: (OFString *)path
-		       owner: (OFString *)owner
-		       group: (OFString *)group
+		  attributes: (of_file_attributes_t)attributes
+	     failedAttribute: (of_file_attribute_key_t)failedAttribute
 		       errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
-		_owner = [owner copy];
-		_group = [group copy];
+		_path = [path copy];
+		_attributes = [attributes copy];
+		_failedAttribute = [failedAttribute copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -66,25 +67,16 @@
 - (void)dealloc
 {
 	[_path release];
-	[_owner release];
-	[_group release];
+	[_attributes release];
+	[_failedAttribute release];
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
-	if (_group == nil)
-		return [OFString stringWithFormat:
-		    @"Failed to change owner of item at path %@ to %@: %@",
-		    _path, _owner, of_strerror(_errNo)];
-	else if (_owner == nil)
-		return [OFString stringWithFormat:
-		    @"Failed to change group of item at path %@ to %@: %@",
-		     _path, _group, of_strerror(_errNo)];
-	else
-		return [OFString stringWithFormat:
-		    @"Failed to change owner of item at path %@ to %@:%@: %@",
-		    _path, _owner, _group, of_strerror(_errNo)];
+	return [OFString stringWithFormat:
+	    @"Failed to set attribute %@ for item %@: %@",
+	    _failedAttribute, _path, of_strerror(_errNo)];
 }
 @end

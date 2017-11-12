@@ -42,7 +42,7 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
-#import "OFStatItemFailedException.h"
+#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
@@ -934,8 +934,8 @@ next:
 
 	if (_continue) {
 		@try {
-			of_offset_t size = [[OFFileManager defaultManager]
-			    sizeOfFileAtPath: _currentFileName];
+			uintmax_t size = [[[OFFileManager defaultManager]
+			    attributesOfItemAtPath: _currentFileName] fileSize];
 			OFString *range;
 
 			if (size > INTMAX_MAX)
@@ -947,7 +947,7 @@ next:
 							    _resumedFrom];
 			[clientHeaders setObject: range
 					  forKey: @"Range"];
-		} @catch (OFStatItemFailedException *e) {
+		} @catch (OFRetrieveItemAttributesFailedException *e) {
 		}
 	}
 

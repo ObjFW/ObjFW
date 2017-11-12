@@ -15,9 +15,12 @@
  */
 
 #import "OFObject.h"
+#import "OFDictionary.h"
 #import "OFSeekableStream.h"
 
 OF_ASSUME_NONNULL_BEGIN
+
+/*! @file */
 
 #if defined(OF_HAVE_CHMOD) && !defined(OF_MORPHOS)
 # define OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
@@ -35,6 +38,190 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
 @class OFURL;
+
+/*!
+ * @brief A key for a file attribute in the file attributes dictionary.
+ *
+ * Possible keys for file URLs are:
+ *
+ *  * @ref of_file_attribute_key_size
+ *  * @ref of_file_attribute_key_type
+ *  * @ref of_file_attribute_key_posix_permissions
+ *  * @ref of_file_attribute_key_posix_uid
+ *  * @ref of_file_attribute_key_posix_gid
+ *  * @ref of_file_attribute_key_owner
+ *  * @ref of_file_attribute_key_group
+ *  * @ref of_file_attribute_key_last_access_date
+ *  * @ref of_file_attribute_key_modification_date
+ *  * @ref of_file_attribute_key_status_change_date
+ *  * @ref of_file_attribute_key_symbolic_link_destination
+ *
+ * Other URL schemes might not have all keys and might have keys not listed.
+ */
+typedef OFConstantString *of_file_attribute_key_t;
+
+/*!
+ * @brief The type of a file.
+ *
+ * Possibles values for file URLs are:
+ *
+ *  * @ref of_file_type_regular
+ *  * @ref of_file_type_directory
+ *  * @ref of_file_type_symbolic_link
+ *  * @ref of_file_type_fifo
+ *  * @ref of_file_type_character_special
+ *  * @ref of_file_type_block_special
+ *  * @ref of_file_type_socket
+ *
+ * Other URL schemes might not have all types and might have types not listed.
+ */
+typedef OFConstantString *of_file_type_t;
+
+/*!
+ * @brief A dictionary mapping keys of type @ref of_file_attribute_key_type_t
+ *	  to their attribute values.
+ */
+typedef OFDictionary OF_GENERIC(of_file_attribute_key_t, id)
+    *of_file_attributes_t;
+
+/*!
+ * @brief A mutable dictionary mapping keys of type
+ *	  @ref of_file_attribute_key_type_t to their attribute values.
+ */
+typedef OFMutableDictionary OF_GENERIC(of_file_attribute_key_t, id)
+    *of_mutable_file_attributes_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief The size of the file as an @ref OFNumber.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileSize.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_size;
+
+/*!
+ * @brief The type of the file.
+ *
+ * The corresponding value is of type @ref of_file_type_t.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileType.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_type;
+
+/*!
+ * @brief The POSIX permissions of the file as an @ref OFNumber.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref filePOSIXPermissions.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_posix_permissions;
+
+/*!
+ * @brief The POSIX UID of the file as an @ref OFNumber.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref filePOSIXUID.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
+
+/*!
+ * @brief The POSIX GID of the file as an @ref OFNumber.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref filePOSIXGID.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
+
+/*!
+ * @brief The owner of the file as an @ref OFString.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileOwner.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_owner;
+
+/*!
+ * @brief The group of the file as an @ref OFString.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileGroup.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_group;
+
+/*!
+ * @brief The last access date of the file as an @ref OFDate.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileLastAccessDate.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
+
+/*!
+ * @brief The last modification date of the file as an @ref OFDate.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileModificationDate.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
+
+/*!
+ * @brief The last status change date of the file as an @ref OFDate.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileStatusChangeDate.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
+
+/*!
+ * @brief The destination of a symbolic link as an @ref OFString.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref fileSymbolicLinkDestination.
+ */
+extern const of_file_attribute_key_t
+    of_file_attribute_key_symbolic_link_destination;
+
+/*!
+ * @brief A regular file.
+ */
+extern const of_file_type_t of_file_type_regular;
+
+/*!
+ * @brief A directory.
+ */
+extern const of_file_type_t of_file_type_directory;
+
+/*!
+ * @brief A symbolic link.
+ */
+extern const of_file_type_t of_file_type_symbolic_link;
+
+/*!
+ * @brief A FIFO.
+ */
+extern const of_file_type_t of_file_type_fifo;
+
+/*!
+ * @brief A character special file.
+ */
+extern const of_file_type_t of_file_type_character_special;
+
+/*!
+ * @brief A block special file.
+ */
+extern const of_file_type_t of_file_type_block_special;
+
+/*!
+ * @brief A socket.
+ */
+extern const of_file_type_t of_file_type_socket;
+#ifdef __cplusplus
+}
+#endif
 
 /*!
  * @class OFFileManager OFFileManager.h ObjFW/OFFileManager.h
@@ -61,6 +248,46 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns the default file manager.
  */
 + (OFFileManager *)defaultManager;
+
+/*!
+ * @brief Returns the attributes for the item at the specified path.
+ *
+ * @param path The path to return the attributes for
+ * @return A dictionary of attributes for the specified path, with the keys of
+ *	   type @ref of_file_attribute_key_t
+ */
+- (of_file_attributes_t)attributesOfItemAtPath: (OFString *)path;
+
+/*!
+ * @brief Returns the attributes for the item at the specified URL.
+ *
+ * @param URL The URL to return the attributes for
+ * @return A dictionary of attributes for the specified URL, with the keys of
+ *	   type @ref of_file_attribute_key_t
+ */
+- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL;
+
+/*!
+ * @brief Sets the attributes for the item at the specified path.
+ *
+ * All attributes not part of the dictionary are left unchanged.
+ *
+ * @param attributes The attributes to set for the specified path
+ * @param path The path of the item to set the attributes for
+ */
+- (void)setAttributes: (of_file_attributes_t)attributes
+	 ofItemAtPath: (OFString *)path;
+
+/*!
+ * @brief Sets the attributes for the item at the specified URL.
+ *
+ * All attributes not part of the dictionary are left unchanged.
+ *
+ * @param attributes The attributes to set for the specified URL
+ * @param URL The URL of the item to set the attributes for
+ */
+- (void)setAttributes: (of_file_attributes_t)attributes
+	  ofItemAtURL: (OFURL *)URL;
 
 /*!
  * @brief Checks whether a file exists at the specified path.
@@ -93,24 +320,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A boolean whether there is a directory at the specified URL
  */
 - (bool)directoryExistsAtURL: (OFURL *)URL;
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
-/*!
- * @brief Checks whether a symbolic link exists at the specified path.
- *
- * @param path The path to check
- * @return A boolean whether there is a symbolic link at the specified path
- */
-- (bool)symbolicLinkExistsAtPath: (OFString *)path;
-
-/*!
- * @brief Checks whether a symbolic link exists at the specified URL.
- *
- * @param URL The URL to check
- * @return A boolean whether there is a symbolic link at the specified URL
- */
-- (bool)symbolicLinkExistsAtURL: (OFURL *)URL;
-#endif
 
 /*!
  * @brief Creates a directory at the specified path.
@@ -179,213 +388,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)changeCurrentDirectoryURL: (OFURL *)URL;
 
 /*!
- * @brief Returns the size of the specified file.
- *
- * @param path The path to the file whose size should be returned
- *
- * @return The size of the specified file
- */
-- (of_offset_t)sizeOfFileAtPath: (OFString *)path;
-
-/*!
- * @brief Returns the size of the specified file.
- *
- * @param URL The URL to the file whose size should be returned
- *
- * @return The size of the specified file
- */
-- (of_offset_t)sizeOfFileAtURL: (OFURL *)URL;
-
-/*!
- * @brief Returns the last access time of the specified item.
- *
- * @param path The path to the item whose last access time should be returned
- *
- * @return The last access time of the specified item
- */
-- (OFDate *)accessTimeOfItemAtPath: (OFString *)path;
-
-/*!
- * @brief Returns the last access time of the specified item.
- *
- * @param URL The URL to the item whose last access time should be returned
- *
- * @return The last access time of the specified item
- */
-- (OFDate *)accessTimeOfItemAtURL: (OFURL *)URL;
-
-/*!
- * @brief Returns the last modification date of the specified item.
- *
- * @param path The path to the item whose last modification date should be
- *	       returned
- *
- * @return The last modification date of the specified item
- */
-- (OFDate *)modificationDateOfItemAtPath: (OFString *)path;
-
-/*!
- * @brief Returns the last modification date of the specified item.
- *
- * @param URL The URL to the item whose last modification date should be
- *	       returned
- *
- * @return The last modification date of the specified item
- */
-- (OFDate *)modificationDateOfItemAtURL: (OFURL *)URL;
-
-/*!
- * @brief Returns the last status change time of the specified item.
- *
- * @param path The path to the item whose last status change time should be
- *	       returned
- *
- * @return The last status change time of the specified item
- */
-- (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path;
-
-/*!
- * @brief Returns the last status change time of the specified item.
- *
- * @param URL The URL to the item whose last status change time should be
- *	      returned
- *
- * @return The last status change time of the specified item
- */
-- (OFDate *)statusChangeTimeOfItemAtURL: (OFURL *)URL;
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-/*!
- * @brief Returns the permissions of the specified item.
- *
- * This returns only the permissions, meaning read, write and execute for
- * owner, user and group, along with the sticky, setuid and setgid bit. In
- * other words, only bits that match the mask 07777.
- *
- * @param path The path to the item whose permissions should be returned
- *
- * @return The permissions of the specified item
- */
-- (uint16_t)permissionsOfItemAtPath: (OFString *)path;
-
-/*!
- * @brief Returns the permissions of the specified item.
- *
- * This returns only the permissions, meaning read, write and execute for
- * owner, user and group, along with the sticky, setuid and setgid bit. In
- * other words, only bits that match the mask 07777.
- *
- * @param URL The URL to the item whose permissions should be returned
- *
- * @return The permissions of the specified item
- */
-- (uint16_t)permissionsOfItemAtURL: (OFURL *)URL;
-
-/*!
- * @brief Changes the permissions of an item.
- *
- * This only changes the permissions, meaning read, write and execute for
- * owner, user and group. For security reasons, it ignores all other bits. In
- * other words, the permissions are masked with 0777.
- *
- * This method only changes the read-only flag on Windows.
- *
- * @param path The path to the item whose permissions should be changed
- * @param permissions The new permissions for the item
- */
-- (void)changePermissionsOfItemAtPath: (OFString *)path
-			  permissions: (uint16_t)permissions;
-
-/*!
- * @brief Changes the permissions of an item.
- *
- * This only changes the permissions, meaning read, write and execute for
- * owner, user and group. For security reasons, it ignores all other bits. In
- * other words, the permissions are masked with 0777.
- *
- * This method only changes the read-only flag on Windows.
- *
- * @param URL The URL to the item whose permissions should be changed
- * @param permissions The new permissions for the item
- */
-- (void)changePermissionsOfItemAtURL: (OFURL *)URL
-			 permissions: (uint16_t)permissions;
-#endif
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-/*!
- * @brief Get the UID and GID of the specified item.
- *
- * @param UID A pointer to an uint16_t to store the UID, or NULL
- * @param GID A pointer to an uint16_t to store the GID, or NULL
- * @param path The path to the item whose UID and GID should be retrieved
- */
-- (void)getUID: (nullable uint16_t *)UID
-	   GID: (nullable uint16_t *)GID
-  ofItemAtPath: (OFString *)path;
-
-/*!
- * @brief Get the UID and GID of the specified item.
- *
- * @param UID A pointer to an uint16_t to store the UID, or NULL
- * @param GID A pointer to an uint16_t to store the GID, or NULL
- * @param URL The URL to the item whose UID and GID should be retrieved
- */
-- (void)getUID: (nullable uint16_t *)UID
-	   GID: (nullable uint16_t *)GID
-   ofItemAtURL: (OFURL *)URL;
-
-/*!
- * @brief Get the owner and group of the specified item.
- *
- * @param owner A pointer to an `OFString *` to store the owner, or NULL
- * @param group A pointer to an `OFString *` to store the group, or NULL
- * @param path The path to the item whose owner and group should be retrieved
- */
-- (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner
-	   group: (OFString *__autoreleasing _Nonnull *_Nullable)group
-    ofItemAtPath: (OFString *)path;
-
-/*!
- * @brief Get the owner and group of the specified item.
- *
- * @param owner A pointer to an `OFString *` to store the owner, or NULL
- * @param group A pointer to an `OFString *` to store the group, or NULL
- * @param URL The URL to the item whose owner and group should be retrieved
- */
-- (void)getOwner: (OFString *__autoreleasing _Nonnull *_Nullable)owner
-	   group: (OFString *__autoreleasing _Nonnull *_Nullable)group
-     ofItemAtURL: (OFURL *)URL;
-
-/*!
- * @brief Changes the owner of an item.
- *
- * This method is not available on some systems, most notably Windows.
- *
- * @param path The path to the item whose owner should be changed
- * @param owner The new owner for the item
- * @param group The new group for the item
- */
-- (void)changeOwnerOfItemAtPath: (OFString *)path
-			  owner: (OFString *)owner
-			  group: (OFString *)group;
-
-/*!
- * @brief Changes the owner of an item.
- *
- * This method is not available on some systems, most notably Windows.
- *
- * @param URL The URL to the item whose owner should be changed
- * @param owner The new owner for the item
- * @param group The new group for the item
- */
-- (void)changeOwnerOfItemAtURL: (OFURL *)URL
-			 owner: (OFString *)owner
-			 group: (OFString *)group;
-#endif
-
-/*!
- * @brief Copies a file, directory or symlink (if supported by the OS).
+ * @brief Copies a file, directory or symbolic link (if supported by the OS).
  *
  * The destination path must be a full path, which means it must include the
  * name of the item.
@@ -394,14 +397,14 @@ OF_ASSUME_NONNULL_BEGIN
  * if a directory is copied and an item already exists in the destination
  * directory.
  *
- * @param source The file, directory or symlink to copy
+ * @param source The file, directory or symbolic link to copy
  * @param destination The destination path
  */
 - (void)copyItemAtPath: (OFString *)source
 		toPath: (OFString *)destination;
 
 /*!
- * @brief Copies a file, directory or symlink (if supported by the OS).
+ * @brief Copies a file, directory or symbolic link (if supported by the OS).
  *
  * The destination URL must have a full path, which means it must include the
  * name of the item.
@@ -410,7 +413,7 @@ OF_ASSUME_NONNULL_BEGIN
  * if a directory is copied and an item already exists in the destination
  * directory.
  *
- * @param source The file, directory or symlink to copy
+ * @param source The file, directory or symbolic link to copy
  * @param destination The destination URL
  */
 - (void)copyItemAtURL: (OFURL *)source
@@ -534,29 +537,87 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)createSymbolicLinkAtURL: (OFURL *)destination
 	     withDestinationURL: (OFURL *)source;
-
-/*!
- * @brief Returns the destination of the symbolic link at the specified path.
- *
- * @param path The path to the symbolic link
- *
- * @note On Windows, at least Windows Vista is required.
- *
- * @return The destination of the symbolic link at the specified path
- */
-- (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path;
-
-/*!
- * @brief Returns the destination of the symbolic link at the specified URL.
- *
- * @param URL The URL to the symbolic link
- *
- * @note On Windows, at least Windows Vista is required.
- *
- * @return The destination of the symbolic link at the specified URL
- */
-- (OFString *)destinationOfSymbolicLinkAtURL: (OFURL *)URL;
 #endif
+@end
+
+@interface OFDictionary (FileAttributes)
+/*!
+ * The @ref of_file_attribute_key_size key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) uintmax_t fileSize;
+
+/*!
+ * The @ref of_file_attribute_key_type key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) of_file_type_t fileType;
+
+/*!
+ * The @ref of_file_attribute_key_posix_permissions key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) uint16_t filePOSIXPermissions;
+
+/*!
+ * The @ref of_file_attribute_key_posix_uid key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) uint32_t filePOSIXUID;
+
+/*!
+ * The @ref of_file_attribute_key_posix_gid key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) uint32_t filePOSIXGID;
+
+/*!
+ * The @ref of_file_attribute_key_owner key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFString *fileOwner;
+
+/*!
+ * The @ref of_file_attribute_key_group key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFString *fileGroup;
+
+/*!
+ * The @ref of_file_attribute_key_last_access_date key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFDate *fileLastAccessDate;
+
+/*!
+ * The @ref of_file_attribute_key_modification_date key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFDate *fileModificationDate;
+
+/*!
+ * The @ref of_file_attribute_key_status_change_date key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFDate *fileStatusChangeDate;
+
+/*!
+ * The @ref of_file_attribute_key_symbolic_link_destination key from the
+ * dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFString *fileSymbolicLinkDestination;
 @end
 
 OF_ASSUME_NONNULL_END

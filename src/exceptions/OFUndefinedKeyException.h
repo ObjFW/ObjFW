@@ -22,13 +22,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFUndefinedKeyException \
  *	  OFUndefinedKeyException.h ObjFW/OFUndefinedKeyException.h
  *
- * @brief An exception indicating that a key for Key Value Coding is undefined.
+ * @brief An exception indicating that a key is undefined (e.g. for Key Value
+ *	  Coding).
  */
 @interface OFUndefinedKeyException: OFException
 {
 	id _object;
 	OFString *_key;
-	id _value;
+	id _Nullable _value;
 }
 
 /*!
@@ -44,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * The value for the undefined key
  */
-@property (readonly, nonatomic) id value;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
 
 + (instancetype)exception OF_UNAVAILABLE;
 

@@ -51,7 +51,7 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
-#import "OFStatItemFailedException.h"
+#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFTruncatedDataException.h"
 #import "OFUnsupportedProtocolException.h"
 
@@ -1015,24 +1015,28 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			      encoding: (of_string_encoding_t)encoding
 {
 	char *tmp;
-	of_offset_t fileSize;
+	uintmax_t fileSize;
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 		OFFile *file;
 
 		@try {
-			fileSize = [[OFFileManager defaultManager]
-			    sizeOfFileAtPath: path];
-		} @catch (OFStatItemFailedException *e) {
+			fileSize = [[[OFFileManager defaultManager]
+			    attributesOfItemAtPath: path] fileSize];
+		} @catch (OFRetrieveItemAttributesFailedException *e) {
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
 					 mode: @"r"
 					errNo: errno];
 		}
 
-		if (sizeof(of_offset_t) > sizeof(size_t) &&
-		    fileSize > (of_offset_t)SIZE_MAX)
+		objc_autoreleasePoolPop(pool);
+
+# if UINTMAX_MAX > SIZE_MAX
+		if (fileSize > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
+#endif
 
 		file = [[OFFile alloc] initWithPath: path
 					       mode: @"r"];

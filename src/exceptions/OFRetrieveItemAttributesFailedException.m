@@ -16,10 +16,10 @@
 
 #include "config.h"
 
-#import "OFStatItemFailedException.h"
+#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFString.h"
 
-@implementation OFStatItemFailedException
+@implementation OFRetrieveItemAttributesFailedException
 @synthesize path = _path, errNo = _errNo;
 
 + (instancetype)exception
@@ -65,6 +65,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to stat item %@: %@", _path, of_strerror(_errNo)];
+	    @"Failed to retrieve attributes for item %@: %@",
+	    _path, of_strerror(_errNo)];
 }
 @end

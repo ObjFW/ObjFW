@@ -19,29 +19,22 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @class OFChangePermissionsFailedException \
- *	  OFChangePermissionsFailedException.h \
- *	  ObjFW/OFChangePermissionsFailedException.h
+ * @class OFRetrieveItemAttributesFailedException \
+ *	  OFRetrieveItemAttributesFailedException.h \
+ *	  ObjFW/OFRetrieveItemAttributesFailedException.h
  *
- * @brief An exception indicating that changing the permissions of an item
- *	  failed.
+ * @brief An exception indicating an item's attributes could not be retrieved.
  */
-@interface OFChangePermissionsFailedException: OFException
+@interface OFRetrieveItemAttributesFailedException: OFException
 {
 	OFString *_path;
-	uint16_t _permissions;
 	int _errNo;
 }
 
 /*!
- * The path of the item.
+ * A string with the path of the item whose attributes could not be retrieved.
  */
 @property (readonly, nonatomic) OFString *path;
-
-/*!
- * The new permissions for the item.
- */
-@property (readonly, nonatomic) uint16_t permissions;
 
 /*!
  * The errno of the error that occurred.
@@ -51,29 +44,28 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)exception OF_UNAVAILABLE;
 
 /*!
- * @brief Creates a new, autoreleased change permissions failed exception.
+ * @brief Creates a new, autoreleased retrieve item attributes failed exception.
  *
- * @param path The path of the item
- * @param permissions The new permissions for the item
+ * @param path A string with the path of the item whose attributes could not be
+ *	       retrieved
  * @param errNo The errno of the error that occurred
- * @return A new, autoreleased change permissions failed exception
+ * @return A new, autoreleased retrieve item attributes failed exception
  */
 + (instancetype)exceptionWithPath: (OFString *)path
-		      permissions: (uint16_t)permissions
 			    errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
- * @brief Initializes an already allocated change permissions failed exception.
+ * @brief Initializes an already allocated retrieve item attributes failed
+ *	  exception.
  *
- * @param path The path of the item
- * @param permissions The new permissions for the item
+ * @param path A string with the path of the item whose attributes could not be
+ *	       retrieved
  * @param errNo The errno of the error that occurred
- * @return An initialized change permissions failed exception
+ * @return An initialized retrieve item attributes failed exception
  */
 - (instancetype)initWithPath: (OFString *)path
-		 permissions: (uint16_t)permissions
 		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 

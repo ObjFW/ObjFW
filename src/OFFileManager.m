@@ -34,11 +34,13 @@
 # include <grp.h>
 #endif
 
-#import "OFFileManager.h"
 #import "OFArray.h"
 #import "OFDate.h"
+#import "OFDictionary.h"
 #import "OFFile.h"
+#import "OFFileManager.h"
 #import "OFLocalization.h"
+#import "OFNumber.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
 #import "OFURL.h"
@@ -48,8 +50,6 @@
 #endif
 
 #import "OFChangeCurrentDirectoryPathFailedException.h"
-#import "OFChangeOwnerFailedException.h"
-#import "OFChangePermissionsFailedException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
@@ -64,7 +64,9 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFRemoveItemFailedException.h"
-#import "OFStatItemFailedException.h"
+#import "OFRetrieveItemAttributesFailedException.h"
+#import "OFSetItemAttributesFailedException.h"
+#import "OFUndefinedKeyException.h"
 #import "OFUnlockFailedException.h"
 
 #ifdef OF_WINDOWS
@@ -102,6 +104,38 @@ typedef struct stat of_stat_t;
 @end
 
 static OFFileManager *defaultManager;
+
+const of_file_attribute_key_t of_file_attribute_key_size =
+    @"of_file_attribute_key_size";
+const of_file_attribute_key_t of_file_attribute_key_type =
+    @"of_file_attribute_key_type";
+const of_file_attribute_key_t of_file_attribute_key_posix_permissions =
+    @"of_file_attribute_key_posix_permissions";
+const of_file_attribute_key_t of_file_attribute_key_posix_uid =
+    @"of_file_attribute_key_posix_uid";
+const of_file_attribute_key_t of_file_attribute_key_posix_gid =
+    @"of_file_attribute_key_posix_gid";
+const of_file_attribute_key_t of_file_attribute_key_owner =
+    @"of_file_attribute_key_owner";
+const of_file_attribute_key_t of_file_attribute_key_group =
+    @"of_file_attribute_key_group";
+const of_file_attribute_key_t of_file_attribute_key_last_access_date =
+    @"of_file_attribute_key_last_access_date";
+const of_file_attribute_key_t of_file_attribute_key_modification_date =
+    @"of_file_attribute_key_modification_date";
+const of_file_attribute_key_t of_file_attribute_key_status_change_date =
+    @"of_file_attribute_key_status_change_date";
+const of_file_attribute_key_t of_file_attribute_key_symbolic_link_destination =
+    @"of_file_attribute_key_symbolic_link_destination";
+
+const of_file_type_t of_file_type_regular = @"of_file_type_regular";
+const of_file_type_t of_file_type_directory = @"of_file_type_directory";
+const of_file_type_t of_file_type_symbolic_link = @"of_file_type_symbolic_link";
+const of_file_type_t of_file_type_fifo = @"of_file_type_fifo";
+const of_file_type_t of_file_type_character_special =
+    @"of_file_type_character_special";
+const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
+const of_file_type_t of_file_type_socket = @"of_file_type_socket";
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
 static OFMutex *passwdMutex;
@@ -208,6 +242,204 @@ of_lstat(OFString *path, of_stat_t *buffer)
 #else
 	return of_stat(path, buffer);
 #endif
+}
+
+static void
+setTypeAttribute(of_mutable_file_attributes_t attributes, of_stat_t *s)
+{
+	if (S_ISREG(s->st_mode))
+		[attributes setObject: of_file_type_regular
+			       forKey: of_file_attribute_key_type];
+	else if (S_ISDIR(s->st_mode))
+		[attributes setObject: of_file_type_directory
+			       forKey: of_file_attribute_key_type];
+#ifdef S_ISLNK
+	else if (S_ISLNK(s->st_mode))
+		[attributes setObject: of_file_type_symbolic_link
+			       forKey: of_file_attribute_key_type];
+#endif
+#ifdef S_ISFIFO
+	else if (S_ISFIFO(s->st_mode))
+		[attributes setObject: of_file_type_fifo
+			       forKey: of_file_attribute_key_type];
+#endif
+#ifdef S_ISCHR
+	else if (S_ISCHR(s->st_mode))
+		[attributes setObject: of_file_type_character_special
+			       forKey: of_file_attribute_key_type];
+#endif
+#ifdef S_ISBLK
+	else if (S_ISBLK(s->st_mode))
+		[attributes setObject: of_file_type_block_special
+			       forKey: of_file_attribute_key_type];
+#endif
+#ifdef S_ISSOCK
+	else if (S_ISSOCK(s->st_mode))
+		[attributes setObject: of_file_type_socket
+			       forKey: of_file_attribute_key_type];
+#endif
+}
+
+static void
+setDateAttributes(of_mutable_file_attributes_t attributes, of_stat_t *s)
+{
+	/* FIXME: We could be more precise on some OSes */
+	[attributes
+	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_atime]
+	       forKey: of_file_attribute_key_last_access_date];
+	[attributes
+	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_mtime]
+	       forKey: of_file_attribute_key_modification_date];
+	[attributes
+	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_ctime]
+	       forKey: of_file_attribute_key_status_change_date];
+}
+
+static void
+setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
+    of_stat_t *s)
+{
+#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+	[attributes setObject: [NSNumber numberWithUInt16: s->st_uid]
+		       forKey: of_file_attribute_key_posix_uid];
+	[attributes setObject: [NSNumber numberWithUInt16: s->st_gid]
+		       forKey: of_file_attribute_key_posix_gid];
+
+# ifdef OF_HAVE_THREADS
+	[passwdMutex lock];
+	@try {
+# endif
+		of_string_encoding_t encoding = [OFLocalization encoding];
+		struct passwd *passwd = getpwuid(s->st_uid);
+		struct group *group_ = getgrgid(s->st_gid);
+
+		if (passwd != NULL) {
+			OFString *owner = [OFString
+			    stringWithCString: passwd->pw_name
+				     encoding: encoding];
+
+			[attributes setObject: owner
+				       forKey: of_file_attribute_key_owner];
+		}
+
+		if (group_ != NULL) {
+			OFString *group = [OFString
+			    stringWithCString: group_->gr_name
+				     encoding: encoding];
+
+			[attributes setObject: group
+				       forKey: of_file_attribute_key_group];
+		}
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		[passwdMutex unlock];
+	}
+# endif
+#endif
+}
+
+static void
+setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
+    of_stat_t *s, OFString *path)
+{
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
+# ifndef OF_WINDOWS
+	if (S_ISLNK(s->st_mode)) {
+		of_string_encoding_t encoding = [OFLocalization encoding];
+		char destinationC[PATH_MAX];
+		ssize_t length;
+		OFString *destination;
+		of_file_attribute_key_t key;
+
+		length = readlink([path cStringWithEncoding: encoding],
+		    destinationC, PATH_MAX);
+
+		if (length < 0)
+			@throw [OFRetrieveItemAttributesFailedException
+			    exceptionWithPath: path
+					errNo: errno];
+
+		destination = [OFString stringWithCString: destinationC
+						 encoding: encoding
+						   length: length];
+
+		key = of_file_attribute_key_symbolic_link_destination;
+		[attributes setObject: destination
+			       forKey: key];
+	}
+# else
+	WIN32_FIND_DATAW data;
+
+	if (func_CreateSymbolicLinkW != NULL &&
+	    FindFirstFileW([path UTF16String], &data) &&
+	    (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) &&
+	    data.dwReserved0 == IO_REPARSE_TAG_SYMLINK) {
+		HANDLE handle;
+		OFString *destination;
+
+		if ((handle = CreateFileW([path UTF16String], 0,
+		    (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
+		    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) ==
+		    INVALID_HANDLE_VALUE)
+			@throw [OFRetrieveItemAttributesFailedException
+			    exceptionWithPath: path
+					errNo: 0];
+
+		@try {
+			union {
+				char bytes[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
+				REPARSE_DATA_BUFFER data;
+			} buffer;
+			DWORD size;
+			wchar_t *tmp;
+			of_file_attribute_key_t key;
+
+			if (!DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT,
+			    NULL, 0, buffer.bytes,
+			    MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size, NULL))
+				@throw [OFRetrieveItemAttributesFailedException
+				    exceptionWithPath: path
+						errNo: 0];
+
+			if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
+				@throw [OFRetrieveItemAttributesFailedException
+				    exceptionWithPath: path
+						errNo: 0];
+
+#  define slrb buffer.data.SymbolicLinkReparseBuffer
+			tmp = slrb.PathBuffer +
+			    (slrb.SubstituteNameOffset / sizeof(wchar_t));
+
+			destination = [OFString
+			    stringWithUTF16String: tmp
+					   length: slrb.SubstituteNameLength /
+						   sizeof(wchar_t)];
+
+			[attributes setObject: of_file_type_symbolic_link
+				       forKey: of_file_attribute_key_type];
+			key = of_file_attribute_key_symbolic_link_destination;
+			[attributes setObject: destination
+				       forKey: key];
+#  undef slrb
+		} @finally {
+			CloseHandle(handle);
+		}
+	}
+# endif
+#endif
+}
+
+static id
+attributeForKeyOrException(of_file_attributes_t attributes,
+    of_file_attribute_key_t key)
+{
+	id object = [attributes objectForKey: key];
+
+	if (object == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: attributes
+								key: key];
+
+	return object;
 }
 
 @implementation OFFileManager
@@ -318,6 +550,194 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	return URL;
 }
 
+- (of_file_attributes_t)attributesOfItemAtPath: (OFString *)path
+{
+	of_mutable_file_attributes_t ret = [OFMutableDictionary dictionary];
+	void *pool = objc_autoreleasePoolPush();
+	of_stat_t s;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	if (of_lstat(path, &s) == -1)
+		@throw [OFRetrieveItemAttributesFailedException
+		    exceptionWithPath: path
+				errNo: errno];
+
+	if (s.st_size < 0)
+		@throw [OFOutOfRangeException exception];
+
+	[ret setObject: [NSNumber numberWithUIntMax: s.st_size]
+		forKey: of_file_attribute_key_size];
+
+	setTypeAttribute(ret, &s);
+
+	[ret setObject: [NSNumber numberWithUInt16: s.st_mode & 07777]
+		forKey: of_file_attribute_key_posix_permissions];
+
+	setOwnerAndGroupAttributes(ret, &s);
+	setDateAttributes(ret, &s);
+	setSymbolicLinkDestinationAttribute(ret, &s, path);
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_file_attributes_t ret = [self attributesOfItemAtPath:
+	    [URL fileSystemRepresentation]];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (void)of_setPOSIXPermissions: (OFNumber *)permissions
+		  ofItemAtPath: (OFString *)path
+		    attributes: (of_file_attributes_t)attributes
+{
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+	uint16_t mode = [permissions uInt16Value] & 0777;
+
+# ifndef OF_WINDOWS
+	if (chmod([path cStringWithEncoding: [OFLocalization encoding]],
+	    mode) != 0)
+# else
+	if (_wchmod([path UTF16String], mode) != 0)
+# endif
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithPath: path
+			   attributes: attributes
+		      failedAttribute: of_file_attribute_key_posix_permissions
+				errNo: errno];
+#else
+	@throw [OFNotImplementedException exceptionWithSelector: _cmd
+							 object: self];
+#endif
+}
+
+- (void)of_setOwner: (OFString *)owner
+	   andGroup: (OFString *)group
+       ofItemAtPath: (OFString *)path
+       attributeKey: (of_file_attribute_key_t)attributeKey
+	 attributes: (of_file_attributes_t)attributes
+{
+#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+	uid_t uid = -1;
+	gid_t gid = -1;
+	of_string_encoding_t encoding;
+
+	if (owner == nil && group == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	encoding = [OFLocalization encoding];
+
+# ifdef OF_HAVE_THREADS
+	[passwdMutex lock];
+	@try {
+# endif
+		if (owner != nil) {
+			struct passwd *passwd;
+
+			if ((passwd = getpwnam([owner
+			    cStringWithEncoding: encoding])) == NULL)
+				@throw [OFSetItemAttributesFailedException
+				    exceptionWithPath: path
+					   attributes: attributes
+				      failedAttribute: attributeKey
+						errNo: errno];
+
+			uid = passwd->pw_uid;
+		}
+
+		if (group != nil) {
+			struct group *group_;
+
+			if ((group_ = getgrnam([group
+			    cStringWithEncoding: encoding])) == NULL)
+				@throw [OFSetItemAttributesFailedException
+				    exceptionWithPath: path
+					   attributes: attributes
+				      failedAttribute: attributeKey
+						errNo: errno];
+
+			gid = group_->gr_gid;
+		}
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		[passwdMutex unlock];
+	}
+# endif
+
+	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
+		@throw [OFSetItemAttributesFailedException
+		    exceptionWithPath: path
+			   attributes: attributes
+		      failedAttribute: attributeKey
+				errNo: errno];
+#else
+	@throw [OFNotImplementedException exceptionWithSelector: _cmd
+							 object: self];
+#endif
+}
+
+- (void)setAttributes: (of_file_attributes_t)attributes
+	 ofItemAtPath: (OFString *)path
+{
+	void *pool;
+	OFEnumerator OF_GENERIC(of_file_attribute_key_t) *keyEnumerator;
+	OFEnumerator *objectEnumerator;
+	of_file_attribute_key_t key;
+	id object;
+
+	if (path == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+	keyEnumerator = [attributes keyEnumerator];
+	objectEnumerator = [attributes objectEnumerator];
+
+	while ((key = [keyEnumerator nextObject]) != nil &&
+	    (object = [objectEnumerator nextObject]) != nil) {
+		if ([key isEqual: of_file_attribute_key_posix_permissions])
+			[self of_setPOSIXPermissions: object
+					ofItemAtPath: path
+					  attributes: attributes];
+		else if ([key isEqual: of_file_attribute_key_owner])
+			[self of_setOwner: object
+				 andGroup: nil
+			     ofItemAtPath: path
+			     attributeKey: key
+			       attributes: attributes];
+		else if ([key isEqual: of_file_attribute_key_group])
+			[self of_setOwner: nil
+				 andGroup: object
+			     ofItemAtPath: path
+			     attributeKey: key
+			       attributes: attributes];
+		else
+			@throw [OFInvalidArgumentException exception];
+	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setAttributes: (of_file_attributes_t)attributes
+	  ofItemAtURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[self setAttributes: attributes
+	       ofItemAtPath: [URL fileSystemRepresentation]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (bool)fileExistsAtPath: (OFString *)path
 {
 	of_stat_t s;
@@ -363,45 +783,6 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	return ret;
 }
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
-- (bool)symbolicLinkExistsAtPath: (OFString *)path
-{
-# ifndef OF_WINDOWS
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_lstat(path, &s) == -1)
-		return false;
-
-	return S_ISLNK(s.st_mode);
-# else
-	WIN32_FIND_DATAW data;
-
-	if (!FindFirstFileW([path UTF16String], &data))
-		return false;
-
-	if ((data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) &&
-	    data.dwReserved0 == IO_REPARSE_TAG_SYMLINK)
-		return true;
-
-	return false;
-# endif
-}
-
-- (bool)symbolicLinkExistsAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	bool ret = [self symbolicLinkExistsAtPath:
-	    [URL fileSystemRepresentation]];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-#endif
 
 - (void)createDirectoryAtPath: (OFString *)path
 {
@@ -766,364 +1147,51 @@ of_lstat(OFString *path, of_stat_t *buffer)
 	objc_autoreleasePoolPop(pool);
 }
 
-- (of_offset_t)sizeOfFileAtPath: (OFString *)path
-{
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_stat(path, &s) != 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	return s.st_size;
-}
-
-- (of_offset_t)sizeOfFileAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	of_offset_t ret = [self sizeOfFileAtPath:
-	    [URL fileSystemRepresentation]];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-
-- (OFDate *)accessTimeOfItemAtPath: (OFString *)path
-{
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_stat(path, &s) != 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	/* FIXME: We could be more precise on some OSes */
-	return [OFDate dateWithTimeIntervalSince1970: s.st_atime];
-}
-
-- (OFDate *)accessTimeOfItemAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFDate *ret = [self accessTimeOfItemAtPath:
-	    [URL fileSystemRepresentation]];
-
-	[ret retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
-}
-
-- (OFDate *)modificationDateOfItemAtPath: (OFString *)path
-{
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_stat(path, &s) != 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	/* FIXME: We could be more precise on some OSes */
-	return [OFDate dateWithTimeIntervalSince1970: s.st_mtime];
-}
-
-- (OFDate *)modificationDateOfItemAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFDate *ret = [self modificationDateOfItemAtPath:
-	    [URL fileSystemRepresentation]];
-
-	[ret retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
-}
-
-- (OFDate *)statusChangeTimeOfItemAtPath: (OFString *)path
-{
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_stat(path, &s) != 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	/* FIXME: We could be more precise on some OSes */
-	return [OFDate dateWithTimeIntervalSince1970: s.st_ctime];
-}
-
-- (OFDate *)statusChangeTimeOfItemAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFDate *ret = [self statusChangeTimeOfItemAtPath:
-	    [URL fileSystemRepresentation]];
-
-	[ret retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
-}
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-- (uint16_t)permissionsOfItemAtPath: (OFString *)path
-{
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_stat(path, &s) != 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	return s.st_mode & 07777;
-}
-
-- (uint16_t)permissionsOfItemAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	uint16_t ret = [self permissionsOfItemAtPath:
-	    [URL fileSystemRepresentation]];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-
-- (void)changePermissionsOfItemAtPath: (OFString *)path
-			  permissions: (uint16_t)permissions
-{
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	permissions &= 0777;
-
-# ifndef OF_WINDOWS
-	if (chmod([path cStringWithEncoding: [OFLocalization encoding]],
-	    permissions) != 0)
-# else
-	if (_wchmod([path UTF16String], permissions) != 0)
-# endif
-		@throw [OFChangePermissionsFailedException
-		    exceptionWithPath: path
-			  permissions: permissions
-				errNo: errno];
-}
-
-- (void)changePermissionsOfItemAtURL: (OFURL *)URL
-			 permissions: (uint16_t)permissions
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[self changePermissionsOfItemAtPath: [URL fileSystemRepresentation]
-				permissions: permissions];
-
-	objc_autoreleasePoolPop(pool);
-}
-#endif
-
-#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-- (void)getUID: (uint16_t *)UID
-	   GID: (uint16_t *)GID
-  ofItemAtPath: (OFString *)path
-{
-	of_stat_t s;
-
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if (of_stat(path, &s) != 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	if (UID != NULL)
-		*UID = s.st_uid;
-	if (GID != NULL)
-		*GID = s.st_gid;
-}
-
-- (void)getUID: (uint16_t *)UID
-	   GID: (uint16_t *)GID
-   ofItemAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[self	  getUID: UID
-		     GID: GID
-	    ofItemAtPath: [URL fileSystemRepresentation]];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)getOwner: (OFString **)owner
-	   group: (OFString **)group
-    ofItemAtPath: (OFString *)path
-{
-	uint16_t UID, GID;
-
-	[self	  getUID: &UID
-		     GID: &GID
-	    ofItemAtPath: path];
-
-# ifdef OF_HAVE_THREADS
-	[passwdMutex lock];
-	@try {
-# endif
-		of_string_encoding_t encoding = [OFLocalization encoding];
-
-		if (owner != NULL) {
-			struct passwd *passwd = getpwuid(UID);
-
-			*owner = [OFString stringWithCString: passwd->pw_name
-						    encoding: encoding];
-		}
-
-		if (group != NULL) {
-			struct group *group_ = getgrgid(GID);
-
-			*group = [OFString stringWithCString: group_->gr_name
-						    encoding: encoding];
-		}
-# ifdef OF_HAVE_THREADS
-	} @finally {
-		[passwdMutex unlock];
-	}
-# endif
-}
-
-- (void)getOwner: (OFString **)owner
-	   group: (OFString **)group
-     ofItemAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *path = [URL fileSystemRepresentation];
-
-	[path retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	@try {
-		[self   getOwner: owner
-			   group: group
-		    ofItemAtPath: path];
-	} @finally {
-		[path release];
-	}
-}
-
-- (void)changeOwnerOfItemAtPath: (OFString *)path
-			  owner: (OFString *)owner
-			  group: (OFString *)group
-{
-	uid_t uid = -1;
-	gid_t gid = -1;
-	of_string_encoding_t encoding;
-
-	if (path == nil || (owner == nil && group == nil))
-		@throw [OFInvalidArgumentException exception];
-
-	encoding = [OFLocalization encoding];
-
-# ifdef OF_HAVE_THREADS
-	[passwdMutex lock];
-	@try {
-# endif
-		if (owner != nil) {
-			struct passwd *passwd;
-
-			if ((passwd = getpwnam([owner
-			    cStringWithEncoding: encoding])) == NULL)
-				@throw [OFChangeOwnerFailedException
-				    exceptionWithPath: path
-						owner: owner
-						group: group
-						errNo: errno];
-
-			uid = passwd->pw_uid;
-		}
-
-		if (group != nil) {
-			struct group *group_;
-
-			if ((group_ = getgrnam([group
-			    cStringWithEncoding: encoding])) == NULL)
-				@throw [OFChangeOwnerFailedException
-				    exceptionWithPath: path
-						owner: owner
-						group: group
-						errNo: errno];
-
-			gid = group_->gr_gid;
-		}
-# ifdef OF_HAVE_THREADS
-	} @finally {
-		[passwdMutex unlock];
-	}
-# endif
-
-	if (chown([path cStringWithEncoding: encoding], uid, gid) != 0)
-		@throw [OFChangeOwnerFailedException exceptionWithPath: path
-								 owner: owner
-								 group: group
-								 errNo: errno];
-}
-
-- (void)changeOwnerOfItemAtURL: (OFURL *)URL
-			 owner: (OFString *)owner
-			 group: (OFString *)group
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[self changeOwnerOfItemAtPath: [URL fileSystemRepresentation]
-				owner: owner
-				group: group];
-
-	objc_autoreleasePoolPop(pool);
-}
-#endif
-
 - (void)copyItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
 	void *pool;
-	of_stat_t s;
+	of_file_attributes_t attributes;
+	of_file_type_t type;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
 
-	if (of_lstat(destination, &s) == 0)
+	if ([self fileExistsAtPath: destination])
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
 				      errNo: EEXIST];
 
-	if (of_lstat(source, &s) != 0)
+	@try {
+		attributes = [self attributesOfItemAtPath: source];
+	} @catch (OFRetrieveItemAttributesFailedException *e) {
 		@throw [OFCopyItemFailedException
 		    exceptionWithSourcePath: source
 			    destinationPath: destination
-				      errNo: errno];
+				      errNo: [e errNo]];
+	}
 
-	if (S_ISDIR(s.st_mode)) {
+	type = [attributes fileType];
+
+	if ([type isEqual: of_file_type_directory]) {
 		OFArray *contents;
 
 		@try {
 			[self createDirectoryAtPath: destination];
+
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-			[self changePermissionsOfItemAtPath: destination
-						permissions: s.st_mode];
+			of_file_attribute_key_t key =
+			    of_file_attribute_key_posix_permissions;
+			OFNumber *permissions = [attributes objectForKey: key];
+			of_file_attributes_t destinationAttributes =
+			    [OFDictionary dictionaryWithObject: permissions
+							forKey: key];
+
+			[self setAttributes: destinationAttributes
+			       ofItemAtPath: destination];
 #endif
 
 			contents = [self contentsOfDirectoryAtPath: source];
@@ -1157,7 +1225,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 			objc_autoreleasePoolPop(pool2);
 		}
-	} else if (S_ISREG(s.st_mode)) {
+	} else if ([type isEqual: of_file_type_regular]) {
 		size_t pageSize = [OFSystemInfo pageSize];
 		OFFile *sourceFile = nil;
 		OFFile *destinationFile = nil;
@@ -1183,8 +1251,15 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			}
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-			[self changePermissionsOfItemAtPath: destination
-						permissions: s.st_mode];
+			of_file_attribute_key_t key =
+			    of_file_attribute_key_posix_permissions;
+			OFNumber *permissions = [attributes objectForKey: key];
+			of_file_attributes_t destinationAttributes =
+			    [OFDictionary dictionaryWithObject: permissions
+							forKey: key];
+
+			[self setAttributes: destinationAttributes
+			       ofItemAtPath: destination];
 #endif
 		} @catch (id e) {
 			/*
@@ -1206,9 +1281,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 			free(buffer);
 		}
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
-	} else if (S_ISLNK(s.st_mode)) {
+	} else if ([type isEqual: of_file_type_symbolic_link]) {
 		@try {
-			source = [self destinationOfSymbolicLinkAtPath: source];
+			source = [attributes fileSymbolicLinkDestination];
 
 			[self createSymbolicLinkAtPath: destination
 				   withDestinationPath: source];
@@ -1554,90 +1629,72 @@ of_lstat(OFString *path, of_stat_t *buffer)
 
 	objc_autoreleasePoolPop(pool);
 }
-
-- (OFString *)destinationOfSymbolicLinkAtPath: (OFString *)path
-{
-	if (path == nil)
-		@throw [OFInvalidArgumentException exception];
-
-# ifndef OF_WINDOWS
-	char destination[PATH_MAX];
-	ssize_t length;
-	of_string_encoding_t encoding;
-
-	encoding = [OFLocalization encoding];
-	length = readlink([path cStringWithEncoding: encoding],
-	    destination, PATH_MAX);
-
-	if (length < 0)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: errno];
-
-	return [OFString stringWithCString: destination
-				  encoding: encoding
-				    length: length];
-# else
-	HANDLE handle;
-
-	/* Check if we're on a version that actually supports symlinks. */
-	if (func_CreateSymbolicLinkW == NULL)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-
-	if ((handle = CreateFileW([path UTF16String], 0,
-	    (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
-	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
-		@throw [OFStatItemFailedException exceptionWithPath: path
-							      errNo: 0];
-
-	@try {
-		union {
-			char bytes[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
-			REPARSE_DATA_BUFFER data;
-		} buffer;
-		DWORD size;
-		wchar_t *tmp;
-
-		if (!DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, NULL, 0,
-		    buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
-		    NULL))
-			@throw [OFStatItemFailedException
-			    exceptionWithPath: path
-					errNo: 0];
-
-		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
-			@throw [OFStatItemFailedException
-			    exceptionWithPath: path
-					errNo: 0];
-
-# define slrb buffer.data.SymbolicLinkReparseBuffer
-		tmp = slrb.PathBuffer +
-		    (slrb.SubstituteNameOffset / sizeof(wchar_t));
-
-		return [OFString
-		    stringWithUTF16String: tmp
-				   length: slrb.SubstituteNameLength /
-					   sizeof(wchar_t)];
-# undef slrb
-	} @finally {
-		CloseHandle(handle);
-	}
-# endif
-}
-
-- (OFString *)destinationOfSymbolicLinkAtURL: (OFURL *)URL
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *ret = [self destinationOfSymbolicLinkAtPath:
-	    [URL fileSystemRepresentation]];
-
-	[ret retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
-}
 #endif
+@end
+
+@implementation OFDictionary (FileAttributes)
+- (uintmax_t)fileSize
+{
+	return [attributeForKeyOrException(self, of_file_attribute_key_size)
+	    uIntMaxValue];
+}
+
+- (of_file_type_t)fileType
+{
+	return attributeForKeyOrException(self, of_file_attribute_key_type);
+}
+
+- (uint16_t)filePOSIXPermissions
+{
+	return [attributeForKeyOrException(self,
+	    of_file_attribute_key_posix_permissions) uInt16Value];
+}
+
+- (uint32_t)filePOSIXUID
+{
+	return [attributeForKeyOrException(self,
+	    of_file_attribute_key_posix_uid) uInt32Value];
+}
+
+- (uint32_t)filePOSIXGID
+{
+	return [attributeForKeyOrException(self,
+	    of_file_attribute_key_posix_gid) uInt32Value];
+}
+
+- (OFString *)fileOwner
+{
+	return attributeForKeyOrException(self, of_file_attribute_key_owner);
+}
+
+- (OFString *)fileGroup
+{
+	return attributeForKeyOrException(self, of_file_attribute_key_group);
+}
+
+- (OFDate *)fileLastAccessDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_last_access_date);
+}
+
+- (OFDate *)fileModificationDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_modification_date);
+}
+
+- (OFDate *)fileStatusChangeDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_status_change_date);
+}
+
+- (OFString *)fileSymbolicLinkDestination
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_symbolic_link_destination);
+}
 @end
 
 @implementation OFFileManager_default

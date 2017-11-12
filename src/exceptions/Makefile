@@ -5,8 +5,6 @@ STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 
 SRCS = OFAllocFailedException.m				\
        OFChangeCurrentDirectoryPathFailedException.m	\
-       OFChangeOwnerFailedException.m			\
-       OFChangePermissionsFailedException.m		\
        OFChecksumFailedException.m			\
        OFCopyItemFailedException.m			\
        OFCreateDirectoryFailedException.m		\
@@ -34,10 +32,11 @@ SRCS = OFAllocFailedException.m				\
        OFReadFailedException.m				\
        OFReadOrWriteFailedException.m			\
        OFRemoveItemFailedException.m			\
+       OFRetrieveItemAttributesFailedException.m	\
        OFSandboxActivationFailedException.m		\
        OFSeekFailedException.m				\
+       OFSetItemAttributesFailedException.m		\
        OFSetOptionFailedException.m			\
-       OFStatItemFailedException.m			\
        OFStillLockedException.m				\
        OFTruncatedDataException.m			\
        OFUnboundNamespaceException.m			\

@@ -19,12 +19,13 @@
 #include <inttypes.h>
 #include <errno.h>
 
-#import "OFDate.h"
-#import "OFSet.h"
 #import "OFApplication.h"
+#import "OFDate.h"
 #import "OFFileManager.h"
-#import "OFStdIOStream.h"
 #import "OFLocalization.h"
+#import "OFNumber.h"
+#import "OFSet.h"
+#import "OFStdIOStream.h"
 
 #import "ZIPArchive.h"
 #import "OFZIP.h"
@@ -42,10 +43,14 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	if (([entry versionMadeBy] >> 8) ==
 	    OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_UNIX) {
 		uint16_t mode = [entry versionSpecificAttributes] >> 16;
+		of_file_attribute_key_t key =
+		    of_file_attribute_key_posix_permissions;
+		of_file_attributes_t attributes = [OFDictionary
+		    dictionaryWithObject: [OFNumber numberWithUInt16: mode]
+				  forKey: key];
 
-		[[OFFileManager defaultManager]
-		    changePermissionsOfItemAtPath: path
-				      permissions: mode];
+		[[OFFileManager defaultManager] setAttributes: attributes
+						 ofItemAtPath: path];
 	}
 #endif
 }
@@ -388,15 +393,19 @@ outer_loop_end:
 		void *pool = objc_autoreleasePoolPush();
 		OFArray OF_GENERIC (OFString *) *components;
 		OFString *fileName;
+		of_file_attributes_t attributes;
 		bool isDirectory = false;
 		OFMutableZIPArchiveEntry *entry;
-		of_offset_t size;
+		uintmax_t size;
 		OFStream *output;
 
 		components = [localFileName pathComponents];
 		fileName = [components componentsJoinedByString: @"/"];
 
-		if ([fileManager directoryExistsAtPath: localFileName]) {
+		attributes = [fileManager
+		    attributesOfItemAtPath: localFileName];
+
+		if ([[attributes fileType] isEqual: of_file_type_directory]) {
 			isDirectory = true;
 			fileName = [fileName stringByAppendingString: @"/"];
 		}
@@ -411,7 +420,7 @@ outer_loop_end:
 		if (isDirectory)
 			size = 0;
 		else
-			size = [fileManager sizeOfFileAtPath: localFileName];
+			size = [attributes fileSize];
 
 		if (size > INT64_MAX)
 			@throw [OFOutOfRangeException exception];
@@ -421,15 +430,14 @@ outer_loop_end:
 
 		[entry setCompressionMethod:
 		    OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE];
-		[entry setModificationDate:
-		    [fileManager modificationDateOfItemAtPath: localFileName]];
+		[entry setModificationDate: [attributes fileModificationDate]];
 
 		[entry makeImmutable];
 
 		output = [_archive streamForWritingEntry: entry];
 
 		if (!isDirectory) {
-			int64_t written = 0;
+			uintmax_t written = 0;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName

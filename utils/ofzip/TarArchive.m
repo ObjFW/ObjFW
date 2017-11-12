@@ -18,12 +18,13 @@
 
 #include <inttypes.h>
 
-#import "OFDate.h"
-#import "OFSet.h"
 #import "OFApplication.h"
+#import "OFDate.h"
 #import "OFFileManager.h"
-#import "OFStdIOStream.h"
 #import "OFLocalization.h"
+#import "OFNumber.h"
+#import "OFSet.h"
+#import "OFStdIOStream.h"
 
 #import "TarArchive.h"
 #import "OFZIP.h"
@@ -34,9 +35,12 @@ static void
 setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-	[[OFFileManager defaultManager]
-	    changePermissionsOfItemAtPath: path
-			      permissions: [entry mode]];
+	of_file_attributes_t attributes = [OFDictionary
+	    dictionaryWithObject: [OFNumber numberWithUInt16: [entry mode]]
+			  forKey: of_file_attribute_key_posix_permissions];
+
+	[[OFFileManager defaultManager] setAttributes: attributes
+					 ofItemAtPath: path];
 #endif
 }
 
@@ -456,6 +460,8 @@ outer_loop_end:
 
 	for (OFString *fileName in files) {
 		void *pool = objc_autoreleasePoolPush();
+		of_file_attributes_t attributes;
+		of_file_type_t type;
 		OFMutableTarArchiveEntry *entry;
 		OFStream *output;
 
@@ -464,42 +470,32 @@ outer_loop_end:
 			    @"Adding %[file]...",
 			    @"file", fileName)];
 
+		attributes = [fileManager attributesOfItemAtPath: fileName];
+		type = [attributes fileType];
 		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		[entry setMode:
-		    [fileManager permissionsOfItemAtPath: fileName]];
+		[entry setMode: [attributes filePOSIXPermissions]];
 #endif
-		[entry setSize: [fileManager sizeOfFileAtPath: fileName]];
-		[entry setModificationDate:
-		    [fileManager modificationDateOfItemAtPath: fileName]];
+		[entry setSize: [attributes fileSize]];
+		[entry setModificationDate: [attributes fileModificationDate]];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		uint16_t UID, GID;
-		OFString *owner, *group;
-
-		[fileManager getUID: &UID
-				GID: &GID
-		       ofItemAtPath: fileName];
-		[fileManager getOwner: &owner
-				group: &group
-			 ofItemAtPath: fileName];
-
-		[entry setUID: UID];
-		[entry setGID: GID];
-		[entry setOwner: owner];
-		[entry setGroup: group];
+		[entry setUID: [attributes filePOSIXUID]];
+		[entry setGID: [attributes filePOSIXGID]];
+		[entry setOwner: [attributes fileOwner]];
+		[entry setGroup: [attributes fileGroup]];
 #endif
 
-		if ([fileManager fileExistsAtPath: fileName])
+		if ([type isEqual: of_file_type_regular])
 			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_FILE];
-		else if ([fileManager directoryExistsAtPath: fileName]) {
+		else if ([type isEqual: of_file_type_directory]) {
 			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY];
 			[entry setSize: 0];
-		} else if ([fileManager symbolicLinkExistsAtPath: fileName]) {
+		} else if ([type isEqual: of_file_type_symbolic_link]) {
 			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK];
-			[entry setTargetFileName: [fileManager
-			    destinationOfSymbolicLinkAtPath: fileName]];
+			[entry setTargetFileName:
+			    [attributes fileSymbolicLinkDestination]];
 			[entry setSize: 0];
 		}
 

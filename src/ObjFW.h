@@ -123,8 +123,6 @@
 # import "OFBindFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryPathFailedException.h"
-#import "OFChangeOwnerFailedException.h"
-#import "OFChangePermissionsFailedException.h"
 #import "OFChecksumFailedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"
@@ -169,10 +167,11 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"
+#import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"
-#import "OFStatItemFailedException.h"
 #import "OFStillLockedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThreadJoinFailedException.h"

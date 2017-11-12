@@ -193,13 +193,14 @@ _references_to_categories_of_OFData(void)
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
 	@try {
-		of_offset_t size = [[OFFileManager defaultManager]
-		    sizeOfFileAtPath: path];
+		uintmax_t size = [[[OFFileManager defaultManager]
+		    attributesOfItemAtPath: path] fileSize];
 		char *buffer;
 
-		if (sizeof(of_offset_t) > sizeof(size_t) &&
-		    size > (of_offset_t)SIZE_MAX)
+# if UINTMAX_MAX > SIZE_MAX
+		if (size > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
+# endif
 
 		buffer = malloc((size_t)size);
 		if (buffer == NULL)
