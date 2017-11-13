@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFCreateSymbolicLinkFailedException \
  *	  OFCreateSymbolicLinkFailedException.h \
@@ -27,19 +29,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCreateSymbolicLinkFailedException: OFException
 {
-	OFString *_sourcePath, *_destinationPath;
+	OFURL *_URL;
+	OFString *_target;
 	int _errNo;
 }
 
 /*!
- * The source for the symlink.
+ * The URL at which the symlink should have been created.
  */
-@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFURL *URL;
 
 /*!
- * The destination for the symlink.
+ * The target for the symlink.
  */
-@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly, nonatomic) OFString *target;
 
 /*!
  * The errno of the error that occurred.
@@ -51,14 +54,14 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased create symbolic link failed exception.
  *
- * @param sourcePath The source for the symbolic link
- * @param destinationPath The destination for the symbolic link
+ * @param URL The URL where the symlink should have been created
+ * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create symbolic link failed exception
  */
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath
-				  errNo: (int)errNo;
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			  target: (OFString *)target
+			   errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -66,14 +69,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated create symbolic link failed
  *	  exception.
  *
- * @param sourcePath The source for the symbolic link
- * @param destinationPath The destination for the symbolic link
+ * @param URL The URL where the symlink should have been created
+ * @param target The target for the symbolic link
  * @param errNo The errno of the error that occurred
  * @return An initialized create symbolic link failed exception
  */
-- (instancetype)initWithSourcePath: (OFString *)sourcePath
-		   destinationPath: (OFString *)destinationPath
-			     errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (OFURL *)URL
+		     target: (OFString *)target
+		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

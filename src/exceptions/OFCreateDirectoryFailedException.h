@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFCreateDirectoryFailedException \
  *	  OFCreateDirectoryFailedException.h \
@@ -27,14 +29,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCreateDirectoryFailedException: OFException
 {
-	OFString *_path;
+	OFURL *_URL;
 	int _errNo;
 }
 
 /*!
- * The path of the directory which couldn't be created.
+ * The URL of the directory which couldn't be created.
  */
-@property (readonly, nonatomic) OFString *path;
+@property (readonly, nonatomic) OFURL *URL;
 
 /*!
  * The errno of the error that occurred.
@@ -46,26 +48,24 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased create directory failed exception.
  *
- * @param path A string with the path of the directory which could not be
- *	       created
+ * @param URL The URL of the directory which could not be created
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased create directory failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo;
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			   errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated create directory failed exception.
  *
- * @param path A string with the path of the directory which could not be
- *	       created
+ * @param URL The URL of the directory which could not be created
  * @param errNo The errno of the error that occurred
  * @return An initialized create directory failed exception
  */
-- (instancetype)initWithPath: (OFString *)path
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (OFURL *)URL
+		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

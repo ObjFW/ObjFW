@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFLinkFailedException \
  *	  OFLinkFailedException.h ObjFW/OFLinkFailedException.h
@@ -26,19 +28,19 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFLinkFailedException: OFException
 {
-	OFString *_sourcePath, *_destinationPath;
+	OFURL *_sourceURL, *_destinationURL;
 	int _errNo;
 }
 
 /*!
- * A string with the source for the link.
+ * A URL with the source for the link.
  */
-@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFURL *sourceURL;
 
 /*!
- * A string with the destination for the link.
+ * A URL with the destination for the link.
  */
-@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly, nonatomic) OFURL *destinationURL;
 
 /*!
  * The errno of the error that occurred.
@@ -50,28 +52,28 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased link failed exception.
  *
- * @param sourcePath The source for the link
- * @param destinationPath The destination for the link
+ * @param sourceURL The source for the link
+ * @param destinationURL The destination for the link
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased link failed exception
  */
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath
-				  errNo: (int)errNo;
++ (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
+			destinationURL: (OFURL *)destinationURL
+				 errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated link failed exception.
  *
- * @param sourcePath The source for the link
- * @param destinationPath The destination for the link
+ * @param sourceURL The source for the link
+ * @param destinationURL The destination for the link
  * @param errNo The errno of the error that occurred
  * @return An initialized link failed exception
  */
-- (instancetype)initWithSourcePath: (OFString *)sourcePath
-		   destinationPath: (OFString *)destinationPath
-			     errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSourceURL: (OFURL*)sourceURL
+		   destinationURL: (OFURL *)destinationURL
+			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

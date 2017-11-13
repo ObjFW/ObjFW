@@ -511,13 +511,11 @@ extern const of_file_type_t of_file_type_socket;
  * @note On Windows, this requires at least Windows Vista and administrator
  *	 privileges!
  *
- * @param destination The path to the item which should symbolically link to the
- *		      source
- * @param source The path to the item for which a symbolic link should be
- *		 created
+ * @param path The path to the item which should symbolically link to the target
+ * @param target The target of the symbolic link
  */
-- (void)createSymbolicLinkAtPath: (OFString *)destination
-	     withDestinationPath: (OFString *)source;
+- (void)createSymbolicLinkAtPath: (OFString *)path
+	     withDestinationPath: (OFString *)target;
 #endif
 
 /*!
@@ -531,13 +529,11 @@ extern const of_file_type_t of_file_type_socket;
  * @note On Windows, this requires at least Windows Vista and administrator
  *	 privileges!
  *
- * @param destination The URL to the item which should symbolically link to the
- *		      source
- * @param source The path to the item for which a symbolic link should be
- *		 created
+ * @param URL The URL to the item which should symbolically link to the target
+ * @param target The target of the symbolic link
  */
-- (void)createSymbolicLinkAtURL: (OFURL *)destination
-	    withDestinationPath: (OFString *)source;
+- (void)createSymbolicLinkAtURL: (OFURL *)URL
+	    withDestinationPath: (OFString *)target;
 @end
 
 @interface OFDictionary (FileAttributes)

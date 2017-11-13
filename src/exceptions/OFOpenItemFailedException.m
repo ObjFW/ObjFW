@@ -18,13 +18,23 @@
 
 #import "OFOpenItemFailedException.h"
 #import "OFString.h"
+#import "OFURL.h"
 
 @implementation OFOpenItemFailedException
-@synthesize path = _path, mode = _mode, errNo = _errNo;
+@synthesize URL = _URL, path = _path, mode = _mode, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			    mode: (OFString *)mode
+			   errNo: (int)errNo
+{
+	return [[[self alloc] initWithURL: URL
+				     mode: mode
+				    errNo: errNo] autorelease];
 }
 
 + (instancetype)exceptionWithPath: (OFString *)path
@@ -41,6 +51,24 @@
 	OF_INVALID_INIT_METHOD
 }
 
+- (instancetype)initWithURL: (OFURL *)URL
+		       mode: (OFString *)mode
+		      errNo: (int)errNo
+{
+	self = [super init];
+
+	@try {
+		_URL = [URL copy];
+		_mode = [mode copy];
+		_errNo = errNo;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
 - (instancetype)initWithPath: (OFString *)path
 			mode: (OFString *)mode
 		       errNo: (int)errNo
@@ -48,8 +76,8 @@
 	self = [super init];
 
 	@try {
-		_path  = [path copy];
-		_mode  = [mode copy];
+		_path = [path copy];
+		_mode = [mode copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -61,6 +89,7 @@
 
 - (void)dealloc
 {
+	[_URL release];
 	[_path release];
 	[_mode release];
 
@@ -69,12 +98,19 @@
 
 - (OFString *)description
 {
+	id item = nil;
+
+	if (_URL != nil)
+		item = _URL;
+	else if (_path != nil)
+		item = _path;
+
 	if (_mode != nil)
 		return [OFString stringWithFormat:
 		    @"Failed to open item %@ with mode %@: %@",
-		    _path, _mode, of_strerror(_errNo)];
+		    item, _mode, of_strerror(_errNo)];
 	else
 		return [OFString stringWithFormat:
-		    @"Failed to open item %@: %@", _path, of_strerror(_errNo)];
+		    @"Failed to open item %@: %@", item, of_strerror(_errNo)];
 }
 @end

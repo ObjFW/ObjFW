@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFRemoveItemFailedException \
  *	  OFRemoveItemFailedException.h ObjFW/OFRemoveItemFailedException.h
@@ -26,14 +28,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFRemoveItemFailedException: OFException
 {
-	OFString *_path;
+	OFURL *_URL;
 	int _errNo;
 }
 
 /*!
- * The path of the item which could not be removed.
+ * The URL of the item which could not be removed.
  */
-@property (readonly, nonatomic) OFString *path;
+@property (readonly, nonatomic) OFURL *URL;
 
 /*!
  * The errno of the error that occurred.
@@ -45,24 +47,24 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased remove failed exception.
  *
- * @param path The path of the item which could not be removed
+ * @param URL The URL of the item which could not be removed
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased remove item failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo;
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			   errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated remove failed exception.
  *
- * @param path The path of the item which could not be removed
+ * @param URL The URL of the item which could not be removed
  * @param errNo The errno of the error that occurred
  * @return An initialized remove item failed exception
  */
-- (instancetype)initWithPath: (OFString *)path
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (OFURL *)URL
+		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

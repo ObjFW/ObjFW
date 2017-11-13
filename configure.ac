@@ -906,6 +906,7 @@ AC_ARG_ENABLE(files,
 AS_IF([test x"$enable_files" != x"no"], [
 	AC_DEFINE(OF_HAVE_FILES, 1, [Whether we have files])
 	AC_SUBST(USE_SRCS_FILES, '${SRCS_FILES}')
+	AC_SUBST(USE_SRCS_FILES_NOINCLUDE, '${SRCS_FILES_NOINCLUDE}')
 	AC_SUBST(OFHASH, "ofhash")
 	AC_SUBST(OFZIP, "ofzip")
 

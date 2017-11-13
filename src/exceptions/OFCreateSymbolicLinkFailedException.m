@@ -18,23 +18,23 @@
 
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFString.h"
+#import "OFURL.h"
 
 @implementation OFCreateSymbolicLinkFailedException
-@synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
-@synthesize errNo = _errNo;
+@synthesize URL = _URL, target = _target, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath
-				  errNo: (int)errNo
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			  target: (OFString *)target
+			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithSourcePath: sourcePath
-				 destinationPath: destinationPath
-					   errNo: errNo] autorelease];
+	return [[[self alloc] initWithURL: URL
+				   target: target
+				    errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -42,15 +42,15 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSourcePath: (OFString *)sourcePath
-		   destinationPath: (OFString *)destinationPath
-			     errNo: (int)errNo
+- (instancetype)initWithURL: (OFURL *)URL
+		     target: (OFString *)target
+		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_sourcePath = [sourcePath copy];
-		_destinationPath = [destinationPath copy];
+		_URL = [URL copy];
+		_target = [target copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -62,8 +62,8 @@
 
 - (void)dealloc
 {
-	[_sourcePath release];
-	[_destinationPath release];
+	[_URL release];
+	[_target release];
 
 	[super dealloc];
 }
@@ -71,7 +71,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to create symbolic link %@ with destination %@: %@",
-	    _destinationPath, _sourcePath, of_strerror(_errNo)];
+	    @"Failed to create symbolic link %@ with target %@: %@",
+	    _URL, _target, of_strerror(_errNo)];
 }
 @end

@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFRetrieveItemAttributesFailedException \
  *	  OFRetrieveItemAttributesFailedException.h \
@@ -27,14 +29,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFRetrieveItemAttributesFailedException: OFException
 {
-	OFString *_path;
+	OFURL *_URL;
 	int _errNo;
 }
 
 /*!
- * A string with the path of the item whose attributes could not be retrieved.
+ * The URL of the item whose attributes could not be retrieved.
  */
-@property (readonly, nonatomic) OFString *path;
+@property (readonly, nonatomic) OFURL *URL;
 
 /*!
  * The errno of the error that occurred.
@@ -46,13 +48,12 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased retrieve item attributes failed exception.
  *
- * @param path A string with the path of the item whose attributes could not be
- *	       retrieved
+ * @param URL The URL of the item whose attributes could not be retrieved
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased retrieve item attributes failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString *)path
-			    errNo: (int)errNo;
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			   errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -60,13 +61,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated retrieve item attributes failed
  *	  exception.
  *
- * @param path A string with the path of the item whose attributes could not be
- *	       retrieved
+ * @param URL The URL of the item whose attributes could not be retrieved
  * @param errNo The errno of the error that occurred
  * @return An initialized retrieve item attributes failed exception
  */
-- (instancetype)initWithPath: (OFString *)path
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (OFURL *)URL
+		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

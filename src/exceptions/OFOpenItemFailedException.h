@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFOpenItemFailedException \
  *	  OFOpenItemFailedException.h ObjFW/OFOpenItemFailedException.h
@@ -26,14 +28,21 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFOpenItemFailedException: OFException
 {
-	OFString *_path, *_mode;
+	OFURL *_Nullable _URL;
+	OFString *_Nullable _path;
+	OFString *_mode;
 	int _errNo;
 }
 
 /*!
+ * The URL of the item which could not be opened.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFURL *URL;
+
+/*!
  * The path of the item which could not be opened.
  */
-@property (readonly, nonatomic) OFString *path;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *path;
 
 /*!
  * The mode in which the item should have been opened.
@@ -50,7 +59,19 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased open item failed exception.
  *
- * @param path A string with the path of the item tried to open
+ * @param URL The URL of the item which could not be opened
+ * @param mode A string with the mode in which the item should have been opened
+ * @param errNo The errno of the error that occurred
+ * @return A new, autoreleased open item failed exception
+ */
++ (instancetype)exceptionWithURL: (OFURL *)URL
+			    mode: (nullable OFString *)mode
+			   errNo: (int)errNo;
+
+/*!
+ * @brief Creates a new, autoreleased open item failed exception.
+ *
+ * @param path The path of the item which could not be opened
  * @param mode A string with the mode in which the item should have been opened
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased open item failed exception
@@ -64,14 +85,26 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Initializes an already allocated open item failed exception.
  *
- * @param path A string with the path of the item which could not be opened
+ * @param URL The URL of the item which could not be opened
+ * @param mode A string with the mode in which the item should have been opened
+ * @param errNo The errno of the error that occurred
+ * @return An initialized open item failed exception
+ */
+- (instancetype)initWithURL: (OFURL *)URL
+		       mode: (nullable OFString *)mode
+		      errNo: (int)errNo;
+
+/*!
+ * @brief Initializes an already allocated open item failed exception.
+ *
+ * @param path The path of the item which could not be opened
  * @param mode A string with the mode in which the item should have been opened
  * @param errNo The errno of the error that occurred
  * @return An initialized open item failed exception
  */
 - (instancetype)initWithPath: (OFString *)path
 			mode: (nullable OFString *)mode
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+		       errNo: (int)errNo;
 @end
 
 OF_ASSUME_NONNULL_END

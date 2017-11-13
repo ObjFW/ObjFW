@@ -19,6 +19,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFSetItemAttributesFailedException \
  *	  OFSetItemAttributesFailedException.h \
@@ -28,16 +30,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSetItemAttributesFailedException: OFException
 {
-	OFString *_path;
+	OFURL *_URL;
 	of_file_attributes_t _attributes;
 	of_file_attribute_key_t _failedAttribute;
 	int _errNo;
 }
 
 /*!
- * A string with the path of the item whose attributes could not be set.
+ * The URL of the item whose attributes could not be set.
  */
-@property (readonly, nonatomic) OFString *path;
+@property (readonly, nonatomic) OFURL *URL;
 
 /*!
  * The errno of the error that occurred.
@@ -59,36 +61,34 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased set item attributes failed exception.
  *
- * @param path A string with the path of the item whose attributes could not be
- *	       set
+ * @param URL The URL of the item whose attributes could not be set
  * @param attributes The attributes that should have been set for the specified
  *		     item.
  * @param failedAttribute The first attribute that could not be set
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased set item attributes failed exception
  */
-+ (instancetype)exceptionWithPath: (OFString *)path
-		       attributes: (of_file_attributes_t)attributes
-		  failedAttribute: (of_file_attribute_key_t)failedAttribute
-			    errNo: (int)errNo;
++ (instancetype)exceptionWithURL: (OFURL *)URL
+		      attributes: (of_file_attributes_t)attributes
+		 failedAttribute: (of_file_attribute_key_t)failedAttribute
+			   errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated set item attributes failed exception.
  *
- * @param path A string with the path of the item whose attributes could not be
- *	       set
+ * @param URL The URL of the item whose attributes could not be set
  * @param attributes The attributes that should have been set for the specified
  *		     item.
  * @param failedAttribute The first attribute that could not be set
  * @param errNo The errno of the error that occurred
  * @return An initialized set item attributes failed exception
  */
-- (instancetype)initWithPath: (OFString *)path
-		  attributes: (of_file_attributes_t)attributes
-	     failedAttribute: (of_file_attribute_key_t)failedAttribute
-		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL: (OFURL *)URL
+		 attributes: (of_file_attributes_t)attributes
+	    failedAttribute: (of_file_attribute_key_t)failedAttribute
+		      errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

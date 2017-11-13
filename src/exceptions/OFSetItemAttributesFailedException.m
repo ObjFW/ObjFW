@@ -18,9 +18,10 @@
 
 #import "OFSetItemAttributesFailedException.h"
 #import "OFString.h"
+#import "OFURL.h"
 
 @implementation OFSetItemAttributesFailedException
-@synthesize path = _path, attributes = _attributes;
+@synthesize URL = _URL, attributes = _attributes;
 @synthesize failedAttribute = _failedAttribute, errNo = _errNo;
 
 + (instancetype)exception
@@ -28,15 +29,15 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithPath: (OFString *)path
-		       attributes: (of_file_attributes_t)attributes
-		  failedAttribute: (of_file_attribute_key_t)failedAttribute
-			    errNo: (int)errNo
++ (instancetype)exceptionWithURL: (OFURL *)URL
+		      attributes: (of_file_attributes_t)attributes
+		 failedAttribute: (of_file_attribute_key_t)failedAttribute
+			   errNo: (int)errNo
 {
-	return [[[self alloc] initWithPath: path
-				attributes: attributes
-			   failedAttribute: failedAttribute
-				     errNo: errNo] autorelease];
+	return [[[self alloc] initWithURL: URL
+			       attributes: attributes
+			  failedAttribute: failedAttribute
+				    errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -44,15 +45,15 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithPath: (OFString *)path
-		  attributes: (of_file_attributes_t)attributes
-	     failedAttribute: (of_file_attribute_key_t)failedAttribute
-		       errNo: (int)errNo
+- (instancetype)initWithURL: (OFURL *)URL
+		 attributes: (of_file_attributes_t)attributes
+	    failedAttribute: (of_file_attribute_key_t)failedAttribute
+		      errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_path = [path copy];
+		_URL = [URL copy];
 		_attributes = [attributes copy];
 		_failedAttribute = [failedAttribute copy];
 		_errNo = errNo;
@@ -66,7 +67,7 @@
 
 - (void)dealloc
 {
-	[_path release];
+	[_URL release];
 	[_attributes release];
 	[_failedAttribute release];
 
@@ -77,6 +78,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to set attribute %@ for item %@: %@",
-	    _failedAttribute, _path, of_strerror(_errNo)];
+	    _failedAttribute, _URL, of_strerror(_errNo)];
 }
 @end

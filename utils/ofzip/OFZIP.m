@@ -22,10 +22,11 @@
 #import "OFArray.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFOptionsParser.h"
-#import "OFStdIOStream.h"
 #import "OFLocalization.h"
+#import "OFOptionsParser.h"
 #import "OFSandbox.h"
+#import "OFStdIOStream.h"
+#import "OFURL.h"
 
 #import "OFZIP.h"
 #import "GZIPArchive.h"
@@ -318,7 +319,7 @@ writingNotSupported(OFString *type)
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
-			    @"dir", [e path],
+			    @"dir", [[e URL] fileSystemRepresentation],
 			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {

@@ -22,12 +22,14 @@
 #import "OFURL.h"
 #import "OFURL+Private.h"
 #import "OFArray.h"
-#ifdef OF_HAVE_FILES
-# import "OFFileManager.h"
-#endif
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
+
+#ifdef OF_HAVE_FILES
+# import "OFFileManager.h"
+# import "OFURLHandler_file.h"
+#endif
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -507,11 +509,10 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFFileManager *fileManager = [OFFileManager defaultManager];
 		bool isDirectory;
 
 		isDirectory = ([path hasSuffix: OF_PATH_DELIMITER_STRING] ||
-		    [fileManager directoryExistsAtPath: path]);
+		    [OFURLHandler_file of_directoryExistsAtPath: path]);
 		self = [self initFileURLWithPath: path
 				     isDirectory: isDirectory];
 

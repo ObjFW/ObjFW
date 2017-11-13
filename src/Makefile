@@ -87,6 +87,7 @@ SRCS = OFApplication.m			\
        OFTimer.m			\
        OFTriple.m			\
        OFURL.m				\
+       OFURLHandler.m			\
        OFXMLAttribute.m			\
        OFXMLCDATA.m			\
        OFXMLCharacters.m		\
@@ -115,6 +116,7 @@ SRCS_FILES = OFFile.m			\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
 	     OFSettings.m
+SRCS_FILES_NOINCLUDE = OFURLHandler_file.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m			\
 	       OFHTTPServer.m			\
@@ -170,7 +172,8 @@ SRCS += OFArray_adjacent.m		\
 	OFString_UTF8.m			\
 	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
-	${INSTANCE_M}
+	${INSTANCE_M}			\
+	${USE_SRCS_FILES_NOINCLUDE}
 SRCS_FILES += OFSettings_INIFile.m
 SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_EPOLL_M}	\
 		${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
