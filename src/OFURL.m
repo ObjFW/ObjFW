@@ -530,10 +530,19 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 {
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+# if OF_PATH_DELIMITER != '/' || defined(OF_WINDOWS) || defined(OF_DJGPP)
+		OFArray OF_GENERIC(OFString *) *pathComponents =
+		    [path pathComponents];
+# endif
 		OFURL *currentDirectoryURL;
 
 # if OF_PATH_DELIMITER != '/'
-		path = [[path pathComponents] componentsJoinedByString: @"/"];
+		path = [pathComponents componentsJoinedByString: @"/"];
+# endif
+
+# if defined(OF_WINDOWS) || defined(OF_DJGPP)
+		if ([[pathComponents firstObject] hasSuffix: @":"])
+			path = [path stringByPrependingString: @"/"];
 # endif
 
 		if (isDirectory && ![path hasSuffix: OF_PATH_DELIMITER_STRING])
