@@ -22,6 +22,11 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFCharacterSet_range
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithRange: (of_range_t)range
 {
 	self = [super init];

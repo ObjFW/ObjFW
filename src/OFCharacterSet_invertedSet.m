@@ -22,6 +22,11 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFCharacterSet_invertedSet
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
 {
 	self = [super init];

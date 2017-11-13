@@ -22,6 +22,11 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFCharacterSet_bitset
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithCharactersInString: (OFString *)string
 {
 	self = [super init];
