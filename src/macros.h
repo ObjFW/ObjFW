@@ -365,14 +365,11 @@
 
 #define OF_UNRECOGNIZED_SELECTOR of_method_not_found(self, _cmd);
 #if __has_feature(objc_arc)
-# define OF_INVALID_INIT_METHOD			\
-	[self doesNotRecognizeSelector: _cmd];	\
-						\
-	abort();
+# define OF_INVALID_INIT_METHOD of_method_not_found(self, _cmd);
 #else
 # define OF_INVALID_INIT_METHOD				\
 	@try {						\
-		[self doesNotRecognizeSelector: _cmd];	\
+		of_method_not_found(self, _cmd);	\
 	} @catch (id e) {				\
 		[self release];				\
 		@throw e;				\
