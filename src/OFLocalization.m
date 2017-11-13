@@ -86,7 +86,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 @synthesize language = _language, territory = _territory, encoding = _encoding;
 @synthesize decimalPoint = _decimalPoint;
 
-+ (instancetype)sharedLocalization
++ (OFLocalization *)sharedLocalization
 {
 	return sharedLocalization;
 }
