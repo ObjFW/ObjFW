@@ -104,6 +104,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 #endif
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFCharacterSet;
 @class OFURL;
 
 /*!
@@ -989,6 +990,47 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (of_range_t)rangeOfString: (OFString *)string
 		    options: (int)options
 		      range: (of_range_t)range;
+
+/*!
+ * @brief Returns the index of the first character from the set.
+ *
+ * @param characterSet The set of characters to search for
+ * @return The index of the first occurrence of a character from the set or
+ *	   `OF_NOT_FOUND` if it was not found
+ */
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet;
+
+/*!
+ * @brief Returns the index of the first character from the set.
+ *
+ * @param characterSet The set of characters to search for
+ * @param options Options modifying search behaviour.@n
+ *		  Possible values are:
+ *		  Value                        | Description
+ *		  -----------------------------|-------------------------------
+ *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
+ * @return The index of the first occurrence of a character from the set or
+ *	   `OF_NOT_FOUND` if it was not found
+ */
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (int)options;
+
+/*!
+ * @brief Returns the index of the first character from the set.
+ *
+ * @param characterSet The set of characters to search for
+ * @param options Options modifying search behaviour.@n
+ *		  Possible values are:
+ *		  Value                        | Description
+ *		  -----------------------------|-------------------------------
+ *		  `OF_STRING_SEARCH_BACKWARDS` | Search backwards in the string
+ * @param range The range in which to search
+ * @return The index of the first occurrence of a character from the set or
+ *	   `OF_NOT_FOUND` if it was not found
+ */
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (int)options
+			    range: (of_range_t)range;
 
 /*!
  * @brief Returns whether the string contains the specified string.

@@ -370,6 +370,33 @@ struct {
 			     range: range];
 }
 
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+{
+	[self finishInitialization];
+
+	return [self indexOfCharacterFromSet: characterSet];
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (int)options
+{
+	[self finishInitialization];
+
+	return [self indexOfCharacterFromSet: characterSet
+				     options: options];
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (int)options
+			    range: (of_range_t)range
+{
+	[self finishInitialization];
+
+	return [self indexOfCharacterFromSet: characterSet
+				     options: options
+				       range: range];
+}
+
 - (bool)containsString: (OFString *)string
 {
 	[self finishInitialization];

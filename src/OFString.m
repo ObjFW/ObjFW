@@ -33,8 +33,9 @@
 #import "OFString_UTF8.h"
 #import "OFString_UTF8+Private.h"
 #import "OFArray.h"
-#import "OFDictionary.h"
+#import "OFCharacterSet.h"
 #import "OFData.h"
+#import "OFDictionary.h"
 #import "OFLocalization.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -1852,9 +1853,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	pool = objc_autoreleasePoolPush();
 
 	searchCharacters = [string characters];
-	characters = malloc(range.length * sizeof(of_unichar_t));
 
-	if (characters == NULL)
+	if ((characters = malloc(range.length * sizeof(of_unichar_t))) == NULL)
 		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
 		    range.length * sizeof(of_unichar_t)];
 
@@ -1893,6 +1893,69 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	objc_autoreleasePoolPop(pool);
 
 	return of_range(OF_NOT_FOUND, 0);
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+{
+	return [self indexOfCharacterFromSet: characterSet
+				     options: 0
+				       range: of_range(0, [self length])];
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (int)options
+{
+	return [self indexOfCharacterFromSet: characterSet
+				     options: options
+				       range: of_range(0, [self length])];
+}
+
+- (size_t)indexOfCharacterFromSet: (OFCharacterSet *)characterSet
+			  options: (int)options
+			    range: (of_range_t)range
+{
+	bool (*characterIsMember)(id, SEL, of_unichar_t) =
+	    (bool (*)(id, SEL, of_unichar_t))[characterSet
+	    methodForSelector: @selector(characterIsMember:)];
+	of_unichar_t *characters;
+
+	if (range.length == 0)
+		return OF_NOT_FOUND;
+
+	if (range.length > SIZE_MAX / sizeof(of_unichar_t))
+		@throw [OFOutOfRangeException exception];
+
+	if ((characters = malloc(range.length * sizeof(of_unichar_t))) == NULL)
+		@throw [OFOutOfMemoryException exceptionWithRequestedSize:
+		    range.length * sizeof(of_unichar_t)];
+
+	@try {
+		[self getCharacters: characters
+			    inRange: range];
+
+		if (options & OF_STRING_SEARCH_BACKWARDS) {
+			for (size_t i = range.length - 1;; i--) {
+				if (characterIsMember(characterSet,
+				    @selector(characterIsMember:),
+				    characters[i]))
+					return range.location + i;
+
+				/* No match and we're at the last character */
+				if (i == 0)
+					break;
+			}
+		} else {
+			for (size_t i = 0; i < range.length; i++)
+				if (characterIsMember(characterSet,
+				    @selector(characterIsMember:),
+				    characters[i]))
+					return range.location + i;
+		}
+	} @finally {
+		free(characters);
+	}
+
+	return OF_NOT_FOUND;
 }
 
 - (bool)containsString: (OFString *)string

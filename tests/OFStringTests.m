@@ -226,6 +226,7 @@ static uint16_t sutf16str[] = {
 	int i;
 	const of_unichar_t *ua;
 	const uint16_t *u16a;
+	OFCharacterSet *cs;
 	EntityHandler *h;
 #ifdef OF_HAVE_BLOCKS
 	__block int j;
@@ -502,6 +503,35 @@ static uint16_t sutf16str[] = {
 	    options: OF_STRING_SEARCH_BACKWARDS].location == 0 &&
 	    [C(@"𝄞öö") rangeOfString: @"x"
 	    options: OF_STRING_SEARCH_BACKWARDS].location == OF_NOT_FOUND)
+
+	EXPECT_EXCEPTION(
+	    @"Detect out of range in -[rangeOfString:options:range:]",
+	    OFOutOfRangeException,
+	    [C(@"𝄞öö") rangeOfString: @"ö"
+			     options: 0
+			       range: of_range(3, 1)])
+
+	cs = [OFCharacterSet characterSetWithCharactersInString: @"cđ"];
+	TEST(@"-[indexOfCharacterFromSet:]",
+	     [C(@"abcđabcđe") indexOfCharacterFromSet: cs] == 2 &&
+	     [C(@"abcđabcđë")
+	     indexOfCharacterFromSet: cs
+			     options: OF_STRING_SEARCH_BACKWARDS] == 7 &&
+	     [C(@"abcđabcđë")
+	     indexOfCharacterFromSet: cs
+			     options: 0
+			       range: of_range(4, 4)] == 6 &&
+	     [C(@"abcđabcđëf")
+	     indexOfCharacterFromSet: cs
+			     options: 0
+			       range: of_range(8, 2)] == OF_NOT_FOUND)
+
+	EXPECT_EXCEPTION(
+	    @"Detect out of range in -[indexOfCharacterFromSet:options:range:]",
+	    OFOutOfRangeException,
+	    [C(@"𝄞öö") indexOfCharacterFromSet: cs
+				       options: 0
+					 range: of_range(3, 1)])
 
 	TEST(@"-[substringWithRange:]",
 	    [[C(@"𝄞öö") substringWithRange: of_range(1, 1)] isEqual: @"ö"] &&
@@ -783,8 +813,7 @@ static uint16_t sutf16str[] = {
 	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
 	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
 
-	OFCharacterSet *cs = [OFCharacterSet
-	    characterSetWithCharactersInString: @"abfo'_~$🍏"];
+	cs = [OFCharacterSet characterSetWithCharactersInString: @"abfo'_~$🍏"];
 	TEST(@"-[stringByURLEncodingWithAllowedCharacters:]",
 	    [[C(@"foo\"ba'_~$]🍏🍌") stringByURLEncodingWithAllowedCharacters:
 	    cs] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
