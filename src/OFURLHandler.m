@@ -70,6 +70,8 @@ static OFMutex *mutex;
 		} @finally {
 			[handler release];
 		}
+
+		return true;
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];
