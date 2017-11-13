@@ -161,6 +161,7 @@ SRCS += OFArray_adjacent.m		\
 	OFArray_adjacentSubarray.m	\
 	OFArray_subarray.m		\
 	OFCharacterSet_bitset.m		\
+	OFCharacterSet_invertedSet.m	\
 	OFCharacterSet_range.m		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\

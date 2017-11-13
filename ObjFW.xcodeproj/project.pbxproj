@@ -1074,6 +1074,10 @@
 		4BF8FE591F9A97E100CB9F9C /* OFException+Swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF8FE551F9A97E100CB9F9C /* OFException+Swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFC37BD1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
 		4BFC37BE1E50E11C00EE1269 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFC37BC1E50E11C00EE1269 /* common.h */; };
+		4BFD0B9A1FBA59CB009895D7 /* OFCharacterSet_invertedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B981FBA59CB009895D7 /* OFCharacterSet_invertedSet.h */; };
+		4BFD0B9B1FBA59CB009895D7 /* OFCharacterSet_invertedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B981FBA59CB009895D7 /* OFCharacterSet_invertedSet.h */; };
+		4BFD0B9C1FBA59CB009895D7 /* OFCharacterSet_invertedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */; };
+		4BFD0B9D1FBA59CB009895D7 /* OFCharacterSet_invertedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
 /* End PBXBuildFile section */
@@ -1785,6 +1789,8 @@
 		4BF8FE551F9A97E100CB9F9C /* OFException+Swift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OFException+Swift.h"; path = "src/bridge/OFException+Swift.h"; sourceTree = "<group>"; };
 		4BFBDD1610A0724800051AFB /* unicode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = unicode.m; path = src/unicode.m; sourceTree = "<group>"; };
 		4BFC37BC1E50E11C00EE1269 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/encodings/common.h; sourceTree = "<group>"; };
+		4BFD0B981FBA59CB009895D7 /* OFCharacterSet_invertedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCharacterSet_invertedSet.h; path = src/OFCharacterSet_invertedSet.h; sourceTree = "<group>"; };
+		4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCharacterSet_invertedSet.m; path = src/OFCharacterSet_invertedSet.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2151,6 +2157,8 @@
 				4BB99CD61FAEC9D900CC79A9 /* OFCharacterSet.m */,
 				4BB99CD71FAEC9D900CC79A9 /* OFCharacterSet_bitset.h */,
 				4BB99CD81FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m */,
+				4BFD0B981FBA59CB009895D7 /* OFCharacterSet_invertedSet.h */,
+				4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */,
 				4BB99CE21FAF542000CC79A9 /* OFCharacterSet_range.h */,
 				4BB99CE31FAF542000CC79A9 /* OFCharacterSet_range.m */,
 				4BAF5F46123460C900F4E111 /* OFCollection.h */,
@@ -2788,6 +2796,7 @@
 				4B2C21D91DA292BE00735907 /* OFArray_subarray.h in Headers */,
 				4B2C22901DA292BE00735907 /* OFAutoreleasePool+Private.h in Headers */,
 				4BB99CDD1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.h in Headers */,
+				4BFD0B9B1FBA59CB009895D7 /* OFCharacterSet_invertedSet.h in Headers */,
 				4BB99CE51FAF542000CC79A9 /* OFCharacterSet_range.h in Headers */,
 				4B2C22911DA292BE00735907 /* OFCountedSet_hashtable.h in Headers */,
 				4B1223171F23E6C100D9F8FF /* OFData+Private.h in Headers */,
@@ -3026,6 +3035,7 @@
 				4B9BB7BF141CDE2D000AD1CC /* OFArray_subarray.h in Headers */,
 				4B1473CB17E6391900B46BB8 /* OFAutoreleasePool+Private.h in Headers */,
 				4BB99CDC1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.h in Headers */,
+				4BFD0B9A1FBA59CB009895D7 /* OFCharacterSet_invertedSet.h in Headers */,
 				4BB99CE41FAF542000CC79A9 /* OFCharacterSet_range.h in Headers */,
 				4BA85BCA140ECCE800E91D51 /* OFCountedSet_hashtable.h in Headers */,
 				4B1223141F23E6C000D9F8FF /* OFData+Private.h in Headers */,
@@ -3393,6 +3403,7 @@
 				4B2C21261DA292BE00735907 /* OFBlock.m in Sources */,
 				4BB99CDB1FAEC9DA00CC79A9 /* OFCharacterSet.m in Sources */,
 				4BB99CDF1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m in Sources */,
+				4BFD0B9D1FBA59CB009895D7 /* OFCharacterSet_invertedSet.m in Sources */,
 				4BB99CE71FAF542000CC79A9 /* OFCharacterSet_range.m in Sources */,
 				4B2C21271DA292BE00735907 /* OFCondition.m in Sources */,
 				4B2C21281DA292BE00735907 /* OFConstantString.m in Sources */,
@@ -3605,6 +3616,7 @@
 				4B3D238E1337FC0D00DD29B8 /* OFBlock.m in Sources */,
 				4BB99CDA1FAEC9DA00CC79A9 /* OFCharacterSet.m in Sources */,
 				4BB99CDE1FAEC9DA00CC79A9 /* OFCharacterSet_bitset.m in Sources */,
+				4BFD0B9C1FBA59CB009895D7 /* OFCharacterSet_invertedSet.m in Sources */,
 				4BB99CE61FAF542000CC79A9 /* OFCharacterSet_range.m in Sources */,
 				4B674401163C395900EB1E59 /* OFCondition.m in Sources */,
 				4B3D238F1337FC0D00DD29B8 /* OFConstantString.m in Sources */,

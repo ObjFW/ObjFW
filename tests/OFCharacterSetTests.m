@@ -39,7 +39,7 @@ static OFString *module = nil;
 - (void)characterSetTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFCharacterSet *cs;
+	OFCharacterSet *cs, *ics;
 	bool ok;
 
 	module = @"OFCharacterSet";
@@ -88,6 +88,20 @@ static OFString *module = nil;
 			ok = false;
 	}
 	TEST(@"-[characterIsMember:]", ok);
+
+	ok = true;
+	ics = [cs invertedSet];
+	for (of_unichar_t c = 0; c < 65536; c++) {
+		if (c >= '0' && c <= '9') {
+			if ([ics characterIsMember: c])
+				ok = false;
+		} else if (![ics characterIsMember: c])
+			ok = false;
+	}
+	TEST(@"-[invertedSet]", ok);
+
+	TEST(@"Inverting -[invertedSet] returns original set",
+	    [ics invertedSet] == cs)
 
 	[pool drain];
 }

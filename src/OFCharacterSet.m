@@ -18,6 +18,7 @@
 
 #import "OFCharacterSet.h"
 #import "OFCharacterSet_bitset.h"
+#import "OFCharacterSet_invertedSet.h"
 #import "OFCharacterSet_range.h"
 
 static struct {
@@ -121,5 +122,11 @@ static struct {
 - (bool)characterIsMember: (of_unichar_t)character
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (OFCharacterSet *)invertedSet
+{
+	return [[[OFCharacterSet_invertedSet alloc]
+	    of_initWithCharacterSet: self] autorelease];
 }
 @end
