@@ -36,33 +36,50 @@
 #import "OFOutOfMemoryException.h"
 
 static OFCharacterSet *URLAllowedCharacterSet = nil;
+static OFCharacterSet *URLSchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URLPathAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
-@interface OFCharacterSet_URLAllowed: OFCharacterSet
+@interface OFCharacterSet_URLAllowedBase: OFCharacterSet
+- (instancetype)of_init OF_METHOD_FAMILY(init);
+@end
+
+@interface OFCharacterSet_URLAllowed: OFCharacterSet_URLAllowedBase
 + (OFCharacterSet *)URLAllowedCharacterSet;
 @end
 
-@interface OFCharacterSet_URLPathAllowed: OFCharacterSet
+@interface OFCharacterSet_URLSchemeAllowed: OFCharacterSet_URLAllowedBase
++ (OFCharacterSet *)URLSchemeAllowedCharacterSet;
+@end
+
+@interface OFCharacterSet_URLPathAllowed: OFCharacterSet_URLAllowedBase
 + (OFCharacterSet *)URLPathAllowedCharacterSet;
 @end
 
-@interface OFCharacterSet_URLQueryOrFragmentAllowed: OFCharacterSet
+@interface OFCharacterSet_URLQueryOrFragmentAllowed:
+    OFCharacterSet_URLAllowedBase
 + (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet;
 @end
 
-@implementation OFCharacterSet_URLAllowed
-+ (void)initialize
+@interface OFCharacterSet_invertedSetWithPercent: OFCharacterSet
 {
-	if (self != [OFCharacterSet_URLAllowed class])
-		return;
-
-	URLAllowedCharacterSet = [[OFCharacterSet_URLAllowed alloc] init];
+	OFCharacterSet *_characterSet;
+	bool (*_characterIsMember)(id, SEL, of_unichar_t);
 }
 
-+ (OFCharacterSet *)URLAllowedCharacterSet
+- (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
+    OF_METHOD_FAMILY(init);
+@end
+
+@implementation OFCharacterSet_URLAllowedBase
+- (instancetype)init
 {
-	return URLAllowedCharacterSet;
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	return [super init];
 }
 
 - (instancetype)autorelease
@@ -82,6 +99,21 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 - (unsigned int)retainCount
 {
 	return OF_RETAIN_COUNT_MAX;
+}
+@end
+
+@implementation OFCharacterSet_URLAllowed
++ (void)initialize
+{
+	if (self != [OFCharacterSet_URLAllowed class])
+		return;
+
+	URLAllowedCharacterSet = [[OFCharacterSet_URLAllowed alloc] of_init];
+}
+
++ (OFCharacterSet *)URLAllowedCharacterSet
+{
+	return URLAllowedCharacterSet;
 }
 
 - (bool)characterIsMember: (of_unichar_t)character
@@ -112,6 +144,37 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 }
 @end
 
+@implementation OFCharacterSet_URLSchemeAllowed
++ (void)initialize
+{
+	if (self != [OFCharacterSet_URLSchemeAllowed class])
+		return;
+
+	URLSchemeAllowedCharacterSet =
+	    [[OFCharacterSet_URLSchemeAllowed alloc] of_init];
+}
+
++ (OFCharacterSet *)URLSchemeAllowedCharacterSet
+{
+	return URLSchemeAllowedCharacterSet;
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	if (character < CHAR_MAX && of_ascii_isalnum(character))
+		return true;
+
+	switch (character) {
+	case '+':
+	case '-':
+	case '.':
+		return true;
+	default:
+		return false;
+	}
+}
+@end
+
 @implementation OFCharacterSet_URLPathAllowed
 + (void)initialize
 {
@@ -119,31 +182,12 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 		return;
 
 	URLPathAllowedCharacterSet =
-	    [[OFCharacterSet_URLPathAllowed alloc] init];
+	    [[OFCharacterSet_URLPathAllowed alloc] of_init];
 }
 
 + (OFCharacterSet *)URLPathAllowedCharacterSet
 {
 	return URLPathAllowedCharacterSet;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OF_RETAIN_COUNT_MAX;
 }
 
 - (bool)characterIsMember: (of_unichar_t)character
@@ -184,31 +228,12 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 		return;
 
 	URLQueryOrFragmentAllowedCharacterSet =
-	    [[OFCharacterSet_URLQueryOrFragmentAllowed alloc] init];
+	    [[OFCharacterSet_URLQueryOrFragmentAllowed alloc] of_init];
 }
 
 + (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet
 {
 	return URLQueryOrFragmentAllowedCharacterSet;
-}
-
-- (instancetype)autorelease
-{
-	return self;
-}
-
-- (instancetype)retain
-{
-	return self;
-}
-
-- (void)release
-{
-}
-
-- (unsigned int)retainCount
-{
-	return OF_RETAIN_COUNT_MAX;
 }
 
 - (bool)characterIsMember: (of_unichar_t)character
@@ -243,10 +268,55 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 }
 @end
 
+@implementation OFCharacterSet_invertedSetWithPercent
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_initWithCharacterSet: (OFCharacterSet *)characterSet
+{
+	self = [super init];
+
+	_characterSet = [characterSet retain];
+	_characterIsMember = (bool (*)(id, SEL, of_unichar_t))
+	    [_characterSet methodForSelector: @selector(characterIsMember:)];
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_characterSet release];
+
+	[super dealloc];
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	return (character != '%' && !_characterIsMember(_characterSet,
+	    @selector(characterIsMember:), character));
+}
+@end
+
+void
+of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	characterSet = [[[OFCharacterSet_invertedSetWithPercent alloc]
+	    of_initWithCharacterSet: characterSet] autorelease];
+
+	if ([string indexOfCharacterFromSet: characterSet] != OF_NOT_FOUND)
+		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 @implementation OFCharacterSet (URLCharacterSets)
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet
 {
-	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+	return [OFCharacterSet_URLSchemeAllowed URLSchemeAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLHostAllowedCharacterSet
@@ -354,6 +424,9 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 		    initWithUTF8String: UTF8String
 				length: tmp - UTF8String];
 
+		of_url_verify_escaped(_URLEncodedScheme,
+		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
+
 		UTF8String = tmp + 3;
 
 		if ((tmp = strchr(UTF8String, '/')) != NULL) {
@@ -375,9 +448,16 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 				    initWithUTF8String: UTF8String];
 				_URLEncodedPassword = [[OFString alloc]
 				    initWithUTF8String: tmp3];
+
+				of_url_verify_escaped(_URLEncodedPassword,
+				    [OFCharacterSet
+				    URLPasswordAllowedCharacterSet]);
 			} else
 				_URLEncodedUser = [[OFString alloc]
 				    initWithUTF8String: UTF8String];
+
+			of_url_verify_escaped(_URLEncodedUser,
+			    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 			UTF8String = tmp2;
 		}
@@ -402,12 +482,19 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 			_URLEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
+		of_url_verify_escaped(_URLEncodedHost,
+		    [OFCharacterSet URLHostAllowedCharacterSet]);
+
 		if ((UTF8String = tmp) != NULL) {
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
 				*tmp = '\0';
 
 				_URLEncodedFragment = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
+
+				of_url_verify_escaped(_URLEncodedFragment,
+				    [OFCharacterSet
+				    URLFragmentAllowedCharacterSet]);
 			}
 
 			if ((tmp = strchr(UTF8String, '?')) != NULL) {
@@ -415,6 +502,10 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 				_URLEncodedQuery = [[OFString alloc]
 				    initWithUTF8String: tmp + 1];
+
+				of_url_verify_escaped(_URLEncodedQuery,
+				    [OFCharacterSet
+				    URLQueryAllowedCharacterSet]);
 			}
 
 			UTF8String--;
@@ -422,6 +513,9 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
+
+			of_url_verify_escaped(_URLEncodedPath,
+			    [OFCharacterSet URLPathAllowedCharacterSet]);
 		}
 
 		objc_autoreleasePoolPop(pool);
@@ -466,12 +560,18 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 			*tmp = '\0';
 			_URLEncodedFragment = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
+
+			of_url_verify_escaped(_URLEncodedFragment,
+			    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 		}
 
 		if ((tmp = strchr(UTF8String, '?')) != NULL) {
 			*tmp = '\0';
 			_URLEncodedQuery = [[OFString alloc]
 			    initWithUTF8String: tmp + 1];
+
+			of_url_verify_escaped(_URLEncodedQuery,
+			    [OFCharacterSet URLQueryAllowedCharacterSet]);
 		}
 
 		if (*UTF8String == '/')
@@ -492,6 +592,9 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 			_URLEncodedPath =
 			    [[s stringByStandardizingURLPath] copy];
 		}
+
+		of_url_verify_escaped(_URLEncodedPath,
+		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

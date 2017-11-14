@@ -46,6 +46,26 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    R(u3 = [OFURL URLWithString: @"http://bar/"]) &&
 	    R(u4 = [OFURL URLWithString: @"file:///etc/passwd"]))
 
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #1",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"ht,tp://foo"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #2",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"http://f`oo"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #3",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"http://foo/`"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #4",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"http://foo/foo?`"])
+
+	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #5",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"http://foo/foo?foo#`"])
+
 	TEST(@"+[URLWithString:relativeToURL:]",
 	    [[[OFURL URLWithString: @"/foo"
 		     relativeToURL: u1] string] isEqual:
@@ -58,6 +78,30 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    string] isEqual: @"http://h/qux/foo/bar"] &&
 	    [[[OFURL URLWithString: @"http://foo/?q"
 		     relativeToURL: u1] string] isEqual: @"http://foo/?q"])
+
+	EXPECT_EXCEPTION(
+	    @"+[URLWithString:relativeToURL:] fails with invalid characters #1",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"`"
+		   relativeToURL: u1])
+
+	EXPECT_EXCEPTION(
+	    @"+[URLWithString:relativeToURL:] fails with invalid characters #2",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"/`"
+		   relativeToURL: u1])
+
+	EXPECT_EXCEPTION(
+	    @"+[URLWithString:relativeToURL:] fails with invalid characters #3",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"?`"
+		   relativeToURL: u1])
+
+	EXPECT_EXCEPTION(
+	    @"+[URLWithString:relativeToURL:] fails with invalid characters #4",
+	    OFInvalidFormatException,
+	    [OFURL URLWithString: @"#`"
+		   relativeToURL: u1])
 
 #ifdef OF_HAVE_FILES
 	TEST(@"+[fileURLWithPath:isDirectory:]",
@@ -118,29 +162,82 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    R([mu setScheme: @"ht:tp"]) &&
 	    [[mu URLEncodedScheme] isEqual: @"ht%3Atp"])
 
+	TEST(@"-[setURLEncodedScheme:]",
+	    R([mu setURLEncodedScheme: @"ht%3Atp"]) &&
+	    [[mu scheme] isEqual: @"ht:tp"])
+
+	EXPECT_EXCEPTION(
+	    @"-[setURLEncodedScheme:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedScheme: @"~"])
+
 	TEST(@"-[setHost:]",
 	    R([mu setHost: @"ho:st"]) &&
 	    [[mu URLEncodedHost] isEqual: @"ho%3Ast"])
+
+	TEST(@"-[setURLEncodedHost:]",
+	    R([mu setURLEncodedHost: @"ho%3Ast"]) &&
+	    [[mu host] isEqual: @"ho:st"])
+
+	EXPECT_EXCEPTION(@"-[setURLEncodedHost:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedHost: @"/"])
 
 	TEST(@"-[setUser:]",
 	    R([mu setUser: @"us:er"]) &&
 	    [[mu URLEncodedUser] isEqual: @"us%3Aer"])
 
+	TEST(@"-[setURLEncodedUser:]",
+	    R([mu setURLEncodedUser: @"us%3Aer"]) &&
+	    [[mu user] isEqual: @"us:er"])
+
+	EXPECT_EXCEPTION(@"-[setURLEncodedUser:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedHost: @"/"])
+
 	TEST(@"-[setPassword:]",
 	    R([mu setPassword: @"pass:word"]) &&
 	    [[mu URLEncodedPassword] isEqual: @"pass%3Aword"])
+
+	TEST(@"-[setURLEncodedPassword:]",
+	    R([mu setURLEncodedPassword: @"pass%3Aword"]) &&
+	    [[mu password] isEqual: @"pass:word"])
+
+	EXPECT_EXCEPTION(
+	    @"-[setURLEncodedPassword:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedPassword: @"/"])
 
 	TEST(@"-[setPath:]",
 	    R([mu setPath: @"pa/th@?"]) &&
 	    [[mu URLEncodedPath] isEqual: @"pa/th@%3F"])
 
+	TEST(@"-[setURLEncodedPath:]",
+	    R([mu setURLEncodedPath: @"pa/th@%3F"]) &&
+	    [[mu path] isEqual: @"pa/th@?"])
+
+	EXPECT_EXCEPTION(@"-[setURLEncodedPath:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedPath: @"?"])
+
 	TEST(@"-[setQuery:]",
 	    R([mu setQuery: @"que/ry?#"]) &&
 	    [[mu URLEncodedQuery] isEqual: @"que/ry?%23"])
 
+	TEST(@"-[setURLEncodedQuery:]",
+	    R([mu setURLEncodedQuery: @"que/ry?%23"]) &&
+	    [[mu query] isEqual: @"que/ry?#"])
+
+	EXPECT_EXCEPTION(
+	    @"-[setURLEncodedQuery:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedQuery: @"`"])
+
 	TEST(@"-[setFragment:]",
 	    R([mu setFragment: @"frag/ment?#"]) &&
 	    [[mu URLEncodedFragment] isEqual: @"frag/ment?%23"])
+
+	TEST(@"-[setURLEncodedFragment:]",
+	    R([mu setURLEncodedFragment: @"frag/ment?%23"]) &&
+	    [[mu fragment] isEqual: @"frag/ment?#"])
+
+	EXPECT_EXCEPTION(
+	    @"-[setURLEncodedFragment:] with invalid characters fails",
+	    OFInvalidFormatException, [mu setURLEncodedFragment: @"`"])
 
 	[pool drain];
 }
