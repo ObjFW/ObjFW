@@ -631,13 +631,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 - (instancetype)initFileURLWithPath: (OFString *)path
 			isDirectory: (bool)isDirectory
 {
+	self = [super init];
+
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 # if OF_PATH_DELIMITER != '/' || defined(OF_WINDOWS) || defined(OF_DJGPP)
 		OFArray OF_GENERIC(OFString *) *pathComponents =
 		    [path pathComponents];
 # endif
-		OFURL *currentDirectoryURL;
 
 # if OF_PATH_DELIMITER != '/'
 		path = [pathComponents componentsJoinedByString: @"/"];
@@ -651,11 +652,20 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		if (isDirectory && ![path hasSuffix: OF_PATH_DELIMITER_STRING])
 			path = [path stringByAppendingString: @"/"];
 
-		currentDirectoryURL =
-		    [[OFFileManager defaultManager] currentDirectoryURL];
+		_URLEncodedScheme = @"file";
 
-		self = [self initWithString: path
-			      relativeToURL: currentDirectoryURL];
+		if (![path hasPrefix: @"/"]) {
+			OFString *currentDirectoryPath = [[OFFileManager
+			    defaultManager] currentDirectoryPath];
+
+			path = [OFString stringWithFormat:
+			    @"%@/%@", currentDirectoryPath, path];
+			path = [path stringByStandardizingURLPath];
+		}
+
+		_URLEncodedPath = [[path
+		    stringByURLEncodingWithAllowedCharacters:
+		    [OFCharacterSet URLPathAllowedCharacterSet]] copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
