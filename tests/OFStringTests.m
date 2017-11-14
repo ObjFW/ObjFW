@@ -550,6 +550,17 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[stringByPrependingString:]",
 	    [[C(@"foo") stringByPrependingString: @"bar"] isEqual: @"barfoo"])
 
+	s[0] = [mutableStringClass stringWithString: @"foo"];
+	[s[0] appendString: OF_PATH_DELIMITER_STRING];
+	[s[0] appendString: @"bar"];
+	s[1] = [mutableStringClass stringWithString: s[0]];
+	[s[1] appendString: OF_PATH_DELIMITER_STRING];
+	is = [stringClass stringWithString: s[1]];
+	[s[1] appendString: @"baz"];
+	TEST(@"-[stringByAppendingPathComponent:]",
+	    [[s[0] stringByAppendingPathComponent: @"baz"] isEqual: s[1]] &&
+	    [[is stringByAppendingPathComponent: @"baz"] isEqual: s[1]])
+
 	TEST(@"-[hasPrefix:]", [C(@"foobar") hasPrefix: @"foo"] &&
 	    ![C(@"foobar") hasPrefix: @"foobar0"])
 

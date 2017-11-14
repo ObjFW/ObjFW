@@ -2047,15 +2047,18 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 - (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFString *ret;
+	if ([self hasSuffix: OF_PATH_DELIMITER_STRING])
+		return [self stringByAppendingString: component];
+	else {
+		OFMutableString *ret = [[self mutableCopy] autorelease];
 
-	ret = [OFString pathWithComponents:
-	    [OFArray arrayWithObjects: self, component, nil]];
+		[ret appendString: OF_PATH_DELIMITER_STRING];
+		[ret appendString: component];
 
-	[ret retain];
-	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+		[ret makeImmutable];
+
+		return ret;
+	}
 }
 
 - (OFString *)stringByPrependingString: (OFString *)string
