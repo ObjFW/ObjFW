@@ -658,8 +658,17 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			OFString *currentDirectoryPath = [[OFFileManager
 			    defaultManager] currentDirectoryPath];
 
-			path = [OFString stringWithFormat:
-			    @"%@/%@", currentDirectoryPath, path];
+# if OF_PATH_DELIMITER != '/'
+			currentDirectoryPath = [[currentDirectoryPath
+			    pathComponents] componentsJoinedByString: @"/"];
+# endif
+# if defined(OF_WINDOWS) || defined(OF_DJGPP)
+			currentDirectoryPath = [currentDirectoryPath
+			    stringByPrependingString: @"/"];
+# endif
+
+			path = [currentDirectoryPath
+			    stringByAppendingURLPathComponent: path];
 			path = [path stringByStandardizingURLPath];
 		}
 
