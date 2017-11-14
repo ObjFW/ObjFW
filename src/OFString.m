@@ -2061,6 +2061,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	}
 }
 
+- (OFString *)stringByAppendingURLPathComponent: (OFString *)component
+{
+	if ([self hasSuffix: @"/"])
+		return [self stringByAppendingString: component];
+	else {
+		OFMutableString *ret = [[self mutableCopy] autorelease];
+
+		[ret appendString: @"/"];
+		[ret appendString: component];
+
+		[ret makeImmutable];
+
+		return ret;
+	}
+}
+
 - (OFString *)stringByPrependingString: (OFString *)string
 {
 	OFMutableString *new = [[string mutableCopy] autorelease];

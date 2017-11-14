@@ -1083,6 +1083,14 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (OFString *)stringByAppendingPathComponent: (OFString *)component;
 
 /*!
+ * @brief Creates a new string by appending a URL path component.
+ *
+ * @param component The URL path component to append
+ * @return A new, autoreleased OFString with the URL path component appended
+ */
+- (OFString *)stringByAppendingURLPathComponent: (OFString *)component;
+
+/*!
  * @brief Creates a new string by prepending another string.
  *
  * @param string The string to prepend
