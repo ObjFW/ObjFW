@@ -1078,6 +1078,14 @@
 		4BFD0B9B1FBA59CB009895D7 /* OFCharacterSet_invertedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B981FBA59CB009895D7 /* OFCharacterSet_invertedSet.h */; };
 		4BFD0B9C1FBA59CB009895D7 /* OFCharacterSet_invertedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */; };
 		4BFD0B9D1FBA59CB009895D7 /* OFCharacterSet_invertedSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */; };
+		4BFD0BA21FBA70FD009895D7 /* OFURLHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B9E1FBA70FC009895D7 /* OFURLHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BFD0BA31FBA70FD009895D7 /* OFURLHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B9E1FBA70FC009895D7 /* OFURLHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4BFD0BA41FBA70FD009895D7 /* OFURLHandler_file.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B9F1FBA70FC009895D7 /* OFURLHandler_file.h */; };
+		4BFD0BA51FBA70FD009895D7 /* OFURLHandler_file.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFD0B9F1FBA70FC009895D7 /* OFURLHandler_file.h */; };
+		4BFD0BA61FBA70FD009895D7 /* OFURLHandler_file.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0BA01FBA70FD009895D7 /* OFURLHandler_file.m */; };
+		4BFD0BA71FBA70FD009895D7 /* OFURLHandler_file.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0BA01FBA70FD009895D7 /* OFURLHandler_file.m */; };
+		4BFD0BA81FBA70FD009895D7 /* OFURLHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0BA11FBA70FD009895D7 /* OFURLHandler.m */; };
+		4BFD0BA91FBA70FD009895D7 /* OFURLHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFD0BA11FBA70FD009895D7 /* OFURLHandler.m */; };
 		4BFF3714177E17C100192782 /* OFRemoveItemFailedException.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4BFF3715177E17C100192782 /* OFRemoveItemFailedException.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */; };
 /* End PBXBuildFile section */
@@ -1791,6 +1799,10 @@
 		4BFC37BC1E50E11C00EE1269 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/encodings/common.h; sourceTree = "<group>"; };
 		4BFD0B981FBA59CB009895D7 /* OFCharacterSet_invertedSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFCharacterSet_invertedSet.h; path = src/OFCharacterSet_invertedSet.h; sourceTree = "<group>"; };
 		4BFD0B991FBA59CB009895D7 /* OFCharacterSet_invertedSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFCharacterSet_invertedSet.m; path = src/OFCharacterSet_invertedSet.m; sourceTree = "<group>"; };
+		4BFD0B9E1FBA70FC009895D7 /* OFURLHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURLHandler.h; path = src/OFURLHandler.h; sourceTree = "<group>"; };
+		4BFD0B9F1FBA70FC009895D7 /* OFURLHandler_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFURLHandler_file.h; path = src/OFURLHandler_file.h; sourceTree = "<group>"; };
+		4BFD0BA01FBA70FD009895D7 /* OFURLHandler_file.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLHandler_file.m; path = src/OFURLHandler_file.m; sourceTree = "<group>"; };
+		4BFD0BA11FBA70FD009895D7 /* OFURLHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFURLHandler.m; path = src/OFURLHandler.m; sourceTree = "<group>"; };
 		4BFF3710177E17C100192782 /* OFRemoveItemFailedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OFRemoveItemFailedException.h; path = src/exceptions/OFRemoveItemFailedException.h; sourceTree = "<group>"; };
 		4BFF3711177E17C100192782 /* OFRemoveItemFailedException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OFRemoveItemFailedException.m; path = src/exceptions/OFRemoveItemFailedException.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2381,6 +2393,10 @@
 				4B4A61F212DF5EA20048F3F2 /* OFURL.h */,
 				4B4A61F312DF5EA20048F3F2 /* OFURL.m */,
 				4B4116CF1F21654200E78916 /* OFURL+Private.h */,
+				4BFD0B9E1FBA70FC009895D7 /* OFURLHandler.h */,
+				4BFD0BA11FBA70FD009895D7 /* OFURLHandler.m */,
+				4BFD0B9F1FBA70FC009895D7 /* OFURLHandler_file.h */,
+				4BFD0BA01FBA70FD009895D7 /* OFURLHandler_file.m */,
 				4BF1BCCE11C9663F0025511F /* OFXMLAttribute.h */,
 				4BF1BCCF11C9663F0025511F /* OFXMLAttribute.m */,
 				4B49EA67143B3A090005BBC6 /* OFXMLCDATA.h */,
@@ -2697,6 +2713,7 @@
 				4B3DE1381F5F553E0090AA3E /* OFTriple.h in Headers */,
 				4B2C222E1DA292BE00735907 /* OFUDPSocket.h in Headers */,
 				4B2C222F1DA292BE00735907 /* OFURL.h in Headers */,
+				4BFD0BA31FBA70FD009895D7 /* OFURLHandler.h in Headers */,
 				4B2C22301DA292BE00735907 /* OFXMLAttribute.h in Headers */,
 				4B2C22311DA292BE00735907 /* OFXMLCDATA.h in Headers */,
 				4B2C22321DA292BE00735907 /* OFXMLCharacters.h in Headers */,
@@ -2823,6 +2840,7 @@
 				4B2C22A61DA292BE00735907 /* OFThread+Private.h in Headers */,
 				4B2C22A71DA292BE00735907 /* OFTimer+Private.h in Headers */,
 				4B4116D51F21654200E78916 /* OFURL+Private.h in Headers */,
+				4BFD0BA51FBA70FD009895D7 /* OFURLHandler_file.h in Headers */,
 				4B853CEC1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B2C22A81DA292BE00735907 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B2C22AA1DA292BE00735907 /* socket_helpers.h in Headers */,
@@ -2936,6 +2954,7 @@
 				4B3DE1371F5F553E0090AA3E /* OFTriple.h in Headers */,
 				4B7769F11895ED0C00D12284 /* OFUDPSocket.h in Headers */,
 				4B3D23DF1337FCB000DD29B8 /* OFURL.h in Headers */,
+				4BFD0BA21FBA70FD009895D7 /* OFURLHandler.h in Headers */,
 				4B3D23E01337FCB000DD29B8 /* OFXMLAttribute.h in Headers */,
 				4B49EA6D143B3A090005BBC6 /* OFXMLCDATA.h in Headers */,
 				4B49EA6F143B3A090005BBC6 /* OFXMLCharacters.h in Headers */,
@@ -3062,6 +3081,7 @@
 				4B6C8ADC17BD5C2E00B194F2 /* OFThread+Private.h in Headers */,
 				4B6C8ADD17BD5C2E00B194F2 /* OFTimer+Private.h in Headers */,
 				4B4116D41F21654200E78916 /* OFURL+Private.h in Headers */,
+				4BFD0BA41FBA70FD009895D7 /* OFURLHandler_file.h in Headers */,
 				4B853CEB1EBFDEB000A4B2C4 /* OFXMLNode+Private.h in Headers */,
 				4B6C8ADE17BD5C2E00B194F2 /* OFZIPArchiveEntry+Private.h in Headers */,
 				4B7DD58218942FE200990FD6 /* socket_helpers.h in Headers */,
@@ -3504,6 +3524,8 @@
 				4B3DE13A1F5F553E0090AA3E /* OFTriple.m in Sources */,
 				4B2C217B1DA292BE00735907 /* OFUDPSocket.m in Sources */,
 				4B2C217C1DA292BE00735907 /* OFURL.m in Sources */,
+				4BFD0BA91FBA70FD009895D7 /* OFURLHandler.m in Sources */,
+				4BFD0BA71FBA70FD009895D7 /* OFURLHandler_file.m in Sources */,
 				4B2C217D1DA292BE00735907 /* OFXMLAttribute.m in Sources */,
 				4B2C217E1DA292BE00735907 /* OFXMLCDATA.m in Sources */,
 				4B2C217F1DA292BE00735907 /* OFXMLCharacters.m in Sources */,
@@ -3718,6 +3740,8 @@
 				4B3DE1391F5F553E0090AA3E /* OFTriple.m in Sources */,
 				4B7769F21895ED0C00D12284 /* OFUDPSocket.m in Sources */,
 				4B3D23AD1337FC0D00DD29B8 /* OFURL.m in Sources */,
+				4BFD0BA81FBA70FD009895D7 /* OFURLHandler.m in Sources */,
+				4BFD0BA61FBA70FD009895D7 /* OFURLHandler_file.m in Sources */,
 				4B3D23AE1337FC0D00DD29B8 /* OFXMLAttribute.m in Sources */,
 				4B49EA6E143B3A090005BBC6 /* OFXMLCDATA.m in Sources */,
 				4B49EA70143B3A090005BBC6 /* OFXMLCharacters.m in Sources */,
