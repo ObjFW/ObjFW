@@ -109,6 +109,17 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  */
 - (void)replaceObjectAtIndex: (size_t)index
 		  withObject: (ObjectType)object;
+
+/*!
+ * @brief Replaces the object at the specified index with the specified object.
+ *
+ * This method is the same as @ref replaceObjectAtIndex:withObject:.
+ *
+ * This method is also used by the subscripting syntax.
+ *
+ * @param index The index of the object to replace
+ * @param object The replacement object
+ */
 -    (void)setObject: (ObjectType)object
   atIndexedSubscript: (size_t)index;
 

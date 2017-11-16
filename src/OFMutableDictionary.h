@@ -63,14 +63,26 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 /*!
  * @brief Sets an object for a key.
  *
- * A key can be any object that conforms to the OFCopying protocol.
+ * A key can be any object that conforms to the @ref OFCopying protocol.
  *
  * @param key The key to set
  * @param object The object to set the key to
  */
 - (void)setObject: (ObjectType)object
 	   forKey: (KeyType)key;
--   (void)setObject: (ObjectType)object
+
+/*!
+ * @brief Sets an object for a key.
+ *
+ * A key can be any object that conforms to the @ref OFCopying protocol.
+ *
+ * This method is also used by the subscripting syntax.
+ *
+ * @param key The key to set
+ * @param object The object to set the key to. If it is nil, this is equal to
+ *		 calling @ref removeObjectForKey:.
+ */
+-   (void)setObject: (nullable ObjectType)object
   forKeyedSubscript: (KeyType)key;
 
 /*!

@@ -170,8 +170,11 @@ static struct {
 -   (void)setObject: (id)object
   forKeyedSubscript: (id)key
 {
-	[self setObject: object
-		 forKey: key];
+	if (object != nil)
+		[self setObject: object
+			 forKey: key];
+	else
+		[self removeObjectForKey: key];
 }
 
 - (void)removeObjectForKey: (id)key
