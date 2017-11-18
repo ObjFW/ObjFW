@@ -136,7 +136,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 	       count: (size_t)count;
 
 /*!
- * The objects of the array as a C array.
+ * @brief The objects of the array as a C array.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
@@ -146,7 +146,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
     ObjectType const __unsafe_unretained _Nonnull *_Nonnull objects;
 
 /*!
- * The first object of the array or `nil`.
+ * @brief The first object of the array or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
@@ -154,7 +154,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
 
 /*!
- * The last object of the array or `nil`.
+ * @brief The last object of the array or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
@@ -162,12 +162,12 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
 
 /*!
- * The array sorted in ascending order.
+ * @brief The array sorted in ascending order.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *sortedArray;
 
 /*!
- * The array with the order reversed.
+ * @brief The array with the order reversed.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *reversedArray;
 

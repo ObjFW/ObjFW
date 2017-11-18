@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The name of the unknown XML entity.
+ * @brief The name of the unknown XML entity.
  */
 @property (readonly, nonatomic) OFString *entityName;
 

@@ -62,21 +62,21 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * The language of the locale for messages.
+ * @brief The language of the locale for messages.
  *
  * If the language is unknown, it is `nil`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *language;
 
 /*!
- * The territory of the locale for messages.
+ * @brief The territory of the locale for messages.
  *
  * If the territory is unknown, it is `nil`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *territory;
 
 /*!
- * The native 8-bit string encoding of the locale for messages.
+ * @brief The native 8-bit string encoding of the locale for messages.
  *
  * This is useful to encode strings correctly for passing them to operating
  * system calls.
@@ -86,7 +86,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) of_string_encoding_t encoding;
 
 /*!
- * The decimal point of the system's locale.
+ * @brief The decimal point of the system's locale.
  */
 @property (readonly, nonatomic) OFString *decimalPoint;
 

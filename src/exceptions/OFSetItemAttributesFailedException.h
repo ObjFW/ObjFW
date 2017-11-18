@@ -37,22 +37,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The URL of the item whose attributes could not be set.
+ * @brief The URL of the item whose attributes could not be set.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 
 /*!
- * The attributes that should have been set.
+ * @brief The attributes that should have been set.
  */
 @property (readonly, nonatomic) of_file_attributes_t attributes;
 
 /*!
- * The first attribute that could not be set.
+ * @brief The first attribute that could not be set.
  */
 @property (readonly, nonatomic) of_file_attribute_key_t failedAttribute;
 

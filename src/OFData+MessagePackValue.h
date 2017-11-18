@@ -28,7 +28,8 @@ extern int _OFData_MessagePackValue_reference;
 
 @interface OFData (MessagePackValue)
 /*!
- * The data interpreted as MessagePack representation and parsed as an object.
+ * @brief The data interpreted as MessagePack representation and parsed as an
+ *	  object.
  */
 @property (readonly, nonatomic) id messagePackValue;
 

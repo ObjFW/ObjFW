@@ -32,12 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The name of the attribute.
+ * @brief The name of the attribute.
  */
 @property (readonly, nonatomic) OFString *name;
 
 /*!
- * The namespace of the attribute.
+ * @brief The namespace of the attribute.
  */
 #ifndef __cplusplus
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *namespace;

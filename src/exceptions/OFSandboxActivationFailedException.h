@@ -34,12 +34,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The sandbox which could not be activated.
+ * @brief The sandbox which could not be activated.
  */
 @property (readonly, nonatomic) OFSandbox *sandbox;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

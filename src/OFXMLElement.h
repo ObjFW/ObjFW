@@ -40,12 +40,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The name of the element.
+ * @brief The name of the element.
  */
 @property (copy, nonatomic) OFString *name;
 
 /*!
- * The namespace of the element.
+ * @brief The namespace of the element.
  */
 #ifndef __cplusplus
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *namespace;
@@ -55,24 +55,25 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * The default namespace for the element to be used if there is no parent.
+ * @brief The default namespace for the element to be used if there is no
+ *	  parent.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *defaultNamespace;
 
 /*!
- * An array with the attributes of the element
+ * @brief An array with the attributes of the element.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFArray OF_GENERIC(OFXMLAttribute *) *attributes;
 
 /*!
- * An array of OFXMLNodes with all children of the element.
+ * @brief An array of OFXMLNodes with all children of the element.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic, copy)
     OFArray OF_GENERIC(OFXMLNode *) *children;
 
 /*!
- * All children that are elements.
+ * @brief All children that are elements.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFXMLElement *) *elements;
 

@@ -76,12 +76,12 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #endif
 
 /*!
- * Whether the socket is a listening socket.
+ * @brief Whether the socket is a listening socket.
  */
 @property (readonly, nonatomic, getter=isListening) bool listening;
 
 /*!
- * The remote address as a string
+ * @brief The remote address as a string
  *
  * @note This only works for accepted sockets!
  */
@@ -89,7 +89,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /*!
- * Whether keep alives are enabled for the connection.
+ * @brief Whether keep alives are enabled for the connection.
  *
  * @warning This is not available on the Wii or Nintendo 3DS!
  */
@@ -98,7 +98,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 
 #ifndef OF_WII
 /*!
- * Whether TCP_NODELAY is enabled for the connection
+ * @brief Whether TCP_NODELAY is enabled for the connection
  *
  * @warning This is not available on the Wii!
  */
@@ -106,12 +106,12 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #endif
 
 /*!
- * The host to use as a SOCKS5 proxy.
+ * @brief The host to use as a SOCKS5 proxy.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *SOCKS5Host;
 
 /*!
- * The port to use on the SOCKS5 proxy.
+ * @brief The port to use on the SOCKS5 proxy.
  */
 @property (nonatomic) uint16_t SOCKS5Port;
 

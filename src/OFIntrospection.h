@@ -48,17 +48,17 @@ enum {
 }
 
 /*!
- * The selector of the method.
+ * @brief The selector of the method.
  */
 @property (readonly, nonatomic) SEL selector;
 
 /*!
- * The name of the method.
+ * @brief The name of the method.
  */
 @property (readonly, nonatomic) OFString *name;
 
 /*!
- * The type encoding for the method.
+ * @brief The type encoding for the method.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const char *typeEncoding;
 
@@ -78,12 +78,12 @@ enum {
 }
 
 /*!
- * The name of the property.
+ * @brief The name of the property.
  */
 @property (readonly, nonatomic) OFString *name;
 
 /*!
- * The attributes of the property.
+ * @brief The attributes of the property.
  *
  * The attributes are a bitmask with the following possible flags:@n
  * Flag                          | Description
@@ -102,12 +102,12 @@ enum {
 @property (readonly, nonatomic) unsigned int attributes;
 
 /*!
- * The name of the getter.
+ * @brief The name of the getter.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *getter;
 
 /*!
- * @return The name of the setter.
+ * @brief The name of the setter.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *setter;
 
@@ -127,17 +127,17 @@ enum {
 }
 
 /*!
- * The name of the instance variable.
+ * @brief The name of the instance variable.
  */
 @property (readonly, nonatomic) OFString *name;
 
 /*!
- * The offset of the instance variable.
+ * @brief The offset of the instance variable.
  */
 @property (readonly, nonatomic) ptrdiff_t offset;
 
 /*!
- * The type encoding for the instance variable.
+ * @brief The type encoding for the instance variable.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const char *typeEncoding;
 
@@ -158,17 +158,17 @@ enum {
 }
 
 /*!
- * The class methods of the class.
+ * @brief The class methods of the class.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod *) *classMethods;
 
 /*!
- * The instance methods of the class.
+ * @brief The instance methods of the class.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFMethod *) *instanceMethods;
 
 /*!
- * The properties of the class.
+ * @brief The properties of the class.
  *
  * @warning **Do not rely on this, as this behaves differently depending on the
  *	    compiler and ABI used!**
@@ -190,7 +190,7 @@ enum {
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFProperty *) *properties;
 
 /*!
- * The instance variables of the class.
+ * @brief The instance variables of the class.
  */
 @property (readonly, nonatomic)
     OFArray OF_GENERIC(OFInstanceVariable *) *instanceVariables;

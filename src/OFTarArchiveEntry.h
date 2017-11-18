@@ -63,65 +63,65 @@ typedef enum of_tar_archive_entry_type_t {
 }
 
 /*!
- * The file name of the entry.
+ * @brief The file name of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *fileName;
 
 /*!
- * The mode of the entry.
+ * @brief The mode of the entry.
  */
 @property (readonly, nonatomic) uint32_t mode;
 
 /*!
- * The UID of the owner.
+ * @brief The UID of the owner.
  */
 @property (readonly, nonatomic) uint32_t UID;
 
 /*!
- * The GID of the group.
+ * @brief The GID of the group.
  */
 @property (readonly, nonatomic) uint32_t GID;
 
 /*!
- * The size of the file.
+ * @brief The size of the file.
  */
 @property (readonly, nonatomic) uint64_t size;
 
 /*!
- * The date of the last modification of the file.
+ * @brief The date of the last modification of the file.
  */
 @property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /*!
- * The type of the archive entry.
+ * @brief The type of the archive entry.
  *
  * See @ref of_tar_archive_entry_type_t.
  */
 @property (readonly, nonatomic) of_tar_archive_entry_type_t type;
 
 /*!
- * The file name of the target (for a hard link or symbolic link).
+ * @brief The file name of the target (for a hard link or symbolic link).
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *targetFileName;
 
 /*!
- * The owner of the file.
+ * @brief The owner of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *owner;
 
 /*!
- * The group of the file.
+ * @brief The group of the file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
 
 /*!
- * The device major (if the file is a device).
+ * @brief The device major (if the file is a device).
  */
 @property (readonly, nonatomic) uint32_t deviceMajor;
 
 /*!
- * The device major (if the file is a device).
+ * @brief The device major (if the file is a device).
  */
 @property (readonly, nonatomic) uint32_t deviceMinor;
 

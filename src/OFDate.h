@@ -38,92 +38,92 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * The microsecond of the date.
+ * @brief The microsecond of the date.
  */
 @property (readonly, nonatomic) uint32_t microsecond;
 
 /*!
- * The second of the date.
+ * @brief The second of the date.
  */
 @property (readonly, nonatomic) uint8_t second;
 
 /*!
- * The minute of the date.
+ * @brief The minute of the date.
  */
 @property (readonly, nonatomic) uint8_t minute;
 
 /*!
- * The minute of the date in local time.
+ * @brief The minute of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localMinute;
 
 /*!
- * The hour of the date.
+ * @brief The hour of the date.
  */
 @property (readonly, nonatomic) uint8_t hour;
 
 /*!
- * The hour of the date in local time.
+ * @brief The hour of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localHour;
 
 /*!
- * The day of the month of the date.
+ * @brief The day of the month of the date.
  */
 @property (readonly, nonatomic) uint8_t dayOfMonth;
 
 /*!
- * The day of the month of the date in local time.
+ * @brief The day of the month of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localDayOfMonth;
 
 /*!
- * The month of the year of the date.
+ * @brief The month of the year of the date.
  */
 @property (readonly, nonatomic) uint8_t monthOfYear;
 
 /*!
- * The month of the year of the date in local time.
+ * @brief The month of the year of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localMonthOfYear;
 
 /*!
- * The year of the date.
+ * @brief The year of the date.
  */
 @property (readonly, nonatomic) uint16_t year;
 
 /*!
- * The year of the date in local time.
+ * @brief The year of the date in local time.
  */
 @property (readonly, nonatomic) uint16_t localYear;
 
 /*!
- * The day of the week of the date.
+ * @brief The day of the week of the date.
  */
 @property (readonly, nonatomic) uint8_t dayOfWeek;
 
 /*!
- * The day of the week of the date in local time.
+ * @brief The day of the week of the date in local time.
  */
 @property (readonly, nonatomic) uint8_t localDayOfWeek;
 
 /*!
- * The day of the year of the date.
+ * @brief The day of the year of the date.
  */
 @property (readonly, nonatomic) uint16_t dayOfYear;
 
 /*!
- * The day of the year of the date in local time.
+ * @brief The day of the year of the date in local time.
  */
 @property (readonly, nonatomic) uint16_t localDayOfYear;
 
 /*!
- * The seconds since 1970-01-01T00:00:00Z.
+ * @brief The seconds since 1970-01-01T00:00:00Z.
  */
 @property (readonly, nonatomic) of_time_interval_t timeIntervalSince1970;
 
 /*!
- * The seconds the date is in the future.
+ * @brief The seconds the date is in the future.
  */
 @property (readonly, nonatomic) of_time_interval_t timeIntervalSinceNow;
 

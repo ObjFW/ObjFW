@@ -39,67 +39,67 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The scheme part of the URL.
+ * @brief The scheme part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *scheme;
 
 /*!
- * The scheme part of the URL in URL-encoded form.
+ * @brief The scheme part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedScheme;
 
 /*!
- * The host part of the URL.
+ * @brief The host part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *host;
 
 /*!
- * The host part of the URL in URL-encoded form.
+ * @brief The host part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedHost;
 
 /*!
- * The port part of the URL.
+ * @brief The port part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFNumber *port;
 
 /*!
- * The user part of the URL.
+ * @brief The user part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *user;
 
 /*!
- * The user part of the URL in URL-encoded form.
+ * @brief The user part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedUser;
 
 /*!
- * The password part of the URL.
+ * @brief The password part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *password;
 
 /*!
- * The password part of the URL in URL-encoded form.
+ * @brief The password part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedPassword;
 
 /*!
- * The path part of the URL.
+ * @brief The path part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *path;
 
 /*!
- * The path part of the URL in URL-encoded form.
+ * @brief The path part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedPath;
 
 /*!
- * The path of the URL split into components.
+ * @brief The path of the URL split into components.
  *
  * The first component must always be empty to designate the root.
  */
@@ -107,7 +107,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /*!
- * The last path component of the URL.
+ * @brief The last path component of the URL.
  *
  * Returns the empty string if the path is the root.
  */
@@ -115,34 +115,34 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *lastPathComponent;
 
 /*!
- * The query part of the URL.
+ * @brief The query part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *query;
 
 /*!
- * The query part of the URL in URL-encoded form.
+ * @brief The query part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedQuery;
 
 /*!
- * The fragment part of the URL.
+ * @brief The fragment part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *fragment;
 
 /*!
- * The fragment part of the URL in URL-encoded form.
+ * @brief The fragment part of the URL in URL-encoded form.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *URLEncodedFragment;
 
 /*!
- * The URL as a string.
+ * @brief The URL as a string.
  */
 @property (readonly, nonatomic) OFString *string;
 
 /*!
- * The local file system representation for a file URL.
+ * @brief The local file system representation for a file URL.
  *
  * @note This only exists for URLs with the file scheme and throws an exception
  *	 otherwise.

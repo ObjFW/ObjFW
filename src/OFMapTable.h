@@ -79,17 +79,17 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
 }
 
 /*!
- * The key functions used by the map table.
+ * @brief The key functions used by the map table.
  */
 @property (readonly, nonatomic) of_map_table_functions_t keyFunctions;
 
 /*!
- * The object functions used by the map table.
+ * @brief The object functions used by the map table.
  */
 @property (readonly, nonatomic) of_map_table_functions_t objectFunctions;
 
 /*!
- * The number of objects in the map table.
+ * @brief The number of objects in the map table.
  */
 @property (readonly, nonatomic) size_t count;
 

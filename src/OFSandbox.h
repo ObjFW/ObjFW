@@ -57,88 +57,144 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned int _allowsBPF: 1;
 }
 
-/*! Allows IO operations on previously allocated file descriptors. */
+/*!
+ * @brief Allows IO operations on previously allocated file descriptors.
+ */
 @property (nonatomic) bool allowsStdIO;
 
-/*! Allows read access to the file system. */
+/*!
+ * @brief Allows read access to the file system.
+ */
 @property (nonatomic) bool allowsReadingFiles;
 
-/*! Allows write access to the file system. */
+/*!
+ * @brief Allows write access to the file system.
+ */
 @property (nonatomic) bool allowsWritingFiles;
 
-/*! Allows creating files in the file system. */
+/*!
+ * @brief Allows creating files in the file system.
+ */
 @property (nonatomic) bool allowsCreatingFiles;
 
-/*! Allows creating special files in the file system. */
+/*!
+ * @brief Allows creating special files in the file system.
+ */
 @property (nonatomic) bool allowsCreatingSpecialFiles;
 
-/*! Allows creating, reading and writing temporary files in /tmp. */
+/*!
+ * @brief Allows creating, reading and writing temporary files in `/tmp`.
+ */
 @property (nonatomic) bool allowsTemporaryFiles;
 
-/*! Allows using IP sockets. */
+/*!
+ * @brief Allows using IP sockets.
+ */
 @property (nonatomic) bool allowsIPSockets;
 
-/*! Allows multicast sockets. */
+/*!
+ * @brief Allows multicast sockets.
+ */
 @property (nonatomic) bool allowsMulticastSockets;
 
-/*! Allows explicit changes to file attributes. */
+/*!
+ * @brief Allows explicit changes to file attributes.
+ */
 @property (nonatomic) bool allowsChangingFileAttributes;
 
-/*! Allows changing ownership of files. */
+/*!
+ * @brief Allows changing ownership of files.
+ */
 @property (nonatomic) bool allowsFileOwnerChanges;
 
-/*! Allows file locks. */
+/*!
+ * @brief Allows file locks.
+ */
 @property (nonatomic) bool allowsFileLocks;
 
-/*! Allows UNIX sockets. */
+/*!
+ * @brief Allows UNIX sockets.
+ */
 @property (nonatomic) bool allowsUNIXSockets;
 
-/*! Allows syscalls necessary for DNS lookups. */
+/*!
+ * @brief Allows syscalls necessary for DNS lookups.
+ */
 @property (nonatomic) bool allowsDNS;
 
-/*! Allows to look up users and groups. */
+/*!
+ * @brief Allows to look up users and groups.
+ */
 @property (nonatomic) bool allowsUserDatabaseReading;
 
-/*! Allows sending file descriptors via sendmsg(). */
+/*!
+ * @brief Allows sending file descriptors via sendmsg().
+ */
 @property (nonatomic) bool allowsFileDescriptorSending;
 
-/*! Allows receiving file descriptors via recvmsg(). */
+/*!
+ * @brief Allows receiving file descriptors via recvmsg().
+ */
 @property (nonatomic) bool allowsFileDescriptorReceiving;
 
-/*! Allows MTIOCGET and MTIOCTOP operations on tape devices. */
+/*!
+ * @brief Allows MTIOCGET and MTIOCTOP operations on tape devices.
+ */
 @property (nonatomic) bool allowsTape;
 
-/*! Allows read-write operations and ioctls on the TTY. */
+/*!
+ * @brief Allows read-write operations and ioctls on the TTY.
+ */
 @property (nonatomic) bool allowsTTY;
 
-/*! Allows various process relationshop operations. */
+/*!
+ * @brief Allows various process relationshop operations.
+ */
 @property (nonatomic) bool allowsProcessOperations;
 
-/*! Allows execve(). */
+/*!
+ * @brief Allows execve().
+ */
 @property (nonatomic) bool allowsExec;
 
-/*! Allows PROT_EXEC for mmap() and mprotect(). */
+/*!
+ * @brief Allows PROT_EXEC for `mmap()` and `mprotect()`.
+ */
 @property (nonatomic) bool allowsProtExec;
 
-/*! Allows settime(). */
+/*!
+ * @brief Allows `settime()`.
+ */
 @property (nonatomic) bool allowsSetTime;
 
-/*! Allows introspection of processes on the system. */
+/*!
+ * @brief Allows introspection of processes on the system.
+ */
 @property (nonatomic) bool allowsPS;
 
-/*! Allows introspection of the system's virtual memory. */
+/*!
+ * @brief Allows introspection of the system's virtual memory.
+ */
 @property (nonatomic) bool allowsVMInfo;
 
-/*! Allows changing the rights of process, for example the UID. */
+/*!
+ * @brief Allows changing the rights of process, for example the UID.
+ */
 @property (nonatomic) bool allowsChangingProcessRights;
 
-/*! Allows certain ioctls on the PF device. */
+/*!
+ * @brief Allows certain ioctls on the PF device.
+ */
 @property (nonatomic) bool allowsPF;
 
-/*! Allows certain ioctls on audio devices. */
+/*!
+ * @brief Allows certain ioctls on audio devices.
+ */
 @property (nonatomic) bool allowsAudio;
 
-/*! Allows BIOCGSTATS to collect statistics from a BPF device. */
+/*!
+ * @brief Allows BIOCGSTATS to collect statistics from a BPF device.
+ */
 @property (nonatomic) bool allowsBPF;
 
 /*!

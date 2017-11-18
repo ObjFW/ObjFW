@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The unbound namespace.
+ * @brief The unbound namespace.
  */
 #ifndef __cplusplus
 @property (readonly, nonatomic) OFString *namespace;
@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * The element in which the namespace was not bound.
+ * @brief The element in which the namespace was not bound.
  */
 @property (readonly, nonatomic) OFXMLElement *element;
 

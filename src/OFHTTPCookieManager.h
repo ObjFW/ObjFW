@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * All cookies known to the cookie manager.
+ * @brief All cookies known to the cookie manager.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
 

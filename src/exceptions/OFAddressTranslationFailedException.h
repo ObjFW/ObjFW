@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The host for which the address translation was requested.
+ * @brief The host for which the address translation was requested.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
 

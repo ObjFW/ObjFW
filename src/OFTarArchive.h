@@ -39,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @return A stream for reading the current entry
+ * @brief A stream for reading the current entry
  *
  * @note This is only available in read mode.
  */

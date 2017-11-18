@@ -31,17 +31,17 @@ OF_ASSUME_NONNULL_BEGIN
 # define ThirdType id
 #endif
 /*!
- * The first object of the triple.
+ * @brief The first object of the triple.
  */
 @property (readwrite, nonatomic, retain) FirstType firstObject;
 
 /*!
- * The second object of the triple.
+ * @brief The second object of the triple.
  */
 @property (readwrite, nonatomic, retain) SecondType secondObject;
 
 /*!
- * The third object of the triple.
+ * @brief The third object of the triple.
  */
 @property (readwrite, nonatomic, retain) ThirdType thirdObject;
 

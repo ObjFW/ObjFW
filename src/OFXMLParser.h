@@ -174,23 +174,23 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The delegate that is used by the XML parser.
+ * @brief The delegate that is used by the XML parser.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFXMLParserDelegate> delegate;
 
 /*!
- * The current line number.
+ * @brief The current line number.
  */
 @property (readonly, nonatomic) size_t lineNumber;
 
 /*!
- * @return Whether the XML parser has finished parsing.
+ * @brief Whether the XML parser has finished parsing.
  */
 @property (readonly, nonatomic) bool hasFinishedParsing;
 
 /*!
- * The depth limit for the XML parser.
+ * @brief The depth limit for the XML parser.
  *
  * If the depth limit is exceeded, an OFMalformedXMLException is thrown.
  *

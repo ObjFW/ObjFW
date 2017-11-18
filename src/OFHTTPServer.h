@@ -95,23 +95,23 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The host on which the HTTP server will listen.
+ * @brief The host on which the HTTP server will listen.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
 /*!
- * The port on which the HTTP server will listen.
+ * @brief The port on which the HTTP server will listen.
  */
 @property (nonatomic) uint16_t port;
 
 /*!
- * The delegate for the HTTP server.
+ * @brief The delegate for the HTTP server.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFHTTPServerDelegate> delegate;
 
 /*!
- * The server name the server presents to clients.
+ * @brief The server name the server presents to clients.
  *
  * Setting it to `nil` means no `Server` header will be sent, unless one is
  * specified in the response headers.

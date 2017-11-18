@@ -104,25 +104,25 @@ enum {
 }
 
 /*!
- * The file name of the entry.
+ * @brief The file name of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *fileName;
 
 /*!
- * The comment of the entry's file.
+ * @brief The comment of the entry's file.
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *fileComment;
 
 /*!
- * The extra field of the entry.
+ * @brief The extra field of the entry.
  *
  * The item size *must* be 1!
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFData *extraField;
 
 /*!
- * The version which made the entry.
+ * @brief The version which made the entry.
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
@@ -131,7 +131,7 @@ enum {
 @property (readonly, nonatomic) uint16_t versionMadeBy;
 
 /*!
- * The minimum version required to extract the file.
+ * @brief The minimum version required to extract the file.
  *
  * The lower 8 bits are the ZIP specification version.@n
  * The upper 8 bits are the attribute compatibility.
@@ -140,14 +140,14 @@ enum {
 @property (readonly, nonatomic) uint16_t minVersionNeeded;
 
 /*!
- * The last modification date of the entry's file.
+ * @brief The last modification date of the entry's file.
  *
  * @note Due to limitations of the ZIP format, this has only 2 second precision.
  */
 @property (readonly, retain, nonatomic) OFDate *modificationDate;
 
 /*!
- * The compression method of the entry.
+ * @brief The compression method of the entry.
  *
  * Supported values are:
  * Value                                             | Description
@@ -161,22 +161,22 @@ enum {
 @property (readonly, nonatomic) uint16_t compressionMethod;
 
 /*!
- * The compressed size of the entry's file.
+ * @brief The compressed size of the entry's file.
  */
 @property (readonly, nonatomic) uint64_t compressedSize;
 
 /*!
- * The uncompressed size of the entry's file.
+ * @brief The uncompressed size of the entry's file.
  */
 @property (readonly, nonatomic) uint64_t uncompressedSize;
 
 /*!
- * The CRC32 checksum of the entry's file.
+ * @brief The CRC32 checksum of the entry's file.
  */
 @property (readonly, nonatomic) uint32_t CRC32;
 
 /*!
- * The version specific attributes.
+ * @brief The version specific attributes.
  *
  * The meaning of the version specific attributes depends on the attribute
  * compatibility part of the version that made the entry.
@@ -184,7 +184,7 @@ enum {
 @property (readonly, nonatomic) uint32_t versionSpecificAttributes;
 
 /*!
- * The general purpose bit flag of the entry.
+ * @brief The general purpose bit flag of the entry.
  *
  * See the ZIP specification for details.
  */

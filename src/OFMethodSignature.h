@@ -32,17 +32,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The number of arguments of the method.
+ * @brief The number of arguments of the method.
  */
 @property (readonly, nonatomic) size_t numberOfArguments;
 
 /*!
- * The return type of the method.
+ * @brief The return type of the method.
  */
 @property (readonly, nonatomic) const char *methodReturnType;
 
 /*!
- * The size of the arguments on the stack frame.
+ * @brief The size of the arguments on the stack frame.
  *
  * @note This is platform-dependent!
  */

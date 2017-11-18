@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The scheme this OFURLHandler handles.
+ * @brief The scheme this OFURLHandler handles.
  */
 @property (readonly, nonatomic) OFString *scheme;
 

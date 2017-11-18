@@ -35,13 +35,13 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The first object of the pair.
+ * @brief The first object of the pair.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     FirstType firstObject;
 
 /*!
- * The second object of the pair.
+ * @brief The second object of the pair.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic, retain)
     SecondType secondObject;

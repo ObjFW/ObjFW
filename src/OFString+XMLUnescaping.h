@@ -66,7 +66,7 @@ typedef OFString *_Nullable (^of_string_xml_unescaping_block_t)(
 
 @interface OFString (XMLUnescaping)
 /*!
- * The string with XML entities unescapted.
+ * @brief The string with XML entities unescapted.
  */
 @property (readonly, nonatomic) OFString *stringByXMLUnescaping;
 

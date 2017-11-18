@@ -35,17 +35,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The URL at which the symlink should have been created.
+ * @brief The URL at which the symlink should have been created.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
 /*!
- * The target for the symlink.
+ * @brief The target for the symlink.
  */
 @property (readonly, nonatomic) OFString *target;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

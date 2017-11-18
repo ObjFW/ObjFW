@@ -28,7 +28,7 @@ extern int _OFString_XMLEscaping_reference;
 
 @interface OFString (XMLEscaping)
 /*!
- * The string in a form escaped for use in an XML document.
+ * @brief The string in a form escaped for use in an XML document.
  */
 @property (readonly, nonatomic) OFString *stringByXMLEscaping;
 @end

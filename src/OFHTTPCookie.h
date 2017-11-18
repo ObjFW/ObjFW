@@ -39,42 +39,42 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The name of the cookie.
+ * @brief The name of the cookie.
  */
 @property (copy, nonatomic) OFString *name;
 
 /*!
- * The value of the cookie.
+ * @brief The value of the cookie.
  */
 @property (copy, nonatomic) OFString *value;
 
 /*!
- * The domain for the cookie.
+ * @brief The domain for the cookie.
  */
 @property (copy, nonatomic) OFString *domain;
 
 /*!
- * The path for the cookie.
+ * @brief The path for the cookie.
  */
 @property (copy, nonatomic) OFString *path;
 
 /*!
- * The date when the cookie expires.
+ * @brief The date when the cookie expires.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFDate *expires;
 
 /*!
- * Whether the cookie is only to be used with HTTPS.
+ * @brief Whether the cookie is only to be used with HTTPS.
  */
 @property (nonatomic, getter=isSecure) bool secure;
 
 /*!
- * Whether the cookie is only to be accessed through HTTP.
+ * @brief Whether the cookie is only to be accessed through HTTP.
  */
 @property (nonatomic, getter=isHTTPOnly) bool HTTPOnly;
 
 /*!
- * An array of other attributes.
+ * @brief An array of other attributes.
  */
 @property (readonly, nonatomic)
     OFMutableArray OF_GENERIC(OFString *) *extensions;

@@ -35,28 +35,28 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The protocol version of the HTTP request reply.
+ * @brief The protocol version of the HTTP request reply.
  */
 @property (nonatomic) of_http_request_protocol_version_t protocolVersion;
 
 /*!
- * The protocol version of the HTTP request reply as a string.
+ * @brief The protocol version of the HTTP request reply as a string.
  */
 @property (readonly, nonatomic) OFString *protocolVersionString;
 
 /*!
- * The status code of the reply to the HTTP request.
+ * @brief The status code of the reply to the HTTP request.
  */
 @property (nonatomic) short statusCode;
 
 /*!
- * The headers of the reply to the HTTP request.
+ * @brief The headers of the reply to the HTTP request.
  */
 @property (copy, nonatomic) OFDictionary OF_GENERIC(OFString *, OFString *)
     *headers;
 
 /*!
- * The reply as a string, trying to detect the encoding.
+ * @brief The reply as a string, trying to detect the encoding.
  */
 @property (readonly, nonatomic) OFString *string;
 

@@ -25,12 +25,12 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMutableURL: OFURL
 /*!
- * The scheme part of the URL.
+ * @brief The scheme part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *scheme;
 
 /*!
- * The scheme part of the URL in URL-encoded form.
+ * @brief The scheme part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
@@ -39,12 +39,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedScheme;
 
 /*!
- * The host part of the URL.
+ * @brief The host part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *host;
 
 /*!
- * The host part of the URL in URL-encoded form.
+ * @brief The host part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
@@ -53,17 +53,17 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedHost;
 
 /*!
- * The port part of the URL.
+ * @brief The port part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFNumber *port;
 
 /*!
- * The user part of the URL.
+ * @brief The user part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *user;
 
 /*!
- * The user part of the URL in URL-encoded form.
+ * @brief The user part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
@@ -72,12 +72,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedUser;
 
 /*!
- * The password part of the URL.
+ * @brief The password part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *password;
 
 /*!
- * The password part of the URL in URL-encoded form.
+ * @brief The password part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
@@ -86,12 +86,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedPassword;
 
 /*!
- * The path part of the URL.
+ * @brief The path part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *path;
 
 /*!
- * The path part of the URL in URL-encoded form.
+ * @brief The path part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
@@ -100,7 +100,7 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedPath;
 
 /*!
- * The path of the URL split into components.
+ * @brief The path of the URL split into components.
  *
  * The first component must always be empty to designate the root.
  */
@@ -108,12 +108,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /*!
- * The query part of the URL.
+ * @brief The query part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *query;
 
 /*!
- * The query part of the URL in URL-encoded form.
+ * @brief The query part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.
@@ -122,12 +122,12 @@ OF_ASSUME_NONNULL_BEGIN
     OFString *URLEncodedQuery;
 
 /*!
- * The fragment part of the URL.
+ * @brief The fragment part of the URL.
  */
 @property OF_NULLABLE_PROPERTY (readwrite, copy, nonatomic) OFString *fragment;
 
 /*!
- * The fragment part of the URL in URL-encoded form.
+ * @brief The fragment part of the URL in URL-encoded form.
  *
  * Setting this retains the original URL-encoding used - if more characters
  * than necessary are URL-encoded, it is kept this way.

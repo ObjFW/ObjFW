@@ -199,7 +199,7 @@ OF_ASSUME_NONNULL_BEGIN
 /* GCC does not like overriding properties with a different type. */
 #if defined(__clang__) || defined(DOXYGEN)
 /*!
- * All items of the OFMutableData as a C array.
+ * @brief All items of the OFMutableData as a C array.
  *
  * @warning The pointer is only valid until the OFMutableData is changed!
  *
@@ -209,7 +209,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) void *items OF_RETURNS_INNER_POINTER;
 
 /*!
- * The first item of the OFMutableData or NULL.
+ * @brief The first item of the OFMutableData or `NULL`.
  *
  * Modifying the returned item directly is allowed and will change the contents
  * of the data array.
@@ -218,7 +218,7 @@ OF_ASSUME_NONNULL_BEGIN
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * Last item of the OFMutableData or NULL.
+ * @brief Last item of the OFMutableData or `NULL`.
  *
  * Modifying the returned item directly is allowed and will change the contents
  * of the data array.

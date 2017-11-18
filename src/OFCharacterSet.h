@@ -26,8 +26,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCharacterSet: OFObject
 /*!
- * The inverted set, containing only the characters that do not exist in the
- * receiver.
+ * @brief The inverted set, containing only the characters that do not exist in
+ *	  the receiver.
  */
 @property (readonly, nonatomic) OFCharacterSet *invertedSet;
 

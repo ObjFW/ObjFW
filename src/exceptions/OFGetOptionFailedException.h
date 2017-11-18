@@ -33,12 +33,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The stream for which the option could not be retrieved.
+ * @brief The stream for which the option could not be retrieved.
  */
 @property (readonly, nonatomic) OFStream *stream;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

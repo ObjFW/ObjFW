@@ -33,17 +33,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The stream which caused the read or write failed exception.
+ * @brief The stream which caused the read or write failed exception.
  */
 @property (readonly, nonatomic) id object;
 
 /*!
- * The requested length of the data that could not be read / written.
+ * @brief The requested length of the data that could not be read / written.
  */
 @property (readonly, nonatomic) size_t requestedLength;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

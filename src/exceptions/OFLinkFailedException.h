@@ -33,17 +33,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * A URL with the source for the link.
+ * @brief A URL with the source for the link.
  */
 @property (readonly, nonatomic) OFURL *sourceURL;
 
 /*!
- * A URL with the destination for the link.
+ * @brief A URL with the destination for the link.
  */
 @property (readonly, nonatomic) OFURL *destinationURL;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

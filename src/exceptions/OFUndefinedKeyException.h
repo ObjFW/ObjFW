@@ -33,17 +33,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The object on which the key is undefined.
+ * @brief The object on which the key is undefined.
  */
 @property (readonly, nonatomic) id object;
 
 /*!
- * The key which is undefined.
+ * @brief The key which is undefined.
  */
 @property (readonly, nonatomic) OFString *key;
 
 /*!
- * The value for the undefined key
+ * @brief The value for the undefined key
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id value;
 

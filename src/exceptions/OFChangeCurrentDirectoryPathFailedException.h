@@ -33,12 +33,13 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The path of the directory to which the current path could not be changed.
+ * @brief The path of the directory to which the current path could not be
+ *	  changed.
  */
 @property (readonly, nonatomic) OFString *path;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

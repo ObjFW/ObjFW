@@ -146,23 +146,23 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * The name of the program (argv[0]).
+ * @brief The name of the program (argv[0]).
  */
 @property (readonly, nonatomic) OFString *programName;
 
 /*!
- * The arguments passed to the application.
+ * @brief The arguments passed to the application.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *arguments;
 
 /*!
- * The environment of the application.
+ * @brief The environment of the application.
  */
 @property (readonly, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *environment;
 
 /*!
- * The delegate of the application.
+ * @brief The delegate of the application.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFApplicationDelegate> delegate;

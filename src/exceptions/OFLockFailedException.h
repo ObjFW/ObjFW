@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The lock which could not be locked.
+ * @brief The lock which could not be locked.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OFLocking> lock;
 

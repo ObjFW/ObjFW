@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The thread which could not be joined.
+ * @brief The thread which could not be joined.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 

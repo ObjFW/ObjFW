@@ -154,13 +154,13 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The delegate of the HTTP request.
+ * @brief The delegate of the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     OFObject <OFHTTPClientDelegate> *delegate;
 
 /*!
- * Whether redirects from HTTPS to HTTP will be allowed.
+ * @brief Whether redirects from HTTPS to HTTP will be allowed.
  */
 @property (nonatomic) bool insecureRedirectsAllowed;
 

@@ -116,12 +116,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
     OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
 
 /*!
- * The length of the string in Unicode codepoints.
+ * @brief The length of the string in Unicode codepoints.
  */
 @property (readonly, nonatomic) size_t length;
 
 /*!
- * The OFString as a UTF-8 encoded C string.
+ * @brief The OFString as a UTF-8 encoded C string.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
@@ -130,37 +130,37 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) const char *UTF8String OF_RETURNS_INNER_POINTER;
 
 /*!
- * The number of bytes the string needs in UTF-8 encoding.
+ * @brief The number of bytes the string needs in UTF-8 encoding.
  */
 @property (readonly, nonatomic) size_t UTF8StringLength;
 
 /*!
- * The components of the string when interpreted as a path.
+ * @brief The components of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *pathComponents;
 
 /*!
- * The last path component of the string when interpreted as a path.
+ * @brief The last path component of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFString *lastPathComponent;
 
 /*!
- * The file extension of string when interpreted as a path.
+ * @brief The file extension of string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFString *pathExtension;
 
 /*!
- * The string in uppercase.
+ * @brief The string in uppercase.
  */
 @property (readonly, nonatomic) OFString *uppercaseString;
 
 /*!
- * The string in lowercase.
+ * @brief The string in lowercase.
  */
 @property (readonly, nonatomic) OFString *lowercaseString;
 
 /*!
- * The string in capitalized form.
+ * @brief The string in capitalized form.
  *
  * @note This only considers spaces, tabs and newlines to be word delimiters!
  *	 Also note that this might change in the future to all word delimiters
@@ -169,7 +169,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) OFString *capitalizedString;
 
 /*!
- * The decimal value of the string as an `intmax_t`.
+ * @brief The decimal value of the string as an `intmax_t`.
  *
  * Leading and trailing whitespaces are ignored.
  *
@@ -182,7 +182,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) intmax_t decimalValue;
 
 /*!
- * The hexadecimal value of the string as an `uintmax_t`.
+ * @brief The hexadecimal value of the string as an `uintmax_t`.
  *
  * Leading and trailing whitespaces are ignored.
  *
@@ -195,7 +195,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) uintmax_t hexadecimalValue;
 
 /*!
- * The octal value of the string as an `uintmax_t`.
+ * @brief The octal value of the string as an `uintmax_t`.
  *
  * Leading and trailing whitespaces are ignored.
  *
@@ -208,7 +208,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) uintmax_t octalValue;
 
 /*!
- * The float value of the string as a float.
+ * @brief The float value of the string as a float.
  *
  * If the string contains any non-number characters, an
  * @ref OFInvalidEncodingException is thrown.
@@ -216,7 +216,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) float floatValue;
 
 /*!
- * The double value of the string as a double.
+ * @brief The double value of the string as a double.
  *
  * If the string contains any non-number characters, an
  * OFInvalidEncodingException is thrown.
@@ -224,22 +224,22 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) double doubleValue;
 
 /*!
- * The directory name of the string when interpreted as a path.
+ * @brief The directory name of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingLastPathComponent;
 
 /*!
- * The string with the file extension of the path removed.
+ * @brief The string with the file extension of the path removed.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingPathExtension;
 
 /*!
- * The string interpreted as a path with relative sub paths resolved.
+ * @brief The string interpreted as a path with relative sub paths resolved.
  */
 @property (readonly, nonatomic) OFString *stringByStandardizingPath;
 
 /*!
- * The string interpreted as a URL path with relative sub paths resolved.
+ * @brief The string interpreted as a URL path with relative sub paths resolved.
  *
  * This works similar to @ref stringByStandardizingPath, but is intended for
  * standardization of paths that are part of a URL.
@@ -247,7 +247,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) OFString *stringByStandardizingURLPath;
 
 /*!
- * The string as an array of Unicode characters.
+ * @brief The string as an array of Unicode characters.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
@@ -257,7 +257,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * The string in UTF-16 encoding with native byte order.
+ * @brief The string in UTF-16 encoding with native byte order.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
@@ -267,12 +267,12 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * The length of the string in UTF-16 characters.
+ * @brief The length of the string in UTF-16 characters.
  */
 @property (readonly, nonatomic) size_t UTF16StringLength;
 
 /*!
- * The string in UTF-32 encoding with native byte order.
+ * @brief The string in UTF-32 encoding with native byte order.
  *
  * The result is valid until the autorelease pool is released. If you want to
  * use the result outside the scope of the current autorelease pool, you have to
@@ -282,28 +282,28 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * The string with leading whitespaces deleted.
+ * @brief The string with leading whitespaces deleted.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingLeadingWhitespaces;
 
 /*!
- * The string with trailing whitespaces deleted.
+ * @brief The string with trailing whitespaces deleted.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingTrailingWhitespaces;
 
 /*!
- * The string with leading and trailing whitespaces deleted.
+ * @brief The string with leading and trailing whitespaces deleted.
  */
 @property (readonly, nonatomic) OFString *stringByDeletingEnclosingWhitespaces;
 
 #ifdef OF_HAVE_UNICODE_TABLES
 /*!
- * The string in Unicode Normalization Form D (NFD).
+ * @brief The string in Unicode Normalization Form D (NFD).
  */
 @property (readonly, nonatomic) OFString *decomposedStringWithCanonicalMapping;
 
 /*!
- * The string in Unicode Normalization Form KD (NFKD).
+ * @brief The string in Unicode Normalization Form KD (NFKD).
  */
 @property (readonly, nonatomic)
     OFString *decomposedStringWithCompatibilityMapping;

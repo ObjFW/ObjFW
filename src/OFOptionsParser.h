@@ -77,7 +77,7 @@ typedef struct of_options_parser_option_t {
 }
 
 /*!
- * The last parsed option.
+ * @brief The last parsed option.
  *
  * If @ref nextOption returned `?` or `:`, this returns the option which was
  * unknown or for which the argument was missing.@n
@@ -87,8 +87,8 @@ typedef struct of_options_parser_option_t {
 @property (readonly, nonatomic) of_unichar_t lastOption;
 
 /*!
- * The long option for the last parsed option, or `nil` if the last parsed
- * option was not passed as a long option by the user.
+ * @brief The long option for the last parsed option, or `nil` if the last
+ *	  parsed option was not passed as a long option by the user.
  *
  * In case @ref nextOption returned `?`, this contains the unknown long
  * option.@n
@@ -104,13 +104,13 @@ typedef struct of_options_parser_option_t {
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *lastLongOption;
 
 /*!
- * The argument for the last parsed option, or `nil` if the last parsed option
- * takes no argument.
+ * @brief The argument for the last parsed option, or `nil` if the last parsed
+ *	  option takes no argument.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *argument;
 
 /*!
- * The arguments following the last option.
+ * @brief The arguments following the last option.
  */
 @property (readonly, nonatomic)
     OFArray OF_GENERIC(OFString *) *remainingArguments;

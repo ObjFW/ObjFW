@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFXMLNode: OFObject <OFCopying, OFSerialization>
 /*!
- * The contents of the node as a string value.
+ * @brief The contents of the node as a string value.
  *
  * For an @ref OFXMLElement, setting it removes all children and creates a
  * single child with the specified string value.
@@ -36,27 +36,27 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) OFString *stringValue;
 
 /*!
- * The contents of the receiver as a decimal value.
+ * @brief The contents of the receiver as a decimal value.
  */
 @property (readonly, nonatomic) intmax_t decimalValue;
 
 /*!
- * The contents of the receiver as a hexadecimal value.
+ * @brief The contents of the receiver as a hexadecimal value.
  */
 @property (readonly, nonatomic) uintmax_t hexadecimalValue;
 
 /*!
- * The contents of the receiver as a float value.
+ * @brief The contents of the receiver as a float value.
  */
 @property (readonly, nonatomic) float floatValue;
 
 /*!
- * The contents of the receiver as a double value.
+ * @brief The contents of the receiver as a double value.
  */
 @property (readonly, nonatomic) double doubleValue;
 
 /*!
- * A string representing the node as an XML string.
+ * @brief A string representing the node as an XML string.
  */
 @property (readonly, nonatomic) OFString *XMLString;
 

@@ -35,12 +35,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The socket which could not accept a connection.
+ * @brief The socket which could not accept a connection.
  */
 @property (readonly, nonatomic) id socket;
 
 /*!
- * @return The errno from when the exception was created.
+ * @brief The errno from when the exception was created.
  */
 @property (readonly, nonatomic) int errNo;
 

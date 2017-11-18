@@ -34,12 +34,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The URL of the item whose attributes could not be retrieved.
+ * @brief The URL of the item whose attributes could not be retrieved.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

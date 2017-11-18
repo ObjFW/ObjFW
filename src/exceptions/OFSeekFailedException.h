@@ -33,22 +33,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The stream for which seeking failed.
+ * @brief The stream for which seeking failed.
  */
 @property (readonly, nonatomic) OFSeekableStream *stream;
 
 /*!
- * The offset to which seeking failed.
+ * @brief The offset to which seeking failed.
  */
 @property (readonly, nonatomic) of_offset_t offset;
 
 /*!
- * To what the offset is relative.
+ * @brief To what the offset is relative.
  */
 @property (readonly, nonatomic) int whence;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

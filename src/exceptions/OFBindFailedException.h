@@ -37,22 +37,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The host on which binding failed.
+ * @brief The host on which binding failed.
  */
 @property (readonly, nonatomic) OFString *host;
 
 /*!
- * The port on which binding failed.
+ * @brief The port on which binding failed.
  */
 @property (readonly, nonatomic) uint16_t port;
 
 /*!
- * The socket which could not be bound.
+ * @brief The socket which could not be bound.
  */
 @property (readonly, nonatomic) id socket;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

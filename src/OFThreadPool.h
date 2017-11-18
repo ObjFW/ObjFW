@@ -53,7 +53,7 @@ typedef void (^of_thread_pool_block_t)(void);
 }
 
 /*!
- * The size of the thread pool.
+ * @brief The size of the thread pool.
  */
 @property (readonly, nonatomic) size_t size;
 

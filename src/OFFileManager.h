@@ -235,12 +235,12 @@ extern const of_file_type_t of_file_type_socket;
 #endif
 
 /*!
- * The path of the current working directory.
+ * @brief The path of the current working directory.
  */
 @property (readonly, nonatomic) OFString *currentDirectoryPath;
 
 /*!
- * The URL of the current working directory.
+ * @brief The URL of the current working directory.
  */
 @property (readonly, nonatomic) OFURL *currentDirectoryURL;
 

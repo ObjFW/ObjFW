@@ -46,12 +46,12 @@ OF_ASSUME_NONNULL_BEGIN
 # define ObjectType id
 #endif
 /*!
- * An array of all remaining objects in the collection.
+ * @brief An array of all remaining objects in the collection.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
 
 /*!
- * Returns the next object or `nil` if there is none left.
+ * @brief Returns the next object or `nil` if there is none left.
  *
  * @return The next object or `nil` if there is none left
  */

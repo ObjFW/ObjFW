@@ -30,12 +30,12 @@ OF_ASSUME_NONNULL_BEGIN
 # define SecondType id
 #endif
 /*!
- * The first object of the pair.
+ * @brief The first object of the pair.
  */
 @property (readwrite, nonatomic, retain) FirstType firstObject;
 
 /*!
- * The second object of the pair.
+ * @brief The second object of the pair.
  */
 @property (readwrite, nonatomic, retain) SecondType secondObject;
 

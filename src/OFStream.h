@@ -122,22 +122,22 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
 }
 
 /*!
- * Whether the end of the stream has been reached.
+ * @brief Whether the end of the stream has been reached.
  */
 @property (readonly, nonatomic, getter=isAtEndOfStream) bool atEndOfStream;
 
 /*!
- * Whether writes are buffered.
+ * @brief Whether writes are buffered.
  */
 @property (nonatomic, nonatomic, getter=isWriteBuffered) bool writeBuffered;
 
 /*!
- * Whether data is present in the internal read buffer.
+ * @brief Whether data is present in the internal read buffer.
  */
 @property (readonly, nonatomic) bool hasDataInReadBuffer;
 
 /*!
- * Whether the stream is in blocking mode.
+ * @brief Whether the stream is in blocking mode.
  *
  * By default, a stream is in blocking mode.
  * On Win32, setting this currently only works for sockets!
@@ -145,12 +145,12 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
 @property (readonly, nonatomic, getter=isBlocking) bool blocking;
 
 /*!
- * The file descriptor for the read end of the stream.
+ * @brief The file descriptor for the read end of the stream.
  */
 @property (readonly, nonatomic) int fileDescriptorForReading;
 
 /*!
- * The file descriptor for the write end of the stream.
+ * @brief The file descriptor for the write end of the stream.
  */
 @property (readonly, nonatomic) int fileDescriptorForWriting;
 

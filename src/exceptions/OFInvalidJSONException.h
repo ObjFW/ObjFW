@@ -31,12 +31,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The string containing the invalid JSON representation.
+ * @brief The string containing the invalid JSON representation.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *string;
 
 /*!
- * The line in which parsing the JSON representation failed.
+ * @brief The line in which parsing the JSON representation failed.
  */
 @property (readonly, nonatomic) size_t line;
 

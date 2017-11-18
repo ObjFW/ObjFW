@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The hash which has already been calculated.
+ * @brief The hash which has already been calculated.
  */
 @property (readonly, nonatomic) id object;
 

@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The URL whose protocol is unsupported.
+ * @brief The URL whose protocol is unsupported.
  */
 @property (readonly, nonatomic) OFURL *URL;
 

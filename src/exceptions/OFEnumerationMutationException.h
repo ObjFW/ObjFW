@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The object which was mutated during enumeration.
+ * @brief The object which was mutated during enumeration.
  */
 @property (readonly, nonatomic) id object;
 

@@ -57,13 +57,13 @@ struct of_list_object_t {
 }
 
 /*!
- * The first list object of the list.
+ * @brief The first list object of the list.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_list_object_t *firstListObject;
 
 /*!
- * The first object of the list or `nil`.
+ * @brief The first object of the list or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!
@@ -71,13 +71,13 @@ struct of_list_object_t {
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
 
 /*!
- * The last list object of the list.
+ * @brief The last list object of the list.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_list_object_t *lastListObject;
 
 /*!
- * The last object of the list or `nil`.
+ * @brief The last object of the list or `nil`.
  *
  * @warning The returned object is *not* retained and autoreleased for
  *	    performance reasons!

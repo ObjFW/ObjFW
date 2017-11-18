@@ -39,12 +39,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The HTTP request which failed.
+ * @brief The HTTP request which failed.
  */
 @property (readonly, nonatomic) OFHTTPRequest *request;
 
 /*!
- * The response for the failed HTTP request.
+ * @brief The response for the failed HTTP request.
  */
 @property (readonly, nonatomic) OFHTTPResponse *response;
 

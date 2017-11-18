@@ -51,13 +51,13 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The archive comment.
+ * @brief The archive comment.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *archiveComment;
 
 /*!
- * The entries in the central directory of the archive as an array of objects
- * of class @ref OFZIPArchiveEntry.
+ * @brief The entries in the central directory of the archive as an array of
+ *	  objects of class @ref OFZIPArchiveEntry.
  *
  * The objects of the array have the same order as the entries in the central
  * directory, which does not need to be the order in which the actual files are

@@ -28,7 +28,7 @@ extern int _OFString_JSONValue_reference;
 
 @interface OFString (JSONValue)
 /*!
- * The string interpreted as JSON and parsed as an object.
+ * @brief The string interpreted as JSON and parsed as an object.
  *
  * @note This also allows parsing JSON5, an extension of JSON. See
  *	 http://json5.org/ for more details.

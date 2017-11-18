@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The version which is unsupported.
+ * @brief The version which is unsupported.
  */
 @property (readonly, nonatomic) OFString *version;
 

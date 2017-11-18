@@ -33,12 +33,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The class for the cryptographic hash used by the HMAC.
+ * @brief The class for the cryptographic hash used by the HMAC.
  */
 @property (readonly, nonatomic) Class <OFCryptoHash> hashClass;
 
 /*!
- * A buffer containing the HMAC.
+ * @brief A buffer containing the HMAC.
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
  * receiver's memory pool.
@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * The size of the digest.
+ * @brief The size of the digest.
  */
 @property (readonly, nonatomic) size_t digestSize;
 

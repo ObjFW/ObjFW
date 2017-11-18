@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The number of bytes already written before the write failed.
+ * @brief The number of bytes already written before the write failed.
  *
  * This can be used to make sure that a retry does not write data already
  * written before.

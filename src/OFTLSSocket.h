@@ -55,23 +55,23 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFTLSSocket
 /*!
- * The delegate for the TLS socket.
+ * @brief The delegate for the TLS socket.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFTLSSocketDelegate> delegate;
 
 /*!
- * The path to the X.509 certificate file to use.
+ * @brief The path to the X.509 certificate file to use.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *certificateFile;
 
 /*!
- * The path to the PKCS#8 private key file to use.
+ * @brief The path to the PKCS#8 private key file to use.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *privateKeyFile;
 
 /*!
- * The passphrase to decrypt the PKCS#8 private key file.
+ * @brief The passphrase to decrypt the PKCS#8 private key file.
  *
  * @warning You have to ensure that this is in secure memory protected from
  *	    swapping! This is also the reason why this is not an OFString.
@@ -80,7 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
     const char *privateKeyPassphrase;
 
 /*!
- * Whether certificate verification is enabled.
+ * @brief Whether certificate verification is enabled.
  *
  * The default is enabled.
  */

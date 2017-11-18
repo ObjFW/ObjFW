@@ -33,12 +33,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The observer which failed to observe.
+ * @brief The observer which failed to observe.
  */
 @property (readonly, nonatomic) OFKernelEventObserver *observer;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

@@ -33,12 +33,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The URL of the item which could not be removed.
+ * @brief The URL of the item which could not be removed.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The thread which is still running.
+ * @brief The thread which is still running.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFThread *thread;
 

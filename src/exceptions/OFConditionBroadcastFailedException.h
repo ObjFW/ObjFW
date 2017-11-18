@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The condition which could not be broadcasted.
+ * @brief The condition which could not be broadcasted.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 

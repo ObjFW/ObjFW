@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The method signature for the invocation.
+ * @brief The method signature for the invocation.
  */
 @property (readonly, nonatomic) OFMethodSignature *methodSignature;
 

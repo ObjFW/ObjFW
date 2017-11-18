@@ -86,7 +86,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # endif
 
 /*!
- * The name for the thread to use when starting it.
+ * @brief The name for the thread to use when starting it.
  *
  * @note While this can be changed after the thread has been started, it will
  *	 have no effect once the thread started. If you want to change the name
@@ -97,19 +97,19 @@ typedef id _Nullable (^of_thread_block_t)(void);
 
 # ifdef OF_HAVE_BLOCKS
 /*!
- * The block to execute in the thread.
+ * @brief The block to execute in the thread.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_thread_block_t threadBlock;
 # endif
 
 /*!
- * The run loop for the thread.
+ * @brief The run loop for the thread.
  */
 @property (readonly, nonatomic) OFRunLoop *runLoop;
 
 /*!
- * The priority of the thread.
+ * @brief The priority of the thread.
  *
  * @note This has to be set before the thread is started!
  *
@@ -120,7 +120,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 @property (nonatomic) float priority;
 
 /*!
- * The stack size of the thread.
+ * @brief The stack size of the thread.
  *
  * @note This has to be set before the thread is started!
  */

@@ -40,37 +40,36 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The size of a single item in the OFData in bytes.
+ * @brief The size of a single item in the OFData in bytes.
  */
 @property (readonly, nonatomic) size_t itemSize;
 
 /*!
- * The number of items in the OFData.
+ * @brief The number of items in the OFData.
  */
 @property (readonly, nonatomic) size_t count;
 
 /*!
- * All elements of the OFData as a C array.
+ * @brief All elements of the OFData as a C array.
  *
  * @warning The pointer is only valid until the OFData is changed!
- *
  */
 @property (readonly, nonatomic) const void *items OF_RETURNS_INNER_POINTER;
 
 /*!
- * The first item of the OFData or NULL.
+ * @brief The first item of the OFData or `NULL`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *firstItem
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * The last item of the OFData or NULL.
+ * @brief The last item of the OFData or `NULL`.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) const void *lastItem
     OF_RETURNS_INNER_POINTER;
 
 /*!
- * The string representation of the data.
+ * @brief The string representation of the data.
  *
  * The string representation is a hex dump of the data, grouped by itemSize
  * bytes.
@@ -78,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *stringRepresentation;
 
 /*!
- * A string containing the data in Base64 encoding.
+ * @brief A string containing the data in Base64 encoding.
  */
 @property (readonly, nonatomic) OFString *stringByBase64Encoding;
 

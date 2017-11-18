@@ -25,7 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFCollection <OFEnumerating, OFFastEnumeration>
 /*!
- * @return The number of objects in the collection
+ * @brief The number of objects in the collection
  */
 @property (readonly, nonatomic) size_t count;
 

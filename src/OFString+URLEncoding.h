@@ -30,7 +30,7 @@ extern int _OFString_URLEncoding_reference;
 
 @interface OFString (URLEncoding)
 /*!
- * The string as an URL decoded string.
+ * @brief The string as an URL decoded string.
  */
 @property (readonly, nonatomic) OFString *stringByURLDecoding;
 

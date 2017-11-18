@@ -35,17 +35,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The socket which failed to listen.
+ * @brief The socket which failed to listen.
  */
 @property (readonly, nonatomic) id socket;
 
 /*!
- * The requested back log.
+ * @brief The requested back log.
  */
 @property (readonly, nonatomic) int backLog;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

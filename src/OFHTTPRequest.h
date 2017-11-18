@@ -77,38 +77,38 @@ typedef struct {
 }
 
 /*!
- * The URL of the HTTP request.
+ * @brief The URL of the HTTP request.
  */
 @property (copy, nonatomic) OFURL *URL;
 
 /*!
- * The protocol version of the HTTP request.
+ * @brief The protocol version of the HTTP request.
  */
 @property (nonatomic) of_http_request_protocol_version_t protocolVersion;
 
 /*!
- * The protocol version of the HTTP request as a string.
+ * @brief The protocol version of the HTTP request as a string.
  */
 @property (readonly, nonatomic) OFString *protocolVersionString;
 
 /*!
- * The request method of the HTTP request.
+ * @brief The request method of the HTTP request.
  */
 @property (nonatomic) of_http_request_method_t method;
 
 /*!
- * The headers for the HTTP request.
+ * @brief The headers for the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
 
 /*!
- * The entity body of the HTTP request.
+ * @brief The entity body of the HTTP request.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFData *body;
 
 /*!
- * The remote address from which the request originates.
+ * @brief The remote address from which the request originates.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *remoteAddress;
 

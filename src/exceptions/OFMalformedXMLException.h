@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The parser which encountered malformed XML.
+ * @brief The parser which encountered malformed XML.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFXMLParser *parser;
 

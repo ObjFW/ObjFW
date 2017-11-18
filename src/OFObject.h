@@ -199,17 +199,17 @@ of_rectangle(float x, float y, float width, float height)
  */
 @protocol OFObject
 /*!
- * The class of the object.
+ * @brief The class of the object.
  */
 @property (readonly, nonatomic) Class class;
 
 /*!
- * The superclass of the object.
+ * @brief The superclass of the object.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class superclass;
 
 /*!
- * A 32 bit hash for the object.
+ * @brief A 32 bit hash for the object.
  *
  * Classes containing data (like strings, arrays, lists etc.) should reimplement
  * this!
@@ -221,17 +221,17 @@ of_rectangle(float x, float y, float width, float height)
 @property (readonly, nonatomic) uint32_t hash;
 
 /*!
- * The retain count.
+ * @brief The retain count.
  */
 @property (readonly, nonatomic) unsigned int retainCount;
 
 /*!
- * Whether the object is a proxy object.
+ * @brief Whether the object is a proxy object.
  */
 @property (readonly, nonatomic) bool isProxy;
 
 /*!
- * Whether the object allows weak references.
+ * @brief Whether the object allows weak references.
  */
 @property (readonly, nonatomic) bool allowsWeakReference;
 
@@ -424,12 +424,12 @@ OF_ROOT_CLASS
 #endif
 
 /*!
- * The name of the object's class.
+ * @brief The name of the object's class.
  */
 @property (readonly, nonatomic) OFString *className;
 
 /*!
- * A description for the object.
+ * @brief A description for the object.
  *
  * This is used when the object is used in a format string and for debugging
  * purposes.

@@ -34,12 +34,12 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * A boolean whether the hash has already been calculated.
+ * @brief A boolean whether the hash has already been calculated.
  */
 @property (readonly, nonatomic, getter=isCalculated) bool calculated;
 
 /*!
- * A buffer containing the cryptographic hash.
+ * @brief A buffer containing the cryptographic hash.
  *
  * The size of the buffer depends on the hash used. The buffer is part of the
  * receiver's memory pool.

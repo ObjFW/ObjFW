@@ -38,7 +38,8 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The name of the application whose settings are accessed by the instance.
+ * @brief The name of the application whose settings are accessed by the
+ *	  instance.
  */
 @property (readonly, nonatomic) OFString *applicationName;
 

@@ -34,7 +34,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The name of the INI category
+ * @brief The name of the INI category
  */
 @property (copy, nonatomic) OFString *name;
 

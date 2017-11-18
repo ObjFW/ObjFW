@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The class for which initialization failed.
+ * @brief The class for which initialization failed.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) Class inClass;
 

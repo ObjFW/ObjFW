@@ -31,17 +31,17 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The original path.
+ * @brief The original path.
  */
 @property (readonly, nonatomic) OFString *sourcePath;
 
 /*!
- * The new path.
+ * @brief The new path.
  */
 @property (readonly, nonatomic) OFString *destinationPath;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

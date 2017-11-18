@@ -118,17 +118,17 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
     OF_SENTINEL;
 
 /*!
- * An array of all keys.
+ * @brief An array of all keys.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(KeyType) *allKeys;
 
 /*!
- * An array of all objects.
+ * @brief An array of all objects.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
 
 /*!
- * A URL-encoded string with the contents of the dictionary.
+ * @brief A URL-encoded string with the contents of the dictionary.
  */
 @property (readonly, nonatomic) OFString *stringByURLEncoding;
 

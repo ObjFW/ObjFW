@@ -37,22 +37,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The socket which could not connect.
+ * @brief The socket which could not connect.
  */
 @property (readonly, nonatomic) id socket;
 
 /*!
- * The host to which the connection failed.
+ * @brief The host to which the connection failed.
  */
 @property (readonly, nonatomic) OFString *host;
 
 /*!
- * The port on the host to which the connection failed.
+ * @brief The port on the host to which the connection failed.
  */
 @property (readonly, nonatomic) uint16_t port;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

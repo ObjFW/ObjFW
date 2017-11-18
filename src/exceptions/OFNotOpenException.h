@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The object which is not open, connected or bound.
+ * @brief The object which is not open, connected or bound.
  */
 @property (readonly, nonatomic) id object;
 

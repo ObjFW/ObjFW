@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFSerialization
 /*!
- * The object serialized into an XML element.
+ * @brief The object serialized into an XML element.
  */
 @property (readonly, nonatomic) OFXMLElement *XMLElementBySerializing;
 

@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The condition for which could not be waited.
+ * @brief The condition for which could not be waited.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFCondition *condition;
 

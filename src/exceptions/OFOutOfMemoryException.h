@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The size of the memory that could not be allocated.
+ * @brief The size of the memory that could not be allocated.
  */
 @property (readonly, nonatomic) size_t requestedSize;
 

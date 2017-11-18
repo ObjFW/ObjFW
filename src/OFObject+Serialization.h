@@ -30,7 +30,7 @@ extern int _OFObject_Serialization_reference;
 
 @interface OFObject (OFSerialization)
 /*!
- * The object serialized as a string.
+ * @brief The object serialized as a string.
  */
 @property (readonly, nonatomic) OFString *stringBySerializing;
 @end

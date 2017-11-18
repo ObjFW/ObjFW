@@ -34,12 +34,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The URL of the directory which couldn't be created.
+ * @brief The URL of the directory which couldn't be created.
  */
 @property (readonly, nonatomic) OFURL *URL;
 
 /*!
- * The errno of the error that occurred.
+ * @brief The errno of the error that occurred.
  */
 @property (readonly, nonatomic) int errNo;
 

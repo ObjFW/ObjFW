@@ -35,7 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The socket which is already connected.
+ * @brief The socket which is already connected.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id socket;
 

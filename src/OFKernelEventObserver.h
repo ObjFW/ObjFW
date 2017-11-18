@@ -69,8 +69,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFReadyForReadingObserving <OFObject>
 /*!
- * The file descriptor for reading that should be checked by the
- * OFKernelEventObserver.
+ * @brief The file descriptor for reading that should be checked by the
+ *	  OFKernelEventObserver.
  */
 @property (readonly, nonatomic) int fileDescriptorForReading;
 @end
@@ -84,8 +84,8 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFReadyForWritingObserving <OFObject>
 /*!
- * The file descriptor for writing that should be checked by the
- * OFKernelEventObserver.
+ * @brief The file descriptor for writing that should be checked by the
+ *	  OFKernelEventObserver.
  */
 @property (readonly, nonatomic) int fileDescriptorForWriting;
 @end
@@ -120,7 +120,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The delegate for the OFKernelEventObserver.
+ * @brief The delegate for the OFKernelEventObserver.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFKernelEventObserverDelegate> delegate;

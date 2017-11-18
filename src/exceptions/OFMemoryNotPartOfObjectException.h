@@ -32,12 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * A pointer to the memory which is not part of the object.
+ * @brief A pointer to the memory which is not part of the object.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *pointer;
 
 /*!
- * The object which the memory is not part of.
+ * @brief The object which the memory is not part of.
  */
 @property (readonly, nonatomic) id object;
 

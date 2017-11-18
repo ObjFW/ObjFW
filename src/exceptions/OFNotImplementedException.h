@@ -32,12 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The selector which is not or not fully implemented.
+ * @brief The selector which is not or not fully implemented.
  */
 @property (readonly, nonatomic) SEL selector;
 
 /*!
- * The object which does not (fully) implement the selector.
+ * @brief The object which does not (fully) implement the selector.
  */
 @property (readonly, nonatomic) id object;
 

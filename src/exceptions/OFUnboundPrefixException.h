@@ -33,12 +33,12 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * The unbound prefix.
+ * @brief The unbound prefix.
  */
 @property (readonly, nonatomic) OFString *prefix;
 
 /*!
- * The parser which encountered the unbound prefix.
+ * @brief The parser which encountered the unbound prefix.
  */
 @property (readonly, nonatomic) OFXMLParser *parser;
 

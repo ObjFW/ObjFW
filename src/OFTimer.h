@@ -62,23 +62,23 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 }
 
 /*!
- * The time interval in which the timer will repeat, if it is a repeating
- * timer.
+ * @brief The time interval in which the timer will repeat, if it is a
+ *	  repeating timer.
  */
 @property (readonly, nonatomic) of_time_interval_t timeInterval;
 
 /*!
- * Whether the timer is repeating.
+ * @brief Whether the timer is repeating.
  */
 @property (readonly, nonatomic, getter=isRepeating) bool repeating;
 
 /*!
- * Whether the timer is valid.
+ * @brief Whether the timer is valid.
  */
 @property (readonly, nonatomic, getter=isValid) bool valid;
 
 /*!
- * The next date at which the timer will fire.
+ * @brief The next date at which the timer will fire.
  *
  * If the timer is already scheduled in a run loop, it will be rescheduled.
  * Note that rescheduling is an expensive operation, though it still might be

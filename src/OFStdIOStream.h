@@ -47,14 +47,14 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /*!
- * The number of columns, or -1 if there is no underlying terminal or the
- * number of columns could not be queried.
+ * @brief The number of columns, or -1 if there is no underlying terminal or
+ *	  the number of columns could not be queried.
  */
 @property (readonly, nonatomic) int columns;
 
 /*!
- * The number of rows, or -1 if there is no underlying terminal or the number
- * of rows could not be queried
+ * @brief The number of rows, or -1 if there is no underlying terminal or the
+ *	  number of rows could not be queried.
  */
 @property (readonly, nonatomic) int rows;
 
