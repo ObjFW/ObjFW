@@ -15,6 +15,7 @@ PREDEFINED = DOXYGEN				\
 	     OF_HAVE_SANDBOX			\
 	     OF_HAVE_SOCKETS			\
 	     OF_HAVE_THREADS			\
+	     OF_KINDOF(...)=			\
 	     OF_NO_RETURN			\
 	     OF_NO_RETURN_FUNC			\
 	     OF_NULLABLE_PROPERTY(...)=		\
