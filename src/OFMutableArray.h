@@ -199,7 +199,7 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  * @brief Sorts the array using the specified selector and options.
  *
  * @param selector The selector to use to sort the array. It's signature
- *		   should be the same as that of @ref compare:.
+ *		   should be the same as that of @ref OFComparing#compare:.
  * @param options The options to use when sorting the array.@n
  *		  Possible values are:
  *		  Value                      | Description

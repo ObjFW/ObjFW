@@ -388,7 +388,7 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  *	  options.
  *
  * @param selector The selector to use to sort the array. It's signature
- *		   should be the same as that of @ref compare:.
+ *		   should be the same as that of @ref OFComparing#compare:.
  * @param options The options to use when sorting the array.@n
  *		  Possible values are:
  *		  Value                      | Description

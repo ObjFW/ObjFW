@@ -1137,7 +1137,7 @@ OF_ROOT_CLASS
  *
  * This protocol is implemented by objects that can be compared.
  */
-@protocol OFComparing <OFObject>
+@protocol OFComparing
 /*!
  * @brief Compares the object with another object.
  *
