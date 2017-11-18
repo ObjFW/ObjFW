@@ -161,7 +161,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * If you want to read exactly the specified number of bytes, use
  * @ref readIntoBuffer:exactLength:. Note that a read can even return 0 bytes -
  * this does not necessarily mean that the stream ended, so you still need to
- * check @ref isAtEndOfStream.
+ * check @ref atEndOfStream.
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read at most.
@@ -198,7 +198,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:target:selector:context:. Note that a
  * read can even return 0 bytes - this does not necessarily mean that the
- * stream ended, so you still need to check @ref isAtEndOfStream.
+ * stream ended, so you still need to check @ref atEndOfStream.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
  *	 valid file descriptor in order for this to work!
@@ -265,7 +265,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * If you want to read exactly the specified number of bytes, use
  * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
  * return 0 bytes - this does not necessarily mean that the stream ended, so
- * you still need to check @ref isAtEndOfStream.
+ * you still need to check @ref atEndOfStream.
  *
  * @note The stream must implement @ref fileDescriptorForReading and return a
  *	 valid file descriptor in order for this to work!

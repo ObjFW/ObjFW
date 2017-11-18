@@ -21,6 +21,15 @@ OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
 
+/*!
+ * @def OF_LOCALIZED
+ *
+ * @brief Returns the localized string for the specified ID with the specified
+ *	  arguments inserted.
+ *
+ * @param ID The ID of the localized string to retrieve
+ * @return The localized string with the specified arguments replaced
+ */
 #define OF_LOCALIZED(ID, ...)				\
 	[[OFLocalization sharedLocalization]		\
 	    localizedStringForID: ID			\

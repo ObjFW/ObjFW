@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*! @file */
+
 @class OFDate;
 
 /*!

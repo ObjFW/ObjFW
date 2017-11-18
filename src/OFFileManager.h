@@ -78,7 +78,7 @@ typedef OFConstantString *of_file_attribute_key_t;
 typedef OFConstantString *of_file_type_t;
 
 /*!
- * @brief A dictionary mapping keys of type @ref of_file_attribute_key_type_t
+ * @brief A dictionary mapping keys of type @ref of_file_attribute_key_t
  *	  to their attribute values.
  */
 typedef OFDictionary OF_GENERIC(of_file_attribute_key_t, id)
@@ -86,7 +86,7 @@ typedef OFDictionary OF_GENERIC(of_file_attribute_key_t, id)
 
 /*!
  * @brief A mutable dictionary mapping keys of type
- *	  @ref of_file_attribute_key_type_t to their attribute values.
+ *	  @ref of_file_attribute_key_t to their attribute values.
  */
 typedef OFMutableDictionary OF_GENERIC(of_file_attribute_key_t, id)
     *of_mutable_file_attributes_t;
@@ -98,7 +98,7 @@ extern "C" {
  * @brief The size of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileSize.
+ * via @ref OFDictionary#fileSize.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_size;
 
@@ -108,7 +108,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_size;
  * The corresponding value is of type @ref of_file_type_t.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileType.
+ * via @ref OFDictionary#fileType.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_type;
 
@@ -116,7 +116,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_type;
  * @brief The POSIX permissions of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref filePOSIXPermissions.
+ * via @ref OFDictionary#filePOSIXPermissions.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_posix_permissions;
 
@@ -124,7 +124,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_permissions;
  * @brief The POSIX UID of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref filePOSIXUID.
+ * via @ref OFDictionary#filePOSIXUID.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
 
@@ -132,7 +132,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_uid;
  * @brief The POSIX GID of the file as an @ref OFNumber.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref filePOSIXGID.
+ * via @ref OFDictionary#filePOSIXGID.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
 
@@ -140,7 +140,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_posix_gid;
  * @brief The owner of the file as an @ref OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileOwner.
+ * via @ref OFDictionary#fileOwner.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_owner;
 
@@ -148,7 +148,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_owner;
  * @brief The group of the file as an @ref OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileGroup.
+ * via @ref OFDictionary#fileGroup.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_group;
 
@@ -156,7 +156,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_group;
  * @brief The last access date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileLastAccessDate.
+ * via @ref OFDictionary#fileLastAccessDate.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
 
@@ -164,7 +164,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_last_access_date;
  * @brief The last modification date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileModificationDate.
+ * via @ref OFDictionary#fileModificationDate.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
 
@@ -172,7 +172,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
  * @brief The last status change date of the file as an @ref OFDate.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileStatusChangeDate.
+ * via @ref OFDictionary#fileStatusChangeDate.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
 
@@ -180,7 +180,7 @@ extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
  * @brief The destination of a symbolic link as an @ref OFString.
  *
  * For convenience, a category on @ref OFDictionary is provided to access this
- * via @ref fileSymbolicLinkDestination.
+ * via @ref OFDictionary#fileSymbolicLinkDestination.
  */
 extern const of_file_attribute_key_t
     of_file_attribute_key_symbolic_link_destination;

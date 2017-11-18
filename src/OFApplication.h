@@ -116,9 +116,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * In order to create a new OFApplication, you should create a class conforming
  * to the optional @ref OFApplicationDelegate protocol and put
- * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class. The
- * only required method of the @ref OFApplicationDelegate protocol is
- * @ref OFApplicationDelegate::applicationDidFinishLaunching.
+ * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  */
 @interface OFApplication: OFObject
 {
