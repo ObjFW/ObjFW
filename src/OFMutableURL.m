@@ -58,8 +58,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedScheme,
-	    [OFCharacterSet URLSchemeAllowedCharacterSet]);
+	if (URLEncodedScheme != nil)
+		of_url_verify_escaped(URLEncodedScheme,
+		    [OFCharacterSet URLSchemeAllowedCharacterSet]);
 
 	old = _URLEncodedScheme;
 	_URLEncodedScheme = [URLEncodedScheme copy];
@@ -83,8 +84,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedHost,
-	    [OFCharacterSet URLHostAllowedCharacterSet]);
+	if (URLEncodedHost != nil)
+		of_url_verify_escaped(URLEncodedHost,
+		    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 	old = _URLEncodedHost;
 	_URLEncodedHost = [URLEncodedHost copy];
@@ -115,8 +117,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedUser,
-	    [OFCharacterSet URLUserAllowedCharacterSet]);
+	if (URLEncodedUser != nil)
+		of_url_verify_escaped(URLEncodedUser,
+		    [OFCharacterSet URLUserAllowedCharacterSet]);
 
 	old = _URLEncodedUser;
 	_URLEncodedUser = [URLEncodedUser copy];
@@ -141,8 +144,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedPassword,
-	    [OFCharacterSet URLPasswordAllowedCharacterSet]);
+	if (URLEncodedPassword != nil)
+		of_url_verify_escaped(URLEncodedPassword,
+		    [OFCharacterSet URLPasswordAllowedCharacterSet]);
 
 	old = _URLEncodedPassword;
 	_URLEncodedPassword = [URLEncodedPassword copy];
@@ -166,8 +170,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedPath,
-	    [OFCharacterSet URLPathAllowedCharacterSet]);
+	if (URLEncodedPath != nil)
+		of_url_verify_escaped(URLEncodedPath,
+		    [OFCharacterSet URLPathAllowedCharacterSet]);
 
 	old = _URLEncodedPath;
 	_URLEncodedPath = [URLEncodedPath copy];
@@ -211,8 +216,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedQuery,
-	    [OFCharacterSet URLQueryAllowedCharacterSet]);
+	if (URLEncodedQuery != nil)
+		of_url_verify_escaped(URLEncodedQuery,
+		    [OFCharacterSet URLQueryAllowedCharacterSet]);
 
 	old = _URLEncodedQuery;
 	_URLEncodedQuery = [URLEncodedQuery copy];
@@ -237,8 +243,9 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 {
 	OFString *old;
 
-	of_url_verify_escaped(URLEncodedFragment,
-	    [OFCharacterSet URLFragmentAllowedCharacterSet]);
+	if (URLEncodedFragment != nil)
+		of_url_verify_escaped(URLEncodedFragment,
+		    [OFCharacterSet URLFragmentAllowedCharacterSet]);
 
 	old = _URLEncodedFragment;
 	_URLEncodedFragment = [URLEncodedFragment copy];
