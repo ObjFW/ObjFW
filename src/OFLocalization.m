@@ -25,6 +25,7 @@
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
+#import "OFOpenItemFailedException.h"
 
 #ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
@@ -249,7 +250,12 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	pool = objc_autoreleasePoolPush();
 
 	mapPath = [path stringByAppendingPathComponent: @"languages.json"];
-	map = [[OFString stringWithContentsOfFile: mapPath] JSONValue];
+	@try {
+		map = [[OFString stringWithContentsOfFile: mapPath] JSONValue];
+	} @catch (OFOpenItemFailedException *e) {
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
 
 	language = [_language lowercaseString];
 	territory = [_territory lowercaseString];
