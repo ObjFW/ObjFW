@@ -397,7 +397,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return [self retain];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
 {
 	OFDate *otherDate;
 

@@ -808,7 +808,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	return true;
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
 {
 	OFString *otherString;
 	size_t otherCStringLength, minimumCStringLength;

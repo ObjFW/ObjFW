@@ -506,7 +506,7 @@
 	[super dealloc];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
 {
 	OFTimer *timer;
 

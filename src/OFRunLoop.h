@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
     <OFKernelEventObserverDelegate>
 #endif
 {
-	OFSortedList *_timersQueue;
+	OFSortedList OF_GENERIC(OFTimer *) *_timersQueue;
 #ifdef OF_HAVE_THREADS
 	OFMutex *_timersQueueLock;
 #endif

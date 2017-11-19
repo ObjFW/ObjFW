@@ -436,7 +436,7 @@ _references_to_categories_of_OFData(void)
 	return true;
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
 {
 	OFData *data;
 	int comparison;

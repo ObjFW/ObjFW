@@ -763,7 +763,7 @@
 	return ([number uIntMaxValue] == [self uIntMaxValue]);
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
 {
 	OFNumber *number;
 

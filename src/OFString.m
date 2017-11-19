@@ -1552,7 +1552,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (id <OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
 {
 	void *pool;
 	OFString *otherString;
