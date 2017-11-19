@@ -243,7 +243,7 @@ normalizeKey(char *str_)
 	[super dealloc];
 }
 
-- (void)createResponseWithSocket: (OFTCPSocket *)sock
+- (void)createResponseWithSocketOrThrow: (OFTCPSocket *)sock
 {
 	OFURL *URL = [_request URL];
 	OFHTTPClientResponse *response;
@@ -372,12 +372,12 @@ normalizeKey(char *str_)
 		}
 	}
 
+	_client->_inProgress = false;
+
 	if (_status / 100 != 2)
 		@throw [OFHTTPRequestFailedException
 		    exceptionWithRequest: _request
 				response: response];
-
-	_client->_inProgress = false;
 
 	[_client->_delegate performSelector: @selector(client:didPerformRequest:
 						 response:context:)
@@ -386,6 +386,18 @@ normalizeKey(char *str_)
 				 withObject: response
 				 withObject: _context
 				 afterDelay: 0];
+}
+
+- (void)createResponseWithSocket: (OFTCPSocket *)sock
+{
+	@try {
+		[self createResponseWithSocketOrThrow: sock];
+	} @catch (id e) {
+		[_client->_delegate client: _client
+		     didEncounterException: e
+				forRequest: _request
+				   context: _context];
+	}
 }
 
 - (bool)handleFirstLine: (OFString *)line
@@ -712,35 +724,42 @@ normalizeKey(char *str_)
 
 - (void)closeAndReconnect
 {
-	OFURL *URL = [_request URL];
-	OFTCPSocket *sock;
-	uint16_t port;
-	OFNumber *URLPort;
+	@try {
+		OFURL *URL = [_request URL];
+		OFTCPSocket *sock;
+		uint16_t port;
+		OFNumber *URLPort;
 
-	[_client close];
+		[_client close];
 
-	if ([[URL scheme] isEqual: @"https"]) {
-		if (of_tls_socket_class == Nil)
-			@throw [OFUnsupportedProtocolException
-			    exceptionWithURL: URL];
+		if ([[URL scheme] isEqual: @"https"]) {
+			if (of_tls_socket_class == Nil)
+				@throw [OFUnsupportedProtocolException
+				    exceptionWithURL: URL];
 
-		sock = [[[of_tls_socket_class alloc] init] autorelease];
-		port = 443;
-	} else {
-		sock = [OFTCPSocket socket];
-		port = 80;
+			sock = [[[of_tls_socket_class alloc] init] autorelease];
+			port = 443;
+		} else {
+			sock = [OFTCPSocket socket];
+			port = 80;
+		}
+
+		URLPort = [URL port];
+		if (URLPort != nil)
+			port = [URLPort uInt16Value];
+
+		[sock asyncConnectToHost: [URL host]
+				    port: port
+				  target: self
+				selector: @selector(socketDidConnect:context:
+					      exception:)
+				 context: nil];
+	} @catch (id e) {
+		[_client->_delegate client: _client
+		     didEncounterException: e
+				forRequest: _request
+				   context: _context];
 	}
-
-	URLPort = [URL port];
-	if (URLPort != nil)
-		port = [URLPort uInt16Value];
-
-	[sock asyncConnectToHost: [URL host]
-			    port: port
-			  target: self
-			selector: @selector(socketDidConnect:context:
-				      exception:)
-			 context: nil];
 }
 @end
 
