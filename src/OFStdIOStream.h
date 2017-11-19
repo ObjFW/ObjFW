@@ -15,6 +15,7 @@
  */
 
 #import "OFStream.h"
+#import "OFKernelEventObserver.h"
 
 #ifdef OF_MORPHOS
 # define BOOL EXEC_BOOL
@@ -36,6 +37,9 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFStdIOStream: OFStream
+#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
+    <OFReadyForReadingObserving, OFReadyForWritingObserving>
+#endif
 {
 #ifndef OF_MORPHOS
 	int _fd;

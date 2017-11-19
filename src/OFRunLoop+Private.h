@@ -25,24 +25,28 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFRunLoop ()
 + (void)of_setMainRunLoop: (OFRunLoop *)runLoop;
 #ifdef OF_HAVE_SOCKETS
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector
 			 context: (nullable id)context;
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			  target: (id)target
 			selector: (SEL)selector
 			 context: (nullable id)context;
-+ (void)of_addAsyncReadLineForStream: (OFStream *)stream
++ (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
+					  stream
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
 			    selector: (SEL)selector
 			     context: (nullable id)context;
-+ (void)of_addAsyncWriteForStream: (OFStream *)stream
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
 			   target: (id)target
@@ -66,18 +70,22 @@ OF_ASSUME_NONNULL_BEGIN
 			   selector: (SEL)selector
 			    context: (nullable id)context;
 # ifdef OF_HAVE_BLOCKS
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			   block: (of_stream_async_read_block_t)block;
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			   block: (of_stream_async_read_block_t)block;
-+ (void)of_addAsyncReadLineForStream: (OFStream *)stream
++ (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
+					  stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block;
-+ (void)of_addAsyncWriteForStream: (OFStream *)stream
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
 			    block: (of_stream_async_write_block_t)block;

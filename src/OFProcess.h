@@ -28,6 +28,7 @@
 #endif
 
 #import "OFStream.h"
+#import "OFKernelEventObserver.h"
 #import "OFString.h"
 
 #ifdef OF_WINDOWS
@@ -45,6 +46,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for stream-like communication with a newly created process.
  */
 @interface OFProcess: OFStream
+#ifndef OF_WINDOWS
+    <OFReadyForReadingObserving, OFReadyForWritingObserving>
+#endif
 {
 #ifndef OF_WINDOWS
 	pid_t _pid;

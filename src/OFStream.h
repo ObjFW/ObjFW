@@ -104,11 +104,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  *	 override these methods without the `lowlevel` prefix, you *will* break
  *	 caching and get broken results!
  */
-@interface OFStream: OFObject <
-#ifdef OF_HAVE_SOCKETS
-    OFReadyForReadingObserving, OFReadyForWritingObserving,
-#endif
-    OFCopying>
+@interface OFStream: OFObject <OFCopying>
 {
 #if !defined(OF_SEEKABLE_STREAM_M) && !defined(OF_TCP_SOCKET_M)
 @private
@@ -143,16 +139,6 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * On Win32, setting this currently only works for sockets!
  */
 @property (readonly, nonatomic, getter=isBlocking) bool blocking;
-
-/*!
- * @brief The file descriptor for the read end of the stream.
- */
-@property (readonly, nonatomic) int fileDescriptorForReading;
-
-/*!
- * @brief The file descriptor for the write end of the stream.
- */
-@property (readonly, nonatomic) int fileDescriptorForWriting;
 
 /*!
  * @brief Reads *at most* size bytes from the stream into a buffer.
@@ -200,8 +186,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * read can even return 0 bytes - this does not necessarily mean that the
  * stream ended, so you still need to check @ref atEndOfStream.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param buffer The buffer into which the data is read.
  *		 The buffer must not be freed before the async read completed!
@@ -233,8 +219,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * instead, it waits until it got exactly the specified length, the stream has
  * ended or an exception occurred.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
@@ -267,8 +253,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * return 0 bytes - this does not necessarily mean that the stream ended, so
  * you still need to check @ref atEndOfStream.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param buffer The buffer into which the data is read.
  *		 The buffer must not be freed before the async read completed!
@@ -293,8 +279,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * waits until it got exactly the specified length, the stream has ended or an
  * exception occurred.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
@@ -662,8 +648,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param target The target on which to call the selector when the data has
  *		 been received. If the method returns true, it will be called
@@ -683,8 +669,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @brief Asynchronously reads with the specified encoding until a newline,
  *	  `\0`, end of stream or an exception occurs.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param encoding The encoding used by the stream
  * @param target The target on which to call the selector when the data has
@@ -707,8 +693,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
  *	  exception occurs.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param block The block to call when the data has been received.
  *		If the block returns true, it will be called again when the next
@@ -722,8 +708,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * @brief Asynchronously reads with the specified encoding until a newline,
  *	  `\0`, end of stream or an exception occurs.
  *
- * @note The stream must implement @ref fileDescriptorForReading and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
  *
  * @param encoding The encoding used by the stream
  * @param block The block to call when the data has been received.
@@ -823,8 +809,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
 /*!
  * @brief Asynchronously writes a buffer into the stream.
  *
- * @note The stream must implement @ref fileDescriptorForWriting and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
  *
  * @param buffer The buffer from which the data is written into the stream. The
  *		 buffer needs to be valid until the write request is completed!
@@ -850,8 +836,8 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
 /*!
  * @brief Asynchronously writes a buffer into the stream.
  *
- * @note The stream must implement @ref fileDescriptorForWriting and return a
- *	 valid file descriptor in order for this to work!
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
  *
  * @param buffer The buffer from which the data is written into the stream. The
  *		 buffer needs to be valid until the write request is completed!

@@ -33,7 +33,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
-@interface OFTarArchive_FileReadStream: OFStream
+@interface OFTarArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OFTarArchiveEntry *_entry;
 	OF_KINDOF(OFStream *) _stream;
@@ -46,10 +46,10 @@
 - (void)of_skip;
 @end
 
-@interface OFTarArchive_FileWriteStream: OFStream
+@interface OFTarArchive_FileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFTarArchiveEntry *_entry;
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	uint64_t _toWrite;
 }
 
@@ -203,7 +203,7 @@
 	return entry;
 }
 
-- (OFStream *)streamForReadingCurrentEntry
+- (OFStream <OFReadyForReadingObserving> *)streamForReadingCurrentEntry
 {
 	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
@@ -214,7 +214,8 @@
 	return [[_lastReturnedStream retain] autorelease];
 }
 
-- (OFStream *)streamForWritingEntry: (OFTarArchiveEntry *)entry
+- (OFStream <OFReadyForWritingObserving> *)
+    streamForWritingEntry: (OFTarArchiveEntry *)entry
 {
 	void *pool;
 

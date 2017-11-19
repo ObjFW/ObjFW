@@ -116,11 +116,9 @@ SRCS_FILES = OFFile.m			\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
 	     OFSettings.m
-SRCS_FILES_NOINCLUDE = OFURLHandler_file.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPClient.m			\
 	       OFHTTPServer.m			\
-	       OFKernelEventObserver.m		\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
@@ -143,6 +141,7 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    OFCollection.h			\
 	    OFCryptoHash.h			\
 	    OFJSONRepresentation.h		\
+	    OFKernelEventObserver.h		\
 	    OFKeyValueCoding.h			\
 	    OFLocking.h				\
 	    OFMessagePackRepresentation.h	\
@@ -173,10 +172,11 @@ SRCS += OFArray_adjacent.m		\
 	OFString_UTF8.m			\
 	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
-	${INSTANCE_M}			\
-	${USE_SRCS_FILES_NOINCLUDE}
-SRCS_FILES += OFSettings_INIFile.m
-SRCS_SOCKETS += ${OFKERNELEVENTOBSERVER_EPOLL_M}	\
+	${INSTANCE_M}
+SRCS_FILES += OFSettings_INIFile.m	\
+	      OFURLHandler_file.m
+SRCS_SOCKETS += OFKernelEventObserver.m			\
+		${OFKERNELEVENTOBSERVER_EPOLL_M}	\
 		${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
 		${OFKERNELEVENTOBSERVER_POLL_M}		\
 		${OFKERNELEVENTOBSERVER_SELECT_M}	\

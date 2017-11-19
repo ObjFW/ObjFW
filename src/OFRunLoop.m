@@ -529,7 +529,8 @@ static OFRunLoop *mainRunLoop = nil;
 									\
 	objc_autoreleasePoolPop(pool);
 
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			  target: (id)target
@@ -545,7 +546,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
 			  target: (id)target
@@ -561,7 +563,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReadLineForStream: (OFStream *)stream
++ (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
+					  stream
 			    encoding: (of_string_encoding_t)encoding
 			      target: (id)target
 			    selector: (SEL)selector
@@ -575,7 +578,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncWriteForStream: (OFStream *)stream
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
 			   target: (id)target
@@ -638,7 +642,8 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 # ifdef OF_HAVE_BLOCKS
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			   block: (of_stream_async_read_block_t)block
@@ -650,7 +655,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReadForStream: (OFStream *)stream
++ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
+				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
 			   block: (of_stream_async_read_block_t)block
@@ -662,7 +668,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncReadLineForStream: (OFStream *)stream
++ (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
+					  stream
 			    encoding: (of_string_encoding_t)encoding
 			       block: (of_stream_async_read_line_block_t)block
 {
@@ -672,7 +679,8 @@ static OFRunLoop *mainRunLoop = nil;
 	})
 }
 
-+ (void)of_addAsyncWriteForStream: (OFStream *)stream
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
 			    block: (of_stream_async_write_block_t)block

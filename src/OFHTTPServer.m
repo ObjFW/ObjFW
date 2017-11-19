@@ -173,7 +173,7 @@ normalizedKey(OFString *key)
 				       freeWhenDone: true];
 }
 
-@interface OFHTTPServerResponse: OFHTTPResponse
+@interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
 {
 	OFTCPSocket *_socket;
 	OFHTTPServer *_server;

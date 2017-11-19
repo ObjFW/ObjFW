@@ -527,23 +527,17 @@ extern char **environ;
 	return (size_t)bytesWritten;
 }
 
+#ifndef OF_WINDOWS
 - (int)fileDescriptorForReading
 {
-#ifndef OF_WINDOWS
 	return _readPipe[0];
-#else
-	OF_UNRECOGNIZED_SELECTOR
-#endif
 }
 
 - (int)fileDescriptorForWriting
 {
-#ifndef OF_WINDOWS
 	return _writePipe[1];
-#else
-	OF_UNRECOGNIZED_SELECTOR
-#endif
 }
+#endif
 
 - (void)closeForWriting
 {

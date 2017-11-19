@@ -15,6 +15,7 @@
  */
 
 #import "OFSeekableStream.h"
+#import "OFKernelEventObserver.h"
 
 #ifndef OF_MORPHOS
 # define OF_FILE_HANDLE_IS_FD
@@ -38,6 +39,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which provides methods to read and write files.
  */
 @interface OFFile: OFSeekableStream
+#ifdef OF_FILE_HANDLE_IS_FD
+    <OFReadyForReadingObserving, OFReadyForWritingObserving>
+#endif
 {
 	of_file_handle_t _handle;
 	bool _atEndOfStream;

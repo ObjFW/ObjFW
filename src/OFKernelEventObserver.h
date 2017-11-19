@@ -16,7 +16,9 @@
 
 #import "OFObject.h"
 
-#import "socket.h"
+#ifdef OF_HAVE_SOCKETS
+# import "socket.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -90,6 +92,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) int fileDescriptorForWriting;
 @end
 
+#ifdef OF_HAVE_SOCKETS
 /*!
  * @class OFKernelEventObserver
  *	  OFKernelEventObserver.h ObjFW/OFKernelEventObserver.h
@@ -205,5 +208,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)cancel;
 @end
+#endif
 
 OF_ASSUME_NONNULL_END

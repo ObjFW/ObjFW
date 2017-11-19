@@ -15,6 +15,7 @@
  */
 
 #import "OFStream.h"
+#import "OFKernelEventObserver.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,15 +24,18 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @class OFInflateStream OFInflateStream.h ObjFW/OFInflateStream.h
  *
+ * @note This class only conforms to OFReadyForReadingObserving if the
+ *	 underlying stream does so, too.
+ *
  * @brief A class that handles Deflate decompression transparently for an
  *	  underlying stream.
  */
-@interface OFInflateStream: OFStream
+@interface OFInflateStream: OFStream <OFReadyForReadingObserving>
 {
 #ifdef OF_INFLATE_STREAM_M
 @public
 #endif
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	uint8_t _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;

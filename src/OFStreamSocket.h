@@ -25,7 +25,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create and use stream sockets.
  */
-@interface OFStreamSocket: OFStream
+@interface OFStreamSocket: OFStream <OFReadyForReadingObserving,
+    OFReadyForWritingObserving>
 {
 	of_socket_t _socket;
 	bool _atEndOfStream;

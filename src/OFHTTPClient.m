@@ -26,6 +26,7 @@
 #import "OFDictionary.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFKernelEventObserver.h"
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
@@ -65,7 +66,7 @@
 - (void)closeAndReconnect;
 @end
 
-@interface OFHTTPClientResponse: OFHTTPResponse
+@interface OFHTTPClientResponse: OFHTTPResponse <OFReadyForReadingObserving>
 {
 	OFTCPSocket *_socket;
 	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
