@@ -482,12 +482,6 @@ OF_ROOT_CLASS
 + (instancetype)alloc;
 
 /*!
- * @brief Allocates memory for a new instance and calls @ref init on it.
- * @return An allocated and initialized object
- */
-+ (instancetype)new;
-
-/*!
  * @brief Returns the class.
  *
  * @return The class
