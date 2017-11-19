@@ -201,7 +201,11 @@ of_rectangle(float x, float y, float width, float height)
 /*!
  * @brief The class of the object.
  */
+#ifndef __cplusplus
 @property (readonly, nonatomic) Class class;
+#else
+@property (readonly, nonatomic, getter=class) Class class_;
+#endif
 
 /*!
  * @brief The superclass of the object.
@@ -417,7 +421,11 @@ OF_ROOT_CLASS
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
+# ifndef __cplusplus
 @property (class, readonly, nonatomic) Class class;
+# else
+@property (class, readonly, nonatomic, getter=class) Class class_;
+# endif
 @property (class, readonly, nonatomic) OFString *className;
 @property (class, readonly, nullable, nonatomic) Class superclass;
 @property (class, readonly, nonatomic) OFString *description;
