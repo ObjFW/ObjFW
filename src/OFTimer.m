@@ -506,11 +506,11 @@
 	[super dealloc];
 }
 
-- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFTimer *timer;
 
-	if (![object isKindOfClass: [OFTimer class]])
+	if (![(id)object isKindOfClass: [OFTimer class]])
 		@throw [OFInvalidArgumentException exception];
 
 	timer = (OFTimer *)object;

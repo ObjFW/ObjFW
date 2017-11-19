@@ -397,11 +397,11 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	return [self retain];
 }
 
-- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFDate *otherDate;
 
-	if (![object isKindOfClass: [OFDate class]])
+	if (![(id)object isKindOfClass: [OFDate class]])
 		@throw [OFInvalidArgumentException exception];
 
 	otherDate = (OFDate *)object;

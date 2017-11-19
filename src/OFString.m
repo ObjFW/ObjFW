@@ -1552,7 +1552,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return [[OFMutableString alloc] initWithString: self];
 }
 
-- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	void *pool;
 	OFString *otherString;
@@ -1562,7 +1562,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (object == self)
 		return OF_ORDERED_SAME;
 
-	if (![object isKindOfClass: [OFString class]])
+	if (![(id)object isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
 
 	otherString = (OFString *)object;

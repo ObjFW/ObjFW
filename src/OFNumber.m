@@ -763,11 +763,11 @@
 	return ([number uIntMaxValue] == [self uIntMaxValue]);
 }
 
-- (of_comparison_result_t)compare: (id <OFObject, OFComparing>)object
+- (of_comparison_result_t)compare: (id <OFComparing>)object
 {
 	OFNumber *number;
 
-	if (![object isKindOfClass: [OFNumber class]])
+	if (![(id)object isKindOfClass: [OFNumber class]])
 		@throw [OFInvalidArgumentException exception];
 
 	number = (OFNumber *)object;
