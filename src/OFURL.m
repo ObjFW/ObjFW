@@ -909,17 +909,17 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (id)mutableCopy
 {
-	OFMutableURL *copy = [[OFMutableURL alloc] init];
+	OFURL *copy = [[OFMutableURL alloc] init];
 
 	@try {
-		[copy setURLEncodedScheme: _URLEncodedScheme];
-		[copy setURLEncodedHost: _URLEncodedHost];
-		[copy setPort: _port];
-		[copy setURLEncodedUser: _URLEncodedUser];
-		[copy setURLEncodedPassword: _URLEncodedPassword];
-		[copy setURLEncodedPath: _URLEncodedPath];
-		[copy setURLEncodedQuery: _URLEncodedQuery];
-		[copy setURLEncodedFragment: _URLEncodedFragment];
+		copy->_URLEncodedScheme = [_URLEncodedScheme copy];
+		copy->_URLEncodedHost = [_URLEncodedHost copy];
+		copy->_port = _port;
+		copy->_URLEncodedUser = [_URLEncodedUser copy];
+		copy->_URLEncodedPassword = [_URLEncodedPassword copy];
+		copy->_URLEncodedPath = [_URLEncodedPath copy];
+		copy->_URLEncodedQuery = [_URLEncodedQuery copy];
+		copy->_URLEncodedFragment = [_URLEncodedFragment copy];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
