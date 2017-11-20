@@ -18,17 +18,141 @@
 
 #import "OFSet.h"
 #import "OFArray.h"
+#import "OFMutableSet_hashtable.h"
 #import "OFNumber.h"
+#import "OFSet_hashtable.h"
 #import "OFAutoreleasePool.h"
 
 #import "OFEnumerationMutationException.h"
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFSet";
+static OFString *module = nil;
+
+@interface SimpleSet: OFSet
+{
+	OFMutableSet *_set;
+}
+@end
+
+@interface SimpleMutableSet: OFMutableSet
+{
+	OFMutableSet *_set;
+}
+@end
+
+@implementation SimpleSet
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_set = [[OFMutableSet alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithSet: (OFSet *)set
+{
+	self = [super init];
+
+	@try {
+		_set = [[OFMutableSet alloc] initWithSet: set];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithArray: (OFArray *)array
+{
+	self = [super init];
+
+	@try {
+		_set = [[OFMutableSet alloc] initWithArray: array];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (instancetype)initWithObject: (id)firstObject
+		     arguments: (va_list)arguments
+{
+	self = [super init];
+
+	@try {
+		_set = [[OFMutableSet alloc] initWithObject: firstObject
+						  arguments: arguments];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_set release];
+
+	[super dealloc];
+}
+
+- (size_t)count
+{
+	return [_set count];
+}
+
+- (bool)containsObject: (id)object
+{
+	return [_set containsObject: object];
+}
+
+- (OFEnumerator *)objectEnumerator
+{
+	return [_set objectEnumerator];
+}
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
+			     count: (int)count
+{
+	return [_set countByEnumeratingWithState: state
+					 objects: objects
+					   count: count];
+}
+@end
+
+@implementation SimpleMutableSet
++ (void)initialize
+{
+	if (self == [SimpleMutableSet class])
+		[self inheritMethodsFromClass: [SimpleSet class]];
+}
+
+- (void)addObject: (id)object
+{
+	[_set addObject: object];
+}
+
+- (void)removeObject: (id)object
+{
+	[_set removeObject: object];
+}
+@end
 
 @implementation TestsAppDelegate (OFSetTests)
-- (void)setTests
+- (void)setTestsWithClass: (Class)setClass
+	     mutableClass: (Class)mutableSetClass
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFSet *set1, *set2;
@@ -37,12 +161,12 @@ static OFString *module = @"OFSet";
 	size_t i;
 
 	TEST(@"+[setWithArray:]",
-	    (set1 = [OFSet setWithArray: [OFArray arrayWithObjects: @"foo",
+	    (set1 = [setClass setWithArray: [OFArray arrayWithObjects: @"foo",
 	    @"bar", @"baz", @"foo", @"x", nil]]))
 
 	TEST(@"+[setWithObjects:]",
-	    (set2 = [OFSet setWithObjects: @"foo", @"bar", @"baz", @"bar", @"x",
-	    nil]))
+	    (set2 = [setClass setWithObjects: @"foo", @"bar", @"baz", @"bar",
+	    @"x", nil]))
 
 	TEST(@"-[isEqual:]", [set1 isEqual: set2])
 
@@ -56,12 +180,14 @@ static OFString *module = @"OFSet";
 	TEST(@"-[copy]", [set1 isEqual: [[set1 copy] autorelease]])
 
 	TEST(@"-[mutableCopy]",
-	    (mutableSet = [[set1 mutableCopy] autorelease]));
+	    [set1 isEqual: [[set1 mutableCopy] autorelease]]);
+
+	mutableSet = [mutableSetClass setWithSet: set1];
 
 	TEST(@"-[addObject:]",
 	    R([mutableSet addObject: @"baz"]) && [mutableSet isEqual: set2] &&
 	    R([mutableSet addObject: @"y"]) && [mutableSet isEqual:
-	    [OFSet setWithObjects: @"foo", @"bar", @"baz", @"x", @"y", nil]])
+	    [setClass setWithObjects: @"foo", @"bar", @"baz", @"x", @"y", nil]])
 
 	TEST(@"-[removeObject:]",
 	    R([mutableSet removeObject: @"y"]) && [mutableSet isEqual: set1])
@@ -72,27 +198,28 @@ static OFString *module = @"OFSet";
 	    ![set1 isSubsetOfSet: mutableSet]);
 
 	TEST(@"-[intersectsSet:]",
-	    [(set2 = [OFSet setWithObjects: @"x", nil]) intersectsSet: set1] &&
-	    [set1 intersectsSet: set2] &&
-	    ![[OFSet setWithObjects: @"1", nil] intersectsSet: set1]);
+	    [(set2 = [setClass setWithObjects: @"x", nil])
+	    intersectsSet: set1] && [set1 intersectsSet: set2] &&
+	    ![[setClass setWithObjects: @"1", nil] intersectsSet: set1]);
 
 	TEST(@"-[minusSet:]",
-	    R([mutableSet minusSet: [OFSet setWithObjects: @"x", nil]]) &&
-	    [mutableSet isEqual: [OFSet setWithObjects: @"baz", @"bar", nil]])
+	    R([mutableSet minusSet: [setClass setWithObjects: @"x", nil]]) &&
+	    [mutableSet isEqual: [setClass setWithObjects:
+	    @"baz", @"bar", nil]])
 
 	TEST(@"-[intersectSet:]",
-	    R([mutableSet intersectSet: [OFSet setWithObjects: @"baz",
-	    nil]]) && [mutableSet isEqual: [OFSet setWithObjects: @"baz",
-	    nil]])
+	    R([mutableSet intersectSet: [setClass setWithObjects:
+	    @"baz", nil]]) && [mutableSet isEqual: [setClass setWithObjects:
+	    @"baz", nil]])
 
 	TEST(@"-[unionSet:]",
-	    R([mutableSet unionSet: [OFSet setWithObjects: @"x", @"bar",
-	    nil]]) && [mutableSet isEqual: [OFSet setWithObjects: @"baz",
-	    @"bar", @"x", nil]])
+	    R([mutableSet unionSet: [setClass setWithObjects:
+	    @"x", @"bar", nil]]) && [mutableSet isEqual:
+	    [setClass setWithObjects: @"baz", @"bar", @"x", nil]])
 
 	TEST(@"-[removeAllObjects]",
 	    R([mutableSet removeAllObjects]) &&
-	    [mutableSet isEqual: [OFSet set]])
+	    [mutableSet isEqual: [setClass set]])
 
 	ok = true;
 	i = 0;
@@ -138,13 +265,24 @@ static OFString *module = @"OFSet";
 	TEST(@"Detection of mutation during Fast Enumeration", ok);
 
 	TEST(@"-[valueForKey:]",
-	    [(set1 = [[OFSet setWithObjects: @"a", @"ab", @"abc", @"b", nil]
-	    valueForKey: @"length"]) isEqual: [OFSet setWithObjects:
+	    [(set1 = [[setClass setWithObjects: @"a", @"ab", @"abc", @"b", nil]
+	    valueForKey: @"length"]) isEqual: [setClass setWithObjects:
 	    [OFNumber numberWithSize: 1], [OFNumber numberWithSize: 2],
 	    [OFNumber numberWithSize: 3], nil]] &&
 	    [[set1 valueForKey: @"@count"] isEqual:
 	    [OFNumber numberWithSize: 3]])
 
 	[pool drain];
+}
+
+- (void)setTests
+{
+	module = @"OFSet";
+	[self setTestsWithClass: [SimpleSet class]
+		   mutableClass: [SimpleMutableSet class]];
+
+	module = @"OFSet_hashtable";
+	[self setTestsWithClass: [OFSet_hashtable class]
+		   mutableClass: [OFMutableSet_hashtable class]];
 }
 @end

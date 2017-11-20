@@ -177,7 +177,7 @@ static struct {
 }
 
 - (instancetype)initWithObjects: (id const *)objects
-	    count: (size_t)count
+			  count: (size_t)count
 {
 	OF_INVALID_INIT_METHOD
 }

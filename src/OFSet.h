@@ -138,7 +138,7 @@ typedef bool (^of_set_filter_block_t)(id object);
  * @param firstObject The first object for the set
  * @return An initialized set with the specified objects
  */
-- (instancetype)initWithObjects: (ObjectType)firstObject, ...;
+- (instancetype)initWithObjects: (ObjectType)firstObject, ... OF_SENTINEL;
 
 /*!
  * @brief Initializes an already allocated set with the specified objects.
