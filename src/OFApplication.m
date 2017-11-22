@@ -125,13 +125,10 @@ of_application_main(int *argc, char **argv[], Class cls)
 
 	[[OFLocalization alloc] init];
 
-	if ([cls isSubclassOfClass: [OFApplication class]]) {
-		fprintf(stderr, "FATAL ERROR:\n  Class %s is a subclass of "
-		    "class OFApplication, but class\n  %s was specified as "
-		    "application delegate!\n  Most likely, you wanted to "
-		    "subclass OFObject instead or specified\n  the wrong class "
-		    "with OF_APPLICATION_DELEGATE().\n",
-		    class_getName(cls), class_getName(cls));
+	if (![cls conformsToProtocol: @protocol(OFApplicationDelegate)]) {
+		fprintf(stderr, "FATAL ERROR:\n  Class %s does not conform to "
+		    "protocol OFApplicationDelegate,\n  but was specified via "
+		    "OF_APPLICATION_DELEGATE()!\n", class_getName(cls));
 		exit(1);
 	}
 

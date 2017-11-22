@@ -33,7 +33,7 @@
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
 
-@interface OFHash: OFObject
+@interface OFHash: OFObject <OFApplicationDelegate>
 @end
 
 OF_APPLICATION_DELEGATE(OFHash)

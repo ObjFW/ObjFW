@@ -26,7 +26,7 @@
 # define S_IRWXO 0
 #endif
 
-@interface OFZIP: OFObject
+@interface OFZIP: OFObject <OFApplicationDelegate>
 {
 	int8_t _overwrite;
 @public
