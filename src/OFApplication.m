@@ -115,22 +115,15 @@ SIGNAL_HANDLER(SIGUSR2)
 #undef SIGNAL_HANDLER
 
 int
-of_application_main(int *argc, char **argv[], Class cls)
+of_application_main(int *argc, char **argv[],
+    id <OFApplicationDelegate> delegate)
 {
-	id <OFApplicationDelegate> delegate;
 #ifdef OF_WINDOWS
 	wchar_t **wargv, **wenvp;
 	int wargc, si = 0;
 #endif
 
 	[[OFLocalization alloc] init];
-
-	if (![cls conformsToProtocol: @protocol(OFApplicationDelegate)]) {
-		fprintf(stderr, "FATAL ERROR:\n  Class %s does not conform to "
-		    "protocol OFApplicationDelegate,\n  but was specified via "
-		    "OF_APPLICATION_DELEGATE()!\n", class_getName(cls));
-		exit(1);
-	}
 
 	app = [[OFApplication alloc] of_init];
 
@@ -143,7 +136,6 @@ of_application_main(int *argc, char **argv[], Class cls)
 	   andWideArgumentValues: wargv];
 #endif
 
-	delegate = [[cls alloc] init];
 	[app setDelegate: delegate];
 
 	[app of_run];

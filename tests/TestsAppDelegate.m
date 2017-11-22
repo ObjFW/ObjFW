@@ -148,7 +148,7 @@ main(int argc, char *argv[])
 	defined(OF_NINTENDO_3DS)
 	@try {
 		return of_application_main(&argc, &argv,
-		    [TestsAppDelegate class]);
+		    [[TestsAppDelegate alloc] init]);
 	} @catch (id e) {
 		TestsAppDelegate *delegate =
 		    [[OFApplication sharedApplication] delegate];
@@ -200,7 +200,8 @@ main(int argc, char *argv[])
 # endif
 	}
 #else
-	return of_application_main(&argc, &argv, [TestsAppDelegate class]);
+	return of_application_main(&argc, &argv,
+	    [[TestsAppDelegate alloc] init]);
 #endif
 }
 

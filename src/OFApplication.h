@@ -31,7 +31,8 @@ OF_ASSUME_NONNULL_BEGIN
 	int								\
 	main(int argc, char *argv[])					\
 	{								\
-		return of_application_main(&argc, &argv, [cls class]);	\
+		return of_application_main(&argc, &argv,		\
+		    (cls *)[[cls alloc] init]);				\
 	}
 
 #ifdef OF_HAVE_PLEDGE
@@ -257,7 +258,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern int of_application_main(int *_Nonnull,
-    char *_Nonnull *_Nonnull[_Nonnull], Class);
+    char *_Nonnull *_Nonnull[_Nonnull], id <OFApplicationDelegate>);
 #ifdef __cplusplus
 }
 #endif
