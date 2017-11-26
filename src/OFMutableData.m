@@ -51,21 +51,6 @@
 				      capacity: capacity] autorelease];
 }
 
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
-			   itemSize: (size_t)itemSize
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 - (instancetype)init
 {
 	self = [super of_init];
@@ -133,19 +118,32 @@
 	return self;
 }
 
-- (instancetype)initWithItemsNoCopy: (const void *)items
+- (instancetype)initWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
-	OF_INVALID_INIT_METHOD
+	self = [self initWithItems: items
+			     count: count];
+
+	if (freeWhenDone)
+		free(items);
+
+	return self;
 }
 
-- (instancetype)initWithItemsNoCopy: (const void *)items
+- (instancetype)initWithItemsNoCopy: (void *)items
 			   itemSize: (size_t)itemSize
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
-	OF_INVALID_INIT_METHOD
+	self = [self initWithItems: items
+			  itemSize: itemSize
+			     count: count];
+
+	if (freeWhenDone)
+		free(items);
+
+	return self;
 }
 
 - (instancetype)initWithStringRepresentation: (OFString *)string

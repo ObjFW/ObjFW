@@ -69,7 +69,7 @@ _references_to_categories_of_OFData(void)
 				      count: count] autorelease];
 }
 
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
++ (instancetype)dataWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
@@ -78,7 +78,7 @@ _references_to_categories_of_OFData(void)
 				     freeWhenDone: freeWhenDone] autorelease];
 }
 
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
++ (instancetype)dataWithItemsNoCopy: (void *)items
 			   itemSize: (size_t)itemSize
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
@@ -156,7 +156,7 @@ _references_to_categories_of_OFData(void)
 	return self;
 }
 
-- (instancetype)initWithItemsNoCopy: (const void *)items
+- (instancetype)initWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
@@ -166,7 +166,7 @@ _references_to_categories_of_OFData(void)
 			    freeWhenDone: freeWhenDone];
 }
 
-- (instancetype)initWithItemsNoCopy: (const void *)items
+- (instancetype)initWithItemsNoCopy: (void *)items
 			   itemSize: (size_t)itemSize
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone

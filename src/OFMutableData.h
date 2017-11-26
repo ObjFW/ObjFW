@@ -67,14 +67,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)dataWithItemSize: (size_t)itemSize
 			capacity: (size_t)capacity;
 
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
-			   itemSize: (size_t)itemSize
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
-
 /*!
  * @brief Initializes an already allocated OFMutableData with an item size of 1.
  *
@@ -112,14 +104,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithItemSize: (size_t)itemSize
 			capacity: (size_t)capacity;
-
-- (instancetype)initWithItemsNoCopy: (const void *)items
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
-- (instancetype)initWithItemsNoCopy: (const void *)items
-			   itemSize: (size_t)itemSize
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 
 /*!
  * @brief Adds an item to the OFMutableData.

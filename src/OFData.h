@@ -114,7 +114,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       by the OFData
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
++ (instancetype)dataWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone;
 
@@ -129,7 +129,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       by the OFData
  * @return A new autoreleased OFData
  */
-+ (instancetype)dataWithItemsNoCopy: (const void *)items
++ (instancetype)dataWithItemsNoCopy: (void *)items
 			   itemSize: (size_t)itemSize
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone;
@@ -211,7 +211,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       by the OFData
  * @return An initialized OFData
  */
-- (instancetype)initWithItemsNoCopy: (const void *)items
+- (instancetype)initWithItemsNoCopy: (void *)items
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone;
 
@@ -227,7 +227,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		       by the OFData
  * @return An initialized OFData
  */
-- (instancetype)initWithItemsNoCopy: (const void *)items
+- (instancetype)initWithItemsNoCopy: (void *)items
 			   itemSize: (size_t)itemSize
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone;
