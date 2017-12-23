@@ -46,8 +46,6 @@
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
 #  include <sysdir.h>
-# else
-#  include <NSSystemDirectories.h>
 # endif
 #endif
 #ifdef OF_WINDOWS
@@ -58,6 +56,32 @@
 #endif
 #ifdef OF_QNX
 # include <sys/syspage.h>
+#endif
+
+#if defined(OF_MACOS) || defined(OF_IOS)
+/*
+ * These have been dropped from newer iOS SDKs, however, their replacements are
+ * not available on iOS < 10. This means it's impossible to search for the
+ * paths when using a new SDK while targeting iOS 9 or earlier. To work around
+ * this, we define those manually, only to be used when the replacements are
+ * not available at runtime.
+ */
+
+typedef enum {
+	NSLibraryDirectory = 5,
+	NSApplicationSupportDirectory = 14
+} NSSearchPathDirectory;
+
+typedef enum {
+	NSUserDomainMask = 1
+} NSSearchPathDomainMask;
+
+typedef unsigned int NSSearchPathEnumerationState;
+
+extern NSSearchPathEnumerationState NSStartSearchPathEnumeration(
+    NSSearchPathDirectory, NSSearchPathDomainMask);
+extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
+    NSSearchPathEnumerationState, char *);
 #endif
 
 #if defined(OF_X86_64) || defined(OF_X86)
@@ -153,21 +177,29 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 # ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	sysdir_search_path_enumeration_state state;
+	/* (1) to disable dead code warning when it is not a weak symbol */
+	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+		sysdir_search_path_enumeration_state state;
 
-	state = sysdir_start_search_path_enumeration(
-	    SYSDIR_DIRECTORY_APPLICATION_SUPPORT, SYSDIR_DOMAIN_MASK_USER);
-	if (sysdir_get_next_search_path_enumeration(state, pathC) == 0)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-# else
-	NSSearchPathEnumerationState state;
+		state = sysdir_start_search_path_enumeration(
+		    SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
+		    SYSDIR_DOMAIN_MASK_USER);
+		if (sysdir_get_next_search_path_enumeration(state, pathC) == 0)
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+	} else {
+# endif
+		NSSearchPathEnumerationState state;
 
-	state = NSStartSearchPathEnumeration(NSApplicationSupportDirectory,
-	    NSUserDomainMask);
-	if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
+		state = NSStartSearchPathEnumeration(
+		    NSApplicationSupportDirectory, NSUserDomainMask);
+		if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+	}
 # endif
 
 	path = [OFMutableString stringWithUTF8String: pathC];
@@ -236,21 +268,28 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	OFMutableString *path;
 
 # ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
-	sysdir_search_path_enumeration_state state;
+	/* (1) to disable dead code warning when it is not a weak symbol */
+	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
+		sysdir_search_path_enumeration_state state;
 
-	state = sysdir_start_search_path_enumeration(
-	    SYSDIR_DIRECTORY_LIBRARY, SYSDIR_DOMAIN_MASK_USER);
-	if (sysdir_get_next_search_path_enumeration(state, pathC) == 0)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
-# else
-	NSSearchPathEnumerationState state;
+		state = sysdir_start_search_path_enumeration(
+		    SYSDIR_DIRECTORY_LIBRARY, SYSDIR_DOMAIN_MASK_USER);
+		if (sysdir_get_next_search_path_enumeration(state, pathC) == 0)
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+	} else {
+# endif
+		NSSearchPathEnumerationState state;
 
-	state = NSStartSearchPathEnumeration(NSLibraryDirectory,
-	    NSUserDomainMask);
-	if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
-		@throw [OFNotImplementedException exceptionWithSelector: _cmd
-								 object: self];
+		state = NSStartSearchPathEnumeration(NSLibraryDirectory,
+		    NSUserDomainMask);
+		if (NSGetNextSearchPathEnumeration(state, pathC) == 0)
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
+# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+	}
 # endif
 
 	path = [OFMutableString stringWithUTF8String: pathC];
