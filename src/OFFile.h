@@ -51,7 +51,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new OFFile with the specified path and mode.
  *
  * @param path The path to the file to open as a string
- * @param mode The mode in which the file should be opened.@n
+ * @param mode The mode in which the file should be opened.
+ *             @n
  *	       Possible modes are:
  *	       Mode           | Description
  *	       ---------------|-------------------------------------

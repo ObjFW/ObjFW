@@ -119,6 +119,12 @@ static OFMutex *mutex;
 	[super dealloc];
 }
 
+- (OFStream *)openItemAtURL: (OFURL *)URL
+		       mode: (OFString *)mode
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
 - (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
 {
 	OF_UNRECOGNIZED_SELECTOR

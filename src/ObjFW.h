@@ -47,6 +47,7 @@
 #import "OFNumber.h"
 #import "OFDate.h"
 #import "OFURL.h"
+#import "OFURLHandler.h"
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"

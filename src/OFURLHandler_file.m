@@ -413,6 +413,19 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	return S_ISDIR(s.st_mode);
 }
 
+- (OFStream *)openItemAtURL: (OFURL *)URL
+		       mode: (OFString *)mode
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFFile *file = [[OFFile alloc]
+	    initWithPath: [URL fileSystemRepresentation]
+		    mode: mode];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [file autorelease];
+}
+
 - (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
 {
 	of_mutable_file_attributes_t ret = [OFMutableDictionary dictionary];

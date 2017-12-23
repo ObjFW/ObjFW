@@ -69,6 +69,30 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithScheme: (OFString *)scheme OF_DESIGNATED_INITIALIZER;
 
 /*!
+ * @brief Opens the item at the specified URL.
+ *
+ * @param URL The URL of the item which should be opened
+ * @param mode The mode in which the file should be opened.@n
+ *	       Possible modes are:
+ *	       @n
+ *	       Mode           | Description
+ *	       ---------------|-------------------------------------
+ *	       `r`            | Read-only
+ *	       `r+`           | Read-write
+ *	       `w`            | Write-only, create or truncate
+ *	       `wx`           | Write-only, create or fail, exclusive
+ *	       `w+`           | Read-write, create or truncate
+ *	       `w+x`          | Read-write, create or fail, exclusive
+ *	       `a`            | Write-only, create or append
+ *	       `a+`           | Read-write, create or append
+ *	       @n
+ *	       The handler is allowed to not implement all modes and is also
+ *	       allowed to implement additional, scheme-specific modes.
+ */
+- (OFStream *)openItemAtURL: (OFURL *)URL
+		       mode: (OFString *)mode;
+
+/*!
  * @brief Returns the attributes for the item at the specified URL.
  *
  * @param URL The URL to return the attributes for
