@@ -68,6 +68,14 @@
 # define thread_local __thread
 #endif
 
+/*
+ * Do not use compiler TLS when targeting the iOS simulator, as the iOS 9
+ * simulator does not support it (fails at runtime).
+ */
+#if defined(OF_HAVE_COMPILER_TLS) && defined(OF_IOS) && defined(OF_X86)
+# undef OF_HAVE_COMPILER_TLS
+#endif
+
 #ifdef __GNUC__
 # define OF_INLINE inline __attribute__((__always_inline__))
 # define OF_LIKELY(cond) (__builtin_expect(!!(cond), 1))
