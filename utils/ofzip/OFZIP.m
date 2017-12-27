@@ -174,6 +174,7 @@ writingNotSupported(OFString *type)
 		[sandbox setAllowsWritingFiles: true];
 		[sandbox setAllowsCreatingFiles: true];
 		[sandbox setAllowsChangingFileAttributes: true];
+		[sandbox setAllowsUserDatabaseReading: true];
 
 		[OFApplication activateSandbox: sandbox];
 	} @finally {

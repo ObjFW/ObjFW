@@ -386,6 +386,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[sandbox setAllowsCreatingFiles: true];
 		[sandbox setAllowsIPSockets: true];
 		[sandbox setAllowsDNS: true];
+		[sandbox setAllowsUserDatabaseReading: true];
 		[sandbox setAllowsTTY: true];
 
 		[OFApplication activateSandbox: sandbox];
