@@ -1522,6 +1522,19 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 			OBJCFLAGS="$old_OBJCFLAGS"
 		])
 	])
+
+	AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
+	AC_TRY_COMPILE([
+		#include <complex.h>
+	], [
+		complex float f = 0.5 + 0.5 * I;
+		(void)f;
+	], [
+		AC_MSG_RESULT(no)
+	], [
+		AC_MSG_RESULT(yes)
+		OBJCFLAGS="$OBJCFLAGS -Wno-gnu-imaginary-constant"
+	])
 ])
 
 AS_IF([test x"$cross_compiling" = x"yes"], [
