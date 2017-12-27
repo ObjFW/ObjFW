@@ -73,6 +73,20 @@ AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_EGREP
 
+case "$host" in
+	dnl OpenBSD 6.2 switched to clang for i386 and AMD64, and clang does no
+	dnl longer link in libgcc. Unwinding is unfortunately in libc++abi, so
+	dnl we need that. We add -pthread as libc++abi requires threads.
+	i386-*-openbsd6.[[23456789]] | i386-*-openbsd[[789]].* | \
+	x86_64-*-openbsd6.[[23456789]] | x86_64-*-openbsd[[789]].*)
+		case "$OBJC" in
+			*clang*)
+				LIBS="$LIBS -lc++abi -pthread"
+				;;
+		esac
+		;;
+esac
+
 AC_ARG_WITH(wii,
 	AS_HELP_STRING([--with-wii], [build for Wii]))
 AS_IF([test x"$with_wii" = x"yes"], [
