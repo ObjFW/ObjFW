@@ -181,7 +181,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFURL
  */
 + (instancetype)fileURLWithPath: (OFString *)path;
-#endif
 
 /*!
  * @brief Creates a new URL with the specified local file path.
@@ -191,8 +190,9 @@ OF_ASSUME_NONNULL_BEGIN
  *		      appened if there is no slash yet
  * @return An Initialized OFURL
  */
-- (instancetype)initFileURLWithPath: (OFString *)path
-			isDirectory: (bool)isDirectory;
++ (instancetype)fileURLWithPath: (OFString *)path
+		    isDirectory: (bool)isDirectory;
+#endif
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -237,8 +237,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		      appened if there is no slash yet
  * @return An Initialized OFURL
  */
-+ (instancetype)fileURLWithPath: (OFString *)path
-		    isDirectory: (bool)isDirectory;
+- (instancetype)initFileURLWithPath: (OFString *)path
+			isDirectory: (bool)isDirectory;
 #endif
 @end
 
