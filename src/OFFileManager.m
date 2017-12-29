@@ -462,6 +462,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (void)copyItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
+	void *pool = objc_autoreleasePoolPush();
+
+	[self copyItemAtURL: [OFURL fileURLWithPath: source]
+		      toURL: [OFURL fileURLWithPath: destination]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)copyItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
 	void *pool;
 	of_file_attributes_t attributes;
 	of_file_type_t type;
@@ -471,19 +482,19 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	pool = objc_autoreleasePoolPush();
 
-	if ([self fileExistsAtPath: destination])
+	if ([self fileExistsAtURL: destination])
 		@throw [OFCopyItemFailedException
-		    exceptionWithSourcePath: source
-			    destinationPath: destination
-				      errNo: EEXIST];
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: EEXIST];
 
 	@try {
-		attributes = [self attributesOfItemAtPath: source];
+		attributes = [self attributesOfItemAtURL: source];
 	} @catch (OFRetrieveItemAttributesFailedException *e) {
 		@throw [OFCopyItemFailedException
-		    exceptionWithSourcePath: source
-			    destinationPath: destination
-				      errNo: [e errNo]];
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: [e errNo]];
 	}
 
 	type = [attributes fileType];
@@ -492,7 +503,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		OFArray *contents;
 
 		@try {
-			[self createDirectoryAtPath: destination];
+			[self createDirectoryAtURL: destination];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 			of_file_attribute_key_t key =
@@ -503,10 +514,10 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 							forKey: key];
 
 			[self setAttributes: destinationAttributes
-			       ofItemAtPath: destination];
+				ofItemAtURL: destination];
 #endif
 
-			contents = [self contentsOfDirectoryAtPath: source];
+			contents = [self contentsOfDirectoryAtURL: source];
 		} @catch (id e) {
 			/*
 			 * Only convert exceptions to OFCopyItemFailedException
@@ -516,31 +527,31 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFCopyItemFailedException
-				    exceptionWithSourcePath: source
-					    destinationPath: destination
-						      errNo: [e errNo]];
+				    exceptionWithSourceURL: source
+					    destinationURL: destination
+						     errNo: [e errNo]];
 
 			@throw e;
 		}
 
 		for (OFString *item in contents) {
 			void *pool2 = objc_autoreleasePoolPush();
-			OFString *sourcePath, *destinationPath;
+			OFURL *sourceURL, *destinationURL;
 
-			sourcePath =
-			    [source stringByAppendingPathComponent: item];
-			destinationPath =
-			    [destination stringByAppendingPathComponent: item];
+			sourceURL =
+			    [source URLByAppendingPathComponent: item];
+			destinationURL =
+			    [destination URLByAppendingPathComponent: item];
 
-			[self copyItemAtPath: sourcePath
-				      toPath: destinationPath];
+			[self copyItemAtURL: sourceURL
+				      toURL: destinationURL];
 
 			objc_autoreleasePoolPop(pool2);
 		}
 	} else if ([type isEqual: of_file_type_regular]) {
 		size_t pageSize = [OFSystemInfo pageSize];
-		OFFile *sourceFile = nil;
-		OFFile *destinationFile = nil;
+		OFStream *sourceStream = nil;
+		OFStream *destinationStream = nil;
 		char *buffer;
 
 		if ((buffer = malloc(pageSize)) == NULL)
@@ -548,18 +559,21 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			    exceptionWithRequestedSize: pageSize];
 
 		@try {
-			sourceFile = [OFFile fileWithPath: source
-						     mode: @"r"];
-			destinationFile = [OFFile fileWithPath: destination
-							  mode: @"w"];
+			sourceStream = [[OFURLHandler handlerForURL: source]
+			    openItemAtURL: source
+				     mode: @"r"];
+			destinationStream = [[OFURLHandler handlerForURL:
+			    destination] openItemAtURL: destination
+						  mode: @"w"];
 
-			while (![sourceFile isAtEndOfStream]) {
+			while (![sourceStream isAtEndOfStream]) {
 				size_t length;
 
-				length = [sourceFile readIntoBuffer: buffer
-							     length: pageSize];
-				[destinationFile writeBuffer: buffer
-						      length: length];
+				length = [sourceStream
+				    readIntoBuffer: buffer
+					    length: pageSize];
+				[destinationStream writeBuffer: buffer
+							length: length];
 			}
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
@@ -571,7 +585,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 							forKey: key];
 
 			[self setAttributes: destinationAttributes
-			       ofItemAtPath: destination];
+				ofItemAtURL: destination];
 #endif
 		} @catch (id e) {
 			/*
@@ -582,23 +596,24 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFCopyItemFailedException
-				    exceptionWithSourcePath: source
-					    destinationPath: destination
-						      errNo: [e errNo]];
+				    exceptionWithSourceURL: source
+					    destinationURL: destination
+						     errNo: [e errNo]];
 
 			@throw e;
 		} @finally {
-			[sourceFile close];
-			[destinationFile close];
+			[sourceStream close];
+			[destinationStream close];
 			free(buffer);
 		}
 #ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	} else if ([type isEqual: of_file_type_symbolic_link]) {
 		@try {
-			source = [attributes fileSymbolicLinkDestination];
+			OFString *linkDestination =
+			    [attributes fileSymbolicLinkDestination];
 
-			[self createSymbolicLinkAtPath: destination
-				   withDestinationPath: source];
+			[self createSymbolicLinkAtURL: destination
+				  withDestinationPath: linkDestination];
 		} @catch (id e) {
 			/*
 			 * Only convert exceptions to OFCopyItemFailedException
@@ -608,29 +623,18 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			 */
 			if ([e respondsToSelector: @selector(errNo)])
 				@throw [OFCopyItemFailedException
-				    exceptionWithSourcePath: source
-					    destinationPath: destination
-						      errNo: [e errNo]];
+				    exceptionWithSourceURL: source
+					    destinationURL: destination
+						     errNo: [e errNo]];
 
 			@throw e;
 		}
 #endif
 	} else
 		@throw [OFCopyItemFailedException
-		    exceptionWithSourcePath: source
-			    destinationPath: destination
-				      errNo: EINVAL];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-- (void)copyItemAtURL: (OFURL *)source
-		toURL: (OFURL *)destination
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[self copyItemAtPath: [source fileSystemRepresentation]
-		      toPath: [destination fileSystemRepresentation]];
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: EINVAL];
 
 	objc_autoreleasePoolPop(pool);
 }

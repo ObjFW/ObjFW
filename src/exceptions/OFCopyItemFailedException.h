@@ -18,6 +18,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFURL;
+
 /*!
  * @class OFCopyItemFailedException \
  *	  OFCopyItemFailedException.h ObjFW/OFCopyItemFailedException.h
@@ -26,19 +28,19 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFCopyItemFailedException: OFException
 {
-	OFString *_sourcePath, *_destinationPath;
+	OFURL *_sourceURL, *_destinationURL;
 	int _errNo;
 }
 
 /*!
  * @brief The path of the source item.
  */
-@property (readonly, nonatomic) OFString *sourcePath;
+@property (readonly, nonatomic) OFURL *sourceURL;
 
 /*!
  * @brief The destination path.
  */
-@property (readonly, nonatomic) OFString *destinationPath;
+@property (readonly, nonatomic) OFURL *destinationURL;
 
 /*!
  * @brief The errno of the error that occurred.
@@ -50,28 +52,28 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased copy item failed exception.
  *
- * @param sourcePath The original path
- * @param destinationPath The new path
+ * @param sourceURL The original path
+ * @param destinationURL The new path
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased copy item failed exception
  */
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath
-				  errNo: (int)errNo;
++ (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
+			destinationURL: (OFURL *)destinationURL
+				 errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated copy item failed exception.
  *
- * @param sourcePath The original path
- * @param destinationPath The new path
+ * @param sourceURL The original path
+ * @param destinationURL The new path
  * @param errNo The errno of the error that occurred
  * @return An initialized copy item failed exception
  */
-- (instancetype)initWithSourcePath: (OFString *)sourcePath
-		   destinationPath: (OFString *)destinationPath
-			     errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSourceURL: (OFURL *)sourceURL
+		   destinationURL: (OFURL *)destinationURL
+			    errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

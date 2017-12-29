@@ -20,7 +20,7 @@
 #import "OFString.h"
 
 @implementation OFCopyItemFailedException
-@synthesize sourcePath = _sourcePath, destinationPath = _destinationPath;
+@synthesize sourceURL = _sourceURL, destinationURL = _destinationURL;
 @synthesize errNo = _errNo;
 
 + (instancetype)exception
@@ -28,13 +28,13 @@
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithSourcePath: (OFString *)sourcePath
-			destinationPath: (OFString *)destinationPath
-				  errNo: (int)errNo
++ (instancetype)exceptionWithSourceURL: (OFURL *)sourceURL
+			destinationURL: (OFURL *)destinationURL
+				 errNo: (int)errNo
 {
-	return [[[self alloc] initWithSourcePath: sourcePath
-				 destinationPath: destinationPath
-					   errNo: errNo] autorelease];
+	return [[[self alloc] initWithSourceURL: sourceURL
+				 destinationURL: destinationURL
+					  errNo: errNo] autorelease];
 }
 
 - (instancetype)init
@@ -42,15 +42,15 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithSourcePath: (OFString *)sourcePath
-		   destinationPath: (OFString *)destinationPath
-			     errNo: (int)errNo
+- (instancetype)initWithSourceURL: (OFURL *)sourceURL
+		   destinationURL: (OFURL *)destinationURL
+			    errNo: (int)errNo
 {
 	self = [super init];
 
 	@try {
-		_sourcePath = [sourcePath copy];
-		_destinationPath = [destinationPath copy];
+		_sourceURL = [sourceURL copy];
+		_destinationURL = [destinationURL copy];
 		_errNo = errNo;
 	} @catch (id e) {
 		[self release];
@@ -62,8 +62,8 @@
 
 - (void)dealloc
 {
-	[_sourcePath release];
-	[_destinationPath release];
+	[_sourceURL release];
+	[_destinationURL release];
 
 	[super dealloc];
 }
@@ -71,6 +71,6 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"Failed to copy item %@ to %@: %@",
-	    _sourcePath, _destinationPath, of_strerror(_errNo)];
+	    _sourceURL, _destinationURL, of_strerror(_errNo)];
 }
 @end
