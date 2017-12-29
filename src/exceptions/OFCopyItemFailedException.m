@@ -18,6 +18,7 @@
 
 #import "OFCopyItemFailedException.h"
 #import "OFString.h"
+#import "OFURL.h"
 
 @implementation OFCopyItemFailedException
 @synthesize sourceURL = _sourceURL, destinationURL = _destinationURL;

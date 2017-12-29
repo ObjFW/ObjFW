@@ -441,9 +441,9 @@ extern const of_file_type_t of_file_type_socket;
  * The destination URL must have a full path, which means it must include the
  * name of the item.
  *
- * If the destination is on a different logical device, the source will be
- * copied to the destination using @ref copyItemAtURL:toURL: and the source
- * removed using @ref removeItemAtURL:.
+ * If the destination is on a different logical device or uses a different
+ * scheme, the source will be copied to the destination using
+ * @ref copyItemAtURL:toURL: and the source removed using @ref removeItemAtURL:.
  *
  * @param source The item to rename
  * @param destination The new name for the item

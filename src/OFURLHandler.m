@@ -172,4 +172,16 @@ static OFMutex *mutex;
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
+
+- (bool)copyItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
+	return false;
+}
+
+- (bool)moveItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
+	return false;
+}
 @end

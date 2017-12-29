@@ -184,6 +184,45 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)createSymbolicLinkAtURL: (OFURL *)URL
 	    withDestinationPath: (OFString *)target;
+
+/*!
+ * @brief Tries to efficiently copy an item. If a copy would only be possible
+ *	  by reading the entire item and then writing it, it returns false.
+ *
+ * The destination URL must have a full path, which means it must include the
+ * name of the item.
+ *
+ * If an item already exists, the copy operation fails. This is also the case
+ * if a directory is copied and an item already exists in the destination
+ * directory.
+ *
+ * @param source The file, directory or symbolic link to copy
+ * @param destination The destination URL
+ * @return True if an efficient copy was performed, false if an efficient copy
+ *	   was not possible. Note that errors while performing a copy are
+ *	   reported via exceptions and not by returning false!
+ */
+- (bool)copyItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination;
+
+/*!
+ * @brief Tries to efficiently move an item. If a move would only be possible
+ *	  by copying the source and deleting it, it returns false.
+ *
+ * The destination URL must have a full path, which means it must include the
+ * name of the item.
+ *
+ * If the destination is on a different logical device or uses a different
+ * scheme, an efficient move is not possible and false is returned.
+ *
+ * @param source The item to rename
+ * @param destination The new name for the item
+ * @return True if an efficient move was performed, false if an efficient move
+ *	   was not possible. Note that errors while performing a move are
+ *	   reported via exceptions and not by returning false!
+ */
+- (bool)moveItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination;
 @end
 
 OF_ASSUME_NONNULL_END

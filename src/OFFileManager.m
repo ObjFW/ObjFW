@@ -474,6 +474,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		toURL: (OFURL *)destination
 {
 	void *pool;
+	OF_KINDOF(OFURLHandler *) URLHandler;
 	of_file_attributes_t attributes;
 	of_file_type_t type;
 
@@ -481,6 +482,14 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
+
+	if ((URLHandler = [OFURLHandler handlerForURL: source]) == nil)
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithURL: source];
+
+	if ([URLHandler copyItemAtURL: source
+				toURL: destination])
+		return;
 
 	if ([self fileExistsAtURL: destination])
 		@throw [OFCopyItemFailedException
@@ -642,104 +651,64 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (void)moveItemAtPath: (OFString *)source
 		toPath: (OFString *)destination
 {
-	if (source == nil || destination == nil)
-		@throw [OFInvalidArgumentException exception];
-
-	if ([self fileExistsAtPath: destination])
-		@throw [OFMoveItemFailedException
-		    exceptionWithSourcePath: source
-			    destinationPath: destination
-				      errNo: EEXIST];
-
-#if defined(OF_WINDOWS)
 	void *pool = objc_autoreleasePoolPush();
 
-	if (_wrename([source UTF16String], [destination UTF16String]) != 0) {
-		if (errno != EXDEV)
-			@throw [OFMoveItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination
-					      errNo: errno];
-#elif defined(OF_MORPHOS)
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	[self moveItemAtURL: [OFURL fileURLWithPath: source]
+		      toURL: [OFURL fileURLWithPath: destination]];
 
-	if (!Rename([source cStringWithEncoding: encoding],
-	    [destination cStringWithEncoding: encoding]) != 0) {
-		LONG err;
-
-		if ((err = IoErr()) != ERROR_RENAME_ACROSS_DEVICES) {
-			int errNo;
-
-			switch (err) {
-			case ERROR_OBJECT_IN_USE:
-			case ERROR_DISK_NOT_VALIDATED:
-				errNo = EBUSY;
-				break;
-			case ERROR_OBJECT_EXISTS:
-				errNo = EEXIST;
-				break;
-			case ERROR_OBJECT_NOT_FOUND:
-				errNo = ENOENT;
-				break;
-			case ERROR_DISK_WRITE_PROTECTED:
-				errNo = EROFS;
-				break;
-			default:
-				errNo = 0;
-				break;
-			}
-
-			@throw [OFMoveItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination
-					      errNo: errNo];
-		}
-#else
-	of_string_encoding_t encoding = [OFLocalization encoding];
-
-	if (rename([source cStringWithEncoding: encoding],
-	    [destination cStringWithEncoding: encoding]) != 0) {
-		if (errno != EXDEV)
-			@throw [OFMoveItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination
-					      errNo: errno];
-#endif
-
-		@try {
-			[self copyItemAtPath: source
-				      toPath: destination];
-		} @catch (OFCopyItemFailedException *e) {
-			[self removeItemAtPath: destination];
-
-			@throw [OFMoveItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination
-					      errNo: [e errNo]];
-		}
-
-		@try {
-			[self removeItemAtPath: source];
-		} @catch (OFRemoveItemFailedException *e) {
-			@throw [OFMoveItemFailedException
-			    exceptionWithSourcePath: source
-				    destinationPath: destination
-					      errNo: [e errNo]];
-		}
-	}
-
-#ifdef OF_WINDOWS
 	objc_autoreleasePoolPop(pool);
-#endif
 }
 
 - (void)moveItemAtURL: (OFURL *)source
 		toURL: (OFURL *)destination
 {
-	void *pool = objc_autoreleasePoolPush();
+	void *pool;
+	OF_KINDOF(OFURLHandler *) URLHandler;
 
-	[self moveItemAtPath: [source fileSystemRepresentation]
-		      toPath: [destination fileSystemRepresentation]];
+	if (source == nil || destination == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	pool = objc_autoreleasePoolPush();
+
+	if ((URLHandler = [OFURLHandler handlerForURL: source]) == nil)
+		@throw [OFUnsupportedProtocolException
+		    exceptionWithURL: source];
+
+	@try {
+		if ([URLHandler moveItemAtURL: source
+					toURL: destination])
+			return;
+	} @catch (OFMoveItemFailedException *e) {
+		if ([e errNo] != EXDEV)
+			@throw e;
+	}
+
+	if ([self fileExistsAtURL: destination])
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: EEXIST];
+
+	@try {
+		[self copyItemAtURL: source
+			      toURL: destination];
+	} @catch (OFCopyItemFailedException *e) {
+		[self removeItemAtURL: destination];
+
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: [e errNo]];
+	}
+
+	@try {
+		[self removeItemAtURL: source];
+	} @catch (OFRemoveItemFailedException *e) {
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: [e errNo]];
+	}
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -50,6 +50,7 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
+#import "OFMoveItemFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -1074,4 +1075,82 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	objc_autoreleasePoolPop(pool);
 }
 #endif
+
+- (bool)moveItemAtURL: (OFURL *)source
+		toURL: (OFURL *)destination
+{
+	void *pool;
+
+	if (![[source scheme] isEqual: _scheme] ||
+	    ![[destination scheme] isEqual: _scheme])
+		return false;
+
+	if ([self fileExistsAtURL: destination])
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: EEXIST];
+
+	pool = objc_autoreleasePoolPush();
+
+#if defined(OF_WINDOWS)
+	if (_wrename([[source fileSystemRepresentation] UTF16String],
+	    [[destination fileSystemRepresentation] UTF16String]) != 0)
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: errno];
+#elif defined(OF_MORPHOS)
+	of_string_encoding_t encoding = [OFLocalization encoding];
+
+	if (!Rename([[source fileSystemRepresentation]
+	    cStringWithEncoding: encoding],
+	    [[destination fileSystemRepresentation]
+	    cStringWithEncoding: encoding]) != 0) {
+		int errNo;
+
+		switch (IoErr()) {
+		case ERROR_RENAME_ACROSS_DEVICES:
+			errNo = EXDEV;
+			break;
+		case ERROR_OBJECT_IN_USE:
+		case ERROR_DISK_NOT_VALIDATED:
+			errNo = EBUSY;
+			break;
+		case ERROR_OBJECT_EXISTS:
+			errNo = EEXIST;
+			break;
+		case ERROR_OBJECT_NOT_FOUND:
+			errNo = ENOENT;
+			break;
+		case ERROR_DISK_WRITE_PROTECTED:
+			errNo = EROFS;
+			break;
+		default:
+			errNo = 0;
+			break;
+		}
+
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: errNo];
+	}
+#else
+	of_string_encoding_t encoding = [OFLocalization encoding];
+
+	if (rename([[source fileSystemRepresentation]
+	    cStringWithEncoding: encoding],
+	    [[destination fileSystemRepresentation]
+	    cStringWithEncoding: encoding]) != 0)
+		@throw [OFMoveItemFailedException
+		    exceptionWithSourceURL: source
+			    destinationURL: destination
+				     errNo: errno];
+#endif
+
+	objc_autoreleasePoolPop(pool);
+
+	return true;
+}
 @end
