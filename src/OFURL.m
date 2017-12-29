@@ -996,6 +996,74 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	return [path autorelease];
 }
 
+- (OFMutableURL *)of_URLByAppendingPathComponent: (OFString *)component
+{
+	OFMutableURL *ret = [[self mutableCopy] autorelease];
+	void *pool;
+	OFMutableString *URLEncodedPath;
+
+	if ([component hasPrefix: @"/"]) {
+		[ret setPath: component];
+		return ret;
+	}
+
+	pool = objc_autoreleasePoolPush();
+	URLEncodedPath = [[[self URLEncodedPath] mutableCopy] autorelease];
+
+	if (![URLEncodedPath hasSuffix: @"/"])
+		[URLEncodedPath appendString: @"/"];
+
+	[URLEncodedPath appendString:
+	    [component stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLPathAllowedCharacterSet]]];
+
+	[ret setURLEncodedPath: URLEncodedPath];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+- (OFURL *)URLByAppendingPathComponent: (OFString *)component
+{
+	OFMutableURL *ret = [self of_URLByAppendingPathComponent: component];
+
+#ifdef OF_HAVE_FILES
+	if ([[ret scheme] isEqual: @"file"]) {
+		void *pool = objc_autoreleasePoolPush();
+
+		if ([[OFFileManager defaultManager] directoryExistsAtURL: ret])
+			[ret setURLEncodedPath: [[ret URLEncodedPath]
+			    stringByAppendingString: @"/"]];
+
+		objc_autoreleasePoolPop(pool);
+	}
+#endif
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
+- (OFURL *)URLByAppendingPathComponent: (OFString *)component
+			   isDirectory: (bool)isDirectory
+{
+	OFMutableURL *ret = [self of_URLByAppendingPathComponent: component];
+
+	if (isDirectory) {
+		void *pool = objc_autoreleasePoolPush();
+
+		[ret setURLEncodedPath:
+		    [[ret URLEncodedPath] stringByAppendingString: @"/"]];
+
+		objc_autoreleasePoolPop(pool);
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",

@@ -240,6 +240,32 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initFileURLWithPath: (OFString *)path
 			isDirectory: (bool)isDirectory;
 #endif
+
+/*!
+ * @brief Returns a new URL with the specified path component appended.
+ *
+ * If the URL is a file URL, the file system is queried whether the appended
+ * component is a directory.
+ *
+ * @param component The path component to append. If it starts with the slash,
+ *		    the component is not appended, but replaces the path
+ *		    instead.
+ * @return A new URL with the specified path component appended
+ */
+- (OFURL *)URLByAppendingPathComponent: (OFString *)component;
+
+/*!
+ * @brief Returns a new URL with the specified path component appended.
+ *
+ * @param component The path component to append. If it starts with the slash,
+ *		    the component is not appended, but replaces the path
+ *		    instead.
+ * @param isDirectory Whether the appended component is a directory, meaning
+ *		      that the URL path should have a trailing slash
+ * @return A new URL with the specified path component appended
+ */
+- (OFURL *)URLByAppendingPathComponent: (OFString *)component
+			   isDirectory: (bool)isDirectory;
 @end
 
 @interface OFCharacterSet (URLCharacterSets)

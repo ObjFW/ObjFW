@@ -239,6 +239,36 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    @"-[setURLEncodedFragment:] with invalid characters fails",
 	    OFInvalidFormatException, [mu setURLEncodedFragment: @"`"])
 
+	TEST(@"-[URLByAppendingPathComponent:isDirectory:]",
+	    [[[OFURL URLWithString: @"file:///foo/bar"]
+	    URLByAppendingPathComponent: @"qux"
+			    isDirectory: false] isEqual:
+	    [OFURL URLWithString: @"file:///foo/bar/qux"]] &&
+	    [[[OFURL URLWithString: @"file:///foo/bar/"]
+	    URLByAppendingPathComponent: @"qux"
+			    isDirectory: false] isEqual:
+	    [OFURL URLWithString: @"file:///foo/bar/qux"]] &&
+	    [[[OFURL URLWithString: @"file:///foo/bar/"]
+	    URLByAppendingPathComponent: @"qu?x"
+			    isDirectory: false] isEqual:
+	    [OFURL URLWithString: @"file:///foo/bar/qu%3Fx"]] &&
+	    [[[OFURL URLWithString: @"file:///foo/bar/"]
+	    URLByAppendingPathComponent: @"qu?x"
+			    isDirectory: true] isEqual:
+	    [OFURL URLWithString: @"file:///foo/bar/qu%3Fx/"]] &&
+	    [[[OFURL URLWithString: @"file:///foo/bar/"]
+	    URLByAppendingPathComponent: @"/qux"
+			    isDirectory: false] isEqual:
+	    [OFURL URLWithString: @"file:///qux"]] &&
+	    [[[OFURL URLWithString: @"file:///foo/bar/"]
+	    URLByAppendingPathComponent: @"/qu?x"
+			    isDirectory: false] isEqual:
+	    [OFURL URLWithString: @"file:///qu%3Fx"]] &&
+	    [[[OFURL URLWithString: @"file:///foo/bar/"]
+	    URLByAppendingPathComponent: @"/qu?x"
+			    isDirectory: true] isEqual:
+	    [OFURL URLWithString: @"file:///qu%3Fx/"]])
+
 	[pool drain];
 }
 @end
