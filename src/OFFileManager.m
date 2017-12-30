@@ -203,7 +203,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -231,7 +231,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 - (void)setAttributes: (of_file_attributes_t)attributes
 	  ofItemAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -256,7 +256,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (bool)fileExistsAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -281,7 +281,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (bool)directoryExistsAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -306,7 +306,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (void)createDirectoryAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -374,7 +374,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (OFArray OF_GENERIC(OFString *) *)contentsOfDirectoryAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -474,7 +474,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		toURL: (OFURL *)destination
 {
 	void *pool;
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 	of_file_attributes_t attributes;
 	of_file_type_t type;
 
@@ -663,7 +663,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		toURL: (OFURL *)destination
 {
 	void *pool;
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -715,7 +715,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (void)removeItemAtURL: (OFURL *)URL
 {
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -739,7 +739,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		toURL: (OFURL *)destination
 {
 	void *pool = objc_autoreleasePoolPush();
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (source == nil || destination == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -776,7 +776,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	    withDestinationPath: (OFString *)target
 {
 	void *pool = objc_autoreleasePoolPush();
-	OF_KINDOF(OFURLHandler *) URLHandler;
+	OFURLHandler *URLHandler;
 
 	if (URL == nil || target == nil)
 		@throw [OFInvalidArgumentException exception];
