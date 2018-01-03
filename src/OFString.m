@@ -1064,7 +1064,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
 	return [self initWithContentsOfURL: URL
@@ -1074,26 +1073,22 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 			     encoding: (of_string_encoding_t)encoding
 {
-	void *pool = objc_autoreleasePoolPush();
-	OFString *scheme = [URL scheme];
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFData *data = [OFData dataWithContentsOfURL: URL];
 
-# ifdef OF_HAVE_FILES
-	if ([scheme isEqual: @"file"]) {
-		if (encoding == OF_STRING_ENCODING_AUTODETECT)
-			encoding = OF_STRING_ENCODING_UTF_8;
+		self = [self initWithCString: [data items]
+				    encoding: encoding
+				      length: [data count]];
 
-		self = [self
-		    initWithContentsOfFile: [URL fileSystemRepresentation]
-				  encoding: encoding];
-	} else
-# endif
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
-
-	objc_autoreleasePoolPop(pool);
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
-#endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {

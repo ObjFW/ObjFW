@@ -827,7 +827,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 			      encoding: (of_string_encoding_t)encoding;
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Initializes an already allocated OFString with the contents of the
  *	  specified URL.
@@ -853,7 +852,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 			     encoding: (of_string_encoding_t)encoding;
-#endif
 
 /*!
  * @brief Writes the OFString into the specified C string with the specified

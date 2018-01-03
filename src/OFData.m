@@ -22,15 +22,17 @@
 
 #import "OFData.h"
 #import "OFData+Private.h"
-#import "OFString.h"
+#import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
-#import "OFURL.h"
-#import "OFDictionary.h"
-#import "OFXMLElement.h"
+#import "OFStream.h"
+#import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFURL.h"
+#import "OFURLHandler.h"
+#import "OFXMLElement.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -233,29 +235,48 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
-	void *pool;
-	OFString *scheme;
+	self = [super init];
 
-	pool = objc_autoreleasePoolPush();
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFURLHandler *URLHandler;
+		OFStream *stream;
+		size_t pageSize;
+		unsigned char *buffer;
 
-	scheme = [URL scheme];
+		if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
+			@throw [OFUnsupportedProtocolException
+			    exceptionWithURL: URL];
 
-# ifdef OF_HAVE_FILES
-	if ([scheme isEqual: @"file"])
-		self = [self initWithContentsOfFile:
-		    [URL fileSystemRepresentation]];
-	else
-# endif
-		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+		_itemSize = 1;
+		_count = 0;
 
-	objc_autoreleasePoolPop(pool);
+		pageSize = [OFSystemInfo pageSize];
+		buffer = [self allocMemoryWithSize: pageSize];
+
+		while (![stream isAtEndOfStream]) {
+			size_t length = [stream readIntoBuffer: buffer
+							length: pageSize];
+
+			if (SIZE_MAX - _count < length)
+				@throw [OFOutOfRangeException exception];
+
+			_items = [self resizeMemory: _items
+					       size: _count + length];
+			memcpy(_items + _count, buffer, length);
+			_count += length;
+		}
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
 
 	return self;
 }
-#endif
 
 - (instancetype)initWithStringRepresentation: (OFString *)string
 {

@@ -243,7 +243,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContentsOfFile: (OFString *)path;
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Initializes an already allocated OFData with an item size of 1,
  *	  containing the data of the specified URL.
@@ -252,7 +251,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new autoreleased OFData
  */
 - (instancetype)initWithContentsOfURL: (OFURL *)URL;
-#endif
 
 /*!
  * @brief Initializes an already allocated OFData with an item size of 1,
