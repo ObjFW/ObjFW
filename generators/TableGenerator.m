@@ -42,7 +42,7 @@
 OF_APPLICATION_DELEGATE(TableGenerator)
 
 @implementation TableGenerator
-- init
+- (instancetype)init
 {
 	self = [super init];
 

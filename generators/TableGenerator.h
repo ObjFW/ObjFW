@@ -20,7 +20,8 @@
 
 @class OFString;
 
-@interface TableGenerator: OFObject <OFHTTPClientDelegate>
+@interface TableGenerator: OFObject <OFApplicationDelegate,
+    OFHTTPClientDelegate>
 {
 	OFHTTPClient *_HTTPClient;
 	of_unichar_t _uppercaseTable[0x110000];
