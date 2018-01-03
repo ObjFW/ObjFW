@@ -84,6 +84,7 @@ hashForName(OFString *name)
 	@try {
 		[sandbox setAllowsStdIO: true];
 		[sandbox setAllowsReadingFiles: true];
+		[sandbox setAllowsUserDatabaseReading: true];
 
 		[OFApplication activateSandbox: sandbox];
 	} @finally {
