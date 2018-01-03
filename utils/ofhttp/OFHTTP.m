@@ -921,15 +921,15 @@ next:
 		return;
 	}
 
+	[_currentFileName release];
+	_currentFileName = nil;
 	_detectedFileName = false;
 
 	if (!_quiet)
 		[of_stdout writeFormat: @"⇣ %@", [URL string]];
 
-	if (_outputPath != nil) {
-		[_currentFileName release];
+	if (_outputPath != nil)
 		_currentFileName = [_outputPath copy];
-	}
 
 	if (_currentFileName == nil)
 		_currentFileName = [[[URL path] lastPathComponent] copy];
