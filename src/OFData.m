@@ -251,6 +251,9 @@ _references_to_categories_of_OFData(void)
 			@throw [OFUnsupportedProtocolException
 			    exceptionWithURL: URL];
 
+		stream = [URLHandler openItemAtURL: URL
+					      mode: @"r"];
+
 		_itemSize = 1;
 		_count = 0;
 
