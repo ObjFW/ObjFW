@@ -223,7 +223,6 @@ normalizeKey(char *str_)
 		_request = [request retain];
 		_redirects = redirects;
 		_context = [context retain];
-		_firstLine = true;
 		_serverHeaders = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
 		[self release];
@@ -543,6 +542,7 @@ normalizeKey(char *str_)
 		return 0;
 	}
 
+	_firstLine = true;
 	[sock asyncReadLineWithTarget: self
 			     selector: @selector(socket:didReadLine:context:
 					   exception:)
