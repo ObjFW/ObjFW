@@ -246,6 +246,7 @@
 				break;
 			case 'T':
 			case 't':
+            case 'V':
 				while (*attributes != ',' &&
 				    *attributes != '\0')
 					attributes++;
