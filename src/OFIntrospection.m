@@ -136,7 +136,7 @@
 
 @implementation OFProperty
 @synthesize name = _name, attributes = _attributes;
-@synthesize getter = _getter, setter = _setter;
+@synthesize getter = _getter, setter = _setter, iVar = _iVar;
 
 - (instancetype)init
 {
@@ -185,6 +185,11 @@
 			const char *start;
 
 			switch (*attributes) {
+			case 'T':
+				while (*attributes != ',' &&
+				    *attributes != '\0')
+					attributes++;
+				break;
 			case 'R':
 				_attributes |= OF_PROPERTY_READONLY;
 				attributes++;
@@ -244,11 +249,21 @@
 			case 'P':
 				attributes++;
 				break;
-			case 'T':
-			case 't':
+			case 'V':
+				start = ++attributes;
+
+				if (_iVar != nil)
+					@throw [OFInitializationFailedException
+					    exceptionWithClass: [self class]];
+
 				while (*attributes != ',' &&
 				    *attributes != '\0')
 					attributes++;
+
+				_iVar = [[OFString alloc]
+				    initWithUTF8String: start
+						length: attributes - start];
+
 				break;
 			default:
 				@throw [OFInitializationFailedException
@@ -317,9 +332,10 @@
 			      @"\tAttributes = 0x%03X\n"
 			      @"\tGetter = %@\n"
 			      @"\tSetter = %@\n"
+			      @"\tiVar = %@\n"
 			      @">",
 			      [self class], _name, _attributes,
-			      _getter, _setter];
+			      _getter, _setter, _iVar];
 }
 
 - (bool)isEqual: (id)object

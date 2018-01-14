@@ -75,7 +75,7 @@ enum {
 {
 	OFString *_name;
 	unsigned int _attributes;
-	OFString *_Nullable _getter, *_Nullable _setter;
+	OFString *_Nullable _getter, *_Nullable _setter, *_Nullable iVar;
 }
 
 /*!
@@ -111,6 +111,11 @@ enum {
  * @brief The name of the setter.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *setter;
+
+/*!
+ * @brief The name of the backing iVar.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *iVar;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
