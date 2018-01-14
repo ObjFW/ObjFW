@@ -507,8 +507,13 @@ normalizedKey(OFString *key)
 		if (contentLength > 0) {
 			char *buffer;
 
+			if (contentLength < 0 ||
+			    (uintmax_t)contentLength > SIZE_MAX)
+				@throw [OFOutOfRangeException exception];
+
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
 			_body = [[OFMutableData alloc] init];
+			_contentLength = contentLength;
 
 			[_socket asyncReadIntoBuffer: buffer
 					      length: BUFFER_SIZE
