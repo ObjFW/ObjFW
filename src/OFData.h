@@ -24,6 +24,10 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 @class OFURL;
 
+enum {
+	OF_DATA_SEARCH_BACKWARDS = 1
+};
+
 /*!
  * @class OFData OFData.h ObjFW/OFData.h
  *
@@ -278,6 +282,23 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The specified item of the OFData
  */
 - (const void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
+
+/*!
+ * @brief Returns the range of the data.
+ *
+ * @param data The data to search for
+ * @param options Options modifying search behavior.@n
+ *		  Possible values are:
+ *		  Value                      | Description
+ *		  ---------------------------|-----------------------------
+ *		  `OF_DATA_SEARCH_BACKWARDS` | Search backwards in the data
+ * @param range The range in which to search
+ * @return The range of the first occurrence of the data or a range with
+ *	   `OF_NOT_FOUND` as start position if it was not found.
+ */
+- (of_range_t)rangeOfData: (OFData *)data
+		  options: (int)options
+		    range: (of_range_t)range;
 
 #ifdef OF_HAVE_FILES
 /*!

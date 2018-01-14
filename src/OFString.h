@@ -962,7 +962,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * @brief Returns the range of the string.
  *
  * @param string The string to search
- * @param options Options modifying search behaviour.@n
+ * @param options Options modifying search behavior.@n
  *		  Possible values are:
  *		  Value                        | Description
  *		  -----------------------------|-------------------------------

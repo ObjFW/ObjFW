@@ -23,6 +23,7 @@
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
 
 #import "TestsAppDelegate.h"
@@ -37,6 +38,7 @@ const char *str = "Hello!";
 	OFMutableData *mutable;
 	OFData *immutable;
 	void *raw[2];
+	of_range_t range;
 
 	TEST(@"+[dataWithItemSize:]",
 	    (mutable = [OFMutableData dataWithItemSize: 4096]))
@@ -96,6 +98,65 @@ const char *str = "Hello!";
 			   atIndex: 1
 			     count: 2]) && [mutable count] == 5 &&
 	    memcmp([mutable items], "abcde", 5) == 0)
+
+	immutable = [OFData dataWithItems: "aaabaccdacaabb"
+				 itemSize: 2
+				    count: 7];
+	TEST(@"-[rangeOfString:options:range:]",
+	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							   itemSize: 2
+							      count: 1]
+				     options: 0
+				       range: of_range(0, 7)]) &&
+	    range.location == 0 && range.length == 1 &&
+	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							   itemSize: 2
+							      count: 1]
+				     options: OF_DATA_SEARCH_BACKWARDS
+				       range: of_range(0, 7)]) &&
+	    range.location == 5 && range.length == 1 &&
+	    R(range = [immutable rangeOfData: [OFData dataWithItems: "ac"
+							   itemSize: 2
+							      count: 1]
+				     options: 0
+				       range: of_range(0, 7)]) &&
+	    range.location == 2 && range.length == 1 &&
+	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aabb"
+							   itemSize: 2
+							      count: 2]
+				     options: 0
+				       range: of_range(0, 7)]) &&
+	    range.location == 5 && range.length == 2 &&
+	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							   itemSize: 2
+							      count: 1]
+				     options: 0
+				       range: of_range(1, 6)]) &&
+	    range.location == 5 && range.length == 1 &&
+	    R(range = [immutable rangeOfData: [OFData dataWithItems: "aa"
+							   itemSize: 2
+							      count: 1]
+				     options: OF_DATA_SEARCH_BACKWARDS
+				       range: of_range(0, 5)]) &&
+	    range.location == 0 && range.length == 1)
+
+	EXPECT_EXCEPTION(
+	    @"-[rangeOfString:options:range:] failing on different itemSize",
+	    OFInvalidArgumentException,
+	    [immutable rangeOfData: [OFData dataWithItems: "aaa"
+						 itemSize: 3
+						    count: 1]
+			   options: 0
+			     range: of_range(0, 1)])
+
+	EXPECT_EXCEPTION(
+	    @"-[rangeOfString:options:range:] failing on out of range",
+	    OFOutOfRangeException,
+	    [immutable rangeOfData: [OFData dataWithItems: ""
+						 itemSize: 2
+						    count: 0]
+			   options: 0
+			     range: of_range(8, 1)])
 
 	TEST(@"-[MD5Hash]", [[mutable MD5Hash] isEqual: [@"abcde" MD5Hash]])
 

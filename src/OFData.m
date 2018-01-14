@@ -543,6 +543,49 @@ _references_to_categories_of_OFData(void)
 	return of_base64_encode(_items, _count * _itemSize);
 }
 
+- (of_range_t)rangeOfData: (OFData *)data
+		  options: (int)options
+		    range: (of_range_t)range
+{
+	const char *search;
+	size_t searchLength;
+
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > _count)
+		@throw [OFOutOfRangeException exception];
+
+	if (data == nil || [data itemSize] != _itemSize)
+		@throw [OFInvalidArgumentException exception];
+
+	if ((searchLength = [data count]) == 0)
+		return of_range(0, 0);
+
+	if (searchLength > range.length)
+		return of_range(OF_NOT_FOUND, 0);
+
+	search = [data items];
+
+	if (options & OF_DATA_SEARCH_BACKWARDS) {
+		for (size_t i = range.length - searchLength;; i--) {
+			if (memcmp(_items + i * _itemSize, search,
+			    searchLength * _itemSize) == 0)
+				return of_range(i, searchLength);
+
+			/* No match and we're at the last item */
+			if (i == 0)
+				break;
+		}
+	} else {
+		for (size_t i = range.location;
+		    i <= range.length - searchLength; i++)
+			if (memcmp(_items + i * _itemSize, search,
+			    searchLength * _itemSize) == 0)
+				return of_range(i, searchLength);
+	}
+
+	return of_range(OF_NOT_FOUND, 0);
+}
+
 #ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {
