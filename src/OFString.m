@@ -43,6 +43,7 @@
 # import "OFFileManager.h"
 #endif
 #import "OFURL.h"
+#import "OFURLHandler.h"
 #import "OFXMLElement.h"
 
 #import "OFInitializationFailedException.h"
@@ -2900,6 +2901,30 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	objc_autoreleasePoolPop(pool);
 }
 #endif
+
+- (void)writeToURL: (OFURL *)URL
+{
+	[self writeToURL: URL
+		encoding: OF_STRING_ENCODING_UTF_8];
+}
+
+- (void)writeToURL: (OFURL *)URL
+	  encoding: (of_string_encoding_t)encoding
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFURLHandler *URLHandler;
+	OFStream *stream;
+
+	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+
+	stream = [URLHandler openItemAtURL: URL
+				      mode: @"w"];
+	[stream writeString: self
+		   encoding: encoding];
+
+	objc_autoreleasePoolPop(pool);
+}
 
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateLinesUsingBlock: (of_string_line_enumeration_block_t)block

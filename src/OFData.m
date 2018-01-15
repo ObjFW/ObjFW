@@ -601,6 +601,22 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
+- (void)writeToURL: (OFURL *)URL
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFURLHandler *URLHandler;
+	OFStream *stream;
+
+	if ((URLHandler = [OFURLHandler handlerForURL: URL]) == nil)
+		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];
+
+	stream = [URLHandler openItemAtURL: URL
+				      mode: @"w"];
+	[stream writeData: self];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (OFXMLElement *)XMLElementBySerializing
 {
 	void *pool;

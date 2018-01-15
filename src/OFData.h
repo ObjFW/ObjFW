@@ -308,6 +308,13 @@ enum {
  */
 - (void)writeToFile: (OFString *)path;
 #endif
+
+/*!
+ * @brief Writes the OFData to the specified URL.
+ *
+ * @param URL The URL to write to
+ */
+- (void)writeToURL: (OFURL *)URL;
 @end
 
 OF_ASSUME_NONNULL_END

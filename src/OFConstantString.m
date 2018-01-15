@@ -664,6 +664,7 @@ struct {
 }
 #endif
 
+#ifdef OF_HAVE_FILES
 - (void)writeToFile: (OFString *)path
 {
 	[self finishInitialization];
@@ -678,6 +679,23 @@ struct {
 
 	[self writeToFile: path
 		 encoding: encoding];
+}
+#endif
+
+- (void)writeToURL: (OFURL *)URL
+{
+	[self finishInitialization];
+
+	[self writeToURL: URL];
+}
+
+- (void)writeToURL: (OFURL *)URL
+	  encoding: (of_string_encoding_t)encoding
+{
+	[self finishInitialization];
+
+	[self writeToURL: URL
+		encoding: encoding];
 }
 
 #ifdef OF_HAVE_BLOCKS

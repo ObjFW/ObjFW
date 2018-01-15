@@ -1218,6 +1218,22 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 	   encoding: (of_string_encoding_t)encoding;
 #endif
 
+/*!
+ * @brief Writes the string to the specified URL using UTF-8 encoding.
+ *
+ * @param URL The URL to write to
+ */
+- (void)writeToURL: (OFURL *)URL;
+
+/*!
+ * @brief Writes the string to the specified URL using the specified encoding.
+ *
+ * @param URL The URL to write to
+ * @param encoding The encoding to use to write the string to the URL
+ */
+- (void)writeToURL: (OFURL *)URL
+	  encoding: (of_string_encoding_t)encoding;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * Enumerates all lines in the receiver using the specified block.
