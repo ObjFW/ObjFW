@@ -473,6 +473,8 @@ case "$host_os" in
 
 		AC_CHECK_HEADERS(sysdir.h)
 		AC_CHECK_FUNCS(sysdir_start_search_path_enumeration)
+
+		TESTS_LIBS="$TESTS_LIBS -framework CoreFoundation"
 		;;
 esac
 
