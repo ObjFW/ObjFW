@@ -575,9 +575,12 @@ case "$host_cpu" in
 	arm* | earm*)
 		AC_MSG_CHECKING(if VFP2 or above is available)
 		AC_TRY_COMPILE([], [
+			#if !defined(__arm64__) && !defined(__aarch64__) && \
+			    !defined(__ARM64_ARCH_8__)
 			__asm__ __volatile__ (
 			    "fstmfdd sp!, {d0-d7}"
 			);
+			#endif
 		], [
 			AC_DEFINE(HAVE_VFP2, 1, [Whether we have VFP2 or above])
 			AC_MSG_RESULT(yes)
