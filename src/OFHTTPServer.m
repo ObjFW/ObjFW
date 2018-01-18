@@ -513,7 +513,7 @@ normalizedKey(OFString *key)
 
 			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
 			_body = [[OFMutableData alloc] init];
-			_contentLength = contentLength;
+			_contentLength = (size_t)contentLength;
 
 			[_socket asyncReadIntoBuffer: buffer
 					      length: BUFFER_SIZE
