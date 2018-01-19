@@ -22,6 +22,19 @@ dnl POSSIBILITY OF SUCH DAMAGE.
 dnl
 
 AC_DEFUN([BUILDSYS_INIT], [
+	AC_REQUIRE([AC_CANONICAL_BUILD])
+	AC_REQUIRE([AC_CANONICAL_HOST])
+
+	case "$build_os" in
+		darwin*)
+			case "$host_os" in
+				darwin*)
+					AC_SUBST(BUILD_AND_HOST_ARE_DARWIN, yes)
+					;;
+			esac
+			;;
+	esac
+
 	AC_CONFIG_COMMANDS_PRE([
 		AC_SUBST(CC_DEPENDS, $GCC)
 		AC_SUBST(CXX_DEPENDS, $GXX)

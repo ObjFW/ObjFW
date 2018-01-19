@@ -80,6 +80,7 @@ JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAR = @JAR@
 WINDRES = @WINDRES@
+BUILD_AND_HOST_ARE_DARWIN = @BUILD_AND_HOST_ARE_DARWIN@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
@@ -302,78 +303,96 @@ ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 	${LINK_STATUS}
 	rm -f $@
-	out="$@"; \
-	objs=""; \
-	ars=""; \
-	for i in ${OBJS} ${OBJS_EXTRA}; do \
-		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
-		esac \
-	done; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-		mkdir -p $$dir; \
-		cd $$dir; \
-		${AR} x ../$$i; \
-		for j in *.o; do \
-			objs="$$objs $$dir/$$j"; \
-		done; \
-		cd ..; \
-	done; \
-	if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
-		${LINK_OK}; \
+	if test x"${BUILD_AND_HOST_ARE_DARWIN}" = x"yes"; then \
+		if /usr/bin/libtool -static -o $@ ${OBJS} ${OBJS_EXTRA}; then \
+			${LINK_OK}; \
+		else \
+			${LINK_FAILED}; \
+			rm -f $@; \
+		fi; \
 	else \
-		${LINK_FAILED}; \
-		rm -f $@; \
-	fi; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-	done
+		out="$@"; \
+		objs=""; \
+		ars=""; \
+		for i in ${OBJS} ${OBJS_EXTRA}; do \
+			case $$i in \
+				*.a) \
+					ars="$$ars $$i" \
+					;; \
+				*.o) \
+					objs="$$objs $$i" \
+					;; \
+			esac \
+		done; \
+		for i in $$ars; do \
+			dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+			rm -fr $$dir; \
+			mkdir -p $$dir; \
+			cd $$dir; \
+			${AR} x ../$$i; \
+			for j in *.o; do \
+				objs="$$objs $$dir/$$j"; \
+			done; \
+			cd ..; \
+		done; \
+		if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
+			${LINK_OK}; \
+		else \
+			${LINK_FAILED}; \
+			rm -f $@; \
+		fi; \
+		for i in $$ars; do \
+			dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+			rm -fr $$dir; \
+		done; \
+	fi
 
 ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	${LINK_STATUS}
 	rm -f $@
-	out="$@"; \
-	objs=""; \
-	ars=""; \
-	for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
-		case $$i in \
-			*.a) \
-				ars="$$ars $$i" \
-				;; \
-			*.o) \
-				objs="$$objs $$i" \
-				;; \
-		esac \
-	done; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-		mkdir -p $$dir; \
-		cd $$dir; \
-		${AR} x ../$$i; \
-		for j in *.o; do \
-			objs="$$objs $$dir/$$j"; \
-		done; \
-		cd ..; \
-	done; \
-	if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
-		${LINK_OK}; \
+	if test x"${BUILD_AND_HOST_ARE_DARWIN}" = x"yes"; then \
+		if /usr/bin/libtool -static -o $@ ${OBJS} ${OBJS_EXTRA}; then \
+			${LINK_OK}; \
+		else \
+			${LINK_FAILED}; \
+			rm -f $@; \
+		fi; \
 	else \
-		${LINK_FAILED}; \
-		rm -f $@; \
-	fi; \
-	for i in $$ars; do \
-		dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
-		rm -fr $$dir; \
-	done
+		out="$@"; \
+		objs=""; \
+		ars=""; \
+		for i in ${LIB_OBJS} ${LIB_OBJS_EXTRA}; do \
+			case $$i in \
+				*.a) \
+					ars="$$ars $$i" \
+					;; \
+				*.o) \
+					objs="$$objs $$i" \
+					;; \
+			esac \
+		done; \
+		for i in $$ars; do \
+			dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+			rm -fr $$dir; \
+			mkdir -p $$dir; \
+			cd $$dir; \
+			${AR} x ../$$i; \
+			for j in *.o; do \
+				objs="$$objs $$dir/$$j"; \
+			done; \
+			cd ..; \
+		done; \
+		if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
+			${LINK_OK}; \
+		else \
+			${LINK_FAILED}; \
+			rm -f $@; \
+		fi; \
+		for i in $$ars; do \
+			dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
+			rm -fr $$dir; \
+		done; \
+	fi
 
 locales: ${MO_FILES}
 

@@ -1,16 +1,17 @@
 AC_INIT(ObjFW, 0.91-dev, js@heap.zone)
+AC_CONFIG_SRCDIR(src)
+AC_CONFIG_AUX_DIR(build-aux)
+AC_CONFIG_MACRO_DIR(build-aux/m4)
+
 dnl This may only be set to 0.91 once 0.91 is released
 AC_SUBST(BUNDLE_VERSION, 0.90.9900)
 AC_SUBST(BUNDLE_SHORT_VERSION, 0.90)
-BUILDSYS_INIT
 
 AS_IF([test configure.ac -nt configure], [
 	AC_MSG_ERROR([configure.ac is newer than configure! Run autoreconf!])
 ])
 
-AC_CONFIG_SRCDIR(src)
-AC_CONFIG_AUX_DIR(build-aux)
-AC_CONFIG_MACRO_DIR(build-aux/m4)
+BUILDSYS_INIT
 
 AC_CANONICAL_HOST
 
