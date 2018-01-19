@@ -351,7 +351,7 @@ ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_E
 	${LINK_STATUS}
 	rm -f $@
 	if test x"${BUILD_AND_HOST_ARE_DARWIN}" = x"yes"; then \
-		if /usr/bin/libtool -static -o $@ ${OBJS} ${OBJS_EXTRA}; then \
+		if /usr/bin/libtool -static -o $@ ${LIB_OBJS} ${LIB_OBJS_EXTRA}; then \
 			${LINK_OK}; \
 		else \
 			${LINK_FAILED}; \
