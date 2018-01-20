@@ -8,6 +8,7 @@ CLEAN = EBOOT.PBP		\
 	${PROG_NOINST}.nds
 
 PROG_NOINST = tests${PROG_SUFFIX}
+STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m		\
        OFArrayTests.m			\
        ${OFBLOCKTESTS_M}		\

@@ -25,6 +25,12 @@
 
 #import "plugin/TestPlugin.h"
 
+#ifndef OF_IOS
+# define PLUGIN_PATH @"plugin/TestPlugin"
+#else
+# define PLUGIN_PATH @"PlugIns/TestPlugin"
+#endif
+
 static OFString *module = @"OFPlugin";
 
 @implementation TestsAppDelegate (OFPluginTests)
@@ -34,7 +40,7 @@ static OFString *module = @"OFPlugin";
 	TestPlugin *plugin;
 
 	TEST(@"+[pluginFromFile:]",
-	    (plugin = [OFPlugin pluginFromFile: @"plugin/TestPlugin"]))
+	    (plugin = [OFPlugin pluginFromFile: PLUGIN_PATH]))
 
 	TEST(@"TestPlugin's -[test:]", [plugin test: 1234] == 2468)
 

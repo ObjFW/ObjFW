@@ -23,7 +23,8 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS))
+#if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS)) || \
+    defined(OF_IOS)
 # undef STDOUT
 # define STDOUT_SIMPLE
 #endif
@@ -435,7 +436,7 @@ main(int argc, char *argv[])
 	[self serializationTests];
 #endif
 	[self JSONTests];
-#ifdef OF_HAVE_PLUGINS
+#if defined(OF_HAVE_PLUGINS) && !defined(OF_IOS)
 	[self pluginTests];
 #endif
 

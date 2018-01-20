@@ -475,7 +475,22 @@ case "$host_os" in
 		AC_CHECK_HEADERS(sysdir.h)
 		AC_CHECK_FUNCS(sysdir_start_search_path_enumeration)
 
-		TESTS_LIBS="$TESTS_LIBS -framework CoreFoundation"
+		AC_MSG_CHECKING(whether host is iOS)
+		AC_EGREP_CPP(yes, [
+			#include <TargetConditionals.h>
+
+			#if (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
+			    (defined(TARGET_OS_SIMULATOR) && \
+			    TARGET_OS_SIMULATOR)
+			yes
+			#endif
+		], [
+			AC_MSG_RESULT(yes)
+			AC_SUBST(TESTS_STATIC_LIB, tests.a)
+			TESTS_LIBS="$TESTS_LIBS -framework CoreFoundation"
+		], [
+			AC_MSG_RESULT(no)
+		])
 		;;
 esac
 

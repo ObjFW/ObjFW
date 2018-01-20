@@ -24,10 +24,6 @@ docs
 extra.mk
 generators/gen_tables
 generators/gen_tables.exe
-ObjFW.xcodeproj/*.mode1v3
-ObjFW.xcodeproj/*.pbxuser
-ObjFW.xcodeproj/project.xcworkspace
-ObjFW.xcodeproj/xcuserdata
 src/Info.plist
 src/ObjFW.framework
 src/bridge/Info.plist
@@ -38,6 +34,9 @@ tests/*.map
 tests/EBOOT.PBP
 tests/Info.plist
 tests/PARAM.SFO
+tests/iOS.xcodeproj/*.pbxuser
+tests/iOS.xcodeproj/project.xcworkspace
+tests/iOS.xcodeproj/xcuserdata
 tests/objc_sync/objc_sync
 tests/tests
 tests/tests.3dsx
