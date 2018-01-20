@@ -699,7 +699,8 @@ install: all install-extra
 	for i in "" ${FRAMEWORK}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${prefix}/Library/Frameworks && cp -R ${FRAMEWORK} ${DESTDIR}${prefix}/Library/Frameworks/${FRAMEWORK}; then \
+		rm -fr ${DESTDIR}${prefix}/Library/Frameworks/$$i; \
+		if ${MKDIR_P} ${DESTDIR}${prefix}/Library/Frameworks && cp -R $$i ${DESTDIR}${prefix}/Library/Frameworks/; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
