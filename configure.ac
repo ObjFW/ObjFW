@@ -249,6 +249,12 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(INVOCATION_INVOCATION_LIB_A, "invocation/invocation.lib.a")
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_LIB_A, "lookup-asm/lookup-asm.lib.a")
+
+	case "$host_os" in
+		darwin*)
+			AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
+			;;
+	esac
 ], [
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
@@ -1289,6 +1295,13 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFW_BRIDGE_SHARED_LIB,
 				"${LIB_PREFIX}objfw_bridge${LIB_SUFFIX}")
+
+			case "$host_os" in
+				darwin*)
+					AC_SUBST(OBJFW_BRIDGE_FRAMEWORK,
+						"ObjFW_Bridge.framework")
+					;;
+			esac
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [

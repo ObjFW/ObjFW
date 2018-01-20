@@ -90,6 +90,7 @@ datarootdir = @datarootdir@
 datadir = @datadir@
 includedir = @includedir@
 includesubdir ?= ${PACKAGE_NAME}
+INSTALL_INCLUDES ?= yes
 localedir = @localedir@
 localename ?= ${PACKAGE_NAME}
 mandir = @mandir@
@@ -123,7 +124,7 @@ all:
 	${MAKE} pre-all
 	${MAKE} subdirs
 	${MAKE} depend
-	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
+	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
 	${MAKE} subdirs-after
 	${MAKE} post-all
 
@@ -252,7 +253,7 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 		${LINK_FAILED}; \
 	fi
 
-${FRAMEWORK}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
+${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	rm -fr $@
 	${MKDIR_P} $@
 	${MAKE} INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} INSTALL_INCLUDES_DESTINATION=$$PWD/$@/Headers install-includes
@@ -695,6 +696,16 @@ install: all install-extra
 		fi \
 	done
 
+	for i in "" ${FRAMEWORK}; do \
+		test x"$$i" = x"" && continue; \
+		${INSTALL_STATUS}; \
+		if ${MKDIR_P} ${DESTDIR}${prefix}/Library/Frameworks && cp -R ${FRAMEWORK} ${DESTDIR}${prefix}/Library/Frameworks/${FRAMEWORK}; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	done
+
 	for i in "" ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
@@ -735,15 +746,17 @@ install: all install-extra
 		fi \
 	done
 
-	for i in "" ${INCLUDES}; do \
-		test x"$$i" = x"" && continue; \
-		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${includedir}/${includesubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
-			${INSTALL_OK}; \
-		else \
-			${INSTALL_FAILED}; \
-		fi \
-	done
+	if test x"${INSTALL_INCLUDES}" = x"yes"; then \
+		for i in "" ${INCLUDES}; do \
+			test x"$$i" = x"" && continue; \
+			${INSTALL_STATUS}; \
+			if ${MKDIR_P} ${DESTDIR}${includedir}/${includesubdir} && ${INSTALL} -m 644 $$i ${DESTDIR}${includedir}/${includesubdir}/$$i; then \
+				${INSTALL_OK}; \
+			else \
+				${INSTALL_FAILED}; \
+			fi \
+		done \
+	fi
 
 	for i in "" ${MO_FILES}; do \
 		test x"$$i" = x"" && continue; \
@@ -811,6 +824,19 @@ uninstall: uninstall-extra
 			fi \
 		fi; \
 	done
+
+	for i in "" ${FRAMEWORK}; do \
+		test x"$$i" = x"" && continue; \
+		if test -d ${DESTDIR}${prefix}/Library/Frameworks/$$i; then \
+			if rm -fr ${DESTDIR}${prefix}/Library/Frameworks/$$i; then \
+				${DELETE_OK}; \
+			else \
+				${DELETE_FAILED}; \
+			fi \
+		fi \
+	done
+	-rmdir ${DESTDIR}${prefix}/Library/Frameworks >/dev/null 2>&1
+	-rmdir ${DESTDIR}${prefix}/Library >/dev/null 2>&1
 
 	for i in "" ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
 		test x"$$i" = x"" && continue; \
