@@ -132,7 +132,7 @@ static struct Resident resident = {
 	.rt_Pri = 0,
 	.rt_Name = (char *)"objfw_rt.library",
 	.rt_IdString = (char *)"ObjFW_RT " PACKAGE_VERSION
-	    " \xA9 2008-2017 Jonathan Schleifer",
+	    " \xA9 2008-2018 Jonathan Schleifer",
 	.rt_Init = &init_table
 };
 

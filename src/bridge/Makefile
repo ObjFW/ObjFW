@@ -32,5 +32,5 @@ include ../../buildsys.mk
 
 CPPFLAGS += -I. -I.. -I../.. -I../exceptions -DOF_BRIDGE_LOCAL_INCLUDES
 LD = ${OBJC}
-LIBS += -framework Foundation -L.. -lobjfw
-FRAMEWORK_LIBS += -framework Foundation -F.. -framework ObjFW
+FRAMEWORK_LIBS := -framework Foundation -F.. -framework ObjFW ${LIBS}
+LIBS := -framework Foundation -L.. -lobjfw ${LIBS}
