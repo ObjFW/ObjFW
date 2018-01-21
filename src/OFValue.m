@@ -16,10 +16,11 @@
  */
 
 #import "OFValue.h"
+#import "OFMethodSignature.h"
+#import "OFString.h"
 #import "OFValue_bytes.h"
 #import "OFValue_nonretainedObject.h"
 #import "OFValue_pointer.h"
-#import "OFMethodSignature.h"
 
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
@@ -103,7 +104,7 @@ static struct {
 {
 	const char *objCType;
 	size_t size;
-	void *buffer, *otherBuffer;
+	void *value, *otherValue;
 
 	if (![object isKindOfClass: [OFValue class]])
 		return false;
@@ -115,51 +116,51 @@ static struct {
 
 	size = of_sizeof_type_encoding(objCType);
 
-	if ((buffer = malloc(size)) == NULL)
+	if ((value = malloc(size)) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: size];
 
-	if ((otherBuffer = malloc(size)) == NULL)
+	if ((otherValue = malloc(size)) == NULL) {
+		free(value);
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: size];
+	}
 
 	@try {
-		[self getValue: buffer
+		[self getValue: value
 			  size: size];
-		[object getValue: otherBuffer
+		[object getValue: otherValue
 			    size: size];
 
-		return (memcmp(buffer, otherBuffer, size) == 0);
+		return (memcmp(value, otherValue, size) == 0);
 	} @finally {
-		free(buffer);
-		free(otherBuffer);
+		free(value);
+		free(otherValue);
 	}
 }
 
 - (uint32_t)hash
 {
+	size_t size = of_sizeof_type_encoding([self objCType]);
+	unsigned char *value;
 	uint32_t hash;
-	size_t size;
-	char *buffer;
 
-	size = of_sizeof_type_encoding([self objCType]);
-
-	if ((buffer = malloc(size)) == NULL)
+	if ((value = malloc(size)) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: size];
 
-	[self getValue: buffer
-		  size: size];
-
 	@try {
+		[self getValue: value
+			  size: size];
+
 		OF_HASH_INIT(hash);
 
 		for (size_t i = 0; i < size; i++)
-			OF_HASH_ADD(hash, buffer[i]);
+			OF_HASH_ADD(hash, value[i]);
 
 		OF_HASH_FINALIZE(hash);
 	} @finally {
-		free(buffer);
+		free(value);
 	}
 
 	return hash;
@@ -198,6 +199,37 @@ static struct {
 	[self getValue: &ret
 		  size: sizeof(ret)];
 
+	return ret;
+}
+
+- (OFString *)description
+{
+	OFMutableString *ret =
+	    [OFMutableString stringWithString: @"<OFValue: "];
+	size_t size = of_sizeof_type_encoding([self objCType]);
+	unsigned char *value;
+
+	if ((value = malloc(size)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
+
+	@try {
+		[self getValue: value
+			  size: size];
+
+		for (size_t i = 0; i < size; i++) {
+			if (i > 0)
+				[ret appendString: @" "];
+
+			[ret appendFormat: @"%02x", value[i]];
+		}
+	} @finally {
+		free(value);
+	}
+
+	[ret appendString: @">"];
+
+	[ret makeImmutable];
 	return ret;
 }
 @end
