@@ -1,6 +1,7 @@
 dnl
-dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017
-dnl Jonathan Schleifer <js@heap.zone>
+dnl Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017,
+dnl               2018
+dnl   Jonathan Schleifer <js@heap.zone>
 dnl
 dnl https://heap.zone/git/?p=buildsys.git
 dnl
@@ -280,6 +281,9 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 
 			AC_SUBST(FRAMEWORK_LDFLAGS)
 			AC_SUBST(FRAMEWORK_LDFLAGS_INSTALL_NAME)
+
+			$1
+
 			;;
 	esac
 ])

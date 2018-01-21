@@ -239,7 +239,6 @@ AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
 	BUILDSYS_SHARED_LIB
-	BUILDSYS_FRAMEWORK
 	AC_SUBST(OBJFW_SHARED_LIB, "${LIB_PREFIX}objfw${LIB_SUFFIX}")
 	AC_SUBST(EXCEPTIONS_LIB_A, "exceptions.lib.a")
 	AC_SUBST(EXCEPTIONS_EXCEPTIONS_LIB_A, "exceptions/exceptions.lib.a")
@@ -250,11 +249,9 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(LOOKUP_ASM_LIB_A, "lookup-asm.lib.a")
 	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_LIB_A, "lookup-asm/lookup-asm.lib.a")
 
-	case "$host_os" in
-		darwin*)
-			AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
-			;;
-	esac
+	BUILDSYS_FRAMEWORK([
+		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
+	])
 ], [
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
