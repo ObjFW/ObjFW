@@ -161,6 +161,19 @@ static OFString *module = @"OFValue";
 	    [[OFValue valueWithBytes: "a"
 			    objCType: @encode(char)] rectangleValue])
 
+	TEST(@"-[isEqual:]",
+	    [[OFValue valueWithRectangle: rectangle]
+	    isEqual: [OFValue valueWithBytes: &rectangle
+				    objCType: @encode(of_rectangle_t)]] &&
+	    ![[OFValue valueWithBytes: "a"
+			     objCType: @encode(char)]
+	    isEqual: [OFValue valueWithBytes: "a"
+				    objCType: @encode(unsigned char)]] &&
+	    ![[OFValue valueWithBytes: "a"
+			     objCType: @encode(char)]
+	    isEqual: [OFValue valueWithBytes: "b"
+				    objCType: @encode(char)]])
+
 	[pool drain];
 }
 @end
