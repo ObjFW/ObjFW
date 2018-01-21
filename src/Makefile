@@ -207,3 +207,4 @@ CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
 LDFLAGS += ${REEXPORT_RUNTIME}
 LIBS += -Lruntime ${RUNTIME_LIBS}
+FRAMEWORK_LIBS += -Lruntime ${RUNTIME_LIBS}

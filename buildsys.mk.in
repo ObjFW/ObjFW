@@ -277,7 +277,7 @@ ${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	fi
 	${LINK_STATUS}
 	out="$@"; \
-	if ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
+	if ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; \

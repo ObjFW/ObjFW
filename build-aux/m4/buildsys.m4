@@ -144,6 +144,7 @@ AC_DEFUN([BUILDSYS_PROG_IMPLIB], [
 AC_DEFUN([BUILDSYS_SHARED_LIB], [
 	AC_REQUIRE([AC_CANONICAL_HOST])
 	AC_MSG_CHECKING(for shared library system)
+
 	case "$host_os" in
 		darwin*)
 			AC_MSG_RESULT(Darwin)
@@ -283,7 +284,6 @@ AC_DEFUN([BUILDSYS_FRAMEWORK], [
 			AC_SUBST(FRAMEWORK_LDFLAGS_INSTALL_NAME)
 
 			$1
-
 			;;
 	esac
 ])
