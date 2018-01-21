@@ -398,6 +398,7 @@ main(int argc, char *argv[])
 	[self listTests];
 	[self setTests];
 	[self dateTests];
+	[self valueTests];
 	[self numberTests];
 	[self streamTests];
 #ifdef OF_HAVE_FILES

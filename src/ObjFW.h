@@ -34,6 +34,7 @@
 #import "OFSet.h"
 #import "OFCountedSet.h"
 
+#import "OFValue.h"
 #import "OFPair.h"
 #import "OFTriple.h"
 

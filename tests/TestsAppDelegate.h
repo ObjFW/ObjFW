@@ -221,6 +221,10 @@
 - (void)URLTests;
 @end
 
+@interface TestsAppDelegate (OFValueTests)
+- (void)valueTests;
+@end
+
 @interface TestsAppDelegate (OFXMLElementBuilderTests)
 - (void)XMLElementBuilderTests;
 @end
