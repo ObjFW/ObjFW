@@ -44,12 +44,12 @@ OF_ASSUME_NONNULL_BEGIN
  * If the same class is specified for two schemes, one instance of it is
  * created per scheme.
  *
- * @param class The class to register as the handler for the specified scheme
+ * @param class_ The class to register as the handler for the specified scheme
  * @param scheme The scheme for which to register the handler
  * @return Whether the class was successfully registered. If a handler for the
  *	   same scheme is already registered, registration fails.
  */
-+ (bool)registerClass: (Class)class
++ (bool)registerClass: (Class)class_
 	    forScheme: (OFString *)scheme;
 
 /*!
