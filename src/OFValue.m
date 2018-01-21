@@ -165,6 +165,11 @@ static struct {
 	return hash;
 }
 
+- (id)copy
+{
+	return [self retain];
+}
+
 - (const char *)objCType
 {
 	OF_UNRECOGNIZED_SELECTOR
