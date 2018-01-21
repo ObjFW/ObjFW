@@ -21,8 +21,8 @@
 #import "OFValue_bytes.h"
 #import "OFValue_nonretainedObject.h"
 #import "OFValue_pointer.h"
+#import "OFValue_range.h"
 
-#import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
 static struct {
@@ -49,6 +49,11 @@ static struct {
 {
 	return (id)[[OFValue_nonretainedObject alloc]
 	    initWithNonretainedObject: object];
+}
+
+- (instancetype)initWithRange: (of_range_t)range
+{
+	return (id)[[OFValue_range alloc] initWithRange: range];
 }
 @end
 
@@ -84,6 +89,11 @@ static struct {
 	return [[[self alloc] initWithNonretainedObject: object] autorelease];
 }
 
++ (instancetype)valueWithRange: (of_range_t)range
+{
+	return [[[self alloc] initWithRange: range] autorelease];
+}
+
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
@@ -96,6 +106,11 @@ static struct {
 }
 
 - (instancetype)initWithNonretainedObject: (id)object
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithRange: (of_range_t)range
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -195,6 +210,16 @@ static struct {
 - (id)nonretainedObjectValue
 {
 	id ret;
+
+	[self getValue: &ret
+		  size: sizeof(ret)];
+
+	return ret;
+}
+
+- (of_range_t)rangeValue
+{
+	of_range_t ret;
 
 	[self getValue: &ret
 		  size: sizeof(ret)];

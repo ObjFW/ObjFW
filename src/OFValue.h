@@ -33,16 +33,23 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The value as a pointer to void.
  *
- * If the value is not pointer-sized, @ref OFInvalidFormatException is thrown.
+ * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) void *pointerValue;
 
 /*!
  * @brief The value as a non-retained object.
  *
- * If the value is not pointer-sized, @ref OFInvalidFormatException is thrown.
+ * If the value is not pointer-sized, @ref OFOutOfRangeException is thrown.
  */
 @property (readonly, nonatomic) id nonretainedObjectValue;
+
+/*!
+ * @brief The value as a range.
+ *
+ * If the value is not range-sized, @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) of_range_t rangeValue;
 
 /*!
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -78,6 +85,14 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)valueWithNonretainedObject: (id)object;
 
 /*!
+ * @brief Creates a new, autoreleased OFValue containing the specified range.
+ *
+ * @param range The range the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithRange: (of_range_t)range;
+
+/*!
  * @brief Initializes an already allocated OFValue with the specified bytes of
  *	  the specified type.
  *
@@ -110,6 +125,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFValue
  */
 - (instancetype)initWithNonretainedObject: (id)object;
+
+/*!
+ * @brief Initializes an already allocated OFValue containing the specified
+ *	  range.
+ *
+ * @param range The range the OFValue should contain
+ * @return An initialized OFValue
+ */
+- (instancetype)initWithRange: (of_range_t)range;
 
 /*!
  * @brief Gets the value.

@@ -79,6 +79,21 @@ static OFString *module = @"OFValue";
 	    [[OFValue valueWithBytes: "a"
 			    objCType: @encode(char)] nonretainedObjectValue])
 
+	TEST(@"+[valueWithRange:]",
+	    (value = [OFValue valueWithRange: range]))
+
+	TEST(@"-[rangeValue]",
+	    R(range = [value rangeValue]) &&
+	    memcmp(&range, &range2, sizeof(of_range_t)) == 0 && R(range =
+	    [[OFValue valueWithBytes: &range
+			    objCType: @encode(of_range_t)] rangeValue]) &&
+	    memcmp(&range, &range2, sizeof(of_range_t)) == 0)
+
+	EXPECT_EXCEPTION(@"-[rangeValue] with wrong size throws",
+	    OFOutOfRangeException,
+	    [[OFValue valueWithBytes: "a"
+			    objCType: @encode(char)] rangeValue])
+
 	[pool drain];
 }
 @end

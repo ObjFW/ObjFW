@@ -174,6 +174,7 @@ SRCS += OFArray_adjacent.m		\
 	OFValue_bytes.m			\
 	OFValue_nonretainedObject.m	\
 	OFValue_pointer.m		\
+	OFValue_range.m			\
 	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}
