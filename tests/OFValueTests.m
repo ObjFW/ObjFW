@@ -32,7 +32,10 @@ static OFString *module = @"OFValue";
 - (void)valueTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	of_range_t range = of_range(1, 64), range2 = of_range(1, 64);
+	of_range_t range = of_range(1, 64), range2;
+	of_point_t point = of_point(1.5, 3), point2;
+	of_dimension_t dimension = of_dimension(4.5, 5), dimension2;
+	of_rectangle_t rectangle = of_rectangle(1.5, 3, 4.5, 6), rectangle2;
 	OFValue *value;
 	void *pointer = &value;
 
@@ -42,11 +45,10 @@ static OFString *module = @"OFValue";
 
 	TEST(@"-[objCType]", strcmp([value objCType], @encode(of_range_t)) == 0)
 
-	range = of_range(OF_NOT_FOUND, 0);
 	TEST(@"-[getValue:size:]",
-	    R([value getValue: &range
+	    R([value getValue: &range2
 			 size: sizeof(of_range_t)]) &&
-	    memcmp(&range, &range2, sizeof(of_range_t)) == 0)
+	    of_range_equal(range2, range))
 
 	EXPECT_EXCEPTION(@"-[getValue:size:] with wrong size throws",
 	    OFOutOfRangeException,
@@ -83,16 +85,81 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithRange: range]))
 
 	TEST(@"-[rangeValue]",
-	    R(range = [value rangeValue]) &&
-	    memcmp(&range, &range2, sizeof(of_range_t)) == 0 && R(range =
-	    [[OFValue valueWithBytes: &range
-			    objCType: @encode(of_range_t)] rangeValue]) &&
-	    memcmp(&range, &range2, sizeof(of_range_t)) == 0)
+	    of_range_equal([value rangeValue], range) &&
+	    (value = [OFValue valueWithBytes: &range
+				    objCType: @encode(of_range_t)]) &&
+	    of_range_equal([value rangeValue], range))
+
+	TEST(@"-[getValue:size:] for OFValue_range",
+	    (value = [OFValue valueWithRange: range]) &&
+	    R([value getValue: &range2
+			 size: sizeof(range2)]) &&
+	    of_range_equal(range2, range))
 
 	EXPECT_EXCEPTION(@"-[rangeValue] with wrong size throws",
 	    OFOutOfRangeException,
 	    [[OFValue valueWithBytes: "a"
 			    objCType: @encode(char)] rangeValue])
+
+	TEST(@"+[valueWithPoint:]",
+	    (value = [OFValue valueWithPoint: point]))
+
+	TEST(@"-[pointValue]",
+	    of_point_equal([value pointValue], point) &&
+	    (value = [OFValue valueWithBytes: &point
+				    objCType: @encode(of_point_t)]) &&
+	    of_point_equal([value pointValue], point))
+
+	TEST(@"-[getValue:size:] for OFValue_point",
+	    (value = [OFValue valueWithPoint: point]) &&
+	    R([value getValue: &point2
+			 size: sizeof(point2)]) &&
+	    of_point_equal(point2, point))
+
+	EXPECT_EXCEPTION(@"-[pointValue] with wrong size throws",
+	    OFOutOfRangeException,
+	    [[OFValue valueWithBytes: "a"
+			    objCType: @encode(char)] pointValue])
+
+	TEST(@"+[valueWithDimension:]",
+	    (value = [OFValue valueWithDimension: dimension]))
+
+	TEST(@"-[dimensionValue]",
+	    of_dimension_equal([value dimensionValue], dimension) &&
+	    (value = [OFValue valueWithBytes: &dimension
+				    objCType: @encode(of_dimension_t)]) &&
+	    of_dimension_equal([value dimensionValue], dimension))
+
+	TEST(@"-[getValue:size:] for OFValue_dimension",
+	    (value = [OFValue valueWithDimension: dimension]) &&
+	    R([value getValue: &dimension2
+			 size: sizeof(dimension2)]) &&
+	    of_dimension_equal(dimension2, dimension))
+
+	EXPECT_EXCEPTION(@"-[dimensionValue] with wrong size throws",
+	    OFOutOfRangeException,
+	    [[OFValue valueWithBytes: "a"
+			    objCType: @encode(char)] dimensionValue])
+
+	TEST(@"+[valueWithRectangle:]",
+	    (value = [OFValue valueWithRectangle: rectangle]))
+
+	TEST(@"-[rectangleValue]",
+	    of_rectangle_equal([value rectangleValue], rectangle) &&
+	    (value = [OFValue valueWithBytes: &rectangle
+				    objCType: @encode(of_rectangle_t)]) &&
+	    of_rectangle_equal([value rectangleValue], rectangle))
+
+	TEST(@"-[getValue:size:] for OFValue_rectangle",
+	    (value = [OFValue valueWithRectangle: rectangle]) &&
+	    R([value getValue: &rectangle2
+			 size: sizeof(rectangle2)]) &&
+	    of_rectangle_equal(rectangle2, rectangle))
+
+	EXPECT_EXCEPTION(@"-[rectangleValue] with wrong size throws",
+	    OFOutOfRangeException,
+	    [[OFValue valueWithBytes: "a"
+			    objCType: @encode(char)] rectangleValue])
 
 	[pool drain];
 }

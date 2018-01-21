@@ -32,6 +32,11 @@
 	return self;
 }
 
+- (const char *)objCType
+{
+	return @encode(id);
+}
+
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {

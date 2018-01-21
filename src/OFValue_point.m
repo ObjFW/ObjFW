@@ -15,39 +15,41 @@
  * file.
  */
 
-#import "OFValue_pointer.h"
+#import "OFValue_point.h"
 #import "OFMethodSignature.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFValue_pointer
-@synthesize pointerValue = _pointer;
+@implementation OFValue_point
+@synthesize pointValue = _point;
 
-- (instancetype)initWithPointer: (const void *)pointer
+- (instancetype)initWithPoint: (of_point_t)point
 {
 	self = [super init];
 
-	_pointer = (void *)pointer;
+	_point = point;
 
 	return self;
 }
 
 - (const char *)objCType
 {
-	return @encode(void *);
+	return @encode(of_point_t);
 }
 
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
-	if (size != sizeof(_pointer))
+	if (size != sizeof(_point))
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, &_pointer, sizeof(_pointer));
+	memcpy(value, &_point, sizeof(_point));
 }
 
-- (id)nonretainedObjectValue
+- (OFString *)description
 {
-	return _pointer;
+	return [OFString stringWithFormat:
+	    @"<OFValue: of_point_t { %f, %f }>", _point.x, _point.y];
 }
 @end

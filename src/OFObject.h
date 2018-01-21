@@ -99,6 +99,25 @@ of_range(size_t start, size_t length)
 }
 
 /*!
+ * @brief Returns whether the two ranges are equal.
+ *
+ * @param range1 The first range for the comparison
+ * @param range2 The second range for the comparison
+ * @return Whether the two ranges are equal
+ */
+static OF_INLINE bool
+of_range_equal(of_range_t range1, of_range_t range2)
+{
+	if (range1.location != range2.location)
+		return false;
+
+	if (range1.length != range2.length)
+		return false;
+
+	return true;
+}
+
+/*!
  * @brief A time interval in seconds.
  */
 typedef double of_time_interval_t;
@@ -131,6 +150,25 @@ of_point(float x, float y)
 }
 
 /*!
+ * @brief Returns whether the two points are equal.
+ *
+ * @param point1 The first point for the comparison
+ * @param point2 The second point for the comparison
+ * @return Whether the two points are equal
+ */
+static OF_INLINE bool
+of_point_equal(of_point_t point1, of_point_t point2)
+{
+	if (point1.x != point2.x)
+		return false;
+
+	if (point1.y != point2.y)
+		return false;
+
+	return true;
+}
+
+/*!
  * @struct of_dimension_t OFObject.h ObjFW/OFObject.h
  *
  * @brief A dimension.
@@ -155,6 +193,25 @@ of_dimension(float width, float height)
 	of_dimension_t dimension = { width, height };
 
 	return dimension;
+}
+
+/*!
+ * @brief Returns whether the two dimensions are equal.
+ *
+ * @param dimension1 The first dimension for the comparison
+ * @param dimension2 The second dimension for the comparison
+ * @return Whether the two dimensions are equal
+ */
+static OF_INLINE bool
+of_dimension_equal(of_dimension_t dimension1, of_dimension_t dimension2)
+{
+	if (dimension1.width != dimension2.width)
+		return false;
+
+	if (dimension1.height != dimension2.height)
+		return false;
+
+	return true;
 }
 
 /*!
@@ -187,6 +244,25 @@ of_rectangle(float x, float y, float width, float height)
 	};
 
 	return rectangle;
+}
+
+/*!
+ * @brief Returns whether the two rectangles are equal.
+ *
+ * @param rectangle1 The first rectangle for the comparison
+ * @param rectangle2 The second rectangle for the comparison
+ * @return Whether the two rectangles are equal
+ */
+static OF_INLINE bool
+of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
+{
+	if (!of_point_equal(rectangle1.origin, rectangle2.origin))
+		return false;
+
+	if (!of_dimension_equal(rectangle1.size, rectangle2.size))
+		return false;
+
+	return true;
 }
 
 @class OFMethodSignature;

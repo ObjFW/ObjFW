@@ -15,39 +15,42 @@
  * file.
  */
 
-#import "OFValue_pointer.h"
+#import "OFValue_dimension.h"
 #import "OFMethodSignature.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFValue_pointer
-@synthesize pointerValue = _pointer;
+@implementation OFValue_dimension
+@synthesize dimensionValue = _dimension;
 
-- (instancetype)initWithPointer: (const void *)pointer
+- (instancetype)initWithDimension: (of_dimension_t)dimension
 {
 	self = [super init];
 
-	_pointer = (void *)pointer;
+	_dimension = dimension;
 
 	return self;
 }
 
 - (const char *)objCType
 {
-	return @encode(void *);
+	return @encode(of_dimension_t);
 }
 
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
-	if (size != sizeof(_pointer))
+	if (size != sizeof(_dimension))
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, &_pointer, sizeof(_pointer));
+	memcpy(value, &_dimension, sizeof(_dimension));
 }
 
-- (id)nonretainedObjectValue
+- (OFString *)description
 {
-	return _pointer;
+	return [OFString stringWithFormat:
+	    @"<OFValue: of_dimension_t { %f, %f }>",
+	    _dimension.width, _dimension.height];
 }
 @end

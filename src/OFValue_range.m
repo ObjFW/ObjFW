@@ -33,6 +33,11 @@
 	return self;
 }
 
+- (const char *)objCType
+{
+	return @encode(of_range_t);
+}
+
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
@@ -44,7 +49,8 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat: @"<OFValue: range(%zu, %zu)>",
-					   _range.location, _range.length];
+	return [OFString stringWithFormat:
+	    @"<OFValue: of_range_t { %zu, %zu }>",
+	    _range.location, _range.length];
 }
 @end

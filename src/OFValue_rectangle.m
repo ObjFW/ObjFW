@@ -15,39 +15,43 @@
  * file.
  */
 
-#import "OFValue_pointer.h"
+#import "OFValue_rectangle.h"
 #import "OFMethodSignature.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 
-@implementation OFValue_pointer
-@synthesize pointerValue = _pointer;
+@implementation OFValue_rectangle
+@synthesize rectangleValue = _rectangle;
 
-- (instancetype)initWithPointer: (const void *)pointer
+- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
 {
 	self = [super init];
 
-	_pointer = (void *)pointer;
+	_rectangle = rectangle;
 
 	return self;
 }
 
 - (const char *)objCType
 {
-	return @encode(void *);
+	return @encode(of_rectangle_t);
 }
 
 - (void)getValue: (void *)value
 	    size: (size_t)size
 {
-	if (size != sizeof(_pointer))
+	if (size != sizeof(_rectangle))
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(value, &_pointer, sizeof(_pointer));
+	memcpy(value, &_rectangle, sizeof(_rectangle));
 }
 
-- (id)nonretainedObjectValue
+- (OFString *)description
 {
-	return _pointer;
+	return [OFString stringWithFormat:
+	    @"<OFValue: of_rectangle_t { %f, %f, %f, %f }>",
+	    _rectangle.origin.x, _rectangle.origin.y,
+	    _rectangle.size.width, _rectangle.size.height];
 }
 @end

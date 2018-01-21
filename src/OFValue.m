@@ -19,9 +19,12 @@
 #import "OFMethodSignature.h"
 #import "OFString.h"
 #import "OFValue_bytes.h"
+#import "OFValue_dimension.h"
 #import "OFValue_nonretainedObject.h"
+#import "OFValue_point.h"
 #import "OFValue_pointer.h"
 #import "OFValue_range.h"
+#import "OFValue_rectangle.h"
 
 #import "OFOutOfMemoryException.h"
 
@@ -54,6 +57,21 @@ static struct {
 - (instancetype)initWithRange: (of_range_t)range
 {
 	return (id)[[OFValue_range alloc] initWithRange: range];
+}
+
+- (instancetype)initWithPoint: (of_point_t)point
+{
+	return (id)[[OFValue_point alloc] initWithPoint: point];
+}
+
+- (instancetype)initWithDimension: (of_dimension_t)dimension
+{
+	return (id)[[OFValue_dimension alloc] initWithDimension: dimension];
+}
+
+- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
+{
+	return (id)[[OFValue_rectangle alloc] initWithRectangle: rectangle];
 }
 @end
 
@@ -94,6 +112,21 @@ static struct {
 	return [[[self alloc] initWithRange: range] autorelease];
 }
 
++ (instancetype)valueWithPoint: (of_point_t)point
+{
+	return [[[self alloc] initWithPoint: point] autorelease];
+}
+
++ (instancetype)valueWithDimension: (of_dimension_t)dimension
+{
+	return [[[self alloc] initWithDimension: dimension] autorelease];
+}
+
++ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle
+{
+	return [[[self alloc] initWithRectangle: rectangle] autorelease];
+}
+
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
@@ -111,6 +144,21 @@ static struct {
 }
 
 - (instancetype)initWithRange: (of_range_t)range
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithPoint: (of_point_t)point
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithDimension: (of_dimension_t)dimension
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithRectangle: (of_rectangle_t)rectangle
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -220,6 +268,36 @@ static struct {
 - (of_range_t)rangeValue
 {
 	of_range_t ret;
+
+	[self getValue: &ret
+		  size: sizeof(ret)];
+
+	return ret;
+}
+
+- (of_point_t)pointValue
+{
+	of_point_t ret;
+
+	[self getValue: &ret
+		  size: sizeof(ret)];
+
+	return ret;
+}
+
+- (of_dimension_t)dimensionValue
+{
+	of_dimension_t ret;
+
+	[self getValue: &ret
+		  size: sizeof(ret)];
+
+	return ret;
+}
+
+- (of_rectangle_t)rectangleValue
+{
+	of_rectangle_t ret;
 
 	[self getValue: &ret
 		  size: sizeof(ret)];

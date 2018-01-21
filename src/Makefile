@@ -172,9 +172,12 @@ SRCS += OFArray_adjacent.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
 	OFValue_bytes.m			\
+	OFValue_dimension.m		\
 	OFValue_nonretainedObject.m	\
+	OFValue_point.m			\
 	OFValue_pointer.m		\
 	OFValue_range.m			\
+	OFValue_rectangle.m		\
 	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}

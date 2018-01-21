@@ -52,6 +52,27 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) of_range_t rangeValue;
 
 /*!
+ * @brief The value as a point.
+ *
+ * If the value is not point-sized, @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) of_point_t pointValue;
+
+/*!
+ * @brief The value as a dimension.
+ *
+ * If the value is not dimension-sized, @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) of_dimension_t dimensionValue;
+
+/*!
+ * @brief The value as a rectangle.
+ *
+ * If the value is not rectangle-sized, @ref OFOutOfRangeException is thrown.
+ */
+@property (readonly, nonatomic) of_rectangle_t rectangleValue;
+
+/*!
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
  *	  specified type.
  *
@@ -91,6 +112,32 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased OFValue
  */
 + (instancetype)valueWithRange: (of_range_t)range;
+
+/*!
+ * @brief Creates a new, autoreleased OFValue containing the specified point.
+ *
+ * @param point The point the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithPoint: (of_point_t)point;
+
+/*!
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  dimension.
+ *
+ * @param dimension The dimension the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithDimension: (of_dimension_t)dimension;
+
+/*!
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  rectangle.
+ *
+ * @param rectangle The rectangle the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle;
 
 /*!
  * @brief Initializes an already allocated OFValue with the specified bytes of
@@ -134,6 +181,33 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized OFValue
  */
 - (instancetype)initWithRange: (of_range_t)range;
+
+/*!
+ * @brief Initializes an already allocated OFValue containing the specified
+ *	  point.
+ *
+ * @param point The point the OFValue should contain
+ * @return An initialized OFValue
+ */
+- (instancetype)initWithPoint: (of_point_t)point;
+
+/*!
+ * @brief Initializes an already allocated OFValue containing the specified
+ *	  dimension.
+ *
+ * @param dimension The dimension the OFValue should contain
+ * @return An initialized OFValue
+ */
+- (instancetype)initWithDimension: (of_dimension_t)dimension;
+
+/*!
+ * @brief Initializes an already allocated OFValue containing the specified
+ *	  rectangle.
+ *
+ * @param rectangle The rectangle the OFValue should contain
+ * @return An initialized OFValue
+ */
+- (instancetype)initWithRectangle: (of_rectangle_t)rectangle;
 
 /*!
  * @brief Gets the value.

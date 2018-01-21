@@ -15,39 +15,14 @@
  * file.
  */
 
-#import "OFValue_pointer.h"
-#import "OFMethodSignature.h"
+#import "OFValue.h"
 
-#import "OFOutOfRangeException.h"
+OF_ASSUME_NONNULL_BEGIN
 
-@implementation OFValue_pointer
-@synthesize pointerValue = _pointer;
-
-- (instancetype)initWithPointer: (const void *)pointer
+@interface OFValue_rectangle: OFValue
 {
-	self = [super init];
-
-	_pointer = (void *)pointer;
-
-	return self;
-}
-
-- (const char *)objCType
-{
-	return @encode(void *);
-}
-
-- (void)getValue: (void *)value
-	    size: (size_t)size
-{
-	if (size != sizeof(_pointer))
-		@throw [OFOutOfRangeException exception];
-
-	memcpy(value, &_pointer, sizeof(_pointer));
-}
-
-- (id)nonretainedObjectValue
-{
-	return _pointer;
+	of_rectangle_t _rectangle;
 }
 @end
+
+OF_ASSUME_NONNULL_END
