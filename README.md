@@ -19,24 +19,36 @@ Installation
   In case you checked out ObjFW from the Git repository, you need to run
   the following command first:
 
-    $ autoreconf
+    $ ./autogen.sh
 
 
 Building as a macOS or iOS framework
 ====================================
 
-  It is also possible to build ObjFW as a macOS framework. To do so, just
-  execute `xcodebuild -target 'ObjFW (Mac)'` in the root directory of ObjFW to
-  build it as a macOS framework or `xcodebuild -target 'ObjFW (iOS)'` to build
-  it as an iOS framework; alternatively, you can open the .xcodeproj in Xcode
-  and choose Build -> Build from the menu. Copy the resulting ObjFW.framework
-  to `/Library/Frameworks` and you are done.
+  When building for macOS or iOS, everything is built as a `.framework` by
+  default if `--disable-shared` has not been specified to `configure`.
+
+  To build for iOS, use something like this:
+
+    $ clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
+    $ export OBJC="$clang -arch armv7 -arch arm64"
+    $ export OBJCPP="$clang -arch armv7 -E"
+    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    $ ./configure --prefix=/usr/local/ios --host=arm-apple-darwin
+
+  To build for the iOS simulator, use something like this:
+
+    $ clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
+    $ export OBJC="$clang -arch i386 -arch x86_64"
+    $ export OBJCPP="$clang -arch i386 -E"
+    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    $ ./configure --prefix=/usr/local/iossim --host=i386-apple-darwin
 
 
 Using the macOS or iOS framework in Xcode
 =========================================
 
-  To use the macOS framework in Xcode, you need to add the .framework to your
+  To use the macOS framework in Xcode, you need to add the `.framework`s to your
   project and add the following flags to `Other C Flags`:
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
