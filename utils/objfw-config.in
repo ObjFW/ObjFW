@@ -35,6 +35,8 @@ LDFLAGS="$LDFLAGS @WEAK_NSFOUNDATIONVERSIONNUMBER@"
 LDFLAGS_REEXPORT="@LDFLAGS_REEXPORT@"
 LDFLAGS_RPATH="@LDFLAGS_RPATH@"
 LIBS="-L${libdir} -lobjfw @RUNTIME_LIBS@ @LIBS@"
+FRAMEWORK_LIBS="-F${prefix}/Library/Frameworks -framework ObjFW"
+FRAMEWORK_LIBS="$FRAMEWORK_LIBS @RUNTIME_LIBS@ @LIBS@"
 PLUGIN_CFLAGS="@PLUGIN_CFLAGS@"
 PLUGIN_LDFLAGS="@PLUGIN_LDFLAGS@"
 PLUGIN_SUFFIX="@PLUGIN_SUFFIX@"
@@ -46,24 +48,25 @@ show_help() {
 	cat <<__EOF__
 objfw-config: Available arguments are:
 
-	--all		Outputs all flags + libs
-	--arc		Outputs the required OBJCFLAGS to use ARC
-	--cflags	Outputs the required CFLAGS
-	--cppflags	Outputs the required CPPFLAGS
-	--cxxflags	Outputs the required CXXFLAGS
-	--objc		Outputs the OBJC used to compile ObjFW
-	--objcflags	Outputs the required OBJCFLAGS
-	--ldflags	Outputs the required LDFLAGS
-	--reexport	Outputs LDFLAGS to reexport ObjFW
-	--rpath		Outputs LDFLAGS for using rpath
-	--libs		Outputs the required LIBS
-	--lib-cflags	Outputs CFLAGS for building a library
-	--lib-ldflags	Outputs LDFLAGS for building a library
-	--lib-prefix	Outputs the prefix for libraries
-	--lib-suffix	Outputs the suffix for libraries
-	--prog-suffix	Outputs the suffix for binaries
-	--static-libs	Outputs the required LIBS to link ObjFW statically
-	--version	Outputs the installed version
+    --all             Outputs all flags + libs
+    --arc             Outputs the required OBJCFLAGS to use ARC
+    --cflags          Outputs the required CFLAGS
+    --cppflags        Outputs the required CPPFLAGS
+    --cxxflags        Outputs the required CXXFLAGS
+    --framework-libs  Outputs the required LIBS, preferring frameworks
+    --objc            Outputs the OBJC used to compile ObjFW
+    --objcflags       Outputs the required OBJCFLAGS
+    --ldflags         Outputs the required LDFLAGS
+    --reexport        Outputs LDFLAGS to reexport ObjFW
+    --rpath           Outputs LDFLAGS for using rpath
+    --libs            Outputs the required LIBS
+    --lib-cflags      Outputs CFLAGS for building a library
+    --lib-ldflags     Outputs LDFLAGS for building a library
+    --lib-prefix      Outputs the prefix for libraries
+    --lib-suffix      Outputs the suffix for libraries
+    --prog-suffix     Outputs the suffix for binaries
+    --static-libs     Outputs the required LIBS to link ObjFW statically
+    --version         Outputs the installed version
 __EOF__
 	exit $1
 }
@@ -89,6 +92,9 @@ while test -n "$1"; do
 			;;
 		--cxxflags)
 			printf "%s" "$CXXFLAGS"
+			;;
+		--framework-libs)
+			printf "%s" "$FRAMEWORK_LIBS"
 			;;
 		--objc)
 			printf "%s" "$OBJC"
