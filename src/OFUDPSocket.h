@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A struct which represents a host / port pair for a UDP socket.
  */
-typedef struct {
+typedef struct OF_BOXABLE {
 	struct sockaddr_storage address;
 	socklen_t length;
 } of_udp_socket_address_t;

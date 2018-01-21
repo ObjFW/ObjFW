@@ -55,7 +55,7 @@ typedef enum {
  *
  * @brief The HTTP version of the HTTP request.
  */
-typedef struct {
+typedef struct OF_BOXABLE {
 	/*! The major of the HTTP version */
 	uint8_t major;
 	/*! The minor of the HTTP version */

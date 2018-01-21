@@ -27,7 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief An option which can be parsed by an @ref OFOptionsParser.
  */
-typedef struct of_options_parser_option_t {
+typedef struct {
 	/*! The short version (e.g. `-v`) of the option or `\0` for none. */
 	of_unichar_t shortOption;
 

@@ -76,7 +76,7 @@ typedef enum {
  *
  * @brief A range.
  */
-typedef struct {
+typedef struct OF_BOXABLE {
 	/*! The start of the range */
 	size_t location;
 	/*! The length of the range */
@@ -108,7 +108,7 @@ typedef double of_time_interval_t;
  *
  * @brief A point.
  */
-typedef struct {
+typedef struct OF_BOXABLE {
 	/*! The x coordinate of the point */
 	float x;
 	/*! The y coordinate of the point */
@@ -135,7 +135,7 @@ of_point(float x, float y)
  *
  * @brief A dimension.
  */
-typedef struct {
+typedef struct OF_BOXABLE {
 	/*! The width of the dimension */
 	float width;
 	/*! The height of the dimension */
@@ -162,7 +162,7 @@ of_dimension(float width, float height)
  *
  * @brief A rectangle.
  */
-typedef struct {
+typedef struct OF_BOXABLE {
 	/*! The point from where the rectangle originates */
 	of_point_t origin;
 	/*! The size of the rectangle */

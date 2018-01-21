@@ -271,6 +271,12 @@
 # define OF_DESIGNATED_INITIALIZER
 #endif
 
+#if __has_attribute(__objc_boxable__)
+# define OF_BOXABLE __attribute__((__objc_boxable__))
+#else
+# define OF_BOXABLE
+#endif
+
 #if __has_attribute(__swift_name__)
 # define OF_SWIFT_NAME(name) __attribute__((__swift_name__(name)))
 #else
