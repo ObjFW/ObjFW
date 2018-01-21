@@ -15,16 +15,34 @@
  * file.
  */
 
-#import "OFValue.h"
+#import "OFValue_nonretainedObject.h"
+#import "OFMethodSignature.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#import "OFOutOfRangeException.h"
 
-@interface OFValue_bytes: OFValue
+@implementation OFValue_nonretainedObject
+@synthesize nonretainedObjectValue = _object;
+
+- (instancetype)initWithNonretainedObject: (id)object
 {
-	size_t _size;
-	void *_bytes;
-	const char *_objCType;
+	self = [super init];
+
+	_object = object;
+
+	return self;
+}
+
+- (void)getValue: (void *)value
+	    size: (size_t)size
+{
+	if (size != sizeof(_object))
+		@throw [OFOutOfRangeException exception];
+
+	memcpy(value, &_object, sizeof(_object));
+}
+
+- (void *)pointerValue
+{
+	return _object;
 }
 @end
-
-OF_ASSUME_NONNULL_END

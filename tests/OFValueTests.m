@@ -34,6 +34,7 @@ static OFString *module = @"OFValue";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	of_range_t range = of_range(1, 64), range2 = of_range(1, 64);
 	OFValue *value;
+	void *pointer = &value;
 
 	TEST(@"+[valueWithBytes:objCType:]",
 	    (value = [OFValue valueWithBytes: &range
@@ -51,6 +52,32 @@ static OFString *module = @"OFValue";
 	    OFOutOfRangeException,
 	    [value getValue: &range
 		       size: sizeof(of_range_t) - 1])
+
+	TEST(@"+[valueWithPointer:]",
+	    (value = [OFValue valueWithPointer: pointer]))
+
+	TEST(@"-[pointerValue]",
+	    [value pointerValue] == pointer &&
+	    [[OFValue valueWithBytes: &pointer
+			    objCType: @encode(void *)] pointerValue] == pointer)
+
+	EXPECT_EXCEPTION(@"-[pointerValue] with wrong size throws",
+	    OFOutOfRangeException,
+	    [[OFValue valueWithBytes: "a"
+			    objCType: @encode(char)] pointerValue])
+
+	TEST(@"+[valueWithNonretainedObject:]",
+	    (value = [OFValue valueWithNonretainedObject: pointer]))
+
+	TEST(@"-[nonretainedObjectValue]",
+	    [value nonretainedObjectValue] == pointer &&
+	    [[OFValue valueWithBytes: &pointer
+			    objCType: @encode(id)] pointerValue] == pointer)
+
+	EXPECT_EXCEPTION(@"-[nonretainedObjectValue] with wrong size throws",
+	    OFOutOfRangeException,
+	    [[OFValue valueWithBytes: "a"
+			    objCType: @encode(char)] nonretainedObjectValue])
 
 	[pool drain];
 }

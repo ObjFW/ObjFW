@@ -19,11 +19,9 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFValue_bytes: OFValue
+@interface OFValue_nonretainedObject: OFValue
 {
-	size_t _size;
-	void *_bytes;
-	const char *_objCType;
+	id _object;
 }
 @end
 

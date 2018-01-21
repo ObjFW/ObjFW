@@ -28,7 +28,21 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The ObjC type encoding of the value.
  */
-@property (nonatomic, readonly) const char *objCType;
+@property (readonly, nonatomic) const char *objCType;
+
+/*!
+ * @brief The value as a pointer to void.
+ *
+ * If the value is not pointer-sized, @ref OFInvalidFormatException is thrown.
+ */
+@property (readonly, nonatomic) void *pointerValue;
+
+/*!
+ * @brief The value as a non-retained object.
+ *
+ * If the value is not pointer-sized, @ref OFInvalidFormatException is thrown.
+ */
+@property (readonly, nonatomic) id nonretainedObjectValue;
 
 /*!
  * @brief Creates a new, autorelease OFValue with the specified bytes of the
@@ -42,6 +56,28 @@ OF_ASSUME_NONNULL_BEGIN
 		      objCType: (const char *)objCType;
 
 /*!
+ * @brief Creates a new, autoreleased OFValue containing the specified pointer.
+ *
+ * Only the raw value of the pointer is stored and no data will be copied.
+ *
+ * @param pointer The pointer the OFValue should contain
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithPointer: (const void *)pointer;
+
+/*!
+ * @brief Creates a new, autoreleased OFValue containing the specified
+ *	  non-retained object.
+ *
+ * The object is not retained, which makes this useful for storing objects in
+ * collections without retaining them.
+ *
+ * @param object The object the OFValue should contain without retaining it
+ * @return A new, autoreleased OFValue
+ */
++ (instancetype)valueWithNonretainedObject: (id)object;
+
+/*!
  * @brief Initializes an already allocated OFValue with the specified bytes of
  *	  the specified type.
  *
@@ -51,6 +87,29 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType;
+
+/*!
+ * @brief Initializes an already allocated OFValue containing the specified
+ *	  pointer.
+ *
+ * Only the raw value of the pointer is stored and no data will be copied.
+ *
+ * @param pointer The pointer the OFValue should contain
+ * @return An initialized OFValue
+ */
+- (instancetype)initWithPointer: (const void *)pointer;
+
+/*!
+ * @brief Initializes an already allocated OFValue containing the specified
+ *	  non-retained object.
+ *
+ * The object is not retained, which makes this useful for storing objects in
+ * collections without retaining them.
+ *
+ * @param object The object the OFValue should contain without retaining it
+ * @return An initialized OFValue
+ */
+- (instancetype)initWithNonretainedObject: (id)object;
 
 /*!
  * @brief Gets the value.

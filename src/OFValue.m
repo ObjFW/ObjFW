@@ -17,8 +17,11 @@
 
 #import "OFValue.h"
 #import "OFValue_bytes.h"
+#import "OFValue_nonretainedObject.h"
+#import "OFValue_pointer.h"
 #import "OFMethodSignature.h"
 
+#import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
 static struct {
@@ -34,6 +37,17 @@ static struct {
 {
 	return (id)[[OFValue_bytes alloc] initWithBytes: bytes
 					       objCType: objCType];
+}
+
+- (instancetype)initWithPointer: (const void *)pointer
+{
+	return (id)[[OFValue_pointer alloc] initWithPointer: pointer];
+}
+
+- (instancetype)initWithNonretainedObject: (id)object
+{
+	return (id)[[OFValue_nonretainedObject alloc]
+	    initWithNonretainedObject: object];
 }
 @end
 
@@ -59,8 +73,28 @@ static struct {
 				   objCType: objCType] autorelease];
 }
 
++ (instancetype)valueWithPointer: (const void *)pointer
+{
+	return [[[self alloc] initWithPointer: pointer] autorelease];
+}
+
++ (instancetype)valueWithNonretainedObject: (id)object
+{
+	return [[[self alloc] initWithNonretainedObject: object] autorelease];
+}
+
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithPointer: (const void *)pointer
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithNonretainedObject: (id)object
 {
 	OF_INVALID_INIT_METHOD
 }
@@ -140,5 +174,25 @@ static struct {
 	    size: (size_t)size
 {
 	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (void *)pointerValue
+{
+	void *ret;
+
+	[self getValue: &ret
+		  size: sizeof(ret)];
+
+	return ret;
+}
+
+- (id)nonretainedObjectValue
+{
+	id ret;
+
+	[self getValue: &ret
+		  size: sizeof(ret)];
+
+	return ret;
 }
 @end
