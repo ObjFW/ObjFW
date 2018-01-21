@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "ObjFW-RT.h"
+#import "ObjFW_RT.h"
 #import "private.h"
 
 static struct objc_abi_static_instances **static_instances = NULL;

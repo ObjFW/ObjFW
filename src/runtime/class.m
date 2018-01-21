@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-#import "ObjFW-RT.h"
+#import "ObjFW_RT.h"
 #import "private.h"
 
 static struct objc_hashtable *classes = NULL;

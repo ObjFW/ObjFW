@@ -22,7 +22,7 @@
 #import "OFAutoreleasePool.h"
 
 #if defined(OF_OBJFW_RUNTIME)
-# include "ObjFW-RT.h"
+# include "ObjFW_RT.h"
 #elif defined(OF_APPLE_RUNTIME)
 # include <objc/runtime.h>
 #endif

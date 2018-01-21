@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "ObjFW-RT.h"
+#import "ObjFW_RT.h"
 #import "private.h"
 
 static struct objc_dtable_level2 *empty_level2 = NULL;

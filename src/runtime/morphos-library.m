@@ -17,7 +17,7 @@
 
 #include "config.h"
 
-#import "ObjFW-RT.h"
+#import "ObjFW_RT.h"
 #import "macros.h"
 
 #define BOOL EXEC_BOOL
@@ -72,7 +72,7 @@ static ULONG func_table[] = {
 	(ULONG)objc_getPropertyStruct,
 	(ULONG)objc_setPropertyStruct,
 	(ULONG)objc_enumerationMutation,
-	/* Functions declared in ObjFW-RT.h */
+	/* Functions declared in ObjFW_RT.h */
 	(ULONG)sel_registerName,
 	(ULONG)sel_getName,
 	(ULONG)sel_isEqual,
@@ -130,8 +130,8 @@ static struct Resident resident = {
 	.rt_Version = OBJFW_RT_LIB_MAJOR * 10 + OBJFW_RT_LIB_MINOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
-	.rt_Name = (char *)"objfw-rt.library",
-	.rt_IdString = (char *)"ObjFW-RT " PACKAGE_VERSION
+	.rt_Name = (char *)"objfw_rt.library",
+	.rt_IdString = (char *)"ObjFW_RT " PACKAGE_VERSION
 	    " \xA9 2008-2017 Jonathan Schleifer",
 	.rt_Init = &init_table
 };

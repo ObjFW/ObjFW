@@ -205,6 +205,7 @@ include ../buildsys.mk
 
 CPPFLAGS += -I. -I.. -Iexceptions -Iruntime
 LD = ${OBJC}
-LDFLAGS += ${REEXPORT_RUNTIME}
-LIBS += -Lruntime ${RUNTIME_LIBS}
-FRAMEWORK_LIBS += -Lruntime ${RUNTIME_LIBS}
+LIBS += -Lruntime ${RUNTIME_LIBS} ${REEXPORT_RUNTIME}
+FRAMEWORK_LIBS += -Fruntime			\
+		  ${RUNTIME_FRAMEWORK_LIBS}	\
+		  ${REEXPORT_RUNTIME_FRAMEWORK}

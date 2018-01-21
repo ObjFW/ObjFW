@@ -29,6 +29,7 @@ src/ObjFW.framework
 src/bridge/Info.plist
 src/bridge/ObjFW_Bridge.framework
 src/objfw-defs.h
+src/runtime/ObjFW_RT.framework
 src/runtime/ppcinline.h
 tests/*.map
 tests/EBOOT.PBP

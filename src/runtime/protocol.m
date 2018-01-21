@@ -19,7 +19,7 @@
 
 #include <string.h>
 
-#import "ObjFW-RT.h"
+#import "ObjFW_RT.h"
 #import "private.h"
 
 @implementation Protocol

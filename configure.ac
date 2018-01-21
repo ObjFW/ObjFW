@@ -29,7 +29,7 @@ case "$host" in
 			enable_files="yes"	# Required for reading ENV:
 
 			AC_SUBST(NOIXEMUL, -noixemul)
-			AC_SUBST(OBJFW_RT_MORPHOS_LIB, objfw-rt.library)
+			AC_SUBST(OBJFW_RT_MORPHOS_LIB, objfw_rt.library)
 		])
 
 		enable_shared="no"
@@ -251,6 +251,7 @@ AS_IF([test x"$enable_shared" != x"no"], [
 
 	BUILDSYS_FRAMEWORK([
 		AC_SUBST(OBJFW_FRAMEWORK, "ObjFW.framework")
+		build_framework="yes"
 	])
 ], [
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
@@ -374,13 +375,17 @@ case "$objc_runtime" in
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFW_RT_SHARED_LIB,
-				"${LIB_PREFIX}objfw-rt${LIB_SUFFIX}")
+				"${LIB_PREFIX}objfw_rt${LIB_SUFFIX}")
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 			-o x"$enable_shared" = x"no"], [
-			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw-rt.a")
+			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw_rt.a")
 		])
-		AC_SUBST(RUNTIME_LIBS, "-lobjfw-rt")
+		AS_IF([test x"$build_framework" = x"yes"], [
+			AC_SUBST(OBJFW_RT_FRAMEWORK, "ObjFW_RT.framework")
+		])
+		AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt")
+		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFW_RT")
 
 		AS_IF([test x"$enable_seluid24" = x"yes"], [
 			AC_DEFINE(OF_SELUID24, 1,
@@ -441,6 +446,7 @@ case "$objc_runtime" in
 
 		AC_CHECK_LIB(objc, objc_msgSend, [
 			AC_SUBST(RUNTIME_LIBS, "-lobjc")
+			AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-lobjc")
 		], [
 			AC_MSG_ERROR([libobjc not found!])
 		])
@@ -460,6 +466,8 @@ case "$host_os" in
 		AC_SUBST(LDFLAGS_REEXPORT, ["-Wl,-reexport-lobjfw"])
 		AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
+			AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
+				["-Wl,-reexport-lobjc"])
 			AC_SUBST(WEAK_NSFOUNDATIONVERSIONNUMBER,
 				["-Wl,-U,_NSFoundationVersionNumber"])
 			LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
@@ -472,7 +480,9 @@ case "$host_os" in
 			AS_IF([test x"$exception_type" = x"SjLj"], [
 				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
 			])
-			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfw-rt"])
+			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfw_rt"])
+			AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
+				["-Wl,-reexport_framework,ObjFW_RT"])
 		])
 
 		AC_CHECK_HEADERS(sysdir.h)
@@ -1292,17 +1302,14 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFW_BRIDGE_SHARED_LIB,
 				"${LIB_PREFIX}objfw_bridge${LIB_SUFFIX}")
-
-			case "$host_os" in
-				darwin*)
-					AC_SUBST(OBJFW_BRIDGE_FRAMEWORK,
-						"ObjFW_Bridge.framework")
-					;;
-			esac
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
 			AC_SUBST(OBJFW_BRIDGE_STATIC_LIB, "libobjfw_bridge.a")
+		])
+		AS_IF([test x"$build_framework" = x"yes"], [
+			AC_SUBST(OBJFW_BRIDGE_FRAMEWORK,
+				"ObjFW_Bridge.framework")
 		])
 	])
 ])
