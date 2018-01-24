@@ -36,7 +36,7 @@ Lmain_$0:
 	movzbl	%ah, %ecx
 	movzbl	%al, %edx
 #ifdef OF_SELUID24
-	shrl	$16, %eax
+	shrl	$$16, %eax
 
 	movq	(%r8,%rax,8), %r8
 #endif
