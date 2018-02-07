@@ -437,7 +437,7 @@ main(int argc, char *argv[])
 	[self serializationTests];
 #endif
 	[self JSONTests];
-#if defined(OF_HAVE_PLUGINS) && !defined(OF_IOS)
+#if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
 

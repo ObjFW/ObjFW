@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B6AB9CD202BA431007BAC7D /* TestPlugin.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4BC7FD07201394F300280496 /* ObjFW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC7FD06201394F300280496 /* ObjFW.framework */; };
 		4BC7FD092013954B00280496 /* tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC7FD082013954B00280496 /* tests.a */; };
 		4BC7FD0B2013956D00280496 /* ObjFW.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4BC7FD06201394F300280496 /* ObjFW.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -18,6 +19,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4B6AB9CC202BA428007BAC7D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4B6AB9CD202BA431007BAC7D /* TestPlugin.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4BC7FD0A2013956200280496 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -31,6 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = TestPlugin.bundle; path = plugin/TestPlugin.bundle; sourceTree = "<group>"; };
 		4BC7FD06201394F300280496 /* ObjFW.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjFW.framework; path = ../src/ObjFW.framework; sourceTree = "<group>"; };
 		4BC7FD082013954B00280496 /* tests.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = tests.a; sourceTree = "<group>"; };
 		4BC7FD0C2013960600280496 /* testfile.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = testfile.txt; sourceTree = "<group>"; };
@@ -58,6 +70,7 @@
 		4BC7FD05201394F300280496 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4B6AB9CA202BA408007BAC7D /* TestPlugin.bundle */,
 				4BC7FD082013954B00280496 /* tests.a */,
 				4BC7FD06201394F300280496 /* ObjFW.framework */,
 			);
@@ -105,6 +118,7 @@
 				4BEBFB582013934E002E8710 /* Frameworks */,
 				4BC7FD0A2013956200280496 /* CopyFiles */,
 				4BEBFB592013934E002E8710 /* Resources */,
+				4B6AB9CC202BA428007BAC7D /* CopyFiles */,
 			);
 			buildRules = (
 			);
