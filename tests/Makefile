@@ -103,6 +103,7 @@ run:
 		    libobjfw_rt.${OBJFW_RT_LIB_MAJOR}.dylib; \
 	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
+	DYLD_FRAMEWORK_PATH=../src$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
 	DYLD_LIBRARY_PATH=.$${DYLD_LIBRARY_PATH+:}$$DYLD_LIBRARY_PATH \
 	LIBRARY_PATH=.$${LIBRARY_PATH+:}$$LIBRARY_PATH \
 	ASAN_OPTIONS=allocator_may_return_null=1 \
@@ -182,6 +183,6 @@ ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
 OBJCFLAGS += ${TESTS_OBJCFLAGS}
-LIBS := -L../src -lobjfw -L../src/runtime ${RUNTIME_LIBS} ${TESTS_LIBS} ${LIBS}
+LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}

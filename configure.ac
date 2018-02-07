@@ -272,11 +272,29 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_A, "lookup-asm/lookup-asm.a")
 ])
 
+AS_IF([test x"$build_framework" = x"yes"], [
+	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
+], [
+	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-L../src -L../src/runtime $TESTS_LIBS"
+])
+
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
 AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 	AC_SUBST(USE_SRCS_PLUGINS, '${SRCS_PLUGINS}')
 	AC_SUBST(TESTPLUGIN, "plugin")
 	AC_DEFINE(OF_HAVE_PLUGINS, 1, [Whether we have plugin support])
+
+	AS_IF([test x"$build_framework" = x"yes"], [
+		TESTPLUGIN_LIBS="-F../../src -F../../src/runtime"
+		TESTPLUGIN_LIBS="$TESTPLUGIN_LIBS -framework ObjFW"
+		TESTPLUGIN_LIBS="$TESTPLUGIN_LIBS \${RUNTIME_FRAMEWORK_LIBS}"
+	], [
+		TESTPLUGIN_LIBS="-L../../src -L../../src/runtime"
+		TESTPLUGIN_LIBS="$TESTPLUGIN_LIBS -lobjfw \${RUNTIME_LIBS}"
+	])
+	AC_SUBST(TESTPLUGIN_LIBS)
 ])
 
 AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
