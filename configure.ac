@@ -74,6 +74,8 @@ AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_EGREP
 
+BUILDSYS_CHECK_IOS
+
 case "$host" in
 	dnl OpenBSD 6.2 switched to clang for i386 and AMD64, and clang does no
 	dnl longer link in libgcc. Unwinding is unfortunately in libc++abi, so
@@ -488,21 +490,9 @@ case "$host_os" in
 		AC_CHECK_HEADERS(sysdir.h)
 		AC_CHECK_FUNCS(sysdir_start_search_path_enumeration)
 
-		AC_MSG_CHECKING(whether host is iOS)
-		AC_EGREP_CPP(yes, [
-			#include <TargetConditionals.h>
-
-			#if (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
-			    (defined(TARGET_OS_SIMULATOR) && \
-			    TARGET_OS_SIMULATOR)
-			yes
-			#endif
-		], [
-			AC_MSG_RESULT(yes)
+		AS_IF([test x"$host_is_ios" = x"yes"], [
 			AC_SUBST(TESTS_STATIC_LIB, tests.a)
 			TESTS_LIBS="$TESTS_LIBS -framework CoreFoundation"
-		], [
-			AC_MSG_RESULT(no)
 		])
 		;;
 esac

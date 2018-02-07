@@ -63,8 +63,6 @@ FRAMEWORK_LDFLAGS = @FRAMEWORK_LDFLAGS@
 FRAMEWORK_LDFLAGS_INSTALL_NAME = @FRAMEWORK_LDFLAGS_INSTALL_NAME@
 CODESIGN = @CODESIGN@
 CODESIGN_IDENTITY ?= -
-INSTALL_LIB = @INSTALL_LIB@
-UNINSTALL_LIB = @UNINSTALL_LIB@
 CLEAN_LIB = @CLEAN_LIB@
 AS_DEPENDS = @AS_DEPENDS@
 CC_DEPENDS = @CC_DEPENDS@
@@ -295,7 +293,7 @@ ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_
 ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	${LINK_STATUS}
 	out="$@"; \
-	if ${LD} -o $@ ${PLUGIN_OBJS} ${PLUGIN_OBJS_EXTRA} ${PLUGIN_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
+	if @LINK_PLUGIN@; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
@@ -689,7 +687,7 @@ install: all install-extra
 	for i in "" ${SHARED_LIB}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${libdir} ${INSTALL_LIB}; then \
+		if ${MKDIR_P} ${DESTDIR}${libdir} && @INSTALL_LIB@; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -720,7 +718,7 @@ install: all install-extra
 	for i in "" ${PLUGIN}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${plugindir} && ${INSTALL} -m 755 $$i ${DESTDIR}${plugindir}/$$i; then \
+		if ${MKDIR_P} ${DESTDIR}${plugindir} && @INSTALL_PLUGIN@; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -818,7 +816,7 @@ uninstall: uninstall-extra
 	for i in "" ${SHARED_LIB}; do \
 		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${libdir}/$$i; then \
-			if : ${UNINSTALL_LIB}; then \
+			if @UNINSTALL_LIB@; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \
@@ -852,8 +850,8 @@ uninstall: uninstall-extra
 
 	for i in "" ${PLUGIN}; do \
 		test x"$$i" = x"" && continue; \
-		if test -f ${DESTDIR}${plugindir}/$$i; then \
-			if rm -f ${DESTDIR}${plugindir}/$$i; then \
+		if test -e ${DESTDIR}${plugindir}/$$i; then \
+			if @UNINSTALL_PLUGIN@; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \
