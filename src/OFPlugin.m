@@ -75,7 +75,15 @@ of_dlclose(of_plugin_handle_t handle)
 	init_plugin_t initPlugin;
 	OFPlugin *plugin;
 
+#if defined(OF_MACOS)
+	path = [path stringByAppendingFormat: @".bundle/Contents/MacOS/%@",
+					      [path lastPathComponent]];
+#elif defined(OF_IOS)
+	path = [path stringByAppendingFormat: @".bundle/%@",
+					      [path lastPathComponent]];
+#else
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
+#endif
 
 	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
 		@throw [OFOpenItemFailedException exceptionWithPath: path
