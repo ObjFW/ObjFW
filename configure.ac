@@ -1630,6 +1630,7 @@ AC_CONFIG_FILES([
 	src/Info.plist
 	src/bridge/Info.plist
 	tests/Info.plist
+	tests/plugin/Info.plist
 	utils/objfw-config
 ])
 AC_CONFIG_HEADERS([config.h src/objfw-defs.h])

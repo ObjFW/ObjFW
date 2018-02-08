@@ -39,6 +39,7 @@ tests/iOS.xcodeproj/*.pbxuser
 tests/iOS.xcodeproj/project.xcworkspace
 tests/iOS.xcodeproj/xcuserdata
 tests/objc_sync/objc_sync
+tests/plugin/Info.plist
 tests/tests
 tests/tests.3dsx
 tests/tests.arm9
