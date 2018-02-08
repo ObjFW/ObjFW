@@ -116,7 +116,7 @@ MO_FILES = ${LOCALES:.po=.mo}
 .SILENT:
 .SUFFIXES:
 .SUFFIXES: .beam .c .c.dep .cc .cc.dep .class .cxx .cxx.dep .d .erl .lib.o .java .mo .m .m.dep .mm .mm.dep .moslib.o .o .plugin.o .po .py .pyc .rc .S .S.dep .xpm
-.PHONY: all subdirs subdirs-after pre-depend depend install install-includes install-extra uninstall uninstall-extra clean distclean locales ${SUBDIRS} ${SUBDIRS_AFTER}
+.PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales copy-headers-into-framework ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
 	${MAKE} pre-all
@@ -252,34 +252,29 @@ ${SHARED_LIB} ${SHARED_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	fi
 
 ${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
-	rm -fr $@
-	${MKDIR_P} $@
-	${MAKE} INSTALL_INCLUDES_IF_SUBDIR=${includesubdir} INSTALL_INCLUDES_DESTINATION=$$PWD/$@/Headers install-includes
-	if test -f Info.plist; then \
-		i=Info.plist; \
-		${INSTALL_STATUS}; \
-		if ${INSTALL} -m 644 $$i $@/$$i; then \
-			${INSTALL_OK}; \
-		else \
-			${INSTALL_FAILED}; \
-		fi \
-	fi
-	if test -f module.modulemap; then \
-		i=module.modulemap; \
-		${INSTALL_STATUS}; \
-		if ${MKDIR_P} $@/Modules && ${INSTALL} -m 644 $$i $@/Modules/$$i; then \
-			${INSTALL_OK}; \
-		else \
-			${INSTALL_FAILED}; \
-		fi \
-	fi
 	${LINK_STATUS}
 	out="$@"; \
-	if ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
+	if rm -fr $$out && ${MKDIR_P} $$out && ${MAKE} COPY_HEADERS_IF_SUBDIR=${includesubdir} COPY_HEADERS_DESTINATION=$$PWD/$@/Headers copy-headers-into-framework && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && if test -f module.modulemap; then ${MKDIR_P} $$out/Modules && ${INSTALL} -m 644 module.modulemap $$out/Modules/module.modulemap; fi && ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
 		${LINK_OK}; \
 	else \
 		rm -fr $$out; \
 		${LINK_FAILED}; \
+	fi
+
+copy-headers-into-framework:
+	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
+		test x"$$i" = x"" && continue; \
+		cd $$i || exit 1; \
+		${MAKE} copy-headers-into-framework || exit $$?; \
+		cd .. || exit 1; \
+	done
+
+	if test x"${includesubdir}" = x"${COPY_HEADERS_IF_SUBDIR}"; then \
+		for i in "" ${INCLUDES}; do \
+			test x"$$i" = x"" && continue; \
+			${MKDIR_P} ${COPY_HEADERS_DESTINATION} || exit $$?; \
+			${INSTALL} -m 644 $$i ${COPY_HEADERS_DESTINATION}/$$i || exit $$?; \
+		done \
 	fi
 
 ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}
@@ -296,6 +291,7 @@ ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	if @LINK_PLUGIN@; then \
 		${LINK_OK}; \
 	else \
+		rm -fr $$out; \
 		${LINK_FAILED}; \
 	fi
 
@@ -776,32 +772,6 @@ install: all install-extra
 			${INSTALL_FAILED}; \
 		fi \
 	done
-
-install-includes:
-	for i in "" ${SUBDIRS} ${SUBDIRS_AFTER}; do \
-		test x"$$i" = x"" && continue; \
-		${DIR_ENTER}; \
-		${MAKE} install-includes || exit $$?; \
-		${DIR_LEAVE}; \
-	done
-
-	if test x"${INSTALL_INCLUDES_IF_SUBDIR}" = x"" -o x"${includesubdir}" = x"${INSTALL_INCLUDES_IF_SUBDIR}"; then \
-		if test x"${INSTALL_INCLUDES_DESTINATION}" != x""; then \
-			destination="${INSTALL_INCLUDES_DESTINATION}"; \
-		else \
-			destination="${DESTDIR}${includedir}/${includesubdir}"; \
-		fi; \
-		\
-		for i in "" ${INCLUDES}; do \
-			test x"$$i" = x"" && continue; \
-			${INSTALL_STATUS}; \
-			if ${MKDIR_P} $$destination && ${INSTALL} -m 644 $$i $$destination/$$i; then \
-				${INSTALL_OK}; \
-			else \
-				${INSTALL_FAILED}; \
-			fi \
-		done; \
-	fi
 
 install-extra:
 
