@@ -29,7 +29,7 @@
 #import "OFLocalization.h"
 
 #import "OFInitializationFailedException.h"
-#import "OFOpenItemFailedException.h"
+#import "OFLoadPluginFailedException.h"
 
 typedef OFPlugin *(*init_plugin_t)(void);
 
@@ -67,6 +67,17 @@ of_dlclose(of_plugin_handle_t handle)
 #endif
 }
 
+OFString *
+of_dlerror(void)
+{
+#ifndef OF_WINDOWS
+	return [OFString stringWithCString: dlerror()
+				  encoding: [OFLocalization encoding]];
+#else
+	return nil;
+#endif
+}
+
 @implementation OFPlugin
 + (id)pluginFromFile: (OFString *)path
 {
@@ -86,9 +97,9 @@ of_dlclose(of_plugin_handle_t handle)
 #endif
 
 	if ((handle = of_dlopen(path, OF_RTLD_LAZY)) == NULL)
-		@throw [OFOpenItemFailedException exceptionWithPath: path
-							       mode: nil
-							      errNo: 0];
+		@throw [OFLoadPluginFailedException
+		    exceptionWithPath: path
+				error: of_dlerror()];
 
 	objc_autoreleasePoolPop(pool);
 

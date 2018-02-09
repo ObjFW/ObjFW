@@ -155,6 +155,9 @@
 #ifdef OF_HAVE_SOCKETS
 # import "OFListenFailedException.h"
 #endif
+#ifdef OF_HAVE_PLUGINS
+# import "OFLoadPluginFailedException.h"
+#endif
 #import "OFLockFailedException.h"
 #import "OFMalformedXMLException.h"
 #import "OFMemoryNotPartOfObjectException.h"

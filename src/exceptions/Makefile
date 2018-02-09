@@ -48,7 +48,8 @@ SRCS = OFAllocFailedException.m				\
        OFUnsupportedVersionException.m			\
        OFWriteFailedException.m				\
        ${USE_SRCS_SOCKETS}				\
-       ${USE_SRCS_THREADS}
+       ${USE_SRCS_THREADS}				\
+       ${USE_SRCS_PLUGINS}
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAddressTranslationFailedException.m	\
 	       OFAlreadyConnectedException.m		\
@@ -64,6 +65,7 @@ SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFThreadJoinFailedException.m		\
 	       OFThreadStartFailedException.m		\
 	       OFThreadStillRunningException.m
+SRCS_PLUGINS = OFLoadPluginFailedException.m
 
 INCLUDES = ${SRCS:.m=.h}
 

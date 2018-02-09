@@ -57,6 +57,7 @@ extern "C" {
 #endif
 extern of_plugin_handle_t of_dlopen(OFString *path, int flags);
 extern void *of_dlsym(of_plugin_handle_t handle, const char *symbol);
+extern OFString *of_dlerror(void);
 extern void of_dlclose(of_plugin_handle_t handle);
 #ifdef __cplusplus
 }
