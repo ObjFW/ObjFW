@@ -7,9 +7,11 @@ dnl This may only be set to 0.91 once 0.91 is released
 AC_SUBST(BUNDLE_VERSION, 0.90.9900)
 AC_SUBST(BUNDLE_SHORT_VERSION, 0.90)
 
-AS_IF([test configure.ac -nt configure], [
-	AC_MSG_ERROR([configure.ac is newer than configure! Run autoreconf!])
-])
+for i in configure.ac build-aux/m4/*; do
+	AS_IF([test $i -nt configure], [
+		AC_MSG_ERROR([$i is newer than configure! Run autoreconf!])
+	])
+done
 
 BUILDSYS_INIT
 
