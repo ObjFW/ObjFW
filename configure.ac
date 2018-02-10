@@ -1589,15 +1589,18 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(BIN_PREFIX, "${host_alias}-")
 
 	case "$host" in
-		*-*-mingw*)
+		i?86-*-mingw*)
 			AC_CHECK_PROG(WINE, wine, wine)
-
-			AS_IF([test x"$WINE" != x""], [
-				AC_SUBST(RUN_TESTS, "run")
-				AC_SUBST(WRAPPER, "$WINE")
-			])
+			;;
+		x86_64-*-mingw*)
+			AC_CHECK_PROG(WINE, wine64, wine64)
 			;;
 	esac
+
+	AS_IF([test x"$WINE" != x""], [
+		AC_SUBST(RUN_TESTS, "run")
+		AC_SUBST(WRAPPER, "$WINE")
+	])
 
 	AS_IF([test x"$with_wii" = x"yes"], [
 		dnl Keep this lowercase, as WIILOAD is a variable used by
