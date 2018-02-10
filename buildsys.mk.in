@@ -683,7 +683,7 @@ install: all install-extra
 	for i in "" ${SHARED_LIB}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${libdir} && @INSTALL_LIB@; then \
+		if ${MKDIR_P} ${DESTDIR}${libdir} @INSTALL_LIB@; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -714,7 +714,7 @@ install: all install-extra
 	for i in "" ${PLUGIN}; do \
 		test x"$$i" = x"" && continue; \
 		${INSTALL_STATUS}; \
-		if ${MKDIR_P} ${DESTDIR}${plugindir} && @INSTALL_PLUGIN@; then \
+		if ${MKDIR_P} ${DESTDIR}${plugindir} @INSTALL_PLUGIN@; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \
@@ -786,7 +786,7 @@ uninstall: uninstall-extra
 	for i in "" ${SHARED_LIB}; do \
 		test x"$$i" = x"" && continue; \
 		if test -f ${DESTDIR}${libdir}/$$i; then \
-			if @UNINSTALL_LIB@; then \
+			if : @UNINSTALL_LIB@; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \
@@ -821,7 +821,7 @@ uninstall: uninstall-extra
 	for i in "" ${PLUGIN}; do \
 		test x"$$i" = x"" && continue; \
 		if test -e ${DESTDIR}${plugindir}/$$i; then \
-			if @UNINSTALL_PLUGIN@; then \
+			if : @UNINSTALL_PLUGIN@; then \
 				${DELETE_OK}; \
 			else \
 				${DELETE_FAILED}; \
