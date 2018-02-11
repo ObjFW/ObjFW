@@ -1298,7 +1298,7 @@ AS_IF([test x"$have_processes" = x"yes"], [
 	AC_DEFINE(OF_HAVE_PROCESSES, 1, [Whether we have processes])
 ])
 
-AC_CHECK_HEADERS_ONCE([sys/ioctl.h sys/ttycom.h])
+AC_CHECK_HEADERS_ONCE([complex.h sys/ioctl.h sys/ttycom.h])
 
 AC_CHECK_FUNC(pledge, [
 	AC_DEFINE(OF_HAVE_PLEDGE, 1, [Whether we have pledge()])
@@ -1571,17 +1571,19 @@ AS_IF([test x"$GOBJC" = x"yes"], [
 		])
 	])
 
-	AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
-	AC_TRY_COMPILE([
-		#include <complex.h>
-	], [
-		complex float f = 0.5 + 0.5 * I;
-		(void)f;
-	], [
-		AC_MSG_RESULT(no)
-	], [
-		AC_MSG_RESULT(yes)
-		OBJCFLAGS="$OBJCFLAGS -Wno-gnu-imaginary-constant"
+	AS_IF([test x"$ac_cv_header_complex_h" = x"yes"], [
+		AC_MSG_CHECKING(whether we need -Wno-gnu-imaginary-constant)
+		AC_TRY_COMPILE([
+			#include <complex.h>
+		], [
+			complex float f = 0.5 + 0.5 * I;
+			(void)f;
+		], [
+			AC_MSG_RESULT(no)
+		], [
+			AC_MSG_RESULT(yes)
+			OBJCFLAGS="$OBJCFLAGS -Wno-gnu-imaginary-constant"
+		])
 	])
 ])
 
