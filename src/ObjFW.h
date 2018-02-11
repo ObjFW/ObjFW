@@ -140,6 +140,9 @@
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
 #import "OFEnumerationMutationException.h"
+#ifdef OF_HAVE_FILES
+# import "OFGetCurrentDirectoryPathFailedException.h"
+#endif
 #import "OFGetOptionFailedException.h"
 #import "OFHashAlreadyCalculatedException.h"
 #ifdef OF_HAVE_SOCKETS

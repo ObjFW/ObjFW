@@ -105,7 +105,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 		   relativeToURL: u1])
 
 #ifdef OF_HAVE_FILES
-	TEST(@"+[fileURLWithPath:isDirectory:]",
+	TEST(@"+[fileURLWithPath:]",
 	    [[[OFURL fileURLWithPath: @"testfile.txt"] fileSystemRepresentation]
 	    isEqual: [[[OFFileManager defaultManager] currentDirectoryPath]
 	    stringByAppendingPathComponent: @"testfile.txt"]])

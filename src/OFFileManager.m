@@ -35,6 +35,7 @@
 
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFCopyItemFailedException.h"
+#import "OFGetCurrentDirectoryPathFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMoveItemFailedException.h"
 #import "OFOutOfMemoryException.h"
@@ -159,18 +160,14 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocalization encoding]];
 #else
-	OFString *ret;
-	char *buffer = getcwd(NULL, 0);
+	char buffer[PATH_MAX];
 
-	@try {
-		ret = [OFString
-		    stringWithCString: buffer
-			     encoding: [OFLocalization encoding]];
-	} @finally {
-		free(buffer);
-	}
+	if ((getcwd(buffer, PATH_MAX)) == NULL)
+		@throw [OFGetCurrentDirectoryPathFailedException
+		    exceptionWithErrNo: errno];
 
-	return ret;
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocalization encoding]];
 #endif
 }
 

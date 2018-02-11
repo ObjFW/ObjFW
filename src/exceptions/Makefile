@@ -47,9 +47,11 @@ SRCS = OFAllocFailedException.m				\
        OFUnsupportedProtocolException.m			\
        OFUnsupportedVersionException.m			\
        OFWriteFailedException.m				\
+       ${USE_SRCS_FILES}				\
        ${USE_SRCS_SOCKETS}				\
        ${USE_SRCS_THREADS}				\
        ${USE_SRCS_PLUGINS}
+SRCS_FILES = OFGetCurrentDirectoryPathFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
 	       OFAddressTranslationFailedException.m	\
 	       OFAlreadyConnectedException.m		\
