@@ -20,7 +20,7 @@
 #include <assert.h>
 #include <string.h>
 
-#ifndef __STDC_NO_COMPLEX__
+#if defined(HAVE_COMPLEX_H) && !defined(__STDC_NO_COMPLEX__)
 # include <complex.h>
 #endif
 
@@ -130,7 +130,7 @@ struct test_struct {
 	    d12 + d13 + d14 + d15 + d16) / 16;
 }
 
-#ifndef __STDC_NO_COMPLEX__
+#if defined(HAVE_COMPLEX_H) && !defined(__STDC_NO_COMPLEX__)
 - (complex double)invocationTestMethod6: (complex float)c1
 				       : (complex double)c2
 				       : (complex float)c3
@@ -400,7 +400,7 @@ __extension__
 		    longDoubleResult == 8.5)
 	}
 
-# ifndef __STDC_NO_COMPLEX__
+# if defined(HAVE_COMPLEX_H) && !defined(__STDC_NO_COMPLEX__)
 	/* -[invoke] #5 */
 	selector = @selector(invocationTestMethod6::::::::::::::::);
 	invocation = [OFInvocation invocationWithMethodSignature:
