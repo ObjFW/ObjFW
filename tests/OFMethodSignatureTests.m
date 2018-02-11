@@ -19,6 +19,10 @@
 
 #include <string.h>
 
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
+# include <complex.h>
+#endif
+
 #import "OFMethodSignature.h"
 #import "OFAutoreleasePool.h"
 
@@ -46,6 +50,13 @@ struct test2_struct {
 	} u;
 	double d;
 };
+
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
+struct test3_struct {
+	char c;
+	complex double cd;
+};
+#endif
 
 union test3_union {
 	char c;
@@ -123,15 +134,21 @@ union test4_union {
 	    of_sizeof_type_encoding(@encode(struct test2_struct)) ==
 	    sizeof(struct test2_struct))
 
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
 	TEST(@"of_sizeof_type_encoding() #3",
+	    of_sizeof_type_encoding(@encode(struct test3_struct)) ==
+	    sizeof(struct test3_struct))
+#endif
+
+	TEST(@"of_sizeof_type_encoding() #4",
 	    of_sizeof_type_encoding(@encode(union test3_union)) ==
 	    sizeof(union test3_union))
 
-	TEST(@"of_sizeof_type_encoding() #4",
+	TEST(@"of_sizeof_type_encoding() #5",
 	    of_sizeof_type_encoding(@encode(union test4_union)) ==
 	    sizeof(union test4_union))
 
-	TEST(@"of_sizeof_type_encoding() #5",
+	TEST(@"of_sizeof_type_encoding() #6",
 	    of_sizeof_type_encoding(@encode(struct test1_struct [5])) ==
 	    sizeof(struct test1_struct [5]))
 
@@ -143,15 +160,21 @@ union test4_union {
 	    of_alignof_type_encoding(@encode(struct test2_struct)) ==
 	    OF_ALIGNOF(struct test2_struct))
 
+#if !defined(__STDC_NO_COMPLEX__) && defined(HAVE_COMPLEX_H)
 	TEST(@"of_alignof_type_encoding() #3",
+	    of_alignof_type_encoding(@encode(struct test3_struct)) ==
+	    OF_ALIGNOF(struct test3_struct))
+#endif
+
+	TEST(@"of_alignof_type_encoding() #4",
 	    of_alignof_type_encoding(@encode(union test3_union)) ==
 	    OF_ALIGNOF(union test3_union))
 
-	TEST(@"of_alignof_type_encoding() #4",
+	TEST(@"of_alignof_type_encoding() #5",
 	    of_alignof_type_encoding(@encode(union test4_union)) ==
 	    OF_ALIGNOF(union test4_union))
 
-	TEST(@"of_alignof_type_encoding() #5",
+	TEST(@"of_alignof_type_encoding() #6",
 	    of_alignof_type_encoding(@encode(struct test1_struct [5])) ==
 	    OF_ALIGNOF(struct test1_struct [5]))
 

@@ -29,7 +29,7 @@
 
 #import "macros.h"
 
-size_t alignofEncoding(const char **type, size_t *length);
+size_t alignofEncoding(const char **type, size_t *length, bool inStruct);
 size_t sizeofEncoding(const char **type, size_t *length);
 
 size_t
@@ -47,7 +47,7 @@ alignofArray(const char **type, size_t *length)
 		(*length)--;
 	}
 
-	align = alignofEncoding(type, length);
+	align = alignofEncoding(type, length, true);
 
 	if (*length == 0 || **type != ']')
 		@throw [OFInvalidFormatException exception];
@@ -85,7 +85,7 @@ alignofStruct(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != '}') {
-		size_t fieldAlign = alignofEncoding(type, length);
+		size_t fieldAlign = alignofEncoding(type, length, true);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 		if (!first && fieldAlign > 4)
@@ -131,7 +131,7 @@ alignofUnion(const char **type, size_t *length)
 	(*length)--;
 
 	while (*length > 0 && **type != ')') {
-		size_t fieldAlign = alignofEncoding(type, length);
+		size_t fieldAlign = alignofEncoding(type, length, true);
 
 		if (fieldAlign > align)
 			align = fieldAlign;
@@ -147,7 +147,7 @@ alignofUnion(const char **type, size_t *length)
 }
 
 size_t
-alignofEncoding(const char **type, size_t *length)
+alignofEncoding(const char **type, size_t *length, bool inStruct)
 {
 	size_t align;
 
@@ -181,7 +181,12 @@ alignofEncoding(const char **type, size_t *length)
 		break;
 	case 'q':
 	case 'Q':
-		align = OF_ALIGNOF(long long);
+#ifdef OF_X86
+		if (inStruct)
+			align = 4;
+		else
+#endif
+			align = OF_ALIGNOF(long long);
 		break;
 #ifdef __SIZEOF_INT128__
 	case 't':
@@ -193,10 +198,20 @@ alignofEncoding(const char **type, size_t *length)
 		align = OF_ALIGNOF(float);
 		break;
 	case 'd':
-		align = OF_ALIGNOF(double);
+#ifdef OF_X86
+		if (inStruct)
+			align = 4;
+		else
+#endif
+			align = OF_ALIGNOF(double);
 		break;
 	case 'D':
-		align = OF_ALIGNOF(long double);
+#ifdef OF_X86
+		if (inStruct)
+			align = 4;
+		else
+#endif
+			align = OF_ALIGNOF(long double);
 		break;
 	case 'B':
 		align = OF_ALIGNOF(_Bool);
@@ -226,7 +241,7 @@ alignofEncoding(const char **type, size_t *length)
 		/* Just to skip over the rest */
 		(*type)++;
 		(*length)--;
-		alignofEncoding(type, length);
+		alignofEncoding(type, length, false);
 
 		return OF_ALIGNOF(void *);
 #ifndef __STDC_NO_COMPLEX__
@@ -242,7 +257,12 @@ alignofEncoding(const char **type, size_t *length)
 			align = OF_ALIGNOF(float _Complex);
 			break;
 		case 'd':
-			align = OF_ALIGNOF(double _Complex);
+# ifdef OF_X86
+			if (inStruct)
+				align = 4;
+			else
+#endif
+				align = OF_ALIGNOF(double _Complex);
 			break;
 		case 'D':
 			align = OF_ALIGNOF(long double _Complex);
@@ -333,7 +353,7 @@ sizeofStruct(const char **type, size_t *length)
 		typeCopy = *type;
 		lengthCopy = *length;
 		fieldSize = sizeofEncoding(type, length);
-		fieldAlign = alignofEncoding(&typeCopy, &lengthCopy);
+		fieldAlign = alignofEncoding(&typeCopy, &lengthCopy, true);
 
 #if defined(OF_POWERPC) && defined(OF_MACOS)
 		if (!first && fieldAlign > 4)
@@ -547,7 +567,7 @@ size_t
 of_alignof_type_encoding(const char *type)
 {
 	size_t length = strlen(type);
-	size_t ret = alignofEncoding(&type, &length);
+	size_t ret = alignofEncoding(&type, &length, false);
 
 	if (length > 0)
 		@throw [OFInvalidFormatException exception];
