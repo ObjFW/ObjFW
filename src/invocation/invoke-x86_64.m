@@ -284,7 +284,6 @@ of_invocation_invoke(OFInvocation *invocation)
 					atIndex: i];
 			pushLongDouble(&context, longDoubleTmp);
 			break;
-#ifndef __STDC_NO_COMPLEX__
 		case 'j':
 			switch (typeEncoding[1]) {
 			case 'f':;
@@ -314,7 +313,6 @@ of_invocation_invoke(OFInvocation *invocation)
 			}
 
 			break;
-#endif
 		/* TODO: '[' */
 		/* TODO: '{' */
 		/* TODO: '(' */
@@ -357,7 +355,6 @@ of_invocation_invoke(OFInvocation *invocation)
 	case 'D':
 		context->returnType = RETURN_TYPE_X87;
 		break;
-#ifndef __STDC_NO_COMPLEX__
 	case 'j':
 		switch (typeEncoding[1]) {
 		case 'f':
@@ -373,7 +370,6 @@ of_invocation_invoke(OFInvocation *invocation)
 		}
 
 		break;
-#endif
 	/* TODO: '[' */
 	/* TODO: '{' */
 	/* TODO: '(' */
@@ -428,7 +424,6 @@ of_invocation_invoke(OFInvocation *invocation)
 		case 'D':
 			[invocation setReturnValue: &context->X87[0]];
 			break;
-#ifndef __STDC_NO_COMPLEX__
 		case 'j':
 			switch (typeEncoding[1]) {
 			case 'f':;
@@ -454,7 +449,6 @@ of_invocation_invoke(OFInvocation *invocation)
 			}
 
 			break;
-#endif
 		/* TODO: '[' */
 		/* TODO: '{' */
 		/* TODO: '(' */
