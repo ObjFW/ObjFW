@@ -592,6 +592,247 @@
 	return self;
 }
 
+- (const char *)objCType
+{
+	switch (_type) {
+	case OF_NUMBER_TYPE_BOOL:
+		return @encode(bool);
+	case OF_NUMBER_TYPE_CHAR:
+		return @encode(signed char);
+	case OF_NUMBER_TYPE_SHORT:
+		return @encode(signed short);
+	case OF_NUMBER_TYPE_INT:
+		return @encode(signed int);
+	case OF_NUMBER_TYPE_LONG:
+		return @encode(signed long);
+	case OF_NUMBER_TYPE_LONGLONG:
+		return @encode(signed long long);
+	case OF_NUMBER_TYPE_UCHAR:
+		return @encode(unsigned char);
+	case OF_NUMBER_TYPE_USHORT:
+		return @encode(unsigned short);
+	case OF_NUMBER_TYPE_UINT:
+		return @encode(unsigned int);
+	case OF_NUMBER_TYPE_ULONG:
+		return @encode(unsigned long);
+	case OF_NUMBER_TYPE_ULONGLONG:
+		return @encode(unsigned long long);
+	case OF_NUMBER_TYPE_INT8:
+		return @encode(int8_t);
+	case OF_NUMBER_TYPE_INT16:
+		return @encode(int16_t);
+	case OF_NUMBER_TYPE_INT32:
+		return @encode(int32_t);
+	case OF_NUMBER_TYPE_INT64:
+		return @encode(int64_t);
+	case OF_NUMBER_TYPE_UINT8:
+		return @encode(uint8_t);
+	case OF_NUMBER_TYPE_UINT16:
+		return @encode(uint16_t);
+	case OF_NUMBER_TYPE_UINT32:
+		return @encode(uint32_t);
+	case OF_NUMBER_TYPE_UINT64:
+		return @encode(uint64_t);
+	case OF_NUMBER_TYPE_SIZE:
+		return @encode(size_t);
+	case OF_NUMBER_TYPE_SSIZE:
+		return @encode(ssize_t);
+	case OF_NUMBER_TYPE_INTMAX:
+		return @encode(intmax_t);
+	case OF_NUMBER_TYPE_UINTMAX:
+		return @encode(uintmax_t);
+	case OF_NUMBER_TYPE_PTRDIFF:
+		return @encode(ptrdiff_t);
+	case OF_NUMBER_TYPE_INTPTR:
+		return @encode(intptr_t);
+	case OF_NUMBER_TYPE_UINTPTR:
+		return @encode(uintptr_t);
+	case OF_NUMBER_TYPE_FLOAT:
+		return @encode(float);
+	case OF_NUMBER_TYPE_DOUBLE:
+		return @encode(double);
+	default:
+		@throw [OFInvalidFormatException exception];
+	}
+}
+
+- (void)getValue: (void *)value
+	    size: (size_t)size
+{
+	switch (_type) {
+	case OF_NUMBER_TYPE_BOOL:
+		if (size != sizeof(bool))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.bool_, sizeof(bool));
+		break;
+	case OF_NUMBER_TYPE_CHAR:
+		if (size != sizeof(signed char))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.sChar, sizeof(signed char));
+		break;
+	case OF_NUMBER_TYPE_SHORT:
+		if (size != sizeof(signed short))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.sShort, sizeof(signed short));
+		break;
+	case OF_NUMBER_TYPE_INT:
+		if (size != sizeof(signed int))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.sInt, sizeof(signed int));
+		break;
+	case OF_NUMBER_TYPE_LONG:
+		if (size != sizeof(signed long))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.sLong, sizeof(signed long));
+		break;
+	case OF_NUMBER_TYPE_LONGLONG:
+		if (size != sizeof(signed long long))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.sLongLong, sizeof(signed long long));
+		break;
+	case OF_NUMBER_TYPE_UCHAR:
+		if (size != sizeof(unsigned char))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uChar, sizeof(unsigned char));
+		break;
+	case OF_NUMBER_TYPE_USHORT:
+		if (size != sizeof(unsigned short))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uShort, sizeof(unsigned short));
+		break;
+	case OF_NUMBER_TYPE_UINT:
+		if (size != sizeof(unsigned int))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uInt, sizeof(unsigned int));
+		break;
+	case OF_NUMBER_TYPE_ULONG:
+		if (size != sizeof(unsigned long))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uLong, sizeof(unsigned long));
+		break;
+	case OF_NUMBER_TYPE_ULONGLONG:
+		if (size != sizeof(unsigned long long))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uLongLong, sizeof(unsigned long long));
+		break;
+	case OF_NUMBER_TYPE_INT8:
+		if (size != sizeof(int8_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.int8, sizeof(int8_t));
+		break;
+	case OF_NUMBER_TYPE_INT16:
+		if (size != sizeof(int16_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.int16, sizeof(int16_t));
+		break;
+	case OF_NUMBER_TYPE_INT32:
+		if (size != sizeof(int32_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.int32, sizeof(int32_t));
+		break;
+	case OF_NUMBER_TYPE_INT64:
+		if (size != sizeof(int64_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.int64, sizeof(int64_t));
+		break;
+	case OF_NUMBER_TYPE_UINT8:
+		if (size != sizeof(uint8_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uInt8, sizeof(uint8_t));
+		break;
+	case OF_NUMBER_TYPE_UINT16:
+		if (size != sizeof(uint16_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uInt16, sizeof(uint16_t));
+		break;
+	case OF_NUMBER_TYPE_UINT32:
+		if (size != sizeof(uint32_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uInt32, sizeof(uint32_t));
+		break;
+	case OF_NUMBER_TYPE_UINT64:
+		if (size != sizeof(uint64_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uInt64, sizeof(uint64_t));
+		break;
+	case OF_NUMBER_TYPE_SIZE:
+		if (size != sizeof(size_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.size, sizeof(size_t));
+		break;
+	case OF_NUMBER_TYPE_SSIZE:
+		if (size != sizeof(ssize_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.sSize, sizeof(ssize_t));
+		break;
+	case OF_NUMBER_TYPE_INTMAX:
+		if (size != sizeof(intmax_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.intMax, sizeof(intmax_t));
+		break;
+	case OF_NUMBER_TYPE_UINTMAX:
+		if (size != sizeof(uintmax_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uIntMax, sizeof(uintmax_t));
+		break;
+	case OF_NUMBER_TYPE_PTRDIFF:
+		if (size != sizeof(ptrdiff_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.ptrDiff, sizeof(ptrdiff_t));
+		break;
+	case OF_NUMBER_TYPE_INTPTR:
+		if (size != sizeof(intptr_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.intPtr, sizeof(intptr_t));
+		break;
+	case OF_NUMBER_TYPE_UINTPTR:
+		if (size != sizeof(uintptr_t))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.uIntPtr, sizeof(uintptr_t));
+		break;
+	case OF_NUMBER_TYPE_FLOAT:
+		if (size != sizeof(float))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.float_, sizeof(float));
+		break;
+	case OF_NUMBER_TYPE_DOUBLE:
+		if (size != sizeof(double))
+			@throw [OFOutOfRangeException exception];
+
+		memcpy(value, &_value.double_, sizeof(double));
+		break;
+	default:
+		@throw [OFInvalidFormatException exception];
+	}
+}
+
 - (bool)boolValue
 {
 	RETURN_AS(bool)

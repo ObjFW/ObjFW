@@ -235,6 +235,7 @@
 
 #if __has_attribute(__unavailable__)
 # define OF_UNAVAILABLE __attribute__((__unavailable__))
+# define OF_HAVE_UNAVAILABLE
 #else
 # define OF_UNAVAILABLE
 #endif

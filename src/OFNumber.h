@@ -28,10 +28,10 @@
 # include <sys/types.h>
 #endif
 
-#import "OFObject.h"
-#import "OFSerialization.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
+#import "OFSerialization.h"
+#import "OFValue.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -116,7 +116,7 @@ typedef enum {
  *
  * @brief Provides a way to store a number in an object.
  */
-@interface OFNumber: OFObject <OFCopying, OFComparing, OFSerialization,
+@interface OFNumber: OFValue <OFComparing, OFSerialization,
     OFJSONRepresentation, OFMessagePackRepresentation>
 {
 	union of_number_value {
@@ -296,6 +296,17 @@ typedef enum {
  * @brief The OFNumber as a `double`.
  */
 @property (readonly, nonatomic) double doubleValue;
+
+#ifdef OF_HAVE_UNAVAILABLE
++ (instancetype)valueWithBytes: (const void *)bytes
+		      objCType: (const char *)objCType OF_UNAVAILABLE;
++ (instancetype)valueWithPointer: (const void *)pointer OF_UNAVAILABLE;
++ (instancetype)valueWithNonretainedObject: (id)object OF_UNAVAILABLE;
++ (instancetype)valueWithRange: (of_range_t)range OF_UNAVAILABLE;
++ (instancetype)valueWithPoint: (of_point_t)point OF_UNAVAILABLE;
++ (instancetype)valueWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
++ (instancetype)valueWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
+#endif
 
 /*!
  * @brief Creates a new OFNumber with the specified `bool`.
@@ -522,6 +533,16 @@ typedef enum {
 + (instancetype)numberWithDouble: (double)double_;
 
 - (instancetype)init OF_UNAVAILABLE;
+#ifdef OF_HAVE_UNAVAILABLE
+- (instancetype)initWithBytes: (const void *)bytes
+		     objCType: (const char *)objCType OF_UNAVAILABLE;
+- (instancetype)initWithPointer: (const void *)pointer OF_UNAVAILABLE;
+- (instancetype)initWithNonretainedObject: (id)object OF_UNAVAILABLE;
+- (instancetype)initWithRange: (of_range_t)range OF_UNAVAILABLE;
+- (instancetype)initWithPoint: (of_point_t)point OF_UNAVAILABLE;
+- (instancetype)initWithDimension: (of_dimension_t)dimension OF_UNAVAILABLE;
+- (instancetype)initWithRectangle: (of_rectangle_t)rectangle OF_UNAVAILABLE;
+#endif
 
 /*!
  * @brief Initializes an already allocated OFNumber with the specified `bool`.

@@ -15,6 +15,8 @@
  * file.
  */
 
+#import "OFObject.h"
+
 @class OFString;
 
 OF_ASSUME_NONNULL_BEGIN
