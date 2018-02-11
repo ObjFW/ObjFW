@@ -166,6 +166,16 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFGetCurrentDirectoryPathFailedException
 		    exceptionWithErrNo: errno];
 
+# ifdef OF_DJGPP
+	/*
+	 * For some reason, getcwd() returns forward slashes on DJGPP, even
+	 * though the native format is to use backwards slashes.
+	 */
+	for (char *tmp = buffer; *tmp != '\0'; tmp++)
+		if (*tmp == '/')
+			*tmp = '\\';
+# endif
+
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocalization encoding]];
 #endif
