@@ -1031,27 +1031,48 @@ matrix:
         - OBJC="$clang -arch i386 -arch x86_64"
         - OBJCPP="$clang -arch i386 -E"
 
+    # Nintendo 3DS
+    - os: linux
+      dist: trusty
+      env:
+        - nintendo_3ds=
+        - host=arm-none-eabi
+
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
             sudo apt-get -qq update;
 
-            case $host in
-                    i686-pc-linux-gnu)
-                            sudo apt-get -qq install -y gobjc-multilib;
-                            ;;
-                    "")
-                            sudo apt-get -qq install -y gobjc;
-                            ;;
-            esac
+            if [[ $host == i686-pc-linux-gnu ]]; then
+                    sudo apt-get -qq install -y gobjc-multilib;
+            fi
+
+            if [[ $host == "" ]]; then
+                    sudo apt-get -qq install -y gobjc;
+            fi
+
+            if [[ ${nintendo_3ds+1} == 1 ]]; then
+                    wget "https://download.sourceforge.net/project/devkitpro/devkitARM/devkitARM_r46/devkitARM_r46-x86_64-linux.tar.bz2"
+                         "https://download.sourceforge.net/project/devkitpro/libctru/1.4.0/libctru-1.4.0.tar.bz2";
+                    mkdir -p "$HOME/devkitPro/libctru";
+                    tar -C "$HOME/devkitPro" -xjf
+                            devkitARM_r46-x86_64-linux.tar.bz2;
+                    tar -C "$HOME/devkitPro/libctru" -xjf
+                            libctru-1.4.0.tar.bz2;
+            fi
     fi
 
 script:
   - ./autogen.sh
+  - if [[ ${nintendo_3ds+1} == 1 ]]; then
+            export DEVKITPRO="$HOME/devkitPro";
+            export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
+    fi
   - configure_args="${host+--host=$host}
                     ${runtime+--enable-runtime}
                     ${seluid24+--enable-seluid24}
-                    ${static+--disable-shared}"
+                    ${static+--disable-shared}
+                    ${nintendo_3ds+--with-3ds}"
   - echo "Configure args:" $configure_args
   - ./configure $configure_args || cat config.log
   - make -j4
-  - sudo make install
+  - sudo PATH="$PATH" make install
