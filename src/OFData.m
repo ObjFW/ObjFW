@@ -99,12 +99,10 @@ _references_to_categories_of_OFData(void)
 }
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 + (instancetype)dataWithContentsOfURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithContentsOfURL: URL] autorelease];
 }
-#endif
 
 + (instancetype)dataWithStringRepresentation: (OFString *)string
 {

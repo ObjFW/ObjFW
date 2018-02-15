@@ -150,7 +150,6 @@ enum {
 + (instancetype)dataWithContentsOfFile: (OFString *)path;
 #endif
 
-#if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 /*!
  * @brief Creates a new OFData with an item size of 1, containing the data of
  *	  the specified URL.
@@ -159,7 +158,6 @@ enum {
  * @return A new autoreleased OFData
  */
 + (instancetype)dataWithContentsOfURL: (OFURL *)URL;
-#endif
 
 /*!
  * @brief Creates a new OFData with an item size of 1, containing the data of
