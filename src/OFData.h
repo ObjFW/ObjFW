@@ -177,8 +177,6 @@ enum {
  */
 + (instancetype)dataWithBase64EncodedString: (OFString *)string;
 
-- (instancetype)init OF_UNAVAILABLE;
-
 /*!
  * @brief Initialized an already allocated OFData with the specified `count`
  *	  items of size 1.

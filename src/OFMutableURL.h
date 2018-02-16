@@ -144,13 +144,6 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)URL;
 
 /*!
- * @brief Initializes an already allocated OFMutableURL.
- *
- * @return An initialized OFMutableURL
- */
-- (instancetype)init;
-
-/*!
  * @brief Converts the mutable URL to an immutable URL.
  */
 - (void)makeImmutable;

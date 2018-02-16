@@ -22,7 +22,6 @@
 #include <limits.h>
 
 #import "OFMutableData.h"
-#import "OFData+Private.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
@@ -54,7 +53,7 @@
 
 - (instancetype)init
 {
-	self = [super of_init];
+	self = [super init];
 
 	_itemSize = 1;
 
@@ -63,7 +62,7 @@
 
 - (instancetype)initWithItemSize: (size_t)itemSize
 {
-	self = [super of_init];
+	self = [super init];
 
 	@try {
 		if (itemSize == 0)
@@ -87,7 +86,7 @@
 - (instancetype)initWithItemSize: (size_t)itemSize
 			capacity: (size_t)capacity
 {
-	self = [super of_init];
+	self = [super init];
 
 	@try {
 		if (itemSize == 0)

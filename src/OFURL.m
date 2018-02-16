@@ -21,7 +21,6 @@
 #include <string.h>
 
 #import "OFURL.h"
-#import "OFURL+Private.h"
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFString.h"
@@ -384,16 +383,6 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 				      isDirectory: isDirectory] autorelease];
 }
 #endif
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)of_init
-{
-	return [super init];
-}
 
 - (instancetype)initWithString: (OFString *)string
 {

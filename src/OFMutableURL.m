@@ -21,7 +21,6 @@
 #import "OFArray.h"
 #import "OFNumber.h"
 #import "OFString.h"
-#import "OFURL+Private.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -35,11 +34,6 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 + (instancetype)URL
 {
 	return [[[self alloc] init] autorelease];
-}
-
-- (instancetype)init
-{
-	return [super of_init];
 }
 
 - (void)setScheme: (OFString *)scheme

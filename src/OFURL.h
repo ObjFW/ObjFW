@@ -195,8 +195,6 @@ OF_ASSUME_NONNULL_BEGIN
 		    isDirectory: (bool)isDirectory;
 #endif
 
-- (instancetype)init OF_UNAVAILABLE;
-
 /*!
  * @brief Initializes an already allocated OFURL with the specified string.
  *

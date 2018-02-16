@@ -22,7 +22,6 @@
 #include <limits.h>
 
 #import "OFData.h"
-#import "OFData+Private.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
@@ -113,16 +112,6 @@ _references_to_categories_of_OFData(void)
 + (instancetype)dataWithBase64EncodedString: (OFString *)string
 {
 	return [[[self alloc] initWithBase64EncodedString: string] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
-}
-
-- (instancetype)of_init
-{
-	return [super init];
 }
 
 - (instancetype)initWithItems: (const void *)items
