@@ -23,8 +23,8 @@
 
 #import "TestsAppDelegate.h"
 
-#if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS)) || \
-    defined(OF_IOS)
+#if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS) || \
+    defined(OF_IOS))
 # undef STDOUT
 # define STDOUT_SIMPLE
 #endif
