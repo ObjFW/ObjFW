@@ -832,9 +832,15 @@ of_ascii_isalpha(char c)
 }
 
 static OF_INLINE bool
+of_ascii_isdigit(char c)
+{
+	return (c >= '0' && c <= '9');
+}
+
+static OF_INLINE bool
 of_ascii_isalnum(char c)
 {
-	return (of_ascii_isalpha(c) || (c >= '0' && c <= '9'));
+	return (of_ascii_isalpha(c) || of_ascii_isdigit(c));
 }
 
 static OF_INLINE bool

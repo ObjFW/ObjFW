@@ -42,7 +42,7 @@ alignofArray(const char **type, size_t *length)
 	(*type)++;
 	(*length)--;
 
-	while (*length > 0 && isdigit(**type)) {
+	while (*length > 0 && of_ascii_isdigit(**type)) {
 		(*type)++;
 		(*length)--;
 	}
@@ -294,7 +294,7 @@ sizeofArray(const char **type, size_t *length)
 	(*type)++;
 	(*length)--;
 
-	while (*length > 0 && isdigit(**type)) {
+	while (*length > 0 && of_ascii_isdigit(**type)) {
 		count = count * 10 + **type - '0';
 
 		(*type)++;
@@ -607,7 +607,7 @@ of_alignof_type_encoding(const char *type)
 
 		last = _types;
 		for (size_t i = 0; i < length; i++) {
-			if (isdigit(_types[i])) {
+			if (of_ascii_isdigit(_types[i])) {
 				size_t offset = _types[i] - '0';
 
 				if (last == _types + i)
@@ -618,7 +618,8 @@ of_alignof_type_encoding(const char *type)
 				[_typesPointers addItem: &last];
 
 				i++;
-				for (; i < length && isdigit(_types[i]); i++)
+				for (; i < length &&
+				    of_ascii_isdigit(_types[i]); i++)
 					offset = offset * 10 + _types[i] - '0';
 
 				[_offsets addItem: &offset];
