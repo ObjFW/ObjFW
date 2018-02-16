@@ -1,4 +1,4 @@
-language: generic
+language: c
 
 matrix:
   include:
@@ -6,1073 +6,169 @@ matrix:
     - os: linux
       compiler: gcc
       dist: trusty
-      env:
-        - OBJC=gcc
       sudo: required
     - os: linux
       compiler: clang
       dist: trusty
-      env:
-        - OBJC=clang
       sudo: required
     - os: linux
       compiler: gcc
       dist: precise
-      env:
-        - OBJC=gcc
       sudo: required
     - os: linux
       compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-      sudo: required
-    # Linux with seluid24
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - OBJC=gcc
-        - seluid24=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-        - seluid24=
-      sudo: required
-    - os: linux
-      compiler: gcc
       dist: precise
-      env:
-        - OBJC=gcc
-        - seluid24=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-        - seluid24=
-      sudo: required
-    # Linux static
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - OBJC=gcc
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-        - static=
-      sudo: required
-    - os: linux
-      compiler: gcc
-      dist: precise
-      env:
-        - OBJC=gcc
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-        - static=
-      sudo: required
-    # Linux static with seluid24
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - OBJC=gcc
-        - seluid24=
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-        - seluid24=
-        - static=
-      sudo: required
-    - os: linux
-      compiler: gcc
-      dist: precise
-      env:
-        - OBJC=gcc
-        - seluid24=
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - OBJC=clang
-        - seluid24=
-        - static=
-      sudo: required
-
-    # Linux 32-bit
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-      sudo: required
-    - os: linux
-      compiler: gcc
-      dist: precise
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-      sudo: required
-    # Linux 32 bit with seluid24
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-        - seluid24=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-        - seluid24=
-      sudo: required
-    - os: linux
-      compiler: gcc
-      dist: precise
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-        - seluid24=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-        - seluid24=
-      sudo: required
-    # Linux 32-bit static
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-        - static=
-      sudo: required
-    - os: linux
-      compiler: gcc
-      dist: precise
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-        - static=
-      sudo: required
-    # Linux 32-bit static with seluid24
-    - os: linux
-      compiler: gcc
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-        - seluid24=
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-        - seluid24=
-        - static=
-      sudo: required
-    - os: linux
-      compiler: gcc
-      dist: precise
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="gcc -m32"
-        - seluid24=
-        - static=
-      sudo: required
-    - os: linux
-      compiler: clang
-      dist: trusty
-      env:
-        - host=i686-pc-linux-gnu
-        - OBJC="clang -m32"
-        - seluid24=
-        - static=
       sudo: required
 
     # macOS
-    - os: mac
+    - os: osx
       osx_image: xcode9.3beta
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode9.2
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode9.1
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode9
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode8.3
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode8
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode7.3
       language: objective-c
-    - os: mac
+    - os: osx
       osx_image: xcode6.4
       language: objective-c
-    # macOS with runtime
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - runtime=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - runtime=
-    # macOS with runtime and seluid24
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-    # macOS static
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - static=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - static=
-    # macOS static with runtime
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - runtime=
-        - static=
-    # macOS static with runtime and seluid24
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - runtime=
-        - seluid24=
-        - static=
 
-    # macOS 32-bit
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-    # macOS 32-bit with runtime
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-    # macOS 32-bit with runtime and seluid24
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-    # macOS 32-bit static
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - static=
-    # macOS 32-bit static with runtime
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - static=
-    # macOS 32-bit static with runtime and seluid24
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - OBJC="clang -m32"
-        - runtime=
-        - seluid24=
-        - static=
-
-    # iOS
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=arm-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=7.0
-        - static=
-        - clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
-        - OBJC="$clang -arch armv7 -arch arm64"
-        - OBJCPP="$clang -arch armv7 -E"
-
-    # iOS Simulator
-    - os: mac
-      osx_image: xcode9.3beta
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode9.2
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode9.1
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode9
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode8.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode8
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode7.3
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=9.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-    - os: mac
-      osx_image: xcode6.4
-      language: objective-c
-      env:
-        - host=i386-apple-darwin
-        - IPHONEOS_DEPLOYMENT_TARGET=7.0
-        - clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
-        - OBJC="$clang -arch i386 -arch x86_64"
-        - OBJCPP="$clang -arch i386 -E"
-
-    # Nintendo 3DS
+    # Nintendo DS and 3DS
     - os: linux
       dist: trusty
       env:
-        - nintendo_3ds=
-        - host=arm-none-eabi
+        - config=devkitarm
 
 before_install:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-            sudo apt-get -qq update;
+  - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
+            if ! sudo apt-get -qq update >apt_log 2>&1; then
+                    cat apt_log;
+                    exit 1;
+            fi;
+            if ! sudo apt-get -qq install -y gobjc-multilib >apt_log 2>&1; then
+                    cat apt_log;
+                    exit 1;
+            fi;
+    fi
 
-            if [[ $host == i686-pc-linux-gnu ]]; then
-                    sudo apt-get -qq install -y gobjc-multilib;
-            fi
-
-            if [[ $host == "" ]]; then
-                    sudo apt-get -qq install -y gobjc;
-            fi
-
-            if [[ ${nintendo_3ds+1} == 1 ]]; then
-                    wget "https://download.sourceforge.net/project/devkitpro/devkitARM/devkitARM_r46/devkitARM_r46-x86_64-linux.tar.bz2"
-                         "https://download.sourceforge.net/project/devkitpro/libctru/1.4.0/libctru-1.4.0.tar.bz2";
-                    mkdir -p "$HOME/devkitPro/libctru";
-                    tar -C "$HOME/devkitPro" -xjf
-                            devkitARM_r46-x86_64-linux.tar.bz2;
-                    tar -C "$HOME/devkitPro/libctru" -xjf
-                            libctru-1.4.0.tar.bz2;
-            fi
+  - if [ "$config" == "devkitarm" ]; then
+            base_url="https://download.sourceforge.net/project/devkitpro";
+            wget -q "$base_url/devkitARM/devkitARM_r46/devkitARM_r46-x86_64-linux.tar.bz2"
+                    "$base_url/libctru/1.4.0/libctru-1.4.0.tar.bz2"
+                    "$base_url/libnds/1.7.1/libnds-1.7.1.tar.bz2"
+                    "$base_url/libfat/1.1.2/libfat-nds-1.1.2.tar.bz2"
+                    "$base_url/filesystem/0.9.13-1/libfilesystem-0.9.13-1.tar.bz2";
+            mkdir -p "$HOME/devkitPro/libctru";
+            tar -C "$HOME/devkitPro" -xjf devkitARM_r46-x86_64-linux.tar.bz2;
+            tar -C "$HOME/devkitPro/libctru" -xjf libctru-1.4.0.tar.bz2;
+            mkdir -p "$HOME/devkitPro/libnds";
+            tar -C "$HOME/devkitPro/libnds" -xjf libnds-1.7.1.tar.bz2;
+            tar -C "$HOME/devkitPro/libnds" -xjf libfat-1.1.2.tar.bz2;
+            tar -C "$HOME/devkitPro/libnds" -xjf libfilesystem-0.9.13-1.tar.bz2;
     fi
 
 script:
-  - ./autogen.sh
-  - if [[ ${nintendo_3ds+1} == 1 ]]; then
+  - echo -e '%s/-DSTDOUT$/&_SIMPLE/\nwq' | ed -s tests/Makefile
+
+  - build() {
+            if ! git clean -fxd >clean_log 2>&1; then
+                    cat clean_log;
+                    exit 1;
+            fi;
+            echo ">> Building with $@";
+            ./autogen.sh;
+            if ! ./configure ac_cv_path_TPUT= "$@"; then
+                    cat config.log;
+                    exit 1;
+            fi;
+            if ! make -j4 >make_log 2>&1; then
+                    cat make_log;
+                    exit 1;
+            fi;
+            if ! sudo PATH="$PATH" make install >install_log 2>&1; then
+                    cat install_log;
+                    exit 1;
+            fi;
+    }
+
+  - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
+            build_32_64() {
+                    build OBJC="$CC" $@;
+                    build OBJC="$CC -m32" --host=i686-pc-linux-gnu $@;
+            };
+
+            build_32_64;
+            build_32_64 --enable-seluid24;
+            build_32_64 --disable-threads;
+            build_32_64 --disable-threads --disable-sockets;
+            build_32_64 --disable-threads --disable-files;
+            build_32_64 --disable-threads --disable-sockets --disable-files;
+            build_32_64 --disable-sockets;
+            build_32_64 --disable-sockets --disable-files;
+            build_32_64 --disable-files;
+            build_32_64 --disable-shared;
+            build_32_64 --disable-shared --enable-seluid24;
+    fi
+
+  - if [ "$TRAVIS_OS_NAME" = "osx" -a -z "$config" ]; then
+            build_mac_32_64() {
+                    build $@;
+                    build OBJC="clang -m32" --host=i386-apple-darwin $@;
+            };
+
+            build_mac_32_64;
+            build_mac_32_64 --disable-threads;
+            build_mac_32_64 --disable-threads --disable-sockets;
+            build_mac_32_64 --disable-threads --disable-files;
+            build_mac_32_64 --disable-threads --disable-sockets --disable-files;
+            build_mac_32_64 --disable-sockets;
+            build_mac_32_64 --disable-sockets --disable-files;
+            build_mac_32_64 --disable-files;
+            build_mac_32_64 --disable-shared;
+            build_mac_32_64 --enable-runtime;
+            build_mac_32_64 --enable-runtime --enable-seluid24;
+            build_mac_32_64 --enable-runtime --disable-threads;
+            build_mac_32_64 --enable-runtime --disable-threads
+                            --disable-sockets;
+            build_mac_32_64 --enable-runtime --disable-threads --disable-files;
+            build_mac_32_64 --enable-runtime --disable-threads
+                            --disable-sockets --disable-files;
+            build_mac_32_64 --enable-runtime --disable-sockets;
+            build_mac_32_64 --enable-runtime --disable-sockets --disable-files;
+            build_mac_32_64 --enable-runtime --disable-files;
+            build_mac_32_64 --enable-runtime --disable-shared;
+            build_mac_32_64 --enable-runtime --disable-shared --enable-seluid24;
+
+            export IPHONEOS_DEPLOYMENT_TARGET="10.0";
+            clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)";
+            export OBJC="$clang -arch armv7 -arch arm64";
+            export OBJCPP="$clang -arch armv7 -E";
+            build --host=arm-apple-darwin --enable-static;
+
+            sysroot="$(xcrun --sdk iphonesimulator --show-sdk-path)";
+            clang="clang --sysroot $sysroot";
+            export OBJC="$clang -arch i386 -arch x86_64";
+            export OBJCPP="$clang -arch i386 -E";
+            build --host=i386-apple-darwin --enable-static;
+    fi
+
+  - if [ "$config" = "devkitpro" ]; then
             export DEVKITPRO="$HOME/devkitPro";
             export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
+
+            build --host=arm-none-eabi --with-3ds;
+            build --host=arm-none-eabi --with-nds;
     fi
-  - configure_args="${host+--host=$host}
-                    ${runtime+--enable-runtime}
-                    ${seluid24+--enable-seluid24}
-                    ${static+--disable-shared}
-                    ${nintendo_3ds+--with-3ds}"
-  - echo "Configure args:" $configure_args
-  - ./configure $configure_args || cat config.log
-  - make -j4
-  - sudo PATH="$PATH" make install
