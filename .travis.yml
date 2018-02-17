@@ -162,6 +162,12 @@ script:
                     build OBJC="clang -m32" --host=i386-apple-darwin $@;
             };
 
+            if xcodebuild -version | grep 'Xcode 6' >/dev/null; then
+                    export CPPFLAGS="-D_Nullable=__nullable
+                                     -D_Nonnull=__nonnull
+                                     -D_Null_unspecified=__null_unspecified";
+            fi;
+
             build_mac_32_64;
             build_mac_32_64 --disable-threads;
             build_mac_32_64 --disable-threads --disable-sockets;
@@ -185,7 +191,7 @@ script:
             build_mac_32_64 --enable-runtime --disable-shared;
             build_mac_32_64 --enable-runtime --disable-shared --enable-seluid24;
 
-            export IPHONEOS_DEPLOYMENT_TARGET="10.0";
+            export IPHONEOS_DEPLOYMENT_TARGET="9.0";
             clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)";
             export OBJC="$clang -arch armv7 -arch arm64";
             export OBJCPP="$clang -arch armv7 -E";
@@ -195,7 +201,7 @@ script:
             clang="clang --sysroot $sysroot";
             export OBJC="$clang -arch i386 -arch x86_64";
             export OBJCPP="$clang -arch i386 -E";
-            build --host=i386-apple-darwin --enable-static;
+            build WRAPPER=true --host=i386-apple-darwin --enable-static;
     fi
 
   - if [ "$config" = "devkitarm" ]; then
