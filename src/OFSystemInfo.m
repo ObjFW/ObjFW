@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#include <stdlib.h>	/* include any libc header to get the libc defines */
+#include <limits.h>	/* include any libc header to get the libc defines */
 
 #include "unistd_wrapper.h"
 
