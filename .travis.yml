@@ -52,6 +52,18 @@ matrix:
       env:
         - config=devkitarm
 
+    # Nintendo Wii
+    - os: linux
+      dist: trusty
+      env:
+        - config=devkitppc
+
+    # PSP
+    - os: linux
+      dist: trusty
+      env:
+        - config=devkitpsp
+
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
             if ! sudo apt-get -qq update >apt_log 2>&1; then
@@ -64,7 +76,7 @@ before_install:
             fi;
     fi
 
-  - if [ "$config" == "devkitarm" ]; then
+  - if [ "$config" = "devkitarm" ]; then
             base_url="https://download.sourceforge.net/project/devkitpro";
             wget -q "$base_url/devkitARM/devkitARM_r46/devkitARM_r46-x86_64-linux.tar.bz2"
                     "$base_url/libctru/1.4.0/libctru-1.4.0.tar.bz2"
@@ -76,8 +88,27 @@ before_install:
             tar -C "$HOME/devkitPro/libctru" -xjf libctru-1.4.0.tar.bz2;
             mkdir -p "$HOME/devkitPro/libnds";
             tar -C "$HOME/devkitPro/libnds" -xjf libnds-1.7.1.tar.bz2;
-            tar -C "$HOME/devkitPro/libnds" -xjf libfat-1.1.2.tar.bz2;
+            tar -C "$HOME/devkitPro/libnds" -xjf libfat-nds-1.1.2.tar.bz2;
             tar -C "$HOME/devkitPro/libnds" -xjf libfilesystem-0.9.13-1.tar.bz2;
+    fi
+
+  - if [ "$config" = "devkitppc" ]; then
+            base_url="https://download.sourceforge.net/project/devkitpro";
+            wget -q "$base_url/devkitPPC/devkitPPC_r29-1/devkitPPC_r29-1-x86_64-linux.tar.bz2"
+                    "$base_url/libogc/1.8.16/libogc-1.8.16.tar.bz2"
+                    "$base_url/libfat/1.1.2/libfat-ogc-1.1.2.tar.bz2";
+
+            mkdir -p "$HOME/devkitPro/libogc";
+            tar -C "$HOME/devkitPro" -xjf devkitPPC_r29-1-x86_64-linux.tar.bz2;
+            tar -C "$HOME/devkitPro/libogc" -xjf libogc-1.8.16.tar.bz2;
+            tar -C "$HOME/devkitPro/libogc" -xjf libfat-ogc-1.1.2.tar.bz2;
+    fi
+
+  - if [ "$config" = "devkitpsp" ]; then
+            wget -q https://download.sourceforge.net/project/devkitpro/devkitPSP/devkitPSP_r16-1-x86_64-linux.tar.bz2;
+
+            mkdir -p "$HOME/devkitPro";
+            tar -C "$HOME/devkitPro" -xjf devkitPSP_r16-1-x86_64-linux.tar.bz2;
     fi
 
 script:
@@ -88,16 +119,18 @@ script:
                     cat clean_log;
                     exit 1;
             fi;
-            echo ">> Building with $@";
+            echo ">> Configuring with $@";
             ./autogen.sh;
             if ! ./configure ac_cv_path_TPUT= "$@"; then
                     cat config.log;
                     exit 1;
             fi;
+            echo ">> Building (configured with $@)";
             if ! make -j4 >make_log 2>&1; then
                     cat make_log;
                     exit 1;
             fi;
+            echo ">> Installing (configured with $@)";
             if ! sudo PATH="$PATH" make install >install_log 2>&1; then
                     cat install_log;
                     exit 1;
@@ -165,10 +198,25 @@ script:
             build --host=i386-apple-darwin --enable-static;
     fi
 
-  - if [ "$config" = "devkitpro" ]; then
+  - if [ "$config" = "devkitarm" ]; then
             export DEVKITPRO="$HOME/devkitPro";
             export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
 
             build --host=arm-none-eabi --with-3ds;
             build --host=arm-none-eabi --with-nds;
+    fi
+
+  - if [ "$config" = "devkitppc" ]; then
+            export DEVKITPRO="$HOME/devkitPro";
+            export PATH="$DEVKITPRO/devkitPPC/bin:$PATH";
+
+            build ac_cv_prog_wiiload= --host=powerpc-eabi --with-wii;
+    fi
+
+  - if [ "$config" = "devkitpsp" ]; then
+            export DEVKITPRO="$HOME/devkitPro";
+            export DEVKITPSP="$DEVKITPRO/devkitPSP";
+            export PATH="$DEVKITPSP/bin:$PATH";
+
+            build --host=psp;
     fi
