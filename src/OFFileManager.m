@@ -22,6 +22,10 @@
 
 #include "unistd_wrapper.h"
 
+#ifdef OF_PSP
+# include <sys/syslimits.h>
+#endif
+
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
