@@ -73,7 +73,7 @@
 {
 	OFHTTPClientRequestHandler *_handler;
 	OFTCPSocket *_socket;
-	intmax_t _contentLength, _written;
+	uintmax_t _contentLength, _written;
 	bool _closed;
 }
 
@@ -85,7 +85,7 @@
 {
 	OFTCPSocket *_socket;
 	bool _hasContentLength, _chunked, _keepAlive, _atEndOfStream;
-	size_t _toRead;
+	uintmax_t _toRead;
 }
 
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
@@ -759,6 +759,7 @@ normalizeKey(char *str_)
 
 	@try {
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+		intmax_t contentLength;
 		OFString *contentLengthString;
 
 		_handler = [handler retain];
@@ -770,9 +771,11 @@ normalizeKey(char *str_)
 		if (contentLengthString == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		_contentLength = [contentLengthString decimalValue];
-		if (_contentLength < 0)
+		contentLength = [contentLengthString decimalValue];
+		if (contentLength < 0)
 			@throw [OFOutOfRangeException exception];
+
+		_contentLength = contentLength;
 
 		if ([headers objectForKey: @"Transfer-Encoding"] != nil)
 			@throw [OFInvalidArgumentException exception];
@@ -799,24 +802,14 @@ normalizeKey(char *str_)
 {
 	size_t written;
 
-#if SIZE_MAX >= INTMAX_MAX
-	if (length > INTMAX_MAX)
-		@throw [OFOutOfRangeException exception];
-#endif
-
-	if (INTMAX_MAX - _written < (intmax_t)length ||
-	    _written + (intmax_t)length > _contentLength)
+	if (UINTMAX_MAX - _written < length ||
+	    _written + length > _contentLength)
 		@throw [OFOutOfRangeException exception];
 
 	written = [_socket writeBuffer: buffer
 				length: length];
 
-#if SIZE_MAX >= INTMAX_MAX
-	if (written > INTMAX_MAX)
-		@throw [OFOutOfRangeException exception];
-#endif
-
-	if (INTMAX_MAX - _written < (intmax_t)written)
+	if (UINTMAX_MAX - _written < written)
 		@throw [OFOutOfRangeException exception];
 
 	_written += written;
@@ -883,11 +876,7 @@ normalizeKey(char *str_)
 				@throw [OFInvalidServerReplyException
 				    exception];
 
-			if (sizeof(intmax_t) > sizeof(size_t) &&
-			    toRead > (intmax_t)SIZE_MAX)
-				@throw [OFOutOfRangeException exception];
-
-			_toRead = (size_t)toRead;
+			_toRead = toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
@@ -922,12 +911,14 @@ normalizeKey(char *str_)
 			return 0;
 		}
 
-		if (_toRead < length)
-			ret = [_socket readIntoBuffer: buffer
-					       length: _toRead];
-		else
-			ret = [_socket readIntoBuffer: buffer
-					       length: length];
+		if (length > _toRead)
+			length = (size_t)_toRead;
+
+		ret = [_socket readIntoBuffer: buffer
+				       length: length];
+
+		if (ret > length)
+			@throw [OFOutOfRangeException exception];
 
 		_toRead -= ret;
 
@@ -937,7 +928,7 @@ normalizeKey(char *str_)
 	/* Chunked */
 	if (_toRead > 0) {
 		if (length > _toRead)
-			length = _toRead;
+			length = (size_t)_toRead;
 
 		length = [_socket readIntoBuffer: buffer
 					  length: length];
@@ -967,12 +958,12 @@ normalizeKey(char *str_)
 			    of_range(0, range.location)];
 
 		@try {
-			uintmax_t toRead = [line hexadecimalValue];
+			intmax_t toRead = [line hexadecimalValue];
 
-			if (toRead > SIZE_MAX)
+			if (toRead < 0)
 				@throw [OFOutOfRangeException exception];
 
-			_toRead = (size_t)toRead;
+			_toRead = toRead;
 		} @catch (OFInvalidFormatException *e) {
 			@throw [OFInvalidServerReplyException exception];
 		}
