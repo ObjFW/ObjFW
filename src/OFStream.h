@@ -822,9 +822,11 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  *		 repeat. The buffer may be changed, so that every time a new
  *		 buffer and length can be specified while the callback stays
  *		 the same.
- * @param selector The selector to call on the target. The signature must be
- *		   `size_t (OFStream *stream, const void *buffer,
- *		   size_t bytesWritten, id context, id exception)`.
+ * @param selector The selector to call on the target. It should return the
+ *		   length for the next write with the same callback or 0 if it
+ *		   should not repeat. The signature must be `size_t (OFStream
+ *		   *stream, const void *buffer, size_t bytesWritten, id
+ *		   context, id exception)`.
  * @param context A context object to pass along to the target
  */
 - (void)asyncWriteBuffer: (const void *)buffer

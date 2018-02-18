@@ -35,6 +35,7 @@
 
 #import "OFAlreadyConnectedException.h"
 #import "OFHTTPRequestFailedException.h"
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
@@ -49,6 +50,7 @@
 
 @interface OFHTTPClientRequestHandler: OFObject
 {
+@public
 	OFHTTPClient *_client;
 	OFHTTPRequest *_request;
 	unsigned int _redirects;
@@ -65,6 +67,18 @@
 		       context: (id)context;
 - (void)start;
 - (void)closeAndReconnect;
+@end
+
+@interface OFHTTPClientRequestBodyStream: OFStream <OFReadyForWritingObserving>
+{
+	OFHTTPClientRequestHandler *_handler;
+	OFTCPSocket *_socket;
+	intmax_t _contentLength, _written;
+	bool _closed;
+}
+
+- (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
+			 socket: (OFTCPSocket *)sock;
 @end
 
 @interface OFHTTPClientResponse: OFHTTPResponse <OFReadyForReadingObserving>
@@ -87,7 +101,6 @@ constructRequestString(OFHTTPRequest *request)
 	OFURL *URL = [request URL];
 	OFString *path;
 	OFString *user = [URL user], *password = [URL password];
-	OFData *body = [request body];
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
@@ -151,26 +164,17 @@ constructRequestString(OFHTTPRequest *request)
 				    @"<https://heap.zone/objfw>"
 			    forKey: @"User-Agent"];
 
-	if (body != nil) {
-		if ([headers objectForKey: @"Content-Length"] == nil) {
-			OFString *contentLength = [OFString stringWithFormat:
-			    @"%zd", [body itemSize] * [body count]];
-
-			[headers setObject: contentLength
-				    forKey: @"Content-Length"];
-		}
-
-		if ([headers objectForKey: @"Content-Type"] == nil)
-			[headers setObject: @"application/x-www-form-"
-					    @"urlencoded; charset=UTF-8"
-				    forKey: @"Content-Type"];
-	}
-
 	if ([request protocolVersion].major == 1 &&
 	    [request protocolVersion].minor == 0 &&
 	    [headers objectForKey: @"Connection"] == nil)
 		[headers setObject: @"keep-alive"
 			    forKey: @"Connection"];
+
+	if ([headers objectForKey: @"Content-Length"] != nil &&
+	    [headers objectForKey: @"Content-Type"] == nil)
+		[headers setObject: @"application/x-www-form-"
+				    @"urlencoded; charset=UTF-8"
+			    forKey: @"Content-Type"];
 
 	keyEnumerator = [headers keyEnumerator];
 	objectEnumerator = [headers objectEnumerator];
@@ -351,13 +355,13 @@ normalizeKey(char *str_)
 				    nil &&
 				    (object = [objectEnumerator nextObject]) !=
 				    nil)
-					if ([key hasPrefix: @"Content-"])
+					if ([key hasPrefix: @"Content-"] ||
+					    [key hasPrefix: @"Transfer-"])
 						[newHeaders
 						    removeObjectForKey: key];
 
 				[newRequest setMethod:
 				    OF_HTTP_REQUEST_METHOD_GET];
-				[newRequest setBody: nil];
 			}
 
 			[newRequest setURL: newURL];
@@ -395,7 +399,7 @@ normalizeKey(char *str_)
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
-				forRequest: _request
+				   request: _request
 				   context: _context];
 	}
 }
@@ -505,7 +509,7 @@ normalizeKey(char *str_)
 
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request
+				   request: _request
 				   context: _context];
 		return false;
 	}
@@ -520,34 +524,12 @@ normalizeKey(char *str_)
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
-				forRequest: _request
+				   request: _request
 				   context: _context];
 		ret = false;
 	}
 
 	return ret;
-}
-
-- (size_t)socket: (OFTCPSocket *)sock
-    didWriteBody: (const void **)body
-	  length: (size_t)length
-	 context: (id)context
-       exception: (id)exception
-{
-	if (exception != nil) {
-		[_client->_delegate client: _client
-		     didEncounterException: exception
-				forRequest: _request
-				   context: _context];
-		return 0;
-	}
-
-	_firstLine = true;
-	[sock asyncReadLineWithTarget: self
-			     selector: @selector(socket:didReadLine:context:
-					   exception:)
-			      context: nil];
-	return 0;
 }
 
 -  (size_t)socket: (OFTCPSocket *)sock
@@ -556,8 +538,6 @@ normalizeKey(char *str_)
 	  context: (id)context
 	exception: (id)exception
 {
-	OFData *body;
-
 	if (exception != nil) {
 		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
 		    ([exception errNo] == ECONNRESET ||
@@ -569,25 +549,32 @@ normalizeKey(char *str_)
 
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request
+				   request: _request
 				   context: _context];
 		return 0;
 	}
 
-	if ((body = [_request body]) != nil) {
-		[sock asyncWriteBuffer: [body items]
-				length: [body count] * [body itemSize]
-				target: self
-			      selector: @selector(socket:didWriteBody:length:
-					    context:exception:)
-			       context: nil];
-		return 0;
+	_firstLine = true;
+
+	if ([[_request headers] objectForKey: @"Content-Length"] != nil) {
+		OFStream *stream = [[[OFHTTPClientRequestBodyStream alloc]
+		    initWithHandler: self
+			     socket: sock] autorelease];
+
+		if ([_client->_delegate respondsToSelector:
+		    @selector(client:requestsBody:request:context:)])
+			[_client->_delegate client: _client
+				      requestsBody: stream
+					   request: _request
+					   context: _context];
+
 	} else
-		return [self socket: sock
-		       didWriteBody: NULL
-			     length: 0
-			    context: nil
-			  exception: nil];
+		[sock asyncReadLineWithTarget: self
+				     selector: @selector(socket:didReadLine:
+						   context:exception:)
+				      context: nil];
+
+	return 0;
 }
 
 - (void)handleSocket: (OFTCPSocket *)sock
@@ -619,7 +606,7 @@ normalizeKey(char *str_)
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
-				forRequest: _request
+				   request: _request
 				   context: _context];
 		return;
 	}
@@ -632,16 +619,16 @@ normalizeKey(char *str_)
 	if (exception != nil) {
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request
+				   request: _request
 				   context: _context];
 		return;
 	}
 
 	if ([_client->_delegate respondsToSelector:
-	    @selector(client:didCreateSocket:forRequest:context:)])
+	    @selector(client:didCreateSocket:request:context:)])
 		[_client->_delegate client: _client
 			   didCreateSocket: sock
-				forRequest: _request
+				   request: _request
 				   context: _context];
 
 	[self performSelector: @selector(handleSocket:)
@@ -658,7 +645,7 @@ normalizeKey(char *str_)
 	if (exception != nil) {
 		[_client->_delegate client: _client
 		     didEncounterException: exception
-				forRequest: _request
+				   request: _request
 				   context: _context];
 		return false;
 	}
@@ -758,9 +745,102 @@ normalizeKey(char *str_)
 	} @catch (id e) {
 		[_client->_delegate client: _client
 		     didEncounterException: e
-				forRequest: _request
+				   request: _request
 				   context: _context];
 	}
+}
+@end
+
+@implementation OFHTTPClientRequestBodyStream
+- (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
+			 socket: (OFTCPSocket *)sock
+{
+	self = [super init];
+
+	@try {
+		OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
+		OFString *contentLengthString;
+
+		_handler = [handler retain];
+		_socket = [sock retain];
+
+		headers = [_handler->_request headers];
+
+		contentLengthString = [headers objectForKey: @"Content-Length"];
+		if (contentLengthString == nil)
+			@throw [OFInvalidArgumentException exception];
+
+		_contentLength = [contentLengthString decimalValue];
+		if (_contentLength < 0)
+			@throw [OFOutOfRangeException exception];
+
+		if ([headers objectForKey: @"Transfer-Encoding"] != nil)
+			@throw [OFInvalidArgumentException exception];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
+
+	[_handler release];
+	[_socket release];
+
+	[super dealloc];
+}
+
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
+{
+	size_t written;
+
+#if SIZE_MAX >= INTMAX_MAX
+	if (length > INTMAX_MAX)
+		@throw [OFOutOfRangeException exception];
+#endif
+
+	if (INTMAX_MAX - _written < (intmax_t)length ||
+	    _written + (intmax_t)length > _contentLength)
+		@throw [OFOutOfRangeException exception];
+
+	written = [_socket writeBuffer: buffer
+				length: length];
+
+#if SIZE_MAX >= INTMAX_MAX
+	if (written > INTMAX_MAX)
+		@throw [OFOutOfRangeException exception];
+#endif
+
+	if (INTMAX_MAX - _written < (intmax_t)written)
+		@throw [OFOutOfRangeException exception];
+
+	_written += written;
+
+	return written;
+}
+
+- (void)close
+{
+	if (_closed)
+		return;
+
+	if (_written < _contentLength)
+		@throw [OFTruncatedDataException exception];
+
+	[_socket asyncReadLineWithTarget: _handler
+				selector: @selector(socket:didReadLine:context:
+					      exception:)
+				 context: nil];
+}
+
+- (int)fileDescriptorForWriting
+{
+	return [_socket fileDescriptorForWriting];
 }
 @end
 

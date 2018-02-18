@@ -90,7 +90,7 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 -	   (void)client: (OFHTTPClient *)client
   didEncounterException: (id)exception
-	     forRequest: (OFHTTPRequest *)request
+		request: (OFHTTPRequest *)request
 		context: (id)context
 {
 	@throw exception;

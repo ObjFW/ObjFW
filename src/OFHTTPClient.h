@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFHTTPClient;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
+@class OFStream;
 @class OFTCPSocket;
 @class OFURL;
 
@@ -62,7 +63,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -	   (void)client: (OFHTTPClient *)client
   didEncounterException: (id)exception
-	     forRequest: (OFHTTPRequest *)request
+		request: (OFHTTPRequest *)request
 		context: (nullable id)context;
 
 @optional
@@ -82,8 +83,23 @@ OF_ASSUME_NONNULL_BEGIN
  */
 -    (void)client: (OFHTTPClient *)client
   didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
-       forRequest: (OFHTTPRequest *)request
+	  request: (OFHTTPRequest *)request
 	  context: (nullable id)context;
+
+/*!
+ * @brief A callback which is called when an OFHTTPClient wants to send the
+ *	  body for a request.
+ *
+ * @param client The OFHTTPClient that wants to send the body
+ * @param body A stream into which the body should be written
+ * @param request The request for which the OFHTTPClient wants to send the body
+ * @param context The context object that was passed to
+ *		  @ref asyncPerformRequest:context:
+ */
+- (void)client: (OFHTTPClient *)client
+  requestsBody: (OFStream *)body
+       request: (OFHTTPRequest *)request
+       context: (nullable id)context;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient received headers.

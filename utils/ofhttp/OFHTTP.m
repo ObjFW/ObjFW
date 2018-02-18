@@ -61,7 +61,7 @@
 	OFString *_outputPath, *_currentFileName;
 	bool _continue, _force, _detectFileName, _detectedFileName;
 	bool _quiet, _verbose, _insecure;
-	OFData *_body;
+	OFStream *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
 	OFHTTPClient *_HTTPClient;
@@ -285,18 +285,18 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			   forKey: name];
 }
 
-- (void)setBody: (OFString *)file
+- (void)setBody: (OFString *)path
 {
+	uintmax_t bodySize;
+
 	[_body release];
+	_body = [[OFFile alloc] initWithPath: path
+					mode: @"r"];
 
-	if ([file isEqual: @"-"]) {
-		void *pool = objc_autoreleasePoolPush();
-
-		_body = [[of_stdin readDataUntilEndOfStream] copy];
-
-		objc_autoreleasePoolPop(pool);
-	} else
-		_body = [[OFData alloc] initWithContentsOfFile: file];
+	bodySize = [[[OFFileManager defaultManager]
+	    attributesOfItemAtPath: path] fileSize];
+	[_clientHeaders setObject: [OFString stringWithFormat: @"%ju", bodySize]
+			   forKey: @"Content-Length"];
 }
 
 - (void)setMethod: (OFString *)method
@@ -511,6 +511,23 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[sock setCertificateVerificationEnabled: false];
 }
 
+- (void)client: (OFHTTPClient *)client
+  requestsBody: (OFStream *)body
+       request: (OFHTTPRequest *)request
+       context: (id)context
+{
+	/* TODO: Do asynchronously and print status */
+	while (![_body isAtEndOfStream]) {
+		char buffer[4096];
+		size_t length;
+
+		length = [_body readIntoBuffer: buffer
+					length: 4096];
+		[body writeBuffer: buffer
+			   length: length];
+	}
+}
+
 -	  (bool)client: (OFHTTPClient *)client
   shouldFollowRedirect: (OFURL *)URL
 	    statusCode: (int)statusCode
@@ -546,7 +563,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 -	   (void)client: (OFHTTPClient *)client
   didEncounterException: (id)e
-	     forRequest: (OFHTTPRequest *)request
+		request: (OFHTTPRequest *)request
 		context: (id)context
 {
 	if ([e isKindOfClass: [OFAddressTranslationFailedException class]]) {
@@ -956,7 +973,6 @@ next:
 	request = [OFHTTPRequest requestWithURL: URL];
 	[request setHeaders: clientHeaders];
 	[request setMethod: _method];
-	[request setBody: _body];
 
 	[_HTTPClient asyncPerformRequest: request
 				 context: nil];
