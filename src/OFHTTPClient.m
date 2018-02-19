@@ -825,6 +825,8 @@ normalizeKey(char *str_)
 	if (_written < _contentLength)
 		@throw [OFTruncatedDataException exception];
 
+	_closed = true;
+
 	[_socket asyncReadLineWithTarget: _handler
 				selector: @selector(socket:didReadLine:context:
 					      exception:)
