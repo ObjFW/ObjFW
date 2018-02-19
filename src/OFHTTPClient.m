@@ -73,8 +73,8 @@
 {
 	OFHTTPClientRequestHandler *_handler;
 	OFTCPSocket *_socket;
-	uintmax_t _contentLength, _written;
-	bool _closed;
+	uintmax_t _toWrite;
+	bool _atEndOfStream;
 }
 
 - (instancetype)initWithHandler: (OFHTTPClientRequestHandler *)handler
@@ -775,7 +775,7 @@ normalizeKey(char *str_)
 		if (contentLength < 0)
 			@throw [OFOutOfRangeException exception];
 
-		_contentLength = contentLength;
+		_toWrite = contentLength;
 
 		if ([headers objectForKey: @"Transfer-Encoding"] != nil)
 			@throw [OFInvalidArgumentException exception];
@@ -800,37 +800,63 @@ normalizeKey(char *str_)
 - (size_t)lowlevelWriteBuffer: (const void *)buffer
 		       length: (size_t)length
 {
-	size_t written;
+	size_t requestedLength = length;
+	size_t ret;
 
-	if (UINTMAX_MAX - _written < length ||
-	    _written + length > _contentLength)
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_atEndOfStream)
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: requestedLength
+			   bytesWritten: 0
+				  errNo: 0];
+
+	if (length > _toWrite)
+		length = (size_t)_toWrite;
+
+	ret = [_socket writeBuffer: buffer
+			    length: length];
+
+	if (ret > length)
 		@throw [OFOutOfRangeException exception];
 
-	written = [_socket writeBuffer: buffer
-				length: length];
+	_toWrite -= ret;
 
-	if (UINTMAX_MAX - _written < written)
-		@throw [OFOutOfRangeException exception];
+	if (_toWrite == 0)
+		_atEndOfStream = true;
 
-	_written += written;
+	if (requestedLength > length)
+		@throw [OFWriteFailedException
+		    exceptionWithObject: self
+			requestedLength: requestedLength
+			   bytesWritten: ret
+				  errNo: 0];
 
-	return written;
+	return ret;
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	return _atEndOfStream;
 }
 
 - (void)close
 {
-	if (_closed)
+	if (_socket == nil)
 		return;
 
-	if (_written < _contentLength)
+	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
-
-	_closed = true;
 
 	[_socket asyncReadLineWithTarget: _handler
 				selector: @selector(socket:didReadLine:context:
 					      exception:)
 				 context: nil];
+
+	[_socket release];
+	_socket = nil;
 }
 
 - (int)fileDescriptorForWriting
