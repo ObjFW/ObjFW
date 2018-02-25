@@ -79,7 +79,7 @@ of_http_request_method_from_string(const char *string)
 }
 
 @implementation OFHTTPRequest
-@synthesize URL = _URL, method = _method, headers = _headers, body = _body;
+@synthesize URL = _URL, method = _method, headers = _headers;
 @synthesize remoteAddress = _remoteAddress;
 
 + (instancetype)request
@@ -121,7 +121,6 @@ of_http_request_method_from_string(const char *string)
 {
 	[_URL release];
 	[_headers release];
-	[_body release];
 	[_remoteAddress release];
 
 	[super dealloc];
@@ -136,7 +135,6 @@ of_http_request_method_from_string(const char *string)
 		copy->_protocolVersion = _protocolVersion;
 		[copy setURL: _URL];
 		[copy setHeaders: _headers];
-		[copy setBody: _body];
 		[copy setRemoteAddress: _remoteAddress];
 	} @catch (id e) {
 		[copy release];
@@ -163,7 +161,6 @@ of_http_request_method_from_string(const char *string)
 	    request->_protocolVersion.minor != _protocolVersion.minor ||
 	    ![request->_URL isEqual: _URL] ||
 	    ![request->_headers isEqual: _headers] ||
-	    ![request->_body isEqual: _body] ||
 	    ![request->_remoteAddress isEqual: _remoteAddress])
 		return false;
 
@@ -181,7 +178,6 @@ of_http_request_method_from_string(const char *string)
 	OF_HASH_ADD(hash, _protocolVersion.minor);
 	OF_HASH_ADD_HASH(hash, [_URL hash]);
 	OF_HASH_ADD_HASH(hash, [_headers hash]);
-	OF_HASH_ADD_HASH(hash, [_body hash]);
 	OF_HASH_ADD_HASH(hash, [_remoteAddress hash]);
 
 	OF_HASH_FINALIZE(hash);
@@ -236,34 +232,13 @@ of_http_request_method_from_string(const char *string)
 					   _protocolVersion.minor];
 }
 
-- (void)setBodyFromString: (OFString *)string
-{
-	[self setBodyFromString: string
-		       encoding: OF_STRING_ENCODING_UTF_8];
-}
-
-- (void)setBodyFromString: (OFString *)string
-		 encoding: (of_string_encoding_t)encoding
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[self setBody: [OFData
-	    dataWithItems: [string cStringWithEncoding: encoding]
-		    count: [string cStringLengthWithEncoding: encoding]]];
-
-	objc_autoreleasePoolPop(pool);
-}
-
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *method = of_http_request_method_to_string(_method);
-	OFString *indentedHeaders, *indentedBody, *ret;
+	OFString *indentedHeaders, *ret;
 
 	indentedHeaders = [[_headers description]
-	    stringByReplacingOccurrencesOfString: @"\n"
-				      withString: @"\n\t"];
-	indentedBody = [[_body description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -271,11 +246,9 @@ of_http_request_method_from_string(const char *string)
 	    @"<%@:\n\tURL = %@\n"
 	    @"\tMethod = %s\n"
 	    @"\tHeaders = %@\n"
-	    @"\tBody = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    [self class], _URL, method, indentedHeaders, indentedBody,
-	    _remoteAddress];
+	    [self class], _URL, method, indentedHeaders, _remoteAddress];
 
 	objc_autoreleasePoolPop(pool);
 

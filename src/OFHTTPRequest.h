@@ -73,7 +73,6 @@ typedef struct OF_BOXABLE {
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
-	OFData *_Nullable _body;
 	OFString *_Nullable _remoteAddress;
 }
 
@@ -102,11 +101,6 @@ typedef struct OF_BOXABLE {
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic)
     OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-
-/*!
- * @brief The entity body of the HTTP request.
- */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFData *body;
 
 /*!
  * @brief The remote address from which the request originates.
@@ -143,24 +137,6 @@ typedef struct OF_BOXABLE {
  * @param string A string describing an HTTP version
  */
 - (void)setProtocolVersionFromString: (OFString *)string;
-
-/*!
- * @brief Sets the entity body of the HTTP request to the specified string
- *	  encoded in UTF-8.
- *
- * @param string The string to use for the entity body
- */
-- (void)setBodyFromString: (OFString *)string;
-
-/*!
- * @brief Sets the entity body of the HTTP request to the specified string
- *	  encoded in the specified encoding.
- *
- * @param string The string to use for the entity body
- * @param encoding The encoding to encode the string with
- */
-- (void)setBodyFromString: (OFString *)string
-		 encoding: (of_string_encoding_t)encoding;
 @end
 
 #ifdef __cplusplus
