@@ -189,6 +189,66 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)client;
 
 /*!
+ * @brief Synchronously performs the specified HTTP request.
+ *
+ * @note You must not change the delegate while a synchronous request is
+ *	 running! If you want to change the delegate during the request,
+ *	 perform an asynchronous request instead!
+ *
+ * @param request The request to perform
+ * @return The OFHTTPResponse for the request
+ */
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request;
+
+/*!
+ * @brief Synchronously performs the specified HTTP request.
+ *
+ * @note You must not change the delegate while a synchronous request is
+ *	 running! If you want to change the delegate during the request,
+ *	 perform an asynchronous request instead!
+ *
+ * @param request The request to perform
+ * @param redirects The maximum number of redirects after which no further
+ *		    attempt is done to follow the redirect, but instead the
+ *		    redirect is treated as an OFHTTPResponse
+ * @return The OFHTTPResponse for the request
+ */
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (unsigned int)redirects;
+
+/*!
+ * @brief Synchronously performs the specified HTTP request.
+ *
+ * @note You must not change the delegate while a synchronous request is
+ *	 running! If you want to change the delegate during the request,
+ *	 perform an asynchronous request instead!
+ *
+ * @param request The request to perform
+ * @param context A context object to be passed to the delegate
+ * @return The OFHTTPResponse for the request
+ */
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			   context: (nullable id)context;
+
+/*!
+ * @brief Synchronously performs the specified HTTP request.
+ *
+ * @note You must not change the delegate while a synchronous request is
+ *	 running! If you want to change the delegate during the request,
+ *	 perform an asynchronous request instead!
+ *
+ * @param request The request to perform
+ * @param redirects The maximum number of redirects after which no further
+ *		    attempt is done to follow the redirect, but instead the
+ *		    redirect is treated as an OFHTTPResponse
+ * @param context A context object to be passed to the delegate
+ * @return The OFHTTPResponse for the request
+ */
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (unsigned int)redirects
+			   context: (nullable id)context;
+
+/*!
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform

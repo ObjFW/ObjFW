@@ -29,6 +29,7 @@
 #import "OFHTTPResponse.h"
 #import "OFKernelEventObserver.h"
 #import "OFNumber.h"
+#import "OFRunLoop.h"
 #import "OFString.h"
 #import "OFTCPSocket.h"
 #import "OFURL.h"
@@ -47,6 +48,8 @@
 #import "OFUnsupportedProtocolException.h"
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
+
+#define REDIRECTS_DEFAULT 10
 
 @interface OFHTTPClientRequestHandler: OFObject
 {
@@ -91,6 +94,19 @@
 @property (nonatomic, setter=of_setKeepAlive:) bool of_keepAlive;
 
 - (instancetype)initWithSocket: (OFTCPSocket *)sock;
+@end
+
+@interface OFHTTPClient_SyncPerformer: OFObject <OFHTTPClientDelegate>
+{
+	OFHTTPClient *_client;
+	OFObject <OFHTTPClientDelegate> *_delegate;
+	OFHTTPResponse *_response;
+}
+
+- (instancetype)initWithClient: (OFHTTPClient *)client;
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (unsigned int)redirects
+			   context: (id)context;
 @end
 
 static OFString *
@@ -214,6 +230,28 @@ normalizeKey(char *str_)
 	}
 }
 
+static bool
+defaultShouldFollow(of_http_request_method_t method, int statusCode)
+{
+	bool follow;
+
+	/*
+	 * 301, 302 and 307 should only redirect with user confirmation if the
+	 * request method is not GET or HEAD. Asking the delegate and getting
+	 * true returned is considered user confirmation.
+	 */
+	if (method == OF_HTTP_REQUEST_METHOD_GET ||
+	    method == OF_HTTP_REQUEST_METHOD_HEAD)
+		follow = true;
+	/* 303 should always be redirected and converted to a GET request. */
+	else if (statusCode == 303)
+		follow = true;
+	else
+		follow = false;
+
+	return follow;
+}
+
 @implementation OFHTTPClientRequestHandler
 - (instancetype)initWithClient: (OFHTTPClient *)client
 		       request: (OFHTTPRequest *)request
@@ -307,27 +345,9 @@ normalizeKey(char *str_)
 						    request: _request
 						   response: response
 						    context: _context];
-		else {
-			of_http_request_method_t method = [_request method];
-
-			/*
-			 * 301, 302 and 307 should only redirect with user
-			 * confirmation if the request method is not GET or
-			 * HEAD. Asking the delegate and getting true returned
-			 * is considered user confirmation.
-			 */
-			if (method == OF_HTTP_REQUEST_METHOD_GET ||
-			    method == OF_HTTP_REQUEST_METHOD_HEAD)
-				follow = true;
-			/*
-			 * 303 should always be redirected and converted to a
-			 * GET request.
-			 */
-			else if (_status == 303)
-				follow = true;
-			else
-				follow = false;
-		}
+		else
+			follow = defaultShouldFollow(
+			    [_request method], _status);
 
 		if (follow) {
 			OFDictionary OF_GENERIC(OFString *, OFString *)
@@ -1060,6 +1080,137 @@ normalizeKey(char *str_)
 }
 @end
 
+@implementation OFHTTPClient_SyncPerformer
+- (instancetype)initWithClient: (OFHTTPClient *)client
+{
+	self = [super init];
+
+	@try {
+		_client = [client retain];
+		_delegate = [client delegate];
+
+		[_client setDelegate: self];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_client setDelegate: _delegate];
+	[_client release];
+
+	[super dealloc];
+}
+
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (unsigned int)redirects
+			   context: (id)context
+{
+	[_client asyncPerformRequest: request
+			   redirects: redirects
+			     context: context];
+
+	[[OFRunLoop currentRunLoop] run];
+
+	return _response;
+}
+
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response
+	    context: (id)context
+{
+	[[OFRunLoop currentRunLoop] stop];
+
+	[_response release];
+	_response = [response retain];
+
+	[_delegate     client: client
+	    didPerformRequest: request
+		     response: response
+		      context: context];
+}
+
+-	   (void)client: (OFHTTPClient *)client
+  didEncounterException: (id)exception
+		request: (OFHTTPRequest *)request
+		context: (id)context
+{
+	/*
+	 * Restore the delegate - we're giving up, but not reaching the release
+	 * of the autorelease pool that contains us, so resetting it via
+	 * -[dealloc] might be too late.
+	 */
+	[_client setDelegate: _delegate];
+
+	@throw exception;
+}
+
+-    (void)client: (OFHTTPClient *)client
+  didCreateSocket: (OF_KINDOF(OFTCPSocket *))sock
+	  request: (OFHTTPRequest *)request
+	  context: (id)context
+{
+	if ([_delegate respondsToSelector:
+	    @selector(client:didCreateSocket:request:context:)])
+		[_delegate   client: client
+		    didCreateSocket: sock
+			    request: request
+			    context: context];
+}
+
+- (void)client: (OFHTTPClient *)client
+  requestsBody: (OFStream *)body
+       request: (OFHTTPRequest *)request
+       context: (id)context
+{
+	if ([_delegate respondsToSelector:
+	    @selector(client:requestsBody:request:context:)])
+		[_delegate client: client
+		     requestsBody: body
+			  request: request
+			  context: context];
+}
+
+-      (void)client: (OFHTTPClient *)client
+  didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
+	 statusCode: (int)statusCode
+	    request: (OFHTTPRequest *)request
+	    context: (id)context
+{
+	if ([_delegate respondsToSelector:
+	    @selector(client:didReceiveHeaders:statusCode:request:context:)])
+		[_delegate     client: client
+		    didReceiveHeaders: headers
+			   statusCode: statusCode
+			      request: request
+			      context: context];
+}
+
+-	  (bool)client: (OFHTTPClient *)client
+  shouldFollowRedirect: (OFURL *)URL
+	    statusCode: (int)statusCode
+	       request: (OFHTTPRequest *)request
+	      response: (OFHTTPResponse *)response
+	       context: (id)context
+{
+	if ([_delegate respondsToSelector: @selector(client:
+	    shouldFollowRedirect:statusCode:request:response:context:)])
+		return [_delegate client: client
+		    shouldFollowRedirect: URL
+			      statusCode: statusCode
+				 request: request
+				response: response
+				 context: context];
+	else
+		return defaultShouldFollow([request method], statusCode);
+}
+@end
+
 @implementation OFHTTPClient
 @synthesize delegate = _delegate;
 @synthesize insecureRedirectsAllowed = _insecureRedirectsAllowed;
@@ -1076,11 +1227,53 @@ normalizeKey(char *str_)
 	[super dealloc];
 }
 
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+{
+	return [self performRequest: request
+			  redirects: REDIRECTS_DEFAULT
+			    context: nil];
+}
+
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (unsigned int)redirects
+{
+	return [self performRequest: request
+			  redirects: redirects
+			    context: nil];
+}
+
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			   context: (id)context
+{
+	return [self performRequest: request
+			  redirects: REDIRECTS_DEFAULT
+			    context: context];
+}
+
+- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
+			 redirects: (unsigned int)redirects
+			   context: (id)context
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFHTTPClient_SyncPerformer *syncPerformer =
+	    [[[OFHTTPClient_SyncPerformer alloc] initWithClient: self]
+	    autorelease];
+	OFHTTPResponse *response = [syncPerformer performRequest: request
+						       redirects: redirects
+							 context: context];
+
+	[response retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [response autorelease];
+}
+
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		    context: (id)context
 {
 	[self asyncPerformRequest: request
-			redirects: 10
+			redirects: REDIRECTS_DEFAULT
 			  context: context];
 }
 
