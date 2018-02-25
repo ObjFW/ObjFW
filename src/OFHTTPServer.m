@@ -55,6 +55,62 @@
 	exception: (id)exception;
 @end
 
+@interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
+{
+	OFTCPSocket *_socket;
+	OFHTTPServer *_server;
+	OFHTTPRequest *_request;
+	bool _chunked, _headersSent;
+}
+
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+			server: (OFHTTPServer *)server
+		       request: (OFHTTPRequest *)request;
+@end
+
+@interface OFHTTPServer_Connection: OFObject
+{
+@public
+	OFTCPSocket *_socket;
+	OFHTTPServer *_server;
+	OFTimer *_timer;
+	enum {
+		AWAITING_PROLOG,
+		PARSING_HEADERS,
+		SEND_RESPONSE
+	} _state;
+	uint8_t _HTTPMinorVersion;
+	of_http_request_method_t _method;
+	OFString *_host, *_path;
+	uint16_t _port;
+	OFMutableDictionary *_headers;
+	size_t _contentLength;
+	OFStream *_body;
+}
+
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+			server: (OFHTTPServer *)server;
+- (bool)socket: (OFTCPSocket *)sock
+   didReadLine: (OFString *)line
+       context: (id)context
+     exception: (id)exception;
+- (bool)parseProlog: (OFString *)line;
+- (bool)parseHeaders: (OFString *)line;
+- (bool)sendErrorAndClose: (short)statusCode;
+- (void)createResponse;
+@end
+
+@interface OFHTTPServerRequestBodyStream: OFStream <OFReadyForReadingObserving>
+{
+	OFTCPSocket *_socket;
+	uintmax_t _toRead;
+	bool _atEndOfStream;
+}
+
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+		 contentLength: (uintmax_t)contentLength;
+@end
+
 static const char *
 statusCodeToString(short code)
 {
@@ -173,19 +229,6 @@ normalizedKey(OFString *key)
 	return [OFString stringWithUTF8StringNoCopy: cString
 				       freeWhenDone: true];
 }
-
-@interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
-{
-	OFTCPSocket *_socket;
-	OFHTTPServer *_server;
-	OFHTTPRequest *_request;
-	bool _chunked, _headersSent;
-}
-
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-			server: (OFHTTPServer *)server
-		       request: (OFHTTPRequest *)request;
-@end
 
 @implementation OFHTTPServerResponse
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
@@ -324,42 +367,6 @@ normalizedKey(OFString *key)
 }
 @end
 
-@interface OFHTTPServer_Connection: OFObject
-{
-	OFTCPSocket *_socket;
-	OFHTTPServer *_server;
-	OFTimer *_timer;
-	enum {
-		AWAITING_PROLOG,
-		PARSING_HEADERS,
-		SEND_RESPONSE
-	} _state;
-	uint8_t _HTTPMinorVersion;
-	of_http_request_method_t _method;
-	OFString *_host, *_path;
-	uint16_t _port;
-	OFMutableDictionary *_headers;
-	size_t _contentLength;
-	OFMutableData *_body;
-}
-
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-			server: (OFHTTPServer *)server;
-- (bool)socket: (OFTCPSocket *)sock
-   didReadLine: (OFString *)line
-       context: (id)context
-     exception: (id)exception;
-- (bool)parseProlog: (OFString *)line;
-- (bool)parseHeaders: (OFString *)line;
--      (bool)socket: (OFTCPSocket *)sock
-  didReadIntoBuffer: (char *)buffer
-	     length: (size_t)length
-	    context: (id)context
-	  exception: (id)exception;
-- (bool)sendErrorAndClose: (short)statusCode;
-- (void)createResponse;
-@end
-
 @implementation OFHTTPServer_Connection
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
 			server: (OFHTTPServer *)server
@@ -413,15 +420,7 @@ normalizedKey(OFString *key)
 		case AWAITING_PROLOG:
 			return [self parseProlog: line];
 		case PARSING_HEADERS:
-			if (![self parseHeaders: line])
-				return false;
-
-			if (_state == SEND_RESPONSE) {
-				[self createResponse];
-				return false;
-			}
-
-			return true;
+			return [self parseHeaders: line];
 		default:
 			return false;
 		}
@@ -495,42 +494,38 @@ normalizedKey(OFString *key)
 	size_t pos;
 
 	if ([line length] == 0) {
-		intmax_t contentLength;
+		OFString *contentLengthString;
 
-		@try {
-			contentLength = [[_headers
-			    objectForKey: @"Content-Length"] decimalValue];
-		} @catch (OFInvalidFormatException *e) {
-			return [self sendErrorAndClose: 400];
-		}
+		if ((contentLengthString =
+		    [_headers objectForKey: @"Content-Length"]) != nil) {
+			intmax_t contentLength;
 
-		if (contentLength > 0) {
-			char *buffer;
+			@try {
+				contentLength =
+				    [contentLengthString decimalValue];
 
-			if (contentLength < 0 ||
-			    (uintmax_t)contentLength > SIZE_MAX)
-				@throw [OFOutOfRangeException exception];
+			} @catch (OFInvalidFormatException *e) {
+				return [self sendErrorAndClose: 400];
+			}
 
-			buffer = [self allocMemoryWithSize: BUFFER_SIZE];
-			_body = [[OFMutableData alloc] init];
-			_contentLength = (size_t)contentLength;
+			if (contentLength < 0)
+				return [self sendErrorAndClose: 400];
 
-			[_socket asyncReadIntoBuffer: buffer
-					      length: BUFFER_SIZE
-					      target: self
-					    selector: @selector(socket:
-							  didReadIntoBuffer:
-							  length:context:
-							  exception:)
-					     context: nil];
-			[_timer setFireDate:
-			    [OFDate dateWithTimeIntervalSinceNow: 5]];
+			[_body release];
+			_body = nil;
+			_body = [[OFHTTPServerRequestBodyStream alloc]
+			    initWithSocket: _socket
+			     contentLength: contentLength];
 
-			return false;
+			[_timer invalidate];
+			[_timer release];
+			_timer = nil;
 		}
 
 		_state = SEND_RESPONSE;
-		return true;
+		[self createResponse];
+
+		return false;
 	}
 
 	pos = [line rangeOfString: @":"].location;
@@ -584,43 +579,6 @@ normalizedKey(OFString *key)
 	return true;
 }
 
--      (bool)socket: (OFTCPSocket *)sock
-  didReadIntoBuffer: (char *)buffer
-	     length: (size_t)length
-	    context: (id)context
-	  exception: (id)exception
-{
-	if ([sock isAtEndOfStream] || exception != nil)
-		return false;
-
-	[_body addItems: buffer
-		  count: length];
-
-	if ([_body count] >= _contentLength) {
-		/*
-		 * Manually free the buffer here. While this is not required
-		 * now as the async read is the only thing referencing self and
-		 * the buffer is allocated on self, it is required once
-		 * Connection: keep-alive is implemented.
-		 */
-		[self freeMemory: buffer];
-
-		[_body makeImmutable];
-
-		@try {
-			[self createResponse];
-		} @catch (OFWriteFailedException *e) {
-			return false;
-		}
-
-		return false;
-	}
-
-	[_timer setFireDate: [OFDate dateWithTimeIntervalSinceNow: 5]];
-
-	return true;
-}
-
 - (bool)sendErrorAndClose: (short)statusCode
 {
 	OFString *date = [[OFDate date]
@@ -638,6 +596,7 @@ normalizedKey(OFString *key)
 
 - (void)createResponse
 {
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableURL *URL;
 	OFHTTPRequest *request;
 	OFHTTPServerResponse *response;
@@ -683,7 +642,6 @@ normalizedKey(OFString *key)
 	[request setProtocolVersion:
 	    (of_http_request_protocol_version_t){ 1, _HTTPMinorVersion }];
 	[request setHeaders: _headers];
-	[request setBody: _body];
 	[request setRemoteAddress: [_socket remoteAddress]];
 
 	response = [[[OFHTTPServerResponse alloc]
@@ -693,7 +651,77 @@ normalizedKey(OFString *key)
 
 	[[_server delegate] server: _server
 		 didReceiveRequest: request
+			      body: _body
 			  response: response];
+
+	objc_autoreleasePoolPop(pool);
+}
+@end
+
+@implementation OFHTTPServerRequestBodyStream
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+		     contentLength: (uintmax_t)contentLength
+{
+	self = [super init];
+
+	@try {
+		_socket = [sock retain];
+		_toRead = contentLength;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
+
+	[super dealloc];
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	return _atEndOfStream;
+}
+
+- (size_t)lowlevelReadIntoBuffer: (void *)buffer
+			  length: (size_t)length
+{
+	size_t ret;
+
+	if (_toRead == 0) {
+		_atEndOfStream = true;
+		return 0;
+	}
+
+	if (length > _toRead)
+		length = (size_t)_toRead;
+
+	ret = [_socket readIntoBuffer: buffer
+			       length: length];
+
+	_toRead -= ret;
+
+	return ret;
+}
+
+- (bool)hasDataInReadBuffer
+{
+	return ([super hasDataInReadBuffer] || [_socket hasDataInReadBuffer]);
+}
+
+- (int)fileDescriptorForReading
+{
+	return [_socket fileDescriptorForReading];
+}
+
+- (void)close
+{
+	[_socket release];
+	_socket = nil;
 }
 @end
 
