@@ -567,6 +567,13 @@ OF_ROOT_CLASS
 + (instancetype)alloc;
 
 /*!
+ * @brief Calls @ref alloc on `self` and then `init` on the returned object.
+ *
+ * @return An allocated and initialized object
+ */
++ (instancetype)new;
+
+/*!
  * @brief Returns the class.
  *
  * @return The class
