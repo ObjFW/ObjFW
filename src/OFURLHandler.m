@@ -27,6 +27,9 @@
 #ifdef OF_HAVE_FILES
 # import "OFURLHandler_file.h"
 #endif
+#ifdef OF_HAVE_SOCKETS
+# import "OFURLHandler_HTTP.h"
+#endif
 
 static OFMutableDictionary OF_GENERIC(OFString *, OFURLHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
@@ -49,6 +52,12 @@ static OFMutex *mutex;
 #ifdef OF_HAVE_FILES
 	[self registerClass: [OFURLHandler_file class]
 		  forScheme: @"file"];
+#endif
+#ifdef OF_HAVE_SOCKETS
+	[self registerClass: [OFURLHandler_HTTP class]
+		  forScheme: @"http"];
+	[self registerClass: [OFURLHandler_HTTP class]
+		  forScheme: @"https"];
 #endif
 }
 
