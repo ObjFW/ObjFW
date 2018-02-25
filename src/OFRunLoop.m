@@ -1046,6 +1046,8 @@ static OFRunLoop *mainRunLoop = nil;
 
 		objc_autoreleasePoolPop(pool);
 	}
+
+	_stop = false;
 }
 
 - (void)stop
