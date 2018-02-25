@@ -314,17 +314,20 @@ parseMode(const char *mode, bool *append)
 - (instancetype)initWithURL: (OFURL *)URL
 		       mode: (OFString *)mode
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFString *fileSystemRepresentation;
+
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-
-		self = [self initWithPath: [URL fileSystemRepresentation]
-				     mode: mode];
-
-		objc_autoreleasePoolPop(pool);
+		fileSystemRepresentation = [URL fileSystemRepresentation];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initWithPath: fileSystemRepresentation
+			     mode: mode];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }

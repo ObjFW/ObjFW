@@ -905,14 +905,14 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	@try {
 		if ([data itemSize] != 1)
 			@throw [OFInvalidArgumentException exception];
-
-		self = [self initWithCString: [data items]
-				    encoding: encoding
-				      length: [data count]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initWithCString: [data items]
+			    encoding: encoding
+			      length: [data count]];
 
 	return self;
 }
@@ -1022,7 +1022,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		OFFile *file;
+		OFFile *file = nil;
 
 		@try {
 			fileSize = [[[OFFileManager defaultManager]
@@ -1041,26 +1041,49 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 			@throw [OFOutOfRangeException exception];
 #endif
 
-		file = [[OFFile alloc] initWithPath: path
-					       mode: @"r"];
+		/*
+		 * We need one extra byte for the terminating zero if we want
+		 * to use -[initWithUTF8StringNoCopy:length:freeWhenDone:].
+		 */
+		if (SIZE_MAX - (size_t)fileSize < 1)
+			@throw [OFOutOfRangeException exception];
+
+		if ((tmp = malloc((size_t)fileSize + 1)) == NULL)
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: (size_t)fileSize];
 
 		@try {
-			tmp = [self allocMemoryWithSize: (size_t)fileSize];
+			file = [[OFFile alloc] initWithPath: path
+						       mode: @"r"];
 
 			[file readIntoBuffer: tmp
 				 exactLength: (size_t)fileSize];
+		} @catch (id e) {
+			free(tmp);
+			@throw e;
 		} @finally {
 			[file release];
 		}
+
+		tmp[(size_t)fileSize] = '\0';
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
-	self = [self initWithCString: tmp
-			    encoding: encoding
-			      length: (size_t)fileSize];
-	[self freeMemory: tmp];
+	if (encoding == OF_STRING_ENCODING_UTF_8)
+		self = [self initWithUTF8StringNoCopy: tmp
+					       length: (size_t)fileSize
+					 freeWhenDone: true];
+	else {
+		@try {
+			self = [self initWithCString: tmp
+					    encoding: encoding
+					      length: (size_t)fileSize];
+		} @finally {
+			free(tmp);
+		}
+	}
 
 	return self;
 }
@@ -1075,28 +1098,31 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 			     encoding: (of_string_encoding_t)encoding
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data;
+
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFData *data = [OFData dataWithContentsOfURL: URL];
-
-		self = [self initWithCString: [data items]
-				    encoding: encoding
-				      length: [data count]];
-
-		objc_autoreleasePoolPop(pool);
+		data = [OFData dataWithContentsOfURL: URL];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initWithCString: [data items]
+			    encoding: encoding
+			      length: [data count]];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	@try {
-		void *pool = objc_autoreleasePoolPush();
+	void *pool = objc_autoreleasePoolPush();
+	OFString *stringValue;
 
+	@try {
 		if (![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
@@ -1108,13 +1134,15 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				@throw [OFInvalidArgumentException exception];
 		}
 
-		self = [self initWithString: [element stringValue]];
-
-		objc_autoreleasePoolPop(pool);
+		stringValue = [element stringValue];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initWithString: stringValue];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }

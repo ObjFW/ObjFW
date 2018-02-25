@@ -600,20 +600,22 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 #ifdef OF_HAVE_FILES
 - (instancetype)initFileURLWithPath: (OFString *)path
 {
+	bool isDirectory;
+
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		bool isDirectory;
 
 		isDirectory = ([path hasSuffix: OF_PATH_DELIMITER_STRING] ||
 		    [OFURLHandler_file of_directoryExistsAtPath: path]);
-		self = [self initFileURLWithPath: path
-				     isDirectory: isDirectory];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initFileURLWithPath: path
+			     isDirectory: isDirectory];
 
 	return self;
 }
@@ -678,20 +680,23 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	@try {
-		void *pool = objc_autoreleasePoolPush();
+	void *pool = objc_autoreleasePoolPush();
+	OFString *stringValue;
 
+	@try {
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		self = [self initWithString: [element stringValue]];
-
-		objc_autoreleasePoolPop(pool);
+		stringValue = [element stringValue];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initWithString: stringValue];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }

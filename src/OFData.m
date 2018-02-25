@@ -182,40 +182,45 @@ _references_to_categories_of_OFData(void)
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
+	char *buffer = NULL;
+	uintmax_t size;
+
 	@try {
-		uintmax_t size = [[[OFFileManager defaultManager]
+		OFFile *file;
+
+		size = [[[OFFileManager defaultManager]
 		    attributesOfItemAtPath: path] fileSize];
-		char *buffer;
 
 # if UINTMAX_MAX > SIZE_MAX
 		if (size > SIZE_MAX)
 			@throw [OFOutOfRangeException exception];
 # endif
 
-		buffer = malloc((size_t)size);
-		if (buffer == NULL)
+		if ((buffer = malloc((size_t)size)) == NULL)
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: (size_t)size];
 
+		file = [[OFFile alloc] initWithPath: path
+					       mode: @"r"];
 		@try {
-			OFFile *file = [[OFFile alloc] initWithPath: path
-							       mode: @"r"];
-			@try {
-				[file readIntoBuffer: buffer
-					 exactLength: (size_t)size];
-			} @finally {
-				[file release];
-			}
-
-			self = [self initWithItemsNoCopy: buffer
-						   count: (size_t)size
-					    freeWhenDone: true];
-		} @catch (id e) {
-			free(buffer);
-			@throw e;
+			[file readIntoBuffer: buffer
+				 exactLength: (size_t)size];
+		} @finally {
+			[file release];
 		}
 	} @catch (id e) {
+		free(buffer);
 		[self release];
+
+		@throw e;
+	}
+
+	@try {
+		self = [self initWithItemsNoCopy: buffer
+					   count: (size_t)size
+				    freeWhenDone: true];
+	} @catch (id e) {
+		free(buffer);
 		@throw e;
 	}
 
@@ -353,23 +358,23 @@ _references_to_categories_of_OFData(void)
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	@try {
-		void *pool = objc_autoreleasePoolPush();
-		OFString *stringValue;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *stringValue;
 
+	@try {
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
 		stringValue = [element stringValue];
-
-		self = [self initWithBase64EncodedString: stringValue];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
+
+	self = [self initWithBase64EncodedString: stringValue];
+
+	objc_autoreleasePoolPop(pool);
 
 	return self;
 }
