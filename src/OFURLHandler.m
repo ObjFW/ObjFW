@@ -27,7 +27,7 @@
 #ifdef OF_HAVE_FILES
 # import "OFURLHandler_file.h"
 #endif
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 # import "OFURLHandler_HTTP.h"
 #endif
 
@@ -53,7 +53,7 @@ static OFMutex *mutex;
 	[self registerClass: [OFURLHandler_file class]
 		  forScheme: @"file"];
 #endif
-#ifdef OF_HAVE_SOCKETS
+#if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self registerClass: [OFURLHandler_HTTP class]
 		  forScheme: @"http"];
 	[self registerClass: [OFURLHandler_HTTP class]
