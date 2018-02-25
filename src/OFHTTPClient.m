@@ -285,6 +285,17 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	[super dealloc];
 }
 
+- (void)raiseException: (id)exception
+{
+	[_client close];
+	_client->_inProgress = false;
+
+	[_client->_delegate client: _client
+	     didEncounterException: exception
+			   request: _request
+			   context: _context];
+}
+
 - (void)createResponseWithSocketOrThrow: (OFTCPSocket *)sock
 {
 	OFURL *URL = [_request URL];
@@ -417,10 +428,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	@try {
 		[self createResponseWithSocketOrThrow: sock];
 	} @catch (id e) {
-		[_client->_delegate client: _client
-		     didEncounterException: e
-				   request: _request
-				   context: _context];
+		[self raiseException: e];
 	}
 }
 
@@ -527,10 +535,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		    [OFInvalidEncodingException class]])
 			exception = [OFInvalidServerReplyException exception];
 
-		[_client->_delegate client: _client
-		     didEncounterException: exception
-				   request: _request
-				   context: _context];
+		[self raiseException: exception];
 		return false;
 	}
 
@@ -542,10 +547,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			ret = [self handleServerHeader: line
 						socket: sock];
 	} @catch (id e) {
-		[_client->_delegate client: _client
-		     didEncounterException: e
-				   request: _request
-				   context: _context];
+		[self raiseException: e];
 		ret = false;
 	}
 
@@ -567,10 +569,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			return 0;
 		}
 
-		[_client->_delegate client: _client
-		     didEncounterException: exception
-				   request: _request
-				   context: _context];
+		[self raiseException: exception];
 		return 0;
 	}
 
@@ -624,10 +623,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					    length:context:exception:)
 			       context: requestString];
 	} @catch (id e) {
-		[_client->_delegate client: _client
-		     didEncounterException: e
-				   request: _request
-				   context: _context];
+		[self raiseException: e];
 		return;
 	}
 }
@@ -637,10 +633,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	       exception: (id)exception
 {
 	if (exception != nil) {
-		[_client->_delegate client: _client
-		     didEncounterException: exception
-				   request: _request
-				   context: _context];
+		[self raiseException: exception];
 		return;
 	}
 
@@ -663,10 +656,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	       exception: (id)exception
 {
 	if (exception != nil) {
-		[_client->_delegate client: _client
-		     didEncounterException: exception
-				   request: _request
-				   context: _context];
+		[self raiseException: exception];
 		return false;
 	}
 
@@ -763,10 +753,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					      exception:)
 				 context: nil];
 	} @catch (id e) {
-		[_client->_delegate client: _client
-		     didEncounterException: e
-				   request: _request
-				   context: _context];
+		[self raiseException: e];
 	}
 }
 @end
