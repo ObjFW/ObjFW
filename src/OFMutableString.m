@@ -87,19 +87,19 @@ static struct {
 							     length: length];
 }
 
-- (instancetype)initWithUTF16String: (const char16_t *)string
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
 }
 
-- (instancetype)initWithUTF16String: (const char16_t *)string
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
 			     length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string
 							      length: length];
 }
 
-- (instancetype)initWithUTF16String: (const char16_t *)string
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
 			  byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -107,7 +107,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF16String: (const char16_t *)string
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
 			     length: (size_t)length
 			  byteOrder: (of_byte_order_t)byteOrder
 {
@@ -117,19 +117,19 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const char32_t *)string
+- (instancetype)initWithUTF32String: (const of_char32_t *)string
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string];
 }
 
-- (instancetype)initWithUTF32String: (const char32_t *)string
+- (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
 {
 	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string
 							      length: length];
 }
 
-- (instancetype)initWithUTF32String: (const char32_t *)string
+- (instancetype)initWithUTF32String: (const of_char32_t *)string
 			  byteOrder: (of_byte_order_t)byteOrder
 {
 	return (id)[[OFMutableString_UTF8 alloc]
@@ -137,7 +137,7 @@ static struct {
 		      byteOrder: byteOrder];
 }
 
-- (instancetype)initWithUTF32String: (const char32_t *)string
+- (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
 			  byteOrder: (of_byte_order_t)byteOrder
 {

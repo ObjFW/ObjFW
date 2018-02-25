@@ -606,14 +606,14 @@ struct {
 	return [self characters];
 }
 
-- (const char16_t *)UTF16String
+- (const of_char16_t *)UTF16String
 {
 	[self finishInitialization];
 
 	return [self UTF16String];
 }
 
-- (const char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char16_t *)UTF16StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	[self finishInitialization];
 
@@ -627,14 +627,14 @@ struct {
 	return [self UTF16StringLength];
 }
 
-- (const char32_t *)UTF32String
+- (const of_char32_t *)UTF32String
 {
 	[self finishInitialization];
 
 	return [self UTF32String];
 }
 
-- (const char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
+- (const of_char32_t *)UTF32StringWithByteOrder: (of_byte_order_t)byteOrder
 {
 	[self finishInitialization];
 

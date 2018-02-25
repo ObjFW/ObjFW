@@ -210,7 +210,7 @@ of_application_main(int *argc, char **argv[],
 		atexit(atexitHandler);
 
 #if defined(OF_WINDOWS)
-		char16_t *env, *env0;
+		of_char16_t *env, *env0;
 		env = env0 = GetEnvironmentStringsW();
 
 		while (*env != 0) {

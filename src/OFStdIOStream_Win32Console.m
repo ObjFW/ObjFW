@@ -107,13 +107,13 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	char *buffer = buffer_;
-	char16_t *UTF16;
+	of_char16_t *UTF16;
 	size_t j = 0;
 
 	if (length > sizeof(UINT32_MAX))
 		@throw [OFOutOfRangeException exception];
 
-	UTF16 = [self allocMemoryWithSize: sizeof(char16_t)
+	UTF16 = [self allocMemoryWithSize: sizeof(of_char16_t)
 				    count: length];
 	@try {
 		DWORD UTF16Len;
@@ -162,7 +162,7 @@
 				@throw [OFInvalidEncodingException exception];
 
 			if ((c & 0xFC00) == 0xD800) {
-				char16_t next;
+				of_char16_t next;
 
 				if (UTF16Len <= i + 1) {
 					_incompleteUTF16Surrogate = c;
@@ -223,7 +223,7 @@
 		       length: (size_t)length
 {
 	const char *buffer = buffer_;
-	char16_t *tmp;
+	of_char16_t *tmp;
 	size_t i = 0, j = 0;
 
 	if (length > SIZE_MAX / 2)
@@ -231,7 +231,7 @@
 
 	if (_incompleteUTF8SurrogateLen > 0) {
 		of_unichar_t c;
-		char16_t UTF16[2];
+		of_char16_t UTF16[2];
 		ssize_t UTF8Len;
 		size_t toCopy;
 		DWORD UTF16Len, bytesWritten;
@@ -291,7 +291,7 @@
 		i += toCopy;
 	}
 
-	tmp = [self allocMemoryWithSize: sizeof(char16_t)
+	tmp = [self allocMemoryWithSize: sizeof(of_char16_t)
 				  count: length * 2];
 	@try {
 		DWORD bytesWritten;

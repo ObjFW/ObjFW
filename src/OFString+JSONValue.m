@@ -107,10 +107,10 @@ skipWhitespacesAndComments(const char **pointer, const char *stop, size_t *line)
 	}
 }
 
-static inline char16_t
+static inline of_char16_t
 parseUnicodeEscape(const char *pointer, const char *stop)
 {
-	char16_t ret = 0;
+	of_char16_t ret = 0;
 
 	if (pointer + 5 >= stop)
 		return 0xFFFF;
@@ -188,7 +188,7 @@ parseString(const char **pointer, const char *stop, size_t *line)
 				break;
 			/* Parse Unicode escape sequence */
 			case 'u':;
-				char16_t c1, c2;
+				of_char16_t c1, c2;
 				of_unichar_t c;
 				size_t l;
 
@@ -307,7 +307,7 @@ parseIdentifier(const char **pointer, const char *stop)
 			buffer[i++] = **pointer;
 			(*pointer)++;
 		} else if (**pointer == '\\') {
-			char16_t c1, c2;
+			of_char16_t c1, c2;
 			of_unichar_t c;
 			size_t l;
 
