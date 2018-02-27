@@ -41,12 +41,12 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param server The HTTP server which received the request
  * @param request The request the HTTP server received
- * @param body A stream to read the body of the request from, if any
+ * @param requestBody A stream to read the body of the request from, if any
  * @param response The response the server will send to the client
  */
 -      (void)server: (OFHTTPServer *)server
   didReceiveRequest: (OFHTTPRequest *)request
-	       body: (nullable OFStream *)body
+	requestBody: (nullable OFStream *)requestBody
 	   response: (OFHTTPResponse *)response;
 
 @optional

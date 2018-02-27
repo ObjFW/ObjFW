@@ -91,15 +91,16 @@ OF_ASSUME_NONNULL_BEGIN
  *	  body for a request.
  *
  * @param client The OFHTTPClient that wants to send the body
- * @param body A stream into which the body should be written
+ * @param requestBody A stream into which the body of the request should be
+ *		      written
  * @param request The request for which the OFHTTPClient wants to send the body
  * @param context The context object that was passed to
  *		  @ref asyncPerformRequest:context:
  */
-- (void)client: (OFHTTPClient *)client
-  requestsBody: (OFStream *)body
-       request: (OFHTTPRequest *)request
-       context: (nullable id)context;
+-     (void)client: (OFHTTPClient *)client
+  wantsRequestBody: (OFStream *)requestBody
+	   request: (OFHTTPRequest *)request
+	   context: (nullable id)context;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient received headers.

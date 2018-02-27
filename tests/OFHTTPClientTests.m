@@ -105,10 +105,10 @@ static OFHTTPResponse *response = nil;
 @end
 
 @implementation TestsAppDelegate (OFHTTPClientTests)
-- (void)client: (OFHTTPClient *)client
-  requestsBody: (OFStream *)body
-       request: (OFHTTPRequest *)request
-       context: (id)context
+-     (void)client: (OFHTTPClient *)client
+  wantsRequestBody: (OFStream *)body
+	   request: (OFHTTPRequest *)request
+	   context: (id)context
 {
 	[body writeString: @"Hello"];
 }

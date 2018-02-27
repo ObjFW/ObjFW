@@ -576,14 +576,14 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	_firstLine = true;
 
 	if ([[_request headers] objectForKey: @"Content-Length"] != nil) {
-		OFStream *stream = [[[OFHTTPClientRequestBodyStream alloc]
+		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
 		    initWithHandler: self
 			     socket: sock] autorelease];
 
 		if ([_client->_delegate respondsToSelector:
-		    @selector(client:requestsBody:request:context:)])
+		    @selector(client:wantsRequestBody:request:context:)])
 			[_client->_delegate client: _client
-				      requestsBody: stream
+				  wantsRequestBody: requestBody
 					   request: _request
 					   context: _context];
 
@@ -1150,17 +1150,17 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			    context: context];
 }
 
-- (void)client: (OFHTTPClient *)client
-  requestsBody: (OFStream *)body
-       request: (OFHTTPRequest *)request
-       context: (id)context
+-     (void)client: (OFHTTPClient *)client
+  wantsRequestBody: (OFStream *)body
+	   request: (OFHTTPRequest *)request
+	   context: (id)context
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:requestsBody:request:context:)])
-		[_delegate client: client
-		     requestsBody: body
-			  request: request
-			  context: context];
+	    @selector(client:wantsRequestBody:request:context:)])
+		[_delegate    client: client
+		    wantsRequestBody: body
+			     request: request
+			     context: context];
 }
 
 -      (void)client: (OFHTTPClient *)client

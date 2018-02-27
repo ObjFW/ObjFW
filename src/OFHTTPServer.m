@@ -85,7 +85,7 @@
 	uint16_t _port;
 	OFMutableDictionary *_headers;
 	size_t _contentLength;
-	OFStream *_body;
+	OFStream *_requestBody;
 }
 
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
@@ -402,7 +402,7 @@ normalizedKey(OFString *key)
 	[_host release];
 	[_path release];
 	[_headers release];
-	[_body release];
+	[_requestBody release];
 
 	[super dealloc];
 }
@@ -511,9 +511,9 @@ normalizedKey(OFString *key)
 			if (contentLength < 0)
 				return [self sendErrorAndClose: 400];
 
-			[_body release];
-			_body = nil;
-			_body = [[OFHTTPServerRequestBodyStream alloc]
+			[_requestBody release];
+			_requestBody = nil;
+			_requestBody = [[OFHTTPServerRequestBodyStream alloc]
 			    initWithSocket: _socket
 			     contentLength: contentLength];
 
@@ -651,7 +651,7 @@ normalizedKey(OFString *key)
 
 	[[_server delegate] server: _server
 		 didReceiveRequest: request
-			      body: _body
+		       requestBody: _requestBody
 			  response: response];
 
 	objc_autoreleasePoolPop(pool);

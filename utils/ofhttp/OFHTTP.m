@@ -511,10 +511,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[sock setCertificateVerificationEnabled: false];
 }
 
-- (void)client: (OFHTTPClient *)client
-  requestsBody: (OFStream *)body
-       request: (OFHTTPRequest *)request
-       context: (id)context
+-     (void)client: (OFHTTPClient *)client
+  wantsRequestBody: (OFStream *)body
+	   request: (OFHTTPRequest *)request
+	   context: (id)context
 {
 	/* TODO: Do asynchronously and print status */
 	while (![_body isAtEndOfStream]) {
