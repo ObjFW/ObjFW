@@ -24,6 +24,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidEncodingException.h"
 #import "OFOpenItemFailedException.h"
@@ -127,6 +128,10 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	@try {
 #ifndef OF_MORPHOS
 		char *locale, *messagesLocale = NULL;
+
+		if (sharedLocalization != nil)
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: [OFLocalization class]];
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_decimalPoint = @".";
