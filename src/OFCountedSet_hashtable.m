@@ -137,17 +137,26 @@
 				   namespace: OF_SERIALIZATION_NS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *object;
-			OFXMLAttribute *count_;
-			size_t count;
+			OFXMLAttribute *countAttribute;
+			intmax_t signedCount;
+			uintmax_t count;
 
 			object = [[objectElement elementsForNamespace:
 			    OF_SERIALIZATION_NS] firstObject];
-			count_ = [objectElement attributeForName: @"count"];
+			countAttribute =
+			    [objectElement attributeForName: @"count"];
 
-			if (object == nil || count_ == nil)
+			if (object == nil || countAttribute == nil)
 				@throw [OFInvalidFormatException exception];
 
-			count = (size_t)[[count_ stringValue] decimalValue];
+			signedCount =
+			    [[countAttribute stringValue] decimalValue];
+			if (signedCount < 0)
+			       @throw [OFOutOfRangeException exception];
+
+			count = signedCount;
+			if (count > SIZE_MAX || count > UINTPTR_MAX)
+				@throw [OFOutOfRangeException exception];
 
 			[_mapTable setObject: (void *)(uintptr_t)count
 				      forKey: [object objectByDeserializing]];
