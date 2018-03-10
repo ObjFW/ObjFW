@@ -54,14 +54,16 @@
 # include <ws2tcpip.h>
 #endif
 
-#ifdef OF_MORPHOS
-typedef long socklen_t;
-
+#ifdef OF_AMIGAOS
 struct sockaddr_storage {
 	uint8_t ss_len;
 	uint8_t ss_family;
 	char ss_data[2 + sizeof(struct in_addr) + 8];
 };
+#endif
+
+#ifdef OF_MORPHOS
+typedef long socklen_t;
 #endif
 
 #ifdef OF_MORPHOS_IXEMUL
