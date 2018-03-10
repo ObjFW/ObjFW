@@ -302,11 +302,11 @@ AS_IF([test x"$PLUGIN_SUFFIX" != x""], [
 ])
 
 AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
-AC_EGREP_CPP(yes, [
+AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdlib.h>
 
 	#if defined(__GLIBC__) || defined(__MINGW32__) || defined(__NEWLIB__)
-	yes
+	egrep_cpp_yes
 	#endif
 ], [
 	CPPFLAGS="-D_GNU_SOURCE $CPPFLAGS"
@@ -331,11 +331,11 @@ AC_ARG_ENABLE(seluid24,
 		[use 24 bit instead of 16 bit for selector UIDs]))
 AS_IF([test x"$enable_runtime" != x"yes"], [
 	AS_IF([test x"$ac_cv_header_objc_objc_h" = x"yes"], [
-		AC_EGREP_CPP(yes, [
+		AC_EGREP_CPP(egrep_cpp_yes, [
 			#import <objc/objc.h>
 
 			#ifdef OBJC_BOOL_DEFINED
-			yes
+			egrep_cpp_yes
 			#endif
 		], [
 			objc_runtime="Apple runtime"
@@ -527,24 +527,24 @@ AS_IF([test x"$ac_cv_c_bigendian" = x"universal"], [
 ])
 
 AC_MSG_CHECKING(for SIZE_MAX)
-AC_EGREP_CPP(yes, [
+AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdint.h>
 	#include <limits.h>
 
 	#ifdef SIZE_MAX
-	yes
+	egrep_cpp_yes
 	#endif
 ], [
 	AC_MSG_RESULT(yes)
 ], [
 	AC_MSG_RESULT(no)
 	AC_MSG_CHECKING(for SIZE_T_MAX)
-	AC_EGREP_CPP(yes, [
+	AC_EGREP_CPP(egrep_cpp_yes, [
 		#include <stdint.h>
 		#include <limits.h>
 
 		#ifdef SIZE_T_MAX
-		yes
+		egrep_cpp_yes
 		#endif
 	], [
 		AC_MSG_RESULT(yes)
@@ -556,12 +556,12 @@ AC_EGREP_CPP(yes, [
 	AC_DEFINE_UNQUOTED(SIZE_MAX, $size_max, [Maximum value for size_t])
 ])
 AC_MSG_CHECKING(for SSIZE_MAX)
-AC_EGREP_CPP(yes, [
+AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdint.h>
 	#include <limits.h>
 
 	#ifdef SSIZE_MAX
-	yes
+	egrep_cpp_yes
 	#endif
 ], [
 	AC_MSG_RESULT(yes)
@@ -571,12 +571,12 @@ AC_EGREP_CPP(yes, [
 		[Maximum value for ssize_t])
 ])
 AC_MSG_CHECKING(for UINTPTR_MAX)
-AC_EGREP_CPP(yes, [
+AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdint.h>
 	#include <limits.h>
 
 	#ifdef UINTPTR_MAX
-	yes
+	egrep_cpp_yes
 	#endif
 ], [
 	AC_MSG_RESULT(yes)
@@ -934,12 +934,12 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	atomic_ops="none"
 
 	AC_MSG_CHECKING(whether we have an atomic ops assembly implementation)
-	AC_EGREP_CPP(yes, [
+	AC_EGREP_CPP(egrep_cpp_yes, [
 		#if defined(__GNUC__) && (defined(__i386__) || \
 			defined(__x86_64__) || defined(__amd64__)) || \
 			((defined(__ppc__) || defined(__PPC__) || \
 			defined(__powerpc__)) && !defined(__APPLE_CC__))
-		yes
+		egrep_cpp_yes
 		#endif
 	], [
 		AC_MSG_RESULT(yes)
@@ -1091,7 +1091,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
-		AC_EGREP_CPP(yes, [
+		AC_EGREP_CPP(egrep_cpp_yes, [
 			#ifdef OF_HAVE_SYS_SOCKET_H
 			# include <sys/socket.h>
 			#endif
@@ -1108,7 +1108,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 			#endif
 
 			#ifdef AF_INET6
-			yes
+			egrep_cpp_yes
 			#endif
 		], [
 			AC_DEFINE(OF_HAVE_IPV6, 1, [Whether we have IPv6])
@@ -1232,7 +1232,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 			AS_IF([test x"$have_threadsafe_getaddrinfo" = \
 					x"unknown"], [
-				AC_EGREP_CPP(yes, [
+				AC_EGREP_CPP(egrep_cpp_yes, [
 					#ifdef OF_HAVE_SYS_TYPES_H
 					# include <sys/types.h>
 					#endif
@@ -1249,7 +1249,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 					#endif
 
 					#ifdef h_errno
-					yes
+					egrep_cpp_yes
 					#end
 				], [
 					have_threadsafe_getaddrinfo="yes"
