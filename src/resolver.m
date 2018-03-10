@@ -197,7 +197,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 					error: h_errno];
 
 		count = 0;
-		for (ip = he->h_addr_list; *ip != NULL; ip++)
+		for (ip = (char **)he->h_addr_list; *ip != NULL; ip++)
 			count++;
 
 		if (count == 0)
@@ -224,7 +224,7 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 		}
 
 		for (retIter = ret, resultsIter = results, addrsIter = addrs,
-		    ip = he->h_addr_list; *ip != NULL;
+		    ip = (char **)he->h_addr_list; *ip != NULL;
 		    retIter++, resultsIter++, addrsIter++, ip++) {
 			addrsIter->sin_family = he->h_addrtype;
 			addrsIter->sin_port = OF_BSWAP16_IF_LE(port);
