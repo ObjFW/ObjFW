@@ -1,3 +1,4 @@
+#undef INFINITY
 #undef OF_APPLE_RUNTIME
 #undef OF_BIG_ENDIAN
 #undef OF_FLOAT_BIG_ENDIAN
@@ -38,3 +39,4 @@
 #undef OF_OBJFW_RUNTIME
 #undef OF_UNIVERSAL
 #undef SIZE_MAX
+#undef UINTPTR_MAX
