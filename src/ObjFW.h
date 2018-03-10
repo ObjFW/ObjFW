@@ -50,6 +50,7 @@
 #import "OFDate.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
+#import "OFColor.h"
 
 #import "OFStream.h"
 #import "OFStdIOStream.h"

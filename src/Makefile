@@ -15,6 +15,7 @@ SRCS = OFApplication.m			\
        OFAutoreleasePool.m		\
        OFBlock.m			\
        OFCharacterSet.m			\
+       OFColor.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\

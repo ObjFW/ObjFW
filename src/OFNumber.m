@@ -1086,7 +1086,7 @@
 
 		d.d = OF_BSWAP_DOUBLE_IF_BE([self doubleValue]);
 
-		for (uint8_t i = 0; i < sizeof(double); i++)
+		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, d.b[i]);
 	} else if (type & OF_NUMBER_TYPE_SIGNED) {
 		intmax_t v = [self intMaxValue] * -1;
