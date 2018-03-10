@@ -614,6 +614,33 @@ AS_IF([test x"$fp_endianess" = x"unknown"], [
 	AC_MSG_ERROR(
 		[Floating point implementation does not conform to IEEE 754!])])
 
+AC_MSG_CHECKING(for INFINITY)
+AC_TRY_COMPILE([
+	#include <stdio.h>
+	#include <math.h>
+], [
+	printf("%f", INFINITY);
+], [
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+
+	AC_MSG_CHECKING(for __builtin_inf)
+	AC_TRY_COMPILE([
+		#include <stdio.h>
+	], [
+		printf("%f", __builtin_inf());
+	], [
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(INFINITY, [(__builtin_inf())],
+			[Workaround for missing INFINITY])
+	], [
+		AC_MSG_RESULT(no)
+
+		AC_MSG_ERROR([Neither INFINITY or __builtin_inf was found!])
+	])
+])
+
 case "$host_cpu" in
 	arm* | earm*)
 		AC_MSG_CHECKING(if VFP2 or above is available)
