@@ -932,6 +932,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		return [_socket readIntoBuffer: buffer
 					length: length];
 
+	if ([_socket isAtEndOfStream])
+		@throw [OFTruncatedDataException exception];
+
 	/* Content-Length */
 	if (!_chunked) {
 		size_t ret;
