@@ -551,6 +551,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[stringByPrependingString:]",
 	    [[C(@"foo") stringByPrependingString: @"bar"] isEqual: @"barfoo"])
 
+#ifdef OF_HAVE_FILES
 	s[0] = [mutableStringClass stringWithString: @"foo"];
 	[s[0] appendString: OF_PATH_DELIMITER_STRING];
 	[s[0] appendString: @"bar"];
@@ -561,6 +562,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[stringByAppendingPathComponent:]",
 	    [[s[0] stringByAppendingPathComponent: @"baz"] isEqual: s[1]] &&
 	    [[is stringByAppendingPathComponent: @"baz"] isEqual: s[1]])
+#endif
 
 	s[0] = [mutableStringClass stringWithString: @"foo"];
 	[s[0] appendString: @"/"];
@@ -600,11 +602,12 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"])
 
-#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-# define EXPECTED @"foo/bar/baz"
-#else
-# define EXPECTED @"foo\\bar\\baz"
-#endif
+#ifdef OF_HAVE_FILES
+# if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
+#  define EXPECTED @"foo/bar/baz"
+# else
+#  define EXPECTED @"foo\\bar\\baz"
+# endif
 	TEST(@"+[pathWithComponents:]",
 	    (is = [stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]]) &&
@@ -612,7 +615,7 @@ static uint16_t sutf16str[] = {
 	    (is = [stringClass pathWithComponents:
 	    [OFArray arrayWithObjects: @"foo", nil]]) &&
 	    [is isEqual: @"foo"])
-#undef EXPECTED
+# undef EXPECTED
 
 	TEST(@"-[pathComponents]",
 	    /* /tmp */
@@ -665,11 +668,11 @@ static uint16_t sutf16str[] = {
 	    [[C(@"/") stringByDeletingLastPathComponent] isEqual: @"/"] &&
 	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."])
 
-#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-# define EXPECTED @"/foo./bar"
-#else
-# define EXPECTED @"\\foo.\\bar"
-#endif
+# if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
+#  define EXPECTED @"/foo./bar"
+# else
+#  define EXPECTED @"\\foo.\\bar"
+# endif
 	TEST(@"-[stringByDeletingPathExtension]",
 	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
@@ -680,7 +683,8 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
 	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
-#undef EXPECTED
+# undef EXPECTED
+#endif
 
 	TEST(@"-[decimalValue]",
 	    [C(@"1234") decimalValue] == 1234 &&

@@ -120,6 +120,9 @@ _references_to_categories_of_OFString(void)
 {
 	_OFString_CryptoHashing_reference = 1;
 	_OFString_JSONValue_reference = 1;
+#ifdef OF_HAVE_FILES
+	_OFString_PathAdditions_reference = 1;
+#endif
 	_OFString_Serialization_reference = 1;
 	_OFString_URLEncoding_reference = 1;
 	_OFString_XMLEscaping_reference = 1;
@@ -283,68 +286,6 @@ of_string_utf32_length(const of_char32_t *string)
 		length++;
 
 	return length;
-}
-
-static OFString *
-standardizePath(OFArray *components, OFString *currentDirectory,
-    OFString *parentDirectory, OFString *joinString)
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFMutableArray *array;
-	OFString *ret;
-	bool done = false, startsWithEmpty, endsWithEmpty;
-
-	array = [[components mutableCopy] autorelease];
-
-	if ((startsWithEmpty = [[array firstObject] isEqual: @""]))
-		[array removeObjectAtIndex: 0];
-	endsWithEmpty = [[array lastObject] isEqual: @""];
-
-	while (!done) {
-		size_t length = [array count];
-
-		done = true;
-
-		for (size_t i = 0; i < length; i++) {
-			id object = [array objectAtIndex: i];
-			id parent;
-
-			if (i > 0)
-				parent = [array objectAtIndex: i - 1];
-			else
-				parent = nil;
-
-			if ([object isEqual: currentDirectory] ||
-			   [object length] == 0) {
-				[array removeObjectAtIndex: i];
-
-				done = false;
-				break;
-			}
-
-			if ([object isEqual: parentDirectory] &&
-			    parent != nil &&
-			    ![parent isEqual: parentDirectory]) {
-				[array removeObjectsInRange:
-				    of_range(i - 1, 2)];
-
-				done = false;
-				break;
-			}
-		}
-	}
-
-	if (startsWithEmpty)
-		[array insertObject: @""
-			    atIndex: 0];
-	if (endsWithEmpty)
-		[array addObject: @""];
-
-	ret = [[array componentsJoinedByString: joinString] retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
 }
 
 static OFString *
@@ -811,23 +752,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 					   encoding: encoding] autorelease];
 }
 #endif
-
-+ (OFString *)pathWithComponents: (OFArray *)components
-{
-	OFMutableString *ret = [OFMutableString string];
-	bool first = true;
-
-	for (OFString *component in components) {
-		if (!first)
-			[ret appendString: OF_PATH_DELIMITER_STRING];
-
-		[ret appendString: component];
-
-		first = false;
-	}
-
-	return ret;
-}
 
 - (instancetype)init
 {
@@ -2070,22 +1994,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return new;
 }
 
-- (OFString *)stringByAppendingPathComponent: (OFString *)component
-{
-	if ([self hasSuffix: OF_PATH_DELIMITER_STRING])
-		return [self stringByAppendingString: component];
-	else {
-		OFMutableString *ret = [[self mutableCopy] autorelease];
-
-		[ret appendString: OF_PATH_DELIMITER_STRING];
-		[ret appendString: component];
-
-		[ret makeImmutable];
-
-		return ret;
-	}
-}
-
 - (OFString *)stringByAppendingURLPathComponent: (OFString *)component
 {
 	if ([self hasSuffix: @"/"])
@@ -2328,188 +2236,66 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return array;
 }
 
-- (OFArray *)pathComponents
-{
-	OFMutableArray *ret;
-	void *pool;
-	const of_unichar_t *characters;
-	size_t i, last = 0, length = [self length];
-
-	ret = [OFMutableArray array];
-
-	if (length == 0)
-		return ret;
-
-	pool = objc_autoreleasePoolPush();
-
-	characters = [self characters];
-
-	if (OF_IS_PATH_DELIMITER(characters[length - 1]))
-		length--;
-
-	for (i = 0; i < length; i++) {
-		if (OF_IS_PATH_DELIMITER(characters[i])) {
-			[ret addObject: [self substringWithRange:
-			    of_range(last, i - last)]];
-
-			last = i + 1;
-		}
-	}
-	[ret addObject: [self substringWithRange: of_range(last, i - last)]];
-
-	[ret makeImmutable];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-
-- (OFString *)lastPathComponent
-{
-	void *pool;
-	const of_unichar_t *characters;
-	size_t length = [self length];
-	ssize_t i;
-
-	if (length == 0)
-		return @"";
-
-	pool = objc_autoreleasePoolPush();
-
-	characters = [self characters];
-
-	if (OF_IS_PATH_DELIMITER(characters[length - 1]))
-		length--;
-
-	if (length == 0) {
-		objc_autoreleasePoolPop(pool);
-
-		return @"";
-	}
-
-	if (length - 1 > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	for (i = length - 1; i >= 0; i--) {
-		if (OF_IS_PATH_DELIMITER(characters[i])) {
-			i++;
-			break;
-		}
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	/*
-	 * Only one component, but the trailing delimiter might have been
-	 * removed, so return a new string anyway.
-	 */
-	if (i < 0)
-		i = 0;
-
-	return [self substringWithRange: of_range(i, length - i)];
-}
-
-- (OFString *)pathExtension
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFString *ret, *fileName;
-	size_t pos;
-
-	fileName = [self lastPathComponent];
-	pos = [fileName rangeOfString: @"."
-			      options: OF_STRING_SEARCH_BACKWARDS].location;
-	if (pos == OF_NOT_FOUND || pos == 0)
-		return @"";
-
-	ret = [fileName substringWithRange:
-	    of_range(pos + 1, [fileName length] - pos - 1)];
-
-	[ret retain];
-	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
-}
-
-- (OFString *)stringByDeletingLastPathComponent
-{
-	void *pool;
-	const of_unichar_t *characters;
-	size_t length = [self length];
-
-	if (length == 0)
-		return @"";
-
-	pool = objc_autoreleasePoolPush();
-
-	characters = [self characters];
-
-	if (OF_IS_PATH_DELIMITER(characters[length - 1]))
-		length--;
-
-	if (length == 0) {
-		objc_autoreleasePoolPop(pool);
-		return [self substringWithRange: of_range(0, 1)];
-	}
-
-	for (size_t i = length - 1; i >= 1; i--) {
-		if (OF_IS_PATH_DELIMITER(characters[i])) {
-			objc_autoreleasePoolPop(pool);
-			return [self substringWithRange: of_range(0, i)];
-		}
-	}
-
-	if (OF_IS_PATH_DELIMITER(characters[0])) {
-		objc_autoreleasePoolPop(pool);
-		return [self substringWithRange: of_range(0, 1)];
-	}
-
-	objc_autoreleasePoolPop(pool);
-
-	return OF_PATH_CURRENT_DIRECTORY;
-}
-
-- (OFString *)stringByDeletingPathExtension
-{
-	void *pool;
-	OFMutableArray *components;
-	OFString *ret, *fileName;
-	size_t pos;
-
-	if ([self length] == 0)
-		return [[self copy] autorelease];
-
-	pool = objc_autoreleasePoolPush();
-	components = [[[self pathComponents] mutableCopy] autorelease];
-	fileName = [components lastObject];
-
-	pos = [fileName rangeOfString: @"."
-			      options: OF_STRING_SEARCH_BACKWARDS].location;
-	if (pos == OF_NOT_FOUND || pos == 0) {
-		objc_autoreleasePoolPop(pool);
-		return [[self copy] autorelease];
-	}
-
-	fileName = [fileName substringWithRange: of_range(0, pos)];
-	[components replaceObjectAtIndex: [components count] - 1
-			      withObject: fileName];
-
-	ret = [OFString pathWithComponents: components];
-
-	[ret retain];
-	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
-}
-
-- (OFString *)stringByStandardizingPath
-{
-	return standardizePath([self pathComponents],
-	    OF_PATH_CURRENT_DIRECTORY, OF_PATH_PARENT_DIRECTORY,
-	    OF_PATH_DELIMITER_STRING);
-}
-
 - (OFString *)stringByStandardizingURLPath
 {
-	return standardizePath([self componentsSeparatedByString: @"/"],
-	    @".", @"..", @"/");
+	void *pool = objc_autoreleasePoolPush();
+	OFArray OF_GENERIC(OFString *) *components =
+	    [self componentsSeparatedByString: @"/"];
+	OFMutableArray OF_GENERIC(OFString *) *array;
+	OFString *ret;
+	bool done = false, startsWithEmpty, endsWithEmpty;
+
+	array = [[components mutableCopy] autorelease];
+
+	if ((startsWithEmpty = [[array firstObject] isEqual: @""]))
+		[array removeObjectAtIndex: 0];
+	endsWithEmpty = [[array lastObject] isEqual: @""];
+
+	while (!done) {
+		size_t length = [array count];
+
+		done = true;
+
+		for (size_t i = 0; i < length; i++) {
+			id object = [array objectAtIndex: i];
+			id parent;
+
+			if (i > 0)
+				parent = [array objectAtIndex: i - 1];
+			else
+				parent = nil;
+
+			if ([object isEqual: @"."] ||
+			   [object length] == 0) {
+				[array removeObjectAtIndex: i];
+
+				done = false;
+				break;
+			}
+
+			if ([object isEqual: @".."] &&
+			    parent != nil &&
+			    ![parent isEqual: @".."]) {
+				[array removeObjectsInRange:
+				    of_range(i - 1, 2)];
+
+				done = false;
+				break;
+			}
+		}
+	}
+
+	if (startsWithEmpty)
+		[array insertObject: @""
+			    atIndex: 0];
+	if (endsWithEmpty)
+		[array addObject: @""];
+
+	ret = [[array componentsJoinedByString: @"/"] retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (intmax_t)decimalValue

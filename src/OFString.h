@@ -139,21 +139,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) size_t UTF8StringLength;
 
 /*!
- * @brief The components of the string when interpreted as a path.
- */
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *pathComponents;
-
-/*!
- * @brief The last path component of the string when interpreted as a path.
- */
-@property (readonly, nonatomic) OFString *lastPathComponent;
-
-/*!
- * @brief The file extension of string when interpreted as a path.
- */
-@property (readonly, nonatomic) OFString *pathExtension;
-
-/*!
  * @brief The string in uppercase.
  */
 @property (readonly, nonatomic) OFString *uppercaseString;
@@ -226,21 +211,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  * OFInvalidEncodingException is thrown.
  */
 @property (readonly, nonatomic) double doubleValue;
-
-/*!
- * @brief The directory name of the string when interpreted as a path.
- */
-@property (readonly, nonatomic) OFString *stringByDeletingLastPathComponent;
-
-/*!
- * @brief The string with the file extension of the path removed.
- */
-@property (readonly, nonatomic) OFString *stringByDeletingPathExtension;
-
-/*!
- * @brief The string interpreted as a path with relative sub paths resolved.
- */
-@property (readonly, nonatomic) OFString *stringByStandardizingPath;
 
 /*!
  * @brief The string interpreted as a URL path with relative sub paths resolved.
@@ -575,14 +545,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 + (instancetype)stringWithContentsOfURL: (OFURL *)URL
 			       encoding: (of_string_encoding_t)encoding;
 #endif
-
-/*!
- * @brief Creates a path from the specified path components.
- *
- * @param components An array of components for the path
- * @return A new autoreleased OFString
- */
-+ (OFString *)pathWithComponents: (OFArray OF_GENERIC(OFString *) *)components;
 
 /*!
  * @brief Initializes an already allocated OFString from a UTF-8 encoded C
@@ -1077,14 +1039,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 			    arguments: (va_list)arguments;
 
 /*!
- * @brief Creates a new string by appending a path component.
- *
- * @param component The path component to append
- * @return A new, autoreleased OFString with the path component appended
- */
-- (OFString *)stringByAppendingPathComponent: (OFString *)component;
-
-/*!
  * @brief Creates a new string by appending a URL path component.
  *
  * @param component The URL path component to append
@@ -1265,6 +1219,9 @@ OF_ASSUME_NONNULL_END
 #import "OFMutableString.h"
 #import "OFString+CryptoHashing.h"
 #import "OFString+JSONValue.h"
+#ifdef OF_HAVE_FILES
+# import "OFString+PathAdditions.h"
+#endif
 #import "OFString+Serialization.h"
 #import "OFString+URLEncoding.h"
 #import "OFString+XMLEscaping.h"

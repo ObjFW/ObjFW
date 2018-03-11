@@ -410,11 +410,11 @@ main(int argc, char *argv[])
 	[self SHA384HashTests];
 	[self SHA512HashTests];
 	[self HMACTests];
+#endif
 	[self PBKDF2Tests];
 	[self scryptTests];
-# ifdef HAVE_CODEPAGE_437
+#if defined(OF_HAVE_FILES) && defined(HAVE_CODEPAGE_437)
 	[self INIFileTests];
-# endif
 #endif
 #ifdef OF_HAVE_SOCKETS
 	[self TCPSocketTests];

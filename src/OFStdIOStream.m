@@ -79,7 +79,11 @@ of_log(OFConstantString *format, ...)
 
 	date = [OFDate date];
 	dateString = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
+#ifdef OF_HAVE_FILES
 	me = [[OFApplication programName] lastPathComponent];
+#else
+	me = [OFApplication programName];
+#endif
 
 	va_start(arguments, format);
 	msg = [[[OFString alloc] initWithFormat: format

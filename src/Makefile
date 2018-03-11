@@ -118,7 +118,8 @@ SRCS_FILES = OFFile.m			\
 	     OFFileManager.m		\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
-	     OFSettings.m
+	     OFSettings.m		\
+	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFHTTPServer.m			\
 	       OFStreamSocket.m			\
