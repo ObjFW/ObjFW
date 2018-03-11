@@ -171,13 +171,14 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return numberOfCPUs;
 }
 
+#ifdef OF_HAVE_FILES
 + (OFString *)userDataPath
 {
-#if defined(OF_MACOS) || defined(OF_IOS)
+# if defined(OF_MACOS) || defined(OF_IOS)
 	char pathC[PATH_MAX];
 	OFMutableString *path;
 
-# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+#  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
 	/* (1) to disable dead code warning when it is not a weak symbol */
 	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
 		sysdir_search_path_enumeration_state state;
@@ -190,7 +191,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			    exceptionWithSelector: _cmd
 					   object: self];
 	} else {
-# endif
+#  endif
 		NSSearchPathEnumerationState state;
 
 		state = NSStartSearchPathEnumeration(
@@ -199,9 +200,9 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: self];
-# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+#  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
 	}
-# endif
+#  endif
 
 	path = [OFMutableString stringWithUTF8String: pathC];
 	if ([path hasPrefix: @"~"]) {
@@ -220,7 +221,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[path makeImmutable];
 
 	return path;
-#elif defined(OF_WINDOWS)
+# elif defined(OF_WINDOWS)
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
 
@@ -229,7 +230,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return appData;
-#elif defined(OF_HAIKU)
+# elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, 0, false,
@@ -238,7 +239,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#else
+# else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
 	void *pool;
@@ -259,16 +260,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	objc_autoreleasePoolPop(pool);
 
 	return [var autorelease];
-#endif
+# endif
 }
 
 + (OFString *)userConfigPath
 {
-#if defined(OF_MACOS) || defined(OF_IOS)
+# if defined(OF_MACOS) || defined(OF_IOS)
 	char pathC[PATH_MAX];
 	OFMutableString *path;
 
-# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+#  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
 	/* (1) to disable dead code warning when it is not a weak symbol */
 	if ((1) && &sysdir_start_search_path_enumeration != NULL) {
 		sysdir_search_path_enumeration_state state;
@@ -280,7 +281,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			    exceptionWithSelector: _cmd
 					   object: self];
 	} else {
-# endif
+#  endif
 		NSSearchPathEnumerationState state;
 
 		state = NSStartSearchPathEnumeration(NSLibraryDirectory,
@@ -289,9 +290,9 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: self];
-# ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
+#  ifdef HAVE_SYSDIR_START_SEARCH_PATH_ENUMERATION
 	}
-# endif
+#  endif
 
 	path = [OFMutableString stringWithUTF8String: pathC];
 	if ([path hasPrefix: @"~"]) {
@@ -312,7 +313,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	[path makeImmutable];
 
 	return path;
-#elif defined(OF_WINDOWS)
+# elif defined(OF_WINDOWS)
 	OFDictionary *env = [OFApplication environment];
 	OFString *appData;
 
@@ -321,7 +322,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return appData;
-#elif defined(OF_HAIKU)
+# elif defined(OF_HAIKU)
 	char pathC[PATH_MAX];
 
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, 0, false,
@@ -330,7 +331,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
-#else
+# else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
 
@@ -343,8 +344,9 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [var stringByAppendingPathComponent: @".config"];
-#endif
+# endif
 }
+#endif
 
 + (OFString *)CPUVendor
 {

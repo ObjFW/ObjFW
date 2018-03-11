@@ -29,8 +29,10 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) size_t pageSize;
 @property (class, readonly, nonatomic) size_t numberOfCPUs;
+# ifdef OF_HAVE_FILES
 @property (class, readonly, nullable, nonatomic) OFString *userDataPath;
 @property (class, readonly, nullable, nonatomic) OFString *userConfigPath;
+# endif
 @property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
 # if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsMMX;
@@ -64,6 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (size_t)numberOfCPUs;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief Returns the path where user data for the application can be stored.
  *
@@ -89,6 +92,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The path where user configuration for the application can be stored
  */
 + (nullable OFString *)userConfigPath;
+#endif
 
 /*!
  * @brief Returns the vendor of the CPU.
