@@ -66,12 +66,13 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
-            if ! sudo apt-get -qq update >apt_log 2>&1; then
-                    cat apt_log;
+            if ! sudo apt-get -qq update >/tmp/apt_log 2>&1; then
+                    cat /tmp/apt_log;
                     exit 1;
             fi;
-            if ! sudo apt-get -qq install -y gobjc-multilib >apt_log 2>&1; then
-                    cat apt_log;
+            if ! sudo apt-get -qq install -y gobjc-multilib >/tmp/apt_log 2>&1;
+            then
+                    cat /tmp/apt_log;
                     exit 1;
             fi;
     fi
@@ -115,8 +116,8 @@ script:
   - echo -e '%s/-DSTDOUT$/&_SIMPLE/\nwq' | ed -s tests/Makefile
 
   - build() {
-            if ! git clean -fxd >clean_log 2>&1; then
-                    cat clean_log;
+            if ! git clean -fxd >/tmp/clean_log 2>&1; then
+                    cat /tmp/clean_log;
                     exit 1;
             fi;
             echo ">> Configuring with $@";
@@ -126,13 +127,13 @@ script:
                     exit 1;
             fi;
             echo ">> Building (configured with $@)";
-            if ! make -j4 >make_log 2>&1; then
-                    cat make_log;
+            if ! make -j4 >/tmp/make_log 2>&1; then
+                    cat /tmp/make_log;
                     exit 1;
             fi;
             echo ">> Installing (configured with $@)";
-            if ! sudo PATH="$PATH" make install >install_log 2>&1; then
-                    cat install_log;
+            if ! sudo PATH="$PATH" make install >/tmp/install_log 2>&1; then
+                    cat /tmp/install_log;
                     exit 1;
             fi;
     }
