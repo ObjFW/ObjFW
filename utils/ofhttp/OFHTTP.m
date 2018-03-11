@@ -535,9 +535,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	      response: (OFHTTPResponse *)response
 	       context: (id)context
 {
-	if (!_quiet)
-		[of_stdout writeFormat: @" ➜ %d\n", statusCode];
-
 	if (_verbose) {
 		void *pool = objc_autoreleasePoolPush();
 		OFDictionary OF_GENERIC(OFString *, OFString *) *headers =
@@ -634,10 +631,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"error", error,
 		    @"exception", e)];
 	} else if ([e isKindOfClass: [OFHTTPRequestFailedException class]]) {
-		if (!_quiet)
-			[of_stdout writeFormat: @" ➜ %d\n",
-						[[e response] statusCode]];
-
 		[of_stderr writeLine: OF_LOCALIZED(@"download_failed",
 		    @"%[prog]: Failed to download <%[url]>!",
 		    @"prog", [OFApplication programName],
@@ -710,41 +703,23 @@ next:
 }
 
 -      (void)client: (OFHTTPClient *)client
-  didPerformRequest: (OFHTTPRequest *)request
-	   response: (OFHTTPResponse *)response
+  didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
+	 statusCode: (int)statusCode
+	    request: (OFHTTPRequest *)request
 	    context: (id)context
 {
-	OFDictionary OF_GENERIC(OFString *, OFString *) *headers;
-	OFString *lengthString, *type;
-
-	if ([context isEqual: @"detectFileName"]) {
-		_currentFileName = [fileNameFromContentDisposition(
-		    [[response headers] objectForKey: @"Content-Disposition"])
-		    copy];
-		_detectedFileName = true;
-
-		if (!_quiet)
-			[of_stdout writeFormat: @" ➜ %d\n",
-						[response statusCode]];
-
-		[self performSelector: @selector(downloadNextURL)
-			   afterDelay: 0];
-		return;
-	}
-
-	if (!_quiet)
-		[of_stdout writeFormat: @" ➜ %d\n", [response statusCode]];
-
-	headers = [response headers];
-	lengthString = [headers objectForKey: @"Content-Length"];
-	type = [headers objectForKey: @"Content-Type"];
-
-	if (lengthString != nil)
-		_length = [lengthString decimalValue];
-
 	if (!_quiet) {
+		OFString *lengthString =
+		    [headers objectForKey: @"Content-Length"];
+		OFString *type = [headers objectForKey: @"Content-Type"];
+
+		[of_stdout writeFormat: @" ➜ %d\n", statusCode];
+
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
+
+		if (lengthString != nil)
+			_length = [lengthString decimalValue];
 
 		if (_length >= 0) {
 			if (_resumedFrom + _length >= GIBIBYTE) {
@@ -781,19 +756,19 @@ next:
 
 		if (_verbose) {
 			void *pool = objc_autoreleasePoolPush();
-			OFDictionary OF_GENERIC(OFString *, OFString *)
-			    *responseHeaders = [response headers];
-			OFEnumerator *keyEnumerator =
-			    [responseHeaders keyEnumerator];
-			OFEnumerator *objectEnumerator =
-			    [responseHeaders objectEnumerator];
+			OFEnumerator OF_GENERIC(OFString *) *keyEnumerator =
+			    [headers keyEnumerator];
+			OFEnumerator OF_GENERIC(OFString *) *objectEnumerator =
+			    [headers objectEnumerator];
 			OFString *key, *object;
 
-			[of_stdout writeString: @"  "];
-			[of_stdout writeLine: OF_LOCALIZED(
-			    @"info_name_unaligned",
-			    @"Name: %[name]",
-			    @"name", _currentFileName)];
+			if (statusCode / 100 == 2) {
+				[of_stdout writeString: @"  "];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"info_name_unaligned",
+				    @"Name: %[name]",
+				    @"name", _currentFileName)];
+			}
 
 			while ((key = [keyEnumerator nextObject]) != nil &&
 			    (object = [objectEnumerator nextObject]) != nil)
@@ -801,7 +776,7 @@ next:
 							key, object];
 
 			objc_autoreleasePoolPop(pool);
-		} else {
+		} else if (statusCode / 100 == 2) {
 			[of_stdout writeString: @"  "];
 			[of_stdout writeLine: OF_LOCALIZED(@"info_name",
 			    @"Name: %[name]",
@@ -815,6 +790,23 @@ next:
 			    @"Size: %[size]",
 			    @"size", lengthString)];
 		}
+	}
+}
+
+-      (void)client: (OFHTTPClient *)client
+  didPerformRequest: (OFHTTPRequest *)request
+	   response: (OFHTTPResponse *)response
+	    context: (id)context
+{
+	if ([context isEqual: @"detectFileName"]) {
+		_currentFileName = [fileNameFromContentDisposition(
+		    [[response headers] objectForKey: @"Content-Disposition"])
+		    copy];
+		_detectedFileName = true;
+
+		[self performSelector: @selector(downloadNextURL)
+			   afterDelay: 0];
+		return;
 	}
 
 	if ([_outputPath isEqual: @"-"])
