@@ -633,37 +633,26 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+
+		if (![path isAbsolutePath]) {
+			OFString *currentDirectoryPath = [[OFFileManager
+			    defaultManager] currentDirectoryPath];
+
+			path = [currentDirectoryPath
+			    stringByAppendingPathComponent: path];
+			path = [path stringByStandardizingPath];
+		}
+
 # if defined(OF_WINDOWS) || defined(OF_DJGPP)
-		OFArray OF_GENERIC(OFString *) *pathComponents =
-		    [path pathComponents];
-
-		path = [pathComponents componentsJoinedByString: @"/"];
-
-		if ([[pathComponents firstObject] hasSuffix: @":"])
-			path = [path stringByPrependingString: @"/"];
+		path = [path stringByReplacingOccurrencesOfString: @"\\"
+						       withString: @"/"];
+		path = [path stringByPrependingString: @"/"];
 # endif
 
 		if (isDirectory && ![path hasSuffix: @"/"])
 			path = [path stringByAppendingString: @"/"];
 
 		_URLEncodedScheme = @"file";
-
-		if (![path hasPrefix: @"/"]) {
-			OFString *currentDirectoryPath = [[OFFileManager
-			    defaultManager] currentDirectoryPath];
-
-# if defined(OF_WINDOWS) || defined(OF_DJGPP)
-			currentDirectoryPath = [[currentDirectoryPath
-			    pathComponents] componentsJoinedByString: @"/"];
-			currentDirectoryPath = [currentDirectoryPath
-			    stringByPrependingString: @"/"];
-# endif
-
-			path = [currentDirectoryPath
-			    stringByAppendingURLPathComponent: path];
-			path = [path stringByStandardizingURLPath];
-		}
-
 		_URLEncodedPath = [[path
 		    stringByURLEncodingWithAllowedCharacters:
 		    [OFCharacterSet URLPathAllowedCharacterSet]] copy];
