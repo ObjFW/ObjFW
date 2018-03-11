@@ -605,8 +605,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		isDirectory = ([path hasSuffix: OF_PATH_DELIMITER_STRING] ||
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+		isDirectory = ([path hasSuffix: @"\\"] ||
+		    [path hasSuffix: @"/"] ||
 		    [OFURLHandler_file of_directoryExistsAtPath: path]);
+#else
+		isDirectory = ([path hasSuffix: @"/"] ||
+		    [OFURLHandler_file of_directoryExistsAtPath: path]);
+#endif
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -627,21 +633,17 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-# if OF_PATH_DELIMITER != '/' || defined(OF_WINDOWS) || defined(OF_DJGPP)
+# if defined(OF_WINDOWS) || defined(OF_DJGPP)
 		OFArray OF_GENERIC(OFString *) *pathComponents =
 		    [path pathComponents];
-# endif
 
-# if OF_PATH_DELIMITER != '/'
 		path = [pathComponents componentsJoinedByString: @"/"];
-# endif
 
-# if defined(OF_WINDOWS) || defined(OF_DJGPP)
 		if ([[pathComponents firstObject] hasSuffix: @":"])
 			path = [path stringByPrependingString: @"/"];
 # endif
 
-		if (isDirectory && ![path hasSuffix: OF_PATH_DELIMITER_STRING])
+		if (isDirectory && ![path hasSuffix: @"/"])
 			path = [path stringByAppendingString: @"/"];
 
 		_URLEncodedScheme = @"file";
@@ -650,11 +652,9 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			OFString *currentDirectoryPath = [[OFFileManager
 			    defaultManager] currentDirectoryPath];
 
-# if OF_PATH_DELIMITER != '/'
+# if defined(OF_WINDOWS) || defined(OF_DJGPP)
 			currentDirectoryPath = [[currentDirectoryPath
 			    pathComponents] componentsJoinedByString: @"/"];
-# endif
-# if defined(OF_WINDOWS) || defined(OF_DJGPP)
 			currentDirectoryPath = [currentDirectoryPath
 			    stringByPrependingString: @"/"];
 # endif
@@ -975,11 +975,8 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		path = [path substringWithRange:
 		    of_range(0, [path length] - 1)];
 
-#ifndef OF_PATH_STARTS_WITH_SLASH
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	path = [path substringWithRange: of_range(1, [path length] - 1)];
-#endif
-
-#if OF_PATH_DELIMITER != '/'
 	path = [OFString pathWithComponents:
 	    [path componentsSeparatedByString: @"/"]];
 #endif

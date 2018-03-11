@@ -271,17 +271,15 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 
 - (void)writeFiles
 {
-	OFString *path;
+	OFURL *URL;
 
 	[of_stdout writeString: @"Writing files…"];
 
-	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.m", nil]];
-	[self writeTablesToFile: path];
+	URL = [OFURL fileURLWithPath: @"../src/unicode.m"];
+	[self writeTablesToFile: [URL fileSystemRepresentation]];
 
-	path = [OFString pathWithComponents: [OFArray arrayWithObjects:
-	    OF_PATH_PARENT_DIRECTORY, @"src", @"unicode.h", nil]];
-	[self writeHeaderToFile: path];
+	URL = [OFURL fileURLWithPath: @"../src/unicode.h"];
+	[self writeHeaderToFile: [URL fileSystemRepresentation]];
 
 	[of_stdout writeLine: @" done"];
 

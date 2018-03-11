@@ -553,10 +553,18 @@ static uint16_t sutf16str[] = {
 
 #ifdef OF_HAVE_FILES
 	s[0] = [mutableStringClass stringWithString: @"foo"];
-	[s[0] appendString: OF_PATH_DELIMITER_STRING];
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	[s[0] appendString: @"\\"];
+# else
+	[s[0] appendString: @"/"];
+# endif
 	[s[0] appendString: @"bar"];
 	s[1] = [mutableStringClass stringWithString: s[0]];
-	[s[1] appendString: OF_PATH_DELIMITER_STRING];
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	[s[1] appendString: @"\\"];
+# else
+	[s[1] appendString: @"/"];
+# endif
 	is = [stringClass stringWithString: s[1]];
 	[s[1] appendString: @"baz"];
 	TEST(@"-[stringByAppendingPathComponent:]",

@@ -237,7 +237,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 		pathComponents = [outFileName pathComponents];
 		for (OFString *component in pathComponents) {
-			if ([component isEqual: OF_PATH_PARENT_DIRECTORY]) {
+			if ([component length] == 0 ||
+			    [component isEqual: @".."]) {
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"refusing_to_extract_file",
 				    @"Refusing to extract %[file]!",

@@ -169,7 +169,7 @@ int _OFString_PathAdditions_reference;
 
 	objc_autoreleasePoolPop(pool);
 
-	return OF_PATH_CURRENT_DIRECTORY;
+	return @".";
 }
 
 - (OFString *)stringByDeletingPathExtension

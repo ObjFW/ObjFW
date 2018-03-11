@@ -356,19 +356,6 @@
 #define OF_RETAIN_COUNT_MAX UINT_MAX
 #define OF_NOT_FOUND SIZE_MAX
 
-#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-# define OF_PATH_DELIMITER '/'
-# define OF_PATH_DELIMITER_STRING @"/"
-# define OF_IS_PATH_DELIMITER(c) (c == '/')
-# define OF_PATH_STARTS_WITH_SLASH
-#else
-# define OF_PATH_DELIMITER '\\'
-# define OF_PATH_DELIMITER_STRING @"\\"
-# define OF_IS_PATH_DELIMITER(c) (c == '\\' || c == '/')
-#endif
-#define OF_PATH_CURRENT_DIRECTORY @"."
-#define OF_PATH_PARENT_DIRECTORY @".."
-
 #define OF_ENSURE(cond)							\
 	do {								\
 		if (!(cond)) {						\
