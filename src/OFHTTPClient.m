@@ -681,7 +681,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	OFTCPSocket *sock;
 
 	/* Can we reuse the last socket? */
-	if (_client->_socket != nil &&
+	if (_client->_socket != nil && ![_client->_socket isAtEndOfStream] &&
 	    [[_client->_lastURL scheme] isEqual: [URL scheme]] &&
 	    [[_client->_lastURL host] isEqual: [URL host]] &&
 	    [_client->_lastURL port] == [URL port]) {
@@ -696,7 +696,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		[_client->_lastURL release];
 		_client->_lastURL = nil;
 
-		if (!_client->_lastWasHEAD) {
+		if (!_client->_lastWasHEAD &&
+		    ![_client->_lastResponse isAtEndOfStream]) {
 			/* Throw away content that has not been read yet */
 			char *buffer = [self allocMemoryWithSize: 512];
 
@@ -935,17 +936,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (!_chunked) {
 		size_t ret;
 
-		if (_toRead == 0) {
-			_atEndOfStream = true;
-
-			if (!_keepAlive) {
-				[_socket release];
-				_socket = nil;
-			}
-
-			return 0;
-		}
-
 		if (length > _toRead)
 			length = (size_t)_toRead;
 
@@ -956,6 +946,15 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			@throw [OFOutOfRangeException exception];
 
 		_toRead -= ret;
+
+		if (_toRead == 0) {
+			_atEndOfStream = true;
+
+			if (!_keepAlive) {
+				[_socket release];
+				_socket = nil;
+			}
+		}
 
 		return ret;
 	}
