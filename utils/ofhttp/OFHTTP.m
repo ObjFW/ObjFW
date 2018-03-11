@@ -111,7 +111,7 @@ help(OFStream *stream, bool full, int status)
 		    @"-v  --verbose        "
 		    @"  Verbose mode (print headers)\n    "
 		    @"    --insecure       "
-		    @"  Ignore TLS errors")];
+		    @"  Ignore TLS errors and allow insecure redirects")];
 	}
 
 	[OFApplication terminateWithStatus: status];
@@ -496,6 +496,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		    @"prog", [OFApplication programName])];
 		[OFApplication terminateWithStatus: 1];
 	}
+
+	if (_insecure)
+		[_HTTPClient setInsecureRedirectsAllowed: true];
 
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
