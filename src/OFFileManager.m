@@ -188,30 +188,14 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 - (OFURL *)currentDirectoryURL
 {
-	OFMutableURL *URL = [OFMutableURL URL];
 	void *pool = objc_autoreleasePoolPush();
-	OFString *path;
+	OFURL *ret;
 
-	[URL setScheme: @"file"];
+	ret = [OFURL fileURLWithPath: [self currentDirectoryPath]];
 
-#if OF_PATH_DELIMITER != '/'
-	path = [[[self currentDirectoryPath] pathComponents]
-	    componentsJoinedByString: @"/"];
-#else
-	path = [self currentDirectoryPath];
-#endif
-
-#ifndef OF_PATH_STARTS_WITH_SLASH
-	path = [path stringByPrependingString: @"/"];
-#endif
-
-	[URL setPath: [path stringByAppendingString: @"/"]];
-
-	[URL makeImmutable];
-
+	[ret retain];
 	objc_autoreleasePoolPop(pool);
-
-	return URL;
+	return [ret autorelease];
 }
 
 - (of_file_attributes_t)attributesOfItemAtURL: (OFURL *)URL
