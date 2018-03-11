@@ -30,6 +30,11 @@ int _OFString_PathAdditions_reference;
 	return [components componentsJoinedByString: @"/"];
 }
 
+- (bool)isAbsolutePath
+{
+	return [self hasPrefix: @"/"];
+}
+
 - (OFArray *)pathComponents
 {
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];

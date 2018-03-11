@@ -30,6 +30,19 @@ int _OFString_PathAdditions_reference;
 	return [components componentsJoinedByString: @"\\"];
 }
 
+- (bool)isAbsolutePath
+{
+	void *pool = objc_autoreleasePoolPush();
+	const char *UTF8String = [self UTF8String];
+	size_t UTF8StringLength = [self UTF8StringLength];
+	bool ret = (UTF8StringLength >= 3 && UTF8String[1] == ':' &&
+	    (UTF8String[2] == '\\' || UTF8String[2] == '/'));
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
 - (OFArray *)pathComponents
 {
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];

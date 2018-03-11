@@ -29,6 +29,11 @@ extern int _OFString_PathAdditions_reference;
 
 @interface OFString (PathAdditions)
 /*!
+ * @brief Whether the path is an absolute path.
+ */
+@property (readonly, nonatomic, getter=isAbsolutePath) bool absolutePath;
+
+/*!
  * @brief The components of the string when interpreted as a path.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *pathComponents;

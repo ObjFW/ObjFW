@@ -552,6 +552,16 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo") stringByPrependingString: @"bar"] isEqual: @"barfoo"])
 
 #ifdef OF_HAVE_FILES
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	TEST(@"-[isAbsolutePath]",
+	    [C(@"C:\\foo") isAbsolutePath] && [C(@"a:/foo") isAbsolutePath] &&
+	    ![C(@"foo") isAbsolutePath] && ![C(@"b:foo") isAbsolutePath])
+# else
+	TEST(@"-[isAbsolutePath]",
+	    [C(@"/foo") isAbsolutePath] && [C(@"/foo/bar") isAbsolutePath] &&
+	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
+# endif
+
 	s[0] = [mutableStringClass stringWithString: @"foo"];
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	[s[0] appendString: @"\\"];
