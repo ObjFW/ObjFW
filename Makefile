@@ -20,7 +20,8 @@ tarball:
 		objfw-${PACKAGE_VERSION}.tar.gz
 	mkdir objfw-${PACKAGE_VERSION}
 	git --work-tree=objfw-${PACKAGE_VERSION} checkout .
-	rm objfw-${PACKAGE_VERSION}/.gitignore
+	rm objfw-${PACKAGE_VERSION}/.gitignore \
+		objfw-${PACKAGE_VERSION}/.travis.yml
 	cp configure config.h.in objfw-${PACKAGE_VERSION}/
 	ofzip -cq objfw-${PACKAGE_VERSION}.tar $$(find objfw-${PACKAGE_VERSION})
 	rm -fr objfw-${PACKAGE_VERSION}
