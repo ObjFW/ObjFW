@@ -27,7 +27,24 @@ int _OFString_PathAdditions_reference;
 @implementation OFString (PathAdditions)
 + (OFString *)pathWithComponents: (OFArray *)components
 {
-	return [components componentsJoinedByString: @"/"];
+	void *pool = objc_autoreleasePoolPush();
+	OFString *ret;
+
+	if ([[components firstObject] isEqual: @"/"]) {
+		OFMutableArray OF_GENERIC(OFString *) *mutableComponents =
+		    [[components mutableCopy] autorelease];
+
+		[mutableComponents replaceObjectAtIndex: 0
+					     withObject: @""];
+
+		components = mutableComponents;
+	}
+
+	ret = [components componentsJoinedByString: @"/"];
+
+	[ret retain];
+	objc_autoreleasePoolPop(pool);
+	return [ret autorelease];
 }
 
 - (bool)isAbsolutePath
@@ -60,6 +77,10 @@ int _OFString_PathAdditions_reference;
 	}
 	[ret addObject: [OFString stringWithUTF8String: cString + last
 						length: i - last]];
+
+	if ([[ret firstObject] isEqual: @""])
+		[ret replaceObjectAtIndex: 0
+			       withObject: @"/"];
 
 	[ret makeImmutable];
 
@@ -212,16 +233,29 @@ int _OFString_PathAdditions_reference;
 - (OFString *)stringByStandardizingPath
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *components = [self pathComponents];
+	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFString *) *array;
-	OFString *ret;
-	bool done = false, startsWithEmpty, endsWithEmpty;
+	OFString *firstComponent, *ret;
+	bool done = false, startsWithSlash, endsWithEmpty;
+
+	if ([self length] == 0)
+		return @"";
+
+	components = [self pathComponents];
+
+	if ([components count] == 1) {
+		objc_autoreleasePoolPop(pool);
+		return self;
+	}
 
 	array = [[components mutableCopy] autorelease];
+	firstComponent = [array firstObject];
+	startsWithSlash =
+	    ([firstComponent isEqual: @"/"] || [firstComponent length] == 0);
+	endsWithEmpty = ([[array lastObject] length] == 0);
 
-	if ((startsWithEmpty = [[array firstObject] isEqual: @""]))
+	if (startsWithSlash)
 		[array removeObjectAtIndex: 0];
-	endsWithEmpty = [[array lastObject] isEqual: @""];
 
 	while (!done) {
 		size_t length = [array count];
@@ -252,9 +286,10 @@ int _OFString_PathAdditions_reference;
 		}
 	}
 
-	if (startsWithEmpty)
+	if (startsWithSlash)
 		[array insertObject: @""
 			    atIndex: 0];
+
 	if (endsWithEmpty)
 		[array addObject: @""];
 

@@ -966,8 +966,8 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	path = [path substringWithRange: of_range(1, [path length] - 1)];
-	path = [OFString pathWithComponents:
-	    [path componentsSeparatedByString: @"/"]];
+	path = [path stringByReplacingOccurrencesOfString: @"/"
+					       withString: @"\\"];
 #endif
 
 	[path retain];
