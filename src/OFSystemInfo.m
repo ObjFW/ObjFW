@@ -25,6 +25,9 @@
 
 #include "platform.h"
 
+#ifdef HAVE_SYS_UTSNAME_H
+# include <sys/utsname.h>
+#endif
 #ifdef OF_MACOS
 # include <sys/sysctl.h>
 #endif
@@ -37,10 +40,11 @@
 #endif
 
 #import "OFSystemInfo.h"
-#import "OFString.h"
+#import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFApplication.h"
+#import "OFLocalization.h"
+#import "OFString.h"
 
 #import "OFNotImplementedException.h"
 
@@ -169,6 +173,76 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 + (size_t)numberOfCPUs
 {
 	return numberOfCPUs;
+}
+
++ (OFString *)operatingSystemName
+{
+#if defined(OF_IOS)
+	return @"iOS";
+#elif defined(OF_MACOS)
+	return @"macOS";
+#elif defined(OF_WINDOWS)
+	return @"Windows";
+#elif defined(OF_ANDROID)
+	return @"Android";
+#elif defined(OF_MORPHOS)
+	return @"MorphOS";
+#elif defined(OF_AMIGAOS4)
+	return @"AmigaOS 4";
+#elif defined(OF_WII)
+	return @"Nintendo Wii";
+#elif defined(NINTENDO_3DS)
+	return @"Nintendo 3DS";
+#elif defined(OF_NINTENDO_DS)
+	return @"Nintendo DS";
+#elif defined(OF_PSP)
+	return @"PlayStation Portable";
+#elif defined(OF_MSDOS)
+	return @"MS-DOS";
+#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
+	struct utsname u;
+
+	if (uname(&u) != 0)
+		return nil;
+
+	return [OFString stringWithCString: u.sysname
+				  encoding: [OFLocalization encoding]];
+#else
+	return nil;
+#endif
+}
+
++ (OFString *)operatingSystemVersion
+{
+#if defined(OF_IOS) || defined(OF_MACOS)
+	/* TODO */
+	return nil;
+#elif defined(OF_WINDOWS)
+	/* TODO */
+	return nil;
+#elif defined(OF_ANDROID)
+	/* TODO */
+	return nil;
+#elif defined(OF_MORPHOS)
+	/* TODO */
+	return nil;
+#elif defined(OF_AMIGAOS4)
+	/* TODO */
+	return nil;
+#elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \\
+    defined(OF_PSP) || defined(OF_MSDOS)
+	return nil;
+#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
+	struct utsname u;
+
+	if (uname(&u) != 0)
+		return nil;
+
+	return [OFString stringWithCString: u.release
+				  encoding: [OFLocalization encoding]];
+#else
+	return nil;
+#endif
 }
 
 #ifdef OF_HAVE_FILES

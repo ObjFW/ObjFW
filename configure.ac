@@ -1062,6 +1062,9 @@ AC_CHECK_FUNCS([sysconf gmtime_r localtime_r nanosleep fcntl])
 AC_CHECK_HEADERS(xlocale.h)
 AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
 
+AC_CHECK_HEADERS(sys/utsname.h)
+AC_CHECK_FUNCS(uname)
+
 AC_CHECK_FUNC(pipe, [
 	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
 ])

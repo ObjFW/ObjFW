@@ -29,6 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) size_t pageSize;
 @property (class, readonly, nonatomic) size_t numberOfCPUs;
+@property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
+@property (class, readonly, nullable, nonatomic)
+    OFString *operatingSystemVersion;
 # ifdef OF_HAVE_FILES
 @property (class, readonly, nullable, nonatomic) OFString *userDataPath;
 @property (class, readonly, nullable, nonatomic) OFString *userConfigPath;
@@ -65,6 +68,22 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The number of CPUs installed in the system
  */
 + (size_t)numberOfCPUs;
+
+/**
+ * @brief Returns the name of the operating system the application is running
+ *	  on.
+ *
+ * @return The name of the operating system the application is running on
+ */
++ (nullable OFString *)operatingSystemName;
+
+/**
+ * @brief Returns the version of the operating system the application is
+ *	  running on.
+ *
+ * @return The version of the operating system the application is running on
+ */
++ (nullable OFString *)operatingSystemVersion;
 
 #ifdef OF_HAVE_FILES
 /*!
