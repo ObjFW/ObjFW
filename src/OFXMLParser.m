@@ -41,7 +41,7 @@ typedef void (*state_function_t)(id, SEL);
 static SEL selectors[OF_XMLPARSER_NUM_STATES];
 static state_function_t lookupTable[OF_XMLPARSER_NUM_STATES];
 
-@interface OFXMLParser ()
+@interface OFXMLParser () <OFStringXMLUnescapingDelegate>
 - (void)of_inByteOrderMarkState;
 - (void)of_outsideTagState;
 - (void)of_tagOpenedState;

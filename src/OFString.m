@@ -123,6 +123,7 @@ _references_to_categories_of_OFString(void)
 #ifdef OF_HAVE_FILES
 	_OFString_PathAdditions_reference = 1;
 #endif
+	_OFString_PropertyListValue_reference = 1;
 	_OFString_Serialization_reference = 1;
 	_OFString_URLEncoding_reference = 1;
 	_OFString_XMLEscaping_reference = 1;

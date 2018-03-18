@@ -1222,6 +1222,7 @@ OF_ASSUME_NONNULL_END
 #ifdef OF_HAVE_FILES
 # import "OFString+PathAdditions.h"
 #endif
+#import "OFString+PropertyListValue.h"
 #import "OFString+Serialization.h"
 #import "OFString+URLEncoding.h"
 #import "OFString+XMLEscaping.h"

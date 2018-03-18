@@ -78,6 +78,7 @@ SRCS = OFApplication.m			\
        OFString.m			\
        OFString+CryptoHashing.m		\
        OFString+JSONValue.m		\
+       OFString+PropertyListValue.m	\
        OFString+Serialization.m		\
        OFString+URLEncoding.m		\
        OFString+XMLEscaping.m		\

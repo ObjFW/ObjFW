@@ -437,6 +437,7 @@ main(int argc, char *argv[])
 	[self serializationTests];
 #endif
 	[self JSONTests];
+	[self propertyListTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
