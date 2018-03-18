@@ -159,6 +159,7 @@ initOperatingSystemVersion(void)
 	}
 # endif
 #elif defined(OF_WINDOWS)
+# ifdef OF_HAVE_FILES
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
@@ -209,6 +210,7 @@ initOperatingSystemVersion(void)
 	} @finally {
 		objc_autoreleasePoolPop(pool);
 	}
+# endif
 #elif defined(OF_ANDROID)
 	/* TODO */
 #elif defined(OF_MORPHOS)
