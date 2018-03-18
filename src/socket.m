@@ -39,10 +39,9 @@
 #endif
 
 #ifdef OF_HAVE_THREADS
-static of_once_t onceControl = OF_ONCE_INIT;
 static of_mutex_t mutex;
 #endif
-static bool initialized = false;
+static bool initSuccessful = false;
 
 static void
 init(void)
@@ -77,20 +76,24 @@ init(void)
 # endif
 #endif
 
-	initialized = true;
+	initSuccessful = true;
 }
 
 bool
 of_socket_init()
 {
 #ifdef OF_HAVE_THREADS
+	static of_once_t onceControl = OF_ONCE_INIT;
 	of_once(&onceControl, init);
 #else
-	if (!initialized)
+	static bool initialized = false;
+	if (!initialized) {
 		init();
+		initialized = true;
+	}
 #endif
 
-	return initialized;
+	return initSuccessful;
 }
 
 int

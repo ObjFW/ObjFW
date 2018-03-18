@@ -25,7 +25,6 @@
 #import "threading.h"
 
 static of_rmutex_t global_mutex;
-static of_once_t once_control = OF_ONCE_INIT;
 
 static void
 init(void)
@@ -37,6 +36,7 @@ init(void)
 void
 objc_global_mutex_lock(void)
 {
+	static of_once_t once_control = OF_ONCE_INIT;
 	of_once(&once_control, init);
 
 	if (!of_rmutex_lock(&global_mutex))
