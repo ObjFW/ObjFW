@@ -167,7 +167,7 @@ initOperatingSystemVersion(void)
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
     defined(OF_PSP) || defined(OF_MSDOS)
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname u;
+	struct utsname utsname;
 
 	if (uname(&utsname) != 0)
 		return nil;

@@ -23,6 +23,7 @@
 #import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFNumber.h"
+#import "OFXMLAttribute.h"
 #import "OFXMLElement.h"
 
 #import "OFInvalidFormatException.h"
