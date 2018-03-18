@@ -48,6 +48,10 @@
 
 #import "OFNotImplementedException.h"
 
+#ifdef OF_HAVE_THREADS
+# import "threading.h"
+#endif
+
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
 #  include <sysdir.h>
@@ -97,6 +101,82 @@ struct x86_regs {
 
 static size_t pageSize;
 static size_t numberOfCPUs;
+static OFString *operatingSystemName = nil;
+static OFString *operatingSystemVersion = nil;
+
+static void
+initOperatingSystemName(void)
+{
+#if defined(OF_IOS)
+	operatingSystemName = @"iOS";
+#elif defined(OF_MACOS)
+	operatingSystemName = @"macOS";
+#elif defined(OF_WINDOWS)
+	operatingSystemName = @"Windows";
+#elif defined(OF_ANDROID)
+	operatingSystemName = @"Android";
+#elif defined(OF_MORPHOS)
+	operatingSystemName = @"MorphOS";
+#elif defined(OF_AMIGAOS4)
+	operatingSystemName = @"AmigaOS 4";
+#elif defined(OF_WII)
+	operatingSystemName = @"Nintendo Wii";
+#elif defined(NINTENDO_3DS)
+	operatingSystemName = @"Nintendo 3DS";
+#elif defined(OF_NINTENDO_DS)
+	operatingSystemName = @"Nintendo DS";
+#elif defined(OF_PSP)
+	operatingSystemName = @"PlayStation Portable";
+#elif defined(OF_MSDOS)
+	operatingSystemName = @"MS-DOS";
+#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
+	struct utsname utsname;
+
+	if (uname(&utsname) != 0)
+		return;
+
+	operatingSystemName = [[OFString alloc]
+	    initWithCString: utsname.sysname
+		   encoding: [OFLocalization encoding]];
+#endif
+}
+
+static void
+initOperatingSystemVersion(void)
+{
+#if defined(OF_IOS) || defined(OF_MACOS)
+	void *pool = objc_autoreleasePoolPush();
+
+	@try {
+		OFString *propertyList = [OFString stringWithContentsOfFile:
+		    @"/System/Library/CoreServices/SystemVersion.plist"];
+
+		operatingSystemVersion = [[[propertyList propertyListValue]
+		    objectForKey: @"ProductVersion"] copy];
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
+#elif defined(OF_WINDOWS)
+	/* TODO */
+#elif defined(OF_ANDROID)
+	/* TODO */
+#elif defined(OF_MORPHOS)
+	/* TODO */
+#elif defined(OF_AMIGAOS4)
+	/* TODO */
+#elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
+    defined(OF_PSP) || defined(OF_MSDOS)
+#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
+	struct utsname u;
+
+	if (uname(&utsname) != 0)
+		return nil;
+
+	operatingSystemVersion = [[OFString alloc]
+	    initWithCString: utsname.release
+		   encoding: [OFLocalization encoding]];
+#endif
+}
 
 #if defined(OF_X86_64) || defined(OF_X86)
 static OF_INLINE struct x86_regs OF_CONST_FUNC
@@ -177,72 +257,34 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)operatingSystemName
 {
-#if defined(OF_IOS)
-	return @"iOS";
-#elif defined(OF_MACOS)
-	return @"macOS";
-#elif defined(OF_WINDOWS)
-	return @"Windows";
-#elif defined(OF_ANDROID)
-	return @"Android";
-#elif defined(OF_MORPHOS)
-	return @"MorphOS";
-#elif defined(OF_AMIGAOS4)
-	return @"AmigaOS 4";
-#elif defined(OF_WII)
-	return @"Nintendo Wii";
-#elif defined(NINTENDO_3DS)
-	return @"Nintendo 3DS";
-#elif defined(OF_NINTENDO_DS)
-	return @"Nintendo DS";
-#elif defined(OF_PSP)
-	return @"PlayStation Portable";
-#elif defined(OF_MSDOS)
-	return @"MS-DOS";
-#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname u;
-
-	if (uname(&u) != 0)
-		return nil;
-
-	return [OFString stringWithCString: u.sysname
-				  encoding: [OFLocalization encoding]];
+#ifdef OF_HAVE_THREADS
+	static of_once_t onceControl = OF_ONCE_INIT;
+	of_once(&onceControl, initOperatingSystemName);
 #else
-	return nil;
+	static bool initialized = false;
+	if (!initialized) {
+		initOperatingSystemName();
+		initialized = true;
+	}
 #endif
+
+	return operatingSystemName;
 }
 
 + (OFString *)operatingSystemVersion
 {
-#if defined(OF_IOS) || defined(OF_MACOS)
-	/* TODO */
-	return nil;
-#elif defined(OF_WINDOWS)
-	/* TODO */
-	return nil;
-#elif defined(OF_ANDROID)
-	/* TODO */
-	return nil;
-#elif defined(OF_MORPHOS)
-	/* TODO */
-	return nil;
-#elif defined(OF_AMIGAOS4)
-	/* TODO */
-	return nil;
-#elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \\
-    defined(OF_PSP) || defined(OF_MSDOS)
-	return nil;
-#elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
-	struct utsname u;
-
-	if (uname(&u) != 0)
-		return nil;
-
-	return [OFString stringWithCString: u.release
-				  encoding: [OFLocalization encoding]];
+#ifdef OF_HAVE_THREADS
+	static of_once_t onceControl = OF_ONCE_INIT;
+	of_once(&onceControl, initOperatingSystemVersion);
 #else
-	return nil;
+	static bool initialized = false;
+	if (!initialized) {
+		initOperatingSystemVersion();
+		initialized = true;
+	}
 #endif
+
+	return operatingSystemVersion;
 }
 
 #ifdef OF_HAVE_FILES
