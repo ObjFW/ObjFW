@@ -44,6 +44,8 @@ case "$host" in
 		;;
 	*-*-mingw*)
 		LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
+		LIBS="$LIBS -lversion"
+
 		AC_SUBST(ALLOW_MULTIPLE_DEFINITION,
 			[-Wl,--allow-multiple-definition])
 		;;

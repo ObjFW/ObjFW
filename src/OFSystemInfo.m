@@ -145,6 +145,7 @@ static void
 initOperatingSystemVersion(void)
 {
 #if defined(OF_IOS) || defined(OF_MACOS)
+# ifdef OF_HAVE_FILES
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
@@ -156,8 +157,58 @@ initOperatingSystemVersion(void)
 	} @finally {
 		objc_autoreleasePoolPop(pool);
 	}
+# endif
 #elif defined(OF_WINDOWS)
-	/* TODO */
+	void *pool = objc_autoreleasePoolPush();
+
+	@try {
+		wchar_t systemDir[PATH_MAX];
+		UINT systemDirLen;
+		OFString *systemDirString;
+		const of_char16_t *path;
+		void *buffer;
+		DWORD bufferLen;
+
+		systemDirLen = GetSystemDirectoryW(systemDir, PATH_MAX);
+		if (systemDirLen == 0)
+			return;
+
+		systemDirString = [OFString
+		    stringWithUTF16String: systemDir
+				   length: systemDirLen];
+		path = [[systemDirString stringByAppendingPathComponent:
+		    @"kernel32.dll"] UTF16String];
+
+		if ((bufferLen = GetFileVersionInfoSizeW(path, NULL)) == 0)
+			return;
+		if ((buffer = malloc(bufferLen)) == 0)
+			return;
+
+		@try {
+			void *data;
+			UINT dataLen;
+			VS_FIXEDFILEINFO *info;
+
+			if (!GetFileVersionInfoW(path, 0, bufferLen, buffer))
+				return;
+
+			if (!VerQueryValueW(buffer, L"\\", &data, &dataLen) ||
+			    dataLen < sizeof(info))
+				return;
+
+			info = (VS_FIXEDFILEINFO *)data;
+
+			operatingSystemVersion = [[OFString alloc]
+			    initWithFormat: @"%u.%u.%u",
+					    HIWORD(info->dwProductVersionMS),
+					    LOWORD(info->dwProductVersionMS),
+					    HIWORD(info->dwProductVersionLS)];
+		} @finally {
+			free(buffer);
+		}
+	} @finally {
+		objc_autoreleasePoolPop(pool);
+	}
 #elif defined(OF_ANDROID)
 	/* TODO */
 #elif defined(OF_MORPHOS)
@@ -166,11 +217,12 @@ initOperatingSystemVersion(void)
 	/* TODO */
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
     defined(OF_PSP) || defined(OF_MSDOS)
+	/* Intentionally nothing */
 #elif defined(HAVE_SYS_UTSNAME_H) && defined(HAVE_UNAME)
 	struct utsname utsname;
 
 	if (uname(&utsname) != 0)
-		return nil;
+		return;
 
 	operatingSystemVersion = [[OFString alloc]
 	    initWithCString: utsname.release
