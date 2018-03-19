@@ -27,7 +27,28 @@ int _OFString_PathAdditions_reference;
 @implementation OFString (PathAdditions)
 + (OFString *)pathWithComponents: (OFArray *)components
 {
-	return [components componentsJoinedByString: @"\\"];
+	OFMutableString *ret = [OFMutableString string];
+	void *pool = objc_autoreleasePoolPush();
+	bool first = true;
+
+	for (OFString *component in components) {
+		if ([component length] == 0)
+			continue;
+
+		if ([component isEqual: @"\\"] || [component isEqual: @"/"])
+			continue;
+
+		if (!first && ![ret hasSuffix: @"\\"] && ![ret hasSuffix: @"/"])
+			[ret appendString: @"\\"];
+
+		[ret appendString: component];
+
+		first = false;
+	}
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (bool)isAbsolutePath
@@ -55,20 +76,19 @@ int _OFString_PathAdditions_reference;
 		return ret;
 	}
 
-	if (cString[pathCStringLength - 1] == '\\' ||
-	    cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
-
 	for (i = 0; i < pathCStringLength; i++) {
 		if (cString[i] == '\\' || cString[i] == '/') {
-			[ret addObject:
-			    [OFString stringWithUTF8String: cString + last
-						    length: i - last]];
+			if (i - last != 0)
+				[ret addObject: [OFString
+				    stringWithUTF8String: cString + last
+						  length: i - last]];
+
 			last = i + 1;
 		}
 	}
-	[ret addObject: [OFString stringWithUTF8String: cString + last
-						length: i - last]];
+	if (i - last != 0)
+		[ret addObject: [OFString stringWithUTF8String: cString + last
+							length: i - last]];
 
 	[ret makeImmutable];
 

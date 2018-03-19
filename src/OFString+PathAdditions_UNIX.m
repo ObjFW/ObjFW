@@ -27,24 +27,28 @@ int _OFString_PathAdditions_reference;
 @implementation OFString (PathAdditions)
 + (OFString *)pathWithComponents: (OFArray *)components
 {
+	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	OFString *ret;
+	bool first = true;
 
-	if ([[components firstObject] isEqual: @"/"]) {
-		OFMutableArray OF_GENERIC(OFString *) *mutableComponents =
-		    [[components mutableCopy] autorelease];
+	for (OFString *component in components) {
+		if ([component length] == 0)
+			continue;
 
-		[mutableComponents replaceObjectAtIndex: 0
-					     withObject: @""];
+		if (!first && [component isEqual: @"/"])
+			continue;
 
-		components = mutableComponents;
+		if (!first && ![ret hasSuffix: @"/"])
+			[ret appendString: @"/"];
+
+		[ret appendString: component];
+
+		first = false;
 	}
 
-	ret = [components componentsJoinedByString: @"/"];
-
-	[ret retain];
 	objc_autoreleasePoolPop(pool);
-	return [ret autorelease];
+
+	return ret;
 }
 
 - (bool)isAbsolutePath
@@ -64,23 +68,21 @@ int _OFString_PathAdditions_reference;
 		return ret;
 	}
 
-	if (cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
-
 	for (i = 0; i < pathCStringLength; i++) {
 		if (cString[i] == '/') {
-			[ret addObject:
-			    [OFString stringWithUTF8String: cString + last
-						    length: i - last]];
+			if (i == 0)
+				[ret addObject: @"/"];
+			else if (i - last != 0)
+				[ret addObject: [OFString
+				    stringWithUTF8String: cString + last
+						  length: i - last]];
+
 			last = i + 1;
 		}
 	}
-	[ret addObject: [OFString stringWithUTF8String: cString + last
-						length: i - last]];
-
-	if ([[ret firstObject] isEqual: @""])
-		[ret replaceObjectAtIndex: 0
-			       withObject: @"/"];
+	if (i - last != 0)
+		[ret addObject: [OFString stringWithUTF8String: cString + last
+							length: i - last]];
 
 	[ret makeImmutable];
 
