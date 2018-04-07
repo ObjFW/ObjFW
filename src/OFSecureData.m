@@ -32,6 +32,15 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFSecureData
++ (bool)isSecure
+{
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+	return true;
+#else
+	return false;
+#endif
+}
+
 + (instancetype)dataWithCount: (size_t)count
 {
 	return [[[self alloc] initWithCount: count] autorelease];

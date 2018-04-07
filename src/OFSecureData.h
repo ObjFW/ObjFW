@@ -33,6 +33,16 @@ OF_ASSUME_NONNULL_BEGIN
 	size_t _mappingSize;
 }
 
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic, getter=isSecure) bool secure;
+#endif
+
+/*!
+ * @brief Whether OFSecureData is secure, meaning preventing the data from
+ *	  being swapped out is supported.
+ */
++ (bool)isSecure;
+
 /*!
  * @brief Creates a new, autoreleased OFSecureData with count items of item
  *	  size 1, all set to zero.
