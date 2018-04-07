@@ -19,6 +19,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFSecureData;
+
 /*!
  * @class OFMD5Hash OFMD5Hash.h ObjFW/OFMD5Hash.h
  *
@@ -26,13 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFMD5Hash: OFObject <OFCryptoHash>
 {
-	uint32_t _state[4];
-	uint64_t _bits;
-	union of_md5_hash_buffer {
-		uint8_t bytes[64];
-		uint32_t words[16];
-	} _buffer;
-	size_t _bufferLength;
+	OFSecureData *_iVarsData;
+	struct of_md5_hash_ivars {
+		uint32_t state[4];
+		uint64_t bits;
+		union of_md5_hash_buffer {
+			uint8_t bytes[64];
+			uint32_t words[16];
+		} buffer;
+		size_t bufferLength;
+	} *_iVars;
 	bool _calculated;
 }
 @end

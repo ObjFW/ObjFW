@@ -21,8 +21,10 @@
 #include <string.h>
 
 #import "OFSHA224Or256Hash.h"
+#import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
+#import "OFOutOfRangeException.h"
 
 @interface OFSHA224Or256Hash ()
 - (void)of_resetState;
@@ -48,10 +50,10 @@ static const uint32_t table[] = {
 };
 
 static OF_INLINE void
-byteSwapVectorIfLE(uint32_t *vector, uint8_t length)
+byteSwapVectorIfLE(uint32_t *vector, uint_fast8_t length)
 {
 #ifndef OF_BIG_ENDIAN
-	for (uint8_t i = 0; i < length; i++)
+	for (uint_fast8_t i = 0; i < length; i++)
 		vector[i] = OF_BSWAP32(vector[i]);
 #endif
 }
@@ -60,7 +62,7 @@ static void
 processBlock(uint32_t *state, uint32_t *buffer)
 {
 	uint32_t new[8];
-	uint8_t i;
+	uint_fast8_t i;
 
 	new[0] = state[0];
 	new[1] = state[1];
@@ -136,6 +138,10 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	self = [super init];
 
 	@try {
+		_iVarsData = [[OFSecureData alloc]
+		    initWithCount: sizeof(*_iVars)];
+		_iVars = [_iVarsData items];
+
 		if ([self class] == [OFSHA224Or256Hash class]) {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
@@ -150,21 +156,24 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	return self;
 }
 
+- (instancetype)of_init
+{
+	return [super init];
+}
+
 - (void)dealloc
 {
-	[self reset];
+	[_iVarsData release];
 
 	[super dealloc];
 }
 
 - (id)copy
 {
-	OFSHA224Or256Hash *copy = [[[self class] alloc] init];
+	OFSHA224Or256Hash *copy = [[[self class] alloc] of_init];
 
-	memcpy(copy->_state, _state, sizeof(_state));
-	copy->_bits = _bits;
-	memcpy(&copy->_buffer, &_buffer, sizeof(_buffer));
-	copy->_bufferLength = _bufferLength;
+	copy->_iVarsData = [_iVarsData copy];
+	copy->_iVars = [copy->_iVarsData items];
 	copy->_calculated = _calculated;
 
 	return copy;
@@ -173,29 +182,33 @@ processBlock(uint32_t *state, uint32_t *buffer)
 - (void)updateWithBuffer: (const void *)buffer_
 		  length: (size_t)length
 {
-	const uint8_t *buffer = buffer_;
+	const unsigned char *buffer = buffer_;
 
 	if (_calculated)
 		@throw [OFHashAlreadyCalculatedException
 		    exceptionWithObject: self];
 
-	_bits += (length * 8);
+	if (length > SIZE_MAX / 8)
+		@throw [OFOutOfRangeException exception];
+
+	_iVars->bits += (length * 8);
 
 	while (length > 0) {
-		size_t min = 64 - _bufferLength;
+		size_t min = 64 - _iVars->bufferLength;
 
 		if (min > length)
 			min = length;
 
-		memcpy(_buffer.bytes + _bufferLength, buffer, min);
-		_bufferLength += min;
+		memcpy(_iVars->buffer.bytes + _iVars->bufferLength,
+		    buffer, min);
+		_iVars->bufferLength += min;
 
 		buffer += min;
 		length -= min;
 
-		if (_bufferLength == 64) {
-			processBlock(_state, _buffer.words);
-			_bufferLength = 0;
+		if (_iVars->bufferLength == 64) {
+			processBlock(_iVars->state, _iVars->buffer.words);
+			_iVars->bufferLength = 0;
 		}
 	}
 }
@@ -203,33 +216,36 @@ processBlock(uint32_t *state, uint32_t *buffer)
 - (const unsigned char *)digest
 {
 	if (_calculated)
-		return (const uint8_t *)_state;
+		return (const unsigned char *)_iVars->state;
 
-	_buffer.bytes[_bufferLength] = 0x80;
-	memset(_buffer.bytes + _bufferLength + 1, 0, 64 - _bufferLength - 1);
+	_iVars->buffer.bytes[_iVars->bufferLength] = 0x80;
+	of_explicit_memset(_iVars->buffer.bytes + _iVars->bufferLength + 1, 0,
+	    64 - _iVars->bufferLength - 1);
 
-	if (_bufferLength >= 56) {
-		processBlock(_state, _buffer.words);
-		memset(_buffer.bytes, 0, 64);
+	if (_iVars->bufferLength >= 56) {
+		processBlock(_iVars->state, _iVars->buffer.words);
+		of_explicit_memset(_iVars->buffer.bytes, 0, 64);
 	}
 
-	_buffer.words[14] = OF_BSWAP32_IF_LE((uint32_t)(_bits >> 32));
-	_buffer.words[15] = OF_BSWAP32_IF_LE((uint32_t)(_bits & 0xFFFFFFFF));
+	_iVars->buffer.words[14] =
+	    OF_BSWAP32_IF_LE((uint32_t)(_iVars->bits >> 32));
+	_iVars->buffer.words[15] =
+	    OF_BSWAP32_IF_LE((uint32_t)(_iVars->bits & 0xFFFFFFFF));
 
-	processBlock(_state, _buffer.words);
-	memset(&_buffer, 0, sizeof(_buffer));
-	byteSwapVectorIfLE(_state, 8);
+	processBlock(_iVars->state, _iVars->buffer.words);
+	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	byteSwapVectorIfLE(_iVars->state, 8);
 	_calculated = true;
 
-	return (const uint8_t *)_state;
+	return (const unsigned char *)_iVars->state;
 }
 
 - (void)reset
 {
 	[self of_resetState];
-	_bits = 0;
-	memset(&_buffer, 0, sizeof(_buffer));
-	_bufferLength = 0;
+	_iVars->bits = 0;
+	of_explicit_memset(&_iVars->buffer, 0, sizeof(_iVars->buffer));
+	_iVars->bufferLength = 0;
 	_calculated = false;
 }
 

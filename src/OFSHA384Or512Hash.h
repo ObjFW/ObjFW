@@ -19,6 +19,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFSecureData;
+
 /*!
  * @class OFSHA384Or512Hash OFSHA384Or512Hash.h ObjFW/OFSHA384Or512Hash.h
  *
@@ -26,13 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSHA384Or512Hash: OFObject <OFCryptoHash>
 {
-	uint64_t _state[8];
-	uint64_t _bits[2];
-	union of_sha_384_or_512_hash_buffer {
-		uint8_t bytes[128];
-		uint64_t words[80];
-	} _buffer;
-	size_t _bufferLength;
+	OFSecureData *_iVarsData;
+	struct of_sha384_or_512_hash_ivars {
+		uint64_t state[8];
+		uint64_t bits[2];
+		union of_sha384_or_512_hash_buffer {
+			uint8_t bytes[128];
+			uint64_t words[80];
+		} buffer;
+		size_t bufferLength;
+	} *_iVars;
 	bool _calculated;
 }
 @end

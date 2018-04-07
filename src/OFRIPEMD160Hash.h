@@ -19,6 +19,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFSecureData;
+
 /*!
  * @class OFRIPEMD160Hash OFRIPEMD160Hash.h ObjFW/OFRIPEMD160Hash.h
  *
@@ -26,13 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFRIPEMD160Hash: OFObject <OFCryptoHash>
 {
-	uint32_t _state[5];
-	uint64_t _bits;
-	union of_ripemd_160_hash_buffer {
-		uint8_t bytes[64];
-		uint32_t words[16];
-	} _buffer;
-	size_t _bufferLength;
+	OFSecureData *_iVarsData;
+	struct of_ripemd160_hash_ivars {
+		uint32_t state[5];
+		uint64_t bits;
+		union of_ripemd160_hash_buffer {
+			uint8_t bytes[64];
+			uint32_t words[16];
+		} buffer;
+		size_t bufferLength;
+	} *_iVars;
 	bool _calculated;
 }
 @end

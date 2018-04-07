@@ -27,13 +27,13 @@
 
 - (void)of_resetState
 {
-	_state[0] = 0xC1059ED8;
-	_state[1] = 0x367CD507;
-	_state[2] = 0x3070DD17;
-	_state[3] = 0xF70E5939;
-	_state[4] = 0xFFC00B31;
-	_state[5] = 0x68581511;
-	_state[6] = 0x64F98FA7;
-	_state[7] = 0xBEFA4FA4;
+	_iVars->state[0] = 0xC1059ED8;
+	_iVars->state[1] = 0x367CD507;
+	_iVars->state[2] = 0x3070DD17;
+	_iVars->state[3] = 0xF70E5939;
+	_iVars->state[4] = 0xFFC00B31;
+	_iVars->state[5] = 0x68581511;
+	_iVars->state[6] = 0x64F98FA7;
+	_iVars->state[7] = 0xBEFA4FA4;
 }
 @end

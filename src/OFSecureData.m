@@ -83,7 +83,10 @@
 	self = [super init];
 
 	@try {
-		size_t size, pageSize;
+		size_t size;
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+		size_t pageSize;
+#endif
 
 		if OF_UNLIKELY (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
@@ -92,9 +95,8 @@
 			@throw [OFOutOfRangeException exception];
 
 		size = itemSize * count;
-		pageSize = [OFSystemInfo pageSize];
-
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+		pageSize = [OFSystemInfo pageSize];
 		_mappingSize = OF_ROUND_UP_POW2(pageSize, size);
 
 		if OF_UNLIKELY (_mappingSize < size)
@@ -109,18 +111,16 @@
 		if OF_UNLIKELY (mlock(_items, _mappingSize) != 0)
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: _mappingSize];
-
-		of_explicit_memset(_items, 0, _mappingSize);
 #else
 		if OF_UNLIKELY ((_items = malloc(size)) == NULL)
 			@throw [OFOutOfMemoryException
 			    exceptionWithRequestedSize: size];
-
-		of_explicit_memset(_items, 0, size);
 #endif
 
 		_itemSize = itemSize;
 		_count = count;
+
+		[self zero];
 	} @catch (id e) {
 		[self release];
 		@throw e;

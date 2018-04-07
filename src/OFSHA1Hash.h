@@ -19,6 +19,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFSecureData;
+
 /*!
  * @class OFSHA1Hash OFSHA1Hash.h ObjFW/OFSHA1Hash.h
  *
@@ -26,13 +28,16 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSHA1Hash: OFObject <OFCryptoHash>
 {
-	uint32_t _state[5];
-	uint64_t _bits;
-	union of_sha_1_hash_buffer {
-		uint8_t bytes[64];
-		uint32_t words[80];
-	} _buffer;
-	size_t _bufferLength;
+	OFSecureData *_iVarsData;
+	struct of_sha1_hash_ivars {
+		uint32_t state[5];
+		uint64_t bits;
+		union of_sha1_hash_buffer {
+			uint8_t bytes[64];
+			uint32_t words[80];
+		} buffer;
+		size_t bufferLength;
+	} *_iVars;
 	bool _calculated;
 }
 @end
