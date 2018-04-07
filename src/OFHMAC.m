@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFHMAC.h"
+#import "OFSecureData.h"
 
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFInvalidArgumentException.h"
@@ -59,7 +60,10 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t blockSize = [_hashClass blockSize];
-	uint8_t outerKeyPad[blockSize], innerKeyPad[blockSize];
+	OFSecureData *outerKeyPad = [OFSecureData dataWithCount: blockSize];
+	OFSecureData *innerKeyPad = [OFSecureData dataWithCount: blockSize];
+	unsigned char *outerKeyPadItems = [outerKeyPad items];
+	unsigned char *innerKeyPadItems = [innerKeyPad items];
 
 	[_outerHash release];
 	[_innerHash release];
@@ -67,38 +71,43 @@
 	[_innerHashCopy release];
 	_outerHash = _innerHash = _outerHashCopy = _innerHashCopy = nil;
 
-	if (length > blockSize) {
-		id <OFCryptoHash> hash = [_hashClass cryptoHash];
+	@try {
+		if (length > blockSize) {
+			id <OFCryptoHash> hash = [_hashClass cryptoHash];
 
-		[hash updateWithBuffer: key
-				length: length];
+			[hash updateWithBuffer: key
+					length: length];
 
-		length = [_hashClass digestSize];
-		if OF_UNLIKELY (length > blockSize)
-			length = blockSize;
+			length = [_hashClass digestSize];
+			if OF_UNLIKELY (length > blockSize)
+				length = blockSize;
 
-		memcpy(outerKeyPad, [hash digest], length);
-		memcpy(innerKeyPad, [hash digest], length);
-	} else {
-		memcpy(outerKeyPad, key, length);
-		memcpy(innerKeyPad, key, length);
+			memcpy(outerKeyPadItems, [hash digest], length);
+			memcpy(innerKeyPadItems, [hash digest], length);
+		} else {
+			memcpy(outerKeyPadItems, key, length);
+			memcpy(innerKeyPadItems, key, length);
+		}
+
+		memset(outerKeyPadItems + length, 0, blockSize - length);
+		memset(innerKeyPadItems + length, 0, blockSize - length);
+
+		for (size_t i = 0; i < blockSize; i++) {
+			outerKeyPadItems[i] ^= 0x5C;
+			innerKeyPadItems[i] ^= 0x36;
+		}
+
+		_outerHash = [[_hashClass cryptoHash] retain];
+		_innerHash = [[_hashClass cryptoHash] retain];
+
+		[_outerHash updateWithBuffer: outerKeyPadItems
+				      length: blockSize];
+		[_innerHash updateWithBuffer: innerKeyPadItems
+				      length: blockSize];
+	} @catch (id e) {
+		[outerKeyPad zero];
+		[innerKeyPad zero];
 	}
-
-	memset(outerKeyPad + length, 0, blockSize - length);
-	memset(innerKeyPad + length, 0, blockSize - length);
-
-	for (size_t i = 0; i < blockSize; i++) {
-		outerKeyPad[i] ^= 0x5C;
-		innerKeyPad[i] ^= 0x36;
-	}
-
-	_outerHash = [[_hashClass cryptoHash] retain];
-	_innerHash = [[_hashClass cryptoHash] retain];
-
-	[_outerHash updateWithBuffer: outerKeyPad
-			      length: blockSize];
-	[_innerHash updateWithBuffer: innerKeyPad
-			      length: blockSize];
 
 	objc_autoreleasePoolPop(pool);
 
