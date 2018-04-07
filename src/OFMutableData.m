@@ -119,19 +119,6 @@
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
-			      count: (size_t)count
-		       freeWhenDone: (bool)freeWhenDone
-{
-	self = [self initWithItems: items
-			     count: count];
-
-	if (freeWhenDone)
-		free(items);
-
-	return self;
-}
-
-- (instancetype)initWithItemsNoCopy: (void *)items
 			   itemSize: (size_t)itemSize
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone

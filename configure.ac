@@ -787,6 +787,9 @@ case "$host_os" in
 		;;
 esac
 
+AC_CHECK_HEADERS(sys/mman.h)
+AC_CHECK_FUNCS(mmap mlock)
+
 AC_ARG_ENABLE(threads,
 	AS_HELP_STRING([--disable-threads], [disable thread support]))
 AS_IF([test x"$enable_threads" != x"no"], [

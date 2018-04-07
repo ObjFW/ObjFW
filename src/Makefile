@@ -62,6 +62,7 @@ SRCS = OFApplication.m			\
        OFRIPEMD160Hash.m		\
        OFRunLoop.m			\
        OFSandbox.m			\
+       OFSecureData.m			\
        OFSeekableStream.m		\
        OFSet.m				\
        OFSHA1Hash.m			\

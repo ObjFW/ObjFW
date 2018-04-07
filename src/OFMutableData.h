@@ -189,7 +189,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @warning The pointer is only valid until the OFMutableData is changed!
  *
  * Modifying the returned array directly is allowed and will change the contents
- * of the data array.
+ * of the data.
  */
 @property (readonly, nonatomic) void *items OF_RETURNS_INNER_POINTER;
 
@@ -197,7 +197,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The first item of the OFMutableData or `NULL`.
  *
  * Modifying the returned item directly is allowed and will change the contents
- * of the data array.
+ * of the data.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *firstItem
     OF_RETURNS_INNER_POINTER;
@@ -206,7 +206,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Last item of the OFMutableData or `NULL`.
  *
  * Modifying the returned item directly is allowed and will change the contents
- * of the data array.
+ * of the data.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *lastItem
     OF_RETURNS_INNER_POINTER;
@@ -220,7 +220,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Returns a specific item of the OFMutableData.
  *
  * Modifying the returned item directly is allowed and will change the contents
- * of the data array.
+ * of the data.
  *
  * @param index The number of the item to return
  * @return The specified item of the OFMutableData

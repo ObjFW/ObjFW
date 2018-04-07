@@ -24,6 +24,7 @@
 
 #import "OFData.h"
 #import "OFArray.h"
+#import "OFSecureData.h"
 
 #import "OFList.h"
 #import "OFSortedList.h"

@@ -132,12 +132,12 @@ _references_to_categories_of_OFData(void)
 		if (itemSize == 0)
 			@throw [OFInvalidArgumentException exception];
 
-		_itemSize = itemSize;
-		_count = count;
 		_items = [self allocMemoryWithSize: itemSize
 					     count: count];
+		_itemSize = itemSize;
+		_count = count;
 
-		memcpy(_items, items, itemSize * count);
+		memcpy(_items, items, count * itemSize);
 	} @catch (id e) {
 		[self release];
 		@throw e;
