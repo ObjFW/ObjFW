@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #import "OFHMAC.h"
+#import "OFSecureData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
@@ -32,10 +33,14 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
     const char *password, size_t passwordLength,
     unsigned char *key, size_t keyLength)
 {
+	void *pool = objc_autoreleasePoolPush();
 	size_t blocks, digestSize = [HMAC digestSize];
-	unsigned char *extendedSalt;
-	unsigned char buffer[digestSize];
-	unsigned char digest[digestSize];
+	OFSecureData *buffer = [OFSecureData dataWithCount: digestSize];
+	OFSecureData *digest = [OFSecureData dataWithCount: digestSize];
+	unsigned char *bufferItems = [buffer items];
+	unsigned char *digestItems = [digest items];
+	OFSecureData *extendedSalt;
+	unsigned char *extendedSaltItems;
 
 	if (HMAC == nil || iterations == 0 || salt == NULL ||
 	    password == NULL || key == NULL || keyLength == 0)
@@ -48,9 +53,8 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 	if (saltLength > SIZE_MAX - 4 || blocks > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((extendedSalt = malloc(saltLength + 4)) == NULL)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: saltLength + 4];
+	extendedSalt = [OFSecureData dataWithCount: saltLength + 4];
+	extendedSaltItems = [extendedSalt items];
 
 	@try {
 		uint32_t i = OF_BSWAP32_IF_LE(1);
@@ -58,46 +62,48 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 		[HMAC setKey: password
 		      length: passwordLength];
 
-		memcpy(extendedSalt, salt, saltLength);
+		memcpy(extendedSaltItems, salt, saltLength);
 
 		while (keyLength > 0) {
 			size_t length;
 
-			memcpy(extendedSalt + saltLength, &i, 4);
+			memcpy(extendedSaltItems + saltLength, &i, 4);
 
 			[HMAC reset];
-			[HMAC updateWithBuffer: extendedSalt
+			[HMAC updateWithBuffer: extendedSaltItems
 					length: saltLength + 4];
-			memcpy(buffer, [HMAC digest], digestSize);
-			memcpy(digest, [HMAC digest], digestSize);
+			memcpy(bufferItems, [HMAC digest], digestSize);
+			memcpy(digestItems, [HMAC digest], digestSize);
 
 			for (size_t j = 1; j < iterations; j++) {
 				[HMAC reset];
-				[HMAC updateWithBuffer: digest
+				[HMAC updateWithBuffer: digestItems
 						length: digestSize];
-				memcpy(digest, [HMAC digest], digestSize);
+				memcpy(digestItems, [HMAC digest], digestSize);
 
 				for (size_t k = 0; k < digestSize; k++)
-					buffer[k] ^= digest[k];
+					bufferItems[k] ^= digestItems[k];
 			}
 
 			length = digestSize;
 			if (length > keyLength)
 				length = keyLength;
 
-			memcpy(key, buffer, length);
+			memcpy(key, bufferItems, length);
 			key += length;
 			keyLength -= length;
 
 			i = OF_BSWAP32_IF_LE(OF_BSWAP32_IF_LE(i) + 1);
 		}
+	} @catch (id e) {
+		[extendedSalt zero];
+		[buffer zero];
+		[digest zero];
+
+		@throw e;
 	} @finally {
-		of_explicit_memset(extendedSalt, 0, saltLength + 4);
-		of_explicit_memset(buffer, 0, digestSize);
-		of_explicit_memset(digest, 0, digestSize);
-
 		[HMAC zero];
-
-		free(extendedSalt);
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
