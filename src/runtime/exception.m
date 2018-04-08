@@ -339,11 +339,13 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	if (enc == DW_EH_PE_aligned)
 		OBJC_ERROR("DW_EH_PE_aligned is not implemented!")
 
-#define READ(type)				\
-	{					\
-		value = *(type *)(void *)*ptr;	\
-		*ptr += size_for_encoding(enc);	\
-		break;				\
+#define READ(type)					\
+	{						\
+		type tmp;				\
+		memcpy(&tmp, *ptr, sizeof(type));	\
+		value = tmp;				\
+		*ptr += size_for_encoding(enc);		\
+		break;					\
 	}
 	switch (enc & 0x0F) {
 	case DW_EH_PE_absptr:
