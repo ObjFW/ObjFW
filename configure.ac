@@ -80,20 +80,6 @@ AC_PROG_EGREP
 
 BUILDSYS_CHECK_IOS
 
-case "$host" in
-	dnl OpenBSD 6.2 switched to clang for i386 and AMD64, and clang does no
-	dnl longer link in libgcc. Unwinding is unfortunately in libc++abi, so
-	dnl we need that. We add -pthread as libc++abi requires threads.
-	i386-*-openbsd6.[[23456789]] | i386-*-openbsd[[789]].* | \
-	x86_64-*-openbsd6.[[23456789]] | x86_64-*-openbsd[[789]].*)
-		case "$OBJC" in
-			*clang*)
-				LIBS="$LIBS -lc++abi -pthread"
-				;;
-		esac
-		;;
-esac
-
 AC_ARG_WITH(wii,
 	AS_HELP_STRING([--with-wii], [build for Wii]))
 AS_IF([test x"$with_wii" = x"yes"], [
@@ -470,6 +456,14 @@ case "$objc_runtime" in
 		], [
 			AC_MSG_RESULT(exceptions unavailable!)
 			AC_MSG_ERROR([Exceptions not accepted by compiler!])
+		])
+
+		AC_CHECK_FUNC(_Unwind_RaiseException, [], [
+			AC_CHECK_LIB(c++, _Unwind_RaiseException, [
+				LIBS="-lc++ -lc++abi -lpthread $LIBS"
+			], [
+				AC_MSG_ERROR([_Unwind_RaiseException missing!])
+			], [-lc++abi -lpthread])
 		])
 
 		AC_CHECK_FUNCS(_Unwind_GetDataRelBase _Unwind_GetTextRelBase)
