@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdlib.h>
 
 #ifdef HAVE_SYS_MMAN_H
@@ -36,7 +37,7 @@
 # import "threading.h"
 #endif
 
-#define CHUNK_SIZE 32
+#define CHUNK_SIZE 16
 
 struct page {
 	struct page *next, *previous;
@@ -69,7 +70,7 @@ mapPages(size_t numPages)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: pageSize];
 
-	if (mlock(pointer, numPages * pageSize) != 0)
+	if (mlock(pointer, numPages * pageSize) != 0 && errno != EPERM)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: pageSize];
 #else
@@ -241,7 +242,30 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 + (bool)isSecure
 {
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-	return true;
+	bool isSecure = true;
+	size_t pageSize = [OFSystemInfo pageSize];
+	void *pointer;
+
+	if ((pointer = mmap(NULL, pageSize, PROT_READ | PROT_WRITE,
+	    MAP_PRIVATE | MAP_ANON, -1, 0)) == MAP_FAILED)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
+
+	if (mlock(pointer, pageSize) != 0) {
+		if (errno != EPERM) {
+			munmap(pointer, pageSize);
+
+			@throw [OFOutOfMemoryException
+			    exceptionWithRequestedSize: pageSize];
+		}
+
+		isSecure = false;
+	}
+
+	munlock(pointer, pageSize);
+	munmap(pointer, pageSize);
+
+	return isSecure;
 #else
 	return false;
 #endif
@@ -406,7 +430,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (_count * _itemSize > pageSize)
 		unmapPages(_items,
 		    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) / pageSize);
-	else {
+	else if (_page != NULL) {
 		if (_items != NULL)
 			freeMemory(_page, _items, _count * _itemSize);
 
