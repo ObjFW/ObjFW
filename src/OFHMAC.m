@@ -107,6 +107,8 @@
 	} @catch (id e) {
 		[outerKeyPad zero];
 		[innerKeyPad zero];
+
+		@throw e;
 	}
 
 	objc_autoreleasePoolPop(pool);
