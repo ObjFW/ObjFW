@@ -27,11 +27,217 @@
 #import "OFString.h"
 #import "OFSystemInfo.h"
 
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
+#ifdef OF_HAVE_THREADS
+# import "threading.h"
+#endif
+
+#define CHUNK_SIZE 32
+
+struct page {
+	struct page *next, *previous;
+	void *map;
+	unsigned char *page;
+};
+
+#if defined(OF_HAVE_COMPILER_TLS)
+static thread_local struct page *firstPage = NULL;
+static thread_local struct page *lastPage = NULL;
+#elif defined(OF_HAVE_THREADS)
+static of_tlskey_t firstPageKey, lastPageKey;
+#else
+static struct page *firstPage = NULL;
+static struct page *lastPage = NULL;
+#endif
+
+static void *
+mapPages(size_t numPages)
+{
+	size_t pageSize = [OFSystemInfo pageSize];
+	void *pointer;
+
+	if (numPages > SIZE_MAX / pageSize)
+		@throw [OFOutOfRangeException exception];
+
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+	if ((pointer = mmap(NULL, numPages * pageSize, PROT_READ | PROT_WRITE,
+	    MAP_PRIVATE | MAP_ANON, -1, 0)) == MAP_FAILED)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
+
+	if (mlock(pointer, numPages * pageSize) != 0)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
+#else
+	if ((pointer = malloc(numPages * pageSize)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: pageSize];
+#endif
+
+	return pointer;
+}
+
+static void
+unmapPages(void *pointer, size_t numPages)
+{
+	size_t pageSize = [OFSystemInfo pageSize];
+
+	if (numPages > SIZE_MAX / pageSize)
+		@throw [OFOutOfRangeException exception];
+
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+	munlock(pointer, numPages * pageSize);
+	munmap(pointer, numPages * pageSize);
+#else
+	free(pointer);
+#endif
+}
+
+static struct page *
+addPage(void)
+{
+	size_t pageSize = [OFSystemInfo pageSize];
+	size_t mapSize = OF_ROUND_UP_POW2(8, pageSize / CHUNK_SIZE) / 8;
+	struct page *page;
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+	struct page *lastPage;
+#endif
+
+	if ((page = malloc(sizeof(*page))) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: sizeof(*page)];
+
+	if ((page->map = malloc(mapSize)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: mapSize];
+
+	of_explicit_memset(page->map, 0, mapSize);
+
+	page->page = mapPages(1);
+	of_explicit_memset(page->page, 0, pageSize);
+
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+	lastPage = of_tlskey_get(lastPageKey);
+#endif
+
+	page->previous = lastPage;
+	page->next = NULL;
+
+	if (lastPage != NULL)
+		lastPage->next = page;
+
+#if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
+	lastPage = page;
+
+	if (firstPage == NULL)
+		firstPage = page;
+#else
+	OF_ENSURE(of_tlskey_set(lastPageKey, page));
+
+	if (of_tlskey_get(firstPageKey) == NULL)
+		OF_ENSURE(of_tlskey_set(firstPageKey, page));
+#endif
+
+	return page;
+}
+
+static void
+removePageIfEmpty(struct page *page)
+{
+	unsigned char *map = page->map;
+	size_t pageSize = [OFSystemInfo pageSize];
+	size_t mapSize = OF_ROUND_UP_POW2(8, pageSize / CHUNK_SIZE) / 8;
+
+	for (size_t i = 0; i < mapSize; i++)
+		if (map[i] != 0)
+			return;
+
+	unmapPages(page->page, 1);
+	free(page->map);
+
+	if (page->previous != NULL)
+		page->previous->next = page->next;
+	if (page->next != NULL)
+		page->next->previous = page->previous;
+
+#if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
+	if (firstPage == page)
+		firstPage = page->next;
+	if (lastPage == page)
+		lastPage = page->previous;
+#else
+	if (of_tlskey_get(firstPageKey) == page)
+		OF_ENSURE(of_tlskey_set(firstPageKey, page->next));
+	if (of_tlskey_get(lastPageKey) == page)
+		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous));
+#endif
+
+	free(page);
+}
+
+static void *
+allocateMemory(struct page *page, size_t bytes)
+{
+	size_t chunks, chunksLeft, pageSize, i, firstChunk;
+
+	bytes = OF_ROUND_UP_POW2(CHUNK_SIZE, bytes);
+	chunks = chunksLeft = bytes / CHUNK_SIZE;
+	firstChunk = 0;
+	pageSize = [OFSystemInfo pageSize];
+
+	for (i = 0; i < pageSize / CHUNK_SIZE; i++) {
+		if (of_bitset_isset(page->map, i)) {
+			chunksLeft = chunks;
+			firstChunk = i + 1;
+			continue;
+		}
+
+		if (--chunksLeft == 0)
+			break;
+	}
+
+	if (chunksLeft == 0) {
+		for (size_t j = firstChunk; j < firstChunk + chunks; j++)
+			of_bitset_set(page->map, j);
+
+		return page->page + (CHUNK_SIZE * firstChunk);
+	}
+
+	return NULL;
+}
+
+static void
+freeMemory(struct page *page, void *pointer, size_t bytes)
+{
+	size_t chunks, chunkIndex;
+
+	bytes = OF_ROUND_UP_POW2(CHUNK_SIZE, bytes);
+	chunks = bytes / CHUNK_SIZE;
+	chunkIndex = ((uintptr_t)pointer - (uintptr_t)page->page) / CHUNK_SIZE;
+
+	of_explicit_memset(pointer, 0, bytes);
+
+	for (size_t i = 0; i < chunks; i++)
+		of_bitset_clear(page->map, chunkIndex + i);
+}
+
 @implementation OFSecureData
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
++ (void)initialize
+{
+	if (self != [OFSecureData class])
+		return;
+
+	if (!of_tlskey_new(&firstPageKey) || !of_tlskey_new(&lastPageKey))
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+}
+#endif
+
 + (bool)isSecure
 {
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
@@ -92,44 +298,43 @@
 	self = [super init];
 
 	@try {
-		size_t size;
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-		size_t pageSize;
-#endif
+		size_t pageSize = [OFSystemInfo pageSize];
 
-		if OF_UNLIKELY (itemSize == 0)
-			@throw [OFInvalidArgumentException exception];
-
-		if OF_UNLIKELY (count > SIZE_MAX / itemSize)
+		if (count > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
 
-		size = itemSize * count;
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-		pageSize = [OFSystemInfo pageSize];
-		_mappingSize = OF_ROUND_UP_POW2(pageSize, size);
-
-		if OF_UNLIKELY (_mappingSize < size)
-			@throw [OFOutOfRangeException exception];
-
-		if OF_UNLIKELY ((_items = mmap(NULL, _mappingSize,
-		    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0)) ==
-		    MAP_FAILED)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: _mappingSize];
-
-		if OF_UNLIKELY (mlock(_items, _mappingSize) != 0)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: _mappingSize];
-#else
-		if OF_UNLIKELY ((_items = malloc(size)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: size];
+		if (count * itemSize >= pageSize)
+			_items = mapPages(OF_ROUND_UP_POW2(pageSize,
+			    count * itemSize) / pageSize);
+		else {
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+			struct page *lastPage = of_tlskey_get(lastPageKey);
 #endif
+
+			for (struct page *page = lastPage; page != NULL;
+			    page = page->previous) {
+				_items = allocateMemory(page, count * itemSize);
+
+				if (_items != NULL) {
+					_page = page;
+					break;
+				}
+			}
+
+			if (_items == NULL) {
+				_page = addPage();
+				_items = allocateMemory(_page,
+				    count * itemSize);
+
+				if (_items == NULL)
+					@throw [OFOutOfMemoryException
+					    exceptionWithRequestedSize:
+					    count * itemSize];
+			}
+		}
 
 		_itemSize = itemSize;
 		_count = count;
-
-		[self zero];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -196,25 +401,24 @@
 
 - (void)dealloc
 {
-	[self zero];
+	size_t pageSize = [OFSystemInfo pageSize];
 
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-	munlock(_items, _mappingSize);
-	munmap(_items, _mappingSize);
-#else
-	free(_items);
-#endif
+	if (_count * _itemSize > pageSize)
+		unmapPages(_items,
+		    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) / pageSize);
+	else {
+		if (_items != NULL)
+			freeMemory(_page, _items, _count * _itemSize);
+
+		removePageIfEmpty(_page);
+	}
 
 	[super dealloc];
 }
 
 - (void)zero
 {
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-	of_explicit_memset(_items, 0, _mappingSize);
-#else
 	of_explicit_memset(_items, 0, _count * _itemSize);
-#endif
 }
 
 - (id)copy

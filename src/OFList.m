@@ -88,6 +88,7 @@
 		_lastListObject->next = listObject;
 
 	_lastListObject = listObject;
+
 	if (_firstListObject == NULL)
 		_firstListObject = listObject;
 

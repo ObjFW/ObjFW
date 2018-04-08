@@ -30,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSecureData: OFData
 {
-	size_t _mappingSize;
+	struct page *_page;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
