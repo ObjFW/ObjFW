@@ -61,7 +61,7 @@ case "$host" in
 		LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
 		LIBS="$LIBS -lpspge -lpspctrl -lpspsdk -lc -lpspnet"
 		LIBS="$LIBS -lpspnet_inet -lpspnet_apctl -lpspnet_resolver"
-		LIBS="$LIBS -lpsputility -lpspuser -lpspkernel"
+		LIBS="$LIBS -lpsputility -lpspuser -lpspkernel -lgcc -lpsplibc"
 		enable_shared="no"
 		enable_threads="no"	# TODO
 		enable_sockets="no"	# TODO
