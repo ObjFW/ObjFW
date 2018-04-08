@@ -178,6 +178,12 @@ case "$OBJC" in
 			*-*-mingw*)
 				ASFLAGS="$ASFLAGS -no-integrated-as"
 				;;
+			dnl Clang generates assembly output on SPARC64 that
+			dnl OpenBSD's assembler does not accept.
+			sparc64-*-*openbsd*)
+				OBJCFLAGS="$OBJCFLAGS -integrated-as"
+				AC_SUBST(INTEGRATED_AS, "-integrated-as")
+				;;
 		esac
 		;;
 esac
