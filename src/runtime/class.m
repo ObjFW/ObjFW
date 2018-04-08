@@ -860,7 +860,7 @@ unregister_class(Class rcls)
 
 	rcls->dtable = NULL;
 
-	if (rcls->superclass != Nil)
+	if ((rcls->info & OBJC_CLASS_INFO_SETUP) && rcls->superclass != Nil)
 		cls->superclass = rcls->superclass->name;
 
 	rcls->info &= ~OBJC_CLASS_INFO_SETUP;
