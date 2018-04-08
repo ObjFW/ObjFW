@@ -171,17 +171,18 @@ extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception *);
 extern void _Unwind_DeleteException(struct _Unwind_Exception *);
 extern void *_Unwind_GetLanguageSpecificData(struct _Unwind_Context *);
 extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context *);
-#ifndef OF_ITANIUM
+#ifdef HAVE__UNWIND_GETDATARELBASE
 extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context *);
+#endif
+#ifdef HAVE__UNWIND_GETTEXTRELBASE
 extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context *);
-#else
-extern uintptr_t _Unwind_GetGR(struct _Unwind_Context *, int);
 #endif
 
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
 # define CONTINUE_UNWIND return _URC_CONTINUE_UNWIND
 
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context *);
+extern uintptr_t _Unwind_GetGR(struct _Unwind_Context *, int);
 extern void _Unwind_SetIP(struct _Unwind_Context *, uintptr_t);
 extern void _Unwind_SetGR(struct _Unwind_Context *, int, uintptr_t);
 #else
@@ -294,14 +295,16 @@ get_base(struct _Unwind_Context *ctx, uint8_t enc)
 		return 0;
 	case DW_EH_PE_funcrel:
 		return _Unwind_GetRegionStart(ctx);
-#ifndef OF_ITANIUM
+#ifdef HAVE__UNWIND_GETDATARELBASE
 	case DW_EH_PE_datarel:
 		return _Unwind_GetDataRelBase(ctx);
-	case DW_EH_PE_textrel:
-		return _Unwind_GetTextRelBase(ctx);
 #else
 	case DW_EH_PE_datarel:
 		return _Unwind_GetGR(ctx, 1);
+#endif
+#ifdef HAVE__UNWIND_GETTEXTRELBASE
+	case DW_EH_PE_textrel:
+		return _Unwind_GetTextRelBase(ctx);
 #endif
 	}
 

@@ -471,6 +471,8 @@ case "$objc_runtime" in
 			AC_MSG_RESULT(exceptions unavailable!)
 			AC_MSG_ERROR([Exceptions not accepted by compiler!])
 		])
+
+		AC_CHECK_FUNCS(_Unwind_GetDataRelBase _Unwind_GetTextRelBase)
 		;;
 	"Apple runtime")
 		AC_DEFINE(OF_APPLE_RUNTIME, 1,
@@ -484,6 +486,8 @@ case "$objc_runtime" in
 		])
 		;;
 esac
+
+AC_CHECK_FUNCS(_Unwind_Backtrace)
 
 AC_CHECK_FUNC(objc_constructInstance, [], [
 	AC_SUBST(INSTANCE_M, "instance.m")

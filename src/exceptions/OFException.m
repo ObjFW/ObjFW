@@ -43,29 +43,10 @@
 # include <winerror.h>
 #endif
 
-/*
- * Define HAVE_DWARF_EXCEPTIONS if OBJC_ZEROCOST_EXCEPTIONS is defined, but
- * don't do so on iOS, as it is defined there even if SjLj exceptions are used.
- */
-#ifndef HAVE_DWARF_EXCEPTIONS
-# if defined(OBJC_ZEROCOST_EXCEPTIONS) && !defined(OF_IOS)
-#  define HAVE_DWARF_EXCEPTIONS
-# endif
-#endif
-
-/*
- * Define HAVE_DWARF_EXCEPTIONS if HAVE_SEH_EXCEPTIONS is defined, as SEH
- * exceptions are implemented as a wrapper around DWARF exceptions.
- */
-#ifdef HAVE_SEH_EXCEPTIONS
-# define HAVE_DWARF_EXCEPTIONS
-#endif
-
 #if defined(OF_ARM) && !defined(__ARM_DWARF_EH__)
 # define HAVE_ARM_EHABI_EXCEPTIONS
 #endif
 
-#ifdef HAVE_DWARF_EXCEPTIONS
 struct _Unwind_Context;
 typedef enum {
 	_URC_OK		  = 0,
@@ -77,14 +58,15 @@ struct backtrace_ctx {
 	uint8_t i;
 };
 
+#ifdef HAVE__UNWIND_BACKTRACE
 extern _Unwind_Reason_Code _Unwind_Backtrace(
     _Unwind_Reason_Code (*)(struct _Unwind_Context *, void *), void *);
-# ifndef HAVE_ARM_EHABI_EXCEPTIONS
+#endif
+#ifndef HAVE_ARM_EHABI_EXCEPTIONS
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context *);
-# else
+#else
 extern int _Unwind_VRS_Get(struct _Unwind_Context *, int, uint32_t, int,
     void *);
-# endif
 #endif
 
 #if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
@@ -225,7 +207,7 @@ of_strerror(int errNo)
 	return ret;
 }
 
-#ifdef HAVE_DWARF_EXCEPTIONS
+#ifdef HAVE__UNWIND_BACKTRACE
 static _Unwind_Reason_Code
 backtrace_callback(struct _Unwind_Context *ctx, void *data)
 {
@@ -253,7 +235,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 	return [[[self alloc] init] autorelease];
 }
 
-#ifdef HAVE_DWARF_EXCEPTIONS
+#ifdef HAVE__UNWIND_BACKTRACE
 - (instancetype)init
 {
 	struct backtrace_ctx ctx;
@@ -276,7 +258,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 
 - (OFArray OF_GENERIC(OFString *) *)backtrace
 {
-#ifdef HAVE_DWARF_EXCEPTIONS
+#ifdef HAVE__UNWIND_BACKTRACE
 	OFMutableArray OF_GENERIC(OFString *) *backtrace =
 	    [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
