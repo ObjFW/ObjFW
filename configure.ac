@@ -433,6 +433,8 @@ case "$objc_runtime" in
 				exception_type="SEH"
 			])
 
+			raise_exception="_Unwind_RaiseException"
+
 			case "$exception_type" in
 			DWARF)
 				AC_DEFINE(HAVE_DWARF_EXCEPTIONS, 1,
@@ -441,6 +443,7 @@ case "$objc_runtime" in
 			SjLj)
 				AC_DEFINE(HAVE_SJLJ_EXCEPTIONS, 1,
 					[Whether SjLj exceptions are used])
+				raise_exception="_Unwind_SjLj_RaiseException"
 				;;
 			SEH)
 				AC_DEFINE(HAVE_SEH_EXCEPTIONS, 1,
@@ -458,8 +461,8 @@ case "$objc_runtime" in
 			AC_MSG_ERROR([Exceptions not accepted by compiler!])
 		])
 
-		AC_CHECK_FUNC(_Unwind_RaiseException, [], [
-			AC_CHECK_LIB(c++, _Unwind_RaiseException, [
+		AC_CHECK_FUNC($raise_exception, [], [
+			AC_CHECK_LIB(c++, $raise_exception, [
 				LIBS="-lc++ -lc++abi -lpthread $LIBS"
 			], [
 				AC_MSG_ERROR([_Unwind_RaiseException missing!])
