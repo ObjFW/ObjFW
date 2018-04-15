@@ -409,6 +409,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
+# elif defined(OF_AMIGAOS)
+	return @"PROGDIR:";
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
@@ -501,6 +503,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 								 object: self];
 
 	return [OFString stringWithUTF8String: pathC];
+# elif defined(OF_AMIGAOS)
+	return @"PROGDIR:";
 # else
 	OFDictionary *env = [OFApplication environment];
 	OFString *var;
