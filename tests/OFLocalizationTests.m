@@ -22,33 +22,21 @@
 
 #import "TestsAppDelegate.h"
 
+static OFString *module = @"OFLocalization";
+
 @implementation TestsAppDelegate (OFLocalizationTests)
 - (void)localizationTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFString *msg;
 
-	msg = [OFString stringWithFormat:
-	     @"[OFLocalization] Language: %@\n", [OFLocalization language]];
-	[self outputString: msg
-		   inColor: GREEN];
+	PRINT(GREEN, @"Language: %@", [OFLocalization language]);
 
-	msg = [OFString stringWithFormat:
-	    @"[OFLocalization] Territory: %@\n", [OFLocalization territory]];
-	[self outputString: msg
-		   inColor: GREEN];
+	PRINT(GREEN, @"Territory: %@", [OFLocalization territory]);
 
-	msg = [OFString stringWithFormat:
-	    @"[OFLocalization] Encoding: %@\n",
-	    of_string_name_of_encoding([OFLocalization encoding])];
-	[self outputString: msg
-		   inColor: GREEN];
+	PRINT(GREEN, @"Encoding: %@",
+	    of_string_name_of_encoding([OFLocalization encoding]));
 
-	msg = [OFString stringWithFormat:
-	    @"[OFLocalization] Decimal point: %@\n",
-	    [OFLocalization decimalPoint]];
-	[self outputString: msg
-		   inColor: GREEN];
+	PRINT(GREEN, @"Decimal point: %@", [OFLocalization decimalPoint]);
 
 	[pool drain];
 }

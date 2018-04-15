@@ -435,6 +435,7 @@ main(int argc, char *argv[])
 	[self pluginTests];
 #endif
 
+	[self systemInfoTests];
 	[self localizationTests];
 
 #if defined(OF_IOS)

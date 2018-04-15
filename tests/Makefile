@@ -29,6 +29,7 @@ SRCS = ForwardingTests.m		\
        OFSetTests.m			\
        OFStreamTests.m			\
        OFStringTests.m			\
+       OFSystemInfoTests.m		\
        OFURLTests.m			\
        OFValueTests.m			\
        OFXMLElementBuilderTests.m	\

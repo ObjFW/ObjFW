@@ -55,6 +55,13 @@
 		}					\
 	}
 #define R(...) (__VA_ARGS__, 1)
+#define PRINT(color, fmt, ...)					\
+	{							\
+		OFString *msg = [OFString stringWithFormat:	\
+		    @"[%@] " fmt @"\n", module, __VA_ARGS__];	\
+		[self outputString: msg				\
+			   inColor: color];			\
+	}
 
 @class OFString;
 
@@ -206,6 +213,10 @@ enum {
 
 @interface TestsAppDelegate (OFSHA512HashTests)
 - (void)SHA512HashTests;
+@end
+
+@interface TestsAppDelegate (OFSystemInfoTests)
+- (void)systemInfoTests;
 @end
 
 @interface TestsAppDelegate (OFHMACTests)
