@@ -1205,6 +1205,7 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 extern "C" {
 #endif
 extern of_string_encoding_t of_string_parse_encoding(OFString *);
+extern OFString *_Nullable of_string_name_of_encoding(of_string_encoding_t);
 extern size_t of_string_utf8_encode(of_unichar_t, char *);
 extern ssize_t of_string_utf8_decode(const char *, size_t, of_unichar_t *);
 extern size_t of_string_utf16_length(const of_char16_t *);

@@ -191,6 +191,45 @@ of_string_parse_encoding(OFString *string)
 	return encoding;
 }
 
+OFString *
+of_string_name_of_encoding(of_string_encoding_t encoding)
+{
+	switch (encoding) {
+	case OF_STRING_ENCODING_UTF_8:
+		return @"UTF-8";
+	case OF_STRING_ENCODING_ASCII:
+		return @"ASCII";
+	case OF_STRING_ENCODING_ISO_8859_1:
+		return @"ISO 8859-1";
+	case OF_STRING_ENCODING_ISO_8859_2:
+		return @"ISO 8859-2";
+	case OF_STRING_ENCODING_ISO_8859_3:
+		return @"ISO 8859-3";
+	case OF_STRING_ENCODING_ISO_8859_15:
+		return @"ISO 8859-15";
+	case OF_STRING_ENCODING_WINDOWS_1251:
+		return @"Windows-1251";
+	case OF_STRING_ENCODING_WINDOWS_1252:
+		return @"Windows-1252";
+	case OF_STRING_ENCODING_CODEPAGE_437:
+		return @"Codepage 437";
+	case OF_STRING_ENCODING_CODEPAGE_850:
+		return @"Codepage 850";
+	case OF_STRING_ENCODING_CODEPAGE_858:
+		return @"Codepage 858";
+	case OF_STRING_ENCODING_MAC_ROMAN:
+		return @"Mac Roman";
+	case OF_STRING_ENCODING_KOI8_R:
+		return @"KOI8-R";
+	case OF_STRING_ENCODING_KOI8_U:
+		return @"KOI8-U";
+	case OF_STRING_ENCODING_AUTODETECT:
+		return @"autodetect";
+	}
+
+	return nil;
+}
+
 size_t
 of_string_utf8_encode(of_unichar_t character, char *buffer)
 {

@@ -58,6 +58,13 @@
 
 @class OFString;
 
+enum {
+	NO_COLOR,
+	RED,
+	GREEN,
+	YELLOW
+};
+
 @interface TestsAppDelegate: OFObject <OFApplicationDelegate>
 {
 	int _fails;
@@ -131,6 +138,10 @@
 
 @interface TestsAppDelegate (OFListTests)
 - (void)listTests;
+@end
+
+@interface TestsAppDelegate (OFLocalizationTests)
+- (void)localizationTests;
 @end
 
 @interface TestsAppDelegate (OFMD5HashTests)

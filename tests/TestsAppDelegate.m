@@ -60,13 +60,6 @@ PSP_MODULE_INFO("ObjFW Tests", 0, 0, 0);
 # include <3ds.h>
 #endif
 
-enum {
-	NO_COLOR,
-	RED,
-	GREEN,
-	YELLOW
-};
-
 #ifdef OF_PSP
 static int
 exit_cb(int arg1, int arg2, void *arg)
@@ -441,6 +434,8 @@ main(int argc, char *argv[])
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
+
+	[self localizationTests];
 
 #if defined(OF_IOS)
 	[self outputString: [OFString stringWithFormat: @"%d tests failed!",
