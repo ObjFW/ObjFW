@@ -29,16 +29,45 @@
 #import "OFInvalidEncodingException.h"
 #import "OFOpenItemFailedException.h"
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS4
+#  define __NOLIBBASE__
+#  define __NOGLOBALIFACE__
+#  define __USE_INLINE__
+# endif
 # define BOOL EXEC_BOOL
 # include <proto/dos.h>
+# include <proto/exec.h>
 # include <proto/locale.h>
 # undef BOOL
 #endif
 
 static OFLocalization *sharedLocalization = nil;
 
-#ifndef OF_MORPHOS
+#ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
+static struct Library *DOSBase = NULL;
+static struct DOSIFace *IDOS = NULL;
+static struct Library *LocaleBase = NULL;
+static struct LocaleIFace *ILocale = NULL;
+
+OF_DESTRUCTOR()
+{
+	if (ILocale != NULL)
+		DropInterface(ILocale);
+
+	if (LocaleBase != NULL)
+		CloseLibrary(LocaleBase);
+
+	if (IDOS != NULL)
+		DropInterface(IDOS);
+
+	if (DOSBase != NULL)
+		CloseLibrary(DOSBase);
+}
+#endif
+
+#ifndef OF_AMIGAOS
 static void
 parseLocale(char *locale, of_string_encoding_t *encoding,
     OFString **language, OFString **territory)
@@ -89,6 +118,32 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 @synthesize language = _language, territory = _territory, encoding = _encoding;
 @synthesize decimalPoint = _decimalPoint;
 
+#ifdef OF_AMIGAOS4
++ (void)initialize
+{
+	if (self != [OFLocalization class])
+		return;
+
+	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((IDOS = (struct DOSIFace *)
+	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((LocaleBase = OpenLibrary("locale.library", 38)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((ILocale = (struct LocaleIFace *)
+	    GetInterface(LocaleBase, "main", 1, NULL)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+}
+#endif
+
 + (OFLocalization *)sharedLocalization
 {
 	return sharedLocalization;
@@ -126,7 +181,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	self = [super init];
 
 	@try {
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 		char *locale, *messagesLocale = NULL;
 
 		if (sharedLocalization != nil)
@@ -170,7 +225,11 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 		 */
 		setlocale(LC_ALL, "");
 
+# ifdef OF_MORPHOS
 		if (GetVar("CODEPAGE", buffer, sizeof(buffer), 0) > 0) {
+# else
+		if (GetVar("Charset", buffer, sizeof(buffer), 0) > 0) {
+# endif
 			of_string_encoding_t ASCII = OF_STRING_ENCODING_ASCII;
 
 			@try {
@@ -198,27 +257,28 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 			    initWithCString: buffer
 				   encoding: _encoding];
 
-		locale = OpenLocale(NULL);
-		@try {
-			union {
-				uint32_t u32;
-				char c[4];
-			} territory;
-			size_t length;
+		if ((locale = OpenLocale(NULL)) != NULL) {
+			@try {
+				union {
+					uint32_t u32;
+					char c[4];
+				} territory;
+				size_t length;
 
-			territory.u32 =
-			    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
+				territory.u32 =
+				    OF_BSWAP32_IF_LE(locale->loc_CountryCode);
 
-			for (length = 0; length < 4; length++)
-				if (territory.c[length] == 0)
-					break;
+				for (length = 0; length < 4; length++)
+					if (territory.c[length] == 0)
+						break;
 
-			_territory = [[OFString alloc]
-			    initWithCString: territory.c
-				   encoding: _encoding
-				     length: length];
-		} @finally {
-			CloseLocale(locale);
+				_territory = [[OFString alloc]
+				    initWithCString: territory.c
+					   encoding: _encoding
+					     length: length];
+			} @finally {
+				CloseLocale(locale);
+			}
 		}
 
 		objc_autoreleasePoolPop(pool);
