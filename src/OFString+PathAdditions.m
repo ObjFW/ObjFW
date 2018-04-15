@@ -21,6 +21,8 @@
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
 # import "OFString+PathAdditions_DOS.m"
+#elif defined(OF_AMIGAOS)
+# import "OFString+PathAdditions_AmigaOS.m"
 #else
 # import "OFString+PathAdditions_UNIX.m"
 #endif

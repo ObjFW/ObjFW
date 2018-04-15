@@ -61,6 +61,77 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 + (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet;
 @end
 
+#ifdef OF_HAVE_FILES
+static OFString *
+pathToURLPath(OFString *path)
+{
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	path = [path stringByReplacingOccurrencesOfString: @"\\"
+					       withString: @"/"];
+	path = [path stringByPrependingString: @"/"];
+# elif defined(OF_AMIGAOS)
+	OFArray OF_GENERIC(OFString *) *components = [path pathComponents];
+	OFMutableString *ret = [OFMutableString string];
+
+	for (OFString *component in components) {
+		if ([component length] == 0)
+			continue;
+
+		if ([component isEqual: @"/"])
+			[ret appendString: @"/.."];
+		else {
+			[ret appendString: @"/"];
+			[ret appendString: component];
+		}
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+# else
+	return path;
+# endif
+}
+
+static OFString *
+URLPathToPath(OFString *path)
+{
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	path = [path substringWithRange: of_range(1, [path length] - 1)];
+	path = [path stringByReplacingOccurrencesOfString: @"/"
+					       withString: @"\\"];
+# elif defined(OF_AMIGAOS)
+	OFMutableArray OF_GENERIC(OFString *) *components;
+	size_t count;
+
+	path = [path substringWithRange: of_range(1, [path length] - 1)];
+	components = [[[path
+	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
+	count = [components count];
+
+	for (size_t i = 0; i < count; i++) {
+		OFString *component = [components objectAtIndex: i];
+
+		if ([component isEqual: @"."]) {
+			[components removeObjectAtIndex: i];
+			count--;
+
+			i--;
+			continue;
+		}
+
+		if ([component isEqual: @".."])
+			[components replaceObjectAtIndex: i
+					      withObject: @"/"];
+	}
+
+	return [OFString pathWithComponents: components];
+# else
+	return path;
+# endif
+}
+#endif
+
 @interface OFCharacterSet_invertedSetWithPercent: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
@@ -609,6 +680,10 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		isDirectory = ([path hasSuffix: @"\\"] ||
 		    [path hasSuffix: @"/"] ||
 		    [OFURLHandler_file of_directoryExistsAtPath: path]);
+#elif defined(OF_AMIGAOS)
+		isDirectory = ([path hasSuffix: @"/"] ||
+		    [path hasSuffix: @":"] ||
+		    [OFURLHandler_file of_directoryExistsAtPath: path]);
 #else
 		isDirectory = ([path hasSuffix: @"/"] ||
 		    [OFURLHandler_file of_directoryExistsAtPath: path]);
@@ -643,11 +718,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			path = [path stringByStandardizingPath];
 		}
 
-# if defined(OF_WINDOWS) || defined(OF_DJGPP)
-		path = [path stringByReplacingOccurrencesOfString: @"\\"
-						       withString: @"/"];
-		path = [path stringByPrependingString: @"/"];
-# endif
+		path = pathToURLPath(path);
 
 		if (isDirectory && ![path hasSuffix: @"/"])
 			path = [path stringByAppendingString: @"/"];
@@ -964,11 +1035,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		path = [path substringWithRange:
 		    of_range(0, [path length] - 1)];
 
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	path = [path substringWithRange: of_range(1, [path length] - 1)];
-	path = [path stringByReplacingOccurrencesOfString: @"/"
-					       withString: @"\\"];
-#endif
+	path = URLPathToPath(path);
 
 	[path retain];
 

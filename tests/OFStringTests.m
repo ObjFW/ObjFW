@@ -556,6 +556,10 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"C:\\foo") isAbsolutePath] && [C(@"a:/foo") isAbsolutePath] &&
 	    ![C(@"foo") isAbsolutePath] && ![C(@"b:foo") isAbsolutePath])
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[isAbsolutePath]",
+	    [C(@"dh0:foo") isAbsolutePath] && [C(@"dh0:a/b") isAbsolutePath] &&
+	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
 # else
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"/foo") isAbsolutePath] && [C(@"/foo/bar") isAbsolutePath] &&
@@ -630,6 +634,18 @@ static uint16_t sutf16str[] = {
 	    isEqual: @"foo/bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"])
+# elif defined(OF_AMIGAOS)
+	TEST(@"+[pathWithComponents:]",
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"dh0:", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"dh0:foo/bar/baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo/bar/baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo/", @"bar", @"", @"baz", @"/", nil]]
+	    isEqual: @"foo//bar/baz//"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", nil]] isEqual: @"foo"])
 # else
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
@@ -661,13 +677,41 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo\bar/baz/ */
-	    (a = [C(@"foo\\bar/baz") pathComponents]) && [a count] == 3 &&
+	    (a = [C(@"foo\\bar/baz/") pathComponents]) && [a count] == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo\/ */
 	    (a = [C(@"foo\\/") pathComponents]) && [a count] == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[C(@"") pathComponents] count] == 0)
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[pathComponents]",
+	    /* dh0:tmp */
+	    (a = [C(@"dh0:tmp") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* dh0:tmp/ */
+	    (a = [C(@"dh0:tmp/") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* dh0: */
+	    (a = [C(@"dh0:/") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
+	    [[a objectAtIndex: 1] isEqual: @"/"] &&
+	    /* foo/bar */
+	    (a = [C(@"foo/bar") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    /* foo/bar/baz/ */
+	    (a = [C(@"foo/bar/baz/") pathComponents]) && [a count] == 3 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    /* foo// */
+	    (a = [C(@"foo//") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"/"] &&
 	    [[C(@"") pathComponents] count] == 0)
 # else
 	TEST(@"-[pathComponents]",
@@ -687,7 +731,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = [C(@"foo/bar/baz") pathComponents]) && [a count] == 3 &&
+	    (a = [C(@"foo/bar/baz/") pathComponents]) && [a count] == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
@@ -697,21 +741,30 @@ static uint16_t sutf16str[] = {
 	    [[C(@"") pathComponents] count] == 0)
 # endif
 
-# if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-	TEST(@"-[lastPathComponent]",
-	    [[C(@"/tmp") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"/tmp/") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"/") lastPathComponent] isEqual: @"/"] &&
-	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
-	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
-# else
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	TEST(@"-[lastPathComponent]",
 	    [[C(@"c:/tmp") lastPathComponent] isEqual: @"tmp"] &&
 	    [[C(@"c:\\tmp\\") lastPathComponent] isEqual: @"tmp"] &&
 	    [[C(@"\\") lastPathComponent] isEqual: @""] &&
 	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
 	    [[C(@"foo\\bar") lastPathComponent] isEqual: @"bar"] &&
+	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[lastPathComponent]",
+	    [[C(@"dh0:tmp") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"dh0:tmp/") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"dh0:/") lastPathComponent] isEqual: @"/"] &&
+	    [[C(@"dh0:") lastPathComponent] isEqual: @"dh0:"] &&
+	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
+	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
+	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+# else
+	TEST(@"-[lastPathComponent]",
+	    [[C(@"/tmp") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"/tmp/") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"/") lastPathComponent] isEqual: @"/"] &&
+	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
+	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
 	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
 # endif
 
@@ -731,6 +784,20 @@ static uint16_t sutf16str[] = {
 	    isEqual: @"foo"] &&
 	    [[C(@"\\") stringByDeletingLastPathComponent] isEqual: @""] &&
 	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."])
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[stringByDeletingLastPathComponent]",
+	    [[C(@"dh0:") stringByDeletingLastPathComponent] isEqual: @"dh0:"] &&
+	    [[C(@"dh0:tmp") stringByDeletingLastPathComponent]
+	    isEqual: @"dh0:"] &&
+	    [[C(@"dh0:tmp/") stringByDeletingLastPathComponent]
+	    isEqual: @"dh0:"] &&
+	    [[C(@"dh0:/") stringByDeletingLastPathComponent]
+	    isEqual: @"dh0:"] &&
+	    [[C(@"dh0:tmp/foo/") stringByDeletingLastPathComponent]
+	    isEqual: @"dh0:tmp"] &&
+	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
+	    isEqual: @"foo"] &&
+	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @""])
 # else
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [[C(@"/tmp") stringByDeletingLastPathComponent] isEqual: @"/"] &&
@@ -753,6 +820,21 @@ static uint16_t sutf16str[] = {
 	    isEqual: @"c:\\foo.\\bar"] &&
 	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
+	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+# elif defined(OF_AMIGAOS)
+	TEST(@"-[stringByDeletingPathExtension]",
+	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
+	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
+	    [[C(@"dh0:foo.bar") stringByDeletingPathExtension]
+	    isEqual: @"dh0:foo"] &&
+	    [[C(@"dh0:foo./bar") stringByDeletingPathExtension]
+	    isEqual: @"dh0:foo./bar"] &&
+	    [[C(@"dh0:foo./bar.baz") stringByDeletingPathExtension]
+	    isEqual: @"dh0:foo./bar"] &&
+	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
+	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
+	    [[C(@".foo\\bar") stringByDeletingPathExtension]
+	    isEqual: @".foo\\bar"] &&
 	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
 # else
 	TEST(@"-[stringByDeletingPathExtension]",

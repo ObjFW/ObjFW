@@ -238,14 +238,22 @@ int _OFString_PathAdditions_reference;
 - (OFString *)stringByStandardizingPath
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *components = [self pathComponents];
+	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFString *) *array;
 	OFString *ret;
-	bool done = false, endsWithEmpty;
+	bool done = false;
+
+	if ([self length] == 0)
+		return @"";
+
+	components = [self pathComponents];
+
+	if ([components count] == 1) {
+		objc_autoreleasePoolPop(pool);
+		return [[self copy] autorelease];
+	}
 
 	array = [[components mutableCopy] autorelease];
-
-	endsWithEmpty = [[array lastObject] isEqual: @""];
 
 	while (!done) {
 		size_t length = [array count];
@@ -276,7 +284,7 @@ int _OFString_PathAdditions_reference;
 		}
 	}
 
-	if (endsWithEmpty)
+	if ([self hasSuffix: @"\\"] || [self hasSuffix: @"/"])
 		[array addObject: @""];
 
 	ret = [[array componentsJoinedByString: @"\\"] retain];

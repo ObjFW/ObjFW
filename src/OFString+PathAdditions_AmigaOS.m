@@ -29,21 +29,19 @@ int _OFString_PathAdditions_reference;
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	bool first = true;
+	bool firstAfterDevice = true;
 
 	for (OFString *component in components) {
 		if ([component length] == 0)
 			continue;
 
-		if (!first && [component isEqual: @"/"])
-			continue;
-
-		if (!first && ![ret hasSuffix: @"/"])
+		if (!firstAfterDevice)
 			[ret appendString: @"/"];
 
 		[ret appendString: component];
 
-		first = false;
+		if (![component hasSuffix: @":"])
+			firstAfterDevice = false;
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -53,7 +51,7 @@ int _OFString_PathAdditions_reference;
 
 - (bool)isAbsolutePath
 {
-	return [self hasPrefix: @"/"];
+	return [self containsString: @":"];
 }
 
 - (OFArray *)pathComponents
@@ -70,12 +68,18 @@ int _OFString_PathAdditions_reference;
 
 	for (i = 0; i < pathCStringLength; i++) {
 		if (cString[i] == '/') {
-			if (i == 0)
-				[ret addObject: @"/"];
-			else if (i - last != 0)
+			if (i - last != 0)
 				[ret addObject: [OFString
 				    stringWithUTF8String: cString + last
 						  length: i - last]];
+			else
+				[ret addObject: @"/"];
+
+			last = i + 1;
+		} else if (cString[i] == ':') {
+			[ret addObject: [OFString
+			    stringWithUTF8String: cString + last
+					  length: i - last + 1]];
 
 			last = i + 1;
 		}
@@ -93,47 +97,17 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)lastPathComponent
 {
-	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
-	size_t pathCStringLength = [self UTF8StringLength];
-	ssize_t i;
-	OFString *ret;
-
-	if (pathCStringLength == 0) {
-		objc_autoreleasePoolPop(pool);
-		return @"";
-	}
-
-	if (cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
-
-	if (pathCStringLength == 0) {
-		objc_autoreleasePoolPop(pool);
-		return @"/";
-	}
-
-	if (pathCStringLength - 1 > SSIZE_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	for (i = pathCStringLength - 1; i >= 0; i--) {
-		if (cString[i] == '/') {
-			i++;
-			break;
-		}
-	}
-
 	/*
-	 * Only one component, but the trailing delimiter might have been
-	 * removed, so return a new string anyway.
+	 * AmigaOS needs the full parsing to determine the last path component.
+	 * This could be optimized by not creating the temporary objects,
+	 * though.
 	 */
-	if (i < 0)
-		i = 0;
+	void *pool = objc_autoreleasePoolPush();
+	OFArray OF_GENERIC(OFString *) *components = [self pathComponents];
+	OFString *ret = [components lastObject];
 
-	ret = [[OFString alloc] initWithUTF8String: cString + i
-					    length: pathCStringLength - i];
-
+	[ret retain];
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 
@@ -161,43 +135,33 @@ int _OFString_PathAdditions_reference;
 
 - (OFString *)stringByDeletingLastPathComponent
 {
+	/*
+	 * AmigaOS needs the full parsing to delete the last path component.
+	 * This could be optimized, though.
+	 */
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
-	size_t pathCStringLength = [self UTF8StringLength];
+	OFArray OF_GENERIC(OFString *) *components = [self pathComponents];
+	size_t count = [components count];
 	OFString *ret;
 
-	if (pathCStringLength == 0) {
+	if (count < 2) {
+		if ([[components firstObject] hasSuffix: @":"]) {
+			ret = [[components firstObject] retain];
+			objc_autoreleasePoolPop(pool);
+			return [ret autorelease];
+		}
+
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	if (cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
+	components = [components objectsInRange:
+	    of_range(0, [components count] - 1)];
+	ret = [OFString pathWithComponents: components];
 
-	if (pathCStringLength == 0) {
-		objc_autoreleasePoolPop(pool);
-		return @"/";
-	}
-
-	for (size_t i = pathCStringLength; i >= 1; i--) {
-		if (cString[i - 1] == '/') {
-			if (i == 1) {
-				objc_autoreleasePoolPop(pool);
-				return @"/";
-			}
-
-			ret = [[OFString alloc] initWithUTF8String: cString
-							    length: i - 1];
-
-			objc_autoreleasePoolPop(pool);
-
-			return [ret autorelease];
-		}
-	}
-
+	[ret retain];
 	objc_autoreleasePoolPop(pool);
-
-	return @".";
+	return [ret autorelease];
 }
 
 - (OFString *)stringByDeletingPathExtension
@@ -238,7 +202,7 @@ int _OFString_PathAdditions_reference;
 	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFString *) *array;
 	OFString *ret;
-	bool done = false, startsWithSlash;
+	bool done = false;
 
 	if ([self length] == 0)
 		return @"";
@@ -251,10 +215,6 @@ int _OFString_PathAdditions_reference;
 	}
 
 	array = [[components mutableCopy] autorelease];
-	startsWithSlash = [self hasPrefix: @"/"];
-
-	if (startsWithSlash)
-		[array removeObjectAtIndex: 0];
 
 	while (!done) {
 		size_t length = [array count];
@@ -266,16 +226,15 @@ int _OFString_PathAdditions_reference;
 			OFString *parent =
 			    (i > 0 ? [array objectAtIndex: i - 1] : 0);
 
-			if ([component isEqual: @"."] ||
-			   [component length] == 0) {
+			if ([component length] == 0) {
 				[array removeObjectAtIndex: i];
 
 				done = false;
 				break;
 			}
 
-			if ([component isEqual: @".."] &&
-			    parent != nil && ![parent isEqual: @".."]) {
+			if ([component isEqual: @"/"] &&
+			    parent != nil && ![parent isEqual: @"/"]) {
 				[array removeObjectsInRange:
 				    of_range(i - 1, 2)];
 
@@ -285,23 +244,19 @@ int _OFString_PathAdditions_reference;
 		}
 	}
 
-	if (startsWithSlash)
-		[array insertObject: @""
-			    atIndex: 0];
+	ret = [OFString pathWithComponents: array];
 
 	if ([self hasSuffix: @"/"])
-		[array addObject: @""];
+		ret = [ret stringByAppendingString: @"/"];
 
-	ret = [[array componentsJoinedByString: @"/"] retain];
-
+	[ret retain];
 	objc_autoreleasePoolPop(pool);
-
 	return [ret autorelease];
 }
 
 - (OFString *)stringByAppendingPathComponent: (OFString *)component
 {
-	if ([self hasSuffix: @"/"])
+	if ([self hasSuffix: @"/"] || [self hasSuffix: @":"])
 		return [self stringByAppendingString: component];
 	else {
 		OFMutableString *ret = [[self mutableCopy] autorelease];
