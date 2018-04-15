@@ -80,7 +80,9 @@
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
 #ifdef OF_HAVE_SOCKETS
-# import "OFHTTPClient.h"
+# ifdef OF_HAVE_THREADS
+#  import "OFHTTPClient.h"
+# endif
 # import "OFHTTPServer.h"
 #endif
 
