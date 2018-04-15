@@ -166,7 +166,7 @@ static OFString *module = @"OFValue";
 	    isEqual: [OFValue valueWithBytes: &rectangle
 				    objCType: @encode(of_rectangle_t)]] &&
 	    ![[OFValue valueWithBytes: "a"
-			     objCType: @encode(char)]
+			     objCType: @encode(signed char)]
 	    isEqual: [OFValue valueWithBytes: "a"
 				    objCType: @encode(unsigned char)]] &&
 	    ![[OFValue valueWithBytes: "a"
