@@ -152,7 +152,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 			void *pool = objc_autoreleasePoolPush();
 
 			parseLocale(messagesLocale, &_encoding,
-			    &_language, &_language);
+			    &_language, &_territory);
 
 			[_language retain];
 			[_territory retain];
