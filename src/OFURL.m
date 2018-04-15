@@ -1018,6 +1018,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	return ret;
 }
 
+#ifdef OF_HAVE_FILES
 - (OFString *)fileSystemRepresentation
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1043,6 +1044,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	return [path autorelease];
 }
+#endif
 
 - (OFMutableURL *)of_URLByAppendingPathComponent: (OFString *)component
 {

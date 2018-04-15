@@ -142,6 +142,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *string;
 
+#ifdef OF_HAVE_FILES
 /*!
  * @brief The local file system representation for a file URL.
  *
@@ -151,6 +152,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     OFString *fileSystemRepresentation;
+#endif
 
 /*!
  * @brief Creates a new URL with the specified string.
