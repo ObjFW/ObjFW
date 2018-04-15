@@ -24,6 +24,10 @@ dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
 case "$host" in
+	powerpc-*-amigaos*)
+		enable_shared="no"
+		enable_threads="no"
+		;;
 	*-morphos*)
 		AS_IF([test x"$with_ixemul" != x"yes"], [
 			OBJCFLAGS="$OBJCFLAGS -noixemul"
