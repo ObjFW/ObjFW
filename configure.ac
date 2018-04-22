@@ -41,38 +41,8 @@ case "$host" in
 		AC_DEFINE(LLONG_MIN, [(-0x7FFFFFFFFFFFFFFFLL - 1)],
 			[Minimum value for long long])
 
-		AC_DEFINE(PRId8, "hhd", [Format string for 8-bit as decimal])
-		AC_DEFINE(PRId16, "hd", [Format string for 16-bit as decimal])
-		AC_DEFINE(PRId32, "d", [Format string for 32-bit as decimal])
-		AC_DEFINE(PRId64, "lld", [Format string for 64-bit as decimal])
-		AC_DEFINE(PRIi8, "hhi", [Format string for 8-bit as integer])
-		AC_DEFINE(PRIi16, "hi", [Format string for 16-bit as integer])
-		AC_DEFINE(PRIi32, "i", [Format string for 32-bit as integer])
-		AC_DEFINE(PRIi64, "lli", [Format string for 64-bit as integer])
-		AC_DEFINE(PRIo8, "hho", [Format string for 8-bit as octal])
-		AC_DEFINE(PRIo16, "ho", [Format string for 16-bit as octal])
-		AC_DEFINE(PRIo32, "o", [Format string for 32-bit as octal])
-		AC_DEFINE(PRIo64, "llo", [Format string for 64-bit as octal])
-		AC_DEFINE(PRIu8, "hhu", [Format string for 8-bit as unsigned])
-		AC_DEFINE(PRIu16, "hu", [Format string for 16-bit as unsigned])
-		AC_DEFINE(PRIu32, "u", [Format string for 32-bit as unsigned])
-		AC_DEFINE(PRIu64, "llu", [Format string for 64-bit as unsigned])
-		AC_DEFINE(PRIx8, "hhx",
-			[Format string for 8-bit as lowercase hex])
-		AC_DEFINE(PRIx16, "hx",
-			[Format string for 16-bit as lowercase hex])
-		AC_DEFINE(PRIx32, "x",
-			[Format string for 32-bit as lowercase hex])
-		AC_DEFINE(PRIx64, "llx",
-			[Format string for 64-bit as lowercase hex])
-		AC_DEFINE(PRIX8, "hhX",
-			[Format string for 8-bit as uppercase hex])
-		AC_DEFINE(PRIX16, "hX",
-			[Format string for 16-bit as uppercase hex])
-		AC_DEFINE(PRIX32, "X",
-			[Format string for 32-bit as uppercase hex])
-		AC_DEFINE(PRIX64, "llX",
-			[Format string for 64-bit as uppercase hex])
+		AC_DEFINE(__have_longlong64, 1,
+			[Required for AmigaOS to correctly define PRI?64])
 
 		AC_SUBST(NOIXEMUL, -noixemul)
 		;;

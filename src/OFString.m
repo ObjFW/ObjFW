@@ -2506,7 +2506,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#ifdef OF_MORPHOS
+#if defined(OF_AMIGAOS3) || defined(OF_MORPHOS)
 	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
@@ -2556,7 +2556,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#ifdef OF_MORPHOS
+#if defined(OF_AMIGAOS3) || defined(OF_MORPHOS)
 	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||

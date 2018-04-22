@@ -878,20 +878,24 @@ static uint16_t sutf16str[] = {
 	 */
 	TEST(@"-[floatValue]",
 	    [C(@"\t-0.25 ") floatValue] == -0.25 &&
-	    [C(@"\r\n\tINF\t\n") doubleValue] == INFINITY &&
+	    [C(@"\r\n\tINF\t\n") floatValue] == INFINITY &&
 	    [C(@"\r -INFINITY\n") floatValue] == -INFINITY &&
 	    isnan([C(@"   NAN\t\t") floatValue]))
 
-#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP)
+#if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP) && \
+    !defined(OF_AMIGAOS3)
 # define INPUT @"\t-0x1.FFFFFFFFFFFFFP-1020 "
 # define EXPECTED -0x1.FFFFFFFFFFFFFP-1020
 #else
-/* Android, Solaris and DJGPP do not accept 0x for strtod() */
-# if !defined(OF_SOLARIS) || !defined(OF_X86)
+/* Android, Solaris, DJGPP and AmigaOS3 do not accept 0x for strtod() */
+# if (!defined(OF_SOLARIS) || !defined(OF_X86)) && !defined(OF_AMIGAOS3)
 #  define INPUT @"\t-0.123456789 "
 #  define EXPECTED -0.123456789
 # else
-/* Solaris' strtod() has weird rounding on x86, but not on x86_64 */
+/*
+ * Solaris' strtod() has weird rounding on x86, but not on x86_64/
+ * AmigaOS 3 with libnix has weird rounding as well.
+ */
 #  define INPUT @"\t-0.125 "
 #  define EXPECTED -0.125
 # endif

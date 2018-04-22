@@ -113,6 +113,8 @@ initOperatingSystemName(void)
 	operatingSystemName = @"Windows";
 #elif defined(OF_ANDROID)
 	operatingSystemName = @"Android";
+#elif defined(OF_AMIGAOS3)
+	operatingSystemName = @"AmigaOS";
 #elif defined(OF_MORPHOS)
 	operatingSystemName = @"MorphOS";
 #elif defined(OF_AMIGAOS4)
