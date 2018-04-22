@@ -155,6 +155,8 @@ of_method_not_found(id obj, SEL sel)
 	 * never return.
 	 */
 	abort();
+
+	OF_UNREACHABLE
 }
 
 void OF_NO_RETURN_FUNC

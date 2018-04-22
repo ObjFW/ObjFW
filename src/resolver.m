@@ -22,10 +22,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
+
+#import "OFString.h"
 
 #import "resolver.h"
-
 #import "macros.h"
 
 #if !defined(HAVE_THREADSAFE_GETADDRINFO) && defined(OF_HAVE_THREADS)

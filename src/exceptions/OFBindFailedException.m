@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#include <inttypes.h>
-
 #import "OFBindFailedException.h"
 #import "OFString.h"
 

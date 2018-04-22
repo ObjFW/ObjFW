@@ -17,12 +17,11 @@
 
 #include "config.h"
 
-#include <inttypes.h>
-
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
-#import "OFStream.h"
 #import "OFDate.h"
+#import "OFStream.h"
+#import "OFString.h"
 
 #import "OFOutOfRangeException.h"
 

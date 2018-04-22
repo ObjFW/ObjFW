@@ -84,6 +84,9 @@
 #ifdef OF_DJGPP
 # define lrint(x) rint(x)
 #endif
+#ifdef OF_AMIGAOS3
+# define lrint(x) ((long)x)
+#endif
 
 #ifdef OF_HAVE_THREADS
 # import "threading.h"

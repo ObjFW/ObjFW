@@ -29,6 +29,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#import "platform.h"
+
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif

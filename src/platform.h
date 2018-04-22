@@ -109,6 +109,9 @@
 #elif defined(__amigaos4__)
 # define OF_AMIGAOS4
 # define OF_AMIGAOS
+#elif defined(__amigaos__)
+# define OF_AMIGAOS3
+# define OF_AMIGAOS
 #elif defined(__sun__)
 # define OF_SOLARIS
 #elif defined(__QNX__)

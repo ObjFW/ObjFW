@@ -17,7 +17,8 @@
 
 #include "config.h"
 
-#include "platform.h"
+#import "macros.h"
+#import "platform.h"
 
 #if !defined(__has_feature) || !__has_feature(nullability)
 # ifndef _Nonnull
@@ -224,4 +225,5 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 		fprintf(stderr, __VA_ARGS__);				\
 		fputs("\n", stderr);					\
 		abort();						\
+		OF_UNREACHABLE						\
 	}

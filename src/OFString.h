@@ -30,6 +30,9 @@
 
 #include <stdarg.h>
 #include <stdint.h>
+#ifdef OF_HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
 
 #import "OFObject.h"
 #import "OFSerialization.h"

@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#include <inttypes.h>
-
 #import "OFApplication.h"
 #import "OFDate.h"
 #import "OFFileManager.h"
@@ -26,6 +24,7 @@
 #import "OFNumber.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
+#import "OFString.h"
 
 #import "TarArchive.h"
 #import "OFZIP.h"

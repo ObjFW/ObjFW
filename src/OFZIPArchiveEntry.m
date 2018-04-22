@@ -17,14 +17,12 @@
 
 #include "config.h"
 
-#include <inttypes.h>
-
 #import "OFZIPArchiveEntry.h"
 #import "OFZIPArchiveEntry+Private.h"
-#import "OFString.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFStream.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"

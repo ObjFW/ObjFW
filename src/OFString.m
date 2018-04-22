@@ -69,6 +69,11 @@
 # define strtod __strtod
 #endif
 
+#ifdef OF_AMIGAOS3
+/* libnix has strtod, but not strtof */
+# define strtof strtod
+#endif
+
 static struct {
 	Class isa;
 } placeholder;

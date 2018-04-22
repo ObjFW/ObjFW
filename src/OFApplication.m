@@ -36,7 +36,7 @@
 #import "OFThread.h"
 #import "OFThread+Private.h"
 #import "OFSandbox.h"
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
@@ -52,7 +52,10 @@
 
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 #elif !defined(OF_IOS)
@@ -179,6 +182,8 @@ of_application_main(int *argc, char **argv[],
 {
 #ifndef OF_PSP
 	exit(status);
+
+	OF_UNREACHABLE
 #else
 	sceKernelExitGame();
 
@@ -249,7 +254,7 @@ of_application_main(int *argc, char **argv[],
 		}
 
 		FreeEnvironmentStringsW(env0);
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 		void *pool = objc_autoreleasePoolPush();
 		OFFileManager *fileManager = [OFFileManager defaultManager];
 		OFArray *envContents =

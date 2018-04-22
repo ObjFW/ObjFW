@@ -17,7 +17,6 @@
 
 #include "config.h"
 
-#include <inttypes.h>
 #include <errno.h>
 
 #import "OFApplication.h"
@@ -27,6 +26,7 @@
 #import "OFNumber.h"
 #import "OFSet.h"
 #import "OFStdIOStream.h"
+#import "OFString.h"
 
 #import "ZIPArchive.h"
 #import "OFZIP.h"

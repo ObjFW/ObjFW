@@ -123,6 +123,8 @@ test(id self, SEL _cmd)
 		return self;
 
 	abort();
+
+	OF_UNREACHABLE
 }
 @end
 

@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#include <inttypes.h>
-
 #import "OFConnectionFailedException.h"
 #import "OFString.h"
 
