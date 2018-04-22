@@ -29,8 +29,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#import "platform.h"
-
 #ifndef __has_feature
 # define __has_feature(x) 0
 #endif
@@ -63,7 +61,7 @@
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
-#if !defined(OF_WII) && !defined(OF_AMIGAOS)
+#if !defined(__wii__) && !defined(__amigaos__)
 typedef bool BOOL;
 #endif
 typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
