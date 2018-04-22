@@ -31,10 +31,10 @@ id objc_getRequiredClass_inline(const char *);
 void objc_exception_throw_inline(id);
 int objc_sync_enter_inline(id);
 int objc_sync_exit_inline(id);
-id objc_getProperty_inline(id, SEL, ptrdiff_t, BOOL);
-void objc_setProperty_inline(id, SEL, ptrdiff_t, id, BOOL, signed char);
-void objc_getPropertyStruct_inline(void *, const void *, ptrdiff_t, BOOL, BOOL);
-void objc_setPropertyStruct_inline(void *, const void *, ptrdiff_t, BOOL, BOOL);
+id objc_getProperty_inline(id, SEL, ptrdiff_t, bool);
+void objc_setProperty_inline(id, SEL, ptrdiff_t, id, bool, signed char);
+void objc_getPropertyStruct_inline(void *, const void *, ptrdiff_t, bool, bool);
+void objc_setPropertyStruct_inline(void *, const void *, ptrdiff_t, bool, bool);
 void objc_enumerationMutation_inline(id);
 
 SEL sel_registerName(const char *);

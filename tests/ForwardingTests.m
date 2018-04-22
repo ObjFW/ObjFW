@@ -69,7 +69,7 @@ test(id self, SEL _cmd)
 }
 
 @implementation ForwardingTest
-+ (BOOL)resolveClassMethod: (SEL)selector
++ (bool)resolveClassMethod: (SEL)selector
 {
 	forwardings++;
 
@@ -82,7 +82,7 @@ test(id self, SEL _cmd)
 	return NO;
 }
 
-+ (BOOL)resolveInstanceMethod: (SEL)selector
++ (bool)resolveInstanceMethod: (SEL)selector
 {
 	forwardings++;
 

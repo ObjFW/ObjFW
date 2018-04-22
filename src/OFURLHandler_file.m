@@ -67,10 +67,8 @@
 #endif
 
 #ifdef OF_MORPHOS
-# define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # include <proto/locale.h>
-# undef BOOL
 #endif
 
 #if defined(OF_WINDOWS)

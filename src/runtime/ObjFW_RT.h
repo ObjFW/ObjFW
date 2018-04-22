@@ -55,13 +55,15 @@
 
 #define Nil (Class _Null_unspecified)0
 #define nil (id _Null_unspecified)0
-#define YES (BOOL)1
-#define NO  (BOOL)0
+#define YES true
+#define NO  false
 
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
-typedef signed char BOOL;
+#if !defined(OF_WII) && !defined(OF_AMIGAOS)
+typedef bool BOOL;
+#endif
 typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
 typedef void (*objc_uncaught_exception_handler)(id _Nullable);
 typedef void (*objc_enumeration_mutation_handler)(id _Nonnull);
@@ -249,9 +251,7 @@ extern void objc_zero_weak_references(id _Nonnull);
 }
 # endif
 #else
-# define BOOL EXEC_BOOL
 # include <ppcinline/macros.h>
-# undef BOOL
 # ifdef __cplusplus
 extern "C" {
 # endif
@@ -288,13 +288,13 @@ extern void objc_exception_throw(id _Nullable);
 extern int objc_sync_enter(id _Nullable);
 extern int objc_sync_exit(id _Nullable);
 extern id _Nullable objc_getProperty(id _Nonnull, SEL _Nonnull, ptrdiff_t,
-    BOOL);
+    bool);
 extern void objc_setProperty(id _Nonnull, SEL _Nonnull, ptrdiff_t, id _Nullable,
-    BOOL, signed char);
+    bool, signed char);
 extern void objc_getPropertyStruct(void *_Nonnull, const void *_Nonnull,
-    ptrdiff_t, BOOL, BOOL);
+    ptrdiff_t, bool, bool);
 extern void objc_setPropertyStruct(void *_Nonnull, const void *_Nonnull,
-    ptrdiff_t, BOOL, BOOL);
+    ptrdiff_t, bool, bool);
 extern void objc_enumerationMutation(id _Nonnull);
 #ifdef __cplusplus
 }

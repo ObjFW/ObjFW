@@ -19,9 +19,7 @@
 #import "OFKernelEventObserver.h"
 
 #ifdef OF_MORPHOS
-# define BOOL EXEC_BOOL
 # include <proto/dos.h>
-# undef BOOL
 #endif
 
 OF_ASSUME_NONNULL_BEGIN

@@ -33,10 +33,8 @@
 #endif
 
 #ifdef OF_MORPHOS
-# define BOOL EXEC_BOOL
 # include <exec/system.h>
 # include <proto/exec.h>
-# undef BOOL
 #endif
 
 #import "OFSystemInfo.h"

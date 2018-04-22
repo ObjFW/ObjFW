@@ -23,9 +23,7 @@
 # define OF_INVALID_FILE_HANDLE (-1)
 typedef int of_file_handle_t;
 #else
-# define BOOL EXEC_BOOL
 # include <proto/dos.h>
-# undef BOOL
 # define OF_INVALID_FILE_HANDLE NULL
 typedef struct of_file_handle *of_file_handle_t;
 #endif

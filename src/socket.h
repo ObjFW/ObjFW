@@ -26,13 +26,7 @@
 #import "platform.h"
 
 #ifdef OF_HAVE_SYS_SOCKET_H
-# ifdef OF_MORPHOS
-#  define BOOL EXEC_BOOL
-# endif
 # include <sys/socket.h>
-# ifdef OF_MORPHOS
-#  undef BOOL
-# endif
 #endif
 #ifdef OF_HAVE_NETINET_IN_H
 # include <netinet/in.h>
@@ -77,9 +71,7 @@ struct sockaddr_storage {
 #endif
 
 #ifdef OF_WII
-# define BOOL OGC_BOOL
 # include <network.h>
-# undef BOOL
 
 struct sockaddr_storage {
 	u8 ss_len;

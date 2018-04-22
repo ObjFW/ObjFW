@@ -42,9 +42,7 @@
 #import "OFWriteFailedException.h"
 
 #ifdef OF_MORPHOS
-# define BOOL EXEC_BOOL
 # include <proto/exec.h>
-# undef BOOL
 #endif
 
 /* References for static linking */

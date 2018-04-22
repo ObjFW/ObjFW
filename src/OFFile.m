@@ -49,9 +49,7 @@
 #endif
 
 #ifdef OF_WII
-# define BOOL OGC_BOOL
 # include <fat.h>
-# undef BOOL
 #endif
 
 #ifdef OF_NINTENDO_DS

@@ -33,16 +33,12 @@
 #include "platform.h"
 
 #ifdef OF_MORPHOS
-# define BOOL EXEC_BOOL
 # include <proto/dos.h>
-# undef BOOL
 #endif
 
 #ifdef OF_WII
-# define BOOL OGC_BOOL
 # define nanosleep ogc_nanosleep
 # include <ogcsys.h>
-# undef BOOL
 # undef nanosleep
 #endif
 

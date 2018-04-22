@@ -41,7 +41,7 @@ OF_CONSTRUCTOR()
 #endif
 
 id
-objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
+objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 {
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
@@ -63,7 +63,7 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, BOOL atomic)
 }
 
 void
-objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
+objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
     signed char copy)
 {
 	if (atomic) {
@@ -116,8 +116,8 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, BOOL atomic,
 
 /* The following methods are only required for GCC >= 4.6 */
 void
-objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
-    BOOL strong)
+objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
+    bool strong)
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
@@ -137,8 +137,8 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
 }
 
 void
-objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, BOOL atomic,
-    BOOL strong)
+objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
+    bool strong)
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS

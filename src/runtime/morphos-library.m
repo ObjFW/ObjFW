@@ -20,7 +20,6 @@
 #import "ObjFW_RT.h"
 #import "macros.h"
 
-#define BOOL EXEC_BOOL
 #include <dos/dos.h>
 #include <emul/emulregs.h>
 #include <exec/execbase.h>
@@ -28,7 +27,6 @@
 #include <exec/resident.h>
 #include <exec/types.h>
 #include <proto/exec.h>
-#undef BOOL
 
 struct ObjFWRTBase {
 	struct Library library;

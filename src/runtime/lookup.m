@@ -29,8 +29,8 @@
 	Class isa;
 }
 
-+ (BOOL)resolveClassMethod: (SEL)selector;
-+ (BOOL)resolveInstanceMethod: (SEL)selector;
++ (bool)resolveClassMethod: (SEL)selector;
++ (bool)resolveInstanceMethod: (SEL)selector;
 @end
 
 static IMP forward_handler = (IMP)0;

@@ -18,14 +18,6 @@
 
 #include <stdlib.h>	/* Make sure we have any libc include */
 
-#import "platform.h"
-
-#ifdef OF_MORPHOS
-# define BOOL EXEC_BOOL
-# include <exec/types.h>
-# undef BOOL
-#endif
-
 #if defined(HAVE_UNISTD_H)
 # ifdef __GLIBC__
 #  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */

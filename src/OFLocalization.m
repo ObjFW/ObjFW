@@ -35,11 +35,9 @@
 #  define __NOGLOBALIFACE__
 #  define __USE_INLINE__
 # endif
-# define BOOL EXEC_BOOL
 # include <proto/dos.h>
 # include <proto/exec.h>
 # include <proto/locale.h>
-# undef BOOL
 #endif
 
 static OFLocalization *sharedLocalization = nil;
