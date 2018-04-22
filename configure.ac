@@ -463,6 +463,12 @@ case "$objc_runtime" in
 			-o x"$enable_shared" = x"no"], [
 			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw_rt.a")
 		])
+		AS_IF([test x"$enable_shared" = x"no"], [
+			AC_SUBST(LIBOBJFW_RT_DEP,
+				"../src/runtime/libobjfw_rt.a")
+			AC_SUBST(LIBOBJFW_RT_DEP_LVL2,
+				"../../src/runtime/libobjfw_rt.a")
+		])
 		AS_IF([test x"$build_framework" = x"yes"], [
 			AC_SUBST(OBJFW_RT_FRAMEWORK, "ObjFW_RT.framework")
 		])

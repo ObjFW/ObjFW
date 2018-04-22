@@ -169,7 +169,7 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP}
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFW_RT_DEP}
 
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@
