@@ -56,7 +56,11 @@
 # include <ntdef.h>
 #endif
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
+# include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/locale.h>
 #endif
@@ -98,7 +102,7 @@ const of_file_type_t of_file_type_character_special =
 const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
 const of_file_type_t of_file_type_socket = @"of_file_type_socket";
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
 static bool dirChanged = false;
 static BPTR originalDirLock = 0;
 
@@ -149,7 +153,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	}
 
 	return ret;
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	char buffer[512];
 
 	if (!NameFromLock(((struct Process *)FindTask(NULL))->pr_CurrentDir,
@@ -404,7 +408,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		@throw [OFChangeCurrentDirectoryPathFailedException
 		    exceptionWithPath: path
 				errNo: errno];
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	BPTR lock, oldLock;
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocalization encoding]],

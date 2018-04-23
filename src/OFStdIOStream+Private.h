@@ -20,7 +20,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFStdIOStream ()
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 - (instancetype)of_initWithFileDescriptor: (int)fd OF_METHOD_FAMILY(init);
 #else
 - (instancetype)of_initWithHandle: (BPTR)handle

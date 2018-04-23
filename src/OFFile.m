@@ -57,6 +57,13 @@
 # include <filesystem.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
+# include <proto/dos.h>
+#endif
+
 #ifndef O_BINARY
 # define O_BINARY 0
 #endif
@@ -70,7 +77,7 @@
 # define O_EXLOCK 0
 #endif
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
 struct of_file_handle {
@@ -103,7 +110,7 @@ OF_DESTRUCTOR()
 }
 #endif
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 static int
 parseMode(const char *mode)
 {
@@ -209,7 +216,7 @@ parseMode(const char *mode, bool *append)
 		void *pool = objc_autoreleasePoolPush();
 		int flags;
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 		if ((flags = parseMode([mode UTF8String])) == -1)
 			@throw [OFInvalidArgumentException exception];
 
@@ -270,8 +277,12 @@ parseMode(const char *mode, bool *append)
 			}
 
 			if (handle->append) {
+# ifdef OF_MORPHOS
 				if (Seek64(handle->handle, 0,
 				    OFFSET_END) == -1) {
+# else
+				if (Seek(handle->handle, 0, OFFSET_END) == -1) {
+# endif
 					Close(handle->handle);
 					@throw [OFOpenItemFailedException
 					    exceptionWithPath: path
@@ -363,7 +374,7 @@ parseMode(const char *mode, bool *append)
 		@throw [OFReadFailedException exceptionWithObject: self
 						  requestedLength: length
 							    errNo: errno];
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
@@ -401,14 +412,18 @@ parseMode(const char *mode, bool *append)
 						   requestedLength: length
 						      bytesWritten: 0
 							     errNo: errno];
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	LONG bytesWritten;
 
 	if (length > LONG_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	if (_handle->append) {
+# ifdef OF_MORPHOS
 		if (Seek64(_handle->handle, 0, OFFSET_END) == -1)
+# else
+		if (Seek(_handle->handle, 0, OFFSET_END) == -1)
+# endif
 			@throw [OFWriteFailedException
 			    exceptionWithObject: self
 				requestedLength: length
@@ -445,7 +460,7 @@ parseMode(const char *mode, bool *append)
 	if (_handle == OF_INVALID_FILE_HANDLE)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 # if defined(OF_WINDOWS)
 	ret = _lseeki64(_handle, offset, whence);
 # elif defined(OF_HAVE_OFF64_T)
@@ -460,22 +475,30 @@ parseMode(const char *mode, bool *append)
 							   whence: whence
 							    errNo: errno];
 #else
+	LONG translatedWhence;
+
 	switch (whence) {
 	case SEEK_SET:
-		ret = Seek64(_handle->handle, offset, OFFSET_BEGINNING);
+		translatedWhence = OFFSET_BEGINNING;
 		break;
 	case SEEK_CUR:
-		ret = Seek64(_handle->handle, offset, OFFSET_CURRENT);
+		translatedWhence = OFFSET_CURRENT;
 		break;
 	case SEEK_END:
-		ret = Seek64(_handle->handle, offset, OFFSET_END);
+		translatedWhence = OFFSET_END;
 		break;
 	default:
-		ret = -1;
-		break;
+		@throw [OFSeekFailedException exceptionWithStream: self
+							   offset: offset
+							   whence: whence
+							    errNo: EINVAL];
 	}
 
-	if (ret == -1)
+# ifdef OF_MORPHOS
+	if ((ret = Seek64(_handle->handle, offset, translatedWhence)) == 1)
+# else
+	if ((ret = Seek(_handle->handle, offset, translatedWhence)) == 1)
+# endif
 		@throw [OFSeekFailedException exceptionWithStream: self
 							   offset: offset
 							   whence: whence

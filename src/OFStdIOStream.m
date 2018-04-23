@@ -41,7 +41,10 @@
 #import "OFReadFailedException.h"
 #import "OFWriteFailedException.h"
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
 # include <proto/exec.h>
 #endif
 
@@ -58,7 +61,7 @@ OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
 OF_DESTRUCTOR()
 {
 	[of_stdin dealloc];
@@ -98,7 +101,7 @@ of_log(OFConstantString *format, ...)
 #ifndef OF_WINDOWS
 + (void)load
 {
-# ifndef OF_MORPHOS
+# ifndef OF_AMIGAOS
 	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: 0];
 	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
 	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
@@ -138,7 +141,7 @@ of_log(OFConstantString *format, ...)
 	OF_INVALID_INIT_METHOD
 }
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 - (instancetype)of_initWithFileDescriptor: (int)fd
 {
 	self = [super init];
@@ -169,7 +172,7 @@ of_log(OFConstantString *format, ...)
 
 - (bool)lowlevelIsAtEndOfStream
 {
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 	if (_fd == -1)
 #else
 	if (_handle == 0)
@@ -184,7 +187,7 @@ of_log(OFConstantString *format, ...)
 {
 	ssize_t ret;
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 	if (_fd == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -224,7 +227,7 @@ of_log(OFConstantString *format, ...)
 - (size_t)lowlevelWriteBuffer: (const void *)buffer
 		       length: (size_t)length
 {
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 	if (_fd == -1)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
@@ -270,7 +273,7 @@ of_log(OFConstantString *format, ...)
 	return (size_t)bytesWritten;
 }
 
-#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
+#if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
 - (int)fileDescriptorForReading
 {
 	return _fd;
@@ -284,7 +287,7 @@ of_log(OFConstantString *format, ...)
 
 - (void)close
 {
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 	if (_fd != -1)
 		close(_fd);
 
@@ -320,7 +323,7 @@ of_log(OFConstantString *format, ...)
 
 - (int)columns
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_MORPHOS)
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_AMIGAOS)
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)
@@ -334,7 +337,7 @@ of_log(OFConstantString *format, ...)
 
 - (int)rows
 {
-#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_MORPHOS)
+#if defined(HAVE_SYS_IOCTL_H) && defined(TIOCGWINSZ) && !defined(OF_AMIGAOS)
 	struct winsize ws;
 
 	if (ioctl(_fd, TIOCGWINSZ, &ws) != 0)

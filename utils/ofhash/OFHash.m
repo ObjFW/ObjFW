@@ -92,7 +92,7 @@ hashForName(OFString *name)
 	}
 #endif
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 #else
 	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];

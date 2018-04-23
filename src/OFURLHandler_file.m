@@ -66,14 +66,17 @@
 # include <ntdef.h>
 #endif
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
 # include <proto/dos.h>
 # include <proto/locale.h>
 #endif
 
 #if defined(OF_WINDOWS)
 typedef struct __stat64 of_stat_t;
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 typedef struct {
 	of_offset_t st_size;
 	mode_t st_mode;
@@ -89,7 +92,7 @@ typedef struct stat of_stat_t;
 # define S_ISLNK(s) 0
 #endif
 
-#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_MORPHOS)
+#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 static OFMutex *passwdMutex;
 #endif
 #if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
@@ -105,7 +108,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 {
 #if defined(OF_WINDOWS)
 	return _wstat64([path UTF16String], buffer);
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	BPTR lock;
 	struct FileInfoBlock fib;
 	of_time_interval_t timeInterval;
@@ -129,7 +132,11 @@ of_stat(OFString *path, of_stat_t *buffer)
 		return -1;
 	}
 
+# ifdef OF_MORPHOS
 	if (!Examine64(lock, &fib, TAG_DONE)) {
+# else
+	if (!Examine(lock, &fib)) {
+# endif
 		UnLock(lock);
 
 		errno = 0;
@@ -138,7 +145,11 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	UnLock(lock);
 
+# ifdef OF_MORPHOS
 	buffer->st_size = fib.fib_Size64;
+# else
+	buffer->st_size = fib.fib_Size;
+# endif
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
 
 	timeInterval = 252460800;	/* 1978-01-01 */
@@ -172,7 +183,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 static int
 of_lstat(OFString *path, of_stat_t *buffer)
 {
-#if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
+#if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
 # ifdef OF_HAVE_OFF64_T
 	return lstat64([path cStringWithEncoding: [OFLocalization encoding]],
 	    buffer);
@@ -660,7 +671,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithURL: URL
 			       errNo: errno];
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	BPTR lock;
 
 	if ((lock = CreateDir(
@@ -762,7 +773,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	} @finally {
 		FindClose(handle);
 	}
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	of_string_encoding_t encoding = [OFLocalization encoding];
 	BPTR lock;
 	struct FileInfoBlock fib;
@@ -940,7 +951,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			objc_autoreleasePoolPop(pool2);
 		}
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 # ifndef OF_WINDOWS
 		if (rmdir([path cStringWithEncoding:
 		    [OFLocalization encoding]]) != 0)
@@ -963,7 +974,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #endif
 	}
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
 	if (!DeleteFile(
 	    [path cStringWithEncoding: [OFLocalization encoding]])) {
 		int errNo;
@@ -1099,7 +1110,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		    exceptionWithSourceURL: source
 			    destinationURL: destination
 				     errNo: errno];
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	of_string_encoding_t encoding = [OFLocalization encoding];
 
 	if (!Rename([[source fileSystemRepresentation]

@@ -18,8 +18,14 @@
 #import "OFStream.h"
 #import "OFKernelEventObserver.h"
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
 # include <proto/dos.h>
+# ifdef OF_AMIGAOS3
+#  undef INTUITION_CLASSES_H
+# endif
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
@@ -36,11 +42,11 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 #endif
 @interface OFStdIOStream: OFStream
-#if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
+#if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
     <OFReadyForReadingObserving, OFReadyForWritingObserving>
 #endif
 {
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 	int _fd;
 #else
 	BPTR _handle;

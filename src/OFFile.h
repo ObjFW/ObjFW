@@ -18,12 +18,11 @@
 #import "OFSeekableStream.h"
 #import "OFKernelEventObserver.h"
 
-#ifndef OF_MORPHOS
+#ifndef OF_AMIGAOS
 # define OF_FILE_HANDLE_IS_FD
 # define OF_INVALID_FILE_HANDLE (-1)
 typedef int of_file_handle_t;
 #else
-# include <proto/dos.h>
 # define OF_INVALID_FILE_HANDLE NULL
 typedef struct of_file_handle *of_file_handle_t;
 #endif

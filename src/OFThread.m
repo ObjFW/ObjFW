@@ -32,7 +32,10 @@
 
 #include "platform.h"
 
-#ifdef OF_MORPHOS
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS3
+#  define INTUITION_CLASSES_H
+# endif
 # include <proto/dos.h>
 #endif
 
@@ -83,9 +86,6 @@
 
 #ifdef OF_DJGPP
 # define lrint(x) rint(x)
-#endif
-#ifdef OF_AMIGAOS3
-# define lrint(x) ((long)x)
 #endif
 
 #ifdef OF_HAVE_THREADS
@@ -208,7 +208,7 @@ callMain(id object)
 		@throw [OFOutOfRangeException exception];
 
 	nanosleep(&rqtp, NULL);
-#elif defined(OF_MORPHOS)
+#elif defined(OF_AMIGAOS)
 	if (timeInterval * 50 > ULONG_MAX)
 		@throw [OFOutOfRangeException exception];
 

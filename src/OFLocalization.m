@@ -226,10 +226,12 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 		 */
 		setlocale(LC_ALL, "");
 
-# ifdef OF_MORPHOS
+# if defined(OF_MORPHOS)
 		if (GetVar("CODEPAGE", buffer, sizeof(buffer), 0) > 0) {
-# else
+# elif defined(OF_AMIGAOS4)
 		if (GetVar("Charset", buffer, sizeof(buffer), 0) > 0) {
+# else
+		if (0) {
 # endif
 			of_string_encoding_t ASCII = OF_STRING_ENCODING_ASCII;
 
