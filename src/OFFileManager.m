@@ -19,8 +19,9 @@
 
 #include <errno.h>
 #include <limits.h>
-
 #include "unistd_wrapper.h"
+
+#import "platform.h"
 
 #ifdef OF_PSP
 # include <sys/syslimits.h>

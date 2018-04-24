@@ -18,7 +18,7 @@
 
 #include <stdlib.h>	/* Make sure we have any libc include */
 
-#if defined(HAVE_UNISTD_H)
+#ifdef HAVE_UNISTD_H
 # ifdef __GLIBC__
 #  undef __USE_XOPEN	/* Needed to avoid old glibc using __block */
 # endif
