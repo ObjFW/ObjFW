@@ -155,6 +155,8 @@ script:
             build_32_64 --disable-files;
             build_32_64 --disable-shared;
             build_32_64 --disable-shared --enable-seluid24;
+            build_32_64 --disable-compiler-tls;
+            build_32_64 --disable-compiler-tls --disable-threads;
     fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" -a -z "$config" ]; then
