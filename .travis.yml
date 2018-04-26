@@ -46,6 +46,12 @@ matrix:
       osx_image: xcode6.4
       language: objective-c
 
+    # AmigaOS
+    - os: linux
+      dist: trusty
+      env:
+        - config=amigaos
+
     # Nintendo DS and 3DS
     - os: linux
       dist: trusty
@@ -110,6 +116,11 @@ before_install:
 
             mkdir -p "$HOME/devkitPro";
             tar -C "$HOME/devkitPro" -xjf devkitPSP_r16-1-x86_64-linux.tar.bz2;
+    fi
+
+  - if [ "$config" = "amigaos" ]; then
+            wget -q http://franke.ms/download/amiga-toolchain-centos.tgz;
+            tar -C / -xzf amiga-toolchain-centos.tgz;
     fi
 
 script:
@@ -205,6 +216,12 @@ script:
             export OBJC="$clang -arch i386 -arch x86_64";
             export OBJCPP="$clang -arch i386 -E";
             build WRAPPER=true --host=i386-apple-darwin --enable-static;
+    fi
+
+  - if [ "$config" = "amigaos" ]; then
+            export PATH="/opt/amiga/bin:$PATH";
+
+            build --host=m68k-amigaos OBJC=m68k-amigaos-g++;
     fi
 
   - if [ "$config" = "devkitarm" ]; then
