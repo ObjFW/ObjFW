@@ -36,6 +36,15 @@ AC_DEFUN([BUILDSYS_INIT], [
 			;;
 	esac
 
+	case "$host" in
+		m68k-*-amigaos*)
+			AC_SUBST(AMIGALIB_CFLAGS, -fbaserel)
+			;;
+		powerpc-*-morphos*)
+			AC_SUBST(AMIGALIB_CFLAGS, -mbaserel32)
+			;;
+	esac
+
 	AC_CONFIG_COMMANDS_PRE([
 		AC_SUBST(CC_DEPENDS, $GCC)
 		AC_SUBST(CXX_DEPENDS, $GXX)

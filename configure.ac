@@ -57,7 +57,7 @@ case "$host" in
 			enable_files="yes"	# Required for reading ENV:
 
 			AC_SUBST(NOIXEMUL, -noixemul)
-			AC_SUBST(OBJFW_RT_MORPHOS_LIB, objfw_rt.library)
+			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
 		])
 
 		enable_shared="no"

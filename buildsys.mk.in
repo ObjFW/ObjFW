@@ -56,6 +56,7 @@ LIB_LDFLAGS = @LIB_LDFLAGS@
 LIB_LDFLAGS_INSTALL_NAME = @LIB_LDFLAGS_INSTALL_NAME@
 LIB_PREFIX = @LIB_PREFIX@
 LIB_SUFFIX = @LIB_SUFFIX@
+AMIGALIB_CFLAGS = @AMIGALIB_CFLAGS@
 PLUGIN_CFLAGS = @PLUGIN_CFLAGS@
 PLUGIN_LDFLAGS = @PLUGIN_LDFLAGS@
 PLUGIN_SUFFIX = @PLUGIN_SUFFIX@
@@ -108,21 +109,21 @@ OBJS11 = ${OBJS10:.S=.o}
 OBJS += ${OBJS11:.xpm=.o}
 
 LIB_OBJS = ${OBJS:.o=.lib.o}
-MORPHOS_LIB_OBJS = ${OBJS:.o=.moslib.o}
+AMIGA_LIB_OBJS = ${OBJS:.o=.amigalib.o}
 PLUGIN_OBJS = ${OBJS:.o=.plugin.o}
 
 MO_FILES = ${LOCALES:.po=.mo}
 
 .SILENT:
 .SUFFIXES:
-.SUFFIXES: .beam .c .c.dep .cc .cc.dep .class .cxx .cxx.dep .d .erl .lib.o .java .mo .m .m.dep .mm .mm.dep .moslib.o .o .plugin.o .po .py .pyc .rc .S .S.dep .xpm
+.SUFFIXES: .amigalib.o .beam .c .c.dep .cc .cc.dep .class .cxx .cxx.dep .d .erl .lib.o .java .mo .m .m.dep .mm .mm.dep .o .plugin.o .po .py .pyc .rc .S .S.dep .xpm
 .PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales copy-headers-into-framework ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
 	${MAKE} pre-all
 	${MAKE} subdirs
 	${MAKE} depend
-	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${MORPHOS_LIB} ${MORPHOS_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
+	${MAKE} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${FRAMEWORK} ${FRAMEWORK_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${PLUGIN} ${PLUGIN_NOINST} ${PROG} ${PROG_NOINST} ${JARFILE} locales
 	${MAKE} subdirs-after
 	${MAKE} post-all
 
@@ -192,27 +193,27 @@ depend: pre-depend ${SRCS}
 
 .c.c.dep:
 	${CPP} ${CPPFLAGS} ${CFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.moslib.o \1.plugin.o:/' >$@ || \
+	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
 	{ rm -f $@; false; }
 
 .cc.cc.dep .cxx.cxx.dep:
 	${CPP} ${CPPFLAGS} ${CXXFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.moslib.o \1.plugin.o:/' >$@ || \
+	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
 	{ rm -f $@; false; }
 
 .m.m.dep:
 	${CPP} ${CPPFLAGS} ${OBJCFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.moslib.o \1.plugin.o:/' >$@ || \
+	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
 	{ rm -f $@; false; }
 
 .mm.mm.dep:
 	${CPP} ${CPPFLAGS} ${OBJCPPFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.moslib.o \1.plugin.o:/' >$@ || \
+	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
 	{ rm -f $@; false; }
 
 .S.S.dep:
 	${CPP} ${CPPFLAGS} ${ASFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.moslib.o \1.plugin.o:/' >$@ || \
+	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
 	{ rm -f $@; false; }
 
 pre-depend:
@@ -277,9 +278,9 @@ copy-headers-into-framework:
 		done \
 	fi
 
-${MORPHOS_LIB} ${MORPHOS_LIB_NOINST}: ${EXT_DEPS} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA}
+${AMIGA_LIB} ${AMIGA_LIB_NOINST}: ${EXT_DEPS} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
-	if ${LD} -o $@ ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA} -nostartfiles ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} -nostartfiles ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
@@ -409,14 +410,14 @@ locales: ${MO_FILES}
 	else \
 		${COMPILE_LIB_FAILED}; \
 	fi
-.c.moslib.o:
-	${COMPILE_MOSLIB_STATUS}
+.c.amigalib.o:
+	${COMPILE_AMIGALIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} -mbaserel32 ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_MOSLIB_OK}; \
+	if ${CC} ${AMIGALIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGALIB_OK}; \
 	else \
-		${COMPILE_MOSLIB_FAILED}; \
+		${COMPILE_AMIGALIB_FAILED}; \
 	fi
 .c.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -446,14 +447,14 @@ locales: ${MO_FILES}
 	else \
 		${COMPILE_LIB_FAILED}; \
 	fi
-.cc.moslib.o .cxx.moslib.o:
-	${COMPILE_MOSLIB_STATUS}
+.cc.amigalib.o .cxx.amigalib.o:
+	${COMPILE_AMIGALIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} -mbaserel32 ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_MOSLIB_OK}; \
+	if ${CXX} ${AMIGALIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGALIB_OK}; \
 	else \
-		${COMPILE_MOSLIB_FAILED}; \
+		${COMPILE_AMIGALIB_FAILED}; \
 	fi
 .cc.plugin.o .cxx.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -521,14 +522,14 @@ locales: ${MO_FILES}
 	else \
 		${COMPILE_LIB_FAILED}; \
 	fi
-.m.moslib.o:
-	${COMPILE_MOSLIB_STATUS}
+.m.amigalib.o:
+	${COMPILE_AMIGALIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} -mbaserel32 ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_MOSLIB_OK}; \
+	if ${OBJC} ${AMIGALIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGALIB_OK}; \
 	else \
-		${COMPILE_MOSLIB_FAILED}; \
+		${COMPILE_AMIGALIB_FAILED}; \
 	fi
 .m.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -558,14 +559,14 @@ locales: ${MO_FILES}
 	else \
 		${COMPILE_LIB_FAILED}; \
 	fi
-.mm.moslib.o:
-	${COMPILE_MOSLIB_STATUS}
+.mm.amigalib.o:
+	${COMPILE_AMIGALIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} -mbaserel32 ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_MOSLIB_OK}; \
+	if ${OBJCXX} ${AMIGALIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGALIB_OK}; \
 	else \
-		${COMPILE_MOSLIB_FAILED}; \
+		${COMPILE_AMIGALIB_FAILED}; \
 	fi
 .mm.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -607,7 +608,7 @@ locales: ${MO_FILES}
 		${COMPILE_FAILED}; \
 	fi
 
-.S.o .S.moslib.o:
+.S.o .S.amigalib.o:
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
@@ -653,14 +654,14 @@ locales: ${MO_FILES}
 	else \
 		${COMPILE_LIB_FAILED}; \
 	fi
-.xpm.moslib.o:
-	${COMPILE_MOSLIB_STATUS}
+.xpm.amigalib.o:
+	${COMPILE_AMIGALIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} -mbasel32 ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -x c -c -o $@ $<; then \
-		${COMPILE_MOSLIB_OK}; \
+	if ${CC} ${AMIGALIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -x c -c -o $@ $<; then \
+		${COMPILE_AMIGALIB_OK}; \
 	else \
-		${COMPILE_MOSLIB_FAILED}; \
+		${COMPILE_AMIGALIB_FAILED}; \
 	fi
 .xpm.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -898,7 +899,7 @@ clean:
 		${DIR_LEAVE}; \
 	done
 
-	for i in "" ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${MORPHOS_LIB_OBJS} ${MORPHOS_LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${FRAMEWORK} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
+	for i in "" ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${FRAMEWORK} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
 		test x"$$i" = x"" && continue; \
 		if test -f $$i -o -d $$i; then \
 			if rm -fr $$i; then \
@@ -951,9 +952,9 @@ COMPILE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_
 COMPILE_LIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (lib)...@TERM_SGR0@\r" "$<"
 COMPILE_LIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (lib).@TERM_SGR0@\n" "$<"
 COMPILE_LIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (lib)!@TERM_SGR0@\n" "$<"; exit $$err
-COMPILE_MOSLIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (moslib)...@TERM_SGR0@\r" "$<"
-COMPILE_MOSLIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (moslib).@TERM_SGR0@\n" "$<"
-COMPILE_MOSLIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (moslib)!@TERM_SGR0@\n" "$<"; exit $$err
+COMPILE_AMIGALIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (Amiga lib)...@TERM_SGR0@\r" "$<"
+COMPILE_AMIGALIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (Amiga lib).@TERM_SGR0@\n" "$<"
+COMPILE_AMIGALIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (Amiga lib)!@TERM_SGR0@\n" "$<"; exit $$err
 COMPILE_PLUGIN_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (plugin)...@TERM_SGR0@\r" "$<"
 COMPILE_PLUGIN_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (plugin).@TERM_SGR0@\n" "$<"
 COMPILE_PLUGIN_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (plugin)!@TERM_SGR0@\n" "$<"; exit $$err
