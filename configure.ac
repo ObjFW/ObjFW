@@ -45,6 +45,7 @@ case "$host" in
 			[Required for AmigaOS to correctly define PRI?64])
 
 		AC_SUBST(NOIXEMUL, -noixemul)
+		AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
 		;;
 	powerpc-*-amigaos*)
 		enable_shared="no"
