@@ -759,7 +759,8 @@ objc_exception_throw(id object)
 }
 
 objc_uncaught_exception_handler
-objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
+objc_setUncaughtExceptionHandler(
+    objc_uncaught_exception_handler handler OBJC_M68K_REG("a0"))
 {
 	objc_uncaught_exception_handler old = uncaught_exception_handler;
 	uncaught_exception_handler = handler;

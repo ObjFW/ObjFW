@@ -69,7 +69,7 @@ objc_register_selector(struct objc_abi_selector *sel)
 }
 
 SEL
-sel_registerName(const char *name)
+sel_registerName(const char *name OBJC_M68K_REG("a0"))
 {
 	const struct objc_abi_selector *rsel;
 	struct objc_abi_selector *sel;
@@ -116,7 +116,7 @@ objc_register_all_selectors(struct objc_abi_symtab *symtab)
 }
 
 const char *
-sel_getName(SEL sel)
+sel_getName(SEL sel OBJC_M68K_REG("a0"))
 {
 	const char *ret;
 
@@ -128,7 +128,7 @@ sel_getName(SEL sel)
 }
 
 bool
-sel_isEqual(SEL sel1, SEL sel2)
+sel_isEqual(SEL sel1 OBJC_M68K_REG("a0"), SEL sel2 OBJC_M68K_REG("a1"))
 {
 	return (sel1->uid == sel2->uid);
 }

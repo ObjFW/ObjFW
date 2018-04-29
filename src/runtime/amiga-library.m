@@ -124,7 +124,7 @@ lib_null(void)
 }
 
 static void
-objc_set_libc(struct objc_libc *libc_)
+objc_set_libc(struct objc_libc *libc_ OBJC_M68K_REG("a0"))
 {
 	libc = libc_;
 

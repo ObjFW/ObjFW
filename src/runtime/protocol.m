@@ -26,19 +26,21 @@
 @end
 
 const char *
-protocol_getName(Protocol *p)
+protocol_getName(Protocol *p OBJC_M68K_REG("a0"))
 {
 	return p->name;
 }
 
 bool
-protocol_isEqual(Protocol *a, Protocol *b)
+protocol_isEqual(Protocol *a OBJC_M68K_REG("a0"),
+    Protocol *b OBJC_M68K_REG("a1"))
 {
 	return (strcmp(protocol_getName(a), protocol_getName(b)) == 0);
 }
 
 bool
-protocol_conformsToProtocol(Protocol *a, Protocol *b)
+protocol_conformsToProtocol(Protocol *a OBJC_M68K_REG("a0"),
+    Protocol *b OBJC_M68K_REG("a1"))
 {
 	if (protocol_isEqual(a, b))
 		return true;
@@ -53,7 +55,8 @@ protocol_conformsToProtocol(Protocol *a, Protocol *b)
 }
 
 bool
-class_conformsToProtocol(Class cls, Protocol *p)
+class_conformsToProtocol(Class cls OBJC_M68K_REG("a0"),
+    Protocol *p OBJC_M68K_REG("a1"))
 {
 	struct objc_category **cats;
 

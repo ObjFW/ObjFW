@@ -35,7 +35,8 @@ objc_enumerationMutation(id obj)
 }
 
 void
-objc_setEnumerationMutationHandler(void (*handler)(id))
+objc_setEnumerationMutationHandler(
+    objc_enumeration_mutation_handler handler OBJC_M68K_REG("a0"))
 {
 	enumeration_mutation_handler = handler;
 }

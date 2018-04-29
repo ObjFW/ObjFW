@@ -419,7 +419,9 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 }
 
 Class
-objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
+objc_allocateClassPair(Class superclass OBJC_M68K_REG("a0"),
+    const char *name OBJC_M68K_REG("a1"),
+    size_t extra_bytes OBJC_M68K_REG("d0"))
 {
 	struct objc_class *cls, *metaclass;
 	Class iter, rootclass = Nil;
@@ -453,7 +455,7 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
 }
 
 void
-objc_registerClassPair(Class cls)
+objc_registerClassPair(Class cls OBJC_M68K_REG("a0"))
 {
 	objc_global_mutex_lock();
 
@@ -530,7 +532,8 @@ objc_get_class(const char *name)
 }
 
 unsigned int
-objc_getClassList(Class *buf, unsigned int count)
+objc_getClassList(Class *buf OBJC_M68K_REG("a0"),
+    unsigned int count OBJC_M68K_REG("d0"))
 {
 	unsigned int j;
 	objc_global_mutex_lock();
@@ -570,7 +573,7 @@ objc_getClassList(Class *buf, unsigned int count)
 }
 
 Class *
-objc_copyClassList(unsigned int *len)
+objc_copyClassList(unsigned int *len OBJC_M68K_REG("a0"))
 {
 	Class *ret;
 	unsigned int count;
@@ -594,7 +597,7 @@ objc_copyClassList(unsigned int *len)
 }
 
 bool
-class_isMetaClass(Class cls)
+class_isMetaClass(Class cls OBJC_M68K_REG("a0"))
 {
 	if (cls == Nil)
 		return false;
@@ -603,7 +606,7 @@ class_isMetaClass(Class cls)
 }
 
 const char *
-class_getName(Class cls)
+class_getName(Class cls OBJC_M68K_REG("a0"))
 {
 	if (cls == Nil)
 		return "";
@@ -612,7 +615,7 @@ class_getName(Class cls)
 }
 
 Class
-class_getSuperclass(Class cls)
+class_getSuperclass(Class cls OBJC_M68K_REG("a0"))
 {
 	if (cls == Nil)
 		return Nil;
@@ -621,7 +624,7 @@ class_getSuperclass(Class cls)
 }
 
 unsigned long
-class_getInstanceSize(Class cls)
+class_getInstanceSize(Class cls OBJC_M68K_REG("a0"))
 {
 	if (cls == Nil)
 		return 0;
@@ -630,7 +633,8 @@ class_getInstanceSize(Class cls)
 }
 
 IMP
-class_getMethodImplementation(Class cls, SEL sel)
+class_getMethodImplementation(Class cls OBJC_M68K_REG("a0"),
+    SEL sel OBJC_M68K_REG("a1"))
 {
 	/*
 	 * We use a dummy object here so that the normal lookup is used, even
@@ -654,7 +658,8 @@ class_getMethodImplementation(Class cls, SEL sel)
 }
 
 IMP
-class_getMethodImplementation_stret(Class cls, SEL sel)
+class_getMethodImplementation_stret(Class cls OBJC_M68K_REG("a0"),
+    SEL sel OBJC_M68K_REG("a1"))
 {
 	/*
 	 * Same as above, but use objc_msg_lookup_stret instead, so that the
@@ -721,7 +726,8 @@ add_method(Class cls, SEL sel, IMP imp, const char *types)
 }
 
 const char *
-class_getMethodTypeEncoding(Class cls, SEL sel)
+class_getMethodTypeEncoding(Class cls OBJC_M68K_REG("a0"),
+    SEL sel OBJC_M68K_REG("a1"))
 {
 	struct objc_method *method;
 
@@ -745,7 +751,8 @@ class_getMethodTypeEncoding(Class cls, SEL sel)
 }
 
 bool
-class_addMethod(Class cls, SEL sel, IMP imp, const char *types)
+class_addMethod(Class cls OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"),
+    IMP imp OBJC_M68K_REG("a2"), const char *types OBJC_M68K_REG("a3"))
 {
 	bool ret;
 
@@ -763,7 +770,8 @@ class_addMethod(Class cls, SEL sel, IMP imp, const char *types)
 }
 
 IMP
-class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
+class_replaceMethod(Class cls OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"),
+    IMP newimp OBJC_M68K_REG("a2"), const char *types OBJC_M68K_REG("a3"))
 {
 	struct objc_method *method;
 	IMP oldimp;
@@ -785,7 +793,7 @@ class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 }
 
 Class
-object_getClass(id obj_)
+object_getClass(id obj_ OBJC_M68K_REG("a0"))
 {
 	struct objc_object *obj;
 
@@ -798,7 +806,7 @@ object_getClass(id obj_)
 }
 
 Class
-object_setClass(id obj_, Class cls)
+object_setClass(id obj_ OBJC_M68K_REG("a0"), Class cls OBJC_M68K_REG("a1"))
 {
 	struct objc_object *obj;
 	Class old;
@@ -815,7 +823,7 @@ object_setClass(id obj_, Class cls)
 }
 
 const char *
-object_getClassName(id obj)
+object_getClassName(id obj OBJC_M68K_REG("a0"))
 {
 	return class_getName(object_getClass(obj));
 }
