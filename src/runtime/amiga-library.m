@@ -18,41 +18,182 @@
 #include "config.h"
 
 #import "ObjFW_RT.h"
-#import "macros.h"
+#import "private.h"
+#import "platform.h"
 
-#include <dos/dos.h>
-#include <emul/emulregs.h>
-#include <exec/execbase.h>
+#ifdef OF_AMIGAOS3
+# define INTUITION_CLASSES_H
+#endif
+
+#include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>
-#include <exec/types.h>
 #include <proto/exec.h>
+
+#define CONCAT_VERSION2(major, minor) #major "." #minor
+#define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
+#define VERSION_STRING CONCAT_VERSION(OBJFW_RT_LIB_MAJOR, OBJFW_RT_LIB_MINOR)
+
+/* This always needs to be the first thing in the file. */
+int
+_start()
+{
+	return -1;
+}
 
 struct ObjFWRTBase {
 	struct Library library;
 	BPTR seg_list;
 };
 
-/* Forward declarations for all functions in the func_table */
-static struct Library *lib_init(struct ObjFWRTBase *base, BPTR seg_list,
-    struct ExecBase *exec_base);
-static struct Library *lib_open(void);
-static BPTR lib_close(void);
-static BPTR lib_expunge(void);
-static void lib_null(void);
-void objc_set_exit(void OF_NO_RETURN_FUNC (*exit_fn_)(int status));
+struct ExecBase *SysBase;
+#ifdef OF_MORPHOS
+const ULONG __abox__ = 1;
+#endif
+struct WBStartup *_WBenchMsg;
+struct objc_libc *libc;
+FILE *stdout;
+FILE *stderr;
 
-static ULONG func_table[] = {
-	FUNCARRAY_BEGIN,
-	FUNCARRAY_32BIT_NATIVE,
+static struct Library *
+lib_init(struct ExecBase *exec_base OBJC_M68K_REG("a6"),
+    BPTR seg_list OBJC_M68K_REG("a0"),
+    struct ObjFWRTBase *base OBJC_M68K_REG("d0"))
+{
+	SysBase = exec_base;
+
+	base->seg_list = seg_list;
+
+	return &base->library;
+}
+
+static struct Library *
+OBJC_M68K_FUNC(lib_open, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
+{
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+
+	base->library.lib_OpenCnt++;
+	base->library.lib_Flags &= ~LIBF_DELEXP;
+
+	return &base->library;
+}
+
+static BPTR
+expunge(struct ObjFWRTBase *base)
+{
+	BPTR seg_list;
+
+	if (base->library.lib_OpenCnt > 0) {
+		base->library.lib_Flags |= LIBF_DELEXP;
+		return 0;
+	}
+
+	seg_list = base->seg_list;
+
+	Remove(&base->library.lib_Node);
+	FreeMem((char *)base - base->library.lib_NegSize,
+	    base->library.lib_NegSize + base->library.lib_PosSize);
+
+	return seg_list;
+}
+
+static BPTR
+OBJC_M68K_FUNC(lib_expunge, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
+{
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+
+	return expunge(base);
+}
+
+static BPTR
+OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
+{
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+
+	if (--base->library.lib_OpenCnt == 0 &&
+	    (base->library.lib_Flags & LIBF_DELEXP))
+		return expunge(base);
+
+	return 0;
+}
+
+static BPTR
+lib_null(void)
+{
+	return 0;
+}
+
+static void
+objc_set_libc(struct objc_libc *libc_)
+{
+	libc = libc_;
+
+	stdout = libc->stdout;
+	stderr = libc->stderr;
+}
+
+void *
+malloc(size_t size)
+{
+	return libc->malloc(size);
+}
+
+void *
+calloc(size_t count, size_t size)
+{
+	return libc->calloc(count, size);
+}
+
+void *
+realloc(void *ptr, size_t size)
+{
+	return libc->realloc(ptr, size);
+}
+
+void
+free(void *ptr)
+{
+	libc->free(ptr);
+}
+
+int
+fprintf(FILE *restrict stream, const char *restrict fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = libc->vfprintf(stream, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+fputs(const char *restrict s, FILE *restrict stream)
+{
+	return libc->fputs(s, stream);
+}
+
+void
+exit(int status)
+{
+	libc->exit(status);
+}
+
+void
+abort(void)
+{
+	libc->abort();
+}
+
+static ULONG function_table[] = {
 	(ULONG)lib_open,
 	(ULONG)lib_close,
 	(ULONG)lib_expunge,
 	(ULONG)lib_null,
-	-1,
-	FUNCARRAY_32BIT_SYSTEMV,
 	/* Functions for the glue code */
-	(ULONG)objc_set_exit,
+	(ULONG)objc_set_libc,
 	/* Used by the compiler - these need glue code */
 	(ULONG)__objc_exec_class,
 	(ULONG)objc_msg_lookup,
@@ -101,21 +242,19 @@ static ULONG func_table[] = {
 	(ULONG)objc_setEnumerationMutationHandler,
 	(ULONG)objc_zero_weak_references,
 	-1,
-	FUNCARRAY_END
 };
 
-static struct Library *lib_init(struct ObjFWRTBase *base, BPTR seg_list,
-    struct ExecBase *exec_base);
-
 static struct {
-	LONG struct_size;
-	ULONG *func_table;
-	void *data_table;
-	struct Library *(*init_func)(struct ObjFWRTBase *base, BPTR seg_list,
-	    struct ExecBase *exec_base);
-} init_table = {
-	.struct_size = sizeof(struct ObjFWRTBase),
-	func_table,
+	ULONG data_size;
+	ULONG *function_table;
+	ULONG *data_table;
+	struct Library *(*init_func)(
+	    struct ExecBase *exec_base OBJC_M68K_REG("a6"),
+	    BPTR seg_list OBJC_M68K_REG("a0"),
+	    struct ObjFWRTBase *base OBJC_M68K_REG("d0"));
+} initTable = {
+	sizeof(struct ObjFWRTBase),
+	function_table,
 	NULL,
 	lib_init
 };
@@ -124,97 +263,16 @@ static struct Resident resident = {
 	.rt_MatchWord = RTC_MATCHWORD,
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
-	.rt_Flags = RTF_AUTOINIT | RTF_PPC,
-	.rt_Version = OBJFW_RT_LIB_MAJOR * 10 + OBJFW_RT_LIB_MINOR,
+	.rt_Flags = RTF_AUTOINIT
+#ifndef OF_AMIGAOS3
+	    | RTF_PPC
+#endif
+	    ,
+	.rt_Version = OBJFW_RT_LIB_MAJOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
 	.rt_Name = (char *)"objfw_rt.library",
-	.rt_IdString = (char *)"ObjFW_RT " PACKAGE_VERSION
+	.rt_IdString = (char *)"ObjFW_RT " VERSION_STRING
 	    " \xA9 2008-2018 Jonathan Schleifer",
-	.rt_Init = &init_table
+	.rt_Init = &initTable
 };
-
-/* Magic required to make this a MorphOS binary */
-const ULONG __abox__ = 1;
-
-/* Global variables needed by libnix */
-int ThisRequiresConstructorHandling;
-struct ExecBase *SysBase;
-void *libnix_mempool;
-
-/* Functions passed in from the glue linklib */
-static void OF_NO_RETURN_FUNC (*exit_fn)(int status);
-
-void OF_NO_RETURN_FUNC
-exit(int status)
-{
-	exit_fn(status);
-}
-
-void
-objc_set_exit(void OF_NO_RETURN_FUNC (*exit_fn_)(int status))
-{
-	exit_fn = exit_fn_;
-}
-
-/* Standard library functions */
-static struct Library *lib_init(struct ObjFWRTBase *base, BPTR seg_list,
-    struct ExecBase *exec_base)
-{
-	SysBase = exec_base;
-
-	base->seg_list = seg_list;
-
-	return &base->library;
-}
-
-static struct Library *
-lib_open(void)
-{
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
-
-	base->library.lib_OpenCnt++;
-	base->library.lib_Flags &= ~LIBF_DELEXP;
-
-	return &base->library;
-}
-
-static BPTR
-expunge(struct ObjFWRTBase *base)
-{
-	/* Still in use - set delayed expunge flag and refuse to expunge */
-	if (base->library.lib_OpenCnt > 0) {
-		base->library.lib_Flags |= LIBF_DELEXP;
-		return 0;
-	}
-
-	Remove(&base->library.lib_Node);
-	FreeMem((char *)base - base->library.lib_NegSize,
-	    base->library.lib_NegSize + base->library.lib_PosSize);
-
-	return base->seg_list;
-}
-
-static BPTR
-lib_close(void)
-{
-	struct ObjFWRTBase *base = (struct ObjFWRTBase *)REG_A6;
-
-	/* Not used anymore and delayed expunge flag set -> expunge */
-	if (--base->library.lib_OpenCnt == 0 &&
-	    (base->library.lib_Flags & LIBF_DELEXP))
-		return expunge(base);
-
-	return 0;
-}
-
-static BPTR
-lib_expunge(void)
-{
-	return expunge((struct ObjFWRTBase *)REG_A6);
-}
-
-static void
-lib_null(void)
-{
-}

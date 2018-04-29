@@ -58,6 +58,19 @@
 #define YES true
 #define NO  false
 
+#if defined(__amigaos__) && !defined(__MORPHOS__) && !defined(__amigaos4__)
+# define OBJC_M68K_REG(reg) __asm__(reg)
+#else
+# define OBJC_M68K_REG(reg)
+#endif
+#ifdef __MORPHOS__
+# define OBJC_M68K_FUNC(name, args) name(void)
+# define OBJC_M68K_ARG(type, name, reg) type name = (type)reg;
+#else
+# define OBJC_M68K_FUNC(name, ...) name(__VA_ARGS__)
+# define OBJC_M68K_ARG(type, name, reg)
+#endif
+
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
@@ -205,10 +218,9 @@ struct objc_protocol_list {
 	Protocol *__unsafe_unretained _Nonnull list[1];
 };
 
-#if 1 /* !defined(__MORPHOS__) || defined(OF_COMPILING_OBJFW_RT) */
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif
+#endif
 extern SEL _Nonnull sel_registerName(const char *_Nonnull);
 extern const char *_Nonnull sel_getName(SEL _Nonnull);
 extern bool sel_isEqual(SEL _Nonnull, SEL _Nonnull);
@@ -247,28 +259,14 @@ extern void objc_setForwardHandler(IMP _Nullable, IMP _Nullable);
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler _Nullable);
 extern void objc_zero_weak_references(id _Nonnull);
-# ifdef __cplusplus
-}
-# endif
-#else
-# include <ppcinline/macros.h>
-# ifdef __cplusplus
-extern "C" {
-# endif
+# ifdef OF_AMIGAOS
 extern struct Library *ObjFWRTBase;
-# ifdef __cplusplus
-}
 # endif
-# include "ppcinline.h"
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /*
  * Used by the compiler, but can also be called manually.
  *
- * They need to be in the glue code for the MorphOS library.
+ * They need to be in the glue code for the Amiga library.
  *
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.

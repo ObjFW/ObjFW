@@ -134,6 +134,24 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
+#ifdef OF_AMIGA_LIBRARY
+# undef stdout
+# undef stderr
+extern struct objc_libc {
+	void *(*malloc)(size_t);
+	void *(*calloc)(size_t, size_t);
+	void *(*realloc)(void *, size_t);
+	void (*free)(void *);
+	int (*vfprintf)(FILE *, const char *, _BSD_VA_LIST_);
+	int (*fputs)(const char *, FILE *);
+	void (*exit)(int);
+	void (*abort)(void);
+	FILE *stdout;
+	FILE *stderr;
+} *objc_libc;
+extern FILE *stdout, *stderr;
+#endif
+
 extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);
 extern struct objc_category *_Nullable *_Nullable
     objc_categories_for_class(Class _Nonnull);

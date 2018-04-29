@@ -32,11 +32,10 @@ includesubdir = ObjFW_RT
 
 OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
 LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
-AMIGA_LIB_OBJS_EXTRA = amiga-library.o ${LOOKUP_ASM_LOOKUP_ASM_A}
+AMIGA_LIB_OBJS_EXTRA = amiga-library.amigalib.o ${LOOKUP_ASM_LOOKUP_ASM_A}
 
 include ../../buildsys.mk
 
-${AMIGA_LIB}: ppcinline.h
 ppcinline.h: ObjFW_RT.fd protos.h
 	cvinclude.pl			\
 		--root ObjFW_RT		\
@@ -48,5 +47,6 @@ CPPFLAGS += -I. -I.. -I../..				\
 	    -DOF_COMPILING_OBJFW_RT			\
 	    -DOBJFW_RT_LIB_MAJOR=${OBJFW_RT_LIB_MAJOR}	\
 	    -DOBJFW_RT_LIB_MINOR=${OBJFW_RT_LIB_MINOR}
+AMIGALIB_CFLAGS += -DOF_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}
