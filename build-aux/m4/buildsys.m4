@@ -36,20 +36,15 @@ AC_DEFUN([BUILDSYS_INIT], [
 			;;
 	esac
 
-	case "$host" in
-		m68k-*-amigaos*)
-			AC_SUBST(AMIGALIB_CFLAGS, -fbaserel)
-			;;
-		powerpc-*-morphos*)
-			AC_SUBST(AMIGALIB_CFLAGS, -mbaserel32)
-			;;
-	esac
-
 	AC_CONFIG_COMMANDS_PRE([
 		AC_SUBST(CC_DEPENDS, $GCC)
 		AC_SUBST(CXX_DEPENDS, $GXX)
 		AC_SUBST(OBJC_DEPENDS, $GOBJC)
 		AC_SUBST(OBJCXX_DEPENDS, $GOBJCXX)
+
+		AMIGA_LIB_LDFLAGS="-nostartfiles"
+		AC_SUBST(AMIGA_LIB_CFLAGS)
+		AC_SUBST(AMIGA_LIB_LDFLAGS)
 
 		AC_PATH_PROG(TPUT, tput)
 

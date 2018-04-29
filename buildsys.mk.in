@@ -56,7 +56,8 @@ LIB_LDFLAGS = @LIB_LDFLAGS@
 LIB_LDFLAGS_INSTALL_NAME = @LIB_LDFLAGS_INSTALL_NAME@
 LIB_PREFIX = @LIB_PREFIX@
 LIB_SUFFIX = @LIB_SUFFIX@
-AMIGALIB_CFLAGS = @AMIGALIB_CFLAGS@
+AMIGA_LIB_CFLAGS = @AMIGA_LIB_CFLAGS@
+AMIGA_LIB_LDFLAGS = @AMIGA_LIB_LDFLAGS@
 PLUGIN_CFLAGS = @PLUGIN_CFLAGS@
 PLUGIN_LDFLAGS = @PLUGIN_LDFLAGS@
 PLUGIN_SUFFIX = @PLUGIN_SUFFIX@
@@ -280,7 +281,7 @@ copy-headers-into-framework:
 
 ${AMIGA_LIB} ${AMIGA_LIB_NOINST}: ${EXT_DEPS} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA}
 	${LINK_STATUS}
-	if ${LD} -o $@ ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} -nostartfiles ${LDFLAGS} ${LIBS}; then \
+	if ${LD} -o $@ ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${AMIGA_LIB_LDFLAGS} ${LDFLAGS} ${LIBS}; then \
 		${LINK_OK}; \
 	else \
 		${LINK_FAILED}; \
@@ -411,13 +412,13 @@ locales: ${MO_FILES}
 		${COMPILE_LIB_FAILED}; \
 	fi
 .c.amigalib.o:
-	${COMPILE_AMIGALIB_STATUS}
+	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${AMIGALIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_AMIGALIB_OK}; \
+	if ${CC} ${AMIGA_LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGA_LIB_OK}; \
 	else \
-		${COMPILE_AMIGALIB_FAILED}; \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .c.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -448,13 +449,13 @@ locales: ${MO_FILES}
 		${COMPILE_LIB_FAILED}; \
 	fi
 .cc.amigalib.o .cxx.amigalib.o:
-	${COMPILE_AMIGALIB_STATUS}
+	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${AMIGALIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_AMIGALIB_OK}; \
+	if ${CXX} ${AMIGA_LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGA_LIB_OK}; \
 	else \
-		${COMPILE_AMIGALIB_FAILED}; \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .cc.plugin.o .cxx.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -523,13 +524,13 @@ locales: ${MO_FILES}
 		${COMPILE_LIB_FAILED}; \
 	fi
 .m.amigalib.o:
-	${COMPILE_AMIGALIB_STATUS}
+	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${AMIGALIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_AMIGALIB_OK}; \
+	if ${OBJC} ${AMIGA_LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGA_LIB_OK}; \
 	else \
-		${COMPILE_AMIGALIB_FAILED}; \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .m.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -560,13 +561,13 @@ locales: ${MO_FILES}
 		${COMPILE_LIB_FAILED}; \
 	fi
 .mm.amigalib.o:
-	${COMPILE_AMIGALIB_STATUS}
+	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${AMIGALIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
-		${COMPILE_AMIGALIB_OK}; \
+	if ${OBJCXX} ${AMIGA_LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
+		${COMPILE_AMIGA_LIB_OK}; \
 	else \
-		${COMPILE_AMIGALIB_FAILED}; \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .mm.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -655,13 +656,13 @@ locales: ${MO_FILES}
 		${COMPILE_LIB_FAILED}; \
 	fi
 .xpm.amigalib.o:
-	${COMPILE_AMIGALIB_STATUS}
+	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${AMIGALIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -x c -c -o $@ $<; then \
-		${COMPILE_AMIGALIB_OK}; \
+	if ${CC} ${AMIGA_LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -x c -c -o $@ $<; then \
+		${COMPILE_AMIGA_LIB_OK}; \
 	else \
-		${COMPILE_AMIGALIB_FAILED}; \
+		${COMPILE_AMIGA_LIB_FAILED}; \
 	fi
 .xpm.plugin.o:
 	${COMPILE_PLUGIN_STATUS}
@@ -952,9 +953,9 @@ COMPILE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_
 COMPILE_LIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (lib)...@TERM_SGR0@\r" "$<"
 COMPILE_LIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (lib).@TERM_SGR0@\n" "$<"
 COMPILE_LIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (lib)!@TERM_SGR0@\n" "$<"; exit $$err
-COMPILE_AMIGALIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (Amiga lib)...@TERM_SGR0@\r" "$<"
-COMPILE_AMIGALIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (Amiga lib).@TERM_SGR0@\n" "$<"
-COMPILE_AMIGALIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (Amiga lib)!@TERM_SGR0@\n" "$<"; exit $$err
+COMPILE_AMIGA_LIB_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (Amiga lib)...@TERM_SGR0@\r" "$<"
+COMPILE_AMIGA_LIB_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (Amiga lib).@TERM_SGR0@\n" "$<"
+COMPILE_AMIGA_LIB_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (Amiga lib)!@TERM_SGR0@\n" "$<"; exit $$err
 COMPILE_PLUGIN_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@ (plugin)...@TERM_SGR0@\r" "$<"
 COMPILE_PLUGIN_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@ (plugin).@TERM_SGR0@\n" "$<"
 COMPILE_PLUGIN_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@ (plugin)!@TERM_SGR0@\n" "$<"; exit $$err
