@@ -29,6 +29,14 @@
 # endif
 #endif
 
+#ifdef OBJC_AMIGA_LIBRARY
+# define OBJC_GLUE(name, ...) glue_##name(__VA_ARGS__)
+# define OBJC_GLUE_M68K_REG(reg) OBJC_M68K_REG(reg)
+#else
+# define OBJC_GLUE(name, ...) name(__VA_ARGS__)
+# define OBJC_GLUE_M68K_REG(reg)
+#endif
+
 struct objc_abi_class {
 	struct objc_abi_class *_Nonnull metaclass;
 	const char *_Nullable superclass;

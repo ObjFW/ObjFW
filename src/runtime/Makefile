@@ -32,7 +32,9 @@ includesubdir = ObjFW_RT
 
 OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
 LIB_OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_LIB_A}
-AMIGA_LIB_OBJS_EXTRA = amiga-library.amigalib.o ${LOOKUP_ASM_LOOKUP_ASM_A}
+AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
+		       amiga-library.amigalib.o		\
+		       ${LOOKUP_ASM_LOOKUP_ASM_A}
 
 include ../../buildsys.mk
 

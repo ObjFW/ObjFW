@@ -26,7 +26,7 @@
 static objc_enumeration_mutation_handler enumeration_mutation_handler = NULL;
 
 void
-objc_enumerationMutation(id obj)
+OBJC_GLUE(objc_enumerationMutation, id obj OBJC_GLUE_M68K_REG("a0"))
 {
 	if (enumeration_mutation_handler != NULL)
 		enumeration_mutation_handler(obj);

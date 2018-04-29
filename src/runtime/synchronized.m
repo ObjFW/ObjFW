@@ -43,7 +43,7 @@ OF_CONSTRUCTOR()
 #endif
 
 int
-objc_sync_enter(id object)
+OBJC_GLUE(objc_sync_enter, id object OBJC_GLUE_M68K_REG("a0"))
 {
 	if (object == nil)
 		return 0;
@@ -94,7 +94,7 @@ objc_sync_enter(id object)
 }
 
 int
-objc_sync_exit(id object)
+OBJC_GLUE(objc_sync_exit, id object OBJC_GLUE_M68K_REG("a0"))
 {
 	if (object == nil)
 		return 0;

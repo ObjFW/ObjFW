@@ -480,7 +480,7 @@ objc_registerClassPair(Class cls OBJC_M68K_REG("a0"))
 }
 
 id
-objc_lookUpClass(const char *name)
+OBJC_GLUE(objc_lookUpClass, const char *name OBJC_GLUE_M68K_REG("a0"))
 {
 	Class cls;
 
@@ -503,17 +503,17 @@ objc_lookUpClass(const char *name)
 }
 
 id
-objc_getClass(const char *name)
+OBJC_GLUE(objc_getClass, const char *name OBJC_GLUE_M68K_REG("a0"))
 {
-	return objc_lookUpClass(name);
+	return OBJC_GLUE(objc_lookUpClass, name);
 }
 
 id
-objc_getRequiredClass(const char *name)
+OBJC_GLUE(objc_getRequiredClass, const char *name OBJC_GLUE_M68K_REG("a0"))
 {
 	Class cls;
 
-	if ((cls = objc_getClass(name)) == Nil)
+	if ((cls = OBJC_GLUE(objc_getClass, name)) == Nil)
 		OBJC_ERROR("Class %s not found!", name);
 
 	return cls;

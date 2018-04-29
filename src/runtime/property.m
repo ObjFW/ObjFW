@@ -41,7 +41,10 @@ OF_CONSTRUCTOR()
 #endif
 
 id
-objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
+OBJC_GLUE(objc_getProperty, id self OBJC_GLUE_M68K_REG("a0"),
+    SEL _cmd OBJC_GLUE_M68K_REG("a1"),
+    ptrdiff_t offset OBJC_GLUE_M68K_REG("d0"),
+    bool atomic OBJC_GLUE_M68K_REG("d1"))
 {
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
@@ -63,8 +66,11 @@ objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 }
 
 void
-objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
-    signed char copy)
+OBJC_GLUE(objc_setProperty, id self OBJC_GLUE_M68K_REG("a0"),
+    SEL _cmd OBJC_GLUE_M68K_REG("a1"),
+    ptrdiff_t offset OBJC_GLUE_M68K_REG("d0"),
+    id value OBJC_GLUE_M68K_REG("a2"), bool atomic OBJC_GLUE_M68K_REG("d1"),
+    signed char copy OBJC_GLUE_M68K_REG("d2"))
 {
 	if (atomic) {
 		id *ptr = (id *)(void *)((char *)self + offset);
@@ -116,8 +122,10 @@ objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
 
 /* The following methods are only required for GCC >= 4.6 */
 void
-objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
-    bool strong)
+OBJC_GLUE(objc_getPropertyStruct, void *dest OBJC_GLUE_M68K_REG("a0"),
+    const void *src OBJC_GLUE_M68K_REG("a1"),
+    ptrdiff_t size OBJC_GLUE_M68K_REG("d0"),
+    bool atomic OBJC_GLUE_M68K_REG("d1"), bool strong OBJC_GLUE_M68K_REG("d2"))
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
@@ -137,8 +145,10 @@ objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 }
 
 void
-objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
-    bool strong)
+OBJC_GLUE(objc_setPropertyStruct, void *dest OBJC_GLUE_M68K_REG("a0"),
+    const void *src OBJC_GLUE_M68K_REG("a1"),
+    ptrdiff_t size OBJC_GLUE_M68K_REG("d0"),
+    bool atomic OBJC_GLUE_M68K_REG("d1"), bool strong OBJC_GLUE_M68K_REG("d2"))
 {
 	if (atomic) {
 #ifdef OF_HAVE_THREADS
