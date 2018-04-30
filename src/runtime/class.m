@@ -22,8 +22,6 @@
 #include <string.h>
 #include <limits.h>
 
-#include <assert.h>
-
 #import "ObjFW_RT.h"
 #import "private.h"
 
@@ -584,7 +582,7 @@ objc_copyClassList(unsigned int *len OBJC_M68K_REG("a0"))
 		OBJC_ERROR("Failed to allocate memory for class list!");
 
 	count = objc_getClassList(ret, classes_cnt);
-	assert(count == classes_cnt);
+	OF_ENSURE(count == classes_cnt);
 
 	ret[count] = Nil;
 
@@ -920,7 +918,7 @@ objc_unregister_all_classes(void)
 		}
 	}
 
-	assert(classes_cnt == 0);
+	OF_ENSURE(classes_cnt == 0);
 
 	if (empty_dtable != NULL) {
 		objc_dtable_free(empty_dtable);
