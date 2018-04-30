@@ -63,7 +63,7 @@
 #else
 # define OBJC_M68K_REG(reg)
 #endif
-#if defined(__MORPHOS__) && defined(OBJC_AMIGA_LIBRARY)
+#if defined(__MORPHOS__) && defined(OBJC_COMPILING_AMIGA_LIBRARY)
 # define OBJC_M68K_FUNC(name, ...) name(void)
 # define OBJC_M68K_ARG(type, name, reg) type name = (type)reg;
 #else
@@ -221,6 +221,10 @@ struct objc_protocol_list {
 #ifdef __cplusplus
 extern "C" {
 #endif
+# ifdef OBJC_AMIGA_LIBRARY
+#  import "ObjFW_RT_inline.h"
+extern struct Library *ObjFWRTBase;
+# else
 extern SEL _Nonnull sel_registerName(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
 extern const char *_Nonnull sel_getName(SEL _Nonnull sel OBJC_M68K_REG("a0"));
@@ -284,8 +288,6 @@ extern void objc_setForwardHandler(IMP _Nullable forward OBJC_M68K_REG("a0"),
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler _Nullable handler OBJC_M68K_REG("a0"));
 extern void objc_zero_weak_references(id _Nonnull value OBJC_M68K_REG("a0"));
-# ifdef OF_AMIGAOS
-extern struct Library *ObjFWRTBase;
 # endif
 
 /*

@@ -46,6 +46,8 @@ case "$host" in
 
 		AC_SUBST(NOIXEMUL, -noixemul)
 		AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
+		AC_SUBST(OBJFW_RT_INLINE_H, ObjFW_RT_inline.h)
+		AC_SUBST(SFDC_TARGET, m68k-amigaos)
 		;;
 	powerpc-*-amigaos*)
 		enable_shared="no"
@@ -59,6 +61,8 @@ case "$host" in
 
 			AC_SUBST(NOIXEMUL, -noixemul)
 			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
+			AC_SUBST(OBJFW_RT_INLINE_H, ObjFW_RT_inline.h)
+			AC_SUBST(SFDC_TARGET, ppc-morphos)
 		])
 
 		enable_shared="no"

@@ -134,7 +134,7 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
-#ifdef OBJC_AMIGA_LIBRARY
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
 # undef stdout
 # undef stderr
 extern struct objc_libc {

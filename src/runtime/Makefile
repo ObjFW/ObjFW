@@ -1,6 +1,7 @@
 include ../../extra.mk
 
 SUBDIRS = lookup-asm
+CLEAN = ${OBJFW_RT_INLINE_H}
 
 SHARED_LIB = ${OBJFW_RT_SHARED_LIB}
 STATIC_LIB = ${OBJFW_RT_STATIC_LIB}
@@ -27,7 +28,7 @@ SRCS = arc.m			\
        ${USE_SRCS_THREADS}
 SRCS_THREADS = threading.m	\
 	       ../threading.m
-INCLUDES = ObjFW_RT.h
+INCLUDES = ObjFW_RT.h ${OBJFW_RT_INLINE_H}
 includesubdir = ObjFW_RT
 
 OBJS_EXTRA = ${LOOKUP_ASM_LOOKUP_ASM_A}
@@ -38,15 +39,20 @@ AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
 
 include ../../buildsys.mk
 
+${OBJFW_RT_AMIGA_LIB}: ${OBJFW_RT_INLINE_H}
+
 amiga-library.m: amiga-library-functable.inc
 
 amiga-library-functable.inc: ObjFW_RT.sfd
-	sfdc -q --mode=functable -o $@ $<
+	sfdc -q --target=${SFDC_TARGET} --mode=functable -o $@ $<
+
+${OBJFW_RT_INLINE_H}: ObjFW_RT.sfd
+	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<
 
 CPPFLAGS += -I. -I.. -I../..				\
 	    -DOF_COMPILING_OBJFW_RT			\
 	    -DOBJFW_RT_LIB_MAJOR=${OBJFW_RT_LIB_MAJOR}	\
 	    -DOBJFW_RT_LIB_MINOR=${OBJFW_RT_LIB_MINOR}
-AMIGA_LIB_CFLAGS += -DOBJC_AMIGA_LIBRARY
+AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}
