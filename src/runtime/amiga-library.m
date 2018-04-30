@@ -187,66 +187,21 @@ abort(void)
 	libc->abort();
 }
 
-static ULONG function_table[] = {
-	(ULONG)lib_open,
-	(ULONG)lib_close,
-	(ULONG)lib_expunge,
-	(ULONG)lib_null,
-	/* Functions for the linklib */
-	(ULONG)objc_set_libc,
-	/* Used by the compiler - these need glue code */
-	(ULONG)glue___objc_exec_class,
-	(ULONG)glue_objc_msg_lookup,
-	(ULONG)glue_objc_msg_lookup_stret,
-	(ULONG)glue_objc_msg_lookup_super,
-	(ULONG)glue_objc_msg_lookup_super_stret,
-	(ULONG)glue_objc_lookUpClass,
-	(ULONG)glue_objc_getClass,
-	(ULONG)glue_objc_getRequiredClass,
-	(ULONG)glue_objc_exception_throw,
-	(ULONG)glue_objc_sync_enter,
-	(ULONG)glue_objc_sync_exit,
-	(ULONG)glue_objc_getProperty,
-	(ULONG)glue_objc_setProperty,
-	(ULONG)glue_objc_getPropertyStruct,
-	(ULONG)glue_objc_setPropertyStruct,
-	(ULONG)glue_objc_enumerationMutation,
-	/* Functions declared in ObjFW_RT.h */
-	(ULONG)sel_registerName,
-	(ULONG)sel_getName,
-	(ULONG)sel_isEqual,
-	(ULONG)objc_allocateClassPair,
-	(ULONG)objc_registerClassPair,
-	(ULONG)objc_getClassList,
-	(ULONG)objc_copyClassList,
-	(ULONG)class_isMetaClass,
-	(ULONG)class_getName,
-	(ULONG)class_getSuperclass,
-	(ULONG)class_getInstanceSize,
-	(ULONG)class_respondsToSelector,
-	(ULONG)class_conformsToProtocol,
-	(ULONG)class_getMethodImplementation,
-	(ULONG)class_getMethodImplementation_stret,
-	(ULONG)class_getMethodTypeEncoding,
-	(ULONG)class_addMethod,
-	(ULONG)class_replaceMethod,
-	(ULONG)object_getClass,
-	(ULONG)object_setClass,
-	(ULONG)object_getClassName,
-	(ULONG)protocol_getName,
-	(ULONG)protocol_isEqual,
-	(ULONG)protocol_conformsToProtocol,
-	(ULONG)objc_exit,
-	(ULONG)objc_setUncaughtExceptionHandler,
-	(ULONG)objc_setForwardHandler,
-	(ULONG)objc_setEnumerationMutationHandler,
-	(ULONG)objc_zero_weak_references,
-	-1,
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+static CONST_APTR function_table[] = {
+	(CONST_APTR)lib_open,
+	(CONST_APTR)lib_close,
+	(CONST_APTR)lib_expunge,
+	(CONST_APTR)lib_null,
+#include "amiga-library-functable.inc"
+	(CONST_APTR)-1,
 };
+#pragma GCC diagnostic pop
 
 static struct {
 	ULONG data_size;
-	ULONG *function_table;
+	CONST_APTR *function_table;
 	ULONG *data_table;
 	struct Library *(*init_func)(
 	    struct ExecBase *exec_base OBJC_M68K_REG("a6"),

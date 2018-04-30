@@ -38,12 +38,10 @@ AMIGA_LIB_OBJS_EXTRA = amiga-glue.amigalib.o		\
 
 include ../../buildsys.mk
 
-ppcinline.h: ObjFW_RT.fd protos.h
-	cvinclude.pl			\
-		--root ObjFW_RT		\
-		--fd ObjFW_RT.fd	\
-		--clib protos.h		\
-		--inline $@
+amiga-library.m: amiga-library-functable.inc
+
+amiga-library-functable.inc: ObjFW_RT.sfd
+	sfdc -q --mode=functable -o $@ $<
 
 CPPFLAGS += -I. -I.. -I../..				\
 	    -DOF_COMPILING_OBJFW_RT			\
