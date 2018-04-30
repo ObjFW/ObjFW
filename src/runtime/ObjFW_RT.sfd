@@ -4,7 +4,7 @@
 ==bias 30
 ==public
 * Functions for the linklib
-void objc_set_libc(struct objc_libc *libc)(a0)
+void objc_init(struct objc_libc *libc)(a0)
 * Used by the compiler - these need glue code
 void glue___objc_exec_class(void *module)(a0)
 IMP glue_objc_msg_lookup(id obj, SEL sel)(a0,a1)

@@ -44,6 +44,7 @@ _start()
 struct ObjFWRTBase {
 	struct Library library;
 	BPTR seg_list;
+	bool initialized;
 };
 
 struct ExecBase *SysBase;
@@ -54,6 +55,8 @@ struct WBStartup *_WBenchMsg;
 struct objc_libc *libc;
 FILE *stdout;
 FILE *stderr;
+extern uintptr_t __CTOR_LIST__[];
+extern uintptr_t __DTOR_LIST__[];
 
 static struct Library *
 lib_init(struct ExecBase *exec_base OBJC_M68K_REG("a6"),
@@ -114,6 +117,13 @@ OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	    (base->library.lib_Flags & LIBF_DELEXP))
 		return expunge(base);
 
+	if (base->initialized) {
+		for (uintptr_t *iter = &__DTOR_LIST__[1]; *iter != 0; iter++) {
+			void (*dtor)(void) = (void (*)(void))*iter++;
+			dtor();
+		}
+	}
+
 	return 0;
 }
 
@@ -124,12 +134,25 @@ lib_null(void)
 }
 
 static void
-objc_set_libc(struct objc_libc *libc_ OBJC_M68K_REG("a0"))
+objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
+    struct objc_libc *libc_ OBJC_M68K_REG("a0"))
 {
+	uintptr_t *iter, *iter0;
+
 	libc = libc_;
 
 	stdout = libc->stdout;
 	stderr = libc->stderr;
+
+	iter0 = &__CTOR_LIST__[1];
+	for (iter = iter0; *iter != 0; iter++);
+
+	while (iter > iter0) {
+		void (*ctor)(void) = (void (*)(void))*--iter;
+		ctor();
+	}
+
+	base->initialized = true;
 }
 
 void *
