@@ -29,14 +29,6 @@
 # endif
 #endif
 
-#ifdef OBJC_AMIGA_LIBRARY
-# define OBJC_GLUE(name, ...) glue_##name(__VA_ARGS__)
-# define OBJC_GLUE_M68K_REG(reg) OBJC_M68K_REG(reg)
-#else
-# define OBJC_GLUE(name, ...) name(__VA_ARGS__)
-# define OBJC_GLUE_M68K_REG(reg)
-#endif
-
 struct objc_abi_class {
 	struct objc_abi_class *_Nonnull metaclass;
 	const char *_Nullable superclass;
@@ -158,6 +150,43 @@ extern struct objc_libc {
 	FILE *stderr;
 } *objc_libc;
 extern FILE *stdout, *stderr;
+
+extern void glue___objc_exec_class(void *_Nonnull module OBJC_M68K_REG("a0"));
+extern IMP _Nonnull glue_objc_msg_lookup(id _Nullable obj OBJC_M68K_REG("a0"),
+    SEL _Nonnull sel OBJC_M68K_REG("a1"));
+extern IMP _Nonnull glue_objc_msg_lookup_stret(
+    id _Nullable obj OBJC_M68K_REG("a0"), SEL _Nonnull sel OBJC_M68K_REG("a1"));
+extern IMP _Nonnull glue_objc_msg_lookup_super(
+    struct objc_super *_Nonnull super OBJC_M68K_REG("a0"),
+    SEL _Nonnull sel OBJC_M68K_REG("a1"));
+extern IMP _Nonnull glue_objc_msg_lookup_super_stret(
+    struct objc_super *_Nonnull super OBJC_M68K_REG("a0"),
+    SEL _Nonnull sel OBJC_M68K_REG("a1"));
+extern id _Nullable glue_objc_lookUpClass(
+    const char *_Nonnull name OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_getClass(
+    const char *_Nonnull name OBJC_M68K_REG("a0"));
+extern id _Nonnull glue_objc_getRequiredClass(
+    const char *_Nonnull name OBJC_M68K_REG("a0"));
+extern void glue_objc_exception_throw(id _Nullable object OBJC_M68K_REG("a0"));
+extern int glue_objc_sync_enter(id _Nullable object OBJC_M68K_REG("a0"));
+extern int glue_objc_sync_exit(id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_getProperty(id _Nonnull self OBJC_M68K_REG("a0"),
+    SEL _Nonnull _cmd OBJC_M68K_REG("a1"), ptrdiff_t offset OBJC_M68K_REG("d0"),
+    bool atomic OBJC_M68K_REG("d1"));
+extern void glue_objc_setProperty(id _Nonnull self OBJC_M68K_REG("a0"),
+    SEL _Nonnull _cmd OBJC_M68K_REG("a1"), ptrdiff_t offset OBJC_M68K_REG("d0"),
+    id _Nullable value OBJC_M68K_REG("a2"), bool atomic OBJC_M68K_REG("d1"),
+    signed char copy OBJC_M68K_REG("d2"));
+extern void glue_objc_getPropertyStruct(void *_Nonnull dest OBJC_M68K_REG("a0"),
+    const void *_Nonnull src OBJC_M68K_REG("a1"),
+    ptrdiff_t size OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"),
+    bool strong OBJC_M68K_REG("d2"));
+extern void glue_objc_setPropertyStruct(void *_Nonnull dest OBJC_M68K_REG("a0"),
+    const void *_Nonnull src OBJC_M68K_REG("a1"),
+    ptrdiff_t size OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"),
+    bool strong OBJC_M68K_REG("d2"));
+extern void glue_objc_enumerationMutation(id _Nonnull obj OBJC_M68K_REG("a0"));
 #endif
 
 extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);

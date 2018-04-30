@@ -158,15 +158,13 @@ common_lookup(id obj, SEL sel, IMP (*not_found)(id, SEL))
 }
 
 IMP
-OBJC_GLUE(objc_msg_lookup, id obj OBJC_GLUE_M68K_REG("a0"),
-    SEL sel OBJC_GLUE_M68K_REG("a1"))
+objc_msg_lookup(id obj, SEL sel)
 {
 	return common_lookup(obj, sel, objc_method_not_found);
 }
 
 IMP
-OBJC_GLUE(objc_msg_lookup_stret, id obj OBJC_GLUE_M68K_REG("a0"),
-    SEL sel OBJC_GLUE_M68K_REG("a1"))
+objc_msg_lookup_stret(id obj, SEL sel)
 {
 	return common_lookup(obj, sel, objc_method_not_found_stret);
 }
@@ -189,17 +187,13 @@ common_lookup_super(struct objc_super *super, SEL sel,
 }
 
 IMP
-OBJC_GLUE(objc_msg_lookup_super,
-    struct objc_super *super OBJC_GLUE_M68K_REG("a0"),
-    SEL sel OBJC_GLUE_M68K_REG("a1"))
+objc_msg_lookup_super(struct objc_super *super, SEL sel)
 {
 	return common_lookup_super(super, sel, objc_method_not_found);
 }
 
 IMP
-OBJC_GLUE(objc_msg_lookup_super_stret,
-    struct objc_super *super OBJC_GLUE_M68K_REG("a0"),
-    SEL sel OBJC_GLUE_M68K_REG("a1"))
+objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
 {
 	return common_lookup_super(super, sel, objc_method_not_found_stret);
 }

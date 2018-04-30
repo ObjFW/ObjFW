@@ -22,102 +22,109 @@
 #import "macros.h"
 
 void
-__objc_exec_class(void *module)
+glue___objc_exec_class(void *module OBJC_M68K_REG("a0"))
 {
 	glue___objc_exec_class(module);
 }
 
 IMP
-objc_msg_lookup(id obj, SEL sel)
+glue_objc_msg_lookup(id obj OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"))
 {
-	return glue_objc_msg_lookup(obj, sel);
+	return objc_msg_lookup(obj, sel);
 }
 
 IMP
-objc_msg_lookup_stret(id obj, SEL sel)
+glue_objc_msg_lookup_stret(id obj OBJC_M68K_REG("a0"),
+    SEL sel OBJC_M68K_REG("a1"))
 {
-	return glue_objc_msg_lookup_stret(obj, sel);
+	return objc_msg_lookup_stret(obj, sel);
 }
 
 IMP
-objc_msg_lookup_super(struct objc_super *super, SEL sel)
+glue_objc_msg_lookup_super(struct objc_super *super OBJC_M68K_REG("a0"),
+    SEL sel OBJC_M68K_REG("a1"))
 {
-	return glue_objc_msg_lookup_super(super, sel);
+	return objc_msg_lookup_super(super, sel);
 }
 
 IMP
-objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
+glue_objc_msg_lookup_super_stret(struct objc_super *super OBJC_M68K_REG("a0"),
+    SEL sel OBJC_M68K_REG("a1"))
 {
-	return glue_objc_msg_lookup_super_stret(super, sel);
+	return objc_msg_lookup_super_stret(super, sel);
 }
 
 id
-objc_lookUpClass(const char *name)
+glue_objc_lookUpClass(const char *name OBJC_M68K_REG("a0"))
 {
-	return glue_objc_lookUpClass(name);
+	return objc_lookUpClass(name);
 }
 
 id
-objc_getClass(const char *name)
+glue_objc_getClass(const char *name OBJC_M68K_REG("a0"))
 {
-	return glue_objc_getClass(name);
+	return objc_getClass(name);
 }
 
 id
-objc_getRequiredClass(const char *name)
+glue_objc_getRequiredClass(const char *name OBJC_M68K_REG("a0"))
 {
-	return glue_objc_getRequiredClass(name);
+	return objc_getRequiredClass(name);
 }
 
 void
-objc_exception_throw(id object)
+glue_objc_exception_throw(id object OBJC_M68K_REG("a0"))
 {
-	glue_objc_exception_throw(object);
+	objc_exception_throw(object);
 
 	OF_UNREACHABLE
 }
 
 int
-objc_sync_enter(id object)
+glue_objc_sync_enter(id object OBJC_M68K_REG("a0"))
 {
-	return glue_objc_sync_enter(object);
+	return objc_sync_enter(object);
 }
 
 int
-objc_sync_exit(id object)
+glue_objc_sync_exit(id object OBJC_M68K_REG("a0"))
 {
-	return glue_objc_sync_exit(object);
+	return objc_sync_exit(object);
 }
 
 id
-objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
+glue_objc_getProperty(id self OBJC_M68K_REG("a0"), SEL _cmd OBJC_M68K_REG("a1"),
+    ptrdiff_t offset OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"))
 {
-	return glue_objc_getProperty(self, _cmd, offset, atomic);
+	return objc_getProperty(self, _cmd, offset, atomic);
 }
 
 void
-objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
-    signed char copy)
+glue_objc_setProperty(id self OBJC_M68K_REG("a0"), SEL _cmd OBJC_M68K_REG("a1"),
+    ptrdiff_t offset OBJC_M68K_REG("d0"), id value OBJC_M68K_REG("a2"),
+    bool atomic OBJC_M68K_REG("d1"), signed char copy OBJC_M68K_REG("d2"))
 {
-	glue_objc_setProperty(self, _cmd, offset, value, atomic, copy);
+	objc_setProperty(self, _cmd, offset, value, atomic, copy);
 }
 
 void
-objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
-    bool strong)
+glue_objc_getPropertyStruct(void *dest OBJC_M68K_REG("a0"),
+    const void *src OBJC_M68K_REG("a1"), ptrdiff_t size OBJC_M68K_REG("d0"),
+    bool atomic OBJC_M68K_REG("d1"), bool strong OBJC_M68K_REG("d2"))
 {
-	glue_objc_getPropertyStruct(dest, src, size, atomic, strong);
+	objc_getPropertyStruct(dest, src, size, atomic, strong);
 }
 
 void
-objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
-    bool strong)
+glue_objc_setPropertyStruct(void *dest OBJC_M68K_REG("a0"),
+    const void *src OBJC_M68K_REG("a1"), ptrdiff_t size OBJC_M68K_REG("d0"),
+    bool atomic OBJC_M68K_REG("d1"), bool strong OBJC_M68K_REG("d2"))
 {
-	glue_objc_setPropertyStruct(dest, src, size, atomic, strong);
+	objc_setPropertyStruct(dest, src, size, atomic, strong);
 }
 
 void
-objc_enumerationMutation(id obj)
+glue_objc_enumerationMutation(id obj OBJC_M68K_REG("a0"))
 {
-	glue_objc_enumerationMutation(obj);
+	objc_enumerationMutation(obj);
 }

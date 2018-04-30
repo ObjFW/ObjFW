@@ -241,7 +241,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	struct x86_regs regs;
 
 # if defined(OF_X86_64_ASM)
-	__asm__(
+	__asm__ (
 	    "cpuid"
 	    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
@@ -253,7 +253,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	 * push a register onto the stack before the __asm__ block and to pop
 	 * it afterwards.
 	 */
-	__asm__(
+	__asm__ (
 	    "pushl	%%ebx\n\t"
 	    "cpuid\n\t"
 	    "movl	%%ebx, %1\n\t"

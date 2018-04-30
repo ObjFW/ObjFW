@@ -716,7 +716,7 @@ cleanup_emergency(_Unwind_Reason_Code reason, struct _Unwind_Exception *ex)
 }
 
 void
-OBJC_GLUE(objc_exception_throw, id object OBJC_GLUE_M68K_REG("a0"))
+objc_exception_throw(id object)
 {
 	struct objc_exception *e = malloc(sizeof(*e));
 	bool emergency = false;

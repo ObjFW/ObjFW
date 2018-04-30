@@ -21,7 +21,7 @@
 #import "private.h"
 
 void
-OBJC_GLUE(__objc_exec_class, void *module_ OBJC_GLUE_M68K_REG("a0"))
+__objc_exec_class(void *module_)
 {
 	struct objc_abi_module *module = module_;
 
