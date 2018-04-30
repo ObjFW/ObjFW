@@ -192,7 +192,7 @@ static ULONG function_table[] = {
 	(ULONG)lib_close,
 	(ULONG)lib_expunge,
 	(ULONG)lib_null,
-	/* Functions for the glue code */
+	/* Functions for the linklib */
 	(ULONG)objc_set_libc,
 	/* Used by the compiler - these need glue code */
 	(ULONG)glue___objc_exec_class,
