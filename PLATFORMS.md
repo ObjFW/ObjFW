@@ -5,6 +5,16 @@ ObjFW is known to work on the following platforms, but should run on many
 others as well.
 
 
+AmigaOS
+-------
+
+  * OS Versions: 3.1
+  * Architectures: m68k
+  * Compilers: GCC 6.4.1b (amiga-gcc)
+  * Runtimes: ObjFW
+  * Limitations: No threads
+
+
 Android
 -------
 
