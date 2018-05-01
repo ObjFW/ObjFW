@@ -141,8 +141,8 @@ objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
 
 	libc = libc_;
 
-	stdout = libc->stdout;
-	stderr = libc->stderr;
+	stdout = libc->stdout_;
+	stderr = libc->stderr_;
 
 	iter0 = &__CTOR_LIST__[1];
 	for (iter = iter0; *iter != 0; iter++);
@@ -230,7 +230,7 @@ static struct {
 	    struct ExecBase *exec_base OBJC_M68K_REG("a6"),
 	    BPTR seg_list OBJC_M68K_REG("a0"),
 	    struct ObjFWRTBase *base OBJC_M68K_REG("d0"));
-} initTable = {
+} init_table = {
 	sizeof(struct ObjFWRTBase),
 	function_table,
 	NULL,
@@ -252,5 +252,5 @@ static struct Resident resident = {
 	.rt_Name = (char *)"objfw_rt.library",
 	.rt_IdString = (char *)"ObjFW_RT " VERSION_STRING
 	    " \xA9 2008-2018 Jonathan Schleifer",
-	.rt_Init = &initTable
+	.rt_Init = &init_table
 };

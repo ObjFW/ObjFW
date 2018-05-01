@@ -221,8 +221,15 @@ struct objc_protocol_list {
 #ifdef __cplusplus
 extern "C" {
 #endif
-# ifdef OBJC_AMIGA_LIBRARY
-#  import "ObjFW_RT_inline.h"
+# if defined(OBJC_AMIGA_LIBRARY) || defined(OBJC_COMPILING_AMIGA_LINKLIB)
+#  if defined(__amigaos__) && !defined(__MORPHOS__) && !defined(__amigaos4__)
+#   define INTUITION_CLASSES_H
+#  endif
+#  include <exec/types.h>
+#  include "ObjFW_RT_inline.h"
+#  if defined(__amigaos__) && !defined(__MORPHOS__) && !defined(__amigaos4__)
+#   undef INTUITION_CLASSES_H
+#  endif
 extern struct Library *ObjFWRTBase;
 # else
 extern SEL _Nonnull sel_registerName(
@@ -306,6 +313,8 @@ extern IMP _Nonnull objc_msg_lookup_super_stret(
 extern id _Nullable objc_lookUpClass(const char *_Nonnull name);
 extern id _Nullable objc_getClass(const char *_Nonnull name);
 extern id _Nonnull objc_getRequiredClass(const char *_Nonnull name);
+extern Class _Nullable objc_lookup_class(const char *_Nonnull name);
+extern Class _Nonnull objc_get_class(const char *_Nonnull name);
 extern void objc_exception_throw(id _Nullable object);
 extern int objc_sync_enter(id _Nullable object);
 extern int objc_sync_exit(id _Nullable object);

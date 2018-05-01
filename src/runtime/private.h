@@ -134,21 +134,25 @@ struct objc_dtable {
 	} *_Nonnull buckets[256];
 };
 
-#ifdef OBJC_COMPILING_AMIGA_LIBRARY
-# undef stdout
-# undef stderr
+#if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
+    defined(OBJC_COMPILING_AMIGA_LINKLIB)
 extern struct objc_libc {
 	void *(*malloc)(size_t);
 	void *(*calloc)(size_t, size_t);
 	void *(*realloc)(void *, size_t);
 	void (*free)(void *);
-	int (*vfprintf)(FILE *, const char *, _BSD_VA_LIST_);
+	int (*vfprintf)(FILE *, const char *, va_list);
 	int (*fputs)(const char *, FILE *);
 	void (*exit)(int);
 	void (*abort)(void);
-	FILE *stdout;
-	FILE *stderr;
+	FILE *stdout_;
+	FILE *stderr_;
 } *objc_libc;
+#endif
+
+#ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# undef stdout
+# undef stderr
 extern FILE *stdout, *stderr;
 
 extern void glue___objc_exec_class(void *_Nonnull module OBJC_M68K_REG("a0"));
@@ -167,6 +171,10 @@ extern id _Nullable glue_objc_lookUpClass(
 extern id _Nullable glue_objc_getClass(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
 extern id _Nonnull glue_objc_getRequiredClass(
+    const char *_Nonnull name OBJC_M68K_REG("a0"));
+extern Class _Nullable glue_objc_lookup_class(
+    const char *_Nonnull name OBJC_M68K_REG("a0"));
+extern Class _Nonnull glue_objc_get_class(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
 extern void glue_objc_exception_throw(id _Nullable object OBJC_M68K_REG("a0"));
 extern int glue_objc_sync_enter(id _Nullable object OBJC_M68K_REG("a0"));

@@ -24,7 +24,7 @@
 void
 glue___objc_exec_class(void *module OBJC_M68K_REG("a0"))
 {
-	glue___objc_exec_class(module);
+	__objc_exec_class(module);
 }
 
 IMP
@@ -70,6 +70,18 @@ id
 glue_objc_getRequiredClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_getRequiredClass(name);
+}
+
+Class
+glue_objc_lookup_class(const char *name OBJC_M68K_REG("a0"))
+{
+	return objc_lookup_class(name);
+}
+
+Class
+glue_objc_get_class(const char *name OBJC_M68K_REG("a0"))
+{
+	return objc_get_class(name);
 }
 
 void

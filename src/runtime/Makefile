@@ -1,6 +1,7 @@
 include ../../extra.mk
 
 SUBDIRS = lookup-asm
+SUBDIRS_AFTER = linklib
 CLEAN = ${OBJFW_RT_INLINE_H}
 
 SHARED_LIB = ${OBJFW_RT_SHARED_LIB}
@@ -56,3 +57,8 @@ CPPFLAGS += -I. -I.. -I../..				\
 AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}
 FRAMEWORK_LIBS = ${LIBS}
+
+# For 68000, GCC emits calls to helper functions that expect a4 to be set.
+# Remove this once the library is using -fbaserel.
+AMIGA_LIB_CFLAGS += -mcpu=68020
+AMIGA_LIB_LDFLAGS += -mcpu=68020
