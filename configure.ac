@@ -25,7 +25,11 @@ check_pedantic="yes"
 
 case "$host" in
 	m68k-*-amigaos*)
-		OBJCFLAGS="$OBJCFLAGS -noixemul"
+		AS_IF([test x"$OBJCFLAGS" != x""], [
+			OBJCFLAGS="$OBJCFLAGS -noixemul"
+		], [
+			OBJCFLAGS="-O2 -g -noixemul"
+		])
 		LDFLAGS="$LDFLAGS -noixemul"
 
 		enable_shared="no"
@@ -56,7 +60,11 @@ case "$host" in
 		;;
 	*-morphos*)
 		AS_IF([test x"$with_ixemul" != x"yes"], [
-			OBJCFLAGS="$OBJCFLAGS -noixemul"
+			AS_IF([test x"$OBJCFLAGS" != x""], [
+				OBJCFLAGS="$OBJCFLAGS -noixemul"
+			], [
+				OBJCFLAGS="-O2 -g -noixemul"
+			])
 			LDFLAGS="$LDFLAGS -noixemul"
 			enable_files="yes"	# Required for reading ENV:
 
@@ -88,7 +96,11 @@ case "$host" in
 				[DEVKITPSP is not set! Please set DEVKITPSP.])
 		])
 
-		OBJCFLAGS="$OBJCFLAGS -G0"
+		AS_IF([test x"$OBJCFLAGS" != x""], [
+			OBJCFLAGS="$OBJCFLAGS -G0"
+		], [
+			OBJCFLAGS="-O2 -G0"
+		])
 		CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
 		LDFLAGS="$LDFLAGS -G0"
 		LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
