@@ -25,6 +25,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern int _Unwind_RaiseException(void *);
+extern void _Unwind_DeleteException(void *);
+extern void *_Unwind_GetLanguageSpecificData(void *);
+extern uintptr_t _Unwind_GetRegionStart(void *);
+extern uintptr_t _Unwind_GetDataRelBase(void *);
+extern uintptr_t _Unwind_GetTextRelBase(void *);
+extern uintptr_t _Unwind_GetIP(void *);
+extern uintptr_t _Unwind_GetGR(void *, int);
+extern void _Unwind_SetIP(void *, uintptr_t);
+extern void _Unwind_SetGR(void *, int, uintptr_t);
+extern void _Unwind_Resume(void *);
+extern void __register_frame_info(const void *, void *);
+extern void __deregister_frame_info(const void *);
+
 struct Library *ObjFWRTBase;
 
 static void __attribute__((__constructor__))
@@ -50,6 +64,20 @@ init(void)
 		.fputs = fputs,
 		.exit = exit,
 		.abort = abort,
+		._Unwind_RaiseException = _Unwind_RaiseException,
+		._Unwind_DeleteException = _Unwind_DeleteException,
+		._Unwind_GetLanguageSpecificData =
+		    _Unwind_GetLanguageSpecificData,
+		._Unwind_GetRegionStart = _Unwind_GetRegionStart,
+		._Unwind_GetDataRelBase = _Unwind_GetDataRelBase,
+		._Unwind_GetTextRelBase = _Unwind_GetTextRelBase,
+		._Unwind_GetIP = _Unwind_GetIP,
+		._Unwind_GetGR = _Unwind_GetGR,
+		._Unwind_SetIP = _Unwind_SetIP,
+		._Unwind_SetGR = _Unwind_SetGR,
+		._Unwind_Resume = _Unwind_Resume,
+		.__register_frame_info = __register_frame_info,
+		.__deregister_frame_info = __deregister_frame_info,
 		.stdout_ = stdout,
 		.stderr_ = stderr
 	};
@@ -132,7 +160,18 @@ objc_get_class(const char *name)
 void
 objc_exception_throw(id object)
 {
-	glue_objc_exception_throw(object);
+	/*
+	 * This does not use the glue code to hack around a compiler bug.
+	 *
+	 * When using the generated inline stubs, the compiler does not emit
+	 * any frame information, making the unwind fail. As unwind always
+	 * starts from objc_exception_throw(), this means exceptions would
+	 * never work. If, however, we're using a function pointer instead of
+	 * the inline stub, the compiler does generate a frame and everything
+	 * works fine.
+	 */
+	uintptr_t throw = (((uintptr_t)ObjFWRTBase) - 0x60);
+	((void (*)(id OBJC_M68K_REG("a0")))throw)(object);
 
 	OF_UNREACHABLE
 }
@@ -180,4 +219,12 @@ void
 objc_enumerationMutation(id obj)
 {
 	glue_objc_enumerationMutation(obj);
+}
+
+int
+__gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
+    void *ex, void *ctx)
+{
+	return glue___gnu_objc_personality_v0(version, actions, &ex_class,
+	    ex, ctx);
 }

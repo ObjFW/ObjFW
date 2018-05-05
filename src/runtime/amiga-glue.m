@@ -140,3 +140,11 @@ glue_objc_enumerationMutation(id obj OBJC_M68K_REG("a0"))
 {
 	objc_enumerationMutation(obj);
 }
+
+int
+glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
+    int actions OBJC_M68K_REG("d1"), uint64_t *ex_class OBJC_M68K_REG("d2"),
+    void *ex OBJC_M68K_REG("a0"), void *ctx OBJC_M68K_REG("a1"))
+{
+	return __gnu_objc_personality_v0(version, actions, *ex_class, ex, ctx);
+}

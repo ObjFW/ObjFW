@@ -43,24 +43,25 @@ _start()
 
 struct ObjFWRTBase {
 	struct Library library;
-	BPTR seg_list;
+	void *seg_list;
 	bool initialized;
 };
+
+extern uintptr_t __CTOR_LIST__[], __DTOR_LIST__[];
+extern const void *_EH_FRAME_BEGINS__;
+extern void *_EH_FRAME_OBJECTS__;
 
 struct ExecBase *SysBase;
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
-struct WBStartup *_WBenchMsg;
 struct objc_libc *libc;
 FILE *stdout;
 FILE *stderr;
-extern uintptr_t __CTOR_LIST__[];
-extern uintptr_t __DTOR_LIST__[];
 
 static struct Library *
 lib_init(struct ExecBase *exec_base OBJC_M68K_REG("a6"),
-    BPTR seg_list OBJC_M68K_REG("a0"),
+    void *seg_list OBJC_M68K_REG("a0"),
     struct ObjFWRTBase *base OBJC_M68K_REG("d0"))
 {
 	SysBase = exec_base;
@@ -81,10 +82,10 @@ OBJC_M68K_FUNC(lib_open, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	return &base->library;
 }
 
-static BPTR
+static void *
 expunge(struct ObjFWRTBase *base)
 {
-	BPTR seg_list;
+	void *seg_list;
 
 	if (base->library.lib_OpenCnt > 0) {
 		base->library.lib_Flags |= LIBF_DELEXP;
@@ -100,7 +101,7 @@ expunge(struct ObjFWRTBase *base)
 	return seg_list;
 }
 
-static BPTR
+static void *
 OBJC_M68K_FUNC(lib_expunge, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
@@ -108,26 +109,24 @@ OBJC_M68K_FUNC(lib_expunge, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	return expunge(base);
 }
 
-static BPTR
+static void *
 OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+
+	if (base->initialized &&
+	    (size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
+		for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
+			libc->__deregister_frame_info((&_EH_FRAME_BEGINS__)[i]);
 
 	if (--base->library.lib_OpenCnt == 0 &&
 	    (base->library.lib_Flags & LIBF_DELEXP))
 		return expunge(base);
 
-	if (base->initialized) {
-		for (uintptr_t *iter = &__DTOR_LIST__[1]; *iter != 0; iter++) {
-			void (*dtor)(void) = (void (*)(void))*iter++;
-			dtor();
-		}
-	}
-
 	return 0;
 }
 
-static BPTR
+static void *
 lib_null(void)
 {
 	return 0;
@@ -143,6 +142,11 @@ objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
 
 	stdout = libc->stdout_;
 	stderr = libc->stderr_;
+
+	if ((size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
+		for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
+			libc->__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+			    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
 	for (iter = iter0; *iter != 0; iter++);
@@ -210,6 +214,72 @@ abort(void)
 	libc->abort();
 }
 
+int
+_Unwind_RaiseException(void *ex)
+{
+	return libc->_Unwind_RaiseException(ex);
+}
+
+void
+_Unwind_DeleteException(void *ex)
+{
+	libc->_Unwind_DeleteException(ex);
+}
+
+void *
+_Unwind_GetLanguageSpecificData(void *ctx)
+{
+	return libc->_Unwind_GetLanguageSpecificData(ctx);
+}
+
+uintptr_t
+_Unwind_GetRegionStart(void *ctx)
+{
+	return libc->_Unwind_GetRegionStart(ctx);
+}
+
+uintptr_t
+_Unwind_GetDataRelBase(void *ctx)
+{
+	return libc->_Unwind_GetDataRelBase(ctx);
+}
+
+uintptr_t
+_Unwind_GetTextRelBase(void *ctx)
+{
+	return libc->_Unwind_GetTextRelBase(ctx);
+}
+
+uintptr_t
+_Unwind_GetIP(void *ctx)
+{
+	return libc->_Unwind_GetIP(ctx);
+}
+
+uintptr_t
+_Unwind_GetGR(void *ctx, int gr)
+{
+	return libc->_Unwind_GetGR(ctx, gr);
+}
+
+void
+_Unwind_SetIP(void *ctx, uintptr_t ip)
+{
+	libc->_Unwind_SetIP(ctx, ip);
+}
+
+void
+_Unwind_SetGR(void *ctx, int gr, uintptr_t value)
+{
+	libc->_Unwind_SetGR(ctx, gr, value);
+}
+
+void
+_Unwind_Resume(void *ex)
+{
+	libc->_Unwind_Resume(ex);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR function_table[] = {
@@ -228,7 +298,7 @@ static struct {
 	ULONG *data_table;
 	struct Library *(*init_func)(
 	    struct ExecBase *exec_base OBJC_M68K_REG("a6"),
-	    BPTR seg_list OBJC_M68K_REG("a0"),
+	    void *seg_list OBJC_M68K_REG("a0"),
 	    struct ObjFWRTBase *base OBJC_M68K_REG("d0"));
 } init_table = {
 	sizeof(struct ObjFWRTBase),

@@ -145,6 +145,19 @@ extern struct objc_libc {
 	int (*fputs)(const char *, FILE *);
 	void (*exit)(int);
 	void (*abort)(void);
+	int (*_Unwind_RaiseException)(void *_Nonnull);
+	void (*_Unwind_DeleteException)(void *_Nonnull);
+	void *(*_Unwind_GetLanguageSpecificData)(void *_Nonnull);
+	uintptr_t (*_Unwind_GetRegionStart)(void *_Nonnull);
+	uintptr_t (*_Unwind_GetDataRelBase)(void *_Nonnull);
+	uintptr_t (*_Unwind_GetTextRelBase)(void *_Nonnull);
+	uintptr_t (*_Unwind_GetIP)(void *_Nonnull);
+	uintptr_t (*_Unwind_GetGR)(void *_Nonnull, int);
+	void (*_Unwind_SetIP)(void *_Nonnull, uintptr_t);
+	void (*_Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
+	void (*_Unwind_Resume)(void *);
+	void (*__register_frame_info)(const void *, void *);
+	void (*__deregister_frame_info)(const void *);
 	FILE *stdout_;
 	FILE *stderr_;
 } *objc_libc;
@@ -195,6 +208,11 @@ extern void glue_objc_setPropertyStruct(void *_Nonnull dest OBJC_M68K_REG("a0"),
     ptrdiff_t size OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"),
     bool strong OBJC_M68K_REG("d2"));
 extern void glue_objc_enumerationMutation(id _Nonnull obj OBJC_M68K_REG("a0"));
+extern int glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
+    int actions OBJC_M68K_REG("d1"),
+    uint64_t *_Nonnull ex_class OBJC_M68K_REG("d2"),
+    void *_Nonnull ex OBJC_M68K_REG("a0"),
+    void *_Nonnull ctx OBJC_M68K_REG("a1"));
 #endif
 
 extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);

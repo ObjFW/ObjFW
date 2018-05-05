@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#define OBJC_NO_PERSONALITY_DECLARATION
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -327,6 +327,10 @@ extern void objc_getPropertyStruct(void *_Nonnull dest,
 extern void objc_setPropertyStruct(void *_Nonnull dest,
     const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void objc_enumerationMutation(id _Nonnull obj);
+# ifndef OBJC_NO_PERSONALITY_DECLARATION
+extern int __gnu_objc_personality_v0(int version, int actions,
+    uint64_t ex_class, void *_Nonnull ex, void *_Nonnull ctx);
+# endif
 #ifdef __cplusplus
 }
 #endif
