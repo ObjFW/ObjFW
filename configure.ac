@@ -28,7 +28,7 @@ case "$host" in
 		AS_IF([test x"$OBJCFLAGS" != x""], [
 			OBJCFLAGS="$OBJCFLAGS -noixemul"
 		], [
-			OBJCFLAGS="-O2 -g -noixemul"
+			OBJCFLAGS="-O0 -g -noixemul"
 		])
 		LDFLAGS="$LDFLAGS -noixemul"
 
