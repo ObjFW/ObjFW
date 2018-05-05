@@ -1,6 +1,6 @@
 include ../../../extra.mk
 
-STATIC_LIB = ${OBJFW_RT_AMIGA_LINKLIB}
+STATIC_LIB = libobjfw_rt.linklib.a
 SRCS = linklib.m
 
 include ../../../buildsys.mk

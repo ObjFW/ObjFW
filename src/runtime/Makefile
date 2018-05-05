@@ -1,7 +1,7 @@
 include ../../extra.mk
 
 SUBDIRS = lookup-asm
-SUBDIRS_AFTER = linklib
+SUBDIRS_AFTER = ${LINKLIB}
 CLEAN = ${OBJFW_RT_INLINE_H}
 
 SHARED_LIB = ${OBJFW_RT_SHARED_LIB}

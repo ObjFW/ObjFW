@@ -50,9 +50,9 @@ case "$host" in
 
 		AC_SUBST(NOIXEMUL, -noixemul)
 		AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
-		AC_SUBST(OBJFW_RT_AMIGA_LINKLIB, libobjfw_rt.linklib.a)
 		AC_SUBST(OBJFW_RT_INLINE_H, ObjFW_RT_inline.h)
 		AC_SUBST(SFDC_TARGET, m68k-amigaos)
+		AC_SUBST(LINKLIB, linklib)
 		;;
 	powerpc-*-amigaos*)
 		enable_shared="no"
@@ -70,9 +70,9 @@ case "$host" in
 
 			AC_SUBST(NOIXEMUL, -noixemul)
 			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
-			AC_SUBST(OBJFW_RT_AMIGA_LINKLIB, libobjfw_rt.linklib.a)
 			AC_SUBST(OBJFW_RT_INLINE_H, ObjFW_RT_inline.h)
 			AC_SUBST(SFDC_TARGET, ppc-morphos)
+			AC_SUBST(LINKLIB, linklib)
 		])
 
 		enable_shared="no"
