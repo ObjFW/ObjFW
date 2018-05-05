@@ -216,9 +216,20 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 }
 
 void
-objc_enumerationMutation(id obj)
+objc_enumerationMutation(id object)
 {
-	glue_objc_enumerationMutation(obj);
+	/*
+	 * This does not use the glue code to hack around a compiler bug.
+	 *
+	 * When using the generated inline stubs, the compiler does not emit
+	 * any frame information, making the unwind fail. As a result
+	 * objc_enumerationMutation() might throw an exception that could never
+	 * be caught. If, however, we're using a function pointer instead of
+	 * the inline stub, the compiler does generate a frame and everything
+	 * works fine.
+	 */
+	uintptr_t throw = (((uintptr_t)ObjFWRTBase) - 0x8A);
+	((void (*)(id OBJC_M68K_REG("a0")))throw)(object);
 }
 
 int

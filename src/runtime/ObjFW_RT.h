@@ -274,11 +274,11 @@ extern IMP _Nullable class_replaceMethod(Class _Nonnull cls OBJC_M68K_REG("a0"),
     SEL _Nonnull sel OBJC_M68K_REG("a1"),
     IMP _Nonnull imp OBJC_M68K_REG("a2"),
     const char *_Nullable types OBJC_M68K_REG("a3"));
-extern Class _Nullable object_getClass(id _Nullable obj OBJC_M68K_REG("a0"));
-extern Class _Nullable object_setClass(id _Nullable obj OBJC_M68K_REG("a0"),
+extern Class _Nullable object_getClass(id _Nullable object OBJC_M68K_REG("a0"));
+extern Class _Nullable object_setClass(id _Nullable object OBJC_M68K_REG("a0"),
     Class _Nonnull OBJC_M68K_REG("a1"));
 extern const char *_Nullable object_getClassName(
-    id _Nullable obj OBJC_M68K_REG("a0"));
+    id _Nullable object OBJC_M68K_REG("a0"));
 extern const char *_Nonnull protocol_getName(
     Protocol *_Nonnull p OBJC_M68K_REG("a0"));
 extern bool protocol_isEqual(Protocol *_Nonnull a OBJC_M68K_REG("a0"),
@@ -304,8 +304,9 @@ extern void objc_zero_weak_references(id _Nonnull value OBJC_M68K_REG("a0"));
  * declarations which include __declspec(dllimport) on Windows.
  */
 extern void __objc_exec_class(void *_Nonnull module);
-extern IMP _Nonnull objc_msg_lookup(id _Nullable obj, SEL _Nonnull sel);
-extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable obj, SEL _Nonnull sel);
+extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull sel);
+extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
+    SEL _Nonnull sel);
 extern IMP _Nonnull objc_msg_lookup_super(struct objc_super *_Nonnull super,
     SEL _Nonnull sel);
 extern IMP _Nonnull objc_msg_lookup_super_stret(
@@ -326,7 +327,7 @@ extern void objc_getPropertyStruct(void *_Nonnull dest,
     const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void objc_setPropertyStruct(void *_Nonnull dest,
     const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
-extern void objc_enumerationMutation(id _Nonnull obj);
+extern void objc_enumerationMutation(id _Nonnull object);
 # ifndef OBJC_NO_PERSONALITY_DECLARATION
 extern int __gnu_objc_personality_v0(int version, int actions,
     uint64_t ex_class, void *_Nonnull ex, void *_Nonnull ctx);
