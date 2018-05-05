@@ -189,6 +189,7 @@ extern Class _Nullable glue_objc_lookup_class(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
 extern Class _Nonnull glue_objc_get_class(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
+extern void glue_objc_exception_throw(id _Nullable object OBJC_M68K_REG("a0"));
 extern int glue_objc_sync_enter(id _Nullable object OBJC_M68K_REG("a0"));
 extern int glue_objc_sync_exit(id _Nullable object OBJC_M68K_REG("a0"));
 extern id _Nullable glue_objc_getProperty(id _Nonnull self OBJC_M68K_REG("a0"),
@@ -206,6 +207,7 @@ extern void glue_objc_setPropertyStruct(void *_Nonnull dest OBJC_M68K_REG("a0"),
     const void *_Nonnull src OBJC_M68K_REG("a1"),
     ptrdiff_t size OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"),
     bool strong OBJC_M68K_REG("d2"));
+extern void glue_objc_enumerationMutation(id _Nonnull obj OBJC_M68K_REG("a0"));
 extern int glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
     int actions OBJC_M68K_REG("d1"),
     uint64_t *_Nonnull ex_class OBJC_M68K_REG("d2"),
