@@ -179,11 +179,11 @@ extern IMP _Nonnull glue_objc_msg_lookup_super(
 extern IMP _Nonnull glue_objc_msg_lookup_super_stret(
     struct objc_super *_Nonnull super OBJC_M68K_REG("a0"),
     SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern id _Nullable glue_objc_lookUpClass(
+extern Class _Nullable glue_objc_lookUpClass(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_getClass(
+extern Class _Nullable glue_objc_getClass(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern id _Nonnull glue_objc_getRequiredClass(
+extern Class _Nonnull glue_objc_getRequiredClass(
     const char *_Nonnull name OBJC_M68K_REG("a0"));
 extern Class _Nullable glue_objc_lookup_class(
     const char *_Nonnull name OBJC_M68K_REG("a0"));

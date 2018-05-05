@@ -311,9 +311,9 @@ extern IMP _Nonnull objc_msg_lookup_super(struct objc_super *_Nonnull super,
     SEL _Nonnull sel);
 extern IMP _Nonnull objc_msg_lookup_super_stret(
     struct objc_super *_Nonnull super, SEL _Nonnull sel);
-extern id _Nullable objc_lookUpClass(const char *_Nonnull name);
-extern id _Nullable objc_getClass(const char *_Nonnull name);
-extern id _Nonnull objc_getRequiredClass(const char *_Nonnull name);
+extern Class _Nullable objc_lookUpClass(const char *_Nonnull name);
+extern Class _Nullable objc_getClass(const char *_Nonnull name);
+extern Class _Nonnull objc_getRequiredClass(const char *_Nonnull name);
 extern Class _Nullable objc_lookup_class(const char *_Nonnull name);
 extern Class _Nonnull objc_get_class(const char *_Nonnull name);
 extern void objc_exception_throw(id _Nullable object);

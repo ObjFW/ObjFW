@@ -127,19 +127,19 @@ objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
 	return glue_objc_msg_lookup_super_stret(super, sel);
 }
 
-id
+Class
 objc_lookUpClass(const char *name)
 {
 	return glue_objc_lookUpClass(name);
 }
 
-id
+Class
 objc_getClass(const char *name)
 {
 	return glue_objc_getClass(name);
 }
 
-id
+Class
 objc_getRequiredClass(const char *name)
 {
 	return glue_objc_getRequiredClass(name);

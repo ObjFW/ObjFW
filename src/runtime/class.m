@@ -477,7 +477,7 @@ objc_registerClassPair(Class cls OBJC_M68K_REG("a0"))
 	objc_global_mutex_unlock();
 }
 
-id
+Class
 objc_lookUpClass(const char *name)
 {
 	Class cls;
@@ -500,13 +500,13 @@ objc_lookUpClass(const char *name)
 	return cls;
 }
 
-id
+Class
 objc_getClass(const char *name)
 {
 	return objc_lookUpClass(name);
 }
 
-id
+Class
 objc_getRequiredClass(const char *name)
 {
 	Class cls;

@@ -54,19 +54,19 @@ glue_objc_msg_lookup_super_stret(struct objc_super *super OBJC_M68K_REG("a0"),
 	return objc_msg_lookup_super_stret(super, sel);
 }
 
-id
+Class
 glue_objc_lookUpClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_lookUpClass(name);
 }
 
-id
+Class
 glue_objc_getClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_getClass(name);
 }
 
-id
+Class
 glue_objc_getRequiredClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_getRequiredClass(name);
