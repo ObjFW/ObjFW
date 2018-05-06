@@ -85,6 +85,7 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
 libdir = @libdir@
+amigalibdir ?= ${prefix}/libs
 plugindir ?= ${libdir}/${PACKAGE_NAME}
 datarootdir = @datarootdir@
 datadir = @datadir@
@@ -697,6 +698,16 @@ install: all install-extra
 		${INSTALL_STATUS}; \
 		rm -fr ${DESTDIR}${prefix}/Library/Frameworks/$$i; \
 		if ${MKDIR_P} ${DESTDIR}${prefix}/Library/Frameworks && cp -R $$i ${DESTDIR}${prefix}/Library/Frameworks/; then \
+			${INSTALL_OK}; \
+		else \
+			${INSTALL_FAILED}; \
+		fi \
+	done
+
+	for i in "" ${AMIGA_LIB}; do \
+		test x"$$i" = x"" && continue; \
+		${INSTALL_STATUS}; \
+		if ${MKDIR_P} ${DESTDIR}${amigalibdir} && ${INSTALL} -m 755 $$i ${DESTDIR}${amigalibdir}/$$i; then \
 			${INSTALL_OK}; \
 		else \
 			${INSTALL_FAILED}; \

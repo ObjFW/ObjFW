@@ -1,6 +1,6 @@
 include ../../../extra.mk
 
-STATIC_LIB = libobjfw_rt.linklib.a
+STATIC_LIB = libobjfw_rt.library.a
 SRCS = linklib.m
 
 include ../../../buildsys.mk
