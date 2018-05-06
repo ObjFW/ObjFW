@@ -45,28 +45,53 @@ struct ObjFWRTBase {
 	struct Library library;
 	void *seg_list;
 	bool initialized;
+	void *data_seg;
+	struct objc_libc libc;
 };
 
 extern uintptr_t __CTOR_LIST__[], __DTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
+extern void *__a4_init;
 
 struct ExecBase *SysBase;
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
-struct objc_libc *libc;
 FILE *stdout;
 FILE *stderr;
 
+__asm__ (
+    ".text\n"
+    ".globl ___restore_a4\n"
+    "___restore_a4:\n"
+    "	movea.l	40(a6), a4\n"
+    "	rts"
+);
+
+static OF_INLINE void *
+get_data_seg(void)
+{
+	void *data_seg;
+
+	__asm__ __volatile__ (
+	    "lea.l	___a4_init, %0" : "=a"(data_seg)
+	);
+
+	return data_seg;
+}
+
 static struct Library *
-lib_init(struct ExecBase *exec_base OBJC_M68K_REG("a6"),
+lib_init(struct ExecBase *sys_base OBJC_M68K_REG("a6"),
     void *seg_list OBJC_M68K_REG("a0"),
     struct ObjFWRTBase *base OBJC_M68K_REG("d0"))
 {
-	SysBase = exec_base;
+	__asm__ __volatile__ (
+	    "move.l	a6, _SysBase" :: "a"(sys_base)
+	);
 
 	base->seg_list = seg_list;
+	base->data_seg = get_data_seg();
 
 	return &base->library;
 }
@@ -101,7 +126,7 @@ expunge(struct ObjFWRTBase *base)
 	return seg_list;
 }
 
-static void *
+static void *__saveds
 OBJC_M68K_FUNC(lib_expunge, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
@@ -109,7 +134,7 @@ OBJC_M68K_FUNC(lib_expunge, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	return expunge(base);
 }
 
-static void *
+static void *__saveds
 OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
@@ -117,7 +142,8 @@ OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	if (base->initialized &&
 	    (size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
 		for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-			libc->__deregister_frame_info((&_EH_FRAME_BEGINS__)[i]);
+			base->libc.__deregister_frame_info(
+			    (&_EH_FRAME_BEGINS__)[i]);
 
 	if (--base->library.lib_OpenCnt == 0 &&
 	    (base->library.lib_Flags & LIBF_DELEXP))
@@ -132,20 +158,22 @@ lib_null(void)
 	return 0;
 }
 
-static void
+static void __saveds
 objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
-    struct objc_libc *libc_ OBJC_M68K_REG("a0"))
+    struct objc_libc *libc OBJC_M68K_REG("a0"),
+    FILE *stdout_ OBJC_M68K_REG("a1"), FILE *stderr_ OBJC_M68K_REG("a2"))
 {
 	uintptr_t *iter, *iter0;
 
-	libc = libc_;
+	memcpy(&base->libc, libc, sizeof(base->libc));
 
-	stdout = libc->stdout_;
-	stderr = libc->stderr_;
+	stdout = stdout_;
+	stderr = stderr_;
 
 	if ((size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
 		for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-			libc->__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+			base->libc.__register_frame_info(
+			    (&_EH_FRAME_BEGINS__)[i],
 			    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
@@ -162,35 +190,44 @@ objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
 void *
 malloc(size_t size)
 {
-	return libc->malloc(size);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc.malloc(size);
 }
 
 void *
 calloc(size_t count, size_t size)
 {
-	return libc->calloc(count, size);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc.calloc(count, size);
 }
 
 void *
 realloc(void *ptr, size_t size)
 {
-	return libc->realloc(ptr, size);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc.realloc(ptr, size);
 }
 
 void
 free(void *ptr)
 {
-	libc->free(ptr);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc.free(ptr);
 }
 
 int
 fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 {
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
 	int ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = libc->vfprintf(stream, fmt, args);
+	ret = base->libc.vfprintf(stream, fmt, args);
 	va_end(args);
 
 	return ret;
@@ -199,85 +236,113 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 int
 fputs(const char *restrict s, FILE *restrict stream)
 {
-	return libc->fputs(s, stream);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc.fputs(s, stream);
 }
 
 void
 exit(int status)
 {
-	libc->exit(status);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc.exit(status);
 }
 
 void
 abort(void)
 {
-	libc->abort();
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc.abort();
 }
 
 int
 _Unwind_RaiseException(void *ex)
 {
-	return libc->_Unwind_RaiseException(ex);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_RaiseException(ex);
 }
 
 void
 _Unwind_DeleteException(void *ex)
 {
-	libc->_Unwind_DeleteException(ex);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc._Unwind_DeleteException(ex);
 }
 
 void *
 _Unwind_GetLanguageSpecificData(void *ctx)
 {
-	return libc->_Unwind_GetLanguageSpecificData(ctx);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_GetLanguageSpecificData(ctx);
 }
 
 uintptr_t
 _Unwind_GetRegionStart(void *ctx)
 {
-	return libc->_Unwind_GetRegionStart(ctx);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_GetRegionStart(ctx);
 }
 
 uintptr_t
 _Unwind_GetDataRelBase(void *ctx)
 {
-	return libc->_Unwind_GetDataRelBase(ctx);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_GetDataRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetTextRelBase(void *ctx)
 {
-	return libc->_Unwind_GetTextRelBase(ctx);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_GetTextRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetIP(void *ctx)
 {
-	return libc->_Unwind_GetIP(ctx);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_GetIP(ctx);
 }
 
 uintptr_t
 _Unwind_GetGR(void *ctx, int gr)
 {
-	return libc->_Unwind_GetGR(ctx, gr);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	return base->libc._Unwind_GetGR(ctx, gr);
 }
 
 void
 _Unwind_SetIP(void *ctx, uintptr_t ip)
 {
-	libc->_Unwind_SetIP(ctx, ip);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc._Unwind_SetIP(ctx, ip);
 }
 
 void
 _Unwind_SetGR(void *ctx, int gr, uintptr_t value)
 {
-	libc->_Unwind_SetGR(ctx, gr, value);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc._Unwind_SetGR(ctx, gr, value);
 }
 
 void
 _Unwind_Resume(void *ex)
 {
-	libc->_Unwind_Resume(ex);
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+
+	base->libc._Unwind_Resume(ex);
 }
 
 #pragma GCC diagnostic push

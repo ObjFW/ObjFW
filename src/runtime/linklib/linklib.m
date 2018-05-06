@@ -78,10 +78,8 @@ init(void)
 		._Unwind_Resume = _Unwind_Resume,
 		.__register_frame_info = __register_frame_info,
 		.__deregister_frame_info = __deregister_frame_info,
-		.stdout_ = stdout,
-		.stderr_ = stderr
 	};
-	objc_init(&libc);
+	objc_init(&libc, stdout, stderr);
 
 	initialized = true;
 }
@@ -170,8 +168,10 @@ objc_exception_throw(id object)
 	 * the inline stub, the compiler does generate a frame and everything
 	 * works fine.
 	 */
+	register void *a6 OBJC_M68K_REG("a6") = ObjFWRTBase;
 	uintptr_t throw = (((uintptr_t)ObjFWRTBase) - 0x60);
 	((void (*)(id OBJC_M68K_REG("a0")))throw)(object);
+	(void)a6;
 
 	OF_UNREACHABLE
 }
@@ -228,8 +228,12 @@ objc_enumerationMutation(id object)
 	 * the inline stub, the compiler does generate a frame and everything
 	 * works fine.
 	 */
-	uintptr_t throw = (((uintptr_t)ObjFWRTBase) - 0x8A);
-	((void (*)(id OBJC_M68K_REG("a0")))throw)(object);
+	register void *a6 OBJC_M68K_REG("a6") = ObjFWRTBase;
+	uintptr_t enumerationMutation = (((uintptr_t)ObjFWRTBase) - 0x8A);
+	((void (*)(id OBJC_M68K_REG("a0")))enumerationMutation)(object);
+	(void)a6;
+
+	OF_UNREACHABLE
 }
 
 int

@@ -116,7 +116,7 @@ objc_method_not_found_stret(id obj, SEL sel)
 	    forward_handler_stret);
 }
 
-void
+void __saveds
 objc_setForwardHandler(IMP forward OBJC_M68K_REG("a0"),
     IMP forward_stret OBJC_M68K_REG("a1"))
 {
@@ -124,7 +124,7 @@ objc_setForwardHandler(IMP forward OBJC_M68K_REG("a0"),
 	forward_handler_stret = forward_stret;
 }
 
-bool
+bool __saveds
 class_respondsToSelector(Class cls OBJC_M68K_REG("a0"),
     SEL sel OBJC_M68K_REG("a1"))
 {

@@ -25,7 +25,7 @@
 
 static objc_enumeration_mutation_handler enumeration_mutation_handler = NULL;
 
-void
+void __saveds
 objc_enumerationMutation(id obj)
 {
 	if (enumeration_mutation_handler != NULL)

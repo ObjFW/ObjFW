@@ -25,20 +25,20 @@
 @implementation Protocol
 @end
 
-const char *
+const char *__saveds
 protocol_getName(Protocol *p OBJC_M68K_REG("a0"))
 {
 	return p->name;
 }
 
-bool
+bool __saveds
 protocol_isEqual(Protocol *a OBJC_M68K_REG("a0"),
     Protocol *b OBJC_M68K_REG("a1"))
 {
 	return (strcmp(protocol_getName(a), protocol_getName(b)) == 0);
 }
 
-bool
+bool __saveds
 protocol_conformsToProtocol(Protocol *a OBJC_M68K_REG("a0"),
     Protocol *b OBJC_M68K_REG("a1"))
 {
@@ -54,7 +54,7 @@ protocol_conformsToProtocol(Protocol *a OBJC_M68K_REG("a0"),
 	return false;
 }
 
-bool
+bool __saveds
 class_conformsToProtocol(Class cls OBJC_M68K_REG("a0"),
     Protocol *p OBJC_M68K_REG("a1"))
 {

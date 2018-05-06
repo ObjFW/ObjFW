@@ -158,8 +158,6 @@ extern struct objc_libc {
 	void (*_Unwind_Resume)(void *);
 	void (*__register_frame_info)(const void *, void *);
 	void (*__deregister_frame_info)(const void *);
-	FILE *stdout_;
-	FILE *stderr_;
 } *objc_libc;
 #endif
 
@@ -235,7 +233,8 @@ extern id _Nullable glue_objc_storeWeak(
     id _Nullable value OBJC_M68K_REG("a1"));
 extern id _Nullable glue_objc_loadWeakRetained(
     id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
-extern id glue_objc_initWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+extern id _Nullable glue_objc_initWeak(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
     id _Nullable value OBJC_M68K_REG("a1"));
 extern void glue_objc_destroyWeak(
     id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
@@ -245,6 +244,11 @@ extern void glue_objc_copyWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
     id _Nullable *_Nonnull src OBJC_M68K_REG("a1"));
 extern void glue_objc_moveWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
     id _Nullable *_Nonnull src OBJC_M68K_REG("a1"));
+#else
+# ifdef __saveds
+#  undef __saveds
+# endif
+# define __saveds
 #endif
 
 extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);

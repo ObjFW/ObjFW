@@ -345,7 +345,8 @@ extern id _Nullable objc_storeStrong(id _Nullable *_Nonnull object,
 extern id _Nullable objc_storeWeak(id _Nullable *_Nonnull object,
     id _Nullable value);
 extern id _Nullable objc_loadWeakRetained(id _Nullable *_Nonnull object);
-extern id objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value);
+extern _Nullable id objc_initWeak(id _Nullable *_Nonnull object,
+    id _Nullable value);
 extern void objc_destroyWeak(id _Nullable *_Nonnull object);
 extern id _Nullable objc_loadWeak(id _Nullable *_Nonnull object);
 extern void objc_copyWeak(id _Nullable *_Nonnull dest,

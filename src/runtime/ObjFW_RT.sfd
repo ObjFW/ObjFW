@@ -4,7 +4,7 @@
 ==bias 30
 ==public
 * Functions for the linklib
-void objc_init(struct objc_libc *libc)(a0)
+void objc_init(struct objc_libc *libc, FILE *stdout, FILE *stdin)(a0,a1,a2)
 * Used by the compiler - these need glue code
 void glue___objc_exec_class(void *_Nonnull module)(a0)
 IMP _Nonnull glue_objc_msg_lookup(id _Nullable obj, SEL _Nonnull sel)(a0,a1)
@@ -36,7 +36,7 @@ id _Nullable glue_objc_retainAutoreleasedReturnValue(id _Nullable object)(a0)
 id _Nullable glue_objc_storeStrong(id _Nullable *_Nonnull object, id _Nullable value)(a0/a1)
 id _Nullable glue_objc_storeWeak(id _Nullable *_Nonnull object, id _Nullable value)(a0,a1)
 id _Nullable glue_objc_loadWeakRetained(id _Nullable *_Nonnull object)(a0)
-id glue_objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)(a0,a1)
+id _Nullable glue_objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value)(a0,a1)
 void glue_objc_destroyWeak(id _Nullable *_Nonnull object)(a0)
 id _Nullable glue_objc_loadWeak(id _Nullable *_Nonnull object)(a0)
 void glue_objc_copyWeak(id _Nullable *_Nonnull dest, id _Nullable *_Nonnull src)(a0,a1)

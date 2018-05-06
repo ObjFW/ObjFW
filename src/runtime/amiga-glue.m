@@ -21,70 +21,70 @@
 #import "private.h"
 #import "macros.h"
 
-void
+void __saveds
 glue___objc_exec_class(void *module OBJC_M68K_REG("a0"))
 {
 	__objc_exec_class(module);
 }
 
-IMP
+IMP __saveds
 glue_objc_msg_lookup(id obj OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"))
 {
 	return objc_msg_lookup(obj, sel);
 }
 
-IMP
+IMP __saveds
 glue_objc_msg_lookup_stret(id obj OBJC_M68K_REG("a0"),
     SEL sel OBJC_M68K_REG("a1"))
 {
 	return objc_msg_lookup_stret(obj, sel);
 }
 
-IMP
+IMP __saveds
 glue_objc_msg_lookup_super(struct objc_super *super OBJC_M68K_REG("a0"),
     SEL sel OBJC_M68K_REG("a1"))
 {
 	return objc_msg_lookup_super(super, sel);
 }
 
-IMP
+IMP __saveds
 glue_objc_msg_lookup_super_stret(struct objc_super *super OBJC_M68K_REG("a0"),
     SEL sel OBJC_M68K_REG("a1"))
 {
 	return objc_msg_lookup_super_stret(super, sel);
 }
 
-Class
+Class __saveds
 glue_objc_lookUpClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_lookUpClass(name);
 }
 
-Class
+Class __saveds
 glue_objc_getClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_getClass(name);
 }
 
-Class
+Class __saveds
 glue_objc_getRequiredClass(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_getRequiredClass(name);
 }
 
-Class
+Class __saveds
 glue_objc_lookup_class(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_lookup_class(name);
 }
 
-Class
+Class __saveds
 glue_objc_get_class(const char *name OBJC_M68K_REG("a0"))
 {
 	return objc_get_class(name);
 }
 
-void
+void __saveds
 glue_objc_exception_throw(id object OBJC_M68K_REG("a0"))
 {
 	objc_exception_throw(object);
@@ -92,26 +92,26 @@ glue_objc_exception_throw(id object OBJC_M68K_REG("a0"))
 	OF_UNREACHABLE
 }
 
-int
+int __saveds
 glue_objc_sync_enter(id object OBJC_M68K_REG("a0"))
 {
 	return objc_sync_enter(object);
 }
 
-int
+int __saveds
 glue_objc_sync_exit(id object OBJC_M68K_REG("a0"))
 {
 	return objc_sync_exit(object);
 }
 
-id
+id __saveds
 glue_objc_getProperty(id self OBJC_M68K_REG("a0"), SEL _cmd OBJC_M68K_REG("a1"),
     ptrdiff_t offset OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"))
 {
 	return objc_getProperty(self, _cmd, offset, atomic);
 }
 
-void
+void __saveds
 glue_objc_setProperty(id self OBJC_M68K_REG("a0"), SEL _cmd OBJC_M68K_REG("a1"),
     ptrdiff_t offset OBJC_M68K_REG("d0"), id value OBJC_M68K_REG("a2"),
     bool atomic OBJC_M68K_REG("d1"), signed char copy OBJC_M68K_REG("d2"))
@@ -119,7 +119,7 @@ glue_objc_setProperty(id self OBJC_M68K_REG("a0"), SEL _cmd OBJC_M68K_REG("a1"),
 	objc_setProperty(self, _cmd, offset, value, atomic, copy);
 }
 
-void
+void __saveds
 glue_objc_getPropertyStruct(void *dest OBJC_M68K_REG("a0"),
     const void *src OBJC_M68K_REG("a1"), ptrdiff_t size OBJC_M68K_REG("d0"),
     bool atomic OBJC_M68K_REG("d1"), bool strong OBJC_M68K_REG("d2"))
@@ -127,7 +127,7 @@ glue_objc_getPropertyStruct(void *dest OBJC_M68K_REG("a0"),
 	objc_getPropertyStruct(dest, src, size, atomic, strong);
 }
 
-void
+void __saveds
 glue_objc_setPropertyStruct(void *dest OBJC_M68K_REG("a0"),
     const void *src OBJC_M68K_REG("a1"), ptrdiff_t size OBJC_M68K_REG("d0"),
     bool atomic OBJC_M68K_REG("d1"), bool strong OBJC_M68K_REG("d2"))
@@ -135,13 +135,13 @@ glue_objc_setPropertyStruct(void *dest OBJC_M68K_REG("a0"),
 	objc_setPropertyStruct(dest, src, size, atomic, strong);
 }
 
-void
+void __saveds
 glue_objc_enumerationMutation(id obj OBJC_M68K_REG("a0"))
 {
 	objc_enumerationMutation(obj);
 }
 
-int
+int __saveds
 glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
     int actions OBJC_M68K_REG("d1"), uint64_t *ex_class OBJC_M68K_REG("d2"),
     void *ex OBJC_M68K_REG("a0"), void *ctx OBJC_M68K_REG("a1"))
@@ -149,108 +149,100 @@ glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
 	return __gnu_objc_personality_v0(version, actions, *ex_class, ex, ctx);
 }
 
-id
-_Nullable glue_objc_retain(id _Nullable object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_retain(id object OBJC_M68K_REG("a0"))
 {
 	return objc_retain(object);
 }
 
-id
-_Nullable glue_objc_retainBlock(id _Nullable block OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_retainBlock(id block OBJC_M68K_REG("a0"))
 {
 	return objc_retainBlock(block);
 }
 
-id
-_Nullable glue_objc_retainAutorelease(id _Nullable object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_retainAutorelease(id object OBJC_M68K_REG("a0"))
 {
 	return objc_retainAutorelease(object);
 }
 
-void
-glue_objc_release(id _Nullable object OBJC_M68K_REG("a0"))
+void __saveds
+glue_objc_release(id object OBJC_M68K_REG("a0"))
 {
 	objc_release(object);
 }
 
-id
-_Nullable glue_objc_autorelease(id _Nullable object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_autorelease(id object OBJC_M68K_REG("a0"))
 {
 	return objc_autorelease(object);
 }
 
-id
-_Nullable glue_objc_autoreleaseReturnValue(
-    id _Nullable object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_autoreleaseReturnValue(id object OBJC_M68K_REG("a0"))
 {
 	return objc_autoreleaseReturnValue(object);
 }
 
-id
-_Nullable glue_objc_retainAutoreleaseReturnValue(
-    id _Nullable object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_retainAutoreleaseReturnValue(id object OBJC_M68K_REG("a0"))
 {
 	return objc_retainAutoreleaseReturnValue(object);
 }
 
-id
-_Nullable glue_objc_retainAutoreleasedReturnValue(
-    id _Nullable object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_retainAutoreleasedReturnValue(id object OBJC_M68K_REG("a0"))
 {
 	return objc_retainAutoreleasedReturnValue(object);
 }
 
-id
-_Nullable glue_objc_storeStrong(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
-    id _Nullable value OBJC_M68K_REG("a1"))
+id __saveds
+glue_objc_storeStrong(id *object OBJC_M68K_REG("a0"),
+    id value OBJC_M68K_REG("a1"))
 {
 	return objc_storeStrong(object, value);
 }
 
-id
-_Nullable glue_objc_storeWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
-    id _Nullable value OBJC_M68K_REG("a1"))
+id __saveds
+glue_objc_storeWeak(id *object OBJC_M68K_REG("a0"),
+    id value OBJC_M68K_REG("a1"))
 {
 	return objc_storeWeak(object, value);
 }
 
-id
-_Nullable glue_objc_loadWeakRetained(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_loadWeakRetained(id *object OBJC_M68K_REG("a0"))
 {
 	return objc_loadWeakRetained(object);
 }
 
-id
-glue_objc_initWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
-    id _Nullable value OBJC_M68K_REG("a1"))
+id __saveds
+glue_objc_initWeak(id *object OBJC_M68K_REG("a0"), id value OBJC_M68K_REG("a1"))
 {
 	return objc_initWeak(object, value);
 }
 
-void
-glue_objc_destroyWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"))
+void __saveds
+glue_objc_destroyWeak(id *object OBJC_M68K_REG("a0"))
 {
 	objc_destroyWeak(object);
 }
 
-id
-_Nullable glue_objc_loadWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"))
+id __saveds
+glue_objc_loadWeak(id *object OBJC_M68K_REG("a0"))
 {
 	return objc_loadWeak(object);
 }
 
-void
-glue_objc_copyWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
-    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"))
+void __saveds
+glue_objc_copyWeak(id *dest OBJC_M68K_REG("a0"), id *src OBJC_M68K_REG("a1"))
 {
 	objc_copyWeak(dest, src);
 }
 
-void
-glue_objc_moveWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
-    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"))
+void __saveds
+glue_objc_moveWeak(id *dest OBJC_M68K_REG("a0"), id *src OBJC_M68K_REG("a1"))
 {
 	objc_moveWeak(dest, src);
 }

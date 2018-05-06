@@ -760,7 +760,7 @@ objc_exception_throw(id object)
 	OBJC_ERROR("_Unwind_RaiseException() returned!")
 }
 
-objc_uncaught_exception_handler
+objc_uncaught_exception_handler __saveds
 objc_setUncaughtExceptionHandler(
     objc_uncaught_exception_handler handler OBJC_M68K_REG("a0"))
 {
