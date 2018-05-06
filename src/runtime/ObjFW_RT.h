@@ -332,6 +332,26 @@ extern void objc_enumerationMutation(id _Nonnull object);
 extern int __gnu_objc_personality_v0(int version, int actions,
     uint64_t ex_class, void *_Nonnull ex, void *_Nonnull ctx);
 # endif
+extern id _Nullable objc_retain(id _Nullable object);
+extern id _Nullable objc_retainBlock(id _Nullable block);
+extern id _Nullable objc_retainAutorelease(id _Nullable object);
+extern void objc_release(id _Nullable object);
+extern id _Nullable objc_autorelease(id _Nullable object);
+extern id _Nullable objc_autoreleaseReturnValue(id _Nullable object);
+extern id _Nullable objc_retainAutoreleaseReturnValue(id _Nullable object);
+extern id _Nullable objc_retainAutoreleasedReturnValue(id _Nullable object);
+extern id _Nullable objc_storeStrong(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern id _Nullable objc_storeWeak(id _Nullable *_Nonnull object,
+    id _Nullable value);
+extern id _Nullable objc_loadWeakRetained(id _Nullable *_Nonnull object);
+extern id objc_initWeak(id _Nullable *_Nonnull object, id _Nullable value);
+extern void objc_destroyWeak(id _Nullable *_Nonnull object);
+extern id _Nullable objc_loadWeak(id _Nullable *_Nonnull object);
+extern void objc_copyWeak(id _Nullable *_Nonnull dest,
+    id _Nullable *_Nonnull src);
+extern void objc_moveWeak(id _Nullable *_Nonnull dest,
+    id _Nullable *_Nonnull src);
 #ifdef __cplusplus
 }
 #endif

@@ -200,7 +200,8 @@ objc_loadWeakRetained(id *object)
 		OBJC_ERROR("Failed to lock spinlock!")
 #endif
 
-	if ((ref = objc_hashtable_get(hashtable, *object)) != NULL)
+	if (*object != nil &&
+	    (ref = objc_hashtable_get(hashtable, *object)) != NULL)
 		value = *object;
 
 #ifdef OF_HAVE_THREADS
@@ -250,7 +251,8 @@ objc_moveWeak(id *dest, id *src)
 		OBJC_ERROR("Failed to lock spinlock!")
 #endif
 
-	if ((ref = objc_hashtable_get(hashtable, *src)) != NULL) {
+	if (*src != nil &&
+	    (ref = objc_hashtable_get(hashtable, *src)) != NULL) {
 		for (size_t i = 0; i < ref->count; i++) {
 			if (ref->locations[i] == src) {
 				ref->locations[i] = dest;

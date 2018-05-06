@@ -213,6 +213,38 @@ extern int glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
     uint64_t *_Nonnull ex_class OBJC_M68K_REG("d2"),
     void *_Nonnull ex OBJC_M68K_REG("a0"),
     void *_Nonnull ctx OBJC_M68K_REG("a1"));
+extern id _Nullable glue_objc_retain(id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_retainBlock(
+    id _Nullable block OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_retainAutorelease(
+    id _Nullable object OBJC_M68K_REG("a0"));
+extern void glue_objc_release(id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_autorelease(
+    id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_autoreleaseReturnValue(
+    id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_retainAutoreleaseReturnValue(
+    id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_retainAutoreleasedReturnValue(
+    id _Nullable object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_storeStrong(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+    id _Nullable value OBJC_M68K_REG("a1"));
+extern id _Nullable glue_objc_storeWeak(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+    id _Nullable value OBJC_M68K_REG("a1"));
+extern id _Nullable glue_objc_loadWeakRetained(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
+extern id glue_objc_initWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+    id _Nullable value OBJC_M68K_REG("a1"));
+extern void glue_objc_destroyWeak(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
+extern id _Nullable glue_objc_loadWeak(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
+extern void glue_objc_copyWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
+    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"));
+extern void glue_objc_moveWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
+    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"));
 #endif
 
 extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);

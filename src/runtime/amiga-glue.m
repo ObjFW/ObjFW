@@ -148,3 +148,109 @@ glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
 {
 	return __gnu_objc_personality_v0(version, actions, *ex_class, ex, ctx);
 }
+
+id
+_Nullable glue_objc_retain(id _Nullable object OBJC_M68K_REG("a0"))
+{
+	return objc_retain(object);
+}
+
+id
+_Nullable glue_objc_retainBlock(id _Nullable block OBJC_M68K_REG("a0"))
+{
+	return objc_retainBlock(block);
+}
+
+id
+_Nullable glue_objc_retainAutorelease(id _Nullable object OBJC_M68K_REG("a0"))
+{
+	return objc_retainAutorelease(object);
+}
+
+void
+glue_objc_release(id _Nullable object OBJC_M68K_REG("a0"))
+{
+	objc_release(object);
+}
+
+id
+_Nullable glue_objc_autorelease(id _Nullable object OBJC_M68K_REG("a0"))
+{
+	return objc_autorelease(object);
+}
+
+id
+_Nullable glue_objc_autoreleaseReturnValue(
+    id _Nullable object OBJC_M68K_REG("a0"))
+{
+	return objc_autoreleaseReturnValue(object);
+}
+
+id
+_Nullable glue_objc_retainAutoreleaseReturnValue(
+    id _Nullable object OBJC_M68K_REG("a0"))
+{
+	return objc_retainAutoreleaseReturnValue(object);
+}
+
+id
+_Nullable glue_objc_retainAutoreleasedReturnValue(
+    id _Nullable object OBJC_M68K_REG("a0"))
+{
+	return objc_retainAutoreleasedReturnValue(object);
+}
+
+id
+_Nullable glue_objc_storeStrong(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+    id _Nullable value OBJC_M68K_REG("a1"))
+{
+	return objc_storeStrong(object, value);
+}
+
+id
+_Nullable glue_objc_storeWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+    id _Nullable value OBJC_M68K_REG("a1"))
+{
+	return objc_storeWeak(object, value);
+}
+
+id
+_Nullable glue_objc_loadWeakRetained(
+    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"))
+{
+	return objc_loadWeakRetained(object);
+}
+
+id
+glue_objc_initWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
+    id _Nullable value OBJC_M68K_REG("a1"))
+{
+	return objc_initWeak(object, value);
+}
+
+void
+glue_objc_destroyWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"))
+{
+	objc_destroyWeak(object);
+}
+
+id
+_Nullable glue_objc_loadWeak(id _Nullable *_Nonnull object OBJC_M68K_REG("a0"))
+{
+	return objc_loadWeak(object);
+}
+
+void
+glue_objc_copyWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
+    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"))
+{
+	objc_copyWeak(dest, src);
+}
+
+void
+glue_objc_moveWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
+    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"))
+{
+	objc_moveWeak(dest, src);
+}
