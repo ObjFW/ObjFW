@@ -34,6 +34,8 @@
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
 #define VERSION_STRING CONCAT_VERSION(OBJFW_RT_LIB_MAJOR, OBJFW_RT_LIB_MINOR)
 
+#define DATA_OFFSET 0x7FFE
+
 /* This always needs to be the first thing in the file. */
 int
 _start()
@@ -44,41 +46,55 @@ _start()
 struct ObjFWRTBase {
 	struct Library library;
 	void *seg_list;
+	struct ObjFWRTBase *parent;
+	char *data_seg;
 	bool initialized;
-	void *data_seg;
 	struct objc_libc libc;
 };
 
 extern uintptr_t __CTOR_LIST__[], __DTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
-extern void *__a4_init;
+extern void *__a4_init, *__data_size;
 
-struct ExecBase *SysBase;
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
+struct ExecBase *SysBase;
 FILE *stdout;
 FILE *stderr;
 
 __asm__ (
     ".text\n"
     ".globl ___restore_a4\n"
+    ".align 1\n"
     "___restore_a4:\n"
-    "	movea.l	40(a6), a4\n"
+    "	movea.l	42(a6), a4\n"
     "	rts"
 );
 
-static OF_INLINE void *
+static OF_INLINE char *
 get_data_seg(void)
 {
-	void *data_seg;
+	char *data_seg;
 
 	__asm__ __volatile__ (
-	    "lea.l	___a4_init, %0" : "=a"(data_seg)
+	    "move.l	#___a4_init, %0" : "=r"(data_seg)
 	);
 
 	return data_seg;
+}
+
+static OF_INLINE size_t *
+get_datadata_relocs(void)
+{
+	size_t *datadata_relocs;
+
+	__asm__ __volatile__ (
+	    "move.l	#___datadata_relocs, %0" : "=r"(datadata_relocs)
+	);
+
+	return datadata_relocs;
 }
 
 static struct Library *
@@ -91,26 +107,74 @@ lib_init(struct ExecBase *sys_base OBJC_M68K_REG("a6"),
 	);
 
 	base->seg_list = seg_list;
+	base->parent = NULL;
 	base->data_seg = get_data_seg();
 
 	return &base->library;
 }
 
-static struct Library *
+struct Library *__saveds
 OBJC_M68K_FUNC(lib_open, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+	struct ObjFWRTBase *child;
+	size_t data_size, *datadata_relocs;
+	ptrdiff_t displacement;
+
+	if (base->parent != NULL)
+		return NULL;
 
 	base->library.lib_OpenCnt++;
 	base->library.lib_Flags &= ~LIBF_DELEXP;
 
-	return &base->library;
+	/*
+	 * We cannot use malloc here, as that depends on the libc passed from
+	 * the application.
+	 */
+	if ((child = AllocMem(base->library.lib_NegSize +
+	    base->library.lib_PosSize, MEMF_ANY)) == NULL) {
+		base->library.lib_OpenCnt--;
+		return NULL;
+	}
+
+	memcpy(child, (char *)base - base->library.lib_NegSize,
+	    base->library.lib_NegSize + base->library.lib_PosSize);
+
+	child = (struct ObjFWRTBase *)
+	    ((char *)child + base->library.lib_NegSize);
+	child->library.lib_OpenCnt = 1;
+	child->parent = base;
+
+	data_size = (uintptr_t)&__data_size -
+	    ((uintptr_t)&__a4_init - DATA_OFFSET);
+
+	if ((child->data_seg = AllocMem(data_size, MEMF_ANY)) == NULL) {
+		base->library.lib_OpenCnt--;
+		return NULL;
+	}
+
+	memcpy(child->data_seg, base->data_seg - DATA_OFFSET, data_size);
+
+	datadata_relocs = get_datadata_relocs();
+	displacement = child->data_seg - (base->data_seg - DATA_OFFSET);
+
+	for (size_t i = 1; i <= datadata_relocs[0]; i++)
+		*(long *)(child->data_seg + datadata_relocs[i]) += displacement;
+
+	child->data_seg += DATA_OFFSET;
+
+	return &child->library;
 }
 
 static void *
 expunge(struct ObjFWRTBase *base)
 {
 	void *seg_list;
+
+	if (base->parent != NULL) {
+		base->parent->library.lib_Flags |= LIBF_DELEXP;
+		return 0;
+	}
 
 	if (base->library.lib_OpenCnt > 0) {
 		base->library.lib_Flags |= LIBF_DELEXP;
@@ -139,11 +203,24 @@ OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
 
-	if (base->initialized &&
-	    (size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
-		for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-			base->libc.__deregister_frame_info(
-			    (&_EH_FRAME_BEGINS__)[i]);
+	if (base->parent != NULL) {
+		struct ObjFWRTBase *parent;
+
+		if (base->initialized &&
+		    (size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
+			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
+				base->libc.__deregister_frame_info(
+				    (&_EH_FRAME_BEGINS__)[i]);
+
+		parent = base->parent;
+
+		FreeMem(base->data_seg - DATA_OFFSET, (uintptr_t)&__data_size -
+		    ((uintptr_t)&__a4_init - DATA_OFFSET));
+		FreeMem((char *)base - base->library.lib_NegSize,
+		    base->library.lib_NegSize + base->library.lib_PosSize);
+
+		base = parent;
+	}
 
 	if (--base->library.lib_OpenCnt == 0 &&
 	    (base->library.lib_Flags & LIBF_DELEXP))
