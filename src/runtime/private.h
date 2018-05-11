@@ -142,7 +142,7 @@ extern struct objc_libc {
 	void *(*realloc)(void *, size_t);
 	void (*free)(void *);
 	int (*vfprintf)(FILE *, const char *, va_list);
-	int (*fputs)(const char *, FILE *);
+	int (*fflush)(FILE *);
 	void (*exit)(int);
 	void (*abort)(void);
 	int (*_Unwind_RaiseException)(void *_Nonnull);
@@ -340,7 +340,8 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 	{								\
 		fprintf(stderr, "[objc @ " __FILE__ ":%d] ", __LINE__);	\
 		fprintf(stderr, __VA_ARGS__);				\
-		fputs("\n", stderr);					\
+		fprintf(stderr, "\n");					\
+		fflush(stderr);						\
 		abort();						\
 		OF_UNREACHABLE						\
 	}

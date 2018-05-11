@@ -61,7 +61,7 @@ init(void)
 		.realloc = realloc,
 		.free = free,
 		.vfprintf = vfprintf,
-		.fputs = fputs,
+		.fflush = fflush,
 		.exit = exit,
 		.abort = abort,
 		._Unwind_RaiseException = _Unwind_RaiseException,
@@ -79,7 +79,11 @@ init(void)
 		.__register_frame_info = __register_frame_info,
 		.__deregister_frame_info = __deregister_frame_info,
 	};
-	objc_init(&libc, stdout, stderr);
+
+	if (!objc_init(1, &libc, stdout, stderr)) {
+		fputs("Failed to initialize objfw_rt.library!\n", stderr);
+		abort();
+	}
 
 	initialized = true;
 }

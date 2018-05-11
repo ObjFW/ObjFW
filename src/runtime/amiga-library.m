@@ -149,6 +149,8 @@ OBJC_M68K_FUNC(lib_open, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	    ((uintptr_t)&__a4_init - DATA_OFFSET);
 
 	if ((child->data_seg = AllocMem(data_size, MEMF_ANY)) == NULL) {
+		FreeMem((char *)child - child->library.lib_NegSize,
+		    child->library.lib_NegSize + child->library.lib_PosSize);
 		base->library.lib_OpenCnt--;
 		return NULL;
 	}
@@ -206,8 +208,7 @@ OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	if (base->parent != NULL) {
 		struct ObjFWRTBase *parent;
 
-		if (base->initialized &&
-		    (size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
+		if (base->initialized)
 			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
 				base->libc.__deregister_frame_info(
 				    (&_EH_FRAME_BEGINS__)[i]);
@@ -235,23 +236,28 @@ lib_null(void)
 	return 0;
 }
 
-static void __saveds
-objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
+static bool __saveds
+objc_init(unsigned int version OBJC_M68K_REG("d0"),
     struct objc_libc *libc OBJC_M68K_REG("a0"),
     FILE *stdout_ OBJC_M68K_REG("a1"), FILE *stderr_ OBJC_M68K_REG("a2"))
 {
+	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
 	uintptr_t *iter, *iter0;
+
+	if (version > 1)
+		return false;
 
 	memcpy(&base->libc, libc, sizeof(base->libc));
 
 	stdout = stdout_;
 	stderr = stderr_;
 
-	if ((size_t)_EH_FRAME_BEGINS__ == (size_t)_EH_FRAME_OBJECTS__)
-		for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-			base->libc.__register_frame_info(
-			    (&_EH_FRAME_BEGINS__)[i],
-			    (&_EH_FRAME_OBJECTS__)[i]);
+	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
+		return false;
+
+	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
+		base->libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+		    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
 	for (iter = iter0; *iter != 0; iter++);
@@ -262,6 +268,8 @@ objc_init(struct ObjFWRTBase *base OBJC_M68K_REG("a6"),
 	}
 
 	base->initialized = true;
+
+	return true;
 }
 
 void *
@@ -311,11 +319,11 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 }
 
 int
-fputs(const char *restrict s, FILE *restrict stream)
+fflush(FILE *restrict stream)
 {
 	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
 
-	return base->libc.fputs(s, stream);
+	return base->libc.fflush(stream);
 }
 
 void
