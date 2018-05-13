@@ -73,6 +73,23 @@
 # define OF_PA_RISC
 #elif defined(__ia64__) || defined(__IA64__)
 # define OF_ITANIUM
+#elif defined(__m68k__)
+# define OF_M68K
+# ifdef __mc68060__
+#  define OF_M68060
+# endif
+# if defined(__mc68040__) || defined(OF_M68060)
+#  define OF_M68040
+# endif
+# if defined(__mc68030__) || defined(OF_M68040)
+#  define OF_M68030
+# endif
+# if defined(__mc68020__) || defined(OF_M68030)
+#  define OF_M68020
+# endif
+# if defined(__mc68010__) || defined(OF_M68020)
+#  define OF_M68010
+# endif
 #endif
 
 #if defined(__APPLE__)
