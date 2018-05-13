@@ -30,8 +30,8 @@ src/bridge/Info.plist
 src/bridge/ObjFW_Bridge.framework
 src/objfw-defs.h
 src/runtime/ObjFW_RT.framework
-src/runtime/ObjFW_RT_inline.h
 src/runtime/amiga-library-functable.inc
+src/runtime/inline.h
 tests/*.map
 tests/EBOOT.PBP
 tests/Info.plist

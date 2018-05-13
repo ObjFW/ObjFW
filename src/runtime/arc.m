@@ -270,8 +270,8 @@ objc_moveWeak(id *dest, id *src)
 #endif
 }
 
-void __saveds
-objc_zero_weak_references(id value OBJC_M68K_REG("a0"))
+void
+objc_zero_weak_references(id value)
 {
 	struct weak_ref *ref;
 

@@ -17,25 +17,15 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#import "platform.h"
 
-#include "ObjFW_RT.h"
-#include "private.h"
-
-static objc_enumeration_mutation_handler enumeration_mutation_handler = NULL;
-
-void
-objc_enumerationMutation(id obj)
-{
-	if (enumeration_mutation_handler != NULL)
-		enumeration_mutation_handler(obj);
-	else
-		OBJC_ERROR("Object was mutated during enumeration!");
-}
-
-void
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
-{
-	enumeration_mutation_handler = handler;
-}
+#ifdef OF_MORPHOS
+__asm__ (
+    ".section .ctors, \"aw\", @progbits\n"
+    "	.long 0\n"
+);
+#else
+__asm__ (
+    ""
+);
+#endif

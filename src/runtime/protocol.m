@@ -25,22 +25,20 @@
 @implementation Protocol
 @end
 
-const char *__saveds
-protocol_getName(Protocol *p OBJC_M68K_REG("a0"))
+const char *
+protocol_getName(Protocol *p)
 {
 	return p->name;
 }
 
-bool __saveds
-protocol_isEqual(Protocol *a OBJC_M68K_REG("a0"),
-    Protocol *b OBJC_M68K_REG("a1"))
+bool
+protocol_isEqual(Protocol *a, Protocol *b)
 {
 	return (strcmp(protocol_getName(a), protocol_getName(b)) == 0);
 }
 
-bool __saveds
-protocol_conformsToProtocol(Protocol *a OBJC_M68K_REG("a0"),
-    Protocol *b OBJC_M68K_REG("a1"))
+bool
+protocol_conformsToProtocol(Protocol *a, Protocol *b)
 {
 	if (protocol_isEqual(a, b))
 		return true;
@@ -54,9 +52,8 @@ protocol_conformsToProtocol(Protocol *a OBJC_M68K_REG("a0"),
 	return false;
 }
 
-bool __saveds
-class_conformsToProtocol(Class cls OBJC_M68K_REG("a0"),
-    Protocol *p OBJC_M68K_REG("a1"))
+bool
+class_conformsToProtocol(Class cls, Protocol *p)
 {
 	struct objc_category **cats;
 

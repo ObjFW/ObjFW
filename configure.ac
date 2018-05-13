@@ -50,8 +50,12 @@ case "$host" in
 
 		AC_SUBST(NOIXEMUL, -noixemul)
 		AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
-		AC_SUBST(OBJFW_RT_INLINE_H, ObjFW_RT_inline.h)
 		AC_SUBST(SFDC_TARGET, m68k-amigaos)
+		dnl For 68000, GCC emits calls to helper functions that
+		dnl do not work properly in a library.
+		AC_SUBST(AMIGA_LIB_CFLAGS, "-mcpu=68020 -fbaserel")
+		AC_SUBST(AMIGA_LIB_LDFLAGS,
+			"-mcpu=68020 -fbaserel -resident -nostartfiles")
 		AC_SUBST(LINKLIB, linklib)
 		;;
 	powerpc-*-amigaos*)
@@ -70,8 +74,10 @@ case "$host" in
 
 			AC_SUBST(NOIXEMUL, -noixemul)
 			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
-			AC_SUBST(OBJFW_RT_INLINE_H, ObjFW_RT_inline.h)
 			AC_SUBST(SFDC_TARGET, ppc-morphos)
+			AC_SUBST(AMIGA_LIB_CFLAGS, "-mresident32 -fno-builtin")
+			AC_SUBST(AMIGA_LIB_LDFLAGS,
+				"-mresident32 -nostartfiles -nodefaultlibs -lc")
 			AC_SUBST(LINKLIB, linklib)
 		])
 
@@ -841,7 +847,9 @@ AS_IF([test x"$ENCODINGS_SRCS" != x""], [
 
 AC_CHECK_FUNCS(arc4random random, break)
 
-AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+AS_IF([test x"$host_os" != x"morphos"], [
+	AC_CHECK_LIB(dl, dlopen, LIBS="$LIBS -ldl")
+])
 AC_CHECK_HEADERS_ONCE(dlfcn.h)
 case "$host_os" in
 	netbsd*)

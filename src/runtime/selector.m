@@ -40,7 +40,7 @@ static struct objc_sparsearray *selector_names = NULL;
 static void **free_list = NULL;
 static size_t free_list_cnt = 0;
 
-void __saveds
+void
 objc_register_selector(struct objc_abi_selector *sel)
 {
 	struct objc_selector *rsel;
@@ -69,7 +69,7 @@ objc_register_selector(struct objc_abi_selector *sel)
 }
 
 SEL
-sel_registerName(const char *name OBJC_M68K_REG("a0"))
+sel_registerName(const char *name)
 {
 	const struct objc_abi_selector *rsel;
 	struct objc_abi_selector *sel;
@@ -115,8 +115,8 @@ objc_register_all_selectors(struct objc_abi_symtab *symtab)
 		objc_register_selector(sel);
 }
 
-const char *__saveds
-sel_getName(SEL sel OBJC_M68K_REG("a0"))
+const char *
+sel_getName(SEL sel)
 {
 	const char *ret;
 
@@ -127,8 +127,8 @@ sel_getName(SEL sel OBJC_M68K_REG("a0"))
 	return ret;
 }
 
-bool __saveds
-sel_isEqual(SEL sel1 OBJC_M68K_REG("a0"), SEL sel2 OBJC_M68K_REG("a1"))
+bool
+sel_isEqual(SEL sel1, SEL sel2)
 {
 	return (sel1->uid == sel2->uid);
 }

@@ -136,7 +136,7 @@ struct objc_dtable {
 
 #if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
     defined(OBJC_COMPILING_AMIGA_LINKLIB)
-extern struct objc_libc {
+struct objc_libc {
 	void *(*malloc)(size_t);
 	void *(*calloc)(size_t, size_t);
 	void *(*realloc)(void *, size_t);
@@ -145,7 +145,11 @@ extern struct objc_libc {
 	int (*fflush)(FILE *);
 	void (*exit)(int);
 	void (*abort)(void);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+	int (*_Unwind_SjLj_RaiseException)(void *_Nonnull);
+# else
 	int (*_Unwind_RaiseException)(void *_Nonnull);
+# endif
 	void (*_Unwind_DeleteException)(void *_Nonnull);
 	void *(*_Unwind_GetLanguageSpecificData)(void *_Nonnull);
 	uintptr_t (*_Unwind_GetRegionStart)(void *_Nonnull);
@@ -155,100 +159,28 @@ extern struct objc_libc {
 	uintptr_t (*_Unwind_GetGR)(void *_Nonnull, int);
 	void (*_Unwind_SetIP)(void *_Nonnull, uintptr_t);
 	void (*_Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
-	void (*_Unwind_Resume)(void *);
+# ifdef HAVE_SJLJ_EXCEPTIONS
+	void (*_Unwind_SjLj_Resume)(void *_Nonnull);
+# else
+	void (*_Unwind_Resume)(void *_Nonnull);
+# endif
 	void (*__register_frame_info)(const void *, void *);
 	void (*__deregister_frame_info)(const void *);
-} *objc_libc;
+};
 #endif
 
 #ifdef OBJC_COMPILING_AMIGA_LIBRARY
+# if defined(__MORPHOS__)
+#  include <ppcinline/macros.h>
+#  define OBJC_M68K_ARG(type, name, reg) type name = (type)REG_##reg;
+# else
+#  define OBJC_M68K_ARG(type, name, reg)	\
+	register type reg_##name __asm__(#reg);	\
+	type name = reg_##name;
+# endif
 # undef stdout
 # undef stderr
 extern FILE *stdout, *stderr;
-
-extern void glue___objc_exec_class(void *_Nonnull module OBJC_M68K_REG("a0"));
-extern IMP _Nonnull glue_objc_msg_lookup(id _Nullable obj OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern IMP _Nonnull glue_objc_msg_lookup_stret(
-    id _Nullable obj OBJC_M68K_REG("a0"), SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern IMP _Nonnull glue_objc_msg_lookup_super(
-    struct objc_super *_Nonnull super OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern IMP _Nonnull glue_objc_msg_lookup_super_stret(
-    struct objc_super *_Nonnull super OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern Class _Nullable glue_objc_lookUpClass(
-    const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern Class _Nullable glue_objc_getClass(
-    const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern Class _Nonnull glue_objc_getRequiredClass(
-    const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern Class _Nullable glue_objc_lookup_class(
-    const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern Class _Nonnull glue_objc_get_class(
-    const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern void glue_objc_exception_throw(id _Nullable object OBJC_M68K_REG("a0"));
-extern int glue_objc_sync_enter(id _Nullable object OBJC_M68K_REG("a0"));
-extern int glue_objc_sync_exit(id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_getProperty(id _Nonnull self OBJC_M68K_REG("a0"),
-    SEL _Nonnull _cmd OBJC_M68K_REG("a1"), ptrdiff_t offset OBJC_M68K_REG("d0"),
-    bool atomic OBJC_M68K_REG("d1"));
-extern void glue_objc_setProperty(id _Nonnull self OBJC_M68K_REG("a0"),
-    SEL _Nonnull _cmd OBJC_M68K_REG("a1"), ptrdiff_t offset OBJC_M68K_REG("d0"),
-    id _Nullable value OBJC_M68K_REG("a2"), bool atomic OBJC_M68K_REG("d1"),
-    signed char copy OBJC_M68K_REG("d2"));
-extern void glue_objc_getPropertyStruct(void *_Nonnull dest OBJC_M68K_REG("a0"),
-    const void *_Nonnull src OBJC_M68K_REG("a1"),
-    ptrdiff_t size OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"),
-    bool strong OBJC_M68K_REG("d2"));
-extern void glue_objc_setPropertyStruct(void *_Nonnull dest OBJC_M68K_REG("a0"),
-    const void *_Nonnull src OBJC_M68K_REG("a1"),
-    ptrdiff_t size OBJC_M68K_REG("d0"), bool atomic OBJC_M68K_REG("d1"),
-    bool strong OBJC_M68K_REG("d2"));
-extern void glue_objc_enumerationMutation(id _Nonnull obj OBJC_M68K_REG("a0"));
-extern int glue___gnu_objc_personality_v0(int version OBJC_M68K_REG("d0"),
-    int actions OBJC_M68K_REG("d1"),
-    uint64_t *_Nonnull ex_class OBJC_M68K_REG("d2"),
-    void *_Nonnull ex OBJC_M68K_REG("a0"),
-    void *_Nonnull ctx OBJC_M68K_REG("a1"));
-extern id _Nullable glue_objc_retain(id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_retainBlock(
-    id _Nullable block OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_retainAutorelease(
-    id _Nullable object OBJC_M68K_REG("a0"));
-extern void glue_objc_release(id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_autorelease(
-    id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_autoreleaseReturnValue(
-    id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_retainAutoreleaseReturnValue(
-    id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_retainAutoreleasedReturnValue(
-    id _Nullable object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_storeStrong(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
-    id _Nullable value OBJC_M68K_REG("a1"));
-extern id _Nullable glue_objc_storeWeak(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
-    id _Nullable value OBJC_M68K_REG("a1"));
-extern id _Nullable glue_objc_loadWeakRetained(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_initWeak(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"),
-    id _Nullable value OBJC_M68K_REG("a1"));
-extern void glue_objc_destroyWeak(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
-extern id _Nullable glue_objc_loadWeak(
-    id _Nullable *_Nonnull object OBJC_M68K_REG("a0"));
-extern void glue_objc_copyWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
-    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"));
-extern void glue_objc_moveWeak(id _Nullable *_Nonnull dest OBJC_M68K_REG("a0"),
-    id _Nullable *_Nonnull src OBJC_M68K_REG("a1"));
-#else
-# ifdef __saveds
-#  undef __saveds
-# endif
-# define __saveds
 #endif
 
 extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);

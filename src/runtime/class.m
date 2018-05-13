@@ -416,10 +416,8 @@ objc_register_all_classes(struct objc_abi_symtab *symtab)
 	process_load_queue();
 }
 
-Class __saveds
-objc_allocateClassPair(Class superclass OBJC_M68K_REG("a0"),
-    const char *name OBJC_M68K_REG("a1"),
-    size_t extra_bytes OBJC_M68K_REG("d0"))
+Class
+objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
 {
 	struct objc_class *cls, *metaclass;
 	Class iter, rootclass = Nil;
@@ -452,8 +450,8 @@ objc_allocateClassPair(Class superclass OBJC_M68K_REG("a0"),
 	return cls;
 }
 
-void __saveds
-objc_registerClassPair(Class cls OBJC_M68K_REG("a0"))
+void
+objc_registerClassPair(Class cls)
 {
 	objc_global_mutex_lock();
 
@@ -529,9 +527,8 @@ objc_get_class(const char *name)
 	return objc_getRequiredClass(name);
 }
 
-unsigned int __saveds
-objc_getClassList(Class *buf OBJC_M68K_REG("a0"),
-    unsigned int count OBJC_M68K_REG("d0"))
+unsigned int
+objc_getClassList(Class *buf, unsigned int count)
 {
 	unsigned int j;
 	objc_global_mutex_lock();
@@ -570,8 +567,8 @@ objc_getClassList(Class *buf OBJC_M68K_REG("a0"),
 	return j;
 }
 
-Class *__saveds
-objc_copyClassList(unsigned int *len OBJC_M68K_REG("a0"))
+Class *
+objc_copyClassList(unsigned int *len)
 {
 	Class *ret;
 	unsigned int count;
@@ -594,8 +591,8 @@ objc_copyClassList(unsigned int *len OBJC_M68K_REG("a0"))
 	return ret;
 }
 
-bool __saveds
-class_isMetaClass(Class cls OBJC_M68K_REG("a0"))
+bool
+class_isMetaClass(Class cls)
 {
 	if (cls == Nil)
 		return false;
@@ -603,8 +600,8 @@ class_isMetaClass(Class cls OBJC_M68K_REG("a0"))
 	return (cls->info & OBJC_CLASS_INFO_METACLASS);
 }
 
-const char *__saveds
-class_getName(Class cls OBJC_M68K_REG("a0"))
+const char *
+class_getName(Class cls)
 {
 	if (cls == Nil)
 		return "";
@@ -612,8 +609,8 @@ class_getName(Class cls OBJC_M68K_REG("a0"))
 	return cls->name;
 }
 
-Class __saveds
-class_getSuperclass(Class cls OBJC_M68K_REG("a0"))
+Class
+class_getSuperclass(Class cls)
 {
 	if (cls == Nil)
 		return Nil;
@@ -621,8 +618,8 @@ class_getSuperclass(Class cls OBJC_M68K_REG("a0"))
 	return cls->superclass;
 }
 
-unsigned long __saveds
-class_getInstanceSize(Class cls OBJC_M68K_REG("a0"))
+unsigned long
+class_getInstanceSize(Class cls)
 {
 	if (cls == Nil)
 		return 0;
@@ -630,9 +627,8 @@ class_getInstanceSize(Class cls OBJC_M68K_REG("a0"))
 	return cls->instance_size;
 }
 
-IMP __saveds
-class_getMethodImplementation(Class cls OBJC_M68K_REG("a0"),
-    SEL sel OBJC_M68K_REG("a1"))
+IMP
+class_getMethodImplementation(Class cls, SEL sel)
 {
 	/*
 	 * We use a dummy object here so that the normal lookup is used, even
@@ -655,9 +651,8 @@ class_getMethodImplementation(Class cls OBJC_M68K_REG("a0"),
 	return objc_msg_lookup((id)&dummy, sel);
 }
 
-IMP __saveds
-class_getMethodImplementation_stret(Class cls OBJC_M68K_REG("a0"),
-    SEL sel OBJC_M68K_REG("a1"))
+IMP
+class_getMethodImplementation_stret(Class cls, SEL sel)
 {
 	/*
 	 * Same as above, but use objc_msg_lookup_stret instead, so that the
@@ -723,9 +718,8 @@ add_method(Class cls, SEL sel, IMP imp, const char *types)
 	objc_update_dtable(cls);
 }
 
-const char *__saveds
-class_getMethodTypeEncoding(Class cls OBJC_M68K_REG("a0"),
-    SEL sel OBJC_M68K_REG("a1"))
+const char *
+class_getMethodTypeEncoding(Class cls, SEL sel)
 {
 	struct objc_method *method;
 
@@ -748,9 +742,8 @@ class_getMethodTypeEncoding(Class cls OBJC_M68K_REG("a0"),
 	return NULL;
 }
 
-bool __saveds
-class_addMethod(Class cls OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"),
-    IMP imp OBJC_M68K_REG("a2"), const char *types OBJC_M68K_REG("a3"))
+bool
+class_addMethod(Class cls, SEL sel, IMP imp, const char *types)
 {
 	bool ret;
 
@@ -767,9 +760,8 @@ class_addMethod(Class cls OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"),
 	return ret;
 }
 
-IMP __saveds
-class_replaceMethod(Class cls OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"),
-    IMP newimp OBJC_M68K_REG("a2"), const char *types OBJC_M68K_REG("a3"))
+IMP
+class_replaceMethod(Class cls, SEL sel, IMP newimp, const char *types)
 {
 	struct objc_method *method;
 	IMP oldimp;
@@ -790,8 +782,8 @@ class_replaceMethod(Class cls OBJC_M68K_REG("a0"), SEL sel OBJC_M68K_REG("a1"),
 	return oldimp;
 }
 
-Class __saveds
-object_getClass(id obj_ OBJC_M68K_REG("a0"))
+Class
+object_getClass(id obj_)
 {
 	struct objc_object *obj;
 
@@ -803,8 +795,8 @@ object_getClass(id obj_ OBJC_M68K_REG("a0"))
 	return obj->isa;
 }
 
-Class __saveds
-object_setClass(id obj_ OBJC_M68K_REG("a0"), Class cls OBJC_M68K_REG("a1"))
+Class
+object_setClass(id obj_, Class cls)
 {
 	struct objc_object *obj;
 	Class old;
@@ -820,8 +812,8 @@ object_setClass(id obj_ OBJC_M68K_REG("a0"), Class cls OBJC_M68K_REG("a1"))
 	return old;
 }
 
-const char *__saveds
-object_getClassName(id obj OBJC_M68K_REG("a0"))
+const char *
+object_getClassName(id obj)
 {
 	return class_getName(object_getClass(obj));
 }

@@ -58,19 +58,6 @@
 #define YES true
 #define NO  false
 
-#if defined(__amigaos__) && !defined(__MORPHOS__) && !defined(__amigaos4__)
-# define OBJC_M68K_REG(reg) __asm__(reg)
-#else
-# define OBJC_M68K_REG(reg)
-#endif
-#if defined(__MORPHOS__) && defined(OBJC_COMPILING_AMIGA_LIBRARY)
-# define OBJC_M68K_FUNC(name, ...) name(void)
-# define OBJC_M68K_ARG(type, name, reg) type name = (type)reg;
-#else
-# define OBJC_M68K_FUNC(name, ...) name(__VA_ARGS__)
-# define OBJC_M68K_ARG(type, name, reg)
-#endif
-
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
@@ -221,81 +208,47 @@ struct objc_protocol_list {
 #ifdef __cplusplus
 extern "C" {
 #endif
-# if defined(OBJC_AMIGA_LIBRARY) || defined(OBJC_COMPILING_AMIGA_LINKLIB)
-#  if defined(__amigaos__) && !defined(__MORPHOS__) && !defined(__amigaos4__)
-#   define INTUITION_CLASSES_H
-#  endif
-#  include <exec/types.h>
-#  include "ObjFW_RT_inline.h"
-#  if defined(__amigaos__) && !defined(__MORPHOS__) && !defined(__amigaos4__)
-#   undef INTUITION_CLASSES_H
-#  endif
-extern struct Library *ObjFWRTBase;
-# else
-extern SEL _Nonnull sel_registerName(
-    const char *_Nonnull name OBJC_M68K_REG("a0"));
-extern const char *_Nonnull sel_getName(SEL _Nonnull sel OBJC_M68K_REG("a0"));
-extern bool sel_isEqual(SEL _Nonnull sel1 OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel2 OBJC_M68K_REG("a1"));
-extern Class _Nonnull objc_allocateClassPair(
-    Class _Nullable superclass OBJC_M68K_REG("a0"),
-    const char *_Nonnull name OBJC_M68K_REG("a1"),
-    size_t extra_bytes OBJC_M68K_REG("d0"));
-extern void objc_registerClassPair(Class _Nonnull cls OBJC_M68K_REG("a0"));
-extern unsigned int objc_getClassList(
-    Class _Nonnull *_Nullable buf OBJC_M68K_REG("a0"),
-    unsigned int count OBJC_M68K_REG("d0"));
-extern Class _Nonnull *_Nonnull objc_copyClassList(
-    unsigned int *_Nullable OBJC_M68K_REG("a0"));
-extern bool class_isMetaClass(Class _Nullable cls OBJC_M68K_REG("a0"));
-extern const char *_Nullable class_getName(
-    Class _Nullable cls OBJC_M68K_REG("a0"));
-extern Class _Nullable class_getSuperclass(
-    Class _Nullable cls OBJC_M68K_REG("a0"));
-extern unsigned long class_getInstanceSize(
-    Class _Nullable cls OBJC_M68K_REG("a0"));
-extern bool class_respondsToSelector(Class _Nullable cls OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern bool class_conformsToProtocol(Class _Nullable cls OBJC_M68K_REG("a0"),
-    Protocol *_Nonnull p OBJC_M68K_REG("a1"));
-extern IMP _Nullable class_getMethodImplementation(
-    Class _Nullable cls OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern IMP _Nullable class_getMethodImplementation_stret(
-    Class _Nullable cls OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern const char *_Nullable class_getMethodTypeEncoding(
-    Class _Nullable cls OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"));
-extern bool class_addMethod(Class _Nonnull cls OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"), IMP _Nonnull imp OBJC_M68K_REG("a2"),
-    const char *_Nullable types OBJC_M68K_REG("a3"));
-extern IMP _Nullable class_replaceMethod(Class _Nonnull cls OBJC_M68K_REG("a0"),
-    SEL _Nonnull sel OBJC_M68K_REG("a1"),
-    IMP _Nonnull imp OBJC_M68K_REG("a2"),
-    const char *_Nullable types OBJC_M68K_REG("a3"));
-extern Class _Nullable object_getClass(id _Nullable object OBJC_M68K_REG("a0"));
-extern Class _Nullable object_setClass(id _Nullable object OBJC_M68K_REG("a0"),
-    Class _Nonnull OBJC_M68K_REG("a1"));
-extern const char *_Nullable object_getClassName(
-    id _Nullable object OBJC_M68K_REG("a0"));
-extern const char *_Nonnull protocol_getName(
-    Protocol *_Nonnull p OBJC_M68K_REG("a0"));
-extern bool protocol_isEqual(Protocol *_Nonnull a OBJC_M68K_REG("a0"),
-    Protocol *_Nonnull b OBJC_M68K_REG("a1"));
-extern bool protocol_conformsToProtocol(
-    Protocol *_Nonnull a OBJC_M68K_REG("a0"),
-    Protocol *_Nonnull b OBJC_M68K_REG("a1"));
+extern SEL _Nonnull sel_registerName(const char *_Nonnull name);
+extern const char *_Nonnull sel_getName(SEL _Nonnull sel);
+extern bool sel_isEqual(SEL _Nonnull sel1, SEL _Nonnull sel2);
+extern Class _Nonnull objc_allocateClassPair(Class _Nullable superclass,
+    const char *_Nonnull name, size_t extra_bytes);
+extern void objc_registerClassPair(Class _Nonnull cls);
+extern unsigned int objc_getClassList(Class _Nonnull *_Nullable buf,
+    unsigned int count);
+extern Class _Nonnull *_Nonnull objc_copyClassList(unsigned int *_Nullable len);
+extern bool class_isMetaClass(Class _Nullable cls);
+extern const char *_Nullable class_getName(Class _Nullable cls);
+extern Class _Nullable class_getSuperclass(Class _Nullable cls);
+extern unsigned long class_getInstanceSize(Class _Nullable cls);
+extern bool class_respondsToSelector(Class _Nullable cls, SEL _Nonnull sel);
+extern bool class_conformsToProtocol(Class _Nullable cls, Protocol *_Nonnull p);
+extern IMP _Nullable class_getMethodImplementation(Class _Nullable cls,
+    SEL _Nonnull sel);
+extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable cls,
+    SEL _Nonnull sel);
+extern const char *_Nullable class_getMethodTypeEncoding(Class _Nullable cls,
+    SEL _Nonnull sel);
+extern bool class_addMethod(Class _Nonnull cls, SEL _Nonnull sel,
+    IMP _Nonnull imp, const char *_Nullable types);
+extern IMP _Nullable class_replaceMethod(Class _Nonnull cls, SEL _Nonnull sel,
+    IMP _Nonnull imp, const char *_Nullable types);
+extern Class _Nullable object_getClass(id _Nullable object);
+extern Class _Nullable object_setClass(id _Nullable object, Class _Nonnull cls);
+extern const char *_Nullable object_getClassName(id _Nullable object);
+extern const char *_Nonnull protocol_getName(Protocol *_Nonnull p);
+extern bool protocol_isEqual(Protocol *_Nonnull a, Protocol *_Nonnull b);
+extern bool protocol_conformsToProtocol(Protocol *_Nonnull a,
+    Protocol *_Nonnull b);
 extern void objc_exit(void);
 extern _Nullable objc_uncaught_exception_handler
     objc_setUncaughtExceptionHandler(
-    objc_uncaught_exception_handler _Nullable handler OBJC_M68K_REG("a0"));
-extern void objc_setForwardHandler(IMP _Nullable forward OBJC_M68K_REG("a0"),
-    IMP _Nullable forward_stret OBJC_M68K_REG("a1"));
+    objc_uncaught_exception_handler _Nullable handler);
+extern void objc_setForwardHandler(IMP _Nullable forward,
+    IMP _Nullable forward_stret);
 extern void objc_setEnumerationMutationHandler(
-    objc_enumeration_mutation_handler _Nullable handler OBJC_M68K_REG("a0"));
-extern void objc_zero_weak_references(id _Nonnull value OBJC_M68K_REG("a0"));
-# endif
+    objc_enumeration_mutation_handler _Nullable handler);
+extern void objc_zero_weak_references(id _Nonnull value);
 
 /*
  * Used by the compiler, but can also be called manually.
@@ -328,10 +281,16 @@ extern void objc_getPropertyStruct(void *_Nonnull dest,
 extern void objc_setPropertyStruct(void *_Nonnull dest,
     const void *_Nonnull src, ptrdiff_t size, bool atomic, bool strong);
 extern void objc_enumerationMutation(id _Nonnull object);
-# ifndef OBJC_NO_PERSONALITY_DECLARATION
+#ifndef OBJC_NO_PERSONALITY_DECLARATION
+/*
+ * No objfw-defs.h or config.h is available for the installed runtime headers,
+ * so we don't know which exceptions we have.
+ */
 extern int __gnu_objc_personality_v0(int version, int actions,
     uint64_t ex_class, void *_Nonnull ex, void *_Nonnull ctx);
-# endif
+extern int __gnu_objc_personality_sj0(int version, int actions,
+    uint64_t ex_class, void *_Nonnull ex, void *_Nonnull ctx);
+#endif
 extern id _Nullable objc_retain(id _Nullable object);
 extern id _Nullable objc_retainBlock(id _Nullable block);
 extern id _Nullable objc_retainAutorelease(id _Nullable object);

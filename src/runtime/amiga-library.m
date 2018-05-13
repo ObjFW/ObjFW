@@ -19,7 +19,6 @@
 
 #import "ObjFW_RT.h"
 #import "private.h"
-#import "platform.h"
 
 #ifdef OF_AMIGAOS3
 # define INTUITION_CLASSES_H
@@ -34,7 +33,17 @@
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
 #define VERSION_STRING CONCAT_VERSION(OBJFW_RT_LIB_MAJOR, OBJFW_RT_LIB_MINOR)
 
-#define DATA_OFFSET 0x7FFE
+#if defined(OF_AMIGAOS3)
+# define DATA_OFFSET 0x7FFE
+#elif defined(OF_MORPHOS)
+# define DATA_OFFSET 0x8000
+#endif
+
+#ifdef OF_AMIGAOS3
+# define OBJC_M68K_REG(reg) __asm__ (#reg)
+#else
+# define OBJC_M68K_REG(reg)
+#endif
 
 /* This always needs to be the first thing in the file. */
 int
@@ -49,21 +58,90 @@ struct ObjFWRTBase {
 	struct ObjFWRTBase *parent;
 	char *data_seg;
 	bool initialized;
-	struct objc_libc libc;
 };
 
-extern uintptr_t __CTOR_LIST__[], __DTOR_LIST__[];
+#ifdef OF_AMIGAOS3
+extern uintptr_t __CTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
-extern void *__a4_init, *__data_size;
+#endif
+
+extern void __objc_exec_class_m68k(void);
+extern IMP _Nonnull objc_msg_lookup_m68k(void);
+extern IMP _Nonnull objc_msg_lookup_stret_m68k(void);
+extern IMP _Nonnull objc_msg_lookup_super_m68k(void);
+extern IMP _Nonnull objc_msg_lookup_super_stret_m68k(void);
+extern Class _Nullable objc_lookUpClass_m68k(void);
+extern Class _Nullable objc_getClass_m68k(void);
+extern Class _Nonnull objc_getRequiredClass_m68k(void);
+extern Class _Nullable objc_lookup_class_m68k(void);
+extern Class _Nonnull objc_get_class_m68k(void);
+extern void objc_exception_throw_m68k(void);
+extern int objc_sync_enter_m68k(void);
+extern int objc_sync_exit_m68k(void);
+extern id _Nullable objc_getProperty_m68k(void);
+extern void objc_setProperty_m68k(void);
+extern void objc_getPropertyStruct_m68k(void);
+extern void objc_setPropertyStruct_m68k(void);
+extern void objc_enumerationMutation_m68k(void);
+extern int __gnu_objc_personality_sj0_m68k(void);
+extern int __gnu_objc_personality_v0_m68k(void);
+extern id _Nullable objc_retain_m68k(void);
+extern id _Nullable objc_retainBlock_m68k(void);
+extern id _Nullable objc_retainAutorelease_m68k(void);
+extern void objc_release_m68k(void);
+extern id _Nullable objc_autorelease_m68k(void);
+extern id _Nullable objc_autoreleaseReturnValue_m68k(void);
+extern id _Nullable objc_retainAutoreleaseReturnValue_m68k(void);
+extern id _Nullable objc_retainAutoreleasedReturnValue_m68k(void);
+extern id _Nullable objc_storeStrong_m68k(void);
+extern id _Nullable objc_storeWeak_m68k(void);
+extern id _Nullable objc_loadWeakRetained_m68k(void);
+extern id _Nullable objc_initWeak_m68k(void);
+extern void objc_destroyWeak_m68k(void);
+extern id _Nullable objc_loadWeak_m68k(void);
+extern void objc_copyWeak_m68k(void);
+extern void objc_moveWeak_m68k(void);
+extern SEL _Nonnull sel_registerName_m68k(void);
+extern const char *_Nonnull sel_getName_m68k(void);
+extern bool sel_isEqual_m68k(void);
+extern Class _Nonnull objc_allocateClassPair_m68k(void);
+extern void objc_registerClassPair_m68k(void);
+extern unsigned int objc_getClassList_m68k(void);
+extern Class _Nonnull *_Nonnull objc_copyClassList_m68k(void);
+extern bool class_isMetaClass_m68k(void);
+extern const char *_Nullable class_getName_m68k(void);
+extern Class _Nullable class_getSuperclass_m68k(void);
+extern unsigned long class_getInstanceSize_m68k(void);
+extern bool class_respondsToSelector_m68k(void);
+extern bool class_conformsToProtocol_m68k(void);
+extern IMP _Nullable class_getMethodImplementation_m68k(void);
+extern IMP _Nullable class_getMethodImplementation_stret_m68k(void);
+extern const char *_Nullable class_getMethodTypeEncoding_m68k(void);
+extern bool class_addMethod_m68k(void);
+extern IMP _Nullable class_replaceMethod_m68k(void);
+extern Class _Nullable object_getClass_m68k(void);
+extern Class _Nullable object_setClass_m68k(void);
+extern const char *_Nullable object_getClassName_m68k(void);
+extern const char *_Nonnull protocol_getName_m68k(void);
+extern bool protocol_isEqual_m68k(void);
+extern bool protocol_conformsToProtocol_m68k(void);
+extern void objc_exit_m68k(void);
+extern _Nullable objc_uncaught_exception_handler
+    objc_setUncaughtExceptionHandler_m68k(void);
+extern void objc_setForwardHandler_m68k(void);
+extern void objc_setEnumerationMutationHandler_m68k(void);
+extern void objc_zero_weak_references_m68k(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
 #endif
 struct ExecBase *SysBase;
+struct objc_libc libc;
 FILE *stdout;
 FILE *stderr;
 
+#if defined(OF_AMIGAOS3)
 __asm__ (
     ".text\n"
     ".globl ___restore_a4\n"
@@ -72,17 +150,64 @@ __asm__ (
     "	movea.l	42(a6), a4\n"
     "	rts"
 );
+#elif defined(OF_MORPHOS)
+__asm__ (
+    ".section .text\n"
+    ".globl __restore_r13\n"
+    ".align 2\n"
+    "__restore_r13:\n"
+    "	lwz	%r13, 56(%r2)\n"
+    "	lwz	%r13, 44(%r13)\n"
+    "	blr\n"
+    ".type __restore_r13, @function\n"
+    ".size __restore_r13, .-__restore_r13"
+);
+#endif
 
 static OF_INLINE char *
 get_data_seg(void)
 {
 	char *data_seg;
 
-	__asm__ __volatile__ (
-	    "move.l	#___a4_init, %0" : "=r"(data_seg)
+#if defined(OF_AMIGAOS3)
+	__asm__ (
+	    "move.l	#___a4_init, %0"
+	    : "=r"(data_seg)
 	);
+#elif defined(OF_MORPHOS)
+	__asm__ (
+	    "lis	%0, __r13_init@ha\n\t"
+	    "la		%0, __r13_init@l(%0)"
+	    : "=r"(data_seg)
+	);
+#endif
 
 	return data_seg;
+}
+
+static OF_INLINE size_t
+get_data_size(void)
+{
+	size_t data_size;
+
+#if defined(OF_AMIGAOS3)
+	__asm__ (
+	    "move.l	#___data_size, %0"
+	    : "=r"(data_size)
+	);
+#elif defined(OF_MORPHOS)
+	__asm__ (
+	    "lis	%0, __sdata_size@ha\n\t"
+	    "la		%0, __sdata_size@l(%0)\n\t"
+	    "lis	%%r9, __sbss_size@ha\n\t"
+	    "la		%%r9, __sbss_size@l(%%r9)\n\t"
+	    "add	%0, %0, %%r9"
+	    : "=r"(data_size)
+	    :: "r9"
+	);
+#endif
+
+	return data_size;
 }
 
 static OF_INLINE size_t *
@@ -90,21 +215,39 @@ get_datadata_relocs(void)
 {
 	size_t *datadata_relocs;
 
-	__asm__ __volatile__ (
-	    "move.l	#___datadata_relocs, %0" : "=r"(datadata_relocs)
+#if defined(OF_AMIGAOS3)
+	__asm__ (
+	    "move.l	#___datadata_relocs, %0"
+	    : "=r"(datadata_relocs)
 	);
+#elif defined(OF_MORPHOS)
+	__asm__ (
+	    "lis	%0, __datadata_relocs@ha\n\t"
+	    "la		%0, __datadata_relocs@l(%0)\n\t"
+	    : "=r"(datadata_relocs)
+	);
+#endif
 
 	return datadata_relocs;
 }
 
 static struct Library *
-lib_init(struct ExecBase *sys_base OBJC_M68K_REG("a6"),
-    void *seg_list OBJC_M68K_REG("a0"),
-    struct ObjFWRTBase *base OBJC_M68K_REG("d0"))
+lib_init(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
+    void *seg_list OBJC_M68K_REG(a0),
+    struct ExecBase *sys_base OBJC_M68K_REG(a6))
 {
+#if defined(OF_AMIGAOS3)
 	__asm__ __volatile__ (
-	    "move.l	a6, _SysBase" :: "a"(sys_base)
+	    "move.l	a6, _SysBase"
+	    :: "a"(sys_base)
 	);
+#elif defined(OF_MORPHOS)
+	__asm__ __volatile__ (
+	    "lis	%%r9, SysBase@ha\n\t"
+	    "stw	%0, SysBase@l(%%r9)"
+	    :: "r"(sys_base) : "r9"
+	);
+#endif
 
 	base->seg_list = seg_list;
 	base->parent = NULL;
@@ -114,9 +257,10 @@ lib_init(struct ExecBase *sys_base OBJC_M68K_REG("a6"),
 }
 
 struct Library *__saveds
-OBJC_M68K_FUNC(lib_open, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
+lib_open(void)
 {
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
+
 	struct ObjFWRTBase *child;
 	size_t data_size, *datadata_relocs;
 	ptrdiff_t displacement;
@@ -145,8 +289,7 @@ OBJC_M68K_FUNC(lib_open, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	child->library.lib_OpenCnt = 1;
 	child->parent = base;
 
-	data_size = (uintptr_t)&__data_size -
-	    ((uintptr_t)&__a4_init - DATA_OFFSET);
+	data_size = get_data_size();
 
 	if ((child->data_seg = AllocMem(data_size, MEMF_ANY)) == NULL) {
 		FreeMem((char *)child - child->library.lib_NegSize,
@@ -193,30 +336,31 @@ expunge(struct ObjFWRTBase *base)
 }
 
 static void *__saveds
-OBJC_M68K_FUNC(lib_expunge, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
+lib_expunge(void)
 {
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
 	return expunge(base);
 }
 
 static void *__saveds
-OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
+lib_close(void)
 {
-	OBJC_M68K_ARG(struct ObjFWRTBase *, base, REG_A6)
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
 	if (base->parent != NULL) {
 		struct ObjFWRTBase *parent;
 
+#ifdef OF_AMIGAOS3
 		if (base->initialized)
 			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-				base->libc.__deregister_frame_info(
+				libc.__deregister_frame_info(
 				    (&_EH_FRAME_BEGINS__)[i]);
+#endif
 
 		parent = base->parent;
 
-		FreeMem(base->data_seg - DATA_OFFSET, (uintptr_t)&__data_size -
-		    ((uintptr_t)&__a4_init - DATA_OFFSET));
+		FreeMem(base->data_seg - DATA_OFFSET, get_data_size());
 		FreeMem((char *)base - base->library.lib_NegSize,
 		    base->library.lib_NegSize + base->library.lib_PosSize);
 
@@ -227,39 +371,50 @@ OBJC_M68K_FUNC(lib_close, struct ObjFWRTBase *base OBJC_M68K_REG("a6"))
 	    (base->library.lib_Flags & LIBF_DELEXP))
 		return expunge(base);
 
-	return 0;
+	return NULL;
 }
 
 static void *
 lib_null(void)
 {
-	return 0;
+	return NULL;
 }
 
 static bool __saveds
-objc_init(unsigned int version OBJC_M68K_REG("d0"),
-    struct objc_libc *libc OBJC_M68K_REG("a0"),
-    FILE *stdout_ OBJC_M68K_REG("a1"), FILE *stderr_ OBJC_M68K_REG("a2"))
+objc_init_m68k(void)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
+	OBJC_M68K_ARG(unsigned int, version, d0)
+	OBJC_M68K_ARG(struct objc_libc *, libc_, a0)
+	OBJC_M68K_ARG(FILE *, stdout_, a1)
+	OBJC_M68K_ARG(FILE *, stderr_, a2)
+
 	uintptr_t *iter, *iter0;
 
 	if (version > 1)
 		return false;
 
-	memcpy(&base->libc, libc, sizeof(base->libc));
-
+	memcpy(&libc, libc_, sizeof(libc));
 	stdout = stdout_;
 	stderr = stderr_;
 
+#ifdef OF_AMIGAOS3
 	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
 		return false;
 
 	for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
-		base->libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
+		libc.__register_frame_info((&_EH_FRAME_BEGINS__)[i],
 		    (&_EH_FRAME_OBJECTS__)[i]);
 
 	iter0 = &__CTOR_LIST__[1];
+#elif defined(OF_MORPHOS)
+	__asm__ (
+	    "lis	%0, ctors+4@ha\n\t"
+	    "la		%0, ctors+4@l(%0)\n\t"
+	    : "=r"(iter0)
+	);
+#endif
+
 	for (iter = iter0; *iter != 0; iter++);
 
 	while (iter > iter0) {
@@ -275,44 +430,35 @@ objc_init(unsigned int version OBJC_M68K_REG("d0"),
 void *
 malloc(size_t size)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc.malloc(size);
+	return libc.malloc(size);
 }
 
 void *
 calloc(size_t count, size_t size)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc.calloc(count, size);
+	return libc.calloc(count, size);
 }
 
 void *
 realloc(void *ptr, size_t size)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc.realloc(ptr, size);
+	return libc.realloc(ptr, size);
 }
 
 void
 free(void *ptr)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	base->libc.free(ptr);
+	libc.free(ptr);
 }
 
 int
 fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
 	int ret;
 	va_list args;
 
 	va_start(args, fmt);
-	ret = base->libc.vfprintf(stream, fmt, args);
+	ret = libc.vfprintf(stream, fmt, args);
 	va_end(args);
 
 	return ret;
@@ -321,124 +467,123 @@ fprintf(FILE *restrict stream, const char *restrict fmt, ...)
 int
 fflush(FILE *restrict stream)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc.fflush(stream);
+	return libc.fflush(stream);
 }
 
 void
 exit(int status)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+	libc.exit(status);
 
-	base->libc.exit(status);
+	OF_UNREACHABLE
 }
 
 void
 abort(void)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
+	libc.abort();
 
-	base->libc.abort();
+	OF_UNREACHABLE
 }
 
+#ifdef HAVE_SJLJ_EXCEPTIONS
+int
+_Unwind_SjLj_RaiseException(void *ex)
+{
+	return libc._Unwind_SjLj_RaiseException(ex);
+}
+#else
 int
 _Unwind_RaiseException(void *ex)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_RaiseException(ex);
+	return libc._Unwind_RaiseException(ex);
 }
+#endif
 
 void
 _Unwind_DeleteException(void *ex)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	base->libc._Unwind_DeleteException(ex);
+	libc._Unwind_DeleteException(ex);
 }
 
 void *
 _Unwind_GetLanguageSpecificData(void *ctx)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_GetLanguageSpecificData(ctx);
+	return libc._Unwind_GetLanguageSpecificData(ctx);
 }
 
 uintptr_t
 _Unwind_GetRegionStart(void *ctx)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_GetRegionStart(ctx);
+	return libc._Unwind_GetRegionStart(ctx);
 }
 
 uintptr_t
 _Unwind_GetDataRelBase(void *ctx)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_GetDataRelBase(ctx);
+	return libc._Unwind_GetDataRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetTextRelBase(void *ctx)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_GetTextRelBase(ctx);
+	return libc._Unwind_GetTextRelBase(ctx);
 }
 
 uintptr_t
 _Unwind_GetIP(void *ctx)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_GetIP(ctx);
+	return libc._Unwind_GetIP(ctx);
 }
 
 uintptr_t
 _Unwind_GetGR(void *ctx, int gr)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	return base->libc._Unwind_GetGR(ctx, gr);
+	return libc._Unwind_GetGR(ctx, gr);
 }
 
 void
 _Unwind_SetIP(void *ctx, uintptr_t ip)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	base->libc._Unwind_SetIP(ctx, ip);
+	libc._Unwind_SetIP(ctx, ip);
 }
 
 void
 _Unwind_SetGR(void *ctx, int gr, uintptr_t value)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	base->libc._Unwind_SetGR(ctx, gr, value);
+	libc._Unwind_SetGR(ctx, gr, value);
 }
 
+#ifdef HAVE_SJLJ_EXCEPTIONS
+void
+_Unwind_SjLj_Resume(void *ex)
+{
+	libc._Unwind_SjLj_Resume(ex);
+}
+#else
 void
 _Unwind_Resume(void *ex)
 {
-	register struct ObjFWRTBase *base OBJC_M68K_REG("a6");
-
-	base->libc._Unwind_Resume(ex);
+	libc._Unwind_Resume(ex);
 }
+#endif
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 static CONST_APTR function_table[] = {
+#ifdef OF_MORPHOS
+	(CONST_APTR)FUNCARRAY_BEGIN,
+	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
+#endif
 	(CONST_APTR)lib_open,
 	(CONST_APTR)lib_close,
 	(CONST_APTR)lib_expunge,
 	(CONST_APTR)lib_null,
 #include "amiga-library-functable.inc"
 	(CONST_APTR)-1,
+#ifdef OF_MORPHOS
+	(CONST_APTR)FUNCARRAY_END
+#endif
 };
 #pragma GCC diagnostic pop
 
@@ -447,9 +592,9 @@ static struct {
 	CONST_APTR *function_table;
 	ULONG *data_table;
 	struct Library *(*init_func)(
-	    struct ExecBase *exec_base OBJC_M68K_REG("a6"),
-	    void *seg_list OBJC_M68K_REG("a0"),
-	    struct ObjFWRTBase *base OBJC_M68K_REG("d0"));
+	    struct ObjFWRTBase *base OBJC_M68K_REG(d0),
+	    void *seg_list OBJC_M68K_REG(a0),
+	    struct ExecBase *exec_base OBJC_M68K_REG(a6));
 } init_table = {
 	sizeof(struct ObjFWRTBase),
 	function_table,
@@ -457,13 +602,16 @@ static struct {
 	lib_init
 };
 
-static struct Resident resident = {
+struct Resident resident = {
 	.rt_MatchWord = RTC_MATCHWORD,
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
 	.rt_Flags = RTF_AUTOINIT
 #ifndef OF_AMIGAOS3
 	    | RTF_PPC
+#endif
+#ifdef OF_MORPHOS
+	    | RTF_EXTENDED
 #endif
 	    ,
 	.rt_Version = OBJFW_RT_LIB_MAJOR,
@@ -472,5 +620,18 @@ static struct Resident resident = {
 	.rt_Name = (char *)"objfw_rt.library",
 	.rt_IdString = (char *)"ObjFW_RT " VERSION_STRING
 	    " \xA9 2008-2018 Jonathan Schleifer",
-	.rt_Init = &init_table
+	.rt_Init = &init_table,
+#ifdef OF_MORPHOS
+	.rt_Revision = OBJFW_RT_LIB_MINOR,
+	.rt_Tags = NULL,
+#endif
 };
+
+#ifdef OF_MORPHOS
+__asm__ (
+    ".section .ctors, \"aw\", @progbits\n"
+    "ctors:\n"
+    "	.long -1\n"
+    ".section .text"
+);
+#endif
