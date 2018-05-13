@@ -52,7 +52,6 @@ inline.h: ObjFW_RT.sfd
 	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<
 
 CPPFLAGS += -I. -I.. -I../..				\
-	    -DOF_COMPILING_OBJFW_RT			\
 	    -DOBJFW_RT_LIB_MAJOR=${OBJFW_RT_LIB_MAJOR}	\
 	    -DOBJFW_RT_LIB_MINOR=${OBJFW_RT_LIB_MINOR}
 AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
