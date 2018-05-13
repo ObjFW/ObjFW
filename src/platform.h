@@ -127,7 +127,7 @@
 # define OF_AMIGAOS4
 # define OF_AMIGAOS
 #elif defined(__amigaos__)
-# define OF_AMIGAOS3
+# define OF_AMIGAOS_M68K
 # define OF_AMIGAOS
 #elif defined(__sun__)
 # define OF_SOLARIS

@@ -113,7 +113,7 @@ initOperatingSystemName(void)
 	operatingSystemName = @"Windows";
 #elif defined(OF_ANDROID)
 	operatingSystemName = @"Android";
-#elif defined(OF_AMIGAOS3)
+#elif defined(OF_AMIGAOS_M68K)
 	operatingSystemName = @"AmigaOS";
 #elif defined(OF_MORPHOS)
 	operatingSystemName = @"MorphOS";
@@ -217,7 +217,7 @@ initOperatingSystemVersion(void)
 	/* TODO */
 #elif defined(OF_AMIGAOS4)
 	/* TODO */
-#elif defined(OF_AMIGAOS3)
+#elif defined(OF_AMIGAOS_M68K)
 	/* TODO */
 #elif defined(OF_WII) || defined(NINTENDO_3DS) || defined(OF_NINTENDO_DS) || \
     defined(OF_PSP) || defined(OF_MSDOS)

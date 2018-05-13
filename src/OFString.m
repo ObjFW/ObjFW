@@ -69,7 +69,7 @@
 # define strtod __strtod
 #endif
 
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 /* libnix has strtod, but not strtof */
 # define strtof strtod
 #endif
@@ -2506,7 +2506,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#if defined(OF_AMIGAOS3) || defined(OF_MORPHOS)
+#if defined(OF_AMIGAOS_M68K) || defined(OF_MORPHOS)
 	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||
@@ -2556,7 +2556,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-#if defined(OF_AMIGAOS3) || defined(OF_MORPHOS)
+#if defined(OF_AMIGAOS_M68K) || defined(OF_MORPHOS)
 	OFString *stripped = [self stringByDeletingEnclosingWhitespaces];
 
 	if ([stripped caseInsensitiveCompare: @"INF"] == OF_ORDERED_SAME ||

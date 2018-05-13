@@ -35,7 +35,7 @@
 #  define __NOGLOBALIFACE__
 #  define __USE_INLINE__
 # endif
-# ifdef OF_AMIGAOS3
+# ifdef OF_AMIGAOS_M68K
 #  define INTUITION_CLASSES_H
 # endif
 # include <proto/dos.h>

@@ -20,7 +20,7 @@
 #import "ObjFW_RT.h"
 #import "private.h"
 
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 # define INTUITION_CLASSES_H
 #endif
 
@@ -33,14 +33,14 @@
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
 #define VERSION_STRING CONCAT_VERSION(OBJFW_RT_LIB_MAJOR, OBJFW_RT_LIB_MINOR)
 
-#if defined(OF_AMIGAOS3)
+#if defined(OF_AMIGAOS_M68K)
 # define DATA_OFFSET 0x7FFE
 #elif defined(OF_MORPHOS)
 # define DATA_OFFSET 0x8000
 #endif
 
-#ifdef OF_AMIGAOS3
-# define OBJC_M68K_REG(reg) __asm__ (#reg)
+#ifdef OF_AMIGAOS_M68K
+# define OBJC_M68K_REG(reg) __asm__(#reg)
 #else
 # define OBJC_M68K_REG(reg)
 #endif
@@ -60,7 +60,7 @@ struct ObjFWRTBase {
 	bool initialized;
 };
 
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 extern uintptr_t __CTOR_LIST__[];
 extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
@@ -141,7 +141,7 @@ struct objc_libc libc;
 FILE *stdout;
 FILE *stderr;
 
-#if defined(OF_AMIGAOS3)
+#if defined(OF_AMIGAOS_M68K)
 __asm__ (
     ".text\n"
     ".globl ___restore_a4\n"
@@ -169,7 +169,7 @@ get_data_seg(void)
 {
 	char *data_seg;
 
-#if defined(OF_AMIGAOS3)
+#if defined(OF_AMIGAOS_M68K)
 	__asm__ (
 	    "move.l	#___a4_init, %0"
 	    : "=r"(data_seg)
@@ -190,7 +190,7 @@ get_data_size(void)
 {
 	size_t data_size;
 
-#if defined(OF_AMIGAOS3)
+#if defined(OF_AMIGAOS_M68K)
 	__asm__ (
 	    "move.l	#___data_size, %0"
 	    : "=r"(data_size)
@@ -215,7 +215,7 @@ get_datadata_relocs(void)
 {
 	size_t *datadata_relocs;
 
-#if defined(OF_AMIGAOS3)
+#if defined(OF_AMIGAOS_M68K)
 	__asm__ (
 	    "move.l	#___datadata_relocs, %0"
 	    : "=r"(datadata_relocs)
@@ -236,7 +236,7 @@ lib_init(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
     void *seg_list OBJC_M68K_REG(a0),
     struct ExecBase *sys_base OBJC_M68K_REG(a6))
 {
-#if defined(OF_AMIGAOS3)
+#if defined(OF_AMIGAOS_M68K)
 	__asm__ __volatile__ (
 	    "move.l	a6, _SysBase"
 	    :: "a"(sys_base)
@@ -351,7 +351,7 @@ lib_close(void)
 	if (base->parent != NULL) {
 		struct ObjFWRTBase *parent;
 
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 		if (base->initialized)
 			for (size_t i = 1; i <= (size_t)_EH_FRAME_BEGINS__; i++)
 				libc.__deregister_frame_info(
@@ -398,7 +398,7 @@ objc_init_m68k(void)
 	stdout = stdout_;
 	stderr = stderr_;
 
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 	if ((size_t)_EH_FRAME_BEGINS__ != (size_t)_EH_FRAME_OBJECTS__)
 		return false;
 
@@ -607,11 +607,8 @@ struct Resident resident = {
 	.rt_MatchTag = &resident,
 	.rt_EndSkip = &resident + 1,
 	.rt_Flags = RTF_AUTOINIT
-#ifndef OF_AMIGAOS3
-	    | RTF_PPC
-#endif
 #ifdef OF_MORPHOS
-	    | RTF_EXTENDED
+	    | RTF_PPC | RTF_EXTENDED
 #endif
 	    ,
 	.rt_Version = OBJFW_RT_LIB_MAJOR,

@@ -21,7 +21,7 @@
 #import "private.h"
 #import "macros.h"
 
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 # define INTUITION_CLASSES_H
 #endif
 #include <proto/exec.h>
@@ -182,7 +182,7 @@ objc_get_class(const char *name)
 void
 objc_exception_throw(id object)
 {
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 	/*
 	 * This does not use the glue code to hack around a compiler bug.
 	 *
@@ -246,7 +246,7 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 void
 objc_enumerationMutation(id object)
 {
-#ifdef OF_AMIGAOS3
+#ifdef OF_AMIGAOS_M68K
 	/*
 	 * This does not use the glue code to hack around a compiler bug.
 	 *
