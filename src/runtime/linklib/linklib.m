@@ -54,6 +54,7 @@ extern void __register_frame_info(const void *, void *);
 extern void __deregister_frame_info(const void *);
 
 struct Library *ObjFWRTBase;
+void *__objc_class_name_Protocol;
 
 static void __attribute__((__constructor__))
 init(void)
