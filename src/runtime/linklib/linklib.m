@@ -392,7 +392,7 @@ class_addMethod(Class cls, SEL sel, IMP imp, const char *types)
 IMP
 class_replaceMethod(Class cls, SEL sel, IMP imp, const char *types)
 {
-	return class_replaceMethod(cls, sel, imp, types);
+	return class_replaceMethod_m68k(cls, sel, imp, types);
 }
 
 Class
