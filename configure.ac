@@ -38,16 +38,6 @@ case "$host" in
 		enable_files="yes"	# Required for reading ENV:
 		ac_cv_snprintf_useful_ret="yes"
 
-		AC_DEFINE(ULLONG_MAX, 0xFFFFFFFFFFFFFFFFULL,
-			[Maximum value for unsigned long long])
-		AC_DEFINE(LLONG_MAX, 0x7FFFFFFFFFFFFFFFLL,
-			[Maximum value for long long])
-		AC_DEFINE(LLONG_MIN, [(-0x7FFFFFFFFFFFFFFFLL - 1)],
-			[Minimum value for long long])
-
-		AC_DEFINE(__have_longlong64, 1,
-			[Required for AmigaOS to correctly define PRI?64])
-
 		AC_SUBST(NOIXEMUL, -noixemul)
 		AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
 		AC_SUBST(SFDC_TARGET, m68k-amigaos)
