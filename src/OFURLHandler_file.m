@@ -1116,7 +1116,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (!Rename([[source fileSystemRepresentation]
 	    cStringWithEncoding: encoding],
 	    [[destination fileSystemRepresentation]
-	    cStringWithEncoding: encoding]) != 0) {
+	    cStringWithEncoding: encoding])) {
 		int errNo;
 
 		switch (IoErr()) {
