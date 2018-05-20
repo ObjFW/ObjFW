@@ -137,35 +137,37 @@ struct objc_dtable {
 #if defined(OBJC_COMPILING_AMIGA_LIBRARY) || \
     defined(OBJC_COMPILING_AMIGA_LINKLIB)
 struct objc_libc {
-	void *(*malloc)(size_t);
-	void *(*calloc)(size_t, size_t);
-	void *(*realloc)(void *, size_t);
-	void (*free)(void *);
-	int (*vfprintf)(FILE *, const char *, va_list);
-	int (*fflush)(FILE *);
-	void (*exit)(int);
-	void (*abort)(void);
+	void *_Nullable (*_Nonnull malloc)(size_t);
+	void *_Nullable (*_Nonnull calloc)(size_t, size_t);
+	void *_Nullable (*_Nonnull realloc)(void *_Nullable, size_t);
+	void (*_Nonnull free)(void *_Nullable);
+	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
+	int (*_Nonnull fflush)(FILE *_Nonnull);
+	void (*_Nonnull exit)(int);
+	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS
-	int (*_Unwind_SjLj_RaiseException)(void *_Nonnull);
+	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);
 # else
-	int (*_Unwind_RaiseException)(void *_Nonnull);
+	int (*_Nonnull _Unwind_RaiseException)(void *_Nonnull);
 # endif
-	void (*_Unwind_DeleteException)(void *_Nonnull);
-	void *(*_Unwind_GetLanguageSpecificData)(void *_Nonnull);
-	uintptr_t (*_Unwind_GetRegionStart)(void *_Nonnull);
-	uintptr_t (*_Unwind_GetDataRelBase)(void *_Nonnull);
-	uintptr_t (*_Unwind_GetTextRelBase)(void *_Nonnull);
-	uintptr_t (*_Unwind_GetIP)(void *_Nonnull);
-	uintptr_t (*_Unwind_GetGR)(void *_Nonnull, int);
-	void (*_Unwind_SetIP)(void *_Nonnull, uintptr_t);
-	void (*_Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
+	void (*_Nonnull _Unwind_DeleteException)(void *_Nonnull);
+	void *_Nullable (*_Nonnull _Unwind_GetLanguageSpecificData)(
+	    void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetRegionStart)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetDataRelBase)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetTextRelBase)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetIP)(void *_Nonnull);
+	uintptr_t (*_Nonnull _Unwind_GetGR)(void *_Nonnull, int);
+	void (*_Nonnull _Unwind_SetIP)(void *_Nonnull, uintptr_t);
+	void (*_Nonnull _Unwind_SetGR)(void *_Nonnull, int, uintptr_t);
 # ifdef HAVE_SJLJ_EXCEPTIONS
-	void (*_Unwind_SjLj_Resume)(void *_Nonnull);
+	void (*_Nonnull _Unwind_SjLj_Resume)(void *_Nonnull);
 # else
-	void (*_Unwind_Resume)(void *_Nonnull);
+	void (*_Nonnull _Unwind_Resume)(void *_Nonnull);
 # endif
-	void (*__register_frame_info)(const void *, void *);
-	void (*__deregister_frame_info)(const void *);
+	void (*_Nonnull __register_frame_info)(const void *_Nonnull,
+	    void *_Nonnull);
+	void (*_Nonnull __deregister_frame_info)(const void *_Nonnull);
 };
 #endif
 
