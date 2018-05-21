@@ -744,6 +744,7 @@ esac
 AC_CHECK_FUNCS(strerror_r)
 
 AC_CHECK_LIB(m, fmod, LIBS="$LIBS -lm")
+AC_CHECK_LIB(complex, creal, TESTS_LIBS="$TESTS_LIBS -lcomplex")
 
 AC_CHECK_FUNC(asprintf, [
 	case "$host" in
