@@ -187,6 +187,9 @@ CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW"
 OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
 OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
+dnl amiga-gcc requires -fexceptions in LDFLAGS in order to link in the glue code
+dnl for registering the frames.
+LDFLAGS="$LDFLAGS -fexceptions"
 
 case "$OBJC" in
 	*clang*)
