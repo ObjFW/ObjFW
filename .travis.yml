@@ -221,7 +221,7 @@ script:
   - if [ "$config" = "amigaos" ]; then
             export PATH="/opt/amiga/bin:$PATH";
 
-            build --host=m68k-amigaos OBJC=m68k-amigaos-g++;
+            build --host=m68k-amigaos;
     fi
 
   - if [ "$config" = "devkitarm" ]; then
