@@ -19,6 +19,8 @@ CPPFLAGS += -I../../src					\
 	    -I../../src/exceptions			\
 	    -I../..					\
 	    -DLANGUAGE_DIR=\"${datadir}/ofzip/lang\"
-LIBS := -L../../src -lobjfw -L../../src/runtime ${RUNTIME_LIBS} ${LIBS}
+LIBS := -L../../src -lobjfw						\
+	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
+	${LIBS}
 LD = ${OBJC}
 LDFLAGS += ${LDFLAGS_RPATH}

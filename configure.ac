@@ -36,17 +36,19 @@ case "$host" in
 		enable_threads="no"
 		enable_sockets="no"
 		enable_files="yes"	# Required for reading ENV:
+		supports_amiga_lib="yes"
 		ac_cv_snprintf_useful_ret="yes"
 
 		AC_SUBST(NOIXEMUL, -noixemul)
-		AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
-		AC_SUBST(SFDC_TARGET, m68k-amigaos)
-		dnl For 68000, GCC emits calls to helper functions that
-		dnl do not work properly in a library.
-		AC_SUBST(AMIGA_LIB_CFLAGS, "-mcpu=68020 -fbaserel")
-		AC_SUBST(AMIGA_LIB_LDFLAGS,
-			"-mcpu=68020 -fbaserel -resident -nostartfiles")
-		AC_SUBST(LINKLIB, linklib)
+
+		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			AC_SUBST(SFDC_TARGET, m68k-amigaos)
+			dnl For 68000, GCC emits calls to helper functions that
+			dnl do not work properly in a library.
+			AC_SUBST(AMIGA_LIB_CFLAGS, "-mcpu=68020 -fbaserel")
+			AC_SUBST(AMIGA_LIB_LDFLAGS,
+				"-mcpu=68020 -fbaserel -resident -nostartfiles")
+		])
 		;;
 	powerpc-*-amigaos*)
 		enable_shared="no"
@@ -61,14 +63,18 @@ case "$host" in
 			])
 			LDFLAGS="$LDFLAGS -noixemul"
 			enable_files="yes"	# Required for reading ENV:
+			supports_amiga_lib="yes"
 
 			AC_SUBST(NOIXEMUL, -noixemul)
-			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
-			AC_SUBST(SFDC_TARGET, ppc-morphos)
-			AC_SUBST(AMIGA_LIB_CFLAGS, "-mresident32 -fno-builtin")
-			AC_SUBST(AMIGA_LIB_LDFLAGS,
-				"-mresident32 -nostartfiles -nodefaultlibs -lc")
-			AC_SUBST(LINKLIB, linklib)
+
+			AS_IF([test x"$enable_amiga_lib" != x"no"], [
+				AC_SUBST(SFDC_TARGET, ppc-morphos)
+				tmp="-mresident32 -fno-builtin"
+				AC_SUBST(AMIGA_LIB_CFLAGS, $tmp)
+				tmp="-mresident32 -nostartfiles -nodefaultlibs"
+				tmp="$tmp -lc"
+				AC_SUBST(AMIGA_LIB_LDFLAGS, $tmp)
+			])
 		])
 
 		enable_shared="no"
@@ -287,6 +293,7 @@ AC_TRY_COMPILE([
 
 AC_CHECK_TOOL(AR, ar)
 AC_PROG_RANLIB
+
 AC_ARG_ENABLE(shared,
 	AS_HELP_STRING([--disable-shared], [do not build shared library]))
 AS_IF([test x"$enable_shared" != x"no"], [
@@ -309,8 +316,26 @@ AS_IF([test x"$enable_shared" != x"no"], [
 	AC_SUBST(LIBOBJFW_DEP, "../src/libobjfw.a")
 	AC_SUBST(LIBOBJFW_DEP_LVL2, "../../src/libobjfw.a")
 ])
+
+AS_IF([test x"$build_framework" = x"yes"], [
+	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
+], [
+	TESTS_LIBS="\${RUNTIME_LIBS} $TESTS_LIBS"
+	TESTS_LIBS="-L../src/runtime -L../src/runtime/linklib $TESTS_LIBS"
+	TESTS_LIBS="-L../src -lobjfw $TESTS_LIBS"
+])
+
+AC_ARG_ENABLE(amiga-lib,
+	AS_HELP_STRING([--disable-amiga-lib], [do not build Amiga library]))
+AS_IF([test x"$supports_amiga_lib" != x"yes"], [enable_amiga_lib="no"])
+
+AS_IF([test x"$enable_shared" = x"no" -a x"$enable_amiga_lib" = x"no"], [
+	enable_static="yes"
+])
+
 AC_ARG_ENABLE(static, AS_HELP_STRING([--enable-static], [build static library]))
-AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
+AS_IF([test x"$enable_static" = x"yes" -o x"$enable_amiga_lib" != x"no"], [
 	AC_SUBST(OBJFW_STATIC_LIB, "libobjfw.a")
 	AC_SUBST(EXCEPTIONS_A, "exceptions.a")
 	AC_SUBST(EXCEPTIONS_EXCEPTIONS_A, "exceptions/exceptions.a")
@@ -320,14 +345,6 @@ AS_IF([test x"$enable_static" = x"yes" -o x"$enable_shared" = x"no"], [
 	AC_SUBST(INVOCATION_INVOCATION_A, "invocation/invocation.a")
 	AC_SUBST(LOOKUP_ASM_A, "lookup-asm.a")
 	AC_SUBST(LOOKUP_ASM_LOOKUP_ASM_A, "lookup-asm/lookup-asm.a")
-])
-
-AS_IF([test x"$build_framework" = x"yes"], [
-	TESTS_LIBS="-framework ObjFW \${RUNTIME_FRAMEWORK_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-F../src -F../src/runtime $TESTS_LIBS"
-], [
-	TESTS_LIBS="-lobjfw \${RUNTIME_LIBS} $TESTS_LIBS"
-	TESTS_LIBS="-L../src -L../src/runtime $TESTS_LIBS"
 ])
 
 AC_DEFINE_UNQUOTED(PLUGIN_SUFFIX, "$PLUGIN_SUFFIX", [Suffix for plugins])
@@ -447,21 +464,33 @@ case "$objc_runtime" in
 			AC_SUBST(OBJFW_RT_SHARED_LIB,
 				"${LIB_PREFIX}objfw_rt${LIB_SUFFIX}")
 		])
-		AS_IF([test x"$enable_static" = x"yes" \
-			-o x"$enable_shared" = x"no"], [
+
+		AS_IF([test x"$enable_static" = x"yes"], [
 			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw_rt.a")
 		])
-		AS_IF([test x"$enable_shared" = x"no"], [
-			AC_SUBST(LIBOBJFW_RT_DEP,
-				"../src/runtime/libobjfw_rt.a")
-			AC_SUBST(LIBOBJFW_RT_DEP_LVL2,
-				"../../src/runtime/libobjfw_rt.a")
-		])
+
 		AS_IF([test x"$build_framework" = x"yes"], [
 			AC_SUBST(OBJFW_RT_FRAMEWORK, "ObjFW_RT.framework")
+			AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFW_RT")
 		])
-		AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt")
-		AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFW_RT")
+
+		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
+			AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt.library")
+			AC_SUBST(LINKLIB, linklib)
+			tmp="../src/runtime/linklib/libobjfw_rt.library.a"
+			AC_SUBST(LIBOBJFW_RT_DEP, "$tmp")
+			AC_SUBST(LIBOBJFW_RT_DEP_LVL2, "../$tmp")
+		], [
+			AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt")
+		])
+
+		AS_IF([test x"$enable_shared" = x"no" \
+				-a x"$enable_amiga_lib" = x"no"], [
+			tmp="../src/runtime/libobjfw_rt.a"
+			AC_SUBST(LIBOBJFW_RT_DEP, "$tmp")
+			AC_SUBST(LIBOBJFW_RT_DEP_LVL2, "../$tmp")
+		])
 
 		AS_IF([test x"$enable_seluid24" = x"yes"], [
 			AC_DEFINE(OF_SELUID24, 1,
