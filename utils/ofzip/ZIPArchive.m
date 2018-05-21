@@ -207,9 +207,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 	for (OFZIPArchiveEntry *entry in [_archive entries]) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
-		OFString *outFileName = [fileName stringByStandardizingPath];
-		OFArray OF_GENERIC(OFString *) *pathComponents;
-		OFString *directory;
+		OFString *outFileName, *directory;
 		OFStream *stream;
 		OFFile *output;
 		uint64_t written = 0, size = [entry uncompressedSize];
@@ -220,12 +218,8 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 
 		[missing removeObject: fileName];
 
-#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-		if ([outFileName hasPrefix: @"/"]) {
-#else
-		if ([outFileName hasPrefix: @"/"] ||
-		    [outFileName containsString: @":"]) {
-#endif
+		outFileName = [app safeLocalPathForPath: fileName];
+		if (outFileName == nil) {
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"refusing_to_extract_file",
 			    @"Refusing to extract %[file]!",
@@ -234,21 +228,6 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			app->_exitStatus = 1;
 			goto outer_loop_end;
 		}
-
-		pathComponents = [outFileName pathComponents];
-		for (OFString *component in pathComponents) {
-			if ([component length] == 0 ||
-			    [component isEqual: @".."]) {
-				[of_stderr writeLine: OF_LOCALIZED(
-				    @"refusing_to_extract_file",
-				    @"Refusing to extract %[file]!",
-				    @"file", fileName)];
-
-				app->_exitStatus = 1;
-				goto outer_loop_end;
-			}
-		}
-		outFileName = [OFString pathWithComponents: pathComponents];
 
 		if (app->_outputLevel >= 0)
 			[of_stdout writeString: OF_LOCALIZED(@"extracting_file",

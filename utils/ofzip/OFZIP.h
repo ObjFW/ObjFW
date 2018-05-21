@@ -20,6 +20,8 @@
 
 #import "Archive.h"
 
+OF_ASSUME_NONNULL_BEGIN
+
 #ifndef S_IRWXG
 # define S_IRWXG 0
 #endif
@@ -44,4 +46,7 @@
 - (ssize_t)copyBlockFromStream: (OFStream *)input
 		      toStream: (OFStream *)output
 		      fileName: (OFString *)fileName;
+- (nullable OFString *)safeLocalPathForPath: (OFString *)path;
 @end
+
+OF_ASSUME_NONNULL_END

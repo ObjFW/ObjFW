@@ -255,9 +255,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 		void *pool = objc_autoreleasePoolPush();
 		OFString *fileName = [entry fileName];
 		of_tar_archive_entry_type_t type = [entry type];
-		OFString *outFileName = [fileName stringByStandardizingPath];
-		OFArray OF_GENERIC(OFString *) *pathComponents;
-		OFString *directory;
+		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
 		uint64_t written = 0, size = [entry size];
@@ -278,12 +276,8 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 
 		[missing removeObject: fileName];
 
-#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-		if ([outFileName hasPrefix: @"/"]) {
-#else
-		if ([outFileName hasPrefix: @"/"] ||
-		    [outFileName containsString: @":"]) {
-#endif
+		outFileName = [app safeLocalPathForPath: fileName];
+		if (outFileName == nil) {
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"refusing_to_extract_file",
 			    @"Refusing to extract %[file]!",
@@ -292,21 +286,6 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			app->_exitStatus = 1;
 			goto outer_loop_end;
 		}
-
-		pathComponents = [outFileName pathComponents];
-		for (OFString *component in pathComponents) {
-			if ([component length] == 0 ||
-			    [component isEqual: @".."]) {
-				[of_stderr writeLine: OF_LOCALIZED(
-				    @"refusing_to_extract_file",
-				    @"Refusing to extract %[file]!",
-				    @"file", fileName)];
-
-				app->_exitStatus = 1;
-				goto outer_loop_end;
-			}
-		}
-		outFileName = [OFString pathWithComponents: pathComponents];
 
 		if (app->_outputLevel >= 0)
 			[of_stdout writeString: OF_LOCALIZED(@"extracting_file",

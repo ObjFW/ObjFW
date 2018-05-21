@@ -577,4 +577,50 @@ error:
 
 	return length;
 }
+
+- (OFString *)safeLocalPathForPath: (OFString *)path
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	path = [path stringByStandardizingPath];
+
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	if ([path containsString: @":"] || [path hasPrefix: @"\\"]) {
+#elif defined(OF_AMIGAOS)
+	if ([path containsString: @":"] || [path hasPrefix: @"/"]) {
+#else
+	if ([path hasPrefix: @"/"]) {
+#endif
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	if ([path length] == 0) {
+		objc_autoreleasePoolPop(pool);
+		return nil;
+	}
+
+	/*
+	 * After -[stringByStandardizingPath], everything representing parent
+	 * directory should be at the beginning, so in theory checking the
+	 * first component should be enough. But it does not hurt being
+	 * paranoid and checking all components, just in case.
+	 */
+	for (OFString *component in [path pathComponents]) {
+#ifdef OF_AMIGAOS
+		if ([component length] == 0 || [component isEqual: @"/"]) {
+#else
+		if ([component length] == 0 || [component isEqual: @".."]) {
+#endif
+			objc_autoreleasePoolPop(pool);
+			return nil;
+		}
+	}
+
+	[path retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [path autorelease];
+}
 @end
