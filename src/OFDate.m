@@ -173,7 +173,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	/* Seconds */
 	seconds += tm->tm_sec;
 	/* Time zone */
-	seconds += -(float)*tz * 60;
+	seconds += -(double)*tz * 60;
 
 	return seconds;
 }
