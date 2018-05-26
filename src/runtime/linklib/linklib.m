@@ -22,7 +22,7 @@
 #import "macros.h"
 
 #ifdef OF_AMIGAOS_M68K
-# define INTUITION_CLASSES_H
+#include <stabs.h>
 #endif
 #include <proto/exec.h>
 
@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 extern int _Unwind_SjLj_RaiseException(void *);
@@ -56,8 +57,14 @@ extern void __deregister_frame_info(const void *);
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
+#ifdef OF_AMIGAOS_M68K
+ADD2INIT(__init_objc,0);
+void
+__init_objc(void)
+#else
 static void __attribute__((__constructor__))
 init(void)
+#endif
 {
 	static bool initialized = false;
 	struct objc_libc libc = {
@@ -109,7 +116,13 @@ init(void)
 	initialized = true;
 }
 
+#ifdef OF_AMIGAOS_M68K
+ADD2EXIT(__exit_objc,-1); //beloc atexit handler 
+void
+__exit_objc(void)
+#else
 OF_DESTRUCTOR()
+#endif
 {
 	CloseLibrary(ObjFWRTBase);
 }
@@ -121,8 +134,9 @@ __objc_exec_class(void *module)
 	 * The compiler generates constructors that call into this, so it is
 	 * possible that we are not set up yet when we get called.
 	 */
+#ifndef OF_AMIGAOS_M68K
 	init();
-
+#endif
 	__objc_exec_class_m68k(module);
 }
 
