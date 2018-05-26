@@ -7,6 +7,7 @@
         "    -a  --append      Zu Archiv hinzufügen\n",
         "    -c  --create      Archiv erstellen\n",
         "    -C  --directory   In angegebenes Verzeichnis entpacken\n",
+        "    -E  --encoding    Das Encoding des Archivs (nur tar-Dateien)\n",
         "    -f  --force       Existierende Dateien überschreiben\n",
         "    -h  --help        Diese Hilfe anzeigen\n",
         "    -l  --list        Alle Dateien im Archiv auflisten\n",
@@ -29,8 +30,13 @@
         "        -%[shortopt5] / --%[longopt5] schließen sich gegenseitig aus!"
     ],
     "option_takes_no_argument": "%[prog]: Option --%[opt] nimmt kein Argument",
+    "long_option_requires_argument": [
+        "%[prog]: Option --%[opt] benötigt ein Argument"
+    ],
+    "option_requires_argument": "%[prog]: Option -%[opt] benötigt ein Argument",
     "unknown_long_option": "%[prog]: Unbekannte Option: --%[opt]",
     "unknown_option": "%[prog]: Unbekannte Option: -%[opt]",
+    "invalid_encoding": "%[prog]: Invalid encoding: %[encoding]",
     "writing_not_supported": [
         "Schreiben von Dateien des Typs %[type] wird (noch) nicht unterstützt!"
     ],

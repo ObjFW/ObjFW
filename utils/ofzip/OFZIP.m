@@ -36,6 +36,7 @@
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFOpenItemFailedException.h"
@@ -62,6 +63,8 @@ help(OFStream *stream, bool full, int status)
 		    @"    -c  --create      Create archive\n"
 		    @"    -C  --directory   Extract into the specified "
 		    @"directory\n"
+		    @"    -E  --encoding    The encoding used by the archive "
+		    "(only tar files)\n"
 		    @"    -f  --force       Force / overwrite files\n"
 		    @"    -h  --help        Show this help\n"
 		    @"    -l  --list        List all files in the archive\n"
@@ -146,11 +149,12 @@ writingNotSupported(OFString *type)
 @implementation OFZIP
 - (void)applicationDidFinishLaunching
 {
-	OFString *outputDir = nil, *type = nil;
+	OFString *outputDir = nil, *encodingString = nil, *type = nil;
 	const of_options_parser_option_t options[] = {
 		{ 'a', @"append", 0, NULL, NULL },
 		{ 'c', @"create", 0, NULL, NULL },
 		{ 'C', @"directory", 1, NULL, &outputDir },
+		{ 'E', @"encoding", 1, NULL, &encodingString },
 		{ 'f', @"force", 0, NULL, NULL },
 		{ 'h', @"help", 0, NULL, NULL },
 		{ 'l', @"list", 0, NULL, NULL },
@@ -164,6 +168,7 @@ writingNotSupported(OFString *type)
 	};
 	OFOptionsParser *optionsParser;
 	of_unichar_t option, mode = '\0';
+	of_string_encoding_t encoding = OF_STRING_ENCODING_UTF_8;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
 
@@ -247,6 +252,28 @@ writingNotSupported(OFString *type)
 
 			[OFApplication terminateWithStatus: 1];
 			break;
+		case ':':
+			if ([optionsParser lastLongOption] != nil)
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"long_option_requires_argument",
+				    @"%[prog]: Option --%[opt] requires an "
+				    @"argument",
+				    @"prog", [OFApplication programName],
+				    @"opt", [optionsParser lastLongOption])];
+			else {
+				OFString *optStr = [OFString
+				    stringWithFormat: @"%C",
+				    [optionsParser lastOption]];
+				[of_stderr writeLine: OF_LOCALIZED(
+				    @"option_requires_argument",
+				    @"%[prog]: Option -%[opt] requires an "
+				    @"argument",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
+
+			[OFApplication terminateWithStatus: 1];
+			break;
 		case '?':
 			if ([optionsParser lastLongOption] != nil)
 				[of_stderr writeLine: OF_LOCALIZED(
@@ -256,7 +283,7 @@ writingNotSupported(OFString *type)
 				    @"opt", [optionsParser lastLongOption])];
 			else {
 				OFString *optStr = [OFString
-				    stringWithFormat: @"%c",
+				    stringWithFormat: @"%C",
 				    [optionsParser lastOption]];
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"unknown_option",
@@ -269,10 +296,24 @@ writingNotSupported(OFString *type)
 		}
 	}
 
+	@try {
+		if (encodingString != nil)
+			encoding = of_string_parse_encoding(encodingString);
+	} @catch (OFInvalidEncodingException *e) {
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"invalid_encoding",
+		    @"%[prog]: Invalid encoding: %[encoding]",
+		    @"prog", [OFApplication programName],
+		    @"encoding", encodingString)];
+
+		[OFApplication terminateWithStatus: 1];
+	}
+
 	remainingArguments = [optionsParser remainingArguments];
 	archive = [self openArchiveWithPath: [remainingArguments firstObject]
 				       type: type
-				       mode: mode];
+				       mode: mode
+				   encoding: encoding];
 
 	if (outputDir != nil)
 		[[OFFileManager defaultManager]
@@ -349,6 +390,7 @@ writingNotSupported(OFString *type)
 - (id <Archive>)openArchiveWithPath: (OFString *)path
 			       type: (OFString *)type
 			       mode: (char)mode
+			   encoding: (of_string_encoding_t)encoding
 {
 	OFString *modeString, *fileModeString;
 	OFFile *file = nil;
@@ -409,19 +451,23 @@ writingNotSupported(OFString *type)
 	@try {
 		if ([type isEqual: @"gz"])
 			archive = [GZIPArchive archiveWithStream: file
-							    mode: modeString];
+							    mode: modeString
+							encoding: encoding];
 		else if ([type isEqual: @"tar"])
 			archive = [TarArchive archiveWithStream: file
-							   mode: modeString];
+							   mode: modeString
+						       encoding: encoding];
 		else if ([type isEqual: @"tgz"]) {
 			OFStream *GZIPStream = [OFGZIPStream
 			    streamWithStream: file
 					mode: modeString];
 			archive = [TarArchive archiveWithStream: GZIPStream
-							   mode: modeString];
+							   mode: modeString
+						       encoding: encoding];
 		} else if ([type isEqual: @"zip"])
 			archive = [ZIPArchive archiveWithStream: file
-							   mode: modeString];
+							   mode: modeString
+						       encoding: encoding];
 		else {
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"unknown_archive_type",

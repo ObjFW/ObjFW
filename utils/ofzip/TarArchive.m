@@ -53,19 +53,24 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
+			 encoding: (of_string_encoding_t)encoding
 {
 	return [[[self alloc] initWithStream: stream
-					mode: mode] autorelease];
+					mode: mode
+				    encoding: encoding] autorelease];
 }
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
+		      encoding: (of_string_encoding_t)encoding
 {
 	self = [super init];
 
 	@try {
 		_archive = [[OFTarArchive alloc] initWithStream: stream
 							   mode: mode];
+
+		[_archive setEncoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
