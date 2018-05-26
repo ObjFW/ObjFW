@@ -41,6 +41,11 @@
 
 #import "of_strptime.h"
 
+#ifdef OF_AMIGAOS_M68K
+/* amiga-gcc does not have trunc() */
+# define trunc(x) ((int64_t)(x))
+#endif
+
 #if (!defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)) && \
     defined(OF_HAVE_THREADS)
 static OFMutex *mutex;
