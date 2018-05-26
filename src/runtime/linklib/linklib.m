@@ -21,9 +21,6 @@
 #import "private.h"
 #import "macros.h"
 
-#ifdef OF_AMIGAOS_M68K
-# define INTUITION_CLASSES_H
-#endif
 #include <proto/exec.h>
 
 #import "inline.h"

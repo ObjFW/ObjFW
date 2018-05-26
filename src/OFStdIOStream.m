@@ -42,9 +42,6 @@
 #import "OFWriteFailedException.h"
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS_M68K
-#  define INTUITION_CLASSES_H
-# endif
 # include <proto/exec.h>
 #endif
 

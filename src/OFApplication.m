@@ -49,13 +49,9 @@
 # include <crt_externs.h>
 #elif defined(OF_WINDOWS)
 # include <windows.h>
-
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif defined(OF_AMIGAOS)
-# ifdef OF_AMIGAOS_M68K
-#  define INTUITION_CLASSES_H
-# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 #elif !defined(OF_IOS)

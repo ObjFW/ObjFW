@@ -20,10 +20,6 @@
 #import "ObjFW_RT.h"
 #import "private.h"
 
-#ifdef OF_AMIGAOS_M68K
-# define INTUITION_CLASSES_H
-#endif
-
 #include <exec/libraries.h>
 #include <exec/nodes.h>
 #include <exec/resident.h>

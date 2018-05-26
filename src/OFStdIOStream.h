@@ -19,13 +19,7 @@
 #import "OFKernelEventObserver.h"
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS_M68K
-#  define INTUITION_CLASSES_H
-# endif
 # include <proto/dos.h>
-# ifdef OF_AMIGAOS_M68K
-#  undef INTUITION_CLASSES_H
-# endif
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
