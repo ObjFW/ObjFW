@@ -59,6 +59,8 @@
 @end
 
 @implementation OFTarArchive: OFObject
+@synthesize encoding = _encoding;
+
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode
 {
@@ -117,6 +119,8 @@
 			[stream seekToOffset: -1024
 				      whence: SEEK_END];
 		}
+
+		_encoding = OF_STRING_ENCODING_UTF_8;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -195,7 +199,8 @@
 	}
 
 	entry = [[[OFTarArchiveEntry alloc]
-	    of_initWithHeader: buffer.c] autorelease];
+	    of_initWithHeader: buffer.c
+		     encoding: _encoding] autorelease];
 
 	_lastReturnedStream = [[OFTarArchive_FileReadStream alloc]
 	    initWithStream: _stream
@@ -230,7 +235,8 @@
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	[entry of_writeToStream: _stream];
+	[entry of_writeToStream: _stream
+		       encoding: _encoding];
 
 	_lastReturnedStream = [[OFTarArchive_FileWriteStream alloc]
 	    initWithStream: _stream

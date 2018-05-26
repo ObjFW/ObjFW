@@ -17,11 +17,11 @@
 
 #import "OFObject.h"
 #import "OFKernelEventObserver.h"
+#import "OFString.h"
 #import "OFTarArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
 @class OFStream;
 
 /*!
@@ -37,8 +37,14 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_TAR_ARCHIVE_MODE_WRITE,
 		OF_TAR_ARCHIVE_MODE_APPEND
 	} _mode;
+	of_string_encoding_t _encoding;
 	OF_KINDOF(OFStream *) _Nullable _lastReturnedStream;
 }
+
+/*!
+ * @brief The encoding to use for the archive.
+ */
+@property (nonatomic) of_string_encoding_t encoding;
 
 /*!
  * @brief A stream for reading the current entry

@@ -26,27 +26,30 @@
 #import "OFOutOfRangeException.h"
 
 static OFString *
-stringFromBuffer(const unsigned char *buffer, size_t length)
+stringFromBuffer(const unsigned char *buffer, size_t length,
+    of_string_encoding_t encoding)
 {
 	for (size_t i = 0; i < length; i++)
 		if (buffer[i] == '\0')
 			length = i;
 
-	return [OFString stringWithUTF8String: (const char *)buffer
-				       length: length];
+	return [OFString stringWithCString: (const char *)buffer
+				  encoding: encoding
+				    length: length];
 }
 
 static void
-stringToBuffer(unsigned char *buffer, OFString *string, size_t length)
+stringToBuffer(unsigned char *buffer, OFString *string, size_t length,
+    of_string_encoding_t encoding)
 {
-	size_t UTF8StringLength = [string UTF8StringLength];
+	size_t cStringLength = [string cStringLengthWithEncoding: encoding];
 
-	if (UTF8StringLength > length)
+	if (cStringLength > length)
 		@throw [OFOutOfRangeException exception];
 
-	memcpy(buffer, [string UTF8String], UTF8StringLength);
+	memcpy(buffer, [string cStringWithEncoding: encoding], cStringLength);
 
-	for (size_t i = UTF8StringLength; i < length; i++)
+	for (size_t i = cStringLength; i < length; i++)
 		buffer[i] = '\0';
 }
 
@@ -62,7 +65,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		for (size_t i = 1; i < length; i++)
 			value = (value << 8) | buffer[i];
 	} else
-		value = [stringFromBuffer(buffer, length) octalValue];
+		value = [stringFromBuffer(buffer, length,
+		    OF_STRING_ENCODING_ASCII) octalValue];
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];
@@ -82,6 +86,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 }
 
 - (instancetype)of_initWithHeader: (unsigned char [512])header
+			 encoding: (of_string_encoding_t)encoding
 {
 	self = [super init];
 
@@ -89,7 +94,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		void *pool = objc_autoreleasePoolPush();
 		OFString *targetFileName;
 
-		_fileName = [stringFromBuffer(header, 100) copy];
+		_fileName = [stringFromBuffer(header, 100, encoding) copy];
 		_mode = (uint32_t)octalValueFromBuffer(
 		    header + 100, 8, UINT32_MAX);
 		_UID = (uint32_t)octalValueFromBuffer(
@@ -104,7 +109,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		    header + 136, 12, UINTMAX_MAX)];
 		_type = header[156];
 
-		targetFileName = stringFromBuffer(header + 157, 100);
+		targetFileName = stringFromBuffer(header + 157, 100, encoding);
 		if ([targetFileName length] > 0)
 			_targetFileName = [targetFileName copy];
 
@@ -114,15 +119,17 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		if (memcmp(header + 257, "ustar\0" "00", 8) == 0) {
 			OFString *prefix;
 
-			_owner = [stringFromBuffer(header + 265, 32) copy];
-			_group = [stringFromBuffer(header + 297, 32) copy];
+			_owner = [stringFromBuffer(header + 265, 32, encoding)
+			    copy];
+			_group = [stringFromBuffer(header + 297, 32, encoding)
+			    copy];
 
 			_deviceMajor = (uint32_t)octalValueFromBuffer(
 			    header + 329, 8, UINT32_MAX);
 			_deviceMinor = (uint32_t)octalValueFromBuffer(
 			    header + 337, 8, UINT32_MAX);
 
-			prefix = stringFromBuffer(header + 345, 155);
+			prefix = stringFromBuffer(header + 345, 155, encoding);
 			if ([prefix length] > 0) {
 				OFString *fileName = [OFString
 				    stringWithFormat: @"%@/%@",
@@ -285,24 +292,29 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 }
 
 - (void)of_writeToStream: (OFStream *)stream
+		encoding: (of_string_encoding_t)encoding
 {
 	unsigned char buffer[512];
 	uint64_t modificationDate;
 	uint16_t checksum = 0;
 
-	stringToBuffer(buffer, _fileName, 100);
+	stringToBuffer(buffer, _fileName, 100, encoding);
 	stringToBuffer(buffer + 100,
-	    [OFString stringWithFormat: @"%06" PRIo16 " ", _mode], 8);
+	    [OFString stringWithFormat: @"%06" PRIo16 " ", _mode], 8,
+	    OF_STRING_ENCODING_ASCII);
 	stringToBuffer(buffer + 108,
-	    [OFString stringWithFormat: @"%06" PRIo16 " ", _UID], 8);
+	    [OFString stringWithFormat: @"%06" PRIo16 " ", _UID], 8,
+	    OF_STRING_ENCODING_ASCII);
 	stringToBuffer(buffer + 116,
-	    [OFString stringWithFormat: @"%06" PRIo16 " ", _GID], 8);
+	    [OFString stringWithFormat: @"%06" PRIo16 " ", _GID], 8,
+	    OF_STRING_ENCODING_ASCII);
 	stringToBuffer(buffer + 124,
-	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12);
+	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12,
+	    OF_STRING_ENCODING_ASCII);
 	modificationDate = [_modificationDate timeIntervalSince1970];
 	stringToBuffer(buffer + 136,
 	    [OFString stringWithFormat: @"%011" PRIo64 " ", modificationDate],
-	    12);
+	    12, OF_STRING_ENCODING_ASCII);
 
 	/*
 	 * During checksumming, the checksum field is expected to be set to 8
@@ -311,23 +323,26 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	memset(buffer + 148, ' ', 8);
 
 	buffer[156] = _type;
-	stringToBuffer(buffer + 157, _targetFileName, 100);
+	stringToBuffer(buffer + 157, _targetFileName, 100, encoding);
 
 	/* ustar */
 	memcpy(buffer + 257, "ustar\0" "00", 8);
-	stringToBuffer(buffer + 265, _owner, 32);
-	stringToBuffer(buffer + 297, _group, 32);
+	stringToBuffer(buffer + 265, _owner, 32, encoding);
+	stringToBuffer(buffer + 297, _group, 32, encoding);
 	stringToBuffer(buffer + 329,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8);
+	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMajor], 8,
+	    OF_STRING_ENCODING_ASCII);
 	stringToBuffer(buffer + 337,
-	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8);
+	    [OFString stringWithFormat: @"%06" PRIo32 " ", _deviceMinor], 8,
+	    OF_STRING_ENCODING_ASCII);
 	memset(buffer + 345, '\0', 155 + 12);
 
 	/* Fill in the checksum */
 	for (size_t i = 0; i < 500; i++)
 		checksum += buffer[i];
 	stringToBuffer(buffer + 148,
-	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7);
+	    [OFString stringWithFormat: @"%06" PRIo16, checksum], 7,
+	    OF_STRING_ENCODING_ASCII);
 
 	[stream writeBuffer: buffer
 		     length: sizeof(buffer)];
