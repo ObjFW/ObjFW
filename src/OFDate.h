@@ -16,6 +16,7 @@
  */
 
 #import "OFObject.h"
+#import "OFMessagePackRepresentation.h"
 #import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -28,7 +29,8 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for storing, accessing and comparing dates.
  */
-@interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization>
+@interface OFDate: OFObject <OFCopying, OFComparing, OFSerialization,
+    OFMessagePackRepresentation>
 {
 	of_time_interval_t _seconds;
 }

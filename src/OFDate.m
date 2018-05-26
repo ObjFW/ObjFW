@@ -24,13 +24,15 @@
 #include <sys/time.h>
 
 #import "OFDate.h"
-#import "OFString.h"
+#import "OFData.h"
 #import "OFDictionary.h"
-#import "OFXMLElement.h"
+#import "OFMessagePackExtension.h"
 #ifdef OF_HAVE_THREADS
 # import "OFMutex.h"
 #endif
+#import "OFString.h"
 #import "OFSystemInfo.h"
+#import "OFXMLElement.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -440,6 +442,61 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	objc_autoreleasePoolPop(pool);
 
 	return [element autorelease];
+}
+
+- (OFData *)messagePackRepresentation
+{
+	void *pool = objc_autoreleasePoolPush();
+	int64_t seconds = (int64_t)_seconds;
+	uint32_t nanoseconds = (_seconds - trunc(_seconds)) * 1000000000;
+	OFData *ret;
+
+	if (seconds >= 0 && seconds < 0x400000000) {
+		if (seconds <= UINT32_MAX && nanoseconds == 0) {
+			uint32_t seconds32 = (uint32_t)seconds;
+			OFData *data;
+
+			seconds32 = OF_BSWAP32_IF_LE(seconds32);
+			data = [OFData dataWithItems: &seconds32
+					       count: sizeof(seconds32)];
+
+			ret = [[OFMessagePackExtension
+			    extensionWithType: -1
+					 data: data] messagePackRepresentation];
+		} else {
+			uint64_t combined = ((uint64_t)nanoseconds << 34) |
+			    (uint64_t)seconds;
+			OFData *data;
+
+			combined = OF_BSWAP64_IF_LE(combined);
+			data = [OFData dataWithItems: &combined
+					       count: sizeof(combined)];
+
+			ret = [[OFMessagePackExtension
+			    extensionWithType: -1
+					 data: data] messagePackRepresentation];
+		}
+	} else {
+		OFMutableData *data = [OFMutableData dataWithCapacity: 12];
+
+		seconds = OF_BSWAP64_IF_LE(seconds);
+		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
+
+		[data addItems: &nanoseconds
+			 count: sizeof(nanoseconds)];
+		[data addItems: &seconds
+			 count: sizeof(seconds)];
+
+		ret = [[OFMessagePackExtension
+		    extensionWithType: -1
+				 data: data] messagePackRepresentation];
+	}
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (uint32_t)microsecond

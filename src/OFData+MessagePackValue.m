@@ -20,12 +20,13 @@
 #include <string.h>
 
 #import "OFData+MessagePackValue.h"
-#import "OFNumber.h"
-#import "OFNull.h"
-#import "OFString.h"
 #import "OFArray.h"
+#import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFMessagePackExtension.h"
+#import "OFNull.h"
+#import "OFNumber.h"
+#import "OFString.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -153,12 +154,63 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count,
 	return pos;
 }
 
+static OFDate *
+createDate(OFData *data)
+{
+	switch ([data count]) {
+	case 4: {
+		uint32_t timestamp;
+
+		memcpy(&timestamp, [data items], 4);
+		timestamp = OF_BSWAP32_IF_LE(timestamp);
+
+		return [OFDate dateWithTimeIntervalSince1970: timestamp];
+	}
+	case 8: {
+		uint64_t combined;
+
+		memcpy(&combined, [data items], 8);
+		combined = OF_BSWAP64_IF_LE(combined);
+
+		return [OFDate dateWithTimeIntervalSince1970:
+		    (double)(combined & 0x3FFFFFFFF) +
+		    (double)(combined >> 34) / 1000000000];
+	}
+	case 12: {
+		uint32_t nanoseconds;
+		int64_t seconds;
+
+		memcpy(&nanoseconds, [data items], 4);
+		memcpy(&seconds, (char *)[data items] + 4, 8);
+
+		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
+		seconds = OF_BSWAP64_IF_LE(seconds);
+
+		return [OFDate dateWithTimeIntervalSince1970:
+		    (double)seconds + (double)nanoseconds / 1000000000];
+	}
+	default:
+		@throw [OFInvalidFormatException exception];
+	}
+}
+
+static id
+createExtension(int8_t type, OFData *data)
+{
+	switch (type) {
+	case -1:
+		return createDate(data);
+	default:
+		return [OFMessagePackExtension extensionWithType: type
+							    data: data];
+	}
+}
+
 static size_t
 parseObject(const uint8_t *buffer, size_t length, id *object,
     size_t depthLimit)
 {
 	size_t count;
-	int8_t type;
 	OFData *data;
 
 	if (length < 1)
@@ -341,14 +393,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < count + 3)
 			goto error;
 
-		type = buffer[2];
-
 		data = [[OFData alloc] initWithItems: buffer + 3
 					       count: count];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[2], data);
 		} @finally {
 			[data release];
 		}
@@ -363,14 +411,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < count + 4)
 			goto error;
 
-		type = buffer[3];
-
 		data = [[OFData alloc] initWithItems: buffer + 4
 					       count: count];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[3], data);
 		} @finally {
 			[data release];
 		}
@@ -385,14 +429,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < count + 6)
 			goto error;
 
-		type = buffer[5];
-
 		data = [[OFData alloc] initWithItems: buffer + 6
 					       count: count];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[5], data);
 		} @finally {
 			[data release];
 		}
@@ -402,14 +442,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 3)
 			goto error;
 
-		type = buffer[1];
-
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 1];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[1], data);
 		} @finally {
 			[data release];
 		}
@@ -419,14 +455,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 4)
 			goto error;
 
-		type = buffer[1];
-
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 2];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[1], data);
 		} @finally {
 			[data release];
 		}
@@ -436,14 +468,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 6)
 			goto error;
 
-		type = buffer[1];
-
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 4];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[1], data);
 		} @finally {
 			[data release];
 		}
@@ -453,14 +481,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 10)
 			goto error;
 
-		type = buffer[1];
-
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 8];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[1], data);
 		} @finally {
 			[data release];
 		}
@@ -470,14 +494,10 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		if (length < 18)
 			goto error;
 
-		type = buffer[1];
-
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 16];
 		@try {
-			*object = [OFMessagePackExtension
-			    extensionWithType: type
-					 data: data];
+			*object = createExtension(buffer[1], data);
 		} @finally {
 			[data release];
 		}
