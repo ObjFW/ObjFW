@@ -222,6 +222,8 @@ script:
             export PATH="/opt/amiga/bin:$PATH";
 
             build --host=m68k-amigaos;
+            build --host=m68k-amigaos --disable-amiga-lib;
+            build --host=m68k-amigaos --enable-static;
     fi
 
   - if [ "$config" = "devkitarm" ]; then
