@@ -106,7 +106,7 @@
 	for (size_t i = 0; i < (size_t)bars; i++)
 		[of_stdout writeString: @"█"];
 	if (bars < barWidth) {
-		float rem = bars - floorf(bars);
+		float rem = bars - truncf(bars);
 
 		if (rem >= 0.875)
 			[of_stdout writeString: @"▉"];

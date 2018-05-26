@@ -51,7 +51,7 @@ static OFMutex *mutex;
 	time_t seconds = (time_t)_seconds;				\
 	struct tm tm;							\
 									\
-	if (seconds != floor(_seconds))					\
+	if (seconds != trunc(_seconds))					\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (gmtime_r(&seconds, &tm) == NULL)				\
@@ -62,7 +62,7 @@ static OFMutex *mutex;
 	time_t seconds = (time_t)_seconds;				\
 	struct tm tm;							\
 									\
-	if (seconds != floor(_seconds))					\
+	if (seconds != trunc(_seconds))					\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if (localtime_r(&seconds, &tm) == NULL)				\
@@ -75,7 +75,7 @@ static OFMutex *mutex;
 	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds != floor(_seconds))					\
+	if (seconds != trunc(_seconds))					\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -92,7 +92,7 @@ static OFMutex *mutex;
 	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds != floor(_seconds))					\
+	if (seconds != trunc(_seconds))					\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	[mutex lock];							\
@@ -110,7 +110,7 @@ static OFMutex *mutex;
 	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds != floor(_seconds))					\
+	if (seconds != trunc(_seconds))					\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = gmtime(&seconds)) == NULL)				\
@@ -121,7 +121,7 @@ static OFMutex *mutex;
 	time_t seconds = (time_t)_seconds;				\
 	struct tm *tm;							\
 									\
-	if (seconds != floor(_seconds))					\
+	if (seconds != trunc(_seconds))					\
 		@throw [OFOutOfRangeException exception];		\
 									\
 	if ((tm = localtime(&seconds)) == NULL)				\
@@ -501,7 +501,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 - (uint32_t)microsecond
 {
-	return (uint32_t)((_seconds - floor(_seconds)) * 1000000);
+	return (uint32_t)((_seconds - trunc(_seconds)) * 1000000);
 }
 
 - (uint8_t)second
@@ -591,7 +591,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	wchar_t *buffer;
 #endif
 
-	if (seconds != floor(_seconds))
+	if (seconds != trunc(_seconds))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_GMTIME_R
@@ -651,7 +651,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	wchar_t *buffer;
 #endif
 
-	if (seconds != floor(_seconds))
+	if (seconds != trunc(_seconds))
 		@throw [OFOutOfRangeException exception];
 
 #ifdef HAVE_LOCALTIME_R
