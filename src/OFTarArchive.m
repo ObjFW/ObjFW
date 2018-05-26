@@ -42,8 +42,8 @@
 	bool _atEndOfStream;
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFTarArchiveEntry *)entry;
+- (instancetype)of_initWithStream: (OFStream *)stream
+			    entry: (OFTarArchiveEntry *)entry;
 - (void)of_skip;
 @end
 
@@ -54,8 +54,8 @@
 	uint64_t _toWrite;
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFTarArchiveEntry *)entry;
+- (instancetype)of_initWithStream: (OFStream *)stream
+			    entry: (OFTarArchiveEntry *)entry;
 @end
 
 @implementation OFTarArchive: OFObject
@@ -76,6 +76,11 @@
 				      mode: mode] autorelease];
 }
 #endif
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
 
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode
@@ -203,8 +208,8 @@
 		     encoding: _encoding] autorelease];
 
 	_lastReturnedStream = [[OFTarArchive_FileReadStream alloc]
-	    initWithStream: _stream
-		     entry: entry];
+	    of_initWithStream: _stream
+			entry: entry];
 
 	return entry;
 }
@@ -239,8 +244,8 @@
 		       encoding: _encoding];
 
 	_lastReturnedStream = [[OFTarArchive_FileWriteStream alloc]
-	    initWithStream: _stream
-		     entry: entry];
+	    of_initWithStream: _stream
+			entry: entry];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -270,8 +275,8 @@
 @end
 
 @implementation OFTarArchive_FileReadStream
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFTarArchiveEntry *)entry
+- (instancetype)of_initWithStream: (OFStream *)stream
+			    entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 
@@ -346,6 +351,8 @@
 
 - (void)close
 {
+	[self of_skip];
+
 	[_stream release];
 	_stream = nil;
 
@@ -354,6 +361,9 @@
 
 - (void)of_skip
 {
+	if (_stream == nil || _toRead == 0)
+		return;
+
 	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
 	    _toRead <= INT64_MAX && (of_offset_t)_toRead == (int64_t)_toRead) {
 		uint64_t size;
@@ -394,8 +404,8 @@
 @end
 
 @implementation OFTarArchive_FileWriteStream
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFTarArchiveEntry *)entry
+- (instancetype)of_initWithStream: (OFStream *)stream
+			    entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
 

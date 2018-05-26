@@ -35,6 +35,8 @@ SRCS = OFApplication.m			\
        OFInflateStream.m		\
        OFIntrospection.m		\
        OFInvocation.m			\
+       OFLHAArchive.m			\
+       OFLHAArchiveEntry.m		\
        OFList.m				\
        OFLocalization.m			\
        OFMapTable.m			\

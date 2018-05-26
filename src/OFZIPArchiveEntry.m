@@ -401,21 +401,21 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *ret = [OFString stringWithFormat: @"<%@:\n"
+	OFString *ret = [OFString stringWithFormat:
+	    @"<%@:\n"
 	    @"\tFile name = %@\n"
 	    @"\tFile comment = %@\n"
 	    @"\tGeneral purpose bit flag = %u\n"
 	    @"\tCompression method = %u\n"
-	    @"\tCompressed size = %ju\n"
-	    @"\tUncompressed size = %ju\n"
+	    @"\tCompressed size = %" @PRIu64 "\n"
+	    @"\tUncompressed size = %" @PRIu64 "\n"
 	    @"\tModification date = %@\n"
-	    @"\tCRC32 = %" @PRIu32 @"\n"
+	    @"\tCRC32 = %08" @PRIX32 @"\n"
 	    @"\tExtra field = %@\n"
 	    @">",
 	    [self class], _fileName, _fileComment, _generalPurposeBitFlag,
-	    _compressionMethod, (intmax_t)_compressedSize,
-	    (intmax_t)_uncompressedSize, [self modificationDate], _CRC32,
-	    _extraField];
+	    _compressionMethod, _compressedSize, _uncompressedSize,
+	    [self modificationDate], _CRC32, _extraField];
 
 	[ret retain];
 

@@ -17,32 +17,27 @@
 
 #import "OFObject.h"
 #import "OFKernelEventObserver.h"
+#import "OFLHAArchiveEntry.h"
 #import "OFString.h"
-#import "OFTarArchiveEntry.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFStream;
 
 /*!
- * @class OFTarArchive OFTarArchive.h ObjFW/OFTarArchive.h
+ * @class OFLHAArchive OFLHAArchive.h ObjFW/OFLHAArchive.h
  *
- * @brief A class for accessing and manipulating tar archives.
+ * @brief A class for accessing and manipulating LHA files.
  */
-@interface OFTarArchive: OFObject
+@interface OFLHAArchive: OFObject
 {
 	OF_KINDOF(OFStream *) _stream;
-	enum {
-		OF_TAR_ARCHIVE_MODE_READ,
-		OF_TAR_ARCHIVE_MODE_WRITE,
-		OF_TAR_ARCHIVE_MODE_APPEND
-	} _mode;
 	of_string_encoding_t _encoding;
 	OF_KINDOF(OFStream *) _Nullable _lastReturnedStream;
 }
 
 /*!
- * @brief The encoding to use for the archive. Defaults to UTF-8.
+ * @brief The encoding to use for the archive. Defaults to ISO 8859-1.
  */
 @property (nonatomic) of_string_encoding_t encoding;
 
@@ -58,27 +53,27 @@ OF_ASSUME_NONNULL_BEGIN
     OFStream <OFReadyForReadingObserving> *streamForReadingCurrentEntry;
 
 /*!
- * @brief Creates a new OFTarArchive object with the specified stream.
+ * @brief Creates a new OFLHAArchive object with the specified stream.
  *
- * @param stream A stream from which the tar archive will be read.
- *		 For append mode, this needs to be an OFSeekableStream.
- * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ * @param stream A stream from which the LHA archive will be read.
+ *		 For read and append mode, this needs to be an OFSeekableStream.
+ * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
- * @return A new, autoreleased OFTarArchive
+ * @return A new, autoreleased OFLHAArchive
  */
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
 /*!
- * @brief Creates a new OFTarArchive object with the specified file.
+ * @brief Creates a new OFLHAArchive object with the specified file.
  *
- * @param path The path to the tar archive
- * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ * @param path The path to the LHA file
+ * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
- * @return A new, autoreleased OFTarArchive
+ * @return A new, autoreleased OFLHAArchive
  */
 + (instancetype)archiveWithPath: (OFString *)path
 			   mode: (OFString *)mode;
@@ -87,36 +82,36 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
- * @brief Initializes an already allocated OFTarArchive object with the
+ * @brief Initializes an already allocated OFLHAArchive object with the
  *	  specified stream.
  *
- * @param stream A stream from which the tar archive will be read.
- *		 For append mode, this needs to be an OFSeekableStream.
- * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ * @param stream A stream from which the LHA archive will be read.
+ *		 For read and append mode, this needs to be an OFSeekableStream.
+ * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
- * @return An initialized OFTarArchive
+ * @return An initialized OFLHAArchive
  */
 - (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES
 /*!
- * @brief Initializes an already allocated OFTarArchive object with the
+ * @brief Initializes an already allocated OFLHAArchive object with the
  *	  specified file.
  *
- * @param path The path to the tar archive
- * @param mode The mode for the tar file. Valid modes are "r" for reading,
+ * @param path The path to the LHA file
+ * @param mode The mode for the LHA file. Valid modes are "r" for reading,
  *	       "w" for creating a new file and "a" for appending to an existing
  *	       archive.
- * @return An initialized OFTarArchive
+ * @return An initialized OFLHAArchive
  */
 - (instancetype)initWithPath: (OFString *)path
 			mode: (OFString *)mode;
 #endif
 
 /*!
- * @brief Returns the next entry from the tar archive or `nil` if all entries
+ * @brief Returns the next entry from the LHA archive or `nil` if all entries
  *	  have been read.
  *
  * @note This is only available in read mode.
@@ -127,33 +122,13 @@ OF_ASSUME_NONNULL_BEGIN
  *	    invalidated stream will throw an @ref OFReadFailedException or
  *	    @ref OFWriteFailedException!
  *
- * @return The next entry from the tar archive or `nil` if all entries have
+ * @return The next entry from the LHA archive or `nil` if all entries have
  *	   been read
  */
-- (nullable OFTarArchiveEntry *)nextEntry;
+- (nullable OFLHAArchiveEntry *)nextEntry;
 
 /*!
- * @brief Returns a stream for writing the specified entry.
- *
- * @note This is only available in write and append mode.
- *
- * @note The returned stream only conforms to @ref OFReadyForWritingObserving if
- *	 the underlying stream does so, too.
- *
- * @warning Calling @ref nextEntry will invalidate all streams returned by
- *	    @ref streamForReadingCurrentEntry or
- *	    @ref streamForWritingEntry:! Reading from or writing to an
- *	    invalidated stream will throw an @ref OFReadFailedException or
- *	    @ref OFWriteFailedException!
- *
- * @param entry The entry for which a stream for writing should be returned
- * @return A stream for writing the specified entry
- */
-- (OFStream <OFReadyForWritingObserving> *)
-    streamForWritingEntry: (OFTarArchiveEntry *)entry;
-
-/*!
- * @brief Closes the OFTarArchive.
+ * @brief Closes the OFLHAArchive.
  */
 - (void)close;
 @end

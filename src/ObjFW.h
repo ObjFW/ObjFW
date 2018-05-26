@@ -58,6 +58,8 @@
 #import "OFInflateStream.h"
 #import "OFInflate64Stream.h"
 #import "OFGZIPStream.h"
+#import "OFLHAArchive.h"
+#import "OFLHAArchiveEntry.h"
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
 #import "OFZIPArchive.h"
