@@ -181,8 +181,9 @@
 	self = [super init];
 
 	@try {
-		if ([entry method] != OF_LHA_ARCHIVE_ENTRY_METHOD_LH0 &&
-		    [entry method] != OF_LHA_ARCHIVE_ENTRY_METHOD_LHD)
+		OFString *method = [entry method];
+
+		if (![method isEqual: @"-lh0-"] && ![method isEqual: @"-lhd-"])
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: self];

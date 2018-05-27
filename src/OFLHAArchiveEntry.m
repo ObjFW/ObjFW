@@ -249,39 +249,10 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 		[stream readIntoBuffer: header
 			   exactLength: 20];
 
-		if (memcmp(header + 1, "-lh0-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH0;
-		else if (memcmp(header + 1, "-lzs-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LZS;
-		else if (memcmp(header + 1, "-lz4-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LZ4;
-		else if (memcmp(header + 1, "-lh1-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH1;
-		else if (memcmp(header + 1, "-lh2-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH2;
-		else if (memcmp(header + 1, "-lh3-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH3;
-		else if (memcmp(header + 1, "-lh4-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH4;
-		else if (memcmp(header + 1, "-lh5-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH5;
-		else if (memcmp(header + 1, "-lh6-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH6;
-		else if (memcmp(header + 1, "-lh7-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH7;
-		else if (memcmp(header + 1, "-lh8-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LH8;
-		else if (memcmp(header + 1, "-lhd-", 5) == 0)
-			_method = OF_LHA_ARCHIVE_ENTRY_METHOD_LHD;
-		else {
-			OFString *version = [OFString
-			    stringWithCString: header + 1
-				     encoding: OF_STRING_ENCODING_ASCII
-				       length: 5];
-
-			@throw [OFUnsupportedVersionException
-			    exceptionWithVersion: version];
-		}
+		_method = [[OFString alloc]
+		    initWithCString: header + 1
+			   encoding: OF_STRING_ENCODING_ASCII
+			     length: 5];
 
 		memcpy(&_compressedSize, header + 6, 4);
 		_compressedSize = OF_BSWAP32_IF_BE(_compressedSize);
@@ -333,6 +304,7 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 - (void)dealloc
 {
+	[_method release];
 	[_fileName release];
 	[_directoryName release];
 	[_date release];
@@ -372,6 +344,7 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	OFString *ret = [OFString stringWithFormat:
 	    @"<%@:\n"
 	    @"\tFile name = %@\n"
+	    @"\tMethod = %@\n"
 	    @"\tCompressed size = %" @PRIu32 "\n"
 	    @"\tUncompressed size = %" @PRIu32 "\n"
 	    @"\tDate = %@\n"
@@ -387,9 +360,10 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	    @"\tModification date = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
-	    [self class], [self fileName], _compressedSize, _uncompressedSize,
-	    _date, _level, _CRC16, _operatingSystemIdentifier, _fileComment,
-	    mode, _UID, _GID, _owner, _group, _modificationDate, extensions];
+	    [self class], [self fileName], _method, _compressedSize,
+	    _uncompressedSize, _date, _level, _CRC16,
+	    _operatingSystemIdentifier, _fileComment, mode, _UID, _GID, _owner,
+	    _group, _modificationDate, extensions];
 
 	[ret retain];
 

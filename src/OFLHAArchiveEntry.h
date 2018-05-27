@@ -23,28 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 @class OFDate;
 @class OFNumber;
-
-/*! @file */
-
-/*!
- * @brief The compression method of the archive entry.
- */
-typedef enum of_lha_archive_method_t {
-	/*! No compression */
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH0,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LZS,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LZ4,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH1,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH2,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH3,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH4,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH5,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH6,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH7,
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LH8,
-	/*! Directory */
-	OF_LHA_ARCHIVE_ENTRY_METHOD_LHD
-} of_lha_archive_method_t;
+@class OFString;
 
 /*!
  * @class OFLHAArchiveEntry OFLHAArchiveEntry.h ObjFW/OFLHAArchiveEntry.h
@@ -57,8 +36,7 @@ typedef enum of_lha_archive_method_t {
 #ifdef OF_LHA_ARCHIVE_ENTRY_M
 @public
 #endif
-	of_lha_archive_method_t _method;
-	OFString *_fileName, *_Nullable _directoryName;
+	OFString *_fileName, *_Nullable _directoryName, *_method;
 	uint32_t _compressedSize, _uncompressedSize;
 	OFDate *_date;
 	uint8_t _level;
@@ -72,14 +50,14 @@ typedef enum of_lha_archive_method_t {
 }
 
 /*!
- * @brief The method of the entry.
- */
-@property (readonly, nonatomic) of_lha_archive_method_t method;
-
-/*!
  * @brief The file name of the entry.
  */
 @property (readonly, copy, nonatomic) OFString *fileName;
+
+/*!
+ * @brief The method of the entry.
+ */
+@property (readonly, copy, nonatomic) OFString *method;
 
 /*!
  * @brief The compressed size of the entry's file.
