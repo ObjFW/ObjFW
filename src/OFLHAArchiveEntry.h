@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFData;
 @class OFDate;
+@class OFMutableArray OF_GENERIC(ObjectType);
 @class OFNumber;
 @class OFString;
 
@@ -46,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFNumber *_Nullable _mode, *_Nullable _UID, *_Nullable _GID;
 	OFString *_Nullable _owner, *_Nullable _group;
 	OFDate *_Nullable _modificationDate;
-	OFArray OF_GENERIC(OFData *) *_extensions;
+	OFMutableArray OF_GENERIC(OFData *) *_extensions;
 }
 
 /*!

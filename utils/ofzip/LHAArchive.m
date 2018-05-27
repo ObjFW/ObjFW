@@ -70,7 +70,8 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 		_archive = [[OFLHAArchive alloc] initWithStream: stream
 							   mode: mode];
 
-		[_archive setEncoding: encoding];
+		if (encoding != OF_STRING_ENCODING_AUTODETECT)
+			[_archive setEncoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -101,7 +102,7 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			OFString *compressedSize = [OFString stringWithFormat:
 			    @"%" PRIu32, [entry compressedSize]];
 			OFString *uncompressedSize = [OFString stringWithFormat:
-			    @"%" PRIu32, [entry compressedSize]];
+			    @"%" PRIu32, [entry uncompressedSize]];
 			OFString *CRC16 = [OFString stringWithFormat:
 			    @"%04" PRIX16, [entry CRC16]];
 

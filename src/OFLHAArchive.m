@@ -30,10 +30,10 @@
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFTruncatedDataException.h"
 
 @interface OFLHAArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
-	OFLHAArchiveEntry *_entry;
 	OF_KINDOF(OFStream *) _stream;
 	uint32_t _toRead;
 	bool _atEndOfStream;
@@ -122,40 +122,58 @@
 
 - (OFLHAArchiveEntry *)nextEntry
 {
-	OFLHAArchiveEntry *entry;
-	uint8_t headerSize;
+	char header[21];
+	size_t headerLen;
+
+	[_lastEntry release];
+	_lastEntry = nil;
 
 	[_lastReturnedStream of_skip];
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	if ([_stream isAtEndOfStream])
-		return nil;
+	for (headerLen = 0; headerLen < 21;) {
+		if ([_stream isAtEndOfStream]) {
+			if (headerLen == 0)
+				return nil;
 
-	if ([_stream readIntoBuffer: &headerSize
-			     length: 1] == 0)
-		return nil;
+			if (headerLen == 1 && header[0] == 0)
+				return nil;
 
-	if (headerSize == 0)
-		return nil;
+			@throw [OFTruncatedDataException exception];
+		}
 
-	entry = [[[OFLHAArchiveEntry alloc]
-	    of_initWithHeaderSize: headerSize
-			   stream: _stream
-			 encoding: _encoding] autorelease];
+		headerLen += [_stream readIntoBuffer: header + headerLen
+					      length: 21 - headerLen];
+	}
+
+	_lastEntry = [[OFLHAArchiveEntry alloc]
+	    of_initWithHeader: header
+		       stream: _stream
+		     encoding: _encoding];
 
 	_lastReturnedStream = [[OFLHAArchive_FileReadStream alloc]
 	    of_initWithStream: _stream
-			entry: entry];
+			entry: _lastEntry];
 
-	return entry;
+	return [[_lastEntry copy] autorelease];
 }
 
 - (OFStream <OFReadyForReadingObserving> *)streamForReadingCurrentEntry
 {
+	OFString *method;
+
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
+
+	method = [_lastEntry method];
+
+	if (![method isEqual: @"-lh0-"] && ![method isEqual: @"-lhd-"] &&
+	    ![method isEqual: @"-lz4-"])
+		@throw [OFNotImplementedException
+		    exceptionWithSelector: _cmd
+				   object: self];
 
 	return [[_lastReturnedStream retain] autorelease];
 }
@@ -164,6 +182,9 @@
 {
 	if (_stream == nil)
 		return;
+
+	[_lastEntry release];
+	_lastEntry = nil;
 
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
@@ -181,16 +202,13 @@
 	self = [super init];
 
 	@try {
-		OFString *method = [entry method];
-
-		if (![method isEqual: @"-lh0-"] && ![method isEqual: @"-lhd-"])
-			@throw [OFNotImplementedException
-			    exceptionWithSelector: _cmd
-					   object: self];
-
-		_entry = [entry copy];
 		_stream = [stream retain];
-		_toRead = [entry uncompressedSize];
+		/*
+		 * Use the compressed size, as that is the number of bytes we
+		 * need to skip for the next entry and is equal for
+		 * uncompressed files, the only thing supported so far.
+		 */
+		_toRead = [entry compressedSize];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -202,8 +220,6 @@
 - (void)dealloc
 {
 	[self close];
-
-	[_entry release];
 
 	[super dealloc];
 }

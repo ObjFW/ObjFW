@@ -170,7 +170,7 @@ writingNotSupported(OFString *type)
 	};
 	OFOptionsParser *optionsParser;
 	of_unichar_t option, mode = '\0';
-	of_string_encoding_t encoding = OF_STRING_ENCODING_UTF_8;
+	of_string_encoding_t encoding = OF_STRING_ENCODING_AUTODETECT;
 	OFArray OF_GENERIC(OFString *) *remainingArguments, *files;
 	id <Archive> archive;
 

@@ -70,7 +70,8 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 		_archive = [[OFTarArchive alloc] initWithStream: stream
 							   mode: mode];
 
-		[_archive setEncoding: encoding];
+		if (encoding != OF_STRING_ENCODING_AUTODETECT)
+			[_archive setEncoding: encoding];
 	} @catch (id e) {
 		[self release];
 		@throw e;

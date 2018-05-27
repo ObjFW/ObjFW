@@ -31,6 +31,25 @@
 #import "OFInvalidFormatException.h"
 #import "OFUnsupportedVersionException.h"
 
+static OFDate *
+parseMSDOSDate(uint32_t MSDOSDate)
+{
+	uint16_t year = ((MSDOSDate & 0xFE000000) >> 25) + 1980;
+	uint8_t month = (MSDOSDate & 0x1E00000) >> 21;
+	uint8_t day = (MSDOSDate & 0x1F);
+	uint8_t hour = (MSDOSDate & 0xF800) >> 11;
+	uint8_t minute = (MSDOSDate & 0x7E0) >> 5;
+	uint8_t second = (MSDOSDate & 0x1F) << 1;
+	OFString *dateString;
+
+	dateString = [OFString
+	    stringWithFormat: @"%04u-%02u-%02u %02u:%02u:%02u",
+			      year, month, day, hour, minute, second];
+
+	return [OFDate dateWithLocalDateString: dateString
+					format: @"%Y-%m-%d %H:%M:%S"];
+}
+
 static void
 parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     of_string_encoding_t encoding)
@@ -217,6 +236,25 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	return true;
 }
 
+static void
+readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
+    of_string_encoding_t encoding)
+{
+	uint16_t nextSize;
+
+	while ((nextSize = [stream readLittleEndianInt16]) > 0) {
+		OFData *extension;
+
+		if (nextSize < 2)
+			@throw [OFInvalidFormatException exception];
+
+		extension = [stream readDataWithCount: nextSize - 2];
+
+		if (!parseExtension(entry, extension, encoding))
+			[entry->_extensions addObject: extension];
+	}
+}
+
 @implementation OFLHAArchiveEntry
 @synthesize method = _method, compressedSize = _compressedSize;
 @synthesize uncompressedSize = _uncompressedSize, date = _date;
@@ -231,41 +269,62 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)of_initWithHeaderSize: (uint8_t)headerSize
-			       stream: (OFStream *)stream
-			     encoding: (of_string_encoding_t)encoding
+- (instancetype)of_initWithHeader: (char [21])header
+			   stream: (OFStream *)stream
+			 encoding: (of_string_encoding_t)encoding
 {
 	self = [super init];
 
 	@try {
-		char header[20];
 		uint32_t date;
-		uint16_t nextSize;
-		OFMutableArray *extensions;
-
-		if (headerSize < 21)
-			@throw [OFInvalidFormatException exception];
-
-		[stream readIntoBuffer: header
-			   exactLength: 20];
 
 		_method = [[OFString alloc]
-		    initWithCString: header + 1
+		    initWithCString: header + 2
 			   encoding: OF_STRING_ENCODING_ASCII
 			     length: 5];
 
-		memcpy(&_compressedSize, header + 6, 4);
+		memcpy(&_compressedSize, header + 7, 4);
 		_compressedSize = OF_BSWAP32_IF_BE(_compressedSize);
 
-		memcpy(&_uncompressedSize, header + 10, 4);
+		memcpy(&_uncompressedSize, header + 11, 4);
 		_uncompressedSize = OF_BSWAP32_IF_BE(_uncompressedSize);
 
-		memcpy(&date, header + 14, 4);
+		memcpy(&date, header + 15, 4);
 		date = OF_BSWAP32_IF_BE(date);
 
-		_level = header[19];
+		_level = header[20];
 
-		if (_level != 2) {
+		_extensions = [[OFMutableArray alloc] init];
+
+		switch (_level) {
+		case 0:;
+			void *pool = objc_autoreleasePoolPush();
+			uint16_t fileNameLength = [stream readInt8];
+			OFString *tmp;
+
+			_date = [parseMSDOSDate(date) retain];
+
+			tmp = [stream readStringWithLength: fileNameLength
+						  encoding: encoding];
+			tmp = [tmp stringByReplacingOccurrencesOfString: @"\\"
+							     withString: @"/"];
+			_fileName = [tmp copy];
+
+			_CRC16 = [stream readLittleEndianInt16];
+
+			objc_autoreleasePoolPop(pool);
+			break;
+		case 2:
+			_date = [[OFDate alloc]
+			    initWithTimeIntervalSince1970: date];
+
+			_CRC16 = [stream readLittleEndianInt16];
+			_operatingSystemIdentifier = [stream readInt8];
+
+			readExtensions(self, stream, encoding);
+
+			break;
+		default:;
 			OFString *version = [OFString
 			    stringWithFormat: @"%u", _level];
 
@@ -273,27 +332,7 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 			    exceptionWithVersion: version];
 		}
 
-		_date = [[OFDate alloc] initWithTimeIntervalSince1970: date];
-
-		_CRC16 = [stream readLittleEndianInt16];
-		_operatingSystemIdentifier = [stream readInt8];
-
-		extensions = [[OFMutableArray alloc] init];
-		_extensions = extensions;
-
-		while ((nextSize = [stream readLittleEndianInt16]) > 0) {
-			OFData *extension;
-
-			if (nextSize < 2)
-				@throw [OFInvalidFormatException exception];
-
-			extension = [stream readDataWithCount: nextSize - 2];
-
-			if (!parseExtension(self, extension, encoding))
-				[extensions addObject: extension];
-		}
-
-		[extensions makeImmutable];
+		[_extensions makeImmutable];
 	} @catch (id e) {
 		[self release];
 		@throw e;

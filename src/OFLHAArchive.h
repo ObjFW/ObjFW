@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OF_KINDOF(OFStream *) _stream;
 	of_string_encoding_t _encoding;
+	OFLHAArchiveEntry *_Nullable _lastEntry;
 	OF_KINDOF(OFStream *) _Nullable _lastReturnedStream;
 }
 
