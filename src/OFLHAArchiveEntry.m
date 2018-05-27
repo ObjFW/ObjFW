@@ -197,14 +197,15 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static bool
 parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
-    of_string_encoding_t encoding)
+    of_string_encoding_t encoding, bool allowFileName)
 {
 	void (*function)(OFLHAArchiveEntry *, OFData *, of_string_encoding_t) =
 	    NULL;
 
 	switch (*(char *)[extension itemAtIndex: 0]) {
 	case 0x01:
-		function = parseFileNameExtension;
+		if (allowFileName)
+			function = parseFileNameExtension;
 		break;
 	case 0x02:
 		function = parseDirectoryNameExtension;
@@ -238,20 +239,27 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 
 static void
 readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
-    of_string_encoding_t encoding)
+    of_string_encoding_t encoding, bool allowFileName)
 {
-	uint16_t nextSize;
+	uint16_t size;
 
-	while ((nextSize = [stream readLittleEndianInt16]) > 0) {
+	while ((size = [stream readLittleEndianInt16]) > 0) {
 		OFData *extension;
 
-		if (nextSize < 2)
+		if (size < 2)
 			@throw [OFInvalidFormatException exception];
 
-		extension = [stream readDataWithCount: nextSize - 2];
+		extension = [stream readDataWithCount: size - 2];
 
-		if (!parseExtension(entry, extension, encoding))
+		if (!parseExtension(entry, extension, encoding, allowFileName))
 			[entry->_extensions addObject: extension];
+
+		if (entry->_level == 1) {
+			if (entry->_compressedSize < size)
+				@throw [OFInvalidFormatException exception];
+
+			entry->_compressedSize -= size;
+		}
 	}
 }
 
@@ -293,17 +301,18 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 		date = OF_BSWAP32_IF_BE(date);
 
 		_level = header[20];
-
 		_extensions = [[OFMutableArray alloc] init];
 
 		switch (_level) {
-		case 0:;
+		case 0:
+		case 1:;
 			void *pool = objc_autoreleasePoolPush();
-			uint16_t fileNameLength = [stream readInt8];
+			uint8_t fileNameLength;
 			OFString *tmp;
 
 			_date = [parseMSDOSDate(date) retain];
 
+			fileNameLength = [stream readInt8];
 			tmp = [stream readStringWithLength: fileNameLength
 						  encoding: encoding];
 			tmp = [tmp stringByReplacingOccurrencesOfString: @"\\"
@@ -311,6 +320,12 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			_fileName = [tmp copy];
 
 			_CRC16 = [stream readLittleEndianInt16];
+
+			if (_level == 1) {
+				_operatingSystemIdentifier = [stream readInt8];
+
+				readExtensions(self, stream, encoding, false);
+			}
 
 			objc_autoreleasePoolPop(pool);
 			break;
@@ -321,7 +336,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			_CRC16 = [stream readLittleEndianInt16];
 			_operatingSystemIdentifier = [stream readInt8];
 
-			readExtensions(self, stream, encoding);
+			readExtensions(self, stream, encoding, true);
 
 			break;
 		default:;
