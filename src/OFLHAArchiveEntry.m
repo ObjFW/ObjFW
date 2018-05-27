@@ -49,24 +49,28 @@ parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
     of_string_encoding_t encoding)
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *tmp = [OFString
-	    stringWithCString: (char *)[extension items] + 1
-		     encoding: encoding
-		       length: [extension count] - 1];
-	OFString *separator = [OFString stringWithCString: "\xFF"
-						 encoding: encoding
-						   length: 1];
+	OFMutableData *data = [[extension mutableCopy] autorelease];
+	char *items = [data items];
+	size_t count = [data count];
+	OFMutableString *directoryName;
 
-	if (![tmp hasSuffix: separator])
-		@throw [OFInvalidFormatException exception];
+	for (size_t i = 1; i < count; i++)
+		if (items[i] == '\xFF')
+			items[i] = '/';
 
-	tmp = [tmp stringByReplacingOccurrencesOfString: separator
-					     withString: @"/"];
+	directoryName = [OFMutableString stringWithCString: items + 1
+						  encoding: encoding
+						    length: count - 1];
+
+	if (![directoryName hasSuffix: @"/"])
+		[directoryName appendString: @"/"];
+
+	[directoryName makeImmutable];
 
 	[entry->_directoryName release];
 	entry->_directoryName = nil;
 
-	entry->_directoryName = [tmp copy];
+	entry->_directoryName = [directoryName copy];
 
 	objc_autoreleasePoolPop(pool);
 }
