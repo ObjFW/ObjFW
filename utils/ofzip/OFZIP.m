@@ -31,6 +31,7 @@
 
 #import "OFZIP.h"
 #import "GZIPArchive.h"
+#import "LHAArchive.h"
 #import "TarArchive.h"
 #import "ZIPArchive.h"
 
@@ -73,7 +74,8 @@ help(OFStream *stream, bool full, int status)
 		    @"archive\n"
 		    @"    -q  --quiet       Quiet mode (no output, except "
 		    @"errors)\n"
-		    @"    -t  --type        Archive type (gz, tar, tgz, zip)\n"
+		    @"    -t  --type        Archive type (gz, lha, tar, tgz, "
+		    @"zip)\n"
 		    @"    -v  --verbose     Verbose output for file list\n"
 		    @"    -x  --extract     Extract files")];
 	}
@@ -442,6 +444,8 @@ writingNotSupported(OFString *type)
 			type = @"tgz";
 		else if ([path hasSuffix: @".gz"] || [path hasSuffix: @".GZ"])
 			type = @"gz";
+		else if ([path hasSuffix: @".lha"] || [path hasSuffix: @".lzh"])
+			type = @"lha";
 		else if ([path hasSuffix: @".tar"] || [path hasSuffix: @".TAR"])
 			type = @"tar";
 		else
@@ -453,6 +457,10 @@ writingNotSupported(OFString *type)
 			archive = [GZIPArchive archiveWithStream: file
 							    mode: modeString
 							encoding: encoding];
+		else if ([type isEqual: @"lha"])
+			archive = [LHAArchive archiveWithStream: file
+							   mode: modeString
+						       encoding: encoding];
 		else if ([type isEqual: @"tar"])
 			archive = [TarArchive archiveWithStream: file
 							   mode: modeString

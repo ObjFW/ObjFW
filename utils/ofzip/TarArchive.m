@@ -324,11 +324,10 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 				outFileName: outFileName])
 			goto outer_loop_end;
 
+		stream = [_archive streamForReadingCurrentEntry];
 		output = [OFFile fileWithPath: outFileName
 					 mode: @"w"];
 		setPermissions(outFileName, entry);
-
-		stream = [_archive streamForReadingCurrentEntry];
 
 		while (![stream isAtEndOfStream]) {
 			ssize_t length = [app copyBlockFromStream: stream

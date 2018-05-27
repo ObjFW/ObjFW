@@ -111,7 +111,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			    stringWithFormat: @"%" PRIu64,
 					      [entry uncompressedSize]];
 			OFString *CRC32 = [OFString
-			    stringWithFormat: @"%08X", [entry CRC32]];
+			    stringWithFormat: @"%08" PRIX32, [entry CRC32]];
 			OFString *modificationDate = [[entry modificationDate]
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 

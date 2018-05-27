@@ -15,7 +15,7 @@
         "    -p  --print       Eine oder mehr Dateien aus dem Archiv ausgeben",
         "\n",
         "    -q  --quiet       Ruhiger Modus (keine Ausgabe außer Fehler)\n",
-        "    -t  --type        Archiv-Typ (gz, tar, tgz, zip)\n",
+        "    -t  --type        Archiv-Typ (gz, lha, tar, tgz, zip)\n",
         "    -v  --verbose     Ausführlicher Modus für Datei-Liste\n",
         "    -x  --extract     Dateien entpacken"
     ],
@@ -87,6 +87,9 @@
     "list_type_unknown": "Typ: Unbekannt",
     "list_compressed_size": "Komprimierte Größe: %[size] Bytes",
     "list_uncompressed_size": "Unkomprimierte Größe: %[size] Bytes",
+    "list_date": "Datum: %[date]",
+    "list_method": "Methode: %[method]",
+    "list_osid": "Betriebssystem-Identifikator: %[osid]",
     "list_version_made_by": "Erstellt mit Version: %[version]",
     "list_min_version_needed": "Mindestens benötigte Version: %[version]",
     "list_general_purpose_bit_flag": "General Purpose Bit Flag: %[gpbf]",

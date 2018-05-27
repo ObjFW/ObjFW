@@ -2,6 +2,7 @@ include ../../extra.mk
 
 PROG = ofzip${PROG_SUFFIX}
 SRCS = GZIPArchive.m	\
+       LHAArchive.m	\
        OFZIP.m		\
        TarArchive.m	\
        ZIPArchive.m
