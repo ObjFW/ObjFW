@@ -161,8 +161,6 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			if (app->_outputLevel >= 2) {
 				OFString *level = [OFString stringWithFormat:
 				    @"%" PRIu8, [entry level]];
-				OFString *OSID = [OFString stringWithFormat:
-				    @"%c", [entry operatingSystemIdentifier]];
 
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
@@ -176,11 +174,18 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 				    @"Method: %[method]",
 				    @"method", [entry method])];
 
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
-				    @"list_osid",
-				    @"Operating system identifier: %[osid]",
-				    @"osid", OSID)];
+				if ([entry operatingSystemIdentifier] != '\0') {
+					OFString *OSID =
+					    [OFString stringWithFormat: @"%c",
+					    [entry operatingSystemIdentifier]];
+
+					[of_stdout writeString: @"\t"];
+					[of_stdout writeLine: OF_LOCALIZED(
+					    @"list_osid",
+					    @"Operating system identifier: "
+					    "%[osid]",
+					    @"osid", OSID)];
+				}
 			}
 		}
 
