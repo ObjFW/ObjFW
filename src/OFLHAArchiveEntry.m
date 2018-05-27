@@ -24,6 +24,7 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
+#import "OFNumber.h"
 #import "OFStream.h"
 #import "OFString.h"
 
@@ -71,17 +72,145 @@ parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 }
 
 static void
+parseCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    of_string_encoding_t encoding)
+{
+	[entry->_fileComment release];
+	entry->_fileComment = nil;
+
+	entry->_fileComment = [[OFString alloc]
+	    initWithCString: (char *)[extension items] + 1
+		   encoding: encoding
+		     length: [extension count] - 1];
+}
+
+static void
+parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    of_string_encoding_t encoding)
+{
+	uint16_t mode;
+
+	if ([extension count] != 3)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&mode, (char *)[extension items] + 1, 2);
+	mode = OF_BSWAP16_IF_BE(mode);
+
+	[entry->_mode release];
+	entry->_mode = nil;
+
+	entry->_mode = [[OFNumber alloc] initWithUInt16: mode];
+}
+
+static void
+parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    of_string_encoding_t encoding)
+{
+	uint16_t UID, GID;
+
+	if ([extension count] != 5)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&GID, (char *)[extension items] + 1, 2);
+	GID = OF_BSWAP16_IF_BE(GID);
+
+	memcpy(&UID, (char *)[extension items] + 3, 2);
+	UID = OF_BSWAP16_IF_BE(UID);
+
+	[entry->_GID release];
+	entry->_GID = nil;
+
+	[entry->_UID release];
+	entry->_UID = nil;
+
+	entry->_GID = [[OFNumber alloc] initWithUInt16: GID];
+	entry->_UID = [[OFNumber alloc] initWithUInt16: UID];
+}
+
+static void
+parseGroupExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    of_string_encoding_t encoding)
+{
+	[entry->_group release];
+	entry->_group = nil;
+
+	entry->_group = [[OFString alloc]
+	    initWithCString: (char *)[extension items] + 1
+		   encoding: encoding
+		     length: [extension count] - 1];
+}
+
+static void
+parseOwnerExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    of_string_encoding_t encoding)
+{
+	[entry->_owner release];
+	entry->_owner = nil;
+
+	entry->_owner = [[OFString alloc]
+	    initWithCString: (char *)[extension items] + 1
+		   encoding: encoding
+		     length: [extension count] - 1];
+}
+
+static void
+parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
+    of_string_encoding_t encoding)
+{
+	uint32_t modificationDate;
+
+	if ([extension count] != 5)
+		@throw [OFInvalidFormatException exception];
+
+	memcpy(&modificationDate, (char *)[extension items] + 1, 4);
+	modificationDate = OF_BSWAP32_IF_BE(modificationDate);
+
+	[entry->_modificationDate release];
+	entry->_modificationDate = nil;
+
+	entry->_modificationDate = [[OFDate alloc]
+	    initWithTimeIntervalSince1970: modificationDate];
+}
+
+static bool
 parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
     of_string_encoding_t encoding)
 {
+	void (*function)(OFLHAArchiveEntry *, OFData *, of_string_encoding_t) =
+	    NULL;
+
 	switch (*(char *)[extension itemAtIndex: 0]) {
 	case 0x01:
-		parseFileNameExtension(entry, extension, encoding);
+		function = parseFileNameExtension;
 		break;
 	case 0x02:
-		parseDirectoryNameExtension(entry, extension, encoding);
+		function = parseDirectoryNameExtension;
+		break;
+	case 0x3F:
+		function = parseCommentExtension;
+		break;
+	case 0x50:
+		function = parsePermissionsExtension;
+		break;
+	case 0x51:
+		function = parseGIDUIDExtension;
+		break;
+	case 0x52:
+		function = parseGroupExtension;
+		break;
+	case 0x53:
+		function = parseOwnerExtension;
+		break;
+	case 0x54:
+		function = parseModificationDateExtension;
 		break;
 	}
+
+	if (function == NULL)
+		return false;
+
+	function(entry, extension, encoding);
+	return true;
 }
 
 @implementation OFLHAArchiveEntry
@@ -89,7 +218,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 @synthesize uncompressedSize = _uncompressedSize, date = _date;
 @synthesize level = _level, CRC16 = _CRC16;
 @synthesize operatingSystemIdentifier = _operatingSystemIdentifier;
-@synthesize extensions = _extensions;
+@synthesize fileComment = _fileComment, mode = _mode, UID = _UID, GID = _GID;
+@synthesize owner = _owner, group = _group;
+@synthesize modificationDate = _modificationDate, extensions = _extensions;
 
 - (instancetype)init
 {
@@ -182,9 +313,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 				@throw [OFInvalidFormatException exception];
 
 			extension = [stream readDataWithCount: nextSize - 2];
-			[extensions addObject: extension];
 
-			parseExtension(self, extension, encoding);
+			if (!parseExtension(self, extension, encoding))
+				[extensions addObject: extension];
 		}
 
 		[extensions makeImmutable];
@@ -201,6 +332,12 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	[_fileName release];
 	[_directoryName release];
 	[_date release];
+	[_fileComment release];
+	[_mode release];
+	[_UID release];
+	[_GID release];
+	[_owner release];
+	[_group release];
 	[_extensions release];
 
 	[super dealloc];
@@ -222,6 +359,9 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFString *mode = (_mode == nil
+	    ? @"(nil)"
+	    : [OFString stringWithFormat: @"%" PRIo16, [_mode uInt16Value]]);
 	OFString *extensions = [[_extensions description]
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
@@ -234,10 +374,18 @@ parseExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	    @"\tLevel = %u\n"
 	    @"\tCRC16 = %04" @PRIX16 @"\n"
 	    @"\tOperating system identifier = %c\n"
+	    @"\tComment = %@\n"
+	    @"\tMode = %@\n"
+	    @"\tUID = %@\n"
+	    @"\tGID = %@\n"
+	    @"\tOwner = %@\n"
+	    @"\tGroup = %@\n"
+	    @"\tModification date = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
 	    [self class], [self fileName], _compressedSize, _uncompressedSize,
-	    _date, _level, _CRC16, _operatingSystemIdentifier, extensions];
+	    _date, _level, _CRC16, _operatingSystemIdentifier, _fileComment,
+	    mode, _UID, _GID, _owner, _group, _modificationDate, extensions];
 
 	[ret retain];
 

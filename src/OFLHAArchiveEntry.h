@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFData;
 @class OFDate;
+@class OFNumber;
 
 /*! @file */
 
@@ -57,12 +58,16 @@ typedef enum of_lha_archive_method_t {
 @public
 #endif
 	of_lha_archive_method_t _method;
-	OFString *_fileName, *_directoryName;
+	OFString *_fileName, *_Nullable _directoryName;
 	uint32_t _compressedSize, _uncompressedSize;
 	OFDate *_date;
 	uint8_t _level;
 	uint16_t _CRC16;
 	uint8_t _operatingSystemIdentifier;
+	OFString *_Nullable _fileComment;
+	OFNumber *_Nullable _mode, *_Nullable _UID, *_Nullable _GID;
+	OFString *_Nullable _owner, *_Nullable _group;
+	OFDate *_Nullable _modificationDate;
 	OFArray OF_GENERIC(OFData *) *_extensions;
 }
 
@@ -92,7 +97,7 @@ typedef enum of_lha_archive_method_t {
 @property (readonly, retain, nonatomic) OFDate *date;
 
 /*!
- * @brief The LHA level.
+ * @brief The LHA level of the file.
  */
 @property (readonly, nonatomic) uint8_t level;
 
@@ -102,14 +107,51 @@ typedef enum of_lha_archive_method_t {
 @property (readonly, nonatomic) uint16_t CRC16;
 
 /*!
- * @brief The operating system identifier.
+ * @brief The operating system identifier of the file.
  */
 @property (readonly, nonatomic) uint8_t operatingSystemIdentifier;
+
+/*!
+ * @brief The comment of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
+    OFString *fileComment;
 
 /*!
  * @brief The LHA extensions of the file.
  */
 @property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
+
+/*!
+ * @brief The mode of the entry.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *mode;
+
+/*!
+ * @brief The UID of the owner.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *UID;
+
+/*!
+ * @brief The GID of the group.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic) OFNumber *GID;
+
+/*!
+ * @brief The owner of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *owner;
+
+/*!
+ * @brief The group of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic) OFString *group;
+
+/*!
+ * @brief The date of the last modification of the file.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
+    OFDate *modificationDate;
 
 - (instancetype)init OF_UNAVAILABLE;
 @end
