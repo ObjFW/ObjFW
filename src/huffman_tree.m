@@ -111,8 +111,7 @@ of_huffman_tree_construct_single(uint16_t value)
 }
 
 bool
-of_huffman_tree_walk(OFStream *stream,
-    bool (*bitReader)(OFStream *, uint16_t *, uint8_t),
+of_huffman_tree_walk(id stream, bool (*bitReader)(id, uint16_t *, uint8_t),
     struct of_huffman_tree **tree, uint16_t *value)
 {
 	struct of_huffman_tree *iter = *tree;

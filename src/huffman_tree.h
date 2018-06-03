@@ -22,8 +22,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFStream;
-
 struct of_huffman_tree {
 	struct of_huffman_tree *_Nullable leaves[2];
 	uint16_t value;
@@ -36,8 +34,8 @@ extern struct of_huffman_tree *_Nonnull of_huffman_tree_construct(
     uint8_t lengths[_Nonnull], uint16_t count);
 extern struct of_huffman_tree *_Nonnull of_huffman_tree_construct_single(
     uint16_t value);
-extern bool of_huffman_tree_walk(OFStream *_Nullable stream,
-    bool (*bitReader)(OFStream *_Nullable, uint16_t *_Nonnull, uint8_t),
+extern bool of_huffman_tree_walk(id _Nullable stream,
+    bool (*bitReader)(id _Nullable, uint16_t *_Nonnull, uint8_t),
     struct of_huffman_tree *_Nonnull *_Nonnull tree, uint16_t *_Nonnull value);
 extern void of_huffman_tree_release(struct of_huffman_tree *_Nonnull tree);
 #ifdef __cplusplus

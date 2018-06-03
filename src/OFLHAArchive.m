@@ -256,12 +256,8 @@ tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 
 - (OFStream <OFReadyForReadingObserving> *)streamForReadingCurrentEntry
 {
-	OFString *method;
-
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
-
-	method = [_lastEntry method];
 
 	return [[_lastReturnedStream retain] autorelease];
 }
@@ -455,7 +451,7 @@ start:
 	case STATE_LITLEN_TREE:
 		while (_codesReceived < _codesCount) {
 			if OF_UNLIKELY (_skip) {
-				uint_fast16_t skipCount;
+				uint16_t skipCount;
 
 				switch (_codesLengths[_codesReceived]) {
 				case 0:
@@ -484,7 +480,7 @@ start:
 					@throw [OFInvalidFormatException
 					    exception];
 
-				for (uint16_t j = 0; j < skipCount; j++)
+				for (uint_fast16_t j = 0; j < skipCount; j++)
 					_codesLengths[_codesReceived++] = 0;
 
 				_skip = false;
@@ -682,6 +678,8 @@ start:
 		_state = STATE_BLOCK_LITLEN;
 		goto start;
 	}
+
+	OF_UNREACHABLE
 }
 
 - (bool)lowlevelIsAtEndOfStream

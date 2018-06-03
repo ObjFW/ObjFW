@@ -379,7 +379,7 @@ start:
 				memset(CTX.lengths, 0, 19);
 			}
 
-			for (uint_fast16_t i = CTX.receivedCount;
+			for (uint16_t i = CTX.receivedCount;
 			    i < CTX.codeLenCodesCount + 4; i++) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 3)) {
 					CTX.receivedCount = i;
@@ -403,7 +403,7 @@ start:
 			CTX.lengths = [self allocMemoryWithSize:
 			    CTX.litLenCodesCount + CTX.distCodesCount + 258];
 
-		for (uint_fast16_t i = CTX.receivedCount;
+		for (uint16_t i = CTX.receivedCount;
 		    i < CTX.litLenCodesCount + CTX.distCodesCount + 258;) {
 			uint8_t j, count;
 
