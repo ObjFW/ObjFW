@@ -109,6 +109,7 @@ SRCS = OFApplication.m			\
        OFZIPArchiveEntry.m		\
        base64.m				\
        crc32.m				\
+       huffman_tree.m			\
        of_asprintf.m			\
        of_strptime.m			\
        pbkdf2.m				\

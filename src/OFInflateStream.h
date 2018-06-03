@@ -37,12 +37,12 @@ OF_ASSUME_NONNULL_BEGIN
 @public
 #endif
 	OF_KINDOF(OFStream *) _stream;
-	uint8_t _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
+	unsigned char _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
 	uint8_t _bitIndex, _savedBitsLength;
 	uint16_t _savedBits;
-	uint8_t *_Nullable _slidingWindow;
+	unsigned char *_Nullable _slidingWindow;
 	uint16_t _slidingWindowIndex, _slidingWindowMask;
 	int _state;
 	union {
@@ -54,19 +54,19 @@ OF_ASSUME_NONNULL_BEGIN
 			uint16_t position, length;
 		} uncompressed;
 		struct {
-			struct huffman_tree *_Nullable litLenTree;
-			struct huffman_tree *_Nullable distTree;
-			struct huffman_tree *_Nullable codeLenTree;
-			struct huffman_tree *_Nullable treeIter;
+			struct of_huffman_tree *_Nullable litLenTree;
+			struct of_huffman_tree *_Nullable distTree;
+			struct of_huffman_tree *_Nullable codeLenTree;
+			struct of_huffman_tree *_Nullable treeIter;
 			uint8_t *_Nullable lengths;
 			uint16_t receivedCount;
 			uint8_t value, litLenCodesCount, distCodesCount;
 			uint8_t codeLenCodesCount;
 		} huffmanTree;
 		struct {
-			struct huffman_tree *_Nullable litLenTree;
-			struct huffman_tree *_Nullable distTree;
-			struct huffman_tree *_Nullable treeIter;
+			struct of_huffman_tree *_Nullable litLenTree;
+			struct of_huffman_tree *_Nullable distTree;
+			struct of_huffman_tree *_Nullable treeIter;
 			int state;
 			uint16_t value, length, distance, extraBits;
 		} huffman;

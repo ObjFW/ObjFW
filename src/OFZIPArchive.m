@@ -82,8 +82,8 @@
 	bool _atEndOfStream;
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFZIPArchiveEntry *)entry;
+- (instancetype)of_initWithStream: (OFStream *)stream
+			    entry: (OFZIPArchiveEntry *)entry;
 @end
 
 @interface OFZIPArchive_FileWriteStream: OFStream
@@ -463,8 +463,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	}
 
 	_lastReturnedStream = [[OFZIPArchive_FileReadStream alloc]
-	     initWithStream: _stream
-		      entry: entry];
+	     of_initWithStream: _stream
+			 entry: entry];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -728,8 +728,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 @end
 
 @implementation OFZIPArchive_FileReadStream
-- (instancetype)initWithStream: (OFStream *)stream
-			 entry: (OFZIPArchiveEntry *)entry
+- (instancetype)of_initWithStream: (OFStream *)stream
+			    entry: (OFZIPArchiveEntry *)entry
 {
 	self = [super init];
 
