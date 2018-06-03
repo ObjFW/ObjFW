@@ -35,8 +35,13 @@ static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+	OFNumber *mode = [entry mode];
+
+	if (mode == nil)
+		return;
+
 	of_file_attributes_t attributes = [OFDictionary
-	    dictionaryWithObject: [entry mode]
+	    dictionaryWithObject: mode
 			  forKey: of_file_attribute_key_posix_permissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
