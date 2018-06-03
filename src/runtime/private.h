@@ -143,7 +143,6 @@ struct objc_libc {
 	void (*_Nonnull free)(void *_Nullable);
 	int (*_Nonnull vfprintf)(FILE *_Nonnull, const char *_Nonnull, va_list);
 	int (*_Nonnull fflush)(FILE *_Nonnull);
-	void (*_Nonnull exit)(int);
 	void (*_Nonnull abort)(void);
 # ifdef HAVE_SJLJ_EXCEPTIONS
 	int (*_Nonnull _Unwind_SjLj_RaiseException)(void *_Nonnull);

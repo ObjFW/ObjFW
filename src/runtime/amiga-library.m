@@ -467,14 +467,6 @@ fflush(FILE *restrict stream)
 }
 
 void
-exit(int status)
-{
-	libc.exit(status);
-
-	OF_UNREACHABLE
-}
-
-void
 abort(void)
 {
 	libc.abort();

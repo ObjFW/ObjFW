@@ -71,7 +71,6 @@ ctor(void)
 		.free = free,
 		.vfprintf = vfprintf,
 		.fflush = fflush,
-		.exit = exit,
 		.abort = abort,
 #ifdef HAVE_SJLJ_EXCEPTIONS
 		._Unwind_SjLj_RaiseException = _Unwind_SjLj_RaiseException,
