@@ -178,7 +178,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 		extraAlignment = ((instanceSize + extraAlignment - 1) &
 		    ~(extraAlignment - 1)) - extraAlignment;
 
-	instance = malloc(PRE_IVARS_ALIGN + instanceSize +
+	instance = calloc(1, PRE_IVARS_ALIGN + instanceSize +
 	    extraAlignment + extraSize);
 
 	if OF_UNLIKELY (instance == nil) {
@@ -187,8 +187,6 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 	}
 
 	((struct pre_ivar *)instance)->retainCount = 1;
-	((struct pre_ivar *)instance)->firstMem = NULL;
-	((struct pre_ivar *)instance)->lastMem = NULL;
 
 #if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
 	if OF_UNLIKELY (!of_spinlock_new(
@@ -200,8 +198,6 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 #endif
 
 	instance = (OFObject *)(void *)((char *)instance + PRE_IVARS_ALIGN);
-
-	memset(instance, 0, instanceSize);
 
 	if (!objc_constructInstance(class, instance)) {
 		free((char *)instance - PRE_IVARS_ALIGN);
@@ -1038,8 +1034,8 @@ _references_to_categories_of_OFObject(void)
 	if OF_UNLIKELY ((pointer = malloc(PRE_MEM_ALIGN + size)) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: size];
-	preMem = pointer;
 
+	preMem = pointer;
 	preMem->owner = self;
 	preMem->prev = PRE_IVARS->lastMem;
 	preMem->next = NULL;
@@ -1049,6 +1045,7 @@ _references_to_categories_of_OFObject(void)
 
 	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
 		PRE_IVARS->firstMem = preMem;
+
 	PRE_IVARS->lastMem = preMem;
 
 	return (char *)pointer + PRE_MEM_ALIGN;
@@ -1061,6 +1058,45 @@ _references_to_categories_of_OFObject(void)
 		@throw [OFOutOfRangeException exception];
 
 	return [self allocMemoryWithSize: size * count];
+}
+
+- (void *)allocZeroedMemoryWithSize: (size_t)size
+{
+	void *pointer;
+	struct pre_mem *preMem;
+
+	if OF_UNLIKELY (size == 0)
+		return NULL;
+
+	if OF_UNLIKELY (size > SIZE_MAX - PRE_IVARS_ALIGN)
+		@throw [OFOutOfRangeException exception];
+
+	if OF_UNLIKELY ((pointer = calloc(1, PRE_MEM_ALIGN + size)) == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: size];
+
+	preMem = pointer;
+	preMem->owner = self;
+	preMem->prev = PRE_IVARS->lastMem;
+
+	if OF_LIKELY (PRE_IVARS->lastMem != NULL)
+		PRE_IVARS->lastMem->next = preMem;
+
+	if OF_UNLIKELY (PRE_IVARS->firstMem == NULL)
+		PRE_IVARS->firstMem = preMem;
+
+	PRE_IVARS->lastMem = preMem;
+
+	return (char *)pointer + PRE_MEM_ALIGN;
+}
+
+- (void *)allocZeroedMemoryWithSize: (size_t)size
+			      count: (size_t)count
+{
+	if OF_UNLIKELY (count > SIZE_MAX / size)
+		@throw [OFOutOfRangeException exception];
+
+	return [self allocZeroedMemoryWithSize: size * count];
 }
 
 - (void *)resizeMemory: (void *)pointer

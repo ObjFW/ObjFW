@@ -720,7 +720,7 @@ cleanup_emergency(_Unwind_Reason_Code reason, struct _Unwind_Exception *ex)
 void
 objc_exception_throw(id object)
 {
-	struct objc_exception *e = malloc(sizeof(*e));
+	struct objc_exception *e = calloc(1, sizeof(*e));
 	bool emergency = false;
 
 	if (e == NULL) {
@@ -748,7 +748,6 @@ objc_exception_throw(id object)
 	if (e == NULL)
 		OBJC_ERROR("Not enough memory to allocate exception!")
 
-	memset(e, 0, sizeof(*e));
 	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 	e->exception.cleanup = (emergency ? cleanup_emergency : cleanup);
 	e->object = object;

@@ -296,10 +296,8 @@ tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 		_dictionaryBits = dictionaryBits;
 
 		_slidingWindowMask = (1 << dictionaryBits) - 1;
-		_slidingWindow = [self allocMemoryWithSize:
+		_slidingWindow = [self allocZeroedMemoryWithSize:
 		    _slidingWindowMask + 1];
-		/* Avoid leaking data */
-		memset(_slidingWindow, 0, _slidingWindowMask + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -360,8 +358,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = [self allocMemoryWithSize: bits];
-		memset(_codesLengths, 0, bits);
+		_codesLengths = [self allocZeroedMemoryWithSize: bits];
 		_skip = true;
 
 		_state = STATE_CODE_LEN_TREE;
@@ -441,8 +438,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = [self allocMemoryWithSize: bits];
-		memset(_codesLengths, 0, bits);
+		_codesLengths = [self allocZeroedMemoryWithSize: bits];
 		_skip = false;
 
 		_treeIter = _codeLenTree;
@@ -531,8 +527,7 @@ start:
 
 		_codesCount = bits;
 		_codesReceived = 0;
-		_codesLengths = [self allocMemoryWithSize: bits];
-		memset(_codesLengths, 0, bits);
+		_codesLengths = [self allocZeroedMemoryWithSize: bits];
 
 		_treeIter = _codeLenTree;
 		_state = STATE_DIST_TREE;

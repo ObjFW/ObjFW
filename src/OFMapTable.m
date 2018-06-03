@@ -161,10 +161,8 @@ defaultEqual(void *object1, void *object2)
 		if (_capacity < MIN_CAPACITY)
 			_capacity = MIN_CAPACITY;
 
-		_buckets = [self allocMemoryWithSize: sizeof(*_buckets)
-					       count: _capacity];
-
-		memset(_buckets, 0, _capacity * sizeof(*_buckets));
+		_buckets = [self allocZeroedMemoryWithSize: sizeof(*_buckets)
+						     count: _capacity];
 
 		if (of_hash_seed != 0)
 #if defined(HAVE_ARC4RANDOM)
@@ -328,10 +326,8 @@ defaultEqual(void *object1, void *object2)
 	if ((capacity < _capacity && count > _count) || capacity < MIN_CAPACITY)
 		return;
 
-	buckets = [self allocMemoryWithSize: sizeof(*buckets)
-				      count: capacity];
-
-	memset(buckets, 0, capacity * sizeof(*buckets));
+	buckets = [self allocZeroedMemoryWithSize: sizeof(*buckets)
+					    count: capacity];
 
 	for (uint32_t i = 0; i < _capacity; i++) {
 		if (_buckets[i] != NULL && _buckets[i] != &deleted) {

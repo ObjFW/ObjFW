@@ -112,11 +112,9 @@ addPage(void)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: sizeof(*page)];
 
-	if ((page->map = malloc(mapSize)) == NULL)
+	if ((page->map = calloc(1, mapSize)) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: mapSize];
-
-	of_explicit_memset(page->map, 0, mapSize);
 
 	page->page = mapPages(1);
 	of_explicit_memset(page->page, 0, pageSize);

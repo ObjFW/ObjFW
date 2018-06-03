@@ -194,10 +194,8 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 #else
 		_slidingWindowMask = 0x7FFF;
 #endif
-		_slidingWindow = [self allocMemoryWithSize:
+		_slidingWindow = [self allocZeroedMemoryWithSize:
 		    _slidingWindowMask + 1];
-		/* Avoid leaking data */
-		memset(_slidingWindow, 0, _slidingWindowMask + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -374,10 +372,9 @@ start:
 				CTX.codeLenCodesCount = bits;
 			}
 
-			if OF_LIKELY (CTX.lengths == NULL) {
-				CTX.lengths = [self allocMemoryWithSize: 19];
-				memset(CTX.lengths, 0, 19);
-			}
+			if OF_LIKELY (CTX.lengths == NULL)
+				CTX.lengths = [self
+				    allocZeroedMemoryWithSize: 19];
 
 			for (uint16_t i = CTX.receivedCount;
 			    i < CTX.codeLenCodesCount + 4; i++) {
