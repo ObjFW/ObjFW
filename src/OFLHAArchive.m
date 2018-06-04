@@ -29,8 +29,10 @@
 #import "OFSeekableStream.h"
 #import "OFString.h"
 
+#import "crc16.h"
 #import "huffman_tree.h"
 
+#import "OFChecksumFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
@@ -71,6 +73,7 @@
 {
 	OF_KINDOF(OFStream *) _stream;
 	uint32_t _toRead;
+	uint16_t _expectedCRC16, _CRC16;
 	bool _atEndOfStream;
 }
 
@@ -728,6 +731,8 @@ start:
 			_toRead = [entry uncompressedSize];
 		else
 			_toRead = [entry compressedSize];
+
+		_expectedCRC16 = [entry CRC16];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -761,9 +766,14 @@ start:
 			       length: length];
 
 	_toRead -= ret;
+	_CRC16 = of_crc16(_CRC16, buffer, ret);
 
-	if (_toRead == 0)
+	if (_toRead == 0) {
 		_atEndOfStream = true;
+
+		if (_CRC16 != _expectedCRC16)
+			@throw [OFChecksumFailedException exception];
+	}
 
 	return ret;
 }
