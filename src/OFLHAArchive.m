@@ -299,8 +299,9 @@ tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 		_dictionaryBits = dictionaryBits;
 
 		_slidingWindowMask = (1 << dictionaryBits) - 1;
-		_slidingWindow = [self allocZeroedMemoryWithSize:
+		_slidingWindow = [self allocMemoryWithSize:
 		    _slidingWindowMask + 1];
+		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
