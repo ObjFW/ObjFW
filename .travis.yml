@@ -53,22 +53,22 @@ matrix:
         - config=amigaos
 
     # Nintendo DS and 3DS
-    - os: linux
-      dist: trusty
-      env:
-        - config=devkitarm
+    #- os: linux
+    #  dist: trusty
+    #  env:
+    #    - config=devkitarm
 
     # Nintendo Wii
-    - os: linux
-      dist: trusty
-      env:
-        - config=devkitppc
+    #- os: linux
+    #  dist: trusty
+    #  env:
+    #    - config=devkitppc
 
     # PSP
-    - os: linux
-      dist: trusty
-      env:
-        - config=devkitpsp
+    #- os: linux
+    #  dist: trusty
+    #  env:
+    #    - config=devkitpsp
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
