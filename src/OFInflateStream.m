@@ -246,6 +246,7 @@ start:
 			[_stream unreadFromBuffer: _buffer + _bufferIndex
 					   length: _bufferLength -
 						   _bufferIndex];
+			_bufferIndex = _bufferLength = 0;
 
 			_atEndOfStream = true;
 			return bytesWritten;
@@ -677,6 +678,11 @@ start:
 
 - (void)close
 {
+	/* Give back our buffer to the stream, in case it's shared */
+	[_stream unreadFromBuffer: _buffer + _bufferIndex
+			   length: _bufferLength - _bufferIndex];
+	_bufferIndex = _bufferLength = 0;
+
 	[_stream release];
 	_stream = nil;
 
