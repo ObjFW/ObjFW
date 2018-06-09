@@ -105,7 +105,7 @@ typeEncodingForSelector(Class class, SEL selector)
 {
 #if defined(OF_OBJFW_RUNTIME)
 	return class_getMethodTypeEncoding(class, selector);
-#else
+#elif defined(OF_APPLE_RUNTIME)
 	Method m;
 
 	if ((m = class_getInstanceMethod(class, selector)) == NULL)
