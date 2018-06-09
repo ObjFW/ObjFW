@@ -15,5 +15,5 @@
  * file.
  */
 
-#define INFLATE64
+#define OF_INFLATE64_STREAM_M
 #include "OFInflateStream.m"

@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-#ifndef INFLATE64
+#ifndef OF_INFLATE64_STREAM_M
 # import "OFInflateStream.h"
 #else
 # import "OFInflate64Stream.h"
@@ -38,7 +38,11 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 
-#define BUFFER_SIZE		  OF_INFLATE_STREAM_BUFFER_SIZE
+#ifndef OF_INFLATE64_STREAM_M
+# define BUFFER_SIZE OF_INFLATE_STREAM_BUFFER_SIZE
+#else
+# define BUFFER_SIZE OF_INFLATE64_STREAM_BUFFER_SIZE
+#endif
 
 enum state {
 	BLOCK_HEADER,
@@ -57,7 +61,7 @@ enum huffman_state {
 	PROCESS_PAIR
 };
 
-#ifndef INFLATE64
+#ifndef OF_INFLATE64_STREAM_M
 static const uint8_t numDistanceCodes = 30;
 static const uint8_t lengthCodes[29] = {
 	/* indices are -257, values -3 */
@@ -168,7 +172,6 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	fixedDistTree = of_huffman_tree_construct(lengths, 32);
 }
 
-#ifndef INFLATE64
 + (instancetype)streamWithStream: (OFStream *)stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
@@ -189,7 +192,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 		/* 0-7 address the bit, 8 means fetch next byte */
 		_bitIndex = 8;
 
-#ifdef INFLATE64
+#ifdef OF_INFLATE64_STREAM_M
 		_slidingWindowMask = 0xFFFF;
 #else
 		_slidingWindowMask = 0x7FFF;
@@ -222,7 +225,6 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 
 	[super dealloc];
 }
-#endif
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer_
 			  length: (size_t)length
@@ -656,7 +658,6 @@ start:
 	OF_UNREACHABLE
 }
 
-#ifndef INFLATE64
 - (bool)lowlevelIsAtEndOfStream
 {
 	if (_stream == nil)
@@ -674,7 +675,6 @@ start:
 {
 	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
 }
-#endif
 
 - (void)close
 {
