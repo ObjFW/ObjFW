@@ -728,23 +728,24 @@ start:
 	self = [super init];
 
 	@try {
-		OFString *method;
+		OFString *compressionMethod;
 
 		_stream = [stream retain];
 
-		method = [entry method];
+		compressionMethod = [entry compressionMethod];
 
-		if ([method isEqual: @"-lh4-"] || [method isEqual: @"-lh5-"])
+		if ([compressionMethod isEqual: @"-lh4-"] ||
+		    [compressionMethod isEqual: @"-lh5-"])
 			_decompressedStream = [[OFLHAArchive_LHStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 4
 			       dictionaryBits: 14];
-		else if ([method isEqual: @"-lh6-"])
+		else if ([compressionMethod isEqual: @"-lh6-"])
 			_decompressedStream = [[OFLHAArchive_LHStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 16];
-		else if ([method isEqual: @"-lh7-"])
+		else if ([compressionMethod isEqual: @"-lh7-"])
 			_decompressedStream = [[OFLHAArchive_LHStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 5

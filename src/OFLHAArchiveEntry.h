@@ -37,7 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_LHA_ARCHIVE_ENTRY_M
 @public
 #endif
-	OFString *_fileName, *_Nullable _directoryName, *_method;
+	OFString *_fileName, *_Nullable _directoryName, *_compressionMethod;
 	uint32_t _compressedSize, _uncompressedSize;
 	OFDate *_date;
 	uint8_t _level;
@@ -56,9 +56,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, copy, nonatomic) OFString *fileName;
 
 /*!
- * @brief The method of the entry.
+ * @brief The compression method of the entry.
  */
-@property (readonly, copy, nonatomic) OFString *method;
+@property (readonly, copy, nonatomic) OFString *compressionMethod;
 
 /*!
  * @brief The compressed size of the entry's file.

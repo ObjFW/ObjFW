@@ -22,9 +22,19 @@ OF_ASSUME_NONNULL_BEGIN
 /*! @file */
 
 enum {
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE	  = 0,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE	  = 8,
-	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64 = 9
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE		=  0,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_SHRINK		=  1,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_1 =  2,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_2 =  3,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_3 =  4,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_4 =  5,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_IMPLODE		=  6,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE		=  8,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64	=  9,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_BZIP2		= 12,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_LZMA		= 14,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_WAVPACK		= 97,
+	OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_PPMD		= 98
 };
 
 /*!
@@ -215,12 +225,22 @@ enum {
 extern "C" {
 #endif
 /*!
- * @brief Converts the ZIP entry version to a string
+ * @brief Converts the ZIP entry version to a string.
  *
  * @param version The ZIP entry version to convert to a string
  * @return The ZIP entry version as a string
  */
 extern OFString *of_zip_archive_entry_version_to_string(uint16_t version);
+
+/*!
+ * @brief Convers the ZIP entry compression method to a string.
+ *
+ * @param compressionMethod The ZIP entry compression method to convert to a
+ *			    string
+ * @return The ZIP entry compression method as a string
+ */
+extern OFString *of_zip_archive_entry_compression_method_to_string(
+    uint16_t compressionMethod);
 
 /*!
  * @brief Gets a pointer to and the size of the extensible data field with the

@@ -175,9 +175,9 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
-				    @"list_method",
-				    @"Method: %[method]",
-				    @"method", [entry method])];
+				    @"list_compression_method",
+				    @"Compression method: %[method]",
+				    @"method", [entry compressionMethod])];
 
 				if ([entry operatingSystemIdentifier] != '\0') {
 					OFString *OSID =

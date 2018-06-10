@@ -110,6 +110,9 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			OFString *uncompressedSize = [OFString
 			    stringWithFormat: @"%" PRIu64,
 					      [entry uncompressedSize]];
+			OFString *compressionMethod =
+			    of_zip_archive_entry_compression_method_to_string(
+			    [entry compressionMethod]);
 			OFString *CRC32 = [OFString
 			    stringWithFormat: @"%08" PRIX32, [entry CRC32]];
 			OFString *modificationDate = [[entry modificationDate]
@@ -125,6 +128,11 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			    @"list_uncompressed_size",
 			    @"Uncompressed: %[size] bytes",
 			    @"size", uncompressedSize)];
+			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"list_compression_method",
+			    @"Compression method: %[method]",
+			    @"method", compressionMethod)];
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_crc32",
 			    @"CRC32: %[crc32]",

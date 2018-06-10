@@ -109,6 +109,41 @@ of_zip_archive_entry_version_to_string(uint16_t version)
 		    (version % 0xFF) / 10, (version & 0xFF) % 10, version >> 8];
 }
 
+OFString *
+of_zip_archive_entry_compression_method_to_string(uint16_t compressionMethod)
+{
+	switch (compressionMethod) {
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_NONE:
+		return @"none";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_SHRINK:
+		return @"Shrink";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_1:
+		return @"Reduce (factor 1)";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_2:
+		return @"Reduce (factor 2)";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_3:
+		return @"Reduce (factor 3)";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_REDUCE_FACTOR_4:
+		return @"Reduce (factor 4)";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_IMPLODE:
+		return @"Implode";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE:
+		return @"Deflate";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_DEFLATE64:
+		return @"Deflate64";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_BZIP2:
+		return @"BZip2";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_LZMA:
+		return @"LZMA";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_WAVPACK:
+		return @"WavPack";
+	case OF_ZIP_ARCHIVE_ENTRY_COMPRESSION_METHOD_PPMD:
+		return @"PPMd";
+	default:
+		return @"unknown";
+	}
+}
+
 size_t
 of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
     uint16_t *size)
@@ -401,20 +436,23 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
+	OFString *compressionMethod =
+	    of_zip_archive_entry_compression_method_to_string(
+	    _compressionMethod);
 	OFString *ret = [OFString stringWithFormat:
 	    @"<%@:\n"
 	    @"\tFile name = %@\n"
 	    @"\tFile comment = %@\n"
 	    @"\tGeneral purpose bit flag = %u\n"
-	    @"\tCompression method = %u\n"
 	    @"\tCompressed size = %" @PRIu64 "\n"
 	    @"\tUncompressed size = %" @PRIu64 "\n"
+	    @"\tCompression method = %@\n"
 	    @"\tModification date = %@\n"
 	    @"\tCRC32 = %08" @PRIX32 @"\n"
 	    @"\tExtra field = %@\n"
 	    @">",
 	    [self class], _fileName, _fileComment, _generalPurposeBitFlag,
-	    _compressionMethod, _compressedSize, _uncompressedSize,
+	    _compressedSize, _uncompressedSize, compressionMethod,
 	    [self modificationDate], _CRC32, _extraField];
 
 	[ret retain];

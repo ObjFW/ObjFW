@@ -264,7 +264,8 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 }
 
 @implementation OFLHAArchiveEntry
-@synthesize method = _method, compressedSize = _compressedSize;
+@synthesize compressionMethod = _compressionMethod;
+@synthesize compressedSize = _compressedSize;
 @synthesize uncompressedSize = _uncompressedSize, date = _date;
 @synthesize level = _level, CRC16 = _CRC16;
 @synthesize operatingSystemIdentifier = _operatingSystemIdentifier;
@@ -286,7 +287,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	@try {
 		uint32_t date;
 
-		_method = [[OFString alloc]
+		_compressionMethod = [[OFString alloc]
 		    initWithCString: header + 2
 			   encoding: OF_STRING_ENCODING_ASCII
 			     length: 5];
@@ -358,7 +359,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 
 - (void)dealloc
 {
-	[_method release];
+	[_compressionMethod release];
 	[_fileName release];
 	[_directoryName release];
 	[_date release];
@@ -398,7 +399,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	OFString *ret = [OFString stringWithFormat:
 	    @"<%@:\n"
 	    @"\tFile name = %@\n"
-	    @"\tMethod = %@\n"
+	    @"\tCompression method = %@\n"
 	    @"\tCompressed size = %" @PRIu32 "\n"
 	    @"\tUncompressed size = %" @PRIu32 "\n"
 	    @"\tDate = %@\n"
@@ -414,7 +415,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	    @"\tModification date = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
-	    [self class], [self fileName], _method, _compressedSize,
+	    [self class], [self fileName], _compressionMethod, _compressedSize,
 	    _uncompressedSize, _date, _level, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, mode, _UID, _GID, _owner,
 	    _group, _modificationDate, extensions];
