@@ -172,7 +172,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	fixedDistTree = of_huffman_tree_construct(lengths, 32);
 }
 
-+ (instancetype)streamWithStream: (OFStream *)stream
++ (instancetype)streamWithStream: (OF_KINDOF(OFStream *))stream
 {
 	return [[[self alloc] initWithStream: stream] autorelease];
 }
@@ -182,7 +182,7 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
 {
 	self = [super init];
 

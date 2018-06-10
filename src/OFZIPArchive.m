@@ -43,6 +43,7 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSeekFailedException.h"
+#import "OFTruncatedDataException.h"
 #import "OFUnsupportedVersionException.h"
 
 /*
@@ -75,7 +76,8 @@
 
 @interface OFZIPArchive_FileReadStream: OFStream
 {
-	OFStream *_stream, *_decompressedStream;
+	OF_KINDOF(OFStream *) _stream;
+	OF_KINDOF(OFStream *) _decompressedStream;
 	OFZIPArchiveEntry *_entry;
 	uint64_t _toRead;
 	uint32_t _CRC32;
@@ -778,6 +780,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (bool)lowlevelIsAtEndOfStream
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	return _atEndOfStream;
 }
 
@@ -803,23 +808,37 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	ret = [_decompressedStream readIntoBuffer: buffer
 					   length: length];
 
-	if (ret == 0)
-		_atEndOfStream = true;
-
 	_toRead -= ret;
 	_CRC32 = of_crc32(_CRC32, buffer, ret);
 
-	if (_toRead == 0)
+	if (_toRead == 0) {
+		_atEndOfStream = true;
+
 		if (~_CRC32 != [_entry CRC32])
 			@throw [OFChecksumFailedException exception];
+	}
 
 	return ret;
+}
+
+- (bool)hasDataInReadBuffer
+{
+	return ([super hasDataInReadBuffer] ||
+	    [_decompressedStream hasDataInReadBuffer]);
+}
+
+- (int)fileDescriptorForReading
+{
+	return [_decompressedStream fileDescriptorForReading];
 }
 
 - (void)close
 {
 	[_stream release];
 	_stream = nil;
+
+	[_decompressedStream release];
+	_decompressedStream = nil;
 
 	[super close];
 }

@@ -81,7 +81,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A new, autoreleased OFInflateStream
  */
-+ (instancetype)streamWithStream: (OFStream *)stream;
++ (instancetype)streamWithStream: (OF_KINDOF(OFStream *))stream;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -93,7 +93,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A initialized OFInflateStream
  */
-- (instancetype)initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+    OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

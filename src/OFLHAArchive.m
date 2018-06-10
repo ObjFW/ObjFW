@@ -44,9 +44,10 @@
 @interface OFLHAArchive_LHStream: OFStream
 {
 @public
-	OFStream *_stream;
+	OF_KINDOF(OFStream *) _stream;
 	uint8_t _distanceBits, _dictionaryBits;
 	unsigned char _buffer[LHSTREAM_BUFFER_SIZE];
+	uint32_t _bytesConsumed;
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
 	uint8_t _bitIndex, _savedBitsLength;
@@ -64,7 +65,7 @@
 	uint32_t _distance;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 		     distanceBits: (uint8_t)distanceBits
 		   dictionaryBits: (uint8_t)dictionaryBits;
 @end
@@ -72,12 +73,14 @@
 @interface OFLHAArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OF_KINDOF(OFStream *) _stream;
-	uint32_t _toRead;
-	uint16_t _expectedCRC16, _CRC16;
+	OF_KINDOF(OFStream *) _decompressedStream;
+	OFLHAArchiveEntry *_entry;
+	uint32_t _toRead, _bytesConsumed;
+	uint16_t _CRC16;
 	bool _atEndOfStream;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 			    entry: (OFLHAArchiveEntry *)entry;
 - (void)of_skip;
 @end
@@ -115,6 +118,8 @@ tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 				size_t length = [stream->_stream
 				    readIntoBuffer: stream->_buffer
 					    length: LHSTREAM_BUFFER_SIZE];
+
+				stream->_bytesConsumed += (uint32_t)length;
 
 				if OF_UNLIKELY (length < 1) {
 					stream->_savedBits = ret;
@@ -283,7 +288,7 @@ tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 @end
 
 @implementation OFLHAArchive_LHStream
-- (instancetype)of_initWithStream: (OFStream *)stream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 		     distanceBits: (uint8_t)distanceBits
 		   dictionaryBits: (uint8_t)dictionaryBits
 {
@@ -602,6 +607,7 @@ start:
 			[_stream unreadFromBuffer: _buffer + _bufferIndex
 					   length: _bufferLength -
 						   _bufferIndex];
+			_bytesConsumed -= _bufferLength - _bufferIndex;
 			_bufferIndex = _bufferLength = 0;
 
 			return bytesWritten;
@@ -690,11 +696,22 @@ start:
 	    _bufferLength - _bufferIndex == 0 && _state == STATE_BLOCK_HEADER);
 }
 
+- (int)fileDescriptorForReading
+{
+	return [_stream fileDescriptorForReading];
+}
+
+- (bool)hasDataInReadBuffer
+{
+	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+}
+
 - (void)close
 {
 	/* Give back our buffer to the stream, in case it's shared */
 	[_stream unreadFromBuffer: _buffer + _bufferIndex
 			   length: _bufferLength - _bufferIndex];
+	_bytesConsumed -= _bufferLength - _bufferIndex;
 	_bufferIndex = _bufferLength = 0;
 
 	[_stream release];
@@ -705,40 +722,38 @@ start:
 @end
 
 @implementation OFLHAArchive_FileReadStream
-- (instancetype)of_initWithStream: (OFStream *)stream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 			    entry: (OFLHAArchiveEntry *)entry
 {
 	self = [super init];
 
 	@try {
-		OFString *method = [entry method];
+		OFString *method;
+
+		_stream = [stream retain];
+
+		method = [entry method];
 
 		if ([method isEqual: @"-lh4-"] || [method isEqual: @"-lh5-"])
-			_stream = [[OFLHAArchive_LHStream alloc]
+			_decompressedStream = [[OFLHAArchive_LHStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 4
 			       dictionaryBits: 14];
 		else if ([method isEqual: @"-lh6-"])
-			_stream = [[OFLHAArchive_LHStream alloc]
+			_decompressedStream = [[OFLHAArchive_LHStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 16];
 		else if ([method isEqual: @"-lh7-"])
-			_stream = [[OFLHAArchive_LHStream alloc]
+			_decompressedStream = [[OFLHAArchive_LHStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 17];
 		else
-			_stream = [stream retain];
+			_decompressedStream = [stream retain];
 
-		if ([method isEqual: @"-lh0-"] || [method isEqual: @"-lhd-"] ||
-		    [method isEqual: @"-lz4-"] || [method isEqual: @"-lh5-"] ||
-		    [method isEqual: @"-lh6-"] || [method isEqual: @"-lh6-"])
-			_toRead = [entry uncompressedSize];
-		else
-			_toRead = [entry compressedSize];
-
-		_expectedCRC16 = [entry CRC16];
+		_entry = [entry copy];
+		_toRead = [entry uncompressedSize];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -751,7 +766,19 @@ start:
 {
 	[self close];
 
+	[_stream release];
+	[_decompressedStream release];
+	[_entry release];
+
 	[super dealloc];
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	return _atEndOfStream;
 }
 
 - (size_t)lowlevelReadIntoBuffer: (void *)buffer
@@ -768,8 +795,8 @@ start:
 	if (length > _toRead)
 		length = _toRead;
 
-	ret = [_stream readIntoBuffer: buffer
-			       length: length];
+	ret = [_decompressedStream readIntoBuffer: buffer
+					   length: length];
 
 	_toRead -= ret;
 	_CRC16 = of_crc16(_CRC16, buffer, ret);
@@ -777,29 +804,67 @@ start:
 	if (_toRead == 0) {
 		_atEndOfStream = true;
 
-		if (_CRC16 != _expectedCRC16)
+		if (_CRC16 != [_entry CRC16])
 			@throw [OFChecksumFailedException exception];
 	}
 
 	return ret;
 }
 
-- (bool)lowlevelIsAtEndOfStream
-{
-	if (_stream == nil)
-		@throw [OFNotOpenException exceptionWithObject: self];
-
-	return _atEndOfStream;
-}
-
 - (bool)hasDataInReadBuffer
 {
-	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+	return ([super hasDataInReadBuffer] ||
+	    [_decompressedStream hasDataInReadBuffer]);
 }
 
 - (int)fileDescriptorForReading
 {
-	return [_stream fileDescriptorForReading];
+	return [_decompressedStream fileDescriptorForReading];
+}
+
+- (void)of_skip
+{
+	OF_KINDOF(OFStream *) stream;
+	uint32_t toRead;
+
+	if (_stream == nil || _toRead == 0)
+		return;
+
+	stream = _stream;
+	toRead = _toRead;
+
+	/*
+	 * Get the number of consumed bytes and directly read from the
+	 * compressed stream, to make skipping much faster.
+	 */
+	if ([_decompressedStream isKindOfClass:
+	    [OFLHAArchive_LHStream class]]) {
+		OFLHAArchive_LHStream *LHStream = _decompressedStream;
+
+		[LHStream close];
+		toRead = [_entry compressedSize] - LHStream->_bytesConsumed;
+
+		stream = _stream;
+	}
+
+	if ([stream isKindOfClass: [OFSeekableStream class]] &&
+	    (sizeof(of_offset_t) > 4 || toRead < INT32_MAX))
+		[stream seekToOffset: (of_offset_t)toRead
+			      whence: SEEK_CUR];
+	else {
+		while (toRead > 0) {
+			char buffer[512];
+			size_t min = toRead;
+
+			if (min > 512)
+				min = 512;
+
+			toRead -= [stream readIntoBuffer: buffer
+						  length: min];
+		}
+	}
+
+	_toRead = 0;
 }
 
 - (void)close
@@ -809,31 +874,9 @@ start:
 	[_stream release];
 	_stream = nil;
 
+	[_decompressedStream release];
+	_decompressedStream = nil;
+
 	[super close];
-}
-
-- (void)of_skip
-{
-	if (_stream == nil || _toRead == 0)
-		return;
-
-	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
-	    (sizeof(of_offset_t) > 4 || _toRead < INT32_MAX)) {
-		[_stream seekToOffset: (of_offset_t)_toRead
-			       whence: SEEK_CUR];
-
-		_toRead = 0;
-	} else {
-		while (_toRead > 0) {
-			char buffer[512];
-			size_t min = _toRead;
-
-			if (min > 512)
-				min = 512;
-
-			_toRead -= [_stream readIntoBuffer: buffer
-						    length: min];
-		}
-	}
 }
 @end
