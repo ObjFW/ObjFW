@@ -109,8 +109,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readwrite, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
 
-- (instancetype)init OF_UNAVAILABLE;
-
 /*!
  * @brief Converts the OFMutableLHAArchiveEntry to an immutable
  *	  OFLHAArchiveEntry.
