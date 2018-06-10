@@ -72,6 +72,7 @@
     "list_mode": "Modus: %[mode]",
     "list_owner": "Besitzer: %[owner]",
     "list_group": "Gruppe: %[group]",
+    "list_header_level": "Header-Level: %[level]",
     "list_modification_date": "Änderungsdatum: %[date]",
     "list_type_normal": "Typ: Normale Datei",
     "list_type_hardlink": "Typ: Harter Link",

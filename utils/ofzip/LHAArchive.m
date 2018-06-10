@@ -122,6 +122,11 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			    @"Uncompressed: %[size] bytes",
 			    @"size", uncompressedSize)];
 			[of_stdout writeString: @"\t"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"list_compression_method",
+			    @"Compression method: %[method]",
+			    @"method", [entry compressionMethod])];
+			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_crc16",
 			    @"CRC16: %[crc16]",
 			    @"crc16", CRC16)];
@@ -164,20 +169,15 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			}
 
 			if (app->_outputLevel >= 2) {
-				OFString *level = [OFString stringWithFormat:
-				    @"%" PRIu8, [entry level]];
+				OFString *headerLevel = [OFString
+				    stringWithFormat: @"%" PRIu8,
+						      [entry headerLevel]];
 
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
-				    @"list_level",
-				    @"Level: %[level]",
-				    @"level", level)];
-
-				[of_stdout writeString: @"\t"];
-				[of_stdout writeLine: OF_LOCALIZED(
-				    @"list_compression_method",
-				    @"Compression method: %[method]",
-				    @"method", [entry compressionMethod])];
+				    @"list_header_level",
+				    @"Header level: %[level]",
+				    @"level", headerLevel)];
 
 				if ([entry operatingSystemIdentifier] != '\0') {
 					OFString *OSID =

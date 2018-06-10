@@ -254,7 +254,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 		if (!parseExtension(entry, extension, encoding, allowFileName))
 			[entry->_extensions addObject: extension];
 
-		if (entry->_level == 1) {
+		if (entry->_headerLevel == 1) {
 			if (entry->_compressedSize < size)
 				@throw [OFInvalidFormatException exception];
 
@@ -264,18 +264,30 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 }
 
 @implementation OFLHAArchiveEntry
-@synthesize compressionMethod = _compressionMethod;
-@synthesize compressedSize = _compressedSize;
-@synthesize uncompressedSize = _uncompressedSize, date = _date;
-@synthesize level = _level, CRC16 = _CRC16;
-@synthesize operatingSystemIdentifier = _operatingSystemIdentifier;
-@synthesize fileComment = _fileComment, mode = _mode, UID = _UID, GID = _GID;
-@synthesize owner = _owner, group = _group;
-@synthesize modificationDate = _modificationDate, extensions = _extensions;
++ (instancetype)entryWithFileName: (OFString *)fileName
+{
+	return [[[self alloc] initWithFileName: fileName] autorelease];
+}
 
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithFileName: (OFString *)fileName
+{
+	self = [super init];
+
+	@try {
+		_fileName = [fileName copy];
+		_compressionMethod = @"-lh0-";
+		_date = [[OFDate alloc] initWithTimeIntervalSince1970: 0];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)of_initWithHeader: (char [21])header
@@ -301,10 +313,10 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 		memcpy(&date, header + 15, 4);
 		date = OF_BSWAP32_IF_BE(date);
 
-		_level = header[20];
+		_headerLevel = header[20];
 		_extensions = [[OFMutableArray alloc] init];
 
-		switch (_level) {
+		switch (_headerLevel) {
 		case 0:
 		case 1:;
 			void *pool = objc_autoreleasePoolPush();
@@ -322,7 +334,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 
 			_CRC16 = [stream readLittleEndianInt16];
 
-			if (_level == 1) {
+			if (_headerLevel == 1) {
 				_operatingSystemIdentifier = [stream readInt8];
 
 				readExtensions(self, stream, encoding, false);
@@ -342,7 +354,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			break;
 		default:;
 			OFString *version = [OFString
-			    stringWithFormat: @"%u", _level];
+			    stringWithFormat: @"%u", _headerLevel];
 
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: version];
@@ -379,12 +391,123 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	return [self retain];
 }
 
+- (id)mutableCopy
+{
+	OFLHAArchiveEntry *copy = [[OFMutableLHAArchiveEntry alloc]
+	    initWithFileName: _fileName];
+
+	@try {
+		[copy->_compressionMethod release];
+		copy->_compressionMethod = nil;
+
+		[copy->_date release];
+		copy->_date = nil;
+
+		copy->_directoryName = [_directoryName copy];
+		copy->_compressionMethod = [_compressionMethod copy];
+		copy->_compressedSize = _compressedSize;
+		copy->_uncompressedSize = _uncompressedSize;
+		copy->_date = [_date copy];
+		copy->_headerLevel = _headerLevel;
+		copy->_CRC16 = _CRC16;
+		copy->_operatingSystemIdentifier = _operatingSystemIdentifier;
+		copy->_fileComment = [_fileComment copy];
+		copy->_mode = [_mode retain];
+		copy->_UID = [_UID retain];
+		copy->_GID = [_GID retain];
+		copy->_owner = [_owner copy];
+		copy->_group = [_group copy];
+		copy->_modificationDate = [_modificationDate retain];
+		copy->_extensions = [_extensions copy];
+	} @catch (id e) {
+		[copy release];
+		@throw e;
+	}
+
+	return copy;
+}
+
 - (OFString *)fileName
 {
 	if (_directoryName == nil)
 		return _fileName;
 
 	return [_directoryName stringByAppendingString: _fileName];
+}
+
+- (OFString *)compressionMethod
+{
+	return _compressionMethod;
+}
+
+- (uint32_t)compressedSize
+{
+	return _compressedSize;
+}
+
+- (uint32_t)uncompressedSize
+{
+	return _uncompressedSize;
+}
+
+- (OFDate *)date
+{
+	return _date;
+}
+
+- (uint8_t)headerLevel
+{
+	return _headerLevel;
+}
+
+- (uint16_t)CRC16
+{
+	return _CRC16;
+}
+
+- (uint8_t)operatingSystemIdentifier
+{
+	return _operatingSystemIdentifier;
+}
+
+- (OFString *)fileComment
+{
+	return _fileComment;
+}
+
+- (OFNumber *)mode
+{
+	return _mode;
+}
+
+- (OFNumber *)UID
+{
+	return _UID;
+}
+
+- (OFNumber *)GID
+{
+	return _GID;
+}
+
+- (OFString *)owner
+{
+	return _owner;
+}
+
+- (OFString *)group
+{
+	return _group;
+}
+
+- (OFDate *)modificationDate
+{
+	return _modificationDate;
+}
+
+- (OFArray OF_GENERIC(OFData *) *)extensions
+{
+	return _extensions;
 }
 
 - (OFString *)description
@@ -403,7 +526,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	    @"\tCompressed size = %" @PRIu32 "\n"
 	    @"\tUncompressed size = %" @PRIu32 "\n"
 	    @"\tDate = %@\n"
-	    @"\tLevel = %u\n"
+	    @"\tHeader level = %u\n"
 	    @"\tCRC16 = %04" @PRIX16 @"\n"
 	    @"\tOperating system identifier = %c\n"
 	    @"\tComment = %@\n"
@@ -416,7 +539,7 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	    @"\tExtensions: %@"
 	    @">",
 	    [self class], [self fileName], _compressionMethod, _compressedSize,
-	    _uncompressedSize, _date, _level, _CRC16,
+	    _uncompressedSize, _date, _headerLevel, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, mode, _UID, _GID, _owner,
 	    _group, _modificationDate, extensions];
 

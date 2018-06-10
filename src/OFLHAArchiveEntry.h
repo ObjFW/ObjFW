@@ -29,10 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @class OFLHAArchiveEntry OFLHAArchiveEntry.h ObjFW/OFLHAArchiveEntry.h
  *
- * @brief A class which represents an entry in the central directory of a LHA
- *	  archive.
+ * @brief A class which represents an entry in an LHA archive.
  */
-@interface OFLHAArchiveEntry: OFObject <OFCopying>
+@interface OFLHAArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
 #ifdef OF_LHA_ARCHIVE_ENTRY_M
 @public
@@ -40,7 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_fileName, *_Nullable _directoryName, *_compressionMethod;
 	uint32_t _compressedSize, _uncompressedSize;
 	OFDate *_date;
-	uint8_t _level;
+	uint8_t _headerLevel;
 	uint16_t _CRC16;
 	uint8_t _operatingSystemIdentifier;
 	OFString *_Nullable _fileComment;
@@ -78,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The LHA level of the file.
  */
-@property (readonly, nonatomic) uint8_t level;
+@property (readonly, nonatomic) uint8_t headerLevel;
 
 /*!
  * @brief The CRC16 of the file.
@@ -95,11 +94,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (readonly, copy, nonatomic)
     OFString *fileComment;
-
-/*!
- * @brief The LHA extensions of the file.
- */
-@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
 
 /*!
  * @brief The mode of the entry.
@@ -132,7 +126,31 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, retain, nonatomic)
     OFDate *modificationDate;
 
+/*!
+ * @brief The LHA extensions of the file.
+ */
+@property (readonly, copy, nonatomic) OFArray OF_GENERIC(OFData *) *extensions;
+
+/*!
+ * @brief Creates a new OFLHAArchiveEntry with the specified file name.
+ *
+ * @param fileName The file name for the OFLHAArchiveEntry
+ * @return A new, autoreleased OFLHAArchiveEntry
+ */
++ (instancetype)entryWithFileName: (OFString *)fileName;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFLHAArchiveEntry with the specified
+ *	  file name.
+ *
+ * @param fileName The file name for the OFLHAArchiveEntry
+ * @return An initialized OFLHAArchiveEntry
+ */
+- (instancetype)initWithFileName: (OFString *)fileName;
 @end
 
 OF_ASSUME_NONNULL_END
+
+#import "OFMutableLHAArchiveEntry.h"

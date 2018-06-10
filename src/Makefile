@@ -46,6 +46,7 @@ SRCS = OFApplication.m			\
        OFMutableArray.m			\
        OFMutableData.m			\
        OFMutableDictionary.m		\
+       OFMutableLHAArchiveEntry.m	\
        OFMutablePair.m			\
        OFMutableSet.m			\
        OFMutableString.m		\
