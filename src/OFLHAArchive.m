@@ -703,7 +703,8 @@ start:
 
 - (bool)hasDataInReadBuffer
 {
-	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer] ||
+	    _bufferLength - _bufferIndex > 0);
 }
 
 - (void)close
@@ -792,6 +793,10 @@ start:
 
 	if (_atEndOfStream)
 		return 0;
+
+	if ([_stream isAtEndOfStream] &&
+	    ![_decompressedStream hasDataInReadBuffer])
+		@throw [OFTruncatedDataException exception];
 
 	if (length > _toRead)
 		length = _toRead;

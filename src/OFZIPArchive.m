@@ -797,6 +797,10 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (_atEndOfStream)
 		return 0;
 
+	if ([_stream isAtEndOfStream] &&
+	    ![_decompressedStream hasDataInReadBuffer])
+		@throw [OFTruncatedDataException exception];
+
 #if SIZE_MAX >= UINT64_MAX
 	if (length > UINT64_MAX)
 		@throw [OFOutOfRangeException exception];

@@ -673,7 +673,8 @@ start:
 
 - (bool)hasDataInReadBuffer
 {
-	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer] ||
+	    _bufferLength - _bufferIndex > 0);
 }
 
 - (void)close
