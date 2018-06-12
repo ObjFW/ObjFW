@@ -23,7 +23,7 @@
 
 #import "crc32.h"
 
-#import "OFChecksumFailedException.h"
+#import "OFChecksumMismatchException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -81,6 +81,7 @@
 
 	for (;;) {
 		uint8_t byte;
+		uint32_t CRC32, uncompressedSize;
 
 		if ([_stream isAtEndOfStream]) {
 			if (_state != OF_GZIP_STREAM_ID1)
@@ -261,9 +262,18 @@
 			if (_bytesRead < 4)
 				return 0;
 
-			if ((((uint32_t)_buffer[3] << 24) | (_buffer[2] << 16) |
-			    (_buffer[1] << 8) | _buffer[0]) != ~_CRC32)
-				@throw [OFChecksumFailedException exception];
+			CRC32 = ((uint32_t)_buffer[3] << 24) |
+			    (_buffer[2] << 16) | (_buffer[1] << 8) | _buffer[0];
+			if (~_CRC32 != CRC32) {
+				OFString *actual = [OFString stringWithFormat:
+				    @"%08" PRIX32, ~_CRC32];
+				OFString *expected = [OFString stringWithFormat:
+				    @"%08" PRIX32, CRC32];
+
+				@throw [OFChecksumMismatchException
+				    exceptionWithActualChecksum: actual
+					       expectedChecksum: expected];
+			}
 
 			_bytesRead = 0;
 			_CRC32 = ~0;
@@ -273,10 +283,18 @@
 			_bytesRead += [_stream readIntoBuffer: _buffer
 						       length: 4 - _bytesRead];
 
-			if ((((uint32_t)_buffer[3] << 24) | (_buffer[2] << 16) |
-			    (_buffer[1] << 8) | _buffer[0]) !=
-			    _uncompressedSize)
-				@throw [OFChecksumFailedException exception];
+			uncompressedSize = ((uint32_t)_buffer[3] << 24) |
+			    (_buffer[2] << 16) | (_buffer[1] << 8) | _buffer[0];
+			if (_uncompressedSize != uncompressedSize) {
+				OFString *actual = [OFString stringWithFormat:
+				    @"%" PRIu32, _uncompressedSize];
+				OFString *expected = [OFString stringWithFormat:
+				    @"%" PRIu32, uncompressedSize];
+
+				@throw [OFChecksumMismatchException
+				    exceptionWithActualChecksum: actual
+					       expectedChecksum: expected];
+			}
 
 			_bytesRead = 0;
 			_uncompressedSize = 0;

@@ -35,7 +35,7 @@
 
 #import "crc32.h"
 
-#import "OFChecksumFailedException.h"
+#import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
@@ -818,8 +818,16 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if (_toRead == 0) {
 		_atEndOfStream = true;
 
-		if (~_CRC32 != [_entry CRC32])
-			@throw [OFChecksumFailedException exception];
+		if (~_CRC32 != [_entry CRC32]) {
+			OFString *actualChecksum = [OFString stringWithFormat:
+			    @"%08" PRIX32, ~_CRC32];
+			OFString *expectedChecksum = [OFString stringWithFormat:
+			    @"%08" PRIX32, [_entry CRC32]];
+
+			@throw [OFChecksumMismatchException
+			    exceptionWithActualChecksum: actualChecksum
+				       expectedChecksum: expectedChecksum];
+		}
 	}
 
 	return ret;

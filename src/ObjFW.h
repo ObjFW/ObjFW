@@ -132,7 +132,7 @@
 # import "OFBindFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryPathFailedException.h"
-#import "OFChecksumFailedException.h"
+#import "OFChecksumMismatchException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFConditionBroadcastFailedException.h"
 # import "OFConditionSignalFailedException.h"

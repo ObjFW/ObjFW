@@ -32,7 +32,7 @@
 #import "crc16.h"
 #import "huffman_tree.h"
 
-#import "OFChecksumFailedException.h"
+#import "OFChecksumMismatchException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFNotImplementedException.h"
@@ -810,8 +810,16 @@ start:
 	if (_toRead == 0) {
 		_atEndOfStream = true;
 
-		if (_CRC16 != [_entry CRC16])
-			@throw [OFChecksumFailedException exception];
+		if (_CRC16 != [_entry CRC16]) {
+			OFString *actualChecksum = [OFString stringWithFormat:
+			    @"%04" PRIX16, _CRC16];
+			OFString *expectedChecksum = [OFString stringWithFormat:
+			    @"%04" PRIX16, [_entry CRC16]];
+
+			@throw [OFChecksumMismatchException
+			    exceptionWithActualChecksum: actualChecksum
+				       expectedChecksum: expectedChecksum];
+		}
 	}
 
 	return ret;

@@ -5,7 +5,7 @@ STATIC_LIB_NOINST = ${EXCEPTIONS_A}
 
 SRCS = OFAllocFailedException.m				\
        OFChangeCurrentDirectoryPathFailedException.m	\
-       OFChecksumFailedException.m			\
+       OFChecksumMismatchException.m			\
        OFCopyItemFailedException.m			\
        OFCreateDirectoryFailedException.m		\
        OFCreateSymbolicLinkFailedException.m		\
