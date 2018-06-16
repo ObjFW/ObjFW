@@ -525,18 +525,22 @@ static Class CDATAClass = Nil;
 	/* Attributes */
 	for (OFXMLAttribute *attribute in _attributes) {
 		void *pool2 = objc_autoreleasePoolPush();
-		OFString *attributeName = [attribute name];
+		const char *attributeNameCString =
+		    [attribute->_name UTF8String];
+		size_t attributeNameLength =
+		    [attribute->_name UTF8StringLength];
 		OFString *attributePrefix = nil;
 		OFString *tmp = [[attribute stringValue] stringByXMLEscaping];
+		char delimiter = (attribute->_useDoubleQuotes ? '"' : '\'');
 
-		if ([attribute namespace] != nil &&
+		if (attribute->_namespace != nil &&
 		    (attributePrefix = [allNamespaces objectForKey:
-		    [attribute namespace]]) == nil)
+		    attribute->_namespace]) == nil)
 			@throw [OFUnboundNamespaceException
 			    exceptionWithNamespace: [attribute namespace]
 					   element: self];
 
-		length += [attributeName UTF8StringLength] +
+		length += attributeNameLength +
 		    (attributePrefix != nil ?
 		    [attributePrefix UTF8StringLength] + 1 : 0) +
 		    [tmp UTF8StringLength] + 4;
@@ -556,14 +560,13 @@ static Class CDATAClass = Nil;
 			i += [attributePrefix UTF8StringLength];
 			cString[i++] = ':';
 		}
-		memcpy(cString + i, [attributeName UTF8String],
-		    [attributeName UTF8StringLength]);
-		i += [attributeName UTF8StringLength];
+		memcpy(cString + i, attributeNameCString, attributeNameLength);
+		i += attributeNameLength;
 		cString[i++] = '=';
-		cString[i++] = '\'';
+		cString[i++] = delimiter;
 		memcpy(cString + i, [tmp UTF8String], [tmp UTF8StringLength]);
 		i += [tmp UTF8StringLength];
-		cString[i++] = '\'';
+		cString[i++] = delimiter;
 
 		objc_autoreleasePoolPop(pool2);
 	}

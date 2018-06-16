@@ -842,6 +842,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	void *pool;
 	OFString *attributeValue;
 	size_t length;
+	OFXMLAttribute *attribute;
 
 	if (_data[_i] != _delimiter)
 		return;
@@ -859,10 +860,11 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		[[_namespaces lastObject] setObject: attributeValue
 					     forKey: _attributeName];
 
-	[_attributes addObject:
-	    [OFXMLAttribute attributeWithName: _attributeName
-				    namespace: _attributePrefix
-				  stringValue: attributeValue]];
+	attribute = [OFXMLAttribute attributeWithName: _attributeName
+					    namespace: _attributePrefix
+					  stringValue: attributeValue];
+	attribute->_useDoubleQuotes = (_delimiter == '"');
+	[_attributes addObject: attribute];
 
 	objc_autoreleasePoolPop(pool);
 

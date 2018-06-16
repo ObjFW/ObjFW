@@ -32,6 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @public
 #endif
 	OFString *_name, *_Nullable _namespace, *_stringValue;
+	bool _useDoubleQuotes;
 }
 
 /*!
