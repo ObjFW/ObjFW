@@ -46,7 +46,9 @@ typedef void (^of_thread_pool_block_t)(void);
 	size_t _size;
 	OFMutableArray *_threads;
 	volatile int _count;
+#ifdef OF_THREAD_POOL_M
 @public
+#endif
 	OFList *_queue;
 	OFCondition *_queueCondition;
 	volatile int _doneCount;

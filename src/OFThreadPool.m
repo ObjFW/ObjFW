@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#define OF_THREAD_POOL_M
+
 #import "OFThreadPool.h"
 #import "OFArray.h"
 #import "OFList.h"

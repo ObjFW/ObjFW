@@ -57,8 +57,6 @@ typedef id _Nullable (^of_thread_block_t)(void);
 {
 # ifdef OF_THREAD_M
 @public
-# else
-@private
 # endif
 	of_thread_t _thread;
 	of_thread_attr_t _attr;
