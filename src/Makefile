@@ -174,6 +174,7 @@ SRCS += OFArray_adjacent.m		\
 	OFCharacterSet_range.m		\
 	OFCountedSet_hashtable.m	\
 	OFDictionary_hashtable.m	\
+	OFLHAArchive_LHStream.m		\
 	OFMutableArray_adjacent.m	\
 	OFMutableDictionary_hashtable.m	\
 	OFMutableSet_hashtable.m	\
