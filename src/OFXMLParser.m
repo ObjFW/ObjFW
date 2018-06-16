@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#define OF_XML_PARSER_M
+
 #include <string.h>
 
 #import "OFXMLParser.h"

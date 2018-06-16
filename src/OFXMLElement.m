@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#define OF_XML_ELEMENT_M
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -191,7 +193,8 @@ static Class CDATAClass = Nil;
 	self = [super of_init];
 
 	@try {
-		if (element == nil)
+		if (element == nil ||
+		    ![element isKindOfClass: [OFXMLElement class]])
 			@throw [OFInvalidArgumentException exception];
 
 		_name = [element->_name copy];
@@ -760,6 +763,9 @@ static Class CDATAClass = Nil;
 
 - (void)addAttribute: (OFXMLAttribute *)attribute
 {
+	if (![attribute isKindOfClass: [OFXMLAttribute class]])
+		@throw [OFInvalidArgumentException exception];
+
 	if (_attributes == nil)
 		_attributes = [[OFMutableArray alloc] init];
 
