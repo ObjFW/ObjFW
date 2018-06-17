@@ -29,7 +29,7 @@
 #import "OFStdIOStream.h"
 #import "OFURL.h"
 
-#import "OFZIP.h"
+#import "OFArc.h"
 #import "GZIPArchive.h"
 #import "LHAArchive.h"
 #import "TarArchive.h"
@@ -47,7 +47,7 @@
 
 #define BUFFER_SIZE 4096
 
-OF_APPLICATION_DELEGATE(OFZIP)
+OF_APPLICATION_DELEGATE(OFArc)
 
 static void
 help(OFStream *stream, bool full, int status)
@@ -148,7 +148,7 @@ writingNotSupported(OFString *type)
 	    @"type", type)];
 }
 
-@implementation OFZIP
+@implementation OFArc
 - (void)applicationDidFinishLaunching
 {
 	OFString *outputDir = nil, *encodingString = nil, *type = nil;
@@ -193,7 +193,7 @@ writingNotSupported(OFString *type)
 #ifndef OF_AMIGAOS
 	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
 #else
-	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofzip/lang"];
+	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofarc/lang"];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];

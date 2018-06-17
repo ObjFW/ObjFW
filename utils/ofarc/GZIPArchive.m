@@ -23,9 +23,9 @@
 #import "OFLocalization.h"
 
 #import "GZIPArchive.h"
-#import "OFZIP.h"
+#import "OFArc.h"
 
-static OFZIP *app;
+static OFArc *app;
 
 static void
 setPermissions(OFString *destination, OFString *source)
@@ -48,7 +48,7 @@ setPermissions(OFString *destination, OFString *source)
 + (void)initialize
 {
 	if (self == [GZIPArchive class])
-		app = (OFZIP *)[[OFApplication sharedApplication] delegate];
+		app = (OFArc *)[[OFApplication sharedApplication] delegate];
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream

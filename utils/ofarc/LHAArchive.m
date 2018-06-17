@@ -27,9 +27,9 @@
 #import "OFString.h"
 
 #import "LHAArchive.h"
-#import "OFZIP.h"
+#import "OFArc.h"
 
-static OFZIP *app;
+static OFArc *app;
 
 static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
@@ -53,7 +53,7 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 + (void)initialize
 {
 	if (self == [LHAArchive class])
-		app = (OFZIP *)[[OFApplication sharedApplication] delegate];
+		app = (OFArc *)[[OFApplication sharedApplication] delegate];
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream

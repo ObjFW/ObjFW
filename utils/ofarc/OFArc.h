@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 # define S_IRWXO 0
 #endif
 
-@interface OFZIP: OFObject <OFApplicationDelegate>
+@interface OFArc: OFObject <OFApplicationDelegate>
 {
 	int8_t _overwrite;
 @public

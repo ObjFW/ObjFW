@@ -47,9 +47,9 @@ tests/tests.arm9
 tests/tests.exe
 tests/tests.nds
 utils/objfw-config
+utils/ofarc/ofarc
+utils/ofarc/ofarc.exe
 utils/ofhash/ofhash
 utils/ofhash/ofhash.exe
 utils/ofhttp/ofhttp
 utils/ofhttp/ofhttp.exe
-utils/ofzip/ofzip
-utils/ofzip/ofzip.exe

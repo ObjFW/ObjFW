@@ -1,9 +1,9 @@
 include ../../extra.mk
 
-PROG = ofzip${PROG_SUFFIX}
+PROG = ofarc${PROG_SUFFIX}
 SRCS = GZIPArchive.m	\
        LHAArchive.m	\
-       OFZIP.m		\
+       OFArc.m		\
        TarArchive.m	\
        ZIPArchive.m
 DATA = lang/de.json		\
@@ -11,7 +11,7 @@ DATA = lang/de.json		\
 
 include ../../buildsys.mk
 
-PACKAGE_NAME = ofzip
+PACKAGE_NAME = ofarc
 
 ${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFW_RT_DEP_LVL2}
 
@@ -19,7 +19,7 @@ CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\
 	    -I../../src/exceptions			\
 	    -I../..					\
-	    -DLANGUAGE_DIR=\"${datadir}/ofzip/lang\"
+	    -DLANGUAGE_DIR=\"${datadir}/ofarc/lang\"
 LIBS := -L../../src -lobjfw						\
 	-L../../src/runtime -L../../src/runtime/linklib ${RUNTIME_LIBS}	\
 	${LIBS}
