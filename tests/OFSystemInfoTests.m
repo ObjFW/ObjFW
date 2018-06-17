@@ -42,7 +42,7 @@ static OFString *module = @"OFSystemInfo";
 #ifdef OF_HAVE_FILES
 	PRINT(GREEN, @"User data path: %@", [OFSystemInfo userDataPath]);
 
-	PRINT(GREEN, @"User config path: %@", [OFSystemInfo userDataPath]);
+	PRINT(GREEN, @"User config path: %@", [OFSystemInfo userConfigPath]);
 #endif
 
 	PRINT(GREEN, @"CPU vendor: %@", [OFSystemInfo CPUVendor]);
