@@ -722,6 +722,22 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			 count: sizeof(tmp32)];
 	}
 
+	for (OFData *extension in _extensions) {
+		size_t extensionLength = [extension count];
+
+		if ([extension itemSize] != 1)
+			@throw [OFInvalidArgumentException exception];
+
+		if (extensionLength > UINT16_MAX - 2)
+			@throw [OFOutOfRangeException exception];
+
+		tmp16 = OF_BSWAP16_IF_BE((uint16_t)extensionLength + 2);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItems: [extension items]
+			 count: [extension count]];
+	}
+
 	/* Zero-length extension to terminate */
 	[data increaseCountBy: 2];
 
