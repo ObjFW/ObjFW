@@ -279,7 +279,7 @@ start:
 					skipCount = bits + 20;
 					break;
 				default:
-					assert(0);
+					OF_ENSURE(0);
 				}
 
 				if OF_UNLIKELY (_codesReceived + skipCount >

@@ -54,7 +54,7 @@
 	uint64_t _toWrite;
 }
 
-- (instancetype)of_initWithStream: (OFStream *)stream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 			    entry: (OFTarArchiveEntry *)entry;
 @end
 

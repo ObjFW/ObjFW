@@ -69,6 +69,8 @@ pathToURLPath(OFString *path)
 	path = [path stringByReplacingOccurrencesOfString: @"\\"
 					       withString: @"/"];
 	path = [path stringByPrependingString: @"/"];
+
+	return path;
 # elif defined(OF_AMIGAOS)
 	OFArray OF_GENERIC(OFString *) *components = [path pathComponents];
 	OFMutableString *ret = [OFMutableString string];
@@ -100,6 +102,8 @@ URLPathToPath(OFString *path)
 	path = [path substringWithRange: of_range(1, [path length] - 1)];
 	path = [path stringByReplacingOccurrencesOfString: @"/"
 					       withString: @"\\"];
+
+	return path;
 # elif defined(OF_AMIGAOS)
 	OFMutableArray OF_GENERIC(OFString *) *components;
 	size_t count;
