@@ -109,10 +109,10 @@
 			if (![_stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
-			[stream seekToOffset: -1024
-				      whence: SEEK_END];
-			[stream readIntoBuffer: buffer.c
-				   exactLength: 1024];
+			[_stream seekToOffset: -1024
+				       whence: SEEK_END];
+			[_stream readIntoBuffer: buffer.c
+				    exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)
 				if (buffer.u32[i] != 0)
@@ -121,8 +121,8 @@
 			if (!empty)
 				@throw [OFInvalidFormatException exception];
 
-			[stream seekToOffset: -1024
-				      whence: SEEK_END];
+			[_stream seekToOffset: -1024
+				       whence: SEEK_END];
 		}
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
@@ -404,7 +404,7 @@
 @end
 
 @implementation OFTarArchive_FileWriteStream
-- (instancetype)of_initWithStream: (OFStream *)stream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 			    entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];

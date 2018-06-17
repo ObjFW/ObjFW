@@ -32,8 +32,12 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFLHAArchive: OFObject
 {
 	OF_KINDOF(OFStream *) _stream;
+	enum {
+		OF_LHA_ARCHIVE_MODE_READ,
+		OF_LHA_ARCHIVE_MODE_WRITE,
+		OF_LHA_ARCHIVE_MODE_APPEND
+	} _mode;
 	of_string_encoding_t _encoding;
-	OFLHAArchiveEntry *_Nullable _lastEntry;
 	OF_KINDOF(OFStream *) _Nullable _lastReturnedStream;
 }
 
@@ -127,6 +131,29 @@ OF_ASSUME_NONNULL_BEGIN
  *	   been read
  */
 - (nullable OFLHAArchiveEntry *)nextEntry;
+
+/*!
+ * @brief Returns a stream for writing the specified entry.
+ *
+ * @note This is only available in write and append mode.
+ *
+ * @note The uncompressed size, compressed size and CRC16 of the specified
+ *	 entry are ignored.
+ *
+ * @note The returned stream only conforms to @ref OFReadyForWritingObserving if
+ *	 the underlying stream does so, too.
+ *
+ * @warning Calling @ref nextEntry will invalidate all streams returned by
+ *	    @ref streamForReadingCurrentEntry or
+ *	    @ref streamForWritingEntry:! Reading from or writing to an
+ *	    invalidated stream will throw an @ref OFReadFailedException or
+ *	    @ref OFWriteFailedException!
+ *
+ * @param entry The entry for which a stream for writing should be returned
+ * @return A stream for writing the specified entry
+ */
+- (OFStream <OFReadyForWritingObserving> *)
+    streamForWritingEntry: (OFLHAArchiveEntry *)entry;
 
 /*!
  * @brief Closes the OFLHAArchive.

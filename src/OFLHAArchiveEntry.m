@@ -19,6 +19,8 @@
 
 #define OF_LHA_ARCHIVE_ENTRY_M
 
+#include <string.h>
+
 #import "OFLHAArchiveEntry.h"
 #import "OFLHAArchiveEntry+Private.h"
 #import "OFArray.h"
@@ -28,7 +30,11 @@
 #import "OFStream.h"
 #import "OFString.h"
 
+#import "crc16.h"
+
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
 static OFDate *
@@ -263,6 +269,33 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	}
 }
 
+static void
+getFileNameAndDirectoryNameForPath(OFString *path,
+    of_string_encoding_t encoding,
+    const char **fileName, size_t *fileNameLength,
+    const char **directoryName, size_t *directoryNameLength)
+{
+	/* We use OFMutableData to have an autoreleased buffer. */
+	OFMutableData *data = [OFMutableData
+	    dataWithItems: [path cStringWithEncoding: encoding]
+		    count: [path cStringLengthWithEncoding: encoding]];
+	char *cString = [data items];
+	size_t length = [data count];
+	size_t pos = 0;
+
+	for (size_t i = 0; i < length; i++) {
+		if (cString[i] == '/' || cString[i] == '\\') {
+			cString[i] = '\xFF';
+			pos = i + 1;
+		}
+	}
+
+	*fileName = cString + pos;
+	*fileNameLength = length - pos;
+	*directoryName = cString;
+	*directoryNameLength = pos;
+}
+
 @implementation OFLHAArchiveEntry
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
@@ -359,6 +392,9 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 			@throw [OFUnsupportedVersionException
 			    exceptionWithVersion: version];
 		}
+
+		if (_fileName == nil)
+			@throw [OFInvalidFormatException exception];
 
 		[_extensions makeImmutable];
 	} @catch (id e) {
@@ -510,11 +546,196 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 	return _extensions;
 }
 
+- (void)of_writeToStream: (OFStream *)stream
+		encoding: (of_string_encoding_t)encoding
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableData *data = [OFMutableData dataWithCapacity: 24];
+	const char *fileName, *directoryName;
+	size_t fileNameLength, directoryNameLength;
+	uint16_t tmp16;
+	uint32_t tmp32;
+	size_t headerSize;
+
+	if ([_compressionMethod cStringLengthWithEncoding:
+	    OF_STRING_ENCODING_ASCII] != 5)
+		@throw [OFInvalidArgumentException exception];
+
+	getFileNameAndDirectoryNameForPath(_fileName, encoding,
+	    &fileName, &fileNameLength,
+	    &directoryName, &directoryNameLength);
+
+	if (fileNameLength > UINT16_MAX - 3 ||
+	    directoryNameLength > UINT16_MAX - 3)
+		@throw [OFOutOfRangeException exception];
+
+	/* Length. Filled in after we're done. */
+	[data increaseCountBy: 2];
+
+	[data addItems: [_compressionMethod
+			    cStringWithEncoding: OF_STRING_ENCODING_ASCII]
+		 count: 5];
+
+	tmp32 = OF_BSWAP32_IF_BE(_compressedSize);
+	[data addItems: &tmp32
+		 count: sizeof(tmp32)];
+
+	tmp32 = OF_BSWAP32_IF_BE(_uncompressedSize);
+	[data addItems: &tmp32
+		 count: sizeof(tmp32)];
+
+	tmp32 = OF_BSWAP32_IF_BE((uint32_t)[_date timeIntervalSince1970]);
+	[data addItems: &tmp32
+		 count: sizeof(tmp32)];
+
+	/* Reserved */
+	[data increaseCountBy: 1];
+
+	/* Header level */
+	[data addItem: "\x02"];
+
+	/* CRC16 */
+	tmp16 = OF_BSWAP16_IF_BE(_CRC16);
+	[data addItems: &tmp16
+		 count: sizeof(tmp16)];
+
+	/* Operating system identifier */
+	[data addItem: "U"];
+
+	/* Common header. Contains CRC16, which is written at the end. */
+	tmp16 = OF_BSWAP16_IF_BE(5);
+	[data addItems: &tmp16
+		 count: sizeof(tmp16)];
+	[data addItem: "\x00"];
+	[data increaseCountBy: 2];
+
+	tmp16 = OF_BSWAP16_IF_BE((uint16_t)fileNameLength + 3);
+	[data addItems: &tmp16
+		 count: sizeof(tmp16)];
+	[data addItem: "\x01"];
+	[data addItems: fileName
+		 count: fileNameLength];
+
+	if (directoryNameLength > 0) {
+		tmp16 = OF_BSWAP16_IF_BE((uint16_t)directoryNameLength + 3);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x02"];
+		[data addItems: directoryName
+			 count: directoryNameLength];
+	}
+
+	if (_fileComment != nil) {
+		size_t fileCommentLength =
+		    [_fileComment cStringLengthWithEncoding: encoding];
+
+		if (fileCommentLength > UINT16_MAX - 3)
+			@throw [OFOutOfRangeException exception];
+
+		tmp16 = OF_BSWAP16_IF_BE((uint16_t)fileCommentLength + 3);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x3F"];
+		[data addItems: [_fileComment cStringWithEncoding: encoding]
+			 count: fileCommentLength];
+	}
+
+	if (_mode != nil) {
+		tmp16 = OF_BSWAP16_IF_BE(5);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x50"];
+
+		tmp16 = OF_BSWAP16_IF_BE([_mode uInt16Value]);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+	}
+
+	if (_UID != nil || _GID != nil) {
+		if (_UID == nil || _GID == nil)
+			@throw [OFInvalidArgumentException exception];
+
+		tmp16 = OF_BSWAP16_IF_BE(7);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x51"];
+
+		tmp16 = OF_BSWAP16_IF_BE([_GID uInt16Value]);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+
+		tmp16 = OF_BSWAP16_IF_BE([_UID uInt16Value]);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+	}
+
+	if (_group != nil) {
+		size_t groupLength =
+		    [_group cStringLengthWithEncoding: encoding];
+
+		if (groupLength > UINT16_MAX - 3)
+			@throw [OFOutOfRangeException exception];
+
+		tmp16 = OF_BSWAP16_IF_BE((uint16_t)groupLength + 3);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x52"];
+		[data addItems: [_group cStringWithEncoding: encoding]
+			 count: groupLength];
+	}
+
+	if (_owner != nil) {
+		size_t ownerLength =
+		    [_owner cStringLengthWithEncoding: encoding];
+
+		if (ownerLength > UINT16_MAX - 3)
+			@throw [OFOutOfRangeException exception];
+
+		tmp16 = OF_BSWAP16_IF_BE((uint16_t)ownerLength + 3);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x53"];
+		[data addItems: [_owner cStringWithEncoding: encoding]
+			 count: ownerLength];
+	}
+
+	if (_modificationDate != nil) {
+		tmp16 = OF_BSWAP16_IF_BE(7);
+		[data addItems: &tmp16
+			 count: sizeof(tmp16)];
+		[data addItem: "\x54"];
+
+		tmp32 = OF_BSWAP32_IF_BE(
+		    (uint32_t)[_modificationDate timeIntervalSince1970]);
+		[data addItems: &tmp32
+			 count: sizeof(tmp32)];
+	}
+
+	/* Zero-length extension to terminate */
+	[data increaseCountBy: 2];
+
+	headerSize = [data count];
+
+	if (headerSize > UINT16_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	/* Now fill in the size and CRC16 for the entire header */
+	tmp16 = OF_BSWAP16_IF_BE(headerSize);
+	memcpy([data itemAtIndex: 0], &tmp16, sizeof(tmp16));
+
+	tmp16 = OF_BSWAP16_IF_BE(of_crc16(0, [data items], [data count]));
+	memcpy([data itemAtIndex: 27], &tmp16, sizeof(tmp16));
+
+	[stream writeData: data];
+
+	objc_autoreleasePoolPop(pool);
+}
+
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *mode = (_mode == nil
-	    ? @"(nil)"
+	    ? nil
 	    : [OFString stringWithFormat: @"%" PRIo16, [_mode uInt16Value]]);
 	OFString *extensions = [[_extensions description]
 	    stringByReplacingOccurrencesOfString: @"\n"

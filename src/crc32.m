@@ -22,8 +22,10 @@
 #define CRC32_MAGIC 0xEDB88320
 
 uint32_t
-of_crc32(uint32_t crc, const unsigned char *bytes, size_t length)
+of_crc32(uint32_t crc, const void *bytes_, size_t length)
 {
+	const unsigned char *bytes = bytes_;
+
 	for (size_t i = 0; i < length; i++) {
 		crc ^= bytes[i];
 

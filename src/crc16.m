@@ -17,13 +17,15 @@
 
 #include "config.h"
 
-#import "crc32.h"
+#import "crc16.h"
 
 #define CRC16_MAGIC 0xA001
 
 uint16_t
-of_crc16(uint16_t crc, const unsigned char *bytes, size_t length)
+of_crc16(uint16_t crc, const void *bytes_, size_t length)
 {
+	const unsigned char *bytes = bytes_;
+
 	for (size_t i = 0; i < length; i++) {
 		crc ^= bytes[i];
 

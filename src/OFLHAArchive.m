@@ -34,7 +34,9 @@
 #import "OFInvalidArgumentException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
+#import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
+#import "OFWriteFailedException.h"
 
 @interface OFLHAArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
@@ -49,6 +51,21 @@
 - (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
 			    entry: (OFLHAArchiveEntry *)entry;
 - (void)of_skip;
+@end
+
+@interface OFLHAArchive_FileWriteStream: OFStream <OFReadyForWritingObserving>
+{
+	OFMutableLHAArchiveEntry *_entry;
+	of_string_encoding_t _encoding;
+	OF_KINDOF(OFStream *) _stream;
+	of_offset_t _headerOffset;
+	uint32_t _bytesWritten;
+	uint16_t _CRC16;
+}
+
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+			    entry: (OFLHAArchiveEntry *)entry
+			 encoding: (of_string_encoding_t)encoding;
 @end
 
 @implementation OFLHAArchive
@@ -81,12 +98,26 @@
 	self = [super init];
 
 	@try {
-		if (![mode isEqual: @"r"])
-			@throw [OFNotImplementedException
-			    exceptionWithSelector: _cmd
-					   object: self];
-
 		_stream = [stream retain];
+
+		if ([mode isEqual: @"r"])
+			_mode = OF_LHA_ARCHIVE_MODE_READ;
+		else if ([mode isEqual: @"w"])
+			_mode = OF_LHA_ARCHIVE_MODE_WRITE;
+		else if ([mode isEqual: @"a"])
+			_mode = OF_LHA_ARCHIVE_MODE_APPEND;
+		else
+			@throw [OFInvalidArgumentException exception];
+
+		if ((_mode == OF_LHA_ARCHIVE_MODE_WRITE ||
+		    _mode == OF_LHA_ARCHIVE_MODE_APPEND) &&
+		    ![_stream isKindOfClass: [OFSeekableStream class]])
+			@throw [OFInvalidArgumentException exception];
+
+		if (_mode == OF_LHA_ARCHIVE_MODE_APPEND)
+			[_stream seekToOffset: 0
+				       whence: SEEK_END];
+
 		_encoding = OF_STRING_ENCODING_ISO_8859_1;
 	} @catch (id e) {
 		[self release];
@@ -129,11 +160,12 @@
 
 - (OFLHAArchiveEntry *)nextEntry
 {
+	OFLHAArchiveEntry *entry;
 	char header[21];
 	size_t headerLen;
 
-	[_lastEntry release];
-	_lastEntry = nil;
+	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
+		@throw [OFInvalidArgumentException exception];
 
 	[_lastReturnedStream of_skip];
 	[_lastReturnedStream close];
@@ -155,22 +187,48 @@
 					      length: 21 - headerLen];
 	}
 
-	_lastEntry = [[OFLHAArchiveEntry alloc]
+	entry = [[[OFLHAArchiveEntry alloc]
 	    of_initWithHeader: header
 		       stream: _stream
-		     encoding: _encoding];
+		     encoding: _encoding] autorelease];
 
 	_lastReturnedStream = [[OFLHAArchive_FileReadStream alloc]
 	    of_initWithStream: _stream
-			entry: _lastEntry];
+			entry: entry];
 
-	return [[_lastEntry copy] autorelease];
+	return entry;
 }
 
 - (OFStream <OFReadyForReadingObserving> *)streamForReadingCurrentEntry
 {
+	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
+		@throw [OFInvalidArgumentException exception];
+
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
+
+	return [[_lastReturnedStream retain] autorelease];
+}
+
+- (OFStream <OFReadyForWritingObserving> *)
+    streamForWritingEntry: (OFLHAArchiveEntry *)entry
+{
+	if (_mode != OF_LHA_ARCHIVE_MODE_WRITE &&
+	    _mode != OF_LHA_ARCHIVE_MODE_APPEND)
+		@throw [OFInvalidArgumentException exception];
+
+	if (![[entry compressionMethod] isEqual: @"-lh0-"])
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	[_lastReturnedStream close];
+	[_lastReturnedStream release];
+	_lastReturnedStream = nil;
+
+	_lastReturnedStream = [[OFLHAArchive_FileWriteStream alloc]
+	    of_initWithStream: _stream
+			entry: entry
+		     encoding: _encoding];
 
 	return [[_lastReturnedStream retain] autorelease];
 }
@@ -179,9 +237,6 @@
 {
 	if (_stream == nil)
 		return;
-
-	[_lastEntry release];
-	_lastEntry = nil;
 
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
@@ -360,6 +415,111 @@
 
 	[_decompressedStream release];
 	_decompressedStream = nil;
+
+	[super close];
+}
+@end
+
+@implementation OFLHAArchive_FileWriteStream
+- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+			    entry: (OFLHAArchiveEntry *)entry
+			 encoding: (of_string_encoding_t)encoding
+{
+	self = [super init];
+
+	@try {
+		_entry = [entry mutableCopy];
+		_encoding = encoding;
+
+		_headerOffset = [stream seekToOffset: 0
+					       whence: SEEK_CUR];
+		[_entry of_writeToStream: stream
+				encoding: _encoding];
+
+		/*
+		 * Retain stream last, so that -[close] called by -[dealloc]
+		 * doesn't write in case of an error.
+		 */
+		_stream = [stream retain];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[self close];
+
+	[_entry release];
+
+	[super dealloc];
+}
+
+- (size_t)lowlevelWriteBuffer: (const void *)buffer
+		       length: (size_t)length
+{
+	uint32_t bytesWritten;
+
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (UINT32_MAX - _bytesWritten < length)
+		@throw [OFOutOfRangeException exception];
+
+	@try {
+		bytesWritten = (uint32_t)[_stream writeBuffer: buffer
+						       length: length];
+	} @catch (OFWriteFailedException *e) {
+		_bytesWritten += [e bytesWritten];
+		_CRC16 = of_crc16(_CRC16, buffer, [e bytesWritten]);
+
+		@throw e;
+	}
+
+	_bytesWritten += (uint32_t)bytesWritten;
+	_CRC16 = of_crc16(_CRC16, buffer, bytesWritten);
+
+	return bytesWritten;
+}
+
+- (bool)lowlevelIsAtEndOfStream
+{
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	return [_stream isAtEndOfStream];
+}
+
+- (int)fileDescriptorForWriting
+{
+	return [_stream fileDescriptorForWriting];
+}
+
+- (void)close
+{
+	of_offset_t offset;
+
+	if (_stream == nil)
+		return;
+
+	[_entry setUncompressedSize: _bytesWritten];
+	[_entry setCompressedSize: _bytesWritten];
+	[_entry setCRC16: _CRC16];
+
+	offset = [_stream seekToOffset: 0
+				whence:SEEK_CUR];
+	[_stream seekToOffset: _headerOffset
+		       whence: SEEK_SET];
+	[_entry of_writeToStream: _stream
+			encoding: _encoding];
+	[_stream seekToOffset: offset
+		       whence: SEEK_SET];
+
+	[_stream release];
+	_stream = nil;
 
 	[super close];
 }

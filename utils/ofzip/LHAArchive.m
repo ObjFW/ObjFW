@@ -136,10 +136,14 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 			    @"date", date)];
 
 			if ([entry mode] != nil) {
+				OFString *modeString = [OFString
+				    stringWithFormat:
+				    @"%" PRIo16, [[entry mode] uInt16Value]];
+
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(@"list_mode",
 				    @"Mode: %[mode]",
-				    @"mode", [entry mode])];
+				    @"mode", modeString)];
 			}
 			if ([entry UID] != nil) {
 				[of_stdout writeString: @"\t"];
