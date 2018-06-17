@@ -371,4 +371,107 @@ outer_loop_end:
 		app->_exitStatus = 1;
 	}
 }
+- (void)addFiles: (OFArray OF_GENERIC(OFString *) *)files
+{
+	OFFileManager *fileManager = [OFFileManager defaultManager];
+
+	if ([files count] < 1) {
+		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
+		    @"Need one or more files to add!")];
+		app->_exitStatus = 1;
+		return;
+	}
+
+	for (OFString *fileName in files) {
+		void *pool = objc_autoreleasePoolPush();
+		of_file_attributes_t attributes;
+		of_file_type_t type;
+		OFMutableLHAArchiveEntry *entry;
+		OFStream *output;
+
+		if (app->_outputLevel >= 0)
+			[of_stdout writeString: OF_LOCALIZED(@"adding_file",
+			    @"Adding %[file]...",
+			    @"file", fileName)];
+
+		attributes = [fileManager attributesOfItemAtPath: fileName];
+		type = [attributes fileType];
+		entry = [OFMutableLHAArchiveEntry entryWithFileName: fileName];
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
+		[entry setMode: [OFNumber numberWithUInt16:
+		    [attributes filePOSIXPermissions]]];
+#endif
+		[entry setDate: [attributes fileModificationDate]];
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
+		[entry setUID: [OFNumber numberWithUInt16:
+		    [attributes filePOSIXUID]]];
+		[entry setGID: [OFNumber numberWithUInt16:
+		    [attributes filePOSIXGID]]];
+		[entry setOwner: [attributes fileOwner]];
+		[entry setGroup: [attributes fileGroup]];
+#endif
+
+		if ([type isEqual: of_file_type_directory])
+			[entry setCompressionMethod: @"-lhd-"];
+
+		output = [_archive streamForWritingEntry: entry];
+
+		if ([type isEqual: of_file_type_regular]) {
+			size_t written = 0, size = [attributes fileSize];
+			int8_t percent = -1, newPercent;
+
+			OFFile *input = [OFFile fileWithPath: fileName
+							mode: @"r"];
+
+			while (![input isAtEndOfStream]) {
+				ssize_t length = [app
+				    copyBlockFromStream: input
+					       toStream: output
+					       fileName: fileName];
+
+				if (length < 0) {
+					app->_exitStatus = 1;
+					goto outer_loop_end;
+				}
+
+				written += length;
+				newPercent = (written == size
+				    ? 100 : (int8_t)(written * 100 / size));
+
+				if (app->_outputLevel >= 0 &&
+				    percent != newPercent) {
+					OFString *percentString;
+
+					percent = newPercent;
+					percentString = [OFString
+					    stringWithFormat: @"%3u", percent];
+
+					[of_stdout writeString: @"\r"];
+					[of_stdout writeString: OF_LOCALIZED(
+					    @"adding_file_percent",
+					    @"Adding %[file]... %[percent]%",
+					    @"file", fileName,
+					    @"percent", percentString)];
+				}
+			}
+		}
+
+		if (app->_outputLevel >= 0) {
+			[of_stdout writeString: @"\r"];
+			[of_stdout writeLine: OF_LOCALIZED(
+			    @"adding_file_done",
+			    @"Adding %[file]... done",
+			    @"file", fileName)];
+		}
+
+		[output close];
+
+outer_loop_end:
+		objc_autoreleasePoolPop(pool);
+	}
+
+	[_archive close];
+}
 @end

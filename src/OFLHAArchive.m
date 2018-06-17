@@ -213,11 +213,16 @@
 - (OFStream <OFReadyForWritingObserving> *)
     streamForWritingEntry: (OFLHAArchiveEntry *)entry
 {
+	OFString *compressionMethod;
+
 	if (_mode != OF_LHA_ARCHIVE_MODE_WRITE &&
 	    _mode != OF_LHA_ARCHIVE_MODE_APPEND)
 		@throw [OFInvalidArgumentException exception];
 
-	if (![[entry compressionMethod] isEqual: @"-lh0-"])
+	compressionMethod = [entry compressionMethod];
+
+	if (![compressionMethod isEqual: @"-lh0-"] &&
+	    ![compressionMethod isEqual: @"-lhd-"])
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
