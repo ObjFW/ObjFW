@@ -41,13 +41,17 @@ struct thread_ctx {
 OF_CONSTRUCTOR()
 {
 	pthread_attr_t pattr;
+#ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 	int policy;
+#endif
 	struct sched_param param;
 
 	OF_ENSURE(pthread_attr_init(&pattr) == 0);
+#ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
 	OF_ENSURE(pthread_attr_getschedpolicy(&pattr, &policy) == 0);
 	OF_ENSURE((minPrio = sched_get_priority_min(policy)) != -1);
 	OF_ENSURE((maxPrio = sched_get_priority_max(policy)) != -1);
+#endif
 	OF_ENSURE(pthread_attr_getschedparam(&pattr, &param) == 0);
 
 	normalPrio = param.sched_priority;

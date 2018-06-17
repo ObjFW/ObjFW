@@ -903,7 +903,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 		AC_MSG_RESULT(POSIX)
 
 		dnl Use -Wp, as we only use it for the preprocessor.
-		AX_CHECK_COMPILER_FLAGS(-Wp,-pthread, [
+		AX_CHECK_COMPILER_FLAGS([-Wp,-pthread], [
 			CPPFLAGS="$CPPFLAGS -Wp,-pthread"
 		], [
 			CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
@@ -943,6 +943,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 				[Whether we have sched_yield()])
 		])
 
+		AC_CHECK_FUNCS(pthread_attr_getschedpolicy)
 		AC_CHECK_FUNCS(pthread_attr_setinheritsched)
 
 		AC_CHECK_HEADERS(pthread_np.h, [], [], [#include <pthread.h>])
