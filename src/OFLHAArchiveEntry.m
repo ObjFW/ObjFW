@@ -270,18 +270,30 @@ readExtensions(OFLHAArchiveEntry *entry, OFStream *stream,
 }
 
 static void
-getFileNameAndDirectoryNameForPath(OFString *path,
+getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
     of_string_encoding_t encoding,
     const char **fileName, size_t *fileNameLength,
     const char **directoryName, size_t *directoryNameLength)
 {
-	/* We use OFMutableData to have an autoreleased buffer. */
-	OFMutableData *data = [OFMutableData
-	    dataWithItems: [path cStringWithEncoding: encoding]
-		    count: [path cStringLengthWithEncoding: encoding]];
-	char *cString = [data items];
-	size_t length = [data count];
-	size_t pos = 0;
+	OFMutableData *data;
+	char *cString;
+	size_t length;
+	size_t pos;
+
+	/*
+	 * We use OFMutableData to have an autoreleased buffer that we can
+	 * return indirectly.
+	 */
+	data = [OFMutableData
+	    dataWithItems: [entry->_directoryName cStringWithEncoding: encoding]
+		    count: [entry->_directoryName
+			       cStringLengthWithEncoding: encoding]];
+	[data addItems: [entry->_fileName cStringWithEncoding: encoding]
+		 count: [entry->_fileName cStringLengthWithEncoding: encoding]];
+
+	cString = [data items];
+	length = [data count];
+	pos = 0;
 
 	for (size_t i = 0; i < length; i++) {
 		if (cString[i] == '/' || cString[i] == '\\') {
@@ -561,8 +573,7 @@ getFileNameAndDirectoryNameForPath(OFString *path,
 	    OF_STRING_ENCODING_ASCII] != 5)
 		@throw [OFInvalidArgumentException exception];
 
-	getFileNameAndDirectoryNameForPath(_fileName, encoding,
-	    &fileName, &fileNameLength,
+	getFileNameAndDirectoryName(self, encoding, &fileName, &fileNameLength,
 	    &directoryName, &directoryNameLength);
 
 	if (fileNameLength > UINT16_MAX - 3 ||
