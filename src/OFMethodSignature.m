@@ -181,7 +181,7 @@ alignofEncoding(const char **type, size_t *length, bool inStruct)
 		break;
 	case 'q':
 	case 'Q':
-#ifdef OF_X86
+#if defined(OF_X86) && !defined(OF_WINDOWS)
 		if (inStruct)
 			align = 4;
 		else
@@ -198,7 +198,7 @@ alignofEncoding(const char **type, size_t *length, bool inStruct)
 		align = OF_ALIGNOF(float);
 		break;
 	case 'd':
-#ifdef OF_X86
+#if defined(OF_X86) && !defined(OF_WINDOWS)
 		if (inStruct)
 			align = 4;
 		else
@@ -206,7 +206,7 @@ alignofEncoding(const char **type, size_t *length, bool inStruct)
 			align = OF_ALIGNOF(double);
 		break;
 	case 'D':
-#ifdef OF_X86
+#if defined(OF_X86) && !defined(OF_WINDOWS)
 		if (inStruct)
 			align = 4;
 		else
@@ -257,11 +257,11 @@ alignofEncoding(const char **type, size_t *length, bool inStruct)
 			align = OF_ALIGNOF(float _Complex);
 			break;
 		case 'd':
-# ifdef OF_X86
+# if defined(OF_X86) && !defined(OF_WINDOWS)
 			if (inStruct)
 				align = 4;
 			else
-#endif
+# endif
 				align = OF_ALIGNOF(double _Complex);
 			break;
 		case 'D':
