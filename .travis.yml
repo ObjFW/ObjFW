@@ -49,6 +49,53 @@ matrix:
       osx_image: xcode6.4
       language: objective-c
 
+    # iOS
+    - os: osx
+      osx_image: xcode9.4
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode9.3
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode9.2
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode9.1
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode9
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode8.3
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode8
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode7.3
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode6.4
+      language: objective-c
+      env:
+        - config=ios
+
     # AmigaOS
     - os: linux
       dist: trusty
@@ -207,6 +254,14 @@ script:
             build_mac_32_64 --enable-runtime --disable-files;
             build_mac_32_64 --enable-runtime --disable-shared;
             build_mac_32_64 --enable-runtime --disable-shared --enable-seluid24;
+    fi
+
+  - if [ "$config" = "ios" ]; then
+            if xcodebuild -version | grep 'Xcode 6' >/dev/null; then
+                    export CPPFLAGS="-D_Nullable=__nullable
+                                     -D_Nonnull=__nonnull
+                                     -D_Null_unspecified=__null_unspecified";
+            fi;
 
             export IPHONEOS_DEPLOYMENT_TARGET="9.0";
             clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)";
