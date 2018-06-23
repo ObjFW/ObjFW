@@ -91,6 +91,7 @@
     "list_compression_method": "Kompressionsmethode: %[method]",
     "list_date": "Datum: %[date]",
     "list_osid": "Betriebssystem-Identifikator: %[osid]",
+    "list_extensions": "Erweiterungen: %[extensions]",
     "list_version_made_by": "Erstellt mit Version: %[version]",
     "list_min_version_needed": "Mindestens benötigte Version: %[version]",
     "list_general_purpose_bit_flag": "General Purpose Bit Flag: %[gpbf]",

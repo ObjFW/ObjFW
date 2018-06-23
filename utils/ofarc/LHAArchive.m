@@ -31,6 +31,13 @@
 
 static OFArc *app;
 
+static OFString *
+indent(OFString *string)
+{
+	return [string stringByReplacingOccurrencesOfString: @"\n"
+						 withString: @"\n\t"];
+}
+
 static void
 setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 {
@@ -195,6 +202,28 @@ setPermissions(OFString *path, OFLHAArchiveEntry *entry)
 					    "%[osid]",
 					    @"osid", OSID)];
 				}
+
+				if ([entry modificationDate] != nil) {
+					OFString *modificationDate = [[entry
+					    modificationDate] description];
+
+					[of_stdout writeString: @"\t"];
+					[of_stdout writeLine: OF_LOCALIZED(
+					    @"list_modification_date",
+					    @"Modification date: %[date]",
+					    @"date", modificationDate)];
+				}
+			}
+
+			if (app->_outputLevel >= 3) {
+				OFString *extensions = indent([[entry
+				    extensions] description]);
+
+				[of_stdout writeString: @"\t"];
+				[of_stdout writeLine: OF_LOCALIZED(
+				    @"list_extensions",
+				    @"Extensions: %[extensions]",
+				    @"extensions", extensions)];
 			}
 		}
 
