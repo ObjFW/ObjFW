@@ -309,7 +309,7 @@ setPermissions(OFString *path, OFZIPArchiveEntry *entry)
 			[of_stdout writeString: @"\r"];
 			[of_stdout writeLine: OF_LOCALIZED(
 			    @"extracting_file_done",
-			    @"Extracting %[file]... done\n",
+			    @"Extracting %[file]... done",
 			    @"file", fileName)];
 		}
 
