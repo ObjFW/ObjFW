@@ -510,18 +510,18 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)listen
 {
-	[self listenWithBackLog: SOMAXCONN];
+	[self listenWithBacklog: SOMAXCONN];
 }
 
-- (void)listenWithBackLog: (int)backLog
+- (void)listenWithBacklog: (int)backlog
 {
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (listen(_socket, backLog) == -1)
+	if (listen(_socket, backlog) == -1)
 		@throw [OFListenFailedException
 		    exceptionWithSocket: self
-				backLog: backLog
+				backlog: backlog
 				  errNo: of_socket_errno()];
 
 	_listening = true;

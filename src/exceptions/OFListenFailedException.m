@@ -21,7 +21,7 @@
 #import "OFString.h"
 
 @implementation OFListenFailedException
-@synthesize socket = _socket, backLog = _backLog, errNo = _errNo;
+@synthesize socket = _socket, backlog = _backlog, errNo = _errNo;
 
 + (instancetype)exception
 {
@@ -29,11 +29,11 @@
 }
 
 + (instancetype)exceptionWithSocket: (id)socket
-			    backLog: (int)backLog
+			    backlog: (int)backlog
 			      errNo: (int)errNo
 {
 	return [[[self alloc] initWithSocket: socket
-				     backLog: backLog
+				     backlog: backlog
 				       errNo: errNo] autorelease];
 }
 
@@ -43,13 +43,13 @@
 }
 
 - (instancetype)initWithSocket: (id)socket
-		       backLog: (int)backLog
+		       backlog: (int)backlog
 			 errNo: (int)errNo
 {
 	self = [super init];
 
 	_socket = [socket retain];
-	_backLog = backLog;
+	_backlog = backlog;
 	_errNo = errNo;
 
 	return self;
@@ -66,6 +66,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Failed to listen in socket of type %@ with a back log of %d: %@",
-	    [_socket class], _backLog, of_strerror(_errNo)];
+	    [_socket class], _backlog, of_strerror(_errNo)];
 }
 @end

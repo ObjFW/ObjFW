@@ -32,7 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFListenFailedException: OFException
 {
 	id _socket;
-	int _backLog, _errNo;
+	int _backlog, _errNo;
 }
 
 /*!
@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The requested back log.
  */
-@property (readonly, nonatomic) int backLog;
+@property (readonly, nonatomic) int backlog;
 
 /*!
  * @brief The errno of the error that occurred.
@@ -56,12 +56,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new, autoreleased listen failed exception.
  *
  * @param socket The socket which failed to listen
- * @param backLog The requested size of the back log
+ * @param backlog The requested size of the back log
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased listen failed exception
  */
 + (instancetype)exceptionWithSocket: (id)socket
-			    backLog: (int)backLog
+			    backlog: (int)backlog
 			      errNo: (int)errNo;
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -70,12 +70,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated listen failed exception
  *
  * @param socket The socket which failed to listen
- * @param backLog The requested size of the back log
+ * @param backlog The requested size of the back log
  * @param errNo The errno of the error that occurred
  * @return An initialized listen failed exception
  */
 - (instancetype)initWithSocket: (id)socket
-		       backLog: (int)backLog
+		       backlog: (int)backlog
 			 errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
 @end
 

@@ -201,9 +201,9 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 /*!
  * @brief Listen on the socket.
  *
- * @param backLog Maximum length for the queue of pending connections.
+ * @param backlog Maximum length for the queue of pending connections.
  */
-- (void)listenWithBackLog: (int)backLog;
+- (void)listenWithBacklog: (int)backlog;
 
 /*!
  * @brief Listen on the socket.
