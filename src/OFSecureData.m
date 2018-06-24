@@ -457,6 +457,27 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 					     count: _count];
 }
 
+- (bool)isEqual: (id)object
+{
+	OFData *otherData;
+	unsigned char diff;
+
+	if (![object isKindOfClass: [OFData class]])
+		return false;
+
+	otherData = object;
+
+	if (otherData->_count != _count || otherData->_itemSize != _itemSize)
+		return false;
+
+	diff = 0;
+
+	for (size_t i = 0; i < _count * _itemSize; i++)
+		diff |= otherData->_items[i] ^ _items[i];
+
+	return (diff == 0);
+}
+
 - (OFString *)description
 {
 	return @"<OFSecureData>";

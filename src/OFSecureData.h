@@ -92,6 +92,17 @@ OF_ASSUME_NONNULL_BEGIN
 			   count: (size_t)count;
 
 /*!
+ * @brief Checks the OFSecureData for equality to another object.
+ *
+ * If the specified object is a subclass of @ref OFData, the comparison is
+ * performed in constant time.
+ *
+ * @param object The object which should be tested for equality
+ * @return A boolean whether the OFSecureData is equal to the specified object
+ */
+- (bool)isEqual: (nullable id)object;
+
+/*!
  * @brief Zeroes the data.
  */
 - (void)zero;
