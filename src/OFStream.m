@@ -744,8 +744,7 @@
 					if (bufferLength > 0) {
 						/*
 						 * Append data to _readBuffer
-						 * to prevent loss of data due
-						 * to wrong encoding.
+						 * to prevent loss of data.
 						 */
 						readBuffer = [self
 						    allocMemoryWithSize:
@@ -972,6 +971,32 @@
 					    stringWithCString: rcs
 						     encoding: encoding
 						       length: rl];
+				} @catch (id e) {
+					if (bufferLength > 0) {
+						/*
+						 * Append data to _readBuffer
+						 * to prevent loss of data.
+						 */
+						readBuffer = [self
+						    allocMemoryWithSize:
+						    _readBufferLength +
+						    bufferLength];
+
+						memcpy(readBuffer, _readBuffer,
+						    _readBufferLength);
+						memcpy(readBuffer +
+						    _readBufferLength,
+						    buffer, bufferLength);
+
+						[self freeMemory:
+						    _readBufferMemory];
+						_readBuffer = readBuffer;
+						_readBufferMemory = readBuffer;
+						_readBufferLength +=
+						    bufferLength;
+					}
+
+					@throw e;
 				} @finally {
 					[self freeMemory: retCString];
 				}
