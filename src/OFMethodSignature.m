@@ -29,10 +29,10 @@
 
 #import "macros.h"
 
-size_t alignofEncoding(const char **type, size_t *length, bool inStruct);
-size_t sizeofEncoding(const char **type, size_t *length);
+static size_t alignofEncoding(const char **type, size_t *length, bool inStruct);
+static size_t sizeofEncoding(const char **type, size_t *length);
 
-size_t
+static size_t
 alignofArray(const char **type, size_t *length)
 {
 	size_t align;
@@ -58,7 +58,7 @@ alignofArray(const char **type, size_t *length)
 	return align;
 }
 
-size_t
+static size_t
 alignofStruct(const char **type, size_t *length)
 {
 	size_t align = 0;
@@ -107,7 +107,7 @@ alignofStruct(const char **type, size_t *length)
 	return align;
 }
 
-size_t
+static size_t
 alignofUnion(const char **type, size_t *length)
 {
 	size_t align = 0;
@@ -146,7 +146,7 @@ alignofUnion(const char **type, size_t *length)
 	return align;
 }
 
-size_t
+static size_t
 alignofEncoding(const char **type, size_t *length, bool inStruct)
 {
 	size_t align;
@@ -283,7 +283,7 @@ alignofEncoding(const char **type, size_t *length, bool inStruct)
 	return align;
 }
 
-size_t
+static size_t
 sizeofArray(const char **type, size_t *length)
 {
 	size_t count = 0;
@@ -318,7 +318,7 @@ sizeofArray(const char **type, size_t *length)
 	return count * size;
 }
 
-size_t
+static size_t
 sizeofStruct(const char **type, size_t *length)
 {
 	size_t size = 0;
@@ -395,7 +395,7 @@ sizeofStruct(const char **type, size_t *length)
 	return size;
 }
 
-size_t
+static size_t
 sizeofUnion(const char **type, size_t *length)
 {
 	size_t size = 0;
@@ -434,7 +434,7 @@ sizeofUnion(const char **type, size_t *length)
 	return size;
 }
 
-size_t
+static size_t
 sizeofEncoding(const char **type, size_t *length)
 {
 	size_t size;
