@@ -147,7 +147,7 @@ of_application_main(int *argc, char **argv[],
 
 @implementation OFApplication
 @synthesize programName = _programName, arguments = _arguments;
-@synthesize environment = _environment;
+@synthesize environment = _environment, activeSandbox = _activeSandbox;
 
 + (OFApplication *)sharedApplication
 {
@@ -572,6 +572,7 @@ of_application_main(int *argc, char **argv[],
 	void *pool = objc_autoreleasePoolPush();
 	const char *promises = [[sandbox pledgeString]
 	    cStringWithEncoding: [OFLocalization encoding]];
+	OFSandbox *oldSandbox;
 
 	if (pledge(promises, NULL) != 0)
 		@throw [OFSandboxActivationFailedException
@@ -579,6 +580,10 @@ of_application_main(int *argc, char **argv[],
 				   errNo: errno];
 
 	objc_autoreleasePoolPop(pool);
+
+	oldSandbox = _activeSandbox;
+	_activeSandbox = [sandbox retain];
+	[oldSandbox release];
 # endif
 }
 #endif

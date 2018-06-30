@@ -137,6 +137,7 @@ OF_ASSUME_NONNULL_BEGIN
 	void (*_Nullable _SIGUSR1Handler)(id, SEL);
 	void (*_Nullable _SIGUSR2Handler)(id, SEL);
 #endif
+	OFSandbox *_Nullable _activeSandbox;
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -170,6 +171,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFApplicationDelegate> delegate;
+
+/*!
+ * @brief The sandbox currently active for this application.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFSandbox *activeSandbox;
 
 /*!
  * @brief Returns the only OFApplication instance in the application.
