@@ -29,6 +29,9 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) size_t pageSize;
 @property (class, readonly, nonatomic) size_t numberOfCPUs;
+@property (class, readonly, nonatomic) OFString *ObjFWVersion;
+@property (class, readonly, nonatomic) unsigned int ObjFWVersionMajor;
+@property (class, readonly, nonatomic) unsigned int ObjFWVersionMinor;
 @property (class, readonly, nullable, nonatomic) OFString *operatingSystemName;
 @property (class, readonly, nullable, nonatomic)
     OFString *operatingSystemVersion;
@@ -68,6 +71,27 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The number of CPUs installed in the system
  */
 + (size_t)numberOfCPUs;
+
+/*!
+ * @brief The version of ObjFW.
+ *
+ * @return The version of ObjFW
+ */
++ (OFString *)ObjFWVersion;
+
+/*!
+ * @brief The major version of ObjFW.
+ *
+ * @return The major version of ObjFW
+ */
++ (unsigned int)ObjFWVersionMajor;
+
+/*!
+ * @brief The minor version of ObjFW.
+ *
+ * @return The minor version of ObjFW
+ */
++ (unsigned int)ObjFWVersionMinor;
 
 /**
  * @brief Returns the name of the operating system the application is running

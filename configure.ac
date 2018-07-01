@@ -3,6 +3,8 @@ AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
 
+AC_DEFINE(OBJFW_VERSION_MAJOR, 0, [The major version of ObjFW])
+AC_DEFINE(OBJFW_VERSION_MINOR, 91, [The minor version of ObjFW])
 dnl This may only be set to 0.91 once 0.91 is released
 AC_SUBST(BUNDLE_VERSION, 0.90.9900)
 AC_SUBST(BUNDLE_SHORT_VERSION, 0.90)

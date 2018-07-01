@@ -311,6 +311,21 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return numberOfCPUs;
 }
 
++ (OFString *)ObjFWVersion
+{
+	return @PACKAGE_VERSION;
+}
+
++ (unsigned int)ObjFWVersionMajor
+{
+	return OBJFW_VERSION_MAJOR;
+}
+
++ (unsigned int)ObjFWVersionMinor
+{
+	return OBJFW_VERSION_MINOR;
+}
+
 + (OFString *)operatingSystemName
 {
 #ifdef OF_HAVE_THREADS
