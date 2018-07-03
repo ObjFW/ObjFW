@@ -807,6 +807,9 @@ next:
 		    copy];
 		_detectedFileName = true;
 
+		/* Handle this URL on the next -[downloadNextURL] call */
+		_URLIndex--;
+
 		[self performSelector: @selector(downloadNextURL)
 			   afterDelay: 0];
 		return;
@@ -918,9 +921,6 @@ next:
 	clientHeaders = [[_clientHeaders mutableCopy] autorelease];
 
 	if (_detectFileName && !_detectedFileName) {
-		/* Handle this URL on the next -[downloadNextURL] call */
-		_URLIndex--;
-
 		if (!_quiet)
 			[of_stdout writeFormat: @"⠒ %@", [URL string]];
 
