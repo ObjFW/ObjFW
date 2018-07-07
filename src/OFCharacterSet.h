@@ -26,6 +26,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class cluster representing a character set.
  */
 @interface OFCharacterSet: OFObject
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) OFCharacterSet *whitespaceCharacterSet;
+#endif
+
 /*!
  * @brief The inverted set, containing only the characters that do not exist in
  *	  the receiver.
@@ -49,6 +53,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new OFCharacterSet
  */
 + (instancetype)characterSetWithRange: (of_range_t)range;
+
+/*!
+ * @brief A character set containing all Unicode characters in the category
+ *	  `Zs` plus CHARACTER TABULATION (U+0009).
+ */
++ (OFCharacterSet *)whitespaceCharacterSet;
 
 /*!
  * @brief Initializes an already allocated character set with the characters of

@@ -26,7 +26,13 @@ static struct {
 	Class isa;
 } placeholder;
 
+static OFCharacterSet *whitespaceCharacterSet = nil;
+
 @interface OFCharacterSet_placeholder: OFCharacterSet
+@end
+
+@interface OFCharacterSet_whitespace: OFCharacterSet
+- (instancetype)of_init;
 @end
 
 @implementation OFCharacterSet_placeholder
@@ -94,6 +100,11 @@ static struct {
 	return [[[self alloc] initWithRange: range] autorelease];
 }
 
++ (OFCharacterSet *)whitespaceCharacterSet
+{
+	return [OFCharacterSet_whitespace whitespaceCharacterSet];
+}
+
 - (instancetype)init
 {
 	if ([self isMemberOfClass: [OFCharacterSet class]]) {
@@ -129,5 +140,76 @@ static struct {
 {
 	return [[[OFCharacterSet_invertedSet alloc]
 	    of_initWithCharacterSet: self] autorelease];
+}
+@end
+
+@implementation OFCharacterSet_whitespace
++ (void)initialize
+{
+	if (self != [OFCharacterSet_whitespace class])
+		return;
+
+	whitespaceCharacterSet = [[OFCharacterSet_whitespace alloc] of_init];
+}
+
++ (OFCharacterSet *)whitespaceCharacterSet
+{
+	return whitespaceCharacterSet;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)of_init
+{
+	return [super init];
+}
+
+- (instancetype)autorelease
+{
+	return self;
+}
+
+- (instancetype)retain
+{
+	return self;
+}
+
+- (void)release
+{
+}
+
+- (unsigned int)retainCount
+{
+	return OF_RETAIN_COUNT_MAX;
+}
+
+- (bool)characterIsMember: (of_unichar_t)character
+{
+	switch (character) {
+	case 0x0009:
+	case 0x0020:
+	case 0x00A0:
+	case 0x1680:
+	case 0x2000:
+	case 0x2001:
+	case 0x2002:
+	case 0x2003:
+	case 0x2004:
+	case 0x2005:
+	case 0x2006:
+	case 0x2007:
+	case 0x2008:
+	case 0x2009:
+	case 0x200A:
+	case 0x202F:
+	case 0x205F:
+	case 0x3000:
+		return true;
+	default:
+		return false;
+	}
 }
 @end
