@@ -2281,6 +2281,53 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return array;
 }
 
+- (OFArray *)
+    componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
+{
+	return [self componentsSeparatedByCharactersInSet: characterSet
+						  options: 0];
+}
+
+- (OFArray *)
+   componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
+				options: (int)options
+{
+	OFMutableArray *array = [OFMutableArray array];
+	void *pool = objc_autoreleasePoolPush();
+	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
+	const of_unichar_t *characters = [self characters];
+	size_t length = [self length];
+	bool (*characterIsMember)(id, SEL, of_unichar_t) =
+	    (bool (*)(id, SEL, of_unichar_t))[characterSet
+	    methodForSelector: @selector(characterIsMember:)];
+	size_t last;
+
+	last = 0;
+	for (size_t i = 0; i < length; i++) {
+		if (characterIsMember(characterSet,
+		    @selector(characterIsMember:), characters[i])) {
+			if (!skipEmpty || i != last) {
+				OFString *component = [self substringWithRange:
+				    of_range(last, i - last)];
+				[array addObject: component];
+			}
+
+			last = i + 1;
+		}
+	}
+	if (!skipEmpty || length != last) {
+		OFString *component = [self substringWithRange:
+		    of_range(last, length - last)];
+		[array addObject: component];
+	}
+
+	[array makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return array;
+}
+
 - (OFString *)stringByStandardizingURLPath
 {
 	void *pool = objc_autoreleasePoolPush();

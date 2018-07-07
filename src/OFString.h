@@ -1102,16 +1102,18 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (bool)hasSuffix: (OFString *)suffix;
 
 /*!
- * @brief Separates an OFString into an OFArray of OFStrings.
+ * @brief Separates the string into an array of strings, split by the specified
+ *	  delimiter.
  *
  * @param delimiter The delimiter for separating
  * @return An autoreleased OFArray with the separated string
  */
-- (OFArray OF_GENERIC(OFString *) *)componentsSeparatedByString:
-    (OFString *)delimiter;
+- (OFArray OF_GENERIC(OFString *) *)
+    componentsSeparatedByString: (OFString *)delimiter;
 
 /*!
- * @brief Separates an OFString into an OFArray of OFStrings.
+ * @brief Separates the string into an array of strings, split by the specified
+ *	  delimiter.
  *
  * @param delimiter The delimiter for separating
  * @param options Options according to which the string should be separated.@n
@@ -1124,6 +1126,32 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 - (OFArray OF_GENERIC(OFString *) *)
     componentsSeparatedByString: (OFString *)delimiter
 			options: (int)options;
+
+/*!
+ * @brief Separates the string into an array of strings, split by characters in
+ *	  the specified set.
+ *
+ * @param characterSet The character set for separating
+ * @return An autoreleased OFArray with the separated string
+ */
+- (OFArray OF_GENERIC(OFString *) *)
+    componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet;
+
+/*!
+ * @brief Separates the string into an array of strings, split by characters in
+ *	  the specified set.
+ *
+ * @param characterSet The character set for separating
+ * @param options Options according to which the string should be separated.@n
+ *		  Possible values are:
+ *		  Value                  | Description
+ *		  -----------------------|----------------------
+ * 		  `OF_STRING_SKIP_EMPTY` | Skip empty components
+ * @return An autoreleased OFArray with the separated string
+ */
+- (OFArray OF_GENERIC(OFString *) *)
+    componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
+				 options: (int)options;
 
 /*!
  * @brief Returns the string in UTF-16 encoding with the specified byte order.

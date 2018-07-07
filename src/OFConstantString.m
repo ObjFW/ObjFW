@@ -543,6 +543,24 @@ struct {
 					 options: options];
 }
 
+- (OFArray *)
+    componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
+{
+	[self finishInitialization];
+
+	return [self componentsSeparatedByCharactersInSet: characterSet];
+}
+
+- (OFArray *)
+    componentsSeparatedByCharactersInSet: (OFCharacterSet *)characterSet
+				 options: (int)options
+{
+	[self finishInitialization];
+
+	return [self componentsSeparatedByCharactersInSet: characterSet
+						  options: options];
+}
+
 - (OFArray *)pathComponents
 {
 	[self finishInitialization];

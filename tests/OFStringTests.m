@@ -224,7 +224,7 @@ static uint16_t sutf16str[] = {
 	OFMutableString *s[3];
 	OFString *is;
 	OFArray *a;
-	int i;
+	size_t i;
 	const of_unichar_t *ua;
 	const uint16_t *u16a;
 	OFCharacterSet *cs;
@@ -606,23 +606,53 @@ static uint16_t sutf16str[] = {
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:]",
 	    (a = [C(@"fooXXbarXXXXbazXXXX")
-	    componentsSeparatedByString: @"XX"]) && [a count] == 6 &&
+	    componentsSeparatedByString: @"XX"]) &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [[a objectAtIndex: i++] isEqual: @""])
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [a count] == i)
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:options:]",
 	    (a = [C(@"fooXXbarXXXXbazXXXX")
 	    componentsSeparatedByString: @"XX"
 				options: OF_STRING_SKIP_EMPTY]) &&
-	    [a count] == 3 &&
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
-	    [[a objectAtIndex: i++] isEqual: @"baz"])
+	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
+	    [a count] == i)
+
+	cs = [OFCharacterSet characterSetWithCharactersInString: @"XYZ"];
+
+	i = 0;
+	TEST(@"-[componentsSeparatedByCharactersInSet:]",
+	    (a = [C(@"fooXYbarXYZXbazXYXZx")
+	    componentsSeparatedByCharactersInSet: cs]) &&
+	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @""] &&
+	    [[a objectAtIndex: i++] isEqual: @"x"] &&
+	    [a count] == i)
+
+	i = 0;
+	TEST(@"-[componentsSeparatedByCharactersInSet:options:]",
+	    (a = [C(@"fooXYbarXYZXbazXYXZ")
+	    componentsSeparatedByCharactersInSet: cs
+					 options: OF_STRING_SKIP_EMPTY]) &&
+	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
+	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
+	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
+	    [a count] == i)
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
