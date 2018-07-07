@@ -267,7 +267,7 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern int of_application_main(int *_Nonnull,
-    char *_Nonnull *_Nonnull[_Nonnull], id <OFApplicationDelegate>);
+    char *_Nullable *_Nonnull[_Nonnull], id <OFApplicationDelegate>);
 #ifdef __cplusplus
 }
 #endif
