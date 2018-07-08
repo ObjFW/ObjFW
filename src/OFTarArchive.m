@@ -39,7 +39,7 @@
 	OFTarArchiveEntry *_entry;
 	OF_KINDOF(OFStream *) _stream;
 	uint64_t _toRead;
-	bool _atEndOfStream;
+	bool _atEndOfStream, _skipped;
 }
 
 - (instancetype)of_initWithStream: (OFStream *)stream
@@ -361,7 +361,7 @@
 
 - (void)of_skip
 {
-	if (_stream == nil || _toRead == 0)
+	if (_stream == nil || _skipped)
 		return;
 
 	if ([_stream isKindOfClass: [OFSeekableStream class]] &&
@@ -400,6 +400,8 @@
 			[_stream readIntoBuffer: buffer
 				    exactLength: (size_t)(512 - (size % 512))];
 	}
+
+	_skipped = true;
 }
 @end
 

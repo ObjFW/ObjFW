@@ -269,8 +269,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	OFString *ret = [OFString stringWithFormat: @"<%@:\n"
 	     @"\tFile name = %@\n"
 	     @"\tMode = %06o\n"
-	     @"\tUID = %u\n",
-	     @"\tGID = %u\n",
+	     @"\tUID = %u\n"
+	     @"\tGID = %u\n"
 	     @"\tSize = %" PRIu64 @"\n"
 	     @"\tModification date = %@\n"
 	     @"\tType = %u\n"

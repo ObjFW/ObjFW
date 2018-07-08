@@ -45,7 +45,7 @@
 	OFLHAArchiveEntry *_entry;
 	uint32_t _toRead, _bytesConsumed;
 	uint16_t _CRC16;
-	bool _atEndOfStream;
+	bool _atEndOfStream, _skipped;
 }
 
 - (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
@@ -371,7 +371,7 @@
 	OF_KINDOF(OFStream *) stream;
 	uint32_t toRead;
 
-	if (_stream == nil || _toRead == 0)
+	if (_stream == nil || _skipped)
 		return;
 
 	stream = _stream;
@@ -409,6 +409,7 @@
 	}
 
 	_toRead = 0;
+	_skipped = true;
 }
 
 - (void)close
