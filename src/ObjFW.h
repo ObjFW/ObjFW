@@ -76,6 +76,7 @@
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
 # import "OFKernelEventObserver.h"
+# import "OFDNSResolver.h"
 #endif
 #import "OFHTTPCookie.h"
 #import "OFHTTPCookieManager.h"
