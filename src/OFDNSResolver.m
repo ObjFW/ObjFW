@@ -73,7 +73,17 @@ domainFromHostname(void)
 		_minNumberOfDotsInAbsoluteName = 1;
 
 #ifdef OF_HAVE_FILES
+# if defined(OF_HAIKU)
+		[self of_parseHosts: @"/boot/common/settings/network/hosts"];
+# elif defined(OF_MORPHOS)
+		[self of_parseHosts: @"ENVARC:sys/net/hosts"];
+# elif defined(OF_AMIGAOS4)
+		[self of_parseHosts: @"DEVS:Internet/hosts"];
+# elif defined(OF_AMIGAOS)
+		[self of_parseHosts: @"AmiTCP:db/hosts"];
+# else
 		[self of_parseHosts: @"/etc/hosts"];
+# endif
 		[self of_parseResolvConf: @"/etc/resolv.conf"];
 		[self of_parseResolvConf: @"/etc/resolv.conf.tail"];
 #endif
