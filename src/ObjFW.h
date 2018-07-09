@@ -124,6 +124,10 @@
 #import "OFRunLoop.h"
 #import "OFSandbox.h"
 
+#ifdef OF_WINDOWS
+# import "OFWindowsRegistryKey.h"
+#endif
+
 #import "OFAllocFailedException.h"
 #import "OFException.h"
 #ifdef OF_HAVE_SOCKETS
@@ -146,6 +150,9 @@
 #import "OFCopyItemFailedException.h"
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFCreateWindowsRegistryKeyFailedException.h"
+#endif
 #import "OFEnumerationMutationException.h"
 #ifdef OF_HAVE_FILES
 # import "OFGetCurrentDirectoryPathFailedException.h"
@@ -178,10 +185,16 @@
 # import "OFObserveFailedException.h"
 #endif
 #import "OFOpenItemFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFOpenWindowsRegistryKeyFailedException.h"
+#endif
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFReadWindowsRegistryValueFailedException.h"
+#endif
 #import "OFRemoveItemFailedException.h"
 #import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSandboxActivationFailedException.h"

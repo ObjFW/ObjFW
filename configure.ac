@@ -93,6 +93,7 @@ case "$host" in
 
 		AC_SUBST(ALLOW_MULTIPLE_DEFINITION,
 			[-Wl,--allow-multiple-definition])
+		AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
 		;;
 	*-psp-*)
 		AS_IF([test x"$DEVKITPSP" = x""], [
@@ -818,12 +819,6 @@ AC_CHECK_FUNC(asprintf, [
 ])
 test x"$have_asprintf" != x"yes" -a x"$ac_cv_snprintf_useful_ret" != x"yes" && \
 	AC_MSG_ERROR(No asprintf and no snprintf returning required space!)
-
-case "$host_os" in
-mingw*)
-	AC_SUBST(OFSTDIOSTREAM_WIN32CONSOLE_M, "OFStdIOStream_Win32Console.m")
-	;;
-esac
 
 AC_ARG_ENABLE(unicode-tables,
 	AS_HELP_STRING([--disable-unicode-tables], [Disable Unicode tables]))
