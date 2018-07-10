@@ -86,6 +86,14 @@
 }
 
 - (OFWindowsRegistryKey *)openSubKeyWithPath: (OFString *)path
+		     securityAndAccessRights: (REGSAM)securityAndAccessRights
+{
+	return [self openSubKeyWithPath: path
+				options: 0
+		securityAndAccessRights: securityAndAccessRights];
+}
+
+- (OFWindowsRegistryKey *)openSubKeyWithPath: (OFString *)path
 				     options: (DWORD)options
 		     securityAndAccessRights: (REGSAM)securityAndAccessRights
 {
@@ -117,6 +125,17 @@
 
 - (OFWindowsRegistryKey *)
        createSubKeyWithPath: (OFString *)path
+    securityAndAccessRights: (REGSAM)securityAndAccessRights
+{
+	return [self createSubKeyWithPath: path
+				  options: 0
+		  securityAndAccessRights: securityAndAccessRights
+		       securityAttributes: NULL
+			      disposition: NULL];
+}
+
+- (OFWindowsRegistryKey *)
+       createSubKeyWithPath: (OFString *)path
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights
 	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
@@ -142,6 +161,15 @@
 	return [[[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
 							close: true]
 	    autorelease];
+}
+
+- (OFString *)stringForValue: (OFString *)value
+		  subKeyPath: (OFString *)subKeyPath
+{
+	return [self stringForValue: value
+			 subKeyPath: subKeyPath
+			      flags: 0
+			       type: NULL];
 }
 
 - (OFString *)stringForValue: (OFString *)value

@@ -73,7 +73,19 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Opens the sub key at the specified path.
  *
  * @param path The path of the sub key to open
- * @param options Please refer to the `RegOpenKeyEx()` documentation
+ * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
+ *				  documentation
+ * @return The sub key with the specified path, or nil if it does not exist
+ */
+- (nullable OFWindowsRegistryKey *)
+	 openSubKeyWithPath: (OFString *)path
+    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+
+/*!
+ * @brief Opens the sub key at the specified path.
+ *
+ * @param path The path of the sub key to open
+ * @param options Please refer to the `RegOpenKeyEx()` documentation. Usually 0.
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
  *				  documentation
  * @return The sub key with the specified path, or nil if it does not exist
@@ -88,12 +100,27 @@ OF_ASSUME_NONNULL_BEGIN
  *	  exists.
  *
  * @param path The path of the sub key to create
- * @param options Please refer to the `RegCreateKeyEx()` documentation
+ * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
+ *				  documentation
+ * @return The sub key with the specified path
+ */
+- (OFWindowsRegistryKey *)
+       createSubKeyWithPath: (OFString *)path
+    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+
+/*!
+ * @brief Creates a sub key at the specified path or opens it if it already
+ *	  exists.
+ *
+ * @param path The path of the sub key to create
+ * @param options Please refer to the `RegCreateKeyEx()` documentation.
+ *		  Usually 0.
  * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
  *				  documentation
  * @param securityAttributes Please refer to the `RegCreateKeyEx()`
- *			     documentation
- * @param disposition Please refer to the `RegCreateKeyEx()` documentation
+ *			     documentation. Usually NULL.
+ * @param disposition Whether the key was created or already existed. Please
+ *		      refer to the `RegCreateKeyEx()` documentation.
  * @return The sub key with the specified path
  */
 - (OFWindowsRegistryKey *)
@@ -102,6 +129,16 @@ OF_ASSUME_NONNULL_BEGIN
     securityAndAccessRights: (REGSAM)securityAndAccessRights
 	 securityAttributes: (nullable LPSECURITY_ATTRIBUTES)securityAttributes
 		disposition: (nullable LPDWORD)disposition;
+
+/*!
+ * @brief Returns the string for the specified value at the specified path.
+ *
+ * @param value The name of the value to return
+ * @param subKeyPath The path of the key from which to retrieve the value
+ * @return The string for the specified value
+ */
+- (nullable OFString *)stringForValue: (nullable OFString *)value
+			   subKeyPath: (nullable OFString *)subKeyPath;
 
 /*!
  * @brief Returns the string for the specified value at the specified path.
