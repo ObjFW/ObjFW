@@ -147,6 +147,7 @@
 - (OFString *)stringForValue: (OFString *)value
 		  subKeyPath: (OFString *)subKeyPath
 		       flags: (DWORD)flags
+			type: (LPDWORD)type
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_char16_t stackBuffer[256], *buffer = stackBuffer;
@@ -156,7 +157,7 @@
 
 	if ((status = RegGetValueW(_hKey, [subKeyPath UTF16String],
 	    [value UTF16String], flags | RRF_RT_REG_SZ | RRF_RT_REG_EXPAND_SZ,
-	    NULL, buffer, &length)) != ERROR_SUCCESS) {
+	    type, buffer, &length)) != ERROR_SUCCESS) {
 		OFObject *tmp;
 
 		if (status == ERROR_FILE_NOT_FOUND) {

@@ -109,11 +109,13 @@ OF_ASSUME_NONNULL_BEGIN
  * @param value The name of the value to return
  * @param subKeyPath The path of the key from which to retrieve the value
  * @param flags Extra flags for `RegGetValue()`. Usually 0.
+ * @param type A pointer to store the type of the value, or NULL
  * @return The string for the specified value
  */
 - (nullable OFString *)stringForValue: (nullable OFString *)value
 			   subKeyPath: (nullable OFString *)subKeyPath
-				flags: (DWORD)flags;
+				flags: (DWORD)flags
+				 type: (nullable LPDWORD)type;
 @end
 
 OF_ASSUME_NONNULL_END
