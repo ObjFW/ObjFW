@@ -33,11 +33,22 @@
 
 #import "OFOpenItemFailedException.h"
 
+#ifdef OF_WINDOWS
+# define interface struct
+# include <iphlpapi.h>
+# undef interface
+#endif
+
 @interface OFDNSResolver ()
 #ifdef OF_HAVE_FILES
 - (void)of_parseHosts: (OFString *)path;
+# ifndef OF_WINDOWS
 - (void)of_parseResolvConf: (OFString *)path;
 - (void)of_parseResolvConfOption: (OFString *)option;
+# endif
+#endif
+#ifdef OF_WINDOWS
+- (void)of_parseNetworkParams;
 #endif
 @end
 
@@ -105,8 +116,13 @@ domainFromHostname(void)
 # else
 		[self of_parseHosts: @"/etc/hosts"];
 # endif
+# ifndef OF_WINDOWS
 		[self of_parseResolvConf: @"/etc/resolv.conf"];
 		[self of_parseResolvConf: @"/etc/resolv.conf.tail"];
+# endif
+#endif
+#ifdef OF_WINDOWS
+		[self of_parseNetworkParams];
 #endif
 
 		if (_staticHosts == nil)
@@ -216,6 +232,7 @@ domainFromHostname(void)
 	objc_autoreleasePoolPop(pool);
 }
 
+# ifndef OF_WINDOWS
 - (void)of_parseResolvConf: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -308,6 +325,47 @@ domainFromHostname(void)
 		}
 	} else if ([option isEqual: @"tcp"])
 		_usesTCP = true;
+}
+# endif
+#endif
+
+#ifdef OF_WINDOWS
+- (void)of_parseNetworkParams
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_string_encoding_t encoding = [OFLocalization encoding];
+	OFMutableArray *nameServers;
+	OFString *localDomain;
+	/*
+	 * We need more space than FIXED_INFO in case we have more than one
+	 * name server, but we also want it to be properly aligned, meaning we
+	 * can't just get a buffer of bytes. Thus, we just get space for 8.
+	 */
+	FIXED_INFO fixedInfo[8];
+	ULONG length = sizeof(fixedInfo);
+	PIP_ADDR_STRING iter;
+
+	if (GetNetworkParams(fixedInfo, &length) != ERROR_SUCCESS)
+		return;
+
+	nameServers = [OFMutableArray array];
+	localDomain = [OFString stringWithCString: fixedInfo->DomainName
+					 encoding: encoding];
+
+	for (iter = &fixedInfo->DnsServerList; iter != NULL; iter = iter->Next)
+		[nameServers addObject:
+		    [OFString stringWithCString: iter->IpAddress.String
+				       encoding: encoding]];
+
+	if ([nameServers count] > 0) {
+		[nameServers makeImmutable];
+		_nameServers = [nameServers copy];
+	}
+
+	if ([localDomain length] > 0)
+		_localDomain = [localDomain copy];
+
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 @end

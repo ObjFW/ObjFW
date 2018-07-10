@@ -1182,6 +1182,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
 	AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
+	AC_CHECK_LIB(iphlpapi, main, LIBS="$LIBS -liphlpapi")
 
 	AC_CHECK_HEADER(sys/socket.h, [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
