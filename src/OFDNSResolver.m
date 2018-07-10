@@ -27,6 +27,9 @@
 #import "OFFile.h"
 #import "OFLocalization.h"
 #import "OFString.h"
+#ifdef OF_WINDOWS
+# import "OFWindowsRegistryKey.h"
+#endif
 
 #import "OFOpenItemFailedException.h"
 
@@ -70,10 +73,28 @@ domainFromHostname(void)
 	self = [super init];
 
 	@try {
+#ifdef OF_WINDOWS
+		void *pool;
+		OFString *path;
+#endif
+
 		_minNumberOfDotsInAbsoluteName = 1;
 
 #ifdef OF_HAVE_FILES
-# if defined(OF_HAIKU)
+# if defined(OF_WINDOWS)
+		pool = objc_autoreleasePoolPush();
+
+		path = [[OFWindowsRegistryKey localMachineKey]
+		    stringForValue: @"DataBasePath"
+			subKeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+				    @"Tcpip\\Parameters"];
+		path = [path stringByAppendingPathComponent: @"hosts"];
+
+		if (path != nil)
+			[self of_parseHosts: path];
+
+		objc_autoreleasePoolPop(pool);
+# elif defined(OF_HAIKU)
 		[self of_parseHosts: @"/boot/common/settings/network/hosts"];
 # elif defined(OF_MORPHOS)
 		[self of_parseHosts: @"ENVARC:sys/net/hosts"];
