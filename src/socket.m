@@ -218,3 +218,115 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 	return ret;
 }
 #endif
+
+bool
+of_socket_address_equal(of_socket_address_t *address1,
+    of_socket_address_t *address2)
+{
+	struct sockaddr_in *addrIn1, *addrIn2;
+#ifdef HAVE_IPV6
+	struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
+#endif
+
+	if (address1->address.ss_family != address2->address.ss_family)
+		return false;
+
+	switch (address1->address.ss_family) {
+	case AF_INET:
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+		if (address1->length < (socklen_t)sizeof(struct sockaddr_in) ||
+		    address2->length < (socklen_t)sizeof(struct sockaddr_in))
+			@throw [OFInvalidArgumentException exception];
+#else
+		if (address1->length < 8 || address2->length < 8)
+			@throw [OFInvalidArgumentException exception];
+#endif
+
+		addrIn1 = (struct sockaddr_in *)&address1->address;
+		addrIn2 = (struct sockaddr_in *)&address2->address;
+
+		if (addrIn1->sin_port != addrIn2->sin_port)
+			return false;
+		if (addrIn1->sin_addr.s_addr != addrIn2->sin_addr.s_addr)
+			return false;
+
+		break;
+#ifdef HAVE_IPV6
+	case AF_INET6:
+		if (address1->length < sizeof(struct sockaddr_in6) ||
+		    address2->length < sizeof(struct sockaddr_in6))
+			@throw [OFInvalidArgumentException exception];
+
+		addrIn6_1 = (struct sockaddr_in6 *)&address1->address;
+		addrIn6_2 = (struct sockaddr_in6 *)&address2->address;
+
+		if (addrIn6_1->sin6_port != addrIn6_2->sin6_port)
+			return false;
+		if (memcmp(addrIn6_1->sin6_addr.s6_addr,
+		    addrIn6_2->sin6_addr.s6_addr,
+		    sizeof(addrIn6_1->sin6_addr.s6_addr)) != 0)
+			return false;
+
+		break;
+#endif
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+
+	return true;
+}
+
+uint32_t
+of_socket_address_hash(of_socket_address_t *address)
+{
+	uint32_t hash = of_hash_seed;
+	struct sockaddr_in *addrIn;
+#ifdef HAVE_IPV6
+	struct sockaddr_in6 *addrIn6;
+	uint32_t subhash;
+#endif
+
+	hash += address->address.ss_family;
+
+	switch (address->address.ss_family) {
+	case AF_INET:
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+		if (address->length < (socklen_t)sizeof(struct sockaddr_in))
+			@throw [OFInvalidArgumentException exception];
+#else
+		if (address->length < 8)
+			@throw [OFInvalidArgumentException exception];
+#endif
+
+		addrIn = (struct sockaddr_in *)&address->address;
+
+		hash += (addrIn->sin_port << 1);
+		hash ^= addrIn->sin_addr.s_addr;
+
+		break;
+#ifdef HAVE_IPV6
+	case AF_INET6:
+		if (address->length < sizeof(struct sockaddr_in6))
+			@throw [OFInvalidArgumentException exception];
+
+		addrIn6 = (struct sockaddr_in6 *)&address->address;
+
+		hash += (addrIn6->sin6_port << 1);
+
+		OF_HASH_INIT(subhash);
+
+		for (size_t i = 0; i < sizeof(addrIn6->sin6_addr.s6_addr); i++)
+			OF_HASH_ADD(subhash, adrIn6->sin6_addr.s6_addr[i]);
+
+		OF_HASH_FINALIZE(subhash);
+
+		hash ^= subhash;
+
+		break;
+#endif
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+
+	return hash;
+}

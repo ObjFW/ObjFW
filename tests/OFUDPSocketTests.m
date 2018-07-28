@@ -33,7 +33,7 @@ static OFString *module = @"OFUDPSocket";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFUDPSocket *sock;
 	uint16_t port1, port2;
-	of_udp_socket_address_t addr1, addr2, addr3;
+	of_socket_address_t addr1, addr2, addr3;
 	char buf[6];
 	OFString *host;
 
@@ -69,15 +69,17 @@ static OFString *module = @"OFUDPSocket";
 				      port: port1 + 1
 				   address: &addr3];
 
-	TEST(@"of_udp_socket_address_equal()",
-	    of_udp_socket_address_equal(&addr1, &addr2) &&
-	    !of_udp_socket_address_equal(&addr1, &addr3))
+	/*
+	 * TODO: Move those tests elsewhere as soon as the DNS resolving part
+	 *	 is no longer in OFUDPSocket.
+	 */
+	TEST(@"of_socket_address_equal()",
+	    of_socket_address_equal(&addr1, &addr2) &&
+	    !of_socket_address_equal(&addr1, &addr3))
 
-	TEST(@"of_udp_socket_address_hash()",
-	    of_udp_socket_address_hash(&addr1) ==
-	    of_udp_socket_address_hash(&addr2) &&
-	    of_udp_socket_address_hash(&addr1) !=
-	    of_udp_socket_address_hash(&addr3))
+	TEST(@"of_socket_address_hash()",
+	    of_socket_address_hash(&addr1) == of_socket_address_hash(&addr2) &&
+	    of_socket_address_hash(&addr1) != of_socket_address_hash(&addr3))
 
 	[pool drain];
 }

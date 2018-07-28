@@ -26,16 +26,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFUDPSocket;
 
-/*!
- * @struct of_udp_socket_address_t OFUDPSocket.h ObjFW/OFUDPSocket.h
- *
- * @brief A struct which represents a host / port pair for a UDP socket.
- */
-typedef struct OF_BOXABLE {
-	struct sockaddr_storage address;
-	socklen_t length;
-} of_udp_socket_address_t;
-
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief A block which is called when the host / port pair for the UDP socket
@@ -48,7 +38,7 @@ typedef struct OF_BOXABLE {
  *		    success
  */
 typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
-    uint16_t port, of_udp_socket_address_t address, id _Nullable exception);
+    uint16_t port, of_socket_address_t address, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a packet has been received.
@@ -62,7 +52,7 @@ typedef void (^of_udp_socket_async_resolve_block_t)(OFString *host,
  * @return A bool whether the same block should be used for the next receive
  */
 typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
-    void *buffer, size_t length, of_udp_socket_address_t sender,
+    void *buffer, size_t length, of_socket_address_t sender,
     id _Nullable exception);
 
 /*!
@@ -85,7 +75,7 @@ typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
  */
 typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
     const void *_Nonnull *_Nonnull buffer, size_t bytesSent,
-    of_udp_socket_address_t *_Nonnull receiver, id exception);
+    of_socket_address_t *_Nonnull receiver, id exception);
 #endif
 
 /*!
@@ -93,13 +83,12 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *
  * @brief A class which provides methods to create and use UDP sockets.
  *
- * Addresses are of type @ref of_udp_socket_address_t. You can use
+ * Addresses are of type @ref of_socket_address_t. You can use
  * @ref resolveAddressForHost:port:address: to create an address for a host /
  * port pair and @ref getHost:andPort:forAddress: to get the host / port pair
  * for an address. If you want to compare two addresses, you can use
- * @ref of_udp_socket_address_equal and you can use
- * @ref of_udp_socket_address_hash to get a hash to use in e.g.
- * @ref OFMapTable.
+ * @ref of_socket_address_equal and you can use @ref of_socket_address_hash to
+ * get a hash to use in e.g. @ref OFMapTable.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the socket, but instead retains it.
@@ -135,7 +124,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  */
 + (void)resolveAddressForHost: (OFString *)host
 			 port: (uint16_t)port
-		      address: (of_udp_socket_address_t *)address;
+		      address: (of_socket_address_t *)address;
 
 #ifdef OF_HAVE_THREADS
 /*!
@@ -148,7 +137,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *		 resolved
  * @param selector The selector to call on the target. The signature must be
  *		   `void (OFString *host, uint16_t port,
- *		   of_udp_socket_address_t address, id context, id exception)`.
+ *		   of_socket_address_t address, id context, id exception)`.
  * @param context A context object to pass along to the target
  */
 + (void)asyncResolveAddressForHost: (OFString *)host
@@ -183,7 +172,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  */
 + (void)getHost: (OFString *__autoreleasing _Nonnull *_Nullable)host
 	andPort: (nullable uint16_t *)port
-     forAddress: (of_udp_socket_address_t *)address;
+     forAddress: (of_socket_address_t *)address;
 
 /*!
  * @brief Binds the socket to the specified host and port.
@@ -204,13 +193,13 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *
  * @param buffer The buffer to write the datagram to
  * @param length The length of the buffer
- * @param sender A pointer to an @ref of_udp_socket_address_t, which will be
- *		 set to the address of the sender
+ * @param sender A pointer to an @ref of_socket_address_t, which will be set to
+ *		 the address of the sender
  * @return The length of the received datagram
  */
 - (size_t)receiveIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     sender: (of_udp_socket_address_t *)sender;
+		     sender: (of_socket_address_t *)sender;
 
 /*!
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -228,7 +217,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *		 need to return false from the method.
  * @param selector The selector to call on the target. The signature must be
  *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
- *		   of_udp_socket_address_t sender, id context, id exception)`.
+ *		   of_socket_address_t sender, id context, id exception)`.
  * @param context A context object to pass along to the target
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
@@ -263,19 +252,19 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *
  * @param buffer The buffer to send as a datagram
  * @param length The length of the buffer
- * @param receiver A pointer to an @ref of_udp_socket_address_t to which the
+ * @param receiver A pointer to an @ref of_socket_address_t to which the
  *		   datagram should be sent
  */
 - (void)sendBuffer: (const void *)buffer
 	    length: (size_t)length
-	  receiver: (const of_udp_socket_address_t *)receiver;
+	  receiver: (const of_socket_address_t *)receiver;
 
 /*!
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
  * @param buffer The buffer to send as a datagram
  * @param length The length of the buffer
- * @param receiver A pointer to an @ref of_udp_socket_address_t to which the
+ * @param receiver A pointer to an @ref of_socket_address_t to which the
  *		   datagram should be sent
  * @param target The target on which the selector should be called when the
  *		 packet has been sent. The method should return the length for
@@ -285,13 +274,13 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *		 the callback stays the same.
  * @param selector The selector to call on the target. The signature must be
  *		   `size_t (OFUDPSocket *socket, const void **buffer,
- *		   size_t bytesSent, of_udp_socket_address_t *receiver,
- *		   id context, id exception)`.
+ *		   size_t bytesSent, of_socket_address_t *receiver, id context,
+ *		   id exception)`.
  * @param context A context object to pass along to the target
  */
 - (void)asyncSendBuffer: (const void *)buffer
 		 length: (size_t)length
-	       receiver: (of_udp_socket_address_t)receiver
+	       receiver: (of_socket_address_t)receiver
 		 target: (id)target
 	       selector: (SEL)selector
 		context: (nullable id)context;
@@ -302,7 +291,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *
  * @param buffer The buffer to send as a datagram
  * @param length The length of the buffer
- * @param receiver A pointer to an @ref of_udp_socket_address_t to which the
+ * @param receiver A pointer to an @ref of_socket_address_t to which the
  *		   datagram should be sent
  * @param block The block to call when the packet has been sent. It should
  *		return the length for the next send with the same callback or 0
@@ -312,7 +301,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  */
 - (void)asyncSendBuffer: (const void *)buffer
 		 length: (size_t)length
-	       receiver: (of_udp_socket_address_t)receiver
+	       receiver: (of_socket_address_t)receiver
 		  block: (of_udp_socket_async_send_block_t)block;
 #endif
 
@@ -331,23 +320,6 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*!
- * @brief Compares two of_udp_socket_address_t for equality.
- *
- * @param address1 The address to compare with the second address
- * @param address2 The second address
- * @return Whether the two addresses are equal
- */
-extern bool of_udp_socket_address_equal(of_udp_socket_address_t *address1,
-    of_udp_socket_address_t *address2);
-
-/*!
- * @brief Returns the hash for the specified of_udp_socket_address_t.
- *
- * @param address The address to hash
- * @return The hash for the specified of_udp_socket_address_t
- */
-extern uint32_t of_udp_socket_address_hash(of_udp_socket_address_t *address);
 #ifdef __cplusplus
 }
 #endif

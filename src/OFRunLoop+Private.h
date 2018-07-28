@@ -66,7 +66,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
 			     buffer: (const void *)buffer
 			     length: (size_t)length
-			   receiver: (of_udp_socket_address_t)receiver
+			   receiver: (of_socket_address_t)receiver
 			     target: (id)target
 			   selector: (SEL)selector
 			    context: (nullable id)context;
@@ -101,7 +101,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
 			     buffer: (const void *)buffer
 			     length: (size_t)length
-			   receiver: (of_udp_socket_address_t)receiver
+			   receiver: (of_socket_address_t)receiver
 			      block: (of_udp_socket_async_send_block_t)block;
 # endif
 + (void)of_cancelAsyncRequestsForObject: (id)object;

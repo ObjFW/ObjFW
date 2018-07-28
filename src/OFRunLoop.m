@@ -123,7 +123,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 	const void *_buffer;
 	size_t _length;
-	of_udp_socket_address_t _receiver;
+	of_socket_address_t _receiver;
 }
 @end
 
@@ -378,7 +378,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleObject: (id)object
 {
 	size_t length;
-	of_udp_socket_address_t address;
+	of_socket_address_t address;
 	id exception = nil;
 
 	@try {
@@ -396,9 +396,9 @@ static OFRunLoop *mainRunLoop = nil;
 	else {
 # endif
 		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t, id, id) =
+		    of_socket_address_t, id, id) =
 		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_udp_socket_address_t, id, id))
+		    of_socket_address_t, id, id))
 		    [_target methodForSelector: _selector];
 
 		return func(_target, _selector, object, _buffer, length,
@@ -440,9 +440,9 @@ static OFRunLoop *mainRunLoop = nil;
 	} else {
 # endif
 		size_t (*func)(id, SEL, OFUDPSocket *, const void *, size_t,
-		    of_udp_socket_address_t *, id, id) =
+		    of_socket_address_t *, id, id) =
 		    (size_t (*)(id, SEL, OFUDPSocket *, const void *, size_t,
-		    of_udp_socket_address_t *, id, id))
+		    of_socket_address_t *, id, id))
 		    [_target methodForSelector: _selector];
 
 		_length = func(_target, _selector, object, &_buffer,
@@ -627,7 +627,7 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
 			     buffer: (const void *)buffer
 			     length: (size_t)length
-			   receiver: (of_udp_socket_address_t)receiver
+			   receiver: (of_socket_address_t)receiver
 			     target: (id)target
 			   selector: (SEL)selector
 			    context: (id)context
@@ -717,7 +717,7 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
 			     buffer: (const void *)buffer
 			     length: (size_t)length
-			   receiver: (of_udp_socket_address_t)receiver
+			   receiver: (of_socket_address_t)receiver
 			      block: (of_udp_socket_async_send_block_t)block
 {
 	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, {

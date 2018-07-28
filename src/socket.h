@@ -48,6 +48,8 @@
 # include <ws2tcpip.h>
 #endif
 
+/*! @file */
+
 #ifdef OF_AMIGAOS
 struct sockaddr_storage {
 	uint8_t ss_len;
@@ -102,6 +104,16 @@ typedef int of_socket_t;
 typedef SOCKET of_socket_t;
 #endif
 
+/*!
+ * @struct of_socket_address_t socket.h ObjFW/socket.h
+ *
+ * @brief A struct which represents a host / port pair for a socket.
+ */
+typedef struct OF_BOXABLE {
+	struct sockaddr_storage address;
+	socklen_t length;
+} of_socket_address_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -111,6 +123,24 @@ extern int of_socket_errno(void);
 extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen);
 # endif
+
+/*!
+ * @brief Compares two of_socket_address_t for equality.
+ *
+ * @param address1 The address to compare with the second address
+ * @param address2 The second address
+ * @return Whether the two addresses are equal
+ */
+extern bool of_socket_address_equal(of_socket_address_t *address1,
+    of_socket_address_t *address2);
+
+/*!
+ * @brief Returns the hash for the specified of_socket_address_t.
+ *
+ * @param address The address to hash
+ * @return The hash for the specified of_socket_address_t
+ */
+extern uint32_t of_socket_address_hash(of_socket_address_t *address);
 #ifdef __cplusplus
 }
 #endif
