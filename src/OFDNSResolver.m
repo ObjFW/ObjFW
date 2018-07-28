@@ -116,7 +116,10 @@ domainFromHostname(void)
 # else
 		[self of_parseHosts: @"/etc/hosts"];
 # endif
-# ifndef OF_WINDOWS
+
+# if defined(OF_MORPHOS)
+		[self of_parseResolvConf: @"ENV:sys/net/resolv.conf"];
+# elif !defined(OF_WINDOWS)
 		[self of_parseResolvConf: @"/etc/resolv.conf"];
 		[self of_parseResolvConf: @"/etc/resolv.conf.tail"];
 # endif
