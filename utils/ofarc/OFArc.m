@@ -23,7 +23,7 @@
 #import "OFArray.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
@@ -191,9 +191,9 @@ writingNotSupported(OFString *type)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
 #else
-	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofarc/lang"];
+	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofarc/lang"];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];
@@ -359,7 +359,7 @@ writingNotSupported(OFString *type)
 		} @catch (OFCreateDirectoryFailedException *e) {
 			OFString *error = [OFString
 			    stringWithCString: strerror([e errNo])
-				     encoding: [OFLocalization encoding]];
+				     encoding: [OFLocale encoding]];
 			[of_stderr writeString: @"\r"];
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
@@ -370,7 +370,7 @@ writingNotSupported(OFString *type)
 		} @catch (OFOpenItemFailedException *e) {
 			OFString *error = [OFString
 			    stringWithCString: strerror([e errNo])
-				     encoding: [OFLocalization encoding]];
+				     encoding: [OFLocale encoding]];
 			[of_stderr writeString: @"\r"];
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
@@ -427,7 +427,7 @@ writingNotSupported(OFString *type)
 	} @catch (OFOpenItemFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
-			     encoding: [OFLocalization encoding]];
+			     encoding: [OFLocale encoding]];
 		[of_stderr writeString: @"\r"];
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"failed_to_open_file",
@@ -495,7 +495,7 @@ writingNotSupported(OFString *type)
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
-			     encoding: [OFLocalization encoding]];
+			     encoding: [OFLocale encoding]];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
 		    @"file", path,
@@ -504,7 +504,7 @@ writingNotSupported(OFString *type)
 	} @catch (OFSeekFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
-			     encoding: [OFLocalization encoding]];
+			     encoding: [OFLocale encoding]];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_seek_in_file",
 		    @"Failed to seek in file %[file]: %[error]",
 		    @"file", path,
@@ -605,7 +605,7 @@ error:
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
-			     encoding: [OFLocalization encoding]];
+			     encoding: [OFLocale encoding]];
 		[of_stdout writeString: @"\r"];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
@@ -620,7 +620,7 @@ error:
 	} @catch (OFWriteFailedException *e) {
 		OFString *error = [OFString
 		    stringWithCString: strerror([e errNo])
-			     encoding: [OFLocalization encoding]];
+			     encoding: [OFLocale encoding]];
 		[of_stdout writeString: @"\r"];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_write_file",
 		    @"Failed to write file %[file]: %[error]",

@@ -32,7 +32,7 @@
 #import "OFTCPSocket.h"
 #import "OFTLSSocket.h"
 #import "OFURL.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFSandbox.h"
 
 #import "OFAddressTranslationFailedException.h"
@@ -397,9 +397,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
 #else
-	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofhttp/lang"];
+	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhttp/lang"];
 #endif
 
 	optionsParser = [OFOptionsParser parserWithOptions: options];

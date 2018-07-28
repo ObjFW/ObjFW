@@ -17,26 +17,26 @@
 
 #include "config.h"
 
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFAutoreleasePool.h"
 
 #import "TestsAppDelegate.h"
 
-static OFString *module = @"OFLocalization";
+static OFString *module = @"OFLocale";
 
-@implementation TestsAppDelegate (OFLocalizationTests)
-- (void)localizationTests
+@implementation TestsAppDelegate (OFLocaleTests)
+- (void)localeTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 
-	PRINT(GREEN, @"Language: %@", [OFLocalization language]);
+	PRINT(GREEN, @"Language: %@", [OFLocale language]);
 
-	PRINT(GREEN, @"Territory: %@", [OFLocalization territory]);
+	PRINT(GREEN, @"Territory: %@", [OFLocale territory]);
 
 	PRINT(GREEN, @"Encoding: %@",
-	    of_string_name_of_encoding([OFLocalization encoding]));
+	    of_string_name_of_encoding([OFLocale encoding]));
 
-	PRINT(GREEN, @"Decimal point: %@", [OFLocalization decimalPoint]);
+	PRINT(GREEN, @"Decimal point: %@", [OFLocale decimalPoint]);
 
 	[pool drain];
 }

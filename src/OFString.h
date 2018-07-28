@@ -59,8 +59,8 @@ typedef of_char32_t of_unichar_t;
  */
 typedef enum of_string_encoding_t {
 	/*
-	 * UTF-8 *has* to be 0, so that if the @ref OFLocalization singleton is
-	 * `nil`, `[OFLocalization encoding]` returns UTF-8.
+	 * UTF-8 *has* to be 0, so that if the current @ref OFLocale is
+	 * `nil`, `[OFLocale encoding]` returns UTF-8.
 	 */
 	/*! UTF-8 */
 	OF_STRING_ENCODING_UTF_8,

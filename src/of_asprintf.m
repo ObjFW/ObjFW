@@ -39,7 +39,7 @@
 #endif
 
 #import "OFString.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 
 #import "OFInitializationFailedException.h"
 
@@ -561,8 +561,7 @@ formatConversionSpecifierState(struct context *ctx)
 				OFMutableString *tmpStr = [OFMutableString
 				    stringWithUTF8String: tmp
 						  length: tmpLen];
-				OFString *point =
-				    [OFLocalization decimalPoint];
+				OFString *point = [OFLocale decimalPoint];
 				if (point != nil)
 					[tmpStr
 					    replaceOccurrencesOfString: point

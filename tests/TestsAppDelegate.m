@@ -434,7 +434,7 @@ main(int argc, char *argv[])
 #endif
 
 	[self systemInfoTests];
-	[self localizationTests];
+	[self localeTests];
 
 #if defined(OF_IOS)
 	[self outputString: [OFString stringWithFormat: @"%d tests failed!",

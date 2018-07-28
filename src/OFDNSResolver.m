@@ -25,7 +25,7 @@
 #import "OFCharacterSet.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFString.h"
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
@@ -65,7 +65,7 @@ domainFromHostname(void)
 		return nil;
 
 	return [OFString stringWithCString: domain + 1
-				  encoding: [OFLocalization encoding]];
+				  encoding: [OFLocale encoding]];
 }
 
 @implementation OFDNSResolver
@@ -336,7 +336,7 @@ domainFromHostname(void)
 - (void)of_parseNetworkParams
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 	OFMutableArray *nameServers;
 	OFString *localDomain;
 	/*

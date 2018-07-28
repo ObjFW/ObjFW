@@ -39,7 +39,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFFile.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFURL.h"
 
@@ -111,7 +111,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 	of_time_interval_t timeInterval;
 	struct Locale *locale;
 
-	if ((lock = Lock([path cStringWithEncoding: [OFLocalization encoding]],
+	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
 	    SHARED_LOCK)) == 0) {
 		switch (IoErr()) {
 		case ERROR_OBJECT_IN_USE:
@@ -169,11 +169,9 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	return 0;
 #elif defined(OF_HAVE_OFF64_T)
-	return stat64([path cStringWithEncoding: [OFLocalization encoding]],
-	    buffer);
+	return stat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
 #else
-	return stat([path cStringWithEncoding: [OFLocalization encoding]],
-	    buffer);
+	return stat([path cStringWithEncoding: [OFLocale encoding]], buffer);
 #endif
 }
 
@@ -182,11 +180,9 @@ of_lstat(OFString *path, of_stat_t *buffer)
 {
 #if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
 # ifdef OF_HAVE_OFF64_T
-	return lstat64([path cStringWithEncoding: [OFLocalization encoding]],
-	    buffer);
+	return lstat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
 # else
-	return lstat([path cStringWithEncoding: [OFLocalization encoding]],
-	    buffer);
+	return lstat([path cStringWithEncoding: [OFLocale encoding]], buffer);
 # endif
 #else
 	return of_stat(path, buffer);
@@ -258,7 +254,7 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
 	[passwdMutex lock];
 	@try {
 # endif
-		of_string_encoding_t encoding = [OFLocalization encoding];
+		of_string_encoding_t encoding = [OFLocale encoding];
 		struct passwd *passwd = getpwuid(s->st_uid);
 		struct group *group_ = getgrgid(s->st_gid);
 
@@ -296,7 +292,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 # ifndef OF_WINDOWS
 	if (S_ISLNK(s->st_mode)) {
-		of_string_encoding_t encoding = [OFLocalization encoding];
+		of_string_encoding_t encoding = [OFLocale encoding];
 		char destinationC[PATH_MAX];
 		ssize_t length;
 		OFString *destination;
@@ -483,8 +479,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	OFString *path = [URL fileSystemRepresentation];
 
 # ifndef OF_WINDOWS
-	if (chmod([path cStringWithEncoding: [OFLocalization encoding]],
-	    mode) != 0)
+	if (chmod([path cStringWithEncoding: [OFLocale encoding]], mode) != 0)
 # else
 	if (_wchmod([path UTF16String], mode) != 0)
 # endif
@@ -513,7 +508,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (owner == nil && group == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	encoding = [OFLocalization encoding];
+	encoding = [OFLocale encoding];
 
 # ifdef OF_HAVE_THREADS
 	[passwdMutex lock];
@@ -672,7 +667,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	BPTR lock;
 
 	if ((lock = CreateDir(
-	    [path cStringWithEncoding: [OFLocalization encoding]])) == 0) {
+	    [path cStringWithEncoding: [OFLocale encoding]])) == 0) {
 		int errNo;
 
 		switch (IoErr()) {
@@ -705,8 +700,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	UnLock(lock);
 #else
-	if (mkdir([path cStringWithEncoding: [OFLocalization encoding]],
-	    0777) != 0)
+	if (mkdir([path cStringWithEncoding: [OFLocale encoding]], 0777) != 0)
 		@throw [OFCreateDirectoryFailedException
 		    exceptionWithURL: URL
 			       errNo: errno];
@@ -771,7 +765,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		FindClose(handle);
 	}
 #elif defined(OF_AMIGAOS)
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 	BPTR lock;
 	struct FileInfoBlock fib;
 
@@ -826,7 +820,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		UnLock(lock);
 	}
 #else
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 	DIR *dir;
 
 	if ((dir = opendir([path cStringWithEncoding: encoding])) == NULL)
@@ -950,8 +944,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 #ifndef OF_AMIGAOS
 # ifndef OF_WINDOWS
-		if (rmdir([path cStringWithEncoding:
-		    [OFLocalization encoding]]) != 0)
+		if (rmdir([path cStringWithEncoding: [OFLocale encoding]]) != 0)
 # else
 		if (_wrmdir([path UTF16String]) != 0)
 # endif
@@ -961,7 +954,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	} else {
 # ifndef OF_WINDOWS
 		if (unlink([path cStringWithEncoding:
-		    [OFLocalization encoding]]) != 0)
+		    [OFLocale encoding]]) != 0)
 # else
 		if (_wunlink([path UTF16String]) != 0)
 # endif
@@ -972,8 +965,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	}
 
 #ifdef OF_AMIGAOS
-	if (!DeleteFile(
-	    [path cStringWithEncoding: [OFLocalization encoding]])) {
+	if (!DeleteFile([path cStringWithEncoding: [OFLocale encoding]])) {
 		int errNo;
 
 		switch (IoErr()) {
@@ -1021,7 +1013,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	destinationPath = [destination fileSystemRepresentation];
 
 # ifndef OF_WINDOWS
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 
 	if (link([sourcePath cStringWithEncoding: encoding],
 	    [destinationPath cStringWithEncoding: encoding]) != 0)
@@ -1058,7 +1050,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	path = [URL fileSystemRepresentation];
 
 # ifndef OF_WINDOWS
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 
 	if (symlink([target cStringWithEncoding: encoding],
 	    [path cStringWithEncoding: encoding]) != 0)
@@ -1108,7 +1100,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    destinationURL: destination
 				     errNo: errno];
 #elif defined(OF_AMIGAOS)
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 
 	if (!Rename([[source fileSystemRepresentation]
 	    cStringWithEncoding: encoding],
@@ -1144,7 +1136,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				     errNo: errNo];
 	}
 #else
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 
 	if (rename([[source fileSystemRepresentation]
 	    cStringWithEncoding: encoding],

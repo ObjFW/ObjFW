@@ -38,7 +38,7 @@ SRCS = OFApplication.m			\
        OFLHAArchive.m			\
        OFLHAArchiveEntry.m		\
        OFList.m				\
-       OFLocalization.m			\
+       OFLocale.m			\
        OFMapTable.m			\
        OFMD5Hash.m			\
        OFMessagePackExtension.m		\

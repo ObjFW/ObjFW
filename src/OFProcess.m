@@ -36,7 +36,7 @@
 #import "OFArray.h"
 #import "OFDictionary.h"
 #import "OFData.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFNotOpenException.h"
@@ -145,7 +145,7 @@ extern char **environ;
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: [self class]];
 
-		path = [program cStringWithEncoding: [OFLocalization encoding]];
+		path = [program cStringWithEncoding: [OFLocale encoding]];
 		[self of_getArgv: &argv
 		  forProgramName: programName
 		    andArguments: arguments];
@@ -345,7 +345,7 @@ extern char **environ;
 	*argv = [self allocMemoryWithSize: sizeof(char *)
 				    count: count + 2];
 
-	encoding = [OFLocalization encoding];
+	encoding = [OFLocale encoding];
 
 	(*argv)[0] = (char *)[programName cStringWithEncoding: encoding];
 
@@ -366,7 +366,7 @@ extern char **environ;
 	if (environment == nil)
 		return NULL;
 
-	encoding = [OFLocalization encoding];
+	encoding = [OFLocale encoding];
 
 	count = [environment count];
 	envp = [self allocMemoryWithSize: sizeof(char *)

@@ -29,7 +29,7 @@
 
 #import "OFObject.h"
 #import "OFArray.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFMethodSignature.h"
 #import "OFRunLoop.h"
 #import "OFThread.h"
@@ -119,7 +119,7 @@ uncaughtExceptionHandler(id exception)
 {
 	OFString *description = [exception description];
 	OFArray *backtrace = nil;
-	of_string_encoding_t encoding = [OFLocalization encoding];
+	of_string_encoding_t encoding = [OFLocale encoding];
 
 	fprintf(stderr, "\nRuntime error: Unhandled exception:\n%s\n",
 	    [description cStringWithEncoding: encoding]);
@@ -212,8 +212,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 const char *
 _NSPrintForDebugger(id object)
 {
-	return [[object description]
-	    cStringWithEncoding: [OFLocalization encoding]];
+	return [[object description] cStringWithEncoding: [OFLocale encoding]];
 }
 
 /* References for static linking */

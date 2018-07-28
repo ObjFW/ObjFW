@@ -41,7 +41,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFString.h"
 
 #import "OFNotImplementedException.h"
@@ -137,7 +137,7 @@ initOperatingSystemName(void)
 
 	operatingSystemName = [[OFString alloc]
 	    initWithCString: utsname.sysname
-		   encoding: [OFLocalization encoding]];
+		   encoding: [OFLocale encoding]];
 #endif
 }
 
@@ -230,7 +230,7 @@ initOperatingSystemVersion(void)
 
 	operatingSystemVersion = [[OFString alloc]
 	    initWithCString: utsname.release
-		   encoding: [OFLocalization encoding]];
+		   encoding: [OFLocale encoding]];
 #endif
 }
 

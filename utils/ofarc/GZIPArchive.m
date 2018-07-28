@@ -20,7 +20,7 @@
 #import "OFApplication.h"
 #import "OFFileManager.h"
 #import "OFStdIOStream.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 
 #import "GZIPArchive.h"
 #import "OFArc.h"

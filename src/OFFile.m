@@ -30,7 +30,7 @@
 #endif
 
 #import "OFFile.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFString.h"
 #import "OFURL.h"
 
@@ -224,10 +224,10 @@ parseMode(const char *mode, bool *append)
 		    _S_IREAD | _S_IWRITE)) == -1)
 # elif defined(OF_HAVE_OFF64_T)
 		if ((handle = open64([path cStringWithEncoding:
-		    [OFLocalization encoding]], flags, 0666)) == -1)
+		    [OFLocale encoding]], flags, 0666)) == -1)
 # else
 		if ((handle = open([path cStringWithEncoding:
-		    [OFLocalization encoding]], flags, 0666)) == -1)
+		    [OFLocale encoding]], flags, 0666)) == -1)
 # endif
 			@throw [OFOpenItemFailedException
 			    exceptionWithPath: path
@@ -244,7 +244,7 @@ parseMode(const char *mode, bool *append)
 				@throw [OFInvalidArgumentException exception];
 
 			if ((handle->handle = Open([path cStringWithEncoding:
-			    [OFLocalization encoding]], flags)) == 0) {
+			    [OFLocale encoding]], flags)) == 0) {
 				int errNo;
 
 				switch (IoErr()) {

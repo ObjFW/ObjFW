@@ -118,7 +118,7 @@
 
 #import "OFApplication.h"
 #import "OFSystemInfo.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFOptionsParser.h"
 #import "OFTimer.h"
 #import "OFRunLoop.h"

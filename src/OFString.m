@@ -37,7 +37,7 @@
 #import "OFCharacterSet.h"
 #import "OFData.h"
 #import "OFDictionary.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFFileManager.h"
@@ -2571,7 +2571,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	 * If we have no strtof_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFLocalization decimalPoint];
+	OFString *decimalPoint = [OFLocale decimalPoint];
 	const char *UTF8String = [[self
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint] UTF8String];
@@ -2621,7 +2621,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	 * If we have no strtod_l, we have no other choice but to replace "."
 	 * with the locale's decimal point.
 	 */
-	OFString *decimalPoint = [OFLocalization decimalPoint];
+	OFString *decimalPoint = [OFLocale decimalPoint];
 	const char *UTF8String = [[self
 	    stringByReplacingOccurrencesOfString: @"."
 				      withString: decimalPoint] UTF8String];

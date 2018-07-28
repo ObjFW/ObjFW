@@ -22,7 +22,7 @@
 #import "OFDate.h"
 #import "OFStdIOStream.h"
 #import "OFTimer.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 
 #import "ProgressBar.h"
 

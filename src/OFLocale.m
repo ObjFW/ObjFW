@@ -19,7 +19,7 @@
 
 #include <locale.h>
 
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
@@ -40,7 +40,7 @@
 # include <proto/locale.h>
 #endif
 
-static OFLocalization *sharedLocalization = nil;
+static OFLocale *currentLocale = nil;
 
 #ifdef OF_AMIGAOS4
 extern struct ExecIFace *IExec;
@@ -112,14 +112,14 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 }
 #endif
 
-@implementation OFLocalization
+@implementation OFLocale
 @synthesize language = _language, territory = _territory, encoding = _encoding;
 @synthesize decimalPoint = _decimalPoint;
 
 #ifdef OF_AMIGAOS4
 + (void)initialize
 {
-	if (self != [OFLocalization class])
+	if (self != [OFLocale class])
 		return;
 
 	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
@@ -142,35 +142,35 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 }
 #endif
 
-+ (OFLocalization *)sharedLocalization
++ (OFLocale *)currentLocale
 {
-	return sharedLocalization;
+	return currentLocale;
 }
 
 + (OFString *)language
 {
-	return [sharedLocalization language];
+	return [currentLocale language];
 }
 
 + (OFString *)territory
 {
-	return [sharedLocalization territory];
+	return [currentLocale territory];
 }
 
 + (of_string_encoding_t)encoding
 {
-	return [sharedLocalization encoding];
+	return [currentLocale encoding];
 }
 
 + (OFString *)decimalPoint
 {
-	return [sharedLocalization decimalPoint];
+	return [currentLocale decimalPoint];
 }
 
 #ifdef OF_HAVE_FILES
 + (void)addLanguageDirectory: (OFString *)path
 {
-	[sharedLocalization addLanguageDirectory: path];
+	[currentLocale addLanguageDirectory: path];
 }
 #endif
 
@@ -182,9 +182,9 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 #ifndef OF_AMIGAOS
 		char *locale, *messagesLocale = NULL;
 
-		if (sharedLocalization != nil)
+		if (currentLocale != nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [OFLocalization class]];
+			    exceptionWithClass: [OFLocale class]];
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_decimalPoint = @".";
@@ -288,7 +288,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 		@throw e;
 	}
 
-	sharedLocalization = self;
+	currentLocale = self;
 
 	return self;
 }

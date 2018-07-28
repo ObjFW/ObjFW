@@ -53,7 +53,7 @@
 #import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFList.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFRunLoop.h"
 #import "OFString.h"
 
@@ -106,7 +106,7 @@ callMain(id object)
 	name = [thread name];
 	if (name != nil)
 		of_thread_set_name(
-		    [name cStringWithEncoding: [OFLocalization encoding]]);
+		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
 		of_thread_set_name(object_getClassName(thread));
 
@@ -287,7 +287,7 @@ callMain(id object)
 
 	if (name != nil)
 		of_thread_set_name(
-		    [name cStringWithEncoding: [OFLocalization encoding]]);
+		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
 		of_thread_set_name(class_getName([self class]));
 }

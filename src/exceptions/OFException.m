@@ -29,7 +29,7 @@
 #import "OFException.h"
 #import "OFString.h"
 #import "OFArray.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFLockFailedException.h"
@@ -179,13 +179,13 @@ of_strerror(int errNo)
 		return @"Unknown error (strerror_r failed)";
 
 	ret = [OFString stringWithCString: string
-				 encoding: [OFLocalization encoding]];
+				 encoding: [OFLocale encoding]];
 #elif defined(HAVE_STRERROR_R)
 	if (strerror_r(errNo, buffer, 256) != 0)
 		return @"Unknown error (strerror_r failed)";
 
 	ret = [OFString stringWithCString: buffer
-				 encoding: [OFLocalization encoding]];
+				 encoding: [OFLocale encoding]];
 #else
 # ifdef OF_HAVE_THREADS
 	if (!of_mutex_lock(&mutex))
@@ -195,7 +195,7 @@ of_strerror(int errNo)
 # endif
 		ret = [OFString
 		    stringWithCString: strerror(errNo)
-			     encoding: [OFLocalization encoding]];
+			     encoding: [OFLocale encoding]];
 # ifdef OF_HAVE_THREADS
 	} @finally {
 		if (!of_mutex_unlock(&mutex))

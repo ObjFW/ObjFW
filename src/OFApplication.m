@@ -32,7 +32,7 @@
 #import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
 #import "OFThread.h"
@@ -123,7 +123,7 @@ of_application_main(int *argc, char **argv[],
 	int wargc, si = 0;
 #endif
 
-	[[OFLocalization alloc] init];
+	[[OFLocale alloc] init];
 
 	app = [[OFApplication alloc] of_init];
 
@@ -257,7 +257,7 @@ of_application_main(int *argc, char **argv[],
 		OFFileManager *fileManager = [OFFileManager defaultManager];
 		OFArray *envContents =
 		    [fileManager contentsOfDirectoryAtPath: @"ENV:"];
-		const of_string_encoding_t encoding = [OFLocalization encoding];
+		const of_string_encoding_t encoding = [OFLocale encoding];
 		struct Process *proc;
 		struct LocalVar *firstLocalVar;
 
@@ -324,7 +324,7 @@ of_application_main(int *argc, char **argv[],
 
 		if (env != NULL) {
 			const of_string_encoding_t encoding =
-			    [OFLocalization encoding];
+			    [OFLocale encoding];
 
 			for (; *env != NULL; env++) {
 				void *pool = objc_autoreleasePoolPush();
@@ -429,7 +429,7 @@ of_application_main(int *argc, char **argv[],
 	_argc = argc;
 	_argv = argv;
 
-	encoding = [OFLocalization encoding];
+	encoding = [OFLocale encoding];
 
 # ifndef OF_NINTENDO_DS
 	if (*argc > 0) {
@@ -571,7 +571,7 @@ of_application_main(int *argc, char **argv[],
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
 	const char *promises = [[sandbox pledgeString]
-	    cStringWithEncoding: [OFLocalization encoding]];
+	    cStringWithEncoding: [OFLocale encoding]];
 	OFSandbox *oldSandbox;
 
 	if (pledge(promises, NULL) != 0)

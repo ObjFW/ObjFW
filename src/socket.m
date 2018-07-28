@@ -23,7 +23,7 @@
 
 #include <errno.h>
 
-#import "OFLocalization.h"
+#import "OFLocale.h"
 
 #import "OFException.h"  /* For some E* -> WSAE* defines */
 #import "OFInvalidArgumentException.h"
@@ -348,8 +348,8 @@ parseIPv4(OFString *IPv4, uint16_t port)
 	sin->sin_family = AF_INET;
 	sin->sin_port = OF_BSWAP16_IF_LE(port);
 
-	if (inet_pton(AF_INET, [IPv4 cStringWithEncoding:
-	    [OFLocalization encoding]], &sin->sin_addr) != 1)
+	if (inet_pton(AF_INET, [IPv4 cStringWithEncoding: [OFLocale encoding]],
+	    &sin->sin_addr) != 1)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -371,8 +371,8 @@ parseIPv6(OFString *IPv6, uint16_t port)
 	sin6->sin6_family = AF_INET6;
 	sin6->sin6_port = OF_BSWAP16_IF_LE(port);
 
-	if (inet_pton(AF_INET6, [IPv6 cStringWithEncoding:
-	    [OFLocalization encoding]], &sin6->sin_addr6) != 1)
+	if (inet_pton(AF_INET6, [IPv6 cStringWithEncoding: [OFLocale encoding]],
+	    &sin6->sin_addr6) != 1)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);

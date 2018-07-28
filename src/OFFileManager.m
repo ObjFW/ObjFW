@@ -32,7 +32,7 @@
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFFileManager.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFSystemInfo.h"
@@ -163,7 +163,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	}
 
 	return [OFString stringWithCString: buffer
-				  encoding: [OFLocalization encoding]];
+				  encoding: [OFLocale encoding]];
 #else
 	char buffer[PATH_MAX];
 
@@ -182,7 +182,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 # endif
 
 	return [OFString stringWithCString: buffer
-				  encoding: [OFLocalization encoding]];
+				  encoding: [OFLocale encoding]];
 #endif
 }
 
@@ -409,7 +409,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 #elif defined(OF_AMIGAOS)
 	BPTR lock, oldLock;
 
-	if ((lock = Lock([path cStringWithEncoding: [OFLocalization encoding]],
+	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
 	    SHARED_LOCK)) == 0) {
 		int errNo;
 
@@ -440,7 +440,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 
 	dirChanged = true;
 #else
-	if (chdir([path cStringWithEncoding: [OFLocalization encoding]]) != 0)
+	if (chdir([path cStringWithEncoding: [OFLocale encoding]]) != 0)
 		@throw [OFChangeCurrentDirectoryPathFailedException
 		    exceptionWithPath: path
 				errNo: errno];

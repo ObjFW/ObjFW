@@ -147,8 +147,8 @@ enum {
 - (void)listTests;
 @end
 
-@interface TestsAppDelegate (OFLocalizationTests)
-- (void)localizationTests;
+@interface TestsAppDelegate (OFLocaleTests)
+- (void)localeTests;
 @end
 
 @interface TestsAppDelegate (OFMD5HashTests)

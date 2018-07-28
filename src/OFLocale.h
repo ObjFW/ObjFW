@@ -31,20 +31,19 @@ OF_ASSUME_NONNULL_BEGIN
  * @param ID The ID of the localized string to retrieve
  * @return The localized string with the specified arguments replaced
  */
-#define OF_LOCALIZED(ID, ...)				\
-	[[OFLocalization sharedLocalization]		\
-	    localizedStringForID: ID			\
-			fallback: __VA_ARGS__, nil]
+#define OF_LOCALIZED(ID, ...)						 \
+	[[OFLocale currentLocale] localizedStringForID: ID		 \
+					     fallback: __VA_ARGS__, nil]
 
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 
 /*!
- * @class OFLocalization OFLocalization.h ObjFW/OFLocalization.h
+ * @class OFLocale OFLocale.h ObjFW/OFLocale.h
  *
  * @brief A class for querying the locale and retrieving localized strings.
  */
-@interface OFLocalization: OFObject
+@interface OFLocale: OFObject
 {
 	OFString *_Nullable _language, *_Nullable _territory;
 	of_string_encoding_t _encoding;
@@ -54,8 +53,7 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
-@property (class, readonly, nullable, nonatomic)
-    OFLocalization *sharedLocalization;
+@property (class, readonly, nullable, nonatomic) OFLocale *currentLocale;
 @property (class, readonly, nullable, nonatomic) OFString *language;
 @property (class, readonly, nullable, nonatomic) OFString *territory;
 @property (class, readonly, nonatomic) of_string_encoding_t encoding;
@@ -92,15 +90,15 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *decimalPoint;
 
 /*!
- * @brief Returns the shared OFLocalization instance.
+ * @brief Returns the current OFLocale.
  *
  * @warning If you don't use @ref OFApplication, this might be `nil`! In this
  *	    case, you need to manually allocate an instance and call
  *	    @ref init once.
  *
- * @return The shared OFLocalization instance
+ * @return The current OFLocale instance
  */
-+ (nullable OFLocalization *)sharedLocalization;
++ (nullable OFLocale *)currentLocale;
 
 /*!
  * @brief Returns the language of the locale.
@@ -149,13 +147,13 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
- * @brief Initializes the OFLocalization singleton with the specified locale.
+ * @brief Initializes the current OFLocale.
  *
  * @warning This sets the locale via `setlocale()`!
  *
  * @warning You should never call this yourself, except if you do not use
  *	    @ref OFApplication. In this case, you need to allocate exactly one
- *	    instance of OFLocalization, which will be come the singleton, and
+ *	    instance of OFLocale, which will be come the current locale, and
  *	    call this method.
  */
 - (instancetype)init;

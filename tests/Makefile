@@ -21,7 +21,7 @@ SRCS = ForwardingTests.m		\
        OFInvocationTests.m		\
        OFJSONTests.m			\
        OFListTests.m			\
-       OFLocalizationTests.m		\
+       OFLocaleTests.m			\
        OFMethodSignatureTests.m		\
        OFNumberTests.m			\
        OFObjectTests.m			\

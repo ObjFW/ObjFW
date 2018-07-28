@@ -28,7 +28,7 @@
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
 #import "OFStdIOStream.h"
-#import "OFLocalization.h"
+#import "OFLocale.h"
 #import "OFSandbox.h"
 
 #import "OFOpenItemFailedException.h"
@@ -93,9 +93,9 @@ hashForName(OFString *name)
 #endif
 
 #ifndef OF_AMIGAOS
-	[OFLocalization addLanguageDirectory: @LANGUAGE_DIR];
+	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
 #else
-	[OFLocalization addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
+	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
 #endif
 
 	if ([arguments count] < 2)
@@ -126,8 +126,7 @@ hashForName(OFString *name)
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror([e errNo])
-					     encoding: [OFLocalization
-							   encoding]];
+					     encoding: [OFLocale encoding]];
 
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"failed_to_open_file",
@@ -152,8 +151,7 @@ hashForName(OFString *name)
 			} @catch (OFReadFailedException *e) {
 				OFString *error = [OFString
 				    stringWithCString: strerror([e errNo])
-					     encoding: [OFLocalization
-							   encoding]];
+					     encoding: [OFLocale encoding]];
 
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"failed_to_read_file",
