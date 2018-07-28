@@ -23,12 +23,16 @@
 
 #include <errno.h>
 
+#import "OFLocalization.h"
+
 #import "OFException.h"  /* For some E* -> WSAE* defines */
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFLockFailedException.h"
 #import "OFUnlockFailedException.h"
 
 #import "socket.h"
+#import "socket_helpers.h"
 #ifdef OF_HAVE_THREADS
 # include "threading.h"
 #endif
@@ -329,4 +333,64 @@ of_socket_address_hash(of_socket_address_t *address)
 	}
 
 	return hash;
+}
+
+static of_socket_address_t
+parseIPv4(OFString *IPv4, uint16_t port)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_socket_address_t ret;
+	struct sockaddr_in *sin = (struct sockaddr_in *)&ret.address;
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.length = sizeof(struct sockaddr_in);
+
+	sin->sin_family = AF_INET;
+	sin->sin_port = OF_BSWAP16_IF_LE(port);
+
+	if (inet_pton(AF_INET, [IPv4 cStringWithEncoding:
+	    [OFLocalization encoding]], &sin->sin_addr) != 1)
+		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+#ifdef HAVE_IPV6
+static of_socket_address_t
+parseIPv6(OFString *IPv6, uint16_t port)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_socket_address_t ret;
+	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)&ret.address;
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.length = sizeof(struct sockaddr_in6);
+
+	sin6->sin6_family = AF_INET6;
+	sin6->sin6_port = OF_BSWAP16_IF_LE(port);
+
+	if (inet_pton(AF_INET6, [IPv6 cStringWithEncoding:
+	    [OFLocalization encoding]], &sin6->sin_addr6) != 1)
+		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+#endif
+
+of_socket_address_t
+of_socket_address_parse_ip(OFString *IP, uint16_t port)
+{
+#ifdef HAVE_IPV6
+	@try {
+		return parseIPv6(IP, port);
+	} @catch (OFInvalidFormatException *e) {
+#endif
+		return parseIPv4(IP, port);
+#ifdef HAVE_IPV6
+	}
+#endif
 }

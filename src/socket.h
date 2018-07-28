@@ -125,6 +125,16 @@ extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 # endif
 
 /*!
+ * @brief Parses the specified IP and port into an of_socket_address_t.
+ *
+ * @param IP The IP to parse
+ * @param port The port to use
+ * @return The parsed IP and port as an of_socket_address_t
+ */
+extern of_socket_address_t of_socket_address_parse_ip(
+    OFString *IP, uint16_t port);
+
+/*!
  * @brief Compares two of_socket_address_t for equality.
  *
  * @param address1 The address to compare with the second address
