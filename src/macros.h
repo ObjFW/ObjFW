@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/time.h>
+
 #include "platform.h"
 
 #ifdef OF_OBJFW_RUNTIME
@@ -859,12 +861,12 @@ of_random(void) {
 
 	gettimeofday(&tv, NULL);
 	srandom((unsigned)(tv.tv_sec ^ tv.tv_usec));
-	return (((uint32_t)(random()) << 16) | ((uint32_t)(random()) & 0xFFFF);
+	return (((uint32_t)(random()) << 16) | ((uint32_t)(random()) & 0xFFFF));
 #else
 	struct timeval tv;
 
 	gettimeofday(&tv, NULL);
 	srand((unsigned)(t.tv_sec ^ t.tv_usec));
-	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF);
+	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
 #endif
 }

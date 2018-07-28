@@ -23,8 +23,6 @@
 
 #include <assert.h>
 
-#include <sys/time.h>
-
 #ifdef OF_APPLE_RUNTIME
 # include <dlfcn.h>
 #endif
