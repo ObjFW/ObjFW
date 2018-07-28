@@ -223,6 +223,66 @@ of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
 }
 #endif
 
+static of_socket_address_t
+parseIPv4(OFString *IPv4, uint16_t port)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_socket_address_t ret;
+	struct sockaddr_in *sin = (struct sockaddr_in *)&ret.address;
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.length = sizeof(struct sockaddr_in);
+
+	sin->sin_family = AF_INET;
+	sin->sin_port = OF_BSWAP16_IF_LE(port);
+
+	if (inet_pton(AF_INET, [IPv4 cStringWithEncoding: [OFLocale encoding]],
+	    &sin->sin_addr) != 1)
+		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+
+#ifdef HAVE_IPV6
+static of_socket_address_t
+parseIPv6(OFString *IPv6, uint16_t port)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_socket_address_t ret;
+	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)&ret.address;
+
+	memset(&ret, '\0', sizeof(ret));
+	ret.length = sizeof(struct sockaddr_in6);
+
+	sin6->sin6_family = AF_INET6;
+	sin6->sin6_port = OF_BSWAP16_IF_LE(port);
+
+	if (inet_pton(AF_INET6, [IPv6 cStringWithEncoding: [OFLocale encoding]],
+	    &sin6->sin_addr6) != 1)
+		@throw [OFInvalidFormatException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
+}
+#endif
+
+of_socket_address_t
+of_socket_address_parse_ip(OFString *IP, uint16_t port)
+{
+#ifdef HAVE_IPV6
+	@try {
+		return parseIPv6(IP, port);
+	} @catch (OFInvalidFormatException *e) {
+#endif
+		return parseIPv4(IP, port);
+#ifdef HAVE_IPV6
+	}
+#endif
+}
+
 bool
 of_socket_address_equal(of_socket_address_t *address1,
     of_socket_address_t *address2)
@@ -335,62 +395,54 @@ of_socket_address_hash(of_socket_address_t *address)
 	return hash;
 }
 
-static of_socket_address_t
-parseIPv4(OFString *IPv4, uint16_t port)
+static OFString *
+IPv4String(const of_socket_address_t *address, uint16_t *port)
 {
-	void *pool = objc_autoreleasePoolPush();
-	of_socket_address_t ret;
-	struct sockaddr_in *sin = (struct sockaddr_in *)&ret.address;
+	const struct sockaddr_in *sin =
+	    (const struct sockaddr_in *)&address->address;
+	char buffer[INET_ADDRSTRLEN];
 
-	memset(&ret, '\0', sizeof(ret));
-	ret.length = sizeof(struct sockaddr_in);
+	if (inet_ntop(AF_INET, &sin->sin_addr, buffer, sizeof(buffer)) == NULL)
+		@throw [OFInvalidArgumentException exception];
 
-	sin->sin_family = AF_INET;
-	sin->sin_port = OF_BSWAP16_IF_LE(port);
+	if (port != NULL)
+		*port = OF_BSWAP16_IF_LE(sin->sin_port);
 
-	if (inet_pton(AF_INET, [IPv4 cStringWithEncoding: [OFLocale encoding]],
-	    &sin->sin_addr) != 1)
-		@throw [OFInvalidFormatException exception];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocale encoding]];
 }
 
 #ifdef HAVE_IPV6
-static of_socket_address_t
-parseIPv6(OFString *IPv6, uint16_t port)
+static OFString *
+IPv6String(const of_socket_address_t *address, uint16_t *port)
 {
-	void *pool = objc_autoreleasePoolPush();
-	of_socket_address_t ret;
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)&ret.address;
+	const struct sockaddr_in6 *sin6 =
+	    (const struct sockaddr_in6 *)&address->address;
+	char buffer[INET6_ADDRSTRLEN];
 
-	memset(&ret, '\0', sizeof(ret));
-	ret.length = sizeof(struct sockaddr_in6);
+	if (inet_ntop(AF_INET, &sin6->sin_addr6, buffer, sizeof(buffer)) ==
+	    NULL)
+		@throw [OFInvalidArgumentException exception];
 
-	sin6->sin6_family = AF_INET6;
-	sin6->sin6_port = OF_BSWAP16_IF_LE(port);
+	if (port != NULL)
+		*port = OF_BSWAP16_IF_LE(sin6->sin_port);
 
-	if (inet_pton(AF_INET6, [IPv6 cStringWithEncoding: [OFLocale encoding]],
-	    &sin6->sin_addr6) != 1)
-		@throw [OFInvalidFormatException exception];
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
+	return [OFString stringWithCString: buffer
+				  encoding: [OFLocale encoding]];
 }
 #endif
 
-of_socket_address_t
-of_socket_address_parse_ip(OFString *IP, uint16_t port)
+OFString *
+of_socket_address_ip_string(const of_socket_address_t *address, uint16_t *port)
 {
+	switch (address->address.ss_family) {
+	case AF_INET:
+		return IPv4String(address, port);
 #ifdef HAVE_IPV6
-	@try {
-		return parseIPv6(IP, port);
-	} @catch (OFInvalidFormatException *e) {
+	case AF_INET6:
+		return IPv6String(address, port);
 #endif
-		return parseIPv4(IP, port);
-#ifdef HAVE_IPV6
+	default:
+		@throw [OFInvalidArgumentException exception];
 	}
-#endif
 }

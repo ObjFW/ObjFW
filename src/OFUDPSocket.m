@@ -252,14 +252,6 @@
 # endif
 #endif
 
-+ (void)getHost: (OFString *__autoreleasing *)host
-	andPort: (uint16_t *)port
-     forAddress: (of_socket_address_t *)address
-{
-	of_address_to_string_and_port(
-	    (struct sockaddr *)&address->address, address->length, host, port);
-}
-
 - (instancetype)init
 {
 	self = [super init];

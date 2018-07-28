@@ -151,6 +151,17 @@ extern bool of_socket_address_equal(of_socket_address_t *address1,
  * @return The hash for the specified of_socket_address_t
  */
 extern uint32_t of_socket_address_hash(of_socket_address_t *address);
+
+/*!
+ * @brief Converts the specified of_socket_address_t to an IP string and port.
+ *
+ * @param address The address to convert to a string
+ * @param port A pointer to an uint16_t which should be set to the port of the
+ *	       address or NULL if the port is not needed
+ * @return The address as an IP string
+ */
+extern OFString *_Nonnull of_socket_address_ip_string(
+    const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port);
 #ifdef __cplusplus
 }
 #endif

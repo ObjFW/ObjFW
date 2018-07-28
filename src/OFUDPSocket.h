@@ -85,8 +85,8 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  *
  * Addresses are of type @ref of_socket_address_t. You can use
  * @ref resolveAddressForHost:port:address: to create an address for a host /
- * port pair and @ref getHost:andPort:forAddress: to get the host / port pair
- * for an address. If you want to compare two addresses, you can use
+ * port pair and @ref of_socket_address_ip_string to get the IP string / port
+ * pair for an address. If you want to compare two addresses, you can use
  * @ref of_socket_address_equal and you can use @ref of_socket_address_hash to
  * get a hash to use in e.g. @ref OFMapTable.
  *
@@ -160,19 +160,6 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 			     block: (of_udp_socket_async_resolve_block_t)block;
 # endif
 #endif
-
-/*!
- * @brief Gets the host and port for the specified address.
- *
- * @param host A pointer to an @ref OFString *. If it is not NULL, it will be
- *	       set to the host of the host / port pair.
- * @param port A pointer to an uint16_t. If it is not NULL, the port of the
- *	       host / port pair will be written to it.
- * @param address The address for which the host and port should be retrieved
- */
-+ (void)getHost: (OFString *__autoreleasing _Nonnull *_Nullable)host
-	andPort: (nullable uint16_t *)port
-     forAddress: (of_socket_address_t *)address;
 
 /*!
  * @brief Binds the socket to the specified host and port.

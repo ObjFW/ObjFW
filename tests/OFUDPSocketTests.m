@@ -57,12 +57,8 @@ static OFString *module = @"OFUDPSocket";
 	    [sock receiveIntoBuffer: buf
 			     length: 6
 			     sender: &addr2] == 6 &&
-	    !memcmp(buf, "Hello", 6))
-
-	TEST(@"+[getHost:andPort:forAddress:]",
-	    R([OFUDPSocket getHost: &host
-			   andPort: &port2
-			forAddress: &addr2]) &&
+	    !memcmp(buf, "Hello", 6) &&
+	    (host = of_socket_address_ip_string(&addr2, &port2)) &&
 	    [host isEqual: @"127.0.0.1"] && port2 == port1)
 
 	[OFUDPSocket resolveAddressForHost: @"127.0.0.1"

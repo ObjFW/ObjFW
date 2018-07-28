@@ -48,6 +48,7 @@
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
+#import "OFOutOfRangeException.h"
 #import "OFSetOptionFailedException.h"
 
 #import "socket.h"
@@ -601,7 +602,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (OFString *)remoteAddress
 {
-	OFString *ret;
+	of_socket_address_t address;
 
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
@@ -609,9 +610,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	of_address_to_string_and_port(_address, _addressLength, &ret, NULL);
+	if (_addressLength > sizeof(address.address))
+		@throw [OFOutOfRangeException exception];
 
-	return ret;
+	memset(&address, '\0', sizeof(address));
+	memcpy(&address.address, _address, _addressLength);
+	address.length = _addressLength;
+
+	return of_socket_address_ip_string(&address, NULL);
 }
 
 - (bool)isListening
