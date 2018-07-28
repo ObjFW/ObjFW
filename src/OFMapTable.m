@@ -165,13 +165,7 @@ defaultEqual(void *object1, void *object2)
 						     count: _capacity];
 
 		if (of_hash_seed != 0)
-#if defined(HAVE_ARC4RANDOM)
-			_rotate = arc4random() & 31;
-#elif defined(HAVE_RANDOM)
-			_rotate = random() & 31;
-#else
-			_rotate = rand() & 31;
-#endif
+			_rotate = of_random() & 31;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -538,13 +532,7 @@ defaultEqual(void *object1, void *object2)
 	 * than creating a new hash map.
 	 */
 	if (of_hash_seed != 0)
-#if defined(HAVE_ARC4RANDOM)
-		_rotate = arc4random() & 31;
-#elif defined(HAVE_RANDOM)
-		_rotate = random() & 31;
-#else
-		_rotate = rand() & 31;
-#endif
+		_rotate = of_random() & 31;
 }
 
 - (bool)containsObject: (void *)object
