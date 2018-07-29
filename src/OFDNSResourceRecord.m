@@ -29,6 +29,8 @@ of_dns_resource_record_class_to_string(
 	switch (recordClass) {
 	case OF_DNS_RESOURCE_RECORD_CLASS_IN:
 		return @"IN";
+	case OF_DNS_RESOURCE_RECORD_CLASS_ANY:
+		return @"any";
 	default:
 		return [OFString stringWithFormat: @"%u", recordClass];
 	}
@@ -54,6 +56,8 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 		return @"TXT";
 	case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
 		return @"AAAA";
+	case OF_DNS_RESOURCE_RECORD_TYPE_ALL:
+		return @"all";
 	default:
 		return [OFString stringWithFormat: @"%u", recordType];
 	}
@@ -146,7 +150,7 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 {
 	return [OFString stringWithFormat:
 	    @"<OFDNSResourceRecord:\n"
-	    @"\tName = %@,\n"
+	    @"\tName = %@\n"
 	    @"\tClass = %@\n"
 	    @"\tType = %@\n"
 	    @"\tData = %@\n"

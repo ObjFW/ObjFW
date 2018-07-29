@@ -102,6 +102,25 @@ OF_ASSUME_NONNULL_BEGIN
 		  target: (id)target
 		selector: (SEL)selector
 		 context: (nullable id)context;
+
+/*!
+ * @brief Asynchronously resolves the specified host.
+ *
+ * @param host The host to resolve
+ * @param recordClass The desired class of the records to query
+ * @param recordType The desired type of the records to query
+ * @param target The target to call with the result once resolving is done
+ * @param selector The selector to call on the target. The signature must be
+ *		   `void (OFArray<OFDNSResourceRecord *> *response, id context,
+ *		   id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncResolveHost: (OFString *)host
+	     recordClass: (of_dns_resource_record_class_t)recordClass
+	      recordType: (of_dns_resource_record_type_t)recordType
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (nullable id)context;
 @end
 
 OF_ASSUME_NONNULL_END

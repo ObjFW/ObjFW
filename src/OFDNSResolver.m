@@ -750,6 +750,21 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 		selector: (SEL)selector
 		 context: (id)context
 {
+	[self asyncResolveHost: host
+		   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		    recordType: OF_DNS_RESOURCE_RECORD_TYPE_ALL
+			target: target
+		      selector: selector
+		       context: context];
+}
+
+- (void)asyncResolveHost: (OFString *)host
+	     recordClass: (of_dns_resource_record_class_t)recordClass
+	      recordType: (of_dns_resource_record_type_t)recordType
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableData *data = [OFMutableData dataWithCapacity: 512];
 	OFDNSResolver_context *DNSResolverContext;
@@ -806,12 +821,12 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 	}
 
 	/* QTYPE */
-	tmp = OF_BSWAP16_IF_LE(OF_DNS_RESOURCE_RECORD_TYPE_A);
+	tmp = OF_BSWAP16_IF_LE(recordType);
 	[data addItems: &tmp
 		 count: 2];
 
 	/* QCLASS */
-	tmp = OF_BSWAP16_IF_LE(OF_DNS_RESOURCE_RECORD_CLASS_IN);
+	tmp = OF_BSWAP16_IF_LE(recordClass);
 	[data addItems: &tmp
 		 count: 2];
 
