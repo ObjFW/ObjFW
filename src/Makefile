@@ -129,6 +129,7 @@ SRCS_FILES = OFFile.m			\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSResolver.m			\
+	       OFDNSResourceRecord.m		\
 	       OFHTTPServer.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\

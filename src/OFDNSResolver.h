@@ -17,11 +17,14 @@
 
 #import "OFObject.h"
 #import "OFString.h"
+#import "OFDNSResourceRecord.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFNumber;
 
 /*!
  * @class OFDNSResolver OFDNSResolver.h ObjFW/OFDNSResolver.h
@@ -37,6 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	size_t _minNumberOfDotsInAbsoluteName;
 	bool _usesTCP;
+	OFMutableDictionary OF_GENERIC(OFNumber *, id) *_queries;
 }
 
 /*!
@@ -83,6 +87,21 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated OFDNSResolver.
  */
 - (instancetype)init;
+
+/*!
+ * @brief Asynchronously resolves the specified host.
+ *
+ * @param host The host to resolve
+ * @param target The target to call with the result once resolving is done
+ * @param selector The selector to call on the target. The signature must be
+ *		   `void (OFArray<OFDNSResourceRecord *> *response, id context,
+ *		   id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncResolveHost: (OFString *)host
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (nullable id)context;
 @end
 
 OF_ASSUME_NONNULL_END
