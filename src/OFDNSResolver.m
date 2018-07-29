@@ -185,6 +185,50 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 	return [components componentsJoinedByString: @"."];
 }
 
+static id
+parseData(const unsigned char *buffer, size_t length, size_t i,
+    size_t dataLength, of_dns_resource_record_class_t recordClass,
+    of_dns_resource_record_type_t recordType)
+{
+	id data;
+
+	if (recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
+		size_t j;
+
+		switch (recordType) {
+		case OF_DNS_RESOURCE_RECORD_TYPE_A:
+			if (dataLength != 4)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			data = [OFString stringWithFormat:
+			    @"%u.%u.%u.%u",
+			    buffer[i], buffer[i + 1],
+			    buffer[i + 2], buffer[i + 3]];
+			break;
+		case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
+			j = i;
+
+			data = parseName(buffer, length, &j,
+			    ALLOWED_POINTER_LEVELS);
+
+			if (j != i + dataLength)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			break;
+		default:
+			data = [OFData dataWithItems: &buffer[i]
+					       count: dataLength];
+			break;
+		}
+	} else
+		data = [OFData dataWithItems: &buffer[i]
+				       count: dataLength];
+
+	return data;
+}
+
 @implementation OFDNSResolver_context
 @synthesize host = _host, nameServers = _nameServers;
 @synthesize searchDomains = _searchDomains;
@@ -619,7 +663,6 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 		numAnswers = (buffer[6] << 8) | buffer[7];
 		answers = [OFMutableArray arrayWithCapacity: numAnswers];
 
-		/* "Consume" headers */
 		i = 12;
 
 		/*
@@ -636,17 +679,18 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 		for (uint_fast16_t j = 0; j < numAnswers; j++) {
 			OFString *name = parseName(buffer, length, &i,
 			    ALLOWED_POINTER_LEVELS);
-			uint16_t type, dataClass;
+			of_dns_resource_record_class_t recordClass;
+			of_dns_resource_record_type_t recordType;
 			uint32_t TTL;
 			uint16_t dataLength;
-			OFData *data;
+			id data;
 			OFDNSResourceRecord *record;
 
 			if (i + 10 > length)
 				@throw [OFTruncatedDataException exception];
 
-			type = (buffer[i] << 16) | buffer[i + 1];
-			dataClass = (buffer[i + 2] << 16) | buffer[i + 3];
+			recordType = (buffer[i] << 16) | buffer[i + 1];
+			recordClass = (buffer[i + 2] << 16) | buffer[i + 3];
 			TTL = (buffer[i + 4] << 24) | (buffer[i + 5] << 16) |
 			    (buffer[i + 6] << 8) | buffer[i + 7];
 			dataLength = (buffer[i + 8] << 16) | buffer[i + 9];
@@ -656,14 +700,14 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 			if (i + dataLength > length)
 				@throw [OFTruncatedDataException exception];
 
-			data = [OFData dataWithItems: &buffer[i]
-					       count: dataLength];
+			data = parseData(buffer, length, i, dataLength,
+			    recordClass, recordType);
 			i += dataLength;
 
 			record = [[[OFDNSResourceRecord alloc]
 			    initWithName: name
-				    type: type
-			       dataClass: dataClass
+			     recordClass: recordClass
+			      recordType: recordType
 				    data: data
 				     TTL: TTL] autorelease];
 
@@ -762,12 +806,12 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 	}
 
 	/* QTYPE */
-	tmp = OF_BSWAP16_IF_LE(1); /* A */
+	tmp = OF_BSWAP16_IF_LE(OF_DNS_RESOURCE_RECORD_TYPE_A);
 	[data addItems: &tmp
 		 count: 2];
 
 	/* QCLASS */
-	tmp = OF_BSWAP16_IF_LE(1); /* IN */
+	tmp = OF_BSWAP16_IF_LE(OF_DNS_RESOURCE_RECORD_CLASS_IN);
 	[data addItems: &tmp
 		 count: 2];
 

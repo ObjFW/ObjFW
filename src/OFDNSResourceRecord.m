@@ -22,22 +22,59 @@
 
 #import "OFInvalidFormatException.h"
 
+OFString *
+of_dns_resource_record_class_to_string(
+    of_dns_resource_record_class_t recordClass)
+{
+	switch (recordClass) {
+	case OF_DNS_RESOURCE_RECORD_CLASS_IN:
+		return @"IN";
+	default:
+		return [OFString stringWithFormat: @"%u", recordClass];
+	}
+}
+
+OFString *
+of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
+{
+	switch (recordType) {
+	case OF_DNS_RESOURCE_RECORD_TYPE_A:
+		return @"A";
+	case OF_DNS_RESOURCE_RECORD_TYPE_NS:
+		return @"NS";
+	case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
+		return @"CNAME";
+	case OF_DNS_RESOURCE_RECORD_TYPE_SOA:
+		return @"SOA";
+	case OF_DNS_RESOURCE_RECORD_TYPE_PTR:
+		return @"PTR";
+	case OF_DNS_RESOURCE_RECORD_TYPE_MX:
+		return @"MX";
+	case OF_DNS_RESOURCE_RECORD_TYPE_TXT:
+		return @"TXT";
+	case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
+		return @"AAAA";
+	default:
+		return [OFString stringWithFormat: @"%u", recordType];
+	}
+}
+
 @implementation OFDNSResourceRecord
-@synthesize name = _name, type = _type, dataClass = _dataClass, data = _data;
-@synthesize TTL = _TTL;
+@synthesize name = _name, recordClass = _recordClass, recordType = _recordType;
+@synthesize data = _data, TTL = _TTL;
 
 - (instancetype)initWithName: (OFString *)name
-			type: (uint16_t)type
-		   dataClass: (uint16_t)dataClass
-			data: (OFData *)data
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			data: (id)data
 			 TTL: (uint32_t)TTL
 {
 	self = [super init];
 
 	@try {
 		_name = [name copy];
-		_type = type;
-		_dataClass = dataClass;
+		_recordClass = recordClass;
+		_recordType = recordType;
 		_data = [data copy];
 		_TTL = TTL;
 	} @catch (id e) {
@@ -68,10 +105,10 @@
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_type != _type)
+	if (otherRecord->_recordClass != _recordClass)
 		return false;
 
-	if (otherRecord->_dataClass != _dataClass)
+	if (otherRecord->_recordType != _recordType)
 		return false;
 
 	if (otherRecord->_data != _data && ![otherRecord->_data isEqual: _data])
@@ -90,10 +127,10 @@
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, [_name hash]);
-	OF_HASH_ADD(hash, _type >> 8);
-	OF_HASH_ADD(hash, _type);
-	OF_HASH_ADD(hash, _dataClass >> 8);
-	OF_HASH_ADD(hash, _dataClass);
+	OF_HASH_ADD(hash, _recordClass >> 8);
+	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _recordType >> 8);
+	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, [_data hash]);
 	OF_HASH_ADD(hash, _TTL >> 24);
 	OF_HASH_ADD(hash, _TTL >> 16);
@@ -107,45 +144,15 @@
 
 - (OFString *)description
 {
-	id data = _data;
-
-	if (_dataClass == 1 && _type == 1)
-		data = [self IPAddress];
-
 	return [OFString stringWithFormat:
 	    @"<OFDNSResourceRecord:\n"
 	    @"\tName = %@,\n"
-	    @"\tType = %" PRIu16 "\n"
-	    @"\tData Class = %" PRIu16 "\n"
+	    @"\tClass = %@\n"
+	    @"\tType = %@\n"
 	    @"\tData = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    _name, _type, _dataClass, data, _TTL];
-}
-
-- (OFString *)IPAddress
-{
-	const unsigned char *dataItems;
-
-	if (_dataClass != 1)
-		@throw [OFInvalidFormatException exception];
-
-	if ([_data itemSize] != 1)
-		@throw [OFInvalidFormatException exception];
-
-	dataItems = [_data items];
-
-	switch (_type) {
-	case 1:
-		if ([_data count] != 4)
-			@throw [OFInvalidFormatException exception];
-
-		return [OFString stringWithFormat: @"%u.%u.%u.%u",
-		    dataItems[0], dataItems[1], dataItems[2], dataItems[3]];
-	case 28:
-		/* TODO: Implement */
-	default:
-		@throw [OFInvalidFormatException exception];
-	}
+	    _name, of_dns_resource_record_class_to_string(_recordClass),
+	    of_dns_resource_record_type_to_string(_recordType), _data, _TTL];
 }
 @end

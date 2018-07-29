@@ -20,7 +20,30 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*! @file */
+
 @class OFData;
+
+/*!
+ * @brief The class of a DNS resource record.
+ */
+typedef enum {
+	OF_DNS_RESOURCE_RECORD_CLASS_IN = 1
+} of_dns_resource_record_class_t;
+
+/*!
+ * @brief The type of a DNS resource record.
+ */
+typedef enum {
+	OF_DNS_RESOURCE_RECORD_TYPE_A	  = 1,
+	OF_DNS_RESOURCE_RECORD_TYPE_NS	  = 2,
+	OF_DNS_RESOURCE_RECORD_TYPE_CNAME = 5,
+	OF_DNS_RESOURCE_RECORD_TYPE_SOA	  = 6,
+	OF_DNS_RESOURCE_RECORD_TYPE_PTR	  = 12,
+	OF_DNS_RESOURCE_RECORD_TYPE_MX	  = 15,
+	OF_DNS_RESOURCE_RECORD_TYPE_TXT	  = 16,
+	OF_DNS_RESOURCE_RECORD_TYPE_AAAA  = 28
+} of_dns_resource_record_type_t;
 
 /*!
  * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
@@ -30,9 +53,9 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFDNSResourceRecord: OFObject
 {
 	OFString *_name;
-	uint16_t _type;
-	uint16_t _dataClass;
-	OFData *_data;
+	of_dns_resource_record_class_t _recordClass;
+	of_dns_resource_record_type_t _recordType;
+	id _data;
 	uint32_t _TTL;
 }
 
@@ -42,19 +65,23 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *name;
 
 /*!
- * @brief The resource record type code.
- */
-@property (readonly, nonatomic) uint16_t type;
-
-/*!
  * @brief The class of the data.
  */
-@property (readonly, nonatomic) uint16_t dataClass;
+@property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
 
 /*!
- * The data of the resource.
+ * @brief The resource record type code.
  */
-@property (readonly, nonatomic) OFData *data;
+@property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
+
+/*!
+ * The class and type-dependent data of the resource.
+ *
+ * For A and AAAA records, this is a string with the IP address.
+ * For CNAME records, this is a string with the alias.
+ * For anything else, this is OFData.
+ */
+@property (readonly, nonatomic) id data;
 
 /*!
  * @brief The number of seconds after which the resource record should be
@@ -62,17 +89,22 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) uint32_t TTL;
 
-/*!
- * @brief If the resource record is an A or AAAA record, this contains the data
- *	  interpreted as an IP address.
- */
-@property (readonly, nonatomic) OFString *IPAddress;
-
 - (instancetype)initWithName: (OFString *)name
-			type: (uint16_t)type
-		   dataClass: (uint16_t)dataClass
-			data: (OFData *)data
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			data: (id)data
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFString *_Nonnull of_dns_resource_record_class_to_string(
+    of_dns_resource_record_class_t recordClass);
+extern OFString *_Nonnull of_dns_resource_record_type_to_string(
+    of_dns_resource_record_type_t recordType);
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END
