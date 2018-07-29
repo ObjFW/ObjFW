@@ -866,7 +866,7 @@ of_random(void) {
 	struct timeval tv;
 
 	gettimeofday(&tv, NULL);
-	srand((unsigned)(t.tv_sec ^ t.tv_usec));
+	srand((unsigned)(tv.tv_sec ^ tv.tv_usec));
 	return (((uint32_t)(rand()) << 16) | ((uint32_t)(rand()) & 0xFFFF));
 #endif
 }
