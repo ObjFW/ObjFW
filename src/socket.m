@@ -228,16 +228,16 @@ parseIPv4(OFString *IPv4, uint16_t port)
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_socket_address_t ret;
-	struct sockaddr_in *sin = (struct sockaddr_in *)&ret.address;
+	struct sockaddr_in *addrIn = (struct sockaddr_in *)&ret.address;
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.length = sizeof(struct sockaddr_in);
 
-	sin->sin_family = AF_INET;
-	sin->sin_port = OF_BSWAP16_IF_LE(port);
+	addrIn->sin_family = AF_INET;
+	addrIn->sin_port = OF_BSWAP16_IF_LE(port);
 
 	if (inet_pton(AF_INET, [IPv4 cStringWithEncoding: [OFLocale encoding]],
-	    &sin->sin_addr) != 1)
+	    &addrIn->sin_addr) != 1)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -251,16 +251,16 @@ parseIPv6(OFString *IPv6, uint16_t port)
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_socket_address_t ret;
-	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)&ret.address;
+	struct sockaddr_in6 *addrIn6 = (struct sockaddr_in6 *)&ret.address;
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.length = sizeof(struct sockaddr_in6);
 
-	sin6->sin6_family = AF_INET6;
-	sin6->sin6_port = OF_BSWAP16_IF_LE(port);
+	addrIn6->sin6_family = AF_INET6;
+	addrIn6->sin6_port = OF_BSWAP16_IF_LE(port);
 
 	if (inet_pton(AF_INET6, [IPv6 cStringWithEncoding: [OFLocale encoding]],
-	    &sin6->sin_addr6) != 1)
+	    &addrIn6->sin_addr6) != 1)
 		@throw [OFInvalidFormatException exception];
 
 	objc_autoreleasePoolPop(pool);
@@ -398,15 +398,16 @@ of_socket_address_hash(of_socket_address_t *address)
 static OFString *
 IPv4String(const of_socket_address_t *address, uint16_t *port)
 {
-	const struct sockaddr_in *sin =
+	const struct sockaddr_in *addrIn =
 	    (const struct sockaddr_in *)&address->address;
 	char buffer[INET_ADDRSTRLEN];
 
-	if (inet_ntop(AF_INET, &sin->sin_addr, buffer, sizeof(buffer)) == NULL)
+	if (inet_ntop(AF_INET, &addrIn->sin_addr, buffer, sizeof(buffer)) ==
+	    NULL)
 		@throw [OFInvalidArgumentException exception];
 
 	if (port != NULL)
-		*port = OF_BSWAP16_IF_LE(sin->sin_port);
+		*port = OF_BSWAP16_IF_LE(addrIn->sin_port);
 
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]];
@@ -416,16 +417,16 @@ IPv4String(const of_socket_address_t *address, uint16_t *port)
 static OFString *
 IPv6String(const of_socket_address_t *address, uint16_t *port)
 {
-	const struct sockaddr_in6 *sin6 =
+	const struct sockaddr_in6 *addrIn6 =
 	    (const struct sockaddr_in6 *)&address->address;
 	char buffer[INET6_ADDRSTRLEN];
 
-	if (inet_ntop(AF_INET, &sin6->sin_addr6, buffer, sizeof(buffer)) ==
+	if (inet_ntop(AF_INET, &addrIn6->sin_addr6, buffer, sizeof(buffer)) ==
 	    NULL)
 		@throw [OFInvalidArgumentException exception];
 
 	if (port != NULL)
-		*port = OF_BSWAP16_IF_LE(sin6->sin_port);
+		*port = OF_BSWAP16_IF_LE(addrIn6->sin_port);
 
 	return [OFString stringWithCString: buffer
 				  encoding: [OFLocale encoding]];
