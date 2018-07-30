@@ -28,7 +28,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The class of a DNS resource record.
  */
 typedef enum {
+	/*! IN */
 	OF_DNS_RESOURCE_RECORD_CLASS_IN	 =   1,
+	/*! Any class. Only for queries. */
 	OF_DNS_RESOURCE_RECORD_CLASS_ANY = 255,
 } of_dns_resource_record_class_t;
 
@@ -36,14 +38,23 @@ typedef enum {
  * @brief The type of a DNS resource record.
  */
 typedef enum {
+	/*! A */
 	OF_DNS_RESOURCE_RECORD_TYPE_A	  =   1,
+	/*! NS */
 	OF_DNS_RESOURCE_RECORD_TYPE_NS	  =   2,
+	/*! CNAME */
 	OF_DNS_RESOURCE_RECORD_TYPE_CNAME =   5,
+	/*! SOA */
 	OF_DNS_RESOURCE_RECORD_TYPE_SOA	  =   6,
+	/*! PTR */
 	OF_DNS_RESOURCE_RECORD_TYPE_PTR	  =  12,
+	/*! MX */
 	OF_DNS_RESOURCE_RECORD_TYPE_MX	  =  15,
+	/*! TXT */
 	OF_DNS_RESOURCE_RECORD_TYPE_TXT	  =  16,
+	/*! AAAA */
 	OF_DNS_RESOURCE_RECORD_TYPE_AAAA  =  28,
+	/*! All types. Only for queries. */
 	OF_DNS_RESOURCE_RECORD_TYPE_ALL	  = 255,
 } of_dns_resource_record_type_t;
 

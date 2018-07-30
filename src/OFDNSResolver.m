@@ -60,7 +60,7 @@
  *  - Timeouts
  *  - Resolve with each search domain
  *  - Iterate through name servers
- *  - IPv6 (for responses and for talking to the name servers)
+ *  - IPv6 for talking to the name servers
  *  - Fallback to TCP
  */
 
@@ -185,6 +185,65 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 	return [components componentsJoinedByString: @"."];
 }
 
+static OFString *
+parseAAAA(const unsigned char *buffer)
+{
+	OFMutableString *data = [OFMutableString string];
+	int_fast8_t zerosStart = -1, maxZerosStart = -1;
+	uint_fast8_t zerosCount = 0, maxZerosCount = 0;
+	bool first = true;
+
+	for (uint_fast8_t i = 0; i < 16; i += 2) {
+		if (buffer[i] == 0 && buffer[i + 1] == 0) {
+			if (zerosStart >= 0)
+				zerosCount++;
+			else {
+				zerosStart = i;
+				zerosCount = 1;
+			}
+		} else {
+			if (zerosCount > maxZerosCount) {
+				maxZerosStart = zerosStart;
+				maxZerosCount = zerosCount;
+			}
+
+			zerosStart = -1;
+		}
+	}
+	if (zerosCount > maxZerosCount) {
+		maxZerosStart = zerosStart;
+		maxZerosCount = zerosCount;
+	}
+
+	if (maxZerosCount >= 2) {
+		for (uint_fast8_t i = 0; i < maxZerosStart; i += 2) {
+			[data appendFormat: (first ? @"%x" : @":%x"),
+					    (buffer[i] << 8) | buffer[i + 1]];
+			first = false;
+		}
+
+		[data appendString: @"::"];
+		first = true;
+
+		for (uint_fast8_t i = maxZerosStart + (maxZerosCount * 2);
+		    i < 16; i += 2) {
+			[data appendFormat: (first ? @"%x" : @":%x"),
+					    (buffer[i] << 8) | buffer[i + 1]];
+			first = false;
+		}
+	} else {
+		for (uint_fast8_t i = 0; i < 16; i += 2) {
+			[data appendFormat: (first ? @"%x" : @":%x"),
+					    (buffer[i] << 8) | buffer[i + 1]];
+			first = false;
+		}
+	}
+
+	[data makeImmutable];
+
+	return data;
+}
+
 static id
 parseData(const unsigned char *buffer, size_t length, size_t i,
     size_t dataLength, of_dns_resource_record_class_t recordClass,
@@ -216,6 +275,13 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 				@throw [OFInvalidServerReplyException
 				    exception];
 
+			break;
+		case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
+			if (dataLength != 16)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			data = parseAAAA(&buffer[i]);
 			break;
 		default:
 			data = [OFData dataWithItems: &buffer[i]
