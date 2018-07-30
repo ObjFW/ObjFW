@@ -62,6 +62,7 @@
  *  - Iterate through name servers
  *  - IPv6 for talking to the name servers
  *  - Fallback to TCP
+ *  - More record types
  */
 
 @interface OFDNSResolver_context: OFObject
@@ -186,7 +187,7 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 }
 
 static OFString *
-parseAAAA(const unsigned char *buffer)
+parseAAAAData(const unsigned char *buffer)
 {
 	OFMutableString *data = [OFMutableString string];
 	int_fast8_t zerosStart = -1, maxZerosStart = -1;
@@ -244,11 +245,12 @@ parseAAAA(const unsigned char *buffer)
 	return data;
 }
 
-static id
-parseData(const unsigned char *buffer, size_t length, size_t i,
-    size_t dataLength, of_dns_resource_record_class_t recordClass,
-    of_dns_resource_record_type_t recordType)
+static OF_KINDOF(OFDNSResourceRecord *)
+createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
+    of_dns_resource_record_type_t recordType, uint32_t TTL,
+    const unsigned char *buffer, size_t length, size_t i, size_t dataLength)
 {
+	Class class;
 	id data;
 
 	if (recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
@@ -260,6 +262,7 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 				@throw [OFInvalidServerReplyException
 				    exception];
 
+			class = [OFADNSResourceRecord class];
 			data = [OFString stringWithFormat:
 			    @"%u.%u.%u.%u",
 			    buffer[i], buffer[i + 1],
@@ -268,6 +271,7 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 		case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
 			j = i;
 
+			class = [OFCNAMEDNSResourceRecord class];
 			data = parseName(buffer, length, &j,
 			    ALLOWED_POINTER_LEVELS);
 
@@ -281,18 +285,26 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 				@throw [OFInvalidServerReplyException
 				    exception];
 
-			data = parseAAAA(&buffer[i]);
+			class = [OFAAAADNSResourceRecord class];
+			data = parseAAAAData(&buffer[i]);
 			break;
 		default:
+			class = [OFDNSResourceRecord class];
 			data = [OFData dataWithItems: &buffer[i]
 					       count: dataLength];
 			break;
 		}
-	} else
+	} else {
+		class = [OFDNSResourceRecord class];
 		data = [OFData dataWithItems: &buffer[i]
 				       count: dataLength];
+	}
 
-	return data;
+	return [[[class alloc] initWithName: name
+				recordClass: recordClass
+				 recordType: recordType
+				       data: data
+					TTL: TTL] autorelease];
 }
 
 @implementation OFDNSResolver_context
@@ -749,7 +761,6 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 			of_dns_resource_record_type_t recordType;
 			uint32_t TTL;
 			uint16_t dataLength;
-			id data;
 			OFDNSResourceRecord *record;
 
 			if (i + 10 > length)
@@ -766,16 +777,9 @@ parseData(const unsigned char *buffer, size_t length, size_t i,
 			if (i + dataLength > length)
 				@throw [OFTruncatedDataException exception];
 
-			data = parseData(buffer, length, i, dataLength,
-			    recordClass, recordType);
+			record = createResourceRecord(name, recordClass,
+			    recordType, TTL, buffer, length, i, dataLength);
 			i += dataLength;
-
-			record = [[[OFDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
 
 			[answers addObject: record];
 		}

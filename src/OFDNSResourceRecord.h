@@ -61,7 +61,7 @@ typedef enum {
 /*!
  * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
- * @brief A class represenging a DNS resource record.
+ * @brief A class representing a DNS resource record.
  */
 @interface OFDNSResourceRecord: OFObject
 {
@@ -89,10 +89,6 @@ typedef enum {
 
 /*!
  * The class and type-dependent data of the resource.
- *
- * For A and AAAA records, this is a string with the IP address.
- * For CNAME records, this is a string with the alias.
- * For anything else, this is OFData.
  */
 @property (readonly, nonatomic) id data;
 
@@ -107,6 +103,44 @@ typedef enum {
 		  recordType: (of_dns_resource_record_type_t)recordType
 			data: (id)data
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
+@end
+
+/*!
+ * @class OFADNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing an A DNS resource record.
+ */
+@interface OFADNSResourceRecord: OFDNSResourceRecord
+/*!
+ * A string with the IP address.
+ */
+@property (readonly, nonatomic) OFString *data;
+@end
+
+/*!
+ * @class OFAAAADNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class represenging a DNS resource record.
+ */
+@interface OFAAAADNSResourceRecord: OFDNSResourceRecord
+/*!
+ * A string with the IP address.
+ */
+@property (readonly, nonatomic) OFString *data;
+@end
+
+/*!
+ * @class OFCNAMEDNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing a CNAME DNS resource record.
+ */
+@interface OFCNAMEDNSResourceRecord: OFDNSResourceRecord
+/*!
+ * A string with the alias.
+ */
+@property (readonly, nonatomic) OFString *data;
 @end
 
 #ifdef __cplusplus

@@ -160,3 +160,24 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 	    of_dns_resource_record_type_to_string(_recordType), _data, _TTL];
 }
 @end
+
+@implementation OFADNSResourceRecord
+- (OFString *)data
+{
+	return _data;
+}
+@end
+
+@implementation OFAAAADNSResourceRecord
+- (OFString *)data
+{
+	return _data;
+}
+@end
+
+@implementation OFCNAMEDNSResourceRecord
+- (OFString *)data
+{
+	return _data;
+}
+@end
