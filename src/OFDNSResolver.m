@@ -250,7 +250,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
     of_dns_resource_record_type_t recordType, uint32_t TTL,
     const unsigned char *buffer, size_t length, size_t i, size_t dataLength)
 {
-	Class class;
+	uint16_t preference;
 	id data;
 
 	if (recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
@@ -262,16 +262,20 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 				@throw [OFInvalidServerReplyException
 				    exception];
 
-			class = [OFADNSResourceRecord class];
 			data = [OFString stringWithFormat:
 			    @"%u.%u.%u.%u",
 			    buffer[i], buffer[i + 1],
 			    buffer[i + 2], buffer[i + 3]];
-			break;
+
+			return [[[OFADNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+				    data: data
+				     TTL: TTL] autorelease];
 		case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
 			j = i;
 
-			class = [OFCNAMEDNSResourceRecord class];
 			data = parseName(buffer, length, &j,
 			    ALLOWED_POINTER_LEVELS);
 
@@ -279,32 +283,70 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 				@throw [OFInvalidServerReplyException
 				    exception];
 
-			break;
+			return [[[OFCNAMEDNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+				    data: data
+				     TTL: TTL] autorelease];
+		case OF_DNS_RESOURCE_RECORD_TYPE_MX:
+			if (dataLength < 2)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			preference = (buffer[i] << 8) | buffer[i + 1];
+
+			j = i + 2;
+
+			data = parseName(buffer, length, &j,
+			    ALLOWED_POINTER_LEVELS);
+
+			if (j != i + dataLength)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			return [[[OFMXDNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+			      preference: preference
+				    data: data
+				     TTL: TTL] autorelease];
 		case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
 			if (dataLength != 16)
 				@throw [OFInvalidServerReplyException
 				    exception];
 
-			class = [OFAAAADNSResourceRecord class];
 			data = parseAAAAData(&buffer[i]);
-			break;
+
+			return [[[OFAAAADNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+				    data: data
+				     TTL: TTL] autorelease];
 		default:
-			class = [OFDNSResourceRecord class];
 			data = [OFData dataWithItems: &buffer[i]
 					       count: dataLength];
-			break;
+
+			return [[[OFDNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+				    data: data
+				     TTL: TTL] autorelease];
 		}
 	} else {
-		class = [OFDNSResourceRecord class];
 		data = [OFData dataWithItems: &buffer[i]
 				       count: dataLength];
-	}
 
-	return [[[class alloc] initWithName: name
-				recordClass: recordClass
-				 recordType: recordType
-				       data: data
-					TTL: TTL] autorelease];
+		return [[[OFDNSResourceRecord alloc]
+		    initWithName: name
+		     recordClass: recordClass
+		      recordType: recordType
+			    data: data
+			     TTL: TTL] autorelease];
+	}
 }
 
 @implementation OFDNSResolver_context

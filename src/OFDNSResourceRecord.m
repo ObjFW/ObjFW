@@ -149,35 +149,109 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"<OFDNSResourceRecord:\n"
+	    @"<%@:\n"
 	    @"\tName = %@\n"
 	    @"\tClass = %@\n"
 	    @"\tType = %@\n"
 	    @"\tData = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    _name, of_dns_resource_record_class_to_string(_recordClass),
+	    [self className], _name,
+	    of_dns_resource_record_class_to_string(_recordClass),
 	    of_dns_resource_record_type_to_string(_recordType), _data, _TTL];
 }
 @end
 
 @implementation OFADNSResourceRecord
-- (OFString *)data
-{
-	return _data;
-}
+@dynamic data;
 @end
 
 @implementation OFAAAADNSResourceRecord
-- (OFString *)data
-{
-	return _data;
-}
+@dynamic data;
 @end
 
 @implementation OFCNAMEDNSResourceRecord
-- (OFString *)data
+@dynamic data;
+@end
+
+@implementation OFMXDNSResourceRecord
+@dynamic data;
+@synthesize preference = _preference;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			data: (id)data
+			 TTL: (uint32_t)TTL
 {
-	return _data;
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+		  preference: (uint16_t)preference
+			data: (id)data
+			 TTL: (uint32_t)TTL
+{
+	self = [super initWithName: name
+		       recordClass: recordClass
+			recordType: recordType
+			      data: data
+			       TTL: TTL];
+
+	_preference = preference;
+
+	return self;
+}
+
+- (bool)isEqual: (id)otherObject
+{
+	OFMXDNSResourceRecord *otherRecord;
+
+	if (![otherObject isKindOfClass: [OFMXDNSResourceRecord class]])
+		return false;
+
+	otherRecord = otherObject;
+
+	if (![super isEqual: otherRecord])
+		return false;
+
+	if (otherRecord->_preference != _preference)
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_HASH(hash, [super hash]);
+	OF_HASH_ADD(hash, _preference >> 8);
+	OF_HASH_ADD(hash, _preference);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tName = %@\n"
+	    @"\tClass = %@\n"
+	    @"\tType = %@\n"
+	    @"\tPreference = %" PRIu16 "\n"
+	    @"\tData = %@\n"
+	    @"\tTTL = %" PRIu32 "\n"
+	    @">",
+	    [self className], _name,
+	    of_dns_resource_record_class_to_string(_recordClass),
+	    of_dns_resource_record_type_to_string(_recordType), _preference,
+	    _data, _TTL];
 }
 @end

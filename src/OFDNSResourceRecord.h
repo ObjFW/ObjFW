@@ -78,7 +78,7 @@ typedef enum {
 @property (readonly, nonatomic) OFString *name;
 
 /*!
- * @brief The class of the data.
+ * @brief The resource record class code.
  */
 @property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
 
@@ -98,6 +98,17 @@ typedef enum {
  */
 @property (readonly, nonatomic) uint32_t TTL;
 
+/*!
+ * @brief Initializes an already allocated OFDNSResourceRecord with the
+ *	  specified name, resource record class, resource record type, resource
+ *	  record data and resource record time to live.
+ *
+ * @param name The name of the resource record
+ * @param recordClass The class code for the resource record
+ * @param recordType The type code for the resource record
+ * @param data The data for the resource record
+ * @param TTL The time to live for the resource record
+ */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
@@ -141,6 +152,54 @@ typedef enum {
  * A string with the alias.
  */
 @property (readonly, nonatomic) OFString *data;
+@end
+
+/*!
+ * @class OFMXDNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing an MX DNS resource record.
+ */
+@interface OFMXDNSResourceRecord: OFDNSResourceRecord
+{
+	uint16_t _preference;
+}
+
+/*!
+ * The preference of the resource record.
+ */
+@property (readonly, nonatomic) uint16_t preference;
+
+/*!
+ * A string with the mail exchange.
+ */
+@property (readonly, nonatomic) OFString *data;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			data: (id)data
+			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFMXDNSResourceRecord with the
+ *	  specified name, resource record class, resource record type, resource
+ *	  record preference, resource record data and resource record time to
+ *	  live.
+ *
+ * @param name The name of the resource record
+ * @param recordClass The class code for the resource record
+ * @param recordType The type code for the resource record
+ * @param preference The preference of the resource record
+ * @param data The data for the resource record
+ * @param TTL The time to live for the resource record
+ */
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+		  preference: (uint16_t)preference
+			data: (id)data
+			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
 #ifdef __cplusplus
