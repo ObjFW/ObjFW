@@ -255,3 +255,15 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 	    _data, _TTL];
 }
 @end
+
+@implementation OFNSDNSResourceRecord
+@dynamic data;
+@end
+
+@implementation OFPTRDNSResourceRecord
+@dynamic data;
+@end
+
+@implementation OFTXTDNSResourceRecord
+@dynamic data;
+@end

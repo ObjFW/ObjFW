@@ -273,6 +273,22 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			      recordType: recordType
 				    data: data
 				     TTL: TTL] autorelease];
+		case OF_DNS_RESOURCE_RECORD_TYPE_NS:
+			j = i;
+
+			data = parseName(buffer, length, &j,
+			    ALLOWED_POINTER_LEVELS);
+
+			if (j != i + dataLength)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			return [[[OFNSDNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+				    data: data
+				     TTL: TTL] autorelease];
 		case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
 			j = i;
 
@@ -284,6 +300,22 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 				    exception];
 
 			return [[[OFCNAMEDNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
+				    data: data
+				     TTL: TTL] autorelease];
+		case OF_DNS_RESOURCE_RECORD_TYPE_PTR:
+			j = i;
+
+			data = parseName(buffer, length, &j,
+			    ALLOWED_POINTER_LEVELS);
+
+			if (j != i + dataLength)
+				@throw [OFInvalidServerReplyException
+				    exception];
+
+			return [[[OFPTRDNSResourceRecord alloc]
 			    initWithName: name
 			     recordClass: recordClass
 			      recordType: recordType
@@ -310,6 +342,16 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			     recordClass: recordClass
 			      recordType: recordType
 			      preference: preference
+				    data: data
+				     TTL: TTL] autorelease];
+		case OF_DNS_RESOURCE_RECORD_TYPE_TXT:
+			data = [OFData dataWithItems: &buffer[i]
+					       count: dataLength];
+
+			return [[[OFTXTDNSResourceRecord alloc]
+			    initWithName: name
+			     recordClass: recordClass
+			      recordType: recordType
 				    data: data
 				     TTL: TTL] autorelease];
 		case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:

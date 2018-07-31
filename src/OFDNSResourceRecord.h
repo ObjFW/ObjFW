@@ -202,6 +202,45 @@ typedef enum {
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
+/*!
+ * @class OFNSDNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing a CNAME DNS resource record.
+ */
+@interface OFNSDNSResourceRecord: OFDNSResourceRecord
+/*!
+ * A string with the authoritative host of the resource record.
+ */
+@property (readonly, nonatomic) OFString *data;
+@end
+
+/*!
+ * @class OFPTRDNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing a CNAME DNS resource record.
+ */
+@interface OFPTRDNSResourceRecord: OFDNSResourceRecord
+/*!
+ * A string with the domain name for the resource record.
+ */
+@property (readonly, nonatomic) OFString *data;
+@end
+
+/*!
+ * @class OFTXTDNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing a CNAME DNS resource record.
+ */
+@interface OFTXTDNSResourceRecord: OFDNSResourceRecord
+/*!
+ * Data with the text of the resource record.
+ */
+@property (readonly, nonatomic) OFString *data;
+@end
+
 #ifdef __cplusplus
 extern "C" {
 #endif
