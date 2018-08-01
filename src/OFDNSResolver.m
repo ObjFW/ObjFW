@@ -250,145 +250,111 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
     of_dns_resource_record_type_t recordType, uint32_t TTL,
     const unsigned char *buffer, size_t length, size_t i, size_t dataLength)
 {
-	uint16_t preference;
-	id data;
+	if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_A &&
+	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
+		OFString *address;
 
-	if (recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
+		if (dataLength != 4)
+			@throw [OFInvalidServerReplyException exception];
+
+		address = [OFString stringWithFormat: @"%u.%u.%u.%u",
+		    buffer[i], buffer[i + 1], buffer[i + 2], buffer[i + 3]];
+
+		return [[[OFADNSResourceRecord alloc]
+		    initWithName: name
+			 address: address
+			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_NS) {
+		size_t j = i;
+		OFString *authoritativeHost = parseName(buffer, length, &j,
+		    ALLOWED_POINTER_LEVELS);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFNSDNSResourceRecord alloc]
+			 initWithName: name
+			  recordClass: recordClass
+		    authoritativeHost: authoritativeHost
+				  TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
+		size_t j = i;
+		OFString *alias = parseName(buffer, length, &j,
+			    ALLOWED_POINTER_LEVELS);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFCNAMEDNSResourceRecord alloc]
+		    initWithName: name
+		     recordClass: recordClass
+			   alias: alias
+			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_PTR) {
+		size_t j = i;
+		OFString *domainName = parseName(buffer, length, &j,
+		    ALLOWED_POINTER_LEVELS);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFPTRDNSResourceRecord alloc]
+		    initWithName: name
+		     recordClass: recordClass
+		      domainName: domainName
+			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_MX) {
+		uint16_t preference;
 		size_t j;
+		OFString *mailExchange;
 
-		switch (recordType) {
-		case OF_DNS_RESOURCE_RECORD_TYPE_A:
-			if (dataLength != 4)
-				@throw [OFInvalidServerReplyException
-				    exception];
+		if (dataLength < 2)
+			@throw [OFInvalidServerReplyException exception];
 
-			data = [OFString stringWithFormat:
-			    @"%u.%u.%u.%u",
-			    buffer[i], buffer[i + 1],
-			    buffer[i + 2], buffer[i + 3]];
+		preference = (buffer[i] << 8) | buffer[i + 1];
 
-			return [[[OFADNSResourceRecord alloc]
+		j = i + 2;
+		mailExchange = parseName(buffer, length, &j,
+		    ALLOWED_POINTER_LEVELS);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFMXDNSResourceRecord alloc]
 			    initWithName: name
 			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		case OF_DNS_RESOURCE_RECORD_TYPE_NS:
-			j = i;
-
-			data = parseName(buffer, length, &j,
-			    ALLOWED_POINTER_LEVELS);
-
-			if (j != i + dataLength)
-				@throw [OFInvalidServerReplyException
-				    exception];
-
-			return [[[OFNSDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
-			j = i;
-
-			data = parseName(buffer, length, &j,
-			    ALLOWED_POINTER_LEVELS);
-
-			if (j != i + dataLength)
-				@throw [OFInvalidServerReplyException
-				    exception];
-
-			return [[[OFCNAMEDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		case OF_DNS_RESOURCE_RECORD_TYPE_PTR:
-			j = i;
-
-			data = parseName(buffer, length, &j,
-			    ALLOWED_POINTER_LEVELS);
-
-			if (j != i + dataLength)
-				@throw [OFInvalidServerReplyException
-				    exception];
-
-			return [[[OFPTRDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		case OF_DNS_RESOURCE_RECORD_TYPE_MX:
-			if (dataLength < 2)
-				@throw [OFInvalidServerReplyException
-				    exception];
-
-			preference = (buffer[i] << 8) | buffer[i + 1];
-
-			j = i + 2;
-
-			data = parseName(buffer, length, &j,
-			    ALLOWED_POINTER_LEVELS);
-
-			if (j != i + dataLength)
-				@throw [OFInvalidServerReplyException
-				    exception];
-
-			return [[[OFMXDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
 			      preference: preference
-				    data: data
+			    mailExchange: mailExchange
 				     TTL: TTL] autorelease];
-		case OF_DNS_RESOURCE_RECORD_TYPE_TXT:
-			data = [OFData dataWithItems: &buffer[i]
-					       count: dataLength];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_TXT) {
+		OFData *textData = [OFData dataWithItems: &buffer[i]
+						   count: dataLength];
 
-			return [[[OFTXTDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
-			if (dataLength != 16)
-				@throw [OFInvalidServerReplyException
-				    exception];
+		return [[[OFTXTDNSResourceRecord alloc]
+		    initWithName: name
+		     recordClass: recordClass
+			textData: textData
+			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_AAAA &&
+	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
+		OFString *address;
 
-			data = parseAAAAData(&buffer[i]);
+		if (dataLength != 16)
+			@throw [OFInvalidServerReplyException
+			    exception];
 
-			return [[[OFAAAADNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		default:
-			data = [OFData dataWithItems: &buffer[i]
-					       count: dataLength];
+		address = parseAAAAData(&buffer[i]);
 
-			return [[[OFDNSResourceRecord alloc]
-			    initWithName: name
-			     recordClass: recordClass
-			      recordType: recordType
-				    data: data
-				     TTL: TTL] autorelease];
-		}
-	} else {
-		data = [OFData dataWithItems: &buffer[i]
-				       count: dataLength];
-
+		return [[[OFAAAADNSResourceRecord alloc]
+		    initWithName: name
+			 address: address
+			     TTL: TTL] autorelease];
+	} else
 		return [[[OFDNSResourceRecord alloc]
 		    initWithName: name
 		     recordClass: recordClass
 		      recordType: recordType
-			    data: data
 			     TTL: TTL] autorelease];
-	}
 }
 
 @implementation OFDNSResolver_context
