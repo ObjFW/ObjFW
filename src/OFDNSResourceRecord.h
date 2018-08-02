@@ -329,6 +329,85 @@ typedef enum {
 @end
 
 /*!
+ * @class OFSOADNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing an SOA DNS resource record.
+ */
+@interface OFSOADNSResourceRecord: OFDNSResourceRecord
+{
+	OFString *_primaryNameServer, *_responsiblePerson;
+	uint32_t _serialNumber, _refreshInterval, _retryInterval;
+	uint32_t _expirationInterval, _minTTL;
+}
+
+/*!
+ * The the primary name server for the zone.
+ */
+@property (readonly, nonatomic) OFString *primaryNameServer;
+
+/*!
+ * The mailbox of the person responsible for the zone.
+ */
+@property (readonly, nonatomic) OFString *responsiblePerson;
+
+/*!
+ * The serial number of the original copy of the zone.
+ */
+@property (readonly, nonatomic) uint32_t serialNumber;
+
+/*!
+ * The refresh interval of the zone.
+ */
+@property (readonly, nonatomic) uint32_t refreshInterval;
+
+/*!
+ * The retry interval of the zone.
+ */
+@property (readonly, nonatomic) uint32_t retryInterval;
+
+/*!
+ * The expiration interval of the zone.
+ */
+@property (readonly, nonatomic) uint32_t expirationInterval;
+/*!
+ * The minimum TTL of the zone.
+ */
+@property (readonly, nonatomic) uint32_t minTTL;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFTXTDNSResourceRecord with the
+ *	  specified name, class, text data and time to live.
+ *
+ * @param name The name for the resource record
+ * @param recordClass The class code for the resource record
+ * @param primaryNameServer The the primary name server for the zone
+ * @param responsiblePerson The mailbox of the person responsible for the zone
+ * @param serialNumber The serial number of the original copy of the zone
+ * @param refreshInterval The refresh interval of the zone
+ * @param retryInterval The retry interval of the zone
+ * @param expirationInterval The expiration interval of the zone
+ * @param minTTL The minimum TTL of the zone
+ * @param TTL The time to live for the resource record
+ */
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+	   primaryNameServer: (OFString *)primaryNameServer
+	   responsiblePerson: (OFString *)responsiblePerson
+		serialNumber: (uint32_t)serialNumber
+	     refreshInterval: (uint32_t)refreshInterval
+	       retryInterval: (uint32_t)retryInterval
+	  expirationInterval: (uint32_t)expirationInterval
+		      minTTL: (uint32_t)minTTL
+			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
+@end
+
+/*!
  * @class OFTXTDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *

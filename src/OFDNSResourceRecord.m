@@ -686,6 +686,167 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 }
 @end
 
+@implementation OFSOADNSResourceRecord
+@synthesize primaryNameServer = _primaryNameServer;
+@synthesize responsiblePerson = _responsiblePerson;
+@synthesize serialNumber = _serialNumber, refreshInterval = _refreshInterval;
+@synthesize retryInterval = _retryInterval;
+@synthesize expirationInterval = _expirationInterval, minTTL = _minTTL;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+	   primaryNameServer: (OFString *)primaryNameServer
+	   responsiblePerson: (OFString *)responsiblePerson
+		serialNumber: (uint32_t)serialNumber
+	     refreshInterval: (uint32_t)refreshInterval
+	       retryInterval: (uint32_t)retryInterval
+	  expirationInterval: (uint32_t)expirationInterval
+		      minTTL: (uint32_t)minTTL
+			 TTL: (uint32_t)TTL
+{
+	self = [super initWithName: name
+		       recordClass: recordClass
+			recordType: OF_DNS_RESOURCE_RECORD_TYPE_SOA
+			       TTL: TTL];
+
+	@try {
+		_primaryNameServer = [primaryNameServer copy];
+		_responsiblePerson = [responsiblePerson copy];
+		_serialNumber = serialNumber;
+		_refreshInterval = refreshInterval;
+		_retryInterval = retryInterval;
+		_expirationInterval = expirationInterval;
+		_minTTL = minTTL;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_primaryNameServer release];
+	[_responsiblePerson release];
+
+	[super dealloc];
+}
+
+- (bool)isEqual: (id)otherObject
+{
+	OFSOADNSResourceRecord *otherRecord;
+
+	if (![otherObject isKindOfClass: [OFSOADNSResourceRecord class]])
+		return false;
+
+	otherRecord = otherObject;
+
+	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+		return false;
+
+	if (otherRecord->_recordClass != _recordClass)
+		return false;
+
+	if (otherRecord->_recordType != _recordType)
+		return false;
+
+	if (otherRecord->_primaryNameServer != _primaryNameServer &&
+	    ![otherRecord->_primaryNameServer isEqual: _primaryNameServer])
+		return false;
+
+	if (otherRecord->_responsiblePerson != _responsiblePerson &&
+	    ![otherRecord->_responsiblePerson isEqual: _responsiblePerson])
+		return false;
+
+	if (otherRecord->_serialNumber != _serialNumber)
+		return false;
+
+	if (otherRecord->_refreshInterval != _refreshInterval)
+		return false;
+
+	if (otherRecord->_retryInterval != _retryInterval)
+		return false;
+
+	if (otherRecord->_expirationInterval != _expirationInterval)
+		return false;
+
+	if (otherRecord->_minTTL != _minTTL)
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD(hash, _recordClass >> 8);
+	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _recordType >> 8);
+	OF_HASH_ADD(hash, _recordType);
+	OF_HASH_ADD_HASH(hash, [_primaryNameServer hash]);
+	OF_HASH_ADD_HASH(hash, [_responsiblePerson hash]);
+	OF_HASH_ADD(hash, _serialNumber >> 24);
+	OF_HASH_ADD(hash, _serialNumber >> 16);
+	OF_HASH_ADD(hash, _serialNumber >> 8);
+	OF_HASH_ADD(hash, _serialNumber);
+	OF_HASH_ADD(hash, _refreshInterval >> 24);
+	OF_HASH_ADD(hash, _refreshInterval >> 16);
+	OF_HASH_ADD(hash, _refreshInterval >> 8);
+	OF_HASH_ADD(hash, _refreshInterval);
+	OF_HASH_ADD(hash, _retryInterval >> 24);
+	OF_HASH_ADD(hash, _retryInterval >> 16);
+	OF_HASH_ADD(hash, _retryInterval >> 8);
+	OF_HASH_ADD(hash, _retryInterval);
+	OF_HASH_ADD(hash, _expirationInterval >> 24);
+	OF_HASH_ADD(hash, _expirationInterval >> 16);
+	OF_HASH_ADD(hash, _expirationInterval >> 8);
+	OF_HASH_ADD(hash, _expirationInterval);
+	OF_HASH_ADD(hash, _minTTL >> 24);
+	OF_HASH_ADD(hash, _minTTL >> 16);
+	OF_HASH_ADD(hash, _minTTL >> 8);
+	OF_HASH_ADD(hash, _minTTL);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tName = %@\n"
+	    @"\tClass = %@\n"
+	    @"\tPrimary Name Server = %@\n"
+	    @"\tResponsible Person = %@\n"
+	    @"\tSerial Number = %" PRIu32 "\n"
+	    @"\tRefresh Interval = %" PRIu32 "\n"
+	    @"\tRetry Interval = %" PRIu32 "\n"
+	    @"\tExpiration Interval = %" PRIu32 "\n"
+	    @"\tMinimum TTL = %" PRIu32 "\n"
+	    @"\tTTL = %" PRIu32 "\n"
+	    @">",
+	    [self className], _name,
+	    of_dns_resource_record_class_to_string(_recordClass),
+	    _primaryNameServer, _responsiblePerson, _serialNumber,
+	    _refreshInterval, _retryInterval, _expirationInterval, _minTTL,
+	    _TTL];
+}
+@end
+
 @implementation OFTXTDNSResourceRecord
 @synthesize textData = _textData;
 

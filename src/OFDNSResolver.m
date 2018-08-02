@@ -248,7 +248,7 @@ parseAAAAData(const unsigned char *buffer)
 static OF_KINDOF(OFDNSResourceRecord *)
 createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
     of_dns_resource_record_type_t recordType, uint32_t TTL,
-    const unsigned char *buffer, size_t length, size_t i, size_t dataLength)
+    const unsigned char *buffer, size_t length, size_t i, uint16_t dataLength)
 {
 	if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_A &&
 	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
@@ -280,7 +280,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
-			    ALLOWED_POINTER_LEVELS);
+		    ALLOWED_POINTER_LEVELS);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -290,6 +290,47 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		     recordClass: recordClass
 			   alias: alias
 			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_SOA) {
+		size_t j = i;
+		OFString *primaryNameServer = parseName(buffer, length, &j,
+		    ALLOWED_POINTER_LEVELS);
+		OFString *responsiblePerson;
+		uint32_t serialNumber, refreshInterval, retryInterval;
+		uint32_t expirationInterval, minTTL;
+
+		if (j > i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		responsiblePerson = parseName(buffer, length, &j,
+		    ALLOWED_POINTER_LEVELS);
+
+		if (dataLength - (j - i) != 20)
+			@throw [OFInvalidServerReplyException exception];
+
+		serialNumber = (buffer[j] << 24) | (buffer[j + 1] << 16) |
+		    (buffer[j + 2] << 8) | buffer[j + 3];
+		refreshInterval = (buffer[j + 4] << 24) |
+		    (buffer[j + 5] << 16) | (buffer[j + 6] << 8) |
+		    buffer[j + 7];
+		retryInterval = (buffer[j + 8] << 24) | (buffer[j + 9] << 16) |
+		    (buffer[j + 10] << 8) | buffer[j + 11];
+		expirationInterval = (buffer[j + 12] << 24) |
+		    (buffer[j + 13] << 16) | (buffer[j + 14] << 8) |
+		    buffer[j + 15];
+		minTTL = (buffer[j + 16] << 24) | (buffer[j + 17] << 16) |
+		    (buffer[j + 18] << 8) | buffer[j + 19];
+
+		return [[[OFSOADNSResourceRecord alloc]
+			  initWithName: name
+			   recordClass: recordClass
+		     primaryNameServer: primaryNameServer
+		     responsiblePerson: responsiblePerson
+			  serialNumber: serialNumber
+		       refreshInterval: refreshInterval
+			 retryInterval: retryInterval
+		    expirationInterval: expirationInterval
+				minTTL: minTTL
+				   TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_PTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
