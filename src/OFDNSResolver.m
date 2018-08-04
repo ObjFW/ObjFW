@@ -68,6 +68,7 @@
 	OFString *_host;
 	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
 	size_t _nameServersIndex, _searchDomainsIndex;
+	OFNumber *_ID;
 	OFMutableData *_queryData;
 	id _target;
 	SEL _selector;
@@ -79,6 +80,7 @@
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
 @property (nonatomic) size_t nameServersIndex;
 @property (nonatomic) size_t searchDomainsIndex;
+@property (readonly, nonatomic) OFNumber *ID;
 @property (readonly, nonatomic) OFMutableData *queryData;
 @property (readonly, nonatomic) id target;
 @property (readonly, nonatomic) SEL selector;
@@ -87,6 +89,7 @@
 - (instancetype)initWithHost: (OFString *)host
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+			  ID: (OFNumber *)ID
 		   queryData: (OFMutableData *)queryData
 		      target: (id)target
 		    selector: (SEL)selector
@@ -490,12 +493,14 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 @synthesize host = _host, nameServers = _nameServers;
 @synthesize searchDomains = _searchDomains;
 @synthesize nameServersIndex = _nameServersIndex;
-@synthesize searchDomainsIndex = _searchDomainsIndex, queryData = _queryData;
-@synthesize target = _target, selector = _selector, userContext = _userContext;
+@synthesize searchDomainsIndex = _searchDomainsIndex, ID = _ID;
+@synthesize queryData = _queryData, target = _target, selector = _selector;
+@synthesize userContext = _userContext;
 
 - (instancetype)initWithHost: (OFString *)host
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+			  ID: (OFNumber *)ID
 		   queryData: (OFMutableData *)queryData
 		      target: (id)target
 		    selector: (SEL)selector
@@ -507,6 +512,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		_host = [host copy];
 		_nameServers = [nameServers copy];
 		_searchDomains = [searchDomains copy];
+		_ID = [ID retain];
 		_queryData = [queryData retain];
 		_target = [target retain];
 		_selector = selector;
@@ -524,6 +530,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	[_host release];
 	[_nameServers release];
 	[_searchDomains release];
+	[_ID release];
 	[_queryData release];
 	[_target release];
 	[_userContext release];
@@ -999,11 +1006,23 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
       didSendBuffer: (void **)buffer
 	  bytesSent: (size_t)bytesSent
 	   receiver: (of_socket_address_t *)receiver
-	    context: (id)context
+	    context: (id)DNSResolverContext
 	  exception: (id)exception
 {
-	if (exception != nil)
+	if (exception != nil) {
+		id target = [[[DNSResolverContext target] retain] autorelease];
+		SEL selector = [DNSResolverContext selector];
+		void (*callback)(id, SEL, OFArray *, id, id) =
+		    (void (*)(id, SEL, OFArray *, id, id))
+		    [target methodForSelector: selector];
+
+		[_queries removeObjectForKey: [DNSResolverContext ID]];
+
+		callback(target, selector, nil,
+		    [DNSResolverContext userContext], exception);
+
 		return 0;
+	}
 
 	[sock asyncReceiveIntoBuffer: [self allocMemoryWithSize: 512]
 			      length: 512
@@ -1104,6 +1123,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	    initWithHost: host
 	     nameServers: _nameServers
 	   searchDomains: _searchDomains
+		      ID: ID
 	       queryData: data
 		  target: target
 		selector: selector
@@ -1120,6 +1140,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket bindToHost: @"::"
 					   port: 0];
+			[_IPv6Socket setBlocking: false];
 		}
 
 		sock = _IPv6Socket;
@@ -1129,6 +1150,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket bindToHost: @"0.0.0.0"
 					   port: 0];
+			[_IPv4Socket setBlocking: false];
 		}
 
 		sock = _IPv4Socket;
@@ -1142,7 +1164,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		       target: self
 		     selector: @selector(of_socket:didSendBuffer:bytesSent:
 				   receiver:context:exception:)
-		      context: nil];
+		      context: DNSResolverContext];
 
 	objc_autoreleasePoolPop(pool);
 }
