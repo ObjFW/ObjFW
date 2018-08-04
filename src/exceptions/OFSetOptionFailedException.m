@@ -19,20 +19,19 @@
 
 #import "OFSetOptionFailedException.h"
 #import "OFString.h"
-#import "OFStream.h"
 
 @implementation OFSetOptionFailedException
-@synthesize stream = _stream, errNo = _errNo;
+@synthesize object = _object, errNo = _errNo;
 
 + (instancetype)exception
 {
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)exceptionWithStream: (OFStream *)stream
++ (instancetype)exceptionWithObject: (id)object
 			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithStream: stream
+	return [[[self alloc] initWithObject: object
 				       errNo: errNo] autorelease];
 }
 
@@ -41,12 +40,12 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OFStream *)stream
+- (instancetype)initWithObject: (id)object
 			 errNo: (int)errNo
 {
 	self = [super init];
 
-	_stream = [stream retain];
+	_object = [object retain];
 	_errNo = errNo;
 
 	return self;
@@ -54,7 +53,7 @@
 
 - (void)dealloc
 {
-	[_stream release];
+	[_object release];
 
 	[super dealloc];
 }
@@ -62,7 +61,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Setting an option in a stream of type %@ failed: %@",
-	    [_stream class], of_strerror(_errNo)];
+	    @"Setting an option in an object of type %@ failed: %@",
+	    [_object class], of_strerror(_errNo)];
 }
 @end

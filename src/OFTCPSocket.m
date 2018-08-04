@@ -288,6 +288,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			continue;
 		}
 
+		_blocking = true;
+
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
 			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
@@ -396,6 +398,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 					 port: port
 				       socket: self
 					errNo: of_socket_errno()];
+
+		_blocking = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
@@ -633,7 +637,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE,
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
-		    exceptionWithStream: self
+		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 }
 
@@ -660,7 +664,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (setsockopt(_socket, IPPROTO_TCP, TCP_NODELAY,
 	    (char *)&v, (socklen_t)sizeof(v)) != 0)
 		@throw [OFSetOptionFailedException
-		    exceptionWithStream: self
+		    exceptionWithObject: self
 				  errNo: of_socket_errno()];
 }
 

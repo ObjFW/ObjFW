@@ -26,6 +26,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
 #include "platform.h"
 
 #if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
@@ -1663,7 +1667,67 @@
 
 - (void)setBlocking: (bool)enable
 {
+#if defined(HAVE_FCNTL)
+	bool readImplemented = false, writeImplemented = false;
+
+	@try {
+		int readFlags;
+
+		readFlags = fcntl([self fileDescriptorForReading], F_GETFL);
+
+		readImplemented = true;
+
+		if (readFlags == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithObject: self
+					  errNo: errno];
+
+		if (enable)
+			readFlags &= ~O_NONBLOCK;
+		else
+			readFlags |= O_NONBLOCK;
+
+		if (fcntl([self fileDescriptorForReading], F_SETFL,
+		    readFlags) == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithObject: self
+					  errNo: errno];
+	} @catch (OFNotImplementedException *e) {
+	}
+
+	@try {
+		int writeFlags;
+
+		writeFlags = fcntl([self fileDescriptorForWriting], F_GETFL);
+
+		writeImplemented = true;
+
+		if (writeFlags == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithObject: self
+					  errNo: errno];
+
+		if (enable)
+			writeFlags &= ~O_NONBLOCK;
+		else
+			writeFlags |= O_NONBLOCK;
+
+		if (fcntl([self fileDescriptorForWriting], F_SETFL,
+		    writeFlags) == -1)
+			@throw [OFSetOptionFailedException
+			    exceptionWithObject: self
+					  errNo: errno];
+	} @catch (OFNotImplementedException *e) {
+	}
+
+	if (!readImplemented && !writeImplemented)
+		@throw [OFNotImplementedException exceptionWithSelector: _cmd
+								 object: self];
+
+	_blocking = enable;
+#else
 	OF_UNRECOGNIZED_SELECTOR
+#endif
 }
 
 - (int)fileDescriptorForReading

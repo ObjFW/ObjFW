@@ -104,7 +104,15 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 #ifdef OF_WII
 	uint16_t _port;
 #endif
+	bool _blocking;
 }
+
+/*!
+ * @brief Whether the socket is in blocking mode.
+ *
+ * By default, a socket is in blocking mode.
+ */
+@property (nonatomic, getter=isBlocking) bool blocking;
 
 /*!
  * @brief Returns a new, autoreleased OFUDPSocket.

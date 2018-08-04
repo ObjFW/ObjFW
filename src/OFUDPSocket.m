@@ -38,6 +38,7 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFSetOptionFailedException.h"
 #import "OFWriteFailedException.h"
 
 #import "socket.h"
@@ -257,6 +258,7 @@
 	self = [super init];
 
 	_socket = INVALID_SOCKET;
+	_blocking = true;
 
 	return self;
 }
@@ -272,6 +274,44 @@
 - (id)copy
 {
 	return [self retain];
+}
+
+- (bool)isBlocking
+{
+	return _blocking;
+}
+
+- (void)setBlocking: (bool)enable
+{
+#if defined(HAVE_FCNTL)
+	int flags = fcntl(_socket, F_GETFL);
+
+	if (flags == -1)
+		@throw [OFSetOptionFailedException exceptionWithObject: self
+								 errNo: errno];
+
+	if (enable)
+		flags &= ~O_NONBLOCK;
+	else
+		flags |= O_NONBLOCK;
+
+	if (fcntl(_socket, F_SETFL, flags) == -1)
+		@throw [OFSetOptionFailedException exceptionWithObject: self
+								 errNo: errno];
+
+	_blocking = enable;
+#elif defined(OF_WINDOWS)
+	u_long v = enable;
+
+	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
+		@throw [OFSetOptionFailedException
+		    exceptionWithObject: self
+				  errNo: of_socket_errno()];
+
+	_blocking = enable;
+#else
+	OF_UNRECOGNIZED_SELECTOR
+#endif
 }
 
 - (uint16_t)bindToHost: (OFString *)host
@@ -303,6 +343,8 @@
 					 port: port
 				       socket: self
 					errNo: of_socket_errno()];
+
+		_blocking = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
 		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
