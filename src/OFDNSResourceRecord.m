@@ -20,6 +20,7 @@
 #import "OFDNSResourceRecord.h"
 #import "OFData.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
 OFString *
@@ -63,6 +64,58 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 	default:
 		return [OFString stringWithFormat: @"%u", recordType];
 	}
+}
+
+of_dns_resource_record_class_t of_dns_resource_record_class_parse(
+    OFString *string)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_dns_resource_record_class_t recordClass;
+
+	string = [string uppercaseString];
+
+	if ([string isEqual: @"IN"])
+		recordClass = OF_DNS_RESOURCE_RECORD_CLASS_IN;
+	else
+		@throw [OFInvalidArgumentException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return recordClass;
+}
+
+of_dns_resource_record_type_t of_dns_resource_record_type_parse(
+    OFString *string)
+{
+	void *pool = objc_autoreleasePoolPush();
+	of_dns_resource_record_type_t recordType;
+
+	string = [string uppercaseString];
+
+	if ([string isEqual: @"A"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_A;
+	else if ([string isEqual: @"NS"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_NS;
+	else if ([string isEqual: @"CNAME"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_CNAME;
+	else if ([string isEqual: @"SOA"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_SOA;
+	else if ([string isEqual: @"PTR"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_PTR;
+	else if ([string isEqual: @"HINFO"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_HINFO;
+	else if ([string isEqual: @"MX"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_MX;
+	else if ([string isEqual: @"TXT"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_TXT;
+	else if ([string isEqual: @"AAAA"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_AAAA;
+	else
+		@throw [OFInvalidArgumentException exception];
+
+	objc_autoreleasePoolPop(pool);
+
+	return recordType;
 }
 
 @implementation OFDNSResourceRecord

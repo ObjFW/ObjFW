@@ -1391,6 +1391,7 @@ AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
 	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
 	AC_SUBST(OFURLHANDLER_HTTP_M, "OFURLHandler_HTTP.m")
 
+	AC_SUBST(OFDNS, "ofdns")
 	AS_IF([test x"$enable_files" != x"no"], [
 		AC_SUBST(OFHTTP, "ofhttp")
 	])

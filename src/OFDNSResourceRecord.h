@@ -450,6 +450,10 @@ extern OFString *_Nonnull of_dns_resource_record_class_to_string(
     of_dns_resource_record_class_t recordClass);
 extern OFString *_Nonnull of_dns_resource_record_type_to_string(
     of_dns_resource_record_type_t recordType);
+extern of_dns_resource_record_class_t of_dns_resource_record_class_parse(
+    OFString *_Nonnull string);
+extern of_dns_resource_record_type_t of_dns_resource_record_type_parse(
+    OFString *_Nonnull string);
 #ifdef __cplusplus
 }
 #endif

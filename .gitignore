@@ -49,6 +49,8 @@ tests/tests.nds
 utils/objfw-config
 utils/ofarc/ofarc
 utils/ofarc/ofarc.exe
+utils/ofdns/ofdns
+utils/ofdns/ofdns.exe
 utils/ofhash/ofhash
 utils/ofhash/ofhash.exe
 utils/ofhttp/ofhttp

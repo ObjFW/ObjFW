@@ -1,6 +1,7 @@
 include ../extra.mk
 
 SUBDIRS += ${OFARC}	\
+	   ${OFDNS}	\
 	   ${OFHASH}	\
 	   ${OFHTTP}
 
