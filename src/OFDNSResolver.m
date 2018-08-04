@@ -38,6 +38,7 @@
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
+#import "OFResolveHostFailedException.h"
 #import "OFTruncatedDataException.h"
 
 #ifdef OF_WINDOWS
@@ -66,9 +67,11 @@
 @interface OFDNSResolver_context: OFObject
 {
 	OFString *_host;
+	of_dns_resource_record_class_t _recordClass;
+	of_dns_resource_record_type_t _recordType;
+	OFNumber *_ID;
 	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
 	size_t _nameServersIndex, _searchDomainsIndex;
-	OFNumber *_ID;
 	OFMutableData *_queryData;
 	id _target;
 	SEL _selector;
@@ -76,20 +79,24 @@
 }
 
 @property (readonly, nonatomic) OFString *host;
+@property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
+@property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
+@property (readonly, nonatomic) OFNumber *ID;
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *nameServers;
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
 @property (nonatomic) size_t nameServersIndex;
 @property (nonatomic) size_t searchDomainsIndex;
-@property (readonly, nonatomic) OFNumber *ID;
 @property (readonly, nonatomic) OFMutableData *queryData;
 @property (readonly, nonatomic) id target;
 @property (readonly, nonatomic) SEL selector;
 @property (readonly, nonatomic) id userContext;
 
 - (instancetype)initWithHost: (OFString *)host
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
-			  ID: (OFNumber *)ID
 		   queryData: (OFMutableData *)queryData
 		      target: (id)target
 		    selector: (SEL)selector
@@ -490,17 +497,19 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 }
 
 @implementation OFDNSResolver_context
-@synthesize host = _host, nameServers = _nameServers;
+@synthesize host = _host, recordClass = _recordClass, recordType = _recordType;
+@synthesize ID = _ID, nameServers = _nameServers;
 @synthesize searchDomains = _searchDomains;
 @synthesize nameServersIndex = _nameServersIndex;
-@synthesize searchDomainsIndex = _searchDomainsIndex, ID = _ID;
-@synthesize queryData = _queryData, target = _target, selector = _selector;
-@synthesize userContext = _userContext;
+@synthesize searchDomainsIndex = _searchDomainsIndex, queryData = _queryData;
+@synthesize target = _target, selector = _selector, userContext = _userContext;
 
 - (instancetype)initWithHost: (OFString *)host
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
-			  ID: (OFNumber *)ID
 		   queryData: (OFMutableData *)queryData
 		      target: (id)target
 		    selector: (SEL)selector
@@ -510,9 +519,11 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	@try {
 		_host = [host copy];
+		_recordClass = recordClass;
+		_recordType = recordType;
+		_ID = [ID retain];
 		_nameServers = [nameServers copy];
 		_searchDomains = [searchDomains copy];
-		_ID = [ID retain];
 		_queryData = [queryData retain];
 		_target = [target retain];
 		_selector = selector;
@@ -528,9 +539,9 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 - (void)dealloc
 {
 	[_host release];
+	[_ID release];
 	[_nameServers release];
 	[_searchDomains release];
-	[_ID release];
 	[_queryData release];
 	[_target release];
 	[_userContext release];
@@ -906,6 +917,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	@try {
 		const unsigned char *queryBuffer;
 		size_t i;
+		of_dns_resolver_error_t error;
 		uint16_t numQuestions, numAnswers;
 
 		if (length < 12)
@@ -928,20 +940,36 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		if (buffer[2] & 0x02)
 			@throw [OFTruncatedDataException exception];
 
-		/* RA */
-		if ((buffer[3] & 0x80) == 0)
-			/* Server doesn't handle recursive queries */
-			/* TODO: Better exception */
-			@throw [OFInvalidServerReplyException exception];
-
 		/* RCODE */
 		switch (buffer[3] & 0x0F) {
 		case 0:
 			break;
+		case 1:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT;
+			break;
+		case 2:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_FAILURE;
+			break;
+		case 3:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
+			break;
+		case 4:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED;
+			break;
+		case 5:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_REFUSED;
+			break;
 		default:
-			/* TODO: Better exception */
-			@throw [OFInvalidServerReplyException exception];
+			error = OF_DNS_RESOLVER_ERROR_UNKNOWN;
+			break;
 		}
+
+		if (buffer[3] & 0x0F)
+			@throw [OFResolveHostFailedException
+			    exceptionWithHost: [DNSResolverContext host]
+				  recordClass: [DNSResolverContext recordClass]
+				   recordType: [DNSResolverContext recordType]
+					error: error];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
 
@@ -1121,9 +1149,11 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	DNSResolverContext = [[[OFDNSResolver_context alloc]
 	    initWithHost: host
+	     recordClass: recordClass
+	      recordType: recordType
+		      ID: ID
 	     nameServers: _nameServers
 	   searchDomains: _searchDomains
-		      ID: ID
 	       queryData: data
 		  target: target
 		selector: selector
@@ -1171,6 +1201,10 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 - (void)close
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFEnumerator *enumerator;
+	OFDNSResolver_context *DNSResolverContext;
+
 	[_IPv4Socket cancelAsyncRequests];
 	[_IPv4Socket close];
 	[_IPv4Socket release];
@@ -1182,5 +1216,28 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	[_IPv6Socket release];
 	_IPv6Socket = nil;
 #endif
+
+	enumerator = [_queries objectEnumerator];
+	while ((DNSResolverContext = [enumerator nextObject]) != nil) {
+		id target = [[[DNSResolverContext target] retain] autorelease];
+		SEL selector = [DNSResolverContext selector];
+		void (*callback)(id, SEL, OFArray *, id, id) =
+		    (void (*)(id, SEL, OFArray *, id, id))
+		    [target methodForSelector: selector];
+		OFResolveHostFailedException *exception;
+
+		exception = [OFResolveHostFailedException
+		    exceptionWithHost: [DNSResolverContext host]
+			  recordClass: [DNSResolverContext recordClass]
+			   recordType: [DNSResolverContext recordType]
+				error: OF_DNS_RESOLVER_ERROR_CANCELED];
+
+		callback(target, selector, nil,
+		    [DNSResolverContext userContext], exception);
+	}
+
+	[_queries removeAllObjects];
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

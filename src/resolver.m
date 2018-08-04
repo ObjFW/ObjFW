@@ -32,7 +32,6 @@
 # include "threading.h"
 #endif
 
-#import "OFAddressTranslationFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
@@ -41,6 +40,7 @@
 # import "OFLockFailedException.h"
 # import "OFUnlockFailedException.h"
 #endif
+#import "OFResolveHostFailedException.h"
 
 #import "socket_helpers.h"
 
@@ -75,13 +75,13 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 
 	@try {
 # endif
-		int error;
-
-		if ((error = getaddrinfo([host UTF8String], portCString, &hints,
-		    &res0)) != 0)
-			@throw [OFAddressTranslationFailedException
+		if (getaddrinfo([host UTF8String], portCString, &hints,
+		    &res0) != 0)
+			@throw [OFResolveHostFailedException
 			    exceptionWithHost: host
-					error: error];
+				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+				   recordType: 0
+					error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
 
 		count = 0;
 		for (res = res0; res != NULL; res = res->ai_next)
@@ -89,8 +89,11 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 
 		if (count == 0) {
 			freeaddrinfo(res0);
-			@throw [OFAddressTranslationFailedException
-			    exceptionWithHost: host];
+			@throw [OFResolveHostFailedException
+			    exceptionWithHost: host
+				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+				   recordType: 0
+					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
 		}
 
 		if ((ret = calloc(count + 1, sizeof(*ret))) == NULL) {
@@ -192,17 +195,22 @@ of_resolve_host(OFString *host, uint16_t port, int type)
 
 		if ((he = gethostbyname((const void *)[host UTF8String])) ==
 		    NULL || he->h_addrtype != AF_INET)
-			@throw [OFAddressTranslationFailedException
+			@throw [OFResolveHostFailedException
 			    exceptionWithHost: host
-					error: h_errno];
+				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+				   recordType: 0
+					error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
 
 		count = 0;
 		for (ip = (char **)he->h_addr_list; *ip != NULL; ip++)
 			count++;
 
 		if (count == 0)
-			@throw [OFAddressTranslationFailedException
-			    exceptionWithHost: host];
+			@throw [OFResolveHostFailedException
+			    exceptionWithHost: host
+				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+				   recordType: 0
+					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
 
 		if ((ret = calloc(count + 1, sizeof(*ret))) == NULL)
 			@throw [OFOutOfMemoryException

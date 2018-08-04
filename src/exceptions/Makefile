@@ -55,13 +55,13 @@ SRCS = OFAllocFailedException.m				\
 SRCS_FILES = OFGetCurrentDirectoryPathFailedException.m
 SRCS_PLUGINS = OFLoadPluginFailedException.m
 SRCS_SOCKETS = OFAcceptFailedException.m		\
-	       OFAddressTranslationFailedException.m	\
 	       OFAlreadyConnectedException.m		\
 	       OFBindFailedException.m			\
 	       OFConnectionFailedException.m		\
 	       OFHTTPRequestFailedException.m		\
 	       OFListenFailedException.m		\
-	       OFObserveFailedException.m
+	       OFObserveFailedException.m		\
+	       OFResolveHostFailedException.m
 SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFConditionSignalFailedException.m	\
 	       OFConditionStillWaitingException.m	\

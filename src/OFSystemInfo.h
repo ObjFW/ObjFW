@@ -93,7 +93,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (unsigned int)ObjFWVersionMinor;
 
-/**
+/*!
  * @brief Returns the name of the operating system the application is running
  *	  on.
  *
@@ -101,7 +101,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (nullable OFString *)operatingSystemName;
 
-/**
+/*!
  * @brief Returns the version of the operating system the application is
  *	  running on.
  *

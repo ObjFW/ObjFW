@@ -35,7 +35,6 @@
 #import "OFLocale.h"
 #import "OFSandbox.h"
 
-#import "OFAddressTranslationFailedException.h"
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidFormatException.h"
@@ -43,6 +42,7 @@
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
+#import "OFResolveHostFailedException.h"
 #import "OFRetrieveItemAttributesFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
@@ -566,14 +566,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		request: (OFHTTPRequest *)request
 		context: (id)context
 {
-	if ([e isKindOfClass: [OFAddressTranslationFailedException class]]) {
+	if ([e isKindOfClass: [OFResolveHostFailedException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
 		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_address_translation",
+		    OF_LOCALIZED(@"download_failed_resolve_host_failed",
 		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  Address translation failed: %[exception]",
+		    @"  Failed to resolve host: %[exception]",
 		    @"prog", [OFApplication programName],
 		    @"url", [[request URL] string],
 		    @"exception", e)];

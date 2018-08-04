@@ -28,6 +28,37 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFUDPSocket;
 
 /*!
+ * @enum of_dns_resolver_error_t OFDNSResolver.h ObjFW/OFDNSResolver.h
+ *
+ * @brief An enum describing why resolving a host failed.
+ */
+typedef enum of_dns_resolver_error_t {
+	/*! An unknown error */
+	OF_DNS_RESOLVER_ERROR_UNKNOWN,
+	/*! The query timed out */
+	OF_DNS_RESOLVER_ERROR_TIMEOUT,
+	/*! The query was canceled */
+	OF_DNS_RESOLVER_ERROR_CANCELED,
+	/*!
+	 * No result for the specified host with the specified type and class.
+	 *
+	 * This is only used in situations where this is an error, e.g. when
+	 * trying to connect to a host.
+	 */
+	OF_DNS_RESOLVER_ERROR_NO_RESULT,
+	/*! The server considered the query to be malformed */
+	OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT,
+	/*! The server was unable to process due to an internal error */
+	OF_DNS_RESOLVER_ERROR_SERVER_FAILURE,
+	/*! The server returned an error that the domain does not exist */
+	OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR,
+	/*! The server does not have support for the requested query */
+	OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED,
+	/*! The server refused the query */
+	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED
+} of_dns_resolver_error_t;
+
+/*!
  * @class OFDNSResolver OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief A class for resolving DNS names.
@@ -126,6 +157,11 @@ OF_ASSUME_NONNULL_BEGIN
 		  target: (id)target
 		selector: (SEL)selector
 		 context: (nullable id)context;
+
+/*!
+ * @brief Closes all sockets and cancels all ongoing requests.
+ */
+- (void)close;
 @end
 
 OF_ASSUME_NONNULL_END

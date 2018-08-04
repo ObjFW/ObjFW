@@ -34,7 +34,7 @@
         "%[prog]: -o / --output kann nicht mit mehr als einer URL benutzt ",
         "werden!"
     ],
-    "download_failed_address_translation": [
+    "download_failed_resolve_host_failed": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
         "  Adressauflösung fehlgeschlagen: %[exception]"
     ],

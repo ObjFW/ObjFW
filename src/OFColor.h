@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-/**
+/*!
  * @class OFColor OFColor.h ObjFW/OFColor.h
  *
  * @brief A class for storing a color.
