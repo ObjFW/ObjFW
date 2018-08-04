@@ -49,10 +49,10 @@
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
  * many. Since it's unspecified, we have to assume that it might happen, but we
- * also want to limit it to avoid DoS. Limiting it to 4 levels of pointers and
- * rejecting pointers to itself seems like a fair balance.
+ * also want to limit it to avoid DoS. Limiting it to 16 levels of pointers and
+ * immediately rejecting pointers to itself seems like a fair balance.
  */
-#define ALLOWED_POINTER_LEVELS 4
+#define MAX_ALLOWED_POINTERS 16
 
 /*
  * TODO:
@@ -267,7 +267,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_NS) {
 		size_t j = i;
 		OFString *authoritativeHost = parseName(buffer, length, &j,
-		    ALLOWED_POINTER_LEVELS);
+		    MAX_ALLOWED_POINTERS);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -280,7 +280,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
-		    ALLOWED_POINTER_LEVELS);
+		    MAX_ALLOWED_POINTERS);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -293,7 +293,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_SOA) {
 		size_t j = i;
 		OFString *primaryNameServer = parseName(buffer, length, &j,
-		    ALLOWED_POINTER_LEVELS);
+		    MAX_ALLOWED_POINTERS);
 		OFString *responsiblePerson;
 		uint32_t serialNumber, refreshInterval, retryInterval;
 		uint32_t expirationInterval, minTTL;
@@ -302,7 +302,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			@throw [OFInvalidServerReplyException exception];
 
 		responsiblePerson = parseName(buffer, length, &j,
-		    ALLOWED_POINTER_LEVELS);
+		    MAX_ALLOWED_POINTERS);
 
 		if (dataLength - (j - i) != 20)
 			@throw [OFInvalidServerReplyException exception];
@@ -334,7 +334,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_PTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
-		    ALLOWED_POINTER_LEVELS);
+		    MAX_ALLOWED_POINTERS);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -356,7 +356,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 		j = i + 2;
 		mailExchange = parseName(buffer, length, &j,
-		    ALLOWED_POINTER_LEVELS);
+		    MAX_ALLOWED_POINTERS);
 
 		if (j != i + dataLength)
 			@throw [OFInvalidServerReplyException exception];
@@ -460,8 +460,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
 #ifdef OF_WINDOWS
-		void *pool;
 		OFString *path;
 #endif
 
@@ -469,8 +469,6 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS)
-		pool = objc_autoreleasePoolPush();
-
 		path = [[OFWindowsRegistryKey localMachineKey]
 		    stringForValue: @"DataBasePath"
 			subKeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
@@ -479,8 +477,6 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 		if (path != nil)
 			[self of_parseHosts: path];
-
-		objc_autoreleasePoolPop(pool);
 # elif defined(OF_HAIKU)
 		[self of_parseHosts: @"/boot/common/settings/network/hosts"];
 # elif defined(OF_MORPHOS)
@@ -504,12 +500,29 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		[self of_parseNetworkParams];
 #endif
 
-		if (_staticHosts == nil)
-			_staticHosts = [[OFDictionary alloc] init];
+		if (_staticHosts == nil) {
+			OFArray *localhost =
+
+#ifdef HAVE_IPV6
+			localhost = [OFArray arrayWithObjects:
+			    @"::1", @"127.0.0.1", nil];
+#else
+			localhost = [OFArray arrayWithObject: @"127.0.0.1"];
+#endif
+
+			_staticHosts = [[OFDictionary alloc]
+			    initWithObject: localhost
+				    forKey: @"localhost"];
+		}
 
 		if (_nameServers == nil)
-			_nameServers = [[OFArray alloc] initWithObjects:
-			    @"127.0.0.1", @"::1", nil];
+#ifdef HAVE_IPV6
+			_nameServers = [[OFArray alloc]
+			    initWithObjects: @"127.0.0.1", @"::1", nil];
+#else
+			_nameServers = [[OFArray alloc]
+			    initWithObject: @"127.0.0.1"];
+#endif
 
 		if (_localDomain == nil)
 			_localDomain = [domainFromHostname() copy];
@@ -523,6 +536,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		}
 
 		_queries = [[OFMutableDictionary alloc] init];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -841,13 +856,13 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		 * TODO: Compare to our query, just in case?
 		 */
 		for (uint_fast16_t j = 0; j < numQuestions; j++) {
-			parseName(buffer, length, &i, ALLOWED_POINTER_LEVELS);
+			parseName(buffer, length, &i, MAX_ALLOWED_POINTERS);
 			i += 4;
 		}
 
 		for (uint_fast16_t j = 0; j < numAnswers; j++) {
 			OFString *name = parseName(buffer, length, &i,
-			    ALLOWED_POINTER_LEVELS);
+			    MAX_ALLOWED_POINTERS);
 			of_dns_resource_record_class_t recordClass;
 			of_dns_resource_record_type_t recordType;
 			uint32_t TTL;
