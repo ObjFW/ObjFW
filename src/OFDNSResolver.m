@@ -593,7 +593,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		if (_staticHosts == nil) {
 			OFArray *localhost =
 
-#ifdef HAVE_IPV6
+#ifdef OF_HAVE_IPV6
 			localhost = [OFArray arrayWithObjects:
 			    @"::1", @"127.0.0.1", nil];
 #else
@@ -606,7 +606,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		}
 
 		if (_nameServers == nil)
-#ifdef HAVE_IPV6
+#ifdef OF_HAVE_IPV6
 			_nameServers = [[OFArray alloc]
 			    initWithObjects: @"127.0.0.1", @"::1", nil];
 #else

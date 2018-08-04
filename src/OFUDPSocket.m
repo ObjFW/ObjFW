@@ -282,7 +282,7 @@
 	union {
 		struct sockaddr_storage storage;
 		struct sockaddr_in in;
-# ifdef HAVE_IPV6
+# ifdef OF_HAVE_IPV6
 		struct sockaddr_in6 in6;
 # endif
 	} addr;
@@ -340,7 +340,7 @@
 					    results[0]->address)->sin_port =
 					    OF_BSWAP16_IF_LE(rnd);
 					break;
-# ifdef HAVE_IPV6
+# ifdef OF_HAVE_IPV6
 				case AF_INET6:
 					((struct sockaddr_in6 *)
 					    results[0]->address)->sin6_port =
@@ -399,7 +399,7 @@
 
 	if (addr.storage.ss_family == AF_INET)
 		return OF_BSWAP16_IF_LE(addr.in.sin_port);
-# ifdef HAVE_IPV6
+# ifdef OF_HAVE_IPV6
 	if (addr.storage.ss_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
 # endif
