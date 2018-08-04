@@ -454,6 +454,32 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		    initWithName: name
 			 address: address
 			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_SRV &&
+	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
+		uint16_t priority, weight, port;
+		size_t j;
+		OFString *target;
+
+		if (dataLength < 6)
+			@throw [OFInvalidServerReplyException exception];
+
+		priority = (buffer[i] << 8) | buffer[i + 1];
+		weight = (buffer[i + 2] << 8) | buffer[i + 3];
+		port = (buffer[i + 4] << 8) | buffer[i + 5];
+
+		j = i + 6;
+		target = parseName(buffer, length, &j, MAX_ALLOWED_POINTERS);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFSRVDNSResourceRecord alloc]
+			    initWithName: name
+				priority: priority
+				  weight: weight
+				  target: target
+				    port: port
+				     TTL: TTL] autorelease];
 	} else
 		return [[[OFDNSResourceRecord alloc]
 		    initWithName: name

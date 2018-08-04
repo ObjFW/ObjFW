@@ -61,6 +61,8 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 		return @"RP";
 	case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
 		return @"AAAA";
+	case OF_DNS_RESOURCE_RECORD_TYPE_SRV:
+		return @"SRV";
 	case OF_DNS_RESOURCE_RECORD_TYPE_ALL:
 		return @"all";
 	default:
@@ -114,6 +116,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 		recordType = OF_DNS_RESOURCE_RECORD_TYPE_RP;
 	else if ([string isEqual: @"AAAA"])
 		recordType = OF_DNS_RESOURCE_RECORD_TYPE_AAAA;
+	else if ([string isEqual: @"SRV"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_SRV;
 	else
 		@throw [OFInvalidArgumentException exception];
 
@@ -1109,6 +1113,123 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    _primaryNameServer, _responsiblePerson, _serialNumber,
 	    _refreshInterval, _retryInterval, _expirationInterval, _minTTL,
 	    _TTL];
+}
+@end
+
+@implementation OFSRVDNSResourceRecord
+@synthesize priority = _priority, weight = _weight, target = _target;
+@synthesize port = _port;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+		    priority: (uint16_t)priority
+		      weight: (uint16_t)weight
+		      target: (OFString *)target
+			port: (uint16_t)port
+			 TTL: (uint32_t)TTL
+{
+	self = [super initWithName: name
+		       recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			recordType: OF_DNS_RESOURCE_RECORD_TYPE_SRV
+			       TTL: TTL];
+
+	@try {
+		_priority = priority;
+		_weight = weight;
+		_target = [target copy];
+		_port = port;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_target release];
+
+	[super dealloc];
+}
+
+- (bool)isEqual: (id)otherObject
+{
+	OFSRVDNSResourceRecord *otherRecord;
+
+	if (![otherObject isKindOfClass: [OFSRVDNSResourceRecord class]])
+		return false;
+
+	otherRecord = otherObject;
+
+	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+		return false;
+
+	if (otherRecord->_recordClass != _recordClass)
+		return false;
+
+	if (otherRecord->_recordType != _recordType)
+		return false;
+
+	if (otherRecord->_priority != _priority)
+		return false;
+
+	if (otherRecord->_weight != _weight)
+		return false;
+
+	if (otherRecord->_target != _target &&
+	    ![otherRecord->_target isEqual: _target])
+		return false;
+
+	if (otherRecord->_port != _port)
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD(hash, _recordClass >> 8);
+	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _recordType >> 8);
+	OF_HASH_ADD(hash, _recordType);
+	OF_HASH_ADD(hash, _priority >> 8);
+	OF_HASH_ADD(hash, _priority);
+	OF_HASH_ADD(hash, _weight >> 8);
+	OF_HASH_ADD(hash, _weight);
+	OF_HASH_ADD_HASH(hash, [_target hash]);
+	OF_HASH_ADD(hash, _port >> 8);
+	OF_HASH_ADD(hash, _port);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tName = %@\n"
+	    @"\tPriority = %" PRIu16 "\n"
+	    @"\tWeight = %" PRIu16 "\n"
+	    @"\tTarget = %@\n"
+	    @"\tPort = %" PRIu16 "\n"
+	    @"\tTTL = %" PRIu32 "\n"
+	    @">",
+	    [self className], _name, _priority, _weight, _target, _port, _TTL];
 }
 @end
 

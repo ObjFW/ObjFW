@@ -58,6 +58,8 @@ typedef enum {
 	OF_DNS_RESOURCE_RECORD_TYPE_RP	  =  17,
 	/*! AAAA */
 	OF_DNS_RESOURCE_RECORD_TYPE_AAAA  =  28,
+	/*! SRV */
+	OF_DNS_RESOURCE_RECORD_TYPE_SRV	  =  33,
 	/*! All types. Only for queries. */
 	OF_DNS_RESOURCE_RECORD_TYPE_ALL	  = 255,
 } of_dns_resource_record_type_t;
@@ -505,6 +507,64 @@ typedef enum {
 	       retryInterval: (uint32_t)retryInterval
 	  expirationInterval: (uint32_t)expirationInterval
 		      minTTL: (uint32_t)minTTL
+			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
+@end
+
+/*!
+ * @class OFSRVDNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing an SRV DNS resource record.
+ */
+@interface OFSRVDNSResourceRecord: OFDNSResourceRecord
+{
+	uint16_t _priority, _weight;
+	OFString *_target;
+	uint16_t _port;
+}
+
+/*!
+ * @brief The priority of the resource record.
+ */
+@property (readonly, nonatomic) uint16_t priority;
+
+/*!
+ * @brief The weight of the resource record.
+ */
+@property (readonly, nonatomic) uint16_t weight;
+
+/*!
+ * @brief The target of the resource record.
+ */
+@property (readonly, nonatomic) OFString *target;
+
+/*!
+ * @brief The port on the target of the resource record.
+ */
+@property (readonly, nonatomic) uint16_t port;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFSRVDNSResourceRecord with the
+ *	  specified name, class, preference, mail exchange and time to live.
+ *
+ * @param name The name for the resource record
+ * @param priority The priority for the resource record
+ * @param weight The weight for the resource record
+ * @param target The target for the resource record
+ * @param port The port on the target for the resource record
+ * @param TTL The time to live for the resource record
+ * @return An initialized OFSRVDNSResourceRecord
+ */
+- (instancetype)initWithName: (OFString *)name
+		    priority: (uint16_t)priority
+		      weight: (uint16_t)weight
+		      target: (OFString *)target
+			port: (uint16_t)port
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
