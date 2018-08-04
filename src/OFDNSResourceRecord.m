@@ -443,6 +443,109 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 @end
 
+@implementation OFHINFODNSResourceRecord
+@synthesize CPU = _CPU, OS = _OS;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+			 CPU: (OFString *)CPU
+			  OS: (OFString *)OS
+			 TTL: (uint32_t)TTL
+{
+	self = [super initWithName: name
+		       recordClass: recordClass
+			recordType: OF_DNS_RESOURCE_RECORD_TYPE_HINFO
+			       TTL: TTL];
+
+	@try {
+		_CPU = [CPU copy];
+		_OS = [OS copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_CPU release];
+	[_OS release];
+
+	[super dealloc];
+}
+
+- (bool)isEqual: (id)otherObject
+{
+	OFHINFODNSResourceRecord *otherRecord;
+
+	if (![otherObject isKindOfClass: [OFHINFODNSResourceRecord class]])
+		return false;
+
+	otherRecord = otherObject;
+
+	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+		return false;
+
+	if (otherRecord->_recordClass != _recordClass)
+		return false;
+
+	if (otherRecord->_recordType != _recordType)
+		return false;
+
+	if (otherRecord->_CPU != _CPU && ![otherRecord->_CPU isEqual: _CPU])
+		return false;
+
+	if (otherRecord->_OS != _OS && ![otherRecord->_OS isEqual: _OS])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD(hash, _recordClass >> 8);
+	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _recordType >> 8);
+	OF_HASH_ADD(hash, _recordType);
+	OF_HASH_ADD_HASH(hash, [_CPU hash]);
+	OF_HASH_ADD_HASH(hash, [_OS hash]);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tName = %@\n"
+	    @"\tClass = %@\n"
+	    @"\tCPU = %@\n"
+	    @"\tOS = %@\n"
+	    @"\tTTL = %" PRIu32 "\n"
+	    @">",
+	    [self className], _name,
+	    of_dns_resource_record_class_to_string(_recordClass), _CPU, _OS,
+	    _TTL];
+}
+@end
+
 @implementation OFMXDNSResourceRecord
 @synthesize preference = _preference, mailExchange = _mailExchange;
 

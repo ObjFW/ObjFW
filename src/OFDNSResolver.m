@@ -125,6 +125,30 @@ domainFromHostname(void)
 }
 
 static OFString *
+parseString(const unsigned char *buffer, size_t length, size_t *idx)
+{
+	size_t i = *idx;
+	uint8_t stringLength;
+	OFString *string;
+
+	if (i >= length)
+		@throw [OFTruncatedDataException exception];
+
+	stringLength = buffer[i++];
+
+	if (i + stringLength > length)
+		@throw [OFTruncatedDataException exception];
+
+	string = [OFString stringWithUTF8String: (char *)&buffer[i]
+					 length: stringLength];
+	i += stringLength;
+
+	*idx = i;
+
+	return string;
+}
+
+static OFString *
 parseName(const unsigned char *buffer, size_t length, size_t *idx,
     uint_fast8_t pointerLevel)
 {
@@ -343,6 +367,25 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		    initWithName: name
 		     recordClass: recordClass
 		      domainName: domainName
+			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_HINFO) {
+		size_t j = i;
+		OFString *CPU = parseString(buffer, length, &j);
+		OFString *OS;
+
+		if (j > i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		OS = parseString(buffer, length, &j);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFHINFODNSResourceRecord alloc]
+		    initWithName: name
+		     recordClass: recordClass
+			     CPU: CPU
+			      OS: OS
 			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_MX) {
 		uint16_t preference;

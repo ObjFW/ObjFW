@@ -213,6 +213,49 @@ typedef enum {
 @end
 
 /*!
+ * @class OFHINFODNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing an HINFO DNS resource record.
+ */
+@interface OFHINFODNSResourceRecord: OFDNSResourceRecord
+{
+	OFString *_CPU, *_OS;
+}
+
+/*!
+ * The CPU of the host info of the resource record.
+ */
+@property (readonly, nonatomic) OFString *CPU;
+
+/*!
+ * The OS of the host info of the resource record.
+ */
+@property (readonly, nonatomic) OFString *OS;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFPTRDNSResourceRecord with the
+ *	  specified name, class, domain name and time to live.
+ *
+ * @param name The name for the resource record
+ * @param recordClass The class code for the resource record
+ * @param CPU The CPU of the host info for the resource record
+ * @param OS The OS of the host info for the resource record
+ * @param TTL The time to live for the resource record
+ */
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+			 CPU: (OFString *)CPU
+			  OS: (OFString *)OS
+			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
+@end
+
+/*!
  * @class OFMXDNSResourceRecord \
  *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
  *
