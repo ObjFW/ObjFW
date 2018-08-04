@@ -419,6 +419,27 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		     recordClass: recordClass
 			textData: textData
 			     TTL: TTL] autorelease];
+	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_RP) {
+		size_t j = i;
+		OFString *mailbox = parseName(buffer, length, &j,
+		    MAX_ALLOWED_POINTERS);
+		OFString *TXTDomainName;
+
+		if (j > i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		TXTDomainName = parseName(buffer, length, &j,
+		    MAX_ALLOWED_POINTERS);
+
+		if (j != i + dataLength)
+			@throw [OFInvalidServerReplyException exception];
+
+		return [[[OFRPDNSResourceRecord alloc]
+		    initWithName: name
+		     recordClass: recordClass
+			 mailbox: mailbox
+		   TXTDomainName: TXTDomainName
+			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_AAAA &&
 	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
 		OFString *address;

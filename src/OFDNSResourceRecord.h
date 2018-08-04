@@ -54,6 +54,8 @@ typedef enum {
 	OF_DNS_RESOURCE_RECORD_TYPE_MX	  =  15,
 	/*! TXT */
 	OF_DNS_RESOURCE_RECORD_TYPE_TXT	  =  16,
+	/*! RP */
+	OF_DNS_RESOURCE_RECORD_TYPE_RP	  =  17,
 	/*! AAAA */
 	OF_DNS_RESOURCE_RECORD_TYPE_AAAA  =  28,
 	/*! All types. Only for queries. */
@@ -102,6 +104,7 @@ typedef enum {
  * @param recordClass The class code for the resource record
  * @param recordType The type code for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -120,7 +123,7 @@ typedef enum {
 }
 
 /*!
- * The IPv4 address of the resource record.
+ * @brief The IPv4 address of the resource record.
  */
 @property (readonly, nonatomic) OFString *address;
 
@@ -136,6 +139,7 @@ typedef enum {
  * @param name The name for the resource record
  * @param address The address for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		     address: (OFString *)address
@@ -154,7 +158,7 @@ typedef enum {
 }
 
 /*!
- * The IPv6 address of the resource record.
+ * @brief The IPv6 address of the resource record.
  */
 @property (readonly, nonatomic) OFString *address;
 
@@ -170,6 +174,7 @@ typedef enum {
  * @param name The name for the resource record
  * @param address The address for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFAAAADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		     address: (OFString *)address
@@ -188,7 +193,7 @@ typedef enum {
 }
 
 /*!
- * The alias of the resource record.
+ * @brief The alias of the resource record.
  */
 @property (readonly, nonatomic) OFString *alias;
 
@@ -205,6 +210,7 @@ typedef enum {
  * @param recordClass The class code for the resource record
  * @param alias The alias for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFCNAMEDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -224,12 +230,12 @@ typedef enum {
 }
 
 /*!
- * The CPU of the host info of the resource record.
+ * @brief The CPU of the host info of the resource record.
  */
 @property (readonly, nonatomic) OFString *CPU;
 
 /*!
- * The OS of the host info of the resource record.
+ * @brief The OS of the host info of the resource record.
  */
 @property (readonly, nonatomic) OFString *OS;
 
@@ -239,7 +245,7 @@ typedef enum {
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
- * @brief Initializes an already allocated OFPTRDNSResourceRecord with the
+ * @brief Initializes an already allocated OFHINFODNSResourceRecord with the
  *	  specified name, class, domain name and time to live.
  *
  * @param name The name for the resource record
@@ -247,6 +253,7 @@ typedef enum {
  * @param CPU The CPU of the host info for the resource record
  * @param OS The OS of the host info for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFHINFODNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -268,12 +275,12 @@ typedef enum {
 }
 
 /*!
- * The preference of the resource record.
+ * @brief The preference of the resource record.
  */
 @property (readonly, nonatomic) uint16_t preference;
 
 /*!
- * The mail exchange of the resource record.
+ * @brief The mail exchange of the resource record.
  */
 @property (readonly, nonatomic) OFString *mailExchange;
 
@@ -291,6 +298,7 @@ typedef enum {
  * @param preference The preference for the resource record
  * @param mailExchange The mail exchange for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFMXDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -311,7 +319,7 @@ typedef enum {
 }
 
 /*!
- * The authoritative host of the resource record.
+ * @brief The authoritative host of the resource record.
  */
 @property (readonly, nonatomic) OFString *authoritativeHost;
 
@@ -328,6 +336,7 @@ typedef enum {
  * @param recordClass The class code for the resource record
  * @param authoritativeHost The authoritative host for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFNSDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -347,7 +356,7 @@ typedef enum {
 }
 
 /*!
- * The domain name of the resource record.
+ * @brief The domain name of the resource record.
  */
 @property (readonly, nonatomic) OFString *domainName;
 
@@ -364,10 +373,57 @@ typedef enum {
  * @param recordClass The class code for the resource record
  * @param domainName The domain name for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFPTRDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  domainName: (OFString *)domainName
+			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
+@end
+
+/*!
+ * @class OFRPNSResourceRecord \
+ *	  OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
+ *
+ * @brief A class representing an RP DNS resource record.
+ */
+@interface OFRPDNSResourceRecord: OFDNSResourceRecord
+{
+	OFString *_mailbox, *_TXTDomainName;
+}
+
+/*!
+ * @brief The mailbox of the responsible person of the resource record.
+ */
+@property (readonly, nonatomic) OFString *mailbox;
+
+/*!
+ * @brief A domain name that contains a TXT resource record for the responsible
+ *	  person of the resource record.
+ */
+@property (readonly, nonatomic) OFString *TXTDomainName;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated OFRPDNSResourceRecord with the
+ *	  specified name, class, alias and time to live.
+ *
+ * @param name The name for the resource record
+ * @param recordClass The class code for the resource record
+ * @param mailbox The mailbox of the responsible person of the resource record
+ * @param TXTDomainName A domain name that contains a TXT resource record for
+ *			the responsible person of the resource record
+ * @param TTL The time to live for the resource record
+ * @return An initialized OFRPDNSResourceRecord
+ */
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		     mailbox: (OFString *)mailbox
+	       TXTDomainName: (OFString *)TXTDomainName
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -385,36 +441,37 @@ typedef enum {
 }
 
 /*!
- * The the primary name server for the zone.
+ * @brief The the primary name server for the zone.
  */
 @property (readonly, nonatomic) OFString *primaryNameServer;
 
 /*!
- * The mailbox of the person responsible for the zone.
+ * @brief The mailbox of the person responsible for the zone.
  */
 @property (readonly, nonatomic) OFString *responsiblePerson;
 
 /*!
- * The serial number of the original copy of the zone.
+ * @brief The serial number of the original copy of the zone.
  */
 @property (readonly, nonatomic) uint32_t serialNumber;
 
 /*!
- * The refresh interval of the zone.
+ * @brief The refresh interval of the zone.
  */
 @property (readonly, nonatomic) uint32_t refreshInterval;
 
 /*!
- * The retry interval of the zone.
+ * @brief The retry interval of the zone.
  */
 @property (readonly, nonatomic) uint32_t retryInterval;
 
 /*!
- * The expiration interval of the zone.
+ * @brief The expiration interval of the zone.
  */
 @property (readonly, nonatomic) uint32_t expirationInterval;
+
 /*!
- * The minimum TTL of the zone.
+ * @brief The minimum TTL of the zone.
  */
 @property (readonly, nonatomic) uint32_t minTTL;
 
@@ -424,7 +481,7 @@ typedef enum {
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
- * @brief Initializes an already allocated OFTXTDNSResourceRecord with the
+ * @brief Initializes an already allocated OFSOADNSResourceRecord with the
  *	  specified name, class, text data and time to live.
  *
  * @param name The name for the resource record
@@ -437,6 +494,7 @@ typedef enum {
  * @param expirationInterval The expiration interval of the zone
  * @param minTTL The minimum TTL of the zone
  * @param TTL The time to live for the resource record
+ * @return An initialized OFSOADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -462,7 +520,7 @@ typedef enum {
 }
 
 /*!
- * The text of the resource record.
+ * @brief The text of the resource record.
  */
 @property (readonly, nonatomic) OFData *textData;
 
@@ -479,6 +537,7 @@ typedef enum {
  * @param recordClass The class code for the resource record
  * @param textData The data for the resource record
  * @param TTL The time to live for the resource record
+ * @return An initialized OFTXTDNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass

@@ -57,6 +57,8 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 		return @"MX";
 	case OF_DNS_RESOURCE_RECORD_TYPE_TXT:
 		return @"TXT";
+	case OF_DNS_RESOURCE_RECORD_TYPE_RP:
+		return @"RP";
 	case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
 		return @"AAAA";
 	case OF_DNS_RESOURCE_RECORD_TYPE_ALL:
@@ -108,6 +110,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 		recordType = OF_DNS_RESOURCE_RECORD_TYPE_MX;
 	else if ([string isEqual: @"TXT"])
 		recordType = OF_DNS_RESOURCE_RECORD_TYPE_TXT;
+	else if ([string isEqual: @"RP"])
+		recordType = OF_DNS_RESOURCE_RECORD_TYPE_RP;
 	else if ([string isEqual: @"AAAA"])
 		recordType = OF_DNS_RESOURCE_RECORD_TYPE_AAAA;
 	else
@@ -839,6 +843,111 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    [self className], _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _domainName,
 	    _TTL];
+}
+@end
+
+@implementation OFRPDNSResourceRecord
+@synthesize mailbox = _mailbox, TXTDomainName = _TXTDomainName;
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		  recordType: (of_dns_resource_record_type_t)recordType
+			 TTL: (uint32_t)TTL
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithName: (OFString *)name
+		 recordClass: (of_dns_resource_record_class_t)recordClass
+		     mailbox: (OFString *)mailbox
+	       TXTDomainName: (OFString *)TXTDomainName
+			 TTL: (uint32_t)TTL
+{
+	self = [super initWithName: name
+		       recordClass: recordClass
+			recordType: OF_DNS_RESOURCE_RECORD_TYPE_RP
+			       TTL: TTL];
+
+	@try {
+		_mailbox = [mailbox copy];
+		_TXTDomainName = [TXTDomainName copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_mailbox release];
+	[_TXTDomainName release];
+
+	[super dealloc];
+}
+
+- (bool)isEqual: (id)otherObject
+{
+	OFRPDNSResourceRecord *otherRecord;
+
+	if (![otherObject isKindOfClass: [OFRPDNSResourceRecord class]])
+		return false;
+
+	otherRecord = otherObject;
+
+	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+		return false;
+
+	if (otherRecord->_recordClass != _recordClass)
+		return false;
+
+	if (otherRecord->_recordType != _recordType)
+		return false;
+
+	if (otherRecord->_mailbox != _mailbox &&
+	    ![otherRecord->_mailbox isEqual: _mailbox])
+		return false;
+
+	if (otherRecord->_TXTDomainName != _TXTDomainName &&
+	    ![otherRecord->_TXTDomainName isEqual: _TXTDomainName])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	uint32_t hash;
+
+	OF_HASH_INIT(hash);
+
+	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD(hash, _recordClass >> 8);
+	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _recordType >> 8);
+	OF_HASH_ADD(hash, _recordType);
+	OF_HASH_ADD_HASH(hash, [_mailbox hash]);
+	OF_HASH_ADD_HASH(hash, [_TXTDomainName hash]);
+
+	OF_HASH_FINALIZE(hash);
+
+	return hash;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<%@:\n"
+	    @"\tName = %@\n"
+	    @"\tClass = %@\n"
+	    @"\tMailbox = %@\n"
+	    @"\tTXT Domain Name = %@\n"
+	    @"\tTTL = %" PRIu32 "\n"
+	    @">",
+	    [self className], _name,
+	    of_dns_resource_record_class_to_string(_recordClass), _mailbox,
+	    _TXTDomainName, _TTL];
 }
 @end
 
