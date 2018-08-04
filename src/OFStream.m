@@ -38,11 +38,12 @@
 
 #import "OFStream.h"
 #import "OFStream+Private.h"
-#import "OFString.h"
 #import "OFData.h"
-#import "OFSystemInfo.h"
-#import "OFRunLoop.h"
+#import "OFKernelEventObserver.h"
 #import "OFRunLoop+Private.h"
+#import "OFRunLoop.h"
+#import "OFString.h"
+#import "OFSystemInfo.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -1673,7 +1674,7 @@
 	@try {
 		int readFlags;
 
-		readFlags = fcntl([self fileDescriptorForReading], F_GETFL);
+		readFlags = fcntl([(id)self fileDescriptorForReading], F_GETFL);
 
 		readImplemented = true;
 
@@ -1687,7 +1688,7 @@
 		else
 			readFlags |= O_NONBLOCK;
 
-		if (fcntl([self fileDescriptorForReading], F_SETFL,
+		if (fcntl([(id)self fileDescriptorForReading], F_SETFL,
 		    readFlags) == -1)
 			@throw [OFSetOptionFailedException
 			    exceptionWithObject: self
@@ -1698,7 +1699,8 @@
 	@try {
 		int writeFlags;
 
-		writeFlags = fcntl([self fileDescriptorForWriting], F_GETFL);
+		writeFlags =
+		    fcntl([(id)self fileDescriptorForWriting], F_GETFL);
 
 		writeImplemented = true;
 
@@ -1712,7 +1714,7 @@
 		else
 			writeFlags |= O_NONBLOCK;
 
-		if (fcntl([self fileDescriptorForWriting], F_SETFL,
+		if (fcntl([(id)self fileDescriptorForWriting], F_SETFL,
 		    writeFlags) == -1)
 			@throw [OFSetOptionFailedException
 			    exceptionWithObject: self
