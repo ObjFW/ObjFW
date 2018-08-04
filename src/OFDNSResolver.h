@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
+@class OFUDPSocket;
 
 /*!
  * @class OFDNSResolver OFDNSResolver.h ObjFW/OFDNSResolver.h
@@ -40,6 +41,10 @@ OF_ASSUME_NONNULL_BEGIN
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	size_t _minNumberOfDotsInAbsoluteName;
 	bool _usesTCP;
+	OFUDPSocket *_IPv4Socket;
+#ifdef OF_HAVE_IPV6
+	OFUDPSocket *_IPv6Socket;
+#endif
 	OFMutableDictionary OF_GENERIC(OFNumber *, id) *_queries;
 }
 

@@ -60,9 +60,7 @@
  *  - Timeouts
  *  - Resolve with each search domain
  *  - Iterate through name servers
- *  - IPv6 for talking to the name servers
  *  - Fallback to TCP
- *  - More record types
  */
 
 @interface OFDNSResolver_context: OFObject
@@ -638,11 +636,17 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 - (void)dealloc
 {
+	[self close];
+
 	[_staticHosts release];
 	[_nameServers release];
 	[_localDomain release];
 	[_searchDomains release];
 	[_queries release];
+	[_IPv4Socket release];
+#ifdef OF_HAVE_IPV6
+	[_IPv6Socket release];
+#endif
 
 	[super dealloc];
 }
@@ -1107,12 +1111,30 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	[_queries setObject: DNSResolverContext
 		     forKey: ID];
 
-	sock = [OFUDPSocket socket];
-	[sock bindToHost: @"0.0.0.0"
-		    port: 0];
-
 	address = of_socket_address_parse_ip(
 	    [[DNSResolverContext nameServers] firstObject], 53);
+
+#ifdef OF_HAVE_IPV6
+	if (address.address.ss_family == AF_INET6) {
+		if (_IPv6Socket == nil) {
+			_IPv6Socket = [[OFUDPSocket alloc] init];
+			[_IPv6Socket bindToHost: @"::"
+					   port: 0];
+		}
+
+		sock = _IPv6Socket;
+	} else {
+#endif
+		if (_IPv4Socket == nil) {
+			_IPv4Socket = [[OFUDPSocket alloc] init];
+			[_IPv4Socket bindToHost: @"0.0.0.0"
+					   port: 0];
+		}
+
+		sock = _IPv4Socket;
+#ifdef OF_HAVE_IPV6
+	}
+#endif
 
 	[sock asyncSendBuffer: [data items]
 		       length: [data count]
@@ -1123,5 +1145,20 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		      context: nil];
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)close
+{
+	[_IPv4Socket cancelAsyncRequests];
+	[_IPv4Socket close];
+	[_IPv4Socket release];
+	_IPv4Socket = nil;
+
+#ifdef OF_HAVE_IPV6
+	[_IPv6Socket cancelAsyncRequests];
+	[_IPv6Socket close];
+	[_IPv6Socket release];
+	_IPv6Socket = nil;
+#endif
 }
 @end
