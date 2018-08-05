@@ -877,6 +877,14 @@ static OFRunLoop *mainRunLoop = nil;
 			 * should do nothing.
 			 */
 			if (listObject != NULL) {
+				/*
+				 * Make sure we keep the target until after we
+				 * are done removing the object. The reason for
+				 * this is that the target might call
+				 * -[cancelAsyncRequests] in its dealloc.
+				 */
+				[[listObject->object retain] autorelease];
+
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
@@ -913,6 +921,14 @@ static OFRunLoop *mainRunLoop = nil;
 			 * should do nothing.
 			 */
 			if (listObject != NULL) {
+				/*
+				 * Make sure we keep the target until after we
+				 * are done removing the object. The reason for
+				 * this is that the target might call
+				 * -[cancelAsyncRequests] in its dealloc.
+				 */
+				[[listObject->object retain] autorelease];
+
 				[queue removeListObject: listObject];
 
 				if ([queue count] == 0) {
