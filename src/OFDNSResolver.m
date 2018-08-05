@@ -1253,13 +1253,11 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	OFDNSResolver_context *DNSResolverContext;
 
 	[_IPv4Socket cancelAsyncRequests];
-	[_IPv4Socket close];
 	[_IPv4Socket release];
 	_IPv4Socket = nil;
 
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket cancelAsyncRequests];
-	[_IPv6Socket close];
 	[_IPv6Socket release];
 	_IPv6Socket = nil;
 #endif
