@@ -317,8 +317,8 @@ of_socket_address_equal(of_socket_address_t *address1,
 		break;
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		if (address1->length < sizeof(struct sockaddr_in6) ||
-		    address2->length < sizeof(struct sockaddr_in6))
+		if (address1->length < (socklen_t)sizeof(struct sockaddr_in6) ||
+		    address2->length < (socklen_t)sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
 		addrIn6_1 = (struct sockaddr_in6 *)&address1->address;
@@ -370,7 +370,7 @@ of_socket_address_hash(of_socket_address_t *address)
 		break;
 #ifdef OF_HAVE_IPV6
 	case AF_INET6:
-		if (address->length < sizeof(struct sockaddr_in6))
+		if (address->length < (socklen_t)sizeof(struct sockaddr_in6))
 			@throw [OFInvalidArgumentException exception];
 
 		addrIn6 = (struct sockaddr_in6 *)&address->address;

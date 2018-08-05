@@ -614,7 +614,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_address == NULL)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_addressLength > sizeof(address.address))
+	if (_addressLength > (socklen_t)sizeof(address.address))
 		@throw [OFOutOfRangeException exception];
 
 	memset(&address, '\0', sizeof(address));

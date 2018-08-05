@@ -50,10 +50,10 @@
 
 /*! @file */
 
-#ifdef OF_AMIGAOS
+#if defined(OF_AMIGAOS) && defined(OF_MORPHOS_IXEMUL)
 struct sockaddr_storage {
 	uint8_t ss_len;
-	uint8_t ss_family;
+	sa_family_t ss_family;
 	char ss_data[2 + sizeof(struct in_addr) + 8];
 };
 #endif
@@ -61,15 +61,8 @@ struct sockaddr_storage {
 #ifdef OF_MORPHOS
 typedef long socklen_t;
 #endif
-
 #ifdef OF_MORPHOS_IXEMUL
 typedef int socklen_t;
-
-struct sockaddr_storage {
-	uint8_t ss_len;
-	uint8_t ss_family;
-	char ss_data[2 + sizeof(struct in_addr) + 8];
-};
 #endif
 
 #ifdef OF_WII
@@ -77,7 +70,7 @@ struct sockaddr_storage {
 
 struct sockaddr_storage {
 	u8 ss_len;
-	u8 ss_family;
+	sa_family_t ss_family;
 	u8 ss_data[14];
 };
 #endif
