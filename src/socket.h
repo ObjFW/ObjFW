@@ -128,6 +128,28 @@ extern of_socket_address_t of_socket_address_parse_ip(
     OFString *IP, uint16_t port);
 
 /*!
+ * @brief Parses the specified IPv4 and port into an of_socket_address_t.
+ *
+ * @param IP The IPv4 to parse
+ * @param port The port to use
+ * @return The parsed IPv4 and port as an of_socket_address_t
+ */
+extern of_socket_address_t of_socket_address_parse_ipv4(
+    OFString *IP, uint16_t port);
+
+#ifdef OF_HAVE_IPV6
+/*!
+ * @brief Parses the specified IPv6 and port into an of_socket_address_t.
+ *
+ * @param IP The IPv6 to parse
+ * @param port The port to use
+ * @return The parsed IPv6 and port as an of_socket_address_t
+ */
+extern of_socket_address_t of_socket_address_parse_ipv6(
+    OFString *IP, uint16_t port);
+#endif
+
+/*!
  * @brief Compares two of_socket_address_t for equality.
  *
  * @param address1 The address to compare with the second address

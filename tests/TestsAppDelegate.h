@@ -267,3 +267,7 @@ enum {
 @interface TestsAppDelegate (PBKDF2Tests)
 - (void)PBKDF2Tests;
 @end
+
+@interface TestsAppDelegate (SocketTests)
+- (void)socketTests;
+@end
