@@ -66,7 +66,7 @@
  *  - Fallback to TCP
  */
 
-@interface OFDNSResolver_context: OFObject
+@interface OFDNSResolverQuery: OFObject
 {
 	OFString *_host;
 	of_dns_resource_record_class_t _recordClass;
@@ -74,11 +74,11 @@
 	OFNumber *_ID;
 	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
 	size_t _nameServersIndex, _searchDomainsIndex;
-	OFMutableData *_queryData;
 	id _target;
 	SEL _selector;
-	id _userContext;
-	OFTimer *_timer;
+	id _context;
+	OFData *_queryData;
+	OFTimer *_cancelTimer;
 }
 
 @property (readonly, nonatomic) OFString *host;
@@ -89,11 +89,11 @@
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
 @property (nonatomic) size_t nameServersIndex;
 @property (nonatomic) size_t searchDomainsIndex;
-@property (readonly, nonatomic) OFMutableData *queryData;
 @property (readonly, nonatomic) id target;
 @property (readonly, nonatomic) SEL selector;
-@property (readonly, nonatomic) id userContext;
-@property (readonly, nonatomic) OFTimer *timer;
+@property (readonly, nonatomic) id context;
+@property (readonly, nonatomic) OFData *queryData;
+@property (retain, nonatomic) OFTimer *cancelTimer;
 
 - (instancetype)initWithHost: (OFString *)host
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -101,11 +101,9 @@
 			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
-		   queryData: (OFMutableData *)queryData
 		      target: (id)target
 		    selector: (SEL)selector
-		 userContext: (id)userContext
-		       timer: (OFTimer *)timer;
+		     context: (id)context;
 @end
 
 @interface OFDNSResolver ()
@@ -501,14 +499,14 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			     TTL: TTL] autorelease];
 }
 
-@implementation OFDNSResolver_context
+@implementation OFDNSResolverQuery
 @synthesize host = _host, recordClass = _recordClass, recordType = _recordType;
 @synthesize ID = _ID, nameServers = _nameServers;
 @synthesize searchDomains = _searchDomains;
 @synthesize nameServersIndex = _nameServersIndex;
-@synthesize searchDomainsIndex = _searchDomainsIndex, queryData = _queryData;
-@synthesize target = _target, selector = _selector, userContext = _userContext;
-@synthesize timer = _timer;
+@synthesize searchDomainsIndex = _searchDomainsIndex, target = _target;
+@synthesize selector = _selector, context = _context, queryData = _queryData;
+@synthesize cancelTimer = _cancelTimer;
 
 - (instancetype)initWithHost: (OFString *)host
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -516,26 +514,80 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
-		   queryData: (OFMutableData *)queryData
 		      target: (id)target
 		    selector: (SEL)selector
-		 userContext: (id)userContext
-		       timer: (OFTimer *)timer
+		     context: (id)context
 {
 	self = [super init];
 
 	@try {
+		void *pool = objc_autoreleasePoolPush();
+		OFMutableData *queryData;
+		uint16_t tmp;
+
 		_host = [host copy];
 		_recordClass = recordClass;
 		_recordType = recordType;
 		_ID = [ID retain];
 		_nameServers = [nameServers copy];
 		_searchDomains = [searchDomains copy];
-		_queryData = [queryData retain];
 		_target = [target retain];
 		_selector = selector;
-		_userContext = [userContext retain];
-		_timer = [timer retain];
+		_context = [context retain];
+
+		queryData = [OFMutableData dataWithCapacity: 512];
+
+		/* Header */
+
+		tmp = OF_BSWAP16_IF_LE([ID uInt16Value]);
+		[queryData addItems: &tmp
+			      count: 2];
+
+		/* RD */
+		tmp = OF_BSWAP16_IF_LE(1 << 8);
+		[queryData addItems: &tmp
+			      count: 2];
+
+		/* QDCOUNT */
+		tmp = OF_BSWAP16_IF_LE(1);
+		[queryData addItems: &tmp
+			      count: 2];
+
+		/* ANCOUNT, NSCOUNT and ARCOUNT */
+		[queryData increaseCountBy: 6];
+
+		/* Question */
+
+		/* QNAME */
+		for (OFString *component in
+		    [host componentsSeparatedByString: @"."]) {
+			size_t length = [component UTF8StringLength];
+			uint8_t length8;
+
+			if (length > 63 || [queryData count] + length > 512)
+				@throw [OFOutOfRangeException exception];
+
+			length8 = (uint8_t)length;
+			[queryData addItem: &length8];
+			[queryData addItems: [component UTF8String]
+				      count: length];
+		}
+
+		/* QTYPE */
+		tmp = OF_BSWAP16_IF_LE(recordType);
+		[queryData addItems: &tmp
+			      count: 2];
+
+		/* QCLASS */
+		tmp = OF_BSWAP16_IF_LE(recordClass);
+		[queryData addItems: &tmp
+			 count: 2];
+
+		[queryData makeImmutable];
+
+		_queryData = [queryData copy];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -550,10 +602,10 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	[_ID release];
 	[_nameServers release];
 	[_searchDomains release];
-	[_queryData release];
 	[_target release];
-	[_userContext release];
-	[_timer release];
+	[_context release];
+	[_queryData release];
+	[_cancelTimer release];
 
 	[super dealloc];
 }
@@ -896,7 +948,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 {
 	OFMutableArray *answers = nil;
 	OFNumber *ID;
-	OFDNSResolver_context *DNSResolverContext;
+	OFDNSResolverQuery *query;
 	id target;
 	SEL selector;
 	void (*callback)(id, SEL, OFArray *, id, id);
@@ -910,22 +962,22 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		return false;
 
 	ID = [OFNumber numberWithUInt16: (buffer[0] << 8) | buffer[1]];
-	DNSResolverContext = [[[_queries objectForKey: ID] retain] autorelease];
+	query = [[[_queries objectForKey: ID] retain] autorelease];
 
-	if (DNSResolverContext == nil)
+	if (query == nil)
 		return false;
 
-	[[DNSResolverContext timer] invalidate];
+	[[query cancelTimer] invalidate];
 	[_queries removeObjectForKey: ID];
 
-	target = [DNSResolverContext target];
-	selector = [DNSResolverContext selector];
+	target = [query target];
+	selector = [query selector];
 	callback = (void (*)(id, SEL, OFArray *, id, id))
 	    [target methodForSelector: selector];
-	queryData = [DNSResolverContext queryData];
+	queryData = [query queryData];
 
 	@try {
-		const unsigned char *queryBuffer;
+		const unsigned char *queryDataBuffer;
 		size_t i;
 		of_dns_resolver_error_t error;
 		uint16_t numQuestions, numAnswers;
@@ -936,14 +988,14 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		if ([queryData itemSize] != 1 || [queryData count] < 12)
 			@throw [OFInvalidArgumentException exception];
 
-		queryBuffer = [queryData items];
+		queryDataBuffer = [queryData items];
 
 		/* QR */
 		if ((buffer[2] & 0x80) == 0)
 			@throw [OFInvalidServerReplyException exception];
 
 		/* Opcode */
-		if ((buffer[2] & 0x78) != (queryBuffer[2] & 0x78))
+		if ((buffer[2] & 0x78) != (queryDataBuffer[2] & 0x78))
 			@throw [OFInvalidServerReplyException exception];
 
 		/* TC */
@@ -976,9 +1028,9 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 		if (buffer[3] & 0x0F)
 			@throw [OFResolveHostFailedException
-			    exceptionWithHost: [DNSResolverContext host]
-				  recordClass: [DNSResolverContext recordClass]
-				   recordType: [DNSResolverContext recordType]
+			    exceptionWithHost: [query host]
+				  recordClass: [query recordClass]
+				   recordType: [query recordType]
 					error: error];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
@@ -1029,63 +1081,59 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			[answers addObject: record];
 		}
 	} @catch (id e) {
-		callback(target, selector, nil,
-		    [DNSResolverContext userContext], e);
+		callback(target, selector, nil, [query context], e);
 		return false;
 	}
 
-	callback(target, selector, answers, [DNSResolverContext userContext],
-	    nil);
+	callback(target, selector, answers, [query context], nil);
 
 	return false;
 }
 
 - (void)of_queryWithIDTimedOut: (OFNumber *)ID
 {
-	OFDNSResolver_context *DNSResolverContext = [_queries objectForKey: ID];
+	OFDNSResolverQuery *query = [_queries objectForKey: ID];
 	id target;
 	SEL selector;
 	void (*callback)(id, SEL, OFArray *, id, id);
 	OFResolveHostFailedException *exception;
 
-	if (DNSResolverContext == nil)
+	if (query == nil)
 		return;
 
-	target = [[[DNSResolverContext target] retain] autorelease];
-	selector = [DNSResolverContext selector];
+	target = [[[query target] retain] autorelease];
+	selector = [query selector];
 	callback = (void (*)(id, SEL, OFArray *, id, id))
 	    [target methodForSelector: selector];
 
 	exception = [OFResolveHostFailedException
-	    exceptionWithHost: [DNSResolverContext host]
-		  recordClass: [DNSResolverContext recordClass]
-		   recordType: [DNSResolverContext recordType]
+	    exceptionWithHost: [query host]
+		  recordClass: [query recordClass]
+		   recordType: [query recordType]
 			error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
 
-	[_queries removeObjectForKey: [DNSResolverContext ID]];
+	[_queries removeObjectForKey: [query ID]];
 
-	callback(target, selector, nil,
-	    [DNSResolverContext userContext], exception);
+	callback(target, selector, nil, [query context], exception);
 }
 
 - (size_t)of_socket: (OFUDPSocket *)sock
       didSendBuffer: (void **)buffer
 	  bytesSent: (size_t)bytesSent
 	   receiver: (of_socket_address_t *)receiver
-	    context: (id)DNSResolverContext
+	    context: (OFDNSResolverQuery *)query
 	  exception: (id)exception
 {
 	if (exception != nil) {
-		id target = [[[DNSResolverContext target] retain] autorelease];
-		SEL selector = [DNSResolverContext selector];
+		id target = [[[query target] retain] autorelease];
+		SEL selector = [query selector];
 		void (*callback)(id, SEL, OFArray *, id, id) =
 		    (void (*)(id, SEL, OFArray *, id, id))
 		    [target methodForSelector: selector];
 
-		[_queries removeObjectForKey: [DNSResolverContext ID]];
+		[_queries removeObjectForKey: [query ID]];
 
-		callback(target, selector, nil,
-		    [DNSResolverContext userContext], exception);
+		callback(target, selector, nil, [query context], exception);
 
 		return 0;
 	}
@@ -1121,11 +1169,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		 context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableData *data = [OFMutableData dataWithCapacity: 512];
-	OFTimer *timer;
-	OFDNSResolver_context *DNSResolverContext;
+	OFDNSResolverQuery *query;
 	OFNumber *ID;
-	uint16_t tmp;
 	OFUDPSocket *sock;
 	of_socket_address_t address;
 
@@ -1136,80 +1181,33 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	if ([host UTF8StringLength] > 253)
 		@throw [OFOutOfRangeException exception];
 
-	/* Header */
-
 	/* Random, unused ID */
 	do {
 		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
 	} while ([_queries objectForKey: ID] != nil);
 
-	tmp = OF_BSWAP16_IF_LE([ID uInt16Value]);
-	[data addItems: &tmp
-		 count: 2];
-
-	/* RD */
-	tmp = OF_BSWAP16_IF_LE(1 << 8);
-	[data addItems: &tmp
-		 count: 2];
-
-	/* QDCOUNT */
-	tmp = OF_BSWAP16_IF_LE(1);
-	[data addItems: &tmp
-		 count: 2];
-
-	/* ANCOUNT, NSCOUNT and ARCOUNT */
-	[data increaseCountBy: 6];
-
-	/* Question */
-
-	/* QNAME */
-	for (OFString *component in [host componentsSeparatedByString: @"."]) {
-		size_t length = [component UTF8StringLength];
-		uint8_t length8;
-
-		if (length > 63 || [data count] + length > 512)
-			@throw [OFOutOfRangeException exception];
-
-		length8 = (uint8_t)length;
-		[data addItem: &length8];
-		[data addItems: [component UTF8String]
-			 count: length];
-	}
-
-	/* QTYPE */
-	tmp = OF_BSWAP16_IF_LE(recordType);
-	[data addItems: &tmp
-		 count: 2];
-
-	/* QCLASS */
-	tmp = OF_BSWAP16_IF_LE(recordClass);
-	[data addItems: &tmp
-		 count: 2];
-
-	timer = [OFTimer
-	    scheduledTimerWithTimeInterval: TIMEOUT
-				    target: self
-				  selector: @selector(of_queryWithIDTimedOut:)
-				    object: ID
-				   repeats: false];
-
-	DNSResolverContext = [[[OFDNSResolver_context alloc]
+	query = [[[OFDNSResolverQuery alloc]
 	    initWithHost: host
 	     recordClass: recordClass
 	      recordType: recordType
 		      ID: ID
 	     nameServers: _nameServers
 	   searchDomains: _searchDomains
-	       queryData: data
 		  target: target
 		selector: selector
-	     userContext: context
-		   timer: timer] autorelease];
-	[_queries setObject: DNSResolverContext
+		 context: context] autorelease];
+	[_queries setObject: query
 		     forKey: ID];
 
+	[query setCancelTimer: [OFTimer
+	    scheduledTimerWithTimeInterval: TIMEOUT
+				    target: self
+				  selector: @selector(of_queryWithIDTimedOut:)
+				    object: ID
+				   repeats: false]];
+
 	address = of_socket_address_parse_ip(
-	    [[DNSResolverContext nameServers] firstObject], 53);
+	    [[query nameServers] firstObject], 53);
 
 #ifdef OF_HAVE_IPV6
 	if (address.address.ss_family == AF_INET6) {
@@ -1235,13 +1233,13 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	}
 #endif
 
-	[sock asyncSendBuffer: [data items]
-		       length: [data count]
+	[sock asyncSendBuffer: [[query queryData] items]
+		       length: [[query queryData] count]
 		     receiver: address
 		       target: self
 		     selector: @selector(of_socket:didSendBuffer:bytesSent:
 				   receiver:context:exception:)
-		      context: DNSResolverContext];
+		      context: query];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1249,8 +1247,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 - (void)close
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFEnumerator *enumerator;
-	OFDNSResolver_context *DNSResolverContext;
+	OFEnumerator OF_GENERIC(OFDNSResolverQuery *) *enumerator;
+	OFDNSResolverQuery *query;
 
 	[_IPv4Socket cancelAsyncRequests];
 	[_IPv4Socket release];
@@ -1263,22 +1261,21 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 #endif
 
 	enumerator = [_queries objectEnumerator];
-	while ((DNSResolverContext = [enumerator nextObject]) != nil) {
-		id target = [[[DNSResolverContext target] retain] autorelease];
-		SEL selector = [DNSResolverContext selector];
+	while ((query = [enumerator nextObject]) != nil) {
+		id target = [[[query target] retain] autorelease];
+		SEL selector = [query selector];
 		void (*callback)(id, SEL, OFArray *, id, id) =
 		    (void (*)(id, SEL, OFArray *, id, id))
 		    [target methodForSelector: selector];
 		OFResolveHostFailedException *exception;
 
 		exception = [OFResolveHostFailedException
-		    exceptionWithHost: [DNSResolverContext host]
-			  recordClass: [DNSResolverContext recordClass]
-			   recordType: [DNSResolverContext recordType]
+		    exceptionWithHost: [query host]
+			  recordClass: [query recordClass]
+			   recordType: [query recordType]
 				error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
-		callback(target, selector, nil,
-		    [DNSResolverContext userContext], exception);
+		callback(target, selector, nil, [query context], exception);
 	}
 
 	[_queries removeAllObjects];

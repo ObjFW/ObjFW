@@ -22,6 +22,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
+@class OFDNSResolverQuery;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
@@ -76,7 +77,8 @@ typedef enum of_dns_resolver_error_t {
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
 #endif
-	OFMutableDictionary OF_GENERIC(OFNumber *, id) *_queries;
+	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverQuery *)
+	    *_queries;
 }
 
 /*!
