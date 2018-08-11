@@ -87,7 +87,7 @@
 # define lrint(x) rint(x)
 #endif
 
-#ifdef OF_HAVE_THREADS
+#if defined(OF_HAVE_THREADS)
 # import "threading.h"
 
 static of_tlskey_t threadSelfKey;
@@ -132,7 +132,7 @@ callMain(id object)
 
 	[thread release];
 }
-#else
+#elif defined(OF_HAVE_SOCKETS)
 static OFDNSResolver *DNSResolver;
 #endif
 
