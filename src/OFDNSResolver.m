@@ -116,6 +116,20 @@
 #ifdef OF_WINDOWS
 - (void)of_parseNetworkParams;
 #endif
+- (void)of_sendQuery: (OFDNSResolverQuery *)query;
+- (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query;
+- (size_t)of_socket: (OFUDPSocket *)sock
+      didSendBuffer: (void **)buffer
+	  bytesSent: (size_t)bytesSent
+	   receiver: (of_socket_address_t *)receiver
+	    context: (OFDNSResolverQuery *)query
+	  exception: (id)exception;
+-      (bool)of_socket: (OFUDPSocket *)sock
+  didReceiveIntoBuffer: (unsigned char *)buffer
+		length: (size_t)length
+		sender: (of_socket_address_t)sender
+	       context: (id)context
+	     exception: (id)exception;
 @end
 
 static OFString *
@@ -891,6 +905,175 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 }
 #endif
 
+- (void)asyncResolveHost: (OFString *)host
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
+	[self asyncResolveHost: host
+		   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		    recordType: OF_DNS_RESOURCE_RECORD_TYPE_ALL
+			target: target
+		      selector: selector
+		       context: context];
+}
+
+- (void)asyncResolveHost: (OFString *)host
+	     recordClass: (of_dns_resource_record_class_t)recordClass
+	      recordType: (of_dns_resource_record_type_t)recordType
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFNumber *ID;
+	OFDNSResolverQuery *query;
+
+	/* TODO: Properly try all search domains */
+	if (![host hasSuffix: @"."])
+		host = [host stringByAppendingString: @"."];
+
+	if ([host UTF8StringLength] > 253)
+		@throw [OFOutOfRangeException exception];
+
+	/* Random, unused ID */
+	do {
+		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
+	} while ([_queries objectForKey: ID] != nil);
+
+	query = [[[OFDNSResolverQuery alloc]
+	    initWithHost: host
+	     recordClass: recordClass
+	      recordType: recordType
+		      ID: ID
+	     nameServers: _nameServers
+	   searchDomains: _searchDomains
+		  target: target
+		selector: selector
+		 context: context] autorelease];
+	[_queries setObject: query
+		     forKey: ID];
+
+	[self of_sendQuery: query];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)of_sendQuery: (OFDNSResolverQuery *)query
+{
+	of_socket_address_t address;
+	OFUDPSocket *sock;
+
+	[[query cancelTimer] invalidate];
+	[query setCancelTimer: [OFTimer
+	    scheduledTimerWithTimeInterval: TIMEOUT
+				    target: self
+				  selector: @selector(of_queryWithIDTimedOut:)
+				    object: query
+				   repeats: false]];
+
+	address = of_socket_address_parse_ip(
+	    [[query nameServers] objectAtIndex: [query nameServersIndex]], 53);
+
+	switch (address.family) {
+#ifdef OF_HAVE_IPV6
+	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+		if (_IPv6Socket == nil) {
+			_IPv6Socket = [[OFUDPSocket alloc] init];
+			[_IPv6Socket bindToHost: @"::"
+					   port: 0];
+			[_IPv6Socket setBlocking: false];
+		}
+
+		sock = _IPv6Socket;
+		break;
+#endif
+	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+		if (_IPv4Socket == nil) {
+			_IPv4Socket = [[OFUDPSocket alloc] init];
+			[_IPv4Socket bindToHost: @"0.0.0.0"
+					   port: 0];
+			[_IPv4Socket setBlocking: false];
+		}
+
+		sock = _IPv4Socket;
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+
+	[sock asyncSendBuffer: [[query queryData] items]
+		       length: [[query queryData] count]
+		     receiver: address
+		       target: self
+		     selector: @selector(of_socket:didSendBuffer:bytesSent:
+				   receiver:context:exception:)
+		      context: query];
+}
+
+- (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
+{
+	id target;
+	SEL selector;
+	void (*callback)(id, SEL, OFArray *, id, id);
+	OFResolveHostFailedException *exception;
+
+	if (query == nil)
+		return;
+
+	if ([query nameServersIndex] + 1 < [[query nameServers] count]) {
+		[query setNameServersIndex: [query nameServersIndex] + 1];
+		[self of_sendQuery: query];
+		return;
+	}
+
+	target = [[[query target] retain] autorelease];
+	selector = [query selector];
+	callback = (void (*)(id, SEL, OFArray *, id, id))
+	    [target methodForSelector: selector];
+
+	exception = [OFResolveHostFailedException
+	    exceptionWithHost: [query host]
+		  recordClass: [query recordClass]
+		   recordType: [query recordType]
+			error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
+
+	[_queries removeObjectForKey: [query ID]];
+
+	callback(target, selector, nil, [query context], exception);
+}
+
+- (size_t)of_socket: (OFUDPSocket *)sock
+      didSendBuffer: (void **)buffer
+	  bytesSent: (size_t)bytesSent
+	   receiver: (of_socket_address_t *)receiver
+	    context: (OFDNSResolverQuery *)query
+	  exception: (id)exception
+{
+	if (exception != nil) {
+		id target = [[[query target] retain] autorelease];
+		SEL selector = [query selector];
+		void (*callback)(id, SEL, OFArray *, id, id) =
+		    (void (*)(id, SEL, OFArray *, id, id))
+		    [target methodForSelector: selector];
+
+		[_queries removeObjectForKey: [query ID]];
+
+		callback(target, selector, nil, [query context], exception);
+
+		return 0;
+	}
+
+	[sock asyncReceiveIntoBuffer: [self allocMemoryWithSize: 512]
+			      length: 512
+			      target: self
+			    selector: @selector(of_socket:didReceiveIntoBuffer:
+					  length:sender:context:exception:)
+			     context: nil];
+
+	return 0;
+}
+
 -      (bool)of_socket: (OFUDPSocket *)sock
   didReceiveIntoBuffer: (unsigned char *)buffer
 		length: (size_t)length
@@ -1040,175 +1223,6 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	callback(target, selector, answers, [query context], nil);
 
 	return false;
-}
-
-- (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
-{
-	id target;
-	SEL selector;
-	void (*callback)(id, SEL, OFArray *, id, id);
-	OFResolveHostFailedException *exception;
-
-	if (query == nil)
-		return;
-
-	if ([query nameServersIndex] + 1 < [[query nameServers] count]) {
-		[query setNameServersIndex: [query nameServersIndex] + 1];
-		[self of_sendQuery: query];
-		return;
-	}
-
-	target = [[[query target] retain] autorelease];
-	selector = [query selector];
-	callback = (void (*)(id, SEL, OFArray *, id, id))
-	    [target methodForSelector: selector];
-
-	exception = [OFResolveHostFailedException
-	    exceptionWithHost: [query host]
-		  recordClass: [query recordClass]
-		   recordType: [query recordType]
-			error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
-
-	[_queries removeObjectForKey: [query ID]];
-
-	callback(target, selector, nil, [query context], exception);
-}
-
-- (size_t)of_socket: (OFUDPSocket *)sock
-      didSendBuffer: (void **)buffer
-	  bytesSent: (size_t)bytesSent
-	   receiver: (of_socket_address_t *)receiver
-	    context: (OFDNSResolverQuery *)query
-	  exception: (id)exception
-{
-	if (exception != nil) {
-		id target = [[[query target] retain] autorelease];
-		SEL selector = [query selector];
-		void (*callback)(id, SEL, OFArray *, id, id) =
-		    (void (*)(id, SEL, OFArray *, id, id))
-		    [target methodForSelector: selector];
-
-		[_queries removeObjectForKey: [query ID]];
-
-		callback(target, selector, nil, [query context], exception);
-
-		return 0;
-	}
-
-	[sock asyncReceiveIntoBuffer: [self allocMemoryWithSize: 512]
-			      length: 512
-			      target: self
-			    selector: @selector(of_socket:didReceiveIntoBuffer:
-					  length:sender:context:exception:)
-			     context: nil];
-
-	return 0;
-}
-
-- (void)of_sendQuery: (OFDNSResolverQuery *)query
-{
-	of_socket_address_t address;
-	OFUDPSocket *sock;
-
-	[[query cancelTimer] invalidate];
-	[query setCancelTimer: [OFTimer
-	    scheduledTimerWithTimeInterval: TIMEOUT
-				    target: self
-				  selector: @selector(of_queryWithIDTimedOut:)
-				    object: query
-				   repeats: false]];
-
-	address = of_socket_address_parse_ip(
-	    [[query nameServers] objectAtIndex: [query nameServersIndex]], 53);
-
-	switch (address.family) {
-#ifdef OF_HAVE_IPV6
-	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
-		if (_IPv6Socket == nil) {
-			_IPv6Socket = [[OFUDPSocket alloc] init];
-			[_IPv6Socket bindToHost: @"::"
-					   port: 0];
-			[_IPv6Socket setBlocking: false];
-		}
-
-		sock = _IPv6Socket;
-		break;
-#endif
-	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
-		if (_IPv4Socket == nil) {
-			_IPv4Socket = [[OFUDPSocket alloc] init];
-			[_IPv4Socket bindToHost: @"0.0.0.0"
-					   port: 0];
-			[_IPv4Socket setBlocking: false];
-		}
-
-		sock = _IPv4Socket;
-		break;
-	default:
-		@throw [OFInvalidArgumentException exception];
-	}
-
-	[sock asyncSendBuffer: [[query queryData] items]
-		       length: [[query queryData] count]
-		     receiver: address
-		       target: self
-		     selector: @selector(of_socket:didSendBuffer:bytesSent:
-				   receiver:context:exception:)
-		      context: query];
-}
-
-- (void)asyncResolveHost: (OFString *)host
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
-{
-	[self asyncResolveHost: host
-		   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-		    recordType: OF_DNS_RESOURCE_RECORD_TYPE_ALL
-			target: target
-		      selector: selector
-		       context: context];
-}
-
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFNumber *ID;
-	OFDNSResolverQuery *query;
-
-	/* TODO: Properly try all search domains */
-	if (![host hasSuffix: @"."])
-		host = [host stringByAppendingString: @"."];
-
-	if ([host UTF8StringLength] > 253)
-		@throw [OFOutOfRangeException exception];
-
-	/* Random, unused ID */
-	do {
-		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
-	} while ([_queries objectForKey: ID] != nil);
-
-	query = [[[OFDNSResolverQuery alloc]
-	    initWithHost: host
-	     recordClass: recordClass
-	      recordType: recordType
-		      ID: ID
-	     nameServers: _nameServers
-	   searchDomains: _searchDomains
-		  target: target
-		selector: selector
-		 context: context] autorelease];
-	[_queries setObject: query
-		     forKey: ID];
-
-	[self of_sendQuery: query];
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (void)close
