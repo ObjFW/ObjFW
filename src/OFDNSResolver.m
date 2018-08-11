@@ -62,7 +62,6 @@
  * TODO:
  *
  *  - Resolve with each search domain
- *  - Iterate through name servers
  *  - Fallback to TCP
  */
 
@@ -1043,9 +1042,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	return false;
 }
 
-- (void)of_queryWithIDTimedOut: (OFNumber *)ID
+- (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
 {
-	OFDNSResolverQuery *query = [_queries objectForKey: ID];
 	id target;
 	SEL selector;
 	void (*callback)(id, SEL, OFArray *, id, id);
@@ -1053,6 +1051,12 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	if (query == nil)
 		return;
+
+	if ([query nameServersIndex] + 1 < [[query nameServers] count]) {
+		[query setNameServersIndex: [query nameServersIndex] + 1];
+		[self of_sendQuery: query];
+		return;
+	}
 
 	target = [[[query target] retain] autorelease];
 	selector = [query selector];
@@ -1101,66 +1105,21 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	return 0;
 }
 
-- (void)asyncResolveHost: (OFString *)host
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
+- (void)of_sendQuery: (OFDNSResolverQuery *)query
 {
-	[self asyncResolveHost: host
-		   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-		    recordType: OF_DNS_RESOURCE_RECORD_TYPE_ALL
-			target: target
-		      selector: selector
-		       context: context];
-}
-
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFDNSResolverQuery *query;
-	OFNumber *ID;
-	OFUDPSocket *sock;
 	of_socket_address_t address;
+	OFUDPSocket *sock;
 
-	/* TODO: Properly try all search domains */
-	if (![host hasSuffix: @"."])
-		host = [host stringByAppendingString: @"."];
-
-	if ([host UTF8StringLength] > 253)
-		@throw [OFOutOfRangeException exception];
-
-	/* Random, unused ID */
-	do {
-		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
-	} while ([_queries objectForKey: ID] != nil);
-
-	query = [[[OFDNSResolverQuery alloc]
-	    initWithHost: host
-	     recordClass: recordClass
-	      recordType: recordType
-		      ID: ID
-	     nameServers: _nameServers
-	   searchDomains: _searchDomains
-		  target: target
-		selector: selector
-		 context: context] autorelease];
-	[_queries setObject: query
-		     forKey: ID];
-
+	[[query cancelTimer] invalidate];
 	[query setCancelTimer: [OFTimer
 	    scheduledTimerWithTimeInterval: TIMEOUT
 				    target: self
 				  selector: @selector(of_queryWithIDTimedOut:)
-				    object: ID
+				    object: query
 				   repeats: false]];
 
 	address = of_socket_address_parse_ip(
-	    [[query nameServers] firstObject], 53);
+	    [[query nameServers] objectAtIndex: [query nameServersIndex]], 53);
 
 	switch (address.family) {
 #ifdef OF_HAVE_IPV6
@@ -1196,6 +1155,58 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		     selector: @selector(of_socket:didSendBuffer:bytesSent:
 				   receiver:context:exception:)
 		      context: query];
+}
+
+- (void)asyncResolveHost: (OFString *)host
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
+	[self asyncResolveHost: host
+		   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		    recordType: OF_DNS_RESOURCE_RECORD_TYPE_ALL
+			target: target
+		      selector: selector
+		       context: context];
+}
+
+- (void)asyncResolveHost: (OFString *)host
+	     recordClass: (of_dns_resource_record_class_t)recordClass
+	      recordType: (of_dns_resource_record_type_t)recordType
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFNumber *ID;
+	OFDNSResolverQuery *query;
+
+	/* TODO: Properly try all search domains */
+	if (![host hasSuffix: @"."])
+		host = [host stringByAppendingString: @"."];
+
+	if ([host UTF8StringLength] > 253)
+		@throw [OFOutOfRangeException exception];
+
+	/* Random, unused ID */
+	do {
+		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
+	} while ([_queries objectForKey: ID] != nil);
+
+	query = [[[OFDNSResolverQuery alloc]
+	    initWithHost: host
+	     recordClass: recordClass
+	      recordType: recordType
+		      ID: ID
+	     nameServers: _nameServers
+	   searchDomains: _searchDomains
+		  target: target
+		selector: selector
+		 context: context] autorelease];
+	[_queries setObject: query
+		     forKey: ID];
+
+	[self of_sendQuery: query];
 
 	objc_autoreleasePoolPop(pool);
 }
