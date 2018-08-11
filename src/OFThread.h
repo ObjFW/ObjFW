@@ -26,6 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
 /*! @file */
 
 @class OFDate;
+#ifdef OF_HAVE_SOCKETS
+@class OFDNSResolver;
+#endif
 @class OFRunLoop;
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 
@@ -74,16 +77,26 @@ typedef id _Nullable (^of_thread_block_t)(void);
 	OFMutableDictionary *_threadDictionary;
 @private
 	OFString *_Nullable _name;
+# ifdef OF_HAVE_SOCKETS
+	OFDNSResolver *_DNSResolver;
+# endif
 }
+#endif
 
-# ifdef OF_HAVE_CLASS_PROPERTIES
+#ifdef OF_HAVE_CLASS_PROPERTIES
+# ifdef OF_HAVE_THREADS
 @property (class, readonly, nullable, nonatomic) OFThread *currentThread;
 @property (class, readonly, nullable, nonatomic) OFThread *mainThread;
 @property (class, readonly, nullable, nonatomic)
     OFMutableDictionary *threadDictionary;
 @property (class, nullable, copy, nonatomic) OFString *name;
 # endif
+# ifdef OF_HAVE_SOCKETS
+@property (class, readonly, nonatomic) OFDNSResolver *DNSResolver;
+# endif
+#endif
 
+#ifdef OF_HAVE_THREADS
 /*!
  * @brief The name for the thread to use when starting it.
  *
@@ -160,9 +173,18 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @brief Returns a dictionary to store thread-specific data, meaning it
  *	  returns a different dictionary for every thread.
  *
- * @return A dictionary to store thread-specific data.
+ * @return A dictionary to store thread-specific data
  */
 + (nullable OFMutableDictionary *)threadDictionary;
+#endif
+
+#ifdef OF_HAVE_SOCKETS
+/*!
+ * @brief Returns the DNS resolver for the current thread.
+ *
+ * @return The DNS resolver for the current thread
+ */
++ (OFDNSResolver *)DNSResolver;
 #endif
 
 /*!

@@ -52,7 +52,9 @@
 #import "OFAutoreleasePool.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
-#import "OFList.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFDNSResolver.h"
+#endif
 #import "OFLocale.h"
 #import "OFRunLoop.h"
 #import "OFString.h"
@@ -130,6 +132,8 @@ callMain(id object)
 
 	[thread release];
 }
+#else
+static OFDNSResolver *DNSResolver;
 #endif
 
 @implementation OFThread
@@ -182,6 +186,28 @@ callMain(id object)
 		thread->_threadDictionary = [[OFMutableDictionary alloc] init];
 
 	return thread->_threadDictionary;
+}
+#endif
+
+#ifdef OF_HAVE_SOCKETS
++ (OFDNSResolver *)DNSResolver
+{
+# ifdef OF_HAVE_THREADS
+	OFThread *thread = of_tlskey_get(threadSelfKey);
+
+	if (thread == nil)
+		return nil;
+
+	if (thread->_DNSResolver == nil)
+		thread->_DNSResolver = [[OFDNSResolver alloc] init];
+
+	return thread->_DNSResolver;
+# else
+	if (DNSResolver == nil)
+		DNSResolver = [[OFDNSResolver alloc] init];
+
+	return DNSResolver;
+# endif
 }
 #endif
 
@@ -354,6 +380,11 @@ callMain(id object)
 
 	[_threadDictionary release];
 	_threadDictionary = nil;
+
+# ifdef OF_HAVE_SOCKETS
+	[_DNSResolver release];
+	_DNSResolver = nil;
+# endif
 }
 
 - (void)start
