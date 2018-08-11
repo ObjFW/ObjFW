@@ -102,23 +102,23 @@ matrix:
       env:
         - config=amigaos
 
-    # Nintendo DS and 3DS
-    #- os: linux
-    #  dist: trusty
-    #  env:
-    #    - config=devkitarm
+    # Nintendo 3DS
+    - os: linux
+      dist: trusty
+      env:
+        - config=nintendo_3ds
+
+    # Nintendo DS
+    - os: linux
+      dist: trusty
+      env:
+        - config=nintendo_ds
 
     # Nintendo Wii
-    #- os: linux
-    #  dist: trusty
-    #  env:
-    #    - config=devkitppc
-
-    # PSP
-    #- os: linux
-    #  dist: trusty
-    #  env:
-    #    - config=devkitpsp
+    - os: linux
+      dist: trusty
+      env:
+        - config=wii
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
@@ -133,39 +133,22 @@ before_install:
             fi;
     fi
 
-  - if [ "$config" = "devkitarm" ]; then
-            base_url="https://download.sourceforge.net/project/devkitpro";
-            wget -q "$base_url/devkitARM/devkitARM_r46/devkitARM_r46-x86_64-linux.tar.bz2"
-                    "$base_url/libctru/1.4.0/libctru-1.4.0.tar.bz2"
-                    "$base_url/libnds/1.7.1/libnds-1.7.1.tar.bz2"
-                    "$base_url/libfat/1.1.2/libfat-nds-1.1.2.tar.bz2"
-                    "$base_url/filesystem/0.9.13-1/libfilesystem-0.9.13-1.tar.bz2";
-            mkdir -p "$HOME/devkitPro/libctru";
-            tar -C "$HOME/devkitPro" -xjf devkitARM_r46-x86_64-linux.tar.bz2;
-            tar -C "$HOME/devkitPro/libctru" -xjf libctru-1.4.0.tar.bz2;
-            mkdir -p "$HOME/devkitPro/libnds";
-            tar -C "$HOME/devkitPro/libnds" -xjf libnds-1.7.1.tar.bz2;
-            tar -C "$HOME/devkitPro/libnds" -xjf libfat-nds-1.1.2.tar.bz2;
-            tar -C "$HOME/devkitPro/libnds" -xjf libfilesystem-0.9.13-1.tar.bz2;
+  - if [ "$config" = "nintendo_3ds" -o "$config" = "nintendo_ds"
+        -o "$config" = "wii" ]; then
+            wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb;
+            sudo dpkg -i devkitpro-pacman.deb;
     fi
 
-  - if [ "$config" = "devkitppc" ]; then
-            base_url="https://download.sourceforge.net/project/devkitpro";
-            wget -q "$base_url/devkitPPC/devkitPPC_r29-1/devkitPPC_r29-1-x86_64-linux.tar.bz2"
-                    "$base_url/libogc/1.8.16/libogc-1.8.16.tar.bz2"
-                    "$base_url/libfat/1.1.2/libfat-ogc-1.1.2.tar.bz2";
-
-            mkdir -p "$HOME/devkitPro/libogc";
-            tar -C "$HOME/devkitPro" -xjf devkitPPC_r29-1-x86_64-linux.tar.bz2;
-            tar -C "$HOME/devkitPro/libogc" -xjf libogc-1.8.16.tar.bz2;
-            tar -C "$HOME/devkitPro/libogc" -xjf libfat-ogc-1.1.2.tar.bz2;
+  - if [ "$config" = "nintendo_3ds" ]; then
+            sudo dkp-pacman --noconfirm -Syu 3ds-dev;
     fi
 
-  - if [ "$config" = "devkitpsp" ]; then
-            wget -q https://download.sourceforge.net/project/devkitpro/devkitPSP/devkitPSP_r16-1-x86_64-linux.tar.bz2;
+  - if [ "$config" = "nintendo_ds" ]; then
+            sudo dkp-pacman --noconfirm -Syu nds-dev;
+    fi
 
-            mkdir -p "$HOME/devkitPro";
-            tar -C "$HOME/devkitPro" -xjf devkitPSP_r16-1-x86_64-linux.tar.bz2;
+  - if [ "$config" = "wii" ]; then
+            sudo dkp-pacman --noconfirm -Syu wii-dev;
     fi
 
   - if [ "$config" = "amigaos" ]; then
@@ -284,25 +267,23 @@ script:
             build --host=m68k-amigaos --enable-static;
     fi
 
-  - if [ "$config" = "devkitarm" ]; then
-            export DEVKITPRO="$HOME/devkitPro";
+  - if [ "$config" = "nintendo_3ds" ]; then
+            export DEVKITPRO="/opt/devkitpro";
             export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
 
             build --host=arm-none-eabi --with-3ds;
+    fi
+
+  - if [ "$config" = "nintendo_ds" ]; then
+            export DEVKITPRO="/opt/devkitpro";
+            export PATH="$DEVKITPRO/devkitARM/bin:$PATH";
+
             build --host=arm-none-eabi --with-nds;
     fi
 
-  - if [ "$config" = "devkitppc" ]; then
-            export DEVKITPRO="$HOME/devkitPro";
+  - if [ "$config" = "wii" ]; then
+            export DEVKITPRO="/opt/devkitpro";
             export PATH="$DEVKITPRO/devkitPPC/bin:$PATH";
 
             build ac_cv_prog_wiiload= --host=powerpc-eabi --with-wii;
-    fi
-
-  - if [ "$config" = "devkitpsp" ]; then
-            export DEVKITPRO="$HOME/devkitPro";
-            export DEVKITPSP="$DEVKITPRO/devkitPSP";
-            export PATH="$DEVKITPSP/bin:$PATH";
-
-            build --host=psp;
     fi
