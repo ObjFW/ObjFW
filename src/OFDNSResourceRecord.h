@@ -18,6 +18,8 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+#import "socket.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
@@ -121,13 +123,13 @@ typedef enum {
  */
 @interface OFADNSResourceRecord: OFDNSResourceRecord
 {
-	OFString *_address;
+	of_socket_address_t _address;
 }
 
 /*!
  * @brief The IPv4 address of the resource record.
  */
-@property (readonly, nonatomic) OFString *address;
+@property (readonly, nonatomic) const of_socket_address_t *address;
 
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -144,7 +146,7 @@ typedef enum {
  * @return An initialized OFADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		     address: (OFString *)address
+		     address: (const of_socket_address_t *)address
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -156,13 +158,13 @@ typedef enum {
  */
 @interface OFAAAADNSResourceRecord: OFDNSResourceRecord
 {
-	OFString *_address;
+	of_socket_address_t _address;
 }
 
 /*!
  * @brief The IPv6 address of the resource record.
  */
-@property (readonly, nonatomic) OFString *address;
+@property (readonly, nonatomic) const of_socket_address_t *address;
 
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -179,7 +181,7 @@ typedef enum {
  * @return An initialized OFAAAADNSResourceRecord
  */
 - (instancetype)initWithName: (OFString *)name
-		     address: (OFString *)address
+		     address: (const of_socket_address_t *)address
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 

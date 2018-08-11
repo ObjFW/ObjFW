@@ -173,8 +173,6 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @end
 
 @implementation OFADNSResourceRecord
-@synthesize address = _address;
-
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
@@ -184,7 +182,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		     address: (OFString *)address
+		     address: (const of_socket_address_t *)address
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
@@ -192,21 +190,14 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_A
 			       TTL: TTL];
 
-	@try {
-		_address = [address copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	_address = *address;
 
 	return self;
 }
 
-- (void)dealloc
+- (const of_socket_address_t *)address
 {
-	[_address release];
-
-	[super dealloc];
+	return &_address;
 }
 
 - (bool)isEqual: (id)otherObject
@@ -227,8 +218,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_address != _address &&
-	    ![otherRecord->_address isEqual: _address])
+	if (!of_socket_address_equal(&otherRecord->_address, &_address))
 		return false;
 
 	return true;
@@ -245,7 +235,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_address hash]);
+	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_address));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -260,13 +250,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAddress = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name, _address, _TTL];
+	    [self className], _name,
+	    of_socket_address_ip_string(&_address, NULL), _TTL];
 }
 @end
 
 @implementation OFAAAADNSResourceRecord
-@synthesize address = _address;
-
 - (instancetype)initWithName: (OFString *)name
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
@@ -276,7 +265,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		     address: (OFString *)address
+		     address: (const of_socket_address_t *)address
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
@@ -284,21 +273,14 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA
 			       TTL: TTL];
 
-	@try {
-		_address = [address copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	_address = *address;
 
 	return self;
 }
 
-- (void)dealloc
+- (const of_socket_address_t *)address
 {
-	[_address release];
-
-	[super dealloc];
+	return &_address;
 }
 
 - (bool)isEqual: (id)otherObject
@@ -319,8 +301,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_address != _address &&
-	    ![otherRecord->_address isEqual: _address])
+	if (!of_socket_address_equal(&otherRecord->_address, &_address))
 		return false;
 
 	return true;
@@ -337,7 +318,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_address hash]);
+	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_address));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -352,7 +333,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAddress = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name, _address, _TTL];
+	    [self className], _name,
+	    of_socket_address_ip_string(&_address, NULL), _TTL];
 }
 @end
 

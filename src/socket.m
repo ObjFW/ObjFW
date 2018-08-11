@@ -241,7 +241,7 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
-	ret.length = sizeof(struct sockaddr_in);
+	ret.length = sizeof(ret.sockaddr.in);
 
 	addrIn->sin_family = AF_INET;
 	addrIn->sin_port = OF_BSWAP16_IF_LE(port);
@@ -305,7 +305,7 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
-	ret.length = sizeof(struct sockaddr_in6);
+	ret.length = sizeof(ret.sockaddr.in6);
 
 #ifdef AF_INET6
 	addrIn6->sin6_family = AF_INET6;

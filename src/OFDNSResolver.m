@@ -221,65 +221,6 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 	return [components componentsJoinedByString: @"."];
 }
 
-static OFString *
-parseAAAAData(const unsigned char *buffer)
-{
-	OFMutableString *data = [OFMutableString string];
-	int_fast8_t zerosStart = -1, maxZerosStart = -1;
-	uint_fast8_t zerosCount = 0, maxZerosCount = 0;
-	bool first = true;
-
-	for (uint_fast8_t i = 0; i < 16; i += 2) {
-		if (buffer[i] == 0 && buffer[i + 1] == 0) {
-			if (zerosStart >= 0)
-				zerosCount++;
-			else {
-				zerosStart = i;
-				zerosCount = 1;
-			}
-		} else {
-			if (zerosCount > maxZerosCount) {
-				maxZerosStart = zerosStart;
-				maxZerosCount = zerosCount;
-			}
-
-			zerosStart = -1;
-		}
-	}
-	if (zerosCount > maxZerosCount) {
-		maxZerosStart = zerosStart;
-		maxZerosCount = zerosCount;
-	}
-
-	if (maxZerosCount >= 2) {
-		for (uint_fast8_t i = 0; i < maxZerosStart; i += 2) {
-			[data appendFormat: (first ? @"%x" : @":%x"),
-					    (buffer[i] << 8) | buffer[i + 1]];
-			first = false;
-		}
-
-		[data appendString: @"::"];
-		first = true;
-
-		for (uint_fast8_t i = maxZerosStart + (maxZerosCount * 2);
-		    i < 16; i += 2) {
-			[data appendFormat: (first ? @"%x" : @":%x"),
-					    (buffer[i] << 8) | buffer[i + 1]];
-			first = false;
-		}
-	} else {
-		for (uint_fast8_t i = 0; i < 16; i += 2) {
-			[data appendFormat: (first ? @"%x" : @":%x"),
-					    (buffer[i] << 8) | buffer[i + 1]];
-			first = false;
-		}
-	}
-
-	[data makeImmutable];
-
-	return data;
-}
-
 static OF_KINDOF(OFDNSResourceRecord *)
 createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
     of_dns_resource_record_type_t recordType, uint32_t TTL,
@@ -287,17 +228,21 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 {
 	if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_A &&
 	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
-		OFString *address;
+		of_socket_address_t address;
 
 		if (dataLength != 4)
 			@throw [OFInvalidServerReplyException exception];
 
-		address = [OFString stringWithFormat: @"%u.%u.%u.%u",
-		    buffer[i], buffer[i + 1], buffer[i + 2], buffer[i + 3]];
+		memset(&address, 0, sizeof(address));
+		address.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		address.length = sizeof(address.sockaddr.in);
+
+		address.sockaddr.in.sin_family = AF_INET;
+		memcpy(&address.sockaddr.in.sin_addr.s_addr, buffer + i, 4);
 
 		return [[[OFADNSResourceRecord alloc]
 		    initWithName: name
-			 address: address
+			 address: &address
 			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_NS) {
 		size_t j = i;
@@ -453,17 +398,25 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_AAAA &&
 	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
-		OFString *address;
+		of_socket_address_t address;
 
 		if (dataLength != 16)
-			@throw [OFInvalidServerReplyException
-			    exception];
+			@throw [OFInvalidServerReplyException exception];
 
-		address = parseAAAAData(&buffer[i]);
+		memset(&address, 0, sizeof(address));
+		address.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		address.length = sizeof(address.sockaddr.in6);
+
+#ifdef AF_INET6
+		address.sockaddr.in6.sin6_family = AF_INET6;
+#else
+		address.sockaddr.in6.sin6_family = AF_UNSPEC;
+#endif
+		memcpy(address.sockaddr.in6.sin6_addr.s6_addr, buffer + i, 16);
 
 		return [[[OFAAAADNSResourceRecord alloc]
 		    initWithName: name
-			 address: address
+			 address: &address
 			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_SRV &&
 	    recordClass == OF_DNS_RESOURCE_RECORD_CLASS_IN) {
