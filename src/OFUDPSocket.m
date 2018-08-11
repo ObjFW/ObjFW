@@ -332,7 +332,9 @@
 		  port: (uint16_t)port
 {
 	of_resolver_result_t **results;
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	of_socket_address_t address;
+#endif
 
 	results = of_resolve_host(host, port, SOCK_DGRAM);
 	@try {

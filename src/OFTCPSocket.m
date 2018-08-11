@@ -366,7 +366,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	of_resolver_result_t **results;
 	const int one = 1;
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 	of_socket_address_t address;
+#endif
 
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];

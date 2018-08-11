@@ -75,6 +75,10 @@ typedef int of_socket_t;
 typedef SOCKET of_socket_t;
 #endif
 
+#ifdef OF_WII
+typedef u8 sa_family_t;
+#endif
+
 /*!
  * @enum of_socket_address_type_t socket.h ObjFW/socket.h
  */

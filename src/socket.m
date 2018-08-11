@@ -537,7 +537,7 @@ IPv6String(const of_socket_address_t *address, uint16_t *port)
 	}
 
 	if (maxZerosCount >= 2) {
-		for (uint_fast8_t i = 0; i < maxZerosStart; i += 2) {
+		for (int_fast8_t i = 0; i < maxZerosStart; i += 2) {
 			[string appendFormat:
 			    (first ? @"%x" : @":%x"),
 			    (addrIn6->sin6_addr.s6_addr[i] << 8) |
@@ -548,7 +548,7 @@ IPv6String(const of_socket_address_t *address, uint16_t *port)
 		[string appendString: @"::"];
 		first = true;
 
-		for (uint_fast8_t i = maxZerosStart + (maxZerosCount * 2);
+		for (int_fast8_t i = maxZerosStart + (maxZerosCount * 2);
 		    i < 16; i += 2) {
 			[string appendFormat:
 			    (first ? @"%x" : @":%x"),

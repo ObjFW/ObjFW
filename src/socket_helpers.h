@@ -87,7 +87,7 @@ typedef uint32_t in_addr_t;
     net_select(nfds, readfds, writefds, errorfds, timeout)
 # define send(sock, buf, len, flags) net_send(sock, buf, len, flags)
 # define sendto(sock, buf, len, flags, addr, addrlen) \
-    net_sendto(sock, buf, len, flags, addr, addrlen)
+    net_sendto(sock, buf, len, flags, (struct sockaddr *)(addr), addrlen)
 # define setsockopt(sock, level, name, value, len) \
     net_setsockopt(sock, level, name, value, len)
 # define socket(domain, type, proto) net_socket(domain, type, proto)
