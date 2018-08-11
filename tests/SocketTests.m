@@ -26,42 +26,40 @@
 
 #import "socket.h"
 
-#define SOCKADDR_IN(a) (*(struct sockaddr_in *)&a.address)
-#define SOCKADDR_IN6(a) (*(struct sockaddr_in6 *)&a.address)
 #define COMPARE_V6(a, a0, a1, a2, a3, a4, a5, a6, a7)		\
-	(SOCKADDR_IN6(a).sin6_addr.s6_addr[0] == (a0 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[1] == (a0 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[2] == (a1 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[3] == (a1 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[4] == (a2 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[5] == (a2 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[6] == (a3 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[7] == (a3 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[8] == (a4 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[9] == (a4 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[10] == (a5 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[11] == (a5 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[12] == (a6 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[13] == (a6 & 0xFF) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[14] == (a7 >> 8) &&	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[15] == (a7 & 0xFF))
+	(a.sockaddr.in6.sin6_addr.s6_addr[0] == (a0 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[1] == (a0 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[2] == (a1 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[3] == (a1 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[4] == (a2 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[5] == (a2 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[6] == (a3 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[7] == (a3 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[8] == (a4 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[9] == (a4 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[10] == (a5 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[11] == (a5 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[12] == (a6 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[13] == (a6 & 0xFF) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[14] == (a7 >> 8) &&	\
+	a.sockaddr.in6.sin6_addr.s6_addr[15] == (a7 & 0xFF))
 #define SET_V6(a, a0, a1, a2, a3, a4, a5, a6, a7)		\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[0] = a0 >> 8;		\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[1] = a0 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[2] = a1 >> 8;		\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[3] = a1 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[4] = a2 >> 8;		\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[5] = a2 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[6] = a3 >> 8;		\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[7] = a3 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[8] = a4 >> 8;		\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[9] = a4 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[10] = a5 >> 8;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[11] = a5 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[12] = a6 >> 8;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[13] = a6 & 0xFF;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[14] = a7 >> 8;	\
-	SOCKADDR_IN6(a).sin6_addr.s6_addr[15] = a7 & 0xFF;
+	a.sockaddr.in6.sin6_addr.s6_addr[0] = a0 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[1] = a0 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[2] = a1 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[3] = a1 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[4] = a2 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[5] = a2 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[6] = a3 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[7] = a3 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[8] = a4 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[9] = a4 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[10] = a5 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[11] = a5 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[12] = a6 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[13] = a6 & 0xFF;	\
+	a.sockaddr.in6.sin6_addr.s6_addr[14] = a7 >> 8;		\
+	a.sockaddr.in6.sin6_addr.s6_addr[15] = a7 & 0xFF;
 
 static OFString *module = @"Socket";
 
@@ -74,8 +72,8 @@ static OFString *module = @"Socket";
 
 	TEST(@"Parsing an IPv4",
 	    R(addr = of_socket_address_parse_ip(@"127.0.0.1", 1234)) &&
-	    OF_BSWAP32_IF_LE(SOCKADDR_IN(addr).sin_addr.s_addr) == 0x7F000001 &&
-	    OF_BSWAP16_IF_LE(SOCKADDR_IN(addr).sin_port) == 1234)
+	    OF_BSWAP32_IF_LE(addr.sockaddr.in.sin_addr.s_addr) == 0x7F000001 &&
+	    OF_BSWAP16_IF_LE(addr.sockaddr.in.sin_port) == 1234)
 
 	EXPECT_EXCEPTION(@"Refusing invalid IPv4 #1",
 	    OFInvalidFormatException,
@@ -105,33 +103,32 @@ static OFString *module = @"Socket";
 	    [of_socket_address_ip_string(&addr, &port) isEqual: @"127.0.0.1"] &&
 	    port == 1234)
 
-#ifdef OF_HAVE_IPV6
 	TEST(@"Parsing an IPv6 #1",
 	    R(addr = of_socket_address_parse_ip(
 	    @"1122:3344:5566:7788:99aa:bbCc:ddee:ff00", 1234)) &&
 	    COMPARE_V6(addr,
 	    0x1122, 0x3344, 0x5566, 0x7788, 0x99AA, 0xBBCC, 0xDDEE, 0xFF00) &&
-	    OF_BSWAP16_IF_LE(SOCKADDR_IN6(addr).sin6_port) == 1234)
+	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #2",
 	    R(addr = of_socket_address_parse_ip(@"::", 1234)) &&
 	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0) &&
-	    OF_BSWAP16_IF_LE(SOCKADDR_IN6(addr).sin6_port) == 1234)
+	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #3",
 	    R(addr = of_socket_address_parse_ip(@"aaAa::bBbb", 1234)) &&
 	    COMPARE_V6(addr, 0xAAAA, 0, 0, 0, 0, 0, 0, 0xBBBB) &&
-	    OF_BSWAP16_IF_LE(SOCKADDR_IN6(addr).sin6_port) == 1234)
+	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #4",
 	    R(addr = of_socket_address_parse_ip(@"aaAa::", 1234)) &&
 	    COMPARE_V6(addr, 0xAAAA, 0, 0, 0, 0, 0, 0, 0) &&
-	    OF_BSWAP16_IF_LE(SOCKADDR_IN6(addr).sin6_port) == 1234)
+	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
 
 	TEST(@"Parsing an IPv6 #5",
 	    R(addr = of_socket_address_parse_ip(@"::aaAa", 1234)) &&
 	    COMPARE_V6(addr, 0, 0, 0, 0, 0, 0, 0, 0xAAAA) &&
-	    OF_BSWAP16_IF_LE(SOCKADDR_IN6(addr).sin6_port) == 1234)
+	    OF_BSWAP16_IF_LE(addr.sockaddr.in6.sin6_port) == 1234)
 
 	EXPECT_EXCEPTION(@"Refusing invalid IPv6 #1",
 	    OFInvalidFormatException,
@@ -230,7 +227,6 @@ static OFString *module = @"Socket";
 	    [of_socket_address_ip_string(&addr, &port) isEqual:
 	    @"::5566:7788:99aa:bbcc:0:0"] &&
 	    port == 1234)
-#endif
 
 	[pool drain];
 }

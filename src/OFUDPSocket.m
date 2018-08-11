@@ -206,11 +206,25 @@
 	    of_resolve_host(host, port, SOCK_DGRAM);
 
 	assert(results[0]->addressLength <=
-	    (socklen_t)sizeof(address->address));
+	    (socklen_t)sizeof(address->sockaddr));
 
-	memcpy(&address->address, results[0]->address,
+	memcpy(&address->sockaddr, results[0]->address,
 	    results[0]->addressLength);
 	address->length = results[0]->addressLength;
+
+	switch (results[0]->address->sa_family) {
+	case AF_INET:
+		address->family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		break;
+#ifdef OF_HAVE_IPV6
+	case AF_INET6:
+		address->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		break;
+#endif
+	default:
+		address->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		break;
+	}
 
 	of_resolver_free(results);
 }
@@ -318,16 +332,7 @@
 		  port: (uint16_t)port
 {
 	of_resolver_result_t **results;
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	union {
-		struct sockaddr_storage storage;
-		struct sockaddr_in in;
-# ifdef OF_HAVE_IPV6
-		struct sockaddr_in6 in6;
-# endif
-	} addr;
-	socklen_t addrLen;
-#endif
+	of_socket_address_t address;
 
 	results = of_resolve_host(host, port, SOCK_DGRAM);
 	@try {
@@ -425,9 +430,9 @@
 		return port;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	addrLen = (socklen_t)sizeof(addr.storage);
-	if (of_getsockname(_socket, (struct sockaddr *)&addr.storage,
-	    &addrLen) != 0) {
+	address.length = (socklen_t)sizeof(address.sockaddr);
+	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	    &address.length) != 0) {
 		int errNo = of_socket_errno();
 
 		closesocket(_socket);
@@ -439,11 +444,11 @@
 							  errNo: errNo];
 	}
 
-	if (addr.storage.ss_family == AF_INET)
-		return OF_BSWAP16_IF_LE(addr.in.sin_port);
+	if (address.sockaddr.sockaddr.sa_family == AF_INET)
+		return OF_BSWAP16_IF_LE(address.sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
-	if (addr.storage.ss_family == AF_INET6)
-		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
+	if (address.sockaddr.sockaddr.sa_family == AF_INET6)
+		return OF_BSWAP16_IF_LE(address.sockaddr.in6.sin6_port);
 # endif
 #endif
 
@@ -464,11 +469,11 @@
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	sender->length = (socklen_t)sizeof(sender->address);
+	sender->length = (socklen_t)sizeof(sender->sockaddr);
 
 #ifndef OF_WINDOWS
 	if ((ret = recvfrom(_socket, buffer, length, 0,
-	    (struct sockaddr *)&sender->address, &sender->length)) < 0)
+	    &sender->sockaddr.sockaddr, &sender->length)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -478,12 +483,26 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((ret = recvfrom(_socket, buffer, (int)length, 0,
-	    (struct sockaddr *)&sender->address, &sender->length)) < 0)
+	    &sender->sockaddr.sockaddr, &sender->length)) < 0)
 		@throw [OFReadFailedException
 		    exceptionWithObject: self
 			requestedLength: length
 				  errNo: of_socket_errno()];
 #endif
+
+	switch (sender->sockaddr.sockaddr.sa_family) {
+	case AF_INET:
+		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		break;
+#ifdef OF_HAVE_IPV6
+	case AF_INET6:
+		sender->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		break;
+#endif
+	default:
+		sender->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		break;
+	}
 
 	return ret;
 }
@@ -528,7 +547,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((bytesWritten = sendto(_socket, buffer, length, 0,
-	    (struct sockaddr *)&receiver->address, receiver->length)) < 0)
+	    &receiver->sockaddr.sockaddr, receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length
@@ -541,8 +560,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	if ((bytesWritten = sendto(_socket, buffer, (int)length, 0,
-	    (struct sockaddr *)&receiver->address,
-	    receiver->length)) < 0)
+	    &receiver->sockaddr.sockaddr, receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length

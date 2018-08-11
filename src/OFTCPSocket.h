@@ -62,8 +62,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 @interface OFTCPSocket: OFStreamSocket
 {
 	bool _listening;
-	struct sockaddr *_Nullable _address;
-	socklen_t _addressLength;
+	of_socket_address_t _remoteAddress;
 	OFString *_Nullable _SOCKS5Host;
 	uint16_t _SOCKS5Port;
 #ifdef OF_WII
@@ -82,11 +81,11 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 @property (readonly, nonatomic, getter=isListening) bool listening;
 
 /*!
- * @brief The remote address as a string
+ * @brief The remote address.
  *
  * @note This only works for accepted sockets!
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *remoteAddress;
+@property (readonly, nonatomic) const of_socket_address_t *remoteAddress;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 /*!

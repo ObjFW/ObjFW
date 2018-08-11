@@ -50,14 +50,6 @@
 
 /*! @file */
 
-#if defined(OF_AMIGAOS) && defined(OF_MORPHOS_IXEMUL)
-struct sockaddr_storage {
-	uint8_t ss_len;
-	sa_family_t ss_family;
-	char ss_data[2 + sizeof(struct in_addr) + 8];
-};
-#endif
-
 #ifdef OF_MORPHOS
 typedef long socklen_t;
 #endif
@@ -67,24 +59,10 @@ typedef int socklen_t;
 
 #ifdef OF_WII
 # include <network.h>
-
-struct sockaddr_storage {
-	u8 ss_len;
-	sa_family_t ss_family;
-	u8 ss_data[14];
-};
 #endif
 
 #ifdef OF_PSP
 # include <stdint.h>
-
-struct sockaddr_storage {
-	uint8_t	       ss_len;
-	sa_family_t    ss_family;
-	in_port_t      ss_data1;
-	struct in_addr ss_data2;
-	int8_t	       ss_data3[8];
-};
 #endif
 
 #import "macros.h"
@@ -98,12 +76,45 @@ typedef SOCKET of_socket_t;
 #endif
 
 /*!
+ * @enum of_socket_address_type_t socket.h ObjFW/socket.h
+ */
+typedef enum {
+	OF_SOCKET_ADDRESS_FAMILY_UNKNOWN,
+	OF_SOCKET_ADDRESS_FAMILY_IPV4,
+	OF_SOCKET_ADDRESS_FAMILY_IPV6,
+} of_socket_address_family_t;
+
+#ifndef OF_HAVE_IPV6
+struct sockaddr_in6 {
+	sa_family_t sin6_family;
+	in_port_t sin6_port;
+	uint32_t sin6_flowinfo;
+	struct in6_addr {
+		uint8_t s6_addr[16];
+	} sin6_addr;
+	uint32_t sin6_scope_id;
+};
+#endif
+
+/*!
  * @struct of_socket_address_t socket.h ObjFW/socket.h
  *
  * @brief A struct which represents a host / port pair for a socket.
  */
 typedef struct OF_BOXABLE {
-	struct sockaddr_storage address;
+	/*
+	 * Even though struct sockaddr contains the family, we need to use our
+	 * own family, as we need to support storing an IPv6 address on systems
+	 * that don't support IPv6. These may not have AF_INET6 defined and we
+	 * can't just define it, as the value is system-dependent and might
+	 * clash with an existing value.
+	 */
+	of_socket_address_family_t family;
+	union {
+		struct sockaddr sockaddr;
+		struct sockaddr_in in;
+		struct sockaddr_in6 in6;
+	} sockaddr;
 	socklen_t length;
 } of_socket_address_t;
 
@@ -177,6 +188,16 @@ extern uint32_t of_socket_address_hash(of_socket_address_t *address);
  */
 extern OFString *_Nonnull of_socket_address_ip_string(
     const of_socket_address_t *_Nonnull address, uint16_t *_Nullable port);
+
+/*!
+ * @brief Sets the port of the specified of_socket_address_t, independent of
+ *	  the address family used.
+ *
+ * @param address The address on which to set the port
+ * @param port The port to set on the address
+ */
+extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
+    uint16_t port);
 #ifdef __cplusplus
 }
 #endif

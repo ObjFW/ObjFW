@@ -366,16 +366,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	of_resolver_result_t **results;
 	const int one = 1;
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	union {
-		struct sockaddr_storage storage;
-		struct sockaddr_in in;
-# ifdef OF_HAVE_IPV6
-		struct sockaddr_in6 in6;
-# endif
-	} addr;
-	socklen_t addrLen;
-#endif
+	of_socket_address_t address;
 
 	if (_socket != INVALID_SOCKET)
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
@@ -483,9 +474,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return port;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	addrLen = (socklen_t)sizeof(addr.storage);
-	if (of_getsockname(_socket, (struct sockaddr *)&addr.storage,
-	    &addrLen) != 0) {
+	address.length = (socklen_t)sizeof(address.sockaddr);
+	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
+	    &address.length) != 0) {
 		int errNo = of_socket_errno();
 
 		closesocket(_socket);
@@ -497,11 +488,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 							  errNo: errNo];
 	}
 
-	if (addr.storage.ss_family == AF_INET)
-		return OF_BSWAP16_IF_LE(addr.in.sin_port);
+	if (address.sockaddr.sockaddr.sa_family == AF_INET)
+		return OF_BSWAP16_IF_LE(address.sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
-	if (addr.storage.ss_family == AF_INET6)
-		return OF_BSWAP16_IF_LE(addr.in6.sin6_port);
+	if (address.sockaddr.sockaddr.sa_family == AF_INET6)
+		return OF_BSWAP16_IF_LE(address.sockaddr.in6.sin6_port);
 # endif
 #endif
 
@@ -541,25 +532,28 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 #endif
 
-	client->_address = [client
-	    allocMemoryWithSize: sizeof(struct sockaddr_storage)];
-	client->_addressLength = (socklen_t)sizeof(struct sockaddr_storage);
+	client->_remoteAddress.length =
+	    (socklen_t)sizeof(client->_remoteAddress.sockaddr);
 
 #if defined(HAVE_PACCEPT) && defined(SOCK_CLOEXEC)
-	if ((client->_socket = paccept(_socket, client->_address,
-	   &client->_addressLength, NULL, SOCK_CLOEXEC)) == INVALID_SOCKET)
+	if ((client->_socket = paccept(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length, NULL, SOCK_CLOEXEC)) ==
+	    INVALID_SOCKET)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
 				  errNo: of_socket_errno()];
 #elif defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
-	if ((client->_socket = accept4(_socket, client->_address,
-	   &client->_addressLength, SOCK_CLOEXEC)) == INVALID_SOCKET)
+	if ((client->_socket = accept4(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length, SOCK_CLOEXEC)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
 				  errNo: of_socket_errno()];
 #else
-	if ((client->_socket = accept(_socket, client->_address,
-	   &client->_addressLength)) == INVALID_SOCKET)
+	if ((client->_socket = accept(_socket,
+	    &client->_remoteAddress.sockaddr.sockaddr,
+	    &client->_remoteAddress.length)) == INVALID_SOCKET)
 		@throw [OFAcceptFailedException
 		    exceptionWithSocket: self
 				  errNo: of_socket_errno()];
@@ -570,17 +564,22 @@ static uint16_t defaultSOCKS5Port = 1080;
 # endif
 #endif
 
-	assert(client->_addressLength <=
-	    (socklen_t)sizeof(struct sockaddr_storage));
+	assert(client->_remoteAddress.length <=
+	    (socklen_t)sizeof(client->_remoteAddress.sockaddr));
 
-	if (client->_addressLength != sizeof(struct sockaddr_storage)) {
-		@try {
-			client->_address = [client
-			    resizeMemory: client->_address
-				    size: client->_addressLength];
-		} @catch (OFOutOfMemoryException *e) {
-			/* We don't care, as we only made it smaller */
-		}
+	switch (client->_remoteAddress.sockaddr.sockaddr.sa_family) {
+	case AF_INET:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+		break;
+#ifdef OF_HAVE_IPV6
+	case AF_INET6:
+		client->_remoteAddress.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+		break;
+#endif
+	default:
+		client->_remoteAddress.family =
+		    OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
+		break;
 	}
 
 	return client;
@@ -604,24 +603,18 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 #endif
 
-- (OFString *)remoteAddress
+- (const of_socket_address_t *)remoteAddress
 {
-	of_socket_address_t address;
-
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (_address == NULL)
+	if (_remoteAddress.length == 0)
 		@throw [OFInvalidArgumentException exception];
 
-	if (_addressLength > (socklen_t)sizeof(address.address))
+	if (_remoteAddress.length > (socklen_t)sizeof(_remoteAddress.sockaddr))
 		@throw [OFOutOfRangeException exception];
 
-	memset(&address, '\0', sizeof(address));
-	memcpy(&address.address, _address, _addressLength);
-	address.length = _addressLength;
-
-	return of_socket_address_ip_string(&address, NULL);
+	return &_remoteAddress;
 }
 
 - (bool)isListening
@@ -687,9 +680,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	_listening = false;
 
-	[self freeMemory: _address];
-	_address = NULL;
-	_addressLength = 0;
+	memset(&_remoteAddress, 0, sizeof(_remoteAddress));
 
 #ifdef OF_WII
 	_port = 0;

@@ -26,11 +26,6 @@ SRCS = OFApplication.m			\
        OFEnumerator.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
-       ${OFHTTPCLIENT_M}		\
-       OFHTTPCookie.m			\
-       OFHTTPCookieManager.m		\
-       OFHTTPRequest.m			\
-       OFHTTPResponse.m			\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
        OFIntrospection.m		\
@@ -130,6 +125,11 @@ SRCS_FILES = OFFile.m			\
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
+	       ${OFHTTPCLIENT_M}		\
+	       OFHTTPCookie.m			\
+	       OFHTTPCookieManager.m		\
+	       OFHTTPRequest.m			\
+	       OFHTTPResponse.m			\
 	       OFHTTPServer.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\

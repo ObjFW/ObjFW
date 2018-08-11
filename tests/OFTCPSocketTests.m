@@ -51,7 +51,8 @@ static OFString *module = @"OFTCPSocket";
 	TEST(@"-[accept]", (accepted = [server accept]))
 
 	TEST(@"-[remoteAddress]",
-	    [[accepted remoteAddress] isEqual: @"127.0.0.1"])
+	    [of_socket_address_ip_string([accepted remoteAddress], NULL)
+	    isEqual: @"127.0.0.1"])
 
 	TEST(@"-[writeString:]", [client writeString: @"Hello!"])
 

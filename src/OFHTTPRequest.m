@@ -80,7 +80,6 @@ of_http_request_method_from_string(const char *string)
 
 @implementation OFHTTPRequest
 @synthesize URL = _URL, method = _method, headers = _headers;
-@synthesize remoteAddress = _remoteAddress;
 
 + (instancetype)request
 {
@@ -121,9 +120,18 @@ of_http_request_method_from_string(const char *string)
 {
 	[_URL release];
 	[_headers release];
-	[_remoteAddress release];
 
 	[super dealloc];
+}
+
+- (void)setRemoteAddress: (const of_socket_address_t *)remoteAddress
+{
+	_remoteAddress = *remoteAddress;
+}
+
+- (const of_socket_address_t *)remoteAddress
+{
+	return &_remoteAddress;
 }
 
 - (id)copy
@@ -135,7 +143,7 @@ of_http_request_method_from_string(const char *string)
 		copy->_protocolVersion = _protocolVersion;
 		[copy setURL: _URL];
 		[copy setHeaders: _headers];
-		[copy setRemoteAddress: _remoteAddress];
+		[copy setRemoteAddress: &_remoteAddress];
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -161,7 +169,7 @@ of_http_request_method_from_string(const char *string)
 	    request->_protocolVersion.minor != _protocolVersion.minor ||
 	    ![request->_URL isEqual: _URL] ||
 	    ![request->_headers isEqual: _headers] ||
-	    ![request->_remoteAddress isEqual: _remoteAddress])
+	    !of_socket_address_equal(&request->_remoteAddress, &_remoteAddress))
 		return false;
 
 	return true;
@@ -178,7 +186,7 @@ of_http_request_method_from_string(const char *string)
 	OF_HASH_ADD(hash, _protocolVersion.minor);
 	OF_HASH_ADD_HASH(hash, [_URL hash]);
 	OF_HASH_ADD_HASH(hash, [_headers hash]);
-	OF_HASH_ADD_HASH(hash, [_remoteAddress hash]);
+	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_remoteAddress));
 
 	OF_HASH_FINALIZE(hash);
 
@@ -248,7 +256,8 @@ of_http_request_method_from_string(const char *string)
 	    @"\tHeaders = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    [self class], _URL, method, indentedHeaders, _remoteAddress];
+	    [self class], _URL, method, indentedHeaders,
+	    of_socket_address_ip_string(&_remoteAddress, NULL)];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -18,6 +18,8 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+#import "socket.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFURL;
@@ -73,7 +75,7 @@ typedef struct OF_BOXABLE {
 	of_http_request_method_t _method;
 	of_http_request_protocol_version_t _protocolVersion;
 	OFDictionary OF_GENERIC(OFString *, OFString *) *_Nullable _headers;
-	OFString *_Nullable _remoteAddress;
+	of_socket_address_t _remoteAddress;
 }
 
 /*!
@@ -105,7 +107,8 @@ typedef struct OF_BOXABLE {
 /*!
  * @brief The remote address from which the request originates.
  */
-@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *remoteAddress;
+@property OF_NULLABLE_PROPERTY (nonatomic)
+    const of_socket_address_t *remoteAddress;
 
 /*!
  * @brief Creates a new OFHTTPRequest.

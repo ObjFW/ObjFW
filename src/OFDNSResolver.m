@@ -1209,8 +1209,9 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	address = of_socket_address_parse_ip(
 	    [[query nameServers] firstObject], 53);
 
+	switch (address.family) {
 #ifdef OF_HAVE_IPV6
-	if (address.address.ss_family == AF_INET6) {
+	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
 		if (_IPv6Socket == nil) {
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket bindToHost: @"::"
@@ -1219,8 +1220,9 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		}
 
 		sock = _IPv6Socket;
-	} else {
+		break;
 #endif
+	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
 		if (_IPv4Socket == nil) {
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket bindToHost: @"0.0.0.0"
@@ -1229,9 +1231,10 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		}
 
 		sock = _IPv4Socket;
-#ifdef OF_HAVE_IPV6
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
 	}
-#endif
 
 	[sock asyncSendBuffer: [[query queryData] items]
 		       length: [[query queryData] count]
