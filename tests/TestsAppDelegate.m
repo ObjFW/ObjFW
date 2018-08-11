@@ -420,8 +420,10 @@ main(int argc, char *argv[])
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
 	[self HTTPClientTests];
 #endif
+#ifdef OF_HAVE_SOCKETS
 	[self HTTPCookieTests];
 	[self HTTPCookieManagerTests];
+#endif
 	[self XMLParserTests];
 	[self XMLNodeTests];
 	[self XMLElementBuilderTests];
