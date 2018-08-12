@@ -57,6 +57,7 @@
 #define MAX_ALLOWED_POINTERS 16
 
 #define TIMEOUT 2
+#define ATTEMPTS 3
 
 /*
  * TODO:
@@ -73,6 +74,7 @@
 	OFNumber *_ID;
 	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
 	size_t _nameServersIndex, _searchDomainsIndex;
+	size_t _attempt;
 	id _target;
 	SEL _selector;
 	id _context;
@@ -88,6 +90,7 @@
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
 @property (nonatomic) size_t nameServersIndex;
 @property (nonatomic) size_t searchDomainsIndex;
+@property (nonatomic) size_t attempt;
 @property (readonly, nonatomic) id target;
 @property (readonly, nonatomic) SEL selector;
 @property (readonly, nonatomic) id context;
@@ -470,9 +473,9 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 @synthesize ID = _ID, nameServers = _nameServers;
 @synthesize searchDomains = _searchDomains;
 @synthesize nameServersIndex = _nameServersIndex;
-@synthesize searchDomainsIndex = _searchDomainsIndex, target = _target;
-@synthesize selector = _selector, context = _context, queryData = _queryData;
-@synthesize cancelTimer = _cancelTimer;
+@synthesize searchDomainsIndex = _searchDomainsIndex, attempt = _attempt;
+@synthesize target = _target, selector = _selector, context = _context;
+@synthesize queryData = _queryData, cancelTimer = _cancelTimer;
 
 - (instancetype)initWithHost: (OFString *)host
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -1023,6 +1026,13 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	if ([query nameServersIndex] + 1 < [[query nameServers] count]) {
 		[query setNameServersIndex: [query nameServersIndex] + 1];
+		[self of_sendQuery: query];
+		return;
+	}
+
+	if ([query attempt] < ATTEMPTS) {
+		[query setAttempt: [query attempt] + 1];
+		[query setNameServersIndex: 0];
 		[self of_sendQuery: query];
 		return;
 	}
