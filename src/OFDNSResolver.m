@@ -68,7 +68,7 @@
 
 @interface OFDNSResolverQuery: OFObject
 {
-	OFString *_host;
+	OFString *_host, *_domainName;
 	of_dns_resource_record_class_t _recordClass;
 	of_dns_resource_record_type_t _recordType;
 	OFNumber *_ID;
@@ -82,7 +82,7 @@
 	OFTimer *_cancelTimer;
 }
 
-@property (readonly, nonatomic) OFString *host;
+@property (readonly, nonatomic) OFString *host, *domainName;
 @property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
 @property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
 @property (readonly, nonatomic) OFNumber *ID;
@@ -98,6 +98,7 @@
 @property (retain, nonatomic) OFTimer *cancelTimer;
 
 - (instancetype)initWithHost: (OFString *)host
+		  domainName: (OFString *)domainName
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			  ID: (OFNumber *)ID
@@ -503,21 +504,21 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 static void callback(id target, SEL selector, OFDNSResolver *resolver,
-    OFArray *answerRecords, OFArray *authorityRecords,
+    OFString *domainName, OFArray *answerRecords, OFArray *authorityRecords,
     OFArray *additionalRecords, id context, id exception)
 {
-	void (*method)(id, SEL, OFDNSResolver *, OFArray *, OFArray *,
-	    OFArray *, id, id) = (void (*)(id, SEL, OFDNSResolver *, OFArray *,
-	    OFArray *, OFArray *, id, id))
+	void (*method)(id, SEL, OFDNSResolver *, OFString *, OFArray *,
+	    OFArray *, OFArray *, id, id) = (void (*)(id, SEL, OFDNSResolver *,
+	    OFString *, OFArray *, OFArray *, OFArray *, id, id))
 	    [target methodForSelector: selector];
 
-	method(target, selector, resolver, answerRecords, authorityRecords,
-	    additionalRecords, context, exception);
+	method(target, selector, resolver, domainName, answerRecords,
+	    authorityRecords, additionalRecords, context, exception);
 }
 
 @implementation OFDNSResolverQuery
-@synthesize host = _host, recordClass = _recordClass, recordType = _recordType;
-@synthesize ID = _ID, nameServers = _nameServers;
+@synthesize host = _host, domainName = _domainName, recordClass = _recordClass;
+@synthesize recordType = _recordType, ID = _ID, nameServers = _nameServers;
 @synthesize searchDomains = _searchDomains;
 @synthesize nameServersIndex = _nameServersIndex;
 @synthesize searchDomainsIndex = _searchDomainsIndex, attempt = _attempt;
@@ -525,6 +526,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 @synthesize queryData = _queryData, cancelTimer = _cancelTimer;
 
 - (instancetype)initWithHost: (OFString *)host
+		  domainName: (OFString *)domainName
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			  ID: (OFNumber *)ID
@@ -542,6 +544,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		uint16_t tmp;
 
 		_host = [host copy];
+		_domainName = [domainName copy];
 		_recordClass = recordClass;
 		_recordType = recordType;
 		_ID = [ID retain];
@@ -576,7 +579,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 		/* QNAME */
 		for (OFString *component in
-		    [host componentsSeparatedByString: @"."]) {
+		    [domainName componentsSeparatedByString: @"."]) {
 			size_t length = [component UTF8StringLength];
 			uint8_t length8;
 
@@ -615,6 +618,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 - (void)dealloc
 {
 	[_host release];
+	[_domainName release];
 	[_ID release];
 	[_nameServers release];
 	[_searchDomains release];
@@ -977,22 +981,26 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFNumber *ID;
+	OFString *domainName;
 	OFDNSResolverQuery *query;
-
-	/* TODO: Properly try all search domains */
-	if (![host hasSuffix: @"."])
-		host = [host stringByAppendingString: @"."];
-
-	if ([host UTF8StringLength] > 253)
-		@throw [OFOutOfRangeException exception];
 
 	/* Random, unused ID */
 	do {
 		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
 	} while ([_queries objectForKey: ID] != nil);
 
+	if ([host hasSuffix: @"."])
+		domainName = host;
+	else
+		/* TODO: Properly try all search domains */
+		domainName = [host stringByAppendingString: @"."];
+
+	if ([domainName UTF8StringLength] > 253)
+		@throw [OFOutOfRangeException exception];
+
 	query = [[[OFDNSResolverQuery alloc]
 	    initWithHost: host
+	      domainName: domainName
 	     recordClass: recordClass
 	      recordType: recordType
 		      ID: ID
@@ -1063,8 +1071,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
 {
-	id target, context;
-	SEL selector;
 	OFResolveHostFailedException *exception;
 
 	if (query == nil)
@@ -1083,9 +1089,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 	}
 
-	target = [[[query target] retain] autorelease];
-	selector = [query selector];
-	context = [[[query context] retain] autorelease];
+	query = [[query retain] autorelease];
+	[_queries removeObjectForKey: [query ID]];
 
 	exception = [OFResolveHostFailedException
 	    exceptionWithHost: [query host]
@@ -1093,9 +1098,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		   recordType: [query recordType]
 			error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
 
-	[_queries removeObjectForKey: [query ID]];
-
-	callback(target, selector, self, nil, nil, nil, context, exception);
+	callback([query target], [query selector], self, [query domainName],
+	    nil, nil, nil, [query context], exception);
 }
 
 - (size_t)of_socket: (OFUDPSocket *)sock
@@ -1106,13 +1110,11 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	  exception: (id)exception
 {
 	if (exception != nil) {
-		id target = [[[query target] retain] autorelease];
-		SEL selector = [query selector];
-		id context = [[[query context] retain] autorelease];
-
+		query = [[query retain] autorelease];
 		[_queries removeObjectForKey: [query ID]];
 
-		callback(target, selector, self, nil, nil, nil, context,
+		callback([query target], [query selector], self,
+		    [query domainName], nil, nil, nil, [query context],
 		    exception);
 
 		return 0;
@@ -1241,13 +1243,14 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		additionalRecords = parseSection(buffer, length, &i,
 		    numAdditionalRecords);
 	} @catch (id e) {
-		callback([query target], [query selector], self, nil, nil, nil,
-		    [query context], e);
+		callback([query target], [query selector], self,
+		    [query domainName], nil, nil, nil, [query context], e);
 		return false;
 	}
 
-	callback([query target], [query selector], self, answerRecords,
-	    authorityRecords, additionalRecords, [query context], nil);
+	callback([query target], [query selector], self, [query domainName],
+	    answerRecords, authorityRecords, additionalRecords,
+	    [query context], nil);
 
 	return false;
 }
@@ -1278,8 +1281,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			   recordType: [query recordType]
 				error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
-		callback([query target], [query selector], self, nil, nil, nil,
-		    [query context], exception);
+		callback([query target], [query selector], self,
+		    [query domainName], nil, nil, nil, [query context],
+		    exception);
 	}
 
 	[_queries removeAllObjects];

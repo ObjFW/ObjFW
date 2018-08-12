@@ -132,11 +132,23 @@ typedef enum of_dns_resolver_error_t {
  * @param host The host to resolve
  * @param target The target to call with the result once resolving is done
  * @param selector The selector to call on the target. The signature must be
- *		   `void (OFDNSResolver *resolver,
+ *		   `void (OFDNSResolver *resolver, OFString *domainName,
  *		   nullable OFArray<OFDNSResourceRecord *> *answerRecords,
  *		   nullable OFArray<OFDNSResourceRecord *> *authorityRecords,
  *		   nullable OFArray<OFDNSResourceRecord *> *additionalRecords,
- *		   nullable id context, nullable id exception)`.
+ *		   nullable id context, nullable id exception)`.@n
+ *		   `resolver` is the acting resolver.@n
+ *		   `domainName` is the fully qualified domain name used to
+ *		   resolve the host.@n
+ *		   `answerRecords` are the answer records from the name server.
+ *		   @n
+ *		   `authorityRecords` are the authority records from the name
+ *		   server.@n
+ *		   `additionalRecords` are additional records sent by the name
+ *		   server.
+ *		   `context` is the context object originally passed.@n
+ *		   `exception` is an exception that happened during resolving,
+ *		   otherwise nil.
  * @param context A context object to pass along to the target
  */
 - (void)asyncResolveHost: (OFString *)host
@@ -152,8 +164,23 @@ typedef enum of_dns_resolver_error_t {
  * @param recordType The desired type of the records to query
  * @param target The target to call with the result once resolving is done
  * @param selector The selector to call on the target. The signature must be
- *		   `void (OFArray<OFDNSResourceRecord *> *response, id context,
- *		   id exception)`.
+ *		   `void (OFDNSResolver *resolver, OFString *domainName,
+ *		   nullable OFArray<OFDNSResourceRecord *> *answerRecords,
+ *		   nullable OFArray<OFDNSResourceRecord *> *authorityRecords,
+ *		   nullable OFArray<OFDNSResourceRecord *> *additionalRecords,
+ *		   nullable id context, nullable id exception)`.@n
+ *		   `resolver` is the acting resolver.@n
+ *		   `domainName` is the fully qualified domain name used to
+ *		   resolve the host.@n
+ *		   `answerRecords` are the answer records from the name server.
+ *		   @n
+ *		   `authorityRecords` are the authority records from the name
+ *		   server.@n
+ *		   `additionalRecords` are additional records sent by the name
+ *		   server.
+ *		   `context` is the context object originally passed.@n
+ *		   `exception` is an exception that happened during resolving,
+ *		   otherwise nil.
  * @param context A context object to pass along to the target
  */
 - (void)asyncResolveHost: (OFString *)host
