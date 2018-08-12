@@ -132,8 +132,11 @@ typedef enum of_dns_resolver_error_t {
  * @param host The host to resolve
  * @param target The target to call with the result once resolving is done
  * @param selector The selector to call on the target. The signature must be
- *		   `void (OFArray<OFDNSResourceRecord *> *response, id context,
- *		   id exception)`.
+ *		   `void (OFDNSResolver *resolver,
+ *		   nullable OFArray<OFDNSResourceRecord *> *answerRecords,
+ *		   nullable OFArray<OFDNSResourceRecord *> *authorityRecords,
+ *		   nullable OFArray<OFDNSResourceRecord *> *additionalRecords,
+ *		   nullable id context, nullable id exception)`.
  * @param context A context object to pass along to the target
  */
 - (void)asyncResolveHost: (OFString *)host

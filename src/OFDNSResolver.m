@@ -152,44 +152,40 @@ domainFromHostname(void)
 }
 
 static OFString *
-parseString(const unsigned char *buffer, size_t length, size_t *idx)
+parseString(const unsigned char *buffer, size_t length, size_t *i)
 {
-	size_t i = *idx;
 	uint8_t stringLength;
 	OFString *string;
 
-	if (i >= length)
+	if (*i >= length)
 		@throw [OFTruncatedDataException exception];
 
-	stringLength = buffer[i++];
+	stringLength = buffer[(*i)++];
 
-	if (i + stringLength > length)
+	if (*i + stringLength > length)
 		@throw [OFTruncatedDataException exception];
 
-	string = [OFString stringWithUTF8String: (char *)&buffer[i]
+	string = [OFString stringWithUTF8String: (char *)&buffer[*i]
 					 length: stringLength];
-	i += stringLength;
-
-	*idx = i;
+	*i += stringLength;
 
 	return string;
 }
 
 static OFString *
-parseName(const unsigned char *buffer, size_t length, size_t *idx,
+parseName(const unsigned char *buffer, size_t length, size_t *i,
     uint_fast8_t pointerLevel)
 {
-	size_t i = *idx;
 	OFMutableArray *components = [OFMutableArray array];
 	uint8_t componentLength;
 
 	do {
 		OFString *component;
 
-		if (i >= length)
+		if (*i >= length)
 			@throw [OFTruncatedDataException exception];
 
-		componentLength = buffer[i++];
+		componentLength = buffer[(*i)++];
 
 		if (componentLength & 0xC0) {
 			size_t j;
@@ -199,13 +195,12 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 				@throw [OFInvalidServerReplyException
 				    exception];
 
-			if (i >= length)
+			if (*i >= length)
 				@throw [OFTruncatedDataException exception];
 
-			j = ((componentLength & 0x3F) << 8) | buffer[i++];
-			*idx = i;
+			j = ((componentLength & 0x3F) << 8) | buffer[(*i)++];
 
-			if (j == i - 2)
+			if (j == *i - 2)
 				/* Pointing to itself?! */
 				@throw [OFInvalidServerReplyException
 				    exception];
@@ -222,23 +217,21 @@ parseName(const unsigned char *buffer, size_t length, size_t *idx,
 			}
 		}
 
-		if (i + componentLength > length)
+		if (*i + componentLength > length)
 			@throw [OFTruncatedDataException exception];
 
-		component = [OFString stringWithUTF8String: (char *)&buffer[i]
+		component = [OFString stringWithUTF8String: (char *)&buffer[*i]
 						    length: componentLength];
-		i += componentLength;
+		*i += componentLength;
 
 		[components addObject: component];
 	} while (componentLength > 0);
-
-	*idx = i;
 
 	return [components componentsJoinedByString: @"."];
 }
 
 static OF_KINDOF(OFDNSResourceRecord *)
-createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
+parseResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
     of_dns_resource_record_type_t recordType, uint32_t TTL,
     const unsigned char *buffer, size_t length, size_t i, uint16_t dataLength)
 {
@@ -466,6 +459,60 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 		     recordClass: recordClass
 		      recordType: recordType
 			     TTL: TTL] autorelease];
+}
+
+static OFArray *
+parseSection(const unsigned char *buffer, size_t length, size_t *i,
+    uint_fast16_t count)
+{
+	OFMutableArray *ret = [OFMutableArray array];
+
+	for (uint_fast16_t j = 0; j < count; j++) {
+		OFString *name = parseName(buffer, length, i,
+		    MAX_ALLOWED_POINTERS);
+		of_dns_resource_record_class_t recordClass;
+		of_dns_resource_record_type_t recordType;
+		uint32_t TTL;
+		uint16_t dataLength;
+		OFDNSResourceRecord *record;
+
+		if (*i + 10 > length)
+			@throw [OFTruncatedDataException exception];
+
+		recordType = (buffer[*i] << 16) | buffer[*i + 1];
+		recordClass = (buffer[*i + 2] << 16) | buffer[*i + 3];
+		TTL = (buffer[*i + 4] << 24) | (buffer[*i + 5] << 16) |
+		    (buffer[*i + 6] << 8) | buffer[*i + 7];
+		dataLength = (buffer[*i + 8] << 16) | buffer[*i + 9];
+
+		*i += 10;
+
+		if (*i + dataLength > length)
+			@throw [OFTruncatedDataException exception];
+
+		record = parseResourceRecord(name, recordClass, recordType, TTL,
+		    buffer, length, *i, dataLength);
+		*i += dataLength;
+
+		[ret addObject: record];
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
+static void callback(id target, SEL selector, OFDNSResolver *resolver,
+    OFArray *answerRecords, OFArray *authorityRecords,
+    OFArray *additionalRecords, id context, id exception)
+{
+	void (*method)(id, SEL, OFDNSResolver *, OFArray *, OFArray *,
+	    OFArray *, id, id) = (void (*)(id, SEL, OFDNSResolver *, OFArray *,
+	    OFArray *, OFArray *, id, id))
+	    [target methodForSelector: selector];
+
+	method(target, selector, resolver, answerRecords, authorityRecords,
+	    additionalRecords, context, exception);
 }
 
 @implementation OFDNSResolverQuery
@@ -1016,9 +1063,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
 {
-	id target;
+	id target, context;
 	SEL selector;
-	void (*callback)(id, SEL, OFArray *, id, id);
 	OFResolveHostFailedException *exception;
 
 	if (query == nil)
@@ -1039,8 +1085,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	target = [[[query target] retain] autorelease];
 	selector = [query selector];
-	callback = (void (*)(id, SEL, OFArray *, id, id))
-	    [target methodForSelector: selector];
+	context = [[[query context] retain] autorelease];
 
 	exception = [OFResolveHostFailedException
 	    exceptionWithHost: [query host]
@@ -1050,7 +1095,7 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	[_queries removeObjectForKey: [query ID]];
 
-	callback(target, selector, nil, [query context], exception);
+	callback(target, selector, self, nil, nil, nil, context, exception);
 }
 
 - (size_t)of_socket: (OFUDPSocket *)sock
@@ -1063,13 +1108,12 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	if (exception != nil) {
 		id target = [[[query target] retain] autorelease];
 		SEL selector = [query selector];
-		void (*callback)(id, SEL, OFArray *, id, id) =
-		    (void (*)(id, SEL, OFArray *, id, id))
-		    [target methodForSelector: selector];
+		id context = [[[query context] retain] autorelease];
 
 		[_queries removeObjectForKey: [query ID]];
 
-		callback(target, selector, nil, [query context], exception);
+		callback(target, selector, self, nil, nil, nil, context,
+		    exception);
 
 		return 0;
 	}
@@ -1091,19 +1135,17 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	       context: (id)context
 	     exception: (id)exception
 {
-	OFMutableArray *answers = nil;
+	OFArray *answerRecords = nil, *authorityRecords = nil;
+	OFArray *additionalRecords = nil;
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
-	id target;
-	SEL selector;
-	void (*callback)(id, SEL, OFArray *, id, id);
 	OFData *queryData;
 
 	if (exception != nil)
 		return false;
 
 	if (length < 2)
-		/* We can't get the ID to get the context. Give up. */
+		/* We can't get the ID to get the query. Give up. */
 		return false;
 
 	ID = [OFNumber numberWithUInt16: (buffer[0] << 8) | buffer[1]];
@@ -1115,17 +1157,14 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 	[[query cancelTimer] invalidate];
 	[_queries removeObjectForKey: ID];
 
-	target = [query target];
-	selector = [query selector];
-	callback = (void (*)(id, SEL, OFArray *, id, id))
-	    [target methodForSelector: selector];
 	queryData = [query queryData];
 
 	@try {
 		const unsigned char *queryDataBuffer;
 		size_t i;
 		of_dns_resolver_error_t error;
-		uint16_t numQuestions, numAnswers;
+		uint16_t numQuestions, numAnswers, numAuthorityRecords;
+		uint16_t numAdditionalRecords;
 
 		if (length < 12)
 			@throw [OFTruncatedDataException exception];
@@ -1179,9 +1218,9 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 					error: error];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
-
 		numAnswers = (buffer[6] << 8) | buffer[7];
-		answers = [OFMutableArray arrayWithCapacity: numAnswers];
+		numAuthorityRecords = (buffer[8] << 8) | buffer[9];
+		numAdditionalRecords = (buffer[10] << 8) | buffer[11];
 
 		i = 12;
 
@@ -1196,41 +1235,19 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			i += 4;
 		}
 
-		for (uint_fast16_t j = 0; j < numAnswers; j++) {
-			OFString *name = parseName(buffer, length, &i,
-			    MAX_ALLOWED_POINTERS);
-			of_dns_resource_record_class_t recordClass;
-			of_dns_resource_record_type_t recordType;
-			uint32_t TTL;
-			uint16_t dataLength;
-			OFDNSResourceRecord *record;
-
-			if (i + 10 > length)
-				@throw [OFTruncatedDataException exception];
-
-			recordType = (buffer[i] << 16) | buffer[i + 1];
-			recordClass = (buffer[i + 2] << 16) | buffer[i + 3];
-			TTL = (buffer[i + 4] << 24) | (buffer[i + 5] << 16) |
-			    (buffer[i + 6] << 8) | buffer[i + 7];
-			dataLength = (buffer[i + 8] << 16) | buffer[i + 9];
-
-			i += 10;
-
-			if (i + dataLength > length)
-				@throw [OFTruncatedDataException exception];
-
-			record = createResourceRecord(name, recordClass,
-			    recordType, TTL, buffer, length, i, dataLength);
-			i += dataLength;
-
-			[answers addObject: record];
-		}
+		answerRecords = parseSection(buffer, length, &i, numAnswers);
+		authorityRecords = parseSection(buffer, length, &i,
+		    numAuthorityRecords);
+		additionalRecords = parseSection(buffer, length, &i,
+		    numAdditionalRecords);
 	} @catch (id e) {
-		callback(target, selector, nil, [query context], e);
+		callback([query target], [query selector], self, nil, nil, nil,
+		    [query context], e);
 		return false;
 	}
 
-	callback(target, selector, answers, [query context], nil);
+	callback([query target], [query selector], self, answerRecords,
+	    authorityRecords, additionalRecords, [query context], nil);
 
 	return false;
 }
@@ -1253,11 +1270,6 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 
 	enumerator = [_queries objectEnumerator];
 	while ((query = [enumerator nextObject]) != nil) {
-		id target = [[[query target] retain] autorelease];
-		SEL selector = [query selector];
-		void (*callback)(id, SEL, OFArray *, id, id) =
-		    (void (*)(id, SEL, OFArray *, id, id))
-		    [target methodForSelector: selector];
 		OFResolveHostFailedException *exception;
 
 		exception = [OFResolveHostFailedException
@@ -1266,7 +1278,8 @@ createResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			   recordType: [query recordType]
 				error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
-		callback(target, selector, nil, [query context], exception);
+		callback([query target], [query selector], self, nil, nil, nil,
+		    [query context], exception);
 	}
 
 	[_queries removeAllObjects];

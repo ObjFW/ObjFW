@@ -28,7 +28,10 @@
 OF_APPLICATION_DELEGATE(OFDNS)
 
 @implementation OFDNS
-- (void)handleDNSResponse: (OFArray OF_GENERIC(OFDNSResourceRecord *) *)response
+-	(void)DNSResolver: (OFDNSResolver *)resolver
+  didReceiveAnswerRecords: (OFArray *)answerRecords
+	 authorityRecords: (OFArray *)authorityRecords
+	additionalRecords: (OFArray *)additionalRecords
 		  context: (id)context
 		exception: (id)exception
 {
@@ -37,7 +40,11 @@ OF_APPLICATION_DELEGATE(OFDNS)
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	[of_stdout writeLine: [response description]];
+	[of_stdout writeFormat: @"Answer records: %@\n"
+				@"Authority records: %@\n"
+				@"Additional records: %@\n",
+				answerRecords, authorityRecords,
+				additionalRecords];
 
 	[OFApplication terminate];
 }
@@ -76,8 +83,10 @@ OF_APPLICATION_DELEGATE(OFDNS)
 		       recordClass: recordClass
 			recordType: recordType
 			    target: self
-			  selector: @selector(handleDNSResponse:context:
-					exception:)
+			  selector: @selector(DNSResolver:
+					didReceiveAnswerRecords:
+					authorityRecords:additionalRecords:
+					context:exception:)
 			   context: nil];
 }
 @end
