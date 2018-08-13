@@ -1181,7 +1181,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return 0;
 	}
 
-	[sock asyncReceiveIntoBuffer: [self allocMemoryWithSize: 512]
+	[sock asyncReceiveIntoBuffer: [query allocMemoryWithSize: 512]
 			      length: 512
 			      target: self
 			    selector: @selector(of_socket:didReceiveIntoBuffer:
