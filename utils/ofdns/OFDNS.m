@@ -77,9 +77,11 @@ OF_APPLICATION_DELEGATE(OFDNS)
 		recordClass = of_dns_resource_record_class_parse(
 		    [arguments objectAtIndex: 2]);
 
-	if ([arguments count] >= 4)
+	if ([arguments count] >= 4) {
+		[resolver setConfigReloadInterval: 0];
 		[resolver setNameServers:
 		    [OFArray arrayWithObject: [arguments objectAtIndex: 3]]];
+	}
 
 	[resolver asyncResolveHost: [arguments objectAtIndex: 0]
 		       recordClass: recordClass

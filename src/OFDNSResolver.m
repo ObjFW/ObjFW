@@ -24,6 +24,7 @@
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFData.h"
+#import "OFDate.h"
 #import "OFDictionary.h"
 #import "OFFile.h"
 #import "OFLocale.h"
@@ -58,6 +59,23 @@
 
 #define TIMEOUT 2
 #define ATTEMPTS 3
+
+#if defined(OF_HAIKU)
+# define HOSTS_PATH @"/system/settings/network/hosts"
+# define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
+#elif defined(OF_MORPHOS)
+# define HOSTS_PATH @"ENV:sys/net/hosts"
+# define RESOLV_CONF_PATH @"ENV:sys/net/resolv.conf"
+#elif defined(OF_AMIGAOS4)
+# define HOSTS_PATH @"DEVS:Internet/hosts"
+# define RESOLV_CONF_PATH @"DEVS:Internet/resolv.conf"
+#elif defined(OF_AMIGAOS)
+# define HOSTS_PATH @"AmiTCP:db/hosts"
+# define RESOLV_CONF_PATH @"AmiTCP:db/resolv.conf"
+#else
+# define HOSTS_PATH @"/etc/hosts"
+# define RESOLV_CONF_PATH @"/etc/resolv.conf"
+#endif
 
 /*
  * TODO:
@@ -110,6 +128,7 @@
 @end
 
 @interface OFDNSResolver ()
+- (void)of_parseConfig;
 #ifdef OF_HAVE_FILES
 - (void)of_parseHosts: (OFString *)path;
 # ifndef OF_WINDOWS
@@ -120,6 +139,7 @@
 #ifdef OF_WINDOWS
 - (void)of_parseNetworkParams;
 #endif
+- (void)of_reloadConfig;
 - (void)of_sendQuery: (OFDNSResolverQuery *)query;
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query;
 - (size_t)of_socket: (OFUDPSocket *)sock
@@ -635,7 +655,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 @synthesize staticHosts = _staticHosts, nameServers = _nameServers;
 @synthesize localDomain = _localDomain, searchDomains = _searchDomains;
 @synthesize minNumberOfDotsInAbsoluteName = _minNumberOfDotsInAbsoluteName;
-@synthesize usesTCP = _usesTCP;
+@synthesize usesTCP = _usesTCP, configReloadInterval = _configReloadInterval;
 
 + (instancetype)resolver
 {
@@ -647,90 +667,85 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	self = [super init];
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
-#ifdef OF_WINDOWS
-		OFString *path;
-#endif
-
-		_minNumberOfDotsInAbsoluteName = 1;
-
-#ifdef OF_HAVE_FILES
-# if defined(OF_WINDOWS)
-		path = [[OFWindowsRegistryKey localMachineKey]
-		    stringForValue: @"DataBasePath"
-			subKeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
-				    @"Tcpip\\Parameters"];
-		path = [path stringByAppendingPathComponent: @"hosts"];
-
-		if (path != nil)
-			[self of_parseHosts: path];
-# elif defined(OF_HAIKU)
-		[self of_parseHosts: @"/boot/common/settings/network/hosts"];
-# elif defined(OF_MORPHOS)
-		[self of_parseHosts: @"ENVARC:sys/net/hosts"];
-# elif defined(OF_AMIGAOS4)
-		[self of_parseHosts: @"DEVS:Internet/hosts"];
-# elif defined(OF_AMIGAOS)
-		[self of_parseHosts: @"AmiTCP:db/hosts"];
-# else
-		[self of_parseHosts: @"/etc/hosts"];
-# endif
-
-# if defined(OF_MORPHOS)
-		[self of_parseResolvConf: @"ENV:sys/net/resolv.conf"];
-# elif !defined(OF_WINDOWS)
-		[self of_parseResolvConf: @"/etc/resolv.conf"];
-		[self of_parseResolvConf: @"/etc/resolv.conf.tail"];
-# endif
-#endif
-#ifdef OF_WINDOWS
-		[self of_parseNetworkParams];
-#endif
-
-		if (_staticHosts == nil) {
-			OFArray *localhost =
-
-#ifdef OF_HAVE_IPV6
-			localhost = [OFArray arrayWithObjects:
-			    @"::1", @"127.0.0.1", nil];
-#else
-			localhost = [OFArray arrayWithObject: @"127.0.0.1"];
-#endif
-
-			_staticHosts = [[OFDictionary alloc]
-			    initWithObject: localhost
-				    forKey: @"localhost"];
-		}
-
-		if (_nameServers == nil)
-#ifdef OF_HAVE_IPV6
-			_nameServers = [[OFArray alloc]
-			    initWithObjects: @"127.0.0.1", @"::1", nil];
-#else
-			_nameServers = [[OFArray alloc]
-			    initWithObject: @"127.0.0.1"];
-#endif
-
-		if (_localDomain == nil)
-			_localDomain = [domainFromHostname() copy];
-
-		if (_searchDomains == nil) {
-			if (_localDomain != nil)
-				_searchDomains = [[OFArray alloc]
-				    initWithObject: _localDomain];
-			else
-				_searchDomains = [[OFArray alloc] init];
-		}
-
 		_queries = [[OFMutableDictionary alloc] init];
 
-		objc_autoreleasePoolPop(pool);
+		[self of_parseConfig];
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (void)of_parseConfig
+{
+	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_WINDOWS
+	OFString *path;
+#endif
+
+	_minNumberOfDotsInAbsoluteName = 1;
+	_usesTCP = false;
+	_configReloadInterval = 2;
+
+#if defined(OF_WINDOWS)
+# ifdef OF_HAVE_FILES
+	path = [[OFWindowsRegistryKey localMachineKey]
+	    stringForValue: @"DataBasePath"
+		subKeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+			    @"Tcpip\\Parameters"];
+	path = [path stringByAppendingPathComponent: @"hosts"];
+
+	if (path != nil)
+		[self of_parseHosts: path];
+# endif
+
+	[self of_parseNetworkParams];
+#elif defined(OF_HAVE_FILES)
+	[self of_parseHosts: HOSTS_PATH];
+# ifdef OF_OPENBSD
+	[self of_parseHosts: @"/etc/resolv.conf.tail"];
+# endif
+
+	[self of_parseResolvConf: RESOLV_CONF_PATH];
+#endif
+
+	if (_staticHosts == nil) {
+		OFArray *localhost =
+#ifdef OF_HAVE_IPV6
+		    [OFArray arrayWithObjects: @"::1", @"127.0.0.1", nil];
+#else
+		    [OFArray arrayWithObject: @"127.0.0.1"];
+#endif
+
+		_staticHosts = [[OFDictionary alloc]
+		    initWithObject: localhost
+			    forKey: @"localhost"];
+	}
+
+	if (_nameServers == nil)
+#ifdef OF_HAVE_IPV6
+		_nameServers = [[OFArray alloc]
+		    initWithObjects: @"127.0.0.1", @"::1", nil];
+#else
+		_nameServers = [[OFArray alloc] initWithObject: @"127.0.0.1"];
+#endif
+
+	if (_localDomain == nil)
+		_localDomain = [domainFromHostname() copy];
+
+	if (_searchDomains == nil) {
+		if (_localDomain != nil)
+			_searchDomains = [[OFArray alloc]
+			    initWithObject: _localDomain];
+		else
+			_searchDomains = [[OFArray alloc] init];
+	}
+
+	_lastConfigReload = [[OFDate alloc] init];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)dealloc
@@ -741,11 +756,12 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[_nameServers release];
 	[_localDomain release];
 	[_searchDomains release];
-	[_queries release];
+	[_lastConfigReload release];
 	[_IPv4Socket release];
 #ifdef OF_HAVE_IPV6
 	[_IPv6Socket release];
 #endif
+	[_queries release];
 
 	[super dealloc];
 }
@@ -959,6 +975,39 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 #endif
 
+- (void)of_reloadConfig
+{
+	/*
+	 * TODO: Rather than reparsing every, check what actually changed
+	 * (mtime) and only reset those.
+	 */
+
+	if (_lastConfigReload != nil && _configReloadInterval > 0 &&
+	    [_lastConfigReload timeIntervalSinceNow] < _configReloadInterval)
+		return;
+
+	[_staticHosts release];
+	_staticHosts = nil;
+
+	[_nameServers release];
+	_nameServers = nil;
+
+	[_localDomain release];
+	_localDomain = nil;
+
+	[_searchDomains release];
+	_searchDomains = nil;
+
+	_minNumberOfDotsInAbsoluteName = 1;
+	_usesTCP = false;
+	_configReloadInterval = 2;
+
+	[_lastConfigReload release];
+	_lastConfigReload = nil;
+
+	[self of_parseConfig];
+}
+
 - (void)asyncResolveHost: (OFString *)host
 		  target: (id)target
 		selector: (SEL)selector
@@ -983,6 +1032,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	OFNumber *ID;
 	OFString *domainName;
 	OFDNSResolverQuery *query;
+
+	[self of_reloadConfig];
 
 	/* Random, unused ID */
 	do {

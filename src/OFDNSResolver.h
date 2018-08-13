@@ -23,6 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDNSResolverQuery;
+@class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFNumber;
@@ -63,6 +64,11 @@ typedef enum of_dns_resolver_error_t {
  * @class OFDNSResolver OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
  * @brief A class for resolving DNS names.
+ *
+ * @note If you change any of the properties, make sure to set
+ *	 @ref configReloadInterval to 0, as otherwise your changes will be
+ *	 reverted back to the system configuration on the next periodic config
+ *	 reload.
  */
 @interface OFDNSResolver: OFObject
 {
@@ -73,6 +79,8 @@ typedef enum of_dns_resolver_error_t {
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	size_t _minNumberOfDotsInAbsoluteName;
 	bool _usesTCP;
+	of_time_interval_t _configReloadInterval;
+	OFDate *_lastConfigReload;
 	OFUDPSocket *_IPv4Socket;
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
@@ -115,6 +123,13 @@ typedef enum of_dns_resolver_error_t {
  * @brief Whether the resolver uses TCP to talk to a name server.
  */
 @property (nonatomic) bool usesTCP;
+
+/*!
+ * @brief The interval in seconds in which the config should be reloaded.
+ *
+ * Setting this to 0 disables config reloading.
+ */
+@property (nonatomic) of_time_interval_t configReloadInterval;
 
 /*!
  * @brief Creates a new, autoreleased OFDNSResolver.
