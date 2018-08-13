@@ -78,7 +78,7 @@ typedef enum of_dns_resolver_error_t {
 	OFString *_Nullable _localDomain;
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	of_time_interval_t _timeout;
-	unsigned int _maxRetries;
+	unsigned int _maxAttempts;
 	size_t _minNumberOfDotsInAbsoluteName;
 	bool _usesTCP;
 	of_time_interval_t _configReloadInterval;
@@ -123,11 +123,11 @@ typedef enum of_dns_resolver_error_t {
 @property (nonatomic) of_time_interval_t timeout;
 
 /*!
- * @brief The number of retries after which to give up resolving a host.
+ * @brief The number of attempts before giving up to resolve a host.
  *
- * Trying all name servers once is considered a single retry.
+ * Trying all name servers once is considered a single attempt.
  */
-@property (nonatomic) unsigned int maxRetries;
+@property (nonatomic) unsigned int maxAttempts;
 
 /*!
  * @brief The minimum number of dots for a name to be considered absolute.

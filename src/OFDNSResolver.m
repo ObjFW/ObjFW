@@ -37,6 +37,7 @@
 #endif
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -91,7 +92,7 @@
 	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
 	size_t _nameServersIndex, _searchDomainsIndex;
 	of_time_interval_t _timeout;
-	unsigned int _maxRetries;
+	unsigned int _maxAttempts;
 	size_t _attempt;
 	id _target;
 	SEL _selector;
@@ -108,7 +109,7 @@
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
 		     timeout: (of_time_interval_t)timeout
-		  maxRetries: (unsigned int)maxRetries
+		 maxAttempts: (unsigned int)maxAttempts
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context;
@@ -533,7 +534,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
 		     timeout: (of_time_interval_t)timeout
-		  maxRetries: (unsigned int)maxRetries
+		 maxAttempts: (unsigned int)maxAttempts
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context
@@ -553,7 +554,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		_nameServers = [nameServers copy];
 		_searchDomains = [searchDomains copy];
 		_timeout = timeout;
-		_maxRetries = maxRetries;
+		_maxAttempts = maxAttempts;
 		_target = [target retain];
 		_selector = selector;
 		_context = [context retain];
@@ -638,7 +639,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 @implementation OFDNSResolver
 @synthesize staticHosts = _staticHosts, nameServers = _nameServers;
 @synthesize localDomain = _localDomain, searchDomains = _searchDomains;
-@synthesize timeout = _timeout, maxRetries = _maxRetries;
+@synthesize timeout = _timeout, maxAttempts = _maxAttempts;
 @synthesize minNumberOfDotsInAbsoluteName = _minNumberOfDotsInAbsoluteName;
 @synthesize usesTCP = _usesTCP, configReloadInterval = _configReloadInterval;
 
@@ -666,7 +667,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 - (void)of_setDefaults
 {
 	_timeout = 2;
-	_maxRetries = 3;
+	_maxAttempts = 3;
 	_minNumberOfDotsInAbsoluteName = 1;
 	_usesTCP = false;
 	_configReloadInterval = 2;
@@ -678,6 +679,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 #ifdef OF_WINDOWS
 	OFString *path;
 #endif
+
+	[self of_setDefaults];
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
@@ -909,18 +912,32 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 - (void)of_parseResolvConfOption: (OFString *)option
 {
-	if ([option hasPrefix: @"ndots:"]) {
-		option = [option substringWithRange:
-		    of_range(6, [option length] - 6)];
+	@try {
+		if ([option hasPrefix: @"ndots:"]) {
+			option = [option substringWithRange:
+			    of_range(6, [option length] - 6)];
 
-		@try {
 			_minNumberOfDotsInAbsoluteName =
 			    (size_t)[option decimalValue];
-		} @catch (id e) {
-			return;
-		}
-	} else if ([option isEqual: @"tcp"])
-		_usesTCP = true;
+		} else if ([option hasPrefix: @"timeout:"]) {
+			option = [option substringWithRange:
+			    of_range(8, [option length] - 8)];
+
+			_timeout = [option decimalValue];
+		} else if ([option hasPrefix: @"attempts:"]) {
+			option = [option substringWithRange:
+			    of_range(9, [option length] - 9)];
+
+			_maxAttempts = (unsigned int)[option decimalValue];
+		} else if ([option hasPrefix: @"reload-period:"]) {
+			option = [option substringWithRange:
+			    of_range(14, [option length] - 14)];
+
+			_configReloadInterval = [option decimalValue];
+		} else if ([option isEqual: @"tcp"])
+			_usesTCP = true;
+	} @catch (OFInvalidFormatException *e) {
+	}
 }
 # endif
 #endif
@@ -1046,7 +1063,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	     nameServers: _nameServers
 	   searchDomains: _searchDomains
 		 timeout: _timeout
-	      maxRetries: _maxRetries
+	     maxAttempts: _maxAttempts
 		  target: target
 		selector: selector
 		 context: context] autorelease];
@@ -1125,7 +1142,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 	}
 
-	if (query->_attempt < query->_maxRetries) {
+	if (query->_attempt < query->_maxAttempts) {
 		query->_attempt++;
 		query->_nameServersIndex = 0;
 		[self of_sendQuery: query];
