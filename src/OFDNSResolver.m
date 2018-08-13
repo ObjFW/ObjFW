@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <string.h>
 #include "unistd_wrapper.h"
 
@@ -98,6 +99,7 @@
 	SEL _selector;
 	id _context;
 	OFData *_queryData;
+	of_socket_address_t _usedNameServer;
 	OFTimer *_cancelTimer;
 }
 
@@ -1077,7 +1079,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 - (void)of_sendQuery: (OFDNSResolverQuery *)query
 {
-	of_socket_address_t address;
 	OFUDPSocket *sock;
 
 	[query->_cancelTimer invalidate];
@@ -1090,10 +1091,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				    object: query
 				   repeats: false] retain];
 
-	address = of_socket_address_parse_ip(
+	query->_usedNameServer = of_socket_address_parse_ip(
 	    [query->_nameServers objectAtIndex: query->_nameServersIndex], 53);
 
-	switch (address.family) {
+	switch (query->_usedNameServer.family) {
 #ifdef OF_HAVE_IPV6
 	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
 		if (_IPv6Socket == nil) {
@@ -1122,7 +1123,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 	[sock asyncSendBuffer: [query->_queryData items]
 		       length: [query->_queryData count]
-		     receiver: address
+		     receiver: query->_usedNameServer
 		       target: self
 		     selector: @selector(of_socket:didSendBuffer:bytesSent:
 				   receiver:context:exception:)
@@ -1202,18 +1203,25 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
 
-	if (exception != nil)
+	if (exception != nil) {
+		if ([exception respondsToSelector: @selector(errNo)])
+			return ([exception errNo] == EINTR);
+
 		return false;
+	}
 
 	if (length < 2)
-		/* We can't get the ID to get the query. Give up. */
-		return false;
+		/* We can't get the ID to get the query. Ignore packet. */
+		return true;
 
 	ID = [OFNumber numberWithUInt16: (buffer[0] << 8) | buffer[1]];
 	query = [[[_queries objectForKey: ID] retain] autorelease];
 
 	if (query == nil)
-		return false;
+		return true;
+
+	if (!of_socket_address_equal(&sender, &query->_usedNameServer))
+		return true;
 
 	[query->_cancelTimer invalidate];
 	[query->_cancelTimer release];
