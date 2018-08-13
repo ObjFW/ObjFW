@@ -57,9 +57,6 @@
  */
 #define MAX_ALLOWED_POINTERS 16
 
-#define TIMEOUT 2
-#define ATTEMPTS 3
-
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
@@ -93,6 +90,8 @@
 	OFNumber *_ID;
 	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
 	size_t _nameServersIndex, _searchDomainsIndex;
+	of_time_interval_t _timeout;
+	unsigned int _maxRetries;
 	size_t _attempt;
 	id _target;
 	SEL _selector;
@@ -108,12 +107,15 @@
 			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+		     timeout: (of_time_interval_t)timeout
+		  maxRetries: (unsigned int)maxRetries
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context;
 @end
 
 @interface OFDNSResolver ()
+- (void)of_setDefaults;
 - (void)of_parseConfig;
 #ifdef OF_HAVE_FILES
 - (void)of_parseHosts: (OFString *)path;
@@ -530,6 +532,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+		     timeout: (of_time_interval_t)timeout
+		  maxRetries: (unsigned int)maxRetries
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context
@@ -548,6 +552,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		_ID = [ID retain];
 		_nameServers = [nameServers copy];
 		_searchDomains = [searchDomains copy];
+		_timeout = timeout;
+		_maxRetries = maxRetries;
 		_target = [target retain];
 		_selector = selector;
 		_context = [context retain];
@@ -632,6 +638,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 @implementation OFDNSResolver
 @synthesize staticHosts = _staticHosts, nameServers = _nameServers;
 @synthesize localDomain = _localDomain, searchDomains = _searchDomains;
+@synthesize timeout = _timeout, maxRetries = _maxRetries;
 @synthesize minNumberOfDotsInAbsoluteName = _minNumberOfDotsInAbsoluteName;
 @synthesize usesTCP = _usesTCP, configReloadInterval = _configReloadInterval;
 
@@ -656,16 +663,21 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	return self;
 }
 
+- (void)of_setDefaults
+{
+	_timeout = 2;
+	_maxRetries = 3;
+	_minNumberOfDotsInAbsoluteName = 1;
+	_usesTCP = false;
+	_configReloadInterval = 2;
+}
+
 - (void)of_parseConfig
 {
 	void *pool = objc_autoreleasePoolPush();
 #ifdef OF_WINDOWS
 	OFString *path;
 #endif
-
-	_minNumberOfDotsInAbsoluteName = 1;
-	_usesTCP = false;
-	_configReloadInterval = 2;
 
 #if defined(OF_WINDOWS)
 # ifdef OF_HAVE_FILES
@@ -976,9 +988,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[_searchDomains release];
 	_searchDomains = nil;
 
-	_minNumberOfDotsInAbsoluteName = 1;
-	_usesTCP = false;
-	_configReloadInterval = 2;
+	[self of_setDefaults];
 
 	[_lastConfigReload release];
 	_lastConfigReload = nil;
@@ -1035,6 +1045,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		      ID: ID
 	     nameServers: _nameServers
 	   searchDomains: _searchDomains
+		 timeout: _timeout
+	      maxRetries: _maxRetries
 		  target: target
 		selector: selector
 		 context: context] autorelease];
@@ -1055,7 +1067,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[query->_cancelTimer release];
 	query->_cancelTimer = nil;
 	query->_cancelTimer = [[OFTimer
-	    scheduledTimerWithTimeInterval: TIMEOUT
+	    scheduledTimerWithTimeInterval: query->_timeout
 				    target: self
 				  selector: @selector(of_queryWithIDTimedOut:)
 				    object: query
@@ -1113,7 +1125,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 	}
 
-	if (query->_attempt < ATTEMPTS) {
+	if (query->_attempt < query->_maxRetries) {
 		query->_attempt++;
 		query->_nameServersIndex = 0;
 		[self of_sendQuery: query];
