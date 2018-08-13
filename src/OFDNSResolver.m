@@ -86,6 +86,7 @@
 
 @interface OFDNSResolverQuery: OFObject
 {
+@public
 	OFString *_host, *_domainName;
 	of_dns_resource_record_class_t _recordClass;
 	of_dns_resource_record_type_t _recordType;
@@ -99,21 +100,6 @@
 	OFData *_queryData;
 	OFTimer *_cancelTimer;
 }
-
-@property (readonly, nonatomic) OFString *host, *domainName;
-@property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
-@property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
-@property (readonly, nonatomic) OFNumber *ID;
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *nameServers;
-@property (readonly, nonatomic) OFArray OF_GENERIC(OFString *) *searchDomains;
-@property (nonatomic) size_t nameServersIndex;
-@property (nonatomic) size_t searchDomainsIndex;
-@property (nonatomic) size_t attempt;
-@property (readonly, nonatomic) id target;
-@property (readonly, nonatomic) SEL selector;
-@property (readonly, nonatomic) id context;
-@property (readonly, nonatomic) OFData *queryData;
-@property (retain, nonatomic) OFTimer *cancelTimer;
 
 - (instancetype)initWithHost: (OFString *)host
 		  domainName: (OFString *)domainName
@@ -537,14 +523,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 
 @implementation OFDNSResolverQuery
-@synthesize host = _host, domainName = _domainName, recordClass = _recordClass;
-@synthesize recordType = _recordType, ID = _ID, nameServers = _nameServers;
-@synthesize searchDomains = _searchDomains;
-@synthesize nameServersIndex = _nameServersIndex;
-@synthesize searchDomainsIndex = _searchDomainsIndex, attempt = _attempt;
-@synthesize target = _target, selector = _selector, context = _context;
-@synthesize queryData = _queryData, cancelTimer = _cancelTimer;
-
 - (instancetype)initWithHost: (OFString *)host
 		  domainName: (OFString *)domainName
 		 recordClass: (of_dns_resource_record_class_t)recordClass
@@ -1073,16 +1051,18 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	of_socket_address_t address;
 	OFUDPSocket *sock;
 
-	[[query cancelTimer] invalidate];
-	[query setCancelTimer: [OFTimer
+	[query->_cancelTimer invalidate];
+	[query->_cancelTimer release];
+	query->_cancelTimer = nil;
+	query->_cancelTimer = [[OFTimer
 	    scheduledTimerWithTimeInterval: TIMEOUT
 				    target: self
 				  selector: @selector(of_queryWithIDTimedOut:)
 				    object: query
-				   repeats: false]];
+				   repeats: false] retain];
 
 	address = of_socket_address_parse_ip(
-	    [[query nameServers] objectAtIndex: [query nameServersIndex]], 53);
+	    [query->_nameServers objectAtIndex: query->_nameServersIndex], 53);
 
 	switch (address.family) {
 #ifdef OF_HAVE_IPV6
@@ -1111,8 +1091,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	[sock asyncSendBuffer: [[query queryData] items]
-		       length: [[query queryData] count]
+	[sock asyncSendBuffer: [query->_queryData items]
+		       length: [query->_queryData count]
 		     receiver: address
 		       target: self
 		     selector: @selector(of_socket:didSendBuffer:bytesSent:
@@ -1127,30 +1107,30 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if (query == nil)
 		return;
 
-	if ([query nameServersIndex] + 1 < [[query nameServers] count]) {
-		[query setNameServersIndex: [query nameServersIndex] + 1];
+	if (query->_nameServersIndex + 1 < [query->_nameServers count]) {
+		query->_nameServersIndex++;
 		[self of_sendQuery: query];
 		return;
 	}
 
-	if ([query attempt] < ATTEMPTS) {
-		[query setAttempt: [query attempt] + 1];
-		[query setNameServersIndex: 0];
+	if (query->_attempt < ATTEMPTS) {
+		query->_attempt++;
+		query->_nameServersIndex = 0;
 		[self of_sendQuery: query];
 		return;
 	}
 
 	query = [[query retain] autorelease];
-	[_queries removeObjectForKey: [query ID]];
+	[_queries removeObjectForKey: query->_ID];
 
 	exception = [OFResolveHostFailedException
-	    exceptionWithHost: [query host]
-		  recordClass: [query recordClass]
-		   recordType: [query recordType]
+	    exceptionWithHost: query->_host
+		  recordClass: query->_recordClass
+		   recordType: query->_recordType
 			error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
 
-	callback([query target], [query selector], self, [query domainName],
-	    nil, nil, nil, [query context], exception);
+	callback(query->_target, query->_selector, self, query->_domainName,
+	    nil, nil, nil, query->_context, exception);
 }
 
 - (size_t)of_socket: (OFUDPSocket *)sock
@@ -1162,10 +1142,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	if (exception != nil) {
 		query = [[query retain] autorelease];
-		[_queries removeObjectForKey: [query ID]];
+		[_queries removeObjectForKey: query->_ID];
 
-		callback([query target], [query selector], self,
-		    [query domainName], nil, nil, nil, [query context],
+		callback(query->_target, query->_selector, self,
+		    query->_domainName, nil, nil, nil, query->_context,
 		    exception);
 
 		return 0;
@@ -1192,7 +1172,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	OFArray *additionalRecords = nil;
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
-	OFData *queryData;
 
 	if (exception != nil)
 		return false;
@@ -1207,10 +1186,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if (query == nil)
 		return false;
 
-	[[query cancelTimer] invalidate];
+	[query->_cancelTimer invalidate];
+	[query->_cancelTimer release];
+	query->_cancelTimer = nil;
 	[_queries removeObjectForKey: ID];
-
-	queryData = [query queryData];
 
 	@try {
 		const unsigned char *queryDataBuffer;
@@ -1222,10 +1201,11 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		if (length < 12)
 			@throw [OFTruncatedDataException exception];
 
-		if ([queryData itemSize] != 1 || [queryData count] < 12)
+		if ([query->_queryData itemSize] != 1 ||
+		    [query->_queryData count] < 12)
 			@throw [OFInvalidArgumentException exception];
 
-		queryDataBuffer = [queryData items];
+		queryDataBuffer = [query->_queryData items];
 
 		/* QR */
 		if ((buffer[2] & 0x80) == 0)
@@ -1265,9 +1245,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 		if (buffer[3] & 0x0F)
 			@throw [OFResolveHostFailedException
-			    exceptionWithHost: [query host]
-				  recordClass: [query recordClass]
-				   recordType: [query recordType]
+			    exceptionWithHost: query->_host
+				  recordClass: query->_recordClass
+				   recordType: query->_recordType
 					error: error];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
@@ -1294,14 +1274,14 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		additionalRecords = parseSection(buffer, length, &i,
 		    numAdditionalRecords);
 	} @catch (id e) {
-		callback([query target], [query selector], self,
-		    [query domainName], nil, nil, nil, [query context], e);
+		callback(query->_target, query->_selector, self,
+		    query->_domainName, nil, nil, nil, query->_context, e);
 		return false;
 	}
 
-	callback([query target], [query selector], self, [query domainName],
+	callback(query->_target, query->_selector, self, query->_domainName,
 	    answerRecords, authorityRecords, additionalRecords,
-	    [query context], nil);
+	    query->_context, nil);
 
 	return false;
 }
@@ -1327,13 +1307,13 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		OFResolveHostFailedException *exception;
 
 		exception = [OFResolveHostFailedException
-		    exceptionWithHost: [query host]
-			  recordClass: [query recordClass]
-			   recordType: [query recordType]
+		    exceptionWithHost: query->_host
+			  recordClass: query->_recordClass
+			   recordType: query->_recordType
 				error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
-		callback([query target], [query selector], self,
-		    [query domainName], nil, nil, nil, [query context],
+		callback(query->_target, query->_selector, self,
+		    query->_domainName, nil, nil, nil, query->_context,
 		    exception);
 	}
 
