@@ -80,7 +80,7 @@ typedef u8 sa_family_t;
 #endif
 
 /*!
- * @enum of_socket_address_type_t socket.h ObjFW/socket.h
+ * @brief A socket address family.
  */
 typedef enum {
 	OF_SOCKET_ADDRESS_FAMILY_UNKNOWN,
