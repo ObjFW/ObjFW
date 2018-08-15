@@ -109,7 +109,9 @@
 		  recordType: (of_dns_resource_record_type_t)recordType
 			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+	    nameServersIndex: (size_t)nameServersIndex
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+	  searchDomainsIndex: (size_t)searchDomainsIndex
 		     timeout: (of_time_interval_t)timeout
 		 maxAttempts: (unsigned int)maxAttempts
 		      target: (id)target
@@ -131,6 +133,18 @@
 - (void)of_parseNetworkParams;
 #endif
 - (void)of_reloadConfig;
+- (void)of_resolveHost: (OFString *)host
+	   recordClass: (of_dns_resource_record_class_t)recordClass
+	    recordType: (of_dns_resource_record_type_t)recordType
+	   nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+      nameServersIndex: (size_t)nameServersIndex
+	 searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+    searchDomainsIndex: (size_t)searchDomainsIndex
+	       timeout: (unsigned int)timeout
+	   maxAttempts: (unsigned int)maxAttempts
+		target: (id)target
+	      selector: (SEL)selector
+	       context: (id)context;
 - (void)of_sendQuery: (OFDNSResolverQuery *)query;
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query;
 - (size_t)of_socket: (OFUDPSocket *)sock
@@ -161,6 +175,23 @@ domainFromHostname(void)
 
 	return [OFString stringWithCString: domain + 1
 				  encoding: [OFLocale encoding]];
+}
+
+static bool
+isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
+{
+	const char *UTF8String = [host UTF8String];
+	size_t length = [host UTF8StringLength];
+	unsigned int dots = 0;
+
+	if ([host hasSuffix: @"."])
+		return true;
+
+	for (size_t i = 0; i < length; i++)
+		if (UTF8String[i] == '.')
+			dots++;
+
+	return (dots >= minNumberOfDotsInAbsoluteName);
 }
 
 static OFString *
@@ -534,7 +565,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		  recordType: (of_dns_resource_record_type_t)recordType
 			  ID: (OFNumber *)ID
 		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+	    nameServersIndex: (size_t)nameServersIndex
 	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+	  searchDomainsIndex: (size_t)searchDomainsIndex
 		     timeout: (of_time_interval_t)timeout
 		 maxAttempts: (unsigned int)maxAttempts
 		      target: (id)target
@@ -554,7 +587,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		_recordType = recordType;
 		_ID = [ID retain];
 		_nameServers = [nameServers copy];
+		_nameServersIndex = nameServersIndex;
 		_searchDomains = [searchDomains copy];
+		_searchDomainsIndex = searchDomainsIndex;
 		_timeout = timeout;
 		_maxAttempts = maxAttempts;
 		_target = [target retain];
@@ -920,7 +955,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			    of_range(6, [option length] - 6)];
 
 			_minNumberOfDotsInAbsoluteName =
-			    (size_t)[option decimalValue];
+			    (unsigned int)[option decimalValue];
 		} else if ([option hasPrefix: @"timeout:"]) {
 			option = [option substringWithRange:
 			    of_range(8, [option length] - 8)];
@@ -1028,12 +1063,18 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		       context: context];
 }
 
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
+- (void)of_resolveHost: (OFString *)host
+	   recordClass: (of_dns_resource_record_class_t)recordClass
+	    recordType: (of_dns_resource_record_type_t)recordType
+	   nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+      nameServersIndex: (size_t)nameServersIndex
+	 searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
+    searchDomainsIndex: (size_t)searchDomainsIndex
+	       timeout: (unsigned int)timeout
+	   maxAttempts: (unsigned int)maxAttempts
+		target: (id)target
+	      selector: (SEL)selector
+	       context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFNumber *ID;
@@ -1047,34 +1088,57 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
 	} while ([_queries objectForKey: ID] != nil);
 
-	if ([host hasSuffix: @"."])
+	if (isFQDN(host, _minNumberOfDotsInAbsoluteName))
 		domainName = host;
 	else
-		/* TODO: Properly try all search domains */
-		domainName = [host stringByAppendingString: @"."];
+		domainName = [OFString stringWithFormat: @"%@.%@.",
+		    host, [searchDomains objectAtIndex: searchDomainsIndex]];
 
 	if ([domainName UTF8StringLength] > 253)
 		@throw [OFOutOfRangeException exception];
 
 	query = [[[OFDNSResolverQuery alloc]
-	    initWithHost: host
-	      domainName: domainName
-	     recordClass: recordClass
-	      recordType: recordType
-		      ID: ID
-	     nameServers: _nameServers
-	   searchDomains: _searchDomains
-		 timeout: _timeout
-	     maxAttempts: _maxAttempts
-		  target: target
-		selector: selector
-		 context: context] autorelease];
+		  initWithHost: host
+		    domainName: domainName
+		   recordClass: recordClass
+		    recordType: recordType
+			    ID: ID
+		   nameServers: _nameServers
+	      nameServersIndex: nameServersIndex
+		 searchDomains: _searchDomains
+	    searchDomainsIndex: searchDomainsIndex
+		       timeout: _timeout
+		   maxAttempts: _maxAttempts
+			target: target
+		      selector: selector
+		       context: context] autorelease];
 	[_queries setObject: query
 		     forKey: ID];
 
 	[self of_sendQuery: query];
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (void)asyncResolveHost: (OFString *)host
+	     recordClass: (of_dns_resource_record_class_t)recordClass
+	      recordType: (of_dns_resource_record_type_t)recordType
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
+	[self of_resolveHost: host
+		 recordClass: recordClass
+		  recordType: recordType
+		 nameServers: _nameServers
+	    nameServersIndex: 0
+	       searchDomains: _searchDomains
+	  searchDomainsIndex: 0
+		     timeout: _timeout
+		 maxAttempts: _maxAttempts
+		      target: target
+		    selector: selector
+		     context: context];
 }
 
 - (void)of_sendQuery: (OFDNSResolverQuery *)query
@@ -1267,6 +1331,26 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			error = OF_DNS_RESOLVER_ERROR_SERVER_FAILURE;
 			break;
 		case 3:
+			if (query->_searchDomainsIndex + 1 <
+			    [query->_searchDomains count]) {
+				query->_searchDomainsIndex++;
+
+				[self of_resolveHost: query->_host
+					 recordClass: query->_recordClass
+					  recordType: query->_recordType
+					 nameServers: query->_nameServers
+				    nameServersIndex: query->_nameServersIndex
+				       searchDomains: query->_searchDomains
+				  searchDomainsIndex: query->_searchDomainsIndex
+					     timeout: query->_timeout
+					 maxAttempts: query->_maxAttempts
+					      target: query->_target
+					    selector: query->_selector
+					     context: query->_context];
+
+				return false;
+			}
+
 			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
 			break;
 		case 4:

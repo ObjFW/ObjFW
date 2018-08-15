@@ -78,8 +78,7 @@ typedef enum of_dns_resolver_error_t {
 	OFString *_Nullable _localDomain;
 	OFArray OF_GENERIC(OFString *) *_searchDomains;
 	of_time_interval_t _timeout;
-	unsigned int _maxAttempts;
-	size_t _minNumberOfDotsInAbsoluteName;
+	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
 	bool _usesTCP;
 	of_time_interval_t _configReloadInterval;
 	OFDate *_lastConfigReload;
@@ -132,7 +131,7 @@ typedef enum of_dns_resolver_error_t {
 /*!
  * @brief The minimum number of dots for a name to be considered absolute.
  */
-@property (nonatomic) size_t minNumberOfDotsInAbsoluteName;
+@property (nonatomic) unsigned int minNumberOfDotsInAbsoluteName;
 
 /*!
  * @brief Whether the resolver uses TCP to talk to a name server.
