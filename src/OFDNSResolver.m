@@ -79,9 +79,24 @@
 /*
  * TODO:
  *
- *  - Resolve with each search domain
  *  - Fallback to TCP
  */
+
+@interface OFDNSResolverSettings: OFObject
+{
+@public
+	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
+	of_time_interval_t _timeout;
+	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
+}
+
+- (instancetype)
+	      initWithNameServers: (OFArray *)nameServers
+		    searchDomains: (OFArray *)searchDomains
+			  timeout: (of_time_interval_t)timeout
+		      maxAttempts: (unsigned int)maxAttempts
+    minNumberOfDotsInAbsoluteName: (unsigned int)minNumberOfDotsInAbsoluteName;
+@end
 
 @interface OFDNSResolverQuery: OFObject
 {
@@ -90,11 +105,9 @@
 	of_dns_resource_record_class_t _recordClass;
 	of_dns_resource_record_type_t _recordType;
 	OFNumber *_ID;
-	OFArray OF_GENERIC(OFString *) *_nameServers, *_searchDomains;
+	OFDNSResolverSettings *_settings;
 	size_t _nameServersIndex, _searchDomainsIndex;
-	of_time_interval_t _timeout;
-	unsigned int _maxAttempts;
-	size_t _attempt;
+	unsigned int _attempt;
 	id _target;
 	SEL _selector;
 	id _context;
@@ -108,12 +121,9 @@
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			  ID: (OFNumber *)ID
-		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+		    settings: (OFDNSResolverSettings *)settings
 	    nameServersIndex: (size_t)nameServersIndex
-	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
 	  searchDomainsIndex: (size_t)searchDomainsIndex
-		     timeout: (of_time_interval_t)timeout
-		 maxAttempts: (unsigned int)maxAttempts
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context;
@@ -136,12 +146,9 @@
 - (void)of_resolveHost: (OFString *)host
 	   recordClass: (of_dns_resource_record_class_t)recordClass
 	    recordType: (of_dns_resource_record_type_t)recordType
-	   nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+	      settings: (OFDNSResolverSettings *)settings
       nameServersIndex: (size_t)nameServersIndex
-	 searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
     searchDomainsIndex: (size_t)searchDomainsIndex
-	       timeout: (unsigned int)timeout
-	   maxAttempts: (unsigned int)maxAttempts
 		target: (id)target
 	      selector: (SEL)selector
 	       context: (id)context;
@@ -178,7 +185,7 @@ domainFromHostname(void)
 }
 
 static bool
-isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
+isFQDN(OFString *host, OFDNSResolverSettings *settings)
 {
 	const char *UTF8String = [host UTF8String];
 	size_t length = [host UTF8StringLength];
@@ -191,7 +198,7 @@ isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
 		if (UTF8String[i] == '.')
 			dots++;
 
-	return (dots >= minNumberOfDotsInAbsoluteName);
+	return (dots >= settings->_minNumberOfDotsInAbsoluteName);
 }
 
 static OFString *
@@ -558,18 +565,47 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	    authorityRecords, additionalRecords, context, exception);
 }
 
+@implementation OFDNSResolverSettings
+- (instancetype)initWithNameServers: (OFArray *)nameServers
+		      searchDomains: (OFArray *)searchDomains
+			    timeout: (of_time_interval_t)timeout
+			maxAttempts: (unsigned int)maxAttempts
+      minNumberOfDotsInAbsoluteName: (unsigned int)minNumberOfDotsInAbsoluteName
+{
+	self = [super init];
+
+	@try {
+		_nameServers = [nameServers copy];
+		_searchDomains = [searchDomains copy];
+		_timeout = timeout;
+		_maxAttempts = maxAttempts;
+		_minNumberOfDotsInAbsoluteName = minNumberOfDotsInAbsoluteName;
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_nameServers release];
+	[_searchDomains release];
+
+	[super dealloc];
+}
+@end
+
 @implementation OFDNSResolverQuery
 - (instancetype)initWithHost: (OFString *)host
 		  domainName: (OFString *)domainName
 		 recordClass: (of_dns_resource_record_class_t)recordClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			  ID: (OFNumber *)ID
-		 nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+		    settings: (OFDNSResolverSettings *)settings
 	    nameServersIndex: (size_t)nameServersIndex
-	       searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
 	  searchDomainsIndex: (size_t)searchDomainsIndex
-		     timeout: (of_time_interval_t)timeout
-		 maxAttempts: (unsigned int)maxAttempts
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context
@@ -586,12 +622,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		_recordClass = recordClass;
 		_recordType = recordType;
 		_ID = [ID retain];
-		_nameServers = [nameServers copy];
+		_settings = [settings retain];
 		_nameServersIndex = nameServersIndex;
-		_searchDomains = [searchDomains copy];
 		_searchDomainsIndex = searchDomainsIndex;
-		_timeout = timeout;
-		_maxAttempts = maxAttempts;
 		_target = [target retain];
 		_selector = selector;
 		_context = [context retain];
@@ -662,8 +695,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[_host release];
 	[_domainName release];
 	[_ID release];
-	[_nameServers release];
-	[_searchDomains release];
+	[_settings release];
 	[_target release];
 	[_context release];
 	[_queryData release];
@@ -1066,12 +1098,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 - (void)of_resolveHost: (OFString *)host
 	   recordClass: (of_dns_resource_record_class_t)recordClass
 	    recordType: (of_dns_resource_record_type_t)recordType
-	   nameServers: (OFArray OF_GENERIC(OFString *) *)nameServers
+	      settings: (OFDNSResolverSettings *)settings
       nameServersIndex: (size_t)nameServersIndex
-	 searchDomains: (OFArray OF_GENERIC(OFString *) *)searchDomains
     searchDomainsIndex: (size_t)searchDomainsIndex
-	       timeout: (unsigned int)timeout
-	   maxAttempts: (unsigned int)maxAttempts
 		target: (id)target
 	      selector: (SEL)selector
 	       context: (id)context
@@ -1088,11 +1117,18 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
 	} while ([_queries objectForKey: ID] != nil);
 
-	if (isFQDN(host, _minNumberOfDotsInAbsoluteName))
+	if (isFQDN(host, settings)) {
 		domainName = host;
-	else
+
+		if (![domainName hasSuffix: @"."])
+			domainName = [domainName stringByAppendingString: @"."];
+	} else {
+		OFString *searchDomain = [settings->_searchDomains
+		    objectAtIndex: searchDomainsIndex];
+
 		domainName = [OFString stringWithFormat: @"%@.%@.",
-		    host, [searchDomains objectAtIndex: searchDomainsIndex]];
+		    host, searchDomain];
+	}
 
 	if ([domainName UTF8StringLength] > 253)
 		@throw [OFOutOfRangeException exception];
@@ -1103,12 +1139,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		   recordClass: recordClass
 		    recordType: recordType
 			    ID: ID
-		   nameServers: _nameServers
+		      settings: settings
 	      nameServersIndex: nameServersIndex
-		 searchDomains: _searchDomains
 	    searchDomainsIndex: searchDomainsIndex
-		       timeout: _timeout
-		   maxAttempts: _maxAttempts
 			target: target
 		      selector: selector
 		       context: context] autorelease];
@@ -1127,36 +1160,46 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		selector: (SEL)selector
 		 context: (id)context
 {
+	void *pool = objc_autoreleasePoolPush();
+	OFDNSResolverSettings *settings = [[[OFDNSResolverSettings alloc]
+		      initWithNameServers: _nameServers
+			    searchDomains: _searchDomains
+				  timeout: _timeout
+			      maxAttempts: _maxAttempts
+	    minNumberOfDotsInAbsoluteName: _minNumberOfDotsInAbsoluteName]
+	    autorelease];
+
 	[self of_resolveHost: host
 		 recordClass: recordClass
 		  recordType: recordType
-		 nameServers: _nameServers
+		    settings: settings
 	    nameServersIndex: 0
-	       searchDomains: _searchDomains
 	  searchDomainsIndex: 0
-		     timeout: _timeout
-		 maxAttempts: _maxAttempts
 		      target: target
 		    selector: selector
 		     context: context];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)of_sendQuery: (OFDNSResolverQuery *)query
 {
 	OFUDPSocket *sock;
+	OFString *nameServer;
 
 	[query->_cancelTimer invalidate];
 	[query->_cancelTimer release];
 	query->_cancelTimer = nil;
 	query->_cancelTimer = [[OFTimer
-	    scheduledTimerWithTimeInterval: query->_timeout
+	    scheduledTimerWithTimeInterval: query->_settings->_timeout
 				    target: self
 				  selector: @selector(of_queryWithIDTimedOut:)
 				    object: query
 				   repeats: false] retain];
 
-	query->_usedNameServer = of_socket_address_parse_ip(
-	    [query->_nameServers objectAtIndex: query->_nameServersIndex], 53);
+	nameServer = [query->_settings->_nameServers
+	    objectAtIndex: query->_nameServersIndex];
+	query->_usedNameServer = of_socket_address_parse_ip(nameServer, 53);
 
 	switch (query->_usedNameServer.family) {
 #ifdef OF_HAVE_IPV6
@@ -1201,13 +1244,14 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if (query == nil)
 		return;
 
-	if (query->_nameServersIndex + 1 < [query->_nameServers count]) {
+	if (query->_nameServersIndex + 1 <
+	    [query->_settings->_nameServers count]) {
 		query->_nameServersIndex++;
 		[self of_sendQuery: query];
 		return;
 	}
 
-	if (query->_attempt < query->_maxAttempts) {
+	if (query->_attempt < query->_settings->_maxAttempts) {
 		query->_attempt++;
 		query->_nameServersIndex = 0;
 		[self of_sendQuery: query];
@@ -1332,18 +1376,15 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			break;
 		case 3:
 			if (query->_searchDomainsIndex + 1 <
-			    [query->_searchDomains count]) {
+			    [query->_settings->_searchDomains count]) {
 				query->_searchDomainsIndex++;
 
 				[self of_resolveHost: query->_host
 					 recordClass: query->_recordClass
 					  recordType: query->_recordType
-					 nameServers: query->_nameServers
+					    settings: query->_settings
 				    nameServersIndex: query->_nameServersIndex
-				       searchDomains: query->_searchDomains
 				  searchDomainsIndex: query->_searchDomainsIndex
-					     timeout: query->_timeout
-					 maxAttempts: query->_maxAttempts
 					      target: query->_target
 					    selector: query->_selector
 					     context: query->_context];
