@@ -67,8 +67,12 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define __USE_INLINE__
 # include <proto/dos.h>
 # include <proto/locale.h>
+# ifdef OF_AMIGAOS4
+#  define DeleteFile(path) Delete(path)
+# endif
 #endif
 
 #if defined(OF_WINDOWS)
@@ -107,9 +111,14 @@ of_stat(OFString *path, of_stat_t *buffer)
 	return _wstat64([path UTF16String], buffer);
 #elif defined(OF_AMIGAOS)
 	BPTR lock;
+# ifdef OF_AMIGAOS4
+	struct ExamineData *ed;
+# else
 	struct FileInfoBlock fib;
+# endif
 	of_time_interval_t timeInterval;
 	struct Locale *locale;
+	struct DateStamp *date;
 
 	if ((lock = Lock([path cStringWithEncoding: [OFLocale encoding]],
 	    SHARED_LOCK)) == 0) {
@@ -129,8 +138,10 @@ of_stat(OFString *path, of_stat_t *buffer)
 		return -1;
 	}
 
-# ifdef OF_MORPHOS
+# if defined(OF_MORPHOS)
 	if (!Examine64(lock, &fib, TAG_DONE)) {
+# elif defined(OF_AMIGAOS4)
+	if ((ed = ExamineObjectTags(EX_FileLockInput, lock, TAG_END)) == NULL) {
 # else
 	if (!Examine(lock, &fib)) {
 # endif
@@ -142,12 +153,18 @@ of_stat(OFString *path, of_stat_t *buffer)
 
 	UnLock(lock);
 
-# ifdef OF_MORPHOS
+# if defined(OF_MORPHOS)
 	buffer->st_size = fib.fib_Size64;
+# elif defined(OF_AMIGAOS4)
+	buffer->st_size = ed->FileSize;
 # else
 	buffer->st_size = fib.fib_Size;
 # endif
+# ifdef OF_AMIGAOS4
+	buffer->st_mode = (EXD_IS_DIRECTORY(ed) ? S_IFDIR : S_IFREG);
+# else
 	buffer->st_mode = (fib.fib_DirEntryType > 0 ? S_IFDIR : S_IFREG);
+# endif
 
 	timeInterval = 252460800;	/* 1978-01-01 */
 
@@ -160,12 +177,20 @@ of_stat(OFString *path, of_stat_t *buffer)
 	timeInterval += locale->loc_GMTOffset * 60.0;
 	CloseLocale(locale);
 
-	timeInterval += fib.fib_Date.ds_Days * 86400.0;
-	timeInterval += fib.fib_Date.ds_Minute * 60.0;
-	timeInterval +=
-	    fib.fib_Date.ds_Tick / (of_time_interval_t)TICKS_PER_SECOND;
+# ifdef OF_AMIGAOS4
+	date = &ed->Date;
+# else
+	date = &fib.fib_Date;
+# endif
+	timeInterval += date->ds_Days * 86400.0;
+	timeInterval += date->ds_Minute * 60.0;
+	timeInterval += date->ds_Tick / (of_time_interval_t)TICKS_PER_SECOND;
 
 	buffer->st_atime = buffer->st_mtime = buffer->st_ctime = timeInterval;
+
+# ifdef OF_AMIGAOS4
+	FreeDosObject(DOS_EXAMINEDATA, ed);
+# endif
 
 	return 0;
 #elif defined(OF_HAVE_OFF64_T)
@@ -767,7 +792,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 #elif defined(OF_AMIGAOS)
 	of_string_encoding_t encoding = [OFLocale encoding];
 	BPTR lock;
-	struct FileInfoBlock fib;
 
 	if ((lock = Lock([path cStringWithEncoding: encoding],
 	    SHARED_LOCK)) == 0) {
@@ -792,6 +816,36 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	}
 
 	@try {
+# ifdef OF_AMIGAOS4
+		struct ExamineData *ed;
+		APTR context;
+
+		if ((context = ObtainDirContextTags(EX_FileLockInput, lock,
+		    EX_DoCurrentDir, TRUE, EX_DataFields, EXF_NAME,
+		    TAG_END)) == NULL)
+			@throw [OFOpenItemFailedException
+			    exceptionWithURL: URL
+					mode: nil
+				       errNo: 0];
+
+		@try {
+			while ((ed = ExamineDir(context)) != NULL) {
+				OFString *file = [[OFString alloc]
+				    initWithCString: ed->Name
+					   encoding: encoding];
+
+				@try {
+					[files addObject: file];
+				} @finally {
+					[file release];
+				}
+			}
+		} @finally {
+			ReleaseDirContext(context);
+		}
+# else
+		struct FileInfoBlock fib;
+
 		if (!Examine(lock, &fib))
 			@throw [OFOpenItemFailedException
 			    exceptionWithURL: URL
@@ -799,17 +853,17 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 				       errNo: 0];
 
 		while (ExNext(lock, &fib)) {
-			OFString *file;
-
-			file = [[OFString alloc]
+			OFString *file = [[OFString alloc]
 			    initWithCString: fib.fib_FileName
 				   encoding: encoding];
+
 			@try {
 				[files addObject: file];
 			} @finally {
 				[file release];
 			}
 		}
+# endif
 
 		if (IoErr() != ERROR_NO_MORE_ENTRIES)
 			@throw [OFReadFailedException

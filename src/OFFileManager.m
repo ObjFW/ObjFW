@@ -58,6 +58,7 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define __USE_INLINE__
 # include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/locale.h>

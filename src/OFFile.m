@@ -58,6 +58,7 @@
 #endif
 
 #ifdef OF_AMIGAOS
+# define __USE_INLINE__
 # include <proto/dos.h>
 #endif
 
@@ -274,8 +275,11 @@ parseMode(const char *mode, bool *append)
 			}
 
 			if (handle->append) {
-# ifdef OF_MORPHOS
+# if defined(OF_MORPHOS)
 				if (Seek64(handle->handle, 0,
+				    OFFSET_END) == -1) {
+# elif defined(OF_AMIGAOS4)
+				if (ChangeFilePosition(handle->handle, 0,
 				    OFFSET_END) == -1) {
 # else
 				if (Seek(handle->handle, 0, OFFSET_END) == -1) {
@@ -416,8 +420,10 @@ parseMode(const char *mode, bool *append)
 		@throw [OFOutOfRangeException exception];
 
 	if (_handle->append) {
-# ifdef OF_MORPHOS
+# if defined(OF_MORPHOS)
 		if (Seek64(_handle->handle, 0, OFFSET_END) == -1)
+# elif defined(OF_AMIGAOS4)
+		if (ChangeFilePosition(_handle->handle, 0, OFFSET_END) == -1)
 # else
 		if (Seek(_handle->handle, 0, OFFSET_END) == -1)
 # endif
@@ -491,8 +497,11 @@ parseMode(const char *mode, bool *append)
 							    errNo: EINVAL];
 	}
 
-# ifdef OF_MORPHOS
+# if defined(OF_MORPHOS)
 	if ((ret = Seek64(_handle->handle, offset, translatedWhence)) == 1)
+# elif defined(OF_AMIGAOS4)
+	if ((ret = ChangeFilePosition(_handle->handle, offset,
+	    translatedWhence)) == 1)
 # else
 	if ((ret = Seek(_handle->handle, offset, translatedWhence)) == 1)
 # endif

@@ -53,6 +53,8 @@ case "$host" in
 		])
 		;;
 	powerpc-*-amigaos*)
+		LIBS="$LIBS -lauto"
+
 		enable_shared="no"
 		enable_threads="no"
 		;;

@@ -19,7 +19,7 @@
 #import "OFKernelEventObserver.h"
 
 #ifdef OF_AMIGAOS
-# include <proto/dos.h>
+# include <dos/dos.h>
 #endif
 
 OF_ASSUME_NONNULL_BEGIN

@@ -42,7 +42,9 @@
 #import "OFWriteFailedException.h"
 
 #ifdef OF_AMIGAOS
+# define __USE_INLINE__
 # include <proto/exec.h>
+# include <proto/dos.h>
 #endif
 
 /* References for static linking */

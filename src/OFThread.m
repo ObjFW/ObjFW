@@ -33,6 +33,7 @@
 #include "platform.h"
 
 #ifdef OF_AMIGAOS
+# define __USE_INLINE__
 # include <proto/dos.h>
 #endif
 
