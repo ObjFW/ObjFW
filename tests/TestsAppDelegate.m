@@ -85,8 +85,13 @@ main(int argc, char *argv[])
 	int tid;
 #endif
 
-#if defined(OF_OBJFW_RUNTIME) && !defined(OF_WINDOWS)
-	/* This does not work on Win32 if ObjFW is built as a DLL */
+#if defined(OF_OBJFW_RUNTIME) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS4)
+	/*
+	 * This does not work on Win32 if ObjFW is built as a DLL.
+	 *
+	 * On AmigaOS 4, atexit() calls objc_exit() before our destructors have
+	 * run, but we need to send messages in some destructors.
+	 */
 	atexit(objc_exit);
 #endif
 

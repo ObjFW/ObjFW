@@ -49,6 +49,7 @@
 
 #import "OFCreateDirectoryFailedException.h"
 #import "OFCreateSymbolicLinkFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFLinkFailedException.h"
 #import "OFMoveItemFailedException.h"
@@ -67,7 +68,12 @@
 #endif
 
 #ifdef OF_AMIGAOS
-# define __USE_INLINE__
+# ifdef OF_AMIGAOS4
+#  define __USE_INLINE__
+#  define __NOLIBBASE__
+#  define __NOGLOBALIFACE__
+# endif
+# include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/locale.h>
 # ifdef OF_AMIGAOS4
@@ -102,6 +108,29 @@ static OFMutex *readdirMutex;
 
 #ifdef OF_WINDOWS
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
+#endif
+
+#ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
+static struct Library *DOSBase = NULL;
+static struct DOSIFace *IDOS = NULL;
+static struct Library *LocaleBase = NULL;
+static struct LocaleIFace *ILocale = NULL;
+
+OF_DESTRUCTOR()
+{
+	if (ILocale != NULL)
+		DropInterface(ILocale);
+
+	if (LocaleBase != NULL)
+		CloseLibrary(LocaleBase);
+
+	if (IDOS != NULL)
+		DropInterface(IDOS);
+
+	if (DOSBase != NULL)
+		CloseLibrary(DOSBase);
+}
 #endif
 
 static int
@@ -416,6 +445,26 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	 * On some systems, this is needed to initialize the file system driver.
 	 */
 	[OFFile class];
+
+#ifdef OF_AMIGAOS4
+	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((IDOS = (struct DOSIFace *)
+	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((LocaleBase = OpenLibrary("locale.library", 38)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((ILocale = (struct LocaleIFace *)
+	    GetInterface(LocaleBase, "main", 1, NULL)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
 	passwdMutex = [[OFMutex alloc] init];

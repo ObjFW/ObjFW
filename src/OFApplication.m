@@ -54,7 +54,11 @@
 extern int _CRT_glob;
 extern void __wgetmainargs(int *, wchar_t ***, wchar_t ***, int, int *);
 #elif defined(OF_AMIGAOS)
-# define __USE_INLINE__
+# ifdef OF_AMIGAOS4
+#  define __USE_INLINE__
+#  define __NOLIBBASE__
+#  define __NOGLOBALIFACE__
+# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 #elif !defined(OF_IOS)
@@ -70,6 +74,10 @@ extern char **environ;
 # define asm __asm__
 # include <nds.h>
 # undef asm
+#endif
+
+#ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
 #endif
 
 @interface OFApplication ()

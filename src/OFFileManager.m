@@ -42,6 +42,7 @@
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFCopyItemFailedException.h"
 #import "OFGetCurrentDirectoryPathFailedException.h"
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFMoveItemFailedException.h"
 #import "OFOutOfMemoryException.h"
@@ -58,7 +59,11 @@
 #endif
 
 #ifdef OF_AMIGAOS
-# define __USE_INLINE__
+# ifdef OF_AMIGAOS4
+#  define __USE_INLINE__
+#  define __NOLIBBASE__
+#  define __NOGLOBALIFACE__
+# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/locale.h>
@@ -66,6 +71,12 @@
 
 @interface OFFileManager_default: OFFileManager
 @end
+
+#ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
+static struct Library *DOSBase = NULL;
+static struct DOSIFace *IDOS = NULL;
+#endif
 
 static OFFileManager *defaultManager;
 
@@ -109,6 +120,14 @@ OF_DESTRUCTOR()
 {
 	if (dirChanged)
 		UnLock(CurrentDir(originalDirLock));
+
+# ifdef OF_AMIGAOS4
+	if (IDOS != NULL)
+		DropInterface(IDOS);
+
+	if (DOSBase != NULL)
+		CloseLibrary(DOSBase);
+# endif
 }
 #endif
 
@@ -130,6 +149,17 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 {
 	if (self != [OFFileManager class])
 		return;
+
+#ifdef OF_AMIGAOS4
+	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((IDOS = (struct DOSIFace *)
+	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+#endif
 
 	defaultManager = [[OFFileManager_default alloc] init];
 }
