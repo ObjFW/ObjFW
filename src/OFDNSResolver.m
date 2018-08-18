@@ -37,10 +37,12 @@
 # import "OFWindowsRegistryKey.h"
 #endif
 
+#import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
+#import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFResolveHostFailedException.h"
 #import "OFTruncatedDataException.h"
@@ -49,6 +51,14 @@
 # define interface struct
 # include <iphlpapi.h>
 # undef interface
+#endif
+
+#ifdef OF_AMIGAOS4
+# define __USE_INLINE__
+# define __NOLIBBASE__
+# define __NOGLOBALIFACE__
+# include <proto/exec.h>
+# include <proto/bsdsocket.h>
 #endif
 
 /*
@@ -67,13 +77,27 @@
 # define RESOLV_CONF_PATH @"ENV:sys/net/resolv.conf"
 #elif defined(OF_AMIGAOS4)
 # define HOSTS_PATH @"DEVS:Internet/hosts"
-# define RESOLV_CONF_PATH @"DEVS:Internet/resolv.conf"
 #elif defined(OF_AMIGAOS)
 # define HOSTS_PATH @"AmiTCP:db/hosts"
 # define RESOLV_CONF_PATH @"AmiTCP:db/resolv.conf"
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
+#endif
+
+#ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
+static struct Library *SocketBase = NULL;
+static struct SocketIFace *ISocket = NULL;
+
+OF_DESTRUCTOR()
+{
+	if (ISocket != NULL)
+		DropInterface(ISocket);
+
+	if (SocketBase != NULL)
+		CloseLibrary(SocketBase);
+}
 #endif
 
 /*
@@ -131,18 +155,21 @@
 
 @interface OFDNSResolver ()
 - (void)of_setDefaults;
-- (void)of_parseConfig;
+- (void)of_obtainSystemConfig;
 #ifdef OF_HAVE_FILES
 - (void)of_parseHosts: (OFString *)path;
-# ifndef OF_WINDOWS
+# if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS4)
 - (void)of_parseResolvConf: (OFString *)path;
 - (void)of_parseResolvConfOption: (OFString *)option;
 # endif
 #endif
 #ifdef OF_WINDOWS
-- (void)of_parseNetworkParams;
+- (void)of_obtainWindowsSystemConfig;
 #endif
-- (void)of_reloadConfig;
+#ifdef OF_AMIGAOS4
+- (void)of_obtainAmigaOS4SystemConfig;
+#endif
+- (void)of_reloadSystemConfig;
 - (void)of_resolveHost: (OFString *)host
 	   recordClass: (of_dns_resource_record_class_t)recordClass
 	    recordType: (of_dns_resource_record_type_t)recordType
@@ -712,6 +739,23 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 @synthesize minNumberOfDotsInAbsoluteName = _minNumberOfDotsInAbsoluteName;
 @synthesize usesTCP = _usesTCP, configReloadInterval = _configReloadInterval;
 
+#ifdef OF_AMIGAOS4
++ (void)initialize
+{
+	if (self != [OFDNSResolver class])
+		return;
+
+	if ((SocketBase = OpenLibrary("bsdsocket.library", 4)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+
+	if ((ISocket = (struct SocketIFace *)
+	    GetInterface(SocketBase, "main", 1, NULL)) == NULL)
+		@throw [OFInitializationFailedException
+		    exceptionWithClass: self];
+}
+#endif
+
 + (instancetype)resolver
 {
 	return [[[self alloc] init] autorelease];
@@ -724,7 +768,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	@try {
 		_queries = [[OFMutableDictionary alloc] init];
 
-		[self of_parseConfig];
+		[self of_obtainSystemConfig];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -742,7 +786,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	_configReloadInterval = 2;
 }
 
-- (void)of_parseConfig
+- (void)of_obtainSystemConfig
 {
 	void *pool = objc_autoreleasePoolPush();
 #ifdef OF_WINDOWS
@@ -763,7 +807,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		[self of_parseHosts: path];
 # endif
 
-	[self of_parseNetworkParams];
+	[self of_obtainWindowsSystemConfig];
+#elif defined(OF_AMIGAOS4)
+	[self of_parseHosts: HOSTS_PATH];
+	[self of_obtainAmigaOS4SystemConfig];
 #elif defined(OF_HAVE_FILES)
 	[self of_parseHosts: HOSTS_PATH];
 # ifdef OF_OPENBSD
@@ -900,7 +947,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	objc_autoreleasePoolPop(pool);
 }
 
-# ifndef OF_WINDOWS
+# if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS4)
 - (void)of_parseResolvConf: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1012,12 +1059,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 #endif
 
 #ifdef OF_WINDOWS
-- (void)of_parseNetworkParams
+- (void)of_obtainWindowsSystemConfig
 {
-	void *pool = objc_autoreleasePoolPush();
 	of_string_encoding_t encoding = [OFLocale encoding];
 	OFMutableArray *nameServers;
-	OFString *localDomain;
 	/*
 	 * We need more space than FIXED_INFO in case we have more than one
 	 * name server, but we also want it to be properly aligned, meaning we
@@ -1031,8 +1076,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 
 	nameServers = [OFMutableArray array];
-	localDomain = [OFString stringWithCString: fixedInfo->DomainName
-					 encoding: encoding];
 
 	for (iter = &fixedInfo->DnsServerList; iter != NULL; iter = iter->Next)
 		[nameServers addObject:
@@ -1044,14 +1087,57 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		_nameServers = [nameServers copy];
 	}
 
-	if ([localDomain length] > 0)
-		_localDomain = [localDomain copy];
-
-	objc_autoreleasePoolPop(pool);
+	if (fixedInfo->DomainName[0] != '\0')
+		_localDomain = [[OFString alloc]
+		    initWithCString: fixedInfo->DomainName
+			   encoding: encoding];
 }
 #endif
 
-- (void)of_reloadConfig
+#ifdef OF_AMIGAOS4
+- (void)of_obtainAmigaOS4SystemConfig
+{
+	OFMutableArray *nameServers = [OFMutableArray array];
+	of_string_encoding_t encoding = [OFLocale encoding];
+	struct List *nameServerList = ObtainDomainNameServerList();
+	char buffer[MAXHOSTNAMELEN];
+
+	if (nameServerList == NULL)
+		@throw [OFOutOfMemoryException exception];
+
+	@try {
+		struct DomainNameServerNode *iter =
+		    (struct DomainNameServerNode *)&nameServerList->lh_Head;
+
+		while (iter->dnsn_MinNode.mln_Succ != NULL) {
+			if (iter->dnsn_UseCount != 0 &&
+			    iter->dnsn_Address != NULL) {
+				OFString *address = [OFString
+				    stringWithCString: iter->dnsn_Address
+					     encoding: encoding];
+
+				[nameServers addObject: address];
+			}
+
+			iter = (struct DomainNameServerNode *)
+			    iter->dnsn_MinNode.mln_Succ;
+		}
+	} @finally {
+		ReleaseDomainNameServerList(nameServerList);
+	}
+
+	if ([nameServers count] > 0) {
+		[nameServers makeImmutable];
+		_nameServers = [nameServers copy];
+	}
+
+	if (GetDefaultDomainName(buffer, sizeof(buffer)))
+		_localDomain = [[OFString alloc] initWithCString: buffer
+							encoding: encoding];
+}
+#endif
+
+- (void)of_reloadSystemConfig
 {
 	/*
 	 * TODO: Rather than reparsing every, check what actually changed
@@ -1079,7 +1165,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[_lastConfigReload release];
 	_lastConfigReload = nil;
 
-	[self of_parseConfig];
+	[self of_obtainSystemConfig];
 }
 
 - (void)asyncResolveHost: (OFString *)host
@@ -1110,7 +1196,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	OFString *domainName;
 	OFDNSResolverQuery *query;
 
-	[self of_reloadConfig];
+	[self of_reloadSystemConfig];
 
 	/* Random, unused ID */
 	do {
