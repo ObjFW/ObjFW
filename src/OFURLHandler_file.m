@@ -232,7 +232,8 @@ of_stat(OFString *path, of_stat_t *buffer)
 static int
 of_lstat(OFString *path, of_stat_t *buffer)
 {
-#if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS)
+#if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && \
+    !defined(OF_NINTENDO_3DS)
 # ifdef OF_HAVE_OFF64_T
 	return lstat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
 # else
