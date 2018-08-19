@@ -22,12 +22,17 @@
 
 #import "TestsAppDelegate.h"
 
+#import "OFNotImplementedException.h"
+
 static OFString *module = @"OFSystemInfo";
 
 @implementation TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+#ifdef OF_HAVE_FILES
+	OFString *userConfigPath, *userDataPath;
+#endif
 
 	PRINT(GREEN, @"Page size: %zd", [OFSystemInfo pageSize]);
 
@@ -48,9 +53,19 @@ static OFString *module = @"OFSystemInfo";
 	    [OFSystemInfo operatingSystemVersion]);
 
 #ifdef OF_HAVE_FILES
-	PRINT(GREEN, @"User data path: %@", [OFSystemInfo userDataPath]);
+	@try {
+		userConfigPath = [OFSystemInfo userConfigPath];
+	} @catch (OFNotImplementedException *e) {
+		userConfigPath = @"Not implemented";
+	}
+	PRINT(GREEN, @"User config path: %@", userConfigPath);
 
-	PRINT(GREEN, @"User config path: %@", [OFSystemInfo userConfigPath]);
+	@try {
+		userDataPath = [OFSystemInfo userDataPath];
+	} @catch (OFNotImplementedException *e) {
+		userDataPath = @"Not implemented";
+	}
+	PRINT(GREEN, @"User data path: %@", userDataPath);
 #endif
 
 	PRINT(GREEN, @"CPU vendor: %@", [OFSystemInfo CPUVendor]);
