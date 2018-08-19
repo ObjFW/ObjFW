@@ -46,6 +46,8 @@ int _OFString_PathAdditions_reference;
 		first = false;
 	}
 
+	[ret makeImmutable];
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
@@ -61,14 +63,14 @@ int _OFString_PathAdditions_reference;
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
-	size_t i, last = 0, pathCStringLength = [self UTF8StringLength];
+	size_t i, last = 0, cStringLength = [self UTF8StringLength];
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return ret;
 	}
 
-	for (i = 0; i < pathCStringLength; i++) {
+	for (i = 0; i < cStringLength; i++) {
 		if (cString[i] == '/') {
 			if (i == 0)
 				[ret addObject: @"/"];
@@ -95,27 +97,27 @@ int _OFString_PathAdditions_reference;
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
-	size_t pathCStringLength = [self UTF8StringLength];
+	size_t cStringLength = [self UTF8StringLength];
 	ssize_t i;
 	OFString *ret;
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	if (cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
+	if (cString[cStringLength - 1] == '/')
+		cStringLength--;
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"/";
 	}
 
-	if (pathCStringLength - 1 > SSIZE_MAX)
+	if (cStringLength - 1 > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	for (i = pathCStringLength - 1; i >= 0; i--) {
+	for (i = cStringLength - 1; i >= 0; i--) {
 		if (cString[i] == '/') {
 			i++;
 			break;
@@ -130,7 +132,7 @@ int _OFString_PathAdditions_reference;
 		i = 0;
 
 	ret = [[OFString alloc] initWithUTF8String: cString + i
-					    length: pathCStringLength - i];
+					    length: cStringLength - i];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -163,23 +165,23 @@ int _OFString_PathAdditions_reference;
 {
 	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
-	size_t pathCStringLength = [self UTF8StringLength];
+	size_t cStringLength = [self UTF8StringLength];
 	OFString *ret;
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	if (cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
+	if (cString[cStringLength - 1] == '/')
+		cStringLength--;
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"/";
 	}
 
-	for (size_t i = pathCStringLength; i >= 1; i--) {
+	for (size_t i = cStringLength; i >= 1; i--) {
 		if (cString[i - 1] == '/') {
 			if (i == 1) {
 				objc_autoreleasePoolPop(pool);

@@ -46,6 +46,11 @@ int _OFString_PathAdditions_reference;
 		first = false;
 	}
 
+	if ([ret hasSuffix: @":"])
+		[ret appendString: @"\\"];
+
+	[ret makeImmutable];
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
@@ -53,15 +58,7 @@ int _OFString_PathAdditions_reference;
 
 - (bool)isAbsolutePath
 {
-	void *pool = objc_autoreleasePoolPush();
-	const char *UTF8String = [self UTF8String];
-	size_t UTF8StringLength = [self UTF8StringLength];
-	bool ret = (UTF8StringLength >= 3 && UTF8String[1] == ':' &&
-	    (UTF8String[2] == '\\' || UTF8String[2] == '/'));
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
+	return ([self containsString: @":\\"] || [self containsString: @":/"]);
 }
 
 - (OFArray *)pathComponents
@@ -69,14 +66,14 @@ int _OFString_PathAdditions_reference;
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
-	size_t i, last = 0, pathCStringLength = [self UTF8StringLength];
+	size_t i, last = 0, cStringLength = [self UTF8StringLength];
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return ret;
 	}
 
-	for (i = 0; i < pathCStringLength; i++) {
+	for (i = 0; i < cStringLength; i++) {
 		if (cString[i] == '\\' || cString[i] == '/') {
 			if (i - last != 0)
 				[ret addObject: [OFString
@@ -100,29 +97,35 @@ int _OFString_PathAdditions_reference;
 - (OFString *)lastPathComponent
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
-	size_t pathCStringLength = [self UTF8StringLength];
+	const char *cString;
+	size_t cStringLength;
 	ssize_t i;
 	OFString *ret;
 
-	if (pathCStringLength == 0) {
+	if ([self hasSuffix: @":\\"] || [self hasSuffix: @":/"])
+		return self;
+
+	cString = [self UTF8String];
+	cStringLength = [self UTF8StringLength];
+
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	if (cString[pathCStringLength - 1] == '\\' ||
-	    cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
+	if (cString[cStringLength - 1] == '\\' ||
+	    cString[cStringLength - 1] == '/')
+		cStringLength--;
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	if (pathCStringLength - 1 > SSIZE_MAX)
+	if (cStringLength - 1 > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	for (i = pathCStringLength - 1; i >= 0; i--) {
+	for (i = cStringLength - 1; i >= 0; i--) {
 		if (cString[i] == '\\' || cString[i] == '/') {
 			i++;
 			break;
@@ -137,7 +140,7 @@ int _OFString_PathAdditions_reference;
 		i = 0;
 
 	ret = [[OFString alloc] initWithUTF8String: cString + i
-					    length: pathCStringLength - i];
+					    length: cStringLength - i];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -169,25 +172,31 @@ int _OFString_PathAdditions_reference;
 - (OFString *)stringByDeletingLastPathComponent
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
-	size_t pathCStringLength = [self UTF8StringLength];
+	const char *cString;
+	size_t cStringLength;
 	OFString *ret;
 
-	if (pathCStringLength == 0) {
+	if ([self hasSuffix: @":\\"] || [self hasSuffix: @":/"])
+		return self;
+
+	cString = [self UTF8String];
+	cStringLength = [self UTF8StringLength];
+
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	if (cString[pathCStringLength - 1] == '\\' ||
-	    cString[pathCStringLength - 1] == '/')
-		pathCStringLength--;
+	if (cString[cStringLength - 1] == '\\' ||
+	    cString[cStringLength - 1] == '/')
+		cStringLength--;
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return @"";
 	}
 
-	for (size_t i = pathCStringLength; i >= 1; i--) {
+	for (size_t i = cStringLength; i >= 1; i--) {
 		if (cString[i - 1] == '\\' || cString[i - 1] == '/') {
 			ret = [[OFString alloc] initWithUTF8String: cString
 							    length: i - 1];

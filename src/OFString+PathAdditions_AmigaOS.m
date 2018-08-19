@@ -44,6 +44,8 @@ int _OFString_PathAdditions_reference;
 			firstAfterDevice = false;
 	}
 
+	[ret makeImmutable];
+
 	objc_autoreleasePoolPop(pool);
 
 	return ret;
@@ -59,14 +61,14 @@ int _OFString_PathAdditions_reference;
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	const char *cString = [self UTF8String];
-	size_t i, last = 0, pathCStringLength = [self UTF8StringLength];
+	size_t i, last = 0, cStringLength = [self UTF8StringLength];
 
-	if (pathCStringLength == 0) {
+	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
 		return ret;
 	}
 
-	for (i = 0; i < pathCStringLength; i++) {
+	for (i = 0; i < cStringLength; i++) {
 		if (cString[i] == '/') {
 			if (i - last != 0)
 				[ret addObject: [OFString

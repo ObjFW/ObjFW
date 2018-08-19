@@ -560,6 +560,11 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"dh0:foo") isAbsolutePath] && [C(@"dh0:a/b") isAbsolutePath] &&
 	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
+# elif defined(OF_NINTENDO_3DS)
+	TEST(@"-[isAbsolutePath]",
+	    [C(@"sdmc:/foo") isAbsolutePath] &&
+	    ![C(@"sdmc:foo") isAbsolutePath] &&
+	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
 # else
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"/foo") isAbsolutePath] && [C(@"/foo/bar") isAbsolutePath] &&
@@ -660,10 +665,15 @@ static uint16_t sutf16str[] = {
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo\\bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:\\foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo/", @"bar\\", @"", @"baz", @"\\", nil]]
 	    isEqual: @"foo/bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
-	    @"foo", nil]] isEqual: @"foo"])
+	    @"foo", nil]] isEqual: @"foo"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObject: @"c:"]]
+	    isEqual: @"c:\\"])
 # elif defined(OF_AMIGAOS)
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
@@ -676,6 +686,20 @@ static uint16_t sutf16str[] = {
 	    isEqual: @"foo//bar/baz//"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"])
+# elif defined(OF_NINTENDO_3DS)
+	TEST(@"+[pathWithComponents:]",
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo/bar/baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"sdmc:", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"sdmc:/foo/bar/baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo/", @"bar/", @"", @"baz", @"/", nil]]
+	    isEqual: @"foo/bar/baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", nil]] isEqual: @"foo"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObject:
+	    @"sdmc:"]] isEqual: @"sdmc:/"])
 # else
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
@@ -743,6 +767,28 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"/"] &&
 	    [[C(@"") pathComponents] count] == 0)
+# elif defined(OF_NINTENDO_3DS)
+	TEST(@"-[pathComponents]",
+	    /* sdmc:/tmp */
+	    (a = [C(@"sdmc:/tmp") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"sdmc:"] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* sdmc:/ */
+	    (a = [C(@"sdmc:/") pathComponents]) && [a count] == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"sdmc:"] &&
+	    /* foo/bar */
+	    (a = [C(@"foo/bar") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    /* foo/bar/baz/ */
+	    (a = [C(@"foo/bar/baz/") pathComponents]) && [a count] == 3 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    /* foo// */
+	    (a = [C(@"foo//") pathComponents]) && [a count] == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[C(@"") pathComponents] count] == 0)
 # else
 	TEST(@"-[pathComponents]",
 	    /* /tmp */
@@ -775,6 +821,8 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[lastPathComponent]",
 	    [[C(@"c:/tmp") lastPathComponent] isEqual: @"tmp"] &&
 	    [[C(@"c:\\tmp\\") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"c:\\") lastPathComponent] isEqual: @"c:\\"] &&
+	    [[C(@"c:/") lastPathComponent] isEqual: @"c:/"] &&
 	    [[C(@"\\") lastPathComponent] isEqual: @""] &&
 	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
 	    [[C(@"foo\\bar") lastPathComponent] isEqual: @"bar"] &&
@@ -785,6 +833,15 @@ static uint16_t sutf16str[] = {
 	    [[C(@"dh0:tmp/") lastPathComponent] isEqual: @"tmp"] &&
 	    [[C(@"dh0:/") lastPathComponent] isEqual: @"/"] &&
 	    [[C(@"dh0:") lastPathComponent] isEqual: @"dh0:"] &&
+	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
+	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
+	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+# elif defined(OF_NINTENDO_3DS)
+	TEST(@"-[lastPathComponent]",
+	    [[C(@"sdmc:/tmp") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"sdmc:/tmp/") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"sdmc:/") lastPathComponent] isEqual: @"sdmc:/"] &&
+	    [[C(@"sdmc:") lastPathComponent] isEqual: @"sdmc:"] &&
 	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
 	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
 	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
@@ -808,6 +865,8 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [[C(@"\\tmp") stringByDeletingLastPathComponent] isEqual: @""] &&
 	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
+	    [[C(@"c:\\") stringByDeletingLastPathComponent] isEqual: @"c:\\"] &&
+	    [[C(@"c:/") stringByDeletingLastPathComponent] isEqual: @"c:/"] &&
 	    [[C(@"c:\\tmp/foo/") stringByDeletingLastPathComponent]
 	    isEqual: @"c:\\tmp"] &&
 	    [[C(@"foo\\bar") stringByDeletingLastPathComponent]
@@ -828,6 +887,17 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
 	    isEqual: @"foo"] &&
 	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @""])
+# elif defined(OF_NINTENDO_3DS)
+	TEST(@"-[stringByDeletingLastPathComponent]",
+	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
+	    [[C(@"sdmc:/tmp/foo/") stringByDeletingLastPathComponent]
+	    isEqual: @"sdmc:/tmp"] &&
+	    [[C(@"sdmc:/") stringByDeletingLastPathComponent]
+	    isEqual: @"sdmc:/"] &&
+	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
+	    isEqual: @"foo"] &&
+	    [[C(@"/") stringByDeletingLastPathComponent] isEqual: @""] &&
+	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."])
 # else
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [[C(@"/tmp") stringByDeletingLastPathComponent] isEqual: @"/"] &&
@@ -865,6 +935,17 @@ static uint16_t sutf16str[] = {
 	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
 	    [[C(@".foo\\bar") stringByDeletingPathExtension]
 	    isEqual: @".foo\\bar"] &&
+	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+# elif defined(OF_NINTENDO_3DS)
+	TEST(@"-[stringByDeletingPathExtension]",
+	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
+	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
+	    [[C(@"sdmc:/foo./bar") stringByDeletingPathExtension]
+	    isEqual: @"sdmc:/foo./bar"] &&
+	    [[C(@"sdmc:/foo./bar.baz") stringByDeletingPathExtension]
+	    isEqual: @"sdmc:/foo./bar"] &&
+	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
+	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
 	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
 # else
 	TEST(@"-[stringByDeletingPathExtension]",
