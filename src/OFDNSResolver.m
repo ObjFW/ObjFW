@@ -199,16 +199,32 @@ static OFString *
 domainFromHostname(void)
 {
 	char hostname[256];
-	char *domain;
+	OFString *domain;
 
 	if (gethostname(hostname, 256) != 0)
 		return nil;
 
-	if ((domain = strchr(hostname, '.')) == NULL)
-		return nil;
+	domain = [OFString stringWithCString: hostname
+				    encoding: [OFLocale encoding]];
 
-	return [OFString stringWithCString: domain + 1
-				  encoding: [OFLocale encoding]];
+	@try {
+		of_socket_address_parse_ip(domain, 0);
+
+		/*
+		 * If we are still here, the host name is a valid IP address.
+		 * We can't use that as local domain.
+		 */
+		return nil;
+	} @catch (OFInvalidFormatException *e) {
+		/* Not an IP address -> we can use it if it contains a dot. */
+		size_t pos = [domain rangeOfString: @"."].location;
+
+		if (pos == OF_NOT_FOUND)
+			return nil;
+
+		return [domain substringWithRange:
+		    of_range(pos + 1, [domain length] - pos - 1)];
+	}
 }
 
 static bool
