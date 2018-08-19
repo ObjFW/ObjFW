@@ -442,6 +442,9 @@ main(int argc, char *argv[])
 	[self pluginTests];
 #endif
 
+#ifdef OF_HAVE_SOCKETS
+	[self DNSResolverTests];
+#endif
 	[self systemInfoTests];
 	[self localeTests];
 

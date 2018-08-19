@@ -99,6 +99,10 @@ enum {
 - (void)characterSetTests;
 @end
 
+@interface TestsAppDelegate (OFDNSResolverTests)
+- (void)DNSResolverTests;
+@end
+
 @interface TestsAppDelegate (OFDataTests)
 - (void)dataTests;
 @end

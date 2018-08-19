@@ -52,7 +52,8 @@ SRCS_FILES = OFHMACTests.m		\
 	     OFSHA384HashTests.m	\
 	     OFSHA512HashTests.m
 SRCS_PLUGINS = OFPluginTests.m
-SRCS_SOCKETS = OFHTTPCookieTests.m		\
+SRCS_SOCKETS = OFDNSResolverTests.m		\
+	       OFHTTPCookieTests.m		\
 	       OFHTTPCookieManagerTests.m	\
 	       ${OFHTTPCLIENTTESTS_M}		\
 	       OFKernelEventObserverTests.m	\
