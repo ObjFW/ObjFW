@@ -257,6 +257,11 @@ static OFDNSResolver *DNSResolver;
 		@throw [OFOutOfRangeException exception];
 
 	Sleep((unsigned int)(timeInterval * 1000));
+#elif defined(OF_NINTENDO_3DS)
+	if (timeInterval * 1000000000 > INT64_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	svcSleepThread((int64_t)(timeInterval * 1000000000));
 #elif defined(HAVE_NANOSLEEP)
 	struct timespec rqtp;
 
@@ -281,11 +286,6 @@ static OFDNSResolver *DNSResolver;
 	counter = timeInterval * 60;
 	while (counter--)
 		swiWaitForVBlank();
-#elif defined(OF_NINTENDO_3DS)
-	if (timeInterval * 1000000000 > INT64_MAX)
-		@throw [OFOutOfRangeException exception];
-
-	svcSleepThread((int64_t)(timeInterval * 1000000000));
 #else
 	if (timeInterval > UINT_MAX)
 		@throw [OFOutOfRangeException exception];
