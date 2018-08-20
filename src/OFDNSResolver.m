@@ -195,6 +195,7 @@ OF_DESTRUCTOR()
 	     exception: (id)exception;
 @end
 
+#ifndef OF_WII
 static OFString *
 domainFromHostname(void)
 {
@@ -226,6 +227,7 @@ domainFromHostname(void)
 		    of_range(pos + 1, [domain length] - pos - 1)];
 	}
 }
+#endif
 
 static bool
 isFQDN(OFString *host, OFDNSResolverSettings *settings)
@@ -857,8 +859,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		_nameServers = [[OFArray alloc] initWithObject: @"127.0.0.1"];
 #endif
 
+#ifndef OF_WII
 	if (_localDomain == nil)
 		_localDomain = [domainFromHostname() copy];
+#endif
 
 	if (_searchDomains == nil) {
 		if (_localDomain != nil)
