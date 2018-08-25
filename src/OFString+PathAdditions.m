@@ -23,8 +23,8 @@
 # import "OFString+PathAdditions_DOS.m"
 #elif defined(OF_AMIGAOS)
 # import "OFString+PathAdditions_AmigaOS.m"
-#elif defined(OF_NINTENDO_3DS)
-# import "OFString+PathAdditions_3DS.m"
+#elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
+# import "OFString+PathAdditions_libfat.m"
 #else
 # import "OFString+PathAdditions_UNIX.m"
 #endif

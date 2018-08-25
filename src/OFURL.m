@@ -90,7 +90,7 @@ pathToURLPath(OFString *path)
 	[ret makeImmutable];
 
 	return ret;
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	return [path stringByPrependingString: @"/"];
 # else
 	return path;
@@ -132,7 +132,7 @@ URLPathToPath(OFString *path)
 	}
 
 	return [OFString pathWithComponents: components];
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	return [path substringWithRange: of_range(1, [path length] - 1)];
 # else
 	return path;
