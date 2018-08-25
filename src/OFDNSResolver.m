@@ -61,6 +61,10 @@
 # include <proto/bsdsocket.h>
 #endif
 
+#ifdef OF_NINTENDO_3DS
+# include <3ds.h>
+#endif
+
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
  * many. Since it's unspecified, we have to assume that it might happen, but we
@@ -156,7 +160,7 @@ OF_DESTRUCTOR()
 @interface OFDNSResolver ()
 - (void)of_setDefaults;
 - (void)of_obtainSystemConfig;
-#ifdef OF_HAVE_FILES
+#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_3DS)
 - (void)of_parseHosts: (OFString *)path;
 # if !defined(OF_WINDOWS) && !defined(OF_AMIGAOS4)
 - (void)of_parseResolvConf: (OFString *)path;
@@ -168,6 +172,9 @@ OF_DESTRUCTOR()
 #endif
 #ifdef OF_AMIGAOS4
 - (void)of_obtainAmigaOS4SystemConfig;
+#endif
+#ifdef OF_NINTENDO_3DS
+- (void)of_obtainNintendo3DSSytemConfig;
 #endif
 - (void)of_reloadSystemConfig;
 - (void)of_resolveHost: (OFString *)host
@@ -801,7 +808,11 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	_maxAttempts = 3;
 	_minNumberOfDotsInAbsoluteName = 1;
 	_usesTCP = false;
+#ifndef OF_NINTENDO_3DS
 	_configReloadInterval = 2;
+#else
+	_configReloadInterval = 0;
+#endif
 }
 
 - (void)of_obtainSystemConfig
@@ -829,6 +840,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 #elif defined(OF_AMIGAOS4)
 	[self of_parseHosts: HOSTS_PATH];
 	[self of_obtainAmigaOS4SystemConfig];
+#elif defined(OF_NINTENDO_3DS)
+	[self of_obtainNintendo3DSSytemConfig];
 #elif defined(OF_HAVE_FILES)
 	[self of_parseHosts: HOSTS_PATH];
 # ifdef OF_OPENBSD
@@ -895,7 +908,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[super dealloc];
 }
 
-#ifdef OF_HAVE_FILES
+#if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_3DS)
 - (void)of_parseHosts: (OFString *)path
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -1154,6 +1167,49 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if (GetDefaultDomainName(buffer, sizeof(buffer)))
 		_localDomain = [[OFString alloc] initWithCString: buffer
 							encoding: encoding];
+}
+#endif
+
+#ifdef OF_NINTENDO_3DS
+- (void)of_obtainNintendo3DSSytemConfig
+{
+	OFMutableArray *nameServers = [OFMutableArray array];
+	union {
+		/*
+		 * For some unknown reason, this needs a 336 bytes buffer and
+		 * always returns 336 bytes.
+		 */
+		char bytes[336];
+		SOCU_DNSTableEntry entries[2];
+	} buffer;
+	socklen_t optLen = sizeof(buffer);
+
+	if (SOCU_GetNetworkOpt(SOL_CONFIG, NETOPT_DNS_TABLE,
+	    &buffer, &optLen) != 0)
+		return;
+
+	/*
+	 * We're fine if this gets smaller in a future release (unlikely), as
+	 * long as two entries still fit.
+	 */
+	if (optLen < sizeof(buffer.entries))
+		return;
+
+	for (uint_fast8_t i = 0; i < 2; i++) {
+		uint32_t ip = OF_BSWAP32_IF_LE(buffer.entries[i].ip.s_addr);
+
+		if (ip == 0)
+			continue;
+
+		[nameServers addObject: [OFString stringWithFormat:
+		    @"%u.%u.%u.%u", (ip >> 24) & 0xFF, (ip >> 16) & 0xFF,
+		    (ip >> 8) & 0xFF, ip & 0xFF]];
+	}
+
+	if ([nameServers count] > 0) {
+		[nameServers makeImmutable];
+		_nameServers = [nameServers copy];
+	}
 }
 #endif
 
