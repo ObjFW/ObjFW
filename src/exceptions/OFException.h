@@ -23,7 +23,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMutableArray OF_GENERIC(ObjectType);
 @class OFString;
 
-#define OF_BACKTRACE_SIZE 32
+#define OF_BACKTRACE_SIZE 16
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)
 # ifndef EADDRINUSE
