@@ -560,7 +560,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"dh0:foo") isAbsolutePath] && [C(@"dh0:a/b") isAbsolutePath] &&
 	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"sdmc:/foo") isAbsolutePath] &&
 	    ![C(@"sdmc:foo") isAbsolutePath] &&
@@ -686,7 +686,7 @@ static uint16_t sutf16str[] = {
 	    isEqual: @"foo//bar/baz//"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"])
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo/bar/baz"] &&
@@ -767,7 +767,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"/"] &&
 	    [[C(@"") pathComponents] count] == 0)
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[pathComponents]",
 	    /* sdmc:/tmp */
 	    (a = [C(@"sdmc:/tmp") pathComponents]) && [a count] == 2 &&
@@ -836,7 +836,7 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
 	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
 	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[lastPathComponent]",
 	    [[C(@"sdmc:/tmp") lastPathComponent] isEqual: @"tmp"] &&
 	    [[C(@"sdmc:/tmp/") lastPathComponent] isEqual: @"tmp"] &&
@@ -887,7 +887,7 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
 	    isEqual: @"foo"] &&
 	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @""])
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
 	    [[C(@"sdmc:/tmp/foo/") stringByDeletingLastPathComponent]
@@ -936,7 +936,7 @@ static uint16_t sutf16str[] = {
 	    [[C(@".foo\\bar") stringByDeletingPathExtension]
 	    isEqual: @".foo\\bar"] &&
 	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
-# elif defined(OF_NINTENDO_3DS)
+# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[stringByDeletingPathExtension]",
 	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
 	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
