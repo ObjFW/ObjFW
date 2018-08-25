@@ -441,12 +441,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (self != [OFURLHandler_file class])
 		return;
 
-	/*
-	 * Make sure OFFile is initialized.
-	 * On some systems, this is needed to initialize the file system driver.
-	 */
-	[OFFile class];
-
 #ifdef OF_AMIGAOS4
 	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
 		@throw [OFInitializationFailedException
@@ -480,6 +474,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		    (WINAPI BOOLEAN (*)(LPCWSTR, LPCWSTR, DWORD))
 		    GetProcAddress(module, "CreateSymbolicLinkW");
 #endif
+
+	/*
+	 * Make sure OFFile is initialized.
+	 * On some systems, this is needed to initialize the file system driver.
+	 */
+	[OFFile class];
 }
 
 + (bool)of_directoryExistsAtPath: (OFString *)path

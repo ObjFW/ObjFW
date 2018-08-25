@@ -161,6 +161,12 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 		    exceptionWithClass: self];
 #endif
 
+	/*
+	 * Make sure OFFile is initialized.
+	 * On some systems, this is needed to initialize the file system driver.
+	 */
+	[OFFile class];
+
 	defaultManager = [[OFFileManager_default alloc] init];
 }
 
