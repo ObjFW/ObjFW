@@ -91,8 +91,6 @@ case "$host" in
 		LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
 		LIBS="$LIBS -lversion"
 
-		AC_SUBST(ALLOW_MULTIPLE_DEFINITION,
-			[-Wl,--allow-multiple-definition])
 		AC_SUBST(USE_SRCS_WINDOWS, '${SRCS_WINDOWS}')
 		;;
 	*-psp-*)
@@ -145,6 +143,9 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	enable_shared="no"
 	enable_threads="no"	# TODO
 
+	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
+	AC_SUBST(DEFINES, "-DGEKKO")
+	AC_SUBST(INCLUDES, '-I$DEVKITPRO/libogc/include')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -166,8 +167,9 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	enable_sockets="no"	# TODO
 	check_pedantic="no"
 
-	AC_DEFINE(OF_NINTENDO_DS, 1,
-		[Whether we are compiling for the Nintendo DS])
+	AC_DEFINE(OF_NINTENDO_DS, 1, [Whether we are compiling for Nintendo DS])
+	AC_SUBST(DEFINES, "-DARM9")
+	AC_SUBST(INCLUDES, '-I$DEVKITPRO/libnds/include')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -190,7 +192,9 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
-		[Whether we are compiling for the Nintendo 3DS])
+		[Whether we are compiling for Nintendo 3DS])
+	AC_SUBST(DEFINES, "-DARM11")
+	AC_SUBST(INCLUDES, '-I$DEVKITPRO/libctru/include')
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -593,8 +597,6 @@ case "$host_os" in
 			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjc"])
 			AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
 				["-Wl,-reexport-lobjc"])
-			AC_SUBST(WEAK_NSFOUNDATIONVERSIONNUMBER,
-				["-Wl,-U,_NSFoundationVersionNumber"])
 			LDFLAGS="$LDFLAGS -Wl,-U,_NSFoundationVersionNumber"
 		])
 
@@ -1772,7 +1774,6 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 		AC_CHECK_PROG(wiiload, wiiload, wiiload)
 
 		AS_IF([test x"$wiiload" != x""], [
-			AC_SUBST(RUN_TESTS, "run")
 			AC_SUBST(WRAPPER, "$wiiload")
 		])
 	])

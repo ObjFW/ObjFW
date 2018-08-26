@@ -138,8 +138,6 @@
 # define OF_SOLARIS
 #elif defined(__QNX__)
 # define OF_QNX
-#elif defined(__wii__)
-# define OF_WII
 #elif defined(_PSP)
 # define OF_PSP
 #elif defined(__DJGPP__)
