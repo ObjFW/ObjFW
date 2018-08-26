@@ -241,10 +241,17 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+#ifndef OF_WII
 	ret.length = sizeof(ret.sockaddr.in);
+#else
+	ret.length = 8;
+#endif
 
 	addrIn->sin_family = AF_INET;
 	addrIn->sin_port = OF_BSWAP16_IF_LE(port);
+#ifdef OF_WII
+	addrIn->sin_len = ret.length;
+#endif
 
 	components = [IPv4 componentsSeparatedByString: @"."];
 
