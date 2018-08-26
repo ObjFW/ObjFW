@@ -25,6 +25,8 @@
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFKernelEventObserver.h"
+# import "OFTCPSocket.h"
+# import "OFTCPSocket+Private.h"
 #endif
 #import "OFThread.h"
 #ifdef OF_HAVE_THREADS
@@ -37,6 +39,9 @@
 #import "OFDate.h"
 
 #import "OFObserveFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFConnectionFailedException.h"
+#endif
 
 static OFRunLoop *mainRunLoop = nil;
 
@@ -93,6 +98,9 @@ static OFRunLoop *mainRunLoop = nil;
 	const void *_buffer;
 	size_t _length, _writtenLength;
 }
+@end
+
+@interface OFRunLoop_ConnectQueueItem: OFRunLoop_QueueItem
 @end
 
 @interface OFRunLoop_AcceptQueueItem: OFRunLoop_QueueItem
@@ -333,6 +341,28 @@ static OFRunLoop *mainRunLoop = nil;
 	[super dealloc];
 }
 # endif
+@end
+
+@implementation OFRunLoop_ConnectQueueItem
+- (bool)handleObject: (id)object
+{
+	id exception = nil;
+	int errNo;
+	void (*func)(id, SEL, OFTCPSocket *, id, id);
+
+	if ((errNo = [object of_socketError]) != 0)
+		exception = [OFConnectionFailedException
+		    exceptionWithHost: nil
+				 port: 0
+			       socket: object
+				errNo: errNo];
+
+	func = (void (*)(id, SEL, OFTCPSocket *, id, id))
+	    [_target methodForSelector: _selector];
+	func(_target, _selector, object, _context, exception);
+
+	return false;
+}
 @end
 
 @implementation OFRunLoop_AcceptQueueItem
@@ -593,6 +623,18 @@ static OFRunLoop *mainRunLoop = nil;
 		queueItem->_context = [context retain];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
+	})
+}
+
++ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
+				target: (id)target
+			      selector: (SEL)selector
+			       context: (id)context
+{
+	ADD_WRITE(OFRunLoop_ConnectQueueItem, stream, {
+		queueItem->_target = [target retain];
+		queueItem->_selector = selector;
+		queueItem->_context = [context retain];
 	})
 }
 

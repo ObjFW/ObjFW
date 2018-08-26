@@ -31,6 +31,7 @@
 #endif
 
 #import "OFTCPSocket.h"
+#import "OFTCPSocket+Private.h"
 #import "OFTCPSocket+SOCKS5.h"
 #import "OFString.h"
 #import "OFThread.h"
@@ -255,6 +256,62 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
+- (bool)of_createSocketForAddress: (const of_socket_address_t *)address
+			    errNo: (int *)errNo
+{
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	int flags;
+#endif
+
+	if (_socket != INVALID_SOCKET)
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+
+	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET) {
+		*errNo = of_socket_errno();
+		return false;
+	}
+
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+#endif
+
+	return true;
+}
+
+- (bool)of_connectSocketToAddress: (const of_socket_address_t *)address
+			    errNo: (int *)errNo
+{
+	if (_socket == INVALID_SOCKET)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (connect(_socket, &address->sockaddr.sockaddr,
+	    address->length) != 0) {
+		*errNo = of_socket_errno();
+		return false;
+	}
+
+	return true;
+}
+
+- (void)of_closeSocket
+{
+	closesocket(_socket);
+	_socket = INVALID_SOCKET;
+}
+
+- (int)of_socketError
+{
+	int errNo;
+	socklen_t len = sizeof(errNo);
+
+	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, &errNo, &len) != 0)
+		return of_socket_errno();
+
+	return errNo;
+}
+
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port
 {
@@ -276,32 +333,38 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	for (iter = results; *iter != NULL; iter++) {
 		of_resolver_result_t *result = *iter;
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-		int flags;
-#endif
+		of_socket_address_t address;
 
-		if ((_socket = socket(result->family,
-		    result->type | SOCK_CLOEXEC,
-		    result->protocol)) == INVALID_SOCKET) {
-			errNo = of_socket_errno();
-
+		switch (result->family) {
+		case AF_INET:
+			address.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
+			break;
+		case AF_INET6:
+			address.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
+			break;
+		default:
+			errNo = EAFNOSUPPORT;
 			continue;
 		}
 
+		if (result->addressLength > sizeof(address)) {
+			errNo = EOVERFLOW;
+			continue;
+		}
+
+		address.length = result->addressLength;
+		memcpy(&address.sockaddr.sockaddr, result->address,
+		    result->addressLength);
+
+		if (![self of_createSocketForAddress: &address
+					       errNo: &errNo])
+			continue;
+
 		_blocking = true;
 
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
-			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
-#endif
-
-		if (connect(_socket, result->address,
-		    result->addressLength) == -1) {
-			errNo = of_socket_errno();
-
-			closesocket(_socket);
-			_socket = INVALID_SOCKET;
-
+		if (![self of_connectSocketToAddress: &address
+					       errNo: &errNo]) {
+			[self of_closeSocket];
 			continue;
 		}
 

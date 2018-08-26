@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The host to which the connection failed.
  */
-@property (readonly, nonatomic) OFString *host;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *host;
 
 /*!
  * @brief The port on the host to which the connection failed.
@@ -68,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return A new, autoreleased connection failed exception
  */
-+ (instancetype)exceptionWithHost: (OFString *)host
++ (instancetype)exceptionWithHost: (nullable OFString *)host
 			     port: (uint16_t)port
 			   socket: (id)socket
 			    errNo: (int)errNo;
@@ -84,7 +84,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param errNo The errno of the error that occurred
  * @return An initialized connection failed exception
  */
-- (instancetype)initWithHost: (OFString *)host
+- (instancetype)initWithHost: (nullable OFString *)host
 			port: (uint16_t)port
 		      socket: (id)socket
 		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;

@@ -67,7 +67,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to write %zu bytes (after %zu bytes written)  to an "
+	    @"Failed to write %zu bytes (after %zu bytes written) to an "
 	    @"object of type %@: %@",
 	    _requestedLength, _bytesWritten, [_object class],
 	    of_strerror(_errNo)];

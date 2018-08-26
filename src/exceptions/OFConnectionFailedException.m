@@ -74,9 +74,15 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"A connection to %@ on port %" @PRIu16 @" could not be "
-	    @"established in socket of type %@: %@",
-	    _host, _port, [_socket class], of_strerror(_errNo)];
+	if (_host != nil)
+		return [OFString stringWithFormat:
+		    @"A connection to %@ on port %" @PRIu16 @" could not be "
+		    @"established in socket of type %@: %@",
+		    _host, _port, [_socket class], of_strerror(_errNo)];
+	else
+		return [OFString stringWithFormat:
+		    @"A connection could not be established in socket of "
+		    @"type %@: %@",
+		    [_socket class], of_strerror(_errNo)];
 }
 @end

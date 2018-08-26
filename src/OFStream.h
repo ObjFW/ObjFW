@@ -139,7 +139,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  * By default, a stream is in blocking mode.
  * On Win32, setting this currently only works for sockets!
  */
-@property (readonly, nonatomic, getter=isBlocking) bool blocking;
+@property (nonatomic, getter=isBlocking) bool blocking;
 
 /*!
  * @brief Reads *at most* size bytes from the stream into a buffer.

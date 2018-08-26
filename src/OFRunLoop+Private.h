@@ -53,6 +53,10 @@ OF_ASSUME_NONNULL_BEGIN
 			   target: (id)target
 			 selector: (SEL)selector
 			  context: (nullable id)context;
++ (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
+				target: (id)target
+			      selector: (SEL)selector
+			       context: (nullable id)context;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 			       target: (id)target
 			     selector: (SEL)selector
