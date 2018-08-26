@@ -339,9 +339,11 @@ static uint16_t defaultSOCKS5Port = 1080;
 		case AF_INET:
 			address.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
 			break;
+#ifdef AF_INET6
 		case AF_INET6:
 			address.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
 			break;
+#endif
 		default:
 			errNo = EAFNOSUPPORT;
 			continue;

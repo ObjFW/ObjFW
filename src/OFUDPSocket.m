@@ -298,7 +298,7 @@
 - (void)setBlocking: (bool)enable
 {
 #if defined(HAVE_FCNTL)
-	int flags = fcntl(_socket, F_GETFL);
+	int flags = fcntl(_socket, F_GETFL, 0);
 
 	if (flags == -1)
 		@throw [OFSetOptionFailedException exceptionWithObject: self

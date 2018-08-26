@@ -23,7 +23,7 @@
 
 #include <stdbool.h>
 
-#import "platform.h"
+#import "OFString.h"
 
 #ifdef OF_HAVE_SYS_SOCKET_H
 # include <sys/socket.h>

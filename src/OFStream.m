@@ -30,6 +30,10 @@
 # include <fcntl.h>
 #endif
 
+#ifdef OF_HAVE_SOCKETS
+# import "socket_helpers.h"
+#endif
+
 #include "platform.h"
 
 #if !defined(OF_WINDOWS) && !defined(OF_MORPHOS)
@@ -1674,7 +1678,8 @@
 	@try {
 		int readFlags;
 
-		readFlags = fcntl([(id)self fileDescriptorForReading], F_GETFL);
+		readFlags =
+		    fcntl([(id)self fileDescriptorForReading], F_GETFL, 0);
 
 		readImplemented = true;
 
@@ -1700,7 +1705,7 @@
 		int writeFlags;
 
 		writeFlags =
-		    fcntl([(id)self fileDescriptorForWriting], F_GETFL);
+		    fcntl([(id)self fileDescriptorForWriting], F_GETFL, 0);
 
 		writeImplemented = true;
 
