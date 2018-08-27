@@ -115,10 +115,11 @@ matrix:
         - config=nintendo_ds
 
     # Nintendo Wii
-    - os: linux
-      dist: trusty
-      env:
-        - config=wii
+    # TODO: Enable once libogc is updated
+    #- os: linux
+    #  dist: trusty
+    #  env:
+    #    - config=wii
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" -a -z "$config" ]; then
