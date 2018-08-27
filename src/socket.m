@@ -405,7 +405,7 @@ of_socket_address_equal(of_socket_address_t *address1,
 
 	switch (address1->family) {
 	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#ifndef OF_WII
 		if (address1->length < (socklen_t)sizeof(struct sockaddr_in) ||
 		    address2->length < (socklen_t)sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
@@ -456,7 +456,7 @@ of_socket_address_hash(of_socket_address_t *address)
 
 	switch (address->family) {
 	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#ifndef OF_WII
 		if (address->length < (socklen_t)sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #else
