@@ -32,6 +32,7 @@ case "$host" in
 		], [
 			OBJCFLAGS="-O0 -g -noixemul"
 		])
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		LDFLAGS="$LDFLAGS -noixemul"
 
 		enable_shared="no"
@@ -40,8 +41,6 @@ case "$host" in
 		enable_files="yes"	# Required for reading ENV:
 		supports_amiga_lib="yes"
 		ac_cv_snprintf_useful_ret="yes"
-
-		AC_SUBST(NOIXEMUL, -noixemul)
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
 			AC_SUBST(SFDC_TARGET, m68k-amigaos)
@@ -63,11 +62,10 @@ case "$host" in
 			], [
 				OBJCFLAGS="-O2 -g -noixemul"
 			])
+			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 			LDFLAGS="$LDFLAGS -noixemul"
 			enable_files="yes"	# Required for reading ENV:
 			supports_amiga_lib="yes"
-
-			AC_SUBST(NOIXEMUL, -noixemul)
 
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
 				AC_SUBST(SFDC_TARGET, ppc-morphos)
@@ -104,6 +102,7 @@ case "$host" in
 		], [
 			OBJCFLAGS="-O2 -G0"
 		])
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -G0"
 		CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
 		LDFLAGS="$LDFLAGS -G0"
 		LIBS="$LIBS -L$DEVKITPSP/psp/sdk/lib -lpspdebug -lpspdisplay"
@@ -135,7 +134,9 @@ AS_IF([test x"$with_wii" = x"yes"], [
 		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
 	])
 
-	OBJCFLAGS="$OBJCFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
+	flags="-mrvl -mcpu=750 -meabi -mhard-float"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DGEKKO -I$DEVKITPRO/libogc/include"
 	LDFLAGS="$LDFLAGS -mrvl -mcpu=750 -meabi -mhard-float"
 	LIBS="$LIBS -L$DEVKITPRO/libogc/lib/wii -lfat -logc"
@@ -144,8 +145,7 @@ AS_IF([test x"$with_wii" = x"yes"], [
 	enable_threads="no"	# TODO
 
 	AC_DEFINE(OF_WII, 1, [Whether we are compiling for Wii])
-	AC_SUBST(DEFINES, "-DGEKKO")
-	AC_SUBST(INCLUDES, '-I$DEVKITPRO/libogc/include')
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DGEKKO -I\$DEVKITPRO/libogc/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -156,8 +156,9 @@ AS_IF([test x"$with_nds" = x"yes"], [
 		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
 	])
 
-	OBJCFLAGS="$OBJCFLAGS -march=armv5te -mtune=arm946e-s"
-	OBJCFLAGS="$OBJCFLAGS -mthumb -mthumb-interwork"
+	flags="-march=armv5te -mtune=arm946e-s -mthumb -mthumb-interwork"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DARM9 -I$DEVKITPRO/libnds/include"
 	ASFLAGS="$ASFLAGS -march=armv5te"
 	LDFLAGS="$LDFLAGS -specs=ds_arm9.specs"
@@ -168,8 +169,7 @@ AS_IF([test x"$with_nds" = x"yes"], [
 	check_pedantic="no"
 
 	AC_DEFINE(OF_NINTENDO_DS, 1, [Whether we are compiling for Nintendo DS])
-	AC_SUBST(DEFINES, "-DARM9")
-	AC_SUBST(INCLUDES, '-I$DEVKITPRO/libnds/include')
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM9 -I\$DEVKITPRO/libnds/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
@@ -180,8 +180,10 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 		AC_MSG_ERROR([DEVKITPRO is not set! Please set DEVKITPRO.])
 	])
 
-	OBJCFLAGS="$OBJCFLAGS -march=armv6k -mtune=mpcore -mfloat-abi=hard"
-	OBJCFLAGS="$OBJCFLAGS -mtp=soft -mword-relocations"
+	flags="-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft"
+	flags="$flags -mword-relocations"
+	OBJCFLAGS="$OBJCFLAGS $flags"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 	CPPFLAGS="$CPPFLAGS -DARM11 -I$DEVKITPRO/libctru/include"
 	ASFLAGS="$ASFLAGS -march=armv6k"
 	LDFLAGS="$LDFLAGS -specs=3dsx.specs -march=armv6k -mtune=mpcore"
@@ -193,15 +195,16 @@ AS_IF([test x"$with_3ds" = x"yes"], [
 
 	AC_DEFINE(OF_NINTENDO_3DS, 1,
 		[Whether we are compiling for Nintendo 3DS])
-	AC_SUBST(DEFINES, "-DARM11")
-	AC_SUBST(INCLUDES, '-I$DEVKITPRO/libctru/include')
+	OBJFW_CPPFLAGS="$OBJFW_CPPFLAGS -DARM11 -I\$DEVKITPRO/libctru/include"
 	AC_SUBST(MAP_LDFLAGS, ['-Wl,-Map,$@.map'])
 ])
 
 CPP="$OBJCPP"
 CPPFLAGS="$CPPFLAGS $OBJCPPFLAGS -DOF_COMPILING_OBJFW"
-OBJCFLAGS="$OBJCFLAGS -Wall -fexceptions -fobjc-exceptions -funwind-tables"
-OBJCFLAGS="$OBJCFLAGS -fconstant-string-class=OFConstantString"
+flags="-fexceptions -fobjc-exceptions -funwind-tables"
+flags="$flags -fconstant-string-class=OFConstantString"
+OBJCFLAGS="$OBJCFLAGS -Wall $flags"
+OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
 dnl amiga-gcc requires -fexceptions in LDFLAGS in order to link in the glue code
 dnl for registering the frames.
 LDFLAGS="$LDFLAGS -fexceptions"
@@ -215,8 +218,9 @@ case "$OBJC" in
 			dnl Therefore, use the integrated assembler for ObjC
 			dnl files, but not for assembly files.
 			mips*-*-*)
-				OBJCFLAGS="$OBJCFLAGS -integrated-as"
-				AC_SUBST(INTEGRATED_AS, "-integrated-as")
+				flag="-integrated-as"
+				OBJCFLAGS="$OBJCFLAGS $flag"
+				OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 				;;
 			dnl Clang's assembler on Windows is not complete yet
 			dnl and cannot compile all .S files.
@@ -226,8 +230,9 @@ case "$OBJC" in
 			dnl Clang generates assembly output on SPARC64 that
 			dnl OpenBSD's assembler does not accept.
 			sparc64-*-*openbsd*)
-				OBJCFLAGS="$OBJCFLAGS -integrated-as"
-				AC_SUBST(INTEGRATED_AS, "-integrated-as")
+				flag="-integrated-as"
+				OBJCFLAGS="$OBJCFLAGS $flag"
+				OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 				;;
 		esac
 		;;
@@ -247,8 +252,9 @@ AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
 AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-cfstrings, [
-	OBJCFLAGS="$OBJCFLAGS -Xclang -fno-constant-cfstrings"
-	AC_SUBST(NO_CONST_CFSTRINGS, "-Xclang -fno-constant-cfstrings")
+	flag="-Xclang -fno-constant-cfstrings"
+	OBJCFLAGS="$OBJCFLAGS $flag"
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 ])
 AX_CHECK_COMPILER_FLAGS([-Wsign-compare -Werror],
 	[OBJCFLAGS="$OBJCFLAGS -Wsign-compare"])
@@ -457,17 +463,18 @@ case "$objc_runtime" in
 		], [
 			[Test test];
 		], [
-			RUNTIME_FLAGS="-Xclang -fobjc-runtime=objfw"
+			flag="-Xclang -fobjc-runtime=objfw"
+			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 			AC_MSG_RESULT(yes)
 		], [
-			RUNTIME_FLAGS="-fgnu-runtime"
-			OBJCFLAGS="$old_OBJCFLAGS -fgnu-runtime"
+			flag="-fgnu-runtime"
+			OBJCFLAGS="$old_OBJCFLAGS $flag"
+			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flag"
 			AC_MSG_RESULT(no)
 			old_compiler="yes"
 		])
 
 		AC_SUBST(RUNTIME, "runtime")
-		AC_SUBST(RUNTIME_FLAGS)
 
 		AS_IF([test x"$enable_shared" != x"no"], [
 			AC_SUBST(OBJFW_RT_SHARED_LIB,
@@ -1497,7 +1504,7 @@ AC_TRY_COMPILE([], [
 	int (^foo)(int bar);
 	foo = ^ (int bar) { return 0; }
 ], [
-	AC_SUBST(BLOCKS_FLAGS, "-Xclang -fblocks")
+	OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -Xclang -fblocks"
 	AC_SUBST(OFBLOCKTESTS_M, "OFBlockTests.m")
 	AC_MSG_RESULT(yes)
 ], [
@@ -1790,7 +1797,9 @@ AC_SUBST(AS, $OBJC)
 AC_SUBST(ASFLAGS)
 AC_SUBST(AS_DEPENDS, '${OBJC_DEPENDS}')
 
-AC_SUBST(TESTS_OBJCFLAGS)
+AC_SUBST(OBJFW_CPPFLAGS)
+AC_SUBST(OBJFW_OBJCFLAGS)
+
 AC_SUBST(TESTS_LIBS)
 
 AC_CONFIG_FILES([

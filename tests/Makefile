@@ -191,7 +191,6 @@ ${PROG_NOINST}.3dsx: ${PROG_NOINST}
 	3dsxtool $< $@
 
 CPPFLAGS += -I../src -I../src/exceptions -I../src/runtime -I.. -DSTDOUT
-OBJCFLAGS += ${TESTS_OBJCFLAGS}
 LIBS := ${TESTS_LIBS} ${LIBS}
 LDFLAGS += ${MAP_LDFLAGS}
 LD = ${OBJC}
