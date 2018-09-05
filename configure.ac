@@ -1197,9 +1197,15 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
 
 	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
-	AC_CHECK_LIB(network, socket, LIBS="$LIBS -lnetwork")
-	AC_CHECK_LIB(ws2_32, main, LIBS="$LIBS -lws2_32")
-	AC_CHECK_LIB(iphlpapi, main, LIBS="$LIBS -liphlpapi")
+
+	case "$host_os" in
+		mingw*)
+			LIBS="$LIBS -lws2_32 -liphlpapi"
+			;;
+		haiku*)
+			LIBS="$LIBS -lnetwork"
+			;;
+	esac
 
 	AC_CHECK_HEADER(sys/socket.h, [
 		AC_DEFINE(OF_HAVE_SYS_SOCKET_H, 1,
