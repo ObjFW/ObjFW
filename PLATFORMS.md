@@ -89,7 +89,7 @@ Linux
 macOS
 -----
 
-  * OS Versions: 10.5, 10.7-10.12
+  * OS Versions: 10.5, 10.7-10.14, Darling
   * Architectures: PowerPC, PowerPC 64, x86, x86_64
   * Compilers: Clang 3.1-4.0, LLVM GCC 4.2.1
   * Runtimes: Apple, ObjFW
