@@ -157,6 +157,30 @@ OF_DESTRUCTOR()
 		     context: (id)context;
 @end
 
+@interface OFDNSResolver_ResolveSocketAddressContext: OFObject
+{
+	OFString *_host;
+	id _target;
+	SEL _selector;
+	id _context;
+	OFMutableArray OF_GENERIC(OF_KINDOF(OFDNSResourceRecord *)) *_records;
+@public
+	unsigned int _expectedResponses;
+}
+
+- (instancetype)initWithHost: (OFString *)host
+		      target: (id)target
+		    selector: (SEL)selector
+		     context: (id)context;
+-	(void)resolver: (OFDNSResolver *)resolver
+  didResolveDomainName: (OFString *)domainName
+	 answerRecords: (OFArray *)answerRecords
+      authorityRecords: (OFArray *)authorityRecords
+     additionalRecords: (OFArray *)additionalRecords
+	       context: (id)context
+	     exception: (id)exception;
+@end
+
 @interface OFDNSResolver ()
 - (void)of_setDefaults;
 - (void)of_obtainSystemConfig;
@@ -754,6 +778,127 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[_cancelTimer release];
 
 	[super dealloc];
+}
+@end
+
+@implementation OFDNSResolver_ResolveSocketAddressContext
+- (instancetype)initWithHost: (OFString *)host
+		      target: (id)target
+		    selector: (SEL)selector
+		     context: (id)context
+{
+	self = [super init];
+
+	@try {
+		_host = [host copy];
+		_target = [target retain];
+		_selector = selector;
+		_context = [context retain];
+
+		_records = [[OFMutableArray alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_host release];
+	[_target release];
+	[_context release];
+	[_records release];
+
+	[super dealloc];
+}
+
+-	(void)resolver: (OFDNSResolver *)resolver
+  didResolveDomainName: (OFString *)domainName
+	 answerRecords: (OFArray *)answerRecords
+      authorityRecords: (OFArray *)authorityRecords
+     additionalRecords: (OFArray *)additionalRecords
+	       context: (id)context
+	     exception: (id)exception
+{
+	/*
+	 * TODO: Error handling could be improved. Ignore error if there are
+	 * responses, otherwise propagate error.
+	 */
+
+	of_socket_address_family_t addressFamily = [context intValue];
+
+	_expectedResponses--;
+
+	if (exception == nil) {
+		for (OFDNSResourceRecord *record in answerRecords) {
+			if (![[record name] isEqual: domainName])
+				continue;
+
+			if ([record recordClass] !=
+			    OF_DNS_RESOURCE_RECORD_CLASS_IN)
+				continue;
+
+			switch ([record recordType]) {
+			case OF_DNS_RESOURCE_RECORD_TYPE_A:
+				if (addressFamily ==
+				    OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
+				    addressFamily ==
+				    OF_SOCKET_ADDRESS_FAMILY_ANY)
+					[_records addObject: record];
+
+				break;
+			case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
+				if (addressFamily ==
+				    OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
+				    addressFamily ==
+				    OF_SOCKET_ADDRESS_FAMILY_ANY)
+					[_records addObject: record];
+
+				break;
+			/*
+			 * TODO: Add CNAMEs and replace them with addresses in
+			 *	 a later stage.
+			 */
+			default:
+				break;
+			}
+		}
+	}
+
+	if (_expectedResponses == 0) {
+		void (*method)(id, SEL, OFDNSResolver *, OFString *, OFData *,
+		    id, id) = (void (*)(id, SEL, OFDNSResolver *, OFString *,
+		    OFData *, id, id))[_target methodForSelector: _selector];
+		OFMutableData *addresses = nil;
+
+		if ([_records count] > 0) {
+			addresses = [OFMutableData
+			    dataWithItemSize: sizeof(of_socket_address_t)
+				    capacity: [_records count]];
+
+			for (OF_KINDOF(OFDNSResourceRecord *) record in
+			    _records)
+				[addresses addItem: [record address]];
+
+			[addresses makeImmutable];
+
+			method(_target, _selector, resolver, domainName,
+			    addresses, _context, nil);
+		} else {
+			OFResolveHostFailedException *e;
+
+			e = [OFResolveHostFailedException
+			    exceptionWithHost: _host
+				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+				   recordType: 0
+					error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
+
+			method(_target, _selector, resolver, domainName, nil,
+			    _context, e);
+		}
+	}
 }
 @end
 
@@ -1608,6 +1753,84 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	    query->_context, nil);
 
 	return false;
+}
+
+- (void)asyncResolveSocketAddressesForHost: (OFString *)host
+				    target: (id)target
+				  selector: (SEL)selector
+				   context: (nullable id)context
+{
+#ifdef OF_HAVE_IPV6
+	[self asyncResolveSocketAddressesForHost: host
+				   addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+					  target: target
+					selector: selector
+					 context: context];
+#else
+	[self asyncResolveSocketAddressesForHost: host
+				   addressFamily: OF_SOCKET_ADDRESS_FAMILY_IPV4
+					  target: target
+					selector: selector
+					 context: context];
+#endif
+}
+
+- (void)asyncResolveSocketAddressesForHost: (OFString *)host
+			     addressFamily: (of_socket_address_family_t)
+						addressFamily
+				    target: (id)target
+				  selector: (SEL)selector
+				   context: (id)userContext
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFDNSResolver_ResolveSocketAddressContext *context;
+	OFNumber *addressFamilyNumber;
+
+	context = [[[OFDNSResolver_ResolveSocketAddressContext alloc]
+	    initWithHost: host
+		  target: target
+		selector: selector
+		 context: userContext] autorelease];
+
+	switch (addressFamily) {
+	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+		context->_expectedResponses = 1;
+		break;
+	case OF_SOCKET_ADDRESS_FAMILY_ANY:
+		context->_expectedResponses = 2;
+		break;
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+
+	addressFamilyNumber = [OFNumber numberWithInt: addressFamily];
+
+	if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
+	    addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
+		[self asyncResolveHost: host
+			   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			    recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA
+				target: context
+			      selector: @selector(resolver:didResolveDomainName:
+					    answerRecords:authorityRecords:
+					    additionalRecords:context:
+					    exception:)
+			       context: addressFamilyNumber];
+
+	if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
+	    addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
+		[self asyncResolveHost: host
+			   recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			    recordType: OF_DNS_RESOURCE_RECORD_TYPE_A
+				target: context
+			      selector: @selector(resolver:didResolveDomainName:
+					    answerRecords:authorityRecords:
+					    additionalRecords:context:
+					    exception:)
+			       context: addressFamilyNumber];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)close

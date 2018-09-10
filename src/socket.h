@@ -83,9 +83,14 @@ typedef u8 sa_family_t;
  * @brief A socket address family.
  */
 typedef enum {
+	/** An unknown address family. */
 	OF_SOCKET_ADDRESS_FAMILY_UNKNOWN,
+	/** IPv4 */
 	OF_SOCKET_ADDRESS_FAMILY_IPV4,
+	/** IPv6 */
 	OF_SOCKET_ADDRESS_FAMILY_IPV6,
+	/** Any address family */
+	OF_SOCKET_ADDRESS_FAMILY_ANY = 255
 } of_socket_address_family_t;
 
 #ifndef OF_HAVE_IPV6

@@ -236,6 +236,67 @@ typedef enum of_dns_resolver_error_t {
 		 context: (nullable id)context;
 
 /*!
+ * @brief Asynchronously resolves the specified host to socket addresses.
+ *
+ * @param host The host to resolve
+ * @param target The target to call with the result once resolving is done
+ * @param selector The selector to call on the target. The signature must be
+ *		   the following:
+ *		   @parblock
+ *
+ *		       void (OFDNSResolver *resolver, OFString *domainName,
+ *		           OFData *_Nullable, socketAddresses,
+ *		           id _Nullable context, id _Nullable exception)
+ *
+ *		   `resolver` is the acting resolver.@n
+ *		   `domainName` is the fully qualified domain name used to
+ *		   resolve the host.@n
+ *		   `socketAddresses` is OFData containing several
+ *		   of_socket_address_t.@n
+ *		   `context` is the context object originally passed.@n
+ *		   `exception` is an exception that happened during resolving,
+ *		   otherwise nil.
+ *		   @endparblock
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncResolveSocketAddressesForHost: (OFString *)host
+				    target: (id)target
+				  selector: (SEL)selector
+				   context: (nullable id)context;
+
+/*!
+ * @brief Asynchronously resolves the specified host to socket addresses.
+ *
+ * @param host The host to resolve
+ * @param addressFamily The desired socket address family
+ * @param target The target to call with the result once resolving is done
+ * @param selector The selector to call on the target. The signature must be
+ *		   the following:
+ *		   @parblock
+ *
+ *		       void (OFDNSResolver *resolver, OFString *domainName,
+ *		           OFData *_Nullable socketAddresses,
+ *		           id _Nullable context, id _Nullable exception)
+ *
+ *		   `resolver` is the acting resolver.@n
+ *		   `domainName` is the fully qualified domain name used to
+ *		   resolve the host.@n
+ *		   `socketAddresses` is OFData containing several
+ *		   of_socket_address_t.@n
+ *		   `context` is the context object originally passed.@n
+ *		   `exception` is an exception that happened during resolving,
+ *		   otherwise nil.
+ *		   @endparblock
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncResolveSocketAddressesForHost: (OFString *)host
+			     addressFamily: (of_socket_address_family_t)
+						addressFamily
+				    target: (id)target
+				  selector: (SEL)selector
+				   context: (nullable id)context;
+
+/*!
  * @brief Closes all sockets and cancels all ongoing requests.
  */
 - (void)close;
