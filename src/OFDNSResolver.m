@@ -73,6 +73,8 @@
  */
 #define MAX_ALLOWED_POINTERS 16
 
+#define CNAME_RECURSION 3
+
 #if defined(OF_HAIKU)
 # define HOSTS_PATH @"/system/settings/network/hosts"
 # define RESOLV_CONF_PATH @"/system/settings/network/resolv.conf"
@@ -829,6 +831,108 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[super dealloc];
 }
 
+- (bool)parseRecords: (OFArray *)records
+	    resolver: (OFDNSResolver *)resolver
+       answerRecords: (OFDictionary *)answerRecords
+   additionalRecords: (OFDictionary *)additionalRecords
+	  recordType: (of_dns_resource_record_type_t)recordType
+	   recursion: (unsigned int)recursion
+{
+	bool found = false;
+
+	for (OF_KINDOF(OFDNSResourceRecord *) record in records) {
+		if ([record recordClass] != OF_DNS_RESOURCE_RECORD_CLASS_IN)
+			continue;
+
+		if ([record recordType] == recordType) {
+			[_records addObject: record];
+			found = true;
+		} else if ([record recordType] ==
+		    OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
+			[self	resolveCNAME: record
+				    resolver: resolver
+			       answerRecords: answerRecords
+			   additionalRecords: additionalRecords
+				  recordType: recordType
+				   recursion: recursion];
+			found = true;
+		}
+	}
+
+	return found;
+}
+
+- (void)resolveCNAME: (OFCNAMEDNSResourceRecord *)CNAME
+	    resolver: (OFDNSResolver *)resolver
+       answerRecords: (OFDictionary *)answerRecords
+   additionalRecords: (OFDictionary *)additionalRecords
+	  recordType: (of_dns_resource_record_type_t)recordType
+	   recursion: (unsigned int)recursion
+{
+	OFString *domainName = [CNAME alias];
+	bool found = false;
+
+	if (recursion == 0)
+		return;
+
+	if ([self parseRecords: [answerRecords objectForKey: domainName]
+		      resolver: resolver
+		 answerRecords: answerRecords
+	     additionalRecords: additionalRecords
+		    recordType: recordType
+		     recursion: recursion - 1])
+		found = true;
+
+	if ([self parseRecords: [additionalRecords objectForKey: domainName]
+		      resolver: resolver
+		 answerRecords: answerRecords
+	     additionalRecords: additionalRecords
+		    recordType: recordType
+		     recursion: recursion - 1])
+		found = true;
+
+	if (!found) {
+		/*
+		 * TODO: Send request, add CNAME to _records and replace once
+		 *	 resolved.
+		 */
+	}
+}
+
+- (void)doneWithDomainName: (OFString *)domainName
+		  resolver: (OFDNSResolver *)resolver
+{
+	void (*method)(id, SEL, OFDNSResolver *, OFString *, OFData *, id, id) =
+	    (void (*)(id, SEL, OFDNSResolver *, OFString *, OFData *, id, id))
+	    [_target methodForSelector: _selector];
+	OFMutableData *addresses = nil;
+
+	if ([_records count] > 0) {
+		addresses = [OFMutableData
+		    dataWithItemSize: sizeof(of_socket_address_t)
+			    capacity: [_records count]];
+
+		for (OF_KINDOF(OFDNSResourceRecord *) record in _records)
+			[addresses addItem: [record address]];
+
+		[addresses makeImmutable];
+
+		method(_target, _selector, resolver, domainName, addresses,
+		    _context, nil);
+	} else {
+		OFResolveHostFailedException *e;
+
+		e = [OFResolveHostFailedException
+		    exceptionWithHost: _host
+			  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			   recordType: 0
+				error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
+
+		method(_target, _selector, resolver, domainName, nil, _context,
+		    e);
+	}
+}
+
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
 	 answerRecords: (OFDictionary *)answerRecords
@@ -842,76 +946,28 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	 * responses, otherwise propagate error.
 	 */
 
-	of_socket_address_family_t addressFamily = [context intValue];
+	of_dns_resource_record_type_t recordType = [context intValue];
 
 	_expectedResponses--;
 
-	if (exception == nil) {
-		for (OFDNSResourceRecord *record in
-		    [answerRecords objectForKey: domainName]) {
-			if ([record recordClass] !=
-			    OF_DNS_RESOURCE_RECORD_CLASS_IN)
-				continue;
+	if (exception != nil) {
+		if (_expectedResponses == 0)
+			[self doneWithDomainName: domainName
+					resolver: resolver];
 
-			switch ([record recordType]) {
-			case OF_DNS_RESOURCE_RECORD_TYPE_A:
-				if (addressFamily ==
-				    OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
-				    addressFamily ==
-				    OF_SOCKET_ADDRESS_FAMILY_ANY)
-					[_records addObject: record];
-
-				break;
-			case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
-				if (addressFamily ==
-				    OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
-				    addressFamily ==
-				    OF_SOCKET_ADDRESS_FAMILY_ANY)
-					[_records addObject: record];
-
-				break;
-			/*
-			 * TODO: Add CNAMEs and replace them with addresses in
-			 *	 a later stage.
-			 */
-			default:
-				break;
-			}
-		}
+		return;
 	}
 
-	if (_expectedResponses == 0) {
-		void (*method)(id, SEL, OFDNSResolver *, OFString *, OFData *,
-		    id, id) = (void (*)(id, SEL, OFDNSResolver *, OFString *,
-		    OFData *, id, id))[_target methodForSelector: _selector];
-		OFMutableData *addresses = nil;
+	[self parseRecords: [answerRecords objectForKey: domainName]
+		  resolver: resolver
+	     answerRecords: answerRecords
+	 additionalRecords: additionalRecords
+		recordType: recordType
+		 recursion: CNAME_RECURSION];
 
-		if ([_records count] > 0) {
-			addresses = [OFMutableData
-			    dataWithItemSize: sizeof(of_socket_address_t)
-				    capacity: [_records count]];
-
-			for (OF_KINDOF(OFDNSResourceRecord *) record in
-			    _records)
-				[addresses addItem: [record address]];
-
-			[addresses makeImmutable];
-
-			method(_target, _selector, resolver, domainName,
-			    addresses, _context, nil);
-		} else {
-			OFResolveHostFailedException *e;
-
-			e = [OFResolveHostFailedException
-			    exceptionWithHost: _host
-				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-				   recordType: 0
-					error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
-
-			method(_target, _selector, resolver, domainName, nil,
-			    _context, e);
-		}
-	}
+	if (_expectedResponses == 0)
+		[self doneWithDomainName: domainName
+				resolver: resolver];
 }
 @end
 
@@ -1797,7 +1853,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDNSResolver_ResolveSocketAddressContext *context;
-	OFNumber *addressFamilyNumber;
 
 	context = [[[OFDNSResolver_ResolveSocketAddressContext alloc]
 	    initWithHost: host
@@ -1817,8 +1872,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	addressFamilyNumber = [OFNumber numberWithInt: addressFamily];
-
 	if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
 	    addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
 		[self asyncResolveHost: host
@@ -1829,7 +1882,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 					    answerRecords:authorityRecords:
 					    additionalRecords:context:
 					    exception:)
-			       context: addressFamilyNumber];
+			       context: [OFNumber numberWithInt:
+					    OF_DNS_RESOURCE_RECORD_TYPE_AAAA]];
 
 	if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
 	    addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY)
@@ -1841,7 +1895,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 					    answerRecords:authorityRecords:
 					    additionalRecords:context:
 					    exception:)
-			       context: addressFamilyNumber];
+			       context: [OFNumber numberWithInt:
+					    OF_DNS_RESOURCE_RECORD_TYPE_A]];
 
 	objc_autoreleasePoolPop(pool);
 }
