@@ -174,6 +174,20 @@ OF_DESTRUCTOR()
 		      target: (id)target
 		    selector: (SEL)selector
 		     context: (id)context;
+- (bool)parseRecords: (OFArray *)records
+	    resolver: (OFDNSResolver *)resolver
+       answerRecords: (OFDictionary *)answerRecords
+   additionalRecords: (OFDictionary *)additionalRecords
+	  recordType: (of_dns_resource_record_type_t)recordType
+	   recursion: (unsigned int)recursion;
+- (void)resolveCNAME: (OFCNAMEDNSResourceRecord *)CNAME
+	    resolver: (OFDNSResolver *)resolver
+       answerRecords: (OFDictionary *)answerRecords
+   additionalRecords: (OFDictionary *)additionalRecords
+	  recordType: (of_dns_resource_record_type_t)recordType
+	   recursion: (unsigned int)recursion;
+- (void)doneWithDomainName: (OFString *)domainName
+		  resolver: (OFDNSResolver *)resolver;
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
 	 answerRecords: (OFDictionary *)answerRecords
