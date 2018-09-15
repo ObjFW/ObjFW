@@ -174,9 +174,9 @@ OF_DESTRUCTOR()
 		     context: (id)context;
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (OFArray *)answerRecords
-      authorityRecords: (OFArray *)authorityRecords
-     additionalRecords: (OFArray *)additionalRecords
+	 answerRecords: (OFDictionary *)answerRecords
+      authorityRecords: (OFDictionary *)authorityRecords
+     additionalRecords: (OFDictionary *)additionalRecords
 	       context: (id)context
 	     exception: (id)exception;
 @end
@@ -587,11 +587,13 @@ parseResourceRecord(OFString *name, of_dns_resource_record_class_t recordClass,
 			     TTL: TTL] autorelease];
 }
 
-static OFArray *
+static OFDictionary *
 parseSection(const unsigned char *buffer, size_t length, size_t *i,
     uint_fast16_t count)
 {
-	OFMutableArray *ret = [OFMutableArray array];
+	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
+	OFEnumerator OF_GENERIC(OFMutableArray *) *objectEnumerator;
+	OFMutableArray *array;
 
 	for (uint_fast16_t j = 0; j < count; j++) {
 		OFString *name = parseName(buffer, length, i,
@@ -620,8 +622,20 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		    buffer, length, *i, dataLength);
 		*i += dataLength;
 
-		[ret addObject: record];
+		array = [ret objectForKey: name];
+
+		if (array == nil) {
+			array = [OFMutableArray array];
+			[ret setObject: array
+				forKey: name];
+		}
+
+		[array addObject: record];
 	}
+
+	objectEnumerator = [ret objectEnumerator];
+	while ((array = [objectEnumerator nextObject]) != nil)
+		[array makeImmutable];
 
 	[ret makeImmutable];
 
@@ -629,13 +643,14 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 static void callback(id target, SEL selector, OFDNSResolver *resolver,
-    OFString *domainName, OFArray *answerRecords, OFArray *authorityRecords,
-    OFArray *additionalRecords, id context, id exception)
+    OFString *domainName, OFDictionary *answerRecords,
+    OFDictionary *authorityRecords, OFDictionary *additionalRecords, id context,
+    id exception)
 {
-	void (*method)(id, SEL, OFDNSResolver *, OFString *, OFArray *,
-	    OFArray *, OFArray *, id, id) = (void (*)(id, SEL, OFDNSResolver *,
-	    OFString *, OFArray *, OFArray *, OFArray *, id, id))
-	    [target methodForSelector: selector];
+	void (*method)(id, SEL, OFDNSResolver *, OFString *, OFDictionary *,
+	    OFDictionary *, OFDictionary *, id, id) = (void (*)(id, SEL,
+	    OFDNSResolver *, OFString *, OFDictionary *, OFDictionary *,
+	    OFDictionary *, id, id))[target methodForSelector: selector];
 
 	method(target, selector, resolver, domainName, answerRecords,
 	    authorityRecords, additionalRecords, context, exception);
@@ -816,9 +831,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (OFArray *)answerRecords
-      authorityRecords: (OFArray *)authorityRecords
-     additionalRecords: (OFArray *)additionalRecords
+	 answerRecords: (OFDictionary *)answerRecords
+      authorityRecords: (OFDictionary *)authorityRecords
+     additionalRecords: (OFDictionary *)additionalRecords
 	       context: (id)context
 	     exception: (id)exception
 {
@@ -832,10 +847,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	_expectedResponses--;
 
 	if (exception == nil) {
-		for (OFDNSResourceRecord *record in answerRecords) {
-			if (![[record name] isEqual: domainName])
-				continue;
-
+		for (OFDNSResourceRecord *record in
+		    [answerRecords objectForKey: domainName]) {
 			if ([record recordClass] !=
 			    OF_DNS_RESOURCE_RECORD_CLASS_IN)
 				continue;
@@ -1613,8 +1626,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	       context: (id)context
 	     exception: (id)exception
 {
-	OFArray *answerRecords = nil, *authorityRecords = nil;
-	OFArray *additionalRecords = nil;
+	OFDictionary *answerRecords = nil, *authorityRecords = nil;
+	OFDictionary *additionalRecords = nil;
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
 

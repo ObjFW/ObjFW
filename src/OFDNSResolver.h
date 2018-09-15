@@ -165,23 +165,27 @@ typedef enum of_dns_resolver_error_t {
  *		   @parblock
  *
  *		       void (OFDNSResolver *resolver, OFString *domainName,
- *		           OFArray<__kindof OFDNSResourceRecord *>
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
  *		           *_Nullable answerRecords,
- *		           OFArray<__kindof OFDNSResourceRecord *>
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
  *		           *_Nullable authorityRecords,
- *		           OFArray<__kindof OFDNSResourceRecord *>
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
  *		           *_Nullable additionalRecords,
  *		           id _Nullable context, id _Nullable exception)
  *
  *		   `resolver` is the acting resolver.@n
  *		   `domainName` is the fully qualified domain name used to
  *		   resolve the host.@n
- *		   `answerRecords` are the answer records from the name server.
+ *		   `answerRecords` are the answer records from the name server,
+ *		   grouped by domain name.
  *		   @n
  *		   `authorityRecords` are the authority records from the name
- *		   server.@n
+ *		   server, grouped by domain name.@n
  *		   `additionalRecords` are additional records sent by the name
- *		   server.@n
+ *		   server, grouped by domain name.@n
  *		   `context` is the context object originally passed.@n
  *		   `exception` is an exception that happened during resolving,
  *		   otherwise nil.
@@ -205,23 +209,27 @@ typedef enum of_dns_resolver_error_t {
  *		   @parblock
  *
  *		       void (OFDNSResolver *resolver, OFString *domainName,
- *		           OFArray<__kindof OFDNSResourceRecord *>
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
  *		           *_Nullable answerRecords,
- *		           OFArray<__kindof OFDNSResourceRecord *>
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
  *		           *_Nullable authorityRecords,
- *		           OFArray<__kindof OFDNSResourceRecord *>
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
  *		           *_Nullable additionalRecords,
  *		           id _Nullable context, id _Nullable exception)
  *
  *		   `resolver` is the acting resolver.@n
  *		   `domainName` is the fully qualified domain name used to
  *		   resolve the host.@n
- *		   `answerRecords` are the answer records from the name server.
+ *		   `answerRecords` are the answer records from the name server,
+ *		   grouped by domain name.
  *		   @n
  *		   `authorityRecords` are the authority records from the name
- *		   server.@n
+ *		   server, grouped by domain name.@n
  *		   `additionalRecords` are additional records sent by the name
- *		   server.@n
+ *		   server, grouped by domain name.@n
  *		   `context` is the context object originally passed.@n
  *		   `exception` is an exception that happened during resolving,
  *		   otherwise nil.
