@@ -125,7 +125,7 @@ SRCS_FILES = OFFile.m			\
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
-	       ${OFHTTPCLIENT_M}		\
+	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\
 	       OFHTTPRequest.m			\
@@ -185,7 +185,6 @@ SRCS += OFArray_adjacent.m		\
 	OFMutableString_UTF8.m		\
 	OFSet_hashtable.m		\
 	OFString_UTF8.m			\
-	${OFURLHANDLER_HTTP_M}		\
 	OFValue_bytes.m			\
 	OFValue_dimension.m		\
 	OFValue_nonretainedObject.m	\
@@ -203,7 +202,8 @@ SRCS_SOCKETS += OFKernelEventObserver.m			\
 		${OFKERNELEVENTOBSERVER_KQUEUE_M}	\
 		${OFKERNELEVENTOBSERVER_POLL_M}		\
 		${OFKERNELEVENTOBSERVER_SELECT_M}	\
-		OFTCPSocket+SOCKS5.m
+		OFTCPSocket+SOCKS5.m			\
+		OFURLHandler_HTTP.m
 
 OBJS_EXTRA = ${RUNTIME_RUNTIME_A}	\
 	     ${EXCEPTIONS_EXCEPTIONS_A} \

@@ -33,11 +33,13 @@
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+Private.h"
 #import "OFTCPSocket+SOCKS5.h"
+#import "OFDNSResolver.h"
+#import "OFData.h"
+#import "OFRunLoop.h"
+#import "OFRunLoop+Private.h"
 #import "OFString.h"
 #import "OFThread.h"
 #import "OFTimer.h"
-#import "OFRunLoop.h"
-#import "OFRunLoop+Private.h"
 
 #import "OFAcceptFailedException.h"
 #import "OFAlreadyConnectedException.h"
@@ -45,6 +47,7 @@
 #import "OFConnectionFailedException.h"
 #import "OFGetOptionFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFListenFailedException.h"
 #import "OFNotImplementedException.h"
 #import "OFNotOpenException.h"
@@ -68,52 +71,58 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-#ifdef OF_HAVE_THREADS
-@interface OFTCPSocket_ConnectThread: OFThread
+@interface OFTCPSocket_ConnectContext: OFObject
 {
-	OFThread *_sourceThread;
 	OFTCPSocket *_socket;
 	OFString *_host;
 	uint16_t _port;
 	id _target;
 	SEL _selector;
 	id _context;
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 	of_tcp_socket_async_connect_block_t _block;
-# endif
+#endif
 	id _exception;
+	OFData *_socketAddresses;
+	size_t _socketAddressesIndex;
 }
 
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-			      socket: (OFTCPSocket *)sock
-				host: (OFString *)host
-				port: (uint16_t)port
-			      target: (id)target
-			    selector: (SEL)selector
-			     context: (id)context;
-# ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-			      socket: (OFTCPSocket *)sock
-				host: (OFString *)host
-				port: (uint16_t)port
-			       block: (of_tcp_socket_async_connect_block_t)
-					  block;
-# endif
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+			  host: (OFString *)host
+			  port: (uint16_t)port
+			target: (id)target
+		      selector: (SEL)selector
+		       context: (id)context;
+#ifdef OF_HAVE_BLOCKS
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+			  host: (OFString *)host
+			  port: (uint16_t)port
+			 block: (of_tcp_socket_async_connect_block_t)block;
+#endif
+- (void)didConnect;
+- (void)socketDidConnect: (OFTCPSocket *)sock
+		 context: (id)context
+	       exception: (id)exception;
+- (void)tryNextAddress;
+-	(void)resolver: (OFDNSResolver *)resolver
+  didResolveDomainName: (OFString *)domainName
+       socketAddresses: (OFData *)socketAddresses
+	       context: (id)context
+	     exception: (id)exception;
+- (void)start;
 @end
 
-@implementation OFTCPSocket_ConnectThread
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-			      socket: (OFTCPSocket *)sock
-				host: (OFString *)host
-				port: (uint16_t)port
-			      target: (id)target
-			    selector: (SEL)selector
-			     context: (id)context
+@implementation OFTCPSocket_ConnectContext
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+			  host: (OFString *)host
+			  port: (uint16_t)port
+			target: (id)target
+		      selector: (SEL)selector
+		       context: (id)context
 {
 	self = [super init];
 
 	@try {
-		_sourceThread = [sourceThread retain];
 		_socket = [sock retain];
 		_host = [host copy];
 		_port = port;
@@ -128,17 +137,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return self;
 }
 
-# ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-			      socket: (OFTCPSocket *)sock
-				host: (OFString *)host
-				port: (uint16_t)port
-			       block: (of_tcp_socket_async_connect_block_t)block
+#ifdef OF_HAVE_BLOCKS
+- (instancetype)initWithSocket: (OFTCPSocket *)sock
+			  host: (OFString *)host
+			  port: (uint16_t)port
+			 block: (of_tcp_socket_async_connect_block_t)block
 {
 	self = [super init];
 
 	@try {
-		_sourceThread = [sourceThread retain];
 		_socket = [sock retain];
 		_host = [host copy];
 		_port = port;
@@ -150,63 +157,156 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	return self;
 }
-# endif
+#endif
 
 - (void)dealloc
 {
-	[_sourceThread release];
 	[_socket release];
 	[_host release];
 	[_target release];
 	[_context release];
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 	[_block release];
-# endif
+#endif
 	[_exception release];
+	[_socketAddresses release];
 
 	[super dealloc];
 }
 
 - (void)didConnect
 {
-	[self join];
-
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
 		_block(_socket, _exception);
 	else {
-# endif
+#endif
 		void (*func)(id, SEL, OFTCPSocket *, id, id) =
 		    (void (*)(id, SEL, OFTCPSocket *, id, id))
 		    [_target methodForSelector: _selector];
 
 		func(_target, _selector, _socket, _context, _exception);
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 	}
-# endif
+#endif
 }
 
-- (id)main
+- (void)socketDidConnect: (OFTCPSocket *)sock
+		 context: (id)context
+	       exception: (id)exception
 {
-	void *pool = objc_autoreleasePoolPush();
-
-	@try {
-		[_socket connectToHost: _host
-				  port: _port];
-	} @catch (id e) {
-		_exception = [e retain];
+	if (exception != nil) {
+		if (_socketAddressesIndex >= [_socketAddresses count])
+			_exception = [exception retain];
+		else {
+			[self tryNextAddress];
+			return;
+		}
 	}
 
-	[self performSelector: @selector(didConnect)
-		     onThread: _sourceThread
-		waitUntilDone: false];
+	[self didConnect];
+}
 
-	objc_autoreleasePoolPop(pool);
+- (void)tryNextAddress
+{
+	of_socket_address_t address = *(const of_socket_address_t *)
+	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
+	int errNo;
 
-	return nil;
+	of_socket_address_set_port(&address, _port);
+
+	if (![_socket of_createSocketForAddress: &address
+					  errNo: &errNo]) {
+		if (_socketAddressesIndex >= [_socketAddresses count]) {
+			_exception = [[OFConnectionFailedException alloc]
+			    initWithHost: _host
+				    port: _port
+				  socket: _socket
+				   errNo: errNo];
+			[self didConnect];
+			return;
+		}
+
+		[self tryNextAddress];
+		return;
+	}
+
+	[_socket setBlocking: false];
+
+	if (![_socket of_connectSocketToAddress: &address
+					  errNo: &errNo]) {
+		if (errNo == EINPROGRESS) {
+			SEL selector = @selector(socketDidConnect:context:
+			    exception:);
+
+			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
+							   target: self
+							 selector: selector
+							  context: nil];
+			return;
+		} else {
+			[_socket of_closeSocket];
+
+			if (_socketAddressesIndex >= [_socketAddresses count]) {
+				_exception = [[OFConnectionFailedException
+				    alloc] initWithHost: _host
+						   port: _port
+						 socket: _socket
+						  errNo: errNo];
+				[self didConnect];
+				return;
+			}
+
+			[self tryNextAddress];
+			return;
+		}
+	}
+
+	[self didConnect];
+}
+
+-	(void)resolver: (OFDNSResolver *)resolver
+  didResolveDomainName: (OFString *)domainName
+       socketAddresses: (OFData *)socketAddresses
+	       context: (id)context
+	     exception: (id)exception
+{
+	if (exception != nil) {
+		_exception = [exception retain];
+		[self didConnect];
+		return;
+	}
+
+	_socketAddresses = [socketAddresses copy];
+	[self tryNextAddress];
+}
+
+- (void)start
+{
+	@try {
+		of_socket_address_t address =
+		    of_socket_address_parse_ip(_host, _port);
+
+		_socketAddresses = [[OFData alloc]
+		    initWithItems: &address
+			 itemSize: sizeof(address)
+			    count: 1];
+
+		[self tryNextAddress];
+		return;
+	} @catch (OFInvalidFormatException *e) {
+	}
+
+	[[OFThread DNSResolver]
+	    asyncResolveSocketAddressesForHost: _host
+					target: self
+				      selector: @selector(resolver:
+						    didResolveDomainName:
+						    socketAddresses:context:
+						    exception:)
+				       context: nil];
 }
 @end
-#endif
 
 @implementation OFTCPSocket
 @synthesize SOCKS5Host = _SOCKS5Host, SOCKS5Port = _SOCKS5Port;
@@ -386,44 +486,42 @@ static uint16_t defaultSOCKS5Port = 1080;
 					port: destinationPort];
 }
 
-#ifdef OF_HAVE_THREADS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		    target: (id)target
 		  selector: (SEL)selector
 		   context: (id)context
 {
+	/* TODO: Support SOCKS5 */
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_ConnectThread alloc]
-	    initWithSourceThread: [OFThread currentThread]
-			  socket: self
-			    host: host
-			    port: port
-			  target: target
-			selector: selector
-			 context: context] autorelease] start];
+	[[[[OFTCPSocket_ConnectContext alloc]
+	    initWithSocket: self
+		      host: host
+		      port: port
+		    target: target
+		  selector: selector
+		   context: context] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }
 
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		     block: (of_tcp_socket_async_connect_block_t)block
 {
+	/* TODO: Support SOCKS5 */
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_ConnectThread alloc]
-	    initWithSourceThread: [OFThread currentThread]
-			  socket: self
-			    host: host
-			    port: port
-			   block: block] autorelease] start];
+	[[[[OFTCPSocket_ConnectContext alloc]
+	    initWithSocket: self
+		      host: host
+		      port: port
+		     block: block] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }
-# endif
 #endif
 
 - (uint16_t)bindToHost: (OFString *)host

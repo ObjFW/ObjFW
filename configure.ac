@@ -1399,12 +1399,10 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	], [
 		AC_MSG_RESULT(no)
 	])
-])
 
-AS_IF([test x"$enable_sockets" != x"no" -a x"$enable_threads" != x"no"], [
-	AC_SUBST(OFHTTPCLIENT_M, "OFHTTPClient.m")
-	AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
-	AC_SUBST(OFURLHANDLER_HTTP_M, "OFURLHandler_HTTP.m")
+	AS_IF([test x"$enable_threads" != x"no"], [
+		AC_SUBST(OFHTTPCLIENTTESTS_M, "OFHTTPClientTests.m")
+	])
 
 	AC_SUBST(OFDNS, "ofdns")
 	AS_IF([test x"$enable_files" != x"no"], [

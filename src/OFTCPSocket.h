@@ -153,7 +153,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port;
 
-#ifdef OF_HAVE_THREADS
 /*!
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
@@ -171,7 +170,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 		  selector: (SEL)selector
 		   context: (nullable id)context;
 
-# ifdef OF_HAVE_BLOCKS
+#ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
  *
@@ -182,7 +181,6 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 		     block: (of_tcp_socket_async_connect_block_t)block;
-# endif
 #endif
 
 /*!
