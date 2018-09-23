@@ -48,8 +48,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
-    size_t length, id _Nullable exception);
+typedef bool (^of_stream_async_read_block_t)(OF_KINDOF(OFStream *) stream,
+    void *buffer, size_t length, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read from the stream.
@@ -61,7 +61,7 @@ typedef bool (^of_stream_async_read_block_t)(OFStream *stream, void *buffer,
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
+typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
     OFString *_Nullable line, id _Nullable exception);
 
 /*!
@@ -80,7 +80,7 @@ typedef bool (^of_stream_async_read_line_block_t)(OFStream *stream,
  *	   The buffer may be changed, so that every time a new buffer and length
  *	   can be specified while the callback stays the same.
  */
-typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
+typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
     const void *_Nonnull *_Nonnull buffer, size_t bytesWritten,
     id _Nullable exception);
 #endif
@@ -233,7 +233,7 @@ typedef size_t (^of_stream_async_write_block_t)(OFStream *stream,
  *		 queue to handle the data received next, you need to return
  *		 false from the method.
  * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, void *buffer, size_t size,
+ *		   `bool (OFStream *stream, void *buffer, size_t length,
  *		   id context, id exception)`.
  * @param context A context object to pass along to the target
  */
