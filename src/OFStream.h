@@ -26,6 +26,7 @@
 
 #import "OFObject.h"
 #import "OFString.h"
+#import "OFRunLoop.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFKernelEventObserver.h"
 #endif
@@ -212,6 +213,42 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 		    context: (nullable id)context;
 
 /*!
+ * @brief Asynchronously reads *at most* size bytes from the stream into a
+ *	  buffer.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * @ref asyncReadIntoBuffer:exactLength:target:selector:context:. Note that a
+ * read can even return 0 bytes - this does not necessarily mean that the
+ * stream ended, so you still need to check @ref atEndOfStream.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read.
+ *		 The buffer must not be freed before the async read completed!
+ * @param length The length of the data that should be read at most.
+ *		 The buffer *must* be *at least* this big!
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param target The target on which the selector should be called when the
+ *		 data has been received. If the method returns true, it will be
+ *		 called again with the same buffer and maximum length when more
+ *		 data has been received. If you want the next method in the
+ *		 queue to handle the data received next, you need to return
+ *		 false from the method.
+ * @param selector The selector to call on the target. The signature must be
+ *		   `bool (OFStream *stream, void *buffer, size_t length,
+ *		   id context, id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		     target: (id)target
+		   selector: (SEL)selector
+		    context: (nullable id)context;
+
+/*!
  * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
@@ -239,6 +276,40 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
+		     target: (id)target
+		   selector: (SEL)selector
+		    context: (nullable id)context;
+
+/*!
+ * @brief Asynchronously reads exactly the specified length bytes from the
+ *	  stream into a buffer.
+ *
+ * Unlike @ref asyncReadIntoBuffer:length:target:selector:context:, this method
+ * does not call the method when less than the specified length has been read -
+ * instead, it waits until it got exactly the specified length, the stream has
+ * ended or an exception occurred.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read
+ * @param length The length of the data that should be read.
+ *		 The buffer *must* be *at least* this big!
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param target The target on which the selector should be called when the
+ *		 data has been received. If the method returns true, it will be
+ *		 called again with the same buffer and exact length when more
+ *		 data has been received. If you want the next method in the
+ *		 queue to handle the data received next, you need to return
+ *		 false from the method.
+ * @param selector The selector to call on the target. The signature must be
+ *		   `bool (OFStream *stream, void *buffer, size_t length,
+ *		   id context, id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
 		     target: (id)target
 		   selector: (SEL)selector
 		    context: (nullable id)context;
@@ -272,6 +343,35 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 		      block: (of_stream_async_read_block_t)block;
 
 /*!
+ * @brief Asynchronously reads *at most* ref size bytes from the stream into a
+ *	  buffer.
+ *
+ * On network streams, this might read less than the specified number of bytes.
+ * If you want to read exactly the specified number of bytes, use
+ * @ref asyncReadIntoBuffer:exactLength:block:. Note that a read can even
+ * return 0 bytes - this does not necessarily mean that the stream ended, so
+ * you still need to check @ref atEndOfStream.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read.
+ *		 The buffer must not be freed before the async read completed!
+ * @param length The length of the data that should be read at most.
+ *		 The buffer *must* be *at least* this big!
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again with the same
+ *		buffer and maximum length when more data has been received. If
+ *		you want the next block in the queue to handle the data
+ *		received next, you need to return false from the block.
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      block: (of_stream_async_read_block_t)block;
+
+/*!
  * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
@@ -292,9 +392,36 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *		you want the next block in the queue to handle the data
  *		received next, you need to return false from the block.
  */
- - (void)asyncReadIntoBuffer: (void *)buffer
-		 exactLength: (size_t)length
-		       block: (of_stream_async_read_block_t)block;
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		      block: (of_stream_async_read_block_t)block;
+
+/*!
+ * @brief Asynchronously reads exactly the specified length bytes from the
+ *	  stream into a buffer.
+ *
+ * Unlike @ref asyncReadIntoBuffer:length:block:, this method does not invoke
+ * the block when less than the specified length has been read - instead, it
+ * waits until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer into which the data is read
+ * @param length The length of the data that should be read.
+ *		 The buffer *must* be *at least* this big!
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again with the same
+ *		buffer and exact length when more data has been received. If
+ *		you want the next block in the queue to handle the data
+ *		received next, you need to return false from the block.
+ */
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      block: (of_stream_async_read_block_t)block;
 # endif
 #endif
 
@@ -689,6 +816,31 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 			 selector: (SEL)selector
 			  context: (nullable id)context;
 
+/*!
+ * @brief Asynchronously reads with the specified encoding until a newline,
+ *	  `\0`, end of stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param target The target on which to call the selector when the data has
+ *		 been received. If the method returns true, it will be called
+ *		 again when the next line has been received. If you want the
+ *		 next method in the queue to handle the next line, you need to
+ *		 return false from the method
+ * @param selector The selector to call on the target. The signature must be
+ *		   `bool (OFStream *stream, OFString *line, id context,
+ *		   id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+		      runLoopMode: (of_run_loop_mode_t)runLoopMode
+			   target: (id)target
+			 selector: (SEL)selector
+			  context: (nullable id)context;
+
 # ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously reads until a newline, `\0`, end of stream or an
@@ -720,6 +872,25 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *		block.
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+			    block: (of_stream_async_read_line_block_t)block;
+
+/*!
+ * @brief Asynchronously reads with the specified encoding until a newline,
+ *	  `\0`, end of stream or an exception occurs.
+ *
+ * @note The stream must conform to @ref OFReadyForReadingObserving in order
+ *	 for this to work!
+ *
+ * @param encoding The encoding used by the stream
+ * @param runLoopMode The run loop mode in which to perform the async read
+ * @param block The block to call when the data has been received.
+ *		If the block returns true, it will be called again when the next
+ *		line has been received. If you want the next block in the queue
+ *		to handle the next line, you need to return false from the
+ *		block.
+ */
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+		      runLoopMode: (of_run_loop_mode_t)runLoopMode
 			    block: (of_stream_async_read_line_block_t)block;
 # endif
 #endif
@@ -835,6 +1006,36 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 		selector: (SEL)selector
 		 context: (nullable id)context;
 
+/*!
+ * @brief Asynchronously writes a buffer into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer from which the data is written into the stream. The
+ *		 buffer needs to be valid until the write request is completed!
+ * @param length The length of the data that should be written
+ * @param runLoopMode The run loop mode in which to perform the async write
+ * @param target The target on which the selector should be called when the
+ *		 data has been written. The method should return the length for
+ *		 the next write with the same callback or 0 if it should not
+ *		 repeat. The buffer may be changed, so that every time a new
+ *		 buffer and length can be specified while the callback stays
+ *		 the same.
+ * @param selector The selector to call on the target. It should return the
+ *		   length for the next write with the same callback or 0 if it
+ *		   should not repeat. The signature must be `size_t (OFStream
+ *		   *stream, const void *buffer, size_t bytesWritten, id
+ *		   context, id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (nullable id)context;
+
 # ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously writes a buffer into the stream.
@@ -853,6 +1054,27 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  */
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
+		   block: (of_stream_async_write_block_t)block;
+
+/*!
+ * @brief Asynchronously writes a buffer into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param buffer The buffer from which the data is written into the stream. The
+ *		 buffer needs to be valid until the write request is completed!
+ * @param length The length of the data that should be written
+ * @param runLoopMode The run loop mode in which to perform the async write
+ * @param block The block to call when the data has been written. It should
+ *		return the length for the next write with the same callback or
+ *		0 if it should not repeat. The buffer may be changed, so that
+ *		every time a new buffer and length can be specified while the
+ *		callback stays the same.
+ */
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
 		   block: (of_stream_async_write_block_t)block;
 # endif
 #endif

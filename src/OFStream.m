@@ -201,13 +201,28 @@
 		   selector: (SEL)selector
 		    context: (id)context
 {
+	[self asyncReadIntoBuffer: buffer
+			   length: length
+		      runLoopMode: of_run_loop_mode_default
+			   target: target
+			 selector: selector
+			  context: context];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		     target: (id)target
+		   selector: (SEL)selector
+		    context: (id)context
+{
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
 
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				     length: length
-				       mode: of_run_loop_mode_default
+				       mode: runLoopMode
 				     target: target
 				   selector: selector
 				    context: context];
@@ -219,13 +234,28 @@
 		   selector: (SEL)selector
 		    context: (id)context
 {
+	[self asyncReadIntoBuffer: buffer
+		      exactLength: length
+		      runLoopMode: of_run_loop_mode_default
+			   target: target
+			 selector: selector
+			  context: context];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		     target: (id)target
+		   selector: (SEL)selector
+		    context: (id)context
+{
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
 
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				exactLength: length
-				       mode: of_run_loop_mode_default
+				       mode: runLoopMode
 				     target: target
 				   selector: selector
 				    context: context];
@@ -236,18 +266,40 @@
 		     length: (size_t)length
 		      block: (of_stream_async_read_block_t)block
 {
+	[self asyncReadIntoBuffer: buffer
+			   length: length
+		      runLoopMode: of_run_loop_mode_default
+			    block: block];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		     length: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      block: (of_stream_async_read_block_t)block
+{
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
 
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				     length: length
-				       mode: of_run_loop_mode_default
+				       mode: runLoopMode
 				      block: block];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
+		      block: (of_stream_async_read_block_t)block
+{
+	[self asyncReadIntoBuffer: buffer
+		      exactLength: length
+		      runLoopMode: of_run_loop_mode_default
+			    block: block];
+}
+
+- (void)asyncReadIntoBuffer: (void *)buffer
+		exactLength: (size_t)length
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
 		      block: (of_stream_async_read_block_t)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
@@ -256,7 +308,7 @@
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				exactLength: length
-				       mode: of_run_loop_mode_default
+				       mode: runLoopMode
 				      block: block];
 }
 # endif
@@ -841,6 +893,7 @@
 			context: (id)context
 {
 	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+			    runLoopMode: of_run_loop_mode_default
 				 target: target
 			       selector: selector
 				context: context];
@@ -851,12 +904,25 @@
 			 selector: (SEL)selector
 			  context: (id)context
 {
+	[self asyncReadLineWithEncoding: encoding
+			    runLoopMode: of_run_loop_mode_default
+				 target: target
+			       selector: selector
+				context: context];
+}
+
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+		      runLoopMode: (of_run_loop_mode_t)runLoopMode
+			   target: (id)target
+			 selector: (SEL)selector
+			  context: (id)context
+{
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
 
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
-					   mode: of_run_loop_mode_default
+					   mode: runLoopMode
 					 target: target
 				       selector: selector
 					context: context];
@@ -866,10 +932,20 @@
 - (void)asyncReadLineWithBlock: (of_stream_async_read_line_block_t)block
 {
 	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
+			    runLoopMode: of_run_loop_mode_default
 				  block: block];
 }
 
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+			    block: (of_stream_async_read_line_block_t)block
+{
+	[self asyncReadLineWithEncoding: encoding
+			    runLoopMode: of_run_loop_mode_default
+				  block: block];
+}
+
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
+		      runLoopMode: (of_run_loop_mode_t)runLoopMode
 			    block: (of_stream_async_read_line_block_t)block
 {
 	OFStream <OFReadyForReadingObserving> *stream =
@@ -877,7 +953,7 @@
 
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
-					   mode: of_run_loop_mode_default
+					   mode: runLoopMode
 					  block: block];
 }
 # endif
@@ -1134,13 +1210,28 @@
 		selector: (SEL)selector
 		 context: (id)context
 {
+	[self asyncWriteBuffer: buffer
+			length: length
+		   runLoopMode: of_run_loop_mode_default
+			target: target
+		      selector: selector
+		       context: context];
+}
+
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (id)context
+{
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
 
 	[OFRunLoop of_addAsyncWriteForStream: stream
 				      buffer: buffer
 				      length: length
-					mode: of_run_loop_mode_default
+					mode: runLoopMode
 				      target: target
 				    selector: selector
 				     context: context];
@@ -1151,13 +1242,24 @@
 		  length: (size_t)length
 		   block: (of_stream_async_write_block_t)block
 {
+	[self asyncWriteBuffer: buffer
+			length: length
+		   runLoopMode: of_run_loop_mode_default
+			 block: block];
+}
+
+- (void)asyncWriteBuffer: (const void *)buffer
+		  length: (size_t)length
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   block: (of_stream_async_write_block_t)block
+{
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
 
 	[OFRunLoop of_addAsyncWriteForStream: stream
 				      buffer: buffer
 				      length: length
-					mode: of_run_loop_mode_default
+					mode: runLoopMode
 				       block: block];
 }
 # endif

@@ -17,9 +17,6 @@
 
 #import "OFObject.h"
 #import "OFString.h"
-#ifdef OF_HAVE_SOCKETS
-# import "OFTCPSocket.h"
-#endif
 
 OF_ASSUME_NONNULL_BEGIN
 

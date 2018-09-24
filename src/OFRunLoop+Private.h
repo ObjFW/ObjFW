@@ -18,6 +18,7 @@
 #import "OFRunLoop.h"
 #import "OFStream.h"
 #ifdef OF_HAVE_SOCKETS
+# import "OFTCPSocket.h"
 # import "OFUDPSocket.h"
 #endif
 
