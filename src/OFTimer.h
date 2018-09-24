@@ -16,6 +16,7 @@
  */
 
 #import "OFObject.h"
+#import "OFRunLoop.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +24,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFTimer;
 @class OFDate;
-@class OFRunLoop;
 #ifdef OF_HAVE_THREADS
 @class OFCondition;
 #endif
@@ -60,6 +60,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
 	bool _done;
 #endif
 	OFRunLoop *_Nullable _inRunLoop;
+	of_run_loop_mode_t _Nullable _inRunLoopMode;
 }
 
 /*!

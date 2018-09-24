@@ -294,8 +294,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		if (errNo == EINPROGRESS) {
 			SEL selector = @selector(socketDidConnect:context:
 			    exception:);
+			of_run_loop_mode_t mode = of_run_loop_mode_default;
 
 			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
+							     mode: mode
 							   target: self
 							 selector: selector
 							  context: nil];
@@ -1067,6 +1069,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      context: (id)context
 {
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
+					    mode: of_run_loop_mode_default
 					  target: target
 					selector: selector
 					 context: context];
@@ -1076,6 +1079,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block
 {
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
+					    mode: of_run_loop_mode_default
 					   block: block];
 }
 #endif

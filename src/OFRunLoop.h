@@ -16,11 +16,14 @@
  */
 
 #import "OFObject.h"
+#import "OFString.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFTCPSocket.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN
+
+/*! @file */
 
 @class OFSortedList OF_GENERIC(ObjectType);
 #ifdef OF_HAVE_THREADS
@@ -35,25 +38,33 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFDate;
 
 /*!
+ * @brief A mode for an OFRunLoop.
+ */
+typedef OFConstantString *of_run_loop_mode_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*!
+ * @brief The default mode for an OFRunLoop.
+ */
+extern of_run_loop_mode_t of_run_loop_mode_default;
+#ifdef __cplusplus
+}
+#endif
+
+/*!
  * @class OFRunLoop OFRunLoop.h ObjFW/OFRunLoop.h
  *
  * @brief A class providing a run loop for the application and its processes.
  */
 @interface OFRunLoop: OFObject
-#ifdef OF_HAVE_SOCKETS
-    <OFKernelEventObserverDelegate>
-#endif
 {
-	OFSortedList OF_GENERIC(OFTimer *) *_timersQueue;
+	OFMutableDictionary *_states;
 #ifdef OF_HAVE_THREADS
-	OFMutex *_timersQueueLock;
+	OFMutex *_statesMutex;
 #endif
-#if defined(OF_HAVE_SOCKETS)
-	OFKernelEventObserver *_kernelEventObserver;
-	OFMutableDictionary *_readQueues, *_writeQueues;
-#elif defined(OF_HAVE_THREADS)
-	OFCondition *_condition;
-#endif
+	of_run_loop_mode_t _currentMode;
 	volatile bool _stop;
 }
 
@@ -61,6 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nullable, nonatomic) OFRunLoop *mainRunLoop;
 @property (class, readonly, nullable, nonatomic) OFRunLoop *currentRunLoop;
 #endif
+@property (readonly, nonatomic) of_run_loop_mode_t currentMode;
 
 /*!
  * @brief Returns the run loop for the main thread.
@@ -84,6 +96,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)addTimer: (OFTimer *)timer;
 
 /*!
+ * @brief Adds an OFTimer to the run loop for the specified mode.
+ *
+ * @param timer The timer to add
+ * @param mode The run loop mode in which to run the timer
+ */
+- (void)addTimer: (OFTimer *)timer
+	 forMode: (of_run_loop_mode_t)mode;
+
+/*!
  * @brief Starts the run loop.
  */
 - (void)run;
@@ -94,6 +115,16 @@ OF_ASSUME_NONNULL_BEGIN
  * @param deadline The date until which the run loop should run
  */
 - (void)runUntilDate: (nullable OFDate *)deadline;
+
+/*!
+ * @brief Run the run loop until an event or timer occurs or the specified
+ *	  deadline is reached.
+ *
+ * @param mode The mode in which to run the run loop
+ * @param deadline The date until which the run loop should run at the longest
+ */
+- (void)runMode: (of_run_loop_mode_t)mode
+     beforeDate: (OFDate *)deadline;
 
 /*!
  * @brief Stops the run loop. If there is still an operation being executed, it

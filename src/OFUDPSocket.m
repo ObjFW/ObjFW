@@ -518,6 +518,7 @@
 	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
+					     mode: of_run_loop_mode_default
 					   target: target
 					 selector: selector
 					  context: context];
@@ -531,6 +532,7 @@
 	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
+					     mode: of_run_loop_mode_default
 					    block: block];
 }
 #endif
@@ -588,6 +590,7 @@
 					buffer: buffer
 					length: length
 				      receiver: receiver
+					  mode: of_run_loop_mode_default
 					target: target
 				      selector: selector
 				       context: context];
@@ -603,13 +606,15 @@
 					buffer: buffer
 					length: length
 				      receiver: receiver
+					  mode: of_run_loop_mode_default
 					 block: block];
 }
 #endif
 
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop of_cancelAsyncRequestsForObject: self];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self
+					      mode: of_run_loop_mode_default];
 }
 
 - (int)fileDescriptorForReading

@@ -207,6 +207,7 @@
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				     length: length
+				       mode: of_run_loop_mode_default
 				     target: target
 				   selector: selector
 				    context: context];
@@ -224,6 +225,7 @@
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				exactLength: length
+				       mode: of_run_loop_mode_default
 				     target: target
 				   selector: selector
 				    context: context];
@@ -240,6 +242,7 @@
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				     length: length
+				       mode: of_run_loop_mode_default
 				      block: block];
 }
 
@@ -253,6 +256,7 @@
 	[OFRunLoop of_addAsyncReadForStream: stream
 				     buffer: buffer
 				exactLength: length
+				       mode: of_run_loop_mode_default
 				      block: block];
 }
 # endif
@@ -852,6 +856,7 @@
 
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
+					   mode: of_run_loop_mode_default
 					 target: target
 				       selector: selector
 					context: context];
@@ -872,6 +877,7 @@
 
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
+					   mode: of_run_loop_mode_default
 					  block: block];
 }
 # endif
@@ -1134,6 +1140,7 @@
 	[OFRunLoop of_addAsyncWriteForStream: stream
 				      buffer: buffer
 				      length: length
+					mode: of_run_loop_mode_default
 				      target: target
 				    selector: selector
 				     context: context];
@@ -1150,6 +1157,7 @@
 	[OFRunLoop of_addAsyncWriteForStream: stream
 				      buffer: buffer
 				      length: length
+					mode: of_run_loop_mode_default
 				       block: block];
 }
 # endif
@@ -1750,7 +1758,8 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)cancelAsyncRequests
 {
-	[OFRunLoop of_cancelAsyncRequestsForObject: self];
+	[OFRunLoop of_cancelAsyncRequestsForObject: self
+					      mode: of_run_loop_mode_default];
 }
 #endif
 

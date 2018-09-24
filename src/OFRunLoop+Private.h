@@ -23,6 +23,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFRunLoop_State;
+
 @interface OFRunLoop ()
 + (void)of_setMainRunLoop: (OFRunLoop *)runLoop;
 #ifdef OF_HAVE_SOCKETS
@@ -30,6 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
+			    mode: (of_run_loop_mode_t)mode
 			  target: (id)target
 			selector: (SEL)selector
 			 context: (nullable id)context;
@@ -37,12 +40,14 @@ OF_ASSUME_NONNULL_BEGIN
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
+			    mode: (of_run_loop_mode_t)mode
 			  target: (id)target
 			selector: (SEL)selector
 			 context: (nullable id)context;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
+				mode: (of_run_loop_mode_t)mode
 			      target: (id)target
 			    selector: (SEL)selector
 			     context: (nullable id)context;
@@ -50,20 +55,24 @@ OF_ASSUME_NONNULL_BEGIN
 				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
+			     mode: (of_run_loop_mode_t)mode
 			   target: (id)target
 			 selector: (SEL)selector
 			  context: (nullable id)context;
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
+				  mode: (of_run_loop_mode_t)mode
 				target: (id)target
 			      selector: (SEL)selector
 			       context: (nullable id)context;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
+				 mode: (of_run_loop_mode_t)mode
 			       target: (id)target
 			     selector: (SEL)selector
 			      context: (nullable id)context;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
 				buffer: (void *)buffer
 				length: (size_t)length
+				  mode: (of_run_loop_mode_t)mode
 				target: (id)target
 			      selector: (SEL)selector
 			       context: (nullable id)context;
@@ -71,6 +80,7 @@ OF_ASSUME_NONNULL_BEGIN
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
+			       mode: (of_run_loop_mode_t)mode
 			     target: (id)target
 			   selector: (SEL)selector
 			    context: (nullable id)context;
@@ -79,38 +89,47 @@ OF_ASSUME_NONNULL_BEGIN
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
+			    mode: (of_run_loop_mode_t)mode
 			   block: (of_stream_async_read_block_t)block;
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
+			    mode: (of_run_loop_mode_t)mode
 			   block: (of_stream_async_read_block_t)block;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
+				mode: (of_run_loop_mode_t)mode
 			       block: (of_stream_async_read_line_block_t)block;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
+			     mode: (of_run_loop_mode_t)mode
 			    block: (of_stream_async_write_block_t)block;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
+				 mode: (of_run_loop_mode_t)mode
 				block: (of_tcp_socket_async_accept_block_t)
 					   block;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
 				buffer: (void *)buffer
 				length: (size_t)length
+				  mode: (of_run_loop_mode_t)mode
 				 block: (of_udp_socket_async_receive_block_t)
 					    block;
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
+			       mode: (of_run_loop_mode_t)mode
 			      block: (of_udp_socket_async_send_block_t)block;
 # endif
-+ (void)of_cancelAsyncRequestsForObject: (id)object;
++ (void)of_cancelAsyncRequestsForObject: (id)object
+				   mode: (of_run_loop_mode_t)mode;
 #endif
-- (void)of_removeTimer: (OFTimer *)timer;
+- (void)of_removeTimer: (OFTimer *)timer
+	       forMode: (of_run_loop_mode_t)mode;
 @end
 
 OF_ASSUME_NONNULL_END

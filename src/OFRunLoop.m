@@ -43,7 +43,32 @@
 # import "OFConnectionFailedException.h"
 #endif
 
+of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
 static OFRunLoop *mainRunLoop = nil;
+
+@interface OFRunLoop ()
+- (OFRunLoop_State *)of_stateForMode: (of_run_loop_mode_t)mode
+			      create: (bool)create;
+@end
+
+@interface OFRunLoop_State: OFObject
+#ifdef OF_HAVE_SOCKETS
+    <OFKernelEventObserverDelegate>
+#endif
+{
+@public
+	OFSortedList OF_GENERIC(OFTimer *) *_timersQueue;
+#ifdef OF_HAVE_THREADS
+	OFMutex *_timersQueueMutex;
+#endif
+#if defined(OF_HAVE_SOCKETS)
+	OFKernelEventObserver *_kernelEventObserver;
+	OFMutableDictionary *_readQueues, *_writeQueues;
+#elif defined(OF_HAVE_THREADS)
+	OFCondition *_condition;
+#endif
+}
+@end
 
 #ifdef OF_HAVE_SOCKETS
 @interface OFRunLoop_QueueItem: OFObject
@@ -134,7 +159,139 @@ static OFRunLoop *mainRunLoop = nil;
 	of_socket_address_t _receiver;
 }
 @end
+#endif
 
+@implementation OFRunLoop_State
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_timersQueue = [[OFSortedList alloc] init];
+
+#if defined(OF_HAVE_SOCKETS)
+		_kernelEventObserver = [[OFKernelEventObserver alloc] init];
+		[_kernelEventObserver setDelegate: self];
+
+		_readQueues = [[OFMutableDictionary alloc] init];
+		_writeQueues = [[OFMutableDictionary alloc] init];
+#elif defined(OF_HAVE_THREADS)
+		_condition = [[OFCondition alloc] init];
+#endif
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_timersQueue release];
+#if defined(OF_HAVE_SOCKETS)
+	[_kernelEventObserver release];
+	[_readQueues release];
+	[_writeQueues release];
+#elif defined(OF_HAVE_THREADS)
+	[_condition release];
+#endif
+
+	[super dealloc];
+}
+
+#ifdef OF_HAVE_SOCKETS
+- (void)objectIsReadyForReading: (id)object
+{
+	/*
+	 * Retain the queue so that it doesn't disappear from us because the
+	 * handler called -[cancelAsyncRequests].
+	 */
+	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_ReadQueueItem *)) *queue =
+	    [[_readQueues objectForKey: object] retain];
+
+	assert(queue != nil);
+
+	@try {
+		if (![[queue firstObject] handleObject: object]) {
+			of_list_object_t *listObject = [queue firstListObject];
+
+			/*
+			 * The handler might have called -[cancelAsyncRequests]
+			 * so that our queue is now empty, in which case we
+			 * should do nothing.
+			 */
+			if (listObject != NULL) {
+				/*
+				 * Make sure we keep the target until after we
+				 * are done removing the object. The reason for
+				 * this is that the target might call
+				 * -[cancelAsyncRequests] in its dealloc.
+				 */
+				[[listObject->object retain] autorelease];
+
+				[queue removeListObject: listObject];
+
+				if ([queue count] == 0) {
+					[_kernelEventObserver
+					    removeObjectForReading: object];
+					[_readQueues
+					    removeObjectForKey: object];
+				}
+			}
+		}
+	} @finally {
+		[queue release];
+	}
+}
+
+- (void)objectIsReadyForWriting: (id)object
+{
+	/*
+	 * Retain the queue so that it doesn't disappear from us because the
+	 * handler called -[cancelAsyncRequests].
+	 */
+	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_WriteQueueItem *)) *queue =
+	    [[_writeQueues objectForKey: object] retain];
+
+	assert(queue != nil);
+
+	@try {
+		if (![[queue firstObject] handleObject: object]) {
+			of_list_object_t *listObject = [queue firstListObject];
+
+			/*
+			 * The handler might have called -[cancelAsyncRequests]
+			 * so that our queue is now empty, in which case we
+			 * should do nothing.
+			 */
+			if (listObject != NULL) {
+				/*
+				 * Make sure we keep the target until after we
+				 * are done removing the object. The reason for
+				 * this is that the target might call
+				 * -[cancelAsyncRequests] in its dealloc.
+				 */
+				[[listObject->object retain] autorelease];
+
+				[queue removeListObject: listObject];
+
+				if ([queue count] == 0) {
+					[_kernelEventObserver
+					    removeObjectForWriting: object];
+					[_writeQueues
+					    removeObjectForKey: object];
+				}
+			}
+		}
+	} @finally {
+		[queue release];
+	}
+}
+#endif
+@end
+
+#ifdef OF_HAVE_SOCKETS
 @implementation OFRunLoop_QueueItem
 - (bool)handleObject: (id)object
 {
@@ -497,6 +654,8 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 
 @implementation OFRunLoop
+@synthesize currentMode = _currentMode;
+
 + (OFRunLoop *)mainRunLoop
 {
 	return mainRunLoop;
@@ -517,20 +676,22 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 #ifdef OF_HAVE_SOCKETS
-# define ADD_READ(type, object, code)					\
+# define ADD_READ(type, object, mode, code)				\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFList *queue = [runLoop->_readQueues objectForKey: object];	\
+	OFRunLoop_State *state = [runLoop of_stateForMode: mode		\
+						   create: true];	\
+	OFList *queue = [state->_readQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[runLoop->_readQueues setObject: queue			\
+		[state->_readQueues setObject: queue			\
 					 forKey: object];		\
 	}								\
 									\
 	if ([queue count] == 0)						\
-		[runLoop->_kernelEventObserver				\
+		[state->_kernelEventObserver				\
 		    addObjectForReading: object];			\
 									\
 	queueItem = [[[type alloc] init] autorelease];			\
@@ -538,20 +699,22 @@ static OFRunLoop *mainRunLoop = nil;
 	[queue appendObject: queueItem];				\
 									\
 	objc_autoreleasePoolPop(pool);
-# define ADD_WRITE(type, object, code)					\
+# define ADD_WRITE(type, object, mode, code)				\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFList *queue = [runLoop->_writeQueues objectForKey: object];	\
+	OFRunLoop_State *state = [runLoop of_stateForMode: mode		\
+						   create: true];	\
+	OFList *queue = [state->_writeQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
 	if (queue == nil) {						\
 		queue = [OFList list];					\
-		[runLoop->_writeQueues setObject: queue			\
+		[state->_writeQueues setObject: queue			\
 					  forKey: object];		\
 	}								\
 									\
 	if ([queue count] == 0)						\
-		[runLoop->_kernelEventObserver				\
+		[state->_kernelEventObserver				\
 		    addObjectForWriting: object];			\
 									\
 	queueItem = [[[type alloc] init] autorelease];			\
@@ -564,11 +727,12 @@ static OFRunLoop *mainRunLoop = nil;
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
+			    mode: (of_run_loop_mode_t)mode
 			  target: (id)target
 			selector: (SEL)selector
 			 context: (id)context
 {
-	ADD_READ(OFRunLoop_ReadQueueItem, stream, {
+	ADD_READ(OFRunLoop_ReadQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -581,11 +745,12 @@ static OFRunLoop *mainRunLoop = nil;
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
+			    mode: (of_run_loop_mode_t)mode
 			  target: (id)target
 			selector: (SEL)selector
 			 context: (id)context
 {
-	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, {
+	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -597,11 +762,12 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
+				mode: (of_run_loop_mode_t)mode
 			      target: (id)target
 			    selector: (SEL)selector
 			     context: (id)context
 {
-	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, {
+	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -613,11 +779,12 @@ static OFRunLoop *mainRunLoop = nil;
 				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
+			     mode: (of_run_loop_mode_t)mode
 			   target: (id)target
 			 selector: (SEL)selector
 			  context: (id)context
 {
-	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, {
+	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -627,11 +794,12 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
+				  mode: (of_run_loop_mode_t)mode
 				target: (id)target
 			      selector: (SEL)selector
 			       context: (id)context
 {
-	ADD_WRITE(OFRunLoop_ConnectQueueItem, stream, {
+	ADD_WRITE(OFRunLoop_ConnectQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -639,11 +807,12 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
+				 mode: (of_run_loop_mode_t)mode
 			       target: (id)target
 			     selector: (SEL)selector
 			      context: (id)context
 {
-	ADD_READ(OFRunLoop_AcceptQueueItem, stream, {
+	ADD_READ(OFRunLoop_AcceptQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -653,11 +822,12 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
+				  mode: (of_run_loop_mode_t)mode
 				target: (id)target
 			      selector: (SEL)selector
 			       context: (id)context
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, {
+	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -670,11 +840,12 @@ static OFRunLoop *mainRunLoop = nil;
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
+			       mode: (of_run_loop_mode_t)mode
 			     target: (id)target
 			   selector: (SEL)selector
 			    context: (id)context
 {
-	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, {
+	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
 		queueItem->_context = [context retain];
@@ -689,9 +860,10 @@ static OFRunLoop *mainRunLoop = nil;
 				      stream
 			  buffer: (void *)buffer
 			  length: (size_t)length
+			    mode: (of_run_loop_mode_t)mode
 			   block: (of_stream_async_read_block_t)block
 {
-	ADD_READ(OFRunLoop_ReadQueueItem, stream, {
+	ADD_READ(OFRunLoop_ReadQueueItem, stream, mode, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
@@ -702,9 +874,10 @@ static OFRunLoop *mainRunLoop = nil;
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
+			    mode: (of_run_loop_mode_t)mode
 			   block: (of_stream_async_read_block_t)block
 {
-	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, {
+	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, mode, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_exactLength = exactLength;
@@ -714,9 +887,10 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
+				mode: (of_run_loop_mode_t)mode
 			       block: (of_stream_async_read_line_block_t)block
 {
-	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, {
+	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, mode, {
 		queueItem->_block = [block copy];
 		queueItem->_encoding = encoding;
 	})
@@ -726,9 +900,10 @@ static OFRunLoop *mainRunLoop = nil;
 				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
+			     mode: (of_run_loop_mode_t)mode
 			    block: (of_stream_async_write_block_t)block
 {
-	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, {
+	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
@@ -736,9 +911,10 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
+				 mode: (of_run_loop_mode_t)mode
 				block: (of_tcp_socket_async_accept_block_t)block
 {
-	ADD_READ(OFRunLoop_AcceptQueueItem, stream, {
+	ADD_READ(OFRunLoop_AcceptQueueItem, stream, mode, {
 		queueItem->_block = [block copy];
 	})
 }
@@ -746,10 +922,11 @@ static OFRunLoop *mainRunLoop = nil;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
+				  mode: (of_run_loop_mode_t)mode
 				 block: (of_udp_socket_async_receive_block_t)
 					    block
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, {
+	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
@@ -760,9 +937,10 @@ static OFRunLoop *mainRunLoop = nil;
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
+			       mode: (of_run_loop_mode_t)mode
 			      block: (of_udp_socket_async_send_block_t)block
 {
-	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, {
+	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode, {
 		queueItem->_block = [block copy];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
@@ -774,12 +952,18 @@ static OFRunLoop *mainRunLoop = nil;
 # undef ADD_WRITE
 
 + (void)of_cancelAsyncRequestsForObject: (id)object
+				   mode: (of_run_loop_mode_t)mode
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
+	OFRunLoop_State *state = [runLoop of_stateForMode: mode
+						   create: false];
 	OFList *queue;
 
-	if ((queue = [runLoop->_writeQueues objectForKey: object]) != nil) {
+	if (state == nil)
+		return;
+
+	if ((queue = [state->_writeQueues objectForKey: object]) != nil) {
 		assert([queue count] > 0);
 
 		/*
@@ -788,11 +972,11 @@ static OFRunLoop *mainRunLoop = nil;
 		 */
 		[queue removeAllObjects];
 
-		[runLoop->_kernelEventObserver removeObjectForWriting: object];
-		[runLoop->_writeQueues removeObjectForKey: object];
+		[state->_kernelEventObserver removeObjectForWriting: object];
+		[state->_writeQueues removeObjectForKey: object];
 	}
 
-	if ((queue = [runLoop->_readQueues objectForKey: object]) != nil) {
+	if ((queue = [state->_readQueues objectForKey: object]) != nil) {
 		assert([queue count] > 0);
 
 		/*
@@ -801,8 +985,8 @@ static OFRunLoop *mainRunLoop = nil;
 		 */
 		[queue removeAllObjects];
 
-		[runLoop->_kernelEventObserver removeObjectForReading: object];
-		[runLoop->_readQueues removeObjectForKey: object];
+		[state->_kernelEventObserver removeObjectForReading: object];
+		[state->_readQueues removeObjectForKey: object];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -814,19 +998,20 @@ static OFRunLoop *mainRunLoop = nil;
 	self = [super init];
 
 	@try {
-		_timersQueue = [[OFSortedList alloc] init];
+		OFRunLoop_State *state;
+
+		_states = [[OFMutableDictionary alloc] init];
+
+		state = [[OFRunLoop_State alloc] init];
+		@try {
+			[_states setObject: state
+				    forKey: of_run_loop_mode_default];
+		} @finally {
+			[state release];
+		}
+
 #ifdef OF_HAVE_THREADS
-		_timersQueueLock = [[OFMutex alloc] init];
-#endif
-
-#if defined(OF_HAVE_SOCKETS)
-		_kernelEventObserver = [[OFKernelEventObserver alloc] init];
-		[_kernelEventObserver setDelegate: self];
-
-		_readQueues = [[OFMutableDictionary alloc] init];
-		_writeQueues = [[OFMutableDictionary alloc] init];
-#elif defined(OF_HAVE_THREADS)
-		_condition = [[OFCondition alloc] init];
+		_statesMutex = [[OFMutex alloc] init];
 #endif
 	} @catch (id e) {
 		[self release];
@@ -838,154 +1023,104 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)dealloc
 {
-	[_timersQueue release];
+	[_states release];
 #ifdef OF_HAVE_THREADS
-	[_timersQueueLock release];
-#endif
-#if defined(OF_HAVE_SOCKETS)
-	[_kernelEventObserver release];
-	[_readQueues release];
-	[_writeQueues release];
-#elif defined(OF_HAVE_THREADS)
-	[_condition release];
+	[_statesMutex release];
 #endif
 
 	[super dealloc];
 }
 
-- (void)addTimer: (OFTimer *)timer
+- (OFRunLoop_State *)of_stateForMode: (of_run_loop_mode_t)mode
+			      create: (bool)create
 {
+	OFRunLoop_State *state;
+
 #ifdef OF_HAVE_THREADS
-	[_timersQueueLock lock];
+	[_statesMutex lock];
 	@try {
 #endif
-		[_timersQueue insertObject: timer];
+		state = [_states objectForKey: mode];
+
+		if (create && state == nil) {
+			state = [[OFRunLoop_State alloc] init];
+			@try {
+				[_states setObject: state
+					    forKey: mode];
+			} @finally {
+				[state release];
+			}
+		}
 #ifdef OF_HAVE_THREADS
 	} @finally {
-		[_timersQueueLock unlock];
+		[_statesMutex unlock];
 	}
 #endif
 
-	[timer of_setInRunLoop: self];
+	return state;
+}
+
+- (void)addTimer: (OFTimer *)timer
+{
+	[self addTimer: timer
+	       forMode: of_run_loop_mode_default];
+}
+
+- (void)addTimer: (OFTimer *)timer
+	 forMode: (of_run_loop_mode_t)mode
+{
+	OFRunLoop_State *state = [self of_stateForMode: mode
+						create: true];
+
+#ifdef OF_HAVE_THREADS
+	[state->_timersQueueMutex lock];
+	@try {
+#endif
+		[state->_timersQueue insertObject: timer];
+#ifdef OF_HAVE_THREADS
+	} @finally {
+		[state->_timersQueueMutex unlock];
+	}
+#endif
+
+	[timer of_setInRunLoop: self
+			  mode: mode];
 
 #if defined(OF_HAVE_SOCKETS)
-	[_kernelEventObserver cancel];
+	[state->_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
-	[_condition signal];
+	[state->_condition signal];
 #endif
 }
 
 - (void)of_removeTimer: (OFTimer *)timer
+	       forMode: (of_run_loop_mode_t)mode
 {
+	OFRunLoop_State *state = [self of_stateForMode: mode
+						create: false];
+
+	if (state == nil)
+		return;
+
 #ifdef OF_HAVE_THREADS
-	[_timersQueueLock lock];
+	[state->_timersQueueMutex lock];
 	@try {
 #endif
 		of_list_object_t *iter;
 
-		for (iter = [_timersQueue firstListObject]; iter != NULL;
+		for (iter = [state->_timersQueue firstListObject]; iter != NULL;
 		    iter = iter->next) {
 			if ([iter->object isEqual: timer]) {
-				[_timersQueue removeListObject: iter];
+				[state->_timersQueue removeListObject: iter];
 				break;
 			}
 		}
 #ifdef OF_HAVE_THREADS
 	} @finally {
-		[_timersQueueLock unlock];
+		[state->_timersQueueMutex unlock];
 	}
 #endif
 }
-
-#ifdef OF_HAVE_SOCKETS
-- (void)objectIsReadyForReading: (id)object
-{
-	/*
-	 * Retain the queue so that it doesn't disappear from us because the
-	 * handler called -[cancelAsyncRequests].
-	 */
-	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_ReadQueueItem *)) *queue =
-	    [[_readQueues objectForKey: object] retain];
-
-	assert(queue != nil);
-
-	@try {
-		if (![[queue firstObject] handleObject: object]) {
-			of_list_object_t *listObject = [queue firstListObject];
-
-			/*
-			 * The handler might have called -[cancelAsyncRequests]
-			 * so that our queue is now empty, in which case we
-			 * should do nothing.
-			 */
-			if (listObject != NULL) {
-				/*
-				 * Make sure we keep the target until after we
-				 * are done removing the object. The reason for
-				 * this is that the target might call
-				 * -[cancelAsyncRequests] in its dealloc.
-				 */
-				[[listObject->object retain] autorelease];
-
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForReading: object];
-					[_readQueues
-					    removeObjectForKey: object];
-				}
-			}
-		}
-	} @finally {
-		[queue release];
-	}
-}
-
-- (void)objectIsReadyForWriting: (id)object
-{
-	/*
-	 * Retain the queue so that it doesn't disappear from us because the
-	 * handler called -[cancelAsyncRequests].
-	 */
-	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_WriteQueueItem *)) *queue =
-	    [[_writeQueues objectForKey: object] retain];
-
-	assert(queue != nil);
-
-	@try {
-		if (![[queue firstObject] handleObject: object]) {
-			of_list_object_t *listObject = [queue firstListObject];
-
-			/*
-			 * The handler might have called -[cancelAsyncRequests]
-			 * so that our queue is now empty, in which case we
-			 * should do nothing.
-			 */
-			if (listObject != NULL) {
-				/*
-				 * Make sure we keep the target until after we
-				 * are done removing the object. The reason for
-				 * this is that the target might call
-				 * -[cancelAsyncRequests] in its dealloc.
-				 */
-				[[listObject->object retain] autorelease];
-
-				[queue removeListObject: listObject];
-
-				if ([queue count] == 0) {
-					[_kernelEventObserver
-					    removeObjectForWriting: object];
-					[_writeQueues
-					    removeObjectForKey: object];
-				}
-			}
-		}
-	} @finally {
-		[queue release];
-	}
-}
-#endif
 
 - (void)run
 {
@@ -996,51 +1131,69 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	_stop = false;
 
-	for (;;) {
-		void *pool = objc_autoreleasePoolPush();
-		OFDate *now = [OFDate date];
+	while (!_stop &&
+	    (deadline == nil || [deadline timeIntervalSinceNow] >= 0))
+		[self runMode: of_run_loop_mode_default
+		   beforeDate: deadline];
+}
+
+- (void)runMode: (of_run_loop_mode_t)mode
+     beforeDate: (OFDate *)deadline
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFRunLoop_State *state = [self of_stateForMode: mode
+						create: false];
+
+	if (state == nil)
+		return;
+
+	_currentMode = mode;
+	@try {
 		OFDate *nextTimer;
 
 		for (;;) {
 			OFTimer *timer;
 
 #ifdef OF_HAVE_THREADS
-			[_timersQueueLock lock];
+			[state->_timersQueueMutex lock];
 			@try {
 #endif
 				of_list_object_t *listObject =
-				    [_timersQueue firstListObject];
+				    [state->_timersQueue firstListObject];
 
 				if (listObject != NULL && [[listObject->object
-				    fireDate] compare: now] !=
-				    OF_ORDERED_DESCENDING) {
+				    fireDate] timeIntervalSinceNow] <= 0) {
 					timer = [[listObject->object
 					    retain] autorelease];
 
-					[_timersQueue removeListObject:
-					    listObject];
+					[state->_timersQueue
+					    removeListObject: listObject];
 
-					[timer of_setInRunLoop: nil];
+					[timer of_setInRunLoop: nil
+							  mode: nil];
 				} else
 					break;
 #ifdef OF_HAVE_THREADS
 			} @finally {
-				[_timersQueueLock unlock];
+				[state->_timersQueueMutex unlock];
 			}
 #endif
 
-			if ([timer isValid])
+			if ([timer isValid]) {
 				[timer fire];
+				return;
+			}
 		}
 
 #ifdef OF_HAVE_THREADS
-		[_timersQueueLock lock];
+		[state->_timersQueueMutex lock];
 		@try {
 #endif
-			nextTimer = [[_timersQueue firstObject] fireDate];
+			nextTimer = [[state->_timersQueue
+			    firstObject] fireDate];
 #ifdef OF_HAVE_THREADS
 		} @finally {
-			[_timersQueueLock unlock];
+			[state->_timersQueueMutex unlock];
 		}
 #endif
 
@@ -1061,16 +1214,16 @@ static OFRunLoop *mainRunLoop = nil;
 
 #if defined(OF_HAVE_SOCKETS)
 			@try {
-				[_kernelEventObserver
+				[state->_kernelEventObserver
 				    observeForTimeInterval: timeout];
 			} @catch (OFObserveFailedException *e) {
 				if ([e errNo] != EINTR)
 					@throw e;
 			}
 #elif defined(OF_HAVE_THREADS)
-			[_condition lock];
-			[_condition waitForTimeInterval: timeout];
-			[_condition unlock];
+			[state->_condition lock];
+			[state->_condition waitForTimeInterval: timeout];
+			[state->_condition unlock];
 #else
 			[OFThread sleepForTimeInterval: timeout];
 #endif
@@ -1082,39 +1235,40 @@ static OFRunLoop *mainRunLoop = nil;
 			 */
 #if defined(OF_HAVE_SOCKETS)
 			@try {
-				[_kernelEventObserver observe];
+				[state->_kernelEventObserver observe];
 			} @catch (OFObserveFailedException *e) {
 				if ([e errNo] != EINTR)
 					@throw e;
 			}
 #elif defined(OF_HAVE_THREADS)
-			[_condition lock];
-			[_condition wait];
-			[_condition unlock];
+			[state->_condition lock];
+			[state->_condition wait];
+			[state->_condition unlock];
 #else
 			[OFThread sleepForTimeInterval: 86400];
 #endif
 		}
 
-		if (_stop || (deadline != nil &&
-		    [deadline compare: now] != OF_ORDERED_DESCENDING)) {
-			objc_autoreleasePoolPop(pool);
-			break;
-		}
-
 		objc_autoreleasePoolPop(pool);
+	} @finally {
+		_currentMode = nil;
 	}
-
-	_stop = false;
 }
 
 - (void)stop
 {
+	OFRunLoop_State *state = [self of_stateForMode: of_run_loop_mode_default
+						create: false];
+
 	_stop = true;
+
+	if (state == nil)
+		return;
+
 #if defined(OF_HAVE_SOCKETS)
-	[_kernelEventObserver cancel];
+	[state->_kernelEventObserver cancel];
 #elif defined(OF_HAVE_THREADS)
-	[_condition signal];
+	[state->_condition signal];
 #endif
 }
 @end

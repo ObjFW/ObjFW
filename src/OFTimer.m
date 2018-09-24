@@ -34,7 +34,6 @@
 
 @implementation OFTimer
 @synthesize timeInterval = _interval, repeating = _repeats, valid = _valid;
-@synthesize of_inRunLoop = _inRunLoop;
 
 + (instancetype)scheduledTimerWithTimeInterval: (of_time_interval_t)timeInterval
 					target: (id)target
@@ -490,6 +489,7 @@
 	 * if it is still in a run loop.
 	 */
 	assert(_inRunLoop == nil);
+	assert(_inRunLoopMode == nil);
 
 	[_fireDate release];
 	[_target release];
@@ -519,6 +519,19 @@
 	return [_fireDate compare: timer->_fireDate];
 }
 
+- (void)of_setInRunLoop: (OFRunLoop *)runLoop
+		   mode: (of_run_loop_mode_t)mode
+{
+	OFRunLoop *oldInRunLoop = _inRunLoop;
+	of_run_loop_mode_t oldInRunLoopMode = _inRunLoopMode;
+
+	_inRunLoop = [runLoop retain];
+	[oldInRunLoop release];
+
+	_inRunLoopMode = [mode copy];
+	[oldInRunLoopMode release];
+}
+
 - (void)fire
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -534,6 +547,7 @@
 		int64_t missedIntervals =
 		    -[_fireDate timeIntervalSinceNow] / _interval;
 		of_time_interval_t newFireDate;
+		OFRunLoop *runLoop;
 
 		/* In case the clock was changed backwards */
 		if (missedIntervals < 0)
@@ -546,7 +560,9 @@
 		_fireDate = [[OFDate alloc]
 		    initWithTimeIntervalSince1970: newFireDate];
 
-		[[OFRunLoop currentRunLoop] addTimer: self];
+		runLoop = [OFRunLoop currentRunLoop];
+		[runLoop addTimer: self
+			  forMode: [runLoop currentMode]];
 	} else
 		[self invalidate];
 
@@ -611,13 +627,15 @@
 		@synchronized (self) {
 			OFDate *old;
 
-			[_inRunLoop of_removeTimer: self];
+			[_inRunLoop of_removeTimer: self
+					   forMode: _inRunLoopMode];
 
 			old = _fireDate;
 			_fireDate = [fireDate copy];
 			[old release];
 
-			[_inRunLoop addTimer: self];
+			[_inRunLoop addTimer: self
+				     forMode: _inRunLoopMode];
 		}
 	} @finally {
 		[self release];
