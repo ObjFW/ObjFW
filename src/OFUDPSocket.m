@@ -515,10 +515,25 @@
 		      selector: (SEL)selector
 		       context: (id)context
 {
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: of_run_loop_mode_default
+			      target: target
+			    selector: selector
+			     context: context];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+			target: (id)target
+		      selector: (SEL)selector
+		       context: (id)context
+{
 	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
-					     mode: of_run_loop_mode_default
+					     mode: runLoopMode
 					   target: target
 					 selector: selector
 					  context: context];
@@ -529,10 +544,21 @@
 			length: (size_t)length
 			 block: (of_udp_socket_async_receive_block_t)block
 {
+	[self asyncReceiveIntoBuffer: buffer
+			      length: length
+			 runLoopMode: of_run_loop_mode_default
+			       block: block];
+}
+
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+			 block: (of_udp_socket_async_receive_block_t)block
+{
 	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
-					     mode: of_run_loop_mode_default
+					     mode: runLoopMode
 					    block: block];
 }
 #endif
@@ -586,11 +612,28 @@
 	       selector: (SEL)selector
 		context: (id)context
 {
+	[self asyncSendBuffer: buffer
+		       length: length
+		     receiver: receiver
+		  runLoopMode: of_run_loop_mode_default
+		       target: target
+		     selector: selector
+		      context: context];
+}
+
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_socket_address_t)receiver
+	    runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 target: (id)target
+	       selector: (SEL)selector
+		context: (id)context
+{
 	[OFRunLoop of_addAsyncSendForUDPSocket: self
 					buffer: buffer
 					length: length
 				      receiver: receiver
-					  mode: of_run_loop_mode_default
+					  mode: runLoopMode
 					target: target
 				      selector: selector
 				       context: context];
@@ -602,11 +645,24 @@
 	       receiver: (of_socket_address_t)receiver
 		  block: (of_udp_socket_async_send_block_t)block
 {
+	[self asyncSendBuffer: buffer
+		       length: length
+		     receiver: receiver
+		  runLoopMode: of_run_loop_mode_default
+			block: block];
+}
+
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_socket_address_t)receiver
+	    runLoopMode: (of_run_loop_mode_t)runLoopMode
+		  block: (of_udp_socket_async_send_block_t)block
+{
 	[OFRunLoop of_addAsyncSendForUDPSocket: self
 					buffer: buffer
 					length: length
 				      receiver: receiver
-					  mode: of_run_loop_mode_default
+					  mode: runLoopMode
 					 block: block];
 }
 #endif

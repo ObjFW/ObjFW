@@ -17,6 +17,7 @@
 
 #import "OFObject.h"
 #import "OFKernelEventObserver.h"
+#import "OFRunLoop.h"
 
 #import "socket.h"
 
@@ -221,6 +222,33 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 		      selector: (SEL)selector
 		       context: (nullable id)context;
 
+/*!
+ * @brief Asynchronously receives a datagram and stores it into the specified
+ *	  buffer.
+ *
+ * If the buffer is too small, the datagram is truncated.
+ *
+ * @param buffer The buffer to write the datagram to
+ * @param length The length of the buffer
+ * @param runLoopMode The run loop mode in which to perform the async receive
+ * @param target The target on which the selector should be called when the
+ *		 datagram has been received. If the method returns true, it
+ *		 will be called again with the same buffer and maximum length
+ *		 when more datagrams have been received. If you want the next
+ *		 method in the queue to handle the datagram received next, you
+ *		 need to return false from the method.
+ * @param selector The selector to call on the target. The signature must be
+ *		   `bool (OFUDPSocket *socket, void *buffer, size_t length,
+ *		   of_socket_address_t sender, id context, id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (of_run_loop_mode_t)runLoopMode
+			target: (id)target
+		      selector: (SEL)selector
+		       context: (nullable id)context;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously receives a datagram and stores it into the specified
@@ -239,6 +267,27 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  */
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
+			 block: (of_udp_socket_async_receive_block_t)block;
+
+/*!
+ * @brief Asynchronously receives a datagram and stores it into the specified
+ *	  buffer.
+ *
+ * If the buffer is too small, the datagram is truncated.
+ *
+ * @param buffer The buffer to write the datagram to
+ * @param length The length of the buffer
+ * @param runLoopMode The run loop mode in which to perform the async receive
+ * @param block The block to call when the datagram has been received. If the
+ *		block returns true, it will be called again with the same
+ *		buffer and maximum length when more datagrams have been
+ *		received. If you want the next method in the queue to handle
+ *		the datagram received next, you need to return false from the
+ *		method.
+ */
+- (void)asyncReceiveIntoBuffer: (void *)buffer
+			length: (size_t)length
+		   runLoopMode: (of_run_loop_mode_t)runLoopMode
 			 block: (of_udp_socket_async_receive_block_t)block;
 #endif
 
@@ -280,6 +329,34 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 	       selector: (SEL)selector
 		context: (nullable id)context;
 
+/*!
+ * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @param buffer The buffer to send as a datagram
+ * @param length The length of the buffer
+ * @param receiver A pointer to an @ref of_socket_address_t to which the
+ *		   datagram should be sent
+ * @param runLoopMode The run loop mode in which to perform the async send
+ * @param target The target on which the selector should be called when the
+ *		 packet has been sent. The method should return the length for
+ *		 the next send with the same callback or 0 if it should not
+ *		 repeat. The buffer and receiver may be changed, so that every
+ *		 time a new buffer, length and receiver can be specified while
+ *		 the callback stays the same.
+ * @param selector The selector to call on the target. The signature must be
+ *		   `size_t (OFUDPSocket *socket, const void **buffer,
+ *		   size_t bytesSent, of_socket_address_t *receiver, id context,
+ *		   id exception)`.
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_socket_address_t)receiver
+	    runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 target: (id)target
+	       selector: (SEL)selector
+		context: (nullable id)context;
+
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously sends the specified datagram to the specified address.
@@ -297,6 +374,26 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 - (void)asyncSendBuffer: (const void *)buffer
 		 length: (size_t)length
 	       receiver: (of_socket_address_t)receiver
+		  block: (of_udp_socket_async_send_block_t)block;
+
+/*!
+ * @brief Asynchronously sends the specified datagram to the specified address.
+ *
+ * @param buffer The buffer to send as a datagram
+ * @param length The length of the buffer
+ * @param receiver A pointer to an @ref of_socket_address_t to which the
+ *		   datagram should be sent
+ * @param runLoopMode The run loop mode in which to perform the async send
+ * @param block The block to call when the packet has been sent. It should
+ *		return the length for the next send with the same callback or 0
+ *		if it should not repeat. The buffer and receiver may be
+ *		changed, so that every time a new buffer, length and receiver
+ *		can be specified while the callback stays the same.
+ */
+- (void)asyncSendBuffer: (const void *)buffer
+		 length: (size_t)length
+	       receiver: (of_socket_address_t)receiver
+	    runLoopMode: (of_run_loop_mode_t)runLoopMode
 		  block: (of_udp_socket_async_send_block_t)block;
 #endif
 
