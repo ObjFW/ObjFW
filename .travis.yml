@@ -153,8 +153,8 @@ before_install:
     fi
 
   - if [ "$config" = "amigaos" ]; then
-            wget -q http://franke.ms/download/amiga-toolchain-centos.tgz;
-            tar -C / -xzf amiga-toolchain-centos.tgz;
+            wget -q https://franke.ms/download/amiga-gcc.tgz;
+            tar -C / -xzf amiga-gcc.tgz;
     fi
 
 script:
