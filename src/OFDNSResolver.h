@@ -388,6 +388,17 @@ typedef enum of_dns_resolver_error_t {
 				   context: (nullable id)context;
 
 /*!
+ * @brief Synchronously resolves the specified host to socket addresses.
+ *
+ * @param host The host to resolve
+ * @param addressFamily The desired socket address family
+ * @return OFData containing several of_socket_address_t
+ */
+- (OFData *)resolveSocketAddressesForHost: (OFString *)host
+			    addressFamily: (of_socket_address_family_t)
+					       addressFamily;
+
+/*!
  * @brief Closes all sockets and cancels all ongoing requests.
  */
 - (void)close;

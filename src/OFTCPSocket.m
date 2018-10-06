@@ -148,7 +148,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 @interface OFTCPSocket_ConnectContext: OFObject
 {
 @public
-	bool _connected;
+	bool _done;
 	id _exception;
 }
 
@@ -657,10 +657,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		 context: (id)context
 	       exception: (id)exception
 {
-	if (exception != nil)
-		_exception = [exception retain];
-
-	_connected = true;
+	_exception = [exception retain];
+	_done = true;
 }
 @end
 
@@ -783,7 +781,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			selector: @selector(socketDidConnect:context:exception:)
 			 context: nil];
 
-	while (!context->_connected)
+	while (!context->_done)
 		[runLoop runMode: connectRunLoopMode
 		      beforeDate: nil];
 

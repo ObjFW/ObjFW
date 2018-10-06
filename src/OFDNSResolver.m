@@ -113,6 +113,8 @@ OF_DESTRUCTOR()
  *  - Fallback to TCP
  */
 
+static of_run_loop_mode_t resolveRunLoopMode = @"of_dns_resolver_resolve_mode";
+
 @interface OFDNSResolverSettings: OFObject
 {
 @public
@@ -160,7 +162,7 @@ OF_DESTRUCTOR()
 		     context: (id)context;
 @end
 
-@interface OFDNSResolver_ResolveSocketAddressContext: OFObject
+@interface OFDNSResolver_AsyncResolveSocketAddressesContext: OFObject
 {
 	OFString *_host;
 	id _target;
@@ -202,6 +204,21 @@ OF_DESTRUCTOR()
 	 answerRecords: (OFDictionary *)answerRecords
       authorityRecords: (OFDictionary *)authorityRecords
      additionalRecords: (OFDictionary *)additionalRecords
+	       context: (id)context
+	     exception: (id)exception;
+@end
+
+@interface OFDNSResolver_ResolveSocketAddressesContext: OFObject
+{
+@public
+	bool _done;
+	OFData *_socketAddresses;
+	id _exception;
+}
+
+-	(void)resolver: (OFDNSResolver *)resolver
+  didResolveDomainName: (OFString *)domainName
+       socketAddresses: (OFData *)socketAddresses
 	       context: (id)context
 	     exception: (id)exception;
 @end
@@ -823,7 +840,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 @end
 
-@implementation OFDNSResolver_ResolveSocketAddressContext
+@implementation OFDNSResolver_AsyncResolveSocketAddressesContext
 - (instancetype)initWithHost: (OFString *)host
 		      target: (id)target
 		    selector: (SEL)selector
@@ -1107,6 +1124,27 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 	if (_expectedResponses == 0)
 		[self done];
+}
+@end
+
+@implementation OFDNSResolver_ResolveSocketAddressesContext
+- (void)dealloc
+{
+	[_socketAddresses release];
+	[_exception release];
+
+	[super dealloc];
+}
+
+-	(void)resolver: (OFDNSResolver *)resolver
+  didResolveDomainName: (OFString *)domainName
+       socketAddresses: (OFData *)socketAddresses
+	       context: (id)context
+	     exception: (id)exception
+{
+	_socketAddresses = [socketAddresses retain];
+	_exception = [exception retain];
+	_done = true;
 }
 @end
 
@@ -2034,9 +2072,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				   context: (id)userContext
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFDNSResolver_ResolveSocketAddressContext *context;
+	OFDNSResolver_AsyncResolveSocketAddressesContext *context;
 
-	context = [[[OFDNSResolver_ResolveSocketAddressContext alloc]
+	context = [[[OFDNSResolver_AsyncResolveSocketAddressesContext alloc]
 	    initWithHost: host
 		  target: target
 		selector: selector
@@ -2091,6 +2129,46 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 					    OF_DNS_RESOURCE_RECORD_TYPE_A]];
 
 	objc_autoreleasePoolPop(pool);
+}
+
+- (OFData *)resolveSocketAddressesForHost: (OFString *)host
+			    addressFamily: (of_socket_address_family_t)
+					       addressFamily
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+	OFDNSResolver_ResolveSocketAddressesContext *context;
+	OFData *ret;
+
+	context = [[[OFDNSResolver_ResolveSocketAddressesContext
+	    alloc] init] autorelease];
+
+	[self asyncResolveSocketAddressesForHost: host
+				   addressFamily: addressFamily
+				     runLoopMode: resolveRunLoopMode
+					  target: context
+					selector: @selector(resolver:
+						      didResolveDomainName:
+						      socketAddresses:context:
+						      exception:)
+					 context: nil];
+
+	while (!context->_done)
+		[runLoop runMode: resolveRunLoopMode
+		      beforeDate: nil];
+
+	/* Cleanup */
+	[runLoop runMode: resolveRunLoopMode
+	      beforeDate: [OFDate date]];
+
+	if (context->_exception != nil)
+		@throw context->_exception;
+
+	ret = [context->_socketAddresses retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (void)close
