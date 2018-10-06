@@ -32,7 +32,7 @@
 
 #import "OFTCPSocket.h"
 #import "OFTCPSocket+Private.h"
-#import "OFTCPSocket+SOCKS5.h"
+#import "OFDate.h"
 #import "OFDNSResolver.h"
 #import "OFData.h"
 #import "OFRunLoop.h"
@@ -59,19 +59,13 @@
 #import "socket_helpers.h"
 #import "resolver.h"
 
-/* References for static linking */
-void
-_references_to_categories_of_OFTCPSocket(void)
-{
-	_OFTCPSocket_SOCKS5_reference = 1;
-}
-
 Class of_tls_socket_class = Nil;
 
+static of_run_loop_mode_t connectRunLoopMode = @"of_tcp_socket_connect_mode";
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket_ConnectContext: OFObject
+@interface OFTCPSocket_AsyncConnectContext: OFObject
 {
 	OFTCPSocket *_socket;
 	OFString *_host;
@@ -151,7 +145,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 		   exception: (id)exception;
 @end
 
-@implementation OFTCPSocket_ConnectContext
+@interface OFTCPSocket_ConnectContext: OFObject
+{
+@public
+	bool _connected;
+	id _exception;
+}
+
+- (void)socketDidConnect: (OFTCPSocket *)sock
+		 context: (id)context
+	       exception: (id)exception;
+@end
+
+@implementation OFTCPSocket_AsyncConnectContext
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port
@@ -636,6 +642,25 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 @end
 
+@implementation OFTCPSocket_ConnectContext
+- (void)dealloc
+{
+	[_exception release];
+
+	[super dealloc];
+}
+
+- (void)socketDidConnect: (OFTCPSocket *)sock
+		 context: (id)context
+	       exception: (id)exception
+{
+	if (exception != nil)
+		_exception = [exception retain];
+
+	_connected = true;
+}
+@end
+
 @implementation OFTCPSocket
 @synthesize SOCKS5Host = _SOCKS5Host, SOCKS5Port = _SOCKS5Port;
 
@@ -743,75 +768,30 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port
 {
-	OFString *destinationHost = host;
-	uint16_t destinationPort = port;
-	of_resolver_result_t **results, **iter;
-	int errNo = 0;
+	void *pool = objc_autoreleasePoolPush();
+	OFTCPSocket_ConnectContext *context =
+	    [[[OFTCPSocket_ConnectContext alloc] init] autorelease];
+	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
-	if (_socket != INVALID_SOCKET)
-		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: connectRunLoopMode
+			  target: context
+			selector: @selector(socketDidConnect:context:exception:)
+			 context: nil];
 
-	if (_SOCKS5Host != nil) {
-		/* Connect to the SOCKS5 proxy instead */
-		host = _SOCKS5Host;
-		port = _SOCKS5Port;
-	}
+	while (!context->_connected)
+		[runLoop runMode: connectRunLoopMode
+		      beforeDate: nil];
 
-	results = of_resolve_host(host, port, SOCK_STREAM);
+	/* Cleanup */
+	[runLoop runMode: connectRunLoopMode
+	      beforeDate: [OFDate date]];
 
-	for (iter = results; *iter != NULL; iter++) {
-		of_resolver_result_t *result = *iter;
-		of_socket_address_t address;
+	if (context->_exception != nil)
+		@throw context->_exception;
 
-		switch (result->family) {
-		case AF_INET:
-			address.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
-			break;
-#ifdef AF_INET6
-		case AF_INET6:
-			address.family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
-			break;
-#endif
-		default:
-			errNo = EAFNOSUPPORT;
-			continue;
-		}
-
-		if (result->addressLength > sizeof(address)) {
-			errNo = EOVERFLOW;
-			continue;
-		}
-
-		address.length = result->addressLength;
-		memcpy(&address.sockaddr.sockaddr, result->address,
-		    result->addressLength);
-
-		if (![self of_createSocketForAddress: &address
-					       errNo: &errNo])
-			continue;
-
-		_blocking = true;
-
-		if (![self of_connectSocketToAddress: &address
-					       errNo: &errNo]) {
-			[self of_closeSocket];
-			continue;
-		}
-
-		break;
-	}
-
-	of_resolver_free(results);
-
-	if (_socket == INVALID_SOCKET)
-		@throw [OFConnectionFailedException exceptionWithHost: host
-								 port: port
-							       socket: self
-								errNo: errNo];
-
-	if (_SOCKS5Host != nil)
-		[self OF_SOCKS5ConnectToHost: destinationHost
-					port: destinationPort];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)asyncConnectToHost: (OFString *)host
@@ -837,7 +817,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_ConnectContext alloc]
+	[[[[OFTCPSocket_AsyncConnectContext alloc]
 	    initWithSocket: self
 		      host: host
 		      port: port
@@ -869,7 +849,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_ConnectContext alloc]
+	[[[[OFTCPSocket_AsyncConnectContext alloc]
 	    initWithSocket: self
 		      host: host
 		      port: port
