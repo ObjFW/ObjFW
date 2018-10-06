@@ -230,6 +230,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)didConnect
 {
+	if (_exception == nil)
+		[_socket setBlocking: true];
+
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
 		_block(_socket, _exception);
