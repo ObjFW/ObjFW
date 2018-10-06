@@ -16,8 +16,9 @@
  */
 
 #import "OFObject.h"
-#import "OFString.h"
 #import "OFDNSResourceRecord.h"
+#import "OFRunLoop.h"
+#import "OFString.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -244,6 +245,54 @@ typedef enum of_dns_resolver_error_t {
 		 context: (nullable id)context;
 
 /*!
+ * @brief Asynchronously resolves the specified host.
+ *
+ * @param host The host to resolve
+ * @param recordClass The desired class of the records to query
+ * @param recordType The desired type of the records to query
+ * @param runLoopMode The run loop mode in which to resolve
+ * @param target The target to call with the result once resolving is done
+ * @param selector The selector to call on the target. The signature must be
+ *		   the following:
+ *		   @parblock
+ *
+ *		       void (OFDNSResolver *resolver, OFString *domainName,
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
+ *		           *_Nullable answerRecords,
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
+ *		           *_Nullable authorityRecords,
+ *		           OFArray<OFDictionary<OFString *,
+ *		           __kindof OFDNSResourceRecord *> *>
+ *		           *_Nullable additionalRecords,
+ *		           id _Nullable context, id _Nullable exception)
+ *
+ *		   `resolver` is the acting resolver.@n
+ *		   `domainName` is the fully qualified domain name used to
+ *		   resolve the host.@n
+ *		   `answerRecords` are the answer records from the name server,
+ *		   grouped by domain name.
+ *		   @n
+ *		   `authorityRecords` are the authority records from the name
+ *		   server, grouped by domain name.@n
+ *		   `additionalRecords` are additional records sent by the name
+ *		   server, grouped by domain name.@n
+ *		   `context` is the context object originally passed.@n
+ *		   `exception` is an exception that happened during resolving,
+ *		   otherwise nil.
+ *		   @endparblock
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncResolveHost: (OFString *)host
+	     recordClass: (of_dns_resource_record_class_t)recordClass
+	      recordType: (of_dns_resource_record_type_t)recordType
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		  target: (id)target
+		selector: (SEL)selector
+		 context: (nullable id)context;
+
+/*!
  * @brief Asynchronously resolves the specified host to socket addresses.
  *
  * @param host The host to resolve
@@ -300,6 +349,40 @@ typedef enum of_dns_resolver_error_t {
 - (void)asyncResolveSocketAddressesForHost: (OFString *)host
 			     addressFamily: (of_socket_address_family_t)
 						addressFamily
+				    target: (id)target
+				  selector: (SEL)selector
+				   context: (nullable id)context;
+
+/*!
+ * @brief Asynchronously resolves the specified host to socket addresses.
+ *
+ * @param host The host to resolve
+ * @param addressFamily The desired socket address family
+ * @param runLoopMode The run loop mode in which to resolve
+ * @param target The target to call with the result once resolving is done
+ * @param selector The selector to call on the target. The signature must be
+ *		   the following:
+ *		   @parblock
+ *
+ *		       void (OFDNSResolver *resolver, OFString *domainName,
+ *		           OFData *_Nullable socketAddresses,
+ *		           id _Nullable context, id _Nullable exception)
+ *
+ *		   `resolver` is the acting resolver.@n
+ *		   `domainName` is the fully qualified domain name used to
+ *		   resolve the host.@n
+ *		   `socketAddresses` is OFData containing several
+ *		   of_socket_address_t.@n
+ *		   `context` is the context object originally passed.@n
+ *		   `exception` is an exception that happened during resolving,
+ *		   otherwise nil.
+ *		   @endparblock
+ * @param context A context object to pass along to the target
+ */
+- (void)asyncResolveSocketAddressesForHost: (OFString *)host
+			     addressFamily: (of_socket_address_family_t)
+						addressFamily
+			       runLoopMode: (of_run_loop_mode_t)runLoopMode
 				    target: (id)target
 				  selector: (SEL)selector
 				   context: (nullable id)context;
