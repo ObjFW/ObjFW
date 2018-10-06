@@ -97,8 +97,8 @@ struct x86_regs {
 };
 #endif
 
-static size_t pageSize;
-static size_t numberOfCPUs;
+static size_t pageSize = 4096;
+static size_t numberOfCPUs = 1;
 static OFString *operatingSystemName = nil;
 static OFString *operatingSystemVersion = nil;
 
@@ -272,6 +272,8 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 @implementation OFSystemInfo
 + (void)initialize
 {
+	long tmp;
+
 	if (self != [OFSystemInfo class])
 		return;
 
@@ -281,19 +283,21 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	pageSize = si.dwPageSize;
 	numberOfCPUs = si.dwNumberOfProcessors;
 #elif defined(OF_QNX)
-	if ((pageSize = sysconf(_SC_PAGESIZE)) < 1)
-		pageSize = 4096;
+	if ((tmp = sysconf(_SC_PAGESIZE)) > 0)
+		pageSize = tmp;
 	numberOfCPUs = _syspage_ptr->num_cpu;
 #else
 # if defined(HAVE_SYSCONF) && defined(_SC_PAGESIZE)
-	if ((pageSize = sysconf(_SC_PAGESIZE)) < 1)
+	if ((tmp = sysconf(_SC_PAGESIZE)) > 0)
+		pageSize = tmp;
 # endif
-		pageSize = 4096;
 # if defined(HAVE_SYSCONF) && defined(_SC_NPROCESSORS_CONF)
-	if ((numberOfCPUs = sysconf(_SC_NPROCESSORS_CONF)) < 1)
+	if ((tmp = sysconf(_SC_NPROCESSORS_CONF)) > 0)
+		numberOfCPUs = tmp;
 # endif
-		numberOfCPUs = 1;
 #endif
+
+	(void)tmp;
 }
 
 + (instancetype)alloc
