@@ -61,7 +61,7 @@ extern of_run_loop_mode_t of_run_loop_mode_default;
 #ifdef OF_HAVE_THREADS
 	OFMutex *_statesMutex;
 #endif
-	of_run_loop_mode_t _currentMode;
+	of_run_loop_mode_t _Nullable _currentMode;
 	volatile bool _stop;
 }
 
@@ -69,7 +69,8 @@ extern of_run_loop_mode_t of_run_loop_mode_default;
 @property (class, readonly, nullable, nonatomic) OFRunLoop *mainRunLoop;
 @property (class, readonly, nullable, nonatomic) OFRunLoop *currentRunLoop;
 #endif
-@property (readonly, nonatomic) of_run_loop_mode_t currentMode;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    of_run_loop_mode_t currentMode;
 
 /*!
  * @brief Returns the run loop for the main thread.
@@ -121,7 +122,7 @@ extern of_run_loop_mode_t of_run_loop_mode_default;
  * @param deadline The date until which the run loop should run at the longest
  */
 - (void)runMode: (of_run_loop_mode_t)mode
-     beforeDate: (OFDate *)deadline;
+     beforeDate: (nullable OFDate *)deadline;
 
 /*!
  * @brief Stops the run loop. If there is still an operation being executed, it
