@@ -111,13 +111,13 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)socketDidConnect: (OFTCPSocket *)sock
 		 context: (id)context
 	       exception: (id)exception;
-- (void)tryNextAddress;
+- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
        socketAddresses: (OFData *)socketAddresses
 	       context: (id)context
 	     exception: (id)exception;
-- (void)start;
+- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 - (void)sendSOCKS5Request;
 -	       (size_t)socket: (OFTCPSocket *)sock
   didSendSOCKS5Authentication: (const void *)request
@@ -248,7 +248,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			_exception = [exception retain];
 			[self didConnect];
 		} else {
-			[self tryNextAddress];
+			[self tryNextAddressWithRunLoopMode:
+			    [[OFRunLoop currentRunLoop] currentMode]];
 		}
 
 		return;
@@ -260,7 +261,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[self didConnect];
 }
 
-- (void)tryNextAddress
+- (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
 {
 	of_socket_address_t address = *(const of_socket_address_t *)
 	    [_socketAddresses itemAtIndex: _socketAddressesIndex++];
@@ -283,7 +284,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			return;
 		}
 
-		[self tryNextAddress];
+		[self tryNextAddressWithRunLoopMode: runLoopMode];
 		return;
 	}
 
@@ -294,10 +295,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 		if (errNo == EINPROGRESS) {
 			SEL selector = @selector(socketDidConnect:context:
 			    exception:);
-			of_run_loop_mode_t mode = of_run_loop_mode_default;
 
 			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
-							     mode: mode
+							     mode: runLoopMode
 							   target: self
 							 selector: selector
 							  context: nil];
@@ -315,7 +315,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				return;
 			}
 
-			[self tryNextAddress];
+			[self tryNextAddressWithRunLoopMode: runLoopMode];
 			return;
 		}
 	}
@@ -336,10 +336,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 
 	_socketAddresses = [socketAddresses copy];
-	[self tryNextAddress];
+
+	[self tryNextAddressWithRunLoopMode:
+	    [[OFRunLoop currentRunLoop] currentMode]];
 }
 
-- (void)start
+- (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
 {
 	OFString *host;
 	uint16_t port;
@@ -364,13 +366,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 			 itemSize: sizeof(address)
 			    count: 1];
 
-		[self tryNextAddress];
+		[self tryNextAddressWithRunLoopMode: runLoopMode];
 		return;
 	} @catch (OFInvalidFormatException *e) {
 	}
 
 	[[OFThread DNSResolver]
 	    asyncResolveSocketAddressesForHost: host
+				 addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+				   runLoopMode: runLoopMode
 					target: self
 				      selector: @selector(resolver:
 						    didResolveDomainName:
@@ -383,6 +387,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[_socket asyncWriteBuffer: "\x05\x01\x00"
 			   length: 3
+		      runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
 			   target: self
 			 selector: @selector(socket:didSendSOCKS5Authentication:
 				       bytesWritten:context:exception:)
@@ -403,6 +408,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	[_socket asyncReadIntoBuffer: _buffer
 			 exactLength: 2
+			 runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
 			      target: self
 			    selector: @selector(socket:didReadSOCKSVersion:
 					  length:context:exception:)
@@ -454,6 +460,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	/* Use request as context to retain it */
 	[_socket asyncWriteBuffer: [request items]
 			   length: [request count]
+		      runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
 			   target: self
 			 selector: @selector(socket:didSendSOCKS5Request:
 				       bytesWritten:context:exception:)
@@ -476,6 +483,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	[_socket asyncReadIntoBuffer: _buffer
 			 exactLength: 4
+			 runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
 			      target: self
 			    selector: @selector(socket:didReadSOCKS5Response:
 					  length:context:exception:)
@@ -490,6 +498,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		context: (id)context
 	      exception: (id)exception
 {
+	of_run_loop_mode_t runLoopMode;
+
 	if (exception != nil) {
 		_exception = [exception retain];
 		[self didConnect];
@@ -545,11 +555,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return false;
 	}
 
+	runLoopMode = [[OFRunLoop currentRunLoop] currentMode];
+
 	/* Skip the rest of the response */
 	switch (response[3]) {
 	case 1: /* IPv4 */
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 4 + 2
+				 runLoopMode: runLoopMode
 				      target: self
 				    selector: @selector(socket:
 						  didReadSOCKS5Address:length:
@@ -559,6 +572,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	case 3: /* Domain name */
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 1
+				 runLoopMode: runLoopMode
 				      target: self
 				    selector: @selector(socket:
 						  didReadSOCKS5AddressLength:
@@ -568,6 +582,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	case 4: /* IPv6 */
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 16 + 2
+				 runLoopMode: runLoopMode
 				      target: self
 				    selector: @selector(socket:
 						  didReadSOCKS5Address:length:
@@ -612,6 +627,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	[_socket asyncReadIntoBuffer: _buffer
 			 exactLength: addressLength[0] + 2
+			 runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
 			      target: self
 			    selector: @selector(socket:didReadSOCKS5Address:
 					  length:context:exception:)
@@ -804,6 +820,21 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  selector: (SEL)selector
 		   context: (id)context
 {
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: of_run_loop_mode_default
+			  target: target
+			selector: selector
+			 context: context];
+}
+
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+	       runLoopMode: (of_run_loop_mode_t)runLoopMode
+		    target: (id)target
+		  selector: (SEL)selector
+		   context: (id)context
+{
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFTCPSocket_ConnectContext alloc]
@@ -814,7 +845,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		SOCKS5Port: _SOCKS5Port
 		    target: target
 		  selector: selector
-		   context: context] autorelease] start];
+		   context: context] autorelease]
+	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -822,6 +854,17 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
+		     block: (of_tcp_socket_async_connect_block_t)block
+{
+	[self asyncConnectToHost: host
+			    port: port
+		     runLoopMode: of_run_loop_mode_default
+			   block: block];
+}
+
+- (void)asyncConnectToHost: (OFString *)host
+		      port: (uint16_t)port
+	       runLoopMode: (of_run_loop_mode_t)runLoopMode
 		     block: (of_tcp_socket_async_connect_block_t)block
 {
 	void *pool = objc_autoreleasePoolPush();
@@ -832,7 +875,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		      port: port
 		SOCKS5Host: _SOCKS5Host
 		SOCKS5Port: _SOCKS5Port
-		     block: block] autorelease] start];
+		     block: block] autorelease]
+	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1068,8 +1112,19 @@ static uint16_t defaultSOCKS5Port = 1080;
 		     selector: (SEL)selector
 		      context: (id)context
 {
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
+				  target: target
+				selector: selector
+				 context: context];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+			    target: (id)target
+			  selector: (SEL)selector
+			   context: (id)context
+{
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
-					    mode: of_run_loop_mode_default
+					    mode: runLoopMode
 					  target: target
 					selector: selector
 					 context: context];
@@ -1078,8 +1133,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 #ifdef OF_HAVE_BLOCKS
 - (void)asyncAcceptWithBlock: (of_tcp_socket_async_accept_block_t)block
 {
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
+				   block: block];
+}
+
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
+			     block: (of_tcp_socket_async_accept_block_t)block
+{
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
-					    mode: of_run_loop_mode_default
+					    mode: runLoopMode
 					   block: block];
 }
 #endif
