@@ -2076,30 +2076,96 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				  selector: (SEL)selector
 				   context: (id)userContext
 {
-	void *pool = objc_autoreleasePoolPush();
+	OFArray OF_GENERIC(OFString *) *aliases;
+	void *pool;
 	OFDNSResolver_AsyncResolveSocketAddressesContext *context;
 
 	@try {
 		of_socket_address_t address =
 		    of_socket_address_parse_ip(host, 0);
-		OFData *addresses;
 		void (*method)(id, SEL, OFDNSResolver *, OFString *, OFData *,
-		    id, id);
+		    id, id) = (void (*)(id, SEL, OFDNSResolver *, OFString *,
+		    OFData *, id, id))[target methodForSelector: selector];
+		OFData *addresses;
 
 		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY &&
-		    address.family != addressFamily)
-			@throw [OFInvalidArgumentException exception];
+		    address.family != addressFamily) {
+			method(target, selector, self, host, nil, userContext,
+			    [OFInvalidArgumentException exception]);
+			return;
+		}
 
 		addresses = [OFData dataWithItems: &address
 				    itemSize: sizeof(address)
 				       count: 1];
-
-		method = (void (*)(id, SEL, OFDNSResolver *, OFString *,
-		    OFData *, id, id))[target methodForSelector: selector];
 		method(target, selector, self, host, addresses, userContext,
 		    nil);
+		return;
 	} @catch (OFInvalidFormatException *e) {
 	}
+
+	if ((aliases = [_staticHosts objectForKey: host]) != nil) {
+		void (*method)(id, SEL, OFDNSResolver *, OFString *, OFData *,
+		    id, id) = (void (*)(id, SEL, OFDNSResolver *, OFString *,
+		    OFData *, id, id))[target methodForSelector: selector];
+		OFMutableData *addresses = [OFMutableData
+		    dataWithItemSize: sizeof(of_socket_address_t)];
+
+		for (OFString *alias in aliases) {
+			of_socket_address_t address;
+
+			@try {
+				address = of_socket_address_parse_ip(alias, 0);
+			} @catch (OFInvalidFormatException *e) {
+				continue;
+			}
+
+			if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY &&
+			    address.family != addressFamily)
+				continue;
+
+			[addresses addItem: &address];
+		}
+
+		[addresses makeImmutable];
+
+		if ([addresses count] == 0) {
+			OFResolveHostFailedException *exception;
+			of_dns_resource_record_type_t type;
+
+			switch (addressFamily) {
+			case OF_SOCKET_ADDRESS_FAMILY_ANY:
+				type = OF_DNS_RESOURCE_RECORD_TYPE_ALL;
+				break;
+			case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+				type = OF_DNS_RESOURCE_RECORD_TYPE_A;
+				break;
+			case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+				type = OF_DNS_RESOURCE_RECORD_TYPE_AAAA;
+				break;
+			default:
+				method(target, selector, self, host, nil,
+				    userContext,
+				    [OFInvalidArgumentException exception]);
+				return;
+			}
+
+			exception = [OFResolveHostFailedException
+			    exceptionWithHost: host
+				  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+				   recordType: type
+					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
+			method(target, selector, self, host, nil, userContext,
+			    exception);
+			return;
+		}
+
+		method(target, selector, self, host, addresses, userContext,
+		    nil);
+		return;
+	}
+
+	pool = objc_autoreleasePoolPush();
 
 	context = [[[OFDNSResolver_AsyncResolveSocketAddressesContext alloc]
 	    initWithHost: host
