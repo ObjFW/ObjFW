@@ -243,9 +243,6 @@
 #import "instance.h"
 #import "of_asprintf.h"
 #import "of_strptime.h"
-#ifdef OF_HAVE_SOCKETS
-# import "resolver.h"
-#endif
 #import "pbkdf2.h"
 #import "scrypt.h"
 #import "unicode.h"

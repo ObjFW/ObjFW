@@ -32,15 +32,6 @@
 # define INVALID_SOCKET -1
 #endif
 
-#ifdef HAVE_GETADDRINFO
-# ifndef AI_NUMERICSERV
-#  define AI_NUMERICSERV 0
-# endif
-# ifndef AI_NUMERICHOST
-#  define AI_NUMERICHOST 0
-# endif
-#endif
-
 #ifndef INADDR_NONE
 # define INADDR_NONE ((in_addr_t)-1)
 #endif
@@ -77,7 +68,6 @@ typedef uint32_t in_addr_t;
 # define connect(sock, addr, addrlen) \
     net_connect(sock, (struct sockaddr *)addr, addrlen)
 # define fcntl(fd, cmd, flags) net_fcntl(fd, cmd, flags)
-# define gethostbyname(name) net_gethostbyname(name)
 # define getsockopt(sock, level, name, value, len) \
     net_getsockopt(sock, level, name, value, len)
 # define h_errno 0

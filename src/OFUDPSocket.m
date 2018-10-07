@@ -26,15 +26,18 @@
 #endif
 
 #import "OFUDPSocket.h"
-#ifdef OF_HAVE_THREADS
-# import "OFThread.h"
-#endif
-#import "OFRunLoop.h"
+#import "OFUDPSocket+Private.h"
+#import "OFDNSResolver.h"
+#import "OFData.h"
 #import "OFRunLoop+Private.h"
+#import "OFRunLoop.h"
+#import "OFThread.h"
 
+#import "OFAlreadyConnectedException.h"
 #import "OFBindFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 #import "OFNotOpenException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
@@ -43,144 +46,6 @@
 
 #import "socket.h"
 #import "socket_helpers.h"
-#import "resolver.h"
-
-#ifdef OF_HAVE_THREADS
-@interface OFUDPSocket_ResolveThread: OFThread
-{
-	OFThread *_sourceThread;
-	OFString *_host;
-	uint16_t _port;
-	id _target;
-	SEL _selector;
-	id _context;
-# ifdef OF_HAVE_BLOCKS
-	of_udp_socket_async_resolve_block_t _block;
-# endif
-	of_socket_address_t _address;
-	id _exception;
-}
-
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-				host: (OFString *)host
-				port: (uint16_t)port
-			      target: (id)target
-			    selector: (SEL)selector
-			     context: (id)context;
-# ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-				host: (OFString *)host
-				port: (uint16_t)port
-			       block: (of_udp_socket_async_resolve_block_t)
-					  block;
-# endif
-@end
-
-@implementation OFUDPSocket_ResolveThread
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-				host: (OFString *)host
-				port: (uint16_t)port
-			      target: (id)target
-			    selector: (SEL)selector
-			     context: (id)context
-{
-	self = [super init];
-
-	@try {
-		_sourceThread = [sourceThread retain];
-		_host = [host retain];
-		_port = port;
-		_target = [target retain];
-		_selector = selector;
-		_context = [context retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-
-# ifdef OF_HAVE_BLOCKS
-- (instancetype)initWithSourceThread: (OFThread *)sourceThread
-				host: (OFString *)host
-				port: (uint16_t)port
-			       block: (of_udp_socket_async_resolve_block_t)block
-{
-	self = [super init];
-
-	@try {
-		_sourceThread = [sourceThread retain];
-		_host = [host copy];
-		_port = port;
-		_block = [block copy];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-# endif
-
-- (void)dealloc
-{
-	[_sourceThread release];
-	[_host release];
-	[_target release];
-	[_context release];
-# ifdef OF_HAVE_BLOCKS
-	[_block release];
-# endif
-	[_exception release];
-
-	[super dealloc];
-}
-
-- (void)didResolve
-{
-	[self join];
-
-# ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
-		_block(_host, _port, _address, _exception);
-	else {
-# endif
-		void (*func)(id, SEL, OFString *, uint16_t,
-		    of_socket_address_t, id, id) =
-		    (void (*)(id, SEL, OFString *, uint16_t,
-		    of_socket_address_t, id, id))
-		    [_target methodForSelector: _selector];
-
-		func(_target, _selector, _host, _port, _address, _context,
-		    _exception);
-# ifdef OF_HAVE_BLOCKS
-	}
-# endif
-}
-
-- (id)main
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	@try {
-		[OFUDPSocket resolveAddressForHost: _host
-					      port: _port
-					   address: &_address];
-	} @catch (id e) {
-		_exception = e;
-	}
-
-	[self performSelector: @selector(didResolve)
-		     onThread: _sourceThread
-		waitUntilDone: false];
-
-	objc_autoreleasePoolPop(pool);
-
-	return nil;
-}
-@end
-#endif
 
 @implementation OFUDPSocket
 + (void)initialize
@@ -197,75 +62,6 @@
 {
 	return [[[self alloc] init] autorelease];
 }
-
-+ (void)resolveAddressForHost: (OFString *)host
-			 port: (uint16_t)port
-		      address: (of_socket_address_t *)address
-{
-	of_resolver_result_t **results =
-	    of_resolve_host(host, port, SOCK_DGRAM);
-
-	assert(results[0]->addressLength <=
-	    (socklen_t)sizeof(address->sockaddr));
-
-	memcpy(&address->sockaddr, results[0]->address,
-	    results[0]->addressLength);
-	address->length = results[0]->addressLength;
-
-	switch (results[0]->address->sa_family) {
-	case AF_INET:
-		address->family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
-		break;
-#ifdef OF_HAVE_IPV6
-	case AF_INET6:
-		address->family = OF_SOCKET_ADDRESS_FAMILY_IPV6;
-		break;
-#endif
-	default:
-		address->family = OF_SOCKET_ADDRESS_FAMILY_UNKNOWN;
-		break;
-	}
-
-	of_resolver_free(results);
-}
-
-#ifdef OF_HAVE_THREADS
-+ (void)asyncResolveAddressForHost: (OFString *)host
-			      port: (uint16_t)port
-			    target: (id)target
-			  selector: (SEL)selector
-			   context: (id)context
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[[[[OFUDPSocket_ResolveThread alloc]
-	    initWithSourceThread: [OFThread currentThread]
-			    host: host
-			    port: port
-			  target: target
-			selector: selector
-			 context: context] autorelease] start];
-
-	objc_autoreleasePoolPop(pool);
-}
-
-# ifdef OF_HAVE_BLOCKS
-+ (void)asyncResolveAddressForHost: (OFString *)host
-			      port: (uint16_t)port
-			     block: (of_udp_socket_async_resolve_block_t)block
-{
-	void *pool = objc_autoreleasePoolPush();
-
-	[[[[OFUDPSocket_ResolveThread alloc]
-	    initWithSourceThread: [OFThread currentThread]
-			    host: host
-			    port: port
-			   block: block] autorelease] start];
-
-	objc_autoreleasePoolPop(pool);
-}
-# endif
-#endif
 
 - (instancetype)init
 {
@@ -328,138 +124,156 @@
 #endif
 }
 
-- (uint16_t)bindToHost: (OFString *)host
-		  port: (uint16_t)port
+- (uint16_t)of_bindToAddress: (of_socket_address_t *)address
 {
-	of_resolver_result_t **results;
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	of_socket_address_t address;
+	void *pool = objc_autoreleasePoolPush();
+	OFString *host;
+	uint16_t port;
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	int flags;
 #endif
 
-	results = of_resolve_host(host, port, SOCK_DGRAM);
-	@try {
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-		int flags;
-#endif
+	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
+	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET) {
+		host = of_socket_address_ip_string(address, &port);
+		@throw [OFBindFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: of_socket_errno()];
+	}
 
-		if ((_socket = socket(results[0]->family,
-		    results[0]->type | SOCK_CLOEXEC,
-		    results[0]->protocol)) == INVALID_SOCKET)
-			@throw [OFBindFailedException
-			    exceptionWithHost: host
-					 port: port
-				       socket: self
-					errNo: of_socket_errno()];
-
-		_blocking = true;
+	_blocking = true;
 
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
-			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
+	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
-		if (port != 0) {
+	if (port != 0) {
 #endif
-			if (bind(_socket, results[0]->address,
-			    results[0]->addressLength) != 0) {
+		if (bind(_socket, &address->sockaddr.sockaddr,
+		    address->length) != 0) {
+			int errNo = of_socket_errno();
+
+			closesocket(_socket);
+			_socket = INVALID_SOCKET;
+
+			host = of_socket_address_ip_string(address, &port);
+			@throw [OFBindFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
+		}
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	} else {
+		for (;;) {
+			uint16_t rnd = 0;
+			int ret;
+
+			while (rnd < 1024)
+				rnd = (uint16_t)rand();
+
+			of_socket_address_set_port(address, rnd);
+
+			if ((ret = bind(_socket, &address->sockaddr.sockaddr,
+			    address->length)) == 0) {
+				port = rnd;
+				break;
+			}
+
+			if (of_socket_errno() != EADDRINUSE) {
 				int errNo = of_socket_errno();
 
 				closesocket(_socket);
 				_socket = INVALID_SOCKET;
 
+				host = of_socket_address_ip_string(
+				    address, &port);
 				@throw [OFBindFailedException
 				    exceptionWithHost: host
 						 port: port
 					       socket: self
 						errNo: errNo];
 			}
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
-		} else {
-			for (;;) {
-				uint16_t rnd = 0;
-				int ret;
-
-				while (rnd < 1024)
-					rnd = (uint16_t)rand();
-
-				switch (results[0]->family) {
-				case AF_INET:
-					((struct sockaddr_in *)
-					    results[0]->address)->sin_port =
-					    OF_BSWAP16_IF_LE(rnd);
-					break;
-# ifdef OF_HAVE_IPV6
-				case AF_INET6:
-					((struct sockaddr_in6 *)
-					    results[0]->address)->sin6_port =
-					    OF_BSWAP16_IF_LE(rnd);
-					break;
-# endif
-				default:
-					@throw [OFInvalidArgumentException
-					    exception];
-				}
-
-				ret = bind(_socket, results[0]->address,
-				    results[0]->addressLength);
-
-				if (ret == 0) {
-					port = rnd;
-					break;
-				}
-
-				if (of_socket_errno() != EADDRINUSE) {
-					int errNo = of_socket_errno();
-
-					closesocket(_socket);
-					_socket = INVALID_SOCKET;
-
-					@throw [OFBindFailedException
-					    exceptionWithHost: host
-							 port: port
-						       socket: self
-							errNo: errNo];
-				}
-			}
 		}
-#endif
-	} @finally {
-		of_resolver_free(results);
 	}
+#endif
 
-	if (port > 0)
+	objc_autoreleasePoolPop(pool);
+
+	if ((port = of_socket_address_get_port(address)) > 0)
 		return port;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-	address.length = (socklen_t)sizeof(address.sockaddr);
-	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
-	    &address.length) != 0) {
+	memset(address, 0, sizeof(*address));
+
+	address->length = (socklen_t)sizeof(address->sockaddr);
+	if (of_getsockname(_socket, &address->sockaddr.sockaddr,
+	    &address->length) != 0) {
 		int errNo = of_socket_errno();
 
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
 
+		host = of_socket_address_ip_string(address, &port);
 		@throw [OFBindFailedException exceptionWithHost: host
 							   port: port
 							 socket: self
 							  errNo: errNo];
 	}
 
-	if (address.sockaddr.sockaddr.sa_family == AF_INET)
-		return OF_BSWAP16_IF_LE(address.sockaddr.in.sin_port);
+	if (address->sockaddr.sockaddr.sa_family == AF_INET)
+		return OF_BSWAP16_IF_LE(address->sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
-	if (address.sockaddr.sockaddr.sa_family == AF_INET6)
-		return OF_BSWAP16_IF_LE(address.sockaddr.in6.sin6_port);
+	else if (address->sockaddr.sockaddr.sa_family == AF_INET6)
+		return OF_BSWAP16_IF_LE(address->sockaddr.in6.sin6_port);
 # endif
+	else {
+		closesocket(_socket);
+		_socket = INVALID_SOCKET;
+
+		host = of_socket_address_ip_string(address, &port);
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self
+							  errNo: EAFNOSUPPORT];
+	}
 #endif
 
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;
+
+	host = of_socket_address_ip_string(address, &port);
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
 						 socket: self
-						  errNo: EAFNOSUPPORT];
+						  errNo: EADDRNOTAVAIL];
+}
+
+- (uint16_t)bindToHost: (OFString *)host
+		  port: (uint16_t)port
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *socketAddresses;
+	of_socket_address_t address;
+
+	if (_socket != INVALID_SOCKET)
+		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
+
+	socketAddresses = [[OFThread DNSResolver]
+	    resolveSocketAddressesForHost: host
+			    addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+
+	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
+	of_socket_address_set_port(&address, port);
+
+	port = [self of_bindToAddress: &address];
+
+	objc_autoreleasePoolPop(pool);
+
+	return port;
 }
 
 - (size_t)receiveIntoBuffer: (void *)buffer

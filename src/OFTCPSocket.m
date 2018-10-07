@@ -57,7 +57,6 @@
 
 #import "socket.h"
 #import "socket_helpers.h"
-#import "resolver.h"
 
 Class of_tls_socket_class = Nil;
 
@@ -866,10 +865,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (uint16_t)bindToHost: (OFString *)host
 		  port: (uint16_t)port
 {
-	of_resolver_result_t **results;
 	const int one = 1;
-#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+	void *pool = objc_autoreleasePoolPush();
+	OFData *socketAddresses;
 	of_socket_address_t address;
+#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
+	int flags;
 #endif
 
 	if (_socket != INVALID_SOCKET)
@@ -879,36 +880,64 @@ static uint16_t defaultSOCKS5Port = 1080;
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	results = of_resolve_host(host, port, SOCK_STREAM);
-	@try {
+	socketAddresses = [[OFThread DNSResolver]
+	    resolveSocketAddressesForHost: host
+			    addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+
+	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
+	of_socket_address_set_port(&address, port);
+
+	if ((_socket = socket(address.sockaddr.sockaddr.sa_family,
+	    SOCK_STREAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET)
+		@throw [OFBindFailedException
+		    exceptionWithHost: host
+				 port: port
+			       socket: self
+				errNo: of_socket_errno()];
+
+	_blocking = true;
+
 #if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-		int flags;
+	if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
+		fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
 #endif
 
-		if ((_socket = socket(results[0]->family,
-		    results[0]->type | SOCK_CLOEXEC,
-		    results[0]->protocol)) == INVALID_SOCKET)
-			@throw [OFBindFailedException
-			    exceptionWithHost: host
-					 port: port
-				       socket: self
-					errNo: of_socket_errno()];
-
-		_blocking = true;
-
-#if SOCK_CLOEXEC == 0 && defined(HAVE_FCNTL) && defined(FD_CLOEXEC)
-		if ((flags = fcntl(_socket, F_GETFD, 0)) != -1)
-			fcntl(_socket, F_SETFD, flags | FD_CLOEXEC);
-#endif
-
-		setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
-		    (const char *)&one, (socklen_t)sizeof(one));
+	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
+	    (const char *)&one, (socklen_t)sizeof(one));
 
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
-		if (port != 0) {
+	if (port != 0) {
 #endif
-			if (bind(_socket, results[0]->address,
-			    results[0]->addressLength) != 0) {
+		if (bind(_socket, &address.sockaddr.sockaddr,
+		    address.length) != 0) {
+			int errNo = of_socket_errno();
+
+			closesocket(_socket);
+			_socket = INVALID_SOCKET;
+
+			@throw [OFBindFailedException exceptionWithHost: host
+								   port: port
+								 socket: self
+								  errNo: errNo];
+		}
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+	} else {
+		for (;;) {
+			uint16_t rnd = 0;
+			int ret;
+
+			while (rnd < 1024)
+				rnd = (uint16_t)rand();
+
+			of_socket_address_set_port(&address, rnd);
+
+			if ((ret = bind(_socket, &address.sockaddr.sockaddr,
+			    address.length)) == 0) {
+				port = rnd;
+				break;
+			}
+
+			if (of_socket_errno() != EADDRINUSE) {
 				int errNo = of_socket_errno();
 
 				closesocket(_socket);
@@ -920,64 +949,18 @@ static uint16_t defaultSOCKS5Port = 1080;
 					       socket: self
 						errNo: errNo];
 			}
-#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
-		} else {
-			for (;;) {
-				uint16_t rnd = 0;
-				int ret;
-
-				while (rnd < 1024)
-					rnd = (uint16_t)rand();
-
-				switch (results[0]->family) {
-				case AF_INET:
-					((struct sockaddr_in *)
-					    results[0]->address)->sin_port =
-					    OF_BSWAP16_IF_LE(rnd);
-					break;
-# ifdef OF_HAVE_IPV6
-				case AF_INET6:
-					((struct sockaddr_in6 *)
-					    results[0]->address)->sin6_port =
-					    OF_BSWAP16_IF_LE(rnd);
-					break;
-# endif
-				default:
-					@throw [OFInvalidArgumentException
-					    exception];
-				}
-
-				ret = bind(_socket, results[0]->address,
-				    results[0]->addressLength);
-
-				if (ret == 0) {
-					port = rnd;
-					break;
-				}
-
-				if (of_socket_errno() != EADDRINUSE) {
-					int errNo = of_socket_errno();
-
-					closesocket(_socket);
-					_socket = INVALID_SOCKET;
-
-					@throw [OFBindFailedException
-					    exceptionWithHost: host
-							 port: port
-						       socket: self
-							errNo: errNo];
-				}
-			}
 		}
-#endif
-	} @finally {
-		of_resolver_free(results);
 	}
+#endif
+
+	objc_autoreleasePoolPop(pool);
 
 	if (port > 0)
 		return port;
 
 #if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+	memset(&address, 0, sizeof(address));
+
 	address.length = (socklen_t)sizeof(address.sockaddr);
 	if (of_getsockname(_socket, &address.sockaddr.sockaddr,
 	    &address.length) != 0) {
@@ -995,9 +978,18 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (address.sockaddr.sockaddr.sa_family == AF_INET)
 		return OF_BSWAP16_IF_LE(address.sockaddr.in.sin_port);
 # ifdef OF_HAVE_IPV6
-	if (address.sockaddr.sockaddr.sa_family == AF_INET6)
+	else if (address.sockaddr.sockaddr.sa_family == AF_INET6)
 		return OF_BSWAP16_IF_LE(address.sockaddr.in6.sin6_port);
 # endif
+	else {
+		closesocket(_socket);
+		_socket = INVALID_SOCKET;
+
+		@throw [OFBindFailedException exceptionWithHost: host
+							   port: port
+							 socket: self
+							  errNo: EAFNOSUPPORT];
+	}
 #endif
 
 	closesocket(_socket);
@@ -1005,7 +997,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
 						 socket: self
-						  errNo: EAFNOSUPPORT];
+						  errNo: EADDRNOTAVAIL];
 }
 
 - (void)listen

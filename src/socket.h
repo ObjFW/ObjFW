@@ -207,6 +207,16 @@ extern OFString *_Nonnull of_socket_address_ip_string(
  */
 extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
     uint16_t port);
+
+/*!
+ * @brief Returns the port of the specified of_socket_address_t, independent of
+ *	  the address family used.
+ *
+ * @param address The address on which to get the port
+ * @return The port of the address
+ */
+extern uint16_t of_socket_address_get_port(
+    const of_socket_address_t *_Nonnull address);
 #ifdef __cplusplus
 }
 #endif

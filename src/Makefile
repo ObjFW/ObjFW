@@ -134,7 +134,6 @@ SRCS_SOCKETS = OFDNSResolver.m			\
 	       OFStreamSocket.m			\
 	       OFTCPSocket.m			\
 	       OFUDPSocket.m			\
-	       resolver.m			\
 	       socket.m
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\

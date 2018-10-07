@@ -34,6 +34,7 @@
 #import "OFString.h"
 #import "OFTimer.h"
 #import "OFUDPSocket.h"
+#import "OFUDPSocket+Private.h"
 #ifdef OF_WINDOWS
 # import "OFWindowsRegistryKey.h"
 #endif
@@ -1784,9 +1785,11 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 #ifdef OF_HAVE_IPV6
 	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
 		if (_IPv6Socket == nil) {
+			of_socket_address_t address =
+			    of_socket_address_parse_ip(@"::", 0);
+
 			_IPv6Socket = [[OFUDPSocket alloc] init];
-			[_IPv6Socket bindToHost: @"::"
-					   port: 0];
+			[_IPv6Socket of_bindToAddress: &address];
 			[_IPv6Socket setBlocking: false];
 		}
 
@@ -1795,9 +1798,11 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 #endif
 	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
 		if (_IPv4Socket == nil) {
+			of_socket_address_t address =
+			    of_socket_address_parse_ip(@"0.0.0.0", 0);
+
 			_IPv4Socket = [[OFUDPSocket alloc] init];
-			[_IPv4Socket bindToHost: @"0.0.0.0"
-					   port: 0];
+			[_IPv4Socket of_bindToAddress: &address];
 			[_IPv4Socket setBlocking: false];
 		}
 
@@ -2073,6 +2078,28 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFDNSResolver_AsyncResolveSocketAddressesContext *context;
+
+	@try {
+		of_socket_address_t address =
+		    of_socket_address_parse_ip(host, 0);
+		OFData *addresses;
+		void (*method)(id, SEL, OFDNSResolver *, OFString *, OFData *,
+		    id, id);
+
+		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY &&
+		    address.family != addressFamily)
+			@throw [OFInvalidArgumentException exception];
+
+		addresses = [OFData dataWithItems: &address
+				    itemSize: sizeof(address)
+				       count: 1];
+
+		method = (void (*)(id, SEL, OFDNSResolver *, OFString *,
+		    OFData *, id, id))[target methodForSelector: selector];
+		method(target, selector, self, host, addresses, userContext,
+		    nil);
+	} @catch (OFInvalidFormatException *e) {
+	}
 
 	context = [[[OFDNSResolver_AsyncResolveSocketAddressesContext alloc]
 	    initWithHost: host

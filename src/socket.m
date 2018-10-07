@@ -608,3 +608,16 @@ of_socket_address_set_port(of_socket_address_t *address, uint16_t port)
 		@throw [OFInvalidArgumentException exception];
 	}
 }
+
+uint16_t
+of_socket_address_get_port(const of_socket_address_t *address)
+{
+	switch (address->family) {
+	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
+		return OF_BSWAP16_IF_LE(address->sockaddr.in.sin_port);
+	case OF_SOCKET_ADDRESS_FAMILY_IPV6:
+		return OF_BSWAP16_IF_LE(address->sockaddr.in6.sin6_port);
+	default:
+		@throw [OFInvalidArgumentException exception];
+	}
+}

@@ -1141,6 +1141,7 @@ static OFRunLoop *mainRunLoop = nil;
      beforeDate: (OFDate *)deadline
 {
 	void *pool = objc_autoreleasePoolPush();
+	of_run_loop_mode_t previousMode = _currentMode;
 	OFRunLoop_State *state = [self of_stateForMode: mode
 						create: false];
 
@@ -1251,7 +1252,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 		objc_autoreleasePoolPop(pool);
 	} @finally {
-		_currentMode = nil;
+		_currentMode = previousMode;
 	}
 }
 

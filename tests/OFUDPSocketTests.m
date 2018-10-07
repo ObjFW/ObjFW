@@ -43,10 +43,7 @@ static OFString *module = @"OFUDPSocket";
 	    (port1 = [sock bindToHost: @"127.0.0.1"
 				 port: 0]))
 
-	TEST(@"+[resolveAddressForHost:port:address:]",
-	    R([OFUDPSocket resolveAddressForHost: @"127.0.0.1"
-					    port: port1
-					 address: &addr1]))
+	addr1 = of_socket_address_parse_ip(@"127.0.0.1", port1);
 
 	TEST(@"-[sendBuffer:length:receiver:]",
 	    R([sock sendBuffer: "Hello"
@@ -61,9 +58,7 @@ static OFString *module = @"OFUDPSocket";
 	    (host = of_socket_address_ip_string(&addr2, &port2)) &&
 	    [host isEqual: @"127.0.0.1"] && port2 == port1)
 
-	[OFUDPSocket resolveAddressForHost: @"127.0.0.1"
-				      port: port1 + 1
-				   address: &addr3];
+	addr3 = of_socket_address_parse_ip(@"127.0.0.1", port1 + 1);
 
 	/*
 	 * TODO: Move those tests elsewhere as soon as the DNS resolving part
