@@ -35,8 +35,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @param exception An exception which occurred while connecting the socket or
  *		    `nil` on success
  */
-typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
-    id _Nullable exception);
+typedef void (^of_tcp_socket_async_connect_block_t)(
+    OF_KINDOF(OFTCPSocket *) socket, id _Nullable exception);
 
 /*!
  * @brief A block which is called when the socket accepted a connection.
@@ -48,8 +48,9 @@ typedef void (^of_tcp_socket_async_connect_block_t)(OFTCPSocket *socket,
  * @return A bool whether the same block should be used for the next incoming
  *	   connection
  */
-typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
-    OFTCPSocket *acceptedSocket, id _Nullable exception);
+typedef bool (^of_tcp_socket_async_accept_block_t)(
+    OF_KINDOF(OFTCPSocket *) socket, OF_KINDOF(OFTCPSocket *) acceptedSocket,
+    id _Nullable exception);
 #endif
 
 /*!
