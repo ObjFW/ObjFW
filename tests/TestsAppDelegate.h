@@ -107,6 +107,10 @@ enum {
 - (void)dataTests;
 @end
 
+@interface TestsAppDelegate (OFDataASN1DERValueTests)
+- (void)dataASN1DERValueTests;
+@end
+
 @interface TestsAppDelegate (OFDateTests)
 - (void)dateTests;
 @end

@@ -571,6 +571,6 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 
 	objc_autoreleasePoolPop(pool);
 
-	return object;
+	return [object autorelease];
 }
 @end

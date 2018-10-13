@@ -390,6 +390,7 @@ main(int argc, char *argv[])
 	[self stringTests];
 	[self characterSetTests];
 	[self dataTests];
+	[self dataASN1DERValueTests];
 	[self arrayTests];
 	[self dictionaryTests];
 	[self listTests];

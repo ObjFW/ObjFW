@@ -10,7 +10,12 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFApplication.m			\
+SRCS = OFASN1Boolean.m			\
+       OFASN1Integer.m			\
+       OFASN1Null.m			\
+       OFASN1UTF8String.m		\
+       OFASN1Value.m			\
+       OFApplication.m			\
        OFArray.m			\
        OFAutoreleasePool.m		\
        OFBlock.m			\
@@ -19,6 +24,7 @@ SRCS = OFApplication.m			\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
+       OFData+ASN1DERValue.m		\
        OFData+CryptoHashing.m		\
        OFData+MessagePackValue.m	\
        OFDate.m				\

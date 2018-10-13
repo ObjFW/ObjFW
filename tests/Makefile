@@ -14,6 +14,7 @@ SRCS = ForwardingTests.m		\
        ${OFBLOCKTESTS_M}		\
        OFCharacterSetTests.m		\
        OFDataTests.m			\
+       OFDataASN1DERValueTests.m	\
        OFDateTests.m			\
        OFDictionaryTests.m		\
        OFInvocationTests.m		\
