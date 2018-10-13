@@ -19,6 +19,7 @@
 
 #import "OFASN1Boolean.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -58,5 +59,12 @@
 	}
 
 	return self;
+}
+
+- (OFString *)description
+{
+	return (_booleanValue
+	    ? @"<OFASN1Boolean: true>"
+	    : @"<OFASN1Boolean: false>");
 }
 @end

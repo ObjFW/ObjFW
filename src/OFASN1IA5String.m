@@ -65,4 +65,10 @@
 {
 	return [self IA5StringValue];
 }
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<OFASN1IA5String: %@>",
+					   _IA5StringValue];
+}
 @end

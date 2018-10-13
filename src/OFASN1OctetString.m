@@ -19,6 +19,7 @@
 
 #import "OFASN1OctetString.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
@@ -49,5 +50,11 @@
 - (OFData *)octetStringValue
 {
 	return _DEREncodedContents;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<OFASN1OctetString: %@>",
+					   _DEREncodedContents];
 }
 @end

@@ -19,6 +19,7 @@
 
 #import "OFASN1Integer.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -72,5 +73,11 @@
 	}
 
 	return self;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<OFASN1Integer: %jd>",
+					   _integerValue];
 }
 @end

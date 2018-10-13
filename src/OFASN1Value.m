@@ -19,6 +19,7 @@
 
 #import "OFASN1Value.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidFormatException.h"
 
@@ -114,5 +115,18 @@
 - (id)copy
 {
 	return [self retain];
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat:
+	    @"<OFASN1Value:\n"
+	    @"\tTag class = %x\n"
+	    @"\tTag number = %x\n"
+	    @"\tConstructed = %u\n"
+	    @"\tDER-encoded contents = %@\n"
+	    @">",
+	    _tagClass, _tagNumber, _constructed,
+	    [_DEREncodedContents description]];
 }
 @end

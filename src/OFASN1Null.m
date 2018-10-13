@@ -19,6 +19,7 @@
 
 #import "OFASN1Null.h"
 #import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -47,5 +48,10 @@
 	}
 
 	return self;
+}
+
+- (OFString *)description
+{
+	return @"<OFASN1Null>";
 }
 @end

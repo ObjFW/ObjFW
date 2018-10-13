@@ -64,4 +64,10 @@
 {
 	return [self UTF8StringValue];
 }
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<OFASN1UTF8String: %@>",
+					   _UTF8StringValue];
+}
 @end
