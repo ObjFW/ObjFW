@@ -10,7 +10,8 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASN1Boolean.m			\
+SRCS = OFASN1BitString.m		\
+       OFASN1Boolean.m			\
        OFASN1IA5String.m		\
        OFASN1Integer.m			\
        OFASN1Null.m			\

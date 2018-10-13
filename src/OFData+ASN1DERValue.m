@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFData+ASN1DERValue.h"
+#import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
@@ -122,6 +123,9 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		break;
 	case OF_ASN1_TAG_NUMBER_INTEGER:
 		valueClass = [OFASN1Integer class];
+		break;
+	case OF_ASN1_TAG_NUMBER_BIT_STRING:
+		valueClass = [OFASN1BitString class];
 		break;
 	case OF_ASN1_TAG_NUMBER_OCTET_STRING:
 		valueClass = [OFASN1OctetString class];

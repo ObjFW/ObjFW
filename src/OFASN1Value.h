@@ -45,6 +45,8 @@ typedef enum {
 	OF_ASN1_TAG_NUMBER_BOOLEAN	= 0x01,
 	/*! Integer */
 	OF_ASN1_TAG_NUMBER_INTEGER	= 0x02,
+	/*! Bit string */
+	OF_ASN1_TAG_NUMBER_BIT_STRING	= 0x03,
 	/*! Octet string */
 	OF_ASN1_TAG_NUMBER_OCTET_STRING	= 0x04,
 	/*! Null */

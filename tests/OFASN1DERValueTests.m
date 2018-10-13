@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFData.h"
+#import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
@@ -37,10 +38,11 @@
 
 static OFString *module = @"OFData+ASN1DERValue";
 
-@implementation TestsAppDelegate (OFDataASN1DERValueTests)
-- (void)dataASN1DERValueTests
+@implementation TestsAppDelegate (OFASN1DERValueTests)
+- (void)ASN1DERValueTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	OFASN1BitString *bitString;
 	OFArray *array;
 
 	TEST(@"Parsing of boolean",
@@ -103,6 +105,50 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x02\x02\x00"
 						       count: 3] ASN1DERValue])
 
+	TEST(@"Parsing of bit string",
+	    (bitString = [[OFData dataWithItems: "\x03\x01\x00"
+					  count: 3] ASN1DERValue]) &&
+	    [[bitString bitStringValue] isEqual: [OFData dataWithItems: ""
+								 count: 0]] &&
+	    [bitString bitStringLength] == 0 &&
+	    (bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
+					  count: 15] ASN1DERValue]) &&
+	    [[bitString bitStringValue]
+	    isEqual: [OFData dataWithItems: "Hello World\x80"
+				     count: 12]] &&
+	    [bitString bitStringLength] == 97 &&
+	    (bitString = [[OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+						 "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+			      count: 131] ASN1DERValue]) &&
+	    [[bitString bitStringValue]
+	    isEqual: [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					    "xxxxxxxxxxxxxxxxxxxxxxxxx"
+				     count: 127]] &&
+	    [bitString bitStringLength] == 127 * 8)
+
+	EXPECT_EXCEPTION(@"Detection of invalid bit string #1",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x03\x00"
+						       count: 2] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of invalid bit string #2",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x03\x01\x01"
+						       count: 3] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of out of range bit string",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x03\x89"
+				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+			     count: 11] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated bit string",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x03\x01"
+						       count: 2] ASN1DERValue])
+
 	TEST(@"Parsing of octet string",
 	    [[[[OFData dataWithItems: "\x04\x0CHello World!"
 			      count: 14] ASN1DERValue] octetStringValue]
@@ -121,12 +167,12 @@ static OFString *module = @"OFData+ASN1DERValue";
 
 	EXPECT_EXCEPTION(@"Detection of out of range octet string",
 	    OFOutOfRangeException,
-	    [[OFData dataWithItems: "\x16\x89"
+	    [[OFData dataWithItems: "\x04\x89"
 				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
 			     count: 11] ASN1DERValue])
 
 	EXPECT_EXCEPTION(@"Detection of truncated octet string",
-	    OFTruncatedDataException, [[OFData dataWithItems: "\x16\x01"
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x04\x01"
 						       count: 2] ASN1DERValue])
 
 	TEST(@"Parsing of NULL",

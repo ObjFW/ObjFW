@@ -390,7 +390,6 @@ main(int argc, char *argv[])
 	[self stringTests];
 	[self characterSetTests];
 	[self dataTests];
-	[self dataASN1DERValueTests];
 	[self arrayTests];
 	[self dictionaryTests];
 	[self listTests];
@@ -439,6 +438,7 @@ main(int argc, char *argv[])
 #endif
 	[self JSONTests];
 	[self propertyListTests];
+	[self ASN1DERValueTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
