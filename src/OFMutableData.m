@@ -142,6 +142,17 @@
 	return self;
 }
 
+- (OFData *)subdataWithRange: (of_range_t)range
+{
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > _count)
+		@throw [OFOutOfRangeException exception];
+
+	return [OFData dataWithItems: _items + (range.location * _itemSize)
+			    itemSize: _itemSize
+			       count: range.length];
+}
+
 - (void)addItem: (const void *)item
 {
 	if (SIZE_MAX - _count < 1)

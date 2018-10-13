@@ -150,13 +150,28 @@ const char *str = "Hello!";
 			     range: of_range(0, 1)])
 
 	EXPECT_EXCEPTION(
-	    @"-[rangeOfString:options:range:] failing on out of range",
+	    @"-[rangeOfData:options:range:] failing on out of range",
 	    OFOutOfRangeException,
 	    [immutable rangeOfData: [OFData dataWithItems: ""
 						 itemSize: 2
 						    count: 0]
 			   options: 0
 			     range: of_range(8, 1)])
+
+	TEST(@"-[subdataWithRange:]",
+	    [[immutable subdataWithRange: of_range(2, 4)]
+	    isEqual: [OFData dataWithItems: "accdacaa"
+				  itemSize: 2
+				     count: 4]] &&
+	    [[mutable subdataWithRange: of_range(2, 3)]
+	    isEqual: [OFData dataWithItems: "cde"
+				     count: 3]])
+
+	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #1",
+	    OFOutOfRangeException, [immutable subdataWithRange: of_range(7, 1)])
+
+	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
+	    OFOutOfRangeException, [mutable subdataWithRange: of_range(6, 1)])
 
 	TEST(@"-[MD5Hash]", [[mutable MD5Hash] isEqual: [@"abcde" MD5Hash]])
 

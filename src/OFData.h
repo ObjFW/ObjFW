@@ -42,6 +42,7 @@ enum {
 	unsigned char *_items;
 	size_t _count, _itemSize;
 	bool _freeWhenDone;
+	OFData *_parentData;
 }
 
 /*!
@@ -278,6 +279,14 @@ enum {
  * @return The specified item of the OFData
  */
 - (const void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
+
+/*!
+ * @brief Returns the data in the specified range as a new OFData.
+ *
+ * @param range The range of the data for the new data
+ * @return The data in the specified range as a new OFData
+ */
+- (OFData *)subdataWithRange: (of_range_t)range;
 
 /*!
  * @brief Returns the range of the data.

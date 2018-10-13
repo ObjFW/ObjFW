@@ -384,6 +384,8 @@ _references_to_categories_of_OFData(void)
 	if (_freeWhenDone)
 		free(_items);
 
+	[_parentData release];
+
 	[super dealloc];
 }
 
@@ -498,6 +500,23 @@ _references_to_categories_of_OFData(void)
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
+}
+
+- (OFData *)subdataWithRange: (of_range_t)range
+{
+	OFData *ret;
+
+	if (range.length > SIZE_MAX - range.location ||
+	    range.location + range.length > _count)
+		@throw [OFOutOfRangeException exception];
+
+	ret = [OFData dataWithItemsNoCopy: _items + (range.location * _itemSize)
+				 itemSize: _itemSize
+				    count: range.length
+			     freeWhenDone: false];
+	ret->_parentData = [(_parentData != nil ? _parentData : self) copy];
+
+	return ret;
 }
 
 - (OFString *)description
