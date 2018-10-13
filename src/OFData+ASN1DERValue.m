@@ -19,8 +19,10 @@
 
 #import "OFData+ASN1DERValue.h"
 #import "OFASN1Boolean.h"
+#import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
+#import "OFASN1OctetString.h"
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
 #import "OFArray.h"
@@ -41,13 +43,11 @@ static size_t parseObject(OFData *self, id *object, size_t depthLimit);
 static OFArray *
 parseSequence(OFData *contents, size_t depthLimit)
 {
+	OFMutableArray *ret = [OFMutableArray array];
 	size_t count = [contents count];
-	OFMutableArray *ret;
 
 	if (depthLimit == 0)
 		@throw [OFOutOfRangeException exception];
-
-	ret = [OFMutableArray array];
 
 	while (count > 0) {
 		id object;
@@ -123,15 +123,23 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	case OF_ASN1_TAG_NUMBER_INTEGER:
 		valueClass = [OFASN1Integer class];
 		break;
+	case OF_ASN1_TAG_NUMBER_OCTET_STRING:
+		valueClass = [OFASN1OctetString class];
+		break;
 	case OF_ASN1_TAG_NUMBER_NULL:
 		valueClass = [OFASN1Null class];
 		break;
 	case OF_ASN1_TAG_NUMBER_UTF8_STRING:
 		valueClass = [OFASN1UTF8String class];
 		break;
+	case OF_ASN1_TAG_NUMBER_SEQUENCE:
+		@throw [OFInvalidFormatException exception];
 	case OF_ASN1_TAG_NUMBER_SEQUENCE | ASN1_TAG_CONSTRUCTED_MASK:
 		*object = parseSequence(contents, depthLimit - 1);
 		return bytesConsumed;
+	case OF_ASN1_TAG_NUMBER_IA5_STRING:
+		valueClass = [OFASN1IA5String class];
+		break;
 	default:
 		valueClass = [OFASN1Value class];
 		break;

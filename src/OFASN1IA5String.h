@@ -22,17 +22,17 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /*!
- * @brief An ASN.1 UTF-8 string.
+ * @brief An ASN.1 IA5String.
  */
-@interface OFASN1UTF8String: OFASN1Value
+@interface OFASN1IA5String: OFASN1Value
 {
-	OFString *_UTF8StringValue;
+	OFString *_IA5StringValue;
 }
 
 /*!
- * @brief The UTF-8 string value.
+ * @brief The IA5String value.
  */
-@property (readonly, nonatomic) OFString *UTF8StringValue;
+@property (readonly, nonatomic) OFString *IA5StringValue;
 
 /*!
  * @brief The string value.

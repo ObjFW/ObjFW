@@ -283,7 +283,7 @@ enum {
 /*!
  * @brief Returns the data in the specified range as a new OFData.
  *
- * @param range The range of the data for the new data
+ * @param range The range of the data for the new OFData
  * @return The data in the specified range as a new OFData
  */
 - (OFData *)subdataWithRange: (of_range_t)range;

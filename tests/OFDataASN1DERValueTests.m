@@ -19,8 +19,10 @@
 
 #import "OFData.h"
 #import "OFASN1Boolean.h"
+#import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
+#import "OFASN1OctetString.h"
 #import "OFASN1UTF8String.h"
 #import "OFArray.h"
 #import "OFString.h"
@@ -28,6 +30,7 @@
 
 #import "TestsAppDelegate.h"
 
+#import "OFInvalidEncodingException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOutOfRangeException.h"
 #import "OFTruncatedDataException.h"
@@ -100,6 +103,32 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x02\x02\x00"
 						       count: 3] ASN1DERValue])
 
+	TEST(@"Parsing of octet string",
+	    [[[[OFData dataWithItems: "\x04\x0CHello World!"
+			      count: 14] ASN1DERValue] octetStringValue]
+	    isEqual: [OFData dataWithItems: "Hello World!"
+				     count: 12]] &&
+	    [[[[OFData dataWithItems: "\x04\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxx"
+			      count: 131] ASN1DERValue] octetStringValue]
+	    isEqual: [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+					    "xxxxxxxxxxxxxxxxxxxxxxxxxx"
+				     count: 128]])
+
+	EXPECT_EXCEPTION(@"Detection of out of range octet string",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x16\x89"
+				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+			     count: 11] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated octet string",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x16\x01"
+						       count: 2] ASN1DERValue])
+
 	TEST(@"Parsing of NULL",
 	    [[[OFData dataWithItems: "\x05\x00"
 			      count: 2] ASN1DERValue]
@@ -111,13 +140,13 @@ static OFString *module = @"OFData+ASN1DERValue";
 
 	TEST(@"Parsing of UTF-8 string",
 	    [[[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
-			      count: 16] ASN1DERValue] stringValue]
+			      count: 16] ASN1DERValue] UTF8StringValue]
 	    isEqual: @"Hällo Wörld!"] &&
 	    [[[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxx"
-			      count: 131] ASN1DERValue] stringValue]
+			      count: 131] ASN1DERValue] UTF8StringValue]
 	    isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		     @"xxxxxxxxxxxxxxxx"])
@@ -166,6 +195,34 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException,
 	    [[OFData dataWithItems: "\x30\x04\x02\x01\x01\x00\x00"
 			     count: 7] ASN1DERValue])
+
+	TEST(@"Parsing of IA5String",
+	    [[[[OFData dataWithItems: "\x16\x0CHello World!"
+			      count: 14] ASN1DERValue] IA5StringValue]
+	    isEqual: @"Hello World!"] &&
+	    [[[[OFData dataWithItems: "\x16\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				      "xxxxxxxxxxxxxxxxxxxx"
+			      count: 131] ASN1DERValue] IA5StringValue]
+	    isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+		     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+		     @"xxxxxxxxxxxxxxxx"])
+
+	EXPECT_EXCEPTION(@"Detection of invalid IA5String",
+	    OFInvalidEncodingException,
+	    [[OFData dataWithItems: "\x16\x02ä"
+			     count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of out of range IA5String",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x16\x89"
+				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+			     count: 11] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated IA5String",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x16\x01"
+						       count: 2] ASN1DERValue])
 
 	[pool drain];
 }

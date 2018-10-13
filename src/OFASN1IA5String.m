@@ -17,14 +17,14 @@
 
 #include "config.h"
 
-#import "OFASN1UTF8String.h"
+#import "OFASN1IA5String.h"
 #import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OFASN1UTF8String
-@synthesize UTF8StringValue = _UTF8StringValue;
+@implementation OFASN1IA5String
+@synthesize IA5StringValue = _IA5StringValue;
 
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
@@ -38,13 +38,14 @@
 
 	@try {
 		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_UTF8_STRING ||
+		    _tagNumber != OF_ASN1_TAG_NUMBER_IA5_STRING ||
 		    _constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		_UTF8StringValue = [[OFString alloc]
-		    initWithUTF8String: [_DEREncodedContents items]
-				length: [_DEREncodedContents count]];
+		_IA5StringValue = [[OFString alloc]
+		    initWithCString: [_DEREncodedContents items]
+			   encoding: OF_STRING_ENCODING_ASCII
+			     length: [_DEREncodedContents count]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -55,13 +56,13 @@
 
 - (void)dealloc
 {
-	[_UTF8StringValue release];
+	[_IA5StringValue release];
 
 	[super dealloc];
 }
 
 - (OFString *)stringValue
 {
-	return [self UTF8StringValue];
+	return [self IA5StringValue];
 }
 @end

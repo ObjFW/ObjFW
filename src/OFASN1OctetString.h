@@ -19,25 +19,16 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFString;
+@class OFData;
 
 /*!
- * @brief An ASN.1 UTF-8 string.
+ * @brief An ASN.1 octet string.
  */
-@interface OFASN1UTF8String: OFASN1Value
-{
-	OFString *_UTF8StringValue;
-}
-
+@interface OFASN1OctetString: OFASN1Value
 /*!
- * @brief The UTF-8 string value.
+ * @brief The octet string value.
  */
-@property (readonly, nonatomic) OFString *UTF8StringValue;
-
-/*!
- * @brief The string value.
- */
-@property (readonly, nonatomic) OFString *stringValue;
+@property (readonly, nonatomic) OFData *octetStringValue;
 @end
 
 OF_ASSUME_NONNULL_END

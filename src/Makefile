@@ -11,8 +11,10 @@ LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
 SRCS = OFASN1Boolean.m			\
+       OFASN1IA5String.m		\
        OFASN1Integer.m			\
        OFASN1Null.m			\
+       OFASN1OctetString.m		\
        OFASN1UTF8String.m		\
        OFASN1Value.m			\
        OFApplication.m			\

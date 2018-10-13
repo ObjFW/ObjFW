@@ -17,15 +17,12 @@
 
 #include "config.h"
 
-#import "OFASN1UTF8String.h"
+#import "OFASN1OctetString.h"
 #import "OFData.h"
-#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OFASN1UTF8String
-@synthesize UTF8StringValue = _UTF8StringValue;
-
+@implementation OFASN1OctetString
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
@@ -38,13 +35,9 @@
 
 	@try {
 		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_UTF8_STRING ||
+		    _tagNumber != OF_ASN1_TAG_NUMBER_OCTET_STRING ||
 		    _constructed)
 			@throw [OFInvalidArgumentException exception];
-
-		_UTF8StringValue = [[OFString alloc]
-		    initWithUTF8String: [_DEREncodedContents items]
-				length: [_DEREncodedContents count]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -53,15 +46,8 @@
 	return self;
 }
 
-- (void)dealloc
+- (OFData *)octetStringValue
 {
-	[_UTF8StringValue release];
-
-	[super dealloc];
-}
-
-- (OFString *)stringValue
-{
-	return [self UTF8StringValue];
+	return _DEREncodedContents;
 }
 @end
