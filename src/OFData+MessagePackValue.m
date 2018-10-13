@@ -28,28 +28,31 @@
 #import "OFNumber.h"
 #import "OFString.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
+#import "OFTruncatedDataException.h"
 
 int _OFData_MessagePackValue_reference;
 
-static size_t parseObject(const uint8_t *buffer, size_t length, id *object,
-    size_t depthLimit);
+static size_t parseObject(const unsigned char *buffer, size_t length,
+    id *object, size_t depthLimit);
 
 static uint16_t
-readUInt16(const uint8_t *buffer)
+readUInt16(const unsigned char *buffer)
 {
 	return ((uint16_t)buffer[0] << 8) | buffer[1];
 }
 
 static uint32_t
-readUInt32(const uint8_t *buffer)
+readUInt32(const unsigned char *buffer)
 {
 	return ((uint32_t)buffer[0] << 24) | ((uint32_t)buffer[1] << 16) |
 	    ((uint32_t)buffer[2] << 8) | buffer[3];
 }
 
 static uint64_t
-readUInt64(const uint8_t *buffer)
+readUInt64(const unsigned char *buffer)
 {
 	return ((uint64_t)buffer[0] << 56) | ((uint64_t)buffer[1] << 48) |
 	    ((uint64_t)buffer[2] << 40) | ((uint64_t)buffer[3] << 32) |
@@ -58,16 +61,14 @@ readUInt64(const uint8_t *buffer)
 }
 
 static size_t
-parseArray(const uint8_t *buffer, size_t length, id *object, size_t count,
+parseArray(const unsigned char *buffer, size_t length, id *object, size_t count,
     size_t depthLimit)
 {
 	void *pool;
 	size_t pos = 0;
 
-	if (--depthLimit == 0) {
-		*object = nil;
-		return 0;
-	}
+	if (--depthLimit == 0)
+		@throw [OFOutOfRangeException exception];
 
 	/*
 	 * Don't use capacity! For data and strings, this is safe, as we can
@@ -78,19 +79,11 @@ parseArray(const uint8_t *buffer, size_t length, id *object, size_t count,
 
 	for (size_t i = 0; i < count; i++) {
 		id child;
-		size_t childLength;
 
 		pool = objc_autoreleasePoolPush();
 
-		childLength = parseObject(buffer + pos, length - pos, &child,
+		pos += parseObject(buffer + pos, length - pos, &child,
 		    depthLimit);
-		if (childLength == 0 || child == nil) {
-			objc_autoreleasePoolPop(pool);
-
-			*object = nil;
-			return 0;
-		}
-		pos += childLength;
 
 		[*object addObject: child];
 
@@ -101,16 +94,14 @@ parseArray(const uint8_t *buffer, size_t length, id *object, size_t count,
 }
 
 static size_t
-parseTable(const uint8_t *buffer, size_t length, id *object, size_t count,
+parseTable(const unsigned char *buffer, size_t length, id *object, size_t count,
     size_t depthLimit)
 {
 	void *pool;
 	size_t pos = 0;
 
-	if (--depthLimit == 0) {
-		*object = nil;
-		return 0;
-	}
+	if (--depthLimit == 0)
+		@throw [OFOutOfRangeException exception];
 
 	/*
 	 * Don't use capacity! For data and strings, this is safe, as we can
@@ -121,29 +112,13 @@ parseTable(const uint8_t *buffer, size_t length, id *object, size_t count,
 
 	for (size_t i = 0; i < count; i++) {
 		id key, value;
-		size_t keyLength, valueLength;
 
 		pool = objc_autoreleasePoolPush();
 
-		keyLength = parseObject(buffer + pos, length - pos, &key,
+		pos += parseObject(buffer + pos, length - pos, &key,
 		    depthLimit);
-		if (keyLength == 0 || key == nil) {
-			objc_autoreleasePoolPop(pool);
-
-			*object = nil;
-			return 0;
-		}
-		pos += keyLength;
-
-		valueLength = parseObject(buffer + pos, length - pos, &value,
+		pos += parseObject(buffer + pos, length - pos, &value,
 		    depthLimit);
-		if (valueLength == 0 || value == nil) {
-			objc_autoreleasePoolPop(pool);
-
-			*object = nil;
-			return 0;
-		}
-		pos += valueLength;
 
 		[*object setObject: value
 			    forKey: key];
@@ -207,14 +182,14 @@ createExtension(int8_t type, OFData *data)
 }
 
 static size_t
-parseObject(const uint8_t *buffer, size_t length, id *object,
+parseObject(const unsigned char *buffer, size_t length, id *object,
     size_t depthLimit)
 {
 	size_t count;
 	OFData *data;
 
 	if (length < 1)
-		goto error;
+		@throw [OFTruncatedDataException exception];
 
 	/* positive fixint */
 	if ((buffer[0] & 0x80) == 0) {
@@ -233,7 +208,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		count = buffer[0] & 0x1F;
 
 		if (length < count + 1)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFString
 		    stringWithUTF8String: (const char *)buffer + 1
@@ -256,62 +231,62 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 	/* Unsigned integers */
 	case 0xCC: /* uint8 */
 		if (length < 2)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithUInt8: buffer[1]];
 		return 2;
 	case 0xCD: /* uint 16 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithUInt16: readUInt16(buffer + 1)];
 		return 3;
 	case 0xCE: /* uint 32 */
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithUInt32: readUInt32(buffer + 1)];
 		return 5;
 	case 0xCF: /* uint 64 */
 		if (length < 9)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithUInt64: readUInt64(buffer + 1)];
 		return 9;
 	/* Signed integers */
 	case 0xD0: /* int 8 */
 		if (length < 2)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithInt8: buffer[1]];
 		return 2;
 	case 0xD1: /* int 16 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithInt16: readUInt16(buffer + 1)];
 		return 3;
 	case 0xD2: /* int 32 */
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithInt32: readUInt32(buffer + 1)];
 		return 5;
 	case 0xD3: /* int 64 */
 		if (length < 9)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFNumber numberWithInt64: readUInt64(buffer + 1)];
 		return 9;
 	/* Floating point */
 	case 0xCA:; /* float 32 */
 		union {
-			uint8_t u8[4];
+			unsigned char u8[4];
 			float f;
 		} f;
 
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		memcpy(&f.u8, buffer + 1, 4);
 
@@ -319,12 +294,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return 5;
 	case 0xCB:; /* float 64 */
 		union {
-			uint8_t u8[8];
+			unsigned char u8[8];
 			double d;
 		} d;
 
 		if (length < 9)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		memcpy(&d.u8, buffer + 1, 8);
 
@@ -346,12 +321,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 	/* Data */
 	case 0xC4: /* bin 8 */
 		if (length < 2)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = buffer[1];
 
 		if (length < count + 2)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFData dataWithItems: buffer + 2
 					  count: count];
@@ -359,12 +334,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 2;
 	case 0xC5: /* bin 16 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = readUInt16(buffer + 1);
 
 		if (length < count + 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFData dataWithItems: buffer + 3
 					  count: count];
@@ -372,12 +347,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 3;
 	case 0xC6: /* bin 32 */
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = readUInt32(buffer + 1);
 
 		if (length < count + 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFData dataWithItems: buffer + 5
 					  count: count];
@@ -386,12 +361,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 	/* Extensions */
 	case 0xC7: /* ext 8 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = buffer[1];
 
 		if (length < count + 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 3
 					       count: count];
@@ -404,12 +379,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 3;
 	case 0xC8: /* ext 16 */
 		if (length < 4)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = readUInt16(buffer + 1);
 
 		if (length < count + 4)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 4
 					       count: count];
@@ -422,12 +397,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 4;
 	case 0xC9: /* ext 32 */
 		if (length < 6)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = readUInt32(buffer + 1);
 
 		if (length < count + 6)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 6
 					       count: count];
@@ -440,7 +415,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 6;
 	case 0xD4: /* fixext 1 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 1];
@@ -453,7 +428,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return 3;
 	case 0xD5: /* fixext 2 */
 		if (length < 4)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 2];
@@ -466,7 +441,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return 4;
 	case 0xD6: /* fixext 4 */
 		if (length < 6)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 4];
@@ -479,7 +454,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return 6;
 	case 0xD7: /* fixext 8 */
 		if (length < 10)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 8];
@@ -492,7 +467,7 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return 10;
 	case 0xD8: /* fixext 16 */
 		if (length < 18)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		data = [[OFData alloc] initWithItems: buffer + 2
 					       count: 16];
@@ -506,12 +481,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 	/* Strings */
 	case 0xD9: /* str 8 */
 		if (length < 2)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = buffer[1];
 
 		if (length < count + 2)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFString
 		    stringWithUTF8String: (const char *)buffer + 2
@@ -519,12 +494,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 2;
 	case 0xDA: /* str 16 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = readUInt16(buffer + 1);
 
 		if (length < count + 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFString
 		    stringWithUTF8String: (const char *)buffer + 3
@@ -532,12 +507,12 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 		return count + 3;
 	case 0xDB: /* str 32 */
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		count = readUInt32(buffer + 1);
 
 		if (length < count + 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		*object = [OFString
 		    stringWithUTF8String: (const char *)buffer + 5
@@ -546,34 +521,32 @@ parseObject(const uint8_t *buffer, size_t length, id *object,
 	/* Arrays */
 	case 0xDC: /* array 16 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		return parseArray(buffer + 3, length - 3, object,
 		    readUInt16(buffer + 1), depthLimit) + 3;
 	case 0xDD: /* array 32 */
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		return parseArray(buffer + 5, length - 5, object,
 		    readUInt32(buffer + 1), depthLimit) + 5;
 	/* Maps */
 	case 0xDE: /* map 16 */
 		if (length < 3)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		return parseTable(buffer + 3, length - 3, object,
 		    readUInt16(buffer + 1), depthLimit) + 3;
 	case 0xDF: /* map 32 */
 		if (length < 5)
-			goto error;
+			@throw [OFTruncatedDataException exception];
 
 		return parseTable(buffer + 5, length - 5, object,
 		    readUInt32(buffer + 1), depthLimit) + 5;
+	default:
+		@throw [OFInvalidFormatException exception];
 	}
-
-error:
-	*object = nil;
-	return 0;
 }
 
 @implementation OFData (MessagePackValue)
@@ -588,8 +561,10 @@ error:
 	size_t count = [self count];
 	id object;
 
-	if (parseObject([self items], count, &object, depthLimit) != count ||
-	    object == nil)
+	if ([self itemSize] != 1)
+		@throw [OFInvalidArgumentException exception];
+
+	if (parseObject([self items], count, &object, depthLimit) != count)
 		@throw [OFInvalidFormatException exception];
 
 	[object retain];

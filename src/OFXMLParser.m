@@ -399,8 +399,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		break;
 	default:
 		if (_depthLimit > 0 && [_previous count] >= _depthLimit)
-			@throw [OFMalformedXMLException
-			    exceptionWithParser: self];
+			@throw [OFOutOfRangeException exception];
 
 		_state = OF_XMLPARSER_IN_TAG_NAME;
 		_acceptProlog = false;
