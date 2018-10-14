@@ -90,15 +90,15 @@ static OFString *module = @"OFData+ASN1DERValue";
 					 count: 11] ASN1DERValue]
 	    integerValue] == UINTMAX_MAX)
 
-	EXPECT_EXCEPTION(@"Detecting of invalid integer #1",
+	EXPECT_EXCEPTION(@"Detection of invalid integer #1",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x02\x02\x00\x00"
 						       count: 4] ASN1DERValue])
 
-	EXPECT_EXCEPTION(@"Detecting of invalid integer #2",
+	EXPECT_EXCEPTION(@"Detection of invalid integer #2",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x02\x02\x00\x7F"
 						       count: 4] ASN1DERValue])
 
-	EXPECT_EXCEPTION(@"Detecting of invalid integer #3",
+	EXPECT_EXCEPTION(@"Detection of invalid integer #3",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x02\x02\xFF\x80"
 						       count: 4] ASN1DERValue])
 
@@ -192,6 +192,45 @@ static OFString *module = @"OFData+ASN1DERValue";
 
 	EXPECT_EXCEPTION(@"Detection of invalid NULL",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x05\x01\x00"
+						       count: 3] ASN1DERValue])
+
+	/* Enumerated */
+	TEST(@"Parsing of enumerated",
+	    [[[OFData dataWithItems: "\x0A\x00"
+			      count: 2] ASN1DERValue] integerValue] == 0 &&
+	    [[[OFData dataWithItems: "\x0A\x01\x01"
+			      count: 3] ASN1DERValue] integerValue] == 1 &&
+	    [[[OFData dataWithItems: "\x0A\x02\x01\x04"
+			      count: 4] ASN1DERValue] integerValue] == 260 &&
+	    [[[OFData dataWithItems: "\x0A\x01\xFF"
+			      count: 3] ASN1DERValue] integerValue] == -1 &&
+	    [[[OFData dataWithItems: "\x0A\x03\xFF\x00\x00"
+			      count: 5] ASN1DERValue] integerValue] == -65536 &&
+	    (uintmax_t)[[[OFData dataWithItems: "\x0A\x09\x00\xFF\xFF\xFF\xFF"
+						"\xFF\xFF\xFF\xFF"
+					 count: 11] ASN1DERValue]
+	    integerValue] == UINTMAX_MAX)
+
+	EXPECT_EXCEPTION(@"Detection of invalid enumerated #1",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x0A\x02\x00\x00"
+						       count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of invalid enumerated #2",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x0A\x02\x00\x7F"
+						       count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of invalid enumerated #3",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x0A\x02\xFF\x80"
+						       count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of out of range enumerated",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x0A\x09\x01"
+				    "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
+			     count: 11] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated enumerated",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x0A\x02\x00"
 						       count: 3] ASN1DERValue])
 
 	/* UTF-8 string */

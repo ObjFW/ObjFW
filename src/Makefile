@@ -12,8 +12,10 @@ LIB_MINOR = ${OBJFW_LIB_MINOR}
 
 SRCS = OFASN1BitString.m		\
        OFASN1Boolean.m			\
+       OFASN1Enumerated.m		\
        OFASN1IA5String.m		\
        OFASN1Integer.m			\
+       OFASN1IntegerOrEnumerated.m	\
        OFASN1Null.m			\
        OFASN1NumericString.m		\
        OFASN1OctetString.m		\

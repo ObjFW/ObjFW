@@ -20,6 +20,7 @@
 #import "OFData+ASN1DERValue.h"
 #import "OFASN1BitString.h"
 #import "OFASN1Boolean.h"
+#import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
@@ -173,6 +174,9 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		break;
 	case OF_ASN1_TAG_NUMBER_NULL:
 		valueClass = [OFASN1Null class];
+		break;
+	case OF_ASN1_TAG_NUMBER_ENUMERATED:
+		valueClass = [OFASN1Enumerated class];
 		break;
 	case OF_ASN1_TAG_NUMBER_UTF8_STRING:
 		valueClass = [OFASN1UTF8String class];

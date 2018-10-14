@@ -51,6 +51,8 @@ typedef enum {
 	OF_ASN1_TAG_NUMBER_OCTET_STRING	    = 0x04,
 	/*! Null */
 	OF_ASN1_TAG_NUMBER_NULL		    = 0x05,
+	/*! Enumerated */
+	OF_ASN1_TAG_NUMBER_ENUMERATED	    = 0x0A,
 	/*! UTF-8 string */
 	OF_ASN1_TAG_NUMBER_UTF8_STRING	    = 0x0C,
 	/*! Sequence */

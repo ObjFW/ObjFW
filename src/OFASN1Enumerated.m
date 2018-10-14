@@ -17,11 +17,11 @@
 
 #include "config.h"
 
-#import "OFASN1Integer.h"
+#import "OFASN1Enumerated.h"
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OFASN1Integer
+@implementation OFASN1Enumerated
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
@@ -34,7 +34,7 @@
 
 	@try {
 		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_INTEGER || _constructed)
+		    _tagNumber != OF_ASN1_TAG_NUMBER_ENUMERATED || _constructed)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];

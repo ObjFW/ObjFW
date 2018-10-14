@@ -20,9 +20,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @brief An ASN.1 integer.
+ * @brief An ASN.1 enumerated.
  */
-@interface OFASN1Integer: OFASN1IntegerOrEnumerated
+@interface OFASN1Enumerated: OFASN1IntegerOrEnumerated
 @end
 
 OF_ASSUME_NONNULL_END
