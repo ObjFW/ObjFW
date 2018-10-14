@@ -24,10 +24,12 @@
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
 #import "OFASN1NumericString.h"
+#import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
 #import "OFArray.h"
+#import "OFNumber.h"
 #import "OFSet.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
@@ -190,8 +192,55 @@ static OFString *module = @"OFData+ASN1DERValue";
 			      count: 2] ASN1DERValue]
 	    isKindOfClass: [OFASN1Null class]])
 
-	EXPECT_EXCEPTION(@"Detection of invalid NULL",
+	EXPECT_EXCEPTION(@"Detection of invalid null",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x05\x01\x00"
+						       count: 3] ASN1DERValue])
+
+	/* Object Identifier */
+	TEST(@"Parsing of Object Identifier",
+	    (array = [[[OFData dataWithItems: "\x06\x01\x27"
+				       count: 3] ASN1DERValue]
+	    subidentifiers]) && [array count] == 2 &&
+	    [[array objectAtIndex: 0] uIntMaxValue] == 0 &&
+	    [[array objectAtIndex: 1] uIntMaxValue] == 39 &&
+	    (array = [[[OFData dataWithItems: "\x06\x01\x4F"
+				       count: 3] ASN1DERValue]
+	    subidentifiers]) && [array count] == 2 &&
+	    [[array objectAtIndex: 0] uIntMaxValue] == 1 &&
+	    [[array objectAtIndex: 1] uIntMaxValue] == 39 &&
+	    (array = [[[OFData dataWithItems: "\x06\x02\x88\x37"
+				       count: 4] ASN1DERValue]
+	    subidentifiers]) && [array count] == 2 &&
+	    [[array objectAtIndex: 0] uIntMaxValue] == 2 &&
+	    [[array objectAtIndex: 1] uIntMaxValue] == 999 &&
+	    (array = [[[OFData dataWithItems: "\x06\x09\x2A\x86\x48\x86\xF7\x0D"
+					      "\x01\x01\x0B"
+				       count: 11] ASN1DERValue]
+	    subidentifiers]) && [array count] == 7 &&
+	    [[array objectAtIndex: 0] uIntMaxValue] == 1 &&
+	    [[array objectAtIndex: 1] uIntMaxValue] == 2 &&
+	    [[array objectAtIndex: 2] uIntMaxValue] == 840 &&
+	    [[array objectAtIndex: 3] uIntMaxValue] == 113549 &&
+	    [[array objectAtIndex: 4] uIntMaxValue] == 1 &&
+	    [[array objectAtIndex: 5] uIntMaxValue] == 1 &&
+	    [[array objectAtIndex: 6] uIntMaxValue] == 11)
+
+	EXPECT_EXCEPTION(@"Detection of invalid Object Identifier #1",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x06\x01\x81"
+						       count: 3] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of invalid Object Identifier #2",
+	    OFInvalidFormatException, [[OFData dataWithItems: "\x06\x02\x80\x01"
+						       count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of out of range Object Identifier",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x06\x0A\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
+				    "\xFF\x7F"
+			     count: 12] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated Object Identifier",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x06\x02\x00"
 						       count: 3] ASN1DERValue])
 
 	/* Enumerated */

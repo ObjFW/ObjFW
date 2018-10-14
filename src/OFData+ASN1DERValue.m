@@ -25,6 +25,7 @@
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
 #import "OFASN1NumericString.h"
+#import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
@@ -174,6 +175,9 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		break;
 	case OF_ASN1_TAG_NUMBER_NULL:
 		valueClass = [OFASN1Null class];
+		break;
+	case OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER:
+		valueClass = [OFASN1ObjectIdentifier class];
 		break;
 	case OF_ASN1_TAG_NUMBER_ENUMERATED:
 		valueClass = [OFASN1Enumerated class];
