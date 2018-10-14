@@ -15,7 +15,9 @@ SRCS = OFASN1BitString.m		\
        OFASN1IA5String.m		\
        OFASN1Integer.m			\
        OFASN1Null.m			\
+       OFASN1NumericString.m		\
        OFASN1OctetString.m		\
+       OFASN1PrintableString.m		\
        OFASN1UTF8String.m		\
        OFASN1Value.m			\
        OFApplication.m			\

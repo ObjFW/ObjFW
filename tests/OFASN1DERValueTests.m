@@ -23,7 +23,9 @@
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
+#import "OFASN1NumericString.h"
 #import "OFASN1OctetString.h"
+#import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
 #import "OFArray.h"
 #import "OFString.h"
@@ -45,6 +47,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	OFASN1BitString *bitString;
 	OFArray *array;
 
+	/* Boolean */
 	TEST(@"Parsing of boolean",
 	    ![[[OFData dataWithItems: "\x01\x01\x00"
 			       count: 3] ASN1DERValue] booleanValue] &&
@@ -67,6 +70,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x01\x01"
 						       count: 2] ASN1DERValue])
 
+	/* Integer */
 	TEST(@"Parsing of integer",
 	    [[[OFData dataWithItems: "\x02\x00"
 			      count: 2] ASN1DERValue] integerValue] == 0 &&
@@ -105,6 +109,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x02\x02\x00"
 						       count: 3] ASN1DERValue])
 
+	/* Bit string */
 	TEST(@"Parsing of bit string",
 	    (bitString = [[OFData dataWithItems: "\x03\x01\x00"
 					  count: 3] ASN1DERValue]) &&
@@ -122,7 +127,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 						 "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
-			      count: 131] ASN1DERValue]) &&
+					  count: 131] ASN1DERValue]) &&
 	    [[bitString bitStringValue]
 	    isEqual: [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -149,6 +154,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x03\x01"
 						       count: 2] ASN1DERValue])
 
+	/* Octet string */
 	TEST(@"Parsing of octet string",
 	    [[[[OFData dataWithItems: "\x04\x0CHello World!"
 			      count: 14] ASN1DERValue] octetStringValue]
@@ -158,7 +164,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxx"
-			      count: 131] ASN1DERValue] octetStringValue]
+			       count: 131] ASN1DERValue] octetStringValue]
 	    isEqual: [OFData dataWithItems: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -175,7 +181,8 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x04\x01"
 						       count: 2] ASN1DERValue])
 
-	TEST(@"Parsing of NULL",
+	/* Null */
+	TEST(@"Parsing of null",
 	    [[[OFData dataWithItems: "\x05\x00"
 			      count: 2] ASN1DERValue]
 	    isKindOfClass: [OFASN1Null class]])
@@ -184,15 +191,16 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x05\x01\x00"
 						       count: 3] ASN1DERValue])
 
+	/* UTF-8 string */
 	TEST(@"Parsing of UTF-8 string",
 	    [[[[OFData dataWithItems: "\x0C\x0EHällo Wörld!"
-			      count: 16] ASN1DERValue] UTF8StringValue]
+			       count: 16] ASN1DERValue] UTF8StringValue]
 	    isEqual: @"Hällo Wörld!"] &&
 	    [[[[OFData dataWithItems: "\x0C\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxx"
-			      count: 131] ASN1DERValue] UTF8StringValue]
+			       count: 131] ASN1DERValue] UTF8StringValue]
 	    isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		     @"xxxxxxxxxxxxxxxx"])
@@ -223,6 +231,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 				    "xxxxxxxxxxxxxxxxxx"
 			     count: 132] ASN1DERValue])
 
+	/* Sequence */
 	TEST(@"Parsing of sequence",
 	    (array = [[OFData dataWithItems: "\x30\x00"
 				      count: 2] ASN1DERValue]) &&
@@ -242,15 +251,74 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    [[OFData dataWithItems: "\x30\x04\x02\x01\x01\x00\x00"
 			     count: 7] ASN1DERValue])
 
+	/* NumericString */
+	TEST(@"Parsing of NumericString",
+	    [[[[OFData dataWithItems: "\x12\x0B" "12345 67890"
+			      count: 13] ASN1DERValue] numericStringValue]
+	    isEqual: @"12345 67890"] &&
+	    [[[[OFData dataWithItems: "\x12\x81\x80" "0000000000000000000000000"
+				      "0000000000000000000000000000000000000000"
+				      "0000000000000000000000000000000000000000"
+				      "00000000000000000000000"
+			       count: 131] ASN1DERValue] numericStringValue]
+	    isEqual: @"00000000000000000000000000000000000000000000000000000000"
+		     @"00000000000000000000000000000000000000000000000000000000"
+		     @"0000000000000000"])
+
+	EXPECT_EXCEPTION(@"Detection of invalid NumericString",
+	    OFInvalidEncodingException,
+	    [[OFData dataWithItems: "\x12\x02."
+			     count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of out of range NumericString",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x12\x89"
+				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+			     count: 11] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated NumericString",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x12\x01"
+						       count: 2] ASN1DERValue])
+
+	/* PrintableString */
+	TEST(@"Parsing of PrintableString",
+	    [[[[OFData dataWithItems: "\x13\x0CHello World."
+			       count: 14] ASN1DERValue] printableStringValue]
+	    isEqual: @"Hello World."] &&
+	    [[[[OFData dataWithItems: "\x13\x81\x80 '()+,-./:=?abcdefghijklmnop"
+				      "qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ '()"
+				      "+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEF"
+				      "GHIJKLMNOPQRSTUVWXYZ"
+			       count: 131] ASN1DERValue] printableStringValue]
+	    isEqual: @" '()+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR"
+		     @"STUVWXYZ '()+,-./:=?abcdefghijklmnopqrstuvwxyzABCDEFGHIJ"
+		     @"KLMNOPQRSTUVWXYZ"])
+
+	EXPECT_EXCEPTION(@"Detection of invalid PrintableString",
+	    OFInvalidEncodingException,
+	    [[OFData dataWithItems: "\x13\x02;"
+			     count: 4] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of out of range PrintableString",
+	    OFOutOfRangeException,
+	    [[OFData dataWithItems: "\x13\x89"
+				    "\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+			     count: 11] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated PrintableString",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x13\x01"
+						       count: 2] ASN1DERValue])
+
+	/* IA5String */
 	TEST(@"Parsing of IA5String",
 	    [[[[OFData dataWithItems: "\x16\x0CHello World!"
-			      count: 14] ASN1DERValue] IA5StringValue]
+			       count: 14] ASN1DERValue] IA5StringValue]
 	    isEqual: @"Hello World!"] &&
 	    [[[[OFData dataWithItems: "\x16\x81\x80xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				      "xxxxxxxxxxxxxxxxxxxx"
-			      count: 131] ASN1DERValue] IA5StringValue]
+			       count: 131] ASN1DERValue] IA5StringValue]
 	    isEqual: @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		     @"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 		     @"xxxxxxxxxxxxxxxx"])

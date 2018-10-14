@@ -42,21 +42,25 @@ typedef enum {
  */
 typedef enum {
 	/*! Boolean */
-	OF_ASN1_TAG_NUMBER_BOOLEAN	= 0x01,
+	OF_ASN1_TAG_NUMBER_BOOLEAN	    = 0x01,
 	/*! Integer */
-	OF_ASN1_TAG_NUMBER_INTEGER	= 0x02,
+	OF_ASN1_TAG_NUMBER_INTEGER	    = 0x02,
 	/*! Bit string */
-	OF_ASN1_TAG_NUMBER_BIT_STRING	= 0x03,
+	OF_ASN1_TAG_NUMBER_BIT_STRING	    = 0x03,
 	/*! Octet string */
-	OF_ASN1_TAG_NUMBER_OCTET_STRING	= 0x04,
+	OF_ASN1_TAG_NUMBER_OCTET_STRING	    = 0x04,
 	/*! Null */
-	OF_ASN1_TAG_NUMBER_NULL		= 0x05,
+	OF_ASN1_TAG_NUMBER_NULL		    = 0x05,
 	/*! UTF-8 string */
-	OF_ASN1_TAG_NUMBER_UTF8_STRING	= 0x0C,
+	OF_ASN1_TAG_NUMBER_UTF8_STRING	    = 0x0C,
 	/*! Sequence */
-	OF_ASN1_TAG_NUMBER_SEQUENCE	= 0x10,
+	OF_ASN1_TAG_NUMBER_SEQUENCE	    = 0x10,
+	/*! NumericString */
+	OF_ASN1_TAG_NUMBER_NUMERIC_STRING   = 0x12,
+	/*! PrintableString */
+	OF_ASN1_TAG_NUMBER_PRINTABLE_STRING = 0x13,
 	/*! IA5String */
-	OF_ASN1_TAG_NUMBER_IA5_STRING	= 0x16
+	OF_ASN1_TAG_NUMBER_IA5_STRING	    = 0x16
 } of_asn1_tag_number_t;
 
 /*!

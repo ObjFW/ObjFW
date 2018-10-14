@@ -23,7 +23,9 @@
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
 #import "OFASN1Null.h"
+#import "OFASN1NumericString.h"
 #import "OFASN1OctetString.h"
+#import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
 #import "OFArray.h"
@@ -117,7 +119,7 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	    of_range(bytesConsumed, contentsLength)];
 	bytesConsumed += contentsLength;
 
-	switch (tag) {
+	switch (tag & ~ASN1_TAG_CONSTRUCTED_MASK) {
 	case OF_ASN1_TAG_NUMBER_BOOLEAN:
 		valueClass = [OFASN1Boolean class];
 		break;
@@ -137,10 +139,17 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1UTF8String class];
 		break;
 	case OF_ASN1_TAG_NUMBER_SEQUENCE:
-		@throw [OFInvalidFormatException exception];
-	case OF_ASN1_TAG_NUMBER_SEQUENCE | ASN1_TAG_CONSTRUCTED_MASK:
+		if (!(tag & ASN1_TAG_CONSTRUCTED_MASK))
+			@throw [OFInvalidFormatException exception];
+
 		*object = parseSequence(contents, depthLimit - 1);
 		return bytesConsumed;
+	case OF_ASN1_TAG_NUMBER_NUMERIC_STRING:
+		valueClass = [OFASN1NumericString class];
+		break;
+	case OF_ASN1_TAG_NUMBER_PRINTABLE_STRING:
+		valueClass = [OFASN1PrintableString class];
+		break;
 	case OF_ASN1_TAG_NUMBER_IA5_STRING:
 		valueClass = [OFASN1IA5String class];
 		break;
