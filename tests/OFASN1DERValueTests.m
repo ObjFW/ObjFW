@@ -28,6 +28,7 @@
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
 #import "OFArray.h"
+#import "OFSet.h"
 #import "OFString.h"
 #import "OFAutoreleasePool.h"
 
@@ -46,6 +47,8 @@ static OFString *module = @"OFData+ASN1DERValue";
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFASN1BitString *bitString;
 	OFArray *array;
+	OFSet *set;
+	OFEnumerator *enumerator;
 
 	/* Boolean */
 	TEST(@"Parsing of boolean",
@@ -242,13 +245,39 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    [[array objectAtIndex: 0] integerValue] == 123 &&
 	    [[[array objectAtIndex: 1] stringValue] isEqual: @"Test"])
 
-	EXPECT_EXCEPTION(@"Parsing of truncated sequence #1",
+	EXPECT_EXCEPTION(@"Detection of truncated sequence #1",
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x30\x01"
 						       count: 2] ASN1DERValue])
 
-	EXPECT_EXCEPTION(@"Parsing of truncated sequence #2",
+	EXPECT_EXCEPTION(@"Detection of truncated sequence #2",
 	    OFTruncatedDataException,
 	    [[OFData dataWithItems: "\x30\x04\x02\x01\x01\x00\x00"
+			     count: 7] ASN1DERValue])
+
+	/* Set */
+	TEST(@"Parsing of set",
+	    (set = [[OFData dataWithItems: "\x31\x00"
+				    count: 2] ASN1DERValue]) &&
+	    [set isKindOfClass: [OFSet class]] && [set count] == 0 &&
+	    (set = [[OFData dataWithItems: "\x31\x09\x02\x01\x7B\x0C\x04Test"
+				    count: 11] ASN1DERValue]) &&
+	    [set isKindOfClass: [OFSet class]] && [set count] == 2 &&
+	    (enumerator = [set objectEnumerator]) &&
+	    [[enumerator nextObject] integerValue] == 123 &&
+	    [[[enumerator nextObject] stringValue] isEqual: @"Test"])
+
+	EXPECT_EXCEPTION(@"Detection of invalid set",
+	    OFInvalidFormatException,
+	    [[OFData dataWithItems: "\x31\x06\x02\x01\x02\x02\x01\x01"
+			     count: 8] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated set #1",
+	    OFTruncatedDataException, [[OFData dataWithItems: "\x31\x01"
+						       count: 2] ASN1DERValue])
+
+	EXPECT_EXCEPTION(@"Detection of truncated set #2",
+	    OFTruncatedDataException,
+	    [[OFData dataWithItems: "\x31\x04\x02\x01\x01\x00\x00"
 			     count: 7] ASN1DERValue])
 
 	/* NumericString */

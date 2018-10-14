@@ -29,6 +29,7 @@
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
 #import "OFArray.h"
+#import "OFSet.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -63,6 +64,44 @@ parseSequence(OFData *contents, size_t depthLimit)
 		    of_range(objectLength, count)];
 
 		[ret addObject: object];
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
+static OFSet *
+parseSet(OFData *contents, size_t depthLimit)
+{
+	OFMutableSet *ret = [OFMutableSet set];
+	size_t count = [contents count];
+	OFData *previousObjectData = nil;
+
+	if (depthLimit == 0)
+		@throw [OFOutOfRangeException exception];
+
+	while (count > 0) {
+		id object;
+		size_t objectLength;
+		OFData *objectData;
+
+		objectLength = parseObject(contents, &object, depthLimit);
+		objectData = [contents subdataWithRange:
+		    of_range(0, objectLength)];
+
+		if (previousObjectData != nil &&
+		    [objectData compare: previousObjectData] !=
+		    OF_ORDERED_DESCENDING)
+			@throw [OFInvalidFormatException exception];
+
+		count -= objectLength;
+		contents = [contents subdataWithRange:
+		    of_range(objectLength, count)];
+
+		[ret addObject: object];
+
+		previousObjectData = objectData;
 	}
 
 	[ret makeImmutable];
@@ -143,6 +182,12 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 			@throw [OFInvalidFormatException exception];
 
 		*object = parseSequence(contents, depthLimit - 1);
+		return bytesConsumed;
+	case OF_ASN1_TAG_NUMBER_SET:
+		if (!(tag & ASN1_TAG_CONSTRUCTED_MASK))
+			@throw [OFInvalidFormatException exception];
+
+		*object = parseSet(contents, depthLimit - 1);
 		return bytesConsumed;
 	case OF_ASN1_TAG_NUMBER_NUMERIC_STRING:
 		valueClass = [OFASN1NumericString class];

@@ -55,6 +55,8 @@ typedef enum {
 	OF_ASN1_TAG_NUMBER_UTF8_STRING	    = 0x0C,
 	/*! Sequence */
 	OF_ASN1_TAG_NUMBER_SEQUENCE	    = 0x10,
+	/*! Set */
+	OF_ASN1_TAG_NUMBER_SET		    = 0x11,
 	/*! NumericString */
 	OF_ASN1_TAG_NUMBER_NUMERIC_STRING   = 0x12,
 	/*! PrintableString */
