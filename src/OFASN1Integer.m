@@ -18,10 +18,39 @@
 #include "config.h"
 
 #import "OFASN1Integer.h"
+#import "OFData.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
+#import "OFOutOfRangeException.h"
+
+intmax_t
+of_asn1_integer_parse(const unsigned char *buffer, size_t length)
+{
+	uintmax_t value = 0;
+
+	/* TODO: Support for big numbers */
+	if (length > sizeof(uintmax_t) &&
+	    (length != sizeof(uintmax_t) + 1 || buffer[0] != 0))
+		@throw [OFOutOfRangeException exception];
+
+	if (length >= 2 && ((buffer[0] == 0 && !(buffer[1] & 0x80)) ||
+	    (buffer[0] == 0xFF && buffer[1] & 0x80)))
+		@throw [OFInvalidFormatException exception];
+
+	if (length >= 1 && buffer[0] & 0x80)
+		value = ~(uintmax_t)0;
+
+	while (length--)
+		value = (value << 8) | *buffer++;
+
+	return value;
+}
 
 @implementation OFASN1Integer
+@synthesize integerValue = _integerValue;
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
@@ -36,11 +65,20 @@
 		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
 		    _tagNumber != OF_ASN1_TAG_NUMBER_INTEGER || _constructed)
 			@throw [OFInvalidArgumentException exception];
+
+		_integerValue = of_asn1_integer_parse(
+		    [_DEREncodedContents items], [_DEREncodedContents count]);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (OFString *)description
+{
+	return [OFString stringWithFormat: @"<OFASN1Integer: %jd>",
+					   _integerValue];
 }
 @end

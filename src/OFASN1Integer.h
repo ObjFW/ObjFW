@@ -15,14 +15,22 @@
  * file.
  */
 
-#import "OFASN1IntegerOrEnumerated.h"
+#import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
  * @brief An ASN.1 integer.
  */
-@interface OFASN1Integer: OFASN1IntegerOrEnumerated
+@interface OFASN1Integer: OFASN1Value
+{
+	intmax_t _integerValue;
+}
+
+/*!
+ * @brief The integer value.
+ */
+@property (readonly, nonatomic) intmax_t integerValue;
 @end
 
 OF_ASSUME_NONNULL_END
