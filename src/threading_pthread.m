@@ -27,7 +27,7 @@
 # include <kernel/OS.h>
 #endif
 
-static int minPrio, maxPrio, normalPrio;
+static int minPrio = 0, maxPrio = 0, normalPrio = 0;
 
 struct thread_ctx {
 	void (*function)(id object);
@@ -41,22 +41,30 @@ struct thread_ctx {
 OF_CONSTRUCTOR()
 {
 	pthread_attr_t pattr;
+
+	if (pthread_attr_init(&pattr) == 0) {
 #ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
-	int policy;
+		int policy;
 #endif
-	struct sched_param param;
+		struct sched_param param;
 
-	OF_ENSURE(pthread_attr_init(&pattr) == 0);
 #ifdef HAVE_PTHREAD_ATTR_GETSCHEDPOLICY
-	OF_ENSURE(pthread_attr_getschedpolicy(&pattr, &policy) == 0);
-	OF_ENSURE((minPrio = sched_get_priority_min(policy)) != -1);
-	OF_ENSURE((maxPrio = sched_get_priority_max(policy)) != -1);
+		if (pthread_attr_getschedpolicy(&pattr, &policy) == 0) {
+			minPrio = sched_get_priority_min(policy);
+			maxPrio = sched_get_priority_max(policy);
+
+			if (minPrio == -1 || maxPrio == -1)
+				minPrio = maxPrio = 0;
+		}
+
+		if (pthread_attr_getschedparam(&pattr, &param) != 0)
+			normalPrio = param.sched_priority;
+		else
+			minPrio = maxPrio = 0;
+
+		pthread_attr_destroy(&pattr);
 #endif
-	OF_ENSURE(pthread_attr_getschedparam(&pattr, &param) == 0);
-
-	normalPrio = param.sched_priority;
-
-	pthread_attr_destroy(&pattr);
+	}
 }
 
 static void *
