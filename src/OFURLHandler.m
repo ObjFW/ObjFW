@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFURLHandler.h"
+#import "OFNumber.h"
 #import "OFURL.h"
 
 #ifdef OF_HAVE_THREADS
@@ -31,10 +32,57 @@
 # import "OFURLHandler_HTTP.h"
 #endif
 
+#import "OFUndefinedKeyException.h"
+
+const of_file_attribute_key_t of_file_attribute_key_size =
+    @"of_file_attribute_key_size";
+const of_file_attribute_key_t of_file_attribute_key_type =
+    @"of_file_attribute_key_type";
+const of_file_attribute_key_t of_file_attribute_key_posix_permissions =
+    @"of_file_attribute_key_posix_permissions";
+const of_file_attribute_key_t of_file_attribute_key_posix_uid =
+    @"of_file_attribute_key_posix_uid";
+const of_file_attribute_key_t of_file_attribute_key_posix_gid =
+    @"of_file_attribute_key_posix_gid";
+const of_file_attribute_key_t of_file_attribute_key_owner =
+    @"of_file_attribute_key_owner";
+const of_file_attribute_key_t of_file_attribute_key_group =
+    @"of_file_attribute_key_group";
+const of_file_attribute_key_t of_file_attribute_key_last_access_date =
+    @"of_file_attribute_key_last_access_date";
+const of_file_attribute_key_t of_file_attribute_key_modification_date =
+    @"of_file_attribute_key_modification_date";
+const of_file_attribute_key_t of_file_attribute_key_status_change_date =
+    @"of_file_attribute_key_status_change_date";
+const of_file_attribute_key_t of_file_attribute_key_symbolic_link_destination =
+    @"of_file_attribute_key_symbolic_link_destination";
+
+const of_file_type_t of_file_type_regular = @"of_file_type_regular";
+const of_file_type_t of_file_type_directory = @"of_file_type_directory";
+const of_file_type_t of_file_type_symbolic_link = @"of_file_type_symbolic_link";
+const of_file_type_t of_file_type_fifo = @"of_file_type_fifo";
+const of_file_type_t of_file_type_character_special =
+    @"of_file_type_character_special";
+const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
+const of_file_type_t of_file_type_socket = @"of_file_type_socket";
+
 static OFMutableDictionary OF_GENERIC(OFString *, OFURLHandler *) *handlers;
 #ifdef OF_HAVE_THREADS
 static OFMutex *mutex;
 #endif
+
+static id
+attributeForKeyOrException(of_file_attributes_t attributes,
+    of_file_attribute_key_t key)
+{
+	id object = [attributes objectForKey: key];
+
+	if (object == nil)
+		@throw [OFUndefinedKeyException exceptionWithObject: attributes
+								key: key];
+
+	return object;
+}
 
 @implementation OFURLHandler
 @synthesize scheme = _scheme;
@@ -193,5 +241,70 @@ static OFMutex *mutex;
 		toURL: (OFURL *)destination
 {
 	return false;
+}
+@end
+
+@implementation OFDictionary (FileAttributes)
+- (uintmax_t)fileSize
+{
+	return [attributeForKeyOrException(self, of_file_attribute_key_size)
+	    uIntMaxValue];
+}
+
+- (of_file_type_t)fileType
+{
+	return attributeForKeyOrException(self, of_file_attribute_key_type);
+}
+
+- (uint16_t)filePOSIXPermissions
+{
+	return [attributeForKeyOrException(self,
+	    of_file_attribute_key_posix_permissions) uInt16Value];
+}
+
+- (uint32_t)filePOSIXUID
+{
+	return [attributeForKeyOrException(self,
+	    of_file_attribute_key_posix_uid) uInt32Value];
+}
+
+- (uint32_t)filePOSIXGID
+{
+	return [attributeForKeyOrException(self,
+	    of_file_attribute_key_posix_gid) uInt32Value];
+}
+
+- (OFString *)fileOwner
+{
+	return attributeForKeyOrException(self, of_file_attribute_key_owner);
+}
+
+- (OFString *)fileGroup
+{
+	return attributeForKeyOrException(self, of_file_attribute_key_group);
+}
+
+- (OFDate *)fileLastAccessDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_last_access_date);
+}
+
+- (OFDate *)fileModificationDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_modification_date);
+}
+
+- (OFDate *)fileStatusChangeDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_status_change_date);
+}
+
+- (OFString *)fileSymbolicLinkDestination
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_symbolic_link_destination);
 }
 @end

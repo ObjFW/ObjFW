@@ -16,7 +16,7 @@
  */
 
 #import "OFException.h"
-#import "OFFileManager.h"
+#import "OFURLHandler.h"
 
 OF_ASSUME_NONNULL_BEGIN
 

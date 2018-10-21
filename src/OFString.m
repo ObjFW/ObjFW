@@ -37,11 +37,12 @@
 #import "OFCharacterSet.h"
 #import "OFData.h"
 #import "OFDictionary.h"
-#import "OFLocale.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFLocale.h"
+#import "OFStream.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
 #import "OFXMLElement.h"
