@@ -26,12 +26,27 @@ dnl Used to disable checking for -pedantic on some platforms where it's broken
 check_pedantic="yes"
 
 case "$host" in
+	arm-*-riscos*)
+		AS_IF([test x"$OBJCFLAGS" != x""], [
+			OBJCFLAGS="-O2 -g"
+		])
+		flags="-mfloat-abi=softfp -mfpu=vfp -mlibscl"
+		ASFLAGS="$ASFLAGS -mfloat-abi=softfp -mfpu=vfp"
+		OBJCFLAGS="$OBJCFLAGS $flags"
+		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS $flags"
+		LDFLAGS="$LDFLAGS $flags"
+
+		enable_shared="no"
+		enable_threads="no"
+		enable_sockets="no"
+		enable_files="no"
+		ac_cv_snprintf_useful_ret="yes"
+		;;
 	m68k-*-amigaos*)
 		AS_IF([test x"$OBJCFLAGS" != x""], [
-			OBJCFLAGS="$OBJCFLAGS -noixemul"
-		], [
-			OBJCFLAGS="-O0 -g -noixemul"
+			OBJCFLAGS="-O0 -g"
 		])
+		OBJCFLAGS="$OBJCFLAGS -noixemul"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		LDFLAGS="$LDFLAGS -noixemul"
 
@@ -58,10 +73,9 @@ case "$host" in
 	*-morphos*)
 		AS_IF([test x"$with_ixemul" != x"yes"], [
 			AS_IF([test x"$OBJCFLAGS" != x""], [
-				OBJCFLAGS="$OBJCFLAGS -noixemul"
-			], [
-				OBJCFLAGS="-O2 -g -noixemul"
+				OBJCFLAGS="-O2 -g"
 			])
+			OBJCFLAGS="$OBJCFLAGS -noixemul"
 			OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 			LDFLAGS="$LDFLAGS -noixemul"
 			enable_files="yes"	# Required for reading ENV:
@@ -98,10 +112,9 @@ case "$host" in
 		])
 
 		AS_IF([test x"$OBJCFLAGS" != x""], [
-			OBJCFLAGS="$OBJCFLAGS -G0"
-		], [
-			OBJCFLAGS="-O2 -G0"
+			OBJCFLAGS="-O2"
 		])
+		OBJCFLAGS="$OBJCFLAGS -G0"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -G0"
 		CPPFLAGS="$CPPFLAGS -I$DEVKITPSP/psp/sdk/include"
 		LDFLAGS="$LDFLAGS -G0"
