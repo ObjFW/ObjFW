@@ -76,8 +76,8 @@ of_zip_archive_entry_version_to_string(uint16_t version)
 	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE:
 		attrCompat = "VSE";
 		break;
-	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC:
-		attrCompat = "Acorn Risc";
+	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC_OS:
+		attrCompat = "Acorn RISC OS";
 		break;
 	case OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT:
 		attrCompat = "VFAT";

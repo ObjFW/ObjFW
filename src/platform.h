@@ -91,9 +91,9 @@
 #  define OF_M68010
 # endif
 # if defined(__riscv) && defined(__riscv_xlen) && __riscv_xlen == 64
-#  define OF_RISCV64
+#  define OF_RISC_V_64
 # elif defined(__riscv)
-#  define OF_RISCV
+#  define OF_RISC_V
 # endif
 #endif
 
@@ -143,6 +143,8 @@
 #elif defined(__DJGPP__)
 # define OF_DJGPP
 # define OF_MSDOS
+#elif defined(__riscos__)
+# define OF_ACORN_RISC_OS
 #endif
 
 #if defined(__ELF__)

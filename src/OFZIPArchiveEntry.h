@@ -67,8 +67,8 @@ enum of_zip_archive_entry_attribute_compatibility {
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_MVS	       = 11,
 	/*! VSE */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VSE	       = 12,
-	/*! Acorn Risc */
-	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC    = 13,
+	/*! Acorn RISC OS */
+	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_ACORN_RISC_OS = 13,
 	/*! VFAT */
 	OF_ZIP_ARCHIVE_ENTRY_ATTR_COMPAT_VFAT	       = 14,
 	/*! Alternate MVS */
