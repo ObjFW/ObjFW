@@ -43,7 +43,8 @@ extern "C" {
 extern void *_Block_copy(const void *);
 extern void _Block_release(const void *);
 
-# ifdef OF_WINDOWS
+# if defined(OF_WINDOWS) && \
+    (defined(OF_NO_SHARED) || defined(OF_COMPILING_OBJFW))
 /*
  * Clang has implicit declarations for these, but they are dllimport. When
  * compiling ObjFW itself or using it as a static library, these need to be

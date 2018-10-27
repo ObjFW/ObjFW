@@ -42,6 +42,7 @@
 #undef OF_HAVE___THREAD
 #undef OF_NINTENDO_3DS
 #undef OF_NINTENDO_DS
+#undef OF_NO_SHARED
 #undef OF_OBJFW_RUNTIME
 #undef OF_UNIVERSAL
 #undef OF_WII
