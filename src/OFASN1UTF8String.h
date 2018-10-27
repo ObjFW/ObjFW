@@ -15,6 +15,7 @@
  * file.
  */
 
+#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -22,15 +23,15 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 
 /*!
- * @brief An ASN.1 UTF-8 string.
+ * @brief An ASN.1 UTF8String.
  */
-@interface OFASN1UTF8String: OFASN1Value
+@interface OFASN1UTF8String: OFObject
 {
 	OFString *_UTF8StringValue;
 }
 
 /*!
- * @brief The UTF-8 string value.
+ * @brief The UTF8String value.
  */
 @property (readonly, nonatomic) OFString *UTF8StringValue;
 
@@ -38,6 +39,23 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The string value.
  */
 @property (readonly, nonatomic) OFString *stringValue;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 UTF8String with the specified
+ *	  arguments.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @param constructed Whether the value if of a constructed type
+ * @param DEREncodedContents The DER-encoded contents octets of the value.
+ * @return An initialized ASN.1 UTF8String
+ */
+- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
+		       tagNumber: (of_asn1_tag_number_t)tagNumber
+		     constructed: (bool)constructed
+	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

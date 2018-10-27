@@ -112,11 +112,6 @@
 	return hash;
 }
 
-- (id)copy
-{
-	return [self retain];
-}
-
 - (OFString *)description
 {
 	return [OFString stringWithFormat:

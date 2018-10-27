@@ -15,14 +15,15 @@
  * file.
  */
 
+#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @brief An ASN.1 enumerated.
+ * @brief An ASN.1 Enumerated.
  */
-@interface OFASN1Enumerated: OFASN1Value
+@interface OFASN1Enumerated: OFObject
 {
 	intmax_t _integerValue;
 }
@@ -31,6 +32,23 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The integer value.
  */
 @property (readonly, nonatomic) intmax_t integerValue;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 Enumerated with the specified
+ *	  arguments.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @param constructed Whether the value if of a constructed type
+ * @param DEREncodedContents The DER-encoded contents octets of the value.
+ * @return An initialized ASN.1 Enumerated
+ */
+- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
+		       tagNumber: (of_asn1_tag_number_t)tagNumber
+		     constructed: (bool)constructed
+	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

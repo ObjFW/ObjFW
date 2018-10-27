@@ -29,31 +29,32 @@
 @synthesize bitStringValue = _bitStringValue;
 @synthesize bitStringLength = _bitStringLength;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		unsigned char lastByteBits;
-		size_t count = [_DEREncodedContents count];
+		size_t count = [DEREncodedContents count];
 
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_BIT_STRING ||
-		    _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_BIT_STRING || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if (count == 0)
+		if ([DEREncodedContents itemSize] != 1 || count == 0)
 			@throw [OFInvalidFormatException exception];
 
 		lastByteBits =
-		    *(unsigned char *)[_DEREncodedContents itemAtIndex: 0];
+		    *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
 
 		if (count == 1 && lastByteBits != 0)
 			@throw [OFInvalidFormatException exception];
@@ -63,7 +64,7 @@
 			@throw [OFOutOfRangeException exception];
 
 		_bitStringLength = (count - 1) * 8 + lastByteBits;
-		_bitStringValue = [[_DEREncodedContents
+		_bitStringValue = [[DEREncodedContents
 		    subdataWithRange: of_range(1, count - 1)] copy];
 
 		objc_autoreleasePoolPop(pool);
@@ -80,6 +81,28 @@
 	[_bitStringValue release];
 
 	[super dealloc];
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1BitString *bitString;
+
+	if (![object isKindOfClass: [OFASN1BitString class]])
+		return false;
+
+	bitString = object;
+
+	if (![bitString->_bitStringValue isEqual: _bitStringValue])
+		return false;
+	if (bitString->_bitStringLength != _bitStringLength)
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return [_bitStringValue hash] + (uint32_t)_bitStringLength;
 }
 
 - (OFString *)description

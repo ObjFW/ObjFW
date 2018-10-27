@@ -15,6 +15,7 @@
  * file.
  */
 
+#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -22,13 +23,34 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 
 /*!
- * @brief An ASN.1 octet string.
+ * @brief An ASN.1 OctetString.
  */
-@interface OFASN1OctetString: OFASN1Value
+@interface OFASN1OctetString: OFObject
+{
+	OFData *_octetStringValue;
+}
+
 /*!
- * @brief The octet string value.
+ * @brief The OctetString value.
  */
 @property (readonly, nonatomic) OFData *octetStringValue;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 OctetString with the specified
+ *	  arguments.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @param constructed Whether the value if of a constructed type
+ * @param DEREncodedContents The DER-encoded contents octets of the value.
+ * @return An initialized ASN.1 OctetString
+ */
+- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
+		       tagNumber: (of_asn1_tag_number_t)tagNumber
+		     constructed: (bool)constructed
+	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -30,31 +30,33 @@
 @implementation OFASN1ObjectIdentifier
 @synthesize subidentifiers = _subidentifiers;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const unsigned char *items = [_DEREncodedContents items];
-		size_t count = [_DEREncodedContents count];
+		const unsigned char *items = [DEREncodedContents items];
+		size_t count = [DEREncodedContents count];
 		OFMutableArray *subidentifiers = [OFMutableArray array];
 		uintmax_t value = 0;
 		uint_fast8_t bits = 0;
 
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER ||
-		    _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER ||
+		    constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if (count == 0)
-			@throw [OFInvalidFormatException exception];
+		if ([DEREncodedContents itemSize] != 1 || count == 0)
+			@throw [OFInvalidArgumentException exception];
 
 		for (size_t i = 0; i < count; i++) {
 			if (bits == 0 && items[i] == 0x80)
@@ -111,6 +113,26 @@
 	[_subidentifiers release];
 
 	[super dealloc];
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1ObjectIdentifier *objectIdentifier;
+
+	if (![object isKindOfClass: [OFASN1ObjectIdentifier class]])
+		return false;
+
+	objectIdentifier = object;
+
+	if (![objectIdentifier->_subidentifiers isEqual: _subidentifiers])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return [_subidentifiers hash];
 }
 
 - (OFString *)description

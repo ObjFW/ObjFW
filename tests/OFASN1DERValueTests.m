@@ -22,13 +22,13 @@
 #import "OFASN1Boolean.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
-#import "OFASN1Null.h"
 #import "OFASN1NumericString.h"
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFASN1PrintableString.h"
 #import "OFASN1UTF8String.h"
 #import "OFArray.h"
+#import "OFNull.h"
 #import "OFNumber.h"
 #import "OFSet.h"
 #import "OFString.h"
@@ -189,8 +189,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	/* Null */
 	TEST(@"Parsing of null",
 	    [[[OFData dataWithItems: "\x05\x00"
-			      count: 2] ASN1DERValue]
-	    isKindOfClass: [OFASN1Null class]])
+			      count: 2] ASN1DERValue] isEqual: [OFNull null]])
 
 	EXPECT_EXCEPTION(@"Detection of invalid null",
 	    OFInvalidFormatException, [[OFData dataWithItems: "\x05\x01\x00"

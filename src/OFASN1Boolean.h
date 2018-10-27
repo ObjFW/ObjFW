@@ -15,22 +15,40 @@
  * file.
  */
 
+#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @brief An ASN.1 boolean.
+ * @brief An ASN.1 Boolean.
  */
-@interface OFASN1Boolean: OFASN1Value
+@interface OFASN1Boolean: OFObject
 {
 	bool _booleanValue;
 }
 
 /*!
- * @brief The boolean value.
+ * @brief The Boolean value.
  */
 @property (readonly, nonatomic) bool booleanValue;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 Boolean with the specified
+ *	  arguments.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @param constructed Whether the value if of a constructed type
+ * @param DEREncodedContents The DER-encoded contents octets of the value.
+ * @return An initialized ASN.1 Boolean
+ */
+- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
+		       tagNumber: (of_asn1_tag_number_t)tagNumber
+		     constructed: (bool)constructed
+	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -26,25 +26,29 @@
 @implementation OFASN1UTF8String
 @synthesize UTF8StringValue = _UTF8StringValue;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_UTF8_STRING ||
-		    _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_UTF8_STRING || constructed)
+			@throw [OFInvalidArgumentException exception];
+
+		if ([DEREncodedContents itemSize] != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		_UTF8StringValue = [[OFString alloc]
-		    initWithUTF8String: [_DEREncodedContents items]
-				length: [_DEREncodedContents count]];
+		    initWithUTF8String: [DEREncodedContents items]
+				length: [DEREncodedContents count]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -63,6 +67,26 @@
 - (OFString *)stringValue
 {
 	return [self UTF8StringValue];
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1UTF8String *UTF8String;
+
+	if (![object isKindOfClass: [OFASN1UTF8String class]])
+		return false;
+
+	UTF8String = object;
+
+	if (![UTF8String->_UTF8StringValue isEqual: _UTF8StringValue])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return [_UTF8StringValue hash];
 }
 
 - (OFString *)description

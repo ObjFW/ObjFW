@@ -23,7 +23,6 @@
 #import "OFASN1Enumerated.h"
 #import "OFASN1IA5String.h"
 #import "OFASN1Integer.h"
-#import "OFASN1Null.h"
 #import "OFASN1NumericString.h"
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
@@ -31,6 +30,7 @@
 #import "OFASN1UTF8String.h"
 #import "OFASN1Value.h"
 #import "OFArray.h"
+#import "OFNull.h"
 #import "OFSet.h"
 
 #import "OFInvalidArgumentException.h"
@@ -174,8 +174,14 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		valueClass = [OFASN1OctetString class];
 		break;
 	case OF_ASN1_TAG_NUMBER_NULL:
-		valueClass = [OFASN1Null class];
-		break;
+		if (tag & ASN1_TAG_CONSTRUCTED_MASK)
+			@throw [OFInvalidFormatException exception];
+
+		if ([contents count] != 0)
+			@throw [OFInvalidFormatException exception];
+
+		*object = [OFNull null];
+		return bytesConsumed;
 	case OF_ASN1_TAG_NUMBER_OBJECT_IDENTIFIER:
 		valueClass = [OFASN1ObjectIdentifier class];
 		break;
@@ -211,10 +217,11 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		break;
 	}
 
-	*object = [valueClass valueWithTagClass: tag >> 6
-				      tagNumber: tag & 0x1F
-				    constructed: tag & ASN1_TAG_CONSTRUCTED_MASK
-			     DEREncodedContents: contents];
+	*object = [[[valueClass alloc]
+	      initWithTagClass: tag >> 6
+		     tagNumber: tag & 0x1F
+		   constructed: tag & ASN1_TAG_CONSTRUCTED_MASK
+	    DEREncodedContents: contents] autorelease];
 	return bytesConsumed;
 }
 

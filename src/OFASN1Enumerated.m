@@ -29,29 +29,54 @@ extern intmax_t of_asn1_integer_parse(const unsigned char *buffer,
 @implementation OFASN1Enumerated
 @synthesize integerValue = _integerValue;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_ENUMERATED || _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_ENUMERATED || constructed)
+			@throw [OFInvalidArgumentException exception];
+
+		if ([DEREncodedContents itemSize] != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		_integerValue = of_asn1_integer_parse(
-		    [_DEREncodedContents items], [_DEREncodedContents count]);
+		    [DEREncodedContents items], [DEREncodedContents count]);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1Enumerated *enumerated;
+
+	if (![object isKindOfClass: [OFASN1Enumerated class]])
+		return false;
+
+	enumerated = object;
+
+	if (enumerated->_integerValue != _integerValue)
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return (uint32_t)_integerValue;
 }
 
 - (OFString *)description

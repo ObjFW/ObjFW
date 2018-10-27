@@ -27,23 +27,28 @@
 @implementation OFASN1PrintableString
 @synthesize printableStringValue = _printableStringValue;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
-		const unsigned char *items = [_DEREncodedContents items];
-		size_t count = [_DEREncodedContents count];
+		const unsigned char *items = [DEREncodedContents items];
+		size_t count = [DEREncodedContents count];
 
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_PRINTABLE_STRING ||
-		    _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_PRINTABLE_STRING ||
+		    constructed)
+			@throw [OFInvalidArgumentException exception];
+
+		if ([DEREncodedContents itemSize] != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		for (size_t i = 0; i < count; i++) {
@@ -70,9 +75,9 @@
 		}
 
 		_printableStringValue = [[OFString alloc]
-		    initWithCString: [_DEREncodedContents items]
+		    initWithCString: [DEREncodedContents items]
 			   encoding: OF_STRING_ENCODING_ASCII
-			     length: [_DEREncodedContents count]];
+			     length: [DEREncodedContents count]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -91,6 +96,27 @@
 - (OFString *)stringValue
 {
 	return [self printableStringValue];
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1PrintableString *printableString;
+
+	if (![object isKindOfClass: [OFASN1PrintableString class]])
+		return false;
+
+	printableString = object;
+
+	if (![printableString->_printableStringValue isEqual:
+	    _printableStringValue])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return [_printableStringValue hash];
 }
 
 - (OFString *)description

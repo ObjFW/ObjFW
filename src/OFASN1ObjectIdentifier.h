@@ -15,6 +15,7 @@
  * file.
  */
 
+#import "OFObject.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -23,17 +24,34 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFNumber;
 
 /*!
- * @brief An ASN.1 Object Identifier.
+ * @brief An ASN.1 ObjectIdentifier.
  */
-@interface OFASN1ObjectIdentifier: OFASN1Value
+@interface OFASN1ObjectIdentifier: OFObject
 {
 	OFArray OF_GENERIC(OFNumber *) *_subidentifiers;
 }
 
 /*!
- * @brief The subidentifiers of the Object Identifier.
+ * @brief The subidentifiers of the ObjectIdentifier.
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFNumber *) *subidentifiers;
+
+- (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ *	  specified arguments.
+ *
+ * @param tagClass The tag class of the value's type
+ * @param tagNumber The tag number of the value's type
+ * @param constructed Whether the value if of a constructed type
+ * @param DEREncodedContents The DER-encoded contents octets of the value.
+ * @return An initialized ASN.1 ObjectIdentifier
+ */
+- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
+		       tagNumber: (of_asn1_tag_number_t)tagNumber
+		     constructed: (bool)constructed
+	      DEREncodedContents: (OFData *)DEREncodedContents;
 @end
 
 OF_ASSUME_NONNULL_END

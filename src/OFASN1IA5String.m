@@ -26,26 +26,30 @@
 @implementation OFASN1IA5String
 @synthesize IA5StringValue = _IA5StringValue;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_IA5_STRING ||
-		    _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_IA5_STRING || constructed)
+			@throw [OFInvalidArgumentException exception];
+
+		if ([DEREncodedContents itemSize] != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		_IA5StringValue = [[OFString alloc]
-		    initWithCString: [_DEREncodedContents items]
+		    initWithCString: [DEREncodedContents items]
 			   encoding: OF_STRING_ENCODING_ASCII
-			     length: [_DEREncodedContents count]];
+			     length: [DEREncodedContents count]];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -64,6 +68,26 @@
 - (OFString *)stringValue
 {
 	return [self IA5StringValue];
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1IA5String *IA5String;
+
+	if (![object isKindOfClass: [OFASN1IA5String class]])
+		return false;
+
+	IA5String = object;
+
+	if (![IA5String->_IA5StringValue isEqual: _IA5StringValue])
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return [_IA5StringValue hash];
 }
 
 - (OFString *)description

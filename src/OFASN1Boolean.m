@@ -27,27 +27,30 @@
 @implementation OFASN1Boolean
 @synthesize booleanValue = _booleanValue;
 
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
+}
+
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super initWithTagClass: tagClass
-			     tagNumber: tagNumber
-			   constructed: constructed
-		    DEREncodedContents: DEREncodedContents];
+	self = [super init];
 
 	@try {
 		unsigned char value;
 
-		if (_tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    _tagNumber != OF_ASN1_TAG_NUMBER_BOOLEAN || _constructed)
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_BOOLEAN || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([_DEREncodedContents count] != 1)
+		if ([DEREncodedContents itemSize] != 1 ||
+		    [DEREncodedContents count] != 1)
 			@throw [OFInvalidFormatException exception];
 
-		value = *(unsigned char *)[_DEREncodedContents itemAtIndex: 0];
+		value = *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
 
 		if (value != 0 && value != 0xFF)
 			@throw [OFInvalidFormatException exception];
@@ -59,6 +62,26 @@
 	}
 
 	return self;
+}
+
+- (bool)isEqual: (id)object
+{
+	OFASN1Boolean *boolean;
+
+	if (![object isKindOfClass: [OFASN1Boolean class]])
+		return false;
+
+	boolean = object;
+
+	if (boolean->_booleanValue != _booleanValue)
+		return false;
+
+	return true;
+}
+
+- (uint32_t)hash
+{
+	return (uint32_t)_booleanValue;
 }
 
 - (OFString *)description
