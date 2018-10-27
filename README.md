@@ -1,8 +1,8 @@
-ObjFW is a portable, lightweight framework for the Objective C language.
-It enables you to write an application in Objective C that will run on
-any platform supported by ObjFW without having to worry about
-differences between operating systems or various frameworks that you
-would otherwise need if you want to be portable.
+ObjFW is a portable, lightweight framework for the Objective C language. It
+enables you to write an application in Objective C that will run on any
+platform supported by ObjFW without having to worry about differences between
+operating systems or various frameworks that you would otherwise need if you
+want to be portable.
 
 See https://heap.zone/objfw for more information.
 
@@ -48,8 +48,8 @@ Building as a macOS or iOS framework
 Using the macOS or iOS framework in Xcode
 =========================================
 
-  To use the macOS framework in Xcode, you need to add the `.framework`s to your
-  project and add the following flags to `Other C Flags`:
+  To use the macOS framework in Xcode, you need to add the `.framework`s to
+  your project and add the following flags to `Other C Flags`:
 
     -fconstant-string-class=OFConstantString -fno-constant-cfstrings
 
@@ -63,3 +63,12 @@ Bugs and feature requests
 
   If you find any bugs or have feature requests, feel free to send a
   mail to js@heap.zone!
+
+
+Commercial use
+==============
+
+  If for whatever reason neither the terms of the QPL nor those of the GPL
+  work for you, a proprietary license for ObjFW including support is available
+  upon request. Just write a mail to js@heap.zone and we can find a reasonable
+  solution for both parties.
