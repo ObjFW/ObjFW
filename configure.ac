@@ -1236,6 +1236,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
+			typedef int BOOL;
+
 			#ifdef OF_HAVE_SYS_SOCKET_H
 			# include <sys/socket.h>
 			#endif
@@ -1259,6 +1261,8 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	], [
 	], [
+		typedef int BOOL;
+
 		#ifdef OF_HAVE_NETINET_IN_H
 		# include <netinet/in.h>
 		#endif
