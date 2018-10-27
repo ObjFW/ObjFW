@@ -73,16 +73,16 @@ iOS
 ---
 
   * Architectures: ARMv7, ARM64
-  * Compilers: Clang, GCC 4.2.1
+  * Compilers: Clang
   * Runtimes: Apple
 
 
 Linux
 -----
 
-  * Architectures: Alpha, ARMv6, ARM64, Itanium, m68k, MIPS (O32), PowerPC, SH4,
-                   x86, x86_64
-  * Compilers: Clang 3.0-3.6, GCC 4.2, GCC 4.6-4.8
+  * Architectures: Alpha, ARMv6, ARM64, Itanium, m68k, MIPS (O32), RISC-V 64,
+		   PowerPC, SH4, x86, x86_64
+  * Compilers: Clang 3.0-7.0, GCC 4.6-8.2
   * Runtimes: ObjFW
 
 
@@ -91,7 +91,7 @@ macOS
 
   * OS Versions: 10.5, 10.7-10.14, Darling
   * Architectures: PowerPC, PowerPC 64, x86, x86_64
-  * Compilers: Clang 3.1-4.0, LLVM GCC 4.2.1
+  * Compilers: Clang 3.1-7.0, GCC 4.2.1
   * Runtimes: Apple, ObjFW
 
 
