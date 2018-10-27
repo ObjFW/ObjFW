@@ -240,8 +240,7 @@
 							 socket: self
 							  errNo: EAFNOSUPPORT];
 	}
-#endif
-
+#else
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 
@@ -250,6 +249,7 @@
 						   port: port
 						 socket: self
 						  errNo: EADDRNOTAVAIL];
+#endif
 }
 
 - (uint16_t)bindToHost: (OFString *)host

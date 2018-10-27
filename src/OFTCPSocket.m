@@ -759,7 +759,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 	int errNo;
 	socklen_t len = sizeof(errNo);
 
-	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, &errNo, &len) != 0)
+	if (getsockopt(_socket, SOL_SOCKET, SO_ERROR, (char *)&errNo,
+	    &len) != 0)
 		return of_socket_errno();
 
 	return errNo;
@@ -990,14 +991,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 							 socket: self
 							  errNo: EAFNOSUPPORT];
 	}
-#endif
-
+#else
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 	@throw [OFBindFailedException exceptionWithHost: host
 						   port: port
 						 socket: self
 						  errNo: EADDRNOTAVAIL];
+#endif
 }
 
 - (void)listen

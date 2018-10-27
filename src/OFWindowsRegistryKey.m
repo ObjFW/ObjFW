@@ -17,9 +17,9 @@
 
 #include "config.h"
 
-#include <windows.h>
-
 #import "OFWindowsRegistryKey.h"
+
+#include <windows.h>
 
 #import "OFCreateWindowsRegistryKeyFailedException.h"
 #import "OFOpenWindowsRegistryKeyFailedException.h"
