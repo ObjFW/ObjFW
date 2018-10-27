@@ -28,7 +28,7 @@ Updating MSYS2
 
   Then proceed to update the `msys2-runtime` itself, `bash` and `pacman`:
 
-    $ pacman -S msys2-runtime bash pacman
+    $ pacman -S msys2-runtime bash pacman mintty
 
   Now close the current window and restart MSYS2, as the current window is now
   defunct. In a new MSYS2 window, update the rest of MSYS2:
@@ -52,8 +52,9 @@ Installing MinGW-w64 using MSYS2
     $ pacman -S mingw-w64-x86_64-clang mingw-w64-x86_64-gcc-objc
 
   There is nothing wrong with installing them both, as MSYS2 has created two
-  entries in your start menu: MinGW-w64 Win32 Shell and MinGW-w64 Win64 Shell.
-  So if you want to build for 32 or 64 bit, you just start the correct shell.
+  entries in your start menu: `MinGW-w64 Win32 Shell` and
+  `MinGW-w64 Win64 Shell`. So if you want to build for 32 or 64 bit, you just
+  start the correct shell.
 
   Finally, install a few more things needed to build ObjFW:
 
@@ -72,7 +73,7 @@ Getting, building and installing ObjFW
   You can also download a release tarball if you want. Now go to the newly
   checked out repository and build and install it:
 
-    $ autoreconf && ./configure && make -j16 install
+    $ ./autogen.sh && ./configure && make -j16 install
 
   If everything was successfully, you can now build projects using ObjFW for
   Windows using the normal `objfw-compile` and friends.
