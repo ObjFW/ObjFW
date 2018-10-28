@@ -239,7 +239,11 @@ add_pc:
 	jmp	%o7 + 8
 	 add	%l7, %o7, %l7
 
+#ifdef OF_SOLARIS
+.section .init_array, "aw"
+#else
 .section .ctors, "aw", %progbits
+#endif
 	.xword init
 
 .section .rodata

@@ -199,7 +199,11 @@ init:
 	leaq	module(%rip), %rdi
 	jmp	__objc_exec_class@PLT
 
+#ifdef OF_SOLARIS
+.section .init_array, "aw"
+#else
 .section .ctors, "aw", %progbits
+#endif
 	.quad init
 
 .section .rodata

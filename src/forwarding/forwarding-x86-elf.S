@@ -186,7 +186,11 @@ get_eip:
 	movl	(%esp), %ebx
 	ret
 
+#ifdef OF_SOLARIS
+.section .init_array, "aw"
+#else
 .section .ctors, "aw", %progbits
+#endif
 	.long init
 
 .section .rodata
