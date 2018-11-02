@@ -41,7 +41,7 @@ STATIC_LIBS="${libdir}/libobjfw.a @LIBS@"
 VERSION="@PACKAGE_VERSION@"
 
 show_help() {
-	cat <<__EOF__
+	cat >&2 <<__EOF__
 objfw-config: Available arguments are:
 
     --all             Outputs all flags + libs
@@ -50,17 +50,21 @@ objfw-config: Available arguments are:
     --cppflags        Outputs the required CPPFLAGS
     --cxxflags        Outputs the required CXXFLAGS
     --framework-libs  Outputs the required LIBS, preferring frameworks
-    --objc            Outputs the OBJC used to compile ObjFW
-    --objcflags       Outputs the required OBJCFLAGS
+    --help            Print this help
     --ldflags         Outputs the required LDFLAGS
-    --reexport        Outputs LDFLAGS to reexport ObjFW
-    --rpath           Outputs LDFLAGS for using rpath
     --libs            Outputs the required LIBS
     --lib-cflags      Outputs CFLAGS for building a library
     --lib-ldflags     Outputs LDFLAGS for building a library
     --lib-prefix      Outputs the prefix for libraries
     --lib-suffix      Outputs the suffix for libraries
+    --objc            Outputs the OBJC used to compile ObjFW
+    --objcflags       Outputs the required OBJCFLAGS
+    --plugin-cflags   Outputs CFLAGS for building a plugin
+    --plugin-ldflags  Outputs LDFLAGS for building a plugin
+    --plugin-suffix   Outputs the suffix for plugins
     --prog-suffix     Outputs the suffix for binaries
+    --reexport        Outputs LDFLAGS to reexport ObjFW
+    --rpath           Outputs LDFLAGS for using rpath
     --static-libs     Outputs the required LIBS to link ObjFW statically
     --version         Outputs the installed version
 __EOF__
@@ -91,6 +95,9 @@ while test -n "$1"; do
 			;;
 		--framework-libs)
 			printf "%s" "$FRAMEWORK_LIBS"
+			;;
+		--help)
+			show_help 0
 			;;
 		--objc)
 			printf "%s" "$OBJC"
