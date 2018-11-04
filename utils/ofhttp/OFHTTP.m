@@ -26,14 +26,14 @@
 #import "OFHTTPClient.h"
 #import "OFHTTPRequest.h"
 #import "OFHTTPResponse.h"
+#import "OFLocale.h"
 #import "OFOptionsParser.h"
+#import "OFSandbox.h"
 #import "OFStdIOStream.h"
 #import "OFSystemInfo.h"
 #import "OFTCPSocket.h"
 #import "OFTLSSocket.h"
 #import "OFURL.h"
-#import "OFLocale.h"
-#import "OFSandbox.h"
 
 #import "OFConnectionFailedException.h"
 #import "OFHTTPRequestFailedException.h"
@@ -379,21 +379,19 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	of_unichar_t option;
 
 #ifdef OF_HAVE_SANDBOX
-	OFSandbox *sandbox = [[OFSandbox alloc] init];
-	@try {
-		[sandbox setAllowsStdIO: true];
-		[sandbox setAllowsReadingFiles: true];
-		[sandbox setAllowsWritingFiles: true];
-		[sandbox setAllowsCreatingFiles: true];
-		[sandbox setAllowsIPSockets: true];
-		[sandbox setAllowsDNS: true];
-		[sandbox setAllowsUserDatabaseReading: true];
-		[sandbox setAllowsTTY: true];
+	OFSandbox *sandbox = [OFSandbox sandbox];
+	[sandbox setAllowsStdIO: true];
+	[sandbox setAllowsReadingFiles: true];
+	[sandbox setAllowsWritingFiles: true];
+	[sandbox setAllowsCreatingFiles: true];
+	[sandbox setAllowsIPSockets: true];
+	[sandbox setAllowsDNS: true];
+	[sandbox setAllowsUserDatabaseReading: true];
+	[sandbox setAllowsTTY: true];
+	/* Dropped after parsing options */
+	[sandbox setAllowsUnveil: true];
 
-		[OFApplication activateSandbox: sandbox];
-	} @finally {
-		[sandbox release];
-	}
+	[OFApplication activateSandbox: sandbox];
 #endif
 
 #ifndef OF_AMIGAOS
@@ -473,6 +471,15 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			break;
 		}
 	}
+
+#ifdef OF_HAVE_SANDBOX
+	[sandbox unveilPath: (outputPath != nil
+				 ? outputPath : OF_PATH_CURRENT_DIRECTORY)
+		permissions: @"wc"];
+
+	[sandbox setAllowsUnveil: false];
+	[OFApplication activateSandbox: sandbox];
+#endif
 
 	_outputPath = [outputPath copy];
 	_URLs = [[optionsParser remainingArguments] retain];

@@ -176,7 +176,6 @@ writingNotSupported(OFString *type)
 
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [OFSandbox sandbox];
-
 	[sandbox setAllowsStdIO: true];
 	[sandbox setAllowsReadingFiles: true];
 	[sandbox setAllowsWritingFiles: true];
