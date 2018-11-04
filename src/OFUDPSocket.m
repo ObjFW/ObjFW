@@ -125,6 +125,7 @@
 }
 
 - (uint16_t)of_bindToAddress: (of_socket_address_t *)address
+		   extraType: (int)extraType
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFString *host;
@@ -134,7 +135,7 @@
 #endif
 
 	if ((_socket = socket(address->sockaddr.sockaddr.sa_family,
-	    SOCK_DGRAM | SOCK_CLOEXEC, 0)) == INVALID_SOCKET) {
+	    SOCK_DGRAM | SOCK_CLOEXEC | extraType, 0)) == INVALID_SOCKET) {
 		host = of_socket_address_ip_string(address, &port);
 		@throw [OFBindFailedException
 		    exceptionWithHost: host
@@ -269,7 +270,8 @@
 	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
 	of_socket_address_set_port(&address, port);
 
-	port = [self of_bindToAddress: &address];
+	port = [self of_bindToAddress: &address
+			    extraType: 0];
 
 	objc_autoreleasePoolPop(pool);
 

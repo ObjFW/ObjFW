@@ -20,6 +20,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFDNSResolver.h"
+#import "OFSandbox.h"
 #import "OFStdIOStream.h"
 
 @interface OFDNS: OFObject <OFApplicationDelegate>
@@ -59,6 +60,18 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	of_dns_resource_record_type_t recordType =
 	    OF_DNS_RESOURCE_RECORD_TYPE_ALL;
 	OFDNSResolver *resolver;
+
+#ifdef OF_HAVE_SANDBOX
+	OFSandbox *sandbox = [[OFSandbox alloc] init];
+	@try {
+		[sandbox setAllowsStdIO: true];
+		[sandbox setAllowsDNS: true];
+
+		[OFApplication activateSandbox: sandbox];
+	} @finally {
+		[sandbox release];
+	}
+#endif
 
 	if ([arguments count] < 1 || [arguments count] > 4) {
 		[of_stderr writeFormat:

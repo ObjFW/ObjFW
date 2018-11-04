@@ -20,7 +20,8 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFUDPSocket ()
-- (uint16_t)of_bindToAddress: (of_socket_address_t *)address;
+- (uint16_t)of_bindToAddress: (of_socket_address_t *)address
+		   extraType: (int)extraType;
 @end
 
 OF_ASSUME_NONNULL_END

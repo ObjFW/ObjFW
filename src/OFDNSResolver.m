@@ -67,6 +67,10 @@
 # include <3ds.h>
 #endif
 
+#ifndef SOCK_DNS
+# define SOCK_DNS 0
+#endif
+
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
  * many. Since it's unspecified, we have to assume that it might happen, but we
@@ -1236,10 +1240,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[self of_obtainNintendo3DSSytemConfig];
 #elif defined(OF_HAVE_FILES)
 	[self of_parseHosts: HOSTS_PATH];
-# ifdef OF_OPENBSD
-	[self of_parseHosts: @"/etc/resolv.conf.tail"];
-# endif
-
 	[self of_parseResolvConf: RESOLV_CONF_PATH];
 #endif
 
@@ -1789,7 +1789,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			    of_socket_address_parse_ip(@"::", 0);
 
 			_IPv6Socket = [[OFUDPSocket alloc] init];
-			[_IPv6Socket of_bindToAddress: &address];
+			[_IPv6Socket of_bindToAddress: &address
+					    extraType: SOCK_DNS];
 			[_IPv6Socket setBlocking: false];
 		}
 
@@ -1802,7 +1803,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			    of_socket_address_parse_ip(@"0.0.0.0", 0);
 
 			_IPv4Socket = [[OFUDPSocket alloc] init];
-			[_IPv4Socket of_bindToAddress: &address];
+			[_IPv4Socket of_bindToAddress: &address
+					    extraType: SOCK_DNS];
 			[_IPv4Socket setBlocking: false];
 		}
 
