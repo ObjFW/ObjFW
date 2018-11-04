@@ -137,7 +137,9 @@ OF_ASSUME_NONNULL_BEGIN
 	void (*_Nullable _SIGUSR1Handler)(id, SEL);
 	void (*_Nullable _SIGUSR2Handler)(id, SEL);
 #endif
-	OFSandbox *_Nullable _activeSandbox;
+#ifdef OF_HAVE_SANDBOX
+	OFSandbox *_Nullable _activeSandbox, *_Nullable _activeExecSandbox;
+#endif
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
@@ -172,10 +174,19 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFApplicationDelegate> delegate;
 
+#ifdef OF_HAVE_SANDBOX
 /*!
  * @brief The sandbox currently active for this application.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFSandbox *activeSandbox;
+
+/*!
+ * @brief The sandbox currently active for `exec()`'d processes of this
+ *	  application.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OFSandbox *activeExecSandbox;
+#endif
 
 /*!
  * @brief Returns the only OFApplication instance in the application.
@@ -223,9 +234,26 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This is only available if `OF_HAVE_SANDBOX` is defined.
  *
+ * @warning If you allow `exec()`, but do not call
+ * @ref activateSandboxForExecdProcesses, an `exec()`'d process does not have
+ * its permissions restricted!
+ *
  * @param sandbox The sandbox to activate
  */
 + (void)activateSandbox: (OFSandbox *)sandbox;
+
+/*!
+ * @brief Activates the specified sandbox for `exec()`'d processes of the
+ *	  application.
+ *
+ * This is only available if `OF_HAVE_SANDBOX` is defined.
+ *
+ * `unveiledPaths` on the sandbox must *not* be empty, otherwise an
+ * @ref OFInvalidArgumentException is raised.
+ *
+ * @param sandbox The sandbox to activate
+ */
++ (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -257,9 +285,26 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * This is only available if `OF_HAVE_SANDBOX` is defined.
  *
+ * @warning If you allow `exec()`, but do not call
+ * @ref activateSandboxForExecdProcesses, an `exec()`'d process does not have
+ * its permissions restricted!
+ *
  * @param sandbox The sandbox to activate
  */
 - (void)activateSandbox: (OFSandbox *)sandbox;
+
+/*!
+ * @brief Activates the specified sandbox for `exec()`'d processes of the
+ *	  application.
+ *
+ * This is only available if `OF_HAVE_SANDBOX` is defined.
+ *
+ * `unveiledPaths` on the sandbox must *not* be empty, otherwise an
+ * @ref OFInvalidArgumentException is raised.
+ *
+ * @param sandbox The sandbox to activate
+ */
+- (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox;
 #endif
 @end
 

@@ -19,7 +19,17 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+/*! @file */
+
 @class OFArray OF_GENERIC(ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFPair OF_GENERIC(FirstType, SecondType);
+
+/*!
+ * @brief An @ref OFPair for a path to unveil, with the first string being the
+ *	  path and the second the permissions.
+ */
+typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
 
 /*!
  * @class OFSandbox OFSandbox.h ObjFW/OFSandbox.h
@@ -56,6 +66,9 @@ OF_ASSUME_NONNULL_BEGIN
 	unsigned int _allowsPF: 1;
 	unsigned int _allowsAudio: 1;
 	unsigned int _allowsBPF: 1;
+	unsigned int _allowsUnveil: 1;
+	unsigned int _returnsErrors: 1;
+	OFMutableArray OF_GENERIC(of_sandbox_unveil_path_t) *_unveiledPaths;
 }
 
 /*!
@@ -199,18 +212,55 @@ OF_ASSUME_NONNULL_BEGIN
 @property (nonatomic) bool allowsBPF;
 
 /*!
+ * @brief Allows unveiling more paths.
+ */
+@property (nonatomic) bool allowsUnveil;
+
+/*!
+ * @brief Returns errors instead of killing the process.
+ */
+@property (nonatomic) bool returnsErrors;
+
+#ifdef OF_HAVE_PLEDGE
+/*!
+ * The string for OpenBSD's pledge() call.
+ *
+ * @warning Only available on systems with the pledge() call!
+ */
+@property (readonly, nonatomic) OFString *pledgeString;
+#endif
+
+/*!
+ * @brief A list of unveiled paths.
+ */
+@property (readonly, nonatomic)
+    OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+
+/*!
  * @brief Create a new, autorelease OFSandbox.
  */
 + (instancetype)sandbox;
 
-#ifdef OF_HAVE_PLEDGE
 /*!
- * @brief Returns the string for OpenBSD's pledge() call.
+ * @brief "Unveils" the specified path, meaning that it becomes visible from
+ *	  the sandbox with the specified permissions.
  *
- * @warning Only available on systems with the pledge() call!
+ * @param path The path to unveil
+ * @param permissions The permissions for the path. The following permissions
+ *		      can be combined:
+ *		      Permission | Description
+ *		      -----------|--------------------
+ *		      r          | Make the path available for reading, like
+ *		                 | @ref allowsReadingFiles
+ *		      w          | Make the path available for writing, like
+ *		                 | @ref allowsWritingFiles
+ *		      x          | Make the path available for executing, like
+ *		                 | @ref allowsExec
+ *		      c          | Make the path available for creation and
+ *		                 | deletion, like @ref allowsCreatingFiles
  */
-- (OFString *)pledgeString;
-#endif
+- (void)unveilPath: (OFString *)path
+       permissions: (OFString *)permissions;
 @end
 
 OF_ASSUME_NONNULL_END

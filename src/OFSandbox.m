@@ -18,13 +18,37 @@
 #include "config.h"
 
 #import "OFSandbox.h"
-#import "OFString.h"
 #import "OFArray.h"
+#import "OFPair.h"
+#import "OFString.h"
 
 @implementation OFSandbox
+@synthesize unveiledPaths = _unveiledPaths;
+
 + (instancetype)sandbox
 {
 	return [[[self alloc] init] autorelease];
+}
+
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_unveiledPaths = [[OFMutableArray alloc] init];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_unveiledPaths release];
+
+	[super dealloc];
 }
 
 - (void)setAllowsStdIO: (bool)allowsStdIO
@@ -307,6 +331,26 @@
 	return _allowsBPF;
 }
 
+- (void)setAllowsUnveil: (bool)allowsUnveil
+{
+	_allowsUnveil = allowsUnveil;
+}
+
+- (bool)allowsUnveil
+{
+	return _allowsUnveil;
+}
+
+- (void)setReturnsErrors: (bool)returnsErrors
+{
+	_returnsErrors = returnsErrors;
+}
+
+- (bool)returnsErrors
+{
+	return _returnsErrors;
+}
+
 - (id)copy
 {
 	OFSandbox *copy = [[OFSandbox alloc] init];
@@ -339,6 +383,8 @@
 	copy->_allowsPF = _allowsPF;
 	copy->_allowsAudio = _allowsAudio;
 	copy->_allowsBPF = _allowsBPF;
+	copy->_allowsUnveil = _allowsUnveil;
+	copy->_returnsErrors = _returnsErrors;
 
 	return copy;
 }
@@ -415,6 +461,10 @@
 		return false;
 	if (sandbox->_allowsBPF != _allowsBPF)
 		return false;
+	if (sandbox->_allowsUnveil != _allowsUnveil)
+		return false;
+	if (sandbox->_returnsErrors != _returnsErrors)
+		return false;
 
 	return true;
 }
@@ -453,6 +503,8 @@
 	OF_HASH_ADD(hash, _allowsPF);
 	OF_HASH_ADD(hash, _allowsAudio);
 	OF_HASH_ADD(hash, _allowsBPF);
+	OF_HASH_ADD(hash, _allowsUnveil);
+	OF_HASH_ADD(hash, _returnsErrors);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -522,6 +574,10 @@
 		[pledges addObject: @"audio"];
 	if (_allowsBPF)
 		[pledges addObject: @"bpf"];
+	if (_allowsUnveil)
+		[pledges addObject: @"unveil"];
+	if (_returnsErrors)
+		[pledges addObject: @"error"];
 
 	ret = [pledges componentsJoinedByString: @" "];
 
@@ -532,4 +588,20 @@
 	return [ret autorelease];
 }
 #endif
+
+- (void)unveilPath: (OFString *)path
+       permissions: (OFString *)permissions
+{
+	void *pool = objc_autoreleasePoolPush();
+
+	[_unveiledPaths addObject: [OFPair pairWithFirstObject: path
+						  secondObject: permissions]];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (OFArray OF_GENERIC(of_sandbox_unveil_path_t) *)unveiledPaths
+{
+	return [[_unveiledPaths copy] autorelease];
+}
 @end

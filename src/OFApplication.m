@@ -29,20 +29,22 @@
 #include "unistd_wrapper.h"
 
 #import "OFApplication.h"
-#import "OFString.h"
 #import "OFArray.h"
 #import "OFDictionary.h"
-#import "OFLocale.h"
-#import "OFRunLoop.h"
-#import "OFRunLoop+Private.h"
-#import "OFThread.h"
-#import "OFThread+Private.h"
-#import "OFSandbox.h"
 #ifdef OF_AMIGAOS
 # import "OFFile.h"
 # import "OFFileManager.h"
 #endif
+#import "OFLocale.h"
+#import "OFPair.h"
+#import "OFRunLoop+Private.h"
+#import "OFRunLoop.h"
+#import "OFSandbox.h"
+#import "OFString.h"
+#import "OFThread+Private.h"
+#import "OFThread.h"
 
+#import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 #import "OFSandboxActivationFailedException.h"
@@ -156,7 +158,11 @@ of_application_main(int *argc, char **argv[],
 
 @implementation OFApplication
 @synthesize programName = _programName, arguments = _arguments;
-@synthesize environment = _environment, activeSandbox = _activeSandbox;
+@synthesize environment = _environment;
+#ifdef OF_HAVE_SANDBOX
+@synthesize activeSandbox = _activeSandbox;
+@synthesize activeExecSandbox = _activeExecSandbox;
+#endif
 
 + (OFApplication *)sharedApplication
 {
@@ -202,6 +208,11 @@ of_application_main(int *argc, char **argv[],
 + (void)activateSandbox: (OFSandbox *)sandbox
 {
 	[app activateSandbox: sandbox];
+}
+
++ (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox
+{
+	[app activateSandboxForExecdProcesses: sandbox];
 }
 #endif
 
@@ -583,9 +594,21 @@ of_application_main(int *argc, char **argv[],
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
+	of_string_encoding_t encoding = [OFLocale encoding];
 	const char *promises = [[sandbox pledgeString]
-	    cStringWithEncoding: [OFLocale encoding]];
+	    cStringWithEncoding: encoding];
 	OFSandbox *oldSandbox;
+
+	for (of_sandbox_unveil_path_t unveiledPath in [sandbox unveiledPaths]) {
+		OFString *path = [unveiledPath firstObject];
+		OFString *permissions = [unveiledPath secondObject];
+
+		if (path == nil || permissions == nil)
+			@throw [OFInvalidArgumentException exception];
+
+		unveil([path cStringWithEncoding: encoding],
+		    [permissions cStringWithEncoding: encoding]);
+	}
 
 	if (pledge(promises, NULL) != 0)
 		@throw [OFSandboxActivationFailedException
@@ -596,6 +619,30 @@ of_application_main(int *argc, char **argv[],
 
 	oldSandbox = _activeSandbox;
 	_activeSandbox = [sandbox retain];
+	[oldSandbox release];
+# endif
+}
+
+- (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox
+{
+# ifdef OF_HAVE_PLEDGE
+	void *pool = objc_autoreleasePoolPush();
+	const char *promises = [[sandbox pledgeString]
+	    cStringWithEncoding: [OFLocale encoding]];
+	OFSandbox *oldSandbox;
+
+	if ([[sandbox unveiledPaths] count] != 0)
+		@throw [OFInvalidArgumentException exception];
+
+	if (pledge(NULL, promises) != 0)
+		@throw [OFSandboxActivationFailedException
+		    exceptionWithSandbox: sandbox
+				   errNo: errno];
+
+	objc_autoreleasePoolPop(pool);
+
+	oldSandbox = _activeExecSandbox;
+	_activeExecSandbox = [sandbox retain];
 	[oldSandbox release];
 # endif
 }
