@@ -20,6 +20,7 @@
 #import "OFApplication.h"
 #import "OFArray.h"
 #import "OFFile.h"
+#import "OFLocale.h"
 #import "OFMD5Hash.h"
 #import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"
@@ -27,9 +28,9 @@
 #import "OFSHA256Hash.h"
 #import "OFSHA384Hash.h"
 #import "OFSHA512Hash.h"
-#import "OFStdIOStream.h"
-#import "OFLocale.h"
 #import "OFSandbox.h"
+#import "OFSecureData.h"
+#import "OFStdIOStream.h"
 
 #import "OFOpenItemFailedException.h"
 #import "OFReadFailedException.h"
@@ -80,11 +81,34 @@ hashForName(OFString *name)
 	int exitStatus = 0;
 
 #ifdef OF_HAVE_SANDBOX
-	OFSandbox *sandbox = [[OFSandbox alloc] init];
+	OFSandbox *sandbox;
+
+	/*
+	 * SHA-512 is the largest hash supported, so no matter which hash will
+	 * be used in the end, this is enough secure memory.
+	 */
+	[OFSecureData preallocateMemoryWithSize:
+	    class_getInstanceSize([OFSHA512Hash class])];
+
+	sandbox = [[OFSandbox alloc] init];
 	@try {
 		[sandbox setAllowsStdIO: true];
 		[sandbox setAllowsReadingFiles: true];
 		[sandbox setAllowsUserDatabaseReading: true];
+
+		for (OFString *path in arguments) {
+			if (first) {
+				first = false;
+				continue;
+			}
+
+			[sandbox unveilPath: path
+				permissions: @"r"];
+		}
+		first = true;
+
+		[sandbox unveilPath: @LANGUAGE_DIR
+			permissions: @"r"];
 
 		[OFApplication activateSandbox: sandbox];
 	} @finally {
