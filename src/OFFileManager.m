@@ -41,6 +41,7 @@
 
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFCopyItemFailedException.h"
+#import "OFCreateDirectoryFailedException.h"
 #import "OFGetCurrentDirectoryPathFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
@@ -319,6 +320,28 @@ OF_DESTRUCTOR()
 	if (!createParents) {
 		[self createDirectoryAtURL: URL];
 		return;
+	}
+
+	/*
+	 * Try blindly creating the directory first.
+	 *
+	 * The reason for this is that we might be sandboxed, so attempting to
+	 * create any of the parent directories will fail, while creating the
+	 * directory itself will work.
+	 */
+	if ([self directoryExistsAtURL: URL])
+		return;
+
+	@try {
+		[self createDirectoryAtURL: URL];
+		return;
+	} @catch (OFCreateDirectoryFailedException *e) {
+		/*
+		 * If we didn't fail because any of the parents is missing,
+		 * there is no point in trying to create the parents.
+		 */
+		if ([e errNo] != ENOENT)
+			@throw e;
 	}
 
 	components = [[URL URLEncodedPath] componentsSeparatedByString: @"/"];

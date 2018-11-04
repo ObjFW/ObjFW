@@ -39,6 +39,7 @@
 #import "OFArray.h"
 #import "OFDate.h"
 #import "OFFile.h"
+#import "OFFileManager.h"
 #import "OFLocale.h"
 #import "OFNumber.h"
 #import "OFURL.h"

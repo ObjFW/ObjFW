@@ -19,6 +19,12 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#ifdef OF_AMIGAOS
+# define OF_PATH_CURRENT_DIRECTORY @""
+#else
+# define OF_PATH_CURRENT_DIRECTORY @"."
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

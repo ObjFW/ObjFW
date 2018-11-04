@@ -175,19 +175,18 @@ writingNotSupported(OFString *type)
 	id <Archive> archive;
 
 #ifdef OF_HAVE_SANDBOX
-	OFSandbox *sandbox = [[OFSandbox alloc] init];
-	@try {
-		[sandbox setAllowsStdIO: true];
-		[sandbox setAllowsReadingFiles: true];
-		[sandbox setAllowsWritingFiles: true];
-		[sandbox setAllowsCreatingFiles: true];
-		[sandbox setAllowsChangingFileAttributes: true];
-		[sandbox setAllowsUserDatabaseReading: true];
+	OFSandbox *sandbox = [OFSandbox sandbox];
 
-		[OFApplication activateSandbox: sandbox];
-	} @finally {
-		[sandbox release];
-	}
+	[sandbox setAllowsStdIO: true];
+	[sandbox setAllowsReadingFiles: true];
+	[sandbox setAllowsWritingFiles: true];
+	[sandbox setAllowsCreatingFiles: true];
+	[sandbox setAllowsChangingFileAttributes: true];
+	[sandbox setAllowsUserDatabaseReading: true];
+	/* Dropped after parsing options */
+	[sandbox setAllowsUnveil: true];
+
+	[OFApplication activateSandbox: sandbox];
 #endif
 
 #ifndef OF_AMIGAOS
@@ -312,14 +311,6 @@ writingNotSupported(OFString *type)
 	}
 
 	remainingArguments = [optionsParser remainingArguments];
-	archive = [self openArchiveWithPath: [remainingArguments firstObject]
-				       type: type
-				       mode: mode
-				   encoding: encoding];
-
-	if (outputDir != nil)
-		[[OFFileManager defaultManager]
-		    changeCurrentDirectoryPath: outputDir];
 
 	switch (mode) {
 	case 'a':
@@ -330,11 +321,42 @@ writingNotSupported(OFString *type)
 		files = [remainingArguments objectsInRange:
 		    of_range(1, [remainingArguments count] - 1)];
 
+#ifdef OF_HAVE_SANDBOX
+		[sandbox unveilPath: [remainingArguments firstObject]
+			permissions: (mode == 'a' ? @"rwc" : @"wc")];
+
+		for (OFString *path in files)
+			[sandbox unveilPath: path
+				permissions: @"r"];
+
+		[sandbox setAllowsUnveil: false];
+		[OFApplication activateSandbox: sandbox];
+#endif
+
+		archive = [self
+		    openArchiveWithPath: [remainingArguments firstObject]
+				   type: type
+				   mode: mode
+			       encoding: encoding];
+
 		[archive addFiles: files];
 		break;
 	case 'l':
 		if ([remainingArguments count] != 1)
 			help(of_stderr, false, 1);
+
+#ifdef OF_HAVE_SANDBOX
+		[sandbox unveilPath: [remainingArguments firstObject]
+			permissions: @"r"];
+		[sandbox setAllowsUnveil: false];
+		[OFApplication activateSandbox: sandbox];
+#endif
+
+		archive = [self
+		    openArchiveWithPath: [remainingArguments firstObject]
+				   type: type
+				   mode: mode
+			       encoding: encoding];
 
 		[archive listFiles];
 		break;
@@ -342,8 +364,21 @@ writingNotSupported(OFString *type)
 		if ([remainingArguments count] < 1)
 			help(of_stderr, false, 1);
 
+#ifdef OF_HAVE_SANDBOX
+		[sandbox unveilPath: [remainingArguments firstObject]
+			permissions: @"r"];
+		[sandbox setAllowsUnveil: false];
+		[OFApplication activateSandbox: sandbox];
+#endif
+
 		files = [remainingArguments objectsInRange:
 		    of_range(1, [remainingArguments count] - 1)];
+
+		archive = [self
+		    openArchiveWithPath: [remainingArguments firstObject]
+				   type: type
+				   mode: mode
+			       encoding: encoding];
 
 		[archive printFiles: files];
 		break;
@@ -353,6 +388,36 @@ writingNotSupported(OFString *type)
 
 		files = [remainingArguments objectsInRange:
 		    of_range(1, [remainingArguments count] - 1)];
+
+#ifdef OF_HAVE_SANDBOX
+		[sandbox unveilPath: [remainingArguments firstObject]
+			permissions: @"r"];
+
+		if ([files count] > 0)
+			for (OFString *path in files)
+				[sandbox unveilPath: path
+					permissions: @"wc"];
+		else {
+			OFString *path = (outputDir != nil
+			    ? outputDir : OF_PATH_CURRENT_DIRECTORY);
+			/* We need 'r' to change the directory to it. */
+			[sandbox unveilPath: path
+				permissions: @"rwc"];
+		}
+
+		[sandbox setAllowsUnveil: false];
+		[OFApplication activateSandbox: sandbox];
+#endif
+
+		archive = [self
+		    openArchiveWithPath: [remainingArguments firstObject]
+				   type: type
+				   mode: mode
+			       encoding: encoding];
+
+		if (outputDir != nil)
+			[[OFFileManager defaultManager]
+			    changeCurrentDirectoryPath: outputDir];
 
 		@try {
 			[archive extractFiles: files];
