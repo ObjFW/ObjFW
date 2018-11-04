@@ -48,11 +48,16 @@ struct page {
 #if defined(OF_HAVE_COMPILER_TLS)
 static thread_local struct page *firstPage = NULL;
 static thread_local struct page *lastPage = NULL;
+static thread_local struct page **preallocatedPages = NULL;
+static thread_local size_t numPreallocatedPages = 0;
 #elif defined(OF_HAVE_THREADS)
 static of_tlskey_t firstPageKey, lastPageKey;
+static of_tlskey_t preallocatedPagesKey, numPreallocatedPagesKey;
 #else
 static struct page *firstPage = NULL;
 static struct page *lastPage = NULL;
+static struct page **preallocatedPages = NULL;
+static size_t numPreallocatedPages = 0;
 #endif
 
 static void *
@@ -99,7 +104,7 @@ unmapPages(void *pointer, size_t numPages)
 }
 
 static struct page *
-addPage(void)
+addPage(bool allowPreallocated)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 	size_t mapSize = OF_ROUND_UP_POW2(8, pageSize / CHUNK_SIZE) / 8;
@@ -107,6 +112,39 @@ addPage(void)
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	struct page *lastPage;
 #endif
+
+	if (allowPreallocated) {
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+		uintptr_t numPreallocatedPages =
+		    (uintptr_t)of_tlskey_get(numPreallocatedPagesKey);
+#endif
+
+		if (numPreallocatedPages > 0) {
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+			struct page **preallocatedPages =
+			    of_tlskey_get(preallocatedPagesKey);
+#endif
+
+			numPreallocatedPages--;
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+			OF_ENSURE(of_tlskey_set(numPreallocatedPagesKey,
+			    (void *)numPreallocatedPages));
+#endif
+
+			page = preallocatedPages[numPreallocatedPages];
+
+			if (numPreallocatedPages == 0) {
+				free(preallocatedPages);
+				preallocatedPages = NULL;
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+				OF_ENSURE(of_tlskey_set(preallocatedPagesKey,
+				    preallocatedPages));
+#endif
+			}
+
+			return page;
+		}
+	}
 
 	if ((page = malloc(sizeof(*page))) == NULL)
 		@throw [OFOutOfMemoryException
@@ -231,7 +269,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	if (self != [OFSecureData class])
 		return;
 
-	if (!of_tlskey_new(&firstPageKey) || !of_tlskey_new(&lastPageKey))
+	if (!of_tlskey_new(&firstPageKey) || !of_tlskey_new(&lastPageKey) ||
+	    !of_tlskey_new(&preallocatedPagesKey) ||
+	    !of_tlskey_new(&numPreallocatedPagesKey))
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }
@@ -266,6 +306,37 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	return isSecure;
 #else
 	return false;
+#endif
+}
+
++ (void)preallocateMemoryWithSize: (size_t)size
+{
+	size_t pageSize = [OFSystemInfo pageSize];
+	size_t numPages = OF_ROUND_UP_POW2(pageSize, size) / pageSize;
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+	struct page **preallocatedPages = of_tlskey_get(preallocatedPagesKey);
+	size_t numPreallocatedPages;
+#endif
+
+	if (preallocatedPages != NULL)
+		@throw [OFInvalidArgumentException exception];
+
+	preallocatedPages = calloc(numPages, sizeof(struct page));
+	if (preallocatedPages == NULL)
+		@throw [OFOutOfMemoryException
+		    exceptionWithRequestedSize: numPages * sizeof(struct page)];
+
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+	of_tlskey_set(preallocatedPagesKey, preallocatedPages);
+#endif
+
+	for (size_t i = 0; i < numPages; i++)
+		preallocatedPages[i] = addPage(false);
+
+	numPreallocatedPages = numPages;
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+	of_tlskey_set(numPreallocatedPagesKey,
+	    (void *)(uintptr_t)numPreallocatedPages);
 #endif
 }
 
@@ -344,7 +415,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			}
 
 			if (_items == NULL) {
-				_page = addPage();
+				_page = addPage(true);
 				_items = allocateMemory(_page,
 				    count * itemSize);
 

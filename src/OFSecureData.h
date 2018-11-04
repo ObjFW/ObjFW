@@ -44,6 +44,20 @@ OF_ASSUME_NONNULL_BEGIN
 + (bool)isSecure;
 
 /*!
+ * @brief Preallocates the specified number of bytes.
+ *
+ * This is useful to allocate secure memory before enabling a sandbox that does
+ * not allow it anymore.
+ *
+ * @note This may only be called once per thread!
+ * @note Preallocated memory is only available for OFSecureData that is smaller
+ *	 than a single page!
+ *
+ * @param size The number of bytes to preallocate
+ */
++ (void)preallocateMemoryWithSize: (size_t)size;
+
+/*!
  * @brief Creates a new, autoreleased OFSecureData with count items of item
  *	  size 1, all set to zero.
  *
