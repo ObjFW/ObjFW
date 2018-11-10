@@ -817,8 +817,8 @@ uninstall: uninstall-extra
 			fi \
 		fi \
 	done
-	-rmdir ${DESTDIR}${prefix}/Library/Frameworks >/dev/null 2>&1
-	-rmdir ${DESTDIR}${prefix}/Library >/dev/null 2>&1
+	rmdir ${DESTDIR}${prefix}/Library/Frameworks >/dev/null 2>&1 || true
+	rmdir ${DESTDIR}${prefix}/Library >/dev/null 2>&1 || true
 
 	for i in "" ${STATIC_LIB} ${STATIC_PIC_LIB}; do \
 		test x"$$i" = x"" && continue; \
@@ -841,7 +841,7 @@ uninstall: uninstall-extra
 			fi \
 		fi \
 	done
-	-rmdir ${DESTDIR}${plugindir} >/dev/null 2>&1
+	rmdir ${DESTDIR}${plugindir} >/dev/null 2>&1 || true
 
 	for i in "" ${DATA}; do \
 		test x"$$i" = x"" && continue; \
@@ -854,7 +854,7 @@ uninstall: uninstall-extra
 		fi; \
 		rmdir "$$(dirname ${DESTDIR}${datadir}/${PACKAGE_NAME}/$$i)" >/dev/null 2>&1 || true; \
 	done
-	-rmdir ${DESTDIR}${datadir}/${PACKAGE_NAME} >/dev/null 2>&1
+	rmdir ${DESTDIR}${datadir}/${PACKAGE_NAME} >/dev/null 2>&1 || true
 
 	for i in "" ${PROG}; do \
 		test x"$$i" = x"" && continue; \
@@ -877,7 +877,7 @@ uninstall: uninstall-extra
 			fi \
 		fi \
 	done
-	-rmdir ${DESTDIR}${includedir}/${includesubdir} >/dev/null 2>&1
+	rmdir ${DESTDIR}${includedir}/${includesubdir} >/dev/null 2>&1 || true
 
 	for i in "" ${MO_FILES}; do \
 		test x"$$i" = x"" && continue; \
