@@ -24,19 +24,9 @@
 @implementation OFUnsupportedProtocolException
 @synthesize URL = _URL;
 
-+ (instancetype)exception
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
 + (instancetype)exceptionWithURL: (OFURL *)URL
 {
 	return [[[self alloc] initWithURL: URL] autorelease];
-}
-
-- (instancetype)init
-{
-	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithURL: (OFURL *)URL
@@ -57,7 +47,10 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"The protocol of URL %@ is not supported!", _URL];
+	if (_URL != nil)
+		return [OFString stringWithFormat:
+		    @"The protocol of URL %@ is not supported!", _URL];
+	else
+		return @"The requested protocol is unsupported!";
 }
 @end

@@ -93,9 +93,12 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_Nullable _host;
 	uint16_t _port;
+	bool _usesTLS;
+	OFString *_Nullable _certificateFile, *_Nullable _privateKeyFile;
+	const char *_Nullable _privateKeyPassphrase;
 	id <OFHTTPServerDelegate> _Nullable _delegate;
 	OFString *_Nullable _name;
-	OFTCPSocket *_Nullable _listeningSocket;
+	OF_KINDOF(OFTCPSocket *) _Nullable _listeningSocket;
 }
 
 /*!
@@ -107,6 +110,30 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The port on which the HTTP server will listen.
  */
 @property (nonatomic) uint16_t port;
+
+/*!
+ * @brief Whether the HTTP server uses TLS.
+ */
+@property (nonatomic) bool usesTLS;
+
+/*!
+ * @brief The path to the X.509 certificate file to use for TLS.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *certificateFile;
+
+/*!
+ * @brief The path to the PKCS#8 private key file to use for TLS.
+ */
+@property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *privateKeyFile;
+
+/*!
+ * @brief The passphrase to decrypt the PKCS#8 private key file for TLS.
+ *
+ * @warning You have to ensure that this is in secure memory protected from
+ *	    swapping! This is also the reason why this is not an OFString.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    const char *privateKeyPassphrase;
 
 /*!
  * @brief The delegate for the HTTP server.

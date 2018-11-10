@@ -39,8 +39,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFURL *URL;
 
-+ (instancetype)exception OF_UNAVAILABLE;
-
 /*!
  * @brief Creates a new, autoreleased unsupported protocol exception.
  *
@@ -48,8 +46,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased unsupported protocol exception
  */
 + (instancetype)exceptionWithURL: (OFURL*)URL;
-
-- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated unsupported protocol exception

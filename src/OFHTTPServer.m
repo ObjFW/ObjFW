@@ -28,6 +28,7 @@
 #import "OFHTTPResponse.h"
 #import "OFNumber.h"
 #import "OFTCPSocket.h"
+#import "OFTLSSocket.h"
 #import "OFTimer.h"
 #import "OFURL.h"
 
@@ -37,6 +38,7 @@
 #import "OFNotOpenException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
+#import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
 
 #import "socket_helpers.h"
@@ -49,21 +51,21 @@
  */
 
 @interface OFHTTPServer ()
-- (bool)of_socket: (OFTCPSocket *)sock
-  didAcceptSocket: (OFTCPSocket *)clientSocket
+- (bool)of_socket: (OF_KINDOF(OFTCPSocket *))sock
+  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))clientSocket
 	  context: (id)context
 	exception: (id)exception;
 @end
 
 @interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
 {
-	OFTCPSocket *_socket;
+	OF_KINDOF(OFTCPSocket *) _socket;
 	OFHTTPServer *_server;
 	OFHTTPRequest *_request;
 	bool _chunked, _headersSent;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 			server: (OFHTTPServer *)server
 		       request: (OFHTTPRequest *)request;
 @end
@@ -71,7 +73,7 @@
 @interface OFHTTPServer_Connection: OFObject
 {
 @public
-	OFTCPSocket *_socket;
+	OF_KINDOF(OFTCPSocket *) _socket;
 	OFHTTPServer *_server;
 	OFTimer *_timer;
 	enum {
@@ -88,9 +90,9 @@
 	OFStream *_requestBody;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 			server: (OFHTTPServer *)server;
-- (bool)socket: (OFTCPSocket *)sock
+- (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
    didReadLine: (OFString *)line
        context: (id)context
      exception: (id)exception;
@@ -102,12 +104,12 @@
 
 @interface OFHTTPServerRequestBodyStream: OFStream <OFReadyForReadingObserving>
 {
-	OFTCPSocket *_socket;
+	OF_KINDOF(OFTCPSocket *) _socket;
 	uintmax_t _toRead;
 	bool _atEndOfStream;
 }
 
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 		 contentLength: (uintmax_t)contentLength;
 @end
 
@@ -231,7 +233,7 @@ normalizedKey(OFString *key)
 }
 
 @implementation OFHTTPServerResponse
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 			server: (OFHTTPServer *)server
 		       request: (OFHTTPRequest *)request
 {
@@ -368,7 +370,7 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServer_Connection
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
+- (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 			server: (OFHTTPServer *)server
 {
 	self = [super init];
@@ -407,7 +409,7 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
-- (bool)socket: (OFTCPSocket *)sock
+- (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
    didReadLine: (OFString *)line
        context: (id)context
      exception: (id)exception
@@ -659,8 +661,8 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServerRequestBodyStream
-- (instancetype)initWithSocket: (OFTCPSocket *)sock
-		     contentLength: (uintmax_t)contentLength
+- (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
+		 contentLength: (uintmax_t)contentLength
 {
 	self = [super init];
 
@@ -726,7 +728,11 @@ normalizedKey(OFString *key)
 @end
 
 @implementation OFHTTPServer
-@synthesize host = _host, port = _port, delegate = _delegate, name = _name;
+@synthesize host = _host, port = _port, usesTLS = _usesTLS;
+@synthesize certificateFile = _certificateFile;
+@synthesize privateKeyFile = _privateKeyFile;
+@synthesize privateKeyPassphrase = _privateKeyPassphrase, delegate = _delegate;
+@synthesize name = _name;
 
 + (instancetype)server
 {
@@ -760,7 +766,22 @@ normalizedKey(OFString *key)
 	if (_listeningSocket != nil)
 		@throw [OFAlreadyConnectedException exception];
 
-	_listeningSocket = [[OFTCPSocket alloc] init];
+	if (_usesTLS) {
+		id <OFTLSSocket> listeningSocket;
+
+		if (of_tls_socket_class == Nil)
+			@throw [OFUnsupportedProtocolException exception];
+
+		_listeningSocket = [[of_tls_socket_class alloc] init];
+
+		listeningSocket = _listeningSocket;
+		[listeningSocket setCertificateFile: _certificateFile];
+		[listeningSocket setPrivateKeyFile: _privateKeyFile];
+		[listeningSocket
+		    setPrivateKeyPassphrase: _privateKeyPassphrase];
+	} else
+		_listeningSocket = [[OFTCPSocket alloc] init];
+
 	_port = [_listeningSocket bindToHost: _host
 					port: _port];
 	[_listeningSocket listen];
@@ -779,8 +800,8 @@ normalizedKey(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (bool)of_socket: (OFTCPSocket *)sock
-  didAcceptSocket: (OFTCPSocket *)clientSocket
+- (bool)of_socket: (OF_KINDOF(OFTCPSocket *))sock
+  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))clientSocket
 	  context: (id)context
 	exception: (id)exception
 {
