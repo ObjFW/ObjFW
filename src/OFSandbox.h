@@ -69,6 +69,8 @@ typedef OFPair OF_GENERIC(OFString *, OFString *) *of_sandbox_unveil_path_t;
 	unsigned int _allowsUnveil: 1;
 	unsigned int _returnsErrors: 1;
 	OFMutableArray OF_GENERIC(of_sandbox_unveil_path_t) *_unveiledPaths;
+@public
+	size_t _unveiledPathsIndex;
 }
 
 /*!

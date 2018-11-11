@@ -597,9 +597,17 @@ of_application_main(int *argc, char **argv[],
 	of_string_encoding_t encoding = [OFLocale encoding];
 	const char *promises = [[sandbox pledgeString]
 	    cStringWithEncoding: encoding];
+	OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
+	size_t unveiledPathsCount;
 	OFSandbox *oldSandbox;
 
-	for (of_sandbox_unveil_path_t unveiledPath in [sandbox unveiledPaths]) {
+	unveiledPaths = [sandbox unveiledPaths];
+	unveiledPathsCount = [unveiledPaths count];
+
+	for (size_t i = sandbox->_unveiledPathsIndex;
+	    i < unveiledPathsCount; i++) {
+		of_sandbox_unveil_path_t unveiledPath =
+		    [unveiledPaths objectAtIndex: i];
 		OFString *path = [unveiledPath firstObject];
 		OFString *permissions = [unveiledPath secondObject];
 
@@ -609,6 +617,8 @@ of_application_main(int *argc, char **argv[],
 		unveil([path cStringWithEncoding: encoding],
 		    [permissions cStringWithEncoding: encoding]);
 	}
+
+	sandbox->_unveiledPathsIndex = unveiledPathsCount;
 
 	if (pledge(promises, NULL) != 0)
 		@throw [OFSandboxActivationFailedException
