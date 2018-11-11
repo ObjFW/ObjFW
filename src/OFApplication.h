@@ -238,6 +238,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref activateSandboxForExecdProcesses, an `exec()`'d process does not have
  * its permissions restricted!
  *
+ * @note Once a sandbox has been activated, you cannot activate a different
+ *	 sandbox. You can however change the active sandbox and reactivate it.
+ *
  * @param sandbox The sandbox to activate
  */
 + (void)activateSandbox: (OFSandbox *)sandbox;
@@ -250,6 +253,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * `unveiledPaths` on the sandbox must *not* be empty, otherwise an
  * @ref OFInvalidArgumentException is raised.
+ *
+ * @note Once a sandbox has been activated, you cannot activate a different
+ *	 sandbox. You can however change the active sandbox and reactivate it.
  *
  * @param sandbox The sandbox to activate
  */
@@ -289,6 +295,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @ref activateSandboxForExecdProcesses, an `exec()`'d process does not have
  * its permissions restricted!
  *
+ * @note Once a sandbox has been activated, you cannot activate a different
+ *	 sandbox. You can however change the active sandbox and reactivate it.
+ *
  * @param sandbox The sandbox to activate
  */
 - (void)activateSandbox: (OFSandbox *)sandbox;
@@ -301,6 +310,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * `unveiledPaths` on the sandbox must *not* be empty, otherwise an
  * @ref OFInvalidArgumentException is raised.
+ *
+ * @note Once a sandbox has been activated, you cannot activate a different
+ *	 sandbox. You can however change the active sandbox and reactivate it.
  *
  * @param sandbox The sandbox to activate
  */

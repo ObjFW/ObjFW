@@ -595,11 +595,12 @@ of_application_main(int *argc, char **argv[],
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
 	of_string_encoding_t encoding = [OFLocale encoding];
-	const char *promises = [[sandbox pledgeString]
-	    cStringWithEncoding: encoding];
 	OFArray OF_GENERIC(of_sandbox_unveil_path_t) *unveiledPaths;
 	size_t unveiledPathsCount;
-	OFSandbox *oldSandbox;
+	const char *promises;
+
+	if (_activeSandbox != nil && sandbox != _activeSandbox)
+		@throw [OFInvalidArgumentException exception];
 
 	unveiledPaths = [sandbox unveiledPaths];
 	unveiledPathsCount = [unveiledPaths count];
@@ -620,6 +621,8 @@ of_application_main(int *argc, char **argv[],
 
 	sandbox->_unveiledPathsIndex = unveiledPathsCount;
 
+	promises = [[sandbox pledgeString] cStringWithEncoding: encoding];
+
 	if (pledge(promises, NULL) != 0)
 		@throw [OFSandboxActivationFailedException
 		    exceptionWithSandbox: sandbox
@@ -627,9 +630,8 @@ of_application_main(int *argc, char **argv[],
 
 	objc_autoreleasePoolPop(pool);
 
-	oldSandbox = _activeSandbox;
-	_activeSandbox = [sandbox retain];
-	[oldSandbox release];
+	if (_activeSandbox == nil)
+		_activeSandbox = [sandbox retain];
 # endif
 }
 
@@ -637,12 +639,16 @@ of_application_main(int *argc, char **argv[],
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
-	const char *promises = [[sandbox pledgeString]
-	    cStringWithEncoding: [OFLocale encoding]];
-	OFSandbox *oldSandbox;
+	const char *promises;
+
+	if (_activeExecSandbox != nil && sandbox != _activeExecSandbox)
+		@throw [OFInvalidArgumentException exception];
 
 	if ([[sandbox unveiledPaths] count] != 0)
 		@throw [OFInvalidArgumentException exception];
+
+	promises = [[sandbox pledgeString]
+	    cStringWithEncoding: [OFLocale encoding]];
 
 	if (pledge(NULL, promises) != 0)
 		@throw [OFSandboxActivationFailedException
@@ -651,9 +657,8 @@ of_application_main(int *argc, char **argv[],
 
 	objc_autoreleasePoolPop(pool);
 
-	oldSandbox = _activeExecSandbox;
-	_activeExecSandbox = [sandbox retain];
-	[oldSandbox release];
+	if (_activeExecSandbox == nil)
+		_activeExecSandbox = [sandbox retain];
 # endif
 }
 #endif
