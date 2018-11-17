@@ -178,7 +178,7 @@ encodingForContentType(OFString *contentType)
 	return _protocolVersion;
 }
 
-- (void)setProtocolVersionFromString: (OFString *)string
+- (void)setProtocolVersionString: (OFString *)string
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];

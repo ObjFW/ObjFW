@@ -209,7 +209,7 @@ of_http_request_method_from_string(const char *string)
 	return _protocolVersion;
 }
 
-- (void)setProtocolVersionFromString: (OFString *)string
+- (void)setProtocolVersionString: (OFString *)string
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *components = [string componentsSeparatedByString: @"."];

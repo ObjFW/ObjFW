@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The protocol version of the HTTP request reply as a string.
  */
-@property (readonly, nonatomic) OFString *protocolVersionString;
+@property (copy, nonatomic) OFString *protocolVersionString;
 
 /*!
  * @brief The status code of the reply to the HTTP request.
@@ -60,14 +60,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The reply as a string, trying to detect the encoding.
  */
 @property (readonly, nonatomic) OFString *string;
-
-/*!
- * @brief Sets the protocol version of the HTTP request reply to the version
- *	  described by the specified string.
- *
- * @param string A string describing an HTTP version
- */
-- (void)setProtocolVersionFromString: (OFString *)string;
 
 /*!
  * @brief Returns the reply as a string, trying to detect the encoding and

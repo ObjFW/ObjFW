@@ -306,7 +306,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	response = [[[OFHTTPClientResponse alloc] initWithSocket: sock]
 	    autorelease];
-	[response setProtocolVersionFromString: _version];
+	[response setProtocolVersionString: _version];
 	[response setStatusCode: _status];
 	[response setHeaders: _serverHeaders];
 

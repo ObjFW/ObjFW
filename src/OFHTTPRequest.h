@@ -91,7 +91,7 @@ typedef struct OF_BOXABLE {
 /*!
  * @brief The protocol version of the HTTP request as a string.
  */
-@property (readonly, nonatomic) OFString *protocolVersionString;
+@property (copy, nonatomic) OFString *protocolVersionString;
 
 /*!
  * @brief The request method of the HTTP request.
@@ -132,14 +132,6 @@ typedef struct OF_BOXABLE {
  * @return An initialized OFHTTPRequest
  */
 - (instancetype)initWithURL: (OFURL *)URL;
-
-/*!
- * @brief Sets the protocol version of the HTTP request to the version
- *	  described by the specified string.
- *
- * @param string A string describing an HTTP version
- */
-- (void)setProtocolVersionFromString: (OFString *)string;
 @end
 
 #ifdef __cplusplus
