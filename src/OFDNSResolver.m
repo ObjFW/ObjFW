@@ -1878,13 +1878,17 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return 0;
 	}
 
+	/*
+	 * Pass the query as context to make sure that its buffer stays around
+	 * for as long as our receive is pending.
+	 */
 	[sock asyncReceiveIntoBuffer: [query allocMemoryWithSize: 512]
 			      length: 512
 			 runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
 			      target: self
 			    selector: @selector(of_socket:didReceiveIntoBuffer:
 					  length:sender:context:exception:)
-			     context: nil];
+			     context: query];
 
 	return 0;
 }
