@@ -2366,8 +2366,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				break;
 			}
 
-			if ([object isEqual: @".."] &&
-			    parent != nil &&
+			if ([object isEqual: @".."] && parent != nil &&
 			    ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
 				    of_range(i - 1, 2)];

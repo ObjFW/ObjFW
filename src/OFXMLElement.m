@@ -287,7 +287,7 @@ static Class CDATAClass = Nil;
 		OFXMLElement *attributesElement, *namespacesElement;
 		OFXMLElement *childrenElement;
 		OFEnumerator *keyEnumerator, *objectEnumerator;
-		id key, object;
+		OFString *key, *object;
 
 		if (![[element name] isEqual: [self className]] ||
 		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
@@ -328,8 +328,8 @@ static Class CDATAClass = Nil;
 		    ![_children isKindOfClass: [OFMutableArray class]]))
 			@throw [OFInvalidArgumentException exception];
 
-		for (object in _attributes)
-			if (![object isKindOfClass: [OFXMLAttribute class]])
+		for (OFXMLAttribute *attribute in _attributes)
+			if (![attribute isKindOfClass: [OFXMLAttribute class]])
 				@throw [OFInvalidArgumentException exception];
 
 		keyEnumerator = [_namespaces keyEnumerator];
@@ -449,7 +449,7 @@ static Class CDATAClass = Nil;
 		OFEnumerator *keyEnumerator = [_namespaces keyEnumerator];
 		OFEnumerator *objectEnumerator = [_namespaces objectEnumerator];
 		OFMutableDictionary *tmp;
-		id key, object;
+		OFString *key, *object;
 
 		tmp = [[allNamespaces mutableCopy] autorelease];
 

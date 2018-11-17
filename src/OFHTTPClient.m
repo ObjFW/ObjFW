@@ -378,7 +378,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			 */
 			if (_status == 303) {
 				OFEnumerator *keyEnumerator, *objectEnumerator;
-				id key, object;
+				OFString *key, *object;
 
 				keyEnumerator = [headers keyEnumerator];
 				objectEnumerator = [headers objectEnumerator];
@@ -609,15 +609,13 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	@try {
 		OFString *requestString = constructRequestString(_request);
-		const char *UTF8String = [requestString UTF8String];
-		size_t UTF8StringLength = [requestString UTF8StringLength];
 
 		/*
 		 * Pass requestString as context to retain it so that the
 		 * underlying buffer lives long enough.
 		 */
-		[sock asyncWriteBuffer: UTF8String
-				length: UTF8StringLength
+		[sock asyncWriteBuffer: [requestString UTF8String]
+				length: [requestString UTF8StringLength]
 				target: self
 			      selector: @selector(socket:didWriteRequest:
 					    length:context:exception:)

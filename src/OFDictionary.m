@@ -678,7 +678,7 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
-	id key, object;
+	id <OFSerialization> key, object;
 
 	if ([self isKindOfClass: [OFMutableDictionary class]])
 		element = [OFXMLElement elementWithName: @"OFMutableDictionary"

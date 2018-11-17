@@ -184,7 +184,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 
 		if (currentLocale != nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [OFLocale class]];
+			    exceptionWithClass: [self class]];
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_decimalPoint = @".";

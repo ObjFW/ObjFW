@@ -28,29 +28,29 @@
 static void
 handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 {
-	OFString *lowerName = [name lowercaseString];
+	OFString *lowercaseName = [name lowercaseString];
 
 	if (value != nil) {
-		if ([lowerName isEqual: @"expires"]) {
+		if ([lowercaseName isEqual: @"expires"]) {
 			OFDate *date = [OFDate
 			    dateWithDateString: value
 					format: @"%a, %d %b %Y %H:%M:%S %z"];
 			[cookie setExpires: date];
-		} else if ([lowerName isEqual: @"max-age"]) {
+		} else if ([lowercaseName isEqual: @"max-age"]) {
 			OFDate *date = [OFDate dateWithTimeIntervalSinceNow:
 			    [value decimalValue]];
 			[cookie setExpires: date];
-		} else if ([lowerName isEqual: @"domain"])
+		} else if ([lowercaseName isEqual: @"domain"])
 			[cookie setDomain: value];
-		else if ([lowerName isEqual: @"path"])
+		else if ([lowercaseName isEqual: @"path"])
 			[cookie setPath: value];
 		else
 			[[cookie extensions] addObject:
 			    [OFString stringWithFormat: @"%@=%@", name, value]];
 	} else {
-		if ([lowerName isEqual: @"secure"])
+		if ([lowercaseName isEqual: @"secure"])
 			[cookie setSecure: true];
-		else if ([lowerName isEqual: @"httponly"])
+		else if ([lowercaseName isEqual: @"httponly"])
 			[cookie setHTTPOnly: true];
 		else if ([name length] > 0)
 			[[cookie extensions] addObject: name];

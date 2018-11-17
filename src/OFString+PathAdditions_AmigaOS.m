@@ -105,8 +105,7 @@ int _OFString_PathAdditions_reference;
 	 * though.
 	 */
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *components = [self pathComponents];
-	OFString *ret = [components lastObject];
+	OFString *ret = [[self pathComponents] lastObject];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);

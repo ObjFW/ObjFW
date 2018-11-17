@@ -459,7 +459,8 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		return nil;
 
 	while (**pointer != '}') {
-		id key, object;
+		OFString *key;
+		id object;
 
 		skipWhitespacesAndComments(pointer, stop, line);
 		if (*pointer >= stop)
@@ -489,7 +490,7 @@ parseDictionary(const char **pointer, const char *stop, size_t *line,
 		else
 			key = nextObject(pointer, stop, line, depthLimit);
 
-		if (key == nil)
+		if (![key isKindOfClass: [OFString class]])
 			return nil;
 
 		skipWhitespacesAndComments(pointer, stop, line);
