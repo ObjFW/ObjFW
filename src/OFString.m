@@ -334,6 +334,7 @@ of_string_utf32_length(const of_char32_t *string)
 	return length;
 }
 
+#ifdef OF_HAVE_UNICODE_TABLES
 static OFString *
 decomposedString(OFString *self, const char *const *const *table, size_t size)
 {
@@ -364,6 +365,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 
 	return ret;
 }
+#endif
 
 @implementation OFString_placeholder
 - (instancetype)init
