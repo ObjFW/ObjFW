@@ -328,6 +328,7 @@ of_invocation_invoke(OFInvocation *invocation)
 		typeEncoding++;
 
 	switch (*typeEncoding) {
+	case 'v':
 	case 'c':
 	case 'C':
 	case 'i':
@@ -381,6 +382,8 @@ of_invocation_invoke(OFInvocation *invocation)
 	of_invocation_call(context);
 
 	switch (*typeEncoding) {
+		case 'v':
+			break;
 #define CASE_GPR(encoding, type)					   \
 		case encoding:						   \
 			{						   \

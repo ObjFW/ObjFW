@@ -64,9 +64,13 @@ extern void of_invocation_invoke(OFInvocation *);
 
 		typeEncoding = [_methodSignature methodReturnType];
 		typeSize = of_sizeof_type_encoding(typeEncoding);
-		_returnValue = [[OFMutableData alloc] initWithItemSize: typeSize
-							      capacity: 1];
-		[_returnValue increaseCountBy: 1];
+
+		if (typeSize > 0) {
+			_returnValue = [[OFMutableData alloc]
+			    initWithItemSize: typeSize
+				    capacity: 1];
+			[_returnValue increaseCountBy: 1];
+		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
