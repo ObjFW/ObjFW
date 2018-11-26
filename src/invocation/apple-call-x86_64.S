@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#include "invoke-x86_64.h"
+
 .globl _of_invocation_call
 
 .section __TEXT, __text, regular, pure_instructions
@@ -65,13 +67,13 @@ Lstack_filled:
 	movb	225(%rdi), %r11b
 	movq	0(%rdi), %rdi
 
-	cmpb	$1, %r11b
+	cmpb	$RETURN_TYPE_STRET, %r11b
 	je	Lcall_send_stret
 
-	cmpb	$4, %r11b
+	cmpb	$RETURN_TYPE_JMP, %r11b
 	je	_objc_msgSend
 
-	cmpb	$5, %r11b
+	cmpb	$RETURN_TYPE_JMP_STRET, %r11b
 	je	_objc_msgSend_stret
 
 	call	_objc_msgSend
@@ -85,10 +87,10 @@ Lafter_send:
 
 	movb	225(%rdi), %r11b
 
-	cmpb	$2, %r11b
+	cmpb	$RETURN_TYPE_X87, %r11b
 	je	Lpop_long_double
 
-	cmpb	$3, %r11b
+	cmpb	$RETURN_TYPE_COMPLEX_X87, %r11b
 	je	Lpop_complex_long_double
 
 Lreturn:

@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#include "invoke-x86_64.h"
+
 .globl of_invocation_call
 
 .section .text
@@ -29,9 +31,9 @@ of_invocation_call:
 	movq	%rdi, -8(%rbp)
 
 	movb	225(%rdi), %r11b
-	cmpb	$1, %r11b
+	cmpb	$RETURN_TYPE_STRET, %r11b
 	je	.lookup_stret
-	cmpb	$4, %r11b
+	cmpb	$RETURN_TYPE_JMP_STRET, %r11b
 	je	.lookup_stret
 
 	movq	8(%rdi), %rsi
@@ -79,9 +81,9 @@ of_invocation_call:
 	movb	225(%rdi), %r11b
 	movq	0(%rdi), %rdi
 
-	cmpb	$4, %r11b
+	cmpb	$RETURN_TYPE_JMP, %r11b
 	je	.jmp_into_method
-	cmpb	$5, %r11b
+	cmpb	$RETURN_TYPE_JMP_STRET, %r11b
 	je	.jmp_into_method
 
 	movq	-16(%rbp), %r11
@@ -96,10 +98,10 @@ of_invocation_call:
 
 	movb	225(%rdi), %r11b
 
-	cmpb	$2, %r11b
+	cmpb	$RETURN_TYPE_X87, %r11b
 	je	.pop_long_double
 
-	cmpb	$3, %r11b
+	cmpb	$RETURN_TYPE_COMPLEX_X87, %r11b
 	je	.pop_complex_long_double
 
 .return:

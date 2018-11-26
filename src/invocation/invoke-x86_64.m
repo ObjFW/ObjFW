@@ -27,21 +27,14 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
+#import "invoke-x86_64.h"
+
 #import "macros.h"
 
 #define NUM_GPR_IN 6
 #define NUM_GPR_OUT 2
 #define NUM_SSE_IN 8
 #define NUM_X87_OUT 2
-
-enum {
-	RETURN_TYPE_NORMAL,
-	RETURN_TYPE_STRUCT,
-	RETURN_TYPE_X87,
-	RETURN_TYPE_COMPLEX_X87,
-	RETURN_TYPE_JMP,
-	RETURN_TYPE_JMP_STRET
-};
 
 struct call_context {
 	uint64_t GPR[NUM_GPR_IN + NUM_GPR_OUT];
