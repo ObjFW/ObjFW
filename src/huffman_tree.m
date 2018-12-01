@@ -25,8 +25,6 @@
 #import "OFInvalidFormatException.h"
 #import "OFOutOfMemoryException.h"
 
-#define MAX_BIT 15
-
 static struct of_huffman_tree *
 newTree(void)
 {
@@ -65,36 +63,62 @@ struct of_huffman_tree *
 of_huffman_tree_construct(uint8_t lengths[], uint16_t count)
 {
 	struct of_huffman_tree *tree;
-	uint16_t lengthCount[MAX_BIT + 1];
-	uint16_t code, maxCode = 0, nextCode[MAX_BIT + 1];
+	uint16_t *lengthCount = NULL;
+	uint16_t code, maxCode = 0, *nextCode = NULL;
+	uint_fast8_t maxBit = 0;
 
-	memset(&lengthCount, 0, (MAX_BIT + 1) * 2);
+	@try {
+		for (uint16_t i = 0; i < count; i++) {
+			uint_fast8_t length = lengths[i];
 
-	for (uint16_t i = 0; i < count; i++) {
-		uint8_t length = lengths[i];
+			if OF_UNLIKELY (length > maxBit) {
+				size_t size = (length + 1) * sizeof(uint16_t);
+				uint16_t *new;
 
-		if OF_UNLIKELY (length > MAX_BIT)
-			@throw [OFInvalidFormatException exception];
+				if ((new = realloc(lengthCount, size)) == NULL)
+					@throw [OFOutOfMemoryException
+					    exceptionWithRequestedSize: size];
 
-		if (length > 0) {
-			lengthCount[length]++;
-			maxCode = i;
+				lengthCount = new;
+
+				if ((new = realloc(nextCode, size)) == NULL)
+					@throw [OFOutOfMemoryException
+					    exceptionWithRequestedSize: size];
+
+				nextCode = new;
+
+				for (uint_fast8_t j = maxBit + 1; j <= length;
+				    j++) {
+					lengthCount[j] = 0;
+					nextCode[j] = 0;
+				}
+
+				maxBit = length;
+			}
+
+			if (length > 0) {
+				lengthCount[length]++;
+				maxCode = i;
+			}
 		}
-	}
 
-	code = 0;
-	for (size_t i = 1; i <= MAX_BIT; i++) {
-		code = (code + lengthCount[i - 1]) << 1;
-		nextCode[i] = code;
-	}
+		code = 0;
+		for (size_t i = 1; i <= maxBit; i++) {
+			code = (code + lengthCount[i - 1]) << 1;
+			nextCode[i] = code;
+		}
 
-	tree = newTree();
+		tree = newTree();
 
-	for (uint16_t i = 0; i <= maxCode; i++) {
-		uint8_t length = lengths[i];
+		for (uint16_t i = 0; i <= maxCode; i++) {
+			uint8_t length = lengths[i];
 
-		if (length > 0)
-			insertTree(tree, nextCode[length]++, length, i);
+			if (length > 0)
+				insertTree(tree, nextCode[length]++, length, i);
+		}
+	} @finally {
+		free(lengthCount);
+		free(nextCode);
 	}
 
 	return tree;
