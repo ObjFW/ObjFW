@@ -257,4 +257,6 @@
 #import "of_strptime.h"
 #import "pbkdf2.h"
 #import "scrypt.h"
-#import "unicode.h"
+#ifdef OF_HAVE_UNICODE_TABLES
+# import "unicode.h"
+#endif
