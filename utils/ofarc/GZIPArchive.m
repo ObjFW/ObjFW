@@ -34,7 +34,7 @@ setPermissions(OFString *destination, OFString *source)
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 	of_file_attributes_t attributes =
 	    [fileManager attributesOfItemAtPath: source];
-	of_file_attribute_key_t key = of_file_attribute_key_size;
+	of_file_attribute_key_t key = of_file_attribute_key_posix_permissions;
 	of_file_attributes_t destinationAttributes = [OFDictionary
 	    dictionaryWithObject: [attributes objectForKey: key]
 			  forKey: key];
