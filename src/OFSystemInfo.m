@@ -248,17 +248,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	);
 # elif defined(OF_X86_ASM)
 	/*
-	 * This workaround is required by GCC when using -fPIC, as ebx is a
-	 * special register in PIC code. Yes, GCC is indeed not able to just
-	 * push a register onto the stack before the __asm__ block and to pop
-	 * it afterwards.
+	 * This workaround is required by older GCC versions when using -fPIC,
+	 * as ebx is a special register in PIC code. Yes, GCC is indeed not
+	 * able to just push a register onto the stack before the __asm__ block
+	 * and to pop it afterwards.
 	 */
 	__asm__ (
-	    "pushl	%%ebx\n\t"
+	    "xchgl	%%ebx, %%edi\n\t"
 	    "cpuid\n\t"
-	    "movl	%%ebx, %1\n\t"
-	    "popl	%%ebx"
-	    : "=a"(regs.eax), "=r"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
+	    "xchgl	%%edi, %%ebx"
+	    : "=a"(regs.eax), "=D"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
 	    : "a"(eax), "c"(ecx)
 	);
 # else
