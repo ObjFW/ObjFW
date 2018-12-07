@@ -74,6 +74,8 @@ static OFRunLoop *mainRunLoop = nil;
 @interface OFRunLoop_QueueItem: OFObject
 {
 @public
+	id _delegate;
+	/* TODO: Remove once everything is moved to using delegates */
 	id _target;
 	SEL _selector;
 	id _context;
@@ -300,6 +302,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)dealloc
 {
+	[_delegate release];
 	[_target release];
 	[_context release];
 
@@ -326,12 +329,22 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream *, void *, size_t, id, id) =
-		    (bool (*)(id, SEL, OFStream *, void *, size_t, id, id))
-		    [_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector:
+			    @selector(stream:didReadIntoBuffer:length:)])
+				return false;
 
-		return func(_target, _selector, object, _buffer, length,
-		    _context, exception);
+			return [_delegate stream: object
+			       didReadIntoBuffer: _buffer
+					  length: length];
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(stream:didFailWithException:)])
+				[_delegate	  stream: object
+				    didFailWithException: exception];
+
+			return false;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -376,16 +389,26 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		bool (*func)(id, SEL, OFStream *, void *, size_t, id, id) =
-		    (bool (*)(id, SEL, OFStream *, void *, size_t, id, id))
-		    [_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector:
+			    @selector(stream:didReadIntoBuffer:length:)])
+				return false;
 
-		if (!func(_target, _selector, object, _buffer, _readLength,
-		    _context, exception))
+			if (![_delegate stream: object
+			     didReadIntoBuffer: _buffer
+					length: _readLength])
+				return false;
+
+			_readLength = 0;
+			return true;
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(stream:didFailWithException:)])
+				[_delegate	  stream: object
+				    didFailWithException: exception];
+
 			return false;
-
-		_readLength = 0;
-		return true;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -422,12 +445,21 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, line, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFStream *, OFString *, id, id) =
-		    (bool (*)(id, SEL, OFStream *, OFString *, id, id))
-		    [_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector:
+			    @selector(stream:didReadLine:)])
+				return false;
 
-		return func(_target, _selector, object, line, _context,
-		    exception);
+			return [_delegate stream: object
+				     didReadLine: line];
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(stream:didFailWithException:)])
+				[_delegate	  stream: object
+				    didFailWithException: exception];
+
+			return false;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -473,18 +505,28 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		bool (*func)(id, SEL, OFStream *, const void *, size_t, id,
-		    id) = (bool (*)(id, SEL, OFStream *, const void *, size_t,
-		    id, id))[_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector:
+			    @selector(stream:didWriteBuffer:length:)])
+				return false;
 
-		_length = func(_target, _selector, object, &_buffer,
-		    _writtenLength, _context, exception);
+			_length = [_delegate stream: object
+				     didWriteBuffer: &_buffer
+					     length: _length];
 
-		if (_length == 0)
+			if (_length == 0)
+				return false;
+
+			_writtenLength = 0;
+			return true;
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(stream:didFailWithException:)])
+				[_delegate	  stream: object
+				    didFailWithException: exception];
+
 			return false;
-
-		_writtenLength = 0;
-		return true;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -728,14 +770,10 @@ static OFRunLoop *mainRunLoop = nil;
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
-			  target: (id)target
-			selector: (SEL)selector
-			 context: (id)context
+			delegate: (id <OFStreamDelegate>)delegate
 {
 	ADD_READ(OFRunLoop_ReadQueueItem, stream, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 	})
@@ -746,14 +784,10 @@ static OFRunLoop *mainRunLoop = nil;
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
 			    mode: (of_run_loop_mode_t)mode
-			  target: (id)target
-			selector: (SEL)selector
-			 context: (id)context
+			delegate: (id <OFStreamDelegate>)delegate
 {
 	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 		queueItem->_buffer = buffer;
 		queueItem->_exactLength = exactLength;
 	})
@@ -763,14 +797,10 @@ static OFRunLoop *mainRunLoop = nil;
 					  stream
 			    encoding: (of_string_encoding_t)encoding
 				mode: (of_run_loop_mode_t)mode
-			      target: (id)target
-			    selector: (SEL)selector
-			     context: (id)context
+			    delegate: (id <OFStreamDelegate>)delegate
 {
 	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 		queueItem->_encoding = encoding;
 	})
 }
@@ -780,14 +810,10 @@ static OFRunLoop *mainRunLoop = nil;
 			   buffer: (const void *)buffer
 			   length: (size_t)length
 			     mode: (of_run_loop_mode_t)mode
-			   target: (id)target
-			 selector: (SEL)selector
-			  context: (id)context
+			 delegate: (id <OFStreamDelegate>)delegate
 {
 	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 	})

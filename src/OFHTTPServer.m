@@ -51,8 +51,8 @@
  */
 
 @interface OFHTTPServer ()
-- (bool)of_socket: (OF_KINDOF(OFTCPSocket *))sock
-  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))clientSocket
+- (bool)of_socket: (OFTCPSocket *)sock
+  didAcceptSocket: (OFTCPSocket *)clientSocket
 	  context: (id)context
 	exception: (id)exception;
 @end
@@ -70,7 +70,7 @@
 		       request: (OFHTTPRequest *)request;
 @end
 
-@interface OFHTTPServer_Connection: OFObject
+@interface OFHTTPServer_Connection: OFObject <OFStreamDelegate>
 {
 @public
 	OF_KINDOF(OFTCPSocket *) _socket;
@@ -92,10 +92,6 @@
 
 - (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 			server: (OFHTTPServer *)server;
-- (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
-   didReadLine: (OFString *)line
-       context: (id)context
-     exception: (id)exception;
 - (bool)parseProlog: (OFString *)line;
 - (bool)parseHeaders: (OFString *)line;
 - (bool)sendErrorAndClose: (short)statusCode;
@@ -409,12 +405,10 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
-- (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
+- (bool)stream: (OF_KINDOF(OFStream *))sock
    didReadLine: (OFString *)line
-       context: (id)context
-     exception: (id)exception
 {
-	if (line == nil || exception != nil)
+	if (line == nil)
 		return false;
 
 	@try {
@@ -800,8 +794,8 @@ normalizedKey(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (bool)of_socket: (OF_KINDOF(OFTCPSocket *))sock
-  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))clientSocket
+- (bool)of_socket: (OFTCPSocket *)sock
+  didAcceptSocket: (OFTCPSocket *)clientSocket
 	  context: (id)context
 	exception: (id)exception
 {
@@ -820,10 +814,8 @@ normalizedKey(OFString *key)
 	    initWithSocket: clientSocket
 		    server: self] autorelease];
 
-	[clientSocket asyncReadLineWithTarget: connection
-				     selector: @selector(socket:didReadLine:
-						  context:exception:)
-				      context: nil];
+	[clientSocket setDelegate: connection];
+	[clientSocket asyncReadLine];
 
 	return true;
 }

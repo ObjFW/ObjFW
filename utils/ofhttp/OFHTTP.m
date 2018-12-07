@@ -53,7 +53,8 @@
 #define MEBIBYTE (1024 * 1024)
 #define KIBIBYTE (1024)
 
-@interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate>
+@interface OFHTTP: OFObject <OFApplicationDelegate, OFHTTPClientDelegate,
+    OFStreamDelegate>
 {
 	OFArray OF_GENERIC(OFString *) *_URLs;
 	size_t _URLIndex;
@@ -652,35 +653,10 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		   afterDelay: 0];
 }
 
--      (bool)stream: (OFHTTPResponse *)response
+-      (bool)stream: (OF_KINDOF(OFStream *))response
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
-	    context: (id)context
-	  exception: (OFException *)e
 {
-	if (e != nil) {
-		OFString *URL;
-
-		[_progressBar stop];
-		[_progressBar draw];
-		[_progressBar release];
-		_progressBar = nil;
-
-		if (!_quiet)
-			[of_stdout writeString: @"\n  Error!\n"];
-
-		URL = [_URLs objectAtIndex: _URLIndex - 1];
-		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_exception",
-		    @"%[prog]: Failed to download <%[url]>: %[exception]",
-		    @"prog", [OFApplication programName],
-		    @"url", URL,
-		    @"exception", e)];
-
-		_errorCode = 1;
-		goto next;
-	}
-
 	_received += length;
 
 	[_output writeBuffer: buffer
@@ -701,15 +677,38 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    OF_LOCALIZED(@"download_done", @"Done!")];
 		}
 
-		goto next;
+		[self performSelector: @selector(downloadNextURL)
+			   afterDelay: 0];
+		return false;
 	}
 
 	return true;
+}
 
-next:
+-	  (void)stream: (OF_KINDOF(OFStream *))response
+  didFailWithException: (id)exception
+{
+	OFString *URL;
+
+	[_progressBar stop];
+	[_progressBar draw];
+	[_progressBar release];
+	_progressBar = nil;
+
+	if (!_quiet)
+		[of_stdout writeString: @"\n  Error!\n"];
+
+	URL = [_URLs objectAtIndex: _URLIndex - 1];
+	[of_stderr writeLine: OF_LOCALIZED(
+	    @"download_failed_exception",
+	    @"%[prog]: Failed to download <%[url]>: %[exception]",
+	    @"prog", [OFApplication programName],
+	    @"url", URL,
+	    @"exception", exception)];
+
+	_errorCode = 1;
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
-	return false;
 }
 
 -      (void)client: (OFHTTPClient *)client
@@ -867,13 +866,9 @@ next:
 	[_currentFileName release];
 	_currentFileName = nil;
 
+	[response setDelegate: self];
 	[response asyncReadIntoBuffer: _buffer
-			       length: [OFSystemInfo pageSize]
-			       target: self
-			     selector: @selector(stream:didReadIntoBuffer:
-					   length:context:exception:)
-			      context: nil];
-
+			       length: [OFSystemInfo pageSize]];
 	return;
 
 next:

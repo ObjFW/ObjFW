@@ -63,7 +63,7 @@
 #define MIN_READ_SIZE 512
 
 @implementation OFStream
-@synthesize of_waitingForDelimiter = _waitingForDelimiter;
+@synthesize of_waitingForDelimiter = _waitingForDelimiter, delegate = _delegate;
 
 #if defined(SIGPIPE) && defined(SIG_IGN)
 + (void)initialize
@@ -197,24 +197,15 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (id)context
 {
 	[self asyncReadIntoBuffer: buffer
 			   length: length
-		      runLoopMode: of_run_loop_mode_default
-			   target: target
-			 selector: selector
-			  context: context];
+		      runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
 		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (id)context
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -223,31 +214,20 @@
 				     buffer: buffer
 				     length: length
 				       mode: runLoopMode
-				     target: target
-				   selector: selector
-				    context: context];
+				   delegate: _delegate];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (id)context
 {
 	[self asyncReadIntoBuffer: buffer
 		      exactLength: length
-		      runLoopMode: of_run_loop_mode_default
-			   target: target
-			 selector: selector
-			  context: context];
+		      runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
 		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (id)context
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -256,9 +236,7 @@
 				     buffer: buffer
 				exactLength: length
 				       mode: runLoopMode
-				     target: target
-				   selector: selector
-				    context: context];
+				   delegate: _delegate];
 }
 
 # ifdef OF_HAVE_BLOCKS
@@ -888,34 +866,20 @@
 }
 
 #ifdef OF_HAVE_SOCKETS
-- (void)asyncReadLineWithTarget: (id)target
-		       selector: (SEL)selector
-			context: (id)context
+- (void)asyncReadLine
 {
 	[self asyncReadLineWithEncoding: OF_STRING_ENCODING_UTF_8
-			    runLoopMode: of_run_loop_mode_default
-				 target: target
-			       selector: selector
-				context: context];
+			    runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-			   target: (id)target
-			 selector: (SEL)selector
-			  context: (id)context
 {
 	[self asyncReadLineWithEncoding: encoding
-			    runLoopMode: of_run_loop_mode_default
-				 target: target
-			       selector: selector
-				context: context];
+			    runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
 		      runLoopMode: (of_run_loop_mode_t)runLoopMode
-			   target: (id)target
-			 selector: (SEL)selector
-			  context: (id)context
 {
 	OFStream <OFReadyForReadingObserving> *stream =
 	    (OFStream <OFReadyForReadingObserving> *)self;
@@ -923,9 +887,7 @@
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
 					   mode: runLoopMode
-					 target: target
-				       selector: selector
-					context: context];
+				       delegate: _delegate];
 }
 
 # ifdef OF_HAVE_BLOCKS
@@ -1206,24 +1168,15 @@
 #ifdef OF_HAVE_SOCKETS
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
 {
 	[self asyncWriteBuffer: buffer
 			length: length
-		   runLoopMode: of_run_loop_mode_default
-			target: target
-		      selector: selector
-		       context: context];
+		   runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
 	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (id)context
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
@@ -1232,9 +1185,7 @@
 				      buffer: buffer
 				      length: length
 					mode: runLoopMode
-				      target: target
-				    selector: selector
-				     context: context];
+				    delegate: _delegate];
 }
 
 # ifdef OF_HAVE_BLOCKS

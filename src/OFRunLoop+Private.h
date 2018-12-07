@@ -34,32 +34,24 @@ OF_ASSUME_NONNULL_BEGIN
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
-			  target: (id)target
-			selector: (SEL)selector
-			 context: (nullable id)context;
+			delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
-			  target: (id)target
-			selector: (SEL)selector
-			 context: (nullable id)context;
+			delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
 				mode: (of_run_loop_mode_t)mode
-			      target: (id)target
-			    selector: (SEL)selector
-			     context: (nullable id)context;
+			    delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			   buffer: (const void *)buffer
 			   length: (size_t)length
 			     mode: (of_run_loop_mode_t)mode
-			   target: (id)target
-			 selector: (SEL)selector
-			  context: (nullable id)context;
+			 delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
 				  mode: (of_run_loop_mode_t)mode
 				target: (id)target

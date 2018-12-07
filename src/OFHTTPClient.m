@@ -51,11 +51,12 @@
 
 #define REDIRECTS_DEFAULT 10
 
-@interface OFHTTPClientRequestHandler: OFObject
+@interface OFHTTPClientRequestHandler: OFObject <OFStreamDelegate>
 {
 @public
 	OFHTTPClient *_client;
 	OFHTTPRequest *_request;
+	OFString *_requestString;
 	unsigned int _redirects;
 	id _context;
 	bool _firstLine;
@@ -278,6 +279,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 {
 	[_client release];
 	[_request release];
+	[_requestString release];
 	[_context release];
 	[_version release];
 	[_serverHeaders release];
@@ -479,6 +481,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					   request: _request
 					   context: _context];
 
+		[sock setDelegate: nil];
+
 		[self performSelector: @selector(createResponseWithSocket:)
 			   withObject: sock
 			   afterDelay: 0];
@@ -523,21 +527,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return true;
 }
 
-- (bool)socket: (OFTCPSocket *)sock
+- (bool)stream: (OF_KINDOF(OFStream *))sock
    didReadLine: (OFString *)line
-       context: (id)context
-     exception: (id)exception
 {
 	bool ret;
-
-	if (exception != nil) {
-		if ([exception isKindOfClass:
-		    [OFInvalidEncodingException class]])
-			exception = [OFInvalidServerReplyException exception];
-
-		[self raiseException: exception];
-		return false;
-	}
 
 	@try {
 		if (_firstLine) {
@@ -554,28 +547,34 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return ret;
 }
 
--  (size_t)socket: (OFTCPSocket *)sock
-  didWriteRequest: (const void **)request
-	   length: (size_t)length
-	  context: (id)context
-	exception: (id)exception
+-	  (void)stream: (OF_KINDOF(OFStream *))sock
+  didFailWithException: (id)exception
 {
-	if (exception != nil) {
-		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
-		    ([exception errNo] == ECONNRESET ||
-		    [exception errNo] == EPIPE)) {
-			/* In case a keep-alive connection timed out */
-			[self closeAndReconnect];
-			return 0;
-		}
-
-		[self raiseException: exception];
-		return 0;
+	if ([exception isKindOfClass: [OFWriteFailedException class]] &&
+	    ([exception errNo] == ECONNRESET || [exception errNo] == EPIPE)) {
+		/* In case a keep-alive connection timed out */
+		[self closeAndReconnect];
+		return;
 	}
 
+	if ([exception isKindOfClass: [OFInvalidEncodingException class]])
+		exception = [OFInvalidServerReplyException exception];
+
+	[self raiseException: exception];
+}
+
+- (size_t)stream: (OF_KINDOF(OFStream *))sock
+  didWriteBuffer: (const void **)request
+	  length: (size_t)length
+{
 	_firstLine = true;
 
+	[_requestString release];
+	_requestString = nil;
+
 	if ([[_request headers] objectForKey: @"Content-Length"] != nil) {
+		[sock setDelegate: nil];
+
 		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
 		    initWithHandler: self
 			     socket: sock] autorelease];
@@ -588,10 +587,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					   context: _context];
 
 	} else
-		[sock asyncReadLineWithTarget: self
-				     selector: @selector(socket:didReadLine:
-						   context:exception:)
-				      context: nil];
+		[sock asyncReadLine];
 
 	return 0;
 }
@@ -608,18 +604,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	 */
 
 	@try {
-		OFString *requestString = constructRequestString(_request);
+		[_requestString release];
+		_requestString = [constructRequestString(_request) retain];
 
-		/*
-		 * Pass requestString as context to retain it so that the
-		 * underlying buffer lives long enough.
-		 */
-		[sock asyncWriteBuffer: [requestString UTF8String]
-				length: [requestString UTF8StringLength]
-				target: self
-			      selector: @selector(socket:didWriteRequest:
-					    length:context:exception:)
-			       context: requestString];
+		[sock asyncWriteBuffer: [_requestString UTF8String]
+				length: [_requestString UTF8StringLength]];
 	} @catch (id e) {
 		[self raiseException: e];
 		return;
@@ -635,6 +624,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		return;
 	}
 
+	[sock setDelegate: self];
+
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:context:)])
 		[_client->_delegate client: _client
@@ -647,32 +638,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		   afterDelay: 0];
 }
 
-- (bool)throwAwayContent: (OFHTTPClientResponse *)response
-		  buffer: (char *)buffer
-		  length: (size_t)length
-		 context: (OFTCPSocket *)sock
-	       exception: (id)exception
-{
-	if (exception != nil) {
-		[self raiseException: exception];
-		return false;
-	}
-
-	if ([response isAtEndOfStream]) {
-		[self freeMemory: buffer];
-
-		[_client->_lastResponse release];
-		_client->_lastResponse = nil;
-
-		[self performSelector: @selector(handleSocket:)
-			   withObject: sock
-			   afterDelay: 0];
-		return false;
-	}
-
-	return true;
-}
-
 - (void)start
 {
 	OFURL *URL = [_request URL];
@@ -682,7 +647,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_client->_socket != nil && ![_client->_socket isAtEndOfStream] &&
 	    [[_client->_lastURL scheme] isEqual: [URL scheme]] &&
 	    [[_client->_lastURL host] isEqual: [URL host]] &&
-	    [_client->_lastURL port] == [URL port]) {
+	    [_client->_lastURL port] == [URL port] &&
+	    (_client->_lastWasHEAD ||
+	    [_client->_lastResponse isAtEndOfStream])) {
 		/*
 		 * Set _socket to nil, so that in case of an error it won't be
 		 * reused. If everything is successful, we set _socket again
@@ -694,27 +661,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		[_client->_lastURL release];
 		_client->_lastURL = nil;
 
-		if (!_client->_lastWasHEAD &&
-		    ![_client->_lastResponse isAtEndOfStream]) {
-			/* Throw away content that has not been read yet */
-			char *buffer = [self allocMemoryWithSize: 512];
+		[_client->_lastResponse release];
+		_client->_lastResponse = nil;
 
-			[_client->_lastResponse
-			    asyncReadIntoBuffer: buffer
-					 length: 512
-					 target: self
-				       selector: @selector(throwAwayContent:
-						     buffer:length:context:
-						     exception:)
-					context: sock];
-		} else {
-			[_client->_lastResponse release];
-			_client->_lastResponse = nil;
-
-			[self performSelector: @selector(handleSocket:)
-				   withObject: sock
-				   afterDelay: 0];
-		}
+		[self performSelector: @selector(handleSocket:)
+			   withObject: sock
+			   afterDelay: 0];
 	} else
 		[self closeAndReconnect];
 }
@@ -856,10 +808,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
-	[_socket asyncReadLineWithTarget: _handler
-				selector: @selector(socket:didReadLine:context:
-					      exception:)
-				 context: nil];
+	[_socket setDelegate: _handler];
+	[_socket asyncReadLine];
 
 	[_socket release];
 	_socket = nil;

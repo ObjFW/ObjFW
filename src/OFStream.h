@@ -40,7 +40,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 #if defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_BLOCKS)
 /*!
- * @brief A block which is called when data was read from the stream.
+ * @brief A block which is called when data was read asynchronously from a
+ *	  stream.
  *
  * @param stream The stream on which data was read
  * @param buffer A buffer with the data that has been read
@@ -53,7 +54,8 @@ typedef bool (^of_stream_async_read_block_t)(OF_KINDOF(OFStream *) stream,
     void *buffer, size_t length, id _Nullable exception);
 
 /*!
- * @brief A block which is called when a line was read from the stream.
+ * @brief A block which is called when a line was read asynchronously from a
+ *	  stream.
  *
  * @param stream The stream on which a line was read
  * @param line The line which has been read or `nil` when the end of stream
@@ -66,7 +68,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
     OFString *_Nullable line, id _Nullable exception);
 
 /*!
- * @brief A block which is called when data was written to the stream.
+ * @brief A block which is called when data was written asynchronously to a
+ *	  stream.
  *
  * @param stream The stream to which data was written
  * @param buffer A pointer to the buffer which was written to the stream. This
@@ -79,12 +82,72 @@ typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
  *		    success
  * @return The length to repeat the write with or 0 if it should not repeat.
  *	   The buffer may be changed, so that every time a new buffer and length
- *	   can be specified while the callback stays the same.
+ *	   can be specified
  */
 typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
     const void *_Nonnull *_Nonnull buffer, size_t bytesWritten,
     id _Nullable exception);
 #endif
+
+/*!
+ * @protocol OFStreamDelegate OFStream.h ObjFW/OFStream.h
+ *
+ * A delegate for OFStream.
+ */
+@protocol OFStreamDelegate <OFObject>
+@optional
+/*!
+ * @brief This method is called when data was read asynchronously from the
+ *	  stream.
+ *
+ * @param stream The stream on which data was read
+ * @param buffer A buffer with the data that has been read
+ * @param length The length of the data that has been read
+ * @return A bool whether the read should be repeated
+ */
+-      (bool)stream: (OF_KINDOF(OFStream *))stream
+  didReadIntoBuffer: (void *)buffer
+	     length: (size_t)length;
+
+/*!
+ * @brief This method is called when a line was read asynchronously from the
+ *	  stream.
+ *
+ * @param stream The stream on which a line was read
+ * @param line The line which has been read or `nil` when the end of stream
+ *	       occurred
+ * @return A bool whether the read should be repeated
+ */
+- (bool)stream: (OF_KINDOF(OFStream *))stream
+   didReadLine: (nullable OFString *)line;
+
+/*!
+ * @brief This method is called when data was written asynchronously to the
+ *	  stream.
+ *
+ * @param stream The stream to which data was written
+ * @param buffer A pointer to the buffer which was written to the stream. This
+ *		 can be changed to point to a different buffer to be used on the
+ *		 next write.
+ * @param length The length of the buffer that has been written
+ * @return The length to repeat the write with or 0 if it should not repeat.
+ *	   The buffer may be changed, so that every time a new buffer and
+ *	   length can be specified
+ */
+- (size_t)stream: (OF_KINDOF(OFStream *))stream
+  didWriteBuffer: (const void *_Nonnull *_Nonnull)buffer
+	  length: (size_t)length;
+
+/*!
+ * @brief This method is called when an exception occurred during an
+ *	  asynchronous operation on the stream.
+ *
+ * @param stream The stream for which an exception occurred
+ * @param exception The exception which occurred for the stream
+ */
+-	  (void)stream: (OF_KINDOF(OFStream *))stream
+  didFailWithException: (id)exception;
+@end
 
 /*!
  * @class OFStream OFStream.h ObjFW/OFStream.h
@@ -117,6 +180,7 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 	bool _writeBuffered, _waitingForDelimiter;
 @protected
 	bool _blocking;
+	id <OFStreamDelegate> _Nullable _delegate;
 }
 
 /*!
@@ -141,6 +205,15 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * On Win32, setting this currently only works for sockets!
  */
 @property (nonatomic, getter=isBlocking) bool blocking;
+
+/*!
+ * @brief The delegate for asynchronous operations on the stream.
+ *
+ * @note The delegate is retained for as long as asynchronous operations are
+ *	 still outstanding.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    id <OFStreamDelegate> delegate;
 
 /*!
  * @brief Reads *at most* size bytes from the stream into a buffer.
@@ -195,22 +268,9 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *		 The buffer must not be freed before the async read completed!
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
- * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns true, it will be
- *		 called again with the same buffer and maximum length when more
- *		 data has been received. If you want the next method in the
- *		 queue to handle the data received next, you need to return
- *		 false from the method.
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, void *buffer, size_t length,
- *		   id context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
-		     length: (size_t)length
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (nullable id)context;
+		     length: (size_t)length;
 
 /*!
  * @brief Asynchronously reads *at most* size bytes from the stream into a
@@ -230,23 +290,10 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * @param length The length of the data that should be read at most.
  *		 The buffer *must* be *at least* this big!
  * @param runLoopMode The run loop mode in which to perform the async read
- * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns true, it will be
- *		 called again with the same buffer and maximum length when more
- *		 data has been received. If you want the next method in the
- *		 queue to handle the data received next, you need to return
- *		 false from the method.
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, void *buffer, size_t length,
- *		   id context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		     length: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (nullable id)context;
+		runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 /*!
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -263,22 +310,9 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * @param buffer The buffer into which the data is read
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
- * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns true, it will be
- *		 called again with the same buffer and exact length when more
- *		 data has been received. If you want the next method in the
- *		 queue to handle the data received next, you need to return
- *		 false from the method.
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, void *buffer, size_t length,
- *		   id context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
-		exactLength: (size_t)length
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (nullable id)context;
+		exactLength: (size_t)length;
 
 /*!
  * @brief Asynchronously reads exactly the specified length bytes from the
@@ -296,23 +330,10 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * @param length The length of the data that should be read.
  *		 The buffer *must* be *at least* this big!
  * @param runLoopMode The run loop mode in which to perform the async read
- * @param target The target on which the selector should be called when the
- *		 data has been received. If the method returns true, it will be
- *		 called again with the same buffer and exact length when more
- *		 data has been received. If you want the next method in the
- *		 queue to handle the data received next, you need to return
- *		 false from the method.
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, void *buffer, size_t length,
- *		   id context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncReadIntoBuffer: (void *)buffer
 		exactLength: (size_t)length
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		     target: (id)target
-		   selector: (SEL)selector
-		    context: (nullable id)context;
+		runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
@@ -778,20 +799,8 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
- *
- * @param target The target on which to call the selector when the data has
- *		 been received. If the method returns true, it will be called
- *		 again when the next line has been received. If you want the
- *		 next method in the queue to handle the next line, you need to
- *		 return false from the method
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, OFString *line, id context,
- *		   id exception)`.
- * @param context A context object to pass along to the target
  */
-- (void)asyncReadLineWithTarget: (id)target
-		       selector: (SEL)selector
-			context: (nullable id)context;
+- (void)asyncReadLine;
 
 /*!
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -801,20 +810,8 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *	 for this to work!
  *
  * @param encoding The encoding used by the stream
- * @param target The target on which to call the selector when the data has
- *		 been received. If the method returns true, it will be called
- *		 again when the next line has been received. If you want the
- *		 next method in the queue to handle the next line, you need to
- *		 return false from the method
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, OFString *line, id context,
- *		   id exception)`.
- * @param context A context object to pass along to the target
  */
-- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-			   target: (id)target
-			 selector: (SEL)selector
-			  context: (nullable id)context;
+- (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding;
 
 /*!
  * @brief Asynchronously reads with the specified encoding until a newline,
@@ -825,21 +822,9 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *
  * @param encoding The encoding used by the stream
  * @param runLoopMode The run loop mode in which to perform the async read
- * @param target The target on which to call the selector when the data has
- *		 been received. If the method returns true, it will be called
- *		 again when the next line has been received. If you want the
- *		 next method in the queue to handle the next line, you need to
- *		 return false from the method
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFStream *stream, OFString *line, id context,
- *		   id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncReadLineWithEncoding: (of_string_encoding_t)encoding
-		      runLoopMode: (of_run_loop_mode_t)runLoopMode
-			   target: (id)target
-			 selector: (SEL)selector
-			  context: (nullable id)context;
+		      runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
@@ -987,24 +972,9 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * @param buffer The buffer from which the data is written into the stream. The
  *		 buffer needs to be valid until the write request is completed!
  * @param length The length of the data that should be written
- * @param target The target on which the selector should be called when the
- *		 data has been written. The method should return the length for
- *		 the next write with the same callback or 0 if it should not
- *		 repeat. The buffer may be changed, so that every time a new
- *		 buffer and length can be specified while the callback stays
- *		 the same.
- * @param selector The selector to call on the target. It should return the
- *		   length for the next write with the same callback or 0 if it
- *		   should not repeat. The signature must be `size_t (OFStream
- *		   *stream, const void *buffer, size_t bytesWritten, id
- *		   context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (nullable id)context;
+		  length: (size_t)length;
 
 /*!
  * @brief Asynchronously writes a buffer into the stream.
@@ -1016,25 +986,10 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *		 buffer needs to be valid until the write request is completed!
  * @param length The length of the data that should be written
  * @param runLoopMode The run loop mode in which to perform the async write
- * @param target The target on which the selector should be called when the
- *		 data has been written. The method should return the length for
- *		 the next write with the same callback or 0 if it should not
- *		 repeat. The buffer may be changed, so that every time a new
- *		 buffer and length can be specified while the callback stays
- *		 the same.
- * @param selector The selector to call on the target. It should return the
- *		   length for the next write with the same callback or 0 if it
- *		   should not repeat. The signature must be `size_t (OFStream
- *		   *stream, const void *buffer, size_t bytesWritten, id
- *		   context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncWriteBuffer: (const void *)buffer
 		  length: (size_t)length
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		  target: (id)target
-		selector: (SEL)selector
-		 context: (nullable id)context;
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
