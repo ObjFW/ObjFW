@@ -547,8 +547,17 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return ret;
 }
 
--	  (void)stream: (OF_KINDOF(OFStream *))sock
-  didFailWithException: (id)exception
+-		(void)stream: (OF_KINDOF(OFStream *))sock
+  didFailToReadWithException: (id)exception
+{
+	if ([exception isKindOfClass: [OFInvalidEncodingException class]])
+		exception = [OFInvalidServerReplyException exception];
+
+	[self raiseException: exception];
+}
+
+-		 (void)stream: (OF_KINDOF(OFStream *))sock
+  didFailToWriteWithException: (id)exception
 {
 	if ([exception isKindOfClass: [OFWriteFailedException class]] &&
 	    ([exception errNo] == ECONNRESET || [exception errNo] == EPIPE)) {
@@ -556,9 +565,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		[self closeAndReconnect];
 		return;
 	}
-
-	if ([exception isKindOfClass: [OFInvalidEncodingException class]])
-		exception = [OFInvalidServerReplyException exception];
 
 	[self raiseException: exception];
 }

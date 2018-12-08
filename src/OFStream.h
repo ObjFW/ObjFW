@@ -97,7 +97,7 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 @protocol OFStreamDelegate <OFObject>
 @optional
 /*!
- * @brief This method is called when data was read asynchronously from the
+ * @brief This method is called when data was read asynchronously from a
  *	  stream.
  *
  * @param stream The stream on which data was read
@@ -110,7 +110,7 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 	     length: (size_t)length;
 
 /*!
- * @brief This method is called when a line was read asynchronously from the
+ * @brief This method is called when a line was read asynchronously from a
  *	  stream.
  *
  * @param stream The stream on which a line was read
@@ -122,7 +122,7 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
    didReadLine: (nullable OFString *)line;
 
 /*!
- * @brief This method is called when data was written asynchronously to the
+ * @brief This method is called when data was written asynchronously to a
  *	  stream.
  *
  * @param stream The stream to which data was written
@@ -140,13 +140,23 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 
 /*!
  * @brief This method is called when an exception occurred during an
- *	  asynchronous operation on the stream.
+ *	  asynchronous read on a stream.
  *
  * @param stream The stream for which an exception occurred
  * @param exception The exception which occurred for the stream
  */
--	  (void)stream: (OF_KINDOF(OFStream *))stream
-  didFailWithException: (id)exception;
+-		(void)stream: (OF_KINDOF(OFStream *))stream
+  didFailToReadWithException: (id)exception;
+
+/*!
+ * @brief This method is called when an exception occurred during an
+ *	  asynchronous write on a stream.
+ *
+ * @param stream The stream for which an exception occurred
+ * @param exception The exception which occurred for the stream
+ */
+-		 (void)stream: (OF_KINDOF(OFStream *))stream
+  didFailToWriteWithException: (id)exception;
 @end
 
 /*!

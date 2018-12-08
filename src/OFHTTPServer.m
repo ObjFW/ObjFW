@@ -800,8 +800,8 @@ normalizedKey(OFString *key)
 	return true;
 }
 
--	  (void)stream: (OF_KINDOF(OFStream *))stream
-  didFailWithException: (id)exception
+-		  (void)stream: (OF_KINDOF(OFStream *))stream
+  didFailToAcceptWithException: (id)exception
 {
 	if ([_delegate respondsToSelector:
 	    @selector(server:didReceiveExceptionOnListeningSocket:)])

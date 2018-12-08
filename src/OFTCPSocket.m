@@ -220,10 +220,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 				    didConnectToHost: _host
 						port: _port];
 		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailWithException:)])
-				[_delegate	  stream: _socket
-				    didFailWithException: _exception];
+			if ([_delegate respondsToSelector: @selector(socket:
+			    didFailToConnectWithException:host:port:)])
+				[_delegate		   socket: _socket
+				    didFailToConnectWithException: _exception
+							     host: _host
+							     port: _port];
 		}
 #ifdef OF_HAVE_BLOCKS
 	}
@@ -554,8 +556,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 }
 
--	  (void)stream: (OF_KINDOF(OFStream *))sock
-  didFailWithException: (id)exception
+-		(void)stream: (OF_KINDOF(OFStream *))sock
+  didFailToReadWithException: (id)exception
+{
+	_exception = [exception retain];
+	[self didConnect];
+}
+
+-		 (void)stream: (OF_KINDOF(OFStream *))sock
+  didFailToWriteWithException: (id)exception
 {
 	_exception = [exception retain];
 	[self didConnect];
@@ -577,8 +586,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 	_done = true;
 }
 
--	  (void)stream: (OF_KINDOF(OFStream *))stream
-  didFailWithException: (id)exception
+-		   (void)socket: (OF_KINDOF(OFTCPSocket *))sock
+  didFailToConnectWithException: (id)exception
 {
 	_done = true;
 	_exception = [exception retain];

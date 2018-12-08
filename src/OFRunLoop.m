@@ -339,9 +339,9 @@ static OFRunLoop *mainRunLoop = nil;
 					  length: length];
 		} else {
 			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailWithException:)])
-				[_delegate	  stream: object
-				    didFailWithException: exception];
+			    @selector(stream:didFailToReadWithException:)])
+				[_delegate		stream: object
+				    didFailToReadWithException: exception];
 
 			return false;
 		}
@@ -403,9 +403,9 @@ static OFRunLoop *mainRunLoop = nil;
 			return true;
 		} else {
 			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailWithException:)])
-				[_delegate	  stream: object
-				    didFailWithException: exception];
+			    @selector(stream:didFailToReadWithException:)])
+				[_delegate		stream: object
+				    didFailToReadWithException: exception];
 
 			return false;
 		}
@@ -454,9 +454,9 @@ static OFRunLoop *mainRunLoop = nil;
 				     didReadLine: line];
 		} else {
 			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailWithException:)])
-				[_delegate	  stream: object
-				    didFailWithException: exception];
+			    @selector(stream:didFailToReadWithException:)])
+				[_delegate		stream: object
+				    didFailToReadWithException: exception];
 
 			return false;
 		}
@@ -521,9 +521,9 @@ static OFRunLoop *mainRunLoop = nil;
 			return true;
 		} else {
 			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailWithException:)])
-				[_delegate	  stream: object
-				    didFailWithException: exception];
+			    @selector(stream:didFailToWriteWithException:)])
+				[_delegate		 stream: object
+				    didFailToWriteWithException: exception];
 
 			return false;
 		}
@@ -591,9 +591,9 @@ static OFRunLoop *mainRunLoop = nil;
 				 didAcceptSocket: acceptedSocket];
 		} else {
 			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailWithException:)])
-				[_delegate	  stream: object
-				    didFailWithException: exception];
+			    @selector(socket:didFailToAcceptWithException:)])
+				[_delegate		  socket: object
+				    didFailToAcceptWithException: exception];
 
 			return false;
 		}

@@ -78,6 +78,30 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
  */
 -    (bool)socket: (OF_KINDOF(OFTCPSocket *))socket
   didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket;
+
+/*!
+ * @brief This method is called when an exception occurred during an
+ *	  asynchronous connect.
+ *
+ * @param socket The socket for which an exception occurred
+ * @param exception The exception which occurred for the stream
+ * @param host The host to which the connection failed
+ * @param port The port on the host to which the connection failed
+ */
+-		   (void)socket: (OF_KINDOF(OFTCPSocket *))socket
+  didFailToConnectWithException: (id)exception
+			   host: (OFString *)host
+			   port: (uint16_t)port;
+
+/*!
+ * @brief This method is called when an exception occurred during an
+ *	  asynchronous accept.
+ *
+ * @param socket The socket for which an exception occurred
+ * @param exception The exception which occurred for the stream
+ */
+-		  (void)socket: (OF_KINDOF(OFTCPSocket *))socket
+  didFailToAcceptWithException: (id)exception;
 @end
 
 /*!
