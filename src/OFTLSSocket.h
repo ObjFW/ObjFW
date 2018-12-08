@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A delegate for classes implementing the OFTLSSocket protocol.
  */
-@protocol OFTLSSocketDelegate
+@protocol OFTLSSocketDelegate <OFTCPSocketDelegate>
 @optional
 /*!
  * @brief This callback is called when the TLS socket wants to know if it
