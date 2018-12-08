@@ -55,13 +55,10 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
 				  mode: (of_run_loop_mode_t)mode
 				target: (id)target
-			      selector: (SEL)selector
-			       context: (nullable id)context;
+			      selector: (SEL)selector;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				 mode: (of_run_loop_mode_t)mode
-			       target: (id)target
-			     selector: (SEL)selector
-			      context: (nullable id)context;
+			     delegate: (id <OFTCPSocketDelegate>)delegate;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
 				buffer: (void *)buffer
 				length: (size_t)length

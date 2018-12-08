@@ -51,7 +51,7 @@
 
 #define REDIRECTS_DEFAULT 10
 
-@interface OFHTTPClientRequestHandler: OFObject <OFStreamDelegate>
+@interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate>
 {
 @public
 	OFHTTPClient *_client;
@@ -615,16 +615,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 }
 
-- (void)socketDidConnect: (OFTCPSocket *)sock
-		 context: (id)context
-	       exception: (id)exception
+-     (void)socket: (OF_KINDOF(OFTCPSocket *))sock
+  didConnectToHost: (OFString *)host
+	      port: (uint16_t)port
 {
-	if (exception != nil) {
-		[self raiseException: exception];
-		return;
-	}
-
-	[sock setDelegate: self];
+	[(OFTCPSocket *)sock setDelegate: self];
 
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:context:)])
@@ -697,12 +692,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		if (URLPort != nil)
 			port = [URLPort uInt16Value];
 
+		[sock setDelegate: self];
 		[sock asyncConnectToHost: [URL host]
-				    port: port
-				  target: self
-				selector: @selector(socketDidConnect:context:
-					      exception:)
-				 context: nil];
+				    port: port];
 	} @catch (id e) {
 		[self raiseException: e];
 	}

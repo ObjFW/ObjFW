@@ -54,6 +54,33 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
 #endif
 
 /*!
+ * @protocol OFTCPSocketDelegate OFTCPSocket.h ObjFW/OFTCPSocket.h
+ *
+ * A delegate for OFTCPSocket.
+ */
+@protocol OFTCPSocketDelegate <OFStreamDelegate>
+@optional
+/*!
+ * @brief A method which is called when a socket connected.
+ *
+ * @param socket The socket which connected
+ */
+-     (void)socket: (OF_KINDOF(OFTCPSocket *))socket
+  didConnectToHost: (OFString *)host
+	      port: (uint16_t)port;
+
+/*!
+ * @brief A method which is called when a socket accepted a connection.
+ *
+ * @param socket The socket which accepted the connection
+ * @param acceptedSocket The socket which has been accepted
+ * @return A bool whether to accept the next incoming connection
+ */
+-    (bool)socket: (OF_KINDOF(OFTCPSocket *))socket
+  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket;
+@end
+
+/*!
  * @class OFTCPSocket OFTCPSocket.h ObjFW/OFTCPSocket.h
  *
  * @brief A class which provides methods to create and use TCP sockets.
@@ -118,6 +145,15 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
 @property (nonatomic) uint16_t SOCKS5Port;
 
 /*!
+ * @brief The delegate for asynchronous operations on the socket.
+ *
+ * @note The delegate is retained for as long as asynchronous operations are
+ *	 still outstanding.
+ */
+@property OF_NULLABLE_PROPERTY (assign, nonatomic)
+    id <OFTCPSocketDelegate> delegate;
+
+/*!
  * @brief Sets the global SOCKS5 proxy host to use when creating a new socket
  *
  * @param SOCKS5Host The host to use as a SOCKS5 proxy when creating a new
@@ -160,17 +196,9 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
  *
  * @param host The host to connect to
  * @param port The port on the host to connect to
- * @param target The target on which to call the selector once the connection
- *		 has been established
- * @param selector The selector to call on the target. The signature must be
- *		   `void (OFTCPSocket *socket, id context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncConnectToHost: (OFString *)host
-		      port: (uint16_t)port
-		    target: (id)target
-		  selector: (SEL)selector
-		   context: (nullable id)context;
+		      port: (uint16_t)port;
 
 /*!
  * @brief Asynchronously connect the OFTCPSocket to the specified destination.
@@ -178,18 +206,10 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
  * @param host The host to connect to
  * @param port The port on the host to connect to
  * @param runLoopMode The run loop mode in which to perform the async connect
- * @param target The target on which to call the selector once the connection
- *		 has been established
- * @param selector The selector to call on the target. The signature must be
- *		   `void (OFTCPSocket *socket, id context, id exception)`.
- * @param context A context object to pass along to the target
  */
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		    target: (id)target
-		  selector: (SEL)selector
-		   context: (nullable id)context;
+	       runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
@@ -250,37 +270,15 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
 
 /*!
  * @brief Asynchronously accept an incoming connection.
- *
- * @param target The target on which to execute the selector when a new
- *		 connection has been accepted. The method returns whether the
- *		 next incoming connection should be accepted by the specified
- *		 block as well.
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
- *		   id context, id exception)`.
- * @param context A context object to pass along to the target
  */
-- (void)asyncAcceptWithTarget: (id)target
-		     selector: (SEL)selector
-		      context: (nullable id)context;
+- (void)asyncAccept;
 
 /*!
  * @brief Asynchronously accept an incoming connection.
  *
  * @param runLoopMode The run loop mode in which to perform the async accept
- * @param target The target on which to execute the selector when a new
- *		 connection has been accepted. The method returns whether the
- *		 next incoming connection should be accepted by the specified
- *		 block as well.
- * @param selector The selector to call on the target. The signature must be
- *		   `bool (OFTCPSocket *socket, OFTCPSocket *acceptedSocket,
- *		   id context, id exception)`.
- * @param context A context object to pass along to the target
  */
-- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			    target: (id)target
-			  selector: (SEL)selector
-			   context: (nullable id)context;
+- (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /*!

@@ -64,16 +64,14 @@ static of_run_loop_mode_t connectRunLoopMode = @"of_tcp_socket_connect_mode";
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket_AsyncConnectContext: OFObject <OFStreamDelegate>
+@interface OFTCPSocket_AsyncConnectContext: OFObject <OFTCPSocketDelegate>
 {
 	OFTCPSocket *_socket;
 	OFString *_host;
 	uint16_t _port;
 	OFString *_SOCKS5Host;
 	uint16_t _SOCKS5Port;
-	id _target;
-	SEL _selector;
-	id _context;
+	id <OFTCPSocketDelegate> _delegate;
 #ifdef OF_HAVE_BLOCKS
 	of_tcp_socket_async_connect_block_t _block;
 #endif
@@ -98,9 +96,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			  port: (uint16_t)port
 		    SOCKS5Host: (OFString *)SOCKS5Host
 		    SOCKS5Port: (uint16_t)SOCKS5Port
-			target: (id)target
-		      selector: (SEL)selector
-		       context: (id)context;
+		      delegate: (id <OFTCPSocketDelegate>)delegate;
 #ifdef OF_HAVE_BLOCKS
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
 			  host: (OFString *)host
@@ -111,7 +107,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 - (void)didConnect;
 - (void)socketDidConnect: (OFTCPSocket *)sock
-		 context: (id)context
 	       exception: (id)exception;
 - (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 -	(void)resolver: (OFDNSResolver *)resolver
@@ -123,16 +118,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)sendSOCKS5Request;
 @end
 
-@interface OFTCPSocket_ConnectContext: OFObject
+@interface OFTCPSocket_ConnectDelegate: OFObject <OFTCPSocketDelegate>
 {
 @public
 	bool _done;
 	id _exception;
 }
-
-- (void)socketDidConnect: (OFTCPSocket *)sock
-		 context: (id)context
-	       exception: (id)exception;
 @end
 
 @implementation OFTCPSocket_AsyncConnectContext
@@ -141,9 +132,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 			  port: (uint16_t)port
 		    SOCKS5Host: (OFString *)SOCKS5Host
 		    SOCKS5Port: (uint16_t)SOCKS5Port
-			target: (id)target
-		      selector: (SEL)selector
-		       context: (id)context
+		      delegate: (id <OFTCPSocketDelegate>)delegate
 {
 	self = [super init];
 
@@ -153,9 +142,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_port = port;
 		_SOCKS5Host = [SOCKS5Host copy];
 		_SOCKS5Port = SOCKS5Port;
-		_target = [target retain];
-		_selector = selector;
-		_context = [context retain];
+		_delegate = [delegate retain];
 
 		[_socket setDelegate: self];
 	} @catch (id e) {
@@ -194,14 +181,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)dealloc
 {
-	if ([_socket delegate] == self)
-		[_socket setDelegate: nil];
+#ifdef OF_HAVE_BLOCKS
+	if (_block != NULL)
+#endif
+		if ([_socket delegate] == self)
+			[_socket setDelegate: _delegate];
 
 	[_socket release];
 	[_host release];
 	[_SOCKS5Host release];
-	[_target release];
-	[_context release];
+	[_delegate release];
 #ifdef OF_HAVE_BLOCKS
 	[_block release];
 #endif
@@ -214,8 +203,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)didConnect
 {
-	[_socket setDelegate: nil];
-
 	if (_exception == nil)
 		[_socket setBlocking: true];
 
@@ -224,18 +211,26 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_block(_socket, _exception);
 	else {
 #endif
-		void (*func)(id, SEL, OFTCPSocket *, id, id) =
-		    (void (*)(id, SEL, OFTCPSocket *, id, id))
-		    [_target methodForSelector: _selector];
+		[_socket setDelegate: _delegate];
 
-		func(_target, _selector, _socket, _context, _exception);
+		if (_exception == nil) {
+			if ([_delegate respondsToSelector:
+			    @selector(socket:didConnectToHost:port:)])
+				[_delegate    socket: _socket
+				    didConnectToHost: _host
+						port: _port];
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(stream:didFailWithException:)])
+				[_delegate	  stream: _socket
+				    didFailWithException: _exception];
+		}
 #ifdef OF_HAVE_BLOCKS
 	}
 #endif
 }
 
 - (void)socketDidConnect: (OFTCPSocket *)sock
-		 context: (id)context
 	       exception: (id)exception
 {
 	if (exception != nil) {
@@ -288,14 +283,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (![_socket of_connectSocketToAddress: &address
 					  errNo: &errNo]) {
 		if (errNo == EINPROGRESS) {
-			SEL selector = @selector(socketDidConnect:context:
-			    exception:);
+			SEL selector = @selector(socketDidConnect:exception:);
 
 			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
 							     mode: runLoopMode
 							   target: self
-							 selector: selector
-							  context: nil];
+							 selector: selector];
 			return;
 		} else {
 			[_socket of_closeSocket];
@@ -501,8 +494,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 		case 4: /* IPv6 */
 			_SOCKS5State = SOCKS5_STATE_READ_ADDRESS;
 			[_socket asyncReadIntoBuffer: _buffer
-				 exactLength: 16 + 2
-				 runLoopMode: runLoopMode];
+					 exactLength: 16 + 2
+					 runLoopMode: runLoopMode];
 			return false;
 		default:
 			_exception = [[OFConnectionFailedException alloc]
@@ -569,7 +562,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 @end
 
-@implementation OFTCPSocket_ConnectContext
+@implementation OFTCPSocket_ConnectDelegate
 - (void)dealloc
 {
 	[_exception release];
@@ -577,17 +570,24 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
-- (void)socketDidConnect: (OFTCPSocket *)sock
-		 context: (id)context
-	       exception: (id)exception
+-     (void)socket: (OF_KINDOF(OFTCPSocket *))sock
+  didConnectToHost: (OFString *)host
+	      port: (uint16_t)port
 {
-	_exception = [exception retain];
 	_done = true;
+}
+
+-	  (void)stream: (OF_KINDOF(OFStream *))stream
+  didFailWithException: (id)exception
+{
+	_done = true;
+	_exception = [exception retain];
 }
 @end
 
 @implementation OFTCPSocket
 @synthesize SOCKS5Host = _SOCKS5Host, SOCKS5Port = _SOCKS5Port;
+@dynamic delegate;
 
 + (void)setSOCKS5Host: (OFString *)host
 {
@@ -695,18 +695,17 @@ static uint16_t defaultSOCKS5Port = 1080;
 		 port: (uint16_t)port
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFTCPSocket_ConnectContext *context =
-	    [[[OFTCPSocket_ConnectContext alloc] init] autorelease];
+	id <OFTCPSocketDelegate> delegate = [_delegate retain];
+	OFTCPSocket_ConnectDelegate *connectDelegate =
+	    [[[OFTCPSocket_ConnectDelegate alloc] init] autorelease];
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
+	[self setDelegate: connectDelegate];
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: connectRunLoopMode
-			  target: context
-			selector: @selector(socketDidConnect:context:exception:)
-			 context: nil];
+		     runLoopMode: connectRunLoopMode];
 
-	while (!context->_done)
+	while (!connectDelegate->_done)
 		[runLoop runMode: connectRunLoopMode
 		      beforeDate: nil];
 
@@ -714,44 +713,35 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[runLoop runMode: connectRunLoopMode
 	      beforeDate: [OFDate date]];
 
-	if (context->_exception != nil)
-		@throw context->_exception;
+	if (connectDelegate->_exception != nil)
+		@throw connectDelegate->_exception;
+
+	[self setDelegate: delegate];
 
 	objc_autoreleasePoolPop(pool);
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
-		    target: (id)target
-		  selector: (SEL)selector
-		   context: (id)context
 {
 	[self asyncConnectToHost: host
 			    port: port
-		     runLoopMode: of_run_loop_mode_default
-			  target: target
-			selector: selector
-			 context: context];
+		     runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncConnectToHost: (OFString *)host
 		      port: (uint16_t)port
 	       runLoopMode: (of_run_loop_mode_t)runLoopMode
-		    target: (id)target
-		  selector: (SEL)selector
-		   context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFTCPSocket_AsyncConnectContext alloc]
-	    initWithSocket: self
-		      host: host
-		      port: port
-		SOCKS5Host: _SOCKS5Host
-		SOCKS5Port: _SOCKS5Port
-		    target: target
-		  selector: selector
-		   context: context] autorelease]
+		  initWithSocket: self
+			    host: host
+			    port: port
+		      SOCKS5Host: _SOCKS5Host
+		      SOCKS5Port: _SOCKS5Port
+			delegate: _delegate] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -776,12 +766,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 	void *pool = objc_autoreleasePoolPush();
 
 	[[[[OFTCPSocket_AsyncConnectContext alloc]
-	    initWithSocket: self
-		      host: host
-		      port: port
-		SOCKS5Host: _SOCKS5Host
-		SOCKS5Port: _SOCKS5Port
-		     block: block] autorelease]
+		  initWithSocket: self
+			    host: host
+			    port: port
+		      SOCKS5Host: _SOCKS5Host
+		      SOCKS5Port: _SOCKS5Port
+			   block: block] autorelease]
 	    startWithRunLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -1007,26 +997,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 	return client;
 }
 
-- (void)asyncAcceptWithTarget: (id)target
-		     selector: (SEL)selector
-		      context: (id)context
+- (void)asyncAccept
 {
-	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default
-				  target: target
-				selector: selector
-				 context: context];
+	[self asyncAcceptWithRunLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncAcceptWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
-			    target: (id)target
-			  selector: (SEL)selector
-			   context: (id)context
 {
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
 					    mode: runLoopMode
-					  target: target
-					selector: selector
-					 context: context];
+					delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS

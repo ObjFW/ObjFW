@@ -567,27 +567,36 @@ static OFRunLoop *mainRunLoop = nil;
 @implementation OFRunLoop_AcceptQueueItem
 - (bool)handleObject: (id)object
 {
-	OFTCPSocket *newSocket;
+	OFTCPSocket *acceptedSocket;
 	id exception = nil;
 
 	@try {
-		newSocket = [object accept];
+		acceptedSocket = [object accept];
 	} @catch (id e) {
-		newSocket = nil;
+		acceptedSocket = nil;
 		exception = e;
 	}
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(object, newSocket, exception);
+		return _block(object, acceptedSocket, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFTCPSocket *, OFTCPSocket *, id, id) =
-		    (bool (*)(id, SEL, OFTCPSocket *, OFTCPSocket *, id, id))
-		    [_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector:
+			    @selector(socket:didAcceptSocket:)])
+				return false;
 
-		return func(_target, _selector, object, newSocket, _context,
-		    exception);
+			return [_delegate socket: object
+				 didAcceptSocket: acceptedSocket];
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(stream:didFailWithException:)])
+				[_delegate	  stream: object
+				    didFailWithException: exception];
+
+			return false;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -823,25 +832,19 @@ static OFRunLoop *mainRunLoop = nil;
 				  mode: (of_run_loop_mode_t)mode
 				target: (id)target
 			      selector: (SEL)selector
-			       context: (id)context
 {
 	ADD_WRITE(OFRunLoop_ConnectQueueItem, stream, mode, {
 		queueItem->_target = [target retain];
 		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
 	})
 }
 
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 				 mode: (of_run_loop_mode_t)mode
-			       target: (id)target
-			     selector: (SEL)selector
-			      context: (id)context
+			     delegate: (id <OFTCPSocketDelegate>)delegate
 {
 	ADD_READ(OFRunLoop_AcceptQueueItem, stream, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 	})
 }
 

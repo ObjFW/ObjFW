@@ -180,7 +180,7 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 	bool _writeBuffered, _waitingForDelimiter;
 @protected
 	bool _blocking;
-	id <OFStreamDelegate> _Nullable _delegate;
+	id _Nullable _delegate;
 }
 
 /*!

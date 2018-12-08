@@ -50,11 +50,7 @@
  * FIXME: Errors are not reported to the user.
  */
 
-@interface OFHTTPServer ()
-- (bool)of_socket: (OFTCPSocket *)sock
-  didAcceptSocket: (OFTCPSocket *)clientSocket
-	  context: (id)context
-	exception: (id)exception;
+@interface OFHTTPServer () <OFTCPSocketDelegate>
 @end
 
 @interface OFHTTPServerResponse: OFHTTPResponse <OFReadyForWritingObserving>
@@ -70,7 +66,7 @@
 		       request: (OFHTTPRequest *)request;
 @end
 
-@interface OFHTTPServer_Connection: OFObject <OFStreamDelegate>
+@interface OFHTTPServer_Connection: OFObject <OFTCPSocketDelegate>
 {
 @public
 	OF_KINDOF(OFTCPSocket *) _socket;
@@ -780,11 +776,8 @@ normalizedKey(OFString *key)
 					port: _port];
 	[_listeningSocket listen];
 
-	[_listeningSocket asyncAcceptWithTarget: self
-				       selector: @selector(of_socket:
-						     didAcceptSocket:context:
-						     exception:)
-					context: nil];
+	[(OFTCPSocket *)_listeningSocket setDelegate: self];
+	[_listeningSocket asyncAccept];
 }
 
 - (void)stop
@@ -794,29 +787,26 @@ normalizedKey(OFString *key)
 	_listeningSocket = nil;
 }
 
-- (bool)of_socket: (OFTCPSocket *)sock
-  didAcceptSocket: (OFTCPSocket *)clientSocket
-	  context: (id)context
-	exception: (id)exception
+-    (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
+  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket
 {
-	OFHTTPServer_Connection *connection;
-
-	if (exception != nil) {
-		if ([_delegate respondsToSelector:
-		    @selector(server:didReceiveExceptionOnListeningSocket:)])
-			return [_delegate		  server: self
-			    didReceiveExceptionOnListeningSocket: exception];
-
-		return false;
-	}
-
-	connection = [[[OFHTTPServer_Connection alloc]
-	    initWithSocket: clientSocket
+	OFHTTPServer_Connection *connection = [[[OFHTTPServer_Connection alloc]
+	    initWithSocket: acceptedSocket
 		    server: self] autorelease];
 
-	[clientSocket setDelegate: connection];
-	[clientSocket asyncReadLine];
+	[(OFTCPSocket *)acceptedSocket setDelegate: connection];
+	[acceptedSocket asyncReadLine];
 
 	return true;
+}
+
+-	  (void)stream: (OF_KINDOF(OFStream *))stream
+  didFailWithException: (id)exception
+{
+	if ([_delegate respondsToSelector:
+	    @selector(server:didReceiveExceptionOnListeningSocket:)])
+		if ([_delegate			  server: self
+		    didReceiveExceptionOnListeningSocket: exception])
+			[stream asyncAccept];
 }
 @end
