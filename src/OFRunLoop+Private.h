@@ -26,10 +26,12 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFRunLoop_State;
 
+#ifdef OF_HAVE_SOCKETS
 @protocol OFTCPSocketDelegate_Private <OFObject>
 - (void)of_socketDidConnect: (OF_KINDOF(OFTCPSocket *))socket
 		  exception: (nullable id)exception;
 @end
+#endif
 
 @interface OFRunLoop ()
 + (void)of_setMainRunLoop: (OFRunLoop *)runLoop;

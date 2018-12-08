@@ -2012,6 +2012,13 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	return true;
 }
 
+-		   (void)socket: (OF_KINDOF(OFUDPSocket *))sock
+  didFailToReceiveWithException: (id)exception
+{
+	[sock asyncReceiveIntoBuffer: _buffer
+			      length: BUFFER_LENGTH];
+}
+
 - (void)asyncResolveSocketAddressesForHost: (OFString *)host
 				    target: (id)target
 				  selector: (SEL)selector
