@@ -48,6 +48,8 @@
 #import "socket_helpers.h"
 
 @implementation OFUDPSocket
+@synthesize delegate = _delegate;
+
 + (void)initialize
 {
 	if (self != [OFUDPSocket class])
@@ -327,32 +329,21 @@
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
-			target: (id)target
-		      selector: (SEL)selector
-		       context: (id)context
 {
 	[self asyncReceiveIntoBuffer: buffer
 			      length: length
-			 runLoopMode: of_run_loop_mode_default
-			      target: target
-			    selector: selector
-			     context: context];
+			 runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncReceiveIntoBuffer: (void *)buffer
 			length: (size_t)length
 		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			target: (id)target
-		      selector: (SEL)selector
-		       context: (id)context
 {
 	[OFRunLoop of_addAsyncReceiveForUDPSocket: self
 					   buffer: buffer
 					   length: length
 					     mode: runLoopMode
-					   target: target
-					 selector: selector
-					  context: context];
+					 delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -424,35 +415,24 @@
 - (void)asyncSendBuffer: (const void *)buffer
 		 length: (size_t)length
 	       receiver: (of_socket_address_t)receiver
-		 target: (id)target
-	       selector: (SEL)selector
-		context: (id)context
 {
 	[self asyncSendBuffer: buffer
 		       length: length
 		     receiver: receiver
-		  runLoopMode: of_run_loop_mode_default
-		       target: target
-		     selector: selector
-		      context: context];
+		  runLoopMode: of_run_loop_mode_default];
 }
 
 - (void)asyncSendBuffer: (const void *)buffer
 		 length: (size_t)length
 	       receiver: (of_socket_address_t)receiver
 	    runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 target: (id)target
-	       selector: (SEL)selector
-		context: (id)context
 {
 	[OFRunLoop of_addAsyncSendForUDPSocket: self
 					buffer: buffer
 					length: length
 				      receiver: receiver
 					  mode: runLoopMode
-					target: target
-				      selector: selector
-				       context: context];
+				      delegate: _delegate];
 }
 
 #ifdef OF_HAVE_BLOCKS

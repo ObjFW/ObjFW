@@ -22,6 +22,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+#define OF_DNS_RESOLVER_BUFFER_LENGTH 512
+
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDNSResolverQuery;
 @class OFDate;
@@ -87,6 +89,7 @@ typedef enum of_dns_resolver_error_t {
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
 #endif
+	char _buffer[OF_DNS_RESOLVER_BUFFER_LENGTH];
 	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverQuery *)
 	    *_queries;
 }

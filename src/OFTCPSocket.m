@@ -64,7 +64,8 @@ static of_run_loop_mode_t connectRunLoopMode = @"of_tcp_socket_connect_mode";
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket_AsyncConnectContext: OFObject <OFTCPSocketDelegate>
+@interface OFTCPSocket_AsyncConnectContext: OFObject <OFTCPSocketDelegate,
+    OFTCPSocketDelegate_Private>
 {
 	OFTCPSocket *_socket;
 	OFString *_host;
@@ -106,8 +107,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 			 block: (of_tcp_socket_async_connect_block_t)block;
 #endif
 - (void)didConnect;
-- (void)socketDidConnect: (OFTCPSocket *)sock
-	       exception: (id)exception;
 - (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
@@ -232,8 +231,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 }
 
-- (void)socketDidConnect: (OFTCPSocket *)sock
-	       exception: (id)exception
+- (void)of_socketDidConnect: (OF_KINDOF(OFTCPSocket *))sock
+		  exception: (id)exception
 {
 	if (exception != nil) {
 		if (_socketAddressesIndex >= [_socketAddresses count]) {
@@ -285,12 +284,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (![_socket of_connectSocketToAddress: &address
 					  errNo: &errNo]) {
 		if (errNo == EINPROGRESS) {
-			SEL selector = @selector(socketDidConnect:exception:);
-
 			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
 							     mode: runLoopMode
-							   target: self
-							 selector: selector];
+							 delegate: self];
 			return;
 		} else {
 			[_socket of_closeSocket];

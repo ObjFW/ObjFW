@@ -71,6 +71,8 @@
 # define SOCK_DNS 0
 #endif
 
+#define BUFFER_LENGTH OF_DNS_RESOLVER_BUFFER_LENGTH
+
 /*
  * RFC 1035 doesn't specify if pointers to pointers are allowed, and if so how
  * many. Since it's unspecified, we have to assume that it might happen, but we
@@ -228,7 +230,7 @@ static of_run_loop_mode_t resolveRunLoopMode = @"of_dns_resolver_resolve_mode";
 	     exception: (id)exception;
 @end
 
-@interface OFDNSResolver ()
+@interface OFDNSResolver () <OFUDPSocketDelegate>
 - (void)of_setDefaults;
 - (void)of_obtainSystemConfig;
 #if defined(OF_HAVE_FILES) && !defined(OF_NINTENDO_3DS)
@@ -261,18 +263,6 @@ static of_run_loop_mode_t resolveRunLoopMode = @"of_dns_resolver_resolve_mode";
 - (void)of_sendQuery: (OFDNSResolverQuery *)query
 	 runLoopMode: (of_run_loop_mode_t)runLoopMode;
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query;
-- (size_t)of_socket: (OFUDPSocket *)sock
-      didSendBuffer: (void **)buffer
-	  bytesSent: (size_t)bytesSent
-	   receiver: (of_socket_address_t *)receiver
-	    context: (OFDNSResolverQuery *)query
-	  exception: (id)exception;
--      (bool)of_socket: (OFUDPSocket *)sock
-  didReceiveIntoBuffer: (unsigned char *)buffer
-		length: (size_t)length
-		sender: (of_socket_address_t)sender
-	       context: (id)context
-	     exception: (id)exception;
 @end
 
 #ifndef OF_WII
@@ -1291,8 +1281,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[_localDomain release];
 	[_searchDomains release];
 	[_lastConfigReload release];
+	[_IPv4Socket cancelAsyncRequests];
 	[_IPv4Socket release];
 #ifdef OF_HAVE_IPV6
+	[_IPv6Socket cancelAsyncRequests];
 	[_IPv6Socket release];
 #endif
 	[_queries release];
@@ -1792,6 +1784,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			[_IPv6Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
 			[_IPv6Socket setBlocking: false];
+			[_IPv6Socket setDelegate: self];
+			[_IPv6Socket asyncReceiveIntoBuffer: _buffer
+						     length: BUFFER_LENGTH];
 		}
 
 		sock = _IPv6Socket;
@@ -1806,6 +1801,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			[_IPv4Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
 			[_IPv4Socket setBlocking: false];
+			[_IPv4Socket setDelegate: self];
+			[_IPv4Socket asyncReceiveIntoBuffer: _buffer
+						     length: BUFFER_LENGTH];
 		}
 
 		sock = _IPv4Socket;
@@ -1817,11 +1815,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	[sock asyncSendBuffer: [query->_queryData items]
 		       length: [query->_queryData count]
 		     receiver: query->_usedNameServer
-		  runLoopMode: runLoopMode
-		       target: self
-		     selector: @selector(of_socket:didSendBuffer:bytesSent:
-				   receiver:context:exception:)
-		      context: query];
+		  runLoopMode: runLoopMode];
 }
 
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
@@ -1850,6 +1844,19 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	query = [[query retain] autorelease];
 	[_queries removeObjectForKey: query->_ID];
 
+	/*
+	 * Cancel any pending requests, to avoid a send being still pending and
+	 * trying to access the query once it no longer exists.
+	 */
+	[_IPv4Socket cancelAsyncRequests];
+	[_IPv4Socket asyncReceiveIntoBuffer: _buffer
+				     length: BUFFER_LENGTH];
+#ifdef OF_HAVE_IPV6
+	[_IPv6Socket cancelAsyncRequests];
+	[_IPv6Socket asyncReceiveIntoBuffer: _buffer
+				     length: BUFFER_LENGTH];
+#endif
+
 	exception = [OFResolveHostFailedException
 	    exceptionWithHost: query->_host
 		  recordClass: query->_recordClass
@@ -1860,57 +1867,16 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	    nil, nil, nil, query->_context, exception);
 }
 
-- (size_t)of_socket: (OFUDPSocket *)sock
-      didSendBuffer: (void **)buffer
-	  bytesSent: (size_t)bytesSent
-	   receiver: (of_socket_address_t *)receiver
-	    context: (OFDNSResolverQuery *)query
-	  exception: (id)exception
-{
-	if (exception != nil) {
-		query = [[query retain] autorelease];
-		[_queries removeObjectForKey: query->_ID];
-
-		callback(query->_target, query->_selector, self,
-		    query->_domainName, nil, nil, nil, query->_context,
-		    exception);
-
-		return 0;
-	}
-
-	/*
-	 * Pass the query as context to make sure that its buffer stays around
-	 * for as long as our receive is pending.
-	 */
-	[sock asyncReceiveIntoBuffer: [query allocMemoryWithSize: 512]
-			      length: 512
-			 runLoopMode: [[OFRunLoop currentRunLoop] currentMode]
-			      target: self
-			    selector: @selector(of_socket:didReceiveIntoBuffer:
-					  length:sender:context:exception:)
-			     context: query];
-
-	return 0;
-}
-
--      (bool)of_socket: (OFUDPSocket *)sock
-  didReceiveIntoBuffer: (unsigned char *)buffer
+-	  (bool)socket: (OF_KINDOF(OFUDPSocket *))sock
+  didReceiveIntoBuffer: (void *)buffer_
 		length: (size_t)length
 		sender: (of_socket_address_t)sender
-	       context: (id)context
-	     exception: (id)exception
 {
+	unsigned char *buffer = buffer_;
 	OFDictionary *answerRecords = nil, *authorityRecords = nil;
 	OFDictionary *additionalRecords = nil;
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
-
-	if (exception != nil) {
-		if ([exception respondsToSelector: @selector(errNo)])
-			return ([exception errNo] == EINTR);
-
-		return false;
-	}
 
 	if (length < 2)
 		/* We can't get the ID to get the query. Ignore packet. */
@@ -1987,7 +1953,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 					    selector: query->_selector
 					     context: query->_context];
 
-				return false;
+				return true;
 			}
 
 			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
@@ -2036,14 +2002,14 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	} @catch (id e) {
 		callback(query->_target, query->_selector, self,
 		    query->_domainName, nil, nil, nil, query->_context, e);
-		return false;
+		return true;
 	}
 
 	callback(query->_target, query->_selector, self, query->_domainName,
 	    answerRecords, authorityRecords, additionalRecords,
 	    query->_context, nil);
 
-	return false;
+	return true;
 }
 
 - (void)asyncResolveSocketAddressesForHost: (OFString *)host

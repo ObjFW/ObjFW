@@ -75,10 +75,6 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 	id _delegate;
-	/* TODO: Remove once everything is moved to using delegates */
-	id _target;
-	SEL _selector;
-	id _context;
 }
 
 - (bool)handleObject: (id)object;
@@ -303,8 +299,6 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[_delegate release];
-	[_target release];
-	[_context release];
 
 	[super dealloc];
 }
@@ -547,7 +541,6 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	id exception = nil;
 	int errNo;
-	void (*func)(id, SEL, OFTCPSocket *, id, id);
 
 	if ((errNo = [object of_socketError]) != 0)
 		exception = [OFConnectionFailedException
@@ -556,9 +549,10 @@ static OFRunLoop *mainRunLoop = nil;
 			       socket: object
 				errNo: errNo];
 
-	func = (void (*)(id, SEL, OFTCPSocket *, id, id))
-	    [_target methodForSelector: _selector];
-	func(_target, _selector, object, _context, exception);
+	if ([_delegate respondsToSelector:
+	    @selector(of_socketDidConnect:exception:)])
+		[_delegate of_socketDidConnect: object
+				     exception: exception];
 
 	return false;
 }
@@ -633,14 +627,23 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, address, exception);
 	else {
 # endif
-		bool (*func)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_socket_address_t, id, id) =
-		    (bool (*)(id, SEL, OFUDPSocket *, void *, size_t,
-		    of_socket_address_t, id, id))
-		    [_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector: @selector(socket:
+			    didReceiveIntoBuffer:length:sender:)])
+				return false;
 
-		return func(_target, _selector, object, _buffer, length,
-		    address, _context, exception);
+			return [_delegate socket: object
+			    didReceiveIntoBuffer: _buffer
+					  length: length
+					  sender: address];
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(socket:didFailToReceiveWithException:)])
+				[_delegate		   socket: object
+				    didFailToReceiveWithException: exception];
+
+			return false;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -677,17 +680,25 @@ static OFRunLoop *mainRunLoop = nil;
 		return (_length > 0);
 	} else {
 # endif
-		size_t (*func)(id, SEL, OFUDPSocket *, const void *, size_t,
-		    of_socket_address_t *, id, id) =
-		    (size_t (*)(id, SEL, OFUDPSocket *, const void *, size_t,
-		    of_socket_address_t *, id, id))
-		    [_target methodForSelector: _selector];
+		if (exception == nil) {
+			if (![_delegate respondsToSelector:
+			    @selector(socket:didSendBuffer:length:receiver:)])
+				return false;
 
-		_length = func(_target, _selector, object, &_buffer,
-		    (exception == nil ? _length : 0), &_receiver, _context,
-		    exception);
+			_length = [_delegate socket: object
+				      didSendBuffer: &_buffer
+					     length: _length
+					   receiver: &_receiver];
 
-		return (_length > 0);
+			return (_length > 0);
+		} else {
+			if ([_delegate respondsToSelector:
+			    @selector(socket:didFailToSendWithException:)])
+				[_delegate		socket: object
+				    didFailToSendWithException: exception];
+
+			return false;
+		}
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -830,12 +841,11 @@ static OFRunLoop *mainRunLoop = nil;
 
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
 				  mode: (of_run_loop_mode_t)mode
-				target: (id)target
-			      selector: (SEL)selector
+			      delegate: (id <OFTCPSocketDelegate_Private>)
+					    delegate
 {
 	ADD_WRITE(OFRunLoop_ConnectQueueItem, stream, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
+		queueItem->_delegate = [delegate retain];
 	})
 }
 
@@ -852,14 +862,10 @@ static OFRunLoop *mainRunLoop = nil;
 				buffer: (void *)buffer
 				length: (size_t)length
 				  mode: (of_run_loop_mode_t)mode
-				target: (id)target
-			      selector: (SEL)selector
-			       context: (id)context
+			      delegate: (id <OFUDPSocketDelegate>)delegate
 {
 	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 	})
@@ -870,14 +876,10 @@ static OFRunLoop *mainRunLoop = nil;
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
 			       mode: (of_run_loop_mode_t)mode
-			     target: (id)target
-			   selector: (SEL)selector
-			    context: (id)context
+			   delegate: (id <OFUDPSocketDelegate>)delegate
 {
 	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode, {
-		queueItem->_target = [target retain];
-		queueItem->_selector = selector;
-		queueItem->_context = [context retain];
+		queueItem->_delegate = [delegate retain];
 		queueItem->_buffer = buffer;
 		queueItem->_length = length;
 		queueItem->_receiver = receiver;

@@ -26,6 +26,11 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFRunLoop_State;
 
+@protocol OFTCPSocketDelegate_Private <OFObject>
+- (void)of_socketDidConnect: (OF_KINDOF(OFTCPSocket *))socket
+		  exception: (nullable id)exception;
+@end
+
 @interface OFRunLoop ()
 + (void)of_setMainRunLoop: (OFRunLoop *)runLoop;
 #ifdef OF_HAVE_SOCKETS
@@ -54,8 +59,8 @@ OF_ASSUME_NONNULL_BEGIN
 			 delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
 				  mode: (of_run_loop_mode_t)mode
-				target: (id)target
-			      selector: (SEL)selector;
+			      delegate: (id <OFTCPSocketDelegate_Private>)
+					    delegate;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				 mode: (of_run_loop_mode_t)mode
 			     delegate: (id <OFTCPSocketDelegate>)delegate;
@@ -63,17 +68,13 @@ OF_ASSUME_NONNULL_BEGIN
 				buffer: (void *)buffer
 				length: (size_t)length
 				  mode: (of_run_loop_mode_t)mode
-				target: (id)target
-			      selector: (SEL)selector
-			       context: (nullable id)context;
+			      delegate: (id <OFUDPSocketDelegate>)delegate;
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
 			       mode: (of_run_loop_mode_t)mode
-			     target: (id)target
-			   selector: (SEL)selector
-			    context: (nullable id)context;
+			   delegate: (id <OFUDPSocketDelegate>)delegate;
 # ifdef OF_HAVE_BLOCKS
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
 				      stream
