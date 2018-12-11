@@ -80,12 +80,15 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  * @param buffer The buffer the packet has been written to
  * @param length The length of the packet
  * @param sender The address of the sender of the packet
+ * @param exception An exception that occurred while receiving, or nil on
+ *		    success
  * @return A bool whether the same block should be used for the next receive
  */
 -	  (bool)socket: (OF_KINDOF(OFUDPSocket *))socket
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
-		sender: (of_socket_address_t)sender;
+		sender: (of_socket_address_t)sender
+	     exception: (nullable id)exception;
 
 /*!
  * @brief This which is called when a packet has been sent.
@@ -96,6 +99,7 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
  * @param length The length of the buffer that has been sent
  * @param receiver The receiver for the UDP packet. This may be set to a new
  *		   receiver to which the next packet is sent.
+ * @param exception An exception that occurred while sending, or nil on success
  * @return The length to repeat the send with or 0 if it should not repeat.
  *	   The buffer and receiver may be changed, so that every time a new
  *	   buffer, length and receiver can be specified while the callback
@@ -104,27 +108,8 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 - (size_t)socket: (OF_KINDOF(OFUDPSocket *))socket
    didSendBuffer: (const void *_Nonnull *_Nonnull)buffer
 	  length: (size_t)length
-	receiver: (of_socket_address_t *_Nonnull)receiver;
-
-/*!
- * @brief This method is called when an exception occurred during an
- *	  asynchronous receive on the socket.
- *
- * @param socket The socket for which an exception occurred
- * @param exception The exception which occurred for the socket
- */
--		   (void)socket: (OF_KINDOF(OFUDPSocket *))socket
-  didFailToReceiveWithException: (id)exception;
-
-/*!
- * @brief This method is called when an exception occurred during an
- *	  asynchronous send on the socket.
- *
- * @param socket The socket for which an exception occurred
- * @param exception The exception which occurred for the socket
- */
--		(void)socket: (OF_KINDOF(OFUDPSocket *))socket
-  didFailToSendWithException: (id)exception;
+	receiver: (of_socket_address_t *_Nonnull)receiver
+       exception: (nullable id)exception;
 @end
 
 /*!

@@ -656,7 +656,33 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -      (bool)stream: (OF_KINDOF(OFStream *))response
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
+	  exception: (id)exception
 {
+	if (exception != nil) {
+		OFString *URL;
+
+		[_progressBar stop];
+		[_progressBar draw];
+		[_progressBar release];
+		_progressBar = nil;
+
+		if (!_quiet)
+			[of_stdout writeString: @"\n  Error!\n"];
+
+		URL = [_URLs objectAtIndex: _URLIndex - 1];
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"download_failed_exception",
+		    @"%[prog]: Failed to download <%[url]>: %[exception]",
+		    @"prog", [OFApplication programName],
+		    @"url", URL,
+		    @"exception", exception)];
+
+		_errorCode = 1;
+		[self performSelector: @selector(downloadNextURL)
+			   afterDelay: 0];
+		return false;
+	}
+
 	_received += length;
 
 	[_output writeBuffer: buffer
@@ -683,32 +709,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	}
 
 	return true;
-}
-
--	  (void)stream: (OF_KINDOF(OFStream *))response
-  didFailWithException: (id)exception
-{
-	OFString *URL;
-
-	[_progressBar stop];
-	[_progressBar draw];
-	[_progressBar release];
-	_progressBar = nil;
-
-	if (!_quiet)
-		[of_stdout writeString: @"\n  Error!\n"];
-
-	URL = [_URLs objectAtIndex: _URLIndex - 1];
-	[of_stderr writeLine: OF_LOCALIZED(
-	    @"download_failed_exception",
-	    @"%[prog]: Failed to download <%[url]>: %[exception]",
-	    @"prog", [OFApplication programName],
-	    @"url", URL,
-	    @"exception", exception)];
-
-	_errorCode = 1;
-	[self performSelector: @selector(downloadNextURL)
-		   afterDelay: 0];
 }
 
 -      (void)client: (OFHTTPClient *)client

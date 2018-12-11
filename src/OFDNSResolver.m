@@ -1871,12 +1871,16 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
   didReceiveIntoBuffer: (void *)buffer_
 		length: (size_t)length
 		sender: (of_socket_address_t)sender
+	     exception: (id)exception
 {
 	unsigned char *buffer = buffer_;
 	OFDictionary *answerRecords = nil, *authorityRecords = nil;
 	OFDictionary *additionalRecords = nil;
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
+
+	if (exception != nil)
+		return true;
 
 	if (length < 2)
 		/* We can't get the ID to get the query. Ignore packet. */
@@ -2010,13 +2014,6 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	    query->_context, nil);
 
 	return true;
-}
-
--		   (void)socket: (OF_KINDOF(OFUDPSocket *))sock
-  didFailToReceiveWithException: (id)exception
-{
-	[sock asyncReceiveIntoBuffer: _buffer
-			      length: BUFFER_LENGTH];
 }
 
 - (void)asyncResolveSocketAddressesForHost: (OFString *)host

@@ -323,22 +323,14 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, exception);
 	else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector:
-			    @selector(stream:didReadIntoBuffer:length:)])
-				return false;
-
-			return [_delegate stream: object
-			       didReadIntoBuffer: _buffer
-					  length: length];
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailToReadWithException:)])
-				[_delegate		stream: object
-				    didFailToReadWithException: exception];
-
+		if (![_delegate respondsToSelector:
+		    @selector(stream:didReadIntoBuffer:length:exception:)])
 			return false;
-		}
+
+		return [_delegate stream: object
+		       didReadIntoBuffer: _buffer
+				  length: length
+			       exception: exception];
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -383,26 +375,18 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector:
-			    @selector(stream:didReadIntoBuffer:length:)])
-				return false;
-
-			if (![_delegate stream: object
-			     didReadIntoBuffer: _buffer
-					length: _readLength])
-				return false;
-
-			_readLength = 0;
-			return true;
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailToReadWithException:)])
-				[_delegate		stream: object
-				    didFailToReadWithException: exception];
-
+		if (![_delegate respondsToSelector:
+		    @selector(stream:didReadIntoBuffer:length:exception:)])
 			return false;
-		}
+
+		if (![_delegate stream: object
+		     didReadIntoBuffer: _buffer
+				length: _readLength
+			     exception: exception])
+			return false;
+
+		_readLength = 0;
+		return true;
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -439,21 +423,13 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, line, exception);
 	else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector:
-			    @selector(stream:didReadLine:)])
-				return false;
-
-			return [_delegate stream: object
-				     didReadLine: line];
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailToReadWithException:)])
-				[_delegate		stream: object
-				    didFailToReadWithException: exception];
-
+		if (![_delegate respondsToSelector:
+		    @selector(stream:didReadLine:exception:)])
 			return false;
-		}
+
+		return [_delegate stream: object
+			     didReadLine: line
+			       exception: exception];
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -499,28 +475,20 @@ static OFRunLoop *mainRunLoop = nil;
 		return true;
 	} else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector:
-			    @selector(stream:didWriteBuffer:length:)])
-				return false;
-
-			_length = [_delegate stream: object
-				     didWriteBuffer: &_buffer
-					     length: _length];
-
-			if (_length == 0)
-				return false;
-
-			_writtenLength = 0;
-			return true;
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(stream:didFailToWriteWithException:)])
-				[_delegate		 stream: object
-				    didFailToWriteWithException: exception];
-
+		if (![_delegate respondsToSelector:
+		    @selector(stream:didWriteBuffer:length:exception:)])
 			return false;
-		}
+
+		_length = [_delegate stream: object
+			     didWriteBuffer: &_buffer
+				     length: _length
+				  exception: exception];
+
+		if (_length == 0)
+			return false;
+
+		_writtenLength = 0;
+		return true;
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -576,21 +544,13 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, acceptedSocket, exception);
 	else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector:
-			    @selector(socket:didAcceptSocket:)])
-				return false;
-
-			return [_delegate socket: object
-				 didAcceptSocket: acceptedSocket];
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(socket:didFailToAcceptWithException:)])
-				[_delegate		  socket: object
-				    didFailToAcceptWithException: exception];
-
+		if (![_delegate respondsToSelector:
+		    @selector(socket:didAcceptSocket:exception:)])
 			return false;
-		}
+
+		return [_delegate socket: object
+			 didAcceptSocket: acceptedSocket
+			       exception: exception];
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -627,23 +587,15 @@ static OFRunLoop *mainRunLoop = nil;
 		return _block(object, _buffer, length, address, exception);
 	else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector: @selector(socket:
-			    didReceiveIntoBuffer:length:sender:)])
-				return false;
-
-			return [_delegate socket: object
-			    didReceiveIntoBuffer: _buffer
-					  length: length
-					  sender: address];
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(socket:didFailToReceiveWithException:)])
-				[_delegate		   socket: object
-				    didFailToReceiveWithException: exception];
-
+		if (![_delegate respondsToSelector: @selector(
+		    socket:didReceiveIntoBuffer:length:sender:exception:)])
 			return false;
-		}
+
+		return [_delegate socket: object
+		    didReceiveIntoBuffer: _buffer
+				  length: length
+				  sender: address
+			       exception: exception];
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
@@ -680,25 +632,17 @@ static OFRunLoop *mainRunLoop = nil;
 		return (_length > 0);
 	} else {
 # endif
-		if (exception == nil) {
-			if (![_delegate respondsToSelector:
-			    @selector(socket:didSendBuffer:length:receiver:)])
-				return false;
-
-			_length = [_delegate socket: object
-				      didSendBuffer: &_buffer
-					     length: _length
-					   receiver: &_receiver];
-
-			return (_length > 0);
-		} else {
-			if ([_delegate respondsToSelector:
-			    @selector(socket:didFailToSendWithException:)])
-				[_delegate		socket: object
-				    didFailToSendWithException: exception];
-
+		if (![_delegate respondsToSelector:
+		    @selector(socket:didSendBuffer:length:receiver:exception:)])
 			return false;
-		}
+
+		_length = [_delegate socket: object
+			      didSendBuffer: &_buffer
+				     length: (exception == nil ? _length : 0)
+				   receiver: &_receiver
+				  exception: exception];
+
+		return (_length > 0);
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif

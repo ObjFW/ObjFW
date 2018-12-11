@@ -103,11 +103,13 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * @param stream The stream on which data was read
  * @param buffer A buffer with the data that has been read
  * @param length The length of the data that has been read
+ * @param exception An exception that occurred while reading, or nil on success
  * @return A bool whether the read should be repeated
  */
 -      (bool)stream: (OF_KINDOF(OFStream *))stream
   didReadIntoBuffer: (void *)buffer
-	     length: (size_t)length;
+	     length: (size_t)length
+	  exception: (nullable id)exception;
 
 /*!
  * @brief This method is called when a line was read asynchronously from a
@@ -116,10 +118,12 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  * @param stream The stream on which a line was read
  * @param line The line which has been read or `nil` when the end of stream
  *	       occurred
+ * @param exception An exception that occurred while reading, or nil on success
  * @return A bool whether the read should be repeated
  */
 - (bool)stream: (OF_KINDOF(OFStream *))stream
-   didReadLine: (nullable OFString *)line;
+   didReadLine: (nullable OFString *)line
+     exception: (nullable id)exception;
 
 /*!
  * @brief This method is called when data was written asynchronously to a
@@ -130,33 +134,15 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *		 can be changed to point to a different buffer to be used on the
  *		 next write.
  * @param length The length of the buffer that has been written
+ * @param exception An exception that occurred while writing, or nil on success
  * @return The length to repeat the write with or 0 if it should not repeat.
  *	   The buffer may be changed, so that every time a new buffer and
  *	   length can be specified
  */
 - (size_t)stream: (OF_KINDOF(OFStream *))stream
   didWriteBuffer: (const void *_Nonnull *_Nonnull)buffer
-	  length: (size_t)length;
-
-/*!
- * @brief This method is called when an exception occurred during an
- *	  asynchronous read on a stream.
- *
- * @param stream The stream for which an exception occurred
- * @param exception The exception which occurred for the stream
- */
--		(void)stream: (OF_KINDOF(OFStream *))stream
-  didFailToReadWithException: (id)exception;
-
-/*!
- * @brief This method is called when an exception occurred during an
- *	  asynchronous write on a stream.
- *
- * @param stream The stream for which an exception occurred
- * @param exception The exception which occurred for the stream
- */
--		 (void)stream: (OF_KINDOF(OFStream *))stream
-  didFailToWriteWithException: (id)exception;
+	  length: (size_t)length
+       exception: (nullable id)exception;
 @end
 
 /*!

@@ -403,8 +403,9 @@ normalizedKey(OFString *key)
 
 - (bool)stream: (OF_KINDOF(OFStream *))sock
    didReadLine: (OFString *)line
+     exception: (id)exception
 {
-	if (line == nil)
+	if (line == nil || exception != nil)
 		return false;
 
 	@try {
@@ -789,8 +790,20 @@ normalizedKey(OFString *key)
 
 -    (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
   didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket
+	exception: (id)exception
 {
-	OFHTTPServer_Connection *connection = [[[OFHTTPServer_Connection alloc]
+	OFHTTPServer_Connection *connection;
+
+	if (exception != nil) {
+		if (![_delegate respondsToSelector:
+		    @selector(server:didReceiveExceptionOnListeningSocket:)])
+			return false;
+
+		return [_delegate		  server: self
+		    didReceiveExceptionOnListeningSocket: exception];
+	}
+
+	connection = [[[OFHTTPServer_Connection alloc]
 	    initWithSocket: acceptedSocket
 		    server: self] autorelease];
 
@@ -798,15 +811,5 @@ normalizedKey(OFString *key)
 	[acceptedSocket asyncReadLine];
 
 	return true;
-}
-
--		  (void)stream: (OF_KINDOF(OFStream *))stream
-  didFailToAcceptWithException: (id)exception
-{
-	if ([_delegate respondsToSelector:
-	    @selector(server:didReceiveExceptionOnListeningSocket:)])
-		if ([_delegate			  server: self
-		    didReceiveExceptionOnListeningSocket: exception])
-			[stream asyncAccept];
 }
 @end

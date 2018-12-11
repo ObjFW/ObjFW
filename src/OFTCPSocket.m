@@ -212,20 +212,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 		[_socket setDelegate: _delegate];
 
-		if (_exception == nil) {
-			if ([_delegate respondsToSelector:
-			    @selector(socket:didConnectToHost:port:)])
-				[_delegate    socket: _socket
-				    didConnectToHost: _host
-						port: _port];
-		} else {
-			if ([_delegate respondsToSelector: @selector(socket:
-			    didFailToConnectWithException:host:port:)])
-				[_delegate		   socket: _socket
-				    didFailToConnectWithException: _exception
-							     host: _host
-							     port: _port];
-		}
+		if ([_delegate respondsToSelector:
+		    @selector(socket:didConnectToHost:port:exception:)])
+			[_delegate    socket: _socket
+			    didConnectToHost: _host
+					port: _port
+				   exception: _exception];
 #ifdef OF_HAVE_BLOCKS
 	}
 #endif
@@ -380,13 +372,21 @@ static uint16_t defaultSOCKS5Port = 1080;
 -      (bool)stream: (OF_KINDOF(OFStream *))sock
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
+	  exception: (id)exception
 {
-	of_run_loop_mode_t runLoopMode =
-	    [[OFRunLoop currentRunLoop] currentMode];
+	of_run_loop_mode_t runLoopMode;
 	unsigned char *SOCKSVersion;
 	uint8_t hostLength;
 	unsigned char port[2];
 	unsigned char *response, *addressLength;
+
+	if (exception != nil) {
+		_exception = [exception retain];
+		[self didConnect];
+		return false;
+	}
+
+	runLoopMode = [[OFRunLoop currentRunLoop] currentMode];
 
 	switch (_SOCKS5State) {
 	case SOCKS5_STATE_READ_VERSION:
@@ -526,9 +526,17 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (size_t)stream: (OF_KINDOF(OFStream *))sock
   didWriteBuffer: (const void **)buffer
 	  length: (size_t)length
+       exception: (id)exception
 {
-	of_run_loop_mode_t runLoopMode =
-	    [[OFRunLoop currentRunLoop] currentMode];
+	of_run_loop_mode_t runLoopMode;
+
+	if (exception != nil) {
+		_exception = [exception retain];
+		[self didConnect];
+		return 0;
+	}
+
+	runLoopMode = [[OFRunLoop currentRunLoop] currentMode];
 
 	switch (_SOCKS5State) {
 	case SOCKS5_STATE_SEND_AUTHENTICATION:
@@ -551,20 +559,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return 0;
 	}
 }
-
--		(void)stream: (OF_KINDOF(OFStream *))sock
-  didFailToReadWithException: (id)exception
-{
-	_exception = [exception retain];
-	[self didConnect];
-}
-
--		 (void)stream: (OF_KINDOF(OFStream *))sock
-  didFailToWriteWithException: (id)exception
-{
-	_exception = [exception retain];
-	[self didConnect];
-}
 @end
 
 @implementation OFTCPSocket_ConnectDelegate
@@ -578,12 +572,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 -     (void)socket: (OF_KINDOF(OFTCPSocket *))sock
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
-{
-	_done = true;
-}
-
--		   (void)socket: (OF_KINDOF(OFTCPSocket *))sock
-  didFailToConnectWithException: (id)exception
+	 exception: (id)exception
 {
 	_done = true;
 	_exception = [exception retain];

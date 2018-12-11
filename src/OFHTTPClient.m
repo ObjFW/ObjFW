@@ -529,8 +529,18 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (bool)stream: (OF_KINDOF(OFStream *))sock
    didReadLine: (OFString *)line
+     exception: (id)exception
 {
 	bool ret;
+
+	if (exception != nil) {
+		if ([exception isKindOfClass:
+		    [OFInvalidEncodingException class]])
+			exception = [OFInvalidServerReplyException exception];
+
+		[self raiseException: exception];
+		return false;
+	}
 
 	@try {
 		if (_firstLine) {
@@ -547,32 +557,24 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return ret;
 }
 
--		(void)stream: (OF_KINDOF(OFStream *))sock
-  didFailToReadWithException: (id)exception
-{
-	if ([exception isKindOfClass: [OFInvalidEncodingException class]])
-		exception = [OFInvalidServerReplyException exception];
-
-	[self raiseException: exception];
-}
-
--		 (void)stream: (OF_KINDOF(OFStream *))sock
-  didFailToWriteWithException: (id)exception
-{
-	if ([exception isKindOfClass: [OFWriteFailedException class]] &&
-	    ([exception errNo] == ECONNRESET || [exception errNo] == EPIPE)) {
-		/* In case a keep-alive connection timed out */
-		[self closeAndReconnect];
-		return;
-	}
-
-	[self raiseException: exception];
-}
-
 - (size_t)stream: (OF_KINDOF(OFStream *))sock
   didWriteBuffer: (const void **)request
 	  length: (size_t)length
+       exception: (id)exception
 {
+	if (exception != nil) {
+		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
+		    ([exception errNo] == ECONNRESET ||
+		    [exception errNo] == EPIPE)) {
+			/* In case a keep-alive connection timed out */
+			[self closeAndReconnect];
+			return 0;
+		}
+
+		[self raiseException: exception];
+		return 0;
+	}
+
 	_firstLine = true;
 
 	[_requestString release];
@@ -624,8 +626,14 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 -     (void)socket: (OF_KINDOF(OFTCPSocket *))sock
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
+	 exception: (id)exception
 {
 	[(OFTCPSocket *)sock setDelegate: self];
+
+	if (exception != nil) {
+		[self raiseException: exception];
+		return;
+	}
 
 	if ([_client->_delegate respondsToSelector:
 	    @selector(client:didCreateSocket:request:context:)])

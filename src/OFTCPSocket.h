@@ -64,44 +64,28 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(
  * @brief A method which is called when a socket connected.
  *
  * @param socket The socket which connected
+ * @param host The host connected to
+ * @param port The port on the host connected to
+ * @param exception An exception that occurred while connecting, or nil on
+ *		    success
  */
 -     (void)socket: (OF_KINDOF(OFTCPSocket *))socket
   didConnectToHost: (OFString *)host
-	      port: (uint16_t)port;
+	      port: (uint16_t)port
+	 exception: (nullable id)exception;
 
 /*!
  * @brief A method which is called when a socket accepted a connection.
  *
  * @param socket The socket which accepted the connection
  * @param acceptedSocket The socket which has been accepted
+ * @param exception An exception that occurred while accepting, or nil on
+ *		    success
  * @return A bool whether to accept the next incoming connection
  */
 -    (bool)socket: (OF_KINDOF(OFTCPSocket *))socket
-  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket;
-
-/*!
- * @brief This method is called when an exception occurred during an
- *	  asynchronous connect.
- *
- * @param socket The socket for which an exception occurred
- * @param exception The exception which occurred for the stream
- * @param host The host to which the connection failed
- * @param port The port on the host to which the connection failed
- */
--		   (void)socket: (OF_KINDOF(OFTCPSocket *))socket
-  didFailToConnectWithException: (id)exception
-			   host: (OFString *)host
-			   port: (uint16_t)port;
-
-/*!
- * @brief This method is called when an exception occurred during an
- *	  asynchronous accept.
- *
- * @param socket The socket for which an exception occurred
- * @param exception The exception which occurred for the stream
- */
--		  (void)socket: (OF_KINDOF(OFTCPSocket *))socket
-  didFailToAcceptWithException: (id)exception;
+  didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket
+	exception: (nullable id)exception;
 @end
 
 /*!
