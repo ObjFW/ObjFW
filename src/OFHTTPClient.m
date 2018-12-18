@@ -555,11 +555,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return ret;
 }
 
-- (OFData *)stream: (OF_KINDOF(OFStream *))stream
-    didWriteString: (OFString *)string
-	  encoding: (of_string_encoding_t)encoding
-      bytesWritten: (size_t)bytesWritten
-	 exception: (id)exception
+- (OFString *)stream: (OF_KINDOF(OFStream *))stream
+      didWriteString: (OFString *)string
+	    encoding: (of_string_encoding_t)encoding
+	bytesWritten: (size_t)bytesWritten
+	   exception: (id)exception
 {
 	if (exception != nil) {
 		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
