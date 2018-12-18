@@ -363,10 +363,12 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 - (void)sendSOCKS5Request
 {
+	OFData *data = [OFData dataWithItems: "\x05\x01\x00"
+				       count: 3];
+
 	_SOCKS5State = SOCKS5_STATE_SEND_AUTHENTICATION;
-	[_socket asyncWriteBuffer: "\x05\x01\x00"
-			   length: 3
-		      runLoopMode: [[OFRunLoop currentRunLoop] currentMode]];
+	[_socket asyncWriteData: data
+		    runLoopMode: [[OFRunLoop currentRunLoop] currentMode]];
 }
 
 -      (bool)stream: (OF_KINDOF(OFStream *))sock
@@ -419,9 +421,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 			    count: 2];
 
 		_SOCKS5State = SOCKS5_STATE_SEND_REQUEST;
-		[_socket asyncWriteBuffer: [_request items]
-				   length: [_request count]
-			      runLoopMode: runLoopMode];
+		[_socket asyncWriteData: _request
+			    runLoopMode: runLoopMode];
 		return false;
 	case SOCKS5_STATE_READ_RESPONSE:
 		response = buffer;
@@ -523,17 +524,17 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 }
 
-- (size_t)stream: (OF_KINDOF(OFStream *))sock
-  didWriteBuffer: (const void **)buffer
-	  length: (size_t)length
-       exception: (id)exception
+- (OFData *)stream: (OF_KINDOF(OFStream *))sock
+      didWriteData: (OFData *)data
+      bytesWritten: (size_t)bytesWritten
+	 exception: (id)exception
 {
 	of_run_loop_mode_t runLoopMode;
 
 	if (exception != nil) {
 		_exception = [exception retain];
 		[self didConnect];
-		return 0;
+		return nil;
 	}
 
 	runLoopMode = [[OFRunLoop currentRunLoop] currentMode];
@@ -544,7 +545,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 2
 				 runLoopMode: runLoopMode];
-		return 0;
+		return nil;
 	case SOCKS5_STATE_SEND_REQUEST:
 		[_request release];
 		_request = nil;
@@ -553,10 +554,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[_socket asyncReadIntoBuffer: _buffer
 				 exactLength: 4
 				 runLoopMode: runLoopMode];
-		return 0;
+		return nil;
 	default:
 		assert(0);
-		return 0;
+		return nil;
 	}
 }
 @end

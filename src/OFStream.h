@@ -71,21 +71,16 @@ typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
  * @brief A block which is called when data was written asynchronously to a
  *	  stream.
  *
- * @param stream The stream to which data was written
- * @param buffer A pointer to the buffer which was written to the stream. This
- *		 can be changed to point to a different buffer to be used on the
- *		 next write.
+ * @param data The data which was written to the stream
  * @param bytesWritten The number of bytes which have been written. This
- *		       matches the length specified on the asynchronous write
- *		       if no exception was encountered.
+ *		       matches the length of the specified data on the
+ *		       asynchronous write if no exception was encountered.
  * @param exception An exception which occurred while writing or `nil` on
  *		    success
- * @return The length to repeat the write with or 0 if it should not repeat.
- *	   The buffer may be changed, so that every time a new buffer and length
- *	   can be specified
+ * @return The data to repeat the write with or nil if it should not repeat
  */
-typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
-    const void *_Nonnull *_Nonnull buffer, size_t bytesWritten,
+typedef OFData *_Nullable (^of_stream_async_write_block_t)(
+    OF_KINDOF(OFStream *) stream, OFData *_Nonnull data, size_t bytesWritten,
     id _Nullable exception);
 #endif
 
@@ -130,19 +125,17 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
  *	  stream.
  *
  * @param stream The stream to which data was written
- * @param buffer A pointer to the buffer which was written to the stream. This
- *		 can be changed to point to a different buffer to be used on the
- *		 next write.
- * @param length The length of the buffer that has been written
+ * @param data The data which was written to the stream
+ * @param bytesWritten The number of bytes which have been written. This
+ *		       matches the length of the specified data on the
+ *		       asynchronous write if no exception was encountered.
  * @param exception An exception that occurred while writing, or nil on success
- * @return The length to repeat the write with or 0 if it should not repeat.
- *	   The buffer may be changed, so that every time a new buffer and
- *	   length can be specified
+ * @return The data to repeat the write with or nil if it should not repeat
  */
-- (size_t)stream: (OF_KINDOF(OFStream *))stream
-  didWriteBuffer: (const void *_Nonnull *_Nonnull)buffer
-	  length: (size_t)length
-       exception: (nullable id)exception;
+- (nullable OFData *)stream: (OF_KINDOF(OFStream *))stream
+	       didWriteData: (OFData *)data
+	       bytesWritten: (size_t)bytesWritten
+		  exception: (nullable id)exception;
 @end
 
 /*!
@@ -960,73 +953,57 @@ typedef size_t (^of_stream_async_write_block_t)(OF_KINDOF(OFStream *) stream,
 
 #ifdef OF_HAVE_SOCKETS
 /*!
- * @brief Asynchronously writes a buffer into the stream.
+ * @brief Asynchronously writes data into the stream.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
  *
- * @param buffer The buffer from which the data is written into the stream. The
- *		 buffer needs to be valid until the write request is completed!
- * @param length The length of the data that should be written
+ * @param data The data which is written into the stream
  */
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length;
+- (void)asyncWriteData: (OFData *)data;
 
 /*!
- * @brief Asynchronously writes a buffer into the stream.
+ * @brief Asynchronously writes data into the stream.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
  *
- * @param buffer The buffer from which the data is written into the stream. The
- *		 buffer needs to be valid until the write request is completed!
- * @param length The length of the data that should be written
+ * @param data The data which is written into the stream
  * @param runLoopMode The run loop mode in which to perform the async write
  */
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 # ifdef OF_HAVE_BLOCKS
 /*!
- * @brief Asynchronously writes a buffer into the stream.
+ * @brief Asynchronously writes data into the stream.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
  *
- * @param buffer The buffer from which the data is written into the stream. The
- *		 buffer needs to be valid until the write request is completed!
- * @param length The length of the data that should be written
+ * @param data The data which is written into the stream
  * @param block The block to call when the data has been written. It should
- *		return the length for the next write with the same callback or
- *		0 if it should not repeat. The buffer may be changed, so that
- *		every time a new buffer and length can be specified while the
- *		callback stays the same.
+ *		return the data for the next write with the same callback or
+ *		nil if it should not repeat.
  */
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-		   block: (of_stream_async_write_block_t)block;
+- (void)asyncWriteData: (OFData *)data
+		 block: (of_stream_async_write_block_t)block;
 
 /*!
- * @brief Asynchronously writes a buffer into the stream.
+ * @brief Asynchronously writes data into the stream.
  *
  * @note The stream must conform to @ref OFReadyForWritingObserving in order
  *	 for this to work!
  *
- * @param buffer The buffer from which the data is written into the stream. The
- *		 buffer needs to be valid until the write request is completed!
- * @param length The length of the data that should be written
+ * @param data The data which is written into the stream
  * @param runLoopMode The run loop mode in which to perform the async write
  * @param block The block to call when the data has been written. It should
- *		return the length for the next write with the same callback or
- *		0 if it should not repeat. The buffer may be changed, so that
- *		every time a new buffer and length can be specified while the
- *		callback stays the same.
+ *		return the data for the next write with the same callback or
+ *		nil if it should not repeat.
  */
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   block: (of_stream_async_write_block_t)block;
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 block: (of_stream_async_write_block_t)block;
 # endif
 #endif
 

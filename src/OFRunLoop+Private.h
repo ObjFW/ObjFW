@@ -55,8 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
 			    delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
-			   buffer: (const void *)buffer
-			   length: (size_t)length
+			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 			 delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
@@ -97,8 +96,7 @@ OF_ASSUME_NONNULL_BEGIN
 			       block: (of_stream_async_read_line_block_t)block;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
-			   buffer: (const void *)buffer
-			   length: (size_t)length
+			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 			    block: (of_stream_async_write_block_t)block;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket

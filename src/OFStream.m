@@ -1166,50 +1166,42 @@
 }
 
 #ifdef OF_HAVE_SOCKETS
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
+- (void)asyncWriteData: (OFData *)data
 {
-	[self asyncWriteBuffer: buffer
-			length: length
-		   runLoopMode: of_run_loop_mode_default];
+	[self asyncWriteData: data
+		 runLoopMode: of_run_loop_mode_default];
 }
 
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (of_run_loop_mode_t)runLoopMode
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
 
 	[OFRunLoop of_addAsyncWriteForStream: stream
-				      buffer: buffer
-				      length: length
+					data: data
 					mode: runLoopMode
 				    delegate: _delegate];
 }
 
 # ifdef OF_HAVE_BLOCKS
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-		   block: (of_stream_async_write_block_t)block
+- (void)asyncWriteData: (OFData *)data
+		 block: (of_stream_async_write_block_t)block
 {
-	[self asyncWriteBuffer: buffer
-			length: length
-		   runLoopMode: of_run_loop_mode_default
-			 block: block];
+	[self asyncWriteData: data
+		 runLoopMode: of_run_loop_mode_default
+		       block: block];
 }
 
-- (void)asyncWriteBuffer: (const void *)buffer
-		  length: (size_t)length
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   block: (of_stream_async_write_block_t)block
+- (void)asyncWriteData: (OFData *)data
+	   runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 block: (of_stream_async_write_block_t)block
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
 
 	[OFRunLoop of_addAsyncWriteForStream: stream
-				      buffer: buffer
-				      length: length
+					data: data
 					mode: runLoopMode
 				       block: block];
 }

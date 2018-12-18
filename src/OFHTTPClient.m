@@ -56,7 +56,6 @@
 @public
 	OFHTTPClient *_client;
 	OFHTTPRequest *_request;
-	OFString *_requestString;
 	unsigned int _redirects;
 	id _context;
 	bool _firstLine;
@@ -279,7 +278,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 {
 	[_client release];
 	[_request release];
-	[_requestString release];
 	[_context release];
 	[_version release];
 	[_serverHeaders release];
@@ -557,10 +555,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return ret;
 }
 
-- (size_t)stream: (OF_KINDOF(OFStream *))sock
-  didWriteBuffer: (const void **)request
-	  length: (size_t)length
-       exception: (id)exception
+- (OFData *)stream: (OF_KINDOF(OFStream *))stream
+      didWriteData: (OFData *)data
+      bytesWritten: (size_t)bytesWritten
+	 exception: (id)exception
 {
 	if (exception != nil) {
 		if ([exception isKindOfClass: [OFWriteFailedException class]] &&
@@ -568,24 +566,21 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		    [exception errNo] == EPIPE)) {
 			/* In case a keep-alive connection timed out */
 			[self closeAndReconnect];
-			return 0;
+			return nil;
 		}
 
 		[self raiseException: exception];
-		return 0;
+		return nil;
 	}
 
 	_firstLine = true;
 
-	[_requestString release];
-	_requestString = nil;
-
 	if ([[_request headers] objectForKey: @"Content-Length"] != nil) {
-		[sock setDelegate: nil];
+		[stream setDelegate: nil];
 
 		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
 		    initWithHandler: self
-			     socket: sock] autorelease];
+			     socket: stream] autorelease];
 
 		if ([_client->_delegate respondsToSelector:
 		    @selector(client:wantsRequestBody:request:context:)])
@@ -595,9 +590,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					   context: _context];
 
 	} else
-		[sock asyncReadLine];
+		[stream asyncReadLine];
 
-	return 0;
+	return nil;
 }
 
 - (void)handleSocket: (OFTCPSocket *)sock
@@ -612,11 +607,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	 */
 
 	@try {
-		[_requestString release];
-		_requestString = [constructRequestString(_request) retain];
+		OFString *requestString = constructRequestString(_request);
+		OFData *requestData = [OFData
+		    dataWithItems: [requestString UTF8String]
+			    count: [requestString UTF8StringLength]];
 
-		[sock asyncWriteBuffer: [_requestString UTF8String]
-				length: [_requestString UTF8StringLength]];
+		[sock asyncWriteData: requestData];
 	} @catch (id e) {
 		[self raiseException: e];
 		return;

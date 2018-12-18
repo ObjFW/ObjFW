@@ -22,6 +22,7 @@
 
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFKernelEventObserver.h"
@@ -118,8 +119,8 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 	of_stream_async_write_block_t _block;
 # endif
-	const void *_buffer;
-	size_t _length, _writtenLength;
+	OFData *_data;
+	size_t _writtenLength;
 }
 @end
 
@@ -450,10 +451,14 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	size_t length;
 	id exception = nil;
+	size_t dataLength = [_data count] * [_data itemSize];
+	OFData *newData, *oldData;
 
 	@try {
-		length = [object writeBuffer: (char *)_buffer + _writtenLength
-				      length: _length - _writtenLength];
+		const char *dataItems = [_data items];
+
+		length = [object writeBuffer: dataItems + _writtenLength
+				      length: dataLength - _writtenLength];
 	} @catch (id e) {
 		length = 0;
 		exception = e;
@@ -461,31 +466,39 @@ static OFRunLoop *mainRunLoop = nil;
 
 	_writtenLength += length;
 
-	if (_writtenLength != _length && exception == nil)
+	if (_writtenLength != dataLength && exception == nil)
 		return true;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		_length = _block(object, &_buffer, _writtenLength, exception);
+		newData = _block(object, _data, _writtenLength, exception);
 
-		if (_length == 0)
+		if (newData == nil)
 			return false;
+
+		oldData = _data;
+		_data = [newData copy];
+		[oldData release];
 
 		_writtenLength = 0;
 		return true;
 	} else {
 # endif
 		if (![_delegate respondsToSelector:
-		    @selector(stream:didWriteBuffer:length:exception:)])
+		    @selector(stream:didWriteData:bytesWritten:exception:)])
 			return false;
 
-		_length = [_delegate stream: object
-			     didWriteBuffer: &_buffer
-				     length: _length
+		newData = [_delegate stream: object
+			       didWriteData: _data
+			       bytesWritten: _writtenLength
 				  exception: exception];
 
-		if (_length == 0)
+		if (newData == nil)
 			return false;
+
+		oldData = _data;
+		_data = [newData copy];
+		[oldData release];
 
 		_writtenLength = 0;
 		return true;
@@ -494,14 +507,15 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 }
 
-# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
+	[_data release];
+# ifdef OF_HAVE_BLOCKS
 	[_block release];
+# endif
 
 	[super dealloc];
 }
-# endif
 @end
 
 @implementation OFRunLoop_ConnectQueueItem
@@ -771,15 +785,13 @@ static OFRunLoop *mainRunLoop = nil;
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
-			   buffer: (const void *)buffer
-			   length: (size_t)length
+			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 			 delegate: (id <OFStreamDelegate>)delegate
 {
 	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
 		queueItem->_delegate = [delegate retain];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
+		queueItem->_data = [data copy];
 	})
 }
 
@@ -873,15 +885,13 @@ static OFRunLoop *mainRunLoop = nil;
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
-			   buffer: (const void *)buffer
-			   length: (size_t)length
+			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 			    block: (of_stream_async_write_block_t)block
 {
 	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
+		queueItem->_data = [data copy];
 		queueItem->_block = [block copy];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
 	})
 }
 
