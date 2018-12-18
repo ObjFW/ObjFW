@@ -79,9 +79,26 @@ typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
  *		    success
  * @return The data to repeat the write with or nil if it should not repeat
  */
-typedef OFData *_Nullable (^of_stream_async_write_block_t)(
+typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
     OF_KINDOF(OFStream *) stream, OFData *_Nonnull data, size_t bytesWritten,
     id _Nullable exception);
+
+/*!
+ * @brief A block which is called when a string was written asynchronously to a
+ *	  stream.
+ *
+ * @param string The string which was written to the stream
+ * @param bytesWritten The number of bytes which have been written. This
+ *		       matches the length of the specified data on the
+ *		       asynchronous write if no exception was encountered.
+ * @param encoding The encoding in which the string was written
+ * @param exception An exception which occurred while writing or `nil` on
+ *		    success
+ * @return The string to repeat the write with or nil if it should not repeat
+ */
+typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
+    OF_KINDOF(OFStream *) stream, OFString *_Nonnull string,
+    of_string_encoding_t encoding, size_t bytesWritten, id _Nullable exception);
 #endif
 
 /*!
@@ -136,6 +153,25 @@ typedef OFData *_Nullable (^of_stream_async_write_block_t)(
 	       didWriteData: (OFData *)data
 	       bytesWritten: (size_t)bytesWritten
 		  exception: (nullable id)exception;
+
+/*!
+ * @brief This method is called when a string was written asynchronously to a
+ *	  stream.
+ *
+ * @param stream The stream to which a string was written
+ * @param string The string which was written to the stream
+ * @param encoding The encoding in which the string was written
+ * @param bytesWritten The number of bytes which have been written. This
+ *		       matches the length of the specified data on the
+ *		       asynchronous write if no exception was encountered.
+ * @param exception An exception that occurred while writing, or nil on success
+ * @return The string to repeat the write with or nil if it should not repeat
+ */
+- (nullable OFString *)stream: (OF_KINDOF(OFStream *))stream
+	       didWriteString: (OFString *)string
+		     encoding: (of_string_encoding_t)encoding
+		 bytesWritten: (size_t)bytesWritten
+		    exception: (nullable id)exception;
 @end
 
 /*!
@@ -974,6 +1010,46 @@ typedef OFData *_Nullable (^of_stream_async_write_block_t)(
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
+/*!
+ * @brief Asynchronously writes a string in UTF-8 encoding into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ */
+- (void)asyncWriteString: (OFString *)string;
+
+/*!
+ * @brief Asynchronously writes a string in the specified encoding into the
+ *	  stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param encoding The encoding in which the string should be written to the
+ *		   stream
+ */
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding;
+
+/*!
+ * @brief Asynchronously writes a string in the specified encoding into the
+ *	  stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param encoding The encoding in which the string should be written to the
+ *		   stream
+ * @param runLoopMode The run loop mode in which to perform the async write
+ */
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode;
+
 # ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously writes data into the stream.
@@ -987,7 +1063,7 @@ typedef OFData *_Nullable (^of_stream_async_write_block_t)(
  *		nil if it should not repeat.
  */
 - (void)asyncWriteData: (OFData *)data
-		 block: (of_stream_async_write_block_t)block;
+		 block: (of_stream_async_write_data_block_t)block;
 
 /*!
  * @brief Asynchronously writes data into the stream.
@@ -1003,7 +1079,59 @@ typedef OFData *_Nullable (^of_stream_async_write_block_t)(
  */
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 block: (of_stream_async_write_block_t)block;
+		 block: (of_stream_async_write_data_block_t)block;
+
+/*!
+ * @brief Asynchronously writes a string into the stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param block The block to call when the string has been written. It should
+ *		return the string for the next write with the same callback or
+ *		nil if it should not repeat.
+ */
+- (void)asyncWriteString: (OFString *)string
+		   block: (of_stream_async_write_string_block_t)block;
+
+/*!
+ * @brief Asynchronously writes a string in the specified encoding into the
+ *	  stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param encoding The encoding in which the string should be written to the
+ *		   stream
+ * @param block The block to call when the string has been written. It should
+ *		return the string for the next write with the same callback or
+ *		nil if it should not repeat.
+ */
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+		   block: (of_stream_async_write_string_block_t)block;
+
+/*!
+ * @brief Asynchronously writes a string in the specified encoding into the
+ *	  stream.
+ *
+ * @note The stream must conform to @ref OFReadyForWritingObserving in order
+ *	 for this to work!
+ *
+ * @param string The string which is written into the stream
+ * @param encoding The encoding in which the string should be written to the
+ *		   stream
+ * @param runLoopMode The run loop mode in which to perform the async write
+ * @param block The block to call when the string has been written. It should
+ *		return the string for the next write with the same callback or
+ *		nil if it should not repeat.
+ */
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   block: (of_stream_async_write_string_block_t)block;
 # endif
 #endif
 

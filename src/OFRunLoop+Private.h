@@ -58,6 +58,12 @@ OF_ASSUME_NONNULL_BEGIN
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
 			 delegate: (id <OFStreamDelegate>)delegate;
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
+			   string: (OFString *)string
+			 encoding: (of_string_encoding_t)encoding
+			     mode: (of_run_loop_mode_t)mode
+			 delegate: (id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
 				  mode: (of_run_loop_mode_t)mode
 			      delegate: (id <OFTCPSocketDelegate_Private>)
@@ -98,7 +104,13 @@ OF_ASSUME_NONNULL_BEGIN
 				       stream
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
-			    block: (of_stream_async_write_block_t)block;
+			    block: (of_stream_async_write_data_block_t)block;
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
+			   string: (OFString *)string
+			 encoding: (of_string_encoding_t)encoding
+			     mode: (of_run_loop_mode_t)mode
+			    block: (of_stream_async_write_string_block_t)block;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				 mode: (of_run_loop_mode_t)mode
 				block: (of_tcp_socket_async_accept_block_t)

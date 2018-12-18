@@ -1184,9 +1184,38 @@
 				    delegate: _delegate];
 }
 
+- (void)asyncWriteString: (OFString *)string
+{
+	[self asyncWriteString: string
+		      encoding: OF_STRING_ENCODING_UTF_8
+		   runLoopMode: of_run_loop_mode_default];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+{
+	[self asyncWriteString: string
+		      encoding: encoding
+		   runLoopMode: of_run_loop_mode_default];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+{
+	OFStream <OFReadyForWritingObserving> *stream =
+	    (OFStream <OFReadyForWritingObserving> *)self;
+
+	[OFRunLoop of_addAsyncWriteForStream: stream
+				      string: string
+				    encoding: encoding
+					mode: runLoopMode
+				    delegate: _delegate];
+}
+
 # ifdef OF_HAVE_BLOCKS
 - (void)asyncWriteData: (OFData *)data
-		 block: (of_stream_async_write_block_t)block
+		 block: (of_stream_async_write_data_block_t)block
 {
 	[self asyncWriteData: data
 		 runLoopMode: of_run_loop_mode_default
@@ -1195,13 +1224,47 @@
 
 - (void)asyncWriteData: (OFData *)data
 	   runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 block: (of_stream_async_write_block_t)block
+		 block: (of_stream_async_write_data_block_t)block
 {
 	OFStream <OFReadyForWritingObserving> *stream =
 	    (OFStream <OFReadyForWritingObserving> *)self;
 
 	[OFRunLoop of_addAsyncWriteForStream: stream
 					data: data
+					mode: runLoopMode
+				       block: block];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		   block: (of_stream_async_write_string_block_t)block
+{
+	[self asyncWriteString: string
+		      encoding: OF_STRING_ENCODING_UTF_8
+		   runLoopMode: of_run_loop_mode_default
+			 block: block];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+		   block: (of_stream_async_write_string_block_t)block
+{
+	[self asyncWriteString: string
+		      encoding: encoding
+		   runLoopMode: of_run_loop_mode_default
+			 block: block];
+}
+
+- (void)asyncWriteString: (OFString *)string
+		encoding: (of_string_encoding_t)encoding
+	     runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   block: (of_stream_async_write_string_block_t)block
+{
+	OFStream <OFReadyForWritingObserving> *stream =
+	    (OFStream <OFReadyForWritingObserving> *)self;
+
+	[OFRunLoop of_addAsyncWriteForStream: stream
+				      string: string
+				    encoding: encoding
 					mode: runLoopMode
 				       block: block];
 }

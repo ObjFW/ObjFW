@@ -113,13 +113,25 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_WriteQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoop_WriteDataQueueItem: OFRunLoop_QueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_stream_async_write_block_t _block;
+	of_stream_async_write_data_block_t _block;
 # endif
 	OFData *_data;
+	size_t _writtenLength;
+}
+@end
+
+@interface OFRunLoop_WriteStringQueueItem: OFRunLoop_QueueItem
+{
+@public
+# ifdef OF_HAVE_BLOCKS
+	of_stream_async_write_string_block_t _block;
+# endif
+	OFString *_string;
+	of_string_encoding_t _encoding;
 	size_t _writtenLength;
 }
 @end
@@ -250,8 +262,7 @@ static OFRunLoop *mainRunLoop = nil;
 	 * Retain the queue so that it doesn't disappear from us because the
 	 * handler called -[cancelAsyncRequests].
 	 */
-	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_WriteQueueItem *)) *queue =
-	    [[_writeQueues objectForKey: object] retain];
+	OFList *queue = [[_writeQueues objectForKey: object] retain];
 
 	assert(queue != nil);
 
@@ -446,7 +457,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoop_WriteQueueItem
+@implementation OFRunLoop_WriteDataQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -510,6 +521,80 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[_data release];
+# ifdef OF_HAVE_BLOCKS
+	[_block release];
+# endif
+
+	[super dealloc];
+}
+@end
+
+@implementation OFRunLoop_WriteStringQueueItem
+- (bool)handleObject: (id)object
+{
+	size_t length;
+	id exception = nil;
+	size_t cStringLength = [_string cStringLengthWithEncoding: _encoding];
+	OFString *newString, *oldString;
+
+	@try {
+		const char *cString = [_string cStringWithEncoding: _encoding];
+
+		length = [object writeBuffer: cString + _writtenLength
+				      length: cStringLength - _writtenLength];
+	} @catch (id e) {
+		length = 0;
+		exception = e;
+	}
+
+	_writtenLength += length;
+
+	if (_writtenLength != cStringLength && exception == nil)
+		return true;
+
+# ifdef OF_HAVE_BLOCKS
+	if (_block != NULL) {
+		newString = _block(object, _string, _encoding, _writtenLength,
+		    exception);
+
+		if (newString == nil)
+			return false;
+
+		oldString = _string;
+		_string = [newString copy];
+		[oldString release];
+
+		_writtenLength = 0;
+		return true;
+	} else {
+# endif
+		if (![_delegate respondsToSelector: @selector(stream:
+		    didWriteString:encoding:bytesWritten:exception:)])
+			return false;
+
+		newString = [_delegate stream: object
+			       didWriteString: _string
+				     encoding: _encoding
+				 bytesWritten: _writtenLength
+				    exception: exception];
+
+		if (newString == nil)
+			return false;
+
+		oldString = _string;
+		_string = [newString copy];
+		[oldString release];
+
+		_writtenLength = 0;
+		return true;
+# ifdef OF_HAVE_BLOCKS
+	}
+# endif
+}
+
+- (void)dealloc
+{
+	[_string release];
 # ifdef OF_HAVE_BLOCKS
 	[_block release];
 # endif
@@ -789,9 +874,23 @@ static OFRunLoop *mainRunLoop = nil;
 			     mode: (of_run_loop_mode_t)mode
 			 delegate: (id <OFStreamDelegate>)delegate
 {
-	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
+	ADD_WRITE(OFRunLoop_WriteDataQueueItem, stream, mode, {
 		queueItem->_delegate = [delegate retain];
 		queueItem->_data = [data copy];
+	})
+}
+
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
+			   string: (OFString *)string
+			 encoding: (of_string_encoding_t)encoding
+			     mode: (of_run_loop_mode_t)mode
+			 delegate: (id <OFStreamDelegate>)delegate
+{
+	ADD_WRITE(OFRunLoop_WriteStringQueueItem, stream, mode, {
+		queueItem->_delegate = [delegate retain];
+		queueItem->_string = [string copy];
+		queueItem->_encoding = encoding;
 	})
 }
 
@@ -887,10 +986,24 @@ static OFRunLoop *mainRunLoop = nil;
 				       stream
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
-			    block: (of_stream_async_write_block_t)block
+			    block: (of_stream_async_write_data_block_t)block
 {
-	ADD_WRITE(OFRunLoop_WriteQueueItem, stream, mode, {
+	ADD_WRITE(OFRunLoop_WriteDataQueueItem, stream, mode, {
 		queueItem->_data = [data copy];
+		queueItem->_block = [block copy];
+	})
+}
+
++ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
+				       stream
+			   string: (OFString *)string
+			 encoding: (of_string_encoding_t)encoding
+			     mode: (of_run_loop_mode_t)mode
+			    block: (of_stream_async_write_string_block_t)block
+{
+	ADD_WRITE(OFRunLoop_WriteStringQueueItem, stream, mode, {
+		queueItem->_string = [string copy];
+		queueItem->_encoding = encoding;
 		queueItem->_block = [block copy];
 	})
 }

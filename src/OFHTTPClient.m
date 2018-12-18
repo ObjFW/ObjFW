@@ -556,7 +556,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 }
 
 - (OFData *)stream: (OF_KINDOF(OFStream *))stream
-      didWriteData: (OFData *)data
+    didWriteString: (OFString *)string
+	  encoding: (of_string_encoding_t)encoding
       bytesWritten: (size_t)bytesWritten
 	 exception: (id)exception
 {
@@ -607,12 +608,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	 */
 
 	@try {
-		OFString *requestString = constructRequestString(_request);
-		OFData *requestData = [OFData
-		    dataWithItems: [requestString UTF8String]
-			    count: [requestString UTF8StringLength]];
-
-		[sock asyncWriteData: requestData];
+		[sock asyncWriteString: constructRequestString(_request)];
 	} @catch (id e) {
 		[self raiseException: e];
 		return;
