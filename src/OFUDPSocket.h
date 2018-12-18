@@ -39,31 +39,23 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
-typedef bool (^of_udp_socket_async_receive_block_t)(OFUDPSocket *socket,
-    void *buffer, size_t length, of_socket_address_t sender,
-    id _Nullable exception);
+typedef bool (^of_udp_socket_async_receive_block_t)(
+    OFUDPSocket *_Nonnull socket, void *_Nonnull buffer, size_t length,
+    const of_socket_address_t *_Nonnull sender, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a packet has been sent.
  *
  * @param socket The UDP socket which sent a packet
- * @param buffer A pointer to the buffer which was sent. This can be changed to
- *		 point to a different buffer to be used on the next send.
- * @param bytesSent The number of bytes which have been sent. This matches the
- *		    length specified on the asynchronous send if no exception
- *		    was encountered.
- * @param receiver The receiver for the UDP packet. This may be set to a new
- *		   receiver to which the next packet is sent.
+ * @param data The data which was sent
+ * @param receiver The receiver for the UDP packet
  * @param exception An exception which occurred while reading or `nil` on
  *		    success
- * @return The length to repeat the send with or 0 if it should not repeat.
- *	   The buffer and receiver may be changed, so that every time a new
- *	   buffer, length and receiver can be specified while the callback
- *	   stays the same.
+ * @return The data to repeat the send with or nil if it should not repeat
  */
-typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
-    const void *_Nonnull *_Nonnull buffer, size_t bytesSent,
-    of_socket_address_t *_Nonnull receiver, id exception);
+typedef OFData *_Nullable (^of_udp_socket_async_send_data_block_t)(
+    OFUDPSocket *_Nonnull socket, OFData *_Nonnull data,
+    const of_socket_address_t *_Nonnull receiver, id _Nullable exception);
 #endif
 
 /*!
@@ -87,29 +79,22 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 -	  (bool)socket: (OF_KINDOF(OFUDPSocket *))socket
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
-		sender: (of_socket_address_t)sender
+		sender: (const of_socket_address_t *_Nonnull)sender
 	     exception: (nullable id)exception;
 
 /*!
  * @brief This which is called when a packet has been sent.
  *
  * @param socket The UDP socket which sent a packet
- * @param buffer A pointer to the buffer which was sent. This can be changed to
- *		 point to a different buffer to be used on the next send.
- * @param length The length of the buffer that has been sent
- * @param receiver The receiver for the UDP packet. This may be set to a new
- *		   receiver to which the next packet is sent.
+ * @param data The data which was sent
+ * @param receiver The receiver for the UDP packet
  * @param exception An exception that occurred while sending, or nil on success
- * @return The length to repeat the send with or 0 if it should not repeat.
- *	   The buffer and receiver may be changed, so that every time a new
- *	   buffer, length and receiver can be specified while the callback
- *	   stays the same.
+ * @return The data to repeat the send with or nil if it should not repeat
  */
-- (size_t)socket: (OF_KINDOF(OFUDPSocket *))socket
-   didSendBuffer: (const void *_Nonnull *_Nonnull)buffer
-	  length: (size_t)length
-	receiver: (of_socket_address_t *_Nonnull)receiver
-       exception: (nullable id)exception;
+- (nullable OFData *)socket: (OF_KINDOF(OFUDPSocket *))socket
+		didSendData: (OFData *)data
+		   receiver: (const of_socket_address_t *_Nonnull)receiver
+		  exception: (nullable id)exception;
 @end
 
 /*!
@@ -275,67 +260,55 @@ typedef size_t (^of_udp_socket_async_send_block_t)(OFUDPSocket *socket,
 /*!
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
- * @param buffer The buffer to send as a datagram
- * @param length The length of the buffer
+ * @param data The data to send as a datagram
  * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent
+ *		   datagram should be sent. The receiver is copied.
  */
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver;
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver;
 
 /*!
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
- * @param buffer The buffer to send as a datagram
- * @param length The length of the buffer
+ * @param data The data to send as a datagram
  * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent
+ *		   datagram should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  */
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
-	    runLoopMode: (of_run_loop_mode_t)runLoopMode;
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
+	  runLoopMode: (of_run_loop_mode_t)runLoopMode;
 
 #ifdef OF_HAVE_BLOCKS
 /*!
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
- * @param buffer The buffer to send as a datagram
- * @param length The length of the buffer
+ * @param data The data to send as a datagram
  * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent
+ *		   datagram should be sent. The receiver is copied.
  * @param block The block to call when the packet has been sent. It should
- *		return the length for the next send with the same callback or 0
- *		if it should not repeat. The buffer and receiver may be
- *		changed, so that every time a new buffer, length and receiver
- *		can be specified while the callback stays the same.
+ *		return the data for the next send with the same callback or nil
+ *		if it should not repeat.
  */
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
-		  block: (of_udp_socket_async_send_block_t)block;
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
+		block: (of_udp_socket_async_send_data_block_t)block;
 
 /*!
  * @brief Asynchronously sends the specified datagram to the specified address.
  *
- * @param buffer The buffer to send as a datagram
- * @param length The length of the buffer
+ * @param data The data to send as a datagram
  * @param receiver A pointer to an @ref of_socket_address_t to which the
- *		   datagram should be sent
+ *		   datagram should be sent. The receiver is copied.
  * @param runLoopMode The run loop mode in which to perform the async send
  * @param block The block to call when the packet has been sent. It should
- *		return the length for the next send with the same callback or 0
- *		if it should not repeat. The buffer and receiver may be
- *		changed, so that every time a new buffer, length and receiver
- *		can be specified while the callback stays the same.
+ *		return the data for the next send with the same callback or nil
+ *		if it should not repeat.
  */
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
-	    runLoopMode: (of_run_loop_mode_t)runLoopMode
-		  block: (of_udp_socket_async_send_block_t)block;
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
+	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+		block: (of_udp_socket_async_send_data_block_t)block;
 #endif
 
 /*!

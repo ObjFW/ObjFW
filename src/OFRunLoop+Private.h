@@ -109,12 +109,12 @@ OF_ASSUME_NONNULL_BEGIN
 			      delegate: (nullable id <OFUDPSocketDelegate>)
 					    delegate;
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
-			     buffer: (const void *)buffer
-			     length: (size_t)length
-			   receiver: (of_socket_address_t)receiver
+			       data: (OFData *)data
+			   receiver: (const of_socket_address_t *)receiver
 			       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			      block: (nullable of_udp_socket_async_send_block_t)
+			      block: (nullable
+					 of_udp_socket_async_send_data_block_t)
 					 block
 # endif
 			   delegate: (nullable id <OFUDPSocketDelegate>)

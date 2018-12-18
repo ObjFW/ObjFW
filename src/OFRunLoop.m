@@ -163,10 +163,9 @@ static OFRunLoop *mainRunLoop = nil;
 {
 @public
 # ifdef OF_HAVE_BLOCKS
-	of_udp_socket_async_send_block_t _block;
+	of_udp_socket_async_send_data_block_t _block;
 # endif
-	const void *_buffer;
-	size_t _length;
+	OFData *_data;
 	of_socket_address_t _receiver;
 }
 @end
@@ -683,7 +682,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
-		return _block(object, _buffer, length, address, exception);
+		return _block(object, _buffer, length, &address, exception);
 	else {
 # endif
 		if (![_delegate respondsToSelector: @selector(
@@ -693,7 +692,7 @@ static OFRunLoop *mainRunLoop = nil;
 		return [_delegate socket: object
 		    didReceiveIntoBuffer: _buffer
 				  length: length
-				  sender: address
+				  sender: &address
 			       exception: exception];
 # ifdef OF_HAVE_BLOCKS
 	}
@@ -714,10 +713,11 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleObject: (id)object
 {
 	id exception = nil;
+	OFData *newData, *oldData;
 
 	@try {
-		[object sendBuffer: _buffer
-			    length: _length
+		[object sendBuffer: [_data items]
+			    length: [_data count] * [_data itemSize]
 			  receiver: &_receiver];
 	} @catch (id e) {
 		exception = e;
@@ -725,36 +725,49 @@ static OFRunLoop *mainRunLoop = nil;
 
 # ifdef OF_HAVE_BLOCKS
 	if (_block != NULL) {
-		_length = _block(object, &_buffer,
-		    (exception == nil ? _length : 0), &_receiver, exception);
+		newData = _block(object, _data, &_receiver, exception);
 
-		return (_length > 0);
+		if (newData == nil)
+			return false;
+
+		oldData = _data;
+		_data = [newData copy];
+		[oldData release];
+
+		return true;
 	} else {
 # endif
 		if (![_delegate respondsToSelector:
-		    @selector(socket:didSendBuffer:length:receiver:exception:)])
+		    @selector(socket:didSendData:receiver:exception:)])
 			return false;
 
-		_length = [_delegate socket: object
-			      didSendBuffer: &_buffer
-				     length: (exception == nil ? _length : 0)
+		newData = [_delegate socket: object
+				didSendData: _data
 				   receiver: &_receiver
 				  exception: exception];
 
-		return (_length > 0);
+		if (newData == nil)
+			return false;
+
+		oldData = _data;
+		_data = [newData copy];
+		[oldData release];
+
+		return true;
 # ifdef OF_HAVE_BLOCKS
 	}
 # endif
 }
 
-# ifdef OF_HAVE_BLOCKS
 - (void)dealloc
 {
+	[_data release];
+# ifdef OF_HAVE_BLOCKS
 	[_block release];
+# endif
 
 	[super dealloc];
 }
-# endif
 @end
 #endif
 
@@ -982,12 +995,12 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
-			     buffer: (const void *)buffer
-			     length: (size_t)length
-			   receiver: (of_socket_address_t)receiver
+			       data: (OFData *)data
+			   receiver: (const of_socket_address_t *)receiver
 			       mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS
-			      block: (of_udp_socket_async_send_block_t)block
+			      block: (of_udp_socket_async_send_data_block_t)
+					 block
 # endif
 			   delegate: (id <OFUDPSocketDelegate>)delegate
 {
@@ -997,9 +1010,8 @@ static OFRunLoop *mainRunLoop = nil;
 # ifdef OF_HAVE_BLOCKS
 	queueItem->_block = [block copy];
 # endif
-	queueItem->_buffer = buffer;
-	queueItem->_length = length;
-	queueItem->_receiver = receiver;
+	queueItem->_data = [data copy];
+	queueItem->_receiver = *receiver;
 
 	QUEUE_ITEM
 }

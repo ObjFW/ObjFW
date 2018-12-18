@@ -176,8 +176,9 @@ extern of_socket_address_t of_socket_address_parse_ipv6(
  * @param address2 The second address
  * @return Whether the two addresses are equal
  */
-extern bool of_socket_address_equal(of_socket_address_t *address1,
-    of_socket_address_t *address2);
+extern bool of_socket_address_equal(
+    const of_socket_address_t *_Nonnull address1,
+    const of_socket_address_t *_Nonnull address2);
 
 /*!
  * @brief Returns the hash for the specified of_socket_address_t.
@@ -185,7 +186,8 @@ extern bool of_socket_address_equal(of_socket_address_t *address1,
  * @param address The address to hash
  * @return The hash for the specified of_socket_address_t
  */
-extern uint32_t of_socket_address_hash(of_socket_address_t *address);
+extern uint32_t of_socket_address_hash(
+    const of_socket_address_t *_Nonnull address);
 
 /*!
  * @brief Converts the specified of_socket_address_t to an IP string and port.

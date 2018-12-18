@@ -1812,10 +1812,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	[sock asyncSendBuffer: [query->_queryData items]
-		       length: [query->_queryData count]
-		     receiver: query->_usedNameServer
-		  runLoopMode: runLoopMode];
+	[sock asyncSendData: query->_queryData
+		   receiver: &query->_usedNameServer
+		runLoopMode: runLoopMode];
 }
 
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
@@ -1870,7 +1869,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 -	  (bool)socket: (OF_KINDOF(OFUDPSocket *))sock
   didReceiveIntoBuffer: (void *)buffer_
 		length: (size_t)length
-		sender: (of_socket_address_t)sender
+		sender: (const of_socket_address_t *)sender
 	     exception: (id)exception
 {
 	unsigned char *buffer = buffer_;
@@ -1892,7 +1891,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if (query == nil)
 		return true;
 
-	if (!of_socket_address_equal(&sender, &query->_usedNameServer))
+	if (!of_socket_address_equal(sender, &query->_usedNameServer))
 		return true;
 
 	[query->_cancelTimer invalidate];

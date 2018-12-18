@@ -394,11 +394,11 @@ of_socket_address_parse_ip(OFString *IP, uint16_t port)
 }
 
 bool
-of_socket_address_equal(of_socket_address_t *address1,
-    of_socket_address_t *address2)
+of_socket_address_equal(const of_socket_address_t *address1,
+    const of_socket_address_t *address2)
 {
-	struct sockaddr_in *addrIn1, *addrIn2;
-	struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
+	const struct sockaddr_in *addrIn1, *addrIn2;
+	const struct sockaddr_in6 *addrIn6_1, *addrIn6_2;
 
 	if (address1->family != address2->family)
 		return false;
@@ -447,7 +447,7 @@ of_socket_address_equal(of_socket_address_t *address1,
 }
 
 uint32_t
-of_socket_address_hash(of_socket_address_t *address)
+of_socket_address_hash(const of_socket_address_t *address)
 {
 	uint32_t hash;
 

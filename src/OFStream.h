@@ -50,8 +50,9 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(OF_KINDOF(OFStream *) stream,
-    void *buffer, size_t length, id _Nullable exception);
+typedef bool (^of_stream_async_read_block_t)(
+    OF_KINDOF(OFStream *) _Nonnull stream, void *_Nonnull buffer,
+    size_t length, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read asynchronously from a
@@ -64,8 +65,9 @@ typedef bool (^of_stream_async_read_block_t)(OF_KINDOF(OFStream *) stream,
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
-    OFString *_Nullable line, id _Nullable exception);
+typedef bool (^of_stream_async_read_line_block_t)(
+    OF_KINDOF(OFStream *) _Nonnull stream, OFString *_Nullable line,
+    id _Nullable exception);
 
 /*!
  * @brief A block which is called when data was written asynchronously to a
@@ -80,8 +82,8 @@ typedef bool (^of_stream_async_read_line_block_t)(OF_KINDOF(OFStream *) stream,
  * @return The data to repeat the write with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
-    OF_KINDOF(OFStream *) stream, OFData *_Nonnull data, size_t bytesWritten,
-    id _Nullable exception);
+    OF_KINDOF(OFStream *) _Nonnull stream, OFData *_Nonnull data,
+    size_t bytesWritten, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a string was written asynchronously to a
@@ -97,7 +99,7 @@ typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
-    OF_KINDOF(OFStream *) stream, OFString *_Nonnull string,
+    OF_KINDOF(OFStream *) _Nonnull stream, OFString *_Nonnull string,
     of_string_encoding_t encoding, size_t bytesWritten, id _Nullable exception);
 #endif
 

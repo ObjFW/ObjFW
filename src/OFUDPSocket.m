@@ -416,24 +416,20 @@
 							     errNo: 0];
 }
 
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
 {
-	[self asyncSendBuffer: buffer
-		       length: length
-		     receiver: receiver
-		  runLoopMode: of_run_loop_mode_default];
+	[self asyncSendData: data
+		   receiver: receiver
+		runLoopMode: of_run_loop_mode_default];
 }
 
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
-	    runLoopMode: (of_run_loop_mode_t)runLoopMode
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
+	  runLoopMode: (of_run_loop_mode_t)runLoopMode
 {
 	[OFRunLoop of_addAsyncSendForUDPSocket: self
-					buffer: buffer
-					length: length
+					  data: data
 				      receiver: receiver
 					  mode: runLoopMode
 # ifdef OF_HAVE_BLOCKS
@@ -443,27 +439,23 @@
 }
 
 #ifdef OF_HAVE_BLOCKS
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
-		  block: (of_udp_socket_async_send_block_t)block
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
+		block: (of_udp_socket_async_send_data_block_t)block
 {
-	[self asyncSendBuffer: buffer
-		       length: length
-		     receiver: receiver
-		  runLoopMode: of_run_loop_mode_default
-			block: block];
+	[self asyncSendData: data
+		   receiver: receiver
+		runLoopMode: of_run_loop_mode_default
+		      block: block];
 }
 
-- (void)asyncSendBuffer: (const void *)buffer
-		 length: (size_t)length
-	       receiver: (of_socket_address_t)receiver
-	    runLoopMode: (of_run_loop_mode_t)runLoopMode
-		  block: (of_udp_socket_async_send_block_t)block
+- (void)asyncSendData: (OFData *)data
+	     receiver: (const of_socket_address_t *)receiver
+	  runLoopMode: (of_run_loop_mode_t)runLoopMode
+		block: (of_udp_socket_async_send_data_block_t)block
 {
 	[OFRunLoop of_addAsyncSendForUDPSocket: self
-					buffer: buffer
-					length: length
+					  data: data
 				      receiver: receiver
 					  mode: runLoopMode
 					 block: block
