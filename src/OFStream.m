@@ -214,6 +214,9 @@
 				     buffer: buffer
 				     length: length
 				       mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+				      block: NULL
+# endif
 				   delegate: _delegate];
 }
 
@@ -236,6 +239,9 @@
 				     buffer: buffer
 				exactLength: length
 				       mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+				      block: NULL
+# endif
 				   delegate: _delegate];
 }
 
@@ -262,7 +268,8 @@
 				     buffer: buffer
 				     length: length
 				       mode: runLoopMode
-				      block: block];
+				      block: block
+				   delegate: nil];
 }
 
 - (void)asyncReadIntoBuffer: (void *)buffer
@@ -287,7 +294,8 @@
 				     buffer: buffer
 				exactLength: length
 				       mode: runLoopMode
-				      block: block];
+				      block: block
+				   delegate: nil];
 }
 # endif
 #endif
@@ -887,6 +895,9 @@
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
 					   mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					  block: NULL
+# endif
 				       delegate: _delegate];
 }
 
@@ -916,7 +927,8 @@
 	[OFRunLoop of_addAsyncReadLineForStream: stream
 				       encoding: encoding
 					   mode: runLoopMode
-					  block: block];
+					  block: block
+				       delegate: nil];
 }
 # endif
 #endif
@@ -1181,6 +1193,9 @@
 	[OFRunLoop of_addAsyncWriteForStream: stream
 					data: data
 					mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+				       block: NULL
+# endif
 				    delegate: _delegate];
 }
 
@@ -1210,6 +1225,9 @@
 				      string: string
 				    encoding: encoding
 					mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+				       block: NULL
+# endif
 				    delegate: _delegate];
 }
 
@@ -1232,7 +1250,8 @@
 	[OFRunLoop of_addAsyncWriteForStream: stream
 					data: data
 					mode: runLoopMode
-				       block: block];
+				       block: block
+				    delegate: nil];
 }
 
 - (void)asyncWriteString: (OFString *)string
@@ -1266,7 +1285,8 @@
 				      string: string
 				    encoding: encoding
 					mode: runLoopMode
-				       block: block];
+				       block: block
+				    delegate: nil];
 }
 # endif
 #endif

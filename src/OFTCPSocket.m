@@ -1001,6 +1001,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
 					    mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					   block: NULL
+# endif
 					delegate: _delegate];
 }
 
@@ -1016,7 +1019,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	[OFRunLoop of_addAsyncAcceptForTCPSocket: self
 					    mode: runLoopMode
-					   block: block];
+					   block: block
+					delegate: nil];
 }
 #endif
 

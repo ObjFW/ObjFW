@@ -781,7 +781,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 
 #ifdef OF_HAVE_SOCKETS
-# define ADD_READ(type, object, mode, code)				\
+# define NEW_READ(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
 	OFRunLoop_State *state = [runLoop of_stateForMode: mode		\
@@ -799,12 +799,8 @@ static OFRunLoop *mainRunLoop = nil;
 		[state->_kernelEventObserver				\
 		    addObjectForReading: object];			\
 									\
-	queueItem = [[[type alloc] init] autorelease];			\
-	code								\
-	[queue appendObject: queueItem];				\
-									\
-	objc_autoreleasePoolPop(pool);
-# define ADD_WRITE(type, object, mode, code)				\
+	queueItem = [[[type alloc] init] autorelease];
+# define NEW_WRITE(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
 	OFRunLoop_State *state = [runLoop of_stateForMode: mode		\
@@ -822,8 +818,8 @@ static OFRunLoop *mainRunLoop = nil;
 		[state->_kernelEventObserver				\
 		    addObjectForWriting: object];			\
 									\
-	queueItem = [[[type alloc] init] autorelease];			\
-	code								\
+	queueItem = [[[type alloc] init] autorelease];
+#define QUEUE_ITEM							\
 	[queue appendObject: queueItem];				\
 									\
 	objc_autoreleasePoolPop(pool);
@@ -833,13 +829,21 @@ static OFRunLoop *mainRunLoop = nil;
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+			   block: (of_stream_async_read_block_t)block
+# endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
-	ADD_READ(OFRunLoop_ReadQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
-	})
+	NEW_READ(OFRunLoop_ReadQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_buffer = buffer;
+	queueItem->_length = length;
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
@@ -847,37 +851,61 @@ static OFRunLoop *mainRunLoop = nil;
 			  buffer: (void *)buffer
 		     exactLength: (size_t)exactLength
 			    mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+			   block: (of_stream_async_read_block_t)block
+# endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
-	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_buffer = buffer;
-		queueItem->_exactLength = exactLength;
-	})
+	NEW_READ(OFRunLoop_ExactReadQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_buffer = buffer;
+	queueItem->_exactLength = exactLength;
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
 				mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+			       block: (of_stream_async_read_line_block_t)block
+# endif
 			    delegate: (id <OFStreamDelegate>)delegate
 {
-	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_encoding = encoding;
-	})
+	NEW_READ(OFRunLoop_ReadLineQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_encoding = encoding;
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+			    block: (of_stream_async_write_data_block_t)block
+# endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
-	ADD_WRITE(OFRunLoop_WriteDataQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_data = [data copy];
-	})
+	NEW_WRITE(OFRunLoop_WriteDataQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_data = [data copy];
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
@@ -885,13 +913,21 @@ static OFRunLoop *mainRunLoop = nil;
 			   string: (OFString *)string
 			 encoding: (of_string_encoding_t)encoding
 			     mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+			    block: (of_stream_async_write_string_block_t)block
+# endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
-	ADD_WRITE(OFRunLoop_WriteStringQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_string = [string copy];
-		queueItem->_encoding = encoding;
-	})
+	NEW_WRITE(OFRunLoop_WriteStringQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_string = [string copy];
+	queueItem->_encoding = encoding;
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
@@ -899,136 +935,50 @@ static OFRunLoop *mainRunLoop = nil;
 			      delegate: (id <OFTCPSocketDelegate_Private>)
 					    delegate
 {
-	ADD_WRITE(OFRunLoop_ConnectQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-	})
+	NEW_WRITE(OFRunLoop_ConnectQueueItem, stream, mode)
+
+	queueItem->_delegate = [delegate retain];
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 				 mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
+				block: (of_tcp_socket_async_accept_block_t)block
+# endif
 			     delegate: (id <OFTCPSocketDelegate>)delegate
 {
-	ADD_READ(OFRunLoop_AcceptQueueItem, stream, mode, {
-		queueItem->_delegate = [delegate retain];
-	})
-}
+	NEW_READ(OFRunLoop_AcceptQueueItem, stream, mode)
 
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
-				buffer: (void *)buffer
-				length: (size_t)length
-				  mode: (of_run_loop_mode_t)mode
-			      delegate: (id <OFUDPSocketDelegate>)delegate
-{
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
-	})
-}
-
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
-			     buffer: (const void *)buffer
-			     length: (size_t)length
-			   receiver: (of_socket_address_t)receiver
-			       mode: (of_run_loop_mode_t)mode
-			   delegate: (id <OFUDPSocketDelegate>)delegate
-{
-	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode, {
-		queueItem->_delegate = [delegate retain];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
-		queueItem->_receiver = receiver;
-	})
-}
-
+	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
-+ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
-				      stream
-			  buffer: (void *)buffer
-			  length: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
-			   block: (of_stream_async_read_block_t)block
-{
-	ADD_READ(OFRunLoop_ReadQueueItem, stream, mode, {
-		queueItem->_block = [block copy];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
-	})
-}
+	queueItem->_block = [block copy];
+# endif
 
-+ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
-				      stream
-			  buffer: (void *)buffer
-		     exactLength: (size_t)exactLength
-			    mode: (of_run_loop_mode_t)mode
-			   block: (of_stream_async_read_block_t)block
-{
-	ADD_READ(OFRunLoop_ExactReadQueueItem, stream, mode, {
-		queueItem->_block = [block copy];
-		queueItem->_buffer = buffer;
-		queueItem->_exactLength = exactLength;
-	})
-}
-
-+ (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
-					  stream
-			    encoding: (of_string_encoding_t)encoding
-				mode: (of_run_loop_mode_t)mode
-			       block: (of_stream_async_read_line_block_t)block
-{
-	ADD_READ(OFRunLoop_ReadLineQueueItem, stream, mode, {
-		queueItem->_block = [block copy];
-		queueItem->_encoding = encoding;
-	})
-}
-
-+ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
-				       stream
-			     data: (OFData *)data
-			     mode: (of_run_loop_mode_t)mode
-			    block: (of_stream_async_write_data_block_t)block
-{
-	ADD_WRITE(OFRunLoop_WriteDataQueueItem, stream, mode, {
-		queueItem->_data = [data copy];
-		queueItem->_block = [block copy];
-	})
-}
-
-+ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
-				       stream
-			   string: (OFString *)string
-			 encoding: (of_string_encoding_t)encoding
-			     mode: (of_run_loop_mode_t)mode
-			    block: (of_stream_async_write_string_block_t)block
-{
-	ADD_WRITE(OFRunLoop_WriteStringQueueItem, stream, mode, {
-		queueItem->_string = [string copy];
-		queueItem->_encoding = encoding;
-		queueItem->_block = [block copy];
-	})
-}
-
-+ (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
-				 mode: (of_run_loop_mode_t)mode
-				block: (of_tcp_socket_async_accept_block_t)block
-{
-	ADD_READ(OFRunLoop_AcceptQueueItem, stream, mode, {
-		queueItem->_block = [block copy];
-	})
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)sock
 				buffer: (void *)buffer
 				length: (size_t)length
 				  mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
 				 block: (of_udp_socket_async_receive_block_t)
 					    block
+# endif
+			      delegate: (id <OFUDPSocketDelegate>)delegate
 {
-	ADD_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode, {
-		queueItem->_block = [block copy];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
-	})
+	NEW_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_buffer = buffer;
+	queueItem->_length = length;
+
+	QUEUE_ITEM
 }
 
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)sock
@@ -1036,18 +986,26 @@ static OFRunLoop *mainRunLoop = nil;
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
 			       mode: (of_run_loop_mode_t)mode
+# ifdef OF_HAVE_BLOCKS
 			      block: (of_udp_socket_async_send_block_t)block
-{
-	ADD_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode, {
-		queueItem->_block = [block copy];
-		queueItem->_buffer = buffer;
-		queueItem->_length = length;
-		queueItem->_receiver = receiver;
-	})
-}
 # endif
-# undef ADD_READ
-# undef ADD_WRITE
+			   delegate: (id <OFUDPSocketDelegate>)delegate
+{
+	NEW_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode)
+
+	queueItem->_delegate = [delegate retain];
+# ifdef OF_HAVE_BLOCKS
+	queueItem->_block = [block copy];
+# endif
+	queueItem->_buffer = buffer;
+	queueItem->_length = length;
+	queueItem->_receiver = receiver;
+
+	QUEUE_ITEM
+}
+# undef NEW_READ
+# undef NEW_WRITE
+# undef QUEUE_ITEM
 
 + (void)of_cancelAsyncRequestsForObject: (id)object
 				   mode: (of_run_loop_mode_t)mode

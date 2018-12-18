@@ -343,6 +343,9 @@
 					   buffer: buffer
 					   length: length
 					     mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					    block: NULL
+# endif
 					 delegate: _delegate];
 }
 
@@ -366,7 +369,8 @@
 					   buffer: buffer
 					   length: length
 					     mode: runLoopMode
-					    block: block];
+					    block: block
+					 delegate: nil];
 }
 #endif
 
@@ -432,6 +436,9 @@
 					length: length
 				      receiver: receiver
 					  mode: runLoopMode
+# ifdef OF_HAVE_BLOCKS
+					 block: NULL
+# endif
 				      delegate: _delegate];
 }
 
@@ -459,7 +466,8 @@
 					length: length
 				      receiver: receiver
 					  mode: runLoopMode
-					 block: block];
+					 block: block
+				      delegate: nil];
 }
 #endif
 

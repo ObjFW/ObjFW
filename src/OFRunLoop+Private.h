@@ -41,93 +41,84 @@ OF_ASSUME_NONNULL_BEGIN
 			  buffer: (void *)buffer
 			  length: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
-			delegate: (id <OFStreamDelegate>)delegate;
+# ifdef OF_HAVE_BLOCKS
+			   block: (nullable of_stream_async_read_block_t)block
+# endif
+			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
 				      stream
 			  buffer: (void *)buffer
 		     exactLength: (size_t)length
 			    mode: (of_run_loop_mode_t)mode
-			delegate: (id <OFStreamDelegate>)delegate;
+# ifdef OF_HAVE_BLOCKS
+			   block: (nullable of_stream_async_read_block_t)block
+# endif
+			delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
 					  stream
 			    encoding: (of_string_encoding_t)encoding
 				mode: (of_run_loop_mode_t)mode
-			    delegate: (id <OFStreamDelegate>)delegate;
+# ifdef OF_HAVE_BLOCKS
+			       block: (nullable
+					  of_stream_async_read_line_block_t)
+					  block
+# endif
+			    delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			     data: (OFData *)data
 			     mode: (of_run_loop_mode_t)mode
-			 delegate: (id <OFStreamDelegate>)delegate;
+# ifdef OF_HAVE_BLOCKS
+			    block: (nullable of_stream_async_write_data_block_t)
+				       block
+# endif
+			 delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
 				       stream
 			   string: (OFString *)string
 			 encoding: (of_string_encoding_t)encoding
 			     mode: (of_run_loop_mode_t)mode
-			 delegate: (id <OFStreamDelegate>)delegate;
+# ifdef OF_HAVE_BLOCKS
+			    block: (nullable
+				       of_stream_async_write_string_block_t)
+				       block
+# endif
+			 delegate: (nullable id <OFStreamDelegate>)delegate;
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
 				  mode: (of_run_loop_mode_t)mode
 			      delegate: (id <OFTCPSocketDelegate_Private>)
 					    delegate;
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				 mode: (of_run_loop_mode_t)mode
-			     delegate: (id <OFTCPSocketDelegate>)delegate;
-+ (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
-				buffer: (void *)buffer
-				length: (size_t)length
-				  mode: (of_run_loop_mode_t)mode
-			      delegate: (id <OFUDPSocketDelegate>)delegate;
-+ (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
-			     buffer: (const void *)buffer
-			     length: (size_t)length
-			   receiver: (of_socket_address_t)receiver
-			       mode: (of_run_loop_mode_t)mode
-			   delegate: (id <OFUDPSocketDelegate>)delegate;
 # ifdef OF_HAVE_BLOCKS
-+ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
-				      stream
-			  buffer: (void *)buffer
-			  length: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
-			   block: (of_stream_async_read_block_t)block;
-+ (void)of_addAsyncReadForStream: (OFStream <OFReadyForReadingObserving> *)
-				      stream
-			  buffer: (void *)buffer
-		     exactLength: (size_t)length
-			    mode: (of_run_loop_mode_t)mode
-			   block: (of_stream_async_read_block_t)block;
-+ (void)of_addAsyncReadLineForStream: (OFStream <OFReadyForReadingObserving> *)
-					  stream
-			    encoding: (of_string_encoding_t)encoding
-				mode: (of_run_loop_mode_t)mode
-			       block: (of_stream_async_read_line_block_t)block;
-+ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
-				       stream
-			     data: (OFData *)data
-			     mode: (of_run_loop_mode_t)mode
-			    block: (of_stream_async_write_data_block_t)block;
-+ (void)of_addAsyncWriteForStream: (OFStream <OFReadyForWritingObserving> *)
-				       stream
-			   string: (OFString *)string
-			 encoding: (of_string_encoding_t)encoding
-			     mode: (of_run_loop_mode_t)mode
-			    block: (of_stream_async_write_string_block_t)block;
-+ (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
-				 mode: (of_run_loop_mode_t)mode
-				block: (of_tcp_socket_async_accept_block_t)
-					   block;
+				block: (nullable
+					   of_tcp_socket_async_accept_block_t)
+					   block
+# endif
+			     delegate: (nullable id <OFTCPSocketDelegate>)
+					   delegate;
 + (void)of_addAsyncReceiveForUDPSocket: (OFUDPSocket *)socket
 				buffer: (void *)buffer
 				length: (size_t)length
 				  mode: (of_run_loop_mode_t)mode
-				 block: (of_udp_socket_async_receive_block_t)
-					    block;
+# ifdef OF_HAVE_BLOCKS
+				 block: (nullable
+					    of_udp_socket_async_receive_block_t)
+					    block
+# endif
+			      delegate: (nullable id <OFUDPSocketDelegate>)
+					    delegate;
 + (void)of_addAsyncSendForUDPSocket: (OFUDPSocket *)socket
 			     buffer: (const void *)buffer
 			     length: (size_t)length
 			   receiver: (of_socket_address_t)receiver
 			       mode: (of_run_loop_mode_t)mode
-			      block: (of_udp_socket_async_send_block_t)block;
+# ifdef OF_HAVE_BLOCKS
+			      block: (nullable of_udp_socket_async_send_block_t)
+					 block
 # endif
+			   delegate: (nullable id <OFUDPSocketDelegate>)
+					 delegate;
 + (void)of_cancelAsyncRequestsForObject: (id)object
 				   mode: (of_run_loop_mode_t)mode;
 #endif
