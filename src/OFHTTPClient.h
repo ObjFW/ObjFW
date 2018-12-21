@@ -43,13 +43,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param client The OFHTTPClient which performed the request
  * @param request The request the OFHTTPClient performed
  * @param response The response to the request performed
- * @param context The context object that was passed to
- *		  @ref asyncPerformRequest:context:
  */
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
-	   response: (OFHTTPResponse *)response
-	    context: (nullable id)context;
+	   response: (OFHTTPResponse *)response;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient encountered an
@@ -58,13 +55,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param client The client which encountered an exception
  * @param exception The exception the client encountered
  * @param request The request during which the client encountered the exception
- * @param context The context object that was passed to
- *		  @ref asyncPerformRequest:context:
  */
--	   (void)client: (OFHTTPClient *)client
-  didEncounterException: (id)exception
-		request: (OFHTTPRequest *)request
-		context: (nullable id)context;
+-	  (void)client: (OFHTTPClient *)client
+  didFailWithException: (id)exception
+	       request: (OFHTTPRequest *)request;
 
 @optional
 /*!
@@ -78,13 +72,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param client The OFHTTPClient that created a socket
  * @param socket The socket created by the OFHTTPClient
  * @param request The request for which the socket was created
- * @param context The context object that was passed to
- *		  @ref asyncPerformRequest:context:
  */
 -    (void)client: (OFHTTPClient *)client
   didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
-	  request: (OFHTTPRequest *)request
-	  context: (nullable id)context;
+	  request: (OFHTTPRequest *)request;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient wants to send the
@@ -94,13 +85,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @param requestBody A stream into which the body of the request should be
  *		      written
  * @param request The request for which the OFHTTPClient wants to send the body
- * @param context The context object that was passed to
- *		  @ref asyncPerformRequest:context:
  */
 -     (void)client: (OFHTTPClient *)client
   wantsRequestBody: (OFStream *)requestBody
-	   request: (OFHTTPRequest *)request
-	   context: (nullable id)context;
+	   request: (OFHTTPRequest *)request;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient received headers.
@@ -110,14 +98,11 @@ OF_ASSUME_NONNULL_BEGIN
  * @param statusCode The status code received
  * @param request The request for which the headers and status code have been
  *		  received
- * @param context The context object that was passed to
- *		  @ref asyncPerformRequest:context:
  */
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
 	 statusCode: (int)statusCode
-	    request: (OFHTTPRequest *)request
-	    context: (nullable id)context;
+	    request: (OFHTTPRequest *)request;
 
 /*!
  * @brief A callback which is called when an OFHTTPClient wants to follow a
@@ -141,16 +126,13 @@ OF_ASSUME_NONNULL_BEGIN
  *		  (e.g. to set the cookies for the new URL), however, keep in
  *		  mind that this will change the request you originally passed.
  * @param response The response indicating the redirect
- * @param context The context object that was passed to
- *		  @ref asyncPerformRequest:context:
  * @return A boolean whether the OFHTTPClient should follow the redirect
  */
 -	  (bool)client: (OFHTTPClient *)client
   shouldFollowRedirect: (OFURL *)URL
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest *)request
-	      response: (OFHTTPResponse *)response
-	       context: (nullable id)context;
+	      response: (OFHTTPResponse *)response;
 @end
 
 /*!
@@ -218,45 +200,11 @@ OF_ASSUME_NONNULL_BEGIN
 			 redirects: (unsigned int)redirects;
 
 /*!
- * @brief Synchronously performs the specified HTTP request.
- *
- * @note You must not change the delegate while a synchronous request is
- *	 running! If you want to change the delegate during the request,
- *	 perform an asynchronous request instead!
- *
- * @param request The request to perform
- * @param context A context object to be passed to the delegate
- * @return The OFHTTPResponse for the request
- */
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			   context: (nullable id)context;
-
-/*!
- * @brief Synchronously performs the specified HTTP request.
- *
- * @note You must not change the delegate while a synchronous request is
- *	 running! If you want to change the delegate during the request,
- *	 perform an asynchronous request instead!
- *
- * @param request The request to perform
- * @param redirects The maximum number of redirects after which no further
- *		    attempt is done to follow the redirect, but instead the
- *		    redirect is treated as an OFHTTPResponse
- * @param context A context object to be passed to the delegate
- * @return The OFHTTPResponse for the request
- */
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (unsigned int)redirects
-			   context: (nullable id)context;
-
-/*!
  * @brief Asynchronously performs the specified HTTP request.
  *
  * @param request The request to perform
- * @param context A context object to be passed to the delegate
  */
-- (void)asyncPerformRequest: (OFHTTPRequest *)request
-		    context: (nullable id)context;
+- (void)asyncPerformRequest: (OFHTTPRequest *)request;
 
 /*!
  * @brief Asynchronously performs the specified HTTP request.
@@ -265,11 +213,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @param redirects The maximum number of redirects after which no further
  *		    attempt is done to follow the redirect, but instead the
  *		    redirect is treated as an OFHTTPResponse
- * @param context A context object to be passed to the delegate
  */
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
-		  redirects: (unsigned int)redirects
-		    context: (nullable id)context;
+		  redirects: (unsigned int)redirects;
 
 /*!
  * @brief Closes connections that are still open due to keep-alive.

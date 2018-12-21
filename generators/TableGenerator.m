@@ -69,29 +69,31 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	OFHTTPRequest *request;
 
 	[of_stdout writeString: @"Downloading UnicodeData.txt…"];
+	_state = STATE_UNICODE_DATA;
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: UNICODE_DATA_URL]];
-	[_HTTPClient asyncPerformRequest: request
-				 context: @"UnicodeData"];
+	[_HTTPClient asyncPerformRequest: request];
 }
 
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
-	    context: (id)context
 {
 	[of_stdout writeLine: @" done"];
 
-	if ([context isEqual: @"UnicodeData"])
+	switch (_state) {
+	case STATE_UNICODE_DATA:
 		[self parseUnicodeData: response];
-	else if ([context isEqual: @"CaseFolding"])
+		break;
+	case STATE_CASE_FOLDING:
 		[self parseCaseFolding: response];
+		break;
+	}
 }
 
--	   (void)client: (OFHTTPClient *)client
-  didEncounterException: (id)exception
-		request: (OFHTTPRequest *)request
-		context: (id)context
+-	  (void)client: (OFHTTPClient *)client
+  didFailWithException: (id)exception
+	       request: (OFHTTPRequest *)request
 {
 	@throw exception;
 }
@@ -170,10 +172,10 @@ OF_APPLICATION_DELEGATE(TableGenerator)
 	[of_stdout writeLine: @" done"];
 
 	[of_stdout writeString: @"Downloading CaseFolding.txt…"];
+	_state = STATE_CASE_FOLDING;
 	request = [OFHTTPRequest requestWithURL:
 	    [OFURL URLWithString: CASE_FOLDING_URL]];
-	[_HTTPClient asyncPerformRequest: request
-				 context: @"CaseFolding"];
+	[_HTTPClient asyncPerformRequest: request];
 }
 
 - (void)parseCaseFolding: (OFHTTPResponse *)response

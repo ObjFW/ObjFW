@@ -42,6 +42,10 @@
 	size_t _casefoldingTableSize;
 	size_t _decompositionTableSize;
 	size_t _decompositionCompatTableSize;
+	enum {
+		STATE_UNICODE_DATA,
+		STATE_CASE_FOLDING
+	} _state;
 }
 
 - (void)parseUnicodeData: (OFHTTPResponse *)response;

@@ -60,8 +60,8 @@
 	size_t _URLIndex;
 	int _errorCode;
 	OFString *_outputPath, *_currentFileName;
-	bool _continue, _force, _detectFileName, _detectedFileName;
-	bool _quiet, _verbose, _insecure;
+	bool _continue, _force, _detectFileName, _detectFileNameRequest;
+	bool _detectedFileName, _quiet, _verbose, _insecure;
 	OFStream *_body;
 	of_http_request_method_t _method;
 	OFMutableDictionary *_clientHeaders;
@@ -515,7 +515,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -    (void)client: (OFHTTPClient *)client
   didCreateSocket: (OF_KINDOF(OFTCPSocket *))sock
 	  request: (OFHTTPRequest *)request
-	  context: (id)context
 {
 	if (_insecure && [sock respondsToSelector:
 	    @selector(setCertificateVerificationEnabled:)])
@@ -525,7 +524,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -     (void)client: (OFHTTPClient *)client
   wantsRequestBody: (OFStream *)body
 	   request: (OFHTTPRequest *)request
-	   context: (id)context
 {
 	/* TODO: Do asynchronously and print status */
 	while (![_body isAtEndOfStream]) {
@@ -544,7 +542,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response
-	       context: (id)context
 {
 	if (_verbose) {
 		void *pool = objc_autoreleasePoolPush();
@@ -569,10 +566,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	return true;
 }
 
--	   (void)client: (OFHTTPClient *)client
-  didEncounterException: (id)e
-		request: (OFHTTPRequest *)request
-		context: (id)context
+-	  (void)client: (OFHTTPClient *)client
+  didFailWithException: (id)e
+	       request: (OFHTTPRequest *)request
 {
 	if ([e isKindOfClass: [OFResolveHostFailedException class]]) {
 		if (!_quiet)
@@ -715,7 +711,6 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
 	 statusCode: (int)statusCode
 	    request: (OFHTTPRequest *)request
-	    context: (id)context
 {
 	if (!_quiet) {
 		OFString *lengthString =
@@ -805,9 +800,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
-	    context: (id)context
 {
-	if ([context isEqual: @"detectFileName"]) {
+	if (_detectFileNameRequest) {
 		_currentFileName = [fileNameFromContentDisposition(
 		    [[response headers] objectForKey: @"Content-Disposition"])
 		    copy];
@@ -930,8 +924,8 @@ next:
 		[request setHeaders: clientHeaders];
 		[request setMethod: OF_HTTP_REQUEST_METHOD_HEAD];
 
-		[_HTTPClient asyncPerformRequest: request
-					 context: @"detectFileName"];
+		_detectFileNameRequest = true;
+		[_HTTPClient asyncPerformRequest: request];
 		return;
 	}
 
@@ -971,8 +965,8 @@ next:
 	[request setHeaders: clientHeaders];
 	[request setMethod: _method];
 
-	[_HTTPClient asyncPerformRequest: request
-				 context: nil];
+	_detectFileNameRequest = false;
+	[_HTTPClient asyncPerformRequest: request];
 	return;
 
 next:

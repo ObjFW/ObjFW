@@ -108,7 +108,6 @@ static OFHTTPResponse *response = nil;
 -     (void)client: (OFHTTPClient *)client
   wantsRequestBody: (OFStream *)body
 	   request: (OFHTTPRequest *)request
-	   context: (id)context
 {
 	[body writeString: @"Hello"];
 }
@@ -116,7 +115,6 @@ static OFHTTPResponse *response = nil;
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response_
-	    context: (id)context
 {
 	response = [response_ retain];
 
@@ -151,8 +149,7 @@ static OFHTTPResponse *response = nil;
 	    R([request setHeaders:
 	    [OFDictionary dictionaryWithObject: @"5"
 					forKey: @"Content-Length"]]) &&
-	    R([client asyncPerformRequest: request
-				  context: nil]))
+	    R([client asyncPerformRequest: request]))
 
 	[[OFRunLoop mainRunLoop] runUntilDate:
 	    [OFDate dateWithTimeIntervalSinceNow: 2]];

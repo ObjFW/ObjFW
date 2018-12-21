@@ -57,7 +57,6 @@
 	OFHTTPClient *_client;
 	OFHTTPRequest *_request;
 	unsigned int _redirects;
-	id _context;
 	bool _firstLine;
 	OFString *_version;
 	int _status;
@@ -66,8 +65,7 @@
 
 - (instancetype)initWithClient: (OFHTTPClient *)client
 		       request: (OFHTTPRequest *)request
-		     redirects: (unsigned int)redirects
-		       context: (id)context;
+		     redirects: (unsigned int)redirects;
 - (void)start;
 - (void)closeAndReconnect;
 @end
@@ -105,8 +103,7 @@
 
 - (instancetype)initWithClient: (OFHTTPClient *)client;
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (unsigned int)redirects
-			   context: (id)context;
+			 redirects: (unsigned int)redirects;
 @end
 
 static OFString *
@@ -256,7 +253,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (instancetype)initWithClient: (OFHTTPClient *)client
 		       request: (OFHTTPRequest *)request
 		     redirects: (unsigned int)redirects
-		       context: (id)context
 {
 	self = [super init];
 
@@ -264,7 +260,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_client = [client retain];
 		_request = [request retain];
 		_redirects = redirects;
-		_context = [context retain];
 		_serverHeaders = [[OFMutableDictionary alloc] init];
 	} @catch (id e) {
 		[self release];
@@ -278,7 +273,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 {
 	[_client release];
 	[_request release];
-	[_context release];
 	[_version release];
 	[_serverHeaders release];
 
@@ -291,9 +285,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	_client->_inProgress = false;
 
 	[_client->_delegate client: _client
-	     didEncounterException: exception
-			   request: _request
-			   context: _context];
+	      didFailWithException: exception
+			   request: _request];
 }
 
 - (void)createResponseWithSocketOrThrow: (OFTCPSocket *)sock
@@ -349,13 +342,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 				relativeToURL: URL];
 
 		if ([_client->_delegate respondsToSelector: @selector(client:
-		    shouldFollowRedirect:statusCode:request:response:context:)])
+		    shouldFollowRedirect:statusCode:request:response:)])
 			follow = [_client->_delegate client: _client
 				       shouldFollowRedirect: newURL
 						 statusCode: _status
 						    request: _request
-						   response: response
-						    context: _context];
+						   response: response];
 		else
 			follow = defaultShouldFollow(
 			    [_request method], _status);
@@ -401,8 +393,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			_client->_inProgress = false;
 
 			[_client asyncPerformRequest: newRequest
-					   redirects: _redirects - 1
-					     context: _context];
+					   redirects: _redirects - 1];
 			return;
 		}
 	}
@@ -415,11 +406,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 				response: response];
 
 	[_client->_delegate performSelector: @selector(client:didPerformRequest:
-						 response:context:)
+						 response:)
 				 withObject: _client
 				 withObject: _request
 				 withObject: response
-				 withObject: _context
 				 afterDelay: 0];
 }
 
@@ -472,12 +462,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		[_serverHeaders makeImmutable];
 
 		if ([_client->_delegate respondsToSelector: @selector(client:
-		    didReceiveHeaders:statusCode:request:context:)])
+		    didReceiveHeaders:statusCode:request:)])
 			[_client->_delegate client: _client
 				 didReceiveHeaders: _serverHeaders
 					statusCode: _status
-					   request: _request
-					   context: _context];
+					   request: _request];
 
 		[sock setDelegate: nil];
 
@@ -584,12 +573,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			     socket: stream] autorelease];
 
 		if ([_client->_delegate respondsToSelector:
-		    @selector(client:wantsRequestBody:request:context:)])
+		    @selector(client:wantsRequestBody:request:)])
 			[_client->_delegate client: _client
 				  wantsRequestBody: requestBody
-					   request: _request
-					   context: _context];
-
+					   request: _request];
 	} else
 		[stream asyncReadLine];
 
@@ -628,11 +615,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 
 	if ([_client->_delegate respondsToSelector:
-	    @selector(client:didCreateSocket:request:context:)])
+	    @selector(client:didCreateSocket:request:)])
 		[_client->_delegate client: _client
 			   didCreateSocket: sock
-				   request: _request
-				   context: _context];
+				   request: _request];
 
 	[self performSelector: @selector(handleSocket:)
 		   withObject: sock
@@ -664,6 +650,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		[_client->_lastResponse release];
 		_client->_lastResponse = nil;
+
+		[sock setDelegate: self];
 
 		[self performSelector: @selector(handleSocket:)
 			   withObject: sock
@@ -1043,11 +1031,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects
-			   context: (id)context
 {
 	[_client asyncPerformRequest: request
-			   redirects: redirects
-			     context: context];
+			   redirects: redirects];
 
 	[[OFRunLoop currentRunLoop] run];
 
@@ -1057,7 +1043,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 -      (void)client: (OFHTTPClient *)client
   didPerformRequest: (OFHTTPRequest *)request
 	   response: (OFHTTPResponse *)response
-	    context: (id)context
 {
 	[[OFRunLoop currentRunLoop] stop];
 
@@ -1066,14 +1051,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	[_delegate     client: client
 	    didPerformRequest: request
-		     response: response
-		      context: context];
+		     response: response];
 }
 
--	   (void)client: (OFHTTPClient *)client
-  didEncounterException: (id)exception
-		request: (OFHTTPRequest *)request
-		context: (id)context
+-	  (void)client: (OFHTTPClient *)client
+  didFailWithException: (id)exception
+	       request: (OFHTTPRequest *)request
 {
 	/*
 	 * Restore the delegate - we're giving up, but not reaching the release
@@ -1088,42 +1071,36 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 -    (void)client: (OFHTTPClient *)client
   didCreateSocket: (OF_KINDOF(OFTCPSocket *))sock
 	  request: (OFHTTPRequest *)request
-	  context: (id)context
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:didCreateSocket:request:context:)])
+	    @selector(client:didCreateSocket:request:)])
 		[_delegate   client: client
 		    didCreateSocket: sock
-			    request: request
-			    context: context];
+			    request: request];
 }
 
 -     (void)client: (OFHTTPClient *)client
   wantsRequestBody: (OFStream *)body
 	   request: (OFHTTPRequest *)request
-	   context: (id)context
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:wantsRequestBody:request:context:)])
+	    @selector(client:wantsRequestBody:request:)])
 		[_delegate    client: client
 		    wantsRequestBody: body
-			     request: request
-			     context: context];
+			     request: request];
 }
 
 -      (void)client: (OFHTTPClient *)client
   didReceiveHeaders: (OFDictionary OF_GENERIC(OFString *, OFString *) *)headers
 	 statusCode: (int)statusCode
 	    request: (OFHTTPRequest *)request
-	    context: (id)context
 {
 	if ([_delegate respondsToSelector:
-	    @selector(client:didReceiveHeaders:statusCode:request:context:)])
+	    @selector(client:didReceiveHeaders:statusCode:request:)])
 		[_delegate     client: client
 		    didReceiveHeaders: headers
 			   statusCode: statusCode
-			      request: request
-			      context: context];
+			      request: request];
 }
 
 -	  (bool)client: (OFHTTPClient *)client
@@ -1131,16 +1108,14 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	    statusCode: (int)statusCode
 	       request: (OFHTTPRequest *)request
 	      response: (OFHTTPResponse *)response
-	       context: (id)context
 {
 	if ([_delegate respondsToSelector: @selector(client:
-	    shouldFollowRedirect:statusCode:request:response:context:)])
+	    shouldFollowRedirect:statusCode:request:response:)])
 		return [_delegate client: client
 		    shouldFollowRedirect: URL
 			      statusCode: statusCode
 				 request: request
-				response: response
-				 context: context];
+				response: response];
 	else
 		return defaultShouldFollow([request method], statusCode);
 }
@@ -1165,37 +1140,18 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 {
 	return [self performRequest: request
-			  redirects: REDIRECTS_DEFAULT
-			    context: nil];
+			  redirects: REDIRECTS_DEFAULT];
 }
 
 - (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
 			 redirects: (unsigned int)redirects
-{
-	return [self performRequest: request
-			  redirects: redirects
-			    context: nil];
-}
-
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			   context: (id)context
-{
-	return [self performRequest: request
-			  redirects: REDIRECTS_DEFAULT
-			    context: context];
-}
-
-- (OFHTTPResponse *)performRequest: (OFHTTPRequest *)request
-			 redirects: (unsigned int)redirects
-			   context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHTTPClient_SyncPerformer *syncPerformer =
 	    [[[OFHTTPClient_SyncPerformer alloc] initWithClient: self]
 	    autorelease];
 	OFHTTPResponse *response = [syncPerformer performRequest: request
-						       redirects: redirects
-							 context: context];
+						       redirects: redirects];
 
 	[response retain];
 
@@ -1205,16 +1161,13 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
-		    context: (id)context
 {
 	[self asyncPerformRequest: request
-			redirects: REDIRECTS_DEFAULT
-			  context: context];
+			redirects: REDIRECTS_DEFAULT];
 }
 
 - (void)asyncPerformRequest: (OFHTTPRequest *)request
 		  redirects: (unsigned int)redirects
-		    context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [request URL];
@@ -1232,8 +1185,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	[[[[OFHTTPClientRequestHandler alloc]
 	    initWithClient: self
 		   request: request
-		 redirects: redirects
-		   context: context] autorelease] start];
+		 redirects: redirects] autorelease] start];
 
 	objc_autoreleasePoolPop(pool);
 }
