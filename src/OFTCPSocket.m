@@ -64,8 +64,8 @@ static of_run_loop_mode_t connectRunLoopMode = @"of_tcp_socket_connect_mode";
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket_AsyncConnectContext: OFObject <OFTCPSocketDelegate,
-    OFTCPSocketDelegate_Private>
+@interface OFTCPSocket_AsyncConnectDelegate: OFObject <OFTCPSocketDelegate,
+    OFTCPSocketDelegate_Private, OFDNSResolverDelegate>
 {
 	OFTCPSocket *_socket;
 	OFString *_host;
@@ -108,11 +108,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 - (void)didConnect;
 - (void)tryNextAddressWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
--	(void)resolver: (OFDNSResolver *)resolver
-  didResolveDomainName: (OFString *)domainName
-       socketAddresses: (OFData *)socketAddresses
-	       context: (id)context
-	     exception: (id)exception;
 - (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode;
 - (void)sendSOCKS5Request;
 @end
@@ -125,7 +120,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 @end
 
-@implementation OFTCPSocket_AsyncConnectContext
+@implementation OFTCPSocket_AsyncConnectDelegate
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port
@@ -304,7 +299,6 @@ static uint16_t defaultSOCKS5Port = 1080;
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
        socketAddresses: (OFData *)socketAddresses
-	       context: (id)context
 	     exception: (id)exception
 {
 	if (exception != nil) {
@@ -353,12 +347,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    asyncResolveSocketAddressesForHost: host
 				 addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
 				   runLoopMode: runLoopMode
-					target: self
-				      selector: @selector(resolver:
-						    didResolveDomainName:
-						    socketAddresses:context:
-						    exception:)
-				       context: nil];
+				      delegate: self];
 }
 
 - (void)sendSOCKS5Request
@@ -730,7 +719,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_AsyncConnectContext alloc]
+	[[[[OFTCPSocket_AsyncConnectDelegate alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -760,7 +749,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_AsyncConnectContext alloc]
+	[[[[OFTCPSocket_AsyncConnectDelegate alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port

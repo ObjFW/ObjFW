@@ -23,18 +23,17 @@
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 
-@interface OFDNS: OFObject <OFApplicationDelegate>
+@interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverDelegate>
 @end
 
 OF_APPLICATION_DELEGATE(OFDNS)
 
 @implementation OFDNS
--    (void)DNSResolver: (OFDNSResolver *)resolver
+-	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
 	 answerRecords: (OFArray *)answerRecords
       authorityRecords: (OFArray *)authorityRecords
      additionalRecords: (OFArray *)additionalRecords
-	       context: (id)context
 	     exception: (id)exception
 {
 	if (exception != nil) {
@@ -99,10 +98,6 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	[resolver asyncResolveHost: [arguments objectAtIndex: 0]
 		       recordClass: recordClass
 			recordType: recordType
-			    target: self
-			  selector: @selector(DNSResolver:didResolveDomainName:
-					answerRecords:authorityRecords:
-					additionalRecords:context:exception:)
-			   context: nil];
+			  delegate: self];
 }
 @end
