@@ -2129,7 +2129,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 		if ([addresses count] == 0) {
 			id exception = nil;
-			of_dns_resource_record_type_t recordType;
+			of_dns_resource_record_type_t recordType = 0;
 
 			switch (addressFamily) {
 			case OF_SOCKET_ADDRESS_FAMILY_ANY:

@@ -31,9 +31,9 @@ OF_APPLICATION_DELEGATE(OFDNS)
 @implementation OFDNS
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (OFArray *)answerRecords
-      authorityRecords: (OFArray *)authorityRecords
-     additionalRecords: (OFArray *)additionalRecords
+	 answerRecords: (of_dns_resolver_records_t)answerRecords
+      authorityRecords: (of_dns_resolver_records_t)authorityRecords
+     additionalRecords: (of_dns_resolver_records_t)additionalRecords
 	     exception: (id)exception
 {
 	if (exception != nil) {
