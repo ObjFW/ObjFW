@@ -477,6 +477,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	[sandbox unveilPath: (outputPath != nil
 				 ? outputPath : OF_PATH_CURRENT_DIRECTORY)
 		permissions: @"wc"];
+	/* In case we use ObjOpenSSL for https later */
+	[sandbox unveilPath: @"/etc/ssl"
+		permissions: @"r"];
 
 	[sandbox setAllowsUnveil: false];
 	[OFApplication activateSandbox: sandbox];
