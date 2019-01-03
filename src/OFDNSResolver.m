@@ -2073,33 +2073,34 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	@try {
 		of_socket_address_t address =
 		    of_socket_address_parse_ip(host, 0);
-		OFData *addresses;
+		OFData *addresses = nil;
+		id exception = nil;
 
-		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY &&
-		    address.family != addressFamily) {
-			if ([delegate respondsToSelector: @selector(resolver:
-			    didResolveDomainName:socketAddresses:exception:)]) {
-				OFInvalidArgumentException *exception =
-				    [OFInvalidArgumentException exception];
-
-				[delegate	resolver: self
-				    didResolveDomainName: host
-					 socketAddresses: nil
-					       exception: exception];
-			}
-			return;
-		}
-
-		addresses = [OFData dataWithItems: &address
-					 itemSize: sizeof(address)
-					    count: 1];
+		if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY ||
+		    addressFamily == address.family)
+			addresses = [OFData dataWithItems: &address
+						 itemSize: sizeof(address)
+						    count: 1];
+		else
+			exception = [OFInvalidArgumentException exception];
 
 		if ([delegate respondsToSelector: @selector(resolver:
-		    didResolveDomainName:socketAddresses:exception:)])
-			[delegate	resolver: self
-			    didResolveDomainName: host
-				 socketAddresses: addresses
-				       exception: nil];
+		    didResolveDomainName:socketAddresses:exception:)]) {
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: delegate
+					 selector: @selector(resolver:
+						       didResolveDomainName:
+						       socketAddresses:
+						       exception:)
+					   object: self
+					   object: host
+					   object: addresses
+					   object: exception
+					  repeats: false];
+			[[OFRunLoop currentRunLoop] addTimer: timer
+						     forMode: runLoopMode];
+		}
 
 		return;
 	} @catch (OFInvalidFormatException *e) {
@@ -2108,6 +2109,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if ((aliases = [_staticHosts objectForKey: host]) != nil) {
 		OFMutableData *addresses = [OFMutableData
 		    dataWithItemSize: sizeof(of_socket_address_t)];
+		id exception = nil;
 
 		for (OFString *alias in aliases) {
 			of_socket_address_t address;
@@ -2128,8 +2130,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		[addresses makeImmutable];
 
 		if ([addresses count] == 0) {
-			id exception = nil;
 			of_dns_resource_record_type_t recordType = 0;
+
+			addresses = nil;
 
 			switch (addressFamily) {
 			case OF_SOCKET_ADDRESS_FAMILY_ANY:
@@ -2159,21 +2162,25 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 					   recordType: recordType
 						error: error];
 			}
-
-			if ([delegate respondsToSelector: @selector(resolver:
-			    didResolveDomainName:socketAddresses:exception:)])
-				[delegate	resolver: self
-				    didResolveDomainName: host
-					 socketAddresses: nil
-					       exception: exception];
 		}
 
 		if ([delegate respondsToSelector: @selector(resolver:
-		    didResolveDomainName:socketAddresses:exception:)])
-			[delegate	resolver: self
-			    didResolveDomainName: host
-				 socketAddresses: addresses
-				       exception: nil];
+		    didResolveDomainName:socketAddresses:exception:)]) {
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: delegate
+					 selector: @selector(resolver:
+						       didResolveDomainName:
+						       socketAddresses:
+						       exception:)
+					   object: self
+					   object: host
+					   object: addresses
+					   object: exception
+					  repeats: false];
+			[[OFRunLoop currentRunLoop] addTimer: timer
+						     forMode: runLoopMode];
+		}
 
 		return;
 	}
