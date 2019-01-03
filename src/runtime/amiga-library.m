@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018
+ *               2018, 2019
  *   Jonathan Schleifer <js@heap.zone>
  *
  * All rights reserved.
@@ -604,7 +604,7 @@ struct Resident resident = {
 	.rt_Pri = 0,
 	.rt_Name = (char *)"objfw_rt.library",
 	.rt_IdString = (char *)"ObjFW_RT " VERSION_STRING
-	    " \xA9 2008-2018 Jonathan Schleifer",
+	    " \xA9 2008-2019 Jonathan Schleifer",
 	.rt_Init = &init_table,
 #ifdef OF_MORPHOS
 	.rt_Revision = OBJFW_RT_LIB_MINOR,
