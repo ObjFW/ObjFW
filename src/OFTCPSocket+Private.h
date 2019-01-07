@@ -20,7 +20,9 @@
 OF_ASSUME_NONNULL_BEGIN
 
 @interface OFTCPSocket ()
+#ifndef OF_WII
 @property (readonly, nonatomic) int of_socketError;
+#endif
 
 - (bool)of_createSocketForAddress: (const of_socket_address_t *)address
 			    errNo: (int *)errNo;

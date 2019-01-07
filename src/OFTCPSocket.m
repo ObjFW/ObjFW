@@ -266,16 +266,32 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return;
 	}
 
+#if defined(OF_NINTENDO_3DS) || defined(OF_WII)
+	/*
+	 * On Wii and 3DS, connect() fails if non-blocking is enabled.
+	 *
+	 * Additionally, on Wii, there is no getsockopt(), so it would not be
+	 * possible to get the error (or success) after connecting anyway.
+	 *
+	 * So for now, connecting is blocking on Wii and 3DS.
+	 *
+	 * FIXME: Use a different thread as a work around.
+	 */
+	[_socket setBlocking: true];
+#else
 	[_socket setBlocking: false];
+#endif
 
 	if (![_socket of_connectSocketToAddress: &address
 					  errNo: &errNo]) {
+#if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
 		if (errNo == EINPROGRESS) {
 			[OFRunLoop of_addAsyncConnectForTCPSocket: _socket
 							     mode: runLoopMode
 							 delegate: self];
 			return;
 		} else {
+#endif
 			[_socket of_closeSocket];
 
 			if (_socketAddressesIndex >= [_socketAddresses count]) {
@@ -290,8 +306,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 			[self tryNextAddressWithRunLoopMode: runLoopMode];
 			return;
+#if !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
 		}
+#endif
 	}
+
+#if defined(OF_NINTENDO_3DS) || defined(OF_WII)
+	[_socket setBlocking: false];
+#endif
 
 	[self didConnect];
 }
@@ -663,6 +685,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	_socket = INVALID_SOCKET;
 }
 
+#ifndef OF_WII
 - (int)of_socketError
 {
 	int errNo;
@@ -674,6 +697,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	return errNo;
 }
+#endif
 
 - (void)connectToHost: (OFString *)host
 		 port: (uint16_t)port

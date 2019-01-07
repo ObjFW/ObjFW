@@ -132,7 +132,7 @@ extern "C" {
 #endif
 extern bool of_socket_init(void);
 extern int of_socket_errno(void);
-# ifndef OF_WII
+# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
     socklen_t *restrict addrLen);
 # endif

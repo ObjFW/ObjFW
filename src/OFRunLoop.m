@@ -136,8 +136,10 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 @interface OFRunLoop_ConnectQueueItem: OFRunLoop_QueueItem
 @end
+# endif
 
 @interface OFRunLoop_AcceptQueueItem: OFRunLoop_QueueItem
 {
@@ -602,6 +604,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 @implementation OFRunLoop_ConnectQueueItem
 - (bool)handleObject: (id)object
 {
@@ -623,6 +626,7 @@ static OFRunLoop *mainRunLoop = nil;
 	return false;
 }
 @end
+# endif
 
 @implementation OFRunLoop_AcceptQueueItem
 - (bool)handleObject: (id)object
@@ -943,6 +947,7 @@ static OFRunLoop *mainRunLoop = nil;
 	QUEUE_ITEM
 }
 
+# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)stream
 				  mode: (of_run_loop_mode_t)mode
 			      delegate: (id <OFTCPSocketDelegate_Private>)
@@ -954,6 +959,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 	QUEUE_ITEM
 }
+# endif
 
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)stream
 				 mode: (of_run_loop_mode_t)mode

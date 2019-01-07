@@ -84,10 +84,12 @@ OF_ASSUME_NONNULL_BEGIN
 				       block
 # endif
 			 delegate: (nullable id <OFStreamDelegate>)delegate;
+# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
 + (void)of_addAsyncConnectForTCPSocket: (OFTCPSocket *)socket
 				  mode: (of_run_loop_mode_t)mode
 			      delegate: (id <OFTCPSocketDelegate_Private>)
 					    delegate;
+# endif
 + (void)of_addAsyncAcceptForTCPSocket: (OFTCPSocket *)socket
 				 mode: (of_run_loop_mode_t)mode
 # ifdef OF_HAVE_BLOCKS

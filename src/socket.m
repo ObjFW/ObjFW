@@ -241,10 +241,10 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 
 	memset(&ret, '\0', sizeof(ret));
 	ret.family = OF_SOCKET_ADDRESS_FAMILY_IPV4;
-#ifndef OF_WII
-	ret.length = sizeof(ret.sockaddr.in);
-#else
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	ret.length = 8;
+#else
+	ret.length = sizeof(ret.sockaddr.in);
 #endif
 
 	addrIn->sin_family = AF_INET;
@@ -405,12 +405,12 @@ of_socket_address_equal(const of_socket_address_t *address1,
 
 	switch (address1->family) {
 	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
-#ifndef OF_WII
-		if (address1->length < (socklen_t)sizeof(struct sockaddr_in) ||
-		    address2->length < (socklen_t)sizeof(struct sockaddr_in))
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+		if (address1->length < 8 || address2->length < 8)
 			@throw [OFInvalidArgumentException exception];
 #else
-		if (address1->length < 8 || address2->length < 8)
+		if (address1->length < (socklen_t)sizeof(struct sockaddr_in) ||
+		    address2->length < (socklen_t)sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #endif
 
@@ -456,11 +456,11 @@ of_socket_address_hash(const of_socket_address_t *address)
 
 	switch (address->family) {
 	case OF_SOCKET_ADDRESS_FAMILY_IPV4:
-#ifndef OF_WII
-		if (address->length < (socklen_t)sizeof(struct sockaddr_in))
+#if defined(OF_WII) || defined(OF_NINTENDO_3DS)
+		if (address->length < 8)
 			@throw [OFInvalidArgumentException exception];
 #else
-		if (address->length < 8)
+		if (address->length < (socklen_t)sizeof(struct sockaddr_in))
 			@throw [OFInvalidArgumentException exception];
 #endif
 

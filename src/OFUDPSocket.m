@@ -154,7 +154,7 @@
 #endif
 
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
-	if (port != 0) {
+	if (of_socket_address_get_port(address) != 0) {
 #endif
 		if (bind(_socket, &address->sockaddr.sockaddr,
 		    address->length) != 0) {

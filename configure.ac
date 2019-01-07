@@ -784,7 +784,7 @@ AC_TRY_COMPILE([
 
 case "$host_cpu" in
 	arm* | earm*)
-		AC_MSG_CHECKING(if VFP2 or above is available)
+		AC_MSG_CHECKING(for VFP2 or above)
 		AC_TRY_COMPILE([], [
 			#if !defined(__arm64__) && !defined(__aarch64__) && \
 			    !defined(__ARM64_ARCH_8__)

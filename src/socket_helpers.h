@@ -68,8 +68,6 @@ typedef uint32_t in_addr_t;
 # define connect(sock, addr, addrlen) \
     net_connect(sock, (struct sockaddr *)addr, addrlen)
 # define fcntl(fd, cmd, flags) net_fcntl(fd, cmd, flags)
-# define getsockopt(sock, level, name, value, len) \
-    net_getsockopt(sock, level, name, value, len)
 # define h_errno 0
 # define hstrerror(err) "unknown (no hstrerror)"
 # define listen(sock, backlog) net_listen(sock, backlog)
