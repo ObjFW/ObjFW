@@ -17,6 +17,8 @@
 
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
 libdir="@libdir@"
 CFLAGS=""
 CPPFLAGS="@OBJFW_CPPFLAGS@ -I@includedir@"
@@ -59,6 +61,8 @@ objfw-config: Available arguments are:
     --lib-suffix      Outputs the suffix for libraries
     --objc            Outputs the OBJC used to compile ObjFW
     --objcflags       Outputs the required OBJCFLAGS
+    --package         Additionally outputs the flags for the specified package
+    --packages-dir    Outputs the directory where flags for packages are stored
     --plugin-cflags   Outputs CFLAGS for building a plugin
     --plugin-ldflags  Outputs LDFLAGS for building a plugin
     --plugin-suffix   Outputs the suffix for plugins
@@ -72,6 +76,36 @@ __EOF__
 }
 
 test -z "$1" && show_help 1
+
+package_version() {
+	if test "$1" != "1"; then
+		echo "Unsupported package version: $1"
+		exit 1
+	fi
+}
+
+include_package() {
+	if ! test -f "$datadir/objfw/packages/$1"; then
+		echo "No such package: $1"
+		exit 1
+	fi
+
+	source "$datadir/objfw/packages/$1"
+}
+
+add_package_flags() {
+	while test -n "$1"; do
+		case "$1" in
+			--package)
+				shift
+				include_package "$1"
+				;;
+		esac
+		shift
+	done
+}
+
+add_package_flags "$@"
 
 while test -n "$1"; do
 	case "$1" in
@@ -153,6 +187,13 @@ while test -n "$1"; do
 			;;
 		--rpath)
 			printf "%s" "$LDFLAGS_RPATH"
+			;;
+		--package)
+			# Already included into the flags.
+			shift
+			;;
+		--packages-dir)
+			printf "%s" "$datadir/objfw/packages"
 			;;
 		--plugin-cflags)
 			printf "%s" "$PLUGIN_CFLAGS"
