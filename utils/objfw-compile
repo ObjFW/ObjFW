@@ -26,11 +26,26 @@ if ! which $OBJFW_CONFIG >/dev/null 2>&1; then
 	exit 1
 fi
 
-CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG --cppflags)"
+parse_packages() {
+	packages=""
+
+	while test x"$1" != "x"; do
+		case "$1" in
+			--package)
+				shift
+				packages="$packages --package $1"
+				;;
+		esac
+		shift
+	done
+}
+parse_packages "$@"
+
+CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG $packages --cppflags)"
 OBJC="$($OBJFW_CONFIG --objc)"
-OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --objcflags) -Wall -g"
-LIBS="$LIBS $($OBJFW_CONFIG --libs)"
-LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --ldflags --rpath)"
+OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG $packages --objcflags) -Wall -g"
+LIBS="$LIBS $($OBJFW_CONFIG $packages --libs)"
+LDFLAGS="$LDFLAGS $($OBJFW_CONFIG $packages --ldflags --rpath)"
 
 if test x"$1" = "x"; then
 	echo "Syntax: objfw-compile -o outname source1.m source2.m ..."
@@ -103,6 +118,10 @@ while test x"$1" != "x"; do
 			OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG --lib-cflags)"
 			out_prefix="$($OBJFW_CONFIG --lib-prefix)"
 			out_suffix="$($OBJFW_CONFIG --lib-suffix)"
+			;;
+		--package)
+			# Already included into the flags.
+			shift
 			;;
 		--plugin)
 			if test x"$lib" = x"yes"; then
