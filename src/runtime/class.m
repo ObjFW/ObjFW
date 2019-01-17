@@ -55,10 +55,17 @@ register_class(struct objc_abi_class *cls)
 bool
 class_registerAlias_np(Class cls, const char *name)
 {
-	if (classes == NULL)
+	objc_global_mutex_lock();
+
+	if (classes == NULL) {
+		objc_global_mutex_unlock();
+
 		return NO;
+	}
 
 	objc_hashtable_set(classes, name, (Class)((uintptr_t)cls | 1));
+
+	objc_global_mutex_unlock();
 
 	return YES;
 }
