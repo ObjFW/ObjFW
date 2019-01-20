@@ -17,9 +17,8 @@
 
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
-datarootdir="@datarootdir@"
-datadir="@datadir@"
 libdir="@libdir@"
+packagesdir="$libdir/objfw-config"
 CFLAGS=""
 CPPFLAGS="@OBJFW_CPPFLAGS@ -I@includedir@"
 CXXFLAGS=""
@@ -77,35 +76,36 @@ __EOF__
 
 test -z "$1" && show_help 1
 
-package_version() {
+package_description() {
 	if test "$1" != "1"; then
-		echo "Unsupported package version: $1"
+		echo "Unsupported package description version: $1"
 		exit 1
 	fi
 }
 
-include_package() {
-	if ! test -f "$datadir/objfw/packages/$1"; then
+package_depends_on() {
+	if ! test -f "$packagesdir/$1.oc"; then
 		echo "No such package: $1"
 		exit 1
 	fi
 
-	source "$datadir/objfw/packages/$1"
+	set -e
+	source "$packagesdir/$1.oc"
+	set +e
 }
 
-add_package_flags() {
+parse_packages() {
 	while test x"$1" != "x"; do
 		case "$1" in
 			--package)
 				shift
-				include_package "$1"
+				package_depends_on "$1"
 				;;
 		esac
 		shift
 	done
 }
-
-add_package_flags "$@"
+parse_packages "$@"
 
 while test x"$1" != "x"; do
 	case "$1" in
@@ -193,7 +193,7 @@ while test x"$1" != "x"; do
 			shift
 			;;
 		--packages-dir)
-			printf "%s" "$datadir/objfw/packages"
+			printf "%s" "$packagesdir"
 			;;
 		--plugin-cflags)
 			printf "%s" "$PLUGIN_CFLAGS"
