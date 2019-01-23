@@ -90,7 +90,7 @@ package_depends_on() {
 	fi
 
 	set -e
-	source "$packagesdir/$1.oc"
+	. "$packagesdir/$1.oc"
 	set +e
 }
 
