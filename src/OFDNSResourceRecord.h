@@ -71,7 +71,7 @@ typedef enum {
  *
  * @brief A class representing a DNS resource record.
  */
-@interface OFDNSResourceRecord: OFObject
+@interface OFDNSResourceRecord: OFObject <OFCopying>
 {
 	OFString *_name;
 	of_dns_resource_record_class_t _recordClass;

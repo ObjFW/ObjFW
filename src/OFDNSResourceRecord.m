@@ -157,6 +157,11 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	[super dealloc];
 }
 
+- (id)copy
+{
+	return [self retain];
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
