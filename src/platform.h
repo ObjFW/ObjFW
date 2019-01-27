@@ -121,6 +121,8 @@
 # define OF_ANDROID
 #elif defined(__HAIKU__)
 # define OF_HAIKU
+#elif defined(_AIX)
+# define OF_AIX
 #elif defined(__MORPHOS__)
 # ifndef __ixemul__
 #  define OF_MORPHOS
