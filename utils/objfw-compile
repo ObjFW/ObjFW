@@ -294,6 +294,16 @@ if test x"$lib" = x"yes"; then
 	LDFLAGS="$LDFLAGS $($OBJFW_CONFIG --lib-ldflags)"
 fi
 
+if test x"$plugin" = x"yes" -a x"$out_suffix" = x".bundle"; then
+	# If $out_suffix is .bundle, it means we are creating a macOS bundle.
+	# These are not just a single file, but have a certain directory
+	# structure. Therefore we amend the output path to match the expected
+	# directory structure.
+	mkdir -p $out$out_suffix/Contents/MacOS
+	out="$out$out_suffix/Contents/MacOS/$(basename $out)"
+	out_suffix=""
+fi
+
 if test ! -f "$out_prefix$out$out_suffix" -o x"$link" = x"yes"; then
 	status_linking $out_prefix$out$out_suffix
 	$OBJC -o $out_prefix$out$out_suffix $objs $LIBS $LDFLAGS || \
