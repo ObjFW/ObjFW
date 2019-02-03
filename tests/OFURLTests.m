@@ -276,6 +276,20 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 			    isDirectory: true] isEqual:
 	    [OFURL URLWithString: @"file:///qu%3Fx/"]])
 
+	TEST(@"-[URLByStandardizingPath]",
+	    [[[OFURL URLWithString: @"http://foo/bar/.."]
+	    URLByStandardizingPath] isEqual:
+	    [OFURL URLWithString: @"http://foo/"]] &&
+	    [[[OFURL URLWithString: @"http://foo/bar/%2E%2E/../qux/"]
+	    URLByStandardizingPath] isEqual:
+	    [OFURL URLWithString: @"http://foo/bar/qux/"]] &&
+	    [[[OFURL URLWithString: @"http://foo/bar/./././qux/./"]
+	    URLByStandardizingPath] isEqual:
+	    [OFURL URLWithString: @"http://foo/bar/qux/"]] &&
+	    [[[OFURL URLWithString: @"http://foo/bar/../../qux"]
+	    URLByStandardizingPath] isEqual:
+	    [OFURL URLWithString: @"http://foo/../qux"]])
+
 	[pool drain];
 }
 @end

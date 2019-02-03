@@ -2042,22 +2042,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	return new;
 }
 
-- (OFString *)stringByAppendingURLPathComponent: (OFString *)component
-{
-	if ([self hasSuffix: @"/"])
-		return [self stringByAppendingString: component];
-	else {
-		OFMutableString *ret = [[self mutableCopy] autorelease];
-
-		[ret appendString: @"/"];
-		[ret appendString: component];
-
-		[ret makeImmutable];
-
-		return ret;
-	}
-}
-
 - (OFString *)stringByPrependingString: (OFString *)string
 {
 	OFMutableString *new = [[string mutableCopy] autorelease];
@@ -2329,67 +2313,6 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	objc_autoreleasePoolPop(pool);
 
 	return array;
-}
-
-- (OFString *)stringByStandardizingURLPath
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *components =
-	    [self componentsSeparatedByString: @"/"];
-	OFMutableArray OF_GENERIC(OFString *) *array;
-	OFString *ret;
-	bool done = false, startsWithEmpty, endsWithEmpty;
-
-	array = [[components mutableCopy] autorelease];
-
-	if ((startsWithEmpty = [[array firstObject] isEqual: @""]))
-		[array removeObjectAtIndex: 0];
-	endsWithEmpty = [[array lastObject] isEqual: @""];
-
-	while (!done) {
-		size_t length = [array count];
-
-		done = true;
-
-		for (size_t i = 0; i < length; i++) {
-			id object = [array objectAtIndex: i];
-			id parent;
-
-			if (i > 0)
-				parent = [array objectAtIndex: i - 1];
-			else
-				parent = nil;
-
-			if ([object isEqual: @"."] ||
-			   [object length] == 0) {
-				[array removeObjectAtIndex: i];
-
-				done = false;
-				break;
-			}
-
-			if ([object isEqual: @".."] && parent != nil &&
-			    ![parent isEqual: @".."]) {
-				[array removeObjectsInRange:
-				    of_range(i - 1, 2)];
-
-				done = false;
-				break;
-			}
-		}
-	}
-
-	if (startsWithEmpty)
-		[array insertObject: @""
-			    atIndex: 0];
-	if (endsWithEmpty)
-		[array addObject: @""];
-
-	ret = [[array componentsJoinedByString: @"/"] retain];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
 }
 
 - (intmax_t)decimalValue

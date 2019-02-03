@@ -216,14 +216,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
 @property (readonly, nonatomic) double doubleValue;
 
 /*!
- * @brief The string interpreted as a URL path with relative sub paths resolved.
- *
- * This works similar to @ref stringByStandardizingPath, but is intended for
- * standardization of paths that are part of a URL.
- */
-@property (readonly, nonatomic) OFString *stringByStandardizingURLPath;
-
-/*!
  * @brief The string as an array of Unicode characters.
  *
  * The result is valid until the autorelease pool is released. If you want to
@@ -1040,14 +1032,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 - (OFString *)stringByAppendingFormat: (OFConstantString *)format
 			    arguments: (va_list)arguments;
-
-/*!
- * @brief Creates a new string by appending a URL path component.
- *
- * @param component The URL path component to append
- * @return A new, autoreleased OFString with the URL path component appended
- */
-- (OFString *)stringByAppendingURLPathComponent: (OFString *)component;
 
 /*!
  * @brief Creates a new string by prepending another string.

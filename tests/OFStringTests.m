@@ -591,17 +591,6 @@ static uint16_t sutf16str[] = {
 	    [[is stringByAppendingPathComponent: @"baz"] isEqual: s[1]])
 #endif
 
-	s[0] = [mutableStringClass stringWithString: @"foo"];
-	[s[0] appendString: @"/"];
-	[s[0] appendString: @"bar"];
-	s[1] = [mutableStringClass stringWithString: s[0]];
-	[s[1] appendString: @"/"];
-	is = [stringClass stringWithString: s[1]];
-	[s[1] appendString: @"baz"];
-	TEST(@"-[stringByAppendingURLPathComponent:]",
-	    [[s[0] stringByAppendingURLPathComponent: @"baz"] isEqual: s[1]] &&
-	    [[is stringByAppendingURLPathComponent: @"baz"] isEqual: s[1]])
-
 	TEST(@"-[hasPrefix:]", [C(@"foobar") hasPrefix: @"foo"] &&
 	    ![C(@"foobar") hasPrefix: @"foobar0"])
 

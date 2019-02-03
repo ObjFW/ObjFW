@@ -435,13 +435,6 @@ struct {
 	return [self stringByAppendingPathComponent: component];
 }
 
-- (OFString *)stringByAppendingURLPathComponent: (OFString *)component
-{
-	[self finishInitialization];
-
-	return [self stringByAppendingURLPathComponent: component];
-}
-
 - (OFString *)stringByPrependingString: (OFString *)string
 {
 	[self finishInitialization];

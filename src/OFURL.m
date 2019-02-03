@@ -1139,6 +1139,73 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	return ret;
 }
 
+- (OFURL *)URLByStandardizingPath
+{
+	void *pool;
+	OFMutableArray OF_GENERIC(OFString *) *array;
+	bool done = false, endsWithEmpty;
+	OFString *path;
+	OFMutableURL *URL;
+
+	if (_URLEncodedPath == nil)
+		return self;
+
+	pool = objc_autoreleasePoolPush();
+
+	array = [[[_URLEncodedPath
+	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
+
+	if ([[array firstObject] length] != 0)
+		@throw [OFInvalidFormatException exception];
+
+	endsWithEmpty = ([[array lastObject] length] == 0);
+
+	while (!done) {
+		size_t length = [array count];
+
+		done = true;
+
+		for (size_t i = 0; i < length; i++) {
+			id object = [array objectAtIndex: i];
+			id parent =
+			    (i > 0 ? [array objectAtIndex: i - 1] : nil);
+
+			if ([object isEqual: @"."] || [object length] == 0) {
+				[array removeObjectAtIndex: i];
+
+				done = false;
+				break;
+			}
+
+			if ([object isEqual: @".."] && parent != nil &&
+			    ![parent isEqual: @".."]) {
+				[array removeObjectsInRange:
+				    of_range(i - 1, 2)];
+
+				done = false;
+				break;
+			}
+		}
+	}
+
+	[array insertObject: @""
+		    atIndex: 0];
+	if (endsWithEmpty)
+		[array addObject: @""];
+
+	path = [array componentsJoinedByString: @"/"];
+	if ([path length] == 0)
+		path = @"/";
+
+	URL = [[self mutableCopy] autorelease];
+	[URL setURLEncodedPath: path];
+	[URL makeImmutable];
+
+	[URL retain];
+	objc_autoreleasePoolPop(pool);
+	return [URL autorelease];
+}
+
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@>",

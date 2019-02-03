@@ -142,6 +142,11 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *string;
 
+/*!
+ * @brief The URL with relative sub paths resolved.
+ */
+@property (readonly, nonatomic) OFURL *URLByStandardizingPath;
+
 #ifdef OF_HAVE_FILES
 /*!
  * @brief The local file system representation for a file URL.
