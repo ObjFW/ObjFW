@@ -125,6 +125,37 @@ Windows
   If everything was successfully, you can now build projects using ObjFW for
   Windows using the normal `objfw-compile` and friends.
 
+Nintendo DS, Nintendo 3DS and Wii
+---------------------------------
+
+  Download and install [devkitPro](https://devkitpro.org/wiki/Getting_Started).
+
+### Nintendo DS
+
+  Follow the normal process, but instead of `./configure` run:
+
+    $ ./configure --host=arm-none-eabi --with-nds
+
+### Nintendo 3DS
+
+  Follow the normal process, but instead of `./configure` run:
+
+    $ ./configure --host=arm-none-eabi --with-3ds
+
+### Wii
+
+  Follow the normal process, but instead of `./configure` run:
+
+    $ ./configure --host=powerpc-eabi --with-wii
+
+Amiga
+-----
+
+  Install [amiga-gcc](https://github.com/bebbo/amiga-gcc). Then follow the
+  normal process, but instead of `./configure` run:
+
+    $ ./configure --host=m68k-amigaos
+
 
 Bugs and feature requests
 =========================
