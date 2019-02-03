@@ -157,6 +157,29 @@ Amiga
     $ ./configure --host=m68k-amigaos
 
 
+Writing your first application with ObjFW
+=========================================
+
+  To create your first, empty application, you can use `objfw-new`:
+
+    $ objfw-new app MyFirstApp
+
+  This creates a file `MyFirstApp.m`. The `-[applicationDidFinishLaunching]`
+  method is called as soon as ObjFW finished all initialization. Use this as
+  the entry point to your own code. For example, you could add the following
+  line there to create a "Hello World":
+
+    [of_stdout writeLine: @"Hello World!"];
+
+  You can compile your new app using `objfw-compile`:
+
+    $ objfw-compile -o MyFirstApp MyFirstApp.m
+
+  `objfw-compile` is a tool that allows building applications and libraries
+  using ObjFW without needing a full-blown build system. If you want to use
+  your own build system, you can get the necessary flags from `objfw-config`.
+
+
 Bugs and feature requests
 =========================
 
