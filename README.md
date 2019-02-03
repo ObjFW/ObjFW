@@ -7,6 +7,28 @@ want to be portable.
 See https://heap.zone/objfw for more information.
 
 
+Table of Contents
+=================
+
+ * [Installation](#installation)
+   * [macOS and iOS](#macos-and-ios)
+     * [Building as a framework](#building-as-a-framework)
+     * [Using the macOS or iOS framework in Xcode](#using-the-macos-or-ios-framework-in-xcode)
+   * [Windows](#windows)
+     * [Getting MSYS2](#getting-msys2)
+     * [Updating MSYS2](#updating-msys2)
+     * [Installing MinGW-w64 using MSYS2](#installing-mingw-w64-using-msys2)
+     * [Getting, building and installing ObjFW](#getting-building-and-installing-objfw)
+   * [Nintendo DS, Nintendo 3DS and Wii](#nintendo-ds-nintendo-3ds-and-wii)
+     * [Nintendo DS](#nintendo-ds)
+     * [Nintendo 3DS](#nintendo-3ds)
+     * [Wii](#wii)
+   * [Amiga](#amiga)
+ * [Writing your first application with ObjFW](#writing-your-first-application-with-objfw)
+ * [Bugs and feature requests](#bugs-and-feature-requests)
+ * [Commercial use](#commercial-use)
+
+
 Installation
 ============
 
@@ -61,7 +83,7 @@ Windows
 
 ### Getting MSYS2
 
-  The first thing to install is [MSYS2](https://msys2.github.io) to provide a
+  The first thing to install is [MSYS2](https://www.msys2.org) to provide a
   basic UNIX-like environment for Windows. Unfortunately, the binaries are not
   signed and there is no way to verify their integrity, so only download this
   from a trusted connection. Everything else you will download using MSYS2
