@@ -78,7 +78,13 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 		     relativeToURL: [OFURL URLWithString: @"http://h/qux/?x"]]
 	    string] isEqual: @"http://h/qux/foo/bar"] &&
 	    [[[OFURL URLWithString: @"http://foo/?q"
-		     relativeToURL: u1] string] isEqual: @"http://foo/?q"])
+		     relativeToURL: u1] string] isEqual: @"http://foo/?q"] &&
+	    [[[OFURL URLWithString: @"foo"
+		     relativeToURL: [OFURL URLWithString: @"http://foo/bar"]]
+	    string] isEqual: @"http://foo/foo"] &&
+	    [[[OFURL URLWithString: @"foo"
+		     relativeToURL: [OFURL URLWithString: @"http://foo"]]
+	    string] isEqual: @"http://foo/foo"])
 
 	EXPECT_EXCEPTION(
 	    @"+[URLWithString:relativeToURL:] fails with invalid characters #1",

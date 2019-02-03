@@ -647,19 +647,36 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedPath = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 		else {
-			OFString *path, *s;
-
-			path = [OFString stringWithUTF8String: UTF8String];
+			OFString *relativePath =
+			    [OFString stringWithUTF8String: UTF8String];
 
 			if ([URL->_URLEncodedPath hasSuffix: @"/"])
-				s = [URL->_URLEncodedPath
-				    stringByAppendingString: path];
-			else
-				s = [OFString stringWithFormat:
-				    @"%@/../%@", URL->_URLEncodedPath, path];
+				_URLEncodedPath = [[URL->_URLEncodedPath
+				    stringByAppendingString: relativePath]
+				    copy];
+			else {
+				OFMutableString *path = [OFMutableString
+				    stringWithString:
+				    (URL->_URLEncodedPath != nil
+				    ? URL->_URLEncodedPath
+				    : @"/")];
+				of_range_t range = [path
+				    rangeOfString: @"/"
+					  options: OF_STRING_SEARCH_BACKWARDS];
 
-			_URLEncodedPath =
-			    [[s stringByStandardizingURLPath] copy];
+				if (range.location == OF_NOT_FOUND)
+					@throw [OFInvalidFormatException
+					    exception];
+
+				range.location++;
+				range.length = [path length] - range.location;
+
+				[path replaceCharactersInRange: range
+						    withString: relativePath];
+				[path makeImmutable];
+
+				_URLEncodedPath = [path copy];
+			}
 		}
 
 		of_url_verify_escaped(_URLEncodedPath,
