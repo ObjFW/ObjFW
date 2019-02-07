@@ -60,7 +60,7 @@ objc_hashtable_new(uint32_t (*hash)(const void *),
 {
 	struct objc_hashtable *table;
 
-	if ((table = malloc(sizeof(struct objc_hashtable))) == NULL)
+	if ((table = malloc(sizeof(*table))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate hash table!");
 
 	table->hash = hash;

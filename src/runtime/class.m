@@ -726,7 +726,7 @@ addMethod(Class class, SEL selector, IMP implementation,
 	struct objc_method_list *methodList;
 
 	/* FIXME: We need a way to free this at objc_exit() */
-	if ((methodList = malloc(sizeof(struct objc_method_list))) == NULL)
+	if ((methodList = malloc(sizeof(*methodList))) == NULL)
 		OBJC_ERROR("Not enough memory to replace method!");
 
 	methodList->next = class->methodList;

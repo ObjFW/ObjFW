@@ -31,11 +31,11 @@ static struct objc_dtable_level3 *emptyLevel3 = NULL;
 static void
 init(void)
 {
-	if ((emptyLevel2 = malloc(sizeof(struct objc_dtable_level2))) == NULL)
+	if ((emptyLevel2 = malloc(sizeof(*emptyLevel2))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate dtable!");
 
 #ifdef OF_SELUID24
-	if ((emptyLevel3 = malloc(sizeof(struct objc_dtable_level3))) == NULL)
+	if ((emptyLevel3 = malloc(sizeof(*emptyLevel3))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate dtable!");
 #endif
 
@@ -63,7 +63,7 @@ objc_dtable_new(void)
 		init();
 #endif
 
-	if ((DTable = malloc(sizeof(struct objc_dtable))) == NULL)
+	if ((DTable = malloc(sizeof(*DTable))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate dtable!");
 
 	for (uint_fast16_t i = 0; i < 256; i++)
@@ -127,8 +127,7 @@ objc_dtable_set(struct objc_dtable *DTable, uint32_t idx, IMP implementation)
 #endif
 
 	if (DTable->buckets[i] == emptyLevel2) {
-		struct objc_dtable_level2 *level2 =
-		    malloc(sizeof(struct objc_dtable_level2));
+		struct objc_dtable_level2 *level2 = malloc(sizeof(*level2));
 
 		if (level2 == NULL)
 			OBJC_ERROR("Not enough memory to insert into dtable!");
@@ -145,8 +144,7 @@ objc_dtable_set(struct objc_dtable *DTable, uint32_t idx, IMP implementation)
 
 #ifdef OF_SELUID24
 	if (DTable->buckets[i]->buckets[j] == emptyLevel3) {
-		struct objc_dtable_level3 *level3 =
-		    malloc(sizeof(struct objc_dtable_level3));
+		struct objc_dtable_level3 *level3 = malloc(sizeof(*level3));
 
 		if (level3 == NULL)
 			OBJC_ERROR("Not enough memory to insert into dtable!");
