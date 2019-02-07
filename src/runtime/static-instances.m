@@ -33,13 +33,13 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 
 	/* Check if the class for a static instance became available */
 	for (size_t i = 0; i < staticInstancesCount; i++) {
-		Class cls = objc_lookUpClass(
+		Class class = objc_lookUpClass(
 		    staticInstancesList[i]->className);
 
-		if (cls != Nil) {
+		if (class != Nil) {
 			for (id *instances = staticInstancesList[i]->instances;
 			    *instances != nil; instances++)
-				object_setClass(*instances, cls);
+				object_setClass(*instances, class);
 
 			staticInstancesCount--;
 
@@ -75,12 +75,12 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 		return;
 
 	for (; *staticInstances != NULL; staticInstances++) {
-		Class cls = objc_lookUpClass((*staticInstances)->className);
+		Class class = objc_lookUpClass((*staticInstances)->className);
 
-		if (cls != Nil) {
+		if (class != Nil) {
 			for (id *instances = (*staticInstances)->instances;
 			    *instances != nil; instances++)
-				object_setClass(*instances, cls);
+				object_setClass(*instances, class);
 		} else {
 			staticInstancesList = realloc(staticInstancesList,
 			    sizeof(struct objc_abi_static_instances *) *

@@ -326,9 +326,9 @@ objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 }
 
 void
-objc_registerClassPair(Class cls)
+objc_registerClassPair(Class class)
 {
-	objc_registerClassPair_m68k(cls);
+	objc_registerClassPair_m68k(class);
 }
 
 unsigned int
@@ -344,72 +344,72 @@ objc_copyClassList(unsigned int *length)
 }
 
 bool
-class_isMetaClass(Class cls)
+class_isMetaClass(Class class)
 {
-	return class_isMetaClass_m68k(cls);
+	return class_isMetaClass_m68k(class);
 }
 
 const char *
-class_getName(Class cls)
+class_getName(Class class)
 {
-	return class_getName_m68k(cls);
+	return class_getName_m68k(class);
 }
 
 Class
-class_getSuperclass(Class cls)
+class_getSuperclass(Class class)
 {
-	return class_getSuperclass_m68k(cls);
+	return class_getSuperclass_m68k(class);
 }
 
 unsigned long
-class_getInstanceSize(Class cls)
+class_getInstanceSize(Class class)
 {
-	return class_getInstanceSize_m68k(cls);
+	return class_getInstanceSize_m68k(class);
 }
 
 bool
-class_respondsToSelector(Class cls, SEL selector)
+class_respondsToSelector(Class class, SEL selector)
 {
-	return class_respondsToSelector_m68k(cls, selector);
+	return class_respondsToSelector_m68k(class, selector);
 }
 
 bool
-class_conformsToProtocol(Class cls, Protocol *protocol)
+class_conformsToProtocol(Class class, Protocol *protocol)
 {
-	return class_conformsToProtocol_m68k(cls, protocol);
+	return class_conformsToProtocol_m68k(class, protocol);
 }
 
 IMP
-class_getMethodImplementation(Class cls, SEL selector)
+class_getMethodImplementation(Class class, SEL selector)
 {
-	return class_getMethodImplementation_m68k(cls, selector);
+	return class_getMethodImplementation_m68k(class, selector);
 }
 
 IMP
-class_getMethodImplementation_stret(Class cls, SEL selector)
+class_getMethodImplementation_stret(Class class, SEL selector)
 {
-	return class_getMethodImplementation_stret_m68k(cls, selector);
+	return class_getMethodImplementation_stret_m68k(class, selector);
 }
 
 const char *
-class_getMethodTypeEncoding(Class cls, SEL selector)
+class_getMethodTypeEncoding(Class class, SEL selector)
 {
-	return class_getMethodTypeEncoding_m68k(cls, selector);
+	return class_getMethodTypeEncoding_m68k(class, selector);
 }
 
 bool
-class_addMethod(Class cls, SEL selector, IMP implementation,
+class_addMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	return class_addMethod_m68k(cls, selector, implementation,
+	return class_addMethod_m68k(class, selector, implementation,
 	    typeEncoding);
 }
 
 IMP
-class_replaceMethod(Class cls, SEL selector, IMP implementation,
+class_replaceMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	return class_replaceMethod_m68k(cls, selector, implementation,
+	return class_replaceMethod_m68k(class, selector, implementation,
 	    typeEncoding);
 }
 
@@ -420,9 +420,9 @@ object_getClass(id object)
 }
 
 Class
-object_setClass(id object, Class cls)
+object_setClass(id object, Class class)
 {
-	return object_setClass_m68k(object, cls);
+	return object_setClass_m68k(object, class);
 }
 
 const char *

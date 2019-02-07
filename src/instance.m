@@ -19,83 +19,83 @@
 
 #import "OFObject.h"
 
-static SEL constructSel = NULL;
-static SEL destructSel = NULL;
+static SEL constructSelector = NULL;
+static SEL destructSelector = NULL;
 
 static bool
-callConstructors(Class cls, id obj)
+callConstructors(Class class, id object)
 {
-	Class super = class_getSuperclass(cls);
+	Class super = class_getSuperclass(class);
 	id (*construct)(id, SEL);
 	id (*last)(id, SEL);
 
 	if (super != nil)
-		if (!callConstructors(super, obj))
+		if (!callConstructors(super, object))
 			return false;
 
-	if (constructSel == NULL)
-		constructSel = sel_registerName(".cxx_construct");
+	if (constructSelector == NULL)
+		constructSelector = sel_registerName(".cxx_construct");
 
-	if (!class_respondsToSelector(cls, constructSel))
+	if (!class_respondsToSelector(class, constructSelector))
 		return true;
 
 	construct = (id (*)(id, SEL))
-	    class_getMethodImplementation(cls, constructSel);
+	    class_getMethodImplementation(class, constructSelector);
 	last = (id (*)(id, SEL))
-	    class_getMethodImplementation(super, constructSel);
+	    class_getMethodImplementation(super, constructSelector);
 
 	if (construct == last)
 		return true;
 
-	return (construct(obj, constructSel) != nil);
+	return (construct(object, constructSelector) != nil);
 }
 
 id
-objc_constructInstance(Class cls, void *bytes)
+objc_constructInstance(Class class, void *bytes)
 {
-	id obj = (id)bytes;
+	id object = (id)bytes;
 
-	if (cls == Nil || bytes == NULL)
+	if (class == Nil || bytes == NULL)
 		return nil;
 
-	object_setClass(obj, cls);
+	object_setClass(object, class);
 
-	if (!callConstructors(cls, obj))
+	if (!callConstructors(class, object))
 		return nil;
 
-	return obj;
+	return object;
 }
 
 void *
-objc_destructInstance(id obj)
+objc_destructInstance(id object)
 {
-	Class cls;
+	Class class;
 	void (*last)(id, SEL) = NULL;
 
-	if (obj == nil)
+	if (object == nil)
 		return NULL;
 
 #ifdef OF_OBJFW_RUNTIME
-	objc_zero_weak_references(obj);
+	objc_zero_weak_references(object);
 #endif
 
-	if (destructSel == NULL)
-		destructSel = sel_registerName(".cxx_destruct");
+	if (destructSelector == NULL)
+		destructSelector = sel_registerName(".cxx_destruct");
 
-	for (cls = object_getClass(obj); cls != Nil;
-	    cls = class_getSuperclass(cls)) {
+	for (class = object_getClass(object); class != Nil;
+	    class = class_getSuperclass(class)) {
 		void (*destruct)(id, SEL);
 
-		if (class_respondsToSelector(cls, destructSel)) {
+		if (class_respondsToSelector(class, destructSelector)) {
 			if ((destruct = (void (*)(id, SEL))
-			    class_getMethodImplementation(cls,
-			    destructSel)) != last)
-				destruct(obj, destructSel);
+			    class_getMethodImplementation(class,
+			    destructSelector)) != last)
+				destruct(object, destructSelector);
 
 			last = destruct;
 		} else
 			break;
 	}
 
-	return obj;
+	return object;
 }

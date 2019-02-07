@@ -73,7 +73,7 @@ objc_dtable_new(void)
 }
 
 void
-objc_dtable_copy(struct objc_dtable *dst, struct objc_dtable *src)
+objc_dtable_copy(struct objc_dtable *dest, struct objc_dtable *src)
 {
 	for (uint_fast16_t i = 0; i < 256; i++) {
 		if (src->buckets[i] == emptyLevel2)
@@ -85,36 +85,37 @@ objc_dtable_copy(struct objc_dtable *dst, struct objc_dtable *src)
 				continue;
 
 			for (uint_fast16_t k = 0; k < 256; k++) {
-				IMP obj;
+				IMP implementation;
 				uint32_t idx;
 
-				obj = src->buckets[i]->buckets[j]->buckets[k];
+				implementation =
+				    src->buckets[i]->buckets[j]->buckets[k];
 
-				if (obj == (IMP)0)
+				if (implementation == (IMP)0)
 					continue;
 
 				idx = (uint32_t)
 				    (((uint32_t)i << 16) | (j << 8) | k);
-				objc_dtable_set(dst, idx, obj);
+				objc_dtable_set(dest, idx, implementation);
 			}
 		}
 #else
 		for (uint_fast16_t j = 0; j < 256; j++) {
-			IMP obj = src->buckets[i]->buckets[j];
+			IMP implementation = src->buckets[i]->buckets[j];
 			uint32_t idx;
 
-			if (obj == (IMP)0)
+			if (implementation == (IMP)0)
 				continue;
 
 			idx = (uint32_t)((i << 8) | j);
-			objc_dtable_set(dst, idx, obj);
+			objc_dtable_set(dest, idx, implementation);
 		}
 #endif
 	}
 }
 
 void
-objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
+objc_dtable_set(struct objc_dtable *DTable, uint32_t idx, IMP implementation)
 {
 #ifdef OF_SELUID24
 	uint8_t i = idx >> 16;
@@ -125,7 +126,7 @@ objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
 	uint8_t j = idx;
 #endif
 
-	if (dtable->buckets[i] == emptyLevel2) {
+	if (DTable->buckets[i] == emptyLevel2) {
 		struct objc_dtable_level2 *level2 =
 		    malloc(sizeof(struct objc_dtable_level2));
 
@@ -139,11 +140,11 @@ objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
 			level2->buckets[l] = (IMP)0;
 #endif
 
-		dtable->buckets[i] = level2;
+		DTable->buckets[i] = level2;
 	}
 
 #ifdef OF_SELUID24
-	if (dtable->buckets[i]->buckets[j] == emptyLevel3) {
+	if (DTable->buckets[i]->buckets[j] == emptyLevel3) {
 		struct objc_dtable_level3 *level3 =
 		    malloc(sizeof(struct objc_dtable_level3));
 
@@ -153,32 +154,32 @@ objc_dtable_set(struct objc_dtable *dtable, uint32_t idx, IMP obj)
 		for (uint_fast16_t l = 0; l < 256; l++)
 			level3->buckets[l] = (IMP)0;
 
-		dtable->buckets[i]->buckets[j] = level3;
+		DTable->buckets[i]->buckets[j] = level3;
 	}
 
-	dtable->buckets[i]->buckets[j]->buckets[k] = obj;
+	DTable->buckets[i]->buckets[j]->buckets[k] = implementation;
 #else
-	dtable->buckets[i]->buckets[j] = obj;
+	DTable->buckets[i]->buckets[j] = implementation;
 #endif
 }
 
 void
-objc_dtable_free(struct objc_dtable *dtable)
+objc_dtable_free(struct objc_dtable *DTable)
 {
 	for (uint_fast16_t i = 0; i < 256; i++) {
-		if (dtable->buckets[i] == emptyLevel2)
+		if (DTable->buckets[i] == emptyLevel2)
 			continue;
 
 #ifdef OF_SELUID24
 		for (uint_fast16_t j = 0; j < 256; j++)
-			if (dtable->buckets[i]->buckets[j] != emptyLevel3)
-				free(dtable->buckets[i]->buckets[j]);
+			if (DTable->buckets[i]->buckets[j] != emptyLevel3)
+				free(DTable->buckets[i]->buckets[j]);
 #endif
 
-		free(dtable->buckets[i]);
+		free(DTable->buckets[i]);
 	}
 
-	free(dtable);
+	free(DTable);
 }
 
 void

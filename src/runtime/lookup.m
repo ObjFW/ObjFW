@@ -49,14 +49,14 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 	    object_getClass(object)->info & OBJC_CLASS_INFO_METACLASS;
 
 	if (!(object_getClass(object)->info & OBJC_CLASS_INFO_INITIALIZED)) {
-		Class cls = (isClass
+		Class class = (isClass
 		    ? (Class)object : object_getClass(object));
 
-		objc_initialize_class(cls);
+		objc_initialize_class(class);
 
-		if (!(cls->info & OBJC_CLASS_INFO_SETUP))
+		if (!(class->info & OBJC_CLASS_INFO_SETUP))
 			OBJC_ERROR("Could not dispatch message for incomplete "
-			    "class %s!", cls->name);
+			    "class %s!", class_getName(class));
 
 		/*
 		 * We don't need to handle the case that super was called.
@@ -69,13 +69,13 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 
 	/* Try resolveClassMethod: / resolveInstanceMethod: */
 	if (class_isMetaClass(object_getClass(object))) {
-		Class cls = object_getClass(object);
+		Class class = object_getClass(object);
 
-		if (class_respondsToSelector(cls,
+		if (class_respondsToSelector(class,
 		    @selector(resolveClassMethod:)) &&
 		    [object resolveClassMethod: selector]) {
-			if (!class_respondsToSelector(cls, selector))
-				OBJC_ERROR("[%s resolveClassMethod: %s] "
+			if (!class_respondsToSelector(class, selector))
+				OBJC_ERROR("+[%s resolveClassMethod: %s] "
 				    "returned true without adding the method!",
 				    class_getName(object),
 				    sel_getName(selector));
@@ -83,14 +83,14 @@ commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
 			return lookup(object, selector);
 		}
 	} else {
-		Class cls = object_getClass(object);
-		Class metaclass = object_getClass(cls);
+		Class class = object_getClass(object);
+		Class metaclass = object_getClass(class);
 
 		if (class_respondsToSelector(metaclass,
 		    @selector(resolveInstanceMethod:)) &&
-		    [cls resolveInstanceMethod: selector]) {
-			if (!class_respondsToSelector(cls, selector))
-				OBJC_ERROR("[%s resolveInstanceMethod: %s] "
+		    [class resolveInstanceMethod: selector]) {
+			if (!class_respondsToSelector(class, selector))
+				OBJC_ERROR("+[%s resolveInstanceMethod: %s] "
 				    "returned true without adding the method!",
 				    class_getName(object_getClass(object)),
 				    sel_getName(selector));
@@ -129,12 +129,12 @@ objc_setForwardHandler(IMP forward, IMP stretForward)
 }
 
 bool
-class_respondsToSelector(Class cls, SEL selector)
+class_respondsToSelector(Class class, SEL selector)
 {
-	if (cls == Nil)
+	if (class == Nil)
 		return false;
 
-	return (objc_dtable_get(cls->DTable,
+	return (objc_dtable_get(class->DTable,
 	    (uint32_t)selector->UID) != (IMP)0);
 }
 
@@ -183,7 +183,7 @@ commonSuperLookup(struct objc_super *super, SEL selector,
 	if (super->self == nil)
 		return (IMP)nilMethod;
 
-	imp = objc_dtable_get(super->cls->DTable, (uint32_t)selector->UID);
+	imp = objc_dtable_get(super->class->DTable, (uint32_t)selector->UID);
 
 	if (imp == (IMP)0)
 		return notFound(super->self, selector);

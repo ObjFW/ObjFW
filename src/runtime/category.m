@@ -47,7 +47,7 @@ static void
 registerCategory(struct objc_abi_category *category)
 {
 	struct objc_abi_category **categories;
-	Class cls = objc_classname_to_class(category->className, false);
+	Class class = objc_classname_to_class(category->className, false);
 
 	if (categoriesMap == NULL)
 		categoriesMap = objc_hashtable_new(
@@ -73,9 +73,9 @@ registerCategory(struct objc_abi_category *category)
 		objc_hashtable_set(categoriesMap, category->className,
 		    newCategories);
 
-		if (cls != Nil && cls->info & OBJC_CLASS_INFO_SETUP) {
-			objc_update_dtable(cls);
-			objc_update_dtable(cls->isa);
+		if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
+			objc_update_dtable(class);
+			objc_update_dtable(class->isa);
 		}
 
 		return;
@@ -90,9 +90,9 @@ registerCategory(struct objc_abi_category *category)
 	categories[1] = NULL;
 	objc_hashtable_set(categoriesMap, category->className, categories);
 
-	if (cls != Nil && cls->info & OBJC_CLASS_INFO_SETUP) {
-		objc_update_dtable(cls);
-		objc_update_dtable(cls->isa);
+	if (class != Nil && class->info & OBJC_CLASS_INFO_SETUP) {
+		objc_update_dtable(class);
+		objc_update_dtable(class->isa);
 	}
 }
 
@@ -109,13 +109,13 @@ objc_register_all_categories(struct objc_abi_symtab *symtab)
 }
 
 struct objc_category **
-objc_categories_for_class(Class cls)
+objc_categories_for_class(Class class)
 {
 	if (categoriesMap == NULL)
 		return NULL;
 
 	return (struct objc_category **)objc_hashtable_get(categoriesMap,
-	    cls->name);
+	    class->name);
 }
 
 void

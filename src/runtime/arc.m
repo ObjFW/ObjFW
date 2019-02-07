@@ -38,15 +38,15 @@ static of_spinlock_t spinlock;
 #endif
 
 static uint32_t
-hash(const void *obj)
+hash(const void *object)
 {
-	return (uint32_t)(uintptr_t)obj;
+	return (uint32_t)(uintptr_t)object;
 }
 
 static bool
-equal(const void *obj1, const void *obj2)
+equal(const void *object1, const void *object2)
 {
-	return (obj1 == obj2);
+	return (object1 == object2);
 }
 
 OF_CONSTRUCTOR()

@@ -103,8 +103,8 @@ struct objc_abi_class _NSConcreteMallocBlock = {
 
 static struct {
 	unsigned long unknown;
-	struct objc_abi_selector *sel_refs;
-	uint16_t cls_def_cnt, cat_def_cnt;
+	struct objc_abi_selector *selectorRefs;
+	uint16_t classDefsCount, categoryDefsCount;
 	void *defs[4];
 } symtab = {
 	0, NULL, 3, 0,
@@ -310,46 +310,46 @@ _Block_object_assign(void *dst_, const void *src_, const int flags_)
 }
 
 void
-_Block_object_dispose(const void *obj_, const int flags_)
+_Block_object_dispose(const void *object_, const int flags_)
 {
 	const int flags = flags_ & (OF_BLOCK_FIELD_IS_BLOCK |
 	    OF_BLOCK_FIELD_IS_OBJECT | OF_BLOCK_FIELD_IS_BYREF);
 
-	if (obj_ == NULL)
+	if (object_ == NULL)
 		return;
 
 	switch (flags) {
 	case OF_BLOCK_FIELD_IS_BLOCK:
-		_Block_release(obj_);
+		_Block_release(object_);
 		break;
 	case OF_BLOCK_FIELD_IS_OBJECT:
 		if (!(flags_ & OF_BLOCK_BYREF_CALLER))
-			[(id)obj_ release];
+			[(id)object_ release];
 		break;
 	case OF_BLOCK_FIELD_IS_BYREF:;
-		of_block_byref_t *obj = (of_block_byref_t *)obj_;
+		of_block_byref_t *object = (of_block_byref_t *)object_;
 
-		obj = obj->forwarding;
+		object = object->forwarding;
 
 #ifdef OF_HAVE_ATOMIC_OPS
-		if ((of_atomic_int_dec(&obj->flags) &
+		if ((of_atomic_int_dec(&object->flags) &
 		    OF_BLOCK_REFCOUNT_MASK) == 0) {
-			if (obj->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-				obj->byref_dispose(obj);
+			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
+				object->byref_dispose(object);
 
-			free(obj);
+			free(object);
 		}
 #else
-		unsigned hash = SPINLOCK_HASH(obj);
+		unsigned hash = SPINLOCK_HASH(object);
 
 		OF_ENSURE(of_spinlock_lock(&byrefSpinlocks[hash]));
-		if ((--obj->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
+		if ((--object->flags & OF_BLOCK_REFCOUNT_MASK) == 0) {
 			OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
 
-			if (obj->flags & OF_BLOCK_HAS_COPY_DISPOSE)
-				obj->byref_dispose(obj);
+			if (object->flags & OF_BLOCK_HAS_COPY_DISPOSE)
+				object->byref_dispose(object);
 
-			free(obj);
+			free(object);
 		}
 		OF_ENSURE(of_spinlock_unlock(&byrefSpinlocks[hash]));
 #endif

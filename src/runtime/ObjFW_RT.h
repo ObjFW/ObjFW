@@ -108,7 +108,11 @@ struct objc_selector {
 
 struct objc_super {
 	id __unsafe_unretained _Nullable self;
-	Class _Nonnull cls;
+#ifdef __cplusplus
+	Class _Nonnull class_;
+#else
+	Class _Nonnull class;
+#endif
 };
 
 struct objc_method {
@@ -213,32 +217,33 @@ extern const char *_Nonnull sel_getName(SEL _Nonnull selector);
 extern bool sel_isEqual(SEL _Nonnull selector1, SEL _Nonnull selector2);
 extern Class _Nonnull objc_allocateClassPair(Class _Nullable superclass,
     const char *_Nonnull name, size_t extraBytes);
-extern void objc_registerClassPair(Class _Nonnull cls);
+extern void objc_registerClassPair(Class _Nonnull class_);
 extern unsigned int objc_getClassList(Class _Nonnull *_Nullable buffer,
     unsigned int count);
 extern Class _Nonnull *_Nonnull objc_copyClassList(
     unsigned int *_Nullable length);
-extern bool class_isMetaClass(Class _Nullable cls);
-extern const char *_Nullable class_getName(Class _Nullable cls);
-extern Class _Nullable class_getSuperclass(Class _Nullable cls);
-extern unsigned long class_getInstanceSize(Class _Nullable cls);
-extern bool class_respondsToSelector(Class _Nullable cls,
+extern bool class_isMetaClass(Class _Nullable class_);
+extern const char *_Nullable class_getName(Class _Nullable class_);
+extern Class _Nullable class_getSuperclass(Class _Nullable class_);
+extern unsigned long class_getInstanceSize(Class _Nullable class_);
+extern bool class_respondsToSelector(Class _Nullable class_,
     SEL _Nonnull selector);
-extern bool class_conformsToProtocol(Class _Nullable cls,
+extern bool class_conformsToProtocol(Class _Nullable class_,
     Protocol *_Nonnull protocol);
-extern IMP _Nullable class_getMethodImplementation(Class _Nullable cls,
+extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
-extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable cls,
+extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
-extern const char *_Nullable class_getMethodTypeEncoding(Class _Nullable cls,
+extern const char *_Nullable class_getMethodTypeEncoding(Class _Nullable class_,
     SEL _Nonnull selector);
-extern bool class_addMethod(Class _Nonnull cls, SEL _Nonnull selector,
+extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);
-extern IMP _Nullable class_replaceMethod(Class _Nonnull cls,
+extern IMP _Nullable class_replaceMethod(Class _Nonnull class_,
     SEL _Nonnull selector, IMP _Nonnull implementation,
     const char *_Nullable typeEncoding);
 extern Class _Nullable object_getClass(id _Nullable object);
-extern Class _Nullable object_setClass(id _Nullable object, Class _Nonnull cls);
+extern Class _Nullable object_setClass(id _Nullable object,
+    Class _Nonnull class_);
 extern const char *_Nullable object_getClassName(id _Nullable object);
 extern const char *_Nonnull protocol_getName(Protocol *_Nonnull protocol);
 extern bool protocol_isEqual(Protocol *_Nonnull protocol1,

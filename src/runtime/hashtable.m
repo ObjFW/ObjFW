@@ -49,9 +49,9 @@ objc_hash_string(const void *str_)
 }
 
 bool
-objc_equal_string(const void *obj1, const void *obj2)
+objc_equal_string(const void *ptr1, const void *ptr2)
 {
-	return (strcmp(obj1, obj2) == 0);
+	return (strcmp(ptr1, ptr2) == 0);
 }
 
 struct objc_hashtable *

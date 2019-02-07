@@ -394,9 +394,9 @@ objc_allocateClassPair_m68k(void)
 void __saveds
 objc_registerClassPair_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 
-	objc_registerClassPair(cls);
+	objc_registerClassPair(class);
 }
 
 unsigned int __saveds
@@ -419,100 +419,101 @@ objc_copyClassList_m68k(void)
 bool __saveds
 class_isMetaClass_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 
-	return class_isMetaClass(cls);
+	return class_isMetaClass(class);
 }
 
 const char *__saveds
 class_getName_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 
-	return class_getName(cls);
+	return class_getName(class);
 }
 
 Class __saveds
 class_getSuperclass_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 
-	return class_getSuperclass(cls);
+	return class_getSuperclass(class);
 }
 
 unsigned long __saveds
 class_getInstanceSize_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 
-	return class_getInstanceSize(cls);
+	return class_getInstanceSize(class);
 }
 
 bool __saveds
 class_respondsToSelector_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(SEL, selector, a1)
 
-	return class_respondsToSelector(cls, selector);
+	return class_respondsToSelector(class, selector);
 }
 
 bool __saveds
 class_conformsToProtocol_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(Protocol *, protocol, a1)
 
-	return class_conformsToProtocol(cls, protocol);
+	return class_conformsToProtocol(class, protocol);
 }
 
 IMP __saveds
 class_getMethodImplementation_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(SEL, selector, a1)
 
-	return class_getMethodImplementation(cls, selector);
+	return class_getMethodImplementation(class, selector);
 }
 
 IMP __saveds
 class_getMethodImplementation_stret_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(SEL, selector, a1)
 
-	return class_getMethodImplementation_stret(cls, selector);
+	return class_getMethodImplementation_stret(class, selector);
 }
 
 const char *__saveds
 class_getMethodTypeEncoding_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(SEL, selector, a1)
 
-	return class_getMethodTypeEncoding(cls, selector);
+	return class_getMethodTypeEncoding(class, selector);
 }
 
 bool __saveds
 class_addMethod_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(SEL, selector, a1)
 	OBJC_M68K_ARG(IMP, implementation, a2)
 	OBJC_M68K_ARG(const char *, typeEncoding, a3)
 
-	return class_addMethod(cls, selector, implementation, typeEncoding);
+	return class_addMethod(class, selector, implementation, typeEncoding);
 }
 
 IMP __saveds
 class_replaceMethod_m68k(void)
 {
-	OBJC_M68K_ARG(Class, cls, a0)
+	OBJC_M68K_ARG(Class, class, a0)
 	OBJC_M68K_ARG(SEL, selector, a1)
 	OBJC_M68K_ARG(IMP, implementation, a2)
 	OBJC_M68K_ARG(const char *, typeEncoding, a3)
 
-	return class_replaceMethod(cls, selector, implementation, typeEncoding);
+	return class_replaceMethod(class, selector, implementation,
+	    typeEncoding);
 }
 
 Class __saveds
@@ -527,9 +528,9 @@ Class __saveds
 object_setClass_m68k(void)
 {
 	OBJC_M68K_ARG(id, object, a0)
-	OBJC_M68K_ARG(Class, cls, a1)
+	OBJC_M68K_ARG(Class, class, a1)
 
-	return object_setClass(object, cls);
+	return object_setClass(object, class);
 }
 
 const char *__saveds

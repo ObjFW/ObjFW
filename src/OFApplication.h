@@ -28,12 +28,12 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFSandbox;
 @class OFString;
 
-#define OF_APPLICATION_DELEGATE(cls)					\
+#define OF_APPLICATION_DELEGATE(class_)					\
 	int								\
 	main(int argc, char *argv[])					\
 	{								\
 		return of_application_main(&argc, &argv,		\
-		    (cls *)[[cls alloc] init]);				\
+		    (class_ *)[[class_ alloc] init]);			\
 	}
 
 #ifdef OF_HAVE_PLEDGE

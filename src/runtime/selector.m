@@ -41,9 +41,9 @@ static void **freeList = NULL;
 static size_t freeListCount = 0;
 
 void
-objc_register_selector(struct objc_abi_selector *sel)
+objc_register_selector(struct objc_abi_selector *rawSelector)
 {
-	struct objc_selector *rsel;
+	struct objc_selector *selector;
 	const char *name;
 
 	if (selectorsCount > SEL_MAX)
@@ -52,67 +52,69 @@ objc_register_selector(struct objc_abi_selector *sel)
 	if (selectors == NULL)
 		selectors = objc_hashtable_new(
 		    objc_hash_string, objc_equal_string, 2);
-	else if ((rsel = objc_hashtable_get(selectors, sel->name)) != NULL) {
-		((struct objc_selector *)sel)->UID = rsel->UID;
+	else if ((selector = objc_hashtable_get(selectors,
+	    rawSelector->name)) != NULL) {
+		((struct objc_selector *)rawSelector)->UID = selector->UID;
 		return;
 	}
 
 	if (selectorNames == NULL)
 		selectorNames = objc_sparsearray_new(SEL_SIZE);
 
-	name = sel->name;
-	rsel = (struct objc_selector *)sel;
-	rsel->UID = selectorsCount++;
+	name = rawSelector->name;
+	selector = (struct objc_selector *)rawSelector;
+	selector->UID = selectorsCount++;
 
-	objc_hashtable_set(selectors, name, rsel);
-	objc_sparsearray_set(selectorNames, (uint32_t)rsel->UID, (void *)name);
+	objc_hashtable_set(selectors, name, selector);
+	objc_sparsearray_set(selectorNames, (uint32_t)selector->UID,
+	    (void *)name);
 }
 
 SEL
 sel_registerName(const char *name)
 {
-	const struct objc_abi_selector *rsel;
-	struct objc_abi_selector *sel;
+	struct objc_abi_selector *rawSelector;
 
 	objc_global_mutex_lock();
 
 	if (selectors != NULL &&
-	    (rsel = objc_hashtable_get(selectors, name)) != NULL) {
+	    (rawSelector= objc_hashtable_get(selectors, name)) != NULL) {
 		objc_global_mutex_unlock();
-		return (SEL)rsel;
+		return (SEL)rawSelector;
 	}
 
-	if ((sel = malloc(sizeof(struct objc_abi_selector))) == NULL)
+	if ((rawSelector = malloc(sizeof(*rawSelector))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	if ((sel->name = of_strdup(name)) == NULL)
+	if ((rawSelector->name = of_strdup(name)) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	sel->typeEncoding = NULL;
+	rawSelector->typeEncoding = NULL;
 
 	if ((freeList = realloc(freeList,
 	    sizeof(void *) * (freeListCount + 2))) == NULL)
 		OBJC_ERROR("Not enough memory to allocate selector!");
 
-	freeList[freeListCount++] = sel;
-	freeList[freeListCount++] = (char *)sel->name;
+	freeList[freeListCount++] = rawSelector;
+	freeList[freeListCount++] = (char *)rawSelector->name;
 
-	objc_register_selector(sel);
+	objc_register_selector(rawSelector);
 
 	objc_global_mutex_unlock();
-	return (SEL)sel;
+	return (SEL)rawSelector;
 }
 
 void
 objc_register_all_selectors(struct objc_abi_symtab *symtab)
 {
-	struct objc_abi_selector *sel;
+	struct objc_abi_selector *rawSelector;
 
 	if (symtab->selectorRefs == NULL)
 		return;
 
-	for (sel = symtab->selectorRefs; sel->name != NULL; sel++)
-		objc_register_selector(sel);
+	for (rawSelector = symtab->selectorRefs; rawSelector->name != NULL;
+	    rawSelector++)
+		objc_register_selector(rawSelector);
 }
 
 const char *

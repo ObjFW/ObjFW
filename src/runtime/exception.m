@@ -464,13 +464,13 @@ findCallsite(struct _Unwind_Context *ctx, struct lsda *LSDA,
 #else
 	uintptr_t callsiteLandingpad, callsiteAction;
 
-	if ((intptr_t)ip < 1)
+	if ((intptr_t)IP < 1)
 		return false;
 
 	do {
 		callsiteLandingpad = (uintptr_t)readULEB128(&ptr);
 		callsiteAction = (uintptr_t)readULEB128(&ptr);
-	} while (--ip > 1);
+	} while (--IP > 1);
 
 	*landingpad = callsiteLandingpad + 1;
 	if (callsiteAction != 0)

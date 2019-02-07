@@ -55,14 +55,14 @@ protocol_conformsToProtocol(Protocol *protocol1, Protocol *protocol2)
 }
 
 bool
-class_conformsToProtocol(Class cls, Protocol *protocol)
+class_conformsToProtocol(Class class, Protocol *protocol)
 {
 	struct objc_category **categories;
 
-	if (cls == Nil)
+	if (class == Nil)
 		return false;
 
-	for (struct objc_protocol_list *protocolList = cls->protocols;
+	for (struct objc_protocol_list *protocolList = class->protocols;
 	    protocolList != NULL; protocolList = protocolList->next)
 		for (long i = 0; i < protocolList->count; i++)
 			if (protocol_conformsToProtocol(protocolList->list[i],
@@ -71,7 +71,7 @@ class_conformsToProtocol(Class cls, Protocol *protocol)
 
 	objc_global_mutex_lock();
 
-	if ((categories = objc_categories_for_class(cls)) == NULL) {
+	if ((categories = objc_categories_for_class(class)) == NULL) {
 		objc_global_mutex_unlock();
 		return false;
 	}

@@ -211,9 +211,9 @@
 #endif
 
 #if __has_feature(objc_kindof)
-# define OF_KINDOF(cls) __kindof cls
+# define OF_KINDOF(class_) __kindof class_
 #else
-# define OF_KINDOF(cls) id
+# define OF_KINDOF(class_) id
 #endif
 
 #if __has_feature(objc_class_property)

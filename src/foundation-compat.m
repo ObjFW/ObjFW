@@ -43,9 +43,9 @@ alloc(Class self, SEL _cmd)
 }
 
 static void
-addObject(Class self, SEL _cmd, id obj)
+addObject(Class self, SEL _cmd, id object)
 {
-	[OFAutoreleasePool addObject: obj];
+	[OFAutoreleasePool addObject: object];
 }
 
 static id

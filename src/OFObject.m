@@ -144,9 +144,9 @@ enumerationMutationHandler(id object)
 }
 
 void OF_NO_RETURN_FUNC
-of_method_not_found(id obj, SEL sel)
+of_method_not_found(id object, SEL selector)
 {
-	[obj doesNotRecognizeSelector: sel];
+	[object doesNotRecognizeSelector: selector];
 
 	/*
 	 * Just in case doesNotRecognizeSelector: returned, even though it must
@@ -158,9 +158,9 @@ of_method_not_found(id obj, SEL sel)
 }
 
 void OF_NO_RETURN_FUNC
-of_method_not_found_stret(void *st, id obj, SEL sel)
+of_method_not_found_stret(void *stret, id object, SEL selector)
 {
-	of_method_not_found(obj, sel);
+	of_method_not_found(object, selector);
 }
 
 id
