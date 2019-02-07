@@ -50,9 +50,9 @@ _start()
 
 struct ObjFWRTBase {
 	struct Library library;
-	void *seg_list;
+	void *segList;
 	struct ObjFWRTBase *parent;
-	char *data_seg;
+	char *dataSeg;
 	bool initialized;
 };
 
@@ -161,35 +161,35 @@ __asm__ (
 #endif
 
 static OF_INLINE char *
-get_data_seg(void)
+getDataSeg(void)
 {
-	char *data_seg;
+	char *dataSeg;
 
 #if defined(OF_AMIGAOS_M68K)
 	__asm__ (
 	    "move.l	#___a4_init, %0"
-	    : "=r"(data_seg)
+	    : "=r"(dataSeg)
 	);
 #elif defined(OF_MORPHOS)
 	__asm__ (
 	    "lis	%0, __r13_init@ha\n\t"
 	    "la		%0, __r13_init@l(%0)"
-	    : "=r"(data_seg)
+	    : "=r"(dataSeg)
 	);
 #endif
 
-	return data_seg;
+	return dataSeg;
 }
 
 static OF_INLINE size_t
-get_data_size(void)
+getDataSize(void)
 {
-	size_t data_size;
+	size_t dataSize;
 
 #if defined(OF_AMIGAOS_M68K)
 	__asm__ (
 	    "move.l	#___data_size, %0"
-	    : "=r"(data_size)
+	    : "=r"(dataSize)
 	);
 #elif defined(OF_MORPHOS)
 	__asm__ (
@@ -198,56 +198,55 @@ get_data_size(void)
 	    "lis	%%r9, __sbss_size@ha\n\t"
 	    "la		%%r9, __sbss_size@l(%%r9)\n\t"
 	    "add	%0, %0, %%r9"
-	    : "=r"(data_size)
+	    : "=r"(dataSize)
 	    :: "r9"
 	);
 #endif
 
-	return data_size;
+	return dataSize;
 }
 
 static OF_INLINE size_t *
-get_datadata_relocs(void)
+getDataDataRelocs(void)
 {
-	size_t *datadata_relocs;
+	size_t *dataDataRelocs;
 
 #if defined(OF_AMIGAOS_M68K)
 	__asm__ (
 	    "move.l	#___datadata_relocs, %0"
-	    : "=r"(datadata_relocs)
+	    : "=r"(dataDataRelocs)
 	);
 #elif defined(OF_MORPHOS)
 	__asm__ (
 	    "lis	%0, __datadata_relocs@ha\n\t"
 	    "la		%0, __datadata_relocs@l(%0)\n\t"
-	    : "=r"(datadata_relocs)
+	    : "=r"(dataDataRelocs)
 	);
 #endif
 
-	return datadata_relocs;
+	return dataDataRelocs;
 }
 
 static struct Library *
 lib_init(struct ObjFWRTBase *base OBJC_M68K_REG(d0),
-    void *seg_list OBJC_M68K_REG(a0),
-    struct ExecBase *sys_base OBJC_M68K_REG(a6))
+    void *segList OBJC_M68K_REG(a0), struct ExecBase *sysBase OBJC_M68K_REG(a6))
 {
 #if defined(OF_AMIGAOS_M68K)
 	__asm__ __volatile__ (
 	    "move.l	a6, _SysBase"
-	    :: "a"(sys_base)
+	    :: "a"(sysBase)
 	);
 #elif defined(OF_MORPHOS)
 	__asm__ __volatile__ (
 	    "lis	%%r9, SysBase@ha\n\t"
 	    "stw	%0, SysBase@l(%%r9)"
-	    :: "r"(sys_base) : "r9"
+	    :: "r"(sysBase) : "r9"
 	);
 #endif
 
-	base->seg_list = seg_list;
+	base->segList = segList;
 	base->parent = NULL;
-	base->data_seg = get_data_seg();
+	base->dataSeg = getDataSeg();
 
 	return &base->library;
 }
@@ -258,7 +257,7 @@ lib_open(void)
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 
 	struct ObjFWRTBase *child;
-	size_t data_size, *datadata_relocs;
+	size_t dataSize, *dataDataRelocs;
 	ptrdiff_t displacement;
 
 	if (base->parent != NULL)
@@ -285,24 +284,24 @@ lib_open(void)
 	child->library.lib_OpenCnt = 1;
 	child->parent = base;
 
-	data_size = get_data_size();
+	dataSize = getDataSize();
 
-	if ((child->data_seg = AllocMem(data_size, MEMF_ANY)) == NULL) {
+	if ((child->dataSeg = AllocMem(dataSize, MEMF_ANY)) == NULL) {
 		FreeMem((char *)child - child->library.lib_NegSize,
 		    child->library.lib_NegSize + child->library.lib_PosSize);
 		base->library.lib_OpenCnt--;
 		return NULL;
 	}
 
-	memcpy(child->data_seg, base->data_seg - DATA_OFFSET, data_size);
+	memcpy(child->dataSeg, base->dataSeg - DATA_OFFSET, dataSize);
 
-	datadata_relocs = get_datadata_relocs();
-	displacement = child->data_seg - (base->data_seg - DATA_OFFSET);
+	dataDataRelocs = getDataDataRelocs();
+	displacement = child->dataSeg - (base->dataSeg - DATA_OFFSET);
 
-	for (size_t i = 1; i <= datadata_relocs[0]; i++)
-		*(long *)(child->data_seg + datadata_relocs[i]) += displacement;
+	for (size_t i = 1; i <= dataDataRelocs[0]; i++)
+		*(long *)(child->dataSeg + dataDataRelocs[i]) += displacement;
 
-	child->data_seg += DATA_OFFSET;
+	child->dataSeg += DATA_OFFSET;
 
 	return &child->library;
 }
@@ -310,7 +309,7 @@ lib_open(void)
 static void *
 expunge(struct ObjFWRTBase *base)
 {
-	void *seg_list;
+	void *segList;
 
 	if (base->parent != NULL) {
 		base->parent->library.lib_Flags |= LIBF_DELEXP;
@@ -322,13 +321,13 @@ expunge(struct ObjFWRTBase *base)
 		return 0;
 	}
 
-	seg_list = base->seg_list;
+	segList = base->segList;
 
 	Remove(&base->library.lib_Node);
 	FreeMem((char *)base - base->library.lib_NegSize,
 	    base->library.lib_NegSize + base->library.lib_PosSize);
 
-	return seg_list;
+	return segList;
 }
 
 static void *__saveds
@@ -356,7 +355,7 @@ lib_close(void)
 
 		parent = base->parent;
 
-		FreeMem(base->data_seg - DATA_OFFSET, get_data_size());
+		FreeMem(base->dataSeg - DATA_OFFSET, getDataSize());
 		FreeMem((char *)base - base->library.lib_NegSize,
 		    base->library.lib_NegSize + base->library.lib_PosSize);
 
@@ -558,7 +557,7 @@ _Unwind_Resume(void *ex)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-static CONST_APTR function_table[] = {
+static CONST_APTR functionTable[] = {
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_BEGIN,
 	(CONST_APTR)FUNCARRAY_32BIT_NATIVE,
@@ -576,16 +575,16 @@ static CONST_APTR function_table[] = {
 #pragma GCC diagnostic pop
 
 static struct {
-	ULONG data_size;
-	CONST_APTR *function_table;
-	ULONG *data_table;
-	struct Library *(*init_func)(
+	ULONG dataSize;
+	CONST_APTR *functionTable;
+	ULONG *dataTable;
+	struct Library *(*initFunc)(
 	    struct ObjFWRTBase *base OBJC_M68K_REG(d0),
-	    void *seg_list OBJC_M68K_REG(a0),
-	    struct ExecBase *exec_base OBJC_M68K_REG(a6));
+	    void *segList OBJC_M68K_REG(a0),
+	    struct ExecBase *execBase OBJC_M68K_REG(a6));
 } init_table = {
 	sizeof(struct ObjFWRTBase),
-	function_table,
+	functionTable,
 	NULL,
 	lib_init
 };

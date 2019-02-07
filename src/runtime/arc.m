@@ -38,20 +38,20 @@ static of_spinlock_t spinlock;
 #endif
 
 static uint32_t
-obj_hash(const void *obj)
+hash(const void *obj)
 {
 	return (uint32_t)(uintptr_t)obj;
 }
 
 static bool
-obj_equal(const void *obj1, const void *obj2)
+equal(const void *obj1, const void *obj2)
 {
 	return (obj1 == obj2);
 }
 
 OF_CONSTRUCTOR()
 {
-	hashtable = objc_hashtable_new(obj_hash, obj_equal, 2);
+	hashtable = objc_hashtable_new(hash, equal, 2);
 
 #ifdef OF_HAVE_THREADS
 	if (!of_spinlock_new(&spinlock))

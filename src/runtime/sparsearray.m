@@ -24,7 +24,7 @@
 #import "private.h"
 
 struct objc_sparsearray *
-objc_sparsearray_new(uint8_t index_size)
+objc_sparsearray_new(uint8_t indexSize)
 {
 	struct objc_sparsearray *sparsearray;
 
@@ -34,7 +34,7 @@ objc_sparsearray_new(uint8_t index_size)
 	if ((sparsearray->data = calloc(1, sizeof(*sparsearray->data))) == NULL)
 		OBJC_ERROR("Failed to allocate memory for sparse array!");
 
-	sparsearray->index_size = index_size;
+	sparsearray->indexSize = indexSize;
 
 	return sparsearray;
 }
@@ -44,9 +44,9 @@ objc_sparsearray_get(struct objc_sparsearray *sparsearray, uintptr_t idx)
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
 
-	for (uint8_t i = 0; i < sparsearray->index_size - 1; i++) {
+	for (uint8_t i = 0; i < sparsearray->indexSize - 1; i++) {
 		uintptr_t j =
-		    (idx >> ((sparsearray->index_size - i - 1) * 8)) & 0xFF;
+		    (idx >> ((sparsearray->indexSize - i - 1) * 8)) & 0xFF;
 
 		if ((iter = iter->next[j]) == NULL)
 			return NULL;
@@ -61,9 +61,9 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 {
 	struct objc_sparsearray_data *iter = sparsearray->data;
 
-	for (uint8_t i = 0; i < sparsearray->index_size - 1; i++) {
+	for (uint8_t i = 0; i < sparsearray->indexSize - 1; i++) {
 		uintptr_t j =
-		    (idx >> ((sparsearray->index_size - i - 1) * 8)) & 0xFF;
+		    (idx >> ((sparsearray->indexSize - i - 1) * 8)) & 0xFF;
 
 		if (iter->next[j] == NULL)
 			if ((iter->next[j] = calloc(1,
@@ -78,13 +78,13 @@ objc_sparsearray_set(struct objc_sparsearray *sparsearray, uintptr_t idx,
 }
 
 static void
-free_sparsearray_data(struct objc_sparsearray_data *data, uint8_t depth)
+freeSparsearrayData(struct objc_sparsearray_data *data, uint8_t depth)
 {
 	if (data == NULL || depth == 0)
 		return;
 
 	for (uint_fast16_t i = 0; i < 256; i++)
-		free_sparsearray_data(data->next[i], depth - 1);
+		freeSparsearrayData(data->next[i], depth - 1);
 
 	free(data);
 }
@@ -92,6 +92,6 @@ free_sparsearray_data(struct objc_sparsearray_data *data, uint8_t depth)
 void
 objc_sparsearray_free(struct objc_sparsearray *sparsearray)
 {
-	free_sparsearray_data(sparsearray->data, sparsearray->index_size);
+	freeSparsearrayData(sparsearray->data, sparsearray->indexSize);
 	free(sparsearray);
 }

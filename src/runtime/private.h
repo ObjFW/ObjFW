@@ -35,27 +35,27 @@ struct objc_abi_class {
 	const char *_Nonnull name;
 	unsigned long version;
 	unsigned long info;
-	long instance_size;
-	void *_Nullable ivars;
-	struct objc_abi_method_list *_Nullable methodlist;
-	void *_Nullable dtable;
-	void *_Nullable subclass_list;
-	void *_Nullable sibling_class;
+	long instanceSize;
+	void *_Nullable iVars;
+	struct objc_abi_method_list *_Nullable methodList;
+	void *_Nullable DTable;
+	void *_Nullable subclassList;
+	void *_Nullable siblingClass;
 	void *_Nullable protocols;
-	void *_Nullable gc_object_type;
-	long abi_version;
-	int32_t *_Nonnull *_Nullable ivar_offsets;
+	void *_Nullable GCObjectType;
+	long ABIVersion;
+	int32_t *_Nonnull *_Nullable iVarOffsets;
 	void *_Nullable properties;
 };
 
 struct objc_abi_selector {
 	const char *_Nonnull name;
-	const char *_Nullable types;
+	const char *_Nullable typeEncoding;
 };
 
 struct objc_abi_method {
-	struct objc_abi_selector sel;
-	IMP _Nonnull imp;
+	struct objc_abi_selector selector;
+	IMP _Nonnull implementation;
 };
 
 struct objc_abi_method_list {
@@ -65,16 +65,16 @@ struct objc_abi_method_list {
 };
 
 struct objc_abi_category {
-	const char *_Nonnull category_name;
-	const char *_Nonnull class_name;
-	struct objc_abi_method_list *_Nullable instance_methods;
-	struct objc_abi_method_list *_Nullable class_methods;
+	const char *_Nonnull categoryName;
+	const char *_Nonnull className;
+	struct objc_abi_method_list *_Nullable instanceMethods;
+	struct objc_abi_method_list *_Nullable classMethods;
 	struct objc_protocol_list *_Nullable protocols;
 };
 
 struct objc_abi_method_description {
 	const char *_Nonnull name;
-	const char *_Nonnull types;
+	const char *_Nonnull typeEncoding;
 };
 
 struct objc_abi_method_description_list {
@@ -83,15 +83,15 @@ struct objc_abi_method_description_list {
 };
 
 struct objc_abi_static_instances {
-	const char *_Nonnull class_name;
+	const char *_Nonnull className;
 	id _Nullable instances[1];
 };
 
 struct objc_abi_symtab {
 	unsigned long unknown;
-	struct objc_abi_selector *_Nullable sel_refs;
-	uint16_t cls_def_cnt;
-	uint16_t cat_def_cnt;
+	struct objc_abi_selector *_Nullable selectorRefs;
+	uint16_t classDefsCount;
+	uint16_t categoryDefsCount;
 	void *_Nonnull defs[1];
 };
 
@@ -103,7 +103,7 @@ struct objc_abi_module {
 };
 
 struct objc_hashtable_bucket {
-	const void *_Nonnull key, *_Nonnull obj;
+	const void *_Nonnull key, *_Nonnull object;
 	uint32_t hash;
 };
 
@@ -119,7 +119,7 @@ struct objc_sparsearray {
 	struct objc_sparsearray_data {
 		void *_Nullable next[256];
 	} *_Nonnull data;
-	uint8_t index_size;
+	uint8_t indexSize;
 };
 
 struct objc_dtable {

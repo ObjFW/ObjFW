@@ -79,8 +79,8 @@ objc_hashtable_new(uint32_t (*hash)(const void *),
 static void
 resize(struct objc_hashtable *table, uint32_t count)
 {
-	uint32_t fullness, nsize;
-	struct objc_hashtable_bucket **ndata;
+	uint32_t fullness, newSize;
+	struct objc_hashtable_bucket **newData;
 
 	if (count > UINT32_MAX / sizeof(*table->data) || count > UINT32_MAX / 8)
 		OBJC_ERROR("Integer overflow!");
@@ -91,16 +91,16 @@ resize(struct objc_hashtable *table, uint32_t count)
 		if (table->size > UINT32_MAX / 2)
 			return;
 
-		nsize = table->size * 2;
+		newSize = table->size * 2;
 	} else if (fullness <= 1)
-		nsize = table->size / 2;
+		newSize = table->size / 2;
 	else
 		return;
 
-	if (count < table->count && nsize < 16)
+	if (count < table->count && newSize < 16)
 		return;
 
-	if ((ndata = calloc(nsize, sizeof(sizeof(*ndata)))) == NULL)
+	if ((newData = calloc(newSize, sizeof(sizeof(*newData)))) == NULL)
 		OBJC_ERROR("Not enough memory to resize hash table!");
 
 	for (uint32_t i = 0; i < table->size; i++) {
@@ -108,31 +108,32 @@ resize(struct objc_hashtable *table, uint32_t count)
 		    table->data[i] != &objc_deleted_bucket) {
 			uint32_t j, last;
 
-			last = nsize;
+			last = newSize;
 
-			for (j = table->data[i]->hash & (nsize - 1);
-			    j < last && ndata[j] != NULL; j++);
+			for (j = table->data[i]->hash & (newSize - 1);
+			    j < last && newData[j] != NULL; j++);
 
 			if (j >= last) {
-				last = table->data[i]->hash & (nsize - 1);
+				last = table->data[i]->hash & (newSize - 1);
 
-				for (j = 0; j < last && ndata[j] != NULL; j++);
+				for (j = 0; j < last && newData[j] != NULL;
+				    j++);
 			}
 
 			if (j >= last)
 				OBJC_ERROR("No free bucket!");
 
-			ndata[j] = table->data[i];
+			newData[j] = table->data[i];
 		}
 	}
 
 	free(table->data);
-	table->data = ndata;
-	table->size = nsize;
+	table->data = newData;
+	table->size = newSize;
 }
 
 static inline bool
-index_for_key(struct objc_hashtable *table, const void *key, uint32_t *idx)
+indexForKey(struct objc_hashtable *table, const void *key, uint32_t *idx)
 {
 	uint32_t i, hash;
 
@@ -166,13 +167,13 @@ index_for_key(struct objc_hashtable *table, const void *key, uint32_t *idx)
 
 void
 objc_hashtable_set(struct objc_hashtable *table, const void *key,
-    const void *obj)
+    const void *object)
 {
 	uint32_t i, hash, last;
 	struct objc_hashtable_bucket *bucket;
 
-	if (index_for_key(table, key, &i)) {
-		table->data[i]->obj = obj;
+	if (indexForKey(table, key, &i)) {
+		table->data[i]->object = object;
 		return;
 	}
 
@@ -199,7 +200,7 @@ objc_hashtable_set(struct objc_hashtable *table, const void *key,
 
 	bucket->key = key;
 	bucket->hash = hash;
-	bucket->obj = obj;
+	bucket->object = object;
 
 	table->data[i] = bucket;
 	table->count++;
@@ -210,10 +211,10 @@ objc_hashtable_get(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
 
-	if (!index_for_key(table, key, &idx))
+	if (!indexForKey(table, key, &idx))
 		return NULL;
 
-	return (void *)table->data[idx]->obj;
+	return (void *)table->data[idx]->object;
 }
 
 void
@@ -221,7 +222,7 @@ objc_hashtable_delete(struct objc_hashtable *table, const void *key)
 {
 	uint32_t idx;
 
-	if (!index_for_key(table, key, &idx))
+	if (!indexForKey(table, key, &idx))
 		return;
 
 	free(table->data[idx]);

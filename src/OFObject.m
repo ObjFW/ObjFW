@@ -365,11 +365,11 @@ _references_to_categories_of_OFObject(void)
 		return;
 
 #if defined(OF_OBJFW_RUNTIME)
-	for (struct objc_method_list *methodlist =
-	    object_getClass(class)->methodlist;
-	    methodlist != NULL; methodlist = methodlist->next) {
-		for (unsigned int i = 0; i < methodlist->count; i++) {
-			SEL selector = (SEL)&methodlist->methods[i].sel;
+	for (struct objc_method_list *methodList =
+	    object_getClass(class)->methodList;
+	    methodList != NULL; methodList = methodList->next) {
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			SEL selector = (SEL)&methodList->methods[i].selector;
 
 			/*
 			 * Don't replace methods implemented in the receiving
@@ -384,10 +384,10 @@ _references_to_categories_of_OFObject(void)
 		}
 	}
 
-	for (struct objc_method_list *methodlist = class->methodlist;
-	    methodlist != NULL; methodlist = methodlist->next) {
-		for (unsigned int i = 0; i < methodlist->count; i++) {
-			SEL selector = (SEL)&methodlist->methods[i].sel;
+	for (struct objc_method_list *methodList = class->methodList;
+	    methodList != NULL; methodList = methodList->next) {
+		for (unsigned int i = 0; i < methodList->count; i++) {
+			SEL selector = (SEL)&methodList->methods[i].selector;
 
 			/*
 			 * Don't replace methods implemented in the receiving

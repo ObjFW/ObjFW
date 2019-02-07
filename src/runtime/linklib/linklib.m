@@ -141,27 +141,27 @@ __objc_exec_class(void *module)
 }
 
 IMP
-objc_msg_lookup(id obj, SEL sel)
+objc_msg_lookup(id object, SEL selector)
 {
-	return objc_msg_lookup_m68k(obj, sel);
+	return objc_msg_lookup_m68k(object, selector);
 }
 
 IMP
-objc_msg_lookup_stret(id obj, SEL sel)
+objc_msg_lookup_stret(id object, SEL selector)
 {
-	return objc_msg_lookup_stret_m68k(obj, sel);
+	return objc_msg_lookup_stret_m68k(object, selector);
 }
 
 IMP
-objc_msg_lookup_super(struct objc_super *super, SEL sel)
+objc_msg_lookup_super(struct objc_super *super, SEL selector)
 {
-	return objc_msg_lookup_super_m68k(super, sel);
+	return objc_msg_lookup_super_m68k(super, selector);
 }
 
 IMP
-objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
+objc_msg_lookup_super_stret(struct objc_super *super, SEL selector)
 {
-	return objc_msg_lookup_super_stret_m68k(super, sel);
+	return objc_msg_lookup_super_stret_m68k(super, selector);
 }
 
 Class
@@ -285,18 +285,18 @@ objc_enumerationMutation(id object)
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 int
-__gnu_objc_personality_sj0(int version, int actions, uint64_t ex_class,
+__gnu_objc_personality_sj0(int version, int actions, uint64_t exClass,
     void *ex, void *ctx)
 {
-	return __gnu_objc_personality_sj0_m68k(version, actions, &ex_class,
+	return __gnu_objc_personality_sj0_m68k(version, actions, &exClass,
 	    ex, ctx);
 }
 #else
 int
-__gnu_objc_personality_v0(int version, int actions, uint64_t ex_class,
+__gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
     void *ex, void *ctx)
 {
-	return __gnu_objc_personality_v0_m68k(version, actions, &ex_class,
+	return __gnu_objc_personality_v0_m68k(version, actions, &exClass,
 	    ex, ctx);
 }
 #endif
@@ -308,21 +308,21 @@ sel_registerName(const char *name)
 }
 
 const char *
-sel_getName(SEL sel)
+sel_getName(SEL selector)
 {
-	return sel_getName_m68k(sel);
+	return sel_getName_m68k(selector);
 }
 
 bool
-sel_isEqual(SEL sel1, SEL sel2)
+sel_isEqual(SEL selector1, SEL selector2)
 {
-	return sel_isEqual_m68k(sel1, sel2);
+	return sel_isEqual_m68k(selector1, selector2);
 }
 
 Class
-objc_allocateClassPair(Class superclass, const char *name, size_t extra_bytes)
+objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
 {
-	return objc_allocateClassPair_m68k(superclass, name, extra_bytes);
+	return objc_allocateClassPair_m68k(superclass, name, extraBytes);
 }
 
 void
@@ -332,15 +332,15 @@ objc_registerClassPair(Class cls)
 }
 
 unsigned int
-objc_getClassList(Class *buf, unsigned int count)
+objc_getClassList(Class *buffer, unsigned int count)
 {
-	return objc_getClassList_m68k(buf, count);
+	return objc_getClassList_m68k(buffer, count);
 }
 
 Class *
-objc_copyClassList(unsigned int *len)
+objc_copyClassList(unsigned int *length)
 {
-	return objc_copyClassList_m68k(len);
+	return objc_copyClassList_m68k(length);
 }
 
 bool
@@ -368,45 +368,49 @@ class_getInstanceSize(Class cls)
 }
 
 bool
-class_respondsToSelector(Class cls, SEL sel)
+class_respondsToSelector(Class cls, SEL selector)
 {
-	return class_respondsToSelector_m68k(cls, sel);
+	return class_respondsToSelector_m68k(cls, selector);
 }
 
 bool
-class_conformsToProtocol(Class cls, Protocol *p)
+class_conformsToProtocol(Class cls, Protocol *protocol)
 {
-	return class_conformsToProtocol_m68k(cls, p);
+	return class_conformsToProtocol_m68k(cls, protocol);
 }
 
 IMP
-class_getMethodImplementation(Class cls, SEL sel)
+class_getMethodImplementation(Class cls, SEL selector)
 {
-	return class_getMethodImplementation_m68k(cls, sel);
+	return class_getMethodImplementation_m68k(cls, selector);
 }
 
 IMP
-class_getMethodImplementation_stret(Class cls, SEL sel)
+class_getMethodImplementation_stret(Class cls, SEL selector)
 {
-	return class_getMethodImplementation_stret_m68k(cls, sel);
+	return class_getMethodImplementation_stret_m68k(cls, selector);
 }
 
 const char *
-class_getMethodTypeEncoding(Class cls, SEL sel)
+class_getMethodTypeEncoding(Class cls, SEL selector)
 {
-	return class_getMethodTypeEncoding_m68k(cls, sel);
+	return class_getMethodTypeEncoding_m68k(cls, selector);
 }
 
 bool
-class_addMethod(Class cls, SEL sel, IMP imp, const char *types)
+class_addMethod(Class cls, SEL selector, IMP implementation,
+    const char *typeEncoding)
 {
-	return class_addMethod_m68k(cls, sel, imp, types);
+	return class_addMethod_m68k(cls, selector, implementation,
+	    typeEncoding);
 }
 
 IMP
-class_replaceMethod(Class cls, SEL sel, IMP imp, const char *types)
+class_replaceMethod(Class cls, SEL selector, IMP implementation,
+    const char *typeEncoding)
 {
-	return class_replaceMethod_m68k(cls, sel, imp, types);
+	return class_replaceMethod_m68k(cls, selector, implementation,
+	    typeEncoding);
 }
 
 Class
@@ -428,21 +432,21 @@ object_getClassName(id object)
 }
 
 const char *
-protocol_getName(Protocol *p)
+protocol_getName(Protocol *protocol)
 {
-	return protocol_getName_m68k(p);
+	return protocol_getName_m68k(protocol);
 }
 
 bool
-protocol_isEqual(Protocol *a, Protocol *b)
+protocol_isEqual(Protocol *protocol1, Protocol *protocol2)
 {
-	return protocol_isEqual_m68k(a, b);
+	return protocol_isEqual_m68k(protocol1, protocol2);
 }
 
 bool
-protocol_conformsToProtocol(Protocol *a, Protocol *b)
+protocol_conformsToProtocol(Protocol *protocol1, Protocol *protocol2)
 {
-	return protocol_conformsToProtocol_m68k(a, b);
+	return protocol_conformsToProtocol_m68k(protocol1, protocol2);
 }
 
 void
@@ -458,9 +462,9 @@ objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 }
 
 void
-objc_setForwardHandler(IMP forward, IMP forward_stret)
+objc_setForwardHandler(IMP forward, IMP stretForward)
 {
-	objc_setForwardHandler_m68k(forward, forward_stret);
+	objc_setForwardHandler_m68k(forward, stretForward);
 }
 
 void

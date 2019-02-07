@@ -56,9 +56,9 @@
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
 # define PERSONALITY_FUNC(func)						\
 	_Unwind_Reason_Code						\
-	func(int version, int actions, uint64_t ex_class,		\
+	func(int version, int actions, uint64_t exClass,		\
 	    struct _Unwind_Exception *ex, struct _Unwind_Context *ctx)
-# define CALL_PERSONALITY(func) func(version, actions, ex_class, ex, ctx)
+# define CALL_PERSONALITY(func) func(version, actions, exClass, ex, ctx)
 #else
 # define PERSONALITY_FUNC(func)						\
 	_Unwind_Reason_Code						\
@@ -136,20 +136,20 @@ struct objc_exception {
 		struct {
 			uint32_t reserved1, reserved2, reserved3, reserved4;
 			uint32_t reserved;
-		} unwinder_cache;
+		} unwinderCache;
 		struct {
 			uint32_t sp;
-			uint32_t bitpattern[5];
-		} barrier_cache;
+			uint32_t bitPattern[5];
+		} barrierCache;
 		struct {
-			uint32_t bitpattern[4];
-		} cleanup_cache;
+			uint32_t bitPattern[4];
+		} cleanupCache;
 		struct {
 			uint32_t fnstart;
 			uint32_t *ehtp;
 			uint32_t additional;
 			uint32_t reserved1;
-		} pr_cache;
+		} PRCache;
 		long long int : 0;
 #endif
 	} exception;
@@ -161,12 +161,12 @@ struct objc_exception {
 };
 
 struct lsda {
-	uintptr_t region_start, landingpads_start;
-	uint8_t typestable_enc;
-	const uint8_t *typestable;
-	uintptr_t typestable_base;
-	uint8_t callsites_enc;
-	const uint8_t *callsites, *actiontable;
+	uintptr_t regionStart, landingpadsStart;
+	uint8_t typesTableEnc;
+	const uint8_t *typesTable;
+	uintptr_t typesTableBase;
+	uint8_t callsitesEnc;
+	const uint8_t *callsites, *actionTable;
 };
 
 extern _Unwind_Reason_Code _Unwind_RaiseException(struct _Unwind_Exception *);
@@ -204,10 +204,10 @@ extern int _Unwind_VRS_Set(struct _Unwind_Context *, int, uint32_t, int,
 	}
 
 static inline uintptr_t
-_Unwind_GetGR(struct _Unwind_Context *ctx, int regno)
+_Unwind_GetGR(struct _Unwind_Context *ctx, int regNo)
 {
 	uintptr_t value;
-	_Unwind_VRS_Get(ctx, 0, regno, 0, &value);
+	_Unwind_VRS_Get(ctx, 0, regNo, 0, &value);
 	return value;
 }
 
@@ -218,9 +218,9 @@ _Unwind_GetIP(struct _Unwind_Context *ctx)
 }
 
 static inline void
-_Unwind_SetGR(struct _Unwind_Context *ctx, int regno, uintptr_t value)
+_Unwind_SetGR(struct _Unwind_Context *ctx, int regNo, uintptr_t value)
 {
-	_Unwind_VRS_Set(ctx, 0, regno, 0, &value);
+	_Unwind_VRS_Set(ctx, 0, regNo, 0, &value);
 }
 
 static inline void
@@ -241,20 +241,20 @@ extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
     struct _Unwind_Exception *, struct _Unwind_Context *));
 #endif
 
-static objc_uncaught_exception_handler uncaught_exception_handler;
-static struct objc_exception emergency_exceptions[NUM_EMERGENCY_EXCEPTIONS];
+static objc_uncaught_exception_handler uncaughtExceptionHandler;
+static struct objc_exception emergencyExceptions[NUM_EMERGENCY_EXCEPTIONS];
 #ifdef OF_HAVE_THREADS
-static of_spinlock_t emergency_exceptions_spinlock;
+static of_spinlock_t emergencyExceptionsSpinlock;
 
 OF_CONSTRUCTOR()
 {
-	if (!of_spinlock_new(&emergency_exceptions_spinlock))
+	if (!of_spinlock_new(&emergencyExceptionsSpinlock))
 		OBJC_ERROR("Cannot create spinlock!")
 }
 #endif
 
 static uint64_t
-read_uleb128(const uint8_t **ptr)
+readULEB128(const uint8_t **ptr)
 {
 	uint64_t value = 0;
 	uint8_t shift = 0;
@@ -269,14 +269,14 @@ read_uleb128(const uint8_t **ptr)
 }
 
 static int64_t
-read_sleb128(const uint8_t **ptr)
+readSLEB128(const uint8_t **ptr)
 {
-	const uint8_t *oldptr = *ptr;
+	const uint8_t *oldPtr = *ptr;
 	uint8_t bits;
 	int64_t value;
 
-	value = read_uleb128(ptr);
-	bits = (*ptr - oldptr) * 7;
+	value = readULEB128(ptr);
+	bits = (*ptr - oldPtr) * 7;
 
 	if (bits < 64 && value & (1 << (bits - 1)))
 		value |= -(1 << bits);
@@ -285,7 +285,7 @@ read_sleb128(const uint8_t **ptr)
 }
 
 static uintptr_t
-get_base(struct _Unwind_Context *ctx, uint8_t enc)
+getBase(struct _Unwind_Context *ctx, uint8_t enc)
 {
 	if (enc == DW_EH_PE_omit)
 		return 0;
@@ -314,7 +314,7 @@ get_base(struct _Unwind_Context *ctx, uint8_t enc)
 }
 
 static size_t
-size_for_encoding(uint8_t enc)
+sizeForEncoding(uint8_t enc)
 {
 	if (enc == DW_EH_PE_omit)
 		return 0;
@@ -334,7 +334,7 @@ size_for_encoding(uint8_t enc)
 }
 
 static uint64_t
-read_value(uint8_t enc, const uint8_t **ptr)
+readValue(uint8_t enc, const uint8_t **ptr)
 {
 	uint64_t value;
 
@@ -346,14 +346,14 @@ read_value(uint8_t enc, const uint8_t **ptr)
 		type tmp;				\
 		memcpy(&tmp, *ptr, sizeof(type));	\
 		value = tmp;				\
-		*ptr += size_for_encoding(enc);		\
+		*ptr += sizeForEncoding(enc);		\
 		break;					\
 	}
 	switch (enc & 0x0F) {
 	case DW_EH_PE_absptr:
 		READ(uintptr_t)
 	case DW_EH_PE_uleb128:
-		value = read_uleb128(ptr);
+		value = readULEB128(ptr);
 		break;
 	case DW_EH_PE_udata2:
 		READ(uint16_t)
@@ -362,7 +362,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 	case DW_EH_PE_udata8:
 		READ(uint64_t)
 	case DW_EH_PE_sleb128:
-		value = read_sleb128(ptr);
+		value = readSLEB128(ptr);
 		break;
 	case DW_EH_PE_sdata2:
 		READ(int16_t)
@@ -380,7 +380,7 @@ read_value(uint8_t enc, const uint8_t **ptr)
 
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
 static uint64_t
-resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
+resolveValue(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 {
 	if (value == 0)
 		return 0;
@@ -395,66 +395,66 @@ resolve_value(uint64_t value, uint8_t enc, const uint8_t *start, uint64_t base)
 #endif
 
 static void
-read_lsda(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *lsda)
+readLSDA(struct _Unwind_Context *ctx, const uint8_t *ptr, struct lsda *LSDA)
 {
-	uint8_t landingpads_start_enc;
-	uintptr_t callsites_size;
+	uint8_t landingpadsStartEnc;
+	uintptr_t callsitesSize;
 
-	lsda->region_start = _Unwind_GetRegionStart(ctx);
-	lsda->landingpads_start = lsda->region_start;
-	lsda->typestable = NULL;
+	LSDA->regionStart = _Unwind_GetRegionStart(ctx);
+	LSDA->landingpadsStart = LSDA->regionStart;
+	LSDA->typesTable = NULL;
 
-	if ((landingpads_start_enc = *ptr++) != DW_EH_PE_omit)
-		lsda->landingpads_start =
-		    (uintptr_t)read_value(landingpads_start_enc, &ptr);
+	if ((landingpadsStartEnc = *ptr++) != DW_EH_PE_omit)
+		LSDA->landingpadsStart =
+		    (uintptr_t)readValue(landingpadsStartEnc, &ptr);
 
-	if ((lsda->typestable_enc = *ptr++) != DW_EH_PE_omit) {
-		uintptr_t tmp = (uintptr_t)read_uleb128(&ptr);
-		lsda->typestable = ptr + tmp;
+	if ((LSDA->typesTableEnc = *ptr++) != DW_EH_PE_omit) {
+		uintptr_t tmp = (uintptr_t)readULEB128(&ptr);
+		LSDA->typesTable = ptr + tmp;
 	}
 
-	lsda->typestable_base = get_base(ctx, lsda->typestable_enc);
+	LSDA->typesTableBase = getBase(ctx, LSDA->typesTableEnc);
 
-	lsda->callsites_enc = *ptr++;
-	callsites_size = (uintptr_t)read_uleb128(&ptr);
-	lsda->callsites = ptr;
+	LSDA->callsitesEnc = *ptr++;
+	callsitesSize = (uintptr_t)readULEB128(&ptr);
+	LSDA->callsites = ptr;
 
-	lsda->actiontable = lsda->callsites + callsites_size;
+	LSDA->actionTable = LSDA->callsites + callsitesSize;
 }
 
 static bool
-find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
-    uintptr_t *landingpad, const uint8_t **actionrecords)
+findCallsite(struct _Unwind_Context *ctx, struct lsda *LSDA,
+    uintptr_t *landingpad, const uint8_t **actionRecords)
 {
-	uintptr_t ip = _Unwind_GetIP(ctx);
-	const uint8_t *ptr = lsda->callsites;
+	uintptr_t IP = _Unwind_GetIP(ctx);
+	const uint8_t *ptr = LSDA->callsites;
 
 	*landingpad = 0;
-	*actionrecords = NULL;
+	*actionRecords = NULL;
 
 #ifndef HAVE_SJLJ_EXCEPTIONS
-	while (ptr < lsda->actiontable) {
-		uintptr_t callsite_start, callsite_len, callsite_landingpad;
-		uintptr_t callsite_action;
+	while (ptr < LSDA->actionTable) {
+		uintptr_t callsiteStart, callsiteLength, callsiteLandingpad;
+		uintptr_t callsiteAction;
 
-		callsite_start = lsda->region_start +
-		    (uintptr_t)read_value(lsda->callsites_enc, &ptr);
-		callsite_len = (uintptr_t)read_value(lsda->callsites_enc, &ptr);
-		callsite_landingpad =
-		    (uintptr_t)read_value(lsda->callsites_enc, &ptr);
-		callsite_action = (uintptr_t)read_uleb128(&ptr);
+		callsiteStart = LSDA->regionStart +
+		    (uintptr_t)readValue(LSDA->callsitesEnc, &ptr);
+		callsiteLength = (uintptr_t)readValue(LSDA->callsitesEnc, &ptr);
+		callsiteLandingpad =
+		    (uintptr_t)readValue(LSDA->callsitesEnc, &ptr);
+		callsiteAction = (uintptr_t)readULEB128(&ptr);
 
 		/* We can stop if we passed IP, as the table is sorted */
-		if (callsite_start >= ip)
+		if (callsiteStart >= IP)
 			break;
 
-		if (callsite_start + callsite_len >= ip) {
-			if (callsite_landingpad != 0)
-				*landingpad = lsda->landingpads_start +
-				    callsite_landingpad;
-			if (callsite_action != 0)
-				*actionrecords = lsda->actiontable +
-				    callsite_action - 1;
+		if (callsiteStart + callsiteLength >= IP) {
+			if (callsiteLandingpad != 0)
+				*landingpad = LSDA->landingpadsStart +
+				    callsiteLandingpad;
+			if (callsiteAction != 0)
+				*actionRecords = LSDA->actionTable +
+				    callsiteAction - 1;
 
 			return true;
 		}
@@ -462,26 +462,26 @@ find_callsite(struct _Unwind_Context *ctx, struct lsda *lsda,
 
 	return false;
 #else
-	uintptr_t callsite_landingpad, callsite_action;
+	uintptr_t callsiteLandingpad, callsiteAction;
 
 	if ((intptr_t)ip < 1)
 		return false;
 
 	do {
-		callsite_landingpad = (uintptr_t)read_uleb128(&ptr);
-		callsite_action = (uintptr_t)read_uleb128(&ptr);
+		callsiteLandingpad = (uintptr_t)readULEB128(&ptr);
+		callsiteAction = (uintptr_t)readULEB128(&ptr);
 	} while (--ip > 1);
 
-	*landingpad = callsite_landingpad + 1;
-	if (callsite_action != 0)
-		*actionrecords = lsda->actiontable + callsite_action - 1;
+	*landingpad = callsiteLandingpad + 1;
+	if (callsiteAction != 0)
+		*actionRecords = LSDA->actionTable + callsiteAction - 1;
 
 	return true;
 #endif
 }
 
 static bool
-class_matches(Class class, id object)
+classMatches(Class class, id object)
 {
 	Class iter;
 
@@ -500,24 +500,24 @@ class_matches(Class class, id object)
 }
 
 static uint8_t
-find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
-    bool foreign, struct objc_exception *e, intptr_t *filtervalue)
+findActionRecord(const uint8_t *actionRecords, struct lsda *LSDA, int actions,
+    bool foreign, struct objc_exception *e, intptr_t *filterPtr)
 {
 	const uint8_t *ptr;
 	intptr_t filter, displacement;
 
 	do {
-		ptr = actionrecords;
-		filter = (intptr_t)read_sleb128(&ptr);
+		ptr = actionRecords;
+		filter = (intptr_t)readSLEB128(&ptr);
 
 		/*
-		 * Get the next action record. Since read_sleb128 modifies ptr,
+		 * Get the next action record. Since readSLEB128() modifies ptr,
 		 * we first set the actionrecord to the current ptr and then
 		 * add the displacement.
 		 */
-		actionrecords = ptr;
-		displacement = (intptr_t)read_sleb128(&ptr);
-		actionrecords += displacement;
+		actionRecords = ptr;
+		displacement = (intptr_t)readSLEB128(&ptr);
+		actionRecords += displacement;
 
 		if (filter > 0 && !(actions & _UA_FORCE_UNWIND) && !foreign) {
 			Class class;
@@ -528,13 +528,13 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 #ifndef HAVE_ARM_EHABI_EXCEPTIONS
 			uintptr_t i;
 
-			i = filter * size_for_encoding(lsda->typestable_enc);
-			tmp = lsda->typestable - i;
-			c = (uintptr_t)read_value(lsda->typestable_enc, &tmp);
-			c = (uintptr_t)resolve_value(c, lsda->typestable_enc,
-			    lsda->typestable - i, lsda->typestable_base);
+			i = filter * sizeForEncoding(LSDA->typesTableEnc);
+			tmp = LSDA->typesTable - i;
+			c = (uintptr_t)readValue(LSDA->typesTableEnc, &tmp);
+			c = (uintptr_t)resolveValue(c, LSDA->typesTableEnc,
+			    LSDA->typesTable - i, LSDA->typesTableBase);
 #else
-			tmp = lsda->typestable - (filter * 4);
+			tmp = LSDA->typesTable - (filter * 4);
 			c = *(uintptr_t *)(void *)tmp;
 
 			if (c != 0) {
@@ -553,8 +553,8 @@ find_actionrecord(const uint8_t *actionrecords, struct lsda *lsda, int actions,
 			else
 				class = Nil;
 
-			if (class_matches(class, e->object)) {
-				*filtervalue = filter;
+			if (classMatches(class, e->object)) {
+				*filterPtr = filter;
 				return HANDLER_FOUND;
 			}
 		} else if (filter == 0)
@@ -573,7 +573,7 @@ PERSONALITY_FUNC(PERSONALITY)
 {
 #ifdef HAVE_ARM_EHABI_EXCEPTIONS
 	int version = 1;
-	uint64_t ex_class = ex->class;
+	uint64_t exClass = ex->class;
 	int actions;
 
 	switch (state) {
@@ -582,7 +582,7 @@ PERSONALITY_FUNC(PERSONALITY)
 		break;
 	case 1:	/* _US_UNWIND_FRAME_STARTING */
 		actions = _UA_CLEANUP_PHASE;
-		if ((ex->barrier_cache.sp == _Unwind_GetGR(ctx, 13)) != 0)
+		if ((ex->barrierCache.sp == _Unwind_GetGR(ctx, 13)) != 0)
 			actions |= _UA_HANDLER_FRAME;
 		break;
 	case 2:	/* _US_UNWIND_FRAME_RESUME */
@@ -594,15 +594,15 @@ PERSONALITY_FUNC(PERSONALITY)
 	_Unwind_SetGR(ctx, 12, (uintptr_t)ex);
 #endif
 	struct objc_exception *e = (struct objc_exception *)ex;
-	bool foreign = (ex_class != GNUCOBJC_EXCEPTION_CLASS);
-	const uint8_t *lsda_addr, *actionrecords;
-	struct lsda lsda;
+	bool foreign = (exClass != GNUCOBJC_EXCEPTION_CLASS);
+	const uint8_t *LSDAAddr, *actionRecords;
+	struct lsda LSDA;
 	uintptr_t landingpad = 0;
 	uint8_t found = 0;
 	intptr_t filter = 0;
 
 	if (foreign) {
-		switch (ex_class) {
+		switch (exClass) {
 #ifdef CXX_PERSONALITY
 		case GNUCCXX0_EXCEPTION_CLASS:
 		case CLNGCXX0_EXCEPTION_CLASS:
@@ -638,8 +638,8 @@ PERSONALITY_FUNC(PERSONALITY)
 		_Unwind_SetIP(ctx, e->landingpad);
 #else
 		_Unwind_SetGR(ctx, __builtin_eh_return_data_regno(1),
-		    ex->barrier_cache.bitpattern[1]);
-		_Unwind_SetIP(ctx, ex->barrier_cache.bitpattern[3]);
+		    ex->barrierCache.bitPattern[1]);
+		_Unwind_SetIP(ctx, ex->barrierCache.bitPattern[3]);
 #endif
 
 		_Unwind_DeleteException(ex);
@@ -648,16 +648,16 @@ PERSONALITY_FUNC(PERSONALITY)
 	}
 
 	/* No LSDA -> nothing to handle */
-	if ((lsda_addr = _Unwind_GetLanguageSpecificData(ctx)) == NULL)
+	if ((LSDAAddr = _Unwind_GetLanguageSpecificData(ctx)) == NULL)
 		CONTINUE_UNWIND;
 
-	read_lsda(ctx, lsda_addr, &lsda);
+	readLSDA(ctx, LSDAAddr, &LSDA);
 
-	if (!find_callsite(ctx, &lsda, &landingpad, &actionrecords))
+	if (!findCallsite(ctx, &LSDA, &landingpad, &actionRecords))
 		CONTINUE_UNWIND;
 
-	if (landingpad != 0 && actionrecords != NULL)
-		found = find_actionrecord(actionrecords, &lsda, actions,
+	if (landingpad != 0 && actionRecords != NULL)
+		found = findActionRecord(actionRecords, &LSDA, actions,
 		    foreign, e, &filter);
 	else if (landingpad != 0)
 		found = CLEANUP_FOUND;
@@ -674,9 +674,9 @@ PERSONALITY_FUNC(PERSONALITY)
 		e->landingpad = landingpad;
 		e->filter = filter;
 #else
-		ex->barrier_cache.sp = _Unwind_GetGR(ctx, 13);
-		ex->barrier_cache.bitpattern[1] = filter;
-		ex->barrier_cache.bitpattern[3] = landingpad;
+		ex->barrierCache.sp = _Unwind_GetGR(ctx, 13);
+		ex->barrierCache.bitPattern[1] = filter;
+		ex->barrierCache.bitPattern[3] = landingpad;
 #endif
 
 		return _URC_HANDLER_FOUND;
@@ -702,17 +702,18 @@ cleanup(_Unwind_Reason_Code reason, struct _Unwind_Exception *ex)
 }
 
 static void
-cleanup_emergency(_Unwind_Reason_Code reason, struct _Unwind_Exception *ex)
+emergencyExceptionCleanup(_Unwind_Reason_Code reason,
+    struct _Unwind_Exception *ex)
 {
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_lock(&emergency_exceptions_spinlock))
+	if (!of_spinlock_lock(&emergencyExceptionsSpinlock))
 		OBJC_ERROR("Cannot lock spinlock!");
 #endif
 
 	ex->class = 0;
 
 #ifdef OF_HAVE_THREADS
-	if (!of_spinlock_unlock(&emergency_exceptions_spinlock))
+	if (!of_spinlock_unlock(&emergencyExceptionsSpinlock))
 		OBJC_ERROR("Cannot unlock spinlock!");
 #endif
 }
@@ -725,13 +726,13 @@ objc_exception_throw(id object)
 
 	if (e == NULL) {
 #ifdef OF_HAVE_THREADS
-		if (!of_spinlock_lock(&emergency_exceptions_spinlock))
+		if (!of_spinlock_lock(&emergencyExceptionsSpinlock))
 			OBJC_ERROR("Cannot lock spinlock!");
 #endif
 
 		for (uint_fast8_t i = 0; i < NUM_EMERGENCY_EXCEPTIONS; i++) {
-			if (emergency_exceptions[i].exception.class == 0) {
-				e = &emergency_exceptions[i];
+			if (emergencyExceptions[i].exception.class == 0) {
+				e = &emergencyExceptions[i];
 				e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
 				emergency = true;
 
@@ -740,7 +741,7 @@ objc_exception_throw(id object)
 		}
 
 #ifdef OF_HAVE_THREADS
-		if (!of_spinlock_unlock(&emergency_exceptions_spinlock))
+		if (!of_spinlock_unlock(&emergencyExceptionsSpinlock))
 			OBJC_ERROR("Cannot lock spinlock!");
 #endif
 	}
@@ -749,12 +750,13 @@ objc_exception_throw(id object)
 		OBJC_ERROR("Not enough memory to allocate exception!")
 
 	e->exception.class = GNUCOBJC_EXCEPTION_CLASS;
-	e->exception.cleanup = (emergency ? cleanup_emergency : cleanup);
+	e->exception.cleanup = (emergency
+	    ? emergencyExceptionCleanup : cleanup);
 	e->object = object;
 
 	if (_Unwind_RaiseException(&e->exception) == _URC_END_OF_STACK &&
-	    uncaught_exception_handler != NULL)
-		uncaught_exception_handler(object);
+	    uncaughtExceptionHandler != NULL)
+		uncaughtExceptionHandler(object);
 
 	OBJC_ERROR("_Unwind_RaiseException() returned!")
 }
@@ -762,8 +764,8 @@ objc_exception_throw(id object)
 objc_uncaught_exception_handler
 objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
 {
-	objc_uncaught_exception_handler old = uncaught_exception_handler;
-	uncaught_exception_handler = handler;
+	objc_uncaught_exception_handler old = uncaughtExceptionHandler;
+	uncaughtExceptionHandler = handler;
 
 	return old;
 }

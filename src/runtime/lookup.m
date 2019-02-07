@@ -33,21 +33,24 @@
 + (bool)resolveInstanceMethod: (SEL)selector;
 @end
 
-static IMP forward_handler = (IMP)0;
-static IMP forward_handler_stret = (IMP)0;
+static IMP forwardHandler = (IMP)0;
+static IMP stretForwardHandler = (IMP)0;
 
 static IMP
-common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
+commonMethodNotFound(id object, SEL selector, IMP (*lookup)(id, SEL),
+    IMP forward)
 {
 	/*
-	 * obj might be a dummy object (see class_getMethodImplementation), so
-	 * don't access obj directly unless it's a class!
+	 * object might be a dummy object (see class_getMethodImplementation),
+	 * so don't access object directly unless it's a class!
 	 */
 
-	bool is_class = object_getClass(obj)->info & OBJC_CLASS_INFO_METACLASS;
+	bool isClass =
+	    object_getClass(object)->info & OBJC_CLASS_INFO_METACLASS;
 
-	if (!(object_getClass(obj)->info & OBJC_CLASS_INFO_INITIALIZED)) {
-		Class cls = (is_class ? (Class)obj : object_getClass(obj));
+	if (!(object_getClass(object)->info & OBJC_CLASS_INFO_INITIALIZED)) {
+		Class cls = (isClass
+		    ? (Class)object : object_getClass(object));
 
 		objc_initialize_class(cls);
 
@@ -61,37 +64,38 @@ common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 		 * before a message to the class has been sent and it thus has
 		 * been initialized together with its superclasses.
 		 */
-		return lookup(obj, sel);
+		return lookup(object, selector);
 	}
 
 	/* Try resolveClassMethod: / resolveInstanceMethod: */
-	if (class_isMetaClass(object_getClass(obj))) {
-		Class cls = object_getClass(obj);
+	if (class_isMetaClass(object_getClass(object))) {
+		Class cls = object_getClass(object);
 
 		if (class_respondsToSelector(cls,
 		    @selector(resolveClassMethod:)) &&
-		    [obj resolveClassMethod: sel]) {
-			if (!class_respondsToSelector(cls, sel))
+		    [object resolveClassMethod: selector]) {
+			if (!class_respondsToSelector(cls, selector))
 				OBJC_ERROR("[%s resolveClassMethod: %s] "
 				    "returned true without adding the method!",
-				    class_getName(obj), sel_getName(sel));
+				    class_getName(object),
+				    sel_getName(selector));
 
-			return lookup(obj, sel);
+			return lookup(object, selector);
 		}
 	} else {
-		Class cls = object_getClass(obj);
-		Class metacls = object_getClass(cls);
+		Class cls = object_getClass(object);
+		Class metaclass = object_getClass(cls);
 
-		if (class_respondsToSelector(metacls,
+		if (class_respondsToSelector(metaclass,
 		    @selector(resolveInstanceMethod:)) &&
-		    [cls resolveInstanceMethod: sel]) {
-			if (!class_respondsToSelector(cls, sel))
+		    [cls resolveInstanceMethod: selector]) {
+			if (!class_respondsToSelector(cls, selector))
 				OBJC_ERROR("[%s resolveInstanceMethod: %s] "
 				    "returned true without adding the method!",
-				    class_getName(object_getClass(obj)),
-				    sel_getName(sel));
+				    class_getName(object_getClass(object)),
+				    sel_getName(selector));
 
-			return lookup(obj, sel);
+			return lookup(object, selector);
 		}
 	}
 
@@ -99,100 +103,103 @@ common_method_not_found(id obj, SEL sel, IMP (*lookup)(id, SEL), IMP forward)
 		return forward;
 
 	OBJC_ERROR("Selector %c[%s] is not implemented for class %s!",
-	    (is_class ? '+' : '-'), sel_getName(sel), object_getClassName(obj));
+	    (isClass ? '+' : '-'), sel_getName(selector),
+	    object_getClassName(object));
 }
 
 IMP
-objc_method_not_found(id obj, SEL sel)
+objc_method_not_found(id object, SEL selector)
 {
-	return common_method_not_found(obj, sel, objc_msg_lookup,
-	    forward_handler);
+	return commonMethodNotFound(object, selector, objc_msg_lookup,
+	    forwardHandler);
 }
 
 IMP
-objc_method_not_found_stret(id obj, SEL sel)
+objc_method_not_found_stret(id object, SEL selector)
 {
-	return common_method_not_found(obj, sel, objc_msg_lookup_stret,
-	    forward_handler_stret);
+	return commonMethodNotFound(object, selector, objc_msg_lookup_stret,
+	    stretForwardHandler);
 }
 
 void
-objc_setForwardHandler(IMP forward, IMP forward_stret)
+objc_setForwardHandler(IMP forward, IMP stretForward)
 {
-	forward_handler = forward;
-	forward_handler_stret = forward_stret;
+	forwardHandler = forward;
+	stretForwardHandler = stretForward;
 }
 
 bool
-class_respondsToSelector(Class cls, SEL sel)
+class_respondsToSelector(Class cls, SEL selector)
 {
 	if (cls == Nil)
 		return false;
 
-	return (objc_dtable_get(cls->dtable, (uint32_t)sel->uid) != (IMP)0);
+	return (objc_dtable_get(cls->DTable,
+	    (uint32_t)selector->UID) != (IMP)0);
 }
 
 #ifndef OF_ASM_LOOKUP
 static id
-nil_method(id self, SEL _cmd)
+nilMethod(id self, SEL _cmd)
 {
 	return nil;
 }
 
 static OF_INLINE IMP
-common_lookup(id obj, SEL sel, IMP (*not_found)(id, SEL))
+commonLookup(id object, SEL selector, IMP (*notFound)(id, SEL))
 {
 	IMP imp;
 
-	if (obj == nil)
-		return (IMP)nil_method;
+	if (object == nil)
+		return (IMP)nilMethod;
 
-	imp = objc_dtable_get(object_getClass(obj)->dtable, (uint32_t)sel->uid);
+	imp = objc_dtable_get(object_getClass(object)->DTable,
+	    (uint32_t)selector->UID);
 
 	if (imp == (IMP)0)
-		return not_found(obj, sel);
+		return notFound(object, selector);
 
 	return imp;
 }
 
 IMP
-objc_msg_lookup(id obj, SEL sel)
+objc_msg_lookup(id object, SEL selector)
 {
-	return common_lookup(obj, sel, objc_method_not_found);
+	return commonLookup(object, selector, objc_method_not_found);
 }
 
 IMP
-objc_msg_lookup_stret(id obj, SEL sel)
+objc_msg_lookup_stret(id object, SEL selector)
 {
-	return common_lookup(obj, sel, objc_method_not_found_stret);
+	return commonLookup(object, selector, objc_method_not_found_stret);
 }
 
 static OF_INLINE IMP
-common_lookup_super(struct objc_super *super, SEL sel,
-    IMP (*not_found)(id, SEL))
+commonSuperLookup(struct objc_super *super, SEL selector,
+    IMP (*notFound)(id, SEL))
 {
 	IMP imp;
 
 	if (super->self == nil)
-		return (IMP)nil_method;
+		return (IMP)nilMethod;
 
-	imp = objc_dtable_get(super->cls->dtable, (uint32_t)sel->uid);
+	imp = objc_dtable_get(super->cls->DTable, (uint32_t)selector->UID);
 
 	if (imp == (IMP)0)
-		return not_found(super->self, sel);
+		return notFound(super->self, selector);
 
 	return imp;
 }
 
 IMP
-objc_msg_lookup_super(struct objc_super *super, SEL sel)
+objc_msg_lookup_super(struct objc_super *super, SEL selector)
 {
-	return common_lookup_super(super, sel, objc_method_not_found);
+	return commonSuperLookup(super, selector, objc_method_not_found);
 }
 
 IMP
-objc_msg_lookup_super_stret(struct objc_super *super, SEL sel)
+objc_msg_lookup_super_stret(struct objc_super *super, SEL selector)
 {
-	return common_lookup_super(super, sel, objc_method_not_found_stret);
+	return commonSuperLookup(super, selector, objc_method_not_found_stret);
 }
 #endif

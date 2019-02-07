@@ -23,39 +23,40 @@
 #import "ObjFW_RT.h"
 #import "private.h"
 
-static struct objc_abi_static_instances **static_instances = NULL;
-static size_t static_instances_cnt = 0;
+static struct objc_abi_static_instances **staticInstancesList = NULL;
+static size_t staticInstancesCount = 0;
 
 void
 objc_init_static_instances(struct objc_abi_symtab *symtab)
 {
-	struct objc_abi_static_instances **si;
+	struct objc_abi_static_instances **staticInstances;
 
 	/* Check if the class for a static instance became available */
-	for (size_t i = 0; i < static_instances_cnt; i++) {
-		Class cls = objc_lookUpClass(static_instances[i]->class_name);
+	for (size_t i = 0; i < staticInstancesCount; i++) {
+		Class cls = objc_lookUpClass(
+		    staticInstancesList[i]->className);
 
 		if (cls != Nil) {
-			for (id *instances = static_instances[i]->instances;
+			for (id *instances = staticInstancesList[i]->instances;
 			    *instances != nil; instances++)
 				object_setClass(*instances, cls);
 
-			static_instances_cnt--;
+			staticInstancesCount--;
 
-			if (static_instances_cnt == 0) {
-				free(static_instances);
-				static_instances = NULL;
+			if (staticInstancesCount == 0) {
+				free(staticInstancesList);
+				staticInstancesList = NULL;
 				break;
 			}
 
-			static_instances[i] =
-			    static_instances[static_instances_cnt];
+			staticInstancesList[i] =
+			    staticInstancesList[staticInstancesCount];
 
-			static_instances = realloc(static_instances,
+			staticInstancesList = realloc(staticInstancesList,
 			    sizeof(struct objc_abi_static_instances *) *
-			    static_instances_cnt);
+			    staticInstancesCount);
 
-			if (static_instances == NULL)
+			if (staticInstancesList == NULL)
 				OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
@@ -67,29 +68,30 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 		}
 	}
 
-	si = (struct objc_abi_static_instances **)
-	    symtab->defs[symtab->cls_def_cnt + symtab->cat_def_cnt];
+	staticInstances = (struct objc_abi_static_instances **)
+	    symtab->defs[symtab->classDefsCount + symtab->categoryDefsCount];
 
-	if (si == NULL)
+	if (staticInstances == NULL)
 		return;
 
-	for (; *si != NULL; si++) {
-		Class cls = objc_lookUpClass((*si)->class_name);
+	for (; *staticInstances != NULL; staticInstances++) {
+		Class cls = objc_lookUpClass((*staticInstances)->className);
 
 		if (cls != Nil) {
-			for (id *instances = (*si)->instances;
+			for (id *instances = (*staticInstances)->instances;
 			    *instances != nil; instances++)
 				object_setClass(*instances, cls);
 		} else {
-			static_instances = realloc(static_instances,
+			staticInstancesList = realloc(staticInstancesList,
 			    sizeof(struct objc_abi_static_instances *) *
-			    (static_instances_cnt + 1));
+			    (staticInstancesCount + 1));
 
-			if (static_instances == NULL)
+			if (staticInstancesList == NULL)
 				OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
-			static_instances[static_instances_cnt++] = *si;
+			staticInstancesList[staticInstancesCount++] =
+			    *staticInstances;
 		}
 	}
 }
@@ -97,7 +99,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 void
 objc_forget_pending_static_instances()
 {
-	free(static_instances);
-	static_instances = NULL;
-	static_instances_cnt = 0;
+	free(staticInstancesList);
+	staticInstancesList = NULL;
+	staticInstancesCount = 0;
 }
