@@ -30,9 +30,38 @@
 @implementation OFASN1ObjectIdentifier
 @synthesize subidentifiers = _subidentifiers;
 
-- (instancetype)init
++ (instancetype)objectIdentifierWithSubidentifiers:
+    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
 {
-	OF_INVALID_INIT_METHOD
+	return [[[self alloc]
+	    initWithSubidentifiers: subidentifiers] autorelease];
+}
+
+- (instancetype)initWithSubidentifiers:
+    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers
+{
+	self = [super init];
+
+	@try {
+		if ([subidentifiers count] < 1)
+			@throw [OFInvalidFormatException exception];
+
+		switch ([[subidentifiers objectAtIndex: 0] intMaxValue]) {
+		case 0:
+		case 1:
+		case 2:
+			break;
+		default:
+			@throw [OFInvalidFormatException exception];
+		}
+
+		_subidentifiers = [subidentifiers copy];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
 }
 
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
@@ -40,13 +69,12 @@
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super init];
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
 
 	@try {
-		void *pool = objc_autoreleasePoolPush();
 		const unsigned char *items = [DEREncodedContents items];
 		size_t count = [DEREncodedContents count];
-		OFMutableArray *subidentifiers = [OFMutableArray array];
 		uintmax_t value = 0;
 		uint_fast8_t bits = 0;
 
@@ -57,6 +85,8 @@
 
 		if ([DEREncodedContents itemSize] != 1 || count == 0)
 			@throw [OFInvalidArgumentException exception];
+
+		subidentifiers = [OFMutableArray array];
 
 		for (size_t i = 0; i < count; i++) {
 			if (bits == 0 && items[i] == 0x80)
@@ -97,15 +127,21 @@
 			@throw [OFInvalidFormatException exception];
 
 		[subidentifiers makeImmutable];
-		_subidentifiers = [subidentifiers copy];
-
-		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
+	self = [self initWithSubidentifiers: subidentifiers];
+
+	objc_autoreleasePoolPop(pool);
+
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

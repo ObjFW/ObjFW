@@ -27,35 +27,25 @@
 @implementation OFASN1PrintableString
 @synthesize printableStringValue = _printableStringValue;
 
-- (instancetype)init
++ (instancetype)stringWithStringValue: (OFString *)stringValue
 {
-	OF_INVALID_INIT_METHOD
+	return [[[self alloc] initWithStringValue: stringValue] autorelease];
 }
 
-- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
-		       tagNumber: (of_asn1_tag_number_t)tagNumber
-		     constructed: (bool)constructed
-	      DEREncodedContents: (OFData *)DEREncodedContents
+- (instancetype)initWithStringValue: (OFString *)stringValue
 {
 	self = [super init];
 
 	@try {
-		const unsigned char *items = [DEREncodedContents items];
-		size_t count = [DEREncodedContents count];
+		void *pool = objc_autoreleasePoolPush();
+		const char *cString = [stringValue UTF8String];
+		size_t length = [stringValue UTF8StringLength];
 
-		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
-		    tagNumber != OF_ASN1_TAG_NUMBER_PRINTABLE_STRING ||
-		    constructed)
-			@throw [OFInvalidArgumentException exception];
-
-		if ([DEREncodedContents itemSize] != 1)
-			@throw [OFInvalidArgumentException exception];
-
-		for (size_t i = 0; i < count; i++) {
-			if (of_ascii_isalnum(items[i]))
+		for (size_t i = 0; i < length; i++) {
+			if (of_ascii_isalnum(cString[i]))
 				continue;
 
-			switch (items[i]) {
+			switch (cString[i]) {
 			case ' ':
 			case '\'':
 			case '(':
@@ -74,16 +64,53 @@
 			}
 		}
 
-		_printableStringValue = [[OFString alloc]
-		    initWithCString: [DEREncodedContents items]
-			   encoding: OF_STRING_ENCODING_ASCII
-			     length: [DEREncodedContents count]];
+		_printableStringValue = [stringValue copy];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
 	return self;
+}
+
+- (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
+		       tagNumber: (of_asn1_tag_number_t)tagNumber
+		     constructed: (bool)constructed
+	      DEREncodedContents: (OFData *)DEREncodedContents
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFString *printableStringValue;
+
+	@try {
+		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
+		    tagNumber != OF_ASN1_TAG_NUMBER_PRINTABLE_STRING ||
+		    constructed)
+			@throw [OFInvalidArgumentException exception];
+
+		if ([DEREncodedContents itemSize] != 1)
+			@throw [OFInvalidArgumentException exception];
+
+		printableStringValue = [OFString
+		    stringWithCString: [DEREncodedContents items]
+			     encoding: OF_STRING_ENCODING_ASCII
+			       length: [DEREncodedContents count]];
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	self = [self initWithStringValue: printableStringValue];
+
+	objc_autoreleasePoolPop(pool);
+
+	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc

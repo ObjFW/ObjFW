@@ -41,7 +41,30 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) size_t bitStringLength;
 
+/*!
+ * @brief Creates an ASN.1 BitString with the specified BitString value and
+ *	  length.
+ *
+ * @param bitStringValue The value of the BitString
+ * @param bitStringLength The length of the BitString in bits
+ * @return A new, autoreleased OFASN1BitString
+ */
++ (instancetype)bitStringWithBitStringValue: (OFData *)bitStringValue
+			    bitStringLength: (size_t)bitStringLength;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 BitString with the specified
+ *	  BitString value and length.
+ *
+ * @param bitStringValue The value of the BitString
+ * @param bitStringLength The length of the BitString in bits
+ * @return An initialized OFASN1BitString
+ */
+- (instancetype)initWithBitStringValue: (OFData *)bitStringValue
+		       bitStringLength: (size_t)bitStringLength
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 BitString with the specified
@@ -51,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param tagNumber The tag number of the value's type
  * @param constructed Whether the value if of a constructed type
  * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 BitString
+ * @return An initialized OFASN1BitString
  */
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber

@@ -40,7 +40,25 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
+/*!
+ * @brief Creates a PrintableString with the specified string value.
+ *
+ * @param stringValue The string value of the PrintableString
+ * @return A new, autoreleased OFASN1PrintableString
+ */
++ (instancetype)stringWithStringValue: (OFString *)stringValue;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated PrintableString with the specified
+ *	  string value.
+ *
+ * @param stringValue The string value of the PrintableString
+ * @return An initialized OFASN1PrintableString
+ */
+- (instancetype)initWithStringValue: (OFString *)stringValue
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 PrintableString with the
@@ -50,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param tagNumber The tag number of the value's type
  * @param constructed Whether the value if of a constructed type
  * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 PrintableString
+ * @return An initialized OFASN1PrintableString
  */
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber

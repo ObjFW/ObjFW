@@ -36,7 +36,26 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFArray OF_GENERIC(OFNumber *) *subidentifiers;
 
+/*!
+ * @brief Creates an ASN.1 ObjectIdentifier with the specified subidentifiers.
+ *
+ * @param subidentifiers The subidentifiers of the ASN.1 ObjectIdentifier
+ * @return A new, autoreleased OFASN1ObjectIdentifier
+ */
++ (instancetype)objectIdentifierWithSubidentifiers:
+    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
+ *	  specified subidentifiers.
+ *
+ * @param subidentifiers The subidentifiers of the ASN.1 ObjectIdentifier
+ * @return An initialized OFASN1ObjectIdentifier
+ */
+- (instancetype)initWithSubidentifiers:
+    (OFArray OF_GENERIC(OFNumber *) *)subidentifiers OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 ObjectIdentifier with the
@@ -46,7 +65,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param tagNumber The tag number of the value's type
  * @param constructed Whether the value if of a constructed type
  * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 ObjectIdentifier
+ * @return An initialized OFASN1ObjectIdentifier
  */
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber

@@ -33,7 +33,25 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) bool booleanValue;
 
+/*!
+ * @brief Creates an ASN.1 Boolean with the specified Boolean value.
+ *
+ * @param booleanValue The value of the Boolean
+ * @return A new, autoreleased OFASN1Boolean
+ */
++ (instancetype)booleanWithBooleanValue: (bool)booleanValue;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated ASN.1 Boolean with the specified
+ *	  Boolean value.
+ *
+ * @param booleanValue The value of the Boolean
+ * @return An initialized OFASN1Boolean
+ */
+- (instancetype)initWithBooleanValue: (bool)booleanValue
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 Boolean with the specified
@@ -43,7 +61,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param tagNumber The tag number of the value's type
  * @param constructed Whether the value if of a constructed type
  * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 Boolean
+ * @return An initialized OFASN1Boolean
  */
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber

@@ -26,7 +26,7 @@
 #import "OFOutOfRangeException.h"
 
 intmax_t
-of_asn1_integer_parse(const unsigned char *buffer, size_t length)
+of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 {
 	uintmax_t value = 0;
 
@@ -51,9 +51,18 @@ of_asn1_integer_parse(const unsigned char *buffer, size_t length)
 @implementation OFASN1Integer
 @synthesize integerValue = _integerValue;
 
-- (instancetype)init
++ (instancetype)integerWithIntegerValue: (intmax_t)integerValue
 {
-	OF_INVALID_INIT_METHOD
+	return [[[self alloc] initWithIntegerValue: integerValue] autorelease];
+}
+
+- (instancetype)initWithIntegerValue: (intmax_t)integerValue
+{
+	self = [super init];
+
+	_integerValue = integerValue;
+
+	return self;
 }
 
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
@@ -61,7 +70,7 @@ of_asn1_integer_parse(const unsigned char *buffer, size_t length)
 		     constructed: (bool)constructed
 	      DEREncodedContents: (OFData *)DEREncodedContents
 {
-	self = [super init];
+	intmax_t integerValue;
 
 	@try {
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
@@ -71,14 +80,19 @@ of_asn1_integer_parse(const unsigned char *buffer, size_t length)
 		if ([DEREncodedContents itemSize] != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		_integerValue = of_asn1_integer_parse(
+		integerValue = of_asn1_der_integer_parse(
 		    [DEREncodedContents items], [DEREncodedContents count]);
 	} @catch (id e) {
 		[self release];
 		@throw e;
 	}
 
-	return self;
+	return [self initWithIntegerValue: integerValue];
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (bool)isEqual: (id)object

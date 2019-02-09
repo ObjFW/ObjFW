@@ -40,7 +40,25 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
+/*!
+ * @brief Creates an IA5String with the specified string value.
+ *
+ * @param stringValue The string value of the IA5String
+ * @return A new, autoreleased OFASN1IA5String
+ */
++ (instancetype)stringWithStringValue: (OFString *)stringValue;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated IA5String with the specified string
+ *	  value.
+ *
+ * @param stringValue The string value of the IA5String
+ * @return An initialized OFASN1IA5String
+ */
+- (instancetype)initWithStringValue: (OFString *)stringValue
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 IA5String with the specified
@@ -50,7 +68,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param tagNumber The tag number of the value's type
  * @param constructed Whether the value if of a constructed type
  * @param DEREncodedContents The DER-encoded contents octets of the value.
- * @return An initialized ASN.1 IA5String
+ * @return An initialized OFASN1IA5String
  */
 - (instancetype)initWithTagClass: (of_asn1_tag_class_t)tagClass
 		       tagNumber: (of_asn1_tag_number_t)tagNumber

@@ -40,7 +40,25 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property (readonly, nonatomic) OFString *stringValue;
 
+/*!
+ * @brief Creates an NumericString with the specified string value.
+ *
+ * @param stringValue The string value of the NumericString
+ * @return A new, autoreleased OFASN1NumericString
+ */
++ (instancetype)stringWithStringValue: (OFString *)stringValue;
+
 - (instancetype)init OF_UNAVAILABLE;
+
+/*!
+ * @brief Initializes an already allocated NumericString with the specified
+ *	  string value.
+ *
+ * @param stringValue The string value of the NumericString
+ * @return An initialized OFASN1NumericString
+ */
+- (instancetype)initWithStringValue: (OFString *)stringValue
+    OF_DESIGNATED_INITIALIZER;
 
 /*!
  * @brief Initializes an already allocated ASN.1 NumericString with the
