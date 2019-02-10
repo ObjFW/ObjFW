@@ -40,28 +40,28 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @brief The registry key on which creating the sub key failed.
+ * @brief The registry key on which creating the subkey failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
 /*!
- * @brief The path for the sub key that could not be created.
+ * @brief The path for the subkey that could not be created.
  */
 @property (readonly, nonatomic) OFString *path;
 
 /*!
- * @brief The options for the sub key that could not be created.
+ * @brief The options for the subkey that could not be created.
  */
 @property (readonly, nonatomic) DWORD options;
 
 /*!
- * @brief The security and access rights for the sub key that could not be
+ * @brief The security and access rights for the subkey that could not be
  *	  created.
  */
 @property (readonly, nonatomic) REGSAM securityAndAccessRights;
 
 /*!
- * @brief The security options for the sub key that could not be created.
+ * @brief The security options for the subkey that could not be created.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     LPSECURITY_ATTRIBUTES securityAttributes;
@@ -75,12 +75,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new, autoreleased create Windows registry key failed
  *	  exception.
  *
- * @param registryKey The registry key on which creating the sub key failed
- * @param path The path for the sub key that could not be created
- * @param options The options for the sub key that could not be created
+ * @param registryKey The registry key on which creating the subkey failed
+ * @param path The path for the subkey that could not be created
+ * @param options The options for the subkey that could not be created
  * @param securityAndAccessRights The security and access rights for the sub
  *				  key that could not be created
- * @param securityAttributes The security options for the sub key that could
+ * @param securityAttributes The security options for the subkey that could
  *			     not be created
  * @param status The status returned by RegCreateKeyEx()
  * @return A new, autoreleased creates Windows registry key failed exception
@@ -99,12 +99,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated create Windows registry key failed
  *	  exception.
  *
- * @param registryKey The registry key on which creating the sub key failed
- * @param path The path for the sub key that could not be created
- * @param options The options for the sub key that could not be created
+ * @param registryKey The registry key on which creating the subkey failed
+ * @param path The path for the subkey that could not be created
+ * @param options The options for the subkey that could not be created
  * @param securityAndAccessRights The security and access rights for the sub
  *				  key that could not be created
- * @param securityAttributes The security options for the sub key that could
+ * @param securityAttributes The security options for the subkey that could
  *			     not be created
  * @param status The status returned by RegCreateKeyEx()
  * @return An initialized create Windows registry key failed exception

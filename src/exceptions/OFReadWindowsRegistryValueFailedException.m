@@ -21,17 +21,17 @@
 
 @implementation OFReadWindowsRegistryValueFailedException
 @synthesize registryKey = _registryKey, value = _value;
-@synthesize subKeyPath = _subKeyPath, flags = _flags, status = _status;
+@synthesize subkeyPath = _subkeyPath, flags = _flags, status = _status;
 
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 				   value: (nullable OFString *)value
-			      subKeyPath: (nullable OFString *)subKeyPath
+			      subkeyPath: (nullable OFString *)subkeyPath
 				   flags: (DWORD)flags
 				  status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
 					    value: value
-				       subKeyPath: subKeyPath
+				       subkeyPath: subkeyPath
 					    flags: flags
 					   status: status] autorelease];
 }
@@ -43,7 +43,7 @@
 
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			      value: (nullable OFString *)value
-			 subKeyPath: (nullable OFString *)subKeyPath
+			 subkeyPath: (nullable OFString *)subkeyPath
 			      flags: (DWORD)flags
 			     status: (LSTATUS)status
 {
@@ -52,7 +52,7 @@
 	@try {
 		_registryKey = [registryKey retain];
 		_value = [value copy];
-		_subKeyPath = [subKeyPath copy];
+		_subkeyPath = [subkeyPath copy];
 		_flags = flags;
 		_status = status;
 	} @catch (id e) {
@@ -67,7 +67,7 @@
 {
 	[_registryKey release];
 	[_value release];
-	[_subKeyPath release];
+	[_subkeyPath release];
 
 	[super dealloc];
 }
@@ -75,7 +75,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to read value %@ at sub key path %@: Status code %u!",
-	    _value, _subKeyPath, _status];
+	    @"Failed to read value %@ at subkey path %@: Status code %u!",
+	    _value, _subkeyPath, _status];
 }
 @end

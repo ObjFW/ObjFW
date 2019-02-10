@@ -18,10 +18,12 @@
 #include "config.h"
 
 #import "OFWindowsRegistryKey.h"
+#import "OFData.h"
 
 #include <windows.h>
 
 #import "OFCreateWindowsRegistryKeyFailedException.h"
+#import "OFInvalidFormatException.h"
 #import "OFOpenWindowsRegistryKeyFailedException.h"
 #import "OFReadWindowsRegistryValueFailedException.h"
 
@@ -164,66 +166,98 @@
 }
 
 - (OFString *)stringForValue: (OFString *)value
-		  subKeyPath: (OFString *)subKeyPath
-{
-	return [self stringForValue: value
-			 subKeyPath: subKeyPath
-			      flags: 0
-			       type: NULL];
-}
-
-- (OFString *)stringForValue: (OFString *)value
-		  subKeyPath: (OFString *)subKeyPath
-		       flags: (DWORD)flags
-			type: (LPDWORD)type
+		  subkeyPath: (OFString *)subkeyPath
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_char16_t stackBuffer[256], *buffer = stackBuffer;
-	DWORD length = sizeof(stackBuffer);
-	LSTATUS status;
+	OFData *data = [self dataForValue: value
+			       subkeyPath: subkeyPath
+				    flags: RRF_RT_REG_SZ | RRF_RT_REG_EXPAND_SZ
+				     type: NULL];
+	const of_char16_t *UTF16String;
+	size_t length;
 	OFString *ret;
 
-	if ((status = RegGetValueW(_hKey, [subKeyPath UTF16String],
-	    [value UTF16String], flags | RRF_RT_REG_SZ | RRF_RT_REG_EXPAND_SZ,
-	    type, buffer, &length)) != ERROR_SUCCESS) {
-		OFObject *tmp;
+	if (data == nil)
+		return nil;
 
-		if (status == ERROR_FILE_NOT_FOUND) {
-			objc_autoreleasePoolPop(pool);
-			return nil;
-		}
+	UTF16String = [data items];
+	length = [data count];
 
-		if (status != ERROR_MORE_DATA)
-			@throw [OFReadWindowsRegistryValueFailedException
-			    exceptionWithRegistryKey: self
-					       value: value
-					  subKeyPath: subKeyPath
-					       flags: flags
-					      status: status];
+	if ([data itemSize] != 1 || length % 2 == 1)
+		@throw [OFInvalidFormatException exception];
 
-		tmp = [[[OFObject alloc] init] autorelease];
-		buffer = [tmp allocMemoryWithSize: length];
-
-		if ((status = RegGetValueW(_hKey, [subKeyPath UTF16String],
-		    [value UTF16String], flags | RRF_RT_REG_SZ |
-		    RRF_RT_REG_EXPAND_SZ, NULL, buffer, &length)) !=
-		    ERROR_SUCCESS)
-			@throw [OFReadWindowsRegistryValueFailedException
-			    exceptionWithRegistryKey: self
-					       value: value
-					  subKeyPath: subKeyPath
-					       flags: flags
-					      status: status];
-	}
+	length /= 2;
 
 	/*
-	 * We do not specify a length, as the length returned by RegGetValue()
-	 * sometimes seems to be larger than the string.
+	 * REG_SZ and REG_EXPAND_SZ contain a \0, but can contain data after it
+	 * that should be ignored.
 	 */
-	ret = [[OFString alloc] initWithUTF16String: buffer];
+	for (size_t i = 0; i < length; i++) {
+		if (UTF16String[i] == 0) {
+			length = i;
+			break;
+		}
+	}
+
+	ret = [[OFString alloc] initWithUTF16String: UTF16String
+					     length: length];
 
 	objc_autoreleasePoolPop(pool);
 
 	return [ret autorelease];
+}
+
+- (OFData *)dataForValue: (OFString *)value
+	      subkeyPath: (OFString *)subkeyPath
+		   flags: (DWORD)flags
+		    type: (LPDWORD)type
+{
+	void *pool = objc_autoreleasePoolPush();
+	char stackBuffer[256], *buffer = stackBuffer;
+	DWORD length = sizeof(stackBuffer);
+	OFMutableData *ret = nil;
+	LSTATUS status;
+
+	for (;;) {
+		status = RegGetValueW(_hKey, [subkeyPath UTF16String],
+		    [value UTF16String], flags, type, buffer, &length);
+
+		switch (status) {
+		case ERROR_SUCCESS:
+			if (buffer == stackBuffer) {
+				objc_autoreleasePoolPop(pool);
+
+				return [OFData dataWithItems: buffer
+						       count: length];
+			} else {
+				[ret makeImmutable];
+				[ret retain];
+
+				objc_autoreleasePoolPop(pool);
+
+				return [ret autorelease];
+			}
+		case ERROR_FILE_NOT_FOUND:
+			objc_autoreleasePoolPop(pool);
+
+			return nil;
+		case ERROR_MORE_DATA:
+			objc_autoreleasePoolPop(pool);
+			pool = objc_autoreleasePoolPush();
+
+			ret = [OFMutableData dataWithCapacity: length];
+			[ret increaseCountBy: length];
+			buffer = [ret items];
+
+			continue;
+		default:
+			@throw [OFReadWindowsRegistryValueFailedException
+			    exceptionWithRegistryKey: self
+					       value: value
+					  subkeyPath: subkeyPath
+					       flags: flags
+					      status: status];
+		}
+	}
 }
 @end

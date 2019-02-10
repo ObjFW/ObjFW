@@ -40,22 +40,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @brief The registry key on which opening the sub key failed.
+ * @brief The registry key on which opening the subkey failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
 /*!
- * @brief The path for the sub key that could not be opened.
+ * @brief The path for the subkey that could not be opened.
  */
 @property (readonly, nonatomic) OFString *path;
 
 /*!
- * @brief The options for the sub key that could not be opened.
+ * @brief The options for the subkey that could not be opened.
  */
 @property (readonly, nonatomic) DWORD options;
 
 /*!
- * @brief The security and access rights for the sub key that could not be
+ * @brief The security and access rights for the subkey that could not be
  *	  opened.
  */
 @property (readonly, nonatomic) REGSAM securityAndAccessRights;
@@ -69,9 +69,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new, autoreleased open Windows registry key failed
  *	  exception.
  *
- * @param registryKey The registry key on which opening the sub key failed
- * @param path The path for the sub key that could not be opened
- * @param options The options for the sub key that could not be opened
+ * @param registryKey The registry key on which opening the subkey failed
+ * @param path The path for the subkey that could not be opened
+ * @param options The options for the subkey that could not be opened
  * @param securityAndAccessRights The security and access rights for the sub
  *				  key that could not be opened
  * @param status The status returned by RegOpenKeyEx()
@@ -90,9 +90,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Initializes an already allocated open Windows registry key failed
  *	  exception.
  *
- * @param registryKey The registry key on which opening the sub key failed
- * @param path The path for the sub key that could not be opened
- * @param options The options for the sub key that could not be opened
+ * @param registryKey The registry key on which opening the subkey failed
+ * @param path The path for the subkey that could not be opened
+ * @param options The options for the subkey that could not be opened
  * @param securityAndAccessRights The security and access rights for the sub
  *				  key that could not be opened
  * @param status The status returned by RegOpenKeyEx()

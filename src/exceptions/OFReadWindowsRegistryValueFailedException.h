@@ -32,14 +32,13 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFReadWindowsRegistryValueFailedException: OFException
 {
 	OFWindowsRegistryKey *_registryKey;
-	OFString *_Nullable _value, *_Nullable _subKeyPath;
+	OFString *_Nullable _value, *_Nullable _subkeyPath;
 	DWORD _flags;
 	LSTATUS _status;
 }
 
 /*!
- * @brief The registry key on which reading the value at the sub key path
- *	  failed.
+ * @brief The registry key on which reading the value at the key path failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
@@ -49,9 +48,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
 
 /*!
- * @brief The sub key path at which reading the value failed.
+ * @brief The subkey path at which reading the value failed.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *subKeyPath;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *subkeyPath;
 
 /*!
  * @brief The flags with which reading the value failed.
@@ -70,14 +69,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param registryKey The registry key on which reading the value at the sub
  *		      key path failed
  * @param value The value for which reading failed
- * @param subKeyPath The sub key path at which reading the value failed
+ * @param subkeyPath The subkey path at which reading the value failed
  * @param flags The flags with which reading the value failed
  * @param status The status returned by RegGetValueEx()
  * @return A new, autoreleased read Windows registry value failed exception
  */
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 				   value: (nullable OFString *)value
-			      subKeyPath: (nullable OFString *)subKeyPath
+			      subkeyPath: (nullable OFString *)subkeyPath
 				   flags: (DWORD)flags
 				  status: (LSTATUS)status;
 
@@ -90,14 +89,14 @@ OF_ASSUME_NONNULL_BEGIN
  * @param registryKey The registry key on which reading the value at the sub
  *		      key path failed
  * @param value The value for which reading failed
- * @param subKeyPath The sub key path at which reading the value failed
+ * @param subkeyPath The subkey path at which reading the value failed
  * @param flags The flags with which reading the value failed
  * @param status The status returned by RegGetValueEx()
  * @return An initialized read Windows registry value failed exception
  */
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			      value: (nullable OFString *)value
-			 subKeyPath: (nullable OFString *)subKeyPath
+			 subkeyPath: (nullable OFString *)subkeyPath
 			      flags: (DWORD)flags
 			     status: (LSTATUS)status OF_DESIGNATED_INITIALIZER;
 @end

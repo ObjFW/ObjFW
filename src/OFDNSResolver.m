@@ -1203,7 +1203,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 # ifdef OF_HAVE_FILES
 	path = [[OFWindowsRegistryKey localMachineKey]
 	    stringForValue: @"DataBasePath"
-		subKeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
+		subkeyPath: @"SYSTEM\\CurrentControlSet\\Services\\"
 			    @"Tcpip\\Parameters"];
 	path = [path stringByAppendingPathComponent: @"hosts"];
 

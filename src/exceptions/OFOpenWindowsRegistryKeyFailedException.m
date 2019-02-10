@@ -77,7 +77,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to open sub key at path %@: Status code %u!",
+	    @"Failed to open subkey at path %@: Status code %u!",
 	    _path, _status];
 }
 @end
