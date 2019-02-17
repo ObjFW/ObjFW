@@ -20,14 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "OFXMLParser.h"
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidEncodingException.h"
-#import "OFMalformedXMLException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLParser";

@@ -17,15 +17,6 @@
 
 #include "config.h"
 
-#import "OFArray.h"
-#import "OFString.h"
-#import "OFNumber.h"
-#import "OFURL.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFEnumerationMutationException.h"
-#import "OFOutOfRangeException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = nil;

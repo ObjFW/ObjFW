@@ -17,14 +17,7 @@
 
 #include "config.h"
 
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidFormatException.h"
-
 #import "TestsAppDelegate.h"
-
-#import "socket.h"
 
 #define COMPARE_V6(a, a0, a1, a2, a3, a4, a5, a6, a7)		\
 	(a.sockaddr.in6.sin6_addr.s6_addr[0] == (a0 >> 8) &&	\

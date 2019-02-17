@@ -15,8 +15,7 @@
  * file.
  */
 
-#import "OFApplication.h"
-#import "OFXMLElementBuilder.h"
+#import "ObjFW.h"
 
 #define TEST(test, ...)					\
 	{						\

@@ -17,14 +17,6 @@
 
 #include "config.h"
 
-#import "OFXMLElement.h"
-#import "OFXMLCharacters.h"
-#import "OFXMLCDATA.h"
-#import "OFXMLComment.h"
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLNode";

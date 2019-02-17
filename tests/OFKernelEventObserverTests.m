@@ -17,12 +17,6 @@
 
 #include "config.h"
 
-#import "OFKernelEventObserver.h"
-#import "OFString.h"
-#import "OFDate.h"
-#import "OFTCPSocket.h"
-#import "OFAutoreleasePool.h"
-
 #ifdef HAVE_KQUEUE
 # import "OFKernelEventObserver_kqueue.h"
 #endif

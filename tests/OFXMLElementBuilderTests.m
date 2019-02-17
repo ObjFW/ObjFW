@@ -17,11 +17,6 @@
 
 #include "config.h"
 
-#import "OFXMLElement.h"
-#import "OFXMLParser.h"
-#import "OFXMLElementBuilder.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFXMLElementBuilder";

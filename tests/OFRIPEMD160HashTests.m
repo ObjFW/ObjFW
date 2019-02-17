@@ -19,13 +19,6 @@
 
 #include <string.h>
 
-#import "OFRIPEMD160Hash.h"
-#import "OFString.h"
-#import "OFFile.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFHashAlreadyCalculatedException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFRIPEMD160Hash";

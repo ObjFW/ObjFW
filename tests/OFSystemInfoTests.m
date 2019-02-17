@@ -17,12 +17,7 @@
 
 #include "config.h"
 
-#import "OFSystemInfo.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
-
-#import "OFNotImplementedException.h"
 
 static OFString *module = @"OFSystemInfo";
 

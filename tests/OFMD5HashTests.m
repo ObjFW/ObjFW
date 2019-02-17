@@ -19,13 +19,6 @@
 
 #include <string.h>
 
-#import "OFMD5Hash.h"
-#import "OFString.h"
-#import "OFFile.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFHashAlreadyCalculatedException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFMD5Hash";

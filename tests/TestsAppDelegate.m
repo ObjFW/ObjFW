@@ -19,8 +19,6 @@
 
 #include <stdlib.h>
 
-#import "ObjFW.h"
-
 #import "TestsAppDelegate.h"
 
 #if defined(STDOUT) && (defined(OF_WINDOWS) || defined(OF_MSDOS) || \

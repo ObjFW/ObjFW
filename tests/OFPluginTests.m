@@ -17,10 +17,6 @@
 
 #include "config.h"
 
-#import "OFPlugin.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 #import "plugin/TestPlugin.h"

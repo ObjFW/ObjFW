@@ -17,17 +17,6 @@
 
 #include "config.h"
 
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFData.h"
-#import "OFDate.h"
-#import "OFDictionary.h"
-#import "OFNumber.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidFormatException.h"
-#import "OFUnsupportedVersionException.h"
-
 #import "TestsAppDelegate.h"
 
 #define PLIST(x)							\

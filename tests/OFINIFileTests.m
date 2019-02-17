@@ -17,15 +17,6 @@
 
 #include "config.h"
 
-#import "OFINIFile.h"
-#import "OFINICategory.h"
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFDictionary.h"
-#import "OFFile.h"
-#import "OFFileManager.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFINIFile";

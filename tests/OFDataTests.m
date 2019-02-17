@@ -19,13 +19,6 @@
 
 #include <string.h>
 
-#import "OFData.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidArgumentException.h"
-#import "OFOutOfRangeException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFData";

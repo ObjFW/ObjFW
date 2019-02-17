@@ -23,11 +23,6 @@
 # include <complex.h>
 #endif
 
-#import "OFMethodSignature.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidFormatException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFMethodSignature";

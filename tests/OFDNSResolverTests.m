@@ -17,12 +17,6 @@
 
 #include "config.h"
 
-#import "OFDNSResolver.h"
-#import "OFArray.h"
-#import "OFDictionary.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFDNSResolverTests";

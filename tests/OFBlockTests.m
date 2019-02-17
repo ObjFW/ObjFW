@@ -17,16 +17,6 @@
 
 #include "config.h"
 
-#import "OFBlock.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#if defined(OF_OBJFW_RUNTIME)
-# include "ObjFW_RT.h"
-#elif defined(OF_APPLE_RUNTIME)
-# include <objc/runtime.h>
-#endif
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFBlock";

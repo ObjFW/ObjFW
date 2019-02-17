@@ -17,17 +17,6 @@
 
 #include "config.h"
 
-#import "OFURL.h"
-#import "OFArray.h"
-#ifdef OF_HAVE_FILES
-# import "OFFileManager.h"
-#endif
-#import "OFNumber.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidFormatException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFURL";

@@ -17,9 +17,6 @@
 
 #include "config.h"
 
-#import "OFLocale.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFLocale";

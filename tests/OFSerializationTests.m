@@ -17,20 +17,6 @@
 
 #include "config.h"
 
-#import "OFSerialization.h"
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFDictionary.h"
-#import "OFSet.h"
-#import "OFCountedSet.h"
-#import "OFList.h"
-#import "OFNumber.h"
-#import "OFDate.h"
-#import "OFURL.h"
-#import "OFData.h"
-#import "OFAutoreleasePool.h"
-#import "OFXMLElement.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFSerialization";

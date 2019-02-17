@@ -19,11 +19,6 @@
 
 #include <string.h>
 
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFNotImplementedException.h"
-
 #import "TestsAppDelegate.h"
 
 #define FMT @"%@ %@ %@ %@ %@ %@ %@ %@ %@ %g %g %g %g %g %g %g %g %g"

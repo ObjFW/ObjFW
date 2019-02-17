@@ -17,16 +17,10 @@
 
 #include "config.h"
 
-#import "OFSet.h"
-#import "OFArray.h"
-#import "OFMutableSet_hashtable.h"
-#import "OFNumber.h"
-#import "OFSet_hashtable.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFEnumerationMutationException.h"
-
 #import "TestsAppDelegate.h"
+
+#import "OFMutableSet_hashtable.h"
+#import "OFSet_hashtable.h"
 
 static OFString *module = nil;
 

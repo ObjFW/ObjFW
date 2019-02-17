@@ -17,12 +17,10 @@
 
 #include "config.h"
 
-#import "OFCharacterSet.h"
+#import "TestsAppDelegate.h"
+
 #import "OFCharacterSet_bitset.h"
 #import "OFCharacterSet_range.h"
-#import "OFAutoreleasePool.h"
-
-#import "TestsAppDelegate.h"
 
 static OFString *module = nil;
 

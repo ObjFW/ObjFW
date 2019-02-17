@@ -19,11 +19,6 @@
 
 #include <string.h>
 
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "scrypt.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"scrypt";

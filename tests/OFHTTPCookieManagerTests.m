@@ -17,13 +17,6 @@
 
 #include "config.h"
 
-#import "OFHTTPCookieManager.h"
-#import "OFArray.h"
-#import "OFDate.h"
-#import "OFHTTPCookie.h"
-#import "OFURL.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFHTTPCookieManager";

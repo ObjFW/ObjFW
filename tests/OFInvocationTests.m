@@ -24,10 +24,6 @@
 # include <complex.h>
 #endif
 
-#import "OFInvocation.h"
-#import "OFMethodSignature.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFInvocation";

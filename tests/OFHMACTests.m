@@ -19,20 +19,6 @@
 
 #include <string.h>
 
-#import "OFHMAC.h"
-#import "OFString.h"
-#import "OFFile.h"
-#import "OFMD5Hash.h"
-#import "OFSHA1Hash.h"
-#import "OFRIPEMD160Hash.h"
-#import "OFSHA256Hash.h"
-#import "OFSHA384Hash.h"
-#import "OFSHA512Hash.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFHashAlreadyCalculatedException.h"
-#import "OFInvalidArgumentException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFHMAC";

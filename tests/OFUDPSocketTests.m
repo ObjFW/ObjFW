@@ -19,10 +19,6 @@
 
 #include <string.h>
 
-#import "OFUDPSocket.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFUDPSocket";

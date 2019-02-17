@@ -17,11 +17,6 @@
 
 #include "config.h"
 
-#import "OFThread.h"
-#import "OFString.h"
-#import "OFDictionary.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFThread";

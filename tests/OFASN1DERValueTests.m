@@ -17,29 +17,7 @@
 
 #include "config.h"
 
-#import "OFData.h"
-#import "OFASN1BitString.h"
-#import "OFASN1Boolean.h"
-#import "OFASN1IA5String.h"
-#import "OFASN1Integer.h"
-#import "OFASN1NumericString.h"
-#import "OFASN1ObjectIdentifier.h"
-#import "OFASN1OctetString.h"
-#import "OFASN1PrintableString.h"
-#import "OFASN1UTF8String.h"
-#import "OFArray.h"
-#import "OFNull.h"
-#import "OFNumber.h"
-#import "OFSet.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
-
-#import "OFInvalidEncodingException.h"
-#import "OFInvalidFormatException.h"
-#import "OFOutOfRangeException.h"
-#import "OFTruncatedDataException.h"
 
 static OFString *module = @"OFData+ASN1DERValue";
 

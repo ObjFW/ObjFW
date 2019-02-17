@@ -17,12 +17,6 @@
 
 #include "config.h"
 
-#import "OFList.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFEnumerationMutationException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFList";

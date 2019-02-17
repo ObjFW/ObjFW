@@ -21,20 +21,9 @@
 #include <string.h>
 #include <math.h>
 
-#import "OFString.h"
-#import "OFMutableString_UTF8.h"
-#import "OFArray.h"
-#import "OFCharacterSet.h"
-#import "OFURL.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidArgumentException.h"
-#import "OFInvalidEncodingException.h"
-#import "OFInvalidFormatException.h"
-#import "OFOutOfRangeException.h"
-#import "OFUnknownXMLEntityException.h"
-
 #import "TestsAppDelegate.h"
+
+#import "OFMutableString_UTF8.h"
 
 static OFString *module = nil;
 static OFString *whitespace[] = {

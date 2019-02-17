@@ -17,13 +17,6 @@
 
 #include "config.h"
 
-#include <string.h>
-
-#import "OFStream.h"
-#import "OFString.h"
-#import "OFSystemInfo.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFStream";

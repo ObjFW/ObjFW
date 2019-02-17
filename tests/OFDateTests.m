@@ -19,14 +19,6 @@
 
 #include <time.h>
 
-#import "OFDate.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidFormatException.h"
-
-#import "of_strptime.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFDate";

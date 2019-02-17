@@ -20,20 +20,6 @@
 #include <inttypes.h>
 #include <string.h>
 
-#import "OFHTTPClient.h"
-#import "OFCondition.h"
-#import "OFData.h"
-#import "OFDate.h"
-#import "OFDictionary.h"
-#import "OFHTTPRequest.h"
-#import "OFHTTPResponse.h"
-#import "OFRunLoop.h"
-#import "OFString.h"
-#import "OFTCPSocket.h"
-#import "OFThread.h"
-#import "OFURL.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFHTTPClient";

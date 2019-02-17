@@ -17,15 +17,6 @@
 
 #include "config.h"
 
-#import "OFString.h"
-#import "OFArray.h"
-#import "OFDictionary.h"
-#import "OFNumber.h"
-#import "OFNull.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidJSONException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFJSON";

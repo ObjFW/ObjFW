@@ -17,15 +17,6 @@
 
 #include "config.h"
 
-#import "OFString.h"
-#import "OFNumber.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFInvalidArgumentException.h"
-#import "OFMemoryNotPartOfObjectException.h"
-#import "OFOutOfMemoryException.h"
-#import "OFUndefinedKeyException.h"
-
 #import "TestsAppDelegate.h"
 
 #if (defined(OF_DRAGONFLYBSD) && defined(__LP64__)) || defined(OF_NINTENDO_3DS)

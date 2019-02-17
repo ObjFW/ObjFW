@@ -19,11 +19,6 @@
 
 #include <string.h>
 
-#import "OFValue.h"
-#import "OFAutoreleasePool.h"
-
-#import "OFOutOfRangeException.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFValue";

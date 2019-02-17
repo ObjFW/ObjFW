@@ -17,10 +17,6 @@
 
 #include "config.h"
 
-#import "OFWindowsRegistryKey.h"
-#import "OFData.h"
-#import "OFAutoreleasePool.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"OFWindowsRegistryKey";

@@ -19,13 +19,6 @@
 
 #include <string.h>
 
-#import "OFHMAC.h"
-#import "OFSHA1Hash.h"
-#import "OFString.h"
-#import "OFAutoreleasePool.h"
-
-#import "pbkdf2.h"
-
 #import "TestsAppDelegate.h"
 
 static OFString *module = @"PBKDF2";
