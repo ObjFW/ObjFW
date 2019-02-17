@@ -58,9 +58,6 @@ struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
 
 static void
-#ifndef OF_AMIGAOS_M68K
-    __attribute__((__constructor__))
-#endif
 ctor(void)
 {
 	static bool initialized = false;
@@ -112,20 +109,18 @@ ctor(void)
 	initialized = true;
 }
 
-static void
-#ifndef OF_AMIGAOS_M68K
-    __attribute__((__destructor__))
-#else
-    __attribute__((__unused__))
-#endif
+static void __attribute__((__unused__))
 dtor(void)
 {
 	CloseLibrary(ObjFWRTBase);
 }
 
-#ifdef OF_AMIGAOS_M68K
+#if defined(OF_AMIGAOS_M68K)
 ADD2INIT(ctor, -2);
 ADD2EXIT(dtor, -2);
+#elif defined(OF_MORPHOS)
+CONSTRUCTOR_P(ctor, -2);
+DESTRUCTOR_P(dtor, -2);
 #endif
 
 void
