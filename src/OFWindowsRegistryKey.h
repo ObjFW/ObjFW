@@ -76,24 +76,25 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path of the subkey to open
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
- *				  documentation
+ *				  documentation for `samDesired`
  * @return The subkey with the specified path, or nil if it does not exist
  */
 - (nullable OFWindowsRegistryKey *)
-	 openSubKeyWithPath: (OFString *)path
+	   openSubkeyAtPath: (OFString *)path
     securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /*!
  * @brief Opens the subkey at the specified path.
  *
  * @param path The path of the subkey to open
- * @param options Please refer to the `RegOpenKeyEx()` documentation. Usually 0.
+ * @param options Please refer to the `RegOpenKeyEx()` documentation for
+ *		  `ulOptions`. Usually 0.
  * @param securityAndAccessRights Please refer to the `RegOpenKeyEx()`
- *				  documentation
+ *				  documentation for `samDesired`
  * @return The subkey with the specified path, or nil if it does not exist
  */
 - (nullable OFWindowsRegistryKey *)
-	 openSubKeyWithPath: (OFString *)path
+	   openSubkeyAtPath: (OFString *)path
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
@@ -103,12 +104,11 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param path The path of the subkey to create
  * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
- *				  documentation
+ *				  documentation for `samDesired`
  * @return The subkey with the specified path
  */
-- (OFWindowsRegistryKey *)
-       createSubKeyWithPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights;
+- (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
+		     securityAndAccessRights: (REGSAM)securityAndAccessRights;
 
 /*!
  * @brief Creates a subkey at the specified path or opens it if it already
@@ -118,29 +118,21 @@ OF_ASSUME_NONNULL_BEGIN
  * @param options Please refer to the `RegCreateKeyEx()` documentation.
  *		  Usually 0.
  * @param securityAndAccessRights Please refer to the `RegCreateKeyEx()`
- *				  documentation
+ *				  documentation for `samDesired`
  * @param securityAttributes Please refer to the `RegCreateKeyEx()`
- *			     documentation. Usually NULL.
+ *			     documentation for `lpSecurityAttributes`. Usually
+ *			     NULL.
  * @param disposition Whether the key was created or already existed. Please
- *		      refer to the `RegCreateKeyEx()` documentation.
+ *		      refer to the `RegCreateKeyEx()` documentation for
+ *		      `lpdwDisposition`.
  * @return The subkey with the specified path
  */
 - (OFWindowsRegistryKey *)
-       createSubKeyWithPath: (OFString *)path
+	 createSubkeyAtPath: (OFString *)path
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights
 	 securityAttributes: (nullable LPSECURITY_ATTRIBUTES)securityAttributes
 		disposition: (nullable LPDWORD)disposition;
-
-/*!
- * @brief Returns the string for the specified value at the specified path.
- *
- * @param value The name of the value to return
- * @param subkeyPath The path of the key from which to retrieve the value
- * @return The string for the specified value
- */
-- (nullable OFString *)stringForValue: (nullable OFString *)value
-			   subkeyPath: (nullable OFString *)subkeyPath;
 
 /*!
  * @brief Returns the data for the specified value at the specified path.
@@ -155,6 +147,75 @@ OF_ASSUME_NONNULL_BEGIN
 		       subkeyPath: (nullable OFString *)subkeyPath
 			    flags: (DWORD)flags
 			     type: (nullable LPDWORD)type;
+
+/*!
+ * @brief Sets the data for the specified value.
+ *
+ * @param data The data to set the value to
+ * @param value The name of the value to set
+ * @param type The type for the value
+ */
+- (void)setData: (nullable OFData *)data
+       forValue: (nullable OFString *)value
+	   type: (DWORD)type;
+
+/*!
+ * @brief Returns the string for the specified value at the specified path.
+ *
+ * @param value The name of the value to return
+ * @param subkeyPath The path of the key from which to retrieve the value
+ * @return The string for the specified value
+ */
+- (nullable OFString *)stringForValue: (nullable OFString *)value
+			   subkeyPath: (nullable OFString *)subkeyPath;
+
+/*!
+ * @brief Returns the string for the specified value at the specified path.
+ *
+ * @param value The name of the value to return
+ * @param subkeyPath The path of the key from which to retrieve the value
+ * @param flags Extra flags for `RegGetValue()`. Usually 0.
+ * @param type A pointer to store the type of the value, or NULL
+ * @return The string for the specified value
+ */
+- (nullable OFString *)stringForValue: (nullable OFString *)value
+			   subkeyPath: (nullable OFString *)subkeyPath
+				flags: (DWORD)flags
+				 type: (nullable LPDWORD)type;
+
+/*!
+ * @brief Sets the string for the specified value.
+ *
+ * @param string The string to set the value to
+ * @param value The name of the value to set
+ */
+- (void)setString: (nullable OFString *)string
+	 forValue: (nullable OFString *)value;
+
+/*!
+ * @brief Sets the string for the specified value.
+ *
+ * @param string The string to set the value to
+ * @param value The name of the value to set
+ * @param type The type for the value
+ */
+- (void)setString: (nullable OFString *)string
+	 forValue: (nullable OFString *)value
+	     type: (DWORD)type;
+
+/*!
+ * @brief Deletes the specified value.
+ *
+ * @param value The value to delete
+ */
+- (void)deleteValue: (nullable OFString *)value;
+
+/*!
+ * @brief Deletes the specified subkey.
+ *
+ * @param subkeyPath The path of the subkey to delete
+ */
+- (void)deleteSubkeyAtPath: (OFString *)subkeyPath;
 @end
 
 OF_ASSUME_NONNULL_END

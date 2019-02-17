@@ -17,15 +17,15 @@
 
 #include "config.h"
 
-#import "OFReadWindowsRegistryValueFailedException.h"
+#import "OFGetWindowsRegistryValueFailedException.h"
 
-@implementation OFReadWindowsRegistryValueFailedException
+@implementation OFGetWindowsRegistryValueFailedException
 @synthesize registryKey = _registryKey, value = _value;
 @synthesize subkeyPath = _subkeyPath, flags = _flags, status = _status;
 
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-				   value: (nullable OFString *)value
-			      subkeyPath: (nullable OFString *)subkeyPath
+				   value: (OFString *)value
+			      subkeyPath: (OFString *)subkeyPath
 				   flags: (DWORD)flags
 				  status: (LSTATUS)status
 {
@@ -42,8 +42,8 @@
 }
 
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			      value: (nullable OFString *)value
-			 subkeyPath: (nullable OFString *)subkeyPath
+			      value: (OFString *)value
+			 subkeyPath: (OFString *)subkeyPath
 			      flags: (DWORD)flags
 			     status: (LSTATUS)status
 {
@@ -75,7 +75,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to read value %@ at subkey path %@: Status code %u!",
-	    _value, _subkeyPath, _status];
+	    @"Failed to get value %@ at subkey path %@: %@",
+	    _value, _subkeyPath, of_windows_status_to_string(_status)];
 }
 @end

@@ -70,8 +70,11 @@ SRCS_THREADS = OFConditionBroadcastFailedException.m	\
 	       OFThreadStartFailedException.m		\
 	       OFThreadStillRunningException.m
 SRCS_WINDOWS = OFCreateWindowsRegistryKeyFailedException.m	\
+	       OFDeleteWindowsRegistryKeyFailedException.m	\
+	       OFDeleteWindowsRegistryValueFailedException.m	\
+	       OFGetWindowsRegistryValueFailedException.m	\
 	       OFOpenWindowsRegistryKeyFailedException.m	\
-	       OFReadWindowsRegistryValueFailedException.m
+	       OFSetWindowsRegistryValueFailedException.m
 
 INCLUDES = ${SRCS:.m=.h}
 

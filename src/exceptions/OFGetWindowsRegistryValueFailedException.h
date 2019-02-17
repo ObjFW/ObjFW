@@ -23,13 +23,13 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @class OFReadWindowsRegistryValueFailedException \
- *	  OFReadWindowsRegistryValueFailedException.h \
- *	  ObjFW/OFReadWindowsRegistryValueFailedException.h
+ * @class OFGetWindowsRegistryValueFailedException \
+ *	  OFGetWindowsRegistryValueFailedException.h \
+ *	  ObjFW/OFGetWindowsRegistryValueFailedException.h
  *
- * @brief An exception indicating that reading a Windows registry value failed.
+ * @brief An exception indicating that getting a Windows registry value failed.
  */
-@interface OFReadWindowsRegistryValueFailedException: OFException
+@interface OFGetWindowsRegistryValueFailedException: OFException
 {
 	OFWindowsRegistryKey *_registryKey;
 	OFString *_Nullable _value, *_Nullable _subkeyPath;
@@ -38,22 +38,22 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
- * @brief The registry key on which reading the value at the key path failed.
+ * @brief The registry key on which getting the value at the key path failed.
  */
 @property (readonly, nonatomic) OFWindowsRegistryKey *registryKey;
 
 /*!
- * @brief The value for which reading failed.
+ * @brief The value which could not be retrieved.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *value;
 
 /*!
- * @brief The subkey path at which reading the value failed.
+ * @brief The subkey path at which getting the value failed.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *subkeyPath;
 
 /*!
- * @brief The flags with which reading the value failed.
+ * @brief The flags with which getting the value failed.
  */
 @property (readonly, nonatomic) DWORD flags;
 
@@ -63,16 +63,16 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) LSTATUS status;
 
 /*!
- * @brief Creates a new, autoreleased read Windows registry value failed
+ * @brief Creates a new, autoreleased get Windows registry value failed
  *	  exception.
  *
- * @param registryKey The registry key on which reading the value at the sub
+ * @param registryKey The registry key on which getting the value at the sub
  *		      key path failed
- * @param value The value for which reading failed
- * @param subkeyPath The subkey path at which reading the value failed
- * @param flags The flags with which reading the value failed
+ * @param value The value which could not be retrieved
+ * @param subkeyPath The subkey path at which getting the value failed
+ * @param flags The flags with which getting the value failed
  * @param status The status returned by RegGetValueEx()
- * @return A new, autoreleased read Windows registry value failed exception
+ * @return A new, autoreleased get Windows registry value failed exception
  */
 + (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 				   value: (nullable OFString *)value
@@ -83,16 +83,16 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)init OF_UNAVAILABLE;
 
 /*!
- * @brief Initializes an already allocated read Windows registry value failed
+ * @brief Initializes an already allocated get Windows registry value failed
  *	  exception.
  *
- * @param registryKey The registry key on which reading the value at the sub
+ * @param registryKey The registry key on which getting the value at the sub
  *		      key path failed
- * @param value The value for which reading failed
- * @param subkeyPath The subkey path at which reading the value failed
- * @param flags The flags with which reading the value failed
+ * @param value The value which could not be retrieved
+ * @param subkeyPath The subkey path at which getting the value failed
+ * @param flags The flags with which getting the value failed
  * @param status The status returned by RegGetValueEx()
- * @return An initialized read Windows registry value failed exception
+ * @return An initialized get Windows registry value failed exception
  */
 - (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
 			      value: (nullable OFString *)value

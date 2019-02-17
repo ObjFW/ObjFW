@@ -188,7 +188,7 @@ static OFString *c_ary[] = {
 
 	TEST(@"-[containsObject:]",
 	    [a[0] containsObject: c_ary[1]] &&
-	    ![a[0] containsObject: @"nonexistant"])
+	    ![a[0] containsObject: @"nonexistent"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
 	    [a[0] containsObjectIdenticalTo: c_ary[1]] &&

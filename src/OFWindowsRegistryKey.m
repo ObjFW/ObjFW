@@ -23,9 +23,13 @@
 #include <windows.h>
 
 #import "OFCreateWindowsRegistryKeyFailedException.h"
+#import "OFDeleteWindowsRegistryKeyFailedException.h"
+#import "OFDeleteWindowsRegistryValueFailedException.h"
+#import "OFGetWindowsRegistryValueFailedException.h"
 #import "OFInvalidFormatException.h"
 #import "OFOpenWindowsRegistryKeyFailedException.h"
-#import "OFReadWindowsRegistryValueFailedException.h"
+#import "OFOutOfRangeException.h"
+#import "OFSetWindowsRegistryValueFailedException.h"
 
 @interface OFWindowsRegistryKey ()
 - (instancetype)of_initWithHKey: (HKEY)hKey
@@ -87,17 +91,17 @@
 	[super dealloc];
 }
 
-- (OFWindowsRegistryKey *)openSubKeyWithPath: (OFString *)path
-		     securityAndAccessRights: (REGSAM)securityAndAccessRights
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights
 {
-	return [self openSubKeyWithPath: path
-				options: 0
-		securityAndAccessRights: securityAndAccessRights];
+	return [self openSubkeyAtPath: path
+			      options: 0
+	      securityAndAccessRights: securityAndAccessRights];
 }
 
-- (OFWindowsRegistryKey *)openSubKeyWithPath: (OFString *)path
-				     options: (DWORD)options
-		     securityAndAccessRights: (REGSAM)securityAndAccessRights
+- (OFWindowsRegistryKey *)openSubkeyAtPath: (OFString *)path
+				   options: (DWORD)options
+		   securityAndAccessRights: (REGSAM)securityAndAccessRights
 {
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
@@ -125,19 +129,18 @@
 	    autorelease];
 }
 
-- (OFWindowsRegistryKey *)
-       createSubKeyWithPath: (OFString *)path
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
+- (OFWindowsRegistryKey *)createSubkeyAtPath: (OFString *)path
+		     securityAndAccessRights: (REGSAM)securityAndAccessRights
 {
-	return [self createSubKeyWithPath: path
-				  options: 0
-		  securityAndAccessRights: securityAndAccessRights
-		       securityAttributes: NULL
-			      disposition: NULL];
+	return [self createSubkeyAtPath: path
+				options: 0
+		securityAndAccessRights: securityAndAccessRights
+		     securityAttributes: NULL
+			    disposition: NULL];
 }
 
 - (OFWindowsRegistryKey *)
-       createSubKeyWithPath: (OFString *)path
+	 createSubkeyAtPath: (OFString *)path
 		    options: (DWORD)options
     securityAndAccessRights: (REGSAM)securityAndAccessRights
 	 securityAttributes: (LPSECURITY_ATTRIBUTES)securityAttributes
@@ -163,48 +166,6 @@
 	return [[[OFWindowsRegistryKey alloc] of_initWithHKey: subKey
 							close: true]
 	    autorelease];
-}
-
-- (OFString *)stringForValue: (OFString *)value
-		  subkeyPath: (OFString *)subkeyPath
-{
-	void *pool = objc_autoreleasePoolPush();
-	OFData *data = [self dataForValue: value
-			       subkeyPath: subkeyPath
-				    flags: RRF_RT_REG_SZ | RRF_RT_REG_EXPAND_SZ
-				     type: NULL];
-	const of_char16_t *UTF16String;
-	size_t length;
-	OFString *ret;
-
-	if (data == nil)
-		return nil;
-
-	UTF16String = [data items];
-	length = [data count];
-
-	if ([data itemSize] != 1 || length % 2 == 1)
-		@throw [OFInvalidFormatException exception];
-
-	length /= 2;
-
-	/*
-	 * REG_SZ and REG_EXPAND_SZ contain a \0, but can contain data after it
-	 * that should be ignored.
-	 */
-	for (size_t i = 0; i < length; i++) {
-		if (UTF16String[i] == 0) {
-			length = i;
-			break;
-		}
-	}
-
-	ret = [[OFString alloc] initWithUTF16String: UTF16String
-					     length: length];
-
-	objc_autoreleasePoolPop(pool);
-
-	return [ret autorelease];
 }
 
 - (OFData *)dataForValue: (OFString *)value
@@ -251,7 +212,7 @@
 
 			continue;
 		default:
-			@throw [OFReadWindowsRegistryValueFailedException
+			@throw [OFGetWindowsRegistryValueFailedException
 			    exceptionWithRegistryKey: self
 					       value: value
 					  subkeyPath: subkeyPath
@@ -259,5 +220,133 @@
 					      status: status];
 		}
 	}
+}
+
+- (void)setData: (OFData *)data
+       forValue: (OFString *)value
+	   type: (DWORD)type
+{
+	size_t length = [data count] * [data itemSize];
+	LSTATUS status;
+
+	if (length > UINT32_MAX)
+		@throw [OFOutOfRangeException exception];
+
+	if ((status = RegSetValueExW(_hKey, [value UTF16String], 0, type,
+	    [data items], (DWORD)length)) != ERROR_SUCCESS)
+		@throw [OFSetWindowsRegistryValueFailedException
+		    exceptionWithRegistryKey: self
+				       value: value
+					data: data
+					type: type
+				      status: status];
+}
+
+- (OFString *)stringForValue: (OFString *)value
+		  subkeyPath: (OFString *)subkeyPath
+{
+	return [self stringForValue: value
+			 subkeyPath: subkeyPath
+			      flags: RRF_RT_REG_SZ
+			       type: NULL];
+}
+
+- (OFString *)stringForValue: (OFString *)value
+		  subkeyPath: (OFString *)subkeyPath
+		       flags: (DWORD)flags
+			type: (LPDWORD)type
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data = [self dataForValue: value
+			       subkeyPath: subkeyPath
+				    flags: flags
+				     type: type];
+	const of_char16_t *UTF16String;
+	size_t length;
+	OFString *ret;
+
+	if (data == nil)
+		return nil;
+
+	UTF16String = [data items];
+	length = [data count];
+
+	if ([data itemSize] != 1 || length % 2 == 1)
+		@throw [OFInvalidFormatException exception];
+
+	length /= 2;
+
+	/*
+	 * REG_SZ and REG_EXPAND_SZ contain a \0, but can contain data after it
+	 * that should be ignored.
+	 */
+	for (size_t i = 0; i < length; i++) {
+		if (UTF16String[i] == 0) {
+			length = i;
+			break;
+		}
+	}
+
+	ret = [[OFString alloc] initWithUTF16String: UTF16String
+					     length: length];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (void)setString: (OFString *)string
+	 forValue: (OFString *)value
+{
+	[self setString: string
+	       forValue: value
+		   type: REG_SZ];
+}
+
+- (void)setString: (OFString *)string
+	 forValue: (OFString *)value
+	     type: (DWORD)type
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *data;
+
+	data = [OFData dataWithItems: [string UTF16String]
+			    itemSize: sizeof(of_char16_t)
+			       count: [string UTF16StringLength] + 1];
+	[self setData: data
+	     forValue: value
+		 type: type];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)deleteValue: (OFString *)value
+{
+	void *pool = objc_autoreleasePoolPush();
+	LSTATUS status;
+
+	if ((status = RegDeleteValueW(_hKey, [value UTF16String])) !=
+	    ERROR_SUCCESS)
+		@throw [OFDeleteWindowsRegistryValueFailedException
+		    exceptionWithRegistryKey: self
+				       value: value
+				      status: status];
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)deleteSubkeyAtPath: (OFString *)subkeyPath
+{
+	void *pool = objc_autoreleasePoolPush();
+	LSTATUS status;
+
+	if ((status = RegDeleteKeyW(_hKey, [subkeyPath UTF16String])) !=
+	    ERROR_SUCCESS)
+		@throw [OFDeleteWindowsRegistryKeyFailedException
+		    exceptionWithRegistryKey: self
+				  subkeyPath: subkeyPath
+				      status: status];
+
+	objc_autoreleasePoolPop(pool);
 }
 @end

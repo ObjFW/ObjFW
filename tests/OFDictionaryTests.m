@@ -190,7 +190,7 @@ static OFString *values[] = {
 
 	TEST(@"-[containsObject:]",
 	    [mutDict containsObject: values[0]] &&
-	    ![mutDict containsObject: @"nonexistant"])
+	    ![mutDict containsObject: @"nonexistent"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
 	    [mutDict containsObjectIdenticalTo: values[0]] &&

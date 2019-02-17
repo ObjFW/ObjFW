@@ -207,6 +207,29 @@ of_strerror(int errNo)
 	return ret;
 }
 
+#ifdef OF_WINDOWS
+OFString *
+of_windows_status_to_string(LSTATUS status)
+{
+	void *buffer;
+	OFString *string;
+
+	if (FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
+	    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS |
+	    FORMAT_MESSAGE_MAX_WIDTH_MASK, NULL, status, 0, (LPWSTR)&buffer, 0,
+	    NULL) != 0) {
+		@try {
+			string = [OFString stringWithUTF16String: buffer];
+		} @finally {
+			LocalFree(buffer);
+		}
+	} else
+		string = [OFString stringWithFormat: @"Status code %u", status];
+
+	return string;
+}
+#endif
+
 #ifdef HAVE__UNWIND_BACKTRACE
 static _Unwind_Reason_Code
 backtrace_callback(struct _Unwind_Context *ctx, void *data)

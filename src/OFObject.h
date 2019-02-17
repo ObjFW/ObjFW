@@ -33,6 +33,19 @@
 #import "autorelease.h"
 #import "block.h"
 
+/*
+ * Some versions of MinGW require <winsock2.h> to be included before
+ * <windows.h>. Do this here to make sure this is always done in the correct
+ * order, even if another header includes just <windows.h>.
+ */
+#ifdef __MINGW32__
+# include <_mingw.h>
+# ifdef __MINGW64_VERSION_MAJOR
+#  include <winsock2.h>
+#  include <windows.h>
+# endif
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */

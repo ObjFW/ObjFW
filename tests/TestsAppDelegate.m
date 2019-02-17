@@ -442,6 +442,9 @@ main(int argc, char *argv[])
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif
+#ifdef OF_WINDOWS
+	[self windowsRegistryKeyTests];
+#endif
 
 #ifdef OF_HAVE_SOCKETS
 	[self DNSResolverTests];

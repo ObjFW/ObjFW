@@ -73,7 +73,7 @@ static OFString *module = @"Runtime";
 	RuntimeTest *rt = [[[RuntimeTest alloc] init] autorelease];
 	OFString *t, *foo;
 
-	EXPECT_EXCEPTION(@"Calling a non-existant method via super",
+	EXPECT_EXCEPTION(@"Calling a non-existent method via super",
 	    OFNotImplementedException, [rt superTest])
 
 	TEST(@"Calling a method via a super with self == nil",

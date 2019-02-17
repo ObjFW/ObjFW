@@ -81,7 +81,7 @@ static OFString *strings[] = {
 
 	TEST(@"-[containsObject:]",
 	    [list containsObject: strings[1]] &&
-	    ![list containsObject: @"nonexistant"])
+	    ![list containsObject: @"nonexistent"])
 
 	TEST(@"-[containsObjectIdenticalTo:]",
 	    [list containsObjectIdenticalTo: strings[1]] &&

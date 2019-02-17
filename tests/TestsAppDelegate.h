@@ -259,6 +259,10 @@ enum {
 - (void)valueTests;
 @end
 
+@interface TestsAppDelegate (OFWindowsRegistryKeyTests)
+- (void)windowsRegistryKeyTests;
+@end
+
 @interface TestsAppDelegate (OFXMLElementBuilderTests)
 - (void)XMLElementBuilderTests;
 @end

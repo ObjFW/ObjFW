@@ -17,6 +17,10 @@
 
 #import "OFObject.h"
 
+#ifdef OF_WINDOWS
+# include <windows.h>
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
@@ -173,6 +177,9 @@ OF_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 extern OFString *of_strerror(int errNo);
+#ifdef OF_WINDOWS
+extern OFString *of_windows_status_to_string(LSTATUS status);
+#endif
 #ifdef __cplusplus
 }
 #endif

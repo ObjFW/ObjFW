@@ -37,14 +37,6 @@ typedef pthread_cond_t of_condition_t;
 typedef pthread_once_t of_once_t;
 # define OF_ONCE_INIT PTHREAD_ONCE_INIT
 #elif defined(OF_WINDOWS)
-/*
- * winsock2.h needs to be included before windows.h. Not including it here
- * would make it impossible to use sockets after threading.h has been
- * imported.
- */
-# ifdef OF_HAVE_SOCKETS
-#  include <winsock2.h>
-# endif
 # include <windows.h>
 typedef HANDLE of_thread_t;
 typedef DWORD of_tlskey_t;

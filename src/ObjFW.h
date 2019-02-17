@@ -165,12 +165,17 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #ifdef OF_WINDOWS
 # import "OFCreateWindowsRegistryKeyFailedException.h"
+# import "OFDeleteWindowsRegistryKeyFailedException.h"
+# import "OFDeleteWindowsRegistryValueFailedException.h"
 #endif
 #import "OFEnumerationMutationException.h"
 #ifdef OF_HAVE_FILES
 # import "OFGetCurrentDirectoryPathFailedException.h"
 #endif
 #import "OFGetOptionFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFGetWindowsRegistryValueFailedException.h"
+#endif
 #import "OFHashAlreadyCalculatedException.h"
 #ifdef OF_HAVE_SOCKETS
 # import "OFHTTPRequestFailedException.h"
@@ -205,15 +210,15 @@
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
-#ifdef OF_WINDOWS
-# import "OFReadWindowsRegistryValueFailedException.h"
-#endif
 #import "OFRemoveItemFailedException.h"
 #import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"
 #import "OFSetItemAttributesFailedException.h"
 #import "OFSetOptionFailedException.h"
+#ifdef OF_WINDOWS
+# import "OFSetWindowsRegistryValueFailedException.h"
+#endif
 #import "OFStillLockedException.h"
 #ifdef OF_HAVE_THREADS
 # import "OFThreadJoinFailedException.h"

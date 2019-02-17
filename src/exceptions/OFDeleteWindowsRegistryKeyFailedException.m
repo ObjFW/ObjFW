@@ -17,24 +17,20 @@
 
 #include "config.h"
 
-#import "OFOpenWindowsRegistryKeyFailedException.h"
+#import "OFDeleteWindowsRegistryKeyFailedException.h"
 
-@implementation OFOpenWindowsRegistryKeyFailedException
-@synthesize registryKey = _registryKey, path = _path, options = _options;
-@synthesize securityAndAccessRights = _securityAndAccessRights;
+#import "OFData.h"
+
+@implementation OFDeleteWindowsRegistryKeyFailedException
+@synthesize registryKey = _registryKey, subkeyPath = _subkeyPath;
 @synthesize status = _status;
 
-+ (instancetype)
-    exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-			path: (OFString *)path
-		     options: (DWORD)options
-     securityAndAccessRights: (REGSAM)securityAndAccessRights
-		      status: (LSTATUS)status
++ (instancetype)exceptionWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+			      subkeyPath: (OFString *)subkeyPath
+				  status: (LSTATUS)status
 {
 	return [[[self alloc] initWithRegistryKey: registryKey
-					     path: path
-					  options: options
-			  securityAndAccessRights: securityAndAccessRights
+				       subkeyPath: subkeyPath
 					   status: status] autorelease];
 }
 
@@ -43,20 +39,15 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)
-	initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
-		       path: (OFString *)path
-		    options: (DWORD)options
-    securityAndAccessRights: (REGSAM)securityAndAccessRights
-		     status: (LSTATUS)status
+- (instancetype)initWithRegistryKey: (OFWindowsRegistryKey *)registryKey
+			 subkeyPath: (OFString *)subkeyPath
+			     status: (LSTATUS)status
 {
 	self = [super init];
 
 	@try {
 		_registryKey = [registryKey retain];
-		_path = [path copy];
-		_options = options;
-		_securityAndAccessRights = securityAndAccessRights;
+		_subkeyPath = [subkeyPath copy];
 		_status = status;
 	} @catch (id e) {
 		[self release];
@@ -69,7 +60,7 @@
 - (void)dealloc
 {
 	[_registryKey release];
-	[_path release];
+	[_subkeyPath release];
 
 	[super dealloc];
 }
@@ -77,7 +68,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"Failed to open subkey at path %@: %@",
-	    _path, of_windows_status_to_string(_status)];
+	    @"Failed to delete subkey at path %@: %@",
+	    _subkeyPath, of_windows_status_to_string(_status)];
 }
 @end
