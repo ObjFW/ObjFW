@@ -32,10 +32,10 @@ of_forward:
 	movq	%rdx, -0x38(%rbp)
 	movq	%r8, -0x40(%rbp)
 	movq	%r9, -0x48(%rbp)
-	movdqa	%xmm0, -0x60(%rbp)
-	movdqa	%xmm1, -0x70(%rbp)
-	movdqa	%xmm2, -0x80(%rbp)
-	movdqa	%xmm3, -0x90(%rbp)
+	movaps	%xmm0, -0x60(%rbp)
+	movaps	%xmm1, -0x70(%rbp)
+	movaps	%xmm2, -0x80(%rbp)
+	movaps	%xmm3, -0x90(%rbp)
 
 	call	object_getClass
 
@@ -68,10 +68,10 @@ of_forward:
 	movq	%rax, %r11
 
 	/* Restore all arguments */
-	movdqa	-0x90(%rbp), %xmm3
-	movdqa	-0x80(%rbp), %xmm2
-	movdqa	-0x70(%rbp), %xmm1
-	movdqa	-0x60(%rbp), %xmm0
+	movaps	-0x90(%rbp), %xmm3
+	movaps	-0x80(%rbp), %xmm2
+	movaps	-0x70(%rbp), %xmm1
+	movaps	-0x60(%rbp), %xmm0
 	movq	-0x48(%rbp), %r9
 	movq	-0x40(%rbp), %r8
 	movq	-0x38(%rbp), %rdx
@@ -103,10 +103,10 @@ of_forward_stret:
 	movq	%rdx, -0x38(%rbp)
 	movq	%r8, -0x40(%rbp)
 	movq	%r9, -0x48(%rbp)
-	movdqa	%xmm0, -0x60(%rbp)
-	movdqa	%xmm1, -0x70(%rbp)
-	movdqa	%xmm2, -0x80(%rbp)
-	movdqa	%xmm3, -0x90(%rbp)
+	movaps	%xmm0, -0x60(%rbp)
+	movaps	%xmm1, -0x70(%rbp)
+	movaps	%xmm2, -0x80(%rbp)
+	movaps	%xmm3, -0x90(%rbp)
 
 	movq	%rdx, %rcx
 	call	object_getClass
@@ -140,10 +140,10 @@ of_forward_stret:
 	movq	%rax, %r11
 
 	/* Restore all arguments */
-	movdqa	-0x90(%rbp), %xmm3
-	movdqa	-0x80(%rbp), %xmm2
-	movdqa	-0x70(%rbp), %xmm1
-	movdqa	-0x60(%rbp), %xmm0
+	movaps	-0x90(%rbp), %xmm3
+	movaps	-0x80(%rbp), %xmm2
+	movaps	-0x70(%rbp), %xmm1
+	movaps	-0x60(%rbp), %xmm0
 	movq	-0x48(%rbp), %r9
 	movq	-0x40(%rbp), %r8
 	movq	-0x38(%rbp), %rdx

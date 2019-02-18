@@ -63,14 +63,14 @@ of_invocation_call:
 .stack_filled:
 	movb	OFFSET_NUM_SSE_USED(%rdi), %al
 
-	movdqa	OFFSET_SSE_INOUT+112(%rdi), %xmm7
-	movdqa	OFFSET_SSE_INOUT+96(%rdi), %xmm6
-	movdqa	OFFSET_SSE_INOUT+80(%rdi), %xmm5
-	movdqa	OFFSET_SSE_INOUT+64(%rdi), %xmm4
-	movdqa	OFFSET_SSE_INOUT+48(%rdi), %xmm3
-	movdqa	OFFSET_SSE_INOUT+32(%rdi), %xmm2
-	movdqa	OFFSET_SSE_INOUT+16(%rdi), %xmm1
-	movdqa	OFFSET_SSE_INOUT(%rdi), %xmm0
+	movaps	OFFSET_SSE_INOUT+112(%rdi), %xmm7
+	movaps	OFFSET_SSE_INOUT+96(%rdi), %xmm6
+	movaps	OFFSET_SSE_INOUT+80(%rdi), %xmm5
+	movaps	OFFSET_SSE_INOUT+64(%rdi), %xmm4
+	movaps	OFFSET_SSE_INOUT+48(%rdi), %xmm3
+	movaps	OFFSET_SSE_INOUT+32(%rdi), %xmm2
+	movaps	OFFSET_SSE_INOUT+16(%rdi), %xmm1
+	movaps	OFFSET_SSE_INOUT(%rdi), %xmm0
 
 	movq	OFFSET_GPR_IN+40(%rdi), %r9
 	movq	OFFSET_GPR_IN+32(%rdi), %r8
@@ -93,8 +93,8 @@ of_invocation_call:
 	movq	-8(%rbp), %rdi
 	movq	%rax, OFFSET_GPR_OUT(%rdi)
 	movq	%rdx, OFFSET_GPR_OUT+8(%rdi)
-	movdqa	%xmm0, OFFSET_SSE_INOUT(%rdi)
-	movdqa	%xmm1, OFFSET_SSE_INOUT+16(%rdi)
+	movaps	%xmm0, OFFSET_SSE_INOUT(%rdi)
+	movaps	%xmm1, OFFSET_SSE_INOUT+16(%rdi)
 
 	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
 

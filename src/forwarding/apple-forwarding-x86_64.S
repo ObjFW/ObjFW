@@ -45,14 +45,14 @@ _of_forward:
 	movq	%rcx, -0x28(%rbp)
 	movq	%r8, -0x30(%rbp)
 	movq	%r9, -0x38(%rbp)
-	movdqa	%xmm0, -0x50(%rbp)
-	movdqa	%xmm1, -0x60(%rbp)
-	movdqa	%xmm2, -0x70(%rbp)
-	movdqa	%xmm3, -0x80(%rbp)
-	movdqa	%xmm4, -0x90(%rbp)
-	movdqa	%xmm5, -0xA0(%rbp)
-	movdqa	%xmm6, -0xB0(%rbp)
-	movdqa	%xmm7, -0xC0(%rbp)
+	movaps	%xmm0, -0x50(%rbp)
+	movaps	%xmm1, -0x60(%rbp)
+	movaps	%xmm2, -0x70(%rbp)
+	movaps	%xmm3, -0x80(%rbp)
+	movaps	%xmm4, -0x90(%rbp)
+	movaps	%xmm5, -0xA0(%rbp)
+	movaps	%xmm6, -0xB0(%rbp)
+	movaps	%xmm7, -0xC0(%rbp)
 
 	call	_object_getClass
 
@@ -76,14 +76,14 @@ _of_forward:
 	movq	%rax, %rdi
 
 	/* Restore all arguments, except %rdi */
-	movdqa	-0xC0(%rbp), %xmm7
-	movdqa	-0xB0(%rbp), %xmm6
-	movdqa	-0xA0(%rbp), %xmm5
-	movdqa	-0x90(%rbp), %xmm4
-	movdqa	-0x80(%rbp), %xmm3
-	movdqa	-0x70(%rbp), %xmm2
-	movdqa	-0x60(%rbp), %xmm1
-	movdqa	-0x50(%rbp), %xmm0
+	movaps	-0xC0(%rbp), %xmm7
+	movaps	-0xB0(%rbp), %xmm6
+	movaps	-0xA0(%rbp), %xmm5
+	movaps	-0x90(%rbp), %xmm4
+	movaps	-0x80(%rbp), %xmm3
+	movaps	-0x70(%rbp), %xmm2
+	movaps	-0x60(%rbp), %xmm1
+	movaps	-0x50(%rbp), %xmm0
 	movq	-0x38(%rbp), %r9
 	movq	-0x30(%rbp), %r8
 	movq	-0x28(%rbp), %rcx
@@ -118,14 +118,14 @@ _of_forward_stret:
 	movq	%rcx, -0x28(%rbp)
 	movq	%r8, -0x30(%rbp)
 	movq	%r9, -0x38(%rbp)
-	movdqa	%xmm0, -0x50(%rbp)
-	movdqa	%xmm1, -0x60(%rbp)
-	movdqa	%xmm2, -0x70(%rbp)
-	movdqa	%xmm3, -0x80(%rbp)
-	movdqa	%xmm4, -0x90(%rbp)
-	movdqa	%xmm5, -0xA0(%rbp)
-	movdqa	%xmm6, -0xB0(%rbp)
-	movdqa	%xmm7, -0xC0(%rbp)
+	movaps	%xmm0, -0x50(%rbp)
+	movaps	%xmm1, -0x60(%rbp)
+	movaps	%xmm2, -0x70(%rbp)
+	movaps	%xmm3, -0x80(%rbp)
+	movaps	%xmm4, -0x90(%rbp)
+	movaps	%xmm5, -0xA0(%rbp)
+	movaps	%xmm6, -0xB0(%rbp)
+	movaps	%xmm7, -0xC0(%rbp)
 
 	movq	%rsi, %rdi
 	call	_object_getClass
@@ -149,14 +149,14 @@ _of_forward_stret:
 	movq	%rax, %rsi
 
 	/* Restore all arguments, except %rsi */
-	movdqa	-0xC0(%rbp), %xmm7
-	movdqa	-0xB0(%rbp), %xmm6
-	movdqa	-0xA0(%rbp), %xmm5
-	movdqa	-0x90(%rbp), %xmm4
-	movdqa	-0x80(%rbp), %xmm3
-	movdqa	-0x70(%rbp), %xmm2
-	movdqa	-0x60(%rbp), %xmm1
-	movdqa	-0x50(%rbp), %xmm0
+	movaps	-0xC0(%rbp), %xmm7
+	movaps	-0xB0(%rbp), %xmm6
+	movaps	-0xA0(%rbp), %xmm5
+	movaps	-0x90(%rbp), %xmm4
+	movaps	-0x80(%rbp), %xmm3
+	movaps	-0x70(%rbp), %xmm2
+	movaps	-0x60(%rbp), %xmm1
+	movaps	-0x50(%rbp), %xmm0
 	movq	-0x38(%rbp), %r9
 	movq	-0x30(%rbp), %r8
 	movq	-0x28(%rbp), %rcx
