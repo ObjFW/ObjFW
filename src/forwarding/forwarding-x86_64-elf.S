@@ -95,7 +95,7 @@ of_forward:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmpq     *%r11
+	jmpq	*%r11
 
 0:
 	movq	-0x10(%rbp), %rdi
@@ -181,7 +181,7 @@ of_forward_stret:
 	movq	%rbp, %rsp
 	popq	%rbp
 
-	jmpq     *%r11
+	jmpq	*%r11
 
 0:
 	movq	-0x10(%rbp), %rdi

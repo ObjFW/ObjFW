@@ -31,14 +31,9 @@
 
 #import "macros.h"
 
-#define NUM_GPR_IN 6
-#define NUM_GPR_OUT 2
-#define NUM_SSE_IN 8
-#define NUM_X87_OUT 2
-
 struct call_context {
 	uint64_t GPR[NUM_GPR_IN + NUM_GPR_OUT];
-	__m128 SSE[NUM_SSE_IN];
+	__m128 SSE[NUM_SSE_INOUT];
 	long double X87[NUM_X87_OUT];
 	uint8_t numSSEUsed;
 	uint8_t returnType;
@@ -76,7 +71,7 @@ pushDouble(struct call_context **context, uint_fast8_t *currentSSE,
 {
 	struct call_context *newContext;
 
-	if (*currentSSE < NUM_SSE_IN) {
+	if (*currentSSE < NUM_SSE_INOUT) {
 		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(value);
 		(*context)->numSSEUsed++;
 		return;
@@ -101,7 +96,7 @@ pushQuad(struct call_context **context, uint_fast8_t *currentSSE,
 	size_t stackSize;
 	struct call_context *newContext;
 
-	if (*currentSSE + 1 < NUM_SSE_IN) {
+	if (*currentSSE + 1 < NUM_SSE_INOUT) {
 		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(low);
 		(*context)->SSE[(*currentSSE)++] = (__m128)_mm_set_sd(high);
 		(*context)->numSSEUsed += 2;

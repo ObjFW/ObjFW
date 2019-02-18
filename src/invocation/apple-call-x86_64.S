@@ -30,8 +30,8 @@ _of_invocation_call:
 	andq	$-16, %rsp
 	movq	%rdi, -8(%rbp)
 
-	leaq	240(%rdi), %rdx
-	movq	232(%rdi), %rcx
+	leaq	OFFSET_STACK(%rdi), %rdx
+	movq	OFFSET_STACK_SIZE(%rdi), %rcx
 
 	testq	$1, %rcx
 	jnz	Lfix_align
@@ -47,25 +47,25 @@ Lfill_stack:
 	jmp	Lfill_stack
 
 Lstack_filled:
-	movb	224(%rdi), %al
+	movb	OFFSET_NUM_SSE_USED(%rdi), %al
 
-	movdqa	176(%rdi), %xmm7
-	movdqa	160(%rdi), %xmm6
-	movdqa	144(%rdi), %xmm5
-	movdqa	128(%rdi), %xmm4
-	movdqa	112(%rdi), %xmm3
-	movdqa	96(%rdi), %xmm2
-	movdqa	80(%rdi), %xmm1
-	movdqa	64(%rdi), %xmm0
+	movdqa	OFFSET_SSE_INOUT+112(%rdi), %xmm7
+	movdqa	OFFSET_SSE_INOUT+96(%rdi), %xmm6
+	movdqa	OFFSET_SSE_INOUT+80(%rdi), %xmm5
+	movdqa	OFFSET_SSE_INOUT+64(%rdi), %xmm4
+	movdqa	OFFSET_SSE_INOUT+48(%rdi), %xmm3
+	movdqa	OFFSET_SSE_INOUT+32(%rdi), %xmm2
+	movdqa	OFFSET_SSE_INOUT+16(%rdi), %xmm1
+	movdqa	OFFSET_SSE_INOUT(%rdi), %xmm0
 
-	movq	40(%rdi), %r9
-	movq	32(%rdi), %r8
-	movq	24(%rdi), %rcx
-	movq	16(%rdi), %rdx
-	movq	8(%rdi), %rsi
+	movq	OFFSET_GPR_IN+40(%rdi), %r9
+	movq	OFFSET_GPR_IN+32(%rdi), %r8
+	movq	OFFSET_GPR_IN+24(%rdi), %rcx
+	movq	OFFSET_GPR_IN+16(%rdi), %rdx
+	movq	OFFSET_GPR_IN+8(%rdi), %rsi
 
-	movb	225(%rdi), %r11b
-	movq	0(%rdi), %rdi
+	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
+	movq	OFFSET_GPR_IN(%rdi), %rdi
 
 	cmpb	$RETURN_TYPE_STRET, %r11b
 	je	Lcall_send_stret
@@ -80,12 +80,12 @@ Lstack_filled:
 
 Lafter_send:
 	movq	-8(%rbp), %rdi
-	movq	%rax, 48(%rdi)
-	movq	%rdx, 56(%rdi)
-	movdqa	%xmm0, 64(%rdi)
-	movdqa	%xmm1, 80(%rdi)
+	movq	%rax, OFFSET_GPR_OUT(%rdi)
+	movq	%rdx, OFFSET_GPR_OUT+8(%rdi)
+	movdqa	%xmm0, OFFSET_SSE_INOUT(%rdi)
+	movdqa	%xmm1, OFFSET_SSE_INOUT+16(%rdi)
 
-	movb	225(%rdi), %r11b
+	movb	OFFSET_RETURN_TYPE(%rdi), %r11b
 
 	cmpb	$RETURN_TYPE_X87, %r11b
 	je	Lpop_long_double
@@ -109,10 +109,10 @@ Lcall_send_stret:
 	jmp	Lafter_send
 
 Lpop_long_double:
-	fstpt	192(%rdi)
+	fstpt	OFFSET_X87_OUT(%rdi)
 	jmp	Lreturn
 
 Lpop_complex_long_double:
-	fstpt	192(%rdi)
-	fstpt	208(%rdi)
+	fstpt	OFFSET_X87_OUT(%rdi)
+	fstpt	OFFSET_X87_OUT+16(%rdi)
 	jmp	Lreturn
