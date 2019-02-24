@@ -994,7 +994,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	@try {
 		copy->_URLEncodedScheme = [_URLEncodedScheme copy];
 		copy->_URLEncodedHost = [_URLEncodedHost copy];
-		copy->_port = _port;
+		copy->_port = [_port copy];
 		copy->_URLEncodedUser = [_URLEncodedUser copy];
 		copy->_URLEncodedPassword = [_URLEncodedPassword copy];
 		copy->_URLEncodedPath = [_URLEncodedPath copy];
