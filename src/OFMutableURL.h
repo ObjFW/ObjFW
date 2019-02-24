@@ -144,6 +144,11 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)URL;
 
 /*!
+ * @brief Resolves relative sub paths.
+ */
+- (void)standardizePath;
+
+/*!
  * @brief Converts the mutable URL to an immutable URL.
  */
 - (void)makeImmutable;
