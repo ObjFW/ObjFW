@@ -296,6 +296,102 @@ __gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
 }
 #endif
 
+id
+objc_retain(id object)
+{
+	return objc_retain_m68k(object);
+}
+
+id
+objc_retainBlock(id block)
+{
+	return objc_retainBlock_m68k(block);
+}
+
+id
+objc_retainAutorelease(id object)
+{
+	return objc_retainAutorelease_m68k(object);
+}
+
+void
+objc_release(id object)
+{
+	objc_release_m68k(object);
+}
+
+id
+objc_autorelease(id object)
+{
+	return objc_autorelease_m68k(object);
+}
+
+id
+objc_autoreleaseReturnValue(id object)
+{
+	return objc_autoreleaseReturnValue_m68k(object);
+}
+
+id
+objc_retainAutoreleaseReturnValue(id object)
+{
+	return objc_retainAutoreleaseReturnValue_m68k(object);
+}
+
+id
+objc_retainAutoreleasedReturnValue(id object)
+{
+	return objc_retainAutoreleasedReturnValue_m68k(object);
+}
+
+id
+objc_storeStrong(id *object, id value)
+{
+	return objc_storeStrong_m68k(object, value);
+}
+
+id
+objc_storeWeak(id *object, id value)
+{
+	return objc_storeWeak_m68k(object, value);
+}
+
+id
+objc_loadWeakRetained(id *object)
+{
+	return objc_loadWeakRetained_m68k(object);
+}
+
+id
+objc_initWeak(id *object, id value)
+{
+	return objc_initWeak_m68k(object, value);
+}
+
+void
+objc_destroyWeak(id *object)
+{
+	objc_destroyWeak_m68k(object);
+}
+
+id
+objc_loadWeak(id *object)
+{
+	return objc_loadWeak_m68k(object);
+}
+
+void
+objc_copyWeak(id *dest, id *src)
+{
+	objc_copyWeak_m68k(dest, src);
+}
+
+void
+objc_moveWeak(id *dest, id *src)
+{
+	objc_moveWeak_m68k(dest, src);
+}
+
 SEL
 sel_registerName(const char *name)
 {
