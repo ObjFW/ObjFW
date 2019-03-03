@@ -23,6 +23,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFArray;
 @class OFHTTPRequest;
 @class OFHTTPResponse;
 @class OFHTTPServer;
@@ -99,30 +100,49 @@ OF_ASSUME_NONNULL_BEGIN
 	id <OFHTTPServerDelegate> _Nullable _delegate;
 	OFString *_Nullable _name;
 	OF_KINDOF(OFTCPSocket *) _Nullable _listeningSocket;
+#ifdef OF_HAVE_THREADS
+	size_t _numberOfThreads, _nextThreadIndex;
+	OFArray *_threadPool;
+#endif
 }
 
 /*!
  * @brief The host on which the HTTP server will listen.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *host;
 
 /*!
  * @brief The port on which the HTTP server will listen.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
  */
 @property (nonatomic) uint16_t port;
 
 /*!
  * @brief Whether the HTTP server uses TLS.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
  */
 @property (nonatomic) bool usesTLS;
 
 /*!
  * @brief The path to the X.509 certificate file to use for TLS.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *certificateFile;
 
 /*!
  * @brief The path to the PKCS#8 private key file to use for TLS.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
  */
 @property OF_NULLABLE_PROPERTY (copy, nonatomic) OFString *privateKeyFile;
 
@@ -131,6 +151,9 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @warning You have to ensure that this is in secure memory protected from
  *	    swapping! This is also the reason why this is not an OFString.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     const char *privateKeyPassphrase;
@@ -140,6 +163,21 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFHTTPServerDelegate> delegate;
+
+#ifdef OF_HAVE_THREADS
+/*!
+ * @brief The number of threads the OFHTTPServer should use.
+ *
+ * If this is larger than 1 (the default), one thread will be used to accept
+ * incoming connections and all others will be used to handle connections.
+ *
+ * For maximum CPU utilization, set this to `[OFSystemInfo numberOfCPUs] + 1`.
+ *
+ * Setting this after @ref start has been called raises an
+ * @ref OFAlreadyConnectedException.
+ */
+@property (nonatomic) size_t numberOfThreads;
+#endif
 
 /*!
  * @brief The server name the server presents to clients.

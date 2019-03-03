@@ -21,6 +21,7 @@
 #include <string.h>
 
 #import "OFHTTPServer.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
@@ -29,6 +30,7 @@
 #import "OFNumber.h"
 #import "OFTCPSocket.h"
 #import "OFTLSSocket.h"
+#import "OFThread.h"
 #import "OFTimer.h"
 #import "OFURL.h"
 
@@ -104,6 +106,12 @@
 - (instancetype)initWithSocket: (OF_KINDOF(OFTCPSocket *))sock
 		 contentLength: (uintmax_t)contentLength;
 @end
+
+#ifdef OF_HAVE_THREADS
+@interface OFHTTPServerThread: OFThread
+- (void)stop;
+@end
+#endif
 
 static const char *
 statusCodeToString(short code)
@@ -718,12 +726,18 @@ normalizedKey(OFString *key)
 }
 @end
 
+#ifdef OF_HAVE_THREADS
+@implementation OFHTTPServerThread
+- (void)stop
+{
+	[[OFRunLoop currentRunLoop] stop];
+	[self join];
+}
+@end
+#endif
+
 @implementation OFHTTPServer
-@synthesize host = _host, port = _port, usesTLS = _usesTLS;
-@synthesize certificateFile = _certificateFile;
-@synthesize privateKeyFile = _privateKeyFile;
-@synthesize privateKeyPassphrase = _privateKeyPassphrase, delegate = _delegate;
-@synthesize name = _name;
+@synthesize delegate = _delegate, name = _name;
 
 + (instancetype)server
 {
@@ -736,12 +750,17 @@ normalizedKey(OFString *key)
 
 	_name = @"OFHTTPServer (ObjFW's HTTP server class "
 	    @"<https://heap.zone/objfw/>)";
+#ifdef OF_HAVE_THREADS
+	_numberOfThreads = 1;
+#endif
 
 	return self;
 }
 
 - (void)dealloc
 {
+	[self stop];
+
 	[_host release];
 	[_listeningSocket release];
 	[_name release];
@@ -749,8 +768,118 @@ normalizedKey(OFString *key)
 	[super dealloc];
 }
 
+- (void)setHost: (OFString *)host
+{
+	OFString *old;
+
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	old = _host;
+	_host = [host copy];
+	[old release];
+}
+
+- (OFString *)host
+{
+	return _host;
+}
+
+- (void)setPort: (uint16_t)port
+{
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	_port = port;
+}
+
+- (uint16_t)port
+{
+	return _port;
+}
+
+- (void)setUsesTLS: (bool)usesTLS
+{
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	_usesTLS = usesTLS;
+}
+
+- (bool)usesTLS
+{
+	return _usesTLS;
+}
+
+- (void)setCertificateFile: (OFString *)certificateFile
+{
+	OFString *old;
+
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	old = _certificateFile;
+	_certificateFile = [certificateFile copy];
+	[old release];
+}
+
+- (OFString *)certificateFile
+{
+	return _certificateFile;
+}
+
+- (void)setPrivateKeyFile: (OFString *)privateKeyFile
+{
+	OFString *old;
+
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	old = _privateKeyFile;
+	_privateKeyFile = [privateKeyFile copy];
+	[old release];
+}
+
+- (OFString *)privateKeyFile
+{
+	return _privateKeyFile;
+}
+
+- (void)setPrivateKeyPassphrase: (const char *)privateKeyPassphrase
+{
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	_privateKeyPassphrase = privateKeyPassphrase;
+}
+
+- (const char *)privateKeyPassphrase
+{
+	return _privateKeyPassphrase;
+}
+
+#ifdef OF_HAVE_THREADS
+- (void)setNumberOfThreads: (size_t)numberOfThreadas
+{
+	if (numberOfThreadas == 0)
+		@throw [OFInvalidArgumentException exception];
+
+	if (_listeningSocket != nil)
+		@throw [OFAlreadyConnectedException exception];
+
+	_numberOfThreads = numberOfThreadas;
+}
+
+- (size_t)numberOfThreads
+{
+	return _numberOfThreads;
+}
+#endif
+
 - (void)start
 {
+	void *pool = objc_autoreleasePoolPush();
+
 	if (_host == nil)
 		@throw [OFInvalidArgumentException exception];
 
@@ -777,8 +906,28 @@ normalizedKey(OFString *key)
 					port: _port];
 	[_listeningSocket listen];
 
+#ifdef OF_HAVE_THREADS
+	if (_numberOfThreads > 1) {
+		OFMutableArray *threads =
+		    [OFMutableArray arrayWithCapacity: _numberOfThreads - 1];
+
+		for (size_t i = 1; i < _numberOfThreads; i++) {
+			OFHTTPServerThread *thread =
+			    [OFHTTPServerThread thread];
+
+			[thread start];
+			[threads addObject: thread];
+		}
+
+		[threads makeImmutable];
+		_threadPool = [threads copy];
+	}
+#endif
+
 	[(OFTCPSocket *)_listeningSocket setDelegate: self];
 	[_listeningSocket asyncAccept];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)stop
@@ -786,14 +935,30 @@ normalizedKey(OFString *key)
 	[_listeningSocket cancelAsyncRequests];
 	[_listeningSocket release];
 	_listeningSocket = nil;
+
+#ifdef OF_HAVE_THREADS
+	for (OFHTTPServerThread *thread in _threadPool)
+		[thread stop];
+
+	[_threadPool release];
+	_threadPool = nil;
+#endif
+}
+
+- (void)of_handleAcceptedSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket
+{
+	OFHTTPServer_Connection *connection = [[[OFHTTPServer_Connection alloc]
+	    initWithSocket: acceptedSocket
+		    server: self] autorelease];
+
+	[(OFTCPSocket *)acceptedSocket setDelegate: connection];
+	[acceptedSocket asyncReadLine];
 }
 
 -    (bool)socket: (OF_KINDOF(OFTCPSocket *))sock
   didAcceptSocket: (OF_KINDOF(OFTCPSocket *))acceptedSocket
 	exception: (id)exception
 {
-	OFHTTPServer_Connection *connection;
-
 	if (exception != nil) {
 		if (![_delegate respondsToSelector:
 		    @selector(server:didReceiveExceptionOnListeningSocket:)])
@@ -803,12 +968,21 @@ normalizedKey(OFString *key)
 		    didReceiveExceptionOnListeningSocket: exception];
 	}
 
-	connection = [[[OFHTTPServer_Connection alloc]
-	    initWithSocket: acceptedSocket
-		    server: self] autorelease];
+#ifdef OF_HAVE_THREADS
+	if (_numberOfThreads > 1) {
+		OFHTTPServerThread *thread =
+		    [_threadPool objectAtIndex: _nextThreadIndex];
 
-	[(OFTCPSocket *)acceptedSocket setDelegate: connection];
-	[acceptedSocket asyncReadLine];
+		if (++_nextThreadIndex >= _numberOfThreads - 1)
+			_nextThreadIndex = 0;
+
+		[self performSelector: @selector(of_handleAcceptedSocket:)
+			     onThread: thread
+			   withObject: acceptedSocket
+			waitUntilDone: false];
+	} else
+#endif
+		[self of_handleAcceptedSocket: acceptedSocket];
 
 	return true;
 }
