@@ -114,13 +114,13 @@ enum {
 #ifdef OF_HAVE_PIPE
 		if (pipe(_cancelFD))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 #else
 		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 
 		if (_cancelFD[0] == INVALID_SOCKET)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		_cancelAddr.sin_family = AF_INET;
 		_cancelAddr.sin_port = 0;
@@ -134,13 +134,13 @@ enum {
 		if (bind(_cancelFD[0], (struct sockaddr *)&_cancelAddr,
 		    sizeof(_cancelAddr)) != 0)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		cancelAddrLen = sizeof(_cancelAddr);
 		if (of_getsockname(_cancelFD[0],
 		    (struct sockaddr *)&_cancelAddr, &cancelAddrLen) != 0)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 # else
 		for (;;) {
 			uint16_t rnd = 0;
@@ -159,7 +159,7 @@ enum {
 
 			if (of_socket_errno() != EADDRINUSE)
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 		}
 # endif
 #endif
@@ -308,11 +308,11 @@ enum {
 	[_mutex lock];
 	@try {
 #endif
-		int *queueActions = [_queueActions items];
-		id const *queueObjects = [_queueObjects objects];
-		size_t count = [_queueActions count];
+		const int *queueActions = _queueActions.items;
+		id const *queueObjects = _queueObjects.objects;
+		size_t count = _queueActions.count;
 
-		OF_ENSURE([_queueObjects count] == count);
+		OF_ENSURE(_queueObjects.count == count);
 
 		for (size_t i = 0; i < count; i++) {
 			int action = queueActions[i];
@@ -412,7 +412,7 @@ enum {
 
 - (void)observeUntilDate: (OFDate *)date
 {
-	[self observeForTimeInterval: [date timeIntervalSinceNow]];
+	[self observeForTimeInterval: date.timeIntervalSinceNow];
 }
 
 - (void)cancel

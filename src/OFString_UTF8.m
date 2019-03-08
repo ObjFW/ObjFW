@@ -450,7 +450,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	@try {
 		_s = &_storage;
 
-		_s->cStringLength = [string UTF8StringLength];
+		_s->cStringLength = string.UTF8StringLength;
 
 		if ([string isKindOfClass: [OFString_UTF8 class]] ||
 		    [string isKindOfClass: [OFMutableString_UTF8 class]])
@@ -458,10 +458,10 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		else
 			_s->isUTF8 = true;
 
-		_s->length = [string length];
+		_s->length = string.length;
 
 		_s->cString = [self allocMemoryWithSize: _s->cStringLength + 1];
-		memcpy(_s->cString, [string UTF8String], _s->cStringLength + 1);
+		memcpy(_s->cString, string.UTF8String, _s->cStringLength + 1);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -680,7 +680,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		_s = &_storage;
 
-		if ((cStringLength = of_vasprintf(&tmp, [format UTF8String],
+		if ((cStringLength = of_vasprintf(&tmp, format.UTF8String,
 		    arguments)) == -1)
 			@throw [OFInvalidFormatException exception];
 
@@ -793,8 +793,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 	otherString = object;
 
-	if ([otherString UTF8StringLength] != _s->cStringLength ||
-	    [otherString length] != _s->length)
+	if (otherString.UTF8StringLength != _s->cStringLength ||
+	    otherString.length != _s->length)
 		return false;
 
 	if (([otherString isKindOfClass: [OFString_UTF8 class]] ||
@@ -803,7 +803,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	    _s->hash != otherString->_s->hash)
 		return false;
 
-	if (strcmp(_s->cString, [otherString UTF8String]) != 0)
+	if (strcmp(_s->cString, otherString.UTF8String) != 0)
 		return false;
 
 	return true;
@@ -822,11 +822,11 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		@throw [OFInvalidArgumentException exception];
 
 	otherString = (OFString *)object;
-	otherCStringLength = [otherString UTF8StringLength];
+	otherCStringLength = otherString.UTF8StringLength;
 	minimumCStringLength = (_s->cStringLength > otherCStringLength
 	    ? otherCStringLength : _s->cStringLength);
 
-	if ((compare = memcmp(_s->cString, [otherString UTF8String],
+	if ((compare = memcmp(_s->cString, otherString.UTF8String,
 	    minimumCStringLength)) == 0) {
 		if (_s->cStringLength > otherCStringLength)
 			return OF_ORDERED_DESCENDING;
@@ -856,8 +856,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	if (![otherString isKindOfClass: [OFString class]])
 		@throw [OFInvalidArgumentException exception];
 
-	otherCString = [otherString UTF8String];
-	otherCStringLength = [otherString UTF8StringLength];
+	otherCString = otherString.UTF8String;
+	otherCStringLength = otherString.UTF8StringLength;
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	if (!_s->isUTF8) {
@@ -947,8 +947,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			@throw [OFInvalidEncodingException exception];
 
 		OF_HASH_ADD(hash, (c & 0xFF0000) >> 16);
-		OF_HASH_ADD(hash, (c & 0x00FF00) >>  8);
-		OF_HASH_ADD(hash,  c & 0x0000FF);
+		OF_HASH_ADD(hash, (c & 0x00FF00) >> 8);
+		OF_HASH_ADD(hash, c & 0x0000FF);
 
 		i += length - 1;
 	}
@@ -985,7 +985,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 {
 	/* TODO: Could be slightly optimized */
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = [self characters];
+	const of_unichar_t *characters = self.characters;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > _s->length)
@@ -1001,8 +1001,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 		    options: (int)options
 		      range: (of_range_t)range
 {
-	const char *cString = [string UTF8String];
-	size_t cStringLength = [string UTF8StringLength];
+	const char *cString = string.UTF8String;
+	size_t cStringLength = string.UTF8StringLength;
 	size_t rangeLocation, rangeLength;
 
 	if (range.length > SIZE_MAX - range.location ||
@@ -1032,7 +1032,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			    cStringLength) == 0) {
 				range.location += of_string_utf8_get_index(
 				    _s->cString + rangeLocation, i);
-				range.length = [string length];
+				range.length = string.length;
 
 				return range;
 			}
@@ -1047,7 +1047,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 			    cStringLength) == 0) {
 				range.location += of_string_utf8_get_index(
 				    _s->cString + rangeLocation, i);
-				range.length = [string length];
+				range.length = string.length;
 
 				return range;
 			}
@@ -1059,8 +1059,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (bool)containsString: (OFString *)string
 {
-	const char *cString = [string UTF8String];
-	size_t cStringLength = [string UTF8StringLength];
+	const char *cString = string.UTF8String;
+	size_t cStringLength = string.UTF8StringLength;
 
 	if (cStringLength == 0)
 		return true;
@@ -1096,23 +1096,23 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 - (bool)hasPrefix: (OFString *)prefix
 {
-	size_t cStringLength = [prefix UTF8StringLength];
+	size_t cStringLength = prefix.UTF8StringLength;
 
 	if (cStringLength > _s->cStringLength)
 		return false;
 
-	return (memcmp(_s->cString, [prefix UTF8String], cStringLength) == 0);
+	return (memcmp(_s->cString, prefix.UTF8String, cStringLength) == 0);
 }
 
 - (bool)hasSuffix: (OFString *)suffix
 {
-	size_t cStringLength = [suffix UTF8StringLength];
+	size_t cStringLength = suffix.UTF8StringLength;
 
 	if (cStringLength > _s->cStringLength)
 		return false;
 
 	return (memcmp(_s->cString + (_s->cStringLength - cStringLength),
-	    [suffix UTF8String], cStringLength) == 0);
+	    suffix.UTF8String, cStringLength) == 0);
 }
 
 - (OFArray *)componentsSeparatedByString: (OFString *)delimiter
@@ -1120,8 +1120,8 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 {
 	void *pool;
 	OFMutableArray *array;
-	const char *cString = [delimiter UTF8String];
-	size_t cStringLength = [delimiter UTF8StringLength];
+	const char *cString = delimiter.UTF8String;
+	size_t cStringLength = delimiter.UTF8StringLength;
 	bool skipEmpty = (options & OF_STRING_SKIP_EMPTY);
 	size_t last;
 	OFString *component;
@@ -1143,14 +1143,14 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 
 		component = [OFString stringWithUTF8String: _s->cString + last
 						    length: i - last];
-		if (!skipEmpty || [component length] > 0)
+		if (!skipEmpty || component.length > 0)
 			[array addObject: component];
 
 		i += cStringLength - 1;
 		last = i + 1;
 	}
 	component = [OFString stringWithUTF8String: _s->cString + last];
-	if (!skipEmpty || [component length] > 0)
+	if (!skipEmpty || component.length > 0)
 		[array addObject: component];
 
 	[array makeImmutable];

@@ -142,6 +142,19 @@
 	return self;
 }
 
+- (void *)mutableItems
+{
+	return _items;
+}
+
+- (void *)mutableItemAtIndex: (size_t)idx
+{
+	if (idx >= _count)
+		@throw [OFOutOfRangeException exception];
+
+	return _items + idx * _itemSize;
+}
+
 - (OFData *)subdataWithRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||

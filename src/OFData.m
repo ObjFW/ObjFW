@@ -189,8 +189,8 @@ _references_to_categories_of_OFData(void)
 	@try {
 		OFFile *file;
 
-		size = [[[OFFileManager defaultManager]
-		    attributesOfItemAtPath: path] fileSize];
+		size = [[OFFileManager defaultManager]
+		    attributesOfItemAtPath: path].fileSize;
 
 # if UINTMAX_MAX > SIZE_MAX
 		if (size > SIZE_MAX)
@@ -253,7 +253,7 @@ _references_to_categories_of_OFData(void)
 		pageSize = [OFSystemInfo pageSize];
 		buffer = [self allocMemoryWithSize: pageSize];
 
-		while (![stream isAtEndOfStream]) {
+		while (!stream.atEndOfStream) {
 			size_t length = [stream readIntoBuffer: buffer
 							length: pageSize];
 
@@ -338,7 +338,7 @@ _references_to_categories_of_OFData(void)
 		self = [OFMutableData alloc];
 	}
 
-	self = [(OFMutableData *)self initWithCapacity: [string length] / 3];
+	self = [(OFMutableData *)self initWithCapacity: string.length / 3];
 
 	@try {
 		if (!of_base64_decode((OFMutableData *)self,
@@ -363,11 +363,11 @@ _references_to_categories_of_OFData(void)
 	OFString *stringValue;
 
 	@try {
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		stringValue = [element stringValue];
+		stringValue = element.stringValue;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -448,9 +448,9 @@ _references_to_categories_of_OFData(void)
 
 	data = object;
 
-	if ([data count] != _count || [data itemSize] != _itemSize)
+	if (data.count != _count || data.itemSize != _itemSize)
 		return false;
-	if (memcmp([data items], _items, _count * _itemSize) != 0)
+	if (memcmp(data.items, _items, _count * _itemSize) != 0)
 		return false;
 
 	return true;
@@ -467,13 +467,13 @@ _references_to_categories_of_OFData(void)
 
 	data = (OFData *)object;
 
-	if ([data itemSize] != _itemSize)
+	if (data.itemSize != _itemSize)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [data count];
+	count = data.count;
 	minCount = (_count > count ? count : _count);
 
-	if ((comparison = memcmp(_items, [data items],
+	if ((comparison = memcmp(_items, data.items,
 	    minCount * _itemSize)) == 0) {
 		if (_count > count)
 			return OF_ORDERED_DESCENDING;
@@ -566,16 +566,16 @@ _references_to_categories_of_OFData(void)
 	    range.location + range.length > _count)
 		@throw [OFOutOfRangeException exception];
 
-	if (data == nil || [data itemSize] != _itemSize)
+	if (data == nil || data.itemSize != _itemSize)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((searchLength = [data count]) == 0)
+	if ((searchLength = data.count) == 0)
 		return of_range(0, 0);
 
 	if (searchLength > range.length)
 		return of_range(OF_NOT_FOUND, 0);
 
-	search = [data items];
+	search = data.items;
 
 	if (options & OF_DATA_SEARCH_BACKWARDS) {
 		for (size_t i = range.length - searchLength;; i--) {
@@ -639,7 +639,7 @@ _references_to_categories_of_OFData(void)
 
 	pool = objc_autoreleasePoolPush();
 	element = [OFXMLElement
-	    elementWithName: [self className]
+	    elementWithName: self.className
 		  namespace: OF_SERIALIZATION_NS
 		stringValue: of_base64_encode(_items, _count * _itemSize)];
 

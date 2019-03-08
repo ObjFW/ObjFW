@@ -276,7 +276,7 @@ backtrace_callback(struct _Unwind_Context *ctx, void *data)
 - (OFString *)description
 {
 	return [OFString stringWithFormat:
-	    @"An exception of type %@ occurred!", [self class]];
+	    @"An exception of type %@ occurred!", self.class];
 }
 
 - (OFArray OF_GENERIC(OFString *) *)backtrace

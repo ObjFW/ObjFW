@@ -40,15 +40,15 @@
 
 @interface OFLHAArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
-	OF_KINDOF(OFStream *) _stream;
-	OF_KINDOF(OFStream *) _decompressedStream;
+	OFStream *_stream;
+	OFStream *_decompressedStream;
 	OFLHAArchiveEntry *_entry;
 	uint32_t _toRead, _bytesConsumed;
 	uint16_t _CRC16;
 	bool _atEndOfStream, _skipped;
 }
 
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry;
 - (void)of_skip;
 @end
@@ -57,13 +57,13 @@
 {
 	OFMutableLHAArchiveEntry *_entry;
 	of_string_encoding_t _encoding;
-	OF_KINDOF(OFStream *) _stream;
+	OFSeekableStream *_stream;
 	of_offset_t _headerOffset;
 	uint32_t _bytesWritten;
 	uint16_t _CRC16;
 }
 
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
 			 encoding: (of_string_encoding_t)encoding;
 @end
@@ -71,7 +71,7 @@
 @implementation OFLHAArchive
 @synthesize encoding = _encoding;
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithStream: (OFStream *)stream
 			     mode: (OFString *)mode
 {
 	return [[[self alloc] initWithStream: stream
@@ -92,7 +92,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode
 {
 	self = [super init];
@@ -115,8 +115,8 @@
 			@throw [OFInvalidArgumentException exception];
 
 		if (_mode == OF_LHA_ARCHIVE_MODE_APPEND)
-			[_stream seekToOffset: 0
-				       whence: SEEK_END];
+			[(OFSeekableStream *)_stream seekToOffset: 0
+							   whence: SEEK_END];
 
 		_encoding = OF_STRING_ENCODING_ISO_8859_1;
 	} @catch (id e) {
@@ -167,13 +167,13 @@
 	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
 
-	[_lastReturnedStream of_skip];
+	[(OFLHAArchive_FileReadStream *)_lastReturnedStream of_skip];
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
 	for (headerLen = 0; headerLen < 21;) {
-		if ([_stream isAtEndOfStream]) {
+		if (_stream.atEndOfStream) {
 			if (headerLen == 0)
 				return nil;
 
@@ -207,7 +207,8 @@
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFLHAArchive_FileReadStream *)_lastReturnedStream
+	    retain] autorelease];
 }
 
 - (OFStream <OFReadyForWritingObserving> *)
@@ -219,7 +220,7 @@
 	    _mode != OF_LHA_ARCHIVE_MODE_APPEND)
 		@throw [OFInvalidArgumentException exception];
 
-	compressionMethod = [entry compressionMethod];
+	compressionMethod = entry.compressionMethod;
 
 	if (![compressionMethod isEqual: @"-lh0-"] &&
 	    ![compressionMethod isEqual: @"-lhd-"])
@@ -231,11 +232,12 @@
 	_lastReturnedStream = nil;
 
 	_lastReturnedStream = [[OFLHAArchive_FileWriteStream alloc]
-	    of_initWithStream: _stream
+	    of_initWithStream: (OFSeekableStream *)_stream
 			entry: entry
 		     encoding: _encoding];
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFLHAArchive_FileWriteStream *)_lastReturnedStream
+	    retain] autorelease];
 }
 
 - (void)close
@@ -253,7 +255,7 @@
 @end
 
 @implementation OFLHAArchive_FileReadStream
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
 {
 	self = [super init];
@@ -263,7 +265,7 @@
 
 		_stream = [stream retain];
 
-		compressionMethod = [entry compressionMethod];
+		compressionMethod = entry.compressionMethod;
 
 		if ([compressionMethod isEqual: @"-lh4-"] ||
 		    [compressionMethod isEqual: @"-lh5-"])
@@ -285,7 +287,7 @@
 			_decompressedStream = [stream retain];
 
 		_entry = [entry copy];
-		_toRead = [entry uncompressedSize];
+		_toRead = entry.uncompressedSize;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -324,8 +326,7 @@
 	if (_atEndOfStream)
 		return 0;
 
-	if ([_stream isAtEndOfStream] &&
-	    ![_decompressedStream hasDataInReadBuffer])
+	if (_stream.atEndOfStream && !_decompressedStream.hasDataInReadBuffer)
 		@throw [OFTruncatedDataException exception];
 
 	if (length > _toRead)
@@ -340,11 +341,11 @@
 	if (_toRead == 0) {
 		_atEndOfStream = true;
 
-		if (_CRC16 != [_entry CRC16]) {
+		if (_CRC16 != _entry.CRC16) {
 			OFString *actualChecksum = [OFString stringWithFormat:
 			    @"%04" PRIX16, _CRC16];
 			OFString *expectedChecksum = [OFString stringWithFormat:
-			    @"%04" PRIX16, [_entry CRC16]];
+			    @"%04" PRIX16, _entry.CRC16];
 
 			@throw [OFChecksumMismatchException
 			    exceptionWithActualChecksum: actualChecksum
@@ -357,18 +358,19 @@
 
 - (bool)hasDataInReadBuffer
 {
-	return ([super hasDataInReadBuffer] ||
-	    [_decompressedStream hasDataInReadBuffer]);
+	return (super.hasDataInReadBuffer ||
+	    _decompressedStream.hasDataInReadBuffer);
 }
 
 - (int)fileDescriptorForReading
 {
-	return [_decompressedStream fileDescriptorForReading];
+	return ((id <OFReadyForReadingObserving>)_decompressedStream)
+	    .fileDescriptorForReading;
 }
 
 - (void)of_skip
 {
-	OF_KINDOF(OFStream *) stream;
+	OFStream *stream;
 	uint32_t toRead;
 
 	if (_stream == nil || _skipped)
@@ -383,18 +385,19 @@
 	 */
 	if ([_decompressedStream isKindOfClass:
 	    [OFLHAArchive_LHStream class]]) {
-		OFLHAArchive_LHStream *LHStream = _decompressedStream;
+		OFLHAArchive_LHStream *LHStream =
+		    (OFLHAArchive_LHStream *)_decompressedStream;
 
 		[LHStream close];
-		toRead = [_entry compressedSize] - LHStream->_bytesConsumed;
+		toRead = _entry.compressedSize - LHStream->_bytesConsumed;
 
 		stream = _stream;
 	}
 
 	if ([stream isKindOfClass: [OFSeekableStream class]] &&
 	    (sizeof(of_offset_t) > 4 || toRead < INT32_MAX))
-		[stream seekToOffset: (of_offset_t)toRead
-			      whence: SEEK_CUR];
+		[(OFSeekableStream *)stream seekToOffset: (of_offset_t)toRead
+						  whence: SEEK_CUR];
 	else {
 		while (toRead > 0) {
 			char buffer[512];
@@ -427,7 +430,7 @@
 @end
 
 @implementation OFLHAArchive_FileWriteStream
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
 			 encoding: (of_string_encoding_t)encoding
 {
@@ -479,8 +482,8 @@
 		bytesWritten = (uint32_t)[_stream writeBuffer: buffer
 						       length: length];
 	} @catch (OFWriteFailedException *e) {
-		_bytesWritten += [e bytesWritten];
-		_CRC16 = of_crc16(_CRC16, buffer, [e bytesWritten]);
+		_bytesWritten += e.bytesWritten;
+		_CRC16 = of_crc16(_CRC16, buffer, e.bytesWritten);
 
 		@throw e;
 	}
@@ -496,12 +499,13 @@
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	return [_stream isAtEndOfStream];
+	return _stream.atEndOfStream;
 }
 
 - (int)fileDescriptorForWriting
 {
-	return [_stream fileDescriptorForWriting];
+	return ((id <OFReadyForWritingObserving>)_stream)
+	    .fileDescriptorForWriting;
 }
 
 - (void)close
@@ -511,9 +515,9 @@
 	if (_stream == nil)
 		return;
 
-	[_entry setUncompressedSize: _bytesWritten];
-	[_entry setCompressedSize: _bytesWritten];
-	[_entry setCRC16: _CRC16];
+	_entry.uncompressedSize = _bytesWritten;
+	_entry.compressedSize = _bytesWritten;
+	_entry.CRC16 = _CRC16;
 
 	offset = [_stream seekToOffset: 0
 				whence:SEEK_CUR];

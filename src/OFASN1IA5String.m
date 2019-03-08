@@ -58,13 +58,13 @@
 		    tagNumber != OF_ASN1_TAG_NUMBER_IA5_STRING || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		IA5StringValue = [OFString
-		    stringWithCString: [DEREncodedContents items]
+		    stringWithCString: DEREncodedContents.items
 			     encoding: OF_STRING_ENCODING_ASCII
-			       length: [DEREncodedContents count]];
+			       length: DEREncodedContents.count];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -91,7 +91,7 @@
 
 - (OFString *)stringValue
 {
-	return [self IA5StringValue];
+	return self.IA5StringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -111,7 +111,7 @@
 
 - (uint32_t)hash
 {
-	return [_IA5StringValue hash];
+	return _IA5StringValue.hash;
 }
 
 - (OFString *)description

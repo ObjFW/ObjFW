@@ -39,7 +39,7 @@ parseArrayElement(OFXMLElement *element)
 	OFMutableArray *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 
-	for (OFXMLElement *child in [element elements])
+	for (OFXMLElement *child in element.elements)
 		[ret addObject: parseElement(child)];
 
 	[ret makeImmutable];
@@ -54,22 +54,22 @@ parseDictElement(OFXMLElement *element)
 {
 	OFMutableDictionary *ret = [OFMutableDictionary dictionary];
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFXMLElement *) *children = [element elements];
+	OFArray OF_GENERIC(OFXMLElement *) *children = element.elements;
 	OFEnumerator OF_GENERIC(OFXMLElement *) *enumerator;
 	OFXMLElement *key, *object;
 
-	if ([children count] % 2 != 0)
+	if (children.count % 2 != 0)
 		@throw [OFInvalidFormatException exception];
 
 	enumerator = [children objectEnumerator];
 	while ((key = [enumerator nextObject]) &&
 	    (object = [enumerator nextObject])) {
-		if ([key namespace] != nil || [[key attributes] count] != 0 ||
-		    ![[key name] isEqual: @"key"])
+		if (key.namespace != nil || key.attributes.count != 0 ||
+		    ![key.name isEqual: @"key"])
 			@throw [OFInvalidFormatException exception];
 
 		[ret setObject: parseElement(object)
-			forKey: [key stringValue]];
+			forKey: key.stringValue];
 	}
 
 	[ret makeImmutable];
@@ -82,26 +82,26 @@ parseDictElement(OFXMLElement *element)
 static OFString *
 parseStringElement(OFXMLElement *element)
 {
-	return [element stringValue];
+	return element.stringValue;
 }
 
 static OFData *
 parseDataElement(OFXMLElement *element)
 {
-	return [OFData dataWithBase64EncodedString: [element stringValue]];
+	return [OFData dataWithBase64EncodedString: element.stringValue];
 }
 
 static OFDate *
 parseDateElement(OFXMLElement *element)
 {
-	return [OFDate dateWithDateString: [element stringValue]
+	return [OFDate dateWithDateString: element.stringValue
 				   format: @"%Y-%m-%dT%H:%M:%SZ"];
 }
 
 static OFNumber *
 parseTrueElement(OFXMLElement *element)
 {
-	if ([[element children] count] != 0)
+	if (element.children.count != 0)
 		@throw [OFInvalidFormatException exception];
 
 	return [OFNumber numberWithBool: true];
@@ -110,7 +110,7 @@ parseTrueElement(OFXMLElement *element)
 static OFNumber *
 parseFalseElement(OFXMLElement *element)
 {
-	if ([[element children] count] != 0)
+	if (element.children.count != 0)
 		@throw [OFInvalidFormatException exception];
 
 	return [OFNumber numberWithBool: false];
@@ -119,14 +119,13 @@ parseFalseElement(OFXMLElement *element)
 static OFNumber *
 parseRealElement(OFXMLElement *element)
 {
-	return [OFNumber numberWithDouble: [[element stringValue] doubleValue]];
+	return [OFNumber numberWithDouble: element.stringValue.doubleValue];
 }
 
 static OFNumber *
 parseIntegerElement(OFXMLElement *element)
 {
-	return [OFNumber numberWithIntMax:
-	    [[element stringValue] decimalValue]];
+	return [OFNumber numberWithIntMax: element.stringValue.decimalValue];
 }
 
 static id
@@ -134,11 +133,10 @@ parseElement(OFXMLElement *element)
 {
 	OFString *elementName;
 
-	if ([element namespace] != nil ||
-	    [[element attributes] count] != 0)
+	if (element.namespace != nil || element.attributes.count != 0)
 		@throw [OFInvalidFormatException exception];
 
-	elementName = [element name];
+	elementName = element.name;
 
 	if ([elementName isEqual: @"array"])
 		return parseArrayElement(element);
@@ -171,8 +169,8 @@ parseElement(OFXMLElement *element)
 	OFArray OF_GENERIC(OFXMLElement *) *elements;
 	id ret;
 
-	if (![[rootElement name] isEqual: @"plist"] ||
-	    [rootElement namespace] != nil)
+	if (![rootElement.name isEqual: @"plist"] ||
+	    rootElement.namespace != nil)
 		@throw [OFInvalidFormatException exception];
 
 	versionAttribute = [rootElement attributeForName: @"version"];
@@ -180,16 +178,16 @@ parseElement(OFXMLElement *element)
 	if (versionAttribute == nil)
 		@throw [OFInvalidFormatException exception];
 
-	if (![[versionAttribute stringValue] isEqual: @"1.0"])
+	if (![versionAttribute.stringValue isEqual: @"1.0"])
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: [versionAttribute stringValue]];
 
-	elements = [rootElement elements];
+	elements = rootElement.elements;
 
-	if ([elements count] != 1)
+	if (elements.count != 1)
 		@throw [OFInvalidFormatException exception];
 
-	ret = parseElement([elements firstObject]);
+	ret = parseElement(elements.firstObject);
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);

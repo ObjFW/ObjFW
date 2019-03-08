@@ -20,9 +20,9 @@
 #import "OFTarArchive.h"
 #import "OFTarArchiveEntry.h"
 #import "OFTarArchiveEntry+Private.h"
-#import "OFStream.h"
-#import "OFSeekableStream.h"
 #import "OFDate.h"
+#import "OFSeekableStream.h"
+#import "OFStream.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
@@ -37,7 +37,7 @@
 @interface OFTarArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OFTarArchiveEntry *_entry;
-	OF_KINDOF(OFStream *) _stream;
+	OFStream *_stream;
 	uint64_t _toRead;
 	bool _atEndOfStream, _skipped;
 }
@@ -50,18 +50,18 @@
 @interface OFTarArchive_FileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFTarArchiveEntry *_entry;
-	OF_KINDOF(OFStream *) _stream;
+	OFStream *_stream;
 	uint64_t _toWrite;
 }
 
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFTarArchiveEntry *)entry;
 @end
 
 @implementation OFTarArchive: OFObject
 @synthesize encoding = _encoding;
 
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithStream: (OFStream *)stream
 			     mode: (OFString *)mode
 {
 	return [[[self alloc] initWithStream: stream
@@ -82,7 +82,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode
 {
 	self = [super init];
@@ -109,9 +109,9 @@
 			if (![_stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
-			[_stream seekToOffset: -1024
-				       whence: SEEK_END];
-			[_stream readIntoBuffer: buffer.c
+			[(OFSeekableStream *)stream seekToOffset: -1024
+							  whence: SEEK_END];
+			[stream readIntoBuffer: buffer.c
 				    exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)
@@ -121,8 +121,8 @@
 			if (!empty)
 				@throw [OFInvalidFormatException exception];
 
-			[_stream seekToOffset: -1024
-				       whence: SEEK_END];
+			[(OFSeekableStream *)stream seekToOffset: -1024
+							  whence: SEEK_END];
 		}
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
@@ -177,12 +177,12 @@
 	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
 
-	[_lastReturnedStream of_skip];
+	[(OFTarArchive_FileReadStream *)_lastReturnedStream of_skip];
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	if ([_stream isAtEndOfStream])
+	if (_stream.atEndOfStream)
 		return nil;
 
 	[_stream readIntoBuffer: buffer.c
@@ -222,7 +222,8 @@
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFTarArchive_FileReadStream *)_lastReturnedStream
+	    retain] autorelease];
 }
 
 - (OFStream <OFReadyForWritingObserving> *)
@@ -249,7 +250,8 @@
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[_lastReturnedStream retain] autorelease];
+	return [[(OFTarArchive_FileWriteStream *)_lastReturnedStream
+	    retain] autorelease];
 }
 
 - (void)close
@@ -283,7 +285,7 @@
 	@try {
 		_entry = [entry copy];
 		_stream = [stream retain];
-		_toRead = [entry size];
+		_toRead = entry.size;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -341,12 +343,13 @@
 
 - (bool)hasDataInReadBuffer
 {
-	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer);
 }
 
 - (int)fileDescriptorForReading
 {
-	return [_stream fileDescriptorForReading];
+	return ((id <OFReadyForReadingObserving>)_stream)
+	    .fileDescriptorForReading;
 }
 
 - (void)close
@@ -368,16 +371,17 @@
 	    _toRead <= INT64_MAX && (of_offset_t)_toRead == (int64_t)_toRead) {
 		uint64_t size;
 
-		[_stream seekToOffset: (of_offset_t)_toRead
-			       whence: SEEK_CUR];
+		[(OFSeekableStream *)_stream seekToOffset: (of_offset_t)_toRead
+						   whence: SEEK_CUR];
 
 		_toRead = 0;
 
-		size = [_entry size];
+		size = _entry.size;
 
 		if (size % 512 != 0)
-			[_stream seekToOffset: 512 - (size % 512)
-				       whence: SEEK_CUR];
+			[(OFSeekableStream *)_stream
+			    seekToOffset: 512 - (size % 512)
+				  whence: SEEK_CUR];
 	} else {
 		char buffer[512];
 		uint64_t size;
@@ -394,7 +398,7 @@
 			_toRead = 0;
 		}
 
-		size = [_entry size];
+		size = _entry.size;
 
 		if (size % 512 != 0)
 			[_stream readIntoBuffer: buffer
@@ -406,7 +410,7 @@
 @end
 
 @implementation OFTarArchive_FileWriteStream
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFTarArchiveEntry *)entry
 {
 	self = [super init];
@@ -414,7 +418,7 @@
 	@try {
 		_entry = [entry copy];
 		_stream = [stream retain];
-		_toWrite = [entry size];
+		_toWrite = entry.size;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -447,7 +451,7 @@
 		bytesWritten = [_stream writeBuffer: buffer
 					     length: length];
 	} @catch (OFWriteFailedException *e) {
-		_toWrite -= [e bytesWritten];
+		_toWrite -= e.bytesWritten;
 		@throw e;
 	}
 
@@ -466,7 +470,8 @@
 
 - (int)fileDescriptorForWriting
 {
-	return [_stream fileDescriptorForWriting];
+	return ((id <OFReadyForWritingObserving>)_stream)
+	    .fileDescriptorForWriting;
 }
 
 - (void)close
@@ -474,13 +479,13 @@
 	if (_stream == nil)
 		return;
 
-	uint64_t remainder = 512 - [_entry size] % 512;
+	uint64_t remainder = 512 - _entry.size % 512;
 
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
 	if (remainder != 512) {
-		bool wasWriteBuffered = [_stream isWriteBuffered];
+		bool wasWriteBuffered = _stream.writeBuffered;
 
 		[_stream setWriteBuffered: true];
 
@@ -488,7 +493,7 @@
 			[_stream writeInt8: 0];
 
 		[_stream flushWriteBuffer];
-		[_stream setWriteBuffered: wasWriteBuffered];
+		_stream.writeBuffered = wasWriteBuffered;
 	}
 
 	[_stream release];

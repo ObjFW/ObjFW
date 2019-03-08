@@ -55,7 +55,7 @@
 	if (_condition != nil)
 		return [OFString stringWithFormat:
 		    @"Waiting for a condition of type %@ failed!",
-		    [_condition class]];
+		    _condition.class];
 	else
 		return @"Waiting for a condition failed!";
 }

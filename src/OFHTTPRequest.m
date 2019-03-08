@@ -141,9 +141,9 @@ of_http_request_method_from_string(const char *string)
 	@try {
 		copy->_method = _method;
 		copy->_protocolVersion = _protocolVersion;
-		[copy setURL: _URL];
-		[copy setHeaders: _headers];
-		[copy setRemoteAddress: &_remoteAddress];
+		copy.URL = _URL;
+		copy.headers = _headers;
+		copy.remoteAddress = &_remoteAddress;
 	} @catch (id e) {
 		[copy release];
 		@throw e;
@@ -184,8 +184,8 @@ of_http_request_method_from_string(const char *string)
 	OF_HASH_ADD(hash, _method);
 	OF_HASH_ADD(hash, _protocolVersion.major);
 	OF_HASH_ADD(hash, _protocolVersion.minor);
-	OF_HASH_ADD_HASH(hash, [_URL hash]);
-	OF_HASH_ADD_HASH(hash, [_headers hash]);
+	OF_HASH_ADD_HASH(hash, _URL.hash);
+	OF_HASH_ADD_HASH(hash, _headers.hash);
 	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_remoteAddress));
 
 	OF_HASH_FINALIZE(hash);
@@ -216,11 +216,11 @@ of_http_request_method_from_string(const char *string)
 	intmax_t major, minor;
 	of_http_request_protocol_version_t protocolVersion;
 
-	if ([components count] != 2)
+	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [[components firstObject] decimalValue];
-	minor = [[components lastObject] decimalValue];
+	major = [components.firstObject decimalValue];
+	minor = [components.lastObject decimalValue];
 
 	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -228,7 +228,7 @@ of_http_request_method_from_string(const char *string)
 	protocolVersion.major = (uint8_t)major;
 	protocolVersion.minor = (uint8_t)minor;
 
-	[self setProtocolVersion: protocolVersion];
+	self.protocolVersion = protocolVersion;
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -246,7 +246,7 @@ of_http_request_method_from_string(const char *string)
 	const char *method = of_http_request_method_to_string(_method);
 	OFString *indentedHeaders, *ret;
 
-	indentedHeaders = [[_headers description]
+	indentedHeaders = [_headers.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -256,7 +256,7 @@ of_http_request_method_from_string(const char *string)
 	    @"\tHeaders = %@\n"
 	    @"\tRemote address = %@\n"
 	    @">",
-	    [self class], _URL, method, indentedHeaders,
+	    self.class, _URL, method, indentedHeaders,
 	    of_socket_address_ip_string(&_remoteAddress, NULL)];
 
 	objc_autoreleasePoolPop(pool);

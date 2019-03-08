@@ -110,42 +110,42 @@ static OFString *
 constructRequestString(OFHTTPRequest *request)
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_http_request_method_t method = [request method];
-	OFURL *URL = [request URL];
+	of_http_request_method_t method = request.method;
+	OFURL *URL = request.URL;
 	OFString *path;
-	OFString *user = [URL user], *password = [URL password];
+	OFString *user = URL.user, *password = URL.password;
 	OFMutableString *requestString;
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *headers;
 	OFEnumerator OF_GENERIC(OFString *) *keyEnumerator, *objectEnumerator;
 	OFString *key, *object;
 
-	if ([URL path] != nil)
-		path = [URL URLEncodedPath];
+	if (URL.path != nil)
+		path = URL.URLEncodedPath;
 	else
 		path = @"/";
 
 	requestString = [OFMutableString stringWithFormat:
 	    @"%s %@", of_http_request_method_to_string(method), path];
 
-	if ([URL query] != nil) {
+	if (URL.query != nil) {
 		[requestString appendString: @"?"];
-		[requestString appendString: [URL URLEncodedQuery]];
+		[requestString appendString: URL.URLEncodedQuery];
 	}
 
 	[requestString appendString: @" HTTP/"];
-	[requestString appendString: [request protocolVersionString]];
+	[requestString appendString: request.protocolVersionString];
 	[requestString appendString: @"\r\n"];
 
-	headers = [[[request headers] mutableCopy] autorelease];
+	headers = [[request.headers mutableCopy] autorelease];
 	if (headers == nil)
 		headers = [OFMutableDictionary dictionary];
 
 	if ([headers objectForKey: @"Host"] == nil) {
-		OFNumber *port = [URL port];
+		OFNumber *port = URL.port;
 
 		if (port != nil) {
 			OFString *host = [OFString stringWithFormat:
-			    @"%@:%@", [URL URLEncodedHost], port];
+			    @"%@:%@", URL.URLEncodedHost, port];
 
 			[headers setObject: host
 				    forKey: @"Host"];
@@ -154,19 +154,19 @@ constructRequestString(OFHTTPRequest *request)
 				    forKey: @"Host"];
 	}
 
-	if (([user length] > 0 || [password length] > 0) &&
+	if ((user.length > 0 || password.length > 0) &&
 	    [headers objectForKey: @"Authorization"] == nil) {
 		OFMutableData *authorizationData = [OFMutableData data];
 		OFString *authorization;
 
-		[authorizationData addItems: [user UTF8String]
-				      count: [user UTF8StringLength]];
+		[authorizationData addItems: user.UTF8String
+				      count: user.UTF8StringLength];
 		[authorizationData addItem: ":"];
-		[authorizationData addItems: [password UTF8String]
-				      count: [password UTF8StringLength]];
+		[authorizationData addItems: password.UTF8String
+				      count: password.UTF8StringLength];
 
 		authorization = [OFString stringWithFormat:
-		    @"Basic %@", [authorizationData stringByBase64Encoding]];
+		    @"Basic %@", authorizationData.stringByBase64Encoding];
 
 		[headers setObject: authorization
 			    forKey: @"Authorization"];
@@ -177,8 +177,8 @@ constructRequestString(OFHTTPRequest *request)
 				    @"<https://heap.zone/objfw>"
 			    forKey: @"User-Agent"];
 
-	if ([request protocolVersion].major == 1 &&
-	    [request protocolVersion].minor == 0 &&
+	if (request.protocolVersion.major == 1 &&
+	    request.protocolVersion.minor == 0 &&
 	    [headers objectForKey: @"Connection"] == nil)
 		[headers setObject: @"keep-alive"
 			    forKey: @"Connection"];
@@ -291,7 +291,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)createResponseWithSocketOrThrow: (OFTCPSocket *)sock
 {
-	OFURL *URL = [_request URL];
+	OFURL *URL = _request.URL;
 	OFHTTPClientResponse *response;
 	OFString *connectionHeader;
 	bool keepAlive;
@@ -299,9 +299,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	response = [[[OFHTTPClientResponse alloc] initWithSocket: sock]
 	    autorelease];
-	[response setProtocolVersionString: _version];
-	[response setStatusCode: _status];
-	[response setHeaders: _serverHeaders];
+	response.protocolVersionString = _version;
+	response.statusCode = _status;
+	response.headers = _serverHeaders;
 
 	connectionHeader = [_serverHeaders objectForKey: @"Connection"];
 	if ([_version isEqual: @"1.1"]) {
@@ -319,12 +319,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 
 	if (keepAlive) {
-		[response of_setKeepAlive: true];
+		response.of_keepAlive = true;
 
 		_client->_socket = [sock retain];
 		_client->_lastURL = [URL copy];
 		_client->_lastWasHEAD =
-		    ([_request method] == OF_HTTP_REQUEST_METHOD_HEAD);
+		    (_request.method == OF_HTTP_REQUEST_METHOD_HEAD);
 		_client->_lastResponse = [response retain];
 	}
 
@@ -333,7 +333,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	    _status == 303 || _status == 307) &&
 	    (location = [_serverHeaders objectForKey: @"Location"]) != nil &&
 	    (_client->_insecureRedirectsAllowed ||
-	    [[URL scheme] isEqual: @"http"] ||
+	    [URL.scheme isEqual: @"http"] ||
 	    [location hasPrefix: @"https://"])) {
 		OFURL *newURL;
 		bool follow;
@@ -349,18 +349,17 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 						    request: _request
 						   response: response];
 		else
-			follow = defaultShouldFollow(
-			    [_request method], _status);
+			follow = defaultShouldFollow(_request.method, _status);
 
 		if (follow) {
 			OFDictionary OF_GENERIC(OFString *, OFString *)
-			    *headers = [_request headers];
+			    *headers = _request.headers;
 			OFHTTPRequest *newRequest =
 			    [[_request copy] autorelease];
 			OFMutableDictionary *newHeaders =
 			    [[headers mutableCopy] autorelease];
 
-			if (![[newURL host] isEqual: [URL host]])
+			if (![newURL.host isEqual: URL.host])
 				[newHeaders removeObjectForKey: @"Host"];
 
 			/*
@@ -383,12 +382,11 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 						[newHeaders
 						    removeObjectForKey: key];
 
-				[newRequest setMethod:
-				    OF_HTTP_REQUEST_METHOD_GET];
+				newRequest.method = OF_HTTP_REQUEST_METHOD_GET;
 			}
 
-			[newRequest setURL: newURL];
-			[newRequest setHeaders: newHeaders];
+			newRequest.URL = newURL;
+			newRequest.headers = newHeaders;
 
 			_client->_inProgress = false;
 
@@ -434,7 +432,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		return false;
 	}
 
-	if (![line hasPrefix: @"HTTP/"] || [line length] < 9 ||
+	if (![line hasPrefix: @"HTTP/"] || line.length < 9 ||
 	    [line characterAtIndex: 8] != ' ')
 		@throw [OFInvalidServerReplyException exception];
 
@@ -443,7 +441,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: _version];
 
-	_status = (int)[[line substringWithRange: of_range(9, 3)] decimalValue];
+	_status = (int)[line substringWithRange: of_range(9, 3)].decimalValue;
 
 	return true;
 }
@@ -458,7 +456,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (line == nil)
 		@throw [OFInvalidServerReplyException exception];
 
-	if ([line length] == 0) {
+	if (line.length == 0) {
 		[_serverHeaders makeImmutable];
 
 		if ([_client->_delegate respondsToSelector: @selector(client:
@@ -468,7 +466,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					statusCode: _status
 					   request: _request];
 
-		[sock setDelegate: nil];
+		sock.delegate = nil;
 
 		[self performSelector: @selector(createResponseWithSocket:)
 			   withObject: sock
@@ -477,7 +475,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		return false;
 	}
 
-	lineC = [line UTF8String];
+	lineC = line.UTF8String;
 
 	if ((tmp = strchr(lineC, ':')) == NULL)
 		@throw [OFInvalidServerReplyException exception];
@@ -514,7 +512,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return true;
 }
 
-- (bool)stream: (OF_KINDOF(OFStream *))sock
+- (bool)stream: (OFStream *)sock
    didReadLine: (OFString *)line
      exception: (id)exception
 {
@@ -535,7 +533,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			ret = [self handleFirstLine: line];
 		} else
 			ret = [self handleServerHeader: line
-						socket: sock];
+						socket: (OFTCPSocket *)sock];
 	} @catch (id e) {
 		[self raiseException: e];
 		ret = false;
@@ -544,7 +542,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	return ret;
 }
 
-- (OFString *)stream: (OF_KINDOF(OFStream *))stream
+- (OFString *)stream: (OFStream *)stream
       didWriteString: (OFString *)string
 	    encoding: (of_string_encoding_t)encoding
 	bytesWritten: (size_t)bytesWritten
@@ -565,12 +563,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	_firstLine = true;
 
-	if ([[_request headers] objectForKey: @"Content-Length"] != nil) {
-		[stream setDelegate: nil];
+	if ([_request.headers objectForKey: @"Content-Length"] != nil) {
+		stream.delegate = nil;
 
 		OFStream *requestBody = [[[OFHTTPClientRequestBodyStream alloc]
 		    initWithHandler: self
-			     socket: stream] autorelease];
+			     socket: (OFTCPSocket *)stream] autorelease];
 
 		if ([_client->_delegate respondsToSelector:
 		    @selector(client:wantsRequestBody:request:)])
@@ -602,12 +600,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	}
 }
 
--     (void)socket: (OF_KINDOF(OFTCPSocket *))sock
+-     (void)socket: (OFTCPSocket *)sock
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
 	 exception: (id)exception
 {
-	[(OFTCPSocket *)sock setDelegate: self];
+	sock.delegate = self;
 
 	if (exception != nil) {
 		[self raiseException: exception];
@@ -627,16 +625,15 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)start
 {
-	OFURL *URL = [_request URL];
+	OFURL *URL = _request.URL;
 	OFTCPSocket *sock;
 
 	/* Can we reuse the last socket? */
-	if (_client->_socket != nil && ![_client->_socket isAtEndOfStream] &&
-	    [[_client->_lastURL scheme] isEqual: [URL scheme]] &&
-	    [[_client->_lastURL host] isEqual: [URL host]] &&
-	    [_client->_lastURL port] == [URL port] &&
-	    (_client->_lastWasHEAD ||
-	    [_client->_lastResponse isAtEndOfStream])) {
+	if (_client->_socket != nil && !_client->_socket.atEndOfStream &&
+	    [_client->_lastURL.scheme isEqual: URL.scheme] &&
+	    [_client->_lastURL.host isEqual: URL.host] &&
+	    _client->_lastURL.port == URL.port &&
+	    (_client->_lastWasHEAD || _client->_lastResponse.atEndOfStream)) {
 		/*
 		 * Set _socket to nil, so that in case of an error it won't be
 		 * reused. If everything is successful, we set _socket again
@@ -651,7 +648,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		[_client->_lastResponse release];
 		_client->_lastResponse = nil;
 
-		[sock setDelegate: self];
+		sock.delegate = self;
 
 		[self performSelector: @selector(handleSocket:)
 			   withObject: sock
@@ -663,14 +660,14 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (void)closeAndReconnect
 {
 	@try {
-		OFURL *URL = [_request URL];
+		OFURL *URL = _request.URL;
 		OFTCPSocket *sock;
 		uint16_t port;
 		OFNumber *URLPort;
 
 		[_client close];
 
-		if ([[URL scheme] isEqual: @"https"]) {
+		if ([URL.scheme isEqual: @"https"]) {
 			if (of_tls_socket_class == Nil)
 				@throw [OFUnsupportedProtocolException
 				    exceptionWithURL: URL];
@@ -682,12 +679,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			port = 80;
 		}
 
-		URLPort = [URL port];
+		URLPort = URL.port;
 		if (URLPort != nil)
-			port = [URLPort uInt16Value];
+			port = URLPort.uInt16Value;
 
-		[sock setDelegate: self];
-		[sock asyncConnectToHost: [URL host]
+		sock.delegate = self;
+		[sock asyncConnectToHost: URL.host
 				    port: port];
 	} @catch (id e) {
 		[self raiseException: e];
@@ -709,13 +706,13 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_handler = [handler retain];
 		_socket = [sock retain];
 
-		headers = [_handler->_request headers];
+		headers = _handler->_request.headers;
 
 		contentLengthString = [headers objectForKey: @"Content-Length"];
 		if (contentLengthString == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		contentLength = [contentLengthString decimalValue];
+		contentLength = contentLengthString.decimalValue;
 		if (contentLength < 0)
 			@throw [OFOutOfRangeException exception];
 
@@ -794,7 +791,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
 
-	[_socket setDelegate: _handler];
+	_socket.delegate = _handler;
 	[_socket asyncReadLine];
 
 	[_socket release];
@@ -803,7 +800,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (int)fileDescriptorForWriting
 {
-	return [_socket fileDescriptorForWriting];
+	return _socket.fileDescriptorForWriting;
 }
 @end
 
@@ -830,7 +827,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 {
 	OFString *contentLength;
 
-	[super setHeaders: headers];
+	super.headers = headers;
 
 	_chunked = [[headers objectForKey: @"Transfer-Encoding"]
 	    isEqual: @"chunked"];
@@ -840,7 +837,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_hasContentLength = true;
 
 		@try {
-			intmax_t toRead = [contentLength decimalValue];
+			intmax_t toRead = contentLength.decimalValue;
 
 			if (toRead < 0)
 				@throw [OFInvalidServerReplyException
@@ -866,7 +863,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		return [_socket readIntoBuffer: buffer
 					length: length];
 
-	if ([_socket isAtEndOfStream])
+	if (_socket.atEndOfStream)
 		@throw [OFTruncatedDataException exception];
 
 	/* Content-Length */
@@ -907,7 +904,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		_toRead -= length;
 
 		if (_toRead == 0)
-			if ([[_socket readLine] length] > 0)
+			if ([_socket readLine].length > 0)
 				@throw [OFInvalidServerReplyException
 				    exception];
 
@@ -929,7 +926,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			    of_range(0, range.location)];
 
 		@try {
-			intmax_t toRead = [line hexadecimalValue];
+			intmax_t toRead = line.hexadecimalValue;
 
 			if (toRead < 0)
 				@throw [OFOutOfRangeException exception];
@@ -950,7 +947,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 					    exception];
 				}
 
-				if ([line length] > 0)
+				if (line.length > 0)
 					@throw [OFInvalidServerReplyException
 					    exception];
 			} else {
@@ -974,7 +971,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (!_hasContentLength && !_chunked)
-		return [_socket isAtEndOfStream];
+		return _socket.atEndOfStream;
 
 	return _atEndOfStream;
 }
@@ -984,12 +981,12 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_socket == nil)
 		return -1;
 
-	return [_socket fileDescriptorForReading];
+	return _socket.fileDescriptorForReading;
 }
 
 - (bool)hasDataInReadBuffer
 {
-	return ([super hasDataInReadBuffer] || [_socket hasDataInReadBuffer]);
+	return (super.hasDataInReadBuffer || _socket.hasDataInReadBuffer);
 }
 
 - (void)close
@@ -1010,9 +1007,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	@try {
 		_client = [client retain];
-		_delegate = [client delegate];
+		_delegate = client.delegate;
 
-		[_client setDelegate: self];
+		_client.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -1023,7 +1020,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)dealloc
 {
-	[_client setDelegate: _delegate];
+	_client.delegate = _delegate;
 	[_client release];
 
 	[super dealloc];
@@ -1063,13 +1060,13 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	 * of the autorelease pool that contains us, so resetting it via
 	 * -[dealloc] might be too late.
 	 */
-	[_client setDelegate: _delegate];
+	_client.delegate = _delegate;
 
 	@throw exception;
 }
 
 -    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OF_KINDOF(OFTCPSocket *))sock
+  didCreateSocket: (OFTCPSocket *)sock
 	  request: (OFHTTPRequest *)request
 {
 	if ([_delegate respondsToSelector:
@@ -1117,7 +1114,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 				 request: request
 				response: response];
 	else
-		return defaultShouldFollow([request method], statusCode);
+		return defaultShouldFollow(request.method, statusCode);
 }
 @end
 
@@ -1170,8 +1167,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 		  redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFURL *URL = [request URL];
-	OFString *scheme = [URL scheme];
+	OFURL *URL = request.URL;
+	OFString *scheme = URL.scheme;
 
 	if (![scheme isEqual: @"http"] && ![scheme isEqual: @"https"])
 		@throw [OFUnsupportedProtocolException exceptionWithURL: URL];

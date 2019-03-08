@@ -186,7 +186,7 @@
 	size_t readLength = 0;
 
 	while (readLength < length) {
-		if ([self isAtEndOfStream])
+		if (self.atEndOfStream)
 			@throw [OFTruncatedDataException exception];
 
 		readLength += [self readIntoBuffer: (char *)buffer + readLength
@@ -662,7 +662,7 @@
 	char *buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
-		while (![self isAtEndOfStream]) {
+		while (!self.atEndOfStream) {
 			size_t length;
 
 			length = [self readIntoBuffer: buffer
@@ -867,7 +867,7 @@
 	OFString *line = nil;
 
 	while ((line = [self tryReadLineWithEncoding: encoding]) == nil)
-		if ([self isAtEndOfStream])
+		if (self.atEndOfStream)
 			return nil;
 
 	return line;
@@ -1114,10 +1114,9 @@
 {
 	OFString *ret = nil;
 
-
 	while ((ret = [self tryReadTillDelimiter: delimiter
 					encoding: encoding]) == nil)
-		if ([self isAtEndOfStream])
+		if (self.atEndOfStream)
 			return nil;
 
 	return ret;
@@ -1696,9 +1695,9 @@
 		@throw [OFInvalidArgumentException exception];
 
 	pool = objc_autoreleasePoolPush();
-	length = [data count] * [data itemSize];
+	length = data.count * data.itemSize;
 
-	[self writeBuffer: [data items]
+	[self writeBuffer: data.items
 		   length: length];
 
 	objc_autoreleasePoolPop(pool);
@@ -1782,7 +1781,7 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((length = of_vasprintf(&UTF8String, [format UTF8String],
+	if ((length = of_vasprintf(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
@@ -1814,8 +1813,8 @@
 	@try {
 		int readFlags;
 
-		readFlags =
-		    fcntl([(id)self fileDescriptorForReading], F_GETFL, 0);
+		readFlags = fcntl(((id <OFReadyForReadingObserving>)self)
+		    .fileDescriptorForReading, F_GETFL, 0);
 
 		readImplemented = true;
 
@@ -1829,8 +1828,8 @@
 		else
 			readFlags |= O_NONBLOCK;
 
-		if (fcntl([(id)self fileDescriptorForReading], F_SETFL,
-		    readFlags) == -1)
+		if (fcntl(((id <OFReadyForReadingObserving>)self)
+		    .fileDescriptorForReading, F_SETFL, readFlags) == -1)
 			@throw [OFSetOptionFailedException
 			    exceptionWithObject: self
 					  errNo: errno];
@@ -1840,8 +1839,8 @@
 	@try {
 		int writeFlags;
 
-		writeFlags =
-		    fcntl([(id)self fileDescriptorForWriting], F_GETFL, 0);
+		writeFlags = fcntl(((id <OFReadyForWritingObserving>)self)
+		    .fileDescriptorForWriting, F_GETFL, 0);
 
 		writeImplemented = true;
 
@@ -1855,8 +1854,8 @@
 		else
 			writeFlags |= O_NONBLOCK;
 
-		if (fcntl([(id)self fileDescriptorForWriting], F_SETFL,
-		    writeFlags) == -1)
+		if (fcntl(((id <OFReadyForWritingObserving>)self)
+		    .fileDescriptorForWriting, F_SETFL, writeFlags) == -1)
 			@throw [OFSetOptionFailedException
 			    exceptionWithObject: self
 					  errNo: errno];

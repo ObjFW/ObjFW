@@ -193,8 +193,8 @@ pushInt128(struct call_context **context, uint_fast8_t *currentGPR,
 void
 of_invocation_invoke(OFInvocation *invocation)
 {
-	OFMethodSignature *methodSignature = [invocation methodSignature];
-	size_t numberOfArguments = [methodSignature numberOfArguments];
+	OFMethodSignature *methodSignature = invocation.methodSignature;
+	size_t numberOfArguments = methodSignature.numberOfArguments;
 	struct call_context *context;
 	const char *typeEncoding;
 	uint_fast8_t currentGPR = 0, currentSSE = 0;
@@ -310,7 +310,7 @@ of_invocation_invoke(OFInvocation *invocation)
 		}
 	}
 
-	typeEncoding = [methodSignature methodReturnType];
+	typeEncoding = methodSignature.methodReturnType;
 
 	if (*typeEncoding == 'r')
 		typeEncoding++;

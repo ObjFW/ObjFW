@@ -63,7 +63,7 @@
 {
 	OFXMLProcessingInstructions *node = [OFXMLProcessingInstructions
 	    processingInstructionsWithString: pi];
-	OFXMLElement *parent = [_stack lastObject];
+	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];
@@ -83,19 +83,19 @@
 						    namespace: namespace];
 
 	for (OFXMLAttribute *attribute in attributes) {
-		if ([attribute namespace] == nil &&
-		    [[attribute name] isEqual: @"xmlns"])
+		if (attribute.namespace == nil &&
+		    [attribute.name isEqual: @"xmlns"])
 			continue;
 
-		if ([[attribute namespace]
-		    isEqual: @"http://www.w3.org/2000/xmlns/"])
-			[element setPrefix: [attribute name]
-			      forNamespace: [attribute stringValue]];
+		if ([attribute.namespace isEqual:
+		    @"http://www.w3.org/2000/xmlns/"])
+			[element setPrefix: attribute.name
+			      forNamespace: attribute.stringValue];
 
 		[element addAttribute: attribute];
 	}
 
-	[[_stack lastObject] addChild: element];
+	[_stack.lastObject addChild: element];
 	[_stack addObject: element];
 }
 
@@ -104,7 +104,7 @@
 	 prefix: (OFString *)prefix
       namespace: (OFString *)namespace
 {
-	switch ([_stack count]) {
+	switch (_stack.count) {
 	case 0:
 		if ([_delegate respondsToSelector: @selector(elementBuilder:
 		    didNotExpectCloseTag:prefix:namespace:)])
@@ -118,7 +118,7 @@
 		return;
 	case 1:
 		[_delegate elementBuilder: self
-			  didBuildElement: [_stack firstObject]];
+			  didBuildElement: _stack.firstObject];
 		break;
 	}
 
@@ -132,7 +132,7 @@
 	OFXMLElement *parent;
 
 	node = [OFXMLCharacters charactersWithString: characters];
-	parent = [_stack lastObject];
+	parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];
@@ -146,7 +146,7 @@
     foundCDATA: (OFString *)CDATA
 {
 	OFXMLCDATA *node = [OFXMLCDATA CDATAWithString: CDATA];
-	OFXMLElement *parent = [_stack lastObject];
+	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];
@@ -160,7 +160,7 @@
   foundComment: (OFString *)comment
 {
 	OFXMLComment *node = [OFXMLComment commentWithString: comment];
-	OFXMLElement *parent = [_stack lastObject];
+	OFXMLElement *parent = _stack.lastObject;
 
 	if (parent != nil)
 		[parent addChild: node];

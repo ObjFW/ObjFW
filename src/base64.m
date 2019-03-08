@@ -105,7 +105,7 @@ of_base64_decode(OFMutableData *data, const char *string, size_t length)
 	if ((length & 3) != 0)
 		return false;
 
-	if ([data itemSize] != 1)
+	if (data.itemSize != 1)
 		return false;
 
 	for (i = 0; i < length; i += 4) {

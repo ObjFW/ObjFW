@@ -24,7 +24,7 @@
 @implementation OFArray_adjacentSubarray
 - (const id *)objects
 {
-	return [_array objects] + _range.location;
+	return _array.objects + _range.location;
 }
 
 - (bool)isEqual: (id)object
@@ -41,11 +41,11 @@
 
 	otherArray = object;
 
-	if (_range.length != [otherArray count])
+	if (_range.length != otherArray.count)
 		return false;
 
-	objects = [self objects];
-	otherObjects = [otherArray objects];
+	objects = self.objects;
+	otherObjects = otherArray.objects;
 
 	for (size_t i = 0; i < _range.length; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
@@ -57,7 +57,7 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id const *objects = [self objects];
+	id const *objects = self.objects;
 	bool stop = false;
 
 	for (size_t i = 0; i < _range.length && !stop; i++)

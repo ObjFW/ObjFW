@@ -42,7 +42,7 @@ extern void of_invocation_invoke(OFInvocation *);
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		size_t numberOfArguments = [signature numberOfArguments];
+		size_t numberOfArguments = signature.numberOfArguments;
 		const char *typeEncoding;
 		size_t typeSize;
 
@@ -62,7 +62,7 @@ extern void of_invocation_invoke(OFInvocation *);
 			[_arguments addObject: data];
 		}
 
-		typeEncoding = [_methodSignature methodReturnType];
+		typeEncoding = _methodSignature.methodReturnType;
 		typeSize = of_sizeof_type_encoding(typeEncoding);
 
 		if (typeSize > 0) {
@@ -95,7 +95,7 @@ extern void of_invocation_invoke(OFInvocation *);
 {
 	OFMutableData *data = [_arguments objectAtIndex: idx];
 
-	memcpy([data items], buffer, [data itemSize]);
+	memcpy(data.mutableItems, buffer, data.itemSize);
 }
 
 - (void)getArgument: (void *)buffer
@@ -103,17 +103,17 @@ extern void of_invocation_invoke(OFInvocation *);
 {
 	OFData *data = [_arguments objectAtIndex: idx];
 
-	memcpy(buffer, [data items], [data itemSize]);
+	memcpy(buffer, data.items, data.itemSize);
 }
 
 - (void)setReturnValue: (const void *)buffer
 {
-	memcpy([_returnValue items], buffer, [_returnValue itemSize]);
+	memcpy(_returnValue.mutableItems, buffer, _returnValue.itemSize);
 }
 
 - (void)getReturnValue: (void *)buffer
 {
-	memcpy(buffer, [_returnValue items], [_returnValue itemSize]);
+	memcpy(buffer, _returnValue.items, _returnValue.itemSize);
 }
 
 #ifdef OF_INVOCATION_CAN_INVOKE

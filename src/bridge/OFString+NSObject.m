@@ -26,7 +26,7 @@ int _OFString_NSObject_reference;
 @implementation OFString (NSObject)
 - (id)NSObject
 {
-	NSString *string = [NSString stringWithUTF8String: [self UTF8String]];
+	NSString *string = [NSString stringWithUTF8String: self.UTF8String];
 
 	if (string == nil)
 		@throw [OFInitializationFailedException

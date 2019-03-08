@@ -37,8 +37,8 @@ int _OFString_XMLEscaping_reference;
 	size_t j;
 	OFString *ret;
 
-	string = [self UTF8String];
-	length = [self UTF8StringLength];
+	string = self.UTF8String;
+	length = self.UTF8StringLength;
 
 	j = 0;
 	retLength = length;

@@ -276,14 +276,14 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	self = [super init];
 
 	@try {
-		const char *UTF8String = [string UTF8String];
+		const char *UTF8String = string.UTF8String;
 		struct tm tm = { 0 };
 		int16_t tz = 0;
 
 		tm.tm_isdst = -1;
 
-		if (of_strptime(UTF8String, [format UTF8String],
-		    &tm, &tz) != UTF8String + [string UTF8StringLength])
+		if (of_strptime(UTF8String, format.UTF8String,
+		    &tm, &tz) != UTF8String + string.UTF8StringLength)
 			@throw [OFInvalidFormatException exception];
 
 		_seconds = tmAndTzToTime(&tm, &tz);
@@ -301,7 +301,7 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 	self = [super init];
 
 	@try {
-		const char *UTF8String = [string UTF8String];
+		const char *UTF8String = string.UTF8String;
 		struct tm tm = { 0 };
 		/*
 		 * of_strptime() can never set this to INT16_MAX, no matter
@@ -312,8 +312,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 		tm.tm_isdst = -1;
 
-		if (of_strptime(UTF8String, [format UTF8String],
-		    &tm, &tz) != UTF8String + [string UTF8StringLength])
+		if (of_strptime(UTF8String, format.UTF8String,
+		    &tm, &tz) != UTF8String + string.UTF8StringLength)
 			@throw [OFInvalidFormatException exception];
 
 		if (tz == INT16_MAX) {
@@ -345,11 +345,11 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 			uint64_t u;
 		} d;
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		d.u = OF_BSWAP64_IF_LE((uint64_t)[element hexadecimalValue]);
+		d.u = OF_BSWAP64_IF_LE((uint64_t)element.hexadecimalValue);
 		_seconds = OF_BSWAP_DOUBLE_IF_LE(d.d);
 
 		objc_autoreleasePoolPop(pool);
@@ -435,12 +435,12 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		uint64_t u;
 	} d;
 
-	element = [OFXMLElement elementWithName: [self className]
+	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS];
 
 	d.d = OF_BSWAP_DOUBLE_IF_LE(_seconds);
-	[element setStringValue:
-	    [OFString stringWithFormat: @"%016" PRIx64, OF_BSWAP64_IF_LE(d.u)]];
+	element.stringValue =
+	    [OFString stringWithFormat: @"%016" PRIx64, OF_BSWAP64_IF_LE(d.u)];
 
 	[element retain];
 
@@ -626,13 +626,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	@try {
 #ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, [format UTF8String], &tm) == 0)
+		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
 #else
 		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    [format UTF16String], &tm) == 0)
+		    format.UTF16String, &tm) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF16String: buffer];
@@ -686,13 +686,13 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 
 	@try {
 #ifndef OF_WINDOWS
-		if (strftime(buffer, pageSize, [format UTF8String], &tm) == 0)
+		if (strftime(buffer, pageSize, format.UTF8String, &tm) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF8String: buffer];
 #else
 		if (wcsftime(buffer, pageSize / sizeof(wchar_t),
-		    [format UTF16String], &tm) == 0)
+		    format.UTF16String, &tm) == 0)
 			@throw [OFOutOfRangeException exception];
 
 		ret = [OFString stringWithUTF16String: buffer];

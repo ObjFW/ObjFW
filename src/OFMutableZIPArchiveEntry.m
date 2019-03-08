@@ -46,7 +46,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old;
 
-	if ([fileName UTF8StringLength] > UINT16_MAX)
+	if (fileName.UTF8StringLength > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	old = _fileName;
@@ -61,7 +61,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFString *old;
 
-	if ([fileComment UTF8StringLength] > UINT16_MAX)
+	if (fileComment.UTF8StringLength > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	old = _fileComment;
@@ -76,10 +76,10 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFData *old;
 
-	if ([extraField itemSize] != 1)
+	if (extraField.itemSize != 1)
 		@throw [OFInvalidArgumentException exception];
 
-	if ([extraField count] > UINT16_MAX)
+	if (extraField.count > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	old = _extraField;
@@ -103,11 +103,11 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	_lastModifiedFileDate = ((([date localYear] - 1980) & 0xFF) << 9) |
-	    (([date localMonthOfYear] & 0x0F) << 5) |
-	    ([date localDayOfMonth] & 0x1F);
-	_lastModifiedFileTime = (([date localHour] & 0x1F) << 11) |
-	    (([date localMinute] & 0x3F) << 5) | (([date second] >> 1) & 0x0F);
+	_lastModifiedFileDate = (((date.localYear - 1980) & 0xFF) << 9) |
+	    ((date.localMonthOfYear & 0x0F) << 5) |
+	    (date.localDayOfMonth & 0x1F);
+	_lastModifiedFileTime = ((date.localHour & 0x1F) << 11) |
+	    ((date.localMinute & 0x3F) << 5) | ((date.second >> 1) & 0x0F);
 
 	objc_autoreleasePoolPop(pool);
 }

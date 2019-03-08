@@ -43,7 +43,7 @@
 	self = [super init];
 
 	@try {
-		if ([bitStringValue count] * [bitStringValue itemSize] !=
+		if (bitStringValue.count * bitStringValue.itemSize !=
 		    bitStringLength / 8)
 			@throw [OFInvalidFormatException exception];
 
@@ -68,13 +68,13 @@
 
 	@try {
 		unsigned char lastByteBits;
-		size_t count = [DEREncodedContents count];
+		size_t count = DEREncodedContents.count;
 
 		if (tagClass != OF_ASN1_TAG_CLASS_UNIVERSAL ||
 		    tagNumber != OF_ASN1_TAG_NUMBER_BIT_STRING || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1 || count == 0)
+		if (DEREncodedContents.itemSize != 1 || count == 0)
 			@throw [OFInvalidFormatException exception];
 
 		lastByteBits =
@@ -134,7 +134,7 @@
 
 - (uint32_t)hash
 {
-	return [_bitStringValue hash] + (uint32_t)_bitStringLength;
+	return _bitStringValue.hash + (uint32_t)_bitStringLength;
 }
 
 - (OFString *)description

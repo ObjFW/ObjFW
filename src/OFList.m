@@ -44,15 +44,15 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in
 		    [element elementsForNamespace: OF_SERIALIZATION_NS]) {
 			void *pool2 = objc_autoreleasePoolPush();
 
-			[self appendObject: [child objectByDeserializing]];
+			[self appendObject: child.objectByDeserializing];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -216,10 +216,10 @@
 
 	list = object;
 
-	if ([list count] != _count)
+	if (list.count != _count)
 		return false;
 
-	for (iter = _firstListObject, iter2 = [list firstListObject];
+	for (iter = _firstListObject, iter2 = list.firstListObject;
 	    iter != NULL && iter2 != NULL;
 	    iter = iter->next, iter2 = iter2->next)
 		if (![iter->object isEqual: iter2->object])
@@ -356,7 +356,7 @@
 - (OFXMLElement *)XMLElementBySerializing
 {
 	OFXMLElement *element =
-	    [OFXMLElement elementWithName: [self className]
+	    [OFXMLElement elementWithName: self.className
 				namespace: OF_SERIALIZATION_NS];
 
 	for (of_list_object_t *iter = _firstListObject;
@@ -415,7 +415,7 @@
 	self = [super init];
 
 	_list = [list retain];
-	_current = [list firstListObject];
+	_current = _list.firstListObject;
 	_mutations = *mutationsPtr;
 	_mutationsPtr = mutationsPtr;
 
@@ -452,6 +452,6 @@
 		@throw [OFEnumerationMutationException
 		    exceptionWithObject: _list];
 
-	_current = [_list firstListObject];
+	_current = _list.firstListObject;
 }
 @end

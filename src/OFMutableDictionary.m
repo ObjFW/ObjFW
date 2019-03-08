@@ -187,7 +187,7 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	for (id key in [self allKeys])
+	for (id key in self.allKeys)
 		[self removeObjectForKey: key];
 
 	objc_autoreleasePoolPop(pool);

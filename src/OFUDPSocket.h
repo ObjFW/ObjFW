@@ -76,7 +76,7 @@ typedef OFData *_Nullable (^of_udp_socket_async_send_data_block_t)(
  *		    success
  * @return A bool whether the same block should be used for the next receive
  */
--	  (bool)socket: (OF_KINDOF(OFUDPSocket *))socket
+-	  (bool)socket: (OFUDPSocket *)socket
   didReceiveIntoBuffer: (void *)buffer
 		length: (size_t)length
 		sender: (const of_socket_address_t *_Nonnull)sender
@@ -91,7 +91,7 @@ typedef OFData *_Nullable (^of_udp_socket_async_send_data_block_t)(
  * @param exception An exception that occurred while sending, or nil on success
  * @return The data to repeat the send with or nil if it should not repeat
  */
-- (nullable OFData *)socket: (OF_KINDOF(OFUDPSocket *))socket
+- (nullable OFData *)socket: (OFUDPSocket *)socket
 		didSendData: (OFData *)data
 		   receiver: (const of_socket_address_t *_Nonnull)receiver
 		  exception: (nullable id)exception;

@@ -38,9 +38,9 @@ int _OFString_CryptoHashing_reference;
 	const unsigned char *digest;
 	char cString[digestSize * 2];
 
-	[hash updateWithBuffer: [self UTF8String]
-			length: [self UTF8StringLength]];
-	digest = [hash digest];
+	[hash updateWithBuffer: self.UTF8String
+			length: self.UTF8StringLength];
+	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {
 		uint8_t high, low;

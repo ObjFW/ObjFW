@@ -169,7 +169,7 @@ static struct {
 - (void)intersectSet: (OFSet *)set
 {
 	void *pool = objc_autoreleasePoolPush();
-	size_t count = [self count];
+	size_t count = self.count;
 	id *cArray;
 
 	cArray = [self allocMemoryWithSize: sizeof(id)

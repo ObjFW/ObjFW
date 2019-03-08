@@ -168,8 +168,8 @@
 					_incompleteUTF16Surrogate = c;
 
 					if (rest != nil) {
-						char *items = [rest items];
-						size_t count = [rest count];
+						char *items = rest.items;
+						size_t count = rest.count;
 
 						[self unreadFromBuffer: items
 								length: count];
@@ -208,8 +208,8 @@
 		}
 
 		if (rest != nil)
-			[self unreadFromBuffer: [rest items]
-					length: [rest count]];
+			[self unreadFromBuffer: rest.items
+					length: rest.count];
 	} @finally {
 		[self freeMemory: UTF16];
 	}

@@ -38,8 +38,8 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const char *cString = [stringValue UTF8String];
-		size_t length = [stringValue UTF8StringLength];
+		const char *cString = stringValue.UTF8String;
+		size_t length = stringValue.UTF8StringLength;
 
 		for (size_t i = 0; i < length; i++)
 			if (!of_ascii_isdigit(cString[i]) && cString[i] != ' ')
@@ -70,13 +70,13 @@
 		    constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		numericStringValue = [OFString
-		    stringWithCString: [DEREncodedContents items]
+		    stringWithCString: DEREncodedContents.items
 			     encoding: OF_STRING_ENCODING_ASCII
-			       length: [DEREncodedContents count]];
+			       length: DEREncodedContents.count];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -103,7 +103,7 @@
 
 - (OFString *)stringValue
 {
-	return [self numericStringValue];
+	return self.numericStringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -123,7 +123,7 @@
 
 - (uint32_t)hash
 {
-	return [_numericStringValue hash];
+	return _numericStringValue.hash;
 }
 
 - (OFString *)description

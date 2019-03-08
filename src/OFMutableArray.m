@@ -260,13 +260,13 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 - (void)addObject: (id)object
 {
 	[self insertObject: object
-		   atIndex: [self count]];
+		   atIndex: self.count];
 }
 
 - (void)addObjectsFromArray: (OFArray *)array
 {
 	[self insertObjectsFromArray: array
-			     atIndex: [self count]];
+			     atIndex: self.count];
 }
 
 - (void)insertObject: (id)object
@@ -306,7 +306,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [self count];
+	count = self.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: oldObject]) {
@@ -325,7 +325,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [self count];
+	count = self.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == oldObject) {
@@ -349,7 +349,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [self count];
+	count = self.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([[self objectAtIndex: i] isEqual: object]) {
@@ -367,7 +367,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	count = [self count];
+	count = self.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([self objectAtIndex: i] == object) {
@@ -386,7 +386,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)removeLastObject
 {
-	size_t count = [self count];
+	size_t count = self.count;
 
 	if (count == 0)
 		return;
@@ -396,7 +396,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)removeAllObjects
 {
-	[self removeObjectsInRange: of_range(0, [self count])];
+	[self removeObjectsInRange: of_range(0, self.count)];
 }
 
 #ifdef OF_HAVE_BLOCKS
@@ -439,7 +439,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 - (void)sortUsingSelector: (SEL)selector
 		  options: (int)options
 {
-	size_t count = [self count];
+	size_t count = self.count;
 
 	if (count == 0 || count == 1)
 		return;
@@ -451,7 +451,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 - (void)sortUsingComparator: (of_comparator_t)comparator
 		    options: (int)options
 {
-	size_t count = [self count];
+	size_t count = self.count;
 
 	if (count == 0 || count == 1)
 		return;
@@ -462,7 +462,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 
 - (void)reverse
 {
-	size_t i, j, count = [self count];
+	size_t i, j, count = self.count;
 
 	if (count == 0 || count == 1)
 		return;

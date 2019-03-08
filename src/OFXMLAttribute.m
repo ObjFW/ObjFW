@@ -77,16 +77,15 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		_name = [[[element attributeForName: @"name"]
-		    stringValue] copy];
-		_namespace = [[[element attributeForName: @"namespace"]
-		    stringValue] copy];
-		_stringValue = [[[element attributeForName: @"stringValue"]
-		    stringValue] copy];
+		_name = [[element attributeForName: @"name"].stringValue copy];
+		_namespace = [[element attributeForName: @"namespace"]
+		    .stringValue copy];
+		_stringValue = [[element attributeForName: @"stringValue"]
+		    .stringValue copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -147,9 +146,9 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
-	OF_HASH_ADD_HASH(hash, [_namespace hash]);
-	OF_HASH_ADD_HASH(hash, [_stringValue hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
+	OF_HASH_ADD_HASH(hash, _namespace.hash);
+	OF_HASH_ADD_HASH(hash, _stringValue.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -161,7 +160,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: [self className]
+	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS];
 
 	[element addAttributeWithName: @"name"

@@ -64,7 +64,7 @@ parseFileNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_fileName = nil;
 
 	entry->_fileName = [[OFString alloc]
-	    initWithCString: (char *)[extension items] + 1
+	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
 		     length: [extension count] - 1];
 }
@@ -75,8 +75,8 @@ parseDirectoryNameExtension(OFLHAArchiveEntry *entry, OFData *extension,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableData *data = [[extension mutableCopy] autorelease];
-	char *items = [data items];
-	size_t count = [data count];
+	char *items = data.mutableItems;
+	size_t count = data.count;
 	OFMutableString *directoryName;
 
 	for (size_t i = 1; i < count; i++)
@@ -108,9 +108,9 @@ parseCommentExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_fileComment = nil;
 
 	entry->_fileComment = [[OFString alloc]
-	    initWithCString: (char *)[extension items] + 1
+	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
-		     length: [extension count] - 1];
+		     length: extension.count - 1];
 }
 
 static void
@@ -119,10 +119,10 @@ parsePermissionsExtension(OFLHAArchiveEntry *entry, OFData *extension,
 {
 	uint16_t mode;
 
-	if ([extension count] != 3)
+	if (extension.count != 3)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&mode, (char *)[extension items] + 1, 2);
+	memcpy(&mode, (char *)extension.items + 1, 2);
 	mode = OF_BSWAP16_IF_BE(mode);
 
 	[entry->_mode release];
@@ -137,13 +137,13 @@ parseGIDUIDExtension(OFLHAArchiveEntry *entry, OFData *extension,
 {
 	uint16_t UID, GID;
 
-	if ([extension count] != 5)
+	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&GID, (char *)[extension items] + 1, 2);
+	memcpy(&GID, (char *)extension.items + 1, 2);
 	GID = OF_BSWAP16_IF_BE(GID);
 
-	memcpy(&UID, (char *)[extension items] + 3, 2);
+	memcpy(&UID, (char *)extension.items + 3, 2);
 	UID = OF_BSWAP16_IF_BE(UID);
 
 	[entry->_GID release];
@@ -164,9 +164,9 @@ parseGroupExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_group = nil;
 
 	entry->_group = [[OFString alloc]
-	    initWithCString: (char *)[extension items] + 1
+	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
-		     length: [extension count] - 1];
+		     length: extension.count - 1];
 }
 
 static void
@@ -177,9 +177,9 @@ parseOwnerExtension(OFLHAArchiveEntry *entry, OFData *extension,
 	entry->_owner = nil;
 
 	entry->_owner = [[OFString alloc]
-	    initWithCString: (char *)[extension items] + 1
+	    initWithCString: (char *)extension.items + 1
 		   encoding: encoding
-		     length: [extension count] - 1];
+		     length: extension.count - 1];
 }
 
 static void
@@ -188,10 +188,10 @@ parseModificationDateExtension(OFLHAArchiveEntry *entry, OFData *extension,
 {
 	uint32_t modificationDate;
 
-	if ([extension count] != 5)
+	if (extension.count != 5)
 		@throw [OFInvalidFormatException exception];
 
-	memcpy(&modificationDate, (char *)[extension items] + 1, 4);
+	memcpy(&modificationDate, (char *)extension.items + 1, 4);
 	modificationDate = OF_BSWAP32_IF_BE(modificationDate);
 
 	[entry->_modificationDate release];
@@ -291,8 +291,8 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 	[data addItems: [entry->_fileName cStringWithEncoding: encoding]
 		 count: [entry->_fileName cStringLengthWithEncoding: encoding]];
 
-	cString = [data items];
-	length = [data count];
+	cString = data.mutableItems;
+	length = data.count;
 	pos = 0;
 
 	for (size_t i = 0; i < length; i++) {
@@ -595,7 +595,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 	[data addItems: &tmp32
 		 count: sizeof(tmp32)];
 
-	tmp32 = OF_BSWAP32_IF_BE((uint32_t)[_date timeIntervalSince1970]);
+	tmp32 = OF_BSWAP32_IF_BE((uint32_t)_date.timeIntervalSince1970);
 	[data addItems: &tmp32
 		 count: sizeof(tmp32)];
 
@@ -657,7 +657,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			 count: sizeof(tmp16)];
 		[data addItem: "\x50"];
 
-		tmp16 = OF_BSWAP16_IF_BE([_mode uInt16Value]);
+		tmp16 = OF_BSWAP16_IF_BE(_mode.uInt16Value);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
 	}
@@ -671,11 +671,11 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 			 count: sizeof(tmp16)];
 		[data addItem: "\x51"];
 
-		tmp16 = OF_BSWAP16_IF_BE([_GID uInt16Value]);
+		tmp16 = OF_BSWAP16_IF_BE(_GID.uInt16Value);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
 
-		tmp16 = OF_BSWAP16_IF_BE([_UID uInt16Value]);
+		tmp16 = OF_BSWAP16_IF_BE(_UID.uInt16Value);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
 	}
@@ -717,15 +717,15 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 		[data addItem: "\x54"];
 
 		tmp32 = OF_BSWAP32_IF_BE(
-		    (uint32_t)[_modificationDate timeIntervalSince1970]);
+		    (uint32_t)_modificationDate.timeIntervalSince1970);
 		[data addItems: &tmp32
 			 count: sizeof(tmp32)];
 	}
 
 	for (OFData *extension in _extensions) {
-		size_t extensionLength = [extension count];
+		size_t extensionLength = extension.count;
 
-		if ([extension itemSize] != 1)
+		if (extension.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		if (extensionLength > UINT16_MAX - 2)
@@ -734,24 +734,25 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 		tmp16 = OF_BSWAP16_IF_BE((uint16_t)extensionLength + 2);
 		[data addItems: &tmp16
 			 count: sizeof(tmp16)];
-		[data addItems: [extension items]
-			 count: [extension count]];
+		[data addItems: extension.items
+			 count: extension.count];
 	}
 
 	/* Zero-length extension to terminate */
 	[data increaseCountBy: 2];
 
-	headerSize = [data count];
+	headerSize = data.count;
 
 	if (headerSize > UINT16_MAX)
 		@throw [OFOutOfRangeException exception];
 
 	/* Now fill in the size and CRC16 for the entire header */
 	tmp16 = OF_BSWAP16_IF_BE(headerSize);
-	memcpy([data itemAtIndex: 0], &tmp16, sizeof(tmp16));
+	memcpy([data mutableItemAtIndex: 0], &tmp16, sizeof(tmp16));
 
-	tmp16 = OF_BSWAP16_IF_BE(of_crc16(0, [data items], [data count]));
-	memcpy([data itemAtIndex: 27], &tmp16, sizeof(tmp16));
+	tmp16 = of_crc16(0, data.items, data.count);
+	tmp16 = OF_BSWAP16_IF_BE(tmp16);
+	memcpy([data mutableItemAtIndex: 27], &tmp16, sizeof(tmp16));
 
 	[stream writeData: data];
 
@@ -761,10 +762,9 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 - (OFString *)description
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *mode = (_mode == nil
-	    ? nil
-	    : [OFString stringWithFormat: @"%" PRIo16, [_mode uInt16Value]]);
-	OFString *extensions = [[_extensions description]
+	OFString *mode = (_mode == nil ? nil
+	    : [OFString stringWithFormat: @"%" PRIo16, _mode.uInt16Value]);
+	OFString *extensions = [_extensions.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 	OFString *ret = [OFString stringWithFormat:
@@ -786,7 +786,7 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 	    @"\tModification date = %@\n"
 	    @"\tExtensions: %@"
 	    @">",
-	    [self class], [self fileName], _compressionMethod, _compressedSize,
+	    self.class, self.fileName, _compressionMethod, _compressedSize,
 	    _uncompressedSize, _date, _headerLevel, _CRC16,
 	    _operatingSystemIdentifier, _fileComment, mode, _UID, _GID, _owner,
 	    _group, _modificationDate, extensions];

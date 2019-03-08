@@ -143,7 +143,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	[mutex lock];
 	@try {
 #endif
-		return [handlers objectForKey: [URL scheme]];
+		return [handlers objectForKey: URL.scheme];
 #ifdef OF_HAVE_THREADS
 	} @finally {
 		[mutex unlock];

@@ -27,7 +27,7 @@
 static uint32_t
 stringHash(void *object)
 {
-	return [(OFString *)object hash];
+	return ((OFString *)object).hash;
 }
 
 static bool
@@ -165,7 +165,7 @@ stringEqual(void *object1, void *object2)
 	of_options_parser_option_t *iter;
 	OFString *argument;
 
-	if (_done || _index >= [_arguments count])
+	if (_done || _index >= _arguments.count)
 		return '\0';
 
 	[_lastLongOption release];
@@ -176,7 +176,7 @@ stringEqual(void *object1, void *object2)
 	argument = [_arguments objectAtIndex: _index];
 
 	if (_subIndex == 0) {
-		if ([argument length] < 2 ||
+		if (argument.length < 2 ||
 		    [argument characterAtIndex: 0] != '-') {
 			_done = true;
 			return '\0';
@@ -199,11 +199,11 @@ stringEqual(void *object1, void *object2)
 			if ((pos = [argument rangeOfString: @"="].location) !=
 			    OF_NOT_FOUND) {
 				of_range_t range = of_range(pos + 1,
-				    [argument length] - pos - 1);
+				    argument.length - pos - 1);
 				_argument = [[argument
 				    substringWithRange: range] copy];
 			} else
-				pos = [argument length];
+				pos = argument.length;
 
 			_lastLongOption = [[argument substringWithRange:
 			    of_range(2, pos - 2)] copy];
@@ -236,7 +236,7 @@ stringEqual(void *object1, void *object2)
 
 	_lastOption = [argument characterAtIndex: _subIndex++];
 
-	if (_subIndex >= [argument length]) {
+	if (_subIndex >= argument.length) {
 		_index++;
 		_subIndex = 0;
 	}
@@ -251,12 +251,12 @@ stringEqual(void *object1, void *object2)
 				return _lastOption;
 			}
 
-			if (_index >= [_arguments count])
+			if (_index >= _arguments.count)
 				return ':';
 
 			argument = [_arguments objectAtIndex: _index];
 			argument = [argument substringWithRange:
-			    of_range(_subIndex, [argument length] - _subIndex)];
+			    of_range(_subIndex, argument.length - _subIndex)];
 
 			_argument = [argument copy];
 
@@ -279,6 +279,6 @@ stringEqual(void *object1, void *object2)
 - (OFArray *)remainingArguments
 {
 	return [_arguments objectsInRange:
-	    of_range(_index, [_arguments count] - _index)];
+	    of_range(_index, _arguments.count - _index)];
 }
 @end

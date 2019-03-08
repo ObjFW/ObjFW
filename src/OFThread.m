@@ -122,11 +122,11 @@ callMain(id object)
 
 	if (!of_tlskey_set(threadSelfKey, thread))
 		@throw [OFInitializationFailedException
-		    exceptionWithClass: [thread class]];
+		    exceptionWithClass: thread.class];
 
 	thread->_pool = objc_autoreleasePoolPush();
 
-	name = [thread name];
+	name = thread.name;
 	if (name != nil)
 		of_thread_set_name(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
@@ -298,7 +298,7 @@ static OFDNSResolver *DNSResolver;
 
 + (void)sleepUntilDate: (OFDate *)date
 {
-	[self sleepForTimeInterval: [date timeIntervalSinceNow]];
+	[self sleepForTimeInterval: date.timeIntervalSinceNow];
 }
 
 + (void)yield
@@ -345,18 +345,18 @@ static OFDNSResolver *DNSResolver;
 
 + (void)setName: (OFString *)name
 {
-	[[OFThread currentThread] setName: name];
+	[OFThread currentThread].name = name;
 
 	if (name != nil)
 		of_thread_set_name(
 		    [name cStringWithEncoding: [OFLocale encoding]]);
 	else
-		of_thread_set_name(class_getName([self class]));
+		of_thread_set_name(class_getName(self.class));
 }
 
 + (OFString *)name
 {
-	return [[OFThread currentThread] name];
+	return [OFThread currentThread].name;
 }
 
 + (void)of_createMainThread
@@ -376,7 +376,7 @@ static OFDNSResolver *DNSResolver;
 	@try {
 		if (!of_thread_attr_init(&_attr))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 	} @catch (id e) {
 		[self release];
 		@throw e;

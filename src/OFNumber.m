@@ -532,11 +532,11 @@
 		void *pool = objc_autoreleasePoolPush();
 		OFString *typeString;
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		typeString = [[element attributeForName: @"type"] stringValue];
+		typeString = [element attributeForName: @"type"].stringValue;
 
 		if ([typeString isEqual: @"boolean"]) {
 			_type = OF_NUMBER_TYPE_BOOL;
@@ -553,10 +553,10 @@
 			 *	  INTMAX_MAX!
 			 */
 			_type = OF_NUMBER_TYPE_UINTMAX;
-			_value.uIntMax = [element decimalValue];
+			_value.uIntMax = element.decimalValue;
 		} else if ([typeString isEqual: @"signed"]) {
 			_type = OF_NUMBER_TYPE_INTMAX;
-			_value.intMax = [element decimalValue];
+			_value.intMax = element.decimalValue;
 		} else if ([typeString isEqual: @"float"]) {
 			union {
 				float f;
@@ -564,7 +564,7 @@
 			} f;
 
 			f.u = OF_BSWAP32_IF_LE(
-			    (uint32_t)[element hexadecimalValue]);
+			    (uint32_t)element.hexadecimalValue);
 
 			_type = OF_NUMBER_TYPE_FLOAT;
 			_value.float_ = OF_BSWAP_FLOAT_IF_LE(f.f);
@@ -575,7 +575,7 @@
 			} d;
 
 			d.u = OF_BSWAP64_IF_LE(
-			    (uint64_t)[element hexadecimalValue]);
+			    (uint64_t)element.hexadecimalValue);
 
 			_type = OF_NUMBER_TYPE_DOUBLE;
 			_value.double_ = OF_BSWAP_DOUBLE_IF_LE(d.d);
@@ -986,8 +986,8 @@
 
 	if (_type & OF_NUMBER_TYPE_FLOAT ||
 	    number->_type & OF_NUMBER_TYPE_FLOAT) {
-		double value1 = [number doubleValue];
-		double value2 = [self doubleValue];
+		double value1 = number.doubleValue;
+		double value2 = self.doubleValue;
 
 		if (isnan(value1) && isnan(value2))
 			return true;
@@ -999,9 +999,9 @@
 
 	if (_type & OF_NUMBER_TYPE_SIGNED ||
 	    number->_type & OF_NUMBER_TYPE_SIGNED)
-		return ([number intMaxValue] == [self intMaxValue]);
+		return (number.intMaxValue == self.intMaxValue);
 
-	return ([number uIntMaxValue] == [self uIntMaxValue]);
+	return (number.uIntMaxValue == self.uIntMaxValue);
 }
 
 - (of_comparison_result_t)compare: (id <OFComparing>)object
@@ -1015,8 +1015,8 @@
 
 	if (_type & OF_NUMBER_TYPE_FLOAT ||
 	    number->_type & OF_NUMBER_TYPE_FLOAT) {
-		double double1 = [self doubleValue];
-		double double2 = [number doubleValue];
+		double double1 = self.doubleValue;
+		double double2 = number.doubleValue;
 
 		if (double1 > double2)
 			return OF_ORDERED_DESCENDING;
@@ -1026,8 +1026,8 @@
 		return OF_ORDERED_SAME;
 	} else if (_type & OF_NUMBER_TYPE_SIGNED ||
 	    number->_type & OF_NUMBER_TYPE_SIGNED) {
-		intmax_t int1 = [self intMaxValue];
-		intmax_t int2 = [number intMaxValue];
+		intmax_t int1 = self.intMaxValue;
+		intmax_t int2 = number.intMaxValue;
 
 		if (int1 > int2)
 			return OF_ORDERED_DESCENDING;
@@ -1036,8 +1036,8 @@
 
 		return OF_ORDERED_SAME;
 	} else {
-		uintmax_t uint1 = [self uIntMaxValue];
-		uintmax_t uint2 = [number uIntMaxValue];
+		uintmax_t uint1 = self.uIntMaxValue;
+		uintmax_t uint2 = number.uIntMaxValue;
 
 		if (uint1 > uint2)
 			return OF_ORDERED_DESCENDING;
@@ -1054,20 +1054,20 @@
 	uint32_t hash;
 
 	/* Do we really need signed to represent this number? */
-	if (type & OF_NUMBER_TYPE_SIGNED && [self intMaxValue] >= 0)
+	if (type & OF_NUMBER_TYPE_SIGNED && self.intMaxValue >= 0)
 		type &= ~OF_NUMBER_TYPE_SIGNED;
 
 	/* Do we really need floating point to represent this number? */
 	if (type & OF_NUMBER_TYPE_FLOAT) {
-		double v = [self doubleValue];
+		double v = self.doubleValue;
 
 		if (v < 0) {
-			if (v == [self intMaxValue]) {
+			if (v == self.intMaxValue) {
 				type &= ~OF_NUMBER_TYPE_FLOAT;
 				type |= OF_NUMBER_TYPE_SIGNED;
 			}
 		} else {
-			if (v == [self uIntMaxValue])
+			if (v == self.uIntMaxValue)
 				type &= ~OF_NUMBER_TYPE_FLOAT;
 		}
 	}
@@ -1080,15 +1080,15 @@
 			uint8_t b[sizeof(double)];
 		} d;
 
-		if (isnan([self doubleValue]))
+		if (isnan(self.doubleValue))
 			return 0;
 
-		d.d = OF_BSWAP_DOUBLE_IF_BE([self doubleValue]);
+		d.d = OF_BSWAP_DOUBLE_IF_BE(self.doubleValue);
 
 		for (uint_fast8_t i = 0; i < sizeof(double); i++)
 			OF_HASH_ADD(hash, d.b[i]);
 	} else if (type & OF_NUMBER_TYPE_SIGNED) {
-		intmax_t v = [self intMaxValue] * -1;
+		intmax_t v = self.intMaxValue * -1;
 
 		while (v != 0) {
 			OF_HASH_ADD(hash, v & 0xFF);
@@ -1097,7 +1097,7 @@
 
 		OF_HASH_ADD(hash, 1);
 	} else {
-		uintmax_t v = [self uIntMaxValue];
+		uintmax_t v = self.uIntMaxValue;
 
 		while (v != 0) {
 			OF_HASH_ADD(hash, v & 0xFF);
@@ -1134,7 +1134,7 @@
 	case OF_NUMBER_TYPE_SIZE:
 	case OF_NUMBER_TYPE_UINTMAX:
 	case OF_NUMBER_TYPE_UINTPTR:
-		return [OFString stringWithFormat: @"%ju", [self uIntMaxValue]];
+		return [OFString stringWithFormat: @"%ju", self.uIntMaxValue];
 	case OF_NUMBER_TYPE_CHAR:
 	case OF_NUMBER_TYPE_SHORT:
 	case OF_NUMBER_TYPE_INT:
@@ -1148,7 +1148,7 @@
 	case OF_NUMBER_TYPE_INTMAX:
 	case OF_NUMBER_TYPE_PTRDIFF:
 	case OF_NUMBER_TYPE_INTPTR:
-		return [OFString stringWithFormat: @"%jd", [self intMaxValue]];
+		return [OFString stringWithFormat: @"%jd", self.intMaxValue];
 	case OF_NUMBER_TYPE_FLOAT:
 		ret = [OFMutableString stringWithFormat: @"%g", _value.float_];
 
@@ -1177,9 +1177,9 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: [self className]
+	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS
-				    stringValue: [self description]];
+				    stringValue: self.description];
 
 	switch (_type) {
 	case OF_NUMBER_TYPE_BOOL:
@@ -1227,9 +1227,9 @@
 
 		[element addAttributeWithName: @"type"
 				  stringValue: @"float"];
-		[element setStringValue:
+		element.stringValue =
 		    [OFString stringWithFormat: @"%08" PRIx32,
-						OF_BSWAP32_IF_LE(f.u)]];
+						OF_BSWAP32_IF_LE(f.u)];
 
 		break;
 	case OF_NUMBER_TYPE_DOUBLE:;
@@ -1242,9 +1242,9 @@
 
 		[element addAttributeWithName: @"type"
 				  stringValue: @"double"];
-		[element setStringValue:
+		element.stringValue =
 		    [OFString stringWithFormat: @"%016" PRIx64,
-						OF_BSWAP64_IF_LE(d.u)]];
+						OF_BSWAP64_IF_LE(d.u)];
 
 		break;
 	default:
@@ -1278,7 +1278,7 @@
 	if (_type == OF_NUMBER_TYPE_BOOL)
 		return (_value.bool_ ? @"true" : @"false");
 
-	doubleValue = [self doubleValue];
+	doubleValue = self.doubleValue;
 	if (isinf(doubleValue)) {
 		if (options & OF_JSON_REPRESENTATION_JSON5) {
 			if (doubleValue > 0)
@@ -1289,7 +1289,7 @@
 			@throw [OFInvalidArgumentException exception];
 	}
 
-	return [self description];
+	return self.description;
 }
 
 - (OFData *)messagePackRepresentation
@@ -1322,7 +1322,7 @@
 		[data addItems: &tmp
 			 count: sizeof(tmp)];
 	} else if (_type & OF_NUMBER_TYPE_SIGNED) {
-		intmax_t value = [self intMaxValue];
+		intmax_t value = self.intMaxValue;
 
 		if (value >= -32 && value < 0) {
 			uint8_t tmp = 0xE0 | ((uint8_t)(value - 32) & 0x1F);
@@ -1371,7 +1371,7 @@
 		} else
 			@throw [OFOutOfRangeException exception];
 	} else {
-		uintmax_t value = [self uIntMaxValue];
+		uintmax_t value = self.uIntMaxValue;
 
 		if (value <= 127) {
 			uint8_t tmp = ((uint8_t)value & 0x7F);

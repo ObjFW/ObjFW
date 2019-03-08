@@ -32,7 +32,7 @@ int _OFString_PathAdditions_reference;
 	bool first = true;
 
 	for (OFString *component in components) {
-		if ([component length] == 0)
+		if (component.length == 0)
 			continue;
 
 		if ([component isEqual: @"/"])
@@ -65,8 +65,8 @@ int _OFString_PathAdditions_reference;
 {
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
-	size_t i, last = 0, cStringLength = [self UTF8StringLength];
+	const char *cString = self.UTF8String;
+	size_t i, last = 0, cStringLength = self.UTF8StringLength;
 
 	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
@@ -105,8 +105,8 @@ int _OFString_PathAdditions_reference;
 	if ([self hasSuffix: @":/"])
 		return self;
 
-	cString = [self UTF8String];
-	cStringLength = [self UTF8StringLength];
+	cString = self.UTF8String;
+	cStringLength = self.UTF8StringLength;
 
 	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
@@ -152,7 +152,7 @@ int _OFString_PathAdditions_reference;
 	OFString *ret, *fileName;
 	size_t pos;
 
-	fileName = [self lastPathComponent];
+	fileName = self.lastPathComponent;
 	pos = [fileName rangeOfString: @"."
 			      options: OF_STRING_SEARCH_BACKWARDS].location;
 	if (pos == OF_NOT_FOUND || pos == 0) {
@@ -161,7 +161,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	ret = [fileName substringWithRange:
-	    of_range(pos + 1, [fileName length] - pos - 1)];
+	    of_range(pos + 1, fileName.length - pos - 1)];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -178,8 +178,8 @@ int _OFString_PathAdditions_reference;
 	if ([self hasSuffix: @":/"])
 		return self;
 
-	cString = [self UTF8String];
-	cStringLength = [self UTF8StringLength];
+	cString = self.UTF8String;
+	cStringLength = self.UTF8StringLength;
 
 	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
@@ -217,12 +217,12 @@ int _OFString_PathAdditions_reference;
 	OFString *ret, *fileName;
 	size_t pos;
 
-	if ([self length] == 0)
+	if (self.length == 0)
 		return [[self copy] autorelease];
 
 	pool = objc_autoreleasePoolPush();
-	components = [[[self pathComponents] mutableCopy] autorelease];
-	fileName = [components lastObject];
+	components = [[self.pathComponents mutableCopy] autorelease];
+	fileName = components.lastObject;
 
 	pos = [fileName rangeOfString: @"."
 			      options: OF_STRING_SEARCH_BACKWARDS].location;
@@ -232,7 +232,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	fileName = [fileName substringWithRange: of_range(0, pos)];
-	[components replaceObjectAtIndex: [components count] - 1
+	[components replaceObjectAtIndex: components.count - 1
 			      withObject: fileName];
 
 	ret = [OFString pathWithComponents: components];
@@ -250,12 +250,12 @@ int _OFString_PathAdditions_reference;
 	OFString *ret;
 	bool done = false;
 
-	if ([self length] == 0)
+	if (self.length == 0)
 		return @"";
 
-	components = [self pathComponents];
+	components = self.pathComponents;
 
-	if ([components count] == 1) {
+	if (components.count == 1) {
 		objc_autoreleasePoolPop(pool);
 		return [[self copy] autorelease];
 	}
@@ -263,7 +263,7 @@ int _OFString_PathAdditions_reference;
 	array = [[components mutableCopy] autorelease];
 
 	while (!done) {
-		size_t length = [array count];
+		size_t length = array.count;
 
 		done = true;
 
@@ -273,7 +273,7 @@ int _OFString_PathAdditions_reference;
 			    (i > 0 ? [array objectAtIndex: i - 1] : 0);
 
 			if ([component isEqual: @"."] ||
-			   [component length] == 0) {
+			   component.length == 0) {
 				[array removeObjectAtIndex: i];
 
 				done = false;

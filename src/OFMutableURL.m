@@ -179,17 +179,17 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	void *pool = objc_autoreleasePoolPush();
 
 	if (components == nil) {
-		[self setPath: nil];
+		self.path = nil;
 		return;
 	}
 
-	if ([components count] == 0)
+	if (components.count == 0)
 		@throw [OFInvalidFormatException exception];
 
-	if ([[components firstObject] length] != 0)
+	if ([components.firstObject length] != 0)
 		@throw [OFInvalidFormatException exception];
 
-	[self setPath: [components componentsJoinedByString: @"/"]];
+	self.path = [components componentsJoinedByString: @"/"];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -271,29 +271,29 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	array = [[[_URLEncodedPath
 	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
 
-	if ([[array firstObject] length] != 0)
+	if ([array.firstObject length] != 0)
 		@throw [OFInvalidFormatException exception];
 
-	endsWithEmpty = ([[array lastObject] length] == 0);
+	endsWithEmpty = ([array.lastObject length] == 0);
 
 	while (!done) {
-		size_t length = [array count];
+		size_t length = array.count;
 
 		done = true;
 
 		for (size_t i = 0; i < length; i++) {
-			id object = [array objectAtIndex: i];
-			id parent =
+			OFString *current = [array objectAtIndex: i];
+			OFString *parent =
 			    (i > 0 ? [array objectAtIndex: i - 1] : nil);
 
-			if ([object isEqual: @"."] || [object length] == 0) {
+			if ([current isEqual: @"."] || current.length == 0) {
 				[array removeObjectAtIndex: i];
 
 				done = false;
 				break;
 			}
 
-			if ([object isEqual: @".."] && parent != nil &&
+			if ([current isEqual: @".."] && parent != nil &&
 			    ![parent isEqual: @".."]) {
 				[array removeObjectsInRange:
 				    of_range(i - 1, 2)];
@@ -310,7 +310,7 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 		[array addObject: @""];
 
 	path = [array componentsJoinedByString: @"/"];
-	if ([path length] == 0)
+	if (path.length == 0)
 		path = @"/";
 
 	[self setURLEncodedPath: path];

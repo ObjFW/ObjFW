@@ -31,7 +31,7 @@
 	@try {
 		if (array == nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		_array = [array retain];
 	} @catch (id e) {
@@ -59,6 +59,6 @@
 
 - (size_t)count
 {
-	return [_array count];
+	return _array.count;
 }
 @end

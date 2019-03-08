@@ -54,7 +54,7 @@
 {
 	if (_thread != nil)
 		return [OFString stringWithFormat:
-		    @"Starting a thread of type %@ failed!", [_thread class]];
+		    @"Starting a thread of type %@ failed!", _thread.class];
 	else
 		return @"Starting a thread failed!";
 }

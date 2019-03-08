@@ -28,7 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 #ifdef OF_HAVE_SOCKETS
 @protocol OFTCPSocketDelegate_Private <OFObject>
-- (void)of_socketDidConnect: (OF_KINDOF(OFTCPSocket *))socket
+- (void)of_socketDidConnect: (OFTCPSocket *)socket
 		  exception: (nullable id)exception;
 @end
 #endif

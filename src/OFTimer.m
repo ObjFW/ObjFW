@@ -545,7 +545,7 @@
 
 	if (_repeats && _valid) {
 		int64_t missedIntervals =
-		    -[_fireDate timeIntervalSinceNow] / _interval;
+		    -_fireDate.timeIntervalSinceNow / _interval;
 		of_time_interval_t newFireDate;
 		OFRunLoop *runLoop;
 
@@ -553,7 +553,7 @@
 		if (missedIntervals < 0)
 			missedIntervals = 0;
 
-		newFireDate = [_fireDate timeIntervalSince1970] +
+		newFireDate = _fireDate.timeIntervalSince1970 +
 		    (missedIntervals + 1) * _interval;
 
 		[_fireDate release];
@@ -562,7 +562,7 @@
 
 		runLoop = [OFRunLoop currentRunLoop];
 		[runLoop addTimer: self
-			  forMode: [runLoop currentMode]];
+			  forMode: runLoop.currentMode];
 	} else
 		[self invalidate];
 

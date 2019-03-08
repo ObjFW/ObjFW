@@ -32,7 +32,7 @@ int _OFString_PathAdditions_reference;
 	bool firstAfterDevice = true;
 
 	for (OFString *component in components) {
-		if ([component length] == 0)
+		if (component.length == 0)
 			continue;
 
 		if (!firstAfterDevice)
@@ -60,8 +60,8 @@ int _OFString_PathAdditions_reference;
 {
 	OFMutableArray OF_GENERIC(OFString *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
-	const char *cString = [self UTF8String];
-	size_t i, last = 0, cStringLength = [self UTF8StringLength];
+	const char *cString = self.UTF8String;
+	size_t i, last = 0, cStringLength = self.UTF8StringLength;
 
 	if (cStringLength == 0) {
 		objc_autoreleasePoolPop(pool);
@@ -105,7 +105,7 @@ int _OFString_PathAdditions_reference;
 	 * though.
 	 */
 	void *pool = objc_autoreleasePoolPush();
-	OFString *ret = [[self pathComponents] lastObject];
+	OFString *ret = self.pathComponents.lastObject;
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -118,7 +118,7 @@ int _OFString_PathAdditions_reference;
 	OFString *ret, *fileName;
 	size_t pos;
 
-	fileName = [self lastPathComponent];
+	fileName = self.lastPathComponent;
 	pos = [fileName rangeOfString: @"."
 			      options: OF_STRING_SEARCH_BACKWARDS].location;
 	if (pos == OF_NOT_FOUND || pos == 0) {
@@ -127,7 +127,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	ret = [fileName substringWithRange:
-	    of_range(pos + 1, [fileName length] - pos - 1)];
+	    of_range(pos + 1, fileName.length - pos - 1)];
 
 	[ret retain];
 	objc_autoreleasePoolPop(pool);
@@ -141,13 +141,13 @@ int _OFString_PathAdditions_reference;
 	 * This could be optimized, though.
 	 */
 	void *pool = objc_autoreleasePoolPush();
-	OFArray OF_GENERIC(OFString *) *components = [self pathComponents];
-	size_t count = [components count];
+	OFArray OF_GENERIC(OFString *) *components = self.pathComponents;
+	size_t count = components.count;
 	OFString *ret;
 
 	if (count < 2) {
-		if ([[components firstObject] hasSuffix: @":"]) {
-			ret = [[components firstObject] retain];
+		if ([components.firstObject hasSuffix: @":"]) {
+			ret = [components.firstObject retain];
 			objc_autoreleasePoolPop(pool);
 			return [ret autorelease];
 		}
@@ -157,7 +157,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	components = [components objectsInRange:
-	    of_range(0, [components count] - 1)];
+	    of_range(0, components.count - 1)];
 	ret = [OFString pathWithComponents: components];
 
 	[ret retain];
@@ -172,12 +172,12 @@ int _OFString_PathAdditions_reference;
 	OFString *ret, *fileName;
 	size_t pos;
 
-	if ([self length] == 0)
+	if (self.length == 0)
 		return [[self copy] autorelease];
 
 	pool = objc_autoreleasePoolPush();
-	components = [[[self pathComponents] mutableCopy] autorelease];
-	fileName = [components lastObject];
+	components = [[self.pathComponents mutableCopy] autorelease];
+	fileName = components.lastObject;
 
 	pos = [fileName rangeOfString: @"."
 			      options: OF_STRING_SEARCH_BACKWARDS].location;
@@ -187,7 +187,7 @@ int _OFString_PathAdditions_reference;
 	}
 
 	fileName = [fileName substringWithRange: of_range(0, pos)];
-	[components replaceObjectAtIndex: [components count] - 1
+	[components replaceObjectAtIndex: components.count - 1
 			      withObject: fileName];
 
 	ret = [OFString pathWithComponents: components];
@@ -205,12 +205,12 @@ int _OFString_PathAdditions_reference;
 	OFString *ret;
 	bool done = false;
 
-	if ([self length] == 0)
+	if (self.length == 0)
 		return @"";
 
-	components = [self pathComponents];
+	components = self.pathComponents;
 
-	if ([components count] == 1) {
+	if (components.count == 1) {
 		objc_autoreleasePoolPop(pool);
 		return [[self copy] autorelease];
 	}
@@ -218,7 +218,7 @@ int _OFString_PathAdditions_reference;
 	array = [[components mutableCopy] autorelease];
 
 	while (!done) {
-		size_t length = [array count];
+		size_t length = array.count;
 
 		done = true;
 
@@ -227,7 +227,7 @@ int _OFString_PathAdditions_reference;
 			OFString *parent =
 			    (i > 0 ? [array objectAtIndex: i - 1] : 0);
 
-			if ([component length] == 0) {
+			if (component.length == 0) {
 				[array removeObjectAtIndex: i];
 
 				done = false;

@@ -37,8 +37,8 @@
 static bool
 isWhitespaceLine(OFString *line)
 {
-	const char *cString = [line UTF8String];
-	size_t length = [line UTF8StringLength];
+	const char *cString = line.UTF8String;
+	size_t length = line.UTF8StringLength;
 
 	for (size_t i = 0; i < length; i++)
 		if (!of_ascii_isspace(cString[i]))
@@ -102,7 +102,7 @@ isWhitespaceLine(OFString *line)
 	OFINICategory *category;
 
 	for (category in _categories)
-		if ([[category name] isEqual: name])
+		if ([category.name isEqual: name])
 			return category;
 
 	category = [[[OFINICategory alloc] of_initWithName: name] autorelease];
@@ -126,7 +126,7 @@ isWhitespaceLine(OFString *line)
 				       mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		/* Handle missing file like an empty file */
-		if ([e errNo] == ENOENT)
+		if (e.errNo == ENOENT)
 			return;
 
 		@throw e;
@@ -143,7 +143,7 @@ isWhitespaceLine(OFString *line)
 				@throw [OFInvalidFormatException exception];
 
 			categoryName = [line substringWithRange:
-			    of_range(1, [line length] - 2)];
+			    of_range(1, line.length - 2)];
 
 			category = [[[OFINICategory alloc]
 			    of_initWithName: categoryName] autorelease];

@@ -55,13 +55,13 @@
 #ifdef HAVE_KQUEUE1
 		if ((_kernelQueue = kqueue1(O_CLOEXEC)) == -1)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 #else
 		int flags;
 
 		if ((_kernelQueue = kqueue()) == -1)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		if ((flags = fcntl(_kernelQueue, F_GETFD, 0)) != -1)
 			fcntl(_kernelQueue, F_SETFD, flags | FD_CLOEXEC);
@@ -71,7 +71,7 @@
 
 		if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -92,7 +92,7 @@
 	struct kevent event;
 
 	memset(&event, 0, sizeof(event));
-	event.ident = [object fileDescriptorForReading];
+	event.ident = object.fileDescriptorForReading;
 	event.filter = EVFILT_READ;
 	event.flags = EV_ADD;
 #ifndef OF_NETBSD
@@ -111,7 +111,7 @@
 	struct kevent event;
 
 	memset(&event, 0, sizeof(event));
-	event.ident = [object fileDescriptorForWriting];
+	event.ident = object.fileDescriptorForWriting;
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_ADD;
 #ifndef OF_NETBSD
@@ -130,7 +130,7 @@
 	struct kevent event;
 
 	memset(&event, 0, sizeof(event));
-	event.ident = [object fileDescriptorForReading];
+	event.ident = object.fileDescriptorForReading;
 	event.filter = EVFILT_READ;
 	event.flags = EV_DELETE;
 
@@ -144,7 +144,7 @@
 	struct kevent event;
 
 	memset(&event, 0, sizeof(event));
-	event.ident = [object fileDescriptorForWriting];
+	event.ident = object.fileDescriptorForWriting;
 	event.filter = EVFILT_WRITE;
 	event.flags = EV_DELETE;
 

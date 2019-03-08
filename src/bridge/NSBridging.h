@@ -42,7 +42,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The receiver as an ObjFW object
  */
-- (id)OFObject;
+@property (readonly, nonatomic) id OFObject;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -78,8 +78,8 @@ appendToBuffer(OFMutableData *buffer, const char *string,
 		OFString *tmp = [OFString stringWithCString: string
 						   encoding: encoding
 						     length: length];
-		[buffer addItems: [tmp UTF8String]
-			   count: [tmp UTF8StringLength]];
+		[buffer addItems: tmp.UTF8String
+			   count: tmp.UTF8StringLength];
 		objc_autoreleasePoolPop(pool);
 	}
 }
@@ -88,8 +88,8 @@ static OFString *
 transformString(OFXMLParser *parser, OFMutableData *buffer, size_t cut,
     bool unescape)
 {
-	char *items = [buffer items];
-	size_t length = [buffer count] - cut;
+	char *items = buffer.mutableItems;
+	size_t length = buffer.count - cut;
 	bool hasEntities = false;
 	OFString *ret;
 
@@ -97,7 +97,7 @@ transformString(OFXMLParser *parser, OFMutableData *buffer, size_t cut,
 		if (items[i] == '\r') {
 			if (i + 1 < length && items[i + 1] == '\n') {
 				[buffer removeItemAtIndex: i];
-				items = [buffer items];
+				items = buffer.mutableItems;
 
 				i--;
 				length--;
@@ -125,8 +125,8 @@ transformString(OFXMLParser *parser, OFMutableData *buffer, size_t cut,
 static OFString *
 namespaceForPrefix(OFString *prefix, OFArray *namespaces)
 {
-	OFDictionary *const *objects = [namespaces objects];
-	size_t count = [namespaces count];
+	OFDictionary *const *objects = namespaces.objects;
+	size_t count = namespaces.count;
 
 	if (prefix == nil)
 		prefix = @"";
@@ -282,8 +282,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 - (void)parseString: (OFString *)string
 {
-	[self parseBuffer: [string UTF8String]
-		   length: [string UTF8StringLength]];
+	[self parseBuffer: string.UTF8String
+		   length: string.UTF8StringLength];
 }
 
 - (void)parseStream: (OFStream *)stream
@@ -292,7 +292,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	char *buffer = [self allocMemoryWithSize: pageSize];
 
 	@try {
-		while (![stream isAtEndOfStream]) {
+		while (!stream.atEndOfStream) {
 			size_t length = [stream readIntoBuffer: buffer
 							length: pageSize];
 
@@ -346,7 +346,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 {
 	size_t length;
 
-	if ((_finishedParsing || [_previous count] < 1) && _data[_i] != ' ' &&
+	if ((_finishedParsing || _previous.count < 1) && _data[_i] != ' ' &&
 	    _data[_i] != '\t' && _data[_i] != '\n' && _data[_i] != '\r' &&
 	    _data[_i] != '<')
 		@throw [OFMalformedXMLException exceptionWithParser: self];
@@ -357,7 +357,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	if ((length = _i - _last) > 0)
 		appendToBuffer(_buffer, _data + _last, _encoding, length);
 
-	if ([_buffer count] > 0) {
+	if (_buffer.count > 0) {
 		void *pool = objc_autoreleasePoolPush();
 		OFString *characters = transformString(self, _buffer, 0, true);
 
@@ -398,7 +398,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_acceptProlog = false;
 		break;
 	default:
-		if (_depthLimit > 0 && [_previous count] >= _depthLimit)
+		if (_depthLimit > 0 && _previous.count >= _depthLimit)
 			@throw [OFOutOfRangeException exception];
 
 		_state = OF_XMLPARSER_IN_TAG_NAME;
@@ -424,11 +424,11 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	_acceptProlog = false;
 
-	pi = [pi substringWithRange: of_range(3, [pi length] - 3)];
-	pi = [pi stringByDeletingEnclosingWhitespaces];
+	pi = [pi substringWithRange: of_range(3, pi.length - 3)];
+	pi = pi.stringByDeletingEnclosingWhitespaces;
 
-	cString = [pi UTF8String];
-	length = [pi UTF8StringLength];
+	cString = pi.UTF8String;
+	length = pi.UTF8StringLength;
 
 	last = 0;
 	for (size_t i = 0; i < length; i++) {
@@ -547,8 +547,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferCString = [_buffer items];
-	bufferLength = [_buffer count];
+	bufferCString = _buffer.items;
+	bufferLength = _buffer.count;
 	bufferString = [OFString stringWithUTF8String: bufferCString
 					       length: bufferLength];
 
@@ -591,7 +591,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 					   prefix: _prefix
 					namespace: namespace];
 
-			if ([_previous count] == 0)
+			if (_previous.count == 0)
 				_finishedParsing = true;
 		} else
 			[_previous addObject: bufferString];
@@ -632,8 +632,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferCString = [_buffer items];
-	bufferLength = [_buffer count];
+	bufferCString = _buffer.items;
+	bufferLength = _buffer.count;
 	bufferString = [OFString stringWithUTF8String: bufferCString
 					       length: bufferLength];
 
@@ -650,7 +650,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		_prefix = nil;
 	}
 
-	if (![[_previous lastObject] isEqual: bufferString])
+	if (![_previous.lastObject isEqual: bufferString])
 		@throw [OFMalformedXMLException exceptionWithParser: self];
 
 	[_previous removeLastObject];
@@ -681,7 +681,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	    ? OF_XMLPARSER_OUTSIDE_TAG
 	    : OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE);
 
-	if ([_previous count] == 0)
+	if (_previous.count == 0)
 		_finishedParsing = true;
 }
 
@@ -704,8 +704,8 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		return;
 	}
 
-	attributesObjects = [_attributes objects];
-	attributesCount = [_attributes count];
+	attributesObjects = _attributes.objects;
+	attributesCount = _attributes.count;
 
 	namespace = namespaceForPrefix(_prefix, _namespaces);
 
@@ -735,7 +735,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 				   prefix: _prefix
 				namespace: namespace];
 
-		if ([_previous count] == 0)
+		if (_previous.count == 0)
 			_finishedParsing = true;
 
 		[_namespaces removeLastObject];
@@ -776,11 +776,11 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 
 	pool = objc_autoreleasePoolPush();
 
-	bufferString = [OFString stringWithUTF8String: [_buffer items]
-					       length: [_buffer count]];
+	bufferString = [OFString stringWithUTF8String: _buffer.items
+					       length: _buffer.count];
 
-	bufferCString = [bufferString UTF8String];
-	bufferLength = [bufferString UTF8StringLength];
+	bufferCString = bufferString.UTF8String;
+	bufferLength = bufferString.UTF8StringLength;
 
 	if ((tmp = memchr(bufferCString, ':', bufferLength)) != NULL) {
 		_attributeName = [[OFString alloc]
@@ -853,11 +853,11 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 	attributeValue = transformString(self, _buffer, 0, true);
 
 	if (_attributePrefix == nil && [_attributeName isEqual: @"xmlns"])
-		[[_namespaces lastObject] setObject: attributeValue
-					     forKey: @""];
+		[_namespaces.lastObject setObject: attributeValue
+					   forKey: @""];
 	if ([_attributePrefix isEqual: @"xmlns"])
-		[[_namespaces lastObject] setObject: attributeValue
-					     forKey: _attributeName];
+		[_namespaces.lastObject setObject: attributeValue
+					   forKey: _attributeName];
 
 	attribute = [OFXMLAttribute attributeWithName: _attributeName
 					    namespace: _attributePrefix

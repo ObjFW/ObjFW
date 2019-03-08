@@ -132,11 +132,11 @@ parseTable(const unsigned char *buffer, size_t length, id *object, size_t count,
 static OFDate *
 createDate(OFData *data)
 {
-	switch ([data count]) {
+	switch (data.count) {
 	case 4: {
 		uint32_t timestamp;
 
-		memcpy(&timestamp, [data items], 4);
+		memcpy(&timestamp, data.items, 4);
 		timestamp = OF_BSWAP32_IF_LE(timestamp);
 
 		return [OFDate dateWithTimeIntervalSince1970: timestamp];
@@ -144,7 +144,7 @@ createDate(OFData *data)
 	case 8: {
 		uint64_t combined;
 
-		memcpy(&combined, [data items], 8);
+		memcpy(&combined, data.items, 8);
 		combined = OF_BSWAP64_IF_LE(combined);
 
 		return [OFDate dateWithTimeIntervalSince1970:
@@ -155,8 +155,8 @@ createDate(OFData *data)
 		uint32_t nanoseconds;
 		int64_t seconds;
 
-		memcpy(&nanoseconds, [data items], 4);
-		memcpy(&seconds, (char *)[data items] + 4, 8);
+		memcpy(&nanoseconds, data.items, 4);
+		memcpy(&seconds, (char *)data.items + 4, 8);
 
 		nanoseconds = OF_BSWAP32_IF_LE(nanoseconds);
 		seconds = OF_BSWAP64_IF_LE(seconds);
@@ -558,13 +558,13 @@ parseObject(const unsigned char *buffer, size_t length, id *object,
 - (id)messagePackValueWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
-	size_t count = [self count];
+	size_t count = self.count;
 	id object;
 
-	if ([self itemSize] != 1)
+	if (self.itemSize != 1)
 		@throw [OFInvalidArgumentException exception];
 
-	if (parseObject([self items], count, &object, depthLimit) != count)
+	if (parseObject(self.items, count, &object, depthLimit) != count)
 		@throw [OFInvalidFormatException exception];
 
 	[object retain];

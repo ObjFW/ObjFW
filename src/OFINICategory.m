@@ -81,7 +81,7 @@ unescapeString(OFString *string)
 	if (![string hasPrefix: @"\""] || ![string hasSuffix: @"\""])
 		return string;
 
-	string = [string substringWithRange: of_range(1, [string length] - 2)];
+	string = [string substringWithRange: of_range(1, string.length - 2)];
 	mutableString = [[string mutableCopy] autorelease];
 
 	[mutableString replaceOccurrencesOfString: @"\\f"
@@ -163,10 +163,10 @@ unescapeString(OFString *string)
 
 		key = [line substringWithRange: of_range(0, pos)];
 		value = [line substringWithRange:
-		    of_range(pos + 1, [line length] - pos - 1)];
+		    of_range(pos + 1, line.length - pos - 1)];
 
-		key = [key stringByDeletingEnclosingWhitespaces];
-		value = [value stringByDeletingEnclosingWhitespaces];
+		key = key.stringByDeletingEnclosingWhitespaces;
+		value = value.stringByDeletingEnclosingWhitespaces;
 
 		key = unescapeString(key);
 		value = unescapeString(value);
@@ -219,9 +219,9 @@ unescapeString(OFString *string)
 
 	if (value != nil) {
 		if ([value hasPrefix: @"0x"] || [value hasPrefix: @"$"])
-			ret = [value hexadecimalValue];
+			ret = value.hexadecimalValue;
 		else
-			ret = [value decimalValue];
+			ret = value.decimalValue;
 	} else
 		ret = defaultValue;
 
@@ -262,7 +262,7 @@ unescapeString(OFString *string)
 	float ret;
 
 	if (value != nil)
-		ret = [value floatValue];
+		ret = value.floatValue;
 	else
 		ret = defaultValue;
 
@@ -280,7 +280,7 @@ unescapeString(OFString *string)
 	double ret;
 
 	if (value != nil)
-		ret = [value doubleValue];
+		ret = value.doubleValue;
 	else
 		ret = defaultValue;
 
@@ -403,14 +403,14 @@ unescapeString(OFString *string)
 	size_t count;
 	bool replaced;
 
-	if ([array count] == 0) {
+	if (array.count == 0) {
 		[self removeValueForKey: key];
 		return;
 	}
 
 	pool = objc_autoreleasePoolPush();
 
-	pairs = [OFMutableArray arrayWithCapacity: [array count]];
+	pairs = [OFMutableArray arrayWithCapacity: array.count];
 
 	for (id object in array) {
 		OFINICategory_Pair *pair;
@@ -425,8 +425,8 @@ unescapeString(OFString *string)
 		[pairs addObject: pair];
 	}
 
-	lines = [_lines objects];
-	count = [_lines count];
+	lines = _lines.objects;
+	count = _lines.count;
 	replaced = false;
 
 	for (size_t i = 0; i < count; i++) {
@@ -446,12 +446,12 @@ unescapeString(OFString *string)
 
 				replaced = true;
 				/* Continue after inserted pairs */
-				i += [array count] - 1;
+				i += array.count - 1;
 			} else
 				i--;	/* Continue at same position */
 
-			lines = [_lines objects];
-			count = [_lines count];
+			lines = _lines.objects;
+			count = _lines.count;
 
 			continue;
 		}
@@ -466,8 +466,8 @@ unescapeString(OFString *string)
 - (void)removeValueForKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
-	id const *lines = [_lines objects];
-	size_t count = [_lines count];
+	id const *lines = _lines.objects;
+	size_t count = _lines.count;
 
 	for (size_t i = 0; i < count; i++) {
 		OFINICategory_Pair *pair;
@@ -480,8 +480,8 @@ unescapeString(OFString *string)
 		if ([pair->_key isEqual: key]) {
 			[_lines removeObjectAtIndex: i];
 
-			lines = [_lines objects];
-			count = [_lines count];
+			lines = _lines.objects;
+			count = _lines.count;
 
 			i--;	/* Continue at same position */
 			continue;
@@ -495,7 +495,7 @@ unescapeString(OFString *string)
 		encoding: (of_string_encoding_t)encoding
 		   first: (bool)first
 {
-	if ([_lines count] == 0)
+	if (_lines.count == 0)
 		return false;
 
 	if (first)

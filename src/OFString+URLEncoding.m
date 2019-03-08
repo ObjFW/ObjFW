@@ -36,8 +36,8 @@ int _OFString_URLEncoding_reference;
 {
 	OFMutableString *ret = [OFMutableString string];
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = [self characters];
-	size_t length = [self length];
+	const of_unichar_t *characters = self.characters;
+	size_t length = self.length;
 	bool (*characterIsMember)(id, SEL, of_unichar_t) =
 	    (bool (*)(id, SEL, of_unichar_t))[allowedCharacters
 	    methodForSelector: @selector(characterIsMember:)];
@@ -82,8 +82,8 @@ int _OFString_URLEncoding_reference;
 - (OFString *)stringByURLDecoding
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *string = [self UTF8String];
-	size_t length = [self UTF8StringLength];
+	const char *string = self.UTF8String;
+	size_t length = self.UTF8StringLength;
 	char *retCString, *retCString2;
 	char byte = 0;
 	int state = 0;

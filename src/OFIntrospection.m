@@ -81,7 +81,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@: %@ [%s]>",
-					   [self class], _name, _typeEncoding];
+					   self.class, _name, _typeEncoding];
 }
 
 - (bool)isEqual: (id)object
@@ -119,7 +119,7 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 
 	if (_typeEncoding != NULL) {
 		size_t length = strlen(_typeEncoding);
@@ -179,7 +179,7 @@
 
 		if ((attributes = property_getAttributes(property)) == NULL)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		while (*attributes != '\0') {
 			const char *start;
@@ -211,7 +211,7 @@
 
 				if (_getter != nil)
 					@throw [OFInitializationFailedException
-					    exceptionWithClass: [self class]];
+					    exceptionWithClass: self.class];
 
 				while (*attributes != ',' &&
 				    *attributes != '\0')
@@ -227,7 +227,7 @@
 
 				if (_setter != nil)
 					@throw [OFInitializationFailedException
-					    exceptionWithClass: [self class]];
+					    exceptionWithClass: self.class];
 
 				while (*attributes != ',' &&
 				    *attributes != '\0')
@@ -254,7 +254,7 @@
 
 				if (_iVar != nil)
 					@throw [OFInitializationFailedException
-					    exceptionWithClass: [self class]];
+					    exceptionWithClass: self.class];
 
 				while (*attributes != ',' &&
 				    *attributes != '\0')
@@ -267,12 +267,12 @@
 				break;
 			default:
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 			}
 
 			if (*attributes != ',' && *attributes != '\0')
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 
 			if (*attributes != '\0')
 				attributes++;
@@ -334,8 +334,8 @@
 			      @"\tSetter = %@\n"
 			      @"\tiVar = %@\n"
 			      @">",
-			      [self class], _name, _attributes,
-			      _getter, _setter, _iVar];
+			      self.class, _name, _attributes, _getter, _setter,
+			      _iVar];
 }
 
 - (bool)isEqual: (id)object
@@ -368,11 +368,11 @@
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, (_attributes & 0xFF00) >> 8);
 	OF_HASH_ADD(hash, _attributes & 0xFF);
-	OF_HASH_ADD_HASH(hash, [_getter hash]);
-	OF_HASH_ADD_HASH(hash, [_setter hash]);
+	OF_HASH_ADD_HASH(hash, _getter.hash);
+	OF_HASH_ADD_HASH(hash, _setter.hash);
 
 	OF_HASH_FINALIZE(hash);
 

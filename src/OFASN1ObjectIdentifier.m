@@ -43,7 +43,7 @@
 	self = [super init];
 
 	@try {
-		if ([subidentifiers count] < 1)
+		if (subidentifiers.count < 1)
 			@throw [OFInvalidFormatException exception];
 
 		switch ([[subidentifiers objectAtIndex: 0] intMaxValue]) {
@@ -73,8 +73,8 @@
 	OFMutableArray OF_GENERIC(OFNumber *) *subidentifiers;
 
 	@try {
-		const unsigned char *items = [DEREncodedContents items];
-		size_t count = [DEREncodedContents count];
+		const unsigned char *items = DEREncodedContents.items;
+		size_t count = DEREncodedContents.count;
 		uintmax_t value = 0;
 		uint_fast8_t bits = 0;
 
@@ -83,7 +83,7 @@
 		    constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1 || count == 0)
+		if (DEREncodedContents.itemSize != 1 || count == 0)
 			@throw [OFInvalidArgumentException exception];
 
 		subidentifiers = [OFMutableArray array];
@@ -101,7 +101,7 @@
 			if (items[i] & 0x80)
 				continue;
 
-			if ([subidentifiers count] == 0) {
+			if (subidentifiers.count == 0) {
 				if (value < 40)
 					[subidentifiers addObject:
 					    [OFNumber numberWithUIntMax: 0]];
@@ -168,7 +168,7 @@
 
 - (uint32_t)hash
 {
-	return [_subidentifiers hash];
+	return _subidentifiers.hash;
 }
 
 - (OFString *)description

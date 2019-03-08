@@ -199,7 +199,7 @@ static of_run_loop_mode_t resolveRunLoopMode = @"of_dns_resolver_resolve_mode";
       answerRecords: (OFDictionary *)answerRecords
    authorityRecords: (OFDictionary *)authorityRecords
   additionalRecords: (OFDictionary *)additionalRecords
-	    context: (id)context
+	    context: (OFNumber *)context
 	  exception: (id)exception;
 - (void)done;
 -	(void)resolver: (OFDNSResolver *)resolver
@@ -207,7 +207,7 @@ static of_run_loop_mode_t resolveRunLoopMode = @"of_dns_resolver_resolve_mode";
 	 answerRecords: (OFDictionary *)answerRecords
       authorityRecords: (OFDictionary *)authorityRecords
      additionalRecords: (OFDictionary *)additionalRecords
-	       context: (id)context
+	       context: (OFNumber *)context
 	     exception: (id)exception;
 @end
 
@@ -292,7 +292,7 @@ domainFromHostname(void)
 			return nil;
 
 		return [domain substringWithRange:
-		    of_range(pos + 1, [domain length] - pos - 1)];
+		    of_range(pos + 1, domain.length - pos - 1)];
 	}
 }
 #endif
@@ -300,8 +300,8 @@ domainFromHostname(void)
 static bool
 isFQDN(OFString *host, OFDNSResolverSettings *settings)
 {
-	const char *UTF8String = [host UTF8String];
-	size_t length = [host UTF8StringLength];
+	const char *UTF8String = host.UTF8String;
+	size_t length = host.UTF8StringLength;
 	unsigned int dots = 0;
 
 	if ([host hasSuffix: @"."])
@@ -371,7 +371,7 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 			suffix = parseName(buffer, length, &j,
 			    pointerLevel - 1);
 
-			if ([components count] == 0)
+			if (components.count == 0)
 				return suffix;
 			else {
 				[components addObject: suffix];
@@ -761,7 +761,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 		/* Header */
 
-		tmp = OF_BSWAP16_IF_LE([ID uInt16Value]);
+		tmp = OF_BSWAP16_IF_LE(ID.uInt16Value);
 		[queryData addItems: &tmp
 			      count: 2];
 
@@ -783,15 +783,15 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		/* QNAME */
 		for (OFString *component in
 		    [domainName componentsSeparatedByString: @"."]) {
-			size_t length = [component UTF8StringLength];
+			size_t length = component.UTF8StringLength;
 			uint8_t length8;
 
-			if (length > 63 || [queryData count] + length > 512)
+			if (length > 63 || queryData.count + length > 512)
 				@throw [OFOutOfRangeException exception];
 
 			length8 = (uint8_t)length;
 			[queryData addItem: &length8];
-			[queryData addItems: [component UTF8String]
+			[queryData addItems: component.UTF8String
 				      count: length];
 		}
 
@@ -872,16 +872,16 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	bool found = false;
 
-	for (OF_KINDOF(OFDNSResourceRecord *) record in records) {
-		if ([record recordClass] != OF_DNS_RESOURCE_RECORD_CLASS_IN)
+	for (OFDNSResourceRecord *record in records) {
+		if (record.recordClass != OF_DNS_RESOURCE_RECORD_CLASS_IN)
 			continue;
 
-		if ([record recordType] == recordType) {
+		if (record.recordType == recordType) {
 			[result addObject: record];
 			found = true;
-		} else if ([record recordType] ==
+		} else if (record.recordType ==
 		    OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
-			[self	resolveCNAME: record
+			[self	resolveCNAME: (OFCNAMEDNSResourceRecord *)record
 			       answerRecords: answerRecords
 			   additionalRecords: additionalRecords
 				  recordType: recordType
@@ -901,7 +901,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	   recursion: (unsigned int)recursion
 	      result: (OFMutableArray *)result
 {
-	OFString *alias = [CNAME alias];
+	OFString *alias = CNAME.alias;
 	bool found = false;
 
 	if (recursion == 0)
@@ -925,7 +925,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 	if (!found) {
 		of_run_loop_mode_t runLoopMode =
-		    [[OFRunLoop currentRunLoop] currentMode];
+		    [OFRunLoop currentRunLoop].currentMode;
 		OFNumber *recordTypeNumber =
 		    [OFNumber numberWithInt: recordType];
 
@@ -955,7 +955,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
       answerRecords: (OFDictionary *)answerRecords
    authorityRecords: (OFDictionary *)authorityRecords
   additionalRecords: (OFDictionary *)additionalRecords
-	    context: (id)context
+	    context: (OFNumber *)context
 	  exception: (id)exception
 {
 	/*
@@ -963,7 +963,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	 * responses, otherwise propagate error.
 	 */
 
-	of_dns_resource_record_type_t recordType = [context unsignedIntValue];
+	of_dns_resource_record_type_t recordType = context.unsignedIntValue;
 	bool found = false;
 	OFMutableArray *records;
 	size_t count;
@@ -1004,7 +1004,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 	}
 
-	count = [_records count];
+	count = _records.count;
 	for (size_t i = 0; i < count; i++) {
 		id object = [_records objectAtIndex: i];
 
@@ -1020,7 +1020,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		[_records removeObjectAtIndex: i];
 		[_records insertObjectsFromArray: records
 					 atIndex: i];
-		i += [records count] - 1;
+		i += records.count - 1;
 	}
 
 	if (_expectedResponses == 0)
@@ -1049,7 +1049,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 	[addresses makeImmutable];
 
-	if ([addresses count] == 0)
+	if (addresses.count == 0)
 		exception = [OFResolveHostFailedException
 		    exceptionWithHost: _host
 			  recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
@@ -1069,7 +1069,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	 answerRecords: (OFDictionary *)answerRecords
       authorityRecords: (OFDictionary *)authorityRecords
      additionalRecords: (OFDictionary *)additionalRecords
-	       context: (id)context
+	       context: (OFNumber *)context
 	     exception: (id)exception
 {
 	/*
@@ -1077,7 +1077,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	 * responses, otherwise propagate error.
 	 */
 
-	of_dns_resource_record_type_t recordType = [context unsignedIntValue];
+	of_dns_resource_record_type_t recordType = context.unsignedIntValue;
 
 	if (_resolver != nil)
 		OF_ENSURE(resolver == _resolver);
@@ -1317,14 +1317,14 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
 						 options: OF_STRING_SKIP_EMPTY];
 
-		if ([components count] < 2) {
+		if (components.count < 2) {
 			objc_autoreleasePoolPop(pool2);
 			continue;
 		}
 
-		address = [components firstObject];
+		address = components.firstObject;
 		hosts = [components objectsInRange:
-		    of_range(1, [components count] - 1)];
+		    of_range(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
 			addresses = [staticHosts objectForKey: host];
@@ -1390,30 +1390,30 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
 						 options: OF_STRING_SKIP_EMPTY];
 
-		if ([components count] < 2) {
+		if (components.count < 2) {
 			objc_autoreleasePoolPop(pool2);
 			continue;
 		}
 
-		option = [components firstObject];
+		option = components.firstObject;
 		arguments = [components objectsInRange:
-		    of_range(1, [components count] - 1)];
+		    of_range(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
-			if ([arguments count] != 1) {
+			if (arguments.count != 1) {
 				objc_autoreleasePoolPop(pool2);
 				continue;
 			}
 
 			[nameServers addObject: [arguments firstObject]];
 		} else if ([option isEqual: @"domain"]) {
-			if ([arguments count] != 1) {
+			if (arguments.count != 1) {
 				objc_autoreleasePoolPop(pool2);
 				continue;
 			}
 
 			[_localDomain release];
-			_localDomain = [[arguments firstObject] copy];
+			_localDomain = [arguments.firstObject copy];
 		} else if ([option isEqual: @"search"]) {
 			[_searchDomains release];
 			_searchDomains = [arguments copy];
@@ -1437,25 +1437,25 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	@try {
 		if ([option hasPrefix: @"ndots:"]) {
 			option = [option substringWithRange:
-			    of_range(6, [option length] - 6)];
+			    of_range(6, option.length - 6)];
 
 			_minNumberOfDotsInAbsoluteName =
-			    (unsigned int)[option decimalValue];
+			    (unsigned int)option.decimalValue;
 		} else if ([option hasPrefix: @"timeout:"]) {
 			option = [option substringWithRange:
-			    of_range(8, [option length] - 8)];
+			    of_range(8, option.length - 8)];
 
-			_timeout = [option decimalValue];
+			_timeout = option.decimalValue;
 		} else if ([option hasPrefix: @"attempts:"]) {
 			option = [option substringWithRange:
-			    of_range(9, [option length] - 9)];
+			    of_range(9, option.length - 9)];
 
-			_maxAttempts = (unsigned int)[option decimalValue];
+			_maxAttempts = (unsigned int)option.decimalValue;
 		} else if ([option hasPrefix: @"reload-period:"]) {
 			option = [option substringWithRange:
-			    of_range(14, [option length] - 14)];
+			    of_range(14, option.length - 14)];
 
-			_configReloadInterval = [option decimalValue];
+			_configReloadInterval = option.decimalValue;
 		} else if ([option isEqual: @"tcp"])
 			_usesTCP = true;
 	} @catch (OFInvalidFormatException *e) {
@@ -1488,7 +1488,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		    [OFString stringWithCString: iter->IpAddress.String
 				       encoding: encoding]];
 
-	if ([nameServers count] > 0) {
+	if (nameServers.count > 0) {
 		[nameServers makeImmutable];
 		_nameServers = [nameServers copy];
 	}
@@ -1532,7 +1532,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		ReleaseDomainNameServerList(nameServerList);
 	}
 
-	if ([nameServers count] > 0) {
+	if (nameServers.count > 0) {
 		[nameServers makeImmutable];
 		_nameServers = [nameServers copy];
 	}
@@ -1579,7 +1579,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		    (ip >> 8) & 0xFF, ip & 0xFF]];
 	}
 
-	if ([nameServers count] > 0) {
+	if (nameServers.count > 0) {
 		[nameServers makeImmutable];
 		_nameServers = [nameServers copy];
 	}
@@ -1594,7 +1594,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	 */
 
 	if (_lastConfigReload != nil && _configReloadInterval > 0 &&
-	    [_lastConfigReload timeIntervalSinceNow] < _configReloadInterval)
+	    _lastConfigReload.timeIntervalSinceNow < _configReloadInterval)
 		return;
 
 	[_staticHosts release];
@@ -1653,7 +1653,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		    host, searchDomain];
 	}
 
-	if ([domainName UTF8StringLength] > 253)
+	if (domainName.UTF8StringLength > 253)
 		@throw [OFOutOfRangeException exception];
 
 	query = [[[OFDNSResolverQuery alloc]
@@ -1808,8 +1808,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			_IPv6Socket = [[OFUDPSocket alloc] init];
 			[_IPv6Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
-			[_IPv6Socket setBlocking: false];
-			[_IPv6Socket setDelegate: self];
+			_IPv6Socket.blocking = false;
+			_IPv6Socket.delegate = self;
 			[_IPv6Socket asyncReceiveIntoBuffer: _buffer
 						     length: BUFFER_LENGTH];
 		}
@@ -1825,8 +1825,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			_IPv4Socket = [[OFUDPSocket alloc] init];
 			[_IPv4Socket of_bindToAddress: &address
 					    extraType: SOCK_DNS];
-			[_IPv4Socket setBlocking: false];
-			[_IPv4Socket setDelegate: self];
+			_IPv4Socket.blocking = false;
+			_IPv4Socket.delegate = self;
 			[_IPv4Socket asyncReceiveIntoBuffer: _buffer
 						     length: BUFFER_LENGTH];
 		}
@@ -1850,10 +1850,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 
 	if (query->_nameServersIndex + 1 <
-	    [query->_settings->_nameServers count]) {
+	    query->_settings->_nameServers.count) {
 		query->_nameServersIndex++;
 		[self of_sendQuery: query
-		       runLoopMode: [[OFRunLoop currentRunLoop] currentMode]];
+		       runLoopMode: [OFRunLoop currentRunLoop].currentMode];
 		return;
 	}
 
@@ -1861,7 +1861,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		query->_attempt++;
 		query->_nameServersIndex = 0;
 		[self of_sendQuery: query
-		       runLoopMode: [[OFRunLoop currentRunLoop] currentMode]];
+		       runLoopMode: [OFRunLoop currentRunLoop].currentMode];
 		return;
 	}
 
@@ -1891,7 +1891,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	    nil, nil, nil, query->_context, exception);
 }
 
--	  (bool)socket: (OF_KINDOF(OFUDPSocket *))sock
+-	  (bool)socket: (OFUDPSocket *)sock
   didReceiveIntoBuffer: (void *)buffer_
 		length: (size_t)length
 		sender: (const of_socket_address_t *)sender
@@ -1934,11 +1934,11 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		if (length < 12)
 			@throw [OFTruncatedDataException exception];
 
-		if ([query->_queryData itemSize] != 1 ||
-		    [query->_queryData count] < 12)
+		if (query->_queryData.itemSize != 1 ||
+		    query->_queryData.count < 12)
 			@throw [OFInvalidArgumentException exception];
 
-		queryDataBuffer = [query->_queryData items];
+		queryDataBuffer = query->_queryData.items;
 
 		/* QR */
 		if ((buffer[2] & 0x80) == 0)
@@ -1964,9 +1964,9 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			break;
 		case 3:
 			if (query->_searchDomainsIndex + 1 <
-			    [query->_settings->_searchDomains count]) {
+			    query->_settings->_searchDomains.count) {
 				of_run_loop_mode_t runLoopMode =
-				    [[OFRunLoop currentRunLoop] currentMode];
+				    [OFRunLoop currentRunLoop].currentMode;
 
 				query->_searchDomainsIndex++;
 
@@ -2129,7 +2129,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 		[addresses makeImmutable];
 
-		if ([addresses count] == 0) {
+		if (addresses.count == 0) {
 			of_dns_resource_record_type_t recordType = 0;
 
 			addresses = nil;

@@ -44,7 +44,7 @@
 	self = [super init];
 
 	@try {
-		if (data == nil || [data itemSize] != 1)
+		if (data == nil || data.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		_type = type;
@@ -68,7 +68,7 @@
 {
 	OFMutableData *ret;
 	uint8_t prefix;
-	size_t count = [_data count];
+	size_t count = _data.count;
 
 	if (count == 1) {
 		ret = [OFMutableData dataWithCapacity: 3];
@@ -145,8 +145,8 @@
 		[ret addItem: &_type];
 	}
 
-	[ret addItems: [_data items]
-		count: [_data count]];
+	[ret addItems: _data.items
+		count: _data.count];
 
 	[ret makeImmutable];
 
@@ -184,7 +184,7 @@
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD(hash, (uint8_t)_type);
-	OF_HASH_ADD_HASH(hash, [_data hash]);
+	OF_HASH_ADD_HASH(hash, _data.hash);
 
 	OF_HASH_FINALIZE(hash);
 

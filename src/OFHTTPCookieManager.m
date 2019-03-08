@@ -62,18 +62,18 @@
 	OFString *cookieDomain, *URLHost;
 	size_t i;
 
-	if (![[cookie path] hasPrefix: @"/"])
-		[cookie setPath: @"/"];
+	if (![cookie.path hasPrefix: @"/"])
+		cookie.path = @"/";
 
-	if ([cookie isSecure] && ![[URL scheme] isEqual: @"https"]) {
+	if (cookie.secure && ![URL.scheme isEqual: @"https"]) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
 
-	cookieDomain = [[cookie domain] lowercaseString];
-	[cookie setDomain: cookieDomain];
+	cookieDomain = cookie.domain.lowercaseString;
+	cookie.domain = cookieDomain;
 
-	URLHost = [[URL host] lowercaseString];
+	URLHost = URL.host.lowercaseString;
 	if (![cookieDomain isEqual: URLHost]) {
 		URLHost = [@"." stringByAppendingString: URLHost];
 
@@ -85,9 +85,9 @@
 
 	i = 0;
 	for (OFHTTPCookie *iter in _cookies) {
-		if ([[iter name] isEqual: [cookie name]] &&
-		    [[iter domain] isEqual: [cookie domain]] &&
-		    [[iter path] isEqual: [cookie path]]) {
+		if ([iter.name isEqual: cookie.name] &&
+		    [iter.domain isEqual: cookie.domain] &&
+		    [iter.path isEqual: cookie.path]) {
 			[_cookies replaceObjectAtIndex: i
 					    withObject: cookie];
 
@@ -121,23 +121,23 @@
 		OFString *cookieDomain, *URLHost, *cookiePath, *URLPath;
 		bool match;
 
-		expires = [cookie expires];
-		if (expires != nil && [expires timeIntervalSinceNow] <= 0)
+		expires = cookie.expires;
+		if (expires != nil && expires.timeIntervalSinceNow <= 0)
 			continue;
 
-		if ([cookie isSecure] && ![[URL scheme] isEqual: @"https"])
+		if (cookie.secure && ![URL.scheme isEqual: @"https"])
 			continue;
 
 		pool = objc_autoreleasePoolPush();
 
-		cookieDomain = [[cookie domain] lowercaseString];
-		URLHost = [[URL host] lowercaseString];
+		cookieDomain = cookie.domain.lowercaseString;
+		URLHost = URL.host.lowercaseString;
 		if ([cookieDomain hasPrefix: @"."]) {
 			if ([URLHost hasSuffix: cookieDomain])
 				match = true;
 			else {
 				cookieDomain = [cookieDomain substringWithRange:
-				    of_range(1, [cookieDomain length] - 1)];
+				    of_range(1, cookieDomain.length - 1)];
 
 				match = [cookieDomain isEqual: URLHost];
 			}
@@ -149,8 +149,8 @@
 			continue;
 		}
 
-		cookiePath = [cookie path];
-		URLPath = [URL path];
+		cookiePath = cookie.path;
+		URLPath = URL.path;
 		if (![cookiePath isEqual: @"/"]) {
 			if ([cookiePath isEqual: URLPath])
 				match = true;
@@ -178,10 +178,10 @@
 
 - (void)purgeExpiredCookies
 {
-	for (size_t i = 0, count = [_cookies count]; i < count; i++) {
+	for (size_t i = 0, count = _cookies.count; i < count; i++) {
 		OFDate *expires = [[_cookies objectAtIndex: i] expires];
 
-		if (expires != nil && [expires timeIntervalSinceNow] <= 0) {
+		if (expires != nil && expires.timeIntervalSinceNow <= 0) {
 			[_cookies removeObjectAtIndex: i];
 
 			i--;

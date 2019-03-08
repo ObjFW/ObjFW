@@ -100,18 +100,18 @@ static Class CDATAClass = Nil;
 }
 
 + (instancetype)elementWithName: (OFString *)name
-		      namespace: (OFString *)ns
+		      namespace: (OFString *)namespace
 {
 	return [[[self alloc] initWithName: name
-				 namespace: ns] autorelease];
+				 namespace: namespace] autorelease];
 }
 
 + (instancetype)elementWithName: (OFString *)name
-		      namespace: (OFString *)ns
+		      namespace: (OFString *)namespace
 		    stringValue: (OFString *)stringValue
 {
 	return [[[self alloc] initWithName: name
-				 namespace: ns
+				 namespace: namespace
 			       stringValue: stringValue] autorelease];
 }
 
@@ -179,7 +179,7 @@ static Class CDATAClass = Nil;
 		    @"http://www.w3.org/2000/xmlns/", @"xmlns", nil];
 
 		if (stringValue != nil)
-			[self setStringValue: stringValue];
+			self.stringValue = stringValue;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -230,12 +230,12 @@ static Class CDATAClass = Nil;
 	delegate = [[[OFXMLElement_OFXMLElementBuilderDelegate alloc] init]
 	    autorelease];
 
-	[parser setDelegate: builder];
-	[builder setDelegate: delegate];
+	parser.delegate = builder;
+	builder.delegate = delegate;
 
 	[parser parseString: string];
 
-	if (![parser hasFinishedParsing])
+	if (!parser.hasFinishedParsing)
 		@throw [OFMalformedXMLException exceptionWithParser: parser];
 
 	self = [delegate->_element retain];
@@ -262,12 +262,12 @@ static Class CDATAClass = Nil;
 	delegate = [[[OFXMLElement_OFXMLElementBuilderDelegate alloc] init]
 	    autorelease];
 
-	[parser setDelegate: builder];
-	[builder setDelegate: delegate];
+	parser.delegate = builder;
+	builder.delegate = delegate;
 
 	[parser parseFile: path];
 
-	if (![parser hasFinishedParsing])
+	if (!parser.hasFinishedParsing)
 		@throw [OFMalformedXMLException exceptionWithParser: parser];
 
 	self = [delegate->_element retain];
@@ -289,35 +289,34 @@ static Class CDATAClass = Nil;
 		OFEnumerator *keyEnumerator, *objectEnumerator;
 		OFString *key, *object;
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		_name = [[[element attributeForName: @"name"]
-		    stringValue] copy];
-		_namespace = [[[element attributeForName: @"namespace"]
-		    stringValue] copy];
-		_defaultNamespace = [[[element attributeForName:
-		    @"defaultNamespace"] stringValue] copy];
+		_name = [[element attributeForName: @"name"].stringValue copy];
+		_namespace = [[element attributeForName: @"namespace"]
+		    .stringValue copy];
+		_defaultNamespace = [[element attributeForName:
+		    @"defaultNamespace"].stringValue copy];
 
-		attributesElement = [[[element
+		attributesElement = [[element
 		    elementForName: @"attributes"
 			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS] firstObject];
-		namespacesElement = [[[element
+		    OF_SERIALIZATION_NS].firstObject;
+		namespacesElement = [[element
 		    elementForName: @"namespaces"
 			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS] firstObject];
-		childrenElement = [[[element
+		    OF_SERIALIZATION_NS].firstObject;
+		childrenElement = [[element
 		    elementForName: @"children"
 			 namespace: OF_SERIALIZATION_NS] elementsForNamespace:
-		    OF_SERIALIZATION_NS] firstObject];
+		    OF_SERIALIZATION_NS].firstObject;
 
-		_attributes = [[attributesElement objectByDeserializing]
+		_attributes = [attributesElement.objectByDeserializing
 		    mutableCopy];
-		_namespaces = [[namespacesElement objectByDeserializing]
+		_namespaces = [namespacesElement.objectByDeserializing
 		    mutableCopy];
-		_children = [[childrenElement objectByDeserializing]
+		_children = [childrenElement.objectByDeserializing
 		    mutableCopy];
 
 		/* Sanity checks */
@@ -398,8 +397,8 @@ static Class CDATAClass = Nil;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[self setChildren: [OFArray arrayWithObject:
-	    [OFXMLCharacters charactersWithString: stringValue]]];
+	self.children = [OFArray arrayWithObject:
+	    [OFXMLCharacters charactersWithString: stringValue]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -408,7 +407,7 @@ static Class CDATAClass = Nil;
 {
 	OFMutableString *ret;
 
-	if ([_children count] == 0)
+	if (_children.count == 0)
 		return @"";
 
 	ret = [OFMutableString string];
@@ -416,7 +415,7 @@ static Class CDATAClass = Nil;
 	for (OFXMLNode *child in _children) {
 		void *pool = objc_autoreleasePoolPush();
 
-		[ret appendString: [child stringValue]];
+		[ret appendString: child.stringValue];
 
 		objc_autoreleasePoolPop(pool);
 	}
@@ -473,7 +472,7 @@ static Class CDATAClass = Nil;
 		defaultNS = _defaultNamespace;
 
 	i = 0;
-	length = [_name UTF8StringLength] + 3 + (level * indentation);
+	length = _name.UTF8StringLength + 3 + (level * indentation);
 	cString = [self allocMemoryWithSize: length];
 
 	memset(cString + i, ' ', level * indentation);
@@ -483,7 +482,7 @@ static Class CDATAClass = Nil;
 	cString[i++] = '<';
 
 	if (prefix != nil && ![_namespace isEqual: defaultNS]) {
-		length += [prefix UTF8StringLength] + 1;
+		length += prefix.UTF8StringLength + 1;
 		@try {
 			cString = [self resizeMemory: cString
 						size: length];
@@ -492,20 +491,19 @@ static Class CDATAClass = Nil;
 			@throw e;
 		}
 
-		memcpy(cString + i, [prefix UTF8String],
-		    [prefix UTF8StringLength]);
-		i += [prefix UTF8StringLength];
+		memcpy(cString + i, prefix.UTF8String, prefix.UTF8StringLength);
+		i += prefix.UTF8StringLength;
 		cString[i++] = ':';
 	}
 
-	memcpy(cString + i, [_name UTF8String], [_name UTF8StringLength]);
-	i += [_name UTF8StringLength];
+	memcpy(cString + i, _name.UTF8String, _name.UTF8StringLength);
+	i += _name.UTF8StringLength;
 
 	/* xmlns if necessary */
 	if (prefix == nil && ((_namespace != nil &&
 	    ![_namespace isEqual: defaultNS]) ||
 	    (_namespace == nil && defaultNS != nil))) {
-		length += [_namespace UTF8StringLength] + 9;
+		length += _namespace.UTF8StringLength + 9;
 		@try {
 			cString = [self resizeMemory: cString
 						size: length];
@@ -516,21 +514,19 @@ static Class CDATAClass = Nil;
 
 		memcpy(cString + i, " xmlns='", 8);
 		i += 8;
-		memcpy(cString + i, [_namespace UTF8String],
-		    [_namespace UTF8StringLength]);
-		i += [_namespace UTF8StringLength];
+		memcpy(cString + i, _namespace.UTF8String,
+		    _namespace.UTF8StringLength);
+		i += _namespace.UTF8StringLength;
 		cString[i++] = '\'';
 	}
 
 	/* Attributes */
 	for (OFXMLAttribute *attribute in _attributes) {
 		void *pool2 = objc_autoreleasePoolPush();
-		const char *attributeNameCString =
-		    [attribute->_name UTF8String];
-		size_t attributeNameLength =
-		    [attribute->_name UTF8StringLength];
+		const char *attributeNameCString = attribute->_name.UTF8String;
+		size_t attributeNameLength = attribute->_name.UTF8StringLength;
 		OFString *attributePrefix = nil;
-		OFString *tmp = [[attribute stringValue] stringByXMLEscaping];
+		OFString *tmp = attribute.stringValue.stringByXMLEscaping;
 		char delimiter = (attribute->_useDoubleQuotes ? '"' : '\'');
 
 		if (attribute->_namespace != nil &&
@@ -542,8 +538,8 @@ static Class CDATAClass = Nil;
 
 		length += attributeNameLength +
 		    (attributePrefix != nil ?
-		    [attributePrefix UTF8StringLength] + 1 : 0) +
-		    [tmp UTF8StringLength] + 4;
+		    attributePrefix.UTF8StringLength + 1 : 0) +
+		    tmp.UTF8StringLength + 4;
 
 		@try {
 			cString = [self resizeMemory: cString
@@ -555,17 +551,17 @@ static Class CDATAClass = Nil;
 
 		cString[i++] = ' ';
 		if (attributePrefix != nil) {
-			memcpy(cString + i, [attributePrefix UTF8String],
-			    [attributePrefix UTF8StringLength]);
-			i += [attributePrefix UTF8StringLength];
+			memcpy(cString + i, attributePrefix.UTF8String,
+			    attributePrefix.UTF8StringLength);
+			i += attributePrefix.UTF8StringLength;
 			cString[i++] = ':';
 		}
 		memcpy(cString + i, attributeNameCString, attributeNameLength);
 		i += attributeNameLength;
 		cString[i++] = '=';
 		cString[i++] = delimiter;
-		memcpy(cString + i, [tmp UTF8String], [tmp UTF8StringLength]);
-		i += [tmp UTF8StringLength];
+		memcpy(cString + i, tmp.UTF8String, tmp.UTF8StringLength);
+		i += tmp.UTF8StringLength;
 		cString[i++] = delimiter;
 
 		objc_autoreleasePoolPop(pool2);
@@ -607,14 +603,14 @@ static Class CDATAClass = Nil;
 				    XMLStringWithIndentation: ind
 						       level: level + 1];
 
-			[tmp addItems: [childString UTF8String]
-				count: [childString UTF8StringLength]];
+			[tmp addItems: childString.UTF8String
+				count: childString.UTF8StringLength];
 		}
 
 		if (indent)
 			[tmp addItem: "\n"];
 
-		length += [tmp count] + [_name UTF8StringLength] + 2 +
+		length += tmp.count + _name.UTF8StringLength + 2 +
 		    (indent ? level * indentation : 0);
 		@try {
 			cString = [self resizeMemory: cString
@@ -626,8 +622,8 @@ static Class CDATAClass = Nil;
 
 		cString[i++] = '>';
 
-		memcpy(cString + i, [tmp items], [tmp count]);
-		i += [tmp count];
+		memcpy(cString + i, tmp.items, tmp.count);
+		i += tmp.count;
 
 		if (indent) {
 			memset(cString + i, ' ', level * indentation);
@@ -637,7 +633,7 @@ static Class CDATAClass = Nil;
 		cString[i++] = '<';
 		cString[i++] = '/';
 		if (prefix != nil) {
-			length += [prefix UTF8StringLength] + 1;
+			length += prefix.UTF8StringLength + 1;
 			@try {
 				cString = [self resizeMemory: cString
 							size: length];
@@ -646,14 +642,13 @@ static Class CDATAClass = Nil;
 				@throw e;
 			}
 
-			memcpy(cString + i, [prefix UTF8String],
-			    [prefix UTF8StringLength]);
-			i += [prefix UTF8StringLength];
+			memcpy(cString + i, prefix.UTF8String,
+			    prefix.UTF8StringLength);
+			i += prefix.UTF8StringLength;
 			cString[i++] = ':';
 		}
-		memcpy(cString + i, [_name UTF8String],
-		    [_name UTF8StringLength]);
-		i += [_name UTF8StringLength];
+		memcpy(cString + i, _name.UTF8String, _name.UTF8StringLength);
+		i += _name.UTF8StringLength;
 	} else
 		cString[i++] = '/';
 
@@ -701,7 +696,7 @@ static Class CDATAClass = Nil;
 	void *pool = objc_autoreleasePoolPush();
 	OFXMLElement *element;
 
-	element = [OFXMLElement elementWithName: [self className]
+	element = [OFXMLElement elementWithName: self.className
 				      namespace: OF_SERIALIZATION_NS];
 
 	if (_name != nil)
@@ -723,7 +718,7 @@ static Class CDATAClass = Nil;
 		    [OFXMLElement elementWithName: @"attributes"
 					namespace: OF_SERIALIZATION_NS];
 		[attributesElement addChild:
-		    [_attributes XMLElementBySerializing]];
+		    _attributes.XMLElementBySerializing];
 		[element addChild: attributesElement];
 	}
 
@@ -737,12 +732,12 @@ static Class CDATAClass = Nil;
 		[namespacesCopy removeObjectForKey:
 		    @"http://www.w3.org/2000/xmlns/"];
 
-		if ([namespacesCopy count] > 0) {
+		if (namespacesCopy.count > 0) {
 			namespacesElement =
 			    [OFXMLElement elementWithName: @"namespaces"
 						namespace: OF_SERIALIZATION_NS];
 			[namespacesElement addChild:
-			    [namespacesCopy XMLElementBySerializing]];
+			    namespacesCopy.XMLElementBySerializing];
 			[element addChild: namespacesElement];
 		}
 	}
@@ -753,7 +748,7 @@ static Class CDATAClass = Nil;
 		childrenElement =
 		    [OFXMLElement elementWithName: @"children"
 					namespace: OF_SERIALIZATION_NS];
-		[childrenElement addChild: [_children XMLElementBySerializing]];
+		[childrenElement addChild: _children.XMLElementBySerializing];
 		[element addChild: childrenElement];
 	}
 
@@ -824,8 +819,8 @@ static Class CDATAClass = Nil;
 
 - (void)removeAttributeForName: (OFString *)attributeName
 {
-	OFXMLAttribute *const *objects = [_attributes objects];
-	size_t count = [_attributes count];
+	OFXMLAttribute *const *objects = _attributes.objects;
+	size_t count = _attributes.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if (objects[i]->_namespace == nil &&
@@ -848,8 +843,8 @@ static Class CDATAClass = Nil;
 		return;
 	}
 
-	objects = [_attributes objects];
-	count = [_attributes count];
+	objects = _attributes.objects;
+	count = _attributes.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i]->_namespace isEqual: attributeNS] &&
@@ -863,7 +858,7 @@ static Class CDATAClass = Nil;
 - (void)setPrefix: (OFString *)prefix
      forNamespace: (OFString *)namespace
 {
-	if ([prefix length] == 0)
+	if (prefix.length == 0)
 		@throw [OFInvalidArgumentException exception];
 	if (namespace == nil)
 		namespace = @"";
@@ -953,14 +948,14 @@ static Class CDATAClass = Nil;
 
 - (OFXMLElement *)elementForName: (OFString *)elementName
 {
-	return [[self elementsForName: elementName] firstObject];
+	return [self elementsForName: elementName].firstObject;
 }
 
 - (OFXMLElement *)elementForName: (OFString *)elementName
 		       namespace: (OFString *)elementNS
 {
-	return [[self elementsForName: elementName
-			    namespace: elementNS] firstObject];
+	return [self elementsForName: elementName
+			   namespace: elementNS].firstObject;
 }
 
 - (OFArray *)elements
@@ -1078,12 +1073,12 @@ static Class CDATAClass = Nil;
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
-	OF_HASH_ADD_HASH(hash, [_namespace hash]);
-	OF_HASH_ADD_HASH(hash, [_defaultNamespace hash]);
-	OF_HASH_ADD_HASH(hash, [_attributes hash]);
-	OF_HASH_ADD_HASH(hash, [_namespaces hash]);
-	OF_HASH_ADD_HASH(hash, [_children hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
+	OF_HASH_ADD_HASH(hash, _namespace.hash);
+	OF_HASH_ADD_HASH(hash, _defaultNamespace.hash);
+	OF_HASH_ADD_HASH(hash, _attributes.hash);
+	OF_HASH_ADD_HASH(hash, _namespaces.hash);
+	OF_HASH_ADD_HASH(hash, _children.hash);
 
 	OF_HASH_FINALIZE(hash);
 

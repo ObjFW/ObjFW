@@ -56,7 +56,7 @@
 		return [OFString stringWithFormat:
 		    @"Joining a thread of type %@ failed! Most likely, another "
 		    @"thread already waits for the thread to join.",
-		    [_thread class]];
+		    _thread.class];
 	else
 		return @"Joining a thread failed! Most likely, another thread "
 		    @"already waits for the thread to join.";

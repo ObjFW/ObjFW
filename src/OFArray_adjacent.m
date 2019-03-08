@@ -97,8 +97,8 @@
 		return self;
 
 	@try {
-		objects = [array objects];
-		count = [array count];
+		objects = array.objects;
+		count = array.count;
 
 		_array = [[OFMutableData alloc] initWithItemSize: sizeof(id)
 							capacity: count];
@@ -166,9 +166,9 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if ((![[element name] isEqual: @"OFArray"] &&
-		    ![[element name] isEqual: @"OFMutableArray"]) ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if ((![element.name isEqual: @"OFArray"] &&
+		    ![element.name isEqual: @"OFMutableArray"]) ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in
@@ -176,7 +176,7 @@
 			void *pool2 = objc_autoreleasePoolPush();
 			id object;
 
-			object = [child objectByDeserializing];
+			object = child.objectByDeserializing;
 			[_array addItem: &object];
 			[object retain];
 
@@ -194,12 +194,12 @@
 
 - (size_t)count
 {
-	return [_array count];
+	return _array.count;
 }
 
 - (id const *)objects
 {
-	return [_array items];
+	return _array.items;
 }
 
 - (id)objectAtIndex: (size_t)idx
@@ -215,8 +215,8 @@
 - (void)getObjects: (id *)buffer
 	   inRange: (of_range_t)range
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location + range.length > count)
@@ -228,14 +228,14 @@
 
 - (size_t)indexOfObject: (id)object
 {
-	id *objects;
+	id const *objects;
 	size_t count;
 
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	objects = [_array items];
-	count = [_array count];
+	objects = _array.items;
+	count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
 		if ([objects[i] isEqual: object])
@@ -246,14 +246,14 @@
 
 - (size_t)indexOfObjectIdenticalTo: (id)object
 {
-	id *objects;
+	id const *objects;
 	size_t count;
 
 	if (object == nil)
 		return OF_NOT_FOUND;
 
-	objects = [_array items];
-	count = [_array count];
+	objects = _array.items;
+	count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
 		if (objects[i] == object)
@@ -266,12 +266,12 @@
 - (OFArray *)objectsInRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > [_array count])
+	    range.location + range.length > _array.count)
 		@throw [OFOutOfRangeException exception];
 
 	if ([self isKindOfClass: [OFMutableArray class]])
 		return [OFArray
-		    arrayWithObjects: (id *)[_array items] + range.location
+		    arrayWithObjects: (id *)_array.items + range.location
 			       count: range.length];
 
 	return [OFArray_adjacentSubarray arrayWithArray: self
@@ -293,13 +293,13 @@
 
 	otherArray = object;
 
-	count = [_array count];
+	count = _array.count;
 
-	if (count != [otherArray count])
+	if (count != otherArray.count)
 		return false;
 
-	objects = [_array items];
-	otherObjects = [otherArray objects];
+	objects = _array.items;
+	otherObjects = otherArray.objects;
 
 	for (size_t i = 0; i < count; i++)
 		if (![objects[i] isEqual: otherObjects[i]])
@@ -310,8 +310,8 @@
 
 - (uint32_t)hash
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
@@ -328,7 +328,7 @@
 			   objects: (id *)objects
 			     count: (int)count_
 {
-	size_t count = [_array count];
+	size_t count = _array.count;
 
 	if (count > INT_MAX)
 		/*
@@ -343,7 +343,7 @@
 		return 0;
 
 	state->state = (unsigned long)count;
-	state->itemsPtr = [_array items];
+	state->itemsPtr = _array.items;
 	state->mutationsPtr = (unsigned long *)self;
 
 	return (int)count;
@@ -352,8 +352,8 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
 	bool stop = false;
 
 	for (size_t i = 0; i < count && !stop; i++)
@@ -363,8 +363,8 @@
 
 - (void)dealloc
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
 		[objects[i] release];

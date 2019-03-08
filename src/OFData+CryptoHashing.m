@@ -41,7 +41,7 @@ int _OFData_CryptoHashing_reference;
 
 	[hash updateWithBuffer: _items
 			length: _count * _itemSize];
-	digest = [hash digest];
+	digest = hash.digest;
 
 	for (size_t i = 0; i < digestSize; i++) {
 		uint8_t high, low;

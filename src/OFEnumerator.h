@@ -87,7 +87,7 @@ typedef struct {
 	/*! Arbitrary state information for the enumeration */
 	unsigned long state;
 	/*! Pointer to a C array of objects to return */
-	id __unsafe_unretained _Nullable *_Nullable itemsPtr;
+	id const __unsafe_unretained _Nullable *_Nullable itemsPtr;
 	/*! Arbitrary state information to detect mutations */
 	unsigned long *_Nullable mutationsPtr;
 	/*! Additional arbitrary state information */

@@ -55,7 +55,7 @@
 	if (_parser != nil)
 		return [OFString stringWithFormat:
 		    @"An XML parser of type %@ encountered malformed XML in "
-		    @"line %zu!", [_parser class], [_parser lineNumber]];
+		    @"line %zu!", _parser.class, _parser.lineNumber];
 	else
 		return @"An XML parser encountered malformed XML!";
 }

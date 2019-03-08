@@ -107,7 +107,7 @@
 	LSTATUS status;
 	HKEY subKey;
 
-	if ((status = RegOpenKeyExW(_hKey, [path UTF16String], options,
+	if ((status = RegOpenKeyExW(_hKey, path.UTF16String, options,
 	    securityAndAccessRights, &subKey)) != ERROR_SUCCESS) {
 		if (status == ERROR_FILE_NOT_FOUND) {
 			objc_autoreleasePoolPop(pool);
@@ -150,7 +150,7 @@
 	LSTATUS status;
 	HKEY subKey;
 
-	if ((status = RegCreateKeyExW(_hKey, [path UTF16String], 0,
+	if ((status = RegCreateKeyExW(_hKey, path.UTF16String, 0,
 	    NULL, options, securityAndAccessRights, securityAttributes,
 	    &subKey, NULL)) != ERROR_SUCCESS)
 		@throw [OFCreateWindowsRegistryKeyFailedException
@@ -180,8 +180,8 @@
 	LSTATUS status;
 
 	for (;;) {
-		status = RegGetValueW(_hKey, [subkeyPath UTF16String],
-		    [value UTF16String], flags, type, buffer, &length);
+		status = RegGetValueW(_hKey, subkeyPath.UTF16String,
+		    value.UTF16String, flags, type, buffer, &length);
 
 		switch (status) {
 		case ERROR_SUCCESS:
@@ -208,7 +208,7 @@
 
 			ret = [OFMutableData dataWithCapacity: length];
 			[ret increaseCountBy: length];
-			buffer = [ret items];
+			buffer = ret.items;
 
 			continue;
 		default:
@@ -226,14 +226,14 @@
        forValue: (OFString *)value
 	   type: (DWORD)type
 {
-	size_t length = [data count] * [data itemSize];
+	size_t length = data.count * data.itemSize;
 	LSTATUS status;
 
 	if (length > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((status = RegSetValueExW(_hKey, [value UTF16String], 0, type,
-	    [data items], (DWORD)length)) != ERROR_SUCCESS)
+	if ((status = RegSetValueExW(_hKey, value.UTF16String, 0, type,
+	    data.items, (DWORD)length)) != ERROR_SUCCESS)
 		@throw [OFSetWindowsRegistryValueFailedException
 		    exceptionWithRegistryKey: self
 				       value: value
@@ -268,10 +268,10 @@
 	if (data == nil)
 		return nil;
 
-	UTF16String = [data items];
-	length = [data count];
+	UTF16String = data.items;
+	length = data.count;
 
-	if ([data itemSize] != 1 || length % 2 == 1)
+	if (data.itemSize != 1 || length % 2 == 1)
 		@throw [OFInvalidFormatException exception];
 
 	length /= 2;
@@ -310,9 +310,9 @@
 	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
-	data = [OFData dataWithItems: [string UTF16String]
+	data = [OFData dataWithItems: string.UTF16String
 			    itemSize: sizeof(of_char16_t)
-			       count: [string UTF16StringLength] + 1];
+			       count: string.UTF16StringLength + 1];
 	[self setData: data
 	     forValue: value
 		 type: type];
@@ -325,7 +325,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
 
-	if ((status = RegDeleteValueW(_hKey, [value UTF16String])) !=
+	if ((status = RegDeleteValueW(_hKey, value.UTF16String)) !=
 	    ERROR_SUCCESS)
 		@throw [OFDeleteWindowsRegistryValueFailedException
 		    exceptionWithRegistryKey: self
@@ -340,7 +340,7 @@
 	void *pool = objc_autoreleasePoolPush();
 	LSTATUS status;
 
-	if ((status = RegDeleteKeyW(_hKey, [subkeyPath UTF16String])) !=
+	if ((status = RegDeleteKeyW(_hKey, subkeyPath.UTF16String)) !=
 	    ERROR_SUCCESS)
 		@throw [OFDeleteWindowsRegistryKeyFailedException
 		    exceptionWithRegistryKey: self

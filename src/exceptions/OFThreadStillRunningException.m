@@ -56,7 +56,7 @@
 		return [OFString stringWithFormat:
 		    @"Deallocation of a thread of type %@ was tried, even "
 		    @"though it was still running!",
-		    [_thread class]];
+		    _thread.class];
 	else
 		return @"Deallocation of a thread was tried, even though it "
 		    @"was still running!";

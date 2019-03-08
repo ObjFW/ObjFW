@@ -75,8 +75,8 @@
       fileDescriptor: (int)fd
 	      events: (short)events
 {
-	struct pollfd *FDs = [_FDs items];
-	size_t count = [_FDs count];
+	struct pollfd *FDs = _FDs.mutableItems;
+	size_t count = _FDs.count;
 	bool found = false;
 
 	for (size_t i = 0; i < count; i++) {
@@ -106,8 +106,8 @@
 	 fileDescriptor: (int)fd
 		 events: (short)events
 {
-	struct pollfd *FDs = [_FDs items];
-	size_t nFDs = [_FDs count];
+	struct pollfd *FDs = _FDs.mutableItems;
+	size_t nFDs = _FDs.count;
 
 	for (size_t i = 0; i < nFDs; i++) {
 		if (FDs[i].fd == fd) {
@@ -129,28 +129,28 @@
 - (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_addObject: object
-	    fileDescriptor: [object fileDescriptorForReading]
+	    fileDescriptor: object.fileDescriptorForReading
 		    events: POLLIN];
 }
 
 - (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_addObject: object
-	    fileDescriptor: [object fileDescriptorForWriting]
+	    fileDescriptor: object.fileDescriptorForWriting
 		    events: POLLOUT];
 }
 
 - (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_removeObject: object
-	       fileDescriptor: [object fileDescriptorForReading]
+	       fileDescriptor: object.fileDescriptorForReading
 		       events: POLLIN];
 }
 
 - (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_removeObject: object
-	       fileDescriptor: [object fileDescriptorForWriting]
+	       fileDescriptor: object.fileDescriptorForWriting
 		       events: POLLOUT];
 }
 
@@ -165,8 +165,8 @@
 	if ([self of_processReadBuffers])
 		return;
 
-	FDs = [_FDs items];
-	nFDs = [_FDs count];
+	FDs = _FDs.mutableItems;
+	nFDs = _FDs.count;
 
 #ifdef OPEN_MAX
 	if (nFDs > OPEN_MAX)

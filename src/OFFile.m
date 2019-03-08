@@ -245,13 +245,13 @@ parseMode(const char *mode, bool *append)
 		int flags;
 
 #ifndef OF_AMIGAOS
-		if ((flags = parseMode([mode UTF8String])) == -1)
+		if ((flags = parseMode(mode.UTF8String)) == -1)
 			@throw [OFInvalidArgumentException exception];
 
 		flags |= O_BINARY | O_CLOEXEC;
 
 # if defined(OF_WINDOWS)
-		if ((handle = _wopen([path UTF16String], flags,
+		if ((handle = _wopen(path.UTF16String, flags,
 		    _S_IREAD | _S_IWRITE)) == -1)
 # elif defined(OF_HAVE_OFF64_T)
 		if ((handle = open64([path cStringWithEncoding:
@@ -270,7 +270,7 @@ parseMode(const char *mode, bool *append)
 			    exceptionWithRequestedSize: sizeof(*handle)];
 
 		@try {
-			if ((flags = parseMode([mode UTF8String],
+			if ((flags = parseMode(mode.UTF8String,
 			    &handle->append)) == -1)
 				@throw [OFInvalidArgumentException exception];
 
@@ -358,7 +358,7 @@ parseMode(const char *mode, bool *append)
 	OFString *fileSystemRepresentation;
 
 	@try {
-		fileSystemRepresentation = [URL fileSystemRepresentation];
+		fileSystemRepresentation = URL.fileSystemRepresentation;
 	} @catch (id e) {
 		[self release];
 		@throw e;

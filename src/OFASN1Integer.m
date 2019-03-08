@@ -77,11 +77,11 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 		    tagNumber != OF_ASN1_TAG_NUMBER_INTEGER || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		integerValue = of_asn1_der_integer_parse(
-		    [DEREncodedContents items], [DEREncodedContents count]);
+		    DEREncodedContents.items, DEREncodedContents.count);
 	} @catch (id e) {
 		[self release];
 		@throw e;

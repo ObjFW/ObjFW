@@ -80,8 +80,8 @@
 - (void)insertObjectsFromArray: (OFArray *)array
 		       atIndex: (size_t)idx
 {
-	id const *objects = [array objects];
-	size_t count = [array count];
+	id const *objects = array.objects;
+	size_t count = array.count;
 
 	@try {
 		[_array insertItems: objects
@@ -106,8 +106,8 @@
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	objects = [_array items];
-	count = [_array count];
+	objects = _array.mutableItems;
+	count = _array.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: oldObject]) {
@@ -129,9 +129,9 @@
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	objects = [_array items];
+	objects = _array.mutableItems;
 
-	if (idx >= [_array count])
+	if (idx >= _array.count)
 		@throw [OFOutOfRangeException exception];
 
 	oldObject = objects[idx];
@@ -148,8 +148,8 @@
 	if (oldObject == nil || newObject == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	objects = [_array items];
-	count = [_array count];
+	objects = _array.mutableItems;
+	count = _array.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if (objects[i] == oldObject) {
@@ -164,14 +164,14 @@
 
 - (void)removeObject: (id)object
 {
-	id *objects;
+	id const *objects;
 	size_t count;
 
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	objects = [_array items];
-	count = [_array count];
+	objects = _array.items;
+	count = _array.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if ([objects[i] isEqual: object]) {
@@ -189,14 +189,14 @@
 
 - (void)removeObjectIdenticalTo: (id)object
 {
-	id *objects;
+	id const *objects;
 	size_t count;
 
 	if (object == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	objects = [_array items];
-	count = [_array count];
+	objects = _array.items;
+	count = _array.count;
 
 	for (size_t i = 0; i < count; i++) {
 		if (objects[i] == object) {
@@ -223,8 +223,8 @@
 
 - (void)removeAllObjects
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
 
 	for (size_t i = 0; i < count; i++)
 		[objects[i] release];
@@ -234,8 +234,9 @@
 
 - (void)removeObjectsInRange: (of_range_t)range
 {
-	id *objects = [_array items], *copy;
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
+	id *copy;
 
 	if (range.length > SIZE_MAX - range.location ||
 	    range.location >= count || range.length > count - range.location)
@@ -259,7 +260,7 @@
 - (void)removeLastObject
 {
 #ifndef __clang_analyzer__
-	size_t count = [_array count];
+	size_t count = _array.count;
 	id object;
 
 	if (count == 0)
@@ -276,8 +277,8 @@
 - (void)exchangeObjectAtIndex: (size_t)idx1
 	    withObjectAtIndex: (size_t)idx2
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id *objects = _array.mutableItems;
+	size_t count = _array.count;
 	id tmp;
 
 	if (idx1 >= count || idx2 >= count)
@@ -290,8 +291,8 @@
 
 - (void)reverse
 {
-	id *objects = [_array items];
-	size_t i, j, count = [_array count];
+	id *objects = _array.mutableItems;
+	size_t i, j, count = _array.count;
 
 	if (count == 0 || count == 1)
 		return;
@@ -307,7 +308,7 @@
 			   objects: (id *)objects
 			     count: (int)count_
 {
-	size_t count = [_array count];
+	size_t count = _array.count;
 
 	if (count > INT_MAX) {
 		/*
@@ -326,7 +327,7 @@
 		return 0;
 
 	state->state = (unsigned long)count;
-	state->itemsPtr = [_array items];
+	state->itemsPtr = _array.items;
 	state->mutationsPtr = &_mutations;
 
 	return (int)count;
@@ -342,8 +343,8 @@
 #ifdef OF_HAVE_BLOCKS
 - (void)enumerateObjectsUsingBlock: (of_array_enumeration_block_t)block
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id const *objects = _array.items;
+	size_t count = _array.count;
 	bool stop = false;
 	unsigned long mutations = _mutations;
 
@@ -358,8 +359,8 @@
 
 - (void)replaceObjectsUsingBlock: (of_array_replace_block_t)block
 {
-	id *objects = [_array items];
-	size_t count = [_array count];
+	id *objects = _array.mutableItems;
+	size_t count = _array.count;
 	unsigned long mutations = _mutations;
 
 	for (size_t i = 0; i < count; i++) {

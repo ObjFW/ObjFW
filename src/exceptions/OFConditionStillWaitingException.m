@@ -56,7 +56,7 @@
 		return [OFString stringWithFormat:
 		    @"Deallocation of a condition of type %@ was tried, even "
 		    "though a thread was still waiting for it!",
-		    [_condition class]];
+		    _condition.class];
 	else
 		return @"Deallocation of a condition was tried, even though a "
 		    "thread was still waiting for it!";

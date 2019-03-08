@@ -34,7 +34,7 @@ int _OFObject_KeyValueCoding_reference;
 @implementation OFObject (KeyValueCoding)
 - (id)valueForKey: (OFString *)key
 {
-	SEL selector = sel_registerName([key UTF8String]);
+	SEL selector = sel_registerName(key.UTF8String);
 	OFMethodSignature *methodSignature =
 	    [self methodSignatureForSelector: selector];
 	id ret;
@@ -43,7 +43,7 @@ int _OFObject_KeyValueCoding_reference;
 		size_t keyLength;
 		char *name;
 
-		if ((keyLength = [key UTF8StringLength]) < 1)
+		if ((keyLength = key.UTF8StringLength) < 1)
 			return [self valueForUndefinedKey: key];
 
 		if ((name = malloc(keyLength + 3)) == NULL)
@@ -52,7 +52,7 @@ int _OFObject_KeyValueCoding_reference;
 
 		@try {
 			memcpy(name, "is", 2);
-			memcpy(name + 2, [key UTF8String], keyLength);
+			memcpy(name + 2, key.UTF8String, keyLength);
 			name[keyLength + 2] = '\0';
 
 			name[2] = of_ascii_toupper(name[2]);
@@ -67,19 +67,19 @@ int _OFObject_KeyValueCoding_reference;
 		if (methodSignature == NULL)
 			return [self valueForUndefinedKey: key];
 
-		switch (*[methodSignature methodReturnType]) {
+		switch (*methodSignature.methodReturnType) {
 		case '@':
 		case '#':
 			return [self valueForUndefinedKey: key];
 		}
 	}
 
-	if ([methodSignature numberOfArguments] != 2 ||
+	if (methodSignature.numberOfArguments != 2 ||
 	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
 	    *[methodSignature argumentTypeAtIndex: 1] != ':')
 		return [self valueForUndefinedKey: key];
 
-	switch (*[methodSignature methodReturnType]) {
+	switch (*methodSignature.methodReturnType) {
 	case '@':
 	case '#':
 		ret = [self performSelector: selector];
@@ -128,7 +128,7 @@ int _OFObject_KeyValueCoding_reference;
 	OFMethodSignature *methodSignature;
 	const char *valueType;
 
-	if ((keyLength = [key UTF8StringLength]) < 1) {
+	if ((keyLength = key.UTF8StringLength) < 1) {
 		[self	 setValue: value
 		  forUndefinedKey: key];
 		return;
@@ -140,7 +140,7 @@ int _OFObject_KeyValueCoding_reference;
 
 	@try {
 		memcpy(name, "set", 3);
-		memcpy(name + 3, [key UTF8String], keyLength);
+		memcpy(name + 3, key.UTF8String, keyLength);
 		memcpy(name + keyLength + 3, ":", 2);
 
 		name[3] = of_ascii_toupper(name[3]);
@@ -153,8 +153,8 @@ int _OFObject_KeyValueCoding_reference;
 	methodSignature = [self methodSignatureForSelector: selector];
 
 	if (methodSignature == nil ||
-	    [methodSignature numberOfArguments] != 3 ||
-	    *[methodSignature methodReturnType] != 'v' ||
+	    methodSignature.numberOfArguments != 3 ||
+	    *methodSignature.methodReturnType != 'v' ||
 	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
 	    *[methodSignature argumentTypeAtIndex: 1] != ':') {
 		[self    setValue: value

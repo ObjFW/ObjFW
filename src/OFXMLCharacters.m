@@ -51,11 +51,11 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		_characters = [[element stringValue] copy];
+		_characters = [element.stringValue copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -90,7 +90,7 @@
 
 - (uint32_t)hash
 {
-	return [_characters hash];
+	return _characters.hash;
 }
 
 - (OFString *)stringValue
@@ -107,28 +107,28 @@
 
 - (OFString *)XMLString
 {
-	return [_characters stringByXMLEscaping];
+	return _characters.stringByXMLEscaping;
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 {
-	return [_characters stringByXMLEscaping];
+	return _characters.stringByXMLEscaping;
 }
 
 - (OFString *)XMLStringWithIndentation: (unsigned int)indentation
 				 level: (unsigned int)level
 {
-	return [_characters stringByXMLEscaping];
+	return _characters.stringByXMLEscaping;
 }
 
 - (OFString *)description
 {
-	return [_characters stringByXMLEscaping];
+	return _characters.stringByXMLEscaping;
 }
 
 - (OFXMLElement *)XMLElementBySerializing
 {
-	return [OFXMLElement elementWithName: [self className]
+	return [OFXMLElement elementWithName: self.className
 				   namespace: OF_SERIALIZATION_NS
 				 stringValue: _characters];
 }

@@ -69,6 +69,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"The namespace %@ is not bound in an element of type %@!",
-	    _namespace, [_element class]];
+	    _namespace, _element.class];
 }
 @end

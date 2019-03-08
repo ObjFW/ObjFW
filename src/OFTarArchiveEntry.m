@@ -65,8 +65,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		for (size_t i = 1; i < length; i++)
 			value = (value << 8) | buffer[i];
 	} else
-		value = [stringFromBuffer(buffer, length,
-		    OF_STRING_ENCODING_ASCII) octalValue];
+		value = stringFromBuffer(buffer, length,
+		    OF_STRING_ENCODING_ASCII).octalValue;
 
 	if (value > max)
 		@throw [OFOutOfRangeException exception];
@@ -110,7 +110,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 		_type = header[156];
 
 		targetFileName = stringFromBuffer(header + 157, 100, encoding);
-		if ([targetFileName length] > 0)
+		if (targetFileName.length > 0)
 			_targetFileName = [targetFileName copy];
 
 		if (_type == '\0')
@@ -130,7 +130,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 			    header + 337, 8, UINT32_MAX);
 
 			prefix = stringFromBuffer(header + 345, 155, encoding);
-			if ([prefix length] > 0) {
+			if (prefix.length > 0) {
 				OFString *fileName = [OFString
 				    stringWithFormat: @"%@/%@",
 						      prefix, _fileName];
@@ -280,9 +280,8 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	     @"\tDevice major = %" PRIu32 @"\n"
 	     @"\tDevice minor = %" PRIu32 @"\n"
 	     @">",
-	    [self class], _fileName, _mode, _UID, _GID, _size,
-	    _modificationDate, _type, _targetFileName, _owner, _group,
-	    _deviceMajor, _deviceMinor];
+	    self.class, _fileName, _mode, _UID, _GID, _size, _modificationDate,
+	    _type, _targetFileName, _owner, _group, _deviceMajor, _deviceMinor];
 
 	[ret retain];
 
@@ -311,7 +310,7 @@ octalValueFromBuffer(const unsigned char *buffer, size_t length, uintmax_t max)
 	stringToBuffer(buffer + 124,
 	    [OFString stringWithFormat: @"%011" PRIo64 " ", _size], 12,
 	    OF_STRING_ENCODING_ASCII);
-	modificationDate = [_modificationDate timeIntervalSince1970];
+	modificationDate = _modificationDate.timeIntervalSince1970;
 	stringToBuffer(buffer + 136,
 	    [OFString stringWithFormat: @"%011" PRIo64 " ", modificationDate],
 	    12, OF_STRING_ENCODING_ASCII);

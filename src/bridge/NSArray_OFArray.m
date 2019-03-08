@@ -47,7 +47,7 @@
 
 - (NSUInteger)count
 {
-	size_t count = [_array count];
+	size_t count = _array.count;
 
 	if (count > NSUIntegerMax)
 		@throw [OFOutOfRangeException exception];

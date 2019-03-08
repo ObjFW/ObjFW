@@ -151,9 +151,9 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	@try {
 		_iVarsData = [[OFSecureData alloc]
 		    initWithCount: sizeof(*_iVars)];
-		_iVars = [_iVarsData items];
+		_iVars = _iVarsData.mutableItems;
 
-		if ([self class] == [OFSHA384Or512Hash class]) {
+		if (self.class == [OFSHA384Or512Hash class]) {
 			[self doesNotRecognizeSelector: _cmd];
 			abort();
 		}
@@ -184,7 +184,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	OFSHA384Or512Hash *copy = [[[self class] alloc] of_init];
 
 	copy->_iVarsData = [_iVarsData copy];
-	copy->_iVars = [copy->_iVarsData items];
+	copy->_iVars = copy->_iVarsData.mutableItems;
 	copy->_calculated = _calculated;
 
 	return copy;

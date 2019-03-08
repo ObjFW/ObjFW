@@ -55,7 +55,7 @@
 	if (_condition != nil)
 		return [OFString stringWithFormat:
 		    @"Signaling a condition of type %@ failed!",
-		    [_condition class]];
+		    _condition.class];
 	else
 		return @"Signaling a condition failed!";
 }

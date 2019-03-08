@@ -99,7 +99,7 @@ OF_ASSUME_NONNULL_BEGIN
 	const char *_Nullable _privateKeyPassphrase;
 	id <OFHTTPServerDelegate> _Nullable _delegate;
 	OFString *_Nullable _name;
-	OF_KINDOF(OFTCPSocket *) _Nullable _listeningSocket;
+	OFTCPSocket *_Nullable _listeningSocket;
 #ifdef OF_HAVE_THREADS
 	size_t _numberOfThreads, _nextThreadIndex;
 	OFArray *_threadPool;

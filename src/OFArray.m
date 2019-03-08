@@ -244,9 +244,9 @@ static struct {
 	id *buffer;
 
 	container = [[[OFObject alloc] init] autorelease];
-	count = [self count];
+	count = self.count;
 	buffer = [container allocMemoryWithSize: sizeof(*buffer)
-					  count: [self count]];
+					  count: count];
 
 	[self getObjects: buffer
 		 inRange: of_range(0, count)];
@@ -281,7 +281,7 @@ static struct {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
 
-		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		key = [key substringWithRange: of_range(1, key.length - 1)];
 		ret = [[super valueForKey: key] retain];
 
 		objc_autoreleasePoolPop(pool);
@@ -289,7 +289,7 @@ static struct {
 		return [ret autorelease];
 	}
 
-	ret = [OFMutableArray arrayWithCapacity: [self count]];
+	ret = [OFMutableArray arrayWithCapacity: self.count];
 
 	for (id object in self) {
 		id value = [object valueForKey: key];
@@ -311,7 +311,7 @@ static struct {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
 
-		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		key = [key substringWithRange: of_range(1, key.length - 1)];
 		[super setValue: value
 			 forKey: key];
 
@@ -370,7 +370,7 @@ static struct {
 
 - (id)firstObject
 {
-	if ([self count] > 0)
+	if (self.count > 0)
 		return [self objectAtIndex: 0];
 
 	return nil;
@@ -378,7 +378,7 @@ static struct {
 
 - (id)lastObject
 {
-	size_t count = [self count];
+	size_t count = self.count;
 
 	if (count > 0)
 		return [self objectAtIndex: count - 1];
@@ -392,7 +392,7 @@ static struct {
 	id *buffer;
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length < [self count])
+	    range.location + range.length < self.count)
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
@@ -447,10 +447,10 @@ static struct {
 	if (separator == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ([self count] == 0)
+	if (self.count == 0)
 		return @"";
 
-	if ([self count] == 1) {
+	if (self.count == 1) {
 		OFString *component =
 		    [[self firstObject] performSelector: selector];
 
@@ -471,8 +471,8 @@ static struct {
 			if (component == nil)
 				@throw [OFInvalidArgumentException exception];
 
-			if ([component length] > 0) {
-				if ([ret length] > 0)
+			if (component.length > 0) {
+				if (ret.length > 0)
 					[ret appendString: separator];
 				[ret appendString: component];
 			}
@@ -520,9 +520,9 @@ static struct {
 
 	otherArray = object;
 
-	count = [self count];
+	count = self.count;
 
-	if (count != [otherArray count])
+	if (count != otherArray.count)
 		return false;
 
 	for (size_t i = 0; i < count; i++)
@@ -552,7 +552,7 @@ static struct {
 	void *pool;
 	OFMutableString *ret;
 
-	if ([self count] == 0)
+	if (self.count == 0)
 		return @"()";
 
 	pool = objc_autoreleasePoolPush();
@@ -587,10 +587,10 @@ static struct {
 		element = [OFXMLElement elementWithName: @"OFArray"
 					      namespace: OF_SERIALIZATION_NS];
 
-	for (id object in self) {
+	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
-		[element addChild: [object XMLElementBySerializing]];
+		[element addChild: object.XMLElementBySerializing];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -619,7 +619,7 @@ static struct {
 {
 	OFMutableString *JSON = [OFMutableString stringWithString: @"["];
 	void *pool = objc_autoreleasePoolPush();
-	size_t i, count = [self count];
+	size_t i, count = self.count;
 
 	if (options & OF_JSON_REPRESENTATION_PRETTY) {
 		OFMutableString *indentation = [OFMutableString string];
@@ -679,7 +679,7 @@ static struct {
 	void *pool;
 
 	data = [OFMutableData data];
-	count = [self count];
+	count = self.count;
 
 	if (count <= 15) {
 		uint8_t tmp = 0x90 | ((uint8_t)count & 0xF);
@@ -711,8 +711,8 @@ static struct {
 		i++;
 
 		child = [object messagePackRepresentation];
-		[data addItems: [child items]
-			 count: [child count]];
+		[data addItems: child.items
+			 count: child.count];
 
 		objc_autoreleasePoolPop(pool2);
 	}
@@ -799,8 +799,8 @@ static struct {
 	if (range.length > SIZE_MAX - range.location)
 		@throw [OFOutOfRangeException exception];
 
-	if (range.location + range.length > [self count])
-		range.length = [self count] - range.location;
+	if (range.location + range.length > self.count)
+		range.length = self.count - range.location;
 
 	[self getObjects: objects
 		 inRange: range];
@@ -875,7 +875,7 @@ static struct {
 - (OFArray *)mappedArrayUsingBlock: (of_array_map_block_t)block
 {
 	OFArray *ret;
-	size_t count = [self count];
+	size_t count = self.count;
 	id *tmp = [self allocMemoryWithSize: sizeof(id)
 				      count: count];
 
@@ -897,7 +897,7 @@ static struct {
 - (OFArray *)filteredArrayUsingBlock: (of_array_filter_block_t)block
 {
 	OFArray *ret;
-	size_t count = [self count];
+	size_t count = self.count;
 	id *tmp = [self allocMemoryWithSize: sizeof(id)
 				      count: count];
 
@@ -921,7 +921,7 @@ static struct {
 
 - (id)foldUsingBlock: (of_array_fold_block_t)block
 {
-	size_t count = [self count];
+	size_t count = self.count;
 	__block id current;
 
 	if (count == 0)

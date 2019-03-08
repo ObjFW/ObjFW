@@ -676,7 +676,7 @@ _references_to_categories_of_OFObject(void)
 						 target: self
 					       selector: selector
 						repeats: false];
-	[[thread runLoop] addTimer: timer];
+	[thread.runLoop addTimer: timer];
 
 	if (waitUntilDone)
 		[timer waitUntilDone];
@@ -695,7 +695,7 @@ _references_to_categories_of_OFObject(void)
 					       selector: selector
 						 object: object
 						repeats: false];
-	[[thread runLoop] addTimer: timer];
+	[thread.runLoop addTimer: timer];
 
 	if (waitUntilDone)
 		[timer waitUntilDone];
@@ -716,7 +716,7 @@ _references_to_categories_of_OFObject(void)
 						 object: object1
 						 object: object2
 						repeats: false];
-	[[thread runLoop] addTimer: timer];
+	[thread.runLoop addTimer: timer];
 
 	if (waitUntilDone)
 		[timer waitUntilDone];
@@ -739,7 +739,7 @@ _references_to_categories_of_OFObject(void)
 						 object: object2
 						 object: object3
 						repeats: false];
-	[[thread runLoop] addTimer: timer];
+	[thread.runLoop addTimer: timer];
 
 	if (waitUntilDone)
 		[timer waitUntilDone];
@@ -764,7 +764,7 @@ _references_to_categories_of_OFObject(void)
 						 object: object3
 						 object: object4
 						repeats: false];
-	[[thread runLoop] addTimer: timer];
+	[thread.runLoop addTimer: timer];
 
 	if (waitUntilDone)
 		[timer waitUntilDone];
@@ -878,10 +878,10 @@ _references_to_categories_of_OFObject(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
-							    target: self
-							  selector: selector
-							   repeats: false]];
+	[thread.runLoop addTimer: [OFTimer timerWithTimeInterval: delay
+							  target: self
+							selector: selector
+							 repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -893,11 +893,11 @@ _references_to_categories_of_OFObject(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
-							    target: self
-							  selector: selector
-							    object: object
-							   repeats: false]];
+	[thread.runLoop addTimer: [OFTimer timerWithTimeInterval: delay
+							  target: self
+							selector: selector
+							  object: object
+							 repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -910,12 +910,12 @@ _references_to_categories_of_OFObject(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
-							    target: self
-							  selector: selector
-							    object: object1
-							    object: object2
-							   repeats: false]];
+	[thread.runLoop addTimer: [OFTimer timerWithTimeInterval: delay
+							  target: self
+							selector: selector
+							  object: object1
+							  object: object2
+							 repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -929,13 +929,13 @@ _references_to_categories_of_OFObject(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
-							    target: self
-							  selector: selector
-							    object: object1
-							    object: object2
-							    object: object3
-							   repeats: false]];
+	[thread.runLoop addTimer: [OFTimer timerWithTimeInterval: delay
+							  target: self
+							selector: selector
+							  object: object1
+							  object: object2
+							  object: object3
+							 repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -950,14 +950,14 @@ _references_to_categories_of_OFObject(void)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[thread runLoop] addTimer: [OFTimer timerWithTimeInterval: delay
-							    target: self
-							  selector: selector
-							    object: object1
-							    object: object2
-							    object: object3
-							    object: object4
-							   repeats: false]];
+	[thread.runLoop addTimer: [OFTimer timerWithTimeInterval: delay
+							  target: self
+							selector: selector
+							  object: object1
+							  object: object2
+							  object: object3
+							  object: object4
+							 repeats: false]];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -1000,7 +1000,7 @@ _references_to_categories_of_OFObject(void)
 {
 	/* Classes containing data should reimplement this! */
 
-	return [OFString stringWithFormat: @"<%@>", [self className]];
+	return [OFString stringWithFormat: @"<%@>", self.className];
 }
 
 - (void *)allocMemoryWithSize: (size_t)size

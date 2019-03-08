@@ -169,7 +169,7 @@
 				return nil;
 			}
 
-			listObject = [_queue firstListObject];
+			listObject = _queue.firstListObject;
 
 			while (listObject == NULL) {
 				[_queueCondition wait];
@@ -179,7 +179,7 @@
 					return nil;
 				}
 
-				listObject = [_queue firstListObject];
+				listObject = _queue.firstListObject;
 			}
 
 			job = [[listObject->object retain] autorelease];

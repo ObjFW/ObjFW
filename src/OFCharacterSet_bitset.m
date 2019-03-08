@@ -34,8 +34,8 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-		const of_unichar_t *characters = [string characters];
-		size_t length = [string length];
+		const of_unichar_t *characters = string.characters;
+		size_t length = string.length;
 
 		for (size_t i = 0; i < length; i++) {
 			of_unichar_t c = characters[i];

@@ -149,10 +149,11 @@ initOperatingSystemVersion(void)
 	void *pool = objc_autoreleasePoolPush();
 
 	@try {
-		OFString *propertyList = [OFString stringWithContentsOfFile:
-		    @"/System/Library/CoreServices/SystemVersion.plist"];
+		OFDictionary *propertyList = [OFString stringWithContentsOfFile:
+		    @"/System/Library/CoreServices/SystemVersion.plist"]
+		    .propertyListValue;
 
-		operatingSystemVersion = [[[propertyList propertyListValue]
+		operatingSystemVersion = [[propertyList
 		    objectForKey: @"ProductVersion"] copy];
 	} @finally {
 		objc_autoreleasePoolPop(pool);
@@ -177,8 +178,8 @@ initOperatingSystemVersion(void)
 		systemDirString = [OFString
 		    stringWithUTF16String: systemDir
 				   length: systemDirLen];
-		path = [[systemDirString stringByAppendingPathComponent:
-		    @"kernel32.dll"] UTF16String];
+		path = [systemDirString stringByAppendingPathComponent:
+		    @"kernel32.dll"].UTF16String;
 
 		if ((bufferLen = GetFileVersionInfoSizeW(path, NULL)) == 0)
 			return;
@@ -437,7 +438,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	void *pool;
 
 	if ((var = [env objectForKey: @"XDG_DATA_HOME"]) != nil &&
-	    [var length] > 0)
+	    var.length > 0)
 		return var;
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)
@@ -530,7 +531,7 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	OFString *var;
 
 	if ((var = [env objectForKey: @"XDG_CONFIG_HOME"]) != nil &&
-	    [var length] > 0)
+	    var.length > 0)
 		return var;
 
 	if ((var = [env objectForKey: @"HOME"]) == nil)

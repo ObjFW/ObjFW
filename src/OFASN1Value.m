@@ -48,7 +48,7 @@
 	self = [super init];
 
 	@try {
-		if ([DEREncodedContents itemSize] != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidFormatException exception];
 
 		_tagClass = tagClass;
@@ -105,7 +105,7 @@
 	OF_HASH_ADD(hash, _tagClass & 0xFF);
 	OF_HASH_ADD(hash, _tagNumber & 0xFF);
 	OF_HASH_ADD(hash, _constructed);
-	OF_HASH_ADD_HASH(hash, [_DEREncodedContents hash]);
+	OF_HASH_ADD_HASH(hash, _DEREncodedContents.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -122,6 +122,6 @@
 	    @"\tDER-encoded contents = %@\n"
 	    @">",
 	    _tagClass, _tagNumber, _constructed,
-	    [_DEREncodedContents description]];
+	    _DEREncodedContents.description];
 }
 @end

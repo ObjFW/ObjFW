@@ -24,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFLHAArchive_LHStream: OFStream
 {
 @public
-	OF_KINDOF(OFStream *) _stream;
+	OFStream *_stream;
 	uint8_t _distanceBits, _dictionaryBits;
 	unsigned char _buffer[OF_LHA_ARCHIVE_LHSTREAM_BUFFER_SIZE];
 	uint32_t _bytesConsumed;
@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint32_t _distance;
 }
 
-- (instancetype)of_initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)of_initWithStream: (OFStream *)stream
 		     distanceBits: (uint8_t)distanceBits
 		   dictionaryBits: (uint8_t)dictionaryBits;
 @end

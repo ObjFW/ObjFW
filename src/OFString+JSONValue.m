@@ -556,17 +556,17 @@ parseNumber(const char **pointer, const char *stop, size_t *line)
 	@try {
 		if (hasDecimal)
 			number = [OFNumber numberWithDouble:
-			    [string doubleValue]];
+			    string.doubleValue];
 		else if (isHex)
 			number = [OFNumber numberWithIntMax:
-			    [string hexadecimalValue]];
+			    string.hexadecimalValue];
 		else if ([string isEqual: @"Infinity"])
 			number = [OFNumber numberWithDouble: INFINITY];
 		else if ([string isEqual: @"-Infinity"])
 			number = [OFNumber numberWithDouble: -INFINITY];
 		else
 			number = [OFNumber numberWithIntMax:
-			    [string decimalValue]];
+			    string.decimalValue];
 	} @finally {
 		[string release];
 	}
@@ -650,8 +650,8 @@ nextObject(const char **pointer, const char *stop, size_t *line,
 - (id)JSONValueWithDepthLimit: (size_t)depthLimit
 {
 	void *pool = objc_autoreleasePoolPush();
-	const char *pointer = [self UTF8String];
-	const char *stop = pointer + [self UTF8StringLength];
+	const char *pointer = self.UTF8String;
+	const char *stop = pointer + self.UTF8StringLength;
 	id object;
 	size_t line = 1;
 

@@ -158,7 +158,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	@try {
 		_iVarsData = [[OFSecureData alloc]
 		    initWithCount: sizeof(*_iVars)];
-		_iVars = [_iVarsData items];
+		_iVars = _iVarsData.mutableItems;
 
 		[self of_resetState];
 	} @catch (id e) {
@@ -186,7 +186,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	OFRIPEMD160Hash *copy = [[OFRIPEMD160Hash alloc] of_init];
 
 	copy->_iVarsData = [_iVarsData copy];
-	copy->_iVars = [copy->_iVarsData items];
+	copy->_iVars = copy->_iVarsData.mutableItems;
 	copy->_calculated = _calculated;
 
 	return copy;

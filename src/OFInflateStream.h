@@ -36,7 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_INFLATE_STREAM_M
 @public
 #endif
-	OF_KINDOF(OFStream *) _stream;
+	OFStream *_stream;
 	unsigned char _buffer[OF_INFLATE_STREAM_BUFFER_SIZE];
 	uint16_t _bufferIndex, _bufferLength;
 	uint8_t _byte;
@@ -81,7 +81,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A new, autoreleased OFInflateStream
  */
-+ (instancetype)streamWithStream: (OF_KINDOF(OFStream *))stream;
++ (instancetype)streamWithStream: (OFStream *)stream;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -93,8 +93,7 @@ OF_ASSUME_NONNULL_BEGIN
  *		 from which compressed data is read
  * @return A initialized OFInflateStream
  */
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
-    OF_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStream: (OFStream *)stream OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

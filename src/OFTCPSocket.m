@@ -138,7 +138,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		_SOCKS5Port = SOCKS5Port;
 		_delegate = [delegate retain];
 
-		[_socket setDelegate: self];
+		_socket.delegate = self;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -176,10 +176,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)dealloc
 {
 #ifdef OF_HAVE_BLOCKS
-	if (_block != NULL)
+	if (_block == NULL)
 #endif
-		if ([_socket delegate] == self)
-			[_socket setDelegate: _delegate];
+		if (_socket.delegate == self)
+			_socket.delegate = _delegate;
 
 	[_socket release];
 	[_host release];
@@ -198,14 +198,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)didConnect
 {
 	if (_exception == nil)
-		[_socket setBlocking: true];
+		_socket.blocking = true;
 
 #ifdef OF_HAVE_BLOCKS
 	if (_block != NULL)
 		_block(_socket, _exception);
 	else {
 #endif
-		[_socket setDelegate: _delegate];
+		_socket.delegate = _delegate;
 
 		if ([_delegate respondsToSelector:
 		    @selector(socket:didConnectToHost:port:exception:)])
@@ -218,16 +218,16 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 }
 
-- (void)of_socketDidConnect: (OF_KINDOF(OFTCPSocket *))sock
+- (void)of_socketDidConnect: (OFTCPSocket *)sock
 		  exception: (id)exception
 {
 	if (exception != nil) {
-		if (_socketAddressesIndex >= [_socketAddresses count]) {
+		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [exception retain];
 			[self didConnect];
 		} else {
 			[self tryNextAddressWithRunLoopMode:
-			    [[OFRunLoop currentRunLoop] currentMode]];
+			    [OFRunLoop currentRunLoop].currentMode];
 		}
 
 		return;
@@ -252,7 +252,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	if (![_socket of_createSocketForAddress: &address
 					  errNo: &errNo]) {
-		if (_socketAddressesIndex >= [_socketAddresses count]) {
+		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [[OFConnectionFailedException alloc]
 			    initWithHost: _host
 				    port: _port
@@ -277,9 +277,9 @@ static uint16_t defaultSOCKS5Port = 1080;
 	 *
 	 * FIXME: Use a different thread as a work around.
 	 */
-	[_socket setBlocking: true];
+	_socket.blocking = true;
 #else
-	[_socket setBlocking: false];
+	_socket.blocking = false;
 #endif
 
 	if (![_socket of_connectSocketToAddress: &address
@@ -294,7 +294,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 			[_socket of_closeSocket];
 
-			if (_socketAddressesIndex >= [_socketAddresses count]) {
+			if (_socketAddressesIndex >= _socketAddresses.count) {
 				_exception = [[OFConnectionFailedException
 				    alloc] initWithHost: _host
 						   port: _port
@@ -312,7 +312,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 
 #if defined(OF_NINTENDO_3DS) || defined(OF_WII)
-	[_socket setBlocking: false];
+	_socket.blocking = false;
 #endif
 
 	[self didConnect];
@@ -332,7 +332,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	_socketAddresses = [socketAddresses copy];
 
 	[self tryNextAddressWithRunLoopMode:
-	    [[OFRunLoop currentRunLoop] currentMode]];
+	    [OFRunLoop currentRunLoop].currentMode];
 }
 
 - (void)startWithRunLoopMode: (of_run_loop_mode_t)runLoopMode
@@ -341,7 +341,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	uint16_t port;
 
 	if (_SOCKS5Host != nil) {
-		if ([_host UTF8StringLength] > 255)
+		if (_host.UTF8StringLength > 255)
 			@throw [OFOutOfRangeException exception];
 
 		host = _SOCKS5Host;
@@ -379,10 +379,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 	_SOCKS5State = SOCKS5_STATE_SEND_AUTHENTICATION;
 	[_socket asyncWriteData: data
-		    runLoopMode: [[OFRunLoop currentRunLoop] currentMode]];
+		    runLoopMode: [OFRunLoop currentRunLoop].currentMode];
 }
 
--      (bool)stream: (OF_KINDOF(OFStream *))sock
+-      (bool)stream: (OFStream *)sock
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
 	  exception: (id)exception
@@ -399,7 +399,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return false;
 	}
 
-	runLoopMode = [[OFRunLoop currentRunLoop] currentMode];
+	runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 
 	switch (_SOCKS5State) {
 	case SOCKS5_STATE_READ_VERSION:
@@ -421,15 +421,15 @@ static uint16_t defaultSOCKS5Port = 1080;
 		[_request addItems: "\x05\x01\x00\x03"
 			     count: 4];
 
-		hostLength = (uint8_t)[_host UTF8StringLength];
+		hostLength = (uint8_t)_host.UTF8StringLength;
 		[_request addItem: &hostLength];
-		[_request addItems: [_host UTF8String]
+		[_request addItems: _host.UTF8String
 			     count: hostLength];
 
 		port[0] = _port >> 8;
 		port[1] = _port & 0xFF;
 		[_request addItems: port
-			    count: 2];
+			     count: 2];
 
 		_SOCKS5State = SOCKS5_STATE_SEND_REQUEST;
 		[_socket asyncWriteData: _request
@@ -535,7 +535,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 }
 
-- (OFData *)stream: (OF_KINDOF(OFStream *))sock
+- (OFData *)stream: (OFStream *)sock
       didWriteData: (OFData *)data
       bytesWritten: (size_t)bytesWritten
 	 exception: (id)exception
@@ -548,7 +548,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return nil;
 	}
 
-	runLoopMode = [[OFRunLoop currentRunLoop] currentMode];
+	runLoopMode = [OFRunLoop currentRunLoop].currentMode;
 
 	switch (_SOCKS5State) {
 	case SOCKS5_STATE_SEND_AUTHENTICATION:
@@ -581,7 +581,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[super dealloc];
 }
 
--     (void)socket: (OF_KINDOF(OFTCPSocket *))sock
+-     (void)socket: (OFTCPSocket *)sock
   didConnectToHost: (OFString *)host
 	      port: (uint16_t)port
 	 exception: (id)exception
@@ -708,7 +708,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	    [[[OFTCPSocket_ConnectDelegate alloc] init] autorelease];
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
-	[self setDelegate: connectDelegate];
+	self.delegate = connectDelegate;
 	[self asyncConnectToHost: host
 			    port: port
 		     runLoopMode: connectRunLoopMode];
@@ -724,7 +724,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (connectDelegate->_exception != nil)
 		@throw connectDelegate->_exception;
 
-	[self setDelegate: delegate];
+	self.delegate = delegate;
 
 	objc_autoreleasePoolPop(pool);
 }

@@ -53,8 +53,8 @@
 		    tagNumber != OF_ASN1_TAG_NUMBER_BOOLEAN || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1 ||
-		    [DEREncodedContents count] != 1)
+		if (DEREncodedContents.itemSize != 1 ||
+		    DEREncodedContents.count != 1)
 			@throw [OFInvalidFormatException exception];
 
 		value = *(unsigned char *)[DEREncodedContents itemAtIndex: 0];

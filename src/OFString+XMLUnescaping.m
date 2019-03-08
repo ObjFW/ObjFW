@@ -88,8 +88,8 @@ parseEntities(OFString *self, id (*lookup)(void *, OFString *, OFString *),
 
 	pool = objc_autoreleasePoolPush();
 
-	string = [self UTF8String];
-	length = [self UTF8StringLength];
+	string = self.UTF8String;
+	length = self.UTF8StringLength;
 
 	last = 0;
 	inEntity = false;

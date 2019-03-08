@@ -50,9 +50,8 @@ OF_ASSUME_NONNULL_BEGIN
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_block_t)(
-    OF_KINDOF(OFStream *) _Nonnull stream, void *_Nonnull buffer,
-    size_t length, id _Nullable exception);
+typedef bool (^of_stream_async_read_block_t)(OFStream *_Nonnull stream,
+    void *_Nonnull buffer, size_t length, id _Nullable exception);
 
 /*!
  * @brief A block which is called when a line was read asynchronously from a
@@ -65,9 +64,8 @@ typedef bool (^of_stream_async_read_block_t)(
  *		    success
  * @return A bool whether the same block should be used for the next read
  */
-typedef bool (^of_stream_async_read_line_block_t)(
-    OF_KINDOF(OFStream *) _Nonnull stream, OFString *_Nullable line,
-    id _Nullable exception);
+typedef bool (^of_stream_async_read_line_block_t)(OFStream *_Nonnull stream,
+    OFString *_Nullable line, id _Nullable exception);
 
 /*!
  * @brief A block which is called when data was written asynchronously to a
@@ -82,7 +80,7 @@ typedef bool (^of_stream_async_read_line_block_t)(
  * @return The data to repeat the write with or nil if it should not repeat
  */
 typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
-    OF_KINDOF(OFStream *) _Nonnull stream, OFData *_Nonnull data,
+    OFStream *_Nonnull stream, OFData *_Nonnull data,
     size_t bytesWritten, id _Nullable exception);
 
 /*!
@@ -99,7 +97,7 @@ typedef OFData *_Nullable (^of_stream_async_write_data_block_t)(
  * @return The string to repeat the write with or nil if it should not repeat
  */
 typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
-    OF_KINDOF(OFStream *) _Nonnull stream, OFString *_Nonnull string,
+    OFStream *_Nonnull stream, OFString *_Nonnull string,
     of_string_encoding_t encoding, size_t bytesWritten, id _Nullable exception);
 #endif
 
@@ -120,7 +118,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param exception An exception that occurred while reading, or nil on success
  * @return A bool whether the read should be repeated
  */
--      (bool)stream: (OF_KINDOF(OFStream *))stream
+-      (bool)stream: (OFStream *)stream
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
 	  exception: (nullable id)exception;
@@ -135,7 +133,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param exception An exception that occurred while reading, or nil on success
  * @return A bool whether the read should be repeated
  */
-- (bool)stream: (OF_KINDOF(OFStream *))stream
+- (bool)stream: (OFStream *)stream
    didReadLine: (nullable OFString *)line
      exception: (nullable id)exception;
 
@@ -151,7 +149,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param exception An exception that occurred while writing, or nil on success
  * @return The data to repeat the write with or nil if it should not repeat
  */
-- (nullable OFData *)stream: (OF_KINDOF(OFStream *))stream
+- (nullable OFData *)stream: (OFStream *)stream
 	       didWriteData: (OFData *)data
 	       bytesWritten: (size_t)bytesWritten
 		  exception: (nullable id)exception;
@@ -169,7 +167,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @param exception An exception that occurred while writing, or nil on success
  * @return The string to repeat the write with or nil if it should not repeat
  */
-- (nullable OFString *)stream: (OF_KINDOF(OFStream *))stream
+- (nullable OFString *)stream: (OFStream *)stream
 	       didWriteString: (OFString *)string
 		     encoding: (of_string_encoding_t)encoding
 		 bytesWritten: (size_t)bytesWritten

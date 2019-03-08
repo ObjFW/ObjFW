@@ -183,7 +183,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 #if defined(OF_HAVE_SOCKETS)
 		_kernelEventObserver = [[OFKernelEventObserver alloc] init];
-		[_kernelEventObserver setDelegate: self];
+		_kernelEventObserver.delegate = self;
 
 		_readQueues = [[OFMutableDictionary alloc] init];
 		_writeQueues = [[OFMutableDictionary alloc] init];
@@ -225,8 +225,8 @@ static OFRunLoop *mainRunLoop = nil;
 	assert(queue != nil);
 
 	@try {
-		if (![[queue firstObject] handleObject: object]) {
-			of_list_object_t *listObject = [queue firstListObject];
+		if (![queue.firstObject handleObject: object]) {
+			of_list_object_t *listObject = queue.firstListObject;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
@@ -244,7 +244,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 				[queue removeListObject: listObject];
 
-				if ([queue count] == 0) {
+				if (queue.count == 0) {
 					[_kernelEventObserver
 					    removeObjectForReading: object];
 					[_readQueues
@@ -268,8 +268,8 @@ static OFRunLoop *mainRunLoop = nil;
 	assert(queue != nil);
 
 	@try {
-		if (![[queue firstObject] handleObject: object]) {
-			of_list_object_t *listObject = [queue firstListObject];
+		if (![queue.firstObject handleObject: object]) {
+			of_list_object_t *listObject = queue.firstListObject;
 
 			/*
 			 * The handler might have called -[cancelAsyncRequests]
@@ -287,7 +287,7 @@ static OFRunLoop *mainRunLoop = nil;
 
 				[queue removeListObject: listObject];
 
-				if ([queue count] == 0) {
+				if (queue.count == 0) {
 					[_kernelEventObserver
 					    removeObjectForWriting: object];
 					[_writeQueues
@@ -463,11 +463,11 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	size_t length;
 	id exception = nil;
-	size_t dataLength = [_data count] * [_data itemSize];
+	size_t dataLength = _data.count * _data.itemSize;
 	OFData *newData, *oldData;
 
 	@try {
-		const char *dataItems = [_data items];
+		const char *dataItems = _data.items;
 
 		length = [object writeBuffer: dataItems + _writtenLength
 				      length: dataLength - _writtenLength];
@@ -720,8 +720,8 @@ static OFRunLoop *mainRunLoop = nil;
 	OFData *newData, *oldData;
 
 	@try {
-		[object sendBuffer: [_data items]
-			    length: [_data count] * [_data itemSize]
+		[object sendBuffer: _data.items
+			    length: _data.count * _data.itemSize
 			  receiver: &_receiver];
 	} @catch (id e) {
 		exception = e;
@@ -786,7 +786,7 @@ static OFRunLoop *mainRunLoop = nil;
 + (OFRunLoop *)currentRunLoop
 {
 #ifdef OF_HAVE_THREADS
-	return [[OFThread currentThread] runLoop];
+	return [OFThread currentThread].runLoop;
 #else
 	return [self mainRunLoop];
 #endif
@@ -809,10 +809,10 @@ static OFRunLoop *mainRunLoop = nil;
 	if (queue == nil) {						\
 		queue = [OFList list];					\
 		[state->_readQueues setObject: queue			\
-					 forKey: object];		\
+				       forKey: object];			\
 	}								\
 									\
-	if ([queue count] == 0)						\
+	if (queue.count == 0)						\
 		[state->_kernelEventObserver				\
 		    addObjectForReading: object];			\
 									\
@@ -831,7 +831,7 @@ static OFRunLoop *mainRunLoop = nil;
 					  forKey: object];		\
 	}								\
 									\
-	if ([queue count] == 0)						\
+	if (queue.count == 0)						\
 		[state->_kernelEventObserver				\
 		    addObjectForWriting: object];			\
 									\
@@ -1038,7 +1038,7 @@ static OFRunLoop *mainRunLoop = nil;
 		return;
 
 	if ((queue = [state->_writeQueues objectForKey: object]) != nil) {
-		assert([queue count] > 0);
+		assert(queue.count > 0);
 
 		/*
 		 * Clear the queue now, in case this has been called from a
@@ -1051,7 +1051,7 @@ static OFRunLoop *mainRunLoop = nil;
 	}
 
 	if ((queue = [state->_readQueues objectForKey: object]) != nil) {
-		assert([queue count] > 0);
+		assert(queue.count > 0);
 
 		/*
 		 * Clear the queue now, in case this has been called from a
@@ -1182,7 +1182,7 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 		of_list_object_t *iter;
 
-		for (iter = [state->_timersQueue firstListObject]; iter != NULL;
+		for (iter = state->_timersQueue.firstListObject; iter != NULL;
 		    iter = iter->next) {
 			if ([iter->object isEqual: timer]) {
 				[state->_timersQueue removeListObject: iter];
@@ -1206,7 +1206,7 @@ static OFRunLoop *mainRunLoop = nil;
 	_stop = false;
 
 	while (!_stop &&
-	    (deadline == nil || [deadline timeIntervalSinceNow] >= 0))
+	    (deadline == nil || deadline.timeIntervalSinceNow >= 0))
 		[self runMode: of_run_loop_mode_default
 		   beforeDate: deadline];
 }
@@ -1234,10 +1234,10 @@ static OFRunLoop *mainRunLoop = nil;
 			@try {
 #endif
 				of_list_object_t *listObject =
-				    [state->_timersQueue firstListObject];
+				    state->_timersQueue.firstListObject;
 
-				if (listObject != NULL && [[listObject->object
-				    fireDate] timeIntervalSinceNow] <= 0) {
+				if (listObject != NULL && [listObject->object
+				    fireDate].timeIntervalSinceNow <= 0) {
 					timer = [[listObject->object
 					    retain] autorelease];
 
@@ -1254,7 +1254,7 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 #endif
 
-			if ([timer isValid]) {
+			if (timer.valid) {
 				[timer fire];
 				return;
 			}
@@ -1277,12 +1277,12 @@ static OFRunLoop *mainRunLoop = nil;
 			of_time_interval_t timeout;
 
 			if (nextTimer != nil && deadline == nil)
-				timeout = [nextTimer timeIntervalSinceNow];
+				timeout = nextTimer.timeIntervalSinceNow;
 			else if (nextTimer == nil && deadline != nil)
-				timeout = [deadline timeIntervalSinceNow];
+				timeout = deadline.timeIntervalSinceNow;
 			else
-				timeout = [[nextTimer earlierDate: deadline]
-				    timeIntervalSinceNow];
+				timeout = [nextTimer earlierDate: deadline]
+				    .timeIntervalSinceNow;
 
 			if (timeout < 0)
 				timeout = 0;
@@ -1292,7 +1292,7 @@ static OFRunLoop *mainRunLoop = nil;
 				[state->_kernelEventObserver
 				    observeForTimeInterval: timeout];
 			} @catch (OFObserveFailedException *e) {
-				if ([e errNo] != EINTR)
+				if (e.errNo != EINTR)
 					@throw e;
 			}
 #elif defined(OF_HAVE_THREADS)
@@ -1312,7 +1312,7 @@ static OFRunLoop *mainRunLoop = nil;
 			@try {
 				[state->_kernelEventObserver observe];
 			} @catch (OFObserveFailedException *e) {
-				if ([e errNo] != EINTR)
+				if (e.errNo != EINTR)
 					@throw e;
 			}
 #elif defined(OF_HAVE_THREADS)

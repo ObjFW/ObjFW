@@ -28,32 +28,32 @@
 static void
 handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 {
-	OFString *lowercaseName = [name lowercaseString];
+	OFString *lowercaseName = name.lowercaseString;
 
 	if (value != nil) {
 		if ([lowercaseName isEqual: @"expires"]) {
 			OFDate *date = [OFDate
 			    dateWithDateString: value
 					format: @"%a, %d %b %Y %H:%M:%S %z"];
-			[cookie setExpires: date];
+			cookie.expires = date;
 		} else if ([lowercaseName isEqual: @"max-age"]) {
 			OFDate *date = [OFDate dateWithTimeIntervalSinceNow:
-			    [value decimalValue]];
-			[cookie setExpires: date];
+			    value.decimalValue];
+			cookie.expires = date;
 		} else if ([lowercaseName isEqual: @"domain"])
-			[cookie setDomain: value];
+			cookie.domain = value;
 		else if ([lowercaseName isEqual: @"path"])
-			[cookie setPath: value];
+			cookie.path = value;
 		else
-			[[cookie extensions] addObject:
+			[cookie.extensions addObject:
 			    [OFString stringWithFormat: @"%@=%@", name, value]];
 	} else {
 		if ([lowercaseName isEqual: @"secure"])
-			[cookie setSecure: true];
+			cookie.secure = true;
 		else if ([lowercaseName isEqual: @"httponly"])
-			[cookie setHTTPOnly: true];
-		else if ([name length] > 0)
-			[[cookie extensions] addObject: name];
+			cookie.HTTPOnly = true;
+		else if (name.length > 0)
+			[cookie.extensions addObject: name];
 	}
 }
 
@@ -69,9 +69,9 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *ret = [OFMutableArray array];
 	void *pool = objc_autoreleasePoolPush();
 	OFString *string = [headerFields objectForKey: @"Set-Cookie"];
-	OFString *domain = [URL host];
-	const of_unichar_t *characters = [string characters];
-	size_t length = [string length], last = 0;
+	OFString *domain = URL.host;
+	const of_unichar_t *characters = string.characters;
+	size_t length = string.length, last = 0;
 	enum {
 		STATE_PRE_NAME,
 		STATE_NAME,
@@ -166,7 +166,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				name = [string substringWithRange:
 				    of_range(last, i - last)];
 
-				handleAttribute([ret lastObject], name, nil);
+				handleAttribute(ret.lastObject, name, nil);
 
 				state = (characters[i] == ';'
 				    ? STATE_PRE_ATTR_NAME : STATE_PRE_NAME);
@@ -187,7 +187,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				 */
 				if (characters[i] == ',' &&
 				    [name caseInsensitiveCompare: @"expires"] ==
-				    OF_ORDERED_SAME && [value length] == 3 &&
+				    OF_ORDERED_SAME && value.length == 3 &&
 				    ([value isEqual: @"Mon"] ||
 				    [value isEqual: @"Tue"] ||
 				    [value isEqual: @"Wed"] ||
@@ -197,7 +197,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 				    [value isEqual: @"Sun"]))
 					break;
 
-				handleAttribute([ret lastObject], name, value);
+				handleAttribute(ret.lastObject, name, value);
 
 				state = (characters[i] == ';'
 				    ? STATE_PRE_ATTR_NAME : STATE_PRE_NAME);
@@ -233,14 +233,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 			name = [string substringWithRange:
 			    of_range(last, length - last)];
 
-			handleAttribute([ret lastObject], name, nil);
+			handleAttribute(ret.lastObject, name, nil);
 		}
 		break;
 	case STATE_ATTR_VALUE:
 		value = [string substringWithRange:
 		    of_range(last, length - last)];
 
-		handleAttribute([ret lastObject], name, value);
+		handleAttribute(ret.lastObject, name, value);
 
 		break;
 	}
@@ -258,7 +258,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	OFMutableString *cookieString;
 	bool first = true;
 
-	if ([cookies count] == 0)
+	if (cookies.count == 0)
 		return [OFDictionary dictionary];
 
 	pool = objc_autoreleasePoolPush();
@@ -270,9 +270,9 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 		else
 			[cookieString appendString: @"; "];
 
-		[cookieString appendString: [cookie name]];
+		[cookieString appendString: cookie.name];
 		[cookieString appendString: @"="];
-		[cookieString appendString: [cookie value]];
+		[cookieString appendString: cookie.value];
 	}
 
 	ret = [[OFDictionary alloc] initWithObject: cookieString
@@ -368,14 +368,14 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, [_name hash]);
-	OF_HASH_ADD_HASH(hash, [_value hash]);
-	OF_HASH_ADD_HASH(hash, [_domain hash]);
-	OF_HASH_ADD_HASH(hash, [_path hash]);
-	OF_HASH_ADD_HASH(hash, [_expires hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
+	OF_HASH_ADD_HASH(hash, _value.hash);
+	OF_HASH_ADD_HASH(hash, _domain.hash);
+	OF_HASH_ADD_HASH(hash, _path.hash);
+	OF_HASH_ADD_HASH(hash, _expires.hash);
 	OF_HASH_ADD(hash, _secure);
 	OF_HASH_ADD(hash, _HTTPOnly);
-	OF_HASH_ADD_HASH(hash, [_extensions hash]);
+	OF_HASH_ADD_HASH(hash, _extensions.hash);
 	OF_HASH_FINALIZE(hash);
 
 	return hash;
@@ -420,7 +420,7 @@ handleAttribute(OFHTTPCookie *cookie, OFString *name, OFString *value)
 	if (_HTTPOnly)
 		[ret appendString: @"; HTTPOnly"];
 
-	if ([_extensions count] > 0)
+	if (_extensions.count > 0)
 		[ret appendFormat:
 		    @"; %@", [_extensions componentsJoinedByString: @"; "]];
 

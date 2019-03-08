@@ -34,11 +34,11 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
     unsigned char *key, size_t keyLength)
 {
 	void *pool = objc_autoreleasePoolPush();
-	size_t blocks, digestSize = [HMAC digestSize];
+	size_t blocks, digestSize = HMAC.digestSize;
 	OFSecureData *buffer = [OFSecureData dataWithCount: digestSize];
 	OFSecureData *digest = [OFSecureData dataWithCount: digestSize];
-	unsigned char *bufferItems = [buffer items];
-	unsigned char *digestItems = [digest items];
+	unsigned char *bufferItems = buffer.mutableItems;
+	unsigned char *digestItems = digest.mutableItems;
 	OFSecureData *extendedSalt;
 	unsigned char *extendedSaltItems;
 
@@ -54,7 +54,7 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 		@throw [OFOutOfRangeException exception];
 
 	extendedSalt = [OFSecureData dataWithCount: saltLength + 4];
-	extendedSaltItems = [extendedSalt items];
+	extendedSaltItems = extendedSalt.mutableItems;
 
 	@try {
 		uint32_t i = OF_BSWAP32_IF_LE(1);
@@ -72,14 +72,14 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 			[HMAC reset];
 			[HMAC updateWithBuffer: extendedSaltItems
 					length: saltLength + 4];
-			memcpy(bufferItems, [HMAC digest], digestSize);
-			memcpy(digestItems, [HMAC digest], digestSize);
+			memcpy(bufferItems, HMAC.digest, digestSize);
+			memcpy(digestItems, HMAC.digest, digestSize);
 
 			for (size_t j = 1; j < iterations; j++) {
 				[HMAC reset];
 				[HMAC updateWithBuffer: digestItems
 						length: digestSize];
-				memcpy(digestItems, [HMAC digest], digestSize);
+				memcpy(digestItems, HMAC.digest, digestSize);
 
 				for (size_t k = 0; k < digestSize; k++)
 					bufferItems[k] ^= digestItems[k];

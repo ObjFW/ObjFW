@@ -141,7 +141,7 @@ static struct {
 {
 	OFMutableString *ret;
 	void *pool;
-	size_t i, count = [self count];
+	size_t i, count = self.count;
 
 	if (count == 0)
 		return @"{()}";
@@ -206,7 +206,7 @@ static struct {
 			  namespace: OF_SERIALIZATION_NS];
 		[objectElement addAttributeWithName: @"count"
 					stringValue: count];
-		[objectElement addChild: [object XMLElementBySerializing]];
+		[objectElement addChild: object.XMLElementBySerializing];
 		[element addChild: objectElement];
 
 		objc_autoreleasePoolPop(pool2);

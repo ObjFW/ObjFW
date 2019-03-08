@@ -48,22 +48,22 @@
 
 - (intmax_t)decimalValue
 {
-	return [[self stringValue] decimalValue];
+	return self.stringValue.decimalValue;
 }
 
 - (uintmax_t)hexadecimalValue
 {
-	return [[self stringValue] hexadecimalValue];
+	return self.stringValue.hexadecimalValue;
 }
 
 - (float)floatValue
 {
-	return [[self stringValue] floatValue];
+	return self.stringValue.floatValue;
 }
 
 - (double)doubleValue
 {
-	return [[self stringValue] doubleValue];
+	return self.stringValue.doubleValue;
 }
 
 - (OFString *)XMLString

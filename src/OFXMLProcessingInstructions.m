@@ -53,11 +53,11 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if (![[element name] isEqual: [self className]] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: self.className] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		_processingInstructions = [[element stringValue] copy];
+		_processingInstructions = [element.stringValue copy];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -93,7 +93,7 @@
 
 - (uint32_t)hash
 {
-	return [_processingInstructions hash];
+	return _processingInstructions.hash;
 }
 
 - (OFString *)stringValue
@@ -142,7 +142,7 @@
 
 - (OFXMLElement *)XMLElementBySerializing
 {
-	return [OFXMLElement elementWithName: [self className]
+	return [OFXMLElement elementWithName: self.className
 				   namespace: OF_SERIALIZATION_NS
 				 stringValue: _processingInstructions];
 }

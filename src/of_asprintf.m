@@ -372,7 +372,7 @@ formatConversionSpecifierState(struct context *ctx)
 				void *pool = objc_autoreleasePoolPush();
 
 				tmpLen = asprintf(&tmp, ctx->subformat,
-				    [[object description] UTF8String]);
+				    [object description].UTF8String);
 
 				objc_autoreleasePoolPop(pool);
 			} else
@@ -566,11 +566,11 @@ formatConversionSpecifierState(struct context *ctx)
 					[tmpStr
 					    replaceOccurrencesOfString: point
 							    withString: @"."];
-				if ([tmpStr UTF8StringLength] > INT_MAX)
+				if (tmpStr.UTF8StringLength > INT_MAX)
 					return false;
-				tmpLen = (int)[tmpStr UTF8StringLength];
+				tmpLen = (int)tmpStr.UTF8StringLength;
 				tmp2 = malloc(tmpLen);
-				memcpy(tmp2, [tmpStr UTF8String], tmpLen);
+				memcpy(tmp2, tmpStr.UTF8String, tmpLen);
 			} @finally {
 				free(tmp);
 				objc_autoreleasePoolPop(pool);

@@ -58,12 +58,12 @@
 		    tagNumber != OF_ASN1_TAG_NUMBER_UTF8_STRING || constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
 		UTF8StringValue = [OFString
-		    stringWithUTF8String: [DEREncodedContents items]
-				  length: [DEREncodedContents count]];
+		    stringWithUTF8String: DEREncodedContents.items
+				  length: DEREncodedContents.count];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -90,7 +90,7 @@
 
 - (OFString *)stringValue
 {
-	return [self UTF8StringValue];
+	return self.UTF8StringValue;
 }
 
 - (bool)isEqual: (id)object
@@ -110,7 +110,7 @@
 
 - (uint32_t)hash
 {
-	return [_UTF8StringValue hash];
+	return _UTF8StringValue.hash;
 }
 
 - (OFString *)description

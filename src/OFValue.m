@@ -172,7 +172,7 @@ static struct {
 	if (![object isKindOfClass: [OFValue class]])
 		return false;
 
-	objCType = [self objCType];
+	objCType = self.objCType;
 
 	if (strcmp([object objCType], objCType) != 0)
 		return false;
@@ -204,7 +204,7 @@ static struct {
 
 - (uint32_t)hash
 {
-	size_t size = of_sizeof_type_encoding([self objCType]);
+	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 	uint32_t hash;
 
@@ -309,7 +309,7 @@ static struct {
 {
 	OFMutableString *ret =
 	    [OFMutableString stringWithString: @"<OFValue: "];
-	size_t size = of_sizeof_type_encoding([self objCType]);
+	size_t size = of_sizeof_type_encoding(self.objCType);
 	unsigned char *value;
 
 	if ((value = malloc(size)) == NULL)

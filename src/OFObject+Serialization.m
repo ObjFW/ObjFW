@@ -41,7 +41,7 @@ int _OFObject_Serialization_reference;
 	}
 
 	pool = objc_autoreleasePoolPush();
-	element = [(id)self XMLElementBySerializing];
+	element = ((id <OFSerialization>)self).XMLElementBySerializing;
 
 	root = [OFXMLElement elementWithName: @"serialization"
 				   namespace: OF_SERIALIZATION_NS];

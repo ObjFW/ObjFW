@@ -48,20 +48,20 @@ int _OFString_Serialization_reference;
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	version = [[root attributeForName: @"version"] stringValue];
+	version = [root attributeForName: @"version"].stringValue;
 	if (version == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ([version decimalValue] != 1)
+	if (version.decimalValue != 1)
 		@throw [OFUnsupportedVersionException
 		    exceptionWithVersion: version];
 
 	elements = [root elementsForNamespace: OF_SERIALIZATION_NS];
 
-	if ([elements count] != 1)
+	if (elements.count != 1)
 		@throw [OFInvalidArgumentException exception];
 
-	object = [[[elements firstObject] objectByDeserializing] retain];
+	object = [[elements.firstObject objectByDeserializing] retain];
 
 	objc_autoreleasePoolPop(pool);
 

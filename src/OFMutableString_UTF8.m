@@ -104,7 +104,7 @@
 		return;
 	}
 
-	unicodeLen = [self length];
+	unicodeLen = self.length;
 	unicodeString = [self allocMemoryWithSize: sizeof(of_unichar_t)
 					    count: unicodeLen];
 
@@ -360,17 +360,17 @@
 	if (string == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	UTF8StringLength = [string UTF8StringLength];
+	UTF8StringLength = string.UTF8StringLength;
 
 	_s->hashed = false;
 	_s->cString = [self resizeMemory: _s->cString
 				    size: _s->cStringLength +
 					  UTF8StringLength + 1];
-	memcpy(_s->cString + _s->cStringLength, [string UTF8String],
+	memcpy(_s->cString + _s->cStringLength, string.UTF8String,
 	    UTF8StringLength);
 
 	_s->cStringLength += UTF8StringLength;
-	_s->length += [string length];
+	_s->length += string.length;
 
 	_s->cString[_s->cStringLength] = 0;
 
@@ -431,7 +431,7 @@
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
+	if ((UTF8StringLength = of_vasprintf(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
@@ -535,19 +535,19 @@
 		idx = of_string_utf8_get_position(_s->cString, idx,
 		    _s->cStringLength);
 
-	newCStringLength = _s->cStringLength + [string UTF8StringLength];
+	newCStringLength = _s->cStringLength + string.UTF8StringLength;
 	_s->hashed = false;
 	_s->cString = [self resizeMemory: _s->cString
 				    size: newCStringLength + 1];
 
-	memmove(_s->cString + idx + [string UTF8StringLength],
+	memmove(_s->cString + idx + string.UTF8StringLength,
 	    _s->cString + idx, _s->cStringLength - idx);
-	memcpy(_s->cString + idx, [string UTF8String],
-	    [string UTF8StringLength]);
+	memcpy(_s->cString + idx, string.UTF8String,
+	    string.UTF8StringLength);
 	_s->cString[newCStringLength] = '\0';
 
 	_s->cStringLength = newCStringLength;
-	_s->length += [string length];
+	_s->length += string.length;
 
 	if ([string isKindOfClass: [OFString_UTF8 class]] ||
 	    [string isKindOfClass: [OFMutableString_UTF8 class]]) {
@@ -600,7 +600,7 @@
 	if (range.length > SIZE_MAX - range.location || end > _s->length)
 		@throw [OFOutOfRangeException exception];
 
-	newLength = _s->length - range.length + [replacement length];
+	newLength = _s->length - range.length + replacement.length;
 
 	if (_s->isUTF8) {
 		start = of_string_utf8_get_position(_s->cString, start,
@@ -610,7 +610,7 @@
 	}
 
 	newCStringLength = _s->cStringLength - (end - start) +
-	    [replacement UTF8StringLength];
+	    replacement.UTF8StringLength;
 	_s->hashed = false;
 
 	/*
@@ -625,10 +625,10 @@
 		_s->cString = [self resizeMemory: _s->cString
 					    size: newCStringLength + 1];
 
-	memmove(_s->cString + start + [replacement UTF8StringLength],
+	memmove(_s->cString + start + replacement.UTF8StringLength,
 	    _s->cString + end, _s->cStringLength - end);
-	memcpy(_s->cString + start, [replacement UTF8String],
-	    [replacement UTF8StringLength]);
+	memcpy(_s->cString + start, replacement.UTF8String,
+	    replacement.UTF8StringLength);
 	_s->cString[newCStringLength] = '\0';
 
 	/*
@@ -655,10 +655,10 @@
 			   options: (int)options
 			     range: (of_range_t)range
 {
-	const char *searchString = [string UTF8String];
-	const char *replacementString = [replacement UTF8String];
-	size_t searchLength = [string UTF8StringLength];
-	size_t replacementLength = [replacement UTF8StringLength];
+	const char *searchString = string.UTF8String;
+	const char *replacementString = replacement.UTF8String;
+	size_t searchLength = string.UTF8StringLength;
+	size_t replacementLength = replacement.UTF8StringLength;
 	size_t last, newCStringLength, newLength;
 	char *newCString;
 
@@ -666,7 +666,7 @@
 		@throw [OFInvalidArgumentException exception];
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > [self length])
+	    range.location + range.length > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	if (_s->isUTF8) {
@@ -677,7 +677,7 @@
 		    _s->cStringLength - range.location);
 	}
 
-	if ([string UTF8StringLength] > range.length)
+	if (string.UTF8StringLength > range.length)
 		return;
 
 	newCString = NULL;
@@ -690,10 +690,10 @@
 			continue;
 
 		@try {
-			newCString = [self
-			    resizeMemory: newCString
-				    size: newCStringLength + i - last +
-					  replacementLength + 1];
+			newCString = [self resizeMemory: newCString
+						   size: newCStringLength +
+							 i - last +
+							 replacementLength + 1];
 		} @catch (id e) {
 			[self freeMemory: newCString];
 			@throw e;
@@ -704,7 +704,7 @@
 		    replacementString, replacementLength);
 
 		newCStringLength += i - last + replacementLength;
-		newLength = newLength - [string length] + [replacement length];
+		newLength = newLength - string.length + replacement.length;
 
 		i += searchLength - 1;
 		last = i + 1;

@@ -62,8 +62,8 @@
 	size_t blockSize = [_hashClass blockSize];
 	OFSecureData *outerKeyPad = [OFSecureData dataWithCount: blockSize];
 	OFSecureData *innerKeyPad = [OFSecureData dataWithCount: blockSize];
-	unsigned char *outerKeyPadItems = [outerKeyPad items];
-	unsigned char *innerKeyPadItems = [innerKeyPad items];
+	unsigned char *outerKeyPadItems = outerKeyPad.mutableItems;
+	unsigned char *innerKeyPadItems = innerKeyPad.mutableItems;
 
 	[_outerHash release];
 	[_innerHash release];
@@ -82,8 +82,8 @@
 			if OF_UNLIKELY (length > blockSize)
 				length = blockSize;
 
-			memcpy(outerKeyPadItems, [hash digest], length);
-			memcpy(innerKeyPadItems, [hash digest], length);
+			memcpy(outerKeyPadItems, hash.digest, length);
+			memcpy(innerKeyPadItems, hash.digest, length);
 		} else {
 			memcpy(outerKeyPadItems, key, length);
 			memcpy(innerKeyPadItems, key, length);
@@ -139,13 +139,13 @@
 		@throw [OFInvalidArgumentException exception];
 
 	if (_calculated)
-		return [_outerHash digest];
+		return _outerHash.digest;
 
-	[_outerHash updateWithBuffer: [_innerHash digest]
+	[_outerHash updateWithBuffer: _innerHash.digest
 			      length: [_hashClass digestSize]];
 	_calculated = true;
 
-	return [_outerHash digest];
+	return _outerHash.digest;
 }
 
 - (size_t)digestSize

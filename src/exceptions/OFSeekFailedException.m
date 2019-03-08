@@ -72,6 +72,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Seeking failed in stream of type %@: %@",
-	    [_stream class], of_strerror(_errNo)];
+	    _stream.class, of_strerror(_errNo)];
 }
 @end

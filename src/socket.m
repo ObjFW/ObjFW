@@ -255,7 +255,7 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 
 	components = [IPv4 componentsSeparatedByString: @"."];
 
-	if ([components count] != 4)
+	if (components.count != 4)
 		@throw [OFInvalidFormatException exception];
 
 	addr = 0;
@@ -263,14 +263,14 @@ of_socket_address_parse_ipv4(OFString *IPv4, uint16_t port)
 	for (OFString *component in components) {
 		intmax_t number;
 
-		if ([component length] == 0)
+		if (component.length == 0)
 			@throw [OFInvalidFormatException exception];
 
 		if ([component indexOfCharacterFromSet:
 		    whitespaceCharacterSet] != OF_NOT_FOUND)
 			@throw [OFInvalidFormatException exception];
 
-		number = [component decimalValue];
+		number = component.decimalValue;
 
 		if (number < 0 || number > UINT8_MAX)
 			@throw [OFInvalidFormatException exception];
@@ -294,7 +294,7 @@ parseIPv6Component(OFString *component)
 	    [OFCharacterSet whitespaceCharacterSet]] != OF_NOT_FOUND)
 		@throw [OFInvalidFormatException exception];
 
-	number = [component hexadecimalValue];
+	number = component.hexadecimalValue;
 
 	if (number > UINT16_MAX)
 		@throw [OFInvalidFormatException exception];
@@ -327,7 +327,7 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 		OFString *left = [IPv6 substringWithRange:
 		    of_range(0, doubleColon)];
 		OFString *right = [IPv6 substringWithRange:
-		    of_range(doubleColon + 2, [IPv6 length] - doubleColon - 2)];
+		    of_range(doubleColon + 2, IPv6.length - doubleColon - 2)];
 		OFArray OF_GENERIC(OFString *) *leftComponents;
 		OFArray OF_GENERIC(OFString *) *rightComponents;
 		size_t i;
@@ -338,7 +338,7 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 		leftComponents = [left componentsSeparatedByString: @":"];
 		rightComponents = [right componentsSeparatedByString: @":"];
 
-		if ([leftComponents count] + [rightComponents count] > 7)
+		if (leftComponents.count + rightComponents.count > 7)
 			@throw [OFInvalidFormatException exception];
 
 		i = 0;
@@ -350,7 +350,7 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 		}
 
 		i = 16;
-		for (OFString *component in [rightComponents reversedArray]) {
+		for (OFString *component in rightComponents.reversedArray) {
 			uint16_t number = parseIPv6Component(component);
 
 			addrIn6->sin6_addr.s6_addr[--i] = number >> 8;
@@ -361,14 +361,14 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 		    [IPv6 componentsSeparatedByString: @":"];
 		size_t i;
 
-		if ([components count] != 8)
+		if (components.count != 8)
 			@throw [OFInvalidFormatException exception];
 
 		i = 0;
 		for (OFString *component in components) {
 			uint16_t number;
 
-			if ([component length] == 0)
+			if (component.length == 0)
 				@throw [OFInvalidFormatException exception];
 
 			number = parseIPv6Component(component);

@@ -43,7 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @return The receiver as Foundation object
  */
-- (id)NSObject;
+@property (readonly, nonatomic) id NSObject;
 @end
 
 OF_ASSUME_NONNULL_END

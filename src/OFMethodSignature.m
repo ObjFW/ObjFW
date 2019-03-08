@@ -679,17 +679,17 @@ of_alignof_type_encoding(const char *type)
 
 - (size_t)numberOfArguments
 {
-	return [_typesPointers count] - 1;
+	return _typesPointers.count - 1;
 }
 
 - (const char *)methodReturnType
 {
-	return *(const char **)[_typesPointers firstItem];
+	return *(const char **)_typesPointers.firstItem;
 }
 
 - (size_t)frameLength
 {
-	return *(size_t *)[_offsets firstItem];
+	return *(size_t *)_offsets.firstItem;
 }
 
 - (const char *)argumentTypeAtIndex: (size_t)idx

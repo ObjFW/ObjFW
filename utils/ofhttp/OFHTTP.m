@@ -516,12 +516,12 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 }
 
 -    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OF_KINDOF(OFTCPSocket *))sock
+  didCreateSocket: (OFTCPSocket *)sock
 	  request: (OFHTTPRequest *)request
 {
 	if (_insecure && [sock respondsToSelector:
 	    @selector(setCertificateVerificationEnabled:)])
-		[sock setCertificateVerificationEnabled: false];
+		((id <OFTLSSocket>)sock).certificateVerificationEnabled = false;
 }
 
 -     (void)client: (OFHTTPClient *)client
@@ -652,7 +652,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		   afterDelay: 0];
 }
 
--      (bool)stream: (OF_KINDOF(OFStream *))response
+-      (bool)stream: (OFStream *)response
   didReadIntoBuffer: (void *)buffer
 	     length: (size_t)length
 	  exception: (id)exception

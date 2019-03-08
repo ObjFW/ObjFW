@@ -69,6 +69,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"An XML parser of type %@ encountered the unbound prefix %@ in "
-	    @"line %zu!", [_parser class], _prefix, [_parser lineNumber]];
+	    @"line %zu!", _parser.class, _prefix, _parser.lineNumber];
 }
 @end

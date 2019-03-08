@@ -72,8 +72,8 @@
 	self = [self init];
 
 	@try {
-		id const *objects = [array objects];
-		size_t count = [array count];
+		id const *objects = array.objects;
+		size_t count = array.count;
 
 		for (size_t i = 0; i < count; i++)
 			[self addObject: objects[i]];
@@ -128,8 +128,8 @@
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if (![[element name] isEqual: @"OFCountedSet"] ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if (![element.name isEqual: @"OFCountedSet"] ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *objectElement in
@@ -141,8 +141,8 @@
 			intmax_t signedCount;
 			uintmax_t count;
 
-			object = [[objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS] firstObject];
+			object = [objectElement elementsForNamespace:
+			    OF_SERIALIZATION_NS].firstObject;
 			countAttribute =
 			    [objectElement attributeForName: @"count"];
 
@@ -150,7 +150,7 @@
 				@throw [OFInvalidFormatException exception];
 
 			signedCount =
-			    [[countAttribute stringValue] decimalValue];
+			    countAttribute.stringValue.decimalValue;
 			if (signedCount < 0)
 			       @throw [OFOutOfRangeException exception];
 
@@ -159,7 +159,7 @@
 				@throw [OFOutOfRangeException exception];
 
 			[_mapTable setObject: (void *)(uintptr_t)count
-				      forKey: [object objectByDeserializing]];
+				      forKey: object.objectByDeserializing];
 
 			objc_autoreleasePoolPop(pool2);
 		}

@@ -509,6 +509,19 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	[super dealloc];
 }
 
+- (void *)mutableItems
+{
+	return _items;
+}
+
+- (void *)mutableItemAtIndex: (size_t)idx
+{
+	if (idx >= _count)
+		@throw [OFOutOfRangeException exception];
+
+	return _items + idx * _itemSize;
+}
+
 - (void)zero
 {
 	of_explicit_memset(_items, 0, _count * _itemSize);

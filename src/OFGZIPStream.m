@@ -83,7 +83,7 @@
 		uint8_t byte;
 		uint32_t CRC32, uncompressedSize;
 
-		if ([_stream isAtEndOfStream]) {
+		if (_stream.atEndOfStream) {
 			if (_state != OF_GZIP_STREAM_ID1)
 				@throw [OFTruncatedDataException exception];
 
@@ -239,7 +239,7 @@
 				_inflateStream = [[OFInflateStream alloc]
 				    initWithStream: _stream];
 
-			if (![_inflateStream isAtEndOfStream]) {
+			if (!_inflateStream.atEndOfStream) {
 				size_t bytesRead = [_inflateStream
 				    readIntoBuffer: buffer
 					    length: length];
@@ -309,16 +309,16 @@
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	return [_stream isAtEndOfStream];
+	return _stream.atEndOfStream;
 }
 
 - (bool)hasDataInReadBuffer
 {
 	if (_state == OF_GZIP_STREAM_DATA)
-		return ([super hasDataInReadBuffer] ||
-		    [_inflateStream hasDataInReadBuffer]);
+		return (super.hasDataInReadBuffer ||
+		    _inflateStream.hasDataInReadBuffer);
 
-	return ([super hasDataInReadBuffer] || [_stream hasDataInReadBuffer]);
+	return (super.hasDataInReadBuffer || _stream.hasDataInReadBuffer);
 }
 
 - (void)close

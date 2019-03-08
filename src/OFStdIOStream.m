@@ -99,7 +99,7 @@ of_log(OFConstantString *format, ...)
 	date = [OFDate date];
 	dateString = [date localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 #ifdef OF_HAVE_FILES
-	me = [[OFApplication programName] lastPathComponent];
+	me = [OFApplication programName].lastPathComponent;
 #else
 	me = [OFApplication programName];
 #endif
@@ -110,7 +110,7 @@ of_log(OFConstantString *format, ...)
 	va_end(arguments);
 
 	[of_stderr writeFormat: @"[%@.%03d %@(%d)] %@\n", dateString,
-				[date microsecond] / 1000, me, getpid(), msg];
+				date.microsecond / 1000, me, getpid(), msg];
 
 	objc_autoreleasePoolPop(pool);
 }

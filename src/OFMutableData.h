@@ -33,6 +33,16 @@ OF_ASSUME_NONNULL_BEGIN
 }
 
 /*!
+ * @brief All items of the OFMutableData as a C array.
+ *
+ * @warning The pointer is only valid until the OFMutableData is changed!
+ *
+ * Modifying the returned array directly is allowed and will change the contents
+ * of the data.
+ */
+@property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Creates a new OFMutableData with an item size of 1.
  *
  * @return A new autoreleased OFMutableData
@@ -107,6 +117,17 @@ OF_ASSUME_NONNULL_BEGIN
 			capacity: (size_t)capacity;
 
 /*!
+ * @brief Returns a specific item of the OFMutableData.
+ *
+ * Modifying the returned item directly is allowed and will change the contents
+ * of the data.
+ *
+ * @param index The number of the item to return
+ * @return The specified item of the OFMutableData
+ */
+- (void *)mutableItemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Adds an item to the OFMutableData.
  *
  * @param item A pointer to an arbitrary item
@@ -178,54 +199,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Converts the mutable URL to an immutable URL.
  */
 - (void)makeImmutable;
-@end
-
-@interface OFMutableData (MutableRetrieving)
-/* GCC does not like overriding properties with a different type. */
-#if defined(__clang__) || defined(DOXYGEN)
-/*!
- * @brief All items of the OFMutableData as a C array.
- *
- * @warning The pointer is only valid until the OFMutableData is changed!
- *
- * Modifying the returned array directly is allowed and will change the contents
- * of the data.
- */
-@property (readonly, nonatomic) void *items OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief The first item of the OFMutableData or `NULL`.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *firstItem
-    OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Last item of the OFMutableData or `NULL`.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *lastItem
-    OF_RETURNS_INNER_POINTER;
-#else
-- (void *)items;
-- (nullable void *)firstItem;
-- (nullable void *)lastItem;
-#endif
-
-/*!
- * @brief Returns a specific item of the OFMutableData.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data.
- *
- * @param index The number of the item to return
- * @return The specified item of the OFMutableData
- */
-- (void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 @end
 
 OF_ASSUME_NONNULL_END

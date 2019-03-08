@@ -149,22 +149,22 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 
 + (OFString *)language
 {
-	return [currentLocale language];
+	return currentLocale.language;
 }
 
 + (OFString *)territory
 {
-	return [currentLocale territory];
+	return currentLocale.territory;
 }
 
 + (of_string_encoding_t)encoding
 {
-	return [currentLocale encoding];
+	return currentLocale.encoding;
 }
 
 + (OFString *)decimalPoint
 {
-	return [currentLocale decimalPoint];
+	return currentLocale.decimalPoint;
 }
 
 #ifdef OF_HAVE_FILES
@@ -184,7 +184,7 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 
 		if (currentLocale != nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		_encoding = OF_STRING_ENCODING_UTF_8;
 		_decimalPoint = @".";
@@ -323,16 +323,15 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 		return;
 	}
 
-	language = [_language lowercaseString];
-	territory = [_territory lowercaseString];
+	language = _language.lowercaseString;
+	territory = _territory.lowercaseString;
 
 	if (territory == nil)
 		territory = @"";
 
 	languageFile = [[map objectForKey: language] objectForKey: territory];
 	if (languageFile == nil)
-		languageFile = [[map objectForKey: language]
-		    objectForKey: @""];
+		languageFile = [[map objectForKey: language] objectForKey: @""];
 
 	if (languageFile == nil) {
 		objc_autoreleasePoolPop(pool);
@@ -389,8 +388,8 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 	}
 
 	if (UTF8String == NULL) {
-		UTF8String = [fallback UTF8String];
-		UTF8StringLength = [fallback UTF8StringLength];
+		UTF8String = fallback.UTF8String;
+		UTF8StringLength = fallback.UTF8StringLength;
 	}
 
 	state = 0;

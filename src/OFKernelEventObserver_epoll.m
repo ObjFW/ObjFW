@@ -55,13 +55,13 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 #ifdef HAVE_EPOLL_CREATE1
 		if ((_epfd = epoll_create1(EPOLL_CLOEXEC)) == -1)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 #else
 		int flags;
 
 		if ((_epfd = epoll_create(1)) == -1)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		if ((flags = fcntl(_epfd, F_GETFD, 0)) != -1)
 			fcntl(_epfd, F_SETFD, flags | FD_CLOEXEC);
@@ -77,7 +77,7 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 		if (epoll_ctl(_epfd, EPOLL_CTL_ADD, _cancelFD[0], &event) == -1)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -155,28 +155,28 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 - (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_addObject: object
-	    fileDescriptor: [object fileDescriptorForReading]
+	    fileDescriptor: object.fileDescriptorForReading
 		    events: EPOLLIN];
 }
 
 - (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_addObject: object
-	    fileDescriptor: [object fileDescriptorForWriting]
+	    fileDescriptor: object.fileDescriptorForWriting
 		    events: EPOLLOUT];
 }
 
 - (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_removeObject: object
-	       fileDescriptor: [object fileDescriptorForReading]
+	       fileDescriptor: object.fileDescriptorForReading
 		       events: EPOLLIN];
 }
 
 - (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_removeObject: object
-	       fileDescriptor: [object fileDescriptorForWriting]
+	       fileDescriptor: object.fileDescriptorForWriting
 		       events: EPOLLOUT];
 }
 

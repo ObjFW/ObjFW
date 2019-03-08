@@ -148,8 +148,8 @@ size_t
 of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
     uint16_t *size)
 {
-	const uint8_t *bytes = [extraField items];
-	size_t count = [extraField count];
+	const uint8_t *bytes = extraField.items;
+	size_t count = extraField.count;
 
 	for (size_t i = 0; i < count;) {
 		uint16_t currentTag, currentSize;
@@ -193,7 +193,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if ([fileName UTF8StringLength] > UINT16_MAX)
+		if (fileName.UTF8StringLength > UINT16_MAX)
 			@throw [OFOutOfRangeException exception];
 
 		_fileName = [fileName copy];
@@ -282,7 +282,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 			[extraField removeItemsInRange: range];
 		}
 
-		if ([extraField count] > 0) {
+		if (extraField.count > 0) {
 			[extraField makeImmutable];
 			_extraField = [extraField copy];
 		}
@@ -451,9 +451,9 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	    @"\tCRC32 = %08" @PRIX32 @"\n"
 	    @"\tExtra field = %@\n"
 	    @">",
-	    [self class], _fileName, _fileComment, _generalPurposeBitFlag,
+	    self.class, _fileName, _fileComment, _generalPurposeBitFlag,
 	    _compressedSize, _uncompressedSize, compressionMethod,
-	    [self modificationDate], _CRC32, _extraField];
+	    self.modificationDate, _CRC32, _extraField];
 
 	[ret retain];
 
@@ -467,7 +467,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	void *pool = objc_autoreleasePoolPush();
 	uint64_t size = 0;
 
-	if (UINT16_MAX - [_extraField count] < 32)
+	if (UINT16_MAX - _extraField.count < 32)
 		@throw [OFOutOfRangeException exception];
 
 	[stream writeLittleEndianInt32: 0x02014B50];
@@ -480,10 +480,10 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	[stream writeLittleEndianInt32: _CRC32];
 	[stream writeLittleEndianInt32: 0xFFFFFFFF];
 	[stream writeLittleEndianInt32: 0xFFFFFFFF];
-	[stream writeLittleEndianInt16: (uint16_t)[_fileName UTF8StringLength]];
-	[stream writeLittleEndianInt16: (uint16_t)[_extraField count] + 32];
+	[stream writeLittleEndianInt16: (uint16_t)_fileName.UTF8StringLength];
+	[stream writeLittleEndianInt16: (uint16_t)_extraField.count + 32];
 	[stream writeLittleEndianInt16:
-	    (uint16_t)[_fileComment UTF8StringLength]];
+	    (uint16_t)_fileComment.UTF8StringLength];
 	[stream writeLittleEndianInt16: 0xFFFF];
 	[stream writeLittleEndianInt16: _internalAttributes];
 	[stream writeLittleEndianInt32: _versionSpecificAttributes];
@@ -491,7 +491,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 	size += (4 + (6 * 2) + (3 * 4) + (5 * 2) + (2 * 4));
 
 	[stream writeString: _fileName];
-	size += (uint64_t)[_fileName UTF8StringLength];
+	size += (uint64_t)_fileName.UTF8StringLength;
 
 	[stream writeLittleEndianInt16: OF_ZIP_ARCHIVE_ENTRY_EXTRA_FIELD_ZIP64];
 	[stream writeLittleEndianInt16: 28];
@@ -503,11 +503,11 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 
 	if (_extraField != nil)
 		[stream writeData: _extraField];
-	size += (uint64_t)[_extraField count];
+	size += (uint64_t)_extraField.count;
 
 	if (_fileComment != nil)
 		[stream writeString: _fileComment];
-	size += (uint64_t)[_fileComment UTF8StringLength];
+	size += (uint64_t)_fileComment.UTF8StringLength;
 
 	objc_autoreleasePoolPop(pool);
 

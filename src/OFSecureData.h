@@ -38,6 +38,14 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
+ * @brief All items of the OFSecureData as a C array.
+ *
+ * Modifying the returned array directly is allowed and will change the contents
+ * of the data.
+ */
+@property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Whether OFSecureData is secure, meaning preventing the data from
  *	  being swapped out is supported.
  */
@@ -106,6 +114,17 @@ OF_ASSUME_NONNULL_BEGIN
 			   count: (size_t)count;
 
 /*!
+ * @brief Returns a specific item of the OFSecureData.
+ *
+ * Modifying the returned item directly is allowed and will change the contents
+ * of the data array.
+ *
+ * @param index The number of the item to return
+ * @return The specified item of the OFSecureData
+ */
+- (void *)mutableItemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Checks the OFSecureData for equality to another object.
  *
  * If the specified object is a subclass of @ref OFData, the comparison is
@@ -136,52 +155,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)writeToURL: (OFURL *)URL OF_UNAVAILABLE;
 - (OFXMLElement *)XMLElementBySerializing OF_UNAVAILABLE;
 - (OFData *)messagePackRepresentation OF_UNAVAILABLE;
-@end
-
-@interface OFSecureData (MutableRetrieving)
-/* GCC does not like overriding properties with a different type. */
-#if defined(__clang__) || defined(DOXYGEN)
-/*!
- * @brief All items of the OFSecureData as a C array.
- *
- * Modifying the returned array directly is allowed and will change the contents
- * of the data.
- */
-@property (readonly, nonatomic) void *items OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief The first item of the OFSecureData or `NULL`.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *firstItem
-    OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Last item of the OFSecureData or `NULL`.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data.
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *lastItem
-    OF_RETURNS_INNER_POINTER;
-#else
-- (void *)items;
-- (nullable void *)firstItem;
-- (nullable void *)lastItem;
-#endif
-
-/*!
- * @brief Returns a specific item of the OFSecureData.
- *
- * Modifying the returned item directly is allowed and will change the contents
- * of the data array.
- *
- * @param index The number of the item to return
- * @return The specified item of the OFSecureData
- */
-- (void *)itemAtIndex: (size_t)index OF_RETURNS_INNER_POINTER;
 @end
 
 OF_ASSUME_NONNULL_END

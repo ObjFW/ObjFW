@@ -57,7 +57,7 @@
 		    constructed)
 			@throw [OFInvalidArgumentException exception];
 
-		if ([DEREncodedContents itemSize] != 1)
+		if (DEREncodedContents.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 	} @catch (id e) {
 		[self release];
@@ -96,7 +96,7 @@
 
 - (uint32_t)hash
 {
-	return [_octetStringValue hash];
+	return _octetStringValue.hash;
 }
 
 - (OFString *)description

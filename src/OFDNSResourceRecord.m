@@ -76,7 +76,7 @@ of_dns_resource_record_class_t of_dns_resource_record_class_parse(
 	void *pool = objc_autoreleasePoolPush();
 	of_dns_resource_record_class_t recordClass;
 
-	string = [string uppercaseString];
+	string = string.uppercaseString;
 
 	if ([string isEqual: @"IN"])
 		recordClass = OF_DNS_RESOURCE_RECORD_CLASS_IN;
@@ -94,7 +94,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	void *pool = objc_autoreleasePoolPush();
 	of_dns_resource_record_type_t recordType;
 
-	string = [string uppercaseString];
+	string = string.uppercaseString;
 
 	if ([string isEqual: @"A"])
 		recordType = OF_DNS_RESOURCE_RECORD_TYPE_A;
@@ -171,7 +171,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tType = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass),
 	    of_dns_resource_record_type_to_string(_recordType), _TTL];
 }
@@ -235,7 +235,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
@@ -255,7 +255,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAddress = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_socket_address_ip_string(&_address, NULL), _TTL];
 }
 @end
@@ -318,7 +318,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
@@ -338,7 +338,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAddress = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_socket_address_ip_string(&_address, NULL), _TTL];
 }
 @end
@@ -412,12 +412,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_alias hash]);
+	OF_HASH_ADD_HASH(hash, _alias.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -433,7 +433,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAlias = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _alias, _TTL];
 }
 @end
@@ -512,13 +512,13 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_CPU hash]);
-	OF_HASH_ADD_HASH(hash, [_OS hash]);
+	OF_HASH_ADD_HASH(hash, _CPU.hash);
+	OF_HASH_ADD_HASH(hash, _OS.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -535,7 +535,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tOS = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _CPU, _OS,
 	    _TTL];
 }
@@ -615,14 +615,14 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD(hash, _preference >> 8);
 	OF_HASH_ADD(hash, _preference);
-	OF_HASH_ADD_HASH(hash, [_mailExchange hash]);
+	OF_HASH_ADD_HASH(hash, _mailExchange.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -639,7 +639,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tMail Exchange = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _preference,
 	    _mailExchange, _TTL];
 }
@@ -714,12 +714,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_authoritativeHost hash]);
+	OF_HASH_ADD_HASH(hash, _authoritativeHost.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -735,7 +735,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAuthoritative Host = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass),
 	    _authoritativeHost, _TTL];
 }
@@ -810,12 +810,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_domainName hash]);
+	OF_HASH_ADD_HASH(hash, _domainName.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -831,7 +831,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tDomain Name = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _domainName,
 	    _TTL];
 }
@@ -913,13 +913,13 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_mailbox hash]);
-	OF_HASH_ADD_HASH(hash, [_TXTDomainName hash]);
+	OF_HASH_ADD_HASH(hash, _mailbox.hash);
+	OF_HASH_ADD_HASH(hash, _TXTDomainName.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -936,7 +936,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tTXT Domain Name = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _mailbox,
 	    _TXTDomainName, _TTL];
 }
@@ -1047,13 +1047,13 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_primaryNameServer hash]);
-	OF_HASH_ADD_HASH(hash, [_responsiblePerson hash]);
+	OF_HASH_ADD_HASH(hash, _primaryNameServer.hash);
+	OF_HASH_ADD_HASH(hash, _responsiblePerson.hash);
 	OF_HASH_ADD(hash, _serialNumber >> 24);
 	OF_HASH_ADD(hash, _serialNumber >> 16);
 	OF_HASH_ADD(hash, _serialNumber >> 8);
@@ -1095,7 +1095,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tMinimum TTL = %" PRIu32 "\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass),
 	    _primaryNameServer, _responsiblePerson, _serialNumber,
 	    _refreshInterval, _retryInterval, _expirationInterval, _minTTL,
@@ -1187,7 +1187,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
@@ -1196,7 +1196,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_ADD(hash, _priority);
 	OF_HASH_ADD(hash, _weight >> 8);
 	OF_HASH_ADD(hash, _weight);
-	OF_HASH_ADD_HASH(hash, [_target hash]);
+	OF_HASH_ADD_HASH(hash, _target.hash);
 	OF_HASH_ADD(hash, _port >> 8);
 	OF_HASH_ADD(hash, _port);
 
@@ -1216,7 +1216,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tPort = %" PRIu16 "\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name, _priority, _weight, _target, _port, _TTL];
+	    self.className, _name, _priority, _weight, _target, _port, _TTL];
 }
 @end
 
@@ -1289,12 +1289,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	OF_HASH_INIT(hash);
 
-	OF_HASH_ADD_HASH(hash, [_name hash]);
+	OF_HASH_ADD_HASH(hash, _name.hash);
 	OF_HASH_ADD(hash, _recordClass >> 8);
 	OF_HASH_ADD(hash, _recordClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
-	OF_HASH_ADD_HASH(hash, [_textData hash]);
+	OF_HASH_ADD_HASH(hash, _textData.hash);
 
 	OF_HASH_FINALIZE(hash);
 
@@ -1310,7 +1310,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tText Data = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    [self className], _name,
+	    self.className, _name,
 	    of_dns_resource_record_class_to_string(_recordClass), _textData,
 	    _TTL];
 }

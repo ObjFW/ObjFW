@@ -92,7 +92,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 		return [self init];
 
 	@try {
-		count = [set count];
+		count = set.count;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -120,7 +120,7 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 		return self;
 
 	@try {
-		count = [array count];
+		count = array.count;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -197,9 +197,9 @@ static const of_map_table_functions_t objectFunctions = { NULL };
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-		if ((![[element name] isEqual: @"OFSet"] &&
-		    ![[element name] isEqual: @"OFMutableSet"]) ||
-		    ![[element namespace] isEqual: OF_SERIALIZATION_NS])
+		if ((![element.name isEqual: @"OFSet"] &&
+		    ![element.name isEqual: @"OFMutableSet"]) ||
+		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
 		for (OFXMLElement *child in

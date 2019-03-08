@@ -23,6 +23,6 @@ int _NSString_OFObject_reference;
 @implementation NSString (OFObject)
 - (id)OFObject
 {
-	return [OFString stringWithUTF8String: [self UTF8String]];
+	return [OFString stringWithUTF8String: self.UTF8String];
 }
 @end

@@ -219,7 +219,7 @@ static struct {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
 
-		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		key = [key substringWithRange: of_range(1, key.length - 1)];
 		ret = [[super valueForKey: key] retain];
 
 		objc_autoreleasePoolPop(pool);
@@ -227,7 +227,7 @@ static struct {
 		return [ret autorelease];
 	}
 
-	ret = [OFMutableSet setWithCapacity: [self count]];
+	ret = [OFMutableSet setWithCapacity: self.count];
 
 	for (id object in self) {
 		id value = [object valueForKey: key];
@@ -247,7 +247,7 @@ static struct {
 	if ([key hasPrefix: @"@"]) {
 		void *pool = objc_autoreleasePoolPush();
 
-		key = [key substringWithRange: of_range(1, [key length] - 1)];
+		key = [key substringWithRange: of_range(1, key.length - 1)];
 		[super setValue: value
 			 forKey: key];
 
@@ -289,7 +289,7 @@ static struct {
 
 	set = object;
 
-	if ([set count] != [self count])
+	if (set.count != self.count)
 		return false;
 
 	return [set isSubsetOfSet: self];
@@ -312,7 +312,7 @@ static struct {
 {
 	void *pool;
 	OFMutableString *ret;
-	size_t i, count = [self count];
+	size_t i, count = self.count;
 
 	if (count == 0)
 		return @"{()}";
@@ -386,7 +386,7 @@ static struct {
 	for (id <OFSerialization> object in self) {
 		void *pool2 = objc_autoreleasePoolPush();
 
-		[element addChild: [object XMLElementBySerializing]];
+		[element addChild: object.XMLElementBySerializing];
 
 		objc_autoreleasePoolPop(pool2);
 	}

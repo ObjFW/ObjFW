@@ -31,14 +31,14 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFTarArchive: OFObject
 {
-	OF_KINDOF(OFStream *) _stream;
+	OFStream *_stream;
 	enum {
 		OF_TAR_ARCHIVE_MODE_READ,
 		OF_TAR_ARCHIVE_MODE_WRITE,
 		OF_TAR_ARCHIVE_MODE_APPEND
 	} _mode;
 	of_string_encoding_t _encoding;
-	OF_KINDOF(OFStream *) _Nullable _lastReturnedStream;
+	OFStream *_Nullable _lastReturnedStream;
 }
 
 /*!
@@ -67,7 +67,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return A new, autoreleased OFTarArchive
  */
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithStream: (OFStream *)stream
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
@@ -97,7 +97,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return An initialized OFTarArchive
  */
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES

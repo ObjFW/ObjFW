@@ -42,7 +42,7 @@ of_dlopen(OFString *path, int flags)
 	if (path == nil)
 		return GetModuleHandle(NULL);
 
-	return LoadLibraryW([path UTF16String]);
+	return LoadLibraryW(path.UTF16String);
 #endif
 }
 
@@ -87,10 +87,10 @@ of_dlerror(void)
 
 #if defined(OF_MACOS)
 	path = [path stringByAppendingFormat: @".bundle/Contents/MacOS/%@",
-					      [path lastPathComponent]];
+					      path.lastPathComponent];
 #elif defined(OF_IOS)
 	path = [path stringByAppendingFormat: @".bundle/%@",
-					      [path lastPathComponent]];
+					      path.lastPathComponent];
 #else
 	path = [path stringByAppendingString: @PLUGIN_SUFFIX];
 #endif

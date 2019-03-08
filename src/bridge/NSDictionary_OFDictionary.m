@@ -54,7 +54,7 @@
 
 - (NSUInteger)count
 {
-	size_t count = [_dictionary count];
+	size_t count = _dictionary.count;
 
 	if (count > NSUIntegerMax)
 		@throw [OFOutOfRangeException exception];

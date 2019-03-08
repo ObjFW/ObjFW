@@ -37,7 +37,7 @@
 	self = [super init];
 
 	if (!of_condition_new(&_condition)) {
-		Class c = [self class];
+		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
@@ -72,7 +72,7 @@
 - (bool)waitUntilDate: (OFDate *)date
 {
 	return of_condition_timed_wait(&_condition, &_mutex,
-	    [date timeIntervalSinceNow]);
+	    date.timeIntervalSinceNow);
 }
 
 - (void)signal

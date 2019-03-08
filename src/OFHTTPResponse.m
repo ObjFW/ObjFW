@@ -32,8 +32,8 @@
 static of_string_encoding_t
 encodingForContentType(OFString *contentType)
 {
-	const char *UTF8String = [contentType UTF8String];
-	size_t last, length = [contentType UTF8StringLength];
+	const char *UTF8String = contentType.UTF8String;
+	size_t last, length = contentType.UTF8StringLength;
 	enum {
 		STATE_TYPE,
 		STATE_BEFORE_PARAM_NAME,
@@ -87,8 +87,8 @@ encodingForContentType(OFString *contentType)
 				value = [OFString
 				    stringWithUTF8String: UTF8String + last
 						  length: i - last];
-				value = [value
-				    stringByDeletingTrailingWhitespaces];
+				value =
+				    value.stringByDeletingTrailingWhitespaces;
 
 				if ([name isEqual: @"charset"])
 					charset = value;
@@ -121,7 +121,7 @@ encodingForContentType(OFString *contentType)
 	if (state == STATE_PARAM_VALUE) {
 		value = [OFString stringWithUTF8String: UTF8String + last
 						length: length - last];
-		value = [value stringByDeletingTrailingWhitespaces];
+		value = value.stringByDeletingTrailingWhitespaces;
 
 		if ([name isEqual: @"charset"])
 			charset = value;
@@ -185,11 +185,11 @@ encodingForContentType(OFString *contentType)
 	intmax_t major, minor;
 	of_http_request_protocol_version_t protocolVersion;
 
-	if ([components count] != 2)
+	if (components.count != 2)
 		@throw [OFInvalidFormatException exception];
 
-	major = [[components firstObject] decimalValue];
-	minor = [[components lastObject] decimalValue];
+	major = [components.firstObject decimalValue];
+	minor = [components.lastObject decimalValue];
 
 	if (major < 0 || major > UINT8_MAX || minor < 0 || minor > UINT8_MAX)
 		@throw [OFOutOfRangeException exception];
@@ -197,7 +197,7 @@ encodingForContentType(OFString *contentType)
 	protocolVersion.major = (uint8_t)major;
 	protocolVersion.minor = (uint8_t)minor;
 
-	[self setProtocolVersion: protocolVersion];
+	self.protocolVersion = protocolVersion;
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -230,12 +230,12 @@ encodingForContentType(OFString *contentType)
 	data = [self readDataUntilEndOfStream];
 
 	if ((contentLength = [_headers objectForKey: @"Content-Length"]) != nil)
-		if ([data count] != (size_t)[contentLength decimalValue])
+		if (data.count != (size_t)contentLength.decimalValue)
 			@throw [OFTruncatedDataException exception];
 
-	ret = [[OFString alloc] initWithCString: (char *)[data items]
+	ret = [[OFString alloc] initWithCString: (char *)data.items
 				       encoding: encoding
-					 length: [data count]];
+					 length: data.count];
 
 	objc_autoreleasePoolPop(pool);
 
@@ -247,7 +247,7 @@ encodingForContentType(OFString *contentType)
 	void *pool = objc_autoreleasePoolPush();
 	OFString *indentedHeaders, *ret;
 
-	indentedHeaders = [[_headers description]
+	indentedHeaders = [_headers.description
 	    stringByReplacingOccurrencesOfString: @"\n"
 				      withString: @"\n\t"];
 
@@ -256,7 +256,7 @@ encodingForContentType(OFString *contentType)
 	    @"\tStatus code = %d\n"
 	    @"\tHeaders = %@\n"
 	    @">",
-	    [self class], _statusCode, indentedHeaders];
+	    self.class, _statusCode, indentedHeaders];
 
 	objc_autoreleasePoolPop(pool);
 

@@ -122,7 +122,7 @@ static const of_map_table_functions_t objectFunctions = {
 	}
 
 	@try {
-		count = [dictionary count];
+		count = dictionary.count;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -256,13 +256,13 @@ static const of_map_table_functions_t objectFunctions = {
 		objects = [element elementsForName: @"object"
 					 namespace: OF_SERIALIZATION_NS];
 
-		if ([keys count] != [objects count])
+		if (keys.count != objects.count)
 			@throw [OFInvalidFormatException exception];
 
 		_mapTable = [[OFMapTable alloc]
 		    initWithKeyFunctions: keyFunctions
 			 objectFunctions: objectFunctions
-				capacity: [keys count]];
+				capacity: keys.count];
 
 		keyEnumerator = [keys objectEnumerator];
 		objectEnumerator = [objects objectEnumerator];
@@ -271,16 +271,16 @@ static const of_map_table_functions_t objectFunctions = {
 			void *pool2 = objc_autoreleasePoolPush();
 			OFXMLElement *key, *object;
 
-			key = [[keyElement elementsForNamespace:
-			    OF_SERIALIZATION_NS] firstObject];
-			object = [[objectElement elementsForNamespace:
-			    OF_SERIALIZATION_NS] firstObject];
+			key = [keyElement elementsForNamespace:
+			    OF_SERIALIZATION_NS].firstObject;
+			object = [objectElement elementsForNamespace:
+			    OF_SERIALIZATION_NS].firstObject;
 
 			if (key == nil || object == nil)
 				@throw [OFInvalidFormatException exception];
 
-			[_mapTable setObject: [object objectByDeserializing]
-				      forKey: [key objectByDeserializing]];
+			[_mapTable setObject: object.objectByDeserializing
+				      forKey: key.objectByDeserializing];
 
 			objc_autoreleasePoolPop(pool2);
 		}
@@ -308,7 +308,7 @@ static const of_map_table_functions_t objectFunctions = {
 
 - (size_t)count
 {
-	return [_mapTable count];
+	return _mapTable.count;
 }
 
 - (bool)isEqual: (id)object
@@ -343,7 +343,7 @@ static const of_map_table_functions_t objectFunctions = {
 	id *keys;
 	size_t count;
 
-	count = [_mapTable count];
+	count = _mapTable.count;
 	keys = [self allocMemoryWithSize: sizeof(*keys)
 				   count: count];
 
@@ -378,7 +378,7 @@ static const of_map_table_functions_t objectFunctions = {
 	id *objects;
 	size_t count;
 
-	count = [_mapTable count];
+	count = _mapTable.count;
 	objects = [self allocMemoryWithSize: sizeof(*objects)
 				      count: count];
 
@@ -448,6 +448,6 @@ static const of_map_table_functions_t objectFunctions = {
 
 - (uint32_t)hash
 {
-	return [_mapTable hash];
+	return _mapTable.hash;
 }
 @end

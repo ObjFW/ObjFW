@@ -50,7 +50,7 @@ static OFArray *
 parseSequence(OFData *contents, size_t depthLimit)
 {
 	OFMutableArray *ret = [OFMutableArray array];
-	size_t count = [contents count];
+	size_t count = contents.count;
 
 	if (depthLimit == 0)
 		@throw [OFOutOfRangeException exception];
@@ -77,7 +77,7 @@ static OFSet *
 parseSet(OFData *contents, size_t depthLimit)
 {
 	OFMutableSet *ret = [OFMutableSet set];
-	size_t count = [contents count];
+	size_t count = contents.count;
 	OFData *previousObjectData = nil;
 
 	if (depthLimit == 0)
@@ -114,8 +114,8 @@ parseSet(OFData *contents, size_t depthLimit)
 static size_t
 parseObject(OFData *self, id *object, size_t depthLimit)
 {
-	const unsigned char *items = [self items];
-	size_t count = [self count];
+	const unsigned char *items = self.items;
+	size_t count = self.count;
 	unsigned char tag;
 	size_t contentsLength, bytesConsumed = 0;
 	Class valueClass;
@@ -177,7 +177,7 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 		if (tag & ASN1_TAG_CONSTRUCTED_MASK)
 			@throw [OFInvalidFormatException exception];
 
-		if ([contents count] != 0)
+		if (contents.count != 0)
 			@throw [OFInvalidFormatException exception];
 
 		*object = [OFNull null];
@@ -236,10 +236,10 @@ parseObject(OFData *self, id *object, size_t depthLimit)
 	void *pool = objc_autoreleasePoolPush();
 	id object;
 
-	if ([self itemSize] != 1)
+	if (self.itemSize != 1)
 		@throw [OFInvalidArgumentException exception];
 
-	if (parseObject(self, &object, depthLimit) != [self count])
+	if (parseObject(self, &object, depthLimit) != self.count)
 		@throw [OFInvalidFormatException exception];
 
 	[object retain];

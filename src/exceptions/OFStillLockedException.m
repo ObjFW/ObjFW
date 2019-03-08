@@ -54,7 +54,7 @@
 	if (_lock != nil)
 		return [OFString stringWithFormat:
 		    @"Deallocation of a lock of type %@ even though it was "
-		    @"still locked!", [_lock class]];
+		    @"still locked!", _lock.class];
 	else
 		return @"Deallocation of a lock even though it was still "
 		    @"locked!";

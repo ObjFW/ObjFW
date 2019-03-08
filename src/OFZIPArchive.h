@@ -33,7 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFZIPArchive: OFObject
 {
-	OF_KINDOF(OFStream *) _stream;
+	OFStream *_stream;
 	int64_t _offset;
 	enum {
 		OF_ZIP_ARCHIVE_MODE_READ,
@@ -77,7 +77,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return A new, autoreleased OFZIPArchive
  */
-+ (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
++ (instancetype)archiveWithStream: (OFStream *)stream
 			     mode: (OFString *)mode;
 
 #ifdef OF_HAVE_FILES
@@ -107,7 +107,7 @@ OF_ASSUME_NONNULL_BEGIN
  *	       archive.
  * @return An initialized OFZIPArchive
  */
-- (instancetype)initWithStream: (OF_KINDOF(OFStream *))stream
+- (instancetype)initWithStream: (OFStream *)stream
 			  mode: (OFString *)mode OF_DESIGNATED_INITIALIZER;
 
 #ifdef OF_HAVE_FILES

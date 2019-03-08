@@ -51,7 +51,7 @@
 #ifndef OF_WINDOWS
 	if (_cancelFD[0] >= (int)FD_SETSIZE)
 		@throw [OFInitializationFailedException
-		    exceptionWithClass: [self class]];
+		    exceptionWithClass: self.class];
 #endif
 
 	FD_ZERO(&_readFDs);
@@ -68,7 +68,7 @@
 
 - (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	int fd = [object fileDescriptorForReading];
+	int fd = object.fileDescriptorForReading;
 
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
@@ -86,7 +86,7 @@
 
 - (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	int fd = [object fileDescriptorForWriting];
+	int fd = object.fileDescriptorForWriting;
 
 	if (fd < 0 || fd > INT_MAX - 1)
 		@throw [OFOutOfRangeException exception];
@@ -106,7 +106,7 @@
 {
 	/* TODO: Adjust _maxFD */
 
-	int fd = [object fileDescriptorForReading];
+	int fd = object.fileDescriptorForReading;
 
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
@@ -123,7 +123,7 @@
 {
 	/* TODO: Adjust _maxFD */
 
-	int fd = [object fileDescriptorForWriting];
+	int fd = object.fileDescriptorForWriting;
 
 	if (fd < 0)
 		@throw [OFOutOfRangeException exception];
@@ -189,8 +189,8 @@
 #endif
 	}
 
-	objects = [_readObjects objects];
-	count = [_readObjects count];
+	objects = _readObjects.objects;
+	count = _readObjects.count;
 
 	for (size_t i = 0; i < count; i++) {
 		void *pool = objc_autoreleasePoolPush();
@@ -204,8 +204,8 @@
 		objc_autoreleasePoolPop(pool);
 	}
 
-	objects = [_writeObjects objects];
-	count = [_writeObjects count];
+	objects = _writeObjects.objects;
+	count = _writeObjects.count;
 
 	for (size_t i = 0; i < count; i++) {
 		void *pool = objc_autoreleasePoolPush();

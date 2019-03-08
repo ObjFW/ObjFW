@@ -74,7 +74,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param request The request for which the socket was created
  */
 -    (void)client: (OFHTTPClient *)client
-  didCreateSocket: (OF_KINDOF(OFTCPSocket *))socket
+  didCreateSocket: (OFTCPSocket *)socket
 	  request: (OFHTTPRequest *)request;
 
 /*!

@@ -38,7 +38,7 @@
 	self = [super init];
 
 	if (!of_rmutex_new(&_rmutex)) {
-		Class c = [self class];
+		Class c = self.class;
 		[self release];
 		@throw [OFInitializationFailedException exceptionWithClass: c];
 	}
@@ -79,9 +79,8 @@
 - (OFString *)description
 {
 	if (_name == nil)
-		return [super description];
+		return super.description;
 
-	return [OFString stringWithFormat: @"<%@: %@>",
-					   [self className], _name];
+	return [OFString stringWithFormat: @"<%@: %@>", self.className, _name];
 }
 @end

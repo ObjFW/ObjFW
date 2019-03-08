@@ -32,7 +32,7 @@
 	@try {
 		if (dictionary == nil)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		_dictionary = [dictionary retain];
 	} @catch (id e) {
@@ -60,6 +60,6 @@
 
 - (size_t)count
 {
-	return [_dictionary count];
+	return _dictionary.count;
 }
 @end

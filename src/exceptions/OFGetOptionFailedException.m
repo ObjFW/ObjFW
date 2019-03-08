@@ -63,6 +63,6 @@
 {
 	return [OFString stringWithFormat:
 	    @"Getting an option in a stream of type %@ failed: %@",
-	    [_stream class], of_strerror(_errNo)];
+	    _stream.class, of_strerror(_errNo)];
 }
 @end

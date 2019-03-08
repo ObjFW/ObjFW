@@ -239,14 +239,14 @@ static struct {
 }
 
 #ifdef OF_HAVE_UNICODE_TABLES
-- (void)of_convertWithWordStartTable: (const of_unichar_t *const[])startTable
-		     wordMiddleTable: (const of_unichar_t *const[])middleTable
+- (void)of_convertWithWordStartTable: (const of_unichar_t *const [])startTable
+		     wordMiddleTable: (const of_unichar_t *const [])middleTable
 		  wordStartTableSize: (size_t)startTableSize
 		 wordMiddleTableSize: (size_t)middleTableSize
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = [self characters];
-	size_t length = [self length];
+	const of_unichar_t *characters = self.characters;
+	size_t length = self.length;
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
@@ -276,8 +276,8 @@ static struct {
 		     wordMiddleFunction: (char (*)(char))middleFunction
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = [self characters];
-	size_t length = [self length];
+	const of_unichar_t *characters = self.characters;
+	size_t length = self.length;
 	bool isStart = true;
 
 	for (size_t i = 0; i < length; i++) {
@@ -314,7 +314,7 @@ static struct {
 - (void)appendString: (OFString *)string
 {
 	[self insertString: string
-		   atIndex: [self length]];
+		   atIndex: self.length];
 }
 
 - (void)appendCharacters: (const of_unichar_t *)characters
@@ -391,7 +391,7 @@ static struct {
 	if (format == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	if ((UTF8StringLength = of_vasprintf(&UTF8String, [format UTF8String],
+	if ((UTF8StringLength = of_vasprintf(&UTF8String, format.UTF8String,
 	    arguments)) == -1)
 		@throw [OFInvalidFormatException exception];
 
@@ -411,7 +411,7 @@ static struct {
 
 - (void)reverse
 {
-	size_t i, j, length = [self length];
+	size_t i, j, length = self.length;
 
 	for (i = 0, j = length - 1; i < length / 2; i++, j--) {
 		of_unichar_t tmp = [self characterAtIndex: j];
@@ -491,7 +491,7 @@ static struct {
 	[self replaceOccurrencesOfString: string
 			      withString: replacement
 				 options: 0
-				   range: of_range(0, [self length])];
+				   range: of_range(0, self.length)];
 }
 
 - (void)replaceOccurrencesOfString: (OFString *)string
@@ -501,15 +501,15 @@ static struct {
 {
 	void *pool = objc_autoreleasePoolPush(), *pool2;
 	const of_unichar_t *characters;
-	const of_unichar_t *searchCharacters = [string characters];
-	size_t searchLength = [string length];
-	size_t replacementLength = [replacement length];
+	const of_unichar_t *searchCharacters = string.characters;
+	size_t searchLength = string.length;
+	size_t replacementLength = replacement.length;
 
 	if (string == nil || replacement == nil)
 		@throw [OFInvalidArgumentException exception];
 
 	if (range.length > SIZE_MAX - range.location ||
-	    range.location + range.length > [self length])
+	    range.location + range.length > self.length)
 		@throw [OFOutOfRangeException exception];
 
 	if (searchLength > range.length) {
@@ -518,7 +518,7 @@ static struct {
 	}
 
 	pool2 = objc_autoreleasePoolPush();
-	characters = [self characters];
+	characters = self.characters;
 
 	for (size_t i = range.location; i <= range.length - searchLength; i++) {
 		if (memcmp(characters + i, searchCharacters,
@@ -536,7 +536,7 @@ static struct {
 		objc_autoreleasePoolPop(pool2);
 		pool2 = objc_autoreleasePoolPush();
 
-		characters = [self characters];
+		characters = self.characters;
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -545,8 +545,8 @@ static struct {
 - (void)deleteLeadingWhitespaces
 {
 	void *pool = objc_autoreleasePoolPush();
-	const of_unichar_t *characters = [self characters];
-	size_t i, length = [self length];
+	const of_unichar_t *characters = self.characters;
+	size_t i, length = self.length;
 
 	for (i = 0; i < length; i++) {
 		of_unichar_t c = characters[i];
@@ -566,13 +566,13 @@ static struct {
 	const of_unichar_t *characters, *p;
 	size_t length, d;
 
-	length = [self length];
+	length = self.length;
 
 	if (length == 0)
 		return;
 
 	pool = objc_autoreleasePoolPush();
-	characters = [self characters];
+	characters = self.characters;
 
 	d = 0;
 	for (p = characters + length - 1; p >= characters; p--) {

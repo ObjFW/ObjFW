@@ -143,7 +143,7 @@ extern char **environ;
 
 		if (pipe(_readPipe) != 0 || pipe(_writePipe) != 0)
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		path = [program cStringWithEncoding: [OFLocale encoding]];
 		[self of_getArgv: &argv
@@ -159,13 +159,13 @@ extern char **environ;
 
 			if (posix_spawn_file_actions_init(&actions) != 0)
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 
 			if (posix_spawnattr_init(&attr) != 0) {
 				posix_spawn_file_actions_destroy(&actions);
 
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 			}
 
 			@try {
@@ -178,19 +178,19 @@ extern char **environ;
 				    posix_spawn_file_actions_adddup2(&actions,
 				    _readPipe[1], 1) != 0)
 					@throw [OFInitializationFailedException
-					    exceptionWithClass: [self class]];
+					    exceptionWithClass: self.class];
 
 #  ifdef POSIX_SPAWN_CLOEXEC_DEFAULT
 				if (posix_spawnattr_setflags(&attr,
 				    POSIX_SPAWN_CLOEXEC_DEFAULT) != 0)
 					@throw [OFInitializationFailedException
-					    exceptionWithClass: [self class]];
+					    exceptionWithClass: self.class];
 #  endif
 
 				if (posix_spawnp(&_pid, path, &actions, &attr,
 				    argv, env) != 0)
 					@throw [OFInitializationFailedException
-					    exceptionWithClass: [self class]];
+					    exceptionWithClass: self.class];
 			} @finally {
 				posix_spawn_file_actions_destroy(&actions);
 				posix_spawnattr_destroy(&attr);
@@ -210,7 +210,7 @@ extern char **environ;
 
 			if (_pid == -1)
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 # endif
 		} @finally {
 			close(_readPipe[1]);
@@ -234,20 +234,20 @@ extern char **environ;
 
 		if (!CreatePipe(&_readPipe[0], &_readPipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		if (!SetHandleInformation(_readPipe[0], HANDLE_FLAG_INHERIT, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		if (!CreatePipe(&_writePipe[0], &_writePipe[1], &sa, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		if (!SetHandleInformation(_writePipe[1],
 		    HANDLE_FLAG_INHERIT, 0))
 			@throw [OFInitializationFailedException
-			    exceptionWithClass: [self class]];
+			    exceptionWithClass: self.class];
 
 		memset(&pi, 0, sizeof(pi));
 		memset(&si, 0, sizeof(si));
@@ -293,19 +293,19 @@ extern char **environ;
 				[argumentsString appendString: @"\""];
 		}
 
-		length = [argumentsString UTF16StringLength];
+		length = argumentsString.UTF16StringLength;
 		argumentsCopy = [self allocMemoryWithSize: sizeof(of_char16_t)
 						    count: length + 1];
-		memcpy(argumentsCopy, [argumentsString UTF16String],
-		    ([argumentsString UTF16StringLength] + 1) * 2);
+		memcpy(argumentsCopy, argumentsString.UTF16String,
+		    (argumentsString.UTF16StringLength + 1) * 2);
 		@try {
-			if (!CreateProcessW([program UTF16String],
+			if (!CreateProcessW(program.UTF16String,
 			    argumentsCopy, NULL, NULL, TRUE,
 			    CREATE_UNICODE_ENVIRONMENT,
 			    [self of_environmentForDictionary: environment],
 			    NULL, &si, &pi))
 				@throw [OFInitializationFailedException
-				    exceptionWithClass: [self class]];
+				    exceptionWithClass: self.class];
 		} @finally {
 			[self freeMemory: argumentsCopy];
 		}
@@ -338,8 +338,8 @@ extern char **environ;
     forProgramName: (OFString *)programName
       andArguments: (OFArray *)arguments
 {
-	OFString *const *objects = [arguments objects];
-	size_t i, count = [arguments count];
+	OFString *const *objects = arguments.objects;
+	size_t i, count = arguments.count;
 	of_string_encoding_t encoding;
 
 	*argv = [self allocMemoryWithSize: sizeof(char *)
@@ -368,7 +368,7 @@ extern char **environ;
 
 	encoding = [OFLocale encoding];
 
-	count = [environment count];
+	count = environment.count;
 	envp = [self allocMemoryWithSize: sizeof(char *)
 				   count: count + 1];
 
@@ -417,19 +417,19 @@ extern char **environ;
 	objectEnumerator = [environment objectEnumerator];
 	while ((key = [keyEnumerator nextObject]) != nil &&
 	    (object = [objectEnumerator nextObject]) != nil) {
-		[env addItems: [key UTF16String]
-			count: [key UTF16StringLength]];
+		[env addItems: key.UTF16String
+			count: key.UTF16StringLength];
 		[env addItems: &equal
 			count: 1];
-		[env addItems: [object UTF16String]
-			count: [object UTF16StringLength]];
+		[env addItems: object.UTF16String
+			count: object.UTF16StringLength];
 		[env addItems: &zero
 			count: 1];
 	}
 	[env addItems: zero
 		count: 2];
 
-	return [env items];
+	return env.items;
 }
 #endif
 

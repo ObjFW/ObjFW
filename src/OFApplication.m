@@ -98,7 +98,7 @@ static OFApplication *app = nil;
 static void
 atexitHandler(void)
 {
-	id <OFApplicationDelegate> delegate = [app delegate];
+	id <OFApplicationDelegate> delegate = app.delegate;
 
 	if ([delegate respondsToSelector: @selector(applicationWillTerminate)])
 		[delegate applicationWillTerminate];
@@ -147,7 +147,7 @@ of_application_main(int *argc, char **argv[],
 	   andWideArgumentValues: wargv];
 #endif
 
-	[app setDelegate: delegate];
+	app.delegate = delegate;
 
 	[app of_run];
 
@@ -171,17 +171,17 @@ of_application_main(int *argc, char **argv[],
 
 + (OFString *)programName
 {
-	return [app programName];
+	return app.programName;
 }
 
 + (OFArray *)arguments
 {
-	return [app arguments];
+	return app.arguments;
 }
 
 + (OFDictionary *)environment
 {
-	return [app environment];
+	return app.environment;
 }
 
 + (void)terminate
@@ -263,7 +263,7 @@ of_application_main(int *argc, char **argv[],
 
 			key = [tmp substringWithRange: of_range(0, pos)];
 			value = [tmp substringWithRange:
-			    of_range(pos + 1, [tmp length] - pos - 1)];
+			    of_range(pos + 1, tmp.length - pos - 1)];
 
 			[_environment setObject: value
 					 forKey: key];
@@ -577,14 +577,14 @@ of_application_main(int *argc, char **argv[],
 
 - (void)terminate
 {
-	[[self class] terminate];
+	[self.class terminate];
 
 	OF_UNREACHABLE
 }
 
 - (void)terminateWithStatus: (int)status
 {
-	[[self class] terminateWithStatus: status];
+	[self.class terminateWithStatus: status];
 
 	OF_UNREACHABLE
 }
@@ -602,15 +602,15 @@ of_application_main(int *argc, char **argv[],
 	if (_activeSandbox != nil && sandbox != _activeSandbox)
 		@throw [OFInvalidArgumentException exception];
 
-	unveiledPaths = [sandbox unveiledPaths];
-	unveiledPathsCount = [unveiledPaths count];
+	unveiledPaths = sandbox.unveiledPaths;
+	unveiledPathsCount = unveiledPaths.count;
 
 	for (size_t i = sandbox->_unveiledPathsIndex;
 	    i < unveiledPathsCount; i++) {
 		of_sandbox_unveil_path_t unveiledPath =
 		    [unveiledPaths objectAtIndex: i];
-		OFString *path = [unveiledPath firstObject];
-		OFString *permissions = [unveiledPath secondObject];
+		OFString *path = unveiledPath.firstObject;
+		OFString *permissions = unveiledPath.secondObject;
 
 		if (path == nil || permissions == nil)
 			@throw [OFInvalidArgumentException exception];
@@ -621,7 +621,7 @@ of_application_main(int *argc, char **argv[],
 
 	sandbox->_unveiledPathsIndex = unveiledPathsCount;
 
-	promises = [[sandbox pledgeString] cStringWithEncoding: encoding];
+	promises = [sandbox.pledgeString cStringWithEncoding: encoding];
 
 	if (pledge(promises, NULL) != 0)
 		@throw [OFSandboxActivationFailedException
@@ -644,10 +644,10 @@ of_application_main(int *argc, char **argv[],
 	if (_activeExecSandbox != nil && sandbox != _activeExecSandbox)
 		@throw [OFInvalidArgumentException exception];
 
-	if ([[sandbox unveiledPaths] count] != 0)
+	if (sandbox.unveiledPaths.count != 0)
 		@throw [OFInvalidArgumentException exception];
 
-	promises = [[sandbox pledgeString]
+	promises = [sandbox.pledgeString
 	    cStringWithEncoding: [OFLocale encoding]];
 
 	if (pledge(NULL, promises) != 0)
