@@ -536,9 +536,8 @@ static Class CDATAClass = Nil;
 			    exceptionWithNamespace: [attribute namespace]
 					   element: self];
 
-		length += attributeNameLength +
-		    (attributePrefix != nil ?
-		    attributePrefix.UTF8StringLength + 1 : 0) +
+		length += attributeNameLength + (attributePrefix != nil
+		    ? attributePrefix.UTF8StringLength + 1 : 0) +
 		    tmp.UTF8StringLength + 4;
 
 		@try {

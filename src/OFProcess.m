@@ -429,7 +429,7 @@ extern char **environ;
 	[env addItems: zero
 		count: 2];
 
-	return env.items;
+	return env.mutableItems;
 }
 #endif
 

@@ -40,8 +40,7 @@
 
 @interface OFLHAArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
 {
-	OFStream *_stream;
-	OFStream *_decompressedStream;
+	OFStream *_stream, *_decompressedStream;
 	OFLHAArchiveEntry *_entry;
 	uint32_t _toRead, _bytesConsumed;
 	uint16_t _CRC16;

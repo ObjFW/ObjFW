@@ -109,9 +109,9 @@
 			if (![_stream isKindOfClass: [OFSeekableStream class]])
 				@throw [OFInvalidArgumentException exception];
 
-			[(OFSeekableStream *)stream seekToOffset: -1024
-							  whence: SEEK_END];
-			[stream readIntoBuffer: buffer.c
+			[(OFSeekableStream *)_stream seekToOffset: -1024
+							   whence: SEEK_END];
+			[_stream readIntoBuffer: buffer.c
 				    exactLength: 1024];
 
 			for (size_t i = 0; i < 1024 / sizeof(uint32_t); i++)

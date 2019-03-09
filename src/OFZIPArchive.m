@@ -76,8 +76,7 @@
 
 @interface OFZIPArchive_FileReadStream: OFStream
 {
-	OFStream *_stream;
-	OFStream *_decompressedStream;
+	OFStream *_stream, *_decompressedStream;
 	OFZIPArchiveEntry *_entry;
 	uint64_t _toRead;
 	uint32_t _CRC32;

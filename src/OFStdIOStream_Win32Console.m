@@ -168,7 +168,7 @@
 					_incompleteUTF16Surrogate = c;
 
 					if (rest != nil) {
-						char *items = rest.items;
+						const char *items = rest.items;
 						size_t count = rest.count;
 
 						[self unreadFromBuffer: items

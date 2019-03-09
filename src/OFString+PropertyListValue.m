@@ -119,13 +119,13 @@ parseFalseElement(OFXMLElement *element)
 static OFNumber *
 parseRealElement(OFXMLElement *element)
 {
-	return [OFNumber numberWithDouble: element.stringValue.doubleValue];
+	return [OFNumber numberWithDouble: element.doubleValue];
 }
 
 static OFNumber *
 parseIntegerElement(OFXMLElement *element)
 {
-	return [OFNumber numberWithIntMax: element.stringValue.decimalValue];
+	return [OFNumber numberWithIntMax: element.decimalValue];
 }
 
 static id

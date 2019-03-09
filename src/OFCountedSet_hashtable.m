@@ -149,8 +149,7 @@
 			if (object == nil || countAttribute == nil)
 				@throw [OFInvalidFormatException exception];
 
-			signedCount =
-			    countAttribute.stringValue.decimalValue;
+			signedCount = countAttribute.decimalValue;
 			if (signedCount < 0)
 			       @throw [OFOutOfRangeException exception];
 

@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #import "OFLHAArchive_LHStream.h"
+#import "OFKernelEventObserver.h"
 
 #import "huffman_tree.h"
 

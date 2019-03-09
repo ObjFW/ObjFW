@@ -208,7 +208,7 @@
 
 			ret = [OFMutableData dataWithCapacity: length];
 			[ret increaseCountBy: length];
-			buffer = ret.items;
+			buffer = ret.mutableItems;
 
 			continue;
 		default:
