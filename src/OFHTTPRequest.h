@@ -106,6 +106,8 @@ typedef struct OF_BOXABLE {
 
 /*!
  * @brief The remote address from which the request originates.
+ *
+ * @note The setter creates a copy of the remote address.
  */
 @property OF_NULLABLE_PROPERTY (nonatomic)
     const of_socket_address_t *remoteAddress;
