@@ -26,6 +26,8 @@
 #import "OFHashAlreadyCalculatedException.h"
 #import "OFOutOfRangeException.h"
 
+#define BLOCK_SIZE 64
+
 @interface OFSHA224Or256Hash ()
 - (void)of_resetState;
 @end
@@ -125,7 +127,7 @@ processBlock(uint32_t *state, uint32_t *buffer)
 
 + (size_t)blockSize
 {
-	return 64;
+	return BLOCK_SIZE;
 }
 
 + (instancetype)cryptoHash
@@ -166,6 +168,16 @@ processBlock(uint32_t *state, uint32_t *buffer)
 	[_iVarsData release];
 
 	[super dealloc];
+}
+
+- (size_t)digestSize
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
+- (size_t)blockSize
+{
+	return BLOCK_SIZE;
 }
 
 - (id)copy

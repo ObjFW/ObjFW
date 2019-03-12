@@ -35,6 +35,16 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 
 /*!
+ * @brief The digest size of the cryptographic hash, in bytes.
+ */
+@property (readonly, nonatomic) size_t digestSize;
+
+/*!
+ * @brief The block size of the cryptographic hash, in bytes.
+ */
+@property (readonly, nonatomic) size_t blockSize;
+
+/*!
  * @brief A boolean whether the hash has already been calculated.
  */
 @property (readonly, nonatomic, getter=isCalculated) bool calculated;

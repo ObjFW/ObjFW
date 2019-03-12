@@ -78,7 +78,7 @@
 			[hash updateWithBuffer: key
 					length: length];
 
-			length = [_hashClass digestSize];
+			length = hash.digestSize;
 			if OF_UNLIKELY (length > blockSize)
 				length = blockSize;
 
@@ -142,7 +142,7 @@
 		return _outerHash.digest;
 
 	[_outerHash updateWithBuffer: _innerHash.digest
-			      length: [_hashClass digestSize]];
+			      length: _innerHash.digestSize];
 	_calculated = true;
 
 	return _outerHash.digest;

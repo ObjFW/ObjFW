@@ -19,10 +19,17 @@
 
 #import "OFSHA384Hash.h"
 
+#define DIGEST_SIZE 48
+
 @implementation OFSHA384Hash
 + (size_t)digestSize
 {
-	return 48;
+	return DIGEST_SIZE;
+}
+
+- (size_t)digestSize
+{
+	return DIGEST_SIZE;
 }
 
 - (void)of_resetState

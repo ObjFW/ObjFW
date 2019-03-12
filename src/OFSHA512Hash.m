@@ -19,10 +19,17 @@
 
 #import "OFSHA512Hash.h"
 
+#define DIGEST_SIZE 64
+
 @implementation OFSHA512Hash
 + (size_t)digestSize
 {
-	return 64;
+	return DIGEST_SIZE;
+}
+
+- (size_t)digestSize
+{
+	return DIGEST_SIZE;
 }
 
 - (void)of_resetState
