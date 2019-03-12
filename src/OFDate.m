@@ -349,7 +349,8 @@ tmAndTzToTime(struct tm *tm, int16_t *tz)
 		    ![element.namespace isEqual: OF_SERIALIZATION_NS])
 			@throw [OFInvalidArgumentException exception];
 
-		d.u = OF_BSWAP64_IF_LE((uint64_t)element.hexadecimalValue);
+		d.u = (uint64_t)element.hexadecimalValue;
+		d.u = OF_BSWAP64_IF_LE(d.u);
 		_seconds = OF_BSWAP_DOUBLE_IF_LE(d.d);
 
 		objc_autoreleasePoolPop(pool);
