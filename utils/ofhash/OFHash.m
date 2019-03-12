@@ -92,9 +92,9 @@ hashForName(OFString *name)
 
 	sandbox = [[OFSandbox alloc] init];
 	@try {
-		[sandbox setAllowsStdIO: true];
-		[sandbox setAllowsReadingFiles: true];
-		[sandbox setAllowsUserDatabaseReading: true];
+		sandbox.allowsStdIO = true;
+		sandbox.allowsReadingFiles = true;
+		sandbox.allowsUserDatabaseReading = true;
 
 		for (OFString *path in arguments) {
 			if (first) {
@@ -122,10 +122,10 @@ hashForName(OFString *name)
 	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
 #endif
 
-	if ([arguments count] < 2)
+	if (arguments.count < 2)
 		help();
 
-	if ((hash = hashForName([arguments firstObject])) == nil)
+	if ((hash = hashForName(arguments.firstObject)) == nil)
 		help();
 
 	for (OFString *path in arguments) {
@@ -149,13 +149,13 @@ hashForName(OFString *name)
 						       mode: @"r"];
 			} @catch (OFOpenItemFailedException *e) {
 				OFString *error = [OFString
-				    stringWithCString: strerror([e errNo])
+				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
 
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"failed_to_open_file",
 				    @"Failed to open file %[file]: %[error]",
-				    @"file", [e path],
+				    @"file", e.path,
 				    @"error", error)];
 
 				exitStatus = 1;
@@ -165,7 +165,7 @@ hashForName(OFString *name)
 
 		[hash reset];
 
-		while (![file isAtEndOfStream]) {
+		while (!file.atEndOfStream) {
 			uint8_t buffer[1024];
 			size_t length;
 
@@ -174,7 +174,7 @@ hashForName(OFString *name)
 						       length: 1024];
 			} @catch (OFReadFailedException *e) {
 				OFString *error = [OFString
-				    stringWithCString: strerror([e errNo])
+				    stringWithCString: strerror(e.errNo)
 					     encoding: [OFLocale encoding]];
 
 				[of_stderr writeLine: OF_LOCALIZED(
@@ -193,8 +193,8 @@ hashForName(OFString *name)
 
 		[file close];
 
-		digest = [hash digest];
-		digestSize = [[hash class] digestSize];
+		digest = hash.digest;
+		digestSize = hash.digestSize;
 
 		for (size_t i = 0; i < digestSize; i++)
 			[of_stdout writeFormat: @"%02x", digest[i]];

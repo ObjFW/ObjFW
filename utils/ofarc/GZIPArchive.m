@@ -48,7 +48,7 @@ setPermissions(OFString *destination, OFString *source)
 + (void)initialize
 {
 	if (self == [GZIPArchive class])
-		app = (OFArc *)[[OFApplication sharedApplication] delegate];
+		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
@@ -96,7 +96,7 @@ setPermissions(OFString *destination, OFString *source)
 	OFString *fileName;
 	OFFile *output;
 
-	if ([files count] != 0) {
+	if (files.count != 0) {
 		[of_stderr writeLine:
 		    OF_LOCALIZED(@"cannot_extract_specific_file_from_gz",
 		    @"Cannot extract a specific file of a .gz archive!")];
@@ -104,8 +104,8 @@ setPermissions(OFString *destination, OFString *source)
 		return;
 	}
 
-	fileName = [[app->_archivePath lastPathComponent]
-	    stringByDeletingPathExtension];
+	fileName = app->_archivePath.lastPathComponent
+	    .stringByDeletingPathExtension;
 
 	if (app->_outputLevel >= 0)
 		[of_stdout writeString: OF_LOCALIZED(@"extracting_file",
@@ -120,7 +120,7 @@ setPermissions(OFString *destination, OFString *source)
 				 mode: @"w"];
 	setPermissions(fileName, app->_archivePath);
 
-	while (![_stream isAtEndOfStream]) {
+	while (!_stream.atEndOfStream) {
 		ssize_t length = [app copyBlockFromStream: _stream
 						 toStream: output
 						 fileName: fileName];
@@ -141,10 +141,10 @@ setPermissions(OFString *destination, OFString *source)
 
 - (void)printFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
-	OFString *fileName = [[app->_archivePath lastPathComponent]
-	    stringByDeletingPathExtension];
+	OFString *fileName = app->_archivePath.lastPathComponent
+	    .stringByDeletingPathExtension;
 
-	if ([files count] > 0) {
+	if (files.count > 0) {
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"cannot_print_specific_file_from_gz",
 		    @"Cannot print a specific file of a .gz archive!")];
@@ -152,7 +152,7 @@ setPermissions(OFString *destination, OFString *source)
 		return;
 	}
 
-	while (![_stream isAtEndOfStream]) {
+	while (!_stream.atEndOfStream) {
 		ssize_t length = [app copyBlockFromStream: _stream
 						 toStream: of_stdout
 						 fileName: fileName];

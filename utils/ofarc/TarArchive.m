@@ -36,7 +36,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 {
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
 	of_file_attributes_t attributes = [OFDictionary
-	    dictionaryWithObject: [OFNumber numberWithUInt16: [entry mode]]
+	    dictionaryWithObject: [OFNumber numberWithUInt16: entry.mode]
 			  forKey: of_file_attribute_key_posix_permissions];
 
 	[[OFFileManager defaultManager] setAttributes: attributes
@@ -48,7 +48,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 + (void)initialize
 {
 	if (self == [TarArchive class])
-		app = (OFArc *)[[OFApplication sharedApplication] delegate];
+		app = (OFArc *)[OFApplication sharedApplication].delegate;
 }
 
 + (instancetype)archiveWithStream: (OF_KINDOF(OFStream *))stream
@@ -71,7 +71,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 							   mode: mode];
 
 		if (encoding != OF_STRING_ENCODING_AUTODETECT)
-			[_archive setEncoding: encoding];
+			_archive.encoding = encoding;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -94,19 +94,19 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
 
-		[of_stdout writeLine: [entry fileName]];
+		[of_stdout writeLine: entry.fileName];
 
 		if (app->_outputLevel >= 1) {
-			OFString *date = [[entry modificationDate]
+			OFString *date = [entry.modificationDate
 			    localDateStringWithFormat: @"%Y-%m-%d %H:%M:%S"];
 			OFString *size = [OFString stringWithFormat:
-			    @"%" PRIu64, [entry size]];
+			    @"%" PRIu64, entry.size];
 			OFString *mode = [OFString stringWithFormat:
-			    @"%06o", [entry mode]];
+			    @"%06o", entry.mode];
 			OFString *UID = [OFString stringWithFormat:
-			    @"%u", [entry UID]];
+			    @"%u", entry.UID];
 			OFString *GID = [OFString stringWithFormat:
-			    @"%u", [entry GID]];
+			    @"%u", entry.GID];
 
 			[of_stdout writeString: @"\t"];
 			[of_stdout writeLine: OF_LOCALIZED(@"list_size",
@@ -125,19 +125,19 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			    @"GID: %[gid]",
 			    @"gid", GID)];
 
-			if ([entry owner] != nil) {
+			if (entry.owner != nil) {
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_owner",
 				    @"Owner: %[owner]",
-				    @"owner", [entry owner])];
+				    @"owner", entry.owner)];
 			}
-			if ([entry group] != nil) {
+			if (entry.group != nil) {
 				[of_stdout writeString: @"\t"];
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_group",
 				    @"Group: %[group]",
-				    @"group", [entry group])];
+				    @"group", entry.group)];
 			}
 
 			[of_stdout writeString: @"\t"];
@@ -150,7 +150,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 		if (app->_outputLevel >= 2) {
 			[of_stdout writeString: @"\t"];
 
-			switch ([entry type]) {
+			switch (entry.type) {
 			case OF_TAR_ARCHIVE_ENTRY_TYPE_FILE:
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_normal",
@@ -164,7 +164,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_link_target",
 				    @"Target file name: %[target]",
-				    @"target", [entry targetFileName])];
+				    @"target", entry.targetFileName)];
 				break;
 			case OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK:
 				[of_stdout writeLine: OF_LOCALIZED(
@@ -174,15 +174,13 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_link_target",
 				    @"Target file name: %[target]",
-				    @"target", [entry targetFileName])];
+				    @"target", entry.targetFileName)];
 				break;
 			case OF_TAR_ARCHIVE_ENTRY_TYPE_CHARACTER_DEVICE: {
 				OFString *majorString = [OFString
-				    stringWithFormat: @"%d",
-						      [entry deviceMajor]];
+				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
-				    stringWithFormat: @"%d",
-						      [entry deviceMinor]];
+				    stringWithFormat: @"%d", entry.deviceMinor];
 
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_character_device",
@@ -201,11 +199,9 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			}
 			case OF_TAR_ARCHIVE_ENTRY_TYPE_BLOCK_DEVICE: {
 				OFString *majorString = [OFString
-				    stringWithFormat: @"%d",
-						      [entry deviceMajor]];
+				    stringWithFormat: @"%d", entry.deviceMajor];
 				OFString *minorString = [OFString
-				    stringWithFormat: @"%d",
-						      [entry deviceMinor]];
+				    stringWithFormat: @"%d", entry.deviceMinor];
 
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"list_type_block_device",
@@ -252,19 +248,19 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 - (void)extractFiles: (OFArray OF_GENERIC(OFString *) *)files
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
-	bool all = ([files count] == 0);
+	bool all = (files.count == 0);
 	OFMutableSet OF_GENERIC(OFString *) *missing =
 	    [OFMutableSet setWithArray: files];
 	OFTarArchiveEntry *entry;
 
 	while ((entry = [_archive nextEntry]) != nil) {
 		void *pool = objc_autoreleasePoolPush();
-		OFString *fileName = [entry fileName];
-		of_tar_archive_entry_type_t type = [entry type];
+		OFString *fileName = entry.fileName;
+		of_tar_archive_entry_type_t type = entry.type;
 		OFString *outFileName, *directory;
 		OFFile *output;
 		OFStream *stream;
-		uint64_t written = 0, size = [entry size];
+		uint64_t written = 0, size = entry.size;
 		int8_t percent = -1, newPercent;
 
 		if (!all && ![files containsObject: fileName])
@@ -316,7 +312,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 			goto outer_loop_end;
 		}
 
-		directory = [outFileName stringByDeletingLastPathComponent];
+		directory = outFileName.stringByDeletingLastPathComponent;
 		if (![fileManager directoryExistsAtPath: directory])
 			[fileManager createDirectoryAtPath: directory
 					     createParents: true];
@@ -330,7 +326,7 @@ setPermissions(OFString *path, OFTarArchiveEntry *entry)
 					 mode: @"w"];
 		setPermissions(outFileName, entry);
 
-		while (![stream isAtEndOfStream]) {
+		while (!stream.atEndOfStream) {
 			ssize_t length = [app copyBlockFromStream: stream
 							 toStream: output
 							 fileName: fileName];
@@ -372,7 +368,7 @@ outer_loop_end:
 		objc_autoreleasePoolPop(pool);
 	}
 
-	if ([missing count] > 0) {
+	if (missing.count > 0) {
 		for (OFString *file in missing)
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"file_not_in_archive",
@@ -388,7 +384,7 @@ outer_loop_end:
 	OFMutableSet *files;
 	OFTarArchiveEntry *entry;
 
-	if ([files_ count] < 1) {
+	if (files_.count < 1) {
 		[of_stderr writeLine: OF_LOCALIZED(@"print_no_file_specified",
 		    @"Need one or more files to print!")];
 		app->_exitStatus = 1;
@@ -398,7 +394,7 @@ outer_loop_end:
 	files = [OFMutableSet setWithArray: files_];
 
 	while ((entry = [_archive nextEntry]) != nil) {
-		OFString *fileName = [entry fileName];
+		OFString *fileName = entry.fileName;
 		OFStream *stream;
 
 		if (![files containsObject: fileName])
@@ -406,7 +402,7 @@ outer_loop_end:
 
 		stream = [_archive streamForReadingCurrentEntry];
 
-		while (![stream isAtEndOfStream]) {
+		while (!stream.atEndOfStream) {
 			ssize_t length = [app copyBlockFromStream: stream
 							 toStream: of_stdout
 							 fileName: fileName];
@@ -420,7 +416,7 @@ outer_loop_end:
 		[files removeObject: fileName];
 		[stream close];
 
-		if ([files count] == 0)
+		if (files.count == 0)
 			break;
 	}
 
@@ -436,7 +432,7 @@ outer_loop_end:
 {
 	OFFileManager *fileManager = [OFFileManager defaultManager];
 
-	if ([files count] < 1) {
+	if (files.count < 1) {
 		[of_stderr writeLine: OF_LOCALIZED(@"add_no_file_specified",
 		    @"Need one or more files to add!")];
 		app->_exitStatus = 1;
@@ -456,46 +452,46 @@ outer_loop_end:
 			    @"file", fileName)];
 
 		attributes = [fileManager attributesOfItemAtPath: fileName];
-		type = [attributes fileType];
+		type = attributes.fileType;
 		entry = [OFMutableTarArchiveEntry entryWithFileName: fileName];
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_PERMISSIONS
-		[entry setMode: [attributes filePOSIXPermissions]];
+		entry.mode = attributes.filePOSIXPermissions;
 #endif
-		[entry setSize: [attributes fileSize]];
-		[entry setModificationDate: [attributes fileModificationDate]];
+		entry.size = attributes.fileSize;
+		entry.modificationDate = attributes.fileModificationDate;
 
 #ifdef OF_FILE_MANAGER_SUPPORTS_OWNER
-		[entry setUID: [attributes filePOSIXUID]];
-		[entry setGID: [attributes filePOSIXGID]];
-		[entry setOwner: [attributes fileOwner]];
-		[entry setGroup: [attributes fileGroup]];
+		entry.UID = attributes.filePOSIXUID;
+		entry.GID = attributes.filePOSIXGID;
+		entry.owner = attributes.fileOwner;
+		entry.group = attributes.fileGroup;
 #endif
 
 		if ([type isEqual: of_file_type_regular])
-			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_FILE];
+			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_FILE;
 		else if ([type isEqual: of_file_type_directory]) {
-			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY];
-			[entry setSize: 0];
+			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_DIRECTORY;
+			entry.size = 0;
 		} else if ([type isEqual: of_file_type_symbolic_link]) {
-			[entry setType: OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK];
-			[entry setTargetFileName:
-			    [attributes fileSymbolicLinkDestination]];
-			[entry setSize: 0];
+			entry.type = OF_TAR_ARCHIVE_ENTRY_TYPE_SYMLINK;
+			entry.targetFileName =
+			    attributes.fileSymbolicLinkDestination;
+			entry.size = 0;
 		}
 
 		[entry makeImmutable];
 
 		output = [_archive streamForWritingEntry: entry];
 
-		if ([entry type] == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE) {
-			uint64_t written = 0, size = [entry size];
+		if (entry.type == OF_TAR_ARCHIVE_ENTRY_TYPE_FILE) {
+			uint64_t written = 0, size = entry.size;
 			int8_t percent = -1, newPercent;
 
 			OFFile *input = [OFFile fileWithPath: fileName
 							mode: @"r"];
 
-			while (![input isAtEndOfStream]) {
+			while (!input.atEndOfStream) {
 				ssize_t length = [app
 				    copyBlockFromStream: input
 					       toStream: output

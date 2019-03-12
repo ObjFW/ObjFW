@@ -176,14 +176,14 @@ writingNotSupported(OFString *type)
 
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [OFSandbox sandbox];
-	[sandbox setAllowsStdIO: true];
-	[sandbox setAllowsReadingFiles: true];
-	[sandbox setAllowsWritingFiles: true];
-	[sandbox setAllowsCreatingFiles: true];
-	[sandbox setAllowsChangingFileAttributes: true];
-	[sandbox setAllowsUserDatabaseReading: true];
+	sandbox.allowsStdIO = true;
+	sandbox.allowsReadingFiles = true;
+	sandbox.allowsWritingFiles = true;
+	sandbox.allowsCreatingFiles = true;
+	sandbox.allowsChangingFileAttributes = true;
+	sandbox.allowsUserDatabaseReading = true;
 	/* Dropped after parsing options */
-	[sandbox setAllowsUnveil: true];
+	sandbox.allowsUnveil = true;
 
 	[OFApplication activateSandbox: sandbox];
 #endif
@@ -248,22 +248,22 @@ writingNotSupported(OFString *type)
 			    @"option_takes_no_argument",
 			    @"%[prog]: Option --%[opt] takes no argument",
 			    @"prog", [OFApplication programName],
-			    @"opt", [optionsParser lastLongOption])];
+			    @"opt", optionsParser.lastLongOption)];
 
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case ':':
-			if ([optionsParser lastLongOption] != nil)
+			if (optionsParser.lastLongOption != nil)
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"long_option_requires_argument",
 				    @"%[prog]: Option --%[opt] requires an "
 				    @"argument",
 				    @"prog", [OFApplication programName],
-				    @"opt", [optionsParser lastLongOption])];
+				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
-				    [optionsParser lastOption]];
+				    optionsParser.lastOption];
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"option_requires_argument",
 				    @"%[prog]: Option -%[opt] requires an "
@@ -275,16 +275,16 @@ writingNotSupported(OFString *type)
 			[OFApplication terminateWithStatus: 1];
 			break;
 		case '?':
-			if ([optionsParser lastLongOption] != nil)
+			if (optionsParser.lastLongOption != nil)
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"unknown_long_option",
 				    @"%[prog]: Unknown option: --%[opt]",
 				    @"prog", [OFApplication programName],
-				    @"opt", [optionsParser lastLongOption])];
+				    @"opt", optionsParser.lastLongOption)];
 			else {
 				OFString *optStr = [OFString
 				    stringWithFormat: @"%C",
-				    [optionsParser lastOption]];
+				    optionsParser.lastOption];
 				[of_stderr writeLine: OF_LOCALIZED(
 				    @"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
@@ -309,31 +309,31 @@ writingNotSupported(OFString *type)
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	remainingArguments = [optionsParser remainingArguments];
+	remainingArguments = optionsParser.remainingArguments;
 
 	switch (mode) {
 	case 'a':
 	case 'c':
-		if ([remainingArguments count] < 1)
+		if (remainingArguments.count < 1)
 			help(of_stderr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, [remainingArguments count] - 1)];
+		    of_range(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: [remainingArguments firstObject]
+		[sandbox unveilPath: remainingArguments.firstObject
 			permissions: (mode == 'a' ? @"rwc" : @"wc")];
 
 		for (OFString *path in files)
 			[sandbox unveilPath: path
 				permissions: @"r"];
 
-		[sandbox setAllowsUnveil: false];
+		sandbox.allowsUnveil = false;
 		[OFApplication activateSandbox: sandbox];
 #endif
 
 		archive = [self
-		    openArchiveWithPath: [remainingArguments firstObject]
+		    openArchiveWithPath: remainingArguments.firstObject
 				   type: type
 				   mode: mode
 			       encoding: encoding];
@@ -341,18 +341,18 @@ writingNotSupported(OFString *type)
 		[archive addFiles: files];
 		break;
 	case 'l':
-		if ([remainingArguments count] != 1)
+		if (remainingArguments.count != 1)
 			help(of_stderr, false, 1);
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: [remainingArguments firstObject]
+		[sandbox unveilPath: remainingArguments.firstObject
 			permissions: @"r"];
-		[sandbox setAllowsUnveil: false];
+		sandbox.allowsUnveil = false;
 		[OFApplication activateSandbox: sandbox];
 #endif
 
 		archive = [self
-		    openArchiveWithPath: [remainingArguments firstObject]
+		    openArchiveWithPath: remainingArguments.firstObject
 				   type: type
 				   mode: mode
 			       encoding: encoding];
@@ -360,21 +360,21 @@ writingNotSupported(OFString *type)
 		[archive listFiles];
 		break;
 	case 'p':
-		if ([remainingArguments count] < 1)
+		if (remainingArguments.count < 1)
 			help(of_stderr, false, 1);
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: [remainingArguments firstObject]
+		[sandbox unveilPath: remainingArguments.firstObject
 			permissions: @"r"];
-		[sandbox setAllowsUnveil: false];
+		sandbox.allowsUnveil = false;
 		[OFApplication activateSandbox: sandbox];
 #endif
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, [remainingArguments count] - 1)];
+		    of_range(1, remainingArguments.count - 1)];
 
 		archive = [self
-		    openArchiveWithPath: [remainingArguments firstObject]
+		    openArchiveWithPath: remainingArguments.firstObject
 				   type: type
 				   mode: mode
 			       encoding: encoding];
@@ -382,17 +382,17 @@ writingNotSupported(OFString *type)
 		[archive printFiles: files];
 		break;
 	case 'x':
-		if ([remainingArguments count] < 1)
+		if (remainingArguments.count < 1)
 			help(of_stderr, false, 1);
 
 		files = [remainingArguments objectsInRange:
-		    of_range(1, [remainingArguments count] - 1)];
+		    of_range(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: [remainingArguments firstObject]
+		[sandbox unveilPath: remainingArguments.firstObject
 			permissions: @"r"];
 
-		if ([files count] > 0)
+		if (files.count > 0)
 			for (OFString *path in files)
 				[sandbox unveilPath: path
 					permissions: @"wc"];
@@ -404,12 +404,12 @@ writingNotSupported(OFString *type)
 				permissions: @"rwc"];
 		}
 
-		[sandbox setAllowsUnveil: false];
+		sandbox.allowsUnveil = false;
 		[OFApplication activateSandbox: sandbox];
 #endif
 
 		archive = [self
-		    openArchiveWithPath: [remainingArguments firstObject]
+		    openArchiveWithPath: remainingArguments.firstObject
 				   type: type
 				   mode: mode
 			       encoding: encoding];
@@ -422,24 +422,24 @@ writingNotSupported(OFString *type)
 			[archive extractFiles: files];
 		} @catch (OFCreateDirectoryFailedException *e) {
 			OFString *error = [OFString
-			    stringWithCString: strerror([e errNo])
+			    stringWithCString: strerror(e.errNo)
 				     encoding: [OFLocale encoding]];
 			[of_stderr writeString: @"\r"];
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"failed_to_create_directory",
 			    @"Failed to create directory %[dir]: %[error]",
-			    @"dir", [[e URL] fileSystemRepresentation],
+			    @"dir", e.URL.fileSystemRepresentation,
 			    @"error", error)];
 			_exitStatus = 1;
 		} @catch (OFOpenItemFailedException *e) {
 			OFString *error = [OFString
-			    stringWithCString: strerror([e errNo])
+			    stringWithCString: strerror(e.errNo)
 				     encoding: [OFLocale encoding]];
 			[of_stderr writeString: @"\r"];
 			[of_stderr writeLine: OF_LOCALIZED(
 			    @"failed_to_open_file",
 			    @"Failed to open file %[file]: %[error]",
-			    @"file", [e path],
+			    @"file", e.path,
 			    @"error", error)];
 			_exitStatus = 1;
 		}
@@ -490,13 +490,13 @@ writingNotSupported(OFString *type)
 				       mode: fileModeString];
 	} @catch (OFOpenItemFailedException *e) {
 		OFString *error = [OFString
-		    stringWithCString: strerror([e errNo])
+		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
 		[of_stderr writeString: @"\r"];
 		[of_stderr writeLine: OF_LOCALIZED(
 		    @"failed_to_open_file",
 		    @"Failed to open file %[file]: %[error]",
-		    @"file", [e path],
+		    @"file", e.path,
 		    @"error", error)];
 		[OFApplication terminateWithStatus: 1];
 	}
@@ -548,8 +548,7 @@ writingNotSupported(OFString *type)
 			goto error;
 		}
 	} @catch (OFNotImplementedException *e) {
-		if ((mode == 'a' || mode == 'c') &&
-		    sel_isEqual([e selector],
+		if ((mode == 'a' || mode == 'c') && sel_isEqual(e.selector,
 		    @selector(initWithStream:mode:))) {
 			writingNotSupported(type);
 			goto error;
@@ -558,7 +557,7 @@ writingNotSupported(OFString *type)
 		@throw e;
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
-		    stringWithCString: strerror([e errNo])
+		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
 		    @"Failed to read file %[file]: %[error]",
@@ -567,7 +566,7 @@ writingNotSupported(OFString *type)
 		goto error;
 	} @catch (OFSeekFailedException *e) {
 		OFString *error = [OFString
-		    stringWithCString: strerror([e errNo])
+		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_seek_in_file",
 		    @"Failed to seek in file %[file]: %[error]",
@@ -668,7 +667,7 @@ error:
 					length: BUFFER_SIZE];
 	} @catch (OFReadFailedException *e) {
 		OFString *error = [OFString
-		    stringWithCString: strerror([e errNo])
+		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
 		[of_stdout writeString: @"\r"];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_read_file",
@@ -683,7 +682,7 @@ error:
 			     length: length];
 	} @catch (OFWriteFailedException *e) {
 		OFString *error = [OFString
-		    stringWithCString: strerror([e errNo])
+		    stringWithCString: strerror(e.errNo)
 			     encoding: [OFLocale encoding]];
 		[of_stdout writeString: @"\r"];
 		[of_stderr writeLine: OF_LOCALIZED(@"failed_to_write_file",
@@ -700,7 +699,7 @@ error:
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	path = [path stringByStandardizingPath];
+	path = path.stringByStandardizingPath;
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	if ([path containsString: @":"] || [path hasPrefix: @"\\"]) {
@@ -713,7 +712,7 @@ error:
 		return nil;
 	}
 
-	if ([path length] == 0) {
+	if (path.length == 0) {
 		objc_autoreleasePoolPop(pool);
 		return nil;
 	}
@@ -724,11 +723,11 @@ error:
 	 * first component should be enough. But it does not hurt being
 	 * paranoid and checking all components, just in case.
 	 */
-	for (OFString *component in [path pathComponents]) {
+	for (OFString *component in path.pathComponents) {
 #ifdef OF_AMIGAOS
-		if ([component length] == 0 || [component isEqual: @"/"]) {
+		if (component.length == 0 || [component isEqual: @"/"]) {
 #else
-		if ([component length] == 0 || [component isEqual: @".."]) {
+		if (component.length == 0 || [component isEqual: @".."]) {
 #endif
 			objc_autoreleasePoolPop(pool);
 			return nil;

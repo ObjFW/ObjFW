@@ -63,8 +63,8 @@ OF_APPLICATION_DELEGATE(OFDNS)
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [[OFSandbox alloc] init];
 	@try {
-		[sandbox setAllowsStdIO: true];
-		[sandbox setAllowsDNS: true];
+		sandbox.allowsStdIO = true;
+		sandbox.allowsDNS = true;
 
 		[OFApplication activateSandbox: sandbox];
 	} @finally {
@@ -72,7 +72,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	}
 #endif
 
-	if ([arguments count] < 1 || [arguments count] > 4) {
+	if (arguments.count < 1 || arguments.count > 4) {
 		[of_stderr writeFormat:
 		    @"Usage: %@ host [type [class [server]]]\n",
 		    [OFApplication programName]];
@@ -81,18 +81,18 @@ OF_APPLICATION_DELEGATE(OFDNS)
 
 	resolver = [OFDNSResolver resolver];
 
-	if ([arguments count] >= 2)
+	if (arguments.count >= 2)
 		recordType = of_dns_resource_record_type_parse(
 		    [arguments objectAtIndex: 1]);
 
-	if ([arguments count] >= 3)
+	if (arguments.count >= 3)
 		recordClass = of_dns_resource_record_class_parse(
 		    [arguments objectAtIndex: 2]);
 
-	if ([arguments count] >= 4) {
-		[resolver setConfigReloadInterval: 0];
-		[resolver setNameServers:
-		    [OFArray arrayWithObject: [arguments objectAtIndex: 3]]];
+	if (arguments.count >= 4) {
+		resolver.configReloadInterval = 0;
+		resolver.nameServers =
+		    [arguments objectsInRange: of_range(3, 1)];
 	}
 
 	[resolver asyncResolveHost: [arguments objectAtIndex: 0]

@@ -88,7 +88,7 @@
 	float bars, percent;
 	int columns, barWidth;
 
-	if ((columns = [of_stdout columns]) >= 0) {
+	if ((columns = of_stdout.columns) >= 0) {
 		if (columns > 37)
 			barWidth = columns - 37;
 		else
@@ -132,7 +132,7 @@
 	[of_stdout writeFormat: @"▏ %,6.2f%% ", percent];
 
 	if (percent == 100) {
-		double timeInterval = -[_startDate timeIntervalSinceNow];
+		double timeInterval = -_startDate.timeIntervalSinceNow;
 
 		_BPS = (float)_received / (float)timeInterval;
 		_ETA = timeInterval;
@@ -212,7 +212,7 @@
 
 	if (_stopped)
 		_BPS = (float)_received /
-		    -(float)[_startDate timeIntervalSinceNow];
+		    -(float)_startDate.timeIntervalSinceNow;
 
 	if (_BPS >= GIBIBYTE) {
 		OFString *num = [OFString stringWithFormat:
@@ -252,7 +252,7 @@
 - (void)calculateBPSAndETA
 {
 	_BPS = (float)(_received - _lastReceived) /
-	    -(float)[_lastReceivedDate timeIntervalSinceNow];
+	    -(float)_lastReceivedDate.timeIntervalSinceNow;
 	_ETA = (double)(_length - _received) / _BPS;
 
 	_lastReceived = _received;
