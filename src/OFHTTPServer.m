@@ -922,7 +922,7 @@ normalizedKey(OFString *key)
 	}
 #endif
 
-	((OFTCPSocket *)_listeningSocket).delegate = self;
+	_listeningSocket.delegate = self;
 	[_listeningSocket asyncAccept];
 
 	objc_autoreleasePoolPop(pool);
