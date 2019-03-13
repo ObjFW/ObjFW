@@ -825,7 +825,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			    !wcscmp(fd.cFileName, L".."))
 				continue;
 
-			file = [OFString stringWithUTF16String: fd.cFileName];
+			file = [[OFString alloc]
+			    initWithUTF16String: fd.cFileName];
 			@try {
 				[files addObject: file];
 			} @finally {
