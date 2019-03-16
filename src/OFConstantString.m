@@ -33,14 +33,14 @@
 # import <objc/runtime.h>
 
 struct {
-	struct class *isa, *super_class;
+	struct class *isa, *superclass;
 	const char *name;
-	long version, info, instance_size;
-	struct ivar_list *ivars;
-	struct method_list **method_lists;
+	long version, info, instanceSize;
+	struct ivar_list *iVars;
+	struct method_list **methodList;
 	struct cache *cache;
 	struct protocol_list *protocols;
-	const char *ivar_layout;
+	const char *iVarLayout;
 	struct class_ext *ext;
 } _OFConstantStringClassReference;
 #endif
