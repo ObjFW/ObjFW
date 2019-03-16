@@ -74,6 +74,18 @@
 	OF_INVALID_INIT_METHOD
 }
 
+- (OFData *)DEREncodedValue
+{
+	char buffer[] = {
+		OF_ASN1_TAG_NUMBER_BOOLEAN,
+		1,
+		(_booleanValue ? 0xFF : 0x00)
+	};
+
+	return [OFData dataWithItems: buffer
+			       count: sizeof(buffer)];
+}
+
 - (bool)isEqual: (id)object
 {
 	OFASN1Boolean *boolean;

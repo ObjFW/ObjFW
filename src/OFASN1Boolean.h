@@ -34,6 +34,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) bool booleanValue;
 
 /*!
+ * @brief The Boolean in DER encoding.
+ */
+@property (readonly, nonatomic) OFData *DEREncodedValue;
+
+/*!
  * @brief Creates an ASN.1 Boolean with the specified Boolean value.
  *
  * @param booleanValue The value of the Boolean
