@@ -767,7 +767,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			    [headers objectEnumerator];
 			OFString *key, *object;
 
-			if (statusCode / 100 == 2) {
+			if (statusCode / 100 == 2 && _currentFileName != nil) {
 				[of_stdout writeString: @"  "];
 				[of_stdout writeLine: OF_LOCALIZED(
 				    @"info_name_unaligned",
@@ -781,7 +781,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 							key, object];
 
 			objc_autoreleasePoolPop(pool);
-		} else if (statusCode / 100 == 2) {
+		} else if (statusCode / 100 == 2 && !_detectFileNameRequest) {
 			[of_stdout writeString: @"  "];
 			[of_stdout writeLine: OF_LOCALIZED(@"info_name",
 			    @"Name: %[name]",
