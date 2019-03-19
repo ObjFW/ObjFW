@@ -632,7 +632,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 	if (_client->_socket != nil && !_client->_socket.atEndOfStream &&
 	    [_client->_lastURL.scheme isEqual: URL.scheme] &&
 	    [_client->_lastURL.host isEqual: URL.host] &&
-	    _client->_lastURL.port == URL.port &&
+	    (_client->_lastURL.port == URL.port ||
+	    [_client->_lastURL.port isEqual: URL.port]) &&
 	    (_client->_lastWasHEAD || _client->_lastResponse.atEndOfStream)) {
 		/*
 		 * Set _socket to nil, so that in case of an error it won't be
