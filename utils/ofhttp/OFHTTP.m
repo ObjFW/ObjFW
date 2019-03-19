@@ -713,6 +713,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	 statusCode: (int)statusCode
 	    request: (OFHTTPRequest *)request
 {
+	if (statusCode != 206)
+		_resumedFrom = 0;
+
 	if (!_quiet) {
 		OFString *lengthString =
 		    [headers objectForKey: @"Content-Length"];
