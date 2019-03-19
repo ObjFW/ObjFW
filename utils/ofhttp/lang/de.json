@@ -30,6 +30,10 @@
         "%[prog]: -q / --quiet und -v / --verbose schließen sich gegenseitig ",
         "aus!"
     ],
+    "output_xor_detect_filename": [
+        "%[prog]: -o / --output und -O / --detect-filename schließen sich ",
+        "gegenseitig aus!"
+    ],
     "output_only_with_one_url": [
         "%[prog]: -o / --output kann nicht mit mehr als einer URL benutzt ",
         "werden!"

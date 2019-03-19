@@ -499,6 +499,15 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		[OFApplication terminateWithStatus: 1];
 	}
 
+	if (_outputPath != nil && _detectFileName) {
+		[of_stderr writeLine: OF_LOCALIZED(
+		    @"output_xor_detect_filename",
+		    @"%[prog]: -o / --output and -O / --detect-filename are "
+		    @"mutually exclusive!",
+		    @"prog", [OFApplication programName])];
+		[OFApplication terminateWithStatus: 1];
+	}
+
 	if (_outputPath != nil && _URLs.count > 1) {
 		[of_stderr writeLine:
 		    OF_LOCALIZED(@"output_only_with_one_url",
@@ -932,14 +941,13 @@ next:
 		return;
 	}
 
-	[_currentFileName release];
-	_currentFileName = nil;
-	_detectedFileName = false;
+	if (!_detectedFileName) {
+		[_currentFileName release];
+		_currentFileName = nil;
+	} else
+		_detectedFileName = false;
 
-	if (!_quiet)
-		[of_stdout writeFormat: @"⇣ %@", URL.string];
-
-	if (_outputPath != nil)
+	if (_currentFileName == nil)
 		_currentFileName = [_outputPath copy];
 
 	if (_currentFileName == nil)
@@ -963,6 +971,9 @@ next:
 		} @catch (OFRetrieveItemAttributesFailedException *e) {
 		}
 	}
+
+	if (!_quiet)
+		[of_stdout writeFormat: @"⇣ %@", URL.string];
 
 	request = [OFHTTPRequest requestWithURL: URL];
 	request.headers = clientHeaders;
