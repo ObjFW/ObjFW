@@ -131,6 +131,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		DISPOSITION_PARAM_NAME,
 		DISPOSITION_PARAM_VALUE,
 		DISPOSITION_PARAM_QUOTED,
+		DISPOSITION_PARAM_UNQUOTED,
 		DISPOSITION_EXPECT_SEMICOLON
 	} state;
 	size_t last;
@@ -193,8 +194,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 				state = DISPOSITION_PARAM_QUOTED;
 				last = i + 1;
 			} else {
-				objc_autoreleasePoolPop(pool);
-				return nil;
+				state = DISPOSITION_PARAM_UNQUOTED;
+				last = i;
+				i--;
 			}
 			break;
 		case DISPOSITION_PARAM_QUOTED:
@@ -204,9 +206,31 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 						  length: i - last];
 
 				[params setObject: paramValue
-					   forKey: paramName];
+					   forKey: paramName.lowercaseString];
 
 				state = DISPOSITION_EXPECT_SEMICOLON;
+			}
+			break;
+		case DISPOSITION_PARAM_UNQUOTED:
+			if (UTF8String[i] <= 31 || UTF8String[i] >= 127)
+				return nil;
+
+			switch (UTF8String[i]) {
+			case ' ': case '"': case '(': case ')': case ',':
+			case '/': case ':': case '<': case '=': case '>':
+			case '?': case '@': case '[': case '\\': case ']':
+			case '{': case '}':
+				return nil;
+			case ';':
+				paramValue = [OFString
+				    stringWithUTF8String: UTF8String + last
+						  length: i - last];
+
+				[params setObject: paramValue
+					   forKey: paramName.lowercaseString];
+
+				state = DISPOSITION_PARAM_NAME_SKIP_SPACE;
+				break;
 			}
 			break;
 		case DISPOSITION_EXPECT_SEMICOLON:
@@ -221,7 +245,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		}
 	}
 
-	if (state != DISPOSITION_EXPECT_SEMICOLON) {
+	if (state == DISPOSITION_PARAM_UNQUOTED) {
+		paramValue = [OFString
+		    stringWithUTF8String: UTF8String + last
+				  length: UTF8StringLength - last];
+
+		[params setObject: paramValue
+			   forKey: paramName.lowercaseString];
+	} else if (state != DISPOSITION_EXPECT_SEMICOLON) {
 		objc_autoreleasePoolPop(pool);
 		return nil;
 	}
