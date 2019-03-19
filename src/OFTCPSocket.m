@@ -222,13 +222,14 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  exception: (id)exception
 {
 	if (exception != nil) {
+		[sock of_closeSocket];
+
 		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [exception retain];
 			[self didConnect];
-		} else {
+		} else
 			[self tryNextAddressWithRunLoopMode:
 			    [OFRunLoop currentRunLoop].currentMode];
-		}
 
 		return;
 	}
