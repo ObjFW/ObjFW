@@ -134,29 +134,6 @@ of_huffman_tree_construct_single(uint16_t value)
 	return tree;
 }
 
-bool
-of_huffman_tree_walk(id stream, bool (*bitReader)(id, uint16_t *, uint8_t),
-    struct of_huffman_tree **tree, uint16_t *value)
-{
-	struct of_huffman_tree *iter = *tree;
-	uint16_t bits;
-
-	while (iter->value == 0xFFFF) {
-		if OF_UNLIKELY (!bitReader(stream, &bits, 1)) {
-			*tree = iter;
-			return false;
-		}
-
-		if OF_UNLIKELY (iter->leaves[bits] == NULL)
-			@throw [OFInvalidFormatException exception];
-
-		iter = iter->leaves[bits];
-	}
-
-	*value = iter->value;
-	return true;
-}
-
 void
 of_huffman_tree_release(struct of_huffman_tree *tree)
 {

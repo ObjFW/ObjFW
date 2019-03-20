@@ -44,7 +44,7 @@ enum state {
 	STATE_BLOCK_LEN_DIST_PAIR
 };
 
-static bool
+static OF_INLINE bool
 tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 {
 	uint16_t ret = stream->_savedBits;
@@ -53,7 +53,8 @@ tryReadBits(OFLHAArchive_LHStream *stream, uint16_t *bits, uint8_t count)
 
 	for (uint_fast8_t i = stream->_savedBitsLength; i < count; i++) {
 		if OF_UNLIKELY (stream->_bitIndex == 8) {
-			if (stream->_bufferIndex < stream->_bufferLength)
+			if OF_LIKELY (stream->_bufferIndex <
+			    stream->_bufferLength)
 				stream->_byte =
 				    stream->_buffer[stream->_bufferIndex++];
 			else {

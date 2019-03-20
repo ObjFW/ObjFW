@@ -20,12 +20,38 @@
 
 #import "macros.h"
 
+#import "OFInvalidFormatException.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 struct of_huffman_tree {
 	struct of_huffman_tree *_Nullable leaves[2];
 	uint16_t value;
 };
+
+static OF_INLINE bool
+of_huffman_tree_walk(id _Nullable stream,
+    bool (*bitReader)(id _Nullable, uint16_t *_Nonnull, uint8_t),
+    struct of_huffman_tree *_Nonnull *_Nonnull tree, uint16_t *_Nonnull value)
+{
+	struct of_huffman_tree *iter = *tree;
+	uint16_t bits;
+
+	while (iter->value == 0xFFFF) {
+		if OF_UNLIKELY (!bitReader(stream, &bits, 1)) {
+			*tree = iter;
+			return false;
+		}
+
+		if OF_UNLIKELY (iter->leaves[bits] == NULL)
+			@throw [OFInvalidFormatException exception];
+
+		iter = iter->leaves[bits];
+	}
+
+	*value = iter->value;
+	return true;
+}
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,9 +60,6 @@ extern struct of_huffman_tree *_Nonnull of_huffman_tree_construct(
     uint8_t lengths[_Nonnull], uint16_t count);
 extern struct of_huffman_tree *_Nonnull of_huffman_tree_construct_single(
     uint16_t value);
-extern bool of_huffman_tree_walk(id _Nullable stream,
-    bool (*bitReader)(id _Nullable, uint16_t *_Nonnull, uint8_t),
-    struct of_huffman_tree *_Nonnull *_Nonnull tree, uint16_t *_Nonnull value);
 extern void of_huffman_tree_release(struct of_huffman_tree *_Nonnull tree);
 #ifdef __cplusplus
 }
