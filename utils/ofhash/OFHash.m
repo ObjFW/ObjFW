@@ -22,6 +22,7 @@
 #import "OFFile.h"
 #import "OFLocale.h"
 #import "OFMD5Hash.h"
+#import "OFOptionsParser.h"
 #import "OFRIPEMD160Hash.h"
 #import "OFSHA1Hash.h"
 #import "OFSHA224Hash.h"
@@ -44,68 +45,103 @@ static void
 help(void)
 {
 	[of_stderr writeLine: OF_LOCALIZED(@"usage",
-	    @"Usage: %[prog] [md5|rmd160|sha1|sha224|sha256|sha384|sha512] "
-	    @"file1 [file2 ...]",
+	    @"Usage: %[prog] [--md5|--ripemd160|--sha1|--sha224|--sha256|"
+	    @"--sha384|--sha512] file1 [file2 ...]",
 	    @"prog", [OFApplication programName])];
 
 	[OFApplication terminateWithStatus: 1];
 }
 
-static id <OFCryptoHash>
-hashForName(OFString *name)
+static void
+printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 {
-	if ([name isEqual: @"md5"])
-		return [OFMD5Hash cryptoHash];
-	else if ([name isEqual: @"rmd160"] || [name isEqual: @"ripemd160"])
-		return [OFRIPEMD160Hash cryptoHash];
-	else if ([name isEqual: @"sha1"])
-		return [OFSHA1Hash cryptoHash];
-	else if ([name isEqual: @"sha224"])
-		return [OFSHA224Hash cryptoHash];
-	else if ([name isEqual: @"sha256"])
-		return [OFSHA256Hash cryptoHash];
-	else if ([name isEqual: @"sha384"])
-		return [OFSHA384Hash cryptoHash];
-	else if ([name isEqual: @"sha512"])
-		return [OFSHA512Hash cryptoHash];
+	const unsigned char *digest = hash.digest;
+	size_t digestSize = hash.digestSize;
 
-	return nil;
+	[of_stdout writeFormat: @"%@ ", algo];
+
+	for (size_t i = 0; i < digestSize; i++)
+		[of_stdout writeFormat: @"%02x", digest[i]];
+
+	[of_stdout writeFormat: @"  %@\n", path];
 }
 
 @implementation OFHash
 - (void)applicationDidFinishLaunching
 {
-	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
-	id <OFCryptoHash> hash;
-	bool first = true;
 	int exitStatus = 0;
+	bool calculateMD5, calculateRIPEMD160, calculateSHA1, calculateSHA224;
+	bool calculateSHA256, calculateSHA384, calculateSHA512;
+	const of_options_parser_option_t options[] = {
+		{ '\0', @"md5", 0, &calculateMD5, NULL },
+		{ '\0', @"ripemd160", 0, &calculateRIPEMD160, NULL },
+		{ '\0', @"sha1", 0, &calculateSHA1, NULL },
+		{ '\0', @"sha224", 0, &calculateSHA224, NULL },
+		{ '\0', @"sha256", 0, &calculateSHA256, NULL },
+		{ '\0', @"sha384", 0, &calculateSHA384, NULL },
+		{ '\0', @"sha512", 0, &calculateSHA512, NULL },
+		{ '\0', nil, 0, NULL, NULL }
+	};
+	OFOptionsParser *optionsParser =
+	    [OFOptionsParser parserWithOptions: options];
+	of_unichar_t option;
+	OFMD5Hash *MD5Hash = nil;
+	OFRIPEMD160Hash *RIPEMD160Hash = nil;
+	OFSHA1Hash *SHA1Hash = nil;
+	OFSHA224Hash *SHA224Hash = nil;
+	OFSHA256Hash *SHA256Hash = nil;
+	OFSHA384Hash *SHA384Hash = nil;
+	OFSHA512Hash *SHA512Hash = nil;
+
+	while ((option = [optionsParser nextOption]) != '\0') {
+		switch (option) {
+		case '?':
+			if (optionsParser.lastLongOption != nil)
+				[of_stderr writeLine:
+				    OF_LOCALIZED(@"unknown_long_option",
+				    @"%[prog]: Unknown option: --%[opt]",
+				    @"prog", [OFApplication programName],
+				    @"opt", optionsParser.lastLongOption)];
+			else {
+				OFString *optStr = [OFString stringWithFormat:
+				    @"%c", optionsParser.lastOption];
+				[of_stderr writeLine:
+				    OF_LOCALIZED(@"unkown_option",
+				    @"%[prog]: Unknown option: -%[opt]",
+				    @"prog", [OFApplication programName],
+				    @"opt", optStr)];
+			}
+
+			[OFApplication terminateWithStatus: 1];
+			break;
+		}
+	}
+
+	if (calculateMD5)
+		MD5Hash = [OFMD5Hash cryptoHash];
+	if (calculateRIPEMD160)
+		RIPEMD160Hash = [OFRIPEMD160Hash cryptoHash];
+	if (calculateSHA1)
+		SHA1Hash = [OFSHA1Hash cryptoHash];
+	if (calculateSHA224)
+		SHA224Hash = [OFSHA224Hash cryptoHash];
+	if (calculateSHA256)
+		SHA256Hash = [OFSHA256Hash cryptoHash];
+	if (calculateSHA384)
+		SHA384Hash = [OFSHA384Hash cryptoHash];
+	if (calculateSHA512)
+		SHA512Hash = [OFSHA512Hash cryptoHash];
 
 #ifdef OF_HAVE_SANDBOX
-	OFSandbox *sandbox;
-
-	/*
-	 * SHA-512 is the largest hash supported, so no matter which hash will
-	 * be used in the end, this is enough secure memory.
-	 */
-	[OFSecureData preallocateMemoryWithSize:
-	    class_getInstanceSize([OFSHA512Hash class])];
-
-	sandbox = [[OFSandbox alloc] init];
+	OFSandbox *sandbox = [OFSandbox sandbox];
 	@try {
 		sandbox.allowsStdIO = true;
 		sandbox.allowsReadingFiles = true;
 		sandbox.allowsUserDatabaseReading = true;
 
-		for (OFString *path in arguments) {
-			if (first) {
-				first = false;
-				continue;
-			}
-
+		for (OFString *path in optionsParser.remainingArguments)
 			[sandbox unveilPath: path
 				permissions: @"r"];
-		}
-		first = true;
 
 		[sandbox unveilPath: @LANGUAGE_DIR
 			permissions: @"r"];
@@ -122,24 +158,17 @@ hashForName(OFString *name)
 	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
 #endif
 
-	if (arguments.count < 2)
+	if (!calculateMD5 && !calculateRIPEMD160 && !calculateSHA1 &&
+	    !calculateSHA224 && !calculateSHA256 && !calculateSHA384 &&
+	    !calculateSHA512)
 		help();
 
-	if ((hash = hashForName(arguments.firstObject)) == nil)
+	if (optionsParser.remainingArguments.count < 1)
 		help();
 
-	for (OFString *path in arguments) {
-		void *pool;
+	for (OFString *path in optionsParser.remainingArguments) {
+		void *pool = objc_autoreleasePoolPush();
 		OFStream *file;
-		const uint8_t *digest;
-		size_t digestSize;
-
-		if (first) {
-			first = false;
-			continue;
-		}
-
-		pool = objc_autoreleasePoolPush();
 
 		if ([path isEqual: @"-"])
 			file = of_stdin;
@@ -163,7 +192,13 @@ hashForName(OFString *name)
 			}
 		}
 
-		[hash reset];
+		[MD5Hash reset];
+		[RIPEMD160Hash reset];
+		[SHA1Hash reset];
+		[SHA224Hash reset];
+		[SHA256Hash reset];
+		[SHA384Hash reset];
+		[SHA512Hash reset];
 
 		while (!file.atEndOfStream) {
 			uint8_t buffer[1024];
@@ -187,19 +222,45 @@ hashForName(OFString *name)
 				goto outer_loop_end;
 			}
 
-			[hash updateWithBuffer: buffer
-					length: length];
+			if (calculateMD5)
+				[MD5Hash updateWithBuffer: buffer
+						   length: length];
+			if (calculateRIPEMD160)
+				[RIPEMD160Hash updateWithBuffer: buffer
+							 length: length];
+			if (calculateSHA1)
+				[SHA1Hash updateWithBuffer: buffer
+						    length: length];
+			if (calculateSHA224)
+				[SHA224Hash updateWithBuffer: buffer
+						      length: length];
+			if (calculateSHA256)
+				[SHA256Hash updateWithBuffer: buffer
+						      length: length];
+			if (calculateSHA384)
+				[SHA384Hash updateWithBuffer: buffer
+						      length: length];
+			if (calculateSHA512)
+				[SHA512Hash updateWithBuffer: buffer
+						      length: length];
 		}
 
 		[file close];
 
-		digest = hash.digest;
-		digestSize = hash.digestSize;
-
-		for (size_t i = 0; i < digestSize; i++)
-			[of_stdout writeFormat: @"%02x", digest[i]];
-
-		[of_stdout writeFormat: @"  %@\n", path];
+		if (calculateMD5)
+			printHash(@"MD5", path, MD5Hash);
+		if (calculateRIPEMD160)
+			printHash(@"RIPEMD160", path, RIPEMD160Hash);
+		if (calculateSHA1)
+			printHash(@"SHA1", path, SHA1Hash);
+		if (calculateSHA224)
+			printHash(@"SHA224", path, SHA224Hash);
+		if (calculateSHA256)
+			printHash(@"SHA256", path, SHA256Hash);
+		if (calculateSHA384)
+			printHash(@"SHA384", path, SHA384Hash);
+		if (calculateSHA512)
+			printHash(@"SHA512", path, SHA512Hash);
 
 outer_loop_end:
 		objc_autoreleasePoolPop(pool);
