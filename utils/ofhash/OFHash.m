@@ -93,6 +93,12 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 	OFSHA384Hash *SHA384Hash = nil;
 	OFSHA512Hash *SHA512Hash = nil;
 
+#ifndef OF_AMIGAOS
+	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
+#else
+	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
+#endif
+
 	while ((option = [optionsParser nextOption]) != '\0') {
 		switch (option) {
 		case '?':
@@ -106,7 +112,7 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 				OFString *optStr = [OFString stringWithFormat:
 				    @"%c", optionsParser.lastOption];
 				[of_stderr writeLine:
-				    OF_LOCALIZED(@"unkown_option",
+				    OF_LOCALIZED(@"unknown_option",
 				    @"%[prog]: Unknown option: -%[opt]",
 				    @"prog", [OFApplication programName],
 				    @"opt", optStr)];
@@ -150,12 +156,6 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 	} @finally {
 		[sandbox release];
 	}
-#endif
-
-#ifndef OF_AMIGAOS
-	[OFLocale addLanguageDirectory: @LANGUAGE_DIR];
-#else
-	[OFLocale addLanguageDirectory: @"PROGDIR:/share/ofhash/lang"];
 #endif
 
 	if (!calculateMD5 && !calculateRIPEMD160 && !calculateSHA1 &&
