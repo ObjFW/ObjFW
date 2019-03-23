@@ -350,17 +350,8 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 
 - (id)valueForKey: (OFString *)key
 {
-	if ([key hasPrefix: @"@"]) {
-		void *pool = objc_autoreleasePoolPush();
-		id ret;
-
-		key = [key substringWithRange: of_range(1, key.length - 1)];
-		ret = [[super valueForKey: key] retain];
-
-		objc_autoreleasePoolPop(pool);
-
-		return [ret autorelease];
-	}
+	if ([key isEqual: @"@count"])
+		return [super valueForKey: @"count"];
 
 	return [self objectForKey: key];
 }
@@ -368,17 +359,6 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 - (void)setValue: (id)value
 	  forKey: (OFString *)key
 {
-	if ([key hasPrefix: @"@"]) {
-		void *pool = objc_autoreleasePoolPush();
-
-		key = [key substringWithRange: of_range(1, key.length - 1)];
-		[super setValue: value
-			 forKey: key];
-
-		objc_autoreleasePoolPop(pool);
-		return;
-	}
-
 	if (![self isKindOfClass: [OFMutableDictionary class]])
 		@throw [OFUndefinedKeyException exceptionWithObject: self
 								key: key

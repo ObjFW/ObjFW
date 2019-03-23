@@ -21,9 +21,10 @@
 
 #import "OFObject.h"
 #import "OFObject+KeyValueCoding.h"
+#import "OFArray.h"
 #import "OFMethodSignature.h"
-#import "OFString.h"
 #import "OFNumber.h"
+#import "OFString.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
@@ -34,6 +35,7 @@ int _OFObject_KeyValueCoding_reference;
 @implementation OFObject (KeyValueCoding)
 - (id)valueForKey: (OFString *)key
 {
+	void *pool = objc_autoreleasePoolPush();
 	SEL selector = sel_registerName(key.UTF8String);
 	OFMethodSignature *methodSignature =
 	    [self methodSignatureForSelector: selector];
@@ -43,8 +45,10 @@ int _OFObject_KeyValueCoding_reference;
 		size_t keyLength;
 		char *name;
 
-		if ((keyLength = key.UTF8StringLength) < 1)
+		if ((keyLength = key.UTF8StringLength) < 1) {
+			objc_autoreleasePoolPop(pool);
 			return [self valueForUndefinedKey: key];
+		}
 
 		if ((name = malloc(keyLength + 3)) == NULL)
 			@throw [OFOutOfMemoryException
@@ -64,20 +68,25 @@ int _OFObject_KeyValueCoding_reference;
 
 		methodSignature = [self methodSignatureForSelector: selector];
 
-		if (methodSignature == NULL)
+		if (methodSignature == NULL) {
+			objc_autoreleasePoolPop(pool);
 			return [self valueForUndefinedKey: key];
+		}
 
 		switch (*methodSignature.methodReturnType) {
 		case '@':
 		case '#':
+			objc_autoreleasePoolPop(pool);
 			return [self valueForUndefinedKey: key];
 		}
 	}
 
 	if (methodSignature.numberOfArguments != 2 ||
 	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
-	    *[methodSignature argumentTypeAtIndex: 1] != ':')
+	    *[methodSignature argumentTypeAtIndex: 1] != ':') {
+		objc_autoreleasePoolPop(pool);
 		return [self valueForUndefinedKey: key];
+	}
 
 	switch (*methodSignature.methodReturnType) {
 	case '@':
@@ -107,10 +116,30 @@ int _OFObject_KeyValueCoding_reference;
 	CASE('d', double, numberWithDouble:)
 #undef CASE
 	default:
+		objc_autoreleasePoolPop(pool);
 		return [self valueForUndefinedKey: key];
 	}
 
-	return ret;
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
+}
+
+- (id)valueForKeyPath: (OFString *)keyPath
+{
+	void *pool = objc_autoreleasePoolPush();
+	id ret = self;
+
+	for (OFString *key in [keyPath componentsSeparatedByString: @"."])
+		ret = [ret valueForKey: key];
+
+	[ret retain];
+
+	objc_autoreleasePoolPop(pool);
+
+	return [ret autorelease];
 }
 
 - (id)valueForUndefinedKey: (OFString *)key
@@ -122,6 +151,7 @@ int _OFObject_KeyValueCoding_reference;
 - (void)setValue: (id)value
 	  forKey: (OFString *)key
 {
+	void *pool = objc_autoreleasePoolPush();
 	size_t keyLength;
 	char *name;
 	SEL selector;
@@ -129,8 +159,9 @@ int _OFObject_KeyValueCoding_reference;
 	const char *valueType;
 
 	if ((keyLength = key.UTF8StringLength) < 1) {
-		[self	 setValue: value
-		  forUndefinedKey: key];
+		objc_autoreleasePoolPop(pool);
+		[self	   setValue: value
+		    forUndefinedKey: key];
 		return;
 	}
 
@@ -157,14 +188,16 @@ int _OFObject_KeyValueCoding_reference;
 	    *methodSignature.methodReturnType != 'v' ||
 	    *[methodSignature argumentTypeAtIndex: 0] != '@' ||
 	    *[methodSignature argumentTypeAtIndex: 1] != ':') {
-		[self    setValue: value
-		  forUndefinedKey: key];
+		objc_autoreleasePoolPop(pool);
+		[self	   setValue: value
+		    forUndefinedKey: key];
 		return;
 	}
 
 	valueType = [methodSignature argumentTypeAtIndex: 2];
 
 	if (*valueType != '@' && *valueType != '#' && value == nil) {
+		objc_autoreleasePoolPop(pool);
 		[self setNilValueForKey: key];
 		return;
 	}
@@ -202,10 +235,33 @@ int _OFObject_KeyValueCoding_reference;
 	CASE('d', double, doubleValue)
 #undef CASE
 	default:
-		[self    setValue: value
-		  forUndefinedKey: key];
+		objc_autoreleasePoolPop(pool);
+		[self	   setValue: value
+		    forUndefinedKey: key];
 		return;
 	}
+
+	objc_autoreleasePoolPop(pool);
+}
+
+- (void)setValue: (id)value
+      forKeyPath: (OFString *)keyPath
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFArray *keys = [keyPath componentsSeparatedByString: @"."];
+	size_t keysCount = keys.count;
+	id object = self;
+	size_t i = 0;
+
+	for (OFString *key in keys) {
+		if (++i == keysCount)
+			[object setValue: value
+				  forKey: key];
+		else
+			object = [object valueForKey: key];
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 
 -  (void)setValue: (id)value

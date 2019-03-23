@@ -215,10 +215,9 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  * @brief Returns the value for the given key or `nil` if the key was not
  *	  found.
  *
- * If the key starts with an `@`, the `@` is stripped and
- * `[super valueForKey:]` is called.
- * If the key does not start with an `@`, this is equivalent to
- * @ref objectForKey:.
+ * This is equivalent to @ref objectForKey:.
+ *
+ * The special key `@count` can be used to retrieve the count as an OFNumber.
  *
  * @param key The key whose value should be returned
  * @return The value for the given key or `nil` if the key was not found
@@ -228,16 +227,13 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 /*!
  * @brief Sets a value for a key.
  *
- * If the key starts with an `@`, the `@` is stripped and
- * `[super setValue:forKey:]` is called.
- * If the key does not start with an `@`, this is equivalent to
- * OFMutableDictionary#setObject:forKey:. In this case, if the dictionary is
- * immutable, an @ref OFUndefinedKeyException is thrown.
+ * This is equivalent to OFMutableDictionary#setObject:forKey:. If the
+ * dictionary is immutable, an @ref OFUndefinedKeyException is thrown.
  *
  * @param key The key to set
  * @param value The value to set the key to
  */
-- (void)setValue: (id)value
+- (void)setValue: (nullable id)value
 	  forKey: (OFString *)key;
 
 /*!

@@ -250,6 +250,20 @@ static OFString *module = @"OFObject";
 	    OFInvalidArgumentException, [m setValue: (id _Nonnull)nil
 					     forKey: @"intValue"])
 
+	TEST(@"-[valueForKeyPath:]",
+	    (m = [[[MyObj alloc] init] autorelease]) &&
+	    (m.objectValue = [[[MyObj alloc] init] autorelease]) &&
+	    R([m.objectValue
+	    setObjectValue: [[[MyObj alloc] init] autorelease]]) &&
+	    R([[m.objectValue objectValue] setDoubleValue: 0.5]) &&
+	    [[m valueForKeyPath: @"objectValue.objectValue.doubleValue"]
+	    doubleValue] == 0.5)
+
+	TEST(@"[-setValue:forKeyPath:]",
+	    R([m setValue: [OFNumber numberWithDouble: 0.75]
+	       forKeyPath: @"objectValue.objectValue.doubleValue"]) &&
+	    [[[m objectValue] objectValue] doubleValue] == 0.75)
+
 	[pool drain];
 }
 @end

@@ -232,10 +232,10 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 /*!
  * @brief Returns the value for the specified key
  *
- * If the key starts with an `@`, the `@` is stripped and
- * `[super valueForKey:]` is called.
- * If the key does not start with an `@`, a new array with the value for the
- * specified key for each object is returned.
+ * A new array with the value for the specified key for each object is
+ * returned.
+ *
+ * The special key `@count` can be used to retrieve the count as an OFNumber.
  *
  * @note Any nil values are replaced with @ref OFNull!
  *
@@ -247,17 +247,14 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 /*!
  * @brief Set the value for the specified key
  *
- * If the key starts with an `@`, the `@` is stripped and
- * `[super setValue:forKey:]` is called.
- * If the key does not start with an `@`, @ref setValue:forKey: is called for
- * each object.
+ * @ref setValue:forKey: is called for each object in the array.
  *
  * @note A @ref OFNull value is translated to nil!
  *
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (id)value
+- (void)setValue: (nullable id)value
 	  forKey: (OFString *)key;
 
 /*!

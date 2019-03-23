@@ -31,12 +31,20 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @protocol OFKeyValueCoding
 /*!
- * @brief Returns the value for the specified key
+ * @brief Returns the value for the specified key.
  *
  * @param key The key of the value to return
  * @return The value for the specified key
  */
 - (nullable id)valueForKey: (OFString *)key;
+
+/*!
+ * @brief Returns the value for the specified key path.
+ *
+ * @param keyPath The key path of the value to return
+ * @return The value for the specified key path
+ */
+- (nullable id)valueForKeyPath: (OFString *)keyPath;
 
 /*!
  * @brief This is called by @ref valueForKey: if the specified key does not
@@ -50,13 +58,22 @@ OF_ASSUME_NONNULL_BEGIN
 - (nullable id)valueForUndefinedKey: (OFString *)key;
 
 /*!
- * @brief Set the value for the specified key
+ * @brief Set the value for the specified key.
  *
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (id)value
+- (void)setValue: (nullable id)value
 	  forKey: (OFString *)key;
+
+/*!
+ * @brief Set the value for the specified key path.
+ *
+ * @param value The value for the specified key path
+ * @param keyPath The key path of the value to set
+ */
+- (void)setValue: (nullable id)value
+      forKeyPath: (OFString *)keyPath;
 
 /*!
  * @brief This is called by @ref setValue:forKey: if the specified key does not

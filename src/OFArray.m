@@ -278,16 +278,8 @@ static struct {
 {
 	id ret;
 
-	if ([key hasPrefix: @"@"]) {
-		void *pool = objc_autoreleasePoolPush();
-
-		key = [key substringWithRange: of_range(1, key.length - 1)];
-		ret = [[super valueForKey: key] retain];
-
-		objc_autoreleasePoolPop(pool);
-
-		return [ret autorelease];
-	}
+	if ([key isEqual: @"@count"])
+		return [super valueForKey: @"count"];
 
 	ret = [OFMutableArray arrayWithCapacity: self.count];
 
@@ -308,17 +300,6 @@ static struct {
 - (void)setValue: (id)value
 	  forKey: (OFString *)key
 {
-	if ([key hasPrefix: @"@"]) {
-		void *pool = objc_autoreleasePoolPush();
-
-		key = [key substringWithRange: of_range(1, key.length - 1)];
-		[super setValue: value
-			 forKey: key];
-
-		objc_autoreleasePoolPop(pool);
-		return;
-	}
-
 	for (id object in self)
 		[object setValue: value
 			  forKey: key];

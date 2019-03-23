@@ -217,10 +217,9 @@ typedef bool (^of_set_filter_block_t)(id object);
 /*!
  * @brief Returns the value for the specified key
  *
- * If the key starts with an `@`, the `@` is stripped and
- * `[super valueForKey:]` is called.
- * If the key does not start with an `@`, a new set with the value for the
- * specified key for each object is returned.
+ * A new set with the value for the specified key for each object is returned.
+ *
+ * The special key `@count` can be used to retrieve the count as an OFNumber.
  *
  * @note Unlike with @ref OFArray, any nil values are removed!
  *
@@ -232,17 +231,14 @@ typedef bool (^of_set_filter_block_t)(id object);
 /*!
  * @brief Set the value for the specified key
  *
- * If the key starts with an `@`, the `@` is stripped and
- * `[super setValue:forKey:]` is called.
- * If the key does not start with an `@`, @ref setValue:forKey: is called for
- * each object.
+ * @ref setValue:forKey: is called for each object.
  *
  * @note A @ref OFNull value is translated to nil!
  *
  * @param value The value for the specified key
  * @param key The key of the value to set
  */
-- (void)setValue: (id)value
+- (void)setValue: (nullable id)value
 	  forKey: (OFString *)key;
 
 #ifdef OF_HAVE_BLOCKS
