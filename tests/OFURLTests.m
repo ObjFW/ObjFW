@@ -104,6 +104,19 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [[[OFURL fileURLWithPath: @"testfile.txt"] fileSystemRepresentation]
 	    isEqual: [[[OFFileManager defaultManager] currentDirectoryPath]
 	    stringByAppendingPathComponent: @"testfile.txt"]])
+
+# ifdef OF_WINDOWS
+	OFURL *tmp;
+	TEST(@"+[fileURLWithPath:] with UNC",
+	    (tmp = [OFURL fileURLWithPath: @"\\\\foo\\bar"]) &&
+	    [tmp.host isEqual: @"foo"] && [tmp.path isEqual: @"/bar"] &&
+	    [tmp.string isEqual: @"file://foo/bar"] &&
+	    [tmp.fileSystemRepresentation isEqual: @"\\\\foo\\bar"] &&
+	    (tmp = [OFURL fileURLWithPath: @"\\\\test"]) &&
+	    [tmp.host isEqual: @"test"] && [tmp.path isEqual: @"/"] &&
+	    [tmp.string isEqual: @"file://test/"] &&
+	    [tmp.fileSystemRepresentation isEqual: @"\\\\test"])
+# endif
 #endif
 
 	TEST(@"-[string]",
@@ -128,7 +141,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [OFArray arrayWithObjects: @"", @"pa?th", nil]] &&
 	    [[u4 pathComponents] isEqual:
 	    [OFArray arrayWithObjects: @"", @"etc", @"passwd", nil]])
-	TEST(@"-[lastPathComponent",
+	TEST(@"-[lastPathComponent]",
 	    [[[OFURL URLWithString: @"http://host/foo//bar/baz"]
 	    lastPathComponent] isEqual: @"baz"] &&
 	    [[[OFURL URLWithString: @"http://host/foo//bar/baz/"]

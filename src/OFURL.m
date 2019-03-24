@@ -743,6 +743,22 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			path = path.stringByStandardizingPath;
 		}
 
+#ifdef OF_WINDOWS
+		if ([path hasPrefix: @"\\\\"]) {
+			OFArray *components = path.pathComponents;
+
+			if (components.count < 2)
+				@throw [OFInvalidFormatException exception];
+
+			_URLEncodedHost = [[[components objectAtIndex: 1]
+			    stringByURLEncodingWithAllowedCharacters:
+			    [OFCharacterSet URLHostAllowedCharacterSet]] copy];
+			path = [OFString pathWithComponents:
+			    [components objectsInRange:
+			    of_range(2, components.count - 2)]];
+		}
+#endif
+
 		path = pathToURLPath(path);
 
 		if (isDirectory && ![path hasSuffix: @"/"])
@@ -1056,10 +1072,21 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	path = self.path;
 
-	if ([path hasSuffix: @"/"])
+	if (path.length > 1 && [path hasSuffix: @"/"])
 		path = [path substringWithRange: of_range(0, path.length - 1)];
 
 	path = URLPathToPath(path);
+
+#ifdef OF_WINDOWS
+	if (_URLEncodedHost != nil) {
+		if (path.length == 0)
+			path = [OFString stringWithFormat: @"\\\\%@",
+							   self.host];
+		else
+			path = [OFString stringWithFormat: @"\\\\%@\\%@",
+							   self.host, path];
+	}
+#endif
 
 	[path retain];
 

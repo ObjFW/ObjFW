@@ -541,7 +541,12 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo") stringByPrependingString: @"bar"] isEqual: @"barfoo"])
 
 #ifdef OF_HAVE_FILES
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+# if defined(OF_WINDOWS)
+	TEST(@"-[isAbsolutePath]",
+	    [C(@"C:\\foo") isAbsolutePath] && [C(@"a:/foo") isAbsolutePath] &&
+	    ![C(@"foo") isAbsolutePath] && ![C(@"b:foo") isAbsolutePath] &&
+	    [C(@"\\\\foo") isAbsolutePath])
+# elif  defined(OF_MSDOS)
 	TEST(@"-[isAbsolutePath]",
 	    [C(@"C:\\foo") isAbsolutePath] && [C(@"a:/foo") isAbsolutePath] &&
 	    ![C(@"foo") isAbsolutePath] && ![C(@"b:foo") isAbsolutePath])
@@ -638,7 +643,23 @@ static uint16_t sutf16str[] = {
 	    [a count] == i)
 
 #ifdef OF_HAVE_FILES
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+# if defined(OF_WINDOWS)
+	TEST(@"+[pathWithComponents:]",
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:\\foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo/", @"bar\\", @"", @"baz", @"\\", nil]]
+	    isEqual: @"foo/bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"foo", nil]] isEqual: @"foo"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObject: @"c:"]]
+	    isEqual: @"c:\\"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"\\\\", @"foo", @"bar", nil]] isEqual: @"\\\\foo\\bar"])
+# elif defined(OF_MSDOS)
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo\\bar\\baz"] &&
@@ -691,7 +712,38 @@ static uint16_t sutf16str[] = {
 	    @"foo", nil]] isEqual: @"foo"])
 # endif
 
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+# if defined(OF_WINDOWS)
+	TEST(@"-[pathComponents]",
+	    /* c:/tmp */
+	    (a = [C(@"c:/tmp") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* c:\tmp\ */
+	    (a = [C(@"c:\\tmp\\") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* c:/ */
+	    (a = [C(@"c:/") pathComponents]) && [a count] == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    /* foo\bar */
+	    (a = [C(@"foo\\bar") pathComponents]) && [a count] == 2 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    /* foo\bar/baz/ */
+	    (a = [C(@"foo\\bar/baz/") pathComponents]) && [a count] == 3 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
+	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
+	    /* foo\/ */
+	    (a = [C(@"foo\\/") pathComponents]) && [a count] == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
+	    [[C(@"") pathComponents] count] == 0 &&
+	    /* \\foo\bar */
+	    (a = [C(@"\\\\foo\\bar") pathComponents]) && [a count] == 3 &&
+	    [[a objectAtIndex: 0] isEqual: @"\\\\"] &&
+	    [[a objectAtIndex: 1] isEqual: @"foo"] &&
+	    [[a objectAtIndex: 2] isEqual: @"bar"])
+# elif defined(OF_MSDOS)
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
 	    (a = [C(@"c:/tmp") pathComponents]) && [a count] == 2 &&
@@ -795,7 +847,19 @@ static uint16_t sutf16str[] = {
 	    [[C(@"") pathComponents] count] == 0)
 # endif
 
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+# if defined(OF_WINDOWS)
+	TEST(@"-[lastPathComponent]",
+	    [[C(@"c:/tmp") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"c:\\tmp\\") lastPathComponent] isEqual: @"tmp"] &&
+	    [[C(@"c:\\") lastPathComponent] isEqual: @"c:\\"] &&
+	    [[C(@"c:/") lastPathComponent] isEqual: @"c:/"] &&
+	    [[C(@"\\") lastPathComponent] isEqual: @""] &&
+	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
+	    [[C(@"foo\\bar") lastPathComponent] isEqual: @"bar"] &&
+	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"] &&
+	    [[C(@"\\\\foo\\bar") lastPathComponent] isEqual: @"bar"] &&
+	    [[C(@"\\\\") lastPathComponent] isEqual: @"\\\\"])
+# elif defined(OF_MSDOS)
 	TEST(@"-[lastPathComponent]",
 	    [[C(@"c:/tmp") lastPathComponent] isEqual: @"tmp"] &&
 	    [[C(@"c:\\tmp\\") lastPathComponent] isEqual: @"tmp"] &&
@@ -839,7 +903,24 @@ static uint16_t sutf16str[] = {
 	    [[C(@"foo/.bar.baz") pathExtension] isEqual: @"baz"] &&
 	    [[C(@"foo/bar.baz/") pathExtension] isEqual: @"baz"])
 
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
+# if defined(OF_WINDOWS)
+	TEST(@"-[stringByDeletingLastPathComponent]",
+	    [[C(@"\\tmp") stringByDeletingLastPathComponent] isEqual: @""] &&
+	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
+	    [[C(@"c:\\") stringByDeletingLastPathComponent] isEqual: @"c:\\"] &&
+	    [[C(@"c:/") stringByDeletingLastPathComponent] isEqual: @"c:/"] &&
+	    [[C(@"c:\\tmp/foo/") stringByDeletingLastPathComponent]
+	    isEqual: @"c:\\tmp"] &&
+	    [[C(@"foo\\bar") stringByDeletingLastPathComponent]
+	    isEqual: @"foo"] &&
+	    [[C(@"\\") stringByDeletingLastPathComponent] isEqual: @""] &&
+	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."] &&
+	    [[C(@"\\\\foo\\bar") stringByDeletingLastPathComponent]
+	    isEqual: @"\\\\foo"] &&
+	    [[C(@"\\\\foo") stringByDeletingLastPathComponent]
+	    isEqual: @"\\\\"] &&
+	    [[C(@"\\\\") stringByDeletingLastPathComponent] isEqual: @"\\\\"])
+# elif defined(OF_MSDOS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
 	    [[C(@"\\tmp") stringByDeletingLastPathComponent] isEqual: @""] &&
 	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
@@ -938,6 +1019,13 @@ static uint16_t sutf16str[] = {
 	    [[C(@".foo\\bar") stringByDeletingPathExtension]
 	    isEqual: @".foo\\bar"] &&
 	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+# endif
+
+# ifdef OF_WINDOWS
+	/* TODO: Add more tests */
+	TEST(@"-[stringByStandardizingPath]",
+	    [[C(@"\\\\foo\\..\\bar\\qux") stringByStandardizingPath]
+	    isEqual: @"\\\\bar\\qux"])
 # endif
 #endif
 
