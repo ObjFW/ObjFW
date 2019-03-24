@@ -45,6 +45,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <io.h>
 
 #import "OFStdIOStream_Win32Console.h"
 #import "OFStdIOStream+Private.h"
@@ -62,12 +63,20 @@
 @implementation OFStdIOStream_Win32Console
 + (void)load
 {
-	of_stdin = [[OFStdIOStream_Win32Console alloc]
-	    of_initWithFileDescriptor: 0];
-	of_stdout = [[OFStdIOStream_Win32Console alloc]
-	    of_initWithFileDescriptor: 1];
-	of_stderr = [[OFStdIOStream_Win32Console alloc]
-	    of_initWithFileDescriptor: 2];
+	int fd;
+
+	if (self != [OFStdIOStream_Win32Console class])
+		return;
+
+	if ((fd = _fileno(stdin)) >= 0)
+		of_stdin = [[OFStdIOStream_Win32Console alloc]
+		    of_initWithFileDescriptor: fd];
+	if ((fd = _fileno(stdout)) >= 0)
+		of_stdout = [[OFStdIOStream_Win32Console alloc]
+		    of_initWithFileDescriptor: fd];
+	if ((fd = _fileno(stderr)) >= 0)
+		of_stderr = [[OFStdIOStream_Win32Console alloc]
+		    of_initWithFileDescriptor: fd];
 }
 
 - (instancetype)of_initWithFileDescriptor: (int)fd
@@ -77,19 +86,9 @@
 	@try {
 		DWORD mode;
 
-		switch (fd) {
-		case 0:
-			_handle = GetStdHandle(STD_INPUT_HANDLE);
-			break;
-		case 1:
-			_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-			break;
-		case 2:
-			_handle = GetStdHandle(STD_ERROR_HANDLE);
-			break;
-		default:
+		_handle = (HANDLE)_get_osfhandle(fd);
+		if (_handle == INVALID_HANDLE_VALUE)
 			@throw [OFInvalidArgumentException exception];
-		}
 
 		/* Not a console: Treat it as a regular OFStdIOStream */
 		if (!GetConsoleMode(_handle, &mode))

@@ -119,10 +119,21 @@ of_log(OFConstantString *format, ...)
 #ifndef OF_WINDOWS
 + (void)load
 {
+	if (self != [OFStdIOStream class])
+		return;
+
 # ifndef OF_AMIGAOS
-	of_stdin = [[OFStdIOStream alloc] of_initWithFileDescriptor: 0];
-	of_stdout = [[OFStdIOStream alloc] of_initWithFileDescriptor: 1];
-	of_stderr = [[OFStdIOStream alloc] of_initWithFileDescriptor: 2];
+	int fd;
+
+	if ((fd = fileno(stdin)) >= 0)
+		of_stdin = [[OFStdIOStream alloc]
+		    of_initWithFileDescriptor: fd];
+	if ((fd = fileno(stdout)) >= 0)
+		of_stdout = [[OFStdIOStream alloc]
+		    of_initWithFileDescriptor: fd];
+	if ((fd = fileno(stderr)) >= 0)
+		of_stderr = [[OFStdIOStream alloc]
+		    of_initWithFileDescriptor: fd];
 # else
 	BPTR input, output, error;
 	bool inputClosable = false, outputClosable = false,
