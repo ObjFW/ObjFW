@@ -37,7 +37,7 @@ const uint8_t testfile_sha1[20] =
 
 	TEST(@"+[cryptoHash]", (sha1 = [OFSHA1Hash cryptoHash]))
 
-	while (![f isAtEndOfStream]) {
+	while (!f.atEndOfStream) {
 		char buf[64];
 		size_t len = [f readIntoBuffer: buf
 					length: 64];
@@ -49,8 +49,8 @@ const uint8_t testfile_sha1[20] =
 	TEST(@"-[copy]", (copy = [[sha1 copy] autorelease]))
 
 	TEST(@"-[digest]",
-	    memcmp([sha1 digest], testfile_sha1, 20) == 0 &&
-	    memcmp([copy digest], testfile_sha1, 20) == 0)
+	    memcmp(sha1.digest, testfile_sha1, 20) == 0 &&
+	    memcmp(copy.digest, testfile_sha1, 20) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length:]", OFHashAlreadyCalculatedException,

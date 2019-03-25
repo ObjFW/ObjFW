@@ -60,11 +60,10 @@ static OFString *module = @"OFSerialization";
 	      forKey: data];
 
 	TEST(@"-[stringBySerializing]",
-	    (s = [d stringBySerializing]) && [s isEqual:
+	    (s = d.stringBySerializing) && [s isEqual:
 	    [OFString stringWithContentsOfFile: @"serialization.xml"]])
 
-	TEST(@"-[objectByDeserializing]",
-	    [[s objectByDeserializing] isEqual: d])
+	TEST(@"-[objectByDeserializing]", [s.objectByDeserializing isEqual: d])
 
 	[pool drain];
 }

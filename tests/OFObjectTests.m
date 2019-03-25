@@ -139,15 +139,15 @@ static OFString *module = @"OFObject";
 	m = [[[MyObj alloc] init] autorelease];
 
 	TEST(@"-[description]",
-	    [[o description] isEqual: @"<OFObject>"] &&
-	    [[m description] isEqual: @"<MyObj>"])
+	    [o.description isEqual: @"<OFObject>"] &&
+	    [m.description isEqual: @"<MyObj>"])
 
-	[m setObjectValue: @"Hello"];
-	[m setClassValue: [m class]];
+	m.objectValue = @"Hello";
+	m.classValue = [m class];
 	TEST(@"-[valueForKey:]",
 	    [[m valueForKey: @"objectValue"] isEqual: @"Hello"] &&
-	    [[m valueForKey: @"classValue"] isEqual: [m class]] &&
-	    [[m valueForKey: @"class"] isEqual: [m class]])
+	    [[m valueForKey: @"classValue"] isEqual: m.class] &&
+	    [[m valueForKey: @"class"] isEqual: m.class])
 
 	EXPECT_EXCEPTION(@"-[valueForKey:] with undefined key",
 	    OFUndefinedKeyException, [m valueForKey: @"undefined"])
@@ -157,26 +157,26 @@ static OFString *module = @"OFObject";
 		   forKey: @"objectValue"]) &&
 	    R([m setValue: [OFObject class]
 		   forKey: @"classValue"]) &&
-	    [[m objectValue] isEqual: @"World"] &&
-	    [[m classValue] isEqual: [OFObject class]])
+	    [m.objectValue isEqual: @"World"] &&
+	    [m.classValue isEqual: [OFObject class]])
 
 	EXPECT_EXCEPTION(@"-[setValue:forKey:] with undefined key",
 	    OFUndefinedKeyException, [m setValue: @"x"
 					  forKey: @"undefined"])
 
-	[m setBoolValue: 1];
-	[m setCharValue: 2];
-	[m setShortValue: 3];
-	[m setIntValue: 4];
-	[m setLongValue: 5 ];
-	[m setLongLongValue: 6];
-	[m setUnsignedCharValue: 7];
-	[m setUnsignedShortValue: 8];
-	[m setUnsignedIntValue: 9];
-	[m setUnsignedLongValue: 10];
-	[m setUnsignedLongLongValue: 11];
-	[m setFloatValue: 12];
-	[m setDoubleValue: 13];
+	m.boolValue = 1;
+	m.charValue = 2;
+	m.shortValue = 3;
+	m.intValue = 4;
+	m.longValue = 5;
+	m.longLongValue = 6;
+	m.unsignedCharValue = 7;
+	m.unsignedShortValue = 8;
+	m.unsignedIntValue = 9;
+	m.unsignedLongValue = 10;
+	m.unsignedLongLongValue = 11;
+	m.floatValue = 12;
+	m.doubleValue = 13;
 	TEST(@"Auto-wrapping of -[valueForKey:]",
 	    [[m valueForKey: @"boolValue"] isEqual:
 	    [OFNumber numberWithBool: 1]] &&
@@ -232,19 +232,12 @@ static OFString *module = @"OFObject";
 		   forKey: @"floatValue"]) &&
 	    R([m setValue: [OFNumber numberWithDouble: 120]
 		   forKey: @"doubleValue"]) &&
-	    [m isBoolValue] == 0 &&
-	    [m charValue] == 10 &&
-	    [m shortValue] == 20 &&
-	    [m intValue] == 30 &&
-	    [m longValue] == 40 &&
-	    [m longLongValue] == 50 &&
-	    [m unsignedCharValue] == 60 &&
-	    [m unsignedShortValue] == 70 &&
-	    [m unsignedIntValue] == 80 &&
-	    [m unsignedLongValue] == 90 &&
-	    [m unsignedLongLongValue] == 100 &&
-	    [m floatValue] == 110 &&
-	    [m doubleValue] == 120)
+	    m.isBoolValue == 0 && m.charValue == 10 && m.shortValue == 20 &&
+	    m.intValue == 30 && m.longValue == 40 && m.longLongValue == 50 &&
+	    m.unsignedCharValue == 60 && m.unsignedShortValue == 70 &&
+	    m.unsignedIntValue == 80 && m.unsignedLongValue == 90 &&
+	    m.unsignedLongLongValue == 100 && m.floatValue == 110 &&
+	    m.doubleValue == 120)
 
 	EXPECT_EXCEPTION(@"Catch -[setValue:forKey:] with nil key for scalar",
 	    OFInvalidArgumentException, [m setValue: (id _Nonnull)nil
@@ -262,7 +255,7 @@ static OFString *module = @"OFObject";
 	TEST(@"[-setValue:forKeyPath:]",
 	    R([m setValue: [OFNumber numberWithDouble: 0.75]
 	       forKeyPath: @"objectValue.objectValue.doubleValue"]) &&
-	    [[[m objectValue] objectValue] doubleValue] == 0.75)
+	    [[m.objectValue objectValue] doubleValue] == 0.75)
 
 	[pool drain];
 }

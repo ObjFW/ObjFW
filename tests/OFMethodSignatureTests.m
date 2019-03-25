@@ -79,13 +79,13 @@ union test4_union {
 
 	TEST(@"-[:signatureWithObjCTypes:] #1",
 	    (ms = [OFMethodSignature signatureWithObjCTypes:
-	    "i28@0:8S16*20"]) && [ms numberOfArguments] == 4 &&
-	    strcmp([ms methodReturnType], "i") == 0 &&
+	    "i28@0:8S16*20"]) && ms.numberOfArguments == 4 &&
+	    strcmp(ms.methodReturnType, "i") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 2], "S") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 3], "*") == 0 &&
-	    [ms frameLength] == 28 && [ms argumentOffsetAtIndex: 0] == 0 &&
+	    ms.frameLength == 28 && [ms argumentOffsetAtIndex: 0] == 0 &&
 	    [ms argumentOffsetAtIndex: 1] == 8 &&
 	    [ms argumentOffsetAtIndex: 2] == 16 &&
 	    [ms argumentOffsetAtIndex: 3] == 20)
@@ -94,14 +94,13 @@ union test4_union {
 	    (ms = [OFMethodSignature signatureWithObjCTypes:
 	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}24@0:8"
 	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}16"]) &&
-	    [ms numberOfArguments] == 3 &&
-	    strcmp([ms methodReturnType],
+	    ms.numberOfArguments == 3 && strcmp(ms.methodReturnType,
 	    "{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 0], "@") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 1], ":") == 0 &&
 	    strcmp([ms argumentTypeAtIndex: 2],
 	    "^{s0=csi(u1={s2=iii{s3=(u4=ic^v*)}})}") == 0 &&
-	    [ms frameLength] == 24 && [ms argumentOffsetAtIndex: 0] == 0 &&
+	    ms.frameLength == 24 && [ms argumentOffsetAtIndex: 0] == 0 &&
 	    [ms argumentOffsetAtIndex: 1] == 8 &&
 	    [ms argumentOffsetAtIndex: 2] == 16)
 

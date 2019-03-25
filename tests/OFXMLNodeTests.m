@@ -124,7 +124,7 @@ static OFString *module = @"OFXMLNode";
 	TEST(@"-[elementsForName:namespace:]",
 	    (a = [nodes[2] elementsForName: @"bar"
 				 namespace: @"urn:objfw:test"]) &&
-	    [a count] == 1 && [[[a firstObject] XMLString] isEqual:
+	    a.count == 1 && [[[a firstObject] XMLString] isEqual:
 	    @"<bar xmlns='urn:objfw:test'/>"])
 
 	TEST(@"-[isEqual:]",

@@ -59,14 +59,14 @@ enum event_type {
 		break;
 	case 3:
 		TEST(msg, type == TAG_START && [name isEqual: @"root"] &&
-		    prefix == nil && ns == nil && [attrs count] == 0)
+		    prefix == nil && ns == nil && attrs.count == 0)
 		break;
 	case 4:
 		TEST(msg, type == STRING && [string isEqual: @"\n\n "])
 		break;
 	case 5:
 		TEST(msg, type == CDATA && [string isEqual: @"f<]]]oo]"] &&
-		    [parser lineNumber] == 3)
+		    parser.lineNumber == 3)
 		break;
 	case 6:
 		TEST(msg, type == TAG_START && [name isEqual: @"bar"] &&
@@ -82,7 +82,7 @@ enum event_type {
 	case 9:
 		TEST(msg, type == TAG_START && [name isEqual: @"foobar"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
-		    [attrs count] == 1 &&
+		    attrs.count == 1 &&
 		    /* xmlns attr */
 		    [[[attrs objectAtIndex: 0] name] isEqual: @"xmlns"] &&
 		    [[attrs objectAtIndex: 0] namespace] == nil &&
@@ -95,7 +95,7 @@ enum event_type {
 	case 11:
 		TEST(msg, type == TAG_START && [name isEqual: @"qux"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
-		    [attrs count] == 1 &&
+		    attrs.count == 1 &&
 		    /* xmlns:foo attr */
 		    [[[attrs objectAtIndex: 0] name] isEqual: @"foo"] &&
 		    [[[attrs objectAtIndex: 0] namespace] isEqual:
@@ -110,7 +110,7 @@ enum event_type {
 		TEST(msg, type == TAG_START && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"foo"] &&
 		    [ns isEqual: @"urn:objfw:test:foo"] &&
-		    [attrs count] == 2 &&
+		    attrs.count == 2 &&
 		    /* foo:bla attr */
 		    [[[attrs objectAtIndex: 0] name] isEqual: @"bla"] &&
 		    [[[attrs objectAtIndex: 0] namespace] isEqual:
@@ -127,7 +127,7 @@ enum event_type {
 	case 15:
 		TEST(msg, type == TAG_START && [name isEqual: @"blup"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
-		    [attrs count] == 2 &&
+		    attrs.count == 2 &&
 		    /* foo:qux attr */
 		    [[[attrs objectAtIndex: 0] name] isEqual: @"qux"] &&
 		    [[[attrs objectAtIndex: 0] namespace] isEqual:
@@ -148,7 +148,7 @@ enum event_type {
 	case 18:
 		TEST(msg, type == TAG_START && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"bla"] &&
-		    [ns isEqual: @"urn:objfw:test:bla"] && [attrs count] == 3 &&
+		    [ns isEqual: @"urn:objfw:test:bla"] && attrs.count == 3 &&
 		    /* xmlns:bla attr */
 		    [[[attrs objectAtIndex: 0] name] isEqual: @"bla"] &&
 		    [[[attrs objectAtIndex: 0] namespace] isEqual:
@@ -176,7 +176,7 @@ enum event_type {
 	case 21:
 		TEST(msg, type == TAG_START && [name isEqual: @"abc"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"] &&
-		    [attrs count] == 3 &&
+		    attrs.count == 3 &&
 		    /* xmlns attr */
 		    [[[attrs objectAtIndex: 0] name] isEqual: @"xmlns"] &&
 		    [[attrs objectAtIndex: 0] namespace] == nil &&
@@ -343,13 +343,13 @@ enum event_type {
 
 	TEST(@"+[parser]", (parser = [OFXMLParser parser]))
 
-	TEST(@"-[setDelegate:]", R([parser setDelegate: self]))
+	TEST(@"-[setDelegate:]", (parser.delegate = self))
 
 	/* Simulate a stream where we only get chunks */
 	len = strlen(str);
 
 	for (j = 0; j < len; j+= 2) {
-		if ([parser hasFinishedParsing])
+		if (parser.hasFinishedParsing)
 			abort();
 
 		if (j + 2 > len)
@@ -361,9 +361,9 @@ enum event_type {
 	}
 
 	TEST(@"Checking if everything was parsed",
-	    i == 32 && [parser lineNumber] == 18)
+	    i == 32 && parser.lineNumber == 18)
 
-	TEST(@"-[hasFinishedParsing]", [parser hasFinishedParsing])
+	TEST(@"-[hasFinishedParsing]", parser.hasFinishedParsing)
 
 	TEST(@"Parsing whitespaces after the document",
 	    R([parser parseString: @" \t\r\n "]))

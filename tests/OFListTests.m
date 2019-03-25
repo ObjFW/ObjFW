@@ -43,35 +43,34 @@ static OFString *strings[] = {
 	    [list appendObject: strings[1]] && [list appendObject: strings[2]])
 
 	TEST(@"-[firstListObject]",
-	    [[list firstListObject]->object isEqual: strings[0]])
+	    [list.firstListObject->object isEqual: strings[0]])
 
 	TEST(@"-[firstListObject]->next",
-	    [[list firstListObject]->next->object isEqual: strings[1]])
+	    [list.firstListObject->next->object isEqual: strings[1]])
 
 	TEST(@"-[lastListObject]",
-	    [[list lastListObject]->object isEqual: strings[2]])
+	    [list.lastListObject->object isEqual: strings[2]])
 
 	TEST(@"-[lastListObject]->previous",
-	    [[list lastListObject]->previous->object isEqual: strings[1]])
+	    [list.lastListObject->previous->object isEqual: strings[1]])
 
 	TEST(@"-[removeListObject:]",
-	    R([list removeListObject: [list lastListObject]]) &&
-	    [[list lastListObject]->object isEqual: strings[1]] &&
-	    R([list removeListObject: [list firstListObject]]) &&
-	    [[list firstListObject]->object isEqual:
-	    [list lastListObject]->object])
+	    R([list removeListObject: list.lastListObject]) &&
+	    [list.lastListObject->object isEqual: strings[1]] &&
+	    R([list removeListObject: list.firstListObject]) &&
+	    [list.firstListObject->object isEqual: list.lastListObject->object])
 
 	TEST(@"-[insertObject:beforeListObject:]",
 	    [list insertObject: strings[0]
-	      beforeListObject: [list lastListObject]] &&
-	    [[list lastListObject]->previous->object isEqual: strings[0]])
+	      beforeListObject: list.lastListObject] &&
+	    [list.lastListObject->previous->object isEqual: strings[0]])
 
 	TEST(@"-[insertObject:afterListObject:]",
 	    [list insertObject: strings[2]
-	       afterListObject: [list firstListObject]->next] &&
-	    [[list lastListObject]->object isEqual: strings[2]])
+	       afterListObject: list.firstListObject->next] &&
+	    [list.lastListObject->object isEqual: strings[2]])
 
-	TEST(@"-[count]", [list count] == 3)
+	TEST(@"-[count]", list.count == 3)
 
 	TEST(@"-[containsObject:]",
 	    [list containsObject: strings[1]] &&
@@ -83,18 +82,18 @@ static OFString *strings[] = {
 	    [OFString stringWithString: strings[1]]])
 
 	TEST(@"-[copy]", (list = [[list copy] autorelease]) &&
-	    [[list firstListObject]->object isEqual: strings[0]] &&
-	    [[list firstListObject]->next->object isEqual: strings[1]] &&
-	    [[list lastListObject]->object isEqual: strings[2]])
+	    [list.firstListObject->object isEqual: strings[0]] &&
+	    [list.firstListObject->next->object isEqual: strings[1]] &&
+	    [list.lastListObject->object isEqual: strings[2]])
 
 	TEST(@"-[isEqual:]", [list isEqual: [[list copy] autorelease]])
 
 	TEST(@"-[description]",
-	    [[list description] isEqual: @"[\n\tFoo,\n\tBar,\n\tBaz\n]"])
+	    [list.description isEqual: @"[\n\tFoo,\n\tBar,\n\tBaz\n]"])
 
 	TEST(@"-[objectEnumerator]", (enumerator = [list objectEnumerator]))
 
-	loe = [list firstListObject];
+	loe = list.firstListObject;
 	i = 0;
 	ok = true;
 	while ((obj = [enumerator nextObject]) != nil) {
@@ -105,20 +104,20 @@ static OFString *strings[] = {
 		i++;
 	}
 
-	if ([list count] != i)
+	if (list.count != i)
 		ok = false;
 
 	TEST(@"OFEnumerator's -[nextObject]", ok);
 
 	[enumerator reset];
-	[list removeListObject: [list firstListObject]];
+	[list removeListObject: list.firstListObject];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",
 	    OFEnumerationMutationException, [enumerator nextObject])
 
 	[list prependObject: strings[0]];
 
-	loe = [list firstListObject];
+	loe = list.firstListObject;
 	i = 0;
 	ok = true;
 
@@ -130,7 +129,7 @@ static OFString *strings[] = {
 		i++;
 	}
 
-	if ([list count] != i)
+	if (list.count != i)
 		ok = false;
 
 	TEST(@"Fast Enumeration", ok)
@@ -140,7 +139,7 @@ static OFString *strings[] = {
 		for (OFString *object in list) {
 			(void)object;
 
-			[list removeListObject: [list lastListObject]];
+			[list removeListObject: list.lastListObject];
 		}
 	} @catch (OFEnumerationMutationException *e) {
 		ok = true;

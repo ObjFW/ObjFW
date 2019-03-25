@@ -37,7 +37,7 @@ const uint8_t testfile_rmd160[20] =
 
 	TEST(@"+[cryptoHash]", (rmd160 = [OFRIPEMD160Hash cryptoHash]))
 
-	while (![f isAtEndOfStream]) {
+	while (!f.atEndOfStream) {
 		char buf[64];
 		size_t len = [f readIntoBuffer: buf
 					length: 64];
@@ -49,8 +49,8 @@ const uint8_t testfile_rmd160[20] =
 	TEST(@"-[copy]", (copy = [[rmd160 copy] autorelease]))
 
 	TEST(@"-[digest]",
-	    memcmp([rmd160 digest], testfile_rmd160, 20) == 0 &&
-	    memcmp([copy digest], testfile_rmd160, 20) == 0)
+	    memcmp(rmd160.digest, testfile_rmd160, 20) == 0 &&
+	    memcmp(copy.digest, testfile_rmd160, 20) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,

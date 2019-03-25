@@ -94,7 +94,7 @@ static const uint8_t digest_sha512[] =
 	    R([HMAC_SHA512 setKey: key
 			   length: key_length]))
 
-	while (![f isAtEndOfStream]) {
+	while (!f.atEndOfStream) {
 		char buf[64];
 		size_t len = [f readIntoBuffer: buf
 					length: 64];
@@ -114,22 +114,21 @@ static const uint8_t digest_sha512[] =
 	[f close];
 
 	TEST(@"-[digest] with MD5",
-	    memcmp([HMAC_MD5 digest], digest_md5, [HMAC_MD5 digestSize]) == 0)
+	    memcmp(HMAC_MD5.digest, digest_md5, HMAC_MD5.digestSize) == 0)
 	TEST(@"-[digest] with SHA-1",
-	    memcmp([HMAC_SHA1 digest], digest_sha1,
-	    [HMAC_SHA1 digestSize]) == 0)
+	    memcmp(HMAC_SHA1.digest, digest_sha1, HMAC_SHA1.digestSize) == 0)
 	TEST(@"-[digest] with RIPEMD-160",
-	    memcmp([HMAC_RMD160 digest], digest_rmd160,
-	    [HMAC_RMD160 digestSize]) == 0)
+	    memcmp(HMAC_RMD160.digest, digest_rmd160,
+	    HMAC_RMD160.digestSize) == 0)
 	TEST(@"-[digest] with SHA-256",
-	    memcmp([HMAC_SHA256 digest], digest_sha256,
-	    [HMAC_SHA256 digestSize]) == 0)
+	    memcmp(HMAC_SHA256.digest, digest_sha256,
+	    HMAC_SHA256.digestSize) == 0)
 	TEST(@"-[digest] with SHA-384",
-	    memcmp([HMAC_SHA384 digest], digest_sha384,
-	    [HMAC_SHA384 digestSize]) == 0)
+	    memcmp(HMAC_SHA384.digest, digest_sha384,
+	    HMAC_SHA384.digestSize) == 0)
 	TEST(@"-[digest] with SHA-512",
-	    memcmp([HMAC_SHA512 digest], digest_sha512,
-	    [HMAC_SHA512 digestSize]) == 0)
+	    memcmp(HMAC_SHA512.digest, digest_sha512,
+	    HMAC_SHA512.digestSize) == 0)
 
 	[pool drain];
 }

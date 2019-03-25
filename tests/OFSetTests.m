@@ -104,7 +104,7 @@ static OFString *module = nil;
 
 - (size_t)count
 {
-	return [_set count];
+	return _set.count;
 }
 
 - (bool)containsObject: (id)object
@@ -165,12 +165,12 @@ static OFString *module = nil;
 
 	TEST(@"-[isEqual:]", [set1 isEqual: set2])
 
-	TEST(@"-[hash]", [set1 hash] == [set2 hash])
+	TEST(@"-[hash]", set1.hash == set2.hash)
 
 	TEST(@"-[description]",
-	    [[set1 description]
+	    [set1.description
 	    isEqual: @"{(\n\tx,\n\tbar,\n\tfoo,\n\tbaz\n)}"] &&
-	    [[set1 description] isEqual: [set2 description]])
+	    [set1.description isEqual: set2.description])
 
 	TEST(@"-[copy]", [set1 isEqual: [[set1 copy] autorelease]])
 

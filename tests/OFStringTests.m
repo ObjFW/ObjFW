@@ -172,7 +172,7 @@ static uint16_t sutf16str[] = {
 
 - (size_t)length
 {
-	return [_string length];
+	return _string.length;
 }
 @end
 
@@ -223,7 +223,7 @@ static uint16_t sutf16str[] = {
 	__block bool ok;
 #endif
 
-#define C(s) [stringClass stringWithString: s]
+#define C(s) ((OFString *)[stringClass stringWithString: s])
 
 	s[0] = [mutableStringClass stringWithString: @"täs€"];
 	s[1] = [mutableStringClass string];
@@ -262,9 +262,9 @@ static uint16_t sutf16str[] = {
 #endif
 
 	TEST(@"-[hash] is the same if -[isEqual:] is true",
-	    [s[0] hash] == [s[2] hash])
+	    s[0].hash == s[2].hash)
 
-	TEST(@"-[description]", [[s[0] description] isEqual: s[0]])
+	TEST(@"-[description]", [s[0].description isEqual: s[0]])
 
 	TEST(@"-[appendString:] and -[appendUTF8String:]",
 	    R([s[1] appendUTF8String: "1𝄞"]) && R([s[1] appendString: @"3"]) &&
@@ -274,9 +274,9 @@ static uint16_t sutf16str[] = {
 	    R([s[1] appendCharacters: ucstr + 6
 			      length: 2]) && [s[1] isEqual: @"1𝄞3r🀺"])
 
-	TEST(@"-[length]", [s[0] length] == 7)
-	TEST(@"-[UTF8StringLength]", [s[0] UTF8StringLength] == 13)
-	TEST(@"-[hash]", [s[0] hash] == 0x705583C0)
+	TEST(@"-[length]", s[0].length == 7)
+	TEST(@"-[UTF8StringLength]", s[0].UTF8StringLength == 13)
+	TEST(@"-[hash]", s[0].hash == 0x705583C0)
 
 	TEST(@"-[characterAtIndex:]", [s[0] characterAtIndex: 0] == 't' &&
 	    [s[0] characterAtIndex: 1] == 0xE4 &&
@@ -305,7 +305,7 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
 	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
 
-	TEST(@"-[capitalizedString]", [[C(@"ǆbla tǆst TǄST") capitalizedString]
+	TEST(@"-[capitalizedString]", [C(@"ǆbla tǆst TǄST").capitalizedString
 	    isEqual: @"ǅbla Tǆst Tǆst"])
 #else
 	TEST(@"-[uppercase]", R([s[0] uppercase]) &&
@@ -316,13 +316,12 @@ static uint16_t sutf16str[] = {
 	    [s[0] isEqual: @"3𝄞1€sät"] &&
 	    R([s[1] lowercase]) && [s[1] isEqual: @"abc"])
 
-	TEST(@"-[uppercaseString]",
-	    [[s[0] uppercaseString] isEqual: @"3𝄞1€SäT"])
+	TEST(@"-[uppercaseString]", [s[0].uppercaseString isEqual: @"3𝄞1€SäT"])
 
 	TEST(@"-[lowercaseString]", R([s[0] uppercase]) &&
-	    [[s[0] lowercaseString] isEqual: @"3𝄞1€sät"])
+	    [s[0].lowercaseString isEqual: @"3𝄞1€sät"])
 
-	TEST(@"-[capitalizedString]", [[C(@"ǆbla tǆst TǄST") capitalizedString]
+	TEST(@"-[capitalizedString]", [C(@"ǆbla tǆst TǄST").capitalizedString
 	    isEqual: @"ǆbla Tǆst TǄst"])
 #endif
 
@@ -543,26 +542,25 @@ static uint16_t sutf16str[] = {
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS)
 	TEST(@"-[isAbsolutePath]",
-	    [C(@"C:\\foo") isAbsolutePath] && [C(@"a:/foo") isAbsolutePath] &&
-	    ![C(@"foo") isAbsolutePath] && ![C(@"b:foo") isAbsolutePath] &&
-	    [C(@"\\\\foo") isAbsolutePath])
+	    C(@"C:\\foo").absolutePath && C(@"a:/foo").absolutePath &&
+	    !C(@"foo").absolutePath && !C(@"b:foo").absolutePath &&
+	    C(@"\\\\foo").absolutePath)
 # elif  defined(OF_MSDOS)
 	TEST(@"-[isAbsolutePath]",
-	    [C(@"C:\\foo") isAbsolutePath] && [C(@"a:/foo") isAbsolutePath] &&
-	    ![C(@"foo") isAbsolutePath] && ![C(@"b:foo") isAbsolutePath])
+	    C(@"C:\\foo").absolutePath && C(@"a:/foo").absolutePath &&
+	    !C(@"foo").absolutePath && !C(@"b:foo").absolutePath)
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[isAbsolutePath]",
-	    [C(@"dh0:foo") isAbsolutePath] && [C(@"dh0:a/b") isAbsolutePath] &&
-	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
+	    C(@"dh0:foo").absolutePath && C(@"dh0:a/b").absolutePath &&
+	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
 # elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[isAbsolutePath]",
-	    [C(@"sdmc:/foo") isAbsolutePath] &&
-	    ![C(@"sdmc:foo") isAbsolutePath] &&
-	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
+	    C(@"sdmc:/foo").absolutePath && !C(@"sdmc:foo").absolutePath &&
+	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
 # else
 	TEST(@"-[isAbsolutePath]",
-	    [C(@"/foo") isAbsolutePath] && [C(@"/foo/bar") isAbsolutePath] &&
-	    ![C(@"foo/bar") isAbsolutePath] && ![C(@"foo") isAbsolutePath])
+	    C(@"/foo").absolutePath && C(@"/foo/bar").absolutePath &&
+	    !C(@"foo/bar").absolutePath && !C(@"foo").absolutePath)
 # endif
 
 	s[0] = [mutableStringClass stringWithString: @"foo"];
@@ -601,7 +599,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
-	    [a count] == i)
+	    a.count == i)
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByString:options:]",
@@ -611,7 +609,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
-	    [a count] == i)
+	    a.count == i)
 
 	cs = [OFCharacterSet characterSetWithCharactersInString: @"XYZ"];
 
@@ -630,7 +628,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @""] &&
 	    [[a objectAtIndex: i++] isEqual: @"x"] &&
-	    [a count] == i)
+	    a.count == i)
 
 	i = 0;
 	TEST(@"-[componentsSeparatedByCharactersInSet:options:]",
@@ -640,7 +638,7 @@ static uint16_t sutf16str[] = {
 	    [[a objectAtIndex: i++] isEqual: @"foo"] &&
 	    [[a objectAtIndex: i++] isEqual: @"bar"] &&
 	    [[a objectAtIndex: i++] isEqual: @"baz"] &&
-	    [a count] == i)
+	    a.count == i)
 
 #ifdef OF_HAVE_FILES
 # if defined(OF_WINDOWS)
@@ -715,349 +713,344 @@ static uint16_t sutf16str[] = {
 # if defined(OF_WINDOWS)
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
-	    (a = [C(@"c:/tmp") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"c:/tmp").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\tmp\ */
-	    (a = [C(@"c:\\tmp\\") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"c:\\tmp\\").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:/ */
-	    (a = [C(@"c:/") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"c:/").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    /* foo\bar */
-	    (a = [C(@"foo\\bar") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"foo\\bar").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo\bar/baz/ */
-	    (a = [C(@"foo\\bar/baz/") pathComponents]) && [a count] == 3 &&
+	    (a = C(@"foo\\bar/baz/").pathComponents) && a.count == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo\/ */
-	    (a = [C(@"foo\\/") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"foo\\/").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[C(@"") pathComponents] count] == 0 &&
 	    /* \\foo\bar */
-	    (a = [C(@"\\\\foo\\bar") pathComponents]) && [a count] == 3 &&
+	    (a = C(@"\\\\foo\\bar").pathComponents) && a.count == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"\\\\"] &&
 	    [[a objectAtIndex: 1] isEqual: @"foo"] &&
-	    [[a objectAtIndex: 2] isEqual: @"bar"])
+	    [[a objectAtIndex: 2] isEqual: @"bar"] &&
+	    C(@"").pathComponents.count == 0)
 # elif defined(OF_MSDOS)
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
-	    (a = [C(@"c:/tmp") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"c:/tmp").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\tmp\ */
-	    (a = [C(@"c:\\tmp\\") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"c:\\tmp\\").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:/ */
-	    (a = [C(@"c:/") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"c:/").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    /* foo\bar */
-	    (a = [C(@"foo\\bar") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"foo\\bar").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo\bar/baz/ */
-	    (a = [C(@"foo\\bar/baz/") pathComponents]) && [a count] == 3 &&
+	    (a = C(@"foo\\bar/baz/").pathComponents) && a.count == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo\/ */
-	    (a = [C(@"foo\\/") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"foo\\/").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[C(@"") pathComponents] count] == 0)
+	    C(@"").pathComponents.count == 0)
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[pathComponents]",
 	    /* dh0:tmp */
-	    (a = [C(@"dh0:tmp") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"dh0:tmp").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* dh0:tmp/ */
-	    (a = [C(@"dh0:tmp/") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"dh0:tmp/").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* dh0: */
-	    (a = [C(@"dh0:/") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"dh0:/").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"dh0:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"/"] &&
 	    /* foo/bar */
-	    (a = [C(@"foo/bar") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"foo/bar").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = [C(@"foo/bar/baz/") pathComponents]) && [a count] == 3 &&
+	    (a = C(@"foo/bar/baz/").pathComponents) && a.count == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo// */
-	    (a = [C(@"foo//") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"foo//").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"/"] &&
-	    [[C(@"") pathComponents] count] == 0)
+	    C(@"").pathComponents.count == 0)
 # elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[pathComponents]",
 	    /* sdmc:/tmp */
-	    (a = [C(@"sdmc:/tmp") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"sdmc:/tmp").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"sdmc:"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* sdmc:/ */
-	    (a = [C(@"sdmc:/") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"sdmc:/").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"sdmc:"] &&
 	    /* foo/bar */
-	    (a = [C(@"foo/bar") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"foo/bar").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = [C(@"foo/bar/baz/") pathComponents]) && [a count] == 3 &&
+	    (a = C(@"foo/bar/baz/").pathComponents) && a.count == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo// */
-	    (a = [C(@"foo//") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"foo//").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[C(@"") pathComponents] count] == 0)
+	    C(@"").pathComponents.count == 0)
 # else
 	TEST(@"-[pathComponents]",
 	    /* /tmp */
-	    (a = [C(@"/tmp") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"/tmp").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"/"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* /tmp/ */
-	    (a = [C(@"/tmp/") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"/tmp/").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"/"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* / */
-	    (a = [C(@"/") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"/").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"/"] &&
 	    /* foo/bar */
-	    (a = [C(@"foo/bar") pathComponents]) && [a count] == 2 &&
+	    (a = C(@"foo/bar").pathComponents) && a.count == 2 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    /* foo/bar/baz/ */
-	    (a = [C(@"foo/bar/baz/") pathComponents]) && [a count] == 3 &&
+	    (a = C(@"foo/bar/baz/").pathComponents) && a.count == 3 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
 	    [[a objectAtIndex: 1] isEqual: @"bar"] &&
 	    [[a objectAtIndex: 2] isEqual: @"baz"] &&
 	    /* foo// */
-	    (a = [C(@"foo//") pathComponents]) && [a count] == 1 &&
+	    (a = C(@"foo//").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"foo"] &&
-	    [[C(@"") pathComponents] count] == 0)
+	    C(@"").pathComponents.count == 0)
 # endif
 
 # if defined(OF_WINDOWS)
 	TEST(@"-[lastPathComponent]",
-	    [[C(@"c:/tmp") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"c:\\tmp\\") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"c:\\") lastPathComponent] isEqual: @"c:\\"] &&
-	    [[C(@"c:/") lastPathComponent] isEqual: @"c:/"] &&
-	    [[C(@"\\") lastPathComponent] isEqual: @""] &&
-	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
-	    [[C(@"foo\\bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"] &&
-	    [[C(@"\\\\foo\\bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"\\\\") lastPathComponent] isEqual: @"\\\\"])
+	    [C(@"c:/tmp").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"c:\\tmp\\").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"c:\\").lastPathComponent isEqual: @"c:\\"] &&
+	    [C(@"c:/").lastPathComponent isEqual: @"c:/"] &&
+	    [C(@"\\").lastPathComponent isEqual: @""] &&
+	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
+	    [C(@"foo\\bar").lastPathComponent isEqual: @"bar"] &&
+	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"] &&
+	    [C(@"\\\\foo\\bar").lastPathComponent isEqual: @"bar"] &&
+	    [C(@"\\\\").lastPathComponent isEqual: @"\\\\"])
 # elif defined(OF_MSDOS)
 	TEST(@"-[lastPathComponent]",
-	    [[C(@"c:/tmp") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"c:\\tmp\\") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"c:\\") lastPathComponent] isEqual: @"c:\\"] &&
-	    [[C(@"c:/") lastPathComponent] isEqual: @"c:/"] &&
-	    [[C(@"\\") lastPathComponent] isEqual: @""] &&
-	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
-	    [[C(@"foo\\bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+	    [C(@"c:/tmp").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"c:\\tmp\\").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"c:\\").lastPathComponent isEqual: @"c:\\"] &&
+	    [C(@"c:/").lastPathComponent isEqual: @"c:/"] &&
+	    [C(@"\\").lastPathComponent isEqual: @""] &&
+	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
+	    [C(@"foo\\bar").lastPathComponent isEqual: @"bar"] &&
+	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[lastPathComponent]",
-	    [[C(@"dh0:tmp") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"dh0:tmp/") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"dh0:/") lastPathComponent] isEqual: @"/"] &&
-	    [[C(@"dh0:") lastPathComponent] isEqual: @"dh0:"] &&
-	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
-	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+	    [C(@"dh0:tmp").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"dh0:tmp/").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"dh0:/").lastPathComponent isEqual: @"/"] &&
+	    [C(@"dh0:").lastPathComponent isEqual: @"dh0:"] &&
+	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
+	    [C(@"foo/bar").lastPathComponent isEqual: @"bar"] &&
+	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
 # elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[lastPathComponent]",
-	    [[C(@"sdmc:/tmp") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"sdmc:/tmp/") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"sdmc:/") lastPathComponent] isEqual: @"sdmc:/"] &&
-	    [[C(@"sdmc:") lastPathComponent] isEqual: @"sdmc:"] &&
-	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
-	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+	    [C(@"sdmc:/tmp").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"sdmc:/tmp/").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"sdmc:/").lastPathComponent isEqual: @"sdmc:/"] &&
+	    [C(@"sdmc:").lastPathComponent isEqual: @"sdmc:"] &&
+	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
+	    [C(@"foo/bar").lastPathComponent isEqual: @"bar"] &&
+	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
 # else
 	TEST(@"-[lastPathComponent]",
-	    [[C(@"/tmp") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"/tmp/") lastPathComponent] isEqual: @"tmp"] &&
-	    [[C(@"/") lastPathComponent] isEqual: @"/"] &&
-	    [[C(@"foo") lastPathComponent] isEqual: @"foo"] &&
-	    [[C(@"foo/bar") lastPathComponent] isEqual: @"bar"] &&
-	    [[C(@"foo/bar/baz/") lastPathComponent] isEqual: @"baz"])
+	    [C(@"/tmp").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"/tmp/").lastPathComponent isEqual: @"tmp"] &&
+	    [C(@"/").lastPathComponent isEqual: @"/"] &&
+	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
+	    [C(@"foo/bar").lastPathComponent isEqual: @"bar"] &&
+	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
 # endif
 
 	TEST(@"-[pathExtension]",
-	    [[C(@"foo.bar") pathExtension] isEqual: @"bar"] &&
-	    [[C(@"foo/.bar") pathExtension] isEqual: @""] &&
-	    [[C(@"foo/.bar.baz") pathExtension] isEqual: @"baz"] &&
-	    [[C(@"foo/bar.baz/") pathExtension] isEqual: @"baz"])
+	    [C(@"foo.bar").pathExtension isEqual: @"bar"] &&
+	    [C(@"foo/.bar").pathExtension isEqual: @""] &&
+	    [C(@"foo/.bar.baz").pathExtension isEqual: @"baz"] &&
+	    [C(@"foo/bar.baz/").pathExtension isEqual: @"baz"])
 
 # if defined(OF_WINDOWS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [[C(@"\\tmp") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"c:\\") stringByDeletingLastPathComponent] isEqual: @"c:\\"] &&
-	    [[C(@"c:/") stringByDeletingLastPathComponent] isEqual: @"c:/"] &&
-	    [[C(@"c:\\tmp/foo/") stringByDeletingLastPathComponent]
+	    [C(@"\\tmp").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"c:\\").stringByDeletingLastPathComponent isEqual: @"c:\\"] &&
+	    [C(@"c:/").stringByDeletingLastPathComponent isEqual: @"c:/"] &&
+	    [C(@"c:\\tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"c:\\tmp"] &&
-	    [[C(@"foo\\bar") stringByDeletingLastPathComponent]
+	    [C(@"foo\\bar").stringByDeletingLastPathComponent
 	    isEqual: @"foo"] &&
-	    [[C(@"\\") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."] &&
-	    [[C(@"\\\\foo\\bar") stringByDeletingLastPathComponent]
+	    [C(@"\\").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @"."] &&
+	    [C(@"\\\\foo\\bar").stringByDeletingLastPathComponent
 	    isEqual: @"\\\\foo"] &&
-	    [[C(@"\\\\foo") stringByDeletingLastPathComponent]
+	    [C(@"\\\\foo").stringByDeletingLastPathComponent
 	    isEqual: @"\\\\"] &&
-	    [[C(@"\\\\") stringByDeletingLastPathComponent] isEqual: @"\\\\"])
+	    [C(@"\\\\").stringByDeletingLastPathComponent isEqual: @"\\\\"])
 # elif defined(OF_MSDOS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [[C(@"\\tmp") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"c:\\") stringByDeletingLastPathComponent] isEqual: @"c:\\"] &&
-	    [[C(@"c:/") stringByDeletingLastPathComponent] isEqual: @"c:/"] &&
-	    [[C(@"c:\\tmp/foo/") stringByDeletingLastPathComponent]
+	    [C(@"\\tmp").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"c:\\").stringByDeletingLastPathComponent isEqual: @"c:\\"] &&
+	    [C(@"c:/").stringByDeletingLastPathComponent isEqual: @"c:/"] &&
+	    [C(@"c:\\tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"c:\\tmp"] &&
-	    [[C(@"foo\\bar") stringByDeletingLastPathComponent]
+	    [C(@"foo\\bar").stringByDeletingLastPathComponent
 	    isEqual: @"foo"] &&
-	    [[C(@"\\") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."])
+	    [C(@"\\").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @"."])
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [[C(@"dh0:") stringByDeletingLastPathComponent] isEqual: @"dh0:"] &&
-	    [[C(@"dh0:tmp") stringByDeletingLastPathComponent]
+	    [C(@"dh0:").stringByDeletingLastPathComponent isEqual: @"dh0:"] &&
+	    [C(@"dh0:tmp").stringByDeletingLastPathComponent
 	    isEqual: @"dh0:"] &&
-	    [[C(@"dh0:tmp/") stringByDeletingLastPathComponent]
+	    [C(@"dh0:tmp/").stringByDeletingLastPathComponent
 	    isEqual: @"dh0:"] &&
-	    [[C(@"dh0:/") stringByDeletingLastPathComponent]
-	    isEqual: @"dh0:"] &&
-	    [[C(@"dh0:tmp/foo/") stringByDeletingLastPathComponent]
+	    [C(@"dh0:/").stringByDeletingLastPathComponent isEqual: @"dh0:"] &&
+	    [C(@"dh0:tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"dh0:tmp"] &&
-	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
-	    isEqual: @"foo"] &&
-	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @""])
+	    [C(@"foo/bar").stringByDeletingLastPathComponent isEqual: @"foo"] &&
+	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @""])
 # elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"sdmc:/tmp/foo/") stringByDeletingLastPathComponent]
+	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"sdmc:/tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"sdmc:/tmp"] &&
-	    [[C(@"sdmc:/") stringByDeletingLastPathComponent]
+	    [C(@"sdmc:/").stringByDeletingLastPathComponent
 	    isEqual: @"sdmc:/"] &&
-	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
-	    isEqual: @"foo"] &&
-	    [[C(@"/") stringByDeletingLastPathComponent] isEqual: @""] &&
-	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."])
+	    [C(@"foo/bar").stringByDeletingLastPathComponent isEqual: @"foo"] &&
+	    [C(@"/").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @"."])
 # else
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [[C(@"/tmp") stringByDeletingLastPathComponent] isEqual: @"/"] &&
-	    [[C(@"/tmp/") stringByDeletingLastPathComponent] isEqual: @"/"] &&
-	    [[C(@"/tmp/foo/") stringByDeletingLastPathComponent]
+	    [C(@"/tmp").stringByDeletingLastPathComponent isEqual: @"/"] &&
+	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @"/"] &&
+	    [C(@"/tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"/tmp"] &&
-	    [[C(@"foo/bar") stringByDeletingLastPathComponent]
-	    isEqual: @"foo"] &&
-	    [[C(@"/") stringByDeletingLastPathComponent] isEqual: @"/"] &&
-	    [[C(@"foo") stringByDeletingLastPathComponent] isEqual: @"."])
+	    [C(@"foo/bar").stringByDeletingLastPathComponent isEqual: @"foo"] &&
+	    [C(@"/").stringByDeletingLastPathComponent isEqual: @"/"] &&
+	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @"."])
 # endif
 
 # if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	TEST(@"-[stringByDeletingPathExtension]",
-	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
-	    [[C(@"c:/foo.\\bar") stringByDeletingPathExtension]
+	    [C(@"foo.bar").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@"foo..bar").stringByDeletingPathExtension isEqual: @"foo."] &&
+	    [C(@"c:/foo.\\bar").stringByDeletingPathExtension
 	    isEqual: @"c:/foo.\\bar"] &&
-	    [[C(@"c:\\foo./bar.baz") stringByDeletingPathExtension]
+	    [C(@"c:\\foo./bar.baz").stringByDeletingPathExtension
 	    isEqual: @"c:\\foo.\\bar"] &&
-	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
-	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+	    [C(@"foo.bar/").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@".foo").stringByDeletingPathExtension isEqual: @".foo"] &&
+	    [C(@".foo.bar").stringByDeletingPathExtension isEqual: @".foo"])
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[stringByDeletingPathExtension]",
-	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
-	    [[C(@"dh0:foo.bar") stringByDeletingPathExtension]
+	    [C(@"foo.bar").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@"foo..bar").stringByDeletingPathExtension isEqual: @"foo."] &&
+	    [C(@"dh0:foo.bar").stringByDeletingPathExtension
 	    isEqual: @"dh0:foo"] &&
-	    [[C(@"dh0:foo./bar") stringByDeletingPathExtension]
+	    [C(@"dh0:foo./bar").stringByDeletingPathExtension
 	    isEqual: @"dh0:foo./bar"] &&
-	    [[C(@"dh0:foo./bar.baz") stringByDeletingPathExtension]
+	    [C(@"dh0:foo./bar.baz").stringByDeletingPathExtension
 	    isEqual: @"dh0:foo./bar"] &&
-	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
-	    [[C(@".foo\\bar") stringByDeletingPathExtension]
+	    [C(@"foo.bar/").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@".foo").stringByDeletingPathExtension isEqual: @".foo"] &&
+	    [C(@".foo\\bar").stringByDeletingPathExtension
 	    isEqual: @".foo\\bar"] &&
-	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+	    [C(@".foo.bar").stringByDeletingPathExtension isEqual: @".foo"])
 # elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
 	TEST(@"-[stringByDeletingPathExtension]",
-	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
-	    [[C(@"sdmc:/foo./bar") stringByDeletingPathExtension]
+	    [C(@"foo.bar").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@"foo..bar").stringByDeletingPathExtension isEqual: @"foo."] &&
+	    [C(@"sdmc:/foo./bar").stringByDeletingPathExtension
 	    isEqual: @"sdmc:/foo./bar"] &&
-	    [[C(@"sdmc:/foo./bar.baz") stringByDeletingPathExtension]
+	    [C(@"sdmc:/foo./bar.baz").stringByDeletingPathExtension
 	    isEqual: @"sdmc:/foo./bar"] &&
-	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
-	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+	    [C(@"foo.bar/").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@".foo").stringByDeletingPathExtension isEqual: @".foo"] &&
+	    [C(@".foo.bar").stringByDeletingPathExtension isEqual: @".foo"])
 # else
 	TEST(@"-[stringByDeletingPathExtension]",
-	    [[C(@"foo.bar") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@"foo..bar") stringByDeletingPathExtension] isEqual: @"foo."] &&
-	    [[C(@"/foo./bar") stringByDeletingPathExtension]
+	    [C(@"foo.bar").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@"foo..bar").stringByDeletingPathExtension isEqual: @"foo."] &&
+	    [C(@"/foo./bar").stringByDeletingPathExtension
 	    isEqual: @"/foo./bar"] &&
-	    [[C(@"/foo./bar.baz") stringByDeletingPathExtension]
+	    [C(@"/foo./bar.baz").stringByDeletingPathExtension
 	    isEqual: @"/foo./bar"] &&
-	    [[C(@"foo.bar/") stringByDeletingPathExtension] isEqual: @"foo"] &&
-	    [[C(@".foo") stringByDeletingPathExtension] isEqual: @".foo"] &&
-	    [[C(@".foo\\bar") stringByDeletingPathExtension]
+	    [C(@"foo.bar/").stringByDeletingPathExtension isEqual: @"foo"] &&
+	    [C(@".foo").stringByDeletingPathExtension isEqual: @".foo"] &&
+	    [C(@".foo\\bar").stringByDeletingPathExtension
 	    isEqual: @".foo\\bar"] &&
-	    [[C(@".foo.bar") stringByDeletingPathExtension] isEqual: @".foo"])
+	    [C(@".foo.bar").stringByDeletingPathExtension isEqual: @".foo"])
 # endif
 
 # ifdef OF_WINDOWS
 	/* TODO: Add more tests */
 	TEST(@"-[stringByStandardizingPath]",
-	    [[C(@"\\\\foo\\..\\bar\\qux") stringByStandardizingPath]
+	    [C(@"\\\\foo\\..\\bar\\qux").stringByStandardizingPath
 	    isEqual: @"\\\\bar\\qux"])
 # endif
 #endif
 
 	TEST(@"-[decimalValue]",
-	    [C(@"1234") decimalValue] == 1234 &&
-	    [C(@"\r\n+123  ") decimalValue] == 123 &&
-	    [C(@"-500\t") decimalValue] == -500 &&
-	    [C(@"\t\t\r\n") decimalValue] == 0)
+	    C(@"1234").decimalValue == 1234 &&
+	    C(@"\r\n+123  ").decimalValue == 123 &&
+	    C(@"-500\t").decimalValue == -500 &&
+	    C(@"\t\t\r\n").decimalValue == 0)
 
 	TEST(@"-[hexadecimalValue]",
-	    [C(@"123f") hexadecimalValue] == 0x123f &&
-	    [C(@"\t\n0xABcd\r") hexadecimalValue] == 0xABCD &&
-	    [C(@"  xbCDE") hexadecimalValue] == 0xBCDE &&
-	    [C(@"$CdEf") hexadecimalValue] == 0xCDEF &&
-	    [C(@"\rFeh ") hexadecimalValue] == 0xFE &&
-	    [C(@"\r\t") hexadecimalValue] == 0)
+	    C(@"123f").hexadecimalValue == 0x123f &&
+	    C(@"\t\n0xABcd\r").hexadecimalValue == 0xABCD &&
+	    C(@"  xbCDE").hexadecimalValue == 0xBCDE &&
+	    C(@"$CdEf").hexadecimalValue == 0xCDEF &&
+	    C(@"\rFeh ").hexadecimalValue == 0xFE &&
+	    C(@"\r\t").hexadecimalValue == 0)
 
 	TEST(@"-[octalValue]",
-	    [C(@"1234567") octalValue] == 01234567 &&
-	    [C(@"\r\n123") octalValue] == 0123 &&
-	    [C(@"765\t") octalValue] == 0765 &&
-	    [C(@"\t\t\r\n") octalValue] == 0)
+	    C(@"1234567").octalValue == 01234567 &&
+	    C(@"\r\n123").octalValue == 0123 &&
+	    C(@"765\t").octalValue == 0765 && C(@"\t\t\r\n").octalValue == 0)
 
 	/*
 	 * These test numbers can be generated without rounding if we have IEEE
 	 * floating point numbers, thus we can use == on them.
 	 */
 	TEST(@"-[floatValue]",
-	    [C(@"\t-0.25 ") floatValue] == -0.25 &&
-	    [C(@"\r\n\tINF\t\n") floatValue] == INFINITY &&
-	    [C(@"\r -INFINITY\n") floatValue] == -INFINITY &&
-	    isnan([C(@"   NAN\t\t") floatValue]))
+	    C(@"\t-0.25 ").floatValue == -0.25 &&
+	    C(@"\r\n\tINF\t\n").floatValue == INFINITY &&
+	    C(@"\r -INFINITY\n").floatValue == -INFINITY &&
+	    isnan(C(@"   NAN\t\t").floatValue))
 
 #if !defined(OF_ANDROID) && !defined(OF_SOLARIS) && !defined(OF_DJGPP) && \
     !defined(OF_AMIGAOS_M68K)
@@ -1078,10 +1071,10 @@ static uint16_t sutf16str[] = {
 # endif
 #endif
 	TEST(@"-[doubleValue]",
-	    [INPUT doubleValue] == EXPECTED &&
-	    [C(@"\r\n\tINF\t\n") doubleValue] == INFINITY &&
-	    [C(@"\r -INFINITY\n") doubleValue] == -INFINITY &&
-	    isnan([C(@"   NAN\t\t") doubleValue]))
+	    INPUT.doubleValue == EXPECTED &&
+	    C(@"\r\n\tINF\t\n").doubleValue == INFINITY &&
+	    C(@"\r -INFINITY\n").doubleValue == -INFINITY &&
+	    isnan(C(@"   NAN\t\t").doubleValue))
 #undef INPUT
 #undef EXPECTED
 
@@ -1139,7 +1132,7 @@ static uint16_t sutf16str[] = {
 	       @"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF")
 	    hexadecimalValue])
 
-	TEST(@"-[characters]", (ua = [C(@"fööbär🀺") characters]) &&
+	TEST(@"-[characters]", (ua = C(@"fööbär🀺").characters) &&
 	    !memcmp(ua, ucstr + 1, sizeof(ucstr) - 8))
 
 #ifdef OF_BIG_ENDIAN
@@ -1147,43 +1140,43 @@ static uint16_t sutf16str[] = {
 #else
 # define SWAPPED_BYTE_ORDER OF_BYTE_ORDER_BIG_ENDIAN
 #endif
-	TEST(@"-[UTF16String]", (u16a = [C(@"fööbär🀺") UTF16String]) &&
+	TEST(@"-[UTF16String]", (u16a = C(@"fööbär🀺").UTF16String) &&
 	    !memcmp(u16a, utf16str + 1, of_string_utf16_length(utf16str) * 2) &&
 	    (u16a = [C(@"fööbär🀺")
 	    UTF16StringWithByteOrder: SWAPPED_BYTE_ORDER]) &&
 	    !memcmp(u16a, sutf16str + 1, of_string_utf16_length(sutf16str) * 2))
 
-	TEST(@"-[UTF16StringLength]", [C(@"fööbär🀺") UTF16StringLength] == 8)
+	TEST(@"-[UTF16StringLength]", C(@"fööbär🀺").UTF16StringLength == 8)
 
-	TEST(@"-[UTF32String]", (ua = [C(@"fööbär🀺") UTF32String]) &&
+	TEST(@"-[UTF32String]", (ua = C(@"fööbär🀺").UTF32String) &&
 	    !memcmp(ua, ucstr + 1, of_string_utf32_length(ucstr) * 4) &&
 	    (ua = [C(@"fööbär🀺") UTF32StringWithByteOrder:
 	    SWAPPED_BYTE_ORDER]) &&
 	    !memcmp(ua, sucstr + 1, of_string_utf32_length(sucstr) * 4))
 #undef SWAPPED_BYTE_ORDER
 
-	TEST(@"-[MD5Hash]", [[C(@"asdfoobar") MD5Hash]
+	TEST(@"-[MD5Hash]", [C(@"asdfoobar").MD5Hash
 	    isEqual: @"184dce2ec49b5422c7cfd8728864db4c"])
 
-	TEST(@"-[RIPEMD160Hash]", [[C(@"asdfoobar") RIPEMD160Hash]
+	TEST(@"-[RIPEMD160Hash]", [C(@"asdfoobar").RIPEMD160Hash
 	    isEqual: @"021d773b0fac06eb6755ca6aa58a580c980f7f13"])
 
-	TEST(@"-[SHA1Hash]", [[C(@"asdfoobar") SHA1Hash]
+	TEST(@"-[SHA1Hash]", [C(@"asdfoobar").SHA1Hash
 	    isEqual: @"f5f81ac0a8b5cbfdc4585ec1ad32e7b3a12b9b49"])
 
-	TEST(@"-[SHA224Hash]", [[C(@"asdfoobar") SHA224Hash]
+	TEST(@"-[SHA224Hash]", [C(@"asdfoobar").SHA224Hash
 	    isEqual:
 	    @"5a06822dcbd5a874f67d062b80b9d8a9cb9b5b303960b9da9290c192"])
 
-	TEST(@"-[SHA256Hash]", [[C(@"asdfoobar") SHA256Hash] isEqual:
+	TEST(@"-[SHA256Hash]", [C(@"asdfoobar").SHA256Hash isEqual:
 	    @"28e65b1dcd7f6ce2ea6277b15f87b913"
 	    @"628b5500bf7913a2bbf4cedcfa1215f6"])
 
-	TEST(@"-[SHA384Hash]", [[C(@"asdfoobar") SHA384Hash] isEqual:
+	TEST(@"-[SHA384Hash]", [C(@"asdfoobar").SHA384Hash isEqual:
 	    @"73286da882ffddca2f45e005cfa6b44f3fc65bfb26db1d08"
 	    @"7ded2f9c279e5addf8be854044bca0cece073fce28eec7d9"])
 
-	TEST(@"-[SHA512Hash]", [[C(@"asdfoobar") SHA512Hash] isEqual:
+	TEST(@"-[SHA512Hash]", [C(@"asdfoobar").SHA512Hash isEqual:
 	    @"0464c427da158b02161bb44a3090bbfc594611ef6a53603640454b56412a9247c"
 	    @"3579a329e53a5dc74676b106755e3394f9454a2d42273242615d32f80437d61"])
 
@@ -1193,7 +1186,7 @@ static uint16_t sutf16str[] = {
 	    cs] isEqual: @"foo%22ba'_~$%5D🍏%F0%9F%8D%8C"])
 
 	TEST(@"-[stringByURLDecoding]",
-	    [[C(@"foo%20bar%22+%24%F0%9F%8D%8C") stringByURLDecoding]
+	    [C(@"foo%20bar%22+%24%F0%9F%8D%8C").stringByURLDecoding
 	    isEqual: @"foo bar\"+$🍌"])
 
 	TEST(@"-[insertString:atIndex:]",
@@ -1308,24 +1301,24 @@ static uint16_t sutf16str[] = {
 
 #ifdef OF_HAVE_UNICODE_TABLES
 	TEST(@"-[decomposedStringWithCanonicalMapping]",
-	    [[@"H\xC3\xA4lǉ\xC3\xB6" decomposedStringWithCanonicalMapping]
+	    [C(@"H\xC3\xA4lǉ\xC3\xB6").decomposedStringWithCanonicalMapping
 	    isEqual: @"H\x61\xCC\x88lǉ\x6F\xCC\x88"]);
 
 	TEST(@"-[decomposedStringWithCompatibilityMapping]",
-	    [[@"H\xC3\xA4lǉ\xC3\xB6" decomposedStringWithCompatibilityMapping]
+	    [C(@"H\xC3\xA4lǉ\xC3\xB6").decomposedStringWithCompatibilityMapping
 	    isEqual: @"H\x61\xCC\x88llj\x6F\xCC\x88"]);
 #endif
 
 	TEST(@"-[stringByXMLEscaping]",
-	    (is = [C(@"<hello> &world'\"!&") stringByXMLEscaping]) &&
+	    (is = C(@"<hello> &world'\"!&").stringByXMLEscaping) &&
 	    [is isEqual: @"&lt;hello&gt; &amp;world&apos;&quot;!&amp;"])
 
 	TEST(@"-[stringByXMLUnescaping]",
-	    [[is stringByXMLUnescaping] isEqual: @"<hello> &world'\"!&"] &&
-	    [[C(@"&#x79;") stringByXMLUnescaping] isEqual: @"y"] &&
-	    [[C(@"&#xe4;") stringByXMLUnescaping] isEqual: @"ä"] &&
-	    [[C(@"&#8364;") stringByXMLUnescaping] isEqual: @"€"] &&
-	    [[C(@"&#x1D11E;") stringByXMLUnescaping] isEqual: @"𝄞"])
+	    [is.stringByXMLUnescaping isEqual: @"<hello> &world'\"!&"] &&
+	    [C(@"&#x79;").stringByXMLUnescaping isEqual: @"y"] &&
+	    [C(@"&#xe4;").stringByXMLUnescaping isEqual: @"ä"] &&
+	    [C(@"&#8364;").stringByXMLUnescaping isEqual: @"€"] &&
+	    [C(@"&#x1D11E;").stringByXMLUnescaping isEqual: @"𝄞"])
 
 	EXPECT_EXCEPTION(@"Detect unknown entities in -[stringByXMLUnescaping]",
 	    OFUnknownXMLEntityException, [C(@"&foo;") stringByXMLUnescaping])

@@ -153,7 +153,7 @@ static OFString *c_ary[] = {
 	    [a[1] isEqual: a[0]])
 
 	TEST(@"-[description]",
-	    [[a[0] description ]isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])
+	    [a[0].description isEqual: @"(\n\tFoo,\n\tBar,\n\tBaz\n)"])
 
 	TEST(@"-[addObject:]", R([m[0] addObject: c_ary[0]]) &&
 	    R([m[0] addObject: c_ary[2]]))
@@ -161,8 +161,7 @@ static OFString *c_ary[] = {
 	TEST(@"-[insertObject:atIndex:]", R([m[0] insertObject: c_ary[1]
 						       atIndex: 1]))
 
-	TEST(@"-[count]", [m[0] count] == 3 && [a[0] count] == 3 &&
-	    [a[1] count] == 3)
+	TEST(@"-[count]", m[0].count == 3 && a[0].count == 3 && a[1].count == 3)
 
 	TEST(@"-[isEqual:]", [m[0] isEqual: a[0]] && [a[0] isEqual: a[1]])
 
@@ -217,19 +216,19 @@ static OFString *c_ary[] = {
 	    [[m[0] objectAtIndex: 2] isEqual: c_ary[2]])
 
 	TEST(@"-[removeObject:]",
-	    R([m[0] removeObject: c_ary[0]]) && [m[0] count] == 2)
+	    R([m[0] removeObject: c_ary[0]]) && m[0].count == 2)
 
 	TEST(@"-[removeObjectIdenticalTo:]",
-	    R([m[0] removeObjectIdenticalTo: c_ary[2]]) && [m[0] count] == 1)
+	    R([m[0] removeObjectIdenticalTo: c_ary[2]]) && m[0].count == 1)
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	TEST(@"-[removeObjectAtIndex:]", R([m[1] removeObjectAtIndex: 1]) &&
-	    [m[1] count] == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
+	    m[1].count == 2 && [[m[1] objectAtIndex: 1] isEqual: c_ary[2]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	TEST(@"-[removeObjectsInRange:]",
 	    R([m[1] removeObjectsInRange: of_range(0, 2)]) &&
-	    [m[1] count] == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
+	    m[1].count == 1 && [[m[1] objectAtIndex: 0] isEqual: c_ary[2]])
 
 	m[1] = [[a[0] mutableCopy] autorelease];
 	[m[1] addObject: @"qux"];
@@ -257,11 +256,11 @@ static OFString *c_ary[] = {
 	    @"z", @"Foo", @"Baz", @"Bar", @"0", nil]])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[objectAtIndex:]",
-	    OFOutOfRangeException, [a[0] objectAtIndex: [a[0] count]])
+	    OFOutOfRangeException, [a[0] objectAtIndex: a[0].count])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeObjectsInRange:]",
 	    OFOutOfRangeException, [m[0] removeObjectsInRange:
-		of_range(0, [m[0] count] + 1)])
+		of_range(0, m[0].count + 1)])
 
 	TEST(@"-[componentsJoinedByString:]",
 	    (a[1] = [arrayClass arrayWithObjects: @"", @"a", @"b", @"c",
@@ -290,7 +289,7 @@ static OFString *c_ary[] = {
 		i++;
 	}
 
-	if ([m[0] count] != i)
+	if (m[0].count != i)
 		ok = false;
 
 	TEST(@"OFEnumerator's -[nextObject]", ok)
@@ -313,7 +312,7 @@ static OFString *c_ary[] = {
 		i++;
 	}
 
-	if ([m[0] count] != i)
+	if (m[0].count != i)
 		ok = false;
 
 	TEST(@"Fast Enumeration", ok)
@@ -359,7 +358,7 @@ static OFString *c_ary[] = {
 				    blockOk = false;
 		}];
 
-		if (count != [cmp count])
+		if (count != cmp.count)
 			blockOk = false;
 
 		TEST(@"Enumeration using blocks", blockOk)
@@ -394,10 +393,10 @@ static OFString *c_ary[] = {
 		}
 
 		return nil;
-		}]) && [[m[0] description] isEqual: @"(\n\tfoo,\n\tbar\n)"])
+	    }]) && [m[0].description isEqual: @"(\n\tfoo,\n\tbar\n)"])
 
 	TEST(@"-[mappedArrayUsingBlock:]",
-	    [[[m[0] mappedArrayUsingBlock: ^ id (id object, size_t idx) {
+	    [[m[0] mappedArrayUsingBlock: ^ id (id object, size_t idx) {
 		switch (idx) {
 		case 0:
 			return @"foobar";
@@ -406,12 +405,12 @@ static OFString *c_ary[] = {
 		}
 
 		return nil;
-	    }] description] isEqual: @"(\n\tfoobar,\n\tqux\n)"])
+	    }].description isEqual: @"(\n\tfoobar,\n\tqux\n)"])
 
 	TEST(@"-[filteredArrayUsingBlock:]",
-	    [[[m[0] filteredArrayUsingBlock: ^ bool (id object, size_t idx) {
+	    [[m[0] filteredArrayUsingBlock: ^ bool (id object, size_t idx) {
 		return [object isEqual: @"foo"];
-	    }] description] isEqual: @"(\n\tfoo\n)"])
+	    }].description isEqual: @"(\n\tfoo\n)"])
 
 	TEST(@"-[foldUsingBlock:]",
 	    [[arrayClass arrayWithObjects: [OFMutableString string], @"foo",

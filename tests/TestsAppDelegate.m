@@ -148,7 +148,7 @@ main(int argc, char *argv[])
 		    [[TestsAppDelegate alloc] init]);
 	} @catch (id e) {
 		TestsAppDelegate *delegate =
-		    [[OFApplication sharedApplication] delegate];
+		    [OFApplication sharedApplication].delegate;
 		OFString *string = [OFString stringWithFormat:
 		    @"\nRuntime error: Unhandled exception:\n%@\n", e];
 		OFString *backtrace = [OFString stringWithFormat:
@@ -230,7 +230,7 @@ main(int argc, char *argv[])
 	}
 
 	pspDebugScreenSetXY(0, y);
-	pspDebugScreenPrintData([str UTF8String], [str UTF8StringLength]);
+	pspDebugScreenPrintData(str.UTF8String, str.UTF8StringLength);
 #elif defined(STDOUT)
 	switch (color) {
 	case NO_COLOR:

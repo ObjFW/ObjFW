@@ -78,12 +78,11 @@ static OFString *module = @"Runtime";
 	foo = @"foo";
 
 	[rt setFoo: t];
-	TEST(@"copy, nonatomic properties", [[rt foo] isEqual: foo] &&
-	    [rt foo] != foo && [[rt foo] retainCount] == 1)
+	TEST(@"copy, nonatomic properties", [rt.foo isEqual: foo] &&
+	    rt.foo != foo && rt.foo.retainCount == 1)
 
-	[rt setBar: t];
-	TEST(@"retain, atomic properties",
-	    [rt bar] == t && [t retainCount] == 3)
+	rt.bar = t;
+	TEST(@"retain, atomic properties", rt.bar == t && t.retainCount == 3)
 
 	[pool drain];
 }

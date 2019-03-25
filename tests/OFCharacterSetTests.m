@@ -89,7 +89,7 @@ static OFString *module = nil;
 	TEST(@"-[characterIsMember:]", ok);
 
 	ok = true;
-	ics = [cs invertedSet];
+	ics = cs.invertedSet;
 	for (of_unichar_t c = 0; c < 65536; c++) {
 		if (c >= '0' && c <= '9') {
 			if ([ics characterIsMember: c])
@@ -100,7 +100,7 @@ static OFString *module = nil;
 	TEST(@"-[invertedSet]", ok);
 
 	TEST(@"Inverting -[invertedSet] returns original set",
-	    [ics invertedSet] == cs)
+	    ics.invertedSet == cs)
 
 	[pool drain];
 }

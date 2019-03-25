@@ -58,7 +58,7 @@ static OFString *module = @"OFHTTPCookieManager";
 	cookie[2] = [OFHTTPCookie cookieWithName: @"test"
 					   value: @"3"
 					  domain: @"heap.zone"];
-	[cookie[2] setSecure: true];
+	cookie[2].secure = true;
 	TEST(@"-[addCookie:forURL:] #3", R([manager addCookie: cookie[2]
 						       forURL: URL[1]]))
 
@@ -67,11 +67,11 @@ static OFString *module = @"OFHTTPCookieManager";
 	    [OFArray arrayWithObject: cookie[2]]] &&
 	    [[manager cookiesForURL: URL[0]] isEqual: [OFArray array]])
 
-	[cookie[2] setExpires: [OFDate dateWithTimeIntervalSinceNow: -1]];
+	cookie[2].expires = [OFDate dateWithTimeIntervalSinceNow: -1];
 	cookie[3] = [OFHTTPCookie cookieWithName: @"test"
 					   value: @"4"
 					  domain: @"heap.zone"];
-	[cookie[3] setDomain: @".heap.zone"];
+	cookie[3].domain = @".heap.zone";
 	TEST(@"-[addCookie:forURL:] #4", R([manager addCookie: cookie[3]
 						       forURL: URL[1]]))
 
@@ -94,10 +94,10 @@ static OFString *module = @"OFHTTPCookieManager";
 	    [OFArray arrayWithObjects: cookie[3], cookie[4], nil]])
 
 	TEST(@"-[purgeExpiredCookies]",
-	    [[manager cookies] isEqual:
+	    [manager.cookies isEqual:
 	    [OFArray arrayWithObjects: cookie[2], cookie[3], cookie[4], nil]] &&
 	    R([manager purgeExpiredCookies]) &&
-	    [[manager cookies] isEqual:
+	    [manager.cookies isEqual:
 	    [OFArray arrayWithObjects: cookie[3], cookie[4], nil]])
 
 	[pool drain];

@@ -47,17 +47,15 @@ static OFString *module = @"OFHTTPCookie";
 	    forKey: @"Set-Cookie"] forURL: URL]
 	    isEqual: [OFArray arrayWithObjects: cookie[0], cookie[1], nil]])
 
-	[cookie[0] setExpires:
-	    [OFDate dateWithTimeIntervalSince1970: 1234567890]];
-	[cookie[1] setExpires:
-	    [OFDate dateWithTimeIntervalSince1970: 1234567890]];
-	[cookie[0] setPath: @"/x"];
-	[cookie[1] setDomain: @"webkeks.org"];
-	[cookie[1] setPath: @"/objfw"];
-	[cookie[1] setSecure: true];
-	[cookie[1] setHTTPOnly: true];
-	[[cookie[1] extensions] addObject: @"foo"];
-	[[cookie[1] extensions] addObject: @"bar"];
+	cookie[0].expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
+	cookie[1].expires = [OFDate dateWithTimeIntervalSince1970: 1234567890];
+	cookie[0].path = @"/x";
+	cookie[1].domain = @"webkeks.org";
+	cookie[1].path = @"/objfw";
+	cookie[1].secure = true;
+	cookie[1].HTTPOnly = true;
+	[cookie[1].extensions addObject: @"foo"];
+	[cookie[1].extensions addObject: @"bar"];
 	TEST(@"+[cookiesWithResponseHeaderFields:forURL:] #3",
 	    [(cookies = [OFHTTPCookie cookiesWithResponseHeaderFields:
 	    [OFDictionary dictionaryWithObject:

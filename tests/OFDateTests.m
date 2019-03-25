@@ -44,8 +44,8 @@ static OFString *module = @"OFDate";
 	    (d2 = [d1 dateByAddingTimeInterval: 3600 * 25 + 5.000002]))
 
 	TEST(@"-[description]",
-	    [[d1 description] isEqual: @"1970-01-01T00:00:00Z"] &&
-	    [[d2 description] isEqual: @"1970-01-02T01:00:05Z"])
+	    [d1.description isEqual: @"1970-01-01T00:00:00Z"] &&
+	    [d2.description isEqual: @"1970-01-02T01:00:05Z"])
 
 	TEST(@"+[dateWithDateString:format:]",
 	    [[[OFDate dateWithDateString: @"2000-06-20T12:34:56+0200"
@@ -77,24 +77,23 @@ static OFString *module = @"OFDate";
 
 	TEST(@"-[compare:]", [d1 compare: d2] == OF_ORDERED_ASCENDING)
 
-	TEST(@"-[second]", [d1 second] == 0 && [d2 second] == 5)
+	TEST(@"-[second]", d1.second == 0 && d2.second == 5)
 
-	TEST(@"-[microsecond]",
-	    [d1 microsecond] == 0 && [d2 microsecond] == 2)
+	TEST(@"-[microsecond]", d1.microsecond == 0 && d2.microsecond == 2)
 
-	TEST(@"-[minute]", [d1 minute] == 0 && [d2 minute] == 0)
+	TEST(@"-[minute]", d1.minute == 0 && d2.minute == 0)
 
-	TEST(@"-[hour]", [d1 hour] == 0 && [d2 hour] == 1)
+	TEST(@"-[hour]", d1.hour == 0 && d2.hour == 1)
 
-	TEST(@"-[dayOfMonth]", [d1 dayOfMonth] == 1 && [d2 dayOfMonth] == 2)
+	TEST(@"-[dayOfMonth]", d1.dayOfMonth == 1 && d2.dayOfMonth == 2)
 
-	TEST(@"-[monthOfYear]", [d1 monthOfYear] == 1 && [d2 monthOfYear] == 1)
+	TEST(@"-[monthOfYear]", d1.monthOfYear == 1 && d2.monthOfYear == 1)
 
-	TEST(@"-[year]", [d1 year] == 1970 && [d2 year] == 1970)
+	TEST(@"-[year]", d1.year == 1970 && d2.year == 1970)
 
-	TEST(@"-[dayOfWeek]", [d1 dayOfWeek] == 4 && [d2 dayOfWeek] == 5)
+	TEST(@"-[dayOfWeek]", d1.dayOfWeek == 4 && d2.dayOfWeek == 5)
 
-	TEST(@"-[dayOfYear]", [d1 dayOfYear] == 1 && [d2 dayOfYear] == 2)
+	TEST(@"-[dayOfYear]", d1.dayOfYear == 1 && d2.dayOfYear == 2)
 
 	TEST(@"-[earlierDate:]", [[d1 earlierDate: d2] isEqual: d1])
 

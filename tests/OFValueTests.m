@@ -38,7 +38,7 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithBytes: &range
 				    objCType: @encode(of_range_t)]))
 
-	TEST(@"-[objCType]", strcmp([value objCType], @encode(of_range_t)) == 0)
+	TEST(@"-[objCType]", strcmp(value.objCType, @encode(of_range_t)) == 0)
 
 	TEST(@"-[getValue:size:]",
 	    R([value getValue: &range2
@@ -54,7 +54,7 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithPointer: pointer]))
 
 	TEST(@"-[pointerValue]",
-	    [value pointerValue] == pointer &&
+	    value.pointerValue == pointer &&
 	    [[OFValue valueWithBytes: &pointer
 			    objCType: @encode(void *)] pointerValue] == pointer)
 
@@ -67,7 +67,7 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithNonretainedObject: pointer]))
 
 	TEST(@"-[nonretainedObjectValue]",
-	    [value nonretainedObjectValue] == pointer &&
+	    value.nonretainedObjectValue == pointer &&
 	    [[OFValue valueWithBytes: &pointer
 			    objCType: @encode(id)] pointerValue] == pointer)
 
@@ -80,10 +80,10 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithRange: range]))
 
 	TEST(@"-[rangeValue]",
-	    of_range_equal([value rangeValue], range) &&
+	    of_range_equal(value.rangeValue, range) &&
 	    (value = [OFValue valueWithBytes: &range
 				    objCType: @encode(of_range_t)]) &&
-	    of_range_equal([value rangeValue], range))
+	    of_range_equal(value.rangeValue, range))
 
 	TEST(@"-[getValue:size:] for OFValue_range",
 	    (value = [OFValue valueWithRange: range]) &&
@@ -100,10 +100,10 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithPoint: point]))
 
 	TEST(@"-[pointValue]",
-	    of_point_equal([value pointValue], point) &&
+	    of_point_equal(value.pointValue, point) &&
 	    (value = [OFValue valueWithBytes: &point
 				    objCType: @encode(of_point_t)]) &&
-	    of_point_equal([value pointValue], point))
+	    of_point_equal(value.pointValue, point))
 
 	TEST(@"-[getValue:size:] for OFValue_point",
 	    (value = [OFValue valueWithPoint: point]) &&
@@ -120,10 +120,10 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithDimension: dimension]))
 
 	TEST(@"-[dimensionValue]",
-	    of_dimension_equal([value dimensionValue], dimension) &&
+	    of_dimension_equal(value.dimensionValue, dimension) &&
 	    (value = [OFValue valueWithBytes: &dimension
 				    objCType: @encode(of_dimension_t)]) &&
-	    of_dimension_equal([value dimensionValue], dimension))
+	    of_dimension_equal(value.dimensionValue, dimension))
 
 	TEST(@"-[getValue:size:] for OFValue_dimension",
 	    (value = [OFValue valueWithDimension: dimension]) &&
@@ -140,10 +140,10 @@ static OFString *module = @"OFValue";
 	    (value = [OFValue valueWithRectangle: rectangle]))
 
 	TEST(@"-[rectangleValue]",
-	    of_rectangle_equal([value rectangleValue], rectangle) &&
+	    of_rectangle_equal(value.rectangleValue, rectangle) &&
 	    (value = [OFValue valueWithBytes: &rectangle
 				    objCType: @encode(of_rectangle_t)]) &&
-	    of_rectangle_equal([value rectangleValue], rectangle))
+	    of_rectangle_equal(value.rectangleValue, rectangle))
 
 	TEST(@"-[getValue:size:] for OFValue_rectangle",
 	    (value = [OFValue valueWithRectangle: rectangle]) &&

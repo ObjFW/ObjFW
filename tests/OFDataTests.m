@@ -49,14 +49,14 @@ const char *str = "Hello!";
 	    memcmp([mutable itemAtIndex: 0], raw[0], 4096) == 0 &&
 	    memcmp([mutable itemAtIndex: 1], raw[1], 4096) == 0)
 
-	TEST(@"-[lastItem]", memcmp([mutable lastItem], raw[1], 4096) == 0)
+	TEST(@"-[lastItem]", memcmp(mutable.lastItem, raw[1], 4096) == 0)
 
-	TEST(@"-[count]", [mutable count] == 2)
+	TEST(@"-[count]", mutable.count == 2)
 
 	TEST(@"-[isEqual:]",
-	    (immutable = [OFData dataWithItems: [mutable items]
-				      itemSize: [mutable itemSize]
-					 count: [mutable count]]) &&
+	    (immutable = [OFData dataWithItems: mutable.items
+				      itemSize: mutable.itemSize
+					 count: mutable.count]) &&
 	    [immutable isEqual: mutable] &&
 	    R([mutable removeLastItem]) && ![mutable isEqual: immutable])
 
@@ -73,24 +73,23 @@ const char *str = "Hello!";
 	    [OFData dataWithItems: "z"
 			    count: 1]] == OF_ORDERED_ASCENDING)
 
-	TEST(@"-[hash]", [immutable hash] == 0x634A529F)
+	TEST(@"-[hash]", immutable.hash == 0x634A529F)
 
 	mutable = [OFMutableData dataWithItems: "abcdef"
 					 count: 6];
 
 	TEST(@"-[removeLastItem]", R([mutable removeLastItem]) &&
-	    [mutable count] == 5 &&
-	    memcmp([mutable items], "abcde", 5) == 0)
+	    mutable.count == 5 && memcmp(mutable.items, "abcde", 5) == 0)
 
 	TEST(@"-[removeItemsInRange:]",
 	    R([mutable removeItemsInRange: of_range(1, 2)]) &&
-	    [mutable count] == 3 && memcmp([mutable items], "ade", 3) == 0)
+	    mutable.count == 3 && memcmp(mutable.items, "ade", 3) == 0)
 
 	TEST(@"-[insertItems:atIndex:count:]",
 	    R([mutable insertItems: "bc"
 			   atIndex: 1
-			     count: 2]) && [mutable count] == 5 &&
-	    memcmp([mutable items], "abcde", 5) == 0)
+			     count: 2]) && mutable.count == 5 &&
+	    memcmp(mutable.items, "abcde", 5) == 0)
 
 	immutable = [OFData dataWithItems: "aaabaccdacaabb"
 				 itemSize: 2
@@ -166,27 +165,27 @@ const char *str = "Hello!";
 	EXPECT_EXCEPTION(@"-[subdataWithRange:] failing on out of range #2",
 	    OFOutOfRangeException, [mutable subdataWithRange: of_range(6, 1)])
 
-	TEST(@"-[MD5Hash]", [[mutable MD5Hash] isEqual: [@"abcde" MD5Hash]])
+	TEST(@"-[MD5Hash]", [mutable.MD5Hash isEqual: @"abcde".MD5Hash])
 
-	TEST(@"-[RIPEMD160Hash]", [[mutable RIPEMD160Hash]
-	    isEqual: [@"abcde" RIPEMD160Hash]])
+	TEST(@"-[RIPEMD160Hash]", [mutable.RIPEMD160Hash
+	    isEqual: @"abcde".RIPEMD160Hash])
 
-	TEST(@"-[SHA1Hash]", [[mutable SHA1Hash] isEqual: [@"abcde" SHA1Hash]])
+	TEST(@"-[SHA1Hash]", [mutable.SHA1Hash isEqual: @"abcde".SHA1Hash])
 
-	TEST(@"-[SHA224Hash]", [[mutable SHA224Hash]
-	    isEqual: [@"abcde" SHA224Hash]])
+	TEST(@"-[SHA224Hash]", [mutable.SHA224Hash
+	    isEqual: @"abcde".SHA224Hash])
 
-	TEST(@"-[SHA256Hash]", [[mutable SHA256Hash]
-	    isEqual: [@"abcde" SHA256Hash]])
+	TEST(@"-[SHA256Hash]", [mutable.SHA256Hash
+	    isEqual: @"abcde".SHA256Hash])
 
-	TEST(@"-[SHA384Hash]", [[mutable SHA384Hash]
-	    isEqual: [@"abcde" SHA384Hash]])
+	TEST(@"-[SHA384Hash]", [mutable.SHA384Hash
+	    isEqual: @"abcde".SHA384Hash])
 
-	TEST(@"-[SHA512Hash]", [[mutable SHA512Hash]
-	    isEqual: [@"abcde" SHA512Hash]])
+	TEST(@"-[SHA512Hash]", [mutable.SHA512Hash
+	    isEqual: @"abcde".SHA512Hash])
 
 	TEST(@"-[stringByBase64Encoding]",
-	    [[mutable stringByBase64Encoding] isEqual: @"YWJjZGU="])
+	    [mutable.stringByBase64Encoding isEqual: @"YWJjZGU="])
 
 	TEST(@"+[dataWithBase64EncodedString:]",
 	    memcmp([[OFData dataWithBase64EncodedString: @"YWJjZGU="]
@@ -196,10 +195,10 @@ const char *str = "Hello!";
 	    (mutable = [OFMutableData dataWithItems: str
 					       count: 6]) &&
 	    R([mutable addItem: ""]) &&
-	    strcmp([mutable items], str) == 0)
+	    strcmp(mutable.items, str) == 0)
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[itemAtIndex:]",
-	    OFOutOfRangeException, [mutable itemAtIndex: [mutable count]])
+	    OFOutOfRangeException, [mutable itemAtIndex: mutable.count])
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[addItems:count:]",
 	    OFOutOfRangeException, [mutable addItems: raw[0]
@@ -207,7 +206,7 @@ const char *str = "Hello!";
 
 	EXPECT_EXCEPTION(@"Detect out of range in -[removeItemsInRange:]",
 	    OFOutOfRangeException,
-	    [mutable removeItemsInRange: of_range([mutable count], 1)])
+	    [mutable removeItemsInRange: of_range(mutable.count, 1)])
 
 	[pool drain];
 }

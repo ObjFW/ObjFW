@@ -47,14 +47,14 @@ static size_t i = 0;
 	    " <qux xmlns:qux='urn:qux'><?asd?><qux:bar/><x qux:y='z'/></qux>"
 	    "</foo>";
 
-	[p setDelegate: builder];
-	[builder setDelegate: self];
+	p.delegate = builder;
+	builder.delegate = self;
 
 	TEST(@"Building elements from parsed XML",
 	    R([p parseString: str]) &&
-	    nodes[0] != nil && [[nodes[0] XMLString] isEqual: str] &&
+	    nodes[0] != nil && [nodes[0].XMLString isEqual: str] &&
 	    R([p parseString: @"<!--foo-->"]) &&
-	    nodes[1] != nil && [[nodes[1] XMLString] isEqual: @"<!--foo-->"] &&
+	    nodes[1] != nil && [nodes[1].XMLString isEqual: @"<!--foo-->"] &&
 	    i == 2)
 
 	[nodes[0] release];

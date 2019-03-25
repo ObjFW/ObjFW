@@ -71,13 +71,13 @@ static OFString *PLIST3 = PLIST(
 	    nil];
 
 	TEST(@"-[propertyListValue:] #1",
-	    [[PLIST1 propertyListValue] isEqual: @"Hello"])
+	    [PLIST1.propertyListValue isEqual: @"Hello"])
 
 	TEST(@"-[propertyListValue:] #2",
-	    [[PLIST2 propertyListValue] isEqual: array])
+	    [PLIST2.propertyListValue isEqual: array])
 
 	TEST(@"-[propertyListValue:] #3",
-	    [[PLIST3 propertyListValue] isEqual:
+	    [PLIST3.propertyListValue isEqual:
 	    [OFDictionary dictionaryWithKeysAndObjects:
 	    @"array", array,
 	    @"foo", @"bar",

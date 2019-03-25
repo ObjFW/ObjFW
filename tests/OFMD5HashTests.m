@@ -36,7 +36,7 @@ const uint8_t testfile_md5[16] =
 
 	TEST(@"+[cryptoHash]", (md5 = [OFMD5Hash cryptoHash]))
 
-	while (![f isAtEndOfStream]) {
+	while (!f.atEndOfStream) {
 		char buf[64];
 		size_t len = [f readIntoBuffer: buf
 					length: 64];
@@ -48,8 +48,8 @@ const uint8_t testfile_md5[16] =
 	TEST(@"-[copy]", (copy = [[md5 copy] autorelease]))
 
 	TEST(@"-[digest]",
-	    memcmp([md5 digest], testfile_md5, 16) == 0 &&
-	    memcmp([copy digest], testfile_md5, 16) == 0)
+	    memcmp(md5.digest, testfile_md5, 16) == 0 &&
+	    memcmp(copy.digest, testfile_md5, 16) == 0)
 
 	EXPECT_EXCEPTION(@"Detect invalid call of "
 	    @"-[updateWithBuffer:length]", OFHashAlreadyCalculatedException,

@@ -323,7 +323,7 @@ static OFString *values[] = {
 	    }] description] isEqual: @"{\n\tkey1 = value_1;\n}"])
 #endif
 
-	TEST(@"-[count]", [mutDict count] == 2)
+	TEST(@"-[count]", mutDict.count == 2)
 
 	TEST(@"+[dictionaryWithKeysAndObjects:]",
 	    (dict = [dictionaryClass dictionaryWithKeysAndObjects:
@@ -351,7 +351,7 @@ static OFString *values[] = {
 
 	TEST(@"-[mutableCopy]",
 	    (mutDict = [[dict mutableCopy] autorelease]) &&
-	    [mutDict count] == [dict count] &&
+	    mutDict.count == dict.count &&
 	    [[mutDict objectForKey: keys[0]] isEqual: values[0]] &&
 	    [[mutDict objectForKey: keys[1]] isEqual: values[1]] &&
 	    R([mutDict setObject: @"value3"
