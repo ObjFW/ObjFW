@@ -347,86 +347,99 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	OFString *path = URL.fileSystemRepresentation;
 
 # ifndef OF_WINDOWS
-	if (S_ISLNK(s->st_mode)) {
-		of_string_encoding_t encoding = [OFLocale encoding];
-		char destinationC[PATH_MAX];
-		ssize_t length;
-		OFString *destination;
+	of_string_encoding_t encoding = [OFLocale encoding];
+	char destinationC[PATH_MAX];
+	ssize_t length;
+	OFString *destination;
+	of_file_attribute_key_t key;
+
+	if (!S_ISLNK(s->st_mode))
+		return;
+
+	length = readlink([path cStringWithEncoding: encoding], destinationC,
+	    PATH_MAX);
+
+	if (length < 0)
+		@throw [OFRetrieveItemAttributesFailedException
+		    exceptionWithURL: URL
+			       errNo: errno];
+
+	destination = [OFString stringWithCString: destinationC
+					 encoding: encoding
+					   length: length];
+
+	key = of_file_attribute_key_symbolic_link_destination;
+	[attributes setObject: destination
+		       forKey: key];
+# else
+	HANDLE findHandle;
+	WIN32_FIND_DATAW findData;
+	HANDLE fileHandle;
+	OFString *destination;
+
+	if (func_CreateSymbolicLinkW == NULL)
+		return;
+
+	findHandle = FindFirstFileW(path.UTF16String, &findData);
+	if (findHandle == INVALID_HANDLE_VALUE)
+		return;
+
+	@try {
+		if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT))
+			return;
+
+		if (findData.dwReserved0 != IO_REPARSE_TAG_SYMLINK)
+			return;
+	} @finally {
+		FindClose(findHandle);
+	}
+
+	fileHandle = CreateFileW(path.UTF16String, 0, (FILE_SHARE_READ |
+	    FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
+	    FILE_FLAG_OPEN_REPARSE_POINT, NULL);
+	if (fileHandle == INVALID_HANDLE_VALUE)
+		@throw [OFRetrieveItemAttributesFailedException
+		    exceptionWithURL: URL
+			       errNo: 0];
+
+	@try {
+		union {
+			char bytes[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
+			REPARSE_DATA_BUFFER data;
+		} buffer;
+		DWORD size;
+		wchar_t *tmp;
 		of_file_attribute_key_t key;
 
-		length = readlink([path cStringWithEncoding: encoding],
-		    destinationC, PATH_MAX);
-
-		if (length < 0)
-			@throw [OFRetrieveItemAttributesFailedException
-			    exceptionWithURL: URL
-				       errNo: errno];
-
-		destination = [OFString stringWithCString: destinationC
-						 encoding: encoding
-						   length: length];
-
-		key = of_file_attribute_key_symbolic_link_destination;
-		[attributes setObject: destination
-			       forKey: key];
-	}
-# else
-	WIN32_FIND_DATAW data;
-
-	if (func_CreateSymbolicLinkW != NULL &&
-	    FindFirstFileW(path.UTF16String, &data) &&
-	    (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) &&
-	    data.dwReserved0 == IO_REPARSE_TAG_SYMLINK) {
-		HANDLE handle;
-		OFString *destination;
-
-		if ((handle = CreateFileW(path.UTF16String, 0,
-		    (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
-		    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) ==
-		    INVALID_HANDLE_VALUE)
+		if (!DeviceIoControl(fileHandle, FSCTL_GET_REPARSE_POINT, NULL,
+		    0, buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
+		    NULL))
 			@throw [OFRetrieveItemAttributesFailedException
 			    exceptionWithURL: URL
 				       errNo: 0];
 
-		@try {
-			union {
-				char bytes[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
-				REPARSE_DATA_BUFFER data;
-			} buffer;
-			DWORD size;
-			wchar_t *tmp;
-			of_file_attribute_key_t key;
-
-			if (!DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT,
-			    NULL, 0, buffer.bytes,
-			    MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size, NULL))
-				@throw [OFRetrieveItemAttributesFailedException
-				    exceptionWithURL: URL
-					       errNo: 0];
-
-			if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
-				@throw [OFRetrieveItemAttributesFailedException
-				    exceptionWithURL: URL
-					       errNo: 0];
+		if (buffer.data.ReparseTag != IO_REPARSE_TAG_SYMLINK)
+			@throw [OFRetrieveItemAttributesFailedException
+			    exceptionWithURL: URL
+				       errNo: 0];
 
 #  define slrb buffer.data.SymbolicLinkReparseBuffer
-			tmp = slrb.PathBuffer +
-			    (slrb.SubstituteNameOffset / sizeof(wchar_t));
+		tmp = slrb.PathBuffer +
+		    (slrb.SubstituteNameOffset / sizeof(wchar_t));
 
-			destination = [OFString
-			    stringWithUTF16String: tmp
-					   length: slrb.SubstituteNameLength /
-						   sizeof(wchar_t)];
+		destination = [OFString
+		    stringWithUTF16String: tmp
+				   length: slrb.SubstituteNameLength /
+					   sizeof(wchar_t)];
 
-			[attributes setObject: of_file_type_symbolic_link
-				       forKey: of_file_attribute_key_type];
-			key = of_file_attribute_key_symbolic_link_destination;
-			[attributes setObject: destination
-				       forKey: key];
+		[attributes setObject: of_file_type_symbolic_link
+			       forKey: of_file_attribute_key_type];
+		key = of_file_attribute_key_symbolic_link_destination;
+		[attributes setObject: destination
+			       forKey: key];
 #  undef slrb
-		} @finally {
-			CloseHandle(handle);
-		}
+	} @finally {
+		CloseHandle(fileHandle);
 	}
 # endif
 #endif
