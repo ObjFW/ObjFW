@@ -646,15 +646,30 @@ static uint16_t sutf16str[] = {
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo\\bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
-	    @"c:", @"foo", @"bar", @"baz", nil]]
+	    @"c:\\", @"foo", @"bar", @"baz", nil]]
 	    isEqual: @"c:\\foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"\\", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:\\foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"/", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:/foo\\bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo/", @"bar\\", @"", @"baz", @"\\", nil]]
 	    isEqual: @"foo/bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObject: @"c:"]]
-	    isEqual: @"c:\\"] &&
+	    isEqual: @"c:"] &&
+	    [[stringClass pathWithComponents:
+	    [OFArray arrayWithObject: @"c:\\"]] isEqual: @"c:\\"] &&
+	    [[stringClass pathWithComponents:
+	    [OFArray arrayWithObject: @"\\"]] isEqual: @"\\"] &&
+	    [[stringClass pathWithComponents:
+	    [OFArray arrayWithObject: @"/"]] isEqual: @"/"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"\\\\", @"foo", @"bar", nil]] isEqual: @"\\\\foo\\bar"])
 # elif defined(OF_MSDOS)
@@ -662,15 +677,30 @@ static uint16_t sutf16str[] = {
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", @"bar", @"baz", nil]] isEqual: @"foo\\bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
-	    @"c:", @"foo", @"bar", @"baz", nil]]
+	    @"c:\\", @"foo", @"bar", @"baz", nil]]
 	    isEqual: @"c:\\foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"\\", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:\\foo\\bar\\baz"] &&
+	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
+	    @"c:", @"/", @"foo", @"bar", @"baz", nil]]
+	    isEqual: @"c:/foo\\bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo/", @"bar\\", @"", @"baz", @"\\", nil]]
 	    isEqual: @"foo/bar\\baz"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
 	    @"foo", nil]] isEqual: @"foo"] &&
 	    [[stringClass pathWithComponents: [OFArray arrayWithObject: @"c:"]]
-	    isEqual: @"c:\\"])
+	    isEqual: @"c:"] &&
+	    [[stringClass pathWithComponents:
+	    [OFArray arrayWithObject: @"c:\\"]] isEqual: @"c:\\"] &&
+	    [[stringClass pathWithComponents:
+	    [OFArray arrayWithObject: @"\\"]] isEqual: @"\\"] &&
+	    [[stringClass pathWithComponents:
+	    [OFArray arrayWithObject: @"/"]] isEqual: @"/"])
 # elif defined(OF_AMIGAOS)
 	TEST(@"+[pathWithComponents:]",
 	    [[stringClass pathWithComponents: [OFArray arrayWithObjects:
@@ -714,14 +744,20 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
 	    (a = C(@"c:/tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\tmp\ */
 	    (a = C(@"c:\\tmp\\").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* c:\ */
+	    (a = C(@"c:\\").pathComponents) && a.count == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
 	    /* c:/ */
 	    (a = C(@"c:/").pathComponents) && a.count == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
+	    /* c: */
+	    (a = C(@"c:").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    /* foo\bar */
 	    (a = C(@"foo\\bar").pathComponents) && a.count == 2 &&
@@ -745,14 +781,20 @@ static uint16_t sutf16str[] = {
 	TEST(@"-[pathComponents]",
 	    /* c:/tmp */
 	    (a = C(@"c:/tmp").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
 	    /* c:\tmp\ */
 	    (a = C(@"c:\\tmp\\").pathComponents) && a.count == 2 &&
-	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
+	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
 	    [[a objectAtIndex: 1] isEqual: @"tmp"] &&
+	    /* c:\ */
+	    (a = C(@"c:\\").pathComponents) && a.count == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:\\"] &&
 	    /* c:/ */
 	    (a = C(@"c:/").pathComponents) && a.count == 1 &&
+	    [[a objectAtIndex: 0] isEqual: @"c:/"] &&
+	    /* c: */
+	    (a = C(@"c:").pathComponents) && a.count == 1 &&
 	    [[a objectAtIndex: 0] isEqual: @"c:"] &&
 	    /* foo\bar */
 	    (a = C(@"foo\\bar").pathComponents) && a.count == 2 &&
@@ -851,7 +893,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"c:\\tmp\\").lastPathComponent isEqual: @"tmp"] &&
 	    [C(@"c:\\").lastPathComponent isEqual: @"c:\\"] &&
 	    [C(@"c:/").lastPathComponent isEqual: @"c:/"] &&
-	    [C(@"\\").lastPathComponent isEqual: @""] &&
+	    [C(@"\\").lastPathComponent isEqual: @"\\"] &&
 	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
 	    [C(@"foo\\bar").lastPathComponent isEqual: @"bar"] &&
 	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"] &&
@@ -863,7 +905,7 @@ static uint16_t sutf16str[] = {
 	    [C(@"c:\\tmp\\").lastPathComponent isEqual: @"tmp"] &&
 	    [C(@"c:\\").lastPathComponent isEqual: @"c:\\"] &&
 	    [C(@"c:/").lastPathComponent isEqual: @"c:/"] &&
-	    [C(@"\\").lastPathComponent isEqual: @""] &&
+	    [C(@"\\").lastPathComponent isEqual: @"\\"] &&
 	    [C(@"foo").lastPathComponent isEqual: @"foo"] &&
 	    [C(@"foo\\bar").lastPathComponent isEqual: @"bar"] &&
 	    [C(@"foo/bar/baz/").lastPathComponent isEqual: @"baz"])
@@ -903,15 +945,15 @@ static uint16_t sutf16str[] = {
 
 # if defined(OF_WINDOWS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [C(@"\\tmp").stringByDeletingLastPathComponent isEqual: @""] &&
-	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"\\tmp").stringByDeletingLastPathComponent isEqual: @"\\"] &&
+	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @"/"] &&
 	    [C(@"c:\\").stringByDeletingLastPathComponent isEqual: @"c:\\"] &&
 	    [C(@"c:/").stringByDeletingLastPathComponent isEqual: @"c:/"] &&
 	    [C(@"c:\\tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"c:\\tmp"] &&
 	    [C(@"foo\\bar").stringByDeletingLastPathComponent
 	    isEqual: @"foo"] &&
-	    [C(@"\\").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"\\").stringByDeletingLastPathComponent isEqual: @"\\"] &&
 	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @"."] &&
 	    [C(@"\\\\foo\\bar").stringByDeletingLastPathComponent
 	    isEqual: @"\\\\foo"] &&
@@ -920,15 +962,15 @@ static uint16_t sutf16str[] = {
 	    [C(@"\\\\").stringByDeletingLastPathComponent isEqual: @"\\\\"])
 # elif defined(OF_MSDOS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
-	    [C(@"\\tmp").stringByDeletingLastPathComponent isEqual: @""] &&
-	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"\\tmp").stringByDeletingLastPathComponent isEqual: @"\\"] &&
+	    [C(@"/tmp/").stringByDeletingLastPathComponent isEqual: @"/"] &&
 	    [C(@"c:\\").stringByDeletingLastPathComponent isEqual: @"c:\\"] &&
 	    [C(@"c:/").stringByDeletingLastPathComponent isEqual: @"c:/"] &&
 	    [C(@"c:\\tmp/foo/").stringByDeletingLastPathComponent
 	    isEqual: @"c:\\tmp"] &&
 	    [C(@"foo\\bar").stringByDeletingLastPathComponent
 	    isEqual: @"foo"] &&
-	    [C(@"\\").stringByDeletingLastPathComponent isEqual: @""] &&
+	    [C(@"\\").stringByDeletingLastPathComponent isEqual: @"\\"] &&
 	    [C(@"foo").stringByDeletingLastPathComponent isEqual: @"."])
 # elif defined(OF_AMIGAOS)
 	TEST(@"-[stringByDeletingLastPathComponent]",
@@ -1019,7 +1061,9 @@ static uint16_t sutf16str[] = {
 	/* TODO: Add more tests */
 	TEST(@"-[stringByStandardizingPath]",
 	    [C(@"\\\\foo\\..\\bar\\qux").stringByStandardizingPath
-	    isEqual: @"\\\\bar\\qux"])
+	    isEqual: @"\\\\bar\\qux"] &&
+	    [C(@"c:\\..\\asd").stringByStandardizingPath
+	    isEqual: @"c:\\..\\asd"])
 # endif
 #endif
 
