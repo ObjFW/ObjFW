@@ -1140,72 +1140,26 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 }
 #endif
 
-- (OFMutableURL *)of_URLByAppendingPathComponent: (OFString *)component
-{
-	OFMutableURL *ret = [[self mutableCopy] autorelease];
-	void *pool;
-	OFMutableString *URLEncodedPath;
-
-	if ([component hasPrefix: @"/"]) {
-		ret.path = component;
-		return ret;
-	}
-
-	pool = objc_autoreleasePoolPush();
-	URLEncodedPath = [[self.URLEncodedPath mutableCopy] autorelease];
-
-	if (![URLEncodedPath hasSuffix: @"/"])
-		[URLEncodedPath appendString: @"/"];
-
-	[URLEncodedPath appendString:
-	    [component stringByURLEncodingWithAllowedCharacters:
-	    [OFCharacterSet URLPathAllowedCharacterSet]]];
-
-	ret.URLEncodedPath = URLEncodedPath;
-
-	objc_autoreleasePoolPop(pool);
-
-	return ret;
-}
-
 - (OFURL *)URLByAppendingPathComponent: (OFString *)component
 {
-	OFMutableURL *ret = [self of_URLByAppendingPathComponent: component];
+	OFMutableURL *URL = [[self mutableCopy] autorelease];
 
-#ifdef OF_HAVE_FILES
-	if ([ret.scheme isEqual: @"file"]) {
-		void *pool = objc_autoreleasePoolPush();
+	[URL appendPathComponent: component];
+	[URL makeImmutable];
 
-		if ([[OFFileManager defaultManager] directoryExistsAtURL: ret])
-			ret.URLEncodedPath =
-			    [ret.URLEncodedPath stringByAppendingString: @"/"];
-
-		objc_autoreleasePoolPop(pool);
-	}
-#endif
-
-	[ret makeImmutable];
-
-	return ret;
+	return URL;
 }
 
 - (OFURL *)URLByAppendingPathComponent: (OFString *)component
 			   isDirectory: (bool)isDirectory
 {
-	OFMutableURL *ret = [self of_URLByAppendingPathComponent: component];
+	OFMutableURL *URL = [[self mutableCopy] autorelease];
 
-	if (isDirectory) {
-		void *pool = objc_autoreleasePoolPush();
+	[URL appendPathComponent: component
+		     isDirectory: isDirectory];
+	[URL makeImmutable];
 
-		ret.URLEncodedPath =
-		    [ret.URLEncodedPath stringByAppendingString: @"/"];
-
-		objc_autoreleasePoolPop(pool);
-	}
-
-	[ret makeImmutable];
-
-	return ret;
+	return URL;
 }
 
 - (OFURL *)URLByStandardizingPath

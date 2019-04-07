@@ -19,6 +19,9 @@
 
 #import "OFMutableURL.h"
 #import "OFArray.h"
+#ifdef OF_HAVE_FILES
+# import "OFFileManager.h"
+#endif
 #import "OFNumber.h"
 #import "OFString.h"
 
@@ -254,6 +257,61 @@ extern void of_url_verify_escaped(OFString *, OFCharacterSet *);
 	[copy makeImmutable];
 
 	return copy;
+}
+
+- (void)appendPathComponent: (OFString *)component
+{
+	[self appendPathComponent: component
+		      isDirectory: false];
+
+#ifdef OF_HAVE_FILES
+	if ([_URLEncodedScheme isEqual: @"file"] &&
+	    ![_URLEncodedPath hasSuffix: @"/"] &&
+	    [[OFFileManager defaultManager] directoryExistsAtURL: self]) {
+		void *pool = objc_autoreleasePoolPush();
+		OFString *path = [_URLEncodedPath
+		    stringByAppendingString: @"/"];
+
+		[_URLEncodedPath release];
+		_URLEncodedPath = [path retain];
+
+		objc_autoreleasePoolPop(pool);
+	}
+#endif
+}
+
+- (void)appendPathComponent: (OFString *)component
+		isDirectory: (bool)isDirectory
+{
+	void *pool;
+	OFString *path;
+
+	if ([component isEqual: @"/"] && [_URLEncodedPath hasSuffix: @"/"])
+		return;
+
+	pool = objc_autoreleasePoolPush();
+	component = [component stringByURLEncodingWithAllowedCharacters:
+	    [OFCharacterSet URLPathAllowedCharacterSet]];
+
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	if ([_URLEncodedPath hasSuffix: @"/"] ||
+	    ([_URLEncodedScheme isEqual: @"file"] &&
+	    [_URLEncodedPath hasSuffix: @":"]))
+#else
+	if ([_URLEncodedPath hasSuffix: @"/"])
+#endif
+		path = [_URLEncodedPath stringByAppendingString: component];
+	else
+		path = [_URLEncodedPath
+		    stringByAppendingFormat: @"/%@", component];
+
+	if (isDirectory && ![path hasSuffix: @"/"])
+		path = [path stringByAppendingString: @"/"];
+
+	[_URLEncodedPath release];
+	_URLEncodedPath = [path retain];
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)standardizePath

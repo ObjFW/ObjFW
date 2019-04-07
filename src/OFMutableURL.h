@@ -144,6 +144,23 @@ OF_ASSUME_NONNULL_BEGIN
 + (instancetype)URL;
 
 /*!
+ * @brief Appends the specified path component.
+ *
+ * @param component The component to append
+ */
+- (void)appendPathComponent: (OFString *)component;
+
+/*!
+ * @brief Appends the specified path component.
+ *
+ * @param component The component to append
+ * @param isDirectory Whether the path is a directory, in which case a slash is
+ *		      appened if there is no slash yet
+ */
+- (void)appendPathComponent: (OFString *)component
+		isDirectory: (bool)isDirectory;
+
+/*!
  * @brief Resolves relative sub paths.
  */
 - (void)standardizePath;
