@@ -27,14 +27,15 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 - (void)URLTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
-	OFURL *u1, *u2, *u3, *u4;
+	OFURL *u1, *u2, *u3, *u4, *u5;
 	OFMutableURL *mu;
 
 	TEST(@"+[URLWithString:]",
 	    R(u1 = [OFURL URLWithString: url_str]) &&
 	    R(u2 = [OFURL URLWithString: @"http://foo:80"]) &&
 	    R(u3 = [OFURL URLWithString: @"http://bar/"]) &&
-	    R(u4 = [OFURL URLWithString: @"file:///etc/passwd"]))
+	    R(u4 = [OFURL URLWithString: @"file:///etc/passwd"]) &&
+	    R(u5 = [OFURL URLWithString: @"http://foo/bar/qux/foo%2fbar"]))
 
 	EXPECT_EXCEPTION(@"+[URLWithString:] fails with invalid characters #1",
 	    OFInvalidFormatException,
@@ -137,9 +138,11 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [u1.path isEqual: @"/pa?th"] && [u4.path isEqual: @"/etc/passwd"])
 	TEST(@"-[pathComponents]",
 	    [u1.pathComponents isEqual:
-	    [OFArray arrayWithObjects: @"", @"pa?th", nil]] &&
+	    [OFArray arrayWithObjects: @"/", @"pa?th", nil]] &&
 	    [u4.pathComponents isEqual:
-	    [OFArray arrayWithObjects: @"", @"etc", @"passwd", nil]])
+	    [OFArray arrayWithObjects: @"/", @"etc", @"passwd", nil]] &&
+	    [u5.pathComponents isEqual:
+	    [OFArray arrayWithObjects: @"/", @"bar", @"qux", @"foo/bar", nil]])
 	TEST(@"-[lastPathComponent]",
 	    [[[OFURL URLWithString: @"http://host/foo//bar/baz"]
 	    lastPathComponent] isEqual: @"baz"] &&
@@ -148,7 +151,8 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    [[[OFURL URLWithString: @"http://host/foo/"]
 	    lastPathComponent] isEqual: @"foo"] &&
 	    [[[OFURL URLWithString: @"http://host/"]
-	    lastPathComponent] isEqual: @""])
+	    lastPathComponent] isEqual: @"/"] &&
+	    [u5.lastPathComponent isEqual: @"foo/bar"])
 	TEST(@"-[query]",
 	    [u1.query isEqual: @"que#ry"] && u4.query == nil)
 	TEST(@"-[fragment]",

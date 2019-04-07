@@ -340,7 +340,7 @@ OF_DESTRUCTOR()
 		 * If we didn't fail because any of the parents is missing,
 		 * there is no point in trying to create the parents.
 		 */
-		if ([e errNo] != ENOENT)
+		if (e.errNo != ENOENT)
 			@throw e;
 	}
 

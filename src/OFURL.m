@@ -932,27 +932,44 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFArray *)pathComponents
 {
-	return [self.path componentsSeparatedByString: @"/"];
+	OFMutableArray *ret = [[[_URLEncodedPath
+	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
+	void *pool = objc_autoreleasePoolPush();
+	size_t count = ret.count;
+
+	if (count > 0 && [ret.firstObject length] == 0)
+		[ret replaceObjectAtIndex: 0
+			       withObject: @"/"];
+
+	for (size_t i = 0; i < count; i++) {
+		OFString *component = [ret objectAtIndex: i];
+		[ret replaceObjectAtIndex: i
+			       withObject: component.stringByURLDecoding];
+	}
+
+	[ret makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return ret;
 }
 
 - (OFString *)lastPathComponent
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFString *path = self.path;
+	OFString *path = _URLEncodedPath;
 	const char *UTF8String, *lastComponent;
 	size_t length;
 	OFString *ret;
 
 	if (path == nil) {
 		objc_autoreleasePoolPop(pool);
-
 		return nil;
 	}
 
 	if ([path isEqual: @"/"]) {
 		objc_autoreleasePoolPop(pool);
-
-		return @"";
+		return @"/";
 	}
 
 	if ([path hasSuffix: @"/"])
@@ -968,9 +985,10 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 		}
 	}
 
-	ret = [[OFString alloc]
-	    initWithUTF8String: lastComponent
-			length: length - (lastComponent - UTF8String)];
+	ret = [OFString
+	    stringWithUTF8String: lastComponent
+			  length: length - (lastComponent - UTF8String)];
+	ret = [ret.stringByURLDecoding retain];
 
 	objc_autoreleasePoolPop(pool);
 
