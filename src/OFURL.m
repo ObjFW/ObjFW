@@ -932,10 +932,25 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFArray *)pathComponents
 {
-	OFMutableArray *ret = [[[_URLEncodedPath
-	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
 	void *pool = objc_autoreleasePoolPush();
-	size_t count = ret.count;
+	OFMutableArray *ret;
+	size_t count;
+
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+	if ([_URLEncodedScheme isEqual: @"file"]) {
+		OFString *path = [_URLEncodedPath substringWithRange:
+		    of_range(1, _URLEncodedPath.length - 1)];
+		path = [path stringByReplacingOccurrencesOfString: @"/"
+						       withString: @"\\"];
+		ret = [[path.pathComponents mutableCopy] autorelease];
+		[ret insertObject: @"/"
+			  atIndex: 0];
+	} else
+#endif
+		ret = [[[_URLEncodedPath componentsSeparatedByString: @"/"]
+		    mutableCopy] autorelease];
+
+	count = ret.count;
 
 	if (count > 0 && [ret.firstObject length] == 0)
 		[ret replaceObjectAtIndex: 0
@@ -943,15 +958,21 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	for (size_t i = 0; i < count; i++) {
 		OFString *component = [ret objectAtIndex: i];
+#if defined(OF_WINDOWS) || defined(OF_MSDOS)
+		component = [component
+		    stringByReplacingOccurrencesOfString: @"\\"
+					      withString: @"/"];
+#endif
 		[ret replaceObjectAtIndex: i
 			       withObject: component.stringByURLDecoding];
 	}
 
 	[ret makeImmutable];
+	[ret retain];
 
 	objc_autoreleasePoolPop(pool);
 
-	return ret;
+	return [ret autorelease];
 }
 
 - (OFString *)lastPathComponent
@@ -1090,7 +1111,12 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	path = self.path;
 
+#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
 	if (path.length > 1 && [path hasSuffix: @"/"])
+#else
+	if (path.length > 1 && [path hasSuffix: @"/"] &&
+	    ![path hasSuffix: @":/"])
+#endif
 		path = [path substringWithRange: of_range(0, path.length - 1)];
 
 	path = URLPathToPath(path);

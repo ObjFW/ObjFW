@@ -106,8 +106,15 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    isEqual: [[OFFileManager defaultManager].currentDirectoryPath
 	    stringByAppendingPathComponent: @"testfile.txt"]])
 
-# ifdef OF_WINDOWS
+# if defined(OF_WINDOWS) || defined(OF_MSDOS)
 	OFURL *tmp;
+	TEST(@"+[fileURLWithPath:] for c:\\",
+	    (tmp = [OFURL fileURLWithPath: @"c:\\"]) &&
+	    [tmp.string isEqual: @"file:///c:/"] &&
+	    [tmp.fileSystemRepresentation isEqual: @"c:\\"])
+# endif
+
+# ifdef OF_WINDOWS
 	TEST(@"+[fileURLWithPath:] with UNC",
 	    (tmp = [OFURL fileURLWithPath: @"\\\\foo\\bar"]) &&
 	    [tmp.host isEqual: @"foo"] && [tmp.path isEqual: @"/bar"] &&
