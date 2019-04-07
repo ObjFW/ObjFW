@@ -312,7 +312,6 @@ OF_DESTRUCTOR()
 	void *pool = objc_autoreleasePoolPush();
 	OFMutableURL *URL = [[URL_ mutableCopy] autorelease];
 	OFArray OF_GENERIC(OFString *) *components;
-	OFString *currentPath = nil;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -344,18 +343,13 @@ OF_DESTRUCTOR()
 			@throw e;
 	}
 
-	components = [URL.URLEncodedPath componentsSeparatedByString: @"/"];
+	components = [[URL.pathComponents retain] autorelease];
+	URL.URLEncodedPath = @"/";
 
 	for (OFString *component in components) {
-		if (currentPath != nil)
-			currentPath = [currentPath
-			    stringByAppendingFormat: @"/%@", component];
-		else
-			currentPath = component;
+		[URL appendPathComponent: component];
 
-		URL.URLEncodedPath = currentPath;
-
-		if (currentPath.length > 0 &&
+		if (![URL.URLEncodedPath isEqual: @"/"] &&
 		    ![self directoryExistsAtURL: URL])
 			[self createDirectoryAtURL: URL];
 	}
