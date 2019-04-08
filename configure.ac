@@ -131,6 +131,13 @@ case "$host" in
 		;;
 esac
 
+AS_IF([test x"$host_os" = x"msdosdjgpp" -a x"$build_os" = x"msdosdjgpp"], [
+	dnl Hack to make configure find these on DOS.
+	: ${AR:=ar.exe}
+	: ${GREP:=grep.exe}
+	: ${RANLIB:=ranlib.exe}
+])
+
 AC_LANG([Objective C])
 AC_PROG_OBJC([clang egcc gcc])
 AC_PROG_OBJCPP
