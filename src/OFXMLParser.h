@@ -40,10 +40,10 @@ OF_ASSUME_NONNULL_BEGIN
  *	  instructions.
  *
  * @param parser The parser which found processing instructions
- * @param pi The processing instructions
+ * @param processingInstructions The processing instructions
  */
 -		 (void)parser: (OFXMLParser *)parser
-  foundProcessingInstructions: (OFString *)pi;
+  foundProcessingInstructions: (OFString *)processingInstructions;
 
 /*!
  * @brief This callback is called when the XML parser found the start of a new
@@ -146,7 +146,7 @@ OF_ASSUME_NONNULL_BEGIN
 		OF_XMLPARSER_IN_ATTRIBUTE_VALUE,
 		OF_XMLPARSER_EXPECT_TAG_CLOSE,
 		OF_XMLPARSER_EXPECT_SPACE_OR_TAG_CLOSE,
-		OF_XMLPARSER_IN_EXCLAMATIONMARK,
+		OF_XMLPARSER_IN_EXCLAMATION_MARK,
 		OF_XMLPARSER_IN_CDATA_OPENING,
 		OF_XMLPARSER_IN_CDATA,
 		OF_XMLPARSER_IN_COMMENT_OPENING,

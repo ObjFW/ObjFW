@@ -394,7 +394,7 @@ resolveAttributeNamespace(OFXMLAttribute *attribute, OFArray *namespaces,
 		break;
 	case '!':
 		_last = _i + 1;
-		_state = OF_XMLPARSER_IN_EXCLAMATIONMARK;
+		_state = OF_XMLPARSER_IN_EXCLAMATION_MARK;
 		_acceptProlog = false;
 		break;
 	default:
