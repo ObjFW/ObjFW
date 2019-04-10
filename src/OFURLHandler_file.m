@@ -498,12 +498,20 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 + (bool)of_directoryExistsAtPath: (OFString *)path
 {
+#ifdef OF_WINDOWS
+	DWORD attributes = GetFileAttributesW(path.UTF16String);
+	if (attributes == INVALID_FILE_ATTRIBUTES)
+		return false;
+
+	return (attributes & FILE_ATTRIBUTE_DIRECTORY);
+#else
 	of_stat_t s;
 
 	if (of_stat(path, &s) == -1)
 		return false;
 
 	return S_ISDIR(s.st_mode);
+#endif
 }
 
 - (OFStream *)openItemAtURL: (OFURL *)URL
@@ -693,7 +701,9 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (bool)fileExistsAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifndef OF_WINDOWS
 	of_stat_t s;
+#endif
 	bool ret;
 
 	if (URL == nil)
@@ -702,10 +712,17 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(URL.fileSystemRepresentation, &s) == -1)
+#ifdef OF_WINDOWS
+	ret = (GetFileAttributesW(URL.fileSystemRepresentation.UTF16String) !=
+	    INVALID_FILE_ATTRIBUTES);
+#else
+	if (of_stat(URL.fileSystemRepresentation, &s) == -1) {
+		objc_autoreleasePoolPop(pool);
 		return false;
+	}
 
 	ret = S_ISREG(s.st_mode);
+#endif
 
 	objc_autoreleasePoolPop(pool);
 
@@ -715,7 +732,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (bool)directoryExistsAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_WINDOWS
+	DWORD attributes;
+#else
 	of_stat_t s;
+#endif
 	bool ret;
 
 	if (URL == nil)
@@ -724,10 +745,23 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-	if (of_stat(URL.fileSystemRepresentation, &s) == -1)
+#ifdef OF_WINDOWS
+	attributes = GetFileAttributesW(
+	    URL.fileSystemRepresentation.UTF16String);
+	if (attributes == INVALID_FILE_ATTRIBUTES) {
+		objc_autoreleasePoolPop(pool);
 		return false;
+	}
+
+	ret = (attributes & FILE_ATTRIBUTE_DIRECTORY);
+#else
+	if (of_stat(URL.fileSystemRepresentation, &s) == -1) {
+		objc_autoreleasePoolPop(pool);
+		return false;
+	}
 
 	ret = S_ISDIR(s.st_mode);
+#endif
 
 	objc_autoreleasePoolPop(pool);
 
