@@ -64,9 +64,9 @@
 #import "OFTarArchiveEntry.h"
 #import "OFZIPArchive.h"
 #import "OFZIPArchiveEntry.h"
+#import "OFFileManager.h"
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
-# import "OFFileManager.h"
 # import "OFINIFile.h"
 # import "OFSettings.h"
 #endif

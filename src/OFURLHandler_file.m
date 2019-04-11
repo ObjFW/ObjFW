@@ -692,7 +692,9 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			     attributeKey: key
 			       attributes: attributes];
 		else
-			@throw [OFInvalidArgumentException exception];
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: self];
 	}
 
 	objc_autoreleasePoolPop(pool);

@@ -36,6 +36,7 @@ SRCS = OFASN1BitString.m		\
        OFDate.m				\
        OFDictionary.m			\
        OFEnumerator.m			\
+       OFFileManager.m			\
        OFGZIPStream.m			\
        OFHMAC.m				\
        OFInflate64Stream.m		\
@@ -129,7 +130,6 @@ SRCS = OFASN1BitString.m		\
        ${USE_SRCS_THREADS}		\
        ${USE_SRCS_WINDOWS}
 SRCS_FILES = OFFile.m			\
-	     OFFileManager.m		\
 	     OFINICategory.m		\
 	     OFINIFile.m		\
 	     OFSettings.m		\
