@@ -155,7 +155,8 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	if (self != [OFFileManager class])
 		return;
 
-#ifdef OF_AMIGAOS4
+#ifdef OF_HAVE_FILES
+# ifdef OF_AMIGAOS4
 	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
@@ -164,9 +165,8 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
-#endif
+# endif
 
-#ifdef OF_HAVE_FILES
 	/*
 	 * Make sure OFFile is initialized.
 	 * On some systems, this is needed to initialize the file system driver.
