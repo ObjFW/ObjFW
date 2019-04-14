@@ -24,15 +24,6 @@
 #import "private.h"
 #import "macros.h"
 
-@interface DummyObject
-{
-	Class isa;
-}
-
-+ (bool)resolveClassMethod: (SEL)selector;
-+ (bool)resolveInstanceMethod: (SEL)selector;
-@end
-
 static IMP forwardHandler = (IMP)0;
 static IMP stretForwardHandler = (IMP)0;
 

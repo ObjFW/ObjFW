@@ -278,3 +278,13 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 		abort();						\
 		OF_UNREACHABLE						\
 	}
+
+@interface DummyObject
+{
+	Class _Nonnull isa;
+}
+
++ (void)initialize;
++ (bool)resolveClassMethod: (nonnull SEL)selector;
++ (bool)resolveInstanceMethod: (nonnull SEL)selector;
+@end

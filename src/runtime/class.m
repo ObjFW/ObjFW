@@ -335,7 +335,9 @@ initializeClass(Class class)
 	class->info |= OBJC_CLASS_INFO_INITIALIZED;
 	class->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
 
-	callMethod(class, "initialize");
+	if (class_respondsToSelector(object_getClass(class),
+	    @selector(initialize)))
+		[class initialize];
 }
 
 void
