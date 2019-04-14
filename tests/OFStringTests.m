@@ -356,7 +356,7 @@ static uint16_t sutf16str[] = {
 #endif
 
 	TEST(@"-[appendUTFString:length:]",
-	    R([s[0] appendUTF8String: "foo\xEF\xBB\xBF" "barqux" + 3
+	    R([s[0] appendUTF8String: "\xEF\xBB\xBF" "barqux"
 			      length: 6]) && [s[0] isEqual: @"foobar"])
 
 	EXPECT_EXCEPTION(@"Detection of invalid UTF-8 encoding #1",
