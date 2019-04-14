@@ -120,7 +120,8 @@ OF_DESTRUCTOR()
  *  - Fallback to TCP
  */
 
-static of_run_loop_mode_t resolveRunLoopMode = @"of_dns_resolver_resolve_mode";
+static const of_run_loop_mode_t resolveRunLoopMode =
+    @"of_dns_resolver_resolve_mode";
 
 @interface OFDNSResolverSettings: OFObject
 {

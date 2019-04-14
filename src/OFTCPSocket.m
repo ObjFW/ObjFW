@@ -58,9 +58,11 @@
 #import "socket.h"
 #import "socket_helpers.h"
 
+static const of_run_loop_mode_t connectRunLoopMode =
+    @"of_tcp_socket_connect_mode";
+
 Class of_tls_socket_class = Nil;
 
-static of_run_loop_mode_t connectRunLoopMode = @"of_tcp_socket_connect_mode";
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
