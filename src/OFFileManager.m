@@ -97,6 +97,8 @@ const of_file_attribute_key_t of_file_attribute_key_modification_date =
     @"of_file_attribute_key_modification_date";
 const of_file_attribute_key_t of_file_attribute_key_status_change_date =
     @"of_file_attribute_key_status_change_date";
+const of_file_attribute_key_t of_file_attribute_key_creation_date =
+    @"of_file_attribute_key_creation_date";
 const of_file_attribute_key_t of_file_attribute_key_symbolic_link_destination =
     @"of_file_attribute_key_symbolic_link_destination";
 
@@ -968,6 +970,12 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 {
 	return attributeForKeyOrException(self,
 	    of_file_attribute_key_status_change_date);
+}
+
+- (OFDate *)fileCreationDate
+{
+	return attributeForKeyOrException(self,
+	    of_file_attribute_key_creation_date);
 }
 
 - (OFString *)fileSymbolicLinkDestination

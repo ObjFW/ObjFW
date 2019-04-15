@@ -58,6 +58,7 @@ OF_ASSUME_NONNULL_BEGIN
  *  * @ref of_file_attribute_key_last_access_date
  *  * @ref of_file_attribute_key_modification_date
  *  * @ref of_file_attribute_key_status_change_date
+ *  * @ref of_file_attribute_key_creation_date
  *  * @ref of_file_attribute_key_symbolic_link_destination
  *
  * Other URL schemes might not have all keys and might have keys not listed.
@@ -179,6 +180,14 @@ extern const of_file_attribute_key_t of_file_attribute_key_modification_date;
  * via @ref OFDictionary#fileStatusChangeDate.
  */
 extern const of_file_attribute_key_t of_file_attribute_key_status_change_date;
+
+/*!
+ * @brief The creation date of the file as an @ref OFDate.
+ *
+ * For convenience, a category on @ref OFDictionary is provided to access this
+ * via @ref OFDictionary#fileCreationDate.
+ */
+extern const of_file_attribute_key_t of_file_attribute_key_creation_date;
 
 /*!
  * @brief The destination of a symbolic link as an @ref OFString.
@@ -562,78 +571,89 @@ extern const of_file_type_t of_file_type_socket;
 
 @interface OFDictionary (FileAttributes)
 /*!
- * The @ref of_file_attribute_key_size key from the dictionary.
+ * @brief The @ref of_file_attribute_key_size key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) uintmax_t fileSize;
 
 /*!
- * The @ref of_file_attribute_key_type key from the dictionary.
+ * @brief The @ref of_file_attribute_key_type key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) of_file_type_t fileType;
 
 /*!
- * The @ref of_file_attribute_key_posix_permissions key from the dictionary.
+ * @brief The @ref of_file_attribute_key_posix_permissions key from the
+ *	  dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) uint16_t filePOSIXPermissions;
 
 /*!
- * The @ref of_file_attribute_key_posix_uid key from the dictionary.
+ * @brief The @ref of_file_attribute_key_posix_uid key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) uint32_t filePOSIXUID;
 
 /*!
- * The @ref of_file_attribute_key_posix_gid key from the dictionary.
+ * @brief The @ref of_file_attribute_key_posix_gid key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) uint32_t filePOSIXGID;
 
 /*!
- * The @ref of_file_attribute_key_owner key from the dictionary.
+ * @brief The @ref of_file_attribute_key_owner key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFString *fileOwner;
 
 /*!
- * The @ref of_file_attribute_key_group key from the dictionary.
+ * @brief The @ref of_file_attribute_key_group key from the dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFString *fileGroup;
 
 /*!
- * The @ref of_file_attribute_key_last_access_date key from the dictionary.
+ * @brief The @ref of_file_attribute_key_last_access_date key from the
+ *	  dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileLastAccessDate;
 
 /*!
- * The @ref of_file_attribute_key_modification_date key from the dictionary.
+ * @brief The @ref of_file_attribute_key_modification_date key from the
+ *	  dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileModificationDate;
 
 /*!
- * The @ref of_file_attribute_key_status_change_date key from the dictionary.
+ * @brief The @ref of_file_attribute_key_status_change_date key from the
+ *	  dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */
 @property (readonly, nonatomic) OFDate *fileStatusChangeDate;
 
 /*!
- * The @ref of_file_attribute_key_symbolic_link_destination key from the
- * dictionary.
+ * @brief The @ref of_file_attribute_key_creation_date key from the dictionary.
+ *
+ * Raises an @ref OFUndefinedKeyException if the key is missing.
+ */
+@property (readonly, nonatomic) OFDate *fileCreationDate;
+
+/*!
+ * @brief The @ref of_file_attribute_key_symbolic_link_destination key from the
+ *	  dictionary.
  *
  * Raises an @ref OFUndefinedKeyException if the key is missing.
  */

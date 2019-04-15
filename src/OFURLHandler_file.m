@@ -66,6 +66,7 @@
 # include <windows.h>
 # include <direct.h>
 # include <ntdef.h>
+# include <wchar.h>
 #endif
 
 #ifdef OF_AMIGAOS
@@ -82,13 +83,16 @@
 # endif
 #endif
 
-#if defined(OF_WINDOWS)
-typedef struct __stat64 of_stat_t;
-#elif defined(OF_AMIGAOS)
+#if defined(OF_WINDOWS) || defined(OF_AMIGAOS)
 typedef struct {
 	of_offset_t st_size;
-	mode_t st_mode;
+	unsigned int st_mode;
 	of_time_interval_t st_atime, st_mtime, st_ctime;
+# ifdef OF_WINDOWS
+#  define HAVE_STRUCT_STAT_ST_BIRTHTIME
+	of_time_interval_t st_birthtime;
+	DWORD fileAttributes;
+# endif
 } of_stat_t;
 #elif defined(OF_HAVE_OFF64_T)
 typedef struct stat64 of_stat_t;
@@ -96,8 +100,9 @@ typedef struct stat64 of_stat_t;
 typedef struct stat of_stat_t;
 #endif
 
-#ifndef S_ISLNK
-# define S_ISLNK(s) 0
+#ifdef OF_WINDOWS
+# define S_IFLNK 0x10000
+# define S_ISLNK(mode) (mode & S_IFLNK)
 #endif
 
 #if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
@@ -134,11 +139,92 @@ OF_DESTRUCTOR()
 }
 #endif
 
+#ifdef OF_WINDOWS
+static of_time_interval_t
+filetimeToTimeInterval(const FILETIME *filetime)
+{
+	return (double)((int64_t)filetime->dwHighDateTime << 32 |
+	    filetime->dwLowDateTime) / 10000000.0 - 11644473600.0;
+}
+
+static void
+setErrno(void)
+{
+	switch (GetLastError()) {
+	case ERROR_FILE_NOT_FOUND:
+	case ERROR_PATH_NOT_FOUND:
+	case ERROR_NO_MORE_FILES:
+		errno = ENOENT;
+		return;
+	case ERROR_ACCESS_DENIED:
+		errno = EACCES;
+		return;
+	case ERROR_DIRECTORY:
+		errno = ENOTDIR;
+		return;
+	case ERROR_NOT_READY:
+		errno = EBUSY;
+		return;
+	}
+
+	errno = 0;
+}
+#endif
+
 static int
 of_stat(OFString *path, of_stat_t *buffer)
 {
 #if defined(OF_WINDOWS)
-	return _wstat64(path.UTF16String, buffer);
+	WIN32_FILE_ATTRIBUTE_DATA data;
+
+	if (!GetFileAttributesExW(path.UTF16String, GetFileExInfoStandard,
+	    &data)) {
+		setErrno();
+		return -1;
+	}
+
+	buffer->st_size = (uint64_t)data.nFileSizeHigh << 32 |
+	    data.nFileSizeLow;
+
+	if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		buffer->st_mode = S_IFDIR;
+	else if (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+		WIN32_FIND_DATAW findData;
+		HANDLE findHandle;
+
+		if ((findHandle = FindFirstFileW(path.UTF16String,
+		    &findData)) == INVALID_HANDLE_VALUE) {
+			setErrno();
+			return -1;
+		}
+
+		@try {
+			if (!(findData.dwFileAttributes &
+			    FILE_ATTRIBUTE_REPARSE_POINT)) {
+				/* Race? Indicate to try again. */
+				errno = EAGAIN;
+				return -1;
+			}
+
+			buffer->st_mode =
+			    (findData.dwReserved0 == IO_REPARSE_TAG_SYMLINK
+			    ? S_IFLNK : S_IFREG);
+		} @finally {
+			FindClose(findHandle);
+		}
+	} else
+		buffer->st_mode = S_IFREG;
+
+	buffer->st_mode |= (data.dwFileAttributes & FILE_ATTRIBUTE_READONLY
+	    ? (S_IRUSR | S_IXUSR) : (S_IRUSR | S_IWUSR | S_IXUSR));
+
+	buffer->st_atime = filetimeToTimeInterval(&data.ftLastAccessTime);
+	buffer->st_mtime = filetimeToTimeInterval(&data.ftLastWriteTime);
+	buffer->st_ctime = buffer->st_birthtime =
+	    filetimeToTimeInterval(&data.ftCreationTime);
+	buffer->fileAttributes = data.dwFileAttributes;
+
+	return 0;
 #elif defined(OF_AMIGAOS)
 	BPTR lock;
 # ifdef OF_AMIGAOS4
@@ -294,6 +380,11 @@ setDateAttributes(of_mutable_file_attributes_t attributes, of_stat_t *s)
 	[attributes
 	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_ctime]
 	       forKey: of_file_attribute_key_status_change_date];
+#ifdef HAVE_STRUCT_STAT_ST_BIRTHTIME
+	[attributes
+	    setObject: [OFDate dateWithTimeIntervalSince1970: s->st_birthtime]
+	       forKey: of_file_attribute_key_creation_date];
+#endif
 }
 
 static void
@@ -339,22 +430,18 @@ setOwnerAndGroupAttributes(of_mutable_file_attributes_t attributes,
 #endif
 }
 
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 static void
 setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
-    of_stat_t *s, OFURL *URL)
+    OFURL *URL)
 {
-#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	OFString *path = URL.fileSystemRepresentation;
-
 # ifndef OF_WINDOWS
 	of_string_encoding_t encoding = [OFLocale encoding];
 	char destinationC[PATH_MAX];
 	ssize_t length;
 	OFString *destination;
 	of_file_attribute_key_t key;
-
-	if (!S_ISLNK(s->st_mode))
-		return;
 
 	length = readlink([path cStringWithEncoding: encoding], destinationC,
 	    PATH_MAX);
@@ -372,32 +459,15 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	[attributes setObject: destination
 		       forKey: key];
 # else
-	HANDLE findHandle;
-	WIN32_FIND_DATAW findData;
-	HANDLE fileHandle;
+	HANDLE handle;
 	OFString *destination;
 
 	if (func_CreateSymbolicLinkW == NULL)
 		return;
 
-	findHandle = FindFirstFileW(path.UTF16String, &findData);
-	if (findHandle == INVALID_HANDLE_VALUE)
-		return;
-
-	@try {
-		if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT))
-			return;
-
-		if (findData.dwReserved0 != IO_REPARSE_TAG_SYMLINK)
-			return;
-	} @finally {
-		FindClose(findHandle);
-	}
-
-	fileHandle = CreateFileW(path.UTF16String, 0, (FILE_SHARE_READ |
+	if ((handle = CreateFileW(path.UTF16String, 0, (FILE_SHARE_READ |
 	    FILE_SHARE_WRITE), NULL, OPEN_EXISTING,
-	    FILE_FLAG_OPEN_REPARSE_POINT, NULL);
-	if (fileHandle == INVALID_HANDLE_VALUE)
+	    FILE_FLAG_OPEN_REPARSE_POINT, NULL)) == INVALID_HANDLE_VALUE)
 		@throw [OFRetrieveItemAttributesFailedException
 		    exceptionWithURL: URL
 			       errNo: 0];
@@ -411,8 +481,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		wchar_t *tmp;
 		of_file_attribute_key_t key;
 
-		if (!DeviceIoControl(fileHandle, FSCTL_GET_REPARSE_POINT, NULL,
-		    0, buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
+		if (!DeviceIoControl(handle, FSCTL_GET_REPARSE_POINT, NULL, 0,
+		    buffer.bytes, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &size,
 		    NULL))
 			@throw [OFRetrieveItemAttributesFailedException
 			    exceptionWithURL: URL
@@ -439,11 +509,11 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 			       forKey: key];
 #  undef slrb
 	} @finally {
-		CloseHandle(fileHandle);
+		CloseHandle(handle);
 	}
 # endif
-#endif
 }
+#endif
 
 @implementation OFURLHandler_file
 + (void)initialize
@@ -498,20 +568,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 + (bool)of_directoryExistsAtPath: (OFString *)path
 {
-#ifdef OF_WINDOWS
-	DWORD attributes = GetFileAttributesW(path.UTF16String);
-	if (attributes == INVALID_FILE_ATTRIBUTES)
-		return false;
-
-	return (attributes & FILE_ATTRIBUTE_DIRECTORY);
-#else
 	of_stat_t s;
 
 	if (of_stat(path, &s) == -1)
 		return false;
 
 	return S_ISDIR(s.st_mode);
-#endif
 }
 
 - (OFStream *)openItemAtURL: (OFURL *)URL
@@ -560,7 +622,10 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	setOwnerAndGroupAttributes(ret, &s);
 	setDateAttributes(ret, &s);
-	setSymbolicLinkDestinationAttribute(ret, &s, URL);
+#ifdef S_ISLNK
+	if (S_ISLNK(s.st_mode))
+		setSymbolicLinkDestinationAttribute(ret, URL);
+#endif
 
 	objc_autoreleasePoolPop(pool);
 
@@ -703,9 +768,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (bool)fileExistsAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
-#ifndef OF_WINDOWS
 	of_stat_t s;
-#endif
 	bool ret;
 
 	if (URL == nil)
@@ -714,17 +777,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-#ifdef OF_WINDOWS
-	ret = (GetFileAttributesW(URL.fileSystemRepresentation.UTF16String) !=
-	    INVALID_FILE_ATTRIBUTES);
-#else
 	if (of_stat(URL.fileSystemRepresentation, &s) == -1) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
 
 	ret = S_ISREG(s.st_mode);
-#endif
 
 	objc_autoreleasePoolPop(pool);
 
@@ -734,11 +792,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 - (bool)directoryExistsAtURL: (OFURL *)URL
 {
 	void *pool = objc_autoreleasePoolPush();
-#ifdef OF_WINDOWS
-	DWORD attributes;
-#else
 	of_stat_t s;
-#endif
 	bool ret;
 
 	if (URL == nil)
@@ -747,23 +801,12 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 	if (![URL.scheme isEqual: _scheme])
 		@throw [OFInvalidArgumentException exception];
 
-#ifdef OF_WINDOWS
-	attributes = GetFileAttributesW(
-	    URL.fileSystemRepresentation.UTF16String);
-	if (attributes == INVALID_FILE_ATTRIBUTES) {
-		objc_autoreleasePoolPop(pool);
-		return false;
-	}
-
-	ret = (attributes & FILE_ATTRIBUTE_DIRECTORY);
-#else
 	if (of_stat(URL.fileSystemRepresentation, &s) == -1) {
 		objc_autoreleasePoolPop(pool);
 		return false;
 	}
 
 	ret = S_ISDIR(s.st_mode);
-#endif
 
 	objc_autoreleasePoolPop(pool);
 
