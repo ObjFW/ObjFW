@@ -622,7 +622,8 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	setOwnerAndGroupAttributes(ret, &s);
 	setDateAttributes(ret, &s);
-#ifdef S_ISLNK
+
+#ifdef OF_FILE_MANAGER_SUPPORTS_SYMLINKS
 	if (S_ISLNK(s.st_mode))
 		setSymbolicLinkDestinationAttribute(ret, URL);
 #endif
