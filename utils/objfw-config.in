@@ -76,9 +76,9 @@ __EOF__
 
 test -z "$1" && show_help 1
 
-package_description() {
+package_format() {
 	if test "$1" != "1"; then
-		echo "Unsupported package description version: $1" 1>&2
+		echo "Unsupported package format version: $1" 1>&2
 		exit 1
 	fi
 }
