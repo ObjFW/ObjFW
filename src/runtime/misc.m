@@ -23,7 +23,7 @@
 #include "ObjFW_RT.h"
 #include "private.h"
 
-static objc_enumeration_mutation_handler enumerationMutationHandler = NULL;
+static objc_enumeration_mutation_handler_t enumerationMutationHandler = NULL;
 
 void
 objc_enumerationMutation(id object)
@@ -35,7 +35,7 @@ objc_enumerationMutation(id object)
 }
 
 void
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
+objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
 {
 	enumerationMutationHandler = handler;
 }

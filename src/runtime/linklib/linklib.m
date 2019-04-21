@@ -546,8 +546,8 @@ objc_exit(void)
 	objc_exit_m68k();
 }
 
-objc_uncaught_exception_handler
-objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
+objc_uncaught_exception_handler_t
+objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler_t handler)
 {
 	return objc_setUncaughtExceptionHandler_m68k(handler);
 }
@@ -559,7 +559,7 @@ objc_setForwardHandler(IMP forward, IMP stretForward)
 }
 
 void
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler handler)
+objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
 {
 	objc_setEnumerationMutationHandler_m68k(handler);
 }

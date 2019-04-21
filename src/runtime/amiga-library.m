@@ -123,7 +123,7 @@ extern const char *_Nonnull protocol_getName_m68k(void);
 extern bool protocol_isEqual_m68k(void);
 extern bool protocol_conformsToProtocol_m68k(void);
 extern void objc_exit_m68k(void);
-extern _Nullable objc_uncaught_exception_handler
+extern _Nullable objc_uncaught_exception_handler_t
     objc_setUncaughtExceptionHandler_m68k(void);
 extern void objc_setForwardHandler_m68k(void);
 extern void objc_setEnumerationMutationHandler_m68k(void);

@@ -65,8 +65,8 @@ typedef const struct objc_selector *SEL;
 typedef bool BOOL;
 #endif
 typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
-typedef void (*objc_uncaught_exception_handler)(id _Nullable);
-typedef void (*objc_enumeration_mutation_handler)(id _Nonnull);
+typedef void (*objc_uncaught_exception_handler_t)(id _Nullable);
+typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull);
 
 struct objc_class {
 	Class _Nonnull isa;
@@ -251,13 +251,13 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
 extern void objc_exit(void);
-extern _Nullable objc_uncaught_exception_handler
+extern _Nullable objc_uncaught_exception_handler_t
     objc_setUncaughtExceptionHandler(
-    objc_uncaught_exception_handler _Nullable handler);
+    objc_uncaught_exception_handler_t _Nullable handler);
 extern void objc_setForwardHandler(IMP _Nullable forward,
     IMP _Nullable stretForward);
 extern void objc_setEnumerationMutationHandler(
-    objc_enumeration_mutation_handler _Nullable handler);
+    objc_enumeration_mutation_handler_t _Nullable handler);
 extern void objc_zero_weak_references(id _Nonnull value);
 
 /*

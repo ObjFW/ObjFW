@@ -241,7 +241,7 @@ extern EXCEPTION_DISPOSITION _GCC_specific_handler(PEXCEPTION_RECORD, void *,
     struct _Unwind_Exception *, struct _Unwind_Context *));
 #endif
 
-static objc_uncaught_exception_handler uncaughtExceptionHandler;
+static objc_uncaught_exception_handler_t uncaughtExceptionHandler;
 static struct objc_exception emergencyExceptions[NUM_EMERGENCY_EXCEPTIONS];
 #ifdef OF_HAVE_THREADS
 static of_spinlock_t emergencyExceptionsSpinlock;
@@ -761,10 +761,10 @@ objc_exception_throw(id object)
 	OBJC_ERROR("_Unwind_RaiseException() returned!")
 }
 
-objc_uncaught_exception_handler
-objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)
+objc_uncaught_exception_handler_t
+objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler_t handler)
 {
-	objc_uncaught_exception_handler old = uncaughtExceptionHandler;
+	objc_uncaught_exception_handler_t old = uncaughtExceptionHandler;
 	uncaughtExceptionHandler = handler;
 
 	return old;

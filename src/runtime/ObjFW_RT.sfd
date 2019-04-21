@@ -71,9 +71,9 @@ const char *_Nonnull protocol_getName_m68k(Protocol *_Nonnull protocol)(a0)
 bool protocol_isEqual_m68k(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)(a0,a1)
 bool protocol_conformsToProtocol_m68k(Protocol *_Nonnull protocol1, Protocol *_Nonnull protocol2)(a0,a1)
 void objc_exit_m68k(void)()
-_Nullable objc_uncaught_exception_handler objc_setUncaughtExceptionHandler_m68k(objc_uncaught_exception_handler _Nullable handler)(a0)
+_Nullable objc_uncaught_exception_handler_t objc_setUncaughtExceptionHandler_m68k(objc_uncaught_exception_handler_t _Nullable handler)(a0)
 void objc_setForwardHandler_m68k(IMP _Nullable forward, IMP _Nullable stretForward)(a0,a1)
-void objc_setEnumerationMutationHandler_m68k(objc_enumeration_mutation_handler _Nullable handler)(a0)
+void objc_setEnumerationMutationHandler_m68k(objc_enumeration_mutation_handler_t _Nullable handler)(a0)
 void objc_zero_weak_references_m68k(id _Nonnull value)(a0)
 * SysV functions for MorphOS could be added here for performance. Having them
 * in addition to the m68k functions allows m68k applications to call into the

@@ -573,10 +573,10 @@ objc_exit_m68k(void)
 	objc_exit();
 }
 
-objc_uncaught_exception_handler __saveds
+objc_uncaught_exception_handler_t __saveds
 objc_setUncaughtExceptionHandler_m68k(void)
 {
-	OBJC_M68K_ARG(objc_uncaught_exception_handler, handler, a0)
+	OBJC_M68K_ARG(objc_uncaught_exception_handler_t, handler, a0)
 
 	return objc_setUncaughtExceptionHandler(handler);
 }
@@ -593,7 +593,7 @@ objc_setForwardHandler_m68k(void)
 void __saveds
 objc_setEnumerationMutationHandler_m68k(void)
 {
-	OBJC_M68K_ARG(objc_enumeration_mutation_handler, handler, a0)
+	OBJC_M68K_ARG(objc_enumeration_mutation_handler_t, handler, a0)
 
 	objc_setEnumerationMutationHandler(handler);
 }
