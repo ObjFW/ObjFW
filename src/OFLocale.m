@@ -52,13 +52,13 @@ static struct LocaleIFace *ILocale = NULL;
 OF_DESTRUCTOR()
 {
 	if (ILocale != NULL)
-		DropInterface(ILocale);
+		DropInterface((struct Interface *)ILocale);
 
 	if (LocaleBase != NULL)
 		CloseLibrary(LocaleBase);
 
 	if (IDOS != NULL)
-		DropInterface(IDOS);
+		DropInterface((struct Interface *)IDOS);
 
 	if (DOSBase != NULL)
 		CloseLibrary(DOSBase);

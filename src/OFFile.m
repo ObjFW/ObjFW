@@ -119,7 +119,7 @@ OF_DESTRUCTOR()
 
 # ifdef OF_AMIGAOS4
 	if (IDOS != NULL)
-		DropInterface(IDOS);
+		DropInterface((struct Interface *)IDOS);
 
 	if (DOSBase != NULL)
 		CloseLibrary(DOSBase);

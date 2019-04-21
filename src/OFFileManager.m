@@ -112,6 +112,7 @@ const of_file_type_t of_file_type_block_special = @"of_file_type_block_special";
 const of_file_type_t of_file_type_socket = @"of_file_type_socket";
 
 #ifdef OF_AMIGAOS4
+# define CurrentDir(lock) SetCurrentDir(lock)
 extern struct ExecIFace *IExec;
 static struct Library *DOSBase = NULL;
 static struct DOSIFace *IDOS = NULL;
@@ -130,7 +131,7 @@ OF_DESTRUCTOR()
 
 # ifdef OF_AMIGAOS4
 	if (IDOS != NULL)
-		DropInterface(IDOS);
+		DropInterface((struct Interface *)IDOS);
 
 	if (DOSBase != NULL)
 		CloseLibrary(DOSBase);

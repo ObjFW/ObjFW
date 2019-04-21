@@ -107,7 +107,7 @@ static struct SocketIFace *ISocket = NULL;
 OF_DESTRUCTOR()
 {
 	if (ISocket != NULL)
-		DropInterface(ISocket);
+		DropInterface((struct Interface *)ISocket);
 
 	if (SocketBase != NULL)
 		CloseLibrary(SocketBase);
