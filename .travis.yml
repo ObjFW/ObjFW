@@ -97,10 +97,10 @@ matrix:
         - config=ios
 
     # AmigaOS
-    - os: linux
-      dist: trusty
-      env:
-        - config=amigaos
+    #- os: linux
+    #  dist: trusty
+    #  env:
+    #    - config=amigaos
 
     # Nintendo 3DS
     - os: linux
