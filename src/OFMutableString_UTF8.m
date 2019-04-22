@@ -207,7 +207,7 @@
 		idx = of_string_utf8_get_position(_s->cString, idx,
 		    _s->cStringLength);
 
-	if (idx > _s->cStringLength)
+	if (idx >= _s->cStringLength)
 		@throw [OFOutOfRangeException exception];
 
 	/* Shortcut if old and new character both are ASCII */

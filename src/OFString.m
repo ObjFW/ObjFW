@@ -265,7 +265,7 @@ of_string_utf8_encode(of_unichar_t character, char *buffer)
 ssize_t
 of_string_utf8_decode(const char *buffer_, size_t length, of_unichar_t *ret)
 {
-	const uint8_t *buffer = (const uint8_t *)buffer_;
+	const unsigned char *buffer = (const unsigned char *)buffer_;
 
 	if (!(*buffer & 0x80)) {
 		*ret = buffer[0];

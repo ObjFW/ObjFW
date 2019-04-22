@@ -167,7 +167,7 @@ of_string_utf8_get_position(const char *string, size_t idx, size_t length)
 	for (size_t i = 0; i <= idx; i++)
 		if OF_UNLIKELY ((string[i] & 0xC0) == 0x80)
 			if (++idx > length)
-				return OF_NOT_FOUND;
+				@throw [OFInvalidFormatException exception];
 
 	return idx;
 }
