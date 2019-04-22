@@ -32,7 +32,13 @@
 # include <sys/sysctl.h>
 #endif
 
-#ifdef OF_MORPHOS
+#if defined(OF_AMIGAOS4)
+# define __USE_INLINE__
+# define __NOLIBBASE__
+# define __NOGLOBALIFACE__
+# include <exec/exectags.h>
+# include <proto/exec.h>
+#elif defined(OF_MORPHOS)
 # include <exec/system.h>
 # include <proto/exec.h>
 #endif
@@ -95,6 +101,10 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 struct x86_regs {
 	uint32_t eax, ebx, ecx, edx;
 };
+#endif
+
+#ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
 #endif
 
 static size_t pageSize = 4096;
@@ -620,6 +630,12 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 	if (sysctl(name, 2, &value, &length, NULL, 0) == 0)
 		return value;
+# elif defined(OF_AMIGAOS4)
+	uint32_t vectorUnit;
+
+	GetCPUInfoTags(GCIT_VectorUnit, &vectorUnit, TAG_END);
+
+	return (vectorUnit == VECTORTYPE_ALTIVEC);
 # elif defined(OF_MORPHOS)
 	uint32_t supportsAltiVec;
 
