@@ -40,6 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nullable, nonatomic) OFString *userConfigPath;
 # endif
 @property (class, readonly, nullable, nonatomic) OFString *CPUVendor;
+@property (class, readonly, nullable, nonatomic) OFString *CPUModel;
 # if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsMMX;
 @property (class, readonly, nonatomic) bool supportsSSE;
@@ -145,6 +146,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The vendor of the CPU
  */
 + (nullable OFString *)CPUVendor;
+
+/*!
+ * @brief Returns the model of the CPU.
+ *
+ * If the model could not be determined, `nil` is returned instead.
+ *
+ * @return The model of the CPU
+ */
++ (nullable OFString *)CPUModel;
 
 #if defined(OF_X86_64) || defined(OF_X86) || defined(DOXYGEN)
 /*!

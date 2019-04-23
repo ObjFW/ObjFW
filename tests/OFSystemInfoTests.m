@@ -65,6 +65,8 @@ static OFString *module = @"OFSystemInfo";
 
 	PRINT(GREEN, @"CPU vendor: %@", [OFSystemInfo CPUVendor]);
 
+	PRINT(GREEN, @"CPU model: %@", [OFSystemInfo CPUModel]);
+
 #if defined(OF_X86_64) || defined(OF_X86)
 	PRINT(GREEN, @"Supports MMX: %d", [OFSystemInfo supportsMMX]);
 

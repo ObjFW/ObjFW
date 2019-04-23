@@ -28,7 +28,7 @@
 #ifdef HAVE_SYS_UTSNAME_H
 # include <sys/utsname.h>
 #endif
-#ifdef OF_MACOS
+#if defined(OF_MACOS) || defined(OF_NETBSD)
 # include <sys/sysctl.h>
 #endif
 
@@ -569,6 +569,38 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	return [OFString stringWithCString: buffer
 				  encoding: OF_STRING_ENCODING_ASCII
 				    length: 12];
+#else
+	return nil;
+#endif
+}
+
++ (OFString *)CPUModel
+{
+#if defined(OF_MACOS) || defined(OF_NETBSD)
+	char value[256];
+	size_t length = sizeof(value);
+
+# if defined(OF_MACOS)
+	if (sysctlbyname("machdep.cpu.brand_string",
+# elif defined(OF_NETBSD)
+	if (sysctlbyname("machdep.cpu_brand",
+# endif
+	    &value, &length, NULL, 0) != 0)
+		return nil;
+
+	return [OFString stringWithCString: value
+				  encoding: OF_STRING_ENCODING_ASCII];
+#elif defined(OF_AMIGAOS4)
+	CONST_STRPTR model, version;
+
+	GetCPUInfoTags(GCIT_ModelString, &model,
+	    GCIT_VersionString, &version, TAG_END);
+
+	if (version != NULL)
+		return [OFString stringWithFormat: @"%s V%s", model, version];
+	else
+		return [OFString stringWithCString: model
+					  encoding: OF_STRING_ENCODING_ASCII];
 #else
 	return nil;
 #endif
