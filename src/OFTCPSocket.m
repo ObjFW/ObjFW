@@ -456,7 +456,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 
 			switch (response[1]) {
 			case 0x02:
-				errNo = EACCES;
+				errNo = EPERM;
 				break;
 			case 0x03:
 				errNo = ENETUNREACH;
@@ -471,13 +471,17 @@ static uint16_t defaultSOCKS5Port = 1080;
 				errNo = ETIMEDOUT;
 				break;
 			case 0x07:
-				errNo = EPROTONOSUPPORT;
+				errNo = ENOTSUP;
 				break;
 			case 0x08:
 				errNo = EAFNOSUPPORT;
 				break;
 			default:
+#ifdef EPROTO
 				errNo = EPROTO;
+#else
+				errNo = 0;
+#endif
 				break;
 			}
 
