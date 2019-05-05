@@ -44,13 +44,6 @@
 
 /*! @file */
 
-#ifdef OF_MORPHOS
-typedef long socklen_t;
-#endif
-#ifdef OF_MORPHOS_IXEMUL
-typedef int socklen_t;
-#endif
-
 #ifdef OF_WII
 # include <network.h>
 #endif
@@ -71,6 +64,16 @@ typedef SOCKET of_socket_t;
 
 #ifdef OF_WII
 typedef u8 sa_family_t;
+#endif
+
+#ifdef OF_MORPHOS
+typedef long socklen_t;
+typedef u_char sa_family_t;
+typedef u_short in_port_t;
+#endif
+
+#ifdef OF_MORPHOS_IXEMUL
+typedef int socklen_t;
 #endif
 
 /*!
