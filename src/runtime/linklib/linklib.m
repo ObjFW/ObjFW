@@ -28,8 +28,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef OF_AMIGAOS_M68K
+#if defined(OF_AMIGAOS_M68K)
 # include <stabs.h>
+#elif defined(OF_MORPHOS)
+# include <constructor.h>
 #endif
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
@@ -120,8 +122,17 @@ dtor(void)
 ADD2INIT(ctor, -2);
 ADD2EXIT(dtor, -2);
 #elif defined(OF_MORPHOS)
-CONSTRUCTOR_P(ctor, -2);
-DESTRUCTOR_P(dtor, -2);
+CONSTRUCTOR_P(ObjFWRT, 4000)
+{
+	ctor();
+
+	return 0;
+}
+
+DESTRUCTOR_P(ObjFWRT, 4000)
+{
+	dtor();
+}
 #endif
 
 void
