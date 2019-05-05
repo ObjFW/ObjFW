@@ -81,7 +81,7 @@ run:
 	rm -f libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR}
 	rm -f libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR}
 	rm -f libobjfw_rt.dll libobjfw_rt.${OBJFW_RT_LIB_MAJOR}.dylib
-	rm -f objfw_rt.library
+	rm -f ${OBJFW_RT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -112,8 +112,9 @@ run:
 		${LN_S} ../src/runtime/libobjfw_rt.dylib \
 		    libobjfw_rt.${OBJFW_RT_LIB_MAJOR}.dylib; \
 	fi
-	if test -f ../src/runtime/objfw_rt.library; then \
-		${LN_S} ../src/runtime/objfw_rt.library objfw_rt.library; \
+	if test -f ../src/runtime/${OBJFW_RT_AMIGA_LIB}; then \
+		${LN_S} ../src/runtime/${OBJFW_RT_AMIGA_LIB} \
+		    ${OBJFW_RT_AMIGA_LIB}; \
 	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \

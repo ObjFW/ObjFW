@@ -11,7 +11,7 @@ AC_SUBST(BUNDLE_SHORT_VERSION, 0.90)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
-		AC_MSG_ERROR([$i is newer than configure! Run autoreconf!])
+		AC_MSG_ERROR([$i is newer than configure! Run ./autogen.sh!])
 	])
 done
 
@@ -58,7 +58,10 @@ case "$host" in
 		ac_cv_snprintf_useful_ret="yes"
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
+			AC_SUBST(OBJFW_RT_AMIGA_LIB,
+				'objfw_rt_${OBJFW_RT_LIB_MAJOR}_68k.library')
 			AC_SUBST(SFDC_TARGET, m68k-amigaos)
+			AC_SUBST(SFD_FILE, amigaos3.sfd)
 			dnl For 68000, GCC emits calls to helper functions that
 			dnl do not work properly in a library.
 			AC_SUBST(AMIGA_LIB_CFLAGS, "-mcpu=68020 -fbaserel")
@@ -82,12 +85,15 @@ case "$host" in
 			supports_amiga_lib="yes"
 
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
+				t='objfw_rt_${OBJFW_RT_LIB_MAJOR}_abox.library'
+				AC_SUBST(OBJFW_RT_AMIGA_LIB, $t)
 				AC_SUBST(SFDC_TARGET, ppc-morphos)
-				tmp="-mresident32 -fno-builtin"
-				AC_SUBST(AMIGA_LIB_CFLAGS, $tmp)
-				tmp="-mresident32 -nostartfiles -nodefaultlibs"
-				tmp="$tmp -lc"
-				AC_SUBST(AMIGA_LIB_LDFLAGS, $tmp)
+				AC_SUBST(SFD_FILE, morphos.sfd)
+				t="-mresident32 -fno-builtin"
+				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
+				t="-mresident32 -nostartfiles -nodefaultlibs"
+				t="$tmp -lc"
+				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 			])
 		])
 
@@ -512,7 +518,6 @@ case "$objc_runtime" in
 		])
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
-			AC_SUBST(OBJFW_RT_AMIGA_LIB, objfw_rt.library)
 			AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt.library")
 			AC_SUBST(LINKLIB, linklib)
 			tmp="../src/runtime/linklib/libobjfw_rt.library.a"

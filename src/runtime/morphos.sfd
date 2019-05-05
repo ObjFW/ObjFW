@@ -1,6 +1,6 @@
 ==base _ObjFWRTBase
 ==basetype struct Library *
-==libname objfw_rt.library
+==libname objfw_rt_0_abox.library
 ==bias 30
 ==public
 * Functions that are only for the linklib.

@@ -601,7 +601,7 @@ struct Resident resident = {
 	.rt_Version = OBJFW_RT_LIB_MAJOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
-	.rt_Name = (char *)"objfw_rt.library",
+	.rt_Name = (char *)OBJFW_RT_AMIGA_LIB,
 	.rt_IdString = (char *)"ObjFW_RT " VERSION_STRING
 	    " \xA9 2008-2019 Jonathan Schleifer",
 	.rt_Init = &init_table,

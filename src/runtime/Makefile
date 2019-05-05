@@ -45,14 +45,15 @@ ${OBJFW_RT_AMIGA_LIB}: inline.h
 
 amiga-library.m: amiga-library-functable.inc
 
-amiga-library-functable.inc: ObjFW_RT.sfd
+amiga-library-functable.inc: ${SFD_FILE}
 	sfdc -q --target=${SFDC_TARGET} --mode=functable -o $@ $<
 
-inline.h: ObjFW_RT.sfd
+inline.h: ${SFD_FILE}
 	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<
 
-CPPFLAGS += -I. -I.. -I../..				\
-	    -DOBJFW_RT_LIB_MAJOR=${OBJFW_RT_LIB_MAJOR}	\
+CPPFLAGS += -I. -I.. -I../..					\
+	    -DOBJFW_RT_AMIGA_LIB=\"${OBJFW_RT_AMIGA_LIB}\"	\
+	    -DOBJFW_RT_LIB_MAJOR=${OBJFW_RT_LIB_MAJOR}		\
 	    -DOBJFW_RT_LIB_MINOR=${OBJFW_RT_LIB_MINOR}
 AMIGA_LIB_CFLAGS += -DOBJC_COMPILING_AMIGA_LIBRARY
 LD = ${OBJC}

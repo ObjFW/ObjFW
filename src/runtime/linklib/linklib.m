@@ -96,13 +96,14 @@ ctor(void)
 	if (initialized)
 		return;
 
-	if ((ObjFWRTBase = OpenLibrary("objfw_rt.library", 0)) == NULL) {
-		fputs("Failed to open objfw_rt.library!\n", stderr);
+	if ((ObjFWRTBase = OpenLibrary(OBJFW_RT_AMIGA_LIB,
+	    OBJFW_RT_LIB_MINOR)) == NULL) {
+		fputs("Failed to open " OBJFW_RT_AMIGA_LIB "!\n", stderr);
 		abort();
 	}
 
 	if (!objc_init_m68k(1, &libc, stdout, stderr)) {
-		fputs("Failed to initialize objfw_rt.library!\n", stderr);
+		fputs("Failed to initialize " OBJFW_RT_AMIGA_LIB "!\n", stderr);
 		abort();
 	}
 
