@@ -27,8 +27,8 @@ static int i = 0;
 
 enum event_type {
 	PROCESSING_INSTRUCTIONS,
-	TAG_START,
-	TAG_END,
+	TAG_OPEN,
+	TAG_CLOSE,
 	STRING,
 	CDATA,
 	COMMENT
@@ -58,7 +58,7 @@ enum event_type {
 		    [string isEqual: @"p?i"])
 		break;
 	case 3:
-		TEST(msg, type == TAG_START && [name isEqual: @"root"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"root"] &&
 		    prefix == nil && ns == nil && attrs.count == 0)
 		break;
 	case 4:
@@ -69,18 +69,18 @@ enum event_type {
 		    parser.lineNumber == 3)
 		break;
 	case 6:
-		TEST(msg, type == TAG_START && [name isEqual: @"bar"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"bar"] &&
 		    prefix == nil && ns == nil && attrs == nil)
 		break;
 	case 7:
-		TEST(msg, type == TAG_END && [name isEqual: @"bar"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"bar"] &&
 		    prefix == nil && ns == nil && attrs == nil)
 		break;
 	case 8:
 		TEST(msg, type == STRING && [string isEqual: @"\n "])
 		break;
 	case 9:
-		TEST(msg, type == TAG_START && [name isEqual: @"foobar"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"foobar"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
 		    attrs.count == 1 &&
 		    /* xmlns attr */
@@ -93,7 +93,7 @@ enum event_type {
 		TEST(msg, type == STRING && [string isEqual: @"\n  "])
 		break;
 	case 11:
-		TEST(msg, type == TAG_START && [name isEqual: @"qux"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"qux"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
 		    attrs.count == 1 &&
 		    /* xmlns:foo attr */
@@ -107,7 +107,7 @@ enum event_type {
 		TEST(msg, type == STRING && [string isEqual: @"\n   "])
 		break;
 	case 13:
-		TEST(msg, type == TAG_START && [name isEqual: @"bla"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"foo"] &&
 		    [ns isEqual: @"urn:objfw:test:foo"] &&
 		    attrs.count == 2 &&
@@ -125,7 +125,7 @@ enum event_type {
 		TEST(msg, type == STRING && [string isEqual: @"\n    "])
 		break;
 	case 15:
-		TEST(msg, type == TAG_START && [name isEqual: @"blup"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"blup"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"] &&
 		    attrs.count == 2 &&
 		    /* foo:qux attr */
@@ -139,14 +139,14 @@ enum event_type {
 		    [[[attrs objectAtIndex: 1] stringValue] isEqual: @"test"])
 		break;
 	case 16:
-		TEST(msg, type == TAG_END && [name isEqual: @"blup"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"blup"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
 	case 17:
 		TEST(msg, type == STRING && [string isEqual: @"\n    "])
 		break;
 	case 18:
-		TEST(msg, type == TAG_START && [name isEqual: @"bla"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"bla"] &&
 		    [ns isEqual: @"urn:objfw:test:bla"] && attrs.count == 3 &&
 		    /* xmlns:bla attr */
@@ -166,7 +166,7 @@ enum event_type {
 		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"blafoo"])
 		break;
 	case 19:
-		TEST(msg, type == TAG_END && [name isEqual: @"bla"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"bla"] &&
 		    [ns isEqual: @"urn:objfw:test:bla"])
 		break;
@@ -174,7 +174,7 @@ enum event_type {
 		TEST(msg, type == STRING && [string isEqual: @"\n    "])
 		break;
 	case 21:
-		TEST(msg, type == TAG_START && [name isEqual: @"abc"] &&
+		TEST(msg, type == TAG_OPEN && [name isEqual: @"abc"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"] &&
 		    attrs.count == 3 &&
 		    /* xmlns attr */
@@ -193,14 +193,14 @@ enum event_type {
 		    [[[attrs objectAtIndex: 2] stringValue] isEqual: @"abc"])
 		break;
 	case 22:
-		TEST(msg, type == TAG_END && [name isEqual: @"abc"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"abc"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:abc"])
 		break;
 	case 23:
 		TEST(msg, type == STRING && [string isEqual: @"\n   "])
 		break;
 	case 24:
-		TEST(msg, type == TAG_END && [name isEqual: @"bla"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"bla"] &&
 		    [prefix isEqual: @"foo"] &&
 		    [ns isEqual: @"urn:objfw:test:foo"])
 		break;
@@ -214,21 +214,21 @@ enum event_type {
 		TEST(msg, type == STRING && [string isEqual: @"\n  "])
 		break;
 	case 28:
-		TEST(msg, type == TAG_END && [name isEqual: @"qux"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"qux"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
 	case 29:
 		TEST(msg, type == STRING && [string isEqual: @"\n "])
 		break;
 	case 30:
-		TEST(msg, type == TAG_END && [name isEqual: @"foobar"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"foobar"] &&
 		    prefix == nil && [ns isEqual: @"urn:objfw:test:foobar"])
 		break;
 	case 31:
 		TEST(msg, type == STRING && [string isEqual: @"\n"])
 		break;
 	case 32:
-		TEST(msg, type == TAG_END && [name isEqual: @"root"] &&
+		TEST(msg, type == TAG_CLOSE && [name isEqual: @"root"] &&
 		    prefix == nil && ns == nil);
 		break;
 	}
@@ -253,7 +253,7 @@ enum event_type {
        attributes: (OFArray *)attrs
 {
 	[self	    parser: parser
-	    didCreateEvent: TAG_START
+	    didCreateEvent: TAG_OPEN
 		      name: name
 		    prefix: prefix
 		 namespace: ns
@@ -267,7 +267,7 @@ enum event_type {
       namespace: (OFString *)ns
 {
 	[self	    parser: parser
-	    didCreateEvent: TAG_END
+	    didCreateEvent: TAG_CLOSE
 		      name: name
 		    prefix: prefix
 		 namespace: ns
