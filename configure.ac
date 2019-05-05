@@ -92,7 +92,7 @@ case "$host" in
 				t="-mresident32 -fno-builtin"
 				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 				t="-mresident32 -nostartfiles -nodefaultlibs"
-				t="$tmp -lc"
+				t="$t -lc"
 				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 			])
 		])
@@ -275,7 +275,14 @@ AX_CHECK_COMPILER_FLAGS(-std=gnu11, [
 	])
 ])
 
-AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
+case "$build_os" in
+	morphos*)
+		# MorphOS 3.10 has a buggy ixemul that does not work with -pipe.
+		;;
+	*)
+		AX_CHECK_COMPILER_FLAGS(-pipe, [OBJCFLAGS="$OBJCFLAGS -pipe"])
+		;;
+esac
 AX_CHECK_COMPILER_FLAGS(-fno-common, [OBJCFLAGS="$OBJCFLAGS -fno-common"])
 AX_CHECK_COMPILER_FLAGS(-Xclang -fno-constant-cfstrings, [
 	flag="-Xclang -fno-constant-cfstrings"
