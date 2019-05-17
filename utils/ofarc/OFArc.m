@@ -414,9 +414,16 @@ writingNotSupported(OFString *type)
 				   mode: mode
 			       encoding: encoding];
 
-		if (outputDir != nil)
-			[[OFFileManager defaultManager]
-			    changeCurrentDirectoryPath: outputDir];
+		if (outputDir != nil) {
+			OFFileManager *fileManager =
+			    [OFFileManager defaultManager];
+
+			if (![fileManager directoryExistsAtPath: outputDir])
+				[fileManager createDirectoryAtPath: outputDir
+						     createParents: true];
+
+			[fileManager changeCurrentDirectoryPath: outputDir];
+		}
 
 		@try {
 			[archive extractFiles: files];
