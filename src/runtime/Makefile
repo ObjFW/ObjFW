@@ -43,13 +43,11 @@ include ../../buildsys.mk
 
 ${OBJFW_RT_AMIGA_LIB}: inline.h
 
-amiga-library.m: amiga-library-functable.inc
+${SFDC_INLINE_H}: ${SFD_FILE}
+	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<; \
 
-amiga-library-functable.inc: ${SFD_FILE}
-	sfdc -q --target=${SFDC_TARGET} --mode=functable -o $@ $<
-
-inline.h: ${SFD_FILE}
-	sfdc -q --target=${SFDC_TARGET} --mode=macros -o $@ $<
+${CVINCLUDE_INLINE_H}: morphos.fd morphos-clib.h
+	cvinclude.pl --quiet --fd=morphos.fd --clib=morphos-clib.h --inlines=$@
 
 CPPFLAGS += -I. -I.. -I../..					\
 	    -DOBJFW_RT_AMIGA_LIB=\"${OBJFW_RT_AMIGA_LIB}\"	\

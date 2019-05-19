@@ -23,6 +23,8 @@
 
 #include <proto/exec.h>
 
+struct ObjFWRTBase;
+
 #import "inline.h"
 
 #include <stdio.h>
@@ -30,8 +32,10 @@
 
 #if defined(OF_AMIGAOS_M68K)
 # include <stabs.h>
+# define SYM(name) __asm__("_" name)
 #elif defined(OF_MORPHOS)
 # include <constructor.h>
+# define SYM(name) __asm__(name)
 #endif
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
@@ -58,6 +62,110 @@ extern void __deregister_frame_info(const void *);
 
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
+
+void linklib___objc_exec_class(void *module) SYM("__objc_exec_class");
+IMP linklib_objc_msg_lookup(id object, SEL selector) SYM("objc_msg_lookup");
+IMP linklib_objc_msg_lookup_stret(id object, SEL selector)
+    SYM("objc_msg_lookup_stret");
+IMP linklib_objc_msg_lookup_super(struct objc_super *super, SEL selector)
+    SYM("objc_msg_lookup_super");
+IMP linklib_objc_msg_lookup_super_stret(struct objc_super *super, SEL selector)
+    SYM("objc_msg_lookup_super_stret");
+Class linklib_objc_lookUpClass(const char *name) SYM("objc_lookUpClass");
+Class linklib_objc_getClass(const char *name) SYM("objc_getClass");
+Class linklib_objc_getRequiredClass(const char *name)
+    SYM("objc_getRequiredClass");
+Class linklib_objc_lookup_class(const char *name) SYM("objc_lookup_class");
+Class linklib_objc_get_class(const char *name) SYM("objc_get_class");
+void linklib_objc_exception_throw(id object) SYM("objc_exception_throw");
+int linklib_objc_sync_enter(id object) SYM("objc_sync_enter");
+int linklib_objc_sync_exit(id object) SYM("objc_sync_exit");
+id linklib_objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
+    SYM("objc_getProperty");
+void linklib_objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value,
+    bool atomic, signed char copy) SYM("objc_setProperty");
+void linklib_objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size,
+    bool atomic, bool strong) SYM("objc_getPropertyStruct");
+void linklib_objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size,
+    bool atomic, bool strong) SYM("objc_setPropertyStruct");
+void linklib_objc_enumerationMutation(id object)
+    SYM("objc_enumerationMutation");
+#ifdef HAVE_SJLJ_EXCEPTIONS
+int linklib___gnu_objc_personality_sj0(int version, int actions,
+    uint64_t exClass, void *ex, void *ctx) SYM("__gnu_objc_personality_sj0");
+#else
+int linklib___gnu_objc_personality_v0(int version, int actions,
+    uint64_t exClass, void *ex, void *ctx) SYM("__gnu_objc_personality_v0");
+#endif
+id linklib_objc_retain(id object) SYM("objc_retain");
+id linklib_objc_retainBlock(id block) SYM("objc_retainBlock");
+id linklib_objc_retainAutorelease(id object) SYM("objc_retainAutorelease");
+void linklib_objc_release(id object) SYM("objc_release");
+id linklib_objc_autorelease(id object) SYM("objc_autorelease");
+id linklib_objc_autoreleaseReturnValue(id object)
+    SYM("objc_autoreleaseReturnValue");
+id linklib_objc_retainAutoreleaseReturnValue(id object)
+    SYM("objc_retainAutoreleaseReturnValue");
+id linklib_objc_retainAutoreleasedReturnValue(id object)
+    SYM("objc_retainAutoreleasedReturnValue");
+id linklib_objc_storeStrong(id *object, id value) SYM("objc_storeStrong");
+id linklib_objc_storeWeak(id *object, id value) SYM("objc_storeWeak");
+id linklib_objc_loadWeakRetained(id *object) SYM("objc_loadWeakRetained");
+id linklib_objc_initWeak(id *object, id value) SYM("objc_initWeak");
+void linklib_objc_destroyWeak(id *object) SYM("objc_destroyWeak");
+id linklib_objc_loadWeak(id *object) SYM("objc_loadWeak");
+void linklib_objc_copyWeak(id *dest, id *src) SYM("objc_copyWeak");
+void linklib_objc_moveWeak(id *dest, id *src) SYM("objc_moveWeak");
+SEL linklib_sel_registerName(const char *name) SYM("sel_registerName");
+const char *linklib_sel_getName(SEL selector) SYM("sel_getName");
+bool linklib_sel_isEqual(SEL selector1, SEL selector2) SYM("sel_isEqual");
+Class linklib_objc_allocateClassPair(Class superclass, const char *name,
+    size_t extraBytes) SYM("objc_allocateClassPair");
+void linklib_objc_registerClassPair(Class class) SYM("objc_registerClassPair");
+unsigned int linklib_objc_getClassList(Class *buffer, unsigned int count)
+    SYM("objc_getClassList");
+Class *linklib_objc_copyClassList(unsigned int *length)
+    SYM("objc_copyClassList");
+bool linklib_class_isMetaClass(Class class) SYM("class_isMetaClass");
+const char *linklib_class_getName(Class class) SYM("class_getName");
+Class linklib_class_getSuperclass(Class class) SYM("class_getSuperclass");
+unsigned long linklib_class_getInstanceSize(Class class)
+    SYM("class_getInstanceSize");
+bool linklib_class_respondsToSelector(Class class, SEL selector)
+    SYM("class_respondsToSelector");
+bool linklib_class_conformsToProtocol(Class class, Protocol *protocol)
+    SYM("class_conformsToProtocol");
+IMP linklib_class_getMethodImplementation(Class class, SEL selector)
+    SYM("class_getMethodImplementation");
+IMP linklib_class_getMethodImplementation_stret(Class class, SEL selector)
+    SYM("class_getMethodImplementation_stret");
+const char *linklib_class_getMethodTypeEncoding(Class class, SEL selector)
+    SYM("class_getMethodTypeEncoding");
+bool linklib_class_addMethod(Class class, SEL selector, IMP implementation,
+    const char *typeEncoding) SYM("class_addMethod");
+IMP linklib_class_replaceMethod(Class class, SEL selector, IMP implementation,
+    const char *typeEncoding) SYM("class_replaceMethod");
+Class linklib_object_getClass(id object) SYM("object_getClass");
+Class linklib_object_setClass(id object, Class class) SYM("object_setClass");
+const char *linklib_object_getClassName(id object)
+    SYM("object_getClassName");
+const char *linklib_protocol_getName(Protocol *protocol)
+    SYM("protocol_getName");
+bool linklib_protocol_isEqual(Protocol *protocol1, Protocol *protocol2)
+    SYM("protocol_isEqual");
+bool linklib_protocol_conformsToProtocol(Protocol *protocol1,
+    Protocol *protocol2) SYM("protocol_conformsToProtocol");
+void linklib_objc_exit(void) SYM("objc_exit");
+objc_uncaught_exception_handler_t linklib_objc_setUncaughtExceptionHandler(
+    objc_uncaught_exception_handler_t handler)
+    SYM("objc_setUncaughtExceptionHandler");
+void linklib_objc_setForwardHandler(IMP forward, IMP stretForward)
+    SYM("objc_setForwardHandler");
+void linklib_objc_setEnumerationMutationHandler(
+    objc_enumeration_mutation_handler_t handler)
+    SYM("objc_setEnumerationMutationHandler");
+void linklib_objc_zero_weak_references(id value)
+    SYM("objc_zero_weak_references");
 
 static void
 ctor(void)
@@ -104,7 +212,7 @@ ctor(void)
 		abort();
 	}
 
-	if (!objc_init_m68k(1, &libc, stdout, stderr)) {
+	if (!objc_init(1, &libc, stdout, stderr)) {
 		fputs("Failed to initialize " OBJFW_RT_AMIGA_LIB "!\n", stderr);
 		abort();
 	}
@@ -136,7 +244,7 @@ DESTRUCTOR_P(ObjFWRT, 4000)
 #endif
 
 void
-__objc_exec_class(void *module)
+linklib___objc_exec_class(void *module)
 {
 	/*
 	 * The compiler generates constructors that call into this, so it is
@@ -144,65 +252,65 @@ __objc_exec_class(void *module)
 	 */
 	ctor();
 
-	__objc_exec_class_m68k(module);
+	__objc_exec_class(module);
 }
 
 IMP
-objc_msg_lookup(id object, SEL selector)
+linklib_objc_msg_lookup(id object, SEL selector)
 {
-	return objc_msg_lookup_m68k(object, selector);
+	return objc_msg_lookup(object, selector);
 }
 
 IMP
-objc_msg_lookup_stret(id object, SEL selector)
+linklib_objc_msg_lookup_stret(id object, SEL selector)
 {
-	return objc_msg_lookup_stret_m68k(object, selector);
+	return objc_msg_lookup_stret(object, selector);
 }
 
 IMP
-objc_msg_lookup_super(struct objc_super *super, SEL selector)
+linklib_objc_msg_lookup_super(struct objc_super *super, SEL selector)
 {
-	return objc_msg_lookup_super_m68k(super, selector);
+	return objc_msg_lookup_super(super, selector);
 }
 
 IMP
-objc_msg_lookup_super_stret(struct objc_super *super, SEL selector)
+linklib_objc_msg_lookup_super_stret(struct objc_super *super, SEL selector)
 {
-	return objc_msg_lookup_super_stret_m68k(super, selector);
+	return objc_msg_lookup_super_stret(super, selector);
 }
 
 Class
-objc_lookUpClass(const char *name)
+linklib_objc_lookUpClass(const char *name)
 {
-	return objc_lookUpClass_m68k(name);
+	return objc_lookUpClass(name);
 }
 
 Class
-objc_getClass(const char *name)
+linklib_objc_getClass(const char *name)
 {
-	return objc_getClass_m68k(name);
+	return objc_getClass(name);
 }
 
 Class
-objc_getRequiredClass(const char *name)
+linklib_objc_getRequiredClass(const char *name)
 {
-	return objc_getRequiredClass_m68k(name);
+	return objc_getRequiredClass(name);
 }
 
 Class
-objc_lookup_class(const char *name)
+linklib_objc_lookup_class(const char *name)
 {
-	return objc_lookup_class_m68k(name);
+	return objc_lookup_class(name);
 }
 
 Class
-objc_get_class(const char *name)
+linklib_objc_get_class(const char *name)
 {
-	return objc_get_class_m68k(name);
+	return objc_get_class(name);
 }
 
 void
-objc_exception_throw(id object)
+linklib_objc_exception_throw(id object)
 {
 #ifdef OF_AMIGAOS_M68K
 	/*
@@ -220,53 +328,53 @@ objc_exception_throw(id object)
 	((void (*)(id __asm__("a0")))throw)(object);
 	(void)a6;
 #else
-	objc_exception_throw_m68k(object);
+	objc_exception_throw(object);
 #endif
 
 	OF_UNREACHABLE
 }
 
 int
-objc_sync_enter(id object)
+linklib_objc_sync_enter(id object)
 {
-	return objc_sync_enter_m68k(object);
+	return objc_sync_enter(object);
 }
 
 int
-objc_sync_exit(id object)
+linklib_objc_sync_exit(id object)
 {
-	return objc_sync_exit_m68k(object);
+	return objc_sync_exit(object);
 }
 
 id
-objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
+linklib_objc_getProperty(id self, SEL _cmd, ptrdiff_t offset, bool atomic)
 {
-	return objc_getProperty_m68k(self, _cmd, offset, atomic);
+	return objc_getProperty(self, _cmd, offset, atomic);
 }
 
 void
-objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value, bool atomic,
-    signed char copy)
+linklib_objc_setProperty(id self, SEL _cmd, ptrdiff_t offset, id value,
+    bool atomic, signed char copy)
 {
-	objc_setProperty_m68k(self, _cmd, offset, value, atomic, copy);
+	objc_setProperty(self, _cmd, offset, value, atomic, copy);
 }
 
 void
-objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
-    bool strong)
+linklib_objc_getPropertyStruct(void *dest, const void *src, ptrdiff_t size,
+    bool atomic, bool strong)
 {
-	objc_getPropertyStruct_m68k(dest, src, size, atomic, strong);
+	objc_getPropertyStruct(dest, src, size, atomic, strong);
 }
 
 void
-objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
-    bool strong)
+linklib_objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size,
+    bool atomic, bool strong)
 {
-	objc_setPropertyStruct_m68k(dest, src, size, atomic, strong);
+	objc_setPropertyStruct(dest, src, size, atomic, strong);
 }
 
 void
-objc_enumerationMutation(id object)
+linklib_objc_enumerationMutation(id object)
 {
 #ifdef OF_AMIGAOS_M68K
 	/*
@@ -284,7 +392,7 @@ objc_enumerationMutation(id object)
 	((void (*)(id __asm__("a0")))enumerationMutation)(object);
 	(void)a6;
 #else
-	objc_enumerationMutation_m68k(object);
+	objc_enumerationMutation(object);
 #endif
 
 	OF_UNREACHABLE
@@ -292,292 +400,292 @@ objc_enumerationMutation(id object)
 
 #ifdef HAVE_SJLJ_EXCEPTIONS
 int
-__gnu_objc_personality_sj0(int version, int actions, uint64_t exClass,
+linklib___gnu_objc_personality_sj0(int version, int actions, uint64_t exClass,
     void *ex, void *ctx)
 {
-	return __gnu_objc_personality_sj0_m68k(version, actions, &exClass,
-	    ex, ctx);
+	return __gnu_objc_personality_sj0(version, actions, &exClass, ex, ctx);
 }
 #else
 int
-__gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
+linklib___gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
     void *ex, void *ctx)
 {
-	return __gnu_objc_personality_v0_m68k(version, actions, &exClass,
-	    ex, ctx);
+	return __gnu_objc_personality_v0(version, actions, &exClass, ex, ctx);
 }
 #endif
 
 id
-objc_retain(id object)
+linklib_objc_retain(id object)
 {
-	return objc_retain_m68k(object);
+	return objc_retain(object);
 }
 
 id
-objc_retainBlock(id block)
+linklib_objc_retainBlock(id block)
 {
-	return objc_retainBlock_m68k(block);
+	return objc_retainBlock(block);
 }
 
 id
-objc_retainAutorelease(id object)
+linklib_objc_retainAutorelease(id object)
 {
-	return objc_retainAutorelease_m68k(object);
+	return objc_retainAutorelease(object);
 }
 
 void
-objc_release(id object)
+linklib_objc_release(id object)
 {
-	objc_release_m68k(object);
+	objc_release(object);
 }
 
 id
-objc_autorelease(id object)
+linklib_objc_autorelease(id object)
 {
-	return objc_autorelease_m68k(object);
+	return objc_autorelease(object);
 }
 
 id
-objc_autoreleaseReturnValue(id object)
+linklib_objc_autoreleaseReturnValue(id object)
 {
-	return objc_autoreleaseReturnValue_m68k(object);
+	return objc_autoreleaseReturnValue(object);
 }
 
 id
-objc_retainAutoreleaseReturnValue(id object)
+linklib_objc_retainAutoreleaseReturnValue(id object)
 {
-	return objc_retainAutoreleaseReturnValue_m68k(object);
+	return objc_retainAutoreleaseReturnValue(object);
 }
 
 id
-objc_retainAutoreleasedReturnValue(id object)
+linklib_objc_retainAutoreleasedReturnValue(id object)
 {
-	return objc_retainAutoreleasedReturnValue_m68k(object);
+	return objc_retainAutoreleasedReturnValue(object);
 }
 
 id
-objc_storeStrong(id *object, id value)
+linklib_objc_storeStrong(id *object, id value)
 {
-	return objc_storeStrong_m68k(object, value);
+	return objc_storeStrong(object, value);
 }
 
 id
-objc_storeWeak(id *object, id value)
+linklib_objc_storeWeak(id *object, id value)
 {
-	return objc_storeWeak_m68k(object, value);
+	return objc_storeWeak(object, value);
 }
 
 id
-objc_loadWeakRetained(id *object)
+linklib_objc_loadWeakRetained(id *object)
 {
-	return objc_loadWeakRetained_m68k(object);
+	return objc_loadWeakRetained(object);
 }
 
 id
-objc_initWeak(id *object, id value)
+linklib_objc_initWeak(id *object, id value)
 {
-	return objc_initWeak_m68k(object, value);
+	return objc_initWeak(object, value);
 }
 
 void
-objc_destroyWeak(id *object)
+linklib_objc_destroyWeak(id *object)
 {
-	objc_destroyWeak_m68k(object);
+	objc_destroyWeak(object);
 }
 
 id
-objc_loadWeak(id *object)
+linklib_objc_loadWeak(id *object)
 {
-	return objc_loadWeak_m68k(object);
+	return objc_loadWeak(object);
 }
 
 void
-objc_copyWeak(id *dest, id *src)
+linklib_objc_copyWeak(id *dest, id *src)
 {
-	objc_copyWeak_m68k(dest, src);
+	objc_copyWeak(dest, src);
 }
 
 void
-objc_moveWeak(id *dest, id *src)
+linklib_objc_moveWeak(id *dest, id *src)
 {
-	objc_moveWeak_m68k(dest, src);
+	objc_moveWeak(dest, src);
 }
 
 SEL
-sel_registerName(const char *name)
+linklib_sel_registerName(const char *name)
 {
-	return sel_registerName_m68k(name);
+	return sel_registerName(name);
 }
 
 const char *
-sel_getName(SEL selector)
+linklib_sel_getName(SEL selector)
 {
-	return sel_getName_m68k(selector);
+	return sel_getName(selector);
 }
 
 bool
-sel_isEqual(SEL selector1, SEL selector2)
+linklib_sel_isEqual(SEL selector1, SEL selector2)
 {
-	return sel_isEqual_m68k(selector1, selector2);
+	return sel_isEqual(selector1, selector2);
 }
 
 Class
-objc_allocateClassPair(Class superclass, const char *name, size_t extraBytes)
+linklib_objc_allocateClassPair(Class superclass, const char *name,
+    size_t extraBytes)
 {
-	return objc_allocateClassPair_m68k(superclass, name, extraBytes);
+	return objc_allocateClassPair(superclass, name, extraBytes);
 }
 
 void
-objc_registerClassPair(Class class)
+linklib_objc_registerClassPair(Class class)
 {
-	objc_registerClassPair_m68k(class);
+	objc_registerClassPair(class);
 }
 
 unsigned int
-objc_getClassList(Class *buffer, unsigned int count)
+linklib_objc_getClassList(Class *buffer, unsigned int count)
 {
-	return objc_getClassList_m68k(buffer, count);
+	return objc_getClassList(buffer, count);
 }
 
 Class *
-objc_copyClassList(unsigned int *length)
+linklib_objc_copyClassList(unsigned int *length)
 {
-	return objc_copyClassList_m68k(length);
+	return objc_copyClassList(length);
 }
 
 bool
-class_isMetaClass(Class class)
+linklib_class_isMetaClass(Class class)
 {
-	return class_isMetaClass_m68k(class);
+	return class_isMetaClass(class);
 }
 
 const char *
-class_getName(Class class)
+linklib_class_getName(Class class)
 {
-	return class_getName_m68k(class);
+	return class_getName(class);
 }
 
 Class
-class_getSuperclass(Class class)
+linklib_class_getSuperclass(Class class)
 {
-	return class_getSuperclass_m68k(class);
+	return class_getSuperclass(class);
 }
 
 unsigned long
-class_getInstanceSize(Class class)
+linklib_class_getInstanceSize(Class class)
 {
-	return class_getInstanceSize_m68k(class);
+	return class_getInstanceSize(class);
 }
 
 bool
-class_respondsToSelector(Class class, SEL selector)
+linklib_class_respondsToSelector(Class class, SEL selector)
 {
-	return class_respondsToSelector_m68k(class, selector);
+	return class_respondsToSelector(class, selector);
 }
 
 bool
-class_conformsToProtocol(Class class, Protocol *protocol)
+linklib_class_conformsToProtocol(Class class, Protocol *protocol)
 {
-	return class_conformsToProtocol_m68k(class, protocol);
+	return class_conformsToProtocol(class, protocol);
 }
 
 IMP
-class_getMethodImplementation(Class class, SEL selector)
+linklib_class_getMethodImplementation(Class class, SEL selector)
 {
-	return class_getMethodImplementation_m68k(class, selector);
+	return class_getMethodImplementation(class, selector);
 }
 
 IMP
-class_getMethodImplementation_stret(Class class, SEL selector)
+linklib_class_getMethodImplementation_stret(Class class, SEL selector)
 {
-	return class_getMethodImplementation_stret_m68k(class, selector);
+	return class_getMethodImplementation_stret(class, selector);
 }
 
 const char *
-class_getMethodTypeEncoding(Class class, SEL selector)
+linklib_class_getMethodTypeEncoding(Class class, SEL selector)
 {
-	return class_getMethodTypeEncoding_m68k(class, selector);
+	return class_getMethodTypeEncoding(class, selector);
 }
 
 bool
-class_addMethod(Class class, SEL selector, IMP implementation,
+linklib_class_addMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	return class_addMethod_m68k(class, selector, implementation,
-	    typeEncoding);
+	return class_addMethod(class, selector, implementation, typeEncoding);
 }
 
 IMP
-class_replaceMethod(Class class, SEL selector, IMP implementation,
+linklib_class_replaceMethod(Class class, SEL selector, IMP implementation,
     const char *typeEncoding)
 {
-	return class_replaceMethod_m68k(class, selector, implementation,
+	return class_replaceMethod(class, selector, implementation,
 	    typeEncoding);
 }
 
 Class
-object_getClass(id object)
+linklib_object_getClass(id object)
 {
-	return object_getClass_m68k(object);
+	return object_getClass(object);
 }
 
 Class
-object_setClass(id object, Class class)
+linklib_object_setClass(id object, Class class)
 {
-	return object_setClass_m68k(object, class);
+	return object_setClass(object, class);
 }
 
 const char *
-object_getClassName(id object)
+linklib_object_getClassName(id object)
 {
-	return object_getClassName_m68k(object);
+	return object_getClassName(object);
 }
 
 const char *
-protocol_getName(Protocol *protocol)
+linklib_protocol_getName(Protocol *protocol)
 {
-	return protocol_getName_m68k(protocol);
+	return protocol_getName(protocol);
 }
 
 bool
-protocol_isEqual(Protocol *protocol1, Protocol *protocol2)
+linklib_protocol_isEqual(Protocol *protocol1, Protocol *protocol2)
 {
-	return protocol_isEqual_m68k(protocol1, protocol2);
+	return protocol_isEqual(protocol1, protocol2);
 }
 
 bool
-protocol_conformsToProtocol(Protocol *protocol1, Protocol *protocol2)
+linklib_protocol_conformsToProtocol(Protocol *protocol1, Protocol *protocol2)
 {
-	return protocol_conformsToProtocol_m68k(protocol1, protocol2);
+	return protocol_conformsToProtocol(protocol1, protocol2);
 }
 
 void
-objc_exit(void)
+linklib_objc_exit(void)
 {
-	objc_exit_m68k();
+	objc_exit();
 }
 
 objc_uncaught_exception_handler_t
-objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler_t handler)
+linklib_objc_setUncaughtExceptionHandler(
+    objc_uncaught_exception_handler_t handler)
 {
-	return objc_setUncaughtExceptionHandler_m68k(handler);
+	return objc_setUncaughtExceptionHandler(handler);
 }
 
 void
-objc_setForwardHandler(IMP forward, IMP stretForward)
+linklib_objc_setForwardHandler(IMP forward, IMP stretForward)
 {
-	objc_setForwardHandler_m68k(forward, stretForward);
+	objc_setForwardHandler(forward, stretForward);
 }
 
 void
-objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
+linklib_objc_setEnumerationMutationHandler(
+    objc_enumeration_mutation_handler_t handler)
 {
-	objc_setEnumerationMutationHandler_m68k(handler);
+	objc_setEnumerationMutationHandler(handler);
 }
 
 void
-objc_zero_weak_references(id value)
+linklib_objc_zero_weak_references(id value)
 {
-	objc_zero_weak_references_m68k(value);
+	objc_zero_weak_references(value);
 }

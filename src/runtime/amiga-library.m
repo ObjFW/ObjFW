@@ -62,6 +62,7 @@ extern const void *_EH_FRAME_BEGINS__;
 extern void *_EH_FRAME_OBJECTS__;
 #endif
 
+extern bool objc_init_m68k(void);
 extern void __objc_exec_class_m68k(void);
 extern IMP _Nonnull objc_msg_lookup_m68k(void);
 extern IMP _Nonnull objc_msg_lookup_stret_m68k(void);
@@ -375,8 +376,8 @@ lib_null(void)
 	return NULL;
 }
 
-static bool __saveds
-objc_init_m68k(void)
+bool
+objc_init(void)
 {
 	OBJC_M68K_ARG(struct ObjFWRTBase *, base, a6)
 	OBJC_M68K_ARG(unsigned int, version, d0)
@@ -566,7 +567,71 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)lib_close,
 	(CONST_APTR)lib_expunge,
 	(CONST_APTR)lib_null,
-#include "amiga-library-functable.inc"
+	(CONST_APTR)objc_init_m68k,
+	(CONST_APTR)__objc_exec_class_m68k,
+	(CONST_APTR)objc_msg_lookup_m68k,
+	(CONST_APTR)objc_msg_lookup_stret_m68k,
+	(CONST_APTR)objc_msg_lookup_super_m68k,
+	(CONST_APTR)objc_msg_lookup_super_stret_m68k,
+	(CONST_APTR)objc_lookUpClass_m68k,
+	(CONST_APTR)objc_getClass_m68k,
+	(CONST_APTR)objc_getRequiredClass_m68k,
+	(CONST_APTR)objc_lookup_class_m68k,
+	(CONST_APTR)objc_get_class_m68k,
+	(CONST_APTR)objc_exception_throw_m68k,
+	(CONST_APTR)objc_sync_enter_m68k,
+	(CONST_APTR)objc_sync_exit_m68k,
+	(CONST_APTR)objc_getProperty_m68k,
+	(CONST_APTR)objc_setProperty_m68k,
+	(CONST_APTR)objc_getPropertyStruct_m68k,
+	(CONST_APTR)objc_setPropertyStruct_m68k,
+	(CONST_APTR)objc_enumerationMutation_m68k,
+	(CONST_APTR)__gnu_objc_personality_v0_m68k,
+	(CONST_APTR)objc_retain_m68k,
+	(CONST_APTR)objc_retainBlock_m68k,
+	(CONST_APTR)objc_retainAutorelease_m68k,
+	(CONST_APTR)objc_release_m68k,
+	(CONST_APTR)objc_autorelease_m68k,
+	(CONST_APTR)objc_autoreleaseReturnValue_m68k,
+	(CONST_APTR)objc_retainAutoreleaseReturnValue_m68k,
+	(CONST_APTR)objc_retainAutoreleasedReturnValue_m68k,
+	(CONST_APTR)objc_storeStrong_m68k,
+	(CONST_APTR)objc_storeWeak_m68k,
+	(CONST_APTR)objc_loadWeakRetained_m68k,
+	(CONST_APTR)objc_initWeak_m68k,
+	(CONST_APTR)objc_destroyWeak_m68k,
+	(CONST_APTR)objc_loadWeak_m68k,
+	(CONST_APTR)objc_copyWeak_m68k,
+	(CONST_APTR)objc_moveWeak_m68k,
+	(CONST_APTR)sel_registerName_m68k,
+	(CONST_APTR)sel_getName_m68k,
+	(CONST_APTR)sel_isEqual_m68k,
+	(CONST_APTR)objc_allocateClassPair_m68k,
+	(CONST_APTR)objc_registerClassPair_m68k,
+	(CONST_APTR)objc_getClassList_m68k,
+	(CONST_APTR)objc_copyClassList_m68k,
+	(CONST_APTR)class_isMetaClass_m68k,
+	(CONST_APTR)class_getName_m68k,
+	(CONST_APTR)class_getSuperclass_m68k,
+	(CONST_APTR)class_getInstanceSize_m68k,
+	(CONST_APTR)class_respondsToSelector_m68k,
+	(CONST_APTR)class_conformsToProtocol_m68k,
+	(CONST_APTR)class_getMethodImplementation_m68k,
+	(CONST_APTR)class_getMethodImplementation_stret_m68k,
+	(CONST_APTR)class_getMethodTypeEncoding_m68k,
+	(CONST_APTR)class_addMethod_m68k,
+	(CONST_APTR)class_replaceMethod_m68k,
+	(CONST_APTR)object_getClass_m68k,
+	(CONST_APTR)object_setClass_m68k,
+	(CONST_APTR)object_getClassName_m68k,
+	(CONST_APTR)protocol_getName_m68k,
+	(CONST_APTR)protocol_isEqual_m68k,
+	(CONST_APTR)protocol_conformsToProtocol_m68k,
+	(CONST_APTR)objc_exit_m68k,
+	(CONST_APTR)objc_setUncaughtExceptionHandler_m68k,
+	(CONST_APTR)objc_setForwardHandler_m68k,
+	(CONST_APTR)objc_setEnumerationMutationHandler_m68k,
+	(CONST_APTR)objc_zero_weak_references_m68k,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

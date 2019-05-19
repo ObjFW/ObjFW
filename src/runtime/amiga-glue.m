@@ -21,6 +21,19 @@
 #import "private.h"
 #import "macros.h"
 
+extern bool objc_init(unsigned int, struct objc_libc *, FILE *, FILE *);
+
+bool __saveds
+objc_init_m68k(void)
+{
+	OBJC_M68K_ARG(unsigned int, version, d0)
+	OBJC_M68K_ARG(struct objc_libc *, libc, a0)
+	OBJC_M68K_ARG(FILE *, stdout_, a1)
+	OBJC_M68K_ARG(FILE *, stderr_, a2)
+
+	return objc_init(version, libc, stdout_, stderr_);
+}
+
 void __saveds
 __objc_exec_class_m68k(void)
 {

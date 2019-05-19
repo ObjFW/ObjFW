@@ -62,6 +62,7 @@ case "$host" in
 				'objfw_rt_${OBJFW_RT_LIB_MAJOR}_68k.library')
 			AC_SUBST(SFDC_TARGET, m68k-amigaos)
 			AC_SUBST(SFD_FILE, amigaos3.sfd)
+			AC_SUBST(SFDC_INLINE_H, inline.h)
 			dnl For 68000, GCC emits calls to helper functions that
 			dnl do not work properly in a library.
 			AC_SUBST(AMIGA_LIB_CFLAGS, "-mcpu=68020 -fbaserel")
@@ -83,12 +84,13 @@ case "$host" in
 			LDFLAGS="$LDFLAGS -noixemul"
 			enable_files="yes"	# Required for reading ENV:
 			supports_amiga_lib="yes"
+			check_pedantic="no"	# Breaks generated inlines
 
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
-				t='objfw_rt_${OBJFW_RT_LIB_MAJOR}_abox.library'
+				t='objfw_rt_${OBJFW_RT_LIB_MAJOR}_morphos'
+				t="$t.library"
 				AC_SUBST(OBJFW_RT_AMIGA_LIB, $t)
-				AC_SUBST(SFDC_TARGET, ppc-morphos)
-				AC_SUBST(SFD_FILE, morphos.sfd)
+				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
 				t="-mresident32 -fno-builtin"
 				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
 				t="-mresident32 -nostartfiles -nodefaultlibs"
