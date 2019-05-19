@@ -27,7 +27,7 @@ check_pedantic="yes"
 
 case "$host" in
 	arm-*-riscos*)
-		AS_IF([test x"$OBJCFLAGS" != x""], [
+		AS_IF([test x"$OBJCFLAGS" = x""], [
 			OBJCFLAGS="-O2 -g"
 		])
 		flags="-mfloat-abi=softfp -mfpu=vfp -mlibscl"
@@ -43,7 +43,7 @@ case "$host" in
 		ac_cv_snprintf_useful_ret="yes"
 		;;
 	m68k-*-amigaos*)
-		AS_IF([test x"$OBJCFLAGS" != x""], [
+		AS_IF([test x"$OBJCFLAGS" = x""], [
 			OBJCFLAGS="-O0 -g"
 		])
 		OBJCFLAGS="$OBJCFLAGS -noixemul"
@@ -75,7 +75,7 @@ case "$host" in
 		;;
 	*-morphos*)
 		AS_IF([test x"$with_ixemul" != x"yes"], [
-			AS_IF([test x"$OBJCFLAGS" != x""], [
+			AS_IF([test x"$OBJCFLAGS" = x""], [
 				OBJCFLAGS="-O2 -g"
 			])
 			OBJCFLAGS="$OBJCFLAGS -noixemul"
@@ -117,7 +117,7 @@ case "$host" in
 				[DEVKITPSP is not set! Please set DEVKITPSP.])
 		])
 
-		AS_IF([test x"$OBJCFLAGS" != x""], [
+		AS_IF([test x"$OBJCFLAGS" = x""], [
 			OBJCFLAGS="-O2"
 		])
 		OBJCFLAGS="$OBJCFLAGS -G0"
