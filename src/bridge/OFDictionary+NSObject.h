@@ -44,6 +44,7 @@ extern int _OFDictionary_NSObject_reference;
  * @brief Support for bridging OFDictionaries to NSDictionaries.
  */
 @interface OFDictionary (NSObject) <OFBridging>
+@property (readonly, nonatomic) NSDictionary *NSObject;
 @end
 
 OF_ASSUME_NONNULL_END

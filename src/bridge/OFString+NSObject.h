@@ -48,6 +48,7 @@ extern int _OFString_NSObject_reference;
  * character of OFString is 4).
  */
 @interface OFString (NSObject) <OFBridging>
+@property (readonly, nonatomic) NSString *NSObject;
 @end
 
 OF_ASSUME_NONNULL_END

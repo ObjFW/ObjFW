@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFArray OF_GENERIC(ObjectType);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,6 +38,7 @@ extern int _NSArray_OFObject_reference;
  * @brief Support for bridging NSArrays to OFArrays.
  */
 @interface NSArray (OFObject) <NSBridging>
+@property (readonly, nonatomic) OFArray *OFObject;
 @end
 
 OF_ASSUME_NONNULL_END

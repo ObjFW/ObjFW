@@ -43,6 +43,7 @@ extern int _OFArray_NSObject_reference;
  * @brief Support for bridging OFArrays to NSArrays.
  */
 @interface OFArray (NSObject) <OFBridging>
+@property (readonly, nonatomic) NSArray *NSObject;
 @end
 
 OF_ASSUME_NONNULL_END

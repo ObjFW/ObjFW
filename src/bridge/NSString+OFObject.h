@@ -21,6 +21,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFString;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +42,7 @@ extern int _NSString_OFObject_reference;
  * character of OFString is 4).
  */
 @interface NSString (OFObject) <NSBridging>
+@property (readonly, nonatomic) OFString *OFObject;
 @end
 
 OF_ASSUME_NONNULL_END
