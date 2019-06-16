@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @note This is only useful to raise OFExceptions in Swift.
  */
-- (void)throw;
+- (void)throw OF_NO_RETURN;
 @end
 
 OF_ASSUME_NONNULL_END
