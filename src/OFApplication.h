@@ -271,7 +271,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @param argv A pointer where a pointer to argv should be stored
  */
 - (void)getArgumentCount: (int *_Nonnull *_Nonnull)argc
-       andArgumentValues: (char *_Nonnull *_Nonnull *_Nonnull[_Nonnull])argv;
+       andArgumentValues: (char *_Nullable *_Nonnull *_Nonnull[_Nonnull])argv;
 
 /*!
  * @brief Terminates the application.
