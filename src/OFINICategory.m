@@ -26,14 +26,14 @@
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 
-@interface OFINICategory_Pair: OFObject
+@interface OFINICategoryPair: OFObject
 {
 @public
 	OFString *_key, *_value;
 }
 @end
 
-@interface OFINICategory_Comment: OFObject
+@interface OFINICategoryComment: OFObject
 {
 @public
 	OFString *_comment;
@@ -100,7 +100,7 @@ unescapeString(OFString *string)
 	return mutableString;
 }
 
-@implementation OFINICategory_Pair
+@implementation OFINICategoryPair
 - (void)dealloc
 {
 	[_key release];
@@ -110,7 +110,7 @@ unescapeString(OFString *string)
 }
 @end
 
-@implementation OFINICategory_Comment
+@implementation OFINICategoryComment
 - (void)dealloc
 {
 	[_comment release];
@@ -153,8 +153,8 @@ unescapeString(OFString *string)
 - (void)of_parseLine: (OFString *)line
 {
 	if (![line hasPrefix: @";"]) {
-		OFINICategory_Pair *pair =
-		    [[[OFINICategory_Pair alloc] init] autorelease];
+		OFINICategoryPair *pair =
+		    [[[OFINICategoryPair alloc] init] autorelease];
 		OFString *key, *value;
 		size_t pos;
 
@@ -176,8 +176,8 @@ unescapeString(OFString *string)
 
 		[_lines addObject: pair];
 	} else {
-		OFINICategory_Comment *comment =
-		    [[[OFINICategory_Comment alloc] init] autorelease];
+		OFINICategoryComment *comment =
+		    [[[OFINICategoryComment alloc] init] autorelease];
 
 		comment->_comment = [line copy];
 
@@ -195,9 +195,9 @@ unescapeString(OFString *string)
 	      defaultValue: (OFString *)defaultValue
 {
 	for (id line in _lines) {
-		OFINICategory_Pair *pair;
+		OFINICategoryPair *pair;
 
-		if (![line isKindOfClass: [OFINICategory_Pair class]])
+		if (![line isKindOfClass: [OFINICategoryPair class]])
 			continue;
 
 		pair = line;
@@ -295,9 +295,9 @@ unescapeString(OFString *string)
 	void *pool = objc_autoreleasePoolPush();
 
 	for (id line in _lines) {
-		OFINICategory_Pair *pair;
+		OFINICategoryPair *pair;
 
-		if (![line isKindOfClass: [OFINICategory_Pair class]])
+		if (![line isKindOfClass: [OFINICategoryPair class]])
 			continue;
 
 		pair = line;
@@ -317,10 +317,10 @@ unescapeString(OFString *string)
 	   forKey: (OFString *)key
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFINICategory_Pair *pair;
+	OFINICategoryPair *pair;
 
 	for (id line in _lines) {
-		if (![line isKindOfClass: [OFINICategory_Pair class]])
+		if (![line isKindOfClass: [OFINICategoryPair class]])
 			continue;
 
 		pair = line;
@@ -336,7 +336,7 @@ unescapeString(OFString *string)
 		}
 	}
 
-	pair = [[[OFINICategory_Pair alloc] init] autorelease];
+	pair = [[[OFINICategoryPair alloc] init] autorelease];
 	pair->_key = nil;
 	pair->_value = nil;
 
@@ -413,12 +413,12 @@ unescapeString(OFString *string)
 	pairs = [OFMutableArray arrayWithCapacity: array.count];
 
 	for (id object in array) {
-		OFINICategory_Pair *pair;
+		OFINICategoryPair *pair;
 
 		if (![object isKindOfClass: [OFString class]])
 			@throw [OFInvalidArgumentException exception];
 
-		pair = [[[OFINICategory_Pair alloc] init] autorelease];
+		pair = [[[OFINICategoryPair alloc] init] autorelease];
 		pair->_key = [key copy];
 		pair->_value = [object copy];
 
@@ -430,9 +430,9 @@ unescapeString(OFString *string)
 	replaced = false;
 
 	for (size_t i = 0; i < count; i++) {
-		OFINICategory_Pair *pair;
+		OFINICategoryPair *pair;
 
-		if (![lines[i] isKindOfClass: [OFINICategory_Pair class]])
+		if (![lines[i] isKindOfClass: [OFINICategoryPair class]])
 			continue;
 
 		pair = lines[i];
@@ -470,9 +470,9 @@ unescapeString(OFString *string)
 	size_t count = _lines.count;
 
 	for (size_t i = 0; i < count; i++) {
-		OFINICategory_Pair *pair;
+		OFINICategoryPair *pair;
 
-		if (![lines[i] isKindOfClass: [OFINICategory_Pair class]])
+		if (![lines[i] isKindOfClass: [OFINICategoryPair class]])
 			continue;
 
 		pair = lines[i];
@@ -504,11 +504,11 @@ unescapeString(OFString *string)
 		[stream writeFormat: @"\r\n[%@]\r\n", _name];
 
 	for (id line in _lines) {
-		if ([line isKindOfClass: [OFINICategory_Comment class]]) {
-			OFINICategory_Comment *comment = line;
+		if ([line isKindOfClass: [OFINICategoryComment class]]) {
+			OFINICategoryComment *comment = line;
 			[stream writeFormat: @"%@\r\n", comment->_comment];
-		} else if ([line isKindOfClass: [OFINICategory_Pair class]]) {
-			OFINICategory_Pair *pair = line;
+		} else if ([line isKindOfClass: [OFINICategoryPair class]]) {
+			OFINICategoryPair *pair = line;
 			OFString *key = escapeString(pair->_key);
 			OFString *value = escapeString(pair->_value);
 			OFString *tmp = [OFString

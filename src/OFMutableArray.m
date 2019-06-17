@@ -23,7 +23,7 @@
 #include <assert.h>
 
 #import "OFMutableArray.h"
-#import "OFMutableArray_adjacent.h"
+#import "OFMutableAdjacentArray.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -33,7 +33,7 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableArray_placeholder: OFMutableArray
+@interface OFMutableArrayPlaceholder: OFMutableArray
 @end
 
 static of_comparison_result_t
@@ -138,20 +138,20 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 }
 #endif
 
-@implementation OFMutableArray_placeholder
+@implementation OFMutableArrayPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFMutableArray_adjacent alloc] init];
+	return (id)[[OFMutableAdjacentArray alloc] init];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithCapacity: capacity];
+	return (id)[[OFMutableAdjacentArray alloc] initWithCapacity: capacity];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithObject: object];
+	return (id)[[OFMutableAdjacentArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -160,8 +160,8 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableArray_adjacent alloc] initWithObject: firstObject
-						    arguments: arguments];
+	ret = [[OFMutableAdjacentArray alloc] initWithObject: firstObject
+						   arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -170,25 +170,25 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithObject: firstObject
-							 arguments: arguments];
+	return (id)[[OFMutableAdjacentArray alloc] initWithObject: firstObject
+							arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithArray: array];
+	return (id)[[OFMutableAdjacentArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFMutableArray_adjacent alloc] initWithObjects: objects
-							      count: count];
+	return (id)[[OFMutableAdjacentArray alloc] initWithObjects: objects
+							     count: count];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFMutableArray_adjacent alloc]
+	return (id)[[OFMutableAdjacentArray alloc]
 	    initWithSerialization: element];
 }
 
@@ -216,7 +216,7 @@ quicksortWithBlock(OFMutableArray *array, size_t left, size_t right,
 + (void)initialize
 {
 	if (self == [OFMutableArray class])
-		placeholder.isa = [OFMutableArray_placeholder class];
+		placeholder.isa = [OFMutableArrayPlaceholder class];
 }
 
 + (instancetype)alloc

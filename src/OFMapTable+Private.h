@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@interface OFMapTable_EnumeratorWrapper: OFEnumerator
+@interface OFMapTableEnumeratorWrapper: OFEnumerator
 {
 	OFMapTableEnumerator *_enumerator;
 	id _object;

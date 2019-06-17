@@ -66,7 +66,7 @@ Class of_tls_socket_class = Nil;
 static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
-@interface OFTCPSocket_AsyncConnectDelegate: OFObject <OFTCPSocketDelegate,
+@interface OFTCPSocketAsyncConnectDelegate: OFObject <OFTCPSocketDelegate,
     OFTCPSocketDelegate_Private, OFDNSResolverDelegate>
 {
 	OFTCPSocket *_socket;
@@ -114,7 +114,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 - (void)sendSOCKS5Request;
 @end
 
-@interface OFTCPSocket_ConnectDelegate: OFObject <OFTCPSocketDelegate>
+@interface OFTCPSocketConnectDelegate: OFObject <OFTCPSocketDelegate>
 {
 @public
 	bool _done;
@@ -122,7 +122,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 @end
 
-@implementation OFTCPSocket_AsyncConnectDelegate
+@implementation OFTCPSocketAsyncConnectDelegate
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
 			  host: (OFString *)host
 			  port: (uint16_t)port
@@ -580,7 +580,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 }
 @end
 
-@implementation OFTCPSocket_ConnectDelegate
+@implementation OFTCPSocketConnectDelegate
 - (void)dealloc
 {
 	[_exception release];
@@ -711,8 +711,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 	id <OFTCPSocketDelegate> delegate = [_delegate retain];
-	OFTCPSocket_ConnectDelegate *connectDelegate =
-	    [[[OFTCPSocket_ConnectDelegate alloc] init] autorelease];
+	OFTCPSocketConnectDelegate *connectDelegate =
+	    [[[OFTCPSocketConnectDelegate alloc] init] autorelease];
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
 
 	self.delegate = connectDelegate;
@@ -750,7 +750,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_AsyncConnectDelegate alloc]
+	[[[[OFTCPSocketAsyncConnectDelegate alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port
@@ -780,7 +780,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	[[[[OFTCPSocket_AsyncConnectDelegate alloc]
+	[[[[OFTCPSocketAsyncConnectDelegate alloc]
 		  initWithSocket: self
 			    host: host
 			    port: port

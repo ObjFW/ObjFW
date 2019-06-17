@@ -23,7 +23,9 @@
 
 #import "TestsAppDelegate.h"
 
-#import "OFMutableString_UTF8.h"
+#import "OFString.h"
+#import "OFMutableUTF8String.h"
+#import "OFUTF8String.h"
 
 static OFString *module = nil;
 static OFString *whitespace[] = {
@@ -1432,7 +1434,7 @@ static uint16_t sutf16str[] = {
 		      mutableClass: [SimpleMutableString class]];
 
 	module = @"OFString_UTF8";
-	[self stringTestsWithClass: [OFString_UTF8 class]
-		      mutableClass: [OFMutableString_UTF8 class]];
+	[self stringTestsWithClass: [OFUTF8String class]
+		      mutableClass: [OFMutableUTF8String class]];
 }
 @end

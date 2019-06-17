@@ -34,7 +34,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
-@interface OFTarArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
+@interface OFTarArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
@@ -47,7 +47,7 @@
 - (void)of_skip;
 @end
 
-@interface OFTarArchive_FileWriteStream: OFStream <OFReadyForWritingObserving>
+@interface OFTarArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFTarArchiveEntry *_entry;
 	OFStream *_stream;
@@ -177,7 +177,7 @@
 	if (_mode != OF_TAR_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
 
-	[(OFTarArchive_FileReadStream *)_lastReturnedStream of_skip];
+	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
@@ -207,7 +207,7 @@
 	    of_initWithHeader: buffer.c
 		     encoding: _encoding] autorelease];
 
-	_lastReturnedStream = [[OFTarArchive_FileReadStream alloc]
+	_lastReturnedStream = [[OFTarArchiveFileReadStream alloc]
 	    of_initWithStream: _stream
 			entry: entry];
 
@@ -222,7 +222,7 @@
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFTarArchive_FileReadStream *)_lastReturnedStream
+	return [[(OFTarArchiveFileReadStream *)_lastReturnedStream
 	    retain] autorelease];
 }
 
@@ -244,13 +244,13 @@
 	[entry of_writeToStream: _stream
 		       encoding: _encoding];
 
-	_lastReturnedStream = [[OFTarArchive_FileWriteStream alloc]
+	_lastReturnedStream = [[OFTarArchiveFileWriteStream alloc]
 	    of_initWithStream: _stream
 			entry: entry];
 
 	objc_autoreleasePoolPop(pool);
 
-	return [[(OFTarArchive_FileWriteStream *)_lastReturnedStream
+	return [[(OFTarArchiveFileWriteStream *)_lastReturnedStream
 	    retain] autorelease];
 }
 
@@ -276,7 +276,7 @@
 }
 @end
 
-@implementation OFTarArchive_FileReadStream
+@implementation OFTarArchiveFileReadStream
 - (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFTarArchiveEntry *)entry
 {
@@ -409,7 +409,7 @@
 }
 @end
 
-@implementation OFTarArchive_FileWriteStream
+@implementation OFTarArchiveFileWriteStream
 - (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFTarArchiveEntry *)entry
 {

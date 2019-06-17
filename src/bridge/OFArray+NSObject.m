@@ -15,7 +15,7 @@
  * file.
  */
 
-#import "NSArray_OFArray.h"
+#import "NSOFArray.h"
 
 #import "OFArray+NSObject.h"
 
@@ -24,6 +24,6 @@ int _OFArray_NSObject_reference;
 @implementation OFArray (NSObject)
 - (id)NSObject
 {
-	return [[[NSArray_OFArray alloc] initWithOFArray: self] autorelease];
+	return [[[NSOFArray alloc] initWithOFArray: self] autorelease];
 }
 @end

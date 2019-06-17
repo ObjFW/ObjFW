@@ -726,7 +726,7 @@ defaultEqual(void *object1, void *object2)
 }
 @end
 
-@implementation OFMapTable_EnumeratorWrapper
+@implementation OFMapTableEnumeratorWrapper
 - (instancetype)initWithEnumerator: (OFMapTableEnumerator *)enumerator
 			    object: (id)object
 {

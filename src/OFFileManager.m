@@ -74,7 +74,7 @@
 # include <proto/locale.h>
 #endif
 
-@interface OFFileManager_default: OFFileManager
+@interface OFDefaultFileManager: OFFileManager
 @end
 
 const of_file_attribute_key_t of_file_attribute_key_size =
@@ -177,7 +177,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	[OFFile class];
 #endif
 
-	defaultManager = [[OFFileManager_default alloc] init];
+	defaultManager = [[OFDefaultFileManager alloc] init];
 }
 
 + (OFFileManager *)defaultManager
@@ -894,7 +894,7 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 #endif
 @end
 
-@implementation OFFileManager_default
+@implementation OFDefaultFileManager
 - (instancetype)autorelease
 {
 	return self;

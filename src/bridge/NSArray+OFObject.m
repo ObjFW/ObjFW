@@ -16,13 +16,13 @@
  */
 
 #import "NSArray+OFObject.h"
-#import "OFArray_NSArray.h"
+#import "OFNSArray.h"
 
 int _NSArray_OFObject_reference;
 
 @implementation NSArray (OFObject)
 - (id)OFObject
 {
-	return [[[OFArray_NSArray alloc] initWithNSArray: self] autorelease];
+	return [[[OFNSArray alloc] initWithNSArray: self] autorelease];
 }
 @end

@@ -22,29 +22,29 @@
 #include <assert.h>
 
 #import "OFMutableSet.h"
-#import "OFMutableSet_hashtable.h"
+#import "OFMutableMapTableSet.h"
 
 static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableSet_placeholder: OFMutableSet
+@interface OFMutableSetPlaceholder: OFMutableSet
 @end
 
-@implementation OFMutableSet_placeholder
+@implementation OFMutableSetPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFMutableSet_hashtable alloc] init];
+	return (id)[[OFMutableMapTableSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFMutableSet_hashtable alloc] initWithSet: set];
+	return (id)[[OFMutableMapTableSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFMutableSet_hashtable alloc] initWithArray: array];
+	return (id)[[OFMutableMapTableSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -53,8 +53,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFMutableSet_hashtable alloc] initWithObject: firstObject
-						   arguments: arguments];
+	ret = [[OFMutableMapTableSet alloc] initWithObject: firstObject
+						 arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -63,26 +63,26 @@ static struct {
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFMutableSet_hashtable alloc] initWithObjects: objects
-							     count: count];
+	return (id)[[OFMutableMapTableSet alloc] initWithObjects: objects
+							   count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFMutableSet_hashtable alloc] initWithObject: firstObject
-							arguments: arguments];
+	return (id)[[OFMutableMapTableSet alloc] initWithObject: firstObject
+						      arguments: arguments];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFMutableSet_hashtable alloc]
+	return (id)[[OFMutableMapTableSet alloc]
 	    initWithSerialization: element];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableSet_hashtable alloc] initWithCapacity: capacity];
+	return (id)[[OFMutableMapTableSet alloc] initWithCapacity: capacity];
 }
 
 - (instancetype)retain
@@ -109,7 +109,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableSet class])
-		placeholder.isa = [OFMutableSet_placeholder class];
+		placeholder.isa = [OFMutableSetPlaceholder class];
 }
 
 + (instancetype)alloc

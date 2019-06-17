@@ -18,7 +18,7 @@
 #include "config.h"
 
 #import "OFSettings.h"
-#import "OFSettings_INIFile.h"
+#import "OFINIFileSettings.h"
 #import "OFString.h"
 
 @implementation OFSettings
@@ -27,7 +27,7 @@
 + (instancetype)alloc
 {
 	if (self == [OFSettings class])
-		return [OFSettings_INIFile alloc];
+		return [OFINIFileSettings alloc];
 
 	return [super alloc];
 }

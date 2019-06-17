@@ -21,10 +21,10 @@ INCLUDES := ${SRCS:.m=.h}	\
 	    OFBridging.h	\
 	    ObjFWBridge.h
 
-SRCS += NSArray_OFArray.m		\
-	NSDictionary_OFDictionary.m	\
-	OFArray_NSArray.m		\
-	OFDictionary_NSDictionary.m	\
+SRCS += NSOFArray.m		\
+	NSOFDictionary.m	\
+	OFNSArray.m		\
+	OFNSDictionary.m	\
 
 includesubdir = ObjFWBridge
 

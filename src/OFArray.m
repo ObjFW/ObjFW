@@ -23,12 +23,12 @@
 #include <assert.h>
 
 #import "OFArray.h"
-#import "OFArray_subarray.h"
-#import "OFArray_adjacent.h"
-#import "OFString.h"
-#import "OFXMLElement.h"
+#import "OFAdjacentArray.h"
 #import "OFData.h"
 #import "OFNull.h"
+#import "OFString.h"
+#import "OFSubarray.h"
+#import "OFXMLElement.h"
 
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
@@ -43,18 +43,18 @@ static struct {
 					 depth: (size_t)depth;
 @end
 
-@interface OFArray_placeholder: OFArray
+@interface OFPlaceholderArray: OFArray
 @end
 
-@implementation OFArray_placeholder
+@implementation OFPlaceholderArray
 - (instancetype)init
 {
-	return (id)[[OFArray_adjacent alloc] init];
+	return (id)[[OFAdjacentArray alloc] init];
 }
 
 - (instancetype)initWithObject: (id)object
 {
-	return (id)[[OFArray_adjacent alloc] initWithObject: object];
+	return (id)[[OFAdjacentArray alloc] initWithObject: object];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -63,8 +63,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFArray_adjacent alloc] initWithObject: firstObject
-					     arguments: arguments];
+	ret = [[OFAdjacentArray alloc] initWithObject: firstObject
+					    arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -73,25 +73,25 @@ static struct {
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFArray_adjacent alloc] initWithObject: firstObject
-						  arguments: arguments];
+	return (id)[[OFAdjacentArray alloc] initWithObject: firstObject
+						 arguments: arguments];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFArray_adjacent alloc] initWithArray: array];
+	return (id)[[OFAdjacentArray alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFArray_adjacent alloc] initWithObjects: objects
-						       count: count];
+	return (id)[[OFAdjacentArray alloc] initWithObjects: objects
+						      count: count];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFArray_adjacent alloc] initWithSerialization: element];
+	return (id)[[OFAdjacentArray alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -118,7 +118,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFArray class])
-		placeholder.isa = [OFArray_placeholder class];
+		placeholder.isa = [OFPlaceholderArray class];
 }
 
 + (instancetype)alloc
@@ -377,8 +377,8 @@ static struct {
 		@throw [OFOutOfRangeException exception];
 
 	if (![self isKindOfClass: [OFMutableArray class]])
-		return [OFArray_subarray arrayWithArray: self
-						  range: range];
+		return [OFSubarray arrayWithArray: self
+					    range: range];
 
 	buffer = [self allocMemoryWithSize: sizeof(*buffer)
 				     count: range.length];

@@ -170,7 +170,7 @@ static const of_run_loop_mode_t resolveRunLoopMode =
 		     context: (id)context;
 @end
 
-@interface OFDNSResolver_AsyncResolveSocketAddressesContext: OFObject
+@interface OFDNSResolverAsyncResolveSocketAddressesContext: OFObject
 {
 	OFString *_host;
 	id _delegate;
@@ -212,7 +212,7 @@ static const of_run_loop_mode_t resolveRunLoopMode =
 	     exception: (id)exception;
 @end
 
-@interface OFDNSResolver_ResolveSocketAddressesDelegate: OFObject
+@interface OFDNSResolverResolveSocketAddressesDelegate: OFObject
     <OFDNSResolverDelegate>
 {
 @public
@@ -834,7 +834,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 @end
 
-@implementation OFDNSResolver_AsyncResolveSocketAddressesContext
+@implementation OFDNSResolverAsyncResolveSocketAddressesContext
 - (instancetype)initWithHost: (OFString *)host
 		    delegate: (id)delegate
 {
@@ -1113,7 +1113,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 @end
 
-@implementation OFDNSResolver_ResolveSocketAddressesDelegate
+@implementation OFDNSResolverResolveSocketAddressesDelegate
 - (void)dealloc
 {
 	[_socketAddresses release];
@@ -2069,7 +2069,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	OFArray OF_GENERIC(OFString *) *aliases;
 	void *pool;
-	OFDNSResolver_AsyncResolveSocketAddressesContext *context;
+	OFDNSResolverAsyncResolveSocketAddressesContext *context;
 
 	@try {
 		of_socket_address_t address =
@@ -2188,7 +2188,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 	pool = objc_autoreleasePoolPush();
 
-	context = [[[OFDNSResolver_AsyncResolveSocketAddressesContext alloc]
+	context = [[[OFDNSResolverAsyncResolveSocketAddressesContext alloc]
 	    initWithHost: host
 		delegate: delegate] autorelease];
 
@@ -2254,10 +2254,10 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
-	OFDNSResolver_ResolveSocketAddressesDelegate *delegate;
+	OFDNSResolverResolveSocketAddressesDelegate *delegate;
 	OFData *ret;
 
-	delegate = [[[OFDNSResolver_ResolveSocketAddressesDelegate
+	delegate = [[[OFDNSResolverResolveSocketAddressesDelegate
 	    alloc] init] autorelease];
 
 	[self asyncResolveSocketAddressesForHost: host

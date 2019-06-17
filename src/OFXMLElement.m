@@ -51,7 +51,7 @@ _references_to_categories_of_OFXMLElement(void)
 static Class charactersClass = Nil;
 static Class CDATAClass = Nil;
 
-@interface OFXMLElement_OFXMLElementBuilderDelegate: OFObject
+@interface OFXMLElementElementBuilderDelegate: OFObject
     <OFXMLElementBuilderDelegate>
 {
 @public
@@ -59,7 +59,7 @@ static Class CDATAClass = Nil;
 }
 @end
 
-@implementation OFXMLElement_OFXMLElementBuilderDelegate
+@implementation OFXMLElementElementBuilderDelegate
 - (void)elementBuilder: (OFXMLElementBuilder *)builder
        didBuildElement: (OFXMLElement *)element
 {
@@ -216,7 +216,7 @@ static Class CDATAClass = Nil;
 	void *pool;
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
-	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
+	OFXMLElementElementBuilderDelegate *delegate;
 
 	[self release];
 
@@ -227,7 +227,7 @@ static Class CDATAClass = Nil;
 
 	parser = [OFXMLParser parser];
 	builder = [OFXMLElementBuilder elementBuilder];
-	delegate = [[[OFXMLElement_OFXMLElementBuilderDelegate alloc] init]
+	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
 	    autorelease];
 
 	parser.delegate = builder;
@@ -251,7 +251,7 @@ static Class CDATAClass = Nil;
 	void *pool;
 	OFXMLParser *parser;
 	OFXMLElementBuilder *builder;
-	OFXMLElement_OFXMLElementBuilderDelegate *delegate;
+	OFXMLElementElementBuilderDelegate *delegate;
 
 	[self release];
 
@@ -259,7 +259,7 @@ static Class CDATAClass = Nil;
 
 	parser = [OFXMLParser parser];
 	builder = [OFXMLElementBuilder elementBuilder];
-	delegate = [[[OFXMLElement_OFXMLElementBuilderDelegate alloc] init]
+	delegate = [[[OFXMLElementElementBuilderDelegate alloc] init]
 	    autorelease];
 
 	parser.delegate = builder;

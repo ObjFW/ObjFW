@@ -47,12 +47,7 @@
 of_run_loop_mode_t of_run_loop_mode_default = @"of_run_loop_mode_default";
 static OFRunLoop *mainRunLoop = nil;
 
-@interface OFRunLoop ()
-- (OFRunLoop_State *)of_stateForMode: (of_run_loop_mode_t)mode
-			      create: (bool)create;
-@end
-
-@interface OFRunLoop_State: OFObject
+@interface OFRunLoopState: OFObject
 #ifdef OF_HAVE_SOCKETS
     <OFKernelEventObserverDelegate>
 #endif
@@ -71,8 +66,13 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
+@interface OFRunLoop ()
+- (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
+			     create: (bool)create;
+@end
+
 #ifdef OF_HAVE_SOCKETS
-@interface OFRunLoop_QueueItem: OFObject
+@interface OFRunLoopQueueItem: OFObject
 {
 @public
 	id _delegate;
@@ -81,7 +81,7 @@ static OFRunLoop *mainRunLoop = nil;
 - (bool)handleObject: (id)object;
 @end
 
-@interface OFRunLoop_ReadQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopReadQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -92,7 +92,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_ExactReadQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopExactReadQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -103,7 +103,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_ReadLineQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopReadLineQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -113,7 +113,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_WriteDataQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopWriteDataQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -124,7 +124,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_WriteStringQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopWriteStringQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -137,11 +137,11 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-@interface OFRunLoop_ConnectQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopConnectQueueItem: OFRunLoopQueueItem
 @end
 # endif
 
-@interface OFRunLoop_AcceptQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopAcceptQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -150,7 +150,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_UDPReceiveQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopUDPReceiveQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -161,7 +161,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@interface OFRunLoop_UDPSendQueueItem: OFRunLoop_QueueItem
+@interface OFRunLoopUDPSendQueueItem: OFRunLoopQueueItem
 {
 @public
 # ifdef OF_HAVE_BLOCKS
@@ -173,7 +173,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 #endif
 
-@implementation OFRunLoop_State
+@implementation OFRunLoopState
 - (instancetype)init
 {
 	self = [super init];
@@ -219,7 +219,7 @@ static OFRunLoop *mainRunLoop = nil;
 	 * Retain the queue so that it doesn't disappear from us because the
 	 * handler called -[cancelAsyncRequests].
 	 */
-	OFList OF_GENERIC(OF_KINDOF(OFRunLoop_ReadQueueItem *)) *queue =
+	OFList OF_GENERIC(OF_KINDOF(OFRunLoopReadQueueItem *)) *queue =
 	    [[_readQueues objectForKey: object] retain];
 
 	assert(queue != nil);
@@ -303,7 +303,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 #ifdef OF_HAVE_SOCKETS
-@implementation OFRunLoop_QueueItem
+@implementation OFRunLoopQueueItem
 - (bool)handleObject: (id)object
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -317,7 +317,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@implementation OFRunLoop_ReadQueueItem
+@implementation OFRunLoopReadQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -359,7 +359,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoop_ExactReadQueueItem
+@implementation OFRunLoopExactReadQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -415,7 +415,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoop_ReadLineQueueItem
+@implementation OFRunLoopReadLineQueueItem
 - (bool)handleObject: (id)object
 {
 	OFString *line;
@@ -458,7 +458,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoop_WriteDataQueueItem
+@implementation OFRunLoopWriteDataQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -530,7 +530,7 @@ static OFRunLoop *mainRunLoop = nil;
 }
 @end
 
-@implementation OFRunLoop_WriteStringQueueItem
+@implementation OFRunLoopWriteStringQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -605,7 +605,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 
 # if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-@implementation OFRunLoop_ConnectQueueItem
+@implementation OFRunLoopConnectQueueItem
 - (bool)handleObject: (id)object
 {
 	id exception = nil;
@@ -628,7 +628,7 @@ static OFRunLoop *mainRunLoop = nil;
 @end
 # endif
 
-@implementation OFRunLoop_AcceptQueueItem
+@implementation OFRunLoopAcceptQueueItem
 - (bool)handleObject: (id)object
 {
 	OFTCPSocket *acceptedSocket;
@@ -668,7 +668,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoop_UDPReceiveQueueItem
+@implementation OFRunLoopUDPReceiveQueueItem
 - (bool)handleObject: (id)object
 {
 	size_t length;
@@ -713,7 +713,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 @end
 
-@implementation OFRunLoop_UDPSendQueueItem
+@implementation OFRunLoopUDPSendQueueItem
 - (bool)handleObject: (id)object
 {
 	id exception = nil;
@@ -801,8 +801,8 @@ static OFRunLoop *mainRunLoop = nil;
 # define NEW_READ(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoop_State *state = [runLoop of_stateForMode: mode		\
-						   create: true];	\
+	OFRunLoopState *state = [runLoop of_stateForMode: mode		\
+						  create: true];	\
 	OFList *queue = [state->_readQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
@@ -820,8 +820,8 @@ static OFRunLoop *mainRunLoop = nil;
 # define NEW_WRITE(type, object, mode)					\
 	void *pool = objc_autoreleasePoolPush();			\
 	OFRunLoop *runLoop = [self currentRunLoop];			\
-	OFRunLoop_State *state = [runLoop of_stateForMode: mode		\
-						   create: true];	\
+	OFRunLoopState *state = [runLoop of_stateForMode: mode		\
+						  create: true];	\
 	OFList *queue = [state->_writeQueues objectForKey: object];	\
 	type *queueItem;						\
 									\
@@ -851,7 +851,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
-	NEW_READ(OFRunLoop_ReadQueueItem, stream, mode)
+	NEW_READ(OFRunLoopReadQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -873,7 +873,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			delegate: (id <OFStreamDelegate>)delegate
 {
-	NEW_READ(OFRunLoop_ExactReadQueueItem, stream, mode)
+	NEW_READ(OFRunLoopExactReadQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -894,7 +894,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			    delegate: (id <OFStreamDelegate>)delegate
 {
-	NEW_READ(OFRunLoop_ReadLineQueueItem, stream, mode)
+	NEW_READ(OFRunLoopReadLineQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -914,7 +914,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
-	NEW_WRITE(OFRunLoop_WriteDataQueueItem, stream, mode)
+	NEW_WRITE(OFRunLoopWriteDataQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -935,7 +935,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			 delegate: (id <OFStreamDelegate>)delegate
 {
-	NEW_WRITE(OFRunLoop_WriteStringQueueItem, stream, mode)
+	NEW_WRITE(OFRunLoopWriteStringQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -953,7 +953,7 @@ static OFRunLoop *mainRunLoop = nil;
 			      delegate: (id <OFTCPSocketDelegate_Private>)
 					    delegate
 {
-	NEW_WRITE(OFRunLoop_ConnectQueueItem, stream, mode)
+	NEW_WRITE(OFRunLoopConnectQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 
@@ -968,7 +968,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			     delegate: (id <OFTCPSocketDelegate>)delegate
 {
-	NEW_READ(OFRunLoop_AcceptQueueItem, stream, mode)
+	NEW_READ(OFRunLoopAcceptQueueItem, stream, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -988,7 +988,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			      delegate: (id <OFUDPSocketDelegate>)delegate
 {
-	NEW_READ(OFRunLoop_UDPReceiveQueueItem, sock, mode)
+	NEW_READ(OFRunLoopUDPReceiveQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -1010,7 +1010,7 @@ static OFRunLoop *mainRunLoop = nil;
 # endif
 			   delegate: (id <OFUDPSocketDelegate>)delegate
 {
-	NEW_WRITE(OFRunLoop_UDPSendQueueItem, sock, mode)
+	NEW_WRITE(OFRunLoopUDPSendQueueItem, sock, mode)
 
 	queueItem->_delegate = [delegate retain];
 # ifdef OF_HAVE_BLOCKS
@@ -1030,8 +1030,8 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFRunLoop *runLoop = [self currentRunLoop];
-	OFRunLoop_State *state = [runLoop of_stateForMode: mode
-						   create: false];
+	OFRunLoopState *state = [runLoop of_stateForMode: mode
+						  create: false];
 	OFList *queue;
 
 	if (state == nil)
@@ -1072,11 +1072,11 @@ static OFRunLoop *mainRunLoop = nil;
 	self = [super init];
 
 	@try {
-		OFRunLoop_State *state;
+		OFRunLoopState *state;
 
 		_states = [[OFMutableDictionary alloc] init];
 
-		state = [[OFRunLoop_State alloc] init];
+		state = [[OFRunLoopState alloc] init];
 		@try {
 			[_states setObject: state
 				    forKey: of_run_loop_mode_default];
@@ -1105,10 +1105,10 @@ static OFRunLoop *mainRunLoop = nil;
 	[super dealloc];
 }
 
-- (OFRunLoop_State *)of_stateForMode: (of_run_loop_mode_t)mode
-			      create: (bool)create
+- (OFRunLoopState *)of_stateForMode: (of_run_loop_mode_t)mode
+			     create: (bool)create
 {
-	OFRunLoop_State *state;
+	OFRunLoopState *state;
 
 #ifdef OF_HAVE_THREADS
 	[_statesMutex lock];
@@ -1117,7 +1117,7 @@ static OFRunLoop *mainRunLoop = nil;
 		state = [_states objectForKey: mode];
 
 		if (create && state == nil) {
-			state = [[OFRunLoop_State alloc] init];
+			state = [[OFRunLoopState alloc] init];
 			@try {
 				[_states setObject: state
 					    forKey: mode];
@@ -1143,8 +1143,8 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)addTimer: (OFTimer *)timer
 	 forMode: (of_run_loop_mode_t)mode
 {
-	OFRunLoop_State *state = [self of_stateForMode: mode
-						create: true];
+	OFRunLoopState *state = [self of_stateForMode: mode
+					       create: true];
 
 #ifdef OF_HAVE_THREADS
 	[state->_timersQueueMutex lock];
@@ -1170,8 +1170,8 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)of_removeTimer: (OFTimer *)timer
 	       forMode: (of_run_loop_mode_t)mode
 {
-	OFRunLoop_State *state = [self of_stateForMode: mode
-						create: false];
+	OFRunLoopState *state = [self of_stateForMode: mode
+					       create: false];
 
 	if (state == nil)
 		return;
@@ -1216,8 +1216,8 @@ static OFRunLoop *mainRunLoop = nil;
 {
 	void *pool = objc_autoreleasePoolPush();
 	of_run_loop_mode_t previousMode = _currentMode;
-	OFRunLoop_State *state = [self of_stateForMode: mode
-						create: false];
+	OFRunLoopState *state = [self of_stateForMode: mode
+					       create: false];
 
 	if (state == nil)
 		return;
@@ -1332,8 +1332,8 @@ static OFRunLoop *mainRunLoop = nil;
 
 - (void)stop
 {
-	OFRunLoop_State *state = [self of_stateForMode: of_run_loop_mode_default
-						create: false];
+	OFRunLoopState *state = [self of_stateForMode: of_run_loop_mode_default
+					       create: false];
 
 	_stop = true;
 

@@ -18,16 +18,16 @@
 #include "config.h"
 
 #ifdef HAVE_KQUEUE
-# import "OFKernelEventObserver_kqueue.h"
+# import "OFKqueueKernelEventObserver.h"
 #endif
 #ifdef HAVE_EPOLL
-# import "OFKernelEventObserver_epoll.h"
+# import "OFEpollKernelEventObserver.h"
 #endif
 #ifdef HAVE_POLL
-# import "OFKernelEventObserver_poll.h"
+# import "OFPollKernelEventObserver.h"
 #endif
 #ifdef HAVE_SELECT
-# import "OFKernelEventObserver_select.h"
+# import "OFSelectKernelEventObserver.h"
 #endif
 
 #import "TestsAppDelegate.h"
@@ -221,22 +221,22 @@ static OFString *module;
 {
 #ifdef HAVE_SELECT
 	[self kernelEventObserverTestsWithClass:
-	    [OFKernelEventObserver_select class]];
+	    [OFSelectKernelEventObserver class]];
 #endif
 
 #ifdef HAVE_POLL
 	[self kernelEventObserverTestsWithClass:
-	    [OFKernelEventObserver_poll class]];
+	    [OFPollKernelEventObserver class]];
 #endif
 
 #ifdef HAVE_EPOLL
 	[self kernelEventObserverTestsWithClass:
-	    [OFKernelEventObserver_epoll class]];
+	    [OFEpollKernelEventObserver class]];
 #endif
 
 #ifdef HAVE_KQUEUE
 	[self kernelEventObserverTestsWithClass:
-	    [OFKernelEventObserver_kqueue class]];
+	    [OFKqueueKernelEventObserver class]];
 #endif
 }
 @end

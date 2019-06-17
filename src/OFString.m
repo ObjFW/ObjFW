@@ -31,8 +31,6 @@
 #endif
 
 #import "OFString.h"
-#import "OFString_UTF8.h"
-#import "OFString_UTF8+Private.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFData.h"
@@ -45,6 +43,8 @@
 #import "OFStream.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
+#import "OFUTF8String+Private.h"
+#import "OFUTF8String.h"
 #import "OFXMLElement.h"
 
 #import "OFInitializationFailedException.h"
@@ -94,7 +94,7 @@ static locale_t cLocale;
 					 depth: (size_t)depth;
 @end
 
-@interface OFString_placeholder: OFString
+@interface OFStringPlaceholder: OFString
 @end
 
 extern bool of_unicode_to_iso_8859_2(const of_unichar_t *, unsigned char *,
@@ -367,10 +367,10 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 }
 #endif
 
-@implementation OFString_placeholder
+@implementation OFStringPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFString_UTF8 alloc] init];
+	return (id)[[OFUTF8String alloc] init];
 }
 
 - (instancetype)initWithUTF8String: (const char *)UTF8String
@@ -380,8 +380,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	void *storage;
 
 	length = strlen(UTF8String);
-	string = of_alloc_object([OFString_UTF8 class],
-	    length + 1, 1, &storage);
+	string = of_alloc_object([OFUTF8String class], length + 1, 1, &storage);
 
 	return (id)[string of_initWithUTF8String: UTF8String
 					  length: length
@@ -394,8 +393,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	id string;
 	void *storage;
 
-	string = of_alloc_object([OFString_UTF8 class],
-	    UTF8StringLength + 1, 1, &storage);
+	string = of_alloc_object([OFUTF8String class], UTF8StringLength + 1, 1,
+	    &storage);
 
 	return (id)[string of_initWithUTF8String: UTF8String
 					  length: UTF8StringLength
@@ -405,7 +404,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithUTF8StringNoCopy: (char *)UTF8String
 			    freeWhenDone: (bool)freeWhenDone
 {
-	return (id)[[OFString_UTF8 alloc]
+	return (id)[[OFUTF8String alloc]
 	    initWithUTF8StringNoCopy: UTF8String
 			freeWhenDone: freeWhenDone];
 }
@@ -414,7 +413,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 				  length: (size_t)UTF8StringLength
 			    freeWhenDone: (bool)freeWhenDone
 {
-	return (id)[[OFString_UTF8 alloc]
+	return (id)[[OFUTF8String alloc]
 	    initWithUTF8StringNoCopy: UTF8String
 			      length: UTF8StringLength
 			freeWhenDone: freeWhenDone];
@@ -429,16 +428,16 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		void *storage;
 
 		length = strlen(cString);
-		string = of_alloc_object([OFString_UTF8 class],
-		    length + 1, 1, &storage);
+		string = of_alloc_object([OFUTF8String class], length + 1, 1,
+		    &storage);
 
 		return (id)[string of_initWithUTF8String: cString
 						  length: length
 						 storage: storage];
 	}
 
-	return (id)[[OFString_UTF8 alloc] initWithCString: cString
-						 encoding: encoding];
+	return (id)[[OFUTF8String alloc] initWithCString: cString
+						encoding: encoding];
 }
 
 - (instancetype)initWithCString: (const char *)cString
@@ -449,7 +448,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 		id string;
 		void *storage;
 
-		string = of_alloc_object([OFString_UTF8 class],
+		string = of_alloc_object([OFUTF8String class],
 		    cStringLength + 1, 1, &storage);
 
 		return (id)[string of_initWithUTF8String: cString
@@ -457,84 +456,84 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 						 storage: storage];
 	}
 
-	return (id)[[OFString_UTF8 alloc] initWithCString: cString
-						 encoding: encoding
-						   length: cStringLength];
+	return (id)[[OFUTF8String alloc] initWithCString: cString
+						encoding: encoding
+						  length: cStringLength];
 }
 
 - (instancetype)initWithData: (OFData *)data
 		    encoding: (of_string_encoding_t)encoding
 {
-	return (id)[[OFString_UTF8 alloc] initWithData: data
-					      encoding: encoding];
+	return (id)[[OFUTF8String alloc] initWithData: data
+					     encoding: encoding];
 }
 
 - (instancetype)initWithString: (OFString *)string
 {
-	return (id)[[OFString_UTF8 alloc] initWithString: string];
+	return (id)[[OFUTF8String alloc] initWithString: string];
 }
 
 - (instancetype)initWithCharacters: (const of_unichar_t *)string
 			    length: (size_t)length
 {
-	return (id)[[OFString_UTF8 alloc] initWithCharacters: string
+	return (id)[[OFUTF8String alloc] initWithCharacters: string
+						     length: length];
+}
+
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
+{
+	return (id)[[OFUTF8String alloc] initWithUTF16String: string];
+}
+
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
+			     length: (size_t)length
+{
+	return (id)[[OFUTF8String alloc] initWithUTF16String: string
 						      length: length];
 }
 
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
-{
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string];
-}
-
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
-			     length: (size_t)length
-{
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
-						       length: length];
-}
-
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
 			  byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
-						    byteOrder: byteOrder];
+	return (id)[[OFUTF8String alloc] initWithUTF16String: string
+						   byteOrder: byteOrder];
 }
 
 - (instancetype)initWithUTF16String: (const of_char16_t *)string
 			     length: (size_t)length
 			  byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF16String: string
-						       length: length
-						    byteOrder: byteOrder];
+	return (id)[[OFUTF8String alloc] initWithUTF16String: string
+						      length: length
+						   byteOrder: byteOrder];
 }
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string];
+	return (id)[[OFUTF8String alloc] initWithUTF32String: string];
 }
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
-						       length: length];
+	return (id)[[OFUTF8String alloc] initWithUTF32String: string
+						      length: length];
 }
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			  byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
-						    byteOrder: byteOrder];
+	return (id)[[OFUTF8String alloc] initWithUTF32String: string
+						   byteOrder: byteOrder];
 }
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
 			  byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFString_UTF8 alloc] initWithUTF32String: string
-						       length: length
-						    byteOrder: byteOrder];
+	return (id)[[OFUTF8String alloc] initWithUTF32String: string
+						      length: length
+						   byteOrder: byteOrder];
 }
 
 - (instancetype)initWithFormat: (OFConstantString *)format, ...
@@ -543,8 +542,8 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	va_list arguments;
 
 	va_start(arguments, format);
-	ret = [[OFString_UTF8 alloc] initWithFormat: format
-					  arguments: arguments];
+	ret = [[OFUTF8String alloc] initWithFormat: format
+					 arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -553,41 +552,41 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFString_UTF8 alloc] initWithFormat: format
-					       arguments: arguments];
+	return (id)[[OFUTF8String alloc] initWithFormat: format
+					      arguments: arguments];
 }
 
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
-	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path];
+	return (id)[[OFUTF8String alloc] initWithContentsOfFile: path];
 }
 
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (of_string_encoding_t)encoding
 {
-	return (id)[[OFString_UTF8 alloc] initWithContentsOfFile: path
-							encoding: encoding];
+	return (id)[[OFUTF8String alloc] initWithContentsOfFile: path
+						       encoding: encoding];
 }
 #endif
 
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
-	return (id)[[OFString_UTF8 alloc] initWithContentsOfURL: URL];
+	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL];
 }
 
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 			     encoding: (of_string_encoding_t)encoding
 {
-	return (id)[[OFString_UTF8 alloc] initWithContentsOfURL: URL
-						       encoding: encoding];
+	return (id)[[OFUTF8String alloc] initWithContentsOfURL: URL
+						      encoding: encoding];
 }
 #endif
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFString_UTF8 alloc] initWithSerialization: element];
+	return (id)[[OFUTF8String alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -616,7 +615,7 @@ decomposedString(OFString *self, const char *const *const *table, size_t size)
 	if (self != [OFString class])
 		return;
 
-	placeholder.isa = [OFString_placeholder class];
+	placeholder.isa = [OFStringPlaceholder class];
 
 #if defined(HAVE_STRTOF_L) || defined(HAVE_STRTOD_L)
 	if ((cLocale = newlocale(LC_ALL_MASK, "C", NULL)) == NULL)

@@ -59,7 +59,7 @@
 - (void)of_writeCentralDirectory;
 @end
 
-@interface OFZIPArchive_LocalFileHeader: OFObject
+@interface OFZIPArchiveLocalFileHeader: OFObject
 {
 @public
 	uint16_t _minVersionNeeded, _generalPurposeBitFlag, _compressionMethod;
@@ -74,7 +74,7 @@
 - (bool)matchesEntry: (OFZIPArchiveEntry *)entry;
 @end
 
-@interface OFZIPArchive_FileReadStream: OFStream
+@interface OFZIPArchiveFileReadStream: OFStream
 {
 	OFStream *_stream, *_decompressedStream;
 	OFZIPArchiveEntry *_entry;
@@ -87,7 +87,7 @@
 			    entry: (OFZIPArchiveEntry *)entry;
 @end
 
-@interface OFZIPArchive_FileWriteStream: OFStream
+@interface OFZIPArchiveFileWriteStream: OFStream
 {
 	OFStream *_stream;
 	uint32_t _CRC32;
@@ -408,9 +408,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	if ((_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
 	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) &&
 	    [_lastReturnedStream isKindOfClass:
-	    [OFZIPArchive_FileWriteStream class]]) {
-		OFZIPArchive_FileWriteStream *stream =
-		    (OFZIPArchive_FileWriteStream *)_lastReturnedStream;
+	    [OFZIPArchiveFileWriteStream class]]) {
+		OFZIPArchiveFileWriteStream *stream =
+		    (OFZIPArchiveFileWriteStream *)_lastReturnedStream;
 
 		if (INT64_MAX - _offset < stream->_bytesWritten)
 			@throw [OFOutOfRangeException exception];
@@ -432,7 +432,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFZIPArchiveEntry *entry;
-	OFZIPArchive_LocalFileHeader *localFileHeader;
+	OFZIPArchiveLocalFileHeader *localFileHeader;
 	int64_t offset64;
 
 	if (_mode != OF_ZIP_ARCHIVE_MODE_READ)
@@ -451,7 +451,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	seekOrThrowInvalidFormat((OFSeekableStream *)_stream,
 	    (of_offset_t)offset64, SEEK_SET);
-	localFileHeader = [[[OFZIPArchive_LocalFileHeader alloc]
+	localFileHeader = [[[OFZIPArchiveLocalFileHeader alloc]
 	    initWithStream: _stream] autorelease];
 
 	if (![localFileHeader matchesEntry: entry])
@@ -466,7 +466,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		    exceptionWithVersion: version];
 	}
 
-	_lastReturnedStream = [[OFZIPArchive_FileReadStream alloc]
+	_lastReturnedStream = [[OFZIPArchiveFileReadStream alloc]
 	     of_initWithStream: _stream
 			 entry: entry];
 
@@ -556,7 +556,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 	_offset += offsetAdd;
 
-	_lastReturnedStream = [[OFZIPArchive_FileWriteStream alloc]
+	_lastReturnedStream = [[OFZIPArchiveFileWriteStream alloc]
 	     initWithStream: _stream
 		      entry: entry];
 
@@ -630,7 +630,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 @end
 
-@implementation OFZIPArchive_LocalFileHeader
+@implementation OFZIPArchiveLocalFileHeader
 - (instancetype)initWithStream: (OFStream *)stream
 {
 	self = [super init];
@@ -730,7 +730,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 @end
 
-@implementation OFZIPArchive_FileReadStream
+@implementation OFZIPArchiveFileReadStream
 - (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFZIPArchiveEntry *)entry
 {
@@ -857,7 +857,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 }
 @end
 
-@implementation OFZIPArchive_FileWriteStream
+@implementation OFZIPArchiveFileWriteStream
 - (instancetype)initWithStream: (OFStream *)stream
 			 entry: (OFMutableZIPArchiveEntry *)entry
 {

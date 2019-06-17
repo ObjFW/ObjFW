@@ -16,15 +16,15 @@
  */
 
 #import "OFValue.h"
+#import "OFBytesValue.h"
+#import "OFDimensionValue.h"
 #import "OFMethodSignature.h"
+#import "OFNonretainedObjectValue.h"
+#import "OFPointValue.h"
+#import "OFPointerValue.h"
+#import "OFRangeValue.h"
+#import "OFRectangleValue.h"
 #import "OFString.h"
-#import "OFValue_bytes.h"
-#import "OFValue_dimension.h"
-#import "OFValue_nonretainedObject.h"
-#import "OFValue_point.h"
-#import "OFValue_pointer.h"
-#import "OFValue_range.h"
-#import "OFValue_rectangle.h"
 
 #import "OFOutOfMemoryException.h"
 
@@ -32,46 +32,46 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFValue_placeholder: OFValue
+@interface OFValuePlaceholder: OFValue
 @end
 
-@implementation OFValue_placeholder
+@implementation OFValuePlaceholder
 - (instancetype)initWithBytes: (const void *)bytes
 		     objCType: (const char *)objCType
 {
-	return (id)[[OFValue_bytes alloc] initWithBytes: bytes
-					       objCType: objCType];
+	return (id)[[OFBytesValue alloc] initWithBytes: bytes
+					      objCType: objCType];
 }
 
 - (instancetype)initWithPointer: (const void *)pointer
 {
-	return (id)[[OFValue_pointer alloc] initWithPointer: pointer];
+	return (id)[[OFPointerValue alloc] initWithPointer: pointer];
 }
 
 - (instancetype)initWithNonretainedObject: (id)object
 {
-	return (id)[[OFValue_nonretainedObject alloc]
+	return (id)[[OFNonretainedObjectValue alloc]
 	    initWithNonretainedObject: object];
 }
 
 - (instancetype)initWithRange: (of_range_t)range
 {
-	return (id)[[OFValue_range alloc] initWithRange: range];
+	return (id)[[OFRangeValue alloc] initWithRange: range];
 }
 
 - (instancetype)initWithPoint: (of_point_t)point
 {
-	return (id)[[OFValue_point alloc] initWithPoint: point];
+	return (id)[[OFPointValue alloc] initWithPoint: point];
 }
 
 - (instancetype)initWithDimension: (of_dimension_t)dimension
 {
-	return (id)[[OFValue_dimension alloc] initWithDimension: dimension];
+	return (id)[[OFDimensionValue alloc] initWithDimension: dimension];
 }
 
 - (instancetype)initWithRectangle: (of_rectangle_t)rectangle
 {
-	return (id)[[OFValue_rectangle alloc] initWithRectangle: rectangle];
+	return (id)[[OFRectangleValue alloc] initWithRectangle: rectangle];
 }
 @end
 
@@ -79,7 +79,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFValue class])
-		placeholder.isa = [OFValue_placeholder class];
+		placeholder.isa = [OFValuePlaceholder class];
 }
 
 + (instancetype)alloc

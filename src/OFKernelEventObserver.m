@@ -25,27 +25,27 @@
 #import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFDate.h"
+#ifdef OF_HAVE_THREADS
+# import "OFMutex.h"
+#endif
 #import "OFStream.h"
 #import "OFStream+Private.h"
 #ifndef OF_HAVE_PIPE
 # import "OFStreamSocket.h"
 #endif
-#import "OFDate.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 
 #ifdef HAVE_KQUEUE
-# import "OFKernelEventObserver_kqueue.h"
+# import "OFKqueueKernelEventObserver.h"
 #endif
 #ifdef HAVE_EPOLL
-# import "OFKernelEventObserver_epoll.h"
+# import "OFEpollKernelEventObserver.h"
 #endif
 #ifdef HAVE_POLL
-# import "OFKernelEventObserver_poll.h"
+# import "OFPollKernelEventObserver.h"
 #endif
 #ifdef HAVE_SELECT
-# import "OFKernelEventObserver_select.h"
+# import "OFSelectKernelEventObserver.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -85,13 +85,13 @@ enum {
 {
 	if (self == [OFKernelEventObserver class])
 #if defined(HAVE_KQUEUE)
-		return [OFKernelEventObserver_kqueue alloc];
+		return [OFKqueueKernelEventObserver alloc];
 #elif defined(HAVE_EPOLL)
-		return [OFKernelEventObserver_epoll alloc];
+		return [OFEpollKernelEventObserver alloc];
 #elif defined(HAVE_POLL)
-		return [OFKernelEventObserver_poll alloc];
+		return [OFPollKernelEventObserver alloc];
 #elif defined(HAVE_SELECT)
-		return [OFKernelEventObserver_select alloc];
+		return [OFSelectKernelEventObserver alloc];
 #else
 # error No kqueue / epoll / poll / select found!
 #endif

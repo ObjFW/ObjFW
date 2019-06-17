@@ -94,7 +94,7 @@
 - (instancetype)initWithSocket: (OFTCPSocket *)sock;
 @end
 
-@interface OFHTTPClient_SyncPerformer: OFObject <OFHTTPClientDelegate>
+@interface OFHTTPClientSyncPerformer: OFObject <OFHTTPClientDelegate>
 {
 	OFHTTPClient *_client;
 	OFObject <OFHTTPClientDelegate> *_delegate;
@@ -1001,7 +1001,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 }
 @end
 
-@implementation OFHTTPClient_SyncPerformer
+@implementation OFHTTPClientSyncPerformer
 - (instancetype)initWithClient: (OFHTTPClient *)client
 {
 	self = [super init];
@@ -1145,8 +1145,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 			 redirects: (unsigned int)redirects
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFHTTPClient_SyncPerformer *syncPerformer =
-	    [[[OFHTTPClient_SyncPerformer alloc] initWithClient: self]
+	OFHTTPClientSyncPerformer *syncPerformer =
+	    [[[OFHTTPClientSyncPerformer alloc] initWithClient: self]
 	    autorelease];
 	OFHTTPResponse *response = [syncPerformer performRequest: request
 						       redirects: redirects];

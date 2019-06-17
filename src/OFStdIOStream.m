@@ -33,7 +33,7 @@
 #import "OFDate.h"
 #import "OFApplication.h"
 #ifdef OF_WINDOWS
-# include "OFStdIOStream_Win32Console.h"
+# include "OFWin32ConsoleStdIOStream.h"
 #endif
 
 #import "OFInitializationFailedException.h"
@@ -55,9 +55,9 @@
 /* References for static linking */
 #ifdef OF_WINDOWS
 void
-_reference_to_OFStdIOStream_Win32Console(void)
+_reference_to_OFWin32ConsoleStdIOStream(void)
 {
-	[OFStdIOStream_Win32Console class];
+	[OFWin32ConsoleStdIOStream class];
 }
 #endif
 

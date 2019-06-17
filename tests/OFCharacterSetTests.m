@@ -19,8 +19,9 @@
 
 #import "TestsAppDelegate.h"
 
-#import "OFCharacterSet_bitset.h"
-#import "OFCharacterSet_range.h"
+#import "OFCharacterSet.h"
+#import "OFBitSetCharacterSet.h"
+#import "OFRangeCharacterSet.h"
 
 static OFString *module = nil;
 
@@ -55,12 +56,12 @@ static OFString *module = nil;
 	}
 	TEST(@"-[characterIsMember:]", ok);
 
-	module = @"OFCharacterSet_bitset";
+	module = @"OFBitSetCharacterSet";
 
 	TEST(@"+[characterSetWithCharactersInString:]",
 	    (cs = [OFCharacterSet characterSetWithCharactersInString:
 	    @"0123456789"]) &&
-	    [cs isKindOfClass: [OFCharacterSet_bitset class]])
+	    [cs isKindOfClass: [OFBitSetCharacterSet class]])
 
 	ok = true;
 	for (of_unichar_t c = 0; c < 65536; c++) {
@@ -72,11 +73,11 @@ static OFString *module = nil;
 	}
 	TEST(@"-[characterIsMember:]", ok);
 
-	module = @"OFCharacterSet_range";
+	module = @"OFRangeCharacterSet";
 
 	TEST(@"+[characterSetWithRange:]",
 	    (cs = [OFCharacterSet characterSetWithRange: of_range('0', 10)]) &&
-	    [cs isKindOfClass: [OFCharacterSet_range class]])
+	    [cs isKindOfClass: [OFRangeCharacterSet class]])
 
 	ok = true;
 	for (of_unichar_t c = 0; c < 65536; c++) {

@@ -23,7 +23,7 @@
 #ifdef OF_HAVE_FILES
 # import "OFFile.h"
 #endif
-#import "OFLHAArchive_LHStream.h"
+#import "OFLHADecompressingStream.h"
 #import "OFStream.h"
 #import "OFSeekableStream.h"
 #import "OFString.h"
@@ -38,7 +38,7 @@
 #import "OFTruncatedDataException.h"
 #import "OFWriteFailedException.h"
 
-@interface OFLHAArchive_FileReadStream: OFStream <OFReadyForReadingObserving>
+@interface OFLHAArchiveFileReadStream: OFStream <OFReadyForReadingObserving>
 {
 	OFStream *_stream, *_decompressedStream;
 	OFLHAArchiveEntry *_entry;
@@ -52,7 +52,7 @@
 - (void)of_skip;
 @end
 
-@interface OFLHAArchive_FileWriteStream: OFStream <OFReadyForWritingObserving>
+@interface OFLHAArchiveFileWriteStream: OFStream <OFReadyForWritingObserving>
 {
 	OFMutableLHAArchiveEntry *_entry;
 	of_string_encoding_t _encoding;
@@ -166,7 +166,7 @@
 	if (_mode != OF_LHA_ARCHIVE_MODE_READ)
 		@throw [OFInvalidArgumentException exception];
 
-	[(OFLHAArchive_FileReadStream *)_lastReturnedStream of_skip];
+	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
@@ -191,7 +191,7 @@
 		       stream: _stream
 		     encoding: _encoding] autorelease];
 
-	_lastReturnedStream = [[OFLHAArchive_FileReadStream alloc]
+	_lastReturnedStream = [[OFLHAArchiveFileReadStream alloc]
 	    of_initWithStream: _stream
 			entry: entry];
 
@@ -206,7 +206,7 @@
 	if (_lastReturnedStream == nil)
 		@throw [OFInvalidArgumentException exception];
 
-	return [[(OFLHAArchive_FileReadStream *)_lastReturnedStream
+	return [[(OFLHAArchiveFileReadStream *)_lastReturnedStream
 	    retain] autorelease];
 }
 
@@ -230,12 +230,12 @@
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
-	_lastReturnedStream = [[OFLHAArchive_FileWriteStream alloc]
+	_lastReturnedStream = [[OFLHAArchiveFileWriteStream alloc]
 	    of_initWithStream: (OFSeekableStream *)_stream
 			entry: entry
 		     encoding: _encoding];
 
-	return [[(OFLHAArchive_FileWriteStream *)_lastReturnedStream
+	return [[(OFLHAArchiveFileWriteStream *)_lastReturnedStream
 	    retain] autorelease];
 }
 
@@ -253,7 +253,7 @@
 }
 @end
 
-@implementation OFLHAArchive_FileReadStream
+@implementation OFLHAArchiveFileReadStream
 - (instancetype)of_initWithStream: (OFStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
 {
@@ -268,17 +268,17 @@
 
 		if ([compressionMethod isEqual: @"-lh4-"] ||
 		    [compressionMethod isEqual: @"-lh5-"])
-			_decompressedStream = [[OFLHAArchive_LHStream alloc]
+			_decompressedStream = [[OFLHADecompressingStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 4
 			       dictionaryBits: 14];
 		else if ([compressionMethod isEqual: @"-lh6-"])
-			_decompressedStream = [[OFLHAArchive_LHStream alloc]
+			_decompressedStream = [[OFLHADecompressingStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 16];
 		else if ([compressionMethod isEqual: @"-lh7-"])
-			_decompressedStream = [[OFLHAArchive_LHStream alloc]
+			_decompressedStream = [[OFLHADecompressingStream alloc]
 			    of_initWithStream: stream
 				 distanceBits: 5
 			       dictionaryBits: 17];
@@ -383,12 +383,13 @@
 	 * compressed stream, to make skipping much faster.
 	 */
 	if ([_decompressedStream isKindOfClass:
-	    [OFLHAArchive_LHStream class]]) {
-		OFLHAArchive_LHStream *LHStream =
-		    (OFLHAArchive_LHStream *)_decompressedStream;
+	    [OFLHADecompressingStream class]]) {
+		OFLHADecompressingStream *decompressingStream =
+		    (OFLHADecompressingStream *)_decompressedStream;
 
-		[LHStream close];
-		toRead = _entry.compressedSize - LHStream->_bytesConsumed;
+		[decompressingStream close];
+		toRead =
+		    _entry.compressedSize - decompressingStream->_bytesConsumed;
 
 		stream = _stream;
 	}
@@ -428,7 +429,7 @@
 }
 @end
 
-@implementation OFLHAArchive_FileWriteStream
+@implementation OFLHAArchiveFileWriteStream
 - (instancetype)of_initWithStream: (OFSeekableStream *)stream
 			    entry: (OFLHAArchiveEntry *)entry
 			 encoding: (of_string_encoding_t)encoding

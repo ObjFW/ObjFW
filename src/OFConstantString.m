@@ -23,7 +23,7 @@
 #include <string.h>
 
 #import "OFConstantString.h"
-#import "OFString_UTF8.h"
+#import "OFUTF8String.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidEncodingException.h"
@@ -45,10 +45,10 @@ struct {
 } _OFConstantStringClassReference;
 #endif
 
-@interface OFString_const: OFString_UTF8
+@interface OFConstantUTF8String: OFUTF8String
 @end
 
-@implementation OFString_const
+@implementation OFConstantUTF8String
 + (instancetype)alloc
 {
 	OF_UNRECOGNIZED_SELECTOR
@@ -139,7 +139,7 @@ struct {
 	@synchronized (self) {
 		struct of_string_utf8_ivars *ivars;
 
-		if ([self isMemberOfClass: [OFString_const class]])
+		if ([self isMemberOfClass: [OFConstantUTF8String class]])
 			return;
 
 		if ((ivars = calloc(1, sizeof(*ivars))) == NULL)
@@ -161,7 +161,7 @@ struct {
 		}
 
 		_cString = (char *)ivars;
-		object_setClass(self, [OFString_const class]);
+		object_setClass(self, [OFConstantUTF8String class]);
 	}
 }
 
@@ -225,7 +225,7 @@ struct {
 
 /*
  * In all following methods, the constant string is converted to an
- * OFString_UTF8 and the message sent again.
+ * OFUTF8String and the message sent again.
  */
 
 /* From protocol OFCopying */

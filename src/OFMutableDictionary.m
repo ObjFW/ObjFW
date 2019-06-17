@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#import "OFMutableDictionary_hashtable.h"
+#import "OFMutableMapTableDictionary.h"
 #import "OFArray.h"
 #import "OFString.h"
 
@@ -27,44 +27,42 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableDictionary_placeholder: OFDictionary
+@interface OFMutableDictionaryPlaceholder: OFDictionary
 @end
 
-@implementation OFMutableDictionary_placeholder
+@implementation OFMutableDictionaryPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFMutableDictionary_hashtable alloc] init];
+	return (id)[[OFMutableMapTableDictionary alloc] init];
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	return (id)[[OFMutableDictionary_hashtable alloc]
+	return (id)[[OFMutableMapTableDictionary alloc]
 	    initWithDictionary: dictionary];
 }
 
 - (instancetype)initWithObject: (id)object
 			forKey: (id)key
 {
-	return (id)[[OFMutableDictionary_hashtable alloc] initWithObject: object
-								  forKey: key];
+	return (id)[[OFMutableMapTableDictionary alloc] initWithObject: object
+								forKey: key];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects
 			forKeys: (OFArray *)keys
 {
-	return (id)[[OFMutableDictionary_hashtable alloc]
-	    initWithObjects: objects
-		    forKeys: keys];
+	return (id)[[OFMutableMapTableDictionary alloc] initWithObjects: objects
+								forKeys: keys];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
-	return (id)[[OFMutableDictionary_hashtable alloc]
-	    initWithObjects: objects
-		    forKeys: keys
-		      count: count];
+	return (id)[[OFMutableMapTableDictionary alloc] initWithObjects: objects
+								forKeys: keys
+								  count: count];
 }
 
 - (instancetype)initWithKeysAndObjects: (id)firstKey, ...
@@ -73,9 +71,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = (id)[[OFMutableDictionary_hashtable alloc]
-	    initWithKey: firstKey
-	      arguments: arguments];
+	ret = (id)[[OFMutableMapTableDictionary alloc] initWithKey: firstKey
+							 arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -84,20 +81,19 @@ static struct {
 - (instancetype)initWithKey: (id)firstKey
 		  arguments: (va_list)arguments
 {
-	return (id)[[OFMutableDictionary_hashtable alloc]
-	    initWithKey: firstKey
-	      arguments: arguments];
+	return (id)[[OFMutableMapTableDictionary alloc] initWithKey: firstKey
+							  arguments: arguments];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFMutableDictionary_hashtable alloc]
+	return (id)[[OFMutableMapTableDictionary alloc]
 	    initWithSerialization: element];
 }
 
 - (instancetype)initWithCapacity: (size_t)capacity
 {
-	return (id)[[OFMutableDictionary_hashtable alloc]
+	return (id)[[OFMutableMapTableDictionary alloc]
 	    initWithCapacity: capacity];
 }
 
@@ -125,7 +121,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableDictionary class])
-		placeholder.isa = [OFMutableDictionary_placeholder class];
+		placeholder.isa = [OFMutableDictionaryPlaceholder class];
 }
 
 + (instancetype)alloc

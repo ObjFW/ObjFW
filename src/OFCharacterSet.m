@@ -18,9 +18,9 @@
 #include "config.h"
 
 #import "OFCharacterSet.h"
-#import "OFCharacterSet_bitset.h"
-#import "OFCharacterSet_invertedSet.h"
-#import "OFCharacterSet_range.h"
+#import "OFBitSetCharacterSet.h"
+#import "OFInvertedCharacterSet.h"
+#import "OFRangeCharacterSet.h"
 
 static struct {
 	Class isa;
@@ -28,28 +28,28 @@ static struct {
 
 static OFCharacterSet *whitespaceCharacterSet = nil;
 
-@interface OFCharacterSet_placeholder: OFCharacterSet
+@interface OFPlaceholderCharacterSet: OFCharacterSet
 @end
 
-@interface OFCharacterSet_whitespace: OFCharacterSet
+@interface OFWhitespaceCharacterSet: OFCharacterSet
 - (instancetype)of_init;
 @end
 
-@implementation OFCharacterSet_placeholder
+@implementation OFPlaceholderCharacterSet
 - (instancetype)init
 {
-	return (id)[[OFCharacterSet_bitset alloc] init];
+	return (id)[[OFBitSetCharacterSet alloc] init];
 }
 
 - (instancetype)initWithCharactersInString: (OFString *)characters
 {
-	return (id)[[OFCharacterSet_bitset alloc]
+	return (id)[[OFBitSetCharacterSet alloc]
 	    initWithCharactersInString: characters];
 }
 
 - (instancetype)initWithRange: (of_range_t)range
 {
-	return (id)[[OFCharacterSet_range alloc] initWithRange: range];
+	return (id)[[OFRangeCharacterSet alloc] initWithRange: range];
 }
 
 - (instancetype)retain
@@ -78,7 +78,7 @@ static OFCharacterSet *whitespaceCharacterSet = nil;
 	if (self != [OFCharacterSet class])
 		return;
 
-	placeholder.isa = [OFCharacterSet_placeholder class];
+	placeholder.isa = [OFPlaceholderCharacterSet class];
 }
 
 + (instancetype)alloc
@@ -102,7 +102,7 @@ static OFCharacterSet *whitespaceCharacterSet = nil;
 
 + (OFCharacterSet *)whitespaceCharacterSet
 {
-	return [OFCharacterSet_whitespace whitespaceCharacterSet];
+	return [OFWhitespaceCharacterSet whitespaceCharacterSet];
 }
 
 - (instancetype)init
@@ -138,18 +138,18 @@ static OFCharacterSet *whitespaceCharacterSet = nil;
 
 - (OFCharacterSet *)invertedSet
 {
-	return [[[OFCharacterSet_invertedSet alloc]
+	return [[[OFInvertedCharacterSet alloc]
 	    of_initWithCharacterSet: self] autorelease];
 }
 @end
 
-@implementation OFCharacterSet_whitespace
+@implementation OFWhitespaceCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet_whitespace class])
+	if (self != [OFWhitespaceCharacterSet class])
 		return;
 
-	whitespaceCharacterSet = [[OFCharacterSet_whitespace alloc] of_init];
+	whitespaceCharacterSet = [[OFWhitespaceCharacterSet alloc] of_init];
 }
 
 + (OFCharacterSet *)whitespaceCharacterSet

@@ -16,14 +16,14 @@
  */
 
 #import "NSDictionary+OFObject.h"
-#import "OFDictionary_NSDictionary.h"
+#import "OFNSDictionary.h"
 
 int _NSDictionary_OFObject_reference;
 
 @implementation NSDictionary (OFObject)
 - (id)OFObject
 {
-	return [[[OFDictionary_NSDictionary alloc]
+	return [[[OFNSDictionary alloc]
 	    initWithNSDictionary: self] autorelease];
 }
 @end

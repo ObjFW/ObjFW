@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #import "OFCountedSet.h"
-#import "OFCountedSet_hashtable.h"
+#import "OFCountedMapTableSet.h"
 #import "OFNumber.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -29,23 +29,23 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFCountedSet_placeholder: OFCountedSet
+@interface OFCountedSetPlaceholder: OFCountedSet
 @end
 
-@implementation OFCountedSet_placeholder
+@implementation OFCountedSetPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFCountedSet_hashtable alloc] init];
+	return (id)[[OFCountedMapTableSet alloc] init];
 }
 
 - (instancetype)initWithSet: (OFSet *)set
 {
-	return (id)[[OFCountedSet_hashtable alloc] initWithSet: set];
+	return (id)[[OFCountedMapTableSet alloc] initWithSet: set];
 }
 
 - (instancetype)initWithArray: (OFArray *)array
 {
-	return (id)[[OFCountedSet_hashtable alloc] initWithArray: array];
+	return (id)[[OFCountedMapTableSet alloc] initWithArray: array];
 }
 
 - (instancetype)initWithObjects: (id)firstObject, ...
@@ -54,8 +54,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, firstObject);
-	ret = [[OFCountedSet_hashtable alloc] initWithObject: firstObject
-						   arguments: arguments];
+	ret = [[OFCountedMapTableSet alloc] initWithObject: firstObject
+						 arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -64,20 +64,20 @@ static struct {
 - (instancetype)initWithObjects: (id const *)objects
 			  count: (size_t)count
 {
-	return (id)[[OFCountedSet_hashtable alloc] initWithObjects: objects
-							     count: count];
+	return (id)[[OFCountedMapTableSet alloc] initWithObjects: objects
+							   count: count];
 }
 
 - (instancetype)initWithObject: (id)firstObject
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFCountedSet_hashtable alloc] initWithObject: firstObject
-							arguments: arguments];
+	return (id)[[OFCountedMapTableSet alloc] initWithObject: firstObject
+						      arguments: arguments];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFCountedSet_hashtable alloc]
+	return (id)[[OFCountedMapTableSet alloc]
 	    initWithSerialization: element];
 }
 
@@ -105,7 +105,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFCountedSet class])
-		placeholder.isa = [OFCountedSet_placeholder class];
+		placeholder.isa = [OFCountedSetPlaceholder class];
 }
 
 + (instancetype)alloc

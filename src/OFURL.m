@@ -28,7 +28,7 @@
 
 #ifdef OF_HAVE_FILES
 # import "OFFileManager.h"
-# import "OFURLHandler_file.h"
+# import "OFFileURLHandler.h"
 #endif
 
 #import "OFInvalidArgumentException.h"
@@ -40,24 +40,23 @@ static OFCharacterSet *URLSchemeAllowedCharacterSet = nil;
 static OFCharacterSet *URLPathAllowedCharacterSet = nil;
 static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 
-@interface OFCharacterSet_URLAllowedBase: OFCharacterSet
+@interface OFURLAllowedCharacterSetBase: OFCharacterSet
 - (instancetype)of_init OF_METHOD_FAMILY(init);
 @end
 
-@interface OFCharacterSet_URLAllowed: OFCharacterSet_URLAllowedBase
+@interface OFURLAllowedCharacterSet: OFURLAllowedCharacterSetBase
 + (OFCharacterSet *)URLAllowedCharacterSet;
 @end
 
-@interface OFCharacterSet_URLSchemeAllowed: OFCharacterSet_URLAllowedBase
+@interface OFURLSchemeAllowedCharacterSet: OFURLAllowedCharacterSetBase
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet;
 @end
 
-@interface OFCharacterSet_URLPathAllowed: OFCharacterSet_URLAllowedBase
+@interface OFURLPathAllowedCharacterSet: OFURLAllowedCharacterSetBase
 + (OFCharacterSet *)URLPathAllowedCharacterSet;
 @end
 
-@interface OFCharacterSet_URLQueryOrFragmentAllowed:
-    OFCharacterSet_URLAllowedBase
+@interface OFURLQueryOrFragmentAllowedCharacterSet: OFURLAllowedCharacterSetBase
 + (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet;
 @end
 
@@ -140,7 +139,7 @@ URLPathToPath(OFString *path)
 }
 #endif
 
-@interface OFCharacterSet_invertedSetWithPercent: OFCharacterSet
+@interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
 	bool (*_characterIsMember)(id, SEL, of_unichar_t);
@@ -150,7 +149,7 @@ URLPathToPath(OFString *path)
     OF_METHOD_FAMILY(init);
 @end
 
-@implementation OFCharacterSet_URLAllowedBase
+@implementation OFURLAllowedCharacterSetBase
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
@@ -181,13 +180,13 @@ URLPathToPath(OFString *path)
 }
 @end
 
-@implementation OFCharacterSet_URLAllowed
+@implementation OFURLAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet_URLAllowed class])
+	if (self != [OFURLAllowedCharacterSet class])
 		return;
 
-	URLAllowedCharacterSet = [[OFCharacterSet_URLAllowed alloc] of_init];
+	URLAllowedCharacterSet = [[OFURLAllowedCharacterSet alloc] of_init];
 }
 
 + (OFCharacterSet *)URLAllowedCharacterSet
@@ -223,14 +222,14 @@ URLPathToPath(OFString *path)
 }
 @end
 
-@implementation OFCharacterSet_URLSchemeAllowed
+@implementation OFURLSchemeAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet_URLSchemeAllowed class])
+	if (self != [OFURLSchemeAllowedCharacterSet class])
 		return;
 
 	URLSchemeAllowedCharacterSet =
-	    [[OFCharacterSet_URLSchemeAllowed alloc] of_init];
+	    [[OFURLSchemeAllowedCharacterSet alloc] of_init];
 }
 
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet
@@ -254,14 +253,14 @@ URLPathToPath(OFString *path)
 }
 @end
 
-@implementation OFCharacterSet_URLPathAllowed
+@implementation OFURLPathAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet_URLPathAllowed class])
+	if (self != [OFURLPathAllowedCharacterSet class])
 		return;
 
 	URLPathAllowedCharacterSet =
-	    [[OFCharacterSet_URLPathAllowed alloc] of_init];
+	    [[OFURLPathAllowedCharacterSet alloc] of_init];
 }
 
 + (OFCharacterSet *)URLPathAllowedCharacterSet
@@ -300,14 +299,14 @@ URLPathToPath(OFString *path)
 }
 @end
 
-@implementation OFCharacterSet_URLQueryOrFragmentAllowed
+@implementation OFURLQueryOrFragmentAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet_URLQueryOrFragmentAllowed class])
+	if (self != [OFURLQueryOrFragmentAllowedCharacterSet class])
 		return;
 
 	URLQueryOrFragmentAllowedCharacterSet =
-	    [[OFCharacterSet_URLQueryOrFragmentAllowed alloc] of_init];
+	    [[OFURLQueryOrFragmentAllowedCharacterSet alloc] of_init];
 }
 
 + (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet
@@ -347,7 +346,7 @@ URLPathToPath(OFString *path)
 }
 @end
 
-@implementation OFCharacterSet_invertedSetWithPercent
+@implementation OFInvertedCharacterSetWithoutPercent
 - (instancetype)init
 {
 	OF_INVALID_INIT_METHOD
@@ -383,7 +382,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 {
 	void *pool = objc_autoreleasePoolPush();
 
-	characterSet = [[[OFCharacterSet_invertedSetWithPercent alloc]
+	characterSet = [[[OFInvertedCharacterSetWithoutPercent alloc]
 	    of_initWithCharacterSet: characterSet] autorelease];
 
 	if ([string indexOfCharacterFromSet: characterSet] != OF_NOT_FOUND)
@@ -395,38 +394,38 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 @implementation OFCharacterSet (URLCharacterSets)
 + (OFCharacterSet *)URLSchemeAllowedCharacterSet
 {
-	return [OFCharacterSet_URLSchemeAllowed URLSchemeAllowedCharacterSet];
+	return [OFURLSchemeAllowedCharacterSet URLSchemeAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLHostAllowedCharacterSet
 {
-	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+	return [OFURLAllowedCharacterSet URLAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLUserAllowedCharacterSet
 {
-	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+	return [OFURLAllowedCharacterSet URLAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLPasswordAllowedCharacterSet
 {
-	return [OFCharacterSet_URLAllowed URLAllowedCharacterSet];
+	return [OFURLAllowedCharacterSet URLAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLPathAllowedCharacterSet
 {
-	return [OFCharacterSet_URLPathAllowed URLPathAllowedCharacterSet];
+	return [OFURLPathAllowedCharacterSet URLPathAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLQueryAllowedCharacterSet
 {
-	return [OFCharacterSet_URLQueryOrFragmentAllowed
+	return [OFURLQueryOrFragmentAllowedCharacterSet
 	    URLQueryOrFragmentAllowedCharacterSet];
 }
 
 + (OFCharacterSet *)URLFragmentAllowedCharacterSet
 {
-	return [OFCharacterSet_URLQueryOrFragmentAllowed
+	return [OFURLQueryOrFragmentAllowedCharacterSet
 	    URLQueryOrFragmentAllowedCharacterSet];
 }
 @end
@@ -704,14 +703,14 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
 		isDirectory = ([path hasSuffix: @"\\"] ||
 		    [path hasSuffix: @"/"] ||
-		    [OFURLHandler_file of_directoryExistsAtPath: path]);
+		    [OFFileURLHandler of_directoryExistsAtPath: path]);
 #elif defined(OF_AMIGAOS)
 		isDirectory = ([path hasSuffix: @"/"] ||
 		    [path hasSuffix: @":"] ||
-		    [OFURLHandler_file of_directoryExistsAtPath: path]);
+		    [OFFileURLHandler of_directoryExistsAtPath: path]);
 #else
 		isDirectory = ([path hasSuffix: @"/"] ||
-		    [OFURLHandler_file of_directoryExistsAtPath: path]);
+		    [OFFileURLHandler of_directoryExistsAtPath: path]);
 #endif
 
 		objc_autoreleasePoolPop(pool);

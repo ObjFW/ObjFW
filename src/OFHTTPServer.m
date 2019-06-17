@@ -68,7 +68,7 @@
 		       request: (OFHTTPRequest *)request;
 @end
 
-@interface OFHTTPServer_Connection: OFObject <OFTCPSocketDelegate>
+@interface OFHTTPServerConnection: OFObject <OFTCPSocketDelegate>
 {
 @public
 	OFTCPSocket *_socket;
@@ -369,7 +369,7 @@ normalizedKey(OFString *key)
 }
 @end
 
-@implementation OFHTTPServer_Connection
+@implementation OFHTTPServerConnection
 - (instancetype)initWithSocket: (OFTCPSocket *)sock
 			server: (OFHTTPServer *)server
 {
@@ -945,7 +945,7 @@ normalizedKey(OFString *key)
 
 - (void)of_handleAcceptedSocket: (OFTCPSocket *)acceptedSocket
 {
-	OFHTTPServer_Connection *connection = [[[OFHTTPServer_Connection alloc]
+	OFHTTPServerConnection *connection = [[[OFHTTPServerConnection alloc]
 	    initWithSocket: acceptedSocket
 		    server: self] autorelease];
 

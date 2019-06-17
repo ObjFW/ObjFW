@@ -19,8 +19,9 @@
 
 #import "TestsAppDelegate.h"
 
-#import "OFMutableSet_hashtable.h"
-#import "OFSet_hashtable.h"
+#import "OFSet.h"
+#import "OFMapTableSet.h"
+#import "OFMutableMapTableSet.h"
 
 static OFString *module = nil;
 
@@ -276,8 +277,8 @@ static OFString *module = nil;
 	[self setTestsWithClass: [SimpleSet class]
 		   mutableClass: [SimpleMutableSet class]];
 
-	module = @"OFSet_hashtable";
-	[self setTestsWithClass: [OFSet_hashtable class]
-		   mutableClass: [OFMutableSet_hashtable class]];
+	module = @"OFMapTableSet";
+	[self setTestsWithClass: [OFMapTableSet class]
+		   mutableClass: [OFMutableMapTableSet class]];
 }
 @end

@@ -22,7 +22,7 @@
 #include <string.h>
 
 #import "OFString.h"
-#import "OFMutableString_UTF8.h"
+#import "OFMutableUTF8String.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -35,25 +35,24 @@ static struct {
 	Class isa;
 } placeholder;
 
-@interface OFMutableString_placeholder: OFMutableString
+@interface OFMutableStringPlaceholder: OFMutableString
 @end
 
-@implementation OFMutableString_placeholder
+@implementation OFMutableStringPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFMutableString_UTF8 alloc] init];
+	return (id)[[OFMutableUTF8String alloc] init];
 }
 
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 {
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUTF8String: UTF8String];
+	return (id)[[OFMutableUTF8String alloc] initWithUTF8String: UTF8String];
 }
 
 - (instancetype)initWithUTF8String: (const char *)UTF8String
 			    length: (size_t)UTF8StringLength
 {
-	return (id)[[OFMutableString_UTF8 alloc]
+	return (id)[[OFMutableUTF8String alloc]
 	    initWithUTF8String: UTF8String
 			length: UTF8StringLength];
 }
@@ -61,90 +60,85 @@ static struct {
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (of_string_encoding_t)encoding
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithCString: cString
-							encoding: encoding];
+	return (id)[[OFMutableUTF8String alloc] initWithCString: cString
+						       encoding: encoding];
 }
 
 - (instancetype)initWithCString: (const char *)cString
 		       encoding: (of_string_encoding_t)encoding
 			 length: (size_t)cStringLength
 {
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithCString: cString
-		   encoding: encoding
-		     length: cStringLength];
+	return (id)[[OFMutableUTF8String alloc] initWithCString: cString
+						       encoding: encoding
+							 length: cStringLength];
 }
 
 - (instancetype)initWithString: (OFString *)string
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithString: string];
+	return (id)[[OFMutableUTF8String alloc] initWithString: string];
 }
 
 - (instancetype)initWithCharacters: (const of_unichar_t *)characters
 			    length: (size_t)length
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithCharacters: characters
+	return (id)[[OFMutableUTF8String alloc] initWithCharacters: characters
+							    length: length];
+}
+
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
+{
+	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string];
+}
+
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
+			     length: (size_t)length
+{
+	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
+							      length: length];
+}
+
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
+			  byteOrder: (of_byte_order_t)byteOrder
+{
+	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
+							  byteOrder: byteOrder];
+}
+
+- (instancetype)initWithUTF16String: (const of_char16_t *)string
+			     length: (size_t)length
+			  byteOrder: (of_byte_order_t)byteOrder
+{
+	return (id)[[OFMutableUTF8String alloc] initWithUTF16String: string
+							     length: length
+							  byteOrder: byteOrder];
+}
+
+- (instancetype)initWithUTF32String: (const of_char32_t *)string
+{
+	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string];
+}
+
+- (instancetype)initWithUTF32String: (const of_char32_t *)string
+			     length: (size_t)length
+{
+	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
 							     length: length];
 }
 
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string];
-}
-
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
-			     length: (size_t)length
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithUTF16String: string
-							      length: length];
-}
-
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
-			  byteOrder: (of_byte_order_t)byteOrder
-{
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUTF16String: string
-		      byteOrder: byteOrder];
-}
-
-- (instancetype)initWithUTF16String: (const of_char16_t *)string
-			     length: (size_t)length
-			  byteOrder: (of_byte_order_t)byteOrder
-{
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUTF16String: string
-			 length: length
-		      byteOrder: byteOrder];
-}
-
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string];
-}
-
-- (instancetype)initWithUTF32String: (const of_char32_t *)string
-			     length: (size_t)length
-{
-	return (id)[[OFMutableString_UTF8 alloc] initWithUTF32String: string
-							      length: length];
-}
-
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			  byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUTF32String: string
-		      byteOrder: byteOrder];
+	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
+							  byteOrder: byteOrder];
 }
 
 - (instancetype)initWithUTF32String: (const of_char32_t *)string
 			     length: (size_t)length
 			  byteOrder: (of_byte_order_t)byteOrder
 {
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithUTF32String: string
-			 length: length
-		      byteOrder: byteOrder];
+	return (id)[[OFMutableUTF8String alloc] initWithUTF32String: string
+							     length: length
+							  byteOrder: byteOrder];
 }
 
 - (instancetype)initWithFormat: (OFConstantString *)format, ...
@@ -153,8 +147,8 @@ static struct {
 	va_list arguments;
 
 	va_start(arguments, format);
-	ret = [[OFMutableString_UTF8 alloc] initWithFormat: format
-						 arguments: arguments];
+	ret = [[OFMutableUTF8String alloc] initWithFormat: format
+						arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -163,20 +157,20 @@ static struct {
 - (instancetype)initWithFormat: (OFConstantString *)format
 		     arguments: (va_list)arguments
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithFormat: format
-						      arguments: arguments];
+	return (id)[[OFMutableUTF8String alloc] initWithFormat: format
+						     arguments: arguments];
 }
 
 #ifdef OF_HAVE_FILES
 - (instancetype)initWithContentsOfFile: (OFString *)path
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfFile: path];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfFile: path];
 }
 
 - (instancetype)initWithContentsOfFile: (OFString *)path
 			      encoding: (of_string_encoding_t)encoding
 {
-	return (id)[[OFMutableString_UTF8 alloc]
+	return (id)[[OFMutableUTF8String alloc]
 	    initWithContentsOfFile: path
 			  encoding: encoding];
 }
@@ -185,13 +179,13 @@ static struct {
 #if defined(OF_HAVE_FILES) || defined(OF_HAVE_SOCKETS)
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 {
-	return (id)[[OFMutableString_UTF8 alloc] initWithContentsOfURL: URL];
+	return (id)[[OFMutableUTF8String alloc] initWithContentsOfURL: URL];
 }
 
 - (instancetype)initWithContentsOfURL: (OFURL *)URL
 			     encoding: (of_string_encoding_t)encoding
 {
-	return (id)[[OFMutableString_UTF8 alloc]
+	return (id)[[OFMutableUTF8String alloc]
 	    initWithContentsOfURL: URL
 			 encoding: encoding];
 }
@@ -199,8 +193,7 @@ static struct {
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFMutableString_UTF8 alloc]
-	    initWithSerialization: element];
+	return (id)[[OFMutableUTF8String alloc] initWithSerialization: element];
 }
 
 - (instancetype)retain
@@ -227,7 +220,7 @@ static struct {
 + (void)initialize
 {
 	if (self == [OFMutableString class])
-		placeholder.isa = [OFMutableString_placeholder class];
+		placeholder.isa = [OFMutableStringPlaceholder class];
 }
 
 + (instancetype)alloc

@@ -22,12 +22,12 @@
 #include <assert.h>
 
 #import "OFDictionary.h"
-#import "OFDictionary_hashtable.h"
 #import "OFArray.h"
 #import "OFCharacterSet.h"
+#import "OFData.h"
+#import "OFMapTableDictionary.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
-#import "OFData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfRangeException.h"
@@ -44,46 +44,46 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 					 depth: (size_t)depth;
 @end
 
-@interface OFDictionary_placeholder: OFDictionary
+@interface OFDictionaryPlaceholder: OFDictionary
 @end
 
-@interface OFCharacterSet_URLQueryPartAllowed: OFCharacterSet
+@interface OFURLQueryPartAllowedCharacterSet: OFCharacterSet
 + (OFCharacterSet *)URLQueryPartAllowedCharacterSet;
 @end
 
-@implementation OFDictionary_placeholder
+@implementation OFDictionaryPlaceholder
 - (instancetype)init
 {
-	return (id)[[OFDictionary_hashtable alloc] init];
+	return (id)[[OFMapTableDictionary alloc] init];
 }
 
 - (instancetype)initWithDictionary: (OFDictionary *)dictionary
 {
-	return (id)[[OFDictionary_hashtable alloc]
+	return (id)[[OFMapTableDictionary alloc]
 	    initWithDictionary: dictionary];
 }
 
 - (instancetype)initWithObject: (id)object
 			forKey: (id)key
 {
-	return (id)[[OFDictionary_hashtable alloc] initWithObject: object
-							   forKey: key];
+	return (id)[[OFMapTableDictionary alloc] initWithObject: object
+							 forKey: key];
 }
 
 - (instancetype)initWithObjects: (OFArray *)objects
 			forKeys: (OFArray *)keys
 {
-	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
-							   forKeys: keys];
+	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+							 forKeys: keys];
 }
 
 - (instancetype)initWithObjects: (id const *)objects
 			forKeys: (id const *)keys
 			  count: (size_t)count
 {
-	return (id)[[OFDictionary_hashtable alloc] initWithObjects: objects
-							   forKeys: keys
-							     count: count];
+	return (id)[[OFMapTableDictionary alloc] initWithObjects: objects
+							 forKeys: keys
+							   count: count];
 }
 
 - (instancetype)initWithKeysAndObjects: (id <OFCopying>)firstKey, ...
@@ -92,8 +92,8 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 	va_list arguments;
 
 	va_start(arguments, firstKey);
-	ret = [[OFDictionary_hashtable alloc] initWithKey: firstKey
-						arguments: arguments];
+	ret = [[OFMapTableDictionary alloc] initWithKey: firstKey
+					      arguments: arguments];
 	va_end(arguments);
 
 	return ret;
@@ -102,13 +102,13 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 - (instancetype)initWithKey: (id <OFCopying>)firstKey
 		  arguments: (va_list)arguments
 {
-	return (id)[[OFDictionary_hashtable alloc] initWithKey: firstKey
-						     arguments: arguments];
+	return (id)[[OFMapTableDictionary alloc] initWithKey: firstKey
+						   arguments: arguments];
 }
 
 - (instancetype)initWithSerialization: (OFXMLElement *)element
 {
-	return (id)[[OFDictionary_hashtable alloc]
+	return (id)[[OFMapTableDictionary alloc]
 	    initWithSerialization: element];
 }
 
@@ -132,14 +132,14 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 }
 @end
 
-@implementation OFCharacterSet_URLQueryPartAllowed
+@implementation OFURLQueryPartAllowedCharacterSet
 + (void)initialize
 {
-	if (self != [OFCharacterSet_URLQueryPartAllowed class])
+	if (self != [OFURLQueryPartAllowedCharacterSet class])
 		return;
 
 	URLQueryPartAllowedCharacterSet =
-	    [[OFCharacterSet_URLQueryPartAllowed alloc] init];
+	    [[OFURLQueryPartAllowedCharacterSet alloc] init];
 }
 
 + (OFCharacterSet *)URLQueryPartAllowedCharacterSet
@@ -196,7 +196,7 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 + (void)initialize
 {
 	if (self == [OFDictionary class])
-		placeholder.isa = [OFDictionary_placeholder class];
+		placeholder.isa = [OFDictionaryPlaceholder class];
 }
 
 + (instancetype)alloc
@@ -627,7 +627,7 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 	void *pool = objc_autoreleasePoolPush();
 	OFEnumerator *keyEnumerator = [self keyEnumerator];
 	OFEnumerator *objectEnumerator = [self objectEnumerator];
-	OFCharacterSet *allowed = [OFCharacterSet_URLQueryPartAllowed
+	OFCharacterSet *allowed = [OFURLQueryPartAllowedCharacterSet
 	    URLQueryPartAllowedCharacterSet];
 	bool first = true;
 	OFObject *key, *object;

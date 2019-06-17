@@ -15,7 +15,7 @@
  * file.
  */
 
-#import "NSDictionary_OFDictionary.h"
+#import "NSOFDictionary.h"
 
 #import "OFDictionary+NSObject.h"
 
@@ -24,7 +24,7 @@ int _OFDictionary_NSObject_reference;
 @implementation OFDictionary (NSObject)
 - (id)NSObject
 {
-	return [[[NSDictionary_OFDictionary alloc]
+	return [[[NSOFDictionary alloc]
 	    initWithOFDictionary: self] autorelease];
 }
 @end
