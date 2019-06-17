@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "ObjFW_RT.h"
+#import "ObjFWRT.h"
 #import "private.h"
 
 struct objc_hashtable_bucket objc_deleted_bucket;

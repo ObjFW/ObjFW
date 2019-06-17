@@ -33,7 +33,7 @@ extern int _NSString_OFObject_reference;
 
 /*!
  * @category NSString (OFObject)
- *	     NSString+OFObject.h ObjFW-Bridge/NSString+OFObject.h
+ *	     NSString+OFObject.h ObjFWBridge/NSString+OFObject.h
  *
  * @brief Support for bridging NSStrings to OFStrings.
  *

@@ -37,9 +37,9 @@
 
 #ifdef OF_OBJFW_RUNTIME
 # ifdef OF_COMPILING_OBJFW
-#  import "ObjFW_RT.h"
+#  import "ObjFWRT.h"
 # else
-#  import <ObjFW_RT/ObjFW_RT.h>
+#  import <ObjFWRT/ObjFWRT.h>
 # endif
 #endif
 #ifdef OF_APPLE_RUNTIME

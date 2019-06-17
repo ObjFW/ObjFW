@@ -10,7 +10,7 @@ include ../../buildsys.mk
 
 PACKAGE_NAME = ofhttp
 
-${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFW_RT_DEP_LVL2}
+${PROG}: ${LIBOBJFW_DEP_LVL2} ${LIBOBJFWRT_DEP_LVL2}
 
 CPPFLAGS += -I../../src					\
 	    -I../../src/runtime				\

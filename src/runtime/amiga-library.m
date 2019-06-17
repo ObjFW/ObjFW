@@ -17,7 +17,7 @@
 
 #include "config.h"
 
-#import "ObjFW_RT.h"
+#import "ObjFWRT.h"
 #import "private.h"
 
 #include <exec/libraries.h>
@@ -27,7 +27,7 @@
 
 #define CONCAT_VERSION2(major, minor) #major "." #minor
 #define CONCAT_VERSION(major, minor) CONCAT_VERSION2(major, minor)
-#define VERSION_STRING CONCAT_VERSION(OBJFW_RT_LIB_MAJOR, OBJFW_RT_LIB_MINOR)
+#define VERSION_STRING CONCAT_VERSION(OBJFWRT_LIB_MAJOR, OBJFWRT_LIB_MINOR)
 
 #if defined(OF_AMIGAOS_M68K)
 # define DATA_OFFSET 0x7FFE
@@ -663,15 +663,15 @@ struct Resident resident = {
 	    | RTF_PPC | RTF_EXTENDED
 #endif
 	    ,
-	.rt_Version = OBJFW_RT_LIB_MAJOR,
+	.rt_Version = OBJFWRT_LIB_MAJOR,
 	.rt_Type = NT_LIBRARY,
 	.rt_Pri = 0,
-	.rt_Name = (char *)OBJFW_RT_AMIGA_LIB,
-	.rt_IdString = (char *)"ObjFW_RT " VERSION_STRING
+	.rt_Name = (char *)OBJFWRT_AMIGA_LIB,
+	.rt_IdString = (char *)"ObjFWRT " VERSION_STRING
 	    " \xA9 2008-2019 Jonathan Schleifer",
 	.rt_Init = &init_table,
 #ifdef OF_MORPHOS
-	.rt_Revision = OBJFW_RT_LIB_MINOR,
+	.rt_Revision = OBJFWRT_LIB_MINOR,
 	.rt_Tags = NULL,
 #endif
 };

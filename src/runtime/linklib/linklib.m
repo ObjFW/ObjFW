@@ -17,7 +17,7 @@
 
 #include "config.h"
 
-#import "ObjFW_RT.h"
+#import "ObjFWRT.h"
 #import "private.h"
 #import "macros.h"
 
@@ -206,14 +206,14 @@ ctor(void)
 	if (initialized)
 		return;
 
-	if ((ObjFWRTBase = OpenLibrary(OBJFW_RT_AMIGA_LIB,
-	    OBJFW_RT_LIB_MINOR)) == NULL) {
-		fputs("Failed to open " OBJFW_RT_AMIGA_LIB "!\n", stderr);
+	if ((ObjFWRTBase = OpenLibrary(OBJFWRT_AMIGA_LIB,
+	    OBJFWRT_LIB_MINOR)) == NULL) {
+		fputs("Failed to open " OBJFWRT_AMIGA_LIB "!\n", stderr);
 		abort();
 	}
 
 	if (!objc_init(1, &libc, stdout, stderr)) {
-		fputs("Failed to initialize " OBJFW_RT_AMIGA_LIB "!\n", stderr);
+		fputs("Failed to initialize " OBJFWRT_AMIGA_LIB "!\n", stderr);
 		abort();
 	}
 

@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ObjFW_RT.h"
+#include "ObjFWRT.h"
 #include "private.h"
 
 static objc_enumeration_mutation_handler_t enumerationMutationHandler = NULL;

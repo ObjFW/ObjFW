@@ -39,7 +39,7 @@ extern int _OFDictionary_NSObject_reference;
 
 /*!
  * @category OFDictionary (NSObject) \
- *	     OFDictionary+NSObject.h ObjFW-Bridge/OFDictionary+NSObject.h
+ *	     OFDictionary+NSObject.h ObjFWBridge/OFDictionary+NSObject.h
  *
  * @brief Support for bridging OFDictionaries to NSDictionaries.
  */

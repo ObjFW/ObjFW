@@ -2,9 +2,9 @@ include ../../extra.mk
 
 DISTCLEAN = Info.plist
 
-SHARED_LIB = ${OBJFW_BRIDGE_SHARED_LIB}
-STATIC_LIB = ${OBJFW_BRIDGE_STATIC_LIB}
-FRAMEWORK = ${OBJFW_BRIDGE_FRAMEWORK}
+SHARED_LIB = ${OBJFWBRIDGE_SHARED_LIB}
+STATIC_LIB = ${OBJFWBRIDGE_STATIC_LIB}
+FRAMEWORK = ${OBJFWBRIDGE_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
@@ -19,14 +19,14 @@ SRCS = OFArray+NSObject.m	\
 INCLUDES := ${SRCS:.m=.h}	\
 	    NSBridging.h	\
 	    OFBridging.h	\
-	    ObjFW_Bridge.h
+	    ObjFWBridge.h
 
 SRCS += NSArray_OFArray.m		\
 	NSDictionary_OFDictionary.m	\
 	OFArray_NSArray.m		\
 	OFDictionary_NSDictionary.m	\
 
-includesubdir = ObjFW_Bridge
+includesubdir = ObjFWBridge
 
 include ../../buildsys.mk
 

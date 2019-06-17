@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>ObjFW_Bridge</string>
+	<string>ObjFWBridge</string>
 	<key>CFBundleName</key>
-	<string>$ObjFW_Bridge</string>
+	<string>ObjFWBridge</string>
 	<key>CFBundleIdentifier</key>
 	<string>zone.heap.objfw.bridge</string>
 	<key>CFBundleInfoDictionaryVersion</key>

@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "ObjFW_RT.h"
+#import "ObjFWRT.h"
 #import "private.h"
 
 struct objc_sparsearray *

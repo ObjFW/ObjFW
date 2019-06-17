@@ -1,12 +1,12 @@
 include ../../../extra.mk
 
-STATIC_LIB = libobjfw_rt.library.a
+STATIC_LIB = libobjfwrt.library.a
 SRCS = linklib.m
 
 include ../../../buildsys.mk
 
 CPPFLAGS += -I..  -I../..  -I../../..				\
 	    -DOBJC_COMPILING_AMIGA_LINKLIB			\
-	    -DOBJFW_RT_AMIGA_LIB=\"${OBJFW_RT_AMIGA_LIB}\"	\
-	    -DOBJFW_RT_LIB_MINOR=${OBJFW_RT_LIB_MINOR}
+	    -DOBJFWRT_AMIGA_LIB=\"${OBJFWRT_AMIGA_LIB}\"	\
+	    -DOBJFWRT_LIB_MINOR=${OBJFWRT_LIB_MINOR}
 LD = ${OBJC}

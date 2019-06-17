@@ -78,10 +78,10 @@ run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR}
 	rm -f libobjfw.dll libobjfw.${OBJFW_LIB_MAJOR}.dylib
-	rm -f libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR}
-	rm -f libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR}
-	rm -f libobjfw_rt.dll libobjfw_rt.${OBJFW_RT_LIB_MAJOR}.dylib
-	rm -f ${OBJFW_RT_AMIGA_LIB}
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}
+	rm -f libobjfwrt.dll libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib
+	rm -f ${OBJFWRT_AMIGA_LIB}
 	if test -f ../src/libobjfw.so; then \
 		${LN_S} ../src/libobjfw.so libobjfw.so.${OBJFW_LIB_MAJOR}; \
 		${LN_S} ../src/libobjfw.so \
@@ -97,24 +97,24 @@ run:
 		${LN_S} ../src/libobjfw.dylib \
 		    libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
 	fi
-	if test -f ../src/runtime/libobjfw_rt.so; then \
-		${LN_S} ../src/runtime/libobjfw_rt.so \
-		    libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR}; \
-		${LN_S} ../src/runtime/libobjfw_rt.so \
-		    libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR}; \
-	elif test -f ../src/runtime/libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR}; then \
-		${LN_S} ../src/runtime/libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR} libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR}; \
+	if test -f ../src/runtime/libobjfwrt.so; then \
+		${LN_S} ../src/runtime/libobjfwrt.so \
+		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
+		${LN_S} ../src/runtime/libobjfwrt.so \
+		    libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
+	elif test -f ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; then \
+		${LN_S} ../src/runtime/libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR}; \
 	fi
-	if test -f ../src/runtime/libobjfw_rt.dll; then \
-		${LN_S} ../src/runtime/libobjfw_rt.dll libobjfw_rt.dll; \
+	if test -f ../src/runtime/libobjfwrt.dll; then \
+		${LN_S} ../src/runtime/libobjfwrt.dll libobjfwrt.dll; \
 	fi
-	if test -f ../src/runtime/libobjfw_rt.dylib; then \
-		${LN_S} ../src/runtime/libobjfw_rt.dylib \
-		    libobjfw_rt.${OBJFW_RT_LIB_MAJOR}.dylib; \
+	if test -f ../src/runtime/libobjfwrt.dylib; then \
+		${LN_S} ../src/runtime/libobjfwrt.dylib \
+		    libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	fi
-	if test -f ../src/runtime/${OBJFW_RT_AMIGA_LIB}; then \
-		${LN_S} ../src/runtime/${OBJFW_RT_AMIGA_LIB} \
-		    ${OBJFW_RT_AMIGA_LIB}; \
+	if test -f ../src/runtime/${OBJFWRT_AMIGA_LIB}; then \
+		${LN_S} ../src/runtime/${OBJFWRT_AMIGA_LIB} \
+		    ${OBJFWRT_AMIGA_LIB}; \
 	fi
 	LD_LIBRARY_PATH=.$${LD_LIBRARY_PATH+:}$$LD_LIBRARY_PATH \
 	DYLD_FRAMEWORK_PATH=../src:../src/runtime$${DYLD_FRAMEWORK_PATH+:}$$DYLD_FRAMEWORK_PATH \
@@ -125,9 +125,9 @@ run:
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	rm -f libobjfw.so.${OBJFW_LIB_MAJOR_MINOR} libobjfw.dll; \
 	rm -f libobjfw.${OBJFW_LIB_MAJOR}.dylib; \
-	rm -f libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR}; \
-	rm -f libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR_MINOR} libobjfw_rt.dll; \
-	rm -f libobjfw_rt.${OBJFW_RT_LIB_MAJOR}.dylib; \
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
+	rm -f libobjfwrt.so.${OBJFWRT_LIB_MAJOR_MINOR} libobjfwrt.dll; \
+	rm -f libobjfwrt.${OBJFWRT_LIB_MAJOR}.dylib; \
 	exit $$EXIT
 
 run-on-ios: all
@@ -155,9 +155,9 @@ run-on-android: all
 		adb push ../src/libobjfw.so \
 		    /data/local/tmp/objfw/libobjfw.so.${OBJFW_LIB_MAJOR}; \
 	fi
-	if test -f ../src/runtime/libobjfw_rt.so; then \
-		adb push ../src/runtime/libobjfw_rt.so \
-		    /data/local/tmp/objfw/libobjfw_rt.so.${OBJFW_RT_LIB_MAJOR}; \
+	if test -f ../src/runtime/libobjfwrt.so; then \
+		adb push ../src/runtime/libobjfwrt.so \
+		    /data/local/tmp/objfw/libobjfwrt.so.${OBJFWRT_LIB_MAJOR}; \
 	fi
 	adb push tests /data/local/tmp/objfw/tests
 	adb push testfile.bin /data/local/tmp/objfw/testfile.bin
@@ -180,7 +180,7 @@ EBOOT.PBP: ${PROG_NOINST}
 boot.dol: ${PROG_NOINST}
 	elf2dol ${PROG_NOINST} $@
 
-${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFW_RT_DEP}
+${PROG_NOINST}: ${LIBOBJFW_DEP} ${LIBOBJFWRT_DEP}
 
 ${PROG_NOINST}.arm9: ${PROG_NOINST}
 	arm-none-eabi-objcopy -O binary $< $@

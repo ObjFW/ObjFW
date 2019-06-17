@@ -58,8 +58,8 @@ case "$host" in
 		ac_cv_snprintf_useful_ret="yes"
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
-			AC_SUBST(OBJFW_RT_AMIGA_LIB,
-				'objfw_rt_${OBJFW_RT_LIB_MAJOR}_68k.library')
+			AC_SUBST(OBJFWRT_AMIGA_LIB,
+				'objfwrt68k.library')
 			AC_SUBST(SFDC_TARGET, m68k-amigaos)
 			AC_SUBST(SFD_FILE, amigaos3.sfd)
 			AC_SUBST(SFDC_INLINE_H, inline.h)
@@ -88,9 +88,8 @@ case "$host" in
 			check_pedantic="no"	# Breaks generated inlines
 
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
-				t='objfw_rt_${OBJFW_RT_LIB_MAJOR}_morphos'
-				t="$t.library"
-				AC_SUBST(OBJFW_RT_AMIGA_LIB, $t)
+				t='objfwrt.library'
+				AC_SUBST(OBJFWRT_AMIGA_LIB, $t)
 				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
 				t="-mresident32 -ffreestanding"
 				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
@@ -514,34 +513,34 @@ case "$objc_runtime" in
 		AC_SUBST(RUNTIME, "runtime")
 
 		AS_IF([test x"$enable_shared" != x"no"], [
-			AC_SUBST(OBJFW_RT_SHARED_LIB,
-				"${LIB_PREFIX}objfw_rt${LIB_SUFFIX}")
+			AC_SUBST(OBJFWRT_SHARED_LIB,
+				"${LIB_PREFIX}objfwrt${LIB_SUFFIX}")
 		])
 
 		AS_IF([test x"$enable_static" = x"yes"], [
-			AC_SUBST(OBJFW_RT_STATIC_LIB, "libobjfw_rt.a")
+			AC_SUBST(OBJFWRT_STATIC_LIB, "libobjfwrt.a")
 		])
 
 		AS_IF([test x"$build_framework" = x"yes"], [
-			AC_SUBST(OBJFW_RT_FRAMEWORK, "ObjFW_RT.framework")
-			AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFW_RT")
+			AC_SUBST(OBJFWRT_FRAMEWORK, "ObjFWRT.framework")
+			AC_SUBST(RUNTIME_FRAMEWORK_LIBS, "-framework ObjFWRT")
 		])
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
-			AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt.library")
+			AC_SUBST(RUNTIME_LIBS, "-lobjfwrt.library")
 			AC_SUBST(LINKLIB, linklib)
-			tmp="../src/runtime/linklib/libobjfw_rt.library.a"
-			AC_SUBST(LIBOBJFW_RT_DEP, "$tmp")
-			AC_SUBST(LIBOBJFW_RT_DEP_LVL2, "../$tmp")
+			tmp="../src/runtime/linklib/libobjfwrt.library.a"
+			AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
+			AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
 		], [
-			AC_SUBST(RUNTIME_LIBS, "-lobjfw_rt")
+			AC_SUBST(RUNTIME_LIBS, "-lobjfwrt")
 		])
 
 		AS_IF([test x"$enable_shared" = x"no" \
 				-a x"$enable_amiga_lib" = x"no"], [
-			tmp="../src/runtime/libobjfw_rt.a"
-			AC_SUBST(LIBOBJFW_RT_DEP, "$tmp")
-			AC_SUBST(LIBOBJFW_RT_DEP_LVL2, "../$tmp")
+			tmp="../src/runtime/libobjfwrt.a"
+			AC_SUBST(LIBOBJFWRT_DEP, "$tmp")
+			AC_SUBST(LIBOBJFWRT_DEP_LVL2, "../$tmp")
 		])
 
 		AS_IF([test x"$enable_seluid24" = x"yes"], [
@@ -650,9 +649,9 @@ case "$host_os" in
 			AS_IF([test x"$exception_type" = x"SjLj"], [
 				LDFLAGS="$LDFLAGS -Wl,-U,___gxx_personality_sj0"
 			])
-			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfw_rt"])
+			AC_SUBST(REEXPORT_RUNTIME, ["-Wl,-reexport-lobjfwrt"])
 			AC_SUBST(REEXPORT_RUNTIME_FRAMEWORK,
-				["-Wl,-reexport_framework,ObjFW_RT"])
+				["-Wl,-reexport_framework,ObjFWRT"])
 		])
 
 		AC_CHECK_HEADERS(sysdir.h)
@@ -1435,16 +1434,16 @@ AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 		AC_SUBST(BRIDGE, "bridge")
 
 		AS_IF([test x"$enable_shared" != x"no"], [
-			AC_SUBST(OBJFW_BRIDGE_SHARED_LIB,
-				"${LIB_PREFIX}objfw_bridge${LIB_SUFFIX}")
+			AC_SUBST(OBJFWBRIDGE_SHARED_LIB,
+				"${LIB_PREFIX}objfwbridge${LIB_SUFFIX}")
 		])
 		AS_IF([test x"$enable_static" = x"yes" \
 		    -o x"$enable_shared" = x"no"], [
-			AC_SUBST(OBJFW_BRIDGE_STATIC_LIB, "libobjfw_bridge.a")
+			AC_SUBST(OBJFWBRIDGE_STATIC_LIB, "libobjfwbridge.a")
 		])
 		AS_IF([test x"$build_framework" = x"yes"], [
-			AC_SUBST(OBJFW_BRIDGE_FRAMEWORK,
-				"ObjFW_Bridge.framework")
+			AC_SUBST(OBJFWBRIDGE_FRAMEWORK,
+				"ObjFWBridge.framework")
 		])
 	])
 ])

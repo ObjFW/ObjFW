@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#import "ObjFW_RT.h"
+#import "ObjFWRT.h"
 #import "private.h"
 
 static struct objc_hashtable *categoriesMap = NULL;

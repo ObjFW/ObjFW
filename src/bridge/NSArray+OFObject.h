@@ -33,7 +33,7 @@ extern int _NSArray_OFObject_reference;
 
 /*!
  * @category NSArray (OFObject) \
- *	     NSArray+OFObject.h ObjFW-Bridge/NSArray+OFObject.h
+ *	     NSArray+OFObject.h ObjFWBridge/NSArray+OFObject.h
  *
  * @brief Support for bridging NSArrays to OFArrays.
  */

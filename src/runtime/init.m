@@ -17,7 +17,7 @@
 
 #include "config.h"
 
-#import "ObjFW_RT.h"
+#import "ObjFWRT.h"
 #import "private.h"
 
 void

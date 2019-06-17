@@ -28,7 +28,7 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @protocol NSBridging NSBridging.h ObjFW-Bridge/NSBridging.h
+ * @protocol NSBridging NSBridging.h ObjFWBridge/NSBridging.h
  *
  * @brief A protocol implemented by classes supporting bridging Foundation
  *	  objects to ObjFW objects.

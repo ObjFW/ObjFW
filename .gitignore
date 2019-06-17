@@ -27,9 +27,9 @@ generators/gen_tables.exe
 src/Info.plist
 src/ObjFW.framework
 src/bridge/Info.plist
-src/bridge/ObjFW_Bridge.framework
+src/bridge/ObjFWBridge.framework
 src/objfw-defs.h
-src/runtime/ObjFW_RT.framework
+src/runtime/ObjFWRT.framework
 src/runtime/amiga-library-functable.inc
 src/runtime/inline.h
 tests/*.map
