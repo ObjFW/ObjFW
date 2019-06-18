@@ -25,6 +25,7 @@
 #import "OFArray.h"
 #import "OFCharacterSet.h"
 #import "OFData.h"
+#import "OFEnumerator.h"
 #import "OFMapTableDictionary.h"
 #import "OFString.h"
 #import "OFXMLElement.h"
@@ -45,6 +46,15 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 @end
 
 @interface OFDictionaryPlaceholder: OFDictionary
+@end
+
+@interface OFDictionaryObjectEnumerator: OFEnumerator
+{
+	OFDictionary *_dictionary;
+	OFEnumerator *_keyEnumerator;
+}
+
+- (instancetype)initWithDictionary: (OFDictionary *)dictionary;
 @end
 
 @interface OFURLQueryPartAllowedCharacterSet: OFCharacterSet
@@ -504,7 +514,8 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 
 - (OFEnumerator *)objectEnumerator
 {
-	OF_UNRECOGNIZED_SELECTOR
+	return [[[OFDictionaryObjectEnumerator alloc]
+	    initWithDictionary: self] autorelease];
 }
 
 - (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
@@ -851,5 +862,48 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 	objc_autoreleasePoolPop(pool);
 
 	return data;
+}
+@end
+
+@implementation OFDictionaryObjectEnumerator
+- (instancetype)initWithDictionary: (OFDictionary *)dictionary
+{
+	self = [super init];
+
+	@try {
+		void *pool = objc_autoreleasePoolPush();
+
+		_dictionary = [dictionary retain];
+		_keyEnumerator = [[_dictionary keyEnumerator] retain];
+
+		objc_autoreleasePoolPop(pool);
+	} @catch (id e) {
+		[self release];
+		@throw e;
+	}
+
+	return self;
+}
+
+- (void)dealloc
+{
+	[_dictionary release];
+	[_keyEnumerator release];
+
+	[super dealloc];
+}
+
+- (id)nextObject
+{
+	id key = [_keyEnumerator nextObject];
+	id object;
+
+	if (key == nil)
+		return nil;
+
+	if ((object = [_dictionary objectForKey: key]) == nil)
+		@throw [OFInvalidArgumentException exception];
+
+	return object;
 }
 @end
