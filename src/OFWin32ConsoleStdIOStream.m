@@ -69,7 +69,7 @@
 		return;
 
 	if ((fd = _fileno(stdin)) >= 0)
-		of_stdin = [[OFWin32ConsoleStdIOStream_ alloc]
+		of_stdin = [[OFWin32ConsoleStdIOStream alloc]
 		    of_initWithFileDescriptor: fd];
 	if ((fd = _fileno(stdout)) >= 0)
 		of_stdout = [[OFWin32ConsoleStdIOStream alloc]

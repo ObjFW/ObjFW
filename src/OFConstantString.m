@@ -225,7 +225,7 @@ struct {
 
 /*
  * In all following methods, the constant string is converted to an
- * OFUTF8String and the message sent again.
+ * OFConstantUTF8String and the message sent again.
  */
 
 /* From protocol OFCopying */

@@ -43,8 +43,8 @@
 #import "OFStream.h"
 #import "OFURL.h"
 #import "OFURLHandler.h"
-#import "OFUTF8String+Private.h"
 #import "OFUTF8String.h"
+#import "OFUTF8String+Private.h"
 #import "OFXMLElement.h"
 
 #import "OFInitializationFailedException.h"
