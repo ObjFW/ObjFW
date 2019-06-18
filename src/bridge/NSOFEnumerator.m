@@ -15,56 +15,35 @@
  * file.
  */
 
-#import <Foundation/NSArray.h>
+#import "NSOFEnumerator.h"
+#import "OFEnumerator.h"
 
-#import "OFNSArray.h"
 #import "NSBridging.h"
+#import "OFBridging.h"
 
-#import "OFInvalidArgumentException.h"
-#import "OFOutOfRangeException.h"
-
-@implementation OFNSArray
-- (instancetype)initWithNSArray: (NSArray *)array
+@implementation NSOFEnumerator
+- (instancetype)initWithOFEnumerator: (OFEnumerator *)enumerator
 {
-	self = [super init];
-
-	@try {
-		if (array == nil)
-			@throw [OFInvalidArgumentException exception];
-
-		_array = [array retain];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
+	if ((self = [super init]) != nil)
+		_enumerator = [enumerator retain];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[_array release];
+	[_enumerator release];
 
 	[super dealloc];
 }
 
-- (id)objectAtIndex: (size_t)idx
+- (id)nextObject
 {
-	id object;
+	id object = [_enumerator nextObject];
 
-	if (idx > NSUIntegerMax)
-		@throw [OFOutOfRangeException exception];
-
-	object = [_array objectAtIndex: idx];
-
-	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
-		return [object OFObject];
+	if ([(OFObject *)object conformsToProtocol: @protocol(OFBridging)])
+		return [object NSObject];
 
 	return object;
-}
-
-- (size_t)count
-{
-	return _array.count;
 }
 @end

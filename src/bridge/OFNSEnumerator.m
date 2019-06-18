@@ -15,9 +15,8 @@
  * file.
  */
 
-#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
 
-#import "OFNSDictionary.h"
 #import "OFNSEnumerator.h"
 
 #import "NSBridging.h"
@@ -25,16 +24,16 @@
 
 #import "OFInvalidArgumentException.h"
 
-@implementation OFNSDictionary
-- (instancetype)initWithNSDictionary: (NSDictionary *)dictionary
+@implementation OFNSEnumerator
+- (instancetype)initWithNSEnumerator: (NSEnumerator *)enumerator
 {
 	self = [super init];
 
 	@try {
-		if (dictionary == nil)
+		if (enumerator == nil)
 			@throw [OFInvalidArgumentException exception];
 
-		_dictionary = [dictionary retain];
+		_enumerator = [enumerator retain];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -45,34 +44,18 @@
 
 - (void)dealloc
 {
-	[_dictionary release];
+	[_enumerator release];
 
 	[super dealloc];
 }
 
-- (id)objectForKey: (id)key
+- (id)nextObject
 {
-	id object;
-
-	if ([(OFObject *)key conformsToProtocol: @protocol(OFBridging)])
-		key = [key NSObject];
-
-	object = [_dictionary objectForKey: key];
+	id object = [_enumerator nextObject];
 
 	if ([(NSObject *)object conformsToProtocol: @protocol(NSBridging)])
 		return [object OFObject];
 
 	return object;
-}
-
-- (size_t)count
-{
-	return _dictionary.count;
-}
-
-- (OFEnumerator *)keyEnumerator
-{
-	return [[[OFNSEnumerator alloc]
-	    initWithNSEnumerator: [_dictionary keyEnumerator]] autorelease];
 }
 @end

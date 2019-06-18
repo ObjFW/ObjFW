@@ -16,6 +16,7 @@
  */
 
 #import "NSOFDictionary.h"
+#import "NSOFEnumerator.h"
 #import "OFDictionary.h"
 
 #import "NSBridging.h"
@@ -62,5 +63,11 @@
 		@throw [OFOutOfRangeException exception];
 
 	return (NSUInteger)count;
+}
+
+- (NSEnumerator *)keyEnumerator
+{
+	return [[[NSOFEnumerator alloc]
+	    initWithOFEnumerator: [_dictionary keyEnumerator]] autorelease];
 }
 @end

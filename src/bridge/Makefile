@@ -23,8 +23,10 @@ INCLUDES := ${SRCS:.m=.h}	\
 
 SRCS += NSOFArray.m		\
 	NSOFDictionary.m	\
+	NSOFEnumerator.m	\
 	OFNSArray.m		\
 	OFNSDictionary.m	\
+	OFNSEnumerator.m
 
 includesubdir = ObjFWBridge
 
