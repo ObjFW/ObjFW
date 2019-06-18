@@ -24,15 +24,17 @@
 @implementation NSOFArray
 - (instancetype)initWithOFArray: (OFArray *)array
 {
-	if ((self = [super init]) != nil) {
-		@try {
-			_array = [array retain];
-		} @catch (id e) {
-			return nil;
-		}
-	}
+	if ((self = [super init]) != nil)
+		_array = [array retain];
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[_array release];
+
+	[super dealloc];
 }
 
 - (id)objectAtIndex: (NSUInteger)idx

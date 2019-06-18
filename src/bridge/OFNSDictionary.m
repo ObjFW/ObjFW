@@ -43,6 +43,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_dictionary release];
+
+	[super dealloc];
+}
+
 - (id)objectForKey: (id)key
 {
 	id object;

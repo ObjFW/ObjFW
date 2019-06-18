@@ -26,15 +26,17 @@
 @implementation NSOFDictionary
 - (instancetype)initWithOFDictionary: (OFDictionary *)dictionary
 {
-	if ((self = [super init]) != nil) {
-		@try {
-			_dictionary = [dictionary retain];
-		} @catch (id e) {
-			return nil;
-		}
-	}
+	if ((self = [super init]) != nil)
+		_dictionary = [dictionary retain];
 
 	return self;
+}
+
+- (void)dealloc
+{
+	[_dictionary release];
+
+	[super dealloc];
 }
 
 - (id)objectForKey: (id)key

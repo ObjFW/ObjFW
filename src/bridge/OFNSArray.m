@@ -42,6 +42,13 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_array release];
+
+	[super dealloc];
+}
+
 - (id)objectAtIndex: (size_t)idx
 {
 	id object;
