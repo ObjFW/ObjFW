@@ -16,8 +16,8 @@
  */
 
 #import "NSOFDictionary.h"
-#import "NSOFEnumerator.h"
 #import "OFDictionary.h"
+#import "OFEnumerator+NSObject.h"
 
 #import "NSBridging.h"
 #import "OFBridging.h"
@@ -67,7 +67,6 @@
 
 - (NSEnumerator *)keyEnumerator
 {
-	return [[[NSOFEnumerator alloc]
-	    initWithOFEnumerator: [_dictionary keyEnumerator]] autorelease];
+	return [_dictionary keyEnumerator].NSObject;
 }
 @end
