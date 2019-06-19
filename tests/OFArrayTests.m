@@ -294,7 +294,6 @@ static OFString *c_ary[] = {
 
 	TEST(@"OFEnumerator's -[nextObject]", ok)
 
-	[enumerator reset];
 	[m[0] removeObjectAtIndex: 0];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",

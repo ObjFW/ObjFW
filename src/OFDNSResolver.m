@@ -1590,8 +1590,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 - (void)of_reloadSystemConfig
 {
 	/*
-	 * TODO: Rather than reparsing every, check what actually changed
-	 * (mtime) and only reset those.
+	 * TODO: Rather than reparsing every time, check what actually changed
+	 *	 (mtime) and only reset those.
 	 */
 
 	if (_lastConfigReload != nil && _configReloadInterval > 0 &&

@@ -222,7 +222,6 @@ static OFString *values[] = {
 	    [keyEnumerator nextObject] == nil &&
 	    [objectEnumerator nextObject] == nil)
 
-	[keyEnumerator reset];
 	[mutDict removeObjectForKey: keys[0]];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",

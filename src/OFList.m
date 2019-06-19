@@ -445,13 +445,4 @@
 
 	return ret;
 }
-
-- (void)reset
-{
-	if (*_mutationsPtr != _mutations)
-		@throw [OFEnumerationMutationException
-		    exceptionWithObject: _list];
-
-	_current = _list.firstListObject;
-}
 @end

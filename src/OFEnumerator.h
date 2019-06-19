@@ -59,12 +59,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An array of all remaining objects in the collection.
  */
 - (OFArray OF_GENERIC(ObjectType) *)allObjects;
-
-/*!
- * @brief Resets the enumerator, so the next call to nextObject returns the
- *	  first object again.
- */
-- (void)reset;
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # undef ObjectType
 #endif

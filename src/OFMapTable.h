@@ -255,12 +255,6 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
  * @return The next object
  */
 - (void *_Nullable *_Nullable)nextObject;
-
-/*!
- * @brief Resets the enumerator, so the next call to @ref nextObject returns the
- *	  first object again.
- */
-- (void)reset;
 @end
 
 OF_ASSUME_NONNULL_END

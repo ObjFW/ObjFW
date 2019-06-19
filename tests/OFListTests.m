@@ -109,7 +109,6 @@ static OFString *strings[] = {
 
 	TEST(@"OFEnumerator's -[nextObject]", ok);
 
-	[enumerator reset];
 	[list removeListObject: list.firstListObject];
 
 	EXPECT_EXCEPTION(@"Detection of mutation during enumeration",

@@ -58,9 +58,4 @@
 
 	return ret;
 }
-
-- (void)reset
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
 @end

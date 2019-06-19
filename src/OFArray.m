@@ -964,13 +964,4 @@ static struct {
 
 	return nil;
 }
-
-- (void)reset
-{
-	if (_mutationsPtr != NULL && *_mutationsPtr != _mutations)
-		@throw [OFEnumerationMutationException
-		    exceptionWithObject: _array];
-
-	_position = 0;
-}
 @end
