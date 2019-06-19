@@ -15,15 +15,30 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSEnumerator+OFObject.h"
-#import "NSNumber+OFObject.h"
-#import "NSString+OFObject.h"
+#import <Foundation/NSValue.h>
 
-#import "OFArray+NSObject.h"
-#import "OFException+Swift.h"
-#import "OFDictionary+NSObject.h"
-#import "OFEnumerator+NSObject.h"
-#import "OFNumber+NSObject.h"
-#import "OFString+NSObject.h"
+#import "NSBridging.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFNumber;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _NSNumber_OFObject_reference;
+#ifdef __cplusplus
+}
+#endif
+
+/*!
+ * @category NSNumber (OFObject)
+ *	     NSNumber+OFObject.h ObjFWBridge/NSNumber+OFObject.h
+ *
+ * @brief Support for bridging NSNumbers to OFNumbers.
+ */
+@interface NSNumber (OFObject) <NSBridging>
+@property (readonly, nonatomic) OFNumber *OFObject;
+@end
+
+OF_ASSUME_NONNULL_END

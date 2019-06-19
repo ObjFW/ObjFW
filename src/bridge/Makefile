@@ -12,10 +12,12 @@ SRCS = OFArray+NSObject.m	\
        OFEnumerator+NSObject.m	\
        OFException+Swift.m	\
        OFDictionary+NSObject.m	\
+       OFNumber+NSObject.m	\
        OFString+NSObject.m	\
        NSArray+OFObject.m	\
        NSDictionary+OFObject.m	\
        NSEnumerator+OFObject.m	\
+       NSNumber+OFObject.m	\
        NSString+OFObject.m
 
 INCLUDES := ${SRCS:.m=.h}	\
