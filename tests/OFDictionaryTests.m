@@ -38,6 +38,7 @@ static OFString *values[] = {
 @interface SimpleMutableDictionary: OFMutableDictionary
 {
 	OFMutableDictionary *_dictionary;
+	unsigned long _mutations;
 }
 @end
 
@@ -113,20 +114,6 @@ static OFString *values[] = {
 {
 	return [_dictionary keyEnumerator];
 }
-
-- (OFEnumerator *)objectEnumerator
-{
-	return [_dictionary objectEnumerator];
-}
-
-- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
-			   objects: (id *)objects
-			     count: (int)count
-{
-	return [_dictionary countByEnumeratingWithState: state
-						objects: objects
-						  count: count];
-}
 @end
 
 @implementation SimpleMutableDictionary
@@ -139,13 +126,36 @@ static OFString *values[] = {
 - (void)setObject: (id)object
 	   forKey: (id)key
 {
+	bool existed = ([_dictionary objectForKey: key] == nil);
+
 	[_dictionary setObject: object
 			forKey: key];
+
+	if (existed)
+		_mutations++;
 }
 
 - (void)removeObjectForKey: (id)key
 {
+	bool existed = ([_dictionary objectForKey: key] == nil);
+
 	[_dictionary removeObjectForKey: key];
+
+	if (existed)
+		_mutations++;
+}
+
+- (int)countByEnumeratingWithState: (of_fast_enumeration_state_t *)state
+			   objects: (id *)objects
+			     count: (int)count
+{
+	int ret = [super countByEnumeratingWithState: state
+					     objects: objects
+					       count: count];
+
+	state->mutationsPtr = &_mutations;
+
+	return ret;
 }
 @end
 
