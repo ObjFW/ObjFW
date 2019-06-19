@@ -37,33 +37,6 @@ OF_ASSUME_NONNULL_BEGIN
 - (OFEnumerator *)objectEnumerator;
 @end
 
-/*!
- * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
- *
- * @brief A class which provides methods to enumerate through collections.
- */
-@interface OFEnumerator OF_GENERIC(ObjectType): OFObject
-#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
-# define ObjectType id
-#endif
-/*!
- * @brief Returns the next object or `nil` if there is none left.
- *
- * @return The next object or `nil` if there is none left
- */
-- (nullable ObjectType)nextObject;
-
-/*!
- * @brief Returns an array of all remaining objects in the collection.
- *
- * @return An array of all remaining objects in the collection.
- */
-- (OFArray OF_GENERIC(ObjectType) *)allObjects;
-#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
-# undef ObjectType
-#endif
-@end
-
 /*
  * This needs to be exactly like this because it's hard-coded in the compiler.
  *
@@ -112,6 +85,33 @@ typedef struct {
 			   objects: (id __unsafe_unretained _Nonnull *_Nonnull)
 					objects
 			     count: (int)count;
+@end
+
+/*!
+ * @class OFEnumerator OFEnumerator.h ObjFW/OFEnumerator.h
+ *
+ * @brief A class which provides methods to enumerate through collections.
+ */
+@interface OFEnumerator OF_GENERIC(ObjectType): OFObject <OFFastEnumeration>
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# define ObjectType id
+#endif
+/*!
+ * @brief Returns the next object or `nil` if there is none left.
+ *
+ * @return The next object or `nil` if there is none left
+ */
+- (nullable ObjectType)nextObject;
+
+/*!
+ * @brief Returns an array of all remaining objects in the collection.
+ *
+ * @return An array of all remaining objects in the collection.
+ */
+- (OFArray OF_GENERIC(ObjectType) *)allObjects;
+#if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
+# undef ObjectType
+#endif
 @end
 
 OF_ASSUME_NONNULL_END
