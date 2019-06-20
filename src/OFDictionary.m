@@ -528,29 +528,18 @@ static OFCharacterSet *URLQueryPartAllowedCharacterSet = nil;
 	memcpy(&enumerator, state->extra, sizeof(enumerator));
 
 	if (enumerator == nil) {
-		void *pool = objc_autoreleasePoolPush();
-
-		enumerator = [[self keyEnumerator] retain];
+		enumerator = [self keyEnumerator];
 		memcpy(state->extra, &enumerator, sizeof(enumerator));
-
-		objc_autoreleasePoolPop(pool);
 	}
 
 	state->itemsPtr = objects;
 	state->mutationsPtr = (unsigned long *)self;
 
-	if (state->state == 1)
-		return 0;
-
 	for (i = 0; i < count; i++) {
 		id object = [enumerator nextObject];
 
-		if (object == nil) {
-			state->state = 1;
-			[enumerator release];
-
+		if (object == nil)
 			return i;
-		}
 
 		objects[i] = object;
 	}
