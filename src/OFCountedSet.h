@@ -39,6 +39,9 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
  *
  * @brief An abstract class for a mutable unordered set of objects, counting how
  *	  often it contains an object.
+ *
+ * @note Subclasses must implement @ref countForObject: as well as all methods
+ *	 of @ref OFSet and @ref OFMutableSet that need to be implemented.
  */
 @interface OFCountedSet OF_GENERIC(ObjectType):
     OFMutableSet OF_GENERIC(ObjectType)

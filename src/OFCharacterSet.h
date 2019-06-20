@@ -24,6 +24,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFCharacterSet OFCharacterSet.h ObjFW/OFCharacterSet.h
  *
  * @brief A class cluster representing a character set.
+ *
+ * @note Subclasses must implement @ref characterIsMember:.
  */
 @interface OFCharacterSet: OFObject
 #ifdef OF_HAVE_CLASS_PROPERTIES

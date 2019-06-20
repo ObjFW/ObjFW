@@ -37,6 +37,10 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
  *
  * @brief An abstract class for storing, adding and removing objects in an
  *	  array.
+ *
+ * @note Subclasses must implement @ref insertObject:atIndex:,
+ *	 @ref replaceObjectAtIndex:withObject:, @ref removeObjectAtIndex: as
+ *	 well as all methods of @ref OFArray that need to be implemented.
  */
 @interface OFMutableArray OF_GENERIC(ObjectType): OFArray OF_GENERIC(ObjectType)
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)

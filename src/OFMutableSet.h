@@ -23,6 +23,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFMutableSet OFSet.h ObjFW/OFSet.h
  *
  * @brief An abstract class for a mutable unordered set of unique objects.
+ *
+ * @note Subclasses must implement @ref addObject:, @ref removeObject: as well
+ *	 as all methods of @ref OFSet that need to be implemented.
  */
 @interface OFMutableSet OF_GENERIC(ObjectType): OFSet OF_GENERIC(ObjectType)
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)

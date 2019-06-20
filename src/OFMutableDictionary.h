@@ -36,6 +36,10 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
  * @class OFMutableDictionary OFDictionary.h ObjFW/OFDictionary.h
  *
  * @brief An abstract class for storing and changing objects in a dictionary.
+ *
+ * @note Subclasses must implement @ref setObject:forKey:,
+ *	 @ref removeObjectForKey: as well as all methods of @ref OFDictionary
+ *	 that need to be implemented.
  */
 @interface OFMutableDictionary OF_GENERIC(KeyType, ObjectType):
     OFDictionary OF_GENERIC(KeyType, ObjectType)

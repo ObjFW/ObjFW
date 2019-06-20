@@ -60,6 +60,9 @@ typedef bool (^of_set_filter_block_t)(id object);
  *
  * @warning Do not mutate objects that are in a set! Changing the hash of
  *	    objects in a set breaks the internal representation of the set!
+ *
+ * @note Subclasses must implement @ref count, @ref containsObject: and
+ *	 @ref objectEnumerator.
  */
 @interface OFSet OF_GENERIC(ObjectType): OFObject <OFCollection, OFCopying,
     OFMutableCopying, OFSerialization>

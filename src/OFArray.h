@@ -86,6 +86,8 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
  * @class OFArray OFArray.h ObjFW/OFArray.h
  *
  * @brief An abstract class for storing objects in an array.
+ *
+ * @note Subclasses must implement @ref count and @ref objectAtIndex:.
  */
 @interface OFArray OF_GENERIC(ObjectType): OFObject <OFCopying,
     OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,

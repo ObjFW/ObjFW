@@ -51,6 +51,9 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  *
  * @note Fast enumeration on a dictionary enumerates through the keys of the
  *	 dictionary.
+ *
+ * @note Subclasses must implement @ref objectForKey:, @ref count and
+ *	 @ref keyEnumerator.
  */
 @interface OFDictionary OF_GENERIC(KeyType, ObjectType): OFObject <OFCopying,
     OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
