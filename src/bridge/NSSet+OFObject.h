@@ -15,17 +15,30 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSEnumerator+OFObject.h"
-#import "NSNumber+OFObject.h"
-#import "NSSet+OFObject.h"
-#import "NSString+OFObject.h"
+#import <Foundation/NSSet.h>
 
-#import "OFArray+NSObject.h"
-#import "OFException+Swift.h"
-#import "OFDictionary+NSObject.h"
-#import "OFEnumerator+NSObject.h"
-#import "OFNumber+NSObject.h"
-#import "OFSet+NSObject.h"
-#import "OFString+NSObject.h"
+#import "NSBridging.h"
+
+OF_ASSUME_NONNULL_BEGIN
+
+@class OFSet OF_GENERIC(ObjectType);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int _NSSet_OFObject_reference;
+#ifdef __cplusplus
+}
+#endif
+
+/*!
+ * @category NSSet (OFObject)
+ *	     NSSet+OFObject.h ObjFWBridge/NSSet+OFObject.h
+ *
+ * @brief Support for bridging NSSets to OFSets.
+ */
+@interface NSSet (OFObject) <NSBridging>
+@property (readonly, nonatomic) OFSet *OFObject;
+@end
+
+OF_ASSUME_NONNULL_END

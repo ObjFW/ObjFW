@@ -15,17 +15,20 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSEnumerator+OFObject.h"
-#import "NSNumber+OFObject.h"
-#import "NSSet+OFObject.h"
-#import "NSString+OFObject.h"
+#import <Foundation/NSSet.h>
 
-#import "OFArray+NSObject.h"
-#import "OFException+Swift.h"
-#import "OFDictionary+NSObject.h"
-#import "OFEnumerator+NSObject.h"
-#import "OFNumber+NSObject.h"
-#import "OFSet+NSObject.h"
-#import "OFString+NSObject.h"
+#import "macros.h"
+
+@class OFSet;
+
+OF_ASSUME_NONNULL_BEGIN
+
+@interface NSOFSet: NSSet
+{
+	OFSet *_set;
+}
+
+- (instancetype)initWithOFSet: (OFSet *)set;
+@end
+
+OF_ASSUME_NONNULL_END

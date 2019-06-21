@@ -13,11 +13,13 @@ SRCS = OFArray+NSObject.m	\
        OFException+Swift.m	\
        OFDictionary+NSObject.m	\
        OFNumber+NSObject.m	\
+       OFSet+NSObject.m		\
        OFString+NSObject.m	\
        NSArray+OFObject.m	\
        NSDictionary+OFObject.m	\
        NSEnumerator+OFObject.m	\
        NSNumber+OFObject.m	\
+       NSSet+OFObject.m		\
        NSString+OFObject.m
 
 INCLUDES := ${SRCS:.m=.h}	\
@@ -28,9 +30,11 @@ INCLUDES := ${SRCS:.m=.h}	\
 SRCS += NSOFArray.m		\
 	NSOFDictionary.m	\
 	NSOFEnumerator.m	\
+	NSOFSet.m		\
 	OFNSArray.m		\
 	OFNSDictionary.m	\
-	OFNSEnumerator.m
+	OFNSEnumerator.m	\
+	OFNSSet.m
 
 includesubdir = ObjFWBridge
 

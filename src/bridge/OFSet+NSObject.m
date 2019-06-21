@@ -15,17 +15,15 @@
  * file.
  */
 
-#import "NSArray+OFObject.h"
-#import "NSDictionary+OFObject.h"
-#import "NSEnumerator+OFObject.h"
-#import "NSNumber+OFObject.h"
-#import "NSSet+OFObject.h"
-#import "NSString+OFObject.h"
+#import "NSOFSet.h"
 
-#import "OFArray+NSObject.h"
-#import "OFException+Swift.h"
-#import "OFDictionary+NSObject.h"
-#import "OFEnumerator+NSObject.h"
-#import "OFNumber+NSObject.h"
 #import "OFSet+NSObject.h"
-#import "OFString+NSObject.h"
+
+int _OFSet_NSObject_reference;
+
+@implementation OFSet (NSObject)
+- (id)NSObject
+{
+	return [[[NSOFSet alloc] initWithOFSet: self] autorelease];
+}
+@end
