@@ -41,6 +41,36 @@ parse_packages() {
 }
 parse_packages "$@"
 
+show_help() {
+	cat >&2 <<__EOF__
+Syntax: objfw-compile -o output [flags] source1.m source2.mm ...
+
+    -o name         Specify the output name (not file name!)
+    --arc           Use automatic reference counting
+    --lib version   Compile a library (with the specified version) instead of
+                    an application
+    --plugin        Compile a plugin instead of an application
+    --package name  Use the specified package
+    --builddir dir  Place built objects into the specified directory
+    -D*  -D *       Pass the specified define to the compiler
+    -framework *    Pass the specified -framework argument to the linker
+                    (macOS / iOS only)
+    -f*             Pass the specified -f flag to the compiler
+    -F* -F *        Pass the specified -F flag to the linker (macOS / iOS only)
+    -g*             Pass the specified -g flag to the compiler
+    -I*  -I *       Pass the specified -I flag to the compiler
+    -l*  -l *       Pass the specified -l flag to the linker
+    -L*  -L *       Pass the specified -L flag to the linker
+    -m*             Pass the specified -m flag to the compiler
+    -O*             Pass the specified -O flag to the compiler
+    -pthread        Pass -pthread to the compiler and linker
+    -std=*          Pass the specified -std= flag to the compiler
+    -Wl,*           Pass the specified -Wl, flag to the linker
+    -W*             Pass the specified -W flag to the compiler"
+    --help          Show this help
+__EOF__
+}
+
 CPPFLAGS="$CPPFLAGS $($OBJFW_CONFIG $packages --cppflags)"
 OBJC="$($OBJFW_CONFIG --objc)"
 OBJCFLAGS="$OBJCFLAGS $($OBJFW_CONFIG $packages --objcflags) -Wall -g"
@@ -48,7 +78,7 @@ LIBS="$LIBS $($OBJFW_CONFIG $packages --libs)"
 LDFLAGS="$LDFLAGS $($OBJFW_CONFIG $packages --ldflags --rpath)"
 
 if test x"$1" = "x"; then
-	echo "Syntax: objfw-compile -o outname source1.m source2.m ..."
+	show_help
 	exit 1
 fi
 
@@ -186,7 +216,7 @@ while test x"$1" != "x"; do
 		-L*)
 			LIBS="$LIBS $1"
 			;;
-		-m)
+		-m*)
 			OBJCFLAGS="$OBJCFLAGS $1"
 			;;
 		-O*)
@@ -204,6 +234,10 @@ while test x"$1" != "x"; do
 			;;
 		-W*)
 			OBJCFLAGS="$OBJCFLAGS $1"
+			;;
+		--help)
+			show_help
+			exit 0
 			;;
 		-*)
 			echo "Unknown option: $1"
