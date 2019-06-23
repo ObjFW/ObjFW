@@ -104,7 +104,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    [bitString.bitStringValue
 	    isEqual: [OFData dataWithItems: "Hello World\x80"
 				     count: 12]] &&
-	    bitString.bitStringLength == 97 &&
+	    bitString.bitStringLength == 89 &&
 	    (bitString = [[OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxx"
 						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 						 "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

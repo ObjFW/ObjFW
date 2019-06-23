@@ -44,7 +44,7 @@
 
 	@try {
 		if (bitStringValue.count * bitStringValue.itemSize !=
-		    bitStringLength / 8)
+		    OF_ROUND_UP_POW2(8, bitStringLength) / 8)
 			@throw [OFInvalidFormatException exception];
 
 		_bitStringValue = [bitStringValue copy];
@@ -80,6 +80,12 @@
 		lastByteBits =
 		    *(unsigned char *)[DEREncodedContents itemAtIndex: 0];
 
+		if (lastByteBits > 7)
+			@throw [OFInvalidFormatException exception];
+
+		/*
+		 * Can't have any bits of the last byte used if we have no byte.
+		 */
 		if (count == 1 && lastByteBits != 0)
 			@throw [OFInvalidFormatException exception];
 
@@ -87,9 +93,12 @@
 		    SIZE_MAX - (count - 1) * 8 < lastByteBits)
 			@throw [OFOutOfRangeException exception];
 
-		bitStringLength = (count - 1) * 8 + lastByteBits;
+		bitStringLength = (count - 1) * 8;
 		bitStringValue = [[DEREncodedContents
 		    subdataWithRange: of_range(1, count - 1)] copy];
+
+		if (lastByteBits != 0)
+			bitStringLength -= (8 - lastByteBits);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -113,6 +122,28 @@
 	[_bitStringValue release];
 
 	[super dealloc];
+}
+
+- (OFData *)DEREncodedValue
+{
+	size_t bitStringValueCount = [_bitStringValue count];
+	unsigned char lastByteBits = _bitStringLength % 8;
+	unsigned char header[] = { 3, bitStringValueCount + 1, lastByteBits };
+	OFMutableData *data;
+
+	if (bitStringValueCount + 1 > UINT8_MAX ||
+	    bitStringValueCount != OF_ROUND_UP_POW2(8, _bitStringLength) / 8)
+		@throw [OFInvalidFormatException exception];
+
+	data = [OFMutableData dataWithCapacity: 3 + bitStringValueCount];
+	[data addItems: header
+		 count: 3];
+	[data addItems: [_bitStringValue items]
+		 count: bitStringValueCount];
+
+	[data makeImmutable];
+
+	return data;
 }
 
 - (bool)isEqual: (id)object

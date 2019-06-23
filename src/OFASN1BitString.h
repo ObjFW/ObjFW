@@ -42,6 +42,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) size_t bitStringLength;
 
 /*!
+ * @brief The BitString in DER encoding.
+ */
+@property (readonly, nonatomic) OFData *DEREncodedValue;
+
+/*!
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
