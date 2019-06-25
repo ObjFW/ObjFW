@@ -134,10 +134,8 @@ objc_classname_to_class(const char *name, bool cache)
 }
 
 static void
-callMethod(Class class, const char *method)
+callSelector(Class class, SEL selector)
 {
-	SEL selector = sel_registerName(method);
-
 	for (struct objc_method_list *methodList = class->isa->methodList;
 	    methodList != NULL; methodList = methodList->next)
 		for (unsigned int i = 0; i < methodList->count; i++)
@@ -150,13 +148,16 @@ callMethod(Class class, const char *method)
 static bool
 hasLoad(Class class)
 {
-	SEL selector = sel_registerName("load");
+	static SEL loadSel = NULL;
+
+	if (loadSel == NULL)
+		loadSel = sel_registerName("load");
 
 	for (struct objc_method_list *methodList = class->isa->methodList;
 	    methodList != NULL; methodList = methodList->next)
 		for (size_t i = 0; i < methodList->count; i++)
 			if (sel_isEqual((SEL)&methodList->methods[i].selector,
-			    selector))
+			    loadSel))
 				return true;
 
 	return false;
@@ -165,13 +166,18 @@ hasLoad(Class class)
 static void
 callLoad(Class class)
 {
+	static SEL loadSel = NULL;
+
+	if (loadSel == NULL)
+		loadSel = sel_registerName("load");
+
 	if (class->info & OBJC_CLASS_INFO_LOADED)
 		return;
 
 	if (class->superclass != Nil)
 		callLoad(class->superclass);
 
-	callMethod(class, "load");
+	callSelector(class, loadSel);
 
 	class->info |= OBJC_CLASS_INFO_LOADED;
 }
@@ -316,6 +322,11 @@ setupClass(Class class)
 static void
 initializeClass(Class class)
 {
+	static SEL initializeSel = NULL;
+
+	if (initializeSel == NULL)
+		initializeSel = sel_registerName("initialize");
+
 	if (class->info & OBJC_CLASS_INFO_INITIALIZED)
 		return;
 
@@ -335,9 +346,17 @@ initializeClass(Class class)
 	class->info |= OBJC_CLASS_INFO_INITIALIZED;
 	class->isa->info |= OBJC_CLASS_INFO_INITIALIZED;
 
-	if (class_respondsToSelector(object_getClass(class),
-	    @selector(initialize)))
-		[class initialize];
+	/*
+	 * +[initialize] might get called from some +[load], before the
+	 * constructors of this compilation module have been called, at which
+	 * point the selector would not be properly initialized.
+	 */
+	if (class_respondsToSelector(object_getClass(class), initializeSel)) {
+		void (*initialize)(id, SEL) = (void (*)(id, SEL))
+		    objc_msg_lookup(class, initializeSel);
+
+		initialize(class, initializeSel);
+	}
 }
 
 void
@@ -892,11 +911,16 @@ unregisterClass(Class class)
 void
 objc_unregister_class(Class class)
 {
+	static SEL unloadSel = NULL;
+
+	if (unloadSel == NULL)
+		unloadSel = sel_registerName("unload");
+
 	while (class->subclassList != NULL && class->subclassList[0] != Nil)
 		objc_unregister_class(class->subclassList[0]);
 
 	if (class->info & OBJC_CLASS_INFO_LOADED)
-		callMethod(class, "unload");
+		callSelector(class, unloadSel);
 
 	objc_hashtable_delete(classes, class->name);
 
