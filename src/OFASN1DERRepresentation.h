@@ -22,17 +22,17 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFData;
 
 /*!
- * @protocol OFMessagePackRepresentation \
- *	     OFMessagePackRepresentation.h ObjFW/OFMessagePackRepresentation.h
+ * @protocol OFASN1DERRepresentation \
+ *	     OFASN1DERRepresentation.h ObjFW/OFASN1DERRepresentation.h
  *
- * @brief A protocol implemented by classes that support encoding to a
- *	  MessagePack representation.
+ * @brief A protocol implemented by classes that support encoding to ASN.1 DER
+ *	  representation.
  */
-@protocol OFMessagePackRepresentation
+@protocol OFASN1DERRepresentation
 /*!
- * @brief The MessagePack representation of the object as OFData.
+ * @brief The object in ASN.1 DER representation.
  */
-@property (readonly, nonatomic) OFData *messagePackRepresentation;
+@property (readonly, nonatomic) OFData *ASN1DERRepresentation;
 @end
 
 OF_ASSUME_NONNULL_END

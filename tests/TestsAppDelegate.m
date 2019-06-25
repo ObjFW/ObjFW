@@ -437,7 +437,7 @@ main(int argc, char *argv[])
 	[self JSONTests];
 	[self propertyListTests];
 	[self ASN1DERValueTests];
-	[self ASN1DEREncodedValueTests];
+	[self ASN1DERRepresentationTests];
 #if defined(OF_HAVE_PLUGINS)
 	[self pluginTests];
 #endif

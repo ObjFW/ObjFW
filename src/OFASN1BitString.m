@@ -124,11 +124,15 @@
 	[super dealloc];
 }
 
-- (OFData *)DEREncodedValue
+- (OFData *)ASN1DERRepresentation
 {
 	size_t bitStringValueCount = [_bitStringValue count];
 	unsigned char lastByteBits = _bitStringLength % 8;
-	unsigned char header[] = { 3, bitStringValueCount + 1, lastByteBits };
+	unsigned char header[] = {
+		OF_ASN1_TAG_NUMBER_BIT_STRING,
+		bitStringValueCount + 1,
+		lastByteBits
+	};
 	OFMutableData *data;
 
 	if (bitStringValueCount + 1 > UINT8_MAX ||
@@ -137,7 +141,7 @@
 
 	data = [OFMutableData dataWithCapacity: 3 + bitStringValueCount];
 	[data addItems: header
-		 count: 3];
+		 count: sizeof(header)];
 	[data addItems: [_bitStringValue items]
 		 count: bitStringValueCount];
 

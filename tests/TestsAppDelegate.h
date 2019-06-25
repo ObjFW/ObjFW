@@ -90,8 +90,8 @@ enum {
 - (void)ASN1DERValueTests;
 @end
 
-@interface TestsAppDelegate (OFASN1DEREncodedValueTests)
-- (void)ASN1DEREncodedValueTests;
+@interface TestsAppDelegate (OFASN1DERRepresentationTests)
+- (void)ASN1DERRepresentationTests;
 @end
 
 @interface TestsAppDelegate (OFArrayTests)

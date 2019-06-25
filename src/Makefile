@@ -163,6 +163,7 @@ INCLUDES_ATOMIC = atomic.h			\
 		  atomic_sync_builtins.h	\
 		  atomic_x86.h
 INCLUDES := ${SRCS:.m=.h}			\
+	    OFASN1DERRepresentation.h		\
 	    OFCollection.h			\
 	    OFCryptoHash.h			\
 	    OFJSONRepresentation.h		\

@@ -21,42 +21,46 @@
 
 static OFString *module;
 
-@implementation TestsAppDelegate (OFASN1DEREncodedValueTests)
-- (void)ASN1DEREncodedValueTests
+@implementation TestsAppDelegate (OFASN1DERRepresentationTests)
+- (void)ASN1DERRepresentationTests
 {
 	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
 	OFData *data;
 
 	module = @"OFASN1BitString";
-	TEST(@"-[DEREncodedValue]",
+	TEST(@"-[ASN1DERRepresentation]",
 	    (data = [OFData dataWithItems: "\xFF\x00\xF8"
 				    count: 3]) &&
 	    [[[OFASN1BitString bitStringWithBitStringValue: data
-					   bitStringLength: 20] DEREncodedValue]
-	    isEqual: [OFData dataWithItems: "\x03\x04\x04\xFF\x00\xF8"
-				     count: 6]] &&
+					   bitStringLength: 20]
+	    ASN1DERRepresentation] isEqual:
+	    [OFData dataWithItems: "\x03\x04\x04\xFF\x00\xF8"
+			    count: 6]] &&
 	    (data = [OFData dataWithItems: "abcdefäöü"
 				    count: 12]) &&
 	    [[[OFASN1BitString bitStringWithBitStringValue: data
 					   bitStringLength: 12 * 8]
-	    DEREncodedValue] isEqual:
+	    ASN1DERRepresentation] isEqual:
 	    [OFData dataWithItems: "\x03\x0D\x00" "abcdefäöü"
 			    count: 15]] &&
 	    (data = [OFData dataWithItems: ""
 				    count: 0]) &&
 	    [[[OFASN1BitString bitStringWithBitStringValue: data
-					   bitStringLength: 0] DEREncodedValue]
-	    isEqual: [OFData dataWithItems: "\x03\x01\x00"
-				     count: 3]])
+					   bitStringLength: 0]
+	    ASN1DERRepresentation] isEqual:
+	    [OFData dataWithItems: "\x03\x01\x00"
+			    count: 3]])
 
 	module = @"OFASN1Boolean";
-	TEST(@"-[DEREncodedValue]",
-	    [[[OFASN1Boolean booleanWithBooleanValue: false] DEREncodedValue]
-	    isEqual: [OFData dataWithItems: "\x01\x01\x00"
-				     count: 3]] &&
-	    [[[OFASN1Boolean booleanWithBooleanValue: true] DEREncodedValue]
-	    isEqual: [OFData dataWithItems: "\x01\x01\xFF"
-				     count: 3]])
+	TEST(@"-[ASN1DERRepresentation]",
+	    [[[OFASN1Boolean booleanWithBooleanValue: false]
+	    ASN1DERRepresentation] isEqual:
+	    [OFData dataWithItems: "\x01\x01\x00"
+			    count: 3]] &&
+	    [[[OFASN1Boolean booleanWithBooleanValue: true]
+	    ASN1DERRepresentation] isEqual:
+	    [OFData dataWithItems: "\x01\x01\xFF"
+			    count: 3]])
 
 	[pool drain];
 }

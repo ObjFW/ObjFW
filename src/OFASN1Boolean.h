@@ -16,6 +16,7 @@
  */
 
 #import "OFObject.h"
+#import "OFASN1DERRepresentation.h"
 #import "OFASN1Value.h"
 
 OF_ASSUME_NONNULL_BEGIN
@@ -23,7 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 Boolean.
  */
-@interface OFASN1Boolean: OFObject
+@interface OFASN1Boolean: OFObject <OFASN1DERRepresentation>
 {
 	bool _booleanValue;
 }
@@ -32,11 +33,6 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief The Boolean value.
  */
 @property (readonly, nonatomic) bool booleanValue;
-
-/*!
- * @brief The Boolean in DER encoding.
- */
-@property (readonly, nonatomic) OFData *DEREncodedValue;
 
 /*!
  * @brief Creates an ASN.1 Boolean with the specified Boolean value.

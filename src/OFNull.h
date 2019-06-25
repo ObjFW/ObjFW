@@ -16,9 +16,10 @@
  */
 
 #import "OFObject.h"
-#import "OFSerialization.h"
+#import "OFASN1DERRepresentation.h"
 #import "OFJSONRepresentation.h"
 #import "OFMessagePackRepresentation.h"
+#import "OFSerialization.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFNull: OFObject <OFCopying, OFSerialization, OFJSONRepresentation,
-    OFMessagePackRepresentation>
+    OFMessagePackRepresentation, OFASN1DERRepresentation>
 /*!
  * @brief Returns an OFNull singleton.
  *

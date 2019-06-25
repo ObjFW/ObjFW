@@ -74,7 +74,7 @@
 	OF_INVALID_INIT_METHOD
 }
 
-- (OFData *)DEREncodedValue
+- (OFData *)ASN1DERRepresentation
 {
 	char buffer[] = {
 		OF_ASN1_TAG_NUMBER_BOOLEAN,
