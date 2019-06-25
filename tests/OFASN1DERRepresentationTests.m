@@ -32,9 +32,9 @@ static OFString *module;
 	    (data = [OFData dataWithItems: "\xFF\x00\xF8"
 				    count: 3]) &&
 	    [[[OFASN1BitString bitStringWithBitStringValue: data
-					   bitStringLength: 20]
+					   bitStringLength: 21]
 	    ASN1DERRepresentation] isEqual:
-	    [OFData dataWithItems: "\x03\x04\x04\xFF\x00\xF8"
+	    [OFData dataWithItems: "\x03\x04\x03\xFF\x00\xF8"
 			    count: 6]] &&
 	    (data = [OFData dataWithItems: "abcdefäöü"
 				    count: 12]) &&
@@ -61,6 +61,12 @@ static OFString *module;
 	    ASN1DERRepresentation] isEqual:
 	    [OFData dataWithItems: "\x01\x01\xFF"
 			    count: 3]])
+
+	module = @"OFNull";
+	TEST(@"-[OFASN1DERRepresentation]",
+	    [[[OFNull null] ASN1DERRepresentation] isEqual:
+	    [OFData dataWithItems: "\x05\x00"
+			    count: 2]])
 
 	[pool drain];
 }
