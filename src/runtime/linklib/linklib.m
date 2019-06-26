@@ -90,12 +90,12 @@ void linklib_objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size,
     bool atomic, bool strong) SYM("objc_setPropertyStruct");
 void linklib_objc_enumerationMutation(id object)
     SYM("objc_enumerationMutation");
-#ifdef HAVE_SJLJ_EXCEPTIONS
-int linklib___gnu_objc_personality_sj0(int version, int actions,
-    uint64_t exClass, void *ex, void *ctx) SYM("__gnu_objc_personality_sj0");
-#else
+#ifndef HAVE_SJLJ_EXCEPTIONS
 int linklib___gnu_objc_personality_v0(int version, int actions,
     uint64_t exClass, void *ex, void *ctx) SYM("__gnu_objc_personality_v0");
+#else
+int linklib___gnu_objc_personality_sj0(int version, int actions,
+    uint64_t exClass, void *ex, void *ctx) SYM("__gnu_objc_personality_sj0");
 #endif
 id linklib_objc_retain(id object) SYM("objc_retain");
 id linklib_objc_retainBlock(id block) SYM("objc_retainBlock");
@@ -398,21 +398,29 @@ linklib_objc_enumerationMutation(id object)
 	OF_UNREACHABLE
 }
 
-#ifdef HAVE_SJLJ_EXCEPTIONS
-int
-linklib___gnu_objc_personality_sj0(int version, int actions, uint64_t exClass,
-    void *ex, void *ctx)
-{
-	return __gnu_objc_personality_sj0(version, actions, &exClass, ex, ctx);
-}
-#else
 int
 linklib___gnu_objc_personality_v0(int version, int actions, uint64_t exClass,
     void *ex, void *ctx)
 {
-	return __gnu_objc_personality_v0(version, actions, &exClass, ex, ctx);
-}
+#ifndef HAVE_SJLJ_EXCEPTIONS
+	return __gnu_objc_personality_v0_m68k(version, actions, &exClass, ex,
+	    ctx);
+#else
+	abort();
 #endif
+}
+
+int
+linklib___gnu_objc_personality_sj0(int version, int actions, uint64_t exClass,
+    void *ex, void *ctx)
+{
+#ifdef HAVE_SJLJ_EXCEPTIONS
+	return __gnu_objc_personality_sj0_m68k(version, actions, &exClass, ex,
+	    ctx);
+#else
+	abort();
+#endif
+}
 
 id
 linklib_objc_retain(id object)

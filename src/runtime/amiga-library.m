@@ -81,8 +81,8 @@ extern void objc_setProperty_m68k(void);
 extern void objc_getPropertyStruct_m68k(void);
 extern void objc_setPropertyStruct_m68k(void);
 extern void objc_enumerationMutation_m68k(void);
-extern int __gnu_objc_personality_sj0_m68k(void);
 extern int __gnu_objc_personality_v0_m68k(void);
+extern int __gnu_objc_personality_sj0_m68k(void);
 extern id _Nullable objc_retain_m68k(void);
 extern id _Nullable objc_retainBlock_m68k(void);
 extern id _Nullable objc_retainAutorelease_m68k(void);
@@ -587,6 +587,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)objc_setPropertyStruct_m68k,
 	(CONST_APTR)objc_enumerationMutation_m68k,
 	(CONST_APTR)__gnu_objc_personality_v0_m68k,
+	(CONST_APTR)__gnu_objc_personality_sj0_m68k,
 	(CONST_APTR)objc_retain_m68k,
 	(CONST_APTR)objc_retainBlock_m68k,
 	(CONST_APTR)objc_retainAutorelease_m68k,
