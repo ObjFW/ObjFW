@@ -48,13 +48,15 @@
 # define SOCK_CLOEXEC 0
 #endif
 
-#if !defined(OF_WINDOWS) && !defined(OF_WII)
-# define closesocket(sock) close(sock)
-#endif
-
-#ifdef OF_MORPHOS
+#if defined(OF_MORPHOS)
+# include <sys/filio.h>
+# define closesocket(sock) CloseSocket(sock)
+# define ioctlsocket(fd, req, arg) IoctlSocket(fd, req, arg)
 # define hstrerror(err) "unknown (no hstrerror)"
+# define SOCKET_ERROR -1
 typedef uint32_t in_addr_t;
+#elif !defined(OF_WINDOWS) && !defined(OF_WII)
+# define closesocket(sock) close(sock)
 #endif
 
 #ifdef OF_MORPHOS_IXEMUL

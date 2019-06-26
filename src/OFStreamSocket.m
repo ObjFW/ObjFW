@@ -124,10 +124,14 @@
 	return (size_t)bytesWritten;
 }
 
-#ifdef OF_WINDOWS
+#if defined(OF_WINDOWS) || defined(OF_MORPHOS)
 - (void)setBlocking: (bool)enable
 {
+# ifdef OF_WINDOWS
 	u_long v = enable;
+# else
+	char v = enable;
+# endif
 
 	if (ioctlsocket(_socket, FIONBIO, &v) == SOCKET_ERROR)
 		@throw [OFSetOptionFailedException
