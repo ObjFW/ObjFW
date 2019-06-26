@@ -471,7 +471,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 				errNo = ETIMEDOUT;
 				break;
 			case 0x07:
-				errNo = ENOTSUP;
+				errNo = EOPNOTSUPP;
 				break;
 			case 0x08:
 				errNo = EAFNOSUPPORT;
