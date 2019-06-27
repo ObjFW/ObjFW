@@ -44,7 +44,7 @@ case "$host" in
 		;;
 	m68k-*-amigaos*)
 		AS_IF([test x"$OBJCFLAGS" = x""], [
-			OBJCFLAGS="-O0 -g"
+			OBJCFLAGS="-O0"
 		])
 		OBJCFLAGS="$OBJCFLAGS -noixemul"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
