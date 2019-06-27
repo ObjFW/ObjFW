@@ -367,7 +367,7 @@ objc_retainAutoreleasedReturnValue(id object)
 }
 
 id
-objc_linklib_objc_storeStrong(id *object, id value)
+objc_storeStrong(id *object, id value)
 {
 	return glue_objc_storeStrong(object, value);
 }
