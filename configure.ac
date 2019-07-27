@@ -419,7 +419,8 @@ AC_MSG_CHECKING(whether we need -D_GNU_SOURCE)
 AC_EGREP_CPP(egrep_cpp_yes, [
 	#include <stdlib.h>
 
-	#if defined(__GLIBC__) || defined(__MINGW32__) || defined(__NEWLIB__)
+	#if defined(__GLIBC__) || defined(__MINGW32__) || \
+	    defined(__NEWLIB__) || defined(__MORPHOS__)
 	egrep_cpp_yes
 	#endif
 ], [
