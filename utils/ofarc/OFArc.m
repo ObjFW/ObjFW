@@ -321,8 +321,9 @@ writingNotSupported(OFString *type)
 		    of_range(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: remainingArguments.firstObject
-			permissions: (mode == 'a' ? @"rwc" : @"wc")];
+		if (![remainingArguments.firstObject isEqual: @"-"])
+			[sandbox unveilPath: remainingArguments.firstObject
+				permissions: (mode == 'a' ? @"rwc" : @"wc")];
 
 		for (OFString *path in files)
 			[sandbox unveilPath: path
@@ -345,8 +346,10 @@ writingNotSupported(OFString *type)
 			help(of_stderr, false, 1);
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: remainingArguments.firstObject
-			permissions: @"r"];
+		if (![remainingArguments.firstObject isEqual: @"-"])
+			[sandbox unveilPath: remainingArguments.firstObject
+				permissions: @"r"];
+
 		sandbox.allowsUnveil = false;
 		[OFApplication activateSandbox: sandbox];
 #endif
@@ -364,8 +367,10 @@ writingNotSupported(OFString *type)
 			help(of_stderr, false, 1);
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: remainingArguments.firstObject
-			permissions: @"r"];
+		if (![remainingArguments.firstObject isEqual: @"-"])
+			[sandbox unveilPath: remainingArguments.firstObject
+				permissions: @"r"];
+
 		sandbox.allowsUnveil = false;
 		[OFApplication activateSandbox: sandbox];
 #endif
@@ -389,8 +394,9 @@ writingNotSupported(OFString *type)
 		    of_range(1, remainingArguments.count - 1)];
 
 #ifdef OF_HAVE_SANDBOX
-		[sandbox unveilPath: remainingArguments.firstObject
-			permissions: @"r"];
+		if (![remainingArguments.firstObject isEqual: @"-"])
+			[sandbox unveilPath: remainingArguments.firstObject
+				permissions: @"r"];
 
 		if (files.count > 0)
 			for (OFString *path in files)
@@ -466,7 +472,7 @@ writingNotSupported(OFString *type)
 			   encoding: (of_string_encoding_t)encoding
 {
 	OFString *modeString, *fileModeString;
-	OFFile *file = nil;
+	OFStream *file = nil;
 	id <Archive> archive = nil;
 
 	[_archivePath release];
@@ -492,20 +498,36 @@ writingNotSupported(OFString *type)
 		@throw [OFInvalidArgumentException exception];
 	}
 
-	@try {
-		file = [OFFile fileWithPath: path
-				       mode: fileModeString];
-	} @catch (OFOpenItemFailedException *e) {
-		OFString *error = [OFString
-		    stringWithCString: strerror(e.errNo)
-			     encoding: [OFLocale encoding]];
-		[of_stderr writeString: @"\r"];
-		[of_stderr writeLine: OF_LOCALIZED(
-		    @"failed_to_open_file",
-		    @"Failed to open file %[file]: %[error]",
-		    @"file", e.path,
-		    @"error", error)];
-		[OFApplication terminateWithStatus: 1];
+	if ([path isEqual: @"-"]) {
+		switch (mode) {
+		case 'a':
+		case 'c':
+			file = of_stdout;
+			break;
+		case 'l':
+		case 'p':
+		case 'x':
+			file = of_stdin;
+			break;
+		default:
+			@throw [OFInvalidArgumentException exception];
+		}
+	} else {
+		@try {
+			file = [OFFile fileWithPath: path
+					       mode: fileModeString];
+		} @catch (OFOpenItemFailedException *e) {
+			OFString *error = [OFString
+			    stringWithCString: strerror(e.errNo)
+				     encoding: [OFLocale encoding]];
+			[of_stderr writeString: @"\r"];
+			[of_stderr writeLine: OF_LOCALIZED(
+			    @"failed_to_open_file",
+			    @"Failed to open file %[file]: %[error]",
+			    @"file", e.path,
+			    @"error", error)];
+			[OFApplication terminateWithStatus: 1];
+		}
 	}
 
 	if (type == nil || [type isEqual: @"auto"]) {
