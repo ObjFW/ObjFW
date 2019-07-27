@@ -199,17 +199,14 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 								 errNo: errno];
 
 	for (int i = 0; i < events; i++) {
-		if (eventList[i].data.ptr == nullObject) {
-			char buffer;
-
-			assert(eventList[i].events == EPOLLIN);
-			OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
-
-			continue;
-		}
-
 		if (eventList[i].events & EPOLLIN) {
 			void *pool = objc_autoreleasePoolPush();
+
+			if (eventList[i].data.ptr == nullObject) {
+				char buffer;
+				OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
+				continue;
+			}
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
@@ -229,8 +226,6 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 			objc_autoreleasePoolPop(pool);
 		}
-
-		assert((eventList[i].events & ~(EPOLLIN | EPOLLOUT)) == 0);
 	}
 }
 @end
