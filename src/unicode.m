@@ -9874,7 +9874,7 @@ static const char *const decompCompatPage50[0x100] = {
 	"\xE3\x83\xAB", "\xE3\x83\xAC",
 	"\xE3\x83\xAD", "\xE3\x83\xAF",
 	"\xE3\x83\xB0", "\xE3\x83\xB1",
-	"\xE3\x83\xB2", NULL,
+	"\xE3\x83\xB2", "\xE4\xBB\xA4\xE5\x92\x8C",
 };
 
 static const char *const decompCompatPage51[0x100] = {
