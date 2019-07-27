@@ -58,8 +58,7 @@ case "$host" in
 		ac_cv_snprintf_useful_ret="yes"
 
 		AS_IF([test x"$enable_amiga_lib" != x"no"], [
-			AC_SUBST(OBJFWRT_AMIGA_LIB,
-				'objfwrt68k.library')
+			AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt68k.library)
 			AC_SUBST(SFDC_TARGET, m68k-amigaos)
 			AC_SUBST(SFD_FILE, amigaos3.sfd)
 			AC_SUBST(SFDC_INLINE_H, inline.h)
@@ -74,6 +73,7 @@ case "$host" in
 	powerpc-*-amigaos*)
 		enable_shared="no"
 		enable_threads="no"
+		enable_files="yes"	# Required for reading ENV:
 		;;
 	*-morphos*)
 		AS_IF([test x"$with_ixemul" != x"yes"], [
@@ -88,8 +88,7 @@ case "$host" in
 			check_pedantic="no"	# Breaks generated inlines
 
 			AS_IF([test x"$enable_amiga_lib" != x"no"], [
-				t='objfwrt.library'
-				AC_SUBST(OBJFWRT_AMIGA_LIB, $t)
+				AC_SUBST(OBJFWRT_AMIGA_LIB, objfwrt.library)
 				AC_SUBST(CVINCLUDE_INLINE_H, inline.h)
 				t="-mresident32 -ffreestanding"
 				AC_SUBST(AMIGA_LIB_CFLAGS, $t)
