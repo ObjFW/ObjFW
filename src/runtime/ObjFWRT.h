@@ -15,8 +15,8 @@
  * file.
  */
 
-#ifndef __OBJFW_RUNTIME_H__
-#define __OBJFW_RUNTIME_H__
+#ifndef OBJFWRT_OBJFWRT_H
+#define OBJFWRT_OBJFWRT_H
 
 #ifndef __STDC_LIMIT_MACROS
 # define __STDC_LIMIT_MACROS
