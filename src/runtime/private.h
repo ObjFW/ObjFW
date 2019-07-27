@@ -72,16 +72,6 @@ struct objc_abi_category {
 	struct objc_protocol_list *_Nullable protocols;
 };
 
-struct objc_abi_method_description {
-	const char *_Nonnull name;
-	const char *_Nonnull typeEncoding;
-};
-
-struct objc_abi_method_description_list {
-	int count;
-	struct objc_abi_method_description list[1];
-};
-
 struct objc_abi_static_instances {
 	const char *_Nonnull className;
 	id _Nullable instances[1];

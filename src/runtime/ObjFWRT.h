@@ -181,6 +181,16 @@ struct objc_property_list {
 	struct objc_property properties[1];
 };
 
+struct objc_method_description {
+	const char *_Nonnull name;
+	const char *_Nonnull typeEncoding;
+};
+
+struct objc_method_description_list {
+	int count;
+	struct objc_method_description list[1];
+};
+
 #ifdef __OBJC__
 # if __has_attribute(__objc_root_class__)
 __attribute__((__objc_root_class__))
@@ -194,8 +204,8 @@ typedef struct {
 	Class _Nonnull isa;
 	const char *_Nonnull name;
 	struct objc_protocol_list *_Nullable protocolList;
-	struct objc_abi_method_description_list *_Nullable instanceMethods;
-	struct objc_abi_method_description_list *_Nullable classMethods;
+	struct objc_method_description_list *_Nullable instanceMethods;
+	struct objc_method_description_list *_Nullable classMethods;
 #ifdef __OBJC__
 }
 @end
