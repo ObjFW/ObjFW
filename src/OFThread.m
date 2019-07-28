@@ -135,14 +135,16 @@ callMain(id object)
 
 	/*
 	 * Nasty workaround for thread implementations which can't return a
-	 * pointer on join.
+	 * pointer on join, or don't have a way to exit a thread.
 	 */
+	if (setjmp(thread->_exitEnv) == 0) {
 # ifdef OF_HAVE_BLOCKS
-	if (thread->_threadBlock != NULL)
-		thread->_returnValue = [thread->_threadBlock() retain];
-	else
+		if (thread->_threadBlock != NULL)
+			thread->_returnValue = [thread->_threadBlock() retain];
+		else
 # endif
-		thread->_returnValue = [[thread main] retain];
+			thread->_returnValue = [[thread main] retain];
+	}
 
 	[thread handleTermination];
 
@@ -327,20 +329,10 @@ static OFDNSResolver *DNSResolver;
 {
 	OFThread *thread = of_tlskey_get(threadSelfKey);
 
-	if (thread != nil) {
-		thread->_returnValue = [object retain];
+	OF_ENSURE(thread != nil);
 
-		[thread handleTermination];
-
-		thread->_running = OF_THREAD_WAITING_FOR_JOIN;
-		objc_autoreleasePoolPop(thread->_pool);
-	}
-
-	[OFAutoreleasePool of_handleThreadTermination];
-
-	[thread release];
-
-	of_thread_exit();
+	thread->_returnValue = [object retain];
+	longjmp(thread->_exitEnv, 1);
 }
 
 + (void)setName: (OFString *)name

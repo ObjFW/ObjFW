@@ -96,7 +96,6 @@ extern bool of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 extern void of_thread_set_name(const char *name);
 extern bool of_thread_join(of_thread_t thread);
 extern bool of_thread_detach(of_thread_t thread);
-extern void OF_NO_RETURN_FUNC of_thread_exit(void);
 extern void of_once(of_once_t *control, void (*func)(void));
 extern bool of_tlskey_new(of_tlskey_t *key);
 extern bool of_tlskey_free(of_tlskey_t key);

@@ -15,6 +15,8 @@
  * file.
  */
 
+#include <setjmp.h>
+
 #import "OFObject.h"
 
 #ifdef OF_HAVE_THREADS
@@ -72,6 +74,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # ifdef OF_HAVE_BLOCKS
 	of_thread_block_t _Nullable _threadBlock;
 # endif
+	jmp_buf _exitEnv;
 	id _returnValue;
 	OFRunLoop *_Nullable _runLoop;
 	OFMutableDictionary *_threadDictionary;
