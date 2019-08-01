@@ -17,6 +17,8 @@
 
 #import "OFMutex.h"
 
+#import "condition.h"
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFDate;

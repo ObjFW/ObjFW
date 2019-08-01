@@ -36,7 +36,7 @@
 #import "OFUnlockFailedException.h"
 
 #if !defined(HAVE_STRERROR_R) && defined(OF_HAVE_THREADS)
-# import "threading.h"
+# import "mutex.h"
 #endif
 
 #if defined(OF_WINDOWS) && defined(OF_HAVE_SOCKETS)

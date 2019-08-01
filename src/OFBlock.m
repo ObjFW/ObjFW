@@ -34,7 +34,7 @@
 # import "atomic.h"
 #endif
 #ifdef OF_HAVE_THREADS
-# import "threading.h"
+# import "mutex.h"
 #endif
 
 typedef struct of_block_byref_t of_block_byref_t;

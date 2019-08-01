@@ -15,31 +15,12 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFLocking.h"
+#include "config.h"
 
-#import "mutex.h"
+#import "condition.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
-/*!
- * @class OFMutex OFMutex.h ObjFW/OFMutex.h
- *
- * @brief A class for creating mutual exclusions.
- */
-@interface OFMutex: OFObject <OFLocking>
-{
-	of_mutex_t _mutex;
-	bool _initialized;
-	OFString *_Nullable _name;
-}
-
-/*!
- * @brief Creates a new mutex.
- *
- * @return A new autoreleased mutex.
- */
-+ (instancetype)mutex;
-@end
-
-OF_ASSUME_NONNULL_END
+#if defined(OF_HAVE_PTHREADS)
+# include "condition_pthread.m"
+#elif defined(OF_WINDOWS)
+# include "condition_winapi.m"
+#endif

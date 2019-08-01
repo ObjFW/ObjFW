@@ -109,7 +109,7 @@ OF_DESTRUCTOR()
 #endif
 
 #if defined(OF_HAVE_THREADS)
-# import "threading.h"
+# import "tlskey.h"
 
 static of_tlskey_t threadSelfKey;
 static OFThread *mainThread;

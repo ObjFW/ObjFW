@@ -37,8 +37,9 @@
 #import "socket.h"
 #import "socket_helpers.h"
 #ifdef OF_HAVE_THREADS
-# include "threading.h"
+# include "mutex.h"
 #endif
+#include "once.h"
 
 #ifdef OF_NINTENDO_3DS
 # include <3ds/types.h>
@@ -89,16 +90,8 @@ init(void)
 bool
 of_socket_init()
 {
-#ifdef OF_HAVE_THREADS
 	static of_once_t onceControl = OF_ONCE_INIT;
 	of_once(&onceControl, init);
-#else
-	static bool initialized = false;
-	if (!initialized) {
-		init();
-		initialized = true;
-	}
-#endif
 
 	return initSuccessful;
 }

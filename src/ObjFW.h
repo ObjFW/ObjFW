@@ -245,8 +245,11 @@
 
 #import "OFLocking.h"
 #import "OFThread.h"
+#import "once.h"
 #ifdef OF_HAVE_THREADS
-# import "threading.h"
+# import "thread.h"
+# import "mutex.h"
+# import "condition.h"
 # import "OFThreadPool.h"
 # import "OFMutex.h"
 # import "OFRecursiveMutex.h"

@@ -28,7 +28,8 @@ SRCS = arc.m			\
        synchronized.m		\
        ${USE_SRCS_THREADS}
 SRCS_THREADS = threading.m	\
-	       ../threading.m
+	       ../mutex.m	\
+	       ../once.m
 INCLUDES = ObjFWRT.h
 includesubdir = ObjFWRT
 

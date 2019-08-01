@@ -15,31 +15,36 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFLocking.h"
+#include "config.h"
 
-#import "mutex.h"
+#import "once.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_ATOMIC_OPS)
+# import "atomic.h"
+# import "mutex.h"
+#endif
 
-/*!
- * @class OFMutex OFMutex.h ObjFW/OFMutex.h
- *
- * @brief A class for creating mutual exclusions.
- */
-@interface OFMutex: OFObject <OFLocking>
+void
+of_once(of_once_t *control, void (*func)(void))
 {
-	of_mutex_t _mutex;
-	bool _initialized;
-	OFString *_Nullable _name;
+#if !defined(OF_HAVE_THREADS)
+	if (*control == 0) {
+		*control = 1;
+		func();
+	}
+#elif defined(OF_HAVE_PTHREADS)
+	pthread_once(control, func);
+#elif defined(OF_HAVE_ATOMIC_OPS)
+	if (of_atomic_int_cmpswap(control, 0, 1)) {
+		func();
+
+		of_memory_barrier();
+
+		of_atomic_int_inc(control);
+	} else
+		while (*control == 1)
+			of_thread_yield();
+#else
+# error No of_once available
+#endif
 }
-
-/*!
- * @brief Creates a new mutex.
- *
- * @return A new autoreleased mutex.
- */
-+ (instancetype)mutex;
-@end
-
-OF_ASSUME_NONNULL_END

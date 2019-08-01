@@ -60,7 +60,7 @@
 #if defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
 #elif defined(OF_HAVE_THREADS)
-# import "threading.h"
+# import "mutex.h"
 #endif
 
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)

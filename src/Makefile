@@ -121,6 +121,7 @@ SRCS = OFASN1BitString.m		\
        huffman_tree.m			\
        of_asprintf.m			\
        of_strptime.m			\
+       once.m				\
        pbkdf2.m				\
        scrypt.m				\
        ${UNICODE_M}			\
@@ -151,7 +152,10 @@ SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
 	       OFThreadPool.m		\
-	       threading.m
+	       condition.m		\
+	       mutex.m			\
+	       thread.m			\
+	       tlskey.m
 SRCS_WINDOWS = OFWin32ConsoleStdIOStream.m	\
 	       OFWindowsRegistryKey.m
 

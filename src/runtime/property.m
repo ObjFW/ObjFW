@@ -25,7 +25,7 @@
 #import "OFObject.h"
 
 #ifdef OF_HAVE_THREADS
-# import "threading.h"
+# import "mutex.h"
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */
 # define SPINLOCK_HASH(p) ((unsigned)((uintptr_t)p >> 4) & (NUM_SPINLOCKS - 1))
 static of_spinlock_t spinlocks[NUM_SPINLOCKS];

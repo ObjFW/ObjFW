@@ -15,31 +15,26 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFLocking.h"
+#include "config.h"
 
-#import "mutex.h"
+#import "tlskey.h"
 
-OF_ASSUME_NONNULL_BEGIN
-
-/*!
- * @class OFMutex OFMutex.h ObjFW/OFMutex.h
- *
- * @brief A class for creating mutual exclusions.
- */
-@interface OFMutex: OFObject <OFLocking>
+bool
+of_tlskey_new(of_tlskey_t *key)
 {
-	of_mutex_t _mutex;
-	bool _initialized;
-	OFString *_Nullable _name;
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_key_create(key, NULL) == 0);
+#elif defined(OF_WINDOWS)
+	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
+#endif
 }
 
-/*!
- * @brief Creates a new mutex.
- *
- * @return A new autoreleased mutex.
- */
-+ (instancetype)mutex;
-@end
-
-OF_ASSUME_NONNULL_END
+bool
+of_tlskey_free(of_tlskey_t key)
+{
+#if defined(OF_HAVE_PTHREADS)
+	return (pthread_key_delete(key) == 0);
+#elif defined(OF_WINDOWS)
+	return TlsFree(key);
+#endif
+}

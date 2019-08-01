@@ -20,12 +20,12 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-#ifdef OF_HAVE_THREADS
-# import "threading.h"
-#endif
-
 #import "OFObject.h"
 #import "OFBlock.h"
+
+#ifdef OF_HAVE_THREADS
+# import "mutex.h"
+#endif
 
 struct weak_ref {
 	id **locations;

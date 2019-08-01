@@ -20,7 +20,7 @@
 #import "OFObject.h"
 
 #ifdef OF_HAVE_THREADS
-# import "threading.h"
+# import "thread.h"
 #endif
 
 OF_ASSUME_NONNULL_BEGIN

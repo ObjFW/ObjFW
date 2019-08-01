@@ -15,31 +15,20 @@
  * file.
  */
 
-#import "OFObject.h"
-#import "OFLocking.h"
+#include "objfw-defs.h"
 
-#import "mutex.h"
+#include "platform.h"
 
-OF_ASSUME_NONNULL_BEGIN
+#if defined(OF_HAVE_PTHREADS)
+# include <pthread.h>
+typedef pthread_once_t of_once_t;
+# define OF_ONCE_INIT PTHREAD_ONCE_INIT
+#elif defined(OF_HAVE_ATOMIC_OPS)
+typedef volatile int of_once_t;
+# define OF_ONCE_INIT 0
+#elif !defined(OF_HAVE_THREADS)
+typedef int of_once_t;
+# define OF_ONCE_INIT 0
+#endif
 
-/*!
- * @class OFMutex OFMutex.h ObjFW/OFMutex.h
- *
- * @brief A class for creating mutual exclusions.
- */
-@interface OFMutex: OFObject <OFLocking>
-{
-	of_mutex_t _mutex;
-	bool _initialized;
-	OFString *_Nullable _name;
-}
-
-/*!
- * @brief Creates a new mutex.
- *
- * @return A new autoreleased mutex.
- */
-+ (instancetype)mutex;
-@end
-
-OF_ASSUME_NONNULL_END
+extern void of_once(of_once_t *control, void (*func)(void));

@@ -24,7 +24,7 @@
 #import "OFSystemInfo.h"
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-# import "threading.h"
+# import "tlskey.h"
 #endif
 
 #if defined(OF_HAVE_COMPILER_TLS)

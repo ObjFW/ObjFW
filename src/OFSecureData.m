@@ -34,7 +34,7 @@
 #import "OFOutOfRangeException.h"
 
 #ifdef OF_HAVE_THREADS
-# import "threading.h"
+# import "tlskey.h"
 #endif
 
 #define CHUNK_SIZE 16

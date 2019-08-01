@@ -17,30 +17,12 @@
 
 #include "config.h"
 
-#import "threading.h"
+#import "mutex.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "threading_pthread.m"
+# include "mutex_pthread.m"
 #elif defined(OF_WINDOWS)
-# include "threading_winapi.m"
-#else
-# error No threads available!
-#endif
-
-#ifndef OF_HAVE_PTHREADS
-void
-of_once(of_once_t *control, void (*func)(void))
-{
-	if (of_atomic_int_cmpswap(control, 0, 1)) {
-		func();
-
-		of_memory_barrier();
-
-		of_atomic_int_inc(control);
-	} else
-		while (*control == 1)
-			of_thread_yield();
-}
+# include "mutex_winapi.m"
 #endif
 
 #if !defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) && !defined(OF_WINDOWS)

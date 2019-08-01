@@ -15,17 +15,15 @@
  * file.
  */
 
-#include "config.h"
-
 #ifdef HAVE_PTHREAD_NP_H
 # include <pthread_np.h>
 #endif
 
-#import "macros.h"
-
 #ifdef OF_HAIKU
 # include <kernel/OS.h>
 #endif
+
+#import "macros.h"
 
 static int minPrio = 0, maxPrio = 0, normalPrio = 0;
 
@@ -68,7 +66,7 @@ OF_CONSTRUCTOR()
 }
 
 static void *
-function_wrapper(void *data)
+functionWrapper(void *data)
 {
 	struct thread_ctx *ctx = data;
 
@@ -150,7 +148,7 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 		ctx->object = object;
 
 		ret = (pthread_create(thread, &pattr,
-		    function_wrapper, ctx) == 0);
+		    functionWrapper, ctx) == 0);
 	} @finally {
 		pthread_attr_destroy(&pattr);
 	}
@@ -198,140 +196,4 @@ of_thread_set_name(const char *name)
 	pthread_setname_np(pthread_self(), buffer);
 # endif
 #endif
-}
-
-void
-of_once(of_once_t *control, void (*func)(void))
-{
-	pthread_once(control, func);
-}
-
-bool
-of_tlskey_new(of_tlskey_t *key)
-{
-	return (pthread_key_create(key, NULL) == 0);
-}
-
-bool
-of_tlskey_free(of_tlskey_t key)
-{
-	return (pthread_key_delete(key) == 0);
-}
-
-bool
-of_mutex_new(of_mutex_t *mutex)
-{
-	return (pthread_mutex_init(mutex, NULL) == 0);
-}
-
-bool
-of_mutex_lock(of_mutex_t *mutex)
-{
-	return (pthread_mutex_lock(mutex) == 0);
-}
-
-bool
-of_mutex_trylock(of_mutex_t *mutex)
-{
-	return (pthread_mutex_trylock(mutex) == 0);
-}
-
-bool
-of_mutex_unlock(of_mutex_t *mutex)
-{
-	return (pthread_mutex_unlock(mutex) == 0);
-}
-
-bool
-of_mutex_free(of_mutex_t *mutex)
-{
-	return (pthread_mutex_destroy(mutex) == 0);
-}
-
-#ifdef OF_HAVE_RECURSIVE_PTHREAD_MUTEXES
-bool
-of_rmutex_new(of_rmutex_t *rmutex)
-{
-	pthread_mutexattr_t attr;
-
-	if (pthread_mutexattr_init(&attr) != 0)
-		return false;
-
-	if (pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) != 0)
-		return false;
-
-	if (pthread_mutex_init(rmutex, &attr) != 0)
-		return false;
-
-	if (pthread_mutexattr_destroy(&attr) != 0)
-		return false;
-
-	return true;
-}
-
-bool
-of_rmutex_lock(of_rmutex_t *rmutex)
-{
-	return of_mutex_lock(rmutex);
-}
-
-bool
-of_rmutex_trylock(of_rmutex_t *rmutex)
-{
-	return of_mutex_trylock(rmutex);
-}
-
-bool
-of_rmutex_unlock(of_rmutex_t *rmutex)
-{
-	return of_mutex_unlock(rmutex);
-}
-
-bool
-of_rmutex_free(of_rmutex_t *rmutex)
-{
-	return of_mutex_free(rmutex);
-}
-#endif
-
-bool
-of_condition_new(of_condition_t *condition)
-{
-	return (pthread_cond_init(condition, NULL) == 0);
-}
-
-bool
-of_condition_signal(of_condition_t *condition)
-{
-	return (pthread_cond_signal(condition) == 0);
-}
-
-bool
-of_condition_broadcast(of_condition_t *condition)
-{
-	return (pthread_cond_broadcast(condition) == 0);
-}
-
-bool
-of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
-{
-	return (pthread_cond_wait(condition, mutex) == 0);
-}
-
-bool
-of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
-    of_time_interval_t timeout)
-{
-	struct timespec ts;
-
-	ts.tv_sec = (time_t)timeout;
-	ts.tv_nsec = lrint((timeout - ts.tv_sec) * 1000000000);
-
-	return (pthread_cond_timedwait(condition, mutex, &ts) == 0);
-}
-
-bool
-of_condition_free(of_condition_t *condition)
-{
-	return (pthread_cond_destroy(condition) == 0);
 }

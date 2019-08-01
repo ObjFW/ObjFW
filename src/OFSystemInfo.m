@@ -52,9 +52,7 @@
 
 #import "OFNotImplementedException.h"
 
-#ifdef OF_HAVE_THREADS
-# import "threading.h"
-#endif
+#import "once.h"
 
 #if defined(OF_MACOS) || defined(OF_IOS)
 # ifdef HAVE_SYSDIR_H
@@ -342,32 +340,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 
 + (OFString *)operatingSystemName
 {
-#ifdef OF_HAVE_THREADS
 	static of_once_t onceControl = OF_ONCE_INIT;
 	of_once(&onceControl, initOperatingSystemName);
-#else
-	static bool initialized = false;
-	if (!initialized) {
-		initOperatingSystemName();
-		initialized = true;
-	}
-#endif
 
 	return operatingSystemName;
 }
 
 + (OFString *)operatingSystemVersion
 {
-#ifdef OF_HAVE_THREADS
 	static of_once_t onceControl = OF_ONCE_INIT;
 	of_once(&onceControl, initOperatingSystemVersion);
-#else
-	static bool initialized = false;
-	if (!initialized) {
-		initOperatingSystemVersion();
-		initialized = true;
-	}
-#endif
 
 	return operatingSystemVersion;
 }

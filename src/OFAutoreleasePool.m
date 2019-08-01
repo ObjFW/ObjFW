@@ -21,7 +21,7 @@
 #import "OFAutoreleasePool+Private.h"
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-# import "threading.h"
+# import "tlskey.h"
 #
 # import "OFInitializationFailedException.h"
 #endif
