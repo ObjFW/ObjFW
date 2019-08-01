@@ -20,7 +20,7 @@
 #include "platform.h"
 
 #if !defined(OF_HAVE_THREADS) || \
-    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS))
+    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS))
 # error No mutexes available!
 #endif
 
@@ -32,6 +32,9 @@ typedef pthread_mutex_t of_mutex_t;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
 typedef CRITICAL_SECTION of_mutex_t;
+#elif defined(OF_AMIGAOS)
+# include <exec/semaphores.h>
+typedef struct SignalSemaphore of_mutex_t;
 #endif
 
 #if defined(OF_HAVE_ATOMIC_OPS)
@@ -48,9 +51,11 @@ typedef of_mutex_t of_spinlock_t;
 # include <sched.h>
 #endif
 
-#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS)
+#if defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) || defined(OF_WINDOWS) || \
+    defined(OF_AMIGAOS)
 # define of_rmutex_t of_mutex_t
 #else
+# import "tlskey.h"
 typedef struct {
 	of_mutex_t mutex;
 	of_tlskey_t count;

@@ -23,9 +23,12 @@
 # include "mutex_pthread.m"
 #elif defined(OF_WINDOWS)
 # include "mutex_winapi.m"
+#elif defined(OF_AMIGAOS)
+# include "mutex_amiga.m"
 #endif
 
-#if !defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) && !defined(OF_WINDOWS)
+#if !defined(OF_HAVE_RECURSIVE_PTHREAD_MUTEXES) && !defined(OF_WINDOWS) && \
+    !defined(OF_AMIGAOS)
 bool
 of_rmutex_new(of_rmutex_t *rmutex)
 {
