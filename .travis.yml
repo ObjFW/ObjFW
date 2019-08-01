@@ -5,12 +5,29 @@ matrix:
     # Linux
     - os: linux
       compiler: gcc
-      dist: trusty
+      dist: bionic
       sudo: required
     - os: linux
       compiler: clang
-      dist: trusty
+      dist: bionic
       sudo: required
+    - os: linux
+      compiler: gcc
+      dist: xenial
+      sudo: required
+    - os: linux
+      compiler: clang
+      dist: xenial
+      sudo: required
+    # Currently broken
+    #- os: linux
+    #  compiler: gcc
+    #  dist: trusty
+    #  sudo: required
+    #- os: linux
+    #  compiler: clang
+    #  dist: trusty
+    #  sudo: required
     - os: linux
       compiler: gcc
       dist: precise
@@ -21,6 +38,18 @@ matrix:
       sudo: required
 
     # macOS
+    - os: osx
+      osx_image: xcode11
+      language: objective-c
+    - os: osx
+      osx_image: xcode10.2
+      language: objective-c
+    - os: osx
+      osx_image: xcode10.1
+      language: objective-c
+    - os: osx
+      osx_image: xcode10
+      language: objective-c
     - os: osx
       osx_image: xcode9.4
       language: objective-c
