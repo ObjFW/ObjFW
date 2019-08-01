@@ -33,8 +33,15 @@ typedef pthread_key_t of_tlskey_t;
 # include <windows.h>
 typedef DWORD of_tlskey_t;
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern bool of_tlskey_new(of_tlskey_t *key);
 extern bool of_tlskey_free(of_tlskey_t key);
+#ifdef __cplusplus
+}
+#endif
 
 /* TLS keys are inlined for performance. */
 

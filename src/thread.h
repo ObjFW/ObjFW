@@ -47,9 +47,15 @@ typedef struct of_thread_attr_t {
 # define of_thread_current GetCurrentThread
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern bool of_thread_attr_init(of_thread_attr_t *attr);
 extern bool of_thread_new(of_thread_t *thread, void (*function)(id), id object,
     const of_thread_attr_t *attr);
 extern void of_thread_set_name(const char *name);
 extern bool of_thread_join(of_thread_t thread);
 extern bool of_thread_detach(of_thread_t thread);
+#ifdef __cplusplus
+}
+#endif

@@ -57,6 +57,9 @@ typedef struct {
 } of_rmutex_t;
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern bool of_mutex_new(of_mutex_t *mutex);
 extern bool of_mutex_lock(of_mutex_t *mutex);
 extern bool of_mutex_trylock(of_mutex_t *mutex);
@@ -67,6 +70,9 @@ extern bool of_rmutex_lock(of_rmutex_t *rmutex);
 extern bool of_rmutex_trylock(of_rmutex_t *rmutex);
 extern bool of_rmutex_unlock(of_rmutex_t *rmutex);
 extern bool of_rmutex_free(of_rmutex_t *rmutex);
+#ifdef __cplusplus
+}
+#endif
 
 /* Spinlocks are inlined for performance. */
 

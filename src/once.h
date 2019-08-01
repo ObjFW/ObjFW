@@ -31,4 +31,10 @@ typedef int of_once_t;
 # define OF_ONCE_INIT 0
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern void of_once(of_once_t *control, void (*func)(void));
+#ifdef __cplusplus
+}
+#endif

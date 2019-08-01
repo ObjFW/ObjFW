@@ -40,6 +40,9 @@ typedef struct {
 } of_condition_t;
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern bool of_condition_new(of_condition_t *condition);
 extern bool of_condition_signal(of_condition_t *condition);
 extern bool of_condition_broadcast(of_condition_t *condition);
@@ -47,3 +50,6 @@ extern bool of_condition_wait(of_condition_t *condition, of_mutex_t *mutex);
 extern bool of_condition_timed_wait(of_condition_t *condition,
     of_mutex_t *mutex, of_time_interval_t timeout);
 extern bool of_condition_free(of_condition_t *condition);
+#ifdef __cplusplus
+}
+#endif

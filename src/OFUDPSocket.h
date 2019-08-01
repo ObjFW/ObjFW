@@ -323,11 +323,4 @@ typedef OFData *_Nullable (^of_udp_socket_async_send_data_block_t)(
 - (void)close;
 @end
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#ifdef __cplusplus
-}
-#endif
-
 OF_ASSUME_NONNULL_END
