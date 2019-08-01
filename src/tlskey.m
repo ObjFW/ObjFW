@@ -19,6 +19,12 @@
 
 #import "tlskey.h"
 
+#ifdef OF_AMIGAOS
+# import "OFMapTable.h"
+
+static const of_map_table_functions_t functions = { NULL };
+#endif
+
 bool
 of_tlskey_new(of_tlskey_t *key)
 {
@@ -26,6 +32,15 @@ of_tlskey_new(of_tlskey_t *key)
 	return (pthread_key_create(key, NULL) == 0);
 #elif defined(OF_WINDOWS)
 	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
+#elif defined(OF_AMIGAOS)
+	@try {
+		*key = [[OFMapTable alloc] initWithKeyFunctions: functions
+						objectFunctions: functions];
+	} @catch (id e) {
+		return false;
+	}
+
+	return true;
 #endif
 }
 
@@ -36,5 +51,9 @@ of_tlskey_free(of_tlskey_t key)
 	return (pthread_key_delete(key) == 0);
 #elif defined(OF_WINDOWS)
 	return TlsFree(key);
+#elif defined(OF_AMIGAOS)
+	[key release];
+
+	return true;
 #endif
 }

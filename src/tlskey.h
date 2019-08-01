@@ -20,7 +20,7 @@
 #include "platform.h"
 
 #if !defined(OF_HAVE_THREADS) || \
-    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS))
+    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS))
 # error No thread-local storage available!
 #endif
 
@@ -32,6 +32,10 @@ typedef pthread_key_t of_tlskey_t;
 #elif defined(OF_WINDOWS)
 # include <windows.h>
 typedef DWORD of_tlskey_t;
+#elif defined(OF_AMIGAOS)
+# include <proto/exec.h>
+# import "OFMapTable.h"
+typedef OFMapTable *of_tlskey_t;
 #endif
 
 #ifdef __cplusplus
@@ -68,5 +72,41 @@ static OF_INLINE bool
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
 	return TlsSetValue(key, ptr);
+}
+#elif defined(OF_AMIGAOS)
+static OF_INLINE void *
+of_tlskey_get(of_tlskey_t key)
+{
+	void *ret;
+
+	Forbid();
+	@try {
+		ret = [key objectForKey: FindTask(NULL)];
+	} @finally {
+		Permit();
+	}
+
+	return ret;
+}
+
+static OF_INLINE bool
+of_tlskey_set(of_tlskey_t key, void *ptr)
+{
+	Forbid();
+	@try {
+		struct Task *task = FindTask(NULL);
+
+		if (ptr == NULL)
+			[key removeObjectForKey: task];
+		else
+			[key setObject: ptr
+				forKey: task];
+	} @catch (id e) {
+		return false;
+	} @finally {
+		Permit();
+	}
+
+	return true;
 }
 #endif
