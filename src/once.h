@@ -26,7 +26,7 @@ typedef pthread_once_t of_once_t;
 #elif defined(OF_HAVE_ATOMIC_OPS)
 typedef volatile int of_once_t;
 # define OF_ONCE_INIT 0
-#elif !defined(OF_HAVE_THREADS)
+#elif defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
 typedef int of_once_t;
 # define OF_ONCE_INIT 0
 #endif

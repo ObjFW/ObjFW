@@ -19,6 +19,10 @@
 
 #import "once.h"
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+#endif
+
 #if defined(OF_HAVE_THREADS) && defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
 # import "mutex.h"
@@ -44,6 +48,16 @@ of_once(of_once_t *control, void (*func)(void))
 	} else
 		while (*control == 1)
 			of_thread_yield();
+#elif defined(OF_AMIGAOS)
+	Forbid();
+	@try {
+		if (*control == 0) {
+			*control = 1;
+			func();
+		}
+	} @finally {
+		Permit();
+	}
 #else
 # error No of_once available
 #endif
