@@ -155,6 +155,22 @@
 	return _items + idx * _itemSize;
 }
 
+- (void *)mutableFirstItem
+{
+	if (_items == NULL || _count == 0)
+		return NULL;
+
+	return _items;
+}
+
+- (void *)mutableLastItem
+{
+	if (_items == NULL || _count == 0)
+		return NULL;
+
+	return _items + (_count - 1) * _itemSize;
+}
+
 - (OFData *)subdataWithRange: (of_range_t)range
 {
 	if (range.length > SIZE_MAX - range.location ||

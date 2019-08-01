@@ -43,6 +43,18 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
 
 /*!
+ * @brief The first item of the OFMutableData or `NULL`.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *mutableFirstItem
+    OF_RETURNS_INNER_POINTER;
+
+/*!
+ * @brief The last item of the OFMutableData or `NULL`.
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) void *mutableLastItem
+    OF_RETURNS_INNER_POINTER;
+
+/*!
  * @brief Creates a new OFMutableData with an item size of 1.
  *
  * @return A new autoreleased OFMutableData
