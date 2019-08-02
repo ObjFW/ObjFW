@@ -34,8 +34,10 @@ typedef pthread_key_t of_tlskey_t;
 typedef DWORD of_tlskey_t;
 #elif defined(OF_AMIGAOS)
 # include <proto/exec.h>
-# import "OFMapTable.h"
-typedef OFMapTable *of_tlskey_t;
+@class OFMapTable;
+typedef struct {
+	OFMapTable *mapTable;
+} *of_tlskey_t;
 #endif
 
 #ifdef __cplusplus
@@ -74,39 +76,13 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 	return TlsSetValue(key, ptr);
 }
 #elif defined(OF_AMIGAOS)
-static OF_INLINE void *
-of_tlskey_get(of_tlskey_t key)
-{
-	void *ret;
-
-	Forbid();
-	@try {
-		ret = [key objectForKey: FindTask(NULL)];
-	} @finally {
-		Permit();
-	}
-
-	return ret;
+/* Those are too big too inline. */
+# ifdef __cplusplus
+extern "C" {
+# endif
+extern void *of_tlskey_get(of_tlskey_t key);
+extern bool of_tlskey_set(of_tlskey_t key, void *ptr);
+# ifdef __cplusplus
 }
-
-static OF_INLINE bool
-of_tlskey_set(of_tlskey_t key, void *ptr)
-{
-	Forbid();
-	@try {
-		struct Task *task = FindTask(NULL);
-
-		if (ptr == NULL)
-			[key removeObjectForKey: task];
-		else
-			[key setObject: ptr
-				forKey: task];
-	} @catch (id e) {
-		return false;
-	} @finally {
-		Permit();
-	}
-
-	return true;
-}
+# endif
 #endif

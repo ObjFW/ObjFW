@@ -33,12 +33,13 @@ of_tlskey_new(of_tlskey_t *key)
 #elif defined(OF_WINDOWS)
 	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
 #elif defined(OF_AMIGAOS)
-	@try {
-		*key = [[OFMapTable alloc] initWithKeyFunctions: functions
-						objectFunctions: functions];
-	} @catch (id e) {
+	if ((*key = calloc(1, sizeof(*key))) == NULL)
 		return false;
-	}
+
+	/*
+	 * We create the map table lazily, as some TLS are created in
+	 * constructors, at which time OFMapTable is not available yet.
+	 */
 
 	return true;
 #endif
@@ -52,8 +53,57 @@ of_tlskey_free(of_tlskey_t key)
 #elif defined(OF_WINDOWS)
 	return TlsFree(key);
 #elif defined(OF_AMIGAOS)
-	[key release];
+	[key->mapTable release];
+	free(key);
 
 	return true;
 #endif
 }
+
+#ifdef OF_AMIGAOS
+void *
+of_tlskey_get(of_tlskey_t key)
+{
+	void *ret;
+
+	Forbid();
+	@try {
+		if (key->mapTable == NULL)
+			key->mapTable = [[OFMapTable alloc]
+			    initWithKeyFunctions: functions
+				 objectFunctions: functions];
+
+		ret = [key->mapTable objectForKey: FindTask(NULL)];
+	} @finally {
+		Permit();
+	}
+
+	return ret;
+}
+
+bool
+of_tlskey_set(of_tlskey_t key, void *ptr)
+{
+	Forbid();
+	@try {
+		struct Task *task = FindTask(NULL);
+
+		if (key->mapTable == NULL)
+			key->mapTable = [[OFMapTable alloc]
+			    initWithKeyFunctions: functions
+				 objectFunctions: functions];
+
+		if (ptr == NULL)
+			[key->mapTable removeObjectForKey: task];
+		else
+			[key->mapTable setObject: ptr
+					  forKey: task];
+	} @catch (id e) {
+		return false;
+	} @finally {
+		Permit();
+	}
+
+	return true;
+}
+#endif
