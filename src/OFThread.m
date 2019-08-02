@@ -355,6 +355,7 @@ static OFDNSResolver *DNSResolver;
 {
 	mainThread = [[OFThread alloc] init];
 	mainThread->_thread = of_thread_current();
+	mainThread->_running = OF_THREAD_RUNNING;
 
 	if (!of_tlskey_set(threadSelfKey, mainThread))
 		@throw [OFInitializationFailedException
