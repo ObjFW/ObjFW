@@ -105,7 +105,7 @@ typedef struct stat of_stat_t;
 # define S_ISLNK(mode) (mode & S_IFLNK)
 #endif
 
-#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
+#if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 static OFMutex *passwdMutex;
 #endif
 #if !defined(HAVE_READDIR_R) && defined(OF_HAVE_THREADS) && !defined(OF_WINDOWS)
@@ -538,7 +538,7 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 		    exceptionWithClass: self];
 #endif
 
-#if defined(OF_HAVE_CHOWN) && defined(OF_HAVE_THREADS)
+#if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 	passwdMutex = [[OFMutex alloc] init];
 #endif
 #if !defined(HAVE_READDIR_R) && !defined(OF_WINDOWS) && defined(OF_HAVE_THREADS)
