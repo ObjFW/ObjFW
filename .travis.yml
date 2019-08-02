@@ -39,11 +39,10 @@ matrix:
 
     # macOS
     - os: osx
-      osx_image: xcode11
-      language: objective-c
-    - os: osx
       osx_image: xcode10.2
       language: objective-c
+      env:
+        - no32bit=1
     - os: osx
       osx_image: xcode10.1
       language: objective-c
@@ -236,7 +235,9 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "osx" -a -z "$config" ]; then
             build_mac_32_64() {
                     build $@;
-                    build OBJC="clang -m32" --host=i386-apple-darwin $@;
+                    if [ -z "$no32bit" ]; then
+                            build OBJC="clang -m32" --host=i386-apple-darwin $@;
+                    fi;
             };
 
             if xcodebuild -version | grep 'Xcode 6' >/dev/null; then
