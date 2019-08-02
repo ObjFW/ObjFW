@@ -74,7 +74,8 @@ of_thread_join(of_thread_t thread)
 bool
 of_thread_detach(of_thread_t thread)
 {
-	/* FIXME */
+	CloseHandle(thread);
+
 	return true;
 }
 

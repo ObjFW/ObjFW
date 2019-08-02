@@ -37,7 +37,9 @@ of_condition_signal(of_condition_t *condition)
 bool
 of_condition_broadcast(of_condition_t *condition)
 {
-	for (int i = 0; i < condition->count; i++)
+	int count = condition->count;
+
+	for (int i = 0; i < count; i++)
 		if (!SetEvent(condition->event))
 			return false;
 
