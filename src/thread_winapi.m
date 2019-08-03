@@ -15,8 +15,6 @@
  * file.
  */
 
-#include "config.h"
-
 #import "macros.h"
 
 bool

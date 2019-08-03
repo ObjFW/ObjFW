@@ -23,4 +23,6 @@
 # include "thread_pthread.m"
 #elif defined(OF_WINDOWS)
 # include "thread_winapi.m"
+#elif defined(OF_AMIGAOS)
+# include "thread_amiga.m"
 #endif

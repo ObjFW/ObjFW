@@ -20,9 +20,28 @@
 #import "tlskey.h"
 
 #ifdef OF_AMIGAOS
-# import "OFMapTable.h"
+# ifdef OF_AMIGAOS4
+#  define __USE_INLINE__
+#  define __NOLIBBASE__
+#  define __NOGLOBALIFACE__
+# endif
+# include <exec/semaphores.h>
+# include <proto/exec.h>
 
+# import "OFMapTable.h"
+# import "OFList.h"
+
+# ifdef OF_AMIGAOS4
+extern struct ExecIFace *IExec;
+# endif
 static const of_map_table_functions_t functions = { NULL };
+static OFList *allKeys = nil;
+static struct SignalSemaphore semaphore;
+
+OF_CONSTRUCTOR()
+{
+	InitSemaphore(&semaphore);
+}
 #endif
 
 bool
@@ -33,7 +52,7 @@ of_tlskey_new(of_tlskey_t *key)
 #elif defined(OF_WINDOWS)
 	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
 #elif defined(OF_AMIGAOS)
-	if ((*key = calloc(1, sizeof(*key))) == NULL)
+	if ((*key = calloc(1, sizeof(**key))) == NULL)
 		return false;
 
 	/*
@@ -53,29 +72,45 @@ of_tlskey_free(of_tlskey_t key)
 #elif defined(OF_WINDOWS)
 	return TlsFree(key);
 #elif defined(OF_AMIGAOS)
-	[key->mapTable release];
-	free(key);
+	ObtainSemaphore(&semaphore);
+	@try {
+		[allKeys removeListObject: key->listObject];
+		[key->mapTable release];
+		free(key);
+	} @finally {
+		ReleaseSemaphore(&semaphore);
+	}
 
 	return true;
 #endif
 }
 
 #ifdef OF_AMIGAOS
+static void
+unsafeCreateMapTable(of_tlskey_t key)
+{
+	key->mapTable = [[OFMapTable alloc] initWithKeyFunctions: functions
+						 objectFunctions: functions];
+
+	if (allKeys == nil)
+		allKeys = [[OFList alloc] init];
+
+	key->listObject = [allKeys appendObject: key->mapTable];
+}
+
 void *
 of_tlskey_get(of_tlskey_t key)
 {
 	void *ret;
 
-	Forbid();
+	ObtainSemaphore(&semaphore);
 	@try {
 		if (key->mapTable == NULL)
-			key->mapTable = [[OFMapTable alloc]
-			    initWithKeyFunctions: functions
-				 objectFunctions: functions];
+			unsafeCreateMapTable(key);
 
 		ret = [key->mapTable objectForKey: FindTask(NULL)];
 	} @finally {
-		Permit();
+		ReleaseSemaphore(&semaphore);
 	}
 
 	return ret;
@@ -84,14 +119,12 @@ of_tlskey_get(of_tlskey_t key)
 bool
 of_tlskey_set(of_tlskey_t key, void *ptr)
 {
-	Forbid();
+	ObtainSemaphore(&semaphore);
 	@try {
 		struct Task *task = FindTask(NULL);
 
 		if (key->mapTable == NULL)
-			key->mapTable = [[OFMapTable alloc]
-			    initWithKeyFunctions: functions
-				 objectFunctions: functions];
+			unsafeCreateMapTable(key);
 
 		if (ptr == NULL)
 			[key->mapTable removeObjectForKey: task];
@@ -101,9 +134,24 @@ of_tlskey_set(of_tlskey_t key, void *ptr)
 	} @catch (id e) {
 		return false;
 	} @finally {
-		Permit();
+		ReleaseSemaphore(&semaphore);
 	}
 
 	return true;
+}
+
+void
+of_tlskey_thread_exited(void)
+{
+	ObtainSemaphore(&semaphore);
+	@try {
+		struct Task *task = FindTask(NULL);
+
+		for (of_list_object_t *iter = allKeys.firstListObject;
+		    iter != NULL; iter = iter->next)
+			[iter->object removeObjectForKey: task];
+	} @finally {
+		ReleaseSemaphore(&semaphore);
+	}
 }
 #endif

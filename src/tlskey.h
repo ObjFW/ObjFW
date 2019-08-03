@@ -33,10 +33,11 @@ typedef pthread_key_t of_tlskey_t;
 # include <windows.h>
 typedef DWORD of_tlskey_t;
 #elif defined(OF_AMIGAOS)
-# include <proto/exec.h>
+# import "OFList.h"
 @class OFMapTable;
 typedef struct {
 	OFMapTable *mapTable;
+	of_list_object_t *listObject;
 } *of_tlskey_t;
 #endif
 

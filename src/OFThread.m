@@ -148,10 +148,10 @@ callMain(id object)
 
 	[thread handleTermination];
 
-	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
-
 	objc_autoreleasePoolPop(thread->_pool);
 	[OFAutoreleasePool of_handleThreadTermination];
+
+	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
 	[thread release];
 }
@@ -333,6 +333,8 @@ static OFDNSResolver *DNSResolver;
 
 	thread->_returnValue = [object retain];
 	longjmp(thread->_exitEnv, 1);
+
+	OF_UNREACHABLE
 }
 
 + (void)setName: (OFString *)name
