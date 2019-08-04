@@ -146,6 +146,11 @@ __asm__ (
     "	movea.l	42(a6), a4\n"
     "	rts"
 );
+
+void
+__init_eh(void)
+{
+}
 #elif defined(OF_MORPHOS)
 /* All __saveds functions in this file need to use the M68K ABI */
 __asm__ (

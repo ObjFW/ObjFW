@@ -58,7 +58,7 @@ extern void _Unwind_SjLj_Resume(void *);
 extern void _Unwind_Resume(void *);
 #endif
 extern void __register_frame_info(const void *, void *);
-extern void __deregister_frame_info(const void *);
+extern void *__deregister_frame_info(const void *);
 
 struct Library *ObjFWRTBase;
 void *__objc_class_name_Protocol;
