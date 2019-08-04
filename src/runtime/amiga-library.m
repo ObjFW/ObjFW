@@ -186,7 +186,8 @@ getDataSize(void)
 
 #if defined(OF_AMIGAOS_M68K)
 	__asm__ (
-	    "move.l	#___data_size, %0"
+	    "move.l	#___data_size, %0\n\t"
+	    "add.l	#___bss_size, %0"
 	    : "=r"(dataSize)
 	);
 #elif defined(OF_MORPHOS)
