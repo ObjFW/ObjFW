@@ -23,4 +23,6 @@
 # include "condition_pthread.m"
 #elif defined(OF_WINDOWS)
 # include "condition_winapi.m"
+#elif defined(OF_AMIGAOS)
+# include "condition_amiga.m"
 #endif

@@ -149,9 +149,11 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			    ? attr->priority * 127 : attr->priority * 128))
 		}
 
-		ADD_TAG(NP_StackSize, (attr != NULL && attr->stackSize != 0
-		    ? (LONG)attr->stackSize
-		    : ((struct Process *)FindTask(NULL))->pr_StackSize))
+		if (attr != NULL && attr->stackSize != 0)
+			ADD_TAG(NP_StackSize, attr->stackSize)
+		else
+			ADD_TAG(NP_StackSize,
+			    ((struct Process *)FindTask(NULL))->pr_StackSize)
 
 		ADD_TAG(TAG_DONE, 0)
 #undef ADD_TAG

@@ -20,7 +20,7 @@
 #include "platform.h"
 
 #if !defined(OF_HAVE_THREADS) || \
-    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS))
+    (!defined(OF_HAVE_PTHREADS) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS))
 # error No conditions available!
 #endif
 
@@ -36,7 +36,16 @@ typedef pthread_cond_t of_condition_t;
 # include <windows.h>
 typedef struct {
 	HANDLE event;
-	int count;
+	volatile int count;
+} of_condition_t;
+#elif defined(OF_AMIGAOS)
+# include <exec/tasks.h>
+typedef struct {
+	struct of_condition_waiting_task {
+		struct Task *task;
+		uint8_t sigBit;
+		struct of_condition_waiting_task *next;
+	} *waitingTasks;
 } of_condition_t;
 #endif
 

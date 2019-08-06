@@ -15,8 +15,6 @@
  * file.
  */
 
-#include "config.h"
-
 bool
 of_condition_new(of_condition_t *condition)
 {
