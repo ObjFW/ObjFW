@@ -85,26 +85,29 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
+	bool ret;
 
 	if (waitingTask.sigBit == -1)
 		return false;
+
+	Forbid();
 
 	if (!of_mutex_unlock(mutex)) {
 		FreeSignal(waitingTask.sigBit);
 		return false;
 	}
 
-	Forbid();
-
 	waitingTask.next = condition->waitingTasks;
 	condition->waitingTasks = &waitingTask;
 
 	Wait(1 << waitingTask.sigBit);
-	Permit();
-
 	FreeSignal(waitingTask.sigBit);
 
-	return true;
+	ret = of_mutex_lock(mutex);
+
+	Permit();
+
+	return ret;
 }
 
 bool
@@ -152,6 +155,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 		}
 	};
 	ULONG mask;
+	bool ret;
 
 	NewList(&port.mp_MsgList);
 
@@ -162,10 +166,12 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	    (struct IORequest *)&request, 0) != 0)
 		goto fail;
 
-	if (!of_mutex_unlock(mutex))
-		goto fail;
-
 	Forbid();
+
+	if (!of_mutex_unlock(mutex)) {
+		Permit();
+		goto fail;
+	}
 
 	waitingTask.next = condition->waitingTasks;
 	condition->waitingTasks = &waitingTask;
@@ -173,6 +179,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	SendIO((struct IORequest *)&request);
 
 	mask = Wait((1 << waitingTask.sigBit) | (1 << port.mp_SigBit));
+	ret = of_mutex_lock(mutex);
 
 	condition->waitingTasks = waitingTask.next;
 
@@ -190,7 +197,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	FreeSignal(waitingTask.sigBit);
 	FreeSignal(port.mp_SigBit);
 
-	return true;
+	return ret;
 
 fail:
 	if (waitingTask.sigBit != -1)
