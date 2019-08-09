@@ -124,8 +124,7 @@ enum {
 
 		_cancelAddr.sin_family = AF_INET;
 		_cancelAddr.sin_port = 0;
-		_cancelAddr.sin_addr.s_addr =
-		    inet_addr((const void *)"127.0.0.1");
+		_cancelAddr.sin_addr.s_addr = inet_addr((void *)"127.0.0.1");
 # ifdef OF_WII
 		_cancelAddr.sin_len = 8;
 # endif
@@ -423,7 +422,7 @@ enum {
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, 8) > 0);
 #else
-	OF_ENSURE(sendto(_cancelFD[1], (const void *)"", 1, 0,
+	OF_ENSURE(sendto(_cancelFD[1], (void *)"", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, sizeof(_cancelAddr)) > 0);
 #endif
 }

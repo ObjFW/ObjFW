@@ -41,6 +41,10 @@
 #endif
 #include "once.h"
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+#endif
+
 #ifdef OF_NINTENDO_3DS
 # include <3ds/types.h>
 # include <3ds/services/soc.h>
@@ -48,6 +52,13 @@
 
 #ifdef OF_HAVE_THREADS
 static of_mutex_t mutex;
+#endif
+#ifdef OF_AMIGAOS
+/* TODO: Support multiple threads */
+struct Library *SocketBase;
+# ifdef OF_AMIGAOS4
+struct SocketIFace *ISocket = NULL;
+# endif
 #endif
 static bool initSuccessful = false;
 
@@ -59,6 +70,17 @@ init(void)
 
 	if (WSAStartup(MAKEWORD(2, 0), &wsa))
 		return;
+#elif defined(OF_AMIGAOS)
+	if ((SocketBase = OpenLibrary("bsdsocket.library", 4)) == NULL)
+		return;
+
+# ifdef OF_AMIGAOS4
+	if ((ISocket = (struct SocketIFace *)
+	    GetInterface(SocketBase, "main", 1, NULL)) == NULL) {
+		CloseLibrary(SocketBase);
+		return;
+	}
+# endif
 #elif defined(OF_WII)
 	if (net_init() < 0)
 		return;
@@ -87,6 +109,19 @@ init(void)
 	initSuccessful = true;
 }
 
+#ifdef OF_AMIGAOS
+OF_DESTRUCTOR()
+{
+# ifdef OF_AMIGAOS4
+	if (ISocket != NULL)
+		DropInterface((struct Interface *)ISocket);
+# endif
+
+	if (SocketBase != NULL)
+		CloseLibrary(SocketBase);
+}
+#endif
+
 bool
 of_socket_init()
 {
@@ -99,9 +134,7 @@ of_socket_init()
 int
 of_socket_errno()
 {
-#ifndef OF_WINDOWS
-	return errno;
-#else
+#if defined(OF_WINDOWS)
 	switch (WSAGetLastError()) {
 	case WSAEACCES:
 		return EACCES;
@@ -192,6 +225,10 @@ of_socket_errno()
 	}
 
 	return 0;
+#elif defined(OF_AMIGAOS)
+	return Errno();
+#else
+	return errno;
 #endif
 }
 

@@ -677,7 +677,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	if (connect(_socket, &address->sockaddr.sockaddr,
+	if (connect(_socket, (struct sockaddr *)&address->sockaddr.sockaddr,
 	    address->length) != 0) {
 		*errNo = of_socket_errno();
 		return false;
@@ -834,7 +834,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 #endif
 
 	setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR,
-	    (const char *)&one, (socklen_t)sizeof(one));
+	    (char *)&one, (socklen_t)sizeof(one));
 
 #if defined(OF_WII) || defined(OF_NINTENDO_3DS)
 	if (port != 0) {

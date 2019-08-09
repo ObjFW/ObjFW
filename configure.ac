@@ -46,13 +46,12 @@ case "$host" in
 		AS_IF([test x"$OBJCFLAGS" = x""], [
 			OBJCFLAGS="-O0"
 		])
-		OBJCFLAGS="$OBJCFLAGS -noixemul"
+		OBJCFLAGS="$OBJCFLAGS -noixemul -D__NO_NET_API"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
 		LDFLAGS="$LDFLAGS -noixemul"
 
 		enable_shared="no"
 		enable_threads="no"
-		enable_sockets="no"
 		enable_files="yes"	# Required for reading ENV:
 		supports_amiga_lib="yes"
 		ac_cv_snprintf_useful_ret="yes"
@@ -1224,9 +1223,15 @@ AC_CHECK_FUNCS([strtod_l strtof_l asprintf_l])
 AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_FUNCS(uname)
 
-AC_CHECK_FUNC(pipe, [
-	AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
-])
+case "$host_os" in
+	amigaos*)
+		;;
+	*)
+		AC_CHECK_FUNC(pipe, [
+			AC_DEFINE(OF_HAVE_PIPE, 1, [Whether we have pipe()])
+		])
+		;;
+esac
 
 AC_ARG_ENABLE(sockets,
 	AS_HELP_STRING([--disable-sockets], [disable socket support]))
@@ -1234,14 +1239,17 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	AC_DEFINE(OF_HAVE_SOCKETS, 1, [Whether we have sockets])
 	AC_SUBST(USE_SRCS_SOCKETS, '${SRCS_SOCKETS}')
 
-	AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
-
 	case "$host_os" in
-		mingw*)
-			LIBS="$LIBS -lws2_32 -liphlpapi"
+		amigaos*)
 			;;
 		haiku*)
 			LIBS="$LIBS -lnetwork"
+			;;
+		mingw*)
+			LIBS="$LIBS -lws2_32 -liphlpapi"
+			;;
+		*)
+			AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 			;;
 	esac
 
@@ -1261,7 +1269,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 
 	AC_CHECK_MEMBER([struct sockaddr_in6.sin6_addr], [
 		AC_EGREP_CPP(egrep_cpp_yes, [
+			#ifdef _WIN32
 			typedef int BOOL;
+			#endif
 
 			#ifdef OF_HAVE_SYS_SOCKET_H
 			# include <sys/socket.h>
@@ -1286,7 +1296,9 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 		])
 	], [
 	], [
+		#ifdef _WIN32
 		typedef int BOOL;
+		#endif
 
 		#ifdef OF_HAVE_NETINET_IN_H
 		# include <netinet/in.h>
@@ -1333,7 +1345,7 @@ AS_IF([test x"$enable_sockets" != x"no"], [
 	])
 
 	case "$host_os" in
-		mingw* | morphos*)
+		amigaos* | mingw* | morphos*)
 			AC_DEFINE(HAVE_SELECT, 1,
 				[Whether we have select() or similar])
 			AC_SUBST(OFSELECTKERNELEVENTOBSERVER_M,

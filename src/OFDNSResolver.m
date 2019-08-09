@@ -55,10 +55,10 @@
 # undef interface
 #endif
 
-#ifdef OF_AMIGAOS4
-# define __USE_INLINE__
-# define __NOLIBBASE__
-# define __NOGLOBALIFACE__
+#ifdef OF_AMIGAOS
+# ifdef OF_AMIGAOS4
+#  define __USE_INLINE__
+# endif
 # include <proto/exec.h>
 # include <proto/bsdsocket.h>
 #endif
@@ -97,21 +97,6 @@
 #else
 # define HOSTS_PATH @"/etc/hosts"
 # define RESOLV_CONF_PATH @"/etc/resolv.conf"
-#endif
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *SocketBase = NULL;
-static struct SocketIFace *ISocket = NULL;
-
-OF_DESTRUCTOR()
-{
-	if (ISocket != NULL)
-		DropInterface((struct Interface *)ISocket);
-
-	if (SocketBase != NULL)
-		CloseLibrary(SocketBase);
-}
 #endif
 
 /*
@@ -1140,18 +1125,13 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 @synthesize minNumberOfDotsInAbsoluteName = _minNumberOfDotsInAbsoluteName;
 @synthesize usesTCP = _usesTCP, configReloadInterval = _configReloadInterval;
 
-#ifdef OF_AMIGAOS4
+#ifdef OF_AMIGAOS
 + (void)initialize
 {
 	if (self != [OFDNSResolver class])
 		return;
 
-	if ((SocketBase = OpenLibrary("bsdsocket.library", 4)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((ISocket = (struct SocketIFace *)
-	    GetInterface(SocketBase, "main", 1, NULL)) == NULL)
+	if (!of_socket_init())
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 }

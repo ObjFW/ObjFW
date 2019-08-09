@@ -387,8 +387,9 @@
 	if (length > SSIZE_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	if ((bytesWritten = sendto(_socket, buffer, length, 0,
-	    &receiver->sockaddr.sockaddr, receiver->length)) < 0)
+	if ((bytesWritten = sendto(_socket, (void *)buffer, length, 0,
+	    (struct sockaddr *)&receiver->sockaddr.sockaddr,
+	    receiver->length)) < 0)
 		@throw [OFWriteFailedException
 		    exceptionWithObject: self
 			requestedLength: length

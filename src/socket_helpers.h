@@ -48,19 +48,38 @@
 # define SOCK_CLOEXEC 0
 #endif
 
-#if defined(OF_MORPHOS)
+#if defined(OF_AMIGAOS)
+# ifdef OF_AMIGAOS4
+#  define __USE_INLINE__
+# endif
+# include <proto/bsdsocket.h>
 # include <sys/filio.h>
 # define closesocket(sock) CloseSocket(sock)
 # define ioctlsocket(fd, req, arg) IoctlSocket(fd, req, arg)
 # define hstrerror(err) "unknown (no hstrerror)"
 # define SOCKET_ERROR -1
+# ifdef OF_MORPHOS
 typedef uint32_t in_addr_t;
+# endif
 #elif !defined(OF_WINDOWS) && !defined(OF_WII)
 # define closesocket(sock) close(sock)
 #endif
 
 #ifdef OF_MORPHOS_IXEMUL
 typedef uint32_t in_addr_t;
+#endif
+
+#if defined(OF_AMIGAOS_M68K)
+# define select(nfds, readfds, writefds, errorfds, timeout) \
+    WaitSelect(nfds, readfds, writefds, errorfds, (struct __timeval *)timeout, \
+    NULL)
+#elif defined(OF_AMIGAOS4)
+# define select(nfds, readfds, writefds, errorfds, timeout) \
+    WaitSelect(nfds, readfds, writefds, errorfds, (struct TimeVal *)timeout, \
+    NULL)
+#elif defined(OF_MORPHOS)
+# define select(nfds, readfds, writefds, errorfds, timeout) \
+    WaitSelect(nfds, readfds, writefds, errorfds, timeout, NULL)
 #endif
 
 #ifdef OF_WII

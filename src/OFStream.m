@@ -1807,7 +1807,7 @@
 
 - (void)setBlocking: (bool)enable
 {
-#if defined(HAVE_FCNTL) && !defined(OF_MORPHOS)
+#if defined(HAVE_FCNTL) && !defined(OF_AMIGAOS)
 	bool readImplemented = false, writeImplemented = false;
 
 	@try {
