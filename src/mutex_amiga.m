@@ -15,16 +15,7 @@
  * file.
  */
 
-#ifdef OF_AMIGAOS4
-# define __USE_INLINE__
-# define __NOLIBBASE__
-# define __NOGLOBALIFACE__
-#endif
 #include <proto/exec.h>
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-#endif
 
 bool
 of_mutex_new(of_mutex_t *mutex)

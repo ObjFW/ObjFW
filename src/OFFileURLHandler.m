@@ -70,11 +70,6 @@
 #endif
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-#  define __NOLIBBASE__
-#  define __NOGLOBALIFACE__
-# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/locale.h>
@@ -114,29 +109,6 @@ static OFMutex *readdirMutex;
 
 #ifdef OF_WINDOWS
 static WINAPI BOOLEAN (*func_CreateSymbolicLinkW)(LPCWSTR, LPCWSTR, DWORD);
-#endif
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *DOSBase = NULL;
-static struct DOSIFace *IDOS = NULL;
-static struct Library *LocaleBase = NULL;
-static struct LocaleIFace *ILocale = NULL;
-
-OF_DESTRUCTOR()
-{
-	if (ILocale != NULL)
-		DropInterface((struct Interface *)ILocale);
-
-	if (LocaleBase != NULL)
-		CloseLibrary(LocaleBase);
-
-	if (IDOS != NULL)
-		DropInterface((struct Interface *)IDOS);
-
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-}
 #endif
 
 #ifdef OF_WINDOWS
@@ -517,26 +489,6 @@ setSymbolicLinkDestinationAttribute(of_mutable_file_attributes_t attributes,
 
 	if (self != [OFFileURLHandler class])
 		return;
-
-#ifdef OF_AMIGAOS4
-	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((IDOS = (struct DOSIFace *)
-	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((LocaleBase = OpenLibrary("locale.library", 38)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((ILocale = (struct LocaleIFace *)
-	    GetInterface(LocaleBase, "main", 1, NULL)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-#endif
 
 #if defined(OF_FILE_MANAGER_SUPPORTS_OWNER) && defined(OF_HAVE_THREADS)
 	passwdMutex = [[OFMutex alloc] init];

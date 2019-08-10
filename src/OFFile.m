@@ -58,11 +58,6 @@
 #endif
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-#  define __NOLIBBASE__
-#  define __NOGLOBALIFACE__
-# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 #endif
@@ -83,12 +78,6 @@
 #ifndef OF_AMIGAOS
 # define closeHandle(h) close(h)
 #else
-# ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *DOSBase = NULL;
-static struct DOSIFace *IDOS = NULL;
-# endif
-
 struct of_file_handle {
 	of_file_handle_t previous, next;
 	BPTR handle;
@@ -116,14 +105,6 @@ OF_DESTRUCTOR()
 	for (of_file_handle_t iter = firstHandle; iter != NULL;
 	    iter = iter->next)
 		Close(iter->handle);
-
-# ifdef OF_AMIGAOS4
-	if (IDOS != NULL)
-		DropInterface((struct Interface *)IDOS);
-
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-# endif
 }
 #endif
 
@@ -195,17 +176,6 @@ parseMode(const char *mode, bool *append)
 
 #ifdef OF_NINTENDO_DS
 	if (!nitroFSInit(NULL))
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-#endif
-
-#ifdef OF_AMIGAOS4
-	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((IDOS = (struct DOSIFace *)
-	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self];
 #endif

@@ -33,11 +33,6 @@
 #include "platform.h"
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-#  define __NOLIBBASE__
-#  define __NOGLOBALIFACE__
-# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 #endif
@@ -91,21 +86,6 @@
 
 #ifdef OF_DJGPP
 # define lrint(x) rint(x)
-#endif
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *DOSBase = NULL;
-static struct DOSIFace *IDOS = NULL;
-
-OF_DESTRUCTOR()
-{
-	if (IDOS != NULL)
-		DropInterface((struct Interface *)IDOS);
-
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-}
 #endif
 
 #if defined(OF_HAVE_THREADS)
@@ -209,21 +189,6 @@ static OFDNSResolver *DNSResolver;
 		thread->_threadDictionary = [[OFMutableDictionary alloc] init];
 
 	return thread->_threadDictionary;
-}
-#elif defined(OF_AMIGAOS4)
-+ (void)initialize
-{
-	if (self != [OFThread class])
-		return;
-
-	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((IDOS = (struct DOSIFace *)
-	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
 }
 #endif
 

@@ -30,40 +30,12 @@
 #import "OFOpenItemFailedException.h"
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __NOLIBBASE__
-#  define __NOGLOBALIFACE__
-#  define __USE_INLINE__
-# endif
 # include <proto/dos.h>
 # include <proto/exec.h>
 # include <proto/locale.h>
 #endif
 
 static OFLocale *currentLocale = nil;
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *DOSBase = NULL;
-static struct DOSIFace *IDOS = NULL;
-static struct Library *LocaleBase = NULL;
-static struct LocaleIFace *ILocale = NULL;
-
-OF_DESTRUCTOR()
-{
-	if (ILocale != NULL)
-		DropInterface((struct Interface *)ILocale);
-
-	if (LocaleBase != NULL)
-		CloseLibrary(LocaleBase);
-
-	if (IDOS != NULL)
-		DropInterface((struct Interface *)IDOS);
-
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-}
-#endif
 
 #ifndef OF_AMIGAOS
 static void
@@ -115,32 +87,6 @@ parseLocale(char *locale, of_string_encoding_t *encoding,
 @implementation OFLocale
 @synthesize language = _language, territory = _territory, encoding = _encoding;
 @synthesize decimalPoint = _decimalPoint;
-
-#ifdef OF_AMIGAOS4
-+ (void)initialize
-{
-	if (self != [OFLocale class])
-		return;
-
-	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((IDOS = (struct DOSIFace *)
-	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((LocaleBase = OpenLibrary("locale.library", 38)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((ILocale = (struct LocaleIFace *)
-	    GetInterface(LocaleBase, "main", 1, NULL)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-}
-#endif
 
 + (OFLocale *)currentLocale
 {

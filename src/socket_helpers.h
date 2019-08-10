@@ -49,9 +49,6 @@
 #endif
 
 #if defined(OF_AMIGAOS)
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-# endif
 # include <proto/bsdsocket.h>
 # include <sys/filio.h>
 # define closesocket(sock) CloseSocket(sock)

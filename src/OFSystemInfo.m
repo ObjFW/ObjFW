@@ -33,9 +33,6 @@
 #endif
 
 #if defined(OF_AMIGAOS4)
-# define __USE_INLINE__
-# define __NOLIBBASE__
-# define __NOGLOBALIFACE__
 # include <exec/exectags.h>
 # include <proto/exec.h>
 #elif defined(OF_MORPHOS)
@@ -99,10 +96,6 @@ extern NSSearchPathEnumerationState NSGetNextSearchPathEnumeration(
 struct x86_regs {
 	uint32_t eax, ebx, ecx, edx;
 };
-#endif
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
 #endif
 
 static size_t pageSize = 4096;

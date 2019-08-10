@@ -43,11 +43,6 @@
 #import "OFWriteFailedException.h"
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-#  define __NOLIBBASE__
-#  define __NOGLOBALIFACE__
-# endif
 # include <proto/exec.h>
 # include <proto/dos.h>
 #endif
@@ -61,12 +56,6 @@ _reference_to_OFWin32ConsoleStdIOStream(void)
 }
 #endif
 
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *DOSBase = NULL;
-static struct DOSIFace *IDOS = NULL;
-#endif
-
 OFStdIOStream *of_stdin = nil;
 OFStdIOStream *of_stdout = nil;
 OFStdIOStream *of_stderr = nil;
@@ -77,14 +66,6 @@ OF_DESTRUCTOR()
 	[of_stdin dealloc];
 	[of_stdout dealloc];
 	[of_stderr dealloc];
-
-# ifdef OF_AMIGAOS4
-	if (IDOS != NULL)
-		DropInterface((struct Interface *)IDOS);
-
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-# endif
 }
 #endif
 
@@ -138,17 +119,6 @@ of_log(OFConstantString *format, ...)
 	BPTR input, output, error;
 	bool inputClosable = false, outputClosable = false,
 	    errorClosable = false;
-
-#  ifdef OF_AMIGAOS4
-	if ((DOSBase = OpenLibrary("dos.library", 36)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-
-	if ((IDOS = (struct DOSIFace *)
-	    GetInterface(DOSBase, "main", 1, NULL)) == NULL)
-		@throw [OFInitializationFailedException
-		    exceptionWithClass: self];
-#  endif
 
 	input = Input();
 	output = Output();

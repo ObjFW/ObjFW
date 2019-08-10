@@ -56,9 +56,6 @@
 #endif
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-# endif
 # include <proto/exec.h>
 # include <proto/bsdsocket.h>
 #endif

@@ -46,8 +46,9 @@ case "$host" in
 		AS_IF([test x"$OBJCFLAGS" = x""], [
 			OBJCFLAGS="-O0"
 		])
-		OBJCFLAGS="$OBJCFLAGS -noixemul -D__NO_NET_API"
+		OBJCFLAGS="$OBJCFLAGS -noixemul"
 		OBJFW_OBJCFLAGS="$OBJFW_OBJCFLAGS -noixemul"
+		CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 		LDFLAGS="$LDFLAGS -noixemul"
 
 		enable_shared="no"
@@ -68,11 +69,17 @@ case "$host" in
 			AC_SUBST(AMIGA_LIB_LDFLAGS,
 				"-mcpu=68020 -fbaserel -resident -nostartfiles")
 		])
+
+		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
 	powerpc-*-amigaos*)
+		CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
+
 		enable_shared="no"
 		enable_threads="no"
 		enable_files="yes"	# Required for reading ENV:
+
+		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
 	*-morphos*)
 		AS_IF([test x"$with_ixemul" != x"yes"], [
@@ -95,6 +102,8 @@ case "$host" in
 				t="$t -lc"
 				AC_SUBST(AMIGA_LIB_LDFLAGS, $t)
 			])
+
+			AC_SUBST(LIBBASES_M, libbases.m)
 		])
 
 		enable_shared="no"

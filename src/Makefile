@@ -210,7 +210,8 @@ SRCS += OFAdjacentArray.m		\
 	OFUTF8String.m			\
 	${AUTORELEASE_M}		\
 	${FOUNDATION_COMPAT_M}		\
-	${INSTANCE_M}
+	${INSTANCE_M}			\
+	${LIBBASES_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFHTTPURLHandler.m			\

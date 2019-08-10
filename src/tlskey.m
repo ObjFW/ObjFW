@@ -20,20 +20,12 @@
 #import "tlskey.h"
 
 #ifdef OF_AMIGAOS
-# ifdef OF_AMIGAOS4
-#  define __USE_INLINE__
-#  define __NOLIBBASE__
-#  define __NOGLOBALIFACE__
-# endif
 # include <exec/semaphores.h>
 # include <proto/exec.h>
 
 # import "OFMapTable.h"
 # import "OFList.h"
 
-# ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-# endif
 static const of_map_table_functions_t functions = { NULL };
 static OFList *allKeys = nil;
 static struct SignalSemaphore semaphore;

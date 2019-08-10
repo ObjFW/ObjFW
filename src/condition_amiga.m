@@ -15,19 +15,10 @@
  * file.
  */
 
-#ifdef OF_AMIGAOS4
-# define __USE_INLINE__
-# define __NOLIBBASE__
-# define __NOGLOBALIFACE__
-#endif
 #include <proto/exec.h>
 #include <devices/timer.h>
 #ifndef OF_AMIGAOS4
 # include <clib/alib_protos.h>
-#endif
-
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
 #endif
 
 bool

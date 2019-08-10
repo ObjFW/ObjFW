@@ -15,11 +15,6 @@
  * file.
  */
 
-#ifdef OF_AMIGAOS4
-# define __USE_INLINE__
-# define __NOLIBBASE__
-# define __NOGLOBALIFACE__
-#endif
 #include <dos/dostags.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
@@ -30,29 +25,6 @@
 
 extern void of_tlskey_thread_exited(void);
 static of_tlskey_t threadKey;
-#ifdef OF_AMIGAOS4
-extern struct ExecIFace *IExec;
-static struct Library *DOSBase = NULL;
-static struct DOSIFace *IDOS = NULL;
-
-OF_CONSTRUCTOR()
-{
-	DOSBase = OpenLibrary("dos.library", 36);
-	OF_ENSURE(DOSBase != NULL);
-
-	IDOS = (struct DOSIFace *)GetInterface(DOSBase, "main", 1, NULL);
-	OF_ENSURE(IDOS != NULL);
-}
-
-OF_DESTRUCTOR()
-{
-	if (IDOS != NULL)
-		DropInterface((struct Interface *)IDOS);
-
-	if (DOSBase != NULL)
-		CloseLibrary(DOSBase);
-}
-#endif
 
 OF_CONSTRUCTOR()
 {
