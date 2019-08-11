@@ -90,6 +90,9 @@
 
 #if defined(OF_HAVE_THREADS)
 # import "tlskey.h"
+# if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
+#  import "socket.h"
+# endif
 
 static of_tlskey_t threadSelfKey;
 static OFThread *mainThread;
@@ -113,6 +116,13 @@ callMain(id object)
 	else
 		of_thread_set_name(object_getClassName(thread));
 
+#if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
+	if (thread.supportsSockets)
+		if (!of_socket_init())
+			@throw [OFInitializationFailedException
+			    exceptionWithClass: thread.class];
+#endif
+
 	/*
 	 * Nasty workaround for thread implementations which can't return a
 	 * pointer on join, or don't have a way to exit a thread.
@@ -130,6 +140,11 @@ callMain(id object)
 
 	objc_autoreleasePoolPop(thread->_pool);
 	[OFAutoreleasePool of_handleThreadTermination];
+
+#if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
+	if (thread.supportsSockets)
+		of_socket_deinit();
+#endif
 
 	thread->_running = OF_THREAD_WAITING_FOR_JOIN;
 
@@ -464,6 +479,20 @@ static OFDNSResolver *DNSResolver;
 		    exceptionWithThread: self];
 
 	_attr.stackSize = stackSize;
+}
+
+- (bool)supportsSockets
+{
+	return _supportsSockets;
+}
+
+- (void)setSupportsSockets: (bool)supportsSockets
+{
+	if (_running == OF_THREAD_RUNNING)
+		@throw [OFThreadStillRunningException
+		    exceptionWithThread: self];
+
+	_supportsSockets = supportsSockets;
 }
 
 - (void)dealloc

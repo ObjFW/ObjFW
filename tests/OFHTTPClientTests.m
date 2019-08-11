@@ -120,6 +120,7 @@ static OFHTTPResponse *response = nil;
 	[cond lock];
 
 	server = [[[HTTPClientTestsServer alloc] init] autorelease];
+	server.supportsSockets = true;
 	[server start];
 
 	[cond wait];

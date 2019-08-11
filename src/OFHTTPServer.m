@@ -912,6 +912,7 @@ normalizedKey(OFString *key)
 		for (size_t i = 1; i < _numberOfThreads; i++) {
 			OFHTTPServerThread *thread =
 			    [OFHTTPServerThread thread];
+			thread.supportsSockets = true;
 
 			[thread start];
 			[threads addObject: thread];

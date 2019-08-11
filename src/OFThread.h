@@ -51,6 +51,11 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * To use it, you should create a new class derived from it and reimplement
  * main.
  *
+ * @warning Some operating systems such as AmigaOS need special per-thread
+ *	    initialization of sockets. If you intend to use sockets in the
+ *	    thread, set the @ref usesSockets property to true before starting
+ *	    it.
+ *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the thread, but instead retains it.
  *	    This is so that the thread can be used as a key for a dictionary,
@@ -76,6 +81,8 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # endif
 	jmp_buf _exitEnv;
 	id _returnValue;
+@protected
+	bool _supportsSockets;
 	OFRunLoop *_Nullable _runLoop;
 	OFMutableDictionary *_threadDictionary;
 @private
@@ -140,6 +147,15 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @note This has to be set before the thread is started!
  */
 @property (nonatomic) size_t stackSize;
+
+/*!
+ * @brief Whether the thread supports sockets.
+ *
+ * Some operating systems such as AmigaOS need special per-thread
+ * initialization of sockets. If you intend to use sockets in the thread, set
+ * this property to true before starting the thread.
+ */
+@property (nonatomic) bool supportsSockets;
 
 /*!
  * @brief Creates a new thread.

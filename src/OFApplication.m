@@ -95,6 +95,10 @@ atexitHandler(void)
 		[delegate applicationWillTerminate];
 
 	[delegate release];
+
+#if defined(OF_HAVE_THREADS) && defined(OF_HAVE_SOCKETS) && defined(OF_AMIGAOS)
+	of_socket_deinit();
+#endif
 }
 
 #define SIGNAL_HANDLER(signal)					\

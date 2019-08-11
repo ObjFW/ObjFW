@@ -55,10 +55,7 @@
 # undef interface
 #endif
 
-#ifdef OF_AMIGAOS
-# include <proto/exec.h>
-# include <proto/bsdsocket.h>
-#endif
+#import "socket_helpers.h"
 
 #ifdef OF_NINTENDO_3DS
 # include <3ds.h>

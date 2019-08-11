@@ -53,6 +53,9 @@
 #endif
 
 #import "macros.h"
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+# import "tlskey.h"
+#endif
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -127,13 +130,6 @@ typedef struct OF_BOXABLE {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern bool of_socket_init(void);
-extern int of_socket_errno(void);
-# if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
-extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
-    socklen_t *restrict addrLen);
-# endif
-
 /*!
  * @brief Parses the specified IP and port into an of_socket_address_t.
  *
@@ -216,6 +212,23 @@ extern void of_socket_address_set_port(of_socket_address_t *_Nonnull address,
  */
 extern uint16_t of_socket_address_get_port(
     const of_socket_address_t *_Nonnull address);
+
+extern bool of_socket_init(void);
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+extern void of_socket_deinit(void);
+#endif
+extern int of_socket_errno(void);
+#if !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+extern int of_getsockname(of_socket_t sock, struct sockaddr *restrict addr,
+    socklen_t *restrict addrLen);
+#endif
+
+#if defined(OF_HAVE_THREADS) && defined(OF_AMIGAOS)
+extern of_tlskey_t of_socket_base_key;
+# ifdef OF_AMIGAOS4
+extern of_tlskey_t of_socket_interface_key;
+# endif
+#endif
 #ifdef __cplusplus
 }
 #endif
