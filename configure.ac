@@ -51,9 +51,8 @@ case "$host" in
 		CPPFLAGS="$CPPFLAGS -D__NO_NET_API"
 		LDFLAGS="$LDFLAGS -noixemul"
 
-		enable_shared="no"
-		enable_threads="no"
 		enable_files="yes"	# Required for reading ENV:
+		enable_shared="no"
 		supports_amiga_lib="yes"
 		ac_cv_snprintf_useful_ret="yes"
 
@@ -75,9 +74,8 @@ case "$host" in
 	powerpc-*-amigaos*)
 		CPPFLAGS="$CPPFLAGS -D__USE_INLINE__"
 
-		enable_shared="no"
-		enable_threads="no"
 		enable_files="yes"	# Required for reading ENV:
+		enable_shared="no"
 
 		AC_SUBST(LIBBASES_M, libbases.m)
 		;;
@@ -953,6 +951,9 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	AC_MSG_CHECKING(for threads)
 
 	case "$host_os" in
+	amigaos* | morphos*)
+		AC_MSG_RESULT(Amiga)
+		;;
 	mingw*)
 		AC_MSG_RESULT(WinAPI)
 		;;
