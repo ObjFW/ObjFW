@@ -953,6 +953,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 	case "$host_os" in
 	amigaos* | morphos*)
 		AC_MSG_RESULT(Amiga)
+		have_amiga_threads="yes"
 		;;
 	mingw*)
 		AC_MSG_RESULT(WinAPI)
@@ -1802,7 +1803,7 @@ AS_IF([test x"$old_compiler" = x"yes"], [
 ])
 
 AS_IF([test x"$enable_threads" != x"no" -a x"$atomic_ops" = x"none" \
-    -a x"$have_spinlocks" != x"yes"], [
+    -a x"$have_spinlocks" != x"yes" -a x"$have_amiga_threads" != x"yes"], [
 	echo
 	printf "  ** Warning: You have enabled threads, but neither atomic "
 	echo "operations nor"

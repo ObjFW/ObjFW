@@ -54,6 +54,10 @@
 # include <windows.h>
 #endif
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+#endif
+
 #import "OFString.h"
 
 #import "instance.h"
@@ -73,7 +77,7 @@ extern struct stret of_forward_stret(id, SEL, ...);
 
 struct pre_ivar {
 	int retainCount;
-#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	of_spinlock_t retainCountSpinlock;
 #endif
 	struct pre_mem *firstMem, *lastMem;
@@ -186,7 +190,7 @@ of_alloc_object(Class class, size_t extraSize, size_t extraAlignment,
 
 	((struct pre_ivar *)instance)->retainCount = 1;
 
-#if !defined(OF_HAVE_ATOMIC_OPS) && defined(OF_HAVE_THREADS)
+#if !defined(OF_HAVE_ATOMIC_OPS) && !defined(OF_AMIGAOS)
 	if OF_UNLIKELY (!of_spinlock_new(
 	    &((struct pre_ivar *)instance)->retainCountSpinlock)) {
 		free(instance);
@@ -1183,6 +1187,19 @@ _references_to_categories_of_OFObject(void)
 {
 #if defined(OF_HAVE_ATOMIC_OPS)
 	of_atomic_int_inc(&PRE_IVARS->retainCount);
+#elif defined(OF_AMIGAOS)
+	/*
+	 * On AmigaOS, we can only have one CPU. As increasing a variable is a
+	 * single instruction on M68K, we don't need Forbid() / Permit() on
+	 * M68K.
+	 */
+# ifndef OF_AMIGAOS_M68K
+	Forbid();
+# endif
+	PRE_IVARS->retainCount++;
+# ifndef OF_AMIGAOS_M68K
+	Permit();
+# endif
 #else
 	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
 	PRE_IVARS->retainCount++;
@@ -1208,14 +1225,23 @@ _references_to_categories_of_OFObject(void)
 
 		[self dealloc];
 	}
+#elif defined(OF_AMIGAOS)
+	int retainCount;
+
+	Forbid();
+	retainCount = --PRE_IVARS->retainCount;
+	Permit();
+
+	if (retainCount == 0)
+		[self dealloc];
 #else
-	size_t c;
+	int retainCount;
 
 	OF_ENSURE(of_spinlock_lock(&PRE_IVARS->retainCountSpinlock));
-	c = --PRE_IVARS->retainCount;
+	retainCount = --PRE_IVARS->retainCount;
 	OF_ENSURE(of_spinlock_unlock(&PRE_IVARS->retainCountSpinlock));
 
-	if (c == 0)
+	if (retainCount == 0)
 		[self dealloc];
 #endif
 }
