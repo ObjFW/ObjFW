@@ -343,12 +343,15 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 	[URLHandler createDirectoryAtURL: URL];
 }
 
-- (void)createDirectoryAtURL: (OFURL *)URL_
+- (void)createDirectoryAtURL: (OFURL *)URL
 	       createParents: (bool)createParents
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableURL *URL = [[URL_ mutableCopy] autorelease];
+	OFMutableURL *mutableURL;
 	OFArray OF_GENERIC(OFString *) *components;
+	OFMutableArray OF_GENERIC(OFURL *) *componentURLs;
+	size_t componentURLsCount;
+	ssize_t i;
 
 	if (URL == nil)
 		@throw [OFInvalidArgumentException exception];
@@ -380,16 +383,44 @@ attributeForKeyOrException(of_file_attributes_t attributes,
 			@throw e;
 	}
 
-	components = [[URL.pathComponents retain] autorelease];
-	URL.URLEncodedPath = @"/";
+	/*
+	 * Because we might be sandboxed (and for remote URLs don't even know
+	 * anything at all), we generate the URL for every component. We then
+	 * iterate them in reverse order until we find the first existing
+	 * directory, and then create subdirectories from there.
+	 */
+	mutableURL = [[URL mutableCopy] autorelease];
+	mutableURL.URLEncodedPath = @"/";
+	components = URL.pathComponents;
+	componentURLs = [OFMutableArray arrayWithCapacity: components.count];
 
 	for (OFString *component in components) {
-		[URL appendPathComponent: component];
+		[mutableURL appendPathComponent: component];
 
-		if (![URL.URLEncodedPath isEqual: @"/"] &&
-		    ![self directoryExistsAtURL: URL])
-			[self createDirectoryAtURL: URL];
+		if (![mutableURL.URLEncodedPath isEqual: @"/"])
+			[componentURLs addObject:
+			    [[mutableURL copy] autorelease]];
 	}
+
+	componentURLsCount = componentURLs.count;
+	for (i = componentURLsCount - 1; i > 0; i--) {
+		if ([self directoryExistsAtURL:
+		    [componentURLs objectAtIndex: i]])
+			break;
+	}
+
+	if (++i == (ssize_t)componentURLsCount) {
+		/*
+		 * The URL exists, even though before we made sure it did not.
+		 * That means it was created in the meantime by something else,
+		 * so we're done here.
+		 */
+		objc_autoreleasePoolPop(pool);
+		return;
+	}
+
+	for (; i < (ssize_t)componentURLsCount; i++)
+		[self createDirectoryAtURL: [componentURLs objectAtIndex: i]];
 
 	objc_autoreleasePoolPop(pool);
 }
