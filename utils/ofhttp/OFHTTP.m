@@ -507,7 +507,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 #ifdef OF_HAVE_SANDBOX
 	[sandbox unveilPath: (outputPath != nil
 				 ? outputPath : OF_PATH_CURRENT_DIRECTORY)
-		permissions: @"wc"];
+		permissions: (_continue ? @"rwc" : @"wc")];
 	/* In case we use ObjOpenSSL for https later */
 	[sandbox unveilPath: @"/etc/ssl"
 		permissions: @"r"];
