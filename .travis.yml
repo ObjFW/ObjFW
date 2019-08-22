@@ -19,22 +19,13 @@ matrix:
       compiler: clang
       dist: xenial
       sudo: required
-    # Currently broken
-    #- os: linux
-    #  compiler: gcc
-    #  dist: trusty
-    #  sudo: required
-    #- os: linux
-    #  compiler: clang
-    #  dist: trusty
-    #  sudo: required
     - os: linux
       compiler: gcc
-      dist: precise
+      dist: trusty
       sudo: required
     - os: linux
       compiler: clang
-      dist: precise
+      dist: trusty
       sudo: required
 
     # macOS
