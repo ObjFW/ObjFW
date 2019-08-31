@@ -8,11 +8,10 @@ others as well.
 AmigaOS
 -------
 
-  * OS Versions: 3.1
-  * Architectures: m68k
-  * Compilers: GCC 6.4.1b (amiga-gcc)
+  * OS Versions: 3.1, 4.1 Final Edition Update 1
+  * Architectures: m68k, PowerPC
+  * Compilers: GCC 6.4.1b (amiga-gcc), GCC 8.3.0 (adtools)
   * Runtimes: ObjFW
-  * Limitations: No threads
 
 
 Android
@@ -98,11 +97,10 @@ macOS
 MorphOS
 -------
 
-  * OS Versions: 3.9, 3.10
+  * OS Versions: 3.9-3.11
   * Architectures: PowerPC
   * Compilers: GCC 5.3.0, GCC 5.4.0
   * Runtimes: ObjFW
-  * Limitations: No threads
   * Notes: libnix and ixemul are both supported
 
 
@@ -138,7 +136,7 @@ Nintendo DS
 OpenBSD
 -------
 
-  * OS Versions: 5.2-6.1
+  * OS Versions: 5.2-6.5
   * Architectures: MIPS64, PA-RISC, PowerPC, SPARC64, x86_64
   * Compilers: GCC 6.3.0, Clang 4.0
   * Runtimes: ObjFW
