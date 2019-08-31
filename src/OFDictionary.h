@@ -63,6 +63,21 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 # define ObjectType id
 #endif
 /*!
+ * @brief An array of all keys.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(KeyType) *allKeys;
+
+/*!
+ * @brief An array of all objects.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
+
+/*!
+ * @brief A URL-encoded string with the contents of the dictionary.
+ */
+@property (readonly, nonatomic) OFString *stringByURLEncoding;
+
+/*!
  * @brief Creates a new OFDictionary.
  *
  * @return A new autoreleased OFDictionary
@@ -120,21 +135,6 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
  */
 + (instancetype)dictionaryWithKeysAndObjects: (KeyType)firstKey, ...
     OF_SENTINEL;
-
-/*!
- * @brief An array of all keys.
- */
-@property (readonly, nonatomic) OFArray OF_GENERIC(KeyType) *allKeys;
-
-/*!
- * @brief An array of all objects.
- */
-@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *allObjects;
-
-/*!
- * @brief A URL-encoded string with the contents of the dictionary.
- */
-@property (readonly, nonatomic) OFString *stringByURLEncoding;
 
 /*!
  * @brief Initializes an already allocated OFDictionary with the specified

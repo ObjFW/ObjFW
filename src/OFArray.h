@@ -96,6 +96,42 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 # define ObjectType id
 #endif
 /*!
+ * @brief The objects of the array as a C array.
+ *
+ * The result is valid until the autorelease pool is released. If you want to
+ * use the result outside the scope of the current autorelease pool, you have to
+ * copy it.
+ */
+@property (readonly, nonatomic)
+    ObjectType const __unsafe_unretained _Nonnull *_Nonnull objects;
+
+/*!
+ * @brief The first object of the array or `nil`.
+ *
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
+
+/*!
+ * @brief The last object of the array or `nil`.
+ *
+ * @warning The returned object is *not* retained and autoreleased for
+ *	    performance reasons!
+ */
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
+
+/*!
+ * @brief The array sorted in ascending order.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *sortedArray;
+
+/*!
+ * @brief The array with the order reversed.
+ */
+@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *reversedArray;
+
+/*!
  * @brief Creates a new OFArray.
  *
  * @return A new autoreleased OFArray
@@ -137,42 +173,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 + (instancetype)
     arrayWithObjects: (ObjectType const _Nonnull *_Nonnull)objects
 	       count: (size_t)count;
-
-/*!
- * @brief The objects of the array as a C array.
- *
- * The result is valid until the autorelease pool is released. If you want to
- * use the result outside the scope of the current autorelease pool, you have to
- * copy it.
- */
-@property (readonly, nonatomic)
-    ObjectType const __unsafe_unretained _Nonnull *_Nonnull objects;
-
-/*!
- * @brief The first object of the array or `nil`.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType firstObject;
-
-/*!
- * @brief The last object of the array or `nil`.
- *
- * @warning The returned object is *not* retained and autoreleased for
- *	    performance reasons!
- */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) ObjectType lastObject;
-
-/*!
- * @brief The array sorted in ascending order.
- */
-@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *sortedArray;
-
-/*!
- * @brief The array with the order reversed.
- */
-@property (readonly, nonatomic) OFArray OF_GENERIC(ObjectType) *reversedArray;
 
 /*!
  * @brief Initializes an OFArray with the specified object.

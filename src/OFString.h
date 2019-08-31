@@ -121,7 +121,6 @@ typedef void (^of_string_line_enumeration_block_t)(OFString *line, bool *stop);
  */
 @interface OFString: OFObject <OFCopying, OFMutableCopying, OFComparing,
     OFSerialization, OFJSONRepresentation, OFMessagePackRepresentation>
-
 /*!
  * @brief The length of the string in Unicode codepoints.
  */
