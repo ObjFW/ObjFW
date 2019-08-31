@@ -21,6 +21,11 @@
 # import "socket.h"
 #endif
 
+#ifdef OF_AMIGAOS
+# include <exec/types.h>
+# include <exec/tasks.h>
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableArray OF_GENERIC(ObjectType);
@@ -119,8 +124,11 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableArray OF_GENERIC(id <OFReadyForWritingObserving>)
 	    *_writeObjects;
 	id <OFKernelEventObserverDelegate> _Nullable _delegate;
-#ifdef OF_HAVE_PIPE
+#if defined(OF_HAVE_PIPE)
 	int _cancelFD[2];
+#elif defined(OF_AMIGAOS)
+	struct Task *_waitingTask;
+	ULONG _cancelSignal;
 #else
 	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;

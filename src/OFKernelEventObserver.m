@@ -55,6 +55,10 @@
 #import "socket.h"
 #import "socket_helpers.h"
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+#endif
+
 enum {
 	QUEUE_ADD = 0,
 	QUEUE_REMOVE = 1,
@@ -107,18 +111,19 @@ enum {
 	self = [super init];
 
 	@try {
-#if !defined(OF_HAVE_PIPE) && !defined(OF_WII) && !defined(OF_NINTENDO_3DS)
+#if !defined(OF_HAVE_PIPE) && !defined(OF_WII) && !defined(OF_AMIGAOS) && \
+    !defined(OF_NINTENDO_3DS)
 		socklen_t cancelAddrLen;
 #endif
 
 		_readObjects = [[OFMutableArray alloc] init];
 		_writeObjects = [[OFMutableArray alloc] init];
 
-#ifdef OF_HAVE_PIPE
+#if defined(OF_HAVE_PIPE)
 		if (pipe(_cancelFD))
 			@throw [OFInitializationFailedException
 			    exceptionWithClass: self.class];
-#else
+#elif !defined(OF_AMIGAOS)
 		_cancelFD[0] = _cancelFD[1] = socket(AF_INET, SOCK_DGRAM, 0);
 
 		if (_cancelFD[0] == INVALID_SOCKET)
@@ -183,11 +188,11 @@ enum {
 
 - (void)dealloc
 {
-#ifdef OF_HAVE_PIPE
+#if defined(OF_HAVE_PIPE)
 	close(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		close(_cancelFD[1]);
-#else
+#elif !defined(OF_AMIGAOS)
 	closesocket(_cancelFD[0]);
 	if (_cancelFD[1] != _cancelFD[0])
 		closesocket(_cancelFD[1]);
@@ -419,8 +424,17 @@ enum {
 
 - (void)cancel
 {
-#ifdef OF_HAVE_PIPE
+#if defined(OF_HAVE_PIPE)
 	OF_ENSURE(write(_cancelFD[1], "", 1) > 0);
+#elif defined(OF_AMIGAOS)
+	Forbid();
+
+	if (_waitingTask != NULL) {
+		Signal(_waitingTask, (1 << _cancelSignal));
+		_waitingTask = NULL;
+	}
+
+	Permit();
 #elif defined(OF_WII)
 	OF_ENSURE(sendto(_cancelFD[1], "", 1, 0,
 	    (struct sockaddr *)&_cancelAddr, 8) > 0);

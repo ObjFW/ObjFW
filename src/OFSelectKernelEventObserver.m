@@ -43,16 +43,23 @@
 
 #import "socket_helpers.h"
 
+#ifdef OF_AMIGAOS
+# include <proto/exec.h>
+#endif
+
 @implementation OFSelectKernelEventObserver
 - (instancetype)init
 {
 	self = [super init];
 
-#ifndef OF_WINDOWS
+#ifdef OF_AMIGAOS
+	_maxFD = 0;
+#else
+# ifndef OF_WINDOWS
 	if (_cancelFD[0] >= (int)FD_SETSIZE)
 		@throw [OFInitializationFailedException
 		    exceptionWithClass: self.class];
-#endif
+# endif
 
 	FD_ZERO(&_readFDs);
 	FD_ZERO(&_writeFDs);
@@ -62,6 +69,7 @@
 		@throw [OFOutOfRangeException exception];
 
 	_maxFD = (int)_cancelFD[0];
+#endif
 
 	return self;
 }
@@ -144,7 +152,7 @@
 	struct timeval timeout;
 	int events;
 #ifdef OF_AMIGAOS
-	ULONG execSignalMask;
+	ULONG execSignalMask, cancelSignal;
 #endif
 	size_t count;
 
@@ -175,9 +183,26 @@
 	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
 #ifdef OF_AMIGAOS
-	execSignalMask = _execSignalMask;
+	if ((cancelSignal = AllocSignal(-1)) == (ULONG)-1)
+		@throw [OFObserveFailedException exceptionWithObserver: self
+								 errNo: EAGAIN];
+
+	execSignalMask = _execSignalMask | (1 << cancelSignal);
+
+	Forbid();
+
+	_waitingTask = FindTask(NULL);
+	_cancelSignal = cancelSignal;
+
 	events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, NULL,
 	    (void *)(timeInterval != -1 ? &timeout : NULL), &execSignalMask);
+
+	execSignalMask &= ~(1 << cancelSignal);
+
+	_waitingTask = NULL;
+	FreeSignal(_cancelSignal);
+
+	Permit();
 #else
 	events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
 	    (timeInterval != -1 ? &timeout : NULL));
@@ -191,18 +216,18 @@
 	if (execSignalMask != 0 &&
 	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
 		[_delegate execSignalWasReceived: execSignalMask];
-#endif
-
+#else
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;
 
-#ifdef OF_HAVE_PIPE
+# ifdef OF_HAVE_PIPE
 		OF_ENSURE(read(_cancelFD[0], &buffer, 1) == 1);
-#else
+# else
 		OF_ENSURE(recvfrom(_cancelFD[0], (void *)&buffer, 1, 0, NULL,
 		    NULL) == 1);
-#endif
+# endif
 	}
+#endif
 
 	objects = _readObjects.objects;
 	count = _readObjects.count;
