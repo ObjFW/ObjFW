@@ -65,6 +65,9 @@ enum {
 
 @implementation OFKernelEventObserver
 @synthesize delegate = _delegate;
+#ifdef OF_AMIGAOS
+@synthesize execSignalMask = _execSignalMask;
+#endif
 
 + (void)initialize
 {

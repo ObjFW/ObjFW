@@ -73,19 +73,6 @@ typedef uint32_t in_addr_t;
 typedef uint32_t in_addr_t;
 #endif
 
-#if defined(OF_AMIGAOS_M68K)
-# define select(nfds, readfds, writefds, errorfds, timeout) \
-    WaitSelect(nfds, readfds, writefds, errorfds, (struct __timeval *)timeout, \
-    NULL)
-#elif defined(OF_AMIGAOS4)
-# define select(nfds, readfds, writefds, errorfds, timeout) \
-    WaitSelect(nfds, readfds, writefds, errorfds, (struct TimeVal *)timeout, \
-    NULL)
-#elif defined(OF_MORPHOS)
-# define select(nfds, readfds, writefds, errorfds, timeout) \
-    WaitSelect(nfds, readfds, writefds, errorfds, timeout, NULL)
-#endif
-
 #ifdef OF_WII
 # define accept(sock, addr, addrlen) net_accept(sock, addr, addrlen)
 # define bind(sock, addr, addrlen) net_bind(sock, addr, addrlen)

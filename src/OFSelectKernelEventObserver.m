@@ -143,6 +143,9 @@
 	fd_set writeFDs;
 	struct timeval timeout;
 	int events;
+#ifdef OF_AMIGAOS
+	ULONG execSignalMask;
+#endif
 	size_t count;
 
 	[self of_processQueue];
@@ -171,12 +174,24 @@
 #endif
 	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
 
+#ifdef OF_AMIGAOS
+	execSignalMask = _execSignalMask;
+	events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, NULL,
+	    (void *)(timeInterval != -1 ? &timeout : NULL), &execSignalMask);
+#else
 	events = select(_maxFD + 1, &readFDs, &writeFDs, NULL,
 	    (timeInterval != -1 ? &timeout : NULL));
+#endif
 
 	if (events < 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+#ifdef OF_AMIGAOS
+	if (execSignalMask != 0 &&
+	    [_delegate respondsToSelector: @selector(execSignalWasReceived:)])
+		[_delegate execSignalWasReceived: execSignalMask];
+#endif
 
 	if (FD_ISSET(_cancelFD[0], &readFDs)) {
 		char buffer;

@@ -61,6 +61,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @param object The object which did become ready for writing
  */
 - (void)objectIsReadyForWriting: (id)object;
+
+#ifdef OF_AMIGAOS
+/*!
+ * @brief This callback is called when an Exec Signal was received.
+ *
+ * @note This is only available on AmigaOS!
+ */
+- (void)execSignalWasReceived: (ULONG)signalMask;
+#endif
 @end
 
 /*!
@@ -121,6 +130,9 @@ OF_ASSUME_NONNULL_BEGIN
 #endif
 	OFMutableData *_queueActions;
 	OFMutableArray *_queueObjects;
+#ifdef OF_AMIGAOS
+	ULONG _execSignalMask;
+#endif
 }
 
 /*!
@@ -128,6 +140,15 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @property OF_NULLABLE_PROPERTY (assign, nonatomic)
     id <OFKernelEventObserverDelegate> delegate;
+
+#ifdef OF_AMIGAOS
+/*!
+ * @brief A mask of Exec Signals to wait for.
+ *
+ * @note This is only available on AmigaOS!
+ */
+@property (nonatomic) ULONG execSignalMask;
+#endif
 
 /*!
  * @brief Creates a new OFKernelEventObserver.
