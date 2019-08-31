@@ -180,6 +180,9 @@ static OFRunLoop *mainRunLoop = nil;
 
 	@try {
 		_timersQueue = [[OFSortedList alloc] init];
+#ifdef OF_HAVE_THREADS
+		_timersQueueMutex = [[OFMutex alloc] init];
+#endif
 
 #if defined(OF_HAVE_SOCKETS)
 		_kernelEventObserver = [[OFKernelEventObserver alloc] init];
@@ -201,6 +204,9 @@ static OFRunLoop *mainRunLoop = nil;
 - (void)dealloc
 {
 	[_timersQueue release];
+#ifdef OF_HAVE_THREADS
+	[_timersQueueMutex release];
+#endif
 #if defined(OF_HAVE_SOCKETS)
 	[_kernelEventObserver release];
 	[_readQueues release];
