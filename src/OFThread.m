@@ -86,10 +86,6 @@
 # import "atomic.h"
 #endif
 
-#ifdef OF_DJGPP
-# define lrint(x) rint(x)
-#endif
-
 #if defined(OF_HAVE_THREADS)
 # import "tlskey.h"
 # if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
@@ -250,7 +246,7 @@ static OFDNSResolver *DNSResolver;
 	struct timespec rqtp;
 
 	rqtp.tv_sec = (time_t)timeInterval;
-	rqtp.tv_nsec = lrint((timeInterval - rqtp.tv_sec) * 1000000000);
+	rqtp.tv_nsec = (timeInterval - rqtp.tv_sec) * 1000000000;
 
 	if (rqtp.tv_sec != trunc(timeInterval))
 		@throw [OFOutOfRangeException exception];
@@ -275,8 +271,8 @@ static OFDNSResolver *DNSResolver;
 		@throw [OFOutOfRangeException exception];
 
 	sleep((unsigned int)timeInterval);
-	usleep((unsigned int)lrint(
-	    (timeInterval - trunc(timeInterval)) * 1000000));
+	usleep((unsigned int)
+	    (timeInterval - (unsigned int)timeInterval) * 1000000);
 #endif
 }
 

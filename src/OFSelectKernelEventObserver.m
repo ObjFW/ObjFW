@@ -27,7 +27,6 @@
 #endif
 
 #include <errno.h>
-#include <math.h>
 #include <string.h>
 
 #include <sys/time.h>
@@ -180,7 +179,7 @@
 #else
 	timeout.tv_sec = (long)timeInterval;
 #endif
-	timeout.tv_usec = (int)lrint((timeInterval - timeout.tv_sec) * 1000);
+	timeout.tv_usec = (int)((timeInterval - timeout.tv_sec) * 1000);
 
 #ifdef OF_AMIGAOS
 	if ((cancelSignal = AllocSignal(-1)) == (ULONG)-1)

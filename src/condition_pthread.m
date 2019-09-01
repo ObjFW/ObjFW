@@ -15,8 +15,6 @@
  * file.
  */
 
-#include <math.h>
-
 bool
 of_condition_new(of_condition_t *condition)
 {
@@ -48,7 +46,7 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	struct timespec ts;
 
 	ts.tv_sec = (time_t)timeout;
-	ts.tv_nsec = lrint((timeout - ts.tv_sec) * 1000000000);
+	ts.tv_nsec = (timeout - ts.tv_sec) * 1000000000;
 
 	return (pthread_cond_timedwait(condition, mutex, &ts) == 0);
 }

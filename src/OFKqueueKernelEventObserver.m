@@ -19,7 +19,6 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <math.h>
 
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
@@ -165,7 +164,7 @@
 		return;
 
 	timeout.tv_sec = (time_t)timeInterval;
-	timeout.tv_nsec = lrint((timeInterval - timeout.tv_sec) * 1000000000);
+	timeout.tv_nsec = (timeInterval - timeout.tv_sec) * 1000000000;
 
 	events = kevent(_kernelQueue, NULL, 0, eventList, EVENTLIST_SIZE,
 	    (timeInterval != -1 ? &timeout : NULL));
