@@ -1047,6 +1047,7 @@ AS_IF([test x"$enable_threads" != x"no"], [
 					AC_MSG_RESULT(yes)
 					AC_DEFINE(OF_HAVE__THREAD_LOCAL, 1,
 						[Whether _Thread_local works])
+					have_thread_local="yes"
 				], [
 					AC_MSG_RESULT(no)
 				])
@@ -1055,10 +1056,13 @@ AS_IF([test x"$enable_threads" != x"no"], [
 				AC_MSG_RESULT(yes)
 				AC_DEFINE(OF_HAVE__THREAD_LOCAL, 1,
 					[Whether _Thread_local works])
+				have_thread_local="yes"
 			])
 		], [
 			AC_MSG_RESULT(no)
+		])
 
+		AS_IF([test x"$have_thread_local" != x"yes"], [
 			AC_MSG_CHECKING(whether __thread works)
 			AC_TRY_LINK([
 				/* It seems __thread is buggy with GCC 4.1 */
