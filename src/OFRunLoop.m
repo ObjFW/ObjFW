@@ -22,6 +22,7 @@
 
 #import "OFRunLoop.h"
 #import "OFRunLoop+Private.h"
+#import "OFArray.h"
 #import "OFData.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
@@ -62,6 +63,17 @@ static OFRunLoop *mainRunLoop = nil;
 	OFMutableDictionary *_readQueues, *_writeQueues;
 #elif defined(OF_HAVE_THREADS)
 	OFCondition *_condition;
+# ifdef OF_AMIGAOS
+	ULONG _execSignalMask;
+# endif
+#endif
+#ifdef OF_AMIGAOS
+	OFMutableData *_execSignals;
+	OFMutableArray *_execSignalsTargets;
+	OFMutableData *_execSignalsSelectors;
+# ifdef OF_HAVE_THREADS
+	OFMutex *_execSignalsMutex;
+# endif
 #endif
 }
 @end
@@ -193,6 +205,16 @@ static OFRunLoop *mainRunLoop = nil;
 #elif defined(OF_HAVE_THREADS)
 		_condition = [[OFCondition alloc] init];
 #endif
+#ifdef OF_AMIGAOS
+		_execSignals = [[OFMutableData alloc]
+		    initWithItemSize: sizeof(ULONG)];
+		_execSignalsTargets = [[OFMutableArray alloc] init];
+		_execSignalsSelectors = [[OFMutableData alloc]
+		    initWithItemSize: sizeof(SEL)];
+# ifdef OF_HAVE_THREADS
+		_execSignalsMutex = [[OFMutex alloc] init];
+# endif
+#endif
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -213,6 +235,14 @@ static OFRunLoop *mainRunLoop = nil;
 	[_writeQueues release];
 #elif defined(OF_HAVE_THREADS)
 	[_condition release];
+#endif
+#ifdef OF_AMIGAOS
+	[_execSignals release];
+	[_execSignalsTargets release];
+	[_execSignalsSelectors release];
+# ifdef OF_HAVE_THREADS
+	[_execSignalsMutex release];
+# endif
 #endif
 
 	[super dealloc];
@@ -304,6 +334,55 @@ static OFRunLoop *mainRunLoop = nil;
 	} @finally {
 		[queue release];
 	}
+}
+#endif
+
+#ifdef OF_AMIGAOS
+- (void)execSignalWasReceived: (ULONG)signalMask
+{
+	void *pool = objc_autoreleasePoolPush();
+	OFData *signals;
+	OFArray *targets;
+	OFData *selectors;
+	const ULONG *signalsItems;
+	const id *targetsObjects;
+	const SEL *selectorsItems;
+	size_t count;
+
+# ifdef OF_HAVE_THREADS
+	[_execSignalsMutex lock];
+	@try {
+# endif
+		/*
+		 * Create copies, so that signal handlers are allowed to modify
+		 * signals.
+		 */
+		signals = [[_execSignals copy] autorelease];
+		targets = [[_execSignalsTargets copy] autorelease];
+		selectors = [[_execSignalsSelectors copy] autorelease];
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		[_execSignalsMutex unlock];
+	}
+# endif
+
+	signalsItems = signals.items;
+	targetsObjects = targets.objects;
+	selectorsItems = selectors.items;
+	count = signals.count;
+
+	for (size_t i = 0; i < count; i++) {
+		if (signalMask & (1ul << signalsItems[i])) {
+			void (*callback)(id, SEL, ULONG) =
+			    (void (*)(id, SEL, ULONG))[targetsObjects[i]
+			    methodForSelector: selectorsItems[i]];
+
+			callback(targetsObjects[i], selectorsItems[i],
+			    signalsItems[i]);
+		}
+	}
+
+	objc_autoreleasePoolPop(pool);
 }
 #endif
 @end
@@ -1202,6 +1281,116 @@ static OFRunLoop *mainRunLoop = nil;
 #endif
 }
 
+#ifdef OF_AMIGAOS
+- (void)addExecSignal: (ULONG)signal
+	       target: (id)target
+	     selector: (SEL)selector
+{
+	[self addExecSignal: signal
+		    forMode: of_run_loop_mode_default
+		     target: target
+		   selector: selector];
+}
+
+- (void)addExecSignal: (ULONG)signal
+	      forMode: (of_run_loop_mode_t)mode
+	       target: (id)target
+	     selector: (SEL)selector
+{
+	OFRunLoopState *state = [self of_stateForMode: mode
+					       create: true];
+
+# ifdef OF_HAVE_THREADS
+	[state->_execSignalsMutex lock];
+	@try {
+# endif
+		[state->_execSignals addItem: &signal];
+		[state->_execSignalsTargets addObject: target];
+		[state->_execSignalsSelectors addItem: &selector];
+
+# ifdef OF_HAVE_SOCKETS
+		state->_kernelEventObserver.execSignalMask |= (1ul << signal);
+# elif defined(OF_HAVE_THREADS)
+		state->_execSignalMask |= (1ul << signal);
+# endif
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		[state->_execSignalsMutex unlock];
+	}
+# endif
+
+# if defined(OF_HAVE_SOCKETS)
+	[state->_kernelEventObserver cancel];
+# elif defined(OF_HAVE_THREADS)
+	[state->_condition signal];
+# endif
+}
+
+- (void)removeExecSignal: (ULONG)signal
+		  target: (id)target
+		selector: (SEL)selector
+{
+	[self removeExecSignal: signal
+		       forMode: of_run_loop_mode_default
+			target: target
+		      selector: selector];
+}
+
+- (void)removeExecSignal: (ULONG)signal
+		 forMode: (of_run_loop_mode_t)mode
+		  target: (id)target
+		selector: (SEL)selector
+{
+	OFRunLoopState *state = [self of_stateForMode: mode
+					       create: false];
+
+	if (state == nil)
+		return;
+
+# ifdef OF_HAVE_THREADS
+	[state->_execSignalsMutex lock];
+	@try {
+# endif
+		const ULONG *signals = state->_execSignals.items;
+		const id *targets = state->_execSignalsTargets.objects;
+		const SEL *selectors = state->_execSignalsSelectors.items;
+		size_t count = state->_execSignals.count;
+		bool found = false;
+		ULONG newMask = 0;
+
+		for (size_t i = 0; i < count; i++) {
+			if (!found && signals[i] == signal &&
+			    targets[i] == target && selectors[i] == selector) {
+				[state->_execSignals removeItemAtIndex: i];
+				[state->_execSignalsTargets
+				    removeObjectAtIndex: i];
+				[state->_execSignalsSelectors
+				    removeItemAtIndex: i];
+
+				found = true;
+			} else
+				newMask |= (1ul << signals[i]);
+		}
+
+# ifdef OF_HAVE_SOCKETS
+		state->_kernelEventObserver.execSignalMask = newMask;
+# elif defined(OF_HAVE_THREADS)
+		state->_execSignalMask = newMask;
+# endif
+# ifdef OF_HAVE_THREADS
+	} @finally {
+		[state->_execSignalsMutex unlock];
+	}
+# endif
+
+# if defined(OF_HAVE_SOCKETS)
+	[state->_kernelEventObserver cancel];
+# elif defined(OF_HAVE_THREADS)
+	[state->_condition signal];
+# endif
+}
+#endif
+
 - (void)run
 {
 	[self runUntilDate: nil];
@@ -1231,6 +1420,9 @@ static OFRunLoop *mainRunLoop = nil;
 	_currentMode = mode;
 	@try {
 		OFDate *nextTimer;
+#if defined(OF_AMIGAOS) && !defined(OF_HAVE_SOCKETS) && defined(OF_HAVE_THREADS)
+		ULONG signalMask;
+#endif
 
 		for (;;) {
 			OFTimer *timer;
@@ -1303,7 +1495,15 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 #elif defined(OF_HAVE_THREADS)
 			[state->_condition lock];
+# ifdef OF_AMIGAOS
+			signalMask = state->_execSignalMask;
+			[state->_condition waitForTimeInterval: timeout
+						  orExecSignal: &signalMask];
+			if (signalMask != 0)
+				[state execSignalWasReceived: signalMask];
+# else
 			[state->_condition waitForTimeInterval: timeout];
+# endif
 			[state->_condition unlock];
 #else
 			[OFThread sleepForTimeInterval: timeout];
@@ -1323,7 +1523,15 @@ static OFRunLoop *mainRunLoop = nil;
 			}
 #elif defined(OF_HAVE_THREADS)
 			[state->_condition lock];
+# ifdef OF_AMIGAOS
+			signalMask = state->_execSignalMask;
+			[state->_condition
+			    waitForConditionOrExecSignal: &signalMask];
+			if (signalMask != 0)
+				[state execSignalWasReceived: signalMask];
+# else
 			[state->_condition wait];
+# endif
 			[state->_condition unlock];
 #else
 			[OFThread sleepForTimeInterval: 86400];

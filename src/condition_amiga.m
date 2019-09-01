@@ -106,11 +106,8 @@ of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 	condition->waitingTasks = &waitingTask;
 
 	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
-
-	if (mask & (1ul << waitingTask.sigBit))
+	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
 		ret = of_mutex_lock(mutex);
-	else if (*signalMask &= mask)
-		ret = true;
 	else {
 		/*
 		 * This should not happen - it means something interrupted the
@@ -211,14 +208,12 @@ of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
 
 	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
 	    *signalMask);
-	if (mask & (1ul << waitingTask.sigBit))
+	if (mask & (1ul << waitingTask.sigBit) || (*signalMask &= mask))
 		ret = of_mutex_lock(mutex);
 	else if (mask & (1ul << port.mp_SigBit)) {
 		ret = false;
 		errno = ETIMEDOUT;
-	} else if (*signalMask &= mask)
-		ret = true;
-	else {
+	} else {
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.

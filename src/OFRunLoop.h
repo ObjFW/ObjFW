@@ -18,6 +18,10 @@
 #import "OFObject.h"
 #import "OFString.h"
 
+#ifdef OF_AMIGAOS
+# include <exec/types.h>
+#endif
+
 OF_ASSUME_NONNULL_BEGIN
 
 /*! @file */
@@ -101,6 +105,72 @@ extern of_run_loop_mode_t of_run_loop_mode_default;
  */
 - (void)addTimer: (OFTimer *)timer
 	 forMode: (of_run_loop_mode_t)mode;
+
+#ifdef OF_AMIGAOS
+/*!
+ * @brief Adds an Exec Signal to the run loop.
+ *
+ * If a signal is added multiple times, the specified methods will be performed
+ * in the order added.
+ *
+ * @note This is only available on AmigaOS!
+ *
+ * @param signal The signal to add
+ * @param target The target to call when the signal was received
+ * @param selector The selector to call on the target when the signal was
+ *		   received. The selector must have one parameter for the ULONG
+ *		   of the signal that was received.
+ */
+- (void)addExecSignal: (ULONG)signal
+	       target: (id)target
+	     selector: (SEL)selector;
+
+/*!
+ * @brief Adds an Exec Signal to the run loop for the specified mode.
+ *
+ * If a signal is added multiple times, the specified methods will be performed
+ * in the order added.
+ *
+ * @note This is only available on AmigaOS!
+ *
+ * @param signal The signal to add
+ * @param mode The run loop mode in which to handle the signal
+ * @param target The target to call when the signal was received
+ * @param selector The selector to call on the target when the signal was
+ *		   received. The selector must have one parameter for the ULONG
+ *		   of the signal that was received.
+ */
+- (void)addExecSignal: (ULONG)signal
+	      forMode: (of_run_loop_mode_t)mode
+	       target: (id)target
+	     selector: (SEL)selector;
+
+/*!
+ * @brief Removes the specified Exec Signal with the specified target and
+ *	  selector.
+ *
+ * @param signal The signal to remove
+ * @param target The target which was specified when adding the signal
+ * @param selector The selector which was specified when adding the signal
+ */
+- (void)removeExecSignal: (ULONG)signal
+		  target: (id)target
+		selector: (SEL)selector;
+
+/*!
+ * @brief Removes the specified Exec Signal from the specified mode with the
+ *	  specified target and selector.
+ *
+ * @param signal The signal to remove
+ * @param mode The run loop mode to which the signal was added
+ * @param target The target which was specified when adding the signal
+ * @param selector The selector which was specified when adding the signal
+ */
+- (void)removeExecSignal: (ULONG)signal
+		 forMode: (of_run_loop_mode_t)mode
+		  target: (id)target
+		selector: (SEL)selector;
+#endif
 
 /*!
  * @brief Starts the run loop.
