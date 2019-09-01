@@ -97,6 +97,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # ifdef OF_HAVE_THREADS
 @property (class, readonly, nullable, nonatomic) OFThread *currentThread;
 @property (class, readonly, nullable, nonatomic) OFThread *mainThread;
+@property (class, readonly, nonatomic) bool isMainThread;
 @property (class, readonly, nullable, nonatomic)
     OFMutableDictionary *threadDictionary;
 @property (class, nullable, copy, nonatomic) OFString *name;
@@ -187,6 +188,13 @@ typedef id _Nullable (^of_thread_block_t)(void);
  * @return The main thread
  */
 + (nullable OFThread *)mainThread;
+
+/*!
+ * @brief Returns whether the current thread is the main thread.
+ *
+ * @return Whether the current thread is the main thread.
+ */
++ (bool)isMainThread;
 
 /*!
  * @brief Returns a dictionary to store thread-specific data, meaning it

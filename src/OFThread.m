@@ -191,6 +191,14 @@ static OFDNSResolver *DNSResolver;
 	return mainThread;
 }
 
++ (bool)isMainThread
+{
+	if (mainThread == nil)
+		return false;
+
+	return (of_tlskey_get(threadSelfKey) == mainThread);
+}
+
 + (OFMutableDictionary *)threadDictionary
 {
 	OFThread *thread = of_tlskey_get(threadSelfKey);
