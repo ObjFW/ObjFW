@@ -74,11 +74,21 @@ of_condition_broadcast(of_condition_t *condition)
 bool
 of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 {
+	ULONG signalMask = 0;
+
+	return of_condition_wait_or_signal(condition, mutex, &signalMask);
+}
+
+bool
+of_condition_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
+    ULONG *signalMask)
+{
 	struct of_condition_waiting_task waitingTask = {
 		.task = FindTask(NULL),
 		.sigBit = AllocSignal(-1)
 	};
 	bool ret;
+	ULONG mask;
 
 	if (waitingTask.sigBit == -1) {
 		errno = EAGAIN;
@@ -95,10 +105,22 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	waitingTask.next = condition->waitingTasks;
 	condition->waitingTasks = &waitingTask;
 
-	Wait(1 << waitingTask.sigBit);
-	FreeSignal(waitingTask.sigBit);
+	mask = Wait((1ul << waitingTask.sigBit) | *signalMask);
 
-	ret = of_mutex_lock(mutex);
+	if (mask & (1ul << waitingTask.sigBit))
+		ret = of_mutex_lock(mutex);
+	else if (*signalMask &= mask)
+		ret = true;
+	else {
+		/*
+		 * This should not happen - it means something interrupted the
+		 * Wait(), so the best we can do is return EINTR.
+		 */
+		ret = false;
+		errno = EINTR;
+	}
+
+	FreeSignal(waitingTask.sigBit);
 
 	Permit();
 
@@ -108,6 +130,16 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 bool
 of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
     of_time_interval_t timeout)
+{
+	ULONG signalMask = 0;
+
+	return of_condition_timed_wait_or_signal(condition, mutex, timeout,
+	    &signalMask);
+}
+
+bool
+of_condition_timed_wait_or_signal(of_condition_t *condition, of_mutex_t *mutex,
+    of_time_interval_t timeout, ULONG *signalMask)
 {
 	struct of_condition_waiting_task waitingTask = {
 		.task = FindTask(NULL),
@@ -177,13 +209,16 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 
 	SendIO((struct IORequest *)&request);
 
-	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit));
+	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit) |
+	    *signalMask);
 	if (mask & (1ul << waitingTask.sigBit))
 		ret = of_mutex_lock(mutex);
 	else if (mask & (1ul << port.mp_SigBit)) {
 		ret = false;
 		errno = ETIMEDOUT;
-	} else {
+	} else if (*signalMask &= mask)
+		ret = true;
+	else {
 		/*
 		 * This should not happen - it means something interrupted the
 		 * Wait(), so the best we can do is return EINTR.

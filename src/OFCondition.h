@@ -50,6 +50,19 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (void)wait;
 
+#ifdef OF_AMIGAOS
+/*!
+ * @brief Blocks the current thread until another thread calls @ref signal,
+ *	  @ref broadcast or an Exec Signal is received.
+ *
+ * @note This is only available on AmigaOS!
+ *
+ * @param signalMask A pointer to a signal mask of Exec Signals to receive.
+ *		     This is modified and set to the mask of signals received.
+ */
+- (void)waitForConditionOrExecSignal: (ULONG *)signalMask;
+#endif
+
 /*!
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or the timeout is reached.
@@ -62,6 +75,22 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (bool)waitForTimeInterval: (of_time_interval_t)timeInterval;
 
+#ifdef OF_AMIGAOS
+/*!
+ * @brief Blocks the current thread until another thread calls @ref signal,
+ *	  @ref broadcast, the timeout is reached or an Exec Signal is received.
+ *
+ * @note This is only available on AmigaOS!
+ *
+ * @param timeInterval The time interval until the timeout is reached
+ * @param signalMask A pointer to a signal mask of Exec Signals to receive.
+ *		     This is modified and set to the mask of signals received.
+ * @return Whether the condition has been signaled or a signal received
+ */
+- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+	       orExecSignal: (ULONG *)signalMask;
+#endif
+
 /*!
  * @brief Blocks the current thread until another thread calls @ref signal,
  *	  @ref broadcast or the timeout is reached.
@@ -73,6 +102,22 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the condition has been signaled
  */
 - (bool)waitUntilDate: (OFDate *)date;
+
+#ifdef OF_AMIGAOS
+/*!
+ * @brief Blocks the current thread until another thread calls @ref signal,
+ *	  @ref broadcast, the timeout is reached or an Exec Signal is received.
+ *
+ * @note This is only available on AmigaOS!
+ *
+ * @param date The date at which the timeout is reached
+ * @param signalMask A pointer to a signal mask of Exec Signals to receive.
+ *		     This is modified and set to the mask of signals received.
+ * @return Whether the condition has been signaled or a signal received
+ */
+- (bool)waitUntilDate: (OFDate *)date
+	 orExecSignal: (ULONG *)signalMask;
+#endif
 
 /*!
  * @brief Signals the next waiting thread to continue.

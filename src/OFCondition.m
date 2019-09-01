@@ -71,6 +71,16 @@
 				     errNo: errno];
 }
 
+#ifdef OF_AMIGAOS
+- (void)waitForConditionOrExecSignal: (ULONG *)signalMask
+{
+	if (!of_condition_wait_or_signal(&_condition, &_mutex, signalMask))
+		@throw [OFConditionWaitFailedException
+		    exceptionWithCondition: self
+				     errNo: errno];
+}
+#endif
+
 - (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
 {
 	if (!of_condition_timed_wait(&_condition, &_mutex, timeInterval)) {
@@ -85,10 +95,37 @@
 	return true;
 }
 
+#ifdef OF_AMIGAOS
+- (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
+	       orExecSignal: (ULONG *)signalMask
+{
+	if (!of_condition_timed_wait_or_signal(&_condition, &_mutex,
+	    timeInterval, signalMask)) {
+		if (errno == ETIMEDOUT)
+			return false;
+		else
+			@throw [OFConditionWaitFailedException
+			    exceptionWithCondition: self
+					     errNo: errno];
+	}
+
+	return true;
+}
+#endif
+
 - (bool)waitUntilDate: (OFDate *)date
 {
 	return [self waitForTimeInterval: date.timeIntervalSinceNow];
 }
+
+#ifdef OF_AMIGAOS
+- (bool)waitUntilDate: (OFDate *)date
+	 orExecSignal: (ULONG *)signalMask
+{
+	return [self waitForTimeInterval: date.timeIntervalSinceNow
+			    orExecSignal: signalMask];
+}
+#endif
 
 - (void)signal
 {
