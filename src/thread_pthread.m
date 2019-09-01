@@ -32,6 +32,7 @@ static int minPrio = 0, maxPrio = 0, normalPrio = 0;
 struct thread_ctx {
 	void (*function)(id object);
 	id object;
+	const char *name;
 };
 
 /*
@@ -72,6 +73,9 @@ functionWrapper(void *data)
 {
 	struct thread_ctx *ctx = data;
 
+	if (ctx->name != NULL)
+		of_thread_set_name(ctx->name);
+
 	pthread_cleanup_push(free, data);
 
 	ctx->function(ctx->object);
@@ -101,8 +105,8 @@ of_thread_attr_init(of_thread_attr_t *attr)
 }
 
 bool
-of_thread_new(of_thread_t *thread, void (*function)(id), id object,
-    const of_thread_attr_t *attr)
+of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
+    id object, const of_thread_attr_t *attr)
 {
 	bool ret;
 	pthread_attr_t pattr;
@@ -152,6 +156,7 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 
 		ctx->function = function;
 		ctx->object = object;
+		ctx->name = name;
 
 		ret = (pthread_create(thread, &pattr,
 		    functionWrapper, ctx) == 0);

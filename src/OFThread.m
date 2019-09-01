@@ -415,7 +415,9 @@ static OFDNSResolver *DNSResolver;
 
 	_running = OF_THREAD_RUNNING;
 
-	if (!of_thread_new(&_thread, callMain, self, &_attr)) {
+	if (!of_thread_new(&_thread,
+	    [_name cStringWithEncoding: [OFLocale encoding]], callMain, self,
+	    &_attr)) {
 		[self release];
 		@throw [OFThreadStartFailedException
 		    exceptionWithThread: self

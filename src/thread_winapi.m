@@ -29,8 +29,8 @@ of_thread_attr_init(of_thread_attr_t *attr)
 }
 
 bool
-of_thread_new(of_thread_t *thread, void (*function)(id), id object,
-    const of_thread_attr_t *attr)
+of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
+    id object, const of_thread_attr_t *attr)
 {
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
 	    (LPTHREAD_START_ROUTINE)function, (void *)object, 0, NULL);

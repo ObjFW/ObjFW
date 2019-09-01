@@ -72,8 +72,8 @@ of_thread_attr_init(of_thread_attr_t *attr)
 }
 
 bool
-of_thread_new(of_thread_t *thread, void (*function)(id), id object,
-    const of_thread_attr_t *attr)
+of_thread_new(of_thread_t *thread, const char *name, void (*function)(id),
+    id object, const of_thread_attr_t *attr)
 {
 	OFMutableData *tags = nil;
 
@@ -106,6 +106,8 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 #ifdef OF_MORPHOS
 		ADD_TAG(NP_CodeType, CODETYPE_PPC);
 #endif
+		if (name != NULL)
+			ADD_TAG(NP_Name, (ULONG)name);
 
 		ADD_TAG(NP_Input, ((struct Process *)FindTask(NULL))->pr_CIS)
 		ADD_TAG(NP_Output, ((struct Process *)FindTask(NULL))->pr_COS)
