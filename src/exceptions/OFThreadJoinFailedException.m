@@ -17,30 +17,36 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFThreadJoinFailedException.h"
 #import "OFString.h"
 #import "OFThread.h"
 
 @implementation OFThreadJoinFailedException
-@synthesize thread = _thread;
+@synthesize thread = _thread, errNo = _errNo;
 
 + (instancetype)exceptionWithThread: (OFThread *)thread
+			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithThread: thread] autorelease];
-}
-
-- (instancetype)init
-{
-	return [self initWithThread: nil];
+	return [[[self alloc] initWithThread: thread
+				       errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithThread: (OFThread *)thread
+			 errNo: (int)errNo
 {
 	self = [super init];
 
 	_thread = [thread retain];
+	_errNo = errNo;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -52,13 +58,8 @@
 
 - (OFString *)description
 {
-	if (_thread != nil)
-		return [OFString stringWithFormat:
-		    @"Joining a thread of type %@ failed! Most likely, another "
-		    @"thread already waits for the thread to join.",
-		    _thread.class];
-	else
-		return @"Joining a thread failed! Most likely, another thread "
-		    @"already waits for the thread to join.";
+	return [OFString stringWithFormat:
+	    @"Joining a thread of type %@ failed: %s",
+	    _thread.class, strerror(_errNo)];
 }
 @end

@@ -17,29 +17,35 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFUnlockFailedException.h"
 #import "OFString.h"
 
 @implementation OFUnlockFailedException
-@synthesize lock = _lock;
+@synthesize lock = _lock, errNo = _errNo;
 
 + (instancetype)exceptionWithLock: (id <OFLocking>)lock
+			    errNo: (int)errNo
 {
-	return [[[self alloc] initWithLock: lock] autorelease];
-}
-
-- (instancetype)init
-{
-	return [self initWithLock: nil];
+	return [[[self alloc] initWithLock: lock
+				     errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithLock: (id <OFLocking>)lock
+		       errNo: (int)errNo
 {
 	self = [super init];
 
 	_lock = [lock retain];
+	_errNo = errNo;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -51,10 +57,8 @@
 
 - (OFString *)description
 {
-	if (_lock != nil)
-		return [OFString stringWithFormat:
-		    @"A lock of type %@ could not be unlocked!", _lock.class];
-	else
-		return @"A lock could not be unlocked!";
+	return [OFString stringWithFormat:
+	    @"A lock of type %@ could not be unlocked: %s",
+	    _lock.class, strerror(_errNo)];
 }
 @end

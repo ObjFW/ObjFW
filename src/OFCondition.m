@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFCondition.h"
 #import "OFDate.h"
 
@@ -49,10 +51,14 @@
 
 - (void)dealloc
 {
-	if (_conditionInitialized)
-		if (!of_condition_free(&_condition))
+	if (_conditionInitialized) {
+		if (!of_condition_free(&_condition)) {
+			OF_ENSURE(errno == EBUSY);
+
 			@throw [OFConditionStillWaitingException
 			    exceptionWithCondition: self];
+		}
+	}
 
 	[super dealloc];
 }
@@ -61,31 +67,42 @@
 {
 	if (!of_condition_wait(&_condition, &_mutex))
 		@throw [OFConditionWaitFailedException
-		    exceptionWithCondition: self];
+		    exceptionWithCondition: self
+				     errNo: errno];
 }
 
 - (bool)waitForTimeInterval: (of_time_interval_t)timeInterval
 {
-	return of_condition_timed_wait(&_condition, &_mutex, timeInterval);
+	if (!of_condition_timed_wait(&_condition, &_mutex, timeInterval)) {
+		if (errno == ETIMEDOUT)
+			return false;
+		else
+			@throw [OFConditionWaitFailedException
+			    exceptionWithCondition: self
+					     errNo: errno];
+	}
+
+	return true;
 }
 
 - (bool)waitUntilDate: (OFDate *)date
 {
-	return of_condition_timed_wait(&_condition, &_mutex,
-	    date.timeIntervalSinceNow);
+	return [self waitForTimeInterval: date.timeIntervalSinceNow];
 }
 
 - (void)signal
 {
 	if (!of_condition_signal(&_condition))
 		@throw [OFConditionSignalFailedException
-		    exceptionWithCondition: self];
+		    exceptionWithCondition: self
+				     errNo: errno];
 }
 
 - (void)broadcast
 {
 	if (!of_condition_broadcast(&_condition))
 		@throw [OFConditionBroadcastFailedException
-		    exceptionWithCondition: self];
+		    exceptionWithCondition: self
+				     errNo: errno];
 }
 @end

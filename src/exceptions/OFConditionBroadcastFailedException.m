@@ -17,30 +17,36 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFConditionBroadcastFailedException.h"
 #import "OFString.h"
 #import "OFCondition.h"
 
 @implementation OFConditionBroadcastFailedException
-@synthesize condition = _condition;
+@synthesize condition = _condition, errNo = _errNo;
 
 + (instancetype)exceptionWithCondition: (OFCondition *)condition
+				 errNo: (int)errNo
 {
-	return [[[self alloc] initWithCondition: condition] autorelease];
-}
-
-- (instancetype)init
-{
-	return [self initWithCondition: nil];
+	return [[[self alloc] initWithCondition: condition
+					  errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithCondition: (OFCondition *)condition
+			    errNo: (int)errNo
 {
 	self = [super init];
 
 	_condition = [condition retain];
+	_errNo = errNo;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -52,11 +58,8 @@
 
 - (OFString *)description
 {
-	if (_condition != nil)
-		return [OFString stringWithFormat:
-		    @"Broadcasting a condition of type %@ failed!",
-		    _condition.class];
-	else
-		return @"Broadcasting a condition failed!";
+	return [OFString stringWithFormat:
+	    @"Broadcasting a condition of type %@ failed: %s",
+	    _condition.class, strerror(_errNo)];
 }
 @end

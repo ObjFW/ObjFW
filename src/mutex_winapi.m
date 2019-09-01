@@ -15,6 +15,8 @@
  * file.
  */
 
+#include <errno.h>
+
 bool
 of_mutex_new(of_mutex_t *mutex)
 {
@@ -34,7 +36,12 @@ of_mutex_lock(of_mutex_t *mutex)
 bool
 of_mutex_trylock(of_mutex_t *mutex)
 {
-	return TryEnterCriticalSection(mutex);
+	if (!TryEnterCriticalSection(mutex)) {
+		errno = EBUSY;
+		return false;
+	}
+
+	return true;
 }
 
 bool

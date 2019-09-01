@@ -15,6 +15,9 @@
  * file.
  */
 
+#include <assert.h>
+#include <errno.h>
+
 #include <dos/dostags.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
@@ -74,8 +77,10 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 {
 	OFMutableData *tags = nil;
 
-	if ((*thread = calloc(1, sizeof(**thread))) == NULL)
+	if ((*thread = calloc(1, sizeof(**thread))) == NULL) {
+		errno = ENOMEM;
 		return false;
+	}
 
 	@try {
 		(*thread)->function = function;
@@ -110,8 +115,10 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 		ADD_TAG(NP_CloseError, FALSE)
 
 		if (attr != NULL && attr->priority != 0) {
-			if (attr->priority < 1 || attr->priority > 1)
+			if (attr->priority < 1 || attr->priority > 1) {
+				errno = EINVAL;
 				return false;
+			}
 
 			/*
 			 * -1 should be -128 (lowest possible priority) while
@@ -133,6 +140,7 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 		(*thread)->task = (struct Task *)CreateNewProc(tags.items);
 		if ((*thread)->task == NULL) {
 			free(*thread);
+			errno = EAGAIN;
 			return false;
 		}
 	} @catch (id e) {
@@ -154,8 +162,6 @@ of_thread_current(void)
 bool
 of_thread_join(of_thread_t thread)
 {
-	bool ret;
-
 	ObtainSemaphore(&thread->semaphore);
 	@try {
 		if (thread->done) {
@@ -163,24 +169,28 @@ of_thread_join(of_thread_t thread)
 			return true;
 		}
 
-		if (thread->detached || thread->joinTask != NULL)
+		if (thread->detached || thread->joinTask != NULL) {
+			errno = EINVAL;
 			return false;
+		}
 
-		if ((thread->joinSigBit = AllocSignal(-1)) == -1)
+		if ((thread->joinSigBit = AllocSignal(-1)) == -1) {
+			errno = EAGAIN;
 			return false;
+		}
 
 		thread->joinTask = FindTask(NULL);
 	} @finally {
 		ReleaseSemaphore(&thread->semaphore);
 	}
 
-	Wait(1 << thread->joinSigBit);
+	Wait(1ul << thread->joinSigBit);
 	FreeSignal(thread->joinSigBit);
 
-	ret = thread->done;
+	assert(thread->done);
 	free(thread);
 
-	return ret;
+	return true;
 }
 
 bool

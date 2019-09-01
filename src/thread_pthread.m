@@ -15,6 +15,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #ifdef HAVE_PTHREAD_NP_H
 # include <pthread_np.h>
 #endif
@@ -114,8 +116,10 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 		if (attr != NULL) {
 			struct sched_param param;
 
-			if (attr->priority < -1 || attr->priority > 1)
+			if (attr->priority < -1 || attr->priority > 1) {
+				errno = EINVAL;
 				return false;
+			}
 
 #ifdef HAVE_PTHREAD_ATTR_SETINHERITSCHED
 			if (pthread_attr_setinheritsched(&pattr,
@@ -141,8 +145,10 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			}
 		}
 
-		if ((ctx = malloc(sizeof(*ctx))) == NULL)
+		if ((ctx = malloc(sizeof(*ctx))) == NULL) {
+			errno = ENOMEM;
 			return false;
+		}
 
 		ctx->function = function;
 		ctx->object = object;
@@ -161,14 +167,7 @@ of_thread_join(of_thread_t thread)
 {
 	void *ret;
 
-	if (pthread_join(thread, &ret) != 0)
-		return false;
-
-#ifdef PTHREAD_CANCELED
-	return (ret != PTHREAD_CANCELED);
-#else
-	return true;
-#endif
+	return (pthread_join(thread, &ret) == 0);
 }
 
 bool

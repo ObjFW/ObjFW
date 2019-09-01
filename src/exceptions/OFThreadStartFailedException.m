@@ -17,30 +17,36 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #import "OFThreadStartFailedException.h"
 #import "OFString.h"
 #import "OFThread.h"
 
 @implementation OFThreadStartFailedException
-@synthesize thread = _thread;
+@synthesize thread = _thread, errNo = _errNo;
 
 + (instancetype)exceptionWithThread: (OFThread *)thread
+			      errNo: (int)errNo
 {
-	return [[[self alloc] initWithThread: thread] autorelease];
-}
-
-- (instancetype)init
-{
-	return [self initWithThread: nil];
+	return [[[self alloc] initWithThread: thread
+				       errNo: errNo] autorelease];
 }
 
 - (instancetype)initWithThread: (OFThread *)thread
+			 errNo: (int)errNo
 {
 	self = [super init];
 
 	_thread = [thread retain];
+	_errNo = errNo;
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (void)dealloc
@@ -52,10 +58,8 @@
 
 - (OFString *)description
 {
-	if (_thread != nil)
-		return [OFString stringWithFormat:
-		    @"Starting a thread of type %@ failed!", _thread.class];
-	else
-		return @"Starting a thread failed!";
+	return [OFString stringWithFormat:
+	    @"Starting a thread of type %@ failed: %s",
+	    _thread.class, strerror(_errNo)];
 }
 @end

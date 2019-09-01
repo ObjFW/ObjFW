@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFRecursiveMutex.h"
 #import "OFString.h"
 
@@ -50,9 +52,13 @@
 
 - (void)dealloc
 {
-	if (_initialized)
-		if (!of_rmutex_free(&_rmutex))
+	if (_initialized) {
+		if (!of_rmutex_free(&_rmutex)) {
+			OF_ENSURE(errno == EBUSY);
+
 			@throw [OFStillLockedException exceptionWithLock: self];
+		}
+	}
 
 	[_name release];
 
@@ -62,18 +68,28 @@
 - (void)lock
 {
 	if (!of_rmutex_lock(&_rmutex))
-		@throw [OFLockFailedException exceptionWithLock: self];
+		@throw [OFLockFailedException exceptionWithLock: self
+							  errNo: errno];
 }
 
 - (bool)tryLock
 {
-	return of_rmutex_trylock(&_rmutex);
+	if (!of_rmutex_trylock(&_rmutex)) {
+		if (errno == EBUSY)
+			return false;
+		else
+			@throw [OFLockFailedException exceptionWithLock: self
+								  errNo: errno];
+	}
+
+	return true;
 }
 
 - (void)unlock
 {
 	if (!of_rmutex_unlock(&_rmutex))
-		@throw [OFUnlockFailedException exceptionWithLock: self];
+		@throw [OFUnlockFailedException exceptionWithLock: self
+							    errNo: errno];
 }
 
 - (OFString *)description

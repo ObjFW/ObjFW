@@ -15,6 +15,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #import "macros.h"
 
 bool
@@ -33,14 +35,26 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 	*thread = CreateThread(NULL, (attr != NULL ? attr->stackSize : 0),
 	    (LPTHREAD_START_ROUTINE)function, (void *)object, 0, NULL);
 
-	if (thread == NULL)
-		return false;
+	if (thread == NULL) {
+		switch (GetLastError()) {
+		case ERROR_NOT_ENOUGH_MEMORY:
+			errno = ENOMEM;
+			return false;
+		case ERROR_ACCESS_DENIED:
+			errno = EACCES;
+			return false;
+		default:
+			OF_ENSURE(0);
+		}
+	}
 
 	if (attr != NULL && attr->priority != 0) {
 		DWORD priority;
 
-		if (attr->priority < -1 || attr->priority > 1)
+		if (attr->priority < -1 || attr->priority > 1) {
+			errno = EINVAL;
 			return false;
+		}
 
 		if (attr->priority < 0)
 			priority = THREAD_PRIORITY_LOWEST +
@@ -51,8 +65,7 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 			    attr->priority *
 			    (THREAD_PRIORITY_HIGHEST - THREAD_PRIORITY_NORMAL);
 
-		if (!SetThreadPriority(*thread, priority))
-			return false;
+		OF_ENSURE(!SetThreadPriority(*thread, priority));
 	}
 
 	return true;
@@ -61,12 +74,21 @@ of_thread_new(of_thread_t *thread, void (*function)(id), id object,
 bool
 of_thread_join(of_thread_t thread)
 {
-	if (WaitForSingleObject(thread, INFINITE))
-		return false;
-
-	CloseHandle(thread);
-
-	return true;
+	switch (WaitForSingleObject(thread, INFINITE)) {
+	case WAIT_OBJECT_0:
+		CloseHandle(thread);
+		return true;
+	case WAIT_FAILED:
+		switch (GetLastError()) {
+		case ERROR_INVALID_HANDLE:
+			errno = EINVAL;
+			return false;
+		default:
+			OF_ENSURE(0);
+		}
+	default:
+		OF_ENSURE(0);
+	}
 }
 
 bool

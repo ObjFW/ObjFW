@@ -15,13 +15,17 @@
  * file.
  */
 
+#include <errno.h>
+
 bool
 of_condition_new(of_condition_t *condition)
 {
 	condition->count = 0;
 
-	if ((condition->event = CreateEvent(NULL, FALSE, 0, NULL)) == NULL)
+	if ((condition->event = CreateEvent(NULL, FALSE, 0, NULL)) == NULL) {
+		errno = EAGAIN;
 		return false;
+	}
 
 	return true;
 }
@@ -29,7 +33,17 @@ of_condition_new(of_condition_t *condition)
 bool
 of_condition_signal(of_condition_t *condition)
 {
-	return SetEvent(condition->event);
+	if (!SetEvent(condition->event)) {
+		switch (GetLastError()) {
+		case ERROR_INVALID_HANDLE:
+			errno = EINVAL;
+			return false;
+		default:
+			OF_ENSURE(0);
+		}
+	}
+
+	return true;
 }
 
 bool
@@ -37,9 +51,17 @@ of_condition_broadcast(of_condition_t *condition)
 {
 	int count = condition->count;
 
-	for (int i = 0; i < count; i++)
-		if (!SetEvent(condition->event))
-			return false;
+	for (int i = 0; i < count; i++) {
+		if (!SetEvent(condition->event)) {
+			switch (GetLastError()) {
+			case ERROR_INVALID_HANDLE:
+				errno = EINVAL;
+				return false;
+			default:
+				OF_ENSURE(0);
+			}
+		}
+	}
 
 	return true;
 }
@@ -56,10 +78,20 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	status = WaitForSingleObject(condition->event, INFINITE);
 	of_atomic_int_dec(&condition->count);
 
-	if (!of_mutex_lock(mutex))
-		return false;
-
-	return (status == WAIT_OBJECT_0);
+	switch (status) {
+	case WAIT_OBJECT_0:
+		return of_mutex_lock(mutex);
+	case WAIT_FAILED:
+		switch (GetLastError()) {
+		case ERROR_INVALID_HANDLE:
+			errno = EINVAL;
+			return false;
+		default:
+			OF_ENSURE(0);
+		}
+	default:
+		OF_ENSURE(0);
+	}
 }
 
 bool
@@ -75,17 +107,32 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	status = WaitForSingleObject(condition->event, timeout * 1000);
 	of_atomic_int_dec(&condition->count);
 
-	if (!of_mutex_lock(mutex))
+	switch (status) {
+	case WAIT_OBJECT_0:
+		return of_mutex_lock(mutex);
+	case WAIT_TIMEOUT:
+		errno = ETIMEDOUT;
 		return false;
-
-	return (status == WAIT_OBJECT_0);
+	case WAIT_FAILED:
+		switch (GetLastError()) {
+		case ERROR_INVALID_HANDLE:
+			errno = EINVAL;
+			return false;
+		default:
+			OF_ENSURE(0);
+		}
+	default:
+		OF_ENSURE(0);
+	}
 }
 
 bool
 of_condition_free(of_condition_t *condition)
 {
-	if (condition->count != 0)
+	if (condition->count != 0) {
+		errno = EBUSY;
 		return false;
+	}
 
 	return CloseHandle(condition->event);
 }

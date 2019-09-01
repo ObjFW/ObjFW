@@ -15,6 +15,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #include <proto/exec.h>
 
 bool
@@ -36,7 +38,12 @@ of_mutex_lock(of_mutex_t *mutex)
 bool
 of_mutex_trylock(of_mutex_t *mutex)
 {
-	return AttemptSemaphore(mutex);
+	if (!AttemptSemaphore(mutex)) {
+		errno = EBUSY;
+		return false;
+	}
+
+	return true;
 }
 
 bool

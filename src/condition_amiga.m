@@ -15,6 +15,8 @@
  * file.
  */
 
+#include <errno.h>
+
 #include <proto/exec.h>
 #include <devices/timer.h>
 #ifndef OF_AMIGAOS4
@@ -78,8 +80,10 @@ of_condition_wait(of_condition_t *condition, of_mutex_t *mutex)
 	};
 	bool ret;
 
-	if (waitingTask.sigBit == -1)
+	if (waitingTask.sigBit == -1) {
+		errno = EAGAIN;
 		return false;
+	}
 
 	Forbid();
 
@@ -150,12 +154,16 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 
 	NewList(&port.mp_MsgList);
 
-	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1)
+	if (waitingTask.sigBit == -1 || port.mp_SigBit == -1) {
+		errno = EAGAIN;
 		goto fail;
+	}
 
 	if (OpenDevice("timer.device", UNIT_MICROHZ,
-	    (struct IORequest *)&request, 0) != 0)
+	    (struct IORequest *)&request, 0) != 0) {
+		errno = EAGAIN;
 		goto fail;
+	}
 
 	Forbid();
 
@@ -169,8 +177,20 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 
 	SendIO((struct IORequest *)&request);
 
-	mask = Wait((1 << waitingTask.sigBit) | (1 << port.mp_SigBit));
-	ret = of_mutex_lock(mutex);
+	mask = Wait((1ul << waitingTask.sigBit) | (1ul << port.mp_SigBit));
+	if (mask & (1ul << waitingTask.sigBit))
+		ret = of_mutex_lock(mutex);
+	else if (mask & (1ul << port.mp_SigBit)) {
+		ret = false;
+		errno = ETIMEDOUT;
+	} else {
+		/*
+		 * This should not happen - it means something interrupted the
+		 * Wait(), so the best we can do is return EINTR.
+		 */
+		ret = false;
+		errno = EINTR;
+	}
 
 	condition->waitingTasks = waitingTask.next;
 
@@ -181,9 +201,6 @@ of_condition_timed_wait(of_condition_t *condition, of_mutex_t *mutex,
 	CloseDevice((struct IORequest *)&request);
 
 	Permit();
-
-	if (!(mask & (1 << waitingTask.sigBit)))
-		goto fail;
 
 	FreeSignal(waitingTask.sigBit);
 	FreeSignal(port.mp_SigBit);
@@ -204,8 +221,10 @@ of_condition_free(of_condition_t *condition)
 {
 	Forbid();
 	@try {
-		if (condition->waitingTasks != NULL)
+		if (condition->waitingTasks != NULL) {
+			errno = EBUSY;
 			return false;
+		}
 	} @finally {
 		Permit();
 	}

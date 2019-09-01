@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -415,14 +417,22 @@ static OFDNSResolver *DNSResolver;
 
 	if (!of_thread_new(&_thread, callMain, self, &_attr)) {
 		[self release];
-		@throw [OFThreadStartFailedException exceptionWithThread: self];
+		@throw [OFThreadStartFailedException
+		    exceptionWithThread: self
+				  errNo: errno];
 	}
 }
 
 - (id)join
 {
-	if (_running == OF_THREAD_NOT_RUNNING || !of_thread_join(_thread))
-		@throw [OFThreadJoinFailedException exceptionWithThread: self];
+	if (_running == OF_THREAD_NOT_RUNNING)
+		@throw [OFThreadJoinFailedException
+		    exceptionWithThread: self
+				  errNo: EINVAL];
+
+	if (!of_thread_join(_thread))
+		@throw [OFThreadJoinFailedException exceptionWithThread: self
+								  errNo: errno];
 
 	_running = OF_THREAD_NOT_RUNNING;
 

@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFUnlockFailedException: OFException
 {
 	id <OFLocking> _lock;
+	int _errNo;
 }
 
 /*!
@@ -37,21 +38,31 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) id <OFLocking> lock;
 
 /*!
+ * @brief The errno of the error that occurred.
+ */
+@property (readonly, nonatomic) int errNo;
+
+/*!
  * @brief Creates a new, autoreleased unlock failed exception.
  *
  * @param lock The lock which could not be unlocked
+ * @param errNo The errno of the error that occurred
  * @return A new, autoreleased unlock failed exception
  */
-+ (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock;
++ (instancetype)exceptionWithLock: (nullable id <OFLocking>)lock
+			    errNo: (int)errNo;
 
 /*!
  * @brief Initializes an already allocated unlock failed exception.
  *
  * @param lock The lock which could not be unlocked
+ * @param errNo The errno of the error that occurred
  * @return An initialized unlock failed exception
  */
 - (instancetype)initWithLock: (nullable id <OFLocking>)lock
-    OF_DESIGNATED_INITIALIZER;
+		       errNo: (int)errNo OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)init OF_UNAVAILABLE;
 @end
 
 OF_ASSUME_NONNULL_END

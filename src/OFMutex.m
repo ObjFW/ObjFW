@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#include <errno.h>
+
 #import "OFMutex.h"
 #import "OFString.h"
 
@@ -50,9 +52,13 @@
 
 - (void)dealloc
 {
-	if (_initialized)
-		if (!of_mutex_free(&_mutex))
+	if (_initialized) {
+		if (!of_mutex_free(&_mutex)) {
+			OF_ENSURE(errno == EBUSY);
+
 			@throw [OFStillLockedException exceptionWithLock: self];
+		}
+	}
 
 	[_name release];
 
@@ -62,18 +68,28 @@
 - (void)lock
 {
 	if (!of_mutex_lock(&_mutex))
-		@throw [OFLockFailedException exceptionWithLock: self];
+		@throw [OFLockFailedException exceptionWithLock: self
+							  errNo: errno];
 }
 
 - (bool)tryLock
 {
-	return of_mutex_trylock(&_mutex);
+	if (!of_mutex_trylock(&_mutex)) {
+		if (errno == EBUSY)
+			return false;
+		else
+			@throw [OFLockFailedException exceptionWithLock: self
+								  errNo: errno];
+	}
+
+	return true;
 }
 
 - (void)unlock
 {
 	if (!of_mutex_unlock(&_mutex))
-		@throw [OFUnlockFailedException exceptionWithLock: self];
+		@throw [OFUnlockFailedException exceptionWithLock: self
+							    errNo: errno];
 }
 
 - (OFString *)description
