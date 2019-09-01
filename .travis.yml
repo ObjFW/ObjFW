@@ -64,9 +64,6 @@ matrix:
     - os: osx
       osx_image: xcode7.3
       language: objective-c
-    - os: osx
-      osx_image: xcode6.4
-      language: objective-c
 
     # iOS
     - os: osx
@@ -106,11 +103,6 @@ matrix:
         - config=ios
     - os: osx
       osx_image: xcode7.3
-      language: objective-c
-      env:
-        - config=ios
-    - os: osx
-      osx_image: xcode6.4
       language: objective-c
       env:
         - config=ios
