@@ -315,6 +315,9 @@ static OFDNSResolver *DNSResolver;
 {
 	OFThread *thread = of_tlskey_get(threadSelfKey);
 
+	if (thread == mainThread)
+		@throw [OFInvalidArgumentException exception];
+
 	OF_ENSURE(thread != nil);
 
 	thread->_returnValue = [object retain];
