@@ -584,47 +584,47 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 #if defined(OF_X86_64) || defined(OF_X86)
 + (bool)supportsMMX
 {
-	return (x86_cpuid(1, 0).edx & (1 << 23));
+	return (x86_cpuid(1, 0).edx & (1u << 23));
 }
 
 + (bool)supportsSSE
 {
-	return (x86_cpuid(1, 0).edx & (1 << 25));
+	return (x86_cpuid(1, 0).edx & (1u << 25));
 }
 
 + (bool)supportsSSE2
 {
-	return (x86_cpuid(1, 0).edx & (1 << 26));
+	return (x86_cpuid(1, 0).edx & (1u << 26));
 }
 
 + (bool)supportsSSE3
 {
-	return (x86_cpuid(1, 0).ecx & (1 << 0));
+	return (x86_cpuid(1, 0).ecx & (1u << 0));
 }
 
 + (bool)supportsSSSE3
 {
-	return (x86_cpuid(1, 0).ecx & (1 << 9));
+	return (x86_cpuid(1, 0).ecx & (1u << 9));
 }
 
 + (bool)supportsSSE41
 {
-	return (x86_cpuid(1, 0).ecx & (1 << 19));
+	return (x86_cpuid(1, 0).ecx & (1u << 19));
 }
 
 + (bool)supportsSSE42
 {
-	return (x86_cpuid(1, 0).ecx & (1 << 20));
+	return (x86_cpuid(1, 0).ecx & (1u << 20));
 }
 
 + (bool)supportsAVX
 {
-	return (x86_cpuid(1, 0).ecx & (1 << 28));
+	return (x86_cpuid(1, 0).ecx & (1u << 28));
 }
 
 + (bool)supportsAVX2
 {
-	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1 << 5));
+	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1u << 5));
 }
 #endif
 

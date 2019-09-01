@@ -746,7 +746,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			      count: 2];
 
 		/* RD */
-		tmp = OF_BSWAP16_IF_LE(1 << 8);
+		tmp = OF_BSWAP16_IF_LE(1u << 8);
 		[queryData addItems: &tmp
 			      count: 2];
 

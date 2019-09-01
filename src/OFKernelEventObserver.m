@@ -430,7 +430,7 @@ enum {
 	Forbid();
 
 	if (_waitingTask != NULL) {
-		Signal(_waitingTask, (1 << _cancelSignal));
+		Signal(_waitingTask, (1ul << _cancelSignal));
 		_waitingTask = NULL;
 	}
 

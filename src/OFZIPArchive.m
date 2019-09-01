@@ -518,7 +518,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	entry.compressedSize = 0;
 	entry.uncompressedSize = 0;
 	entry.CRC32 = 0;
-	entry.generalPurposeBitFlag |= (1 << 3) | (1 << 11);
+	entry.generalPurposeBitFlag |= (1u << 3) | (1u << 11);
 	entry.of_localFileHeaderOffset = _offset;
 
 	[_stream writeLittleEndianInt32: 0x04034B50];
@@ -656,7 +656,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		_uncompressedSize = [stream readLittleEndianInt32];
 		fileNameLength = [stream readLittleEndianInt16];
 		extraFieldLength = [stream readLittleEndianInt16];
-		encoding = (_generalPurposeBitFlag & (1 << 11)
+		encoding = (_generalPurposeBitFlag & (1u << 11)
 		    ? OF_STRING_ENCODING_UTF_8
 		    : OF_STRING_ENCODING_CODEPAGE_437);
 
@@ -717,7 +717,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	    _lastModifiedFileDate != entry.of_lastModifiedFileDate)
 		return false;
 
-	if (!(_generalPurposeBitFlag & (1 << 3)))
+	if (!(_generalPurposeBitFlag & (1u << 3)))
 		if (_CRC32 != entry.CRC32 ||
 		    _compressedSize != entry.compressedSize ||
 		    _uncompressedSize != entry.uncompressedSize)

@@ -107,7 +107,7 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 		_distanceBits = distanceBits;
 		_dictionaryBits = dictionaryBits;
 
-		_slidingWindowMask = (1 << dictionaryBits) - 1;
+		_slidingWindowMask = (1u << dictionaryBits) - 1;
 		_slidingWindow = [self allocMemoryWithSize:
 		    _slidingWindowMask + 1];
 		memset(_slidingWindow, ' ', _slidingWindowMask + 1);
@@ -456,7 +456,7 @@ start:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distance - 1))
 			return bytesWritten;
 
-		_distance = bits + (1 << (_distance - 1));
+		_distance = bits + (1u << (_distance - 1));
 
 		_state = STATE_BLOCK_LEN_DIST_PAIR;
 		goto start;

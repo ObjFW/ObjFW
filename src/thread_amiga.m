@@ -53,7 +53,7 @@ functionWrapper(void)
 		if (thread->detached)
 			detached = true;
 		else if (thread->joinTask != NULL)
-			Signal(thread->joinTask, 1 << thread->joinSigBit);
+			Signal(thread->joinTask, (1ul << thread->joinSigBit));
 	} @finally {
 		ReleaseSemaphore(&thread->semaphore);
 	}

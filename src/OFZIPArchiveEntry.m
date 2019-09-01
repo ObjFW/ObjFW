@@ -239,7 +239,7 @@ of_zip_archive_entry_extra_field_find(OFData *extraField, uint16_t tag,
 		_versionSpecificAttributes = [stream readLittleEndianInt32];
 		_localFileHeaderOffset = [stream readLittleEndianInt32];
 
-		encoding = (_generalPurposeBitFlag & (1 << 11)
+		encoding = (_generalPurposeBitFlag & (1u << 11)
 		    ? OF_STRING_ENCODING_UTF_8
 		    : OF_STRING_ENCODING_CODEPAGE_437);
 

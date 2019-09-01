@@ -40,7 +40,7 @@ of_condition_signal(of_condition_t *condition)
 			return true;
 
 		Signal(condition->waitingTasks->task,
-		    1 << condition->waitingTasks->sigBit);
+		    (1ul << condition->waitingTasks->sigBit));
 
 		condition->waitingTasks = condition->waitingTasks->next;
 	} @finally {
@@ -60,7 +60,7 @@ of_condition_broadcast(of_condition_t *condition)
 
 		while (condition->waitingTasks != NULL) {
 			Signal(condition->waitingTasks->task,
-			    1 << condition->waitingTasks->sigBit);
+			    (1ul << condition->waitingTasks->sigBit));
 
 			condition->waitingTasks = condition->waitingTasks->next;
 		}

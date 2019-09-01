@@ -187,7 +187,7 @@
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: EAGAIN];
 
-	execSignalMask = _execSignalMask | (1 << cancelSignal);
+	execSignalMask = _execSignalMask | (1ul << cancelSignal);
 
 	Forbid();
 
@@ -197,7 +197,7 @@
 	events = WaitSelect(_maxFD + 1, &readFDs, &writeFDs, NULL,
 	    (void *)(timeInterval != -1 ? &timeout : NULL), &execSignalMask);
 
-	execSignalMask &= ~(1 << cancelSignal);
+	execSignalMask &= ~(1ul << cancelSignal);
 
 	_waitingTask = NULL;
 	FreeSignal(_cancelSignal);

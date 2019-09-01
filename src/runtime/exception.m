@@ -278,8 +278,8 @@ readSLEB128(const uint8_t **ptr)
 	value = readULEB128(ptr);
 	bits = (*ptr - oldPtr) * 7;
 
-	if (bits < 64 && value & (1 << (bits - 1)))
-		value |= -(1 << bits);
+	if (bits < 64 && value & (INT64_C(1) << (bits - 1)))
+		value |= -(INT64_C(1) << bits);
 
 	return value;
 }

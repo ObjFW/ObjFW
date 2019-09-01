@@ -48,7 +48,7 @@ insertTree(struct of_huffman_tree *tree, uint16_t code, uint8_t length,
 		uint8_t bit;
 
 		length--;
-		bit = (code & (1 << length)) >> length;
+		bit = (code & (1u << length)) >> length;
 
 		if (tree->leaves[bit] == NULL)
 			tree->leaves[bit] = newTree();
