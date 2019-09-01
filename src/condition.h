@@ -49,8 +49,6 @@ typedef struct {
 } of_condition_t;
 #endif
 
-OF_ASSUME_NONNULL_BEGIN
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -70,5 +68,3 @@ extern bool of_condition_free(of_condition_t *condition);
 #ifdef __cplusplus
 }
 #endif
-
-OF_ASSUME_NONNULL_END
