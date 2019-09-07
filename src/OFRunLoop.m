@@ -704,9 +704,28 @@ static OFRunLoop *mainRunLoop = nil;
 				errNo: errNo];
 
 	if ([_delegate respondsToSelector:
-	    @selector(of_socketDidConnect:exception:)])
-		[_delegate of_socketDidConnect: object
-				     exception: exception];
+	    @selector(of_socketDidConnect:exception:)]) {
+		/*
+		 * Make sure we only call the delegate once we removed the
+		 * socket from the kernel event observer. This is necessary as
+		 * otherwise we could try to connect to the next address and it
+		 * would not be re-registered with the kernel event observer,
+		 * which is necessary for some kernel event observers (e.g.
+		 * epoll) even if the fd of the new socket is the same.
+		 */
+		OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+		OFTimer *timer = [OFTimer
+		    timerWithTimeInterval: 0
+				   target: _delegate
+				 selector: @selector(of_socketDidConnect:
+					       exception:)
+				   object: object
+				   object: exception
+				  repeats: false];
+
+		[runLoop addTimer: timer
+			  forMode: runLoop.currentMode];
+	}
 
 	return false;
 }

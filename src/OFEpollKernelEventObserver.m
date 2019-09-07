@@ -130,9 +130,15 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 
 	if (events == 0) {
 		if (epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1)
-			@throw [OFObserveFailedException
-			    exceptionWithObserver: self
-					    errNo: errno];
+			/*
+			 * When an async connect fails, it seems the socket is
+			 * automatically removed from epoll, meaning ENOENT is
+			 * returned when we try to remove it after it failed.
+			 */
+			if (errno != ENOENT)
+				@throw [OFObserveFailedException
+				    exceptionWithObserver: self
+						    errNo: errno];
 
 		[_FDToEvents removeObjectForKey: (void *)((intptr_t)fd + 1)];
 	} else {
