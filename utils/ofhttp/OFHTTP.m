@@ -687,6 +687,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	} else
 		@throw e;
 
+	_errorCode = 1;
 	[self performSelector: @selector(downloadNextURL)
 		   afterDelay: 0];
 }
