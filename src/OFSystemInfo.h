@@ -51,6 +51,8 @@ OF_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) bool supportsSSE42;
 @property (class, readonly, nonatomic) bool supportsAVX;
 @property (class, readonly, nonatomic) bool supportsAVX2;
+@property (class, readonly, nonatomic) bool supportsAESNI;
+@property (class, readonly, nonatomic) bool supportsSHAExtensions;
 # endif
 # if defined(OF_POWERPC) || defined(OF_POWERPC64) || defined(DOXYGEN)
 @property (class, readonly, nonatomic) bool supportsAltiVec;
@@ -253,6 +255,24 @@ OF_ASSUME_NONNULL_BEGIN
  * @return Whether the CPU supports AVX2
  */
 + (bool)supportsAVX2;
+
+/*!
+ * @brief Returns whether the CPU supports AES-NI.
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
+ * @return Whether the CPU supports AES-NI
+ */
++ (bool)supportsAESNI;
+
+/*!
+ * @brief Returns whether the CPU supports Intel SHA Extensions.
+ *
+ * @note This method is only available on x86 and x86_64.
+ *
+ * @return Whether the CPU supports Intel SHA Extensions
+ */
++ (bool)supportsSHAExtensions;
 #endif
 
 #if defined(OF_POWERPC) || defined(OF_POWERPC64)

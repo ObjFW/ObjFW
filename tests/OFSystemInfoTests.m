@@ -85,6 +85,11 @@ static OFString *module = @"OFSystemInfo";
 	PRINT(GREEN, @"Supports AVX: %d", [OFSystemInfo supportsAVX]);
 
 	PRINT(GREEN, @"Supports AVX2: %d", [OFSystemInfo supportsAVX2]);
+
+	PRINT(GREEN, @"Supports AES-NI: %d", [OFSystemInfo supportsAESNI]);
+
+	PRINT(GREEN, @"Supports SHA extensions: %d",
+	    [OFSystemInfo supportsSHAExtensions]);
 #endif
 
 #ifdef OF_POWERPC

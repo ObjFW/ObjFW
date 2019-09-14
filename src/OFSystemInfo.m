@@ -626,6 +626,16 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 {
 	return x86_cpuid(0, 0).eax >= 7 && (x86_cpuid(7, 0).ebx & (1u << 5));
 }
+
++ (bool)supportsAESNI
+{
+	return (x86_cpuid(1, 0).ecx & (1u << 25));
+}
+
++ (bool)supportsSHAExtensions
+{
+	return (x86_cpuid(7, 0).ebx & (1u << 29));
+}
 #endif
 
 #if defined(OF_POWERPC) || defined(OF_POWERPC64)
@@ -649,8 +659,6 @@ x86_cpuid(uint32_t eax, uint32_t ecx)
 	if (NewGetSystemAttrs(&supportsAltiVec, sizeof(supportsAltiVec),
 	    SYSTEMINFOTYPE_PPC_ALTIVEC, TAG_DONE) > 0)
 		return supportsAltiVec;
-
-	return false;
 # endif
 
 	return false;
