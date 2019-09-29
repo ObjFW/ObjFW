@@ -156,7 +156,7 @@ of_application_main(int *argc, char **argv[],
 @synthesize environment = _environment;
 #ifdef OF_HAVE_SANDBOX
 @synthesize activeSandbox = _activeSandbox;
-@synthesize activeExecSandbox = _activeExecSandbox;
+@synthesize activeSandboxForChildProcesses = _activeSandboxForChildProcesses;
 #endif
 
 + (OFApplication *)sharedApplication
@@ -205,9 +205,9 @@ of_application_main(int *argc, char **argv[],
 	[app activateSandbox: sandbox];
 }
 
-+ (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox
++ (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
-	[app activateSandboxForExecdProcesses: sandbox];
+	[app activateSandboxForChildProcesses: sandbox];
 }
 #endif
 
@@ -630,13 +630,14 @@ of_application_main(int *argc, char **argv[],
 # endif
 }
 
-- (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox
+- (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox
 {
 # ifdef OF_HAVE_PLEDGE
 	void *pool = objc_autoreleasePoolPush();
 	const char *promises;
 
-	if (_activeExecSandbox != nil && sandbox != _activeExecSandbox)
+	if (_activeSandboxForChildProcesses != nil &&
+	    sandbox != _activeSandboxForChildProcesses)
 		@throw [OFInvalidArgumentException exception];
 
 	if (sandbox.unveiledPaths.count != 0)
@@ -652,8 +653,8 @@ of_application_main(int *argc, char **argv[],
 
 	objc_autoreleasePoolPop(pool);
 
-	if (_activeExecSandbox == nil)
-		_activeExecSandbox = [sandbox retain];
+	if (_activeSandboxForChildProcesses == nil)
+		_activeSandboxForChildProcesses = [sandbox retain];
 # endif
 }
 #endif
