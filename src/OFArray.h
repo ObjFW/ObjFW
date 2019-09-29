@@ -496,19 +496,6 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 #endif
 @end
 
-@interface OFArrayEnumerator: OFEnumerator
-{
-	OFArray	*_array;
-	size_t _count;
-	unsigned long _mutations;
-	unsigned long *_Nullable _mutationsPtr;
-	size_t _position;
-}
-
-- (instancetype)initWithArray: (OFArray *)data
-		 mutationsPtr: (nullable unsigned long *)mutationsPtr;
-@end
-
 OF_ASSUME_NONNULL_END
 
 #import "OFMutableArray.h"

@@ -173,16 +173,4 @@ struct of_list_object_t {
 #endif
 @end
 
-@interface OFListEnumerator: OFEnumerator
-{
-	OFList *_list;
-	of_list_object_t *_Nullable _current;
-	unsigned long _mutations;
-	unsigned long *_Nullable _mutationsPtr;
-}
-
-- (instancetype)initWithList: (OFList *)list
-	    mutationsPointer: (unsigned long *)mutationsPtr;
-@end
-
 OF_ASSUME_NONNULL_END

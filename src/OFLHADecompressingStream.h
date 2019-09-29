@@ -21,10 +21,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 #define OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE 4096
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFLHADecompressingStream: OFStream
 {
-@public
 	OFStream *_stream;
 	uint8_t _distanceBits, _dictionaryBits;
 	unsigned char _buffer[OF_LHA_DECOMPRESSING_STREAM_BUFFER_SIZE];
@@ -45,6 +43,8 @@ OF_SUBCLASSING_RESTRICTED
 	uint16_t _length;
 	uint32_t _distance;
 }
+
+@property (nonatomic, readonly) uint32_t bytesConsumed;
 
 - (instancetype)of_initWithStream: (OFStream *)stream
 		     distanceBits: (uint8_t)distanceBits

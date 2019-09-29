@@ -21,7 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMapTable;
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFMapTableSet: OFSet
 {
 	OFMapTable *_mapTable;

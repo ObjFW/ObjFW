@@ -15,11 +15,10 @@
  * file.
  */
 
-#define OF_THREAD_M
+#include "config.h"
+
 #define _POSIX_TIMERS
 #define __NO_EXT_QNX
-
-#include "config.h"
 
 #include <errno.h>
 
@@ -92,7 +91,12 @@
 
 static of_tlskey_t threadSelfKey;
 static OFThread *mainThread;
+#elif defined(OF_HAVE_SOCKETS)
+static OFDNSResolver *DNSResolver;
+#endif
 
+@implementation OFThread
+#ifdef OF_HAVE_THREADS
 static void
 callMain(id object)
 {
@@ -145,12 +149,7 @@ callMain(id object)
 
 	[thread release];
 }
-#elif defined(OF_HAVE_SOCKETS)
-static OFDNSResolver *DNSResolver;
-#endif
 
-@implementation OFThread
-#ifdef OF_HAVE_THREADS
 @synthesize name = _name;
 # ifdef OF_HAVE_BLOCKS
 @synthesize threadBlock = _threadBlock;

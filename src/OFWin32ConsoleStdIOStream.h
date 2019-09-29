@@ -21,7 +21,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFWin32ConsoleStdIOStream: OFStdIOStream
 {
 	HANDLE _handle;

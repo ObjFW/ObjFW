@@ -133,13 +133,14 @@ OF_ASSUME_NONNULL_BEGIN
 	of_socket_t _cancelFD[2];
 	struct sockaddr_in _cancelAddr;
 #endif
-#ifdef OF_HAVE_THREADS
-	OFMutex *_mutex;
-#endif
-	OFMutableData *_queueActions;
-	OFMutableArray *_queueObjects;
 #ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
+#endif
+@private
+	OFMutableData *_queueActions;
+	OFMutableArray *_queueObjects;
+#ifdef OF_HAVE_THREADS
+	OFMutex *_mutex;
 #endif
 	OF_RESERVE_IVARS(4)
 }

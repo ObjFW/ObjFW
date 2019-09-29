@@ -21,7 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableData;
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFPollKernelEventObserver: OFKernelEventObserver
 {
 	OFMutableData *_FDs;

@@ -21,7 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMutableData;
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFMutableAdjacentArray: OFMutableArray
 {
 	OFMutableData *_array;

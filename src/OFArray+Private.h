@@ -15,35 +15,21 @@
  * file.
  */
 
-#import "OFCryptoHash.h"
+#import "OFArray.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFSecureData;
-
-/*!
- * @class OFSHA224Or256Hash OFSHA224Or256Hash.h ObjFW/OFSHA224Or256Hash.h
- *
- * @brief A base class for SHA-224 and SHA-256.
- */
-@interface OFSHA224Or256Hash: OFObject <OFCryptoHash>
+@interface OFArrayEnumerator: OFEnumerator
 {
-@private
-	OFSecureData *_iVarsData;
-@protected
-	struct of_sha224_or_256_hash_ivars {
-		uint32_t state[8];
-		uint64_t bits;
-		union of_sha224_or_256_hash_buffer {
-			uint8_t bytes[64];
-			uint32_t words[64];
-		} buffer;
-		size_t bufferLength;
-	} *_iVars;
-@private
-	bool _calculated;
-	OF_RESERVE_IVARS(4)
+	OFArray	*_array;
+	size_t _count;
+	unsigned long _mutations;
+	unsigned long *_Nullable _mutationsPtr;
+	size_t _position;
 }
+
+- (instancetype)initWithArray: (OFArray *)data
+		 mutationsPtr: (nullable unsigned long *)mutationsPtr;
 @end
 
 OF_ASSUME_NONNULL_END

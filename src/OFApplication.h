@@ -130,9 +130,6 @@ OF_SUBCLASSING_RESTRICTED
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_environment;
 	int *_argc;
 	char ***_argv;
-#ifdef OF_APPLICATION_M
-@public
-#endif
 	id <OFApplicationDelegate> _Nullable _delegate;
 	void (*_Nullable _SIGINTHandler)(id, SEL);
 #ifndef OF_WINDOWS
