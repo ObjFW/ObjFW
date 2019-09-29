@@ -52,7 +52,7 @@ forwardTest(void)
 @implementation TestsAppDelegate (OFBlockTests)
 - (void)blockTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	__block int x;
 	void (^s)(void) = ^ { x = 0; };
 	void (^m)(void);
@@ -101,6 +101,6 @@ forwardTest(void)
 	TEST(@"Autorelease a malloc block", R([m autorelease]))
 #endif
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

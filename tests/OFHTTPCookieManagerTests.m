@@ -24,7 +24,7 @@ static OFString *module = @"OFHTTPCookieManager";
 @implementation TestsAppDelegate (OFHTTPCookieManagerTests)
 - (void)HTTPCookieManagerTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFHTTPCookieManager *manager = [OFHTTPCookieManager manager];
 	OFURL *URL[4];
 	OFHTTPCookie *cookie[5];
@@ -100,6 +100,6 @@ static OFString *module = @"OFHTTPCookieManager";
 	    [manager.cookies isEqual:
 	    [OFArray arrayWithObjects: cookie[3], cookie[4], nil]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

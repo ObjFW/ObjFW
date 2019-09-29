@@ -180,7 +180,7 @@ test(id self, SEL _cmd)
 @implementation TestsAppDelegate (ForwardingTests)
 - (void)forwardingTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	TEST(@"Forwarding a message and adding a class method",
 	    R([ForwardingTest test]) && success &&
@@ -231,6 +231,6 @@ test(id self, SEL _cmd)
 # endif
 #endif
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

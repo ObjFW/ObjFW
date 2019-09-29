@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to calculate an HMAC.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHMAC: OFObject
 {
 	Class <OFCryptoHash> _hashClass;

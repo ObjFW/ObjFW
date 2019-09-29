@@ -30,6 +30,10 @@ OF_ASSUME_NONNULL_BEGIN
 # define FirstType id
 # define SecondType id
 #endif
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief The first object of the pair.
  */

@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create an MD5 hash.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFMD5Hash: OFObject <OFCryptoHash>
 {
 	OFSecureData *_iVarsData;

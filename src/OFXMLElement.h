@@ -38,6 +38,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMutableDictionary OF_GENERIC(OFString *, OFString *) *_Nullable
 	    _namespaces;
 	OFMutableArray OF_GENERIC(OFXMLNode *) *_Nullable _children;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

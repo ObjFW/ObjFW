@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFFileURLHandler: OFURLHandler
 + (bool)of_directoryExistsAtPath: (OFString *)path;
 @end

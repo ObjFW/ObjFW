@@ -70,6 +70,7 @@ typedef void *_Nullable (^of_map_table_replace_block_t)(void *_Nullable key,
  * @brief A class similar to OFDictionary, but providing more options how keys
  *	  and objects should be retained, released, compared and hashed.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFMapTable: OFObject <OFCopying, OFFastEnumeration>
 {
 	of_map_table_functions_t _keyFunctions, _objectFunctions;

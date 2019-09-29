@@ -90,6 +90,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for creating a simple HTTP server inside of applications.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPServer: OFObject
 {
 	OFString *_Nullable _host;

@@ -134,7 +134,7 @@ static OFString *c_ary[] = {
 - (void)arrayTestsWithClass: (Class)arrayClass
 	       mutableClass: (Class)mutableArrayClass
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFArray *a[3];
 	OFMutableArray *m[2];
 	OFEnumerator *enumerator;
@@ -439,7 +439,7 @@ static OFString *c_ary[] = {
 	    [OFURL URLWithString: @"http://bar.qux:1234/"],
 	    [OFURL URLWithString: @"http://qux.quxqux:1234/"], nil]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)arrayTests

@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFColor: OFObject
 {
 	float _red, _green, _blue, _alpha;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

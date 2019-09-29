@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create an SHA-1 hash.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFSHA1Hash: OFObject <OFCryptoHash>
 {
 	OFSecureData *_iVarsData;

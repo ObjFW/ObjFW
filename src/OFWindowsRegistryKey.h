@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFWindowsRegistryKey \
  *	  OFWindowsRegistryKey.h ObjFW/OFWindowsRegistryKey.h
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFWindowsRegistryKey: OFObject
 {
 	HKEY _hKey;

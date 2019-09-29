@@ -116,6 +116,7 @@ typedef enum {
  *
  * @brief Provides a way to store a number in an object.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFNumber: OFValue <OFComparing, OFSerialization,
     OFJSONRepresentation, OFMessagePackRepresentation>
 {

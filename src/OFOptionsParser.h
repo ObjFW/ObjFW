@@ -66,6 +66,7 @@ typedef struct {
  *
  * @brief A class for parsing the program options specified on the command line.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFOptionsParser: OFObject
 {
 	of_options_parser_option_t *_options;

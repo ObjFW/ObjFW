@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for managing cookies for multiple domains.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPCookieManager: OFObject
 {
 	OFMutableArray OF_GENERIC(OFHTTPCookie *) *_cookies;

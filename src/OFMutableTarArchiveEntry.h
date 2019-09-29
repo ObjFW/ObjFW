@@ -26,6 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which represents a mutable entry of a tar archive.
  */
 @interface OFMutableTarArchiveEntry: OFTarArchiveEntry
+{
+	OF_RESERVE_IVARS(4)
+}
 
 /*!
  * @brief The file name of the entry.

@@ -42,6 +42,7 @@ typedef void (^of_timer_block_t)(OFTimer *timer);
  *
  * @brief A class for creating and firing timers.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFTimer: OFObject <OFComparing>
 {
 	OFDate *_fireDate;

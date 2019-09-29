@@ -30,7 +30,7 @@ const uint8_t testfile_rmd160[20] =
 @implementation TestsAppDelegate (OFRIPEMD160HashTests)
 - (void)RIPEMD160HashTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFRIPEMD160Hash *rmd160, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"r"];
@@ -57,6 +57,6 @@ const uint8_t testfile_rmd160[20] =
 	    [rmd160 updateWithBuffer: ""
 			      length: 1])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

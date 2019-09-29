@@ -104,6 +104,7 @@ typedef bool (^of_tcp_socket_async_accept_block_t)(OFTCPSocket *socket,
 #ifdef OF_WII
 	uint16_t _port;
 #endif
+	OF_RESERVE_IVARS(4)
 }
 
 #ifdef OF_HAVE_CLASS_PROPERTIES

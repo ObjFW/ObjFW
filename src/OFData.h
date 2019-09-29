@@ -43,6 +43,7 @@ enum {
 	size_t _count, _itemSize;
 	bool _freeWhenDone;
 	OFData *_parentData;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

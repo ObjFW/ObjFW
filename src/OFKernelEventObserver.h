@@ -141,6 +141,7 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
 #endif
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

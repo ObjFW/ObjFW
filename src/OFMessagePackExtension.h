@@ -33,6 +33,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	int8_t _type;
 	OFData *_data;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

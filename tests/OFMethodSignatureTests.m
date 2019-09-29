@@ -74,7 +74,7 @@ union test4_union {
 @implementation TestsAppDelegate (OFMethodSignatureTests)
 - (void)methodSignatureTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMethodSignature *ms;
 
 	TEST(@"-[:signatureWithObjCTypes:] #1",
@@ -172,6 +172,6 @@ union test4_union {
 	    of_alignof_type_encoding(@encode(struct test1_struct [5])) ==
 	    OF_ALIGNOF(struct test1_struct [5]))
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -44,6 +44,8 @@ OF_ASSUME_NONNULL_BEGIN
  * @protocol OFApplicationDelegate OFApplication.h ObjFW/OFApplication.h
  *
  * @brief A protocol for delegates of OFApplication.
+ *
+ * @note Signals are not available on AmigaOS!
  */
 @protocol OFApplicationDelegate <OFObject>
 /*!
@@ -120,6 +122,7 @@ OF_ASSUME_NONNULL_BEGIN
  * to the optional @ref OFApplicationDelegate protocol and put
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFApplication: OFObject
 {
 	OFString *_programName;
@@ -138,7 +141,8 @@ OF_ASSUME_NONNULL_BEGIN
 	void (*_Nullable _SIGUSR2Handler)(id, SEL);
 #endif
 #ifdef OF_HAVE_SANDBOX
-	OFSandbox *_Nullable _activeSandbox, *_Nullable _activeExecSandbox;
+	OFSandbox *_Nullable _activeSandbox;
+	OFSandbox *_Nullable _activeSandboxForChildProcesses;
 #endif
 }
 
@@ -181,11 +185,10 @@ OF_ASSUME_NONNULL_BEGIN
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFSandbox *activeSandbox;
 
 /*!
- * @brief The sandbox currently active for `exec()`'d processes of this
- *	  application.
+ * @brief The sandbox currently active for child processes of this application.
  */
 @property OF_NULLABLE_PROPERTY (readonly, nonatomic)
-    OFSandbox *activeExecSandbox;
+    OFSandbox *activeSandboxForChildProcesses;
 #endif
 
 /*!
@@ -235,8 +238,8 @@ OF_ASSUME_NONNULL_BEGIN
  * This is only available if `OF_HAVE_SANDBOX` is defined.
  *
  * @warning If you allow `exec()`, but do not call
- * @ref activateSandboxForExecdProcesses, an `exec()`'d process does not have
- * its permissions restricted!
+ *	    @ref activateSandboxForChildProcesses:, an `exec()`'d process does
+ *	    not have its permissions restricted!
  *
  * @note Once a sandbox has been activated, you cannot activate a different
  *	 sandbox. You can however change the active sandbox and reactivate it.
@@ -246,7 +249,7 @@ OF_ASSUME_NONNULL_BEGIN
 + (void)activateSandbox: (OFSandbox *)sandbox;
 
 /*!
- * @brief Activates the specified sandbox for `exec()`'d processes of the
+ * @brief Activates the specified sandbox for child processes of the
  *	  application.
  *
  * This is only available if `OF_HAVE_SANDBOX` is defined.
@@ -259,7 +262,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param sandbox The sandbox to activate
  */
-+ (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox;
++ (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox;
 #endif
 
 - (instancetype)init OF_UNAVAILABLE;
@@ -292,8 +295,8 @@ OF_ASSUME_NONNULL_BEGIN
  * This is only available if `OF_HAVE_SANDBOX` is defined.
  *
  * @warning If you allow `exec()`, but do not call
- * @ref activateSandboxForExecdProcesses, an `exec()`'d process does not have
- * its permissions restricted!
+ *	    @ref activateSandboxForChildProcesses:, an `exec()`'d process does
+ *	    not have its permissions restricted!
  *
  * @note Once a sandbox has been activated, you cannot activate a different
  *	 sandbox. You can however change the active sandbox and reactivate it.
@@ -303,7 +306,7 @@ OF_ASSUME_NONNULL_BEGIN
 - (void)activateSandbox: (OFSandbox *)sandbox;
 
 /*!
- * @brief Activates the specified sandbox for `exec()`'d processes of the
+ * @brief Activates the specified sandbox for child processes of the
  *	  application.
  *
  * This is only available if `OF_HAVE_SANDBOX` is defined.
@@ -316,7 +319,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @param sandbox The sandbox to activate
  */
-- (void)activateSandboxForExecdProcesses: (OFSandbox *)sandbox;
+- (void)activateSandboxForChildProcesses: (OFSandbox *)sandbox;
 #endif
 @end
 

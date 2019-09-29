@@ -86,7 +86,7 @@ static OFString *module = @"OFObject";
 @implementation TestsAppDelegate (OFObjectTests)
 - (void)objectTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFObject *obj = [[[OFObject alloc] init] autorelease];
 	void *p, *q, *r;
 	OFObject *o;
@@ -257,6 +257,6 @@ static OFString *module = @"OFObject";
 	       forKeyPath: @"objectValue.objectValue.doubleValue"]) &&
 	    [[m.objectValue objectValue] doubleValue] == 0.75)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

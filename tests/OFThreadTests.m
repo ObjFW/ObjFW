@@ -37,7 +37,7 @@ static OFString *module = @"OFThread";
 @implementation TestsAppDelegate (OFThreadTests)
 - (void)threadTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	TestThread *t;
 	OFMutableDictionary *d;
 
@@ -50,6 +50,6 @@ static OFString *module = @"OFThread";
 	TEST(@"-[threadDictionary]", (d = [OFThread threadDictionary]) &&
 	    [d objectForKey: @"foo"] == nil)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

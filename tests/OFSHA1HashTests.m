@@ -30,7 +30,7 @@ const uint8_t testfile_sha1[20] =
 @implementation TestsAppDelegate (SHA1HashTests)
 - (void)SHA1HashTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFSHA1Hash *sha1, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"r"];
@@ -57,6 +57,6 @@ const uint8_t testfile_sha1[20] =
 	    [sha1 updateWithBuffer: ""
 			    length: 1])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

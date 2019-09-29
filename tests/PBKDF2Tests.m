@@ -26,7 +26,7 @@ static OFString *module = @"PBKDF2";
 @implementation TestsAppDelegate (PBKDF2Tests)
 - (void)PBKDF2Tests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFHMAC *HMAC = [OFHMAC HMACWithHashClass: [OFSHA1Hash class]];
 	unsigned char key[25];
 
@@ -72,6 +72,6 @@ static OFString *module = @"PBKDF2";
 	    memcmp(key, "\x56\xFA\x6A\xA7\x55\x48\x09\x9D\xCC\x37\xD7\xF0\x34"
 		"\x25\xE0\xC3", 16) == 0)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

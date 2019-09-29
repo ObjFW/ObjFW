@@ -24,7 +24,7 @@ static OFString *module = @"OFLocale";
 @implementation TestsAppDelegate (OFLocaleTests)
 - (void)localeTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 
 	PRINT(GREEN, @"Language: %@", [OFLocale language]);
 
@@ -35,6 +35,6 @@ static OFString *module = @"OFLocale";
 
 	PRINT(GREEN, @"Decimal point: %@", [OFLocale decimalPoint]);
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

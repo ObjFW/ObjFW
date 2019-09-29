@@ -262,7 +262,7 @@ main(int argc, char *argv[])
 - (void)outputTesting: (OFString *)test
 	     inModule: (OFString *)module
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 #ifndef STDOUT_SIMPLE
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: testing...",
 							module, test]
@@ -272,18 +272,18 @@ main(int argc, char *argv[])
 							module, test]
 		   inColor: YELLOW];
 #endif
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)outputSuccess: (OFString *)test
 	     inModule: (OFString *)module
 {
 #ifndef STDOUT_SIMPLE
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: ok\n",
 							module, test]
 		   inColor: GREEN];
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 #else
 	[self outputString: @"ok\n"
 		   inColor: GREEN];
@@ -294,11 +294,11 @@ main(int argc, char *argv[])
 	     inModule: (OFString *)module
 {
 #ifndef STDOUT_SIMPLE
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	[self outputString: [OFString stringWithFormat: @"[%@] %@: failed\n",
 							module, test]
 		   inColor: RED];
-	[pool release];
+	objc_autoreleasePoolPop(pool);
 
 # ifdef OF_WII
 	[self outputString: @"Press A to continue!\n"

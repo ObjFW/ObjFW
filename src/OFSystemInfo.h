@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for querying information about the system.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFSystemInfo: OFObject
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) size_t pageSize;

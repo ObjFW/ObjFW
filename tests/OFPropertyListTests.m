@@ -58,7 +58,7 @@ static OFString *PLIST3 = PLIST(
 @implementation TestsAppDelegate (OFPLISTParser)
 - (void)propertyListTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFArray *array = [OFArray arrayWithObjects:
 	    @"Hello",
 	    [OFData dataWithItems: "World!"
@@ -114,6 +114,6 @@ static OFString *PLIST3 = PLIST(
 	    OFInvalidFormatException,
 	    [PLIST(@"<dict><key x='x'/><string/></dict>") propertyListValue])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

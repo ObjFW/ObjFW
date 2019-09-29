@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for creating mutual exclusions which can be entered
  *	  recursively.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFRecursiveMutex: OFObject <OFLocking>
 {
 	of_rmutex_t _rmutex;

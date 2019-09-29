@@ -12,7 +12,6 @@ LIB_MINOR = ${OBJFW_LIB_MINOR}
 
 SRCS = OFApplication.m			\
        OFArray.m			\
-       OFAutoreleasePool.m		\
        OFBlock.m			\
        OFCharacterSet.m			\
        OFColor.m			\
@@ -196,7 +195,6 @@ SRCS += OFAdjacentArray.m		\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${AUTORELEASE_M}		\
-	${FOUNDATION_COMPAT_M}		\
 	${INSTANCE_M}			\
 	${LIBBASES_M}
 SRCS_FILES += OFFileURLHandler.m	\

@@ -65,7 +65,7 @@ static OFString *module = @"OFStream";
 @implementation TestsAppDelegate (OFStreamTests)
 - (void)streamTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	size_t pageSize = [OFSystemInfo pageSize];
 	StreamTester *t = [[[StreamTester alloc] init] autorelease];
 	OFString *str;
@@ -79,6 +79,6 @@ static OFString *module = @"OFStream";
 	    (str = [t readLine]).length == pageSize - 3 &&
 	    !strcmp(str.UTF8String, cstr))
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

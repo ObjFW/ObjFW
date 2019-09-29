@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class that handles Deflate decompression transparently for an
  *	  underlying stream.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFInflate64Stream: OFStream <OFReadyForReadingObserving>
 {
 #ifdef OF_INFLATE64_STREAM_M

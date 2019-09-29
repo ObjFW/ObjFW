@@ -59,7 +59,7 @@ static OFString *module = @"Socket";
 @implementation TestsAppDelegate (SocketTests)
 - (void)socketTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	of_socket_address_t addr;
 	uint16_t port;
 
@@ -221,6 +221,6 @@ static OFString *module = @"Socket";
 	    @"::5566:7788:99aa:bbcc:0:0"] &&
 	    port == 1234)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -26,7 +26,7 @@ static OFString *module = @"OFValue";
 @implementation TestsAppDelegate (OFValueTests)
 - (void)valueTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	of_range_t range = of_range(1, 64), range2;
 	of_point_t point = of_point(1.5, 3), point2;
 	of_dimension_t dimension = of_dimension(4.5, 5), dimension2;
@@ -169,6 +169,6 @@ static OFString *module = @"OFValue";
 	    isEqual: [OFValue valueWithBytes: "b"
 				    objCType: @encode(char)]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

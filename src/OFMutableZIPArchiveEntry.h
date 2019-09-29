@@ -27,6 +27,9 @@ OF_ASSUME_NONNULL_BEGIN
  *	  a ZIP archive.
  */
 @interface OFMutableZIPArchiveEntry: OFZIPArchiveEntry
+{
+	OF_RESERVE_IVARS(4)
+}
 
 /*!
  * @brief The file name of the entry.

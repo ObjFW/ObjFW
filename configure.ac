@@ -1453,7 +1453,6 @@ AC_CHECK_FUNC(pledge, [
 
 AS_IF([test x"$objc_runtime" = x"Apple runtime"], [
 	AC_CHECK_HEADER(Foundation/NSObject.h, [
-		AC_SUBST(FOUNDATION_COMPAT_M, "foundation-compat.m")
 		AC_SUBST(BRIDGE, "bridge")
 
 		AS_IF([test x"$enable_shared" != x"no"], [

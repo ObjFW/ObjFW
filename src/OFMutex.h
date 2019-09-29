@@ -32,6 +32,7 @@ OF_ASSUME_NONNULL_BEGIN
 	of_mutex_t _mutex;
 	bool _initialized;
 	OFString *_Nullable _name;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

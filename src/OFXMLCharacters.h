@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLCharacters: OFXMLNode
 {
 	OFString *_characters;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

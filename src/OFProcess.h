@@ -46,6 +46,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for stream-like communication with a newly created process.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFProcess: OFStream
 #ifndef OF_WINDOWS
     <OFReadyForReadingObserving, OFReadyForWritingObserving>

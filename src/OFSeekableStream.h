@@ -56,6 +56,10 @@ typedef off_t of_offset_t;
  *	 caching, get broken results and seek to the wrong position!
  */
 @interface OFSeekableStream: OFStream
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief Seeks to the specified absolute offset.
  *

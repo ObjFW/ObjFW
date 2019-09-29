@@ -28,6 +28,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which stores an XML element.
  */
 @interface OFXMLNode: OFObject <OFCopying, OFSerialization>
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief The contents of the node as a string value.
  *

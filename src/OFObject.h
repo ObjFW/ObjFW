@@ -472,7 +472,7 @@ of_rectangle_equal(of_rectangle_t rectangle1, of_rectangle_t rectangle2)
 - (void)release;
 
 /*!
- * @brief Adds the object to the topmost OFAutoreleasePool of the thread's
+ * @brief Adds the object to the topmost autorelease pool of the thread's
  *	  autorelease pool stack.
  *
  * @return The object

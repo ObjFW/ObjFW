@@ -41,6 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFPlugin: OFObject
 {
 	of_plugin_handle_t _handle;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

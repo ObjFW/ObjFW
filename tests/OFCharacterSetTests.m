@@ -38,7 +38,7 @@ static OFString *module = nil;
 @implementation TestsAppDelegate (OFCharacterSetTests)
 - (void)characterSetTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFCharacterSet *cs, *ics;
 	bool ok;
 
@@ -103,6 +103,6 @@ static OFString *module = nil;
 	TEST(@"Inverting -[invertedSet] returns original set",
 	    ics.invertedSet == cs)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -53,8 +53,8 @@ typedef id _Nullable (^of_thread_block_t)(void);
  *
  * @warning Some operating systems such as AmigaOS need special per-thread
  *	    initialization of sockets. If you intend to use sockets in the
- *	    thread, set the @ref usesSockets property to true before starting
- *	    it.
+ *	    thread, set the @ref supportsSockets property to true before
+ *	    starting it.
  *
  * @warning Even though the OFCopying protocol is implemented, it does *not*
  *	    return an independent copy of the thread, but instead retains it.
@@ -90,6 +90,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # ifdef OF_HAVE_SOCKETS
 	OFDNSResolver *_DNSResolver;
 # endif
+	OF_RESERVE_IVARS(4)
 }
 #endif
 

@@ -21,6 +21,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFMapTable;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFEpollKernelEventObserver: OFKernelEventObserver
 {
 	int _epfd;

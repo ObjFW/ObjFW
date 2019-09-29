@@ -37,6 +37,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFString *_Nullable _URLEncodedUser, *_Nullable _URLEncodedPassword;
 	OFString *_Nullable _URLEncodedPath;
 	OFString *_Nullable _URLEncodedQuery, *_Nullable _URLEncodedFragment;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

@@ -27,7 +27,7 @@ const char *str = "Hello!";
 @implementation TestsAppDelegate (OFDataTests)
 - (void)dataTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableData *mutable;
 	OFData *immutable;
 	void *raw[2];
@@ -208,6 +208,6 @@ const char *str = "Hello!";
 	    OFOutOfRangeException,
 	    [mutable removeItemsInRange: of_range(mutable.count, 1)])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

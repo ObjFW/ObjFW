@@ -32,7 +32,7 @@ static OFString *module = @"OFPlugin";
 @implementation TestsAppDelegate (OFPluginTests)
 - (void)pluginTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	TestPlugin *plugin;
 
 	TEST(@"+[pluginFromFile:]",
@@ -40,6 +40,6 @@ static OFString *module = @"OFPlugin";
 
 	TEST(@"TestPlugin's -[test:]", [plugin test: 1234] == 2468)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

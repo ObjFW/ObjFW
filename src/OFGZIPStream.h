@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class that handles GZIP compression and decompression transparently
  *	  for an underlying stream.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFGZIPStream: OFStream
 {
 	OFStream *_stream;

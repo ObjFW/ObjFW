@@ -255,7 +255,7 @@ __extension__
 
 - (void)invocationTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	SEL selector = @selector(invocationTestMethod1::::);
 	OFMethodSignature *sig = [self methodSignatureForSelector: selector];
 	OFInvocation *invocation;
@@ -311,6 +311,6 @@ __extension__
 							      atIndex: 5]) &&
 	    memcmp(&st, &st2, sizeof(st)) == 0)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

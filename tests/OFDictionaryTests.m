@@ -163,7 +163,7 @@ static OFString *values[] = {
 - (void)dictionaryTestsWithClass: (Class)dictionaryClass
 		    mutableClass: (Class)mutableDictionaryClass
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableDictionary *mutDict = [mutableDictionaryClass dictionary];
 	OFDictionary *dict;
 	OFEnumerator *keyEnumerator, *objectEnumerator;
@@ -384,7 +384,7 @@ static OFString *values[] = {
 			  forKey: keys[0]]) &&
 	    [mutDict isEqual: dict])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)dictionaryTests

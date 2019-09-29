@@ -20,6 +20,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFMutableUTF8String: OFMutableString
 {
 @public

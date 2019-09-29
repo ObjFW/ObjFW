@@ -39,6 +39,7 @@ OF_ASSUME_NONNULL_BEGIN
 		size_t bufferLength;
 	} *_iVars;
 	bool _calculated;
+	OF_RESERVE_IVARS(4)
 }
 @end
 

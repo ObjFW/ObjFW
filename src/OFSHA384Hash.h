@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create an SHA-384 hash.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFSHA384Hash: OFSHA384Or512Hash
 @end
 

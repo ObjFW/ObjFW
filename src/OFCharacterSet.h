@@ -28,6 +28,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @note Subclasses must implement @ref characterIsMember:.
  */
 @interface OFCharacterSet: OFObject
+{
+	OF_RESERVE_IVARS(4)
+}
+
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFCharacterSet *whitespaceCharacterSet;
 #endif

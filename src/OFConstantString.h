@@ -35,6 +35,7 @@ extern void *_OFConstantStringClassReference;
  *
  * @brief A class for storing constant strings using the `@""` literal.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFConstantString: OFString
 {
 	char *_cString;

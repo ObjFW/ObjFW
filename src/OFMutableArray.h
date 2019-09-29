@@ -46,6 +46,10 @@ typedef id _Nonnull (^of_array_replace_block_t)(id object, size_t index);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief Creates a new OFMutableArray with enough memory to hold the specified
  *	  number of objects.

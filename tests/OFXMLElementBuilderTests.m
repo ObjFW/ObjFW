@@ -40,7 +40,7 @@ static size_t i = 0;
 
 - (void)XMLElementBuilderTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFXMLParser *p = [OFXMLParser parser];
 	OFXMLElementBuilder *builder = [OFXMLElementBuilder elementBuilder];
 	OFString *str = @"<foo>bar<![CDATA[f<oo]]>baz<qux/>"
@@ -59,6 +59,6 @@ static size_t i = 0;
 
 	[nodes[0] release];
 	[nodes[1] release];
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

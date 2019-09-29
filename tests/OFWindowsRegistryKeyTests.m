@@ -24,7 +24,7 @@ static OFString *module = @"OFWindowsRegistryKey";
 @implementation TestsAppDelegate (OFWindowsRegistryKeyTests)
 - (void)windowsRegistryKeyTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFData *data = [OFData dataWithItems: "abcdef"
 				       count: 6];
 	OFWindowsRegistryKey *softwareKey, *ObjFWKey;
@@ -95,6 +95,6 @@ static OFString *module = @"OFWindowsRegistryKey";
 	TEST(@"-[deleteSubkeyAtPath:]",
 	    R([softwareKey deleteSubkeyAtPath: @"ObjFW"]))
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

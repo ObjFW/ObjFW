@@ -26,7 +26,7 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 @implementation TestsAppDelegate (OFURLTests)
 - (void)URLTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFURL *u1, *u2, *u3, *u4, *u5;
 	OFMutableURL *mu;
 
@@ -282,6 +282,6 @@ static OFString *url_str = @"ht%3atp://us%3Aer:p%40w@ho%3Ast:1234/"
 	    URLByStandardizingPath] isEqual:
 	    [OFURL URLWithString: @"http://foo/../qux"]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

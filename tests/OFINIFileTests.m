@@ -24,7 +24,7 @@ static OFString *module = @"OFINIFile";
 @implementation TestsAppDelegate (OFINIFileTests)
 - (void)INIFileTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFString *output = @"[tests]\r\n"
 	    @"foo=baz\r\n"
 	    @"foobar=baz\r\n"
@@ -141,6 +141,6 @@ static OFString *module = @"OFINIFile";
 	(void)output;
 #endif
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

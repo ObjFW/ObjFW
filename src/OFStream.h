@@ -206,6 +206,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 @protected
 	bool _blocking;
 	id _Nullable _delegate;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!
@@ -282,9 +283,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * @ref asyncReadIntoBuffer:exactLength:target:selector:context:. Note that a
- * read can even return 0 bytes - this does not necessarily mean that the
- * stream ended, so you still need to check @ref atEndOfStream.
+ * @ref asyncReadIntoBuffer:exactLength:. Note that a read can even return 0
+ * bytes - this does not necessarily mean that the stream ended, so you still
+ * need to check @ref atEndOfStream.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -303,9 +304,9 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  *
  * On network streams, this might read less than the specified number of bytes.
  * If you want to read exactly the specified number of bytes, use
- * @ref asyncReadIntoBuffer:exactLength:target:selector:context:. Note that a
- * read can even return 0 bytes - this does not necessarily mean that the
- * stream ended, so you still need to check @ref atEndOfStream.
+ * @ref asyncReadIntoBuffer:exactLength:. Note that a read can even return 0
+ * bytes - this does not necessarily mean that the stream ended, so you still
+ * need to check @ref atEndOfStream.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -324,10 +325,10 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike @ref asyncReadIntoBuffer:length:target:selector:context:, this method
- * does not call the method when less than the specified length has been read -
- * instead, it waits until it got exactly the specified length, the stream has
- * ended or an exception occurred.
+ * Unlike @ref asyncReadIntoBuffer:length:, this method does not call the
+ * method when less than the specified length has been read - instead, it waits
+ * until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!
@@ -343,10 +344,10 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  * @brief Asynchronously reads exactly the specified length bytes from the
  *	  stream into a buffer.
  *
- * Unlike @ref asyncReadIntoBuffer:length:target:selector:context:, this method
- * does not call the method when less than the specified length has been read -
- * instead, it waits until it got exactly the specified length, the stream has
- * ended or an exception occurred.
+ * Unlike @ref asyncReadIntoBuffer:length:, this method does not call the
+ * method when less than the specified length has been read - instead, it waits
+ * until it got exactly the specified length, the stream has ended or an
+ * exception occurred.
  *
  * @note The stream must conform to @ref OFReadyForReadingObserving in order
  *	 for this to work!

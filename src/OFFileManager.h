@@ -242,6 +242,9 @@ extern const of_file_type_t of_file_type_socket;
  * @brief A class which provides management for files, e.g. reading contents of
  *	  directories, deleting files, renaming files, etc.
  */
+#ifndef OF_FILE_MANAGER_M
+OF_SUBCLASSING_RESTRICTED
+#endif
 @interface OFFileManager: OFObject
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFFileManager *defaultManager;

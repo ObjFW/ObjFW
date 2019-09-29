@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLProcessingInstructions: OFXMLNode
 {
 	OFString *_processingInstructions;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

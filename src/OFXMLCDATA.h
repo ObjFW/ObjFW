@@ -27,6 +27,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFXMLCDATA: OFXMLNode
 {
 	OFString *_CDATA;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

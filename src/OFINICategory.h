@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for representing a category of an INI file.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFINICategory: OFObject
 {
 	OFString *_name;

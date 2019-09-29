@@ -24,7 +24,7 @@ static OFString *module = @"OFDNSResolverTests";
 @implementation TestsAppDelegate (OFDNSResolverTests)
 - (void)DNSResolverTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFDNSResolver *resolver = [OFDNSResolver resolver];
 	OFMutableString *staticHosts = [OFMutableString string];
 
@@ -61,6 +61,6 @@ static OFString *module = @"OFDNSResolverTests";
 	PRINT(GREEN, @"Config reload interval: %lf",
 	    resolver.configReloadInterval);
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

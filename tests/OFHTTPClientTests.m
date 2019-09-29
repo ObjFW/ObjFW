@@ -109,7 +109,7 @@ static OFHTTPResponse *response = nil;
 
 - (void)HTTPClientTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	HTTPClientTestsServer *server;
 	OFURL *URL;
 	OFHTTPClient *client;
@@ -153,6 +153,6 @@ static OFHTTPResponse *response = nil;
 
 	[server join];
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

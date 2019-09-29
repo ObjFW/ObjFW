@@ -36,6 +36,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to read and write files.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFFile: OFSeekableStream
 #ifdef OF_FILE_HANDLE_IS_FD
     <OFReadyForReadingObserving, OFReadyForWritingObserving>

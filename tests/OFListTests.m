@@ -29,7 +29,7 @@ static OFString *strings[] = {
 @implementation TestsAppDelegate (OFListTests)
 - (void)listTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFList *list;
 	OFEnumerator *enumerator;
 	of_list_object_t *loe;
@@ -146,6 +146,6 @@ static OFString *strings[] = {
 
 	TEST(@"Detection of mutation during Fast Enumeration", ok)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

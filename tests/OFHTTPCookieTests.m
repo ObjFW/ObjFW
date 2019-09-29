@@ -24,7 +24,7 @@ static OFString *module = @"OFHTTPCookie";
 @implementation TestsAppDelegate (OFHTTPCookieTests)
 - (void)HTTPCookieTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFURL *URL = [OFURL URLWithString: @"http://heap.zone"];
 	OFHTTPCookie *cookie[2];
 	OFArray OF_GENERIC(OFHTTPCookie *) *cookies;
@@ -70,6 +70,6 @@ static OFString *module = @"OFHTTPCookie";
 	    [OFDictionary dictionaryWithObject: @"foo=bar; qux=cookie"
 					forKey: @"Cookie"]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

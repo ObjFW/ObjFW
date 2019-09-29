@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	of_socket_t _socket;
 	bool _atEndOfStream;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

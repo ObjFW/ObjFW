@@ -92,6 +92,10 @@ typedef id _Nullable (^of_array_fold_block_t)(id _Nullable left, id right);
 @interface OFArray OF_GENERIC(ObjectType): OFObject <OFCopying,
     OFMutableCopying, OFCollection, OFSerialization, OFJSONRepresentation,
     OFMessagePackRepresentation>
+{
+	OF_RESERVE_IVARS(4)
+}
+
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif

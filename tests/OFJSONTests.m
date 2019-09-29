@@ -24,7 +24,7 @@ static OFString *module = @"OFJSON";
 @implementation TestsAppDelegate (JSONTests)
 - (void)JSONTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFString *s = @"{\"foo\"\t:'b\\na\\r', \"x\":/*foo*/ [.5\r,0xF,null"
 	    @"//bar\n,\"foo\",false]}";
 	OFDictionary *d = [OFDictionary dictionaryWithKeysAndObjects:
@@ -85,6 +85,6 @@ static OFString *module = @"OFJSON";
 	    [@"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[{}]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]"
 	    JSONValue])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

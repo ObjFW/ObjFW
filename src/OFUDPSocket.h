@@ -125,6 +125,7 @@ typedef OFData *_Nullable (^of_udp_socket_async_send_data_block_t)(
 #endif
 	bool _blocking;
 	id _Nullable _delegate;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

@@ -211,7 +211,7 @@ static uint16_t sutf16str[] = {
 - (void)stringTestsWithClass: (Class)stringClass
 		mutableClass: (Class)mutableStringClass
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableString *s[3];
 	OFString *is;
 	OFArray *a;
@@ -1424,7 +1424,7 @@ static uint16_t sutf16str[] = {
 
 #undef C
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)stringTests

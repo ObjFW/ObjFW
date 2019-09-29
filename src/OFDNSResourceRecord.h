@@ -77,6 +77,7 @@ typedef enum {
 	of_dns_resource_record_class_t _recordClass;
 	of_dns_resource_record_type_t _recordType;
 	uint32_t _TTL;
+	OF_RESERVE_IVARS(4)
 }
 
 /**
@@ -121,6 +122,7 @@ typedef enum {
  *
  * @brief A class representing an A DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFADNSResourceRecord: OFDNSResourceRecord
 {
 	of_socket_address_t _address;
@@ -156,6 +158,7 @@ typedef enum {
  *
  * @brief A class represenging a DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFAAAADNSResourceRecord: OFDNSResourceRecord
 {
 	of_socket_address_t _address;
@@ -191,6 +194,7 @@ typedef enum {
  *
  * @brief A class representing a CNAME DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFCNAMEDNSResourceRecord: OFDNSResourceRecord
 {
 	OFString *_alias;
@@ -228,6 +232,7 @@ typedef enum {
  *
  * @brief A class representing an HINFO DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHINFODNSResourceRecord: OFDNSResourceRecord
 {
 	OFString *_CPU, *_OS;
@@ -272,6 +277,7 @@ typedef enum {
  *
  * @brief A class representing an MX DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFMXDNSResourceRecord: OFDNSResourceRecord
 {
 	uint16_t _preference;
@@ -317,6 +323,7 @@ typedef enum {
  *
  * @brief A class representing an NS DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFNSDNSResourceRecord: OFDNSResourceRecord
 {
 	OFString *_authoritativeHost;
@@ -354,6 +361,7 @@ typedef enum {
  *
  * @brief A class representing a PTR DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFPTRDNSResourceRecord: OFDNSResourceRecord
 {
 	OFString *_domainName;
@@ -391,6 +399,7 @@ typedef enum {
  *
  * @brief A class representing an RP DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFRPDNSResourceRecord: OFDNSResourceRecord
 {
 	OFString *_mailbox, *_TXTDomainName;
@@ -437,6 +446,7 @@ typedef enum {
  *
  * @brief A class representing an SOA DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFSOADNSResourceRecord: OFDNSResourceRecord
 {
 	OFString *_primaryNameServer, *_responsiblePerson;
@@ -518,6 +528,7 @@ typedef enum {
  *
  * @brief A class representing an SRV DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFSRVDNSResourceRecord: OFDNSResourceRecord
 {
 	uint16_t _priority, _weight;
@@ -576,6 +587,7 @@ typedef enum {
  *
  * @brief A class representing a TXT DNS resource record.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFTXTDNSResourceRecord: OFDNSResourceRecord
 {
 	OFData *_textData;
