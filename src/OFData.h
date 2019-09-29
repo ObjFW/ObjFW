@@ -325,6 +325,5 @@ enum {
 OF_ASSUME_NONNULL_END
 
 #import "OFMutableData.h"
-#import "OFData+ASN1DERValue.h"
 #import "OFData+CryptoHashing.h"
 #import "OFData+MessagePackValue.h"

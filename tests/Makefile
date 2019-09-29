@@ -10,8 +10,6 @@ CLEAN = EBOOT.PBP		\
 PROG_NOINST = tests${PROG_SUFFIX}
 STATIC_LIB_NOINST = ${TESTS_STATIC_LIB}
 SRCS = ForwardingTests.m		\
-       OFASN1DERRepresentationTests.m	\
-       OFASN1DERValueTests.m		\
        OFArrayTests.m			\
        ${OFBLOCKTESTS_M}		\
        OFCharacterSetTests.m		\

@@ -110,14 +110,6 @@ static OFNull *null = nil;
 			       count: 1];
 }
 
-- (OFData *)ASN1DERRepresentation
-{
-	const unsigned char bytes[] = { OF_ASN1_TAG_NUMBER_NULL, 0 };
-
-	return [OFData dataWithItems: bytes
-			       count: sizeof(bytes)];
-}
-
 - (instancetype)autorelease
 {
 	return self;

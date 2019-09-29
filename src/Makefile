@@ -10,18 +10,7 @@ FRAMEWORK = ${OBJFW_FRAMEWORK}
 LIB_MAJOR = ${OBJFW_LIB_MAJOR}
 LIB_MINOR = ${OBJFW_LIB_MINOR}
 
-SRCS = OFASN1BitString.m		\
-       OFASN1Boolean.m			\
-       OFASN1Enumerated.m		\
-       OFASN1IA5String.m		\
-       OFASN1Integer.m			\
-       OFASN1NumericString.m		\
-       OFASN1ObjectIdentifier.m		\
-       OFASN1OctetString.m		\
-       OFASN1PrintableString.m		\
-       OFASN1UTF8String.m		\
-       OFASN1Value.m			\
-       OFApplication.m			\
+SRCS = OFApplication.m			\
        OFArray.m			\
        OFAutoreleasePool.m		\
        OFBlock.m			\
@@ -30,7 +19,6 @@ SRCS = OFASN1BitString.m		\
        OFConstantString.m		\
        OFCountedSet.m			\
        OFData.m				\
-       OFData+ASN1DERValue.m		\
        OFData+CryptoHashing.m		\
        OFData+MessagePackValue.m	\
        OFDate.m				\
@@ -167,7 +155,6 @@ INCLUDES_ATOMIC = atomic.h			\
 		  atomic_sync_builtins.h	\
 		  atomic_x86.h
 INCLUDES := ${SRCS:.m=.h}			\
-	    OFASN1DERRepresentation.h		\
 	    OFCollection.h			\
 	    OFCryptoHash.h			\
 	    OFJSONRepresentation.h		\
