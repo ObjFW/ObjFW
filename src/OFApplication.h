@@ -238,7 +238,7 @@ OF_SUBCLASSING_RESTRICTED
  * This is only available if `OF_HAVE_SANDBOX` is defined.
  *
  * @warning If you allow `exec()`, but do not call
- *	    @ref activateSandboxForChildProcesses, an `exec()`'d process does
+ *	    @ref activateSandboxForChildProcesses:, an `exec()`'d process does
  *	    not have its permissions restricted!
  *
  * @note Once a sandbox has been activated, you cannot activate a different
@@ -295,7 +295,7 @@ OF_SUBCLASSING_RESTRICTED
  * This is only available if `OF_HAVE_SANDBOX` is defined.
  *
  * @warning If you allow `exec()`, but do not call
- *	    @ref activateSandboxForExecdProcesses, an `exec()`'d process does
+ *	    @ref activateSandboxForChildProcesses:, an `exec()`'d process does
  *	    not have its permissions restricted!
  *
  * @note Once a sandbox has been activated, you cannot activate a different
