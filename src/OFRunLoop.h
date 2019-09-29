@@ -59,6 +59,7 @@ extern of_run_loop_mode_t of_run_loop_mode_default;
  *
  * @brief A class providing a run loop for the application and its processes.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFRunLoop: OFObject
 {
 	OFMutableDictionary *_states;

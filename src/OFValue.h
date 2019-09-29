@@ -25,6 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for storing arbitrary values in an object.
  */
 @interface OFValue: OFObject <OFCopying>
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief The ObjC type encoding of the value.
  */

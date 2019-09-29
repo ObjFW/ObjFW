@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFMapTable;
 @class OFMapTableEnumerator;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFMapTableDictionary: OFDictionary
 {
 	OFMapTable *_mapTable;

@@ -32,6 +32,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFSelectKernelEventObserver: OFKernelEventObserver
 {
 	fd_set _readFDs, _writeFDs;

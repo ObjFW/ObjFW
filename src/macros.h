@@ -125,6 +125,21 @@
 # endif
 #endif
 
+#define OF_PREPROCESSOR_CONCAT2(a, b) a##b
+#define OF_PREPROCESSOR_CONCAT(a, b) OF_PREPROCESSOR_CONCAT2(a, b)
+
+#if __OBJFW_RUNTIME_ABI__ || (defined(OF_APPLE_RUNTIME) && defined(__OBJC2__))
+# define OF_HAVE_NONFRAGILE_IVARS
+#endif
+
+#ifdef OF_HAVE_NONFRAGILE_IVARS
+# define OF_RESERVE_IVARS(num)
+#else
+# define OF_RESERVE_IVARS(num)						   \
+	@private							   \
+		void *OF_PREPROCESSOR_CONCAT(_reserved, __COUNTER__)[num];
+#endif
+
 #ifdef __GNUC__
 # define OF_GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
 #else
@@ -405,8 +420,6 @@
 	[super dealloc];	/* Get rid of a stupid warning */
 #endif
 
-#define OF_PREPROCESSOR_CONCAT2(a, b) a##b
-#define OF_PREPROCESSOR_CONCAT(a, b) OF_PREPROCESSOR_CONCAT2(a, b)
 #define OF_CONSTRUCTOR(prio)					\
 	static void __attribute__((__constructor__(prio)))	\
 	OF_PREPROCESSOR_CONCAT(constructor, __LINE__)(void)

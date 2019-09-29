@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 IA5String.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1IA5String: OFObject
 {
 	OFString *_IA5StringValue;

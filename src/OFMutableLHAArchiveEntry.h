@@ -26,6 +26,9 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class which represents a mutable entry in an LHA archive.
  */
 @interface OFMutableLHAArchiveEntry: OFLHAArchiveEntry
+{
+	OF_RESERVE_IVARS(4)
+}
 
 /*!
  * @brief The file name of the entry.

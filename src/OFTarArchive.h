@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for accessing and manipulating tar archives.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFTarArchive: OFObject
 {
 	OFStream *_stream;

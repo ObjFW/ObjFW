@@ -22,6 +22,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFString;
 @class OFINIFile;
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFINIFileSettings: OFSettings
 {
 	OFString *_filePath;

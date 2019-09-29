@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @note Secure memory might be unavailable on the platform, in which case this
  *	 falls back to insecure (potentially swappable) memory.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
 	struct page *_page;

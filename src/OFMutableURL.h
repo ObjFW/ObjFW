@@ -25,6 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for parsing URLs and accessing parts of it.
  */
 @interface OFMutableURL: OFURL
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief The scheme part of the URL.
  */

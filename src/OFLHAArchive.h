@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for accessing and manipulating LHA files.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFLHAArchive: OFObject
 {
 	OFStream *_stream;

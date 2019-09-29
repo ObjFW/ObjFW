@@ -31,12 +31,15 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)init OF_UNAVAILABLE;
 @end
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFStackBlock: OFBlock
 @end
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFGlobalBlock: OFBlock
 @end
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFMallocBlock: OFBlock
 @end
 

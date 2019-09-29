@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFBytesValue: OFValue
 {
 	size_t _size;

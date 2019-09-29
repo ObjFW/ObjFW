@@ -31,6 +31,10 @@ OF_ASSUME_NONNULL_BEGIN
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
+{
+	OF_RESERVE_IVARS(4)
+}
+
 - (of_list_object_t *)appendObject: (ObjectType)object OF_UNAVAILABLE;
 - (of_list_object_t *)prependObject: (ObjectType)object OF_UNAVAILABLE;
 - (of_list_object_t *)insertObject: (ObjectType)object

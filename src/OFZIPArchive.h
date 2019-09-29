@@ -31,6 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for accessing and manipulating ZIP files.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFZIPArchive: OFObject
 {
 	OFStream *_stream;

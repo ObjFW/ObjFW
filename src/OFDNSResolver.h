@@ -121,6 +121,7 @@ typedef OFDictionary OF_GENERIC(OFString *,
  *	 reverted back to the system configuration on the next periodic config
  *	 reload.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFDNSResolver: OFObject
 {
 	OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(OFString *) *)

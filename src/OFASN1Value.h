@@ -72,6 +72,7 @@ typedef enum {
 /*!
  * @brief A class representing an ASN.1 value.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Value: OFObject
 {
 	of_asn1_tag_class_t _tagClass;

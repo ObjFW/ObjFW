@@ -61,6 +61,7 @@ typedef enum of_tar_archive_entry_type_t {
 	OFString *_Nullable _targetFileName;
 	OFString *_Nullable _owner, *_Nullable _group;
 	uint32_t _deviceMajor, _deviceMinor;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

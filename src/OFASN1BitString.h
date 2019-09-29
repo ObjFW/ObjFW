@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 BitString.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1BitString: OFObject <OFASN1DERRepresentation>
 {
 	OFData *_bitStringValue;

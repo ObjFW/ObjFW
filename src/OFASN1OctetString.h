@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 OctetString.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1OctetString: OFObject
 {
 	OFData *_octetStringValue;

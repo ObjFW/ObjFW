@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+#define OF_FILE_MANAGER_M
+
 #include <errno.h>
 #include <limits.h>
 #include "unistd_wrapper.h"

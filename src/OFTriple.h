@@ -35,6 +35,7 @@ OF_ASSUME_NONNULL_BEGIN
 	FirstType _Nullable _firstObject;
 	SecondType _Nullable _secondObject;
 	ThirdType _Nullable _thirdObject;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

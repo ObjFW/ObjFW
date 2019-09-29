@@ -140,6 +140,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for performing HTTP requests.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFHTTPClient: OFObject
 {
 #ifdef OF_HTTPCLIENT_M

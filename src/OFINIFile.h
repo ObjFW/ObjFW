@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for reading, creating and modifying INI files.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFINIFile: OFObject
 {
 	OFMutableArray OF_GENERIC(OFINICategory *) *_categories;

@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class which provides methods to create a RIPEMD-160 hash.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFRIPEMD160Hash: OFObject <OFCryptoHash>
 {
 	OFSecureData *_iVarsData;

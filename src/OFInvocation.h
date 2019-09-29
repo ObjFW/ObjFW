@@ -45,6 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 	OFMethodSignature *_methodSignature;
 	OFMutableArray OF_GENERIC(OFMutableData *) *_arguments;
 	OFMutableData *_returnValue;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

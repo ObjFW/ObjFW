@@ -206,6 +206,7 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 @protected
 	bool _blocking;
 	id _Nullable _delegate;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!

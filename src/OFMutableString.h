@@ -25,6 +25,10 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief A class for storing and modifying strings.
  */
 @interface OFMutableString: OFString
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief Sets the character at the specified index.
  *

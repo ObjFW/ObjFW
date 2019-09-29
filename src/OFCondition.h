@@ -28,6 +28,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class implementing a condition variable for thread synchronization.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFCondition: OFMutex
 {
 	of_condition_t _condition;

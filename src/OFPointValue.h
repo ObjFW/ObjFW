@@ -19,6 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+OF_SUBCLASSING_RESTRICTED
 @interface OFPointValue: OFValue
 {
 	of_point_t _point;

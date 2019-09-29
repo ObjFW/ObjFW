@@ -62,6 +62,10 @@ typedef id _Nonnull (^of_dictionary_map_block_t)(id key, id object);
 # define KeyType id
 # define ObjectType id
 #endif
+{
+	OF_RESERVE_IVARS(4)
+}
+
 /*!
  * @brief An array of all keys.
  */

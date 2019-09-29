@@ -46,6 +46,7 @@ enum {
 	SEL _selector;
 	OFString *_name;
 	const char *_typeEncoding;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!
@@ -76,6 +77,7 @@ enum {
 	OFString *_name;
 	unsigned int _attributes;
 	OFString *_Nullable _getter, *_Nullable _setter, *_Nullable _iVar;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!
@@ -130,6 +132,7 @@ enum {
 	OFString *_name;
 	const char *_typeEncoding;
 	ptrdiff_t _offset;
+	OF_RESERVE_IVARS(4)
 }
 
 /*!
@@ -155,6 +158,7 @@ enum {
  *
  * @brief A class for introspecting classes.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFIntrospection: OFObject
 {
 	OFMutableArray OF_GENERIC(OFMethod *) *_classMethods;

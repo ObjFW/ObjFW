@@ -25,6 +25,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 UTF8String.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1UTF8String: OFObject
 {
 	OFString *_UTF8StringValue;

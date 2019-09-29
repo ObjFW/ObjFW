@@ -24,6 +24,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 Boolean.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Boolean: OFObject <OFASN1DERRepresentation>
 {
 	bool _booleanValue;

@@ -43,6 +43,7 @@ OF_ASSUME_NONNULL_BEGIN
  *
  * @brief A class for querying the locale and retrieving localized strings.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFLocale: OFObject
 {
 	OFString *_Nullable _language, *_Nullable _territory;

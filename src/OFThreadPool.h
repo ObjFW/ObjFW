@@ -41,6 +41,7 @@ typedef void (^of_thread_pool_block_t)(void);
  * @note When the thread pool is released, all threads will terminate after
  *	 they finish the job they are currently processing.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFThreadPool: OFObject
 {
 	size_t _size;

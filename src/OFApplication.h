@@ -122,6 +122,7 @@ OF_ASSUME_NONNULL_BEGIN
  * to the optional @ref OFApplicationDelegate protocol and put
  * `OF_APPLICATION_DELEGATE(NameOfYourClass)` in the .m file of that class.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFApplication: OFObject
 {
 	OFString *_programName;

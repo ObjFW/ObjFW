@@ -26,6 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief An ASN.1 ObjectIdentifier.
  */
+OF_SUBCLASSING_RESTRICTED
 @interface OFASN1ObjectIdentifier: OFObject
 {
 	OFArray OF_GENERIC(OFNumber *) *_subidentifiers;
