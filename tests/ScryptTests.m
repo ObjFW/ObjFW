@@ -135,7 +135,7 @@ static const unsigned char testVector4[64] = {
 @implementation TestsAppDelegate (ScryptTests)
 - (void)scryptTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	uint32_t salsa20Buffer[16];
 	uint32_t blockMixBuffer[32];
 	uint32_t ROMixBuffer[32], ROMixTmp[17 * 32];
@@ -176,6 +176,6 @@ static const unsigned char testVector4[64] = {
 	    memcmp(output, testVector4, 64) == 0)
 #endif
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

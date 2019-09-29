@@ -18,7 +18,6 @@
 #import "OFObject.h"
 #import "OFBlock.h"
 
-#import "OFAutoreleasePool.h"
 #import "OFString.h"
 #import "OFCharacterSet.h"
 

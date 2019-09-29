@@ -165,7 +165,7 @@ static OFString *module = nil;
 - (void)setTestsWithClass: (Class)setClass
 	     mutableClass: (Class)mutableSetClass
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFSet *set1, *set2;
 	OFMutableSet *mutableSet;
 	bool ok;
@@ -283,7 +283,7 @@ static OFString *module = nil;
 	    [[set1 valueForKey: @"@count"] isEqual:
 	    [OFNumber numberWithSize: 3]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)setTests

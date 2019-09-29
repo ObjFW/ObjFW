@@ -24,7 +24,7 @@ static OFString *module = @"OFSerialization";
 @implementation TestsAppDelegate (OFSerializationTests)
 - (void)serializationTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMutableDictionary *d = [OFMutableDictionary dictionary];
 	OFMutableArray *a = [OFMutableArray array];
 	OFList *l = [OFList list];
@@ -65,6 +65,6 @@ static OFString *module = @"OFSerialization";
 
 	TEST(@"-[objectByDeserializing]", [s.objectByDeserializing isEqual: d])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

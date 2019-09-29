@@ -24,7 +24,7 @@ static OFString *module = @"OFData+ASN1DERValue";
 @implementation TestsAppDelegate (OFASN1DERValueTests)
 - (void)ASN1DERValueTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFASN1BitString *bitString;
 	OFArray *array;
 	OFSet *set;
@@ -432,6 +432,6 @@ static OFString *module = @"OFData+ASN1DERValue";
 	    OFTruncatedDataException, [[OFData dataWithItems: "\x16\x01"
 						       count: 2] ASN1DERValue])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

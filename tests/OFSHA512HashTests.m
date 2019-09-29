@@ -32,7 +32,7 @@ const uint8_t testfile_sha512[64] =
 @implementation TestsAppDelegate (SHA512HashTests)
 - (void)SHA512HashTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFSHA512Hash *sha512, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"r"];
@@ -59,6 +59,6 @@ const uint8_t testfile_sha512[64] =
 	    [sha512 updateWithBuffer: ""
 			      length: 1])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

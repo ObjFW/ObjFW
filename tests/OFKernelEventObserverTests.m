@@ -198,7 +198,7 @@ static OFString *module;
 @implementation TestsAppDelegate (OFKernelEventObserverTests)
 - (void)kernelEventObserverTestsWithClass: (Class)class
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	ObserverTest *test;
 
 	module = [class className];
@@ -214,7 +214,7 @@ static OFString *module;
 	[test run];
 	_fails += test->_fails;
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 
 - (void)kernelEventObserverTests

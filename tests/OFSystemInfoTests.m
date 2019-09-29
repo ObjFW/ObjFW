@@ -24,7 +24,7 @@ static OFString *module = @"OFSystemInfo";
 @implementation TestsAppDelegate (OFSystemInfoTests)
 - (void)systemInfoTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 #ifdef OF_HAVE_FILES
 	OFString *userConfigPath, *userDataPath;
 #endif
@@ -96,6 +96,6 @@ static OFString *module = @"OFSystemInfo";
 	PRINT(GREEN, @"Supports AltiVec: %d", [OFSystemInfo supportsAltiVec]);
 #endif
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

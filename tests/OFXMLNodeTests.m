@@ -24,7 +24,7 @@ static OFString *module = @"OFXMLNode";
 @implementation TestsAppDelegate (OFXMLNodeTests)
 - (void)XMLNodeTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	id nodes[4];
 	OFArray *a;
 
@@ -138,6 +138,6 @@ static OFString *module = @"OFXMLNode";
 	    @"<!-- foo --></y></x>"] XMLStringWithIndentation: 2] isEqual:
 	    @"<x>\n  <y>\n    <z>a\nb</z>\n    <!-- foo -->\n  </y>\n</x>"])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

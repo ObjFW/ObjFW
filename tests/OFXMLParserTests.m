@@ -322,7 +322,7 @@ enum event_type {
 
 - (void)XMLParserTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	const char *str = "\xEF\xBB\xBF<?xml version='1.0'?><?p?i?>"
 	    "<!DOCTYPE foo><root>\r\r"
 	    " <![CDATA[f<]]]oo]]]><bar/>\n"
@@ -392,6 +392,6 @@ enum event_type {
 	    OFMalformedXMLException,
 	    [parser parseString: @"<x><?xml?></x>"])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

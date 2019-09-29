@@ -24,7 +24,7 @@ static OFString *module;
 @implementation TestsAppDelegate (OFASN1DERRepresentationTests)
 - (void)ASN1DERRepresentationTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFData *data;
 
 	module = @"OFASN1BitString";
@@ -68,6 +68,6 @@ static OFString *module;
 	    [OFData dataWithItems: "\x05\x00"
 			    count: 2]])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

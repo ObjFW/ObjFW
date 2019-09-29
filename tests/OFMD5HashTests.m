@@ -29,7 +29,7 @@ const uint8_t testfile_md5[16] =
 @implementation TestsAppDelegate (OFMD5HashTests)
 - (void)MD5HashTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFMD5Hash *md5, *copy;
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"r"];
@@ -56,6 +56,6 @@ const uint8_t testfile_md5[16] =
 	    [md5 updateWithBuffer: ""
 			   length: 1])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

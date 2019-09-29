@@ -52,7 +52,7 @@ static const uint8_t digest_sha512[] =
 @implementation TestsAppDelegate (OFHMACTests)
 - (void)HMACTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"r"];
 	OFHMAC *HMAC_MD5, *HMAC_SHA1, *HMAC_RMD160;
@@ -130,6 +130,6 @@ static const uint8_t digest_sha512[] =
 	    memcmp(HMAC_SHA512.digest, digest_sha512,
 	    HMAC_SHA512.digestSize) == 0)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

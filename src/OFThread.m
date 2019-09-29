@@ -51,8 +51,6 @@
 
 #import "OFThread.h"
 #import "OFThread+Private.h"
-#import "OFAutoreleasePool+Private.h"
-#import "OFAutoreleasePool.h"
 #import "OFDate.h"
 #import "OFDictionary.h"
 #ifdef OF_HAVE_SOCKETS
@@ -137,7 +135,6 @@ callMain(id object)
 	[thread handleTermination];
 
 	objc_autoreleasePoolPop(thread->_pool);
-	[OFAutoreleasePool of_handleThreadTermination];
 
 #if defined(OF_AMIGAOS) && defined(OF_HAVE_SOCKETS)
 	if (thread.supportsSockets)

@@ -26,7 +26,7 @@ static OFString *module = @"OFTCPSocket";
 @implementation TestsAppDelegate (OFTCPSocketTests)
 - (void)TCPSocketTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFTCPSocket *server, *client = nil, *accepted;
 	uint16_t port;
 	char buf[6];
@@ -56,6 +56,6 @@ static OFString *module = @"OFTCPSocket";
 							     length: 6] &&
 	    !memcmp(buf, "Hello!", 6))
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

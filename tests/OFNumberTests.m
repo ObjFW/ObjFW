@@ -24,7 +24,7 @@ static OFString *module = @"OFNumber";
 @implementation TestsAppDelegate (OFNumberTests)
 - (void)numberTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFNumber *num;
 
 	TEST(@"+[numberWithIntMax:]",
@@ -39,6 +39,6 @@ static OFString *module = @"OFNumber";
 
 	TEST(@"-[doubleValue]", num.doubleValue == 123456789.L)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

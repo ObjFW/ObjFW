@@ -64,7 +64,7 @@ static OFString *module = @"Runtime";
 @implementation TestsAppDelegate (RuntimeTests)
 - (void)runtimeTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	RuntimeTest *rt = [[[RuntimeTest alloc] init] autorelease];
 	OFString *t, *foo;
 
@@ -84,6 +84,6 @@ static OFString *module = @"Runtime";
 	rt.bar = t;
 	TEST(@"retain, atomic properties", rt.bar == t && t.retainCount == 3)
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

@@ -26,7 +26,7 @@ static OFString *module = @"OFUDPSocket";
 @implementation TestsAppDelegate (OFUDPSocketTests)
 - (void)UDPSocketTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFUDPSocket *sock;
 	uint16_t port1, port2;
 	of_socket_address_t addr1, addr2, addr3;
@@ -68,6 +68,6 @@ static OFString *module = @"OFUDPSocket";
 	    of_socket_address_hash(&addr1) == of_socket_address_hash(&addr2) &&
 	    of_socket_address_hash(&addr1) != of_socket_address_hash(&addr3))
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end

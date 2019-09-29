@@ -26,7 +26,7 @@ static OFString *module = @"OFDate";
 @implementation TestsAppDelegate (OFDateTests)
 - (void)dateTests
 {
-	OFAutoreleasePool *pool = [[OFAutoreleasePool alloc] init];
+	void *pool = objc_autoreleasePoolPush();
 	OFDate *d1, *d2;
 
 	struct tm tm;
@@ -99,6 +99,6 @@ static OFString *module = @"OFDate";
 
 	TEST(@"-[laterDate:]", [[d1 laterDate: d2] isEqual: d2])
 
-	[pool drain];
+	objc_autoreleasePoolPop(pool);
 }
 @end
