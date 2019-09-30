@@ -17,6 +17,7 @@
 
 #import "OFObject.h"
 #import "OFDNSResourceRecord.h"
+#import "OFDNSResponse.h"
 #import "OFRunLoop.h"
 #import "OFString.h"
 
@@ -64,9 +65,6 @@ typedef enum of_dns_resolver_error_t {
 	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED
 } of_dns_resolver_error_t;
 
-typedef OFDictionary OF_GENERIC(OFString *,
-    OFArray OF_GENERIC(OFDNSResourceRecord *) *) *of_dns_resolver_records_t;
-
 /*!
  * @protocol OFDNSResolverDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
@@ -79,20 +77,13 @@ typedef OFDictionary OF_GENERIC(OFString *,
  *
  * @param resolver The acting resolver
  * @param domainName The fully qualified domain name used to resolve the host
- * @param answerRecords The answer records from the name server, grouped by
- *			domain name
- * @param authorityRecords The authority records from the name server, grouped
- *			   by domain name
- * @param additionalRecords Additional records sent by the name server, grouped
- *			    by domain name
+ * @param response The response from the DNS server, or nil on error
  * @param exception An exception that happened during resolving, or nil on
  *		    success
  */
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (nullable of_dns_resolver_records_t)answerRecords
-      authorityRecords: (nullable of_dns_resolver_records_t)authorityRecords
-     additionalRecords: (nullable of_dns_resolver_records_t)additionalRecords
+	      response: (nullable OFDNSResponse *)response
 	     exception: (nullable id)exception;
 
 /*!

@@ -163,30 +163,24 @@ static const of_run_loop_mode_t resolveRunLoopMode =
 - (instancetype)initWithHost: (OFString *)host
 		    delegate: (id)delegate;
 - (bool)parseRecords: (OFArray *)records
-       answerRecords: (OFDictionary *)answerRecords
-   additionalRecords: (OFDictionary *)additionalRecords
+	    response: (OFDNSResponse *)response
 	  recordType: (of_dns_resource_record_type_t)recordType
 	   recursion: (unsigned int)recursion
 	      result: (OFMutableArray *)result;
 - (void)resolveCNAME: (OFCNAMEDNSResourceRecord *)CNAME
-       answerRecords: (OFDictionary *)answerRecords
-   additionalRecords: (OFDictionary *)additionalRecords
+	    response: (OFDNSResponse *)response
 	  recordType: (of_dns_resource_record_type_t)recordType
 	   recursion: (unsigned int)recursion
 	      result: (OFMutableArray *)result;
--    (void)resolver: (OFDNSResolver *)resolver
-    didResolveCNAME: (OFString *)CNAME
-      answerRecords: (OFDictionary *)answerRecords
-   authorityRecords: (OFDictionary *)authorityRecords
-  additionalRecords: (OFDictionary *)additionalRecords
-	    context: (OFNumber *)context
-	  exception: (id)exception;
+-  (void)resolver: (OFDNSResolver *)resolver
+  didResolveCNAME: (OFString *)CNAME
+	 response: (OFDNSResponse *)response
+	  context: (OFNumber *)context
+	exception: (id)exception;
 - (void)done;
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (OFDictionary *)answerRecords
-      authorityRecords: (OFDictionary *)authorityRecords
-     additionalRecords: (OFDictionary *)additionalRecords
+	      response: (OFDNSResponse *)response
 	       context: (OFNumber *)context
 	     exception: (id)exception;
 @end
@@ -659,18 +653,16 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	return ret;
 }
 
-static void callback(id target, SEL selector, OFDNSResolver *resolver,
-    OFString *domainName, OFDictionary *answerRecords,
-    OFDictionary *authorityRecords, OFDictionary *additionalRecords, id context,
-    id exception)
+static void
+callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
+    OFDNSResponse *response, id context, id exception)
 {
-	void (*method)(id, SEL, OFDNSResolver *, OFString *, OFDictionary *,
-	    OFDictionary *, OFDictionary *, id, id) = (void (*)(id, SEL,
-	    OFDNSResolver *, OFString *, OFDictionary *, OFDictionary *,
-	    OFDictionary *, id, id))[target methodForSelector: selector];
+	void (*method)(id, SEL, OFDNSResolver *, OFString *, OFDNSResponse *,
+	    id, id) = (void (*)(id, SEL, OFDNSResolver *, OFString *,
+	    OFDNSResponse *, id, id))[target methodForSelector: selector];
 
-	method(target, selector, resolver, domainName, answerRecords,
-	    authorityRecords, additionalRecords, context, exception);
+	method(target, selector, resolver, domainName, response, context,
+	    exception);
 }
 
 @implementation OFDNSResolverSettings
@@ -844,29 +836,27 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 
 - (bool)parseRecords: (OFArray *)records
-       answerRecords: (OFDictionary *)answerRecords
-   additionalRecords: (OFDictionary *)additionalRecords
+	    response: (OFDNSResponse *)response
 	  recordType: (of_dns_resource_record_type_t)recordType
 	   recursion: (unsigned int)recursion
 	      result: (OFMutableArray *)result
 {
 	bool found = false;
 
-	for (OFDNSResourceRecord *record in records) {
-		if (record.recordClass != OF_DNS_RESOURCE_RECORD_CLASS_IN)
+	for (OF_KINDOF(OFDNSResourceRecord *) record in records) {
+		if ([record recordClass] != OF_DNS_RESOURCE_RECORD_CLASS_IN)
 			continue;
 
-		if (record.recordType == recordType) {
+		if ([record recordType] == recordType) {
 			[result addObject: record];
 			found = true;
-		} else if (record.recordType ==
+		} else if ([record recordType] ==
 		    OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
-			[self	resolveCNAME: (OFCNAMEDNSResourceRecord *)record
-			       answerRecords: answerRecords
-			   additionalRecords: additionalRecords
-				  recordType: recordType
-				   recursion: recursion
-				      result: result];
+			[self resolveCNAME: record
+				  response: response
+				recordType: recordType
+				 recursion: recursion
+				    result: result];
 			found = true;
 		}
 	}
@@ -875,8 +865,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 }
 
 - (void)resolveCNAME: (OFCNAMEDNSResourceRecord *)CNAME
-       answerRecords: (OFDictionary *)answerRecords
-   additionalRecords: (OFDictionary *)additionalRecords
+	    response: (OFDNSResponse *)response
 	  recordType: (of_dns_resource_record_type_t)recordType
 	   recursion: (unsigned int)recursion
 	      result: (OFMutableArray *)result
@@ -887,17 +876,15 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	if (recursion == 0)
 		return;
 
-	if ([self parseRecords: [answerRecords objectForKey: alias]
-		 answerRecords: answerRecords
-	     additionalRecords: additionalRecords
+	if ([self parseRecords: [response.answerRecords objectForKey: alias]
+		      response: response
 		    recordType: recordType
 		     recursion: recursion - 1
 			result: result])
 		found = true;
 
-	if ([self parseRecords: [additionalRecords objectForKey: alias]
-		 answerRecords: answerRecords
-	     additionalRecords: additionalRecords
+	if ([self parseRecords: [response.additionalRecords objectForKey: alias]
+		      response: response
 		    recordType: recordType
 		     recursion: recursion - 1
 			result: result])
@@ -921,22 +908,17 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				   runLoopMode: runLoopMode
 					target: self
 				      selector: @selector(resolver:
-						    didResolveCNAME:
-						    answerRecords:
-						    authorityRecords:
-						    additionalRecords:context:
-						    exception:)
+						    didResolveCNAME:response:
+						    context:exception:)
 				       context: recordTypeNumber];
 	}
 }
 
--    (void)resolver: (OFDNSResolver *)resolver
-    didResolveCNAME: (OFString *)CNAME
-      answerRecords: (OFDictionary *)answerRecords
-   authorityRecords: (OFDictionary *)authorityRecords
-  additionalRecords: (OFDictionary *)additionalRecords
-	    context: (OFNumber *)context
-	  exception: (id)exception
+-  (void)resolver: (OFDNSResolver *)resolver
+  didResolveCNAME: (OFString *)CNAME
+	 response: (OFDNSResponse *)response
+	  context: (OFNumber *)context
+	exception: (id)exception
 {
 	/*
 	 * TODO: Error handling could be improved. Ignore error if there are
@@ -961,17 +943,15 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 	records = [OFMutableArray array];
 
-	if ([self parseRecords: [answerRecords objectForKey: CNAME]
-		 answerRecords: answerRecords
-	     additionalRecords: additionalRecords
+	if ([self parseRecords: [response.answerRecords objectForKey: CNAME]
+		      response: response
 		    recordType: recordType
 		     recursion: CNAME_RECURSION
 			result: records])
 		found = true;
 
-	if ([self parseRecords: [additionalRecords objectForKey: CNAME]
-		 answerRecords: answerRecords
-	     additionalRecords: additionalRecords
+	if ([self parseRecords: [response.additionalRecords objectForKey: CNAME]
+		      response: response
 		    recordType: recordType
 		     recursion: CNAME_RECURSION
 			result: records])
@@ -1046,9 +1026,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (OFDictionary *)answerRecords
-      authorityRecords: (OFDictionary *)authorityRecords
-     additionalRecords: (OFDictionary *)additionalRecords
+	      response: (OFDNSResponse *)response
 	       context: (OFNumber *)context
 	     exception: (id)exception
 {
@@ -1080,9 +1058,8 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		return;
 	}
 
-	[self parseRecords: [answerRecords objectForKey: _domainName]
-	     answerRecords: answerRecords
-	 additionalRecords: additionalRecords
+	[self parseRecords: [response.answerRecords objectForKey: _domainName]
+		  response: response
 		recordType: recordType
 		 recursion: CNAME_RECURSION
 		    result: _records];
@@ -1654,20 +1631,15 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 
 -    (void)of_resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (of_dns_resolver_records_t)answerRecords
-      authorityRecords: (of_dns_resolver_records_t)authorityRecords
-     additionalRecords: (of_dns_resolver_records_t)additionalRecords
+	      response: (OFDNSResponse *)response
 	       context: (id)delegate
 	     exception: (id)exception
 {
 	if ([delegate respondsToSelector: @selector(resolver:
-	    didResolveDomainName:answerRecords:authorityRecords:
-	    additionalRecords:exception:)])
+	    didResolveDomainName:response:exception:)])
 		[delegate	resolver: resolver
 		    didResolveDomainName: domainName
-			   answerRecords: answerRecords
-			authorityRecords: authorityRecords
-		       additionalRecords: additionalRecords
+				response: response
 			       exception: exception];
 }
 
@@ -1680,8 +1652,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		      runLoopMode: of_run_loop_mode_default
 			   target: self
 			 selector: @selector(of_resolver:didResolveDomainName:
-				       answerRecords:authorityRecords:
-				       additionalRecords:context:exception:)
+				       response:context:exception:)
 			  context: delegate];
 }
 
@@ -1696,8 +1667,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		      runLoopMode: of_run_loop_mode_default
 			   target: self
 			 selector: @selector(of_resolver:didResolveDomainName:
-				       answerRecords:authorityRecords:
-				       additionalRecords:context:exception:)
+				       response:context:exception:)
 			  context: delegate];
 }
 
@@ -1713,8 +1683,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		      runLoopMode: runLoopMode
 			   target: self
 			 selector: @selector(of_resolver:didResolveDomainName:
-				       answerRecords:authorityRecords:
-				       additionalRecords:context:exception:)
+				       response:context:exception:)
 			  context: delegate];
 }
 
@@ -1863,7 +1832,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 			error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
 
 	callback(query->_target, query->_selector, self, query->_domainName,
-	    nil, nil, nil, query->_context, exception);
+	    nil, query->_context, exception);
 }
 
 -	  (bool)socket: (OFUDPSocket *)sock
@@ -1875,6 +1844,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 	unsigned char *buffer = buffer_;
 	OFDictionary *answerRecords = nil, *authorityRecords = nil;
 	OFDictionary *additionalRecords = nil;
+	OFDNSResponse *response = nil;
 	OFNumber *ID;
 	OFDNSResolverQuery *query;
 
@@ -2002,15 +1972,18 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 		    numAuthorityRecords);
 		additionalRecords = parseSection(buffer, length, &i,
 		    numAdditionalRecords);
+		response = [OFDNSResponse
+		    responseWithAnswerRecords: answerRecords
+			     authorityRecords: authorityRecords
+			    additionalRecords: additionalRecords];
 	} @catch (id e) {
 		callback(query->_target, query->_selector, self,
-		    query->_domainName, nil, nil, nil, query->_context, e);
+		    query->_domainName, nil, query->_context, e);
 		return true;
 	}
 
 	callback(query->_target, query->_selector, self, query->_domainName,
-	    answerRecords, authorityRecords, additionalRecords,
-	    query->_context, nil);
+	    response, query->_context, nil);
 
 	return true;
 }
@@ -2197,9 +2170,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				   target: context
 				 selector: @selector(resolver:
 					       didResolveDomainName:
-					       answerRecords:authorityRecords:
-					       additionalRecords:context:
-					       exception:)
+					       response:context:exception:)
 				  context: recordTypeNumber];
 	}
 #endif
@@ -2213,9 +2184,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				   target: context
 				 selector: @selector(resolver:
 					       didResolveDomainName:
-					       answerRecords:authorityRecords:
-					       additionalRecords:context:
-					       exception:)
+					       response:context:exception:)
 				  context: [OFNumber numberWithInt:
 					       OF_DNS_RESOURCE_RECORD_TYPE_A]];
 
@@ -2284,8 +2253,7 @@ static void callback(id target, SEL selector, OFDNSResolver *resolver,
 				error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
 		callback(query->_target, query->_selector, self,
-		    query->_domainName, nil, nil, nil, query->_context,
-		    exception);
+		    query->_domainName, nil, query->_context, exception);
 	}
 
 	[_queries removeAllObjects];

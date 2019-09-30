@@ -31,9 +31,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 @implementation OFDNS
 -	(void)resolver: (OFDNSResolver *)resolver
   didResolveDomainName: (OFString *)domainName
-	 answerRecords: (of_dns_resolver_records_t)answerRecords
-      authorityRecords: (of_dns_resolver_records_t)authorityRecords
-     additionalRecords: (of_dns_resolver_records_t)additionalRecords
+	      response: (OFDNSResponse *)response
 	     exception: (id)exception
 {
 	if (exception != nil) {
@@ -42,11 +40,8 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	}
 
 	[of_stdout writeFormat: @"FQDN: %@\n"
-				@"Answer records: %@\n"
-				@"Authority records: %@\n"
-				@"Additional records: %@\n",
-				domainName, answerRecords, authorityRecords,
-				additionalRecords];
+				@"Response: %@\n",
+				domainName, response];
 
 	[OFApplication terminate];
 }

@@ -137,6 +137,7 @@ SRCS_FILES = OFFile.m			\
 SRCS_PLUGINS = OFPlugin.m
 SRCS_SOCKETS = OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
+	       OFDNSResponse.m			\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\

@@ -75,8 +75,9 @@
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
 # import "OFKernelEventObserver.h"
-# import "OFDNSResolver.h"
 # import "OFDNSResourceRecord.h"
+# import "OFDNSResponse.h"
+# import "OFDNSResolver.h"
 #endif
 #ifdef OF_HAVE_SOCKETS
 # ifdef OF_HAVE_THREADS
