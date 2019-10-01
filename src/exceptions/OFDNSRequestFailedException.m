@@ -17,35 +17,26 @@
 
 #include "config.h"
 
-#import "OFResolveHostFailedException.h"
+#import "OFDNSRequestFailedException.h"
 #import "OFString.h"
 
-@implementation OFResolveHostFailedException
-@synthesize host = _host, recordClass = _recordClass, recordType = _recordType;
-@synthesize error = _error;
+@implementation OFDNSRequestFailedException
+@synthesize request = _request, error = _error;
 
-+ (instancetype)exceptionWithHost: (OFString *)host
-		      recordClass: (of_dns_resource_record_class_t)recordClass
-		       recordType: (of_dns_resource_record_type_t)recordType
-			    error: (of_dns_resolver_error_t)error
++ (instancetype)exceptionWithRequest: (OFDNSRequest *)request
+			       error: (of_dns_resolver_error_t)error
 {
-	return [[[self alloc] initWithHost: host
-			       recordClass: recordClass
-				recordType: recordType
-				     error: error] autorelease];
+	return [[[self alloc] initWithRequest: request
+					error: error] autorelease];
 }
 
-- (instancetype)initWithHost: (OFString *)host
-		 recordClass: (of_dns_resource_record_class_t)recordClass
-		  recordType: (of_dns_resource_record_type_t)recordType
-		       error: (of_dns_resolver_error_t)error
+- (instancetype)initWithRequest: (OFDNSRequest *)request
+			  error: (of_dns_resolver_error_t)error
 {
 	self = [super init];
 
 	@try {
-		_host = [host copy];
-		_recordClass = recordClass;
-		_recordType = recordType;
+		_request = [request copy];
 		_error = error;
 	} @catch (id e) {
 		[self release];
@@ -57,7 +48,7 @@
 
 - (void)dealloc
 {
-	[_host release];
+	[_request release];
 
 	[super dealloc];
 }
@@ -100,6 +91,6 @@
 	}
 
 	return [OFString stringWithFormat:
-	    @"The host %@ could not be resolved: %@", _host, error];
+	    @"Request %@ could not be performed: %@", _request, error];
 }
 @end

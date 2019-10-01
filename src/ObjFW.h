@@ -147,7 +147,7 @@
 # import "OFAcceptFailedException.h"
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
-# import "OFResolveHostFailedException.h"
+# import "OFDNSRequestFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChecksumMismatchException.h"

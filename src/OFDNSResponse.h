@@ -42,19 +42,19 @@ typedef OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(
 /*!
  * @brief The answer records of the response.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, readonly)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_dns_response_records_t answerRecords;
 
 /*!
  * @brief The authority records of the response.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, readonly)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_dns_response_records_t authorityRecords;
 
 /*!
  * @brief The additional records of the response.
  */
-@property OF_NULLABLE_PROPERTY (nonatomic, readonly)
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
     of_dns_response_records_t additionalRecords;
 
 /*!

@@ -53,6 +53,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	    OF_DNS_RESOURCE_RECORD_CLASS_ANY;
 	of_dns_resource_record_type_t recordType =
 	    OF_DNS_RESOURCE_RECORD_TYPE_ALL;
+	OFDNSRequest *request;
 	OFDNSResolver *resolver;
 
 #ifdef OF_HAVE_SANDBOX
@@ -90,9 +91,10 @@ OF_APPLICATION_DELEGATE(OFDNS)
 		    [arguments objectsInRange: of_range(3, 1)];
 	}
 
-	[resolver asyncResolveHost: [arguments objectAtIndex: 0]
-		       recordClass: recordClass
-			recordType: recordType
-			  delegate: self];
+	request = [OFDNSRequest requestWithHost: [arguments objectAtIndex: 0]
+				    recordClass: recordClass
+				     recordType: recordType];
+	[resolver asyncPerformRequest: request
+			     delegate: self];
 }
 @end

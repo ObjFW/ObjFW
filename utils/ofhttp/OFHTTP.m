@@ -36,13 +36,13 @@
 #import "OFURL.h"
 
 #import "OFConnectionFailedException.h"
+#import "OFDNSRequestFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
 #import "OFOpenItemFailedException.h"
 #import "OFOutOfRangeException.h"
 #import "OFReadFailedException.h"
-#import "OFResolveHostFailedException.h"
 #import "OFRetrieveItemAttributesFailedException.h"
 #import "OFUnsupportedProtocolException.h"
 #import "OFWriteFailedException.h"
@@ -612,14 +612,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didFailWithException: (id)e
 	       request: (OFHTTPRequest *)request
 {
-	if ([e isKindOfClass: [OFResolveHostFailedException class]]) {
+	if ([e isKindOfClass: [OFDNSRequestFailedException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
 		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_resolve_host_failed",
+		    OF_LOCALIZED(@"download_dns_request_failed",
 		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  Failed to resolve host: %[exception]",
+		    @"  DNS request failed: %[exception]",
 		    @"prog", [OFApplication programName],
 		    @"url", request.URL.string,
 		    @"exception", e)];

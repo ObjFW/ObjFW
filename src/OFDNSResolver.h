@@ -16,6 +16,7 @@
  */
 
 #import "OFObject.h"
+#import "OFDNSRequest.h"
 #import "OFDNSResourceRecord.h"
 #import "OFDNSResponse.h"
 #import "OFRunLoop.h"
@@ -200,41 +201,24 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)init;
 
 /*!
- * @brief Asynchronously resolves the specified host.
+ * @brief Asynchronously performs the specified request.
  *
- * @param host The host to resolve
+ * @param request The request to perform
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveHost: (OFString *)host
-		delegate: (id <OFDNSResolverDelegate>)delegate;
+- (void)asyncPerformRequest: (OFDNSRequest *)request
+		   delegate: (id <OFDNSResolverDelegate>)delegate;
 
 /*!
- * @brief Asynchronously resolves the specified host.
+ * @brief Asynchronously performs the specified request.
  *
- * @param host The host to resolve
- * @param recordClass The desired class of the records to query
- * @param recordType The desired type of the records to query
- * @param delegate The delegate to use for callbacks
- */
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-		delegate: (id <OFDNSResolverDelegate>)delegate;
-
-/*!
- * @brief Asynchronously resolves the specified host.
- *
- * @param host The host to resolve
- * @param recordClass The desired class of the records to query
- * @param recordType The desired type of the records to query
+ * @param request The request to perform
  * @param runLoopMode The run loop mode in which to resolve
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		delegate: (id <OFDNSResolverDelegate>)delegate;
+- (void)asyncPerformRequest: (OFDNSRequest *)request
+		runLoopMode: (of_run_loop_mode_t)runLoopMode
+		   delegate: (id <OFDNSResolverDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.

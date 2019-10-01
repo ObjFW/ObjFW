@@ -82,11 +82,9 @@
 	if (other->_answerRecords != _answerRecords &&
 	    ![other->_answerRecords isEqual: _answerRecords])
 		return false;
-
 	if (other->_authorityRecords != _authorityRecords &&
 	    ![other->_authorityRecords isEqual: _authorityRecords])
 		return false;
-
 	if (other->_additionalRecords != _additionalRecords &&
 	    ![other->_additionalRecords isEqual: _additionalRecords])
 		return false;
@@ -120,11 +118,11 @@
 				      withString: @"\n\t"];
 
 	return [OFString stringWithFormat:
-	    @"<OFDNSResponse:\n"
+	    @"<%@:\n"
 	    @"\tAnswer records = %@\n"
 	    @"\tAuthority records = %@\n"
 	    @"\tAdditional records = %@\n"
 	    @">",
-	    answerRecords, authorityRecords, additionalRecords];
+	    self.className, answerRecords, authorityRecords, additionalRecords];
 }
 @end

@@ -44,7 +44,7 @@ OF_ASSUME_NONNULL_BEGIN
 	uint32_t _distance;
 }
 
-@property (nonatomic, readonly) uint32_t bytesConsumed;
+@property (readonly, nonatomic) uint32_t bytesConsumed;
 
 - (instancetype)of_initWithStream: (OFStream *)stream
 		     distanceBits: (uint8_t)distanceBits
