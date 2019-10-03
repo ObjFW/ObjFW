@@ -214,7 +214,8 @@ SRCS += OFAdjacentArray.m		\
 	${LIBBASES_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
-SRCS_SOCKETS += OFHTTPURLHandler.m			\
+SRCS_SOCKETS += OFDNSResolverSettings.m			\
+		OFHTTPURLHandler.m			\
 		OFKernelEventObserver.m			\
 		${OFEPOLLKERNELEVENTOBSERVER_M}		\
 		${OFKQUEUEKERNELEVENTOBSERVER_M}	\

@@ -29,6 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDNSResolver;
 @class OFDNSResolverQuery;
+@class OFDNSResolverSettings;
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
@@ -116,16 +117,7 @@ typedef enum of_dns_resolver_error_t {
 OF_SUBCLASSING_RESTRICTED
 @interface OFDNSResolver: OFObject
 {
-	OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(OFString *) *)
-	    *_staticHosts;
-	OFArray OF_GENERIC(OFString *) *_nameServers;
-	OFString *_Nullable _localDomain;
-	OFArray OF_GENERIC(OFString *) *_searchDomains;
-	of_time_interval_t _timeout;
-	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
-	bool _usesTCP;
-	of_time_interval_t _configReloadInterval;
-	OFDate *_lastConfigReload;
+	OFDNSResolverSettings *_settings;
 	OFUDPSocket *_IPv4Socket;
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
