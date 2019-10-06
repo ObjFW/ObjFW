@@ -36,7 +36,7 @@
 #import "OFURL.h"
 
 #import "OFConnectionFailedException.h"
-#import "OFDNSRequestFailedException.h"
+#import "OFDNSQueryFailedException.h"
 #import "OFHTTPRequestFailedException.h"
 #import "OFInvalidFormatException.h"
 #import "OFInvalidServerReplyException.h"
@@ -612,14 +612,14 @@ fileNameFromContentDisposition(OFString *contentDisposition)
   didFailWithException: (id)e
 	       request: (OFHTTPRequest *)request
 {
-	if ([e isKindOfClass: [OFDNSRequestFailedException class]]) {
+	if ([e isKindOfClass: [OFDNSQueryFailedException class]]) {
 		if (!_quiet)
 			[of_stdout writeString: @"\n"];
 
 		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_dns_request_failed",
+		    OF_LOCALIZED(@"download_dns_query_failed",
 		    @"%[prog]: Failed to download <%[url]>!\n"
-		    @"  DNS request failed: %[exception]",
+		    @"  DNS query failed: %[exception]",
 		    @"prog", [OFApplication programName],
 		    @"url", request.URL.string,
 		    @"exception", e)];

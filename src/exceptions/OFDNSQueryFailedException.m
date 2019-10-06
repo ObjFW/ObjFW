@@ -17,26 +17,26 @@
 
 #include "config.h"
 
-#import "OFDNSRequestFailedException.h"
+#import "OFDNSQueryFailedException.h"
 #import "OFString.h"
 
-@implementation OFDNSRequestFailedException
-@synthesize request = _request, error = _error;
+@implementation OFDNSQueryFailedException
+@synthesize query = _query, error = _error;
 
-+ (instancetype)exceptionWithRequest: (OFDNSRequest *)request
-			       error: (of_dns_resolver_error_t)error
++ (instancetype)exceptionWithQuery: (OFDNSQuery *)query
+			     error: (of_dns_resolver_error_t)error
 {
-	return [[[self alloc] initWithRequest: request
-					error: error] autorelease];
+	return [[[self alloc] initWithQuery: query
+				      error: error] autorelease];
 }
 
-- (instancetype)initWithRequest: (OFDNSRequest *)request
-			  error: (of_dns_resolver_error_t)error
+- (instancetype)initWithQuery: (OFDNSQuery *)query
+			error: (of_dns_resolver_error_t)error
 {
 	self = [super init];
 
 	@try {
-		_request = [request copy];
+		_query = [query copy];
 		_error = error;
 	} @catch (id e) {
 		[self release];
@@ -48,7 +48,7 @@
 
 - (void)dealloc
 {
-	[_request release];
+	[_query release];
 
 	[super dealloc];
 }
@@ -91,6 +91,6 @@
 	}
 
 	return [OFString stringWithFormat:
-	    @"Request %@ could not be performed: %@", _request, error];
+	    @"Query %@ could not be performed: %@", _query, error];
 }
 @end

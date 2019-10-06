@@ -17,20 +17,20 @@
 
 #include "config.h"
 
-#import "OFDNSRequest.h"
+#import "OFDNSQuery.h"
 #import "OFString.h"
 
-@implementation OFDNSRequest
+@implementation OFDNSQuery
 @synthesize host = _host, recordClass = _recordClass, recordType = _recordType;
 
-+ (instancetype)requestWithHost: (OFString *)host
++ (instancetype)queryWithHost: (OFString *)host
 {
 	return [[[self alloc] initWithHost: host] autorelease];
 }
 
-+ (instancetype)requestWithHost: (OFString *)host
-		    recordClass: (of_dns_resource_record_class_t)recordClass
-		     recordType: (of_dns_resource_record_type_t)recordType
++ (instancetype)queryWithHost: (OFString *)host
+		  recordClass: (of_dns_resource_record_class_t)recordClass
+		   recordType: (of_dns_resource_record_type_t)recordType
 {
 	return [[[self alloc] initWithHost: host
 			       recordClass: recordClass
@@ -76,18 +76,18 @@
 
 - (bool)isEqual: (id)object
 {
-	OFDNSRequest *request;
+	OFDNSQuery *query;
 
-	if (![object isKindOfClass: [OFDNSRequest class]])
+	if (![object isKindOfClass: [OFDNSQuery class]])
 		return false;
 
-	request = object;
+	query = object;
 
-	if (request->_host != _host && ![request->_host isEqual: _host])
+	if (query->_host != _host && ![query->_host isEqual: _host])
 		return false;
-	if (request->_recordClass != _recordClass)
+	if (query->_recordClass != _recordClass)
 		return false;
-	if (request->_recordType != _recordType)
+	if (query->_recordType != _recordType)
 		return false;
 
 	return true;

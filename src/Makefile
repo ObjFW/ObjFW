@@ -135,7 +135,7 @@ SRCS_FILES = OFFile.m			\
 	     OFSettings.m		\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SOCKETS = OFDNSRequest.m			\
+SRCS_SOCKETS = OFDNSQuery.m			\
 	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
 	       OFDNSResponse.m			\

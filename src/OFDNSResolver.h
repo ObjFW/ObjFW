@@ -16,7 +16,7 @@
  */
 
 #import "OFObject.h"
-#import "OFDNSRequest.h"
+#import "OFDNSQuery.h"
 #import "OFDNSResourceRecord.h"
 #import "OFDNSResponse.h"
 #import "OFRunLoop.h"
@@ -193,24 +193,24 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)init;
 
 /*!
- * @brief Asynchronously performs the specified request.
+ * @brief Asynchronously performs the specified query.
  *
- * @param request The request to perform
+ * @param query The query to perform
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncPerformRequest: (OFDNSRequest *)request
-		   delegate: (id <OFDNSResolverDelegate>)delegate;
+- (void)asyncPerformQuery: (OFDNSQuery *)query
+		 delegate: (id <OFDNSResolverDelegate>)delegate;
 
 /*!
- * @brief Asynchronously performs the specified request.
+ * @brief Asynchronously performs the specified query.
  *
- * @param request The request to perform
+ * @param query The query to perform
  * @param runLoopMode The run loop mode in which to resolve
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncPerformRequest: (OFDNSRequest *)request
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   delegate: (id <OFDNSResolverDelegate>)delegate;
+- (void)asyncPerformQuery: (OFDNSQuery *)query
+	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 delegate: (id <OFDNSResolverDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -262,7 +262,7 @@ OF_SUBCLASSING_RESTRICTED
 					       addressFamily;
 
 /*!
- * @brief Closes all sockets and cancels all ongoing requests.
+ * @brief Closes all sockets and cancels all ongoing queries.
  */
 - (void)close;
 @end

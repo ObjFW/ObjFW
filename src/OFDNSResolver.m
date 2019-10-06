@@ -21,7 +21,7 @@
 
 #import "OFDNSResolver.h"
 #import "OFArray.h"
-#import "OFDNSRequest.h"
+#import "OFDNSQuery.h"
 #import "OFDNSResolverSettings.h"
 #import "OFDNSResponse.h"
 #import "OFData.h"
@@ -34,7 +34,7 @@
 #import "OFUDPSocket.h"
 #import "OFUDPSocket+Private.h"
 
-#import "OFDNSRequestFailedException.h"
+#import "OFDNSQueryFailedException.h"
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
@@ -70,7 +70,7 @@ static const of_run_loop_mode_t resolveRunLoopMode =
 @interface OFDNSResolverQuery: OFObject
 {
 @public
-	OFDNSRequest *_request;
+	OFDNSQuery *_query;
 	OFString *_domainName;
 	OFNumber *_ID;
 	OFDNSResolverSettings *_settings;
@@ -84,15 +84,15 @@ static const of_run_loop_mode_t resolveRunLoopMode =
 	OFTimer *_cancelTimer;
 }
 
-- (instancetype)initWithRequest: (OFDNSRequest *)request
-		     domainName: (OFString *)domainName
-			     ID: (OFNumber *)ID
-		       settings: (OFDNSResolverSettings *)settings
-	       nameServersIndex: (size_t)nameServersIndex
-	     searchDomainsIndex: (size_t)searchDomainsIndex
-			 target: (id)target
-		       selector: (SEL)selector
-			context: (id)context;
+- (instancetype)initWithQuery: (OFDNSQuery *)query
+		   domainName: (OFString *)domainName
+			   ID: (OFNumber *)ID
+		     settings: (OFDNSResolverSettings *)settings
+	     nameServersIndex: (size_t)nameServersIndex
+	   searchDomainsIndex: (size_t)searchDomainsIndex
+		       target: (id)target
+		     selector: (SEL)selector
+		      context: (id)context;
 @end
 
 @interface OFDNSResolverAsyncResolveSocketAddressesContext: OFObject
@@ -142,14 +142,14 @@ static const of_run_loop_mode_t resolveRunLoopMode =
 @end
 
 @interface OFDNSResolver () <OFUDPSocketDelegate>
-- (void)of_asyncPerformRequest: (OFDNSRequest *)request
-		      settings: (OFDNSResolverSettings *)settings
-	      nameServersIndex: (size_t)nameServersIndex
-	    searchDomainsIndex: (size_t)searchDomainsIndex
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			target: (id)target
-		      selector: (SEL)selector
-		       context: (id)context;
+- (void)of_asyncPerformQuery: (OFDNSQuery *)query
+		    settings: (OFDNSResolverSettings *)settings
+	    nameServersIndex: (size_t)nameServersIndex
+	  searchDomainsIndex: (size_t)searchDomainsIndex
+		 runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      target: (id)target
+		    selector: (SEL)selector
+		     context: (id)context;
 - (void)of_sendQuery: (OFDNSResolverQuery *)query
 	 runLoopMode: (of_run_loop_mode_t)runLoopMode;
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query;
@@ -550,15 +550,15 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 }
 
 @implementation OFDNSResolverQuery
-- (instancetype)initWithRequest: (OFDNSRequest *)request
-		     domainName: (OFString *)domainName
-			     ID: (OFNumber *)ID
-		       settings: (OFDNSResolverSettings *)settings
-	       nameServersIndex: (size_t)nameServersIndex
-	     searchDomainsIndex: (size_t)searchDomainsIndex
-			 target: (id)target
-		       selector: (SEL)selector
-			context: (id)context
+- (instancetype)initWithQuery: (OFDNSQuery *)query
+		   domainName: (OFString *)domainName
+			   ID: (OFNumber *)ID
+		     settings: (OFDNSResolverSettings *)settings
+	     nameServersIndex: (size_t)nameServersIndex
+	   searchDomainsIndex: (size_t)searchDomainsIndex
+		       target: (id)target
+		     selector: (SEL)selector
+		      context: (id)context
 {
 	self = [super init];
 
@@ -567,7 +567,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 		OFMutableData *queryData;
 		uint16_t tmp;
 
-		_request = [request copy];
+		_query = [query copy];
 		_domainName = [domainName copy];
 		_ID = [ID retain];
 		_settings = [settings copy];
@@ -616,12 +616,12 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 		}
 
 		/* QTYPE */
-		tmp = OF_BSWAP16_IF_LE(_request.recordType);
+		tmp = OF_BSWAP16_IF_LE(_query.recordType);
 		[queryData addItems: &tmp
 			      count: 2];
 
 		/* QCLASS */
-		tmp = OF_BSWAP16_IF_LE(_request.recordClass);
+		tmp = OF_BSWAP16_IF_LE(_query.recordClass);
 		[queryData addItems: &tmp
 			      count: 2];
 
@@ -640,7 +640,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 
 - (void)dealloc
 {
-	[_request release];
+	[_query release];
 	[_domainName release];
 	[_ID release];
 	[_settings release];
@@ -743,7 +743,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 		    [OFRunLoop currentRunLoop].currentMode;
 		OFNumber *recordTypeNumber =
 		    [OFNumber numberWithInt: recordType];
-		OFDNSRequest *request;
+		OFDNSQuery *query;
 
 		_expectedResponses++;
 
@@ -751,20 +751,20 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 		    [OFPair pairWithFirstObject: CNAME
 				   secondObject: recordTypeNumber]];
 
-		request = [OFDNSRequest
-		    requestWithHost: alias
-			recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-			 recordType: recordType];
-		[_resolver of_asyncPerformRequest: request
-					 settings: nil
-				 nameServersIndex: 0
-			       searchDomainsIndex: 0
-				      runLoopMode: runLoopMode
-					   target: self
-					 selector: @selector(resolver:
-						       didResolveCNAME:response:
-						       context:exception:)
-					  context: recordTypeNumber];
+		query = [OFDNSQuery
+		    queryWithHost: alias
+		      recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		       recordType: recordType];
+		[_resolver of_asyncPerformQuery: query
+				       settings: nil
+			       nameServersIndex: 0
+			     searchDomainsIndex: 0
+				    runLoopMode: runLoopMode
+					 target: self
+				       selector: @selector(resolver:
+						     didResolveCNAME:response:
+						     context:exception:)
+					context: recordTypeNumber];
 	}
 }
 
@@ -864,14 +864,14 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 	[addresses makeImmutable];
 
 	if (addresses.count == 0) {
-		OFDNSRequest *request = [OFDNSRequest
-		    requestWithHost: _host
-			recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-			 recordType: 0];
+		OFDNSQuery *query = [OFDNSQuery
+		    queryWithHost: _host
+		      recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		       recordType: 0];
 
-		exception = [OFDNSRequestFailedException
-		    exceptionWithRequest: request
-				   error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
+		exception = [OFDNSQueryFailedException
+		    exceptionWithQuery: query
+				 error: OF_DNS_RESOLVER_ERROR_UNKNOWN];
 	}
 
 	if ([_delegate respondsToSelector: @selector(
@@ -904,7 +904,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 
 	if (_domainName != nil) {
 		if (![domainName isEqual: _domainName])
-			/* Did the config change between requests? */
+			/* Did the config change in between? */
 			return;
 	} else
 		_domainName = [domainName copy];
@@ -1091,19 +1091,19 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 	_settings->_configReloadInterval = configReloadInterval;
 }
 
-- (void)of_asyncPerformRequest: (OFDNSRequest *)request
-		      settings: (OFDNSResolverSettings *)settings
-	      nameServersIndex: (size_t)nameServersIndex
-	    searchDomainsIndex: (size_t)searchDomainsIndex
-		   runLoopMode: (of_run_loop_mode_t)runLoopMode
-			target: (id)target
-		      selector: (SEL)selector
-		       context: (id)context
+- (void)of_asyncPerformQuery: (OFDNSQuery *)query
+		    settings: (OFDNSResolverSettings *)settings
+	    nameServersIndex: (size_t)nameServersIndex
+	  searchDomainsIndex: (size_t)searchDomainsIndex
+		 runLoopMode: (of_run_loop_mode_t)runLoopMode
+		      target: (id)target
+		    selector: (SEL)selector
+		     context: (id)context
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFNumber *ID;
 	OFString *host, *domainName;
-	OFDNSResolverQuery *query;
+	OFDNSResolverQuery *resolverQuery;
 
 	if (settings == nil) {
 		[_settings reload];
@@ -1115,7 +1115,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 		ID = [OFNumber numberWithUInt16: (uint16_t)of_random()];
 	} while ([_queries objectForKey: ID] != nil);
 
-	host = request.host;
+	host = query.host;
 	if (isFQDN(host, settings)) {
 		domainName = host;
 
@@ -1132,20 +1132,20 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 	if (domainName.UTF8StringLength > 253)
 		@throw [OFOutOfRangeException exception];
 
-	query = [[[OFDNSResolverQuery alloc]
-		  initWithRequest: request
-		       domainName: domainName
-			       ID: ID
-			 settings: settings
-		 nameServersIndex: nameServersIndex
-	       searchDomainsIndex: searchDomainsIndex
-			   target: target
-			 selector: selector
-			  context: context] autorelease];
-	[_queries setObject: query
+	resolverQuery = [[[OFDNSResolverQuery alloc]
+		 initWithQuery: query
+		    domainName: domainName
+			    ID: ID
+		      settings: settings
+	      nameServersIndex: nameServersIndex
+	    searchDomainsIndex: searchDomainsIndex
+			target: target
+		      selector: selector
+		       context: context] autorelease];
+	[_queries setObject: resolverQuery
 		     forKey: ID];
 
-	[self of_sendQuery: query
+	[self of_sendQuery: resolverQuery
 	       runLoopMode: runLoopMode];
 
 	objc_autoreleasePoolPop(pool);
@@ -1165,35 +1165,33 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 			       exception: exception];
 }
 
-- (void)asyncPerformRequest: (OFDNSRequest *)request
-		   delegate: (id <OFDNSResolverDelegate>)delegate
+- (void)asyncPerformQuery: (OFDNSQuery *)query
+		 delegate: (id <OFDNSResolverDelegate>)delegate
 {
-	[self of_asyncPerformRequest: request
-			    settings: nil
-		    nameServersIndex: 0
-		  searchDomainsIndex: 0
-			 runLoopMode: of_run_loop_mode_default
-			      target: self
-			    selector: @selector(of_resolver:
-					  didResolveDomainName:response:context:
-					  exception:)
-			     context: delegate];
+	[self of_asyncPerformQuery: query
+			  settings: nil
+		  nameServersIndex: 0
+		searchDomainsIndex: 0
+		       runLoopMode: of_run_loop_mode_default
+			    target: self
+			  selector: @selector(of_resolver:didResolveDomainName:
+					response:context:exception:)
+			   context: delegate];
 }
 
-- (void)asyncPerformRequest: (OFDNSRequest *)request
-		runLoopMode: (of_run_loop_mode_t)runLoopMode
-		   delegate: (id <OFDNSResolverDelegate>)delegate
+- (void)asyncPerformQuery: (OFDNSQuery *)query
+	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 delegate: (id <OFDNSResolverDelegate>)delegate
 {
-	[self of_asyncPerformRequest: request
-			    settings: nil
-		    nameServersIndex: 0
-		  searchDomainsIndex: 0
-			 runLoopMode: runLoopMode
-			      target: self
-			    selector: @selector(of_resolver:
-					  didResolveDomainName:response:context:
-					  exception:)
-			     context: delegate];
+	[self of_asyncPerformQuery: query
+			  settings: nil
+		  nameServersIndex: 0
+		searchDomainsIndex: 0
+		       runLoopMode: runLoopMode
+			    target: self
+			  selector: @selector(of_resolver:didResolveDomainName:
+					response:context:exception:)
+			   context: delegate];
 }
 
 - (void)of_sendQuery: (OFDNSResolverQuery *)query
@@ -1266,7 +1264,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 
 - (void)of_queryWithIDTimedOut: (OFDNSResolverQuery *)query
 {
-	OFDNSRequestFailedException *exception;
+	OFDNSQueryFailedException *exception;
 
 	if (query == nil)
 		return;
@@ -1291,7 +1289,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 	[_queries removeObjectForKey: query->_ID];
 
 	/*
-	 * Cancel any pending requests, to avoid a send being still pending and
+	 * Cancel any pending queries, to avoid a send being still pending and
 	 * trying to access the query once it no longer exists.
 	 */
 	[_IPv4Socket cancelAsyncRequests];
@@ -1303,9 +1301,9 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 				     length: BUFFER_LENGTH];
 #endif
 
-	exception = [OFDNSRequestFailedException
-	    exceptionWithRequest: query->_request
-			   error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
+	exception = [OFDNSQueryFailedException
+	    exceptionWithQuery: query->_query
+			 error: OF_DNS_RESOLVER_ERROR_TIMEOUT];
 
 	callback(query->_target, query->_selector, self, query->_domainName,
 	    nil, query->_context, exception);
@@ -1395,14 +1393,14 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 
 				query->_searchDomainsIndex++;
 
-				[self of_asyncPerformRequest: query->_request
-						    settings: query->_settings
-					    nameServersIndex: nameServersIndex
-					  searchDomainsIndex: searchDomainsIndex
-						 runLoopMode: runLoopMode
-						      target: query->_target
-						    selector: query->_selector
-						     context: query->_context];
+				[self of_asyncPerformQuery: query->_query
+						  settings: query->_settings
+					  nameServersIndex: nameServersIndex
+					searchDomainsIndex: searchDomainsIndex
+					       runLoopMode: runLoopMode
+						    target: query->_target
+						  selector: query->_selector
+						   context: query->_context];
 
 				return true;
 			}
@@ -1421,9 +1419,9 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 		}
 
 		if (buffer[3] & 0x0F)
-			@throw [OFDNSRequestFailedException
-			    exceptionWithRequest: query->_request
-					   error: error];
+			@throw [OFDNSQueryFailedException
+			    exceptionWithQuery: query->_query
+					 error: error];
 
 		numQuestions = (buffer[4] << 8) | buffer[5];
 		numAnswers = (buffer[6] << 8) | buffer[7];
@@ -1579,14 +1577,14 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 				    OF_DNS_RESOURCE_RECORD_CLASS_IN;
 				of_dns_resolver_error_t error =
 				    OF_DNS_RESOLVER_ERROR_NO_RESULT;
-				OFDNSRequest *request = [OFDNSRequest
-				    requestWithHost: host
-					recordClass: recordClass
-					 recordType: recordType];
+				OFDNSQuery *query = [OFDNSQuery
+				    queryWithHost: host
+				      recordClass: recordClass
+				       recordType: recordType];
 
-				exception = [OFDNSRequestFailedException
-				    exceptionWithRequest: request
-						   error: error];
+				exception = [OFDNSQueryFailedException
+				    exceptionWithQuery: query
+						 error: error];
 			}
 		}
 
@@ -1638,45 +1636,45 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 #ifdef OF_HAVE_IPV6
 	if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
 	    addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
-		OFDNSRequest *request = [OFDNSRequest
-		    requestWithHost: host
-			recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-			 recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA];
+		OFDNSQuery *query = [OFDNSQuery
+		    queryWithHost: host
+		      recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		       recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA];
 		OFNumber *recordTypeNumber =
 		    [OFNumber numberWithInt: OF_DNS_RESOURCE_RECORD_TYPE_AAAA];
 
-		[self of_asyncPerformRequest: request
-				    settings: nil
-			    nameServersIndex: 0
-			  searchDomainsIndex: 0
-				 runLoopMode: runLoopMode
-				      target: context
-				    selector: @selector(resolver:
-						  didResolveDomainName:response:
-						  context:exception:)
-				     context: recordTypeNumber];
+		[self of_asyncPerformQuery: query
+				  settings: nil
+			  nameServersIndex: 0
+			searchDomainsIndex: 0
+			       runLoopMode: runLoopMode
+				    target: context
+				  selector: @selector(resolver:
+						didResolveDomainName:response:
+						context:exception:)
+				   context: recordTypeNumber];
 	}
 #endif
 
 	if (addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
 	    addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
-		OFDNSRequest *request = [OFDNSRequest
-		    requestWithHost: host
-			recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-			 recordType: OF_DNS_RESOURCE_RECORD_TYPE_A];
+		OFDNSQuery *query = [OFDNSQuery
+		    queryWithHost: host
+		      recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+		       recordType: OF_DNS_RESOURCE_RECORD_TYPE_A];
 		OFNumber *recordTypeNumber =
 		    [OFNumber numberWithInt: OF_DNS_RESOURCE_RECORD_TYPE_A];
 
-		[self of_asyncPerformRequest: request
-				    settings: nil
-			    nameServersIndex: 0
-			  searchDomainsIndex: 0
-				 runLoopMode: runLoopMode
-				      target: context
-				    selector: @selector(resolver:
-						  didResolveDomainName:response:
-						  context:exception:)
-				     context: recordTypeNumber];
+		[self of_asyncPerformQuery: query
+				  settings: nil
+			  nameServersIndex: 0
+			searchDomainsIndex: 0
+			       runLoopMode: runLoopMode
+				    target: context
+				  selector: @selector(resolver:
+						didResolveDomainName:response:
+						context:exception:)
+				   context: recordTypeNumber];
 	}
 
 	objc_autoreleasePoolPop(pool);
@@ -1735,11 +1733,11 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 
 	enumerator = [_queries objectEnumerator];
 	while ((query = [enumerator nextObject]) != nil) {
-		OFDNSRequestFailedException *exception;
+		OFDNSQueryFailedException *exception;
 
-		exception = [OFDNSRequestFailedException
-		    exceptionWithRequest: query->_request
-				   error: OF_DNS_RESOLVER_ERROR_CANCELED];
+		exception = [OFDNSQueryFailedException
+		    exceptionWithQuery: query->_query
+				 error: OF_DNS_RESOLVER_ERROR_CANCELED];
 
 		callback(query->_target, query->_selector, self,
 		    query->_domainName, nil, query->_context, exception);

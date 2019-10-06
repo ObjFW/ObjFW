@@ -16,28 +16,28 @@
  */
 
 #import "OFException.h"
-#import "OFDNSRequest.h"
+#import "OFDNSQuery.h"
 #import "OFDNSResolver.h"
 #import "OFDNSResourceRecord.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @class OFDNSRequestFailedException \
- *	  OFDNSRequestFailedException.h ObjFW/OFDNSRequestFailedException.h
+ * @class OFDNSQueryFailedException \
+ *	  OFDNSQueryFailedException.h ObjFW/OFDNSQueryFailedException.h
  *
  * @brief An exception indicating the resolving a host failed.
  */
-@interface OFDNSRequestFailedException: OFException
+@interface OFDNSQueryFailedException: OFException
 {
-	OFDNSRequest *_request;
+	OFDNSQuery *_query;
 	of_dns_resolver_error_t _error;
 }
 
 /*!
- * @brief The request which could not be performed.
+ * @brief The query which could not be performed.
  */
-@property (readonly, nonatomic) OFDNSRequest *request;
+@property (readonly, nonatomic) OFDNSQuery *query;
 
 /*!
  * @brief The error from the resolver.
@@ -47,22 +47,22 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new, autoreleased resolve host failed exception.
  *
- * @param request The request which could not be performed
+ * @param query The query which could not be performed
  * @param error The error from the resolver
  * @return A new, autoreleased address translation failed exception
  */
-+ (instancetype)exceptionWithRequest: (OFDNSRequest *)request
-			       error: (of_dns_resolver_error_t)error;
++ (instancetype)exceptionWithQuery: (OFDNSQuery *)query
+			     error: (of_dns_resolver_error_t)error;
 
 /*!
  * @brief Initializes an already allocated address translation failed exception.
  *
- * @param request The request which could not be performed
+ * @param query The query which could not be performed
  * @param error The error from the resolver
  * @return An initialized address translation failed exception
  */
-- (instancetype)initWithRequest: (OFDNSRequest *)request
-			  error: (of_dns_resolver_error_t)error;
+- (instancetype)initWithQuery: (OFDNSQuery *)query
+			error: (of_dns_resolver_error_t)error;
 @end
 
 OF_ASSUME_NONNULL_END

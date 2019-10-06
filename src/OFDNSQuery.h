@@ -21,11 +21,11 @@
 OF_ASSUME_NONNULL_BEGIN
 
 /*!
- * @class OFDNSRequest OFDNSRequest.h ObjFW/OFDNSRequest.h
+ * @class OFDNSQuery OFDNSQuery.h ObjFW/OFDNSQuery.h
  *
- * @brief A class representing a DNS request.
+ * @brief A class representing a DNS query.
  */
-@interface OFDNSRequest: OFObject <OFCopying>
+@interface OFDNSQuery: OFObject <OFCopying>
 {
 	OFString *_host;
 	of_dns_resource_record_class_t _recordClass;
@@ -39,51 +39,51 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *host;
 
 /*!
- * @brief The requested record class.
+ * @brief The record class of the query.
  */
 @property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
 
 /*!
- * @brief The requested record type.
+ * @brief The record type of the query.
  */
 @property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
 
 /*!
- * @brief Creates a new, autoreleased OFDNSRequest with IN class and type ALL.
+ * @brief Creates a new, autoreleased OFDNSQuery with IN class and type ALL.
  *
  * @param host The host to resolve
- * @return A new, autoreleased OFDNSRequest.
+ * @return A new, autoreleased OFDNSQuery
  */
-+ (instancetype)requestWithHost: (OFString *)host;
++ (instancetype)queryWithHost: (OFString *)host;
 
 /*!
- * @brief Creates a new, autoreleased OFDNSRequest.
+ * @brief Creates a new, autoreleased OFDNSQuery.
  *
  * @param host The host to resolve
- * @param recordClass The requested record class
- * @param recordType The requested record type
- * @return A new, autoreleased OFDNSRequest.
+ * @param recordClass The record class of the query
+ * @param recordType The record type of the query
+ * @return A new, autoreleased OFDNSQuery
  */
-+ (instancetype)requestWithHost: (OFString *)host
-		    recordClass: (of_dns_resource_record_class_t)recordClass
-		     recordType: (of_dns_resource_record_type_t)recordType;
++ (instancetype)queryWithHost: (OFString *)host
+		  recordClass: (of_dns_resource_record_class_t)recordClass
+		   recordType: (of_dns_resource_record_type_t)recordType;
 
 /*!
- * @brief Initializes an already allocated OFDNSRequest with IN class and type
+ * @brief Initializes an already allocated OFDNSQuery with IN class and type
  *	  ALL.
  *
  * @param host The host to resolve
- * @return An initialized OFDNSRequest
+ * @return An initialized OFDNSQuery
  */
 - (instancetype)initWithHost: (OFString *)host;
 
 /*!
- * @brief Initializes an already allocated OFDNSRequest.
+ * @brief Initializes an already allocated OFDNSQuery.
  *
  * @param host The host to resolve
- * @param recordClass The requested record class
- * @param recordType The requested record type
- * @return An initialized OFDNSRequest
+ * @param recordClass The record class of the query
+ * @param recordType The record type of the query
+ * @return An initialized OFDNSQuery
  */
 - (instancetype)initWithHost: (OFString *)host
 		 recordClass: (of_dns_resource_record_class_t)recordClass

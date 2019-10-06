@@ -75,6 +75,7 @@
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
 # import "OFKernelEventObserver.h"
+# import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"
 # import "OFDNSResponse.h"
 # import "OFDNSResolver.h"
@@ -147,7 +148,7 @@
 # import "OFAcceptFailedException.h"
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
-# import "OFDNSRequestFailedException.h"
+# import "OFDNSQueryFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChecksumMismatchException.h"

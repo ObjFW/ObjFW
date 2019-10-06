@@ -38,9 +38,9 @@
         "%[prog]: -o / --output kann nicht mit mehr als einer URL benutzt ",
         "werden!"
     ],
-    "download_dns_request_failed": [
+    "download_dns_query_failed": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
-        "  DNS-Anfrage fehlgeschlagen: %[exception]"
+        "  DNS-Abfrage fehlgeschlagen: %[exception]"
     ],
     "download_failed_connection_failed": [
         "%[prog]: Fehler beim Download von <%[url]>!\n",
