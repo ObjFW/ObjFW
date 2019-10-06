@@ -1344,6 +1344,7 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 	[_queries removeObjectForKey: ID];
 
 	@try {
+		bool tryNextNameServer = false;
 		const unsigned char *queryDataBuffer;
 		size_t i;
 		of_dns_resolver_error_t error;
@@ -1380,16 +1381,34 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 			break;
 		case 2:
 			error = OF_DNS_RESOLVER_ERROR_SERVER_FAILURE;
+			tryNextNameServer = true;
 			break;
 		case 3:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
+			break;
+		case 4:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED;
+			tryNextNameServer = true;
+			break;
+		case 5:
+			error = OF_DNS_RESOLVER_ERROR_SERVER_REFUSED;
+			tryNextNameServer = true;
+			break;
+		default:
+			error = OF_DNS_RESOLVER_ERROR_UNKNOWN;
+			tryNextNameServer = true;
+			break;
+		}
+
+		if (tryNextNameServer) {
 			if (query->_searchDomainsIndex + 1 <
 			    query->_settings->_searchDomains.count) {
 				of_run_loop_mode_t runLoopMode =
 				    [OFRunLoop currentRunLoop].currentMode;
 				size_t nameServersIndex =
-				    query->_nameServersIndex;
+				    query->_nameServersIndex + 1;
 				size_t searchDomainsIndex =
-				    query->_searchDomainsIndex;
+				    query->_searchDomainsIndex + 1;
 
 				query->_searchDomainsIndex++;
 
@@ -1404,18 +1423,6 @@ callback(id target, SEL selector, OFDNSResolver *resolver, OFString *domainName,
 
 				return true;
 			}
-
-			error = OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR;
-			break;
-		case 4:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED;
-			break;
-		case 5:
-			error = OF_DNS_RESOLVER_ERROR_SERVER_REFUSED;
-			break;
-		default:
-			error = OF_DNS_RESOLVER_ERROR_UNKNOWN;
-			break;
 		}
 
 		if (buffer[3] & 0x0F)
