@@ -24,16 +24,15 @@
 #import "OFInvalidFormatException.h"
 
 OFString *
-of_dns_resource_record_class_to_string(
-    of_dns_resource_record_class_t recordClass)
+of_dns_class_to_string(of_dns_class_t DNSClass)
 {
-	switch (recordClass) {
-	case OF_DNS_RESOURCE_RECORD_CLASS_IN:
+	switch (DNSClass) {
+	case OF_DNS_CLASS_IN:
 		return @"IN";
-	case OF_DNS_RESOURCE_RECORD_CLASS_ANY:
+	case OF_DNS_CLASS_ANY:
 		return @"any";
 	default:
-		return [OFString stringWithFormat: @"%u", recordClass];
+		return [OFString stringWithFormat: @"%u", DNSClass];
 	}
 }
 
@@ -70,22 +69,21 @@ of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
 	}
 }
 
-of_dns_resource_record_class_t of_dns_resource_record_class_parse(
-    OFString *string)
+of_dns_class_t of_dns_class_parse(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_dns_resource_record_class_t recordClass;
+	of_dns_class_t DNSClass;
 
 	string = string.uppercaseString;
 
 	if ([string isEqual: @"IN"])
-		recordClass = OF_DNS_RESOURCE_RECORD_CLASS_IN;
+		DNSClass = OF_DNS_CLASS_IN;
 	else
 		@throw [OFInvalidArgumentException exception];
 
 	objc_autoreleasePoolPop(pool);
 
-	return recordClass;
+	return DNSClass;
 }
 
 of_dns_resource_record_type_t of_dns_resource_record_type_parse(
@@ -127,11 +125,11 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 @implementation OFDNSResourceRecord
-@synthesize name = _name, recordClass = _recordClass, recordType = _recordType;
+@synthesize name = _name, DNSClass = _DNSClass, recordType = _recordType;
 @synthesize TTL = _TTL;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -139,7 +137,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 	@try {
 		_name = [name copy];
-		_recordClass = recordClass;
+		_DNSClass = DNSClass;
 		_recordType = recordType;
 		_TTL = TTL;
 	} @catch (id e) {
@@ -171,15 +169,14 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tType = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass),
+	    self.className, _name, of_dns_class_to_string(_DNSClass),
 	    of_dns_resource_record_type_to_string(_recordType), _TTL];
 }
 @end
 
 @implementation OFADNSResourceRecord
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -191,7 +188,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			  DNSClass: OF_DNS_CLASS_IN
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_A
 			       TTL: TTL];
 
@@ -217,7 +214,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -236,8 +233,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_address));
@@ -262,7 +259,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 @implementation OFAAAADNSResourceRecord
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -274,7 +271,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			  DNSClass: OF_DNS_CLASS_IN
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA
 			       TTL: TTL];
 
@@ -300,7 +297,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -319,8 +316,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, of_socket_address_hash(&_address));
@@ -347,7 +344,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize alias = _alias;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -355,12 +352,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		       alias: (OFString *)alias
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_CNAME
 			       TTL: TTL];
 
@@ -393,7 +390,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -413,8 +410,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _alias.hash);
@@ -433,8 +430,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAlias = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass), _alias, _TTL];
+	    self.className, _name, of_dns_class_to_string(_DNSClass), _alias,
+	    _TTL];
 }
 @end
 
@@ -442,7 +439,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize CPU = _CPU, OS = _OS;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -450,13 +447,13 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 			 CPU: (OFString *)CPU
 			  OS: (OFString *)OS
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_HINFO
 			       TTL: TTL];
 
@@ -491,7 +488,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -513,8 +510,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _CPU.hash);
@@ -535,8 +532,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tOS = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass), _CPU, _OS,
+	    self.className, _name, of_dns_class_to_string(_DNSClass), _CPU, _OS,
 	    _TTL];
 }
 @end
@@ -545,7 +541,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize preference = _preference, mailExchange = _mailExchange;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -553,13 +549,13 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  preference: (uint16_t)preference
 		mailExchange: (OFString *)mailExchange
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_MX
 			       TTL: TTL];
 
@@ -593,7 +589,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -616,8 +612,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD(hash, _preference >> 8);
@@ -639,9 +635,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tMail Exchange = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass), _preference,
-	    _mailExchange, _TTL];
+	    self.className, _name, of_dns_class_to_string(_DNSClass),
+	    _preference, _mailExchange, _TTL];
 }
 @end
 
@@ -649,7 +644,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize authoritativeHost = _authoritativeHost;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -657,12 +652,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 	   authoritativeHost: (OFString *)authoritativeHost
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_NS
 			       TTL: TTL];
 
@@ -695,7 +690,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -715,8 +710,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _authoritativeHost.hash);
@@ -735,8 +730,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tAuthoritative Host = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass),
+	    self.className, _name, of_dns_class_to_string(_DNSClass),
 	    _authoritativeHost, _TTL];
 }
 @end
@@ -745,7 +739,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize domainName = _domainName;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -753,12 +747,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  domainName: (OFString *)domainName
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_PTR
 			       TTL: TTL];
 
@@ -791,7 +785,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -811,8 +805,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _domainName.hash);
@@ -831,9 +825,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tDomain Name = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass), _domainName,
-	    _TTL];
+	    self.className, _name, of_dns_class_to_string(_DNSClass),
+	    _domainName, _TTL];
 }
 @end
 
@@ -841,7 +834,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize mailbox = _mailbox, TXTDomainName = _TXTDomainName;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -849,13 +842,13 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		     mailbox: (OFString *)mailbox
 	       TXTDomainName: (OFString *)TXTDomainName
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_RP
 			       TTL: TTL];
 
@@ -890,7 +883,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -914,8 +907,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _mailbox.hash);
@@ -936,8 +929,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tTXT Domain Name = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass), _mailbox,
+	    self.className, _name, of_dns_class_to_string(_DNSClass), _mailbox,
 	    _TXTDomainName, _TTL];
 }
 @end
@@ -950,7 +942,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize expirationInterval = _expirationInterval, minTTL = _minTTL;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -958,7 +950,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 	   primaryNameServer: (OFString *)primaryNameServer
 	   responsiblePerson: (OFString *)responsiblePerson
 		serialNumber: (uint32_t)serialNumber
@@ -969,7 +961,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_SOA
 			       TTL: TTL];
 
@@ -1009,7 +1001,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -1048,8 +1040,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _primaryNameServer.hash);
@@ -1095,8 +1087,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tMinimum TTL = %" PRIu32 "\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass),
+	    self.className, _name, of_dns_class_to_string(_DNSClass),
 	    _primaryNameServer, _responsiblePerson, _serialNumber,
 	    _refreshInterval, _retryInterval, _expirationInterval, _minTTL,
 	    _TTL];
@@ -1108,7 +1099,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize port = _port;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -1123,7 +1114,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
+			  DNSClass: OF_DNS_CLASS_IN
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_SRV
 			       TTL: TTL];
 
@@ -1159,7 +1150,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -1188,8 +1179,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD(hash, _priority >> 8);
@@ -1224,7 +1215,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @synthesize textData = _textData;
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		  recordType: (of_dns_resource_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
@@ -1232,12 +1223,12 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 }
 
 - (instancetype)initWithName: (OFString *)name
-		 recordClass: (of_dns_resource_record_class_t)recordClass
+		    DNSClass: (of_dns_class_t)DNSClass
 		    textData: (OFData *)textData
 			 TTL: (uint32_t)TTL
 {
 	self = [super initWithName: name
-		       recordClass: recordClass
+			  DNSClass: DNSClass
 			recordType: OF_DNS_RESOURCE_RECORD_TYPE_TXT
 			       TTL: TTL];
 
@@ -1270,7 +1261,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_recordClass != _recordClass)
+	if (otherRecord->_DNSClass != _DNSClass)
 		return false;
 
 	if (otherRecord->_recordType != _recordType)
@@ -1290,8 +1281,8 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	OF_HASH_INIT(hash);
 
 	OF_HASH_ADD_HASH(hash, _name.hash);
-	OF_HASH_ADD(hash, _recordClass >> 8);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD(hash, _DNSClass >> 8);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType >> 8);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_ADD_HASH(hash, _textData.hash);
@@ -1310,8 +1301,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tText Data = %@\n"
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
-	    self.className, _name,
-	    of_dns_resource_record_class_to_string(_recordClass), _textData,
+	    self.className, _name, of_dns_class_to_string(_DNSClass), _textData,
 	    _TTL];
 }
 @end

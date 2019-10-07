@@ -26,7 +26,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFDNSQueryFailedException \
  *	  OFDNSQueryFailedException.h ObjFW/OFDNSQueryFailedException.h
  *
- * @brief An exception indicating the resolving a host failed.
+ * @brief An exception indicating that a DNS query failed.
  */
 @interface OFDNSQueryFailedException: OFException
 {
@@ -45,7 +45,7 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) of_dns_resolver_error_t error;
 
 /*!
- * @brief Creates a new, autoreleased resolve host failed exception.
+ * @brief Creates a new, autoreleased DNS query failed exception.
  *
  * @param query The query which could not be performed
  * @param error The error from the resolver
@@ -55,7 +55,7 @@ OF_ASSUME_NONNULL_BEGIN
 			     error: (of_dns_resolver_error_t)error;
 
 /*!
- * @brief Initializes an already allocated address translation failed exception.
+ * @brief Initializes an already allocated DNS query failed exception.
  *
  * @param query The query which could not be performed
  * @param error The error from the resolver
@@ -64,5 +64,13 @@ OF_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithQuery: (OFDNSQuery *)query
 			error: (of_dns_resolver_error_t)error;
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern OFString *of_dns_resolver_error_to_string(of_dns_resolver_error_t error);
+#ifdef __cplusplus
+}
+#endif
 
 OF_ASSUME_NONNULL_END

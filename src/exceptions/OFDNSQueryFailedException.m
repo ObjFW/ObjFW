@@ -20,6 +20,35 @@
 #import "OFDNSQueryFailedException.h"
 #import "OFString.h"
 
+OFString *
+of_dns_resolver_error_to_string(of_dns_resolver_error_t error)
+{
+	switch (error) {
+	case OF_DNS_RESOLVER_ERROR_TIMEOUT:
+		return @"The query timed out.";
+	case OF_DNS_RESOLVER_ERROR_CANCELED:
+		return @"The query was canceled.";
+	case OF_DNS_RESOLVER_ERROR_NO_RESULT:
+		return @"No result for the specified host with the specified "
+		    @"type and class.";
+	case OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT:
+		return @"The server considered the query to be malformed.";
+	case OF_DNS_RESOLVER_ERROR_SERVER_FAILURE:
+		return @"The server was unable to process due to an internal "
+		    @"error.";
+	case OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR:
+		return @"The server returned an error that the domain does not "
+		    @"exist.";
+	case OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED:
+		return @"The server does not have support for the requested "
+		    @"query.";
+	case OF_DNS_RESOLVER_ERROR_SERVER_REFUSED:
+		return @"The server refused the query.";
+	default:
+		return @"Unknown error.";
+	}
+}
+
 @implementation OFDNSQueryFailedException
 @synthesize query = _query, error = _error;
 
@@ -55,42 +84,8 @@
 
 - (OFString *)description
 {
-	OFString *error;
-
-	switch (_error) {
-	case OF_DNS_RESOLVER_ERROR_TIMEOUT:
-		error = @"The query timed out.";
-		break;
-	case OF_DNS_RESOLVER_ERROR_CANCELED:
-		error = @"The query was canceled.";
-		break;
-	case OF_DNS_RESOLVER_ERROR_NO_RESULT:
-		error = @"No result for the specified host with the specified "
-		    @"type and class.";
-		break;
-	case OF_DNS_RESOLVER_ERROR_SERVER_INVALID_FORMAT:
-		error = @"The server considered the query to be malformed.";
-		break;
-	case OF_DNS_RESOLVER_ERROR_SERVER_FAILURE:
-		error = @"The server was unable to process due to an internal "
-		    @"error.";
-		break;
-	case OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR:
-		error = @"The server returned an error that the domain does "
-		    @"not exist.";
-		break;
-	case OF_DNS_RESOLVER_ERROR_SERVER_NOT_IMPLEMENTED:
-		error = @"The server does not have support for the requested "
-		    @"query.";
-	case OF_DNS_RESOLVER_ERROR_SERVER_REFUSED:
-		error = @"The server refused the query.";
-		break;
-	default:
-		error = @"Unknown error.";
-		break;
-	}
-
 	return [OFString stringWithFormat:
-	    @"Query %@ could not be performed: %@", _query, error];
+	    @"DNS query %@ could not be performed: %@",
+	    _query, of_dns_resolver_error_to_string(_error)];
 }
 @end

@@ -22,29 +22,32 @@
 #import "OFString.h"
 
 @implementation OFDNSResponse
-@synthesize answerRecords = _answerRecords;
+@synthesize domainName = _domainName, answerRecords = _answerRecords;
 @synthesize authorityRecords = _authorityRecords;
 @synthesize additionalRecords = _additionalRecords;
 
 + (instancetype)
-    responseWithAnswerRecords: (of_dns_response_records_t)answerRecords
-	     authorityRecords: (of_dns_response_records_t)authorityRecords
-	    additionalRecords: (of_dns_response_records_t)additionalRecords
+    responseWithDomainName: (OFString *)domainName
+	     answerRecords: (of_dns_response_records_t)answerRecords
+	  authorityRecords: (of_dns_response_records_t)authorityRecords
+	 additionalRecords: (of_dns_response_records_t)additionalRecords
 {
 	return [[[self alloc]
-	    initWithAnswerRecords: answerRecords
-		 authorityRecords: authorityRecords
-		additionalRecords: additionalRecords] autorelease];
+	    initWithDomainName: domainName
+		 answerRecords: answerRecords
+	      authorityRecords: authorityRecords
+	     additionalRecords: additionalRecords] autorelease];
 }
 
-- (instancetype)
-    initWithAnswerRecords: (of_dns_response_records_t)answerRecords
-	 authorityRecords: (of_dns_response_records_t)authorityRecords
-	additionalRecords: (of_dns_response_records_t)additionalRecords
+- (instancetype)initWithDomainName: (OFString *)domainName
+		     answerRecords: (of_dns_response_records_t)answerRecords
+		  authorityRecords: (of_dns_response_records_t)authorityRecords
+		 additionalRecords: (of_dns_response_records_t)additionalRecords
 {
 	self = [super init];
 
 	@try {
+		_domainName = [domainName copy];
 		_answerRecords = [answerRecords copy];
 		_authorityRecords = [authorityRecords copy];
 		_additionalRecords = [additionalRecords copy];
@@ -63,6 +66,7 @@
 
 - (void)dealloc
 {
+	[_domainName release];
 	[_answerRecords release];
 	[_authorityRecords release];
 	[_additionalRecords release];
@@ -72,21 +76,24 @@
 
 - (bool)isEqual: (id)object
 {
-	OFDNSResponse *other;
+	OFDNSResponse *response;
 
 	if (![object isKindOfClass: [OFDNSResponse class]])
 		return false;
 
-	other = object;
+	response = object;
 
-	if (other->_answerRecords != _answerRecords &&
-	    ![other->_answerRecords isEqual: _answerRecords])
+	if (response->_domainName != _domainName &&
+	    ![response->_domainName isEqual: _domainName])
 		return false;
-	if (other->_authorityRecords != _authorityRecords &&
-	    ![other->_authorityRecords isEqual: _authorityRecords])
+	if (response->_answerRecords != _answerRecords &&
+	    ![response->_answerRecords isEqual: _answerRecords])
 		return false;
-	if (other->_additionalRecords != _additionalRecords &&
-	    ![other->_additionalRecords isEqual: _additionalRecords])
+	if (response->_authorityRecords != _authorityRecords &&
+	    ![response->_authorityRecords isEqual: _authorityRecords])
+		return false;
+	if (response->_additionalRecords != _additionalRecords &&
+	    ![response->_additionalRecords isEqual: _additionalRecords])
 		return false;
 
 	return true;
@@ -97,6 +104,7 @@
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
+	OF_HASH_ADD_HASH(hash, _domainName.hash);
 	OF_HASH_ADD_HASH(hash, [_answerRecords hash]);
 	OF_HASH_ADD_HASH(hash, [_authorityRecords hash]);
 	OF_HASH_ADD_HASH(hash, [_additionalRecords hash]);
@@ -119,10 +127,12 @@
 
 	return [OFString stringWithFormat:
 	    @"<%@:\n"
+	    @"\tDomain name = %@\n"
 	    @"\tAnswer records = %@\n"
 	    @"\tAuthority records = %@\n"
 	    @"\tAdditional records = %@\n"
 	    @">",
-	    self.className, answerRecords, authorityRecords, additionalRecords];
+	    self.className, _domainName, answerRecords, authorityRecords,
+	    additionalRecords];
 }
 @end

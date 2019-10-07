@@ -266,8 +266,8 @@
 		@throw [OFAlreadyConnectedException exceptionWithSocket: self];
 
 	socketAddresses = [[OFThread DNSResolver]
-	    resolveSocketAddressesForHost: host
-			    addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+	    resolveAddressesForHost: host
+		      addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
 
 	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
 	of_socket_address_set_port(&address, port);

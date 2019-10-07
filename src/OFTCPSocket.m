@@ -321,10 +321,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 	[self didConnect];
 }
 
--	(void)resolver: (OFDNSResolver *)resolver
-  didResolveDomainName: (OFString *)domainName
-       socketAddresses: (OFData *)socketAddresses
-	     exception: (id)exception
+- (void)resolver: (OFDNSResolver *)resolver
+  didResolveHost: (OFString *)host
+       addresses: (OFData *)addresses
+       exception: (id)exception
 {
 	if (exception != nil) {
 		_exception = [exception retain];
@@ -332,7 +332,7 @@ static uint16_t defaultSOCKS5Port = 1080;
 		return;
 	}
 
-	_socketAddresses = [socketAddresses copy];
+	_socketAddresses = [addresses copy];
 
 	[self tryNextAddressWithRunLoopMode:
 	    [OFRunLoop currentRunLoop].currentMode];
@@ -369,10 +369,10 @@ static uint16_t defaultSOCKS5Port = 1080;
 	}
 
 	[[OFThread DNSResolver]
-	    asyncResolveSocketAddressesForHost: host
-				 addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
-				   runLoopMode: runLoopMode
-				      delegate: self];
+	    asyncResolveAddressesForHost: host
+			   addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
+			     runLoopMode: runLoopMode
+				delegate: self];
 }
 
 - (void)sendSOCKS5Request
@@ -812,8 +812,8 @@ static uint16_t defaultSOCKS5Port = 1080;
 								 object: self];
 
 	socketAddresses = [[OFThread DNSResolver]
-	    resolveSocketAddressesForHost: host
-			    addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
+	    resolveAddressesForHost: host
+		      addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY];
 
 	address = *(of_socket_address_t *)[socketAddresses itemAtIndex: 0];
 	of_socket_address_set_port(&address, port);

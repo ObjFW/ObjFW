@@ -148,7 +148,6 @@
 # import "OFAcceptFailedException.h"
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
-# import "OFDNSQueryFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChecksumMismatchException.h"
@@ -166,6 +165,11 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #ifdef OF_WINDOWS
 # import "OFCreateWindowsRegistryKeyFailedException.h"
+#endif
+#ifdef OF_HAVE_SOCKETS
+# import "OFDNSQueryFailedException.h"
+#endif
+#ifdef OF_WINDOWS
 # import "OFDeleteWindowsRegistryKeyFailedException.h"
 # import "OFDeleteWindowsRegistryValueFailedException.h"
 #endif
@@ -212,6 +216,9 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFResolveHostFailedException.h"
+#endif
 #import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"

@@ -21,39 +21,35 @@
 #import "OFString.h"
 
 @implementation OFDNSQuery
-@synthesize host = _host, recordClass = _recordClass, recordType = _recordType;
+@synthesize domainName = _domainName, DNSClass = _DNSClass;
+@synthesize recordType = _recordType;
 
-+ (instancetype)queryWithHost: (OFString *)host
++ (instancetype)queryWithDomainName: (OFString *)domainName
+			   DNSClass: (of_dns_class_t)DNSClass
+			 recordType: (of_dns_resource_record_type_t)recordType
 {
-	return [[[self alloc] initWithHost: host] autorelease];
+	return [[[self alloc] initWithDomainName: domainName
+					DNSClass: DNSClass
+				      recordType: recordType] autorelease];
 }
 
-+ (instancetype)queryWithHost: (OFString *)host
-		  recordClass: (of_dns_resource_record_class_t)recordClass
-		   recordType: (of_dns_resource_record_type_t)recordType
-{
-	return [[[self alloc] initWithHost: host
-			       recordClass: recordClass
-				recordType: recordType] autorelease];
-}
-
-- (instancetype)initWithHost: (OFString *)host
-{
-	return [self initWithHost: host
-		      recordClass: OF_DNS_RESOURCE_RECORD_CLASS_IN
-		       recordType: OF_DNS_RESOURCE_RECORD_TYPE_ALL];
-}
-
-- (instancetype)initWithHost: (OFString *)host
-		 recordClass: (of_dns_resource_record_class_t)recordClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+- (instancetype)initWithDomainName: (OFString *)domainName
+			  DNSClass: (of_dns_class_t)DNSClass
+			recordType: (of_dns_resource_record_type_t)recordType
 {
 	self = [super init];
 
 	@try {
-		_host = [host copy];
-		_recordClass = recordClass;
+		void *pool = objc_autoreleasePoolPush();
+
+		if (![domainName hasSuffix: @"."])
+			domainName = [domainName stringByAppendingString: @"."];
+
+		_domainName = [domainName copy];
+		_DNSClass = DNSClass;
 		_recordType = recordType;
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -69,7 +65,7 @@
 
 - (void)dealloc
 {
-	[_host release];
+	[_domainName release];
 
 	[super dealloc];
 }
@@ -83,9 +79,10 @@
 
 	query = object;
 
-	if (query->_host != _host && ![query->_host isEqual: _host])
+	if (query->_domainName != _domainName &&
+	    ![query->_domainName isEqual: _domainName])
 		return false;
-	if (query->_recordClass != _recordClass)
+	if (query->_DNSClass != _DNSClass)
 		return false;
 	if (query->_recordType != _recordType)
 		return false;
@@ -98,8 +95,8 @@
 	uint32_t hash;
 
 	OF_HASH_INIT(hash);
-	OF_HASH_ADD_HASH(hash, _host.hash);
-	OF_HASH_ADD(hash, _recordClass);
+	OF_HASH_ADD_HASH(hash, _domainName.hash);
+	OF_HASH_ADD(hash, _DNSClass);
 	OF_HASH_ADD(hash, _recordType);
 	OF_HASH_FINALIZE(hash);
 
@@ -114,8 +111,7 @@
 - (OFString *)description
 {
 	return [OFString stringWithFormat: @"<%@ %@ %@ %@>",
-	    self.className, _host,
-	    of_dns_resource_record_class_to_string(_recordClass),
+	    self.className, _domainName, of_dns_class_to_string(_DNSClass),
 	    of_dns_resource_record_type_to_string(_recordType)];
 }
 @end

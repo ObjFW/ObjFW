@@ -29,19 +29,17 @@
 OF_APPLICATION_DELEGATE(OFDNS)
 
 @implementation OFDNS
--	(void)resolver: (OFDNSResolver *)resolver
-  didResolveDomainName: (OFString *)domainName
-	      response: (OFDNSResponse *)response
-	     exception: (id)exception
+- (void)resolver: (OFDNSResolver *)resolver
+ didPerformQuery: (OFDNSQuery *)query
+	response: (OFDNSResponse *)response
+       exception: (id)exception
 {
 	if (exception != nil) {
 		[of_stderr writeFormat: @"Failed to resolve: %@\n", exception];
 		[OFApplication terminateWithStatus: 1];
 	}
 
-	[of_stdout writeFormat: @"FQDN: %@\n"
-				@"Response: %@\n",
-				domainName, response];
+	[of_stdout writeFormat: @"%@\n", response];
 
 	[OFApplication terminate];
 }
@@ -49,8 +47,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 - (void)applicationDidFinishLaunching
 {
 	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
-	of_dns_resource_record_class_t recordClass =
-	    OF_DNS_RESOURCE_RECORD_CLASS_ANY;
+	of_dns_class_t DNSClass = OF_DNS_CLASS_ANY;
 	of_dns_resource_record_type_t recordType =
 	    OF_DNS_RESOURCE_RECORD_TYPE_ALL;
 	OFDNSQuery *query;
@@ -82,8 +79,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 		    [arguments objectAtIndex: 1]);
 
 	if (arguments.count >= 3)
-		recordClass = of_dns_resource_record_class_parse(
-		    [arguments objectAtIndex: 2]);
+		DNSClass = of_dns_class_parse([arguments objectAtIndex: 2]);
 
 	if (arguments.count >= 4) {
 		resolver.configReloadInterval = 0;
@@ -91,9 +87,9 @@ OF_APPLICATION_DELEGATE(OFDNS)
 		    [arguments objectsInRange: of_range(3, 1)];
 	}
 
-	query = [OFDNSQuery queryWithHost: [arguments objectAtIndex: 0]
-			      recordClass: recordClass
-			       recordType: recordType];
+	query = [OFDNSQuery queryWithDomainName: [arguments objectAtIndex: 0]
+				       DNSClass: DNSClass
+				     recordType: recordType];
 	[resolver asyncPerformQuery: query
 			   delegate: self];
 }

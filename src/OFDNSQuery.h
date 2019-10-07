@@ -20,6 +20,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
+@class OFString;
+
 /*!
  * @class OFDNSQuery OFDNSQuery.h ObjFW/OFDNSQuery.h
  *
@@ -27,21 +29,21 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFDNSQuery: OFObject <OFCopying>
 {
-	OFString *_host;
-	of_dns_resource_record_class_t _recordClass;
+	OFString *_domainName;
+	of_dns_class_t _DNSClass;
 	of_dns_resource_record_type_t _recordType;
 	OF_RESERVE_IVARS(4)
 }
 
 /*!
- * @brief The host to resolve.
+ * @brief The domain name of the query.
  */
-@property (readonly, nonatomic) OFString *host;
+@property (readonly, nonatomic) OFString *domainName;
 
 /*!
- * @brief The record class of the query.
+ * @brief The DNS class of the query.
  */
-@property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
+@property (readonly, nonatomic) of_dns_class_t DNSClass;
 
 /*!
  * @brief The record type of the query.
@@ -49,45 +51,28 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
 
 /*!
- * @brief Creates a new, autoreleased OFDNSQuery with IN class and type ALL.
- *
- * @param host The host to resolve
- * @return A new, autoreleased OFDNSQuery
- */
-+ (instancetype)queryWithHost: (OFString *)host;
-
-/*!
  * @brief Creates a new, autoreleased OFDNSQuery.
  *
- * @param host The host to resolve
- * @param recordClass The record class of the query
+ * @param domainName The domain name to query
+ * @param DNSClass The DNS class of the query
  * @param recordType The record type of the query
  * @return A new, autoreleased OFDNSQuery
  */
-+ (instancetype)queryWithHost: (OFString *)host
-		  recordClass: (of_dns_resource_record_class_t)recordClass
-		   recordType: (of_dns_resource_record_type_t)recordType;
-
-/*!
- * @brief Initializes an already allocated OFDNSQuery with IN class and type
- *	  ALL.
- *
- * @param host The host to resolve
- * @return An initialized OFDNSQuery
- */
-- (instancetype)initWithHost: (OFString *)host;
++ (instancetype)queryWithDomainName: (OFString *)domainName
+			   DNSClass: (of_dns_class_t)DNSClass
+			 recordType: (of_dns_resource_record_type_t)recordType;
 
 /*!
  * @brief Initializes an already allocated OFDNSQuery.
  *
- * @param host The host to resolve
- * @param recordClass The record class of the query
+ * @param domainName The domain name to query
+ * @param DNSClass The DNS class of the query
  * @param recordType The record type of the query
  * @return An initialized OFDNSQuery
  */
-- (instancetype)initWithHost: (OFString *)host
-		 recordClass: (of_dns_resource_record_class_t)recordClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+- (instancetype)initWithDomainName: (OFString *)domainName
+			  DNSClass: (of_dns_class_t)DNSClass
+			recordType: (of_dns_resource_record_type_t)recordType
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

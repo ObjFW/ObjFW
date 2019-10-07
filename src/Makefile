@@ -216,6 +216,7 @@ SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
 SRCS_SOCKETS += OFDNSResolverSettings.m			\
 		OFHTTPURLHandler.m			\
+		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
 		${OFEPOLLKERNELEVENTOBSERVER_M}		\
 		${OFKQUEUEKERNELEVENTOBSERVER_M}	\
