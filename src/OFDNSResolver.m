@@ -879,10 +879,10 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 	[_queries removeObjectForKey: ID];
 
 	@try {
+		of_dns_resolver_error_t error = 0;
 		bool tryNextNameServer = false;
 		const unsigned char *queryDataBuffer;
 		size_t i;
-		of_dns_resolver_error_t error;
 		uint16_t numQuestions, numAnswers, numAuthorityRecords;
 		uint16_t numAdditionalRecords;
 
