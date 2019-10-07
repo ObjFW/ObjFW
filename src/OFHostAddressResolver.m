@@ -31,7 +31,7 @@
 #import "OFInvalidFormatException.h"
 #import "OFResolveHostFailedException.h"
 
-@interface OFHostAddressResolverDelegate: OFObject <OFDNSResolverDelegate>
+@interface OFHostAddressResolverDelegate: OFObject <OFDNSResolverHostDelegate>
 {
 @public
 	bool _done;
@@ -71,7 +71,7 @@ addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
 
 static void
 callDelegateInMode(of_run_loop_mode_t runLoopMode,
-    id <OFDNSResolverDelegate> delegate, OFDNSResolver *resolver,
+    id <OFDNSResolverHostDelegate> delegate, OFDNSResolver *resolver,
     OFString *host, OFData *addresses, id exception)
 {
 	SEL selector = @selector(resolver:didResolveHost:addresses:exception:);
@@ -97,7 +97,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		    resolver: (OFDNSResolver *)resolver
 		    settings: (OFDNSResolverSettings *)settings
 		 runLoopMode: (of_run_loop_mode_t)runLoopMode
-		    delegate: (id <OFDNSResolverDelegate>)delegate
+		    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	self = [super init];
 

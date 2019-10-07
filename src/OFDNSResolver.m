@@ -77,7 +77,7 @@
 	OFDNSResolverSettings *_settings;
 	size_t _nameServersIndex;
 	unsigned int _attempt;
-	id <OFDNSResolverDelegate> _delegate;
+	id <OFDNSResolverQueryDelegate> _delegate;
 	OFData *_queryData;
 	of_socket_address_t _usedNameServer;
 	OFTimer *_cancelTimer;
@@ -86,7 +86,7 @@
 - (instancetype)initWithQuery: (OFDNSQuery *)query
 			   ID: (OFNumber *)ID
 		     settings: (OFDNSResolverSettings *)settings
-		     delegate: (id <OFDNSResolverDelegate>)delegate;
+		     delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 @end
 
 static OFString *
@@ -458,7 +458,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 - (instancetype)initWithQuery: (OFDNSQuery *)query
 			   ID: (OFNumber *)ID
 		     settings: (OFDNSResolverSettings *)settings
-		     delegate: (id <OFDNSResolverDelegate>)delegate
+		     delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	self = [super init];
 
@@ -758,7 +758,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 - (void)asyncPerformQuery: (OFDNSQuery *)query
-		 delegate: (id <OFDNSResolverDelegate>)delegate
+		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	[self asyncPerformQuery: query
 		    runLoopMode: of_run_loop_mode_default
@@ -767,7 +767,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 - (void)asyncPerformQuery: (OFDNSQuery *)query
 	      runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 delegate: (id <OFDNSResolverDelegate>)delegate
+		 delegate: (id <OFDNSResolverQueryDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFNumber *ID;
@@ -997,7 +997,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 }
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
-			    delegate: (id <OFDNSResolverDelegate>)delegate
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	[self asyncResolveAddressesForHost: host
 			     addressFamily: OF_SOCKET_ADDRESS_FAMILY_ANY
@@ -1007,7 +1007,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 
 - (void)asyncResolveAddressesForHost: (OFString *)host
 		       addressFamily: (of_socket_address_family_t)addressFamily
-			    delegate: (id <OFDNSResolverDelegate>)delegate
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	[self asyncResolveAddressesForHost: host
 			     addressFamily: addressFamily
@@ -1018,7 +1018,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 - (void)asyncResolveAddressesForHost: (OFString *)host
 		       addressFamily: (of_socket_address_family_t)addressFamily
 			 runLoopMode: (of_run_loop_mode_t)runLoopMode
-			    delegate: (id <OFDNSResolverDelegate>)delegate
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFHostAddressResolver *resolver = [[[OFHostAddressResolver alloc]

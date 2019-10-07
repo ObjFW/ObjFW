@@ -68,12 +68,11 @@ typedef enum of_dns_resolver_error_t {
 } of_dns_resolver_error_t;
 
 /*!
- * @protocol OFDNSResolverDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
- * @brief A delegate for OFDNSResolver.
+ * @brief A delegate for performed DNS queries.
  */
-@protocol OFDNSResolverDelegate <OFObject>
-@optional
+@protocol OFDNSResolverQueryDelegate <OFObject>
 /*!
  * @brief This method is called when a DNS resolver performed a query.
  *
@@ -87,7 +86,14 @@ typedef enum of_dns_resolver_error_t {
   didPerformQuery: (OFDNSQuery *)query
 	 response: (nullable OFDNSResponse *)response
 	exception: (nullable id)exception;
+@end
 
+/*!
+ * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
+ *
+ * @brief A delegate for resolved hosts.
+ */
+@protocol OFDNSResolverHostDelegate <OFObject>
 /*!
  * @brief This method is called when a DNS resolver resolved a host to
  *	  addresses.
@@ -199,7 +205,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncPerformQuery: (OFDNSQuery *)query
-		 delegate: (id <OFDNSResolverDelegate>)delegate;
+		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
 /*!
  * @brief Asynchronously performs the specified query.
@@ -210,7 +216,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)asyncPerformQuery: (OFDNSQuery *)query
 	      runLoopMode: (of_run_loop_mode_t)runLoopMode
-		 delegate: (id <OFDNSResolverDelegate>)delegate;
+		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -219,7 +225,7 @@ OF_SUBCLASSING_RESTRICTED
  * @param delegate The delegate to use for callbacks
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
-			    delegate: (id <OFDNSResolverDelegate>)delegate;
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -230,7 +236,7 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)asyncResolveAddressesForHost: (OFString *)host
 		       addressFamily: (of_socket_address_family_t)addressFamily
-			    delegate: (id <OFDNSResolverDelegate>)delegate;
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -243,7 +249,7 @@ OF_SUBCLASSING_RESTRICTED
 - (void)asyncResolveAddressesForHost: (OFString *)host
 		       addressFamily: (of_socket_address_family_t)addressFamily
 			 runLoopMode: (of_run_loop_mode_t)runLoopMode
-			    delegate: (id <OFDNSResolverDelegate>)delegate;
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /*!
  * @brief Synchronously resolves the specified host to socket addresses.

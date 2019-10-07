@@ -23,16 +23,16 @@
 #import "OFSandbox.h"
 #import "OFStdIOStream.h"
 
-@interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverDelegate>
+@interface OFDNS: OFObject <OFApplicationDelegate, OFDNSResolverQueryDelegate>
 @end
 
 OF_APPLICATION_DELEGATE(OFDNS)
 
 @implementation OFDNS
-- (void)resolver: (OFDNSResolver *)resolver
- didPerformQuery: (OFDNSQuery *)query
-	response: (OFDNSResponse *)response
-       exception: (id)exception
+-  (void)resolver: (OFDNSResolver *)resolver
+  didPerformQuery: (OFDNSQuery *)query
+	 response: (OFDNSResponse *)response
+	exception: (id)exception
 {
 	if (exception != nil) {
 		[of_stderr writeFormat: @"Failed to resolve: %@\n", exception];

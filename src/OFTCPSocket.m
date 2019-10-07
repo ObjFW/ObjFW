@@ -67,7 +67,7 @@ static OFString *defaultSOCKS5Host = nil;
 static uint16_t defaultSOCKS5Port = 1080;
 
 @interface OFTCPSocketAsyncConnectDelegate: OFObject <OFTCPSocketDelegate,
-    OFTCPSocketDelegate_Private, OFDNSResolverDelegate>
+    OFTCPSocketDelegate_Private, OFDNSResolverHostDelegate>
 {
 	OFTCPSocket *_socket;
 	OFString *_host;
