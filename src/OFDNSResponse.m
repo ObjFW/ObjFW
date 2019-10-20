@@ -78,6 +78,9 @@
 {
 	OFDNSResponse *response;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFDNSResponse class]])
 		return false;
 

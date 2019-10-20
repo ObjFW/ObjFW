@@ -129,6 +129,9 @@
 {
 	OFASN1PrintableString *printableString;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1PrintableString class]])
 		return false;
 

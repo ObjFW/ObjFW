@@ -97,6 +97,9 @@
 {
 	OFASN1UTF8String *UTF8String;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1UTF8String class]])
 		return false;
 

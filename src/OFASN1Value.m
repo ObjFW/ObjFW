@@ -79,6 +79,9 @@
 {
 	OFASN1Value *value;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1Value class]])
 		return false;
 

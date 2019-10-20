@@ -90,6 +90,9 @@
 {
 	OFASN1Boolean *boolean;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1Boolean class]])
 		return false;
 

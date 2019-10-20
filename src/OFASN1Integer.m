@@ -99,6 +99,9 @@ of_asn1_der_integer_parse(const unsigned char *buffer, size_t length)
 {
 	OFASN1Integer *integer;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1Integer class]])
 		return false;
 

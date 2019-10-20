@@ -155,6 +155,9 @@
 {
 	OFASN1ObjectIdentifier *objectIdentifier;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1ObjectIdentifier class]])
 		return false;
 

@@ -345,7 +345,7 @@
 	if (object == self)
 		return true;
 
-	if ([object isKindOfClass: [OFProperty class]])
+	if (![object isKindOfClass: [OFProperty class]])
 		return false;
 
 	otherProperty = object;

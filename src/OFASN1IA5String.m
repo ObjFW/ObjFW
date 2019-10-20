@@ -98,6 +98,9 @@
 {
 	OFASN1IA5String *IA5String;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1IA5String class]])
 		return false;
 

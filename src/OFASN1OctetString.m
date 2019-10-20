@@ -83,6 +83,9 @@
 {
 	OFASN1OctetString *octetString;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1OctetString class]])
 		return false;
 

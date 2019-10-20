@@ -201,25 +201,28 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return &_address;
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFADNSResourceRecord *otherRecord;
+	OFADNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFADNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFADNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (!of_socket_address_equal(&otherRecord->_address, &_address))
+	if (!of_socket_address_equal(&record->_address, &_address))
 		return false;
 
 	return true;
@@ -284,25 +287,28 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	return &_address;
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFAAAADNSResourceRecord *otherRecord;
+	OFAAAADNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFAAAADNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFAAAADNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (!of_socket_address_equal(&otherRecord->_address, &_address))
+	if (!of_socket_address_equal(&record->_address, &_address))
 		return false;
 
 	return true;
@@ -377,26 +383,28 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFCNAMEDNSResourceRecord *otherRecord;
+	OFCNAMEDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFCNAMEDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFCNAMEDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_alias != _alias &&
-	    ![otherRecord->_alias isEqual: _alias])
+	if (record->_alias != _alias && ![record->_alias isEqual: _alias])
 		return false;
 
 	return true;
@@ -475,28 +483,31 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFHINFODNSResourceRecord *otherRecord;
+	OFHINFODNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFHINFODNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFHINFODNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_CPU != _CPU && ![otherRecord->_CPU isEqual: _CPU])
+	if (record->_CPU != _CPU && ![record->_CPU isEqual: _CPU])
 		return false;
 
-	if (otherRecord->_OS != _OS && ![otherRecord->_OS isEqual: _OS])
+	if (record->_OS != _OS && ![record->_OS isEqual: _OS])
 		return false;
 
 	return true;
@@ -576,29 +587,32 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFMXDNSResourceRecord *otherRecord;
+	OFMXDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFMXDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFMXDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_preference != _preference)
+	if (record->_preference != _preference)
 		return false;
 
-	if (otherRecord->_mailExchange != _mailExchange &&
-	    ![otherRecord->_mailExchange isEqual: _mailExchange])
+	if (record->_mailExchange != _mailExchange &&
+	    ![record->_mailExchange isEqual: _mailExchange])
 		return false;
 
 	return true;
@@ -677,26 +691,29 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFNSDNSResourceRecord *otherRecord;
+	OFNSDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFNSDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFNSDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_authoritativeHost != _authoritativeHost &&
-	    ![otherRecord->_authoritativeHost isEqual: _authoritativeHost])
+	if (record->_authoritativeHost != _authoritativeHost &&
+	    ![record->_authoritativeHost isEqual: _authoritativeHost])
 		return false;
 
 	return true;
@@ -772,26 +789,29 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFPTRDNSResourceRecord *otherRecord;
+	OFPTRDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFPTRDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFPTRDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_domainName != _domainName &&
-	    ![otherRecord->_domainName isEqual: _domainName])
+	if (record->_domainName != _domainName &&
+	    ![record->_domainName isEqual: _domainName])
 		return false;
 
 	return true;
@@ -870,30 +890,33 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFRPDNSResourceRecord *otherRecord;
+	OFRPDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFRPDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFRPDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_mailbox != _mailbox &&
-	    ![otherRecord->_mailbox isEqual: _mailbox])
+	if (record->_mailbox != _mailbox &&
+	    ![record->_mailbox isEqual: _mailbox])
 		return false;
 
-	if (otherRecord->_TXTDomainName != _TXTDomainName &&
-	    ![otherRecord->_TXTDomainName isEqual: _TXTDomainName])
+	if (record->_TXTDomainName != _TXTDomainName &&
+	    ![record->_TXTDomainName isEqual: _TXTDomainName])
 		return false;
 
 	return true;
@@ -988,45 +1011,48 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFSOADNSResourceRecord *otherRecord;
+	OFSOADNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFSOADNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFSOADNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_primaryNameServer != _primaryNameServer &&
-	    ![otherRecord->_primaryNameServer isEqual: _primaryNameServer])
+	if (record->_primaryNameServer != _primaryNameServer &&
+	    ![record->_primaryNameServer isEqual: _primaryNameServer])
 		return false;
 
-	if (otherRecord->_responsiblePerson != _responsiblePerson &&
-	    ![otherRecord->_responsiblePerson isEqual: _responsiblePerson])
+	if (record->_responsiblePerson != _responsiblePerson &&
+	    ![record->_responsiblePerson isEqual: _responsiblePerson])
 		return false;
 
-	if (otherRecord->_serialNumber != _serialNumber)
+	if (record->_serialNumber != _serialNumber)
 		return false;
 
-	if (otherRecord->_refreshInterval != _refreshInterval)
+	if (record->_refreshInterval != _refreshInterval)
 		return false;
 
-	if (otherRecord->_retryInterval != _retryInterval)
+	if (record->_retryInterval != _retryInterval)
 		return false;
 
-	if (otherRecord->_expirationInterval != _expirationInterval)
+	if (record->_expirationInterval != _expirationInterval)
 		return false;
 
-	if (otherRecord->_minTTL != _minTTL)
+	if (record->_minTTL != _minTTL)
 		return false;
 
 	return true;
@@ -1137,35 +1163,37 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFSRVDNSResourceRecord *otherRecord;
+	OFSRVDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFSRVDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFSRVDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_priority != _priority)
+	if (record->_priority != _priority)
 		return false;
 
-	if (otherRecord->_weight != _weight)
+	if (record->_weight != _weight)
 		return false;
 
-	if (otherRecord->_target != _target &&
-	    ![otherRecord->_target isEqual: _target])
+	if (record->_target != _target && ![record->_target isEqual: _target])
 		return false;
 
-	if (otherRecord->_port != _port)
+	if (record->_port != _port)
 		return false;
 
 	return true;
@@ -1248,26 +1276,29 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 	[super dealloc];
 }
 
-- (bool)isEqual: (id)otherObject
+- (bool)isEqual: (id)object
 {
-	OFTXTDNSResourceRecord *otherRecord;
+	OFTXTDNSResourceRecord *record;
 
-	if (![otherObject isKindOfClass: [OFTXTDNSResourceRecord class]])
+	if (object == self)
+		return true;
+
+	if (![object isKindOfClass: [OFTXTDNSResourceRecord class]])
 		return false;
 
-	otherRecord = otherObject;
+	record = object;
 
-	if (otherRecord->_name != _name && ![otherRecord->_name isEqual: _name])
+	if (record->_name != _name && ![record->_name isEqual: _name])
 		return false;
 
-	if (otherRecord->_DNSClass != _DNSClass)
+	if (record->_DNSClass != _DNSClass)
 		return false;
 
-	if (otherRecord->_recordType != _recordType)
+	if (record->_recordType != _recordType)
 		return false;
 
-	if (otherRecord->_textData != _textData &&
-	    ![otherRecord->_textData isEqual: _textData])
+	if (record->_textData != _textData &&
+	    ![record->_textData isEqual: _textData])
 		return false;
 
 	return true;

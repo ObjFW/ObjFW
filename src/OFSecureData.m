@@ -546,6 +546,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	OFData *otherData;
 	unsigned char diff;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFData class]])
 		return false;
 

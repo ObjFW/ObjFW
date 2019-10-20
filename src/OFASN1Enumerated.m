@@ -77,6 +77,9 @@ extern intmax_t of_asn1_der_integer_parse(const unsigned char *buffer,
 {
 	OFASN1Enumerated *enumerated;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1Enumerated class]])
 		return false;
 

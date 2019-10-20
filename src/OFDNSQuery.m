@@ -74,6 +74,9 @@
 {
 	OFDNSQuery *query;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFDNSQuery class]])
 		return false;
 

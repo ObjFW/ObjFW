@@ -110,6 +110,9 @@
 {
 	OFASN1NumericString *numericString;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1NumericString class]])
 		return false;
 

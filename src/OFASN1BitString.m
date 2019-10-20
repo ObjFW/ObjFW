@@ -156,6 +156,9 @@
 {
 	OFASN1BitString *bitString;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFASN1BitString class]])
 		return false;
 
