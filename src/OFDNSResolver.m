@@ -170,11 +170,10 @@ parseName(const unsigned char *buffer, size_t length, size_t *i,
 
 static OF_KINDOF(OFDNSResourceRecord *)
 parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
-    of_dns_resource_record_type_t recordType, uint32_t TTL,
-    const unsigned char *buffer, size_t length, size_t i, uint16_t dataLength)
+    of_dns_record_type_t recordType, uint32_t TTL, const unsigned char *buffer,
+    size_t length, size_t i, uint16_t dataLength)
 {
-	if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_A &&
-	    DNSClass == OF_DNS_CLASS_IN) {
+	if (recordType == OF_DNS_RECORD_TYPE_A && DNSClass == OF_DNS_CLASS_IN) {
 		of_socket_address_t address;
 
 		if (dataLength != 4)
@@ -191,7 +190,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_NS) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_NS) {
 		size_t j = i;
 		OFString *authoritativeHost = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -204,7 +203,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			     DNSClass: DNSClass
 		    authoritativeHost: authoritativeHost
 				  TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_CNAME) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_CNAME) {
 		size_t j = i;
 		OFString *alias = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -217,7 +216,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 			   alias: alias
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_SOA) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_SOA) {
 		size_t j = i;
 		OFString *primaryNameServer = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -258,7 +257,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    expirationInterval: expirationInterval
 				minTTL: minTTL
 				   TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_PTR) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_PTR) {
 		size_t j = i;
 		OFString *domainName = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -271,7 +270,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 		      domainName: domainName
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_HINFO) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_HINFO) {
 		size_t j = i;
 		OFString *CPU = parseString(buffer, length, &j);
 		OFString *OS;
@@ -290,7 +289,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			     CPU: CPU
 			      OS: OS
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_MX) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_MX) {
 		uint16_t preference;
 		size_t j;
 		OFString *mailExchange;
@@ -313,7 +312,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			      preference: preference
 			    mailExchange: mailExchange
 				     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_TXT) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_TXT) {
 		OFData *textData = [OFData dataWithItems: &buffer[i]
 						   count: dataLength];
 
@@ -322,7 +321,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			DNSClass: DNSClass
 			textData: textData
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_RP) {
+	} else if (recordType == OF_DNS_RECORD_TYPE_RP) {
 		size_t j = i;
 		OFString *mailbox = parseName(buffer, length, &j,
 		    MAX_ALLOWED_POINTERS);
@@ -343,7 +342,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			 mailbox: mailbox
 		   TXTDomainName: TXTDomainName
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_AAAA &&
+	} else if (recordType == OF_DNS_RECORD_TYPE_AAAA &&
 	    DNSClass == OF_DNS_CLASS_IN) {
 		of_socket_address_t address;
 
@@ -365,7 +364,7 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 		    initWithName: name
 			 address: &address
 			     TTL: TTL] autorelease];
-	} else if (recordType == OF_DNS_RESOURCE_RECORD_TYPE_SRV &&
+	} else if (recordType == OF_DNS_RECORD_TYPE_SRV &&
 	    DNSClass == OF_DNS_CLASS_IN) {
 		uint16_t priority, weight, port;
 		size_t j;
@@ -411,7 +410,7 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		OFString *name = parseName(buffer, length, i,
 		    MAX_ALLOWED_POINTERS);
 		of_dns_class_t DNSClass;
-		of_dns_resource_record_type_t recordType;
+		of_dns_record_type_t recordType;
 		uint32_t TTL;
 		uint16_t dataLength;
 		OFDNSResourceRecord *record;

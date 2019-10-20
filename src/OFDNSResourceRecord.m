@@ -37,32 +37,32 @@ of_dns_class_to_string(of_dns_class_t DNSClass)
 }
 
 OFString *
-of_dns_resource_record_type_to_string(of_dns_resource_record_type_t recordType)
+of_dns_record_type_to_string(of_dns_record_type_t recordType)
 {
 	switch (recordType) {
-	case OF_DNS_RESOURCE_RECORD_TYPE_A:
+	case OF_DNS_RECORD_TYPE_A:
 		return @"A";
-	case OF_DNS_RESOURCE_RECORD_TYPE_NS:
+	case OF_DNS_RECORD_TYPE_NS:
 		return @"NS";
-	case OF_DNS_RESOURCE_RECORD_TYPE_CNAME:
+	case OF_DNS_RECORD_TYPE_CNAME:
 		return @"CNAME";
-	case OF_DNS_RESOURCE_RECORD_TYPE_SOA:
+	case OF_DNS_RECORD_TYPE_SOA:
 		return @"SOA";
-	case OF_DNS_RESOURCE_RECORD_TYPE_PTR:
+	case OF_DNS_RECORD_TYPE_PTR:
 		return @"PTR";
-	case OF_DNS_RESOURCE_RECORD_TYPE_HINFO:
+	case OF_DNS_RECORD_TYPE_HINFO:
 		return @"HINFO";
-	case OF_DNS_RESOURCE_RECORD_TYPE_MX:
+	case OF_DNS_RECORD_TYPE_MX:
 		return @"MX";
-	case OF_DNS_RESOURCE_RECORD_TYPE_TXT:
+	case OF_DNS_RECORD_TYPE_TXT:
 		return @"TXT";
-	case OF_DNS_RESOURCE_RECORD_TYPE_RP:
+	case OF_DNS_RECORD_TYPE_RP:
 		return @"RP";
-	case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
+	case OF_DNS_RECORD_TYPE_AAAA:
 		return @"AAAA";
-	case OF_DNS_RESOURCE_RECORD_TYPE_SRV:
+	case OF_DNS_RECORD_TYPE_SRV:
 		return @"SRV";
-	case OF_DNS_RESOURCE_RECORD_TYPE_ALL:
+	case OF_DNS_RECORD_TYPE_ALL:
 		return @"all";
 	default:
 		return [OFString stringWithFormat: @"%u", recordType];
@@ -86,36 +86,35 @@ of_dns_class_t of_dns_class_parse(OFString *string)
 	return DNSClass;
 }
 
-of_dns_resource_record_type_t of_dns_resource_record_type_parse(
-    OFString *string)
+of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 {
 	void *pool = objc_autoreleasePoolPush();
-	of_dns_resource_record_type_t recordType;
+	of_dns_record_type_t recordType;
 
 	string = string.uppercaseString;
 
 	if ([string isEqual: @"A"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_A;
+		recordType = OF_DNS_RECORD_TYPE_A;
 	else if ([string isEqual: @"NS"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_NS;
+		recordType = OF_DNS_RECORD_TYPE_NS;
 	else if ([string isEqual: @"CNAME"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_CNAME;
+		recordType = OF_DNS_RECORD_TYPE_CNAME;
 	else if ([string isEqual: @"SOA"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_SOA;
+		recordType = OF_DNS_RECORD_TYPE_SOA;
 	else if ([string isEqual: @"PTR"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_PTR;
+		recordType = OF_DNS_RECORD_TYPE_PTR;
 	else if ([string isEqual: @"HINFO"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_HINFO;
+		recordType = OF_DNS_RECORD_TYPE_HINFO;
 	else if ([string isEqual: @"MX"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_MX;
+		recordType = OF_DNS_RECORD_TYPE_MX;
 	else if ([string isEqual: @"TXT"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_TXT;
+		recordType = OF_DNS_RECORD_TYPE_TXT;
 	else if ([string isEqual: @"RP"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_RP;
+		recordType = OF_DNS_RECORD_TYPE_RP;
 	else if ([string isEqual: @"AAAA"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_AAAA;
+		recordType = OF_DNS_RECORD_TYPE_AAAA;
 	else if ([string isEqual: @"SRV"])
-		recordType = OF_DNS_RESOURCE_RECORD_TYPE_SRV;
+		recordType = OF_DNS_RECORD_TYPE_SRV;
 	else
 		@throw [OFInvalidArgumentException exception];
 
@@ -130,7 +129,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	self = [super init];
@@ -170,14 +169,14 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 	    @"\tTTL = %" PRIu32 "\n"
 	    @">",
 	    self.className, _name, of_dns_class_to_string(_DNSClass),
-	    of_dns_resource_record_type_to_string(_recordType), _TTL];
+	    of_dns_record_type_to_string(_recordType), _TTL];
 }
 @end
 
 @implementation OFADNSResourceRecord
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -189,7 +188,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: OF_DNS_CLASS_IN
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_A
+			recordType: OF_DNS_RECORD_TYPE_A
 			       TTL: TTL];
 
 	_address = *address;
@@ -260,7 +259,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 @implementation OFAAAADNSResourceRecord
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -272,7 +271,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: OF_DNS_CLASS_IN
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA
+			recordType: OF_DNS_RECORD_TYPE_AAAA
 			       TTL: TTL];
 
 	_address = *address;
@@ -345,7 +344,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -358,7 +357,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_CNAME
+			recordType: OF_DNS_RECORD_TYPE_CNAME
 			       TTL: TTL];
 
 	@try {
@@ -440,7 +439,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -454,7 +453,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_HINFO
+			recordType: OF_DNS_RECORD_TYPE_HINFO
 			       TTL: TTL];
 
 	@try {
@@ -542,7 +541,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -556,7 +555,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_MX
+			recordType: OF_DNS_RECORD_TYPE_MX
 			       TTL: TTL];
 
 	@try {
@@ -645,7 +644,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -658,7 +657,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_NS
+			recordType: OF_DNS_RECORD_TYPE_NS
 			       TTL: TTL];
 
 	@try {
@@ -740,7 +739,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -753,7 +752,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_PTR
+			recordType: OF_DNS_RECORD_TYPE_PTR
 			       TTL: TTL];
 
 	@try {
@@ -835,7 +834,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -849,7 +848,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_RP
+			recordType: OF_DNS_RECORD_TYPE_RP
 			       TTL: TTL];
 
 	@try {
@@ -943,7 +942,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -962,7 +961,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_SOA
+			recordType: OF_DNS_RECORD_TYPE_SOA
 			       TTL: TTL];
 
 	@try {
@@ -1100,7 +1099,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -1115,7 +1114,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: OF_DNS_CLASS_IN
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_SRV
+			recordType: OF_DNS_RECORD_TYPE_SRV
 			       TTL: TTL];
 
 	@try {
@@ -1216,7 +1215,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL
 {
 	OF_INVALID_INIT_METHOD
@@ -1229,7 +1228,7 @@ of_dns_resource_record_type_t of_dns_resource_record_type_parse(
 {
 	self = [super initWithName: name
 			  DNSClass: DNSClass
-			recordType: OF_DNS_RESOURCE_RECORD_TYPE_TXT
+			recordType: OF_DNS_RECORD_TYPE_TXT
 			       TTL: TTL];
 
 	@try {

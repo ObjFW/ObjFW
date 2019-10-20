@@ -73,13 +73,13 @@ addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
 {
 	switch ([record recordType]) {
 #ifdef OF_HAVE_IPV6
-	case OF_DNS_RESOURCE_RECORD_TYPE_AAAA:
+	case OF_DNS_RECORD_TYPE_AAAA:
 		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_IPV6 &&
 		    addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
 			return false;
 		break;
 #endif
-	case OF_DNS_RESOURCE_RECORD_TYPE_A:
+	case OF_DNS_RECORD_TYPE_A:
 		if (addressFamily != OF_SOCKET_ADDRESS_FAMILY_IPV4 &&
 		    addressFamily != OF_SOCKET_ADDRESS_FAMILY_ANY)
 			return false;
@@ -170,7 +170,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
 			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA];
+			     recordType: OF_DNS_RECORD_TYPE_AAAA];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: query
 				 runLoopMode: _runLoopMode
@@ -183,7 +183,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		OFDNSQuery *query = [OFDNSQuery
 		    queryWithDomainName: domainName
 			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RESOURCE_RECORD_TYPE_A];
+			     recordType: OF_DNS_RECORD_TYPE_A];
 		_numExpectedResponses++;
 		[_resolver asyncPerformQuery: query
 				 runLoopMode: _runLoopMode
@@ -220,7 +220,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 			continue;
 		}
 
-		if ([record recordType] != OF_DNS_RESOURCE_RECORD_TYPE_CNAME)
+		if ([record recordType] != OF_DNS_RECORD_TYPE_CNAME)
 			continue;
 
 		/* FIXME: Check if it's already in answers */

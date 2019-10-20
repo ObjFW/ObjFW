@@ -31,7 +31,7 @@ OF_ASSUME_NONNULL_BEGIN
 {
 	OFString *_domainName;
 	of_dns_class_t _DNSClass;
-	of_dns_resource_record_type_t _recordType;
+	of_dns_record_type_t _recordType;
 	OF_RESERVE_IVARS(4)
 }
 
@@ -48,7 +48,7 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief The record type of the query.
  */
-@property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
+@property (readonly, nonatomic) of_dns_record_type_t recordType;
 
 /*!
  * @brief Creates a new, autoreleased OFDNSQuery.
@@ -60,7 +60,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)queryWithDomainName: (OFString *)domainName
 			   DNSClass: (of_dns_class_t)DNSClass
-			 recordType: (of_dns_resource_record_type_t)recordType;
+			 recordType: (of_dns_record_type_t)recordType;
 
 /*!
  * @brief Initializes an already allocated OFDNSQuery.
@@ -72,7 +72,7 @@ OF_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithDomainName: (OFString *)domainName
 			  DNSClass: (of_dns_class_t)DNSClass
-			recordType: (of_dns_resource_record_type_t)recordType
+			recordType: (of_dns_record_type_t)recordType
     OF_DESIGNATED_INITIALIZER;
 
 - (instancetype)init OF_UNAVAILABLE;

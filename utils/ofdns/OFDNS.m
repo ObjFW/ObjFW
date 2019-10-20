@@ -48,8 +48,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 {
 	OFArray OF_GENERIC(OFString *) *arguments = [OFApplication arguments];
 	of_dns_class_t DNSClass = OF_DNS_CLASS_ANY;
-	of_dns_resource_record_type_t recordType =
-	    OF_DNS_RESOURCE_RECORD_TYPE_ALL;
+	of_dns_record_type_t recordType = OF_DNS_RECORD_TYPE_ALL;
 	OFDNSQuery *query;
 	OFDNSResolver *resolver;
 
@@ -75,7 +74,7 @@ OF_APPLICATION_DELEGATE(OFDNS)
 	resolver = [OFDNSResolver resolver];
 
 	if (arguments.count >= 2)
-		recordType = of_dns_resource_record_type_parse(
+		recordType = of_dns_record_type_parse(
 		    [arguments objectAtIndex: 1]);
 
 	if (arguments.count >= 3)

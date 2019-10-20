@@ -26,7 +26,7 @@
 
 + (instancetype)queryWithDomainName: (OFString *)domainName
 			   DNSClass: (of_dns_class_t)DNSClass
-			 recordType: (of_dns_resource_record_type_t)recordType
+			 recordType: (of_dns_record_type_t)recordType
 {
 	return [[[self alloc] initWithDomainName: domainName
 					DNSClass: DNSClass
@@ -35,7 +35,7 @@
 
 - (instancetype)initWithDomainName: (OFString *)domainName
 			  DNSClass: (of_dns_class_t)DNSClass
-			recordType: (of_dns_resource_record_type_t)recordType
+			recordType: (of_dns_record_type_t)recordType
 {
 	self = [super init];
 
@@ -112,6 +112,6 @@
 {
 	return [OFString stringWithFormat: @"<%@ %@ %@ %@>",
 	    self.className, _domainName, of_dns_class_to_string(_DNSClass),
-	    of_dns_resource_record_type_to_string(_recordType)];
+	    of_dns_record_type_to_string(_recordType)];
 }
 @end

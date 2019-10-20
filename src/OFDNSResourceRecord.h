@@ -41,30 +41,30 @@ typedef enum {
  */
 typedef enum {
 	/*! A */
-	OF_DNS_RESOURCE_RECORD_TYPE_A	  =   1,
+	OF_DNS_RECORD_TYPE_A	 =   1,
 	/*! NS */
-	OF_DNS_RESOURCE_RECORD_TYPE_NS	  =   2,
+	OF_DNS_RECORD_TYPE_NS	 =   2,
 	/*! CNAME */
-	OF_DNS_RESOURCE_RECORD_TYPE_CNAME =   5,
+	OF_DNS_RECORD_TYPE_CNAME =   5,
 	/*! SOA */
-	OF_DNS_RESOURCE_RECORD_TYPE_SOA	  =   6,
+	OF_DNS_RECORD_TYPE_SOA	 =   6,
 	/*! PTR */
-	OF_DNS_RESOURCE_RECORD_TYPE_PTR	  =  12,
+	OF_DNS_RECORD_TYPE_PTR	 =  12,
 	/*! HINFO */
-	OF_DNS_RESOURCE_RECORD_TYPE_HINFO =  13,
+	OF_DNS_RECORD_TYPE_HINFO =  13,
 	/*! MX */
-	OF_DNS_RESOURCE_RECORD_TYPE_MX	  =  15,
+	OF_DNS_RECORD_TYPE_MX	 =  15,
 	/*! TXT */
-	OF_DNS_RESOURCE_RECORD_TYPE_TXT	  =  16,
+	OF_DNS_RECORD_TYPE_TXT	 =  16,
 	/*! RP */
-	OF_DNS_RESOURCE_RECORD_TYPE_RP	  =  17,
+	OF_DNS_RECORD_TYPE_RP	 =  17,
 	/*! AAAA */
-	OF_DNS_RESOURCE_RECORD_TYPE_AAAA  =  28,
+	OF_DNS_RECORD_TYPE_AAAA	 =  28,
 	/*! SRV */
-	OF_DNS_RESOURCE_RECORD_TYPE_SRV	  =  33,
+	OF_DNS_RECORD_TYPE_SRV	 =  33,
 	/*! All types. Only for queries. */
-	OF_DNS_RESOURCE_RECORD_TYPE_ALL	  = 255,
-} of_dns_resource_record_type_t;
+	OF_DNS_RECORD_TYPE_ALL	 = 255,
+} of_dns_record_type_t;
 
 /*!
  * @class OFDNSResourceRecord OFDNSResourceRecord.h ObjFW/OFDNSResourceRecord.h
@@ -75,7 +75,7 @@ typedef enum {
 {
 	OFString *_name;
 	of_dns_class_t _DNSClass;
-	of_dns_resource_record_type_t _recordType;
+	of_dns_record_type_t _recordType;
 	uint32_t _TTL;
 	OF_RESERVE_IVARS(4)
 }
@@ -93,7 +93,7 @@ typedef enum {
 /*!
  * @brief The resource record type code.
  */
-@property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
+@property (readonly, nonatomic) of_dns_record_type_t recordType;
 
 /*!
  * @brief The number of seconds after which the resource record should be
@@ -113,7 +113,7 @@ typedef enum {
  */
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_DESIGNATED_INITIALIZER;
 @end
 
@@ -135,7 +135,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -171,7 +171,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -207,7 +207,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -250,7 +250,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -296,7 +296,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -336,7 +336,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -374,7 +374,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -418,7 +418,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -491,7 +491,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -558,7 +558,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -600,7 +600,7 @@ OF_SUBCLASSING_RESTRICTED
 
 - (instancetype)initWithName: (OFString *)name
 		    DNSClass: (of_dns_class_t)DNSClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+		  recordType: (of_dns_record_type_t)recordType
 			 TTL: (uint32_t)TTL OF_UNAVAILABLE;
 
 /*!
@@ -623,11 +623,10 @@ OF_SUBCLASSING_RESTRICTED
 extern "C" {
 #endif
 extern OFString *_Nonnull of_dns_class_to_string(of_dns_class_t DNSClass);
-extern OFString *_Nonnull of_dns_resource_record_type_to_string(
-    of_dns_resource_record_type_t recordType);
+extern OFString *_Nonnull of_dns_record_type_to_string(
+    of_dns_record_type_t recordType);
 extern of_dns_class_t of_dns_class_parse(OFString *_Nonnull string);
-extern of_dns_resource_record_type_t of_dns_resource_record_type_parse(
-    OFString *_Nonnull string);
+extern of_dns_record_type_t of_dns_record_type_parse(OFString *_Nonnull string);
 #ifdef __cplusplus
 }
 #endif
