@@ -986,6 +986,9 @@ parseSection(const unsigned char *buffer, size_t length, size_t *i,
 		exception = e;
 	}
 
+	if (exception != nil)
+		response = nil;
+
 	if ([context->_delegate respondsToSelector:
 	    @selector(resolver:didPerformQuery:response:exception:)])
 		[context->_delegate resolver: self

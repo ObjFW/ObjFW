@@ -37,6 +37,8 @@ OF_ASSUME_NONNULL_BEGIN
 	OFDNSResolverSettings *_settings;
 	of_run_loop_mode_t _Nullable _runLoopMode;
 	id <OFDNSResolverHostDelegate> _Nullable _delegate;
+	bool _isFQDN;
+	size_t _searchDomainIndex;
 	unsigned int _numExpectedResponses;
 	OFMutableData *_addresses;
 }

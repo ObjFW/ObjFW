@@ -18,6 +18,7 @@
 #include "config.h"
 
 #import "OFHostAddressResolver.h"
+#import "OFArray.h"
 #import "OFDNSResolver.h"
 #import "OFDNSResolverSettings.h"
 #import "OFData.h"
@@ -27,6 +28,7 @@
 #import "OFString.h"
 #import "OFTimer.h"
 
+#import "OFDNSQueryFailedException.h"
 #import "OFInvalidArgumentException.h"
 #import "OFInvalidFormatException.h"
 #import "OFResolveHostFailedException.h"
@@ -42,6 +44,27 @@
 
 static const of_run_loop_mode_t resolveRunLoopMode =
     @"of_host_address_resolver_resolve_mode";
+
+static bool
+isFQDN(OFString *host, unsigned int minNumberOfDotsInAbsoluteName)
+{
+	const char *UTF8String;
+	size_t length;
+	unsigned int dots;
+
+	if ([host hasSuffix: @"."])
+		return true;
+
+	UTF8String = host.UTF8String;
+	length = host.UTF8StringLength;
+	dots = 0;
+
+	for (size_t i = 0; i < length; i++)
+		if (UTF8String[i] == '.')
+			dots++;
+
+	return (dots >= minNumberOfDotsInAbsoluteName);
+}
 
 static bool
 addressForRecord(OF_KINDOF(OFDNSResourceRecord *) record,
@@ -128,6 +151,46 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	[super dealloc];
 }
 
+- (void)sendQueries
+{
+	OFString *domainName;
+
+	if (!_isFQDN) {
+		OFString *searchDomain = [_settings->_searchDomains
+		    objectAtIndex: _searchDomainIndex];
+
+		domainName = [OFString stringWithFormat: @"%@.%@",
+							 _host, searchDomain];
+	} else
+		domainName = _host;
+
+#ifdef OF_HAVE_IPV6
+	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
+	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
+		OFDNSQuery *query = [OFDNSQuery
+		    queryWithDomainName: domainName
+			       DNSClass: OF_DNS_CLASS_IN
+			     recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA];
+		_numExpectedResponses++;
+		[_resolver asyncPerformQuery: query
+				 runLoopMode: _runLoopMode
+				    delegate: self];
+	}
+#endif
+
+	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
+	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
+		OFDNSQuery *query = [OFDNSQuery
+		    queryWithDomainName: domainName
+			       DNSClass: OF_DNS_CLASS_IN
+			     recordType: OF_DNS_RESOURCE_RECORD_TYPE_A];
+		_numExpectedResponses++;
+		[_resolver asyncPerformQuery: query
+				 runLoopMode: _runLoopMode
+				    delegate: self];
+	}
+}
+
 -  (void)resolver: (OFDNSResolver *)resolver
   didPerformQuery: (OFDNSQuery *)query
 	 response: (OFDNSResponse *)response
@@ -135,13 +198,12 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 {
 	_numExpectedResponses--;
 
-	if (exception != nil && _numExpectedResponses == 0) {
-		if ([_delegate respondsToSelector:
-		    @selector(resolver:didResolveHost:addresses:exception:)])
-			[_delegate resolver: _resolver
-			     didResolveHost: _host
-				  addresses: nil
-				  exception: exception];
+	if ([exception isKindOfClass: [OFDNSQueryFailedException class]] &&
+	    [exception error] == OF_DNS_RESOLVER_ERROR_SERVER_NAME_ERROR &&
+	    !_isFQDN && _numExpectedResponses == 0 && _addresses.count == 0 &&
+	    _searchDomainIndex + 1 < _settings->_searchDomains.count) {
+		_searchDomainIndex++;
+		[self sendQueries];
 		return;
 	}
 
@@ -180,41 +242,8 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 	    @selector(resolver:didResolveHost:addresses:exception:)])
 		[_delegate resolver: _resolver
 		     didResolveHost: _host
-			  addresses: _addresses
-			  exception: exception];
-}
-
-- (void)sendQueries
-{
-	/* FIXME: Add seach domain */
-	OFString *domainName = _host;
-	OFDNSQuery *query;
-
-#ifdef OF_HAVE_IPV6
-	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV6 ||
-	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
-		query = [OFDNSQuery
-		    queryWithDomainName: domainName
-			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RESOURCE_RECORD_TYPE_AAAA];
-		_numExpectedResponses++;
-		[_resolver asyncPerformQuery: query
-				 runLoopMode: _runLoopMode
-				    delegate: self];
-	}
-#endif
-
-	if (_addressFamily == OF_SOCKET_ADDRESS_FAMILY_IPV4 ||
-	    _addressFamily == OF_SOCKET_ADDRESS_FAMILY_ANY) {
-		query = [OFDNSQuery
-		    queryWithDomainName: domainName
-			       DNSClass: OF_DNS_CLASS_IN
-			     recordType: OF_DNS_RESOURCE_RECORD_TYPE_A];
-		_numExpectedResponses++;
-		[_resolver asyncPerformQuery: query
-				 runLoopMode: _runLoopMode
-				    delegate: self];
-	}
+			  addresses: (_addresses.count > 0 ? _addresses : nil)
+			  exception: (_addresses.count == 0 ? exception : nil)];
 }
 
 - (void)asyncResolve
@@ -282,6 +311,7 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 		return;
 	}
 
+	_isFQDN = isFQDN(_host, _settings->_minNumberOfDotsInAbsoluteName);
 	_addresses = [[OFMutableData alloc]
 	    initWithItemSize: sizeof(of_socket_address_t)];
 
