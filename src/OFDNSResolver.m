@@ -307,11 +307,11 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			@throw [OFInvalidServerReplyException exception];
 
 		return [[[OFMXDNSResourceRecord alloc]
-			    initWithName: name
-				DNSClass: DNSClass
-			      preference: preference
-			    mailExchange: mailExchange
-				     TTL: TTL] autorelease];
+		    initWithName: name
+			DNSClass: DNSClass
+		      preference: preference
+		    mailExchange: mailExchange
+			     TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RECORD_TYPE_TXT) {
 		OFData *textData = [OFData dataWithItems: &buffer[i]
 						   count: dataLength];
@@ -337,11 +337,11 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			@throw [OFInvalidServerReplyException exception];
 
 		return [[[OFRPDNSResourceRecord alloc]
-		    initWithName: name
-			DNSClass: DNSClass
-			 mailbox: mailbox
-		   TXTDomainName: TXTDomainName
-			     TTL: TTL] autorelease];
+		     initWithName: name
+			 DNSClass: DNSClass
+			  mailbox: mailbox
+		    TXTDomainName: TXTDomainName
+			      TTL: TTL] autorelease];
 	} else if (recordType == OF_DNS_RECORD_TYPE_AAAA &&
 	    DNSClass == OF_DNS_CLASS_IN) {
 		of_socket_address_t address;
@@ -384,12 +384,12 @@ parseResourceRecord(OFString *name, of_dns_class_t DNSClass,
 			@throw [OFInvalidServerReplyException exception];
 
 		return [[[OFSRVDNSResourceRecord alloc]
-			    initWithName: name
-				priority: priority
-				  weight: weight
-				  target: target
-				    port: port
-				     TTL: TTL] autorelease];
+		    initWithName: name
+			priority: priority
+			  weight: weight
+			  target: target
+			    port: port
+			     TTL: TTL] autorelease];
 	} else
 		return [[[OFDNSResourceRecord alloc]
 		    initWithName: name
