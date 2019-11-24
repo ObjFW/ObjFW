@@ -294,6 +294,7 @@ setupClass(Class class)
 	superclassName = (const char *)class->superclass;
 	if (superclassName != NULL) {
 		Class super = objc_classname_to_class(superclassName, false);
+		Class rootClass;
 
 		if (super == Nil)
 			return;
@@ -303,13 +304,24 @@ setupClass(Class class)
 		if (!(super->info & OBJC_CLASS_INFO_SETUP))
 			return;
 
+		/*
+		 * GCC sets class->isa->isa to the name of the root class,
+		 * while Clang just sets it to Nil. Therefore always calculate
+		 * it.
+		 */
+		for (Class iter = super; iter != NULL; iter = iter->superclass)
+			rootClass = iter;
+
 		class->superclass = super;
+		class->isa->isa = rootClass->isa;
 		class->isa->superclass = super->isa;
 
 		addSubclass(class);
 		addSubclass(class->isa);
-	} else
+	} else {
+		class->isa->isa = class->isa;
 		class->isa->superclass = class;
+	}
 
 	updateIvarOffsets(class);
 

@@ -72,8 +72,8 @@ enum {
 #ifdef OF_OBJFW_RUNTIME
 /* Begin of ObjC module */
 static struct objc_class _NSConcreteStackBlock_metaclass = {
-	(Class)(void *)"OFObject", (Class)(void *)"OFBlock", "OFStackBlock", 8,
-	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
+	Nil, Nil, "OFStackBlock", 8, OBJC_CLASS_INFO_METACLASS,
+	sizeof(_NSConcreteStackBlock_metaclass), NULL, NULL
 };
 
 struct objc_class _NSConcreteStackBlock = {
@@ -83,8 +83,8 @@ struct objc_class _NSConcreteStackBlock = {
 };
 
 static struct objc_class _NSConcreteGlobalBlock_metaclass = {
-	(Class)(void *)"OFObject", (Class)(void *)"OFBlock", "OFGlobalBlock", 8,
-	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
+	Nil, Nil, "OFGlobalBlock", 8, OBJC_CLASS_INFO_METACLASS,
+	sizeof(_NSConcreteGlobalBlock_metaclass), NULL, NULL
 };
 
 struct objc_class _NSConcreteGlobalBlock = {
@@ -94,8 +94,8 @@ struct objc_class _NSConcreteGlobalBlock = {
 };
 
 static struct objc_class _NSConcreteMallocBlock_metaclass = {
-	(Class)(void *)"OFObject", (Class)(void *)"OFBlock", "OFMallocBlock", 8,
-	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
+	Nil, Nil, "OFMallocBlock", 8, OBJC_CLASS_INFO_METACLASS,
+	sizeof(_NSConcreteMallocBlock_metaclass), NULL, NULL
 };
 
 struct objc_class _NSConcreteMallocBlock = {
