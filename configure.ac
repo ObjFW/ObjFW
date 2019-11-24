@@ -5,9 +5,9 @@ AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 AC_DEFINE(OBJFW_VERSION_MAJOR, 1, [The major version of ObjFW])
 AC_DEFINE(OBJFW_VERSION_MINOR, 1, [The minor version of ObjFW])
-dnl This may only be set to 0.91 once 0.91 is released
-AC_SUBST(BUNDLE_VERSION, 1.1.0)
-AC_SUBST(BUNDLE_SHORT_VERSION, 1.1)
+dnl This may only be set to 1.1 once 1.1 is released
+AC_SUBST(BUNDLE_VERSION, 1.0.0)
+AC_SUBST(BUNDLE_SHORT_VERSION, 1.0)
 
 for i in configure.ac build-aux/m4/*; do
 	AS_IF([test $i -nt configure], [
