@@ -128,6 +128,10 @@ extern void glue_objc_setForwardHandler(void);
 extern void glue_objc_setEnumerationMutationHandler(void);
 extern void glue_objc_zero_weak_references(void);
 extern void glue_objc_exit(void);
+extern Ivar *glue_class_copyIvarList(void);
+extern const char *glue_ivar_getName(void);
+extern const char *glue_ivar_getTypeEncoding(void);
+extern ptrdiff_t glue_ivar_getOffset(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -635,6 +639,10 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_setEnumerationMutationHandler,
 	(CONST_APTR)glue_objc_zero_weak_references,
 	(CONST_APTR)glue_objc_exit,
+	(CONST_APTR)glue_class_copyIvarList,
+	(CONST_APTR)glue_ivar_getName,
+	(CONST_APTR)glue_ivar_getTypeEncoding,
+	(CONST_APTR)glue_ivar_getOffset,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

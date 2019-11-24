@@ -257,9 +257,8 @@ addSubclass(Class class)
 	class->superclass->subclassList[i + 1] = Nil;
 }
 
-
 static void
-updateIVarOffsets(Class class)
+updateIvarOffsets(Class class)
 {
 	if (!(class->info & OBJC_CLASS_INFO_NEW_ABI))
 		return;
@@ -272,17 +271,17 @@ updateIVarOffsets(Class class)
 	if (class->superclass != Nil) {
 		class->instanceSize += class->superclass->instanceSize;
 
-		if (class->iVars != NULL) {
-			for (unsigned int i = 0; i < class->iVars->count; i++) {
-				class->iVars->iVars[i].offset +=
+		if (class->ivars != NULL) {
+			for (unsigned int i = 0; i < class->ivars->count; i++) {
+				class->ivars->ivars[i].offset +=
 				    class->superclass->instanceSize;
-				*class->iVarOffsets[i] =
-				    class->iVars->iVars[i].offset;
+				*class->ivarOffsets[i] =
+				    class->ivars->ivars[i].offset;
 			}
 		}
 	} else
-		for (unsigned int i = 0; i < class->iVars->count; i++)
-			*class->iVarOffsets[i] = class->iVars->iVars[i].offset;
+		for (unsigned int i = 0; i < class->ivars->count; i++)
+			*class->ivarOffsets[i] = class->ivars->ivars[i].offset;
 }
 
 static void
@@ -313,7 +312,7 @@ setupClass(Class class)
 	} else
 		class->isa->superclass = class;
 
-	updateIVarOffsets(class);
+	updateIvarOffsets(class);
 
 	class->info |= OBJC_CLASS_INFO_SETUP;
 	class->isa->info |= OBJC_CLASS_INFO_SETUP;

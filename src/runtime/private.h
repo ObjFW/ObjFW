@@ -36,7 +36,7 @@ struct objc_abi_class {
 	unsigned long version;
 	unsigned long info;
 	long instanceSize;
-	void *_Nullable iVars;
+	void *_Nullable ivars;
 	struct objc_abi_method_list *_Nullable methodList;
 	void *_Nullable DTable;
 	void *_Nullable subclassList;
@@ -44,7 +44,7 @@ struct objc_abi_class {
 	void *_Nullable protocols;
 	void *_Nullable GCObjectType;
 	long ABIVersion;
-	int32_t *_Nonnull *_Nullable iVarOffsets;
+	int32_t *_Nonnull *_Nullable ivarOffsets;
 	void *_Nullable properties;
 };
 
@@ -62,6 +62,17 @@ struct objc_abi_method_list {
 	struct objc_abi_method_list *_Nullable next;
 	unsigned int count;
 	struct objc_abi_method methods[1];
+};
+
+struct objc_ivar {
+	const char *_Nonnull name;
+	const char *_Nonnull typeEncoding;
+	unsigned int offset;
+};
+
+struct objc_ivar_list {
+	unsigned int count;
+	struct objc_ivar ivars[1];
 };
 
 struct objc_abi_category {

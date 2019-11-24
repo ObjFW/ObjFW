@@ -65,3 +65,7 @@ void glue_objc_setForwardHandler(IMP, IMP);
 void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t);
 void glue_objc_zero_weak_references(id);
 void glue_objc_exit(void);
+Ivar *glue_class_copyIvarList(Class class_, unsigned int *outCount);
+const char *glue_ivar_getName(Ivar ivar);
+const char *glue_ivar_getTypeEncoding(Ivar ivar);
+ptrdiff_t glue_ivar_getOffset(Ivar ivar);

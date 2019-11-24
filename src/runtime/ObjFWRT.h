@@ -61,6 +61,7 @@
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
+typedef struct objc_ivar *Ivar;
 #if !defined(__wii__) && !defined(__amigaos__)
 typedef bool BOOL;
 #endif
@@ -75,7 +76,7 @@ struct objc_class {
 	unsigned long version;
 	unsigned long info;
 	long instanceSize;
-	struct objc_ivar_list *_Nullable iVars;
+	struct objc_ivar_list *_Nullable ivars;
 	struct objc_method_list *_Nullable methodList;
 	struct objc_dtable *_Nonnull DTable;
 	Class _Nullable *_Nullable subclassList;
@@ -83,7 +84,7 @@ struct objc_class {
 	struct objc_protocol_list *_Nullable protocols;
 	void *_Nullable GCObjectType;
 	unsigned long ABIVersion;
-	int32_t *_Nonnull *_Nullable iVarOffsets;
+	int32_t *_Nonnull *_Nullable ivarOffsets;
 	struct objc_property_list *_Nullable properties;
 };
 
@@ -132,17 +133,6 @@ struct objc_category {
 	struct objc_method_list *_Nullable instanceMethods;
 	struct objc_method_list *_Nullable classMethods;
 	struct objc_protocol_list *_Nullable protocols;
-};
-
-struct objc_ivar {
-	const char *_Nonnull name;
-	const char *_Nonnull typeEncoding;
-	unsigned int offset;
-};
-
-struct objc_ivar_list {
-	unsigned int count;
-	struct objc_ivar iVars[1];
 };
 
 enum objc_property_attributes {
@@ -260,6 +250,11 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
+extern Ivar _Nullable *_Nullable class_copyIvarList(Class _Nullable class_,
+    unsigned int *_Nullable outCount);
+extern const char *_Nonnull ivar_getName(Ivar _Nonnull ivar);
+extern const char *_Nonnull ivar_getTypeEncoding(Ivar _Nonnull ivar);
+extern ptrdiff_t ivar_getOffset(Ivar _Nonnull ivar);
 extern void objc_exit(void);
 extern _Nullable objc_uncaught_exception_handler_t
     objc_setUncaughtExceptionHandler(

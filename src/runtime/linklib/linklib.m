@@ -591,3 +591,27 @@ objc_exit(void)
 {
 	glue_objc_exit();
 }
+
+Ivar *
+class_copyIvarList(Class class, unsigned int *outCount)
+{
+	return glue_class_copyIvarList(class, outCount);
+}
+
+const char *
+ivar_getName(Ivar ivar)
+{
+	return glue_ivar_getName(ivar);
+}
+
+const char *
+ivar_getTypeEncoding(Ivar ivar)
+{
+	return glue_ivar_getTypeEncoding(ivar);
+}
+
+ptrdiff_t
+ivar_getOffset(Ivar ivar)
+{
+	return glue_ivar_getOffset(ivar);
+}

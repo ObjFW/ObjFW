@@ -71,4 +71,8 @@ void glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForwa
 void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t _Nullable handler)(a0)
 void glue_objc_zero_weak_references(id _Nonnull value)(a0)
 void glue_objc_exit(void)()
+Ivar _Nullable *_Nullable glue_class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
+const char *_Nonnull glue_ivar_getName(Ivar _Nonnull ivar)(a0)
+const char *_Nonnull glue_ivar_getTypeEncoding(Ivar _Nonnull ivar)(a0)
+ptrdiff_t glue_ivar_getOffset(Ivar _Nonnull ivar)(a0)
 ==end

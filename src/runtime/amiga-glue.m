@@ -633,3 +633,36 @@ glue_objc_exit(void)
 {
 	objc_exit();
 }
+
+Ivar *__saveds
+glue_class_copyIvarList PPC_PARAMS(Class class, unsigned int *outCount)
+{
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(unsigned int *, outCount, a1)
+
+	return class_copyIvarList(class, outCount);
+}
+
+const char *__saveds
+glue_ivar_getName PPC_PARAMS(Ivar ivar)
+{
+	M68K_ARG(Ivar, ivar, a0)
+
+	return ivar_getName(ivar);
+}
+
+const char *__saveds
+glue_ivar_getTypeEncoding PPC_PARAMS(Ivar ivar)
+{
+	M68K_ARG(Ivar, ivar, a0)
+
+	return ivar_getTypeEncoding(ivar);
+}
+
+ptrdiff_t __saveds
+glue_ivar_getOffset PPC_PARAMS(Ivar ivar)
+{
+	M68K_ARG(Ivar, ivar, a0)
+
+	return ivar_getOffset(ivar);
+}

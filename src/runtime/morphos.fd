@@ -67,4 +67,8 @@ glue_objc_setForwardHandler(forward,stretForward)(sysv,r12base)
 glue_objc_setEnumerationMutationHandler(handler)(sysv,r12base)
 glue_objc_zero_weak_references(value)(sysv,r12base)
 glue_objc_exit()(sysv,r12base)
+glue_class_copyIvarList(class_,outCount)(sysv,r12base)
+glue_ivar_getName(ivar)(sysv,r12base)
+glue_ivar_getTypeEncoding(ivar)(sysv,r12base)
+glue_ivar_getOffset(ivar)(sysv,r12base)
 ##end
