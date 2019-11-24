@@ -55,9 +55,9 @@ glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libc *libc,
 }
 
 void __saveds
-glue___objc_exec_class PPC_PARAMS(void *module)
+glue___objc_exec_class PPC_PARAMS(struct objc_module *module)
 {
-	M68K_ARG(void *, module, a0)
+	M68K_ARG(struct objc_module *, module, a0)
 
 	__objc_exec_class(module);
 }

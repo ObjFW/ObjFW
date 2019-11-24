@@ -29,41 +29,6 @@
 # endif
 #endif
 
-struct objc_abi_class {
-	struct objc_abi_class *_Nonnull metaclass;
-	const char *_Nullable superclass;
-	const char *_Nonnull name;
-	unsigned long version;
-	unsigned long info;
-	long instanceSize;
-	void *_Nullable ivars;
-	struct objc_abi_method_list *_Nullable methodList;
-	void *_Nullable DTable;
-	void *_Nullable subclassList;
-	void *_Nullable siblingClass;
-	void *_Nullable protocols;
-	void *_Nullable GCObjectType;
-	long ABIVersion;
-	int32_t *_Nonnull *_Nullable ivarOffsets;
-	void *_Nullable properties;
-};
-
-struct objc_abi_selector {
-	const char *_Nonnull name;
-	const char *_Nullable typeEncoding;
-};
-
-struct objc_abi_method {
-	struct objc_abi_selector selector;
-	IMP _Nonnull implementation;
-};
-
-struct objc_abi_method_list {
-	struct objc_abi_method_list *_Nullable next;
-	unsigned int count;
-	struct objc_abi_method methods[1];
-};
-
 struct objc_ivar {
 	const char *_Nonnull name;
 	const char *_Nonnull typeEncoding;
@@ -75,32 +40,24 @@ struct objc_ivar_list {
 	struct objc_ivar ivars[1];
 };
 
-struct objc_abi_category {
-	const char *_Nonnull categoryName;
-	const char *_Nonnull className;
-	struct objc_abi_method_list *_Nullable instanceMethods;
-	struct objc_abi_method_list *_Nullable classMethods;
-	struct objc_protocol_list *_Nullable protocols;
-};
-
-struct objc_abi_static_instances {
+struct objc_static_instances {
 	const char *_Nonnull className;
 	id _Nullable instances[1];
 };
 
-struct objc_abi_symtab {
+struct objc_symtab {
 	unsigned long unknown;
-	struct objc_abi_selector *_Nullable selectorRefs;
+	struct objc_selector *_Nullable selectorRefs;
 	uint16_t classDefsCount;
 	uint16_t categoryDefsCount;
 	void *_Nonnull defs[1];
 };
 
-struct objc_abi_module {
+struct objc_module {
 	unsigned long version;	/* 9 = non-fragile */
 	unsigned long size;
 	const char *_Nullable name;
-	struct objc_abi_symtab *_Nonnull symtab;
+	struct objc_symtab *_Nonnull symtab;
 };
 
 struct objc_hashtable_bucket {
@@ -185,13 +142,13 @@ struct objc_libc {
 extern FILE *stdout, *stderr;
 #endif
 
-extern void objc_register_all_categories(struct objc_abi_symtab *_Nonnull);
+extern void objc_register_all_categories(struct objc_symtab *_Nonnull);
 extern struct objc_category *_Nullable *_Nullable
     objc_categories_for_class(Class _Nonnull);
 extern void objc_unregister_all_categories(void);
 extern void objc_initialize_class(Class _Nonnull);
 extern void objc_update_dtable(Class _Nonnull);
-extern void objc_register_all_classes(struct objc_abi_symtab *_Nonnull);
+extern void objc_register_all_classes(struct objc_symtab *_Nonnull);
 extern Class _Nullable objc_classname_to_class(const char *_Nonnull, bool);
 extern void objc_unregister_class(Class _Nonnull);
 extern void objc_unregister_all_classes(void);
@@ -208,8 +165,8 @@ extern void *_Nullable objc_hashtable_get(struct objc_hashtable *_Nonnull,
 extern void objc_hashtable_delete(struct objc_hashtable *_Nonnull,
     const void *_Nonnull);
 extern void objc_hashtable_free(struct objc_hashtable *_Nonnull);
-extern void objc_register_selector(struct objc_abi_selector *_Nonnull);
-extern void objc_register_all_selectors(struct objc_abi_symtab *_Nonnull);
+extern void objc_register_selector(struct objc_selector *_Nonnull);
+extern void objc_register_all_selectors(struct objc_symtab *_Nonnull);
 extern void objc_unregister_all_selectors(void);
 extern struct objc_sparsearray *_Nonnull objc_sparsearray_new(uint8_t);
 extern void *_Nullable objc_sparsearray_get(struct objc_sparsearray *_Nonnull,
@@ -224,7 +181,7 @@ extern void objc_dtable_set(struct objc_dtable *_Nonnull, uint32_t,
     IMP _Nullable);
 extern void objc_dtable_free(struct objc_dtable *_Nonnull);
 extern void objc_dtable_cleanup(void);
-extern void objc_init_static_instances(struct objc_abi_symtab *_Nonnull);
+extern void objc_init_static_instances(struct objc_symtab *_Nonnull);
 extern void objc_forget_pending_static_instances(void);
 #ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);

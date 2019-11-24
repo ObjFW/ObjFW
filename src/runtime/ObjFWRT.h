@@ -61,7 +61,7 @@
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
-typedef struct objc_ivar *Ivar;
+typedef const struct objc_ivar *Ivar;
 #if !defined(__wii__) && !defined(__amigaos__)
 typedef bool BOOL;
 #endif
@@ -271,7 +271,8 @@ extern void objc_zero_weak_references(id _Nonnull value);
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.
  */
-extern void __objc_exec_class(void *_Nonnull module);
+struct objc_module;
+extern void __objc_exec_class(struct objc_module *_Nonnull module);
 extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
     SEL _Nonnull selector);

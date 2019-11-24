@@ -71,39 +71,42 @@ enum {
 
 #ifdef OF_OBJFW_RUNTIME
 /* Begin of ObjC module */
-static struct objc_abi_class _NSConcreteStackBlock_metaclass = {
-	(struct objc_abi_class *)(void *)"OFBlock", "OFBlock", "OFStackBlock",
-	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_class _NSConcreteStackBlock_metaclass = {
+	(Class)(void *)"OFObject", (Class)(void *)"OFBlock", "OFStackBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
 };
 
-struct objc_abi_class _NSConcreteStackBlock = {
-	&_NSConcreteStackBlock_metaclass, "OFBlock", "OFStackBlock",
-	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
+struct objc_class _NSConcreteStackBlock = {
+	&_NSConcreteStackBlock_metaclass, (Class)(void *)"OFBlock",
+	"OFStackBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t),
+	NULL, NULL
 };
 
-static struct objc_abi_class _NSConcreteGlobalBlock_metaclass = {
-	(struct objc_abi_class *)(void *)"OFBlock", "OFBlock", "OFGlobalBlock",
-	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_class _NSConcreteGlobalBlock_metaclass = {
+	(Class)(void *)"OFObject", (Class)(void *)"OFBlock", "OFGlobalBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
 };
 
-struct objc_abi_class _NSConcreteGlobalBlock = {
-	&_NSConcreteGlobalBlock_metaclass, "OFBlock", "OFGlobalBlock",
-	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
+struct objc_class _NSConcreteGlobalBlock = {
+	&_NSConcreteGlobalBlock_metaclass, (Class)(void *)"OFBlock",
+	"OFGlobalBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t),
+	NULL, NULL
 };
 
-static struct objc_abi_class _NSConcreteMallocBlock_metaclass = {
-	(struct objc_abi_class *)(void *)"OFBlock", "OFBlock", "OFMallocBlock",
-	8, OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_abi_class), NULL, NULL
+static struct objc_class _NSConcreteMallocBlock_metaclass = {
+	(Class)(void *)"OFObject", (Class)(void *)"OFBlock", "OFMallocBlock", 8,
+	OBJC_CLASS_INFO_METACLASS, sizeof(struct objc_class), NULL, NULL
 };
 
-struct objc_abi_class _NSConcreteMallocBlock = {
-	&_NSConcreteMallocBlock_metaclass, "OFBlock", "OFMallocBlock",
-	8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t), NULL, NULL
+struct objc_class _NSConcreteMallocBlock = {
+	&_NSConcreteMallocBlock_metaclass, (Class)(void *)"OFBlock",
+	"OFMallocBlock", 8, OBJC_CLASS_INFO_CLASS, sizeof(of_block_literal_t),
+	NULL, NULL
 };
 
 static struct {
 	unsigned long unknown;
-	struct objc_abi_selector *selectorRefs;
+	struct objc_selector *selectorRefs;
 	uint16_t classDefsCount, categoryDefsCount;
 	void *defs[4];
 } symtab = {
@@ -114,8 +117,8 @@ static struct {
 	}
 };
 
-static struct objc_abi_module module = {
-	8, sizeof(module), NULL, (struct objc_abi_symtab *)&symtab
+static struct objc_module module = {
+	8, sizeof(module), NULL, (struct objc_symtab *)&symtab
 };
 
 OF_CONSTRUCTOR()

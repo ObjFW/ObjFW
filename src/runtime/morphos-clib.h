@@ -1,7 +1,7 @@
 /* Functions that are only for the linklib. */
 bool glue_objc_init(unsigned int, struct objc_libc *, FILE *, FILE *);
 /* All other functions. */
-void glue___objc_exec_class(void *);
+void glue___objc_exec_class(struct objc_module *);
 IMP glue_objc_msg_lookup(id, SEL);
 IMP glue_objc_msg_lookup_stret(id, SEL);
 IMP glue_objc_msg_lookup_super(struct objc_super *, SEL);

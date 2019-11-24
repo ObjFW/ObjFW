@@ -23,13 +23,13 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-static struct objc_abi_static_instances **staticInstancesList = NULL;
+static struct objc_static_instances **staticInstancesList = NULL;
 static size_t staticInstancesCount = 0;
 
 void
-objc_init_static_instances(struct objc_abi_symtab *symtab)
+objc_init_static_instances(struct objc_symtab *symtab)
 {
-	struct objc_abi_static_instances **staticInstances;
+	struct objc_static_instances **staticInstances;
 
 	/* Check if the class for a static instance became available */
 	for (size_t i = 0; i < staticInstancesCount; i++) {
@@ -53,7 +53,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 			    staticInstancesList[staticInstancesCount];
 
 			staticInstancesList = realloc(staticInstancesList,
-			    sizeof(struct objc_abi_static_instances *) *
+			    sizeof(*staticInstancesList) *
 			    staticInstancesCount);
 
 			if (staticInstancesList == NULL)
@@ -68,7 +68,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 		}
 	}
 
-	staticInstances = (struct objc_abi_static_instances **)
+	staticInstances = (struct objc_static_instances **)
 	    symtab->defs[symtab->classDefsCount + symtab->categoryDefsCount];
 
 	if (staticInstances == NULL)
@@ -83,7 +83,7 @@ objc_init_static_instances(struct objc_abi_symtab *symtab)
 				object_setClass(*instances, class);
 		} else {
 			staticInstancesList = realloc(staticInstancesList,
-			    sizeof(struct objc_abi_static_instances *) *
+			    sizeof(*staticInstancesList) *
 			    (staticInstancesCount + 1));
 
 			if (staticInstancesList == NULL)

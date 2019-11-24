@@ -21,9 +21,9 @@
 
 static OFString *module = @"OFBlock";
 
-extern struct objc_abi_class _NSConcreteStackBlock;
-extern struct objc_abi_class _NSConcreteGlobalBlock;
-extern struct objc_abi_class _NSConcreteMallocBlock;
+extern struct objc_class _NSConcreteStackBlock;
+extern struct objc_class _NSConcreteGlobalBlock;
+extern struct objc_class _NSConcreteMallocBlock;
 
 static void (^g)(void) = ^ {};
 

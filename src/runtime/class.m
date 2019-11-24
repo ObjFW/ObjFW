@@ -34,21 +34,21 @@ static unsigned lookupsUntilFastPath = 128;
 static struct objc_sparsearray *fastPath = NULL;
 
 static void
-registerClass(struct objc_abi_class *rawClass)
+registerClass(Class class)
 {
 	if (classes == NULL)
 		classes = objc_hashtable_new(
 		    objc_hash_string, objc_equal_string, 2);
 
-	objc_hashtable_set(classes, rawClass->name, rawClass);
+	objc_hashtable_set(classes, class->name, class);
 
 	if (emptyDTable == NULL)
 		emptyDTable = objc_dtable_new();
 
-	rawClass->DTable = emptyDTable;
-	rawClass->metaclass->DTable = emptyDTable;
+	class->DTable = emptyDTable;
+	class->isa->DTable = emptyDTable;
 
-	if (strcmp(rawClass->name, "Protocol") != 0)
+	if (strcmp(class->name, "Protocol") != 0)
 		classesCount++;
 }
 
@@ -71,15 +71,14 @@ class_registerAlias_np(Class class, const char *name)
 }
 
 static void
-registerSelectors(struct objc_abi_class *rawClass)
+registerSelectors(Class class)
 {
-	struct objc_abi_method_list *methodList;
+	struct objc_method_list *iter;
+	unsigned int i;
 
-	for (methodList = rawClass->methodList; methodList != NULL;
-	    methodList = methodList->next)
-		for (unsigned int i = 0; i < methodList->count; i++)
-			objc_register_selector((struct objc_abi_selector *)
-			    &methodList->methods[i]);
+	for (iter = class->methodList; iter != NULL; iter = iter->next)
+		for (i = 0; i < iter->count; i++)
+			objc_register_selector(&iter->methods[i].selector);
 }
 
 Class
@@ -292,7 +291,7 @@ setupClass(Class class)
 	if (class->info & OBJC_CLASS_INFO_SETUP)
 		return;
 
-	superclassName = ((struct objc_abi_class *)class)->superclass;
+	superclassName = (const char *)class->superclass;
 	if (superclassName != NULL) {
 		Class super = objc_classname_to_class(superclassName, false);
 
@@ -417,15 +416,14 @@ processLoadQueue()
 }
 
 void
-objc_register_all_classes(struct objc_abi_symtab *symtab)
+objc_register_all_classes(struct objc_symtab *symtab)
 {
 	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
-		struct objc_abi_class *rawClass =
-		    (struct objc_abi_class *)symtab->defs[i];
+		Class class = (Class)symtab->defs[i];
 
-		registerClass(rawClass);
-		registerSelectors(rawClass);
-		registerSelectors(rawClass->metaclass);
+		registerClass(class);
+		registerSelectors(class);
+		registerSelectors(class->isa);
 	}
 
 	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
@@ -492,7 +490,7 @@ objc_registerClassPair(Class class)
 {
 	objc_global_mutex_lock();
 
-	registerClass((struct objc_abi_class *)class);
+	registerClass(class);
 
 	if (class->superclass != Nil) {
 		addSubclass(class);
@@ -865,8 +863,6 @@ object_getClassName(id object)
 static void
 unregisterClass(Class class)
 {
-	struct objc_abi_class *rawClass = (struct objc_abi_class *)class;
-
 	if ((class->info & OBJC_CLASS_INFO_SETUP) && class->superclass != Nil &&
 	    class->superclass->subclassList != NULL) {
 		size_t i = SIZE_MAX, count = 0;
@@ -902,7 +898,7 @@ unregisterClass(Class class)
 	class->DTable = NULL;
 
 	if ((class->info & OBJC_CLASS_INFO_SETUP) && class->superclass != Nil)
-		rawClass->superclass = class->superclass->name;
+		class->superclass = (Class)class->superclass->name;
 
 	class->info &= ~OBJC_CLASS_INFO_SETUP;
 }

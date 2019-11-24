@@ -7,7 +7,7 @@
 bool glue_objc_init(unsigned int version, struct objc_libc *libc, FILE *stdout, FILE *stderr)(d0,a0,a1,a2)
 * These have a built-in declaration in the compiler that does not use the
 * registers and thus always need glue.
-void glue___objc_exec_class(void *_Nonnull module)(a0)
+void glue___objc_exec_class(struct objc_module *_Nonnull module)(a0)
 IMP _Nonnull glue_objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)(a0,a1)
 IMP _Nonnull glue_objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)(a0,a1)
 IMP _Nonnull glue_objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)(a0,a1)

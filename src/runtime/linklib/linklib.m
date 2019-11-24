@@ -140,7 +140,7 @@ DESTRUCTOR_P(ObjFWRT, 4000)
 #endif
 
 void
-__objc_exec_class(void *module)
+__objc_exec_class(struct objc_module *module)
 {
 	/*
 	 * The compiler generates constructors that call into this, so it is
