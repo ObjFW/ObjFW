@@ -94,8 +94,8 @@
 			@throw [OFOutOfRangeException exception];
 
 		bitStringLength = (count - 1) * 8;
-		bitStringValue = [[DEREncodedContents
-		    subdataWithRange: of_range(1, count - 1)] copy];
+		bitStringValue = [DEREncodedContents subdataWithRange:
+		    of_range(1, count - 1)];
 
 		if (unusedBits != 0)
 			bitStringLength -= unusedBits;

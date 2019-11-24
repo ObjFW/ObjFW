@@ -32,7 +32,7 @@ static int
 {
 	__block int i = 42;
 
-	return Block_copy(^ int { return ++i; });
+	return [Block_copy(^ int { return ++i; }) autorelease];
 }
 
 static double
