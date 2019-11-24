@@ -87,8 +87,8 @@
 
 	processingInstructions = object;
 
-	return ([processingInstructions->_processingInstructions
-	    isEqual: _processingInstructions]);
+	return [processingInstructions->_processingInstructions
+	    isEqual: _processingInstructions];
 }
 
 - (uint32_t)hash
