@@ -67,6 +67,41 @@ matrix:
 
     # iOS
     - os: osx
+      osx_image: xcode11.2
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode11.1
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode11
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode10.3
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode10.2
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode10.1
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
+      osx_image: xcode10
+      language: objective-c
+      env:
+        - config=ios
+    - os: osx
       osx_image: xcode9.4
       language: objective-c
       env:
@@ -260,13 +295,13 @@ script:
             fi;
 
             export IPHONEOS_DEPLOYMENT_TARGET="9.0";
-            clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)";
+            clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)";
             export OBJC="$clang -arch armv7 -arch arm64";
             export OBJCPP="$clang -arch armv7 -E";
             build --host=arm-apple-darwin --enable-static;
 
             sysroot="$(xcrun --sdk iphonesimulator --show-sdk-path)";
-            clang="clang --sysroot $sysroot";
+            clang="clang -isysroot $sysroot";
             export OBJC="$clang -arch i386 -arch x86_64";
             export OBJCPP="$clang -arch i386 -E";
             build WRAPPER=true --host=i386-apple-darwin --enable-static;
