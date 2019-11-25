@@ -30,6 +30,29 @@ matrix:
 
     # macOS
     - os: osx
+      osx_image: xcode11.2
+      language: objective-c
+      env:
+        - no32bit=1
+        - noruntime=1  # Broken compiler in this version of Xcode
+    - os: osx
+      osx_image: xcode11.1
+      language: objective-c
+      env:
+        - no32bit=1
+        - noruntime=1  # Broken compiler in this version of Xcode
+    - os: osx
+      osx_image: xcode11
+      language: objective-c
+      env:
+        - no32bit=1
+        - noruntime=1  # Broken compiler in this version of Xcode
+    - os: osx
+      osx_image: xcode10.3
+      language: objective-c
+      env:
+        - no32bit=1
+    - os: osx
       osx_image: xcode10.2
       language: objective-c
       env:
@@ -272,19 +295,24 @@ script:
             build_mac_32_64 --disable-sockets --disable-files;
             build_mac_32_64 --disable-files;
             build_mac_32_64 --disable-shared;
-            build_mac_32_64 --enable-runtime;
-            build_mac_32_64 --enable-runtime --enable-seluid24;
-            build_mac_32_64 --enable-runtime --disable-threads;
-            build_mac_32_64 --enable-runtime --disable-threads
-                            --disable-sockets;
-            build_mac_32_64 --enable-runtime --disable-threads --disable-files;
-            build_mac_32_64 --enable-runtime --disable-threads
-                            --disable-sockets --disable-files;
-            build_mac_32_64 --enable-runtime --disable-sockets;
-            build_mac_32_64 --enable-runtime --disable-sockets --disable-files;
-            build_mac_32_64 --enable-runtime --disable-files;
-            build_mac_32_64 --enable-runtime --disable-shared;
-            build_mac_32_64 --enable-runtime --disable-shared --enable-seluid24;
+            if [ -z "$noruntime" ]; then
+                    build_mac_32_64 --enable-runtime;
+                    build_mac_32_64 --enable-runtime --enable-seluid24;
+                    build_mac_32_64 --enable-runtime --disable-threads;
+                    build_mac_32_64 --enable-runtime --disable-threads
+                                    --disable-sockets;
+                    build_mac_32_64 --enable-runtime --disable-threads
+                                    --disable-files;
+                    build_mac_32_64 --enable-runtime --disable-threads
+                                    --disable-sockets --disable-files;
+                    build_mac_32_64 --enable-runtime --disable-sockets;
+                    build_mac_32_64 --enable-runtime --disable-sockets
+                                    --disable-files;
+                    build_mac_32_64 --enable-runtime --disable-files;
+                    build_mac_32_64 --enable-runtime --disable-shared;
+                    build_mac_32_64 --enable-runtime --disable-shared
+                                    --enable-seluid24;
+            fi;
     fi
 
   - if [ "$config" = "ios" ]; then
