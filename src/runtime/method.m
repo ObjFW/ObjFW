@@ -20,11 +20,12 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-Ivar *
-class_copyIvarList(Class class, unsigned int *outCount)
+Method *
+class_copyMethodList(Class class, unsigned int *outCount)
 {
-	unsigned int count;
-	Ivar *ivars;
+	unsigned int i, count;
+	struct objc_method_list *iter;
+	Method *methods;
 
 	if (class == Nil) {
 		if (outCount != NULL)
@@ -35,7 +36,9 @@ class_copyIvarList(Class class, unsigned int *outCount)
 
 	objc_global_mutex_lock();
 
-	count = (class->ivars != NULL ? class->ivars->count : 0);
+	count = 0;
+	for (iter = class->methodList; iter != NULL; iter = iter->next)
+		count += iter->count;
 
 	if (count == 0) {
 		if (outCount != NULL)
@@ -45,35 +48,32 @@ class_copyIvarList(Class class, unsigned int *outCount)
 		return NULL;
 	}
 
-	if ((ivars = malloc((count + 1) * sizeof(Ivar))) == NULL)
-		OBJC_ERROR("Not enough memory to copy ivars");
+	if ((methods = malloc((count + 1) * sizeof(Method))) == NULL)
+		OBJC_ERROR("Not enough memory to copy methods");
 
-	for (unsigned int i = 0; i < count; i++)
-		ivars[i] = &class->ivars->ivars[i];
-	ivars[count] = NULL;
+	i = 0;
+	for (iter = class->methodList; iter != NULL; iter = iter->next)
+		for (unsigned int j = 0; j < iter->count; j++)
+			methods[i++] = &iter->methods[j];
+	OF_ENSURE(i == count);
+	methods[count] = NULL;
 
 	if (outCount != NULL)
 		*outCount = count;
 
 	objc_global_mutex_unlock();
 
-	return ivars;
+	return methods;
+}
+
+SEL
+method_getName(Method method)
+{
+	return (SEL)&method->selector;
 }
 
 const char *
-ivar_getName(Ivar ivar)
+method_getTypeEncoding(Method method)
 {
-	return ivar->name;
-}
-
-const char *
-ivar_getTypeEncoding(Ivar ivar)
-{
-	return ivar->typeEncoding;
-}
-
-ptrdiff_t
-ivar_getOffset(Ivar ivar)
-{
-	return ivar->offset;
+	return method->selector.typeEncoding;
 }

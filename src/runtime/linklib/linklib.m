@@ -615,3 +615,21 @@ ivar_getOffset(Ivar ivar)
 {
 	return glue_ivar_getOffset(ivar);
 }
+
+Method *
+class_copyMethodList(Class class, unsigned int *outCount)
+{
+	return glue_class_copyMethodList(class, outCount);
+}
+
+SEL
+method_getName(Method method)
+{
+	return glue_method_getName(method);
+}
+
+const char *
+method_getTypeEncoding(Method method)
+{
+	return glue_method_getTypeEncoding(method);
+}

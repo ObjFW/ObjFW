@@ -20,6 +20,7 @@ SRCS = arc.m			\
        init.m			\
        ivar.m			\
        lookup.m			\
+       method.m			\
        misc.m			\
        property.m		\
        protocol.m		\

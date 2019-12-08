@@ -29,6 +29,34 @@
 # endif
 #endif
 
+struct objc_object {
+	Class _Nonnull isa;
+};
+
+struct objc_selector {
+	uintptr_t UID;
+	const char *_Nullable typeEncoding;
+};
+
+struct objc_method {
+	struct objc_selector selector;
+	IMP _Nonnull implementation;
+};
+
+struct objc_method_list {
+	struct objc_method_list *_Nullable next;
+	unsigned int count;
+	struct objc_method methods[1];
+};
+
+struct objc_category {
+	const char *_Nonnull categoryName;
+	const char *_Nonnull className;
+	struct objc_method_list *_Nullable instanceMethods;
+	struct objc_method_list *_Nullable classMethods;
+	struct objc_protocol_list *_Nullable protocols;
+};
+
 struct objc_ivar {
 	const char *_Nonnull name;
 	const char *_Nonnull typeEncoding;

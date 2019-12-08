@@ -364,50 +364,11 @@ _references_to_categories_of_OFObject(void)
 + (void)inheritMethodsFromClass: (Class)class
 {
 	Class superclass = [self superclass];
+	Method *methodList;
+	unsigned int count;
 
 	if ([self isSubclassOfClass: class])
 		return;
-
-#if defined(OF_OBJFW_RUNTIME)
-	for (struct objc_method_list *methodList =
-	    object_getClass(class)->methodList;
-	    methodList != NULL; methodList = methodList->next) {
-		for (unsigned int i = 0; i < methodList->count; i++) {
-			SEL selector = (SEL)&methodList->methods[i].selector;
-
-			/*
-			 * Don't replace methods implemented in the receiving
-			 * class.
-			 */
-			if ([self methodForSelector: selector] !=
-			    [superclass methodForSelector: selector])
-				continue;
-
-			[self replaceClassMethod: selector
-			     withMethodFromClass: class];
-		}
-	}
-
-	for (struct objc_method_list *methodList = class->methodList;
-	    methodList != NULL; methodList = methodList->next) {
-		for (unsigned int i = 0; i < methodList->count; i++) {
-			SEL selector = (SEL)&methodList->methods[i].selector;
-
-			/*
-			 * Don't replace methods implemented in the receiving
-			 * class.
-			 */
-			if ([self instanceMethodForSelector: selector] !=
-			    [superclass instanceMethodForSelector: selector])
-				continue;
-
-			[self replaceInstanceMethod: selector
-				withMethodFromClass: class];
-		}
-	}
-#elif defined(OF_APPLE_RUNTIME)
-	Method *methodList;
-	unsigned int count;
 
 	methodList = class_copyMethodList(object_getClass(class), &count);
 	@try {
@@ -448,7 +409,6 @@ _references_to_categories_of_OFObject(void)
 	} @finally {
 		free(methodList);
 	}
-#endif
 
 	[self inheritMethodsFromClass: superclass];
 }

@@ -666,3 +666,28 @@ glue_ivar_getOffset PPC_PARAMS(Ivar ivar)
 
 	return ivar_getOffset(ivar);
 }
+
+Method *
+glue_class_copyMethodList PPC_PARAMS(Class class, unsigned int *outCount)
+{
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(unsigned int *, outCount, a1)
+
+	return class_copyMethodList(class, outCount);
+}
+
+SEL
+glue_method_getName PPC_PARAMS(Method method)
+{
+	M68K_ARG(Method, method, a0)
+
+	return method_getName(method);
+}
+
+const char *
+glue_method_getTypeEncoding PPC_PARAMS(Method method)
+{
+	M68K_ARG(Method, method, a0)
+
+	return method_getTypeEncoding(method);
+}

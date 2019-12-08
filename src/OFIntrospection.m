@@ -33,24 +33,6 @@
 	OF_INVALID_INIT_METHOD
 }
 
-#if defined(OF_OBJFW_RUNTIME)
-- (instancetype)of_initWithMethod: (struct objc_method *)method
-{
-	self = [super init];
-
-	@try {
-		_selector = (SEL)&method->selector;
-		_name = [[OFString alloc]
-		    initWithUTF8String: sel_getName(_selector)];
-		_typeEncoding = method->selector.typeEncoding;
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-#elif defined(OF_APPLE_RUNTIME)
 - (instancetype)of_initWithMethod: (Method)method
 {
 	self = [super init];
@@ -67,9 +49,6 @@
 
 	return self;
 }
-#else
-# error Invalid ObjC runtime!
-#endif
 
 - (void)dealloc
 {
@@ -442,14 +421,13 @@
 	self = [super init];
 
 	@try {
+		Method *methodList;
+		Ivar *iVarList;
 #if defined(OF_OBJFW_RUNTIME)
-		struct objc_method_list *methodList;
 		struct objc_property_list *propertyList;
 #elif defined(OF_APPLE_RUNTIME)
-		Method *methodList;
 		objc_property_t *propertyList;
 #endif
-		Ivar *iVarList;
 		unsigned count;
 		void *pool;
 
@@ -458,43 +436,6 @@
 		_properties = [[OFMutableArray alloc] init];
 		_instanceVariables = [[OFMutableArray alloc] init];
 
-#if defined(OF_OBJFW_RUNTIME)
-		for (methodList = object_getClass(class)->methodList;
-		    methodList != NULL; methodList = methodList->next) {
-			pool = objc_autoreleasePoolPush();
-
-			for (unsigned int i = 0; i < methodList->count; i++)
-				[_classMethods addObject: [[[OFMethod alloc]
-				    of_initWithMethod:
-				    &methodList->methods[i]] autorelease]];
-
-			objc_autoreleasePoolPop(pool);
-		}
-
-		for (methodList = class->methodList; methodList != NULL;
-		    methodList = methodList->next) {
-			pool = objc_autoreleasePoolPush();
-
-			for (unsigned int i = 0; i < methodList->count; i++)
-				[_instanceMethods addObject: [[[OFMethod alloc]
-				    of_initWithMethod:
-				    &methodList->methods[i]] autorelease]];
-
-			objc_autoreleasePoolPop(pool);
-		}
-
-		for (propertyList = class->properties; propertyList != NULL;
-		    propertyList = propertyList->next) {
-			pool = objc_autoreleasePoolPush();
-
-			for (unsigned int i = 0; i < propertyList->count; i++)
-				[_properties addObject: [[[OFProperty alloc]
-				    of_initWithProperty:
-				    &propertyList->properties[i]] autorelease]];
-
-			objc_autoreleasePoolPop(pool);
-		}
-#elif defined(OF_APPLE_RUNTIME)
 		methodList = class_copyMethodList(object_getClass(class),
 		    &count);
 		@try {
@@ -524,6 +465,33 @@
 			free(methodList);
 		}
 
+		iVarList = class_copyIvarList(class, &count);
+		@try {
+			pool = objc_autoreleasePoolPush();
+
+			for (unsigned int i = 0; i < count; i++)
+				[_instanceVariables addObject:
+				    [[[OFInstanceVariable alloc]
+				    of_initWithIVar: iVarList[i]] autorelease]];
+
+			objc_autoreleasePoolPop(pool);
+		} @finally {
+			free(iVarList);
+		}
+
+#if defined(OF_OBJFW_RUNTIME)
+		for (propertyList = class->properties; propertyList != NULL;
+		    propertyList = propertyList->next) {
+			pool = objc_autoreleasePoolPush();
+
+			for (unsigned int i = 0; i < propertyList->count; i++)
+				[_properties addObject: [[[OFProperty alloc]
+				    of_initWithProperty:
+				    &propertyList->properties[i]] autorelease]];
+
+			objc_autoreleasePoolPop(pool);
+		}
+#elif defined(OF_APPLE_RUNTIME)
 		propertyList = class_copyPropertyList(class, &count);
 		@try {
 			pool = objc_autoreleasePoolPush();
@@ -540,20 +508,6 @@
 #else
 # error Invalid ObjC runtime!
 #endif
-
-		iVarList = class_copyIvarList(class, &count);
-		@try {
-			pool = objc_autoreleasePoolPush();
-
-			for (unsigned int i = 0; i < count; i++)
-				[_instanceVariables addObject:
-				    [[[OFInstanceVariable alloc]
-				    of_initWithIVar: iVarList[i]] autorelease]];
-
-			objc_autoreleasePoolPop(pool);
-		} @finally {
-			free(iVarList);
-		}
 
 		[_classMethods makeImmutable];
 		[_instanceMethods makeImmutable];

@@ -75,4 +75,7 @@ Ivar _Nullable *_Nullable glue_class_copyIvarList(Class _Nullable class_, unsign
 const char *_Nonnull glue_ivar_getName(Ivar _Nonnull ivar)(a0)
 const char *_Nonnull glue_ivar_getTypeEncoding(Ivar _Nonnull ivar)(a0)
 ptrdiff_t glue_ivar_getOffset(Ivar _Nonnull ivar)(a0)
+Method _Nullable *_Nullable glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
+SEL _Nonnull glue_method_getName(Method _Nonnull method)(a0)
+const char *_Nullable glue_method_getTypeEncoding(Method _Nonnull method)(a0)
 ==end

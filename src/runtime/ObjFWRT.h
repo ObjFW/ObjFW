@@ -61,6 +61,7 @@
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
+typedef const struct objc_method *Method;
 typedef const struct objc_ivar *Ivar;
 #if !defined(__wii__) && !defined(__amigaos__)
 typedef bool BOOL;
@@ -98,15 +99,6 @@ enum objc_class_info {
 	OBJC_CLASS_INFO_INITIALIZED = 0x800
 };
 
-struct objc_object {
-	Class _Nonnull isa;
-};
-
-struct objc_selector {
-	uintptr_t UID;
-	const char *_Nullable typeEncoding;
-};
-
 struct objc_super {
 	id __unsafe_unretained _Nullable self;
 #ifdef __cplusplus
@@ -114,25 +106,6 @@ struct objc_super {
 #else
 	Class _Nonnull class;
 #endif
-};
-
-struct objc_method {
-	struct objc_selector selector;
-	IMP _Nonnull implementation;
-};
-
-struct objc_method_list {
-	struct objc_method_list *_Nullable next;
-	unsigned int count;
-	struct objc_method methods[1];
-};
-
-struct objc_category {
-	const char *_Nonnull categoryName;
-	const char *_Nonnull className;
-	struct objc_method_list *_Nullable instanceMethods;
-	struct objc_method_list *_Nullable classMethods;
-	struct objc_protocol_list *_Nullable protocols;
 };
 
 enum objc_property_attributes {
@@ -250,6 +223,10 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
+extern Method _Nullable *_Nullable class_copyMethodList(Class _Nullable class_,
+    unsigned int *_Nullable outCount);
+extern SEL _Nonnull method_getName(Method _Nonnull method);
+extern const char *_Nullable method_getTypeEncoding(Method _Nonnull method);
 extern Ivar _Nullable *_Nullable class_copyIvarList(Class _Nullable class_,
     unsigned int *_Nullable outCount);
 extern const char *_Nonnull ivar_getName(Ivar _Nonnull ivar);

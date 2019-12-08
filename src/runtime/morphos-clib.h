@@ -69,3 +69,6 @@ Ivar *glue_class_copyIvarList(Class class_, unsigned int *outCount);
 const char *glue_ivar_getName(Ivar ivar);
 const char *glue_ivar_getTypeEncoding(Ivar ivar);
 ptrdiff_t glue_ivar_getOffset(Ivar ivar);
+Method *glue_class_copyMethodList(Class class_, unsigned int *outCount);
+SEL glue_method_getName(Method method);
+const char *glue_method_getTypeEncoding(Method method);
