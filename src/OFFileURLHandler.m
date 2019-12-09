@@ -89,7 +89,7 @@ typedef struct {
 	DWORD fileAttributes;
 # endif
 } of_stat_t;
-#elif defined(OF_HAVE_OFF64_T)
+#elif defined(HAVE_STAT64)
 typedef struct stat64 of_stat_t;
 #else
 typedef struct stat of_stat_t;
@@ -274,7 +274,7 @@ of_stat(OFString *path, of_stat_t *buffer)
 # endif
 
 	return 0;
-#elif defined(OF_HAVE_OFF64_T)
+#elif defined(HAVE_STAT64)
 	return stat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
 #else
 	return stat([path cStringWithEncoding: [OFLocale encoding]], buffer);
@@ -286,7 +286,7 @@ of_lstat(OFString *path, of_stat_t *buffer)
 {
 #if defined(HAVE_LSTAT) && !defined(OF_WINDOWS) && !defined(OF_AMIGAOS) && \
     !defined(OF_NINTENDO_3DS) && !defined(OF_WII)
-# ifdef OF_HAVE_OFF64_T
+# ifdef HAVE_LSTAT64
 	return lstat64([path cStringWithEncoding: [OFLocale encoding]], buffer);
 # else
 	return lstat([path cStringWithEncoding: [OFLocale encoding]], buffer);
