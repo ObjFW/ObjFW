@@ -29,6 +29,35 @@
 # endif
 #endif
 
+struct objc_class {
+	Class _Nonnull isa;
+	Class _Nullable superclass;
+	const char *_Nonnull name;
+	unsigned long version;
+	unsigned long info;
+	long instanceSize;
+	struct objc_ivar_list *_Nullable ivars;
+	struct objc_method_list *_Nullable methodList;
+	struct objc_dtable *_Nonnull DTable;
+	Class _Nullable *_Nullable subclassList;
+	void *_Nullable siblingClass;
+	struct objc_protocol_list *_Nullable protocols;
+	void *_Nullable GCObjectType;
+	unsigned long ABIVersion;
+	int32_t *_Nonnull *_Nullable ivarOffsets;
+	struct objc_property_list *_Nullable propertyList;
+};
+
+enum objc_class_info {
+	OBJC_CLASS_INFO_CLASS	    = 0x001,
+	OBJC_CLASS_INFO_METACLASS   = 0x002,
+	OBJC_CLASS_INFO_NEW_ABI	    = 0x010,
+	OBJC_CLASS_INFO_SETUP	    = 0x100,
+	OBJC_CLASS_INFO_LOADED	    = 0x200,
+	OBJC_CLASS_INFO_DTABLE	    = 0x400,
+	OBJC_CLASS_INFO_INITIALIZED = 0x800
+};
+
 struct objc_object {
 	Class _Nonnull isa;
 };
@@ -67,6 +96,36 @@ struct objc_ivar_list {
 	unsigned int count;
 	struct objc_ivar ivars[1];
 };
+
+struct objc_method_description {
+	const char *_Nonnull name;
+	const char *_Nonnull typeEncoding;
+};
+
+struct objc_method_description_list {
+	int count;
+	struct objc_method_description list[1];
+};
+
+struct objc_protocol_list {
+	struct objc_protocol_list *_Nullable next;
+	long count;
+	Protocol *__unsafe_unretained _Nonnull list[1];
+};
+
+#if __has_attribute(__objc_root_class__)
+__attribute__((__objc_root_class__))
+#endif
+@interface Protocol
+{
+@public
+	Class _Nonnull isa;
+	const char *_Nonnull name;
+	struct objc_protocol_list *_Nullable protocolList;
+	struct objc_method_description_list *_Nullable instanceMethods;
+	struct objc_method_description_list *_Nullable classMethods;
+}
+@end
 
 enum objc_property_attributes {
 	OBJC_PROPERTY_READONLY	= 0x01,

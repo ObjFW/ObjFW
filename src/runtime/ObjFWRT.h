@@ -62,6 +62,11 @@ typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
 typedef const struct objc_method *Method;
+#ifdef __OBJC__
+@class Protocol;
+#else
+typedef const struct objc_protocol *Protocol;
+#endif
 typedef const struct objc_ivar *Ivar;
 typedef const struct objc_property *objc_property_t;
 #if !defined(__wii__) && !defined(__amigaos__)
@@ -71,35 +76,6 @@ typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
 typedef void (*objc_uncaught_exception_handler_t)(id _Nullable);
 typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull);
 
-struct objc_class {
-	Class _Nonnull isa;
-	Class _Nullable superclass;
-	const char *_Nonnull name;
-	unsigned long version;
-	unsigned long info;
-	long instanceSize;
-	struct objc_ivar_list *_Nullable ivars;
-	struct objc_method_list *_Nullable methodList;
-	struct objc_dtable *_Nonnull DTable;
-	Class _Nullable *_Nullable subclassList;
-	void *_Nullable siblingClass;
-	struct objc_protocol_list *_Nullable protocols;
-	void *_Nullable GCObjectType;
-	unsigned long ABIVersion;
-	int32_t *_Nonnull *_Nullable ivarOffsets;
-	struct objc_property_list *_Nullable propertyList;
-};
-
-enum objc_class_info {
-	OBJC_CLASS_INFO_CLASS	    = 0x001,
-	OBJC_CLASS_INFO_METACLASS   = 0x002,
-	OBJC_CLASS_INFO_NEW_ABI	    = 0x010,
-	OBJC_CLASS_INFO_SETUP	    = 0x100,
-	OBJC_CLASS_INFO_LOADED	    = 0x200,
-	OBJC_CLASS_INFO_DTABLE	    = 0x400,
-	OBJC_CLASS_INFO_INITIALIZED = 0x800
-};
-
 struct objc_super {
 	id __unsafe_unretained _Nullable self;
 #ifdef __cplusplus
@@ -107,44 +83,6 @@ struct objc_super {
 #else
 	Class _Nonnull class;
 #endif
-};
-
-struct objc_method_description {
-	const char *_Nonnull name;
-	const char *_Nonnull typeEncoding;
-};
-
-struct objc_method_description_list {
-	int count;
-	struct objc_method_description list[1];
-};
-
-#ifdef __OBJC__
-# if __has_attribute(__objc_root_class__)
-__attribute__((__objc_root_class__))
-# endif
-@interface Protocol
-{
-@public
-#else
-typedef struct {
-#endif
-	Class _Nonnull isa;
-	const char *_Nonnull name;
-	struct objc_protocol_list *_Nullable protocolList;
-	struct objc_method_description_list *_Nullable instanceMethods;
-	struct objc_method_description_list *_Nullable classMethods;
-#ifdef __OBJC__
-}
-@end
-#else
-} Protocol;
-#endif
-
-struct objc_protocol_list {
-	struct objc_protocol_list *_Nullable next;
-	long count;
-	Protocol *__unsafe_unretained _Nonnull list[1];
 };
 
 #ifdef __cplusplus
