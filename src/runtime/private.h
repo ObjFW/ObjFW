@@ -68,6 +68,42 @@ struct objc_ivar_list {
 	struct objc_ivar ivars[1];
 };
 
+enum objc_property_attributes {
+	OBJC_PROPERTY_READONLY	= 0x01,
+	OBJC_PROPERTY_GETTER	= 0x02,
+	OBJC_PROPERTY_ASSIGN	= 0x04,
+	OBJC_PROPERTY_READWRITE	= 0x08,
+	OBJC_PROPERTY_RETAIN	= 0x10,
+	OBJC_PROPERTY_COPY	= 0x20,
+	OBJC_PROPERTY_NONATOMIC	= 0x40,
+	OBJC_PROPERTY_SETTER	= 0x80
+};
+
+enum objc_property_extended_attributes {
+	OBJC_PROPERTY_SYNTHESIZED	=  0x1,
+	OBJC_PROPERTY_DYNAMIC		=  0x2,
+	OBJC_PROPERTY_PROTOCOL		=  0x3,
+	OBJC_PROPERTY_ATOMIC		=  0x4,
+	OBJC_PROPERTY_WEAK		=  0x8,
+	OBJC_PROPERTY_STRONG		= 0x10,
+	OBJC_PROPERTY_UNSAFE_UNRETAINED = 0x20
+};
+
+struct objc_property {
+	const char *_Nonnull name;
+	unsigned char attributes, extendedAttributes;
+	struct {
+		const char *_Nullable name;
+		const char *_Nullable typeEncoding;
+	} getter, setter;
+};
+
+struct objc_property_list {
+	unsigned int count;
+	struct objc_property_list *_Nullable next;
+	struct objc_property properties[1];
+};
+
 struct objc_static_instances {
 	const char *_Nonnull className;
 	id _Nullable instances[1];

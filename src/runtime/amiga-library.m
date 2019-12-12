@@ -135,6 +135,9 @@ extern ptrdiff_t glue_ivar_getOffset(void);
 extern Method *glue_class_copyMethodList(void);
 extern SEL glue_method_getName(void);
 extern const char *glue_method_getTypeEncoding(void);
+extern objc_property_t *glue_class_copyPropertyList(void);
+extern const char *glue_property_getName(void);
+extern char *glue_property_copyAttributeValue(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -649,6 +652,9 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_class_copyMethodList,
 	(CONST_APTR)glue_method_getName,
 	(CONST_APTR)glue_method_getTypeEncoding,
+	(CONST_APTR)glue_class_copyPropertyList,
+	(CONST_APTR)glue_property_getName,
+	(CONST_APTR)glue_property_copyAttributeValue,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

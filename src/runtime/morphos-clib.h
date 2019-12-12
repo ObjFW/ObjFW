@@ -72,3 +72,6 @@ ptrdiff_t glue_ivar_getOffset(Ivar ivar);
 Method *glue_class_copyMethodList(Class class_, unsigned int *outCount);
 SEL glue_method_getName(Method method);
 const char *glue_method_getTypeEncoding(Method method);
+objc_property_t *glue_class_copyPropertyList(Class class_, unsigned int *outCount);
+const char *glue_property_getName(objc_property_t property);
+char *glue_property_copyAttributeValue(objc_property_t property, const char *name);

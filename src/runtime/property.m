@@ -156,3 +156,108 @@ objc_setPropertyStruct(void *dest, const void *src, ptrdiff_t size, bool atomic,
 
 	memcpy(dest, src, size);
 }
+
+objc_property_t *
+class_copyPropertyList(Class class, unsigned int *outCount)
+{
+	unsigned int i, count;
+	struct objc_property_list *iter;
+	objc_property_t *properties;
+
+	if (class == Nil) {
+		if (outCount != NULL)
+			*outCount = 0;
+
+		return NULL;
+	}
+
+	objc_global_mutex_lock();
+
+	count = 0;
+	if (class->info & OBJC_CLASS_INFO_NEW_ABI)
+		for (iter = class->propertyList; iter != NULL;
+		    iter = iter->next)
+			count += iter->count;
+
+	if (count == 0) {
+		if (outCount != NULL)
+			*outCount = 0;
+
+		objc_global_mutex_unlock();
+		return NULL;
+	}
+
+	properties = malloc((count + 1) * sizeof(objc_property_t));
+	if (properties == NULL)
+		OBJC_ERROR("Not enough memory to copy properties");
+
+	i = 0;
+	for (iter = class->propertyList; iter != NULL; iter = iter->next)
+		for (unsigned int j = 0; j < iter->count; j++)
+			properties[i++] = &iter->properties[j];
+	OF_ENSURE(i == count);
+	properties[count] = NULL;
+
+	if (outCount != NULL)
+		*outCount = count;
+
+	objc_global_mutex_unlock();
+
+	return properties;
+}
+
+const char *
+property_getName(objc_property_t property)
+{
+	return property->name;
+}
+
+char *
+property_copyAttributeValue(objc_property_t property, const char *name)
+{
+	char *ret = NULL;
+	bool nullIsError = false;
+
+	if (strlen(name) != 1)
+		return NULL;
+
+	switch (*name) {
+	case 'T':
+		ret = of_strdup(property->getter.typeEncoding);
+		nullIsError = true;
+		break;
+	case 'G':
+		if (property->attributes & OBJC_PROPERTY_GETTER) {
+			ret = of_strdup(property->getter.name);
+			nullIsError = true;
+		}
+		break;
+	case 'S':
+		if (property->attributes & OBJC_PROPERTY_SETTER) {
+			ret = of_strdup(property->setter.name);
+			nullIsError = true;
+		}
+		break;
+#define BOOL_CASE(name, field, flag)		\
+	case name:				\
+		if (property->field & flag) {	\
+			ret = calloc(1, 1);	\
+			nullIsError = true;	\
+		}				\
+		break;
+
+	BOOL_CASE('R', attributes, OBJC_PROPERTY_READONLY)
+	BOOL_CASE('C', attributes, OBJC_PROPERTY_COPY)
+	BOOL_CASE('&', attributes, OBJC_PROPERTY_RETAIN)
+	BOOL_CASE('N', attributes, OBJC_PROPERTY_NONATOMIC)
+	BOOL_CASE('D', extendedAttributes, OBJC_PROPERTY_DYNAMIC)
+	BOOL_CASE('W', extendedAttributes, OBJC_PROPERTY_WEAK)
+#undef BOOL_CASE
+	}
+
+	if (nullIsError && ret == NULL)
+		OBJC_ERROR("Not enough memory to copy property attribute "
+		    "value");
+
+	return ret;
+}

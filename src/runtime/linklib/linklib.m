@@ -633,3 +633,21 @@ method_getTypeEncoding(Method method)
 {
 	return glue_method_getTypeEncoding(method);
 }
+
+objc_property_t *
+class_copyPropertyList(Class class, unsigned int *outCount)
+{
+	return glue_class_copyPropertyList(class, outCount);
+}
+
+const char *
+property_getName(objc_property_t property)
+{
+	return glue_property_getName(property);
+}
+
+char *
+property_copyAttributeValue(objc_property_t property, const char *name)
+{
+	return glue_property_copyAttributeValue(property, name);
+}

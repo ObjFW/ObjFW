@@ -74,4 +74,7 @@ glue_ivar_getOffset(ivar)(sysv,r12base)
 glue_class_copyMethodList(class_,outCount)(sysv,r12base)
 glue_method_getName(method)(sysv,r12base)
 glue_method_getTypeEncoding(method)(sysv,r12base)
+glue_class_copyPropertyList(class_,outCount)(sysv,r12base)
+glue_property_getName(property)(sysv,r12base)
+glue_property_copyAttributeValue(property,name)(sysv,r12base)
 ##end

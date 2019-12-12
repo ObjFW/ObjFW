@@ -78,4 +78,7 @@ ptrdiff_t glue_ivar_getOffset(Ivar _Nonnull ivar)(a0)
 Method _Nullable *_Nullable glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
 SEL _Nonnull glue_method_getName(Method _Nonnull method)(a0)
 const char *_Nullable glue_method_getTypeEncoding(Method _Nonnull method)(a0)
+objc_property_t _Nullable *_Nullable glue_class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
+const char *_Nonnull glue_property_getName(objc_property_t _Nonnull property)(a0)
+char *_Nullable glue_property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name)(a0,a1)
 ==end

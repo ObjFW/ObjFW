@@ -122,139 +122,59 @@
 	OF_INVALID_INIT_METHOD
 }
 
-#if defined(OF_OBJFW_RUNTIME)
-- (instancetype)of_initWithProperty: (struct objc_property *)property
-{
-	self = [super init];
-
-	@try {
-		_name = [[OFString alloc] initWithUTF8String: property->name];
-		_attributes =
-		    property->attributes | (property->extendedAttributes << 8);
-
-		if (property->getter.name != NULL)
-			_getter = [[OFString alloc]
-			    initWithUTF8String: property->getter.name];
-		if (property->setter.name != NULL)
-			_setter = [[OFString alloc]
-			    initWithUTF8String: property->setter.name];
-	} @catch (id e) {
-		[self release];
-		@throw e;
-	}
-
-	return self;
-}
-#elif defined(OF_APPLE_RUNTIME)
 - (instancetype)of_initWithProperty: (objc_property_t)property
 {
 	self = [super init];
 
 	@try {
-		const char *attributes;
+		char *value;
 
 		_name = [[OFString alloc]
 		    initWithUTF8String: property_getName(property)];
 
-		if ((attributes = property_getAttributes(property)) == NULL)
-			@throw [OFInitializationFailedException
-			    exceptionWithClass: self.class];
-
-		while (*attributes != '\0') {
-			const char *start;
-
-			switch (*attributes) {
-			case 'T':
-				while (*attributes != ',' &&
-				    *attributes != '\0')
-					attributes++;
-				break;
-			case 'R':
-				_attributes |= OF_PROPERTY_READONLY;
-				attributes++;
-				break;
-			case 'C':
-				_attributes |= OF_PROPERTY_COPY;
-				attributes++;
-				break;
-			case '&':
-				_attributes |= OF_PROPERTY_RETAIN;
-				attributes++;
-				break;
-			case 'N':
-				_attributes |= OF_PROPERTY_NONATOMIC;
-				attributes++;
-				break;
-			case 'G':
-				start = ++attributes;
-
-				if (_getter != nil)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
-
-				while (*attributes != ',' &&
-				    *attributes != '\0')
-					attributes++;
-
+		value = property_copyAttributeValue(property, "G");
+		if (value != NULL) {
+			@try {
 				_getter = [[OFString alloc]
-				    initWithUTF8String: start
-						length: attributes - start];
-
-				break;
-			case 'S':
-				start = ++attributes;
-
-				if (_setter != nil)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
-
-				while (*attributes != ',' &&
-				    *attributes != '\0')
-					attributes++;
-
-				_setter = [[OFString alloc]
-				    initWithUTF8String: start
-						length: attributes - start];
-
-				break;
-			case 'D':
-				_attributes |= OF_PROPERTY_DYNAMIC;
-				attributes++;
-				break;
-			case 'W':
-				_attributes |= OF_PROPERTY_WEAK;
-				attributes++;
-				break;
-			case 'P':
-				attributes++;
-				break;
-			case 'V':
-				start = ++attributes;
-
-				if (_iVar != nil)
-					@throw [OFInitializationFailedException
-					    exceptionWithClass: self.class];
-
-				while (*attributes != ',' &&
-				    *attributes != '\0')
-					attributes++;
-
-				_iVar = [[OFString alloc]
-				    initWithUTF8String: start
-						length: attributes - start];
-
-				break;
-			default:
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+				    initWithUTF8String: value];
+			} @finally {
+				free(value);
 			}
+		}
 
-			if (*attributes != ',' && *attributes != '\0')
-				@throw [OFInitializationFailedException
-				    exceptionWithClass: self.class];
+		value = property_copyAttributeValue(property, "S");
+		if (value != NULL) {
+			@try {
+				_setter = [[OFString alloc]
+				    initWithUTF8String: value];
+			} @finally {
+				free(value);
+			}
+		}
 
-			if (*attributes != '\0')
-				attributes++;
+#define BOOL_ATTRIBUTE(name, flag)					\
+		value = property_copyAttributeValue(property, name);	\
+		if (value != NULL) {					\
+			_attributes |= flag;				\
+			free(value);					\
+		}
+
+		BOOL_ATTRIBUTE("R", OF_PROPERTY_READONLY)
+		BOOL_ATTRIBUTE("C", OF_PROPERTY_COPY)
+		BOOL_ATTRIBUTE("&", OF_PROPERTY_RETAIN)
+		BOOL_ATTRIBUTE("N", OF_PROPERTY_NONATOMIC)
+		BOOL_ATTRIBUTE("D", OF_PROPERTY_DYNAMIC)
+		BOOL_ATTRIBUTE("W", OF_PROPERTY_WEAK)
+#undef BOOL_ATTRIBUTE
+
+		value = property_copyAttributeValue(property, "V");
+		if (value != NULL) {
+			@try {
+				_iVar = [[OFString alloc]
+				    initWithUTF8String: value];
+			} @finally {
+				free(value);
+			}
 		}
 
 		if (!(_attributes & OF_PROPERTY_READONLY))
@@ -291,9 +211,6 @@
 
 	return self;
 }
-#else
-# error Invalid ObjC runtime!
-#endif
 
 - (void)dealloc
 {
@@ -423,11 +340,7 @@
 	@try {
 		Method *methodList;
 		Ivar *iVarList;
-#if defined(OF_OBJFW_RUNTIME)
-		struct objc_property_list *propertyList;
-#elif defined(OF_APPLE_RUNTIME)
 		objc_property_t *propertyList;
-#endif
 		unsigned count;
 		void *pool;
 
@@ -479,19 +392,6 @@
 			free(iVarList);
 		}
 
-#if defined(OF_OBJFW_RUNTIME)
-		for (propertyList = class->properties; propertyList != NULL;
-		    propertyList = propertyList->next) {
-			pool = objc_autoreleasePoolPush();
-
-			for (unsigned int i = 0; i < propertyList->count; i++)
-				[_properties addObject: [[[OFProperty alloc]
-				    of_initWithProperty:
-				    &propertyList->properties[i]] autorelease]];
-
-			objc_autoreleasePoolPop(pool);
-		}
-#elif defined(OF_APPLE_RUNTIME)
 		propertyList = class_copyPropertyList(class, &count);
 		@try {
 			pool = objc_autoreleasePoolPush();
@@ -505,9 +405,6 @@
 		} @finally {
 			free(propertyList);
 		}
-#else
-# error Invalid ObjC runtime!
-#endif
 
 		[_classMethods makeImmutable];
 		[_instanceMethods makeImmutable];
