@@ -40,7 +40,6 @@ SRCS = OFASN1BitString.m		\
        OFHMAC.m				\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
-       OFIntrospection.m		\
        OFInvocation.m			\
        OFLHAArchive.m			\
        OFLHAArchiveEntry.m		\

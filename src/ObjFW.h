@@ -44,7 +44,6 @@
 
 #import "OFMethodSignature.h"
 #import "OFInvocation.h"
-#import "OFIntrospection.h"
 
 #import "OFNumber.h"
 #import "OFDate.h"
