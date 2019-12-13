@@ -51,7 +51,7 @@ bool glue_class_respondsToSelector(Class, SEL);
 bool glue_class_conformsToProtocol(Class, Protocol *);
 IMP glue_class_getMethodImplementation(Class, SEL);
 IMP glue_class_getMethodImplementation_stret(Class, SEL);
-const char *glue_class_getMethodTypeEncoding(Class, SEL);
+Method glue_class_getInstanceMethod(Class, SEL);
 bool glue_class_addMethod(Class class_, SEL selector, IMP, const char *);
 IMP glue_class_replaceMethod(Class, SEL, IMP, const char *);
 Class glue_object_getClass(id);

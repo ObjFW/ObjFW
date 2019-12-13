@@ -504,10 +504,10 @@ class_getMethodImplementation_stret(Class class, SEL selector)
 	return glue_class_getMethodImplementation_stret(class, selector);
 }
 
-const char *
-class_getMethodTypeEncoding(Class class, SEL selector)
+Method
+class_getInstanceMethod(Class class, SEL selector)
 {
-	return glue_class_getMethodTypeEncoding(class, selector);
+	return glue_class_getInstanceMethod(class, selector);
 }
 
 bool

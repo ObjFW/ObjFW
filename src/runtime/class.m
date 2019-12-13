@@ -770,10 +770,11 @@ addMethod(Class class, SEL selector, IMP implementation,
 	objc_update_dtable(class);
 }
 
-const char *
-class_getMethodTypeEncoding(Class class, SEL selector)
+Method
+class_getInstanceMethod(Class class, SEL selector)
 {
-	struct objc_method *method;
+	Method method;
+	Class superclass;
 
 	if (class == Nil)
 		return NULL;
@@ -781,15 +782,16 @@ class_getMethodTypeEncoding(Class class, SEL selector)
 	objc_global_mutex_lock();
 
 	if ((method = getMethod(class, selector)) != NULL) {
-		const char *ret = method->selector.typeEncoding;
 		objc_global_mutex_unlock();
-		return ret;
+		return method;
 	}
+
+	superclass = class->superclass;
 
 	objc_global_mutex_unlock();
 
-	if (class->superclass != Nil)
-		return class_getMethodTypeEncoding(class->superclass, selector);
+	if (superclass != Nil)
+		return class_getInstanceMethod(superclass, selector);
 
 	return NULL;
 }

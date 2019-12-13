@@ -57,7 +57,7 @@ bool glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector
 bool glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)(a0,a1)
 IMP _Nullable glue_class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
 IMP _Nullable glue_class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
-const char *_Nullable glue_class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
+Method _Nullable glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
 bool glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)(a0,a1,a2,a3)
 IMP _Nullable glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)(a0,a1,a2,a3)
 Class _Nullable glue_object_getClass(id _Nullable object)(a0)

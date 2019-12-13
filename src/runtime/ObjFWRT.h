@@ -110,7 +110,7 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
-extern const char *_Nullable class_getMethodTypeEncoding(Class _Nullable class_,
+extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
     SEL _Nonnull selector);
 extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);

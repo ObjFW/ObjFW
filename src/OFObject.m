@@ -105,16 +105,12 @@ uint32_t of_hash_seed;
 static const char *
 typeEncodingForSelector(Class class, SEL selector)
 {
-#if defined(OF_OBJFW_RUNTIME)
-	return class_getMethodTypeEncoding(class, selector);
-#elif defined(OF_APPLE_RUNTIME)
-	Method m;
+	Method method;
 
-	if ((m = class_getInstanceMethod(class, selector)) == NULL)
+	if ((method = class_getInstanceMethod(class, selector)) == NULL)
 		return NULL;
 
-	return method_getTypeEncoding(m);
-#endif
+	return method_getTypeEncoding(method);
 }
 
 #if !defined(OF_APPLE_RUNTIME) || defined(__OBJC2__)

@@ -507,13 +507,13 @@ glue_class_getMethodImplementation_stret PPC_PARAMS(Class class, SEL selector)
 	return class_getMethodImplementation_stret(class, selector);
 }
 
-const char *__saveds
-glue_class_getMethodTypeEncoding PPC_PARAMS(Class class, SEL selector)
+Method __saveds
+glue_class_getInstanceMethod PPC_PARAMS(Class class, SEL selector)
 {
 	M68K_ARG(Class, class, a0)
 	M68K_ARG(SEL, selector, a1)
 
-	return class_getMethodTypeEncoding(class, selector);
+	return class_getInstanceMethod(class, selector);
 }
 
 bool __saveds
