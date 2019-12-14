@@ -78,8 +78,13 @@ of_dns_class_t of_dns_class_parse(OFString *string)
 
 	if ([string isEqual: @"IN"])
 		DNSClass = OF_DNS_CLASS_IN;
-	else
-		@throw [OFInvalidArgumentException exception];
+	else {
+		@try {
+			DNSClass = (of_dns_class_t)[string decimalValue];
+		} @catch (OFInvalidFormatException *e) {
+			@throw [OFInvalidArgumentException exception];
+		}
+	}
 
 	objc_autoreleasePoolPop(pool);
 
@@ -115,8 +120,14 @@ of_dns_record_type_t of_dns_record_type_parse(OFString *string)
 		recordType = OF_DNS_RECORD_TYPE_AAAA;
 	else if ([string isEqual: @"SRV"])
 		recordType = OF_DNS_RECORD_TYPE_SRV;
-	else
-		@throw [OFInvalidArgumentException exception];
+	else {
+		@try {
+			recordType =
+			    (of_dns_record_type_t)[string decimalValue];
+		} @catch (OFInvalidFormatException *e) {
+			@throw [OFInvalidArgumentException exception];
+		}
+	}
 
 	objc_autoreleasePoolPop(pool);
 
