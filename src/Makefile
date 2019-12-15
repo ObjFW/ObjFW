@@ -139,7 +139,6 @@ SRCS_SOCKETS = OFDNSQuery.m			\
 SRCS_THREADS = OFCondition.m		\
 	       OFMutex.m		\
 	       OFRecursiveMutex.m	\
-	       OFThreadPool.m		\
 	       condition.m		\
 	       mutex.m			\
 	       thread.m			\
