@@ -22,21 +22,25 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @class OFSecureData OFSecureData.h ObjFW/OFSecureData.h
  *
- * @brief A class for storing arbitrary data in secure memory, securely wiping
- *	  it when it gets deallocated.
+ * @brief A class for storing arbitrary data in secure (non-swappable) memory,
+ *	  securely wiping it when it gets deallocated.
  *
- * @note Secure memory might be unavailable on the platform, in which case this
- *	 falls back to insecure (potentially swappable) memory.
+ * @warning Non-swappable memory might be unavailable, in which case this falls
+ *	    back to swappable memory, but still wipes the data when it gets
+ *	    deallocated. Check the @ref swappable property to see whether a
+ *	    particular OFSecureData was allocated in swappable memory.
  */
 OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
 	struct page *_page;
+	bool _swappable;
 }
 
-#ifdef OF_HAVE_CLASS_PROPERTIES
-@property (class, readonly, nonatomic, getter=isSecure) bool secure;
-#endif
+/*!
+ * @brief Whether the OFSecureData is in swappable memory.
+ */
+@property (readonly, nonatomic, getter=isSwappable) bool swappable;
 
 /*!
  * @brief All items of the OFSecureData as a C array.
@@ -45,12 +49,6 @@ OF_SUBCLASSING_RESTRICTED
  * of the data.
  */
 @property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
-
-/*!
- * @brief Whether OFSecureData is secure, meaning preventing the data from
- *	  being swapped out is supported.
- */
-+ (bool)isSecure;
 
 /*!
  * @brief Preallocates the specified number of bytes.
