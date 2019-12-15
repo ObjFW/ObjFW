@@ -19,7 +19,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFDimensionValue: OFValue
 {
 	of_dimension_t _dimension;

@@ -42,6 +42,7 @@
 struct page {
 	struct page *next, *previous;
 	void *map;
+	bool swappable;
 	unsigned char *page;
 };
 
@@ -61,7 +62,7 @@ static size_t numPreallocatedPages = 0;
 #endif
 
 static void *
-mapPages(size_t numPages)
+mapPages(size_t numPages, bool *swappable)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 	void *pointer;
@@ -75,20 +76,20 @@ mapPages(size_t numPages)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: pageSize];
 
-	if (mlock(pointer, numPages * pageSize) != 0 && errno != EPERM)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
+	*swappable = (mlock(pointer, numPages * pageSize) != 0);
 #else
 	if ((pointer = malloc(numPages * pageSize)) == NULL)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: pageSize];
+
+	*swappable = true;
 #endif
 
 	return pointer;
 }
 
 static void
-unmapPages(void *pointer, size_t numPages)
+unmapPages(void *pointer, size_t numPages, bool swappable)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 
@@ -96,7 +97,8 @@ unmapPages(void *pointer, size_t numPages)
 		@throw [OFOutOfRangeException exception];
 
 #if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-	munlock(pointer, numPages * pageSize);
+	if (!swappable)
+		munlock(pointer, numPages * pageSize);
 	munmap(pointer, numPages * pageSize);
 #else
 	free(pointer);
@@ -154,7 +156,7 @@ addPage(bool allowPreallocated)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: mapSize];
 
-	page->page = mapPages(1);
+	page->page = mapPages(1, &page->swappable);
 	of_explicit_memset(page->page, 0, pageSize);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
@@ -193,7 +195,7 @@ removePageIfEmpty(struct page *page)
 		if (map[i] != 0)
 			return;
 
-	unmapPages(page->page, 1);
+	unmapPages(page->page, 1, page->swappable);
 	free(page->map);
 
 	if (page->previous != NULL)
@@ -263,6 +265,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 
 @implementation OFSecureData
+@synthesize swappable = _swappable;
+
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
@@ -276,38 +280,6 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 		    exceptionWithClass: self];
 }
 #endif
-
-+ (bool)isSecure
-{
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-	bool isSecure = true;
-	size_t pageSize = [OFSystemInfo pageSize];
-	void *pointer;
-
-	if ((pointer = mmap(NULL, pageSize, PROT_READ | PROT_WRITE,
-	    MAP_PRIVATE | MAP_ANON, -1, 0)) == MAP_FAILED)
-		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
-
-	if (mlock(pointer, pageSize) != 0) {
-		if (errno != EPERM) {
-			munmap(pointer, pageSize);
-
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: pageSize];
-		}
-
-		isSecure = false;
-	}
-
-	munlock(pointer, pageSize);
-	munmap(pointer, pageSize);
-
-	return isSecure;
-#else
-	return false;
-#endif
-}
 
 + (void)preallocateMemoryWithSize: (size_t)size
 {
@@ -398,7 +370,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 		if (count * itemSize >= pageSize)
 			_items = mapPages(OF_ROUND_UP_POW2(pageSize,
-			    count * itemSize) / pageSize);
+			    count * itemSize) / pageSize, &_swappable);
 		else {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			struct page *lastPage = of_tlskey_get(lastPageKey);
@@ -424,6 +396,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 					    exceptionWithRequestedSize:
 					    count * itemSize];
 			}
+
+			_swappable = _page->swappable;
 		}
 
 		_itemSize = itemSize;
@@ -498,7 +472,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 	if (_count * _itemSize > pageSize)
 		unmapPages(_items,
-		    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) / pageSize);
+		    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) / pageSize,
+		    _swappable);
 	else if (_page != NULL) {
 		if (_items != NULL)
 			freeMemory(_page, _items, _count * _itemSize);
@@ -545,6 +520,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 {
 	OFData *otherData;
 	unsigned char diff;
+
+	if (object == self)
+		return true;
 
 	if (![object isKindOfClass: [OFData class]])
 		return false;

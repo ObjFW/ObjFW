@@ -34,9 +34,6 @@ OF_ASSUME_NONNULL_BEGIN
 OF_SUBCLASSING_RESTRICTED
 @interface OFInflate64Stream: OFStream <OFReadyForReadingObserving>
 {
-#ifdef OF_INFLATE64_STREAM_M
-@public
-#endif
 	OFStream *_stream;
 	unsigned char _buffer[OF_INFLATE64_STREAM_BUFFER_SIZE];
 	uint16_t _bufferIndex, _bufferLength;

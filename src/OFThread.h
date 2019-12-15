@@ -65,9 +65,7 @@ typedef id _Nullable (^of_thread_block_t)(void);
 #ifdef OF_HAVE_THREADS
     <OFCopying>
 {
-# ifdef OF_THREAD_M
-@public
-# endif
+@private
 	of_thread_t _thread;
 	of_thread_attr_t _attr;
 	enum of_thread_running {
@@ -81,11 +79,9 @@ typedef id _Nullable (^of_thread_block_t)(void);
 # endif
 	jmp_buf _exitEnv;
 	id _returnValue;
-@protected
 	bool _supportsSockets;
 	OFRunLoop *_Nullable _runLoop;
 	OFMutableDictionary *_threadDictionary;
-@private
 	OFString *_Nullable _name;
 # ifdef OF_HAVE_SOCKETS
 	OFDNSResolver *_DNSResolver;

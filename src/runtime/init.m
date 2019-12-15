@@ -21,10 +21,8 @@
 #import "private.h"
 
 void
-__objc_exec_class(void *module_)
+__objc_exec_class(struct objc_module *module)
 {
-	struct objc_abi_module *module = module_;
-
 	objc_global_mutex_lock();
 
 	objc_register_all_selectors(module->symtab);

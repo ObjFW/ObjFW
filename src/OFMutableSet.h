@@ -31,10 +31,6 @@ OF_ASSUME_NONNULL_BEGIN
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(4)
-}
-
 /*!
  * @brief Creates a new OFMutableSet with enough memory to hold the specified
  *	  number of objects.

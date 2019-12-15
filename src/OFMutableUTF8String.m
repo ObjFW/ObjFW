@@ -376,7 +376,7 @@
 
 	if ([string isKindOfClass: [OFUTF8String class]] ||
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
-		if (((OFUTF8String *)string)->_s->isUTF8)
+		if (((OFMutableUTF8String *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;
@@ -551,7 +551,7 @@
 
 	if ([string isKindOfClass: [OFUTF8String class]] ||
 	    [string isKindOfClass: [OFMutableUTF8String class]]) {
-		if (((OFUTF8String *)string)->_s->isUTF8)
+		if (((OFMutableUTF8String *)string)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;
@@ -644,7 +644,7 @@
 
 	if ([replacement isKindOfClass: [OFUTF8String class]] ||
 	    [replacement isKindOfClass: [OFMutableUTF8String class]]) {
-		if (((OFUTF8String *)replacement)->_s->isUTF8)
+		if (((OFMutableUTF8String *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;
@@ -731,7 +731,7 @@
 
 	if ([replacement isKindOfClass: [OFUTF8String class]] ||
 	    [replacement isKindOfClass: [OFMutableUTF8String class]]) {
-		if (((OFUTF8String *)replacement)->_s->isUTF8)
+		if (((OFMutableUTF8String *)replacement)->_s->isUTF8)
 			_s->isUTF8 = true;
 	} else
 		_s->isUTF8 = true;

@@ -44,6 +44,9 @@ enum state {
 	STATE_BLOCK_LEN_DIST_PAIR
 };
 
+@implementation OFLHADecompressingStream
+@synthesize bytesConsumed = _bytesConsumed;
+
 static OF_INLINE bool
 tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 {
@@ -91,7 +94,6 @@ tryReadBits(OFLHADecompressingStream *stream, uint16_t *bits, uint8_t count)
 	return true;
 }
 
-@implementation OFLHADecompressingStream
 - (instancetype)of_initWithStream: (OFStream *)stream
 		     distanceBits: (uint8_t)distanceBits
 		   dictionaryBits: (uint8_t)dictionaryBits

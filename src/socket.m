@@ -470,8 +470,8 @@ of_socket_address_parse_ipv6(OFString *IPv6, uint16_t port)
 		for (OFString *component in rightComponents.reversedArray) {
 			uint16_t number = parseIPv6Component(component);
 
-			addrIn6->sin6_addr.s6_addr[--i] = number >> 8;
 			addrIn6->sin6_addr.s6_addr[--i] = number;
+			addrIn6->sin6_addr.s6_addr[--i] = number >> 8;
 		}
 	} else {
 		OFArray OF_GENERIC(OFString *) *components =

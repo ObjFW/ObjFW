@@ -19,7 +19,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFNonretainedObjectValue: OFValue
 {
 	id _object;

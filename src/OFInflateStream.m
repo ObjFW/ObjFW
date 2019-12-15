@@ -15,8 +15,6 @@
  * file.
  */
 
-#define OF_INFLATE_STREAM_M
-
 #include "config.h"
 
 #include <stdlib.h>
@@ -106,6 +104,7 @@ static const uint8_t codeLengthsOrder[19] = {
 };
 static struct of_huffman_tree *fixedLitLenTree, *fixedDistTree;
 
+@implementation OFInflateStream
 static OF_INLINE bool
 tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 {
@@ -148,7 +147,6 @@ tryReadBits(OFInflateStream *stream, uint16_t *bits, uint8_t count)
 	return true;
 }
 
-@implementation OFInflateStream
 + (void)initialize
 {
 	uint8_t lengths[288];

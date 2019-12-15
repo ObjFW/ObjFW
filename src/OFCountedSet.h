@@ -48,10 +48,6 @@ typedef void (^of_counted_set_enumeration_block_t)(id object, size_t count,
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(4)
-}
-
 /*!
  * @brief Returns how often the object is in the set.
  *

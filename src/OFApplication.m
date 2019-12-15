@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#define OF_APPLICATION_M
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -101,25 +99,6 @@ atexitHandler(void)
 #endif
 }
 
-#define SIGNAL_HANDLER(signal)					\
-	static void						\
-	handle##signal(int sig)					\
-	{							\
-		app->_##signal##Handler(app->_delegate,		\
-		    @selector(applicationDidReceive##signal));	\
-	}
-SIGNAL_HANDLER(SIGINT)
-#ifdef SIGHUP
-SIGNAL_HANDLER(SIGHUP)
-#endif
-#ifdef SIGUSR1
-SIGNAL_HANDLER(SIGUSR1)
-#endif
-#ifdef SIGUSR2
-SIGNAL_HANDLER(SIGUSR2)
-#endif
-#undef SIGNAL_HANDLER
-
 int
 of_application_main(int *argc, char **argv[],
     id <OFApplicationDelegate> delegate)
@@ -158,6 +137,25 @@ of_application_main(int *argc, char **argv[],
 @synthesize activeSandbox = _activeSandbox;
 @synthesize activeSandboxForChildProcesses = _activeSandboxForChildProcesses;
 #endif
+
+#define SIGNAL_HANDLER(signal)					\
+	static void						\
+	handle##signal(int sig)					\
+	{							\
+		app->_##signal##Handler(app->_delegate,		\
+		    @selector(applicationDidReceive##signal));	\
+	}
+SIGNAL_HANDLER(SIGINT)
+#ifdef SIGHUP
+SIGNAL_HANDLER(SIGHUP)
+#endif
+#ifdef SIGUSR1
+SIGNAL_HANDLER(SIGUSR1)
+#endif
+#ifdef SIGUSR2
+SIGNAL_HANDLER(SIGUSR2)
+#endif
+#undef SIGNAL_HANDLER
 
 + (OFApplication *)sharedApplication
 {

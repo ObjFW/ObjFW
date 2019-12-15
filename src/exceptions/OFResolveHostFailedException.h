@@ -17,7 +17,6 @@
 
 #import "OFException.h"
 #import "OFDNSResolver.h"
-#import "OFDNSResourceRecord.h"
 
 OF_ASSUME_NONNULL_BEGIN
 
@@ -25,13 +24,12 @@ OF_ASSUME_NONNULL_BEGIN
  * @class OFResolveHostFailedException \
  *	  OFResolveHostFailedException.h ObjFW/OFResolveHostFailedException.h
  *
- * @brief An exception indicating the resolving a host failed.
+ * @brief An exception indicating that resolving a host failed.
  */
 @interface OFResolveHostFailedException: OFException
 {
 	OFString *_host;
-	of_dns_resource_record_class_t _recordClass;
-	of_dns_resource_record_type_t _recordType;
+	of_socket_address_family_t _addressFamily;
 	of_dns_resolver_error_t _error;
 }
 
@@ -41,14 +39,9 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) OFString *host;
 
 /*!
- * @brief The class code for the resource record to resolve to.
+ * @brief The address family for which the host could not be resolved.
  */
-@property (readonly, nonatomic) of_dns_resource_record_class_t recordClass;
-
-/*!
- * @brief The type code for the resource record to resolve to.
- */
-@property (readonly, nonatomic) of_dns_resource_record_type_t recordType;
+@property (readonly, nonatomic) of_socket_address_family_t addressFamily;
 
 /*!
  * @brief The error from the resolver.
@@ -59,28 +52,26 @@ OF_ASSUME_NONNULL_BEGIN
  * @brief Creates a new, autoreleased resolve host failed exception.
  *
  * @param host The host which could not be resolved
- * @param recordClass The class code for the resource record to resolve to
- * @param recordType The type code for the resource record to resolve to
+ * @param addressFamily The address family for which the host could not be
+ *			resolved
  * @param error The error from the resolver
  * @return A new, autoreleased address translation failed exception
  */
 + (instancetype)exceptionWithHost: (OFString *)host
-		      recordClass: (of_dns_resource_record_class_t)recordClass
-		       recordType: (of_dns_resource_record_type_t)recordType
+		    addressFamily: (of_socket_address_family_t)addressFamily
 			    error: (of_dns_resolver_error_t)error;
 
 /*!
- * @brief Initializes an already allocated address translation failed exception.
+ * @brief Initializes an already allocated resolve host failed exception.
  *
- * @param host The host for which translation was requested
- * @param recordClass The class code for the resource record to resolve to
- * @param recordType The type code for the resource record to resolve to
+ * @param host The host which could not be resolved
+ * @param addressFamily The address family for which the host could not be
+ *			resolved
  * @param error The error from the resolver
  * @return An initialized address translation failed exception
  */
 - (instancetype)initWithHost: (OFString *)host
-		 recordClass: (of_dns_resource_record_class_t)recordClass
-		  recordType: (of_dns_resource_record_type_t)recordType
+	       addressFamily: (of_socket_address_family_t)addressFamily
 		       error: (of_dns_resolver_error_t)error;
 @end
 

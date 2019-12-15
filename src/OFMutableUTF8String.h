@@ -20,10 +20,8 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFMutableUTF8String: OFMutableString
 {
-@public
 	struct of_string_utf8_ivars *restrict _s;
 	struct of_string_utf8_ivars _storage;
 }

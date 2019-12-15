@@ -55,9 +55,9 @@ glue_objc_init PPC_PARAMS(unsigned int version, struct objc_libc *libc,
 }
 
 void __saveds
-glue___objc_exec_class PPC_PARAMS(void *module)
+glue___objc_exec_class PPC_PARAMS(struct objc_module *module)
 {
-	M68K_ARG(void *, module, a0)
+	M68K_ARG(struct objc_module *, module, a0)
 
 	__objc_exec_class(module);
 }
@@ -507,13 +507,13 @@ glue_class_getMethodImplementation_stret PPC_PARAMS(Class class, SEL selector)
 	return class_getMethodImplementation_stret(class, selector);
 }
 
-const char *__saveds
-glue_class_getMethodTypeEncoding PPC_PARAMS(Class class, SEL selector)
+Method __saveds
+glue_class_getInstanceMethod PPC_PARAMS(Class class, SEL selector)
 {
 	M68K_ARG(Class, class, a0)
 	M68K_ARG(SEL, selector, a1)
 
-	return class_getMethodTypeEncoding(class, selector);
+	return class_getInstanceMethod(class, selector);
 }
 
 bool __saveds
@@ -632,4 +632,89 @@ void __saveds
 glue_objc_exit(void)
 {
 	objc_exit();
+}
+
+Ivar *__saveds
+glue_class_copyIvarList PPC_PARAMS(Class class, unsigned int *outCount)
+{
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(unsigned int *, outCount, a1)
+
+	return class_copyIvarList(class, outCount);
+}
+
+const char *__saveds
+glue_ivar_getName PPC_PARAMS(Ivar ivar)
+{
+	M68K_ARG(Ivar, ivar, a0)
+
+	return ivar_getName(ivar);
+}
+
+const char *__saveds
+glue_ivar_getTypeEncoding PPC_PARAMS(Ivar ivar)
+{
+	M68K_ARG(Ivar, ivar, a0)
+
+	return ivar_getTypeEncoding(ivar);
+}
+
+ptrdiff_t __saveds
+glue_ivar_getOffset PPC_PARAMS(Ivar ivar)
+{
+	M68K_ARG(Ivar, ivar, a0)
+
+	return ivar_getOffset(ivar);
+}
+
+Method *__saveds
+glue_class_copyMethodList PPC_PARAMS(Class class, unsigned int *outCount)
+{
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(unsigned int *, outCount, a1)
+
+	return class_copyMethodList(class, outCount);
+}
+
+SEL __saveds
+glue_method_getName PPC_PARAMS(Method method)
+{
+	M68K_ARG(Method, method, a0)
+
+	return method_getName(method);
+}
+
+const char *__saveds
+glue_method_getTypeEncoding PPC_PARAMS(Method method)
+{
+	M68K_ARG(Method, method, a0)
+
+	return method_getTypeEncoding(method);
+}
+
+objc_property_t *__saveds
+glue_class_copyPropertyList PPC_PARAMS(Class class, unsigned int *outCount)
+{
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(unsigned int *, outCount, a1)
+
+	return class_copyPropertyList(class, outCount);
+}
+
+const char *__saveds
+glue_property_getName PPC_PARAMS(objc_property_t property)
+{
+	M68K_ARG(objc_property_t, property, a0)
+
+	return property_getName(property);
+}
+
+char *__saveds
+glue_property_copyAttributeValue PPC_PARAMS(objc_property_t property,
+    const char *name)
+{
+	M68K_ARG(objc_property_t, property, a0)
+	M68K_ARG(const char *, name, a1)
+
+	return property_copyAttributeValue(property, name);
 }

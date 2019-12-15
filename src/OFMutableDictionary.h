@@ -47,10 +47,6 @@ typedef id _Nonnull (^of_dictionary_replace_block_t)(id key, id object);
 # define KeyType id
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(4)
-}
-
 /*!
  * @brief Creates a new OFMutableDictionary with enough memory to hold the
  *	  specified number of objects.

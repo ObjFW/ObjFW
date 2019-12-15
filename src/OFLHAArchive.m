@@ -389,7 +389,7 @@
 
 		[decompressingStream close];
 		toRead =
-		    _entry.compressedSize - decompressingStream->_bytesConsumed;
+		    _entry.compressedSize - decompressingStream.bytesConsumed;
 
 		stream = _stream;
 	}

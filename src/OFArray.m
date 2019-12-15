@@ -23,6 +23,7 @@
 #include <assert.h>
 
 #import "OFArray.h"
+#import "OFArray+Private.h"
 #import "OFAdjacentArray.h"
 #import "OFData.h"
 #import "OFNull.h"

@@ -1117,6 +1117,11 @@
 
 - (OFString *)description
 {
+	return [self stringValue];
+}
+
+- (OFString *)stringValue
+{
 	OFMutableString *ret;
 
 	switch (_type) {

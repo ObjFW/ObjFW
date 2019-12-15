@@ -27,43 +27,41 @@
 static struct objc_hashtable *categoriesMap = NULL;
 
 static void
-registerSelectors(struct objc_abi_category *category)
+registerSelectors(struct objc_category *category)
 {
-	for (struct objc_abi_method_list *methodList =
-	    category->instanceMethods; methodList != NULL;
-	    methodList = methodList->next)
-		for (unsigned int i = 0; i < methodList->count; i++)
-			objc_register_selector((struct objc_abi_selector *)
-			    &methodList->methods[i]);
+	struct objc_method_list *iter;
+	unsigned int i;
 
-	for (struct objc_abi_method_list *methodList = category->classMethods;
-	    methodList != NULL; methodList = methodList->next)
-		for (unsigned int i = 0; i < methodList->count; i++)
-			objc_register_selector((struct objc_abi_selector *)
-			    &methodList->methods[i]);
+	for (iter = category->instanceMethods; iter != NULL; iter = iter->next)
+		for (i = 0; i < iter->count; i++)
+			objc_register_selector(&iter->methods[i].selector);
+
+	for (iter = category->classMethods; iter != NULL; iter = iter->next)
+		for (i = 0; i < iter->count; i++)
+			objc_register_selector(&iter->methods[i].selector);
 }
 
 static void
-registerCategory(struct objc_abi_category *category)
+registerCategory(struct objc_category *category)
 {
-	struct objc_abi_category **categories;
+	struct objc_category **categories;
 	Class class = objc_classname_to_class(category->className, false);
 
 	if (categoriesMap == NULL)
 		categoriesMap = objc_hashtable_new(
 		    objc_hash_string, objc_equal_string, 2);
 
-	categories = (struct objc_abi_category **)objc_hashtable_get(
+	categories = (struct objc_category **)objc_hashtable_get(
 	    categoriesMap, category->className);
 
 	if (categories != NULL) {
-		struct objc_abi_category **newCategories;
+		struct objc_category **newCategories;
 		size_t i;
 
 		for (i = 0; categories[i] != NULL; i++);
 
 		if ((newCategories = realloc(categories,
-		    (i + 2) * sizeof(struct objc_abi_category *))) == NULL)
+		    (i + 2) * sizeof(*categories))) == NULL)
 			OBJC_ERROR("Not enough memory for category %s of "
 			    "class %s!", category->categoryName,
 			    category->className);
@@ -81,8 +79,7 @@ registerCategory(struct objc_abi_category *category)
 		return;
 	}
 
-	if ((categories = malloc(
-	    2 * sizeof(struct objc_abi_category *))) == NULL)
+	if ((categories = malloc(2 * sizeof(*categories))) == NULL)
 		OBJC_ERROR("Not enough memory for category %s of class %s!\n",
 		    category->categoryName, category->className);
 
@@ -97,10 +94,10 @@ registerCategory(struct objc_abi_category *category)
 }
 
 void
-objc_register_all_categories(struct objc_abi_symtab *symtab)
+objc_register_all_categories(struct objc_symtab *symtab)
 {
-	struct objc_abi_category **categories =
-	    (struct objc_abi_category **)symtab->defs + symtab->classDefsCount;
+	struct objc_category **categories =
+	    (struct objc_category **)symtab->defs + symtab->classDefsCount;
 
 	for (size_t i = 0; i < symtab->categoryDefsCount; i++) {
 		registerSelectors(categories[i]);

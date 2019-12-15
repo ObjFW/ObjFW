@@ -21,7 +21,6 @@ OF_ASSUME_NONNULL_BEGIN
 
 @interface OFUTF8String: OFString
 {
-@public
 	/*
 	 * A pointer to the actual data.
 	 *

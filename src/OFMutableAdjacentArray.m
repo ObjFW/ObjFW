@@ -21,6 +21,7 @@
 
 #import "OFMutableAdjacentArray.h"
 #import "OFAdjacentArray.h"
+#import "OFArray+Private.h"
 #import "OFData.h"
 
 #import "OFEnumerationMutationException.h"

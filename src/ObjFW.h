@@ -44,7 +44,6 @@
 
 #import "OFMethodSignature.h"
 #import "OFInvocation.h"
-#import "OFIntrospection.h"
 
 #import "OFNumber.h"
 #import "OFDate.h"
@@ -75,8 +74,10 @@
 # import "OFUDPSocket.h"
 # import "OFTLSSocket.h"
 # import "OFKernelEventObserver.h"
-# import "OFDNSResolver.h"
+# import "OFDNSQuery.h"
 # import "OFDNSResourceRecord.h"
+# import "OFDNSResponse.h"
+# import "OFDNSResolver.h"
 #endif
 #ifdef OF_HAVE_SOCKETS
 # ifdef OF_HAVE_THREADS
@@ -134,7 +135,6 @@
 # import "OFAcceptFailedException.h"
 # import "OFAlreadyConnectedException.h"
 # import "OFBindFailedException.h"
-# import "OFResolveHostFailedException.h"
 #endif
 #import "OFChangeCurrentDirectoryPathFailedException.h"
 #import "OFChecksumMismatchException.h"
@@ -152,6 +152,11 @@
 #import "OFCreateSymbolicLinkFailedException.h"
 #ifdef OF_WINDOWS
 # import "OFCreateWindowsRegistryKeyFailedException.h"
+#endif
+#ifdef OF_HAVE_SOCKETS
+# import "OFDNSQueryFailedException.h"
+#endif
+#ifdef OF_WINDOWS
 # import "OFDeleteWindowsRegistryKeyFailedException.h"
 # import "OFDeleteWindowsRegistryValueFailedException.h"
 #endif
@@ -198,6 +203,9 @@
 #import "OFReadFailedException.h"
 #import "OFReadOrWriteFailedException.h"
 #import "OFRemoveItemFailedException.h"
+#ifdef OF_HAVE_SOCKETS
+# import "OFResolveHostFailedException.h"
+#endif
 #import "OFRetrieveItemAttributesFailedException.h"
 #import "OFSandboxActivationFailedException.h"
 #import "OFSeekFailedException.h"

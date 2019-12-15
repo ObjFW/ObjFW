@@ -5,7 +5,6 @@ AC_CONFIG_MACRO_DIR(build-aux/m4)
 
 AC_DEFINE(OBJFW_VERSION_MAJOR, 1, [The major version of ObjFW])
 AC_DEFINE(OBJFW_VERSION_MINOR, 0, [The minor version of ObjFW])
-dnl This may only be set to 0.91 once 0.91 is released
 AC_SUBST(BUNDLE_VERSION, 1.0.0)
 AC_SUBST(BUNDLE_SHORT_VERSION, 1.0)
 
@@ -1184,6 +1183,7 @@ AS_IF([test x"$enable_files" != x"no"], [
 			AC_CHECK_TYPE(off64_t, [
 				AC_DEFINE(OF_HAVE_OFF64_T, 1,
 					[Whether we have off64_t])
+				AC_CHECK_FUNCS([lseek64 lstat64 open64 stat64])
 			])
 			;;
 	esac

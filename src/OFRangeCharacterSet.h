@@ -19,7 +19,6 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-OF_SUBCLASSING_RESTRICTED
 @interface OFRangeCharacterSet: OFCharacterSet
 {
 	of_range_t _range;

@@ -33,9 +33,6 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFLHAArchiveEntry: OFObject <OFCopying, OFMutableCopying>
 {
-#ifdef OF_LHA_ARCHIVE_ENTRY_M
-@public
-#endif
 	OFString *_fileName, *_Nullable _directoryName, *_compressionMethod;
 	uint32_t _compressedSize, _uncompressedSize;
 	OFDate *_date;

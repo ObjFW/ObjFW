@@ -223,7 +223,7 @@ parseMode(const char *mode, bool *append)
 # if defined(OF_WINDOWS)
 		if ((handle = _wopen(path.UTF16String, flags,
 		    _S_IREAD | _S_IWRITE)) == -1)
-# elif defined(OF_HAVE_OFF64_T)
+# elif defined(HAVE_OPEN64)
 		if ((handle = open64([path cStringWithEncoding:
 		    [OFLocale encoding]], flags, 0666)) == -1)
 # else
@@ -466,7 +466,7 @@ parseMode(const char *mode, bool *append)
 #ifndef OF_AMIGAOS
 # if defined(OF_WINDOWS)
 	ret = _lseeki64(_handle, offset, whence);
-# elif defined(OF_HAVE_OFF64_T)
+# elif defined(HAVE_LSEEK64)
 	ret = lseek64(_handle, offset, whence);
 # else
 	ret = lseek(_handle, offset, whence);

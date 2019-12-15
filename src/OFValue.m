@@ -169,6 +169,9 @@ static struct {
 	size_t size;
 	void *value, *otherValue;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFValue class]])
 		return false;
 

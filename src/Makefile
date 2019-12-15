@@ -28,7 +28,6 @@ SRCS = OFApplication.m			\
        OFHMAC.m				\
        OFInflate64Stream.m		\
        OFInflateStream.m		\
-       OFIntrospection.m		\
        OFInvocation.m			\
        OFLHAArchive.m			\
        OFLHAArchiveEntry.m		\
@@ -123,8 +122,10 @@ SRCS_FILES = OFFile.m			\
 	     OFSettings.m		\
 	     OFString+PathAdditions.m
 SRCS_PLUGINS = OFPlugin.m
-SRCS_SOCKETS = OFDNSResolver.m			\
+SRCS_SOCKETS = OFDNSQuery.m			\
+	       OFDNSResolver.m			\
 	       OFDNSResourceRecord.m		\
+	       OFDNSResponse.m			\
 	       OFHTTPClient.m			\
 	       OFHTTPCookie.m			\
 	       OFHTTPCookieManager.m		\
@@ -199,7 +200,9 @@ SRCS += OFAdjacentArray.m		\
 	${LIBBASES_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m
-SRCS_SOCKETS += OFHTTPURLHandler.m			\
+SRCS_SOCKETS += OFDNSResolverSettings.m			\
+		OFHTTPURLHandler.m			\
+		OFHostAddressResolver.m			\
 		OFKernelEventObserver.m			\
 		${OFEPOLLKERNELEVENTOBSERVER_M}		\
 		${OFKQUEUEKERNELEVENTOBSERVER_M}	\

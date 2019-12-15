@@ -42,6 +42,7 @@ struct test_struct {
 	return st;
 }
 
+#ifdef OF_INVOCATION_CAN_INVOKE
 - (void)invocationTestMethod2: (id)obj
 {
 	assert(obj == self);
@@ -131,7 +132,7 @@ struct test_struct {
 	    d12 + d13 + d14 + d15 + d16) / 16;
 }
 
-#if defined(HAVE_COMPLEX_H) && !defined(__STDC_NO_COMPLEX__)
+# if defined(HAVE_COMPLEX_H) && !defined(__STDC_NO_COMPLEX__)
 - (complex double)invocationTestMethod7: (complex float)c1
 				       : (complex double)c2
 				       : (complex float)c3
@@ -207,9 +208,9 @@ struct test_struct {
 	return (c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 +
 	    c12 + c13 + c14 + c15 + c16) / 16;
 }
-#endif
+# endif
 
-#ifdef __SIZEOF_INT128__
+# ifdef __SIZEOF_INT128__
 __extension__
 - (__int128)invocationTestMethod9: (int)i1
 				 : (__int128)i2
@@ -251,6 +252,7 @@ __extension__
 	    (int)i8 + (int)i9 + (int)i10 + (int)i11 + (int)i12 + (int)i13 +
 	    (int)i14 + (int)i15 + (int)i16) / 16) + mask;
 }
+# endif
 #endif
 
 - (void)invocationTests

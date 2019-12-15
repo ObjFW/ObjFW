@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#define OF_LHA_ARCHIVE_ENTRY_M
-
 #include <string.h>
 
 #import "OFLHAArchiveEntry.h"
@@ -37,6 +35,7 @@
 #import "OFOutOfRangeException.h"
 #import "OFUnsupportedVersionException.h"
 
+@implementation OFLHAArchiveEntry
 static OFDate *
 parseMSDOSDate(uint32_t MSDOSDate)
 {
@@ -308,7 +307,6 @@ getFileNameAndDirectoryName(OFLHAArchiveEntry *entry,
 	*directoryNameLength = pos;
 }
 
-@implementation OFLHAArchiveEntry
 + (instancetype)entryWithFileName: (OFString *)fileName
 {
 	return [[[self alloc] initWithFileName: fileName] autorelease];

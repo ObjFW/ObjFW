@@ -298,6 +298,11 @@ OF_SUBCLASSING_RESTRICTED
  */
 @property (readonly, nonatomic) double doubleValue;
 
+/*!
+ * @brief The OFNumber as a string.
+ */
+@property (readonly, nonatomic) OFString *stringValue;
+
 #ifdef OF_HAVE_UNAVAILABLE
 + (instancetype)valueWithBytes: (const void *)bytes
 		      objCType: (const char *)objCType OF_UNAVAILABLE;

@@ -50,8 +50,8 @@ extern void _Block_release(const void *);
  * compiling ObjFW itself or using it as a static library, these need to be
  * dllexport. Interestingly, this still works when using it as a shared library.
  */
-extern __declspec(dllexport) struct objc_abi_class _NSConcreteStackBlock;
-extern __declspec(dllexport) struct objc_abi_class _NSConcreteGlobalBlock;
+extern __declspec(dllexport) struct objc_class _NSConcreteStackBlock;
+extern __declspec(dllexport) struct objc_class _NSConcreteGlobalBlock;
 extern __declspec(dllexport) void _Block_object_assign(void *, const void *,
     const int);
 extern __declspec(dllexport) void _Block_object_dispose(const void *,

@@ -29,7 +29,7 @@
 .section .text
 of_forward:
 #ifdef HAVE_VFP2
-	fstmfdd	sp!, {d0-d7}
+	vstmdb	sp!, {d0-d7}
 #endif
 	stmfd	sp!, {r0-r4, lr}
 
@@ -68,7 +68,7 @@ of_forward:
 	mov	r12, r0
 	ldmfd	sp!, {r0-r4, lr}
 #ifdef HAVE_VFP2
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 #endif
 
 	bx	r12
@@ -76,7 +76,7 @@ of_forward:
 0:
 	ldmfd	sp!, {r0-r4, lr}
 #ifdef HAVE_VFP2
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 #endif
 	b	of_method_not_found(PLT)
 .type of_forward, %function
@@ -84,7 +84,7 @@ of_forward:
 
 of_forward_stret:
 #ifdef HAVE_VFP2
-	fstmfdd	sp!, {d0-d7}
+	vstmdb	sp!, {d0-d7}
 #endif
 	stmfd	sp!, {r0-r4, lr}
 
@@ -124,7 +124,7 @@ of_forward_stret:
 	mov	r12, r0
 	ldmfd	sp!, {r0-r4, lr}
 #ifdef HAVE_VFP2
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 #endif
 
 	bx	r12
@@ -132,7 +132,7 @@ of_forward_stret:
 0:
 	ldmfd	sp!, {r0-r4, lr}
 #ifdef HAVE_VFP2
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 #endif
 	b	of_method_not_found_stret(PLT)
 .type of_forward_stret, %function

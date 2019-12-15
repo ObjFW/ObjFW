@@ -36,7 +36,7 @@ sel_forwardingTargetForSelector_:
 .align 2
 _of_forward:
 	stmfd	sp!, {r0-r4, lr}
-	fstmfdd	sp!, {d0-d7}
+	vstmdb	sp!, {d0-d7}
 
 	ldr	r4, sel_forwardingTargetForSelector_$indirect_L0
 L0:
@@ -61,14 +61,14 @@ L0:
 	cmp	r0, r1
 	beq	0f
 
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 	add	sp, sp, #4	@ throw away r0
 	ldmfd	sp!, {r1-r4, lr}
 
 	b	_objc_msgSend
 
 0:
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
 	b	_of_method_not_found
 
@@ -80,7 +80,7 @@ sel_forwardingTargetForSelector_$indirect_L0:
 .align 2
 _of_forward_stret:
 	stmfd	sp!, {r0-r4, lr}
-	fstmfdd	sp!, {d0-d7}
+	vstmdb	sp!, {d0-d7}
 
 	ldr	r4, sel_forwardingTargetForSelector_$indirect_L1
 L1:
@@ -108,7 +108,7 @@ L1:
 
 	mov	r1, r0
 
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0}
 	add	sp, sp, #4	@ throw away r1
 	ldmfd	sp!, {r2-r4, lr}
@@ -116,7 +116,7 @@ L1:
 	b	_objc_msgSend_stret
 
 0:
-	fldmfdd	sp!, {d0-d7}
+	vldmia	sp!, {d0-d7}
 	ldmfd	sp!, {r0-r4, lr}
 	b	_of_method_not_found_stret
 

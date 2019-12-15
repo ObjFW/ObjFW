@@ -63,6 +63,9 @@
 {
 	OFColor *other;
 
+	if (object == self)
+		return true;
+
 	if (![object isKindOfClass: [OFColor class]])
 		return false;
 

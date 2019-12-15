@@ -61,50 +61,20 @@
 typedef struct objc_class *Class;
 typedef struct objc_object *id;
 typedef const struct objc_selector *SEL;
+typedef const struct objc_method *Method;
+#ifdef __OBJC__
+@class Protocol;
+#else
+typedef const struct objc_protocol *Protocol;
+#endif
+typedef const struct objc_ivar *Ivar;
+typedef const struct objc_property *objc_property_t;
 #if !defined(__wii__) && !defined(__amigaos__)
 typedef bool BOOL;
 #endif
 typedef id _Nullable (*IMP)(id _Nonnull, SEL _Nonnull, ...);
 typedef void (*objc_uncaught_exception_handler_t)(id _Nullable);
 typedef void (*objc_enumeration_mutation_handler_t)(id _Nonnull);
-
-struct objc_class {
-	Class _Nonnull isa;
-	Class _Nullable superclass;
-	const char *_Nonnull name;
-	unsigned long version;
-	unsigned long info;
-	long instanceSize;
-	struct objc_ivar_list *_Nullable iVars;
-	struct objc_method_list *_Nullable methodList;
-	struct objc_dtable *_Nonnull DTable;
-	Class _Nullable *_Nullable subclassList;
-	void *_Nullable siblingClass;
-	struct objc_protocol_list *_Nullable protocols;
-	void *_Nullable GCObjectType;
-	unsigned long ABIVersion;
-	int32_t *_Nonnull *_Nullable iVarOffsets;
-	struct objc_property_list *_Nullable properties;
-};
-
-enum objc_class_info {
-	OBJC_CLASS_INFO_CLASS	    = 0x001,
-	OBJC_CLASS_INFO_METACLASS   = 0x002,
-	OBJC_CLASS_INFO_NEW_ABI	    = 0x010,
-	OBJC_CLASS_INFO_SETUP	    = 0x100,
-	OBJC_CLASS_INFO_LOADED	    = 0x200,
-	OBJC_CLASS_INFO_DTABLE	    = 0x400,
-	OBJC_CLASS_INFO_INITIALIZED = 0x800
-};
-
-struct objc_object {
-	Class _Nonnull isa;
-};
-
-struct objc_selector {
-	uintptr_t UID;
-	const char *_Nullable typeEncoding;
-};
 
 struct objc_super {
 	id __unsafe_unretained _Nullable self;
@@ -113,110 +83,6 @@ struct objc_super {
 #else
 	Class _Nonnull class;
 #endif
-};
-
-struct objc_method {
-	struct objc_selector selector;
-	IMP _Nonnull implementation;
-};
-
-struct objc_method_list {
-	struct objc_method_list *_Nullable next;
-	unsigned int count;
-	struct objc_method methods[1];
-};
-
-struct objc_category {
-	const char *_Nonnull categoryName;
-	const char *_Nonnull className;
-	struct objc_method_list *_Nullable instanceMethods;
-	struct objc_method_list *_Nullable classMethods;
-	struct objc_protocol_list *_Nullable protocols;
-};
-
-struct objc_ivar {
-	const char *_Nonnull name;
-	const char *_Nonnull typeEncoding;
-	unsigned int offset;
-};
-
-struct objc_ivar_list {
-	unsigned int count;
-	struct objc_ivar iVars[1];
-};
-
-enum objc_property_attributes {
-	OBJC_PROPERTY_READONLY	= 0x01,
-	OBJC_PROPERTY_GETTER	= 0x02,
-	OBJC_PROPERTY_ASSIGN	= 0x04,
-	OBJC_PROPERTY_READWRITE	= 0x08,
-	OBJC_PROPERTY_RETAIN	= 0x10,
-	OBJC_PROPERTY_COPY	= 0x20,
-	OBJC_PROPERTY_NONATOMIC	= 0x40,
-	OBJC_PROPERTY_SETTER	= 0x80
-};
-
-enum objc_property_extended_attributes {
-	OBJC_PROPERTY_SYNTHESIZE	=  0x1,
-	OBJC_PROPERTY_DYNAMIC		=  0x2,
-	OBJC_PROPERTY_PROTOCOL		=  0x3,
-	OBJC_PROPERTY_ATOMIC		=  0x4,
-	OBJC_PROPERTY_WEAK		=  0x8,
-	OBJC_PROPERTY_STRONG		= 0x10,
-	OBJC_PROPERTY_UNSAFE_UNRETAINED = 0x20
-};
-
-struct objc_property {
-	const char *_Nonnull name;
-	unsigned char attributes, extendedAttributes;
-	struct {
-		const char *_Nullable name;
-		const char *_Nullable typeEncoding;
-	} getter, setter;
-};
-
-struct objc_property_list {
-	unsigned int count;
-	struct objc_property_list *_Nullable next;
-	struct objc_property properties[1];
-};
-
-struct objc_method_description {
-	const char *_Nonnull name;
-	const char *_Nonnull typeEncoding;
-};
-
-struct objc_method_description_list {
-	int count;
-	struct objc_method_description list[1];
-};
-
-#ifdef __OBJC__
-# if __has_attribute(__objc_root_class__)
-__attribute__((__objc_root_class__))
-# endif
-@interface Protocol
-{
-@public
-#else
-typedef struct {
-#endif
-	Class _Nonnull isa;
-	const char *_Nonnull name;
-	struct objc_protocol_list *_Nullable protocolList;
-	struct objc_method_description_list *_Nullable instanceMethods;
-	struct objc_method_description_list *_Nullable classMethods;
-#ifdef __OBJC__
-}
-@end
-#else
-} Protocol;
-#endif
-
-struct objc_protocol_list {
-	struct objc_protocol_list *_Nullable next;
-	long count;
-	Protocol *__unsafe_unretained _Nonnull list[1];
 };
 
 #ifdef __cplusplus
@@ -244,7 +110,7 @@ extern IMP _Nullable class_getMethodImplementation(Class _Nullable class_,
     SEL _Nonnull selector);
 extern IMP _Nullable class_getMethodImplementation_stret(Class _Nullable class_,
     SEL _Nonnull selector);
-extern const char *_Nullable class_getMethodTypeEncoding(Class _Nullable class_,
+extern Method _Nullable class_getInstanceMethod(Class _Nullable class_,
     SEL _Nonnull selector);
 extern bool class_addMethod(Class _Nonnull class_, SEL _Nonnull selector,
     IMP _Nonnull implementation, const char *_Nullable typeEncoding);
@@ -260,6 +126,20 @@ extern bool protocol_isEqual(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
 extern bool protocol_conformsToProtocol(Protocol *_Nonnull protocol1,
     Protocol *_Nonnull protocol2);
+extern Method _Nullable *_Nullable class_copyMethodList(Class _Nullable class_,
+    unsigned int *_Nullable outCount);
+extern SEL _Nonnull method_getName(Method _Nonnull method);
+extern const char *_Nullable method_getTypeEncoding(Method _Nonnull method);
+extern Ivar _Nullable *_Nullable class_copyIvarList(Class _Nullable class_,
+    unsigned int *_Nullable outCount);
+extern const char *_Nonnull ivar_getName(Ivar _Nonnull ivar);
+extern const char *_Nonnull ivar_getTypeEncoding(Ivar _Nonnull ivar);
+extern ptrdiff_t ivar_getOffset(Ivar _Nonnull ivar);
+extern objc_property_t _Nullable *_Nullable class_copyPropertyList(
+    Class _Nullable class_, unsigned int *_Nullable outCount);
+extern const char *_Nonnull property_getName(objc_property_t _Nonnull property);
+extern char *_Nullable property_copyAttributeValue(
+    objc_property_t _Nonnull property, const char *_Nonnull name);
 extern void objc_exit(void);
 extern _Nullable objc_uncaught_exception_handler_t
     objc_setUncaughtExceptionHandler(
@@ -276,7 +156,8 @@ extern void objc_zero_weak_references(id _Nonnull value);
  * These declarations are also required to prevent Clang's implicit
  * declarations which include __declspec(dllimport) on Windows.
  */
-extern void __objc_exec_class(void *_Nonnull module);
+struct objc_module;
+extern void __objc_exec_class(struct objc_module *_Nonnull module);
 extern IMP _Nonnull objc_msg_lookup(id _Nullable object, SEL _Nonnull selector);
 extern IMP _Nonnull objc_msg_lookup_stret(id _Nullable object,
     SEL _Nonnull selector);

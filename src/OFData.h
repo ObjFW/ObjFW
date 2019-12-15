@@ -42,6 +42,7 @@ enum {
 	unsigned char *_items;
 	size_t _count, _itemSize;
 	bool _freeWhenDone;
+@private
 	OFData *_parentData;
 	OF_RESERVE_IVARS(4)
 }

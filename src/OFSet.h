@@ -69,10 +69,6 @@ typedef bool (^of_set_filter_block_t)(id object);
 #if !defined(OF_HAVE_GENERICS) && !defined(DOXYGEN)
 # define ObjectType id
 #endif
-{
-	OF_RESERVE_IVARS(4)
-}
-
 /*!
  * @brief An array of all objects in the set.
  */

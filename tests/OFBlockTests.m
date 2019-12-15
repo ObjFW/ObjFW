@@ -21,9 +21,15 @@
 
 static OFString *module = @"OFBlock";
 
-extern struct objc_abi_class _NSConcreteStackBlock;
-extern struct objc_abi_class _NSConcreteGlobalBlock;
-extern struct objc_abi_class _NSConcreteMallocBlock;
+#if defined(OF_OBJFW_RUNTIME)
+extern struct objc_class _NSConcreteStackBlock;
+extern struct objc_class _NSConcreteGlobalBlock;
+extern struct objc_class _NSConcreteMallocBlock;
+#elif defined(OF_APPLE_RUNTIME)
+extern void *_NSConcreteStackBlock;
+extern void *_NSConcreteGlobalBlock;
+extern void *_NSConcreteMallocBlock;
+#endif
 
 static void (^g)(void) = ^ {};
 
@@ -32,7 +38,7 @@ static int
 {
 	__block int i = 42;
 
-	return Block_copy(^ int { return ++i; });
+	return [Block_copy(^ int { return ++i; }) autorelease];
 }
 
 static double

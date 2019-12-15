@@ -18,7 +18,9 @@ SRCS = arc.m			\
        exception.m		\
        hashtable.m		\
        init.m			\
+       ivar.m			\
        lookup.m			\
+       method.m			\
        misc.m			\
        property.m		\
        protocol.m		\

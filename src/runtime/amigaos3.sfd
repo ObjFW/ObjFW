@@ -7,7 +7,7 @@
 bool glue_objc_init(unsigned int version, struct objc_libc *libc, FILE *stdout, FILE *stderr)(d0,a0,a1,a2)
 * These have a built-in declaration in the compiler that does not use the
 * registers and thus always need glue.
-void glue___objc_exec_class(void *_Nonnull module)(a0)
+void glue___objc_exec_class(struct objc_module *_Nonnull module)(a0)
 IMP _Nonnull glue_objc_msg_lookup(id _Nullable object, SEL _Nonnull selector)(a0,a1)
 IMP _Nonnull glue_objc_msg_lookup_stret(id _Nullable object, SEL _Nonnull selector)(a0,a1)
 IMP _Nonnull glue_objc_msg_lookup_super(struct objc_super *_Nonnull super, SEL _Nonnull selector)(a0,a1)
@@ -57,7 +57,7 @@ bool glue_class_respondsToSelector(Class _Nullable class_, SEL _Nonnull selector
 bool glue_class_conformsToProtocol(Class _Nullable class_, Protocol *_Nonnull p)(a0,a1)
 IMP _Nullable glue_class_getMethodImplementation(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
 IMP _Nullable glue_class_getMethodImplementation_stret(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
-const char *_Nullable glue_class_getMethodTypeEncoding(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
+Method _Nullable glue_class_getInstanceMethod(Class _Nullable class_, SEL _Nonnull selector)(a0,a1)
 bool glue_class_addMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)(a0,a1,a2,a3)
 IMP _Nullable glue_class_replaceMethod(Class _Nonnull class_, SEL _Nonnull selector, IMP _Nonnull implementation, const char *_Nullable typeEncoding)(a0,a1,a2,a3)
 Class _Nullable glue_object_getClass(id _Nullable object)(a0)
@@ -71,4 +71,14 @@ void glue_objc_setForwardHandler(IMP _Nullable forward, IMP _Nullable stretForwa
 void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t _Nullable handler)(a0)
 void glue_objc_zero_weak_references(id _Nonnull value)(a0)
 void glue_objc_exit(void)()
+Ivar _Nullable *_Nullable glue_class_copyIvarList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
+const char *_Nonnull glue_ivar_getName(Ivar _Nonnull ivar)(a0)
+const char *_Nonnull glue_ivar_getTypeEncoding(Ivar _Nonnull ivar)(a0)
+ptrdiff_t glue_ivar_getOffset(Ivar _Nonnull ivar)(a0)
+Method _Nullable *_Nullable glue_class_copyMethodList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
+SEL _Nonnull glue_method_getName(Method _Nonnull method)(a0)
+const char *_Nullable glue_method_getTypeEncoding(Method _Nonnull method)(a0)
+objc_property_t _Nullable *_Nullable glue_class_copyPropertyList(Class _Nullable class_, unsigned int *_Nullable outCount)(a0,a1)
+const char *_Nonnull glue_property_getName(objc_property_t _Nonnull property)(a0)
+char *_Nullable glue_property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name)(a0,a1)
 ==end

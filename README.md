@@ -53,18 +53,18 @@ macOS and iOS
 
   To build for iOS, use something like this:
 
-    $ clang="clang --sysroot $(xcrun --sdk iphoneos --show-sdk-path)"
+    $ clang="clang -isysroot $(xcrun --sdk iphoneos --show-sdk-path)"
     $ export OBJC="$clang -arch armv7 -arch arm64"
     $ export OBJCPP="$clang -arch armv7 -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
     $ ./configure --prefix=/usr/local/ios --host=arm-apple-darwin
 
   To build for the iOS simulator, use something like this:
 
-    $ clang="clang --sysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
+    $ clang="clang -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path)"
     $ export OBJC="$clang -arch i386 -arch x86_64"
     $ export OBJCPP="$clang -arch i386 -E"
-    $ export IPHONEOS_DEPLOYMENT_TARGET="10.0"
+    $ export IPHONEOS_DEPLOYMENT_TARGET="9.0"
     $ ./configure --prefix=/usr/local/iossim --host=i386-apple-darwin
 
 ### Using the macOS or iOS framework in Xcode

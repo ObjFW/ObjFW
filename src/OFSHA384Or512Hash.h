@@ -28,7 +28,9 @@ OF_ASSUME_NONNULL_BEGIN
  */
 @interface OFSHA384Or512Hash: OFObject <OFCryptoHash>
 {
+@private
 	OFSecureData *_iVarsData;
+@protected
 	struct of_sha384_or_512_hash_ivars {
 		uint64_t state[8];
 		uint64_t bits[2];
@@ -38,6 +40,7 @@ OF_ASSUME_NONNULL_BEGIN
 		} buffer;
 		size_t bufferLength;
 	} *_iVars;
+@private
 	bool _calculated;
 	OF_RESERVE_IVARS(4)
 }

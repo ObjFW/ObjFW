@@ -196,6 +196,8 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
  */
 @interface OFStream: OFObject <OFCopying>
 {
+	bool _blocking;
+	id _Nullable _delegate;
 #if !defined(OF_SEEKABLE_STREAM_M) && !defined(OF_TCP_SOCKET_M)
 @private
 #endif
@@ -203,9 +205,6 @@ typedef OFString *_Nullable (^of_stream_async_write_string_block_t)(
 	char *_Nullable _writeBuffer;
 	size_t _readBufferLength, _writeBufferLength;
 	bool _writeBuffered, _waitingForDelimiter;
-@protected
-	bool _blocking;
-	id _Nullable _delegate;
 	OF_RESERVE_IVARS(4)
 }
 

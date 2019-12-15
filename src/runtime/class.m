@@ -34,21 +34,21 @@ static unsigned lookupsUntilFastPath = 128;
 static struct objc_sparsearray *fastPath = NULL;
 
 static void
-registerClass(struct objc_abi_class *rawClass)
+registerClass(Class class)
 {
 	if (classes == NULL)
 		classes = objc_hashtable_new(
 		    objc_hash_string, objc_equal_string, 2);
 
-	objc_hashtable_set(classes, rawClass->name, rawClass);
+	objc_hashtable_set(classes, class->name, class);
 
 	if (emptyDTable == NULL)
 		emptyDTable = objc_dtable_new();
 
-	rawClass->DTable = emptyDTable;
-	rawClass->metaclass->DTable = emptyDTable;
+	class->DTable = emptyDTable;
+	class->isa->DTable = emptyDTable;
 
-	if (strcmp(rawClass->name, "Protocol") != 0)
+	if (strcmp(class->name, "Protocol") != 0)
 		classesCount++;
 }
 
@@ -71,15 +71,14 @@ class_registerAlias_np(Class class, const char *name)
 }
 
 static void
-registerSelectors(struct objc_abi_class *rawClass)
+registerSelectors(Class class)
 {
-	struct objc_abi_method_list *methodList;
+	struct objc_method_list *iter;
+	unsigned int i;
 
-	for (methodList = rawClass->methodList; methodList != NULL;
-	    methodList = methodList->next)
-		for (unsigned int i = 0; i < methodList->count; i++)
-			objc_register_selector((struct objc_abi_selector *)
-			    &methodList->methods[i]);
+	for (iter = class->methodList; iter != NULL; iter = iter->next)
+		for (i = 0; i < iter->count; i++)
+			objc_register_selector(&iter->methods[i].selector);
 }
 
 Class
@@ -257,9 +256,8 @@ addSubclass(Class class)
 	class->superclass->subclassList[i + 1] = Nil;
 }
 
-
 static void
-updateIVarOffsets(Class class)
+updateIvarOffsets(Class class)
 {
 	if (!(class->info & OBJC_CLASS_INFO_NEW_ABI))
 		return;
@@ -272,17 +270,17 @@ updateIVarOffsets(Class class)
 	if (class->superclass != Nil) {
 		class->instanceSize += class->superclass->instanceSize;
 
-		if (class->iVars != NULL) {
-			for (unsigned int i = 0; i < class->iVars->count; i++) {
-				class->iVars->iVars[i].offset +=
+		if (class->ivars != NULL) {
+			for (unsigned int i = 0; i < class->ivars->count; i++) {
+				class->ivars->ivars[i].offset +=
 				    class->superclass->instanceSize;
-				*class->iVarOffsets[i] =
-				    class->iVars->iVars[i].offset;
+				*class->ivarOffsets[i] =
+				    class->ivars->ivars[i].offset;
 			}
 		}
 	} else
-		for (unsigned int i = 0; i < class->iVars->count; i++)
-			*class->iVarOffsets[i] = class->iVars->iVars[i].offset;
+		for (unsigned int i = 0; i < class->ivars->count; i++)
+			*class->ivarOffsets[i] = class->ivars->ivars[i].offset;
 }
 
 static void
@@ -293,9 +291,10 @@ setupClass(Class class)
 	if (class->info & OBJC_CLASS_INFO_SETUP)
 		return;
 
-	superclassName = ((struct objc_abi_class *)class)->superclass;
+	superclassName = (const char *)class->superclass;
 	if (superclassName != NULL) {
 		Class super = objc_classname_to_class(superclassName, false);
+		Class rootClass;
 
 		if (super == Nil)
 			return;
@@ -305,15 +304,26 @@ setupClass(Class class)
 		if (!(super->info & OBJC_CLASS_INFO_SETUP))
 			return;
 
+		/*
+		 * GCC sets class->isa->isa to the name of the root class,
+		 * while Clang just sets it to Nil. Therefore always calculate
+		 * it.
+		 */
+		for (Class iter = super; iter != NULL; iter = iter->superclass)
+			rootClass = iter;
+
 		class->superclass = super;
+		class->isa->isa = rootClass->isa;
 		class->isa->superclass = super->isa;
 
 		addSubclass(class);
 		addSubclass(class->isa);
-	} else
+	} else {
+		class->isa->isa = class->isa;
 		class->isa->superclass = class;
+	}
 
-	updateIVarOffsets(class);
+	updateIvarOffsets(class);
 
 	class->info |= OBJC_CLASS_INFO_SETUP;
 	class->isa->info |= OBJC_CLASS_INFO_SETUP;
@@ -418,15 +428,14 @@ processLoadQueue()
 }
 
 void
-objc_register_all_classes(struct objc_abi_symtab *symtab)
+objc_register_all_classes(struct objc_symtab *symtab)
 {
 	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
-		struct objc_abi_class *rawClass =
-		    (struct objc_abi_class *)symtab->defs[i];
+		Class class = (Class)symtab->defs[i];
 
-		registerClass(rawClass);
-		registerSelectors(rawClass);
-		registerSelectors(rawClass->metaclass);
+		registerClass(class);
+		registerSelectors(class);
+		registerSelectors(class->isa);
 	}
 
 	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
@@ -493,7 +502,7 @@ objc_registerClassPair(Class class)
 {
 	objc_global_mutex_lock();
 
-	registerClass((struct objc_abi_class *)class);
+	registerClass(class);
 
 	if (class->superclass != Nil) {
 		addSubclass(class);
@@ -761,10 +770,11 @@ addMethod(Class class, SEL selector, IMP implementation,
 	objc_update_dtable(class);
 }
 
-const char *
-class_getMethodTypeEncoding(Class class, SEL selector)
+Method
+class_getInstanceMethod(Class class, SEL selector)
 {
-	struct objc_method *method;
+	Method method;
+	Class superclass;
 
 	if (class == Nil)
 		return NULL;
@@ -772,15 +782,16 @@ class_getMethodTypeEncoding(Class class, SEL selector)
 	objc_global_mutex_lock();
 
 	if ((method = getMethod(class, selector)) != NULL) {
-		const char *ret = method->selector.typeEncoding;
 		objc_global_mutex_unlock();
-		return ret;
+		return method;
 	}
+
+	superclass = class->superclass;
 
 	objc_global_mutex_unlock();
 
-	if (class->superclass != Nil)
-		return class_getMethodTypeEncoding(class->superclass, selector);
+	if (superclass != Nil)
+		return class_getInstanceMethod(superclass, selector);
 
 	return NULL;
 }
@@ -866,8 +877,6 @@ object_getClassName(id object)
 static void
 unregisterClass(Class class)
 {
-	struct objc_abi_class *rawClass = (struct objc_abi_class *)class;
-
 	if ((class->info & OBJC_CLASS_INFO_SETUP) && class->superclass != Nil &&
 	    class->superclass->subclassList != NULL) {
 		size_t i = SIZE_MAX, count = 0;
@@ -903,7 +912,7 @@ unregisterClass(Class class)
 	class->DTable = NULL;
 
 	if ((class->info & OBJC_CLASS_INFO_SETUP) && class->superclass != Nil)
-		rawClass->superclass = class->superclass->name;
+		class->superclass = (Class)class->superclass->name;
 
 	class->info &= ~OBJC_CLASS_INFO_SETUP;
 }

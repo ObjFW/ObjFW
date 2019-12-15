@@ -28,6 +28,18 @@
 #import "OFEnumerationMutationException.h"
 #import "OFInvalidArgumentException.h"
 
+@interface OFListEnumerator: OFEnumerator
+{
+	OFList *_list;
+	of_list_object_t *_Nullable _current;
+	unsigned long _mutations;
+	unsigned long *_Nullable _mutationsPtr;
+}
+
+- (instancetype)initWithList: (OFList *)list
+	    mutationsPointer: (unsigned long *)mutationsPtr;
+@end
+
 @implementation OFList
 @synthesize firstListObject = _firstListObject;
 @synthesize lastListObject = _lastListObject;

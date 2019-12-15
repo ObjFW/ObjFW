@@ -1,7 +1,7 @@
 /* Functions that are only for the linklib. */
 bool glue_objc_init(unsigned int, struct objc_libc *, FILE *, FILE *);
 /* All other functions. */
-void glue___objc_exec_class(void *);
+void glue___objc_exec_class(struct objc_module *);
 IMP glue_objc_msg_lookup(id, SEL);
 IMP glue_objc_msg_lookup_stret(id, SEL);
 IMP glue_objc_msg_lookup_super(struct objc_super *, SEL);
@@ -51,7 +51,7 @@ bool glue_class_respondsToSelector(Class, SEL);
 bool glue_class_conformsToProtocol(Class, Protocol *);
 IMP glue_class_getMethodImplementation(Class, SEL);
 IMP glue_class_getMethodImplementation_stret(Class, SEL);
-const char *glue_class_getMethodTypeEncoding(Class, SEL);
+Method glue_class_getInstanceMethod(Class, SEL);
 bool glue_class_addMethod(Class class_, SEL selector, IMP, const char *);
 IMP glue_class_replaceMethod(Class, SEL, IMP, const char *);
 Class glue_object_getClass(id);
@@ -65,3 +65,13 @@ void glue_objc_setForwardHandler(IMP, IMP);
 void glue_objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t);
 void glue_objc_zero_weak_references(id);
 void glue_objc_exit(void);
+Ivar *glue_class_copyIvarList(Class class_, unsigned int *outCount);
+const char *glue_ivar_getName(Ivar ivar);
+const char *glue_ivar_getTypeEncoding(Ivar ivar);
+ptrdiff_t glue_ivar_getOffset(Ivar ivar);
+Method *glue_class_copyMethodList(Class class_, unsigned int *outCount);
+SEL glue_method_getName(Method method);
+const char *glue_method_getTypeEncoding(Method method);
+objc_property_t *glue_class_copyPropertyList(Class class_, unsigned int *outCount);
+const char *glue_property_getName(objc_property_t property);
+char *glue_property_copyAttributeValue(objc_property_t property, const char *name);

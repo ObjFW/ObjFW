@@ -617,7 +617,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 			[of_stdout writeString: @"\n"];
 
 		[of_stderr writeLine:
-		    OF_LOCALIZED(@"download_failed_resolve_host_failed",
+		    OF_LOCALIZED(@"download_resolve_host_failed",
 		    @"%[prog]: Failed to download <%[url]>!\n"
 		    @"  Failed to resolve host: %[exception]",
 		    @"prog", [OFApplication programName],

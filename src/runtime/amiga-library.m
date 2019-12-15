@@ -64,70 +64,80 @@ extern void *_EH_FRAME_OBJECTS__;
 
 extern bool glue_objc_init(void);
 extern void glue___objc_exec_class(void);
-extern IMP _Nonnull glue_objc_msg_lookup(void);
-extern IMP _Nonnull glue_objc_msg_lookup_stret(void);
-extern IMP _Nonnull glue_objc_msg_lookup_super(void);
-extern IMP _Nonnull glue_objc_msg_lookup_super_stret(void);
-extern Class _Nullable glue_objc_lookUpClass(void);
-extern Class _Nullable glue_objc_getClass(void);
-extern Class _Nonnull glue_objc_getRequiredClass(void);
-extern Class _Nullable glue_objc_lookup_class(void);
-extern Class _Nonnull glue_objc_get_class(void);
+extern IMP glue_objc_msg_lookup(void);
+extern IMP glue_objc_msg_lookup_stret(void);
+extern IMP glue_objc_msg_lookup_super(void);
+extern IMP glue_objc_msg_lookup_super_stret(void);
+extern Class glue_objc_lookUpClass(void);
+extern Class glue_objc_getClass(void);
+extern Class glue_objc_getRequiredClass(void);
+extern Class glue_objc_lookup_class(void);
+extern Class glue_objc_get_class(void);
 extern void glue_objc_exception_throw(void);
 extern int glue_objc_sync_enter(void);
 extern int glue_objc_sync_exit(void);
-extern id _Nullable glue_objc_getProperty(void);
+extern id glue_objc_getProperty(void);
 extern void glue_objc_setProperty(void);
 extern void glue_objc_getPropertyStruct(void);
 extern void glue_objc_setPropertyStruct(void);
 extern void glue_objc_enumerationMutation(void);
 extern int glue___gnu_objc_personality(void);
-extern id _Nullable glue_objc_retain(void);
-extern id _Nullable glue_objc_retainBlock(void);
-extern id _Nullable glue_objc_retainAutorelease(void);
+extern id glue_objc_retain(void);
+extern id glue_objc_retainBlock(void);
+extern id glue_objc_retainAutorelease(void);
 extern void glue_objc_release(void);
-extern id _Nullable glue_objc_autorelease(void);
-extern id _Nullable glue_objc_autoreleaseReturnValue(void);
-extern id _Nullable glue_objc_retainAutoreleaseReturnValue(void);
-extern id _Nullable glue_objc_retainAutoreleasedReturnValue(void);
-extern id _Nullable glue_objc_storeStrong(void);
-extern id _Nullable glue_objc_storeWeak(void);
-extern id _Nullable glue_objc_loadWeakRetained(void);
-extern id _Nullable glue_objc_initWeak(void);
+extern id glue_objc_autorelease(void);
+extern id glue_objc_autoreleaseReturnValue(void);
+extern id glue_objc_retainAutoreleaseReturnValue(void);
+extern id glue_objc_retainAutoreleasedReturnValue(void);
+extern id glue_objc_storeStrong(void);
+extern id glue_objc_storeWeak(void);
+extern id glue_objc_loadWeakRetained(void);
+extern id glue_objc_initWeak(void);
 extern void glue_objc_destroyWeak(void);
-extern id _Nullable glue_objc_loadWeak(void);
+extern id glue_objc_loadWeak(void);
 extern void glue_objc_copyWeak(void);
 extern void glue_objc_moveWeak(void);
-extern SEL _Nonnull glue_sel_registerName(void);
-extern const char *_Nonnull glue_sel_getName(void);
+extern SEL glue_sel_registerName(void);
+extern const char *glue_sel_getName(void);
 extern bool glue_sel_isEqual(void);
-extern Class _Nonnull glue_objc_allocateClassPair(void);
+extern Class glue_objc_allocateClassPair(void);
 extern void glue_objc_registerClassPair(void);
 extern unsigned int glue_objc_getClassList(void);
-extern Class _Nonnull *_Nonnull glue_objc_copyClassList(void);
+extern Class *glue_objc_copyClassList(void);
 extern bool glue_class_isMetaClass(void);
-extern const char *_Nullable glue_class_getName(void);
-extern Class _Nullable glue_class_getSuperclass(void);
+extern const char *glue_class_getName(void);
+extern Class glue_class_getSuperclass(void);
 extern unsigned long glue_class_getInstanceSize(void);
 extern bool glue_class_respondsToSelector(void);
 extern bool glue_class_conformsToProtocol(void);
-extern IMP _Nullable glue_class_getMethodImplementation(void);
-extern IMP _Nullable glue_class_getMethodImplementation_stret(void);
-extern const char *_Nullable glue_class_getMethodTypeEncoding(void);
+extern IMP glue_class_getMethodImplementation(void);
+extern IMP glue_class_getMethodImplementation_stret(void);
+extern Method glue_class_getInstanceMethod(void);
 extern bool glue_class_addMethod(void);
-extern IMP _Nullable glue_class_replaceMethod(void);
-extern Class _Nullable glue_object_getClass(void);
-extern Class _Nullable glue_object_setClass(void);
-extern const char *_Nullable glue_object_getClassName(void);
-extern const char *_Nonnull glue_protocol_getName(void);
+extern IMP glue_class_replaceMethod(void);
+extern Class glue_object_getClass(void);
+extern Class glue_object_setClass(void);
+extern const char *glue_object_getClassName(void);
+extern const char *glue_protocol_getName(void);
 extern bool glue_protocol_isEqual(void);
 extern bool glue_protocol_conformsToProtocol(void);
-extern _Nullable objc_uncaught_exception_handler_t
+extern objc_uncaught_exception_handler_t
     glue_objc_setUncaughtExceptionHandler(void);
 extern void glue_objc_setForwardHandler(void);
 extern void glue_objc_setEnumerationMutationHandler(void);
 extern void glue_objc_zero_weak_references(void);
 extern void glue_objc_exit(void);
+extern Ivar *glue_class_copyIvarList(void);
+extern const char *glue_ivar_getName(void);
+extern const char *glue_ivar_getTypeEncoding(void);
+extern ptrdiff_t glue_ivar_getOffset(void);
+extern Method *glue_class_copyMethodList(void);
+extern SEL glue_method_getName(void);
+extern const char *glue_method_getTypeEncoding(void);
+extern objc_property_t *glue_class_copyPropertyList(void);
+extern const char *glue_property_getName(void);
+extern char *glue_property_copyAttributeValue(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -621,7 +631,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_class_conformsToProtocol,
 	(CONST_APTR)glue_class_getMethodImplementation,
 	(CONST_APTR)glue_class_getMethodImplementation_stret,
-	(CONST_APTR)glue_class_getMethodTypeEncoding,
+	(CONST_APTR)glue_class_getInstanceMethod,
 	(CONST_APTR)glue_class_addMethod,
 	(CONST_APTR)glue_class_replaceMethod,
 	(CONST_APTR)glue_object_getClass,
@@ -635,6 +645,16 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_setEnumerationMutationHandler,
 	(CONST_APTR)glue_objc_zero_weak_references,
 	(CONST_APTR)glue_objc_exit,
+	(CONST_APTR)glue_class_copyIvarList,
+	(CONST_APTR)glue_ivar_getName,
+	(CONST_APTR)glue_ivar_getTypeEncoding,
+	(CONST_APTR)glue_ivar_getOffset,
+	(CONST_APTR)glue_class_copyMethodList,
+	(CONST_APTR)glue_method_getName,
+	(CONST_APTR)glue_method_getTypeEncoding,
+	(CONST_APTR)glue_class_copyPropertyList,
+	(CONST_APTR)glue_property_getName,
+	(CONST_APTR)glue_property_copyAttributeValue,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

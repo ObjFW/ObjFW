@@ -140,7 +140,7 @@ DESTRUCTOR_P(ObjFWRT, 4000)
 #endif
 
 void
-__objc_exec_class(void *module)
+__objc_exec_class(struct objc_module *module)
 {
 	/*
 	 * The compiler generates constructors that call into this, so it is
@@ -504,10 +504,10 @@ class_getMethodImplementation_stret(Class class, SEL selector)
 	return glue_class_getMethodImplementation_stret(class, selector);
 }
 
-const char *
-class_getMethodTypeEncoding(Class class, SEL selector)
+Method
+class_getInstanceMethod(Class class, SEL selector)
 {
-	return glue_class_getMethodTypeEncoding(class, selector);
+	return glue_class_getInstanceMethod(class, selector);
 }
 
 bool
@@ -590,4 +590,64 @@ void
 objc_exit(void)
 {
 	glue_objc_exit();
+}
+
+Ivar *
+class_copyIvarList(Class class, unsigned int *outCount)
+{
+	return glue_class_copyIvarList(class, outCount);
+}
+
+const char *
+ivar_getName(Ivar ivar)
+{
+	return glue_ivar_getName(ivar);
+}
+
+const char *
+ivar_getTypeEncoding(Ivar ivar)
+{
+	return glue_ivar_getTypeEncoding(ivar);
+}
+
+ptrdiff_t
+ivar_getOffset(Ivar ivar)
+{
+	return glue_ivar_getOffset(ivar);
+}
+
+Method *
+class_copyMethodList(Class class, unsigned int *outCount)
+{
+	return glue_class_copyMethodList(class, outCount);
+}
+
+SEL
+method_getName(Method method)
+{
+	return glue_method_getName(method);
+}
+
+const char *
+method_getTypeEncoding(Method method)
+{
+	return glue_method_getTypeEncoding(method);
+}
+
+objc_property_t *
+class_copyPropertyList(Class class, unsigned int *outCount)
+{
+	return glue_class_copyPropertyList(class, outCount);
+}
+
+const char *
+property_getName(objc_property_t property)
+{
+	return glue_property_getName(property);
+}
+
+char *
+property_copyAttributeValue(objc_property_t property, const char *name)
+{
+	return glue_property_copyAttributeValue(property, name);
 }

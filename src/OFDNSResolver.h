@@ -16,7 +16,9 @@
  */
 
 #import "OFObject.h"
+#import "OFDNSQuery.h"
 #import "OFDNSResourceRecord.h"
+#import "OFDNSResponse.h"
 #import "OFRunLoop.h"
 #import "OFString.h"
 
@@ -26,7 +28,8 @@ OF_ASSUME_NONNULL_BEGIN
 
 @class OFArray OF_GENERIC(ObjectType);
 @class OFDNSResolver;
-@class OFDNSResolverQuery;
+@class OFDNSResolverContext;
+@class OFDNSResolverSettings;
 @class OFDate;
 @class OFDictionary OF_GENERIC(KeyType, ObjectType);
 @class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
@@ -64,51 +67,47 @@ typedef enum of_dns_resolver_error_t {
 	OF_DNS_RESOLVER_ERROR_SERVER_REFUSED
 } of_dns_resolver_error_t;
 
-typedef OFDictionary OF_GENERIC(OFString *,
-    OFArray OF_GENERIC(OFDNSResourceRecord *) *) *of_dns_resolver_records_t;
-
 /*!
- * @protocol OFDNSResolverDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
+ * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
  *
- * @brief A delegate for OFDNSResolver.
+ * @brief A delegate for performed DNS queries.
  */
-@protocol OFDNSResolverDelegate <OFObject>
-@optional
+@protocol OFDNSResolverQueryDelegate <OFObject>
 /*!
- * @brief This method is called when a DNS resolver resolved a domain name.
+ * @brief This method is called when a DNS resolver performed a query.
  *
  * @param resolver The acting resolver
- * @param domainName The fully qualified domain name used to resolve the host
- * @param answerRecords The answer records from the name server, grouped by
- *			domain name
- * @param authorityRecords The authority records from the name server, grouped
- *			   by domain name
- * @param additionalRecords Additional records sent by the name server, grouped
- *			    by domain name
+ * @param query The query performed by the resolver
+ * @param response The response from the DNS server, or nil on error
  * @param exception An exception that happened during resolving, or nil on
  *		    success
  */
--	(void)resolver: (OFDNSResolver *)resolver
-  didResolveDomainName: (OFString *)domainName
-	 answerRecords: (nullable of_dns_resolver_records_t)answerRecords
-      authorityRecords: (nullable of_dns_resolver_records_t)authorityRecords
-     additionalRecords: (nullable of_dns_resolver_records_t)additionalRecords
-	     exception: (nullable id)exception;
+-  (void)resolver: (OFDNSResolver *)resolver
+  didPerformQuery: (OFDNSQuery *)query
+	 response: (nullable OFDNSResponse *)response
+	exception: (nullable id)exception;
+@end
 
 /*!
- * @brief This method is called when a DNS resolver resolved a domain name to
- *	  socket addresses.
+ * @protocol OFDNSResolverQueryDelegate OFDNSResolver.h ObjFW/OFDNSResolver.h
+ *
+ * @brief A delegate for resolved hosts.
+ */
+@protocol OFDNSResolverHostDelegate <OFObject>
+/*!
+ * @brief This method is called when a DNS resolver resolved a host to
+ *	  addresses.
  *
  * @param resolver The acting resolver
- * @param domainName The fully qualified domain name used to resolve the host
- * @param socketAddresses OFData containing several of_socket_address_t
+ * @param host The host the resolver resolved
+ * @param addresses OFData containing several of_socket_address_t
  * @param exception The exception that occurred during resolving, or nil on
  *		    success
  */
--	(void)resolver: (OFDNSResolver *)resolver
-  didResolveDomainName: (OFString *)domainName
-       socketAddresses: (nullable OFData *)socketAddresses
-	     exception: (nullable id)exception;
+- (void)resolver: (OFDNSResolver *)resolver
+  didResolveHost: (OFString *)host
+       addresses: (nullable OFData *)addresses
+       exception: (nullable id)exception;
 @end
 
 /*!
@@ -124,22 +123,13 @@ typedef OFDictionary OF_GENERIC(OFString *,
 OF_SUBCLASSING_RESTRICTED
 @interface OFDNSResolver: OFObject
 {
-	OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(OFString *) *)
-	    *_staticHosts;
-	OFArray OF_GENERIC(OFString *) *_nameServers;
-	OFString *_Nullable _localDomain;
-	OFArray OF_GENERIC(OFString *) *_searchDomains;
-	of_time_interval_t _timeout;
-	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
-	bool _usesTCP;
-	of_time_interval_t _configReloadInterval;
-	OFDate *_lastConfigReload;
+	OFDNSResolverSettings *_settings;
 	OFUDPSocket *_IPv4Socket;
 #ifdef OF_HAVE_IPV6
 	OFUDPSocket *_IPv6Socket;
 #endif
 	char _buffer[OF_DNS_RESOLVER_BUFFER_LENGTH];
-	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverQuery *)
+	OFMutableDictionary OF_GENERIC(OFNumber *, OFDNSResolverContext *)
 	    *_queries;
 }
 
@@ -209,41 +199,24 @@ OF_SUBCLASSING_RESTRICTED
 - (instancetype)init;
 
 /*!
- * @brief Asynchronously resolves the specified host.
+ * @brief Asynchronously performs the specified query.
  *
- * @param host The host to resolve
+ * @param query The query to perform
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveHost: (OFString *)host
-		delegate: (id <OFDNSResolverDelegate>)delegate;
+- (void)asyncPerformQuery: (OFDNSQuery *)query
+		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
 /*!
- * @brief Asynchronously resolves the specified host.
+ * @brief Asynchronously performs the specified query.
  *
- * @param host The host to resolve
- * @param recordClass The desired class of the records to query
- * @param recordType The desired type of the records to query
- * @param delegate The delegate to use for callbacks
- */
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-		delegate: (id <OFDNSResolverDelegate>)delegate;
-
-/*!
- * @brief Asynchronously resolves the specified host.
- *
- * @param host The host to resolve
- * @param recordClass The desired class of the records to query
- * @param recordType The desired type of the records to query
+ * @param query The query to perform
  * @param runLoopMode The run loop mode in which to resolve
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveHost: (OFString *)host
-	     recordClass: (of_dns_resource_record_class_t)recordClass
-	      recordType: (of_dns_resource_record_type_t)recordType
-	     runLoopMode: (of_run_loop_mode_t)runLoopMode
-		delegate: (id <OFDNSResolverDelegate>)delegate;
+- (void)asyncPerformQuery: (OFDNSQuery *)query
+	      runLoopMode: (of_run_loop_mode_t)runLoopMode
+		 delegate: (id <OFDNSResolverQueryDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -251,9 +224,8 @@ OF_SUBCLASSING_RESTRICTED
  * @param host The host to resolve
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveSocketAddressesForHost: (OFString *)host
-				  delegate: (id <OFDNSResolverDelegate>)
-						delegate;
+- (void)asyncResolveAddressesForHost: (OFString *)host
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -262,11 +234,9 @@ OF_SUBCLASSING_RESTRICTED
  * @param addressFamily The desired socket address family
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveSocketAddressesForHost: (OFString *)host
-			     addressFamily: (of_socket_address_family_t)
-						addressFamily
-				  delegate: (id <OFDNSResolverDelegate>)
-						delegate;
+- (void)asyncResolveAddressesForHost: (OFString *)host
+		       addressFamily: (of_socket_address_family_t)addressFamily
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /*!
  * @brief Asynchronously resolves the specified host to socket addresses.
@@ -276,12 +246,10 @@ OF_SUBCLASSING_RESTRICTED
  * @param runLoopMode The run loop mode in which to resolve
  * @param delegate The delegate to use for callbacks
  */
-- (void)asyncResolveSocketAddressesForHost: (OFString *)host
-			     addressFamily: (of_socket_address_family_t)
-						addressFamily
-			       runLoopMode: (of_run_loop_mode_t)runLoopMode
-				  delegate: (id <OFDNSResolverDelegate>)
-						delegate;
+- (void)asyncResolveAddressesForHost: (OFString *)host
+		       addressFamily: (of_socket_address_family_t)addressFamily
+			 runLoopMode: (of_run_loop_mode_t)runLoopMode
+			    delegate: (id <OFDNSResolverHostDelegate>)delegate;
 
 /*!
  * @brief Synchronously resolves the specified host to socket addresses.
@@ -290,12 +258,11 @@ OF_SUBCLASSING_RESTRICTED
  * @param addressFamily The desired socket address family
  * @return OFData containing several of_socket_address_t
  */
-- (OFData *)resolveSocketAddressesForHost: (OFString *)host
-			    addressFamily: (of_socket_address_family_t)
-					       addressFamily;
+- (OFData *)resolveAddressesForHost: (OFString *)host
+		      addressFamily: (of_socket_address_family_t)addressFamily;
 
 /*!
- * @brief Closes all sockets and cancels all ongoing requests.
+ * @brief Closes all sockets and cancels all ongoing queries.
  */
 - (void)close;
 @end
