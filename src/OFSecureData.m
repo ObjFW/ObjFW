@@ -260,7 +260,8 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 @implementation OFSecureData
 @synthesize allowsSwappableMemory = _allowsSwappableMemory;
 
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON) && \
+    !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 + (void)initialize
 {
 	if (self != [OFSecureData class])
@@ -394,7 +395,9 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	self = [super init];
 
 	@try {
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 		size_t pageSize = [OFSystemInfo pageSize];
+#endif
 
 		if (count > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
@@ -403,11 +406,11 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			_items = [self allocMemoryWithSize: itemSize
 						     count: count];
 			memset(_items, 0, count * itemSize);
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 		} else if (count * itemSize >= pageSize)
 			_items = mapPages(OF_ROUND_UP_POW2(pageSize,
 			    count * itemSize) / pageSize);
 		else {
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 # if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			struct page *lastPage = of_tlskey_get(lastPageKey);
 # endif
@@ -432,12 +435,13 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 					    exceptionWithRequestedSize:
 					    count * itemSize];
 			}
+		}
 #else
+		} else
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
 					   object: nil];
 #endif
-		}
 
 		_itemSize = itemSize;
 		_count = count;
