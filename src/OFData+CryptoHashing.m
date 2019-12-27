@@ -34,7 +34,8 @@ int _OFData_CryptoHashing_reference;
 - (OFString *)of_cryptoHashWithClass: (Class <OFCryptoHash>)class
 {
 	void *pool = objc_autoreleasePoolPush();
-	id <OFCryptoHash> hash = [class cryptoHash];
+	id <OFCryptoHash> hash =
+	    [class cryptoHashWithAllowsSwappableMemory: true];
 	size_t digestSize = [class digestSize];
 	const unsigned char *digest;
 	char cString[digestSize * 2];

@@ -34,13 +34,13 @@ OF_SUBCLASSING_RESTRICTED
 @interface OFSecureData: OFData
 {
 	struct page *_page;
-	bool _swappable;
+	bool _allowsSwappableMemory;
 }
 
 /*!
- * @brief Whether the OFSecureData is in swappable memory.
+ * @brief Whether the data may be stored in swappable memory.
  */
-@property (readonly, nonatomic, getter=isSwappable) bool swappable;
+@property (readonly, nonatomic) bool allowsSwappableMemory;
 
 /*!
  * @brief All items of the OFSecureData as a C array.
@@ -51,27 +51,30 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) void *mutableItems OF_RETURNS_INNER_POINTER;
 
 /*!
- * @brief Preallocates the specified number of bytes.
+ * @brief Preallocates the specified number of bytes for unswappable memory.
  *
- * This is useful to allocate secure memory before enabling a sandbox that does
- * not allow it anymore.
+ * This is useful to allocate unswappable memory before enabling a sandbox that
+ * does not allow it anymore.
  *
  * @note This may only be called once per thread!
- * @note Preallocated memory is only available for OFSecureData that is smaller
- *	 than a single page!
+ * @note Preallocated unswappable memory is only available for data that is
+ *	 smaller than a single page!
  *
- * @param size The number of bytes to preallocate
+ * @param size The number of bytes of unswappable memory to preallocate
  */
-+ (void)preallocateMemoryWithSize: (size_t)size;
++ (void)preallocateUnswappableMemoryWithSize: (size_t)size;
 
 /*!
  * @brief Creates a new, autoreleased OFSecureData with count items of item
  *	  size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
+ * @param allowsSwappableMemory Whether the data may be stored in swappable
+ *				memory
  * @return A new, autoreleased OFSecureData
  */
-+ (instancetype)dataWithCount: (size_t)count;
++ (instancetype)dataWithCount: (size_t)count
+	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /*!
  * @brief Creates a new, autoreleased OFSecureData with count items of the
@@ -79,27 +82,44 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param count The number of zero items the OFSecureData should contain
+ * @param allowsSwappableMemory Whether the data may be stored in swappable
+ *			       memory
  * @return A new, autoreleased OFSecureData
  */
 + (instancetype)dataWithItemSize: (size_t)itemSize
-			   count: (size_t)count;
+			   count: (size_t)count
+	   allowsSwappableMemory: (bool)allowsSwappableMemory;
 
++ (instancetype)dataWithItems: (const void *)items
+			count: (size_t)count OF_UNAVAILABLE;
++ (instancetype)dataWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count OF_UNAVAILABLE;
++ (instancetype)dataWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
++ (instancetype)dataWithItemsNoCopy: (void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
 #ifdef OF_HAVE_FILES
 + (instancetype)dataWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
 #endif
 + (instancetype)dataWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
 + (instancetype)dataWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
 + (instancetype)dataWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
-+ (instancetype)dataWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /*!
  * @brief Initializes an already allocated OFSecureData with count items of
  *	  item size 1, all set to zero.
  *
  * @param count The number of zero items the OFSecureData should contain
+ * @param allowsSwappableMemory Whether the data may be stored in swappable
+ *				memory
  * @return An initialized OFSecureData
  */
-- (instancetype)initWithCount: (size_t)count;
+- (instancetype)initWithCount: (size_t)count
+	allowsSwappableMemory: (bool)allowsSwappableMemory;
 
 /*!
  * @brief Initializes an already allocated OFSecureData with count items of the
@@ -107,10 +127,34 @@ OF_SUBCLASSING_RESTRICTED
  *
  * @param itemSize The size of a single item in the OFSecureData in bytes
  * @param count The number of zero items the OFSecureData should contain
+ * @param allowsSwappableMemory Whether the data may be stored in swappable
+ *				memory
  * @return An initialized OFSecureData
  */
 - (instancetype)initWithItemSize: (size_t)itemSize
-			   count: (size_t)count;
+			   count: (size_t)count
+	   allowsSwappableMemory: (bool)allowsSwappableMemory
+    OF_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithItems: (const void *)items
+			count: (size_t)count OF_UNAVAILABLE;
+- (instancetype)initWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count OF_UNAVAILABLE;
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
+- (instancetype)initWithItemsNoCopy: (void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone OF_UNAVAILABLE;
+#ifdef OF_HAVE_FILES
+- (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
+#endif
+- (instancetype)initWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
+- (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
+- (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
+- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 
 /*!
  * @brief Returns a specific item of the OFSecureData.

@@ -51,7 +51,7 @@
 		if (![mode isEqual: @"r"])
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
-					   object: self];
+					   object: nil];
 
 		_stream = [stream retain];
 		_CRC32 = ~0;

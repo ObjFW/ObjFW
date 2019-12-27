@@ -130,6 +130,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 @implementation OFSHA384Or512Hash
 @synthesize calculated = _calculated;
+@synthesize allowsSwappableMemory = _allowsSwappableMemory;
 
 + (size_t)digestSize
 {
@@ -141,19 +142,22 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	return BLOCK_SIZE;
 }
 
-+ (instancetype)cryptoHash
++ (instancetype)cryptoHashWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] init] autorelease];
+	return [[[self alloc] initWithAllowsSwappableMemory:
+	    allowsSwappableMemory] autorelease];
 }
 
-- (instancetype)init
+- (instancetype)initWithAllowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	self = [super init];
 
 	@try {
 		_iVarsData = [[OFSecureData alloc]
-		    initWithCount: sizeof(*_iVars)];
+			    initWithCount: sizeof(*_iVars)
+		    allowsSwappableMemory: allowsSwappableMemory];
 		_iVars = _iVarsData.mutableItems;
+		_allowsSwappableMemory = allowsSwappableMemory;
 
 		if (self.class == [OFSHA384Or512Hash class]) {
 			[self doesNotRecognizeSelector: _cmd];
@@ -167,6 +171,11 @@ processBlock(uint64_t *state, uint64_t *buffer)
 	}
 
 	return self;
+}
+
+- (instancetype)init
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)of_init
@@ -197,6 +206,7 @@ processBlock(uint64_t *state, uint64_t *buffer)
 
 	copy->_iVarsData = [_iVarsData copy];
 	copy->_iVars = copy->_iVarsData.mutableItems;
+	copy->_allowsSwappableMemory = _allowsSwappableMemory;
 	copy->_calculated = _calculated;
 
 	return copy;

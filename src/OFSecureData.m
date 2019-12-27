@@ -30,6 +30,7 @@
 
 #import "OFInitializationFailedException.h"
 #import "OFInvalidArgumentException.h"
+#import "OFNotImplementedException.h"
 #import "OFOutOfMemoryException.h"
 #import "OFOutOfRangeException.h"
 
@@ -39,30 +40,30 @@
 
 #define CHUNK_SIZE 16
 
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 struct page {
 	struct page *next, *previous;
 	void *map;
-	bool swappable;
 	unsigned char *page;
 };
 
-#if defined(OF_HAVE_COMPILER_TLS)
+# if defined(OF_HAVE_COMPILER_TLS)
 static thread_local struct page *firstPage = NULL;
 static thread_local struct page *lastPage = NULL;
 static thread_local struct page **preallocatedPages = NULL;
 static thread_local size_t numPreallocatedPages = 0;
-#elif defined(OF_HAVE_THREADS)
+# elif defined(OF_HAVE_THREADS)
 static of_tlskey_t firstPageKey, lastPageKey;
 static of_tlskey_t preallocatedPagesKey, numPreallocatedPagesKey;
-#else
+# else
 static struct page *firstPage = NULL;
 static struct page *lastPage = NULL;
 static struct page **preallocatedPages = NULL;
 static size_t numPreallocatedPages = 0;
-#endif
+# endif
 
 static void *
-mapPages(size_t numPages, bool *swappable)
+mapPages(size_t numPages)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 	void *pointer;
@@ -70,39 +71,30 @@ mapPages(size_t numPages, bool *swappable)
 	if (numPages > SIZE_MAX / pageSize)
 		@throw [OFOutOfRangeException exception];
 
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 	if ((pointer = mmap(NULL, numPages * pageSize, PROT_READ | PROT_WRITE,
 	    MAP_PRIVATE | MAP_ANON, -1, 0)) == MAP_FAILED)
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
+		    exceptionWithRequestedSize: numPages * pageSize];
 
-	*swappable = (mlock(pointer, numPages * pageSize) != 0);
-#else
-	if ((pointer = malloc(numPages * pageSize)) == NULL)
+	if (mlock(pointer, numPages * pageSize) != 0) {
+		munmap(pointer, numPages * pageSize);
 		@throw [OFOutOfMemoryException
-		    exceptionWithRequestedSize: pageSize];
-
-	*swappable = true;
-#endif
+		    exceptionWithRequestedSize: numPages * pageSize];
+	}
 
 	return pointer;
 }
 
 static void
-unmapPages(void *pointer, size_t numPages, bool swappable)
+unmapPages(void *pointer, size_t numPages)
 {
 	size_t pageSize = [OFSystemInfo pageSize];
 
 	if (numPages > SIZE_MAX / pageSize)
 		@throw [OFOutOfRangeException exception];
 
-#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
-	if (!swappable)
-		munlock(pointer, numPages * pageSize);
+	munlock(pointer, numPages * pageSize);
 	munmap(pointer, numPages * pageSize);
-#else
-	free(pointer);
-#endif
 }
 
 static struct page *
@@ -111,37 +103,37 @@ addPage(bool allowPreallocated)
 	size_t pageSize = [OFSystemInfo pageSize];
 	size_t mapSize = OF_ROUND_UP_POW2(8, pageSize / CHUNK_SIZE) / 8;
 	struct page *page;
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	struct page *lastPage;
-#endif
+# endif
 
 	if (allowPreallocated) {
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		uintptr_t numPreallocatedPages =
 		    (uintptr_t)of_tlskey_get(numPreallocatedPagesKey);
-#endif
+# endif
 
 		if (numPreallocatedPages > 0) {
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			struct page **preallocatedPages =
 			    of_tlskey_get(preallocatedPagesKey);
-#endif
+# endif
 
 			numPreallocatedPages--;
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			OF_ENSURE(of_tlskey_set(numPreallocatedPagesKey,
 			    (void *)numPreallocatedPages));
-#endif
+# endif
 
 			page = preallocatedPages[numPreallocatedPages];
 
 			if (numPreallocatedPages == 0) {
 				free(preallocatedPages);
 				preallocatedPages = NULL;
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 				OF_ENSURE(of_tlskey_set(preallocatedPagesKey,
 				    preallocatedPages));
-#endif
+# endif
 			}
 
 			return page;
@@ -156,12 +148,12 @@ addPage(bool allowPreallocated)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: mapSize];
 
-	page->page = mapPages(1, &page->swappable);
+	page->page = mapPages(1);
 	of_explicit_memset(page->page, 0, pageSize);
 
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	lastPage = of_tlskey_get(lastPageKey);
-#endif
+# endif
 
 	page->previous = lastPage;
 	page->next = NULL;
@@ -169,17 +161,17 @@ addPage(bool allowPreallocated)
 	if (lastPage != NULL)
 		lastPage->next = page;
 
-#if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
+# if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
 	lastPage = page;
 
 	if (firstPage == NULL)
 		firstPage = page;
-#else
+# else
 	OF_ENSURE(of_tlskey_set(lastPageKey, page));
 
 	if (of_tlskey_get(firstPageKey) == NULL)
 		OF_ENSURE(of_tlskey_set(firstPageKey, page));
-#endif
+# endif
 
 	return page;
 }
@@ -195,7 +187,7 @@ removePageIfEmpty(struct page *page)
 		if (map[i] != 0)
 			return;
 
-	unmapPages(page->page, 1, page->swappable);
+	unmapPages(page->page, 1);
 	free(page->map);
 
 	if (page->previous != NULL)
@@ -203,17 +195,17 @@ removePageIfEmpty(struct page *page)
 	if (page->next != NULL)
 		page->next->previous = page->previous;
 
-#if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
+# if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
 	if (firstPage == page)
 		firstPage = page->next;
 	if (lastPage == page)
 		lastPage = page->previous;
-#else
+# else
 	if (of_tlskey_get(firstPageKey) == page)
 		OF_ENSURE(of_tlskey_set(firstPageKey, page->next));
 	if (of_tlskey_get(lastPageKey) == page)
 		OF_ENSURE(of_tlskey_set(lastPageKey, page->previous));
-#endif
+# endif
 
 	free(page);
 }
@@ -263,9 +255,10 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	for (size_t i = 0; i < chunks; i++)
 		of_bitset_clear(page->map, chunkIndex + i);
 }
+#endif
 
 @implementation OFSecureData
-@synthesize swappable = _swappable;
+@synthesize allowsSwappableMemory = _allowsSwappableMemory;
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 + (void)initialize
@@ -281,14 +274,15 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 #endif
 
-+ (void)preallocateMemoryWithSize: (size_t)size
++ (void)preallocateUnswappableMemoryWithSize: (size_t)size
 {
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
 	size_t pageSize = [OFSystemInfo pageSize];
 	size_t numPages = OF_ROUND_UP_POW2(pageSize, size) / pageSize;
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	struct page **preallocatedPages = of_tlskey_get(preallocatedPagesKey);
 	size_t numPreallocatedPages;
-#endif
+# endif
 
 	if (preallocatedPages != NULL)
 		@throw [OFInvalidArgumentException exception];
@@ -298,30 +292,68 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 		@throw [OFOutOfMemoryException
 		    exceptionWithRequestedSize: numPages * sizeof(struct page)];
 
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	of_tlskey_set(preallocatedPagesKey, preallocatedPages);
-#endif
+# endif
 
 	for (size_t i = 0; i < numPages; i++)
 		preallocatedPages[i] = addPage(false);
 
 	numPreallocatedPages = numPages;
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 	of_tlskey_set(numPreallocatedPagesKey,
 	    (void *)(uintptr_t)numPreallocatedPages);
+# endif
+#else
+	@throw [OFNotImplementedException exceptionWithSelector: _cmd
+							 object: self];
 #endif
 }
 
 + (instancetype)dataWithCount: (size_t)count
+	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithCount: count] autorelease];
+	return [[[self alloc] initWithCount: count
+		      allowsSwappableMemory: allowsSwappableMemory]
+	    autorelease];
 }
 
 + (instancetype)dataWithItemSize: (size_t)itemSize
 			   count: (size_t)count
+	   allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [[[self alloc] initWithItemSize: itemSize
-					 count: count] autorelease];
+					 count: count
+			 allowsSwappableMemory: allowsSwappableMemory]
+	    autorelease];
+}
+
++ (instancetype)dataWithItems: (const void *)items
+			count: (size_t)count
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithItems: (const void *)items
+		     itemSize: (size_t)itemSize
+			count: (size_t)count
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
+{
+	OF_UNRECOGNIZED_SELECTOR
+}
+
++ (instancetype)dataWithItemsNoCopy: (void *)items
+			   itemSize: (size_t)itemSize
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
+{
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 #ifdef OF_HAVE_FILES
@@ -346,19 +378,18 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 	OF_UNRECOGNIZED_SELECTOR
 }
 
-+ (instancetype)dataWithSerialization: (OFXMLElement *)element
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
 
 - (instancetype)initWithCount: (size_t)count
+	allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	return [self initWithItemSize: 1
-				count: count];
+				count: count
+		allowsSwappableMemory: allowsSwappableMemory];
 }
 
 - (instancetype)initWithItemSize: (size_t)itemSize
 			   count: (size_t)count
+	   allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	self = [super init];
 
@@ -368,13 +399,18 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 		if (count > SIZE_MAX / itemSize)
 			@throw [OFOutOfRangeException exception];
 
-		if (count * itemSize >= pageSize)
+		if (allowsSwappableMemory) {
+			_items = [self allocMemoryWithSize: itemSize
+						     count: count];
+			memset(_items, 0, count * itemSize);
+		} else if (count * itemSize >= pageSize)
 			_items = mapPages(OF_ROUND_UP_POW2(pageSize,
-			    count * itemSize) / pageSize, &_swappable);
+			    count * itemSize) / pageSize);
 		else {
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+# if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 			struct page *lastPage = of_tlskey_get(lastPageKey);
-#endif
+# endif
 
 			for (struct page *page = lastPage; page != NULL;
 			    page = page->previous) {
@@ -396,12 +432,16 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 					    exceptionWithRequestedSize:
 					    count * itemSize];
 			}
-
-			_swappable = _page->swappable;
+#else
+			@throw [OFNotImplementedException
+			    exceptionWithSelector: _cmd
+					   object: nil];
+#endif
 		}
 
 		_itemSize = itemSize;
 		_count = count;
+		_allowsSwappableMemory = allowsSwappableMemory;
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -411,15 +451,23 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 }
 
 - (instancetype)initWithItems: (const void *)items
+			count: (size_t)count
+{
+	OF_INVALID_INIT_METHOD
+}
+
+- (instancetype)initWithItems: (const void *)items
 		     itemSize: (size_t)itemSize
 			count: (size_t)count
 {
-	self = [self initWithItemSize: itemSize
-				count: count];
+	OF_INVALID_INIT_METHOD
+}
 
-	memcpy(_items, items, count * itemSize);
-
-	return self;
+- (instancetype)initWithItemsNoCopy: (void *)items
+			      count: (size_t)count
+		       freeWhenDone: (bool)freeWhenDone
+{
+	OF_INVALID_INIT_METHOD
 }
 
 - (instancetype)initWithItemsNoCopy: (void *)items
@@ -427,16 +475,7 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 			      count: (size_t)count
 		       freeWhenDone: (bool)freeWhenDone
 {
-	self = [self initWithItems: items
-			  itemSize: itemSize
-			     count: count];
-
-	if (freeWhenDone) {
-		of_explicit_memset(items, 0, count * itemSize);
-		free(items);
-	}
-
-	return self;
+	OF_INVALID_INIT_METHOD
 }
 
 #ifdef OF_HAVE_FILES
@@ -468,18 +507,24 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 - (void)dealloc
 {
-	size_t pageSize = [OFSystemInfo pageSize];
+	[self zero];
 
-	if (_count * _itemSize > pageSize)
-		unmapPages(_items,
-		    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) / pageSize,
-		    _swappable);
-	else if (_page != NULL) {
-		if (_items != NULL)
-			freeMemory(_page, _items, _count * _itemSize);
+#if defined(HAVE_MMAP) && defined(HAVE_MLOCK) && defined(MAP_ANON)
+	if (!_allowsSwappableMemory) {
+		size_t pageSize = [OFSystemInfo pageSize];
 
-		removePageIfEmpty(_page);
+		if (_count * _itemSize > pageSize)
+			unmapPages(_items,
+			    OF_ROUND_UP_POW2(pageSize, _count * _itemSize) /
+			    pageSize);
+		else if (_page != NULL) {
+			if (_items != NULL)
+				freeMemory(_page, _items, _count * _itemSize);
+
+			removePageIfEmpty(_page);
+		}
 	}
+#endif
 
 	[super dealloc];
 }
@@ -504,16 +549,26 @@ freeMemory(struct page *page, void *pointer, size_t bytes)
 
 - (id)copy
 {
-	return [[OFSecureData alloc] initWithItems: _items
-					  itemSize: _itemSize
-					     count: _count];
+	OFSecureData *copy = [[OFSecureData alloc]
+		 initWithItemSize: _itemSize
+			    count: _count
+	    allowsSwappableMemory: _allowsSwappableMemory];
+
+	memcpy(copy.mutableItems, _items, _count * _itemSize);
+
+	return copy;
 }
 
 - (id)mutableCopy
 {
-	return [[OFSecureData alloc] initWithItems: _items
-					  itemSize: _itemSize
-					     count: _count];
+	OFSecureData *copy = [[OFSecureData alloc]
+		 initWithItemSize: _itemSize
+			    count: _count
+	    allowsSwappableMemory: _allowsSwappableMemory];
+
+	memcpy(copy.mutableItems, _items, _count * _itemSize);
+
+	return copy;
 }
 
 - (bool)isEqual: (id)object

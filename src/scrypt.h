@@ -41,7 +41,7 @@ extern void of_scrypt_romix(uint32_t *buffer, size_t blockSize,
 extern void of_scrypt(size_t blockSize, size_t costFactor,
     size_t parallelization, const unsigned char *salt, size_t saltLength,
     const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength);
+    unsigned char *key, size_t keyLength, bool allowsSwappableMemory);
 #ifdef __cplusplus
 }
 #endif

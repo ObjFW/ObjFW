@@ -60,8 +60,15 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"The selector %s is not understood by an object of type %@ or not "
-	    @"(fully) implemented!", sel_getName(_selector), [_object class]];
+	if (_object != nil)
+		return [OFString stringWithFormat:
+		    @"The selector %s is not understood by an object of type "
+		    @"%@ or not (fully) implemented!",
+		    sel_getName(_selector), [_object class]];
+	else
+		return [OFString stringWithFormat:
+		    @"The selector %s is not understood by an unknown object "
+		    @"or not (fully) implemented!",
+		    sel_getName(_selector)];
 }
 @end

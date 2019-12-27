@@ -41,6 +41,7 @@ OF_ASSUME_NONNULL_BEGIN
 		size_t bufferLength;
 	} *_iVars;
 @private
+	bool _allowsSwappableMemory;
 	bool _calculated;
 	OF_RESERVE_IVARS(4)
 }

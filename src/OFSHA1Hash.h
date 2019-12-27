@@ -39,6 +39,7 @@ OF_SUBCLASSING_RESTRICTED
 		} buffer;
 		size_t bufferLength;
 	} *_iVars;
+	bool _allowsSwappableMemory;
 	bool _calculated;
 }
 @end

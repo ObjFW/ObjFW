@@ -50,11 +50,12 @@ extern "C" {
  * @param key The buffer to write the key to
  * @param keyLength The desired length for the derived key (key needs to have
  *		    enough storage)
+ * @param allowsSwappableMemory Whether data may be stored in swappable memory
  */
 extern void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
     const unsigned char *salt, size_t saltLength,
     const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength);
+    unsigned char *key, size_t keyLength, bool allowsSwappableMemory);
 #ifdef __cplusplus
 }
 #endif

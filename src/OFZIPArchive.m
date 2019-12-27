@@ -754,7 +754,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 		default:
 			@throw [OFNotImplementedException
 			    exceptionWithSelector: _cmd
-					   object: self];
+					   object: nil];
 		}
 
 		_entry = [entry copy];
