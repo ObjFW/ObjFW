@@ -66,6 +66,9 @@
 # import "mutex.h"
 #endif
 
+#ifdef OF_APPLE_RUNTIME
+extern id _Nullable _objc_rootAutorelease(id _Nullable object);
+#endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id of_forward(id, SEL, ...);
 extern struct stret of_forward_stret(id, SEL, ...);

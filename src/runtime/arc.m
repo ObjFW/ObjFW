@@ -20,9 +20,6 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-#import "OFObject.h"
-#import "OFBlock.h"
-
 #ifdef OF_HAVE_THREADS
 # import "mutex.h"
 #endif

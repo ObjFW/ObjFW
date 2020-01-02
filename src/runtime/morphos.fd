@@ -78,4 +78,7 @@ glue_class_copyPropertyList(class_,outCount)(sysv,r12base)
 glue_property_getName(property)(sysv,r12base)
 glue_property_copyAttributeValue(property,name)(sysv,r12base)
 glue_objc_destructInstance(object)(sysv,r12base)
+objc_autoreleasePoolPush()(sysv,r12base)
+objc_autoreleasePoolPop(pool)(sysv,r12base)
+_objc_rootAutorelease(object)(sysv,r12base)
 ##end

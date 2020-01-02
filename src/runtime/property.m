@@ -22,8 +22,6 @@
 #import "ObjFWRT.h"
 #import "private.h"
 
-#import "OFObject.h"
-
 #ifdef OF_HAVE_THREADS
 # import "mutex.h"
 # define NUM_SPINLOCKS 8	/* needs to be a power of 2 */

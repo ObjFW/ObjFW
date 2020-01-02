@@ -366,7 +366,15 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 	Class _Nonnull isa;
 }
 
+@property (readonly, nonatomic) bool allowsWeakReference;
+
 + (void)initialize;
 + (bool)resolveClassMethod: (nonnull SEL)selector;
 + (bool)resolveInstanceMethod: (nonnull SEL)selector;
+- (nonnull id)retain;
+- (void)release;
+- (nonnull id)autorelease;
+- (nonnull id)copy;
+- (nonnull id)mutableCopy;
+- (bool)retainWeakReference;
 @end

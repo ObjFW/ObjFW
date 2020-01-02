@@ -139,6 +139,9 @@ extern objc_property_t *glue_class_copyPropertyList(void);
 extern const char *glue_property_getName(void);
 extern char *glue_property_copyAttributeValue(void);
 extern void *glue_objc_destructInstance(void);
+extern void *glue_objc_autoreleasePoolPush(void);
+extern void glue_objc_autoreleasePoolPop(void);
+extern id glue__objc_rootAutorelease(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -657,6 +660,9 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_property_getName,
 	(CONST_APTR)glue_property_copyAttributeValue,
 	(CONST_APTR)glue_objc_destructInstance,
+	(CONST_APTR)glue_objc_autoreleasePoolPush,
+	(CONST_APTR)glue_objc_autoreleasePoolPop,
+	(CONST_APTR)glue__objc_rootAutorelease,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

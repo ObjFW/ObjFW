@@ -727,3 +727,25 @@ glue_objc_destructInstance PPC_PARAMS(id object)
 
 	return objc_destructInstance(object);
 }
+
+void *__saveds
+glue_objc_autoreleasePoolPush(void)
+{
+	return objc_autoreleasePoolPush();
+}
+
+void __saveds
+glue_objc_autoreleasePoolPop PPC_PARAMS(void *pool)
+{
+	M68K_ARG(void *, pool, a0)
+
+	objc_autoreleasePoolPop(pool);
+}
+
+id __saveds
+glue__objc_rootAutorelease PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return _objc_rootAutorelease(object);
+}

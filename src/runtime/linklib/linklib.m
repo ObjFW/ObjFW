@@ -657,3 +657,21 @@ objc_destructInstance(id object)
 {
 	return glue_objc_destructInstance(object);
 }
+
+void *
+objc_autoreleasePoolPush(void)
+{
+	return glue_objc_autoreleasePoolPush();
+}
+
+void
+objc_autoreleasePoolPop(void *pool)
+{
+	glue_objc_autoreleasePoolPop(pool);
+}
+
+id
+_objc_rootAutorelease(id object)
+{
+	return glue__objc_rootAutorelease(object);
+}

@@ -76,3 +76,6 @@ objc_property_t *glue_class_copyPropertyList(Class class_, unsigned int *outCoun
 const char *glue_property_getName(objc_property_t property);
 char *glue_property_copyAttributeValue(objc_property_t property, const char *name);
 void *glue_objc_destructInstance(id object);
+void *glue_objc_autoreleasePoolPush(void);
+void glue_objc_autoreleasePoolPop(void *pool);
+id glue__objc_rootAutorelease(id object);

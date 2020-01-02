@@ -151,6 +151,9 @@ extern void objc_setEnumerationMutationHandler(
 extern id _Nullable objc_constructInstance(Class _Nullable class_,
     void *_Nullable bytes);
 extern void *_Nullable objc_destructInstance(id _Nullable object);
+extern void *_Null_unspecified objc_autoreleasePoolPush(void);
+extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
+extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 
 /*
  * Used by the compiler, but can also be called manually.

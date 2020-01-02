@@ -82,4 +82,7 @@ objc_property_t _Nullable *_Nullable glue_class_copyPropertyList(Class _Nullable
 const char *_Nonnull glue_property_getName(objc_property_t _Nonnull property)(a0)
 char *_Nullable glue_property_copyAttributeValue(objc_property_t _Nonnull property, const char *_Nonnull name)(a0,a1)
 void *_Nullable glue_objc_destructInstance(id _Nullable object)(a0)
+void *_Null_unspecified glue_objc_autoreleasePoolPush(void)()
+void glue_objc_autoreleasePoolPop(void *_Null_unspecified pool)(a0)
+id _Nullable glue__objc_rootAutorelease(id _Nullable object)(a0)
 ==end
