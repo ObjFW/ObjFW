@@ -148,7 +148,9 @@ extern void objc_setForwardHandler(IMP _Nullable forward,
     IMP _Nullable stretForward);
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler_t _Nullable handler);
-extern void objc_zero_weak_references(id _Nonnull value);
+extern id _Nullable objc_constructInstance(Class _Nullable class_,
+    void *_Nullable bytes);
+extern void *_Nullable objc_destructInstance(id _Nullable object);
 
 /*
  * Used by the compiler, but can also be called manually.

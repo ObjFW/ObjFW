@@ -180,7 +180,6 @@ INCLUDES := ${SRCS:.m=.h}			\
 	    ObjFW.h				\
 	    autorelease.h			\
 	    block.h				\
-	    instance.h				\
 	    macros.h				\
 	    objfw-defs.h			\
 	    platform.h				\
@@ -209,7 +208,6 @@ SRCS += OFAdjacentArray.m		\
 	OFSubarray.m			\
 	OFUTF8String.m			\
 	${AUTORELEASE_M}		\
-	${INSTANCE_M}			\
 	${LIBBASES_M}
 SRCS_FILES += OFFileURLHandler.m	\
 	      OFINIFileSettings.m

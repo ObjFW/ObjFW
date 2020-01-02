@@ -126,7 +126,7 @@ extern objc_uncaught_exception_handler_t
     glue_objc_setUncaughtExceptionHandler(void);
 extern void glue_objc_setForwardHandler(void);
 extern void glue_objc_setEnumerationMutationHandler(void);
-extern void glue_objc_zero_weak_references(void);
+extern id glue_objc_constructInstance(void);
 extern void glue_objc_exit(void);
 extern Ivar *glue_class_copyIvarList(void);
 extern const char *glue_ivar_getName(void);
@@ -138,6 +138,7 @@ extern const char *glue_method_getTypeEncoding(void);
 extern objc_property_t *glue_class_copyPropertyList(void);
 extern const char *glue_property_getName(void);
 extern char *glue_property_copyAttributeValue(void);
+extern void *glue_objc_destructInstance(void);
 
 #ifdef OF_MORPHOS
 const ULONG __abox__ = 1;
@@ -643,7 +644,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_objc_setUncaughtExceptionHandler,
 	(CONST_APTR)glue_objc_setForwardHandler,
 	(CONST_APTR)glue_objc_setEnumerationMutationHandler,
-	(CONST_APTR)glue_objc_zero_weak_references,
+	(CONST_APTR)glue_objc_constructInstance,
 	(CONST_APTR)glue_objc_exit,
 	(CONST_APTR)glue_class_copyIvarList,
 	(CONST_APTR)glue_ivar_getName,
@@ -655,6 +656,7 @@ static CONST_APTR functionTable[] = {
 	(CONST_APTR)glue_class_copyPropertyList,
 	(CONST_APTR)glue_property_getName,
 	(CONST_APTR)glue_property_copyAttributeValue,
+	(CONST_APTR)glue_objc_destructInstance,
 	(CONST_APTR)-1,
 #ifdef OF_MORPHOS
 	(CONST_APTR)FUNCARRAY_END

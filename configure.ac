@@ -630,10 +630,6 @@ esac
 
 AC_CHECK_FUNCS(_Unwind_Backtrace)
 
-AC_CHECK_FUNC(objc_constructInstance, [], [
-	AC_SUBST(INSTANCE_M, "instance.m")
-])
-
 AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 	AC_SUBST(AUTORELEASE_M, "autorelease.m")
 ])

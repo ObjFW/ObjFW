@@ -620,12 +620,13 @@ glue_objc_setEnumerationMutationHandler PPC_PARAMS(
 	objc_setEnumerationMutationHandler(handler);
 }
 
-void __saveds
-glue_objc_zero_weak_references PPC_PARAMS(id value)
+id __saveds
+glue_objc_constructInstance PPC_PARAMS(Class class, void *bytes)
 {
-	M68K_ARG(id, value, a0)
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(void *, bytes, a1)
 
-	objc_zero_weak_references(value);
+	return objc_constructInstance(class, bytes);
 }
 
 void __saveds
@@ -717,4 +718,12 @@ glue_property_copyAttributeValue PPC_PARAMS(objc_property_t property,
 	M68K_ARG(const char *, name, a1)
 
 	return property_copyAttributeValue(property, name);
+}
+
+void *__saveds
+glue_objc_destructInstance PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return objc_destructInstance(object);
 }

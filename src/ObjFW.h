@@ -267,7 +267,6 @@
 #import "crc16.h"
 #import "crc32.h"
 #import "huffman_tree.h"
-#import "instance.h"
 #import "of_asprintf.h"
 #import "of_strptime.h"
 #import "pbkdf2.h"

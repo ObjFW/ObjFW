@@ -17,7 +17,8 @@
 
 #include "config.h"
 
-#import "OFObject.h"
+#import "ObjFWRT.h"
+#import "private.h"
 
 static SEL constructSelector = NULL;
 static SEL destructSelector = NULL;

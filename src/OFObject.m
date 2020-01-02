@@ -60,7 +60,6 @@
 
 #import "OFString.h"
 
-#import "instance.h"
 #if defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
 #elif defined(OF_HAVE_THREADS)
