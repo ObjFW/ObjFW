@@ -206,7 +206,7 @@ Bugs and feature requests
 =========================
 
   If you find any bugs or have feature requests, feel free to send a mail to
-  js@heap.zone!
+  js@nil.im!
 
 
 Commercial use
@@ -214,5 +214,5 @@ Commercial use
 
   If for whatever reason neither the terms of the QPL nor those of the GPL work
   for you, a proprietary license for ObjFW including support is available upon
-  request. Just write a mail to js@heap.zone and we can find a reasonable
-  solution for both parties.
+  request. Just write a mail to js@nil.im and we can find a reasonable solution
+  for both parties.
