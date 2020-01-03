@@ -183,13 +183,6 @@ OF_SUBCLASSING_RESTRICTED
  */
 - (void)zero;
 
-#ifdef OF_HAVE_FILES
-- (instancetype)initWithContentsOfFile: (OFString *)path OF_UNAVAILABLE;
-#endif
-- (instancetype)initWithContentsOfURL: (OFURL *)URL OF_UNAVAILABLE;
-- (instancetype)initWithStringRepresentation: (OFString *)string OF_UNAVAILABLE;
-- (instancetype)initWithBase64EncodedString: (OFString *)string OF_UNAVAILABLE;
-- (instancetype)initWithSerialization: (OFXMLElement *)element OF_UNAVAILABLE;
 - (OFString *)stringRepresentation OF_UNAVAILABLE;
 - (OFString *)stringByBase64Encoding OF_UNAVAILABLE;
 #ifdef OF_HAVE_FILES
