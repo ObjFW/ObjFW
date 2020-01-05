@@ -238,12 +238,24 @@ callDelegateInMode(of_run_loop_mode_t runLoopMode,
 
 	[_addresses makeImmutable];
 
+	if (_addresses.count == 0) {
+		[_addresses release];
+		_addresses = nil;
+
+		if (exception == nil)
+			exception = [OFResolveHostFailedException
+			    exceptionWithHost: _host
+				addressFamily: _addressFamily
+					error: OF_DNS_RESOLVER_ERROR_NO_RESULT];
+	} else
+		exception = nil;
+
 	if ([_delegate respondsToSelector:
 	    @selector(resolver:didResolveHost:addresses:exception:)])
 		[_delegate resolver: _resolver
 		     didResolveHost: _host
-			  addresses: (_addresses.count > 0 ? _addresses : nil)
-			  exception: (_addresses.count == 0 ? exception : nil)];
+			  addresses: _addresses
+			  exception: exception];
 }
 
 - (void)asyncResolve
