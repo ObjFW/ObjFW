@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_SERIALIZATION_NS @"https://webkeks.org/objfw/serialization"
+#define OF_SERIALIZATION_NS @"https://objfw.nil.im/serialization"
 
 @class OFXMLElement;
 

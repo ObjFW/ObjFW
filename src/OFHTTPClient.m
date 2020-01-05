@@ -174,7 +174,7 @@ constructRequestString(OFHTTPRequest *request)
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
 		[headers setObject: @"Something using ObjFW "
-				    @"<https://heap.zone/objfw>"
+				    @"<https://objfw.nil.im/>"
 			    forKey: @"User-Agent"];
 
 	if (request.protocolVersion.major == 1 &&

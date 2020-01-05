@@ -4,7 +4,7 @@ platform supported by ObjFW without having to worry about differences between
 operating systems or various frameworks that you would otherwise need if you
 want to be portable.
 
-See https://heap.zone/objfw for more information.
+See https://objfw.nil.im/ for more information.
 
 
 Table of Contents
@@ -137,7 +137,7 @@ Windows
   to build - do *not* use the MSYS2 Shell shortcut, but use the MinGW-w64 Win32
   or Win64 Shell shortcut instead!) and check out ObjFW:
 
-    $ git clone https://heap.zone/git/objfw.git
+    $ git clone https://git.nil.im/objfw.git
 
   You can also download a release tarball if you want. Now go to the newly
   checked out repository and build and install it:

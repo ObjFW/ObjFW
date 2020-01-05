@@ -748,7 +748,7 @@ normalizedKey(OFString *key)
 	self = [super init];
 
 	_name = @"OFHTTPServer (ObjFW's HTTP server class "
-	    @"<https://heap.zone/objfw/>)";
+	    @"<https://objfw.nil.im/>)";
 #ifdef OF_HAVE_THREADS
 	_numberOfThreads = 1;
 #endif

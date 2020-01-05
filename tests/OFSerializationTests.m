@@ -44,7 +44,7 @@ static OFString *module = @"OFSerialization";
 
 	[l appendObject: @"Hello"];
 	[l appendObject: @"Wo\rld!\nHow are you?"];
-	[l appendObject: [OFURL URLWithString: @"https://webkeks.org/"]];
+	[l appendObject: [OFURL URLWithString: @"https://objfw.nil.im/"]];
 	[l appendObject:
 	    [OFXMLElement elementWithXMLString: @"<x><y/><![CDATA[<]]></x>"]];
 	[l appendObject: [OFSet setWithObjects: @"foo", @"foo", @"bar", nil]];
