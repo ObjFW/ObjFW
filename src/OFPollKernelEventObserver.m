@@ -210,7 +210,7 @@
 			objc_autoreleasePoolPop(pool);
 		}
 
-		if (FDs[i].revents & POLLOUT) {
+		if (FDs[i].revents & (POLLOUT | POLLHUP)) {
 			void *pool = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
