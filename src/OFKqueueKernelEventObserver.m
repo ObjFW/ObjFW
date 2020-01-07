@@ -98,6 +98,8 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super addObjectForReading: object];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -117,6 +119,8 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super addObjectForWriting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -131,6 +135,8 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super removeObjectForReading: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -145,6 +151,8 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval

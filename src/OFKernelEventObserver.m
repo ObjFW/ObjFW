@@ -194,22 +194,22 @@ enum {
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	OF_UNRECOGNIZED_SELECTOR
+	[_readObjects addObject: object];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	OF_UNRECOGNIZED_SELECTOR
+	[_writeObjects addObject: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-	OF_UNRECOGNIZED_SELECTOR
+	[_readObjects removeObjectIdenticalTo: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-	OF_UNRECOGNIZED_SELECTOR
+	[_writeObjects removeObjectIdenticalTo: object];
 }
 
 - (bool)of_processReadBuffers

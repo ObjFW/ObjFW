@@ -158,6 +158,8 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForReading
 		    events: EPOLLIN];
+
+	[super addObjectForReading: object];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -165,6 +167,8 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForWriting
 		    events: EPOLLOUT];
+
+	[super addObjectForWriting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -172,6 +176,8 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForReading
 		       events: EPOLLIN];
+
+	[super removeObjectForReading: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -179,6 +185,8 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForWriting
 		       events: EPOLLOUT];
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval

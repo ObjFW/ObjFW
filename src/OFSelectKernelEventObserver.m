@@ -87,6 +87,8 @@
 		_maxFD = fd;
 
 	FD_SET((of_socket_t)fd, &_readFDs);
+
+	[super addObjectForReading: object];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -105,6 +107,8 @@
 		_maxFD = fd;
 
 	FD_SET((of_socket_t)fd, &_writeFDs);
+
+	[super addObjectForWriting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -122,6 +126,8 @@
 #endif
 
 	FD_CLR((of_socket_t)fd, &_readFDs);
+
+	[super removeObjectForReading: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -139,6 +145,8 @@
 #endif
 
 	FD_CLR((of_socket_t)fd, &_writeFDs);
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval

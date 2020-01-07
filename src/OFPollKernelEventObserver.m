@@ -129,6 +129,8 @@
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForReading
 		    events: POLLIN];
+
+	[super addObjectForReading: object];
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -136,6 +138,8 @@
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForWriting
 		    events: POLLOUT];
+
+	[super addObjectForWriting: object];
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
@@ -143,6 +147,8 @@
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForReading
 		       events: POLLIN];
+
+	[super removeObjectForReading: object];
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
@@ -150,6 +156,8 @@
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForWriting
 		       events: POLLOUT];
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
