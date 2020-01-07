@@ -31,11 +31,6 @@
 
 #import "OFKqueueKernelEventObserver.h"
 #import "OFArray.h"
-#import "OFKernelEventObserver.h"
-#import "OFKernelEventObserver+Private.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
@@ -86,7 +81,7 @@
 	[super dealloc];
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -105,7 +100,7 @@
 								 errNo: errno];
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -124,7 +119,7 @@
 								 errNo: errno];
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -138,7 +133,7 @@
 								 errNo: errno];
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -157,8 +152,6 @@
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
 	int events;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

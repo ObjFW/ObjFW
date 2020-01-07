@@ -33,8 +33,6 @@
 
 #import "OFSelectKernelEventObserver.h"
 #import "OFArray.h"
-#import "OFKernelEventObserver+Private.h"
-#import "OFKernelEventObserver.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
@@ -73,7 +71,7 @@
 	return self;
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	int fd = object.fileDescriptorForReading;
 
@@ -91,7 +89,7 @@
 	FD_SET((of_socket_t)fd, &_readFDs);
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	int fd = object.fileDescriptorForWriting;
 
@@ -109,7 +107,7 @@
 	FD_SET((of_socket_t)fd, &_writeFDs);
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
 
@@ -126,7 +124,7 @@
 	FD_CLR((of_socket_t)fd, &_readFDs);
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
 
@@ -154,8 +152,6 @@
 	ULONG execSignalMask, cancelSignal;
 #endif
 	size_t count;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

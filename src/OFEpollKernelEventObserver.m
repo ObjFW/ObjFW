@@ -29,12 +29,7 @@
 
 #import "OFEpollKernelEventObserver.h"
 #import "OFArray.h"
-#import "OFKernelEventObserver+Private.h"
-#import "OFKernelEventObserver.h"
 #import "OFMapTable.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 #import "OFNull.h"
 
 #import "OFInitializationFailedException.h"
@@ -158,28 +153,28 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	}
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForReading
 		    events: EPOLLIN];
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForWriting
 		    events: EPOLLOUT];
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForReading
 		       events: EPOLLIN];
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForWriting
@@ -191,8 +186,6 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	OFNull *nullObject = [OFNull null];
 	struct epoll_event eventList[EVENTLIST_SIZE];
 	int events;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

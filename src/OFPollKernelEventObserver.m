@@ -28,8 +28,6 @@
 
 #import "OFPollKernelEventObserver.h"
 #import "OFData.h"
-#import "OFKernelEventObserver+Private.h"
-#import "OFKernelEventObserver.h"
 
 #import "OFObserveFailedException.h"
 #import "OFOutOfRangeException.h"
@@ -126,28 +124,28 @@
 	}
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForReading
 		    events: POLLIN];
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForWriting
 		    events: POLLOUT];
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForReading
 		       events: POLLIN];
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForWriting
@@ -159,8 +157,6 @@
 	struct pollfd *FDs;
 	int events;
 	size_t nFDs;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

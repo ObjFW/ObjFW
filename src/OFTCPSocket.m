@@ -224,14 +224,36 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  exception: (id)exception
 {
 	if (exception != nil) {
+		/*
+		 * self might be retained only by the pending async requests,
+		 * which we're about to cancel.
+		 */
+		[[self retain] autorelease];
+
+		[sock cancelAsyncRequests];
 		[sock of_closeSocket];
 
 		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [exception retain];
 			[self didConnect];
-		} else
-			[self tryNextAddressWithRunLoopMode:
-			    [OFRunLoop currentRunLoop].currentMode];
+		} else {
+			/*
+			 * We must not call it before returning, as otherwise
+			 * the new socket would be removed from the queue upon
+			 * return.
+			 */
+			OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+			SEL selector =
+			    @selector(tryNextAddressWithRunLoopMode:);
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: self
+					 selector: selector
+					   object: runLoop.currentMode
+					  repeats: false];
+			[runLoop addTimer: timer
+				  forMode: runLoop.currentMode];
+		}
 
 		return;
 	}

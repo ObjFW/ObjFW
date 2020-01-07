@@ -22,13 +22,9 @@
 #include <errno.h>
 
 #import "OFKernelEventObserver.h"
-#import "OFKernelEventObserver+Private.h"
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFDate.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 #import "OFStream.h"
 #import "OFStream+Private.h"
 #ifndef OF_HAVE_PIPE
@@ -170,14 +166,6 @@ enum {
 		}
 # endif
 #endif
-
-#ifdef OF_HAVE_THREADS
-		_mutex = [[OFMutex alloc] init];
-#endif
-
-		_queueActions = [[OFMutableData alloc]
-		    initWithItemSize: sizeof(int)];
-		_queueObjects = [[OFMutableArray alloc] init];
 	} @catch (id e) {
 		[self release];
 		@throw e;
@@ -201,183 +189,27 @@ enum {
 	[_readObjects release];
 	[_writeObjects release];
 
-#ifdef OF_HAVE_THREADS
-	[_mutex release];
-#endif
-
-	[_queueActions release];
-	[_queueObjects release];
-
 	[super dealloc];
 }
 
 - (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		int action = QUEUE_ADD | QUEUE_READ;
-
-		[_queueActions addItem: &action];
-		[_queueObjects addObject: object];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
-
-	[self cancel];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		int action = QUEUE_ADD | QUEUE_WRITE;
-
-		[_queueActions addItem: &action];
-		[_queueObjects addObject: object];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
-
-	[self cancel];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		int action = QUEUE_REMOVE | QUEUE_READ;
-
-		[_queueActions addItem: &action];
-		[_queueObjects addObject: object];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
-
-	[self cancel];
+	OF_UNRECOGNIZED_SELECTOR
 }
 
 - (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		int action = QUEUE_REMOVE | QUEUE_WRITE;
-
-		[_queueActions addItem: &action];
-		[_queueObjects addObject: object];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
-
-	[self cancel];
-}
-
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
-{
 	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
-{
-	OF_UNRECOGNIZED_SELECTOR
-}
-
-- (void)of_processQueue
-{
-	void *pool = objc_autoreleasePoolPush();
-
-#ifdef OF_HAVE_THREADS
-	[_mutex lock];
-	@try {
-#endif
-		const int *queueActions = _queueActions.items;
-		id const *queueObjects = _queueObjects.objects;
-		size_t count = _queueActions.count;
-
-		OF_ENSURE(_queueObjects.count == count);
-
-		for (size_t i = 0; i < count; i++) {
-			int action = queueActions[i];
-			id object = queueObjects[i];
-
-			switch (action) {
-			case QUEUE_ADD | QUEUE_READ:
-				[_readObjects addObject: object];
-
-				@try {
-					[self of_addObjectForReading: object];
-				} @catch (id e) {
-					[_readObjects
-					    removeObjectIdenticalTo: object];
-
-					@throw e;
-				}
-
-				break;
-			case QUEUE_ADD | QUEUE_WRITE:
-				[_writeObjects addObject: object];
-
-				@try {
-					[self of_addObjectForWriting: object];
-				} @catch (id e) {
-					[_writeObjects
-					    removeObjectIdenticalTo: object];
-
-					@throw e;
-				}
-
-				break;
-			case QUEUE_REMOVE | QUEUE_READ:
-				[self of_removeObjectForReading: object];
-
-				[_readObjects removeObjectIdenticalTo: object];
-
-				break;
-			case QUEUE_REMOVE | QUEUE_WRITE:
-				[self of_removeObjectForWriting: object];
-
-				[_writeObjects removeObjectIdenticalTo: object];
-
-				break;
-			default:
-				OF_ENSURE(0);
-			}
-		}
-
-		[_queueActions removeAllItems];
-		[_queueObjects removeAllObjects];
-#ifdef OF_HAVE_THREADS
-	} @finally {
-		[_mutex unlock];
-	}
-#endif
-
-	objc_autoreleasePoolPop(pool);
 }
 
 - (bool)of_processReadBuffers
