@@ -1,4 +1,4 @@
-AC_INIT(ObjFW, 1.0, js@heap.zone)
+AC_INIT(ObjFW, 1.0, js@nil.im)
 AC_CONFIG_SRCDIR(src)
 AC_CONFIG_AUX_DIR(build-aux)
 AC_CONFIG_MACRO_DIR(build-aux/m4)
@@ -624,10 +624,6 @@ case "$objc_runtime" in
 esac
 
 AC_CHECK_FUNCS(_Unwind_Backtrace)
-
-AC_CHECK_FUNC(objc_constructInstance, [], [
-	AC_SUBST(INSTANCE_M, "instance.m")
-])
 
 AC_CHECK_FUNC(objc_autoreleasePoolPush, [], [
 	AC_SUBST(AUTORELEASE_M, "autorelease.m")

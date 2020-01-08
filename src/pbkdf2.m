@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,12 +31,16 @@
 void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
     const unsigned char *salt, size_t saltLength,
     const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength)
+    unsigned char *key, size_t keyLength, bool allowsSwappableMemory)
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t blocks, digestSize = HMAC.digestSize;
-	OFSecureData *buffer = [OFSecureData dataWithCount: digestSize];
-	OFSecureData *digest = [OFSecureData dataWithCount: digestSize];
+	OFSecureData *buffer = [OFSecureData
+		    dataWithCount: digestSize
+	    allowsSwappableMemory: allowsSwappableMemory];
+	OFSecureData *digest = [OFSecureData
+		    dataWithCount: digestSize
+	    allowsSwappableMemory: allowsSwappableMemory];
 	unsigned char *bufferItems = buffer.mutableItems;
 	unsigned char *digestItems = digest.mutableItems;
 	OFSecureData *extendedSalt;
@@ -53,7 +57,8 @@ void of_pbkdf2(OFHMAC *HMAC, size_t iterations,
 	if (saltLength > SIZE_MAX - 4 || blocks > UINT32_MAX)
 		@throw [OFOutOfRangeException exception];
 
-	extendedSalt = [OFSecureData dataWithCount: saltLength + 4];
+	extendedSalt = [OFSecureData dataWithCount: saltLength + 4
+			     allowsSwappableMemory: allowsSwappableMemory];
 	extendedSaltItems = extendedSalt.mutableItems;
 
 	@try {

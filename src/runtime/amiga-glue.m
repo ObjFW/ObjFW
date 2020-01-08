@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -620,12 +620,13 @@ glue_objc_setEnumerationMutationHandler PPC_PARAMS(
 	objc_setEnumerationMutationHandler(handler);
 }
 
-void __saveds
-glue_objc_zero_weak_references PPC_PARAMS(id value)
+id __saveds
+glue_objc_constructInstance PPC_PARAMS(Class class, void *bytes)
 {
-	M68K_ARG(id, value, a0)
+	M68K_ARG(Class, class, a0)
+	M68K_ARG(void *, bytes, a1)
 
-	objc_zero_weak_references(value);
+	return objc_constructInstance(class, bytes);
 }
 
 void __saveds
@@ -717,4 +718,34 @@ glue_property_copyAttributeValue PPC_PARAMS(objc_property_t property,
 	M68K_ARG(const char *, name, a1)
 
 	return property_copyAttributeValue(property, name);
+}
+
+void *__saveds
+glue_objc_destructInstance PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return objc_destructInstance(object);
+}
+
+void *__saveds
+glue_objc_autoreleasePoolPush(void)
+{
+	return objc_autoreleasePoolPush();
+}
+
+void __saveds
+glue_objc_autoreleasePoolPop PPC_PARAMS(void *pool)
+{
+	M68K_ARG(void *, pool, a0)
+
+	objc_autoreleasePoolPop(pool);
+}
+
+id __saveds
+glue__objc_rootAutorelease PPC_PARAMS(id object)
+{
+	M68K_ARG(id, object, a0)
+
+	return _objc_rootAutorelease(object);
 }

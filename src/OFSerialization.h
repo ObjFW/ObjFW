@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-#define OF_SERIALIZATION_NS @"https://webkeks.org/objfw/serialization"
+#define OF_SERIALIZATION_NS @"https://objfw.nil.im/serialization"
 
 @class OFXMLElement;
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -31,11 +31,6 @@
 
 #import "OFKqueueKernelEventObserver.h"
 #import "OFArray.h"
-#import "OFKernelEventObserver.h"
-#import "OFKernelEventObserver+Private.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
@@ -86,7 +81,7 @@
 	[super dealloc];
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -103,9 +98,11 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super addObjectForReading: object];
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -122,9 +119,11 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super addObjectForWriting: object];
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	struct kevent event;
 
@@ -136,9 +135,11 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super removeObjectForReading: object];
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	struct kevent event;
 
@@ -150,6 +151,8 @@
 	if (kevent(_kernelQueue, &event, 1, NULL, 0, NULL) != 0)
 		@throw [OFObserveFailedException exceptionWithObserver: self
 								 errNo: errno];
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
@@ -157,8 +160,6 @@
 	struct timespec timeout;
 	struct kevent eventList[EVENTLIST_SIZE];
 	int events;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

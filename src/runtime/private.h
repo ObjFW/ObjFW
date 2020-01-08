@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -306,6 +306,7 @@ extern void objc_dtable_free(struct objc_dtable *_Nonnull);
 extern void objc_dtable_cleanup(void);
 extern void objc_init_static_instances(struct objc_symtab *_Nonnull);
 extern void objc_forget_pending_static_instances(void);
+extern void objc_zero_weak_references(id _Nonnull);
 #ifdef OF_HAVE_THREADS
 extern void objc_global_mutex_lock(void);
 extern void objc_global_mutex_unlock(void);
@@ -365,7 +366,15 @@ objc_dtable_get(const struct objc_dtable *_Nonnull dtable, uint32_t idx)
 	Class _Nonnull isa;
 }
 
+@property (readonly, nonatomic) bool allowsWeakReference;
+
 + (void)initialize;
 + (bool)resolveClassMethod: (nonnull SEL)selector;
 + (bool)resolveInstanceMethod: (nonnull SEL)selector;
+- (nonnull id)retain;
+- (void)release;
+- (nonnull id)autorelease;
+- (nonnull id)copy;
+- (nonnull id)mutableCopy;
+- (bool)retainWeakReference;
 @end

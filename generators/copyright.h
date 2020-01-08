@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -21,8 +21,8 @@
     @"/*\n"								       \
     @" * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, " \
     @"2017,\n"								       \
-    @" *               2018, 2019\n"					       \
-    @" *   Jonathan Schleifer <js@heap.zone>\n"				       \
+    @" *               2018, 2019, 2020\n"				       \
+    @" *   Jonathan Schleifer <js@nil.im>\n"				       \
     @" *\n"								       \
     @" * All rights reserved.\n"					       \
     @" *\n"								       \

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<serialization xmlns='https://webkeks.org/objfw/serialization' version='1'>
+<serialization xmlns='https://objfw.nil.im/serialization' version='1'>
   <OFMutableDictionary>
     <key>
       <OFString>Blub</OFString>
@@ -31,7 +31,7 @@ test</OFString>
         <OFString>Hello</OFString>
         <OFString>Wo&#xD;ld!
 How are you?</OFString>
-        <OFURL>https://webkeks.org/</OFURL>
+        <OFURL>https://objfw.nil.im/</OFURL>
         <OFXMLElement name='x'>
           <children>
             <OFMutableArray>

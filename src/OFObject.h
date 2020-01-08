@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -30,7 +30,6 @@
 #include <limits.h>
 
 #import "macros.h"
-#import "autorelease.h"
 #import "block.h"
 
 /*
@@ -1276,6 +1275,10 @@ OF_ROOT_CLASS
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+#ifdef OF_APPLE_RUNTIME
+extern void *_Null_unspecified objc_autoreleasePoolPush(void);
+extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
 #endif
 extern id of_alloc_object(Class class_, size_t extraSize,
     size_t extraAlignment, void *_Nullable *_Nullable extra);

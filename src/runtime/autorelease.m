@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -20,8 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#import "OFObject.h"
-#import "OFSystemInfo.h"
+#import "ObjFWRT.h"
+#import "private.h"
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 # import "tlskey.h"
@@ -98,7 +98,7 @@ _objc_rootAutorelease(id object)
 #endif
 
 	if (objects == NULL) {
-		size = [OFSystemInfo pageSize];
+		size = 16 * sizeof(id);
 
 		OF_ENSURE((objects = malloc(size)) != NULL);
 
@@ -113,7 +113,7 @@ _objc_rootAutorelease(id object)
 	if ((uintptr_t)top >= (uintptr_t)objects + size) {
 		ptrdiff_t diff = top - objects;
 
-		size += [OFSystemInfo pageSize];
+		size *= 2;
 		OF_ENSURE((objects = realloc(objects, size)) != NULL);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -580,10 +580,10 @@ objc_setEnumerationMutationHandler(objc_enumeration_mutation_handler_t handler)
 	glue_objc_setEnumerationMutationHandler(handler);
 }
 
-void
-objc_zero_weak_references(id value)
+id
+objc_constructInstance(Class class, void *_Nullable bytes)
 {
-	glue_objc_zero_weak_references(value);
+	return glue_objc_constructInstance(class, bytes);
 }
 
 void
@@ -650,4 +650,28 @@ char *
 property_copyAttributeValue(objc_property_t property, const char *name)
 {
 	return glue_property_copyAttributeValue(property, name);
+}
+
+void *
+objc_destructInstance(id object)
+{
+	return glue_objc_destructInstance(object);
+}
+
+void *
+objc_autoreleasePoolPush(void)
+{
+	return glue_objc_autoreleasePoolPush();
+}
+
+void
+objc_autoreleasePoolPop(void *pool)
+{
+	glue_objc_autoreleasePoolPop(pool);
+}
+
+id
+_objc_rootAutorelease(id object)
+{
+	return glue__objc_rootAutorelease(object);
 }

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -224,14 +224,36 @@ static uint16_t defaultSOCKS5Port = 1080;
 		  exception: (id)exception
 {
 	if (exception != nil) {
+		/*
+		 * self might be retained only by the pending async requests,
+		 * which we're about to cancel.
+		 */
+		[[self retain] autorelease];
+
+		[sock cancelAsyncRequests];
 		[sock of_closeSocket];
 
 		if (_socketAddressesIndex >= _socketAddresses.count) {
 			_exception = [exception retain];
 			[self didConnect];
-		} else
-			[self tryNextAddressWithRunLoopMode:
-			    [OFRunLoop currentRunLoop].currentMode];
+		} else {
+			/*
+			 * We must not call it before returning, as otherwise
+			 * the new socket would be removed from the queue upon
+			 * return.
+			 */
+			OFRunLoop *runLoop = [OFRunLoop currentRunLoop];
+			SEL selector =
+			    @selector(tryNextAddressWithRunLoopMode:);
+			OFTimer *timer = [OFTimer
+			    timerWithTimeInterval: 0
+					   target: self
+					 selector: selector
+					   object: runLoop.currentMode
+					  repeats: false];
+			[runLoop addTimer: timer
+				  forMode: runLoop.currentMode];
+		}
 
 		return;
 	}

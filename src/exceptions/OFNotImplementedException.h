@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,7 +29,7 @@ OF_ASSUME_NONNULL_BEGIN
 @interface OFNotImplementedException: OFException
 {
 	SEL _selector;
-	id _object;
+	id _Nullable _object;
 }
 
 /*!
@@ -52,7 +52,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return A new, autoreleased not implemented exception
  */
 + (instancetype)exceptionWithSelector: (SEL)selector
-			       object: (id)object;
+			       object: (nullable id)object;
 
 - (instancetype)init OF_UNAVAILABLE;
 
@@ -64,7 +64,7 @@ OF_ASSUME_NONNULL_BEGIN
  * @return An initialized not implemented exception
  */
 - (instancetype)initWithSelector: (SEL)selector
-			  object: (id)object OF_DESIGNATED_INITIALIZER;
+			  object: (nullable id)object OF_DESIGNATED_INITIALIZER;
 @end
 
 OF_ASSUME_NONNULL_END

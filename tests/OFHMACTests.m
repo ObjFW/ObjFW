@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -59,17 +59,23 @@ static const uint8_t digest_sha512[] =
 	OFHMAC *HMAC_SHA256, *HMAC_SHA384, *HMAC_SHA512;
 
 	TEST(@"+[HMACWithHashClass:] with MD5",
-	    (HMAC_MD5 = [OFHMAC HMACWithHashClass: [OFMD5Hash class]]))
+	    (HMAC_MD5 = [OFHMAC HMACWithHashClass: [OFMD5Hash class]
+			    allowsSwappableMemory: true]))
 	TEST(@"+[HMACWithHashClass:] with SHA-1",
-	    (HMAC_SHA1 = [OFHMAC HMACWithHashClass: [OFSHA1Hash class]]))
+	    (HMAC_SHA1 = [OFHMAC HMACWithHashClass: [OFSHA1Hash class]
+			     allowsSwappableMemory: true]))
 	TEST(@"+[HMACWithHashClass:] with RIPEMD-160",
-	    (HMAC_RMD160 = [OFHMAC HMACWithHashClass: [OFRIPEMD160Hash class]]))
+	    (HMAC_RMD160 = [OFHMAC HMACWithHashClass: [OFRIPEMD160Hash class]
+			       allowsSwappableMemory: true]))
 	TEST(@"+[HMACWithHashClass:] with SHA-256",
-	    (HMAC_SHA256 = [OFHMAC HMACWithHashClass: [OFSHA256Hash class]]))
+	    (HMAC_SHA256 = [OFHMAC HMACWithHashClass: [OFSHA256Hash class]
+			       allowsSwappableMemory: true]))
 	TEST(@"+[HMACWithHashClass:] with SHA-384",
-	    (HMAC_SHA384 = [OFHMAC HMACWithHashClass: [OFSHA384Hash class]]))
+	    (HMAC_SHA384 = [OFHMAC HMACWithHashClass: [OFSHA384Hash class]
+			       allowsSwappableMemory: true]))
 	TEST(@"+[HMACWithHashClass:] with SHA-512",
-	    (HMAC_SHA512 = [OFHMAC HMACWithHashClass: [OFSHA512Hash class]]))
+	    (HMAC_SHA512 = [OFHMAC HMACWithHashClass: [OFSHA512Hash class]
+			       allowsSwappableMemory: true]))
 
 	EXPECT_EXCEPTION(@"Detection of missing key",
 	    OFInvalidArgumentException, [HMAC_MD5 updateWithBuffer: ""

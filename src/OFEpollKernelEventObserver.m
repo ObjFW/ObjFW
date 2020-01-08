@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,12 +29,7 @@
 
 #import "OFEpollKernelEventObserver.h"
 #import "OFArray.h"
-#import "OFKernelEventObserver+Private.h"
-#import "OFKernelEventObserver.h"
 #import "OFMapTable.h"
-#ifdef OF_HAVE_THREADS
-# import "OFMutex.h"
-#endif
 #import "OFNull.h"
 
 #import "OFInitializationFailedException.h"
@@ -158,32 +153,40 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	}
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForReading
 		    events: EPOLLIN];
+
+	[super addObjectForReading: object];
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_addObject: object
 	    fileDescriptor: object.fileDescriptorForWriting
 		    events: EPOLLOUT];
+
+	[super addObjectForWriting: object];
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForReading
 		       events: EPOLLIN];
+
+	[super removeObjectForReading: object];
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	[self of_removeObject: object
 	       fileDescriptor: object.fileDescriptorForWriting
 		       events: EPOLLOUT];
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
@@ -191,8 +194,6 @@ static const of_map_table_functions_t mapFunctions = { NULL };
 	OFNull *nullObject = [OFNull null];
 	struct epoll_event eventList[EVENTLIST_SIZE];
 	int events;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

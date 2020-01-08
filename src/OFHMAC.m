@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -25,10 +25,14 @@
 
 @implementation OFHMAC
 @synthesize hashClass = _hashClass;
+@synthesize allowsSwappableMemory = _allowsSwappableMemory;
 
 + (instancetype)HMACWithHashClass: (Class <OFCryptoHash>)class
+	    allowsSwappableMemory: (bool)allowsSwappableMemory
 {
-	return [[[self alloc] initWithHashClass: class] autorelease];
+	return [[[self alloc] initWithHashClass: class
+			  allowsSwappableMemory: allowsSwappableMemory]
+	    autorelease];
 }
 
 - (instancetype)init
@@ -37,10 +41,12 @@
 }
 
 - (instancetype)initWithHashClass: (Class <OFCryptoHash>)class
+	    allowsSwappableMemory: (bool)allowsSwappableMemory
 {
 	self = [super init];
 
 	_hashClass = class;
+	_allowsSwappableMemory = allowsSwappableMemory;
 
 	return self;
 }
@@ -60,8 +66,12 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	size_t blockSize = [_hashClass blockSize];
-	OFSecureData *outerKeyPad = [OFSecureData dataWithCount: blockSize];
-	OFSecureData *innerKeyPad = [OFSecureData dataWithCount: blockSize];
+	OFSecureData *outerKeyPad = [OFSecureData
+		    dataWithCount: blockSize
+	    allowsSwappableMemory: _allowsSwappableMemory];
+	OFSecureData *innerKeyPad = [OFSecureData
+		    dataWithCount: blockSize
+	    allowsSwappableMemory: _allowsSwappableMemory];
 	unsigned char *outerKeyPadItems = outerKeyPad.mutableItems;
 	unsigned char *innerKeyPadItems = innerKeyPad.mutableItems;
 
@@ -73,7 +83,9 @@
 
 	@try {
 		if (length > blockSize) {
-			id <OFCryptoHash> hash = [_hashClass cryptoHash];
+			id <OFCryptoHash> hash = [_hashClass
+			    cryptoHashWithAllowsSwappableMemory:
+			    _allowsSwappableMemory];
 
 			[hash updateWithBuffer: key
 					length: length];
@@ -97,8 +109,10 @@
 			innerKeyPadItems[i] ^= 0x36;
 		}
 
-		_outerHash = [[_hashClass cryptoHash] retain];
-		_innerHash = [[_hashClass cryptoHash] retain];
+		_outerHash = [[_hashClass cryptoHashWithAllowsSwappableMemory:
+		    _allowsSwappableMemory] retain];
+		_innerHash = [[_hashClass cryptoHashWithAllowsSwappableMemory:
+		    _allowsSwappableMemory] retain];
 
 		[_outerHash updateWithBuffer: outerKeyPadItems
 				      length: blockSize];

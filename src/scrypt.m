@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,6 +19,7 @@
 
 #import "OFHMAC.h"
 #import "OFSHA256Hash.h"
+#import "OFSecureData.h"
 
 #import "OFInvalidArgumentException.h"
 #import "OFOutOfMemoryException.h"
@@ -141,9 +142,9 @@ of_scrypt_romix(uint32_t *buffer, size_t blockSize, size_t costFactor,
 void of_scrypt(size_t blockSize, size_t costFactor,
     size_t parallelization, const unsigned char *salt, size_t saltLength,
     const char *password, size_t passwordLength,
-    unsigned char *key, size_t keyLength)
+    unsigned char *key, size_t keyLength, bool allowsSwappableMemory)
 {
-	uint32_t *tmp = NULL, *buffer = NULL;
+	OFSecureData *tmp = nil, *buffer = nil;
 	OFHMAC *HMAC = nil;
 
 	if (blockSize == 0 || costFactor <= 1 ||
@@ -159,45 +160,45 @@ void of_scrypt(size_t blockSize, size_t costFactor,
 	OVERFLOW_CHECK_2
 
 	@try {
+		uint32_t *tmpItems, *bufferItems;
+
 		if (costFactor > SIZE_MAX - 1 ||
-		    (costFactor + 1) > SIZE_MAX / 128 ||
-		    (costFactor + 1) * 128 > SIZE_MAX / blockSize)
+		    (costFactor + 1) > SIZE_MAX / 128)
 			@throw [OFOutOfRangeException exception];
 
-		if ((tmp = malloc((costFactor + 1) * 128 * blockSize)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: (blockSize +
-							costFactor) * 128];
+		tmp = [[OFSecureData alloc]
+			 initWithItemSize: blockSize
+				    count: (costFactor + 1) * 128
+		    allowsSwappableMemory: allowsSwappableMemory];
+		tmpItems = tmp.mutableItems;
 
-		if (parallelization > SIZE_MAX / 128 ||
-		    parallelization * 128 > SIZE_MAX / blockSize)
+		if (parallelization > SIZE_MAX / 128)
 			@throw [OFOutOfRangeException exception];
 
-		if ((buffer = malloc(parallelization * 128 *
-		    blockSize)) == NULL)
-			@throw [OFOutOfMemoryException
-			    exceptionWithRequestedSize: parallelization * 128 *
-							blockSize];
+		buffer = [[OFSecureData alloc]
+			 initWithItemSize: blockSize
+				    count: parallelization * 128
+		    allowsSwappableMemory: allowsSwappableMemory];
+		bufferItems = buffer.mutableItems;
 
-		HMAC = [[OFHMAC alloc] initWithHashClass: [OFSHA256Hash class]];
+		HMAC = [[OFHMAC alloc]
+			initWithHashClass: [OFSHA256Hash class]
+		    allowsSwappableMemory: allowsSwappableMemory];
 
 		of_pbkdf2(HMAC, 1, salt, saltLength, password, passwordLength,
-		    (unsigned char *)buffer, parallelization * 128 * blockSize);
+		    (unsigned char *)bufferItems,
+		    parallelization * 128 * blockSize, allowsSwappableMemory);
 
 		for (size_t i = 0; i < parallelization; i++)
-			of_scrypt_romix(buffer + i * 32 * blockSize, blockSize,
-			    costFactor, tmp);
+			of_scrypt_romix(bufferItems + i * 32 * blockSize,
+			    blockSize, costFactor, tmpItems);
 
-		of_pbkdf2(HMAC, 1, (unsigned char *)buffer, parallelization *
-		    128 * blockSize, password, passwordLength, key, keyLength);
+		of_pbkdf2(HMAC, 1, (unsigned char *)bufferItems,
+		    parallelization * 128 * blockSize, password, passwordLength,
+		    key, keyLength, allowsSwappableMemory);
 	} @finally {
-		of_explicit_memset(tmp, 0, (costFactor + 1) * blockSize * 128);
-		free(tmp);
-
-		of_explicit_memset(buffer, 0,
-		    parallelization * 128 * blockSize);
-		free(buffer);
-
+		[tmp release];
+		[buffer release];
 		[HMAC release];
 	}
 }

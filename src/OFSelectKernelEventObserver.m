@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -33,8 +33,6 @@
 
 #import "OFSelectKernelEventObserver.h"
 #import "OFArray.h"
-#import "OFKernelEventObserver+Private.h"
-#import "OFKernelEventObserver.h"
 
 #import "OFInitializationFailedException.h"
 #import "OFObserveFailedException.h"
@@ -73,7 +71,7 @@
 	return self;
 }
 
-- (void)of_addObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)addObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	int fd = object.fileDescriptorForReading;
 
@@ -89,9 +87,11 @@
 		_maxFD = fd;
 
 	FD_SET((of_socket_t)fd, &_readFDs);
+
+	[super addObjectForReading: object];
 }
 
-- (void)of_addObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)addObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	int fd = object.fileDescriptorForWriting;
 
@@ -107,9 +107,11 @@
 		_maxFD = fd;
 
 	FD_SET((of_socket_t)fd, &_writeFDs);
+
+	[super addObjectForWriting: object];
 }
 
-- (void)of_removeObjectForReading: (id <OFReadyForReadingObserving>)object
+- (void)removeObjectForReading: (id <OFReadyForReadingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
 
@@ -124,9 +126,11 @@
 #endif
 
 	FD_CLR((of_socket_t)fd, &_readFDs);
+
+	[super removeObjectForReading: object];
 }
 
-- (void)of_removeObjectForWriting: (id <OFReadyForWritingObserving>)object
+- (void)removeObjectForWriting: (id <OFReadyForWritingObserving>)object
 {
 	/* TODO: Adjust _maxFD */
 
@@ -141,6 +145,8 @@
 #endif
 
 	FD_CLR((of_socket_t)fd, &_writeFDs);
+
+	[super removeObjectForWriting: object];
 }
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
@@ -154,8 +160,6 @@
 	ULONG execSignalMask, cancelSignal;
 #endif
 	size_t count;
-
-	[self of_processQueue];
 
 	if ([self of_processReadBuffers])
 		return;

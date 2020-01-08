@@ -4,7 +4,7 @@ platform supported by ObjFW without having to worry about differences between
 operating systems or various frameworks that you would otherwise need if you
 want to be portable.
 
-See https://heap.zone/objfw for more information.
+See https://objfw.nil.im/ for more information.
 
 
 Table of Contents
@@ -137,7 +137,7 @@ Windows
   to build - do *not* use the MSYS2 Shell shortcut, but use the MinGW-w64 Win32
   or Win64 Shell shortcut instead!) and check out ObjFW:
 
-    $ git clone https://heap.zone/git/objfw.git
+    $ git clone https://git.nil.im/objfw.git
 
   You can also download a release tarball if you want. Now go to the newly
   checked out repository and build and install it:
@@ -206,7 +206,7 @@ Bugs and feature requests
 =========================
 
   If you find any bugs or have feature requests, feel free to send a mail to
-  js@heap.zone!
+  js@nil.im!
 
 
 Commercial use
@@ -214,5 +214,5 @@ Commercial use
 
   If for whatever reason neither the terms of the QPL nor those of the GPL work
   for you, a proprietary license for ObjFW including support is available upon
-  request. Just write a mail to js@heap.zone and we can find a reasonable
-  solution for both parties.
+  request. Just write a mail to js@nil.im and we can find a reasonable solution
+  for both parties.

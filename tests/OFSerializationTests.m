@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -44,7 +44,7 @@ static OFString *module = @"OFSerialization";
 
 	[l appendObject: @"Hello"];
 	[l appendObject: @"Wo\rld!\nHow are you?"];
-	[l appendObject: [OFURL URLWithString: @"https://webkeks.org/"]];
+	[l appendObject: [OFURL URLWithString: @"https://objfw.nil.im/"]];
 	[l appendObject:
 	    [OFXMLElement elementWithXMLString: @"<x><y/><![CDATA[<]]></x>"]];
 	[l appendObject: [OFSet setWithObjects: @"foo", @"foo", @"bar", nil]];

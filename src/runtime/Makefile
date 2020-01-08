@@ -12,12 +12,14 @@ LIB_MAJOR = ${OBJFWRT_LIB_MAJOR}
 LIB_MINOR = ${OBJFWRT_LIB_MINOR}
 
 SRCS = arc.m			\
+       autorelease.m		\
        category.m		\
        class.m			\
        dtable.m			\
        exception.m		\
        hashtable.m		\
        init.m			\
+       instance.m		\
        ivar.m			\
        lookup.m			\
        method.m			\

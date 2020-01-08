@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -60,8 +60,15 @@
 
 - (OFString *)description
 {
-	return [OFString stringWithFormat:
-	    @"The selector %s is not understood by an object of type %@ or not "
-	    @"(fully) implemented!", sel_getName(_selector), [_object class]];
+	if (_object != nil)
+		return [OFString stringWithFormat:
+		    @"The selector %s is not understood by an object of type "
+		    @"%@ or not (fully) implemented!",
+		    sel_getName(_selector), [_object class]];
+	else
+		return [OFString stringWithFormat:
+		    @"The selector %s is not understood by an unknown object "
+		    @"or not (fully) implemented!",
+		    sel_getName(_selector)];
 }
 @end

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -174,7 +174,7 @@ constructRequestString(OFHTTPRequest *request)
 
 	if ([headers objectForKey: @"User-Agent"] == nil)
 		[headers setObject: @"Something using ObjFW "
-				    @"<https://heap.zone/objfw>"
+				    @"<https://objfw.nil.im/>"
 			    forKey: @"User-Agent"];
 
 	if (request.protocolVersion.major == 1 &&

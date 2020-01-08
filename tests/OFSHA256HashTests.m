@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -35,7 +35,8 @@ const uint8_t testfile_sha256[32] =
 	OFFile *f = [OFFile fileWithPath: @"testfile.bin"
 				    mode: @"r"];
 
-	TEST(@"+[cryptoHash]", (sha256 = [OFSHA256Hash cryptoHash]))
+	TEST(@"+[cryptoHashWithAllowsSwappableMemory:]",
+	    (sha256 = [OFSHA256Hash cryptoHashWithAllowsSwappableMemory: true]))
 
 	while (!f.atEndOfStream) {
 		char buf[64];

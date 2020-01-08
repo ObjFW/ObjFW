@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -60,13 +60,15 @@
 
 #import "OFString.h"
 
-#import "instance.h"
 #if defined(OF_HAVE_ATOMIC_OPS)
 # import "atomic.h"
 #elif defined(OF_HAVE_THREADS)
 # import "mutex.h"
 #endif
 
+#ifdef OF_APPLE_RUNTIME
+extern id _Nullable _objc_rootAutorelease(id _Nullable object);
+#endif
 #if defined(OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR)
 extern id of_forward(id, SEL, ...);
 extern struct stret of_forward_stret(id, SEL, ...);

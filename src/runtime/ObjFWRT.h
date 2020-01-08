@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -148,7 +148,12 @@ extern void objc_setForwardHandler(IMP _Nullable forward,
     IMP _Nullable stretForward);
 extern void objc_setEnumerationMutationHandler(
     objc_enumeration_mutation_handler_t _Nullable handler);
-extern void objc_zero_weak_references(id _Nonnull value);
+extern id _Nullable objc_constructInstance(Class _Nullable class_,
+    void *_Nullable bytes);
+extern void *_Nullable objc_destructInstance(id _Nullable object);
+extern void *_Null_unspecified objc_autoreleasePoolPush(void);
+extern void objc_autoreleasePoolPop(void *_Null_unspecified pool);
+extern id _Nullable _objc_rootAutorelease(id _Nullable object);
 
 /*
  * Used by the compiler, but can also be called manually.

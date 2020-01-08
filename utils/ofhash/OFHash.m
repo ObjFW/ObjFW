@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -123,21 +123,6 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 		}
 	}
 
-	if (calculateMD5)
-		MD5Hash = [OFMD5Hash cryptoHash];
-	if (calculateRIPEMD160)
-		RIPEMD160Hash = [OFRIPEMD160Hash cryptoHash];
-	if (calculateSHA1)
-		SHA1Hash = [OFSHA1Hash cryptoHash];
-	if (calculateSHA224)
-		SHA224Hash = [OFSHA224Hash cryptoHash];
-	if (calculateSHA256)
-		SHA256Hash = [OFSHA256Hash cryptoHash];
-	if (calculateSHA384)
-		SHA384Hash = [OFSHA384Hash cryptoHash];
-	if (calculateSHA512)
-		SHA512Hash = [OFSHA512Hash cryptoHash];
-
 #ifdef OF_HAVE_SANDBOX
 	OFSandbox *sandbox = [OFSandbox sandbox];
 	@try {
@@ -165,6 +150,27 @@ printHash(OFString *algo, OFString *path, id <OFCryptoHash> hash)
 
 	if (optionsParser.remainingArguments.count < 1)
 		help();
+
+	if (calculateMD5)
+		MD5Hash = [OFMD5Hash cryptoHashWithAllowsSwappableMemory: true];
+	if (calculateRIPEMD160)
+		RIPEMD160Hash =
+		    [OFRIPEMD160Hash cryptoHashWithAllowsSwappableMemory: true];
+	if (calculateSHA1)
+		SHA1Hash =
+		    [OFSHA1Hash cryptoHashWithAllowsSwappableMemory: true];
+	if (calculateSHA224)
+		SHA224Hash =
+		    [OFSHA224Hash cryptoHashWithAllowsSwappableMemory: true];
+	if (calculateSHA256)
+		SHA256Hash =
+		    [OFSHA256Hash cryptoHashWithAllowsSwappableMemory: true];
+	if (calculateSHA384)
+		SHA384Hash =
+		    [OFSHA384Hash cryptoHashWithAllowsSwappableMemory: true];
+	if (calculateSHA512)
+		SHA512Hash =
+		    [OFSHA512Hash cryptoHashWithAllowsSwappableMemory: true];
 
 	for (OFString *path in optionsParser.remainingArguments) {
 		void *pool = objc_autoreleasePoolPush();

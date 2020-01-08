@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -29,14 +29,14 @@ static OFString *module = @"OFHTTPCookieManager";
 	OFURL *URL[4];
 	OFHTTPCookie *cookie[5];
 
-	URL[0] = [OFURL URLWithString: @"http://heap.zone/foo"];
-	URL[1] = [OFURL URLWithString: @"https://heap.zone/foo/bar"];
-	URL[2] = [OFURL URLWithString: @"https://test.heap.zone/foo/bar"];
+	URL[0] = [OFURL URLWithString: @"http://nil.im/foo"];
+	URL[1] = [OFURL URLWithString: @"https://nil.im/foo/bar"];
+	URL[2] = [OFURL URLWithString: @"https://test.nil.im/foo/bar"];
 	URL[3] = [OFURL URLWithString: @"http://webkeks.org/foo/bar"];
 
 	cookie[0] = [OFHTTPCookie cookieWithName: @"test"
 					   value: @"1"
-					  domain: @"heap.zone"];
+					  domain: @"nil.im"];
 	TEST(@"-[addCookie:forURL:] #1", R([manager addCookie: cookie[0]
 						       forURL: URL[0]]))
 
@@ -57,7 +57,7 @@ static OFString *module = @"OFHTTPCookieManager";
 
 	cookie[2] = [OFHTTPCookie cookieWithName: @"test"
 					   value: @"3"
-					  domain: @"heap.zone"];
+					  domain: @"nil.im"];
 	cookie[2].secure = true;
 	TEST(@"-[addCookie:forURL:] #3", R([manager addCookie: cookie[2]
 						       forURL: URL[1]]))
@@ -70,8 +70,8 @@ static OFString *module = @"OFHTTPCookieManager";
 	cookie[2].expires = [OFDate dateWithTimeIntervalSinceNow: -1];
 	cookie[3] = [OFHTTPCookie cookieWithName: @"test"
 					   value: @"4"
-					  domain: @"heap.zone"];
-	cookie[3].domain = @".heap.zone";
+					  domain: @"nil.im"];
+	cookie[3].domain = @".nil.im";
 	TEST(@"-[addCookie:forURL:] #4", R([manager addCookie: cookie[3]
 						       forURL: URL[1]]))
 
@@ -83,7 +83,7 @@ static OFString *module = @"OFHTTPCookieManager";
 
 	cookie[4] = [OFHTTPCookie cookieWithName: @"bar"
 					   value: @"5"
-					  domain: @"test.heap.zone"];
+					  domain: @"test.nil.im"];
 	TEST(@"-[addCookie:forURL:] #5", R([manager addCookie: cookie[4]
 						       forURL: URL[0]]))
 

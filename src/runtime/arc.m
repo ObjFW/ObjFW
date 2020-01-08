@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -19,9 +19,6 @@
 
 #import "ObjFWRT.h"
 #import "private.h"
-
-#import "OFObject.h"
-#import "OFBlock.h"
 
 #ifdef OF_HAVE_THREADS
 # import "mutex.h"

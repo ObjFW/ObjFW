@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -1909,6 +1909,10 @@
 
 - (void)close
 {
+#ifdef OF_HAVE_SOCKETS
+	[self cancelAsyncRequests];
+#endif
+
 	[self freeMemory: _readBufferMemory];
 	_readBuffer = _readBufferMemory = NULL;
 	_readBufferLength = 0;

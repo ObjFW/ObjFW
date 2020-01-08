@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -136,12 +136,6 @@ OF_ASSUME_NONNULL_BEGIN
 #ifdef OF_AMIGAOS
 	ULONG _execSignalMask;
 #endif
-@private
-	OFMutableData *_queueActions;
-	OFMutableArray *_queueObjects;
-#ifdef OF_HAVE_THREADS
-	OFMutex *_mutex;
-#endif
 	OF_RESERVE_IVARS(4)
 }
 
@@ -234,11 +228,17 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Cancels the currently blocking observe call.
  *
- * This is automatically done when a new object is added or removed by another
- * thread, but in some circumstances, it might be desirable for a thread to
- * manually stop the observe running in another thread.
+ * This is the only method that can and should be called from another thread
+ * than the one using the observer.
  */
 - (void)cancel;
+
+/*!
+ * @brief This method should be called by subclasses in @ref observeUntilDate:
+ *	  as the first thing to handle all sockets that currently have data in
+ *	  the read buffer.
+ */
+- (bool)of_processReadBuffers;
 @end
 #endif
 

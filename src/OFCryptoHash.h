@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017,
- *               2018, 2019
- *   Jonathan Schleifer <js@heap.zone>
+ *               2018, 2019, 2020
+ *   Jonathan Schleifer <js@nil.im>
  *
  * All rights reserved.
  *
@@ -45,6 +45,11 @@ OF_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) size_t blockSize;
 
 /*!
+ * @brief Whether data may be stored in swappable memory.
+ */
+@property (readonly, nonatomic) bool allowsSwappableMemory;
+
+/*!
  * @brief A boolean whether the hash has already been calculated.
  */
 @property (readonly, nonatomic, getter=isCalculated) bool calculated;
@@ -61,9 +66,10 @@ OF_ASSUME_NONNULL_BEGIN
 /*!
  * @brief Creates a new cryptographic hash.
  *
- * @return A new autoreleased OFCryptoHash
+ * @return A new autoreleased cryptographic hash
  */
-+ (instancetype)cryptoHash;
++ (instancetype)cryptoHashWithAllowsSwappableMemory:
+    (bool)allowsSwappableMemory;
 
 /*!
  * @brief Returns the digest size of the cryptographic hash, in bytes.
@@ -78,6 +84,15 @@ OF_ASSUME_NONNULL_BEGIN
  * @return The block size of the cryptographic hash, in bytes
  */
 + (size_t)blockSize;
+
+/*!
+ * @brief Initializes an already allocated cryptographic hash.
+ *
+ * @return An initialized cryptographic hash
+ */
+- (instancetype)initWithAllowsSwappableMemory: (bool)allowsSwappableMemory;
+
+- (instancetype)init OF_UNAVAILABLE;
 
 /*!
  * @brief Adds a buffer to the cryptographic hash to be calculated.
