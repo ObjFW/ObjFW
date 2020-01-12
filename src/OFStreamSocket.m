@@ -177,6 +177,10 @@
 	if (_socket == INVALID_SOCKET)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
+#ifdef OF_HAVE_SOCKETS
+	[self cancelAsyncRequests];
+#endif
+
 	closesocket(_socket);
 	_socket = INVALID_SOCKET;
 
