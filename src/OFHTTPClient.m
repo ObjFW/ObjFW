@@ -49,6 +49,8 @@
 #import "OFUnsupportedVersionException.h"
 #import "OFWriteFailedException.h"
 
+#import "socket_helpers.h"
+
 #define REDIRECTS_DEFAULT 10
 
 @interface OFHTTPClientRequestHandler: OFObject <OFTCPSocketDelegate>
@@ -882,14 +884,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 		_toRead -= ret;
 
-		if (_toRead == 0) {
+		if (_toRead == 0)
 			_atEndOfStream = true;
-
-			if (!_keepAlive) {
-				[_socket release];
-				_socket = nil;
-			}
-		}
 
 		return ret;
 	}
@@ -951,9 +947,6 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 				if (line.length > 0)
 					@throw [OFInvalidServerReplyException
 					    exception];
-			} else {
-				[_socket release];
-				_socket = nil;
 			}
 		}
 
@@ -980,7 +973,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (int)fileDescriptorForReading
 {
 	if (_socket == nil)
-		return -1;
+		return INVALID_SOCKET;
 
 	return _socket.fileDescriptorForReading;
 }
