@@ -162,6 +162,7 @@
 
 - (void)observeForTimeInterval: (of_time_interval_t)timeInterval
 {
+	void *pool;
 	struct pollfd *FDs;
 	int events;
 	size_t nFDs;
@@ -169,7 +170,9 @@
 	if ([self of_processReadBuffers])
 		return;
 
-	FDs = _FDs.mutableItems;
+	pool = objc_autoreleasePoolPush();
+
+	FDs = [[[_FDs mutableCopy] autorelease] mutableItems];
 	nFDs = _FDs.count;
 
 #ifdef OPEN_MAX
@@ -188,7 +191,7 @@
 		assert(FDs[i].fd <= _maxFD);
 
 		if (FDs[i].revents & POLLIN) {
-			void *pool;
+			void *pool2;
 
 			if (FDs[i].fd == _cancelFD[0]) {
 				char buffer;
@@ -204,28 +207,30 @@
 				continue;
 			}
 
-			pool = objc_autoreleasePoolPush();
+			pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForReading:)])
 				[_delegate objectIsReadyForReading:
 				    _FDToObject[FDs[i].fd]];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		if (FDs[i].revents & (POLLOUT | POLLHUP)) {
-			void *pool = objc_autoreleasePoolPush();
+			void *pool2 = objc_autoreleasePoolPush();
 
 			if ([_delegate respondsToSelector:
 			    @selector(objectIsReadyForWriting:)])
 				[_delegate objectIsReadyForWriting:
 				    _FDToObject[FDs[i].fd]];
 
-			objc_autoreleasePoolPop(pool);
+			objc_autoreleasePoolPop(pool2);
 		}
 
 		FDs[i].revents = 0;
 	}
+
+	objc_autoreleasePoolPop(pool);
 }
 @end
