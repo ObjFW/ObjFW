@@ -178,7 +178,12 @@ of_log(OFConstantString *format, ...)
 
 - (void)dealloc
 {
-	[self close];
+#ifndef OF_AMIGAOS
+	if (_fd != -1)
+#else
+	if (_handle != 0)
+#endif
+		[self close];
 
 	[super dealloc];
 }
@@ -301,12 +306,16 @@ of_log(OFConstantString *format, ...)
 - (void)close
 {
 #ifndef OF_AMIGAOS
-	if (_fd != -1)
-		close(_fd);
+	if (_fd == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
+	close(_fd);
 	_fd = -1;
 #else
-	if (_closable && _handle != 0)
+	if (_handle == 0)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	if (_closable)
 		Close(_handle);
 
 	_handle = 0;

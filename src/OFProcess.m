@@ -328,7 +328,12 @@ extern char **environ;
 
 - (void)dealloc
 {
-	[self close];
+#ifndef OF_WINDOWS
+	if (_readPipe[0] != -1)
+#else
+	if (_readPipe[0] != NULL)
+#endif
+		[self close];
 
 	[super dealloc];
 }
@@ -558,10 +563,11 @@ extern char **environ;
 - (void)close
 {
 #ifndef OF_WINDOWS
-	if (_readPipe[0] != -1)
-		close(_readPipe[0]);
-	if (_writePipe[1] != -1)
-		close(_writePipe[1]);
+	if (_readPipe[0] == -1)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	[self closeForWriting];
+	close(_readPipe[0]);
 
 	if (_pid != -1) {
 		kill(_pid, SIGTERM);
@@ -570,12 +576,12 @@ extern char **environ;
 
 	_pid = -1;
 	_readPipe[0] = -1;
-	_writePipe[1] = -1;
 #else
-	if (_readPipe[0] != NULL)
-		CloseHandle(_readPipe[0]);
-	if (_writePipe[1] != NULL)
-		CloseHandle(_writePipe[1]);
+	if (_readPipe[0] == NULL)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
+	[self closeForWriting];
+	CloseHandle(_readPipe[0]);
 
 	if (_process != INVALID_HANDLE_VALUE) {
 		TerminateProcess(_process, 0);
@@ -584,7 +590,6 @@ extern char **environ;
 
 	_process = INVALID_HANDLE_VALUE;
 	_readPipe[0] = NULL;
-	_writePipe[1] = NULL;
 #endif
 
 	[super close];

@@ -152,7 +152,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[super dealloc];
 }
@@ -242,7 +243,7 @@
 - (void)close
 {
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	[_lastReturnedStream close];
 	[_lastReturnedStream release];
@@ -297,10 +298,9 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil || _decompressedStream != nil)
+		[self close];
 
-	[_stream release];
-	[_decompressedStream release];
 	[_entry release];
 
 	[super dealloc];
@@ -417,6 +417,9 @@
 
 - (void)close
 {
+	if (_stream == nil || _decompressedStream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[self of_skip];
 
 	[_stream release];
@@ -460,7 +463,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_entry release];
 
@@ -513,7 +517,7 @@
 	of_offset_t offset;
 
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	_entry.uncompressedSize = _bytesWritten;
 	_entry.compressedSize = _bytesWritten;

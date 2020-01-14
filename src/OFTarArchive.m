@@ -296,7 +296,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_entry release];
 
@@ -354,6 +355,9 @@
 
 - (void)close
 {
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[self of_skip];
 
 	[_stream release];
@@ -429,7 +433,8 @@
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_entry release];
 
@@ -476,13 +481,15 @@
 
 - (void)close
 {
-	if (_stream == nil)
-		return;
+	uint64_t remainder;
 
-	uint64_t remainder = 512 - _entry.size % 512;
+	if (_stream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
+
+	remainder = 512 - _entry.size % 512;
 
 	if (remainder != 512) {
 		bool wasWriteBuffered = _stream.writeBuffered;

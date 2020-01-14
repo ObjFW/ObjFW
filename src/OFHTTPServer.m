@@ -250,7 +250,7 @@ normalizedKey(OFString *key)
 - (void)dealloc
 {
 	if (_socket != nil)
-		[self close];	/* includes [_socket release] */
+		[self close];
 
 	[_server release];
 	[_request release];
@@ -677,7 +677,8 @@ normalizedKey(OFString *key)
 
 - (void)dealloc
 {
-	[self close];
+	if (_socket != nil)
+		[self close];
 
 	[super dealloc];
 }
@@ -720,8 +721,13 @@ normalizedKey(OFString *key)
 
 - (void)close
 {
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[_socket release];
 	_socket = nil;
+
+	[super close];
 }
 @end
 

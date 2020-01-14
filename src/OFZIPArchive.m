@@ -248,7 +248,8 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
 	[_stream release];
 	[_archiveComment release];
@@ -617,7 +618,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (void)close
 {
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	[self of_closeLastReturnedStream];
 
@@ -770,10 +771,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil || _decompressedStream != nil)
+		[self close];
 
-	[_stream release];
-	[_decompressedStream release];
 	[_entry release];
 
 	[super dealloc];
@@ -847,6 +847,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)close
 {
+	if (_stream == nil || _decompressedStream == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	[_stream release];
 	_stream = nil;
 
@@ -872,9 +875,9 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)dealloc
 {
-	[self close];
+	if (_stream != nil)
+		[self close];
 
-	[_stream release];
 	[_entry release];
 
 	[super dealloc];
@@ -905,7 +908,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 - (void)close
 {
 	if (_stream == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	[_stream writeLittleEndianInt32: 0x08074B50];
 	[_stream writeLittleEndianInt32: _CRC32];
@@ -921,5 +924,7 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 	[_entry makeImmutable];
 
 	_bytesWritten += (2 * 4 + 2 * 8);
+
+	[super close];
 }
 @end

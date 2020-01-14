@@ -530,9 +530,10 @@ parseMode(const char *mode, bool *append)
 
 - (void)close
 {
-	if (_handle != OF_INVALID_FILE_HANDLE)
-		closeHandle(_handle);
+	if (_handle == OF_INVALID_FILE_HANDLE)
+		@throw [OFNotOpenException exceptionWithObject: self];
 
+	closeHandle(_handle);
 	_handle = OF_INVALID_FILE_HANDLE;
 
 	[super close];
@@ -540,7 +541,8 @@ parseMode(const char *mode, bool *append)
 
 - (void)dealloc
 {
-	[self close];
+	if (_handle != OF_INVALID_FILE_HANDLE)
+		[self close];
 
 	[super dealloc];
 }

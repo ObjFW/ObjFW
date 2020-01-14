@@ -733,10 +733,10 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)dealloc
 {
-	[self close];
+	if (_socket != nil)
+		[self close];
 
 	[_handler release];
-	[_socket release];
 
 	[super dealloc];
 }
@@ -789,7 +789,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (void)close
 {
 	if (_socket == nil)
-		return;
+		@throw [OFNotOpenException exceptionWithObject: self];
 
 	if (_toWrite > 0)
 		@throw [OFTruncatedDataException exception];
@@ -799,6 +799,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 	[_socket release];
 	_socket = nil;
+
+	[super close];
 }
 
 - (int)fileDescriptorForWriting
@@ -821,7 +823,8 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)dealloc
 {
-	[_socket release];
+	if (_socket != nil)
+		[self close];
 
 	[super dealloc];
 }
@@ -985,6 +988,9 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 
 - (void)close
 {
+	if (_socket == nil)
+		@throw [OFNotOpenException exceptionWithObject: self];
+
 	_atEndOfStream = false;
 
 	[_socket release];
