@@ -49,7 +49,11 @@
 #endif
 
 #if defined(OF_AMIGAOS)
-# include <proto/bsdsocket.h>
+# ifdef OF_MORPHOS
+#  include <proto/socket.h>
+# else
+#  include <proto/bsdsocket.h>
+# endif
 # include <sys/filio.h>
 # define closesocket(sock) CloseSocket(sock)
 # define ioctlsocket(fd, req, arg) IoctlSocket(fd, req, arg)

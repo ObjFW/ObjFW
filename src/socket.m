@@ -58,7 +58,7 @@
 #if defined(OF_HAVE_THREADS) && !defined(OF_AMIGAOS)
 static of_mutex_t mutex;
 #endif
-#ifndef OF_AMIGAOS
+#if !defined(OF_AMIGAOS) || !defined(OF_HAVE_THREADS)
 static bool initSuccessful = false;
 #else
 # ifdef OF_HAVE_THREADS
