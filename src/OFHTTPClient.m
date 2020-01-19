@@ -976,7 +976,7 @@ defaultShouldFollow(of_http_request_method_t method, int statusCode)
 - (int)fileDescriptorForReading
 {
 	if (_socket == nil)
-		return INVALID_SOCKET;
+		return -1;
 
 	return _socket.fileDescriptorForReading;
 }
