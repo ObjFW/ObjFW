@@ -29,21 +29,21 @@
 
 #if defined(OF_HAVE_COMPILER_TLS)
 static thread_local id *objects = NULL;
-static thread_local id *top = NULL;
-static thread_local size_t size = 0;
+static thread_local uintptr_t count = 0;
+static thread_local uintptr_t size = 0;
 #elif defined(OF_HAVE_THREADS)
-static of_tlskey_t objectsKey, topKey, sizeKey;
+static of_tlskey_t objectsKey, countKey, sizeKey;
 #else
 static id *objects = NULL;
-static id *top = NULL;
-static size_t size = 0;
+static uintptr_t count = 0;
+static uintptr_t size = 0;
 #endif
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 OF_CONSTRUCTOR()
 {
 	OF_ENSURE(of_tlskey_new(&objectsKey));
-	OF_ENSURE(of_tlskey_new(&topKey));
+	OF_ENSURE(of_tlskey_new(&countKey));
 	OF_ENSURE(of_tlskey_new(&sizeKey));
 }
 #endif
@@ -52,39 +52,50 @@ void *
 objc_autoreleasePoolPush()
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	id *top = of_tlskey_get(topKey);
-	id *objects = of_tlskey_get(objectsKey);
+	uintptr_t count = (uintptr_t)of_tlskey_get(countKey);
 #endif
-	ptrdiff_t offset = top - objects;
-
-	return (void *)offset;
+	return (void *)count;
 }
 
 void
-objc_autoreleasePoolPop(void *offset)
+objc_autoreleasePoolPop(void *pool)
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	id *top = of_tlskey_get(topKey);
 	id *objects = of_tlskey_get(objectsKey);
+	uintptr_t count = (uintptr_t)of_tlskey_get(countKey);
 #endif
-	id *pool = objects + (ptrdiff_t)offset;
-	id *iter;
+	uintptr_t idx = (uintptr_t)pool;
+	bool freeMem = false;
 
-	for (iter = pool; iter < top; iter++)
-		[*iter release];
+	if (idx == (uintptr_t)-1) {
+		idx++;
+		freeMem = true;
+	}
 
-	top = pool;
+	for (uintptr_t i = idx; i < count; i++) {
+		[objects[i] release];
 
-	if (top == objects) {
+#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
+		objects = of_tlskey_get(objectsKey);
+		count = (uintptr_t)of_tlskey_get(countKey);
+#endif
+	}
+
+	count = idx;
+
+	if (freeMem) {
 		free(objects);
-
 		objects = NULL;
-		top = NULL;
+#if defined(OF_HAVE_COMPILER_TLS) || !defined(OF_HAVE_THREADS)
+		size = 0;
+#else
+		OF_ENSURE(of_tlskey_set(objectsKey, objects));
+		OF_ENSURE(of_tlskey_set(sizeKey, (void *)0));
+#endif
 	}
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(of_tlskey_set(topKey, top));
-	OF_ENSURE(of_tlskey_set(objectsKey, objects));
+	OF_ENSURE(of_tlskey_set(countKey, (void *)count));
 #endif
 }
 
@@ -92,43 +103,30 @@ id
 _objc_rootAutorelease(id object)
 {
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	id *top = of_tlskey_get(topKey);
 	id *objects = of_tlskey_get(objectsKey);
-	size_t size = (size_t)(uintptr_t)of_tlskey_get(sizeKey);
+	uintptr_t count = (uintptr_t)of_tlskey_get(countKey);
+	uintptr_t size = (uintptr_t)of_tlskey_get(sizeKey);
 #endif
 
-	if (objects == NULL) {
-		size = 16 * sizeof(id);
+	if (count >= size) {
+		if (size == 0)
+			size = 16;
+		else
+			size *= 2;
 
-		OF_ENSURE((objects = malloc(size)) != NULL);
-
-		top = objects;
+		OF_ENSURE((objects =
+		    realloc(objects, size * sizeof(id))) != NULL);
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
 		OF_ENSURE(of_tlskey_set(objectsKey, objects));
-		OF_ENSURE(of_tlskey_set(sizeKey, (void *)(uintptr_t)size));
+		OF_ENSURE(of_tlskey_set(sizeKey, (void *)size));
 #endif
 	}
 
-	if ((uintptr_t)top >= (uintptr_t)objects + size) {
-		ptrdiff_t diff = top - objects;
-
-		size *= 2;
-		OF_ENSURE((objects = realloc(objects, size)) != NULL);
+	objects[count++] = object;
 
 #if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-		OF_ENSURE(of_tlskey_set(objectsKey, objects));
-		OF_ENSURE(of_tlskey_set(sizeKey, (void *)(uintptr_t)size));
-#endif
-
-		top = objects + diff;
-	}
-
-	*top = object;
-	top++;
-
-#if !defined(OF_HAVE_COMPILER_TLS) && defined(OF_HAVE_THREADS)
-	OF_ENSURE(of_tlskey_set(topKey, top));
+	OF_ENSURE(of_tlskey_set(countKey, (void *)count));
 #endif
 
 	return object;

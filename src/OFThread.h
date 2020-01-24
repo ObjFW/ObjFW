@@ -73,7 +73,9 @@ typedef id _Nullable (^of_thread_block_t)(void);
 		OF_THREAD_RUNNING,
 		OF_THREAD_WAITING_FOR_JOIN
 	} _running;
+# ifndef OF_OBJFW_RUNTIME
 	void *_pool;
+# endif
 # ifdef OF_HAVE_BLOCKS
 	of_thread_block_t _Nullable _threadBlock;
 # endif
