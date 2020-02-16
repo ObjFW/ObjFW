@@ -31,6 +31,7 @@
 
 static of_tlskey_t firstKey = NULL, lastKey = NULL;
 static struct SignalSemaphore semaphore;
+static bool semaphoreInitialized = false;
 
 static uint32_t
 hashFunc(const void *ptr)
@@ -46,7 +47,10 @@ equalFunc(const void *ptr1, const void *ptr2)
 
 OF_CONSTRUCTOR()
 {
-	InitSemaphore(&semaphore);
+	if (!semaphoreInitialized) {
+		InitSemaphore(&semaphore);
+		semaphoreInitialized = true;
+	}
 }
 #endif
 
@@ -58,6 +62,16 @@ of_tlskey_new(of_tlskey_t *key)
 #elif defined(OF_WINDOWS)
 	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
 #elif defined(OF_AMIGAOS)
+	if (!semaphoreInitialized) {
+		/*
+		 * We might be called from another constructor, while ours has
+		 * not run yet. This is safe, as the constructor is definitely
+		 * run before a thread is spawned.
+		 */
+		InitSemaphore(&semaphore);
+		semaphoreInitialized = true;
+	}
+
 	if ((*key = malloc(sizeof(**key))) == NULL)
 		return false;
 
