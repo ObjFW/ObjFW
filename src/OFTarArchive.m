@@ -178,7 +178,11 @@
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFTarArchiveFileReadStream *)_lastReturnedStream of_skip];
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -237,7 +241,11 @@
 
 	pool = objc_autoreleasePoolPush();
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -259,7 +267,11 @@
 	if (_stream == nil)
 		return;
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 

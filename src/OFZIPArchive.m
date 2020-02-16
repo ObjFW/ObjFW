@@ -404,7 +404,11 @@ seekOrThrowInvalidFormat(OFSeekableStream *stream,
 
 - (void)of_closeLastReturnedStream
 {
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 
 	if ((_mode == OF_ZIP_ARCHIVE_MODE_WRITE ||
 	    _mode == OF_ZIP_ARCHIVE_MODE_APPEND) &&

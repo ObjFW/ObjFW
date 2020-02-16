@@ -168,7 +168,11 @@
 		@throw [OFInvalidArgumentException exception];
 
 	[(OFLHAArchiveFileReadStream *)_lastReturnedStream of_skip];
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -227,7 +231,11 @@
 		@throw [OFNotImplementedException exceptionWithSelector: _cmd
 								 object: self];
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
@@ -245,7 +253,11 @@
 	if (_stream == nil)
 		@throw [OFNotOpenException exceptionWithObject: self];
 
-	[_lastReturnedStream close];
+	@try {
+		[_lastReturnedStream close];
+	} @catch (OFNotOpenException *e) {
+		/* Might have already been closed by the user - that's fine. */
+	}
 	[_lastReturnedStream release];
 	_lastReturnedStream = nil;
 
