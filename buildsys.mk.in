@@ -1,9 +1,9 @@
 #
 #  Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
-#                2017, 2018
-#    Jonathan Schleifer <js@heap.zone>
+#                2017, 2018, 2020
+#    Jonathan Schleifer <js@nil.im>
 #
-#  https://heap.zone/git/?p=buildsys.git
+#  https://git.nil.im/buildsys.git
 #
 #  Permission to use, copy, modify, and/or distribute this software for any
 #  purpose with or without fee is hereby granted, provided that the above
@@ -109,6 +109,12 @@ OBJS9 = ${OBJS8:.py=.pyc}
 OBJS10 = ${OBJS9:.rc=.o}
 OBJS11 = ${OBJS10:.S=.o}
 OBJS += ${OBJS11:.xpm=.o}
+DEPS1 = ${SRCS:.c=.c.dep}
+DEPS2 = ${DEPS1:.cc=.cc.dep}
+DEPS3 = ${DEPS2:.cxx=.cxx.dep}
+DEPS4 = ${DEPS3:.m=.m.dep}
+DEPS5 = ${DEPS4:.mm=.mm.dep}
+DEPS = ${DEPS5:.S=.S.dep}
 
 LIB_OBJS = ${OBJS:.o=.lib.o}
 AMIGA_LIB_OBJS = ${OBJS:.o=.amigalib.o}
@@ -141,82 +147,74 @@ ${SUBDIRS} ${SUBDIRS_AFTER}:
 		${DIR_LEAVE}; \
 	done
 
-depend: pre-depend ${SRCS}
-	regen=0; \
-	deps=""; \
-	test -f .deps || regen=1; \
-	for i in "" ${SRCS}; do \
-		case $$i in \
-			"") \
-				;; \
-			*.c) \
-				if test x"${CC_DEPENDS}" = x"yes"; then \
-					test $$i -nt .deps && regen=1; \
-					deps="$$deps $$i.dep"; \
-				fi; \
-				;; \
-			*.cc | *.cxx) \
-				if test x"${CXX_DEPENDS}" = x"yes"; then \
-					test $$i -nt .deps && regen=1; \
-					deps="$$deps $$i.dep"; \
-				fi; \
-				;; \
-			*.m) \
-				if test x"${OBJC_DEPENDS}" = x"yes"; then \
-					test $$i -nt .deps && regen=1; \
-					deps="$$deps $$i.dep"; \
-				fi; \
-				;; \
-			*.mm) \
-				if test x"${OBJCXX_DEPENDS}" = x"yes"; then \
-					test $$i -nt .deps && regen=1; \
-					deps="$$deps $$i.dep"; \
-				fi; \
-				;; \
-			*.S) \
-				if test x"${AS_DEPENDS}" = x"yes"; then \
-					test $$i -nt .deps && regen=1; \
-					deps="$$deps $$i.dep"; \
-				fi; \
-				;; \
-		esac; \
-	done; \
-	if test x"$$regen" = x"1" -a x"$$deps" != x""; then \
-		${DEPEND_STATUS}; \
-		if ${MAKE} $$deps && cat $$deps >.deps; then \
-			rm -f $$deps; \
-			${DEPEND_OK}; \
-		else \
-			:> .deps; \
-			touch -t 0001010000 .deps; \
-			${DEPEND_FAILED}; \
-		fi; \
-	fi
+depend: pre-depend .deps
+
+.deps: ${DEPS}
+	: >.deps
+	for i in $${DEPS}; do \
+		echo "include $$i" >>.deps; \
+	done
 
 .c.c.dep:
-	${CPP} ${CPPFLAGS} ${CFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
-	{ rm -f $@; false; }
-
+	if test x"${CC_DEPENDS}" = x"yes"; then \
+		${DEPEND_STATUS}; \
+		if ${CPP} ${CPPFLAGS} ${CFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
+			${DEPEND_OK}; \
+		else \
+			rm -f $@; false; \
+			${DEPEND_FAILED}; \
+		fi; \
+	else \
+		: >$@; \
+	fi
 .cc.cc.dep .cxx.cxx.dep:
-	${CPP} ${CPPFLAGS} ${CXXFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
-	{ rm -f $@; false; }
-
+	if test x"${CXX_DEPENDS}" = x"yes"; then \
+		${DEPEND_STATUS}; \
+		if ${CPP} ${CPPFLAGS} ${CXXFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
+			${DEPEND_OK}; \
+		else \
+			rm -f $@; false; \
+			${DEPEND_FAILED}; \
+		fi; \
+	else \
+		: >$@; \
+	fi
 .m.m.dep:
-	${CPP} ${CPPFLAGS} ${OBJCFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
-	{ rm -f $@; false; }
-
+	if test x"${OBJC_DEPENDS}" = x"yes"; then \
+		${DEPEND_STATUS}; \
+		if ${CPP} ${CPPFLAGS} ${OBJCFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
+			${DEPEND_OK}; \
+		else \
+			rm -f $@; false; \
+			${DEPEND_FAILED}; \
+		fi; \
+	else \
+		: >$@; \
+	fi
 .mm.mm.dep:
-	${CPP} ${CPPFLAGS} ${OBJCPPFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
-	{ rm -f $@; false; }
-
+	if test x"${OBJCXX_DEPENDS}" = x"yes"; then \
+		${DEPEND_STATUS}; \
+		if ${CPP} ${CPPFLAGS} ${OBJCPPFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
+			${DEPEND_OK}; \
+		else \
+			rm -f $@; false; \
+			${DEPEND_FAILED}; \
+		fi; \
+	else \
+		: >$@; \
+	fi
 .S.S.dep:
-	${CPP} ${CPPFLAGS} ${ASFLAGS} -M $< | \
-	sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@ || \
-	{ rm -f $@; false; }
+	if test x"${AS_DEPENDS}" = x"yes"; then \
+		${DEPEND_STATUS}; \
+		if ${CPP} ${CPPFLAGS} ${ASFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
+			${DEPEND_OK}; \
+		else \
+			rm -f $@; false; \
+			${DEPEND_FAILED}; \
+		fi; \
+	else \
+		: >$@; \
+	fi
 
 pre-depend:
 
@@ -260,7 +258,7 @@ ${FRAMEWORK} ${FRAMEWORK_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_EXTRA}
 	if rm -fr $$out && ${MKDIR_P} $$out && ${MAKE} COPY_HEADERS_IF_SUBDIR=${includesubdir} COPY_HEADERS_DESTINATION=$$PWD/$@/Headers copy-headers-into-framework && if test -f Info.plist; then ${INSTALL} -m 644 Info.plist $$out/Info.plist; fi && if test -f module.modulemap; then ${MKDIR_P} $$out/Modules && ${INSTALL} -m 644 module.modulemap $$out/Modules/module.modulemap; fi && ${LD} -o $$out/$${out%.framework} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${FRAMEWORK_LDFLAGS} ${FRAMEWORK_LDFLAGS_INSTALL_NAME} ${LDFLAGS} ${FRAMEWORK_LIBS} && ${CODESIGN} -fs ${CODESIGN_IDENTITY} --timestamp=none $$out; then \
 		${LINK_OK}; \
 	else \
-		rm -fr $$out; \
+		rm -fr $$out; false; \
 		${LINK_FAILED}; \
 	fi
 
@@ -294,7 +292,7 @@ ${PLUGIN} ${PLUGIN_NOINST}: ${EXT_DEPS} ${PLUGIN_OBJS}
 	if @LINK_PLUGIN@; then \
 		${LINK_OK}; \
 	else \
-		rm -fr $$out; \
+		rm -fr $$out; false; \
 		${LINK_FAILED}; \
 	fi
 
@@ -305,8 +303,8 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 		if /usr/bin/libtool -static -o $@ ${OBJS} ${OBJS_EXTRA}; then \
 			${LINK_OK}; \
 		else \
+			rm -f $@; false; \
 			${LINK_FAILED}; \
-			rm -f $@; \
 		fi; \
 	else \
 		out="$@"; \
@@ -336,8 +334,8 @@ ${STATIC_LIB} ${STATIC_LIB_NOINST}: ${EXT_DEPS} ${OBJS} ${OBJS_EXTRA}
 		if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
 			${LINK_OK}; \
 		else \
+			rm -f $@; false; \
 			${LINK_FAILED}; \
-			rm -f $@; \
 		fi; \
 		for i in $$ars; do \
 			dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
@@ -352,8 +350,8 @@ ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_E
 		if /usr/bin/libtool -static -o $@ ${LIB_OBJS} ${LIB_OBJS_EXTRA}; then \
 			${LINK_OK}; \
 		else \
+			rm -f $@; false; \
 			${LINK_FAILED}; \
-			rm -f $@; \
 		fi; \
 	else \
 		out="$@"; \
@@ -383,8 +381,8 @@ ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST}: ${EXT_DEPS} ${LIB_OBJS} ${LIB_OBJS_E
 		if ${AR} cr $@ $$objs && ${RANLIB} $@; then \
 			${LINK_OK}; \
 		else \
+			rm -f $@; false; \
 			${LINK_FAILED}; \
-			rm -f $@; \
 		fi; \
 		for i in $$ars; do \
 			dir=".$$(echo $$i | sed 's/\//_/g').objs"; \
@@ -911,7 +909,7 @@ clean:
 		${DIR_LEAVE}; \
 	done
 
-	for i in "" ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${FRAMEWORK} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
+	for i in "" ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${FRAMEWORK} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
 		test x"$$i" = x"" && continue; \
 		if test -f $$i -o -d $$i; then \
 			if rm -fr $$i; then \
@@ -955,9 +953,9 @@ print-var:
 
 DIR_ENTER = printf "@TERM_EL@@TERM_SETAF6@Entering directory @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd $$i || exit $$?
 DIR_LEAVE = printf "@TERM_EL@@TERM_SETAF6@Leaving directory @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd .. || exit $$?
-DEPEND_STATUS = printf "@TERM_EL@@TERM_SETAF3@Generating dependencies...@TERM_SGR0@\r"
-DEPEND_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully generated dependencies.@TERM_SGR0@\n"
-DEPEND_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to generate dependencies!@TERM_SGR0@\n"; exit $$err
+DEPEND_STATUS = printf "@TERM_EL@@TERM_SETAF3@Generating dependencies for @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r" "$<"
+DEPEND_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully generated dependencies for @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n" "$<"
+DEPEND_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to generate dependencies for @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$<"; exit $$err
 COMPILE_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r" "$<"
 COMPILE_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n" "$<"
 COMPILE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$<"; exit $$err
