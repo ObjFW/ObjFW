@@ -123,7 +123,7 @@ MO_FILES = ${LOCALES:.po=.mo}
 
 .SILENT:
 .SUFFIXES:
-.SUFFIXES: .amigalib.dep .amigalib.o .beam .c .cc .class .cxx .d .dep .erl .lib.dep .lib.o .java .mo .m .mm .o .plugin.dep .plugin.o .po .py .pyc .rc .S .xpm
+.SUFFIXES: .amigalib.o .beam .c .cc .class .cxx .d .erl .lib.o .java .mo .m .mm .o .plugin.o .po .py .pyc .rc .S .xpm
 .PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales copy-headers-into-framework ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
@@ -146,16 +146,11 @@ ${SUBDIRS} ${SUBDIRS_AFTER}:
 		${DIR_LEAVE}; \
 	done
 
-depend: pre-depend .deps
-
-.deps: ${DEPS}
+depend: pre-depend
 	: >.deps
 	for i in ${DEPS}; do \
-		echo "include \$${.CURDIR}/$$i" >>.deps; \
+		echo "-include \$${.CURDIR}/$$i" >>.deps; \
 	done
-
-.c.dep .c.lib.dep .c.amigalib.dep .c.plugin.dep .cc.dep .cc.lib.dep .cc.amigalib.dep .cc.plugin.dep .cxx.dep .cxx.lib.dep .cxx.amigalib.dep .cxx.plugin.dep .m.dep .m.lib.dep .m.amigalib.dep .m.plugin.dep .mm.dep .mm.lib.dep .mm.amigalib.dep .mm.plugin.dep .S.dep .S.lib.dep .S.amigalib.dep .S.plugin.dep: pre-depend
-	touch $@
 
 pre-depend:
 
@@ -918,4 +913,4 @@ DELETE_OK = printf "@TERM_EL@@TERM_SETAF4@Deleted @TERM_BOLD@%s@TERM_SGR0@@TERM_
 DELETE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to delete @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$$i"; exit $$err
 
 .CURDIR ?= .
-include ${.CURDIR}/.deps
+-include ${.CURDIR}/.deps
