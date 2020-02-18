@@ -3,7 +3,8 @@ include ../extra.mk
 SUBDIRS += ${OFARC}	\
 	   ${OFDNS}	\
 	   ${OFHASH}	\
-	   ${OFHTTP}
+	   ${OFHTTP}	\
+	   completions
 
 include ../buildsys.mk
 

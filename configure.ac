@@ -1769,6 +1769,13 @@ AS_IF([test x"$cross_compiling" = x"yes"], [
 	AC_SUBST(RUN_TESTS, "run")
 ])
 
+AC_ARG_WITH(fish_completions,
+	AS_HELP_STRING([--with-fish-completions],
+		[install completions for the fish shell]))
+AS_IF([test x"$with_fish_completions" = x"yes"], [
+	AC_SUBST(FISH_COMPLETIONS, fish)
+])
+
 dnl We don't call AC_PROG_CPP, but only AC_PROG_OBJCPP and set CPP to OBJCPP
 dnl and add OBJCPPFLAGS to CPPFLAGS, thus we need to AC_SUBST these ourself.
 AC_SUBST(CPP)
