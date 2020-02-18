@@ -66,11 +66,11 @@ FRAMEWORK_LDFLAGS_INSTALL_NAME = @FRAMEWORK_LDFLAGS_INSTALL_NAME@
 CODESIGN = @CODESIGN@
 CODESIGN_IDENTITY ?= -
 CLEAN_LIB = @CLEAN_LIB@
-AS_DEPENDS = @AS_DEPENDS@
-CC_DEPENDS = @CC_DEPENDS@
-CXX_DEPENDS = @CXX_DEPENDS@
-OBJC_DEPENDS = @OBJC_DEPENDS@
-OBJCXX_DEPENDS = @OBJCXX_DEPENDS@
+DEP_ASFLAGS = @DEP_ASFLAGS@
+DEP_CFLAGS = @DEP_CFLAGS@
+DEP_CXXFLAGS = @DEP_CXXFLAGS@
+DEP_OBJCFLAGS = @DEP_OBJCFLAGS@
+DEP_OBJCXXFLAGS = @DEP_OBJCXXFLAGS@
 LN_S = @LN_S@
 MKDIR_P = mkdir -p
 INSTALL = @INSTALL@
@@ -109,22 +109,21 @@ OBJS9 = ${OBJS8:.py=.pyc}
 OBJS10 = ${OBJS9:.rc=.o}
 OBJS11 = ${OBJS10:.S=.o}
 OBJS += ${OBJS11:.xpm=.o}
-DEPS1 = ${SRCS:.c=.c.dep}
-DEPS2 = ${DEPS1:.cc=.cc.dep}
-DEPS3 = ${DEPS2:.cxx=.cxx.dep}
-DEPS4 = ${DEPS3:.m=.m.dep}
-DEPS5 = ${DEPS4:.mm=.mm.dep}
-DEPS = ${DEPS5:.S=.S.dep}
 
 LIB_OBJS = ${OBJS:.o=.lib.o}
 AMIGA_LIB_OBJS = ${OBJS:.o=.amigalib.o}
 PLUGIN_OBJS = ${OBJS:.o=.plugin.o}
 
+DEPS = ${OBJS:.o=.dep}			\
+       ${LIB_OBJS:.o=.dep}		\
+       ${AMIGA_LIB_OBJS:.o=.dep}	\
+       ${PLUGIN_OBJS:.o=.dep}
+
 MO_FILES = ${LOCALES:.po=.mo}
 
 .SILENT:
 .SUFFIXES:
-.SUFFIXES: .amigalib.o .beam .c .c.dep .cc .cc.dep .class .cxx .cxx.dep .d .erl .lib.o .java .mo .m .m.dep .mm .mm.dep .o .plugin.o .po .py .pyc .rc .S .S.dep .xpm
+.SUFFIXES: .amigalib.dep .amigalib.o .beam .c .cc .class .cxx .d .dep .erl .lib.dep .lib.o .java .mo .m .mm .o .plugin.dep .plugin.o .po .py .pyc .rc .S .xpm
 .PHONY: all subdirs subdirs-after pre-depend depend install install-extra uninstall uninstall-extra clean distclean locales copy-headers-into-framework ${SUBDIRS} ${SUBDIRS_AFTER}
 
 all:
@@ -151,70 +150,12 @@ depend: pre-depend .deps
 
 .deps: ${DEPS}
 	: >.deps
-	for i in $${DEPS}; do \
-		echo "include $$i" >>.deps; \
+	for i in ${DEPS}; do \
+		echo "include \$${.CURDIR}/$$i" >>.deps; \
 	done
 
-.c.c.dep:
-	if test x"${CC_DEPENDS}" = x"yes"; then \
-		${DEPEND_STATUS}; \
-		if ${CPP} ${CPPFLAGS} ${CFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
-			${DEPEND_OK}; \
-		else \
-			rm -f $@; false; \
-			${DEPEND_FAILED}; \
-		fi; \
-	else \
-		: >$@; \
-	fi
-.cc.cc.dep .cxx.cxx.dep:
-	if test x"${CXX_DEPENDS}" = x"yes"; then \
-		${DEPEND_STATUS}; \
-		if ${CPP} ${CPPFLAGS} ${CXXFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
-			${DEPEND_OK}; \
-		else \
-			rm -f $@; false; \
-			${DEPEND_FAILED}; \
-		fi; \
-	else \
-		: >$@; \
-	fi
-.m.m.dep:
-	if test x"${OBJC_DEPENDS}" = x"yes"; then \
-		${DEPEND_STATUS}; \
-		if ${CPP} ${CPPFLAGS} ${OBJCFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
-			${DEPEND_OK}; \
-		else \
-			rm -f $@; false; \
-			${DEPEND_FAILED}; \
-		fi; \
-	else \
-		: >$@; \
-	fi
-.mm.mm.dep:
-	if test x"${OBJCXX_DEPENDS}" = x"yes"; then \
-		${DEPEND_STATUS}; \
-		if ${CPP} ${CPPFLAGS} ${OBJCPPFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
-			${DEPEND_OK}; \
-		else \
-			rm -f $@; false; \
-			${DEPEND_FAILED}; \
-		fi; \
-	else \
-		: >$@; \
-	fi
-.S.S.dep:
-	if test x"${AS_DEPENDS}" = x"yes"; then \
-		${DEPEND_STATUS}; \
-		if ${CPP} ${CPPFLAGS} ${ASFLAGS} -M $< | sed 's/^\([^\.]*\)\.o:/\1.o \1.lib.o \1.amigalib.o \1.plugin.o:/' >$@; then \
-			${DEPEND_OK}; \
-		else \
-			rm -f $@; false; \
-			${DEPEND_FAILED}; \
-		fi; \
-	else \
-		: >$@; \
-	fi
+.c.dep .c.lib.dep .c.amigalib.dep .c.plugin.dep .cc.dep .cc.lib.dep .cc.amigalib.dep .cc.plugin.dep .cxx.dep .cxx.lib.dep .cxx.amigalib.dep .cxx.plugin.dep .m.dep .m.lib.dep .m.amigalib.dep .m.plugin.dep .mm.dep .mm.lib.dep .mm.amigalib.dep .mm.plugin.dep .S.dep .S.lib.dep .S.amigalib.dep .S.plugin.dep: pre-depend
+	touch $@
 
 pre-depend:
 
@@ -396,7 +337,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
+	if ${CC} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
@@ -405,7 +346,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
+	if ${CC} ${LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
 		${COMPILE_LIB_FAILED}; \
@@ -414,7 +355,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${AMIGA_LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
+	if ${CC} ${AMIGA_LIB_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
 		${COMPILE_AMIGA_LIB_FAILED}; \
@@ -423,7 +364,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CC} ${PLUGIN_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} -c -o $@ $<; then \
+	if ${CC} ${PLUGIN_CFLAGS} ${CFLAGS} ${CPPFLAGS} ${CFLAGS_$<} ${CFLAGS_$@} ${DEP_CFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
 		${COMPILE_PLUGIN_FAILED}; \
@@ -433,7 +374,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
+	if ${CXX} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
@@ -442,7 +383,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
+	if ${CXX} ${LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
 		${COMPILE_LIB_FAILED}; \
@@ -451,7 +392,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${AMIGA_LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
+	if ${CXX} ${AMIGA_LIB_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
 		${COMPILE_AMIGA_LIB_FAILED}; \
@@ -460,7 +401,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${CXX} ${PLUGIN_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} -c -o $@ $<; then \
+	if ${CXX} ${PLUGIN_CFLAGS} ${CXXFLAGS} ${CPPFLAGS} ${CXXFLAGS_$<} ${CXXFLAGS_$@} ${DEP_CXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
 		${COMPILE_PLUGIN_FAILED}; \
@@ -508,7 +449,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJC} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
@@ -517,7 +458,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJC} ${LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
 		${COMPILE_LIB_FAILED}; \
@@ -526,7 +467,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${AMIGA_LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJC} ${AMIGA_LIB_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
 		${COMPILE_AMIGA_LIB_FAILED}; \
@@ -535,7 +476,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJC} ${PLUGIN_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJC} ${PLUGIN_CFLAGS} ${OBJCFLAGS} ${CPPFLAGS} ${OBJCFLAGS_$<} ${OBJCFLAGS_$@} ${DEP_OBJCFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
 		${COMPILE_PLUGIN_FAILED}; \
@@ -545,7 +486,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJCXX} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
@@ -554,7 +495,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJCXX} ${LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
 		${COMPILE_LIB_FAILED}; \
@@ -563,7 +504,7 @@ locales: ${MO_FILES}
 	${COMPILE_AMIGA_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${AMIGA_LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJCXX} ${AMIGA_LIB_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_AMIGA_LIB_OK}; \
 	else \
 		${COMPILE_AMIGA_LIB_FAILED}; \
@@ -572,7 +513,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${OBJCXX} ${PLUGIN_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} -c -o $@ $<; then \
+	if ${OBJCXX} ${PLUGIN_CFLAGS} ${OBJCXXFLAGS} ${CPPFLAGS} ${OBJCXXFLAGS_$<} ${OBJCXXFLAGS_$@} ${DEP_OBJCXXFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
 		${COMPILE_PLUGIN_FAILED}; \
@@ -612,7 +553,7 @@ locales: ${MO_FILES}
 	${COMPILE_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} -c -o $@ $<; then \
+	if ${AS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_OK}; \
 	else \
 		${COMPILE_FAILED}; \
@@ -621,7 +562,7 @@ locales: ${MO_FILES}
 	${COMPILE_LIB_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${LIB_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} -c -o $@ $<; then \
+	if ${AS} ${LIB_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_LIB_OK}; \
 	else \
 		${COMPILE_LIB_FAILED}; \
@@ -630,7 +571,7 @@ locales: ${MO_FILES}
 	${COMPILE_PLUGIN_STATUS}
 	in="$<"; \
 	out="$@"; \
-	if ${AS} ${PLUGIN_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} -c -o $@ $<; then \
+	if ${AS} ${PLUGIN_CFLAGS} ${ASFLAGS} ${CPPFLAGS} ${ASFLAGS_$<} ${ASFLAGS_$@} ${DEP_ASFLAGS} -c -o $@ $<; then \
 		${COMPILE_PLUGIN_OK}; \
 	else \
 		${COMPILE_PLUGIN_FAILED}; \
@@ -909,6 +850,8 @@ clean:
 		${DIR_LEAVE}; \
 	done
 
+	: >.deps
+
 	for i in "" ${DEPS} ${OBJS} ${OBJS_EXTRA} ${LIB_OBJS} ${LIB_OBJS_EXTRA} ${AMIGA_LIB_OBJS} ${AMIGA_LIB_OBJS_EXTRA} ${PLUGIN_OBJS} ${PROG} ${PROG_NOINST} ${SHARED_LIB} ${SHARED_LIB_NOINST} ${AMIGA_LIB} ${AMIGA_LIB_NOINST} ${STATIC_LIB} ${STATIC_LIB_NOINST} ${STATIC_PIC_LIB} ${STATIC_PIC_LIB_NOINST} ${FRAMEWORK} ${PLUGIN} ${PLUGIN_NOINST} ${CLEAN_LIB} ${MO_FILES} ${CLEAN}; do \
 		test x"$$i" = x"" && continue; \
 		if test -f $$i -o -d $$i; then \
@@ -953,9 +896,6 @@ print-var:
 
 DIR_ENTER = printf "@TERM_EL@@TERM_SETAF6@Entering directory @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd $$i || exit $$?
 DIR_LEAVE = printf "@TERM_EL@@TERM_SETAF6@Leaving directory @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF6@.@TERM_SGR0@\n" "$$i"; cd .. || exit $$?
-DEPEND_STATUS = printf "@TERM_EL@@TERM_SETAF3@Generating dependencies for @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r" "$<"
-DEPEND_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully generated dependencies for @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n" "$<"
-DEPEND_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to generate dependencies for @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$<"; exit $$err
 COMPILE_STATUS = printf "@TERM_EL@@TERM_SETAF3@Compiling @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF3@...@TERM_SGR0@\r" "$<"
 COMPILE_OK = printf "@TERM_EL@@TERM_SETAF2@Successfully compiled @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF2@.@TERM_SGR0@\n" "$<"
 COMPILE_FAILED = err=$$?; printf "@TERM_EL@@TERM_SETAF1@Failed to compile @TERM_BOLD@%s@TERM_SGR0@@TERM_SETAF1@!@TERM_SGR0@\n" "$<"; exit $$err
