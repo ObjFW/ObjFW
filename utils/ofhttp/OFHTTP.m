@@ -605,6 +605,8 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 	if (!_quiet)
 		[of_stdout writeFormat: @"☇ %@", URL.string];
 
+	_length = 0;
+
 	return true;
 }
 
@@ -729,7 +731,7 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 
 	_progressBar.received = _received;
 
-	if (response.atEndOfStream || (_length >= 0 && _received >= _length)) {
+	if (response.atEndOfStream) {
 		[_progressBar stop];
 		[_progressBar draw];
 		[_progressBar release];
@@ -767,10 +769,9 @@ fileNameFromContentDisposition(OFString *contentDisposition)
 		if (type == nil)
 			type = OF_LOCALIZED(@"type_unknown", @"unknown");
 
-		if (lengthString != nil)
+		if (lengthString != nil) {
 			_length = lengthString.decimalValue;
 
-		if (_length >= 0) {
 			if (_resumedFrom + _length >= GIBIBYTE) {
 				lengthString = [OFString stringWithFormat:
 				    @"%,.2f",
@@ -925,8 +926,7 @@ next:
 	OFMutableDictionary *clientHeaders;
 	OFHTTPRequest *request;
 
-	_length = -1;
-	_received = _resumedFrom = 0;
+	_received = _length = _resumedFrom = 0;
 
 	if (_output != of_stdout)
 		[_output release];
