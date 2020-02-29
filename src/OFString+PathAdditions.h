@@ -84,6 +84,13 @@ extern int _OFString_PathAdditions_reference;
  * @return A new, autoreleased OFString with the path component appended
  */
 - (OFString *)stringByAppendingPathComponent: (OFString *)component;
+
+- (bool)of_isDirectoryPath;
+- (OFString *)of_pathToURLPathWithURLEncodedHost:
+    (OFString *__autoreleasing _Nullable *_Nonnull)URLEncodedHost;
+- (OFString *)of_URLPathToPathWithURLEncodedHost:
+    (nullable OFString *)URLEncodedHost;
+- (OFString *)of_pathComponentToURLPathComponent;
 @end
 
 OF_ASSUME_NONNULL_END

@@ -19,6 +19,7 @@
 
 #import "OFString+PathAdditions.h"
 #import "OFArray.h"
+#import "OFFileURLHandler.h"
 
 #import "OFOutOfRangeException.h"
 
@@ -269,5 +270,72 @@ int _OFString_PathAdditions_reference;
 
 		return ret;
 	}
+}
+
+- (bool)of_isDirectoryPath
+{
+	return ([self hasSuffix: @"/"] || [self hasSuffix: @":"] ||
+	    [OFFileURLHandler of_directoryExistsAtPath: self]);
+}
+
+- (OFString *)of_pathToURLPathWithURLEncodedHost: (OFString **)URLEncodedHost
+{
+	OFArray OF_GENERIC(OFString *) *components = self.pathComponents;
+	OFMutableString *ret = [OFMutableString string];
+
+	for (OFString *component in components) {
+		if (component.length == 0)
+			continue;
+
+		if ([component isEqual: @"/"])
+			[ret appendString: @"/.."];
+		else {
+			[ret appendString: @"/"];
+			[ret appendString: component];
+		}
+	}
+
+	[ret makeImmutable];
+
+	return ret;
+}
+
+- (OFString *)of_URLPathToPathWithURLEncodedHost: (OFString *)URLEncodedHost
+{
+	OFString *path = self;
+
+	if (path.length > 1 && [path hasSuffix: @"/"])
+		path = [path substringWithRange: of_range(0, path.length - 1)];
+
+	OFMutableArray OF_GENERIC(OFString *) *components;
+	size_t count;
+
+	path = [path substringWithRange: of_range(1, path.length - 1)];
+	components = [[[path
+	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
+	count = components.count;
+
+	for (size_t i = 0; i < count; i++) {
+		OFString *component = [components objectAtIndex: i];
+
+		if ([component isEqual: @"."]) {
+			[components removeObjectAtIndex: i];
+			count--;
+
+			i--;
+			continue;
+		}
+
+		if ([component isEqual: @".."])
+			[components replaceObjectAtIndex: i
+					      withObject: @"/"];
+	}
+
+	return [OFString pathWithComponents: components];
+}
+
+- (OFString *)of_pathComponentToURLPathComponent
+{
+	return self;
 }
 @end

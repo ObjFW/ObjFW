@@ -60,85 +60,6 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
 + (OFCharacterSet *)URLQueryOrFragmentAllowedCharacterSet;
 @end
 
-#ifdef OF_HAVE_FILES
-static OFString *
-pathToURLPath(OFString *path)
-{
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	path = [path stringByReplacingOccurrencesOfString: @"\\"
-					       withString: @"/"];
-	path = [path stringByPrependingString: @"/"];
-
-	return path;
-# elif defined(OF_AMIGAOS)
-	OFArray OF_GENERIC(OFString *) *components = path.pathComponents;
-	OFMutableString *ret = [OFMutableString string];
-
-	for (OFString *component in components) {
-		if (component.length == 0)
-			continue;
-
-		if ([component isEqual: @"/"])
-			[ret appendString: @"/.."];
-		else {
-			[ret appendString: @"/"];
-			[ret appendString: component];
-		}
-	}
-
-	[ret makeImmutable];
-
-	return ret;
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
-	return [path stringByPrependingString: @"/"];
-# else
-	return path;
-# endif
-}
-
-static OFString *
-URLPathToPath(OFString *path)
-{
-# if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	path = [path substringWithRange: of_range(1, path.length - 1)];
-	path = [path stringByReplacingOccurrencesOfString: @"/"
-					       withString: @"\\"];
-
-	return path;
-# elif defined(OF_AMIGAOS)
-	OFMutableArray OF_GENERIC(OFString *) *components;
-	size_t count;
-
-	path = [path substringWithRange: of_range(1, path.length - 1)];
-	components = [[[path
-	    componentsSeparatedByString: @"/"] mutableCopy] autorelease];
-	count = components.count;
-
-	for (size_t i = 0; i < count; i++) {
-		OFString *component = [components objectAtIndex: i];
-
-		if ([component isEqual: @"."]) {
-			[components removeObjectAtIndex: i];
-			count--;
-
-			i--;
-			continue;
-		}
-
-		if ([component isEqual: @".."])
-			[components replaceObjectAtIndex: i
-					      withObject: @"/"];
-	}
-
-	return [OFString pathWithComponents: components];
-# elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
-	return [path substringWithRange: of_range(1, path.length - 1)];
-# else
-	return path;
-# endif
-}
-#endif
-
 @interface OFInvertedCharacterSetWithoutPercent: OFCharacterSet
 {
 	OFCharacterSet *_characterSet;
@@ -700,18 +621,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
-		isDirectory = ([path hasSuffix: @"\\"] ||
-		    [path hasSuffix: @"/"] ||
-		    [OFFileURLHandler of_directoryExistsAtPath: path]);
-#elif defined(OF_AMIGAOS)
-		isDirectory = ([path hasSuffix: @"/"] ||
-		    [path hasSuffix: @":"] ||
-		    [OFFileURLHandler of_directoryExistsAtPath: path]);
-#else
-		isDirectory = ([path hasSuffix: @"/"] ||
-		    [OFFileURLHandler of_directoryExistsAtPath: path]);
-#endif
+		isDirectory = [path of_isDirectoryPath];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -732,6 +642,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
+		OFString *URLEncodedHost = nil;
 
 		if (!path.absolutePath) {
 			OFString *currentDirectoryPath = [OFFileManager
@@ -742,23 +653,9 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			path = path.stringByStandardizingPath;
 		}
 
-#ifdef OF_WINDOWS
-		if ([path hasPrefix: @"\\\\"]) {
-			OFArray *components = path.pathComponents;
-
-			if (components.count < 2)
-				@throw [OFInvalidFormatException exception];
-
-			_URLEncodedHost = [[[components objectAtIndex: 1]
-			    stringByURLEncodingWithAllowedCharacters:
-			    [OFCharacterSet URLHostAllowedCharacterSet]] copy];
-			path = [OFString pathWithComponents:
-			    [components objectsInRange:
-			    of_range(2, components.count - 2)]];
-		}
-#endif
-
-		path = pathToURLPath(path);
+		path = [path
+		    of_pathToURLPathWithURLEncodedHost: &URLEncodedHost];
+		_URLEncodedHost = [URLEncodedHost copy];
 
 		if (isDirectory && ![path hasSuffix: @"/"])
 			path = [path stringByAppendingString: @"/"];
@@ -932,20 +829,19 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 - (OFArray *)pathComponents
 {
 	void *pool = objc_autoreleasePoolPush();
+	bool isFile = [_URLEncodedScheme isEqual: @"file"];
 	OFMutableArray *ret;
 	size_t count;
 
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
-	if ([_URLEncodedScheme isEqual: @"file"]) {
-		OFString *path = [_URLEncodedPath substringWithRange:
-		    of_range(1, _URLEncodedPath.length - 1)];
-		path = [path stringByReplacingOccurrencesOfString: @"/"
-						       withString: @"\\"];
+	if (isFile) {
+		OFString *path = [_URLEncodedPath
+		    of_URLPathToPathWithURLEncodedHost: nil];
 		ret = [[path.pathComponents mutableCopy] autorelease];
-		[ret insertObject: @"/"
-			  atIndex: 0];
+
+		if (![ret.firstObject isEqual: @"/"])
+			    [ret insertObject: @"/"
+				      atIndex: 0];
 	} else
-#endif
 		ret = [[[_URLEncodedPath componentsSeparatedByString: @"/"]
 		    mutableCopy] autorelease];
 
@@ -957,11 +853,11 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 	for (size_t i = 0; i < count; i++) {
 		OFString *component = [ret objectAtIndex: i];
-#if defined(OF_WINDOWS) || defined(OF_MSDOS)
-		component = [component
-		    stringByReplacingOccurrencesOfString: @"\\"
-					      withString: @"/"];
-#endif
+
+		if (isFile)
+			component =
+			    [component of_pathComponentToURLPathComponent];
+
 		[ret replaceObjectAtIndex: i
 			       withObject: component.stringByURLDecoding];
 	}
@@ -1108,28 +1004,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	if (![_URLEncodedPath hasPrefix: @"/"])
 		@throw [OFInvalidFormatException exception];
 
-	path = self.path;
-
-#if !defined(OF_WINDOWS) && !defined(OF_MSDOS)
-	if (path.length > 1 && [path hasSuffix: @"/"])
-#else
-	if (path.length > 1 && [path hasSuffix: @"/"] &&
-	    ![path hasSuffix: @":/"])
-#endif
-		path = [path substringWithRange: of_range(0, path.length - 1)];
-
-	path = URLPathToPath(path);
-
-#ifdef OF_WINDOWS
-	if (_URLEncodedHost != nil) {
-		if (path.length == 0)
-			path = [OFString stringWithFormat: @"\\\\%@",
-							   self.host];
-		else
-			path = [OFString stringWithFormat: @"\\\\%@\\%@",
-							   self.host, path];
-	}
-#endif
+	path = [self.path of_URLPathToPathWithURLEncodedHost: _URLEncodedHost];
 
 	[path retain];
 
