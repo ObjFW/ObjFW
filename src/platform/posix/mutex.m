@@ -15,6 +15,10 @@
  * file.
  */
 
+#include "config.h"
+
+#import "mutex.h"
+
 bool
 of_mutex_new(of_mutex_t *mutex)
 {
@@ -88,5 +92,96 @@ bool
 of_rmutex_free(of_rmutex_t *rmutex)
 {
 	return of_mutex_free(rmutex);
+}
+#else
+bool
+of_rmutex_new(of_rmutex_t *rmutex)
+{
+	if (!of_mutex_new(&rmutex->mutex))
+		return false;
+
+	if (!of_tlskey_new(&rmutex->count))
+		return false;
+
+	return true;
+}
+
+bool
+of_rmutex_lock(of_rmutex_t *rmutex)
+{
+	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+
+	if (count > 0) {
+		if (!of_tlskey_set(rmutex->count, (void *)(count + 1)))
+			return false;
+
+		return true;
+	}
+
+	if (!of_mutex_lock(&rmutex->mutex))
+		return false;
+
+	if (!of_tlskey_set(rmutex->count, (void *)1)) {
+		of_mutex_unlock(&rmutex->mutex);
+		return false;
+	}
+
+	return true;
+}
+
+bool
+of_rmutex_trylock(of_rmutex_t *rmutex)
+{
+	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+
+	if (count > 0) {
+		if (!of_tlskey_set(rmutex->count, (void *)(count + 1)))
+			return false;
+
+		return true;
+	}
+
+	if (!of_mutex_trylock(&rmutex->mutex))
+		return false;
+
+	if (!of_tlskey_set(rmutex->count, (void *)1)) {
+		of_mutex_unlock(&rmutex->mutex);
+		return false;
+	}
+
+	return true;
+}
+
+bool
+of_rmutex_unlock(of_rmutex_t *rmutex)
+{
+	uintptr_t count = (uintptr_t)of_tlskey_get(rmutex->count);
+
+	if (count > 1) {
+		if (!of_tlskey_set(rmutex->count, (void *)(count - 1)))
+			return false;
+
+		return true;
+	}
+
+	if (!of_tlskey_set(rmutex->count, (void *)0))
+		return false;
+
+	if (!of_mutex_unlock(&rmutex->mutex))
+		return false;
+
+	return true;
+}
+
+bool
+of_rmutex_free(of_rmutex_t *rmutex)
+{
+	if (!of_mutex_free(&rmutex->mutex))
+		return false;
+
+	if (!of_tlskey_free(rmutex->count))
+		return false;
+
+	return true;
 }
 #endif

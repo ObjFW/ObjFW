@@ -15,16 +15,19 @@
  * file.
  */
 
+#include "config.h"
+
 #include <assert.h>
 #include <errno.h>
+
+#import "OFData.h"
+
+#import "thread.h"
+#import "tlskey.h"
 
 #include <dos/dostags.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
-
-#import "OFData.h"
-
-#import "tlskey.h"
 
 extern void of_tlskey_thread_exited(void);
 static of_tlskey_t threadKey;

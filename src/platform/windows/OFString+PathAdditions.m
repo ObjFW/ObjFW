@@ -15,6 +15,11 @@
  * file.
  */
 
+/*
+ * This file is also used for MS-DOS! Don't forget to #ifdef Windows-specific
+ * parts!
+ */
+
 #include "config.h"
 
 #import "OFString+PathAdditions.h"
@@ -78,6 +83,7 @@ int _OFString_PathAdditions_reference;
 		return ret;
 	}
 
+#ifdef OF_WINDOWS
 	if ([self hasPrefix: @"\\\\"]) {
 		isUNC = true;
 		[ret addObject: @"\\\\"];
@@ -85,6 +91,7 @@ int _OFString_PathAdditions_reference;
 		cString += 2;
 		cStringLength -= 2;
 	}
+#endif
 
 	for (i = 0; i < cStringLength; i++) {
 		if (cString[i] == '\\' || cString[i] == '/') {

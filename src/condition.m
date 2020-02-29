@@ -17,12 +17,12 @@
 
 #include "config.h"
 
-#import "condition.h"
+#include "platform.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "condition_pthread.m"
+# include "platform/posix/condition.m"
 #elif defined(OF_WINDOWS)
-# include "condition_winapi.m"
+# include "platform/windows/condition.m"
 #elif defined(OF_AMIGAOS)
-# include "condition_amiga.m"
+# include "platform/amiga/condition.m"
 #endif

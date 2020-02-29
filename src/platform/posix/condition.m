@@ -15,6 +15,10 @@
  * file.
  */
 
+#include "config.h"
+
+#import "condition.h"
+
 bool
 of_condition_new(of_condition_t *condition)
 {

@@ -15,9 +15,14 @@
  * file.
  */
 
+#include "config.h"
+
 #include <errno.h>
 
+#import "thread.h"
 #import "macros.h"
+
+#include <windows.h>
 
 bool
 of_thread_attr_init(of_thread_attr_t *attr)

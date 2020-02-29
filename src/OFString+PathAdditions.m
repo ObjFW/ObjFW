@@ -17,14 +17,14 @@
 
 #include "config.h"
 
-#import "platform.h"
+#include "platform.h"
 
 #if defined(OF_WINDOWS) || defined(OF_MSDOS)
-# import "OFString+PathAdditions_DOS.m"
+# import "platform/windows/OFString+PathAdditions.m"
 #elif defined(OF_AMIGAOS)
-# import "OFString+PathAdditions_AmigaOS.m"
+# import "platform/amiga/OFString+PathAdditions.m"
 #elif defined(OF_NINTENDO_3DS) || defined(OF_WII)
-# import "OFString+PathAdditions_libfat.m"
+# import "platform/libfat/OFString+PathAdditions.m"
 #else
-# import "OFString+PathAdditions_UNIX.m"
+# import "platform/posix/OFString+PathAdditions.m"
 #endif

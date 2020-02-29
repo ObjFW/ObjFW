@@ -17,12 +17,16 @@
 
 #include "config.h"
 
-#include "platform.h"
+#import "tlskey.h"
 
-#if defined(OF_HAVE_PTHREADS)
-# include "platform/posix/tlskey.m"
-#elif defined(OF_WINDOWS)
-# include "platform/windows/tlskey.m"
-#elif defined(OF_AMIGAOS)
-# include "platform/amiga/tlskey.m"
-#endif
+bool
+of_tlskey_new(of_tlskey_t *key)
+{
+	return ((*key = TlsAlloc()) != TLS_OUT_OF_INDEXES);
+}
+
+bool
+of_tlskey_free(of_tlskey_t key)
+{
+	return TlsFree(key);
+}

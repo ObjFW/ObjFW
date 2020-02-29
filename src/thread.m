@@ -17,12 +17,12 @@
 
 #include "config.h"
 
-#import "thread.h"
+#include "platform.h"
 
 #if defined(OF_HAVE_PTHREADS)
-# include "thread_pthread.m"
+# include "platform/posix/thread.m"
 #elif defined(OF_WINDOWS)
-# include "thread_winapi.m"
+# include "platform/windows/thread.m"
 #elif defined(OF_AMIGAOS)
-# include "thread_amiga.m"
+# include "platform/amiga/thread.m"
 #endif
