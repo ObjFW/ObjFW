@@ -70,6 +70,27 @@ static OFCharacterSet *URLQueryOrFragmentAllowedCharacterSet = nil;
     OF_METHOD_FAMILY(init);
 @end
 
+bool
+of_url_is_ipv6_host(OFString *host)
+{
+	const char *UTF8String = host.UTF8String;
+	bool hasColon = false;
+
+	while (*UTF8String != '\0') {
+		if (!of_ascii_isdigit(*UTF8String) && *UTF8String != ':' &&
+		    (*UTF8String < 'a' || *UTF8String > 'f') &&
+		    (*UTF8String < 'A' || *UTF8String > 'F'))
+			return false;
+
+		if (*UTF8String == ':')
+			hasColon = true;
+
+		UTF8String++;
+	}
+
+	return hasColon;
+}
+
 @implementation OFURLAllowedCharacterSetBase
 - (instancetype)init
 {
@@ -831,6 +852,17 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 
 - (OFString *)host
 {
+	if ([_URLEncodedHost hasPrefix: @"["] &&
+	    [_URLEncodedHost hasSuffix: @"]"]) {
+		OFString *host = [_URLEncodedHost substringWithRange:
+		    of_range(1, _URLEncodedHost.length - 2)];
+
+		if (!of_url_is_ipv6_host(host))
+			@throw [OFInvalidArgumentException exception];
+
+		return host;
+	}
+
 	return _URLEncodedHost.stringByURLDecoding;
 }
 
