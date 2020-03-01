@@ -392,6 +392,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	@try {
 		void *pool = objc_autoreleasePoolPush();
 		char *tmp, *tmp2;
+		bool isIPv6Host = false;
 
 		if ((UTF8String2 = of_strdup(string.UTF8String)) == NULL)
 			@throw [OFOutOfMemoryException
@@ -451,7 +452,53 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			UTF8String = tmp2;
 		}
 
-		if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
+		if (UTF8String[0] == '[') {
+			tmp2 = UTF8String++;
+
+			while (of_ascii_isdigit(*UTF8String) ||
+			    *UTF8String == ':' ||
+			    (*UTF8String >= 'a' && *UTF8String <= 'f') ||
+			    (*UTF8String >= 'A' && *UTF8String <= 'F'))
+				UTF8String++;
+
+			if (*UTF8String != ']')
+				@throw [OFInvalidFormatException exception];
+
+			UTF8String++;
+
+			_URLEncodedHost = [[OFString alloc]
+			    initWithUTF8String: tmp2
+					length: UTF8String - tmp2];
+
+			if (*UTF8String == ':') {
+				OFString *portString;
+
+				tmp2 = ++UTF8String;
+
+				while (*UTF8String != '\0') {
+					if (!of_ascii_isdigit(*UTF8String))
+						@throw [OFInvalidFormatException
+						    exception];
+
+					UTF8String++;
+				}
+
+				portString = [OFString
+				    stringWithUTF8String: tmp2
+						  length: UTF8String - tmp2];
+
+				if (portString.length == 0 ||
+				    portString.decimalValue > 65535)
+					@throw [OFInvalidFormatException
+					    exception];
+
+				_port = [[OFNumber alloc] initWithUInt16:
+				    (uint16_t)portString.decimalValue];
+			} else if (*UTF8String != '\0')
+				@throw [OFInvalidFormatException exception];
+
+			isIPv6Host = true;
+		} else if ((tmp2 = strchr(UTF8String, ':')) != NULL) {
 			OFString *portString;
 
 			*tmp2 = '\0';
@@ -471,8 +518,9 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			_URLEncodedHost = [[OFString alloc]
 			    initWithUTF8String: UTF8String];
 
-		of_url_verify_escaped(_URLEncodedHost,
-		    [OFCharacterSet URLHostAllowedCharacterSet]);
+		if (!isIPv6Host)
+			of_url_verify_escaped(_URLEncodedHost,
+			    [OFCharacterSet URLHostAllowedCharacterSet]);
 
 		if ((UTF8String = tmp) != NULL) {
 			if ((tmp = strchr(UTF8String, '#')) != NULL) {
