@@ -829,10 +829,13 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 - (OFArray *)pathComponents
 {
 	void *pool = objc_autoreleasePoolPush();
+#ifdef OF_HAVE_FILES
 	bool isFile = [_URLEncodedScheme isEqual: @"file"];
+#endif
 	OFMutableArray *ret;
 	size_t count;
 
+#ifdef OF_HAVE_FILES
 	if (isFile) {
 		OFString *path = [_URLEncodedPath
 		    of_URLPathToPathWithURLEncodedHost: nil];
@@ -842,6 +845,7 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 			    [ret insertObject: @"/"
 				      atIndex: 0];
 	} else
+#endif
 		ret = [[[_URLEncodedPath componentsSeparatedByString: @"/"]
 		    mutableCopy] autorelease];
 
@@ -854,9 +858,11 @@ of_url_verify_escaped(OFString *string, OFCharacterSet *characterSet)
 	for (size_t i = 0; i < count; i++) {
 		OFString *component = [ret objectAtIndex: i];
 
+#ifdef OF_HAVE_FILES
 		if (isFile)
 			component =
 			    [component of_pathComponentToURLPathComponent];
+#endif
 
 		[ret replaceObjectAtIndex: i
 			       withObject: component.stringByURLDecoding];
